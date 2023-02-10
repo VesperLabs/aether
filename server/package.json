@@ -1,0 +1,17 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@geckos.io/phaser-on-nodejs": "^1.2.8",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "phaser": "^3.55.2",
+    "socket.io": "^4.6.0"
+  },
+  "scripts": {
+    "start": "node index.js"
+  }
+}
