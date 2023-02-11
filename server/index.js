@@ -1,3 +1,4 @@
+/** @type {import("phaser/types/phaser.d.ts")} */
 require("@geckos.io/phaser-on-nodejs");
 require("dotenv").config();
 const Phaser = require("phaser");
@@ -12,22 +13,42 @@ const io = require("socket.io")(httpServer, {
     origin: process.env.CLIENT_URL,
   },
 });
+const { addPlayer } = require("./utils");
 
 global.phaserOnNodeFPS = process.env.FPS;
 
 app.use(cors());
 app.use(express.static(path.join(__dirname, "../client/build")));
-
 class ServerScene extends Phaser.Scene {
   constructor() {
     super();
   }
+  preload() {
+    this.load.tilemapTiledJSON(
+      "map",
+      "../shared/tilemaps/maps/grasslandjson.json"
+    );
+  }
   create() {
-    this.playersGroup = this.add.group();
+    const map = this.make.tilemap("map");
+    const layer = map.createLayer("Collide", "map");
+    layer.setCollisionByProperty({
+      collides: true,
+    });
+
+    this.physics.world.setBounds(0, 0, 2560, 1920);
+    this.players = this.physics.add.group();
+
     io.on("connection", (socket) => {
-      console.log("a user connected");
-      socket.on("disconnect", () => {
-        console.log("user disconnected");
+      const socketId = socket.id;
+
+      console.log("🧑🏻‍🦰 connected");
+      addPlayer({ scene: this, socketId, layer });
+
+      socket.on("disconnect", function () {
+        console.log("🧑🏻‍🦰 disconnected");
+        removePlayer({ scene: this, socketId });
+        io.emit("remove", socketId);
       });
     });
   }
