@@ -16,9 +16,13 @@ const io = require("socket.io")(httpServer, {
 const {
   addPlayer,
   removePlayer,
+  getPlayer,
   handlePlayerInput,
+  serializePlayer,
+  serializeAllPlayers,
+  setPlayerCollision,
   constrainVelocity,
-} = require("./utils");
+} = require("../client/src/utils");
 
 global.phaserOnNodeFPS = process.env.FPS;
 
@@ -35,8 +39,7 @@ class ServerScene extends Phaser.Scene {
   create() {
     /* TODO: Maps will need to be stored in memory and assigned to socket rooms */
     const map = this.make.tilemap({ key: "grassland" });
-    const layer = map.createLayer("Collide");
-    layer.setCollisionByProperty({
+    const collideLayer = map.createLayer("Collide").setCollisionByProperty({
       collides: true,
     });
 
@@ -45,61 +48,34 @@ class ServerScene extends Phaser.Scene {
     io.on("connection", (socket) => {
       const socketId = socket.id;
 
-      console.log("🧑🏻‍🦰 connected");
-      addPlayer(this, { socketId, x: 0, y: 0 });
+      const newPlayer = addPlayer(this, { socketId, x: 600, y: 300 });
+      setPlayerCollision(this, newPlayer, [collideLayer]);
+
+      socket.on("login", () => {
+        console.log("🧑🏻‍🦰 login");
+        socket.emit("heroInit", serializePlayer(newPlayer));
+
+        // send the players object to the new player
+        socket.emit("currentPlayers", serializeAllPlayers(this));
+
+        // update all other players of the new player
+        socket.broadcast.emit("newPlayer", serializePlayer(newPlayer));
+      });
 
       socket.on("disconnect", () => {
         console.log("🧑🏻‍🦰 disconnected");
-        removePlayer(this, { socketId });
+        removePlayer(this, socketId);
         io.emit("remove", socketId);
       });
 
       socket.on("playerInput", (input) => {
-        handlePlayerInput(this, { socketId, input }); //defined in utilites.js
+        handlePlayerInput(this, socketId, input); //defined in utilites.js
       });
     });
   }
   update() {
     if (!this.players) return;
-    this.players.getChildren().forEach((player) => {
-      const { left, up, down, right } = player.input || {};
-      if (left) {
-        player.setVelocityX(-250);
-        if (right) {
-          player.setVelocityX(0);
-        }
-      } else if (right) {
-        player.setVelocityX(250);
-        if (left) {
-          player.setVelocityX(0);
-        }
-      } else {
-        player.setVelocityX(0);
-      }
-      if (up) {
-        player.setVelocityY(-250);
-        if (down) {
-          player.setVelocityY(0);
-        }
-      } else if (down) {
-        player.setVelocityY(250);
-        if (up) {
-          player.setVelocityY(0);
-        }
-      } else {
-        player.setVelocityY(0);
-      }
-      constrainVelocity(player, 250);
-    });
-    io.emit(
-      "playerUpdates",
-      Array.from(this.players.getChildren()).map((p) => ({
-        x: p.x,
-        y: p.y,
-        velocity_x: p.body.velocity.x,
-        velocity_y: p.body.velocity.y,
-      }))
-    );
+    io.emit("tick", serializeAllPlayers(this));
   }
 }
 
@@ -113,10 +89,13 @@ new Phaser.Game({
   fps: {
     target: process.env.FPS,
   },
+  roundPixels: true,
   physics: {
     default: "arcade",
     arcade: {
-      gravity: { y: 0 },
+      gravity: {
+        y: 0,
+      },
     },
   },
 });

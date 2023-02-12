@@ -2,10 +2,10 @@ import Phaser from "phaser";
 import { assetList } from "./Assets";
 import { mapList, imageList } from "./Maps";
 
-class BootScene extends Phaser.Scene {
+class SceneBoot extends Phaser.Scene {
   constructor(socket) {
     super({
-      key: "BootScene",
+      key: "SceneBoot",
     });
     this.socket = socket;
   }
@@ -33,7 +33,7 @@ class BootScene extends Phaser.Scene {
         let tempText = this.textures.get(asset.texture);
         tempText.add("preview", 0, ...asset.previewRect);
       });
-      this.scene.start("MainScene");
+      this.scene.start("SceneMain");
       window.dispatchEvent(new Event("game_loaded"));
     });
     imageList.forEach((asset) => {
@@ -80,4 +80,4 @@ class BootScene extends Phaser.Scene {
   update() {}
 }
 
-export default BootScene;
+export default SceneBoot;

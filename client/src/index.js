@@ -4,8 +4,8 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import socketIO from "socket.io-client";
 import AnimatedTiles from "./AnimatedTiles";
-import MainScene from "./MainScene";
-import BootScene from "./BootScene";
+import SceneMain from "./SceneMain";
+import SceneBoot from "./SceneBoot";
 
 const socket = socketIO.connect("http://localhost:8000");
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -31,7 +31,6 @@ new Phaser.Game({
     autoCenter: Phaser.Scale.CENTER_HORIZONTALLY,
     max: max,
   },
-  //disableContextMenu:true,
   roundPixels: true,
   antialias: false,
   pixelArt: true,
@@ -47,10 +46,17 @@ new Phaser.Game({
   physics: {
     default: "arcade",
     arcade: {
+      debug: true,
+      debugShowBody: true,
+      debugShowStaticBody: true,
+      debugShowVelocity: true,
+      debugVelocityColor: 0xffff00,
+      debugBodyColor: 0x0000ff,
+      debugStaticBodyColor: 0xffffff,
       gravity: {
         y: 0,
       },
     },
   },
-  scene: [new BootScene(socket), new MainScene(socket)],
+  scene: [new SceneBoot(socket), new SceneMain(socket)],
 });
