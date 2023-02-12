@@ -1,16 +1,56 @@
+import Phaser from "phaser";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
-import reportWebVitals from "./reportWebVitals";
+import socketIO from "socket.io-client";
+import AnimatedTiles from "./AnimatedTiles";
+import MainScene from "./MainScene";
+import BootScene from "./BootScene";
 
+const socket = socketIO.connect("http://localhost:8000");
 const root = ReactDOM.createRoot(document.getElementById("root"));
+
+const gameWidth = window.innerWidth * window.devicePixelRatio;
+const gameHeight = window.innerHeight * window.devicePixelRatio;
+const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+const max = iOS ? { width: 1120, height: 620 } : { width: 1120, height: 1120 };
+
 root.render(
   <React.StrictMode>
-    <App />
+    <App socket={socket} />
   </React.StrictMode>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+new Phaser.Game({
+  type: Phaser.AUTO,
+  parent: "game",
+  scale: {
+    mode: Phaser.Scale.RESIZE,
+    width: gameWidth,
+    height: gameHeight,
+    autoCenter: Phaser.Scale.CENTER_HORIZONTALLY,
+    max: max,
+  },
+  //disableContextMenu:true,
+  roundPixels: true,
+  antialias: false,
+  pixelArt: true,
+  plugins: {
+    scene: [
+      {
+        key: "AnimatedTiles",
+        plugin: AnimatedTiles,
+        mapping: "animatedTiles",
+      },
+    ],
+  },
+  physics: {
+    default: "arcade",
+    arcade: {
+      gravity: {
+        y: 0,
+      },
+    },
+  },
+  scene: [new BootScene(socket), new MainScene(socket)],
+});

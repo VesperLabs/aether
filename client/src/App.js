@@ -1,8 +1,6 @@
 import "./App.css";
-import socketIO from "socket.io-client";
-const socket = socketIO.connect("http://localhost:8000");
 
-function App() {
+function App({ socket }) {
   return <div className="App">cool</div>;
 }
 
