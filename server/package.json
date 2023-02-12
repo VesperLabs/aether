@@ -1,5 +1,5 @@
 {
-  "name": "server",
+  "name": "@aether/server",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
@@ -12,6 +12,9 @@
     "socket.io": "^4.6.0"
   },
   "scripts": {
-    "start": "node index.js"
+    "start": "nodemon index.js"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
   }
 }

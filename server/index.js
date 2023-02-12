@@ -13,44 +13,93 @@ const io = require("socket.io")(httpServer, {
     origin: process.env.CLIENT_URL,
   },
 });
-const { addPlayer } = require("./utils");
+const {
+  addPlayer,
+  removePlayer,
+  handlePlayerInput,
+  constrainVelocity,
+} = require("./utils");
 
 global.phaserOnNodeFPS = process.env.FPS;
 
 app.use(cors());
 app.use(express.static(path.join(__dirname, "../client/build")));
+
 class ServerScene extends Phaser.Scene {
-  constructor() {
-    super();
-  }
   preload() {
     this.load.tilemapTiledJSON(
-      "map",
-      "../shared/tilemaps/maps/grasslandjson.json"
+      "grassland",
+      path.join(__dirname, "../client/public/assets/tilemaps/grassland.json")
     );
   }
   create() {
-    const map = this.make.tilemap("map");
-    const layer = map.createLayer("Collide", "map");
+    /* TODO: Maps will need to be stored in memory and assigned to socket rooms */
+    const map = this.make.tilemap({ key: "grassland" });
+    const layer = map.createLayer("Collide");
     layer.setCollisionByProperty({
       collides: true,
     });
 
-    this.physics.world.setBounds(0, 0, 2560, 1920);
     this.players = this.physics.add.group();
 
     io.on("connection", (socket) => {
       const socketId = socket.id;
 
       console.log("🧑🏻‍🦰 connected");
-      addPlayer({ scene: this, socketId, layer });
+      addPlayer(this, { socketId, x: 0, y: 0 });
 
-      socket.on("disconnect", function () {
+      socket.on("disconnect", () => {
         console.log("🧑🏻‍🦰 disconnected");
-        removePlayer({ scene: this, socketId });
+        removePlayer(this, { socketId });
         io.emit("remove", socketId);
       });
+
+      socket.on("playerInput", (input) => {
+        handlePlayerInput(this, { socketId, input }); //defined in utilites.js
+      });
     });
+  }
+  update() {
+    if (!this.players) return;
+    this.players.getChildren().forEach((player) => {
+      const { left, up, down, right } = player.input || {};
+      if (left) {
+        player.setVelocityX(-250);
+        if (right) {
+          player.setVelocityX(0);
+        }
+      } else if (right) {
+        player.setVelocityX(250);
+        if (left) {
+          player.setVelocityX(0);
+        }
+      } else {
+        player.setVelocityX(0);
+      }
+      if (up) {
+        player.setVelocityY(-250);
+        if (down) {
+          player.setVelocityY(0);
+        }
+      } else if (down) {
+        player.setVelocityY(250);
+        if (up) {
+          player.setVelocityY(0);
+        }
+      } else {
+        player.setVelocityY(0);
+      }
+      constrainVelocity(player, 250);
+    });
+    io.emit(
+      "playerUpdates",
+      Array.from(this.players.getChildren()).map((p) => ({
+        x: p.x,
+        y: p.y,
+        velocity_x: p.body.velocity.x,
+        velocity_y: p.body.velocity.y,
+      }))
+    );
   }
 }
 
@@ -73,5 +122,5 @@ new Phaser.Game({
 });
 
 httpServer.listen(process.env.PORT, () => {
-  console.log(`listening on *:${process.env.PORT}`);
+  console.log(`💻 listening on *:${process.env.PORT}`);
 });
