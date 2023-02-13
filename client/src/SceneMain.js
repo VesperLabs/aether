@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import { addPlayer, getPlayer, setPlayerCollision } from "./utils";
 class SceneMain extends Phaser.Scene {
-  constructor(socket) {
+  constructor({ socket }) {
     super({ key: "SceneMain" });
     this.socket = socket;
   }
@@ -28,7 +28,6 @@ class SceneMain extends Phaser.Scene {
       this.hero = addPlayer(this, { ...player, isHero: true });
       setPlayerCollision(this, this.hero, [collideLayer]);
       setCamera(this, this.hero);
-      addJoystick(this);
     });
 
     this.socket.on("newPlayer", (player) => {
@@ -50,6 +49,8 @@ class SceneMain extends Phaser.Scene {
   }
 
   update() {
+    const joystick = this.game.scene.scenes[2].joystick;
+
     if (!this.socket || !this.hero) return;
     for (const player of this.players.getChildren()) {
       if (player.isHero) continue;
@@ -84,8 +85,9 @@ class SceneMain extends Phaser.Scene {
       this.hero.body.setVelocityY(0);
     }
 
-    this.hero.body.setVelocityX(this.joystick.deltaX);
-    this.hero.body.setVelocityY(this.joystick.deltaY);
+    if (joystick.deltaX || joystick.deltaY) {
+      this.hero.body.setVelocity(joystick.deltaX * 4, joystick.deltaY * 4);
+    }
 
     /* TODO: Stop sending when player is standing still */
     this.hero.input.left = this.cursorKeys.left.isDown;
@@ -109,18 +111,6 @@ function setCamera(scene, hero) {
     scene.tilemap.heightInPixels
   );
   scene.cameras.main.setZoom(2);
-}
-function addJoystick(scene) {
-  scene.joystick = scene.add.joystick({
-    sprites: {
-      base: "",
-      body: "",
-      cap: "",
-    },
-    singleDirection: false,
-    maxDistanceInPixels: 50,
-    device: 0, // 0 for mouse pointer (computer), 1 for touch pointer (mobile)
-  });
 }
 
 function changeMap(scene, mapKey) {

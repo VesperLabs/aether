@@ -65,12 +65,14 @@ var Joystick = new Phaser.Class({
     // Instanciate the Joystick sprites.
     var imageGroup = [];
     imageGroup.push(this.scene.add.sprite(0, 0, settings.sprites.cap));
+    for (var i = 0; i < this.maxDistanceInPixels; i += 100) {
+      imageGroup.push(this.scene.add.sprite(0, 0, settings.sprites.body));
+    }
     imageGroup.push(this.scene.add.sprite(0, 0, settings.sprites.base));
 
     // Manage the Joystick sprites with a Layer.
     this.layer = this.scene.add.layer(imageGroup);
     this.layer.setVisible(false);
-
     // Set Joystick position to (0, 0).
     this.setPosition(0, 0);
 
@@ -119,16 +121,17 @@ var Joystick = new Phaser.Class({
   onKeyDown: function (pointer) {
     // Enable update logic of this Joystick.
     this.setActive(true);
-    const cursorPoint = pointer.positionToCamera(pointer.camera);
+
     // Show sprites.
     this.layer.setVisible(true);
     this.layer.each(function (gameObject) {
-      gameObject.x = cursorPoint.x;
-      gameObject.y = cursorPoint.y;
+      gameObject.setScrollFactor(0);
+      gameObject.x = pointer.x;
+      gameObject.y = pointer.y;
     }, this);
 
     // Set position of this Joystick to the pointer position.
-    this.setPosition(cursorPoint.x, cursorPoint.y);
+    this.setPosition(pointer.x, pointer.y);
   },
 
   /**
@@ -164,12 +167,11 @@ var Joystick = new Phaser.Class({
     var pointers = this.scene.sys.input.manager.pointers;
 
     // Get pointer corresponding to used device.
-    var pointer = pointers[this.device];
+    var pointer = pointers[this.device].position;
 
-    const cursorPoint = pointer.positionToCamera(this.scene.cameras.main);
     // Compute delta pointer position.
-    var deltaX = cursorPoint.x - this.x;
-    var deltaY = cursorPoint.y - this.y;
+    var deltaX = pointer.x - this.x;
+    var deltaY = pointer.y - this.y;
 
     //
     var dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
@@ -197,8 +199,8 @@ var Joystick = new Phaser.Class({
 
     var index = 0;
     this.layer.each(function (gameObject) {
-      gameObject.x = this.x + (deltaX * index) / 1.5;
-      gameObject.y = this.y + (deltaY * index) / 1.5;
+      gameObject.x = this.x + (deltaX * index) / 3;
+      gameObject.y = this.y + (deltaY * index) / 3;
       index++;
     }, this);
   },

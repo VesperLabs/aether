@@ -6,11 +6,10 @@ const express = require("express");
 const app = express();
 const http = require("http");
 const path = require("path");
-const cors = require("cors");
 const httpServer = http.createServer(app);
 const io = require("socket.io")(httpServer, {
   cors: {
-    origin: process.env.CLIENT_URL,
+    origin: "*",
   },
 });
 const {
@@ -26,7 +25,6 @@ const {
 
 global.phaserOnNodeFPS = process.env.FPS;
 
-app.use(cors());
 app.use(express.static(path.join(__dirname, "../client/build")));
 
 class ServerScene extends Phaser.Scene {

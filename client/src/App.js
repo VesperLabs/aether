@@ -1,7 +1,7 @@
 import "./App.css";
 
 function App({ socket }) {
-  return <div className="App">cool</div>;
+  return <div className="App"></div>;
 }
 
 export default App;

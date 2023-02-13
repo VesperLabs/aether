@@ -1,53 +1,29 @@
 import Phaser from "phaser";
-import { addPlayer, getPlayer, setPlayerCollision } from "./utils";
-class SceneMain extends Phaser.Scene {
-  constructor(socket) {
-    super({ key: "SceneMain" });
+class SceneHud extends Phaser.Scene {
+  constructor({ socket, isMobile }) {
+    super({
+      key: "SceneHud",
+    });
     this.socket = socket;
+    this.isMobile = isMobile;
   }
-
-  preload() {
-    this.cursorKeys = this.input.keyboard.createCursorKeys();
-  }
-
+  preload() {}
   create() {
-    this.players = this.add.group();
-
-    this.socket.on("tick", (players) => {
-      for (const p of players) {
-        const player = getPlayer(this, p.socketId);
-        if (!player) continue;
-        player.targetX = p.x;
-        player.targetY = p.y;
-      }
+    this.addJoystick();
+  }
+  update() {}
+  addJoystick() {
+    this.joystick = this.add.joystick({
+      sprites: {
+        base: "",
+        body: "",
+        cap: "",
+      },
+      singleDirection: false,
+      maxDistanceInPixels: 50,
+      device: this.isMobile ? 1 : 0, // 0 for mouse pointer (computer), 1 for touch pointer (mobile)
     });
-
-    this.socket.on("heroInit", (player) => {
-      if (this.hero) return;
-      const { collideLayer } = changeMap(this, "map-grassland");
-      this.hero = addPlayer(this, { ...player, isHero: true });
-      setPlayerCollision(this, this.hero, [collideLayer]);
-      setCamera(this, this.hero);
-      addJoystick(this);
-    });
-
-    this.socket.on("newPlayer", (player) => {
-      addPlayer(this, player);
-    });
-
-    this.socket.on("currentPlayers", (players) => {
-      for (const player of players) {
-        addPlayer(this, player);
-      }
-    });
-
-    this.socket.on("remove", (socketId) => {
-      const player = getPlayer(this, socketId);
-      player.destroy();
-    });
-
-    this.socket.emit("login");
   }
 }
 
-export default SceneMain;
+export default SceneHud;

@@ -3,7 +3,7 @@ import { assetList } from "./Assets";
 import { mapList, imageList } from "./Maps";
 
 class SceneBoot extends Phaser.Scene {
-  constructor(socket) {
+  constructor({ socket }) {
     super({
       key: "SceneBoot",
     });
@@ -33,7 +33,9 @@ class SceneBoot extends Phaser.Scene {
         let tempText = this.textures.get(asset.texture);
         tempText.add("preview", 0, ...asset.previewRect);
       });
+
       this.scene.start("SceneMain");
+      this.scene.start("SceneHud");
       window.dispatchEvent(new Event("game_loaded"));
     });
     imageList.forEach((asset) => {
