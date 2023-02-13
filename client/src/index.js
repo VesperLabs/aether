@@ -6,6 +6,7 @@ import socketIO from "socket.io-client";
 import AnimatedTiles from "./AnimatedTiles";
 import SceneMain from "./SceneMain";
 import SceneBoot from "./SceneBoot";
+import VJoyPlugin from "./Joystick";
 
 const socket = socketIO.connect("http://localhost:8000");
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -40,6 +41,11 @@ new Phaser.Game({
         key: "AnimatedTiles",
         plugin: AnimatedTiles,
         mapping: "animatedTiles",
+      },
+      {
+        key: "VJoyPlugin",
+        plugin: VJoyPlugin,
+        mapping: "vjoy",
       },
     ],
   },

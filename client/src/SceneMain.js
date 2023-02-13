@@ -28,6 +28,7 @@ class SceneMain extends Phaser.Scene {
       this.hero = addPlayer(this, { ...player, isHero: true });
       setPlayerCollision(this, this.hero, [collideLayer]);
       setCamera(this, this.hero);
+      addJoystick(this);
     });
 
     this.socket.on("newPlayer", (player) => {
@@ -82,6 +83,10 @@ class SceneMain extends Phaser.Scene {
     } else {
       this.hero.body.setVelocityY(0);
     }
+
+    this.hero.body.setVelocityX(this.joystick.deltaX);
+    this.hero.body.setVelocityY(this.joystick.deltaY);
+
     /* TODO: Stop sending when player is standing still */
     this.hero.input.left = this.cursorKeys.left.isDown;
     this.hero.input.right = this.cursorKeys.right.isDown;
@@ -104,6 +109,18 @@ function setCamera(scene, hero) {
     scene.tilemap.heightInPixels
   );
   scene.cameras.main.setZoom(2);
+}
+function addJoystick(scene) {
+  scene.joystick = scene.add.joystick({
+    sprites: {
+      base: "",
+      body: "",
+      cap: "",
+    },
+    singleDirection: false,
+    maxDistanceInPixels: 50,
+    device: 0, // 0 for mouse pointer (computer), 1 for touch pointer (mobile)
+  });
 }
 
 function changeMap(scene, mapKey) {
