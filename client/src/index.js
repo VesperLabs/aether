@@ -8,14 +8,13 @@ import SceneMain from "./SceneMain";
 import SceneBoot from "./SceneBoot";
 import VJoyPlugin from "./Joystick";
 import SceneHud from "./SceneHud";
-
-const socket = socketIO.connect("http://localhost:8000");
+import { isMobile } from "./utils";
+const socket = socketIO.connect("http://192.168.1.36:8000");
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 const gameWidth = window.innerWidth * window.devicePixelRatio;
 const gameHeight = window.innerHeight * window.devicePixelRatio;
-const isMobile =
-  /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
 const max = isMobile
   ? { width: 1120, height: 620 }
   : { width: 1120, height: 1120 };
@@ -68,9 +67,5 @@ new Phaser.Game({
       },
     },
   },
-  scene: [
-    new SceneBoot({ socket, isMobile }),
-    new SceneMain({ socket, isMobile }),
-    new SceneHud({ socket, isMobile }),
-  ],
+  scene: [new SceneBoot(socket), new SceneMain(socket), new SceneHud(socket)],
 });

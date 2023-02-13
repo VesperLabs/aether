@@ -3,7 +3,7 @@ import { assetList } from "./Assets";
 import { mapList, imageList } from "./Maps";
 
 class SceneBoot extends Phaser.Scene {
-  constructor({ socket }) {
+  constructor(socket) {
     super({
       key: "SceneBoot",
     });

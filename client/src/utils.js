@@ -1,4 +1,3 @@
-const Phaser = require("phaser");
 const Player = require("./Player");
 
 function addPlayer(scene, user) {
@@ -70,6 +69,9 @@ function handlePlayerInput(scene, socketId, input) {
   player.y = input.y;
 }
 
+const isMobile =
+  /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
 module.exports = {
   addPlayer,
   removePlayer,
@@ -79,4 +81,5 @@ module.exports = {
   serializeAllPlayers,
   handlePlayerInput,
   constrainVelocity,
+  isMobile,
 };

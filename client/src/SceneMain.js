@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import { addPlayer, getPlayer, setPlayerCollision } from "./utils";
 class SceneMain extends Phaser.Scene {
-  constructor({ socket }) {
+  constructor(socket) {
     super({ key: "SceneMain" });
     this.socket = socket;
   }
@@ -49,57 +49,44 @@ class SceneMain extends Phaser.Scene {
   }
 
   update() {
-    const joystick = this.game.scene.scenes[2].joystick;
-
     if (!this.socket || !this.hero) return;
+
     for (const player of this.players.getChildren()) {
       if (player.isHero) continue;
       player.setPosition(player.targetX, player.targetY);
     }
 
-    const { left, up, down, right } = this.hero.input || {};
-    if (left) {
-      this.hero.body.setVelocityX(-200);
-      if (right) {
-        this.hero.body.setVelocityX(0);
-      }
-    } else if (right) {
-      this.hero.body.setVelocityX(200);
-      if (left) {
-        this.hero.body.setVelocityX(0);
-      }
-    } else {
-      this.hero.body.setVelocityX(0);
-    }
-    if (up) {
-      this.hero.body.setVelocityY(-200);
-      if (down) {
-        this.hero.body.setVelocityY(0);
-      }
-    } else if (down) {
-      this.hero.body.setVelocityY(200);
-      if (up) {
-        this.hero.body.setVelocityY(0);
-      }
-    } else {
-      this.hero.body.setVelocityY(0);
-    }
-
-    if (joystick.deltaX || joystick.deltaY) {
-      this.hero.body.setVelocity(joystick.deltaX * 4, joystick.deltaY * 4);
-    }
-
-    /* TODO: Stop sending when player is standing still */
-    this.hero.input.left = this.cursorKeys.left.isDown;
-    this.hero.input.right = this.cursorKeys.right.isDown;
-    this.hero.input.up = this.cursorKeys.up.isDown;
-    this.hero.input.down = this.cursorKeys.down.isDown;
-
-    this.socket.emit("playerInput", {
-      x: this.hero.x,
-      y: this.hero.y,
-    });
+    moveHero(this);
   }
+}
+
+function moveHero(scene) {
+  const speed = 200; //TODO: Make this the same as joystick so we don't have to *4 below
+  const joystick = scene.game.scene.scenes[2].joystick;
+  const left = scene.cursorKeys.left.isDown;
+  const right = scene.cursorKeys.right.isDown;
+  const up = scene.cursorKeys.up.isDown;
+  const down = scene.cursorKeys.down.isDown;
+  const velocity = { x: 0, y: 0 };
+
+  if (left) velocity.x = -speed;
+  if (right) velocity.x = speed;
+  if (up) velocity.y = -speed;
+  if (down) velocity.y = speed;
+  if (left && right) velocity.x = 0;
+  if (up && down) velocity.y = 0;
+  if (!left && !right && !up && !down) {
+    velocity.x = 0;
+    velocity.y = 0;
+  }
+
+  scene.hero.body.setVelocity(velocity.x, velocity.y);
+
+  if (joystick.deltaX || joystick.deltaY) {
+    scene.hero.body.setVelocity(joystick.deltaX * 4, joystick.deltaY * 4);
+  }
+
+  scene.socket.emit("playerInput", velocity);
 }
 
 function setCamera(scene, hero) {
