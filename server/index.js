@@ -1,32 +1,33 @@
 /** @type {import("phaser/types/phaser.d.ts")} */
+const path = require("path");
 require("@geckos.io/phaser-on-nodejs");
-require("dotenv").config();
+require("dotenv").config({ path: path.join(__dirname, "/../client/.env") });
+const { SnapshotInterpolation } = require("@geckos.io/snapshot-interpolation");
 const Phaser = require("phaser");
 const express = require("express");
 const app = express();
 const http = require("http");
-const path = require("path");
 const httpServer = http.createServer(app);
 const io = require("socket.io")(httpServer, {
   cors: {
     origin: "*",
   },
 });
+const SI = new SnapshotInterpolation();
 const {
   addPlayer,
   removePlayer,
-  getPlayer,
   handlePlayerInput,
-  serializePlayer,
-  serializeAllPlayers,
+  getPlayerState,
+  getWorldState,
   setPlayerCollision,
-  constrainVelocity,
 } = require("../client/src/utils");
 
-global.phaserOnNodeFPS = process.env.FPS;
+global.phaserOnNodeFPS = process.env.REACT_APP_SERVER_FPS;
 
 app.use(express.static(path.join(__dirname, "../client/build")));
 
+let tick = 0;
 class ServerScene extends Phaser.Scene {
   preload() {
     this.load.tilemapTiledJSON(
@@ -37,9 +38,6 @@ class ServerScene extends Phaser.Scene {
   create() {
     /* TODO: Maps will need to be stored in memory and assigned to socket rooms */
     const map = this.make.tilemap({ key: "grassland" });
-    const collideLayer = map.createLayer("Collide").setCollisionByProperty({
-      collides: true,
-    });
 
     this.players = this.physics.add.group();
 
@@ -47,17 +45,16 @@ class ServerScene extends Phaser.Scene {
       const socketId = socket.id;
 
       const newPlayer = addPlayer(this, { socketId, x: 600, y: 300 });
-      setPlayerCollision(this, newPlayer, [collideLayer]);
+      setPlayerCollision(this, newPlayer, []);
 
       socket.on("login", () => {
         console.log("🧑🏻‍🦰 login");
-        socket.emit("heroInit", serializePlayer(newPlayer));
-
-        // send the players object to the new player
-        socket.emit("currentPlayers", serializeAllPlayers(this));
-
-        // update all other players of the new player
-        socket.broadcast.emit("newPlayer", serializePlayer(newPlayer));
+        socket.emit("heroInit", {
+          players: getWorldState(this).players,
+          socketId,
+        });
+        // tell all others about new player
+        socket.broadcast.emit("newPlayer", getPlayerState(newPlayer));
       });
 
       socket.on("disconnect", () => {
@@ -71,9 +68,15 @@ class ServerScene extends Phaser.Scene {
       });
     });
   }
-  update() {
+  update(delta, ms) {
+    tick++;
     if (!this.players) return;
-    io.emit("tick", serializeAllPlayers(this));
+    const snapshot = SI.snapshot.create(getWorldState(this));
+    SI.vault.add(snapshot);
+    if (tick % 4 === 0) {
+      //every 4th frame
+    }
+    io.emit("update", snapshot);
   }
 }
 
@@ -85,7 +88,7 @@ new Phaser.Game({
   audio: false,
   scene: [ServerScene],
   fps: {
-    target: process.env.FPS,
+    target: process.env.REACT_APP_SERVER_FPS,
   },
   roundPixels: true,
   physics: {
@@ -98,6 +101,6 @@ new Phaser.Game({
   },
 });
 
-httpServer.listen(process.env.PORT, () => {
-  console.log(`💻 listening on *:${process.env.PORT}`);
+httpServer.listen(process.env.SERVER_PORT, () => {
+  console.log(`💻 listening on *:${process.env.SERVER_PORT}`);
 });

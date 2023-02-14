@@ -1,5 +1,13 @@
 import Phaser from "phaser";
-import { addPlayer, getPlayer, setPlayerCollision } from "./utils";
+import {
+  addPlayer,
+  getPlayer,
+  removeAllPlayers,
+  setPlayerCollision,
+  removePlayer,
+} from "./utils";
+const { SnapshotInterpolation } = require("@geckos.io/snapshot-interpolation");
+const SI = new SnapshotInterpolation(process.env.REACT_APP_SERVER_FPS); // the server's fps is 15
 class SceneMain extends Phaser.Scene {
   constructor(socket) {
     super({ key: "SceneMain" });
@@ -13,36 +21,34 @@ class SceneMain extends Phaser.Scene {
   create() {
     this.players = this.add.group();
 
-    this.socket.on("tick", (players) => {
-      for (const p of players) {
-        const player = getPlayer(this, p.socketId);
-        if (!player) continue;
-        player.targetX = p.x;
-        player.targetY = p.y;
-      }
+    this.socket.on("update", (snapshot) => {
+      SI.snapshot.add(snapshot);
     });
 
-    this.socket.on("heroInit", (player) => {
-      if (this.hero) return;
+    this.socket.on("heroInit", ({ socketId, players }) => {
       const { collideLayer } = changeMap(this, "map-grassland");
-      this.hero = addPlayer(this, { ...player, isHero: true });
+      removeAllPlayers(this);
+
+      /* Add players that don't exist */
+      for (const player of players) {
+        if (socketId === player.socketId) {
+          this.hero = addPlayer(this, { ...player, isHero: true });
+        } else {
+          addPlayer(this, player);
+        }
+      }
+
       setPlayerCollision(this, this.hero, [collideLayer]);
       setCamera(this, this.hero);
     });
 
     this.socket.on("newPlayer", (player) => {
+      if (getPlayer(this, player.socketId)) return;
       addPlayer(this, player);
     });
 
-    this.socket.on("currentPlayers", (players) => {
-      for (const player of players) {
-        addPlayer(this, player);
-      }
-    });
-
     this.socket.on("remove", (socketId) => {
-      const player = getPlayer(this, socketId);
-      player.destroy();
+      removePlayer(this, socketId);
     });
 
     this.socket.emit("login");
@@ -50,12 +56,21 @@ class SceneMain extends Phaser.Scene {
 
   update() {
     if (!this.socket || !this.hero) return;
+    const snapshot = SI.calcInterpolation("x y", "players");
 
-    for (const player of this.players.getChildren()) {
-      if (player.isHero) continue;
-      player.setPosition(player.targetX, player.targetY);
+    if (snapshot) {
+      for (const s of snapshot.state) {
+        const player = getPlayer(this, s.socketId);
+        if (player) {
+          /* Update player movements */
+          if (!player.isHero) player.setPosition(s.x, s.y);
+          /* Update depths */
+          player.setDepth(player.y + player.height / 2);
+        }
+      }
     }
 
+    /* Update Hero */
     moveHero(this);
   }
 }
@@ -67,26 +82,30 @@ function moveHero(scene) {
   const right = scene.cursorKeys.right.isDown;
   const up = scene.cursorKeys.up.isDown;
   const down = scene.cursorKeys.down.isDown;
-  const velocity = { x: 0, y: 0 };
+  let vx = 0;
+  let vy = 0;
 
-  if (left) velocity.x = -speed;
-  if (right) velocity.x = speed;
-  if (up) velocity.y = -speed;
-  if (down) velocity.y = speed;
-  if (left && right) velocity.x = 0;
-  if (up && down) velocity.y = 0;
+  if (left) vx = -speed;
+  if (right) vx = speed;
+  if (up) vy = -speed;
+  if (down) vy = speed;
+  if (left && right) vx = 0;
+  if (up && down) vy = 0;
   if (!left && !right && !up && !down) {
-    velocity.x = 0;
-    velocity.y = 0;
+    vx = 0;
+    vy = 0;
   }
 
-  scene.hero.body.setVelocity(velocity.x, velocity.y);
+  scene.hero.body.setVelocity(vx, vy);
 
   if (joystick.deltaX || joystick.deltaY) {
     scene.hero.body.setVelocity(joystick.deltaX * 4, joystick.deltaY * 4);
   }
 
-  scene.socket.emit("playerInput", velocity);
+  scene.socket.emit("playerInput", {
+    x: scene.hero.x,
+    y: scene.hero.y,
+  });
 }
 
 function setCamera(scene, hero) {

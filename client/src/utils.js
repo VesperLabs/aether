@@ -23,6 +23,13 @@ function removePlayer(scene, socketId) {
   });
 }
 
+function removeAllPlayers(scene, socketId) {
+  if (!scene.players) return;
+  scene.players.getChildren().forEach((player) => {
+    player.destroy();
+  });
+}
+
 function getPlayer(scene, socketId) {
   if (!scene.players) return;
   const player = scene.players
@@ -31,16 +38,28 @@ function getPlayer(scene, socketId) {
   return player;
 }
 
-function serializePlayer(p) {
+//used for ghost
+function getPlayers(scene, socketId) {
+  if (!scene.players) return;
+  const players = scene.players
+    .getChildren()
+    .filter((player) => socketId === player.socketId);
+  return players;
+}
+
+function getPlayerState(p) {
   return {
+    id: p.socketId, //required for SI
     socketId: p.socketId,
     x: p.x,
     y: p.y,
   };
 }
 
-function serializeAllPlayers(scene) {
-  return Array.from(scene.players.getChildren()).map(serializePlayer);
+function getWorldState(scene) {
+  return {
+    players: Array.from(scene.players.getChildren()).map(getPlayerState),
+  };
 }
 
 // Ensures sprite speed doesnt exceed maxVelocity while update is called (from Phaser example)
@@ -64,9 +83,10 @@ function constrainVelocity(sprite, maxVelocity) {
 //handling players inputs from socket
 function handlePlayerInput(scene, socketId, input) {
   if (!scene.players) return;
+  const { x, y } = input;
   const player = getPlayer(scene, socketId);
-  player.x = input.x;
-  player.y = input.y;
+  player.x = x;
+  player.y = y;
 }
 
 const isMobile =
@@ -76,10 +96,12 @@ module.exports = {
   addPlayer,
   removePlayer,
   getPlayer,
+  getPlayers,
   setPlayerCollision,
-  serializePlayer,
-  serializeAllPlayers,
+  getPlayerState,
+  getWorldState,
   handlePlayerInput,
   constrainVelocity,
+  removeAllPlayers,
   isMobile,
 };
