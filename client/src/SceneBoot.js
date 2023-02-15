@@ -29,11 +29,10 @@ class SceneBoot extends Phaser.Scene {
 
     // Register a load complete event to launch the title screen when all files are loaded
     this.load.on("complete", () => {
-      assetList.forEach((asset) => {
-        let tempText = this.textures.get(asset.texture);
-        tempText.add("preview", 0, ...asset.previewRect);
-      });
-
+      // assetList.forEach((asset) => {
+      //   let tempText = this.textures.get(asset.texture);
+      //   tempText.add("preview", 0, ...asset.previewRect);
+      // });
       this.scene.start("SceneMain");
       this.scene.start("SceneHud");
       window.dispatchEvent(new Event("game_loaded"));
@@ -78,8 +77,66 @@ class SceneBoot extends Phaser.Scene {
       { frameWidth: 150, frameHeight: 150 }
     );
   }
-  create() {}
+  create() {
+    createAnims(this.scene.manager.getScene("SceneMain"));
+  }
   update() {}
+}
+
+function createAnims(scene) {
+  createWalkingAnims(scene);
+  createStaticAnims(scene);
+}
+
+function createStaticAnims(scene) {
+  const frameProps = { zeroPad: 0, start: "" };
+  const animProps = { frameRate: 0, repeat: 0 };
+  const animKeys = [
+    "up-attack",
+    "down-attack",
+    "left-attack",
+    "right-attack",
+    "up-stand",
+    "down-stand",
+    "left-stand",
+    "right-stand",
+  ];
+  for (const asset of assetList) {
+    /* Skip non animated atlases */
+    if (asset.atlas.includes("-icons") || asset.atlas.includes("-stackable"))
+      continue;
+    for (const animKey of animKeys) {
+      scene.anims.create({
+        key: animKey,
+        frames: scene.anims.generateFrameNames("human", {
+          prefix: animKey,
+          ...frameProps,
+        }),
+        ...animProps,
+      });
+    }
+  }
+}
+
+function createWalkingAnims(scene) {
+  const frameProps = { zeroPad: 3, start: 0, end: 2 };
+  const animProps = { frameRate: 5, repeat: -1, yoyo: true };
+  const animKeys = ["up-walk", "down-walk", "left-walk", "right-walk"];
+  for (const asset of assetList) {
+    /* Skip non animated atlases */
+    if (asset.atlas.includes("-icons") || asset.atlas.includes("-stackable"))
+      continue;
+    for (const animKey of animKeys) {
+      scene.anims.create({
+        key: animKey,
+        frames: scene.anims.generateFrameNames("human", {
+          prefix: animKey + ".",
+          ...frameProps,
+        }),
+        ...animProps,
+      });
+    }
+  }
 }
 
 export default SceneBoot;

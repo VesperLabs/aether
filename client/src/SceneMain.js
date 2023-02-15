@@ -63,7 +63,11 @@ class SceneMain extends Phaser.Scene {
         const player = getPlayer(this, s.socketId);
         if (player) {
           /* Update player movements */
-          if (!player.isHero) player.setPosition(s.x, s.y);
+          if (!player.isHero) {
+            player.setPosition(s.x, s.y);
+            player.vx = s.vx;
+            player.vy = s.vy;
+          }
           /* Update depths */
           player.setDepth(player.y + player.height / 2);
         }
@@ -99,10 +103,14 @@ function moveHero(scene) {
   scene.hero.body.setVelocity(vx, vy);
 
   if (joystick.deltaX || joystick.deltaY) {
-    scene.hero.body.setVelocity(joystick.deltaX * 4, joystick.deltaY * 4);
+    vx = joystick.deltaX * 4;
+    vy = joystick.deltaY * 4;
+    scene.hero.body.setVelocity(vx, vy);
   }
 
   scene.socket.emit("playerInput", {
+    vx,
+    vy,
     x: scene.hero.x,
     y: scene.hero.y,
   });

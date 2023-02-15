@@ -53,6 +53,8 @@ function getPlayerState(p) {
     socketId: p.socketId,
     x: p.x,
     y: p.y,
+    vx: p.vx,
+    vy: p.vy,
   };
 }
 
@@ -62,31 +64,15 @@ function getWorldState(scene) {
   };
 }
 
-// Ensures sprite speed doesnt exceed maxVelocity while update is called (from Phaser example)
-function constrainVelocity(sprite, maxVelocity) {
-  if (!sprite || !sprite.body) return;
-
-  var angle, currVelocitySqr, vx, vy;
-  vx = sprite.body.velocity.x;
-  vy = sprite.body.velocity.y;
-  currVelocitySqr = vx * vx + vy * vy;
-
-  if (currVelocitySqr > maxVelocity * maxVelocity) {
-    angle = Math.atan2(vy, vx);
-    vx = Math.cos(angle) * maxVelocity;
-    vy = Math.sin(angle) * maxVelocity;
-    sprite.body.velocity.x = vx;
-    sprite.body.velocity.y = vy;
-  }
-}
-
 //handling players inputs from socket
 function handlePlayerInput(scene, socketId, input) {
   if (!scene.players) return;
-  const { x, y } = input;
+  const { x, y, vx, vy } = input;
   const player = getPlayer(scene, socketId);
   player.x = x;
   player.y = y;
+  player.vx = vx;
+  player.vy = vy;
 }
 
 const isMobile =
@@ -101,7 +87,6 @@ module.exports = {
   getPlayerState,
   getWorldState,
   handlePlayerInput,
-  constrainVelocity,
   removeAllPlayers,
   isMobile,
 };

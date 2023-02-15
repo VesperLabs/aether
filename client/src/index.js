@@ -35,7 +35,7 @@ new Phaser.Game({
     autoCenter: Phaser.Scale.CENTER_HORIZONTALLY,
     max: max,
   },
-  roundPixels: true,
+  roundPixels: false,
   antialias: false,
   pixelArt: true,
   plugins: {

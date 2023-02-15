@@ -44,7 +44,12 @@ class ServerScene extends Phaser.Scene {
     io.on("connection", (socket) => {
       const socketId = socket.id;
 
-      const newPlayer = addPlayer(this, { socketId, x: 600, y: 300 });
+      const newPlayer = addPlayer(this, {
+        isServer: true,
+        socketId,
+        x: 600,
+        y: 300,
+      });
       setPlayerCollision(this, newPlayer, []);
 
       socket.on("login", () => {
@@ -90,7 +95,7 @@ new Phaser.Game({
   fps: {
     target: process.env.REACT_APP_SERVER_FPS,
   },
-  roundPixels: true,
+  roundPixels: false,
   physics: {
     default: "arcade",
     arcade: {
