@@ -27,7 +27,6 @@ global.phaserOnNodeFPS = process.env.REACT_APP_SERVER_FPS;
 
 app.use(express.static(path.join(__dirname, "../client/build")));
 
-let tick = 0;
 class ServerScene extends Phaser.Scene {
   preload() {
     this.load.tilemapTiledJSON(
@@ -73,14 +72,10 @@ class ServerScene extends Phaser.Scene {
       });
     });
   }
-  update(delta, ms) {
-    tick++;
+  update(time, delta) {
     if (!this.players) return;
     const snapshot = SI.snapshot.create(getWorldState(this));
     SI.vault.add(snapshot);
-    if (tick % 4 === 0) {
-      //every 4th frame
-    }
     io.emit("update", snapshot);
   }
 }
