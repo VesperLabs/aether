@@ -55,13 +55,13 @@ new Phaser.Game({
   physics: {
     default: "arcade",
     arcade: {
-      debug: true,
-      debugShowBody: true,
-      debugShowStaticBody: true,
-      debugShowVelocity: true,
-      debugVelocityColor: 0xffff00,
-      debugBodyColor: 0x0000ff,
-      debugStaticBodyColor: 0xffffff,
+      // debug: true,
+      // debugShowBody: true,
+      // debugShowStaticBody: true,
+      // debugShowVelocity: true,
+      // debugVelocityColor: 0xffff00,
+      // debugBodyColor: 0x0000ff,
+      // debugStaticBodyColor: 0xffffff,
       gravity: {
         y: 0,
       },
