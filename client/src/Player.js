@@ -14,6 +14,7 @@ class Player extends Phaser.GameObjects.Container {
     this.isServer = isServer;
     this.action = "stand";
     this.direction = "down";
+    this.currentSpeed = 0;
     this.vx = 0;
     this.vy = 0;
     this.state = {
@@ -21,10 +22,9 @@ class Player extends Phaser.GameObjects.Container {
     };
     /* For the server, don't draw this stuff */
     if (isServer) return;
-    this.texture = "dragon";
+    this.texture = "human";
     this.skin = new Phaser.GameObjects.Sprite(this.scene, 0, -12, this.texture);
     this.add(this.skin);
-
     scene.add.existing(this.skin);
     /* Do we really need these? */
     scene.events.on("update", this.update, this);
@@ -35,9 +35,8 @@ class Player extends Phaser.GameObjects.Container {
     updatePlayerDirection(this);
     drawFrame(this);
   }
-  hackFrameRate(spriteKey) {
-    const keys = { skin: 60000 / this.speed };
-    this[spriteKey].anims.msPerFrame = keys[spriteKey];
+  hackFrameRate(spriteKey, rate) {
+    this[spriteKey].anims.msPerFrame = rate;
   }
   destroy() {
     if (this.scene) this.scene.events.off("update", this.update, this);
@@ -49,9 +48,10 @@ class Player extends Phaser.GameObjects.Container {
 function drawFrame(player) {
   const newKey = `${player.texture}-${player.direction}-${player.action}`;
   const currentKey = player?.skin?.anims?.currentAnim?.key;
+  const currentFrame = player?.skin?.anims?.currentFrame?.index || 0;
+  player.hackFrameRate("skin", Math.round(80 + 2500 / player.currentSpeed));
   if (currentKey !== newKey) {
-    player.skin.play(newKey, true);
-    player.hackFrameRate("skin");
+    player.skin.play(newKey, false, currentFrame);
   }
 }
 
@@ -59,6 +59,9 @@ function updatePlayerDirection(player) {
   /* Get velocity from server updates if we are not the hero */
   const vx = player?.isHero ? player.body.velocity.x : player.vx;
   const vy = player?.isHero ? player.body.velocity.y : player.vy;
+
+  player.currentSpeed = Math.max(Math.abs(vx), Math.abs(vy));
+
   if (Math.abs(vy) >= Math.abs(vx)) {
     if (vy > 0) {
       player.direction = "down";

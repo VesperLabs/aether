@@ -90,7 +90,6 @@ function createAnims(scene) {
 
 function createStaticAnims(scene) {
   const frameProps = { zeroPad: 0, start: "" };
-  const animProps = { frameRate: 0, repeat: 0 };
   const animKeys = [
     "up-attack",
     "down-attack",
@@ -112,7 +111,6 @@ function createStaticAnims(scene) {
           prefix: animKey,
           ...frameProps,
         }),
-        ...animProps,
       });
     }
   }
