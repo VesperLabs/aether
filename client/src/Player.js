@@ -21,9 +21,10 @@ class Player extends Phaser.GameObjects.Container {
     };
     /* For the server, don't draw this stuff */
     if (isServer) return;
-    this.skin = new Phaser.GameObjects.Sprite(this.scene, 0, -12, "dog");
-    this.add(this.skin);
     this.texture = "dragon";
+    this.skin = new Phaser.GameObjects.Sprite(this.scene, 0, -12, this.texture);
+    this.add(this.skin);
+
     scene.add.existing(this.skin);
     /* Do we really need these? */
     scene.events.on("update", this.update, this);
