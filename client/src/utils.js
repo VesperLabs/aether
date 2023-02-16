@@ -58,6 +58,24 @@ function getPlayerState(p) {
   };
 }
 
+// Ensures sprite speed doesnt exceed maxVelocity while update is called (from Phaser example)
+function constrainVelocity(sprite, maxVelocity) {
+  if (!sprite || !sprite.body) return;
+
+  var angle, currVelocitySqr, vx, vy;
+  vx = sprite.body.velocity.x;
+  vy = sprite.body.velocity.y;
+  currVelocitySqr = vx * vx + vy * vy;
+
+  if (currVelocitySqr > maxVelocity * maxVelocity) {
+    angle = Math.atan2(vy, vx);
+    vx = Math.cos(angle) * maxVelocity;
+    vy = Math.sin(angle) * maxVelocity;
+    sprite.body.velocity.x = vx;
+    sprite.body.velocity.y = vy;
+  }
+}
+
 function getWorldState(scene) {
   return {
     players: Array.from(scene.players.getChildren()).map(getPlayerState),
@@ -88,5 +106,6 @@ module.exports = {
   getWorldState,
   handlePlayerInput,
   removeAllPlayers,
+  constrainVelocity,
   isMobile,
 };

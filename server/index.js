@@ -35,7 +35,11 @@ class ServerScene extends Phaser.Scene {
     );
   }
   create() {
-    /* TODO: Maps will need to be stored in memory and assigned to socket rooms */
+    /* TODO: Maps 
+       - Will need to be stored in memory and assigned to socket rooms 
+       - Maybe ditch the collide layer since we do collision on the client
+       - Will need to implement collision for where NPCs are allowed to walk
+    */
     const map = this.make.tilemap({ key: "grassland" });
 
     this.players = this.physics.add.group();
@@ -49,7 +53,7 @@ class ServerScene extends Phaser.Scene {
         x: 600,
         y: 300,
       });
-      setPlayerCollision(this, newPlayer, []);
+      //setPlayerCollision(this, newPlayer, []);
 
       socket.on("login", () => {
         console.log("🧑🏻‍🦰 login");

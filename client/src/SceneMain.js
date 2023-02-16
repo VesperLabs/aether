@@ -5,6 +5,7 @@ import {
   removeAllPlayers,
   setPlayerCollision,
   removePlayer,
+  constrainVelocity,
 } from "./utils";
 const { SnapshotInterpolation } = require("@geckos.io/snapshot-interpolation");
 const SI = new SnapshotInterpolation(process.env.REACT_APP_SERVER_FPS); // the server's fps is 15
@@ -54,10 +55,9 @@ class SceneMain extends Phaser.Scene {
     this.socket.emit("login");
   }
 
-  update() {
+  update(time, delta) {
     if (!this.socket || !this.hero) return;
     const snapshot = SI.calcInterpolation("x y", "players");
-
     if (snapshot) {
       for (const s of snapshot.state) {
         const player = getPlayer(this, s.socketId);
@@ -65,9 +65,9 @@ class SceneMain extends Phaser.Scene {
           /* Update player movements */
           if (!player.isHero) {
             player.setPosition(s.x, s.y);
-            player.vx = s.vx;
-            player.vy = s.vy;
           }
+          player.vx = s.vx;
+          player.vy = s.vy;
           /* Update depths */
           player.setDepth(player.y + player.height / 2);
         }
@@ -80,7 +80,7 @@ class SceneMain extends Phaser.Scene {
 }
 
 function moveHero(scene) {
-  const speed = 200; //TODO: Make this the same as joystick so we don't have to *4 below
+  const speed = scene.hero.speed;
   const joystick = scene.game.scene.scenes[2].joystick;
   const left = scene.cursorKeys.left.isDown;
   const right = scene.cursorKeys.right.isDown;
@@ -100,20 +100,25 @@ function moveHero(scene) {
     vy = 0;
   }
 
-  scene.hero.body.setVelocity(vx, vy);
-
   if (joystick.deltaX || joystick.deltaY) {
-    vx = joystick.deltaX * 4;
-    vy = joystick.deltaY * 4;
-    scene.hero.body.setVelocity(vx, vy);
+    vx = joystick.deltaX * speed;
+    vy = joystick.deltaY * speed;
   }
 
-  scene.socket.emit("playerInput", {
-    vx,
-    vy,
-    x: scene.hero.x,
-    y: scene.hero.y,
-  });
+  scene.hero.body.setVelocity(vx, vy);
+  constrainVelocity(scene.hero, speed);
+
+  /* If the hero is standing still do not update the server */
+  if (!scene.hero.state.isIdle) {
+    scene.socket.emit("playerInput", {
+      vx,
+      vy,
+      x: scene.hero.x,
+      y: scene.hero.y,
+    });
+  }
+  scene.hero.state.isIdle =
+    scene.hero.vx === vx && scene.hero.vy === vy && vx === 0 && vy === 0;
 }
 
 function setCamera(scene, hero) {

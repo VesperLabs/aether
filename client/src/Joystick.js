@@ -95,7 +95,7 @@ var Joystick = new Phaser.Class({
    */
   deltaX: {
     get: function () {
-      return this.cursors.x;
+      return this.cursors.x / this.maxDistanceInPixels;
     },
   },
 
@@ -107,7 +107,7 @@ var Joystick = new Phaser.Class({
    */
   deltaY: {
     get: function () {
-      return this.cursors.y;
+      return this.cursors.y / this.maxDistanceInPixels;
     },
   },
 

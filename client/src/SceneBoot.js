@@ -107,8 +107,8 @@ function createStaticAnims(scene) {
       continue;
     for (const animKey of animKeys) {
       scene.anims.create({
-        key: animKey,
-        frames: scene.anims.generateFrameNames("human", {
+        key: asset.texture + "-" + animKey,
+        frames: scene.anims.generateFrameNames(asset.texture, {
           prefix: animKey,
           ...frameProps,
         }),
@@ -120,7 +120,7 @@ function createStaticAnims(scene) {
 
 function createWalkingAnims(scene) {
   const frameProps = { zeroPad: 3, start: 0, end: 2 };
-  const animProps = { frameRate: 5, repeat: -1, yoyo: true };
+  const animProps = { repeat: -1, yoyo: true };
   const animKeys = ["up-walk", "down-walk", "left-walk", "right-walk"];
   for (const asset of assetList) {
     /* Skip non animated atlases */
@@ -128,8 +128,8 @@ function createWalkingAnims(scene) {
       continue;
     for (const animKey of animKeys) {
       scene.anims.create({
-        key: animKey,
-        frames: scene.anims.generateFrameNames("human", {
+        key: asset.texture + "-" + animKey,
+        frames: scene.anims.generateFrameNames(asset.texture, {
           prefix: animKey + ".",
           ...frameProps,
         }),
