@@ -49,9 +49,12 @@ function drawFrame(player) {
   const newKey = `${player.texture}-${player.direction}-${player.action}`;
   const currentKey = player?.skin?.anims?.currentAnim?.key;
   const currentFrame = player?.skin?.anims?.currentFrame?.index || 0;
-  player.hackFrameRate("skin", Math.round(80 + 2500 / player.currentSpeed));
+  player.hackFrameRate(
+    "skin",
+    Math.round(80 + 2500 / (player.currentSpeed + 1))
+  );
   if (currentKey !== newKey) {
-    player.skin.play(newKey, false, currentFrame);
+    player.skin.play(newKey, true, currentFrame);
   }
 }
 
