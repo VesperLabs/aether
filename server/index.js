@@ -2,7 +2,11 @@
 const path = require("path");
 require("@geckos.io/phaser-on-nodejs");
 require("dotenv").config({ path: path.join(__dirname, "/../client/.env") });
-const { SnapshotInterpolation } = require("@geckos.io/snapshot-interpolation");
+const { mapList } = require("../client/src/Maps");
+const {
+  SnapshotInterpolation,
+  Vault,
+} = require("@geckos.io/snapshot-interpolation");
 const Phaser = require("phaser");
 const express = require("express");
 const app = express();
@@ -19,9 +23,8 @@ const {
   removePlayer,
   handlePlayerInput,
   getPlayerState,
-  getWorldState,
-  setPlayerCollision,
-} = require("../client/src/utils");
+  getRoomState,
+} = require("./utils");
 
 global.phaserOnNodeFPS = process.env.REACT_APP_SERVER_FPS;
 
@@ -29,58 +32,81 @@ app.use(express.static(path.join(__dirname, "../client/build")));
 
 class ServerScene extends Phaser.Scene {
   preload() {
-    this.load.tilemapTiledJSON(
-      "grassland",
-      path.join(__dirname, "../client/public/assets/tilemaps/grassland.json")
-    );
+    /* Load all map jsons */
+    mapList.forEach((asset) => {
+      this.load.tilemapTiledJSON(
+        asset?.name,
+        path.join(__dirname, `../client/public/${asset.json}`)
+      );
+    });
   }
   create() {
     /* TODO: Maps 
-       - Will need to be stored in memory and assigned to socket rooms 
-       - Maybe ditch the collide layer since we do collision on the client
        - Will need to implement collision for where NPCs are allowed to walk
+         setPlayerCollision(this, newPlayer, []);
     */
-    const map = this.make.tilemap({ key: "grassland" });
-
-    this.players = this.physics.add.group();
+    const scene = this;
+    scene.players = {};
+    scene.mapRooms = mapList.reduce((acc, m) => {
+      acc[m.name] = {
+        name: m.name,
+        map: scene.make.tilemap({ key: m.name }),
+        players: scene.physics.add.group(),
+        doors: scene.physics.add.group(),
+        vault: new Vault(),
+      };
+      return acc;
+    }, {});
 
     io.on("connection", (socket) => {
       const socketId = socket.id;
 
-      const newPlayer = addPlayer(this, {
-        isServer: true,
-        socketId,
-        x: 600,
-        y: 300,
-      });
-      //setPlayerCollision(this, newPlayer, []);
-
       socket.on("login", () => {
         console.log("🧑🏻‍🦰 login");
+        /* TODO: Load from mongoDb */
+        const user = {
+          socketId,
+          x: 600,
+          y: 300,
+          room: "grassland",
+        };
+
+        const player = addPlayer(scene, user);
+        const room = player?.room;
+
+        if (!room) console.log("❌ Missing player room");
+
+        socket.join(room);
         socket.emit("heroInit", {
-          players: getWorldState(this).players,
+          players: getRoomState(scene, room).players,
           socketId,
         });
-        // tell all others about new player
-        socket.broadcast.emit("newPlayer", getPlayerState(newPlayer));
+        socket.broadcast.to(room).emit("newPlayer", getPlayerState(player));
+      });
+
+      socket.on("enterDoor", (door) => {
+        //socket.join(newPlayer.room);
       });
 
       socket.on("disconnect", () => {
         console.log("🧑🏻‍🦰 disconnected");
-        removePlayer(this, socketId);
+        removePlayer(scene, socketId);
         io.emit("remove", socketId);
       });
 
       socket.on("playerInput", (input) => {
-        handlePlayerInput(this, socketId, input); //defined in utilites.js
+        handlePlayerInput(scene, socketId, input); //defined in utilites.js
       });
     });
   }
   update(time, delta) {
-    if (!this.players) return;
-    const snapshot = SI.snapshot.create(getWorldState(this));
-    SI.vault.add(snapshot);
-    io.emit("update", snapshot);
+    const scene = this;
+    for (const mapRoom of Object.values(scene.mapRooms)) {
+      const roomState = getRoomState(scene, mapRoom.name);
+      const snapshot = SI.snapshot.create(roomState);
+      mapRoom.vault.add(snapshot);
+      io.to(mapRoom.name).emit("update", mapRoom.vault.get());
+    }
   }
 }
 

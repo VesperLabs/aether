@@ -97,7 +97,7 @@
                         {
                          "name":"destMap",
                          "type":"string",
-                         "value":"map-grassland"
+                         "value":"grassland"
                         }],
                  "rotation":0,
                  "type":"",
@@ -119,7 +119,7 @@
                         {
                          "name":"destMap",
                          "type":"string",
-                         "value":"map-town"
+                         "value":"town"
                         }],
                  "rotation":0,
                  "type":"",

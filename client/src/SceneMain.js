@@ -27,7 +27,7 @@ class SceneMain extends Phaser.Scene {
     });
 
     this.socket.on("heroInit", ({ socketId, players }) => {
-      const { collideLayer } = changeMap(this, "map-grassland");
+      const { collideLayer } = changeMap(this, "grassland");
       removeAllPlayers(this);
 
       /* Add players that don't exist */
@@ -140,9 +140,9 @@ function changeMap(scene, mapKey) {
 
   const m = mapKey.split("-");
 
-  const tileSet = scene.tilemap.addTilesetImage("tileset-" + m[1]);
+  const tileSet = scene.tilemap.addTilesetImage("tileset-" + m[0]);
   const tilesetShadows = scene.tilemap.addTilesetImage(
-    "tileset-" + m[1] + "-shadows"
+    "tileset-" + m[0] + "-shadows"
   );
   const tilesetCollide = scene.tilemap.addTilesetImage("tileset-collide");
   const tilesetExtras = scene.tilemap.addTilesetImage("tileset-extras");

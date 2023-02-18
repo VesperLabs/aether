@@ -91,7 +91,7 @@
                         {
                          "name":"destMap",
                          "type":"string",
-                         "value":"map-townInside"
+                         "value":"townInside"
                         }],
                  "rotation":0,
                  "type":"",
@@ -113,7 +113,7 @@
                         {
                          "name":"destMap",
                          "type":"string",
-                         "value":"map-dungeon-aqueducts"
+                         "value":"dungeon-aqueducts"
                         }],
                  "rotation":0,
                  "type":"",
@@ -135,7 +135,7 @@
                         {
                          "name":"destMap",
                          "type":"string",
-                         "value":"map-dungeon-aqueducts"
+                         "value":"dungeon-aqueducts"
                         }],
                  "rotation":0,
                  "type":"",

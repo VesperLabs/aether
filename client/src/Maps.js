@@ -1,30 +1,30 @@
 const mapList = [
   {
-    name: "map-grassland",
+    name: "grassland",
     json: "./assets/tilemaps/grassland.json",
   },
   {
-    name: "map-grassland-2",
+    name: "grassland-2",
     json: "./assets/tilemaps/grassland-2.json",
   },
   {
-    name: "map-mine",
+    name: "mine",
     json: "./assets/tilemaps/mine.json",
   },
   {
-    name: "map-town",
+    name: "town",
     json: "./assets/tilemaps/town.json",
   },
   {
-    name: "map-townInside",
+    name: "townInside",
     json: "./assets/tilemaps/townInside.json",
   },
   {
-    name: "map-grassland-graveyard",
+    name: "grassland-graveyard",
     json: "./assets/tilemaps/grassland-graveyard.json",
   },
   {
-    name: "map-dungeon-aqueducts",
+    name: "dungeon-aqueducts",
     json: "./assets/tilemaps/dungeon-aqueducts.json",
   },
 ];
@@ -83,4 +83,4 @@ const getMapByName = (name) => {
   return mapList?.find((m) => m?.mapName === name);
 };
 
-export { mapList, imageList, getMapByName };
+module.exports = { mapList, imageList, getMapByName };

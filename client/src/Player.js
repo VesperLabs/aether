@@ -3,12 +3,13 @@ const Phaser = require("phaser");
 class Player extends Phaser.GameObjects.Container {
   constructor(
     scene,
-    { x, y, socketId, isHero = false, isServer = false, speed = 200 }
+    { x, y, socketId, isHero = false, isServer = false, speed = 200, room }
   ) {
     super(scene, x, y, []);
     this.socketId = socketId;
     this.isHero = isHero;
     this.speed = speed;
+    this.room = room;
     scene.physics.add.existing(this);
     this.body.setCircle(16 / 2, -(16 / 2), -(16 / 2));
     this.isServer = isServer;
