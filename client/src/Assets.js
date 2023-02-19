@@ -444,12 +444,12 @@ const assetList = [
   //   previewRect: [0, 0, 32, 32],
   // },
   // /* Misc */
-  // {
-  //   texture: "icons",
-  //   src: "./assets/images/icons.png",
-  //   atlas: "./assets/atlas/32x32-icons.json",
-  //   previewRect: [0, 0, 32, 32],
-  // },
+  {
+    texture: "icons",
+    src: "./assets/images/icons.png",
+    atlas: "./assets/atlas/32x32-icons.json",
+    previewRect: [0, 0, 32, 32],
+  },
 ];
 
 /* Resolves the right asset compensating for user profile attributes */

@@ -2,10 +2,10 @@ import Phaser from "phaser";
 import {
   addPlayer,
   getPlayer,
-  removeAllPlayers,
-  setPlayerCollision,
+  resetEntities,
   removePlayer,
   constrainVelocity,
+  addDoor,
 } from "./utils";
 const { SnapshotInterpolation } = require("@geckos.io/snapshot-interpolation");
 const SI = new SnapshotInterpolation(process.env.REACT_APP_SERVER_FPS); // the server's fps is 15
@@ -20,60 +20,59 @@ class SceneMain extends Phaser.Scene {
   }
 
   create() {
-    this.players = this.add.group();
+    const scene = this;
+    scene.players = scene.physics.add.group();
+    scene.doors = scene.physics.add.group();
 
-    this.socket.on("update", (snapshot) => {
+    scene.socket.on("update", (snapshot) => {
       SI.snapshot.add(snapshot);
     });
 
-    this.socket.on("heroInit", ({ socketId, players }) => {
-      const { collideLayer } = changeMap(this, "grassland");
-      removeAllPlayers(this);
-
+    scene.socket.on("heroInit", ({ socketId, players }) => {
+      resetEntities(scene);
+      console.log(scene.doors);
       /* Add players that don't exist */
       for (const player of players) {
         if (socketId === player.socketId) {
-          this.hero = addPlayer(this, { ...player, isHero: true });
+          scene.hero = addPlayer(scene, { ...player, isHero: true });
         } else {
-          addPlayer(this, player);
+          addPlayer(scene, player);
         }
       }
 
-      setPlayerCollision(this, this.hero, [collideLayer]);
-      setCamera(this, this.hero);
+      const { collideLayer } = changeMap(scene, scene.hero.room);
+      setPlayerCollision(scene, scene.hero, [collideLayer]);
+      setCamera(scene, scene.hero);
     });
 
-    this.socket.on("newPlayer", (player) => {
-      if (getPlayer(this, player.socketId)) return;
-      addPlayer(this, player);
+    scene.socket.on("newPlayer", (player) => {
+      if (getPlayer(scene, player.socketId)) return;
+      addPlayer(scene, player);
     });
 
-    this.socket.on("remove", (socketId) => {
-      removePlayer(this, socketId);
+    scene.socket.on("remove", (socketId) => {
+      removePlayer(scene, socketId);
     });
 
-    this.socket.emit("login");
+    scene.socket.emit("login");
   }
 
   update(time, delta) {
-    if (!this.socket || !this.hero) return;
     const snapshot = SI.calcInterpolation("x y", "players");
-    if (snapshot) {
-      for (const s of snapshot.state) {
-        const player = getPlayer(this, s.socketId);
-        if (player) {
-          /* Update player movements */
-          if (!player.isHero) {
-            player.setPosition(s.x, s.y);
-          }
-          player.vx = s.vx;
-          player.vy = s.vy;
-          /* Update depths */
-          player.setDepth(player.y + player.height / 2);
+    if (!this.socket || !this.hero || !snapshot) return;
+    for (const s of snapshot?.state) {
+      const player = getPlayer(this, s.socketId);
+      if (player) {
+        /* Update player movements */
+        if (!player.isHero) {
+          player.setPosition(s.x, s.y);
         }
+        player.vx = s.vx;
+        player.vy = s.vy;
+        /* Update depths */
+        player.setDepth(player.y + player.height / 2);
       }
     }
-
     /* Update Hero */
     moveHero(this);
   }
@@ -126,40 +125,65 @@ function setCamera(scene, hero) {
   scene.cameras.main.setBounds(
     0,
     0,
-    scene.tilemap.widthInPixels,
-    scene.tilemap.heightInPixels
+    scene.map.widthInPixels,
+    scene.map.heightInPixels
   );
   scene.cameras.main.setZoom(2);
 }
 
-function changeMap(scene, mapKey) {
-  if (scene.tilemap) scene.tilemap.destroy();
-  scene.tilemap = scene.make.tilemap({
-    key: mapKey,
+function setPlayerCollision(scene, player, colliders = []) {
+  scene.physics.world.colliders.destroy();
+  colliders.forEach((c) => {
+    scene.physics.add.collider(player, c);
+  });
+  scene.physics.add.overlap(
+    scene.hero,
+    scene.doors,
+    (hero, door) => {
+      if (!door.isLoading) {
+        door.isLoading = true;
+        scene.socket.emit("enterDoor", door.name);
+      }
+    },
+    null,
+    scene
+  );
+}
+
+function changeMap(scene, room) {
+  if (scene.map) {
+    scene.map.destroy();
+  }
+
+  scene.map = scene.make.tilemap({
+    key: room,
   });
 
-  const m = mapKey.split("-");
-
-  const tileSet = scene.tilemap.addTilesetImage("tileset-" + m[0]);
-  const tilesetShadows = scene.tilemap.addTilesetImage(
-    "tileset-" + m[0] + "-shadows"
+  const tileSet = scene.map.addTilesetImage("tileset-" + room);
+  const tilesetShadows = scene.map.addTilesetImage(
+    "tileset-" + room + "-shadows"
   );
-  const tilesetCollide = scene.tilemap.addTilesetImage("tileset-collide");
-  const tilesetExtras = scene.tilemap.addTilesetImage("tileset-extras");
-  const collideLayer = scene.tilemap
+  const tilesetCollide = scene.map.addTilesetImage("tileset-collide");
+  const tilesetExtras = scene.map.addTilesetImage("tileset-extras");
+  const collideLayer = scene.map
     .createLayer("Collide", tilesetCollide)
     .setCollisionByProperty({
       collides: true,
     });
-  scene.tilemap.createLayer("Ground", tileSet);
-  scene.tilemap.createLayer("Shadows", tilesetShadows);
-  scene.tilemap.createLayer("Overlay", tileSet);
-  scene.tilemap.createLayer("Extras", tilesetExtras);
-  scene.tilemap.createLayer("Above", tileSet).setDepth(9999);
 
-  //scene.createDoors(scene.tilemap);
+  scene.map.createLayer("Ground", tileSet);
+  scene.map.createLayer("Shadows", tilesetShadows);
+  scene.map.createLayer("Overlay", tileSet);
+  scene.map.createLayer("Extras", tilesetExtras);
+  scene.map.createLayer("Above", tileSet).setDepth(9999);
+  if (scene.animatedTiles) scene.animatedTiles.init(scene.map);
 
-  if (scene.animatedTiles) scene.animatedTiles.init(scene.tilemap);
+  /* Create Doors */
+  const doors = scene.map
+    .getObjectLayer("Doors")
+    .objects?.map((door) => addDoor(scene, door));
+
+  scene.doors.addMultiple(doors);
 
   return { collideLayer };
 }

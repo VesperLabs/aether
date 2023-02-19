@@ -3,10 +3,7 @@ const path = require("path");
 require("@geckos.io/phaser-on-nodejs");
 require("dotenv").config({ path: path.join(__dirname, "/../client/.env") });
 const { mapList } = require("../client/src/Maps");
-const {
-  SnapshotInterpolation,
-  Vault,
-} = require("@geckos.io/snapshot-interpolation");
+const { SnapshotInterpolation } = require("@geckos.io/snapshot-interpolation");
 const Phaser = require("phaser");
 const express = require("express");
 const app = express();
@@ -24,6 +21,8 @@ const {
   handlePlayerInput,
   getPlayerState,
   getRoomState,
+  initMapRooms,
+  teleportPlayer,
 } = require("./utils");
 
 global.phaserOnNodeFPS = process.env.REACT_APP_SERVER_FPS;
@@ -32,7 +31,6 @@ app.use(express.static(path.join(__dirname, "../client/build")));
 
 class ServerScene extends Phaser.Scene {
   preload() {
-    /* Load all map jsons */
     mapList.forEach((asset) => {
       this.load.tilemapTiledJSON(
         asset?.name,
@@ -41,22 +39,10 @@ class ServerScene extends Phaser.Scene {
     });
   }
   create() {
-    /* TODO: Maps 
-       - Will need to implement collision for where NPCs are allowed to walk
-         setPlayerCollision(this, newPlayer, []);
-    */
     const scene = this;
     scene.players = {};
-    scene.mapRooms = mapList.reduce((acc, m) => {
-      acc[m.name] = {
-        name: m.name,
-        map: scene.make.tilemap({ key: m.name }),
-        players: scene.physics.add.group(),
-        doors: scene.physics.add.group(),
-        vault: new Vault(),
-      };
-      return acc;
-    }, {});
+    scene.doors = {};
+    scene.mapRooms = initMapRooms(scene);
 
     io.on("connection", (socket) => {
       const socketId = socket.id;
@@ -67,7 +53,7 @@ class ServerScene extends Phaser.Scene {
         const user = {
           socketId,
           x: 600,
-          y: 300,
+          y: 250,
           room: "grassland",
         };
 
@@ -78,19 +64,32 @@ class ServerScene extends Phaser.Scene {
 
         socket.join(room);
         socket.emit("heroInit", {
-          players: getRoomState(scene, room).players,
+          players: getRoomState(scene, room)?.players,
           socketId,
         });
         socket.broadcast.to(room).emit("newPlayer", getPlayerState(player));
       });
 
-      socket.on("enterDoor", (door) => {
-        //socket.join(newPlayer.room);
+      socket.on("enterDoor", (name) => {
+        const door = scene?.doors?.[name] || {};
+        const { destMap } = door;
+        const player = scene.players[socketId];
+
+        teleportPlayer(scene, socketId, door);
+
+        socket.leave(player.room);
+        socket.join(destMap);
+
+        socket.emit("heroInit", {
+          players: getRoomState(scene, destMap)?.players,
+          socketId,
+        });
       });
 
       socket.on("disconnect", () => {
         console.log("🧑🏻‍🦰 disconnected");
         removePlayer(scene, socketId);
+        delete scene.players?.[socketId];
         io.emit("remove", socketId);
       });
 

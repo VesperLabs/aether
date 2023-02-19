@@ -1,17 +1,16 @@
 const Player = require("./Player");
+const Door = require("./Door");
 
 function addPlayer(scene, user) {
   const player = new Player(scene, user);
   scene.add.existing(player);
   scene.players.add(player);
-
   return player;
 }
 
-function setPlayerCollision(scene, player, colliders = []) {
-  colliders.forEach((c) => {
-    scene.physics.add.collider(player, c);
-  });
+function addDoor(scene, doorData) {
+  const door = new Door(scene, doorData);
+  return door;
 }
 
 function removePlayer(scene, socketId) {
@@ -23,19 +22,16 @@ function removePlayer(scene, socketId) {
   });
 }
 
-function removeAllPlayers(scene, socketId) {
-  if (!scene.players) return;
-  scene.players.getChildren().forEach((player) => {
-    player.destroy();
-  });
+function resetEntities(scene) {
+  scene.players.clear();
+  scene?.doors.clear();
 }
 
 function getPlayer(scene, socketId) {
   if (!scene.players) return;
-  const player = scene.players
+  return scene.players
     .getChildren()
     .find((player) => socketId === player.socketId);
-  return player;
 }
 
 // Ensures sprite speed doesnt exceed maxVelocity while update is called (from Phaser example)
@@ -63,8 +59,8 @@ module.exports = {
   addPlayer,
   removePlayer,
   getPlayer,
-  setPlayerCollision,
-  removeAllPlayers,
+  resetEntities,
   constrainVelocity,
   isMobile,
+  addDoor,
 };
