@@ -5,8 +5,8 @@ import {
   resetEntities,
   removePlayer,
   constrainVelocity,
-  addDoor,
 } from "./utils";
+const Door = require("./Door");
 const { SnapshotInterpolation } = require("@geckos.io/snapshot-interpolation");
 const SI = new SnapshotInterpolation(process.env.REACT_APP_SERVER_FPS); // the server's fps is 15
 class SceneMain extends Phaser.Scene {
@@ -30,7 +30,6 @@ class SceneMain extends Phaser.Scene {
 
     scene.socket.on("heroInit", ({ socketId, players }) => {
       resetEntities(scene);
-      console.log(scene.doors);
       /* Add players that don't exist */
       for (const player of players) {
         if (socketId === player.socketId) {
@@ -39,7 +38,6 @@ class SceneMain extends Phaser.Scene {
           addPlayer(scene, player);
         }
       }
-
       const { collideLayer } = changeMap(scene, scene.hero.room);
       setPlayerCollision(scene, scene.hero, [collideLayer]);
       setCamera(scene, scene.hero);
@@ -140,10 +138,11 @@ function setPlayerCollision(scene, player, colliders = []) {
     scene.hero,
     scene.doors,
     (hero, door) => {
-      if (!door.isLoading) {
-        door.isLoading = true;
-        scene.socket.emit("enterDoor", door.name);
-      }
+      /* Check if hero.startingCoords are in the range of the door.  if they are, they spawned on it.
+      here we then need to check if they hero x and y are outside the doors range.
+      once they are, we can activate the door for them.  */
+      door.destroy();
+      scene.socket.emit("enterDoor", door.name);
     },
     null,
     scene
@@ -179,11 +178,11 @@ function changeMap(scene, room) {
   if (scene.animatedTiles) scene.animatedTiles.init(scene.map);
 
   /* Create Doors */
-  const doors = scene.map
-    .getObjectLayer("Doors")
-    .objects?.map((door) => addDoor(scene, door));
-
-  scene.doors.addMultiple(doors);
+  const mapDoors = scene.map.getObjectLayer("Doors").objects;
+  for (const door of mapDoors) {
+    const newDoor = new Door(scene, door);
+    scene.doors.add(newDoor);
+  }
 
   return { collideLayer };
 }

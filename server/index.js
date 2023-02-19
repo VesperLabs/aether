@@ -22,7 +22,8 @@ const {
   getPlayerState,
   getRoomState,
   initMapRooms,
-  teleportPlayer,
+  changeMap,
+  getDoor,
 } = require("./utils");
 
 global.phaserOnNodeFPS = process.env.REACT_APP_SERVER_FPS;
@@ -70,18 +71,20 @@ class ServerScene extends Phaser.Scene {
         socket.broadcast.to(room).emit("newPlayer", getPlayerState(player));
       });
 
-      socket.on("enterDoor", (name) => {
-        const door = scene?.doors?.[name] || {};
-        const { destMap } = door;
+      socket.on("enterDoor", (doorName) => {
         const player = scene.players[socketId];
-
-        teleportPlayer(scene, socketId, door);
-
+        const door = getDoor(scene, player.room, doorName)?.getProps();
+        const destDoor = getDoor(
+          scene,
+          door.destMap,
+          door.destDoor
+        )?.getProps();
+        /* Need to teleport if same here */
+        changeMap(scene, socketId, door.destMap, destDoor);
         socket.leave(player.room);
-        socket.join(destMap);
-
+        socket.join(door.destMap);
         socket.emit("heroInit", {
-          players: getRoomState(scene, destMap)?.players,
+          players: getRoomState(scene, door.destMap)?.players,
           socketId,
         });
       });

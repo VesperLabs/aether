@@ -4,31 +4,35 @@ const { mapList } = require("../client/src/Maps");
 const { Vault } = require("@geckos.io/snapshot-interpolation");
 
 function initMapRooms(scene) {
-  return mapList.reduce((acc, m) => {
-    acc[m.name] = {
-      name: m.name,
-      map: scene.make.tilemap({ key: m.name }),
+  return mapList.reduce((acc, room) => {
+    acc[room.name] = {
+      name: room.name,
+      map: scene.make.tilemap({ key: room.name }),
       players: scene.physics.add.group(),
       doors: scene.physics.add.group(),
       vault: new Vault(),
     };
 
     /* Create door objects */
-    acc[m.name].map.getObjectLayer("Doors").objects?.forEach((door) => {
-      scene.doors[door.name] = new Door(scene, door);
-      return scene.doors[door.name];
+    scene.doors[room.name] = {};
+    acc[room.name].map.getObjectLayer("Doors").objects?.forEach((door) => {
+      scene.doors[room.name][door.name] = new Door(scene, door);
+      return scene.doors[room.name][door.name];
     });
 
     return acc;
   }, {});
 }
 
-function teleportPlayer(scene, socketId, door) {
-  scene.players[socketId].room = door.destMap;
+function changeMap(scene, socketId, room, door) {
+  const player = scene.players[socketId];
+  player.room = room;
+  player.x = door.centerPos.x;
+  player.y = door.centerPos.y;
   removePlayer(scene, socketId);
-  scene.add.existing(scene.players[socketId]);
-  scene.mapRooms[door.destMap].players.add(scene.players[socketId]);
-  return scene.players[socketId];
+  scene.add.existing(player);
+  scene.mapRooms[room].players.add(player);
+  return player;
 }
 
 function addPlayer(scene, user) {
@@ -51,6 +55,10 @@ function removeAllPlayers(scene, socketId) {
 
 function getPlayer(scene, socketId) {
   return scene.players[socketId];
+}
+
+function getDoor(scene, room, doorName) {
+  return scene?.doors?.[room]?.[doorName];
 }
 
 function getRoomState(scene, room) {
@@ -96,5 +104,6 @@ module.exports = {
   getRoomState,
   isMobile,
   initMapRooms,
-  teleportPlayer,
+  changeMap,
+  getDoor,
 };

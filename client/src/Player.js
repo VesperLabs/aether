@@ -6,6 +6,7 @@ class Player extends Phaser.GameObjects.Container {
     { x, y, socketId, isHero = false, isServer = false, speed = 200, room }
   ) {
     super(scene, x, y, []);
+    this.startingCoords = { x, y };
     this.socketId = socketId;
     this.isHero = isHero;
     this.speed = speed;

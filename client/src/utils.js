@@ -1,16 +1,10 @@
 const Player = require("./Player");
-const Door = require("./Door");
 
 function addPlayer(scene, user) {
   const player = new Player(scene, user);
   scene.add.existing(player);
   scene.players.add(player);
   return player;
-}
-
-function addDoor(scene, doorData) {
-  const door = new Door(scene, doorData);
-  return door;
 }
 
 function removePlayer(scene, socketId) {
@@ -23,8 +17,8 @@ function removePlayer(scene, socketId) {
 }
 
 function resetEntities(scene) {
-  scene.players.clear();
-  scene?.doors.clear();
+  scene.players.getChildren().forEach((p) => p.destroy());
+  scene.doors.getChildren().forEach((d) => d.destroy());
 }
 
 function getPlayer(scene, socketId) {
@@ -62,5 +56,4 @@ module.exports = {
   resetEntities,
   constrainVelocity,
   isMobile,
-  addDoor,
 };
