@@ -11,14 +11,17 @@ function removePlayer(scene, socketId) {
   if (!scene.players) return;
   scene.players.getChildren().forEach((player) => {
     if (socketId === player.socketId) {
-      player.destroy();
+      player.destroy(true);
     }
   });
 }
 
 function resetEntities(scene) {
-  scene.players.getChildren().forEach((p) => p.destroy());
-  scene.doors.getChildren().forEach((d) => d.destroy());
+  scene?.map?.destroy?.(true);
+  scene.players.destroy(true);
+  scene.doors.destroy(true);
+  scene.players = scene.physics.add.group();
+  scene.doors = scene.physics.add.group();
 }
 
 function getPlayer(scene, socketId) {

@@ -11,8 +11,6 @@ class Player extends Phaser.GameObjects.Container {
     this.isHero = isHero;
     this.speed = speed;
     this.room = room;
-    scene.physics.add.existing(this);
-    this.body.setCircle(16 / 2, -(16 / 2), -(16 / 2));
     this.isServer = isServer;
     this.action = "stand";
     this.direction = "down";
@@ -22,11 +20,14 @@ class Player extends Phaser.GameObjects.Container {
     this.state = {
       isIdle: true,
     };
+    scene.physics.add.existing(this);
+    this.body.setCircle(16 / 2, -(16 / 2), -(16 / 2));
     /* For the server, don't draw this stuff */
     if (isServer) return;
     this.texture = "human";
     this.skin = new Phaser.GameObjects.Sprite(this.scene, 0, -12, this.texture);
     this.add(this.skin);
+    this.skin.play(`${this.texture}-${this.direction}-${this.action}`, true);
     scene.add.existing(this.skin);
     /* Do we really need these? */
     scene.events.on("update", this.update, this);
@@ -51,13 +52,13 @@ function drawFrame(player) {
   const newKey = `${player.texture}-${player.direction}-${player.action}`;
   const currentKey = player?.skin?.anims?.currentAnim?.key;
   const currentFrame = player?.skin?.anims?.currentFrame?.index || 0;
+  if (currentKey !== newKey) {
+    player.skin.play(newKey, true, currentFrame);
+  }
   player.hackFrameRate(
     "skin",
     Math.round(80 + 2500 / (player.currentSpeed + 1))
   );
-  if (currentKey !== newKey) {
-    player.skin.play(newKey, true, currentFrame);
-  }
 }
 
 function updatePlayerDirection(player) {

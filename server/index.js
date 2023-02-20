@@ -53,9 +53,9 @@ class ServerScene extends Phaser.Scene {
         /* TODO: Load from mongoDb */
         const user = {
           socketId,
-          x: 600,
-          y: 250,
-          room: "grassland",
+          x: 1000,
+          y: 1500,
+          room: "town",
         };
 
         const player = addPlayer(scene, user);
@@ -72,7 +72,9 @@ class ServerScene extends Phaser.Scene {
       });
 
       socket.on("enterDoor", (doorName) => {
+        /* TODO: Make me work!!!! */
         const player = scene.players[socketId];
+        socket.broadcast.to(player.room).emit("remove", socketId);
         const door = getDoor(scene, player.room, doorName)?.getProps();
         const destDoor = getDoor(
           scene,
@@ -87,6 +89,7 @@ class ServerScene extends Phaser.Scene {
           players: getRoomState(scene, door.destMap)?.players,
           socketId,
         });
+        console.log(socket.rooms);
       });
 
       socket.on("disconnect", () => {

@@ -68,11 +68,20 @@ class SceneMain extends Phaser.Scene {
         player.vx = s.vx;
         player.vy = s.vy;
         /* Update depths */
-        player.setDepth(player.y + player.height / 2);
+        player.setDepth(100 + player.y + player.body.height);
       }
     }
-    /* Update Hero */
     moveHero(this);
+    enableDoors(this);
+  }
+}
+
+function enableDoors(scene) {
+  let coords = {};
+  scene?.hero?.body?.getBounds(coords);
+  for (const door of scene.doors.getChildren()) {
+    if (!Phaser.Geom.Intersects.RectangleToRectangle(coords, door.getBounds()))
+      door.isEnabled = true;
   }
 }
 
@@ -119,6 +128,7 @@ function moveHero(scene) {
 }
 
 function setCamera(scene, hero) {
+  scene.cameras.main.setZoom(2);
   scene.cameras.main.startFollow(hero, true);
   scene.cameras.main.setBounds(
     0,
@@ -126,41 +136,53 @@ function setCamera(scene, hero) {
     scene.map.widthInPixels,
     scene.map.heightInPixels
   );
-  scene.cameras.main.setZoom(2);
 }
 
 function setPlayerCollision(scene, player, colliders = []) {
   scene.physics.world.colliders.destroy();
+  scene.physics.world.setBounds(
+    0,
+    0,
+    scene.map.widthInPixels,
+    scene.map.heightInPixels
+  );
+  player.body.setCollideWorldBounds(true);
   colliders.forEach((c) => {
     scene.physics.add.collider(player, c);
   });
   scene.physics.add.overlap(
     scene.hero,
     scene.doors,
-    (hero, door) => {
-      /* Check if hero.startingCoords are in the range of the door.  if they are, they spawned on it.
-      here we then need to check if they hero x and y are outside the doors range.
-      once they are, we can activate the door for them.  */
-      door.destroy();
-      scene.socket.emit("enterDoor", door.name);
-    },
     null,
+    (hero, door) => {
+      /* If they spawned on the door, ignore it for now */
+      const { x, y } = hero.startingCoords;
+      if (door.getBounds().contains(x, y)) {
+        door.heroSpawn = true;
+      }
+      /* If the door is not disabled let it teleport */
+      if (!door.heroSpawn || door.isEnabled) {
+        door.destroy();
+        /* Wait for the door to go away before emitting the event */
+        setTimeout(() => {
+          scene.socket.emit("enterDoor", door.name);
+        }, 1);
+      }
+    },
     scene
   );
 }
 
 function changeMap(scene, room) {
-  if (scene.map) {
-    scene.map.destroy();
-  }
+  const tileSetKey = room?.split("-")?.[0];
 
   scene.map = scene.make.tilemap({
     key: room,
   });
 
-  const tileSet = scene.map.addTilesetImage("tileset-" + room);
+  const tileSet = scene.map.addTilesetImage("tileset-" + tileSetKey);
   const tilesetShadows = scene.map.addTilesetImage(
-    "tileset-" + room + "-shadows"
+    "tileset-" + tileSetKey + "-shadows"
   );
   const tilesetCollide = scene.map.addTilesetImage("tileset-collide");
   const tilesetExtras = scene.map.addTilesetImage("tileset-extras");
@@ -170,10 +192,10 @@ function changeMap(scene, room) {
       collides: true,
     });
 
-  scene.map.createLayer("Ground", tileSet);
-  scene.map.createLayer("Shadows", tilesetShadows);
-  scene.map.createLayer("Overlay", tileSet);
-  scene.map.createLayer("Extras", tilesetExtras);
+  scene.map.createLayer("Ground", tileSet).setDepth(0);
+  scene.map.createLayer("Shadows", tilesetShadows).setDepth(1);
+  scene.map.createLayer("Overlay", tileSet).setDepth(2);
+  scene.map.createLayer("Extras", tilesetExtras).setDepth(3);
   scene.map.createLayer("Above", tileSet).setDepth(9999);
   if (scene.animatedTiles) scene.animatedTiles.init(scene.map);
 

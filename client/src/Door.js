@@ -10,9 +10,10 @@ class Door extends Phaser.GameObjects.Sprite {
     this.displayWidth = width;
     this.displayHeight = height;
     this.centerPos = {
-      x: this.x + this.width / 2,
-      y: this.y + this.height / 2,
+      x: x + width / 2,
+      y: y + height / 2,
     };
+    scene.events.once("shutdown", this.destroy, this);
   }
   getProps() {
     return {
@@ -25,6 +26,11 @@ class Door extends Phaser.GameObjects.Sprite {
       height: this.height,
       centerPos: this.centerPos,
     };
+  }
+  destroy() {
+    if (this.scene) this.scene.events.off("update", this.update, this);
+    if (this.scene) this.scene.physics.world.disable(this);
+    super.destroy();
   }
 }
 
