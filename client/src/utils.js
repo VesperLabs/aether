@@ -18,8 +18,8 @@ function removePlayer(scene, socketId) {
 
 function resetEntities(scene) {
   scene?.map?.destroy?.(true);
-  scene.players.destroy(true);
-  scene.doors.destroy(true);
+  scene?.players?.destroy?.(true);
+  scene?.doors?.destroy?.(true);
   scene.players = scene.physics.add.group();
   scene.doors = scene.physics.add.group();
 }

@@ -21,8 +21,6 @@ class SceneMain extends Phaser.Scene {
 
   create() {
     const scene = this;
-    scene.players = scene.physics.add.group();
-    scene.doors = scene.physics.add.group();
 
     scene.socket.on("update", (snapshot) => {
       SI.snapshot.add(snapshot);
