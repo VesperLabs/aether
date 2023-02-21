@@ -27,9 +27,11 @@ class SceneMain extends Phaser.Scene {
     });
 
     scene.socket.on("heroInit", ({ socketId, players }) => {
+      /* Delete everything in the scene */
       resetEntities(scene);
       /* Add players that don't exist */
       for (const player of players) {
+        if (getPlayer(scene, player.socketId)) continue;
         if (socketId === player.socketId) {
           scene.hero = addPlayer(scene, { ...player, isHero: true });
         } else {
@@ -37,13 +39,14 @@ class SceneMain extends Phaser.Scene {
         }
       }
       const { collideLayer } = changeMap(scene, scene.hero.room);
-      setPlayerCollision(scene, scene.hero, [collideLayer]);
+      setPlayerCollision(scene, scene.hero, [collideLayer, scene.players]);
       setCamera(scene, scene.hero);
     });
 
     scene.socket.on("newPlayer", (player) => {
       if (getPlayer(scene, player.socketId)) return;
       addPlayer(scene, player);
+      console.log(scene.players);
     });
 
     scene.socket.on("remove", (socketId) => {
@@ -58,18 +61,17 @@ class SceneMain extends Phaser.Scene {
     if (!this.socket || !this.hero || !snapshot) return;
     for (const s of snapshot?.state) {
       const player = getPlayer(this, s.socketId);
-      if (player) {
-        /* Update player movements */
-        if (!player.isHero) {
-          player.setPosition(s.x, s.y);
-        }
-        player.vx = s.vx;
-        player.vy = s.vy;
-        /* Update depths */
-        player.setDepth(100 + player.y + player.body.height);
+      if (!player) continue;
+      /* Update player movements */
+      if (!player.isHero) {
+        player.setPosition(s.x, s.y);
       }
+      player.vx = s.vx;
+      player.vy = s.vy;
+      /* Update depths */
+      player.setDepth(100 + player.y + player.body.height);
     }
-    moveHero(this);
+    moveHero(this, time);
     enableDoors(this);
   }
 }
@@ -83,7 +85,7 @@ function enableDoors(scene) {
   }
 }
 
-function moveHero(scene) {
+function moveHero(scene, time) {
   const speed = scene.hero.speed;
   const joystick = scene.game.scene.scenes[2].joystick;
   const left = scene.cursorKeys.left.isDown;
@@ -114,6 +116,7 @@ function moveHero(scene) {
 
   /* If the hero is standing still do not update the server */
   if (!scene.hero.state.isIdle) {
+    //if (time % 2 > 1)
     scene.socket.emit("playerInput", {
       vx,
       vy,

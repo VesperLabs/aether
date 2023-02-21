@@ -85,6 +85,7 @@ function handlePlayerInput(scene, socketId, input) {
   if (!scene.players) return;
   const { x, y, vx, vy } = input;
   const player = getPlayer(scene, socketId);
+  if (!player) return;
   player.x = x;
   player.y = y;
   player.vx = vx;

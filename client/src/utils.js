@@ -9,11 +9,8 @@ function addPlayer(scene, user) {
 
 function removePlayer(scene, socketId) {
   if (!scene.players) return;
-  scene.players.getChildren().forEach((player) => {
-    if (socketId === player.socketId) {
-      player.destroy(true);
-    }
-  });
+  const player = getPlayer(scene, socketId);
+  player.destroy(true);
 }
 
 function resetEntities(scene) {

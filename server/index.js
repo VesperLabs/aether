@@ -53,9 +53,9 @@ class ServerScene extends Phaser.Scene {
         /* TODO: Load from mongoDb */
         const user = {
           socketId,
-          x: 1000,
-          y: 1500,
-          room: "town",
+          x: 100,
+          y: 100,
+          room: "grassland-2",
         };
 
         const player = addPlayer(scene, user);
@@ -68,13 +68,13 @@ class ServerScene extends Phaser.Scene {
           players: getRoomState(scene, room)?.players,
           socketId,
         });
-        socket.broadcast.to(room).emit("newPlayer", getPlayerState(player));
+        socket.to(room).emit("newPlayer", getPlayerState(player));
       });
 
       socket.on("enterDoor", (doorName) => {
-        /* TODO: Make me work!!!! */
-        const player = scene.players[socketId];
-        socket.broadcast.to(player.room).emit("remove", socketId);
+        const player = getPlayerState(scene.players[socketId]);
+        io.to(player.room).emit("remove", socketId);
+        socket.leave(player.room);
         const door = getDoor(scene, player.room, doorName)?.getProps();
         const destDoor = getDoor(
           scene,
@@ -83,7 +83,7 @@ class ServerScene extends Phaser.Scene {
         )?.getProps();
         /* Need to teleport if same here */
         changeMap(scene, socketId, door.destMap, destDoor);
-        socket.leave(player.room);
+        socket.to(door.destMap).emit("newPlayer", getPlayerState(player));
         socket.join(door.destMap);
         socket.emit("heroInit", {
           players: getRoomState(scene, door.destMap)?.players,

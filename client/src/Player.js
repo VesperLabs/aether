@@ -3,7 +3,7 @@ const Phaser = require("phaser");
 class Player extends Phaser.GameObjects.Container {
   constructor(
     scene,
-    { x, y, socketId, isHero = false, isServer = false, speed = 200, room }
+    { x, y, socketId, isHero = false, isServer = false, speed = 300, room }
   ) {
     super(scene, x, y, []);
     this.startingCoords = { x, y };
@@ -21,14 +21,15 @@ class Player extends Phaser.GameObjects.Container {
       isIdle: true,
     };
     scene.physics.add.existing(this);
-    this.body.setCircle(16 / 2, -(16 / 2), -(16 / 2));
+    this.body.setCircle(8, -8, -8);
+    this.body.setBounceX(100);
     /* For the server, don't draw this stuff */
     if (isServer) return;
-    this.texture = "human";
-    this.skin = new Phaser.GameObjects.Sprite(this.scene, 0, -12, this.texture);
+    this.texture = "dragon";
+    this.skin = scene.add.existing(
+      new Phaser.GameObjects.Sprite(this.scene, 0, -12, this.texture)
+    );
     this.add(this.skin);
-    this.skin.play(`${this.texture}-${this.direction}-${this.action}`, true);
-    scene.add.existing(this.skin);
     /* Do we really need these? */
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
