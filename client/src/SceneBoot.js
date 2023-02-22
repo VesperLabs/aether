@@ -88,23 +88,35 @@ function createAnims(scene) {
   createStaticAnims(scene);
 }
 
+const SINGLE_FRAME_ANIM_KEYS = [
+  "up-attack",
+  "down-attack",
+  "left-attack",
+  "right-attack",
+  "up-stand",
+  "down-stand",
+  "left-stand",
+  "right-stand",
+];
+const MULTI_FRAME_ANIM_KEYS = [
+  "up-walk",
+  "down-walk",
+  "left-walk",
+  "right-walk",
+];
+
+/* Skip making animations for these types */
+const checkSkip = (asset) =>
+  ["weapon.json", "icons.json", "stackable.json"]?.some((a) =>
+    asset?.atlas?.includes(a)
+  );
+
 function createStaticAnims(scene) {
   const frameProps = { zeroPad: 0, start: "" };
-  const animKeys = [
-    "up-attack",
-    "down-attack",
-    "left-attack",
-    "right-attack",
-    "up-stand",
-    "down-stand",
-    "left-stand",
-    "right-stand",
-  ];
   for (const asset of assetList) {
     /* Skip non animated atlases */
-    if (asset.atlas.includes("-icons") || asset.atlas.includes("-stackable"))
-      continue;
-    for (const animKey of animKeys) {
+    if (checkSkip(asset)) continue;
+    for (const animKey of SINGLE_FRAME_ANIM_KEYS) {
       scene.anims.create({
         key: asset.texture + "-" + animKey,
         frames: scene.anims.generateFrameNames(asset.texture, {
@@ -119,11 +131,10 @@ function createStaticAnims(scene) {
 function createWalkingAnims(scene) {
   const frameProps = { zeroPad: 3, start: 0, end: 2 };
   const animProps = { repeat: -1, yoyo: true };
-  const animKeys = ["up-walk", "down-walk", "left-walk", "right-walk"];
+  const animKeys = MULTI_FRAME_ANIM_KEYS;
   for (const asset of assetList) {
     /* Skip non animated atlases */
-    if (asset.atlas.includes("-icons") || asset.atlas.includes("-stackable"))
-      continue;
+    if (checkSkip(asset)) continue;
     for (const animKey of animKeys) {
       scene.anims.create({
         key: asset.texture + "-" + animKey,

@@ -151,224 +151,224 @@ const assetList = [
     previewRect: [0, 160, 80, 80],
   },
   /* Armor */
-  // {
-  //   texture: "human-female-armor-light-plate",
-  //   src: "./assets/atlas/female/armor/armor-light-plate.png",
-  //   atlas: "./assets/atlas/80x80.json",
-  //   previewRect: [0, 160, 80, 80],
-  // },
-  // {
-  //   texture: "human-male-armor-light-plate",
-  //   src: "./assets/atlas/male/armor/armor-light-plate.png",
-  //   atlas: "./assets/atlas/80x80.json",
-  //   previewRect: [0, 160, 80, 80],
-  // },
-  // {
-  //   texture: "human-female-armor-plate",
-  //   src: "./assets/atlas/female/armor/armor-plate.png",
-  //   atlas: "./assets/atlas/80x80.json",
-  //   previewRect: [0, 160, 80, 80],
-  // },
-  // {
-  //   texture: "human-male-armor-plate",
-  //   src: "./assets/atlas/male/armor/armor-plate.png",
-  //   atlas: "./assets/atlas/80x80.json",
-  //   previewRect: [0, 160, 80, 80],
-  // },
-  // {
-  //   texture: "human-female-armor-robe",
-  //   src: "./assets/atlas/female/armor/armor-robe.png",
-  //   atlas: "./assets/atlas/80x80.json",
-  //   previewRect: [0, 160, 80, 80],
-  // },
-  // {
-  //   texture: "human-male-armor-robe",
-  //   src: "./assets/atlas/male/armor/armor-robe.png",
-  //   atlas: "./assets/atlas/80x80.json",
-  //   previewRect: [0, 160, 80, 80],
-  // },
-  // {
-  //   texture: "human-female-armor-wizard",
-  //   src: "./assets/atlas/female/armor/armor-wizard-robe.png",
-  //   atlas: "./assets/atlas/80x80.json",
-  //   previewRect: [0, 160, 80, 80],
-  // },
-  // {
-  //   texture: "human-male-armor-wizard",
-  //   src: "./assets/atlas/male/armor/armor-wizard-robe.png",
-  //   atlas: "./assets/atlas/80x80.json",
-  //   previewRect: [0, 160, 80, 80],
-  // },
-  // /* Helmet */
-  // {
-  //   texture: "human-helmet-bunny",
-  //   src: "./assets/atlas/helmet/helmet-bunny.png",
-  //   atlas: "./assets/atlas/80x80.json",
-  //   previewRect: [0, 140, 80, 80],
-  // },
-  // {
-  //   texture: "human-helmet-cap",
-  //   src: "./assets/atlas/helmet/helmet-cap.png",
-  //   atlas: "./assets/atlas/80x80.json",
-  //   previewRect: [0, 0, 80, 40],
-  // },
-  // {
-  //   texture: "human-helmet-cap-raccoon",
-  //   src: "./assets/atlas/helmet/helmet-cap-raccoon.png",
-  //   atlas: "./assets/atlas/80x80.json",
-  //   previewRect: [0, 80, 80, 40],
-  // },
-  // /* Accessory */
-  // {
-  //   texture: "human-accessory-glasses",
-  //   src: "./assets/atlas/accessory/accessory-glasses.png",
-  //   atlas: "./assets/atlas/80x80.json",
-  //   previewRect: [0, 140, 80, 80],
-  // },
-  // /* Boots */
-  // {
-  //   texture: "human-boots-cloth",
-  //   src: "./assets/atlas/boots/boots-cloth.png",
-  //   atlas: "./assets/atlas/80x80.json",
-  //   previewRect: [0, 173, 80, 80],
-  // },
-  // /* Pants */
-  // {
-  //   texture: "human-pants-cloth",
-  //   src: "./assets/atlas/pants/pants-cloth.png",
-  //   atlas: "./assets/atlas/80x80.json",
-  //   previewRect: [0, 163, 80, 80],
-  // },
-  // /* Weapon */
-  // {
-  //   texture: "weapon-sword-short",
-  //   src: "./assets/atlas/hands/weapon-sword-short.png",
-  //   atlas: "./assets/atlas/weapon.json",
-  //   previewRect: [37, 37, 17, 17],
-  // },
-  // {
-  //   texture: "weapon-spade",
-  //   src: "./assets/atlas/hands/weapon-spade.png",
-  //   atlas: "./assets/atlas/weapon.json",
-  //   previewRect: [35, 36, 18, 17],
-  // },
-  // {
-  //   texture: "weapon-axe",
-  //   src: "./assets/atlas/hands/weapon-axe.png",
-  //   atlas: "./assets/atlas/weapon.json",
-  //   previewRect: [30, 33, 22, 19],
-  // },
-  // {
-  //   texture: "weapon-spear",
-  //   src: "./assets/atlas/hands/weapon-spear.png",
-  //   atlas: "./assets/atlas/weapon.json",
-  //   previewRect: [24, 0, 32, 60],
-  // },
-  // {
-  //   texture: "weapon-cleaver",
-  //   src: "./assets/atlas/hands/weapon-cleaver.png",
-  //   atlas: "./assets/atlas/weapon.json",
-  //   previewRect: [30, 33, 28, 24],
-  // },
-  // {
-  //   texture: "weapon-hammer",
-  //   src: "./assets/atlas/hands/weapon-hammer.png",
-  //   atlas: "./assets/atlas/weapon.json",
-  //   previewRect: [32, 36, 25, 21],
-  // },
-  // {
-  //   texture: "weapon-scythe",
-  //   src: "./assets/atlas/hands/weapon-scythe.png",
-  //   atlas: "./assets/atlas/weapon.json",
-  //   previewRect: [28, 33, 24, 19],
-  // },
-  // {
-  //   texture: "weapon-claymore-soul",
-  //   src: "./assets/atlas/hands/weapon-claymore-soul.png",
-  //   atlas: "./assets/atlas/weapon.json",
-  //   previewRect: [15, 13, 42, 44],
-  // },
-  // {
-  //   texture: "weapon-katar",
-  //   src: "./assets/atlas/hands/weapon-katar.png",
-  //   atlas: "./assets/atlas/weapon.json",
-  //   previewRect: [36, 45, 19, 19],
-  // },
-  // {
-  //   texture: "weapon-gladius",
-  //   src: "./assets/atlas/hands/weapon-gladius.png",
-  //   atlas: "./assets/atlas/weapon.json",
-  //   previewRect: [29, 29, 27, 27],
-  // },
-  // /* Shield */
-  // {
-  //   texture: "shield-round",
-  //   src: "./assets/atlas/hands/shield-round.png",
-  //   atlas: "./assets/atlas/weapon.json",
-  //   previewRect: [40, 36, 20, 22],
-  // },
-  // {
-  //   texture: "shield-broken",
-  //   src: "./assets/atlas/hands/shield-broken.png",
-  //   atlas: "./assets/atlas/weapon.json",
-  //   previewRect: [44, 38, 17, 23],
-  // },
-  // {
-  //   texture: "shield-buckler",
-  //   src: "./assets/atlas/hands/shield-buckler.png",
-  //   atlas: "./assets/atlas/weapon.json",
-  //   previewRect: [41, 36, 20, 22],
-  // },
-  // {
-  //   texture: "shield-tower",
-  //   src: "./assets/atlas/hands/shield-tower.png",
-  //   atlas: "./assets/atlas/weapon.json",
-  //   previewRect: [42, 35, 16, 24],
-  // },
-  // /* Rings */
-  // {
-  //   texture: "ring-silver-plain",
-  //   src: "./assets/atlas/ring/ring-silver-plain.png",
-  //   atlas: "./assets/atlas/32x32-stackable.json",
-  //   previewRect: [0, 0, 32, 32],
-  // },
-  // {
-  //   texture: "ring-gold-plain",
-  //   src: "./assets/atlas/ring/ring-gold-plain.png",
-  //   atlas: "./assets/atlas/32x32-stackable.json",
-  //   previewRect: [0, 0, 32, 32],
-  // },
-  // {
-  //   texture: "ring-silver-sapphire",
-  //   src: "./assets/atlas/ring/ring-silver-sapphire.png",
-  //   atlas: "./assets/atlas/32x32-stackable.json",
-  //   previewRect: [0, 0, 32, 32],
-  // },
-  // {
-  //   texture: "ring-silver-ruby",
-  //   src: "./assets/atlas/ring/ring-silver-ruby.png",
-  //   atlas: "./assets/atlas/32x32-stackable.json",
-  //   previewRect: [0, 0, 32, 32],
-  // },
-  // /* Amulets */
-  // {
-  //   texture: "amulet-silver-plain",
-  //   src: "./assets/atlas/amulet/amulet-silver-plain.png",
-  //   atlas: "./assets/atlas/32x32-stackable.json",
-  //   previewRect: [0, 0, 32, 32],
-  // },
-  // {
-  //   texture: "amulet-gold-plain",
-  //   src: "./assets/atlas/amulet/amulet-gold-plain.png",
-  //   atlas: "./assets/atlas/32x32-stackable.json",
-  //   previewRect: [0, 0, 32, 32],
-  // },
-  // {
-  //   texture: "amulet-gold-sapphire",
-  //   src: "./assets/atlas/amulet/amulet-gold-sapphire.png",
-  //   atlas: "./assets/atlas/32x32-stackable.json",
-  //   previewRect: [0, 0, 32, 32],
-  // },
+  {
+    texture: "human-female-armor-light-plate",
+    src: "./assets/atlas/female/armor/armor-light-plate.png",
+    atlas: "./assets/atlas/80x80.json",
+    previewRect: [0, 160, 80, 80],
+  },
+  {
+    texture: "human-male-armor-light-plate",
+    src: "./assets/atlas/male/armor/armor-light-plate.png",
+    atlas: "./assets/atlas/80x80.json",
+    previewRect: [0, 160, 80, 80],
+  },
+  {
+    texture: "human-female-armor-plate",
+    src: "./assets/atlas/female/armor/armor-plate.png",
+    atlas: "./assets/atlas/80x80.json",
+    previewRect: [0, 160, 80, 80],
+  },
+  {
+    texture: "human-male-armor-plate",
+    src: "./assets/atlas/male/armor/armor-plate.png",
+    atlas: "./assets/atlas/80x80.json",
+    previewRect: [0, 160, 80, 80],
+  },
+  {
+    texture: "human-female-armor-robe",
+    src: "./assets/atlas/female/armor/armor-robe.png",
+    atlas: "./assets/atlas/80x80.json",
+    previewRect: [0, 160, 80, 80],
+  },
+  {
+    texture: "human-male-armor-robe",
+    src: "./assets/atlas/male/armor/armor-robe.png",
+    atlas: "./assets/atlas/80x80.json",
+    previewRect: [0, 160, 80, 80],
+  },
+  {
+    texture: "human-female-armor-wizard-robe",
+    src: "./assets/atlas/female/armor/armor-wizard-robe.png",
+    atlas: "./assets/atlas/80x80.json",
+    previewRect: [0, 160, 80, 80],
+  },
+  {
+    texture: "human-male-armor-wizard-robe",
+    src: "./assets/atlas/male/armor/armor-wizard-robe.png",
+    atlas: "./assets/atlas/80x80.json",
+    previewRect: [0, 160, 80, 80],
+  },
+  /* Helmet */
+  {
+    texture: "human-helmet-bunny",
+    src: "./assets/atlas/helmet/helmet-bunny.png",
+    atlas: "./assets/atlas/80x80.json",
+    previewRect: [0, 140, 80, 80],
+  },
+  {
+    texture: "human-helmet-cap",
+    src: "./assets/atlas/helmet/helmet-cap.png",
+    atlas: "./assets/atlas/80x80.json",
+    previewRect: [0, 0, 80, 40],
+  },
+  {
+    texture: "human-helmet-cap-raccoon",
+    src: "./assets/atlas/helmet/helmet-cap-raccoon.png",
+    atlas: "./assets/atlas/80x80.json",
+    previewRect: [0, 80, 80, 40],
+  },
+  /* Accessory */
+  {
+    texture: "human-accessory-glasses",
+    src: "./assets/atlas/accessory/accessory-glasses.png",
+    atlas: "./assets/atlas/80x80.json",
+    previewRect: [0, 140, 80, 80],
+  },
+  /* Boots */
+  {
+    texture: "human-boots-cloth",
+    src: "./assets/atlas/boots/boots-cloth.png",
+    atlas: "./assets/atlas/80x80.json",
+    previewRect: [0, 173, 80, 80],
+  },
+  /* Pants */
+  {
+    texture: "human-pants-cloth",
+    src: "./assets/atlas/pants/pants-cloth.png",
+    atlas: "./assets/atlas/80x80.json",
+    previewRect: [0, 163, 80, 80],
+  },
+  /* Weapon */
+  {
+    texture: "weapon-sword-short",
+    src: "./assets/atlas/hands/weapon-sword-short.png",
+    atlas: "./assets/atlas/weapon.json",
+    previewRect: [37, 37, 17, 17],
+  },
+  {
+    texture: "weapon-spade",
+    src: "./assets/atlas/hands/weapon-spade.png",
+    atlas: "./assets/atlas/weapon.json",
+    previewRect: [35, 36, 18, 17],
+  },
+  {
+    texture: "weapon-axe",
+    src: "./assets/atlas/hands/weapon-axe.png",
+    atlas: "./assets/atlas/weapon.json",
+    previewRect: [30, 33, 22, 19],
+  },
+  {
+    texture: "weapon-spear",
+    src: "./assets/atlas/hands/weapon-spear.png",
+    atlas: "./assets/atlas/weapon.json",
+    previewRect: [24, 0, 32, 60],
+  },
+  {
+    texture: "weapon-cleaver",
+    src: "./assets/atlas/hands/weapon-cleaver.png",
+    atlas: "./assets/atlas/weapon.json",
+    previewRect: [30, 33, 28, 24],
+  },
+  {
+    texture: "weapon-hammer",
+    src: "./assets/atlas/hands/weapon-hammer.png",
+    atlas: "./assets/atlas/weapon.json",
+    previewRect: [32, 36, 25, 21],
+  },
+  {
+    texture: "weapon-scythe",
+    src: "./assets/atlas/hands/weapon-scythe.png",
+    atlas: "./assets/atlas/weapon.json",
+    previewRect: [28, 33, 24, 19],
+  },
+  {
+    texture: "weapon-claymore-soul",
+    src: "./assets/atlas/hands/weapon-claymore-soul.png",
+    atlas: "./assets/atlas/weapon.json",
+    previewRect: [15, 13, 42, 44],
+  },
+  {
+    texture: "weapon-katar",
+    src: "./assets/atlas/hands/weapon-katar.png",
+    atlas: "./assets/atlas/weapon.json",
+    previewRect: [36, 45, 19, 19],
+  },
+  {
+    texture: "weapon-gladius",
+    src: "./assets/atlas/hands/weapon-gladius.png",
+    atlas: "./assets/atlas/weapon.json",
+    previewRect: [29, 29, 27, 27],
+  },
+  /* Shield */
+  {
+    texture: "shield-round",
+    src: "./assets/atlas/hands/shield-round.png",
+    atlas: "./assets/atlas/weapon.json",
+    previewRect: [40, 36, 20, 22],
+  },
+  {
+    texture: "shield-broken",
+    src: "./assets/atlas/hands/shield-broken.png",
+    atlas: "./assets/atlas/weapon.json",
+    previewRect: [44, 38, 17, 23],
+  },
+  {
+    texture: "shield-buckler",
+    src: "./assets/atlas/hands/shield-buckler.png",
+    atlas: "./assets/atlas/weapon.json",
+    previewRect: [41, 36, 20, 22],
+  },
+  {
+    texture: "shield-tower",
+    src: "./assets/atlas/hands/shield-tower.png",
+    atlas: "./assets/atlas/weapon.json",
+    previewRect: [42, 35, 16, 24],
+  },
+  /* Rings */
+  {
+    texture: "ring-silver-plain",
+    src: "./assets/atlas/ring/ring-silver-plain.png",
+    atlas: "./assets/atlas/32x32-stackable.json",
+    previewRect: [0, 0, 32, 32],
+  },
+  {
+    texture: "ring-gold-plain",
+    src: "./assets/atlas/ring/ring-gold-plain.png",
+    atlas: "./assets/atlas/32x32-stackable.json",
+    previewRect: [0, 0, 32, 32],
+  },
+  {
+    texture: "ring-silver-sapphire",
+    src: "./assets/atlas/ring/ring-silver-sapphire.png",
+    atlas: "./assets/atlas/32x32-stackable.json",
+    previewRect: [0, 0, 32, 32],
+  },
+  {
+    texture: "ring-silver-ruby",
+    src: "./assets/atlas/ring/ring-silver-ruby.png",
+    atlas: "./assets/atlas/32x32-stackable.json",
+    previewRect: [0, 0, 32, 32],
+  },
+  /* Amulets */
+  {
+    texture: "amulet-silver-plain",
+    src: "./assets/atlas/amulet/amulet-silver-plain.png",
+    atlas: "./assets/atlas/32x32-stackable.json",
+    previewRect: [0, 0, 32, 32],
+  },
+  {
+    texture: "amulet-gold-plain",
+    src: "./assets/atlas/amulet/amulet-gold-plain.png",
+    atlas: "./assets/atlas/32x32-stackable.json",
+    previewRect: [0, 0, 32, 32],
+  },
+  {
+    texture: "amulet-gold-sapphire",
+    src: "./assets/atlas/amulet/amulet-gold-sapphire.png",
+    atlas: "./assets/atlas/32x32-stackable.json",
+    previewRect: [0, 0, 32, 32],
+  },
   // /* Stackable */
   // {
   //   texture: "stackable-skull",

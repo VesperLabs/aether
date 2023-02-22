@@ -17,14 +17,14 @@ class Door extends Phaser.GameObjects.Sprite {
   }
   getProps() {
     return {
-      name: this.name,
-      destMap: this.destMap,
-      destDoor: this.destDoor,
-      x: this.x,
-      y: this.y,
-      width: this.width,
-      height: this.height,
-      centerPos: this.centerPos,
+      name: this?.name,
+      destMap: this?.destMap,
+      destDoor: this?.destDoor,
+      x: this?.x,
+      y: this?.y,
+      width: this?.width,
+      height: this?.height,
+      centerPos: this?.centerPos,
     };
   }
   destroy() {

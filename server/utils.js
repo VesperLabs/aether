@@ -24,11 +24,12 @@ function initMapRooms(scene) {
   }, {});
 }
 
-function changeMap(scene, socketId, room, door) {
+function changeMap(scene, socketId, prevDoor, nextDoor) {
   const player = scene.players[socketId];
+  const room = prevDoor.destMap;
   player.room = room;
-  player.x = door.centerPos.x;
-  player.y = door.centerPos.y;
+  player.x = nextDoor.centerPos.x;
+  player.y = nextDoor.centerPos.y;
   removePlayer(scene, socketId);
   scene.add.existing(player);
   scene.mapRooms[room].players.add(player);
@@ -71,13 +72,13 @@ function getRoomState(scene, room) {
 
 function getPlayerState(p) {
   return {
-    id: p.socketId, //required for SI
-    socketId: p.socketId,
-    room: p.room,
-    x: p.x,
-    y: p.y,
-    vx: p.vx,
-    vy: p.vy,
+    id: p?.socketId, //required for SI
+    socketId: p?.socketId,
+    room: p?.room,
+    x: p?.x,
+    y: p?.y,
+    vx: p?.vx,
+    vy: p?.vy,
   };
 }
 
