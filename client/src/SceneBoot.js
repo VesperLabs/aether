@@ -56,6 +56,7 @@ class SceneBoot extends Phaser.Scene {
       "./assets/fonts/light.png",
       "./assets/fonts/font.xml"
     );
+    this.load.image("joy-circle", "./assets/images/joy-circle.png");
     this.load.image("misc-bubble-tail", "./assets/images/bubble-tail.png");
     this.load.image("misc-slash", "./assets/images/slash.png");
     this.load.spritesheet("misc-bubble", "./assets/images/bubble.png", {

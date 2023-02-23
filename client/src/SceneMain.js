@@ -46,7 +46,6 @@ class SceneMain extends Phaser.Scene {
     scene.socket.on("newPlayer", (player) => {
       if (getPlayer(scene, player.socketId)) return;
       addPlayer(scene, player);
-      console.log(scene.players);
     });
 
     scene.socket.on("remove", (socketId) => {

@@ -74,12 +74,13 @@ class Player extends Phaser.GameObjects.Container {
     // this.add(this.bubble);
     // this.add(this.usernameText);
     // this.add(this.hpBar);
-    //this.add(this.talkMenu);
+    // this.add(this.talkMenu);
   }
   update() {
     if (this.isServer) return;
     updatePlayerDirection(this);
     drawFrame(this);
+    hackFrameRates(this, Math.round(80 + 2500 / (this.currentSpeed + 1)));
   }
   destroy() {
     if (this.scene) this.scene.events.off("update", this.update, this);
@@ -89,8 +90,12 @@ class Player extends Phaser.GameObjects.Container {
 }
 
 function playAnim(sprite, parts) {
+  const animKey = parts?.join("-");
   const currentFrame = sprite?.anims?.currentFrame?.index || 0;
-  sprite.play(parts?.join("-"), true, currentFrame);
+  const currentKey = sprite?.anims?.currentAnim?.key;
+  if (animKey !== currentKey) {
+    sprite.play(animKey, true, currentFrame);
+  }
 }
 
 function hackFrameRates(player, rate) {
@@ -183,29 +188,22 @@ function drawFrame(p) {
   handRight.setRotation(0);
   handLeft.setRotation(0);
 
-  /* Anims */
-  const newKey = `${race}-${direction}-${action}`;
-  const currentKey = skin?.anims?.currentAnim?.key;
-
-  if (currentKey !== newKey) {
-    playAnim(skin, [race, direction, action]);
-    if (race === "human") {
-      playAnim(chest, [race, gender, "chest-bare", direction, action]);
-      playAnim(shadow, [race, "shadow", direction, action]);
-    } else {
-      playAnim(chest, [race, "blank", direction, action]);
-    }
-    playAnim(face, [race, gender, "face-1", direction, action]);
-    playAnim(hair, [race, gender, "hair-1", direction, action]);
-    playAnim(armor, [race, gender, "armor-wizard-robe", direction, action]);
-    playAnim(helmet, [race, "helmet-bunny", direction, action]);
-    playAnim(boots, [race, "boots-cloth", direction, action]);
-    playAnim(pants, [race, "pants-cloth", direction, action]);
-    playAnim(accessory, [race, "accessory-glasses", direction, action]);
-    handRight.setTexture("weapon-axe");
-    handLeft.setTexture("shield-round");
+  playAnim(skin, [race, direction, action]);
+  if (race === "human") {
+    playAnim(chest, [race, gender, "chest-bare", direction, action]);
+    playAnim(shadow, [race, "shadow", direction, action]);
+  } else {
+    playAnim(chest, [race, "blank", direction, action]);
   }
-  hackFrameRates(p, Math.round(80 + 2500 / (p.currentSpeed + 1)));
+  playAnim(face, [race, gender, "face-1", direction, action]);
+  playAnim(hair, [race, gender, "hair-1", direction, action]);
+  playAnim(armor, [race, gender, "armor-wizard-robe", direction, action]);
+  playAnim(helmet, [race, "helmet-bunny", direction, action]);
+  playAnim(boots, [race, "boots-cloth", direction, action]);
+  playAnim(pants, [race, "pants-cloth", direction, action]);
+  playAnim(accessory, [race, "accessory-glasses", direction, action]);
+  handRight.setTexture("weapon-axe");
+  handLeft.setTexture("shield-round");
 }
 
 function updatePlayerDirection(player) {

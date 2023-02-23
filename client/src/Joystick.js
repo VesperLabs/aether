@@ -63,15 +63,15 @@ var Joystick = new Phaser.Class({
     this.device = settings.device === undefined ? 0 : settings.device;
 
     //Instanciate the Joystick sprites.
-    // var imageGroup = [];
-    // imageGroup.push(this.scene.add.sprite(0, 0, settings.sprites.cap));
+    var imageGroup = [];
+    imageGroup.push(this.scene.add.sprite(0, 0, settings.sprites.cap));
     // for (var i = 0; i < this.maxDistanceInPixels; i += 100) {
     //   imageGroup.push(this.scene.add.sprite(0, 0, settings.sprites.body));
     // }
-    // imageGroup.push(this.scene.add.sprite(0, 0, settings.sprites.base));
+    imageGroup.push(this.scene.add.sprite(0, 0, settings.sprites.base));
 
     // Manage the Joystick sprites with a Layer.
-    this.layer = this.scene.add.layer(/* imageGroup */);
+    this.layer = this.scene.add.layer(imageGroup);
     this.layer.setVisible(false);
     // Set Joystick position to (0, 0).
     this.setPosition(0, 0);
@@ -124,10 +124,14 @@ var Joystick = new Phaser.Class({
 
     // Show sprites.
     this.layer.setVisible(true);
-    this.layer.each(function (gameObject) {
-      gameObject.setScrollFactor(0);
-      gameObject.x = pointer.x;
-      gameObject.y = pointer.y;
+    this.layer.each(function (obj) {
+      obj.displayWidth = 50;
+      obj.displayHeight = 50;
+      obj.alpha = 0.1;
+      obj.setTint(0xff0000);
+      obj.setScrollFactor(0);
+      obj.x = pointer.x;
+      obj.y = pointer.y;
     }, this);
 
     // Set position of this Joystick to the pointer position.

@@ -18,9 +18,9 @@ class SceneHud extends Phaser.Scene {
 function addJoystick(scene) {
   scene.joystick = scene.add.joystick({
     sprites: {
-      base: "",
-      body: "",
-      cap: "",
+      base: "joy-circle",
+      body: "joy-circle",
+      cap: "joy-circle",
     },
     singleDirection: false,
     maxDistanceInPixels: 50,
