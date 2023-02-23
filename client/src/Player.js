@@ -1,5 +1,4 @@
 const Phaser = require("phaser");
-
 class Player extends Phaser.GameObjects.Container {
   constructor(
     scene,
@@ -22,20 +21,25 @@ class Player extends Phaser.GameObjects.Container {
     };
     scene.physics.add.existing(this);
     this.body.setCircle(8, -8, -8);
-    this.body.setBounceX(100);
     /* For the server, don't draw this stuff */
     if (isServer) return;
     this.race = "human";
     this.gender = "female";
     this.initSpriteLayers();
-
+    this.weaponAtlas = scene.cache.json.get("weaponAtlas");
+    this.equips = {
+      handLeft: "weapon-sword-short",
+      handRight: "weapon-sword-short",
+    };
     /* Do we really need these? */
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
   }
+
   initSpriteLayers() {
     const scene = this.scene;
-    const defaults = [scene, 0, -12, `${this.race}-blank`];
+    const blankSprite = "human-blank";
+    const defaults = [scene, 0, -14, blankSprite];
     this.skin = scene.add.existing(new Phaser.GameObjects.Sprite(...defaults));
     this.chest = scene.add.existing(new Phaser.GameObjects.Sprite(...defaults));
     this.face = scene.add.existing(new Phaser.GameObjects.Sprite(...defaults));
@@ -50,10 +54,10 @@ class Player extends Phaser.GameObjects.Container {
       new Phaser.GameObjects.Sprite(...defaults)
     );
     this.handLeft = scene.add.existing(
-      new Phaser.GameObjects.Sprite(scene, 13, -9, `${this.race}-blank`)
+      new Phaser.GameObjects.Sprite(scene, 13, -9, blankSprite)
     );
     this.handRight = scene.add.existing(
-      new Phaser.GameObjects.Sprite(scene, -13, -9, `${this.race}-blank`)
+      new Phaser.GameObjects.Sprite(scene, -13, -9, blankSprite)
     );
     this.shadow = scene.add.existing(
       new Phaser.GameObjects.Sprite(...defaults)
@@ -89,35 +93,6 @@ class Player extends Phaser.GameObjects.Container {
   }
 }
 
-function playAnim(sprite, parts) {
-  const animKey = parts?.join("-");
-  const currentFrame = sprite?.anims?.currentFrame?.index || 0;
-  const currentKey = sprite?.anims?.currentAnim?.key;
-  if (animKey !== currentKey) {
-    sprite.play(animKey, true, currentFrame);
-  }
-}
-
-function hackFrameRates(player, rate) {
-  const spriteKeys = [
-    "shadow",
-    "chest",
-    "skin",
-    "face",
-    "hair",
-    "accessory",
-    "armor",
-    "boots",
-    "pants",
-    "helmet",
-    "handLeft",
-    "handRight",
-  ];
-  for (const spriteKey of spriteKeys) {
-    player[spriteKey].anims.msPerFrame = rate;
-  }
-}
-
 function drawFrame(p) {
   const {
     skin,
@@ -136,8 +111,8 @@ function drawFrame(p) {
     gender,
     direction,
     action,
+    equips,
   } = p;
-
   /* Depth sort based on direction */
   p.bringToTop(pants);
   p.bringToTop(boots);
@@ -197,13 +172,14 @@ function drawFrame(p) {
   }
   playAnim(face, [race, gender, "face-1", direction, action]);
   playAnim(hair, [race, gender, "hair-1", direction, action]);
-  playAnim(armor, [race, gender, "armor-wizard-robe", direction, action]);
+  //playAnim(armor, [race, gender, "armor-wizard-robe", direction, action]);
   playAnim(helmet, [race, "helmet-bunny", direction, action]);
   playAnim(boots, [race, "boots-cloth", direction, action]);
   playAnim(pants, [race, "pants-cloth", direction, action]);
   playAnim(accessory, [race, "accessory-glasses", direction, action]);
-  handRight.setTexture("weapon-axe");
-  handLeft.setTexture("shield-round");
+  playWeapons(p);
+  handRight.setTexture(equips.handRight);
+  handLeft.setTexture(equips.handLeft);
 }
 
 function updatePlayerDirection(player) {
@@ -231,6 +207,43 @@ function updatePlayerDirection(player) {
     player.action = "stand";
   } else {
     player.action = "walk";
+  }
+}
+
+function hackFrameRates(player, rate) {
+  const spriteKeys = [
+    "shadow",
+    "chest",
+    "skin",
+    "face",
+    "hair",
+    "accessory",
+    "armor",
+    "boots",
+    "pants",
+    "helmet",
+    "handLeft",
+    "handRight",
+  ];
+  for (const spriteKey of spriteKeys) {
+    player[spriteKey].anims.msPerFrame = rate;
+  }
+}
+
+function playWeapons(player) {
+  const { race, handLeft, handRight, weaponAtlas: w } = player;
+  const currentFrame = player?.skin?.anims?.currentFrame;
+  const { left, right } = w?.offsets?.[race]?.[currentFrame.textureFrame] || {};
+  handLeft.setPosition(left?.x, left?.y);
+  handRight.setPosition(right?.x, right?.y);
+}
+
+function playAnim(sprite, parts) {
+  const animKey = parts?.join("-");
+  const currentFrame = sprite?.anims?.currentFrame?.index || 0;
+  const currentKey = sprite?.anims?.currentAnim?.key;
+  if (animKey !== currentKey) {
+    sprite.play(animKey, true, currentFrame);
   }
 }
 

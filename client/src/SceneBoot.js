@@ -77,6 +77,7 @@ class SceneBoot extends Phaser.Scene {
       "./assets/images/spell-anim-chakra.png",
       { frameWidth: 150, frameHeight: 150 }
     );
+    this.load.json("weaponAtlas", "./assets/atlas/weapon.json");
   }
   create() {
     createAnims(this.scene.manager.getScene("SceneMain"));
