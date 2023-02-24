@@ -39,7 +39,7 @@ class SceneMain extends Phaser.Scene {
         }
       }
       const { collideLayer } = changeMap(scene, scene.hero.room);
-      setPlayerCollision(scene, scene.hero, [collideLayer, scene.players]);
+      setPlayerCollision(scene, scene.hero, [collideLayer]);
       setCamera(scene, scene.hero);
     });
 
@@ -91,6 +91,7 @@ function moveHero(scene, time) {
   const right = scene.cursorKeys.right.isDown;
   const up = scene.cursorKeys.up.isDown;
   const down = scene.cursorKeys.down.isDown;
+  const space = scene.cursorKeys.space.isDown;
   let vx = 0;
   let vy = 0;
 
@@ -111,8 +112,17 @@ function moveHero(scene, time) {
   }
 
   scene.hero.body.setVelocity(vx, vy);
-  constrainVelocity(scene.hero, speed);
 
+  if (scene.hero.body.embedded) {
+    constrainVelocity(scene.hero, speed / 4);
+  } else {
+    constrainVelocity(scene.hero, speed);
+  }
+
+  /* If the hero is attacking */
+  if (scene.hero.action !== "attack") {
+    if (space) scene.hero.doAttack();
+  }
   /* If the hero is standing still do not update the server */
   if (!scene.hero.state.isIdle) {
     //if (time % 2 > 1)
@@ -150,6 +160,9 @@ function setPlayerCollision(scene, player, colliders = []) {
   colliders.forEach((c) => {
     scene.physics.add.collider(player, c);
   });
+
+  scene.physics.add.overlap(player, scene.players);
+
   scene.physics.add.overlap(
     scene.hero,
     scene.doors,

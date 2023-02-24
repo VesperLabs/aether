@@ -21,6 +21,8 @@ class Player extends Phaser.GameObjects.Container {
     };
     scene.physics.add.existing(this);
     this.body.setCircle(8, -8, -8);
+    if (isHero) {
+    }
     /* For the server, don't draw this stuff */
     if (isServer) return;
     this.race = "human";
@@ -28,8 +30,9 @@ class Player extends Phaser.GameObjects.Container {
     this.initSpriteLayers();
     this.weaponAtlas = scene.cache.json.get("weaponAtlas");
     this.equips = {
-      handLeft: "weapon-sword-short",
       handRight: "weapon-sword-short",
+      handLeft: "shield-round",
+      armor: "armor-wizard-robe",
     };
     /* Do we really need these? */
     scene.events.on("update", this.update, this);
@@ -80,6 +83,10 @@ class Player extends Phaser.GameObjects.Container {
     // this.add(this.hpBar);
     // this.add(this.talkMenu);
   }
+  doAttack() {
+    this.action = "attack";
+    console.log(this.action);
+  }
   update() {
     if (this.isServer) return;
     updatePlayerDirection(this);
@@ -117,6 +124,12 @@ function drawFrame(p) {
   p.bringToTop(pants);
   p.bringToTop(boots);
   p.bringToTop(armor);
+
+  handRight.setFlipY(false);
+  handLeft.setFlipY(false);
+  handRight.setRotation(0);
+  handLeft.setRotation(0);
+
   if (direction === "up") {
     p.bringToTop(hair);
     p.bringToTop(face);
@@ -125,7 +138,11 @@ function drawFrame(p) {
     p.sendToBack(handLeft);
     p.sendToBack(handRight);
     handRight.setFlipX(true);
+    handRight.setFlipY(false);
     handLeft.setFlipX(false);
+    if (action === "attack") {
+      handRight.setFlipX(false);
+    }
   } else if (direction === "down") {
     p.bringToTop(chest);
     p.bringToTop(armor);
@@ -135,6 +152,11 @@ function drawFrame(p) {
     p.bringToTop(handLeft);
     handRight.setFlipX(false);
     handLeft.setFlipX(true);
+    handRight.setRotation(0);
+    if (action === "attack") {
+      handRight.setFlipY(true);
+      handRight.setFlipX(true);
+    }
   } else if (direction === "left") {
     p.bringToTop(chest);
     p.bringToTop(armor);
@@ -146,6 +168,10 @@ function drawFrame(p) {
     p.sendToBack(handRight);
     handRight.setFlipX(false);
     handLeft.setFlipX(false);
+    handRight.setRotation(0);
+    if (action === "attack") {
+      handRight.setRotation(-Math.PI / 2);
+    }
   } else if (direction === "right") {
     p.bringToTop(chest);
     p.bringToTop(armor);
@@ -157,11 +183,11 @@ function drawFrame(p) {
     p.bringToTop(handRight);
     handRight.setFlipX(true);
     handLeft.setFlipX(true);
+    handRight.setRotation(0);
+    if (action === "attack") {
+      handRight.setRotation(Math.PI / 2);
+    }
   }
-  handRight.setFlipY(false);
-  handLeft.setFlipY(false);
-  handRight.setRotation(0);
-  handLeft.setRotation(0);
 
   playAnim(skin, [race, direction, action]);
   if (race === "human") {
@@ -172,7 +198,7 @@ function drawFrame(p) {
   }
   playAnim(face, [race, gender, "face-1", direction, action]);
   playAnim(hair, [race, gender, "hair-1", direction, action]);
-  //playAnim(armor, [race, gender, "armor-wizard-robe", direction, action]);
+  playAnim(armor, [race, gender, equips.armor, direction, action]);
   playAnim(helmet, [race, "helmet-bunny", direction, action]);
   playAnim(boots, [race, "boots-cloth", direction, action]);
   playAnim(pants, [race, "pants-cloth", direction, action]);
@@ -203,7 +229,9 @@ function updatePlayerDirection(player) {
     }
   }
   /* Action */
+
   if (vx === 0 && vy === 0) {
+    if (player.action === "attack") return;
     player.action = "stand";
   } else {
     player.action = "walk";

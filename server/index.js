@@ -75,7 +75,7 @@ class ServerScene extends Phaser.Scene {
         const player = getPlayerState(scene.players[socketId]);
         const prev = getDoor(scene, player.room, doorName)?.getProps();
         const next = getDoor(scene, prev.destMap, prev.destDoor)?.getProps();
-        socket.to(player.room).emit("leaveDoor", socketId);
+        socket.to(player.room).emit("remove", socketId);
         socket.leave(player.room);
         /* Need to teleport if same here */
         changeMap(scene, socketId, prev, next);
