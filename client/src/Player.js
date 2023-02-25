@@ -1,7 +1,7 @@
 const Phaser = require("phaser");
 const Sprite = Phaser.GameObjects.Sprite;
 class Player extends Phaser.GameObjects.Container {
-  constructor(scene, { x, y, socketId, isHero = false, isServer = false, speed = 300, room }) {
+  constructor(scene, { x, y, socketId, isHero = false, isServer = false, speed = 300, room, equips }) {
     super(scene, x, y, []);
     this.startingCoords = { x, y };
     this.socketId = socketId;
@@ -19,28 +19,20 @@ class Player extends Phaser.GameObjects.Container {
       isIdle: true,
       isAttacking: false,
     };
-    scene.physics.add.existing(this);
-    this.body.setCircle(8, -8, -8);
-    /* For the server, don't draw this stuff */
-    if (isServer) return;
     this.profile = {
       race: "human",
       gender: "female",
       face: { color: "black", texture: "face-1" },
       hair: { color: "black", texture: "hair-3" },
     };
-    this.equips = {
-      handRight: { texture: "weapon-sword-short" },
-      handLeft: { texture: "weapon-sword-short" },
-      armor: { texture: "armor-plate" },
-      helmet: { texture: "helmet-cap-raccoon" },
-      accessory: { texture: "accessory-glasses" },
-      boots: { texture: "boots-cloth" },
-      pants: { texture: "pants-cloth" },
-    };
+    this.equips = equips;
     this.stats = {
       attackSpeed: 200,
     };
+    scene.physics.add.existing(this);
+    this.body.setCircle(8, -8, -8);
+    /* For the server, don't draw this stuff */
+    if (isServer) return;
     this.initSpriteLayers();
     this.weaponAtlas = scene.cache.json.get("weaponAtlas");
     /* Do we really need these? */

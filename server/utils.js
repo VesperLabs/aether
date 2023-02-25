@@ -62,15 +62,36 @@ function getDoor(scene, room, doorName) {
   return scene?.doors?.[room]?.[doorName];
 }
 
-function getRoomState(scene, room) {
+function getFullRoomState(scene, room) {
   return {
     players: Object.values(scene.players)
       ?.filter((p) => p?.room === room)
-      .map(getPlayerState),
+      .map(getFullPlayerState),
   };
 }
 
-function getPlayerState(p) {
+function getFullPlayerState(p) {
+  return {
+    id: p?.socketId, //required for SI
+    socketId: p?.socketId,
+    room: p?.room,
+    x: p?.x,
+    y: p?.y,
+    vx: p?.vx,
+    vy: p?.vy,
+    equips: p?.equips,
+  };
+}
+
+function getTrimmedRoomState(scene, room) {
+  return {
+    players: Object.values(scene.players)
+      ?.filter((p) => p?.room === room)
+      .map(getTrimmedPlayerState),
+  };
+}
+
+function getTrimmedPlayerState(p) {
   return {
     id: p?.socketId, //required for SI
     socketId: p?.socketId,
@@ -93,19 +114,20 @@ function handlePlayerInput(scene, socketId, input) {
   player.vy = vy;
 }
 
-const isMobile =
-  /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+const isMobile = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
 module.exports = {
   addPlayer,
   removePlayer,
   getPlayer,
-  getPlayerState,
+  getTrimmedRoomState,
+  getTrimmedPlayerState,
+  getFullRoomState,
+  getFullPlayerState,
   handlePlayerInput,
   removeAllPlayers,
-  getRoomState,
-  isMobile,
   initMapRooms,
   changeMap,
   getDoor,
+  isMobile,
 };

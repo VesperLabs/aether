@@ -19,8 +19,9 @@ const {
   addPlayer,
   removePlayer,
   handlePlayerInput,
-  getPlayerState,
-  getRoomState,
+  getFullPlayerState,
+  getFullRoomState,
+  getTrimmedRoomState,
   initMapRooms,
   changeMap,
   getDoor,
@@ -33,10 +34,7 @@ app.use(express.static(path.join(__dirname, "../client/build")));
 class ServerScene extends Phaser.Scene {
   preload() {
     mapList.forEach((asset) => {
-      this.load.tilemapTiledJSON(
-        asset?.name,
-        path.join(__dirname, `../client/public/${asset.json}`)
-      );
+      this.load.tilemapTiledJSON(asset?.name, path.join(__dirname, `../client/public/${asset.json}`));
     });
   }
   create() {
@@ -56,6 +54,15 @@ class ServerScene extends Phaser.Scene {
           x: 100,
           y: 100,
           room: "grassland-2",
+          equips: {
+            handRight: { type: "weapon", texture: "weapon-sword-short" },
+            handLeft: { type: "weapon", texture: "weapon-sword-short" },
+            armor: { type: "armor", texture: "armor-plate" },
+            helmet: { type: "helmet", texture: "helmet-cap-raccoon" },
+            accessory: { type: "accessory", texture: "accessory-glasses" },
+            boots: { type: "boots", texture: "boots-cloth" },
+            pants: { type: "pants", texture: "pants-cloth" },
+          },
         };
 
         const player = addPlayer(scene, user);
@@ -65,24 +72,24 @@ class ServerScene extends Phaser.Scene {
 
         socket.join(room);
         socket.emit("heroInit", {
-          players: getRoomState(scene, room)?.players,
+          players: getFullRoomState(scene, room)?.players,
           socketId,
         });
-        socket.to(room).emit("newPlayer", getPlayerState(player));
+        socket.to(room).emit("newPlayer", getFullPlayerState(player));
       });
 
       socket.on("enterDoor", (doorName) => {
-        const player = getPlayerState(scene.players[socketId]);
+        const player = getFullPlayerState(scene.players[socketId]);
         const prev = getDoor(scene, player.room, doorName)?.getProps();
         const next = getDoor(scene, prev.destMap, prev.destDoor)?.getProps();
         socket.to(player.room).emit("remove", socketId);
         socket.leave(player.room);
         /* Need to teleport if same here */
         changeMap(scene, socketId, prev, next);
-        socket.to(prev.destMap).emit("newPlayer", getPlayerState(player));
+        socket.to(prev.destMap).emit("newPlayer", player);
         socket.join(prev.destMap);
         socket.emit("heroInit", {
-          players: getRoomState(scene, prev.destMap)?.players,
+          players: getFullRoomState(scene, prev.destMap)?.players,
           socketId,
         });
         console.log(socket.rooms);
@@ -103,7 +110,7 @@ class ServerScene extends Phaser.Scene {
   update(time, delta) {
     const scene = this;
     for (const mapRoom of Object.values(scene.mapRooms)) {
-      const roomState = getRoomState(scene, mapRoom.name);
+      const roomState = getTrimmedRoomState(scene, mapRoom.name);
       const snapshot = SI.snapshot.create(roomState);
       mapRoom.vault.add(snapshot);
       io.to(mapRoom.name).emit("update", mapRoom.vault.get());
