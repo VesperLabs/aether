@@ -15,7 +15,9 @@ class Player extends Phaser.GameObjects.Container {
     this.vx = 0;
     this.vy = 0;
     this.state = {
+      lastAttack: Date.now(),
       isIdle: true,
+      isAttacking: false,
     };
     scene.physics.add.existing(this);
     this.body.setCircle(8, -8, -8);
@@ -25,15 +27,19 @@ class Player extends Phaser.GameObjects.Container {
       race: "human",
       gender: "female",
       face: { color: "black", texture: "face-1" },
-      hair: { color: "black", texture: "hair-1" },
+      hair: { color: "black", texture: "hair-2" },
     };
     this.equips = {
       handRight: { texture: "weapon-sword-short" },
       handLeft: { texture: "weapon-sword-short" },
-      // armor: { texture: "wizard-robe" },
-      // helmet: { texture: "bunny-ears" },
-      // boots: { texture: "boots-cloth" },
+      armor: { texture: "armor-light-plate" },
+      helmet: { texture: "helmet-bunny" },
+      accessory: { texture: "accessory-glasses" },
+      boots: { texture: "boots-cloth" },
       pants: { texture: "pants-cloth" },
+    };
+    this.stats = {
+      attackSpeed: 200,
     };
     this.initSpriteLayers();
     this.weaponAtlas = scene.cache.json.get("weaponAtlas");
@@ -65,7 +71,7 @@ class Player extends Phaser.GameObjects.Container {
     this.add(this.chest);
     this.add(this.skin);
     this.add(this.face);
-    //this.add(this.hair);
+    this.add(this.hair);
     this.add(this.accessory);
     this.add(this.armor);
     this.add(this.boots);
@@ -78,15 +84,31 @@ class Player extends Phaser.GameObjects.Container {
     // this.add(this.hpBar);
     // this.add(this.talkMenu);
   }
-  doAttack(a) {
-    this.action = a;
-    this.attackSprite.setAlpha(1);
+  doAttack(action) {
+    if (!this.state.isAttacking || !this.isHero) {
+      /* Start animation */
+      if (action === "attack_left") this.attackSprite.setFlipX(true);
+      if (action === "attack_right") this.attackSprite.setFlipX(false);
+      this.attackSprite.setAlpha(1);
+      this.state.isAttacking = true;
+      this.action = action;
+      this.state.lastAttack = Date.now();
+      return true;
+    }
+    return false;
   }
-  update() {
+  update(time, delta) {
     if (this.isServer) return;
     updatePlayerDirection(this);
     drawFrame(this);
     hackFrameRates(this, Math.round(80 + 2500 / (this.currentSpeed + 1)));
+    /* Let us attack again when it is ready */
+    if (Date.now() - this.state.lastAttack > delta + this.stats.attackSpeed) {
+      this.state.isAttacking = false;
+      if (this.action === "attack_right") {
+        this.doAttack("attack_left");
+      }
+    }
   }
   destroy() {
     if (this.scene) this.scene.events.off("update", this.update, this);
@@ -154,20 +176,20 @@ function drawFrame(p) {
     p.bringToTop(handRight);
   }
 
-  playAnim(skin, [profile.race, direction, action]);
-  if (profile.race === "human") {
-    playAnim(chest, [profile.race, profile.gender, "chest-bare", direction, action]);
-    playAnim(shadow, [profile.race, "shadow", direction, action]);
+  playAnim(skin, [profile?.race, direction, action]);
+  if (profile?.race === "human") {
+    playAnim(chest, [profile?.race, profile?.gender, "chest-bare", direction, action]);
+    playAnim(shadow, [profile?.race, "shadow", direction, action]);
   } else {
-    playAnim(chest, [profile.race, "blank", direction, action]);
+    playAnim(chest, [profile?.race, "blank", direction, action]);
   }
-  playAnim(face, [profile?.race, profile?.gender, profile?.face?.texture, direction, action]);
+  playAnim(face, [profile?.race, profile?.face?.texture, direction, action]);
   playAnim(hair, [profile?.race, profile?.gender, profile?.hair?.texture, direction, action]);
   playAnim(armor, [profile?.race, profile?.gender, equips?.armor?.texture, direction, action]);
   playAnim(helmet, [profile?.race, equips?.helmet?.texture, direction, action]);
   playAnim(boots, [profile?.race, equips?.boots?.texture, direction, action]);
   playAnim(pants, [profile?.race, equips?.pants?.texture, direction, action]);
-  playAnim(accessory, [profile?.race, "accessory-glasses", direction, action]);
+  playAnim(accessory, [profile?.race, equips?.accessory?.texture, direction, action]);
   playAttackSprite(p);
   playWeapons(p);
   handRight.setTexture(equips?.handRight?.texture);
@@ -195,9 +217,10 @@ function updatePlayerDirection(player) {
     }
   }
   /* Action */
-
+  if (player.state.isAttacking) {
+    return;
+  }
   if (vx === 0 && vy === 0) {
-    if (player.action.includes("attack")) return;
     player.action = "stand";
   } else {
     player.action = "walk";
@@ -245,19 +268,22 @@ function playWeapons(player) {
         handRight.setAngle(-90);
       }
     }
+    if (action === "attack_left") {
+      if (direction === "left") {
+        handLeft.setAngle(0);
+      }
+      if (direction === "right") {
+        handLeft.setAngle(0);
+      }
+    }
   }
 }
 
 function playAttackSprite(player) {
-  const { attackSprite, direction, action } = player;
+  const { attackSprite, direction } = player;
+
   if (attackSprite.alpha > 0) {
-    attackSprite.setAlpha(attackSprite.alpha - 0.2);
-  }
-  if (action === "attack_left") {
-    attackSprite.setFlipX(true);
-  }
-  if (action === "attack_right") {
-    attackSprite.setFlipX(false);
+    attackSprite.setAlpha(attackSprite.alpha - 0.3);
   }
   if (direction === "up") attackSprite.setAngle(180);
   if (direction === "down") attackSprite.setAngle(0);

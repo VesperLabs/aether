@@ -24,20 +24,20 @@ const assetList = [
     previewRect: [0, 160, 80, 80],
   },
   {
-    texture: "human-male-face-1",
-    src: "./assets/atlas/male/face/face-1.png",
+    texture: "human-face-1",
+    src: "./assets/atlas/face/face-1.png",
     atlas: "./assets/atlas/80x80.json",
     previewRect: [0, 160, 80, 80],
   },
   {
-    texture: "human-male-face-2",
-    src: "./assets/atlas/male/face/face-2.png",
+    texture: "human-face-2",
+    src: "./assets/atlas/face/face-2.png",
     atlas: "./assets/atlas/80x80.json",
     previewRect: [0, 160, 80, 80],
   },
   {
-    texture: "human-male-face-3",
-    src: "./assets/atlas/male/face/face-3.png",
+    texture: "human-face-3",
+    src: "./assets/atlas/face/face-3.png",
     atlas: "./assets/atlas/80x80.json",
     previewRect: [0, 160, 80, 80],
   },
@@ -56,12 +56,6 @@ const assetList = [
   {
     texture: "human-female-chest-bare",
     src: "./assets/atlas/female/chest/chest-bare.png",
-    atlas: "./assets/atlas/80x80.json",
-    previewRect: [0, 160, 80, 80],
-  },
-  {
-    texture: "human-female-face-1",
-    src: "./assets/atlas/female/face/face-1.png",
     atlas: "./assets/atlas/80x80.json",
     previewRect: [0, 160, 80, 80],
   },
@@ -466,8 +460,7 @@ const resolveAsset = (item, user) => {
         textureName = item.texture;
         break;
       case "armor":
-        textureName =
-          user.profile.race + "-" + user.profile.gender + "-" + item.texture;
+        textureName = user.profile.race + "-" + user.profile.gender + "-" + item.texture;
         break;
       default:
         textureName = user.profile.race + "-" + item.texture;

@@ -84,8 +84,7 @@ function moveHero(scene, time) {
   const right = scene.cursorKeys.right.isDown;
   const up = scene.cursorKeys.up.isDown;
   const down = scene.cursorKeys.down.isDown;
-  const space = scene.cursorKeys.space.isDown;
-  const shift = scene.cursorKeys.shift.isDown;
+
   let vx = 0;
   let vy = 0;
 
@@ -105,6 +104,10 @@ function moveHero(scene, time) {
     vy = joystick.deltaY * speed;
   }
 
+  if (scene.hero.state.isAttacking) {
+    vx = 0;
+    vy = 0;
+  }
   scene.hero.body.setVelocity(vx, vy);
 
   if (scene.hero.body.embedded) {
@@ -113,11 +116,6 @@ function moveHero(scene, time) {
     constrainVelocity(scene.hero, speed);
   }
 
-  /* If the hero is attacking */
-  if (scene.hero.action !== "attack") {
-    if (space) scene.hero.doAttack("attack_left");
-    if (shift) scene.hero.doAttack("attack_right");
-  }
   /* If the hero is standing still do not update the server */
   if (!scene.hero.state.isIdle) {
     //if (time % 2 > 1)

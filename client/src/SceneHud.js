@@ -11,6 +11,12 @@ class SceneHud extends Phaser.Scene {
   preload() {}
   create() {
     addJoystick(this);
+    this.input.keyboard.on("keyup-SPACE", (e) => {
+      const mainScene = this.scene.manager.getScene("SceneMain");
+      if (document.activeElement.type === "text") return;
+      if (!mainScene.hero) return;
+      mainScene.hero.doAttack("attack_right");
+    });
   }
   update() {}
 }
