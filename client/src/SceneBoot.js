@@ -91,10 +91,10 @@ function createAnims(scene) {
 }
 
 const SINGLE_FRAME_ANIM_KEYS = [
-  "up-attack",
-  "down-attack",
-  "left-attack",
-  "right-attack",
+  "up-attack_right",
+  "down-attack_right",
+  "left-attack_right",
+  "right-attack_right",
   "up-stand",
   "down-stand",
   "left-stand",

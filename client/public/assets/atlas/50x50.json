@@ -80,7 +80,7 @@
         "h": 50
       }
     },
-    "up-attack": {
+    "up-attack_right": {
       "frame": {
         "x": 200,
         "y": 0,
@@ -180,7 +180,7 @@
         "h": 50
       }
     },
-    "right-attack": {
+    "right-attack_right": {
       "frame": {
         "x": 200,
         "y": 50,
@@ -280,7 +280,7 @@
         "h": 50
       }
     },
-    "down-attack": {
+    "down-attack_right": {
       "frame": {
         "x": 200,
         "y": 100,
@@ -380,7 +380,7 @@
         "h": 50
       }
     },
-    "left-attack": {
+    "left-attack_right": {
       "frame": {
         "x": 200,
         "y": 150,

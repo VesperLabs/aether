@@ -1,9 +1,7 @@
 const Phaser = require("phaser");
+const Sprite = Phaser.GameObjects.Sprite;
 class Player extends Phaser.GameObjects.Container {
-  constructor(
-    scene,
-    { x, y, socketId, isHero = false, isServer = false, speed = 300, room }
-  ) {
+  constructor(scene, { x, y, socketId, isHero = false, isServer = false, speed = 300, room }) {
     super(scene, x, y, []);
     this.startingCoords = { x, y };
     this.socketId = socketId;
@@ -21,19 +19,24 @@ class Player extends Phaser.GameObjects.Container {
     };
     scene.physics.add.existing(this);
     this.body.setCircle(8, -8, -8);
-    if (isHero) {
-    }
     /* For the server, don't draw this stuff */
     if (isServer) return;
-    this.race = "human";
-    this.gender = "female";
+    this.profile = {
+      race: "human",
+      gender: "female",
+      face: { color: "black", texture: "face-1" },
+      hair: { color: "black", texture: "hair-1" },
+    };
+    this.equips = {
+      handRight: { texture: "weapon-katar" },
+      handLeft: { texture: "weapon-katar" },
+      armor: { texture: "armor-wizard-robe" },
+      helmet: { texture: "helmet-bunny" },
+      boots: { texture: "boots-cloth" },
+      pants: { texture: "pants-cloth" },
+    };
     this.initSpriteLayers();
     this.weaponAtlas = scene.cache.json.get("weaponAtlas");
-    this.equips = {
-      handRight: "weapon-sword-short",
-      handLeft: "shield-round",
-      armor: "armor-wizard-robe",
-    };
     /* Do we really need these? */
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
@@ -41,30 +44,20 @@ class Player extends Phaser.GameObjects.Container {
 
   initSpriteLayers() {
     const scene = this.scene;
-    const blankSprite = "human-blank";
-    const defaults = [scene, 0, -14, blankSprite];
-    this.skin = scene.add.existing(new Phaser.GameObjects.Sprite(...defaults));
-    this.chest = scene.add.existing(new Phaser.GameObjects.Sprite(...defaults));
-    this.face = scene.add.existing(new Phaser.GameObjects.Sprite(...defaults));
-    this.hair = scene.add.existing(new Phaser.GameObjects.Sprite(...defaults));
-    this.armor = scene.add.existing(new Phaser.GameObjects.Sprite(...defaults));
-    this.helmet = scene.add.existing(
-      new Phaser.GameObjects.Sprite(...defaults)
-    );
-    this.boots = scene.add.existing(new Phaser.GameObjects.Sprite(...defaults));
-    this.pants = scene.add.existing(new Phaser.GameObjects.Sprite(...defaults));
-    this.accessory = scene.add.existing(
-      new Phaser.GameObjects.Sprite(...defaults)
-    );
-    this.handLeft = scene.add.existing(
-      new Phaser.GameObjects.Sprite(scene, 13, -9, blankSprite)
-    );
-    this.handRight = scene.add.existing(
-      new Phaser.GameObjects.Sprite(scene, -13, -9, blankSprite)
-    );
-    this.shadow = scene.add.existing(
-      new Phaser.GameObjects.Sprite(...defaults)
-    );
+    const blank = "human-blank";
+    const defaults = [scene, 0, -14, blank];
+    this.skin = scene.add.existing(new Sprite(...defaults));
+    this.chest = scene.add.existing(new Sprite(...defaults));
+    this.face = scene.add.existing(new Sprite(...defaults));
+    this.hair = scene.add.existing(new Sprite(...defaults));
+    this.armor = scene.add.existing(new Sprite(...defaults));
+    this.helmet = scene.add.existing(new Sprite(...defaults));
+    this.boots = scene.add.existing(new Sprite(...defaults));
+    this.pants = scene.add.existing(new Sprite(...defaults));
+    this.accessory = scene.add.existing(new Sprite(...defaults));
+    this.handLeft = scene.add.existing(new Sprite(scene, 13, -9, blank));
+    this.handRight = scene.add.existing(new Sprite(scene, -13, -9, blank));
+    this.shadow = scene.add.existing(new Sprite(...defaults));
     // this.add(this.attackSprite);
     this.add(this.shadow);
     this.add(this.chest);
@@ -84,7 +77,7 @@ class Player extends Phaser.GameObjects.Container {
     // this.add(this.talkMenu);
   }
   doAttack() {
-    this.action = "attack";
+    this.action = "attack_right";
     console.log(this.action);
   }
   update() {
@@ -105,30 +98,25 @@ function drawFrame(p) {
     skin,
     chest,
     armor,
-    hair,
     accessory,
     helmet,
     handLeft,
     handRight,
     pants,
     boots,
-    face,
     shadow,
-    race,
-    gender,
     direction,
     action,
     equips,
+    profile,
+    face,
+    hair,
   } = p;
+
   /* Depth sort based on direction */
   p.bringToTop(pants);
   p.bringToTop(boots);
   p.bringToTop(armor);
-
-  handRight.setFlipY(false);
-  handLeft.setFlipY(false);
-  handRight.setRotation(0);
-  handLeft.setRotation(0);
 
   if (direction === "up") {
     p.bringToTop(hair);
@@ -137,12 +125,6 @@ function drawFrame(p) {
     p.bringToTop(helmet);
     p.sendToBack(handLeft);
     p.sendToBack(handRight);
-    handRight.setFlipX(true);
-    handRight.setFlipY(false);
-    handLeft.setFlipX(false);
-    if (action === "attack") {
-      handRight.setFlipX(false);
-    }
   } else if (direction === "down") {
     p.bringToTop(chest);
     p.bringToTop(armor);
@@ -150,13 +132,6 @@ function drawFrame(p) {
     p.bringToTop(accessory);
     p.bringToTop(handRight);
     p.bringToTop(handLeft);
-    handRight.setFlipX(false);
-    handLeft.setFlipX(true);
-    handRight.setRotation(0);
-    if (action === "attack") {
-      handRight.setFlipY(true);
-      handRight.setFlipX(true);
-    }
   } else if (direction === "left") {
     p.bringToTop(chest);
     p.bringToTop(armor);
@@ -166,12 +141,6 @@ function drawFrame(p) {
     p.bringToTop(helmet);
     p.bringToTop(handLeft);
     p.sendToBack(handRight);
-    handRight.setFlipX(false);
-    handLeft.setFlipX(false);
-    handRight.setRotation(0);
-    if (action === "attack") {
-      handRight.setRotation(-Math.PI / 2);
-    }
   } else if (direction === "right") {
     p.bringToTop(chest);
     p.bringToTop(armor);
@@ -181,31 +150,25 @@ function drawFrame(p) {
     p.bringToTop(helmet);
     p.sendToBack(handLeft);
     p.bringToTop(handRight);
-    handRight.setFlipX(true);
-    handLeft.setFlipX(true);
-    handRight.setRotation(0);
-    if (action === "attack") {
-      handRight.setRotation(Math.PI / 2);
-    }
   }
 
-  playAnim(skin, [race, direction, action]);
-  if (race === "human") {
-    playAnim(chest, [race, gender, "chest-bare", direction, action]);
-    playAnim(shadow, [race, "shadow", direction, action]);
+  playAnim(skin, [profile.race, direction, action]);
+  if (profile.race === "human") {
+    playAnim(chest, [profile.race, profile.gender, "chest-bare", direction, action]);
+    playAnim(shadow, [profile.race, "shadow", direction, action]);
   } else {
-    playAnim(chest, [race, "blank", direction, action]);
+    playAnim(chest, [profile.race, "blank", direction, action]);
   }
-  playAnim(face, [race, gender, "face-1", direction, action]);
-  playAnim(hair, [race, gender, "hair-1", direction, action]);
-  playAnim(armor, [race, gender, equips.armor, direction, action]);
-  playAnim(helmet, [race, "helmet-bunny", direction, action]);
-  playAnim(boots, [race, "boots-cloth", direction, action]);
-  playAnim(pants, [race, "pants-cloth", direction, action]);
-  playAnim(accessory, [race, "accessory-glasses", direction, action]);
+  playAnim(face, [profile.race, profile.gender, profile.face.texture, direction, action]);
+  playAnim(hair, [profile.race, profile.gender, profile.hair.texture, direction, action]);
+  playAnim(armor, [profile.race, profile.gender, equips.armor.texture, direction, action]);
+  playAnim(helmet, [profile.race, equips.helmet.texture, direction, action]);
+  playAnim(boots, [profile.race, equips.boots.texture, direction, action]);
+  playAnim(pants, [profile.race, equips.pants.texture, direction, action]);
+  playAnim(accessory, [profile.race, "accessory-glasses", direction, action]);
   playWeapons(p);
-  handRight.setTexture(equips.handRight);
-  handLeft.setTexture(equips.handLeft);
+  handRight.setTexture(equips.handRight.texture);
+  handLeft.setTexture(equips.handLeft.texture);
 }
 
 function updatePlayerDirection(player) {
@@ -231,7 +194,7 @@ function updatePlayerDirection(player) {
   /* Action */
 
   if (vx === 0 && vy === 0) {
-    if (player.action === "attack") return;
+    if (player.action === "attack_right") return;
     player.action = "stand";
   } else {
     player.action = "walk";
@@ -259,11 +222,18 @@ function hackFrameRates(player, rate) {
 }
 
 function playWeapons(player) {
-  const { race, handLeft, handRight, weaponAtlas: w } = player;
+  const { profile, handLeft, handRight, weaponAtlas: w } = player;
   const currentFrame = player?.skin?.anims?.currentFrame;
-  const { left, right } = w?.offsets?.[race]?.[currentFrame.textureFrame] || {};
+  const { left, right } = w?.offsets?.[profile.race]?.[currentFrame.textureFrame] || {};
   handLeft.setPosition(left?.x, left?.y);
+  handLeft.setFlipX(left?.flipX);
+  handLeft.setFlipY(left?.flipY);
+  handLeft.setAngle(left?.rotation);
+  handLeft.setAngle(right?.rotation);
   handRight.setPosition(right?.x, right?.y);
+  handRight.setFlipX(right?.flipX);
+  handRight.setFlipY(right?.flipY);
+  handRight.setAngle(right?.rotation);
 }
 
 function playAnim(sprite, parts) {
