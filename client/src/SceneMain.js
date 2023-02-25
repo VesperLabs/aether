@@ -1,11 +1,5 @@
 import Phaser from "phaser";
-import {
-  addPlayer,
-  getPlayer,
-  resetEntities,
-  removePlayer,
-  constrainVelocity,
-} from "./utils";
+import { addPlayer, getPlayer, resetEntities, removePlayer, constrainVelocity } from "./utils";
 const Door = require("./Door");
 const { SnapshotInterpolation } = require("@geckos.io/snapshot-interpolation");
 const SI = new SnapshotInterpolation(process.env.REACT_APP_SERVER_FPS); // the server's fps is 15
@@ -79,8 +73,7 @@ function enableDoors(scene) {
   let coords = {};
   scene?.hero?.body?.getBounds(coords);
   for (const door of scene.doors.getChildren()) {
-    if (!Phaser.Geom.Intersects.RectangleToRectangle(coords, door.getBounds()))
-      door.isEnabled = true;
+    if (!Phaser.Geom.Intersects.RectangleToRectangle(coords, door.getBounds())) door.isEnabled = true;
   }
 }
 
@@ -92,6 +85,7 @@ function moveHero(scene, time) {
   const up = scene.cursorKeys.up.isDown;
   const down = scene.cursorKeys.down.isDown;
   const space = scene.cursorKeys.space.isDown;
+  const shift = scene.cursorKeys.shift.isDown;
   let vx = 0;
   let vy = 0;
 
@@ -121,7 +115,8 @@ function moveHero(scene, time) {
 
   /* If the hero is attacking */
   if (scene.hero.action !== "attack") {
-    if (space) scene.hero.doAttack();
+    if (space) scene.hero.doAttack("attack_left");
+    if (shift) scene.hero.doAttack("attack_right");
   }
   /* If the hero is standing still do not update the server */
   if (!scene.hero.state.isIdle) {
@@ -133,29 +128,18 @@ function moveHero(scene, time) {
       y: scene.hero.y,
     });
   }
-  scene.hero.state.isIdle =
-    scene.hero.vx === vx && scene.hero.vy === vy && vx === 0 && vy === 0;
+  scene.hero.state.isIdle = scene.hero.vx === vx && scene.hero.vy === vy && vx === 0 && vy === 0;
 }
 
 function setCamera(scene, hero) {
   scene.cameras.main.setZoom(2);
   scene.cameras.main.startFollow(hero, true);
-  scene.cameras.main.setBounds(
-    0,
-    0,
-    scene.map.widthInPixels,
-    scene.map.heightInPixels
-  );
+  scene.cameras.main.setBounds(0, 0, scene.map.widthInPixels, scene.map.heightInPixels);
 }
 
 function setPlayerCollision(scene, player, colliders = []) {
   scene.physics.world.colliders.destroy();
-  scene.physics.world.setBounds(
-    0,
-    0,
-    scene.map.widthInPixels,
-    scene.map.heightInPixels
-  );
+  scene.physics.world.setBounds(0, 0, scene.map.widthInPixels, scene.map.heightInPixels);
   player.body.setCollideWorldBounds(true);
   colliders.forEach((c) => {
     scene.physics.add.collider(player, c);
@@ -194,16 +178,12 @@ function changeMap(scene, room) {
   });
 
   const tileSet = scene.map.addTilesetImage("tileset-" + tileSetKey);
-  const tilesetShadows = scene.map.addTilesetImage(
-    "tileset-" + tileSetKey + "-shadows"
-  );
+  const tilesetShadows = scene.map.addTilesetImage("tileset-" + tileSetKey + "-shadows");
   const tilesetCollide = scene.map.addTilesetImage("tileset-collide");
   const tilesetExtras = scene.map.addTilesetImage("tileset-extras");
-  const collideLayer = scene.map
-    .createLayer("Collide", tilesetCollide)
-    .setCollisionByProperty({
-      collides: true,
-    });
+  const collideLayer = scene.map.createLayer("Collide", tilesetCollide).setCollisionByProperty({
+    collides: true,
+  });
 
   scene.map.createLayer("Ground", tileSet).setDepth(0);
   scene.map.createLayer("Shadows", tilesetShadows).setDepth(1);

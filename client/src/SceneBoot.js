@@ -22,7 +22,6 @@ class SceneBoot extends Phaser.Scene {
       })
       .setScrollFactor(0);
 
-    // Register a load progress event to show a load bar
     this.load.on("progress", (value) => {
       dpanel.setText("Loading... " + Math.floor(value * 100) + "%");
     });
@@ -46,16 +45,8 @@ class SceneBoot extends Phaser.Scene {
     assetList.forEach((asset) => {
       this.load.atlas(asset.texture, asset.src, asset.atlas);
     });
-    this.load.bitmapFont(
-      "nin-dark",
-      "./assets/fonts/dark.png",
-      "./assets/fonts/font.xml"
-    );
-    this.load.bitmapFont(
-      "nin-light",
-      "./assets/fonts/light.png",
-      "./assets/fonts/font.xml"
-    );
+    this.load.bitmapFont("nin-dark", "./assets/fonts/dark.png", "./assets/fonts/font.xml");
+    this.load.bitmapFont("nin-light", "./assets/fonts/light.png", "./assets/fonts/font.xml");
     this.load.image("joy-circle", "./assets/images/joy-circle.png");
     this.load.image("misc-bubble-tail", "./assets/images/bubble-tail.png");
     this.load.image("misc-slash", "./assets/images/slash.png");
@@ -67,16 +58,14 @@ class SceneBoot extends Phaser.Scene {
       frameWidth: 4,
       frameHeight: 4,
     });
-    this.load.spritesheet(
-      "spell-anim-fireball",
-      "./assets/images/spell-anim-fireball.png",
-      { frameWidth: 150, frameHeight: 150 }
-    );
-    this.load.spritesheet(
-      "spell-anim-chakra",
-      "./assets/images/spell-anim-chakra.png",
-      { frameWidth: 150, frameHeight: 150 }
-    );
+    this.load.spritesheet("spell-anim-fireball", "./assets/images/spell-anim-fireball.png", {
+      frameWidth: 150,
+      frameHeight: 150,
+    });
+    this.load.spritesheet("spell-anim-chakra", "./assets/images/spell-anim-chakra.png", {
+      frameWidth: 150,
+      frameHeight: 150,
+    });
     this.load.json("weaponAtlas", "./assets/atlas/weapon.json");
   }
   create() {
@@ -91,6 +80,10 @@ function createAnims(scene) {
 }
 
 const SINGLE_FRAME_ANIM_KEYS = [
+  "up-attack_left",
+  "down-attack_left",
+  "left-attack_left",
+  "right-attack_left",
   "up-attack_right",
   "down-attack_right",
   "left-attack_right",
@@ -100,18 +93,10 @@ const SINGLE_FRAME_ANIM_KEYS = [
   "left-stand",
   "right-stand",
 ];
-const MULTI_FRAME_ANIM_KEYS = [
-  "up-walk",
-  "down-walk",
-  "left-walk",
-  "right-walk",
-];
+const MULTI_FRAME_ANIM_KEYS = ["up-walk", "down-walk", "left-walk", "right-walk"];
 
 /* Skip making animations for these types */
-const checkSkip = (asset) =>
-  ["weapon.json", "icons.json", "stackable.json"]?.some((a) =>
-    asset?.atlas?.includes(a)
-  );
+const checkSkip = (asset) => ["weapon.json", "icons.json", "stackable.json"]?.some((a) => asset?.atlas?.includes(a));
 
 function createStaticAnims(scene) {
   const frameProps = { zeroPad: 0, start: "" };

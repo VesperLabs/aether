@@ -96,9 +96,25 @@
           "rotation": 0
         },
         "right": {
-          "x": 6,
+          "x": 5,
           "y": -18,
           "flipX": false,
+          "flipY": false,
+          "rotation": 0
+        }
+      },
+      "up-attack_left": {
+        "left": {
+          "x": -5,
+          "y": -18,
+          "flipY": false,
+          "flipX": true,
+          "rotation": 0
+        },
+        "right": {
+          "x": 13,
+          "y": -8,
+          "flipX": true,
           "flipY": false,
           "rotation": 0
         }
@@ -169,8 +185,8 @@
       },
       "right-attack_right": {
         "left": {
-          "x": -4,
-          "y": -7,
+          "x": 1,
+          "y": -12,
           "flipX": true,
           "flipY": false,
           "rotation": 0
@@ -180,7 +196,23 @@
           "y": -7,
           "flipX": true,
           "flipY": false,
+          "rotation": 0
+        }
+      },
+      "right-attack_left": {
+        "left": {
+          "x": 13,
+          "y": -7,
+          "flipX": true,
+          "flipY": false,
           "rotation": 90
+        },
+        "right": {
+          "x": -4,
+          "y": -7,
+          "flipX": true,
+          "flipY": false,
+          "rotation": 0
         }
       },
       "down-stand": {
@@ -263,6 +295,22 @@
           "rotation": 0
         }
       },
+      "down-attack_left": {
+        "left": {
+          "x": 6,
+          "y": -3,
+          "flipX": false,
+          "flipY": true,
+          "rotation": 0
+        },
+        "right": {
+          "x": -12,
+          "y": -9,
+          "flipX": false,
+          "flipY": false,
+          "rotation": 0
+        }
+      },
       "left-stand": {
         "left": {
           "x": 1,
@@ -341,6 +389,22 @@
           "flipX": false,
           "flipY": false,
           "rotation": -90
+        }
+      },
+      "left-attack_left": {
+        "left": {
+          "x": -11,
+          "y": -8,
+          "flipX": false,
+          "flipY": false,
+          "rotation": 0
+        },
+        "right": {
+          "x": 1,
+          "y": -12,
+          "flipX": false,
+          "flipY": false,
+          "rotation": 0
         }
       }
     }
