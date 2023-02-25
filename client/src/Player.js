@@ -27,13 +27,13 @@ class Player extends Phaser.GameObjects.Container {
       race: "human",
       gender: "female",
       face: { color: "black", texture: "face-1" },
-      hair: { color: "black", texture: "hair-2" },
+      hair: { color: "black", texture: "hair-3" },
     };
     this.equips = {
       handRight: { texture: "weapon-sword-short" },
       handLeft: { texture: "weapon-sword-short" },
-      armor: { texture: "armor-light-plate" },
-      helmet: { texture: "helmet-bunny" },
+      armor: { texture: "armor-plate" },
+      helmet: { texture: "helmet-cap-raccoon" },
       accessory: { texture: "accessory-glasses" },
       boots: { texture: "boots-cloth" },
       pants: { texture: "pants-cloth" },
@@ -184,7 +184,7 @@ function drawFrame(p) {
     playAnim(chest, [profile?.race, "blank", direction, action]);
   }
   playAnim(face, [profile?.race, profile?.face?.texture, direction, action]);
-  playAnim(hair, [profile?.race, profile?.gender, profile?.hair?.texture, direction, action]);
+  playAnim(hair, [profile?.race, profile?.hair?.texture, direction, action]);
   playAnim(armor, [profile?.race, profile?.gender, equips?.armor?.texture, direction, action]);
   playAnim(helmet, [profile?.race, equips?.helmet?.texture, direction, action]);
   playAnim(boots, [profile?.race, equips?.boots?.texture, direction, action]);
