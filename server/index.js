@@ -2,7 +2,7 @@
 const path = require("path");
 require("@geckos.io/phaser-on-nodejs");
 require("dotenv").config({ path: path.join(__dirname, "/../client/.env") });
-const { mapList } = require("../client/src/Maps");
+const { mapList, imageList } = require("../client/src/Maps");
 const { spawnNpcs } = require("./Npcs");
 const { SnapshotInterpolation } = require("@geckos.io/snapshot-interpolation");
 const Phaser = require("phaser");
@@ -27,7 +27,7 @@ const {
   changeMap,
   createDoors,
   getDoor,
-  createGridEngines,
+  setNpcCollision,
 } = require("./utils");
 
 global.phaserOnNodeFPS = process.env.REACT_APP_SERVER_FPS;
@@ -35,7 +35,18 @@ global.phaserOnNodeFPS = process.env.REACT_APP_SERVER_FPS;
 app.use(express.static(path.join(__dirname, "../client/build")));
 
 class ServerScene extends Phaser.Scene {
+  constructor() {
+    super({ key: "ServerScene" });
+  }
   preload() {
+    /* Need to install plugins here in headless mode */
+    // this.game.plugins.installScenePlugin(
+    //   "gridEngine",
+    //   GridEngine,
+    //   "gridEngine",
+    //   this.scene.scene,
+    //   true
+    // );
     mapList.forEach((asset) => {
       this.load.tilemapTiledJSON(
         asset?.name,
@@ -45,6 +56,7 @@ class ServerScene extends Phaser.Scene {
   }
   create() {
     const scene = this;
+
     scene.players = {};
     scene.doors = {};
     scene.mapRooms = {};
@@ -53,7 +65,7 @@ class ServerScene extends Phaser.Scene {
     createMapRooms(scene);
     createDoors(scene);
     spawnNpcs(scene);
-    createGridEngines(scene);
+    setNpcCollision(scene);
 
     io.on("connection", (socket) => {
       const socketId = socket.id;
@@ -150,19 +162,9 @@ new Phaser.Game({
   height: 720,
   banner: false,
   audio: false,
-  scene: [ServerScene],
   fps: {
     target: process.env.REACT_APP_SERVER_FPS,
   },
-  // plugins: {
-  //   scene: [
-  //     {
-  //       key: "gridEngine",
-  //       plugin: GridEngine,
-  //       mapping: "gridEngine",
-  //     },
-  //   ],
-  // },
   roundPixels: false,
   physics: {
     default: "arcade",
@@ -172,8 +174,10 @@ new Phaser.Game({
       },
     },
   },
+  scene: [new ServerScene()],
 });
 
 httpServer.listen(process.env.SERVER_PORT, () => {
   console.log(`💻 listening on *:${process.env.SERVER_PORT}`);
 });
+``;

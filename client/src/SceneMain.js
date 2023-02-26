@@ -86,6 +86,7 @@ class SceneMain extends Phaser.Scene {
     for (const s of npcSnapshot?.state) {
       const npc = getNpc(this, s.id);
       if (!npc) continue;
+      npc.setPosition(s.x, s.y);
       npc.vx = s.vx;
       npc.vy = s.vy;
       /* Update depths */

@@ -6,12 +6,19 @@ const crypto = require("crypto");
 
 function createMapRooms(scene) {
   scene.mapRooms = mapList.reduce((acc, room) => {
+    /* TODO: Only need collide here. The rest is to please GridEngine */
+    const tileMap = scene.make.tilemap({ key: room.name });
+    const collideLayer = tileMap.createLayer("Collide").setCollisionByProperty({
+      collides: true,
+    });
     acc[room.name] = {
       name: room.name,
-      map: scene.make.tilemap({ key: room.name }),
+      map: tileMap,
+      collideLayer: collideLayer,
       players: scene.physics.add.group(),
       doors: scene.physics.add.group(),
       npcs: scene.physics.add.group(),
+      gridEngine: {},
       vault: new Vault(),
     };
 
@@ -28,22 +35,6 @@ function createDoors(scene) {
       scene.doors[mapRoom.name][door.name] = new Door(scene, door);
       return scene.doors[mapRoom.name][door.name];
     });
-  }
-}
-
-function createGridEngines(scene) {
-  for (const mapRoom of Object.values(scene.mapRooms)) {
-    const gridEngineConfig = {
-      characters: [
-        // {
-        //   id: "player",
-        //   sprite: playerSprite,
-        //   walkingAnimationMapping: 6,
-        // },
-      ],
-    };
-
-    // mapRoom.gridEngine = scene.gridEngine.create(mapRoom.map, gridEngineConfig);
   }
 }
 
@@ -160,6 +151,12 @@ function getTrimmedCharacterState(p) {
   };
 }
 
+function setNpcCollision(scene) {
+  for (const mapRoom of Object.values(scene.mapRooms)) {
+    scene.physics.add.collider(mapRoom.collideLayer, mapRoom.npcs);
+  }
+}
+
 const isMobile = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
 module.exports = {
@@ -176,6 +173,6 @@ module.exports = {
   changeMap,
   createDoors,
   getDoor,
+  setNpcCollision,
   isMobile,
-  createGridEngines,
 };
