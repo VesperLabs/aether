@@ -15,9 +15,7 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 const gameWidth = window.innerWidth * window.devicePixelRatio;
 const gameHeight = window.innerHeight * window.devicePixelRatio;
 
-const max = isMobile
-  ? { width: 1120, height: 620 }
-  : { width: 1120, height: 1120 };
+const max = isMobile ? { width: 1120, height: 620 } : { width: 1120, height: 1120 };
 
 root.render(
   <React.StrictMode>

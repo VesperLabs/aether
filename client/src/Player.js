@@ -1,35 +1,11 @@
 const Phaser = require("phaser");
+const Character = require("./Character");
 const Sprite = Phaser.GameObjects.Sprite;
-class Player extends Phaser.GameObjects.Container {
-  constructor(scene, { x, y, socketId, isHero = false, isServer = false, speed = 300, room, equips, profile }) {
-    super(scene, x, y, []);
-    this.startingCoords = { x, y };
-    this.socketId = socketId;
-    this.isHero = isHero;
-    this.speed = speed;
-    this.room = room;
-    this.isServer = isServer;
-    this.action = "stand";
-    this.direction = "down";
-    this.currentSpeed = 0;
-    this.vx = 0;
-    this.vy = 0;
-    this.state = {
-      lastAttack: Date.now(),
-      isIdle: true,
-      isAttacking: false,
-      hasWeaponRight: false,
-      hasWeaponLeft: false,
-    };
-    this.profile = profile;
-    this.equips = equips;
-    this.stats = {
-      attackSpeed: 200,
-    };
-    scene.physics.add.existing(this);
-    this.body.setCircle(8, -8, -8);
-    /* For the server, don't draw this stuff */
-    if (isServer) return;
+
+const BLANK_TEXTURE = "human-blank";
+class Player extends Character {
+  constructor(scene, args) {
+    super(scene, args);
     this.initSpriteLayers();
     this.checkAttackHands();
     this.weaponAtlas = scene.cache.json.get("weaponAtlas");
@@ -47,8 +23,7 @@ class Player extends Phaser.GameObjects.Container {
   }
   initSpriteLayers() {
     const scene = this.scene;
-    const blank = "human-blank";
-    const defaults = [scene, 0, -14, blank];
+    const defaults = [scene, 0, -14, BLANK_TEXTURE];
     this.attackSprite = scene.add.existing(new Sprite(scene, 0, -14, "misc-slash"));
     this.attackSprite.setAlpha(0);
     this.skin = scene.add.existing(new Sprite(...defaults));
@@ -60,8 +35,8 @@ class Player extends Phaser.GameObjects.Container {
     this.boots = scene.add.existing(new Sprite(...defaults));
     this.pants = scene.add.existing(new Sprite(...defaults));
     this.accessory = scene.add.existing(new Sprite(...defaults));
-    this.handLeft = scene.add.existing(new Sprite(scene, 13, -9, blank));
-    this.handRight = scene.add.existing(new Sprite(scene, -13, -9, blank));
+    this.handLeft = scene.add.existing(new Sprite(scene, 13, -9, BLANK_TEXTURE));
+    this.handRight = scene.add.existing(new Sprite(scene, -13, -9, BLANK_TEXTURE));
     this.shadow = scene.add.existing(new Sprite(...defaults));
     this.add(this.attackSprite);
     this.add(this.shadow);
@@ -192,7 +167,7 @@ function drawFrame(p) {
     playAnim(chest, [profile?.race, profile?.gender, "chest-bare", direction, action]);
     playAnim(shadow, [profile?.race, "shadow", direction, action]);
   } else {
-    playAnim(chest, [profile?.race, "blank", direction, action]);
+    playAnim(chest, [BLANK_TEXTURE, direction, action]);
   }
   playAnim(face, [profile?.race, profile?.face?.texture, direction, action]);
   playAnim(hair, [profile?.race, profile?.hair?.texture, direction, action]);
@@ -261,7 +236,7 @@ function hackFrameRates(player, rate) {
 function playWeapons(player) {
   const { profile, handLeft, handRight, weaponAtlas: w, action, equips, direction } = player;
   const currentFrame = player?.skin?.anims?.currentFrame;
-  const { left, right } = w?.offsets?.[profile.race]?.[currentFrame.textureFrame] || {};
+  const { left, right } = w?.offsets?.[profile?.race]?.[currentFrame.textureFrame] || {};
   handLeft.setPosition(left?.x, left?.y);
   handLeft.setFlipX(left?.flipX);
   handLeft.setFlipY(left?.flipY);
@@ -270,7 +245,7 @@ function playWeapons(player) {
   handRight.setFlipX(right?.flipX);
   handRight.setFlipY(right?.flipY);
   handRight.setAngle(right?.rotation);
-  if (equips.handRight.texture.includes("katar")) {
+  if (equips?.handRight?.texture?.includes("katar")) {
     if (action === "attack_right") {
       if (direction === "left") {
         handRight.setAngle(90);

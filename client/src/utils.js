@@ -16,16 +16,28 @@ function removePlayer(scene, socketId) {
 function resetEntities(scene) {
   scene?.map?.destroy?.(true);
   scene?.players?.destroy?.(true);
+  scene?.npcs?.destroy?.(true);
   scene?.doors?.destroy?.(true);
   scene.players = scene.physics.add.group();
+  scene.npcs = scene.physics.add.group();
   scene.doors = scene.physics.add.group();
 }
 
 function getPlayer(scene, socketId) {
   if (!scene.players) return;
-  return scene.players
-    .getChildren()
-    .find((player) => socketId === player.socketId);
+  return scene.players.getChildren().find((player) => socketId === player.socketId);
+}
+
+function getNpc(scene, id) {
+  if (!scene.npcs) return;
+  return scene.npcs.getChildren().find((player) => id === player.id);
+}
+
+function addNpc(scene, npcData) {
+  const npc = new Player(scene, npcData);
+  scene.add.existing(npc);
+  scene.npcs.add(npc);
+  return npc;
 }
 
 // Ensures sprite speed doesnt exceed maxVelocity while update is called (from Phaser example)
@@ -46,13 +58,14 @@ function constrainVelocity(sprite, maxVelocity) {
   }
 }
 
-const isMobile =
-  /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+const isMobile = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
 module.exports = {
   addPlayer,
   removePlayer,
   getPlayer,
+  getNpc,
+  addNpc,
   resetEntities,
   constrainVelocity,
   isMobile,

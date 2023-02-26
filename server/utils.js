@@ -1,27 +1,61 @@
 const Door = require("../client/src/Door");
-const Player = require("../client/src/Player");
+const Player = require("./Player");
 const { mapList } = require("../client/src/Maps");
 const { Vault } = require("@geckos.io/snapshot-interpolation");
+const crypto = require("crypto");
 
-function initMapRooms(scene) {
-  return mapList.reduce((acc, room) => {
+function createMapRooms(scene) {
+  scene.mapRooms = mapList.reduce((acc, room) => {
     acc[room.name] = {
       name: room.name,
       map: scene.make.tilemap({ key: room.name }),
       players: scene.physics.add.group(),
       doors: scene.physics.add.group(),
+      npcs: scene.physics.add.group(),
       vault: new Vault(),
     };
 
-    /* Create door objects */
-    scene.doors[room.name] = {};
-    acc[room.name].map.getObjectLayer("Doors").objects?.forEach((door) => {
-      scene.doors[room.name][door.name] = new Door(scene, door);
-      return scene.doors[room.name][door.name];
-    });
-
     return acc;
   }, {});
+}
+
+function createDoors(scene) {
+  for (const mapRoom of Object.values(scene.mapRooms)) {
+    mapRoom.map.getObjectLayer("Doors").objects?.forEach((door) => {
+      if (!scene.doors[mapRoom.name]) {
+        scene.doors[mapRoom.name] = {};
+      }
+      scene.doors[mapRoom.name][door.name] = new Door(scene, door);
+      return scene.doors[mapRoom.name][door.name];
+    });
+  }
+}
+
+function createGridEngines(scene) {
+  for (const mapRoom of Object.values(scene.mapRooms)) {
+    const gridEngineConfig = {
+      characters: [
+        // {
+        //   id: "player",
+        //   sprite: playerSprite,
+        //   walkingAnimationMapping: 6,
+        // },
+      ],
+    };
+
+    // mapRoom.gridEngine = scene.gridEngine.create(mapRoom.map, gridEngineConfig);
+  }
+}
+
+function handlePlayerInput(scene, socketId, input) {
+  if (!scene.players) return;
+  const { x, y, vx, vy } = input;
+  const player = getPlayer(scene, socketId);
+  if (!player) return;
+  player.x = x;
+  player.y = y;
+  player.vx = vx;
+  player.vy = vy;
 }
 
 function changeMap(scene, socketId, prevDoor, nextDoor) {
@@ -37,8 +71,9 @@ function changeMap(scene, socketId, prevDoor, nextDoor) {
 }
 
 function addPlayer(scene, user) {
+  const id = crypto.randomUUID();
   const socketId = user?.socketId;
-  scene.players[socketId] = new Player(scene, { ...user, isServer: true });
+  scene.players[socketId] = new Player(scene, { id, ...user, isServer: true });
   scene.add.existing(scene.players[socketId]);
   scene.mapRooms[user.room].players.add(scene.players[socketId]);
   return scene.players[socketId];
@@ -66,14 +101,18 @@ function getFullRoomState(scene, room) {
   return {
     players: Object.values(scene.players)
       ?.filter((p) => p?.room === room)
-      .map(getFullPlayerState),
+      .map(getFullCharacterState),
+    npcs: Object.values(scene.npcs)
+      ?.filter((n) => n?.room === room)
+      .map(getFullCharacterState),
   };
 }
 
-function getFullPlayerState(p) {
+function getFullCharacterState(p) {
+  const uid = p?.socketId || p?.id;
   return {
-    id: p?.socketId, //required for SI
-    socketId: p?.socketId,
+    id: uid, //required for SI
+    socketId: uid,
     room: p?.room,
     x: p?.x,
     y: p?.y,
@@ -88,14 +127,18 @@ function getTrimmedRoomState(scene, room) {
   return {
     players: Object.values(scene.players)
       ?.filter((p) => p?.room === room)
-      .map(getTrimmedPlayerState),
+      .map(getTrimmedCharacterState),
+    npcs: Object.values(scene.npcs)
+      ?.filter((p) => p?.room === room)
+      .map(getTrimmedCharacterState),
   };
 }
 
-function getTrimmedPlayerState(p) {
+function getTrimmedCharacterState(p) {
+  const uid = p?.socketId || p?.id;
   return {
-    id: p?.socketId, //required for SI
-    socketId: p?.socketId,
+    id: uid, //required for SI
+    socketId: uid,
     room: p?.room,
     x: p?.x,
     y: p?.y,
@@ -104,15 +147,17 @@ function getTrimmedPlayerState(p) {
   };
 }
 
-function handlePlayerInput(scene, socketId, input) {
-  if (!scene.players) return;
-  const { x, y, vx, vy } = input;
-  const player = getPlayer(scene, socketId);
-  if (!player) return;
-  player.x = x;
-  player.y = y;
-  player.vx = vx;
-  player.vy = vy;
+function getTrimmedCharacterState(p) {
+  const uid = p?.socketId || p?.id;
+  return {
+    id: uid, //required for SI
+    socketId: uid,
+    room: p?.room,
+    x: p?.x,
+    y: p?.y,
+    vx: p?.vx,
+    vy: p?.vy,
+  };
 }
 
 const isMobile = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
@@ -122,13 +167,15 @@ module.exports = {
   removePlayer,
   getPlayer,
   getTrimmedRoomState,
-  getTrimmedPlayerState,
+  getTrimmedCharacterState,
   getFullRoomState,
-  getFullPlayerState,
+  getFullCharacterState,
   handlePlayerInput,
   removeAllPlayers,
-  initMapRooms,
+  createMapRooms,
   changeMap,
+  createDoors,
   getDoor,
   isMobile,
+  createGridEngines,
 };

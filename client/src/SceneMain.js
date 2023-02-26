@@ -1,5 +1,13 @@
 import Phaser from "phaser";
-import { addPlayer, getPlayer, resetEntities, removePlayer, constrainVelocity } from "./utils";
+import {
+  addPlayer,
+  getPlayer,
+  resetEntities,
+  removePlayer,
+  getNpc,
+  constrainVelocity,
+  addNpc,
+} from "./utils";
 const Door = require("./Door");
 const { SnapshotInterpolation } = require("@geckos.io/snapshot-interpolation");
 const SI = new SnapshotInterpolation(process.env.REACT_APP_SERVER_FPS); // the server's fps is 15
@@ -20,7 +28,7 @@ class SceneMain extends Phaser.Scene {
       SI.snapshot.add(snapshot);
     });
 
-    scene.socket.on("heroInit", ({ socketId, players }) => {
+    scene.socket.on("heroInit", ({ socketId, players = [], npcs = [] }) => {
       /* Delete everything in the scene */
       resetEntities(scene);
       /* Add players that don't exist */
@@ -32,17 +40,21 @@ class SceneMain extends Phaser.Scene {
           addPlayer(scene, player);
         }
       }
+      for (const npc of npcs) {
+        //if (getNpc(scene, npc.id)) continue;
+        addNpc(scene, npc);
+      }
       const { collideLayer } = changeMap(scene, scene.hero.room);
-      setPlayerCollision(scene, scene.hero, [collideLayer, scene.players]);
+      setPlayerCollision(scene, scene.hero, [collideLayer, scene.players, scene.npcs]);
       setCamera(scene, scene.hero);
     });
 
-    scene.socket.on("newPlayer", (player) => {
+    scene.socket.on("playerJoin", (player) => {
       if (getPlayer(scene, player.socketId)) return;
       addPlayer(scene, player);
     });
 
-    scene.socket.on("playerAttacked", ({ socketId, count, direction }) => {
+    scene.socket.on("playerAttack", ({ socketId, count, direction }) => {
       const p = getPlayer(scene, socketId);
       p.direction = direction;
       p.doAttack(count);
@@ -56,9 +68,10 @@ class SceneMain extends Phaser.Scene {
   }
 
   update(time, delta) {
-    const snapshot = SI.calcInterpolation("x y", "players");
-    if (!this.socket || !this.hero || !snapshot) return;
-    for (const s of snapshot?.state) {
+    const playerSnapshot = SI.calcInterpolation("x y", "players");
+    const npcSnapshot = SI.calcInterpolation("x y", "npcs");
+    if (!this.socket || !this.hero || !playerSnapshot) return;
+    for (const s of playerSnapshot?.state) {
       const player = getPlayer(this, s.socketId);
       if (!player) continue;
       /* Update player movements */
@@ -70,6 +83,14 @@ class SceneMain extends Phaser.Scene {
       /* Update depths */
       player.setDepth(100 + player.y + player.body.height);
     }
+    for (const s of npcSnapshot?.state) {
+      const npc = getNpc(this, s.id);
+      if (!npc) continue;
+      npc.vx = s.vx;
+      npc.vy = s.vy;
+      /* Update depths */
+      npc.setDepth(100 + npc.y + npc.body.height);
+    }
     moveHero(this, time);
     enableDoors(this);
   }
@@ -79,7 +100,8 @@ function enableDoors(scene) {
   let coords = {};
   scene?.hero?.body?.getBounds(coords);
   for (const door of scene.doors.getChildren()) {
-    if (!Phaser.Geom.Intersects.RectangleToRectangle(coords, door.getBounds())) door.isEnabled = true;
+    if (!Phaser.Geom.Intersects.RectangleToRectangle(coords, door.getBounds()))
+      door.isEnabled = true;
   }
 }
 

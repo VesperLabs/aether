@@ -3,6 +3,7 @@ const path = require("path");
 require("@geckos.io/phaser-on-nodejs");
 require("dotenv").config({ path: path.join(__dirname, "/../client/.env") });
 const { mapList } = require("../client/src/Maps");
+const { spawnNpcs } = require("./Npcs");
 const { SnapshotInterpolation } = require("@geckos.io/snapshot-interpolation");
 const Phaser = require("phaser");
 const express = require("express");
@@ -19,12 +20,14 @@ const {
   addPlayer,
   removePlayer,
   handlePlayerInput,
-  getFullPlayerState,
+  getFullCharacterState,
   getFullRoomState,
   getTrimmedRoomState,
-  initMapRooms,
+  createMapRooms,
   changeMap,
+  createDoors,
   getDoor,
+  createGridEngines,
 } = require("./utils");
 
 global.phaserOnNodeFPS = process.env.REACT_APP_SERVER_FPS;
@@ -34,14 +37,23 @@ app.use(express.static(path.join(__dirname, "../client/build")));
 class ServerScene extends Phaser.Scene {
   preload() {
     mapList.forEach((asset) => {
-      this.load.tilemapTiledJSON(asset?.name, path.join(__dirname, `../client/public/${asset.json}`));
+      this.load.tilemapTiledJSON(
+        asset?.name,
+        path.join(__dirname, `../client/public/${asset.json}`)
+      );
     });
   }
   create() {
     const scene = this;
     scene.players = {};
     scene.doors = {};
-    scene.mapRooms = initMapRooms(scene);
+    scene.mapRooms = {};
+    scene.npcs = {};
+
+    createMapRooms(scene);
+    createDoors(scene);
+    spawnNpcs(scene);
+    createGridEngines(scene);
 
     io.on("connection", (socket) => {
       const socketId = socket.id;
@@ -80,32 +92,33 @@ class ServerScene extends Phaser.Scene {
         socket.join(room);
         socket.emit("heroInit", {
           players: getFullRoomState(scene, room)?.players,
+          npcs: getFullRoomState(scene, room)?.npcs,
           socketId,
         });
-        socket.to(room).emit("newPlayer", getFullPlayerState(player));
+        socket.to(room).emit("playerJoin", getFullCharacterState(player));
       });
 
       socket.on("attack", ({ count, direction }) => {
         console.log("🧑🏻‍🦰 attacking");
-        const player = getFullPlayerState(scene.players[socketId]);
-        socket.to(player.room).emit("playerAttacked", { socketId, count, direction });
+        const player = getFullCharacterState(scene.players[socketId]);
+        socket.to(player.room).emit("playerAttack", { socketId, count, direction });
       });
 
       socket.on("enterDoor", (doorName) => {
-        const player = getFullPlayerState(scene.players[socketId]);
+        const player = getFullCharacterState(scene.players[socketId]);
         const prev = getDoor(scene, player.room, doorName)?.getProps();
         const next = getDoor(scene, prev.destMap, prev.destDoor)?.getProps();
         socket.to(player.room).emit("remove", socketId);
         socket.leave(player.room);
         /* Need to teleport if same here */
         changeMap(scene, socketId, prev, next);
-        socket.to(prev.destMap).emit("newPlayer", player);
+        socket.to(prev.destMap).emit("playerJoin", player);
         socket.join(prev.destMap);
         socket.emit("heroInit", {
           players: getFullRoomState(scene, prev.destMap)?.players,
+          npcs: getFullRoomState(scene, prev.destMap)?.npcs,
           socketId,
         });
-        console.log(socket.rooms);
       });
 
       socket.on("disconnect", () => {
@@ -141,6 +154,15 @@ new Phaser.Game({
   fps: {
     target: process.env.REACT_APP_SERVER_FPS,
   },
+  // plugins: {
+  //   scene: [
+  //     {
+  //       key: "gridEngine",
+  //       plugin: GridEngine,
+  //       mapping: "gridEngine",
+  //     },
+  //   ],
+  // },
   roundPixels: false,
   physics: {
     default: "arcade",
