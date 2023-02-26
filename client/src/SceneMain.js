@@ -42,6 +42,12 @@ class SceneMain extends Phaser.Scene {
       addPlayer(scene, player);
     });
 
+    scene.socket.on("playerAttacked", ({ socketId, count, direction }) => {
+      const p = getPlayer(scene, socketId);
+      p.direction = direction;
+      p.doAttack(count);
+    });
+
     scene.socket.on("remove", (socketId) => {
       removePlayer(scene, socketId);
     });

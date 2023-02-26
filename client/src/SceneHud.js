@@ -15,7 +15,7 @@ class SceneHud extends Phaser.Scene {
       const mainScene = this.scene.manager.getScene("SceneMain");
       if (document.activeElement.type === "text") return;
       if (!mainScene.hero) return;
-      mainScene.hero.doAttack("attack_right");
+      mainScene.hero.doAttack(1);
     });
   }
   update() {}

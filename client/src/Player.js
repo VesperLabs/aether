@@ -1,7 +1,7 @@
 const Phaser = require("phaser");
 const Sprite = Phaser.GameObjects.Sprite;
 class Player extends Phaser.GameObjects.Container {
-  constructor(scene, { x, y, socketId, isHero = false, isServer = false, speed = 300, room, equips }) {
+  constructor(scene, { x, y, socketId, isHero = false, isServer = false, speed = 300, room, equips, profile }) {
     super(scene, x, y, []);
     this.startingCoords = { x, y };
     this.socketId = socketId;
@@ -18,13 +18,10 @@ class Player extends Phaser.GameObjects.Container {
       lastAttack: Date.now(),
       isIdle: true,
       isAttacking: false,
+      hasWeaponRight: false,
+      hasWeaponLeft: false,
     };
-    this.profile = {
-      race: "human",
-      gender: "female",
-      face: { color: "black", texture: "face-1" },
-      hair: { color: "black", texture: "hair-3" },
-    };
+    this.profile = profile;
     this.equips = equips;
     this.stats = {
       attackSpeed: 200,
@@ -34,12 +31,20 @@ class Player extends Phaser.GameObjects.Container {
     /* For the server, don't draw this stuff */
     if (isServer) return;
     this.initSpriteLayers();
+    this.checkAttackHands();
     this.weaponAtlas = scene.cache.json.get("weaponAtlas");
     /* Do we really need these? */
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
   }
-
+  checkAttackHands() {
+    /* Can only attack with a hand if it contains a weapon type item or is fist */
+    const leftType = this.equips?.handRight?.type;
+    const rightType = this.equips?.handLeft?.type;
+    if (leftType === "weapon" || !leftType) this.state.hasWeaponRight = true;
+    if (rightType === "weapon" || !rightType) this.state.hasWeaponLeft = true;
+    if (this.state.hasWeaponLeft || this.state.hasWeaponLeft) this.state.hasWeapon = true;
+  }
   initSpriteLayers() {
     const scene = this.scene;
     const blank = "human-blank";
@@ -76,36 +81,50 @@ class Player extends Phaser.GameObjects.Container {
     // this.add(this.hpBar);
     // this.add(this.talkMenu);
   }
-  doAttack(action) {
+  doAttack(count) {
+    if (!this.state.hasWeapon) return;
     if (!this.state.isAttacking || !this.isHero) {
+      /* Will always start with a right attack. Will either swing right or left if has weapon. */
+      if (count === 1) {
+        if (this.state.hasWeaponRight) this.action = "attack_right";
+        else if (this.state.hasWeaponLeft) this.action = "attack_left";
+      } else if (count === 2) {
+        /* Always finishes with a left if both hands have weapons */
+        if (this.state.hasWeaponLeft) this.action = "attack_left";
+      }
       /* Start animation */
-      if (action === "attack_left") this.attackSprite.setFlipX(true);
-      if (action === "attack_right") this.attackSprite.setFlipX(false);
       this.attackSprite.setAlpha(1);
+      if (this.action === "attack_left") this.attackSprite.setFlipX(true);
+      if (this.action === "attack_right") this.attackSprite.setFlipX(false);
       this.state.isAttacking = true;
-      this.action = action;
       this.state.lastAttack = Date.now();
-      return true;
+      // If we are the hero, need to trigger the socket that we attacked
+      if (this.isHero) {
+        this.scene.socket.emit("attack", { count, direction: this.direction });
+      }
     }
-    return false;
   }
   update(time, delta) {
     if (this.isServer) return;
     updatePlayerDirection(this);
     drawFrame(this);
     hackFrameRates(this, Math.round(80 + 2500 / (this.currentSpeed + 1)));
-    /* Let us attack again when it is ready */
-    if (Date.now() - this.state.lastAttack > delta + this.stats.attackSpeed) {
-      this.state.isAttacking = false;
-      if (this.action === "attack_right") {
-        this.doAttack("attack_left");
-      }
-    }
+    checkAttackReady(this, delta);
   }
   destroy() {
     if (this.scene) this.scene.events.off("update", this.update, this);
     if (this.scene) this.scene.physics.world.disable(this);
     super.destroy(true);
+  }
+}
+
+function checkAttackReady(p, delta) {
+  /* Let us attack again when it is ready */
+  if (Date.now() - p.state.lastAttack > delta + p.stats.attackSpeed) {
+    p.state.isAttacking = false;
+    if (p.action === "attack_right" && p.state.hasWeaponLeft && p?.isHero) {
+      p.doAttack(2);
+    }
   }
 }
 
