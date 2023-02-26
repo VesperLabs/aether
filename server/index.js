@@ -54,9 +54,16 @@ class ServerScene extends Phaser.Scene {
           x: 100,
           y: 100,
           room: "grassland-2",
+          profile: {
+            race: "human",
+            gender: "female",
+            face: { color: "black", texture: "face-1" },
+            hair: { color: "black", texture: "hair-3" },
+          },
           equips: {
-            handRight: { type: "weapon", texture: "weapon-sword-short" },
+            handRight: { type: "shield", texture: "shield-round" },
             handLeft: { type: "weapon", texture: "weapon-sword-short" },
+            //handRight: { type: "weapon", texture: "weapon-sword-short" },
             armor: { type: "armor", texture: "armor-plate" },
             helmet: { type: "helmet", texture: "helmet-cap-raccoon" },
             accessory: { type: "accessory", texture: "accessory-glasses" },
@@ -76,6 +83,12 @@ class ServerScene extends Phaser.Scene {
           socketId,
         });
         socket.to(room).emit("newPlayer", getFullPlayerState(player));
+      });
+
+      socket.on("attack", ({ count, direction }) => {
+        console.log("🧑🏻‍🦰 attacking");
+        const player = getFullPlayerState(scene.players[socketId]);
+        socket.to(player.room).emit("playerAttacked", { socketId, count, direction });
       });
 
       socket.on("enterDoor", (doorName) => {

@@ -80,6 +80,7 @@ function getFullPlayerState(p) {
     vx: p?.vx,
     vy: p?.vy,
     equips: p?.equips,
+    profile: p?.profile,
   };
 }
 
