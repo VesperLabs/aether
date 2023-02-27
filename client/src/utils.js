@@ -20,7 +20,7 @@ function resetEntities(scene) {
   scene?.doors?.destroy?.(true);
   scene.players = scene.physics.add.group();
   scene.npcs = scene.physics.add.group();
-  scene.doors = scene.physics.add.group();
+  scene.doors = scene.physics.add.staticGroup();
 }
 
 function getPlayer(scene, socketId) {

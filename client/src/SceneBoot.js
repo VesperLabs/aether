@@ -96,7 +96,8 @@ const SINGLE_FRAME_ANIM_KEYS = [
 const MULTI_FRAME_ANIM_KEYS = ["up-walk", "down-walk", "left-walk", "right-walk"];
 
 /* Skip making animations for these types */
-const checkSkip = (asset) => ["weapon.json", "icons.json", "stackable.json"]?.some((a) => asset?.atlas?.includes(a));
+const checkSkip = (asset) =>
+  ["weapon.json", "icons.json", "stackable.json"]?.some((a) => asset?.atlas?.includes(a));
 
 function createStaticAnims(scene) {
   const frameProps = { zeroPad: 0, start: "" };

@@ -23,6 +23,7 @@ class Player extends Character {
   }
   initSpriteLayers() {
     const scene = this.scene;
+    this.setDepth(100);
     const defaults = [scene, 0, -14, BLANK_TEXTURE];
     this.attackSprite = scene.add.existing(new Sprite(scene, 0, -14, "misc-slash"));
     this.attackSprite.setAlpha(0);

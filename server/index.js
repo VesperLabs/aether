@@ -24,7 +24,6 @@ const {
   getFullRoomState,
   getTrimmedRoomState,
   createMapRooms,
-  changeMap,
   createDoors,
   getDoor,
   setNpcCollision,
@@ -117,15 +116,24 @@ class ServerScene extends Phaser.Scene {
       });
 
       socket.on("enterDoor", (doorName) => {
-        const player = getFullCharacterState(scene.players[socketId]);
-        const prev = getDoor(scene, player.room, doorName)?.getProps();
+        const player = scene.players[socketId];
+        const oldRoom = player.room;
+        const prev = getDoor(scene, oldRoom, doorName)?.getProps();
         const next = getDoor(scene, prev.destMap, prev.destDoor)?.getProps();
-        socket.to(player.room).emit("remove", socketId);
-        socket.leave(player.room);
-        /* Need to teleport if same here */
-        changeMap(scene, socketId, prev, next);
-        socket.to(prev.destMap).emit("playerJoin", player);
+
+        socket.leave(oldRoom);
         socket.join(prev.destMap);
+
+        player.room = prev.destMap;
+        player.x = next.centerPos.x;
+        player.y = next.centerPos.y;
+
+        scene.mapRooms[oldRoom].players.remove(player);
+        scene.mapRooms[prev.destMap].players.add(player);
+
+        socket.to(prev.destMap).emit("playerJoin", getFullCharacterState(scene.players[socketId]));
+        socket.to(oldRoom).emit("remove", socketId);
+
         socket.emit("heroInit", {
           players: getFullRoomState(scene, prev.destMap)?.players,
           npcs: getFullRoomState(scene, prev.destMap)?.npcs,

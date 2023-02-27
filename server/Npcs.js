@@ -552,34 +552,36 @@ function addNpc(scene, npcData) {
 class Npc extends Character {
   constructor(scene, args) {
     super(scene, args);
+    this.mapRoom = scene.mapRooms[args.room];
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
   }
-  update() {
-    const randNumber = Math.floor(Math.random() * 10 + 1);
+  update(time, delta) {
+    if (time % 4 > 1) return;
+    const randNumber = Math.floor(Math.random() * 6 + 1);
+    const speed = 100;
     switch (randNumber) {
       case 1:
-        this.body.setVelocityX(50);
-        this.vx = 50;
+        this.vx = -speed;
+        this.direction = "left";
         break;
       case 2:
-        this.body.setVelocityX(-50);
-        this.vx = -50;
+        this.vx = speed;
+        this.direction = "right";
         break;
       case 3:
-        this.body.setVelocityY(-50);
-        this.vy = -50;
+        this.vy = -speed;
+        this.direction = "up";
         break;
       case 4:
-        this.body.setVelocityY(50);
-        this.vy = 50;
+        this.vy = speed;
+        this.direction = "down";
         break;
       default:
         this.vy = 0;
         this.vx = 0;
-        this.body.setVelocityX(0);
-        this.body.setVelocityY(0);
     }
+    this.body.setVelocity(this.vx, this.vy);
   }
 }
 

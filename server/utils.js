@@ -6,19 +6,40 @@ const crypto = require("crypto");
 
 function createMapRooms(scene) {
   scene.mapRooms = mapList.reduce((acc, room) => {
-    /* TODO: Only need collide here. The rest is to please GridEngine */
     const tileMap = scene.make.tilemap({ key: room.name });
+    /* Create bounds */
     const collideLayer = tileMap.createLayer("Collide").setCollisionByProperty({
       collides: true,
     });
+
+    const top = scene.physics.add.sprite(0, 0, "coin");
+    top.displayWidth = tileMap.widthInPixels;
+    top.displayHeight = 0;
+    top.body.immovable = true;
+    top.setOrigin(0, 0);
+    const left = scene.physics.add.sprite(0, 0, "coin");
+    left.displayWidth = 0;
+    left.displayHeight = tileMap.heightInPixels;
+    left.body.immovable = true;
+    left.setOrigin(0, 0);
+    const bottom = scene.physics.add.sprite(0, tileMap.heightInPixels, "coin");
+    bottom.displayWidth = tileMap.widthInPixels;
+    bottom.displayHeight = 0;
+    bottom.body.immovable = true;
+    bottom.setOrigin(0, 0);
+    const right = scene.physics.add.sprite(tileMap.widthInPixels, 0, "coin");
+    right.displayWidth = 0;
+    right.displayHeight = tileMap.heightInPixels;
+    right.body.immovable = true;
+    right.setOrigin(0, 0);
+
     acc[room.name] = {
       name: room.name,
       map: tileMap,
-      collideLayer: collideLayer,
+      colliders: [collideLayer, top, left, bottom, right],
       players: scene.physics.add.group(),
       doors: scene.physics.add.group(),
       npcs: scene.physics.add.group(),
-      gridEngine: {},
       vault: new Vault(),
     };
 
@@ -47,18 +68,6 @@ function handlePlayerInput(scene, socketId, input) {
   player.y = y;
   player.vx = vx;
   player.vy = vy;
-}
-
-function changeMap(scene, socketId, prevDoor, nextDoor) {
-  const player = scene.players[socketId];
-  const room = prevDoor.destMap;
-  player.room = room;
-  player.x = nextDoor.centerPos.x;
-  player.y = nextDoor.centerPos.y;
-  removePlayer(scene, socketId);
-  scene.add.existing(player);
-  scene.mapRooms[room].players.add(player);
-  return player;
 }
 
 function addPlayer(scene, user) {
@@ -153,7 +162,9 @@ function getTrimmedCharacterState(p) {
 
 function setNpcCollision(scene) {
   for (const mapRoom of Object.values(scene.mapRooms)) {
-    scene.physics.add.collider(mapRoom.collideLayer, mapRoom.npcs);
+    mapRoom.colliders.forEach((c) => {
+      scene.physics.add.collider(mapRoom.npcs, c);
+    });
   }
 }
 
@@ -170,7 +181,6 @@ module.exports = {
   handlePlayerInput,
   removeAllPlayers,
   createMapRooms,
-  changeMap,
   createDoors,
   getDoor,
   setNpcCollision,

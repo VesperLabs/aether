@@ -71,6 +71,7 @@ class SceneMain extends Phaser.Scene {
     const playerSnapshot = SI.calcInterpolation("x y", "players");
     const npcSnapshot = SI.calcInterpolation("x y", "npcs");
     if (!this.socket || !this.hero || !playerSnapshot) return;
+    /* Update Player x and y */
     for (const s of playerSnapshot?.state) {
       const player = getPlayer(this, s.socketId);
       if (!player) continue;
@@ -80,16 +81,15 @@ class SceneMain extends Phaser.Scene {
       }
       player.vx = s.vx;
       player.vy = s.vy;
-      /* Update depths */
       player.setDepth(100 + player.y + player.body.height);
     }
+    /* Update NPC x and y */
     for (const s of npcSnapshot?.state) {
       const npc = getNpc(this, s.id);
       if (!npc) continue;
       npc.setPosition(s.x, s.y);
       npc.vx = s.vx;
       npc.vy = s.vy;
-      /* Update depths */
       npc.setDepth(100 + npc.y + npc.body.height);
     }
     moveHero(this, time);
