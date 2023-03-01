@@ -1,5 +1,4 @@
-const Phaser = require("phaser");
-const Character = require("../client/src/Character");
+import Character from "../src/Character";
 class Player extends Character {
   constructor(scene, args) {
     super(scene, args);

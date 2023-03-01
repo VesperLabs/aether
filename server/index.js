@@ -1,8 +1,7 @@
-/** @type {import("phaser/types/phaser.d.ts")} */
 const path = require("path");
-require("@geckos.io/phaser-on-nodejs");
-require("dotenv").config({ path: path.join(__dirname, "/../client/.env") });
-const { mapList, imageList } = require("../client/src/Maps");
+import "@geckos.io/phaser-on-nodejs";
+require("dotenv").config({ path: path.join(__dirname, "/../.env") });
+const { mapList } = require("../src/Maps");
 const { spawnNpcs } = require("./Npcs");
 const { SnapshotInterpolation } = require("@geckos.io/snapshot-interpolation");
 const Phaser = require("phaser");
@@ -16,7 +15,7 @@ const io = require("socket.io")(httpServer, {
   },
 });
 const SI = new SnapshotInterpolation();
-const {
+import {
   addPlayer,
   removePlayer,
   handlePlayerInput,
@@ -27,11 +26,11 @@ const {
   createDoors,
   getDoor,
   setNpcCollision,
-} = require("./utils");
+} from "./utils";
 
-global.phaserOnNodeFPS = process.env.REACT_APP_SERVER_FPS;
+global.phaserOnNodeFPS = process.env.SERVER_FPS;
 
-app.use(express.static(path.join(__dirname, "../client/build")));
+app.use(express.static(path.join(__dirname, "../public")));
 
 class ServerScene extends Phaser.Scene {
   constructor() {
@@ -47,10 +46,7 @@ class ServerScene extends Phaser.Scene {
     //   true
     // );
     mapList.forEach((asset) => {
-      this.load.tilemapTiledJSON(
-        asset?.name,
-        path.join(__dirname, `../client/public/${asset.json}`)
-      );
+      this.load.tilemapTiledJSON(asset?.name, path.join(__dirname, `../public/${asset.json}`));
     });
   }
   create() {
@@ -171,7 +167,7 @@ new Phaser.Game({
   banner: false,
   audio: false,
   fps: {
-    target: process.env.REACT_APP_SERVER_FPS,
+    target: process.env.SERVER_FPS,
   },
   roundPixels: false,
   physics: {
@@ -188,4 +184,3 @@ new Phaser.Game({
 httpServer.listen(process.env.SERVER_PORT, () => {
   console.log(`💻 listening on *:${process.env.SERVER_PORT}`);
 });
-``;

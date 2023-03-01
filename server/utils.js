@@ -1,41 +1,24 @@
-const Door = require("../client/src/Door");
+import Door from "../src/Door";
+import { mapList } from "../src/Maps";
 const Player = require("./Player");
-const { mapList } = require("../client/src/Maps");
 const { Vault } = require("@geckos.io/snapshot-interpolation");
 const crypto = require("crypto");
 
 function createMapRooms(scene) {
   scene.mapRooms = mapList.reduce((acc, room) => {
     const tileMap = scene.make.tilemap({ key: room.name });
-    /* Create bounds */
+
+    /* Colliders */
     const collideLayer = tileMap.createLayer("Collide").setCollisionByProperty({
       collides: true,
     });
 
-    const top = scene.physics.add.sprite(0, 0, "coin");
-    top.displayWidth = tileMap.widthInPixels;
-    top.displayHeight = 0;
-    top.body.immovable = true;
-    top.setOrigin(0, 0);
-    const left = scene.physics.add.sprite(0, 0, "coin");
-    left.displayWidth = 0;
-    left.displayHeight = tileMap.heightInPixels;
-    left.body.immovable = true;
-    left.setOrigin(0, 0);
-    const bottom = scene.physics.add.sprite(0, tileMap.heightInPixels, "coin");
-    bottom.displayWidth = tileMap.widthInPixels;
-    bottom.displayHeight = 0;
-    bottom.body.immovable = true;
-    bottom.setOrigin(0, 0);
-    const right = scene.physics.add.sprite(tileMap.widthInPixels, 0, "coin");
-    right.displayWidth = 0;
-    right.displayHeight = tileMap.heightInPixels;
-    right.body.immovable = true;
-    right.setOrigin(0, 0);
+    const { top, left, bottom, right } = createMapBounds(scene, tileMap);
 
     acc[room.name] = {
       name: room.name,
       map: tileMap,
+
       colliders: [collideLayer, top, left, bottom, right],
       players: scene.physics.add.group(),
       doors: scene.physics.add.group(),
@@ -45,6 +28,30 @@ function createMapRooms(scene) {
 
     return acc;
   }, {});
+}
+
+function createMapBounds(scene, tileMap) {
+  const top = scene.physics.add.sprite(0, 0, "coin");
+  top.displayWidth = tileMap.widthInPixels;
+  top.displayHeight = 0;
+  top.body.immovable = true;
+  top.setOrigin(0, 0);
+  const left = scene.physics.add.sprite(0, 0, "coin");
+  left.displayWidth = 0;
+  left.displayHeight = tileMap.heightInPixels;
+  left.body.immovable = true;
+  left.setOrigin(0, 0);
+  const bottom = scene.physics.add.sprite(0, tileMap.heightInPixels, "coin");
+  bottom.displayWidth = tileMap.widthInPixels;
+  bottom.displayHeight = 0;
+  bottom.body.immovable = true;
+  bottom.setOrigin(0, 0);
+  const right = scene.physics.add.sprite(tileMap.widthInPixels, 0, "coin");
+  right.displayWidth = 0;
+  right.displayHeight = tileMap.heightInPixels;
+  right.body.immovable = true;
+  right.setOrigin(0, 0);
+  return { top, left, bottom, right };
 }
 
 function createDoors(scene) {
@@ -147,19 +154,6 @@ function getTrimmedCharacterState(p) {
   };
 }
 
-function getTrimmedCharacterState(p) {
-  const uid = p?.socketId || p?.id;
-  return {
-    id: uid, //required for SI
-    socketId: uid,
-    room: p?.room,
-    x: p?.x,
-    y: p?.y,
-    vx: p?.vx,
-    vy: p?.vy,
-  };
-}
-
 function setNpcCollision(scene) {
   for (const mapRoom of Object.values(scene.mapRooms)) {
     mapRoom.colliders.forEach((c) => {
@@ -170,7 +164,7 @@ function setNpcCollision(scene) {
 
 const isMobile = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
-module.exports = {
+export {
   addPlayer,
   removePlayer,
   getPlayer,

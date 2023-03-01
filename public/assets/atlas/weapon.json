@@ -1,0 +1,412 @@
+{
+  "frames": {
+    "weapon.001": {
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 100,
+        "h": 100
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 100,
+        "h": 100
+      },
+      "sourceSize": {
+        "w": 100,
+        "h": 100
+      }
+    }
+  },
+  "offsets": {
+    "human": {
+      "up-stand": {
+        "left": {
+          "x": -10,
+          "y": -8,
+          "flipY": false,
+          "flipX": false,
+          "spin": 0
+        },
+        "right": {
+          "x": 11,
+          "y": -8,
+          "flipX": true,
+          "flipY": false,
+          "rotation": 0
+        }
+      },
+      "up-walk.000": {
+        "left": {
+          "x": -9,
+          "y": -10,
+          "flipY": false,
+          "flipX": false,
+          "rotation": 0
+        },
+        "right": {
+          "x": 10,
+          "y": -6,
+          "flipX": true,
+          "flipY": false,
+          "rotation": 0
+        }
+      },
+      "up-walk.001": {
+        "left": {
+          "x": -10,
+          "y": -8,
+          "flipY": false,
+          "flipX": false,
+          "rotation": 0
+        },
+        "right": {
+          "x": 11,
+          "y": -8,
+          "flipX": true,
+          "flipY": false,
+          "rotation": 0
+        }
+      },
+      "up-walk.002": {
+        "left": {
+          "x": -9,
+          "y": -6,
+          "flipY": false,
+          "flipX": false,
+          "rotation": 0
+        },
+        "right": {
+          "x": 10,
+          "y": -10,
+          "flipX": true,
+          "flipY": false,
+          "rotation": 0
+        }
+      },
+      "up-attack_right": {
+        "left": {
+          "x": -13,
+          "y": -8,
+          "flipY": false,
+          "flipX": false,
+          "rotation": 0
+        },
+        "right": {
+          "x": 5,
+          "y": -18,
+          "flipX": false,
+          "flipY": false,
+          "rotation": 0
+        }
+      },
+      "up-attack_left": {
+        "left": {
+          "x": -5,
+          "y": -18,
+          "flipY": false,
+          "flipX": true,
+          "rotation": 0
+        },
+        "right": {
+          "x": 13,
+          "y": -8,
+          "flipX": true,
+          "flipY": false,
+          "rotation": 0
+        }
+      },
+      "right-stand": {
+        "left": {
+          "x": 2,
+          "y": -8,
+          "flipX": true,
+          "flipY": false,
+          "rotation": 0
+        },
+        "right": {
+          "x": 0,
+          "y": -5,
+          "flipX": true,
+          "flipY": false,
+          "rotation": 0
+        }
+      },
+      "right-walk.000": {
+        "left": {
+          "x": 1,
+          "y": -7,
+          "flipX": true,
+          "flipY": false,
+          "rotation": 0
+        },
+        "right": {
+          "x": 2,
+          "y": -3,
+          "flipX": true,
+          "flipY": false,
+          "rotation": 0
+        }
+      },
+      "right-walk.001": {
+        "left": {
+          "x": 2,
+          "y": -8,
+          "flipX": true,
+          "flipY": false,
+          "rotation": 0
+        },
+        "right": {
+          "x": 0,
+          "y": -5,
+          "flipX": true,
+          "flipY": false,
+          "rotation": 0
+        }
+      },
+      "right-walk.002": {
+        "left": {
+          "x": 5,
+          "y": -8,
+          "flipX": true,
+          "flipY": false,
+          "rotation": 0
+        },
+        "right": {
+          "x": -3,
+          "y": -4,
+          "flipX": true,
+          "flipY": false,
+          "rotation": 0
+        }
+      },
+      "right-attack_right": {
+        "left": {
+          "x": 1,
+          "y": -12,
+          "flipX": true,
+          "flipY": false,
+          "rotation": 0
+        },
+        "right": {
+          "x": 13,
+          "y": -7,
+          "flipX": true,
+          "flipY": false,
+          "rotation": 0
+        }
+      },
+      "right-attack_left": {
+        "left": {
+          "x": 13,
+          "y": -7,
+          "flipX": true,
+          "flipY": false,
+          "rotation": 90
+        },
+        "right": {
+          "x": -4,
+          "y": -7,
+          "flipX": true,
+          "flipY": false,
+          "rotation": 0
+        }
+      },
+      "down-stand": {
+        "left": {
+          "x": 11,
+          "y": -8,
+          "flipX": true,
+          "flipY": false,
+          "rotation": 0
+        },
+        "right": {
+          "x": -10,
+          "y": -8,
+          "flipX": false,
+          "flipY": false,
+          "rotation": 0
+        }
+      },
+      "down-walk.000": {
+        "left": {
+          "x": 10,
+          "y": -6,
+          "flipX": true,
+          "flipY": false,
+          "rotation": 0
+        },
+        "right": {
+          "x": -9,
+          "y": -10,
+          "flipX": false,
+          "flipY": false,
+          "rotation": 0
+        }
+      },
+      "down-walk.001": {
+        "left": {
+          "x": 11,
+          "y": -8,
+          "flipX": true,
+          "flipY": false,
+          "rotation": 0
+        },
+        "right": {
+          "x": -10,
+          "y": -8,
+          "flipX": false,
+          "flipY": false,
+          "rotation": 0
+        }
+      },
+      "down-walk.002": {
+        "left": {
+          "x": 10,
+          "y": -10,
+          "flipX": true,
+          "flipY": false,
+          "rotation": 0
+        },
+        "right": {
+          "x": -9,
+          "y": -6,
+          "flipX": false,
+          "flipY": false,
+          "rotation": 0
+        }
+      },
+      "down-attack_right": {
+        "left": {
+          "x": 12,
+          "y": -9,
+          "flipX": true,
+          "flipY": false,
+          "rotation": 0
+        },
+        "right": {
+          "x": -6,
+          "y": -3,
+          "flipX": true,
+          "flipY": true,
+          "rotation": 0
+        }
+      },
+      "down-attack_left": {
+        "left": {
+          "x": 6,
+          "y": -3,
+          "flipX": false,
+          "flipY": true,
+          "rotation": 0
+        },
+        "right": {
+          "x": -12,
+          "y": -9,
+          "flipX": false,
+          "flipY": false,
+          "rotation": 0
+        }
+      },
+      "left-stand": {
+        "left": {
+          "x": 1,
+          "y": -5,
+          "flipX": false,
+          "flipY": false,
+          "rotation": 0
+        },
+        "right": {
+          "x": -2,
+          "y": -8,
+          "flipX": false,
+          "flipY": false,
+          "rotation": 0
+        }
+      },
+      "left-walk.000": {
+        "left": {
+          "x": -1,
+          "y": -5,
+          "flipX": false,
+          "flipY": false,
+          "rotation": 0
+        },
+        "right": {
+          "x": 0,
+          "y": -7,
+          "flipX": false,
+          "flipY": false,
+          "rotation": 0
+        }
+      },
+      "left-walk.001": {
+        "left": {
+          "x": 1,
+          "y": -5,
+          "flipX": false,
+          "flipY": false,
+          "rotation": 0
+        },
+        "right": {
+          "x": -2,
+          "y": -8,
+          "flipX": false,
+          "flipY": false,
+          "rotation": 0
+        }
+      },
+      "left-walk.002": {
+        "left": {
+          "x": 4,
+          "y": -4,
+          "flipX": false,
+          "flipY": false,
+          "rotation": 0
+        },
+        "right": {
+          "x": -4,
+          "y": -8,
+          "flipX": false,
+          "flipY": false,
+          "rotation": 0
+        }
+      },
+      "left-attack_right": {
+        "left": {
+          "x": 5,
+          "y": -1,
+          "flipX": false,
+          "flipY": false,
+          "rotation": 0
+        },
+        "right": {
+          "x": -11,
+          "y": -8,
+          "flipX": false,
+          "flipY": false,
+          "rotation": -90
+        }
+      },
+      "left-attack_left": {
+        "left": {
+          "x": -11,
+          "y": -8,
+          "flipX": false,
+          "flipY": false,
+          "rotation": 0
+        },
+        "right": {
+          "x": 1,
+          "y": -12,
+          "flipX": false,
+          "flipY": false,
+          "rotation": 0
+        }
+      }
+    }
+  }
+}

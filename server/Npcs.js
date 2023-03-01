@@ -1,4 +1,4 @@
-const Character = require("../client/src/Character");
+import Character from "../src/Character";
 const crypto = require("crypto");
 const POTION_DROP_RATE = 15;
 
