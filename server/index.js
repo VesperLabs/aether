@@ -181,6 +181,6 @@ new Phaser.Game({
   scene: [new ServerScene()],
 });
 
-httpServer.listen(process.env.SERVER_PORT, () => {
-  console.log(`💻 listening on *:${process.env.SERVER_PORT}`);
+httpServer.listen(process.env.PORT, () => {
+  console.log(`💻 listening on *:${process.env.PORT}`);
 });
