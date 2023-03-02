@@ -10,7 +10,7 @@ import VJoyPlugin from "./Joystick";
 import SceneHud from "./SceneHud";
 import { isMobile } from "./utils";
 
-const socket = socketIO.connect(`${process.env.SERVER_URL}:${process.env.PORT}`);
+const socket = socketIO.connect(`${process.env.SERVER_URL}`);
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const gameWidth = window.innerWidth * window.devicePixelRatio;
 const gameHeight = window.innerHeight * window.devicePixelRatio;
