@@ -183,6 +183,6 @@ new Phaser.Game({
 
 httpServer.listen(process.env.PORT, () => {
   console.log(`💻 PORT: ${process.env.PORT}`);
-  console.log(`💻 SERVER_FPS: ${process.env.FPS}`);
+  console.log(`💻 SERVER_FPS: ${process.env.SERVER_FPS}`);
   console.log(`💻 SERVER_URL: ${process.env.SERVER_URL}`);
 });
