@@ -16,7 +16,7 @@ const plugins = [
   replace({
     preventAssignment: true,
     "process.env.NODE_ENV": JSON.stringify("production"),
-    "process.env.SERVER_PORT": JSON.stringify(process.env.PORT),
+    "process.env.PORT": JSON.stringify(process.env.PORT),
     "process.env.SERVER_FPS": JSON.stringify(process.env.SERVER_FPS),
     "process.env.SERVER_URL": JSON.stringify(process.env.SERVER_URL),
   }),
