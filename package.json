@@ -21,21 +21,14 @@
     "@babel/plugin-transform-react-jsx": "^7.21.0",
     "@babel/preset-env": "^7.20.2",
     "@babel/preset-react": "^7.18.6",
-    "@rollup/plugin-babel": "^6.0.3",
-    "@rollup/plugin-commonjs": "^24.0.1",
-    "@rollup/plugin-node-resolve": "^15.0.1",
-    "@rollup/plugin-replace": "^5.0.2",
-    "nodemon": "^2.0.21",
-    "rollup": "^3.10.1",
-    "rollup-plugin-scss": "^4.0.0",
-    "sass": "^1.58.3"
+    "esbuild": "^0.17.11",
+    "esbuild-loader": "^3.0.1",
+    "nodemon": "^2.0.21"
   },
   "scripts": {
     "server": "babel-node --presets @babel/env -r dotenv/config server/index.js ",
     "watch:server": "nodemon --watch server --delay 500ms --exec babel-node --presets @babel/env -r dotenv/config server/index.js ",
-    "build": "npm run build:js",
-    "build:js": "rollup --config rollup.config.js --bundleConfigAsCjs --environment NODE_ENV:production",
-    "watch": "npm run watch:js",
-    "watch:js": "rollup --config rollup.config.js  --bundleConfigAsCjs --environment NODE_ENV:development --watch"
+    "watch": "nodemon --watch src --delay 500ms node esbuild.js",
+    "build": "node esbuild.js "
   }
 }
