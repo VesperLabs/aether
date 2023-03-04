@@ -30,7 +30,7 @@ function getPlayer(scene, socketId) {
 
 function getNpc(scene, id) {
   if (!scene.npcs) return;
-  return scene.npcs.getChildren().find((player) => id === player.id);
+  return scene.npcs.getChildren().find((npc) => id === npc.id);
 }
 
 function addNpc(scene, npcData) {

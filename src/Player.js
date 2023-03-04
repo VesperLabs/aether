@@ -1,5 +1,7 @@
 import Phaser from "phaser";
 import Character from "./Character";
+import Bubble from "./Bubble";
+
 const Sprite = Phaser.GameObjects.Sprite;
 
 const BLANK_TEXTURE = "human-blank";
@@ -7,6 +9,7 @@ class Player extends Character {
   constructor(scene, args) {
     super(scene, args);
     this.initSpriteLayers();
+    this.drawCharacterFromUserData();
     this.checkAttackHands();
     this.weaponAtlas = scene.cache.json.get("weaponAtlas");
     /* Do we really need these? */
@@ -39,6 +42,7 @@ class Player extends Character {
     this.handLeft = scene.add.existing(new Sprite(scene, 13, -9, BLANK_TEXTURE));
     this.handRight = scene.add.existing(new Sprite(scene, -13, -9, BLANK_TEXTURE));
     this.shadow = scene.add.existing(new Sprite(...defaults));
+    this.bubble = scene.add.existing(new Bubble(scene, -50, this.bubbleMessage));
     this.add(this.attackSprite);
     this.add(this.shadow);
     this.add(this.chest);
@@ -52,10 +56,21 @@ class Player extends Character {
     this.add(this.helmet);
     this.add(this.handLeft);
     this.add(this.handRight);
-    // this.add(this.bubble);
+    this.add(this.bubble);
     // this.add(this.usernameText);
     // this.add(this.hpBar);
     // this.add(this.talkMenu);
+  }
+  drawCharacterFromUserData() {
+    if (this.profile.tint) {
+      this.skin.setTint("0x" + this.profile.tint);
+      this.chest.setTint("0x" + this.profile.tint);
+    }
+    /* ToDo: Need headY cords to be loaded with asshat */
+    if (this.profile.race !== "human") {
+      this.bubble.setHeadY(-30);
+      //this.hpBar.setHeadY(-20);
+    }
   }
   doAttack(count) {
     if (!this.state.hasWeapon) return;
@@ -78,6 +93,12 @@ class Player extends Character {
       if (this.isHero) {
         this.scene.socket.emit("attack", { count, direction: this.direction });
       }
+    }
+  }
+  setBubbleMessage(message) {
+    if (message !== this.bubbleMessage) {
+      this.bubbleMessage = message;
+      this.bubble.setMessage(this.bubbleMessage);
     }
   }
   update(time, delta) {
@@ -122,6 +143,7 @@ function drawFrame(p) {
     profile,
     face,
     hair,
+    bubble,
   } = p;
 
   /* Depth sort based on direction */
@@ -162,6 +184,8 @@ function drawFrame(p) {
     p.sendToBack(handLeft);
     p.bringToTop(handRight);
   }
+
+  p.bringToTop(bubble);
 
   playAnim(skin, [profile?.race, direction, action]);
   if (profile?.race === "human") {

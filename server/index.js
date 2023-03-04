@@ -38,13 +38,7 @@ class ServerScene extends Phaser.Scene {
   }
   preload() {
     /* Need to install plugins here in headless mode */
-    // this.game.plugins.installScenePlugin(
-    //   "gridEngine",
-    //   GridEngine,
-    //   "gridEngine",
-    //   this.scene.scene,
-    //   true
-    // );
+    // this.game.plugins.installScenePlugin("x", X, "x", this.scene.scene, true);
     mapList.forEach((asset) => {
       this.load.tilemapTiledJSON(asset?.name, path.join(__dirname, `../public/${asset.json}`));
     });
@@ -185,4 +179,13 @@ httpServer.listen(process.env.PORT, () => {
   console.log(`💻 PORT: ${process.env.PORT}`);
   console.log(`💻 SERVER_FPS: ${process.env.SERVER_FPS}`);
   console.log(`💻 SERVER_URL: ${process.env.SERVER_URL}`);
+});
+
+process.once("SIGUSR2", function () {
+  process.kill(process.pid, "SIGUSR2");
+});
+
+process.on("SIGINT", function () {
+  // this is only called on ctrl+c, not restart
+  process.kill(process.pid, "SIGINT");
 });

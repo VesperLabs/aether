@@ -127,6 +127,8 @@ function getFullCharacterState(p) {
     vy: p?.vy,
     equips: p?.equips,
     profile: p?.profile,
+    bubbleMessage: p?.bubbleMessage,
+    isAggro: p?.isAggro,
   };
 }
 
@@ -151,6 +153,7 @@ function getTrimmedCharacterState(p) {
     y: p?.y,
     vx: p?.vx,
     vy: p?.vy,
+    bubbleMessage: p?.bubbleMessage,
   };
 }
 

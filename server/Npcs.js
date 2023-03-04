@@ -1,4 +1,4 @@
-import Character from "../src/Character";
+import Npc from "./Npc";
 const crypto = require("crypto");
 const POTION_DROP_RATE = 15;
 
@@ -86,7 +86,7 @@ const mobTypes = {
     baseStats: {
       expValue: 1,
       level: 1,
-      speed: 100,
+      speed: 150,
       range: 32,
       accuracy: 0,
       armorPierce: 0,
@@ -117,14 +117,13 @@ const mobTypes = {
   },
   /* Level 5 */
   hawkwing: {
-    profile: { race: "bee" },
+    profile: { race: "bee", tint: "44FFCC" },
     name: "Hawkwing",
-    aggro: true,
-    tint: "44FFCC",
+    isAggro: true,
     baseStats: {
       expValue: 5,
       level: 5,
-      speed: 100,
+      speed: 150,
       range: 32,
       accuracy: 0,
       armorPierce: 0,
@@ -149,7 +148,7 @@ const mobTypes = {
   spider: {
     profile: { race: "spider" },
     name: "Spider",
-    aggro: true,
+    isAggro: true,
     baseStats: {
       expValue: 4,
       level: 5,
@@ -183,10 +182,9 @@ const mobTypes = {
     ],
   },
   hogan: {
-    profile: { race: "spider" },
-    tint: "FF6666",
+    profile: { race: "spider", tint: "FF6666" },
     name: "Hogan",
-    aggro: true,
+    isAggro: true,
     baseStats: {
       expValue: 10,
       level: 10,
@@ -228,7 +226,7 @@ const mobTypes = {
   bat: {
     profile: { race: "bat" },
     name: "Bat",
-    aggro: true,
+    isAggro: true,
     baseStats: {
       expValue: 4,
       level: 5,
@@ -271,7 +269,7 @@ const mobTypes = {
   zombie: {
     profile: { race: "zombie" },
     name: "Zombie",
-    aggro: true,
+    isAggro: true,
     baseStats: {
       expValue: 8,
       level: 10,
@@ -319,7 +317,7 @@ const mobTypes = {
   wraith: {
     profile: { race: "wraith" },
     name: "Wraith",
-    aggro: true,
+    isAggro: true,
     baseStats: {
       expValue: 8,
       level: 10,
@@ -365,10 +363,9 @@ const mobTypes = {
     ],
   },
   chonks: {
-    profile: { race: "abomination" },
+    profile: { race: "abomination", tint: "88FF88" },
     name: "Chonks",
-    aggro: true,
-    tint: "88FF88",
+    isAggro: true,
     baseStats: {
       expValue: 12,
       level: 15,
@@ -416,7 +413,7 @@ const mobTypes = {
   merman: {
     profile: { race: "merman" },
     name: "Merman",
-    aggro: true,
+    isAggro: true,
     baseStats: {
       expValue: 8,
       level: 10,
@@ -526,7 +523,7 @@ function spawnNpcs(scene) {
   for (const mapRoom of Object.values(scene.mapRooms)) {
     const npcs = mapNpcs[mapRoom.name];
     for (const npc of npcs) {
-      const npcData = mobTypes[npc.name];
+      const mobData = mobTypes[npc.name];
       addNpc(scene, {
         //nameKey: name,
         //mapGrid: parentMap.mapGrid,
@@ -535,7 +532,7 @@ function spawnNpcs(scene) {
         x: npc?.x,
         y: npc?.y,
         // state: { isDead: false, isRobot: true, lockedUser: null },
-        ...npcData,
+        ...mobData,
       });
     }
   }
@@ -543,46 +540,11 @@ function spawnNpcs(scene) {
 
 function addNpc(scene, npcData) {
   const id = crypto.randomUUID();
-  scene.npcs[id] = new Npc(scene, { id, ...npcData });
+  /* TODO: calcStats */
+  scene.npcs[id] = new Npc(scene, { id, ...npcData, stats: npcData.baseStats });
   scene.add.existing(scene.npcs[id]);
   scene.mapRooms[npcData.room].npcs.add(scene.npcs[id]);
   return scene.npcs[id];
 }
 
-class Npc extends Character {
-  constructor(scene, args) {
-    super(scene, args);
-    this.mapRoom = scene.mapRooms[args.room];
-    scene.events.on("update", this.update, this);
-    scene.events.once("shutdown", this.destroy, this);
-  }
-  update(time, delta) {
-    if (time % 4 > 1) return;
-    const randNumber = Math.floor(Math.random() * 6 + 1);
-    const speed = 100;
-    switch (randNumber) {
-      case 1:
-        this.vx = -speed;
-        this.direction = "left";
-        break;
-      case 2:
-        this.vx = speed;
-        this.direction = "right";
-        break;
-      case 3:
-        this.vy = -speed;
-        this.direction = "up";
-        break;
-      case 4:
-        this.vy = speed;
-        this.direction = "down";
-        break;
-      default:
-        this.vy = 0;
-        this.vx = 0;
-    }
-    this.body.setVelocity(this.vx, this.vy);
-  }
-}
-
-module.exports = { mobTypes, mapNpcs, spawnNpcs };
+export { mobTypes, mapNpcs, spawnNpcs };

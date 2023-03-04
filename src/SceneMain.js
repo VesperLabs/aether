@@ -82,6 +82,7 @@ class SceneMain extends Phaser.Scene {
       }
       player.vx = s.vx;
       player.vy = s.vy;
+      player.setBubbleMessage(s?.bubbleMessage);
       player.setDepth(100 + player.y + player.body.height);
     }
     /* Update NPC x and y */
@@ -91,6 +92,7 @@ class SceneMain extends Phaser.Scene {
       npc.setPosition(s.x, s.y);
       npc.vx = s.vx;
       npc.vy = s.vy;
+      npc.setBubbleMessage(s?.bubbleMessage);
       npc.setDepth(100 + npc.y + npc.body.height);
     }
     moveHero(this, time);
@@ -108,7 +110,7 @@ function enableDoors(scene) {
 }
 
 function moveHero(scene, time) {
-  const speed = scene.hero.speed;
+  const speed = scene.hero.stats.speed;
   const joystick = scene.game.scene.scenes[2].joystick;
   const left = scene.cursorKeys.left.isDown;
   const right = scene.cursorKeys.right.isDown;
