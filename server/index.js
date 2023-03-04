@@ -73,6 +73,10 @@ class ServerScene extends Phaser.Scene {
             face: { color: "black", texture: "face-1" },
             hair: { color: "black", texture: "hair-3" },
           },
+          baseStats: {
+            speed: 300,
+            attackSpeed: 200,
+          },
           equips: {
             handRight: { type: "shield", texture: "shield-round" },
             handLeft: { type: "weapon", texture: "weapon-sword-short" },

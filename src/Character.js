@@ -38,10 +38,7 @@ class Character extends Phaser.GameObjects.Container {
     };
     this.profile = profile;
     this.equips = equips;
-    this.stats = stats || {
-      attackSpeed: 200,
-      speed: 200,
-    };
+    this.stats = stats;
     this.bubbleMessage = bubbleMessage;
     scene.physics.add.existing(this);
     this.body.setCircle(8, -8, -8);

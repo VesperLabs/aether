@@ -18,7 +18,6 @@ function createMapRooms(scene) {
     acc[room.name] = {
       name: room.name,
       map: tileMap,
-
       colliders: [collideLayer, top, left, bottom, right],
       players: scene.physics.add.group(),
       doors: scene.physics.add.group(),
@@ -77,10 +76,23 @@ function handlePlayerInput(scene, socketId, input) {
   player.vy = vy;
 }
 
+function calculateStats(user) {
+  const baseStats = user?.baseStats;
+  return {
+    speed: baseStats?.speed,
+    attackSpeed: baseStats?.attackSpeed,
+  };
+}
+
 function addPlayer(scene, user) {
   const id = crypto.randomUUID();
   const socketId = user?.socketId;
-  scene.players[socketId] = new Player(scene, { id, ...user, isServer: true });
+  scene.players[socketId] = new Player(scene, {
+    id,
+    ...user,
+    isServer: true,
+    stats: calculateStats(user),
+  });
   scene.add.existing(scene.players[socketId]);
   scene.mapRooms[user.room].players.add(scene.players[socketId]);
   return scene.players[socketId];
@@ -125,6 +137,7 @@ function getFullCharacterState(p) {
     y: p?.y,
     vx: p?.vx,
     vy: p?.vy,
+    stats: p?.stats,
     equips: p?.equips,
     profile: p?.profile,
     bubbleMessage: p?.bubbleMessage,
@@ -181,5 +194,6 @@ export {
   createDoors,
   getDoor,
   setNpcCollision,
+  calculateStats,
   isMobile,
 };

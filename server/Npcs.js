@@ -1,6 +1,7 @@
 import Npc from "./Npc";
 const crypto = require("crypto");
 const POTION_DROP_RATE = 15;
+import { calculateStats } from "./utils";
 
 const mobTypes = {
   /* Level 1 */
@@ -502,7 +503,9 @@ const mapNpcs = {
     // { name: "anthony", x: 400, y: 2256, kind: "keeper" },
     { name: "hogan", x: 1872, y: 976, kind: "nasty" },
   ],
-  town: [{ name: "danny", x: 1072, y: 1296, kind: "keeper" }],
+  town: [
+    //{ name: "danny", x: 1072, y: 1296, kind: "keeper" }
+  ],
   townInside: [
     // { name: "steve", x: 1712, y: 1168, kind: "keeper" },
     //{ name: "siobhan", x: 496, y: 976, kind: "keeper" },
@@ -538,12 +541,12 @@ function spawnNpcs(scene) {
   }
 }
 
-function addNpc(scene, npcData) {
+function addNpc(scene, user) {
   const id = crypto.randomUUID();
   /* TODO: calcStats */
-  scene.npcs[id] = new Npc(scene, { id, ...npcData, stats: npcData.baseStats });
+  scene.npcs[id] = new Npc(scene, { id, ...user, stats: calculateStats(user) });
   scene.add.existing(scene.npcs[id]);
-  scene.mapRooms[npcData.room].npcs.add(scene.npcs[id]);
+  scene.mapRooms[user.room].npcs.add(scene.npcs[id]);
   return scene.npcs[id];
 }
 
