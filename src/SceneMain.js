@@ -46,7 +46,7 @@ class SceneMain extends Phaser.Scene {
         addNpc(scene, npc);
       }
       const { collideLayer } = changeMap(scene, scene.hero.room);
-      setPlayerCollision(scene, scene.hero, [collideLayer, scene.players, scene.npcs]);
+      setPlayerCollision(scene, collideLayer);
       setCamera(scene, scene.hero);
     });
 
@@ -161,13 +161,14 @@ function setCamera(scene, hero) {
   scene.cameras.main.setBounds(0, 0, scene.map.widthInPixels, scene.map.heightInPixels);
 }
 
-function setPlayerCollision(scene, player, colliders = []) {
+function setPlayerCollision(scene, collideLayer) {
+  const hero = scene.hero;
   scene.physics.world.colliders.destroy();
   scene.physics.world.setBounds(0, 0, scene.map.widthInPixels, scene.map.heightInPixels);
-  player.body.setCollideWorldBounds(true);
-  colliders.forEach((c) => {
-    scene.physics.add.collider(player, c);
-  });
+
+  hero.body.setCollideWorldBounds(true);
+  hero.body.immovable = true;
+  scene.physics.add.collider(hero, collideLayer);
 
   scene.physics.add.overlap(
     scene.hero,
