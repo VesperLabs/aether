@@ -62,12 +62,13 @@ class Player extends Character {
     // this.add(this.talkMenu);
   }
   drawCharacterFromUserData() {
-    if (this.profile.tint) {
-      this.skin.setTint("0x" + this.profile.tint);
-      this.chest.setTint("0x" + this.profile.tint);
+    const { profile } = this;
+    if (profile?.tint) {
+      this.skin.setTint("0x" + profile?.tint);
+      this.chest.setTint("0x" + profile?.tint);
     }
     /* ToDo: Need headY cords to be loaded with asshat */
-    if (this.profile.race !== "human") {
+    if (profile?.race !== "human") {
       this.bubble.setHeadY(-30);
       //this.hpBar.setHeadY(-20);
     }
