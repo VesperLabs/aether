@@ -17,7 +17,6 @@ esbuild.build({
   define: {
     "process.env.NODE_ENV": JSON.stringify("production"),
     "process.env.DEBUG": process.env.DEBUG,
-    "process.env.PORT": process.env.PORT,
     "process.env.SERVER_FPS": process.env.SERVER_FPS,
     "process.env.SERVER_URL": JSON.stringify(process.env.SERVER_URL),
   },
