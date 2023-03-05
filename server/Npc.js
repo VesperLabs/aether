@@ -1,22 +1,17 @@
 import Character from "../src/Character";
-import { getTrimmedRoomState } from "./utils";
 
 const START_AGGRO_RANGE = 120;
 
 class Npc extends Character {
-  constructor(scene, args) {
+  constructor(scene, room, args) {
     super(scene, args);
-    this.mapRoom = scene.roomManager.rooms[args.room];
-
+    this.room = room;
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
   }
-  update(time, delta) {
-    const roomState = getTrimmedRoomState(this.scene, this.room);
-
-    const player = roomState?.players?.[0];
+  update(time) {
+    const player = this.room?.players?.getChildren()?.[0];
     const isNearPlayer = player && this.distanceTo(player) <= START_AGGRO_RANGE;
-
     if (this.isAggro && player && isNearPlayer) {
       this.moveTowardPlayer(player);
     } else {

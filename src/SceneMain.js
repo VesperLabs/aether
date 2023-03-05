@@ -45,7 +45,7 @@ class SceneMain extends Phaser.Scene {
         if (getNpc(scene, npc.id)) continue;
         addNpc(scene, npc);
       }
-      const { collideLayer } = changeMap(scene, scene.hero.room);
+      const { collideLayer } = changeMap(scene, scene.hero.roomName);
       setPlayerCollision(scene, scene.hero, [collideLayer]);
       setCamera(scene, scene.hero);
     });
@@ -192,11 +192,11 @@ function setPlayerCollision(scene, player, colliders = []) {
   );
 }
 
-function changeMap(scene, room) {
-  const tileSetKey = room?.split("-")?.[0];
+function changeMap(scene, roomName) {
+  const tileSetKey = roomName?.split("-")?.[0];
 
   scene.map = scene.make.tilemap({
-    key: room,
+    key: roomName,
   });
 
   const tileSet = scene.map.addTilesetImage("tileset-" + tileSetKey);

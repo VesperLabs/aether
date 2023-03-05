@@ -9,7 +9,7 @@ class Character extends Phaser.GameObjects.Container {
       id,
       isHero = false,
       isServer = false,
-      room,
+      roomName,
       equips,
       profile,
       stats,
@@ -22,7 +22,7 @@ class Character extends Phaser.GameObjects.Container {
     this.id = id;
     this.isHero = isHero;
     this.isAggro = isAggro;
-    this.room = room;
+    this.roomName = roomName;
     this.isServer = isServer;
     this.action = "stand";
     this.direction = "down";

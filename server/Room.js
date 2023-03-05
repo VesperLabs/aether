@@ -1,6 +1,6 @@
-// import NpcFactory from "./NpcFactory.js";
+import NpcManager from "./NpcManager.js";
+import PlayerManager from "./PlayerManager.js";
 // import LootFactory from "./LootFactory.js";
-// import MapGrid from "./MapGrid.js";
 const { Vault } = require("@geckos.io/snapshot-interpolation");
 
 class Room {
@@ -12,9 +12,12 @@ class Room {
     this.doors = scene.physics.add.group();
     this.npcs = scene.physics.add.group();
     this.vault = new Vault();
-    // this.npcFactory = new NpcFactory(mapFactory, this);
+    this.npcManager = new NpcManager(this.scene, this);
+    this.playerManager = new PlayerManager(this.scene, this);
     // this.lootFactory = new LootFactory(this);
     this.createColliders();
+    this.npcManager.spawnNpcs();
+    this.npcManager.setNpcCollision();
   }
   createColliders() {
     const collideLayer = this.tileMap.createLayer("Collide").setCollisionByProperty({

@@ -2,7 +2,6 @@ const path = require("path");
 import "@geckos.io/phaser-on-nodejs";
 require("dotenv").config({ path: path.join(__dirname, "/../.env") });
 const { mapList } = require("../src/Maps");
-const { spawnNpcs } = require("./Npcs");
 const { SnapshotInterpolation } = require("@geckos.io/snapshot-interpolation");
 const Phaser = require("phaser");
 const express = require("express");
@@ -16,15 +15,13 @@ const io = require("socket.io")(httpServer, {
 });
 const SI = new SnapshotInterpolation();
 import {
-  addPlayer,
-  removePlayer,
   handlePlayerInput,
   getFullCharacterState,
   getFullRoomState,
   getTrimmedRoomState,
   createDoors,
   getDoor,
-  setNpcCollision,
+  removePlayer,
 } from "./utils";
 import RoomManager from "./RoomManager";
 global.phaserOnNodeFPS = process.env.SERVER_FPS;
@@ -45,14 +42,12 @@ class ServerScene extends Phaser.Scene {
   create() {
     const scene = this;
 
-    scene.roomManager = new RoomManager(scene);
     scene.players = {};
     scene.doors = {};
     scene.npcs = {};
+    scene.roomManager = new RoomManager(scene);
 
     createDoors(scene);
-    spawnNpcs(scene);
-    setNpcCollision(scene);
 
     io.on("connection", (socket) => {
       const socketId = socket.id;
@@ -64,7 +59,7 @@ class ServerScene extends Phaser.Scene {
           socketId,
           x: 100,
           y: 100,
-          room: "grassland-2",
+          roomName: "grassland-2",
           profile: {
             race: "human",
             gender: "female",
@@ -87,36 +82,35 @@ class ServerScene extends Phaser.Scene {
           },
         };
 
-        const player = addPlayer(scene, user);
-        const room = player?.room;
+        const player = scene.roomManager.rooms[user.roomName].playerManager.addPlayer(user);
+        const roomName = player?.room?.name;
 
-        if (!room) console.log("❌ Missing player room");
+        if (!roomName) console.log("❌ Missing player roomName");
 
-        socket.join(room);
+        socket.join(roomName);
         socket.emit("heroInit", {
-          players: getFullRoomState(scene, room)?.players,
-          npcs: getFullRoomState(scene, room)?.npcs,
+          players: getFullRoomState(scene, roomName)?.players,
+          npcs: getFullRoomState(scene, roomName)?.npcs,
           socketId,
         });
-        socket.to(room).emit("playerJoin", getFullCharacterState(player));
+        socket.to(roomName).emit("playerJoin", getFullCharacterState(player));
       });
 
       socket.on("attack", ({ count, direction }) => {
         console.log("🧑🏻‍🦰 attacking");
         const player = getFullCharacterState(scene.players[socketId]);
-        socket.to(player.room).emit("playerAttack", { socketId, count, direction });
+        socket.to(player.roomName).emit("playerAttack", { socketId, count, direction });
       });
 
       socket.on("enterDoor", (doorName) => {
         const player = scene.players[socketId];
-        const oldRoom = player.room;
+        const oldRoom = player.room.name;
         const prev = getDoor(scene, oldRoom, doorName)?.getProps();
         const next = getDoor(scene, prev.destMap, prev.destDoor)?.getProps();
 
         socket.leave(oldRoom);
         socket.join(prev.destMap);
 
-        player.room = prev.destMap;
         player.x = next.centerPos.x;
         player.y = next.centerPos.y;
 

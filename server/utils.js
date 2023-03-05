@@ -33,20 +33,6 @@ function calculateStats(user) {
   };
 }
 
-function addPlayer(scene, user) {
-  const id = crypto.randomUUID();
-  const socketId = user?.socketId;
-  scene.players[socketId] = new Player(scene, {
-    id,
-    ...user,
-    isServer: true,
-    stats: calculateStats(user),
-  });
-  scene.add.existing(scene.players[socketId]);
-  scene.roomManager.rooms[user.room].players.add(scene.players[socketId]);
-  return scene.players[socketId];
-}
-
 function removePlayer(scene, socketId) {
   scene.players?.[socketId]?.destroy();
 }
@@ -61,17 +47,17 @@ function getPlayer(scene, socketId) {
   return scene.players[socketId];
 }
 
-function getDoor(scene, room, doorName) {
-  return scene?.doors?.[room]?.[doorName];
+function getDoor(scene, roomName, doorName) {
+  return scene?.doors?.[roomName]?.[doorName];
 }
 
-function getFullRoomState(scene, room) {
+function getFullRoomState(scene, roomName) {
   return {
     players: Object.values(scene.players)
-      ?.filter((p) => p?.room === room)
+      ?.filter((p) => p?.room?.name === roomName)
       .map(getFullCharacterState),
     npcs: Object.values(scene.npcs)
-      ?.filter((n) => n?.room === room)
+      ?.filter((n) => n?.room?.name === roomName)
       .map(getFullCharacterState),
   };
 }
@@ -81,7 +67,7 @@ function getFullCharacterState(p) {
   return {
     id: uid, //required for SI
     socketId: uid,
-    room: p?.room,
+    roomName: p?.room?.name,
     x: p?.x,
     y: p?.y,
     vx: p?.vx,
@@ -94,13 +80,13 @@ function getFullCharacterState(p) {
   };
 }
 
-function getTrimmedRoomState(scene, room) {
+function getTrimmedRoomState(scene, roomName) {
   return {
     players: Object.values(scene.players)
-      ?.filter((p) => p?.room === room)
+      ?.filter((p) => p?.room?.name === roomName)
       .map(getTrimmedCharacterState),
     npcs: Object.values(scene.npcs)
-      ?.filter((p) => p?.room === room)
+      ?.filter((p) => p?.room?.name === roomName)
       .map(getTrimmedCharacterState),
   };
 }
@@ -110,7 +96,7 @@ function getTrimmedCharacterState(p) {
   return {
     id: uid, //required for SI
     socketId: uid,
-    room: p?.room,
+    roomName: p?.room?.name,
     x: p?.x,
     y: p?.y,
     vx: p?.vx,
@@ -119,18 +105,9 @@ function getTrimmedCharacterState(p) {
   };
 }
 
-function setNpcCollision(scene) {
-  for (const room of Object.values(scene.roomManager.rooms)) {
-    room.colliders.forEach((c) => {
-      scene.physics.add.collider(room.npcs, c);
-    });
-  }
-}
-
 const isMobile = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
 export {
-  addPlayer,
   removePlayer,
   getPlayer,
   getTrimmedRoomState,
@@ -141,7 +118,6 @@ export {
   removeAllPlayers,
   createDoors,
   getDoor,
-  setNpcCollision,
   calculateStats,
   isMobile,
 };

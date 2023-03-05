@@ -1,7 +1,43 @@
+import crypto from "crypto";
 import Npc from "./Npc";
-const crypto = require("crypto");
-const POTION_DROP_RATE = 15;
 import { calculateStats } from "./utils";
+
+const POTION_DROP_RATE = 15;
+
+class NpcManager {
+  constructor(scene, room) {
+    this.scene = scene;
+    this.room = room;
+  }
+  spawnNpcs() {
+    const { room } = this;
+    const npcs = mapNpcs[room.name];
+    for (const npc of npcs) {
+      const mobData = mobTypes[npc.name];
+      this.addNpc({
+        moveRange: 1,
+        room: room,
+        x: npc?.x,
+        y: npc?.y,
+        // state: { isDead: false, isRobot: true, lockedUser: null },
+        ...mobData,
+      });
+    }
+  }
+  addNpc(user) {
+    const { scene, room } = this;
+    const id = crypto.randomUUID();
+    scene.npcs[id] = new Npc(scene, room, { id, ...user, stats: calculateStats(user) });
+    scene.add.existing(scene.npcs[id]);
+    room.npcs.add(scene.npcs[id]);
+  }
+  setNpcCollision() {
+    const { scene, room } = this;
+    room.colliders.forEach((c) => {
+      scene.physics.add.collider(room.npcs, c);
+    });
+  }
+}
 
 const mobTypes = {
   /* Level 1 */
@@ -522,32 +558,5 @@ const mapNpcs = {
   "dungeon-aqueducts": [{ name: "wraith", x: 176, y: 1488, kind: "nasty" }],
 };
 
-function spawnNpcs(scene) {
-  for (const room of Object.values(scene.roomManager.rooms)) {
-    const npcs = mapNpcs[room.name];
-    for (const npc of npcs) {
-      const mobData = mobTypes[npc.name];
-      addNpc(scene, {
-        //nameKey: name,
-        //mapGrid: parentMap.mapGrid,
-        moveRange: 1,
-        room: room.name,
-        x: npc?.x,
-        y: npc?.y,
-        // state: { isDead: false, isRobot: true, lockedUser: null },
-        ...mobData,
-      });
-    }
-  }
-}
-
-function addNpc(scene, user) {
-  const id = crypto.randomUUID();
-  /* TODO: calcStats */
-  scene.npcs[id] = new Npc(scene, { id, ...user, stats: calculateStats(user) });
-  scene.add.existing(scene.npcs[id]);
-  scene.roomManager.rooms[user.room].npcs.add(scene.npcs[id]);
-  return scene.npcs[id];
-}
-
-export { mobTypes, mapNpcs, spawnNpcs };
+export { mobTypes, mapNpcs };
+export default NpcManager;
