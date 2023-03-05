@@ -22,12 +22,11 @@ import {
   getFullCharacterState,
   getFullRoomState,
   getTrimmedRoomState,
-  createMapRooms,
   createDoors,
   getDoor,
   setNpcCollision,
 } from "./utils";
-
+import RoomManager from "./RoomManager";
 global.phaserOnNodeFPS = process.env.SERVER_FPS;
 
 app.use(express.static(path.join(__dirname, "../public")));
@@ -46,12 +45,11 @@ class ServerScene extends Phaser.Scene {
   create() {
     const scene = this;
 
+    scene.roomManager = new RoomManager(scene);
     scene.players = {};
     scene.doors = {};
-    scene.mapRooms = {};
     scene.npcs = {};
 
-    createMapRooms(scene);
     createDoors(scene);
     spawnNpcs(scene);
     setNpcCollision(scene);
@@ -122,8 +120,8 @@ class ServerScene extends Phaser.Scene {
         player.x = next.centerPos.x;
         player.y = next.centerPos.y;
 
-        scene.mapRooms[oldRoom].players.remove(player);
-        scene.mapRooms[prev.destMap].players.add(player);
+        scene.roomManager.rooms[oldRoom].players.remove(player);
+        scene.roomManager.rooms[prev.destMap].players.add(player);
 
         socket.to(prev.destMap).emit("playerJoin", getFullCharacterState(scene.players[socketId]));
         socket.to(oldRoom).emit("remove", socketId);
@@ -149,11 +147,11 @@ class ServerScene extends Phaser.Scene {
   }
   update(time, delta) {
     const scene = this;
-    for (const mapRoom of Object.values(scene.mapRooms)) {
-      const roomState = getTrimmedRoomState(scene, mapRoom.name);
+    for (const room of Object.values(scene.roomManager.rooms)) {
+      const roomState = getTrimmedRoomState(scene, room.name);
       const snapshot = SI.snapshot.create(roomState);
-      mapRoom.vault.add(snapshot);
-      io.to(mapRoom.name).emit("update", mapRoom.vault.get());
+      room.vault.add(snapshot);
+      io.to(room.name).emit("update", room.vault.get());
     }
   }
 }

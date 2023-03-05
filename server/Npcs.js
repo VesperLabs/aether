@@ -523,15 +523,15 @@ const mapNpcs = {
 };
 
 function spawnNpcs(scene) {
-  for (const mapRoom of Object.values(scene.mapRooms)) {
-    const npcs = mapNpcs[mapRoom.name];
+  for (const room of Object.values(scene.roomManager.rooms)) {
+    const npcs = mapNpcs[room.name];
     for (const npc of npcs) {
       const mobData = mobTypes[npc.name];
       addNpc(scene, {
         //nameKey: name,
         //mapGrid: parentMap.mapGrid,
         moveRange: 1,
-        room: mapRoom.name,
+        room: room.name,
         x: npc?.x,
         y: npc?.y,
         // state: { isDead: false, isRobot: true, lockedUser: null },
@@ -546,7 +546,7 @@ function addNpc(scene, user) {
   /* TODO: calcStats */
   scene.npcs[id] = new Npc(scene, { id, ...user, stats: calculateStats(user) });
   scene.add.existing(scene.npcs[id]);
-  scene.mapRooms[user.room].npcs.add(scene.npcs[id]);
+  scene.roomManager.rooms[user.room].npcs.add(scene.npcs[id]);
   return scene.npcs[id];
 }
 

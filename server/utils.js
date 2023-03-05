@@ -1,66 +1,15 @@
 import Door from "../src/Door";
-import { mapList } from "../src/Maps";
 const Player = require("./Player");
-const { Vault } = require("@geckos.io/snapshot-interpolation");
 const crypto = require("crypto");
 
-function createMapRooms(scene) {
-  scene.mapRooms = mapList.reduce((acc, room) => {
-    const tileMap = scene.make.tilemap({ key: room.name });
-
-    /* Colliders */
-    const collideLayer = tileMap.createLayer("Collide").setCollisionByProperty({
-      collides: true,
-    });
-
-    const { top, left, bottom, right } = createMapBounds(scene, tileMap);
-
-    acc[room.name] = {
-      name: room.name,
-      map: tileMap,
-      colliders: [collideLayer, top, left, bottom, right],
-      players: scene.physics.add.group(),
-      doors: scene.physics.add.group(),
-      npcs: scene.physics.add.group(),
-      vault: new Vault(),
-    };
-
-    return acc;
-  }, {});
-}
-
-function createMapBounds(scene, tileMap) {
-  const top = scene.physics.add.sprite(0, 0, "coin");
-  top.displayWidth = tileMap.widthInPixels;
-  top.displayHeight = 0;
-  top.body.immovable = true;
-  top.setOrigin(0, 0);
-  const left = scene.physics.add.sprite(0, 0, "coin");
-  left.displayWidth = 0;
-  left.displayHeight = tileMap.heightInPixels;
-  left.body.immovable = true;
-  left.setOrigin(0, 0);
-  const bottom = scene.physics.add.sprite(0, tileMap.heightInPixels, "coin");
-  bottom.displayWidth = tileMap.widthInPixels;
-  bottom.displayHeight = 0;
-  bottom.body.immovable = true;
-  bottom.setOrigin(0, 0);
-  const right = scene.physics.add.sprite(tileMap.widthInPixels, 0, "coin");
-  right.displayWidth = 0;
-  right.displayHeight = tileMap.heightInPixels;
-  right.body.immovable = true;
-  right.setOrigin(0, 0);
-  return { top, left, bottom, right };
-}
-
 function createDoors(scene) {
-  for (const mapRoom of Object.values(scene.mapRooms)) {
-    mapRoom.map.getObjectLayer("Doors").objects?.forEach((door) => {
-      if (!scene.doors[mapRoom.name]) {
-        scene.doors[mapRoom.name] = {};
+  for (const room of Object.values(scene.roomManager.rooms)) {
+    room.tileMap.getObjectLayer("Doors").objects?.forEach((door) => {
+      if (!scene.doors[room.name]) {
+        scene.doors[room.name] = {};
       }
-      scene.doors[mapRoom.name][door.name] = new Door(scene, door);
-      return scene.doors[mapRoom.name][door.name];
+      scene.doors[room.name][door.name] = new Door(scene, door);
+      return scene.doors[room.name][door.name];
     });
   }
 }
@@ -94,7 +43,7 @@ function addPlayer(scene, user) {
     stats: calculateStats(user),
   });
   scene.add.existing(scene.players[socketId]);
-  scene.mapRooms[user.room].players.add(scene.players[socketId]);
+  scene.roomManager.rooms[user.room].players.add(scene.players[socketId]);
   return scene.players[socketId];
 }
 
@@ -171,9 +120,9 @@ function getTrimmedCharacterState(p) {
 }
 
 function setNpcCollision(scene) {
-  for (const mapRoom of Object.values(scene.mapRooms)) {
-    mapRoom.colliders.forEach((c) => {
-      scene.physics.add.collider(mapRoom.npcs, c);
+  for (const room of Object.values(scene.roomManager.rooms)) {
+    room.colliders.forEach((c) => {
+      scene.physics.add.collider(room.npcs, c);
     });
   }
 }
@@ -190,7 +139,6 @@ export {
   getFullCharacterState,
   handlePlayerInput,
   removeAllPlayers,
-  createMapRooms,
   createDoors,
   getDoor,
   setNpcCollision,

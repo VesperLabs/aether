@@ -6,7 +6,7 @@ const START_AGGRO_RANGE = 120;
 class Npc extends Character {
   constructor(scene, args) {
     super(scene, args);
-    this.mapRoom = scene.mapRooms[args.room];
+    this.mapRoom = scene.roomManager.rooms[args.room];
 
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
