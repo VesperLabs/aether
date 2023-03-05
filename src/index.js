@@ -15,7 +15,6 @@ const socket = socketIO.connect(`${process.env.SERVER_URL}`);
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const gameWidth = window.innerWidth * window.devicePixelRatio;
 const gameHeight = window.innerHeight * window.devicePixelRatio;
-const max = isMobile ? { width: 1120, height: 620 } : { width: 1120, height: 1120 };
 
 new Phaser.Game({
   type: Phaser.AUTO,
@@ -25,7 +24,7 @@ new Phaser.Game({
     width: gameWidth,
     height: gameHeight,
     autoCenter: Phaser.Scale.CENTER_HORIZONTALLY,
-    max: max,
+    max: { width: screen.width, height: screen.height },
   },
   roundPixels: false,
   antialias: false,

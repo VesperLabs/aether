@@ -67,9 +67,9 @@ class ServerScene extends Phaser.Scene {
             attackSpeed: 200,
           },
           equips: {
-            handRight: { type: "shield", texture: "shield-round" },
+            //handRight: { type: "shield", texture: "shield-round" },
             handLeft: { type: "weapon", texture: "weapon-sword-short" },
-            //handRight: { type: "weapon", texture: "weapon-sword-short" },
+            handRight: { type: "weapon", texture: "weapon-sword-short" },
             armor: { type: "armor", texture: "armor-plate" },
             helmet: { type: "helmet", texture: "helmet-cap-raccoon" },
             accessory: { type: "accessory", texture: "accessory-glasses" },
