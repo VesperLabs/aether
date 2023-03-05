@@ -11,33 +11,45 @@ class SceneHud extends Phaser.Scene {
   preload() {}
   create() {
     addJoystick(this);
-    const mainScene = this.scene.manager.getScene("SceneMain");
-    this.input.keyboard.on("keyup-SPACE", (e) => {
-      if (document.activeElement.type === "text") return;
-      mainScene?.hero?.doAttack?.(1);
-    });
-    window.addEventListener(
-      "hero_attack",
-      (e) => {
-        mainScene?.hero?.doAttack?.(1);
-      },
-      false
-    );
+    addAttackEvents(this);
   }
   update() {}
 }
 
+function addAttackEvents(scene) {
+  const mainScene = scene.scene.manager.getScene("SceneMain");
+  /* Keyboard */
+  scene.input.keyboard.on("keyup-SPACE", (e) => {
+    if (document.activeElement.type === "text") return;
+    mainScene?.hero?.doAttack?.(1);
+  });
+  window.addEventListener(
+    "hero_attack",
+    (e) => {
+      mainScene?.hero?.doAttack?.(1);
+    },
+    scene
+  );
+}
+
 function addJoystick(scene) {
   scene.joystick = scene.add.joystick({
-    sprites: {
-      base: "joy-circle",
-      body: "joy-circle",
-      cap: "joy-circle",
-    },
+    sprites: { cap: new RoundButton(scene), base: new RoundButton(scene) },
     singleDirection: false,
     maxDistanceInPixels: 50,
     device: isMobile ? 1 : 0, // 0 for mouse pointer (computer), 1 for touch pointer (mobile)
   });
+}
+
+class RoundButton extends Phaser.GameObjects.Sprite {
+  constructor(scene) {
+    super(scene, 0, 0, "joy-circle");
+    this.displayWidth = 50;
+    this.displayHeight = 50;
+    this.alpha = 0.1;
+    this.setTint(0xff0000);
+    this.setScrollFactor(0);
+  }
 }
 
 export default SceneHud;

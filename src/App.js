@@ -24,7 +24,7 @@ function App({ socket, debug }) {
     <ThemeProvider theme={theme}>
       <AppContext.Provider value={{ isConnected, setIsConnected, socket, debug }}>
         <GameWrapper>
-          <DebugPanel />
+          <StatusPanel />
           {isMobile && <AttackPad />}
         </GameWrapper>
       </AppContext.Provider>
@@ -36,15 +36,27 @@ const GameWrapper = (props) => {
   return (
     <Box
       sx={{
+        top: 0,
         left: "50%",
         transform: `translateX(-50%)`,
-        width: "100%",
+        width: "100vw",
+        height: "100%",
         maxWidth: 1120,
+        maxHeight: 1120,
         position: "fixed",
         zIndex: 100,
+        pointerEvents: "none",
       }}
-      {...props}
-    />
+    >
+      <Box
+        sx={{
+          position: "relative",
+          width: "100%",
+          height: "100%",
+        }}
+        {...props}
+      />
+    </Box>
   );
 };
 
@@ -52,10 +64,18 @@ const AttackPad = () => {
   return (
     <Box
       onTouchStart={(e) => {
-        console.log(e);
+        e.stopPropagation();
+        e.preventDefault();
         window.dispatchEvent(new Event("hero_attack"));
       }}
+      onTouchEnd={(e) => {
+        /* Need this for all buttons. Prevents getting hung up */
+        e.stopPropagation();
+        e.preventDefault();
+      }}
       sx={{
+        touchAction: "none",
+        userSelect: "none",
         borderRadius: "100%",
         bg: "shadow.15",
         position: "absolute",
@@ -63,20 +83,21 @@ const AttackPad = () => {
         height: 100,
         bottom: 50,
         right: 20,
+        pointerEvents: "all",
       }}
     />
   );
 };
 
-const DebugPanel = () => {
-  const { debug, isConnected } = useAppContext();
-  return debug ? (
+const StatusPanel = () => {
+  const { isConnected } = useAppContext();
+  return (
     <Box
       sx={{
         bottom: 0,
         right: 0,
         left: 0,
-        position: "absolute",
+        position: "fixed",
         bg: "shadow.15",
         pointerEvents: "none",
       }}
@@ -89,8 +110,6 @@ const DebugPanel = () => {
         )}
       </Flex>
     </Box>
-  ) : (
-    <></>
   );
 };
 
