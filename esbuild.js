@@ -2,7 +2,6 @@ require("dotenv").config();
 const esbuild = require("esbuild");
 
 console.log(`🛠 DEBUG: ${process.env.DEBUG}`);
-console.log(`🛠 PORT: ${process.env.PORT}`);
 console.log(`🛠 SERVER_FPS: ${process.env.SERVER_FPS}`);
 console.log(`🛠 SERVER_URL: ${process.env.SERVER_URL}`);
 

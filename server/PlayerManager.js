@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import Player from "./Player";
 import { calculateStats } from "./utils";
 
