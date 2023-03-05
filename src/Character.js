@@ -9,20 +9,22 @@ class Character extends Phaser.GameObjects.Container {
       id,
       isHero = false,
       isServer = false,
-      roomName,
+      room,
       equips,
       profile,
       stats,
       bubbleMessage,
       isAggro,
+      roomName,
     } = args;
     super(scene, x, y, []);
     this.startingCoords = { x, y };
     this.socketId = socketId;
     this.id = id;
     this.isHero = isHero;
-    this.isAggro = isAggro;
     this.roomName = roomName;
+    this.isAggro = isAggro;
+    this.room = room;
     this.isServer = isServer;
     this.action = "stand";
     this.direction = "down";
@@ -38,7 +40,10 @@ class Character extends Phaser.GameObjects.Container {
     };
     this.profile = profile;
     this.equips = equips;
-    this.stats = stats;
+    this.stats = stats || {
+      attackSpeed: 200,
+      speed: 200,
+    };
     this.bubbleMessage = bubbleMessage;
     scene.physics.add.existing(this);
     this.body.setCircle(8, -8, -8);

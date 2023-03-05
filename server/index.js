@@ -19,7 +19,6 @@ import {
   getFullCharacterState,
   getFullRoomState,
   getTrimmedRoomState,
-  createDoors,
   getDoor,
   removePlayer,
 } from "./utils";
@@ -41,13 +40,10 @@ class ServerScene extends Phaser.Scene {
   }
   create() {
     const scene = this;
-
     scene.players = {};
     scene.doors = {};
     scene.npcs = {};
     scene.roomManager = new RoomManager(scene);
-
-    createDoors(scene);
 
     io.on("connection", (socket) => {
       const socketId = socket.id;
@@ -82,7 +78,7 @@ class ServerScene extends Phaser.Scene {
           },
         };
 
-        const player = scene.roomManager.rooms[user.roomName].playerManager.addPlayer(user);
+        const player = scene.roomManager.rooms[user.roomName].playerManager.create(user);
         const roomName = player?.room?.name;
 
         if (!roomName) console.log("❌ Missing player roomName");
@@ -114,8 +110,8 @@ class ServerScene extends Phaser.Scene {
         player.x = next.centerPos.x;
         player.y = next.centerPos.y;
 
-        scene.roomManager.rooms[oldRoom].players.remove(player);
-        scene.roomManager.rooms[prev.destMap].players.add(player);
+        scene.roomManager.rooms[oldRoom].playerManager.remove(socketId);
+        scene.roomManager.rooms[prev.destMap].playerManager.add(socketId);
 
         socket.to(prev.destMap).emit("playerJoin", getFullCharacterState(scene.players[socketId]));
         socket.to(oldRoom).emit("remove", socketId);

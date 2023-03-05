@@ -3,10 +3,11 @@ import { calculateStats } from "./utils";
 
 class PlayerManager {
   constructor(scene, room) {
+    this.players = [];
     this.scene = scene;
     this.room = room;
   }
-  addPlayer(user) {
+  create(user) {
     const { scene, room } = this;
     const id = crypto.randomUUID();
     const socketId = user?.socketId;
@@ -18,8 +19,16 @@ class PlayerManager {
       stats: calculateStats(user),
     });
     scene.add.existing(scene.players[socketId]);
-    room.players.add(scene.players[socketId]);
+    room.addPlayer(scene.players[socketId]);
     return scene.players[socketId];
+  }
+  add(socketId) {
+    const { scene, room } = this;
+    room.addPlayer(scene.players[socketId]);
+  }
+  remove(socketId) {
+    const { scene, room } = this;
+    room.removePlayer(scene.players[socketId]);
   }
 }
 

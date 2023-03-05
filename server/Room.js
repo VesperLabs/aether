@@ -1,5 +1,6 @@
 import NpcManager from "./NpcManager.js";
 import PlayerManager from "./PlayerManager.js";
+import Door from "../src/Door";
 // import LootFactory from "./LootFactory.js";
 const { Vault } = require("@geckos.io/snapshot-interpolation");
 
@@ -16,8 +17,27 @@ class Room {
     this.playerManager = new PlayerManager(this.scene, this);
     // this.lootFactory = new LootFactory(this);
     this.createColliders();
+    this.createDoors();
     this.npcManager.spawnNpcs();
     this.npcManager.setNpcCollision();
+  }
+  addPlayer(player) {
+    player.room = this;
+    this.players.add(player);
+  }
+  removePlayer(player) {
+    player.room = null;
+    this.players.remove(player);
+  }
+  createDoors() {
+    const { name, doors, scene } = this;
+    this.tileMap.getObjectLayer("Doors").objects?.forEach((door) => {
+      if (!scene?.doors?.[name]) {
+        scene.doors[name] = {};
+      }
+      scene.doors[name][door.name] = new Door(scene, door);
+      doors.add(scene.doors[name][door.name]);
+    });
   }
   createColliders() {
     const collideLayer = this.tileMap.createLayer("Collide").setCollisionByProperty({

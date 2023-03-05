@@ -71,7 +71,7 @@ class SceneMain extends Phaser.Scene {
   update(time, delta) {
     const playerSnapshot = SI.calcInterpolation("x y", "players");
     const npcSnapshot = SI.calcInterpolation("x y", "npcs");
-    if (!this.socket || !this.hero || !playerSnapshot) return;
+    if (!this.socket || !this?.hero?.body || !playerSnapshot) return;
     /* Update Player x and y */
     for (const s of playerSnapshot?.state) {
       const player = getPlayer(this, s.socketId);

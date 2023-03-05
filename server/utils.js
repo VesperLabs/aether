@@ -1,19 +1,3 @@
-import Door from "../src/Door";
-const Player = require("./Player");
-const crypto = require("crypto");
-
-function createDoors(scene) {
-  for (const room of Object.values(scene.roomManager.rooms)) {
-    room.tileMap.getObjectLayer("Doors").objects?.forEach((door) => {
-      if (!scene.doors[room.name]) {
-        scene.doors[room.name] = {};
-      }
-      scene.doors[room.name][door.name] = new Door(scene, door);
-      return scene.doors[room.name][door.name];
-    });
-  }
-}
-
 function handlePlayerInput(scene, socketId, input) {
   if (!scene.players) return;
   const { x, y, vx, vy } = input;
@@ -116,7 +100,6 @@ export {
   getFullCharacterState,
   handlePlayerInput,
   removeAllPlayers,
-  createDoors,
   getDoor,
   calculateStats,
   isMobile,
