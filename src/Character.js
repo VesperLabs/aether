@@ -46,7 +46,8 @@ class Character extends Phaser.GameObjects.Container {
     };
     this.bubbleMessage = bubbleMessage;
     scene.physics.add.existing(this);
-    this.body.setCircle(8, -8, -8);
+    const bodySize = 8 * (this?.profile?.scale || 1);
+    this.body.setCircle(bodySize, -bodySize, -bodySize);
   }
 }
 

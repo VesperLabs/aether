@@ -10,6 +10,7 @@ import VJoyPlugin from "./Joystick";
 import SceneHud from "./SceneHud";
 import { isMobile } from "./utils";
 
+const debug = process.env.DEBUG;
 const socket = socketIO.connect(`${process.env.SERVER_URL}`);
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const gameWidth = window.innerWidth * window.devicePixelRatio;
@@ -46,7 +47,7 @@ new Phaser.Game({
   physics: {
     default: "arcade",
     arcade: {
-      //debug: true,
+      debug,
       gravity: {
         y: 0,
       },
@@ -57,6 +58,6 @@ new Phaser.Game({
 
 root.render(
   <React.StrictMode>
-    <App socket={socket} />
+    <App socket={socket} debug={debug} />
   </React.StrictMode>
 );

@@ -26,9 +26,10 @@ class Player extends Character {
   }
   initSpriteLayers() {
     const scene = this.scene;
+    const bodyOffsetY = -14 * (this?.profile?.scale || 1);
+    const defaults = [scene, 0, bodyOffsetY, BLANK_TEXTURE];
     this.setDepth(100);
-    const defaults = [scene, 0, -14, BLANK_TEXTURE];
-    this.attackSprite = scene.add.existing(new Sprite(scene, 0, -14, "misc-slash"));
+    this.attackSprite = scene.add.existing(new Sprite(scene, 0, bodyOffsetY, "misc-slash"));
     this.attackSprite.setAlpha(0);
     this.skin = scene.add.existing(new Sprite(...defaults));
     this.chest = scene.add.existing(new Sprite(...defaults));
@@ -63,6 +64,9 @@ class Player extends Character {
   }
   drawCharacterFromUserData() {
     const { profile } = this;
+    if (profile?.scale) {
+      this.skin.setScale(profile?.scale);
+    }
     if (profile?.tint) {
       this.skin.setTint("0x" + profile?.tint);
       this.chest.setTint("0x" + profile?.tint);

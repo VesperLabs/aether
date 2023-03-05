@@ -154,7 +154,7 @@ const mobTypes = {
   },
   /* Level 5 */
   hawkwing: {
-    profile: { race: "bee", tint: "44FFCC" },
+    profile: { race: "bee", tint: "44FFCC", scale: 1.5 },
     name: "Hawkwing",
     isAggro: true,
     baseStats: {
@@ -219,7 +219,7 @@ const mobTypes = {
     ],
   },
   hogan: {
-    profile: { race: "spider", tint: "FF6666" },
+    profile: { race: "spider", tint: "FF6666", scale: 2 },
     name: "Hogan",
     isAggro: true,
     baseStats: {
