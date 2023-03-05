@@ -27,6 +27,7 @@ class Player extends Character {
   initSpriteLayers() {
     const scene = this.scene;
     const bodyOffsetY = -14 * (this?.profile?.scale || 1);
+    const bubbleOffsetY = -50 * (this?.profile?.scale || 1);
     const defaults = [scene, 0, bodyOffsetY, BLANK_TEXTURE];
     this.setDepth(100);
     this.attackSprite = scene.add.existing(new Sprite(scene, 0, bodyOffsetY, "misc-slash"));
@@ -43,7 +44,7 @@ class Player extends Character {
     this.handLeft = scene.add.existing(new Sprite(scene, 13, -9, BLANK_TEXTURE));
     this.handRight = scene.add.existing(new Sprite(scene, -13, -9, BLANK_TEXTURE));
     this.shadow = scene.add.existing(new Sprite(...defaults));
-    this.bubble = scene.add.existing(new Bubble(scene, -50, this.bubbleMessage));
+    this.bubble = scene.add.existing(new Bubble(scene, bubbleOffsetY, this.bubbleMessage));
     this.add(this.attackSprite);
     this.add(this.shadow);
     this.add(this.chest);

@@ -291,7 +291,7 @@
          "objects":[
                 {
                  "class":"",
-                 "height":32,
+                 "height":16,
                  "id":14,
                  "name":"door-south",
                  "properties":[
@@ -309,7 +309,7 @@
                  "visible":true,
                  "width":96,
                  "x":416,
-                 "y":1088
+                 "y":1104
                 }, 
                 {
                  "class":"",

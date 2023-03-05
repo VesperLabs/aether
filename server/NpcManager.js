@@ -219,7 +219,7 @@ const mobTypes = {
     ],
   },
   hogan: {
-    profile: { race: "spider", tint: "FF6666", scale: 2 },
+    profile: { race: "spider", tint: "FF33CC", scale: 2 },
     name: "Hogan",
     isAggro: true,
     baseStats: {
