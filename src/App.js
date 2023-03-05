@@ -25,7 +25,7 @@ function App({ socket, debug }) {
       <AppContext.Provider value={{ isConnected, setIsConnected, socket, debug }}>
         <GameWrapper>
           <DebugPanel />
-          <AttackPad />
+          {isMobile && <AttackPad />}
         </GameWrapper>
       </AppContext.Provider>
     </ThemeProvider>

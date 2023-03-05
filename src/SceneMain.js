@@ -62,8 +62,6 @@ class SceneMain extends Phaser.Scene {
     });
 
     scene.socket.on("remove", (socketId) => removePlayer(scene, socketId));
-    scene.socket.on("disconnect", () => scene.stop());
-    scene.socket.on("connect", () => scene.start());
 
     scene.socket.emit("login");
   }
