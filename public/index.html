@@ -6,19 +6,32 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
     />
-    <link rel="stylesheet" href="./bundle.css" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
     />
     <title>Aether</title>
+    <style>
+      body,
+      html,
+      #game {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+      body,
+      html {
+        background: #000;
+        touch-action: manipulation;
+      }
+    </style>
   </head>
 
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
     <div id="game"></div>
+    <div id="root"></div>
     <script src="./bundle.min.js?v=3" type="text/javascript"></script>
   </body>
 </html>

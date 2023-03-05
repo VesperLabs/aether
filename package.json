@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "@emotion/react": "^11.10.6",
     "@geckos.io/phaser-on-nodejs": "^1.2.8",
     "@geckos.io/snapshot-interpolation": "^1.1.0",
     "cors": "^2.8.5",
@@ -13,7 +14,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "socket.io": "^4.6.0",
-    "socket.io-client": "^4.6.0"
+    "socket.io-client": "^4.6.0",
+    "theme-ui": "^0.15.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.12",
