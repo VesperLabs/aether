@@ -10,7 +10,7 @@ function addPlayer(scene, user) {
 function removePlayer(scene, socketId) {
   if (!scene.players) return;
   const player = getPlayer(scene, socketId);
-  player.destroy(true);
+  player?.destroy(true);
 }
 
 function resetEntities(scene) {

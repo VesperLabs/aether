@@ -1,6 +1,6 @@
 import React, { useEffect, useState, createContext, useContext } from "react";
 import { isMobile } from "./utils";
-import { ThemeProvider, Box, theme, Badge, Flex } from "./ui";
+import { ThemeProvider, Box, Button, theme, Badge, Flex } from "./ui";
 
 const AppContext = createContext();
 
@@ -36,16 +36,10 @@ const GameWrapper = (props) => {
   return (
     <Box
       sx={{
-        top: 0,
-        left: "50%",
-        transform: `translateX(-50%)`,
-        width: "100vw",
-        height: "100%",
-        maxWidth: 1120,
-        maxHeight: 1120,
+        inset: "0 0 0 0",
         position: "fixed",
-        zIndex: 100,
         pointerEvents: "none",
+        zIndex: 100,
       }}
     >
       <Box
@@ -62,28 +56,17 @@ const GameWrapper = (props) => {
 
 const AttackPad = () => {
   return (
-    <Box
+    <Button
       onTouchStart={(e) => {
-        e.stopPropagation();
-        e.preventDefault();
         window.dispatchEvent(new Event("hero_attack"));
       }}
-      onTouchEnd={(e) => {
-        /* Need this for all buttons. Prevents getting hung up */
-        e.stopPropagation();
-        e.preventDefault();
-      }}
       sx={{
-        touchAction: "none",
-        userSelect: "none",
-        borderRadius: "100%",
-        bg: "shadow.15",
-        position: "absolute",
         width: 100,
         height: 100,
         bottom: 50,
         right: 20,
-        pointerEvents: "all",
+        borderRadius: "100%",
+        position: "absolute",
       }}
     />
   );
