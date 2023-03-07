@@ -58,7 +58,8 @@ function constrainVelocity(sprite, maxVelocity) {
   }
 }
 
-const isMobile = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+const isTouchScreen =
+  "ontouchstart" in window || navigator?.maxTouchPoints > 0 || navigator?.msMaxTouchPoints > 0;
 
 export {
   addPlayer,
@@ -68,5 +69,5 @@ export {
   addNpc,
   resetEntities,
   constrainVelocity,
-  isMobile,
+  isTouchScreen,
 };

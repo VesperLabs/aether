@@ -89,8 +89,6 @@ function getTrimmedCharacterState(p) {
   };
 }
 
-const isMobile = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
 export {
   removePlayer,
   getPlayer,
@@ -102,5 +100,4 @@ export {
   removeAllPlayers,
   getDoor,
   calculateStats,
-  isMobile,
 };

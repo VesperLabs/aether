@@ -1,12 +1,11 @@
 import Phaser from "phaser";
-import { isMobile } from "./utils";
+import { isTouchScreen } from "./utils";
 class SceneHud extends Phaser.Scene {
   constructor(socket) {
     super({
       key: "SceneHud",
     });
     this.socket = socket;
-    this.isMobile = isMobile;
   }
   preload() {}
   create() {
@@ -37,7 +36,7 @@ function addJoystick(scene) {
     sprites: { cap: new RoundButton(scene), base: new RoundButton(scene) },
     singleDirection: false,
     maxDistanceInPixels: 50,
-    device: isMobile ? 1 : 0, // 0 for mouse pointer (computer), 1 for touch pointer (mobile)
+    device: isTouchScreen ? 1 : 0, // 0 for mouse pointer (computer), 1 for touch pointer (mobile)
   });
 }
 

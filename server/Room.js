@@ -48,22 +48,22 @@ class Room {
   }
   createMapBounds() {
     const { scene, tileMap } = this;
-    const top = scene.physics.add.sprite(0, 0, "coin");
+    const top = scene.physics.add.sprite(0, 0, "blank");
     top.displayWidth = tileMap.widthInPixels;
     top.displayHeight = 0;
     top.body.immovable = true;
     top.setOrigin(0, 0);
-    const left = scene.physics.add.sprite(0, 0, "coin");
+    const left = scene.physics.add.sprite(0, 0, "blank");
     left.displayWidth = 0;
     left.displayHeight = tileMap.heightInPixels;
     left.body.immovable = true;
     left.setOrigin(0, 0);
-    const bottom = scene.physics.add.sprite(0, tileMap.heightInPixels, "coin");
+    const bottom = scene.physics.add.sprite(0, tileMap.heightInPixels, "blank");
     bottom.displayWidth = tileMap.widthInPixels;
     bottom.displayHeight = 0;
     bottom.body.immovable = true;
     bottom.setOrigin(0, 0);
-    const right = scene.physics.add.sprite(tileMap.widthInPixels, 0, "coin");
+    const right = scene.physics.add.sprite(tileMap.widthInPixels, 0, "blank");
     right.displayWidth = 0;
     right.displayHeight = tileMap.heightInPixels;
     right.body.immovable = true;

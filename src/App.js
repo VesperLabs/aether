@@ -1,5 +1,5 @@
 import React, { useEffect, useState, createContext, useContext } from "react";
-import { isMobile } from "./utils";
+import { isTouchScreen } from "./utils";
 import { ThemeProvider, Box, Button, theme, Badge, Flex } from "./ui";
 
 const AppContext = createContext();
@@ -25,7 +25,7 @@ function App({ socket, debug }) {
       <AppContext.Provider value={{ isConnected, setIsConnected, socket, debug }}>
         <GameWrapper>
           <StatusPanel />
-          {isMobile && <AttackPad />}
+          {isTouchScreen && <AttackPad />}
         </GameWrapper>
       </AppContext.Provider>
     </ThemeProvider>
