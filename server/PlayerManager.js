@@ -13,10 +13,9 @@ class PlayerManager {
     const id = crypto.randomUUID();
     const socketId = user?.socketId;
     scene.players[socketId] = new Player(scene, {
-      id,
       ...user,
+      id,
       room,
-      isServer: true,
       stats: calculateStats(user),
     });
     scene.add.existing(scene.players[socketId]);

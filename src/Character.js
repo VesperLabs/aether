@@ -8,14 +8,14 @@ class Character extends Phaser.GameObjects.Container {
       socketId,
       id,
       isHero = false,
-      isServer = false,
       room,
-      equips,
+      equipment,
       profile,
       stats,
       bubbleMessage,
       isAggro,
       roomName,
+      baseStats,
     } = args;
     super(scene, x, y, []);
     this.startingCoords = { x, y };
@@ -25,7 +25,6 @@ class Character extends Phaser.GameObjects.Container {
     this.roomName = roomName;
     this.isAggro = isAggro;
     this.room = room;
-    this.isServer = isServer;
     this.action = "stand";
     this.direction = "down";
     this.currentSpeed = 0;
@@ -39,11 +38,9 @@ class Character extends Phaser.GameObjects.Container {
       hasWeaponLeft: false,
     };
     this.profile = profile;
-    this.equips = equips;
-    this.stats = stats || {
-      attackSpeed: 200,
-      speed: 200,
-    };
+    this.equipment = equipment;
+    this.baseStats = baseStats;
+    this.stats = stats;
     this.bubbleMessage = bubbleMessage;
     scene.physics.add.existing(this);
     const bodySize = 8 * (this?.profile?.scale || 1);

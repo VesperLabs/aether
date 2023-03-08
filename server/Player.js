@@ -1,10 +1,11 @@
 import Character from "../src/Character";
 class Player extends Character {
-  constructor(scene, { room, ...args }) {
+  /* Server level Player object */
+  constructor(scene, { room, email, ...args }) {
     super(scene, args);
     this.scene = scene;
     this.room = room;
-    //scene.events.on("update", this.update, this);
+    this.email = email;
     scene.events.once("shutdown", this.destroy, this);
   }
 }

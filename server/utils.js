@@ -57,7 +57,7 @@ function getFullCharacterState(p) {
     vx: p?.vx,
     vy: p?.vy,
     stats: p?.stats,
-    equips: p?.equips,
+    equipment: p?.equipment,
     profile: p?.profile,
     bubbleMessage: p?.bubbleMessage,
     isAggro: p?.isAggro,

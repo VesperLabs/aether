@@ -1,6 +1,7 @@
-const path = require("path");
+import path from "path";
+import { config } from "dotenv";
 import "@geckos.io/phaser-on-nodejs";
-require("dotenv").config({ path: path.join(__dirname, "/../.env") });
+config({ path: path.join(__dirname, "/../.env") });
 const { mapList } = require("../src/Maps");
 const { SnapshotInterpolation } = require("@geckos.io/snapshot-interpolation");
 const Phaser = require("phaser");
@@ -22,6 +23,7 @@ import {
   getDoor,
   removePlayer,
 } from "./utils";
+import { initDatabase } from "./db";
 import RoomManager from "./RoomManager";
 global.phaserOnNodeFPS = process.env.SERVER_FPS;
 
@@ -38,47 +40,51 @@ class ServerScene extends Phaser.Scene {
       this.load.tilemapTiledJSON(asset?.name, path.join(__dirname, `../public/${asset.json}`));
     });
   }
-  create() {
+  async create() {
     const scene = this;
     scene.players = {};
     scene.doors = {};
     scene.npcs = {};
     scene.roomManager = new RoomManager(scene);
+    scene.db = await initDatabase(process.env.MONGO_URL);
 
     io.on("connection", (socket) => {
       const socketId = socket.id;
 
-      socket.on("login", () => {
-        console.log("🧑🏻‍🦰 login");
+      socket.on("login", async (email = "arf@arf.arf") => {
         /* TODO: Load from mongoDb */
-        const user = {
+        // const user = {
+        //   socketId,
+        //   email: "arf@arf.arf",
+        //   x: 100,
+        //   y: 100,
+        //   roomName: "grassland-2",
+        //   profile: {
+        //     race: "human",
+        //     gender: "female",
+        //     face: { color: "black", texture: "face-1" },
+        //     hair: { color: "black", texture: "hair-3" },
+        //   },
+        //   baseStats: {
+        //     speed: 300,
+        //     attackSpeed: 200,
+        //   },
+        //   equipment: {
+        //     //handRight: { type: "shield", texture: "shield-round" },
+        //     handLeft: { type: "weapon", texture: "weapon-sword-short" },
+        //     handRight: { type: "weapon", texture: "weapon-sword-short" },
+        //     armor: { type: "armor", texture: "armor-plate" },
+        //     helmet: { type: "helmet", texture: "helmet-cap-raccoon" },
+        //     accessory: { type: "accessory", texture: "accessory-glasses" },
+        //     boots: { type: "boots", texture: "boots-cloth" },
+        //     pants: { type: "pants", texture: "pants-cloth" },
+        //   },
+        // };
+        const user = await scene.db.getUserByEmail(email);
+        const player = scene.roomManager.rooms[user.roomName].playerManager.create({
           socketId,
-          x: 100,
-          y: 100,
-          roomName: "grassland-2",
-          profile: {
-            race: "human",
-            gender: "female",
-            face: { color: "black", texture: "face-1" },
-            hair: { color: "black", texture: "hair-3" },
-          },
-          baseStats: {
-            speed: 300,
-            attackSpeed: 200,
-          },
-          equips: {
-            //handRight: { type: "shield", texture: "shield-round" },
-            handLeft: { type: "weapon", texture: "weapon-sword-short" },
-            handRight: { type: "weapon", texture: "weapon-sword-short" },
-            armor: { type: "armor", texture: "armor-plate" },
-            helmet: { type: "helmet", texture: "helmet-cap-raccoon" },
-            accessory: { type: "accessory", texture: "accessory-glasses" },
-            boots: { type: "boots", texture: "boots-cloth" },
-            pants: { type: "pants", texture: "pants-cloth" },
-          },
-        };
-
-        const player = scene.roomManager.rooms[user.roomName].playerManager.create(user);
+          ...user,
+        });
         const roomName = player?.room?.name;
 
         if (!roomName) console.log("❌ Missing player roomName");
@@ -125,6 +131,7 @@ class ServerScene extends Phaser.Scene {
 
       socket.on("disconnect", () => {
         console.log("🧑🏻‍🦰 disconnected");
+        scene.db.updateUser(scene.players?.[socketId]);
         removePlayer(scene, socketId);
         delete scene.players?.[socketId];
         io.emit("remove", socketId);
@@ -168,9 +175,9 @@ new Phaser.Game({
 });
 
 httpServer.listen(process.env.PORT, () => {
-  console.log(`💻 PORT: ${process.env.PORT}`);
-  console.log(`💻 SERVER_FPS: ${process.env.SERVER_FPS}`);
-  console.log(`💻 SERVER_URL: ${process.env.SERVER_URL}`);
+  console.log(
+    `💻 Running on ${process.env.SERVER_URL}:${process.env.PORT} @ ${process.env.SERVER_FPS}fps`
+  );
 });
 
 process.once("SIGUSR2", function () {

@@ -18,8 +18,8 @@ class Player extends Character {
   }
   checkAttackHands() {
     /* Can only attack with a hand if it contains a weapon type item or is fist */
-    const leftType = this.equips?.handRight?.type;
-    const rightType = this.equips?.handLeft?.type;
+    const leftType = this.equipment?.handRight?.type;
+    const rightType = this.equipment?.handLeft?.type;
     if (leftType === "weapon" || !leftType) this.state.hasWeaponRight = true;
     if (rightType === "weapon" || !rightType) this.state.hasWeaponLeft = true;
     if (this.state.hasWeaponLeft || this.state.hasWeaponLeft) this.state.hasWeapon = true;
@@ -108,7 +108,6 @@ class Player extends Character {
     }
   }
   update(time, delta) {
-    if (this.isServer) return;
     updatePlayerDirection(this);
     drawFrame(this);
     hackFrameRates(this, Math.round(80 + 2500 / (this.currentSpeed + 1)));
@@ -145,7 +144,7 @@ function drawFrame(p) {
     shadow,
     direction,
     action,
-    equips,
+    equipment,
     profile,
     face,
     hair,
@@ -202,15 +201,15 @@ function drawFrame(p) {
   }
   playAnim(face, [profile?.race, profile?.face?.texture, direction, action]);
   playAnim(hair, [profile?.race, profile?.hair?.texture, direction, action]);
-  playAnim(armor, [profile?.race, profile?.gender, equips?.armor?.texture, direction, action]);
-  playAnim(helmet, [profile?.race, equips?.helmet?.texture, direction, action]);
-  playAnim(boots, [profile?.race, equips?.boots?.texture, direction, action]);
-  playAnim(pants, [profile?.race, equips?.pants?.texture, direction, action]);
-  playAnim(accessory, [profile?.race, equips?.accessory?.texture, direction, action]);
+  playAnim(armor, [profile?.race, profile?.gender, equipment?.armor?.texture, direction, action]);
+  playAnim(helmet, [profile?.race, equipment?.helmet?.texture, direction, action]);
+  playAnim(boots, [profile?.race, equipment?.boots?.texture, direction, action]);
+  playAnim(pants, [profile?.race, equipment?.pants?.texture, direction, action]);
+  playAnim(accessory, [profile?.race, equipment?.accessory?.texture, direction, action]);
   playAttackSprite(p);
   playWeapons(p);
-  handRight.setTexture(equips?.handRight?.texture);
-  handLeft.setTexture(equips?.handLeft?.texture);
+  handRight.setTexture(equipment?.handRight?.texture);
+  handLeft.setTexture(equipment?.handLeft?.texture);
 }
 
 function updatePlayerDirection(player) {
@@ -265,7 +264,7 @@ function hackFrameRates(player, rate) {
 }
 
 function playWeapons(player) {
-  const { profile, handLeft, handRight, weaponAtlas: w, action, equips, direction } = player;
+  const { profile, handLeft, handRight, weaponAtlas: w, action, equipment, direction } = player;
   const currentFrame = player?.skin?.anims?.currentFrame;
   const { left, right } = w?.offsets?.[profile?.race]?.[currentFrame.textureFrame] || {};
   handLeft.setPosition(left?.x, left?.y);
@@ -276,7 +275,7 @@ function playWeapons(player) {
   handRight.setFlipX(right?.flipX);
   handRight.setFlipY(right?.flipY);
   handRight.setAngle(right?.rotation);
-  if (equips?.handRight?.texture?.includes("katar")) {
+  if (equipment?.handRight?.texture?.includes("katar")) {
     if (action === "attack_right") {
       if (direction === "left") {
         handRight.setAngle(90);
