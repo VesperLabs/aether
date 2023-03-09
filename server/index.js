@@ -25,6 +25,7 @@ import {
 } from "./utils";
 import { initDatabase } from "./db";
 import RoomManager from "./RoomManager";
+import ItemBuilder from "./ItemBuilder";
 global.phaserOnNodeFPS = process.env.SERVER_FPS;
 
 app.use(express.static(path.join(__dirname, "../public")));
@@ -51,14 +52,43 @@ class ServerScene extends Phaser.Scene {
     io.on("connection", (socket) => {
       const socketId = socket.id;
 
-      socket.on("login", async (email = "arf@arf.arf") => {
-        const user = await scene.db.getUserByEmail(email);
+      socket.on("login", async () => {
+        //const user = await scene.db.getUserByEmail(email);
+        const user = {
+          email: "arf@arf.arf",
+          baseStats: { speed: 300, attackSpeed: 200 },
+          direction: "up",
+          equipment: {
+            handRight: ItemBuilder.buildItem("weapon", "common", "common-sword"),
+            handLeft: null,
+            helmet: null,
+            accessory: null,
+            pants: ItemBuilder.buildItem("pants", "common", "common-pants-cloth"),
+            armor: ItemBuilder.buildItem("armor", "common", "common-robe-cloth"),
+            boots: null,
+            ring1: null,
+            ring2: null,
+            amulet: null,
+          },
+          profile: {
+            userName: "Player1",
+            gender: "female",
+            race: "human",
+            hair: { tint: "00FF00", texture: "hair-3" },
+            face: { texture: "face-1" },
+          },
+          roomName: "grassland",
+          stats: { hp: null, mp: null, exp: null },
+          x: 432,
+          y: 400,
+        };
+
         const player = scene.roomManager.rooms[user.roomName].playerManager.create({
           socketId,
           ...user,
         });
         const roomName = player?.room?.name;
-
+        console.log(`🧑🏻‍🦰 ${player?.profile?.userName} connected`);
         if (!roomName) console.log("❌ Missing player roomName");
 
         socket.join(roomName);
@@ -102,8 +132,9 @@ class ServerScene extends Phaser.Scene {
       });
 
       socket.on("disconnect", () => {
-        console.log("🧑🏻‍🦰 disconnected");
+        const player = scene.players?.[socketId];
         scene.db.updateUser(scene.players?.[socketId]);
+        console.log(`🧑🏻‍🦰 ${player?.profile?.userName} disconnected`);
         removePlayer(scene, socketId);
         delete scene.players?.[socketId];
         io.emit("remove", socketId);

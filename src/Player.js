@@ -17,12 +17,12 @@ class Player extends Character {
     scene.events.once("shutdown", this.destroy, this);
   }
   checkAttackHands() {
-    /* Can only attack with a hand if it contains a weapon type item or is fist */
-    const leftType = this.equipment?.handRight?.type;
-    const rightType = this.equipment?.handLeft?.type;
-    if (leftType === "weapon" || !leftType) this.state.hasWeaponRight = true;
-    if (rightType === "weapon" || !rightType) this.state.hasWeaponLeft = true;
-    if (this.state.hasWeaponLeft || this.state.hasWeaponLeft) this.state.hasWeapon = true;
+    /* Can only attack with a hand if it contains a weapon type item  */
+    const leftType = this.equipment?.handLeft?.type;
+    const rightType = this.equipment?.handRight?.type;
+    if (rightType === "weapon") this.state.hasWeaponRight = true;
+    if (leftType === "weapon") this.state.hasWeaponLeft = true;
+    if (this.state.hasWeaponRight || this.state.hasWeaponLeft) this.state.hasWeapon = true;
   }
   initSpriteLayers() {
     const scene = this.scene;
@@ -72,6 +72,9 @@ class Player extends Character {
       this.skin.setTint("0x" + profile?.tint);
       this.chest.setTint("0x" + profile?.tint);
     }
+    if (profile?.hair?.tint) {
+      this.hair.setTint("0x" + profile?.hair?.tint);
+    }
     /* ToDo: Need headY cords to be loaded with asshat */
     if (profile?.race !== "human") {
       this.bubble.setHeadY(-30);
@@ -108,9 +111,9 @@ class Player extends Character {
     }
   }
   update(time, delta) {
+    hackFrameRates(this, Math.round(80 + 2500 / (this.currentSpeed + 10)));
     updatePlayerDirection(this);
     drawFrame(this);
-    hackFrameRates(this, Math.round(80 + 2500 / (this.currentSpeed + 1)));
     checkAttackReady(this, delta);
   }
   destroy() {

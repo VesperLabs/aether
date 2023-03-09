@@ -1,13 +1,5 @@
 import Phaser from "phaser";
-import {
-  addPlayer,
-  getPlayer,
-  resetEntities,
-  removePlayer,
-  getNpc,
-  constrainVelocity,
-  addNpc,
-} from "./utils";
+import { addPlayer, getPlayer, resetEntities, removePlayer, getNpc, addNpc } from "./utils";
 import Door from "./Door";
 import { SnapshotInterpolation } from "@geckos.io/snapshot-interpolation";
 const SI = new SnapshotInterpolation(process.env.SERVER_FPS); // the server's fps is 15
