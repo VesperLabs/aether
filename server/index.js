@@ -52,34 +52,6 @@ class ServerScene extends Phaser.Scene {
       const socketId = socket.id;
 
       socket.on("login", async (email = "arf@arf.arf") => {
-        /* TODO: Load from mongoDb */
-        // const user = {
-        //   socketId,
-        //   email: "arf@arf.arf",
-        //   x: 100,
-        //   y: 100,
-        //   roomName: "grassland-2",
-        //   profile: {
-        //     race: "human",
-        //     gender: "female",
-        //     face: { color: "black", texture: "face-1" },
-        //     hair: { color: "black", texture: "hair-3" },
-        //   },
-        //   baseStats: {
-        //     speed: 300,
-        //     attackSpeed: 200,
-        //   },
-        //   equipment: {
-        //     //handRight: { type: "shield", texture: "shield-round" },
-        //     handLeft: { type: "weapon", texture: "weapon-sword-short" },
-        //     handRight: { type: "weapon", texture: "weapon-sword-short" },
-        //     armor: { type: "armor", texture: "armor-plate" },
-        //     helmet: { type: "helmet", texture: "helmet-cap-raccoon" },
-        //     accessory: { type: "accessory", texture: "accessory-glasses" },
-        //     boots: { type: "boots", texture: "boots-cloth" },
-        //     pants: { type: "pants", texture: "pants-cloth" },
-        //   },
-        // };
         const user = await scene.db.getUserByEmail(email);
         const player = scene.roomManager.rooms[user.roomName].playerManager.create({
           socketId,

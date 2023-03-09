@@ -1,12 +1,13 @@
 function handlePlayerInput(scene, socketId, input) {
   if (!scene.players) return;
-  const { x, y, vx, vy } = input;
+  const { x, y, vx, vy, direction } = input;
   const player = getPlayer(scene, socketId);
   if (!player) return;
   player.x = x;
   player.y = y;
   player.vx = vx;
   player.vy = vy;
+  player.direction = direction;
 }
 
 function calculateStats(user) {
@@ -56,6 +57,7 @@ function getFullCharacterState(p) {
     y: p?.y,
     vx: p?.vx,
     vy: p?.vy,
+    direction: p?.direction,
     stats: p?.stats,
     equipment: p?.equipment,
     profile: p?.profile,

@@ -16,6 +16,7 @@ class Character extends Phaser.GameObjects.Container {
       isAggro,
       roomName,
       baseStats,
+      direction,
     } = args;
     super(scene, x, y, []);
     this.startingCoords = { x, y };
@@ -26,7 +27,7 @@ class Character extends Phaser.GameObjects.Container {
     this.isAggro = isAggro;
     this.room = room;
     this.action = "stand";
-    this.direction = "down";
+    this.direction = direction || "down";
     this.currentSpeed = 0;
     this.vx = 0;
     this.vy = 0;

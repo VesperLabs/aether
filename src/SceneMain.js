@@ -148,6 +148,7 @@ function moveHero(scene, time) {
       vy,
       x: scene.hero.x,
       y: scene.hero.y,
+      direction: scene.hero.direction,
     });
   }
   scene.hero.state.isIdle = scene.hero.vx === vx && scene.hero.vy === vy && vx === 0 && vy === 0;
