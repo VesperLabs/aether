@@ -30,8 +30,13 @@ class Spell extends Phaser.GameObjects.Container {
         this.spell.displayHeight = 50 * rangeRight;
         this.spell.setFlipX(false);
       }
-      if (caster?.direction === "up") this.spell.setAngle(180);
-      if (caster?.direction === "down") this.spell.setAngle(0);
+      if (caster?.direction === "up") {
+        this.spell.setAngle(180);
+      }
+      if (caster?.direction === "down") {
+        this.spell.setAngle(0);
+        this.spell.y = this?.caster?.bodyOffsetY;
+      }
       if (caster?.direction === "left") this.spell.setAngle(90);
       if (caster?.direction === "right") this.spell.setAngle(-90);
       this.spell.setAlpha(1);
@@ -52,7 +57,7 @@ class Spell extends Phaser.GameObjects.Container {
     }
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
-    this.setDepth(100);
+    this.setDepth(this?.caster?.depth - 10);
     this.add(this.spell);
   }
   create() {}

@@ -109,6 +109,7 @@ class Player extends Character {
     updatePlayerDirection(this);
     drawFrame(this);
     checkAttackReady(this, delta);
+    this.setDepth(100 + this.y + this?.body?.height);
   }
   destroy() {
     if (this.scene) this.scene.events.off("update", this.update, this);

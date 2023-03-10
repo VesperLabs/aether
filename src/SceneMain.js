@@ -73,7 +73,6 @@ class SceneMain extends Phaser.Scene {
       player.vx = s.vx;
       player.vy = s.vy;
       player.setBubbleMessage(s?.bubbleMessage);
-      player.setDepth(100 + player.y + player.body.height);
     }
     /* Update NPC x and y */
     for (const s of npcSnapshot?.state) {
@@ -83,7 +82,6 @@ class SceneMain extends Phaser.Scene {
       npc.vx = s.vx;
       npc.vy = s.vy;
       npc.setBubbleMessage(s?.bubbleMessage);
-      npc.setDepth(100 + npc.y + npc.body.height);
     }
     moveHero(this, time);
     enableDoors(this);
