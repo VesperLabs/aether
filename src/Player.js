@@ -1,17 +1,19 @@
 import Phaser from "phaser";
 import Character from "./Character";
 import Bubble from "./Bubble";
-
+import Spell from "./Spell";
 const Sprite = Phaser.GameObjects.Sprite;
 
 const BLANK_TEXTURE = "human-blank";
 class Player extends Character {
   constructor(scene, args) {
     super(scene, args);
+    this.weaponAtlas = scene.cache.json.get("weaponAtlas");
+    this.bodyOffsetY = -14 * (this?.profile?.scale || 1);
+    this.bubbleOffsetY = -50 * (this?.profile?.scale || 1);
     this.initSpriteLayers();
     this.drawCharacterFromUserData();
     this.checkAttackHands();
-    this.weaponAtlas = scene.cache.json.get("weaponAtlas");
     /* Do we really need these? */
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
@@ -26,12 +28,8 @@ class Player extends Character {
   }
   initSpriteLayers() {
     const scene = this.scene;
-    const bodyOffsetY = -14 * (this?.profile?.scale || 1);
-    const bubbleOffsetY = -50 * (this?.profile?.scale || 1);
-    const defaults = [scene, 0, bodyOffsetY, BLANK_TEXTURE];
+    const defaults = [scene, 0, this.bodyOffsetY, BLANK_TEXTURE];
     this.setDepth(100);
-    this.attackSprite = scene.add.existing(new Sprite(scene, 0, bodyOffsetY, "misc-slash"));
-    this.attackSprite.setAlpha(0);
     this.skin = scene.add.existing(new Sprite(...defaults));
     this.chest = scene.add.existing(new Sprite(...defaults));
     this.face = scene.add.existing(new Sprite(...defaults));
@@ -44,8 +42,7 @@ class Player extends Character {
     this.handLeft = scene.add.existing(new Sprite(scene, 13, -9, BLANK_TEXTURE));
     this.handRight = scene.add.existing(new Sprite(scene, -13, -9, BLANK_TEXTURE));
     this.shadow = scene.add.existing(new Sprite(...defaults));
-    this.bubble = scene.add.existing(new Bubble(scene, bubbleOffsetY, this.bubbleMessage));
-    this.add(this.attackSprite);
+    this.bubble = scene.add.existing(new Bubble(scene, this.bubbleOffsetY, this.bubbleMessage));
     this.add(this.shadow);
     this.add(this.chest);
     this.add(this.skin);
@@ -92,10 +89,7 @@ class Player extends Character {
         /* Always finishes with a left if both hands have weapons */
         if (this.state.hasWeaponLeft) this.action = "attack_left";
       }
-      /* Start animation */
-      this.attackSprite.setAlpha(1);
-      if (this.action === "attack_left") this.attackSprite.setFlipX(true);
-      if (this.action === "attack_right") this.attackSprite.setFlipX(false);
+      this.scene.add.existing(new Spell(this.scene, this, "attack"));
       this.state.isAttacking = true;
       this.state.lastAttack = Date.now();
       // If we are the hero, need to trigger the socket that we attacked
@@ -209,7 +203,6 @@ function drawFrame(p) {
   playAnim(boots, [profile?.race, equipment?.boots?.texture, direction, action]);
   playAnim(pants, [profile?.race, equipment?.pants?.texture, direction, action]);
   playAnim(accessory, [profile?.race, equipment?.accessory?.texture, direction, action]);
-  playAttackSprite(p);
   playWeapons(p);
   handRight.setTexture(equipment?.handRight?.texture);
   handLeft.setTexture(equipment?.handLeft?.texture);
@@ -296,18 +289,6 @@ function playWeapons(player) {
       }
     }
   }
-}
-
-function playAttackSprite(player) {
-  const { attackSprite, direction } = player;
-
-  if (attackSprite.alpha > 0) {
-    attackSprite.setAlpha(attackSprite.alpha - 0.3);
-  }
-  if (direction === "up") attackSprite.setAngle(180);
-  if (direction === "down") attackSprite.setAngle(0);
-  if (direction === "left") attackSprite.setAngle(90);
-  if (direction === "right") attackSprite.setAngle(-90);
 }
 
 function playAnim(sprite, parts) {

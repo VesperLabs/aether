@@ -60,7 +60,7 @@ class ServerScene extends Phaser.Scene {
           direction: "up",
           equipment: {
             handRight: ItemBuilder.buildItem("weapon", "common", "common-sword"),
-            handLeft: null,
+            handLeft: ItemBuilder.buildItem("weapon", "unique", "unique-claymore-soul"),
             helmet: null,
             accessory: null,
             pants: ItemBuilder.buildItem("pants", "common", "common-pants-cloth"),

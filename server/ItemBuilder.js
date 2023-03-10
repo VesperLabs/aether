@@ -14,7 +14,7 @@ const _itemList = {
           armorPierce: 5,
           minDamage: 0,
           maxDamage: 3,
-          range: 16,
+          range: 1,
         },
       },
       "common-spade": {
@@ -27,7 +27,7 @@ const _itemList = {
           armorPierce: 5,
           minDamage: 1,
           maxDamage: 2,
-          range: 16,
+          range: 1,
         },
       },
       "common-sword": {
@@ -39,7 +39,7 @@ const _itemList = {
           attackSpeed: 200,
           minDamage: 2,
           maxDamage: 2,
-          range: 16,
+          range: 1,
         },
       },
       "common-hammer": {
@@ -51,7 +51,7 @@ const _itemList = {
           attackSpeed: 300,
           minDamage: 2,
           maxDamage: 3,
-          range: 16,
+          range: 1,
         },
       },
       "common-axe": {
@@ -63,7 +63,7 @@ const _itemList = {
           attackSpeed: 250,
           minDamage: 2,
           maxDamage: 3,
-          range: 20,
+          range: 1,
         },
       },
       "common-sword-gladius": {
@@ -78,7 +78,7 @@ const _itemList = {
           attackSpeed: 250,
           minDamage: 5,
           maxDamage: 5,
-          range: 24,
+          range: 1,
         },
       },
       "common-scythe": {
@@ -91,7 +91,7 @@ const _itemList = {
           attackSpeed: 150,
           minDamage: 1,
           maxDamage: 3,
-          range: 22,
+          range: 1,
         },
       },
       "common-spear": {
@@ -104,7 +104,7 @@ const _itemList = {
           attackSpeed: 500,
           minDamage: 4,
           maxDamage: 4,
-          range: 48,
+          range: 2,
         },
       },
     },
@@ -119,7 +119,7 @@ const _itemList = {
           minDamage: 4,
           maxDamage: 4,
           critChance: 5,
-          range: 18,
+          range: 1,
         },
       },
       "unique-claymore-soul": {
@@ -132,7 +132,7 @@ const _itemList = {
           minDamage: 8,
           maxDamage: 8,
           critChance: 5,
-          range: 24,
+          range: 2,
         },
       },
     },
@@ -151,7 +151,7 @@ const _itemList = {
           attackSpeed: 150,
           minDamage: 3,
           maxDamage: 5,
-          range: 22,
+          range: 1,
         },
       },
       "set-scythe-tickler": {
@@ -168,7 +168,7 @@ const _itemList = {
           attackSpeed: 150,
           minDamage: 3,
           maxDamage: 5,
-          range: 22,
+          range: 1,
         },
       },
     },
