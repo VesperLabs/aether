@@ -14,7 +14,6 @@ class Spell extends Phaser.GameObjects.Container {
     if (spellName === "attack") {
       this.spell = scene.add.existing(new Sprite(scene, 0, 0, "misc-slash", 0));
       scene.physics.add.existing(this);
-
       this.maxVisibleTime = 1000;
       this.maxActiveTime = 100;
       if (caster?.action === "attack_left") {
@@ -69,7 +68,7 @@ class Spell extends Phaser.GameObjects.Container {
         this.spell.setAlpha(this.spell.alpha - 0.1);
       }
     }
-    /* Only check collisions for hero */
+    /* Only check collisions for hero if the spell is active */
     if (this.caster.isHero && isSpellActive) {
       this.checkCollisions();
     }
@@ -79,19 +78,20 @@ class Spell extends Phaser.GameObjects.Container {
     }
   }
   checkCollisions() {
-    const { direction } = this.caster;
-    this.scene.npcs?.getChildren()?.forEach((npc) => {
+    const { spellName, caster, scene } = this;
+    const direction = caster?.direction;
+    scene.npcs?.getChildren()?.forEach((npc) => {
       if (!npc || this.hitIds.includes(npc?.id)) return;
-      if (this.scene.physics.overlap(npc, this)) {
-        /* For attacks that only register if you are facing a beast */
-        if (this.spellName === "attack") {
-          if (direction === "up" && npc.y > this.caster.y) return;
-          if (direction === "down" && npc.y < this.caster.y) return;
-          if (direction === "left" && npc.x > this.caster.x) return;
-          if (direction === "right" && npc.x < this.caster.x) return;
+      if (scene.physics.overlap(npc, this)) {
+        /* For attacks, prevent collision behind the player */
+        if (spellName === "attack") {
+          if (direction === "up" && npc.y > caster.y) return;
+          if (direction === "down" && npc.y < caster.y) return;
+          if (direction === "left" && npc.x > caster.x) return;
+          if (direction === "right" && npc.x < caster.x) return;
         }
         this.hitIds.push(npc?.id);
-        console.log(this.hitIds);
+        scene.socket.emit("hit", { entity: "npc", ids: this.hitIds, spellName });
       }
     });
   }

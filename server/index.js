@@ -56,7 +56,7 @@ class ServerScene extends Phaser.Scene {
         //const user = await scene.db.getUserByEmail(email);
         const user = {
           email: "arf@arf.arf",
-          baseStats: { speed: 300, attackSpeed: 200 },
+          baseStats: { speed: 150, attackSpeed: 200 },
           direction: "up",
           equipment: {
             handRight: ItemBuilder.buildItem("weapon", "common", "common-sword"),
@@ -101,9 +101,12 @@ class ServerScene extends Phaser.Scene {
       });
 
       socket.on("attack", ({ count, direction }) => {
-        console.log("🧑🏻‍🦰 attacking");
         const player = getFullCharacterState(scene.players[socketId]);
         socket.to(player.roomName).emit("playerAttack", { socketId, count, direction });
+      });
+
+      socket.on("hit", ({ entity, ids, spellName }) => {
+        console.log(`🔫 ${spellName} landed on ${entity}`);
       });
 
       socket.on("enterDoor", (doorName) => {
