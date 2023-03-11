@@ -11,6 +11,7 @@ class Spell extends Phaser.GameObjects.Container {
     this.frame = 0;
     this.hitIds = []; //who has this npc hit?
 
+    /* TODO: Once we have enough spells, we can convert this to read a JSON file */
     if (spellName === "attack") {
       this.spell = scene.add.existing(new Sprite(scene, 0, 0, "misc-slash", 0));
       scene.physics.add.existing(this);

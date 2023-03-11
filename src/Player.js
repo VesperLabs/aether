@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import Character from "./Character";
 import Bubble from "./Bubble";
 import Spell from "./Spell";
+import Bar from "./Bar";
 const Sprite = Phaser.GameObjects.Sprite;
 
 const BLANK_TEXTURE = "human-blank";
@@ -10,7 +11,6 @@ class Player extends Character {
     super(scene, args);
     this.weaponAtlas = scene.cache.json.get("weaponAtlas");
     this.bodyOffsetY = -14 * (this?.profile?.scale || 1);
-    this.bubbleOffsetY = -50 * (this?.profile?.scale || 1);
     this.initSpriteLayers();
     this.drawCharacterFromUserData();
     this.checkAttackHands();
@@ -42,7 +42,8 @@ class Player extends Character {
     this.handLeft = scene.add.existing(new Sprite(scene, 13, -9, BLANK_TEXTURE));
     this.handRight = scene.add.existing(new Sprite(scene, -13, -9, BLANK_TEXTURE));
     this.shadow = scene.add.existing(new Sprite(...defaults));
-    this.bubble = scene.add.existing(new Bubble(scene, this.bubbleOffsetY, this.bubbleMessage));
+    this.bubble = scene.add.existing(new Bubble(scene, this?.profile?.headY, this.bubbleMessage));
+    this.hpBar = scene.add.existing(new Bar(scene, 0, this?.profile?.headY, 28, 9));
     this.add(this.shadow);
     this.add(this.chest);
     this.add(this.skin);
@@ -57,7 +58,7 @@ class Player extends Character {
     this.add(this.handRight);
     this.add(this.bubble);
     // this.add(this.usernameText);
-    // this.add(this.hpBar);
+    this.add(this.hpBar);
     // this.add(this.talkMenu);
   }
   drawCharacterFromUserData() {
@@ -147,6 +148,7 @@ function drawFrame(p) {
     face,
     hair,
     bubble,
+    hpBar,
   } = p;
 
   /* Depth sort based on direction */
@@ -189,6 +191,7 @@ function drawFrame(p) {
   }
 
   p.bringToTop(bubble);
+  p.bringToTop(hpBar);
 
   playAnim(skin, [profile?.race, direction, action]);
   if (profile?.race === "human") {

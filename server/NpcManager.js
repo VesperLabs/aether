@@ -42,7 +42,7 @@ class NpcManager {
 const mobTypes = {
   /* Level 1 */
   raccoon: {
-    profile: { race: "raccoon" },
+    profile: { race: "raccoon", headY: -27 },
     name: "Raccoon",
     baseStats: {
       expValue: 2,
@@ -83,7 +83,7 @@ const mobTypes = {
     ],
   },
   slime: {
-    profile: { race: "slime" },
+    profile: { race: "slime", headY: -28 },
     name: "Slime",
     baseStats: {
       expValue: 2,
@@ -118,7 +118,7 @@ const mobTypes = {
     ],
   },
   hornet: {
-    profile: { race: "bee" },
+    profile: { race: "bee", headY: -34 },
     name: "Hornet",
     baseStats: {
       expValue: 1,
@@ -154,7 +154,7 @@ const mobTypes = {
   },
   /* Level 5 */
   hawkwing: {
-    profile: { race: "bee", tint: "44FFCC", scale: 1.5 },
+    profile: { race: "bee", tint: "44FFCC", scale: 1.5, headY: -45 },
     name: "Hawkwing",
     isAggro: true,
     baseStats: {
@@ -183,7 +183,7 @@ const mobTypes = {
     drops: [],
   },
   spider: {
-    profile: { race: "spider" },
+    profile: { race: "spider", headY: -30 },
     name: "Spider",
     isAggro: true,
     baseStats: {
@@ -219,7 +219,7 @@ const mobTypes = {
     ],
   },
   hogan: {
-    profile: { race: "spider", tint: "FF33CC", scale: 2 },
+    profile: { race: "spider", tint: "FF33CC", scale: 2, headY: -30 },
     name: "Hogan",
     isAggro: true,
     baseStats: {
@@ -261,7 +261,7 @@ const mobTypes = {
     ],
   },
   bat: {
-    profile: { race: "bat" },
+    profile: { race: "bat", headY: -30 },
     name: "Bat",
     isAggro: true,
     baseStats: {
@@ -304,7 +304,7 @@ const mobTypes = {
   },
   /* Level 10 */
   zombie: {
-    profile: { race: "zombie" },
+    profile: { race: "zombie", headY: -44 },
     name: "Zombie",
     isAggro: true,
     baseStats: {
@@ -352,7 +352,7 @@ const mobTypes = {
     ],
   },
   wraith: {
-    profile: { race: "wraith" },
+    profile: { race: "wraith", headY: -46 },
     name: "Wraith",
     isAggro: true,
     baseStats: {
@@ -400,7 +400,7 @@ const mobTypes = {
     ],
   },
   chonks: {
-    profile: { race: "abomination", tint: "88FF88" },
+    profile: { race: "abomination", tint: "88FF88", headY: -88 },
     name: "Chonks",
     isAggro: true,
     baseStats: {
@@ -448,7 +448,7 @@ const mobTypes = {
     ],
   },
   merman: {
-    profile: { race: "merman" },
+    profile: { race: "merman", headY: -30 },
     name: "Merman",
     isAggro: true,
     baseStats: {
