@@ -76,7 +76,7 @@ class ServerScene extends Phaser.Scene {
             race: "human",
             hair: { tint: "00FF00", texture: "hair-3" },
             face: { texture: "face-1" },
-            headY: -50,
+            headY: -47,
           },
           roomName: "grassland",
           stats: { hp: null, mp: null, exp: null },

@@ -83,7 +83,7 @@ const mobTypes = {
     ],
   },
   slime: {
-    profile: { race: "slime", headY: -28 },
+    profile: { race: "slime", headY: -23 },
     name: "Slime",
     baseStats: {
       expValue: 2,

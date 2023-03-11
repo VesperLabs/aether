@@ -65,8 +65,8 @@ class Bar extends Phaser.GameObjects.Container {
   center() {
     this.x = -Math.floor(this.width / 4);
   }
-  setPercent(progress) {
-    const newWidth = (this.width - FRAME_SIZE - FRAME_SIZE) * progress;
+  setPercent(percent) {
+    const newWidth = (this.width - FRAME_SIZE - FRAME_SIZE) * percent;
     this.bar.setDisplaySize(newWidth, this.bar.height);
   }
 }

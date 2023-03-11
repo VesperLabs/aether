@@ -73,11 +73,6 @@ class Player extends Character {
     if (profile?.hair?.tint) {
       this.hair.setTint("0x" + profile?.hair?.tint);
     }
-    /* ToDo: Need headY cords to be loaded with asshat */
-    if (profile?.race !== "human") {
-      this.bubble.setHeadY(-30);
-      //this.hpBar.setHeadY(-20);
-    }
   }
   doAttack(count) {
     if (!this.state.hasWeapon) return;
