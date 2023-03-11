@@ -43,7 +43,7 @@ class Player extends Character {
     this.handRight = scene.add.existing(new Sprite(scene, -13, -9, BLANK_TEXTURE));
     this.shadow = scene.add.existing(new Sprite(...defaults));
     this.bubble = scene.add.existing(new Bubble(scene, this?.profile?.headY, this.bubbleMessage));
-    this.hpBar = scene.add.existing(new Bar(scene, 0, this?.profile?.headY, 28, 9));
+    this.hpBar = scene.add.existing(new Bar(scene, 0, this?.profile?.headY, 32, 12));
     this.add(this.shadow);
     this.add(this.chest);
     this.add(this.skin);

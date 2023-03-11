@@ -4,7 +4,7 @@ const Sprite = Phaser.GameObjects.Sprite;
 const FRAME_SIZE = 4;
 
 class Bar extends Phaser.GameObjects.Container {
-  constructor(scene, x, y, width, height) {
+  constructor(scene, x, y, width, height, percent = 0.75, color = "0xFF0000") {
     super(scene, x, y);
     this.width = width;
     this.height = height;
@@ -33,6 +33,19 @@ class Bar extends Phaser.GameObjects.Container {
       .setFrame(5)
       .setOrigin(1, 0)
       .setDisplaySize(FRAME_SIZE, height - FRAME_SIZE - FRAME_SIZE);
+    const bg = new Sprite(scene, FRAME_SIZE, FRAME_SIZE, "misc-bars", 0)
+      .setFrame(4)
+      .setOrigin(0, 0)
+      .setDisplaySize(width - FRAME_SIZE - FRAME_SIZE, FRAME_SIZE)
+      .setTint("0x444444");
+
+    this.bar = scene.add.existing(
+      new Sprite(scene, FRAME_SIZE, FRAME_SIZE, "misc-bars", 0)
+        .setFrame(4)
+        .setOrigin(0, 0)
+        .setDisplaySize(width - FRAME_SIZE - FRAME_SIZE, FRAME_SIZE)
+        .setTint(color)
+    );
 
     // Add everything to the container
     this.add(tl);
@@ -43,14 +56,18 @@ class Bar extends Phaser.GameObjects.Container {
     this.add(bot);
     this.add(left);
     this.add(right);
+    this.add(bg);
+    this.add(this.bar);
+    this.setScale(0.5);
     this.center();
+    this.setPercent(percent);
   }
   center() {
-    this.x = -Math.floor(this.width / 2);
+    this.x = -Math.floor(this.width / 4);
   }
-  setProgress(progress) {
-    const width = (this.width - this.children[0].width - this.children[1].width) * progress;
-    this.children[4].setDisplaySize(width, this.children[4].height);
+  setPercent(progress) {
+    const newWidth = (this.width - FRAME_SIZE - FRAME_SIZE) * progress;
+    this.bar.setDisplaySize(newWidth, this.bar.height);
   }
 }
 
