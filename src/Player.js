@@ -3,8 +3,7 @@ import Character from "./Character";
 import Bubble from "./Bubble";
 import Spell from "./Spell";
 import Bar from "./Bar";
-const Sprite = Phaser.GameObjects.Sprite;
-
+const { Sprite, BitmapText } = Phaser.GameObjects;
 const BLANK_TEXTURE = "human-blank";
 class Player extends Character {
   constructor(scene, args) {
@@ -44,6 +43,7 @@ class Player extends Character {
     this.shadow = scene.add.existing(new Sprite(...defaults));
     this.bubble = scene.add.existing(new Bubble(scene, this?.profile?.headY, this.bubbleMessage));
     this.hpBar = scene.add.existing(new Bar(scene, 0, this?.profile?.headY, 32, 12));
+    this.userName = scene.add.existing(new BitmapText(this.scene, 0, 8, "nin-light").setScale(0.5));
     this.add(this.shadow);
     this.add(this.chest);
     this.add(this.skin);
@@ -57,9 +57,8 @@ class Player extends Character {
     this.add(this.handLeft);
     this.add(this.handRight);
     this.add(this.bubble);
-    // this.add(this.usernameText);
+    this.add(this.userName);
     this.add(this.hpBar);
-    // this.add(this.talkMenu);
   }
   drawCharacterFromUserData() {
     const { profile } = this;
@@ -67,11 +66,16 @@ class Player extends Character {
       this.skin.setScale(profile?.scale);
     }
     if (profile?.tint) {
-      this.skin.setTint("0x" + profile?.tint);
-      this.chest.setTint("0x" + profile?.tint);
+      this.skin.setTint(profile?.tint);
+      this.chest.setTint(profile?.tint);
     }
     if (profile?.hair?.tint) {
-      this.hair.setTint("0x" + profile?.hair?.tint);
+      this.hair.setTint(profile?.hair?.tint);
+    }
+    if (profile?.userName) {
+      this.userName.setText(profile?.userName);
+      this.userName.setX(-this.userName.width / 2);
+      this.userName.setTint(profile?.userNameTint);
     }
   }
   doAttack(count) {
@@ -144,6 +148,7 @@ function drawFrame(p) {
     hair,
     bubble,
     hpBar,
+    userName,
   } = p;
 
   /* Depth sort based on direction */
@@ -185,6 +190,7 @@ function drawFrame(p) {
     p.bringToTop(handRight);
   }
 
+  p.bringToTop(userName);
   p.bringToTop(bubble);
   p.bringToTop(hpBar);
 

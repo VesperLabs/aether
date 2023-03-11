@@ -32,6 +32,7 @@ export async function initDatabase(uri) {
 
 const getDatabaseApi = (db) => ({
   getUserByEmail: async (email) => {
+    if (!email) return console.log("❌ Email not provided");
     const user = await db.collection("users").findOne({ email });
     console.log(`💾 Found ${user?.email} in db`);
     return user;
@@ -48,17 +49,7 @@ const getDatabaseApi = (db) => ({
             x: player?.x,
             y: player?.y,
             //quests: user.quests,
-            //username: user.username,
-            profile: {
-              race: "human",
-              hair: {
-                tint: "00FF00",
-                texture: "hair-1",
-              },
-              face: {
-                texture: "face-1",
-              },
-            },
+            profile: player?.profile,
             direction: player?.direction,
             //gold: player.gold,
             //state: player.state,

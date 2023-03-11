@@ -22,10 +22,10 @@ import {
   getTrimmedRoomState,
   getDoor,
   removePlayer,
+  baseUser,
 } from "./utils";
 import { initDatabase } from "./db";
 import RoomManager from "./RoomManager";
-import ItemBuilder from "./ItemBuilder";
 global.phaserOnNodeFPS = process.env.SERVER_FPS;
 
 app.use(express.static(path.join(__dirname, "../public")));
@@ -52,46 +52,21 @@ class ServerScene extends Phaser.Scene {
     io.on("connection", (socket) => {
       const socketId = socket.id;
 
-      socket.on("login", async () => {
-        //const user = await scene.db.getUserByEmail(email);
-        const user = {
-          email: "arf@arf.arf",
-          baseStats: { speed: 450, attackSpeed: 200 },
-          direction: "up",
-          equipment: {
-            handRight: ItemBuilder.buildItem("weapon", "common", "common-sword"),
-            handLeft: ItemBuilder.buildItem("weapon", "unique", "unique-claymore-soul"),
-            helmet: ItemBuilder.buildItem("helmet", "unique", "unique-cap-tudwick"),
-            accessory: null,
-            pants: ItemBuilder.buildItem("pants", "common", "common-pants-cloth"),
-            armor: ItemBuilder.buildItem("armor", "common", "common-robe-cloth"),
-            boots: null,
-            ring1: null,
-            ring2: null,
-            amulet: null,
-          },
-          profile: {
-            userName: "Player1",
-            gender: "female",
-            race: "human",
-            hair: { tint: "00FF00", texture: "hair-3" },
-            face: { texture: "face-1" },
-            headY: -47,
-          },
-          roomName: "grassland",
-          stats: { hp: null, mp: null, exp: null },
-          x: 432,
-          y: 400,
-        };
+      socket.on("login", async (email = "arf@arf.arf") => {
+        const user = await scene.db.getUserByEmail(email);
+
+        if (!user) return console.log("❌ Player not found in db");
 
         const player = scene.roomManager.rooms[user.roomName].playerManager.create({
           socketId,
           ...user,
         });
-        const roomName = player?.room?.name;
-        console.log(`🧑🏻‍🦰 ${player?.profile?.userName} connected`);
-        if (!roomName) console.log("❌ Missing player roomName");
 
+        const roomName = player?.room?.name;
+
+        if (!roomName) return console.log("❌ Missing player roomName");
+
+        console.log(`🧑🏻‍🦰 ${player?.profile?.userName} connected`);
         socket.join(roomName);
         socket.emit("heroInit", {
           players: getFullRoomState(scene, roomName)?.players,

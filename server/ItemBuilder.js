@@ -85,7 +85,7 @@ const _itemList = {
         ilvl: 1,
         name: "Scythe",
         texture: "weapon-scythe",
-        tint: "FFFFFF",
+        tint: "0xFFFFFF",
         slot: "hands",
         stats: {
           attackSpeed: 150,
@@ -98,7 +98,7 @@ const _itemList = {
         ilvl: 1,
         name: "Spear",
         texture: "weapon-spear",
-        tint: "FFFFFF",
+        tint: "0xFFFFFF",
         slot: "hands",
         stats: {
           attackSpeed: 500,
@@ -142,7 +142,7 @@ const _itemList = {
         set: "hawkwings",
         name: "Hawkwing's Pincher",
         texture: "weapon-scythe",
-        tint: "55FF55",
+        tint: "0x55FF55",
         slot: "hands",
         requirements: {
           level: 5,
@@ -159,7 +159,7 @@ const _itemList = {
         set: "hawkwings",
         name: "Hawkwing's Tickler",
         texture: "weapon-scythe",
-        tint: "5588FF",
+        tint: "0x5588FF",
         slot: "hands",
         requirements: {
           level: 5,
@@ -179,7 +179,7 @@ const _itemList = {
         ilvl: 1,
         name: "Colloquial Cap",
         texture: "helmet-cap",
-        tint: "865027",
+        tint: "0x865027",
         slot: "helmet",
         stats: {
           defense: 3,
@@ -189,7 +189,7 @@ const _itemList = {
         ilvl: 1,
         name: "Cloth Cap",
         texture: "helmet-cap",
-        tint: "FFDDCC",
+        tint: "0xFFDDCC",
         slot: "helmet",
         stats: {
           defense: 3,
@@ -219,7 +219,7 @@ const _itemList = {
         ilvl: 1,
         name: "Nutshell Plate",
         texture: "armor-light-plate",
-        tint: "CC9966",
+        tint: "0xCC9966",
         slot: "armor",
         stats: {
           defense: 5,
@@ -229,7 +229,7 @@ const _itemList = {
         ilvl: 1,
         name: "Cloth Robe",
         texture: "armor-robe",
-        tint: "FFDDCC",
+        tint: "0xFFDDCC",
         slot: "armor",
         stats: {
           defense: 3,
@@ -239,7 +239,7 @@ const _itemList = {
         ilvl: 2,
         name: "Bronze Plate",
         texture: "armor-light-plate",
-        tint: "FFCCAA",
+        tint: "0xFFCCAA",
         slot: "armor",
         requirements: {
           level: 10,
@@ -252,7 +252,7 @@ const _itemList = {
         ilvl: 2,
         name: "Bronze Heavy Plate",
         texture: "armor-plate",
-        tint: "FFCCAA",
+        tint: "0xFFCCAA",
         slot: "armor",
         requirements: {
           level: 10,
@@ -266,7 +266,7 @@ const _itemList = {
         ilvl: 3,
         name: "Wizard Robe",
         texture: "armor-wizard",
-        tint: "FFFFFF",
+        tint: "0xFFFFFF",
         slot: "armor",
         requirements: {
           level: 20,
@@ -281,7 +281,7 @@ const _itemList = {
         ilvl: 1,
         name: "The Mossman Prophecy",
         texture: "armor-robe",
-        tint: "66AA66",
+        tint: "0x66AA66",
         slot: "armor",
         stats: {
           dodgeChance: 2,
@@ -302,7 +302,7 @@ const _itemList = {
         set: "chets",
         name: "Chet's Purple Shirt",
         texture: "armor-robe",
-        tint: "8800FF",
+        tint: "0x8800FF",
         slot: "armor",
         requirements: {
           level: 6,
@@ -321,7 +321,7 @@ const _itemList = {
         ilvl: 1,
         name: "Nutshell Boots",
         texture: "boots-cloth",
-        tint: "CC9966",
+        tint: "0xCC9966",
         slot: "boots",
         stats: {
           speed: 5,
@@ -332,7 +332,7 @@ const _itemList = {
         ilvl: 2,
         name: "Leather Boots",
         texture: "boots-cloth",
-        tint: "865027",
+        tint: "0x865027",
         slot: "boots",
         stats: {
           speed: 10,
@@ -346,7 +346,7 @@ const _itemList = {
         set: "chets",
         name: "Chet's Neon Kicks",
         texture: "boots-cloth",
-        tint: "00FF00",
+        tint: "0x00FF00",
         slot: "boots",
         requirements: {
           level: 6,
@@ -365,7 +365,7 @@ const _itemList = {
         ilvl: 1,
         name: "Cloth Pants",
         texture: "pants-cloth",
-        tint: "FFDDCC",
+        tint: "0xFFDDCC",
         slot: "pants",
         stats: {
           defense: 3,
@@ -375,7 +375,7 @@ const _itemList = {
         ilvl: 2,
         name: "Leather Pants",
         texture: "pants-cloth",
-        tint: "865027",
+        tint: "0x865027",
         slot: "pants",
         requirements: {
           level: 10,
@@ -391,7 +391,7 @@ const _itemList = {
         set: "chets",
         name: "Chet's Champions",
         texture: "pants-cloth",
-        tint: "3333EE",
+        tint: "0x3333EE",
         slot: "pants",
         requirements: {
           level: 6,
@@ -409,7 +409,7 @@ const _itemList = {
         ilvl: 1,
         name: "Bark Blocker",
         texture: "shield-broken",
-        tint: "865027",
+        tint: "0x865027",
         slot: "hands",
         stats: {
           defense: 5,
@@ -420,7 +420,7 @@ const _itemList = {
         ilvl: 2,
         name: "Buckler",
         texture: "shield-buckler",
-        tint: "FFFFFF",
+        tint: "0xFFFFFF",
         slot: "hands",
         stats: {
           defense: 10,
@@ -433,7 +433,7 @@ const _itemList = {
         ilvl: 2,
         name: "Round Stage",
         texture: "shield-round",
-        tint: "FFFFFF",
+        tint: "0xFFFFFF",
         slot: "hands",
         stats: {
           critChance: [4, 5],
@@ -455,7 +455,7 @@ const _itemList = {
         ilvl: 1,
         name: "Glasses",
         texture: "accessory-glasses",
-        tint: "FFFFFF",
+        tint: "0xFFFFFF",
         slot: "accessory",
         stats: {
           accuracy: 1,
@@ -467,7 +467,7 @@ const _itemList = {
         ilvl: 1,
         name: "Compound Lenses",
         texture: "accessory-glasses",
-        tint: "FF6666",
+        tint: "0xFF6666",
         slot: "accessory",
         stats: {
           accuracy: 5,
@@ -485,7 +485,7 @@ const _itemList = {
         ilvl: 1,
         name: "Silver Ring",
         texture: "ring-silver-plain",
-        tint: "FFFFFF",
+        tint: "0xFFFFFF",
         slot: "ring",
         stats: {
           defense: 1,
@@ -495,7 +495,7 @@ const _itemList = {
         ilvl: 2,
         name: "Gold Ring",
         texture: "ring-gold-plain",
-        tint: "FFFFFF",
+        tint: "0xFFFFFF",
         slot: "ring",
         stats: {
           defense: 5,
@@ -508,7 +508,7 @@ const _itemList = {
         set: "timmys",
         name: "Timmy's Signet",
         texture: "ring-silver-sapphire",
-        tint: "FFFFFF",
+        tint: "0xFFFFFF",
         slot: "ring",
         requirements: {
           level: 10,
@@ -523,7 +523,7 @@ const _itemList = {
         ilvl: 2,
         name: "Blood Music",
         texture: "ring-silver-ruby",
-        tint: "FFFFFF",
+        tint: "0xFFFFFF",
         slot: "ring",
         requirements: {
           level: 10,
@@ -544,7 +544,7 @@ const _itemList = {
         ilvl: 1,
         name: "Silver Amulet",
         texture: "amulet-silver-plain",
-        tint: "FFFFFF",
+        tint: "0xFFFFFF",
         slot: "amulet",
         stats: {
           defense: 1,
@@ -554,7 +554,7 @@ const _itemList = {
         ilvl: 2,
         name: "Gold Amulet",
         texture: "amulet-gold-plain",
-        tint: "FFFFFF",
+        tint: "0xFFFFFF",
         slot: "amulet",
         stats: {
           defense: 5,
@@ -567,7 +567,7 @@ const _itemList = {
         set: "timmys",
         name: "Timmy's Chain",
         texture: "amulet-gold-plain",
-        tint: "FFFFFF",
+        tint: "0xFFFFFF",
         slot: "amulet",
         requirements: {
           level: 10,
@@ -585,7 +585,7 @@ const _itemList = {
         name: "Small HP Potion",
         slot: "stackable",
         texture: "stackable-potion-small-hp",
-        tint: "FFFFFF",
+        tint: "0xFFFFFF",
         type: "stackable",
         effects: {
           hp: 25,
@@ -596,7 +596,7 @@ const _itemList = {
         name: "Small MP Potion",
         slot: "stackable",
         texture: "stackable-potion-small-mp",
-        tint: "FFFFFF",
+        tint: "0xFFFFFF",
         type: "stackable",
         effects: {
           mp: 25,
@@ -607,7 +607,7 @@ const _itemList = {
         name: "Medium HP Potion",
         slot: "stackable",
         texture: "stackable-potion-medium-hp",
-        tint: "FFFFFF",
+        tint: "0xFFFFFF",
         type: "stackable",
         effects: {
           hp: 50,
@@ -618,7 +618,7 @@ const _itemList = {
         name: "Medium MP Potion",
         slot: "stackable",
         texture: "stackable-potion-medium-mp",
-        tint: "FFFFFF",
+        tint: "0xFFFFFF",
         type: "stackable",
         effects: {
           mp: 50,
@@ -629,7 +629,7 @@ const _itemList = {
         name: "Blue Sporangium",
         slot: "stackable",
         texture: "stackable-bsporangium",
-        tint: "6666FF",
+        tint: "0x6666FF",
         type: "stackable",
         effects: {
           hp: 15,
@@ -640,7 +640,7 @@ const _itemList = {
         name: "Red Apple",
         slot: "stackable",
         texture: "stackable-apple",
-        tint: "FFFFFF",
+        tint: "0xFFFFFF",
         type: "stackable",
         effects: {
           hp: 20,
@@ -651,7 +651,7 @@ const _itemList = {
         name: "Bat Meat",
         slot: "stackable",
         texture: "stackable-meat",
-        tint: "FFFFFF",
+        tint: "0xFFFFFF",
         type: "stackable",
         effects: {
           hp: 30,
@@ -662,7 +662,7 @@ const _itemList = {
         name: "Spider Meat",
         slot: "stackable",
         texture: "stackable-meat",
-        tint: "FFFFFF",
+        tint: "0xFFFFFF",
         type: "stackable",
         effects: {
           hp: 30,
@@ -673,7 +673,7 @@ const _itemList = {
         name: "Cheese",
         slot: "stackable",
         texture: "stackable-cheese",
-        tint: "FFFFFF",
+        tint: "0xFFFFFF",
         type: "stackable",
         effects: {
           hp: 25,
@@ -684,7 +684,7 @@ const _itemList = {
         name: "Grapes",
         slot: "stackable",
         texture: "stackable-grapes",
-        tint: "FFFFFF",
+        tint: "0xFFFFFF",
         type: "stackable",
         effects: {
           hp: 20,
@@ -695,7 +695,7 @@ const _itemList = {
         name: "Skull",
         slot: "stackable",
         texture: "stackable-skull",
-        tint: "FFFFFF",
+        tint: "0xFFFFFF",
         type: "stackable",
         effects: {},
       },

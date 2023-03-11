@@ -26,8 +26,16 @@ const faceSchema = {
 
 const profileSchema = {
   bsonType: "object",
-  required: ["race"],
+  required: ["race", "userName"],
   properties: {
+    userNameTint: {
+      bsonType: "string",
+      description: "must be a string",
+    },
+    userName: {
+      bsonType: "string",
+      description: "must be a string and is required",
+    },
     race: {
       bsonType: "string",
       description: "must be a string and is required",

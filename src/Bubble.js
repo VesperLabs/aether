@@ -10,7 +10,7 @@ class Bubble extends Phaser.GameObjects.Container {
    * @param {object} text
    * @memberof Bubble
    */
-  constructor(scene, headY, message = "YAY") {
+  constructor(scene, headY, message) {
     super(scene, 0, 0);
 
     this.headY = headY;

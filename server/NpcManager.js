@@ -154,7 +154,7 @@ const mobTypes = {
   },
   /* Level 5 */
   hawkwing: {
-    profile: { race: "bee", tint: "44FFCC", scale: 1.5, headY: -45 },
+    profile: { race: "bee", tint: "0x44FFCC", scale: 1.5, headY: -45 },
     name: "Hawkwing",
     isAggro: true,
     baseStats: {
@@ -183,7 +183,7 @@ const mobTypes = {
     drops: [],
   },
   spider: {
-    profile: { race: "spider", headY: -30 },
+    profile: { race: "spider", headY: -21 },
     name: "Spider",
     isAggro: true,
     baseStats: {
@@ -219,7 +219,7 @@ const mobTypes = {
     ],
   },
   hogan: {
-    profile: { race: "spider", tint: "FF33CC", scale: 2, headY: -30 },
+    profile: { race: "spider", tint: "0xFF33CC", scale: 2, headY: -30 },
     name: "Hogan",
     isAggro: true,
     baseStats: {
@@ -400,7 +400,7 @@ const mobTypes = {
     ],
   },
   chonks: {
-    profile: { race: "abomination", tint: "88FF88", headY: -88 },
+    profile: { race: "abomination", tint: "0x88FF88", headY: -88 },
     name: "Chonks",
     isAggro: true,
     baseStats: {
