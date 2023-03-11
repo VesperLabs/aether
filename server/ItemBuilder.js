@@ -36,7 +36,7 @@ const _itemList = {
         texture: "weapon-sword-short",
         slot: "hands",
         stats: {
-          attackSpeed: 200,
+          attackSpeed: 100,
           minDamage: 2,
           maxDamage: 2,
           range: 1,
@@ -733,7 +733,7 @@ const _setList = {
       speed: 5,
       dodgeChance: 5,
       critChance: 5,
-      critMultiplyer: 1,
+      critMultiplier: 1,
     },
     percentStats: {},
   },

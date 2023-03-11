@@ -55,7 +55,7 @@ const profileSchema = {
 
 const userSchema = {
   bsonType: "object",
-  required: ["x", "y", "roomName"],
+  required: ["x", "y", "roomName", "baseStats"],
   properties: {
     x: {
       bsonType: "number",
@@ -72,6 +72,10 @@ const userSchema = {
     direction: {
       bsonType: "string",
       description: "must be a string",
+    },
+    baseStats: {
+      bsonType: "object",
+      description: "must be an object and is required",
     },
     profile: profileSchema,
   },

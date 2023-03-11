@@ -12,14 +12,6 @@ function handlePlayerInput(scene, socketId, input) {
   player.direction = direction;
 }
 
-function calculateStats(user) {
-  const baseStats = user?.baseStats;
-  return {
-    speed: baseStats?.speed,
-    attackSpeed: baseStats?.attackSpeed,
-  };
-}
-
 function removePlayer(scene, socketId) {
   scene.players?.[socketId]?.destroy();
 }
@@ -61,6 +53,7 @@ function getFullCharacterState(p) {
     vy: p?.vy,
     direction: p?.direction,
     stats: p?.stats,
+    state: p?.state,
     equipment: p?.equipment,
     profile: p?.profile,
     bubbleMessage: p?.bubbleMessage,
@@ -95,11 +88,40 @@ function getTrimmedCharacterState(p) {
 
 const baseUser = {
   email: "arf@arf.arf",
-  baseStats: { speed: 450, attackSpeed: 200 },
-  direction: "up",
+  baseStats: {
+    expValue: 0,
+    level: 1,
+    unspentStats: 3,
+    speed: 150,
+    range: 32,
+    accuracy: 0,
+    attackSpeed: 0,
+    spellDamage: 0,
+    castSpeed: 1000,
+    armorPierce: 0,
+    dexterity: 1,
+    strength: 1,
+    vitality: 1,
+    intelligence: 1,
+    defense: 0,
+    blockChance: 0,
+    critChance: 0,
+    critMultiplier: 2,
+    dodgeChance: 0,
+    maxDamage: 0,
+    minDamage: 0,
+    magicFind: 0,
+    regenHp: 1,
+    regenMp: 1,
+    maxExp: 20,
+    maxHp: 10,
+    maxMp: 10,
+  },
+  direction: "down",
   equipment: {
     handRight: ItemBuilder.buildItem("weapon", "common", "common-sword"),
-    handLeft: ItemBuilder.buildItem("weapon", "unique", "unique-claymore-soul"),
+    handLeft: ItemBuilder.buildItem("weapon", "common", "common-sword"),
+    //handLeft: ItemBuilder.buildItem("weapon", "unique", "unique-claymore-soul"),
     helmet: ItemBuilder.buildItem("helmet", "unique", "unique-cap-tudwick"),
     accessory: null,
     pants: ItemBuilder.buildItem("pants", "common", "common-pants-cloth"),
@@ -118,10 +140,13 @@ const baseUser = {
     headY: -47,
   },
   roomName: "grassland",
-  stats: { hp: null, mp: null, exp: null },
   x: 432,
   y: 400,
 };
+
+function randomNumber(low, high) {
+  return Math.floor(Math.random() * (high - low + 1) + low);
+}
 
 export {
   removePlayer,
@@ -133,6 +158,6 @@ export {
   handlePlayerInput,
   removeAllPlayers,
   getDoor,
-  calculateStats,
+  randomNumber,
   baseUser,
 };

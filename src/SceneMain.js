@@ -53,6 +53,10 @@ class SceneMain extends Phaser.Scene {
       p.doAttack(count);
     });
 
+    scene.socket.on("assignDamage", ({ socketId, hitList }) => {
+      console.log(socketId, hitList);
+    });
+
     scene.socket.on("remove", (socketId) => removePlayer(scene, socketId));
 
     scene.socket.emit("login");

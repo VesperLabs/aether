@@ -53,8 +53,8 @@ class ServerScene extends Phaser.Scene {
       const socketId = socket.id;
 
       socket.on("login", async (email = "arf@arf.arf") => {
-        const user = await scene.db.getUserByEmail(email);
-
+        //const user = await scene.db.getUserByEmail(email);
+        const user = baseUser;
         if (!user) return console.log("❌ Player not found in db");
 
         const player = scene.roomManager.rooms[user.roomName].playerManager.create({
@@ -83,6 +83,15 @@ class ServerScene extends Phaser.Scene {
 
       socket.on("hit", ({ entity, ids, spellName }) => {
         console.log(`🔫 ${spellName} landed on ${entity}`);
+        let hitList = [];
+        const player = scene.players[socketId];
+        const roomNpcs = getFullRoomState(scene, player?.roomName)?.npcs;
+        for (const npc of roomNpcs) {
+          if (!ids?.includes(npc.id)) continue;
+          const newHit = player.calculateDamage(npc);
+          if (newHit) hitList.push(newHit);
+        }
+        io.to(player?.roomName).emit("assignDamage", { socketId, hitList });
       });
 
       socket.on("enterDoor", (doorName) => {

@@ -1,97 +1,59 @@
-import Phaser from "phaser";
+import BaseCharacter from "../src/Character";
+import { randomNumber } from "./utils";
 
-class Character extends Phaser.GameObjects.Container {
+class Character extends BaseCharacter {
   constructor(scene, args) {
-    const {
-      x,
-      y,
-      socketId,
-      id,
-      isHero = false,
-      room,
-      equipment = {},
-      profile,
-      stats = {},
-      bubbleMessage,
-      isAggro,
-      roomName,
-      baseStats = {},
-      direction,
-    } = args;
-    super(scene, x, y, []);
-    this.startingCoords = { x, y };
-    this.socketId = socketId;
-    this.id = id;
-    this.isHero = isHero;
-    this.roomName = roomName;
-    this.isAggro = isAggro;
-    this.room = room;
-    this.action = "stand";
-    this.direction = direction || "down";
-    this.currentSpeed = 0;
-    this.vx = 0;
-    this.vy = 0;
-    this.state = {
-      lastCombat: Date.now(),
-      lastAttack: Date.now(),
-      isIdle: true,
-      isAttacking: false,
-      hasWeaponRight: false,
-      hasWeaponLeft: false,
-    };
-    this.profile = profile;
-    this.equipment = equipment;
-    this.baseStats = baseStats;
-    this.stats = stats;
-    this.bubbleMessage = bubbleMessage;
-    scene.physics.add.existing(this);
-    const bodySize = 8 * (this?.profile?.scale || 1);
-    this.body.setCircle(bodySize, -bodySize, -bodySize);
+    super(scene, args);
+    this.room = args?.room;
+    this.scene = scene;
+    scene.events.on("update", this.update, this);
+    scene.events.once("shutdown", this.destroy, this);
+    this.calculateStats();
   }
   calculateStats() {
+    const { equipment } = this;
     let totalPercentStats = {};
     let ns = JSON.parse(JSON.stringify(this.baseStats));
     let setList = {};
+    this.stats = { hp: null, mp: null, exp: null };
     /* Normal equipment Stats */
-    Object.keys(this.equipment).forEach((eKey) => {
-      if (this.equipment[eKey]) {
-        if (this.equipment[eKey].set) {
-          if (setList[this.equipment[eKey].set]) {
+    Object.keys(equipment).forEach((eKey) => {
+      if (equipment[eKey]) {
+        if (equipment[eKey].set) {
+          if (setList[equipment[eKey].set]) {
             //checking to see that the weapons are different parts of the set etc...
             let amountThisItem = 0;
-            Object.keys(this.equipment).forEach((aKey) => {
-              if (this.equipment[aKey]) {
-                if (this.equipment[aKey].key == this.equipment[eKey].key) {
+            Object.keys(equipment).forEach((aKey) => {
+              if (equipment[aKey]) {
+                if (equipment[aKey].key == equipment[eKey].key) {
                   amountThisItem++;
                 }
               }
             });
             if (amountThisItem == 1) {
-              setList[this.equipment[eKey].set]++;
+              setList[equipment[eKey].set]++;
             }
           } else {
-            setList[this.equipment[eKey].set] = 1;
+            setList[equipment[eKey].set] = 1;
           }
         }
-        if (this.equipment[eKey].percentStats) {
-          Object.keys(this.equipment[eKey].percentStats).forEach((key) => {
+        if (equipment[eKey].percentStats) {
+          Object.keys(equipment[eKey].percentStats).forEach((key) => {
             if (!totalPercentStats[key]) {
-              totalPercentStats[key] = this.equipment[eKey].percentStats[key];
+              totalPercentStats[key] = equipment[eKey].percentStats[key];
             } else {
-              totalPercentStats[key] += this.equipment[eKey].percentStats[key];
+              totalPercentStats[key] += equipment[eKey].percentStats[key];
             }
           });
         }
-        if (this.equipment[eKey].stats) {
-          Object.keys(this.equipment[eKey].stats).forEach((key) => {
-            let itemStat = this.equipment[eKey].stats[key];
+        if (equipment[eKey].stats) {
+          Object.keys(equipment[eKey].stats).forEach((key) => {
+            let itemStat = equipment[eKey].stats[key];
             if (itemStat) {
               if (eKey == "handLeft") {
-                if (key == "range") {
-                  /* Left hand does not add range */
-                } else if (
+                if (
                   (key == "minDamage" || key == "maxDamage") &&
-                  this.equipment[eKey].type == "weapon"
+                  equipment[eKey].type == "weapon"
                 ) {
                   /* Left handed weapons only add half damage */
                   ns[key] += Math.floor(itemStat / 2);
@@ -140,10 +102,7 @@ class Character extends Phaser.GameObjects.Container {
       if (key == "vitality" || key == "dexterity" || key == "strength" || key == "intelligence")
         ns[key] += percentIncrease;
     });
-
-    ns.unspentStats = ns.unspentStats || 0;
     ns.expValue = ns.expValue || 0;
-    ns.range = ns.range || 0;
     ns.maxHp = ns.maxHp + ns.vitality * 3;
     ns.maxMp = ns.maxMp + ns.intelligence * 3;
     ns.regenHp = ns.regenHp || 0;
@@ -163,7 +122,7 @@ class Character extends Phaser.GameObjects.Container {
     ns.armorPierce = ns.armorPierce + ns.dexterity * 3;
     ns.defense = ns.defense + ns.strength * 3;
     ns.critChance = ns.critChance + ns.dexterity * 0.05;
-    ns.critMultiplyer = ns.critMultiplyer + ns.intelligence * 0.03;
+    ns.critMultiplier = ns.critMultiplier + ns.intelligence * 0.03;
     ns.speed = ns.speed + ns.dexterity * 0.003;
     //ns.blockChance = ns.blockChance + (0 * (ns.dexterity - 15)) / (ns.level * 2);
     ns.blockChance = ns.blockChance;
@@ -190,6 +149,73 @@ class Character extends Phaser.GameObjects.Container {
     else if (this.stats.mp > ns.maxMp) ns.mp = ns.maxMp;
     else ns.mp = this.stats.mp;
     this.stats = ns;
+  }
+  calculateDamage(victim) {
+    if (victim?.state?.isDead) return false;
+    let hit = {};
+    let isCriticalHit = false;
+    let damage = randomNumber(this.stats.minDamage, this.stats.maxDamage);
+    let defense = victim.stats.defense || 1;
+    let armorPierce = this.stats.armorPierce || 1;
+    let reduction = armorPierce / defense;
+    if (reduction > 1) reduction = 1;
+    let reducedDamage = damage * reduction;
+    if (reducedDamage < 1) reducedDamage = 1;
+    if (randomNumber(1, 100) >= Math.max(0, victim.stats.dodgeChance - this.stats.accuracy)) {
+      if (randomNumber(1, 100) >= victim.stats.blockChance) {
+        //critical
+        if (this.stats.critChance) {
+          if (randomNumber(1, 100) <= this.stats.critChance) {
+            isCriticalHit = true;
+            reducedDamage = reducedDamage * this.stats.critMultiplier;
+          }
+        }
+        //victim hit
+        reducedDamage = Math.floor(reducedDamage);
+        victim.stats.hp -= reducedDamage;
+        victim.state.lastCombat = Date.now();
+        //only lock a user if an attack hits
+        if (victim.state.isRobot) {
+          victim.state.lockedUser = this;
+        }
+        //damage types
+        if (victim.stats.hp <= 0) {
+          hit = {
+            type: "death",
+            isCritical: isCriticalHit,
+            amount: reducedDamage,
+            from: this.id,
+            to: victim.id,
+          };
+          victim.state.isDead = true;
+          victim.stats.hp = 0;
+          if (victim.state.isRobot) {
+            victim.state.deadTime = Date.now();
+          }
+        } else {
+          if (isCriticalHit) {
+            hit = {
+              type: "critical",
+              amount: reducedDamage,
+              from: this.id,
+              to: victim.id,
+            };
+          } else {
+            hit = {
+              type: "hit",
+              amount: reducedDamage,
+              from: this.id,
+              to: victim.id,
+            };
+          }
+        }
+      } else {
+        hit = { type: "block", amount: 0, from: this.id, to: victim.id };
+      } //blockchance
+    } else {
+      hit = { type: "miss", amount: 0, from: this.id, to: victim.id };
+    } //hitchance
+    return hit;
   }
 }
 

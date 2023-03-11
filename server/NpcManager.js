@@ -1,6 +1,5 @@
 import crypto from "crypto";
 import Npc from "./Npc";
-import { calculateStats } from "./utils";
 
 const POTION_DROP_RATE = 15;
 
@@ -27,7 +26,7 @@ class NpcManager {
   addNpc(user) {
     const { scene, room } = this;
     const id = crypto.randomUUID();
-    scene.npcs[id] = new Npc(scene, room, { id, ...user, stats: calculateStats(user) });
+    scene.npcs[id] = new Npc(scene, room, { id, ...user });
     scene.add.existing(scene.npcs[id]);
     room.npcs.add(scene.npcs[id]);
   }
@@ -59,7 +58,7 @@ const mobTypes = {
       blockChance: 0,
       dodgeChance: 0,
       critChance: 0,
-      critMultiplyer: 2,
+      critMultiplier: 2,
       maxDamage: 1,
       minDamage: 2,
       regenHp: 1,
@@ -100,7 +99,7 @@ const mobTypes = {
       blockChance: 0,
       dodgeChance: 0,
       critChance: 0,
-      critMultiplyer: 2,
+      critMultiplier: 2,
       maxDamage: 1,
       minDamage: 0,
       regenHp: 1,
@@ -135,7 +134,7 @@ const mobTypes = {
       blockChance: 0,
       dodgeChance: 35,
       critChance: 0,
-      critMultiplyer: 2,
+      critMultiplier: 2,
       maxDamage: 0,
       minDamage: 0,
       regenHp: 1,
@@ -172,7 +171,7 @@ const mobTypes = {
       blockChance: 0,
       dodgeChance: 45,
       critChance: 5,
-      critMultiplyer: 2,
+      critMultiplier: 2,
       maxDamage: 1,
       minDamage: 2,
       regenHp: 5,
@@ -201,7 +200,7 @@ const mobTypes = {
       blockChance: 0,
       dodgeChance: 0,
       critChance: 1,
-      critMultiplyer: 2,
+      critMultiplier: 2,
       maxDamage: 3,
       minDamage: 5,
       regenHp: 1,
@@ -237,7 +236,7 @@ const mobTypes = {
       blockChance: 0,
       dodgeChance: 0,
       critChance: 1,
-      critMultiplyer: 2,
+      critMultiplier: 2,
       maxDamage: 5,
       minDamage: 8,
       regenHp: 10,
@@ -279,7 +278,7 @@ const mobTypes = {
       blockChance: 0,
       dodgeChance: 35,
       critChance: 0,
-      critMultiplyer: 2,
+      critMultiplier: 2,
       maxDamage: 2,
       minDamage: 3,
       regenHp: 1,
@@ -322,7 +321,7 @@ const mobTypes = {
       blockChance: 0,
       dodgeChance: 0,
       critChance: 0,
-      critMultiplyer: 2,
+      critMultiplier: 2,
       maxDamage: 5,
       minDamage: 10,
       regenHp: 5,
@@ -370,7 +369,7 @@ const mobTypes = {
       blockChance: 0,
       dodgeChance: 5,
       critChance: 5,
-      critMultiplyer: 2,
+      critMultiplier: 2,
       maxDamage: 5,
       minDamage: 8,
       regenHp: 5,
@@ -418,7 +417,7 @@ const mobTypes = {
       blockChance: 0,
       dodgeChance: 0,
       critChance: 5,
-      critMultiplyer: 1.5,
+      critMultiplier: 1.5,
       maxDamage: 6,
       minDamage: 10,
       regenHp: 5,
@@ -466,7 +465,7 @@ const mobTypes = {
       blockChance: 0,
       dodgeChance: 5,
       critChance: 5,
-      critMultiplyer: 2,
+      critMultiplier: 2,
       maxDamage: 5,
       minDamage: 8,
       regenHp: 5,

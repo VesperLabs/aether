@@ -4,7 +4,7 @@ const Sprite = Phaser.GameObjects.Sprite;
 const FRAME_SIZE = 4;
 
 class Bar extends Phaser.GameObjects.Container {
-  constructor(scene, x, y, width, height, percent = 0.75, color = "0xFF0000") {
+  constructor(scene, x, y, width, height, percent = 0, color = "0xFF0000") {
     super(scene, x, y);
     this.width = width;
     this.height = height;

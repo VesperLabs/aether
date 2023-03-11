@@ -1,17 +1,19 @@
-import Character from "../src/Character";
+import Character from "./Character";
 
 const START_AGGRO_RANGE = 120;
 
 class Npc extends Character {
   constructor(scene, room, args) {
     super(scene, args);
-    this.room = room;
-    scene.events.on("update", this.update, this);
-    scene.events.once("shutdown", this.destroy, this);
   }
   update(time) {
     const player = this.room?.players?.getChildren()?.[0];
     const isNearPlayer = player && this.distanceTo(player) <= START_AGGRO_RANGE;
+    if (this.state.isDead) {
+      this.vx = 0;
+      this.vy = 0;
+      return this.body.setVelocity(this.vx, this.vy);
+    }
     if (this.isAggro && player && isNearPlayer) {
       this.moveTowardPlayer(player);
     } else {

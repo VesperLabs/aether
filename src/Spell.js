@@ -41,6 +41,8 @@ class Spell extends Phaser.GameObjects.Container {
       if (caster?.direction === "left") this.spell.setAngle(90);
       if (caster?.direction === "right") this.spell.setAngle(-90);
       this.spell.setAlpha(1);
+      /* Add to the caster so that it follows them (Some spells will be just this.add) */
+      this.caster.add(this.spell);
     }
     if (spellName == "fireball") {
       // this.spell = new Phaser.GameObjects.Sprite(this.scene, 0, 0, "spell-anim-fireball", 0);
@@ -59,7 +61,6 @@ class Spell extends Phaser.GameObjects.Container {
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
     this.setDepth(this?.caster?.depth - 10);
-    this.add(this.spell);
   }
   create() {}
   update(time, deltaTime) {

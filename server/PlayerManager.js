@@ -1,7 +1,4 @@
-import crypto from "crypto";
 import Player from "./Player";
-import { calculateStats } from "./utils";
-
 class PlayerManager {
   constructor(scene, room) {
     this.players = [];
@@ -10,13 +7,11 @@ class PlayerManager {
   }
   create(user) {
     const { scene, room } = this;
-    const id = crypto.randomUUID();
     const socketId = user?.socketId;
     scene.players[socketId] = new Player(scene, {
       ...user,
-      id,
+      id: socketId,
       room,
-      stats: calculateStats(user),
     });
     scene.add.existing(scene.players[socketId]);
     room.addPlayer(scene.players[socketId]);

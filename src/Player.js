@@ -13,6 +13,7 @@ class Player extends Character {
     this.initSpriteLayers();
     this.drawCharacterFromUserData();
     this.checkAttackHands();
+    this.updateHpBar();
     /* Do we really need these? */
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
@@ -103,6 +104,11 @@ class Player extends Character {
       this.bubbleMessage = message;
       this.bubble.setMessage(this.bubbleMessage);
     }
+  }
+  updateHpBar() {
+    const { stats } = this;
+    const percent = stats?.maxHp > 0 ? stats?.hp / stats?.maxHp : 0;
+    this.hpBar.setPercent(percent);
   }
   update(time, delta) {
     hackFrameRates(this, Math.round(80 + 2500 / (this.currentSpeed + 10)));
