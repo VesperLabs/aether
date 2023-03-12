@@ -35,7 +35,7 @@ function addJoystick(scene) {
   scene.joystick = scene.add.joystick({
     sprites: { cap: new RoundButton(scene), base: new RoundButton(scene) },
     singleDirection: false,
-    maxDistanceInPixels: 50,
+    maxDistanceInPixels: 25,
     device: isTouchScreen ? 1 : 0, // 0 for mouse pointer (computer), 1 for touch pointer (mobile)
   });
 }

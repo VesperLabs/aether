@@ -37,6 +37,7 @@ class Character extends Phaser.GameObjects.Container {
       isAggro: false,
       doHpRegen: false,
       doMpRegen: false,
+      lastTeleport: Date.now(),
       deadTime: Date.now(),
       lastHpRegen: Date.now(),
       lastMpRegen: Date.now(),

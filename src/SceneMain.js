@@ -43,9 +43,13 @@ class SceneMain extends Phaser.Scene {
       setCamera(scene, scene.hero);
     });
 
-    socket.on("playerJoin", (player) => {
-      if (getPlayer(scene, player.socketId)) return;
-      addPlayer(scene, player);
+    socket.on("playerJoin", (user) => {
+      const player = getPlayer(scene, user.socketId);
+      if (player) {
+        /* TODO: Maybe update the entire player here too */
+        return (player.state.lastTeleport = Date.now());
+      }
+      addPlayer(scene, user);
     });
 
     socket.on("playerAttack", ({ socketId, count, direction }) => {
@@ -75,13 +79,18 @@ class SceneMain extends Phaser.Scene {
   update(time, delta) {
     const playerSnapshot = SI.calcInterpolation("x y", "players");
     const npcSnapshot = SI.calcInterpolation("x y", "npcs");
+
     if (!this.socket || !this?.hero?.body || !playerSnapshot) return;
     /* Update Player x and y */
     for (const s of playerSnapshot?.state) {
       const player = getPlayer(this, s.socketId);
       if (!player || player?.state?.isDead) continue;
-      /* Update player movements */
+
       if (!player.isHero) {
+        /* Don't interpolate users who are going through a door */
+        const latestSnap = SI.vault.getById(playerSnapshot?.older);
+        if (player?.state?.lastTeleport >= latestSnap?.time) continue;
+        /* Update other player movements */
         player.setPosition(s.x, s.y);
       }
       player.vx = s.vx;

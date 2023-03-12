@@ -54,8 +54,8 @@ class ServerScene extends Phaser.Scene {
       const socketId = socket.id;
 
       socket.on("login", async (email = "arf@arf.arf") => {
-        //const user = await scene.db.getUserByEmail(email);
-        const user = baseUser;
+        const user = await scene.db.getUserByEmail(email);
+        //const user = baseUser;
         if (!user) return console.log("❌ Player not found in db");
 
         const player = scene.roomManager.rooms[user.roomName].playerManager.create({
@@ -115,17 +115,19 @@ class ServerScene extends Phaser.Scene {
         const prev = getDoor(scene, oldRoom, doorName)?.getProps();
         const next = getDoor(scene, prev.destMap, prev.destDoor)?.getProps();
 
-        socket.leave(oldRoom);
-        socket.join(prev.destMap);
-
         player.x = next.centerPos.x;
         player.y = next.centerPos.y;
+
+        if (oldRoom !== prev.destMap) {
+          socket.leave(oldRoom);
+          socket.join(prev.destMap);
+          socket.to(oldRoom).emit("remove", socketId);
+        }
 
         scene.roomManager.rooms[oldRoom].playerManager.remove(socketId);
         scene.roomManager.rooms[prev.destMap].playerManager.add(socketId);
 
-        socket.to(prev.destMap).emit("playerJoin", getCharacterState(scene.players[socketId]));
-        socket.to(oldRoom).emit("remove", socketId);
+        socket.to(prev.destMap).emit("playerJoin", getCharacterState(player));
 
         socket.emit("heroInit", {
           players: getRoomState(scene, prev.destMap)?.players,
