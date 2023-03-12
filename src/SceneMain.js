@@ -58,6 +58,9 @@ class SceneMain extends Phaser.Scene {
       for (const hit of npcHitList) {
         getNpc(scene, hit?.to)?.takeHit?.(hit);
       }
+      for (const hit of playerHitList) {
+        getPlayer(scene, hit?.to)?.takeHit?.(hit);
+      }
     });
 
     socket.on("respawnNpc", (id) => {
@@ -109,6 +112,7 @@ function enableDoors(scene) {
 }
 
 function moveHero(scene, time) {
+  if (scene?.hero?.state?.isDead) return;
   const speed = scene.hero.stats.speed;
   const joystick = scene.game.scene.scenes[2].joystick;
   const left = scene.cursorKeys.left.isDown;

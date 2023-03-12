@@ -65,9 +65,12 @@ class ServerScene extends Phaser.Scene {
 
         const roomName = player?.room?.name;
 
-        if (!roomName) return console.log("❌ Missing player roomName");
+        roomName
+          ? console.log(`🧑🏻‍🦰 ${player?.profile?.userName} connected`)
+          : console.log("❌ Missing player roomName");
 
-        console.log(`🧑🏻‍🦰 ${player?.profile?.userName} connected`);
+        if (!roomName) return;
+
         socket.join(roomName);
         socket.emit("heroInit", {
           players: getRoomState(scene, roomName)?.players,
@@ -82,8 +85,8 @@ class ServerScene extends Phaser.Scene {
         socket.to(player.roomName).emit("playerAttack", { socketId, count, direction });
       });
 
-      socket.on("hit", ({ entity, ids, spellName }) => {
-        console.log(`🔫 ${spellName} landed on ${entity}`);
+      socket.on("hit", ({ ids, spellName }) => {
+        //console.log(`🔫 ${spellName} landed on ${entity}`);
         const hero = scene.players[socketId];
         const roomName = hero?.roomName;
         /* Create hitList for npcs */

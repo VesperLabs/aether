@@ -10,9 +10,11 @@ class Spell extends Phaser.GameObjects.Container {
     this.spellName = spellName;
     this.frame = 0;
     this.hitIds = []; //who has this npc hit?
+    this.canHitSelf = true;
 
     /* TODO: Once we have enough spells, we can convert this to read a JSON file */
     if (spellName === "attack") {
+      this.canHitSelf = false;
       this.spell = scene.add.existing(new Sprite(scene, 0, 0, "misc-slash", 0));
       scene.physics.add.existing(this);
       this.maxVisibleTime = 1000;
@@ -85,20 +87,23 @@ class Spell extends Phaser.GameObjects.Container {
     }
   }
   checkCollisions() {
-    const { spellName, caster, scene } = this;
+    const { spellName, caster, scene, canHitSelf } = this;
     const direction = caster?.direction;
-    scene.npcs?.getChildren()?.forEach((npc) => {
-      if (!npc || this.hitIds.includes(npc?.id)) return;
-      if (scene.physics.overlap(npc, this)) {
+    const npcs = scene.npcs?.getChildren() || [];
+    const players = scene.players?.getChildren() || [];
+    [...npcs, ...players]?.forEach((victim) => {
+      if (!victim || this.hitIds.includes(victim?.id)) return;
+      if (!canHitSelf && victim?.id == caster?.id) return;
+      if (scene.physics.overlap(victim, this)) {
         /* For attacks, prevent collision behind the player */
         if (spellName === "attack") {
-          if (direction === "up" && npc.y > caster.y) return;
-          if (direction === "down" && npc.y < caster.y) return;
-          if (direction === "left" && npc.x > caster.x) return;
-          if (direction === "right" && npc.x < caster.x) return;
+          if (direction === "up" && victim.y > caster.y) return;
+          if (direction === "down" && victim.y < caster.y) return;
+          if (direction === "left" && victim.x > caster.x) return;
+          if (direction === "right" && victim.x < caster.x) return;
         }
-        this.hitIds.push(npc?.id);
-        scene.socket.emit("hit", { entity: "npc", ids: this.hitIds, spellName });
+        this.hitIds.push(victim?.id);
+        scene.socket.emit("hit", { ids: this.hitIds, spellName });
       }
     });
   }

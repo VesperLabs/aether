@@ -67,7 +67,7 @@ class Player extends Character {
     this.add(this.hpBar);
   }
   drawCharacterFromUserData() {
-    const { profile } = this;
+    const { profile, equipment } = this;
     if (profile?.scale) {
       this.skin.setScale(profile?.scale);
     }
@@ -77,6 +77,12 @@ class Player extends Character {
     }
     if (profile?.hair?.tint) {
       this.hair.setTint(profile?.hair?.tint);
+    }
+    if (equipment?.handLeft?.tint) {
+      this.handLeft.setTint(equipment?.handLeft?.tint);
+    }
+    if (equipment?.handRight?.tint) {
+      this.handRight.setTint(equipment?.handRight?.tint);
     }
     if (profile?.userName) {
       this.userName.setText(profile?.userName);
@@ -131,8 +137,7 @@ class Player extends Character {
     this.handRight.setVisible(false);
     this.hpBar.setVisible(false);
     this.bubble.setVisible(false);
-    this.skin.setTexture("icons").setFrame("grave");
-
+    this.skin.setTexture("icons").setFrame("grave").setTint("0xFFFFFF");
     if (this.isHero) {
       window.dispatchEvent(new Event("hero_died"));
     }
@@ -142,7 +147,6 @@ class Player extends Character {
     this.stats.hp = this.stats.maxHp;
     this.updateHpBar();
     this.drawCharacterFromUserData();
-    this.attackSprite.setVisible(true);
     this.shadow.setVisible(true);
     this.chest.setVisible(true);
     this.face.setVisible(true);
@@ -171,20 +175,17 @@ class Player extends Character {
   }
   takeHit(hit) {
     const { stats, state } = this;
-    if (state.isDead) return;
     this.scene.add.existing(new Damage(this.scene, this, hit));
+    if (state.isDead) return;
     if (hit.type == "death") {
       stats.hp = 0;
       this.doDeath();
     } else if (hit.type == "heal") {
-      if (stats.maxHp > hit.amount + stats.hp) {
-        stats.hp += hit.amount;
-      } else {
-        stats.hp = stats.maxHp;
-      }
+      this.modifyStat("hp", hit?.amount);
     } else {
-      stats.hp -= hit.amount;
+      this.modifyStat("hp", hit?.amount);
     }
+
     this.updateHpBar();
   }
   update(time, delta) {

@@ -9,7 +9,7 @@ class Damage extends Container {
    */
   constructor(scene, victim, hit) {
     super(scene, victim.x, victim.y);
-    let text = "";
+    let text = Math.abs(hit.amount);
     let damageSize = 30;
     this.victim = victim;
     this.duration = 1000;
@@ -19,7 +19,7 @@ class Damage extends Container {
     const damageText = new BitmapText(scene, 0, 0, "nin-light", hit.amount, damageSize);
     switch (hit.type) {
       case "heal":
-        text = "+" + Math.abs(hit.amount);
+        text = "+" + text;
         damageText.setTint("0x99FF99");
         break;
       case "miss":
@@ -31,33 +31,20 @@ class Damage extends Container {
         }
         break;
       case "block":
-        text = "Block!";
+        text = "block!";
         if (this.victim.isHero) {
           damageText.setTint("0xFF99FF");
         } else {
           damageText.setTint("0xFFFFFF");
         }
         break;
-      case "critical":
-        damageSize = 120;
-        text = hit.amount + "!";
-        if (this.victim.isHero) {
-          damageText.setTint("0xFFFFFF");
-        } else {
-          damageText.setTint("0xFF8833");
-        }
-        break;
       case "hit":
-        text = hit.amount;
+        text = text;
         if (this.victim.isHero) {
           damageText.setTint("0xFFFFFF");
         } else {
           damageText.setTint("0xFF6666");
         }
-        break;
-      case "heal":
-        text = "+" + hit.amount;
-        damageText.setTint("0x66FF66");
         break;
       case "level":
         text = "Level Up!";
@@ -65,23 +52,22 @@ class Damage extends Container {
         damageText.setTint("0xFF0000", "0xFFFF00", "0x00FFFF", "0x0000FF");
         break;
       case "exp":
-        text = hit.amount + " XP";
+        text = text + " XP";
         damageText.setTint("0xEECCFF");
         break;
       case "death":
-        if (hit.isCritical) {
-          damageSize = 120;
-          text = hit.amount + "!";
-          if (this.victim.isHero) {
-            damageText.setTint("0xFFFFFF");
-          } else {
-            damageText.setTint("0xFF8833");
-          }
-        } else {
-          text = hit.amount;
-          damageText.setTint("0xFF6666");
-        }
+        text = text;
+        damageText.setTint("0xFF6666");
         break;
+    }
+    if (hit.isCritical) {
+      damageSize = 120;
+      text = text + "!";
+      if (this.victim.isHero) {
+        damageText.setTint("0xFFFFFF");
+      } else {
+        damageText.setTint("0xFF8833");
+      }
     }
     damageText.fontSize = damageSize;
     damageText.setText(text);

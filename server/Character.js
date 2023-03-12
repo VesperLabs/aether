@@ -10,6 +10,9 @@ class Character extends BaseCharacter {
     scene.events.once("shutdown", this.destroy, this);
     this.calculateStats();
   }
+  update() {
+    this.doRegen();
+  }
   calculateStats() {
     const { equipment } = this;
     let totalPercentStats = {};
@@ -119,8 +122,8 @@ class Character extends BaseCharacter {
     ns.accuracy = ns.accuracy;
     ns.regenHp = ns.regenHp + Math.floor(ns.vitality / 10);
     ns.regenMp = ns.regenMp + Math.floor(ns.intelligence / 10);
-    ns.armorPierce = ns.armorPierce + ns.dexterity * 3;
-    ns.defense = ns.defense + ns.strength * 3;
+    ns.armorPierce = ns.armorPierce + ns.dexterity + ns.strength;
+    ns.defense = ns.defense + ns.strength * 5;
     ns.critChance = ns.critChance + ns.dexterity * 0.05;
     ns.critMultiplier = ns.critMultiplier + ns.intelligence * 0.03;
     ns.speed = ns.speed + ns.dexterity * 0.003;
@@ -128,8 +131,8 @@ class Character extends BaseCharacter {
     ns.blockChance = ns.blockChance;
     ns.dodgeChance = ns.dodgeChance;
     if (ns.critChance > 100) ns.critChance = 100;
-    if (ns.dodgeChance > 100) ns.dodgeChance = 100;
-    if (ns.blockChance > 100) ns.blockChance = 100;
+    if (ns.dodgeChance > 75) ns.dodgeChance = 75;
+    if (ns.blockChance > 75) ns.blockChance = 75;
     ns.maxDamage =
       ns.maxDamage + Math.floor(1 + ((ns.strength + ns.dexterity / 2) * ns.level) / 100);
     ns.minDamage =
@@ -152,67 +155,78 @@ class Character extends BaseCharacter {
   }
   calculateDamage(victim) {
     if (victim?.state?.isDead) return false;
-    let hit = {};
-    let isCriticalHit = false;
-    let damage = randomNumber(this.stats.minDamage, this.stats.maxDamage);
-    let defense = victim.stats.defense || 1;
-    let armorPierce = this.stats.armorPierce || 1;
-    let reduction = armorPierce / defense;
-    if (reduction > 1) reduction = 1;
-    let reducedDamage = damage * reduction;
-    if (reducedDamage < 1) reducedDamage = 1;
-    if (randomNumber(1, 100) >= Math.max(0, victim.stats.dodgeChance - this.stats.accuracy)) {
-      if (randomNumber(1, 100) >= victim.stats.blockChance) {
-        //critical
-        if (this.stats.critChance) {
-          if (randomNumber(1, 100) <= this.stats.critChance) {
-            isCriticalHit = true;
-            reducedDamage = reducedDamage * this.stats.critMultiplier;
-          }
-        }
-        //victim hit
-        reducedDamage = Math.floor(reducedDamage);
-        victim.stats.hp -= reducedDamage;
-        victim.state.lastCombat = Date.now();
-        //only lock a user if an attack hits
-        if (victim.state.isRobot) {
-          victim.state.lockedUser = this;
-        }
-        //damage types
-        if (victim.stats.hp <= 0) {
-          hit = {
-            type: "death",
-            isCritical: isCriticalHit,
-            amount: reducedDamage,
-            from: this.id,
-            to: victim.id,
-          };
-          victim.setDead();
-          victim.stats.hp = 0;
-        } else {
-          if (isCriticalHit) {
-            hit = {
-              type: "critical",
-              amount: reducedDamage,
-              from: this.id,
-              to: victim.id,
-            };
-          } else {
-            hit = {
-              type: "hit",
-              amount: reducedDamage,
-              from: this.id,
-              to: victim.id,
-            };
-          }
-        }
-      } else {
-        hit = { type: "block", amount: 0, from: this.id, to: victim.id };
-      } //blockchance
-    } else {
-      hit = { type: "miss", amount: 0, from: this.id, to: victim.id };
-    } //hitchance
-    return hit;
+
+    const dodgeRoll = randomNumber(1, 100);
+    const blockRoll = randomNumber(1, 100);
+    const critRoll = randomNumber(1, 100);
+    const damageRoll = randomNumber(this.stats.minDamage, this.stats.maxDamage);
+
+    const damage = damageRoll;
+    const defense = victim.stats.defense || 1;
+    const armorPierce = this.stats.armorPierce || 1;
+    const reduction = armorPierce / defense > 1 ? 1 : armorPierce / defense;
+    const dodgeChange = Math.max(0, victim.stats.dodgeChance - this.stats.accuracy);
+    let isCritical = false;
+    let reducedDamage = damage * reduction < 1 ? 1 : damage * reduction;
+
+    if (dodgeRoll < dodgeChange) {
+      return { type: "miss", amount: 0, from: this.id, to: victim.id };
+    }
+    if (blockRoll < victim.stats.blockChance) {
+      return { type: "block", amount: 0, from: this.id, to: victim.id };
+    }
+    if (this.stats.critChance && critRoll <= this.stats.critChance) {
+      isCritical = true;
+      reducedDamage = reducedDamage * this.stats.critMultiplier;
+    }
+    /* Update the victim */
+    reducedDamage = Math.floor(reducedDamage);
+    victim.modifyStat("hp", -reducedDamage);
+    victim.state.lastCombat = Date.now();
+    /* Npcs lock on and chase when a user hits them */
+    if (victim.state.isRobot) {
+      victim.state.lockedPlayer = this;
+    }
+    /* Victim killed */
+    if (victim.stats.hp <= 0) {
+      victim.setDead();
+      victim.stats.hp = 0;
+      return {
+        type: "death",
+        isCritical,
+        amount: -reducedDamage,
+        from: this.id,
+        to: victim.id,
+      };
+    }
+    return {
+      type: "hit",
+      isCritical,
+      amount: -reducedDamage,
+      from: this.id,
+      to: victim.id,
+    };
+  }
+  doRegen() {
+    const now = Date.now();
+    const isOutOfCombat = now - this.state.lastCombat > 5000;
+    const isHpRegenReady = now - this.state.lastHpRegen > 5000;
+    const isMpRegenReady = now - this.state.lastMpRegen > 5000;
+    if (isOutOfCombat && !this.state.isDead) {
+      if (isHpRegenReady && this.stats.hp !== this.stats.maxHp) {
+        this.state.doHpRegen = true;
+        this.state.lastHpRegen = now;
+        this.modifyStat("hp", this.stats.regenHp);
+      }
+      if (isMpRegenReady && this.stats.mp !== this.stats.maxMp) {
+        this.state.doMpRegen = true;
+        this.state.lastMpRegen = now;
+        this.modifyStat("hp", this.stats.regenMp);
+      }
+      return;
+    }
+    this.state.doHpRegen = false;
+    this.state.doMpRegen = false;
   }
 }
 

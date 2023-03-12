@@ -3,14 +3,16 @@ import Character from "./Character";
 const START_AGGRO_RANGE = 120;
 
 class Npc extends Character {
-  constructor(scene, room, args) {
+  constructor(scene, room, { state = {}, ...args }) {
     super(scene, args);
     this.scene = scene;
+    this.state = { ...state, isRobot: true };
     this.respawnTime = 10000;
   }
   setDead() {
     this.state.isDead = true;
     this.state.deadTime = Date.now();
+    this.state.lockedPlayer = null;
     this.bubbleMessage = null;
   }
   tryRespawn() {
@@ -22,17 +24,19 @@ class Npc extends Character {
     }
   }
   update(time) {
-    const player = this.room?.players?.getChildren()?.[0];
-    const isNearPlayer = player && this.distanceTo(player) <= START_AGGRO_RANGE;
     if (this.state.isDead) {
       this.tryRespawn();
       this.vx = 0;
       this.vy = 0;
       return this.body.setVelocity(this.vx, this.vy);
     }
-    if (this.state.isAggro && player && isNearPlayer) {
+    const player = this?.state?.lockedPlayer || this.room?.players?.getChildren()?.[0];
+    const shouldChase = this.state.isAggro || this?.state?.lockedPlayer;
+    const isNearPlayer = player && this.distanceTo(player) <= START_AGGRO_RANGE;
+    if (shouldChase && player && isNearPlayer) {
       this.moveTowardPlayer(player);
     } else {
+      this.state.lockedPlayer = null;
       this.moveRandomly(time);
     }
   }

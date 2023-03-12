@@ -78,6 +78,7 @@ function getTrimmedCharacterState(p) {
     id: uid, //required for SI
     socketId: uid,
     roomName: p?.room?.name,
+    state: p?.state,
     x: p?.x,
     y: p?.y,
     vx: p?.vx,
@@ -91,15 +92,13 @@ const baseUser = {
   baseStats: {
     expValue: 0,
     level: 1,
-    unspentStats: 3,
     speed: 150,
-    range: 32,
     accuracy: 0,
     attackSpeed: 0,
     spellDamage: 0,
     castSpeed: 1000,
     armorPierce: 0,
-    dexterity: 1,
+    dexterity: 20,
     strength: 1,
     vitality: 1,
     intelligence: 1,
@@ -119,8 +118,8 @@ const baseUser = {
   },
   direction: "down",
   equipment: {
-    handRight: ItemBuilder.buildItem("weapon", "common", "common-sword"),
-    handLeft: ItemBuilder.buildItem("weapon", "common", "common-sword"),
+    handRight: ItemBuilder.buildItem("weapon", "unique", "unique-sword-whistler"),
+    handLeft: ItemBuilder.buildItem("weapon", "unique", "unique-sword-whistler"),
     //handLeft: ItemBuilder.buildItem("weapon", "unique", "unique-claymore-soul"),
     helmet: ItemBuilder.buildItem("helmet", "unique", "unique-cap-tudwick"),
     accessory: null,
@@ -144,8 +143,8 @@ const baseUser = {
   y: 400,
 };
 
-function randomNumber(low, high) {
-  return Math.floor(Math.random() * (high - low + 1) + low);
+function randomNumber(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 export {
