@@ -3,6 +3,7 @@ import Character from "./Character";
 import Bubble from "./Bubble";
 import Spell from "./Spell";
 import Bar from "./Bar";
+import Damage from "./Damage";
 const { Sprite, BitmapText } = Phaser.GameObjects;
 const BLANK_TEXTURE = "human-blank";
 class Player extends Character {
@@ -14,6 +15,8 @@ class Player extends Character {
     this.drawCharacterFromUserData();
     this.checkAttackHands();
     this.updateHpBar();
+    if (this.state.isDead) this.doDeath();
+    if (this.kind === "nasty") this.userName.setVisible(false);
     /* Do we really need these? */
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
@@ -43,7 +46,9 @@ class Player extends Character {
     this.handRight = scene.add.existing(new Sprite(scene, -13, -9, BLANK_TEXTURE));
     this.shadow = scene.add.existing(new Sprite(...defaults));
     this.bubble = scene.add.existing(new Bubble(scene, this?.profile?.headY, this.bubbleMessage));
-    this.hpBar = scene.add.existing(new Bar(scene, 0, this?.profile?.headY, 32, 12));
+    this.hpBar = scene.add
+      .existing(new Bar(scene, 0, this?.profile?.headY, 32, 12))
+      .setVisible(false);
     this.userName = scene.add.existing(new BitmapText(this.scene, 0, 8, "nin-light").setScale(0.5));
     this.add(this.shadow);
     this.add(this.chest);
@@ -110,7 +115,80 @@ class Player extends Character {
     const percent = stats?.maxHp > 0 ? stats?.hp / stats?.maxHp : 0;
     this.hpBar.setPercent(percent);
   }
+  doDeath() {
+    this.state.isDead = true;
+    this.state.isAttacking = false;
+    this.shadow.setVisible(false);
+    this.chest.setVisible(false);
+    this.face.setVisible(false);
+    this.hair.setVisible(false);
+    this.accessory.setVisible(false);
+    this.armor.setVisible(false);
+    this.helmet.setVisible(false);
+    this.boots.setVisible(false);
+    this.pants.setVisible(false);
+    this.handLeft.setVisible(false);
+    this.handRight.setVisible(false);
+    this.hpBar.setVisible(false);
+    this.bubble.setVisible(false);
+    this.skin.setTexture("icons").setFrame("grave");
+
+    if (this.isHero) {
+      window.dispatchEvent(new Event("hero_died"));
+    }
+  }
+  respawn() {
+    this.state.isDead = false;
+    this.stats.hp = this.stats.maxHp;
+    this.updateHpBar();
+    this.drawCharacterFromUserData();
+    this.attackSprite.setVisible(true);
+    this.shadow.setVisible(true);
+    this.chest.setVisible(true);
+    this.face.setVisible(true);
+    this.hair.setVisible(true);
+    this.accessory.setVisible(true);
+    this.armor.setVisible(true);
+    this.helmet.setVisible(true);
+    this.boots.setVisible(true);
+    this.pants.setVisible(true);
+    this.handLeft.setVisible(true);
+    this.handRight.setVisible(true);
+    this.hpBar.setVisible(false);
+    if (this.isHero) {
+      window.dispatchEvent(new Event("hero_respawn"));
+    }
+  }
+  checkDeath() {
+    /* Ensures the textures and depth have been updated for death state */
+    if (this.state.isDead) {
+      if (this.skin.texture.key !== "icons") {
+        this.doDeath();
+      }
+      this.setDepth(100 + this.y);
+      return true;
+    }
+  }
+  takeHit(hit) {
+    const { stats, state } = this;
+    if (state.isDead) return;
+    this.scene.add.existing(new Damage(this.scene, this, hit));
+    if (hit.type == "death") {
+      stats.hp = 0;
+      this.doDeath();
+    } else if (hit.type == "heal") {
+      if (stats.maxHp > hit.amount + stats.hp) {
+        stats.hp += hit.amount;
+      } else {
+        stats.hp = stats.maxHp;
+      }
+    } else {
+      stats.hp -= hit.amount;
+    }
+    this.updateHpBar();
+  }
   update(time, delta) {
+    if (this.checkDeath()) return;
     hackFrameRates(this, Math.round(80 + 2500 / (this.currentSpeed + 10)));
     updatePlayerDirection(this);
     drawFrame(this);

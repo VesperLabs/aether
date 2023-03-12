@@ -5,6 +5,9 @@ class Player extends Character {
     super(scene, args);
     this.email = email;
   }
+  setDead() {
+    this.state.isDead = true;
+  }
 }
 
 module.exports = Player;

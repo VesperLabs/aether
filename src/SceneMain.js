@@ -16,12 +16,13 @@ class SceneMain extends Phaser.Scene {
 
   create() {
     const scene = this;
+    const socket = scene?.socket;
 
-    scene.socket.on("update", (snapshot) => {
+    socket.on("update", (snapshot) => {
       SI.snapshot.add(snapshot);
     });
 
-    scene.socket.on("heroInit", ({ socketId, players = [], npcs = [] }) => {
+    socket.on("heroInit", ({ socketId, players = [], npcs = [] }) => {
       /* Delete everything in the scene */
       resetEntities(scene);
       /* Add players that don't exist */
@@ -42,24 +43,30 @@ class SceneMain extends Phaser.Scene {
       setCamera(scene, scene.hero);
     });
 
-    scene.socket.on("playerJoin", (player) => {
+    socket.on("playerJoin", (player) => {
       if (getPlayer(scene, player.socketId)) return;
       addPlayer(scene, player);
     });
 
-    scene.socket.on("playerAttack", ({ socketId, count, direction }) => {
+    socket.on("playerAttack", ({ socketId, count, direction }) => {
       const p = getPlayer(scene, socketId);
       p.direction = direction;
       p.doAttack(count);
     });
 
-    scene.socket.on("assignDamage", ({ socketId, hitList }) => {
-      console.log(socketId, hitList);
+    socket.on("assignDamage", ({ socketId, npcHitList, playerHitList }) => {
+      for (const hit of npcHitList) {
+        getNpc(scene, hit?.to)?.takeHit?.(hit);
+      }
     });
 
-    scene.socket.on("remove", (socketId) => removePlayer(scene, socketId));
+    socket.on("respawnNpc", (id) => {
+      getNpc(scene, id)?.respawn();
+    });
 
-    scene.socket.emit("login");
+    socket.on("remove", (socketId) => removePlayer(scene, socketId));
+
+    socket.emit("login");
   }
 
   update(time, delta) {
@@ -69,7 +76,7 @@ class SceneMain extends Phaser.Scene {
     /* Update Player x and y */
     for (const s of playerSnapshot?.state) {
       const player = getPlayer(this, s.socketId);
-      if (!player) continue;
+      if (!player || player?.state?.isDead) continue;
       /* Update player movements */
       if (!player.isHero) {
         player.setPosition(s.x, s.y);
@@ -81,7 +88,7 @@ class SceneMain extends Phaser.Scene {
     /* Update NPC x and y */
     for (const s of npcSnapshot?.state) {
       const npc = getNpc(this, s.id);
-      if (!npc) continue;
+      if (!npc || npc?.state?.isDead) continue;
       npc.setPosition(s.x, s.y);
       npc.vx = s.vx;
       npc.vy = s.vy;

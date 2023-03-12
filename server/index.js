@@ -17,8 +17,8 @@ const io = require("socket.io")(httpServer, {
 const SI = new SnapshotInterpolation();
 import {
   handlePlayerInput,
-  getFullCharacterState,
-  getFullRoomState,
+  getCharacterState,
+  getRoomState,
   getTrimmedRoomState,
   getDoor,
   removePlayer,
@@ -43,6 +43,7 @@ class ServerScene extends Phaser.Scene {
   }
   async create() {
     const scene = this;
+    scene.io = io;
     scene.players = {};
     scene.doors = {};
     scene.npcs = {};
@@ -69,29 +70,40 @@ class ServerScene extends Phaser.Scene {
         console.log(`🧑🏻‍🦰 ${player?.profile?.userName} connected`);
         socket.join(roomName);
         socket.emit("heroInit", {
-          players: getFullRoomState(scene, roomName)?.players,
-          npcs: getFullRoomState(scene, roomName)?.npcs,
+          players: getRoomState(scene, roomName)?.players,
+          npcs: getRoomState(scene, roomName)?.npcs,
           socketId,
         });
-        socket.to(roomName).emit("playerJoin", getFullCharacterState(player));
+        socket.to(roomName).emit("playerJoin", getCharacterState(player));
       });
 
       socket.on("attack", ({ count, direction }) => {
-        const player = getFullCharacterState(scene.players[socketId]);
+        const player = getCharacterState(scene.players[socketId]);
         socket.to(player.roomName).emit("playerAttack", { socketId, count, direction });
       });
 
       socket.on("hit", ({ entity, ids, spellName }) => {
         console.log(`🔫 ${spellName} landed on ${entity}`);
-        let hitList = [];
-        const player = scene.players[socketId];
-        const roomNpcs = getFullRoomState(scene, player?.roomName)?.npcs;
-        for (const npc of roomNpcs) {
+        const hero = scene.players[socketId];
+        const roomName = hero?.roomName;
+        /* Create hitList for npcs */
+        const npcHitList = [];
+        const npcs = getRoomState(scene, roomName, true)?.npcs;
+        for (const npc of npcs) {
           if (!ids?.includes(npc.id)) continue;
-          const newHit = player.calculateDamage(npc);
-          if (newHit) hitList.push(newHit);
+          const newHit = hero.calculateDamage(npc);
+          if (newHit) npcHitList.push(newHit);
         }
-        io.to(player?.roomName).emit("assignDamage", { socketId, hitList });
+        /* Create hitList for players */
+        const playerHitList = [];
+        const players = getRoomState(scene, roomName, true)?.players;
+        for (const player of players) {
+          if (!ids?.includes(player.id)) continue;
+          const newHit = hero.calculateDamage(player);
+          if (newHit) playerHitList.push(newHit);
+        }
+
+        io.to(roomName).emit("assignDamage", { socketId, npcHitList, playerHitList });
       });
 
       socket.on("enterDoor", (doorName) => {
@@ -109,12 +121,12 @@ class ServerScene extends Phaser.Scene {
         scene.roomManager.rooms[oldRoom].playerManager.remove(socketId);
         scene.roomManager.rooms[prev.destMap].playerManager.add(socketId);
 
-        socket.to(prev.destMap).emit("playerJoin", getFullCharacterState(scene.players[socketId]));
+        socket.to(prev.destMap).emit("playerJoin", getCharacterState(scene.players[socketId]));
         socket.to(oldRoom).emit("remove", socketId);
 
         socket.emit("heroInit", {
-          players: getFullRoomState(scene, prev.destMap)?.players,
-          npcs: getFullRoomState(scene, prev.destMap)?.npcs,
+          players: getRoomState(scene, prev.destMap)?.players,
+          npcs: getRoomState(scene, prev.destMap)?.npcs,
           socketId,
         });
       });

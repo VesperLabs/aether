@@ -23,6 +23,7 @@ class Room {
   }
   addPlayer(player) {
     player.room = this;
+    player.roomName = this?.name;
     this.players.add(player);
   }
   removePlayer(player) {

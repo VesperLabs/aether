@@ -30,18 +30,18 @@ function getDoor(scene, roomName, doorName) {
   return scene?.doors?.[roomName]?.[doorName];
 }
 
-function getFullRoomState(scene, roomName) {
+function getRoomState(scene, roomName, deepObjects = false) {
   return {
     players: Object.values(scene.players)
       ?.filter((p) => p?.room?.name === roomName)
-      .map(getFullCharacterState),
+      .map((p) => (deepObjects ? p : getCharacterState(p))),
     npcs: Object.values(scene.npcs)
       ?.filter((n) => n?.room?.name === roomName)
-      .map(getFullCharacterState),
+      .map((p) => (deepObjects ? p : getCharacterState(p))),
   };
 }
 
-function getFullCharacterState(p) {
+function getCharacterState(p) {
   const uid = p?.socketId || p?.id;
   return {
     id: uid, //required for SI
@@ -57,7 +57,7 @@ function getFullCharacterState(p) {
     equipment: p?.equipment,
     profile: p?.profile,
     bubbleMessage: p?.bubbleMessage,
-    isAggro: p?.isAggro,
+    kind: p?.kind,
   };
 }
 
@@ -153,8 +153,8 @@ export {
   getPlayer,
   getTrimmedRoomState,
   getTrimmedCharacterState,
-  getFullRoomState,
-  getFullCharacterState,
+  getRoomState,
+  getCharacterState,
   handlePlayerInput,
   removeAllPlayers,
   getDoor,

@@ -187,11 +187,8 @@ class Character extends BaseCharacter {
             from: this.id,
             to: victim.id,
           };
-          victim.state.isDead = true;
+          victim.setDead();
           victim.stats.hp = 0;
-          if (victim.state.isRobot) {
-            victim.state.deadTime = Date.now();
-          }
         } else {
           if (isCriticalHit) {
             hit = {

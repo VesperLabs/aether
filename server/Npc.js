@@ -5,16 +5,32 @@ const START_AGGRO_RANGE = 120;
 class Npc extends Character {
   constructor(scene, room, args) {
     super(scene, args);
+    this.scene = scene;
+    this.respawnTime = 10000;
+  }
+  setDead() {
+    this.state.isDead = true;
+    this.state.deadTime = Date.now();
+    this.bubbleMessage = null;
+  }
+  tryRespawn() {
+    if (!this.state.isDead) return;
+    if (Date.now() - this.state.deadTime >= this.respawnTime) {
+      this.state.isDead = false;
+      this.stats.hp = this.stats.maxHp;
+      this.scene.io.to(this.room.name).emit("respawnNpc", this?.id);
+    }
   }
   update(time) {
     const player = this.room?.players?.getChildren()?.[0];
     const isNearPlayer = player && this.distanceTo(player) <= START_AGGRO_RANGE;
     if (this.state.isDead) {
+      this.tryRespawn();
       this.vx = 0;
       this.vy = 0;
       return this.body.setVelocity(this.vx, this.vy);
     }
-    if (this.isAggro && player && isNearPlayer) {
+    if (this.state.isAggro && player && isNearPlayer) {
       this.moveTowardPlayer(player);
     } else {
       this.moveRandomly(time);

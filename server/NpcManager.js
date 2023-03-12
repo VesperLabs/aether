@@ -16,9 +16,9 @@ class NpcManager {
       this.addNpc({
         moveRange: 1,
         room: room,
+        kind: npc?.kind,
         x: npc?.x,
         y: npc?.y,
-        // state: { isDead: false, isRobot: true, lockedUser: null },
         ...mobData,
       });
     }
@@ -41,8 +41,7 @@ class NpcManager {
 const mobTypes = {
   /* Level 1 */
   raccoon: {
-    profile: { race: "raccoon", headY: -27 },
-    name: "Raccoon",
+    profile: { race: "raccoon", headY: -27, userName: "Raccoon" },
     baseStats: {
       expValue: 2,
       level: 1,
@@ -82,8 +81,7 @@ const mobTypes = {
     ],
   },
   slime: {
-    profile: { race: "slime", headY: -23 },
-    name: "Slime",
+    profile: { race: "slime", headY: -23, userName: "Slime" },
     baseStats: {
       expValue: 2,
       level: 1,
@@ -117,8 +115,7 @@ const mobTypes = {
     ],
   },
   hornet: {
-    profile: { race: "bee", headY: -34 },
-    name: "Hornet",
+    profile: { race: "bee", headY: -34, userName: "Hornet" },
     baseStats: {
       expValue: 1,
       level: 1,
@@ -153,9 +150,8 @@ const mobTypes = {
   },
   /* Level 5 */
   hawkwing: {
-    profile: { race: "bee", tint: "0x44FFCC", scale: 1.5, headY: -45 },
-    name: "Hawkwing",
-    isAggro: true,
+    profile: { race: "bee", tint: "0x44FFCC", scale: 1.5, headY: -45, userName: "Hawkwing" },
+    state: { isAggro: true },
     baseStats: {
       expValue: 5,
       level: 5,
@@ -182,9 +178,8 @@ const mobTypes = {
     drops: [],
   },
   spider: {
-    profile: { race: "spider", headY: -21 },
-    name: "Spider",
-    isAggro: true,
+    profile: { race: "spider", headY: -21, userName: "Spider" },
+    state: { isAggro: true },
     baseStats: {
       expValue: 4,
       level: 5,
@@ -218,9 +213,8 @@ const mobTypes = {
     ],
   },
   hogan: {
-    profile: { race: "spider", tint: "0xFF33CC", scale: 2, headY: -30 },
-    name: "Hogan",
-    isAggro: true,
+    profile: { race: "spider", tint: "0xFF33CC", scale: 2, headY: -30, userName: "Hogan" },
+    state: { isAggro: true },
     baseStats: {
       expValue: 10,
       level: 10,
@@ -260,9 +254,8 @@ const mobTypes = {
     ],
   },
   bat: {
-    profile: { race: "bat", headY: -30 },
-    name: "Bat",
-    isAggro: true,
+    profile: { race: "bat", headY: -30, userName: "Bat" },
+    state: { isAggro: true },
     baseStats: {
       expValue: 4,
       level: 5,
@@ -303,9 +296,8 @@ const mobTypes = {
   },
   /* Level 10 */
   zombie: {
-    profile: { race: "zombie", headY: -44 },
-    name: "Zombie",
-    isAggro: true,
+    profile: { race: "zombie", headY: -44, userName: "Zombie" },
+    state: { isAggro: true },
     baseStats: {
       expValue: 8,
       level: 10,
@@ -351,9 +343,8 @@ const mobTypes = {
     ],
   },
   wraith: {
-    profile: { race: "wraith", headY: -46 },
-    name: "Wraith",
-    isAggro: true,
+    profile: { race: "wraith", headY: -46, userName: "Wraith" },
+    state: { isAggro: true },
     baseStats: {
       expValue: 8,
       level: 10,
@@ -399,9 +390,8 @@ const mobTypes = {
     ],
   },
   chonks: {
-    profile: { race: "abomination", tint: "0x88FF88", headY: -88 },
-    name: "Chonks",
-    isAggro: true,
+    profile: { race: "abomination", tint: "0x88FF88", headY: -88, userName: "Chonks" },
+    state: { isAggro: true },
     baseStats: {
       expValue: 12,
       level: 15,
@@ -447,9 +437,8 @@ const mobTypes = {
     ],
   },
   merman: {
-    profile: { race: "merman", headY: -30 },
-    name: "Merman",
-    isAggro: true,
+    profile: { race: "merman", headY: -30, userName: "Merman" },
+    state: { isAggro: true },
     baseStats: {
       expValue: 8,
       level: 10,

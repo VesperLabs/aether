@@ -13,10 +13,11 @@ class Character extends Phaser.GameObjects.Container {
       profile,
       stats = {},
       bubbleMessage,
-      isAggro,
+      kind,
       roomName,
       baseStats = {},
       direction,
+      state = {},
     } = args;
     super(scene, x, y, []);
     this.startingCoords = { x, y };
@@ -24,20 +25,23 @@ class Character extends Phaser.GameObjects.Container {
     this.id = id;
     this.isHero = isHero;
     this.roomName = roomName;
-    this.isAggro = isAggro;
     this.room = room;
     this.action = "stand";
     this.direction = direction || "down";
     this.currentSpeed = 0;
     this.vx = 0;
     this.vy = 0;
+    this.kind = kind;
     this.state = {
+      isAggro: false,
       lastCombat: Date.now(),
       lastAttack: Date.now(),
       isIdle: true,
       isAttacking: false,
       hasWeaponRight: false,
       hasWeaponLeft: false,
+      isDead: false,
+      ...state,
     };
     this.profile = profile;
     this.equipment = equipment;
