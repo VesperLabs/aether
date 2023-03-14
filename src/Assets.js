@@ -235,8 +235,8 @@ const assetList = [
   },
   /* Weapon */
   {
-    texture: "weapon-sword-short",
-    src: "./assets/atlas/hands/weapon-sword-short.png",
+    texture: "weapon-dagger",
+    src: "./assets/atlas/hands/weapon-dagger.png",
     atlas: "./assets/atlas/weapon.json",
     previewRect: [37, 37, 17, 17],
   },

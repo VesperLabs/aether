@@ -4,8 +4,9 @@ import Item from "./Item.js";
 const _itemList = {
   weapon: {
     common: {
-      "common-katar": {
+      katar: {
         ilvl: 1,
+        base: "katar",
         name: "Katar",
         texture: "weapon-katar",
         slot: "hands",
@@ -17,8 +18,9 @@ const _itemList = {
           range: 1,
         },
       },
-      "common-spade": {
+      spade: {
         ilvl: 1,
+        base: "spade",
         name: "Spade",
         texture: "weapon-spade",
         slot: "hands",
@@ -30,10 +32,11 @@ const _itemList = {
           range: 1,
         },
       },
-      "common-sword": {
+      sword: {
         ilvl: 1,
-        name: "Sword",
-        texture: "weapon-sword-short",
+        base: "dagger",
+        name: "Dagger",
+        texture: "weapon-dagger",
         slot: "hands",
         stats: {
           attackSpeed: 100,
@@ -42,8 +45,9 @@ const _itemList = {
           range: 1,
         },
       },
-      "common-hammer": {
+      hammer: {
         ilvl: 1,
+        base: "hammer",
         name: "Hammer",
         texture: "weapon-hammer",
         slot: "hands",
@@ -54,8 +58,9 @@ const _itemList = {
           range: 1,
         },
       },
-      "common-axe": {
+      axe: {
         ilvl: 1,
+        base: "axe",
         name: "Axe",
         texture: "weapon-axe",
         slot: "hands",
@@ -66,8 +71,9 @@ const _itemList = {
           range: 1,
         },
       },
-      "common-sword-gladius": {
+      gladius: {
         ilvl: 2,
+        base: "sword",
         name: "Gladius",
         texture: "weapon-gladius",
         slot: "hands",
@@ -81,8 +87,9 @@ const _itemList = {
           range: 1,
         },
       },
-      "common-scythe": {
+      scythe: {
         ilvl: 1,
+        base: "scythe",
         name: "Scythe",
         texture: "weapon-scythe",
         tint: "0xFFFFFF",
@@ -94,8 +101,9 @@ const _itemList = {
           range: 1,
         },
       },
-      "common-spear": {
+      spear: {
         ilvl: 1,
+        base: "spear",
         name: "Spear",
         texture: "weapon-spear",
         tint: "0xFFFFFF",
@@ -109,10 +117,11 @@ const _itemList = {
       },
     },
     unique: {
-      "unique-sword-whistler": {
+      darkWhistler: {
         ilvl: 1,
+        base: "dagger",
         name: "Dark Whistler",
-        texture: "weapon-sword-short",
+        texture: "weapon-dagger",
         tint: "0xFF88FF",
         slot: "hands",
         stats: {
@@ -123,9 +132,10 @@ const _itemList = {
           range: 1,
         },
       },
-      "unique-claymore-soul": {
+      soulEdge: {
         ilvl: 2,
         name: "Soul Edge",
+        base: "sword",
         texture: "weapon-claymore-soul",
         slot: "hands",
         stats: {
@@ -138,10 +148,11 @@ const _itemList = {
       },
     },
     set: {
-      "set-scythe-pincher": {
+      hawkwingsPincher: {
         ilvl: 1,
         set: "hawkwings",
         name: "Hawkwing's Pincher",
+        base: "scythe",
         texture: "weapon-scythe",
         tint: "0x55FF55",
         slot: "hands",
@@ -155,10 +166,11 @@ const _itemList = {
           range: 1,
         },
       },
-      "set-scythe-tickler": {
+      hawkwingsTickler: {
         ilvl: 1,
         set: "hawkwings",
         name: "Hawkwing's Tickler",
+        base: "scythe",
         texture: "weapon-scythe",
         tint: "0x5588FF",
         slot: "hands",
@@ -176,9 +188,10 @@ const _itemList = {
   },
   helmet: {
     common: {
-      "common-cap-colloquial": {
+      colloquialCap: {
         ilvl: 1,
         name: "Colloquial Cap",
+        base: "cap",
         texture: "helmet-cap",
         tint: "0x865027",
         slot: "helmet",
@@ -186,9 +199,10 @@ const _itemList = {
           defense: 3,
         },
       },
-      "common-cap-cloth": {
+      clothCap: {
         ilvl: 1,
         name: "Cloth Cap",
+        base: "cap",
         texture: "helmet-cap",
         tint: "0xFFDDCC",
         slot: "helmet",
@@ -198,9 +212,10 @@ const _itemList = {
       },
     },
     unique: {
-      "unique-cap-tudwick": {
+      tudwicksCap: {
         ilvl: 1,
         name: "Tudwick's Cap",
+        base: "cap",
         texture: "helmet-cap-raccoon",
         slot: "helmet",
         stats: {
@@ -216,9 +231,10 @@ const _itemList = {
   },
   armor: {
     common: {
-      "common-plate-nutshell": {
+      nutshellPlate: {
         ilvl: 1,
         name: "Nutshell Plate",
+        base: "armor",
         texture: "armor-light-plate",
         tint: "0xCC9966",
         slot: "armor",
@@ -226,9 +242,10 @@ const _itemList = {
           defense: 5,
         },
       },
-      "common-robe-cloth": {
+      clothRobe: {
         ilvl: 1,
         name: "Cloth Robe",
+        base: "armor",
         texture: "armor-robe",
         tint: "0xFFDDCC",
         slot: "armor",
@@ -236,9 +253,10 @@ const _itemList = {
           defense: 3,
         },
       },
-      "common-plate-bronze": {
+      bronzePlate: {
         ilvl: 2,
         name: "Bronze Plate",
+        base: "armor",
         texture: "armor-light-plate",
         tint: "0xFFCCAA",
         slot: "armor",
@@ -249,9 +267,10 @@ const _itemList = {
           defense: 8,
         },
       },
-      "common-heavyplate-bronze": {
+      bronzeHeavyPlate: {
         ilvl: 2,
         name: "Bronze Heavy Plate",
+        base: "armor",
         texture: "armor-plate",
         tint: "0xFFCCAA",
         slot: "armor",
@@ -263,9 +282,10 @@ const _itemList = {
           speed: -5,
         },
       },
-      "common-robe-wizard": {
+      wizardRobe: {
         ilvl: 3,
         name: "Wizard Robe",
+        base: "armor",
         texture: "armor-wizard",
         tint: "0xFFFFFF",
         slot: "armor",
@@ -278,9 +298,10 @@ const _itemList = {
       },
     },
     unique: {
-      "unique-robe-mossman": {
+      theMossmanProphecy: {
         ilvl: 1,
         name: "The Mossman Prophecy",
+        base: "armor",
         texture: "armor-robe",
         tint: "0x66AA66",
         slot: "armor",
@@ -298,10 +319,11 @@ const _itemList = {
       },
     },
     set: {
-      "set-robe-chets": {
+      chetsPurpleShirt: {
         ilvl: 1,
         set: "chets",
         name: "Chet's Purple Shirt",
+        base: "armor",
         texture: "armor-robe",
         tint: "0x8800FF",
         slot: "armor",
@@ -318,9 +340,10 @@ const _itemList = {
   },
   boots: {
     common: {
-      "common-boots-nutshell": {
+      nutshellBoots: {
         ilvl: 1,
         name: "Nutshell Boots",
+        base: "boots",
         texture: "boots-cloth",
         tint: "0xCC9966",
         slot: "boots",
@@ -329,9 +352,10 @@ const _itemList = {
           defense: 1,
         },
       },
-      "common-boots-leather": {
+      leatherBoots: {
         ilvl: 2,
         name: "Leather Boots",
+        base: "boots",
         texture: "boots-cloth",
         tint: "0x865027",
         slot: "boots",
@@ -342,10 +366,11 @@ const _itemList = {
       },
     },
     set: {
-      "set-boots-chets": {
+      chetsNeonKicks: {
         ilvl: 1,
         set: "chets",
         name: "Chet's Neon Kicks",
+        base: "boots",
         texture: "boots-cloth",
         tint: "0x00FF00",
         slot: "boots",
@@ -362,9 +387,10 @@ const _itemList = {
   },
   pants: {
     common: {
-      "common-pants-cloth": {
+      clothPants: {
         ilvl: 1,
         name: "Cloth Pants",
+        base: "pants",
         texture: "pants-cloth",
         tint: "0xFFDDCC",
         slot: "pants",
@@ -372,9 +398,10 @@ const _itemList = {
           defense: 3,
         },
       },
-      "common-pants-leather": {
+      leatherPants: {
         ilvl: 2,
         name: "Leather Pants",
+        base: "pants",
         texture: "pants-cloth",
         tint: "0x865027",
         slot: "pants",
@@ -387,10 +414,11 @@ const _itemList = {
       },
     },
     set: {
-      "set-pants-chets": {
+      chetsChampions: {
         ilvl: 1,
         set: "chets",
         name: "Chet's Champions",
+        base: "pants",
         texture: "pants-cloth",
         tint: "0x3333EE",
         slot: "pants",
@@ -406,9 +434,10 @@ const _itemList = {
   },
   shield: {
     common: {
-      "common-shield-bark": {
+      barkShield: {
         ilvl: 1,
-        name: "Bark Blocker",
+        name: "Bark Shield",
+        base: "shield",
         texture: "shield-broken",
         tint: "0x865027",
         slot: "hands",
@@ -417,9 +446,10 @@ const _itemList = {
           blockChance: 5,
         },
       },
-      "common-shield-buckler": {
+      buckler: {
         ilvl: 2,
         name: "Buckler",
+        base: "shield",
         texture: "shield-buckler",
         tint: "0xFFFFFF",
         slot: "hands",
@@ -430,9 +460,10 @@ const _itemList = {
       },
     },
     unique: {
-      "unique-shield-round": {
+      roundStage: {
         ilvl: 2,
         name: "Round Stage",
+        base: "shield",
         texture: "shield-round",
         tint: "0xFFFFFF",
         slot: "hands",
@@ -452,9 +483,10 @@ const _itemList = {
   },
   accessory: {
     common: {
-      "common-glasses": {
+      glasses: {
         ilvl: 1,
         name: "Glasses",
+        base: "accessory",
         texture: "accessory-glasses",
         tint: "0xFFFFFF",
         slot: "accessory",
@@ -464,9 +496,10 @@ const _itemList = {
       },
     },
     unique: {
-      "unique-glasses-compound": {
+      compoundLenses: {
         ilvl: 1,
         name: "Compound Lenses",
+        base: "accessory",
         texture: "accessory-glasses",
         tint: "0xFF6666",
         slot: "accessory",
@@ -482,9 +515,10 @@ const _itemList = {
   },
   ring: {
     common: {
-      "common-ring-silver": {
+      silverRing: {
         ilvl: 1,
         name: "Silver Ring",
+        base: "ring",
         texture: "ring-silver-plain",
         tint: "0xFFFFFF",
         slot: "ring",
@@ -492,9 +526,10 @@ const _itemList = {
           defense: 1,
         },
       },
-      "common-ring-gold": {
+      goldRing: {
         ilvl: 2,
         name: "Gold Ring",
+        base: "ring",
         texture: "ring-gold-plain",
         tint: "0xFFFFFF",
         slot: "ring",
@@ -504,10 +539,11 @@ const _itemList = {
       },
     },
     set: {
-      "set-ring-timmys": {
+      timmysSignet: {
         ilvl: 2,
         set: "timmys",
         name: "Timmy's Signet",
+        base: "ring",
         texture: "ring-silver-sapphire",
         tint: "0xFFFFFF",
         slot: "ring",
@@ -520,9 +556,10 @@ const _itemList = {
       },
     },
     unique: {
-      "unique-ring-blood": {
+      bloodMusic: {
         ilvl: 2,
         name: "Blood Music",
+        base: "ring",
         texture: "ring-silver-ruby",
         tint: "0xFFFFFF",
         slot: "ring",
@@ -541,9 +578,10 @@ const _itemList = {
   },
   amulet: {
     common: {
-      "common-amulet-silver": {
+      silverAmulet: {
         ilvl: 1,
         name: "Silver Amulet",
+        base: "amulet",
         texture: "amulet-silver-plain",
         tint: "0xFFFFFF",
         slot: "amulet",
@@ -551,9 +589,10 @@ const _itemList = {
           defense: 1,
         },
       },
-      "common-amulet-gold": {
+      goldAmulet: {
         ilvl: 2,
         name: "Gold Amulet",
+        base: "amulet",
         texture: "amulet-gold-plain",
         tint: "0xFFFFFF",
         slot: "amulet",
@@ -563,10 +602,11 @@ const _itemList = {
       },
     },
     set: {
-      "set-amulet-timmys": {
+      timmysChain: {
         ilvl: 2,
         set: "timmys",
         name: "Timmy's Chain",
+        base: "amulet",
         texture: "amulet-gold-plain",
         tint: "0xFFFFFF",
         slot: "amulet",
@@ -581,7 +621,7 @@ const _itemList = {
   },
   stackable: {
     common: {
-      "common-stackable-potionsmallhp": {
+      smallHpPotion: {
         ilvl: 1,
         name: "Small HP Potion",
         slot: "stackable",
@@ -592,7 +632,7 @@ const _itemList = {
           hp: 25,
         },
       },
-      "common-stackable-potionsmallmp": {
+      smallMpPotion: {
         ilvl: 1,
         name: "Small MP Potion",
         slot: "stackable",
@@ -603,7 +643,7 @@ const _itemList = {
           mp: 25,
         },
       },
-      "common-stackable-potionmediumhp": {
+      mediumHpPotion: {
         ilvl: 1,
         name: "Medium HP Potion",
         slot: "stackable",
@@ -614,7 +654,7 @@ const _itemList = {
           hp: 50,
         },
       },
-      "common-stackable-potionmediummp": {
+      mediumPotionMp: {
         ilvl: 1,
         name: "Medium MP Potion",
         slot: "stackable",
@@ -625,7 +665,7 @@ const _itemList = {
           mp: 50,
         },
       },
-      "common-stackable-bsporangium": {
+      blueSporangium: {
         ilvl: 1,
         name: "Blue Sporangium",
         slot: "stackable",
@@ -636,7 +676,7 @@ const _itemList = {
           hp: 15,
         },
       },
-      "common-stackable-apple": {
+      redApple: {
         ilvl: 1,
         name: "Red Apple",
         slot: "stackable",
@@ -647,7 +687,7 @@ const _itemList = {
           hp: 20,
         },
       },
-      "common-stackable-batmeat": {
+      batMeat: {
         ilvl: 1,
         name: "Bat Meat",
         slot: "stackable",
@@ -658,7 +698,7 @@ const _itemList = {
           hp: 30,
         },
       },
-      "common-stackable-spidermeat": {
+      spiderMeat: {
         ilvl: 1,
         name: "Spider Meat",
         slot: "stackable",
@@ -669,7 +709,7 @@ const _itemList = {
           hp: 30,
         },
       },
-      "common-stackable-cheese": {
+      cheese: {
         ilvl: 1,
         name: "Cheese",
         slot: "stackable",
@@ -680,7 +720,7 @@ const _itemList = {
           hp: 25,
         },
       },
-      "common-stackable-grapes": {
+      grapes: {
         ilvl: 1,
         name: "Grapes",
         slot: "stackable",
@@ -691,7 +731,7 @@ const _itemList = {
           hp: 20,
         },
       },
-      "common-stackable-skull": {
+      skull: {
         ilvl: 2,
         name: "Skull",
         slot: "stackable",
@@ -857,6 +897,7 @@ const ItemBuilder = {
   },
   buildItem: (type, rarity, itemKey, amount) => {
     let item;
+
     if (rarity == "magic" || rarity == "rare") {
       item = _itemList[type]["common"][itemKey];
     } else {
@@ -928,8 +969,6 @@ const ItemBuilder = {
     item.rarity = rarity;
     item.amount = amount || 1;
     item.type = type;
-    let itemKeyArray = itemKey.split("-"); //needs parsing;
-    item.base = itemKeyArray[1];
     item.stats = newStats;
     item.effects = newEffects;
     item.percentStats = percentStats;

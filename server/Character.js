@@ -1,4 +1,5 @@
 import BaseCharacter from "../src/Character";
+import ItemBuilder from "./ItemBuilder";
 import { randomNumber } from "./utils";
 
 class Character extends BaseCharacter {

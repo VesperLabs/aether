@@ -54,7 +54,7 @@ function App({ socket, debug }) {
       >
         <GameWrapper>
           <MenuBar />
-          {!currentTab && <AttackPad />}
+          {!currentTab && isTouchScreen && <AttackPad />}
         </GameWrapper>
       </AppContext.Provider>
     </ThemeProvider>
