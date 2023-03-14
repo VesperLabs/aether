@@ -4,16 +4,14 @@ export default {
   colors: {
     ...tColors,
     text: tColors.white,
+    unique: tColors.amber[100],
+    rare: tColors.fuchsia[200],
+    set: tColors.lime[200],
+    magic: tColors.blue[200],
+    common: tColors.white,
     background: tColors.black,
-    primary: tColors.blue[500],
-    secondary: tColors.sky[900],
-    accent: tColors.teal[500],
-    muted: tColors.neutral[200],
-    highlight: tColors.sky[500],
-    danger: tColors.red[600],
-    warning: tColors.orange[500],
-    success: tColors.lime[600],
     shadow: {
+      10: "rgba(0,0,0,.10)",
       15: "rgba(0,0,0,.15)",
       25: "rgba(0,0,0,.25)",
     },
@@ -39,17 +37,31 @@ export default {
   },
   breakpoints: ["40em", "52em", "64em"],
   space: [0, 4, 8, 16, 32, 64, 128, 256, 512],
+  radii: [0, 3, 6],
   badges: {
     primary: {
       display: "block",
     },
   },
+  buttons: {
+    menu: {
+      filter: "grayscale(100%)",
+      "*": { opacity: 0.3, transition: ".2s ease all" },
+      "&:hover, &.active": { "*": { opacity: 1 } },
+    },
+  },
   styles: {
     root: {
+      fontSize: 0,
       fontFamily: "body",
       lineHeight: "body",
       fontWeight: "body",
       color: "text",
+      textShadow:
+        "-1px -1px 0 rgba(0, 0, 0, 0.5), 1px -1px 0 rgba(0, 0, 0, 0.5), -1px 1px 0 rgba(0, 0, 0, 0.5), 1px 1px 0 rgba(0, 0, 0, 0.5)",
+      "*": {
+        "-webkit-touch-callout": "none",
+      },
     },
   },
 };

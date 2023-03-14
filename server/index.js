@@ -54,8 +54,8 @@ class ServerScene extends Phaser.Scene {
       const socketId = socket.id;
 
       socket.on("login", async (email = "arf@arf.arf") => {
-        const user = await scene.db.getUserByEmail(email);
-        //const user = baseUser;
+        //const user = await scene.db.getUserByEmail(email);
+        const user = baseUser;
         if (!user) return console.log("❌ Player not found in db");
 
         const player = scene.roomManager.rooms[user.roomName].playerManager.create({

@@ -94,7 +94,7 @@ const baseUser = {
     level: 1,
     speed: 150,
     accuracy: 0,
-    attackSpeed: 0,
+    attackSpeed: 100,
     spellDamage: 0,
     castSpeed: 1000,
     armorPierce: 0,
@@ -119,7 +119,7 @@ const baseUser = {
   direction: "down",
   equipment: {
     handRight: ItemBuilder.buildItem("weapon", "unique", "unique-sword-whistler"),
-    handLeft: ItemBuilder.buildItem("weapon", "unique", "unique-sword-whistler"),
+    handLeft: ItemBuilder.buildItem("shield", "unique", "unique-shield-round"),
     //handLeft: ItemBuilder.buildItem("weapon", "unique", "unique-claymore-soul"),
     helmet: ItemBuilder.buildItem("helmet", "unique", "unique-cap-tudwick"),
     accessory: null,

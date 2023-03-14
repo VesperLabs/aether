@@ -1,31 +1,32 @@
 import React, { forwardRef } from "react";
 import { Button as BaseButton } from "theme-ui";
 
-const Button = forwardRef(
-  ({ sx, onTouchEnd = () => {}, onTouchStart = () => {}, ...props }, ref) => {
-    return (
-      <BaseButton
-        ref={ref}
-        onTouchStart={(e) => {
-          e.stopPropagation();
-          return onTouchStart(e);
-        }}
-        onTouchEnd={(e) => {
-          e.stopPropagation();
-          e.preventDefault();
-          return onTouchEnd(e);
-        }}
-        sx={{
-          ...sx,
-          touchAction: "none",
-          userSelect: "none",
-          bg: "shadow.15",
-          pointerEvents: "all",
-        }}
-        {...props}
-      />
-    );
-  }
-);
+const Button = forwardRef(({ sx, icon, onTouchEnd, onTouchStart, onClick, ...props }, ref) => {
+  return (
+    <BaseButton
+      ref={ref}
+      onClick={onClick}
+      onTouchStart={(e) => {
+        e.stopPropagation();
+        return onTouchStart?.(e) || onClick?.(e);
+      }}
+      onTouchEnd={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        return onTouchEnd?.(e);
+      }}
+      sx={{
+        padding: 1,
+        cursor: "pointer",
+        touchAction: "none",
+        userSelect: "none",
+        backgroundColor: "shadow.10",
+        pointerEvents: "all",
+        ...sx,
+      }}
+      {...props}
+    />
+  );
+});
 
 export default Button;
