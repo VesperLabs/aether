@@ -56,7 +56,6 @@ const Slot = forwardRef(({ sx, size = 52, item, icon, ...props }, ref) => {
   }, [dragging]);
 
   const handleMouseDown = (event) => {
-    event.preventDefault();
     setPosition({
       x: event.clientX - imageRef.current.offsetWidth / 2,
       y: event.clientY - imageRef.current.offsetHeight / 2,
@@ -65,13 +64,11 @@ const Slot = forwardRef(({ sx, size = 52, item, icon, ...props }, ref) => {
   };
 
   const handleMouseUp = (event) => {
-    event.preventDefault();
     setDragging(false);
     setTarget(event.target);
   };
 
   const handleTouchStart = (event) => {
-    event.preventDefault();
     setPosition({
       x: event.touches[0].clientX - imageRef.current.offsetWidth / 2,
       y: event.touches[0].clientY - imageRef.current.offsetHeight / 2,
@@ -80,7 +77,6 @@ const Slot = forwardRef(({ sx, size = 52, item, icon, ...props }, ref) => {
   };
 
   const handleTouchMove = (event) => {
-    event.preventDefault();
     setPosition({
       x: event.touches[0].clientX - imageRef.current.offsetWidth / 2,
       y: event.touches[0].clientY - imageRef.current.offsetHeight / 2,
@@ -88,7 +84,6 @@ const Slot = forwardRef(({ sx, size = 52, item, icon, ...props }, ref) => {
   };
 
   const handleTouchEnd = (event) => {
-    event.preventDefault();
     setDragging(false);
     setTarget(event.target);
   };

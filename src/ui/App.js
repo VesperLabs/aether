@@ -13,7 +13,7 @@ export const useAppContext = () => {
 
 function App({ socket, debug }) {
   const [isConnected, setIsConnected] = useState(true);
-  const [currentTab, setCurrentTab] = useState();
+  const [currentTab, setCurrentTab] = useState(TAB_EQUIPMENT);
   const [player, setPlayer] = useState({});
 
   const toggleTab = (tab) => {
@@ -110,10 +110,11 @@ const MenuEquipment = ({ show }) => {
     <Flex
       sx={{
         gap: 2,
+        p: 2,
         flexWrap: "wrap",
         justifyContent: "end",
         visibility: show ? "visible" : "hidden",
-        height: show ? "auto" : 0,
+        bg: "shadow.10",
       }}
     >
       <Text>Equipment</Text>
@@ -130,21 +131,18 @@ const MenuBar = () => {
   const { isConnected, currentTabEquipment, toggleTab } = useAppContext();
   return (
     <Flex
-      p={2}
       sx={{
-        gap: 2,
         bottom: 0,
         right: 0,
         left: 0,
         flexDirection: "column",
         position: "fixed",
-        bg: "shadow.10",
         pointerEvents: "none",
         boxSizing: "border-box",
       }}
     >
       <MenuEquipment show={currentTabEquipment} />
-      <Flex sx={{ gap: 1, alignItems: "center" }}>
+      <Flex sx={{ gap: 1, alignItems: "center", bg: "shadow.10", p: 2 }}>
         <Box>
           {isConnected ? (
             <Icon icon="../assets/icons/success.png" sx={{ opacity: 0.5 }} />
