@@ -13,7 +13,7 @@ export const useAppContext = () => {
 
 function App({ socket, debug }) {
   const [isConnected, setIsConnected] = useState(true);
-  const [currentTab, setCurrentTab] = useState(TAB_EQUIPMENT);
+  const [currentTab, setCurrentTab] = useState();
   const [player, setPlayer] = useState({});
 
   const toggleTab = (tab) => {
