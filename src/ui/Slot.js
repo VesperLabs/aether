@@ -1,4 +1,4 @@
-import React, { forwardRef, useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Box, Icon, ItemTooltip, theme } from "./";
 import { resolveAsset } from "../Assets";
 import { useAppContext } from "./App";
@@ -16,8 +16,8 @@ const STYLE_NON_EMPTY = (rarity) => ({
 const BLANK_IMAGE =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 
-const Slot = forwardRef(({ sx, size = 52, item, slot, icon, ...props }, ref) => {
-  const { player } = useAppContext();
+const Slot = ({ sx, size = 52, item, slot, icon, ...props }) => {
+  const { player, setIsDraggingGlobal, isDraggingGlobal } = useAppContext();
   const [imageData, setImageData] = useState(BLANK_IMAGE);
   const [dragging, setDragging] = useState(false);
   const [hovering, setHovering] = useState(false);
@@ -46,47 +46,45 @@ const Slot = forwardRef(({ sx, size = 52, item, slot, icon, ...props }, ref) => 
     img.src = asset.src;
   }, [item]);
 
-  useEffect(() => {
-    const handleMouseMove = (event) => {
-      if (!dragging) return;
-      setPosition({
-        x: event.clientX - imageRef.current.offsetWidth / 2,
-        y: event.clientY - imageRef.current.offsetHeight / 2,
-      });
-    };
-    document.addEventListener("mousemove", handleMouseMove);
-    return () => {
-      document.removeEventListener("mousemove", handleMouseMove);
-    };
-  }, [dragging]);
-
-  const handleMouseDown = (event) => {
+  const handleMouseDown = (e) => {
     setPosition({
-      x: event.clientX - imageRef.current.offsetWidth / 2,
-      y: event.clientY - imageRef.current.offsetHeight / 2,
+      x: e.clientX - imageRef.current.offsetWidth / 2,
+      y: e.clientY - imageRef.current.offsetHeight / 2,
     });
     setDragging(true);
-  };
-
-  const handleMouseUp = (e) => {
-    setDragging(false);
-    setTarget(e.target);
   };
 
   const handleTouchStart = (e) => {
     e.stopPropagation();
     setPosition({
-      x: event.touches[0].clientX - imageRef.current.offsetWidth / 2,
-      y: event.touches[0].clientY - imageRef.current.offsetHeight / 2,
+      x: e.touches[0].clientX - imageRef.current.offsetWidth / 2,
+      y: e.touches[0].clientY - imageRef.current.offsetHeight / 2,
     });
     setDragging(true);
   };
 
-  const handleTouchMove = (event) => {
+  const handleMouseMove = (e) => {
+    if (!dragging) return;
     setPosition({
-      x: event.touches[0].clientX - imageRef.current.offsetWidth / 2,
-      y: event.touches[0].clientY - imageRef.current.offsetHeight / 2,
+      x: e.clientX - imageRef.current.offsetWidth / 2,
+      y: e.clientY - imageRef.current.offsetHeight / 2,
     });
+    setTarget(e.target);
+  };
+
+  const handleTouchMove = (e) => {
+    if (!dragging) return;
+    setPosition({
+      x: e.touches[0].clientX - imageRef.current.offsetWidth / 2,
+      y: e.touches[0].clientY - imageRef.current.offsetHeight / 2,
+    });
+    setTarget(e.target);
+  };
+
+  const handleMouseUp = (e) => {
+    if (!dragging) return;
+    setDragging(false);
+    setTarget(e.target);
   };
 
   const handleTouchEnd = (e) => {
@@ -103,19 +101,33 @@ const Slot = forwardRef(({ sx, size = 52, item, slot, icon, ...props }, ref) => 
     setHovering(false);
   };
 
+  useEffect(() => {
+    document.addEventListener("touchend", handleTouchEnd);
+    document.addEventListener("mouseup", handleMouseUp);
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("touchmove", handleTouchMove);
+    dragging ? setIsDraggingGlobal(true) : setIsDraggingGlobal(false);
+
+    return () => {
+      document.removeEventListener("touchend", handleTouchEnd);
+      document.removeEventListener("mouseup", handleMouseUp);
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("touchmove", handleTouchMove);
+    };
+  }, [dragging]);
+
   const mouseBinds = item
     ? {
-        onMouseUp: handleMouseUp,
-        onTouchEnd: handleTouchEnd,
-        onTouchMove: handleTouchMove,
         onMouseEnter: handleMouseEnter,
         onMouseLeave: handleMouseLeave,
       }
     : {};
 
+  const targetMoved = target?.dataset?.tooltipId !== item?.id;
+  const showTooltip = (dragging && !targetMoved) || hovering;
+
   return (
     <Box
-      ref={ref}
       data-tooltip-id={item?.id}
       sx={{
         position: "relative",
@@ -123,7 +135,7 @@ const Slot = forwardRef(({ sx, size = 52, item, slot, icon, ...props }, ref) => 
         userSelect: "none",
         border: (t) => `1px solid ${t.colors.shadow[30]}`,
         borderRadius: 2,
-        pointerEvents: "all",
+        pointerEvents: isDraggingGlobal ? "all" : "none",
         overflow: dragging ? "visible" : "hidden",
         width: size,
         height: size,
@@ -135,27 +147,30 @@ const Slot = forwardRef(({ sx, size = 52, item, slot, icon, ...props }, ref) => 
       {...props}
     >
       {item && (
-        <Icon
-          ref={imageRef}
-          icon={imageData}
-          onMouseDown={handleMouseDown}
-          onTouchStart={handleTouchStart}
-          size={size}
-          sx={{
-            zIndex: dragging ? 9999 : 1,
-            position: dragging ? "fixed" : "unset",
-            left: dragging ? position.x : 0,
-            top: dragging ? position.y : 0,
-            cursor: dragging ? "grabbing" : "grab",
-            transform: dragging ? "scale(4,4)" : "scale(2,2)",
-            imageRendering: "pixelated",
-          }}
-        />
+        <>
+          <Icon
+            ref={imageRef}
+            icon={imageData}
+            onMouseDown={handleMouseDown}
+            onTouchStart={handleTouchStart}
+            size={size}
+            sx={{
+              pointerEvents: dragging ? "none" : "all",
+              zIndex: dragging ? 9999 : 1,
+              position: dragging ? "fixed" : "unset",
+              left: dragging ? position.x : 0,
+              top: dragging ? position.y : 0,
+              cursor: dragging ? "grabbing" : "grab",
+              transform: dragging ? "scale(4,4)" : "scale(2,2)",
+              imageRendering: "pixelated",
+            }}
+          />
+          <ItemTooltip item={item} show={showTooltip} />
+        </>
       )}
-      <ItemTooltip item={item} show={dragging || hovering} />
     </Box>
   );
-});
+};
 
 function trimAndTintCanvas(c, tint = "FFFFFF") {
   let ctx = c.getContext("2d"),

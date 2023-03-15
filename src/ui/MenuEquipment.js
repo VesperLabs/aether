@@ -13,6 +13,7 @@ const MenuEquipment = () => {
         justifyContent: "end",
         display: show ? "flex" : "none",
         bg: "shadow.10",
+        zIndex: 3,
       }}
     >
       <Text>Equipment</Text>

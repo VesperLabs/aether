@@ -5,6 +5,7 @@ const Button = forwardRef(({ sx, icon, onTouchEnd, onTouchStart, onClick, ...pro
   return (
     <BaseButton
       ref={ref}
+      tabIndex="-1"
       onClick={onClick}
       onTouchStart={(e) => {
         e.stopPropagation();
