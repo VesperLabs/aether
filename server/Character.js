@@ -73,12 +73,11 @@ class Character extends BaseCharacter {
       }
     });
     /* Sees what set items are worn, if enough are worn, add SET BONUS */
-    this.activeSets = [];
     Object.keys(setList).forEach((key) => {
       if (ItemBuilder.getSetInfo(key)) {
         let setInfo = ItemBuilder.getSetInfo(key);
         if (setList[key] >= setInfo.pieces) {
-          this.activeSets.push(key);
+          this.state.activeSets.push(key);
           //add percent bonus to totals
           if (setInfo.percentStats) {
             Object.keys(setInfo.percentStats).forEach((key) => {

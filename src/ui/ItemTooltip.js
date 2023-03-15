@@ -7,7 +7,7 @@ const Label = (props) => <Text sx={{ fontWeight: "normal" }} {...props} />;
 
 const ItemTooltip = ({ item, show }) => {
   const { player } = useAppContext();
-  const isSetActive = player?.activeSets?.includes?.(item?.set);
+  const isSetActive = player?.state?.activeSets?.includes?.(item?.set);
   if (!item) return;
   return (
     <Tooltip

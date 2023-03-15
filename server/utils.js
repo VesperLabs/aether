@@ -127,7 +127,7 @@ const baseUser = {
     armor: ItemBuilder.buildItem("armor", "common", "clothRobe"),
     boots: ItemBuilder.buildItem("boots", "rare", "nutshellBoots"),
     ring1: ItemBuilder.buildItem("ring", "unique", "bloodMusic"),
-    ring2: null,
+    ring2: ItemBuilder.buildItem("ring", "set", "timmysSignet"),
     amulet: ItemBuilder.buildItem("amulet", "set", "timmysChain"),
   },
   profile: {

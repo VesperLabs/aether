@@ -49,6 +49,7 @@ class Character extends Phaser.GameObjects.Container {
       hasWeaponRight: false,
       hasWeaponLeft: false,
       isDead: false,
+      activeSets: [],
       ...state,
     };
     this.profile = profile;
