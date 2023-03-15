@@ -1,10 +1,14 @@
 import React, { forwardRef, useState, useRef, useEffect } from "react";
-import { Box, Icon, ItemTooltip } from "./";
+import { Box, Icon, ItemTooltip, theme } from "./";
 import { resolveAsset } from "../Assets";
 import { useAppContext } from "./App";
 
 const STYLE_ABS = { top: 0, left: 0, position: "absoute" };
-const STYLE_EMPTY = { filter: "grayscale(100%)", opacity: 0.3 };
+const STYLE_EMPTY = (icon) => ({
+  background: `${theme.colors.shadow[20]} url(${icon}) center center no-repeat`,
+  filter: "grayscale(100%)",
+  opacity: 0.3,
+});
 const STYLE_NON_EMPTY = (rarity) => ({
   border: (t) => `1px solid ${t.colors[rarity]}`,
   background: (t) => `radial-gradient(circle, ${t.colors[rarity]} 0%, ${t.colors.shadow[15]} 125%)`,
@@ -12,10 +16,11 @@ const STYLE_NON_EMPTY = (rarity) => ({
 const BLANK_IMAGE =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 
-const Slot = forwardRef(({ sx, size = 52, item, icon, ...props }, ref) => {
+const Slot = forwardRef(({ sx, size = 52, item, slot, icon, ...props }, ref) => {
   const { player } = useAppContext();
   const [imageData, setImageData] = useState(BLANK_IMAGE);
   const [dragging, setDragging] = useState(false);
+  const [hovering, setHovering] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [target, setTarget] = useState(null);
   const imageRef = useRef(null);
@@ -91,6 +96,23 @@ const Slot = forwardRef(({ sx, size = 52, item, icon, ...props }, ref) => {
     setTarget(e.target);
   };
 
+  const handleMouseEnter = (e) => {
+    setHovering(true);
+  };
+  const handleMouseLeave = (e) => {
+    setHovering(false);
+  };
+
+  const mouseBinds = item
+    ? {
+        onMouseUp: handleMouseUp,
+        onTouchEnd: handleTouchEnd,
+        onTouchMove: handleTouchMove,
+        onMouseEnter: handleMouseEnter,
+        onMouseLeave: handleMouseLeave,
+      }
+    : {};
+
   return (
     <Box
       ref={ref}
@@ -99,39 +121,38 @@ const Slot = forwardRef(({ sx, size = 52, item, icon, ...props }, ref) => {
         position: "relative",
         touchAction: "none",
         userSelect: "none",
-        backgroundColor: "shadow.10",
-        border: (t) => `1px solid ${t.colors.shadow[25]}`,
+        border: (t) => `1px solid ${t.colors.shadow[30]}`,
         borderRadius: 2,
         pointerEvents: "all",
         overflow: dragging ? "visible" : "hidden",
         width: size,
         height: size,
         ...STYLE_ABS,
-        ...(item?.rarity ? STYLE_NON_EMPTY(item?.rarity) : STYLE_EMPTY),
+        ...(item?.rarity ? STYLE_NON_EMPTY(item?.rarity) : STYLE_EMPTY(icon)),
         ...sx,
       }}
-      onMouseUp={handleMouseUp}
-      onTouchEnd={handleTouchEnd}
-      onTouchMove={handleTouchMove}
+      {...mouseBinds}
       {...props}
     >
-      <Icon
-        ref={imageRef}
-        icon={imageData}
-        onMouseDown={handleMouseDown}
-        onTouchStart={handleTouchStart}
-        size={size}
-        sx={{
-          zIndex: dragging ? 9999 : 1,
-          position: dragging ? "fixed" : "unset",
-          left: dragging ? position.x : 0,
-          top: dragging ? position.y : 0,
-          cursor: dragging ? "grabbing" : "grab",
-          transform: dragging ? "scale(4,4)" : "scale(2,2)",
-          imageRendering: "pixelated",
-        }}
-      />
-      <ItemTooltip item={item} show={dragging} />
+      {item && (
+        <Icon
+          ref={imageRef}
+          icon={imageData}
+          onMouseDown={handleMouseDown}
+          onTouchStart={handleTouchStart}
+          size={size}
+          sx={{
+            zIndex: dragging ? 9999 : 1,
+            position: dragging ? "fixed" : "unset",
+            left: dragging ? position.x : 0,
+            top: dragging ? position.y : 0,
+            cursor: dragging ? "grabbing" : "grab",
+            transform: dragging ? "scale(4,4)" : "scale(2,2)",
+            imageRendering: "pixelated",
+          }}
+        />
+      )}
+      <ItemTooltip item={item} show={dragging || hovering} />
     </Box>
   );
 });

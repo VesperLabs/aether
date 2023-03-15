@@ -1,11 +1,8 @@
 import React, { useEffect, useState, createContext, useContext } from "react";
 import { isTouchScreen } from "../utils";
-import { ThemeProvider, Box, Button, theme, Flex, Icon, MenuEquipment } from "./";
+import { ThemeProvider, Box, Button, theme, Flex, Icon, MenuEquipment, MenuInventory } from "./";
 
 const AppContext = createContext();
-
-const TAB_EQUIPMENT = "TAB_EQUIPMENT";
-const TAB_INVENTORY = "TAB_INVENTORY";
 
 export const useAppContext = () => {
   return useContext(AppContext);
@@ -13,15 +10,11 @@ export const useAppContext = () => {
 
 function App({ socket, debug }) {
   const [isConnected, setIsConnected] = useState(true);
-  const [currentTab, setCurrentTab] = useState();
   const [player, setPlayer] = useState({});
+  const [tabEquipment, setTabEquipment] = useState(false);
+  const [tabInventory, setTabInventory] = useState(false);
 
-  const toggleTab = (tab) => {
-    if (currentTab === tab) {
-      return setCurrentTab(null);
-    }
-    return setCurrentTab(tab);
-  };
+  const hasOpenTab = !tabInventory && !tabEquipment;
 
   useEffect(() => {
     socket.on("connect", () => {
@@ -43,10 +36,10 @@ function App({ socket, debug }) {
         value={{
           isConnected,
           setIsConnected,
-          currentTab,
-          currentTabEquipment: currentTab === TAB_EQUIPMENT,
-          toggleTab,
-          setCurrentTab,
+          setTabEquipment,
+          setTabInventory,
+          tabEquipment,
+          tabInventory,
           player,
           socket,
           debug,
@@ -54,7 +47,6 @@ function App({ socket, debug }) {
       >
         <GameWrapper>
           <MenuBar />
-          {!currentTab && isTouchScreen && <AttackPad />}
         </GameWrapper>
       </AppContext.Provider>
     </ThemeProvider>
@@ -85,26 +77,31 @@ const GameWrapper = (props) => {
 
 const AttackPad = () => {
   return (
-    <Button
-      variant="menu"
-      onTouchStart={(e) => {
-        window.dispatchEvent(new Event("hero_attack"));
-      }}
+    <Flex
       sx={{
-        bottom: 74,
-        right: 20,
-        p: 44,
-        borderRadius: "100%",
-        position: "absolute",
+        p: 2,
+        justifyContent: "end",
       }}
     >
-      <Icon icon="../assets/icons/handRight.png" />
-    </Button>
+      <Button
+        variant="menu"
+        onTouchStart={(e) => {
+          window.dispatchEvent(new Event("hero_attack"));
+        }}
+        sx={{
+          p: 44,
+          borderRadius: "100%",
+        }}
+      >
+        <Icon icon="../assets/icons/handRight.png" />
+      </Button>
+    </Flex>
   );
 };
 
 const MenuBar = () => {
-  const { isConnected, toggleTab, currentTabEquipment } = useAppContext();
+  const { isConnected, tabEquipment, setTabEquipment, tabInventory, setTabInventory } =
+    useAppContext();
   return (
     <Flex
       sx={{
@@ -117,7 +114,9 @@ const MenuBar = () => {
         boxSizing: "border-box",
       }}
     >
+      <AttackPad />
       <MenuEquipment />
+      <MenuInventory />
       <Flex sx={{ gap: 1, alignItems: "center", bg: "shadow.10", p: 2 }}>
         <Box>
           {isConnected ? (
@@ -129,12 +128,16 @@ const MenuBar = () => {
         <Box sx={{ flex: 1 }} />
         <Button
           variant="menu"
-          className={currentTabEquipment ? "active" : ""}
-          onClick={() => toggleTab(TAB_EQUIPMENT)}
+          className={tabEquipment ? "active" : ""}
+          onClick={() => setTabEquipment((prev) => !prev)}
         >
           <Icon icon="../assets/icons/helmet.png" />
         </Button>
-        <Button variant="menu" onClick={() => toggleTab(TAB_INVENTORY)}>
+        <Button
+          variant="menu"
+          className={tabInventory ? "active" : ""}
+          onClick={() => setTabInventory((prev) => !prev)}
+        >
           <Icon icon="../assets/icons/bag.png" />
         </Button>
       </Flex>

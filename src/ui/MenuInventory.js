@@ -1,9 +1,10 @@
 import React from "react";
 import { Flex, Text, useAppContext, Slot } from "./";
 
-const MenuEquipment = () => {
-  const { player, tabEquipment: show } = useAppContext();
-  const equipment = Object.entries(player?.equipment || {});
+const MenuInventory = () => {
+  const { player, tabInventory: show } = useAppContext();
+  const inventory = Object.entries(player?.inventory || {});
+  const maxInventory = new Array(30).fill(null);
   return (
     <Flex
       sx={{
@@ -15,14 +16,14 @@ const MenuEquipment = () => {
         bg: "shadow.10",
       }}
     >
-      <Text>Equipment</Text>
+      <Text>Inventory</Text>
       <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", maxWidth: 592 }}>
-        {equipment?.map(([slotKey, item]) => (
-          <Slot icon={`../assets/icons/${slotKey}.png`} item={item} />
+        {maxInventory?.map((i) => (
+          <Slot icon="./assets/icons/pouch.png" item={inventory?.[i]} />
         ))}
       </Flex>
     </Flex>
   );
 };
 
-export default MenuEquipment;
+export default MenuInventory;
