@@ -897,19 +897,20 @@ const ItemBuilder = {
   },
   buildItem: (type, rarity, itemKey, amount) => {
     let item;
-
-    if (rarity == "magic" || rarity == "rare") {
-      item = _itemList[type]["common"][itemKey];
-    } else {
-      item = _itemList[type][rarity][itemKey];
-    }
     let newStats = {};
     let newEffects = {};
-    // ToDo: needs better error handling. invalid item builds break the server.
-    /* Select an item of the type and rarity (if more than one exist) */
-
-    item = JSON.parse(JSON.stringify(item));
     let percentStats = {}; //holds all of the % values to be calculated together after stats..
+
+    try {
+      item =
+        rarity == "magic" || rarity == "rare"
+          ? _itemList[type]["common"][itemKey]
+          : _itemList[type][rarity][itemKey];
+      item = JSON.parse(JSON.stringify(item));
+    } catch (e) {
+      console.log(`🔧 Item not found for ${type} ${rarity} ${itemKey}`);
+      return null;
+    }
 
     if (item.stats) {
       for (let key in item.stats) {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, createContext, useContext } from "react";
 import { isTouchScreen } from "../utils";
-import { ThemeProvider, Box, Button, theme, Slot, Flex, Icon, Text } from "./";
+import { ThemeProvider, Box, Button, theme, Flex, Icon, MenuEquipment } from "./";
 
 const AppContext = createContext();
 
@@ -103,32 +103,8 @@ const AttackPad = () => {
   );
 };
 
-const MenuEquipment = ({ show }) => {
-  const { player } = useAppContext();
-  const equipment = Object.entries(player?.equipment || {});
-  return (
-    <Flex
-      sx={{
-        gap: 2,
-        p: 2,
-        flexWrap: "wrap",
-        justifyContent: "end",
-        visibility: show ? "visible" : "hidden",
-        bg: "shadow.10",
-      }}
-    >
-      <Text>Equipment</Text>
-      <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end" }}>
-        {equipment?.map(([key, item]) => (
-          <Slot icon={`../assets/icons/${key}.png`} item={item} />
-        ))}
-      </Flex>
-    </Flex>
-  );
-};
-
 const MenuBar = () => {
-  const { isConnected, currentTabEquipment, toggleTab } = useAppContext();
+  const { isConnected, toggleTab, currentTabEquipment } = useAppContext();
   return (
     <Flex
       sx={{
@@ -141,7 +117,7 @@ const MenuBar = () => {
         boxSizing: "border-box",
       }}
     >
-      <MenuEquipment show={currentTabEquipment} />
+      <MenuEquipment />
       <Flex sx={{ gap: 1, alignItems: "center", bg: "shadow.10", p: 2 }}>
         <Box>
           {isConnected ? (

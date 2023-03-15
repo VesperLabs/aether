@@ -1,5 +1,5 @@
 import React, { forwardRef, useState, useRef, useEffect } from "react";
-import { Box, Icon } from "./";
+import { Box, Icon, ItemTooltip } from "./";
 import { resolveAsset } from "../Assets";
 import { useAppContext } from "./App";
 
@@ -63,12 +63,13 @@ const Slot = forwardRef(({ sx, size = 52, item, icon, ...props }, ref) => {
     setDragging(true);
   };
 
-  const handleMouseUp = (event) => {
+  const handleMouseUp = (e) => {
     setDragging(false);
-    setTarget(event.target);
+    setTarget(e.target);
   };
 
-  const handleTouchStart = (event) => {
+  const handleTouchStart = (e) => {
+    e.stopPropagation();
     setPosition({
       x: event.touches[0].clientX - imageRef.current.offsetWidth / 2,
       y: event.touches[0].clientY - imageRef.current.offsetHeight / 2,
@@ -83,14 +84,17 @@ const Slot = forwardRef(({ sx, size = 52, item, icon, ...props }, ref) => {
     });
   };
 
-  const handleTouchEnd = (event) => {
+  const handleTouchEnd = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
     setDragging(false);
-    setTarget(event.target);
+    setTarget(e.target);
   };
 
   return (
     <Box
       ref={ref}
+      data-tooltip-id={item?.id}
       sx={{
         position: "relative",
         touchAction: "none",
@@ -127,6 +131,7 @@ const Slot = forwardRef(({ sx, size = 52, item, icon, ...props }, ref) => {
           imageRendering: "pixelated",
         }}
       />
+      <ItemTooltip item={item} show={dragging} />
     </Box>
   );
 });

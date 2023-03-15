@@ -51,6 +51,12 @@ export default {
     },
   },
   styles: {
+    hr: {
+      my: 2,
+      color: tColors.white,
+      opacity: 0.15,
+      width: "100%",
+    },
     root: {
       fontSize: 0,
       fontFamily: "body",
@@ -61,6 +67,12 @@ export default {
         "-1px -1px 0 rgba(0, 0, 0, 0.5), 1px -1px 0 rgba(0, 0, 0, 0.5), -1px 1px 0 rgba(0, 0, 0, 0.5), 1px 1px 0 rgba(0, 0, 0, 0.5)",
       "*": {
         "-webkit-touch-callout": "none",
+        "-webkit-user-callout": "none",
+        "-webkit-user-select": "none",
+        "-webkit-user-drag": "none",
+        "-webkit-user-modify": "none",
+        "-webkit-highlight": "none",
+        "touch-action": "manipulation",
       },
     },
   },

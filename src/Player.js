@@ -67,7 +67,7 @@ class Player extends Character {
     this.add(this.hpBar);
   }
   drawCharacterFromUserData() {
-    const { profile, equipment } = this;
+    const { profile, equipment } = this || {};
     if (profile?.scale) {
       this.skin.setScale(profile?.scale);
     }
@@ -78,11 +78,8 @@ class Player extends Character {
     if (profile?.hair?.tint) {
       this.hair.setTint(profile?.hair?.tint);
     }
-    if (equipment?.handLeft?.tint) {
-      this.handLeft.setTint(equipment?.handLeft?.tint);
-    }
-    if (equipment?.handRight?.tint) {
-      this.handRight.setTint(equipment?.handRight?.tint);
+    for (const [key, slot] of Object.entries(equipment)) {
+      this?.[key]?.setTint(slot?.tint);
     }
     if (profile?.userName) {
       this.userName.setText(profile?.userName);

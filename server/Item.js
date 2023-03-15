@@ -1,5 +1,6 @@
 class Item {
   constructor(item) {
+    this.id = item?.id;
     this.key = item?.key;
     this.ilvl = item?.ilvl;
     this.stats = item?.stats;
