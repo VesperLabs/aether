@@ -10,12 +10,13 @@ class SceneHud extends Phaser.Scene {
   preload() {}
   create() {
     addJoystick(this);
-    addAttackEvents(this);
+    addInputListeners(this);
   }
   update() {}
 }
 
-function addAttackEvents(scene) {
+function addInputListeners(scene) {
+  const pointer = scene.input.activePointer;
   const mainScene = scene.scene.manager.getScene("SceneMain");
   /* Keyboard */
   scene.input.keyboard.on("keyup-SPACE", (e) => {
@@ -29,6 +30,39 @@ function addAttackEvents(scene) {
     },
     scene
   );
+  window.addEventListener(
+    "item_drag",
+    (e) => {
+      const cursorPoint = pointer.positionToCamera(mainScene.cameras.main);
+      const direction = getHeroSpin(mainScene?.hero, cursorPoint);
+      if (mainScene?.hero?.direction !== direction) {
+        scene.socket.emit("changeDirection", direction);
+      }
+    },
+    scene
+  );
+}
+
+function getHeroSpin(hero, point) {
+  const dx = point.x - hero.x;
+  const dy = point.y - hero.y;
+
+  // determine which direction has the greatest distance
+  if (Math.abs(dx) >= Math.abs(dy)) {
+    // horizontal distance is greater than or equal to vertical distance
+    if (dx > 0) {
+      return "right";
+    } else {
+      return "left";
+    }
+  } else {
+    // vertical distance is greater than horizontal distance
+    if (dy > 0) {
+      return "down";
+    } else {
+      return "up";
+    }
+  }
 }
 
 function addJoystick(scene) {

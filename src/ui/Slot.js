@@ -1,7 +1,8 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useLayoutEffect } from "react";
 import { Box, Icon, ItemTooltip, theme } from "./";
 import { resolveAsset } from "../Assets";
 import { useAppContext } from "./App";
+import { isTouchScreen } from "../utils";
 
 const STYLE_ABS = { top: 0, left: 0, position: "absoute" };
 const STYLE_EMPTY = (icon) => ({
@@ -25,7 +26,65 @@ const Slot = ({ sx, size = 52, item, slot, icon, ...props }) => {
   const [target, setTarget] = useState(null);
   const imageRef = useRef(null);
 
-  useEffect(() => {
+  const handleMouseDown = (e) => {
+    setPosition({
+      x: e.clientX - imageRef.current.offsetWidth / 2,
+      y: e.clientY - imageRef.current.offsetHeight / 2,
+    });
+    setDragging(true);
+    setTarget(document.elementFromPoint(e.clientX, e.clientY));
+  };
+
+  const handleTouchStart = (e) => {
+    e.stopPropagation();
+    setPosition({
+      x: e.touches[0].clientX - imageRef.current.offsetWidth / 2,
+      y: e.touches[0].clientY - imageRef.current.offsetHeight / 2,
+    });
+    setDragging(true);
+    setTimeout(
+      () => setTarget(document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY)),
+      1
+    );
+  };
+
+  const handleMouseMove = (e) => {
+    if (!dragging) return;
+    setPosition({
+      x: e.clientX - imageRef.current.offsetWidth / 2,
+      y: e.clientY - imageRef.current.offsetHeight / 2,
+    });
+    setTarget(document.elementFromPoint(e.clientX, e.clientY));
+  };
+
+  const handleTouchMove = (e) => {
+    if (!dragging) return;
+    setPosition({
+      x: e.touches[0].clientX - imageRef.current.offsetWidth / 2,
+      y: e.touches[0].clientY - imageRef.current.offsetHeight / 2,
+    });
+    setTarget(document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY));
+  };
+
+  const handleMouseUp = (e) => {
+    if (!dragging) return;
+    setDragging(false);
+  };
+
+  const handleTouchEnd = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setDragging(false);
+  };
+
+  const handleMouseEnter = (e) => {
+    setHovering(true);
+  };
+  const handleMouseLeave = (e) => {
+    setHovering(false);
+  };
+
+  useLayoutEffect(() => {
     if (!item) return;
     const asset = resolveAsset(item, player);
     if (!asset) return;
@@ -46,68 +105,16 @@ const Slot = ({ sx, size = 52, item, slot, icon, ...props }) => {
     img.src = asset.src;
   }, [item]);
 
-  const handleMouseDown = (e) => {
-    setPosition({
-      x: e.clientX - imageRef.current.offsetWidth / 2,
-      y: e.clientY - imageRef.current.offsetHeight / 2,
-    });
-    setDragging(true);
-  };
-
-  const handleTouchStart = (e) => {
-    e.stopPropagation();
-    setPosition({
-      x: e.touches[0].clientX - imageRef.current.offsetWidth / 2,
-      y: e.touches[0].clientY - imageRef.current.offsetHeight / 2,
-    });
-    setDragging(true);
-  };
-
-  const handleMouseMove = (e) => {
-    if (!dragging) return;
-    setPosition({
-      x: e.clientX - imageRef.current.offsetWidth / 2,
-      y: e.clientY - imageRef.current.offsetHeight / 2,
-    });
-    setTarget(e.target);
-  };
-
-  const handleTouchMove = (e) => {
-    if (!dragging) return;
-    setPosition({
-      x: e.touches[0].clientX - imageRef.current.offsetWidth / 2,
-      y: e.touches[0].clientY - imageRef.current.offsetHeight / 2,
-    });
-    setTarget(e.target);
-  };
-
-  const handleMouseUp = (e) => {
-    if (!dragging) return;
-    setDragging(false);
-    setTarget(e.target);
-  };
-
-  const handleTouchEnd = (e) => {
-    e.stopPropagation();
-    e.preventDefault();
-    setDragging(false);
-    setTarget(e.target);
-  };
-
-  const handleMouseEnter = (e) => {
-    setHovering(true);
-  };
-  const handleMouseLeave = (e) => {
-    setHovering(false);
-  };
-
-  useEffect(() => {
+  useLayoutEffect(() => {
     document.addEventListener("touchend", handleTouchEnd);
     document.addEventListener("mouseup", handleMouseUp);
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("touchmove", handleTouchMove);
-    dragging ? setIsDraggingGlobal(true) : setIsDraggingGlobal(false);
-
+    if (dragging) {
+      setIsDraggingGlobal(true);
+    } else {
+      setIsDraggingGlobal(false);
+    }
     return () => {
       document.removeEventListener("touchend", handleTouchEnd);
       document.removeEventListener("mouseup", handleMouseUp);
@@ -115,6 +122,16 @@ const Slot = ({ sx, size = 52, item, slot, icon, ...props }) => {
       document.removeEventListener("touchmove", handleTouchMove);
     };
   }, [dragging]);
+
+  useLayoutEffect(() => {
+    if (target?.nodeName == "CANVAS") {
+      window.dispatchEvent(
+        new CustomEvent("item_drag", {
+          detail: position,
+        })
+      );
+    }
+  }, [position]);
 
   const mouseBinds = item
     ? {
@@ -124,7 +141,7 @@ const Slot = ({ sx, size = 52, item, slot, icon, ...props }) => {
     : {};
 
   const targetMoved = target?.dataset?.tooltipId !== item?.id;
-  const showTooltip = (dragging && !targetMoved) || hovering;
+  const showTooltip = (dragging && !targetMoved) || (hovering && !isTouchScreen);
 
   return (
     <Box
@@ -135,7 +152,7 @@ const Slot = ({ sx, size = 52, item, slot, icon, ...props }) => {
         userSelect: "none",
         border: (t) => `1px solid ${t.colors.shadow[30]}`,
         borderRadius: 2,
-        pointerEvents: isDraggingGlobal ? "all" : "none",
+        pointerEvents: dragging ? "all" : "none",
         overflow: dragging ? "visible" : "hidden",
         width: size,
         height: size,
@@ -155,6 +172,8 @@ const Slot = ({ sx, size = 52, item, slot, icon, ...props }) => {
             onTouchStart={handleTouchStart}
             size={size}
             sx={{
+              touchAction: "none",
+              userSelect: "none",
               pointerEvents: dragging ? "none" : "all",
               zIndex: dragging ? 9999 : 1,
               position: dragging ? "fixed" : "unset",

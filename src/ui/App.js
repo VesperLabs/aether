@@ -1,5 +1,4 @@
 import React, { useEffect, useState, createContext, useContext } from "react";
-import { isTouchScreen } from "../utils";
 import { ThemeProvider, Box, Button, theme, Flex, Icon, MenuEquipment, MenuInventory } from "./";
 
 const AppContext = createContext();

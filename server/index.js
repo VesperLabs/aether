@@ -85,6 +85,12 @@ class ServerScene extends Phaser.Scene {
         socket.to(player.roomName).emit("playerAttack", { socketId, count, direction });
       });
 
+      socket.on("changeDirection", (direction) => {
+        const player = getCharacterState(scene.players[socketId]);
+        player.direction = direction;
+        io.to(player.roomName).emit("changeDirection", { socketId, direction });
+      });
+
       socket.on("hit", ({ ids, spellName }) => {
         //console.log(`🔫 ${spellName} landed on ${entity}`);
         const hero = scene.players[socketId];

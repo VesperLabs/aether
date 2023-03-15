@@ -58,6 +58,11 @@ class SceneMain extends Phaser.Scene {
       p.doAttack(count);
     });
 
+    socket.on("changeDirection", ({ socketId, direction }) => {
+      const p = getPlayer(scene, socketId);
+      p.direction = direction;
+    });
+
     socket.on("assignDamage", ({ socketId, npcHitList, playerHitList }) => {
       for (const hit of npcHitList) {
         getNpc(scene, hit?.to)?.takeHit?.(hit);
