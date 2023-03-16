@@ -88,7 +88,7 @@ class ServerScene extends Phaser.Scene {
       });
 
       socket.on("changeDirection", (direction) => {
-        const player = getCharacterState(scene.players[socketId]);
+        const player = scene.players[socketId];
         player.direction = direction;
         io.to(player.roomName).emit("changeDirection", { socketId, direction });
       });
@@ -162,10 +162,17 @@ class ServerScene extends Phaser.Scene {
           player?.clearEquipmentSlot(found?.slotName);
           player?.calculateStats();
         }
+
+        /* Make the item pop up where they dropped it */
+        const coords = { x: player?.x, y: player?.y };
+        if (player?.direction === "left") coords.x -= 16;
+        if (player?.direction === "right") coords.x += 16;
+        if (player?.direction === "up") coords.y -= 16;
+        if (player?.direction === "down") coords.y += 16;
+
         /* Spawn the loot on the server */
         scene.roomManager.rooms[player.roomName].lootManager.create({
-          x: player?.x,
-          y: player?.y,
+          ...coords,
           item: found?.item,
         });
         /* Save the users data */
