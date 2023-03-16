@@ -22,6 +22,10 @@ class Damage extends Container {
         text = "+" + text;
         damageText.setTint("0x99FF99");
         break;
+      case "healMp":
+        text = "+" + text;
+        damageText.setTint("0x9999FF");
+        break;
       case "miss":
         text = "miss!";
         if (this.victim.isHero) {
