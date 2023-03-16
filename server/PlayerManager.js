@@ -1,7 +1,6 @@
 import Player from "./Player";
 class PlayerManager {
   constructor(scene, room) {
-    this.players = [];
     this.scene = scene;
     this.room = room;
   }

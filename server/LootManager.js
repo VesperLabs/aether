@@ -1,40 +1,34 @@
 import Loot from "./Loot.js";
-import ItemBuilder from "./ItemBuilder.js";
-
+import crypto from "crypto";
 class LootManager {
   constructor(scene, room) {
     this.scene = scene;
     this.room = room;
+    this.lootExpireTime = 10000;
     this.loots = [];
   }
-  spawnLoot({ x, y, item }) {
+  create({ x, y, item }) {
     if (!x || !y || !item) return;
-    const loot = new Loot({ x, y, item });
-    this.loots.push(loot);
-    this.scene.io.to(this?.room?.name).emit("lootSpawned", loot);
+    const { scene, room } = this;
+    const id = crypto.randomUUID();
+    scene.loots[id] = new Loot({ id, x, y, roomName: room?.name, item });
+    this.loots.push(scene.loots[id]);
+    this.scene.io.to(room?.name).emit("lootSpawned", scene.loots[id]);
   }
   expireLoots() {
     const now = Date.now();
-    const expiredLoots = [];
-    for (const loot of this.loots) {
-      if (now - loot.dropTime > this.lootExpireTime) {
-        expiredLoots.push(loot);
-        this.loots.splice(i, 1);
+    const { loots, lootExpireTime, scene } = this;
+    for (var i = 0; i < loots.length; i++) {
+      if (now - loots[i].dropTime > lootExpireTime) {
+        const loot = loots[i];
+        if (loots[i]) loots.splice(i, 1);
+        if (scene.loots[loot?.id]) delete scene.loots[loot?.id];
       }
     }
-    return expiredLoots;
   }
-  deleteLootAtId(id) {
-    for (const loot of this.loots) {
-      if (loot?.id == id) {
-        this.loots.splice(i, 1);
-        return true;
-      }
-    }
-    return false;
-  }
-  getAllLoots() {
-    return this.loots;
+  remove(id) {
+    const { scene, room } = this;
+    room.removeLoot(scene.loots[id]);
   }
 }
 

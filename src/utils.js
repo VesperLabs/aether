@@ -1,4 +1,5 @@
 import Player from "./Player";
+import LootItem from "./LootItem";
 
 function addPlayer(scene, user) {
   const player = new Player(scene, user);
@@ -17,9 +18,11 @@ function resetEntities(scene) {
   scene?.map?.destroy?.(true);
   scene?.players?.destroy?.(true);
   scene?.npcs?.destroy?.(true);
+  scene?.loots?.destroy?.(true);
   scene?.doors?.destroy?.(true);
   scene.players = scene.physics.add.group();
   scene.npcs = scene.physics.add.group();
+  scene.loots = scene.physics.add.group();
   scene.doors = scene.physics.add.staticGroup();
 }
 
@@ -31,6 +34,18 @@ function getPlayer(scene, socketId) {
 function getNpc(scene, id) {
   if (!scene.npcs) return;
   return scene.npcs.getChildren().find((npc) => id === npc.id);
+}
+
+function getLoot(scene, id) {
+  if (!scene.loots) return;
+  return scene.loots.getChildren().find((loot) => id === loot.id);
+}
+
+function addLoot(scene, lootData) {
+  const loot = new LootItem(scene, lootData);
+  scene.add.existing(loot);
+  scene.loots.add(loot);
+  return loot;
 }
 
 function addNpc(scene, npcData) {
@@ -67,6 +82,8 @@ export {
   getPlayer,
   getNpc,
   addNpc,
+  addLoot,
+  getLoot,
   resetEntities,
   constrainVelocity,
   isTouchScreen,

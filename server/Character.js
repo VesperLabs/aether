@@ -19,6 +19,7 @@ class Character extends BaseCharacter {
     let totalPercentStats = {};
     let ns = JSON.parse(JSON.stringify(this.baseStats));
     let setList = {};
+    let activeSets = [];
     this.stats = { hp: null, mp: null, exp: null };
     /* Normal equipment Stats */
     Object.keys(equipment).forEach((eKey) => {
@@ -77,7 +78,7 @@ class Character extends BaseCharacter {
       if (ItemBuilder.getSetInfo(key)) {
         let setInfo = ItemBuilder.getSetInfo(key);
         if (setList[key] >= setInfo.pieces) {
-          this.state.activeSets.push(key);
+          activeSets.push(key);
           //add percent bonus to totals
           if (setInfo.percentStats) {
             Object.keys(setInfo.percentStats).forEach((key) => {
@@ -152,6 +153,7 @@ class Character extends BaseCharacter {
     else if (this.stats.mp > ns.maxMp) ns.mp = ns.maxMp;
     else ns.mp = this.stats.mp;
     this.stats = ns;
+    this.state.activeSets = activeSets;
   }
   calculateDamage(victim) {
     if (victim?.state?.isDead) return false;

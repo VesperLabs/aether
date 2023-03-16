@@ -47,6 +47,7 @@ class ServerScene extends Phaser.Scene {
     scene.players = {};
     scene.doors = {};
     scene.npcs = {};
+    scene.loots = {};
     scene.roomManager = new RoomManager(scene);
     scene.db = await initDatabase(process.env.MONGO_URL);
 
@@ -55,7 +56,7 @@ class ServerScene extends Phaser.Scene {
 
       socket.on("login", async (email = "arf@arf.arf") => {
         //const user = await scene.db.getUserByEmail(email);
-        const user = baseUser;
+        const user = JSON.parse(JSON.stringify(baseUser));
         if (!user) return console.log("❌ Player not found in db");
 
         const player = scene.roomManager.rooms[user.roomName].playerManager.create({
@@ -75,6 +76,7 @@ class ServerScene extends Phaser.Scene {
         socket.emit("heroInit", {
           players: getRoomState(scene, roomName)?.players,
           npcs: getRoomState(scene, roomName)?.npcs,
+          loots: getRoomState(scene, roomName)?.loots,
           socketId,
         });
         socket.to(roomName).emit("playerJoin", getCharacterState(player));
@@ -147,7 +149,6 @@ class ServerScene extends Phaser.Scene {
         scene.db.updateUser(scene.players?.[socketId]);
         console.log(`🧑🏻‍🦰 ${player?.profile?.userName} disconnected`);
         removePlayer(scene, socketId);
-        delete scene.players?.[socketId];
         io.emit("remove", socketId);
       });
 
@@ -159,16 +160,17 @@ class ServerScene extends Phaser.Scene {
           found = player?.findEquipmentById(item?.id);
           /* Remove it from the players equipment */
           player?.clearEquipmentSlot(found?.slotName);
+          player?.calculateStats();
         }
         /* Spawn the loot on the server */
-        scene.roomManager.rooms[player.roomName].lootManager.spawnLoot({
+        scene.roomManager.rooms[player.roomName].lootManager.create({
           x: player?.x,
           y: player?.y,
           item: found?.item,
         });
         /* Save the users data */
         scene.db.updateUser(player);
-        io.to(player?.roomName).emit("playerUpdate", getCharacterState(scene?.players?.[socketId]));
+        io.to(player?.roomName).emit("playerUpdate", getCharacterState(player));
       });
 
       socket.on("playerInput", (input) => {
@@ -179,6 +181,7 @@ class ServerScene extends Phaser.Scene {
   update(time, delta) {
     const scene = this;
     for (const room of Object.values(scene.roomManager.rooms)) {
+      room.lootManager.expireLoots();
       const roomState = getTrimmedRoomState(scene, room.name);
       const snapshot = SI.snapshot.create(roomState);
       room.vault.add(snapshot);

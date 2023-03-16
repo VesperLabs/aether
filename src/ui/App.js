@@ -10,7 +10,6 @@ export const useAppContext = () => {
 function App({ socket, debug }) {
   const [isConnected, setIsConnected] = useState(true);
   const [player, setPlayer] = useState({});
-  const [isDraggingGlobal, setIsDraggingGlobal] = useState(false);
   const [tabEquipment, setTabEquipment] = useState(false);
   const [tabInventory, setTabInventory] = useState(false);
 
@@ -45,8 +44,6 @@ function App({ socket, debug }) {
           setIsConnected,
           setTabEquipment,
           setTabInventory,
-          isDraggingGlobal,
-          setIsDraggingGlobal,
           tabEquipment,
           tabInventory,
           player,

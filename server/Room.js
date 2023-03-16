@@ -10,6 +10,7 @@ class Room {
     this.scene = scene;
     this.tileMap = scene.make.tilemap({ key: name });
     this.name = name;
+    /* TODO: Move these to live inside their managers insead */
     this.players = scene.physics.add.group();
     this.doors = scene.physics.add.group();
     this.npcs = scene.physics.add.group();
@@ -17,7 +18,6 @@ class Room {
     this.npcManager = new NpcManager(this.scene, this);
     this.playerManager = new PlayerManager(this.scene, this);
     this.lootManager = new LootManager(this.scene, this);
-    // this.lootFactory = new LootFactory(this);
     this.createColliders();
     this.createDoors();
     this.npcManager.spawnNpcs();
@@ -29,6 +29,7 @@ class Room {
     this.players.add(player);
   }
   removePlayer(player) {
+    if (!player) return;
     player.room = null;
     this.players.remove(player);
   }

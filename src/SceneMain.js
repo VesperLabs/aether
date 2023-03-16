@@ -1,7 +1,16 @@
 import Phaser from "phaser";
-import { addPlayer, getPlayer, resetEntities, removePlayer, getNpc, addNpc } from "./utils";
 import Door from "./Door";
 import { SnapshotInterpolation } from "@geckos.io/snapshot-interpolation";
+import {
+  addPlayer,
+  getPlayer,
+  resetEntities,
+  removePlayer,
+  getNpc,
+  addNpc,
+  addLoot,
+  getLoot,
+} from "./utils";
 const SI = new SnapshotInterpolation(process.env.SERVER_FPS); // the server's fps is 15
 
 class SceneMain extends Phaser.Scene {
@@ -20,9 +29,14 @@ class SceneMain extends Phaser.Scene {
 
     socket.on("update", (snapshot) => {
       SI.snapshot.add(snapshot);
+      for (const loot of scene?.loots?.getChildren()) {
+        if (!snapshot?.state?.loots?.some((l) => l?.id === loot?.id)) {
+          loot.destroy(true);
+        }
+      }
     });
 
-    socket.on("heroInit", ({ socketId, players = [], npcs = [] }) => {
+    socket.on("heroInit", ({ socketId, players = [], npcs = [], loots = [] }) => {
       /* Delete everything in the scene */
       resetEntities(scene);
       /* Add players that don't exist */
@@ -37,6 +51,10 @@ class SceneMain extends Phaser.Scene {
       for (const npc of npcs) {
         if (getNpc(scene, npc.id)) continue;
         addNpc(scene, npc);
+      }
+      for (const loot of loots) {
+        if (getLoot(scene, loot.id)) continue;
+        addLoot(scene, loot);
       }
       const { collideLayer } = changeMap(scene, scene.hero.roomName);
       setPlayerCollision(scene, scene.hero, [collideLayer]);
@@ -79,6 +97,11 @@ class SceneMain extends Phaser.Scene {
 
     socket.on("respawnNpc", (id) => {
       getNpc(scene, id)?.respawn();
+    });
+
+    this.socket.on("lootSpawned", (loot, npcId) => {
+      /* TODO: We will fake the loot pos when an enemy dies by overriding xy */
+      addLoot(scene, loot);
     });
 
     socket.on("remove", (socketId) => removePlayer(scene, socketId));

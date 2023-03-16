@@ -18,7 +18,7 @@ const BLANK_IMAGE =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 
 const Slot = ({ sx, size = 52, item, location, icon, ...props }) => {
-  const { player, setIsDraggingGlobal, socket } = useAppContext();
+  const { player, socket } = useAppContext();
   const [imageData, setImageData] = useState(BLANK_IMAGE);
   const [dragging, setDragging] = useState(false);
   const [hovering, setHovering] = useState(false);
@@ -92,6 +92,7 @@ const Slot = ({ sx, size = 52, item, location, icon, ...props }) => {
     setHovering(false);
   };
 
+  /* Loads the item canvas data out of the texture */
   useLayoutEffect(() => {
     if (!item) return;
     const asset = resolveAsset(item, player);
@@ -113,23 +114,20 @@ const Slot = ({ sx, size = 52, item, location, icon, ...props }) => {
     img.src = asset.src;
   }, [item]);
 
+  /* Bind our global movement events */
   useLayoutEffect(() => {
+    if (!item) return;
     document.addEventListener("touchend", handleTouchEnd);
     document.addEventListener("mouseup", handleMouseUp);
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("touchmove", handleTouchMove);
-    if (dragging) {
-      setIsDraggingGlobal(true);
-    } else {
-      setIsDraggingGlobal(false);
-    }
     return () => {
       document.removeEventListener("touchend", handleTouchEnd);
       document.removeEventListener("mouseup", handleMouseUp);
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("touchmove", handleTouchMove);
     };
-  }, [dragging]);
+  }, [dragging, item]);
 
   useLayoutEffect(() => {
     if (target?.nodeName == "CANVAS") {

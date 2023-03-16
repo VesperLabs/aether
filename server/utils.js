@@ -13,13 +13,12 @@ function handlePlayerInput(scene, socketId, input) {
 }
 
 function removePlayer(scene, socketId) {
-  scene.players?.[socketId]?.destroy();
-}
-
-function removeAllPlayers(scene, socketId) {
-  for (socketId of Object.keys(scene.players)) {
-    removePlayer(scene, socketId);
+  const player = scene.players[socketId];
+  for (const room of Object.values(scene.roomManager.rooms)) {
+    room.removePlayer(player);
   }
+  player?.destroy(true);
+  delete scene.players?.[socketId];
 }
 
 function getPlayer(scene, socketId) {
@@ -38,6 +37,7 @@ function getRoomState(scene, roomName, deepObjects = false) {
     npcs: Object.values(scene.npcs)
       ?.filter((n) => n?.room?.name === roomName)
       .map((p) => (deepObjects ? p : getCharacterState(p))),
+    loots: Object.values(scene.loots)?.filter((l) => l?.roomName === roomName),
   };
 }
 
@@ -69,6 +69,7 @@ function getTrimmedRoomState(scene, roomName) {
     npcs: Object.values(scene.npcs)
       ?.filter((p) => p?.room?.name === roomName)
       .map(getTrimmedCharacterState),
+    loots: Object.values(scene.loots)?.filter((l) => l?.roomName === roomName),
   };
 }
 
@@ -155,7 +156,6 @@ export {
   getRoomState,
   getCharacterState,
   handlePlayerInput,
-  removeAllPlayers,
   getDoor,
   randomNumber,
   baseUser,
