@@ -211,21 +211,20 @@ class Character extends BaseCharacter {
     const isOutOfCombat = now - this.state.lastCombat > 5000;
     const isHpRegenReady = now - this.state.lastHpRegen > 5000;
     const isMpRegenReady = now - this.state.lastMpRegen > 5000;
+    this.state.doHpRegen = false;
+    this.state.doMpRegen = false;
     if (isOutOfCombat && !this.state.isDead) {
-      if (isHpRegenReady && this.stats.hp !== this.stats.maxHp) {
+      if (isHpRegenReady && this.stats.hp < this.stats.maxHp) {
         this.state.doHpRegen = true;
         this.state.lastHpRegen = now;
         this.modifyStat("hp", this.stats.regenHp);
       }
-      if (isMpRegenReady && this.stats.mp !== this.stats.maxMp) {
+      if (isMpRegenReady && this.stats.mp < this.stats.maxMp) {
         this.state.doMpRegen = true;
         this.state.lastMpRegen = now;
         this.modifyStat("hp", this.stats.regenMp);
       }
-      return;
     }
-    this.state.doHpRegen = false;
-    this.state.doMpRegen = false;
   }
 }
 

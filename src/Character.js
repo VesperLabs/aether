@@ -63,7 +63,7 @@ class Character extends Phaser.GameObjects.Container {
   }
   modifyStat(key, amount) {
     const stat = this?.stats?.[key];
-    const maxStat = this?.stats?.["max" + key?.charAt?.(0).toUpperCase?.()];
+    const maxStat = this?.stats?.["max" + capitalize(key)];
     if (typeof stat === undefined) return;
     if (typeof maxStat === undefined) return;
     if (stat + amount > maxStat) {
@@ -76,6 +76,11 @@ class Character extends Phaser.GameObjects.Container {
     }
     this.stats[key] += amount;
   }
+}
+
+function capitalize(str) {
+  if (str.length == 0) return str;
+  return str[0].toUpperCase() + str.substr(1);
 }
 
 export default Character;

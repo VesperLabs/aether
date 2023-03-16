@@ -18,7 +18,7 @@ class Damage extends Container {
     if (this.victim.kind === "nasty") this.victim.userName.setVisible(true);
     const damageText = new BitmapText(scene, 0, 0, "nin-light", hit.amount, damageSize);
     switch (hit.type) {
-      case "heal":
+      case "healHp":
         text = "+" + text;
         damageText.setTint("0x99FF99");
         break;

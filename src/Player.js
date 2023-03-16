@@ -39,6 +39,13 @@ class Player extends Character {
     if (leftType === "weapon") this.state.hasWeaponLeft = true;
     if (this.state.hasWeaponRight || this.state.hasWeaponLeft) this.state.hasWeapon = true;
   }
+  doRegen() {
+    if (this.state.doHpRegen) {
+      this.takeHit({ type: "healHp", amount: this?.stats?.regenHp });
+    }
+    if (this.state.doMpRegen) {
+    }
+  }
   initSpriteLayers() {
     const scene = this.scene;
     const defaults = [scene, 0, this.bodyOffsetY, BLANK_TEXTURE];
@@ -187,12 +194,11 @@ class Player extends Character {
     if (hit.type == "death") {
       stats.hp = 0;
       this.doDeath();
-    } else if (hit.type == "heal") {
+    } else if (hit.type == "healHp") {
       this.modifyStat("hp", hit?.amount);
     } else {
       this.modifyStat("hp", hit?.amount);
     }
-
     this.updateHpBar();
   }
   update(time, delta) {
