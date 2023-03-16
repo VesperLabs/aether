@@ -1,5 +1,5 @@
 import Character from "./Character";
-
+import { getCharacterDirection } from "./utils";
 const START_AGGRO_RANGE = 150;
 
 class Npc extends Character {
@@ -56,6 +56,7 @@ class Npc extends Character {
     this.vy = speed * Math.sin(angle);
     this.bubbleMessage = "!";
     this.body.setVelocity(this.vx, this.vy);
+    this.direction = getCharacterDirection(this, { x: this?.x + this.vx, y: this.y + this.vy });
   }
   moveRandomly(time) {
     if (time % 4 > 1) return;

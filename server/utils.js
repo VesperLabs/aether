@@ -76,6 +76,7 @@ function getTrimmedCharacterState(p) {
     id: uid, //required for SI
     socketId: uid,
     roomName: p?.room?.name,
+    direction: p?.direction,
     state: p?.state,
     x: p?.x,
     y: p?.y,
@@ -117,7 +118,7 @@ const baseUser = {
   direction: "down",
   equipment: {
     handRight: ItemBuilder.buildItem("weapon", "common", "katar"),
-    handLeft: ItemBuilder.buildItem("shield", "common", "barkShield"),
+    handLeft: ItemBuilder.buildItem("weapon", "common", "katar"),
     //handLeft: ItemBuilder.buildItem("weapon", "unique", "soulEdge"),
     helmet: ItemBuilder.buildItem("helmet", "unique", "tudwicksCap"),
     accessory: null,
@@ -145,6 +146,28 @@ function randomNumber(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function getCharacterDirection(character, point) {
+  const dx = point.x - character.x;
+  const dy = point.y - character.y;
+
+  // determine which direction has the greatest distance
+  if (Math.abs(dx) >= Math.abs(dy)) {
+    // horizontal distance is greater than or equal to vertical distance
+    if (dx > 0) {
+      return "right";
+    } else {
+      return "left";
+    }
+  } else {
+    // vertical distance is greater than horizontal distance
+    if (dy > 0) {
+      return "down";
+    } else {
+      return "up";
+    }
+  }
+}
+
 export {
   removePlayer,
   getPlayer,
@@ -155,5 +178,6 @@ export {
   handlePlayerInput,
   getDoor,
   randomNumber,
+  getCharacterDirection,
   baseUser,
 };

@@ -25,6 +25,9 @@ class Spell extends Phaser.GameObjects.Container {
         this.spell.displayWidth = 50 * rangeLeft;
         this.spell.displayHeight = 50 * rangeLeft;
         this.spell.setFlipX(true);
+        if (caster?.equipment?.handLeft?.base === "katar" && caster?.direction === "left") {
+          this.spell.setFlipX(false);
+        }
       }
       if (caster?.action === "attack_right") {
         const rangeRight = caster?.equipment?.handRight?.stats?.range * 2;
@@ -32,6 +35,9 @@ class Spell extends Phaser.GameObjects.Container {
         this.spell.displayWidth = 50 * rangeRight;
         this.spell.displayHeight = 50 * rangeRight;
         this.spell.setFlipX(false);
+        if (caster?.equipment?.handRight?.base === "katar" && caster?.direction === "left") {
+          this.spell.setFlipX(true);
+        }
       }
       if (caster?.direction === "up") {
         this.spell.setAngle(180);
@@ -40,8 +46,12 @@ class Spell extends Phaser.GameObjects.Container {
         this.spell.setAngle(0);
         this.spell.y = this?.caster?.bodyOffsetY;
       }
-      if (caster?.direction === "left") this.spell.setAngle(90);
-      if (caster?.direction === "right") this.spell.setAngle(-90);
+      if (caster?.direction === "left") {
+        this.spell.setAngle(90);
+      }
+      if (caster?.direction === "right") {
+        this.spell.setAngle(-90);
+      }
       this.spell.setAlpha(1);
       /* Add to the caster so that it follows them (Some spells will be just this.add) */
       this.caster.add(this.spell);

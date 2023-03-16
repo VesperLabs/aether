@@ -138,6 +138,7 @@ class SceneMain extends Phaser.Scene {
         if (player?.state?.lastTeleport >= latestSnap?.time) continue;
         /* Update other player movements */
         player.setPosition(s.x, s.y);
+        player.direction = s?.direction;
       }
       player.vx = s.vx;
       player.vy = s.vy;
@@ -147,6 +148,7 @@ class SceneMain extends Phaser.Scene {
       const npc = getNpc(this, s.id);
       if (!npc || npc?.state?.isDead) continue;
       npc.setPosition(s.x, s.y);
+      npc.direction = s?.direction;
       npc.vx = s.vx;
       npc.vy = s.vy;
     }

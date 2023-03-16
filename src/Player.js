@@ -204,7 +204,7 @@ class Player extends Character {
   update(time, delta) {
     if (this.checkDeath()) return;
     hackFrameRates(this, Math.round(80 + 2500 / (this.currentSpeed + 10)));
-    updatePlayerDirection(this);
+    updateCurrentSpeed(this);
     drawFrame(this);
     checkAttackReady(this, delta);
     this.setDepth(100 + this.y + this?.body?.height);
@@ -311,27 +311,11 @@ function drawFrame(p) {
   handLeft.setTexture(equipment?.handLeft?.texture);
 }
 
-function updatePlayerDirection(player) {
+function updateCurrentSpeed(player) {
   const vx = player?.isHero ? player.body.velocity.x : player.vx;
   const vy = player?.isHero ? player.body.velocity.y : player.vy;
   player.currentSpeed = Math.max(Math.abs(vx), Math.abs(vy));
 
-  /* Get velocity from server updates if we are not the hero */
-  if (!player?.isHero) {
-    if (Math.abs(vy) > Math.abs(vx)) {
-      if (vy > 0) {
-        player.direction = "down";
-      } else if (vy < 0) {
-        player.direction = "up";
-      }
-    } else {
-      if (vx > 0) {
-        player.direction = "right";
-      } else if (vx < 0) {
-        player.direction = "left";
-      }
-    }
-  }
   /* Action */
   if (player.state.isAttacking) {
     return;
