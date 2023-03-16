@@ -10,10 +10,7 @@ class Room {
     this.scene = scene;
     this.tileMap = scene.make.tilemap({ key: name });
     this.name = name;
-    /* TODO: Move these to live inside their managers insead */
-    this.players = scene.physics.add.group();
     this.doors = scene.physics.add.group();
-    this.npcs = scene.physics.add.group();
     this.vault = new Vault();
     this.npcManager = new NpcManager(this.scene, this);
     this.playerManager = new PlayerManager(this.scene, this);
@@ -22,16 +19,6 @@ class Room {
     this.createDoors();
     this.npcManager.spawnNpcs();
     this.npcManager.setNpcCollision();
-  }
-  addPlayer(player) {
-    player.room = this;
-    player.roomName = this?.name;
-    this.players.add(player);
-  }
-  removePlayer(player) {
-    if (!player) return;
-    player.room = null;
-    this.players.remove(player);
   }
   createDoors() {
     const { name, doors, scene } = this;

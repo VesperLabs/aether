@@ -7,15 +7,16 @@ class NpcManager {
   constructor(scene, room) {
     this.scene = scene;
     this.room = room;
+    this.npcs = scene.physics.add.group();
   }
   spawnNpcs() {
     const { room } = this;
     const npcs = mapNpcs[room.name];
     for (const npc of npcs) {
       const mobData = mobTypes[npc.name];
-      this.addNpc({
+      this.create({
         moveRange: 1,
-        room: room,
+        room,
         kind: npc?.kind,
         x: npc?.x,
         y: npc?.y,
@@ -23,17 +24,17 @@ class NpcManager {
       });
     }
   }
-  addNpc(user) {
-    const { scene, room } = this;
+  create(user) {
+    const { scene, room, npcs } = this;
     const id = crypto.randomUUID();
     scene.npcs[id] = new Npc(scene, { id, room, ...user });
     scene.add.existing(scene.npcs[id]);
-    room.npcs.add(scene.npcs[id]);
+    npcs.add(scene.npcs[id]);
   }
   setNpcCollision() {
-    const { scene, room } = this;
+    const { scene, room, npcs } = this;
     room.colliders.forEach((c) => {
-      scene.physics.add.collider(room.npcs, c);
+      scene.physics.add.collider(npcs, c);
     });
   }
 }
