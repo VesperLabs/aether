@@ -17,7 +17,6 @@ class Player extends Character {
     this.updateHpBar();
     if (this.state.isDead) this.doDeath();
     if (this.kind === "nasty") this.userName.setVisible(false);
-    /* Do we really need these? */
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
   }
@@ -25,10 +24,14 @@ class Player extends Character {
     this.equipment = data?.equipment;
     this.profile = data?.profile;
     this.stats = data?.stats;
-    this.updateHpBar();
     this.drawCharacterFromUserData();
+    this.checkAttackHands();
+    this.updateHpBar();
   }
   checkAttackHands() {
+    this.state.hasWeaponRight = false;
+    this.state.hasWeaponLeft = false;
+    this.state.hasWeapon = false;
     /* Can only attack with a hand if it contains a weapon type item  */
     const leftType = this.equipment?.handLeft?.type;
     const rightType = this.equipment?.handRight?.type;
