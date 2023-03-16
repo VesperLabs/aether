@@ -1,6 +1,7 @@
 import NpcManager from "./NpcManager.js";
 import PlayerManager from "./PlayerManager.js";
 import Door from "../src/Door";
+import LootManager from "./LootManager.js";
 // import LootFactory from "./LootFactory.js";
 const { Vault } = require("@geckos.io/snapshot-interpolation");
 
@@ -15,6 +16,7 @@ class Room {
     this.vault = new Vault();
     this.npcManager = new NpcManager(this.scene, this);
     this.playerManager = new PlayerManager(this.scene, this);
+    this.lootManager = new LootManager(this.scene, this);
     // this.lootFactory = new LootFactory(this);
     this.createColliders();
     this.createDoors();

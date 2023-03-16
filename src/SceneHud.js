@@ -33,6 +33,8 @@ function addInputListeners(scene) {
   window.addEventListener(
     "item_drag",
     (e) => {
+      pointer.x = e?.detail.x;
+      pointer.y = e?.detail.y;
       const cursorPoint = pointer.positionToCamera(mainScene.cameras.main);
       const direction = getHeroSpin(mainScene?.hero, cursorPoint);
       if (mainScene?.hero?.direction !== direction) {

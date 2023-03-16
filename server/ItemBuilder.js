@@ -1,5 +1,5 @@
 /* This file and Diablo II are the main reason this game exists */
-import { ObjectId } from "mongodb";
+import crypto from "crypto";
 import Item from "./Item.js";
 const _itemList = {
   weapon: {
@@ -964,7 +964,7 @@ const ItemBuilder = {
     if (item.slot == "stackable") {
       item.id = itemKey;
     } else {
-      item.id = new ObjectId();
+      item.id = crypto.randomUUID();
     }
     item.key = itemKey;
     item.rarity = rarity;

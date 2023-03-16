@@ -14,12 +14,13 @@ const MenuInventory = () => {
         justifyContent: "end",
         display: show ? "flex" : "none",
         bg: "shadow.10",
+        pointerEvents: "all",
       }}
     >
       <Text>Inventory</Text>
       <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", maxWidth: 592 }}>
         {maxInventory?.map((i) => (
-          <Slot icon="./assets/icons/pouch.png" item={inventory?.[i]} />
+          <Slot location="inventory" icon="./assets/icons/pouch.png" item={inventory?.[i]} />
         ))}
       </Flex>
     </Flex>

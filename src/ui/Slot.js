@@ -17,14 +17,15 @@ const STYLE_NON_EMPTY = (rarity) => ({
 const BLANK_IMAGE =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 
-const Slot = ({ sx, size = 52, item, slot, icon, ...props }) => {
-  const { player, setIsDraggingGlobal, isDraggingGlobal } = useAppContext();
+const Slot = ({ sx, size = 52, item, location, icon, ...props }) => {
+  const { player, setIsDraggingGlobal, socket } = useAppContext();
   const [imageData, setImageData] = useState(BLANK_IMAGE);
   const [dragging, setDragging] = useState(false);
   const [hovering, setHovering] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [target, setTarget] = useState(null);
   const imageRef = useRef(null);
+  const { dropItem } = useItemEvents({ item, socket, location });
 
   const handleMouseDown = (e) => {
     setPosition({
@@ -68,12 +69,19 @@ const Slot = ({ sx, size = 52, item, slot, icon, ...props }) => {
 
   const handleMouseUp = (e) => {
     if (!dragging) return;
+    const t = document.elementFromPoint(e.clientX, e.clientY);
+    setTarget(t);
+    dropItem(t);
     setDragging(false);
   };
 
   const handleTouchEnd = (e) => {
+    if (!dragging) return;
     e.stopPropagation();
     e.preventDefault();
+    const t = document.elementFromPoint(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+    setTarget(t);
+    dropItem(t);
     setDragging(false);
   };
 
@@ -190,6 +198,16 @@ const Slot = ({ sx, size = 52, item, slot, icon, ...props }) => {
     </Box>
   );
 };
+
+function useItemEvents({ location, item, socket }) {
+  return {
+    dropItem: (target) => {
+      if (target?.nodeName == "CANVAS") {
+        socket.emit("dropItem", { item, location });
+      }
+    },
+  };
+}
 
 function trimAndTintCanvas(c, tint = "FFFFFF") {
   let ctx = c.getContext("2d"),

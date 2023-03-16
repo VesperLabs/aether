@@ -151,6 +151,26 @@ class ServerScene extends Phaser.Scene {
         io.emit("remove", socketId);
       });
 
+      socket.on("dropItem", ({ location, item }) => {
+        const player = scene?.players?.[socketId];
+        let found = null;
+        /* If the item was dropped from equipment find it and what slot it came from */
+        if (location === "equipment") {
+          found = player?.findEquipmentById(item?.id);
+          /* Remove it from the players equipment */
+          player?.clearEquipmentSlot(found?.slotName);
+        }
+        /* Spawn the loot on the server */
+        scene.roomManager.rooms[player.roomName].lootManager.spawnLoot({
+          x: player?.x,
+          y: player?.y,
+          item: found?.item,
+        });
+        /* Save the users data */
+        scene.db.updateUser(player);
+        io.to(player?.roomName).emit("playerUpdate", getCharacterState(scene?.players?.[socketId]));
+      });
+
       socket.on("playerInput", (input) => {
         handlePlayerInput(scene, socketId, input); //defined in utilites.js
       });

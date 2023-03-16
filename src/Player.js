@@ -21,6 +21,13 @@ class Player extends Character {
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
   }
+  updateData(data) {
+    this.equipment = data?.equipment;
+    this.profile = data?.profile;
+    this.stats = data?.stats;
+    this.updateHpBar();
+    this.drawCharacterFromUserData();
+  }
   checkAttackHands() {
     /* Can only attack with a hand if it contains a weapon type item  */
     const leftType = this.equipment?.handLeft?.type;
@@ -67,7 +74,12 @@ class Player extends Character {
     this.add(this.hpBar);
   }
   drawCharacterFromUserData() {
-    const { profile, equipment } = this || {};
+    const { profile, equipment, state } = this || {};
+    if (profile?.userName) {
+      this.userName.setText(profile?.userName);
+      this.userName.setX(-this.userName.width / 2);
+      this.userName.setTint(profile?.userNameTint);
+    }
     if (profile?.scale) {
       this.skin.setScale(profile?.scale);
     }
@@ -80,11 +92,6 @@ class Player extends Character {
     }
     for (const [key, slot] of Object.entries(equipment)) {
       this?.[key]?.setTint(slot?.tint);
-    }
-    if (profile?.userName) {
-      this.userName.setText(profile?.userName);
-      this.userName.setX(-this.userName.width / 2);
-      this.userName.setTint(profile?.userNameTint);
     }
   }
   doAttack(count) {
@@ -379,7 +386,9 @@ function playWeapons(player) {
 }
 
 function playAnim(sprite, parts) {
-  if (parts?.some((p) => !p)) return;
+  /* If a part is missing, clear the texture */
+  if (parts?.some((p) => !p)) return sprite.setTexture(BLANK_TEXTURE);
+  /* Otherwise try to play the texture animation */
   const animKey = parts?.join("-");
   const currentFrame = sprite?.anims?.currentFrame?.index || 0;
   const currentKey = sprite?.anims?.currentAnim?.key;

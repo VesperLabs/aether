@@ -52,6 +52,11 @@ class SceneMain extends Phaser.Scene {
       addPlayer(scene, user);
     });
 
+    socket.on("playerUpdate", (userData) => {
+      const player = getPlayer(scene, userData.socketId);
+      player.updateData(userData);
+    });
+
     socket.on("playerAttack", ({ socketId, count, direction }) => {
       const p = getPlayer(scene, socketId);
       p.direction = direction;

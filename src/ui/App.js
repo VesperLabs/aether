@@ -24,9 +24,16 @@ function App({ socket, debug }) {
       setIsConnected(false);
     });
     socket.on("heroInit", (payload = {}) => {
-      const { socketId, players } = payload;
+      const { players, socketId } = payload;
       const player = players?.find((p) => p?.socketId === socketId);
+      localStorage.setItem("socketId", socketId);
       setPlayer(player);
+    });
+    socket.on("playerUpdate", (player = {}) => {
+      const socketId = localStorage.getItem("socketId");
+      if (socketId === player?.socketId) {
+        setPlayer(player);
+      }
     });
   }, []);
 
