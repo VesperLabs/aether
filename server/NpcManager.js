@@ -26,7 +26,7 @@ class NpcManager {
   addNpc(user) {
     const { scene, room } = this;
     const id = crypto.randomUUID();
-    scene.npcs[id] = new Npc(scene, room, { id, ...user });
+    scene.npcs[id] = new Npc(scene, { id, room, ...user });
     scene.add.existing(scene.npcs[id]);
     room.npcs.add(scene.npcs[id]);
   }

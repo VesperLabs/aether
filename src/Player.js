@@ -212,7 +212,7 @@ class Player extends Character {
 
 function checkAttackReady(p, delta) {
   /* Let us attack again when it is ready */
-  if (Date.now() - p.state.lastAttack > delta + p.stats.attackSpeed) {
+  if (Date.now() - p.state.lastAttack > delta + p.stats.attackDelay) {
     p.state.isAttacking = false;
     if (p.action === "attack_right" && p.state.hasWeaponLeft && p?.isHero) {
       p.doAttack(2);

@@ -3,16 +3,16 @@ import Character from "./Character";
 const START_AGGRO_RANGE = 120;
 
 class Npc extends Character {
-  constructor(scene, room, { state = {}, ...args }) {
+  constructor(scene, args) {
     super(scene, args);
     this.scene = scene;
-    this.state = { ...state, isRobot: true };
+    this.state.isRobot = true;
     this.respawnTime = 10000;
   }
   setDead() {
     this.state.isDead = true;
     this.state.deadTime = Date.now();
-    this.state.lockedPlayer = null;
+    this.state.lockedPlayerId = null;
     this.bubbleMessage = null;
   }
   tryRespawn() {
@@ -24,19 +24,23 @@ class Npc extends Character {
     }
   }
   update(time) {
+    this.doRegen();
     if (this.state.isDead) {
       this.tryRespawn();
       this.vx = 0;
       this.vy = 0;
       return this.body.setVelocity(this.vx, this.vy);
     }
-    const player = this?.state?.lockedPlayer || this.room?.players?.getChildren()?.[0];
-    const shouldChase = this.state.isAggro || this?.state?.lockedPlayer;
-    const isNearPlayer = player && this.distanceTo(player) <= START_AGGRO_RANGE;
-    if (shouldChase && player && isNearPlayer) {
-      this.moveTowardPlayer(player);
+    if (this.state.isAggro) {
+      /* TODO: Clean this up. Make it target the nearest player */
+      this.state.lockedPlayerId = this.room?.players?.getChildren()?.[0]?.socketId;
+    }
+    const targetPlayer = this.scene?.players?.[this?.state?.lockedPlayerId];
+    const isNearPlayer = targetPlayer && this.distanceTo(targetPlayer) <= START_AGGRO_RANGE;
+    if (targetPlayer && isNearPlayer) {
+      this.moveTowardPlayer(targetPlayer);
     } else {
-      this.state.lockedPlayer = null;
+      this.state.lockedPlayerId = null;
       this.moveRandomly(time);
     }
   }

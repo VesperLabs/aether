@@ -14,9 +14,6 @@ function handlePlayerInput(scene, socketId, input) {
 
 function removePlayer(scene, socketId) {
   const player = scene.players[socketId];
-  for (const room of Object.values(scene.roomManager.rooms)) {
-    room.removePlayer(player);
-  }
   player?.destroy(true);
   delete scene.players?.[socketId];
 }
@@ -95,7 +92,7 @@ const baseUser = {
     level: 1,
     speed: 150,
     accuracy: 0,
-    attackSpeed: 100,
+    attackDelay: 100,
     spellDamage: 0,
     castSpeed: 1000,
     armorPierce: 0,
@@ -120,8 +117,8 @@ const baseUser = {
   direction: "down",
   equipment: {
     handRight: ItemBuilder.buildItem("weapon", "common", "katar"),
-    handLeft: ItemBuilder.buildItem("shield", "unique", "roundStage"),
-    //handLeft: ItemBuilder.buildItem("weapon", "unique", "unique-claymore-soul"),
+    handLeft: ItemBuilder.buildItem("weapon", "common", "spade"),
+    //handLeft: ItemBuilder.buildItem("weapon", "unique", "soulEdge"),
     helmet: ItemBuilder.buildItem("helmet", "unique", "tudwicksCap"),
     accessory: null,
     pants: ItemBuilder.buildItem("pants", "magic", "clothPants"),

@@ -11,9 +11,6 @@ class Character extends BaseCharacter {
     scene.events.once("shutdown", this.destroy, this);
     this.calculateStats();
   }
-  update() {
-    this.doRegen();
-  }
   calculateStats() {
     const { equipment } = this;
     let totalPercentStats = {};
@@ -114,9 +111,9 @@ class Character extends BaseCharacter {
     ns.magicFind = ns.magicFind || 0;
     ns.maxExp = ns.maxExp || 0;
     ns.exp = this.stats.exp || 0;
-    ns.attackSpeed = ns.attackSpeed || 0;
+    ns.attackDelay = ns.attackDelay || 0;
     ns.spellDamage = ns.spellDamage || 0;
-    ns.attackSpeed = 1 - Math.floor(ns.dexterity * 0.5) + ns.attackSpeed;
+    ns.attackDelay = 1 - Math.floor(ns.dexterity * 0.5) + ns.attackDelay;
     ns.castSpeed = ns.castSpeed || 1000;
     ns.castSpeed = 1 - Math.floor(ns.intelligence * 0.5) + ns.castSpeed;
     ns.spellDamage = ns.spellDamage + Math.floor(ns.intelligence / 10);
@@ -187,7 +184,7 @@ class Character extends BaseCharacter {
     victim.state.lastCombat = Date.now();
     /* Npcs lock on and chase when a user hits them */
     if (victim.state.isRobot) {
-      victim.state.lockedPlayer = this;
+      victim.state.lockedPlayerId = this?.socketId;
     }
     /* Victim killed */
     if (victim.stats.hp <= 0) {

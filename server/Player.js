@@ -1,7 +1,7 @@
 import Character from "./Character";
 class Player extends Character {
   /* Server level Player object */
-  constructor(scene, { room, email, ...args }) {
+  constructor(scene, { email, ...args }) {
     super(scene, args);
     this.email = email;
   }
@@ -13,6 +13,9 @@ class Player extends Character {
       ([slotName, slotItem]) => slotItem?.id === id
     ) || [null, null];
     return { item: foundItem, slotName };
+  }
+  update() {
+    this.doRegen();
   }
   clearEquipmentSlot(slotName) {
     if (!this?.equipment?.[slotName]) return;

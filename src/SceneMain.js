@@ -34,6 +34,10 @@ class SceneMain extends Phaser.Scene {
           loot.destroy(true);
         }
       }
+      for (const s of snapshot?.state?.npcs) {
+        const npc = getNpc(this, s.id);
+        npc.setBubbleMessage(s?.bubbleMessage);
+      }
     });
 
     socket.on("heroInit", ({ socketId, players = [], npcs = [], loots = [] }) => {
@@ -112,13 +116,11 @@ class SceneMain extends Phaser.Scene {
   update(time, delta) {
     const playerSnapshot = SI.calcInterpolation("x y", "players");
     const npcSnapshot = SI.calcInterpolation("x y", "npcs");
-
     if (!this.socket || !this?.hero?.body || !playerSnapshot) return;
     /* Update Player x and y */
     for (const s of playerSnapshot?.state) {
       const player = getPlayer(this, s.socketId);
       if (!player || player?.state?.isDead) continue;
-
       if (!player.isHero) {
         /* Don't interpolate users who are going through a door */
         const latestSnap = SI.vault.getById(playerSnapshot?.older);
@@ -128,7 +130,6 @@ class SceneMain extends Phaser.Scene {
       }
       player.vx = s.vx;
       player.vy = s.vy;
-      player.setBubbleMessage(s?.bubbleMessage);
     }
     /* Update NPC x and y */
     for (const s of npcSnapshot?.state) {
@@ -137,7 +138,6 @@ class SceneMain extends Phaser.Scene {
       npc.setPosition(s.x, s.y);
       npc.vx = s.vx;
       npc.vy = s.vy;
-      npc.setBubbleMessage(s?.bubbleMessage);
     }
     moveHero(this, time);
     enableDoors(this);

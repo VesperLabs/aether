@@ -11,10 +11,9 @@ const _itemList = {
         texture: "weapon-katar",
         slot: "hands",
         stats: {
-          attackSpeed: 10,
-          armorPierce: 5,
+          attackDelay: 30,
           minDamage: 0,
-          maxDamage: 3,
+          maxDamage: 2,
           range: 1,
         },
       },
@@ -25,8 +24,7 @@ const _itemList = {
         texture: "weapon-spade",
         slot: "hands",
         stats: {
-          attackSpeed: 60,
-          armorPierce: 5,
+          attackDelay: 50,
           minDamage: 1,
           maxDamage: 2,
           range: 1,
@@ -39,8 +37,8 @@ const _itemList = {
         texture: "weapon-dagger",
         slot: "hands",
         stats: {
-          attackSpeed: 100,
-          minDamage: 2,
+          attackDelay: 30,
+          minDamage: 0,
           maxDamage: 2,
           range: 1,
         },
@@ -52,7 +50,7 @@ const _itemList = {
         texture: "weapon-hammer",
         slot: "hands",
         stats: {
-          attackSpeed: 300,
+          attackDelay: 300,
           minDamage: 2,
           maxDamage: 3,
           range: 1,
@@ -65,7 +63,7 @@ const _itemList = {
         texture: "weapon-axe",
         slot: "hands",
         stats: {
-          attackSpeed: 250,
+          attackDelay: 250,
           minDamage: 2,
           maxDamage: 3,
           range: 1,
@@ -81,7 +79,7 @@ const _itemList = {
           level: 10,
         },
         stats: {
-          attackSpeed: 250,
+          attackDelay: 250,
           minDamage: 5,
           maxDamage: 5,
           range: 1,
@@ -95,7 +93,7 @@ const _itemList = {
         tint: "0xFFFFFF",
         slot: "hands",
         stats: {
-          attackSpeed: 150,
+          attackDelay: 150,
           minDamage: 1,
           maxDamage: 3,
           range: 1,
@@ -109,7 +107,7 @@ const _itemList = {
         tint: "0xFFFFFF",
         slot: "hands",
         stats: {
-          attackSpeed: 500,
+          attackDelay: 500,
           minDamage: 4,
           maxDamage: 4,
           range: 2,
@@ -125,7 +123,7 @@ const _itemList = {
         tint: "0xFF88FF",
         slot: "hands",
         stats: {
-          attackSpeed: 100,
+          attackDelay: 100,
           minDamage: 4,
           maxDamage: 4,
           critChance: [1, 5],
@@ -139,7 +137,7 @@ const _itemList = {
         texture: "weapon-claymore-soul",
         slot: "hands",
         stats: {
-          attackSpeed: 350,
+          attackDelay: 350,
           minDamage: 8,
           maxDamage: 8,
           critChance: 5,
@@ -160,7 +158,7 @@ const _itemList = {
           level: 5,
         },
         stats: {
-          attackSpeed: 150,
+          attackDelay: 150,
           minDamage: 3,
           maxDamage: 5,
           range: 1,
@@ -178,7 +176,7 @@ const _itemList = {
           level: 5,
         },
         stats: {
-          attackSpeed: 150,
+          attackDelay: 150,
           minDamage: 3,
           maxDamage: 5,
           range: 1,
@@ -442,6 +440,7 @@ const _itemList = {
         tint: "0x865027",
         slot: "hands",
         stats: {
+          attackDelay: 50,
           defense: 5,
           blockChance: 5,
         },
@@ -454,6 +453,7 @@ const _itemList = {
         tint: "0xFFFFFF",
         slot: "hands",
         stats: {
+          attackDelay: 50,
           defense: 10,
           blockChance: 10,
         },
@@ -469,7 +469,7 @@ const _itemList = {
         slot: "hands",
         stats: {
           critChance: [4, 5],
-          attackSpeed: -20,
+          attackDelay: 50,
           strength: [8, 10],
           vitality: [8, 10],
           defense: [15, 20],
