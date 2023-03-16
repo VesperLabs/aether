@@ -10,6 +10,7 @@ import {
   addNpc,
   addLoot,
   getLoot,
+  getHeroSpin,
 } from "./utils";
 const SI = new SnapshotInterpolation(process.env.SERVER_FPS); // the server's fps is 15
 
@@ -164,8 +165,9 @@ function enableDoors(scene) {
 }
 
 function moveHero(scene, time) {
-  if (scene?.hero?.state?.isDead) return;
-  const speed = scene.hero.stats.speed;
+  const hero = scene?.hero;
+  if (hero?.state?.isDead) return;
+  const speed = hero.stats.speed;
   const joystick = scene.game.scene.scenes[2].joystick;
   const left = scene.cursorKeys.left.isDown;
   const right = scene.cursorKeys.right.isDown;
@@ -175,10 +177,22 @@ function moveHero(scene, time) {
   let vx = 0;
   let vy = 0;
 
-  if (left) vx = -speed;
-  if (right) vx = speed;
-  if (up) vy = -speed;
-  if (down) vy = speed;
+  if (left) {
+    vx = -speed;
+    hero.direction = "left";
+  }
+  if (right) {
+    vx = speed;
+    hero.direction = "right";
+  }
+  if (up) {
+    vy = -speed;
+    hero.direction = "up";
+  }
+  if (down) {
+    vy = speed;
+    hero.direction = "down";
+  }
   if (left && right) vx = 0;
   if (up && down) vy = 0;
   if (!left && !right && !up && !down) {
@@ -189,26 +203,28 @@ function moveHero(scene, time) {
   if (joystick.deltaX || joystick.deltaY) {
     vx = joystick.deltaX * speed;
     vy = joystick.deltaY * speed;
+    hero.direction = getHeroSpin(hero, { x: hero.x + vx, y: hero.y + vy });
   }
 
-  if (scene.hero.state.isAttacking) {
+  if (hero.state.isAttacking) {
     vx = 0;
     vy = 0;
   }
-  scene.hero.body.setVelocity(vx, vy);
+
+  hero.body.setVelocity(vx, vy);
 
   /* If the hero is standing still do not update the server */
-  if (!scene.hero.state.isIdle) {
+  if (!hero.state.isIdle) {
     //if (time % 2 > 1)
     scene.socket.emit("playerInput", {
       vx,
       vy,
-      x: scene.hero.x,
-      y: scene.hero.y,
-      direction: scene.hero.direction,
+      x: hero.x,
+      y: hero.y,
+      direction: hero.direction,
     });
   }
-  scene.hero.state.isIdle = scene.hero.vx === vx && scene.hero.vy === vy && vx === 0 && vy === 0;
+  hero.state.isIdle = hero.vx === vx && hero.vy === vy && vx === 0 && vy === 0;
 }
 
 function setCamera(scene, hero) {

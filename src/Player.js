@@ -312,23 +312,24 @@ function drawFrame(p) {
 }
 
 function updatePlayerDirection(player) {
-  /* Get velocity from server updates if we are not the hero */
   const vx = player?.isHero ? player.body.velocity.x : player.vx;
   const vy = player?.isHero ? player.body.velocity.y : player.vy;
-
   player.currentSpeed = Math.max(Math.abs(vx), Math.abs(vy));
 
-  if (Math.abs(vy) > Math.abs(vx)) {
-    if (vy > 0) {
-      player.direction = "down";
-    } else if (vy < 0) {
-      player.direction = "up";
-    }
-  } else {
-    if (vx > 0) {
-      player.direction = "right";
-    } else if (vx < 0) {
-      player.direction = "left";
+  /* Get velocity from server updates if we are not the hero */
+  if (!player?.isHero) {
+    if (Math.abs(vy) > Math.abs(vx)) {
+      if (vy > 0) {
+        player.direction = "down";
+      } else if (vy < 0) {
+        player.direction = "up";
+      }
+    } else {
+      if (vx > 0) {
+        player.direction = "right";
+      } else if (vx < 0) {
+        player.direction = "left";
+      }
     }
   }
   /* Action */
