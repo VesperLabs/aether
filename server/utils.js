@@ -117,7 +117,7 @@ const baseUser = {
   direction: "down",
   equipment: {
     handRight: ItemBuilder.buildItem("weapon", "common", "katar"),
-    handLeft: ItemBuilder.buildItem("weapon", "common", "spade"),
+    handLeft: ItemBuilder.buildItem("shield", "common", "barkShield"),
     //handLeft: ItemBuilder.buildItem("weapon", "unique", "soulEdge"),
     helmet: ItemBuilder.buildItem("helmet", "unique", "tudwicksCap"),
     accessory: null,

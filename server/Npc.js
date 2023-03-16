@@ -1,6 +1,6 @@
 import Character from "./Character";
 
-const START_AGGRO_RANGE = 120;
+const START_AGGRO_RANGE = 150;
 
 class Npc extends Character {
   constructor(scene, args) {
