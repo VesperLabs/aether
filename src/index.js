@@ -8,6 +8,7 @@ import SceneMain from "./SceneMain";
 import SceneBoot from "./SceneBoot";
 import VJoyPlugin from "./Joystick";
 import SceneHud from "./SceneHud";
+//import { HueRotatePostFX, TintPostFX } from "./PostEffects";
 
 const debug = process.env.DEBUG;
 const socket = socketIO.connect(`${process.env.SERVER_URL}`);
@@ -28,6 +29,7 @@ new Phaser.Game({
   roundPixels: false,
   antialias: false,
   pixelArt: true,
+  //pipeline: { HueRotatePostFX, TintPostFX },
   plugins: {
     scene: [
       {

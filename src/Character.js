@@ -44,6 +44,8 @@ class Character extends Phaser.GameObjects.Container {
       lastCombat: Date.now(),
       lastRegen: Date.now(),
       lastAttack: Date.now(),
+      lastFlash: Date.now(),
+      setFlash: false,
       isIdle: true,
       isAttacking: false,
       hasWeaponRight: false,

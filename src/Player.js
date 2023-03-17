@@ -6,6 +6,7 @@ import Bar from "./Bar";
 import Damage from "./Damage";
 const { Sprite, BitmapText } = Phaser.GameObjects;
 const BLANK_TEXTURE = "human-blank";
+
 class Player extends Character {
   constructor(scene, args) {
     super(scene, args);
@@ -20,6 +21,7 @@ class Player extends Character {
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
   }
+
   updateData(data) {
     this.equipment = data?.equipment;
     this.profile = data?.profile;
@@ -90,18 +92,14 @@ class Player extends Character {
       this.userName.setX(-this.userName.width / 2);
       this.userName.setTint(profile?.userNameTint);
     }
-    if (profile?.scale) {
-      this.skin.setScale(profile?.scale);
-    }
-    if (profile?.tint) {
-      this.skin.setTint(profile?.tint);
-      this.chest.setTint(profile?.tint);
-    }
-    if (profile?.hair?.tint) {
-      this.hair.setTint(profile?.hair?.tint);
-    }
+    this.skin.setScale(profile?.scale || 1);
+    this.skin.setTint(profile?.tint || "0xFFFFFF");
+    this.chest.setTint(profile?.tint || "0xFFFFFF");
+    this.hair.setTint(profile?.hair?.tint || "0xFFFFFF");
+    this.face.setTint(profile?.face?.tint || "0xFFFFFF");
+
     for (const [key, slot] of Object.entries(equipment)) {
-      this?.[key]?.setTint(slot?.tint);
+      this?.[key]?.setTint(slot?.tint || "0xFFFFFF");
     }
   }
   doAttack(count) {
@@ -177,6 +175,16 @@ class Player extends Character {
       window.dispatchEvent(new Event("hero_respawn"));
     }
   }
+  doFlashAnimation(color = "0xFFFFFF") {
+    this.hair.setTint(color);
+    this.skin.setTint(color);
+    this.chest.setTint(color);
+    this.armor.setTint(color);
+    this.helmet.setTint(color);
+    this.boots.setTint(color);
+    this.accessory.setTint(color);
+    this.face.setTint(color);
+  }
   checkDeath() {
     /* Ensures the textures and depth have been updated for death state */
     if (this.state.isDead) {
@@ -196,8 +204,14 @@ class Player extends Character {
       this.doDeath();
     } else if (hit.type == "healHp") {
       this.modifyStat("hp", hit?.amount);
+      this.state.lastFlash = Date.now();
+      this.state.isFlash = true;
+      this.doFlashAnimation("0x00FF00");
     } else {
       this.modifyStat("hp", hit?.amount);
+      this.state.lastFlash = Date.now();
+      this.state.isFlash = true;
+      this.doFlashAnimation("0xFF0000");
     }
     this.updateHpBar();
   }
@@ -207,12 +221,21 @@ class Player extends Character {
     updateCurrentSpeed(this);
     drawFrame(this);
     checkAttackReady(this, delta);
+    checkIsFlash(this, delta);
     this.setDepth(100 + this.y + this?.body?.height);
   }
   destroy() {
     if (this.scene) this.scene.events.off("update", this.update, this);
     if (this.scene) this.scene.physics.world.disable(this);
     super.destroy(true);
+  }
+}
+
+function checkIsFlash(p, delta) {
+  /* Let us attack again when it is ready */
+  if (Date.now() - p.state.lastFlash > delta + 50 && p.state.isFlash) {
+    p.state.isFlash = false;
+    p.drawCharacterFromUserData();
   }
 }
 
