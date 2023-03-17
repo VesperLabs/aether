@@ -1,4 +1,5 @@
 import Player from "./Player";
+import { distanceTo } from "./utils";
 class PlayerManager {
   constructor(scene, room) {
     this.scene = scene;
@@ -29,6 +30,22 @@ class PlayerManager {
     scene.players[socketId].room = null;
     scene.players[socketId].roomName = null;
     this.players.remove(scene.players[socketId]);
+  }
+  getNearestPlayer(player1) {
+    const players = this.players?.getChildren();
+
+    let closestPlayer;
+    let closestDistance = Infinity;
+
+    players.forEach((player2) => {
+      const distance = distanceTo(player2, player1);
+      if (distance < closestDistance) {
+        closestPlayer = player2;
+        closestDistance = distance;
+      }
+    });
+
+    return closestPlayer;
   }
 }
 

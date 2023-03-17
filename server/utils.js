@@ -168,6 +168,12 @@ function getCharacterDirection(character, point) {
   }
 }
 
+function distanceTo(first, second) {
+  let dx = second?.x - first?.x;
+  let dy = second?.y - first?.y;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
 export {
   removePlayer,
   getPlayer,
@@ -179,5 +185,6 @@ export {
   getDoor,
   randomNumber,
   getCharacterDirection,
+  distanceTo,
   baseUser,
 };
