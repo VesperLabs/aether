@@ -139,6 +139,7 @@ class Player extends Character {
     this.hpBar.setPercent(percent);
   }
   doDeath() {
+    this.body.setVelocity(0, 0);
     this.state.isDead = true;
     this.state.isAttacking = false;
     this.shadow.setVisible(false);

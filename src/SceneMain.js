@@ -172,7 +172,7 @@ function enableDoors(scene) {
 
 function moveHero(scene, time) {
   const hero = scene?.hero;
-  if (hero?.state?.isDead) return;
+  if (hero?.state?.isDead) return hero.body.setVelocity(0, 0);
   const speed = hero.stats.speed;
   const joystick = scene.game.scene.scenes[2].joystick;
   const left = scene.cursorKeys.left.isDown;

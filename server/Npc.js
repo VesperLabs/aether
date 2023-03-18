@@ -28,38 +28,72 @@ class Npc extends Character {
   }
   checkInRange(target, range) {
     if (!target) return;
-    return distanceTo(this, target) <= range;
+    const thisRadius = this?.body?.radius || 1;
+    const targetRadius = target?.body?.radius || 1;
+    const distance = distanceTo(this, target) - (thisRadius + targetRadius);
+    return distance <= range;
   }
-  async update(time, delta) {
+  update(time, delta) {
+    // Destructure relevant properties from 'this'
     const { scene, state, stats, room } = this ?? {};
+
+    // Regenerate health points
     this.doRegen();
+
+    // Attempt to respawn if dead
     this.tryRespawn();
+
+    // Check if attack is ready
     this.checkAttackReady(delta);
+
+    // If dead, do not continue update
     if (state?.isDead) return;
+
+    // If is nasty and not locked onto a player, lock onto nearest player
     if (state?.isAggro && !state.lockedPlayerId) {
-      state.lockedPlayerId = room?.playerManager?.getNearestPlayer(this)?.socketId;
+      const nearestPlayer = room?.playerManager?.getNearestPlayer(this);
+      this.state.lockedPlayerId = nearestPlayer?.socketId;
     }
+
+    // Calculate lag delay based on time elapsed
     const lagDelay = delta;
+
+    // Get target player based on locked player ID
     const targetPlayer = scene?.players?.[state?.lockedPlayerId] ?? null;
-    const shouldChasePlayer = this.checkInRange(targetPlayer, START_AGGRO_RANGE);
-    const shouldAttackPlayer = !state?.isAttacking && this.checkInRange(targetPlayer, delta / 6);
+
+    // Check if player is in range for aggro
+    const isInRange = this.checkInRange(targetPlayer, START_AGGRO_RANGE);
+
+    // Determine if player should chase target player or move randomly
+    const shouldChasePlayer = isInRange && !targetPlayer?.state?.isDead;
     if (shouldChasePlayer) {
       this.moveTowardPlayer(targetPlayer);
     } else {
-      state.lockedPlayerId = null;
+      this.state.lockedPlayerId = null;
       this.moveRandomly(time);
     }
+
+    // Determine if player should attack target player
+    const shouldAttackPlayer = !state?.isAttacking && this.checkInRange(targetPlayer, 1);
     if (shouldAttackPlayer) {
+      // Set state to attacking and record attack time
       this.state.isAttacking = true;
       this.state.lastAttack = Date.now();
-      await new Promise((resolve) => setTimeout(resolve, lagDelay));
-      if (this.checkInRange(targetPlayer, delta / 6) && !this.state?.isDead) {
-        this.room?.spellManager.create({
-          caster: this,
-          target: targetPlayer,
-          spellName: "attack_right",
-        });
-      }
+
+      // Attack target player after lag delay
+      setTimeout(() => {
+        if (
+          this.checkInRange(targetPlayer, 1) &&
+          !this.state?.isDead &&
+          !targetPlayer?.state?.isDead
+        ) {
+          this.room?.spellManager.create({
+            caster: this,
+            target: targetPlayer,
+            spellName: "attack_right",
+          });
+        }
+      }, lagDelay);
     }
   }
   checkAttackReady(delta) {
