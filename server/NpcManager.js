@@ -33,6 +33,7 @@ class NpcManager {
   }
   setNpcCollision() {
     const { scene, room, npcs } = this;
+    scene.physics.add.collider(npcs, room.playerManager.players);
     room.colliders.forEach((c) => {
       scene.physics.add.collider(npcs, c);
     });

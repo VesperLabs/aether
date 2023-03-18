@@ -4,7 +4,7 @@ class PlayerManager {
   constructor(scene, room) {
     this.scene = scene;
     this.room = room;
-    this.players = scene.physics.add.group();
+    this.players = scene.physics.add.group({ immovable: true });
   }
   create(user) {
     const { scene, room } = this;
