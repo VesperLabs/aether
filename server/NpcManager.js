@@ -44,6 +44,7 @@ const mobTypes = {
   raccoon: {
     profile: { race: "raccoon", headY: -27, userName: "Raccoon" },
     baseStats: {
+      attackDelay: 100,
       expValue: 2,
       level: 1,
       speed: 100,
@@ -84,6 +85,7 @@ const mobTypes = {
   slime: {
     profile: { race: "slime", headY: -23, userName: "Slime" },
     baseStats: {
+      attackDelay: 100,
       expValue: 2,
       level: 1,
       speed: 100,
@@ -118,6 +120,7 @@ const mobTypes = {
   hornet: {
     profile: { race: "bee", headY: -34, userName: "Hornet" },
     baseStats: {
+      attackDelay: 100,
       expValue: 1,
       level: 1,
       speed: 150,
@@ -154,6 +157,7 @@ const mobTypes = {
     profile: { race: "bee", tint: "0x44FFCC", scale: 1.5, headY: -45, userName: "Hawkwing" },
     state: { isAggro: true },
     baseStats: {
+      attackDelay: 100,
       expValue: 5,
       level: 5,
       speed: 150,
@@ -182,6 +186,7 @@ const mobTypes = {
     profile: { race: "spider", headY: -21, userName: "Spider" },
     state: { isAggro: true },
     baseStats: {
+      attackDelay: 100,
       expValue: 4,
       level: 5,
       speed: 100,
@@ -217,6 +222,7 @@ const mobTypes = {
     profile: { race: "spider", tint: "0xFF33CC", scale: 2, headY: -30, userName: "Hogan" },
     state: { isAggro: true },
     baseStats: {
+      attackDelay: 100,
       expValue: 10,
       level: 10,
       speed: 100,
@@ -258,6 +264,7 @@ const mobTypes = {
     profile: { race: "bat", headY: -30, userName: "Bat" },
     state: { isAggro: true },
     baseStats: {
+      attackDelay: 100,
       expValue: 4,
       level: 5,
       speed: 100,
@@ -300,6 +307,7 @@ const mobTypes = {
     profile: { race: "zombie", headY: -44, userName: "Zombie" },
     state: { isAggro: true },
     baseStats: {
+      attackDelay: 100,
       expValue: 8,
       level: 10,
       speed: 100,
@@ -347,6 +355,7 @@ const mobTypes = {
     profile: { race: "wraith", headY: -46, userName: "Wraith" },
     state: { isAggro: true },
     baseStats: {
+      attackDelay: 100,
       expValue: 8,
       level: 10,
       speed: 100,
@@ -394,6 +403,7 @@ const mobTypes = {
     profile: { race: "abomination", tint: "0x88FF88", headY: -88, userName: "Chonks" },
     state: { isAggro: true },
     baseStats: {
+      attackDelay: 100,
       expValue: 12,
       level: 15,
       speed: 100,
@@ -441,6 +451,7 @@ const mobTypes = {
     profile: { race: "merman", headY: -30, userName: "Merman" },
     state: { isAggro: true },
     baseStats: {
+      attackDelay: 100,
       expValue: 8,
       level: 10,
       speed: 100,

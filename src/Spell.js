@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 const Sprite = Phaser.GameObjects.Sprite;
-
+const BLANK_TEXTURE = "human-blank";
 class Spell extends Phaser.GameObjects.Container {
   constructor(scene, caster, spellName) {
     super(scene, caster.x, caster.y);
@@ -11,16 +11,18 @@ class Spell extends Phaser.GameObjects.Container {
     this.frame = 0;
     this.hitIds = []; //who has this npc hit?
     this.canHitSelf = true;
-
-    /* TODO: Once we have enough spells, we can convert this to read a JSON file */
-    if (spellName === "attack") {
-      this.canHitSelf = false;
-      this.spell = scene.add.existing(new Sprite(scene, 0, 0, "misc-slash", 0));
-      scene.physics.add.existing(this);
-      this.maxVisibleTime = 1000;
-      this.maxActiveTime = 100;
-      if (caster?.action === "attack_left") {
-        const rangeLeft = caster?.equipment?.handLeft?.stats?.range * 2;
+    this.maxVisibleTime = 200;
+    this.maxActiveTime = 100;
+    this.spell = scene.add.existing(new Sprite(scene, 0, 0, BLANK_TEXTURE, 0));
+    scene.physics.add.existing(this);
+    scene.events.on("update", this.update, this);
+    scene.events.once("shutdown", this.destroy, this);
+    this.setDepth(this?.caster?.depth - 10);
+    if (["attack_left", "attack_right"]?.includes(spellName)) {
+      if (spellName === "attack_left") {
+        this.canHitSelf = false;
+        this.spell.setTexture("misc-slash");
+        const rangeLeft = caster?.equipment?.handLeft?.stats?.range * 2 || 1;
         this.body.setCircle(rangeLeft * 16, -rangeLeft * 16, -rangeLeft * 16);
         this.spell.displayWidth = 50 * rangeLeft;
         this.spell.displayHeight = 50 * rangeLeft;
@@ -29,8 +31,10 @@ class Spell extends Phaser.GameObjects.Container {
           this.spell.setFlipX(false);
         }
       }
-      if (caster?.action === "attack_right") {
-        const rangeRight = caster?.equipment?.handRight?.stats?.range * 2;
+      if (spellName === "attack_right") {
+        this.canHitSelf = false;
+        this.spell.setTexture("misc-slash");
+        const rangeRight = caster?.equipment?.handRight?.stats?.range * 2 || 1;
         this.body.setCircle(rangeRight * 16, -rangeRight * 16, -rangeRight * 16);
         this.spell.displayWidth = 50 * rangeRight;
         this.spell.displayHeight = 50 * rangeRight;
@@ -52,7 +56,19 @@ class Spell extends Phaser.GameObjects.Container {
       if (caster?.direction === "right") {
         this.spell.setAngle(-90);
       }
-      this.spell.setAlpha(1);
+      /* Animate it out */
+      scene.tweens.add({
+        targets: this.spell,
+        props: {
+          alpha: {
+            value: () => 0,
+            ease: "Power4",
+          },
+        },
+        duration: this.maxVisibleTime,
+        yoyo: false,
+        repeat: 0,
+      });
       /* Add to the caster so that it follows them (Some spells will be just this.add) */
       this.caster.add(this.spell);
     }
@@ -70,9 +86,6 @@ class Spell extends Phaser.GameObjects.Container {
       // scene.physics.add.existing(this);
       // this.body.setCircle(64, -64, -64);
     }
-    scene.events.on("update", this.update, this);
-    scene.events.once("shutdown", this.destroy, this);
-    this.setDepth(this?.caster?.depth - 10);
   }
   create() {}
   update(time, deltaTime) {
@@ -81,12 +94,6 @@ class Spell extends Phaser.GameObjects.Container {
     this.aliveTime += deltaTime;
     const isSpellExpired = this.aliveTime > this.maxVisibleTime;
     const isSpellActive = this.aliveTime < this.maxActiveTime;
-
-    if (this.spellName === "attack") {
-      if (this.spell.alpha > 0) {
-        this.spell.setAlpha(this.spell.alpha - 0.1);
-      }
-    }
     /* Only check collisions for hero if the spell is active */
     if (this.caster.isHero && isSpellActive) {
       this.checkCollisions();

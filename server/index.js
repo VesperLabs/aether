@@ -114,7 +114,7 @@ class ServerScene extends Phaser.Scene {
           if (newHit) playerHitList.push(newHit);
         }
 
-        io.to(roomName).emit("assignDamage", { socketId, npcHitList, playerHitList });
+        io.to(roomName).emit("assignDamage", { npcHitList, playerHitList });
       });
 
       socket.on("enterDoor", (doorName) => {

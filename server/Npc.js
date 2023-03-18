@@ -26,21 +26,37 @@ class Npc extends Character {
       this.scene.io.to(this.room.name).emit("respawnNpc", this?.id);
     }
   }
-  update(time) {
-    const { state } = this || {};
+  update(time, delta) {
+    const { scene, state } = this || {};
     this.doRegen();
     this.tryRespawn();
+    this.checkAttackReady(delta);
     if (state.isDead) return;
     if (state.isAggro && !state.lockedPlayerId) {
       state.lockedPlayerId = this.room?.playerManager?.getNearestPlayer(this)?.socketId;
     }
     const targetPlayer = this.scene?.players?.[this?.state?.lockedPlayerId];
-    const isNearPlayer = targetPlayer && distanceTo(this, targetPlayer) <= START_AGGRO_RANGE;
-    if (targetPlayer && isNearPlayer) {
+    const shouldChasePlayer = targetPlayer && distanceTo(this, targetPlayer) <= START_AGGRO_RANGE;
+    const shouldAttackPlayer =
+      !state.isAttacking && targetPlayer && distanceTo(this, targetPlayer) <= this.stats.speed;
+    if (shouldChasePlayer) {
       this.moveTowardPlayer(targetPlayer);
     } else {
       state.lockedPlayerId = null;
       this.moveRandomly(time);
+    }
+    if (shouldAttackPlayer) {
+      this.state.isAttacking = true;
+      this.state.lastAttack = Date.now();
+      // const newHit = this.calculateDamage(targetPlayer);
+      // scene.io.to(this?.room?.name).emit("assignDamage", { playerHitList: [newHit] });
+      //send a spell to target here?
+    }
+  }
+  checkAttackReady(delta) {
+    /* Let us attack again when it is ready */
+    if (Date.now() - this.state.lastAttack > delta + this.stats.attackDelay) {
+      this.state.isAttacking = false;
     }
   }
   moveTowardPlayer(player) {

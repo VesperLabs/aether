@@ -113,7 +113,7 @@ class Player extends Character {
         /* Always finishes with a left if both hands have weapons */
         if (this.state.hasWeaponLeft) this.action = "attack_left";
       }
-      this.scene.add.existing(new Spell(this.scene, this, "attack"));
+      this.scene.add.existing(new Spell(this.scene, this, this.action));
       this.state.isAttacking = true;
       this.state.lastAttack = Date.now();
       // If we are the hero, need to trigger the socket that we attacked
