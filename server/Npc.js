@@ -30,17 +30,17 @@ class Npc extends Character {
     if (!target) return;
     return distanceTo(this, target) <= range;
   }
-  update(time, delta) {
-    const { scene, state, stats, room } = this || {};
+  async update(time, delta) {
+    const { scene, state, stats, room } = this ?? {};
     this.doRegen();
     this.tryRespawn();
     this.checkAttackReady(delta);
-    if (state.isDead) return;
-    if (state.isAggro && !state.lockedPlayerId) {
+    if (state?.isDead) return;
+    if (state?.isAggro && !state.lockedPlayerId) {
       state.lockedPlayerId = room?.playerManager?.getNearestPlayer(this)?.socketId;
     }
     const lagDelay = delta;
-    const targetPlayer = scene?.players?.[this?.state?.lockedPlayerId];
+    const targetPlayer = scene?.players?.[state?.lockedPlayerId] ?? null;
     const shouldChasePlayer = this.checkInRange(targetPlayer, START_AGGRO_RANGE);
     const shouldAttackPlayer = !state?.isAttacking && this.checkInRange(targetPlayer, delta / 6);
     if (shouldChasePlayer) {
@@ -52,16 +52,14 @@ class Npc extends Character {
     if (shouldAttackPlayer) {
       this.state.isAttacking = true;
       this.state.lastAttack = Date.now();
-      //send a spell to target here?
-      setTimeout(() => {
-        if (this.checkInRange(targetPlayer, delta / 6) && !this.state.isDead) {
-          this.room?.spellManager.create({
-            caster: this,
-            target: targetPlayer,
-            spellName: "attack_right",
-          });
-        }
-      }, lagDelay);
+      await new Promise((resolve) => setTimeout(resolve, lagDelay));
+      if (this.checkInRange(targetPlayer, delta / 6) && !this.state?.isDead) {
+        this.room?.spellManager.create({
+          caster: this,
+          target: targetPlayer,
+          spellName: "attack_right",
+        });
+      }
     }
   }
   checkAttackReady(delta) {

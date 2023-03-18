@@ -30,9 +30,10 @@
     "nodemon": "^2.0.21"
   },
   "scripts": {
+    "kill": "kill -9 $(lsof -i :3000) &>/dev/null | exit 0",
     "server": "babel-node --presets @babel/env -r dotenv/config server/index.js ",
-    "watch:server": "nodemon --watch server --delay 500ms --exec babel-node --presets @babel/env -r dotenv/config server/index.js ",
-    "watch": "nodemon --watch src --delay 500ms node esbuild.js",
+    "watch:server": "nodemon --watch server --inspect --exec \"yarn run kill && babel-node --presets @babel/env -r dotenv/config server/index.js\"",
+    "watch": "nodemon --watch src node esbuild.js",
     "build": "node esbuild.js "
   }
 }
