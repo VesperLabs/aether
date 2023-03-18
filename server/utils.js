@@ -34,6 +34,9 @@ function getRoomState(scene, roomName, deepObjects = false) {
     npcs: Object.values(scene.npcs)
       ?.filter((n) => n?.room?.name === roomName)
       .map((p) => (deepObjects ? p : getCharacterState(p))),
+    spells: Object.values(scene.spells)
+      ?.filter((s) => s?.room?.name === roomName)
+      .map((s) => s?.getTrimmed()),
     loots: Object.values(scene.loots)?.filter((l) => l?.roomName === roomName),
   };
 }
@@ -66,6 +69,9 @@ function getTrimmedRoomState(scene, roomName) {
     npcs: Object.values(scene.npcs)
       ?.filter((p) => p?.room?.name === roomName)
       .map(getTrimmedCharacterState),
+    spells: Object.values(scene.spells)
+      ?.filter((s) => s?.room?.name === roomName)
+      .map((s) => s?.getTrimmed()),
     loots: Object.values(scene.loots)?.filter((l) => l?.roomName === roomName),
   };
 }

@@ -113,7 +113,9 @@ class Player extends Character {
         /* Always finishes with a left if both hands have weapons */
         if (this.state.hasWeaponLeft) this.action = "attack_left";
       }
-      this.scene.add.existing(new Spell(this.scene, this, this.action));
+      this.scene.add.existing(
+        new Spell(this.scene, { id: null, caster: this, spellName: this.action })
+      );
       this.state.isAttacking = true;
       this.state.lastAttack = Date.now();
       // If we are the hero, need to trigger the socket that we attacked
@@ -121,6 +123,9 @@ class Player extends Character {
         this.scene.socket.emit("attack", { count, direction: this.direction });
       }
     }
+  }
+  castSpell(spellData) {
+    this.scene.add.existing(new Spell(this.scene, { ...spellData, caster: this }));
   }
   setBubbleMessage(message) {
     if (message !== this.bubbleMessage) {
@@ -223,11 +228,6 @@ class Player extends Character {
     checkAttackReady(this, delta);
     checkIsFlash(this, delta);
     this.setDepth(100 + this.y + this?.body?.height);
-  }
-  destroy() {
-    if (this.scene) this.scene.events.off("update", this.update, this);
-    if (this.scene) this.scene.physics.world.disable(this);
-    super.destroy(true);
   }
 }
 

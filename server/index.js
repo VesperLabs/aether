@@ -48,6 +48,7 @@ class ServerScene extends Phaser.Scene {
     scene.doors = {};
     scene.npcs = {};
     scene.loots = {};
+    scene.spells = {};
     scene.roomManager = new RoomManager(scene);
     scene.db = await initDatabase(process.env.MONGO_URL);
 
@@ -98,23 +99,20 @@ class ServerScene extends Phaser.Scene {
         const hero = scene.players[socketId];
         const roomName = hero?.roomName;
         /* Create hitList for npcs */
-        const npcHitList = [];
+        const hitList = [];
         const npcs = getRoomState(scene, roomName, true)?.npcs;
+        const players = getRoomState(scene, roomName, true)?.players;
         for (const npc of npcs) {
           if (!ids?.includes(npc.id)) continue;
           const newHit = hero.calculateDamage(npc);
-          if (newHit) npcHitList.push(newHit);
+          if (newHit) hitList.push(newHit);
         }
-        /* Create hitList for players */
-        const playerHitList = [];
-        const players = getRoomState(scene, roomName, true)?.players;
         for (const player of players) {
           if (!ids?.includes(player.id)) continue;
           const newHit = hero.calculateDamage(player);
-          if (newHit) playerHitList.push(newHit);
+          if (newHit) hitList.push(newHit);
         }
-
-        io.to(roomName).emit("assignDamage", { npcHitList, playerHitList });
+        io.to(roomName).emit("assignDamage", hitList);
       });
 
       socket.on("enterDoor", (doorName) => {
@@ -189,6 +187,7 @@ class ServerScene extends Phaser.Scene {
     const scene = this;
     for (const room of Object.values(scene.roomManager.rooms)) {
       room.lootManager.expireLoots();
+      room.spellManager.expireSpells();
       const roomState = getTrimmedRoomState(scene, room.name);
       const snapshot = SI.snapshot.create(roomState);
       room.vault.add(snapshot);

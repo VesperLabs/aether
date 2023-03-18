@@ -2,23 +2,25 @@ import Phaser from "phaser";
 const Sprite = Phaser.GameObjects.Sprite;
 const BLANK_TEXTURE = "human-blank";
 class Spell extends Phaser.GameObjects.Container {
-  constructor(scene, caster, spellName) {
+  constructor(scene, { id, caster, spellName, maxVisibleTime, maxActiveTime, state }) {
     super(scene, caster.x, caster.y);
-    this.caster = caster;
-    this.aliveTime = 0; // how long it has been alive.
     this.scene = scene;
+    this.id = id;
+    this.caster = caster;
+    this.state = { aliveTime: 0, ...state };
     this.spellName = spellName;
     this.frame = 0;
     this.hitIds = []; //who has this npc hit?
-    this.canHitSelf = true;
-    this.maxVisibleTime = 200;
-    this.maxActiveTime = 100;
+    this.canHitSelf = false;
+    this.maxVisibleTime = maxVisibleTime || 200;
+    this.maxActiveTime = maxActiveTime || 100;
     this.spell = scene.add.existing(new Sprite(scene, 0, 0, BLANK_TEXTURE, 0));
     scene.physics.add.existing(this);
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
     this.setDepth(this?.caster?.depth - 10);
-    if (["attack_left", "attack_right"]?.includes(spellName)) {
+    this.isAttack = ["attack_left", "attack_right"]?.includes(spellName);
+    if (this.isAttack) {
       if (spellName === "attack_left") {
         this.canHitSelf = false;
         this.spell.setTexture("misc-slash");
@@ -91,9 +93,9 @@ class Spell extends Phaser.GameObjects.Container {
   update(time, deltaTime) {
     if (!this.scene) return; //sometimes plays an extra loop after destroy
     /* Step up the alive time */
-    this.aliveTime += deltaTime;
-    const isSpellExpired = this.aliveTime > this.maxVisibleTime;
-    const isSpellActive = this.aliveTime < this.maxActiveTime;
+    this.state.aliveTime += deltaTime;
+    const isSpellExpired = this.state.aliveTime > this.maxVisibleTime;
+    const isSpellActive = this.state.aliveTime < this.maxActiveTime;
     /* Only check collisions for hero if the spell is active */
     if (this.caster.isHero && isSpellActive) {
       this.checkCollisions();
@@ -113,7 +115,7 @@ class Spell extends Phaser.GameObjects.Container {
       if (!canHitSelf && victim?.id == caster?.id) return;
       if (scene.physics.overlap(victim, this)) {
         /* For attacks, prevent collision behind the player */
-        if (spellName === "attack") {
+        if (this.isAttack) {
           if (direction === "up" && victim.y > caster.y) return;
           if (direction === "down" && victim.y < caster.y) return;
           if (direction === "left" && victim.x > caster.x) return;

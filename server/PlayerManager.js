@@ -27,6 +27,9 @@ class PlayerManager {
   }
   remove(socketId) {
     const { scene } = this;
+    if (!scene?.players?.[socketId]) {
+      return console.log("❌ Could not remove player");
+    }
     scene.players[socketId].room = null;
     scene.players[socketId].roomName = null;
     this.players.remove(scene.players[socketId]);

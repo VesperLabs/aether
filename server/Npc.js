@@ -26,19 +26,23 @@ class Npc extends Character {
       this.scene.io.to(this.room.name).emit("respawnNpc", this?.id);
     }
   }
+  checkInRange(target, range) {
+    if (!target) return;
+    return distanceTo(this, target) <= range;
+  }
   update(time, delta) {
-    const { scene, state } = this || {};
+    const { scene, state, stats, room } = this || {};
     this.doRegen();
     this.tryRespawn();
     this.checkAttackReady(delta);
     if (state.isDead) return;
     if (state.isAggro && !state.lockedPlayerId) {
-      state.lockedPlayerId = this.room?.playerManager?.getNearestPlayer(this)?.socketId;
+      state.lockedPlayerId = room?.playerManager?.getNearestPlayer(this)?.socketId;
     }
-    const targetPlayer = this.scene?.players?.[this?.state?.lockedPlayerId];
-    const shouldChasePlayer = targetPlayer && distanceTo(this, targetPlayer) <= START_AGGRO_RANGE;
-    const shouldAttackPlayer =
-      !state.isAttacking && targetPlayer && distanceTo(this, targetPlayer) <= this.stats.speed;
+    const lagDelay = delta;
+    const targetPlayer = scene?.players?.[this?.state?.lockedPlayerId];
+    const shouldChasePlayer = this.checkInRange(targetPlayer, START_AGGRO_RANGE);
+    const shouldAttackPlayer = !state?.isAttacking && this.checkInRange(targetPlayer, delta / 6);
     if (shouldChasePlayer) {
       this.moveTowardPlayer(targetPlayer);
     } else {
@@ -48,9 +52,16 @@ class Npc extends Character {
     if (shouldAttackPlayer) {
       this.state.isAttacking = true;
       this.state.lastAttack = Date.now();
-      // const newHit = this.calculateDamage(targetPlayer);
-      // scene.io.to(this?.room?.name).emit("assignDamage", { playerHitList: [newHit] });
       //send a spell to target here?
+      setTimeout(() => {
+        if (this.checkInRange(targetPlayer, delta / 6) && !this.state.isDead) {
+          this.room?.spellManager.create({
+            caster: this,
+            target: targetPlayer,
+            spellName: "attack_right",
+          });
+        }
+      }, lagDelay);
     }
   }
   checkAttackReady(delta) {
