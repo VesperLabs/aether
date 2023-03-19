@@ -79,7 +79,7 @@ const _itemList = {
           level: 10,
         },
         stats: {
-          attackDelay: 250,
+          attackDelay: 150,
           minDamage: 5,
           maxDamage: 5,
           range: 1.25,
