@@ -44,7 +44,7 @@ function CanvasPreview({ assets }) {
 
 const getAssetProps = (name, tint) => {
   const asset = assetList?.find((a) => a?.texture === name);
-  return { ...asset, tint };
+  return asset ? { ...asset, tint } : null;
 };
 
 const Portrait = () => {
@@ -67,17 +67,26 @@ const Portrait = () => {
   return (
     <Box
       sx={{
-        border: `1px solid #FFF`,
-        boxShadow: `0px 0px 0px 1px #000`,
-        borderRadius: "100%",
-        width: PORTRAIT_SIZE,
-        height: PORTRAIT_SIZE,
-        bg: "black",
-        position: "relative",
-        overflow: "hidden",
+        border: `1px solid #000`,
+        borderRadius: 52,
+        width: PORTRAIT_SIZE + 2,
+        height: PORTRAIT_SIZE + 2,
       }}
     >
-      <CanvasPreview assets={assets} />
+      <Box
+        sx={{
+          border: `1px solid #FFF`,
+          borderRadius: 50,
+          width: PORTRAIT_SIZE,
+          height: PORTRAIT_SIZE,
+          bg: "black",
+          position: "relative",
+          overflow: "hidden",
+          clipPath: "circle(25px at 25px 25px);",
+        }}
+      >
+        <CanvasPreview assets={assets} />
+      </Box>
     </Box>
   );
 };
