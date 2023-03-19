@@ -18,4 +18,6 @@ export { default as ItemTooltip } from "./ItemTooltip";
 export { default as MenuEquipment } from "./MenuEquipment";
 export { default as MenuInventory } from "./MenuInventory";
 export { default as MenuHud } from "./MenuHud";
+export { default as Modal } from "./Modal";
+export { default as ModalRespawn } from "./ModalRespawn";
 export { useAppContext } from "./App";

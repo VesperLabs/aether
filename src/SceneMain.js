@@ -110,6 +110,10 @@ class SceneMain extends Phaser.Scene {
       }
     });
 
+    socket.on("respawnPlayer", (id) => {
+      getPlayer(scene, id)?.respawn();
+    });
+
     socket.on("respawnNpc", (id) => {
       getNpc(scene, id)?.respawn();
     });

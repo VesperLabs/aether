@@ -88,6 +88,17 @@ class ServerScene extends Phaser.Scene {
         socket.to(player.roomName).emit("playerAttack", { socketId, count, direction });
       });
 
+      socket.on("respawn", () => {
+        const player = getCharacterState(scene.players[socketId]);
+        player.state.isDead = false;
+        player.stats.hp = Math.floor(player.stats.maxHp);
+        if (player.stats.exp > 0) {
+          player.stats.exp = Math.floor(player.stats.exp * 0.9);
+        }
+        scene.db.updateUser(scene.players?.[socketId]);
+        io.to(player?.roomName).emit("respawnPlayer", player?.socketId);
+      });
+
       socket.on("changeDirection", (direction) => {
         const player = scene.players[socketId];
         player.direction = direction;

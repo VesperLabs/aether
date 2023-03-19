@@ -9,6 +9,7 @@ import {
   MenuEquipment,
   MenuInventory,
   MenuHud,
+  ModalRespawn,
 } from "./";
 
 const AppContext = createContext();
@@ -56,12 +57,14 @@ function App({ socket, debug, game }) {
     socket.on("heroInit", heroInit);
     socket.on("playerUpdate", playerUpdate);
     window.addEventListener("UPDATE_HUD", updateHud);
+    window.addEventListener("HERO_RESPAWN", updateHud);
     return () => {
       socket.off("connect", connect);
       socket.off("disconnect", disconnect);
       socket.off("heroInit", heroInit);
       socket.off("playerUpdate", playerUpdate);
       window.removeEventListener("UPDATE_HUD", updateHud);
+      window.removeEventListener("HERO_RESPAWN", updateHud);
     };
   }, []);
 
@@ -84,6 +87,7 @@ function App({ socket, debug, game }) {
         }}
       >
         <GameWrapper>
+          {player?.state?.isDead && <ModalRespawn />}
           <MenuHud />
           <MenuBar />
         </GameWrapper>

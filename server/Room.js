@@ -41,24 +41,24 @@ class Room {
   }
   createMapBounds() {
     const { scene, tileMap } = this;
-    const top = scene.physics.add.sprite(0, 0, "blank");
-    top.displayWidth = tileMap.widthInPixels;
-    top.displayHeight = 0;
+    const top = scene.physics.add.sprite(-100, -100, "blank");
+    top.displayWidth = tileMap.widthInPixels + 200;
+    top.displayHeight = 100;
     top.body.immovable = true;
     top.setOrigin(0, 0);
-    const left = scene.physics.add.sprite(0, 0, "blank");
-    left.displayWidth = 0;
-    left.displayHeight = tileMap.heightInPixels;
+    const left = scene.physics.add.sprite(-100, -100, "blank");
+    left.displayWidth = 100;
+    left.displayHeight = tileMap.heightInPixels + 200;
     left.body.immovable = true;
     left.setOrigin(0, 0);
-    const bottom = scene.physics.add.sprite(0, tileMap.heightInPixels, "blank");
-    bottom.displayWidth = tileMap.widthInPixels;
-    bottom.displayHeight = 0;
+    const bottom = scene.physics.add.sprite(-100, tileMap.heightInPixels + 100, "blank");
+    bottom.displayWidth = tileMap.widthInPixels + 200;
+    bottom.displayHeight = 100;
     bottom.body.immovable = true;
     bottom.setOrigin(0, 0);
-    const right = scene.physics.add.sprite(tileMap.widthInPixels, 0, "blank");
-    right.displayWidth = 0;
-    right.displayHeight = tileMap.heightInPixels;
+    const right = scene.physics.add.sprite(tileMap.widthInPixels, -100, "blank");
+    right.displayWidth = 100;
+    right.displayHeight = tileMap.heightInPixels + 200;
     right.body.immovable = true;
     right.setOrigin(0, 0);
     return { top, left, bottom, right };

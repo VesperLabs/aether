@@ -121,7 +121,7 @@ const Bar = ({ width = 100, height = 10, color = "red.300", min, max, sx }) => {
 const MenuHud = () => {
   const { player } = useAppContext();
   return (
-    <Flex sx={{ gap: 1, m: 2 }}>
+    <Flex sx={{ gap: 1, top: 2, left: 2, position: "absolute" }}>
       <Portrait />
       <Flex sx={{ flexDirection: "column", gap: "1px" }}>
         <UserName />

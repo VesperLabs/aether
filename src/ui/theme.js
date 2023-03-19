@@ -65,9 +65,9 @@ export default {
       lineHeight: "body",
       fontWeight: "body",
       color: "text",
-      textShadow:
-        "-1px -1px 0 rgba(0, 0, 0, 0.5), 1px -1px 0 rgba(0, 0, 0, 0.5), -1px 1px 0 rgba(0, 0, 0, 0.5), 1px 1px 0 rgba(0, 0, 0, 0.5)",
       "*": {
+        textShadow:
+          "-1px -1px 0 rgba(0, 0, 0, 0.5), 1px -1px 0 rgba(0, 0, 0, 0.5), -1px 1px 0 rgba(0, 0, 0, 0.5), 1px 1px 0 rgba(0, 0, 0, 0.5)",
         "-webkit-touch-callout": "none",
         "-webkit-user-callout": "none",
         "-webkit-user-select": "none",
