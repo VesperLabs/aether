@@ -17,7 +17,7 @@ export const useAppContext = () => {
   return useContext(AppContext);
 };
 
-function App({ socket, debug }) {
+function App({ socket, debug, game }) {
   const [isConnected, setIsConnected] = useState(true);
   const [player, setPlayer] = useState();
   const [tabEquipment, setTabEquipment] = useState(false);
@@ -57,6 +57,7 @@ function App({ socket, debug }) {
           player,
           socket,
           debug,
+          game,
         }}
       >
         <GameWrapper>

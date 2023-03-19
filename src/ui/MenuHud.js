@@ -25,7 +25,7 @@ function CanvasPreview({ assets }) {
     };
 
     loadImages();
-  }, []);
+  }, [JSON.stringify(assets)]);
 
   return (
     <Box

@@ -16,7 +16,7 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 const gameWidth = window.innerWidth * window.devicePixelRatio;
 const gameHeight = window.innerHeight * window.devicePixelRatio;
 
-new Phaser.Game({
+const game = new Phaser.Game({
   type: Phaser.AUTO,
   parent: "game",
   scale: {
@@ -58,6 +58,6 @@ new Phaser.Game({
 
 root.render(
   <React.StrictMode>
-    <App socket={socket} debug={debug} />
+    <App socket={socket} game={game} debug={debug} />
   </React.StrictMode>
 );

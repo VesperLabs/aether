@@ -28,10 +28,11 @@ class SceneBoot extends Phaser.Scene {
 
     // Register a load complete event to launch the title screen when all files are loaded
     this.load.on("complete", () => {
-      // assetList.forEach((asset) => {
-      //   let tempText = this.textures.get(asset.texture);
-      //   tempText.add("preview", 0, ...asset.previewRect);
-      // });
+      /* For loot pics */
+      assetList.forEach((asset) => {
+        let tempText = this.textures.get(asset.texture);
+        tempText.add("preview", 0, ...asset.previewRect);
+      });
       this.scene.start("SceneMain");
       this.scene.start("SceneHud");
       window.dispatchEvent(new Event("game_loaded"));
