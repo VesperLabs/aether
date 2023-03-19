@@ -133,7 +133,7 @@ const Slot = ({ sx, size = 52, item, location, icon, ...props }) => {
   useLayoutEffect(() => {
     if (target?.nodeName == "CANVAS") {
       window.dispatchEvent(
-        new CustomEvent("item_drag", {
+        new CustomEvent("ITEM_DRAG", {
           detail: position,
         })
       );

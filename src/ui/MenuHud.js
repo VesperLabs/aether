@@ -1,14 +1,16 @@
-import React, { useRef, useEffect } from "react";
-import { Box, useAppContext } from "./";
+import React, { useRef, useEffect, useState } from "react";
+import { Box, useAppContext, Flex } from "./";
 import { tintCanvas, imageToCanvas } from "../utils";
 import { assetList } from "../Assets";
 
 const PORTRAIT_SIZE = 50;
 
 function CanvasPreview({ assets }) {
+  const [loading, setLoading] = useState(true);
   const canvasRef = useRef(null);
 
   useEffect(() => {
+    setLoading(true);
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     canvas.width = 80;
@@ -22,6 +24,7 @@ function CanvasPreview({ assets }) {
         const tintedCanvas = tintCanvas(imageToCanvas(img), asset?.tint);
         ctx.drawImage(tintedCanvas, x, y, w, h, 0, 0, w, h);
       }
+      setLoading(false);
     };
 
     loadImages();
@@ -42,14 +45,8 @@ function CanvasPreview({ assets }) {
   );
 }
 
-const getAssetProps = (name, tint) => {
-  const asset = assetList?.find((a) => a?.texture === name);
-  return asset ? { ...asset, tint } : null;
-};
-
 const Portrait = () => {
   const { player } = useAppContext();
-  if (!player?.profile) return;
   const { race, gender } = player?.profile;
   const playerFace = player?.profile?.face;
   const playerHair = player?.profile?.hair;
@@ -91,11 +88,47 @@ const Portrait = () => {
   );
 };
 
-const MenuHud = () => {
+const getAssetProps = (name, tint) => {
+  const asset = assetList?.find((a) => a?.texture === name);
+  return asset ? { ...asset, tint } : null;
+};
+
+const UserName = ({ sx }) => {
+  const { player } = useAppContext();
+  return <Box sx={{ ...sx }}>{player?.profile?.userName}</Box>;
+};
+
+const Bar = ({ width = 100, height = 10, color = "red.300", min, max, sx }) => {
+  const percent = Math.round((min / max) * 100) + "%";
   return (
-    <Box sx={{ position: "absolute", top: 10, left: 10 }}>
-      <Portrait />
+    <Box
+      sx={{
+        overflow: "hidden",
+        borderRadius: 3,
+        bg: "shadow.25",
+        border: (t) => `1px solid rgba(255,255,255,.85)`,
+        boxShadow: `0px 0px 0px 1px #000`,
+        width,
+        height,
+        ...sx,
+      }}
+    >
+      <Box sx={{ bg: color, height: "100%", width: percent }} />
     </Box>
+  );
+};
+
+const MenuHud = () => {
+  const { player } = useAppContext();
+  return (
+    <Flex sx={{ gap: 1, m: 2 }}>
+      <Portrait />
+      <Flex sx={{ flexDirection: "column", gap: "1px" }}>
+        <UserName />
+        <Bar color="red.500" max={player?.stats?.maxHp} min={player?.stats?.hp} />
+        <Bar color="blue.500" max={player?.stats?.maxMp} min={player?.stats?.mp} />
+      </Flex>
+    </Flex>
   );
 };
 

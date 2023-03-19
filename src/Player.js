@@ -157,7 +157,7 @@ class Player extends Character {
     this.bubble.setVisible(false);
     this.skin.setTexture("icons").setFrame("grave").setTint("0xFFFFFF");
     if (this.isHero) {
-      window.dispatchEvent(new Event("hero_died"));
+      window.dispatchEvent(new Event("HERO_DEAD"));
     }
   }
   respawn() {
@@ -178,7 +178,7 @@ class Player extends Character {
     this.handRight.setVisible(true);
     this.hpBar.setVisible(false);
     if (this.isHero) {
-      window.dispatchEvent(new Event("hero_respawn"));
+      window.dispatchEvent(new Event("HERO_RESPAWN"));
     }
   }
   doFlashAnimation(color = "0xFFFFFF") {
@@ -218,6 +218,10 @@ class Player extends Character {
       this.state.lastFlash = Date.now();
       this.state.isFlash = true;
       this.doFlashAnimation("0xFF0000");
+    }
+    /* Not sure events like this is the best approach */
+    if (this?.isHero) {
+      window.dispatchEvent(new Event("UPDATE_HUD"));
     }
     this.updateHpBar();
   }

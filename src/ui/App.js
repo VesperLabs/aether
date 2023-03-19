@@ -24,25 +24,48 @@ function App({ socket, debug, game }) {
   const [tabInventory, setTabInventory] = useState(false);
 
   useEffect(() => {
-    socket.on("connect", () => {
+    const connect = () => {
       setIsConnected(true);
-    });
-    socket.on("disconnect", () => {
+    };
+
+    const disconnect = () => {
       setIsConnected(false);
-    });
-    socket.on("heroInit", (payload = {}) => {
+    };
+
+    const heroInit = (payload = {}) => {
       const { players, socketId } = payload;
       const player = players?.find((p) => p?.socketId === socketId);
       localStorage.setItem("socketId", socketId);
       setPlayer(player);
-    });
-    socket.on("playerUpdate", (player = {}) => {
+    };
+
+    const playerUpdate = (player = {}) => {
       const socketId = localStorage.getItem("socketId");
       if (socketId === player?.socketId) {
         setPlayer(player);
       }
-    });
+    };
+
+    const updateHud = () => {
+      const hero = game.scene.getScene("SceneMain").hero;
+      setPlayer((prev) => ({ ...prev, state: hero?.state, stats: hero?.stats }));
+    };
+
+    socket.on("connect", connect);
+    socket.on("disconnect", disconnect);
+    socket.on("heroInit", heroInit);
+    socket.on("playerUpdate", playerUpdate);
+    window.addEventListener("UPDATE_HUD", updateHud);
+    return () => {
+      socket.off("connect", connect);
+      socket.off("disconnect", disconnect);
+      socket.off("heroInit", heroInit);
+      socket.off("playerUpdate", playerUpdate);
+      window.removeEventListener("UPDATE_HUD", updateHud);
+    };
   }, []);
+
+  if (!player) return;
 
   return (
     <ThemeProvider theme={theme}>
@@ -103,7 +126,7 @@ const AttackPad = () => {
       <Button
         variant="menu"
         onTouchStart={(e) => {
-          window.dispatchEvent(new Event("hero_attack"));
+          window.dispatchEvent(new Event("HERO_ATTACK"));
         }}
         sx={{
           p: 44,

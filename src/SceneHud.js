@@ -24,14 +24,14 @@ function addInputListeners(scene) {
     mainScene?.hero?.doAttack?.(1);
   });
   window.addEventListener(
-    "hero_attack",
+    "HERO_ATTACK",
     (e) => {
       mainScene?.hero?.doAttack?.(1);
     },
     scene
   );
   window.addEventListener(
-    "item_drag",
+    "ITEM_DRAG",
     (e) => {
       pointer.x = e?.detail.x;
       pointer.y = e?.detail.y;
