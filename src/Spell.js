@@ -24,7 +24,7 @@ class Spell extends Phaser.GameObjects.Container {
       if (spellName === "attack_left") {
         this.canHitSelf = false;
         this.spell.setTexture("misc-slash");
-        const rangeLeft = caster?.equipment?.handLeft?.stats?.range * 2 || 1;
+        const rangeLeft = caster?.equipment?.handLeft?.stats?.range * 2 || caster?.body?.radius / 8;
         this.body.setCircle(rangeLeft * 16, -rangeLeft * 16, -rangeLeft * 16);
         this.spell.displayWidth = 50 * rangeLeft;
         this.spell.displayHeight = 50 * rangeLeft;
@@ -36,7 +36,8 @@ class Spell extends Phaser.GameObjects.Container {
       if (spellName === "attack_right") {
         this.canHitSelf = false;
         this.spell.setTexture("misc-slash");
-        const rangeRight = caster?.equipment?.handRight?.stats?.range * 2 || 1;
+        const rangeRight =
+          caster?.equipment?.handRight?.stats?.range * 2 || caster?.body?.radius / 8;
         this.body.setCircle(rangeRight * 16, -rangeRight * 16, -rangeRight * 16);
         this.spell.displayWidth = 50 * rangeRight;
         this.spell.displayHeight = 50 * rangeRight;

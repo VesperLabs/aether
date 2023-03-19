@@ -29,6 +29,7 @@ class SceneMain extends Phaser.Scene {
     const socket = scene?.socket;
 
     socket.on("update", (snapshot) => {
+      if (!snapshot?.state) return;
       SI.snapshot.add(snapshot);
       for (const loot of scene?.loots?.getChildren()) {
         if (!snapshot?.state?.loots?.some((l) => l?.id === loot?.id)) {
@@ -131,6 +132,7 @@ class SceneMain extends Phaser.Scene {
   update(time, delta) {
     const playerSnapshot = SI.calcInterpolation("x y", "players");
     const npcSnapshot = SI.calcInterpolation("x y", "npcs");
+
     if (!this.socket || !this?.hero?.body || !playerSnapshot) return;
     /* Update Player x and y */
     for (const s of playerSnapshot?.state) {
@@ -147,6 +149,11 @@ class SceneMain extends Phaser.Scene {
       player.vx = s.vx;
       player.vy = s.vy;
     }
+
+    moveHero(this, time);
+    enableDoors(this);
+
+    if (!npcSnapshot) return;
     /* Update NPC x and y */
     for (const s of npcSnapshot?.state) {
       const npc = getNpc(this, s.id);
@@ -156,8 +163,6 @@ class SceneMain extends Phaser.Scene {
       npc.vx = s.vx;
       npc.vy = s.vy;
     }
-    moveHero(this, time);
-    enableDoors(this);
   }
 }
 

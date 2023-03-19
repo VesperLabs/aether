@@ -95,8 +95,9 @@ function getHeroSpin(hero, point) {
   }
 }
 
-const isTouchScreen =
-  "ontouchstart" in window || navigator?.maxTouchPoints > 0 || navigator?.msMaxTouchPoints > 0;
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+  navigator.userAgent
+);
 
 export {
   addPlayer,
@@ -109,5 +110,5 @@ export {
   resetEntities,
   constrainVelocity,
   getHeroSpin,
-  isTouchScreen,
+  isMobile,
 };

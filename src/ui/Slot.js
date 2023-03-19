@@ -2,7 +2,7 @@ import React, { useState, useRef, useLayoutEffect } from "react";
 import { Box, Icon, ItemTooltip, theme } from "./";
 import { resolveAsset } from "../Assets";
 import { useAppContext } from "./App";
-import { isTouchScreen } from "../utils";
+import { isMobile } from "../utils";
 
 const STYLE_ABS = { top: 0, left: 0, position: "absoute" };
 const STYLE_EMPTY = (icon) => ({
@@ -25,7 +25,7 @@ const Slot = ({ sx, size = 52, item, location, icon, ...props }) => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [target, setTarget] = useState(null);
   const imageRef = useRef(null);
-  const { dropItem } = useItemEvents({ item, socket, location });
+  const { dropItem } = useItemEvents({ item, location });
 
   const handleMouseDown = (e) => {
     setPosition({
@@ -147,7 +147,7 @@ const Slot = ({ sx, size = 52, item, location, icon, ...props }) => {
     : {};
 
   const targetMoved = target?.dataset?.tooltipId !== item?.id;
-  const showTooltip = (dragging && !targetMoved) || (hovering && !isTouchScreen);
+  const showTooltip = (dragging && !targetMoved) || (hovering && !isMobile);
 
   return (
     <Box
@@ -197,10 +197,11 @@ const Slot = ({ sx, size = 52, item, location, icon, ...props }) => {
   );
 };
 
-function useItemEvents({ location, item, socket }) {
+function useItemEvents({ location, item }) {
+  const { player, socket } = useAppContext();
   return {
     dropItem: (target) => {
-      if (target?.nodeName == "CANVAS") {
+      if (target?.nodeName == "CANVAS" && !player?.state?.isDead) {
         socket.emit("dropItem", { item, location });
       }
     },
