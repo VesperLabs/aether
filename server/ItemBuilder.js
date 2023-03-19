@@ -82,7 +82,7 @@ const _itemList = {
           attackDelay: 250,
           minDamage: 5,
           maxDamage: 5,
-          range: 1,
+          range: 1.25,
         },
       },
       scythe: {
@@ -914,12 +914,12 @@ const ItemBuilder = {
 
     if (item.stats) {
       for (let key in item.stats) {
-        if (Number.isInteger(item.stats[key])) {
-          newStats[key] = item.stats[key];
-        } else if (Array.isArray(item.stats[key])) {
+        if (Array.isArray(item.stats[key])) {
           let low = item.stats[key][0];
           let high = item.stats[key][1];
           newStats[key] = Math.floor(Math.random() * (high - low + 1) + low);
+        } else {
+          newStats[key] = item.stats[key];
         }
       } //end for
     }

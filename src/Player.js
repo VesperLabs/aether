@@ -246,7 +246,10 @@ function checkIsFlash(p, delta) {
 
 function checkAttackReady(p, delta) {
   /* Let us attack again when it is ready */
-  if (Date.now() - p.state.lastAttack > delta + p.stats.attackDelay) {
+  // let attackDelay = 0;
+  // if (p.action === "attack_right") attackDelay = p?.equipment?.handRight?.stats?.attackDelay;
+  // if (p.action === "attack_left") attackDelay = p?.equipment?.handLeft?.stats?.attackDelay;
+  if (Date.now() - p.state.lastAttack > delta + p?.stats?.attackDelay) {
     p.state.isAttacking = false;
     if (p.action === "attack_right" && p.state.hasWeaponLeft && p?.isHero) {
       p.doAttack(2);

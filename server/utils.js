@@ -123,9 +123,9 @@ const baseUser = {
   },
   direction: "down",
   equipment: {
-    handRight: ItemBuilder.buildItem("weapon", "common", "katar"),
-    handLeft: null,
-    //handLeft: ItemBuilder.buildItem("weapon", "unique", "soulEdge"),
+    handRight: ItemBuilder.buildItem("weapon", "rare", "katar"),
+    //handLeft: null,
+    handLeft: ItemBuilder.buildItem("weapon", "rare", "gladius"),
     helmet: ItemBuilder.buildItem("helmet", "unique", "tudwicksCap"),
     accessory: ItemBuilder.buildItem("accessory", "unique", "compoundLenses"),
     pants: ItemBuilder.buildItem("pants", "magic", "clothPants"),
