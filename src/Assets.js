@@ -446,8 +446,6 @@ const assetList = [
   },
 ];
 
-const getAssetByTextureName = (name) => assetList?.find((a) => a?.texture === name);
-
 /* Resolves the right asset compensating for user profile attributes */
 const resolveAsset = (item, user) => {
   let textureName = "";
@@ -476,4 +474,4 @@ const resolveAsset = (item, user) => {
   return returnAsset;
 };
 
-export { assetList, resolveAsset, getAssetByTextureName };
+export { assetList, resolveAsset };

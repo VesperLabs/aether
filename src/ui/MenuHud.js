@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from "react";
 import { Box, useAppContext } from "./";
-import { resolveAsset, getAssetByTextureName } from "../Assets";
+import { tintCanvas, imageToCanvas } from "../utils";
+import { assetList } from "../Assets";
 
 const PORTRAIT_SIZE = 50;
 
@@ -15,11 +16,11 @@ function CanvasPreview({ assets }) {
     const loadImages = async () => {
       for (const asset of assets) {
         const img = new Image();
-        const [x, y, w, h] = asset.previewRect;
-
+        const [x, y, w, h] = [0, 160, 80, 80];
         img.src = asset.src;
         await img.decode();
-        ctx.drawImage(img, x, y, w, h, 0, 0, w, h);
+        const tintedCanvas = tintCanvas(imageToCanvas(img), asset?.tint);
+        ctx.drawImage(tintedCanvas, x, y, w, h, 0, 0, w, h);
       }
     };
 
@@ -30,7 +31,7 @@ function CanvasPreview({ assets }) {
     <Box
       as="canvas"
       sx={{
-        transform: "translate(-50%, 0) scale(2)",
+        transform: "translate(-51%, 5%) scale(2)",
         imageRendering: "pixelated",
         position: "absolute",
         left: "50%",
@@ -41,19 +42,33 @@ function CanvasPreview({ assets }) {
   );
 }
 
+const getAssetProps = (name, tint) => {
+  const asset = assetList?.find((a) => a?.texture === name);
+  return { ...asset, tint };
+};
+
 const Portrait = () => {
   const { player } = useAppContext();
   if (!player?.profile) return;
   const { race, gender } = player?.profile;
-  const faceTexture = player?.profile?.face?.texture;
-  const hairTexture = player?.profile?.hair?.texture;
-  const skin = getAssetByTextureName(race);
-  const chest = getAssetByTextureName(`${race}-${gender}-chest-bare`);
-  const face = getAssetByTextureName(`${race}-${faceTexture}`);
-  const hair = getAssetByTextureName(`${race}-${hairTexture}`);
+  const playerFace = player?.profile?.face;
+  const playerHair = player?.profile?.hair;
+  const playerAccessory = player?.equipment?.accessory;
+  const playerArmor = player?.equipment?.armor;
+  const playerHelmet = player?.equipment?.helmet;
+  const skin = getAssetProps(race, player?.profile?.tint);
+  const chest = getAssetProps(`${race}-${gender}-chest-bare`, player?.profile?.tint);
+  const face = getAssetProps(`${race}-${playerFace?.texture}`, playerFace?.tint);
+  const hair = getAssetProps(`${race}-${playerHair?.texture}`, playerHair?.tint);
+  const accessory = getAssetProps(`${race}-${playerAccessory?.texture}`, playerAccessory?.tint);
+  const armor = getAssetProps(`${race}-${gender}-${playerArmor?.texture}`, playerArmor?.tint);
+  const helmet = getAssetProps(`${race}-${playerHelmet?.texture}`, playerHelmet?.tint);
+  const assets = [skin, chest, face, hair, armor, helmet, accessory]?.filter(Boolean);
   return (
     <Box
       sx={{
+        border: `1px solid #FFF`,
+        boxShadow: `0px 0px 0px 1px #000`,
         borderRadius: "100%",
         width: PORTRAIT_SIZE,
         height: PORTRAIT_SIZE,
@@ -62,7 +77,7 @@ const Portrait = () => {
         overflow: "hidden",
       }}
     >
-      <CanvasPreview assets={[skin, chest, face, hair]} />
+      <CanvasPreview assets={assets} />
     </Box>
   );
 };
