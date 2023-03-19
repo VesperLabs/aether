@@ -107,8 +107,9 @@ const Slot = ({ sx, size = 52, item, location, icon, ...props }) => {
       canvas.width = w;
       canvas.height = h;
       ctx.drawImage(img, x, y, w, h, 0, 0, w, h);
-      const trimmedCanvas = trimAndTintCanvas(canvas, item?.tint);
-      setImageData(trimmedCanvas.toDataURL("image/png"));
+      const trimmedCanvas = trimCanvas(canvas);
+      const tintedCanvas = tintCanvas(trimmedCanvas, item?.tint);
+      setImageData(tintedCanvas.toDataURL("image/png"));
     };
 
     img.src = asset.src;
@@ -208,11 +209,8 @@ function useItemEvents({ location, item }) {
   };
 }
 
-function trimAndTintCanvas(c, tint = "FFFFFF") {
+function trimCanvas(c) {
   let ctx = c.getContext("2d"),
-    copy = document.createElement("canvas").getContext("2d"),
-    copy2 = document.createElement("canvas").getContext("2d"),
-    copy3 = document.createElement("canvas").getContext("2d"),
     pixels = ctx.getImageData(0, 0, c.width, c.height),
     l = pixels.data.length,
     i,
@@ -256,7 +254,25 @@ function trimAndTintCanvas(c, tint = "FFFFFF") {
 
   var trimHeight = bound.bottom + 1 - bound.top,
     trimWidth = bound.right + 1 - bound.left,
-    trimmed = ctx.getImageData(bound.left, bound.top, trimWidth, trimHeight);
+    trimmed = ctx.getImageData(bound.left, bound.top, trimWidth, trimHeight),
+    copy = document.createElement("canvas").getContext("2d");
+
+  copy.canvas.width = trimWidth;
+  copy.canvas.height = trimHeight;
+  copy.putImageData(trimmed, 0, 0);
+  return copy.canvas;
+}
+
+function tintCanvas(c, tint = "0xFFFFFF") {
+  let ctx = c.getContext("2d"),
+    copy = document.createElement("canvas").getContext("2d"),
+    copy2 = document.createElement("canvas").getContext("2d"),
+    copy3 = document.createElement("canvas").getContext("2d");
+
+  const trimWidth = c?.width;
+  const trimHeight = c?.height;
+
+  const trimmed = ctx.getImageData(0, 0, trimWidth, trimHeight);
 
   copy.canvas.width = trimWidth;
   copy.canvas.height = trimHeight;

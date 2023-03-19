@@ -446,6 +446,8 @@ const assetList = [
   },
 ];
 
+const getAssetByTextureName = (name) => assetList?.find((a) => a?.texture === name);
+
 /* Resolves the right asset compensating for user profile attributes */
 const resolveAsset = (item, user) => {
   let textureName = "";
@@ -461,17 +463,17 @@ const resolveAsset = (item, user) => {
         textureName = texture;
         break;
       case "armor":
-        textureName = user.profile.race + "-" + user.profile.gender + "-" + texture;
+        textureName = user?.profile?.race + "-" + user?.profile?.gender + "-" + texture;
         break;
       default:
-        textureName = user.profile.race + "-" + texture;
+        textureName = user?.profile?.race + "-" + texture;
         break;
     }
-    if (textureName === asset.texture) {
+    if (textureName === asset?.texture) {
       returnAsset = asset;
     }
   });
   return returnAsset;
 };
 
-export { assetList, resolveAsset };
+export { assetList, resolveAsset, getAssetByTextureName };

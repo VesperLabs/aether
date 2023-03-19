@@ -17,4 +17,5 @@ export { default as Slot } from "./Slot";
 export { default as ItemTooltip } from "./ItemTooltip";
 export { default as MenuEquipment } from "./MenuEquipment";
 export { default as MenuInventory } from "./MenuInventory";
+export { default as MenuHud } from "./MenuHud";
 export { useAppContext } from "./App";

@@ -1,5 +1,15 @@
 import React, { useEffect, useState, createContext, useContext } from "react";
-import { ThemeProvider, Box, Button, theme, Flex, Icon, MenuEquipment, MenuInventory } from "./";
+import {
+  ThemeProvider,
+  Box,
+  Button,
+  theme,
+  Flex,
+  Icon,
+  MenuEquipment,
+  MenuInventory,
+  MenuHud,
+} from "./";
 
 const AppContext = createContext();
 
@@ -9,11 +19,9 @@ export const useAppContext = () => {
 
 function App({ socket, debug }) {
   const [isConnected, setIsConnected] = useState(true);
-  const [player, setPlayer] = useState({});
+  const [player, setPlayer] = useState();
   const [tabEquipment, setTabEquipment] = useState(false);
   const [tabInventory, setTabInventory] = useState(false);
-
-  const hasOpenTab = !tabInventory && !tabEquipment;
 
   useEffect(() => {
     socket.on("connect", () => {
@@ -52,6 +60,7 @@ function App({ socket, debug }) {
         }}
       >
         <GameWrapper>
+          <MenuHud />
           <MenuBar />
         </GameWrapper>
       </AppContext.Provider>
@@ -59,6 +68,7 @@ function App({ socket, debug }) {
   );
 }
 
+/* Holds all HUD elements. Ignores clicks. */
 const GameWrapper = (props) => {
   return (
     <Box
