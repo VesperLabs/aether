@@ -16,20 +16,20 @@ class LootManager {
     this.loots.push(scene.loots[id]);
     this.scene.io.to(room?.name).emit("lootSpawned", { loot: scene.loots[id], npcId });
   }
+  remove(id) {
+    const foundIndex = this?.loots?.map((loot) => loot.id).indexOf(id);
+    if (foundIndex) this?.loots.splice(foundIndex, 1);
+    if (this.scene.loots[id]) delete this.scene.loots[id];
+  }
   expireLoots() {
     const now = Date.now();
-    const { loots, lootExpireTime, scene } = this;
+    const { loots, lootExpireTime } = this;
     for (var i = 0; i < loots.length; i++) {
       if (now - loots[i].dropTime > lootExpireTime) {
         const loot = loots[i];
-        if (loots[i]) loots.splice(i, 1);
-        if (scene.loots[loot?.id]) delete scene.loots[loot?.id];
+        this.remove(loot?.id);
       }
     }
-  }
-  remove(id) {
-    const { scene, room } = this;
-    room.removeLoot(scene.loots[id]);
   }
 }
 

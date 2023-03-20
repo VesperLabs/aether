@@ -86,6 +86,36 @@ class ServerScene extends Phaser.Scene {
         socket.to(player.roomName).emit("playerAttack", { socketId, count, direction });
       });
 
+      socket.on("grabLoot", ({ lootId, direction }) => {
+        const player = scene.players[socketId];
+        const loot = scene.loots[lootId] ? JSON.parse(JSON.stringify(scene.loots[lootId])) : null;
+        const item = loot?.item;
+        if (!loot || !player || !item) return;
+        /* Face the loot */
+        player.direction = direction;
+        /* TODO: Check inventory has space */
+        /* Delete loot from server */
+        scene.roomManager.rooms[player?.roomName].lootManager.remove(lootId);
+        /* Check where to put loot */
+        if (item.type == "stackable") {
+          let foundItem = player.findInventoryItemById(item.id);
+          if (foundItem) {
+            foundItem.amount = (foundItem.amount || 0) + (item?.amount || 0);
+          } else {
+            player.inventory.push(item);
+          }
+        } else {
+          player.inventory.push(item);
+        }
+        /* Save player */
+        scene.db.updateUser(player);
+        io.to(player.roomName).emit("lootGrabbed", {
+          socketId,
+          lootId,
+          player: getCharacterState(player),
+        });
+      });
+
       socket.on("respawn", () => {
         const player = getCharacterState(scene.players[socketId]);
         player.state.isDead = false;
@@ -172,6 +202,14 @@ class ServerScene extends Phaser.Scene {
           found = player?.findEquipmentById(item?.id);
           /* Remove it from the players equipment */
           player?.clearEquipmentSlot(found?.slotName);
+          player?.calculateStats();
+        }
+
+        /* If the item was dropped from inventory find it and what slot it came from */
+        if (location === "inventory") {
+          found = { item: player?.findInventoryItemById(item?.id) };
+          /* Remove it from the players inventory */
+          player?.deleteInventoryItemAtId(item?.id);
           player?.calculateStats();
         }
 

@@ -10,6 +10,7 @@ class Character extends Phaser.GameObjects.Container {
       isHero = false,
       room,
       equipment = {},
+      inventory = [],
       profile,
       stats = {},
       bubbleMessage,
@@ -56,6 +57,7 @@ class Character extends Phaser.GameObjects.Container {
     };
     this.profile = profile;
     this.equipment = equipment;
+    this.inventory = inventory;
     this.baseStats = baseStats;
     this.stats = stats;
     this.bubbleMessage = bubbleMessage;

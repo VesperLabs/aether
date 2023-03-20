@@ -680,7 +680,7 @@ const _itemList = {
         name: "Blue Sporangium",
         slot: "stackable",
         texture: "stackable-bsporangium",
-        tint: "0x6666FF",
+        tint: "0x88DDFF",
         type: "stackable",
         effects: {
           hp: 15,

@@ -20,7 +20,7 @@ export const useAppContext = () => {
 
 function App({ socket, debug, game }) {
   const [isConnected, setIsConnected] = useState(true);
-  const [player, setPlayer] = useState();
+  const [hero, setHero] = useState();
   const [tabEquipment, setTabEquipment] = useState(false);
   const [tabInventory, setTabInventory] = useState(false);
 
@@ -37,25 +37,33 @@ function App({ socket, debug, game }) {
       const { players, socketId } = payload;
       const player = players?.find((p) => p?.socketId === socketId);
       localStorage.setItem("socketId", socketId);
-      setPlayer(player);
+      setHero(player);
     };
 
     const playerUpdate = (player = {}) => {
       const socketId = localStorage.getItem("socketId");
       if (socketId === player?.socketId) {
-        setPlayer(player);
+        setHero(player);
+      }
+    };
+
+    const lootGrabbed = ({ player }) => {
+      const socketId = localStorage.getItem("socketId");
+      if (socketId === player?.socketId) {
+        setHero(player);
       }
     };
 
     const updateHud = () => {
       const hero = game.scene.getScene("SceneMain").hero;
-      setPlayer((prev) => ({ ...prev, state: hero?.state, stats: hero?.stats }));
+      setHero((prev) => ({ ...prev, state: hero?.state, stats: hero?.stats }));
     };
 
     socket.on("connect", connect);
     socket.on("disconnect", disconnect);
     socket.on("heroInit", heroInit);
     socket.on("playerUpdate", playerUpdate);
+    socket.on("lootGrabbed", lootGrabbed);
     window.addEventListener("UPDATE_HUD", updateHud);
     window.addEventListener("HERO_RESPAWN", updateHud);
     return () => {
@@ -63,12 +71,13 @@ function App({ socket, debug, game }) {
       socket.off("disconnect", disconnect);
       socket.off("heroInit", heroInit);
       socket.off("playerUpdate", playerUpdate);
+      socket.on("lootGrabbed", lootGrabbed);
       window.removeEventListener("UPDATE_HUD", updateHud);
       window.removeEventListener("HERO_RESPAWN", updateHud);
     };
   }, []);
 
-  if (!player) return;
+  if (!hero) return;
 
   return (
     <ThemeProvider theme={theme}>
@@ -80,14 +89,14 @@ function App({ socket, debug, game }) {
           setTabInventory,
           tabEquipment,
           tabInventory,
-          player,
+          hero,
           socket,
           debug,
           game,
         }}
       >
         <GameWrapper>
-          {player?.state?.isDead && <ModalRespawn />}
+          {hero?.state?.isDead && <ModalRespawn />}
           <MenuHud />
           <MenuBar />
         </GameWrapper>
@@ -119,21 +128,35 @@ const GameWrapper = (props) => {
   );
 };
 
-const AttackPad = () => {
+const SkillButtons = () => {
   return (
     <Flex
       sx={{
+        gap: 2,
         p: 2,
         justifyContent: "end",
+        alignItems: "flex-end",
       }}
     >
+      <Button
+        variant="menu"
+        onTouchStart={(e) => {
+          window.dispatchEvent(new Event("HERO_GRAB"));
+        }}
+        sx={{
+          p: 24,
+          borderRadius: "100%",
+        }}
+      >
+        <Icon icon="../assets/icons/grab.png" />
+      </Button>
       <Button
         variant="menu"
         onTouchStart={(e) => {
           window.dispatchEvent(new Event("HERO_ATTACK"));
         }}
         sx={{
-          p: 44,
+          p: 32,
           borderRadius: "100%",
         }}
       >
@@ -158,7 +181,7 @@ const MenuBar = () => {
         boxSizing: "border-box",
       }}
     >
-      <AttackPad />
+      <SkillButtons />
       <MenuEquipment />
       <MenuInventory />
       <Flex sx={{ gap: 1, alignItems: "center", bg: "shadow.10", p: 2 }}>

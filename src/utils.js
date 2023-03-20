@@ -73,7 +73,7 @@ function constrainVelocity(sprite, maxVelocity) {
   }
 }
 
-function getHeroSpin(hero, point) {
+function getSpinDirection(hero, point) {
   const dx = point.x - hero.x;
   const dy = point.y - hero.y;
 
@@ -194,6 +194,12 @@ function tintCanvas(c, tint = "0xFFFFFF") {
   return copy.canvas;
 }
 
+function distanceTo(first, second) {
+  let dx = second?.x - first?.x;
+  let dy = second?.y - first?.y;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
 export {
   addPlayer,
   removePlayer,
@@ -204,9 +210,10 @@ export {
   getLoot,
   resetEntities,
   constrainVelocity,
-  getHeroSpin,
+  getSpinDirection,
   isMobile,
   trimCanvas,
   tintCanvas,
   imageToCanvas,
+  distanceTo,
 };

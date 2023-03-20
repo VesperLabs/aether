@@ -14,6 +14,24 @@ class Player extends Character {
     ) || [null, null];
     return { item: foundItem, slotName };
   }
+  findInventoryItemById(id) {
+    let returnItem = null;
+    for (var i = 0; i < this.inventory.length; i++) {
+      if (this.inventory[i].id == id) {
+        returnItem = this.inventory[i];
+        break;
+      }
+    }
+    return returnItem;
+  }
+  deleteInventoryItemAtId(id) {
+    for (var i = 0; i < this.inventory.length; i++) {
+      if (this.inventory[i].id == id) {
+        delete this.inventory.splice(i, 1);
+        break;
+      }
+    }
+  }
   update() {
     this.doRegen();
   }

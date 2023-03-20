@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { isMobile, getHeroSpin } from "./utils";
+import { isMobile, getSpinDirection } from "./utils";
 class SceneHud extends Phaser.Scene {
   constructor(socket) {
     super({
@@ -31,12 +31,19 @@ function addInputListeners(scene) {
     scene
   );
   window.addEventListener(
+    "HERO_GRAB",
+    (e) => {
+      mainScene?.hero?.doGrab?.();
+    },
+    scene
+  );
+  window.addEventListener(
     "ITEM_DRAG",
     (e) => {
       pointer.x = e?.detail.x;
       pointer.y = e?.detail.y;
       const cursorPoint = pointer.positionToCamera(mainScene.cameras.main);
-      const direction = getHeroSpin(mainScene?.hero, cursorPoint);
+      const direction = getSpinDirection(mainScene?.hero, cursorPoint);
       if (mainScene?.hero?.direction !== direction) {
         scene.socket.emit("changeDirection", direction);
       }

@@ -4,6 +4,7 @@ import Bubble from "./Bubble";
 import Spell from "./Spell";
 import Bar from "./Bar";
 import Damage from "./Damage";
+import { distanceTo, getSpinDirection } from "./utils";
 const { Sprite, BitmapText } = Phaser.GameObjects;
 const BLANK_TEXTURE = "human-blank";
 
@@ -24,6 +25,7 @@ class Player extends Character {
 
   updateData(data) {
     this.equipment = data?.equipment;
+    this.inventory = data?.inventory;
     this.profile = data?.profile;
     this.stats = data?.stats;
     this.drawCharacterFromUserData();
@@ -122,6 +124,28 @@ class Player extends Character {
       if (this.isHero) {
         this.scene.socket.emit("attack", { count, direction: this.direction });
       }
+    }
+  }
+  doGrab() {
+    const GRAB_RANGE = 32;
+    const { scene } = this;
+    const loots = scene.loots?.getChildren?.();
+
+    let closestLoot;
+    let closestDistance = Infinity;
+    /* Look for the nearest loots */
+    loots.forEach((loot) => {
+      const distance = distanceTo(loot, this);
+      if (distance < closestDistance) {
+        closestLoot = loot;
+        closestDistance = distance;
+      }
+    });
+
+    if (closestDistance <= GRAB_RANGE) {
+      /* Spin hero toward the loot, send it all the API */
+      this.direction = getSpinDirection(this, closestLoot);
+      this.scene.socket.emit("grabLoot", { lootId: closestLoot?.id, direction: this.direction });
     }
   }
   castSpell(spellData) {

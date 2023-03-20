@@ -18,7 +18,7 @@ const BLANK_IMAGE =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 
 const Slot = ({ sx, size = 52, item, location, icon, ...props }) => {
-  const { player, socket } = useAppContext();
+  const { hero } = useAppContext();
   const [imageData, setImageData] = useState(BLANK_IMAGE);
   const [dragging, setDragging] = useState(false);
   const [hovering, setHovering] = useState(false);
@@ -95,7 +95,7 @@ const Slot = ({ sx, size = 52, item, location, icon, ...props }) => {
   /* Loads the item canvas data out of the texture */
   useLayoutEffect(() => {
     if (!item) return;
-    const asset = resolveAsset(item, player);
+    const asset = resolveAsset(item, hero);
     if (!asset) return;
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
@@ -199,10 +199,10 @@ const Slot = ({ sx, size = 52, item, location, icon, ...props }) => {
 };
 
 function useItemEvents({ location, item }) {
-  const { player, socket } = useAppContext();
+  const { hero, socket } = useAppContext();
   return {
     dropItem: (target) => {
-      if (target?.nodeName == "CANVAS" && !player?.state?.isDead) {
+      if (target?.nodeName == "CANVAS" && !hero?.state?.isDead) {
         socket.emit("dropItem", { item, location });
       }
     },

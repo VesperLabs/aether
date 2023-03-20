@@ -46,20 +46,20 @@ function CanvasPreview({ assets }) {
 }
 
 const Portrait = () => {
-  const { player } = useAppContext();
-  const { race, gender } = player?.profile;
-  const playerFace = player?.profile?.face;
-  const playerHair = player?.profile?.hair;
-  const playerAccessory = player?.equipment?.accessory;
-  const playerArmor = player?.equipment?.armor;
-  const playerHelmet = player?.equipment?.helmet;
-  const skin = getAssetProps(race, player?.profile?.tint);
-  const chest = getAssetProps(`${race}-${gender}-chest-bare`, player?.profile?.tint);
-  const face = getAssetProps(`${race}-${playerFace?.texture}`, playerFace?.tint);
-  const hair = getAssetProps(`${race}-${playerHair?.texture}`, playerHair?.tint);
-  const accessory = getAssetProps(`${race}-${playerAccessory?.texture}`, playerAccessory?.tint);
-  const armor = getAssetProps(`${race}-${gender}-${playerArmor?.texture}`, playerArmor?.tint);
-  const helmet = getAssetProps(`${race}-${playerHelmet?.texture}`, playerHelmet?.tint);
+  const { hero } = useAppContext();
+  const { race, gender } = hero?.profile;
+  const heroFace = hero?.profile?.face;
+  const heroHair = hero?.profile?.hair;
+  const heroAccessory = hero?.equipment?.accessory;
+  const heroArmor = hero?.equipment?.armor;
+  const heroHelmet = hero?.equipment?.helmet;
+  const skin = getAssetProps(race, hero?.profile?.tint);
+  const chest = getAssetProps(`${race}-${gender}-chest-bare`, hero?.profile?.tint);
+  const face = getAssetProps(`${race}-${heroFace?.texture}`, heroFace?.tint);
+  const hair = getAssetProps(`${race}-${heroHair?.texture}`, heroHair?.tint);
+  const accessory = getAssetProps(`${race}-${heroAccessory?.texture}`, heroAccessory?.tint);
+  const armor = getAssetProps(`${race}-${gender}-${heroArmor?.texture}`, heroArmor?.tint);
+  const helmet = getAssetProps(`${race}-${heroHelmet?.texture}`, heroHelmet?.tint);
   const assets = [skin, chest, face, hair, armor, helmet, accessory]?.filter(Boolean);
   return (
     <Box
@@ -96,8 +96,8 @@ const getAssetProps = (name, tint) => {
 };
 
 const UserName = ({ sx }) => {
-  const { player } = useAppContext();
-  return <Box sx={{ ...sx }}>{player?.profile?.userName}</Box>;
+  const { hero } = useAppContext();
+  return <Box sx={{ ...sx }}>{hero?.profile?.userName}</Box>;
 };
 
 const Bar = ({ width = 100, height = 10, color = "red", min, max, sx }) => {
@@ -121,14 +121,14 @@ const Bar = ({ width = 100, height = 10, color = "red", min, max, sx }) => {
 };
 
 const MenuHud = () => {
-  const { player } = useAppContext();
+  const { hero } = useAppContext();
   return (
     <Flex sx={{ gap: 1, top: 2, left: 2, position: "absolute" }}>
       <Portrait />
       <Flex sx={{ flexDirection: "column", gap: "1px" }}>
         <UserName />
-        <Bar color="red.700" max={player?.stats?.maxHp} min={player?.stats?.hp} />
-        <Bar color="blue.500" max={player?.stats?.maxMp} min={player?.stats?.mp} />
+        <Bar color="red.700" max={hero?.stats?.maxHp} min={hero?.stats?.hp} />
+        <Bar color="blue.500" max={hero?.stats?.maxMp} min={hero?.stats?.mp} />
       </Flex>
     </Flex>
   );

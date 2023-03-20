@@ -55,6 +55,7 @@ function getCharacterState(p) {
     stats: p?.stats,
     state: p?.state,
     equipment: p?.equipment,
+    inventory: p?.inventory,
     profile: p?.profile,
     bubbleMessage: p?.bubbleMessage,
     kind: p?.kind,
@@ -134,6 +135,7 @@ const baseUser = {
     ring2: ItemBuilder.buildItem("ring", "set", "timmysSignet"),
     amulet: ItemBuilder.buildItem("amulet", "set", "timmysChain"),
   },
+  inventory: [ItemBuilder.buildItem("weapon", "rare", "katar")],
   profile: {
     userName: "Player1",
     gender: "female",

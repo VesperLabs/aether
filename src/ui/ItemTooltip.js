@@ -6,8 +6,8 @@ import "react-tooltip/dist/react-tooltip.css";
 const Label = (props) => <Text sx={{ fontWeight: "normal" }} {...props} />;
 
 const ItemTooltip = ({ item, show }) => {
-  const { player } = useAppContext();
-  const isSetActive = player?.state?.activeSets?.includes?.(item?.set);
+  const { hero } = useAppContext();
+  const isSetActive = hero?.state?.activeSets?.includes?.(item?.set);
   if (!item) return;
   return (
     <Tooltip
@@ -80,7 +80,7 @@ const ItemTooltip = ({ item, show }) => {
         <Divider />
         <Flex sx={{ alignItems: "center", gap: 1 }}>
           <Icon icon="../assets/icons/gold.png" size={16} />
-          {item?.cost * (player?.inflation || 1)}
+          {item?.cost * (hero?.inflation || 1)}
         </Flex>
       </Flex>
     </Tooltip>

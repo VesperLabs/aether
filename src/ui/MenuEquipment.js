@@ -2,8 +2,8 @@ import React from "react";
 import { Flex, Text, useAppContext, Slot } from "./";
 
 const MenuEquipment = () => {
-  const { player, tabEquipment: show } = useAppContext();
-  const equipment = Object.entries(player?.equipment || {});
+  const { hero, tabEquipment: show } = useAppContext();
+  const equipment = Object.entries(hero?.equipment || {});
   return (
     <Flex
       sx={{
@@ -13,8 +13,10 @@ const MenuEquipment = () => {
         justifyContent: "end",
         display: show ? "flex" : "none",
         bg: "shadow.10",
-        zIndex: 3,
         pointerEvents: "all",
+        "&:hover": {
+          zIndex: 999,
+        },
       }}
     >
       <Text>Equipment</Text>

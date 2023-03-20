@@ -10,7 +10,7 @@ import {
   addNpc,
   addLoot,
   getLoot,
-  getHeroSpin,
+  getSpinDirection,
 } from "./utils";
 const SI = new SnapshotInterpolation(process.env.SERVER_FPS); // the server's fps is 15
 
@@ -89,6 +89,13 @@ class SceneMain extends Phaser.Scene {
 
     socket.on("playerUpdate", (userData) => {
       const player = getPlayer(scene, userData.socketId);
+      player.updateData(userData);
+    });
+
+    socket.on("lootGrabbed", ({ socketId, lootId, player: userData }) => {
+      const player = getPlayer(scene, socketId);
+      const loot = getLoot(scene, lootId);
+      loot?.destroy(true);
       player.updateData(userData);
     });
 
@@ -223,7 +230,7 @@ function moveHero(scene, time) {
   if (joystick.deltaX || joystick.deltaY) {
     vx = joystick.deltaX * speed;
     vy = joystick.deltaY * speed;
-    hero.direction = getHeroSpin(hero, { x: hero.x + vx, y: hero.y + vy });
+    hero.direction = getSpinDirection(hero, { x: hero.x + vx, y: hero.y + vy });
   }
 
   if (hero.state.isAttacking) {

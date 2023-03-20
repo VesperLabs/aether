@@ -2,8 +2,8 @@ import React from "react";
 import { Flex, Text, useAppContext, Slot } from "./";
 
 const MenuInventory = () => {
-  const { player, tabInventory: show } = useAppContext();
-  const inventory = Object.entries(player?.inventory || {});
+  const { hero, tabInventory: show } = useAppContext();
+  const inventory = hero?.inventory || [];
   const maxInventory = new Array(30).fill(null);
   return (
     <Flex
@@ -15,12 +15,15 @@ const MenuInventory = () => {
         display: show ? "flex" : "none",
         bg: "shadow.10",
         pointerEvents: "all",
+        "&:hover": {
+          zIndex: 999,
+        },
       }}
     >
       <Text>Inventory</Text>
       <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", maxWidth: 592 }}>
-        {maxInventory?.map((i) => (
-          <Slot location="inventory" icon="./assets/icons/pouch.png" item={inventory?.[i]} />
+        {maxInventory?.map((item, idx) => (
+          <Slot location="inventory" icon="./assets/icons/pouch.png" item={inventory?.[idx]} />
         ))}
       </Flex>
     </Flex>
