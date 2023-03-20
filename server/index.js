@@ -23,6 +23,8 @@ import {
   getDoor,
   removePlayer,
   baseUser,
+  cloneObject,
+  checkSlotsMatch,
 } from "./utils";
 import { initDatabase } from "./db";
 import RoomManager from "./RoomManager";
@@ -56,8 +58,8 @@ class ServerScene extends Phaser.Scene {
       const socketId = socket.id;
 
       socket.on("login", async (email = "arf@arf.arf") => {
-        //const user = await scene.db.getUserByEmail(email);
-        const user = JSON.parse(JSON.stringify(baseUser));
+        const user = await scene.db.getUserByEmail(email);
+        //const user = cloneObject(baseUser);
         if (!user) return console.log("❌ Player not found in db");
 
         const player = scene.roomManager.rooms[user.roomName].playerManager.create({
@@ -88,7 +90,7 @@ class ServerScene extends Phaser.Scene {
 
       socket.on("grabLoot", ({ lootId, direction }) => {
         const player = scene.players[socketId];
-        const loot = scene.loots[lootId] ? JSON.parse(JSON.stringify(scene.loots[lootId])) : null;
+        const loot = cloneObject(scene.loots[lootId]);
         const item = loot?.item;
         if (!loot || !player || !item) return;
         /* Face the loot */
@@ -102,10 +104,10 @@ class ServerScene extends Phaser.Scene {
           if (foundItem) {
             foundItem.amount = (foundItem.amount || 0) + (item?.amount || 0);
           } else {
-            player.inventory.push(item);
+            player.addInventoryItem(item);
           }
         } else {
-          player.inventory.push(item);
+          player.addInventoryItem(item);
         }
         /* Save player */
         scene.db.updateUser(player);
@@ -199,15 +201,16 @@ class ServerScene extends Phaser.Scene {
         let found = null;
         /* If the item was dropped from equipment find it and what slot it came from */
         if (location === "equipment") {
-          found = player?.findEquipmentById(item?.id);
+          const { f, slotName } = player?.findEquipmentById(item?.id);
+          found = f;
           /* Remove it from the players equipment */
-          player?.clearEquipmentSlot(found?.slotName);
+          player?.clearEquipmentSlot(slotName);
           player?.calculateStats();
         }
 
         /* If the item was dropped from inventory find it and what slot it came from */
         if (location === "inventory") {
-          found = { item: player?.findInventoryItemById(item?.id) };
+          found = player?.findInventoryItemById(item?.id);
           /* Remove it from the players inventory */
           player?.deleteInventoryItemAtId(item?.id);
           player?.calculateStats();
@@ -223,8 +226,73 @@ class ServerScene extends Phaser.Scene {
         /* Spawn the loot on the server */
         scene.roomManager.rooms[player.roomName].lootManager.create({
           ...coords,
-          item: found?.item,
+          item: found,
         });
+        /* Save the users data */
+        scene.db.updateUser(player);
+        io.to(player?.roomName).emit("playerUpdate", getCharacterState(player));
+      });
+
+      socket.on("moveItem", ({ to, from }) => {
+        /* TODO: Need to ensure items and their slots match up */
+        const player = scene?.players?.[socketId];
+        let toItem, fromItem;
+        /* Clone the items we are interacting with */
+        if (from?.location === "inventory") {
+          from.itemId = player?.inventory?.[from?.slot]?.id;
+          fromItem = cloneObject(player?.findInventoryItemById(from?.itemId));
+        }
+        if (from?.location === "equipment") {
+          from.itemId = player?.equipment?.[from?.slot]?.id;
+          fromItem = cloneObject(player?.findEquipmentById(from?.itemId))?.item;
+        }
+        if (to?.location === "inventory") {
+          to.itemId = player?.inventory?.[to?.slot]?.id;
+          toItem = cloneObject(player?.findInventoryItemById(to?.itemId));
+        }
+        if (to?.location === "equipment") {
+          to.itemId = player?.equipment?.[to?.slot]?.id;
+          toItem = cloneObject(player?.findEquipmentById(to?.itemId))?.item;
+        }
+
+        /* Same item, return */
+        if (from.itemId === to.itemId) return;
+
+        /* Inventory -> Inventory */
+        if (from?.location === "inventory" && to?.location === "inventory") {
+          player?.deleteInventoryItemAtId(from?.itemId);
+          player.inventory[to?.slot] = fromItem;
+          player.inventory[from?.slot] = toItem;
+        }
+
+        /* Equipment -> Inventory */
+        if (from?.location === "equipment" && to?.location === "inventory") {
+          /* Slots don't match */
+          if (toItem && fromItem && !checkSlotsMatch(toItem?.slot, from?.slot)) return;
+          player?.clearEquipmentSlot(from?.slot);
+          player.inventory[to?.slot] = fromItem;
+          player.equipment[from?.slot] = toItem;
+        }
+
+        /* Inventory -> Equipment */
+        if (from?.location === "inventory" && to?.location === "equipment") {
+          /* Slots don't match */
+          if (toItem && fromItem && !checkSlotsMatch(fromItem?.slot, to?.slot)) return;
+          player?.deleteInventoryItemAtId(from?.itemId);
+          player.equipment[to?.slot] = fromItem;
+          player.inventory[from?.slot] = toItem;
+        }
+
+        /* Equipment -> Equipment */
+        if (from?.location === "equipment" && to?.location === "equipment") {
+          /* Slots don't match */
+          if (toItem && fromItem && !checkSlotsMatch(fromItem?.slot, to?.slot)) return;
+          player?.clearEquipmentSlot(from?.slot);
+          player.equipment[to?.slot] = fromItem;
+          player.equipment[from?.slot] = toItem;
+        }
+
+        player?.calculateStats();
         /* Save the users data */
         scene.db.updateUser(player);
         io.to(player?.roomName).emit("playerUpdate", getCharacterState(player));

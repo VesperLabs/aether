@@ -17,7 +17,7 @@ const STYLE_NON_EMPTY = (rarity) => ({
 const BLANK_IMAGE =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 
-const Slot = ({ sx, size = 52, item, location, icon, ...props }) => {
+const Slot = ({ sx, size = 52, item, slotKey, location, icon, ...props }) => {
   const { hero } = useAppContext();
   const [imageData, setImageData] = useState(BLANK_IMAGE);
   const [dragging, setDragging] = useState(false);
@@ -25,7 +25,7 @@ const Slot = ({ sx, size = 52, item, location, icon, ...props }) => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [target, setTarget] = useState(null);
   const imageRef = useRef(null);
-  const { dropItem } = useItemEvents({ item, location });
+  const { dropItem } = useItemEvents({ item, location, slotKey });
 
   const handleMouseDown = (e) => {
     setPosition({
@@ -147,6 +147,11 @@ const Slot = ({ sx, size = 52, item, location, icon, ...props }) => {
       }
     : {};
 
+  const dataKeys = {
+    "data-location": location,
+    "data-slot-key": slotKey,
+  };
+
   const targetMoved = target?.dataset?.tooltipId !== item?.id;
   const showTooltip = (dragging && !targetMoved) || (hovering && !isMobile);
 
@@ -159,7 +164,7 @@ const Slot = ({ sx, size = 52, item, location, icon, ...props }) => {
         userSelect: "none",
         border: (t) => `1px solid ${t.colors.shadow[30]}`,
         borderRadius: 2,
-        pointerEvents: dragging ? "all" : "none",
+        pointerEvents: "all",
         overflow: dragging ? "visible" : "hidden",
         width: size,
         height: size,
@@ -167,6 +172,7 @@ const Slot = ({ sx, size = 52, item, location, icon, ...props }) => {
         ...(item?.rarity ? STYLE_NON_EMPTY(item?.rarity) : STYLE_EMPTY(icon)),
         ...sx,
       }}
+      {...dataKeys}
       {...mouseBinds}
       {...props}
     >
@@ -193,6 +199,7 @@ const Slot = ({ sx, size = 52, item, location, icon, ...props }) => {
               transform: dragging ? "scale(4,4)" : "scale(2,2)",
               imageRendering: "pixelated",
             }}
+            {...dataKeys}
           />
           <ItemTooltip item={item} show={showTooltip} />
         </>
@@ -201,12 +208,24 @@ const Slot = ({ sx, size = 52, item, location, icon, ...props }) => {
   );
 };
 
-function useItemEvents({ location, item }) {
+function useItemEvents({ location, slotKey, item }) {
   const { hero, socket } = useAppContext();
   return {
     dropItem: (target) => {
-      if (target?.nodeName == "CANVAS" && !hero?.state?.isDead) {
-        socket.emit("dropItem", { item, location });
+      if (hero?.state?.isDead) return;
+      /* If you drop an item on the ground */
+      if (target?.nodeName == "CANVAS") {
+        return socket.emit("dropItem", { item, location });
+      }
+      /* If you move an item in your inventory */
+      if (target?.dataset?.slotKey && target?.dataset?.slotKey !== slotKey) {
+        return socket.emit("moveItem", {
+          to: {
+            slot: target?.dataset?.slotKey,
+            location: target?.dataset?.location,
+          },
+          from: { slot: slotKey, location },
+        });
       }
     },
   };

@@ -60,7 +60,7 @@ const getDatabaseApi = (db) => ({
               exp: player?.stats?.exp,
             },
             equipment: player?.equipment,
-            //inventory: player.inventory,
+            inventory: player.inventory,
             baseStats: player?.baseStats,
             roomName: player?.room?.name,
           },

@@ -137,6 +137,7 @@ const baseUser = {
   },
   inventory: [
     ItemBuilder.buildItem("weapon", "rare", "katar"),
+    ItemBuilder.buildItem("weapon", "rare", "hammer"),
     ItemBuilder.buildItem("stackable", "common", "redApple", 10),
   ],
   profile: {
@@ -184,6 +185,21 @@ function distanceTo(first, second) {
   return Math.sqrt(dx * dx + dy * dy);
 }
 
+function cloneObject(obj) {
+  return obj ? JSON.parse(JSON.stringify(obj)) : null;
+}
+
+function checkSlotsMatch(s1, s2) {
+  const handNames = ["handLeft", "handRight"];
+  const ringNames = ["ring1", "ring2"];
+  if (s1 === s2) return true;
+  if (s1 === "hands" && handNames?.includes(s2)) return true;
+  if (s2 === "hands" && handNames?.includes(s1)) return true;
+  if (s1 === "ring" && ringNames?.includes(s2)) return true;
+  if (s2 === "ring" && ringNames?.includes(s1)) return true;
+  return false;
+}
+
 export {
   removePlayer,
   getPlayer,
@@ -196,5 +212,7 @@ export {
   randomNumber,
   getCharacterDirection,
   distanceTo,
+  cloneObject,
+  checkSlotsMatch,
   baseUser,
 };

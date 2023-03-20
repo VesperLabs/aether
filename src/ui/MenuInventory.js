@@ -23,7 +23,12 @@ const MenuInventory = () => {
       <Text>Inventory</Text>
       <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", maxWidth: 592 }}>
         {maxInventory?.map((item, idx) => (
-          <Slot location="inventory" icon="./assets/icons/pouch.png" item={inventory?.[idx]} />
+          <Slot
+            location="inventory"
+            slotKey={idx}
+            icon="./assets/icons/pouch.png"
+            item={inventory?.[idx]}
+          />
         ))}
       </Flex>
     </Flex>

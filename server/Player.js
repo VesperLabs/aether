@@ -17,7 +17,7 @@ class Player extends Character {
   findInventoryItemById(id) {
     let returnItem = null;
     for (var i = 0; i < this.inventory.length; i++) {
-      if (this.inventory[i].id == id) {
+      if (this.inventory[i]?.id === id) {
         returnItem = this.inventory[i];
         break;
       }
@@ -26,10 +26,23 @@ class Player extends Character {
   }
   deleteInventoryItemAtId(id) {
     for (var i = 0; i < this.inventory.length; i++) {
-      if (this.inventory[i].id == id) {
-        delete this.inventory.splice(i, 1);
+      if (this.inventory[i]?.id === id) {
+        this.inventory[i] = null;
         break;
       }
+    }
+  }
+  addInventoryItem(item) {
+    let itemAdded = false;
+    for (var i = 0; i < this.inventory.length; i++) {
+      if (!this.inventory[i]?.id) {
+        itemAdded = true;
+        this.inventory[i] = item;
+        break;
+      }
+    }
+    if (!itemAdded) {
+      this.inventory.push(item);
     }
   }
   update() {

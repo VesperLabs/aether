@@ -1,6 +1,7 @@
 /* This file and Diablo II are the main reason this game exists */
 import crypto from "crypto";
 import Item from "./Item.js";
+import { cloneObject } from "./utils";
 const _itemList = {
   weapon: {
     common: {
@@ -916,7 +917,7 @@ const ItemBuilder = {
         rarity == "magic" || rarity == "rare"
           ? _itemList[type]["common"][itemKey]
           : _itemList[type][rarity][itemKey];
-      item = JSON.parse(JSON.stringify(item));
+      item = cloneObject(item);
     } catch (e) {
       console.log(`🔧 Item not found for ${type} ${rarity} ${itemKey}`);
       return null;

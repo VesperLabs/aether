@@ -1,6 +1,6 @@
 import BaseCharacter from "../src/Character";
 import ItemBuilder from "./ItemBuilder";
-import { randomNumber } from "./utils";
+import { randomNumber, cloneObject } from "./utils";
 
 class Character extends BaseCharacter {
   constructor(scene, args) {
@@ -14,7 +14,7 @@ class Character extends BaseCharacter {
   calculateStats() {
     const { equipment } = this;
     let totalPercentStats = {};
-    let ns = JSON.parse(JSON.stringify(this.baseStats));
+    let ns = cloneObject(this.baseStats);
     let setList = {};
     let activeSets = [];
     this.stats = { hp: null, mp: null, exp: null };
