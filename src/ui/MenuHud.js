@@ -3,7 +3,7 @@ import { Box, useAppContext, Flex } from "./";
 import { tintCanvas, imageToCanvas } from "../utils";
 import { assetList } from "../Assets";
 
-const PORTRAIT_SIZE = 50;
+const PORTRAIT_SIZE = 54;
 
 function CanvasPreview({ assets }) {
   const [loading, setLoading] = useState(true);
@@ -34,7 +34,7 @@ function CanvasPreview({ assets }) {
     <Box
       as="canvas"
       sx={{
-        transform: "translate(-51%, 5%) scale(2)",
+        transform: "translate(-50%, 10%) scale(2)",
         imageRendering: "pixelated",
         position: "absolute",
         left: "50%",
@@ -73,13 +73,15 @@ const Portrait = () => {
       <Box
         sx={{
           border: `1px solid #FFF`,
-          borderRadius: 50,
+          borderRadius: PORTRAIT_SIZE,
           width: PORTRAIT_SIZE,
           height: PORTRAIT_SIZE,
           bg: "black",
           position: "relative",
           overflow: "hidden",
-          clipPath: "circle(25px at 25px 25px);",
+          clipPath: `circle(${PORTRAIT_SIZE / 2}px at ${PORTRAIT_SIZE / 2}px ${
+            PORTRAIT_SIZE / 2
+          }px)`,
         }}
       >
         <CanvasPreview assets={assets} />
@@ -98,7 +100,7 @@ const UserName = ({ sx }) => {
   return <Box sx={{ ...sx }}>{player?.profile?.userName}</Box>;
 };
 
-const Bar = ({ width = 100, height = 10, color = "red.300", min, max, sx }) => {
+const Bar = ({ width = 100, height = 10, color = "red", min, max, sx }) => {
   const percent = Math.round((min / max) * 100) + "%";
   return (
     <Box
@@ -125,7 +127,7 @@ const MenuHud = () => {
       <Portrait />
       <Flex sx={{ flexDirection: "column", gap: "1px" }}>
         <UserName />
-        <Bar color="red.500" max={player?.stats?.maxHp} min={player?.stats?.hp} />
+        <Bar color="red.700" max={player?.stats?.maxHp} min={player?.stats?.hp} />
         <Bar color="blue.500" max={player?.stats?.maxMp} min={player?.stats?.mp} />
       </Flex>
     </Flex>

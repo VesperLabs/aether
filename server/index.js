@@ -75,9 +75,7 @@ class ServerScene extends Phaser.Scene {
 
         socket.join(roomName);
         socket.emit("heroInit", {
-          players: getRoomState(scene, roomName)?.players,
-          npcs: getRoomState(scene, roomName)?.npcs,
-          loots: getRoomState(scene, roomName)?.loots,
+          ...getRoomState(scene, roomName),
           socketId,
         });
         socket.to(roomName).emit("playerJoin", getCharacterState(player));
@@ -117,10 +115,16 @@ class ServerScene extends Phaser.Scene {
           if (!ids?.includes(npc.id)) continue;
           const newHit = hero.calculateDamage(npc);
           if (newHit) hitList.push(newHit);
+          /* If we kill the NPC */
+          if (newHit?.type === "death") {
+            npc.dropLoot();
+          }
+          /* TODO: Gain exp here */
         }
         for (const player of players) {
           if (!ids?.includes(player.id)) continue;
           const newHit = hero.calculateDamage(player);
+
           if (newHit) hitList.push(newHit);
         }
         io.to(roomName).emit("assignDamage", hitList);
@@ -147,8 +151,7 @@ class ServerScene extends Phaser.Scene {
         socket.to(prev.destMap).emit("playerJoin", getCharacterState(player));
 
         socket.emit("heroInit", {
-          players: getRoomState(scene, prev.destMap)?.players,
-          npcs: getRoomState(scene, prev.destMap)?.npcs,
+          ...getRoomState(scene, prev.destMap),
           socketId,
         });
       });

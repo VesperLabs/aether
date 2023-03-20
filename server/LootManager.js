@@ -4,16 +4,17 @@ class LootManager {
   constructor(scene, room) {
     this.scene = scene;
     this.room = room;
-    this.lootExpireTime = 10000;
+    this.lootExpireTime = 300000; //5min;
     this.loots = [];
   }
-  create({ x, y, item }) {
+  create({ x, y, item, npcId }) {
+    /* Optional npcId to to drop locally on an npc. */
     if (!x || !y || !item) return;
     const { scene, room } = this;
     const id = crypto.randomUUID();
     scene.loots[id] = new Loot({ id, x, y, roomName: room?.name, item });
     this.loots.push(scene.loots[id]);
-    this.scene.io.to(room?.name).emit("lootSpawned", scene.loots[id]);
+    this.scene.io.to(room?.name).emit("lootSpawned", { loot: scene.loots[id], npcId });
   }
   expireLoots() {
     const now = Date.now();

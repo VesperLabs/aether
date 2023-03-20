@@ -123,8 +123,13 @@ class SceneMain extends Phaser.Scene {
       n.castSpell(spellData);
     });
 
-    this.socket.on("lootSpawned", (loot, npcId) => {
-      /* TODO: We will fake the loot pos when an enemy dies by overriding xy */
+    this.socket.on("lootSpawned", ({ loot, npcId }) => {
+      /*  We will fake the loot pos when an enemy dies by overriding xy */
+      const n = getNpc(scene, npcId);
+      if (n) {
+        loot.x = n.x;
+        loot.y = n.y;
+      }
       addLoot(scene, loot);
     });
 

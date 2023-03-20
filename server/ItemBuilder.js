@@ -224,6 +224,16 @@ const _itemList = {
           vitality: [3, 5],
         },
       },
+      theBunnyWhisker: {
+        ilvl: 1,
+        name: "The Bunny Whisker",
+        base: "helmet",
+        texture: "helmet-bunny",
+        slot: "helmet",
+        stats: {
+          speed: [30, 50],
+        },
+      },
     },
     set: {},
   },

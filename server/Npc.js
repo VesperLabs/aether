@@ -1,5 +1,6 @@
 import Character from "./Character";
-import { getCharacterDirection, distanceTo } from "./utils";
+import ItemBuilder from "./ItemBuilder";
+import { getCharacterDirection, distanceTo, randomNumber } from "./utils";
 const START_AGGRO_RANGE = 150;
 
 class Npc extends Character {
@@ -8,6 +9,7 @@ class Npc extends Character {
     this.scene = scene;
     this.state.isRobot = true;
     this.respawnTime = 10000;
+    this.drops = args?.drops;
   }
   setDead() {
     this.state.isDead = true;
@@ -138,6 +140,41 @@ class Npc extends Character {
     }
     this.bubbleMessage = null;
     this.body.setVelocity(this.vx, this.vy);
+  }
+  dropLoot(magicFind) {
+    const ilvl = 1 + Math.floor(this.stats.level / 10);
+    const mainDrop = ItemBuilder.rollDrop(ilvl, magicFind);
+    let runners = [];
+    if (mainDrop) {
+      runners.push(mainDrop);
+    }
+    if (this.drops) {
+      for (var i = 0; i < this.drops.length; i++) {
+        let rando = randomNumber(1, this.drops[i].chance);
+        if (rando == this.drops[i].chance) {
+          runners.push(this.drops[i]);
+        }
+      }
+    }
+    let item = null;
+    for (var i = 0; i < runners.length; i++) {
+      item = runners[i];
+      /* Preferences */
+      if (runners[i].rarity == "unique") break;
+      if (runners[i].rarity == "set") break;
+      if (runners[i].rarity == "rare") break;
+      if (runners[i].rarity == "magic") break;
+      if (runners[i].type != "stackable") break;
+    }
+    /* Spawn the loot on the server */
+
+    if (item) {
+      this.room.lootManager.create({
+        x: this?.x,
+        y: this?.y,
+        item: ItemBuilder.buildItem(item.type, item.rarity, item.key),
+      });
+    }
   }
 }
 

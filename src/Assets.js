@@ -363,81 +363,81 @@ const assetList = [
     atlas: "./assets/atlas/32x32-stackable.json",
     previewRect: [0, 0, 32, 32],
   },
-  // /* Stackable */
-  // {
-  //   texture: "stackable-skull",
-  //   src: "./assets/atlas/stackable/stackable-skull.png",
-  //   atlas: "./assets/atlas/32x32-stackable.json",
-  //   previewRect: [0, 0, 32, 32],
-  // },
-  // {
-  //   texture: "stackable-bsporangium",
-  //   src: "./assets/atlas/stackable/stackable-bsporangium.png",
-  //   atlas: "./assets/atlas/32x32-stackable.json",
-  //   previewRect: [0, 0, 32, 32],
-  // },
-  // {
-  //   texture: "stackable-apple",
-  //   src: "./assets/atlas/stackable/stackable-apple.png",
-  //   atlas: "./assets/atlas/32x32-stackable.json",
-  //   previewRect: [0, 0, 32, 32],
-  // },
-  // {
-  //   texture: "stackable-grapes",
-  //   src: "./assets/atlas/stackable/stackable-grapes.png",
-  //   atlas: "./assets/atlas/32x32-stackable.json",
-  //   previewRect: [0, 0, 32, 32],
-  // },
-  // {
-  //   texture: "stackable-meat",
-  //   src: "./assets/atlas/stackable/stackable-meat.png",
-  //   atlas: "./assets/atlas/32x32-stackable.json",
-  //   previewRect: [0, 0, 32, 32],
-  // },
-  // {
-  //   texture: "stackable-cheese",
-  //   src: "./assets/atlas/stackable/stackable-cheese.png",
-  //   atlas: "./assets/atlas/32x32-stackable.json",
-  //   previewRect: [0, 0, 32, 32],
-  // },
-  // {
-  //   texture: "stackable-potion-small-hp",
-  //   src: "./assets/atlas/stackable/stackable-potion-small-hp.png",
-  //   atlas: "./assets/atlas/32x32-stackable.json",
-  //   previewRect: [0, 0, 32, 32],
-  // },
-  // {
-  //   texture: "stackable-potion-medium-hp",
-  //   src: "./assets/atlas/stackable/stackable-potion-medium-hp.png",
-  //   atlas: "./assets/atlas/32x32-stackable.json",
-  //   previewRect: [0, 0, 32, 32],
-  // },
-  // {
-  //   texture: "stackable-potion-small-mp",
-  //   src: "./assets/atlas/stackable/stackable-potion-small-mp.png",
-  //   atlas: "./assets/atlas/32x32-stackable.json",
-  //   previewRect: [0, 0, 32, 32],
-  // },
-  // {
-  //   texture: "stackable-potion-medium-mp",
-  //   src: "./assets/atlas/stackable/stackable-potion-medium-mp.png",
-  //   atlas: "./assets/atlas/32x32-stackable.json",
-  //   previewRect: [0, 0, 32, 32],
-  // },
-  // /* Spells */
-  // {
-  //   texture: "spell-fire",
-  //   src: "./assets/atlas/spell/spell-fire.png",
-  //   atlas: "./assets/atlas/32x32-stackable.json",
-  //   previewRect: [0, 0, 32, 32],
-  // },
-  // {
-  //   texture: "spell-heal",
-  //   src: "./assets/atlas/spell/spell-heal.png",
-  //   atlas: "./assets/atlas/32x32-stackable.json",
-  //   previewRect: [0, 0, 32, 32],
-  // },
-  // /* Misc */
+  /* Stackable */
+  {
+    texture: "stackable-skull",
+    src: "./assets/atlas/stackable/stackable-skull.png",
+    atlas: "./assets/atlas/32x32-stackable.json",
+    previewRect: [0, 0, 32, 32],
+  },
+  {
+    texture: "stackable-bsporangium",
+    src: "./assets/atlas/stackable/stackable-bsporangium.png",
+    atlas: "./assets/atlas/32x32-stackable.json",
+    previewRect: [0, 0, 32, 32],
+  },
+  {
+    texture: "stackable-apple",
+    src: "./assets/atlas/stackable/stackable-apple.png",
+    atlas: "./assets/atlas/32x32-stackable.json",
+    previewRect: [0, 0, 32, 32],
+  },
+  {
+    texture: "stackable-grapes",
+    src: "./assets/atlas/stackable/stackable-grapes.png",
+    atlas: "./assets/atlas/32x32-stackable.json",
+    previewRect: [0, 0, 32, 32],
+  },
+  {
+    texture: "stackable-meat",
+    src: "./assets/atlas/stackable/stackable-meat.png",
+    atlas: "./assets/atlas/32x32-stackable.json",
+    previewRect: [0, 0, 32, 32],
+  },
+  {
+    texture: "stackable-cheese",
+    src: "./assets/atlas/stackable/stackable-cheese.png",
+    atlas: "./assets/atlas/32x32-stackable.json",
+    previewRect: [0, 0, 32, 32],
+  },
+  {
+    texture: "stackable-potion-small-hp",
+    src: "./assets/atlas/stackable/stackable-potion-small-hp.png",
+    atlas: "./assets/atlas/32x32-stackable.json",
+    previewRect: [0, 0, 32, 32],
+  },
+  {
+    texture: "stackable-potion-medium-hp",
+    src: "./assets/atlas/stackable/stackable-potion-medium-hp.png",
+    atlas: "./assets/atlas/32x32-stackable.json",
+    previewRect: [0, 0, 32, 32],
+  },
+  {
+    texture: "stackable-potion-small-mp",
+    src: "./assets/atlas/stackable/stackable-potion-small-mp.png",
+    atlas: "./assets/atlas/32x32-stackable.json",
+    previewRect: [0, 0, 32, 32],
+  },
+  {
+    texture: "stackable-potion-medium-mp",
+    src: "./assets/atlas/stackable/stackable-potion-medium-mp.png",
+    atlas: "./assets/atlas/32x32-stackable.json",
+    previewRect: [0, 0, 32, 32],
+  },
+  /* Spells */
+  {
+    texture: "spell-fire",
+    src: "./assets/atlas/spell/spell-fire.png",
+    atlas: "./assets/atlas/32x32-stackable.json",
+    previewRect: [0, 0, 32, 32],
+  },
+  {
+    texture: "spell-heal",
+    src: "./assets/atlas/spell/spell-heal.png",
+    atlas: "./assets/atlas/32x32-stackable.json",
+    previewRect: [0, 0, 32, 32],
+  },
+  /* Misc */
   {
     texture: "icons",
     src: "./assets/images/icons.png",
