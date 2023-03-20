@@ -23,6 +23,10 @@ function addInputListeners(scene) {
     if (document.activeElement.type === "text") return;
     mainScene?.hero?.doAttack?.(1);
   });
+  scene.input.keyboard.on("keyup-F", (e) => {
+    if (document.activeElement.type === "text") return;
+    mainScene?.hero?.doGrab?.();
+  });
   window.addEventListener(
     "HERO_ATTACK",
     (e) => {

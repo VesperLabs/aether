@@ -11,6 +11,7 @@ import {
   MenuHud,
   ModalRespawn,
 } from "./";
+import { isMobile } from "../utils";
 
 const AppContext = createContext();
 
@@ -128,6 +129,52 @@ const GameWrapper = (props) => {
   );
 };
 
+const KeyboardKey = ({ name }) => {
+  return (
+    <Box
+      sx={{
+        position: "absolute",
+        bottom: 0,
+        right: 0,
+        bg: "#EEE",
+        px: "5px",
+        pb: "4px",
+        lineHeight: 1,
+        borderRadius: 3,
+        textShadow: "none",
+        color: "#000",
+        fontSize: "10px",
+        fontWeight: "bold",
+        boxShadow: `#CCCCCC 0px -2px 0px 2px inset,
+                     #000000 0px 0px 0px 1px,
+                     #ffffff 0px -1px 0px 2px inset`,
+      }}
+    >
+      {name}
+    </Box>
+  );
+};
+
+const SkillButton = ({ eventName, iconName, size, keyboardKey }) => {
+  return (
+    <Box sx={{ position: "relative" }}>
+      <Button
+        variant="menu"
+        onTouchStart={(e) => {
+          window.dispatchEvent(new Event(eventName));
+        }}
+        sx={{
+          p: size,
+          borderRadius: "100%",
+        }}
+      >
+        <Icon icon={`../assets/icons/${iconName}.png`} />
+      </Button>
+      {!isMobile && <KeyboardKey name={keyboardKey} />}
+    </Box>
+  );
+};
+
 const SkillButtons = () => {
   return (
     <Flex
@@ -138,30 +185,8 @@ const SkillButtons = () => {
         alignItems: "flex-end",
       }}
     >
-      <Button
-        variant="menu"
-        onTouchStart={(e) => {
-          window.dispatchEvent(new Event("HERO_GRAB"));
-        }}
-        sx={{
-          p: 24,
-          borderRadius: "100%",
-        }}
-      >
-        <Icon icon="../assets/icons/grab.png" />
-      </Button>
-      <Button
-        variant="menu"
-        onTouchStart={(e) => {
-          window.dispatchEvent(new Event("HERO_ATTACK"));
-        }}
-        sx={{
-          p: 32,
-          borderRadius: "100%",
-        }}
-      >
-        <Icon icon="../assets/icons/handRight.png" />
-      </Button>
+      <SkillButton size={24} iconName="grab" eventName="HERO_GRAB" keyboardKey="F" />
+      <SkillButton size={24} iconName="handRight" eventName="HERO_ATTACK" keyboardKey="SPACE" />
     </Flex>
   );
 };
