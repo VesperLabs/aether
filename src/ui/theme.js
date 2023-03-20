@@ -48,7 +48,7 @@ export default {
   buttons: {
     menu: {
       filter: "grayscale(100%)",
-      "*": { opacity: 0.3, transition: ".2s ease all" },
+      "*": { opacity: 0.5, transition: ".2s ease all" },
       "&:hover, &.active": { "*": { opacity: 1 } },
     },
   },

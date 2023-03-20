@@ -13,7 +13,7 @@ const ItemTooltip = ({ item, show }) => {
     <Tooltip
       id={item?.id}
       isOpen={show}
-      style={{ transition: "none", padding: 0, borderRadius: 5 }}
+      style={{ transition: "none", padding: 0, borderRadius: 5, zIndex: 8888 }}
     >
       <Flex
         sx={{
