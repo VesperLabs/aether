@@ -71,6 +71,9 @@ class Player extends Character {
       .existing(new Bar(scene, 0, this?.profile?.headY, 32, 12))
       .setVisible(false);
     this.userName = scene.add.existing(new BitmapText(this.scene, 0, 8, "nin-light").setScale(0.5));
+    this.corpse = scene.add
+      .existing(new Sprite(scene, 0, this.bodyOffsetY, "icons", "grave"))
+      .setVisible(false);
     this.add(this.shadow);
     this.add(this.chest);
     this.add(this.skin);
@@ -86,6 +89,7 @@ class Player extends Character {
     this.add(this.bubble);
     this.add(this.userName);
     this.add(this.hpBar);
+    this.add(this.corpse);
   }
   drawCharacterFromUserData() {
     const { profile, equipment, state } = this || {};
@@ -179,7 +183,8 @@ class Player extends Character {
     this.handRight.setVisible(false);
     this.hpBar.setVisible(false);
     this.bubble.setVisible(false);
-    this.skin.setTexture("icons").setFrame("grave").setTint("0xFFFFFF");
+    this.skin.setVisible(false);
+    this.corpse.setVisible(true);
     if (this.isHero) {
       window.dispatchEvent(new Event("HERO_DEAD"));
     }
@@ -191,6 +196,7 @@ class Player extends Character {
     this.drawCharacterFromUserData();
     this.shadow.setVisible(true);
     this.chest.setVisible(true);
+    this.skin.setVisible(true);
     this.face.setVisible(true);
     this.hair.setVisible(true);
     this.accessory.setVisible(true);
@@ -201,6 +207,7 @@ class Player extends Character {
     this.handLeft.setVisible(true);
     this.handRight.setVisible(true);
     this.hpBar.setVisible(false);
+    this.corpse.setVisible(false);
     if (this.isHero) {
       window.dispatchEvent(new Event("HERO_RESPAWN"));
     }
