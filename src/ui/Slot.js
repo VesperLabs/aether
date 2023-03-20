@@ -172,6 +172,9 @@ const Slot = ({ sx, size = 52, item, location, icon, ...props }) => {
     >
       {item && (
         <>
+          {item?.amount > 1 && (
+            <Box sx={{ position: "absolute", m: "1px", fontSize: 0 }}>{item?.amount}</Box>
+          )}
           <Icon
             ref={imageRef}
             icon={imageData}
@@ -183,7 +186,7 @@ const Slot = ({ sx, size = 52, item, location, icon, ...props }) => {
               userSelect: "none",
               pointerEvents: dragging ? "none" : "all",
               zIndex: dragging ? 9999 : 1,
-              position: dragging ? "fixed" : "unset",
+              position: dragging ? "fixed" : "static",
               left: dragging ? position.x : 0,
               top: dragging ? position.y : 0,
               cursor: dragging ? "grabbing" : "grab",

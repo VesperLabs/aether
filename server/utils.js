@@ -135,7 +135,10 @@ const baseUser = {
     ring2: ItemBuilder.buildItem("ring", "set", "timmysSignet"),
     amulet: ItemBuilder.buildItem("amulet", "set", "timmysChain"),
   },
-  inventory: [ItemBuilder.buildItem("weapon", "rare", "katar")],
+  inventory: [
+    ItemBuilder.buildItem("weapon", "rare", "katar"),
+    ItemBuilder.buildItem("stackable", "common", "redApple", 10),
+  ],
   profile: {
     userName: "Player1",
     gender: "female",

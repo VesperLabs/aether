@@ -28,15 +28,20 @@ const ItemTooltip = ({ item, show }) => {
       >
         <Text>
           {item?.name}
+          <Text color="gray.400" sx={{ ml: "2px" }}>
+            {item?.amount > 1 && `(${item?.amount})`}
+          </Text>
           {item?.slot == "spell" && <span> (Level {item?.ilvl})</span>}
         </Text>
         <Text color={item?.rarity}>
           {item?.rarity} {item?.base} {item?.set ? "[" + item?.set + "]" : ""}
         </Text>
         <Divider />
-        <Text>
-          <Label>Slot:</Label> {item?.slot}
-        </Text>
+        {item?.slot !== "stackable" && (
+          <Text>
+            <Label>Slot:</Label> {item?.slot}
+          </Text>
+        )}
         {Object.keys(item?.stats).map((key) => {
           return (
             <Text>
@@ -80,7 +85,7 @@ const ItemTooltip = ({ item, show }) => {
         <Divider />
         <Flex sx={{ alignItems: "center", gap: 1 }}>
           <Icon icon="../assets/icons/gold.png" size={16} />
-          {item?.cost * (hero?.inflation || 1)}
+          {item?.cost * (item?.amount || 1) * (hero?.inflation || 1)}
         </Flex>
       </Flex>
     </Tooltip>
