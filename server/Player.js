@@ -32,6 +32,9 @@ class Player extends Character {
       }
     }
   }
+  isInventoryFull() {
+    return this?.inventory?.every(Boolean) && this?.inventory?.length >= 5;
+  }
   addInventoryItem(item) {
     let itemAdded = false;
     for (var i = 0; i < this.inventory.length; i++) {

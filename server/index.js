@@ -95,18 +95,25 @@ class ServerScene extends Phaser.Scene {
         if (!loot || !player || !item) return;
         /* Face the loot */
         player.direction = direction;
-        /* TODO: Check inventory has space */
-        /* Delete loot from server */
-        scene.roomManager.rooms[player?.roomName].lootManager.remove(lootId);
         /* Check where to put loot */
         if (item.type == "stackable") {
           let foundItem = player.findInventoryItemById(item.id);
           if (foundItem) {
+            /* Delete loot from server */
+            scene.roomManager.rooms[player?.roomName].lootManager.remove(lootId);
             foundItem.amount = (foundItem.amount || 0) + (item?.amount || 0);
           } else {
+            /* If our inventory is full we do not pick it up */
+            if (player.isInventoryFull()) return console.log("❌ Inventory full.");
+            /* Delete loot from server */
+            scene.roomManager.rooms[player?.roomName].lootManager.remove(lootId);
             player.addInventoryItem(item);
           }
         } else {
+          /* If our inventory is full we do not pick it up */
+          if (player.isInventoryFull()) return console.log("❌ Inventory full.");
+          /* Delete loot from server */
+          scene.roomManager.rooms[player?.roomName].lootManager.remove(lootId);
           player.addInventoryItem(item);
         }
         /* Save player */
@@ -201,7 +208,7 @@ class ServerScene extends Phaser.Scene {
         let found = null;
         /* If the item was dropped from equipment find it and what slot it came from */
         if (location === "equipment") {
-          const { f, slotName } = player?.findEquipmentById(item?.id);
+          const { item: f, slotName } = player?.findEquipmentById(item?.id);
           found = f;
           /* Remove it from the players equipment */
           player?.clearEquipmentSlot(slotName);
