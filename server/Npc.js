@@ -35,6 +35,20 @@ class Npc extends Character {
     const distance = distanceTo(this, target) - (thisRadius + targetRadius);
     return distance <= range;
   }
+  isOutOfBounds() {
+    let npcTileX = this.room.tileMap.worldToTileX(this.x); // Convert NPC's world x-coordinate to tile x-coordinate
+    let npcTileY = this.room.tileMap.worldToTileY(this.y); // Convert NPC's world y-coordinate to tile y-coordinate
+    if (
+      this.x >= 0 && // Check if this is within left boundary of tilemap
+      this.y >= 0 && // Check if this is within top boundary of tilemap
+      this.x < this.room.tileMap?.widthInPixels && // Check if this is within right boundary of tilemap
+      this.y < this.room.tileMap?.heightInPixels && // Check if this is within bottom boundary of tilemap
+      !this.room.collideLayer?.hasTileAt(npcTileX, npcTileY, true) // Check for collision with tile properties
+    ) {
+      return false;
+    }
+    return true;
+  }
   update(time, delta) {
     // Destructure relevant properties from 'this'
     const { scene, state, stats, room } = this ?? {};
@@ -69,10 +83,17 @@ class Npc extends Character {
     // Determine if player should chase target player or move randomly
     const shouldChasePlayer = isInRange && !targetPlayer?.state?.isDead;
     if (shouldChasePlayer) {
-      this.moveTowardPlayer(targetPlayer);
+      this.moveTowardPoint(targetPlayer);
+      this.bubbleMessage = "!";
     } else {
       this.state.lockedPlayerId = null;
-      this.moveRandomly(time);
+      /* If the NPC is out of bounds, make it try to get back in bounds */
+      if (this.isOutOfBounds()) {
+        /* TODO: Improve this so that it moves toward the nearest open tile instead */
+        this.moveTowardPoint(this.startingCoords);
+      } else {
+        this.moveRandomly(time);
+      }
     }
 
     // Determine if player should attack target player
@@ -104,12 +125,11 @@ class Npc extends Character {
       this.state.isAttacking = false;
     }
   }
-  moveTowardPlayer(player) {
+  moveTowardPoint(player) {
     const speed = this.stats.speed;
     const angle = Math.atan2(player.y - this.y, player.x - this.x);
     this.vx = speed * Math.cos(angle);
     this.vy = speed * Math.sin(angle);
-    this.bubbleMessage = "!";
     this.body.setVelocity(this.vx, this.vy);
     this.direction = getCharacterDirection(this, { x: this?.x + this.vx, y: this.y + this.vy });
   }

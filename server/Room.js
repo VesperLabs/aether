@@ -33,11 +33,11 @@ class Room {
     });
   }
   createColliders() {
-    const collideLayer = this.tileMap.createLayer("Collide").setCollisionByProperty({
+    this.collideLayer = this.tileMap.createLayer("Collide").setCollisionByProperty({
       collides: true,
     });
     const { top, left, bottom, right } = this.createMapBounds();
-    this.colliders = [collideLayer, top, left, bottom, right];
+    this.colliders = [this.collideLayer, top, left, bottom, right];
   }
   createMapBounds() {
     const { scene, tileMap } = this;
@@ -51,7 +51,7 @@ class Room {
     left.displayHeight = tileMap.heightInPixels + 200;
     left.body.immovable = true;
     left.setOrigin(0, 0);
-    const bottom = scene.physics.add.sprite(-100, tileMap.heightInPixels + 100, "blank");
+    const bottom = scene.physics.add.sprite(-100, tileMap.heightInPixels, "blank");
     bottom.displayWidth = tileMap.widthInPixels + 200;
     bottom.displayHeight = 100;
     bottom.body.immovable = true;

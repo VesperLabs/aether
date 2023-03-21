@@ -20,6 +20,7 @@ class NpcManager {
         kind: npc?.kind,
         x: npc?.x,
         y: npc?.y,
+        startingCoords: { x: npc?.x, y: npc?.y },
         ...mobData,
       });
     }
@@ -444,12 +445,12 @@ const mobTypes = {
   },
   merman: {
     profile: { race: "merman", headY: -30, userName: "Merman" },
-    state: { isAggro: true },
+    state: { isAggro: false },
     baseStats: {
       attackDelay: 500,
       expValue: 8,
       level: 10,
-      speed: 100,
+      speed: 150,
       range: 32,
       accuracy: 0,
       armorPierce: 0,
@@ -478,7 +479,7 @@ const mapNpcs = {
     { name: "hornet", x: 512, y: 640, kind: "nasty" },
     { name: "hornet", x: 512, y: 640, kind: "nasty" },
     { name: "raccoon", x: 512, y: 640, kind: "nasty" },
-    { name: "slime", x: 512, y: 640, kind: "nasty" },
+    { name: "merman", x: 712, y: 640, kind: "nasty" },
     { name: "slime", x: 512, y: 640, kind: "nasty" },
     { name: "slime", x: 512, y: 640, kind: "nasty" },
     { name: "slime", x: 512, y: 640, kind: "nasty" },
