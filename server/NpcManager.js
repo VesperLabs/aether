@@ -445,7 +445,7 @@ const mobTypes = {
   },
   merman: {
     profile: { race: "merman", headY: -30, userName: "Merman" },
-    state: { isAggro: false },
+    state: { isAggro: true },
     baseStats: {
       attackDelay: 500,
       expValue: 8,
@@ -479,7 +479,11 @@ const mapNpcs = {
     { name: "hornet", x: 512, y: 640, kind: "nasty" },
     { name: "hornet", x: 512, y: 640, kind: "nasty" },
     { name: "raccoon", x: 512, y: 640, kind: "nasty" },
-    { name: "merman", x: 712, y: 640, kind: "nasty" },
+    { name: "slime", x: 512, y: 640, kind: "nasty" },
+    { name: "slime", x: 512, y: 640, kind: "nasty" },
+    { name: "slime", x: 512, y: 640, kind: "nasty" },
+    { name: "slime", x: 512, y: 640, kind: "nasty" },
+    { name: "slime", x: 512, y: 640, kind: "nasty" },
     { name: "slime", x: 512, y: 640, kind: "nasty" },
     { name: "slime", x: 512, y: 640, kind: "nasty" },
     { name: "slime", x: 512, y: 640, kind: "nasty" },
