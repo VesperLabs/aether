@@ -265,6 +265,17 @@ class Player extends Character {
     checkIsFlash(this, delta);
     this.setDepth(100 + this.y + this?.body?.height);
   }
+  playAnim(sprite, parts) {
+    let animKey = parts?.join("-");
+    /* If a part is missing, clear the texture */
+    if (parts?.some((p) => !p)) animKey = `${BLANK_TEXTURE}-${this.direction}-${this.action}`;
+    /* Otherwise try to play the texture animation */
+    const currentFrame = sprite?.anims?.currentFrame?.index || 0;
+    const currentKey = sprite?.anims?.currentAnim?.key;
+    if (animKey !== currentKey) {
+      sprite.play(animKey, true, currentFrame);
+    }
+  }
 }
 
 function checkIsFlash(p, delta) {
@@ -354,20 +365,24 @@ function drawFrame(p) {
   p.bringToTop(bubble);
   p.bringToTop(hpBar);
 
-  playAnim(skin, [profile?.race, direction, action]);
+  p?.playAnim(skin, [profile?.race, direction, action]);
   if (profile?.race === "human") {
-    playAnim(chest, [profile?.race, profile?.gender, "chest-bare", direction, action]);
-    playAnim(shadow, [profile?.race, "shadow", direction, action]);
+    p?.playAnim(chest, [profile?.race, profile?.gender, "chest-bare", direction, action]);
+    p?.playAnim(shadow, [profile?.race, "shadow", direction, action]);
   } else {
-    playAnim(chest, [BLANK_TEXTURE, direction, action]);
+    p?.playAnim(chest, [BLANK_TEXTURE, direction, action]);
   }
-  playAnim(face, [profile?.race, profile?.face?.texture, direction, action]);
-  playAnim(hair, [profile?.race, profile?.hair?.texture, direction, action]);
-  playAnim(armor, [profile?.race, profile?.gender, equipment?.armor?.texture, direction, action]);
-  playAnim(helmet, [profile?.race, equipment?.helmet?.texture, direction, action]);
-  playAnim(boots, [profile?.race, equipment?.boots?.texture, direction, action]);
-  playAnim(pants, [profile?.race, equipment?.pants?.texture, direction, action]);
-  playAnim(accessory, [profile?.race, equipment?.accessory?.texture, direction, action]);
+  p?.playAnim(face, [profile?.race, profile?.face?.texture, direction, action]);
+  p?.playAnim(hair, [profile?.race, profile?.hair?.texture, direction, action]);
+  p?.playAnim(
+    armor,
+    [profile?.race, profile?.gender, equipment?.armor?.texture, direction, action],
+    p.isHero
+  );
+  p?.playAnim(helmet, [profile?.race, equipment?.helmet?.texture, direction, action]);
+  p?.playAnim(boots, [profile?.race, equipment?.boots?.texture, direction, action]);
+  p?.playAnim(pants, [profile?.race, equipment?.pants?.texture, direction, action]);
+  p?.playAnim(accessory, [profile?.race, equipment?.accessory?.texture, direction, action]);
   playWeapons(p);
   handRight.setTexture(equipment?.handRight?.texture);
   handLeft.setTexture(equipment?.handLeft?.texture);
@@ -438,18 +453,6 @@ function playWeapons(player) {
         handLeft.setAngle(0);
       }
     }
-  }
-}
-
-function playAnim(sprite, parts) {
-  /* If a part is missing, clear the texture */
-  if (parts?.some((p) => !p)) return sprite.setTexture(BLANK_TEXTURE);
-  /* Otherwise try to play the texture animation */
-  const animKey = parts?.join("-");
-  const currentFrame = sprite?.anims?.currentFrame?.index || 0;
-  const currentKey = sprite?.anims?.currentAnim?.key;
-  if (animKey !== currentKey) {
-    sprite.play(animKey, true, currentFrame);
   }
 }
 
