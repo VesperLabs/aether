@@ -1,5 +1,5 @@
 interface Item {
-  id: number;
+  id: string;
   key: string;
   ilvl: number;
   rarity: string;
@@ -18,4 +18,13 @@ interface Item {
   percentStats?: Record<string, number>;
   setName?: string;
   setBonus?: Record<string, number>;
+}
+
+interface Loot {
+  id: string;
+  roomName: string;
+  x: number;
+  y: number;
+  item: Item;
+  dropTime: number;
 }
