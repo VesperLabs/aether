@@ -636,6 +636,7 @@ const _itemList = {
       smallHpPotion: {
         ilvl: 1,
         name: "Small HP Potion",
+        base: "food",
         slot: "stackable",
         texture: "stackable-potion-small-hp",
         tint: "0xFFFFFF",
@@ -647,6 +648,7 @@ const _itemList = {
       smallMpPotion: {
         ilvl: 1,
         name: "Small MP Potion",
+        base: "food",
         slot: "stackable",
         texture: "stackable-potion-small-mp",
         tint: "0xFFFFFF",
@@ -658,6 +660,7 @@ const _itemList = {
       mediumHpPotion: {
         ilvl: 1,
         name: "Medium HP Potion",
+        base: "food",
         slot: "stackable",
         texture: "stackable-potion-medium-hp",
         tint: "0xFFFFFF",
@@ -669,6 +672,7 @@ const _itemList = {
       mediumPotionMp: {
         ilvl: 1,
         name: "Medium MP Potion",
+        base: "food",
         slot: "stackable",
         texture: "stackable-potion-medium-mp",
         tint: "0xFFFFFF",
@@ -680,6 +684,7 @@ const _itemList = {
       blueSporangium: {
         ilvl: 1,
         name: "Blue Sporangium",
+        base: "food",
         slot: "stackable",
         texture: "stackable-bsporangium",
         tint: "0x88DDFF",
@@ -691,6 +696,7 @@ const _itemList = {
       redApple: {
         ilvl: 1,
         name: "Red Apple",
+        base: "food",
         slot: "stackable",
         texture: "stackable-apple",
         tint: "0xFFFFFF",
@@ -702,6 +708,7 @@ const _itemList = {
       batMeat: {
         ilvl: 1,
         name: "Bat Meat",
+        base: "food",
         slot: "stackable",
         texture: "stackable-meat",
         tint: "0xFFFFFF",
@@ -713,6 +720,7 @@ const _itemList = {
       spiderMeat: {
         ilvl: 1,
         name: "Spider Meat",
+        base: "food",
         slot: "stackable",
         texture: "stackable-meat",
         tint: "0xFFFFFF",
@@ -724,6 +732,7 @@ const _itemList = {
       cheese: {
         ilvl: 1,
         name: "Cheese",
+        base: "food",
         slot: "stackable",
         texture: "stackable-cheese",
         tint: "0xFFFFFF",
@@ -735,6 +744,7 @@ const _itemList = {
       grapes: {
         ilvl: 1,
         name: "Grapes",
+        base: "food",
         slot: "stackable",
         texture: "stackable-grapes",
         tint: "0xFFFFFF",
@@ -746,6 +756,7 @@ const _itemList = {
       skull: {
         ilvl: 2,
         name: "Skull",
+        base: "material",
         slot: "stackable",
         texture: "stackable-skull",
         tint: "0xFFFFFF",

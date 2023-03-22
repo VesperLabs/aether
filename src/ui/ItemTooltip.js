@@ -7,7 +7,7 @@ const Label = (props) => <Text sx={{ fontWeight: "normal" }} {...props} />;
 
 const ItemTooltip = ({ item, show }) => {
   const { hero } = useAppContext();
-  const isSetActive = hero?.state?.activeSets?.includes?.(item?.set);
+  const isSetActive = hero?.state?.activeSets?.includes?.(item?.setName);
   if (!item) return;
   return (
     <Tooltip
@@ -34,7 +34,7 @@ const ItemTooltip = ({ item, show }) => {
           {item?.slot == "spell" && <span> (Level {item?.ilvl})</span>}
         </Text>
         <Text color={item?.rarity}>
-          {item?.rarity} {item?.base} {item?.set ? "[" + item?.set + "]" : ""}
+          {item?.rarity} {item?.base} {item?.setName ? "[" + item?.setName + "]" : ""}
         </Text>
         <Divider />
         {item?.slot !== "stackable" && (

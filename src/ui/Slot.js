@@ -6,13 +6,13 @@ import { isMobile, trimCanvas, tintCanvas } from "../utils";
 
 const STYLE_ABS = { top: 0, left: 0, position: "absoute" };
 const STYLE_EMPTY = (icon) => ({
-  background: `${theme.colors.shadow[20]} url(${icon}) center center no-repeat`,
+  background: `${theme.colors.shadow[30]} url(${icon}) center center no-repeat`,
   filter: "grayscale(100%)",
-  opacity: 0.3,
+  opacity: 0.5,
 });
 const STYLE_NON_EMPTY = (rarity) => ({
   border: (t) => `1px solid ${t.colors[rarity]}`,
-  background: (t) => `radial-gradient(circle, ${t.colors[rarity]} 0%, ${t.colors.shadow[15]} 125%)`,
+  background: (t) => `radial-gradient(circle, ${t.colors[rarity]} 0%, ${t.colors.shadow[50]} 150%)`,
 });
 const BLANK_IMAGE =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
@@ -162,7 +162,7 @@ const Slot = ({ sx, size = 52, item, slotKey, location, icon, ...props }) => {
         position: "relative",
         touchAction: "none",
         userSelect: "none",
-        border: (t) => `1px solid ${t.colors.shadow[30]}`,
+        border: (t) => `1px solid ${t.colors.shadow[50]}`,
         borderRadius: 2,
         pointerEvents: "all",
         overflow: dragging ? "visible" : "hidden",

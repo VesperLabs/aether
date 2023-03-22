@@ -21,8 +21,8 @@ class Character extends BaseCharacter {
     /* Normal equipment Stats */
     Object.keys(equipment).forEach((eKey) => {
       if (equipment[eKey]) {
-        if (equipment[eKey].set) {
-          if (setList[equipment[eKey].set]) {
+        if (equipment[eKey].setName) {
+          if (setList[equipment[eKey].setName]) {
             //checking to see that the weapons are different parts of the set etc...
             let amountThisItem = 0;
             Object.keys(equipment).forEach((aKey) => {
@@ -33,10 +33,10 @@ class Character extends BaseCharacter {
               }
             });
             if (amountThisItem == 1) {
-              setList[equipment[eKey].set]++;
+              setList[equipment[eKey].setName]++;
             }
           } else {
-            setList[equipment[eKey].set] = 1;
+            setList[equipment[eKey].setName] = 1;
           }
         }
         if (equipment[eKey].percentStats) {
@@ -97,6 +97,7 @@ class Character extends BaseCharacter {
         }
       }
     });
+
     /* WIP: Percent Stats...  */
     Object.keys(totalPercentStats).forEach((key) => {
       let percentIncrease = Math.floor(ns[key] * (totalPercentStats[key] / 100));
@@ -150,6 +151,7 @@ class Character extends BaseCharacter {
     else if (this.stats.mp > ns.maxMp) ns.mp = ns.maxMp;
     else ns.mp = this.stats.mp;
     this.stats = ns;
+
     this.state.activeSets = activeSets;
   }
   calculateDamage(victim) {

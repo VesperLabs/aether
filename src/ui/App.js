@@ -209,7 +209,7 @@ const MenuBar = () => {
       <SkillButtons />
       <MenuEquipment />
       <MenuInventory />
-      <Flex sx={{ gap: 1, alignItems: "center", bg: "shadow.10", p: 2 }}>
+      <Flex sx={{ gap: 1, alignItems: "center", bg: "shadow.30", p: 2 }}>
         <Box>
           {isConnected ? (
             <Icon icon="../assets/icons/success.png" sx={{ opacity: 0.5 }} />

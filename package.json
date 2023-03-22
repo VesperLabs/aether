@@ -29,7 +29,7 @@
   "scripts": {
     "kill": "kill -9 $(lsof -i :3000) &>/dev/null | exit 0",
     "server": "ts-node -r dotenv/config --files server/index.ts",
-    "watch:server": "nodemon --watch \"server/**\" --ext \"ts,json\" --inspect --exec \"yarn run kill && yarn run server\"",
+    "watch:server": "nodemon --watch \"server/**\" --ext \"ts,js,json\" --inspect --exec \"yarn run kill && yarn run server\"",
     "watch": "nodemon --watch src node esbuild.js",
     "build": "node esbuild.js "
   }

@@ -13,7 +13,7 @@ const MenuInventory = () => {
         p: 2,
         flexWrap: "wrap",
         justifyContent: "end",
-        bg: "shadow.10",
+        bg: "shadow.30",
         pointerEvents: "all",
         "&:hover": {
           zIndex: 999,
