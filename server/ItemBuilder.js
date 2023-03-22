@@ -1,6 +1,6 @@
 /* This file and Diablo II are the main reason this game exists */
 import crypto from "crypto";
-import Item from "./Item.js";
+import Item from "./Item.ts";
 import { cloneObject } from "./utils";
 
 const _itemList = {
@@ -150,7 +150,7 @@ const _itemList = {
     set: {
       hawkwingsPincher: {
         ilvl: 1,
-        set: "hawkwings",
+        setName: "hawkwings",
         name: "Hawkwing's Pincher",
         base: "scythe",
         texture: "weapon-scythe",
@@ -168,7 +168,7 @@ const _itemList = {
       },
       hawkwingsTickler: {
         ilvl: 1,
-        set: "hawkwings",
+        setName: "hawkwings",
         name: "Hawkwing's Tickler",
         base: "scythe",
         texture: "weapon-scythe",
@@ -331,7 +331,7 @@ const _itemList = {
     set: {
       chetsPurpleShirt: {
         ilvl: 1,
-        set: "chets",
+        setName: "chets",
         name: "Chet's Purple Shirt",
         base: "armor",
         texture: "armor-robe",
@@ -378,7 +378,7 @@ const _itemList = {
     set: {
       chetsNeonKicks: {
         ilvl: 1,
-        set: "chets",
+        setName: "chets",
         name: "Chet's Neon Kicks",
         base: "boots",
         texture: "boots-cloth",
@@ -426,7 +426,7 @@ const _itemList = {
     set: {
       chetsChampions: {
         ilvl: 1,
-        set: "chets",
+        setName: "chets",
         name: "Chet's Champions",
         base: "pants",
         texture: "pants-cloth",
@@ -553,7 +553,7 @@ const _itemList = {
     set: {
       timmysSignet: {
         ilvl: 2,
-        set: "timmys",
+        setName: "timmys",
         name: "Timmy's Signet",
         base: "ring",
         texture: "ring-silver-sapphire",
@@ -616,7 +616,7 @@ const _itemList = {
     set: {
       timmysChain: {
         ilvl: 2,
-        set: "timmys",
+        setName: "timmys",
         name: "Timmy's Chain",
         base: "amulet",
         texture: "amulet-gold-plain",
@@ -920,8 +920,7 @@ const ItemBuilder = {
           : _itemList[type][rarity][itemKey];
       item = cloneObject(item);
     } catch (e) {
-      console.log(e);
-      // console.log(`🔧 Item not found for ${type} ${rarity} ${itemKey}`);
+      console.log(`🔧 Item not found for ${type} ${rarity} ${itemKey}`);
       return null;
     }
 
@@ -953,9 +952,9 @@ const ItemBuilder = {
       } //end for
     }
 
-    if (item.set) {
-      if (_setList[item.set]) {
-        let setBonus = _setList[item.set];
+    if (item.setName) {
+      if (_setList[item.setName]) {
+        let setBonus = _setList[item.setName];
         if (setBonus.percentStats) {
           for (let key in setBonus.percentStats) {
             setBonus.percentStats[key] = parseInt(parseFloat(setBonus.percentStats[key]));

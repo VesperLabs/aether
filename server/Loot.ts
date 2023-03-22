@@ -1,6 +1,14 @@
 import crypto from "crypto";
+
 class Loot {
-  constructor(loot) {
+  id: string;
+  roomName?: string;
+  x: number;
+  y: number;
+  item: Item;
+  dropTime: number;
+
+  constructor(loot?: { id?: string; roomName?: string; x: number; y: number; item: Item }) {
     this.id = loot?.id || crypto.randomUUID();
     this.roomName = loot?.roomName;
     this.x = loot.x;

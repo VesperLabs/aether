@@ -1,4 +1,4 @@
-import Loot from "./Loot.js";
+import Loot from "./Loot";
 import crypto from "crypto";
 class LootManager {
   constructor(scene, room) {

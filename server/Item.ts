@@ -1,5 +1,25 @@
-class Item {
-  constructor(item) {
+class Item implements Item {
+  id: number;
+  key: string;
+  ilvl: number;
+  rarity: string;
+  stats?: Record<string, number>;
+  name: string;
+  base: string;
+  slot: string;
+  texture: string;
+  tint?: string;
+  attackTint?: string;
+  amount: number;
+  type?: string;
+  requirements?: Record<string, number>;
+  cost?: number;
+  effects?: Record<string, any>;
+  percentStats?: Record<string, number>;
+  setName?: string;
+  setBonus?: Record<string, number>;
+
+  constructor(item: Item) {
     this.id = item?.id;
     this.key = item?.key;
     this.ilvl = item?.ilvl;
@@ -17,7 +37,7 @@ class Item {
     this.cost = item?.cost;
     this.effects = item?.effects;
     this.percentStats = item?.percentStats;
-    this.set = item?.set;
+    this.setName = item?.setName;
     this.setBonus = item?.setBonus;
   }
 }
