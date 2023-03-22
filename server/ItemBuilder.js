@@ -2,6 +2,7 @@
 import crypto from "crypto";
 import Item from "./Item.js";
 import { cloneObject } from "./utils";
+
 const _itemList = {
   weapon: {
     common: {
@@ -919,7 +920,8 @@ const ItemBuilder = {
           : _itemList[type][rarity][itemKey];
       item = cloneObject(item);
     } catch (e) {
-      console.log(`🔧 Item not found for ${type} ${rarity} ${itemKey}`);
+      console.log(e);
+      // console.log(`🔧 Item not found for ${type} ${rarity} ${itemKey}`);
       return null;
     }
 

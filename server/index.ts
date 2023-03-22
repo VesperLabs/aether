@@ -1,3 +1,4 @@
+//@ts-nocheck
 import path from "path";
 import { config } from "dotenv";
 import "@geckos.io/phaser-on-nodejs";
@@ -22,12 +23,12 @@ import {
   getTrimmedRoomState,
   getDoor,
   removePlayer,
-  baseUser,
   cloneObject,
   checkSlotsMatch,
 } from "./utils";
-import { initDatabase } from "./db";
+import { initDatabase, baseUser } from "./db";
 import RoomManager from "./RoomManager";
+
 global.phaserOnNodeFPS = process.env.SERVER_FPS;
 
 app.use(express.static(path.join(__dirname, "../public")));
@@ -58,8 +59,8 @@ class ServerScene extends Phaser.Scene {
       const socketId = socket.id;
 
       socket.on("login", async (email = "arf@arf.arf") => {
-        const user = await scene.db.getUserByEmail(email);
-        //const user = cloneObject(baseUser);
+        //const user = await scene.db.getUserByEmail(email);
+        const user = cloneObject(baseUser);
         if (!user) return console.log("❌ Player not found in db");
 
         const player = scene.roomManager.rooms[user.roomName].playerManager.create({
@@ -314,10 +315,14 @@ class ServerScene extends Phaser.Scene {
     const scene = this;
     for (const room of Object.values(scene.roomManager.rooms)) {
       room.lootManager.expireLoots();
+
       room.spellManager.expireSpells();
+
       const roomState = getTrimmedRoomState(scene, room.name);
       const snapshot = SI.snapshot.create(roomState);
+
       room.vault.add(snapshot);
+
       io.to(room.name).emit("update", room.vault.get());
     }
   }
