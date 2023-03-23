@@ -178,7 +178,7 @@ class Character extends BaseCharacter {
     }
     if (this.stats.critChance && critRoll <= this.stats.critChance) {
       isCritical = true;
-      reducedDamage = reducedDamage * this.stats.critMultiplier;
+      reducedDamage = reducedDamage * this?.stats?.critMultiplier || 0;
     }
     /* Update the victim */
     reducedDamage = Math.floor(reducedDamage);

@@ -23,9 +23,11 @@ class Npc extends Character {
   tryRespawn() {
     if (!this.state.isDead) return;
     if (Date.now() - this.state.deadTime >= this.respawnTime) {
-      this.state.isDead = false;
+      this.x = this.startingCoords.x;
+      this.y = this.startingCoords.y;
       this.stats.hp = this.stats.maxHp;
-      this.scene.io.to(this.room.name).emit("respawnNpc", this?.id);
+      this.state.isDead = false;
+      this.scene.io.to(this.room.name).emit("respawnNpc", { id: this?.id, x: this.x, y: this.y });
     }
   }
   checkInRange(target, range) {

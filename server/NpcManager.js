@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import Npc from "./Npc";
+import ItemBuilder from "./ItemBuilder";
 
 const POTION_DROP_RATE = 15;
 
@@ -13,7 +14,7 @@ class NpcManager {
     const { room } = this;
     const npcs = mapNpcs[room.name];
     for (const npc of npcs) {
-      const mobData = mobTypes[npc.name];
+      const mobData = mobsByKind[npc.kind][npc.name];
       this.create({
         moveRange: 1,
         room,
@@ -41,7 +42,7 @@ class NpcManager {
   }
 }
 
-const mobTypes = {
+const nasty = {
   /* Level 1 */
   raccoon: {
     profile: { race: "raccoon", headY: -27, userName: "Raccoon" },
@@ -474,6 +475,70 @@ const mobTypes = {
   },
 };
 
+const keeper = {
+  tudwick: {
+    profile: {
+      userName: "Tudwick",
+      face: {
+        texture: "face-2",
+      },
+      tint: "0x888888",
+      hair: {
+        texture: "hair-1",
+      },
+      gender: "male",
+      race: "human",
+    },
+    direction: "down",
+    baseStats: {
+      expValue: 0,
+      level: 40,
+      speed: 100,
+      range: 32,
+      attackDelay: 500,
+      accuracy: 0,
+      armorPierce: 5,
+      dexterity: 40,
+      strength: 40,
+      vitality: 46,
+      intelligence: 40,
+      defense: 0,
+      blockChance: 0,
+      dodgeChance: 25,
+      critChance: 1,
+      critMultiplier: 1,
+      maxDamage: 1,
+      minDamage: 2,
+      regenHp: 20,
+      regenMp: 20,
+      maxHp: 0,
+      maxMp: 0,
+    },
+    equipment: {
+      handLeft: ItemBuilder.buildItem("weapon", "common", "gladius"),
+      handRight: null,
+      helmet: null,
+      accessory: null,
+      armor: null,
+      pants: ItemBuilder.buildItem("pants", "common", "clothPants"),
+      boots: ItemBuilder.buildItem("boots", "common", "nutshellBoots"),
+    },
+    dialogues: {
+      greet:
+        "My name is <strong>Tudwick</strong> and I don't like wearing shirts. I live in these woods and I have a sweet <em>`stache</em>.<br/><br/>What can I do for you?",
+      quests: "Still listening? Good! Here's some stuff you can do for me.",
+      shop: "Here are some things I found along the trail.",
+    },
+    quests: [],
+    shop: [],
+  },
+};
+
+const mobsByKind = {
+  nasty,
+  keeper,
+};
+
 const mapNpcs = {
   grassland: [
     { name: "hornet", x: 512, y: 640, kind: "nasty" },
@@ -489,7 +554,7 @@ const mapNpcs = {
     { name: "slime", x: 512, y: 640, kind: "nasty" },
     { name: "slime", x: 512, y: 640, kind: "nasty" },
     { name: "slime", x: 512, y: 640, kind: "nasty" },
-    // { name: "tudwick", x: 240, y: 880, kind: "keeper" },
+    { name: "tudwick", x: 240, y: 880, kind: "keeper" },
   ],
   "grassland-2": [
     { name: "hornet", x: 944, y: 624, kind: "nasty" },

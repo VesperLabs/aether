@@ -111,6 +111,7 @@ class SceneMain extends Phaser.Scene {
     });
 
     socket.on("assignDamage", (hitList = []) => {
+      console.log(hitList);
       for (const hit of hitList) {
         getNpc(scene, hit?.to)?.takeHit?.(hit);
         getPlayer(scene, hit?.to)?.takeHit?.(hit);
@@ -121,8 +122,12 @@ class SceneMain extends Phaser.Scene {
       getPlayer(scene, id)?.respawn();
     });
 
-    socket.on("respawnNpc", (id) => {
-      getNpc(scene, id)?.respawn();
+    socket.on("respawnNpc", ({ id, x, y }) => {
+      const npc = getNpc(scene, id);
+      //interpolation will ignore snapshots prior. (Won't fly across screen)
+      npc.state.lastTeleport = Date.now();
+      npc.setPosition(x, y);
+      npc?.respawn();
     });
 
     socket.on("spellSpawned", (spellData) => {
@@ -174,6 +179,9 @@ class SceneMain extends Phaser.Scene {
     for (const s of npcSnapshot?.state) {
       const npc = getNpc(this, s.id);
       if (!npc || npc?.state?.isDead) continue;
+      /* Don't interpolate npcs who are respawning */
+      const latestSnap = SI.vault.getById(npcSnapshot?.older);
+      if (npc?.state?.lastTeleport >= latestSnap?.time) continue;
       npc.setPosition(s.x, s.y);
       npc.direction = s?.direction;
       npc.vx = s.vx;

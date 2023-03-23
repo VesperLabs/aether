@@ -65,7 +65,7 @@ class Damage extends Container {
         break;
     }
     if (hit.isCritical) {
-      damageSize = 120;
+      damageSize = 60;
       text = text + "!";
       if (this.victim.isHero) {
         damageText.setTint("0xFFFFFF");

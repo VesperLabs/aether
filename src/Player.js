@@ -234,8 +234,8 @@ class Player extends Character {
   }
   takeHit(hit) {
     const { stats, state } = this;
-    this.scene.add.existing(new Damage(this.scene, this, hit));
     if (state.isDead) return;
+    this.scene.add.existing(new Damage(this.scene, this, hit));
     if (hit.type == "death") {
       stats.hp = 0;
       this.doDeath();
