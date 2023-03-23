@@ -164,7 +164,6 @@ class ServerScene extends Phaser.Scene {
         for (const player of players) {
           if (!ids?.includes(player.id)) continue;
           const newHit = hero.calculateDamage(player);
-
           if (newHit) hitList.push(newHit);
         }
         io.to(roomName).emit("assignDamage", hitList);
