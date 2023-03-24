@@ -19,6 +19,7 @@ class Character extends Phaser.GameObjects.Container {
       baseStats = {},
       direction,
       state = {},
+      gold = 0,
     } = args;
     super(scene, x, y, []);
     this.startingCoords = { x, y };
@@ -55,6 +56,7 @@ class Character extends Phaser.GameObjects.Container {
       activeSets: [],
       ...state,
     };
+    this.gold = gold;
     this.profile = { headY: -47, ...profile };
     this.equipment = equipment;
     this.inventory = inventory;

@@ -60,6 +60,7 @@ function getCharacterState(p) {
     profile: p?.profile,
     bubbleMessage: p?.bubbleMessage,
     kind: p?.kind,
+    gold: p?.gold,
   };
 }
 

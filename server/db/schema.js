@@ -78,6 +78,10 @@ const userSchema = {
       description: "must be an object and is required",
     },
     profile: profileSchema,
+    gold: {
+      bsonType: "number",
+      description: "must be a number",
+    },
   },
 };
 

@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
-import { Box, useAppContext, Flex, TOOLTIP_STYLE } from "./";
+import { Box, useAppContext, Flex, TOOLTIP_STYLE, Icon } from "./";
 import { tintCanvas, imageToCanvas } from "../utils";
 import { assetList } from "../../shared/Assets";
 import { Tooltip } from "react-tooltip";
@@ -134,7 +134,6 @@ const MenuHud = () => {
         <Portrait />
         <Flex sx={{ flexDirection: "column", gap: "1px", pointerEvents: "all" }}>
           <UserName />
-
           <Bar
             data-tooltip-content={`HP: ${stats?.hp} / ${stats?.maxHp}`}
             color="red.700"

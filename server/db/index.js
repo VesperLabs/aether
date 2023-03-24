@@ -103,6 +103,7 @@ export const baseUser = {
     maxHp: 10,
     maxMp: 10,
   },
+  gold: 100,
   direction: "down",
   equipment: {
     handRight: ItemBuilder.buildItem("weapon", "rare", "katar"),
@@ -117,8 +118,7 @@ export const baseUser = {
     amulet: ItemBuilder.buildItem("amulet", "set", "timmysChain"),
   },
   inventory: [
-    ItemBuilder.buildItem("weapon", "rare", "katar"),
-    ItemBuilder.buildItem("weapon", "rare", "hammer"),
+    ItemBuilder.buildItem("weapon", "rare", "scythe"),
     ItemBuilder.buildItem("stackable", "common", "redApple", 10),
   ],
   profile: {
