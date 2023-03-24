@@ -12,6 +12,7 @@ import {
   ModalRespawn,
 } from "./";
 import { isMobile } from "../utils";
+import "react-tooltip/dist/react-tooltip.css";
 
 const AppContext = createContext();
 

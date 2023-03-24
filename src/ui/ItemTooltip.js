@@ -1,7 +1,6 @@
 import React from "react";
-import { Flex, useAppContext, Text, Divider, Icon } from "./";
+import { Flex, useAppContext, Text, Divider, Icon, TOOLTIP_STYLE } from "./";
 import { Tooltip } from "react-tooltip";
-import "react-tooltip/dist/react-tooltip.css";
 
 const Label = (props) => <Text sx={{ fontWeight: "normal" }} {...props} />;
 
@@ -10,14 +9,9 @@ const ItemTooltip = ({ item, show }) => {
   const isSetActive = hero?.state?.activeSets?.includes?.(item?.setName);
   if (!item) return;
   return (
-    <Tooltip
-      id={item?.id}
-      isOpen={show}
-      style={{ transition: "none", padding: 0, borderRadius: 5, zIndex: 8888 }}
-    >
+    <Tooltip id={item?.id} isOpen={show} style={TOOLTIP_STYLE}>
       <Flex
         sx={{
-          p: 2,
           fontWeight: "bold",
           whiteSpace: "nowrap",
           alignItems: "center",

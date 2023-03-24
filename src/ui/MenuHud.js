@@ -1,7 +1,8 @@
 import React, { useRef, useEffect, useState } from "react";
-import { Box, useAppContext, Flex } from "./";
+import { Box, useAppContext, Flex, TOOLTIP_STYLE } from "./";
 import { tintCanvas, imageToCanvas } from "../utils";
 import { assetList } from "../../shared/Assets";
+import { Tooltip } from "react-tooltip";
 
 const PORTRAIT_SIZE = 54;
 
@@ -100,10 +101,11 @@ const UserName = ({ sx }) => {
   return <Box sx={{ ...sx }}>{hero?.profile?.userName}</Box>;
 };
 
-const Bar = ({ width = 100, height = 10, color = "red", min, max, sx }) => {
+const Bar = ({ width = 100, height = 10, color = "red", min, max, sx, ...props }) => {
   const percent = Math.round((min / max) * 100) + "%";
   return (
     <Box
+      data-tooltip-id="hud"
       sx={{
         overflow: "hidden",
         borderRadius: 3,
@@ -112,8 +114,10 @@ const Bar = ({ width = 100, height = 10, color = "red", min, max, sx }) => {
         boxShadow: `0px 0px 0px 1px #000`,
         width,
         height,
+
         ...sx,
       }}
+      {...props}
     >
       <Box sx={{ bg: color, height: "100%", width: percent }} />
     </Box>
@@ -122,15 +126,30 @@ const Bar = ({ width = 100, height = 10, color = "red", min, max, sx }) => {
 
 const MenuHud = () => {
   const { hero } = useAppContext();
+  const { stats } = hero ?? {};
   return (
-    <Flex sx={{ gap: 1, top: 2, left: 2, position: "absolute" }}>
-      <Portrait />
-      <Flex sx={{ flexDirection: "column", gap: "1px" }}>
-        <UserName />
-        <Bar color="red.700" max={hero?.stats?.maxHp} min={hero?.stats?.hp} />
-        <Bar color="blue.500" max={hero?.stats?.maxMp} min={hero?.stats?.mp} />
+    <>
+      <Tooltip id="hud" style={TOOLTIP_STYLE} />
+      <Flex sx={{ gap: 1, top: 2, left: 2, position: "absolute" }}>
+        <Portrait />
+        <Flex sx={{ flexDirection: "column", gap: "1px", pointerEvents: "all" }}>
+          <UserName />
+
+          <Bar
+            data-tooltip-content={`HP: ${stats?.hp} / ${stats?.maxHp}`}
+            color="red.700"
+            max={stats?.maxHp}
+            min={stats?.hp}
+          />
+          <Bar
+            data-tooltip-content={`MP: ${stats?.mp} / ${stats?.maxMp}`}
+            color="blue.500"
+            max={stats?.maxMp}
+            min={stats?.mp}
+          />
+        </Flex>
       </Flex>
-    </Flex>
+    </>
   );
 };
 

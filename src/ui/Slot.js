@@ -181,7 +181,9 @@ const Slot = React.memo(
         {item && (
           <>
             {item?.amount > 1 && (
-              <Box sx={{ position: "absolute", m: "1px", fontSize: 0 }}>{item?.amount}</Box>
+              <Box sx={{ position: "absolute", mt: `1px`, ml: `2px`, fontSize: 0, zIndex: 2 }}>
+                {item?.amount}
+              </Box>
             )}
             <Icon
               ref={imageRef}

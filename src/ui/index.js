@@ -21,3 +21,4 @@ export { default as MenuHud } from "./MenuHud";
 export { default as Modal } from "./Modal";
 export { default as ModalRespawn } from "./ModalRespawn";
 export { useAppContext } from "./App";
+export const TOOLTIP_STYLE = { transition: "none", padding: 12, borderRadius: 5, zIndex: 8888 };
