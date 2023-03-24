@@ -275,7 +275,7 @@ class ServerScene extends Phaser.Scene {
         /* Equipment -> Inventory */
         if (from?.location === "equipment" && to?.location === "inventory") {
           /* Slots don't match */
-          if (toItem && fromItem && !checkSlotsMatch(toItem?.slot, from?.slot)) return;
+          if (toItem && !checkSlotsMatch(toItem?.slot, from?.slot)) return;
           player?.clearEquipmentSlot(from?.slot);
           player.inventory[to?.slot] = fromItem;
           player.equipment[from?.slot] = toItem;
@@ -284,7 +284,7 @@ class ServerScene extends Phaser.Scene {
         /* Inventory -> Equipment */
         if (from?.location === "inventory" && to?.location === "equipment") {
           /* Slots don't match */
-          if (toItem && fromItem && !checkSlotsMatch(fromItem?.slot, to?.slot)) return;
+          if (fromItem && !checkSlotsMatch(fromItem?.slot, to?.slot)) return;
           player?.deleteInventoryItemAtId(from?.itemId);
           player.equipment[to?.slot] = fromItem;
           player.inventory[from?.slot] = toItem;

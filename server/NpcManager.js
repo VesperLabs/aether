@@ -519,7 +519,7 @@ const keeper = {
     },
     equipment: {
       handRight: ItemBuilder.buildItem("weapon", "common", "dagger"),
-      handLeft: null,
+      handLeft: ItemBuilder.buildItem("weapon", "common", "dagger"),
       helmet: null,
       accessory: null,
       armor: null,
