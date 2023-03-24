@@ -32,7 +32,7 @@ const _itemList = {
           range: 1,
         },
       },
-      sword: {
+      dagger: {
         ilvl: 1,
         base: "dagger",
         name: "Dagger",
@@ -935,7 +935,9 @@ const ItemBuilder = {
       return null;
     }
 
-    if (item.stats) {
+    if (!item) console.log(`🔧 Item not found for ${type} ${rarity} ${itemKey}`);
+
+    if (item?.stats) {
       for (let key in item.stats) {
         if (Array.isArray(item.stats[key])) {
           let low = item.stats[key][0];

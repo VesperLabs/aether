@@ -55,7 +55,7 @@ class Character extends Phaser.GameObjects.Container {
       activeSets: [],
       ...state,
     };
-    this.profile = { ...profile, headY: -47 };
+    this.profile = { headY: -47, ...profile };
     this.equipment = equipment;
     this.inventory = inventory;
     this.baseStats = baseStats;

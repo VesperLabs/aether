@@ -103,6 +103,7 @@ class Player extends Character {
     state.isAttacking = true;
     state.lastAttack = Date.now();
 
+    let spellName = "attack_right";
     /* Play attack animation frame (human only) */
     if (this.profile.race === "human") {
       if (count === 1) {
@@ -113,6 +114,7 @@ class Player extends Character {
         /* Always finishes with a left if both hands have weapons */
         if (state.hasWeaponLeft) this.action = "attack_left";
       }
+      spellName = this.action;
     }
 
     // If we are the hero, need to trigger the socket that we attacked
@@ -120,9 +122,7 @@ class Player extends Character {
       this.scene.socket.emit("attack", { count, direction: this.direction });
     }
 
-    this.scene.add.existing(
-      new Spell(this.scene, { id: null, caster: this, spellName: this.action })
-    );
+    this.scene.add.existing(new Spell(this.scene, { id: null, caster: this, spellName }));
   }
   doGrab() {
     const GRAB_RANGE = 32;

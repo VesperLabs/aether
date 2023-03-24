@@ -10,7 +10,7 @@ class Damage extends Container {
   constructor(scene, victim, hit) {
     super(scene, victim.x, victim.y);
     let text = Math.abs(hit.amount);
-    let damageSize = 30;
+    let damageSize = 20;
     this.victim = victim;
     this.duration = 1000;
     this.setDepth(99999);
@@ -65,7 +65,7 @@ class Damage extends Container {
         break;
     }
     if (hit.isCritical) {
-      damageSize = 60;
+      damageSize = 40;
       text = text + "!";
       if (this.victim.isHero) {
         damageText.setTint("0xFFFFFF");
@@ -83,15 +83,15 @@ class Damage extends Container {
       targets: damageText,
       props: {
         x: {
-          value: () => this.randomRange(60 - damageText.width / 2),
+          value: () => this.randomRange(12 - damageText.width / 2),
           ease: "Power1",
         },
         y: {
-          value: () => -60,
+          value: () => -40,
           ease: "Power1",
         },
         fontSize: {
-          value: () => 16,
+          value: () => 10,
           ease: "Power1",
         },
         alpha: {
