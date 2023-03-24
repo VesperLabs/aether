@@ -157,7 +157,7 @@ class ServerScene extends Phaser.Scene {
           if (newHit) hitList.push(newHit);
           /* If we kill the NPC */
           if (newHit?.type === "death") {
-            npc.dropLoot();
+            npc.dropLoot(hero?.stats?.magicFind);
           }
           /* TODO: Gain exp here */
         }

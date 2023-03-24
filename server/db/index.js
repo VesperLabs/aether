@@ -96,7 +96,7 @@ export const baseUser = {
     dodgeChance: 0,
     maxDamage: 0,
     minDamage: 0,
-    magicFind: 0,
+    magicFind: 1,
     regenHp: 1,
     regenMp: 1,
     maxExp: 20,

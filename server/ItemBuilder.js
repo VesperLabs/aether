@@ -833,7 +833,7 @@ const ItemBuilder = {
   getSetInfo: (setName) => {
     return _setList[setName];
   },
-  rollDrop: (ilvl, magicFind) => {
+  rollDrop: (ilvl, magicFind = 1) => {
     if (magicFind > 100) {
       magicFind = 100;
     }
