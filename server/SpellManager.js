@@ -13,7 +13,7 @@ class SpellManager {
     scene.spells[id] = new Spell(scene, { id, room, ...spellData });
     scene.add.existing(scene.spells[id]);
     spells.add(scene.spells[id]);
-    scene.io.to(room?.name).emit("spellSpawned", scene.spells[id]?.getTrimmed());
+    return scene?.spells?.[id];
   }
   expireSpells() {
     const { spells, scene } = this;

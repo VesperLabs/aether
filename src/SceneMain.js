@@ -36,7 +36,6 @@ class SceneMain extends Phaser.Scene {
           loot.destroy(true);
         }
       }
-      //console.log(snapshot?.state?.spells);
       for (const s of snapshot?.state?.npcs) {
         const npc = getNpc(scene, s.id);
         npc.setBubbleMessage(s?.bubbleMessage);
@@ -105,13 +104,18 @@ class SceneMain extends Phaser.Scene {
       p.doAttack(count);
     });
 
+    socket.on("npcAttack", ({ id, count, direction }) => {
+      const n = getNpc(scene, id);
+      n.direction = direction;
+      n.doAttack(count);
+    });
+
     socket.on("changeDirection", ({ socketId, direction }) => {
       const p = getPlayer(scene, socketId);
       p.direction = direction;
     });
 
     socket.on("assignDamage", (hitList = []) => {
-      console.log(hitList);
       for (const hit of hitList) {
         getNpc(scene, hit?.to)?.takeHit?.(hit);
         getPlayer(scene, hit?.to)?.takeHit?.(hit);
@@ -128,11 +132,6 @@ class SceneMain extends Phaser.Scene {
       npc.state.lastTeleport = Date.now();
       npc.setPosition(x, y);
       npc?.respawn();
-    });
-
-    socket.on("spellSpawned", (spellData) => {
-      const n = getNpc(scene, spellData?.caster?.id);
-      n.castSpell(spellData);
     });
 
     this.socket.on("lootSpawned", ({ loot, npcId }) => {

@@ -51,9 +51,34 @@ class Npc extends Character {
     }
     return true;
   }
+  doAttack() {
+    let count = 1;
+    const { scene, room, direction, id, state } = this ?? {};
+    const targetPlayer = scene?.players?.[state?.lockedPlayerId] ?? null;
+    if (state.isAttacking || state?.isDead) return;
+    if (!this.checkInRange(targetPlayer, 1) || targetPlayer?.state?.isDead) return;
+    // Set state to attacking and record attack time
+    this.state.isAttacking = true;
+    this.state.lastAttack = Date.now();
+
+    /* Switch hands if possible */
+    if (this.action === "attack_right" && this.state.hasWeaponLeft) {
+      this.action = "attack_left";
+      count = 2;
+    } else {
+      this.action = "attack_right";
+    }
+
+    room?.spellManager.create({
+      caster: this,
+      target: targetPlayer,
+      spellName: this.action,
+    });
+    scene.io.to(room?.name).emit("npcAttack", { id, count, direction });
+  }
   update(time, delta) {
     // Destructure relevant properties from 'this'
-    const { scene, state, stats, room } = this ?? {};
+    const { scene, state, room } = this ?? {};
 
     // Regenerate health points
     this.doRegen();
@@ -101,30 +126,10 @@ class Npc extends Character {
     // Determine if player should attack target player
     const shouldAttackPlayer = !state?.isAttacking && this.checkInRange(targetPlayer, 1);
     if (shouldAttackPlayer) {
-      // Set state to attacking and record attack time
-      this.state.isAttacking = true;
-      this.state.lastAttack = Date.now();
-
-      // Attack target player after lag delay
+      // Attack target player after lag delay to ensure we are actually near them
       setTimeout(() => {
-        if (
-          this.checkInRange(targetPlayer, 1) &&
-          !this.state?.isDead &&
-          !targetPlayer?.state?.isDead
-        ) {
-          this.room?.spellManager.create({
-            caster: this,
-            target: targetPlayer,
-            spellName: "attack_right",
-          });
-        }
+        this.doAttack();
       }, lagDelay);
-    }
-  }
-  checkAttackReady(delta) {
-    /* Let us attack again when it is ready */
-    if (Date.now() - this.state.lastAttack > delta + this.stats.attackDelay) {
-      this.state.isAttacking = false;
     }
   }
   moveTowardPoint(player) {

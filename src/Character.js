@@ -64,6 +64,7 @@ class Character extends Phaser.GameObjects.Container {
     scene.physics.add.existing(this);
     const bodySize = 8 * (this?.profile?.scale || 1);
     this.body.setCircle(bodySize, -bodySize, -bodySize);
+    this.checkAttackHands();
   }
   modifyStat(key, amount) {
     const stat = this?.stats?.[key];
@@ -79,6 +80,30 @@ class Character extends Phaser.GameObjects.Container {
       return;
     }
     this.stats[key] += amount;
+  }
+  checkAttackReady(delta) {
+    // let attackDelay = 0;
+    // if (p.action === "attack_right") attackDelay = p?.equipment?.handRight?.stats?.attackDelay;
+    // if (p.action === "attack_left") attackDelay = p?.equipment?.handLeft?.stats?.attackDelay;
+    if (Date.now() - this.state.lastAttack > delta + this?.stats?.attackDelay) {
+      this.state.isAttacking = false;
+    }
+  }
+  triggerSecondAttack() {
+    if (this.action === "attack_right" && this.state.hasWeaponLeft) {
+      this.doAttack(2);
+    }
+  }
+  checkAttackHands() {
+    this.state.hasWeaponRight = false;
+    this.state.hasWeaponLeft = false;
+    this.state.hasWeapon = false;
+    /* Can only attack with a hand if it contains a weapon type item  */
+    const leftType = this.equipment?.handLeft?.type;
+    const rightType = this.equipment?.handRight?.type;
+    if (rightType === "weapon") this.state.hasWeaponRight = true;
+    if (leftType === "weapon") this.state.hasWeaponLeft = true;
+    if (this.state.hasWeaponRight || this.state.hasWeaponLeft) this.state.hasWeapon = true;
   }
   destroy() {
     if (this.scene) this.scene.events.off("update", this.update, this);

@@ -15,7 +15,6 @@ class Player extends Character {
     this.bodyOffsetY = -14 * (this?.profile?.scale || 1);
     this.initSpriteLayers();
     this.drawCharacterFromUserData();
-    this.checkAttackHands();
     this.updateHpBar();
     if (this.state.isDead) this.doDeath();
     if (this.kind === "nasty") this.userName.setVisible(false);
@@ -31,17 +30,6 @@ class Player extends Character {
     this.drawCharacterFromUserData();
     this.checkAttackHands();
     this.updateHpBar();
-  }
-  checkAttackHands() {
-    this.state.hasWeaponRight = false;
-    this.state.hasWeaponLeft = false;
-    this.state.hasWeapon = false;
-    /* Can only attack with a hand if it contains a weapon type item  */
-    const leftType = this.equipment?.handLeft?.type;
-    const rightType = this.equipment?.handRight?.type;
-    if (rightType === "weapon") this.state.hasWeaponRight = true;
-    if (leftType === "weapon") this.state.hasWeaponLeft = true;
-    if (this.state.hasWeaponRight || this.state.hasWeaponLeft) this.state.hasWeapon = true;
   }
   doRegen() {
     if (this.state.doHpRegen) {
@@ -109,26 +97,32 @@ class Player extends Character {
     }
   }
   doAttack(count) {
-    if (!this.state.hasWeapon) return;
-    if (!this.state.isAttacking || !this.isHero) {
-      /* Will always start with a right attack. Will either swing right or left if has weapon. */
+    const { state } = this;
+    if (state.isAttacking) return;
+    if (this?.isHero && !state.hasWeapon) return; /* Heros with no weapon cannot attack */
+    state.isAttacking = true;
+    state.lastAttack = Date.now();
+
+    /* Play attack animation frame (human only) */
+    if (this.profile.race === "human") {
       if (count === 1) {
-        if (this.state.hasWeaponRight) this.action = "attack_right";
-        else if (this.state.hasWeaponLeft) this.action = "attack_left";
+        /* Will always start with a right attack. Will either swing right or left if has weapon. */
+        if (state.hasWeaponRight) this.action = "attack_right";
+        else if (state.hasWeaponLeft) this.action = "attack_left";
       } else if (count === 2) {
         /* Always finishes with a left if both hands have weapons */
-        if (this.state.hasWeaponLeft) this.action = "attack_left";
-      }
-      this.scene.add.existing(
-        new Spell(this.scene, { id: null, caster: this, spellName: this.action })
-      );
-      this.state.isAttacking = true;
-      this.state.lastAttack = Date.now();
-      // If we are the hero, need to trigger the socket that we attacked
-      if (this.isHero) {
-        this.scene.socket.emit("attack", { count, direction: this.direction });
+        if (state.hasWeaponLeft) this.action = "attack_left";
       }
     }
+
+    // If we are the hero, need to trigger the socket that we attacked
+    if (this.isHero) {
+      this.scene.socket.emit("attack", { count, direction: this.direction });
+    }
+
+    this.scene.add.existing(
+      new Spell(this.scene, { id: null, caster: this, spellName: this.action })
+    );
   }
   doGrab() {
     const GRAB_RANGE = 32;
@@ -261,14 +255,15 @@ class Player extends Character {
     hackFrameRates(this, Math.round(80 + 2500 / (this.currentSpeed + 10)));
     updateCurrentSpeed(this);
     drawFrame(this);
-    checkAttackReady(this, delta);
     checkIsFlash(this, delta);
+    this.checkAttackReady(delta);
+    if (this?.isHero) this.triggerSecondAttack();
     this.setDepth(100 + this.y + this?.body?.height);
   }
   playAnim(sprite, parts) {
     let animKey = parts?.join("-");
     /* If a part is missing, clear the texture */
-    if (parts?.some((p) => !p)) animKey = `${BLANK_TEXTURE}-${this.direction}-${this.action}`;
+    if (parts?.some((p) => !p)) animKey = `${BLANK_TEXTURE}-${this?.direction}-${this?.action}`;
     /* Otherwise try to play the texture animation */
     const currentFrame = sprite?.anims?.currentFrame?.index || 0;
     const currentKey = sprite?.anims?.currentAnim?.key;
@@ -283,19 +278,6 @@ function checkIsFlash(p, delta) {
   if (Date.now() - p.state.lastFlash > delta + 50 && p.state.isFlash) {
     p.state.isFlash = false;
     p.drawCharacterFromUserData();
-  }
-}
-
-function checkAttackReady(p, delta) {
-  /* Let us attack again when it is ready */
-  // let attackDelay = 0;
-  // if (p.action === "attack_right") attackDelay = p?.equipment?.handRight?.stats?.attackDelay;
-  // if (p.action === "attack_left") attackDelay = p?.equipment?.handLeft?.stats?.attackDelay;
-  if (Date.now() - p.state.lastAttack > delta + p?.stats?.attackDelay) {
-    p.state.isAttacking = false;
-    if (p.action === "attack_right" && p.state.hasWeaponLeft && p?.isHero) {
-      p.doAttack(2);
-    }
   }
 }
 
