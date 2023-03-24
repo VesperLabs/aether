@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import Character from "./Character";
+import Character from "../shared/Character";
 import Bubble from "./Bubble";
 import Spell from "./Spell";
 import Bar from "./Bar";

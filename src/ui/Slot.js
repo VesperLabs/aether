@@ -1,6 +1,6 @@
 import React, { useState, useRef, useLayoutEffect } from "react";
 import { Box, Icon, ItemTooltip, theme } from "./";
-import { resolveAsset } from "../Assets";
+import { resolveAsset } from "../../shared/Assets";
 import { useAppContext } from "./App";
 import { isMobile, trimCanvas, tintCanvas } from "../utils";
 

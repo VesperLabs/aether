@@ -3,7 +3,7 @@ import path from "path";
 import { config } from "dotenv";
 import "@geckos.io/phaser-on-nodejs";
 config({ path: path.join(__dirname, "/../.env") });
-const { mapList } = require("../src/Maps");
+const { mapList } = require("../shared/Maps");
 const { SnapshotInterpolation } = require("@geckos.io/snapshot-interpolation");
 const Phaser = require("phaser");
 const express = require("express");

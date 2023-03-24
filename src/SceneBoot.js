@@ -1,6 +1,6 @@
 import Phaser from "phaser";
-import { assetList } from "./Assets";
-import { mapList, imageList } from "./Maps";
+import { assetList } from "../shared/Assets";
+import { mapList, mapImageList } from "../shared/Maps";
 
 class SceneBoot extends Phaser.Scene {
   constructor(socket) {
@@ -37,7 +37,7 @@ class SceneBoot extends Phaser.Scene {
       this.scene.start("SceneHud");
       window.dispatchEvent(new Event("GAME_LOAD"));
     });
-    imageList.forEach((asset) => {
+    mapImageList.forEach((asset) => {
       this.load.image(asset.name, asset.image);
     });
     mapList.forEach((asset) => {

@@ -1,5 +1,5 @@
 import Room from "./Room";
-import { mapList } from "../src/Maps";
+import { mapList } from "../shared/Maps";
 
 class RoomManager {
   constructor(scene) {

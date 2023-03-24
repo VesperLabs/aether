@@ -1,9 +1,9 @@
 import crypto from "crypto";
 import Npc from "./Npc";
 import ItemBuilder from "./ItemBuilder";
-import nasties from "./data/nasties.json";
-import keepers from "./data/keepers.json";
-import mapNpcs from "./data/mapNpcs.json"; //todo need these to live in maps
+import nasties from "../shared/data/nasties.json";
+import keepers from "../shared/data/keepers.json";
+import mapNpcs from "../shared/data/mapNpcs.json"; //todo need these to live in maps
 
 const mobsByKind = {
   nasty: nasties,

@@ -1,4 +1,4 @@
-import BaseCharacter from "../src/Character";
+import BaseCharacter from "../shared/Character";
 import ItemBuilder from "./ItemBuilder";
 import { randomNumber, cloneObject } from "./utils";
 

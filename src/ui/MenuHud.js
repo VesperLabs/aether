@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import { Box, useAppContext, Flex } from "./";
 import { tintCanvas, imageToCanvas } from "../utils";
-import { assetList } from "../Assets";
+import { assetList } from "../../shared/Assets";
 
 const PORTRAIT_SIZE = 54;
 

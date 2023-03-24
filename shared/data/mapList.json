@@ -1,0 +1,30 @@
+[
+  {
+    "name": "grassland",
+    "json": "./assets/tilemaps/grassland.json"
+  },
+  {
+    "name": "grassland-2",
+    "json": "./assets/tilemaps/grassland-2.json"
+  },
+  {
+    "name": "mine",
+    "json": "./assets/tilemaps/mine.json"
+  },
+  {
+    "name": "town",
+    "json": "./assets/tilemaps/town.json"
+  },
+  {
+    "name": "townInside",
+    "json": "./assets/tilemaps/townInside.json"
+  },
+  {
+    "name": "grassland-graveyard",
+    "json": "./assets/tilemaps/grassland-graveyard.json"
+  },
+  {
+    "name": "dungeon-aqueducts",
+    "json": "./assets/tilemaps/dungeon-aqueducts.json"
+  }
+]
