@@ -32,8 +32,8 @@ class Npc extends Character {
   }
   checkInRange(target, range) {
     if (!target) return;
-    const thisRadius = this?.body?.radius || 1;
-    const targetRadius = target?.body?.radius || 1;
+    const thisRadius = this?.body?.radius || 8;
+    const targetRadius = target?.body?.radius || 8;
     const distance = distanceTo(this, target) - (thisRadius + targetRadius);
     return distance <= range;
   }
@@ -45,7 +45,7 @@ class Npc extends Character {
       this.y >= 0 && // Check if this is within top boundary of tilemap
       this.x < this.room.tileMap?.widthInPixels && // Check if this is within right boundary of tilemap
       this.y < this.room.tileMap?.heightInPixels && // Check if this is within bottom boundary of tilemap
-      !this.room.collideLayer?.hasTileAt(npcTileX, npcTileY, true) // Check for collision with tile properties
+      !this.room.collideLayer?.getTileAt(npcTileX, npcTileY)?.properties?.collides // Check for collision with tile properties
     ) {
       return false;
     }
@@ -98,9 +98,6 @@ class Npc extends Character {
       this.state.lockedPlayerId = nearestPlayer?.socketId;
     }
 
-    // Calculate lag delay based on time elapsed
-    const lagDelay = delta;
-
     // Get target player based on locked player ID
     const targetPlayer = scene?.players?.[state?.lockedPlayerId] ?? null;
 
@@ -117,9 +114,14 @@ class Npc extends Character {
       /* If the NPC is out of bounds, make it try to get back in bounds */
       if (this.isOutOfBounds()) {
         /* TODO: Improve this so that it moves toward the nearest open tile instead */
-        this.moveTowardPoint(this.startingCoords);
+        this.moveTowardPointPathed(this.startingCoords);
       } else {
-        this.moveRandomly(time);
+        this.bubbleMessage = null;
+        if (this.state.isStatic) {
+          this.moveToSpawnAndWait(delta);
+        } else {
+          this.moveRandomly(time);
+        }
       }
     }
 
@@ -129,16 +131,29 @@ class Npc extends Character {
       // Attack target player after lag delay to ensure we are actually near them
       setTimeout(() => {
         this.doAttack();
-      }, lagDelay);
+        // Calculate lag delay based on time elapsed
+      }, delta);
     }
   }
-  moveTowardPoint(player) {
+  moveTowardPoint(coords) {
     const speed = this.stats.speed;
-    const angle = Math.atan2(player.y - this.y, player.x - this.x);
+    const angle = Math.atan2(coords.y - this.y, coords.x - this.x);
     this.vx = speed * Math.cos(angle);
     this.vy = speed * Math.sin(angle);
     this.body.setVelocity(this.vx, this.vy);
     this.direction = getCharacterDirection(this, { x: this?.x + this.vx, y: this.y + this.vy });
+  }
+  moveTowardPointPathed(targetCoords) {
+    const { nextPath } = this ?? {};
+    this.room.findPath(this, targetCoords);
+    if (nextPath) {
+      if (this.checkInRange(nextPath, 1)) {
+        this.nextPath = null;
+      } else {
+        // Move the player along the path at the given speed
+        this.moveTowardPoint(nextPath);
+      }
+    }
   }
   moveRandomly(time) {
     if (time % 4 > 1) return;
@@ -165,8 +180,18 @@ class Npc extends Character {
         this.vy = 0;
         this.vx = 0;
     }
-    this.bubbleMessage = null;
     this.body.setVelocity(this.vx, this.vy);
+  }
+  moveToSpawnAndWait(delta) {
+    if (this.checkInRange(this.startingCoords, 1)) {
+      this.vy = 0;
+      this.vx = 0;
+      setTimeout(() => {
+        this.direction = "down";
+      }, delta * 4);
+      return this.body.setVelocity(this.vx, this.vy);
+    }
+    this.moveTowardPointPathed(this.startingCoords);
   }
   dropLoot(magicFind) {
     const ilvl = 1 + Math.floor(this.stats.level / 10);

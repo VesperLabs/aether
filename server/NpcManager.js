@@ -490,10 +490,13 @@ const keeper = {
       race: "human",
     },
     direction: "down",
+    state: {
+      isStatic: true,
+    },
     baseStats: {
       expValue: 0,
       level: 40,
-      speed: 100,
+      speed: 120,
       range: 32,
       attackDelay: 200,
       accuracy: 0,

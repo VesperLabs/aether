@@ -9,6 +9,7 @@
     "@geckos.io/snapshot-interpolation": "^1.1.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
+    "easystarjs": "^0.4.4",
     "express": "^4.18.2",
     "mongodb": "^5.1.0",
     "phaser": "^3.55.2",

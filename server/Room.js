@@ -3,6 +3,7 @@ import PlayerManager from "./PlayerManager.js";
 import Door from "../src/Door";
 import LootManager from "./LootManager.js";
 import SpellManager from "./SpellManager.js";
+import EasyStar from "easystarjs";
 // import LootFactory from "./LootFactory.js";
 const { Vault } = require("@geckos.io/snapshot-interpolation");
 
@@ -18,6 +19,7 @@ class Room {
     this.lootManager = new LootManager(this.scene, this);
     this.spellManager = new SpellManager(this.scene, this);
     this.createColliders();
+    this.easystar = this.createPathGrid();
     this.createDoors();
     this.npcManager.spawnNpcs();
     this.npcManager.setNpcCollision();
@@ -38,6 +40,46 @@ class Room {
     });
     const { top, left, bottom, right } = this.createMapBounds();
     this.colliders = [this.collideLayer, top, left, bottom, right];
+  }
+  createPathGrid() {
+    const { collideLayer } = this;
+    // Create an EasyStar grid from the collideLayer data
+    const grid = [];
+    for (let y = 0; y < collideLayer.layer.height; y++) {
+      const row = [];
+      for (let x = 0; x < collideLayer.layer.width; x++) {
+        const tile = collideLayer.layer.data[y][x];
+        row.push(tile.collides ? 1 : 0);
+      }
+      grid.push(row);
+    }
+    const easystar = new EasyStar.js();
+    easystar.setGrid(grid);
+    easystar.setAcceptableTiles([0]);
+    easystar.enableDiagonals();
+    //easystar.enableCornerCutting();
+    easystar.setIterationsPerCalculation(100);
+    easystar.setTileCost(1, 1);
+    easystar.setTileCost(0, 0);
+    return easystar;
+  }
+  findPath(player, targetCoords) {
+    const { collideLayer, easystar } = this ?? {};
+    const TILE_SIZE = collideLayer.layer.tileWidth;
+    const startX = Math.floor(player.x / TILE_SIZE);
+    const startY = Math.floor(player.y / TILE_SIZE);
+    const endX = Math.floor(targetCoords.x / TILE_SIZE);
+    const endY = Math.floor(targetCoords.y / TILE_SIZE);
+
+    easystar.findPath(startX, startY, endX, endY, (path) => {
+      const nextPath = path?.map((tile) => ({
+        x: tile.x * TILE_SIZE + TILE_SIZE / 2,
+        y: tile.y * TILE_SIZE + TILE_SIZE / 2,
+      }))?.[1];
+      if (JSON.stringify(nextPath) !== JSON.stringify(player?.nextPath)) player.nextPath = nextPath;
+    });
+
+    easystar.calculate();
   }
   createMapBounds() {
     const { scene, tileMap } = this;
