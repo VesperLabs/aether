@@ -296,7 +296,7 @@ const _itemList = {
         ilvl: 3,
         name: "Wizard Robe",
         base: "armor",
-        texture: "armor-wizard",
+        texture: "armor-wizard-robe",
         tint: "0xFFFFFF",
         slot: "armor",
         requirements: {

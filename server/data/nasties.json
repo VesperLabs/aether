@@ -1,0 +1,441 @@
+{
+  "raccoon": {
+    "profile": { "race": "raccoon", "headY": -27, "userName": "Raccoon" },
+    "baseStats": {
+      "attackDelay": 500,
+      "expValue": 2,
+      "level": 1,
+      "speed": 100,
+      "range": 32,
+      "accuracy": 0,
+      "armorPierce": 0,
+      "dexterity": 1,
+      "strength": 1,
+      "vitality": 6,
+      "intelligence": 1,
+      "defense": 0,
+      "blockChance": 0,
+      "dodgeChance": 0,
+      "critChance": 0,
+      "critMultiplier": 2,
+      "maxDamage": 1,
+      "minDamage": 2,
+      "regenHp": 1,
+      "regenMp": 1,
+      "maxHp": 0,
+      "maxMp": 0
+    },
+    "drops": [
+      {
+        "type": "stackable",
+        "rarity": "common",
+        "key": "redApple",
+        "chance": 4
+      },
+      {
+        "type": "stackable",
+        "rarity": "common",
+        "key": "grapes",
+        "chance": 4
+      }
+    ]
+  },
+  "slime": {
+    "profile": { "race": "slime", "headY": -23, "userName": "Slime" },
+    "baseStats": {
+      "attackDelay": 500,
+      "expValue": 2,
+      "level": 1,
+      "speed": 100,
+      "range": 32,
+      "accuracy": 0,
+      "armorPierce": 0,
+      "dexterity": 3,
+      "strength": 3,
+      "vitality": 3,
+      "intelligence": 3,
+      "defense": 0,
+      "blockChance": 0,
+      "dodgeChance": 0,
+      "critChance": 0,
+      "critMultiplier": 2,
+      "maxDamage": 1,
+      "minDamage": 0,
+      "regenHp": 1,
+      "regenMp": 1,
+      "maxHp": 0,
+      "maxMp": 0
+    },
+    "drops": [
+      {
+        "type": "stackable",
+        "rarity": "common",
+        "key": "blueSporangium",
+        "chance": 2
+      }
+    ]
+  },
+  "hornet": {
+    "profile": { "race": "bee", "headY": -34, "userName": "Hornet" },
+    "baseStats": {
+      "attackDelay": 500,
+      "expValue": 1,
+      "level": 1,
+      "speed": 150,
+      "range": 32,
+      "accuracy": 0,
+      "armorPierce": 0,
+      "dexterity": 2,
+      "strength": 0,
+      "vitality": 3,
+      "intelligence": 3,
+      "defense": 0,
+      "blockChance": 0,
+      "dodgeChance": 35,
+      "critChance": 0,
+      "critMultiplier": 2,
+      "maxDamage": 0,
+      "minDamage": 0,
+      "regenHp": 1,
+      "regenMp": 1,
+      "maxHp": 0,
+      "maxMp": 0
+    },
+    "drops": [
+      {
+        "type": "stackable",
+        "rarity": "common",
+        "key": "redApple",
+        "chance": 4
+      }
+    ]
+  },
+  "hawkwing": {
+    "profile": {
+      "race": "bee",
+      "tint": "0x44FFCC",
+      "scale": 1.5,
+      "headY": -45,
+      "userName": "Hawkwing"
+    },
+    "state": { "isAggro": true },
+    "baseStats": {
+      "attackDelay": 500,
+      "expValue": 5,
+      "level": 5,
+      "speed": 150,
+      "range": 32,
+      "accuracy": 0,
+      "armorPierce": 0,
+      "dexterity": 6,
+      "strength": 5,
+      "vitality": 6,
+      "intelligence": 3,
+      "defense": 0,
+      "blockChance": 0,
+      "dodgeChance": 45,
+      "critChance": 5,
+      "critMultiplier": 2,
+      "maxDamage": 1,
+      "minDamage": 2,
+      "regenHp": 5,
+      "regenMp": 1,
+      "maxHp": 0,
+      "maxMp": 0
+    },
+    "drops": []
+  },
+  "spider": {
+    "profile": { "race": "spider", "headY": -21, "userName": "Spider" },
+    "state": { "isAggro": true },
+    "baseStats": {
+      "attackDelay": 500,
+      "expValue": 4,
+      "level": 5,
+      "speed": 100,
+      "range": 32,
+      "accuracy": 3,
+      "armorPierce": 0,
+      "dexterity": 6,
+      "strength": 6,
+      "vitality": 9,
+      "intelligence": 3,
+      "defense": 0,
+      "blockChance": 0,
+      "dodgeChance": 0,
+      "critChance": 1,
+      "critMultiplier": 2,
+      "maxDamage": 3,
+      "minDamage": 5,
+      "regenHp": 1,
+      "regenMp": 1,
+      "maxHp": 0,
+      "maxMp": 0
+    },
+    "drops": [
+      {
+        "type": "stackable",
+        "rarity": "common",
+        "key": "spiderMeat",
+        "chance": 3
+      }
+    ]
+  },
+  "hogan": {
+    "profile": {
+      "race": "spider",
+      "tint": "0xFF33CC",
+      "scale": 2,
+      "headY": -30,
+      "userName": "Hogan"
+    },
+    "state": { "isAggro": true },
+    "baseStats": {
+      "attackDelay": 500,
+      "expValue": 10,
+      "level": 10,
+      "speed": 100,
+      "range": 32,
+      "accuracy": 3,
+      "armorPierce": 0,
+      "dexterity": 12,
+      "strength": 12,
+      "vitality": 22,
+      "intelligence": 10,
+      "defense": 0,
+      "blockChance": 0,
+      "dodgeChance": 0,
+      "critChance": 1,
+      "critMultiplier": 2,
+      "maxDamage": 5,
+      "minDamage": 8,
+      "regenHp": 10,
+      "regenMp": 1,
+      "maxHp": 0,
+      "maxMp": 0
+    },
+    "drops": [
+      {
+        "type": "stackable",
+        "rarity": "common",
+        "key": "spiderMeat",
+        "chance": 3
+      },
+      {
+        "type": "stackable",
+        "rarity": "common",
+        "key": "cheese",
+        "chance": 6
+      }
+    ]
+  },
+  "bat": {
+    "profile": { "race": "bat", "headY": -30, "userName": "Bat" },
+    "state": { "isAggro": true },
+    "baseStats": {
+      "attackDelay": 500,
+      "expValue": 4,
+      "level": 5,
+      "speed": 100,
+      "range": 32,
+      "accuracy": 0,
+      "armorPierce": 0,
+      "dexterity": 6,
+      "strength": 3,
+      "vitality": 3,
+      "intelligence": 6,
+      "defense": 5,
+      "blockChance": 0,
+      "dodgeChance": 35,
+      "critChance": 0,
+      "critMultiplier": 2,
+      "maxDamage": 2,
+      "minDamage": 3,
+      "regenHp": 1,
+      "regenMp": 1,
+      "maxHp": 0,
+      "maxMp": 0
+    },
+    "drops": [
+      {
+        "type": "stackable",
+        "rarity": "common",
+        "key": "batMeat",
+        "chance": 3
+      },
+      {
+        "type": "stackable",
+        "rarity": "common",
+        "key": "cheese",
+        "chance": 6
+      }
+    ]
+  },
+  "zombie": {
+    "profile": { "race": "zombie", "headY": -44, "userName": "Zombie" },
+    "state": { "isAggro": true },
+    "baseStats": {
+      "attackDelay": 500,
+      "expValue": 8,
+      "level": 10,
+      "speed": 100,
+      "range": 32,
+      "accuracy": 0,
+      "armorPierce": 0,
+      "dexterity": 6,
+      "strength": 10,
+      "vitality": 25,
+      "intelligence": 8,
+      "defense": 0,
+      "blockChance": 0,
+      "dodgeChance": 0,
+      "critChance": 0,
+      "critMultiplier": 2,
+      "maxDamage": 5,
+      "minDamage": 10,
+      "regenHp": 5,
+      "regenMp": 5,
+      "maxHp": 0,
+      "maxMp": 0
+    },
+    "drops": [
+      {
+        "type": "stackable",
+        "rarity": "common",
+        "key": "mediumHpPotion",
+        "chance": 15
+      },
+      {
+        "type": "stackable",
+        "rarity": "common",
+        "key": "skull",
+        "chance": 4
+      }
+    ]
+  },
+  "wraith": {
+    "profile": { "race": "wraith", "headY": -46, "userName": "Wraith" },
+    "state": { "isAggro": true },
+    "baseStats": {
+      "attackDelay": 500,
+      "expValue": 8,
+      "level": 10,
+      "speed": 100,
+      "range": 32,
+      "accuracy": 0,
+      "armorPierce": 0,
+      "dexterity": 12,
+      "strength": 10,
+      "vitality": 20,
+      "intelligence": 17,
+      "defense": 0,
+      "blockChance": 0,
+      "dodgeChance": 5,
+      "critChance": 5,
+      "critMultiplier": 2,
+      "maxDamage": 5,
+      "minDamage": 8,
+      "regenHp": 5,
+      "regenMp": 5,
+      "maxHp": 0,
+      "maxMp": 0
+    },
+    "drops": [
+      {
+        "type": "stackable",
+        "rarity": "common",
+        "key": "mediumHpPotion",
+        "chance": 15
+      },
+      {
+        "type": "stackable",
+        "rarity": "common",
+        "key": "smallHpPotion",
+        "chance": 15
+      },
+      {
+        "type": "stackable",
+        "rarity": "common",
+        "key": "skull",
+        "chance": 4
+      }
+    ]
+  },
+  "chonks": {
+    "profile": { "race": "abomination", "tint": "0x88FF88", "headY": -88, "userName": "Chonks" },
+    "state": { "isAggro": true },
+    "baseStats": {
+      "attackDelay": 500,
+      "expValue": 12,
+      "level": 15,
+      "speed": 100,
+      "range": 32,
+      "accuracy": 0,
+      "armorPierce": 0,
+      "dexterity": 18,
+      "strength": 20,
+      "vitality": 40,
+      "intelligence": 30,
+      "defense": 15,
+      "blockChance": 0,
+      "dodgeChance": 0,
+      "critChance": 5,
+      "critMultiplier": 1.5,
+      "maxDamage": 6,
+      "minDamage": 10,
+      "regenHp": 5,
+      "regenMp": 5,
+      "maxHp": 0,
+      "maxMp": 0
+    },
+    "drops": [
+      {
+        "type": "stackable",
+        "rarity": "common",
+        "key": "mediumHpPotion",
+        "chance": 15
+      },
+      {
+        "type": "stackable",
+        "rarity": "common",
+        "key": "smallHpPotion",
+        "chance": 15
+      },
+      {
+        "type": "stackable",
+        "rarity": "common",
+        "key": "skull",
+        "chance": 6
+      }
+    ]
+  },
+  "merman": {
+    "profile": { "race": "merman", "headY": -30, "userName": "Merman" },
+    "state": { "isAggro": true },
+    "baseStats": {
+      "attackDelay": 500,
+      "expValue": 8,
+      "level": 10,
+      "speed": 150,
+      "range": 32,
+      "accuracy": 0,
+      "armorPierce": 0,
+      "dexterity": 12,
+      "strength": 10,
+      "vitality": 20,
+      "intelligence": 17,
+      "defense": 0,
+      "blockChance": 0,
+      "dodgeChance": 5,
+      "critChance": 5,
+      "critMultiplier": 2,
+      "maxDamage": 5,
+      "minDamage": 8,
+      "regenHp": 5,
+      "regenMp": 5,
+      "maxHp": 0,
+      "maxMp": 0
+    },
+    "drops": []
+  }
+}

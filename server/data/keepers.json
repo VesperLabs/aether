@@ -1,0 +1,366 @@
+{
+  "tudwick": {
+    "profile": {
+      "userName": "Tudwick",
+      "face": {
+        "texture": "face-2",
+        "tint": "0xFFFFFF"
+      },
+      "tint": "0x888888",
+      "hair": {
+        "texture": "hair-1",
+        "tint": "0xFFFFFF"
+      },
+      "gender": "male",
+      "race": "human"
+    },
+    "direction": "down",
+    "state": { "isStatic": true },
+    "baseStats": {
+      "expValue": 0,
+      "attackDelay": 100,
+      "level": 40,
+      "speed": 100,
+      "range": 32,
+      "accuracy": 0,
+      "armorPierce": 5,
+      "dexterity": 40,
+      "strength": 40,
+      "vitality": 46,
+      "intelligence": 40,
+      "defense": 0,
+      "blockChance": 0,
+      "dodgeChance": 25,
+      "critChance": 50,
+      "critMultiplier": 4,
+      "maxDamage": 1,
+      "minDamage": 2,
+      "regenHp": 20,
+      "regenMp": 20,
+      "maxHp": 0,
+      "maxMp": 0
+    },
+    "equipment": {
+      "handLeft": ["weapon", "common", "dagger"],
+      "handRight": null,
+      "helmet": null,
+      "accessory": null,
+      "armor": null,
+      "pants": ["pants", "common", "clothPants"],
+      "boots": ["boots", "common", "nutshellBoots"]
+    },
+    "dialogues": {
+      "greet": "My name is <strong>Tudwick</strong> and I don't like wearing shirts. I live in these woods and I have a sweet <em>`stache</em>.<br/><br/>What can I do for you?",
+      "quests": "Still listening? Good! Here's some stuff you can do for me.",
+      "shop": "Here are some things I found along the trail."
+    },
+    "quests": ["slime-roundup", "slime-eggs", "hornet-hunting"],
+    "shop": [
+      ["pants", "common", "clothPants"],
+      ["helmet", "common", "colloquialCap"],
+      ["weapon", "common", "dagger"],
+      ["armor", "common", "clothRobe"],
+      ["boots", "common", "nutshellBoots"]
+    ]
+  },
+  "lynne": {
+    "profile": {
+      "userName": "Lynne",
+      "face": {
+        "texture": "face-1",
+        "tint": "0xFFFFFF"
+      },
+      "hair": {
+        "texture": "hair-1",
+        "tint": "0xDD6644"
+      },
+      "gender": "female",
+      "race": "human"
+    },
+    "direction": "down",
+    "state": { "isStatic": true },
+    "baseStats": {
+      "expValue": 0,
+      "attackDelay": 100,
+      "level": 40,
+      "speed": 100,
+      "range": 32,
+      "accuracy": 0,
+      "armorPierce": 5,
+      "dexterity": 40,
+      "strength": 40,
+      "vitality": 46,
+      "intelligence": 40,
+      "defense": 0,
+      "blockChance": 0,
+      "dodgeChance": 25,
+      "critChance": 50,
+      "critMultiplier": 4,
+      "maxDamage": 1,
+      "minDamage": 2,
+      "regenHp": 20,
+      "regenMp": 20,
+      "maxHp": 0,
+      "maxMp": 0
+    },
+    "equipment": {
+      "handLeft": null,
+      "handRight": ["weapon", "common", "scythe"],
+      "helmet": null,
+      "accessory": null,
+      "armor": ["armor", "unique", "theMossmanProphecy"],
+      "pants": ["pants", "common", "clothPants"],
+      "boots": ["boots", "common", "nutshellBoots"]
+    },
+    "dialogues": {
+      "greet": "My name is <strong>Lynne</strong>.  I am trying to film a nature documentary out here, but the critters keep attacking me.",
+      "quests": "In these woods, good production assistants don't grow on trees. Sure, I've got some jobs for you.",
+      "shop": "Some useful goods here. I take gold."
+    },
+    "quests": ["raccoon-hunting", "grape-finding", "hawkwing-hunting"],
+    "shop": [
+      ["weapon", "common", "scythe"],
+      ["weapon", "common", "axe"],
+      ["shield", "common", "barkShield"],
+      ["helmet", "common", "clothCap"]
+    ]
+  },
+  "anthony": {
+    "profile": {
+      "userName": "Anthony",
+      "face": {
+        "texture": "face-1",
+        "tint": "0xFFFFFF"
+      },
+      "hair": {
+        "texture": "hair-1",
+        "tint": "0xDDDD88"
+      },
+      "gender": "male",
+      "race": "human"
+    },
+    "direction": "down",
+    "state": { "isStatic": true },
+    "baseStats": {
+      "expValue": 0,
+      "attackDelay": 100,
+      "level": 40,
+      "speed": 100,
+      "range": 32,
+      "accuracy": 0,
+      "armorPierce": 5,
+      "dexterity": 40,
+      "strength": 40,
+      "vitality": 46,
+      "intelligence": 40,
+      "defense": 0,
+      "blockChance": 0,
+      "dodgeChance": 25,
+      "critChance": 50,
+      "critMultiplier": 4,
+      "maxDamage": 1,
+      "minDamage": 2,
+      "regenHp": 20,
+      "regenMp": 20,
+      "maxHp": 0,
+      "maxMp": 0
+    },
+    "equipment": {
+      "handLeft": null,
+      "handRight": ["weapon", "magic", "axe"],
+      "helmet": null,
+      "accessory": null,
+      "pants": ["pants", "set", "chetsChampions"],
+      "armor": ["armor", "set", "chetsPurpleShirt"],
+      "boots": ["boots", "set", "chetsNeonKicks"]
+    },
+    "dialogues": {
+      "greet": "My name is <strong>Anthony</strong>. Some people refer to me as a <strong>Lunchmeat Scholar</strong>",
+      "quests": "These caves are dark and scary but chuck full of great lunchmeats. You have to just know where to look.",
+      "shop": "Some useful goods here. I take gold."
+    },
+    "quests": ["spidermeat-finding", "batmeat-finding", "cheese-finding", "hogan-hunting"],
+    "shop": [
+      ["weapon", "common", "spear"],
+      ["shield", "common", "barkShield"]
+    ]
+  },
+  "steve": {
+    "profile": {
+      "userName": "Steve",
+      "face": {
+        "texture": "face-1",
+        "tint": "0xFFFFFF"
+      },
+      "hair": {
+        "texture": "hair-2",
+        "tint": "0x665555"
+      },
+      "gender": "male",
+      "race": "human"
+    },
+    "direction": "down",
+    "state": { "isStatic": false },
+    "baseStats": {
+      "expValue": 0,
+      "attackDelay": 100,
+      "level": 40,
+      "speed": 100,
+      "range": 32,
+      "accuracy": 0,
+      "armorPierce": 5,
+      "dexterity": 40,
+      "strength": 40,
+      "vitality": 46,
+      "intelligence": 40,
+      "defense": 0,
+      "blockChance": 0,
+      "dodgeChance": 25,
+      "critChance": 50,
+      "critMultiplier": 4,
+      "maxDamage": 1,
+      "minDamage": 2,
+      "regenHp": 20,
+      "regenMp": 20,
+      "maxHp": 0,
+      "maxMp": 0
+    },
+    "equipment": {
+      "handLeft": null,
+      "handRight": ["weapon", "common", "hammer"],
+      "helmet": null,
+      "accessory": null,
+      "pants": ["pants", "common", "leatherPants"],
+      "armor": ["armor", "common", "bronzeHeavyPlate"],
+      "boots": ["boots", "common", "leatherBoots"]
+    },
+    "dialogues": {
+      "greet": "My name is <strong>Steve</strong>. I am the blacksmith around here.",
+      "quests": "Quests",
+      "shop": "Some useful goods here. I take gold."
+    },
+    "quests": [],
+    "shop": [
+      ["weapon", "common", "gladius"],
+      ["shield", "common", "buckler"],
+      ["boots", "common", "leatherBoots"],
+      ["pants", "common", "leatherPants"],
+      ["armor", "common", "bronzeHeavyPlate"],
+      ["armor", "common", "bronzePlate"]
+    ]
+  },
+  "siobhan": {
+    "profile": {
+      "userName": "Siobhan",
+      "face": {
+        "texture": "face-1",
+        "tint": "0xFFFFFF"
+      },
+      "hair": {
+        "texture": "hair-2",
+        "tint": "0xCCCC55"
+      },
+      "gender": "female",
+      "race": "human"
+    },
+    "direction": "down",
+    "state": { "isStatic": true },
+    "baseStats": {
+      "expValue": 0,
+      "attackDelay": 100,
+      "level": 40,
+      "speed": 100,
+      "range": 32,
+      "accuracy": 0,
+      "armorPierce": 5,
+      "dexterity": 40,
+      "strength": 40,
+      "vitality": 46,
+      "intelligence": 40,
+      "defense": 0,
+      "blockChance": 0,
+      "dodgeChance": 25,
+      "critChance": 50,
+      "critMultiplier": 4,
+      "maxDamage": 1,
+      "minDamage": 2,
+      "regenHp": 20,
+      "regenMp": 20,
+      "maxHp": 0,
+      "maxMp": 0
+    },
+    "equipment": {
+      "handLeft": null,
+      "handRight": null,
+      "helmet": null,
+      "accessory": null,
+      "pants": ["pants", "common", "clothPants"],
+      "armor": ["armor", "common", "clothRobe"],
+      "boots": ["boots", "common", "nutshellBoots"]
+    },
+    "dialogues": {
+      "greet": "My name is <strong>Siobhan</strong>. I am a purveyor of quality potions.",
+      "quests": "Quests",
+      "shop": "See anything you like?"
+    },
+    "quests": [],
+    "shop": []
+  },
+  "danny": {
+    "profile": {
+      "userName": "Danny",
+      "face": {
+        "texture": "face-3",
+        "tint": "0xFFFF00"
+      },
+      "hair": {
+        "texture": "hair-2",
+        "tint": "0xFFFF66"
+      },
+      "gender": "male",
+      "race": "human"
+    },
+    "direction": "down",
+    "state": { "isStatic": true },
+    "baseStats": {
+      "expValue": 0,
+      "attackDelay": 100,
+      "level": 40,
+      "speed": 100,
+      "range": 32,
+      "accuracy": 0,
+      "armorPierce": 5,
+      "dexterity": 40,
+      "strength": 40,
+      "vitality": 46,
+      "intelligence": 40,
+      "defense": 0,
+      "blockChance": 0,
+      "dodgeChance": 25,
+      "critChance": 50,
+      "critMultiplier": 4,
+      "maxDamage": 1,
+      "minDamage": 2,
+      "regenHp": 20,
+      "regenMp": 20,
+      "maxHp": 0,
+      "maxMp": 0
+    },
+    "equipment": {
+      "handLeft": null,
+      "handRight": null,
+      "helmet": null,
+      "accessory": null,
+      "pants": ["pants", "common", "leatherPants"],
+      "armor": ["armor", "common", "wizardRobe"],
+      "boots": ["boots", "common", "leatherBoots"]
+    },
+    "dialogues": {
+      "greet": "My name is <strong>Danny</strong>. I'm the wizard.",
+      "quests": "Here are some quests. And no, my wizard robe is not a reward.",
+      "shop": "You got to be a wizard to wear what I have, but here's some stuff for sale."
+    },
+    "quests": ["skull-finding", "chonks-hunting"],
+    "shop": []
+  }
+}
