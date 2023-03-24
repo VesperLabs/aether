@@ -4,7 +4,7 @@ import { Flex, Text, useAppContext, Slot } from "./";
 const MenuEquipment = () => {
   const { hero, tabEquipment: show } = useAppContext();
   const equipment = Object.entries(hero?.equipment || {});
-  if (!show) return;
+
   return (
     <Flex
       sx={{
@@ -14,6 +14,7 @@ const MenuEquipment = () => {
         justifyContent: "end",
         bg: "shadow.30",
         pointerEvents: "all",
+        display: show ? "flex" : "none",
         "&:hover": {
           zIndex: 999,
         },

@@ -5,7 +5,7 @@ const MenuInventory = () => {
   const { hero, tabInventory: show } = useAppContext();
   const inventory = hero?.inventory || [];
   const maxInventory = new Array(30).fill(null);
-  if (!show) return;
+
   return (
     <Flex
       sx={{
@@ -15,6 +15,7 @@ const MenuInventory = () => {
         justifyContent: "end",
         bg: "shadow.30",
         pointerEvents: "all",
+        display: show ? "flex" : "none",
         "&:hover": {
           zIndex: 999,
         },
