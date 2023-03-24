@@ -28,3 +28,14 @@ interface Loot {
   item: Item;
   dropTime: number;
 }
+
+interface Door extends Phaser.Types.Tilemaps.TiledObject {}
+
+interface Scene extends Phaser.Scene {
+  doors: Array<Door>;
+}
+
+interface Coordinate {
+  x: number;
+  y: number;
+}

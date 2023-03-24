@@ -5,10 +5,23 @@ import LootManager from "./LootManager.js";
 import SpellManager from "./SpellManager.js";
 import EasyStar from "easystarjs";
 // import LootFactory from "./LootFactory.js";
-const { Vault } = require("@geckos.io/snapshot-interpolation");
+import { Vault } from "@geckos.io/snapshot-interpolation";
 
 class Room {
-  constructor(scene, { name }) {
+  private scene: Scene;
+  public tileMap: Phaser.Tilemaps.Tilemap;
+  public collideLayer: Phaser.Tilemaps.TilemapLayer;
+  public name: string;
+  public doors: Phaser.Physics.Arcade.Group;
+  public vault: Vault;
+  public npcManager: NpcManager;
+  public playerManager: PlayerManager;
+  public lootManager: LootManager;
+  public spellManager: SpellManager;
+  public easystar: EasyStar.js;
+  private colliders: Array<any>;
+
+  constructor(scene: Scene, { name }: { name: string }) {
     this.scene = scene;
     this.tileMap = scene.make.tilemap({ key: name });
     this.name = name;
@@ -24,18 +37,21 @@ class Room {
     this.npcManager.spawnNpcs();
     this.npcManager.setNpcCollision();
   }
+
   createDoors() {
     const { name, doors, scene } = this;
-    this.tileMap.getObjectLayer("Doors").objects?.forEach((door) => {
-      if (!scene?.doors?.[name]) {
-        scene.doors[name] = {};
-      }
-      scene.doors[name][door.name] = new Door(scene, door);
-      doors.add(scene.doors[name][door.name]);
-    });
+    this.tileMap
+      .getObjectLayer("Doors")
+      .objects?.forEach((door: Phaser.Types.Tilemaps.TiledObject) => {
+        if (!scene?.doors?.[name]) {
+          scene.doors[name] = {};
+        }
+        scene.doors[name][door.name] = new Door(scene, door);
+        doors.add(scene.doors[name][door.name]);
+      });
   }
   createColliders() {
-    this.collideLayer = this.tileMap.createLayer("Collide").setCollisionByProperty({
+    this.collideLayer = this.tileMap.createLayer("Collide", null).setCollisionByProperty({
       collides: true,
     });
     const { top, left, bottom, right } = this.createMapBounds();

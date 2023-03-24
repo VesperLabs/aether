@@ -15,6 +15,7 @@
     "jsx": "react"
   },
   "include": [
-    "server/**/*" // <-- change this to where your source files are
+    "server/**/*", // <-- change this to where your source files are
+    "shared/**/*"
   ]
 }

@@ -1,6 +1,6 @@
 import crypto from "crypto";
 
-class Loot {
+class Loot implements Loot {
   id: string;
   roomName: string;
   x: number;
