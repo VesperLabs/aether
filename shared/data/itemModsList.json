@@ -1,0 +1,25 @@
+{
+  "suffix": [
+    { "ilvl": 1, "name": "of Dexterity", "stats": { "dexterity": [2, 3] } },
+    { "ilvl": 1, "name": "of Strength", "stats": { "strength": [2, 3] } },
+    { "ilvl": 1, "name": "of Vitality", "stats": { "vitality": [2, 3] } },
+    { "ilvl": 1, "name": "of Intelligence", "stats": { "intelligence": [2, 3] } },
+    { "ilvl": 1, "name": "of Critical Chance", "stats": { "critChance": [1, 2] } },
+    { "ilvl": 1, "name": "of Dodge Chance", "stats": { "dodgeChance": [1, 2] } },
+    { "ilvl": 1, "name": "of HP Regen", "stats": { "regenHp": [1, 2] } },
+    { "ilvl": 1, "name": "of Magic Find", "stats": { "magicFind": [1, 2] } },
+    { "ilvl": 1, "name": "of Max Damage", "stats": { "maxDamage": [1, 2] } },
+    { "ilvl": 1, "name": "of Spell Damage", "stats": { "spellDamage": [1, 1] } },
+
+    { "ilvl": 2, "name": "of Dexterity", "stats": { "dexterity": [6, 8] } },
+    { "ilvl": 2, "name": "of Strength", "stats": { "strength": [6, 8] } },
+    { "ilvl": 2, "name": "of Vitality", "stats": { "vitality": [6, 8] } },
+    { "ilvl": 2, "name": "of Intelligence", "stats": { "intelligence": [6, 8] } },
+    { "ilvl": 2, "name": "of HP Regen", "stats": { "regenHp": [2, 4] } },
+    { "ilvl": 2, "name": "of Critical Chance", "stats": { "critChance": [2, 3] } },
+    { "ilvl": 2, "name": "of Dodge Chance", "stats": { "dodgeChance": [2, 3] } },
+    { "ilvl": 2, "name": "of Magic Find", "stats": { "magicFind": [2, 3] } },
+    { "ilvl": 2, "name": "of Max Damage", "stats": { "maxDamage": [2, 3] } },
+    { "ilvl": 2, "name": "of Spell Damage", "stats": { "spellDamage": [1, 2] } }
+  ]
+}

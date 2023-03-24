@@ -1,0 +1,35 @@
+{
+  "chets": {
+    "pieces": 3,
+    "stats": {
+      "vitality": 10,
+      "intelligence": 10
+    },
+    "percentStats": {
+      "vitality": "15%",
+      "intelligence": "15%"
+    }
+  },
+  "hawkwings": {
+    "pieces": 2,
+    "stats": {
+      "dexterity": 10,
+      "speed": 10,
+      "dodgeChance": 10
+    },
+    "percentStats": {
+      "dexterity": "15%"
+    }
+  },
+  "timmys": {
+    "pieces": 2,
+    "stats": {
+      "strength": 10,
+      "speed": 5,
+      "dodgeChance": 5,
+      "critChance": 5,
+      "critMultiplier": 1
+    },
+    "percentStats": {}
+  }
+}

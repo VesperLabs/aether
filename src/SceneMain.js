@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import Door from "./Door";
+import Door from "../shared/Door";
 import { SnapshotInterpolation } from "@geckos.io/snapshot-interpolation";
 import {
   addPlayer,

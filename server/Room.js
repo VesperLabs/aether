@@ -1,6 +1,6 @@
 import NpcManager from "./NpcManager.js";
 import PlayerManager from "./PlayerManager.js";
-import Door from "../src/Door";
+import Door from "../shared/Door";
 import LootManager from "./LootManager.js";
 import SpellManager from "./SpellManager.js";
 import EasyStar from "easystarjs";
