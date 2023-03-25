@@ -48,9 +48,19 @@ export default {
   },
   buttons: {
     menu: {
+      padding: 1,
       filter: "grayscale(100%)",
       "*": { opacity: 0.5, transition: ".2s ease all" },
       "&:hover, &.active": { "*": { opacity: 1 } },
+      backgroundColor: "shadow.10",
+    },
+    wood: {
+      py: 1,
+      px: 2,
+      backgroundColor: "yellow.900",
+      border: `1px solid #000`,
+      boxShadow: `inset 0px 0px 0px 1px rgba(255,255,255,.25)`,
+      bg: "yellow.900",
     },
   },
   styles: {

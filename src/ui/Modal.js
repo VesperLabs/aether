@@ -5,20 +5,18 @@ const Modal = ({ sx, ...props }) => {
   return (
     <Flex
       sx={{
-        border: `1px solid #000`,
-        boxShadow: `inset 0px 0px 0px 1px rgba(255,255,255,.25)`,
         gap: 1,
         p: 1,
         borderRadius: 3,
         position: "absolute",
         flexDirection: "column",
-        bg: "yellow.900",
         top: "50%",
         left: "50%",
         pointerEvents: "all",
         transform: "translate(-50%, -50%)",
         ...sx,
       }}
+      variant="buttons.wood"
       {...props}
     />
   );

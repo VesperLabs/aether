@@ -45,18 +45,6 @@ function addInputListeners(scene) {
     },
     scene
   );
-  window.addEventListener(
-    "HERO_INTERACT",
-    (e) => {
-      const npcId = mainScene?.hero?.state?.targetNpcId;
-      const npc = getNpc(mainScene, npcId);
-      const direction = getSpinDirection(mainScene?.hero, npc);
-      if (mainScene?.hero?.direction !== direction) {
-        scene.socket.emit("changeDirection", direction);
-      }
-    },
-    scene
-  );
 }
 
 function addJoystick(scene) {

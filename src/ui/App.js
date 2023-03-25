@@ -13,7 +13,7 @@ import {
   ModalRespawn,
   KeyboardKey,
 } from "./";
-import { isMobile } from "../utils";
+import { isMobile, getSpinDirection } from "../utils";
 import "react-tooltip/dist/react-tooltip.css";
 
 const AppContext = createContext();
@@ -60,18 +60,25 @@ function App({ socket, debug, game }) {
       const npc = scene.npcs.getChildren().find((n) => n?.id === args?.npcId);
       if (hero?.state?.targetNpcId === args?.npcId) {
         setKeeper({ ...npc, keeperData: args?.keeperData });
+        setTabKeeper(true);
       }
     };
 
     const onHeroChatNpc = () => {
       const scene = game.scene.getScene("SceneMain");
       const hero = scene.hero;
+      const npcId = scene?.hero?.state?.targetNpcId;
+      const npc = scene.npcs.getChildren().find((n) => n?.id === npcId);
+      const direction = getSpinDirection(hero, npc);
+
       setTabKeeper((prev) => {
         if (!prev) {
           socket.emit("chatNpc", { npcId: hero?.state?.targetNpcId });
-          setKeeper(false);
+          if (hero?.direction !== direction) socket.emit("changeDirection", direction);
         }
-        return !prev;
+        if (prev) {
+          return false;
+        }
       });
     };
 
@@ -91,7 +98,6 @@ function App({ socket, debug, game }) {
       setShowButtonChat(!!e?.detail);
       if (!e?.detail) {
         setTabKeeper(false);
-        setKeeper(false);
       }
     };
 

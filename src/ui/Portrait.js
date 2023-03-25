@@ -43,8 +43,7 @@ function CanvasPreview({ assets }) {
 }
 
 const Portrait = ({ user }) => {
-  if (!user) return;
-  const { race, gender } = user?.profile;
+  const { race, gender } = user?.profile ?? {};
   const userFace = user?.profile?.face;
   const userHair = user?.profile?.hair;
   const userAccessory = user?.equipment?.accessory;
@@ -57,7 +56,7 @@ const Portrait = ({ user }) => {
   const accessory = getAssetProps(`${race}-${userAccessory?.texture}`, userAccessory?.tint);
   const armor = getAssetProps(`${race}-${gender}-${userArmor?.texture}`, userArmor?.tint);
   const helmet = getAssetProps(`${race}-${userHelmet?.texture}`, userHelmet?.tint);
-  const assets = [skin, chest, face, hair, armor, helmet, accessory]?.filter(Boolean);
+  const assets = [skin, chest, hair, face, armor, helmet, accessory]?.filter(Boolean);
   return (
     <Box
       sx={{

@@ -17,11 +17,9 @@ const Button = forwardRef(({ sx, icon, onTouchEnd, onTouchStart, onClick, ...pro
         return onTouchEnd?.(e);
       }}
       sx={{
-        padding: 1,
         cursor: "pointer",
         touchAction: "none",
         userSelect: "none",
-        backgroundColor: "shadow.10",
         pointerEvents: "all",
         "&:focus": {
           outline: "none",
