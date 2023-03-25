@@ -10,6 +10,7 @@ import {
   MenuInventory,
   MenuHud,
   ModalRespawn,
+  KeyboardKey,
 } from "./";
 import { isMobile } from "../utils";
 import "react-tooltip/dist/react-tooltip.css";
@@ -130,32 +131,6 @@ const GameWrapper = (props) => {
   );
 };
 
-const KeyboardKey = ({ name }) => {
-  return (
-    <Box
-      sx={{
-        position: "absolute",
-        bottom: 0,
-        right: 0,
-        bg: "#EEE",
-        px: "5px",
-        pb: "4px",
-        lineHeight: 1,
-        borderRadius: 3,
-        textShadow: "none",
-        color: "#000",
-        fontSize: "10px",
-        fontWeight: "bold",
-        boxShadow: `#CCCCCC 0px -2px 0px 2px inset,
-                     #000000 0px 0px 0px 1px,
-                     #ffffff 0px -1px 0px 2px inset`,
-      }}
-    >
-      {name}
-    </Box>
-  );
-};
-
 const SkillButton = ({ eventName, iconName, size, keyboardKey }) => {
   return (
     <Box sx={{ position: "relative" }}>
@@ -171,7 +146,13 @@ const SkillButton = ({ eventName, iconName, size, keyboardKey }) => {
       >
         <Icon icon={`../assets/icons/${iconName}.png`} />
       </Button>
-      {!isMobile && <KeyboardKey name={keyboardKey} />}
+      <KeyboardKey
+        name={keyboardKey}
+        hidden={isMobile}
+        onKeyUp={(e) => {
+          window.dispatchEvent(new Event(eventName));
+        }}
+      />
     </Box>
   );
 };
@@ -189,6 +170,19 @@ const SkillButtons = () => {
       <SkillButton size={24} iconName="grab" eventName="HERO_GRAB" keyboardKey="F" />
       <SkillButton size={24} iconName="handRight" eventName="HERO_ATTACK" keyboardKey="SPACE" />
     </Flex>
+  );
+};
+
+const MenuButton = ({ keyboardKey, onClick, icon, isActive }) => {
+  return (
+    <Box sx={{ position: "relative" }}>
+      <Button variant="menu" className={isActive ? "active" : ""} onClick={onClick}>
+        <Icon icon={icon} />
+      </Button>
+      {!isMobile && (
+        <KeyboardKey sx={{ bottom: "-3px", right: "-3px" }} name={keyboardKey} onKeyUp={onClick} />
+      )}
+    </Box>
   );
 };
 
@@ -219,20 +213,18 @@ const MenuBar = () => {
           )}
         </Box>
         <Box sx={{ flex: 1 }} />
-        <Button
-          variant="menu"
-          className={tabEquipment ? "active" : ""}
+        <MenuButton
+          keyboardKey="E"
+          icon="../assets/icons/helmet.png"
+          isActive={tabEquipment}
           onClick={() => setTabEquipment((prev) => !prev)}
-        >
-          <Icon icon="../assets/icons/helmet.png" />
-        </Button>
-        <Button
-          variant="menu"
-          className={tabInventory ? "active" : ""}
+        />
+        <MenuButton
+          keyboardKey="I"
+          icon="../assets/icons/bag.png"
+          isActive={tabInventory}
           onClick={() => setTabInventory((prev) => !prev)}
-        >
-          <Icon icon="../assets/icons/bag.png" />
-        </Button>
+        />
       </Flex>
     </Flex>
   );

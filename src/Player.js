@@ -27,7 +27,7 @@ class Player extends Character {
     this.inventory = data?.inventory;
     this.profile = data?.profile;
     this.stats = data?.stats;
-    this.gold = gold;
+    this.gold = data?.gold;
     this.drawCharacterFromUserData();
     this.checkAttackHands();
     this.updateHpBar();

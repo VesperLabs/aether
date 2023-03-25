@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
-import { Box, useAppContext, Flex, TOOLTIP_STYLE, Icon } from "./";
+import { Box, useAppContext, Flex, TOOLTIP_STYLE } from "./";
 import { tintCanvas, imageToCanvas } from "../utils";
 import { assetList } from "../../shared/Assets";
 import { Tooltip } from "react-tooltip";
@@ -101,12 +101,13 @@ const UserName = ({ sx }) => {
   return <Box sx={{ ...sx }}>{hero?.profile?.userName}</Box>;
 };
 
-const Bar = ({ width = 100, height = 10, color = "red", min, max, sx, ...props }) => {
+const Bar = ({ width = 100, height = 12, color = "red", min, max, sx, ...props }) => {
   const percent = Math.round((min / max) * 100) + "%";
   return (
     <Box
       data-tooltip-id="hud"
       sx={{
+        position: "relative",
         overflow: "hidden",
         borderRadius: 3,
         bg: "shadow.25",
@@ -119,6 +120,18 @@ const Bar = ({ width = 100, height = 10, color = "red", min, max, sx, ...props }
       }}
       {...props}
     >
+      <Box
+        sx={{
+          position: "absolute",
+          width: "100%",
+          height: "100%",
+          lineHeight: 1,
+          fontSize: 0,
+          textAlign: "center",
+        }}
+      >
+        {`${min} / ${max}`}
+      </Box>
       <Box sx={{ bg: color, height: "100%", width: percent }} />
     </Box>
   );
