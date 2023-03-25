@@ -63,11 +63,16 @@ function App({ socket, debug, game }) {
       }
     };
 
-    const onHeroInteract = () => {
+    const onHeroChatNpc = () => {
       const scene = game.scene.getScene("SceneMain");
       const hero = scene.hero;
-      setTabKeeper((prev) => !prev);
-      socket.emit("chatNpc", { npcId: hero?.state?.targetNpcId });
+      setTabKeeper((prev) => {
+        if (!prev) {
+          socket.emit("chatNpc", { npcId: hero?.state?.targetNpcId });
+          setKeeper(false);
+        }
+        return !prev;
+      });
     };
 
     const onLootGrabbed = ({ player }) => {
@@ -84,6 +89,10 @@ function App({ socket, debug, game }) {
 
     const onNearNpc = (e) => {
       setShowButtonChat(!!e?.detail);
+      if (!e?.detail) {
+        setTabKeeper(false);
+        setKeeper(false);
+      }
     };
 
     socket.on("connect", onConnect);
@@ -93,7 +102,7 @@ function App({ socket, debug, game }) {
     socket.on("lootGrabbed", onLootGrabbed);
     socket.on("keeperDataUpdate", onKeeperDataUpdate);
     window.addEventListener("HERO_NEAR_NPC", onNearNpc);
-    window.addEventListener("HERO_INTERACT", onHeroInteract);
+    window.addEventListener("HERO_CHAT_NPC", onHeroChatNpc);
     window.addEventListener("UPDATE_HUD", onUpdateHud);
     window.addEventListener("HERO_RESPAWN", onUpdateHud);
     return () => {
@@ -104,7 +113,7 @@ function App({ socket, debug, game }) {
       socket.off("lootGrabbed", onLootGrabbed);
       socket.off("keeperDataUpdate", onKeeperDataUpdate);
       window.removeEventListener("HERO_NEAR_NPC", onNearNpc);
-      window.removeEventListener("HERO_INTERACT", onHeroInteract);
+      window.removeEventListener("HERO_CHAT_NPC", onHeroChatNpc);
       window.removeEventListener("UPDATE_HUD", onUpdateHud);
       window.removeEventListener("HERO_RESPAWN", onUpdateHud);
     };
@@ -206,7 +215,7 @@ const SkillButtons = () => {
       }}
     >
       {showButtonChat && (
-        <SkillButton size={24} iconName="chat" eventName="HERO_INTERACT" keyboardKey="C" />
+        <SkillButton size={24} iconName="chat" eventName="HERO_CHAT_NPC" keyboardKey="C" />
       )}
       <SkillButton size={24} iconName="grab" eventName="HERO_GRAB" keyboardKey="F" />
       <SkillButton size={24} iconName="handRight" eventName="HERO_ATTACK" keyboardKey="SPACE" />

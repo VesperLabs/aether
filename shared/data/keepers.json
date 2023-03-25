@@ -51,7 +51,7 @@
     },
     "keeperData": {
       "dialogues": {
-        "greet": "My name is <strong>Tudwick</strong> and I don't like wearing shirts. I live in these woods and I have a sweet <em>`stache</em>.<br/><br/>What can I do for you?",
+        "greet": "My name is <strong>Tudwick</strong> and I don't like wearing shirts. I live in these woods and I have a sweet <em>`stache</em>. What can I do for you?",
         "quests": "Still listening? Good! Here's some stuff you can do for me.",
         "shop": "Here are some things I found along the trail."
       },
@@ -172,8 +172,8 @@
     },
     "keeperData": {
       "dialogues": {
-        "greet": "My name is <strong>Anthony</strong>. Some people refer to me as a <strong>Lunchmeat Scholar</strong>",
-        "quests": "These caves are dark and scary but chuck full of great lunchmeats. You have to just know where to look.",
+        "greet": "My name is <strong>Anthony</strong>. Some people refer to me as <strong>The Lunchmeat Scholar</strong>. I have eaten just about every lunchmeat that exists.",
+        "quests": "These caves are dark and scary, but they are chuck full of great lunchmeats. You have to just know where to look.",
         "shop": "Some useful goods here. I take gold."
       },
       "quests": ["spidermeat-finding", "batmeat-finding", "cheese-finding", "hogan-hunting"],

@@ -129,7 +129,7 @@ class SceneMain extends Phaser.Scene {
       getPlayer(scene, id)?.respawn();
     });
 
-    socket.on("respawnNpc", ({ id, keeperData }) => {
+    socket.on("respawnNpc", ({ id, x, y }) => {
       const npc = getNpc(scene, id);
       //interpolation will ignore snapshots prior. (Won't fly across screen)
       npc.state.lastTeleport = Date.now();
@@ -217,7 +217,7 @@ function checkNpcProximity(scene, time) {
 
   /* Update the hero to be targeting them */
   if (closestNpc) {
-    if (hero.state.targetNpcId !== closestNpc?.id) {
+    if (hero.state.targetNpcId !== closestNpc?.id && !closestNpc?.state?.lockedPlayerId) {
       hero.state.targetNpcId = closestNpc?.id;
       window.dispatchEvent(new CustomEvent("HERO_NEAR_NPC", { detail: closestNpc?.id }));
     }
