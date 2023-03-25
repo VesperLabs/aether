@@ -11,8 +11,10 @@ import {
   addLoot,
   getLoot,
   getSpinDirection,
+  distanceTo,
 } from "./utils";
 const SI = new SnapshotInterpolation(process.env.SERVER_FPS); // the server's fps is 15
+const { RectangleToRectangle } = Phaser.Geom.Intersects;
 
 class SceneMain extends Phaser.Scene {
   constructor(socket) {
@@ -38,14 +40,15 @@ class SceneMain extends Phaser.Scene {
       }
       for (const s of snapshot?.state?.npcs) {
         const npc = getNpc(scene, s.id);
-        npc.setBubbleMessage(s?.bubbleMessage);
+        npc.state.lockedPlayerId = s.state.lockedPlayerId;
+        npc.state.bubbleMessage = s.state.bubbleMessage;
         npc.state.doHpRegen = s.state.doHpRegen;
         npc.state.doMpRegen = s.state.doMpRegen;
         npc.doRegen();
       }
       for (const s of snapshot?.state?.players) {
         const player = getPlayer(scene, s.id);
-        player.setBubbleMessage(s?.bubbleMessage);
+        player.state.bubbleMessage = s.state.bubbleMessage;
         player.state.doHpRegen = s.state.doHpRegen;
         player.state.doMpRegen = s.state.doMpRegen;
         player.doRegen();
@@ -172,6 +175,7 @@ class SceneMain extends Phaser.Scene {
 
     moveHero(this, time);
     enableDoors(this);
+    checkNpcProximity(this, time);
 
     if (!npcSnapshot) return;
     /* Update NPC x and y */
@@ -189,12 +193,47 @@ class SceneMain extends Phaser.Scene {
   }
 }
 
+function checkNpcProximity(scene, time) {
+  if (time % 4 > 1) return;
+  const { hero } = scene ?? {};
+  let coords = {};
+  let closestNpc;
+  let closestDistance = Infinity;
+
+  hero?.body?.getBounds(coords);
+
+  /* Loop through NPCs, if hero is intersecting, find npc wth closest distance to hero */
+  const npcs = scene.npcs.getChildren();
+  for (const npc of npcs) {
+    if (npc?.kind !== "keeper") continue;
+    if (RectangleToRectangle(coords, npc.getBounds())) {
+      const distance = distanceTo(npc, hero);
+      if (distance < closestDistance) {
+        closestNpc = npc;
+        closestDistance = distance;
+      }
+    }
+  }
+
+  /* Update the hero to be targeting them */
+  if (closestNpc) {
+    if (hero.state.targetNpcId !== closestNpc?.id) {
+      hero.state.targetNpcId = closestNpc?.id;
+      window.dispatchEvent(new CustomEvent("HERO_NEAR_NPC", { detail: closestNpc?.id }));
+    }
+  } else {
+    if (hero.state.targetNpcId) {
+      hero.state.targetNpcId = null;
+      window.dispatchEvent(new CustomEvent("HERO_NEAR_NPC", { detail: null }));
+    }
+  }
+}
+
 function enableDoors(scene) {
   let coords = {};
   scene?.hero?.body?.getBounds(coords);
   for (const door of scene.doors.getChildren()) {
-    if (!Phaser.Geom.Intersects.RectangleToRectangle(coords, door.getBounds()))
-      door.isEnabled = true;
+    if (!RectangleToRectangle(coords, door.getBounds())) door.isEnabled = true;
   }
 }
 

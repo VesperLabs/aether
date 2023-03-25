@@ -21,7 +21,6 @@ class Player extends Character {
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
   }
-
   updateData(data) {
     this.equipment = data?.equipment;
     this.inventory = data?.inventory;
@@ -63,6 +62,9 @@ class Player extends Character {
     this.corpse = scene.add
       .existing(new Sprite(scene, 0, this.bodyOffsetY, "icons", "grave"))
       .setVisible(false);
+    this.talkMenu = scene.add
+      .existing(new Sprite(scene, 6, this?.profile?.headY - 6, "icons", "chat"))
+      .setVisible(false);
     this.add(this.shadow);
     this.add(this.chest);
     this.add(this.skin);
@@ -79,6 +81,7 @@ class Player extends Character {
     this.add(this.userName);
     this.add(this.hpBar);
     this.add(this.corpse);
+    this.add(this.talkMenu);
   }
   drawCharacterFromUserData() {
     const { profile, equipment, state } = this || {};
@@ -150,11 +153,8 @@ class Player extends Character {
   castSpell(spellData) {
     this.scene.add.existing(new Spell(this.scene, { ...spellData, caster: this }));
   }
-  setBubbleMessage(message) {
-    if (message !== this.bubbleMessage) {
-      this.bubbleMessage = message;
-      this.bubble.setMessage(this.bubbleMessage);
-    }
+  setBubbleMessage() {
+    this.bubble.setMessage(this.state.bubbleMessage);
   }
   updateHpBar() {
     const { stats } = this;
@@ -258,6 +258,8 @@ class Player extends Character {
     drawFrame(this);
     checkIsFlash(this, delta);
     this.checkAttackReady(delta);
+    this.setBubbleMessage();
+    this.setTalkMenu();
     if (this?.isHero) this.triggerSecondAttack();
     this.setDepth(100 + this.y + this?.body?.height);
   }
@@ -271,6 +273,10 @@ class Player extends Character {
     if (animKey !== currentKey) {
       sprite.play(animKey, true, currentFrame);
     }
+  }
+  setTalkMenu() {
+    const show = !this.state.lockedPlayerId && this.scene.hero.state.targetNpcId === this.id;
+    return this.talkMenu.setVisible(show);
   }
 }
 

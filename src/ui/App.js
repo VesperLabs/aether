@@ -26,6 +26,7 @@ function App({ socket, debug, game }) {
   const [hero, setHero] = useState();
   const [tabEquipment, setTabEquipment] = useState(false);
   const [tabInventory, setTabInventory] = useState(false);
+  const [showButtonChat, setShowButtonChat] = useState(false);
 
   useEffect(() => {
     const connect = () => {
@@ -62,11 +63,17 @@ function App({ socket, debug, game }) {
       setHero((prev) => ({ ...prev, state: hero?.state, stats: hero?.stats }));
     };
 
+    const nearNpc = (e) => {
+      const hero = game.scene.getScene("SceneMain").hero;
+      setShowButtonChat(!!e?.detail);
+    };
+
     socket.on("connect", connect);
     socket.on("disconnect", disconnect);
     socket.on("heroInit", heroInit);
     socket.on("playerUpdate", playerUpdate);
     socket.on("lootGrabbed", lootGrabbed);
+    window.addEventListener("HERO_NEAR_NPC", nearNpc);
     window.addEventListener("UPDATE_HUD", updateHud);
     window.addEventListener("HERO_RESPAWN", updateHud);
     return () => {
@@ -74,7 +81,8 @@ function App({ socket, debug, game }) {
       socket.off("disconnect", disconnect);
       socket.off("heroInit", heroInit);
       socket.off("playerUpdate", playerUpdate);
-      socket.on("lootGrabbed", lootGrabbed);
+      socket.off("lootGrabbed", lootGrabbed);
+      window.removeEventListener("HERO_NEAR_NPC", nearNpc);
       window.removeEventListener("UPDATE_HUD", updateHud);
       window.removeEventListener("HERO_RESPAWN", updateHud);
     };
@@ -86,6 +94,8 @@ function App({ socket, debug, game }) {
     <ThemeProvider theme={theme}>
       <AppContext.Provider
         value={{
+          showButtonChat,
+          setShowButtonChat,
           isConnected,
           setIsConnected,
           setTabEquipment,
@@ -158,26 +168,31 @@ const SkillButton = ({ eventName, iconName, size, keyboardKey }) => {
 };
 
 const SkillButtons = () => {
+  const { showButtonChat } = useAppContext();
   return (
     <Flex
       sx={{
         gap: 2,
-        p: 2,
+        p: 1,
+        py: 2,
         justifyContent: "end",
         alignItems: "flex-end",
       }}
     >
+      {showButtonChat && (
+        <SkillButton size={24} iconName="chat" eventName="HERO_INTERACT" keyboardKey="C" />
+      )}
       <SkillButton size={24} iconName="grab" eventName="HERO_GRAB" keyboardKey="F" />
       <SkillButton size={24} iconName="handRight" eventName="HERO_ATTACK" keyboardKey="SPACE" />
     </Flex>
   );
 };
 
-const MenuButton = ({ keyboardKey, onClick, icon, isActive }) => {
+const MenuButton = ({ keyboardKey, onClick, iconName, isActive }) => {
   return (
     <Box sx={{ position: "relative" }}>
       <Button variant="menu" className={isActive ? "active" : ""} onClick={onClick}>
-        <Icon icon={icon} />
+        <Icon icon={`../assets/icons/${iconName}.png`} />
       </Button>
       {!isMobile && (
         <KeyboardKey sx={{ bottom: "-3px", right: "-3px" }} name={keyboardKey} onKeyUp={onClick} />
@@ -215,13 +230,13 @@ const MenuBar = () => {
         <Box sx={{ flex: 1 }} />
         <MenuButton
           keyboardKey="E"
-          icon="../assets/icons/helmet.png"
+          iconName="helmet"
           isActive={tabEquipment}
           onClick={() => setTabEquipment((prev) => !prev)}
         />
         <MenuButton
           keyboardKey="I"
-          icon="../assets/icons/bag.png"
+          iconName="bag"
           isActive={tabInventory}
           onClick={() => setTabInventory((prev) => !prev)}
         />

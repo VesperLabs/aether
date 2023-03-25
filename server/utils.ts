@@ -58,7 +58,6 @@ function getCharacterState(p) {
     equipment: p?.equipment,
     inventory: p?.inventory,
     profile: p?.profile,
-    bubbleMessage: p?.bubbleMessage,
     kind: p?.kind,
     gold: p?.gold,
   };
@@ -91,7 +90,6 @@ function getTrimmedCharacterState(p) {
     y: p?.y,
     vx: p?.vx,
     vy: p?.vy,
-    bubbleMessage: p?.bubbleMessage,
   };
 }
 

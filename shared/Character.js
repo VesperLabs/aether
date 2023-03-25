@@ -13,7 +13,6 @@ class Character extends Phaser.GameObjects.Container {
       inventory = [],
       profile,
       stats = {},
-      bubbleMessage,
       kind,
       roomName,
       baseStats = {},
@@ -62,7 +61,6 @@ class Character extends Phaser.GameObjects.Container {
     this.inventory = inventory;
     this.baseStats = baseStats;
     this.stats = stats;
-    this.bubbleMessage = bubbleMessage;
     scene.physics.add.existing(this);
     const bodySize = 8 * (this?.profile?.scale || 1);
     this.body.setCircle(bodySize, -bodySize, -bodySize);

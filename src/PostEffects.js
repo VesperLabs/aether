@@ -63,6 +63,7 @@ class TintPostFX extends Phaser.Renderer.WebGL.Pipelines.PostFXPipeline {
   }
 }
 
+//this.hair.setPostPipeline("TintPostFX");
 //this.hair.postPipelines?.[0].setTint(200, 50, 50);
 
 export { TintPostFX, HueRotatePostFX };

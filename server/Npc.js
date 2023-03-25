@@ -15,7 +15,7 @@ class Npc extends Character {
     this.state.isDead = true;
     this.state.deadTime = Date.now();
     this.state.lockedPlayerId = null;
-    this.bubbleMessage = null;
+    this.state.bubbleMessage = null;
     this.vx = 0;
     this.vy = 0;
     this.body.setVelocity(this.vx, this.vy);
@@ -108,7 +108,7 @@ class Npc extends Character {
     const shouldChasePlayer = isInRange && !targetPlayer?.state?.isDead;
     if (shouldChasePlayer) {
       this.moveTowardPoint(targetPlayer);
-      this.bubbleMessage = "!";
+      this.state.bubbleMessage = "!";
     } else {
       this.state.lockedPlayerId = null;
       /* If the NPC is out of bounds, make it try to get back in bounds */
@@ -116,7 +116,7 @@ class Npc extends Character {
         /* TODO: Improve this so that it moves toward the nearest open tile instead */
         this.moveTowardPointPathed(this.startingCoords);
       } else {
-        this.bubbleMessage = null;
+        this.state.bubbleMessage = null;
         if (this.state.isStatic) {
           this.moveToSpawnAndWait(delta);
         } else {
