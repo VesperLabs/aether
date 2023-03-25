@@ -49,19 +49,18 @@
       "pants": ["pants", "common", "clothPants"],
       "boots": ["boots", "common", "nutshellBoots"]
     },
-    "dialogues": {
-      "greet": "My name is <strong>Tudwick</strong> and I don't like wearing shirts. I live in these woods and I have a sweet <em>`stache</em>.<br/><br/>What can I do for you?",
-      "quests": "Still listening? Good! Here's some stuff you can do for me.",
-      "shop": "Here are some things I found along the trail."
-    },
-    "quests": ["slime-roundup", "slime-eggs", "hornet-hunting"],
-    "shop": [
-      ["pants", "common", "clothPants"],
-      ["helmet", "common", "colloquialCap"],
-      ["weapon", "common", "dagger"],
-      ["armor", "common", "clothRobe"],
-      ["boots", "common", "nutshellBoots"]
-    ]
+    "keeperData": {
+      "dialogues": {
+        "greet": "My name is <strong>Tudwick</strong> and I don't like wearing shirts. I live in these woods and I have a sweet <em>`stache</em>.<br/><br/>What can I do for you?",
+        "quests": "Still listening? Good! Here's some stuff you can do for me.",
+        "shop": "Here are some things I found along the trail."
+      },
+      "quests": ["slime-roundup", "slime-eggs", "hornet-hunting"],
+      "shop": [
+        { "item": ["pants", "common", "clothPants"], "amount": 1, "restockTime": 1000 },
+        { "item": ["weapon", "common", "dagger"], "amount": 1, "restockTime": 1000 }
+      ]
+    }
   },
   "lynne": {
     "profile": {
@@ -112,18 +111,15 @@
       "pants": ["pants", "common", "clothPants"],
       "boots": ["boots", "common", "nutshellBoots"]
     },
-    "dialogues": {
-      "greet": "My name is <strong>Lynne</strong>.  I am trying to film a nature documentary out here, but the critters keep attacking me.",
-      "quests": "In these woods, good production assistants don't grow on trees. Sure, I've got some jobs for you.",
-      "shop": "Some useful goods here. I take gold."
-    },
-    "quests": ["raccoon-hunting", "grape-finding", "hawkwing-hunting"],
-    "shop": [
-      ["weapon", "common", "scythe"],
-      ["weapon", "common", "axe"],
-      ["shield", "common", "barkShield"],
-      ["helmet", "common", "clothCap"]
-    ]
+    "keeperData": {
+      "dialogues": {
+        "greet": "My name is <strong>Lynne</strong>.  I am trying to film a nature documentary out here, but the critters keep attacking me.",
+        "quests": "In these woods, good production assistants don't grow on trees. Sure, I've got some jobs for you.",
+        "shop": "Some useful goods here. I take gold."
+      },
+      "quests": ["raccoon-hunting", "grape-finding", "hawkwing-hunting"],
+      "shop": []
+    }
   },
   "anthony": {
     "profile": {
@@ -174,16 +170,15 @@
       "armor": ["armor", "set", "chetsPurpleShirt"],
       "boots": ["boots", "set", "chetsNeonKicks"]
     },
-    "dialogues": {
-      "greet": "My name is <strong>Anthony</strong>. Some people refer to me as a <strong>Lunchmeat Scholar</strong>",
-      "quests": "These caves are dark and scary but chuck full of great lunchmeats. You have to just know where to look.",
-      "shop": "Some useful goods here. I take gold."
-    },
-    "quests": ["spidermeat-finding", "batmeat-finding", "cheese-finding", "hogan-hunting"],
-    "shop": [
-      ["weapon", "common", "spear"],
-      ["shield", "common", "barkShield"]
-    ]
+    "keeperData": {
+      "dialogues": {
+        "greet": "My name is <strong>Anthony</strong>. Some people refer to me as a <strong>Lunchmeat Scholar</strong>",
+        "quests": "These caves are dark and scary but chuck full of great lunchmeats. You have to just know where to look.",
+        "shop": "Some useful goods here. I take gold."
+      },
+      "quests": ["spidermeat-finding", "batmeat-finding", "cheese-finding", "hogan-hunting"],
+      "shop": []
+    }
   },
   "steve": {
     "profile": {
@@ -234,20 +229,15 @@
       "armor": ["armor", "common", "bronzeHeavyPlate"],
       "boots": ["boots", "common", "leatherBoots"]
     },
-    "dialogues": {
-      "greet": "My name is <strong>Steve</strong>. I am the blacksmith around here.",
-      "quests": "Quests",
-      "shop": "Some useful goods here. I take gold."
-    },
-    "quests": [],
-    "shop": [
-      ["weapon", "common", "gladius"],
-      ["shield", "common", "buckler"],
-      ["boots", "common", "leatherBoots"],
-      ["pants", "common", "leatherPants"],
-      ["armor", "common", "bronzeHeavyPlate"],
-      ["armor", "common", "bronzePlate"]
-    ]
+    "keeperData": {
+      "dialogues": {
+        "greet": "My name is <strong>Steve</strong>. I am the blacksmith around here.",
+        "quests": "Quests",
+        "shop": "Some useful goods here. I take gold."
+      },
+      "quests": [],
+      "shop": []
+    }
   },
   "siobhan": {
     "profile": {
@@ -298,13 +288,15 @@
       "armor": ["armor", "common", "clothRobe"],
       "boots": ["boots", "common", "nutshellBoots"]
     },
-    "dialogues": {
-      "greet": "My name is <strong>Siobhan</strong>. I am a purveyor of quality potions.",
-      "quests": "Quests",
-      "shop": "See anything you like?"
-    },
-    "quests": [],
-    "shop": []
+    "keeperData": {
+      "dialogues": {
+        "greet": "My name is <strong>Siobhan</strong>. I am a purveyor of quality potions.",
+        "quests": "Quests",
+        "shop": "See anything you like?"
+      },
+      "quests": [],
+      "shop": []
+    }
   },
   "danny": {
     "profile": {
@@ -355,12 +347,14 @@
       "armor": ["armor", "common", "wizardRobe"],
       "boots": ["boots", "common", "leatherBoots"]
     },
-    "dialogues": {
-      "greet": "My name is <strong>Danny</strong>. I'm the wizard.",
-      "quests": "Here are some quests. And no, my wizard robe is not a reward.",
-      "shop": "You got to be a wizard to wear what I have, but here's some stuff for sale."
-    },
-    "quests": ["skull-finding", "chonks-hunting"],
-    "shop": []
+    "keeperData": {
+      "dialogues": {
+        "greet": "My name is <strong>Danny</strong>. I'm the wizard.",
+        "quests": "Here are some quests. And no, my wizard robe is not a reward.",
+        "shop": "You got to be a wizard to wear what I have, but here's some stuff for sale."
+      },
+      "quests": ["skull-finding", "chonks-hunting"],
+      "shop": []
+    }
   }
 }

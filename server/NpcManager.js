@@ -1,6 +1,5 @@
 import crypto from "crypto";
 import Npc from "./Npc";
-import ItemBuilder from "./ItemBuilder";
 import nasties from "../shared/data/nasties.json";
 import keepers from "../shared/data/keepers.json";
 import mapNpcs from "../shared/data/mapNpcs.json"; //todo need these to live in maps
@@ -20,7 +19,7 @@ class NpcManager {
     const { room } = this;
     const npcs = mapNpcs[room.name];
     for (const npc of npcs) {
-      const { equipment = {}, ...mobData } = mobsByKind[npc.kind][npc.name];
+      const mobData = mobsByKind[npc.kind][npc.name];
       this.create({
         ...mobData,
         room,
@@ -28,10 +27,6 @@ class NpcManager {
         x: npc?.x,
         y: npc?.y,
         startingCoords: { x: npc?.x, y: npc?.y },
-        equipment: Object?.entries(equipment).reduce((acc, [slot, itemArray]) => {
-          acc[slot] = itemArray?.length ? ItemBuilder.buildItem(...itemArray) : null;
-          return acc;
-        }, {}),
       });
     }
   }

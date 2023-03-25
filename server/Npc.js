@@ -1,15 +1,33 @@
 import Character from "./Character";
 import ItemBuilder from "./ItemBuilder";
 import { getCharacterDirection, distanceTo, randomNumber } from "./utils";
+import crypto from "crypto";
+
 const START_AGGRO_RANGE = 150;
 
+const buildEquipment = (equipment) =>
+  Object?.entries(equipment).reduce((acc, [slot, itemArray]) => {
+    acc[slot] = itemArray?.length ? ItemBuilder.buildItem(...itemArray) : null;
+    return acc;
+  }, {});
+
+const buildShop = (shop) => {
+  return shop?.reduce((acc, entry) => {
+    const id = crypto.randomUUID();
+    acc.push({ id, ...entry, item: ItemBuilder.buildItem(...entry.item) });
+    return acc;
+  }, []);
+};
+
 class Npc extends Character {
-  constructor(scene, args) {
+  constructor(scene, { equipment = {}, keeperData = {}, ...args }) {
     super(scene, args);
     this.scene = scene;
     this.state.isRobot = true;
     this.respawnTime = 10000;
     this.drops = args?.drops;
+    this.equipment = buildEquipment(equipment);
+    this.keeperData = { ...keeperData, shop: buildShop(keeperData?.shop) };
   }
   setDead() {
     this.state.isDead = true;

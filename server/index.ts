@@ -308,6 +308,11 @@ class ServerScene extends Phaser.Scene {
       socket.on("playerInput", (input) => {
         handlePlayerInput(scene, socketId, input); //defined in utilites.js
       });
+
+      socket.on("chatNpc", ({ npcId }) => {
+        const npc = scene.npcs[npcId];
+        socket.emit("keeperDataUpdate", { npcId: npc?.id, keeperData: npc?.keeperData });
+      });
     });
   }
   update(time, delta) {

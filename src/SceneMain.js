@@ -129,7 +129,7 @@ class SceneMain extends Phaser.Scene {
       getPlayer(scene, id)?.respawn();
     });
 
-    socket.on("respawnNpc", ({ id, x, y }) => {
+    socket.on("respawnNpc", ({ id, keeperData }) => {
       const npc = getNpc(scene, id);
       //interpolation will ignore snapshots prior. (Won't fly across screen)
       npc.state.lastTeleport = Date.now();

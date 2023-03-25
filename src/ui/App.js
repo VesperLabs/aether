@@ -8,6 +8,7 @@ import {
   Icon,
   MenuEquipment,
   MenuInventory,
+  MenuKeeper,
   MenuHud,
   ModalRespawn,
   KeyboardKey,
@@ -24,67 +25,88 @@ export const useAppContext = () => {
 function App({ socket, debug, game }) {
   const [isConnected, setIsConnected] = useState(true);
   const [hero, setHero] = useState();
+  const [keeper, setKeeper] = useState(); // data related to NPC you are chatting with
+  const [tabKeeper, setTabKeeper] = useState(false);
   const [tabEquipment, setTabEquipment] = useState(false);
   const [tabInventory, setTabInventory] = useState(false);
   const [showButtonChat, setShowButtonChat] = useState(false);
 
   useEffect(() => {
-    const connect = () => {
+    const onConnect = () => {
       setIsConnected(true);
     };
 
-    const disconnect = () => {
+    const onDisconnect = () => {
       setIsConnected(false);
     };
 
-    const heroInit = (payload = {}) => {
+    const onHeroInit = (payload = {}) => {
       const { players, socketId } = payload;
       const player = players?.find((p) => p?.socketId === socketId);
       localStorage.setItem("socketId", socketId);
       setHero(player);
     };
 
-    const playerUpdate = (player = {}) => {
+    const onPlayerUpdate = (player = {}) => {
       const socketId = localStorage.getItem("socketId");
       if (socketId === player?.socketId) {
         setHero(player);
       }
     };
 
-    const lootGrabbed = ({ player }) => {
+    const onKeeperDataUpdate = (args) => {
+      const scene = game.scene.getScene("SceneMain");
+      const hero = scene.hero;
+      const npc = scene.npcs.getChildren().find((n) => n?.id === args?.npcId);
+      if (hero?.state?.targetNpcId === args?.npcId) {
+        setKeeper({ ...npc, keeperData: args?.keeperData });
+      }
+    };
+
+    const onHeroInteract = () => {
+      const scene = game.scene.getScene("SceneMain");
+      const hero = scene.hero;
+      setTabKeeper((prev) => !prev);
+      socket.emit("chatNpc", { npcId: hero?.state?.targetNpcId });
+    };
+
+    const onLootGrabbed = ({ player }) => {
       const socketId = localStorage.getItem("socketId");
       if (socketId === player?.socketId) {
         setHero(player);
       }
     };
 
-    const updateHud = () => {
+    const onUpdateHud = () => {
       const hero = game.scene.getScene("SceneMain").hero;
       setHero((prev) => ({ ...prev, state: hero?.state, stats: hero?.stats }));
     };
 
-    const nearNpc = (e) => {
-      const hero = game.scene.getScene("SceneMain").hero;
+    const onNearNpc = (e) => {
       setShowButtonChat(!!e?.detail);
     };
 
-    socket.on("connect", connect);
-    socket.on("disconnect", disconnect);
-    socket.on("heroInit", heroInit);
-    socket.on("playerUpdate", playerUpdate);
-    socket.on("lootGrabbed", lootGrabbed);
-    window.addEventListener("HERO_NEAR_NPC", nearNpc);
-    window.addEventListener("UPDATE_HUD", updateHud);
-    window.addEventListener("HERO_RESPAWN", updateHud);
+    socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
+    socket.on("heroInit", onHeroInit);
+    socket.on("playerUpdate", onPlayerUpdate);
+    socket.on("lootGrabbed", onLootGrabbed);
+    socket.on("keeperDataUpdate", onKeeperDataUpdate);
+    window.addEventListener("HERO_NEAR_NPC", onNearNpc);
+    window.addEventListener("HERO_INTERACT", onHeroInteract);
+    window.addEventListener("UPDATE_HUD", onUpdateHud);
+    window.addEventListener("HERO_RESPAWN", onUpdateHud);
     return () => {
-      socket.off("connect", connect);
-      socket.off("disconnect", disconnect);
-      socket.off("heroInit", heroInit);
-      socket.off("playerUpdate", playerUpdate);
-      socket.off("lootGrabbed", lootGrabbed);
-      window.removeEventListener("HERO_NEAR_NPC", nearNpc);
-      window.removeEventListener("UPDATE_HUD", updateHud);
-      window.removeEventListener("HERO_RESPAWN", updateHud);
+      socket.off("connect", onConnect);
+      socket.off("disconnect", onDisconnect);
+      socket.off("heroInit", onHeroInit);
+      socket.off("playerUpdate", onPlayerUpdate);
+      socket.off("lootGrabbed", onLootGrabbed);
+      socket.off("keeperDataUpdate", onKeeperDataUpdate);
+      window.removeEventListener("HERO_NEAR_NPC", onNearNpc);
+      window.removeEventListener("HERO_INTERACT", onHeroInteract);
+      window.removeEventListener("UPDATE_HUD", onUpdateHud);
+      window.removeEventListener("HERO_RESPAWN", onUpdateHud);
     };
   }, []);
 
@@ -94,14 +116,18 @@ function App({ socket, debug, game }) {
     <ThemeProvider theme={theme}>
       <AppContext.Provider
         value={{
+          isConnected,
           showButtonChat,
           setShowButtonChat,
-          isConnected,
           setIsConnected,
           setTabEquipment,
           setTabInventory,
+          setTabKeeper,
+          setKeeper,
           tabEquipment,
           tabInventory,
+          keeper,
+          tabKeeper,
           hero,
           socket,
           debug,
@@ -217,6 +243,7 @@ const MenuBar = () => {
       }}
     >
       <SkillButtons />
+      <MenuKeeper />
       <MenuEquipment />
       <MenuInventory />
       <Flex sx={{ gap: 1, alignItems: "center", bg: "shadow.30", p: 2 }}>

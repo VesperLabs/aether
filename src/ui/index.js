@@ -17,6 +17,8 @@ export { default as Slot } from "./Slot";
 export { default as ItemTooltip } from "./ItemTooltip";
 export { default as MenuEquipment } from "./MenuEquipment";
 export { default as MenuInventory } from "./MenuInventory";
+export { default as Portrait } from "./Portrait";
+export { default as MenuKeeper } from "./MenuKeeper";
 export { default as MenuHud } from "./MenuHud";
 export { default as KeyboardKey } from "./KeyboardKey";
 export { default as Modal } from "./Modal";
