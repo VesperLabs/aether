@@ -4,7 +4,6 @@ import { resolveAsset } from "../../shared/Assets";
 import { useAppContext } from "./App";
 import { isMobile, trimCanvas, tintCanvas } from "../utils";
 
-const STYLE_ABS = { top: 0, left: 0, position: "absoute" };
 const STYLE_EMPTY = (icon) => ({
   background: `${theme.colors.shadow[30]} url(${icon}) center center no-repeat`,
   filter: "grayscale(100%)",
@@ -18,7 +17,7 @@ const BLANK_IMAGE =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 
 const Slot = React.memo(
-  ({ sx, size = 52, item, slotKey, location, icon, ...props }) => {
+  ({ sx, size = 52, item, slotKey, location, icon, stock, ...props }) => {
     // component logic here
     const { hero } = useAppContext();
     const [imageData, setImageData] = useState(BLANK_IMAGE);
@@ -155,13 +154,13 @@ const Slot = React.memo(
     };
 
     const targetMoved = target?.dataset?.tooltipId !== item?.id;
+    const aboutToSell = dragging && target?.closest(".menu-keeper") && location !== "shop";
     const showTooltip = (dragging && !targetMoved) || (hovering && !isMobile);
 
     return (
       <Box
         data-tooltip-id={item?.id}
         sx={{
-          position: "relative",
           touchAction: "none",
           userSelect: "none",
           border: (t) => `1px solid ${t.colors.shadow[50]}`,
@@ -170,7 +169,8 @@ const Slot = React.memo(
           overflow: dragging ? "visible" : "hidden",
           width: size,
           height: size,
-          ...STYLE_ABS,
+          top: 0,
+          left: 0,
           ...(item?.rarity ? STYLE_NON_EMPTY(item?.rarity) : STYLE_EMPTY(icon)),
           ...sx,
         }}
@@ -187,7 +187,7 @@ const Slot = React.memo(
             )}
             <Icon
               ref={imageRef}
-              icon={imageData}
+              icon={aboutToSell ? "../assets/icons/gold.png" : imageData}
               onMouseDown={handleMouseDown}
               onTouchStart={handleTouchStart}
               size={size}
@@ -215,25 +215,39 @@ const Slot = React.memo(
     // Only re-render if item id or amount has changed
     const prevItem = prevProps.item;
     const nextItem = nextProps.item;
-    return prevItem?.id === nextItem?.id && prevItem?.amount === nextItem?.amount;
+    return (
+      prevItem?.id === nextItem?.id &&
+      prevItem?.amount === nextItem?.amount &&
+      prevItem?.stock === nextItem?.stock
+    );
   }
 );
 
 function useItemEvents({ location, slotKey, item }) {
   const { hero, socket } = useAppContext();
+
   return {
     dropItem: (target) => {
       if (hero?.state?.isDead) return;
+
       /* If you drop an item on the ground */
       if (target?.nodeName == "CANVAS") {
         return socket.emit("dropItem", { item, location });
       }
-      /* If you move an item in your inventory */
+      /* If you move an item in your inventory or equipment */
       if (target?.dataset?.slotKey && target?.dataset?.slotKey !== slotKey) {
         return socket.emit("moveItem", {
           to: {
             slot: target?.dataset?.slotKey,
             location: target?.dataset?.location,
+          },
+          from: { slot: slotKey, location },
+        });
+      }
+      if (target?.closest(".menu-keeper")) {
+        return socket.emit("moveItem", {
+          to: {
+            location: "shop",
           },
           from: { slot: slotKey, location },
         });

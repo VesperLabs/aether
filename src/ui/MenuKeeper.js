@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { Flex, Text, useAppContext, Portrait, Box, Button } from "./";
+import { Flex, Text, useAppContext, Portrait, Box, Button, Slot } from "./";
 
 const MenuKeeper = () => {
   const { keeper, tabKeeper: show, setTabKeeper } = useAppContext();
-  const [tab, setTab] = useState();
-  const { dialogues } = keeper?.keeperData ?? {};
+  const [tab, setTab] = useState("greet");
+  const { dialogues, shop } = keeper?.keeperData ?? {};
+
+  const isShop = tab === "shop";
 
   useEffect(() => {
-    if (!show) setTab(null);
+    if (!show) setTab("greet");
   }, [show]);
 
   return (
     <Flex
+      className="menu-keeper"
       sx={{
         gap: 2,
         p: 2,
@@ -36,11 +39,12 @@ const MenuKeeper = () => {
           }}
         >
           <Box sx={{ bg: "shadow.30", p: 3, borderRadius: 6 }}>
-            {!tab && <Text dangerouslySetInnerHTML={{ __html: dialogues?.greet }} />}
-            {tab === "shop" && <Text dangerouslySetInnerHTML={{ __html: dialogues?.shop }} />}
-            {tab === "quests" && <Text dangerouslySetInnerHTML={{ __html: dialogues?.quests }} />}
+            <Text dangerouslySetInnerHTML={{ __html: dialogues?.[tab] }} />
           </Box>
-          <Flex sx={{ gap: 1, ml: 2, mt: "-14px" }}>
+          <Flex sx={{ gap: 1, ml: 2, mt: "-12px" }}>
+            <Button variant="wood" onClick={() => setTab("greet")}>
+              Greet
+            </Button>
             <Button variant="wood" onClick={() => setTab("shop")}>
               Shop
             </Button>
@@ -51,6 +55,13 @@ const MenuKeeper = () => {
               Close
             </Button>
           </Flex>
+        </Flex>
+        <Flex sx={{ gap: 2, display: isShop ? "flex" : "none" }}>
+          {shop?.map(({ item }, idx) => {
+            return (
+              <Slot location="shop" slotKey={idx} icon="./assets/icons/chest.png" item={item} />
+            );
+          })}
         </Flex>
       </Flex>
     </Flex>

@@ -243,8 +243,14 @@ const MenuButton = ({ keyboardKey, onClick, iconName, isActive }) => {
 };
 
 const MenuBar = () => {
-  const { isConnected, tabEquipment, setTabEquipment, tabInventory, setTabInventory } =
-    useAppContext();
+  const {
+    isConnected,
+    tabEquipment,
+    setTabEquipment,
+    tabInventory,
+    setTabInventory,
+    setTabKeeper,
+  } = useAppContext();
   return (
     <Flex
       sx={{
@@ -281,6 +287,15 @@ const MenuBar = () => {
           iconName="bag"
           isActive={tabInventory}
           onClick={() => setTabInventory((prev) => !prev)}
+        />
+        <KeyboardKey
+          name={"ESCAPE"}
+          hidden={true}
+          onKeyUp={(e) => {
+            setTabEquipment(false);
+            setTabInventory(false);
+            setTabKeeper(false);
+          }}
         />
       </Flex>
     </Flex>

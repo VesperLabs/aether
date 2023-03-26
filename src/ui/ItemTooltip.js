@@ -79,7 +79,7 @@ const ItemTooltip = ({ item, show }) => {
         <Divider />
         <Flex sx={{ alignItems: "center", gap: 1 }}>
           <Icon icon="../assets/icons/gold.png" size={16} />
-          {item?.cost * (item?.amount || 1) * (hero?.inflation || 1)}
+          {item?.cost * (item?.amount || 1)}
         </Flex>
       </Flex>
     </Tooltip>

@@ -15,6 +15,7 @@ const io = require("socket.io")(httpServer, {
     origin: "*",
   },
 });
+import crypto from "crypto";
 const SI = new SnapshotInterpolation();
 import {
   handlePlayerInput,
@@ -241,7 +242,6 @@ class ServerScene extends Phaser.Scene {
       });
 
       socket.on("moveItem", ({ to, from }) => {
-        /* TODO: Need to ensure items and their slots match up */
         const player = scene?.players?.[socketId];
         let toItem, fromItem;
         /* Clone the items we are interacting with */
@@ -252,6 +252,16 @@ class ServerScene extends Phaser.Scene {
         if (from?.location === "equipment") {
           from.itemId = player?.equipment?.[from?.slot]?.id;
           fromItem = cloneObject(player?.findEquipmentById(from?.itemId))?.item;
+        }
+        if (from?.location === "shop") {
+          const npcId = player?.state?.targetNpcId;
+          const shopSlot = scene?.npcs?.[npcId]?.keeperData?.shop?.[from?.slot];
+          if (!npcId) return;
+
+          if (!shopSlot?.stock) return;
+          if (to?.location === "shop") return;
+          from.itemId = shopSlot?.item?.id;
+          fromItem = cloneObject({ ...(shopSlot?.item || {}), id: crypto.randomUUID() });
         }
         if (to?.location === "inventory") {
           to.itemId = player?.inventory?.[to?.slot]?.id;
@@ -299,6 +309,35 @@ class ServerScene extends Phaser.Scene {
           player.equipment[from?.slot] = toItem;
         }
 
+        /* Inventory -> Shop */
+        if (from?.location === "inventory" && to?.location === "shop") {
+          player?.deleteInventoryItemAtId(from?.itemId);
+          player.gold += (fromItem?.amount || 1) * (fromItem?.cost || 1);
+        }
+
+        /* Equipment -> Shop */
+        if (from?.location === "equipment" && to?.location === "shop") {
+          player?.clearEquipmentSlot(from?.slot);
+          player.gold += (fromItem?.amount || 1) * (fromItem?.cost || 1);
+        }
+
+        /* Shop -> Inventory */
+        if (from?.location === "shop" && to?.location === "inventory") {
+          /* Always need a free slot */
+          if (toItem) return;
+          player.gold -= fromItem?.cost || 1;
+          player.inventory[to?.slot] = fromItem;
+        }
+
+        /* Shop -> Equipment */
+        if (from?.location === "shop" && to?.location === "equipment") {
+          /* Always need a free slot */
+          if (toItem) return;
+          if (fromItem && !checkSlotsMatch(fromItem?.slot, to?.slot)) return;
+          player.gold -= fromItem?.cost || 1;
+          player.equipment[to?.slot] = fromItem;
+        }
+
         player?.calculateStats();
         /* Save the users data */
         scene.db.updateUser(player);
@@ -310,7 +349,9 @@ class ServerScene extends Phaser.Scene {
       });
 
       socket.on("chatNpc", ({ npcId }) => {
+        const player = scene?.players?.[socketId];
         const npc = scene.npcs[npcId];
+        player.state.targetNpcId = npcId;
         socket.emit("keeperDataUpdate", { npcId: npc?.id, keeperData: npc?.keeperData });
       });
     });

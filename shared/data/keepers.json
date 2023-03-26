@@ -53,12 +53,12 @@
       "dialogues": {
         "greet": "My name is <strong>Tudwick</strong> and I don't like wearing shirts. I live in these woods and I have a sweet <em>`stache</em>. What can I do for you?",
         "quests": "Still listening? Good! Here's some stuff you can do for me.",
-        "shop": "Here are some things I found along the trail."
+        "shop": "Here are some things I found along the trail.  You may find them useful."
       },
       "quests": ["slime-roundup", "slime-eggs", "hornet-hunting"],
       "shop": [
-        { "item": ["pants", "common", "clothPants"], "amount": 1, "restockTime": 1000 },
-        { "item": ["weapon", "common", "dagger"], "amount": 1, "restockTime": 1000 }
+        { "item": ["pants", "common", "clothPants"], "stock": 1, "restockTime": 1000 },
+        { "item": ["weapon", "common", "dagger"], "stock": 1, "restockTime": 1000 }
       ]
     }
   },
