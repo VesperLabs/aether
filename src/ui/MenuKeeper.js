@@ -39,7 +39,7 @@ const MenuKeeper = () => {
             gap: 1,
             flexDirection: "column",
             flex: 1,
-            minWidth: 250,
+            minWidth: 300,
           }}
         >
           <Flex sx={{ bg: "shadow.30", flexDirection: "column", p: 2, gap: 2, borderRadius: 6 }}>
@@ -87,8 +87,6 @@ const KeeperButton = ({ keyboardKey, onClick, children, active, ...props }) => {
         display: "flex",
         gap: 2,
         alignItems: "end",
-        opacity: active ? 1 : 0.5,
-        "&:hover": { opacity: 1 },
       }}
       variant="wood"
       onClick={onClick}
