@@ -8,7 +8,7 @@ const ModalRespawn = () => {
       <Modal.Body>Would you like to respawn?</Modal.Body>
       <Modal.Footer>
         <Button
-          variant="menu"
+          variant="wood"
           sx={{ flex: 1 }}
           onClick={() => {
             socket.emit("respawn");

@@ -5,6 +5,7 @@ const Modal = ({ sx, ...props }) => {
   return (
     <Flex
       sx={{
+        zIndex: "modal",
         gap: 1,
         p: 1,
         borderRadius: 3,
@@ -31,7 +32,7 @@ Modal.Body = ({ sx, ...props }) => {
 };
 
 Modal.Footer = ({ sx, ...props }) => {
-  return <Flex sx={{ flex: 1 }} {...props} />;
+  return <Flex sx={{ gap: 1, flex: 1 }} {...props} />;
 };
 
 export default Modal;

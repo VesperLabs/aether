@@ -103,7 +103,11 @@ class ServerScene extends Phaser.Scene {
           if (foundItem) {
             /* Delete loot from server */
             scene.roomManager.rooms[player?.roomName].lootManager.remove(lootId);
-            foundItem.amount = (foundItem.amount || 0) + (item?.amount || 0);
+            /* TODO: a function that handles setting an items amount
+            - Needs to handle strings and nullish values
+             */
+            foundItem.amount =
+              Math.parseInt(foundItem.amount || 0) + Math.parseInt(item?.amount || 0);
           } else {
             /* If our inventory is full we do not pick it up */
             if (player.isInventoryFull()) return console.log("❌ Inventory full.");
@@ -204,7 +208,7 @@ class ServerScene extends Phaser.Scene {
         io.emit("remove", socketId);
       });
 
-      socket.on("dropItem", ({ location, item }) => {
+      socket.on("dropItem", ({ location, item, amount }) => {
         const player = scene?.players?.[socketId];
         let found = null;
         /* If the item was dropped from equipment find it and what slot it came from */
@@ -213,7 +217,6 @@ class ServerScene extends Phaser.Scene {
           found = f;
           /* Remove it from the players equipment */
           player?.clearEquipmentSlot(slotName);
-          player?.calculateStats();
         }
 
         /* If the item was dropped from inventory find it and what slot it came from */
@@ -221,8 +224,9 @@ class ServerScene extends Phaser.Scene {
           found = player?.findInventoryItemById(item?.id);
           /* Remove it from the players inventory */
           player?.deleteInventoryItemAtId(item?.id);
-          player?.calculateStats();
         }
+
+        player?.calculateStats();
 
         /* Make the item pop up where they dropped it */
         const coords = { x: player?.x, y: player?.y };

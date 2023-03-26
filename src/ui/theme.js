@@ -19,6 +19,9 @@ export default {
       50: "rgba(0,0,0,.50)",
     },
   },
+  zIndices: {
+    modal: "999999",
+  },
   fonts: {
     body: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
     heading: "inherit",
@@ -44,6 +47,15 @@ export default {
   badges: {
     primary: {
       display: "block",
+    },
+  },
+  forms: {
+    input: {
+      bg: "shadow.30",
+      border: `1px solid #000`,
+      borderColor: `shadow.30`,
+      outline: "none",
+      textShadow: "none",
     },
   },
   buttons: {

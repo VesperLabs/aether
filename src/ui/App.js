@@ -11,6 +11,7 @@ import {
   MenuKeeper,
   MenuHud,
   ModalRespawn,
+  ModalDropAmount,
   KeyboardKey,
 } from "./";
 import { isMobile, getSpinDirection } from "../utils";
@@ -24,6 +25,7 @@ export const useAppContext = () => {
 
 function App({ socket, debug, game }) {
   const [isConnected, setIsConnected] = useState(true);
+  const [dropItem, setDropItem] = useState();
   const [hero, setHero] = useState();
   const [keeper, setKeeper] = useState(); // data related to NPC you are chatting with
   const [tabKeeper, setTabKeeper] = useState(false);
@@ -139,6 +141,8 @@ function App({ socket, debug, game }) {
           setTabInventory,
           setTabKeeper,
           setKeeper,
+          dropItem,
+          setDropItem,
           tabEquipment,
           tabInventory,
           keeper,
@@ -151,6 +155,7 @@ function App({ socket, debug, game }) {
       >
         <GameWrapper>
           {hero?.state?.isDead && <ModalRespawn />}
+          {dropItem && <ModalDropAmount />}
           <MenuHud />
           <MenuBar />
         </GameWrapper>

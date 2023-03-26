@@ -17,7 +17,7 @@ const BLANK_IMAGE =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 
 const Slot = React.memo(
-  ({ sx, size = 52, item, slotKey, location, icon, stock, ...props }) => {
+  ({ sx, size = 52, item, slotKey, location, icon, stock, disabled, ...props }) => {
     // component logic here
     const { hero } = useAppContext();
     const [imageData, setImageData] = useState(BLANK_IMAGE);
@@ -27,6 +27,7 @@ const Slot = React.memo(
     const [target, setTarget] = useState(null);
     const imageRef = useRef(null);
     const { dropItem } = useItemEvents({ item, location, slotKey });
+    const shouldBindEvents = item && !disabled;
 
     const handleMouseDown = (e) => {
       setPosition({
@@ -118,7 +119,7 @@ const Slot = React.memo(
 
     /* Bind our global movement events */
     useLayoutEffect(() => {
-      if (!item) return;
+      if (!shouldBindEvents) return;
       document.addEventListener("touchend", handleTouchEnd);
       document.addEventListener("mouseup", handleMouseUp);
       document.addEventListener("mousemove", handleMouseMove);
@@ -141,10 +142,17 @@ const Slot = React.memo(
       }
     }, [position]);
 
-    const mouseBinds = item
+    const outerMouseBinds = shouldBindEvents
       ? {
           onMouseEnter: handleMouseEnter,
           onMouseLeave: handleMouseLeave,
+        }
+      : {};
+
+    const innerMouseBinds = shouldBindEvents
+      ? {
+          onMouseDown: handleMouseDown,
+          onTouchStart: handleTouchStart,
         }
       : {};
 
@@ -175,7 +183,7 @@ const Slot = React.memo(
           ...sx,
         }}
         {...dataKeys}
-        {...mouseBinds}
+        {...outerMouseBinds}
         {...props}
       >
         {item && (
@@ -188,8 +196,6 @@ const Slot = React.memo(
             <Icon
               ref={imageRef}
               icon={aboutToSell ? "../assets/icons/gold.png" : imageData}
-              onMouseDown={handleMouseDown}
-              onTouchStart={handleTouchStart}
               size={size}
               sx={{
                 touchAction: "none",
@@ -203,6 +209,7 @@ const Slot = React.memo(
                 transform: dragging ? "scale(4,4)" : "scale(2,2)",
                 imageRendering: "pixelated",
               }}
+              {...innerMouseBinds}
               {...dataKeys}
             />
             <ItemTooltip item={item} show={showTooltip} />
@@ -224,14 +231,18 @@ const Slot = React.memo(
 );
 
 function useItemEvents({ location, slotKey, item }) {
-  const { hero, socket } = useAppContext();
+  const { hero, socket, setDropItem } = useAppContext();
 
   return {
     dropItem: (target) => {
       if (hero?.state?.isDead) return;
       /* Anywhere -> Ground */
       if (target?.nodeName == "CANVAS" && location !== "shop") {
-        return socket.emit("dropItem", { item, location });
+        if (item?.amount > 1) {
+          setDropItem({ ...item, location });
+        } else {
+          return socket.emit("dropItem", { item, location });
+        }
       }
       /* Anywhere -> Shop */
       if (target?.closest(".menu-keeper")) {
