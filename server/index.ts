@@ -106,8 +106,7 @@ class ServerScene extends Phaser.Scene {
             /* TODO: a function that handles setting an items amount
             - Needs to handle strings and nullish values
              */
-            foundItem.amount =
-              Math.parseInt(foundItem.amount || 0) + Math.parseInt(item?.amount || 0);
+            foundItem.amount = parseInt(foundItem.amount || 0) + parseInt(item?.amount || 0);
           } else {
             /* If our inventory is full we do not pick it up */
             if (player.isInventoryFull()) return console.log("❌ Inventory full.");
