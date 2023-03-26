@@ -57,8 +57,9 @@
       },
       "quests": ["slime-roundup", "slime-eggs", "hornet-hunting"],
       "shop": [
-        { "item": ["pants", "common", "clothPants"], "stock": 1, "restockTime": 1000 },
-        { "item": ["weapon", "common", "dagger"], "stock": 1, "restockTime": 1000 }
+        { "item": ["armor", "common", "clothRobe"], "stock": 1 },
+        { "item": ["pants", "common", "clothPants"], "stock": 1 },
+        { "item": ["weapon", "common", "dagger"], "stock": 1 }
       ]
     }
   },

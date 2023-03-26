@@ -27,6 +27,7 @@ class Npc extends Character {
     this.respawnTime = 10000;
     this.drops = args?.drops;
     this.equipment = buildEquipment(equipment);
+    this.talkingIds = [];
     this.keeperData = { ...keeperData, shop: buildShop(keeperData?.shop) };
   }
   setDead() {
@@ -138,13 +139,18 @@ class Npc extends Character {
         if (this.state.isStatic) {
           this.moveToSpawnAndWait(delta);
         } else {
-          this.moveRandomly(time);
+          if (this.talkingIds?.length > 0) {
+            this.checkTalking();
+          } else {
+            this.moveRandomly(time);
+          }
         }
       }
     }
 
     // Determine if player should attack target player
     const shouldAttackPlayer = !state?.isAttacking && this.checkInRange(targetPlayer, 1);
+
     if (shouldAttackPlayer) {
       // Attack target player after lag delay to ensure we are actually near them
       setTimeout(() => {
@@ -210,6 +216,22 @@ class Npc extends Character {
       return this.body.setVelocity(this.vx, this.vy);
     }
     this.moveTowardPointPathed(this.startingCoords);
+  }
+  checkTalking() {
+    const scene = this.scene;
+    this.vy = 0;
+    this.vx = 0;
+    this.body.setVelocity(this.vx, this.vy);
+
+    for (const playerId of this.talkingIds) {
+      const player = scene?.players?.[playerId];
+      if (!this.checkInRange(player, 80)) {
+        const index = this.talkingIds.indexOf(playerId);
+        if (index !== -1) {
+          this.talkingIds.splice(index, 1);
+        }
+      }
+    }
   }
   dropLoot(magicFind) {
     const ilvl = 1 + Math.floor(this.stats.level / 10);

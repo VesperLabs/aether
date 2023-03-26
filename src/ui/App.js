@@ -283,7 +283,7 @@ const MenuBar = () => {
           onClick={() => setTabEquipment((prev) => !prev)}
         />
         <MenuButton
-          keyboardKey="I"
+          keyboardKey="D"
           iconName="bag"
           isActive={tabInventory}
           onClick={() => setTabInventory((prev) => !prev)}

@@ -229,25 +229,25 @@ function useItemEvents({ location, slotKey, item }) {
   return {
     dropItem: (target) => {
       if (hero?.state?.isDead) return;
-
-      /* If you drop an item on the ground */
-      if (target?.nodeName == "CANVAS") {
+      /* Anywhere -> Ground */
+      if (target?.nodeName == "CANVAS" && location !== "shop") {
         return socket.emit("dropItem", { item, location });
       }
-      /* If you move an item in your inventory or equipment */
+      /* Anywhere -> Shop */
+      if (target?.closest(".menu-keeper")) {
+        return socket.emit("moveItem", {
+          to: {
+            location: "shop",
+          },
+          from: { slot: slotKey, location },
+        });
+      }
+      /* Anywhere -> Anywhere */
       if (target?.dataset?.slotKey && target?.dataset?.slotKey !== slotKey) {
         return socket.emit("moveItem", {
           to: {
             slot: target?.dataset?.slotKey,
             location: target?.dataset?.location,
-          },
-          from: { slot: slotKey, location },
-        });
-      }
-      if (target?.closest(".menu-keeper")) {
-        return socket.emit("moveItem", {
-          to: {
-            location: "shop",
           },
           from: { slot: slotKey, location },
         });

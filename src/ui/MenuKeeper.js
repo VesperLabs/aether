@@ -36,6 +36,7 @@ const MenuKeeper = () => {
             gap: 1,
             flexDirection: "column",
             flex: 1,
+            minWidth: 200,
           }}
         >
           <Box sx={{ bg: "shadow.30", p: 3, borderRadius: 6 }}>
@@ -56,7 +57,13 @@ const MenuKeeper = () => {
             </Button>
           </Flex>
         </Flex>
-        <Flex sx={{ gap: 2, display: isShop ? "flex" : "none" }}>
+        <Flex
+          sx={{
+            gap: 2,
+            display: isShop ? "flex" : "none",
+            justifySelf: "start",
+          }}
+        >
           {shop?.map(({ item }, idx) => {
             return (
               <Slot location="shop" slotKey={idx} icon="./assets/icons/chest.png" item={item} />

@@ -216,7 +216,7 @@ function checkNpcProximity(scene, time) {
   }
 
   /* Update the hero to be targeting them */
-  if (closestNpc) {
+  if (closestNpc && !hero.state.isDead) {
     if (hero.state.targetNpcId !== closestNpc?.id && !closestNpc?.state?.lockedPlayerId) {
       hero.state.targetNpcId = closestNpc?.id;
       window.dispatchEvent(new CustomEvent("HERO_NEAR_NPC", { detail: closestNpc?.id }));

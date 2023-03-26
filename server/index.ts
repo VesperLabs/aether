@@ -257,7 +257,6 @@ class ServerScene extends Phaser.Scene {
           const npcId = player?.state?.targetNpcId;
           const shopSlot = scene?.npcs?.[npcId]?.keeperData?.shop?.[from?.slot];
           if (!npcId) return;
-
           if (!shopSlot?.stock) return;
           if (to?.location === "shop") return;
           from.itemId = shopSlot?.item?.id;
@@ -351,6 +350,7 @@ class ServerScene extends Phaser.Scene {
       socket.on("chatNpc", ({ npcId }) => {
         const player = scene?.players?.[socketId];
         const npc = scene.npcs[npcId];
+        npc.talkingIds.push(socketId);
         player.state.targetNpcId = npcId;
         socket.emit("keeperDataUpdate", { npcId: npc?.id, keeperData: npc?.keeperData });
       });

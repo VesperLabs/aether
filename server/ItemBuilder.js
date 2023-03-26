@@ -112,7 +112,7 @@ const ItemBuilder = {
       return null;
     }
 
-    if (!item) console.log(`🔧 Item not found for ${type} ${rarity} ${itemKey}`);
+    if (!item) return console.log(`🔧 Item not found for ${type} ${rarity} ${itemKey}`);
 
     if (item?.stats) {
       for (let key in item.stats) {
