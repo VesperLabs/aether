@@ -3,7 +3,9 @@ import ItemBuilder from "./ItemBuilder";
 import { randomNumber, cloneObject } from "./utils";
 
 class Character extends BaseCharacter {
-  constructor(scene, args) {
+  declare scene: Scene;
+  declare body: Phaser.Physics.Arcade.Body;
+  constructor(scene: Scene, args) {
     super(scene, args);
     this.room = args?.room;
     this.scene = scene;

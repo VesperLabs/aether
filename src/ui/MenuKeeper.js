@@ -7,7 +7,9 @@ const MenuKeeper = () => {
   const [tab, setTab] = useState("greet");
   const { dialogues, shop } = keeper?.keeperData ?? {};
 
-  const isShop = tab === "shop";
+  const tabShop = tab === "shop";
+  const tabQuests = tab === "quests";
+  const tabGreet = tab === "greet";
 
   useEffect(() => {
     if (!show) setTab("greet");
@@ -37,33 +39,33 @@ const MenuKeeper = () => {
             gap: 1,
             flexDirection: "column",
             flex: 1,
-            minWidth: 200,
+            minWidth: 250,
           }}
         >
-          <Box sx={{ bg: "shadow.30", p: 3, borderRadius: 6 }}>
+          <Flex sx={{ bg: "shadow.30", flexDirection: "column", p: 2, gap: 2, borderRadius: 6 }}>
             <Text dangerouslySetInnerHTML={{ __html: dialogues?.[tab] }} />
-          </Box>
-          {show && (
-            <Flex sx={{ gap: 2, ml: 2, mt: "-12px" }}>
-              <KeeperButton keyboardKey="G" onClick={() => setTab("greet")}>
-                Greet
-              </KeeperButton>
-              <KeeperButton keyboardKey="S" onClick={() => setTab("shop")}>
-                Shop
-              </KeeperButton>
-              <KeeperButton keyboardKey="Q" onClick={() => setTab("quests")}>
-                Quests
-              </KeeperButton>
-              <KeeperButton keyboardKey="C" onClick={() => setTabKeeper(false)}>
-                Close
-              </KeeperButton>
-            </Flex>
-          )}
+            {show && (
+              <Flex sx={{ gap: 2 }}>
+                <KeeperButton keyboardKey="G" onClick={() => setTab("greet")} active={tabGreet}>
+                  Greet
+                </KeeperButton>
+                <KeeperButton keyboardKey="S" onClick={() => setTab("shop")} active={tabShop}>
+                  Shop
+                </KeeperButton>
+                <KeeperButton keyboardKey="Q" onClick={() => setTab("quests")} active={tabQuests}>
+                  Quests
+                </KeeperButton>
+                <KeeperButton keyboardKey="C" onClick={() => setTabKeeper(false)} active={true}>
+                  Close
+                </KeeperButton>
+              </Flex>
+            )}
+          </Flex>
         </Flex>
         <Flex
           sx={{
             gap: 2,
-            display: isShop ? "flex" : "none",
+            display: tabShop ? "flex" : "none",
             justifySelf: "start",
           }}
         >
@@ -78,10 +80,16 @@ const MenuKeeper = () => {
   );
 };
 
-const KeeperButton = ({ keyboardKey, onClick, children, ...props }) => {
+const KeeperButton = ({ keyboardKey, onClick, children, active, ...props }) => {
   return (
     <Button
-      sx={{ display: "flex", gap: 2, alignItems: "end" }}
+      sx={{
+        display: "flex",
+        gap: 2,
+        alignItems: "end",
+        opacity: active ? 1 : 0.5,
+        "&:hover": { opacity: 1 },
+      }}
       variant="wood"
       onClick={onClick}
       {...props}

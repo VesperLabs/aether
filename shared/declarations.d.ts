@@ -29,6 +29,13 @@ interface Loot {
   dropTime: number;
 }
 
+interface Drop {
+  type: string;
+  rarity: string;
+  key: string;
+  chance: integer;
+}
+
 interface Door extends Phaser.Types.Tilemaps.TiledObject {}
 
 interface Scene extends Phaser.Scene {
@@ -63,11 +70,29 @@ interface Character extends Phaser.GameObjects.Sprite {
   action: string;
   direction: string;
   currentSpeed: number;
-  vx: number;
-  vy: number;
-  kind: string;
   nextPath: Coordinate;
+  body: Phaser.Physics.Arcade.Body;
+  vx: any;
+  vy: any;
+  kind: any;
+  state: any;
+  gold: any;
+  profile: any;
+  equipment: any;
+  inventory: any;
+  baseStats: any;
+  stats: any;
 }
 
-interface Npc extends Character {}
+interface KeeperData {
+  dialogues?: any;
+  quests?: any;
+  shop?: any;
+}
+
+interface Npc extends Character {
+  drops: Array<Drop>;
+  talkingIds: Array<string>;
+}
+
 interface Player extends Character {}

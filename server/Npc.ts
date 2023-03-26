@@ -5,13 +5,13 @@ import crypto from "crypto";
 
 const START_AGGRO_RANGE = 150;
 
-const buildEquipment = (equipment) =>
+const buildEquipment = (equipment: Record<string, Array<string>>) =>
   Object?.entries(equipment).reduce((acc, [slot, itemArray]) => {
     acc[slot] = itemArray?.length ? ItemBuilder.buildItem(...itemArray) : null;
     return acc;
   }, {});
 
-const buildShop = (shop) => {
+const buildShop = (shop: Array<any>) => {
   return shop?.reduce((acc, entry) => {
     const id = crypto.randomUUID();
     acc.push({ id, ...entry, item: ItemBuilder.buildItem(...entry.item) });
@@ -19,8 +19,21 @@ const buildShop = (shop) => {
   }, []);
 };
 
-class Npc extends Character {
-  constructor(scene, { equipment = {}, keeperData = {}, ...args }) {
+class Npc extends Character implements Npc {
+  public respawnTime: number;
+  public drops: Array<Drop>;
+  public talkingIds: Array<string>;
+  public keeperData: KeeperData;
+  public nextPath: Coordinate;
+
+  constructor(
+    scene: Scene,
+    {
+      equipment = {},
+      keeperData = {},
+      ...args
+    }: { equipment: Record<string, Array<string>>; keeperData: KeeperData; drops: Array<Drop> }
+  ) {
     super(scene, args);
     this.scene = scene;
     this.state.isRobot = true;
@@ -49,7 +62,7 @@ class Npc extends Character {
       this.scene.io.to(this.room.name).emit("respawnNpc", { id: this?.id, x: this.x, y: this.y });
     }
   }
-  checkInRange(target, range) {
+  checkInRange(target: any, range: number) {
     if (!target) return;
     const thisRadius = this?.body?.radius || 8;
     const targetRadius = target?.body?.radius || 8;
@@ -95,7 +108,7 @@ class Npc extends Character {
     });
     scene.io.to(room?.name).emit("npcAttack", { id, count, direction });
   }
-  update(time, delta) {
+  update(time: number, delta: number) {
     // Destructure relevant properties from 'this'
     const { scene, state, room } = this ?? {};
 
@@ -159,7 +172,7 @@ class Npc extends Character {
       }, delta);
     }
   }
-  moveTowardPoint(coords) {
+  moveTowardPoint(coords: Coordinate) {
     const speed = this.stats.speed;
     const angle = Math.atan2(coords.y - this.y, coords.x - this.x);
     this.vx = speed * Math.cos(angle);
@@ -167,7 +180,7 @@ class Npc extends Character {
     this.body.setVelocity(this.vx, this.vy);
     this.direction = getCharacterDirection(this, { x: this?.x + this.vx, y: this.y + this.vy });
   }
-  moveTowardPointPathed(targetCoords) {
+  moveTowardPointPathed(targetCoords: Coordinate) {
     const { nextPath } = this ?? {};
     this.room.findPath(this, targetCoords);
     if (nextPath) {
@@ -179,7 +192,7 @@ class Npc extends Character {
       }
     }
   }
-  moveRandomly(time) {
+  moveRandomly(time: number) {
     if (time % 4 > 1) return;
     const randNumber = Math.floor(Math.random() * 6 + 1);
     const speed = this.stats.speed / 2;
@@ -206,7 +219,7 @@ class Npc extends Character {
     }
     this.body.setVelocity(this.vx, this.vy);
   }
-  moveToSpawnAndWait(delta) {
+  moveToSpawnAndWait(delta: number) {
     if (this.checkInRange(this.startingCoords, 1)) {
       this.vy = 0;
       this.vx = 0;
@@ -233,7 +246,7 @@ class Npc extends Character {
       }
     }
   }
-  dropLoot(magicFind) {
+  dropLoot(magicFind: number) {
     const ilvl = 1 + Math.floor(this.stats.level / 10);
     const mainDrop = ItemBuilder.rollDrop(ilvl, magicFind);
     let runners = [];
