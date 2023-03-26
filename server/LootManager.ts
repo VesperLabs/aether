@@ -1,7 +1,11 @@
 import Loot from "./Loot";
 import crypto from "crypto";
 class LootManager {
-  constructor(scene, room) {
+  public scene: Scene;
+  public room: Room;
+  private lootExpireTime: number;
+  public loots: Array<Loot>;
+  constructor(scene: Scene, room: Room) {
     this.scene = scene;
     this.room = room;
     this.lootExpireTime = 300000; //5min;
@@ -16,7 +20,7 @@ class LootManager {
     this.loots.push(scene.loots[id]);
     this.scene.io.to(room?.name).emit("lootSpawned", { loot: scene.loots[id], npcId });
   }
-  remove(id) {
+  remove(id: string) {
     const foundIndex = this?.loots?.map((loot) => loot.id).indexOf(id);
     if (foundIndex) this?.loots.splice(foundIndex, 1);
     if (this.scene.loots[id]) delete this.scene.loots[id];

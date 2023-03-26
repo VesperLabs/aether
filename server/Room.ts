@@ -1,14 +1,13 @@
-import NpcManager from "./NpcManager.js";
-import PlayerManager from "./PlayerManager.js";
+import NpcManager from "./NpcManager";
+import PlayerManager from "./PlayerManager";
 import Door from "../shared/Door";
-import LootManager from "./LootManager.js";
-import SpellManager from "./SpellManager.js";
+import LootManager from "./LootManager";
+import SpellManager from "./SpellManager";
 import EasyStar from "easystarjs";
-// import LootFactory from "./LootFactory.js";
 import { Vault } from "@geckos.io/snapshot-interpolation";
 
-class Room {
-  private scene: Scene;
+class Room implements Room {
+  public scene: Scene;
   public tileMap: Phaser.Tilemaps.Tilemap;
   public collideLayer: Phaser.Tilemaps.TilemapLayer;
   public name: string;
@@ -19,7 +18,7 @@ class Room {
   public lootManager: LootManager;
   public spellManager: SpellManager;
   public easystar: EasyStar.js;
-  private colliders: Array<any>;
+  public colliders: Array<any>;
 
   constructor(scene: Scene, { name }: { name: string }) {
     this.scene = scene;
@@ -44,7 +43,7 @@ class Room {
       .getObjectLayer("Doors")
       .objects?.forEach((door: Phaser.Types.Tilemaps.TiledObject) => {
         if (!scene?.doors?.[name]) {
-          scene.doors[name] = {};
+          scene.doors[name] = { id: null, name: null, type: null };
         }
         scene.doors[name][door.name] = new Door(scene, door);
         doors.add(scene.doors[name][door.name]);
@@ -79,7 +78,7 @@ class Room {
     easystar.setTileCost(0, 0);
     return easystar;
   }
-  findPath(player, targetCoords) {
+  findPath(player: Npc, targetCoords: Coordinate) {
     const { collideLayer, easystar } = this ?? {};
     const TILE_SIZE = collideLayer.layer.tileWidth;
     const startX = Math.floor(player.x / TILE_SIZE);
