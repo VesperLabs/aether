@@ -207,9 +207,11 @@ class ServerScene extends Phaser.Scene {
         io.emit("remove", socketId);
       });
 
-      socket.on("dropItem", ({ location, item, amount }) => {
+      socket.on("dropItem", ({ location, item, ...rest }) => {
+        const amount = Math.abs(parseInt(rest?.amount)) || 1;
         const player = scene?.players?.[socketId];
         let found = null;
+        let dropAmount: integer;
         /* If the item was dropped from equipment find it and what slot it came from */
         if (location === "equipment") {
           const { item: f, slotName } = player?.findEquipmentById(item?.id);
@@ -221,8 +223,13 @@ class ServerScene extends Phaser.Scene {
         /* If the item was dropped from inventory find it and what slot it came from */
         if (location === "inventory") {
           found = player?.findInventoryItemById(item?.id);
-          /* Remove it from the players inventory */
-          player?.deleteInventoryItemAtId(item?.id);
+          if (amount >= found?.amount) {
+            dropAmount = found?.amount;
+            player?.deleteInventoryItemAtId(item?.id);
+          } else {
+            dropAmount = player?.subtractInventoryItemAtId(item?.id, amount);
+            if (!dropAmount) return;
+          }
         }
 
         player?.calculateStats();
@@ -237,7 +244,7 @@ class ServerScene extends Phaser.Scene {
         /* Spawn the loot on the server */
         scene.roomManager.rooms[player.roomName].lootManager.create({
           ...coords,
-          item: found,
+          item: { ...found, ...(dropAmount ? { amount: dropAmount } : {}) },
         });
         /* Save the users data */
         scene.db.updateUser(player);
@@ -313,14 +320,22 @@ class ServerScene extends Phaser.Scene {
 
         /* Inventory -> Shop */
         if (from?.location === "inventory" && to?.location === "shop") {
-          player?.deleteInventoryItemAtId(from?.itemId);
-          player.gold += (fromItem?.amount || 1) * (fromItem?.cost || 1);
+          let sellQty = Math.abs(parseInt(from?.amount)) || 1;
+          const cost = Math.abs(parseInt(fromItem?.cost)) || 1;
+          if (sellQty >= fromItem?.amount) {
+            player?.deleteInventoryItemAtId(from?.itemId);
+          } else {
+            player?.subtractInventoryItemAtId(from?.itemId, sellQty);
+          }
+          player.gold += sellQty * cost;
         }
 
         /* Equipment -> Shop */
         if (from?.location === "equipment" && to?.location === "shop") {
+          let sellQty = Math.abs(parseInt(from?.amount)) || 1;
+          const cost = Math.abs(parseInt(fromItem?.cost)) || 1;
           player?.clearEquipmentSlot(from?.slot);
-          player.gold += (fromItem?.amount || 1) * (fromItem?.cost || 1);
+          player.gold += sellQty * cost;
         }
 
         /* Shop -> Inventory */

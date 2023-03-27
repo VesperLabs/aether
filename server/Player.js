@@ -1,4 +1,5 @@
 import Character from "./Character";
+import { cloneObject } from "./utils";
 class Player extends Character {
   /* Server level Player object */
   constructor(scene, { email, ...args }) {
@@ -23,6 +24,16 @@ class Player extends Character {
       }
     }
     return returnItem;
+  }
+  subtractInventoryItemAtId(id, amount) {
+    const found = cloneObject(this.findInventoryItemById(id));
+    if (found?.amount > amount && amount > 0) {
+      const newAmount = found?.amount - amount;
+      this.deleteInventoryItemAtId(id);
+      this.addInventoryItem({ ...found, amount: newAmount });
+      return amount;
+    }
+    return null;
   }
   deleteInventoryItemAtId(id) {
     for (var i = 0; i < this.inventory.length; i++) {

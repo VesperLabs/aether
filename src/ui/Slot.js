@@ -142,12 +142,10 @@ const Slot = React.memo(
       }
     }, [position]);
 
-    const outerMouseBinds = shouldBindEvents
-      ? {
-          onMouseEnter: handleMouseEnter,
-          onMouseLeave: handleMouseLeave,
-        }
-      : {};
+    const outerMouseBinds = {
+      onMouseEnter: handleMouseEnter,
+      onMouseLeave: handleMouseLeave,
+    };
 
     const innerMouseBinds = shouldBindEvents
       ? {
@@ -163,7 +161,8 @@ const Slot = React.memo(
 
     const targetMoved = target?.dataset?.tooltipId !== item?.id;
     const aboutToSell = dragging && target?.closest(".menu-keeper") && location !== "shop";
-    const showTooltip = (dragging && !targetMoved) || (hovering && !isMobile);
+    const showTooltip =
+      (dragging && !targetMoved) || (hovering && !isMobile) || (hovering && disabled);
 
     return (
       <Box
@@ -236,29 +235,43 @@ function useItemEvents({ location, slotKey, item }) {
   return {
     dropItem: (target) => {
       if (hero?.state?.isDead) return;
+      const { nodeName, dataset } = target ?? {};
       /* Anywhere -> Ground */
-      if (target?.nodeName == "CANVAS" && location !== "shop") {
+      if (nodeName == "CANVAS" && location !== "shop") {
         if (item?.amount > 1) {
-          setDropItem({ ...item, location });
+          /* If more than 1, open up the drop modal */
+          setDropItem({ ...item, location, action: "DROP" });
         } else {
+          if (["set", "rare", "unique"]?.includes(item?.rarity)) {
+            setDropItem({ ...item, location, action: "DROP_CONFIRM" });
+          }
           return socket.emit("dropItem", { item, location });
         }
       }
       /* Anywhere -> Shop */
       if (target?.closest(".menu-keeper")) {
-        return socket.emit("moveItem", {
-          to: {
-            location: "shop",
-          },
-          from: { slot: slotKey, location },
-        });
+        if (item?.amount > 1) {
+          /* If more than 1, open up the drop modal */
+          setDropItem({ ...item, location, action: "SHOP", slotKey });
+        } else {
+          if (["set", "rare", "unique"]?.includes(item?.rarity)) {
+            setDropItem({ ...item, location, action: "SHOP_CONFIRM", slotKey });
+          } else {
+            return socket.emit("moveItem", {
+              to: {
+                location: "shop",
+              },
+              from: { slot: slotKey, location },
+            });
+          }
+        }
       }
       /* Anywhere -> Anywhere */
-      if (target?.dataset?.slotKey && target?.dataset?.slotKey !== slotKey) {
+      if (dataset?.slotKey && dataset?.slotKey !== slotKey) {
         return socket.emit("moveItem", {
           to: {
-            slot: target?.dataset?.slotKey,
-            location: target?.dataset?.location,
+            slot: dataset?.slotKey,
+            location: dataset?.location,
           },
           from: { slot: slotKey, location },
         });
