@@ -36,16 +36,16 @@ const ModalDropAmount = () => {
           variant="wood"
           sx={{ flex: 1 }}
           onClick={() => {
-            /* We are selling */
-            isShop
-              ? socket.emit("moveItem", {
-                  to: {
-                    location: "shop",
-                  },
-                  from: { slot: slotKey, location, amount },
-                })
-              : /* Otherwise we are dropping */
-                socket.emit("dropItem", { item, location, amount });
+            if (isShop) {
+              socket.emit("moveItem", {
+                to: {
+                  location: "shop",
+                },
+                from: { slot: slotKey, location, amount },
+              });
+            } else {
+              socket.emit("dropItem", { item, location, amount });
+            }
             setDropItem(null);
           }}
         >

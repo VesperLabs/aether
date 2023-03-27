@@ -240,10 +240,10 @@ function useItemEvents({ location, slotKey, item }) {
       if (nodeName == "CANVAS" && location !== "shop") {
         if (item?.amount > 1) {
           /* If more than 1, open up the drop modal */
-          setDropItem({ ...item, location, action: "DROP" });
+          return setDropItem({ ...item, location, action: "DROP" });
         } else {
           if (["set", "rare", "unique"]?.includes(item?.rarity)) {
-            setDropItem({ ...item, location, action: "DROP_CONFIRM" });
+            return setDropItem({ ...item, location, action: "DROP_CONFIRM" });
           }
           return socket.emit("dropItem", { item, location });
         }
@@ -252,10 +252,10 @@ function useItemEvents({ location, slotKey, item }) {
       if (target?.closest(".menu-keeper")) {
         if (item?.amount > 1) {
           /* If more than 1, open up the drop modal */
-          setDropItem({ ...item, location, action: "SHOP", slotKey });
+          return setDropItem({ ...item, location, action: "SHOP", slotKey });
         } else {
           if (["set", "rare", "unique"]?.includes(item?.rarity)) {
-            setDropItem({ ...item, location, action: "SHOP_CONFIRM", slotKey });
+            return setDropItem({ ...item, location, action: "SHOP_CONFIRM", slotKey });
           } else {
             return socket.emit("moveItem", {
               to: {

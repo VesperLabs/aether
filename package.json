@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "types": "./shared/index.d.ts",
   "dependencies": {
     "@emotion/react": "^11.10.6",
     "@geckos.io/phaser-on-nodejs": "^1.2.8",
