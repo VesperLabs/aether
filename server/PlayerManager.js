@@ -50,6 +50,9 @@ class PlayerManager {
 
     return closestPlayer;
   }
+  getPlayers() {
+    return this.players?.getChildren();
+  }
 }
 
 export default PlayerManager;

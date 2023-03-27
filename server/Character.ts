@@ -3,9 +3,9 @@ import ItemBuilder from "./ItemBuilder";
 import { randomNumber, cloneObject } from "./utils";
 
 class Character extends BaseCharacter {
-  declare scene: Scene;
+  declare scene: ServerScene;
   declare body: Phaser.Physics.Arcade.Body;
-  constructor(scene: Scene, args) {
+  constructor(scene: ServerScene, args) {
     super(scene, args);
     this.room = args?.room;
     this.scene = scene;
@@ -156,7 +156,7 @@ class Character extends BaseCharacter {
 
     this.state.activeSets = activeSets;
   }
-  calculateDamage(victim) {
+  calculateDamage(victim: any) {
     if (victim?.state?.isDead) return false;
 
     const dodgeRoll = randomNumber(1, 100);

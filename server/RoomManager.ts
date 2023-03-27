@@ -2,10 +2,10 @@ import Room from "./Room";
 import { mapList } from "../shared/Maps";
 
 class RoomManager {
-  private scene: Scene;
+  public scene: ServerScene;
   public rooms: Record<string, Room>;
 
-  constructor(scene: Scene) {
+  constructor(scene: ServerScene) {
     this.rooms = {};
     this.scene = scene;
     this.createRooms();

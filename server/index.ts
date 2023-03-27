@@ -1,22 +1,10 @@
-//@ts-nocheck
 import path from "path";
 import { config } from "dotenv";
 import "@geckos.io/phaser-on-nodejs";
 config({ path: path.join(__dirname, "/../.env") });
-const { mapList } = require("../shared/Maps");
-const { SnapshotInterpolation } = require("@geckos.io/snapshot-interpolation");
-const Phaser = require("phaser");
-const express = require("express");
-const app = express();
-const http = require("http");
-const httpServer = http.createServer(app);
-const io = require("socket.io")(httpServer, {
-  cors: {
-    origin: "*",
-  },
-});
+import { mapList } from "../shared/Maps";
+import { Socket, Server } from "socket.io";
 import crypto from "crypto";
-const SI = new SnapshotInterpolation();
 import {
   handlePlayerInput,
   getCharacterState,
@@ -29,34 +17,56 @@ import {
 } from "./utils";
 import { initDatabase, baseUser } from "./db";
 import RoomManager from "./RoomManager";
+import Phaser from "phaser";
+const { SnapshotInterpolation } = require("@geckos.io/snapshot-interpolation");
 
-global.phaserOnNodeFPS = process.env.SERVER_FPS;
+const express = require("express");
+const app = express();
+const http = require("http");
+const httpServer = http.createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: "*",
+  },
+});
+
+const SI = new SnapshotInterpolation();
+global.phaserOnNodeFPS = parseInt(process.env.SERVER_FPS);
 
 app.use(express.static(path.join(__dirname, "../public")));
 
 class ServerScene extends Phaser.Scene {
+  public doors: Record<string, Door>;
+  public loots: Record<string, Loot>;
+  public npcs: Record<string, Npc>;
+  public players: Record<string, Player>;
+  public roomManager: RoomManager;
+  public spells: any;
+  public db: any;
+  public io: any;
+
   constructor() {
     super({ key: "ServerScene" });
   }
-  preload() {
+  async preload() {
     /* Need to install plugins here in headless mode */
     // this.game.plugins.installScenePlugin("x", X, "x", this.scene.scene, true);
-    mapList.forEach((asset) => {
+    mapList.forEach((asset: MapAsset) => {
       this.load.tilemapTiledJSON(asset?.name, path.join(__dirname, `../public/${asset.json}`));
     });
+    this.db = await initDatabase(process.env.MONGO_URL);
   }
-  async create() {
+  create() {
     const scene = this;
-    scene.io = io;
-    scene.players = {};
-    scene.doors = {};
-    scene.npcs = {};
-    scene.loots = {};
-    scene.spells = {};
-    scene.roomManager = new RoomManager(scene);
-    scene.db = await initDatabase(process.env.MONGO_URL);
+    this.io = io;
+    this.players = {};
+    this.doors = {};
+    this.npcs = {};
+    this.loots = {};
+    this.spells = {};
+    this.roomManager = new RoomManager(scene);
 
-    io.on("connection", (socket) => {
+    io.on("connection", (socket: Socket) => {
       const socketId = socket.id;
 
       socket.on("login", async (email = "arf@arf.arf") => {
@@ -153,8 +163,8 @@ class ServerScene extends Phaser.Scene {
         const roomName = hero?.roomName;
         /* Create hitList for npcs */
         const hitList = [];
-        const npcs = getRoomState(scene, roomName, true)?.npcs;
-        const players = getRoomState(scene, roomName, true)?.players;
+        const npcs = scene.roomManager.rooms[roomName]?.npcManager?.getNpcs();
+        const players = scene.roomManager.rooms[roomName]?.playerManager?.getPlayers();
         for (const npc of npcs) {
           if (!ids?.includes(npc.id)) continue;
           const newHit = hero.calculateDamage(npc);
@@ -235,7 +245,7 @@ class ServerScene extends Phaser.Scene {
         player?.calculateStats();
 
         /* Make the item pop up where they dropped it */
-        const coords = { x: player?.x, y: player?.y };
+        const coords: Coordinate = { x: player?.x, y: player?.y };
         if (player?.direction === "left") coords.x -= 16;
         if (player?.direction === "right") coords.x += 16;
         if (player?.direction === "up") coords.y -= 16;
@@ -245,6 +255,7 @@ class ServerScene extends Phaser.Scene {
         scene.roomManager.rooms[player.roomName].lootManager.create({
           ...coords,
           item: { ...found, ...(dropAmount ? { amount: dropAmount } : {}) },
+          npcId: null,
         });
         /* Save the users data */
         scene.db.updateUser(player);
@@ -396,9 +407,12 @@ new Phaser.Game({
   width: 1280,
   height: 720,
   banner: false,
-  audio: false,
+  audio: {
+    disableWebAudio: true,
+    noAudio: true,
+  },
   fps: {
-    target: process.env.SERVER_FPS,
+    target: parseInt(process.env.SERVER_FPS),
   },
   roundPixels: false,
   physics: {

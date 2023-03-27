@@ -1,17 +1,17 @@
 import Loot from "./Loot";
 import crypto from "crypto";
 class LootManager {
-  public scene: Scene;
+  public scene: ServerScene;
   public room: Room;
   private lootExpireTime: number;
   public loots: Array<Loot>;
-  constructor(scene: Scene, room: Room) {
+  constructor(scene: ServerScene, room: Room) {
     this.scene = scene;
     this.room = room;
     this.lootExpireTime = 300000; //5min;
     this.loots = [];
   }
-  create({ x, y, item, npcId }) {
+  create({ x, y, item, npcId }: { x: number; y: number; item: Item; npcId: string }) {
     /* Optional npcId to to drop locally on an npc. */
     if (!x || !y || !item) return;
     const { scene, room } = this;

@@ -1,21 +1,22 @@
 import Character from "./Character";
 import { cloneObject } from "./utils";
-class Player extends Character {
-  /* Server level Player object */
-  constructor(scene, { email, ...args }) {
+/* Server level Player object */
+class Player extends Character implements Player {
+  private email: string;
+  constructor(scene: ServerScene, args: Player) {
     super(scene, args);
-    this.email = email;
+    this.email = args?.email;
   }
   setDead() {
     this.state.isDead = true;
   }
-  findEquipmentById(id) {
+  findEquipmentById(id: string): any {
     const [slotName, foundItem] = Object.entries(this?.equipment).find(
-      ([slotName, slotItem]) => slotItem?.id === id
+      ([_, slotItem]: [string, Item]) => slotItem?.id === id
     ) || [null, null];
     return { item: foundItem, slotName };
   }
-  findInventoryItemById(id) {
+  findInventoryItemById(id: string) {
     let returnItem = null;
     for (var i = 0; i < this.inventory.length; i++) {
       if (this.inventory[i]?.id === id) {
@@ -25,7 +26,7 @@ class Player extends Character {
     }
     return returnItem;
   }
-  subtractInventoryItemAtId(id, amount) {
+  subtractInventoryItemAtId(id: string, amount: integer) {
     const found = cloneObject(this.findInventoryItemById(id));
     if (found?.amount > amount && amount > 0) {
       const newAmount = found?.amount - amount;
@@ -35,7 +36,7 @@ class Player extends Character {
     }
     return null;
   }
-  deleteInventoryItemAtId(id) {
+  deleteInventoryItemAtId(id: string) {
     for (var i = 0; i < this.inventory.length; i++) {
       if (this.inventory[i]?.id === id) {
         this.inventory[i] = null;
@@ -46,7 +47,7 @@ class Player extends Character {
   isInventoryFull() {
     return this?.inventory?.every(Boolean) && this?.inventory?.length >= 30;
   }
-  addInventoryItem(item) {
+  addInventoryItem(item: Item) {
     let itemAdded = false;
     for (var i = 0; i < this.inventory.length; i++) {
       if (!this.inventory[i]?.id) {
@@ -62,7 +63,7 @@ class Player extends Character {
   update() {
     this.doRegen();
   }
-  clearEquipmentSlot(slotName) {
+  clearEquipmentSlot(slotName: string) {
     if (!this?.equipment?.[slotName]) return;
     this.equipment[slotName] = null;
   }

@@ -27,7 +27,7 @@ class Npc extends Character implements Npc {
   public nextPath: Coordinate;
 
   constructor(
-    scene: Scene,
+    scene: ServerScene,
     {
       equipment = {},
       keeperData = {},

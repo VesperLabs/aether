@@ -27,14 +27,14 @@ function getDoor(scene, roomName, doorName) {
   return scene?.doors?.[roomName]?.[doorName];
 }
 
-function getRoomState(scene, roomName, deepObjects = false) {
+function getRoomState(scene: ServerScene, roomName: String): RoomState {
   return {
     players: Object.values(scene.players)
       ?.filter((p) => p?.room?.name === roomName)
-      .map((p) => (deepObjects ? p : getCharacterState(p))),
+      .map((p) => getCharacterState(p)),
     npcs: Object.values(scene.npcs)
       ?.filter((n) => n?.room?.name === roomName)
-      .map((p) => (deepObjects ? p : getCharacterState(p))),
+      .map((p) => getCharacterState(p)),
     spells: Object.values(scene.spells)
       ?.filter((s) => s?.room?.name === roomName)
       .map((s) => s?.getTrimmed()),
@@ -42,7 +42,7 @@ function getRoomState(scene, roomName, deepObjects = false) {
   };
 }
 
-function getCharacterState(p) {
+function getCharacterState(p: Character): CharacterState {
   const uid = p?.socketId || p?.id;
   return {
     id: uid, //required for SI
@@ -63,7 +63,7 @@ function getCharacterState(p) {
   };
 }
 
-function getTrimmedRoomState(scene, roomName) {
+function getTrimmedRoomState(scene: ServerScene, roomName: string): TrimmedRoomState {
   return {
     players: Object.values(scene.players)
       ?.filter((p) => p?.room?.name === roomName)
@@ -78,7 +78,7 @@ function getTrimmedRoomState(scene, roomName) {
   };
 }
 
-function getTrimmedCharacterState(p) {
+function getTrimmedCharacterState(p: Character): TrimmedCharacterState {
   const uid = p?.socketId || p?.id;
   return {
     id: uid, //required for SI

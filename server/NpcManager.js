@@ -44,6 +44,9 @@ class NpcManager {
       scene.physics.add.collider(npcs, c);
     });
   }
+  getNpcs() {
+    return this?.npcs?.getChildren();
+  }
 }
 
 export default NpcManager;

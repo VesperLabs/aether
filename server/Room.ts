@@ -7,7 +7,7 @@ import EasyStar from "easystarjs";
 import { Vault } from "@geckos.io/snapshot-interpolation";
 
 class Room implements Room {
-  public scene: Scene;
+  public scene: ServerScene;
   public tileMap: Phaser.Tilemaps.Tilemap;
   public collideLayer: Phaser.Tilemaps.TilemapLayer;
   public name: string;
@@ -20,7 +20,7 @@ class Room implements Room {
   public easystar: EasyStar.js;
   public colliders: Array<any>;
 
-  constructor(scene: Scene, { name }: { name: string }) {
+  constructor(scene: ServerScene, { name }: { name: string }) {
     this.scene = scene;
     this.tileMap = scene.make.tilemap({ key: name });
     this.name = name;

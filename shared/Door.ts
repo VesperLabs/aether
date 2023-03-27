@@ -4,7 +4,7 @@ class Door extends Phaser.GameObjects.Sprite implements Door {
   private destDoor: string;
   private destMap: string;
   private centerPos: Coordinate;
-  constructor(scene: Scene, args: Phaser.Types.Tilemaps.TiledObject) {
+  constructor(scene: ServerScene, args: Phaser.Types.Tilemaps.TiledObject) {
     const { x, y, width, height, name, properties } = args ?? {};
     super(scene, x, y, "icons");
     this.setOrigin(0, 0);
