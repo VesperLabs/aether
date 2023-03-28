@@ -17,7 +17,7 @@ class ServerCharacter extends Character {
     let ns = cloneObject(this.baseStats);
     let setList = {};
     let activeSets = [];
-    this.stats = { hp: null, mp: null, exp: null };
+    this.stats = { hp: 0, mp: 0, exp: 0 };
     /* Normal equipment Stats */
     Object.keys(equipment).forEach((eKey) => {
       if (equipment[eKey]) {

@@ -386,7 +386,6 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           /* Heal and what not */
           if (playerItem?.effects?.hp) {
             const hp = (parseInt(playerItem?.effects?.hp) / 100) * player?.stats?.maxHp;
-            console.log(hp);
             player.modifyStat("hp", hp);
           }
           if (playerItem?.effects?.mp) {
@@ -394,7 +393,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
             player.modifyStat("mp", mp);
           }
         }
-        player?.calculateStats();
+
         /* Save the users data */
         scene.db.updateUser(player);
         io.to(player?.roomName).emit("playerUpdate", getCharacterState(player));

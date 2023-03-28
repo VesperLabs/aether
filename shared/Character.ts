@@ -22,7 +22,7 @@ class Character extends Phaser.GameObjects.Container {
   stats: any;
   declare body: Phaser.Physics.Arcade.Body;
   declare state: any;
-  constructor(scene, args) {
+  constructor(scene: ServerScene | Phaser.Scene, args) {
     const {
       x,
       y,
@@ -90,20 +90,22 @@ class Character extends Phaser.GameObjects.Container {
   doAttack(count: integer) {
     //placeholder
   }
-  modifyStat(key: string, amount: number) {
-    const stat: number = this?.stats?.[key];
+  modifyStat(key: string, amount: any) {
+    const stat: integer = parseInt(this?.stats?.[key]);
+    const intAmount: integer = parseInt(amount);
+
     const maxStat = this?.stats?.["max" + capitalize(key)];
     if (typeof stat === undefined) return;
     if (typeof maxStat === undefined) return;
-    if (stat + amount > maxStat) {
+    if (stat + intAmount > maxStat) {
       this.stats[key] = maxStat;
       return;
     }
-    if (stat + amount < 0) {
+    if (stat + intAmount < 0) {
       this.stats[key] = 0;
       return;
     }
-    this.stats[key] += amount.toFixed(0);
+    this.stats[key] += intAmount;
   }
   checkAttackReady(delta) {
     // let attackDelay = 0;
