@@ -635,7 +635,6 @@
         "slot": "stackable",
         "texture": "stackable-potion-small-hp",
         "tint": "0xFFFFFF",
-        "type": "stackable",
         "effects": {
           "hp": 25
         }
@@ -647,7 +646,6 @@
         "slot": "stackable",
         "texture": "stackable-potion-small-mp",
         "tint": "0xFFFFFF",
-        "type": "stackable",
         "effects": {
           "mp": 25
         }
@@ -659,7 +657,6 @@
         "slot": "stackable",
         "texture": "stackable-potion-medium-hp",
         "tint": "0xFFFFFF",
-        "type": "stackable",
         "effects": {
           "hp": 50
         }
@@ -671,7 +668,6 @@
         "slot": "stackable",
         "texture": "stackable-potion-medium-mp",
         "tint": "0xFFFFFF",
-        "type": "stackable",
         "effects": {
           "mp": 50
         }
@@ -683,7 +679,6 @@
         "slot": "stackable",
         "texture": "stackable-bsporangium",
         "tint": "0x88DDFF",
-        "type": "stackable",
         "effects": {
           "hp": 15
         }
@@ -695,7 +690,6 @@
         "slot": "stackable",
         "texture": "stackable-apple",
         "tint": "0xFFFFFF",
-        "type": "stackable",
         "effects": {
           "hp": 20
         }
@@ -707,7 +701,6 @@
         "slot": "stackable",
         "texture": "stackable-meat",
         "tint": "0xFFFFFF",
-        "type": "stackable",
         "effects": {
           "hp": 30
         }
@@ -719,7 +712,6 @@
         "slot": "stackable",
         "texture": "stackable-meat",
         "tint": "0xFFFFFF",
-        "type": "stackable",
         "effects": {
           "hp": 30
         }
@@ -731,7 +723,6 @@
         "slot": "stackable",
         "texture": "stackable-cheese",
         "tint": "0xFFFFFF",
-        "type": "stackable",
         "effects": {
           "hp": 25
         }
@@ -743,7 +734,6 @@
         "slot": "stackable",
         "texture": "stackable-grapes",
         "tint": "0xFFFFFF",
-        "type": "stackable",
         "effects": {
           "hp": 20
         }
@@ -755,7 +745,6 @@
         "slot": "stackable",
         "texture": "stackable-skull",
         "tint": "0xFFFFFF",
-        "type": "stackable",
         "effects": {}
       }
     }
