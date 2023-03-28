@@ -25,6 +25,13 @@ interface Slot {
   slotName: string;
 }
 
+interface BuildItem extends Array<any> {
+  0?: string;
+  1?: string;
+  2?: string;
+  3?: number;
+}
+
 interface Loot {
   id: string;
   roomName: string;

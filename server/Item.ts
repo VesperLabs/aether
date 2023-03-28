@@ -1,5 +1,5 @@
 class Item implements Item {
-  id: number;
+  id: string;
   key: string;
   ilvl: number;
   rarity: string;
@@ -19,7 +19,7 @@ class Item implements Item {
   setName?: string;
   setBonus?: Record<string, number>;
 
-  constructor(item: Item) {
+  constructor(item) {
     this.id = item?.id;
     this.key = item?.key;
     this.ilvl = item?.ilvl;

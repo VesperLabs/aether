@@ -1,16 +1,18 @@
 {
   "chets": {
+    "name": "Chet's Leisureware",
     "pieces": 3,
     "stats": {
       "vitality": 10,
       "intelligence": 10
     },
     "percentStats": {
-      "vitality": "15%",
-      "intelligence": "15%"
+      "vitality": 15,
+      "intelligence": 15
     }
   },
   "hawkwings": {
+    "name": "Hawkwind's Deetles",
     "pieces": 2,
     "stats": {
       "dexterity": 10,
@@ -18,10 +20,11 @@
       "dodgeChance": 10
     },
     "percentStats": {
-      "dexterity": "15%"
+      "dexterity": 15
     }
   },
   "timmys": {
+    "name": "Timmy's Sofa Treasures",
     "pieces": 2,
     "stats": {
       "strength": 10,

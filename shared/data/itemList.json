@@ -149,7 +149,7 @@
         "name": "Hawkwing's Pincher",
         "base": "scythe",
         "texture": "weapon-scythe",
-        "tint": "0x55FF55",
+        "tint": "0x77FF77",
         "slot": "hands",
         "requirements": {
           "level": 5
@@ -167,7 +167,7 @@
         "name": "Hawkwing's Tickler",
         "base": "scythe",
         "texture": "weapon-scythe",
-        "tint": "0x5588FF",
+        "tint": "0xFFFF77",
         "slot": "hands",
         "requirements": {
           "level": 5
@@ -319,7 +319,7 @@
           "regenHp": 5
         },
         "percentStats": {
-          "regenHp": "15%"
+          "regenHp": 15
         }
       }
     },
@@ -483,7 +483,7 @@
           "blockChance": [20, 25]
         },
         "percentStats": {
-          "maxHp": "5%"
+          "maxHp": 5
         }
       }
     }
@@ -578,7 +578,7 @@
           "maxHp": [15, 20]
         },
         "percentStats": {
-          "maxHp": ["10%", "15%"]
+          "maxHp": [10, 15]
         }
       }
     }

@@ -6,7 +6,7 @@ import crypto from "crypto";
 const START_AGGRO_RANGE = 150;
 
 const buildEquipment = (equipment: Record<string, Array<string>>) =>
-  Object?.entries(equipment).reduce((acc, [slot, itemArray]) => {
+  Object?.entries(equipment).reduce((acc, [slot, itemArray]: [string, BuildItem]) => {
     acc[slot] = itemArray?.length ? ItemBuilder.buildItem(...itemArray) : null;
     return acc;
   }, {});

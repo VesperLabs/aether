@@ -1,13 +1,13 @@
 /* This file and Diablo II are the main reason this game exists */
 import crypto from "crypto";
-import Item from "./Item.ts";
+import Item from "./Item";
 import { cloneObject } from "./utils";
 import itemList from "../shared/data/itemList.json";
 import itemSetList from "../shared/data/itemSetList.json";
 import itemModsList from "../shared/data/itemModsList.json";
 
 const ItemBuilder = {
-  getSetInfo: (setName) => {
+  getSetInfo: (setName: string) => {
     return itemSetList[setName];
   },
   rollDrop: (ilvl, magicFind = 1) => {
@@ -95,8 +95,10 @@ const ItemBuilder = {
     }
     return item;
   },
-  buildItem: (type, rarity, itemKey, amount) => {
-    let item;
+  buildItem: (...args: BuildItem) => {
+    const [type, rarity, itemKey, amount] = args;
+
+    let item: Item;
     let newStats = {};
     let newEffects = {};
     let percentStats = {}; //holds all of the % values to be calculated together after stats..
@@ -129,13 +131,13 @@ const ItemBuilder = {
     if (item.percentStats) {
       for (let key in item.percentStats) {
         /* If the value is a range */
-        if (typeof item.percentStats[key] == "string") {
-          percentStats[key] = parseInt(parseFloat(item.percentStats[key]));
+        if (typeof item.percentStats[key] == "number") {
+          percentStats[key] = item.percentStats[key];
         } else if (Array.isArray(item.percentStats[key])) {
-          if (typeof item.percentStats[key][0] == "string") {
+          if (typeof item.percentStats[key][0] == "number") {
             //we have a percentage value. need to save it.
-            let low = parseInt(parseFloat(item.percentStats[key][0]));
-            let high = parseInt(parseFloat(item.percentStats[key][1]));
+            let low = parseInt(item.percentStats[key][0]);
+            let high = parseInt(item.percentStats[key][1]);
             percentStats[key] = Math.floor(Math.random() * (high - low + 1) + low);
           }
         }
@@ -147,12 +149,12 @@ const ItemBuilder = {
         let setBonus = itemSetList[item.setName];
         if (setBonus.percentStats) {
           for (let key in setBonus.percentStats) {
-            setBonus.percentStats[key] = parseInt(parseFloat(setBonus.percentStats[key]));
+            setBonus.percentStats[key] = parseInt(setBonus.percentStats[key]);
           }
         }
         if (setBonus.stats) {
           for (let key in setBonus.stats) {
-            setBonus.stats[key] = parseInt(parseFloat(setBonus.stats[key]));
+            setBonus.stats[key] = parseInt(setBonus.stats[key]);
           }
         }
         item.setBonus = setBonus;

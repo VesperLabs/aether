@@ -3,6 +3,7 @@ import { Box, Icon, ItemTooltip, theme } from "./";
 import { resolveAsset } from "../../shared/Assets";
 import { useAppContext } from "./App";
 import { isMobile, trimCanvas, tintCanvas } from "../utils";
+import { useDoubleTap } from "use-double-tap";
 
 const STYLE_EMPTY = (icon) => ({
   background: `${theme.colors.shadow[30]} url(${icon}) center center no-repeat`,
@@ -26,7 +27,7 @@ const Slot = React.memo(
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [target, setTarget] = useState(null);
     const imageRef = useRef(null);
-    const { dropItem } = useItemEvents({ item, location, slotKey });
+    const { dropItem, consumeItem } = useItemEvents({ item, location, slotKey });
     const shouldBindEvents = item && !disabled;
 
     const handleMouseDown = (e) => {
@@ -80,7 +81,7 @@ const Slot = React.memo(
     const handleTouchEnd = (e) => {
       if (!dragging) return;
       e.stopPropagation();
-      e.preventDefault();
+
       const t = document.elementFromPoint(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
       setTarget(t);
       dropItem(t);
@@ -147,6 +148,11 @@ const Slot = React.memo(
       onMouseLeave: handleMouseLeave,
     };
 
+    const binds = useDoubleTap(() => {
+      console.log("arf");
+      consumeItem();
+    });
+
     const innerMouseBinds = shouldBindEvents
       ? {
           onMouseDown: handleMouseDown,
@@ -181,6 +187,7 @@ const Slot = React.memo(
           ...(item?.rarity ? STYLE_NON_EMPTY(item?.rarity) : STYLE_EMPTY(icon)),
           ...sx,
         }}
+        {...binds}
         {...dataKeys}
         {...outerMouseBinds}
         {...props}
@@ -233,6 +240,10 @@ function useItemEvents({ location, slotKey, item }) {
   const { hero, socket, setDropItem } = useAppContext();
 
   return {
+    consumeItem: () => {
+      /* So far can only consume from inventory */
+      if (location === "inventory") return socket.emit("consumeItem", { item, location });
+    },
     dropItem: (target) => {
       if (hero?.state?.isDead) return;
       const { nodeName, dataset } = target ?? {};

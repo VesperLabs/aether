@@ -70,8 +70,8 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       const socketId = socket.id;
 
       socket.on("login", async (email = "arf@arf.arf") => {
-        const user = await scene.db.getUserByEmail(email);
-        //const user = cloneObject(baseUser);
+        //const user = await scene.db.getUserByEmail(email);
+        const user = cloneObject(baseUser);
         if (!user) return console.log("❌ Player not found in db");
 
         const player = scene.roomManager.rooms[user.roomName].playerManager.create({
@@ -371,6 +371,35 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         io.to(player?.roomName).emit("playerUpdate", getCharacterState(player));
       });
 
+      socket.on("consumeItem", ({ location, item }) => {
+        const player = scene?.players?.[socketId];
+        if (player?.state?.isDead) return;
+        let playerItem: Item;
+        if (location === "inventory") {
+          playerItem = player?.findInventoryItemById(item?.id);
+          if (!playerItem?.amount) return;
+          if (playerItem?.amount <= 1) {
+            player?.deleteInventoryItemAtId(item?.id);
+          } else {
+            player?.subtractInventoryItemAtId(item?.id, 1);
+          }
+          /* Heal and what not */
+          if (playerItem?.effects?.hp) {
+            const hp = (parseInt(playerItem?.effects?.hp) / 100) * player?.stats?.maxHp;
+            console.log(hp);
+            player.modifyStat("hp", hp);
+          }
+          if (playerItem?.effects?.mp) {
+            const mp = (parseInt(playerItem?.effects?.mp) / 100) * player?.stats?.maxMp;
+            player.modifyStat("mp", mp);
+          }
+        }
+        player?.calculateStats();
+        /* Save the users data */
+        scene.db.updateUser(player);
+        io.to(player?.roomName).emit("playerUpdate", getCharacterState(player));
+      });
+
       socket.on("playerInput", (input) => {
         handlePlayerInput(scene, socketId, input); //defined in utilites.js
       });
@@ -384,7 +413,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       });
     });
   }
-  update(time, delta) {
+  update(time: number, delta: number) {
     const scene = this;
     for (const room of Object.values(scene.roomManager.rooms)) {
       room.lootManager.expireLoots();

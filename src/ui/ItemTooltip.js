@@ -1,5 +1,6 @@
 import React from "react";
 import { Flex, useAppContext, Text, Divider, Icon, TOOLTIP_STYLE } from "./";
+import itemSetList from "../../shared/data/itemSetList.json";
 import { Tooltip } from "react-tooltip";
 
 const Label = (props) => <Text sx={{ fontWeight: "normal" }} {...props} />;
@@ -7,6 +8,7 @@ const Label = (props) => <Text sx={{ fontWeight: "normal" }} {...props} />;
 const ItemTooltip = ({ item, show }) => {
   const { hero } = useAppContext();
   const isSetActive = hero?.state?.activeSets?.includes?.(item?.setName);
+  const setDetails = itemSetList?.[item?.setName];
   if (!item) return;
   return (
     <Tooltip id={item?.id} isOpen={show} style={TOOLTIP_STYLE}>
@@ -28,7 +30,7 @@ const ItemTooltip = ({ item, show }) => {
           {item?.slot == "spell" && <span> (Level {item?.ilvl})</span>}
         </Text>
         <Text color={item?.rarity}>
-          {item?.rarity} {item?.base} {item?.setName ? "[" + item?.setName + "]" : ""}
+          {item?.rarity} {item?.base}
         </Text>
         <Divider />
         {item?.slot !== "stackable" && (
@@ -59,6 +61,8 @@ const ItemTooltip = ({ item, show }) => {
             );
           }
         })}
+        {item?.setBonus && <Divider />}
+        {item?.setBonus && <Text color={isSetActive ? "set" : "gray.500"}>{setDetails?.name}</Text>}
         {item?.setBonus && <Divider />}
         {item?.setBonus &&
           Object.keys(item?.setBonus.percentStats).map((key) => {

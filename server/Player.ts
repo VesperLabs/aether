@@ -30,8 +30,7 @@ class Player extends ServerCharacter implements Player {
     const found = cloneObject(this.findInventoryItemById(id));
     if (found?.amount > amount && amount > 0) {
       const newAmount = found?.amount - amount;
-      this.deleteInventoryItemAtId(id);
-      this.addInventoryItem({ ...found, amount: newAmount });
+      this.updateInventoryItemAtId(id, { ...found, amount: newAmount });
       return amount;
     }
     return null;
@@ -46,6 +45,14 @@ class Player extends ServerCharacter implements Player {
   }
   isInventoryFull() {
     return this?.inventory?.every(Boolean) && this?.inventory?.length >= 30;
+  }
+  updateInventoryItemAtId(id: string, item: Item) {
+    for (var i = 0; i < this.inventory.length; i++) {
+      if (this.inventory[i]?.id === id) {
+        this.inventory[i] = item;
+        break;
+      }
+    }
   }
   addInventoryItem(item: Item) {
     let itemAdded = false;

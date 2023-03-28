@@ -90,8 +90,8 @@ class Character extends Phaser.GameObjects.Container {
   doAttack(count: integer) {
     //placeholder
   }
-  modifyStat(key, amount) {
-    const stat = this?.stats?.[key];
+  modifyStat(key: string, amount: number) {
+    const stat: number = this?.stats?.[key];
     const maxStat = this?.stats?.["max" + capitalize(key)];
     if (typeof stat === undefined) return;
     if (typeof maxStat === undefined) return;
@@ -103,7 +103,7 @@ class Character extends Phaser.GameObjects.Container {
       this.stats[key] = 0;
       return;
     }
-    this.stats[key] += amount;
+    this.stats[key] += amount.toFixed(0);
   }
   checkAttackReady(delta) {
     // let attackDelay = 0;

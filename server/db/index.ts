@@ -1,5 +1,5 @@
 import { MongoClient } from "mongodb";
-import { userSchema, baseUser } from "./schema";
+import { userSchema } from "./schema";
 import ItemBuilder from "../ItemBuilder";
 
 export async function initDatabase(uri) {
@@ -106,13 +106,13 @@ export const baseUser = {
   gold: 100,
   direction: "down",
   equipment: {
-    handRight: ItemBuilder.buildItem("weapon", "rare", "katar"),
-    handLeft: ItemBuilder.buildItem("weapon", "rare", "katar"),
+    handRight: ItemBuilder.buildItem("weapon", "set", "hawkwingsPincher"),
+    handLeft: ItemBuilder.buildItem("weapon", "set", "hawkwingsTickler"),
     helmet: ItemBuilder.buildItem("helmet", "unique", "theBunnyWhisker"),
     accessory: ItemBuilder.buildItem("accessory", "unique", "compoundLenses"),
-    pants: null,
-    armor: ItemBuilder.buildItem("armor", "common", "clothRobe"),
-    boots: ItemBuilder.buildItem("boots", "rare", "nutshellBoots"),
+    pants: ItemBuilder.buildItem("pants", "set", "chetsChampions"),
+    armor: ItemBuilder.buildItem("armor", "set", "chetsPurpleShirt"),
+    boots: ItemBuilder.buildItem("boots", "set", "chetsNeonKicks"),
     ring1: ItemBuilder.buildItem("ring", "unique", "bloodMusic"),
     ring2: ItemBuilder.buildItem("ring", "set", "timmysSignet"),
     amulet: ItemBuilder.buildItem("amulet", "set", "timmysChain"),
