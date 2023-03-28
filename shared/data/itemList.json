@@ -8,9 +8,9 @@
         "texture": "weapon-katar",
         "slot": "hands",
         "stats": {
-          "attackDelay": 30,
+          "attackDelay": 50,
           "minDamage": 0,
-          "maxDamage": 2,
+          "maxDamage": 1,
           "range": 1
         }
       },
@@ -22,8 +22,8 @@
         "slot": "hands",
         "stats": {
           "attackDelay": 50,
-          "minDamage": 1,
-          "maxDamage": 2,
+          "minDamage": 0,
+          "maxDamage": 1,
           "range": 1
         }
       },
@@ -34,9 +34,9 @@
         "texture": "weapon-dagger",
         "slot": "hands",
         "stats": {
-          "attackDelay": 30,
+          "attackDelay": 50,
           "minDamage": 0,
-          "maxDamage": 2,
+          "maxDamage": 1,
           "range": 1
         }
       },
@@ -47,8 +47,8 @@
         "texture": "weapon-hammer",
         "slot": "hands",
         "stats": {
-          "attackDelay": 300,
-          "minDamage": 2,
+          "attackDelay": 200,
+          "minDamage": 3,
           "maxDamage": 3,
           "range": 1
         }
@@ -60,26 +60,10 @@
         "texture": "weapon-axe",
         "slot": "hands",
         "stats": {
-          "attackDelay": 250,
+          "attackDelay": 180,
           "minDamage": 2,
           "maxDamage": 3,
           "range": 1
-        }
-      },
-      "gladius": {
-        "ilvl": 2,
-        "base": "sword",
-        "name": "Gladius",
-        "texture": "weapon-gladius",
-        "slot": "hands",
-        "requirements": {
-          "level": 10
-        },
-        "stats": {
-          "attackDelay": 150,
-          "minDamage": 5,
-          "maxDamage": 5,
-          "range": 1.25
         }
       },
       "scythe": {
@@ -104,10 +88,26 @@
         "tint": "0xFFFFFF",
         "slot": "hands",
         "stats": {
-          "attackDelay": 500,
+          "attackDelay": 300,
           "minDamage": 4,
-          "maxDamage": 4,
+          "maxDamage": 5,
           "range": 2
+        }
+      },
+      "gladius": {
+        "ilvl": 2,
+        "base": "sword",
+        "name": "Gladius",
+        "texture": "weapon-gladius",
+        "slot": "hands",
+        "requirements": {
+          "level": 10
+        },
+        "stats": {
+          "attackDelay": 150,
+          "minDamage": 5,
+          "maxDamage": 5,
+          "range": 1.25
         }
       }
     },
@@ -121,8 +121,8 @@
         "slot": "hands",
         "stats": {
           "attackDelay": 100,
-          "minDamage": 4,
-          "maxDamage": 4,
+          "minDamage": 0,
+          "maxDamage": 5,
           "critChance": [1, 5],
           "range": 1
         }

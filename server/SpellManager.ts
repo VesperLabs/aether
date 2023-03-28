@@ -2,7 +2,11 @@ import crypto from "crypto";
 import Spell from "./Spell";
 
 class SpellManager {
-  constructor(scene, room) {
+  public scene: ServerScene;
+  public room: Room;
+  public spells: any;
+
+  constructor(scene: ServerScene, room) {
     this.scene = scene;
     this.room = room;
     this.spells = scene.physics.add.group();

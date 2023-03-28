@@ -24,7 +24,6 @@ class Npc extends Character implements Npc {
   public drops: Array<Drop>;
   public talkingIds: Array<string>;
   public keeperData: KeeperData;
-  public nextPath: Coordinate;
 
   constructor(
     scene: ServerScene,
@@ -106,6 +105,7 @@ class Npc extends Character implements Npc {
       target: targetPlayer,
       spellName: this.action,
     });
+
     scene.io.to(room?.name).emit("npcAttack", { id, count, direction });
   }
   update(time: number, delta: number) {

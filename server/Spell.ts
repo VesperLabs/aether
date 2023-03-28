@@ -1,7 +1,20 @@
 import Phaser from "phaser";
 const Sprite = Phaser.GameObjects.Sprite;
 class Spell extends Phaser.GameObjects.Container {
-  constructor(scene, { id, room, caster, target, spellName }) {
+  public id: string;
+  public room: Room;
+  public caster: Character;
+  public target: Character;
+  public spellName: string;
+  declare state: any;
+  private canHitSelf: boolean;
+  private maxVisibleTime: integer;
+  private maxActiveTime: integer;
+  private hits: Array<Hit>;
+  private spell: Phaser.GameObjects.Sprite;
+  declare body: Phaser.Physics.Arcade.Body;
+  declare scene: ServerScene;
+  constructor(scene: ServerScene, { id, room, caster, target, spellName }) {
     super(scene, caster.x, caster.y);
     this.id = id;
     this.scene = scene;
@@ -59,14 +72,11 @@ class Spell extends Phaser.GameObjects.Container {
       maxVisibleTime: this?.maxVisibleTime,
       maxActiveTime: this?.maxActiveTime,
       roomName: this?.room?.name,
-      direction: this?.direction,
       spellName: this?.spellName,
       caster: { id: this?.caster?.id },
       state: this?.state,
       x: this?.x,
       y: this?.y,
-      vx: this?.vx,
-      vy: this?.vy,
     };
   }
   destroy() {

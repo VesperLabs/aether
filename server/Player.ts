@@ -1,8 +1,8 @@
-import Character from "./Character";
+import ServerCharacter from "./Character";
 import { cloneObject } from "./utils";
 /* Server level Player object */
-class Player extends Character implements Player {
-  private email: string;
+class Player extends ServerCharacter implements Player {
+  public email: string;
   constructor(scene: ServerScene, args: Player) {
     super(scene, args);
     this.email = args?.email;
@@ -69,4 +69,4 @@ class Player extends Character implements Player {
   }
 }
 
-module.exports = Player;
+export default Player;

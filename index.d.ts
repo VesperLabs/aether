@@ -46,7 +46,7 @@ interface Door extends Phaser.Types.Tilemaps.TiledObject {}
 interface ServerScene extends Phaser.Scene {
   doors: Record<string, Door>;
   loots: Record<string, Loot>;
-  npcs: Record<string, Npc>;
+  npcs: Record<string, Character>;
   players: Record<string, Player>;
   roomManager: RoomManager;
   spells: any;
@@ -71,6 +71,11 @@ interface Room {
   collideLayer: Phaser.Tilemaps.TilemapLayer;
   doors: Phaser.Physics.Arcade.Group;
   colliders: Array<any>;
+  spellManager: any;
+  playerManager: any;
+  npcManager: any;
+  lootManager: any;
+  findPath(startCoords: Coordinate, targetCoords: Coordinate);
 }
 
 interface Hit {
@@ -81,7 +86,7 @@ interface Hit {
   to: string;
 }
 
-interface Character extends Phaser.GameObjects.Sprite {
+interface Character extends Phaser.GameObjects.Container {
   startingCoords: Coordinate;
   socketId: string;
   id: string;
@@ -103,8 +108,8 @@ interface Character extends Phaser.GameObjects.Sprite {
   inventory: any;
   baseStats: any;
   stats: any;
+  calculateDamage(victim: any);
   calculateStats(): void;
-  calculateDamage(victim: Character | CharacterState): Hit;
   modifyStat(key: string, amount: number);
   setDead();
 }
@@ -139,10 +144,6 @@ interface MapAsset {
   json: string;
 }
 
-interface Spell {
-  id: string;
-}
-
 interface TrimmedCharacterState {
   id: string;
   socketId: string;
@@ -160,6 +161,10 @@ interface TrimmedRoomState {
   npcs: Array<TrimmedCharacterState>;
   spells: Array<Spell>;
   loots: Array<Loot>;
+}
+
+interface Spell {
+  id: string;
 }
 
 interface CharacterState {

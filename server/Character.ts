@@ -1,14 +1,12 @@
-import BaseCharacter from "../shared/Character";
+import Character from "../shared/Character";
 import ItemBuilder from "./ItemBuilder";
 import { randomNumber, cloneObject } from "./utils";
 
-class Character extends BaseCharacter {
+class ServerCharacter extends Character {
   declare scene: ServerScene;
-  declare body: Phaser.Physics.Arcade.Body;
   constructor(scene: ServerScene, args) {
     super(scene, args);
     this.room = args?.room;
-    this.scene = scene;
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
     this.calculateStats();
@@ -156,7 +154,7 @@ class Character extends BaseCharacter {
 
     this.state.activeSets = activeSets;
   }
-  calculateDamage(victim: any) {
+  calculateDamage(victim) {
     if (victim?.state?.isDead) return false;
 
     const dodgeRoll = randomNumber(1, 100);
@@ -232,4 +230,4 @@ class Character extends BaseCharacter {
   }
 }
 
-export default Character;
+export default ServerCharacter;

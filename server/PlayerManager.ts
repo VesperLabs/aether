@@ -1,6 +1,9 @@
 import Player from "./Player";
 import { distanceTo } from "./utils";
 class PlayerManager {
+  public scene: ServerScene;
+  public room: Room;
+  public players: any;
   constructor(scene, room) {
     this.scene = scene;
     this.room = room;
@@ -19,13 +22,13 @@ class PlayerManager {
     this.players.add(scene.players[socketId]);
     return scene.players[socketId];
   }
-  add(socketId) {
+  add(socketId: string) {
     const { scene, room } = this;
     scene.players[socketId].room = room;
     scene.players[socketId].roomName = room?.name;
     this.players.add(scene.players[socketId]);
   }
-  remove(socketId) {
+  remove(socketId: string) {
     const { scene } = this;
     if (!scene?.players?.[socketId]) {
       return console.log("❌ Could not remove player");

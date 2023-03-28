@@ -6,7 +6,7 @@ import SpellManager from "./SpellManager";
 import EasyStar from "easystarjs";
 import { Vault } from "@geckos.io/snapshot-interpolation";
 
-class Room implements Room {
+class Room {
   public scene: ServerScene;
   public tileMap: Phaser.Tilemaps.Tilemap;
   public collideLayer: Phaser.Tilemaps.TilemapLayer;

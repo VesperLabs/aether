@@ -10,7 +10,10 @@ const mobsByKind = {
 };
 
 class NpcManager {
-  constructor(scene, room) {
+  public scene: ServerScene;
+  public room: Room;
+  public npcs: any;
+  constructor(scene: ServerScene, room: Room) {
     this.scene = scene;
     this.room = room;
     this.npcs = scene.physics.add.group();

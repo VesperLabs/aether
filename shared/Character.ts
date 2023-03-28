@@ -1,8 +1,27 @@
-//@ts-nocheck
-
 import Phaser from "phaser";
 
 class Character extends Phaser.GameObjects.Container {
+  startingCoords: Coordinate;
+  socketId: string;
+  id: string;
+  isHero: boolean;
+  roomName: string;
+  room: Room;
+  action: string;
+  direction: string;
+  currentSpeed: number;
+  nextPath: Coordinate;
+  vx: any;
+  vy: any;
+  kind: any;
+  gold: any;
+  profile: any;
+  equipment: Record<string, Item>;
+  inventory: any;
+  baseStats: any;
+  stats: any;
+  declare body: Phaser.Physics.Arcade.Body;
+  declare state: any;
   constructor(scene, args) {
     const {
       x,
@@ -67,6 +86,9 @@ class Character extends Phaser.GameObjects.Container {
     const bodySize = 8 * (this?.profile?.scale || 1);
     this.body.setCircle(bodySize, -bodySize, -bodySize);
     this.checkAttackHands();
+  }
+  doAttack(count: integer) {
+    //placeholder
   }
   modifyStat(key, amount) {
     const stat = this?.stats?.[key];

@@ -35,7 +35,7 @@ global.phaserOnNodeFPS = parseInt(process.env.SERVER_FPS);
 
 app.use(express.static(path.join(__dirname, "../public")));
 
-class ServerScene extends Phaser.Scene {
+class ServerScene extends Phaser.Scene implements ServerScene {
   public doors: Record<string, Door>;
   public loots: Record<string, Loot>;
   public npcs: Record<string, Npc>;
@@ -96,7 +96,7 @@ class ServerScene extends Phaser.Scene {
       });
 
       socket.on("attack", ({ count, direction }) => {
-        const player = getCharacterState(scene.players[socketId]);
+        const player = scene.players[socketId];
         socket.to(player.roomName).emit("playerAttack", { socketId, count, direction });
       });
 
@@ -141,7 +141,7 @@ class ServerScene extends Phaser.Scene {
       });
 
       socket.on("respawn", () => {
-        const player = getCharacterState(scene.players[socketId]);
+        const player = scene.players[socketId];
         player.state.isDead = false;
         player.stats.hp = Math.floor(player.stats.maxHp);
         if (player.stats.exp > 0) {
@@ -158,7 +158,6 @@ class ServerScene extends Phaser.Scene {
       });
 
       socket.on("hit", ({ ids, spellName }) => {
-        //console.log(`🔫 ${spellName} landed on ${entity}`);
         const hero = scene.players[socketId];
         const roomName = hero?.roomName;
         /* Create hitList for npcs */
