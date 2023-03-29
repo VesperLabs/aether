@@ -24,6 +24,7 @@ class SceneMain extends Phaser.Scene {
 
   preload() {
     this.cursorKeys = this.input.keyboard.createCursorKeys();
+    this.input.keyboard.removeCapture("SPACE");
   }
 
   create() {

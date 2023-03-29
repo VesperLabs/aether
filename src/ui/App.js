@@ -13,6 +13,7 @@ import {
   ModalRespawn,
   ModalDropAmount,
   KeyboardKey,
+  Input,
 } from "./";
 import { isMobile, getSpinDirection } from "../utils";
 import "react-tooltip/dist/react-tooltip.css";
@@ -31,6 +32,7 @@ function App({ socket, debug, game }) {
   const [tabKeeper, setTabKeeper] = useState(false);
   const [tabEquipment, setTabEquipment] = useState(false);
   const [tabInventory, setTabInventory] = useState(false);
+  const [tabChat, setTabChat] = useState(false);
   const [showButtonChat, setShowButtonChat] = useState(false);
 
   useEffect(() => {
@@ -141,10 +143,12 @@ function App({ socket, debug, game }) {
           setTabInventory,
           setTabKeeper,
           setKeeper,
-          dropItem,
+          setTabChat,
           setDropItem,
+          dropItem,
           tabEquipment,
           tabInventory,
+          tabChat,
           keeper,
           tabKeeper,
           hero,
@@ -234,16 +238,17 @@ const SkillButtons = () => {
   );
 };
 
-const MenuButton = ({ keyboardKey, onClick, iconName, isActive }) => {
+const MenuButton = ({ keyboardKey, onClick, iconName, isActive, children }) => {
   return (
-    <Box sx={{ position: "relative" }}>
+    <Flex sx={{ position: "relative" }}>
       <Button variant="menu" className={isActive ? "active" : ""} onClick={onClick}>
         <Icon icon={`../assets/icons/${iconName}.png`} />
+        {children}
       </Button>
       {!isMobile && (
         <KeyboardKey sx={{ bottom: "-3px", right: "-3px" }} name={keyboardKey} onKeyUp={onClick} />
       )}
-    </Box>
+    </Flex>
   );
 };
 
@@ -254,7 +259,9 @@ const MenuBar = () => {
     setTabEquipment,
     tabInventory,
     setTabInventory,
+    tabChat,
     setTabKeeper,
+    setTabChat,
     tabKeeper,
     dropItem,
     setDropItem,
@@ -284,6 +291,23 @@ const MenuBar = () => {
           )}
         </Box>
         <Box sx={{ flex: 1 }} />
+        <MenuButton
+          keyboardKey={tabChat ? "ENTER" : "T"}
+          iconName="chat"
+          isActive={tabChat}
+          onClick={() => setTabChat((prev) => !prev)}
+        >
+          {tabChat && (
+            <Input
+              autoFocus={true}
+              onKeyUp={(e) => {
+                if (e.key === "Enter") {
+                  setTabChat();
+                }
+              }}
+            />
+          )}
+        </MenuButton>
         <MenuButton
           keyboardKey="E"
           iconName="helmet"

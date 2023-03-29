@@ -1,9 +1,10 @@
 import React, { forwardRef } from "react";
-import { Button as BaseButton } from "theme-ui";
+import { Flex } from "theme-ui";
 
 const Button = forwardRef(({ sx, icon, onTouchEnd, onTouchStart, onClick, ...props }, ref) => {
   return (
-    <BaseButton
+    <Flex
+      __themeKey="buttons"
       ref={ref}
       tabIndex="-1"
       onClick={onClick || onTouchStart}

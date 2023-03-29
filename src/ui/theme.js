@@ -52,6 +52,8 @@ export default {
   forms: {
     input: {
       p: 2,
+      transition: ".2s ease all",
+      lineHeight: 1,
       bg: "shadow.30",
       border: `1px solid #000`,
       borderColor: `shadow.30`,
@@ -61,6 +63,7 @@ export default {
   },
   buttons: {
     menu: {
+      borderRadius: 3,
       padding: 1,
       filter: "grayscale(100%)",
       "*": { opacity: 0.5, transition: ".2s ease all" },

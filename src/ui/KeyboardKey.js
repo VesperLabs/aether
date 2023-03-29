@@ -18,7 +18,7 @@ const KeyboardKey = ({ name, onKeyUp, hidden, onKeyDown, sx }) => {
   const keyDisplayName = getKeyName(name);
 
   const handleKeyUp = (e) => {
-    if (document.activeElement.type === "text") return;
+    if (document.activeElement.type === "text" || e.target.type === "text") return;
     const keyName = getKeyName(e?.key);
     if (keyName === name) {
       onKeyUp?.();
@@ -27,7 +27,7 @@ const KeyboardKey = ({ name, onKeyUp, hidden, onKeyDown, sx }) => {
   };
 
   const handleKeyDown = (e) => {
-    if (document.activeElement.type === "text") return;
+    if (document.activeElement.type === "text" || e.target.type === "text") return;
     const keyName = getKeyName(e?.key);
     if (keyName === name) {
       onKeyDown?.();

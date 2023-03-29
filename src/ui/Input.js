@@ -12,6 +12,7 @@ const Input = ({ sx, autoFocus, onTouchEnd, ...props }) => {
 
   return (
     <BaseInput
+      type="text"
       ref={inputRef}
       tabIndex="-1"
       onTouchEnd={(e) => {
@@ -20,7 +21,14 @@ const Input = ({ sx, autoFocus, onTouchEnd, ...props }) => {
         e.target.focus({ preventScroll: true });
         return onTouchEnd?.(e);
       }}
+      onTouchStart={(e) => {
+        e.stopPropagation();
+      }}
+      onClick={(e) => {
+        e.stopPropagation();
+      }}
       sx={{
+        pointerEvents: "all",
         ...sx,
       }}
       {...props}
