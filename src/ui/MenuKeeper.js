@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { isMobile } from "../utils";
-import { Flex, Text, useAppContext, Portrait, Box, Button, Slot, KeyboardKey } from "./";
+import { Flex, Text, useAppContext, Portrait, Slot, KeyboardButton } from "./";
 
 const MenuKeeper = () => {
   const { keeper, tabKeeper: show, setTabKeeper } = useAppContext();
@@ -46,18 +45,18 @@ const MenuKeeper = () => {
             <Text dangerouslySetInnerHTML={{ __html: dialogues?.[tab] }} />
             {show && (
               <Flex sx={{ gap: 2 }}>
-                <KeeperButton keyboardKey="G" onClick={() => setTab("greet")} active={tabGreet}>
+                <KeyboardButton keyboardKey="G" onClick={() => setTab("greet")} active={tabGreet}>
                   Greet
-                </KeeperButton>
-                <KeeperButton keyboardKey="S" onClick={() => setTab("shop")} active={tabShop}>
+                </KeyboardButton>
+                <KeyboardButton keyboardKey="B" onClick={() => setTab("shop")} active={tabShop}>
                   Shop
-                </KeeperButton>
-                <KeeperButton keyboardKey="Q" onClick={() => setTab("quests")} active={tabQuests}>
+                </KeyboardButton>
+                <KeyboardButton keyboardKey="Q" onClick={() => setTab("quests")} active={tabQuests}>
                   Quests
-                </KeeperButton>
-                <KeeperButton keyboardKey="C" onClick={() => setTabKeeper(false)} active={true}>
+                </KeyboardButton>
+                <KeyboardButton keyboardKey="C" onClick={() => setTabKeeper(false)} active={true}>
                   Close
-                </KeeperButton>
+                </KeyboardButton>
               </Flex>
             )}
           </Flex>
@@ -77,26 +76,6 @@ const MenuKeeper = () => {
         </Flex>
       </Flex>
     </Flex>
-  );
-};
-
-const KeeperButton = ({ keyboardKey, onClick, children, active, ...props }) => {
-  return (
-    <Button
-      sx={{
-        display: "flex",
-        gap: 2,
-        alignItems: "end",
-      }}
-      variant="wood"
-      onClick={onClick}
-      {...props}
-    >
-      {children}
-      {!isMobile && (
-        <KeyboardKey sx={{ position: "static", mr: "-2px" }} name={keyboardKey} onKeyUp={onClick} />
-      )}
-    </Button>
   );
 };
 

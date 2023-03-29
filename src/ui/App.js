@@ -255,6 +255,9 @@ const MenuBar = () => {
     tabInventory,
     setTabInventory,
     setTabKeeper,
+    tabKeeper,
+    dropItem,
+    setDropItem,
   } = useAppContext();
   return (
     <Flex
@@ -294,12 +297,14 @@ const MenuBar = () => {
           onClick={() => setTabInventory((prev) => !prev)}
         />
         <KeyboardKey
+          key={`esc-${dropItem}-${tabEquipment}-${tabInventory}-${tabKeeper}`}
           name={"ESCAPE"}
           hidden={true}
           onKeyUp={(e) => {
-            setTabEquipment(false);
-            setTabInventory(false);
-            setTabKeeper(false);
+            if (dropItem) return setDropItem(false);
+            if (tabKeeper) return setTabKeeper(false);
+            if (tabEquipment) return setTabEquipment(false);
+            if (tabInventory) return setTabInventory(false);
           }}
         />
       </Flex>

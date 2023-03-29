@@ -24,6 +24,7 @@ export { default as KeyboardKey } from "./KeyboardKey";
 export { default as Modal } from "./Modal";
 export { default as Input } from "./Input";
 export { default as ModalRespawn } from "./ModalRespawn";
+export { default as KeyboardButton } from "./KeyboardButton";
 export { default as ModalDropAmount } from "./ModalDropAmount";
 export { useAppContext } from "./App";
 export const TOOLTIP_STYLE = { transition: "none", padding: 12, borderRadius: 5, zIndex: 8888 };

@@ -1,5 +1,16 @@
 import React, { useState } from "react";
-import { Modal, Flex, Button, useAppContext, Slot, Box, Input, Icon, Text } from "./";
+import {
+  Modal,
+  Flex,
+  Button,
+  useAppContext,
+  Slot,
+  Box,
+  Input,
+  Icon,
+  Text,
+  KeyboardButton,
+} from "./";
 
 const ModalDropAmount = () => {
   const { socket, dropItem, setDropItem } = useAppContext();
@@ -35,12 +46,9 @@ const ModalDropAmount = () => {
         )}
       </Modal.Body>
       <Modal.Footer>
-        <Button sx={{ flex: 1 }} variant="wood" onClick={() => setDropItem(null)}>
-          Cancel
-        </Button>
-        <Button
-          variant="wood"
-          sx={{ flex: 1 }}
+        <KeyboardButton keyboardKey="ESCAPE">Cancel</KeyboardButton>
+        <KeyboardButton
+          keyboardKey="ENTER"
           onClick={() => {
             if (isShop) {
               socket.emit("moveItem", {
@@ -61,9 +69,9 @@ const ModalDropAmount = () => {
               <Text>{amount * item?.cost}</Text>
             </Flex>
           ) : (
-            "Drop"
+            <Text>Drop</Text>
           )}
-        </Button>
+        </KeyboardButton>
       </Modal.Footer>
     </Modal>
   );

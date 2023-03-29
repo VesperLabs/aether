@@ -15,6 +15,8 @@ const getKeyName = (name) => {
 const KeyboardKey = ({ name, onKeyUp, hidden, onKeyDown, sx }) => {
   const [isPressed, setIsPressed] = useState(false);
 
+  const keyDisplayName = getKeyName(name);
+
   const handleKeyUp = (e) => {
     if (document.activeElement.type === "text") return;
     const keyName = getKeyName(e?.key);
@@ -66,7 +68,7 @@ const KeyboardKey = ({ name, onKeyUp, hidden, onKeyDown, sx }) => {
         ...sx,
       }}
     >
-      {name}
+      {keyDisplayName}
     </Box>
   );
 };
