@@ -1,10 +1,9 @@
 import React, { forwardRef } from "react";
-import { Flex } from "theme-ui";
+import { Button as BaseButton } from "theme-ui";
 
 const Button = forwardRef(({ sx, icon, onTouchEnd, onTouchStart, onClick, ...props }, ref) => {
   return (
-    <Flex
-      __themeKey="buttons"
+    <BaseButton
       ref={ref}
       tabIndex="-1"
       onClick={onClick || onTouchStart}
@@ -18,6 +17,7 @@ const Button = forwardRef(({ sx, icon, onTouchEnd, onTouchStart, onClick, ...pro
         return onTouchEnd?.(e);
       }}
       sx={{
+        display: "flex",
         cursor: "pointer",
         touchAction: "none",
         userSelect: "none",

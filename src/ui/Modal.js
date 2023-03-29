@@ -32,7 +32,7 @@ Modal.Body = ({ sx, ...props }) => {
 };
 
 Modal.Footer = ({ sx, ...props }) => {
-  return <Flex sx={{ gap: 1, flex: 1 }} {...props} />;
+  return <Flex sx={{ gap: 1, flex: 1, ...sx }} {...props} />;
 };
 
 export default Modal;

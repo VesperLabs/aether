@@ -2,13 +2,13 @@ import React from "react";
 import { isMobile } from "../utils";
 import { Button, KeyboardKey } from "./";
 
-const KeeperButton = ({ keyboardKey, onClick, children, active, ...props }) => {
+const KeeperButton = ({ keyboardKey, onClick, children, active, sx, ...props }) => {
   return (
     <Button
       sx={{
-        display: "flex",
-        gap: 2,
-        alignItems: "end",
+        gap: 1,
+        justifyContent: "center",
+        ...sx,
       }}
       variant="wood"
       onClick={onClick}

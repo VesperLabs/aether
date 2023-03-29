@@ -46,8 +46,11 @@ const ModalDropAmount = () => {
         )}
       </Modal.Body>
       <Modal.Footer>
-        <KeyboardButton keyboardKey="ESCAPE">Cancel</KeyboardButton>
+        <KeyboardButton sx={{ flex: 1 }} onClick={() => setDropItem(null)} keyboardKey="ESCAPE">
+          Cancel
+        </KeyboardButton>
         <KeyboardButton
+          sx={{ flex: 1 }}
           keyboardKey="ENTER"
           onClick={() => {
             if (isShop) {
