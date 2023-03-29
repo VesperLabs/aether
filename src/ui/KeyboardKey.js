@@ -18,8 +18,13 @@ const KeyboardKey = ({ name, onKeyUp, hidden, onKeyDown, sx }) => {
   const keyDisplayName = getKeyName(name);
 
   const handleKeyUp = (e) => {
-    if (document.activeElement.type === "text" || e.target.type === "text") return;
     const keyName = getKeyName(e?.key);
+    if (
+      (document.activeElement.type === "text" || e.target.type === "text") &&
+      keyName !== "ESCAPE"
+    )
+      return;
+
     if (keyName === name) {
       onKeyUp?.();
       setIsPressed(false);
@@ -27,8 +32,9 @@ const KeyboardKey = ({ name, onKeyUp, hidden, onKeyDown, sx }) => {
   };
 
   const handleKeyDown = (e) => {
-    if (document.activeElement.type === "text" || e.target.type === "text") return;
     const keyName = getKeyName(e?.key);
+    if (document.activeElement.type === "text" || e.target.type === "text") return;
+
     if (keyName === name) {
       onKeyDown?.();
       setIsPressed(true);

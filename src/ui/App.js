@@ -300,7 +300,7 @@ const MenuBar = () => {
           {tabChat && (
             <Input
               autoFocus={true}
-              onKeyUp={(e) => {
+              onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   setTabChat();
                 }
@@ -321,7 +321,7 @@ const MenuBar = () => {
           onClick={() => setTabInventory((prev) => !prev)}
         />
         <KeyboardKey
-          key={`esc-${dropItem}-${tabEquipment}-${tabInventory}-${tabKeeper}`}
+          key={`esc-${tabChat}-${dropItem}-${tabEquipment}-${tabInventory}-${tabKeeper}`}
           name={"ESCAPE"}
           hidden={true}
           onKeyUp={(e) => {
@@ -329,6 +329,7 @@ const MenuBar = () => {
             if (tabKeeper) return setTabKeeper(false);
             if (tabEquipment) return setTabEquipment(false);
             if (tabInventory) return setTabInventory(false);
+            if (tabChat) return setTabChat(false);
           }}
         />
       </Flex>
