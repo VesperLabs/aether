@@ -148,10 +148,13 @@ const Slot = React.memo(
       onMouseLeave: handleMouseLeave,
     };
 
-    const binds = useDoubleTap(() => {
-      console.log("arf");
-      consumeItem();
-    });
+    const doubleTabBinds = useDoubleTap(
+      shouldBindEvents
+        ? () => {
+            consumeItem();
+          }
+        : null
+    );
 
     const innerMouseBinds = shouldBindEvents
       ? {
@@ -187,7 +190,7 @@ const Slot = React.memo(
           ...(item?.rarity ? STYLE_NON_EMPTY(item?.rarity) : STYLE_EMPTY(icon)),
           ...sx,
         }}
-        {...binds}
+        {...doubleTabBinds}
         {...dataKeys}
         {...outerMouseBinds}
         {...props}

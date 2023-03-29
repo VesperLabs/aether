@@ -51,6 +51,7 @@ export default {
   },
   forms: {
     input: {
+      p: 2,
       bg: "shadow.30",
       border: `1px solid #000`,
       borderColor: `shadow.30`,

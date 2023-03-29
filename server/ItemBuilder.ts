@@ -217,11 +217,11 @@ const ItemBuilder = {
       }
     }
     if (rarity == "common") {
-      item.cost = 5 * ilvl;
+      item.cost = 1 * ilvl;
     }
     if (rarity == "magic") {
       item.name = item.name + " " + randomMod.name;
-      item.cost = 10 * ilvl;
+      item.cost = 5 * ilvl;
       item.key = item.key.replace("-common-", "-magic-");
     }
     if (rarity == "rare") {

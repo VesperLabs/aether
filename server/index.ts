@@ -70,8 +70,8 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       const socketId = socket.id;
 
       socket.on("login", async (email = "arf@arf.arf") => {
-        const user = await scene.db.getUserByEmail(email);
-        //const user = cloneObject(baseUser);
+        //const user = await scene.db.getUserByEmail(email);
+        const user = cloneObject(baseUser);
         if (!user) return console.log("❌ Player not found in db");
 
         const player = scene.roomManager.rooms[user.roomName].playerManager.create({
@@ -165,6 +165,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         const npcs = scene.roomManager.rooms[roomName]?.npcManager?.getNpcs();
         const players = scene.roomManager.rooms[roomName]?.playerManager?.getPlayers();
         for (const npc of npcs) {
+          /* TODO: verify location of hit before we consider it a hit */
           if (!ids?.includes(npc.id)) continue;
           const newHit = hero.calculateDamage(npc);
           if (newHit) hitList.push(newHit);
@@ -384,7 +385,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           } else {
             player?.subtractInventoryItemAtId(item?.id, 1);
           }
-          /* Heal and what not */
+          /* Apply item effects to hero */
           if (playerItem?.effects?.hp) {
             const hp = (parseInt(playerItem?.effects?.hp) / 100) * player?.stats?.maxHp;
             player.modifyStat("hp", hp);
