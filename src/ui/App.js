@@ -35,6 +35,7 @@ function App({ socket, debug, game }) {
   const [tabInventory, setTabInventory] = useState(false);
   const [tabChat, setTabChat] = useState(false);
   const [showButtonChat, setShowButtonChat] = useState(false);
+  const [bottomOffset, setBottomOffset] = useState(0);
 
   useEffect(() => {
     const onConnect = () => {
@@ -130,6 +131,13 @@ function App({ socket, debug, game }) {
     };
   }, []);
 
+  useViewportSizeEffect(() => {
+    const windowHeight = window.innerHeight;
+    const bodyHeight = window.visualViewport.height;
+    let offset = windowHeight - bodyHeight;
+    setBottomOffset(offset > 0 ? offset : 0);
+  });
+
   if (!hero) return;
 
   return (
@@ -146,6 +154,7 @@ function App({ socket, debug, game }) {
           setKeeper,
           setTabChat,
           setDropItem,
+          bottomOffset,
           dropItem,
           tabEquipment,
           tabInventory,
@@ -241,22 +250,8 @@ const MenuBar = () => {
     tabKeeper,
     dropItem,
     setDropItem,
+    bottomOffset,
   } = useAppContext();
-
-  const [bottomOffset, setBottomOffset] = useState(0);
-
-  /* Adapt when keyboard opens */
-  useViewportSizeEffect(() => {
-    const windowHeight = window.innerHeight;
-    const bodyHeight = window.visualViewport.height;
-    let offset = windowHeight - bodyHeight;
-    if (!tabChat) offset = 0;
-    setBottomOffset(offset > 0 ? offset : 0);
-  });
-
-  useEffect(() => {
-    if (bottomOffset > 0 && !tabChat) setBottomOffset(0);
-  }, [bottomOffset, tabChat]);
 
   return (
     <Flex

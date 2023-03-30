@@ -47,9 +47,9 @@ const MenuHud = () => {
   const { hero } = useAppContext();
   const { stats } = hero ?? {};
   return (
-    <>
+    <Box sx={{ top: 2, left: 2, position: "absolute" }}>
       <Tooltip id="hud" style={TOOLTIP_STYLE} />
-      <Flex sx={{ gap: 1, top: 2, left: 2, position: "absolute" }}>
+      <Flex sx={{ gap: 1 }}>
         <Portrait user={hero} />
         <Flex sx={{ flexDirection: "column", gap: "1px", pointerEvents: "all" }}>
           <UserName />
@@ -67,7 +67,7 @@ const MenuHud = () => {
           />
         </Flex>
       </Flex>
-    </>
+    </Box>
   );
 };
 
