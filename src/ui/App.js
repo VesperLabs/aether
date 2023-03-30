@@ -30,6 +30,7 @@ function App({ socket, debug, game }) {
   const [dropItem, setDropItem] = useState();
   const [hero, setHero] = useState();
   const [keeper, setKeeper] = useState(); // data related to NPC you are chatting with
+  const [messages, setMessages] = useState([]);
   const [tabKeeper, setTabKeeper] = useState(false);
   const [tabEquipment, setTabEquipment] = useState(false);
   const [tabInventory, setTabInventory] = useState(false);
@@ -44,6 +45,11 @@ function App({ socket, debug, game }) {
 
     const onDisconnect = () => {
       setIsConnected(false);
+    };
+
+    const onMessage = (payload) => {
+      console.log(payload);
+      setMessages((prev) => [...prev, payload]);
     };
 
     const onHeroInit = (payload = {}) => {
@@ -113,6 +119,7 @@ function App({ socket, debug, game }) {
     socket.on("playerUpdate", onPlayerUpdate);
     socket.on("lootGrabbed", onLootGrabbed);
     socket.on("keeperDataUpdate", onKeeperDataUpdate);
+    socket.on("message", onMessage);
     window.addEventListener("HERO_NEAR_NPC", onNearNpc);
     window.addEventListener("HERO_CHAT_NPC", onHeroChatNpc);
     window.addEventListener("UPDATE_HUD", onUpdateHud);
@@ -124,6 +131,7 @@ function App({ socket, debug, game }) {
       socket.off("playerUpdate", onPlayerUpdate);
       socket.off("lootGrabbed", onLootGrabbed);
       socket.off("keeperDataUpdate", onKeeperDataUpdate);
+      socket.off("message", onMessage);
       window.removeEventListener("HERO_NEAR_NPC", onNearNpc);
       window.removeEventListener("HERO_CHAT_NPC", onHeroChatNpc);
       window.removeEventListener("UPDATE_HUD", onUpdateHud);
@@ -154,6 +162,7 @@ function App({ socket, debug, game }) {
           setKeeper,
           setTabChat,
           setDropItem,
+          messages,
           bottomOffset,
           dropItem,
           tabEquipment,
@@ -225,7 +234,7 @@ const SkillButtons = () => {
 
 const MenuButton = ({ keyboardKey, onClick, iconName, isActive, children }) => {
   return (
-    <Flex sx={{ position: "relative" }}>
+    <Flex sx={{ position: "relative", flexShrink: 0 }}>
       <Button variant="menu" className={isActive ? "active" : ""} onClick={onClick}>
         <Icon icon={`../assets/icons/${iconName}.png`} />
         {children}
@@ -251,6 +260,7 @@ const MenuBar = () => {
     dropItem,
     setDropItem,
     bottomOffset,
+    socket,
   } = useAppContext();
 
   return (
@@ -286,16 +296,22 @@ const MenuBar = () => {
         >
           {tabChat && (
             <Input
+              sx={{ flex: 1 }}
               autoFocus={true}
               onKeyDown={(e) => {
                 if (e.keyCode === 13) {
+                  socket.emit("message", { message: e?.target?.value });
                   setTabChat(false);
                 }
               }}
               onClickOutside={() => {
                 setTabChat(false);
               }}
-              onBlur={() => {
+              onBlur={(e) => {
+                /* Hack to send if `Done` button is pushed */
+                if (e?.target?.value && isMobile) {
+                  socket.emit("message", { message: e?.target?.value });
+                }
                 setTabChat(false);
               }}
             />

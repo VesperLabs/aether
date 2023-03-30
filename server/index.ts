@@ -412,6 +412,15 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         player.state.targetNpcId = npcId;
         socket.emit("keeperDataUpdate", { npcId: npc?.id, keeperData: npc?.keeperData });
       });
+
+      socket.on("message", ({ message }) => {
+        const player = scene?.players?.[socketId];
+        io.to(player?.roomName).emit("message", {
+          from: player?.profile?.userName,
+          type: "chat",
+          message,
+        });
+      });
     });
   }
   update(time: number, delta: number) {

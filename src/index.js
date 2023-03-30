@@ -56,6 +56,12 @@ const game = new Phaser.Game({
   scene: [new SceneBoot(socket), new SceneMain(socket), new SceneHud(socket)],
 });
 
+document.addEventListener("scroll", (e) => {
+  if (document.documentElement.scrollTop > 0) {
+    document.documentElement.scrollTop = 0;
+  }
+});
+
 root.render(
   <React.StrictMode>
     <App socket={socket} game={game} debug={debug} />
