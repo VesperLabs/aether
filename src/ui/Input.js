@@ -1,7 +1,15 @@
 import React, { useRef, useEffect } from "react";
 import { Input as BaseInput } from "theme-ui";
+import { useOnClickOutside } from "./hooks";
 
-const Input = ({ sx, autoFocus, onTouchEnd, ...props }) => {
+const Input = ({
+  sx,
+  autoFocus,
+  onTouchEnd,
+  onClickOutside = () => {},
+  onBlur = () => {},
+  ...props
+}) => {
   const inputRef = useRef();
 
   useEffect(() => {
@@ -10,11 +18,21 @@ const Input = ({ sx, autoFocus, onTouchEnd, ...props }) => {
     }
   }, [autoFocus]);
 
+  useOnClickOutside(inputRef, onClickOutside);
+  useEffect(() => {
+    const listener = (e) => {
+      onBlur?.(e);
+    };
+    inputRef?.current?.addEventListener("blur", listener);
+    return () => {
+      inputRef?.current?.removeEventListener("blur", listener);
+    };
+  }, []);
+
   return (
     <BaseInput
       type="text"
       ref={inputRef}
-      tabIndex="-1"
       onTouchEnd={(e) => {
         /* Disables IOS keyboard Jump */
         e.preventDefault();
@@ -28,6 +46,7 @@ const Input = ({ sx, autoFocus, onTouchEnd, ...props }) => {
         e.stopPropagation();
       }}
       sx={{
+        lineHeight: 1,
         pointerEvents: "all",
         ...sx,
       }}

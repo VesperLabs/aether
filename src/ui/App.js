@@ -17,6 +17,7 @@ import {
 } from "./";
 import { isMobile, getSpinDirection } from "../utils";
 import "react-tooltip/dist/react-tooltip.css";
+import { useViewportSizeEffect } from "./hooks";
 
 const AppContext = createContext();
 
@@ -157,39 +158,14 @@ function App({ socket, debug, game }) {
           game,
         }}
       >
-        <GameWrapper>
-          {hero?.state?.isDead && <ModalRespawn />}
-          {dropItem && <ModalDropAmount />}
-          <MenuHud />
-          <MenuBar />
-        </GameWrapper>
+        {hero?.state?.isDead && <ModalRespawn />}
+        {dropItem && <ModalDropAmount />}
+        <MenuHud />
+        <MenuBar />
       </AppContext.Provider>
     </ThemeProvider>
   );
 }
-
-/* Holds all HUD elements. Ignores clicks. */
-const GameWrapper = (props) => {
-  return (
-    <Box
-      sx={{
-        inset: "0 0 0 0",
-        position: "fixed",
-        pointerEvents: "none",
-        zIndex: 100,
-      }}
-    >
-      <Box
-        sx={{
-          position: "relative",
-          width: "100%",
-          height: "100%",
-        }}
-        {...props}
-      />
-    </Box>
-  );
-};
 
 const SkillButton = ({ eventName, iconName, size, keyboardKey }) => {
   return (
@@ -266,16 +242,32 @@ const MenuBar = () => {
     dropItem,
     setDropItem,
   } = useAppContext();
+
+  const [bottomOffset, setBottomOffset] = useState(0);
+
+  /* Adapt when keyboard opens */
+  useViewportSizeEffect(() => {
+    const windowHeight = window.innerHeight;
+    const bodyHeight = window.visualViewport.height;
+    let offset = windowHeight - bodyHeight;
+    if (!tabChat) offset = 0;
+    setBottomOffset(offset > 0 ? offset : 0);
+  });
+
+  useEffect(() => {
+    if (bottomOffset > 0 && !tabChat) setBottomOffset(0);
+  }, [bottomOffset, tabChat]);
+
   return (
     <Flex
       sx={{
-        bottom: 0,
-        right: 0,
-        left: 0,
         flexDirection: "column",
-        position: "fixed",
         pointerEvents: "none",
         boxSizing: "border-box",
+        position: "fixed",
+        bottom: bottomOffset,
+        left: 0,
+        right: 0,
       }}
     >
       <SkillButtons />
@@ -301,9 +293,15 @@ const MenuBar = () => {
             <Input
               autoFocus={true}
               onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  setTabChat();
+                if (e.keyCode === 13) {
+                  setTabChat(false);
                 }
+              }}
+              onClickOutside={() => {
+                setTabChat(false);
+              }}
+              onBlur={() => {
+                setTabChat(false);
               }}
             />
           )}
