@@ -232,17 +232,20 @@ const SkillButtons = () => {
   );
 };
 
-const MenuButton = ({ keyboardKey, onClick, iconName, isActive, children }) => {
+const MenuButton = ({ keyboardKey, onClick, iconName, isActive, children, sx }) => {
   return (
-    <Flex sx={{ position: "relative", flexShrink: 0 }}>
-      <Button variant="menu" className={isActive ? "active" : ""} onClick={onClick}>
-        <Icon icon={`../assets/icons/${iconName}.png`} />
-        {children}
-      </Button>
+    <Button
+      variant="menu"
+      className={isActive ? "active" : ""}
+      onClick={onClick}
+      sx={{ position: "relative", flexShrink: 0, ...sx }}
+    >
+      <Icon icon={`../assets/icons/${iconName}.png`} />
+      {children}
       {!isMobile && (
         <KeyboardKey sx={{ bottom: "-3px", right: "-3px" }} name={keyboardKey} onKeyUp={onClick} />
       )}
-    </Flex>
+    </Button>
   );
 };
 
@@ -275,11 +278,14 @@ const MenuBar = () => {
         right: 0,
       }}
     >
-      <SkillButtons />
+      <Flex sx={{ flex: 1 }}>
+        <Box sx={{ flex: 1 }} />
+        <SkillButtons />
+      </Flex>
       <MenuKeeper />
       <MenuEquipment />
       <MenuInventory />
-      <Flex sx={{ gap: 1, alignItems: "center", bg: "shadow.30", p: 2 }}>
+      <Flex sx={{ gap: 1, alignItems: "center", justifyContent: "end", bg: "shadow.30", p: 2 }}>
         <Box>
           {isConnected ? (
             <Icon icon="../assets/icons/success.png" sx={{ opacity: 0.5 }} />
@@ -287,10 +293,11 @@ const MenuBar = () => {
             <Icon icon="../assets/icons/danger.png" sx={{ opacity: 0.5 }} />
           )}
         </Box>
-        <Box sx={{ flex: 1 }} />
+        <Box sx={{ flex: tabChat ? "unset" : 1 }} />
         <MenuButton
           keyboardKey={tabChat ? "ENTER" : "T"}
           iconName="chat"
+          sx={{ flex: tabChat ? 1 : "unset" }}
           isActive={tabChat}
           onClick={() => setTabChat((prev) => !prev)}
         >

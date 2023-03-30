@@ -81,7 +81,6 @@ const Slot = React.memo(
     const handleTouchEnd = (e) => {
       if (!dragging) return;
       e.stopPropagation();
-
       const t = document.elementFromPoint(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
       setTarget(t);
       dropItem(t);
@@ -171,7 +170,7 @@ const Slot = React.memo(
     const targetMoved = target?.dataset?.tooltipId !== item?.id;
     const aboutToSell = dragging && target?.closest(".menu-keeper") && location !== "shop";
     const showTooltip =
-      (dragging && !targetMoved) || (hovering && !isMobile) || (hovering && disabled);
+      (dragging && !targetMoved) || (hovering && !isMobile) || (hovering && !isMobile && disabled);
 
     return (
       <Box
