@@ -10,7 +10,6 @@
     { "ilvl": 1, "name": "of Magic Find", "stats": { "magicFind": [1, 2] } },
     { "ilvl": 1, "name": "of Max Damage", "stats": { "maxDamage": [1, 2] } },
     { "ilvl": 1, "name": "of Spell Damage", "stats": { "spellDamage": [1, 1] } },
-
     { "ilvl": 2, "name": "of Dexterity", "stats": { "dexterity": [6, 8] } },
     { "ilvl": 2, "name": "of Strength", "stats": { "strength": [6, 8] } },
     { "ilvl": 2, "name": "of Vitality", "stats": { "vitality": [6, 8] } },
@@ -20,6 +19,7 @@
     { "ilvl": 2, "name": "of Dodge Chance", "stats": { "dodgeChance": [2, 3] } },
     { "ilvl": 2, "name": "of Magic Find", "stats": { "magicFind": [2, 3] } },
     { "ilvl": 2, "name": "of Max Damage", "stats": { "maxDamage": [2, 3] } },
-    { "ilvl": 2, "name": "of Spell Damage", "stats": { "spellDamage": [1, 2] } }
+    { "ilvl": 2, "name": "of Spell Damage", "stats": { "spellDamage": [1, 2] } },
+    { "ilvl": 3, "name": "of Spell Damage", "stats": { "spellDamage": [2, 4] } }
   ]
 }
