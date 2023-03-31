@@ -1,6 +1,6 @@
 import React from "react";
 import { isMobile } from "../utils";
-import { Button, KeyboardKey } from "./";
+import { Button, KeyboardKey, Box } from "./";
 
 const KeeperButton = ({ keyboardKey, onClick, children, active, sx, ...props }) => {
   return (
@@ -16,12 +16,14 @@ const KeeperButton = ({ keyboardKey, onClick, children, active, sx, ...props }) 
     >
       {children}
       {!isMobile && (
-        <KeyboardKey
-          sx={{ position: "static", mr: "-2px" }}
-          name={keyboardKey}
-          onKeyUp={onClick}
-          stopPropagation={true}
-        />
+        <Box sx={{ alignSelf: "end" }}>
+          <KeyboardKey
+            sx={{ position: "static", mr: "-2px" }}
+            name={keyboardKey}
+            onKeyUp={onClick}
+            stopPropagation={true}
+          />
+        </Box>
       )}
     </Button>
   );

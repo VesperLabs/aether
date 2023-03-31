@@ -10,6 +10,7 @@ export default {
     magic: tColors.blue[200],
     common: tColors.white,
     background: tColors.black,
+    danger: tColors.red,
     shadow: {
       10: "rgba(0,0,0,.10)",
       15: "rgba(0,0,0,.15)",
@@ -51,7 +52,7 @@ export default {
   },
   forms: {
     input: {
-      p: 2,
+      p: 1,
       transition: ".2s ease all",
       lineHeight: 1,
       bg: "shadow.30",
@@ -88,7 +89,7 @@ export default {
       width: "100%",
     },
     root: {
-      fontSize: 1,
+      fontSize: 2,
       fontFamily: "body",
       lineHeight: "body",
       fontWeight: "body",

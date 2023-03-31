@@ -14,6 +14,7 @@ import {
   ModalDropAmount,
   KeyboardKey,
   Input,
+  MessageBox,
 } from "./";
 import { isMobile, getSpinDirection } from "../utils";
 import "react-tooltip/dist/react-tooltip.css";
@@ -48,8 +49,11 @@ function App({ socket, debug, game }) {
     };
 
     const onMessage = (payload) => {
-      console.log(payload);
       setMessages((prev) => [...prev, payload]);
+    };
+
+    const onPlayerJoin = (payload) => {
+      setMessages((prev) => [...prev, { type: "info", message: "A player has joined the game." }]);
     };
 
     const onHeroInit = (payload = {}) => {
@@ -120,6 +124,7 @@ function App({ socket, debug, game }) {
     socket.on("lootGrabbed", onLootGrabbed);
     socket.on("keeperDataUpdate", onKeeperDataUpdate);
     socket.on("message", onMessage);
+    socket.on("playerJoin", onPlayerJoin);
     window.addEventListener("HERO_NEAR_NPC", onNearNpc);
     window.addEventListener("HERO_CHAT_NPC", onHeroChatNpc);
     window.addEventListener("UPDATE_HUD", onUpdateHud);
@@ -132,6 +137,7 @@ function App({ socket, debug, game }) {
       socket.off("lootGrabbed", onLootGrabbed);
       socket.off("keeperDataUpdate", onKeeperDataUpdate);
       socket.off("message", onMessage);
+      socket.off("playerJoin", onPlayerJoin);
       window.removeEventListener("HERO_NEAR_NPC", onNearNpc);
       window.removeEventListener("HERO_CHAT_NPC", onHeroChatNpc);
       window.removeEventListener("UPDATE_HUD", onUpdateHud);
@@ -187,7 +193,7 @@ function App({ socket, debug, game }) {
 
 const SkillButton = ({ eventName, iconName, size, keyboardKey }) => {
   return (
-    <Box sx={{ position: "relative" }}>
+    <Box sx={{ position: "relative", flexShrink: 0 }}>
       <Button
         variant="menu"
         onTouchStart={(e) => {
@@ -279,7 +285,7 @@ const MenuBar = () => {
       }}
     >
       <Flex sx={{ flex: 1 }}>
-        <Box sx={{ flex: 1 }} />
+        <MessageBox />
         <SkillButtons />
       </Flex>
       <MenuKeeper />
@@ -306,8 +312,9 @@ const MenuBar = () => {
               sx={{ flex: 1 }}
               autoFocus={true}
               onKeyDown={(e) => {
+                const message = e?.target?.value;
                 if (e.keyCode === 13) {
-                  socket.emit("message", { message: e?.target?.value });
+                  if (message?.trim() !== "") socket.emit("message", { message });
                   setTabChat(false);
                 }
               }}
@@ -316,8 +323,9 @@ const MenuBar = () => {
               }}
               onBlur={(e) => {
                 /* Hack to send if `Done` button is pushed */
-                if (e?.target?.value && isMobile) {
-                  socket.emit("message", { message: e?.target?.value });
+                const message = e?.target?.value;
+                if (message && isMobile) {
+                  if (message?.trim() !== "") socket.emit("message", { message });
                 }
                 setTabChat(false);
               }}
