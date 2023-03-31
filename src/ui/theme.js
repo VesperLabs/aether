@@ -72,6 +72,7 @@ export default {
       backgroundColor: "shadow.10",
     },
     wood: {
+      borderRadius: 3,
       py: 1,
       px: 2,
       backgroundColor: "yellow.900",

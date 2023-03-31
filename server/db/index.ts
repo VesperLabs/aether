@@ -118,7 +118,15 @@ export const baseUser = {
     amulet: ItemBuilder.buildItem("amulet", "set", "timmysChain"),
   },
   inventory: [
-    ItemBuilder.buildItem("weapon", "rare", "scythe"),
+    ItemBuilder.buildItem("armor", "rare", "nutshellPlate"),
+    ItemBuilder.buildItem("weapon", "unique", "darkWhistler"),
+    ItemBuilder.buildItem("weapon", "rare", "katar"),
+    ItemBuilder.buildItem("weapon", "rare", "katar"),
+    ItemBuilder.buildItem("weapon", "unique", "darkWhistler"),
+    ItemBuilder.buildItem("armor", "unique", "theMossmanProphecy"),
+    ItemBuilder.buildItem("weapon", "unique", "soulEdge"),
+    ItemBuilder.buildItem("weapon", "unique", "soulEdge"),
+    ItemBuilder.buildItem("shield", "unique", "roundStage"),
     ItemBuilder.buildItem("stackable", "common", "redApple", 10),
   ],
   profile: {

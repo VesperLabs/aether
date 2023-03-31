@@ -60,7 +60,7 @@
         "texture": "weapon-axe",
         "slot": "hands",
         "stats": {
-          "attackDelay": 180,
+          "attackDelay": 150,
           "minDamage": 2,
           "maxDamage": 3,
           "range": 1
@@ -74,7 +74,7 @@
         "tint": "0xFFFFFF",
         "slot": "hands",
         "stats": {
-          "attackDelay": 150,
+          "attackDelay": 100,
           "minDamage": 1,
           "maxDamage": 3,
           "range": 1
@@ -104,7 +104,7 @@
           "level": 10
         },
         "stats": {
-          "attackDelay": 150,
+          "attackDelay": 100,
           "minDamage": 5,
           "maxDamage": 5,
           "range": 1.25
@@ -117,13 +117,13 @@
         "base": "dagger",
         "name": "Dark Whistler",
         "texture": "weapon-dagger",
-        "tint": "0xFF88FF",
+        "tint": "0xCC66FF",
         "slot": "hands",
         "stats": {
-          "attackDelay": 100,
+          "attackDelay": 50,
           "minDamage": 0,
           "maxDamage": 5,
-          "critChance": [1, 5],
+          "critChance": [1, 10],
           "range": 1
         }
       },
@@ -134,7 +134,7 @@
         "texture": "weapon-claymore-soul",
         "slot": "hands",
         "stats": {
-          "attackDelay": 350,
+          "attackDelay": 250,
           "minDamage": 8,
           "maxDamage": 8,
           "critChance": 5,
@@ -155,7 +155,7 @@
           "level": 5
         },
         "stats": {
-          "attackDelay": 150,
+          "attackDelay": 100,
           "minDamage": 3,
           "maxDamage": 5,
           "range": 1
@@ -173,7 +173,7 @@
           "level": 5
         },
         "stats": {
-          "attackDelay": 150,
+          "attackDelay": 100,
           "minDamage": 3,
           "maxDamage": 5,
           "range": 1
@@ -238,9 +238,9 @@
     "common": {
       "nutshellPlate": {
         "ilvl": 1,
-        "name": "Nutshell Plate",
+        "name": "Nutshell Light Plate",
         "base": "armor",
-        "texture": "armor-light-plate",
+        "texture": "armor-plate-light",
         "tint": "0xCC9966",
         "slot": "armor",
         "stats": {
@@ -260,9 +260,9 @@
       },
       "bronzePlate": {
         "ilvl": 2,
-        "name": "Bronze Plate",
+        "name": "Bronze Light Plate",
         "base": "armor",
-        "texture": "armor-light-plate",
+        "texture": "armor-plate-light",
         "tint": "0xFFCCAA",
         "slot": "armor",
         "requirements": {
@@ -291,7 +291,7 @@
         "ilvl": 3,
         "name": "Wizard Robe",
         "base": "armor",
-        "texture": "armor-wizard-robe",
+        "texture": "armor-robe-wizard",
         "tint": "0xFFFFFF",
         "slot": "armor",
         "requirements": {
