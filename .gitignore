@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 .env
+public/index*
 public/assets/index-*
 
 # Editor directories and files
