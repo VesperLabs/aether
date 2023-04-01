@@ -20,7 +20,7 @@ import { isMobile, getSpinDirection } from "../utils";
 import "react-tooltip/dist/react-tooltip.css";
 import { useViewportSizeEffect } from "./hooks";
 
-const AppContext = createContext();
+const AppContext = createContext({});
 
 export const useAppContext = () => {
   return useContext(AppContext);
@@ -29,7 +29,7 @@ export const useAppContext = () => {
 function App({ socket, debug, game }) {
   const [isConnected, setIsConnected] = useState(true);
   const [dropItem, setDropItem] = useState();
-  const [hero, setHero] = useState();
+  const [hero, setHero] = useState<Player>();
   const [keeper, setKeeper] = useState(); // data related to NPC you are chatting with
   const [messages, setMessages] = useState([]);
   const [tabKeeper, setTabKeeper] = useState(false);
@@ -48,18 +48,15 @@ function App({ socket, debug, game }) {
       setIsConnected(false);
     };
 
-    const onMessage = (payload) => {
+    const onMessage = (payload: Message) => {
       setMessages((prev) => [...prev, payload]);
     };
 
     const onPlayerJoin = (payload) => {
-      setMessages((prev) => [
-        ...prev,
-        { type: "info", message: "A player has joined the game." },
-      ]);
+      setMessages((prev) => [...prev, { type: "info", message: "A player has joined the game." }]);
     };
 
-    const onHeroInit = (payload = {}) => {
+    const onHeroInit = (payload: { players: Array<Player>; socketId: string }) => {
       const { players, socketId } = payload;
       const player = players?.find((p) => p?.socketId === socketId);
       localStorage.setItem("socketId", socketId);
@@ -93,8 +90,7 @@ function App({ socket, debug, game }) {
       setTabKeeper((prev) => {
         if (!prev) {
           socket.emit("chatNpc", { npcId: hero?.state?.targetNpcId });
-          if (hero?.direction !== direction)
-            socket.emit("changeDirection", direction);
+          if (hero?.direction !== direction) socket.emit("changeDirection", direction);
         }
         if (prev) {
           return false;
@@ -234,37 +230,15 @@ const SkillButtons = () => {
       }}
     >
       {showButtonChat && (
-        <SkillButton
-          size={24}
-          iconName="chat"
-          eventName="HERO_CHAT_NPC"
-          keyboardKey="C"
-        />
+        <SkillButton size={24} iconName="chat" eventName="HERO_CHAT_NPC" keyboardKey="C" />
       )}
-      <SkillButton
-        size={24}
-        iconName="grab"
-        eventName="HERO_GRAB"
-        keyboardKey="F"
-      />
-      <SkillButton
-        size={24}
-        iconName="handRight"
-        eventName="HERO_ATTACK"
-        keyboardKey="SPACE"
-      />
+      <SkillButton size={24} iconName="grab" eventName="HERO_GRAB" keyboardKey="F" />
+      <SkillButton size={24} iconName="handRight" eventName="HERO_ATTACK" keyboardKey="SPACE" />
     </Flex>
   );
 };
 
-const MenuButton = ({
-  keyboardKey,
-  onClick,
-  iconName,
-  isActive,
-  children,
-  sx,
-}) => {
+const MenuButton = ({ keyboardKey, onClick, iconName, isActive, children, sx }) => {
   return (
     <Button
       variant="menu"
@@ -275,11 +249,7 @@ const MenuButton = ({
       <Icon icon={`../assets/icons/${iconName}.png`} />
       {children}
       {!isMobile && (
-        <KeyboardKey
-          sx={{ bottom: "-3px", right: "-3px" }}
-          name={keyboardKey}
-          onKeyUp={onClick}
-        />
+        <KeyboardKey sx={{ bottom: "-3px", right: "-3px" }} name={keyboardKey} onKeyUp={onClick} />
       )}
     </Button>
   );
@@ -352,8 +322,7 @@ const MenuBar = () => {
               onKeyDown={(e) => {
                 const message = e?.target?.value;
                 if (e.keyCode === 13) {
-                  if (message?.trim() !== "")
-                    socket.emit("message", { message });
+                  if (message?.trim() !== "") socket.emit("message", { message });
                   setTabChat(false);
                 }
               }}
@@ -364,8 +333,7 @@ const MenuBar = () => {
                 /* Hack to send if `Done` button is pushed */
                 const message = e?.target?.value;
                 if (message && isMobile) {
-                  if (message?.trim() !== "")
-                    socket.emit("message", { message });
+                  if (message?.trim() !== "") socket.emit("message", { message });
                 }
                 setTabChat(false);
               }}

@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from "react";
-import { Box } from "./";
+import { Box, useAppContext } from "./";
 import { tintCanvas, imageToCanvas } from "../utils";
 import { assetList } from "../../shared/Assets";
 
@@ -7,24 +7,19 @@ const PORTRAIT_SIZE = 54;
 
 function CanvasPreview({ assets }) {
   const canvasRef = useRef(null);
+  const { game } = useAppContext();
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     canvas.width = 80;
     canvas.height = 80;
-    const loadImages = async () => {
-      for (const asset of assets) {
-        const img = new Image();
-        const [x, y, w, h] = [0, 160, 80, 80];
-        img.src = asset.src;
-        await img.decode();
-        const tintedCanvas = tintCanvas(imageToCanvas(img), asset?.tint);
-        ctx.drawImage(tintedCanvas, x, y, w, h, 0, 0, w, h);
-      }
-    };
-
-    loadImages();
+    for (const asset of assets) {
+      const [x, y, w, h] = [0, 160, 80, 80];
+      const img = game.textures.get(asset.name).getSourceImage();
+      const tintedCanvas = tintCanvas(imageToCanvas(img), asset?.tint);
+      ctx.drawImage(tintedCanvas, x, y, w, h, 0, 0, w, h);
+    }
   }, [JSON.stringify(assets)]);
 
   return (
@@ -87,8 +82,7 @@ const Portrait = ({ user }) => {
 };
 
 const getAssetProps = (name, tint) => {
-  const asset = assetList?.find((a) => a?.texture === name);
-  return asset ? { ...asset, tint } : null;
+  return { name, tint };
 };
 
 export default Portrait;

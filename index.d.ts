@@ -20,6 +20,12 @@ interface Item {
   setBonus?: Record<string, number>;
 }
 
+interface Message {
+  from: string;
+  type: "chat";
+  message: string;
+}
+
 interface Slot {
   item: Item;
   slotName: string;

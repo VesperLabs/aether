@@ -1,5 +1,6 @@
 import Phaser from "phaser";
-import { isMobile, getSpinDirection, getNpc } from "./utils";
+import { isMobile, getSpinDirection } from "./utils";
+
 class SceneHud extends Phaser.Scene {
   constructor(socket) {
     super({
@@ -11,6 +12,8 @@ class SceneHud extends Phaser.Scene {
   create() {
     addJoystick(this);
     addInputListeners(this);
+    this.renderTexture = this.add.renderTexture(0, 0, 80, 80).setVisible(false);
+    this.socket.on("playerUpdate", (userData) => {});
   }
   update() {}
 }

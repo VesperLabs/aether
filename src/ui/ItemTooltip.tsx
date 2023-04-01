@@ -40,14 +40,14 @@ const ItemTooltip = ({ item, show }) => {
         )}
         {Object.keys(item?.stats).map((key) => {
           return (
-            <Text>
+            <Text key={key}>
               <Label>{key}:</Label> {item?.stats[key]}
             </Text>
           );
         })}
         {Object.keys(item?.percentStats).map((key) => {
           return (
-            <Text>
+            <Text key={key}>
               <Label>{key}:</Label> {item?.percentStats[key]}%
             </Text>
           );
@@ -55,7 +55,7 @@ const ItemTooltip = ({ item, show }) => {
         {Object.keys(item?.effects).map((key) => {
           if (key == "hp") {
             return (
-              <Text>
+              <Text key={key}>
                 <Label>+</Label> {item?.effects[key]}% hp
               </Text>
             );
@@ -67,7 +67,7 @@ const ItemTooltip = ({ item, show }) => {
         {item?.setBonus &&
           Object.keys(item?.setBonus.percentStats).map((key) => {
             return (
-              <Text color={isSetActive ? "set" : "gray.500"}>
+              <Text key={key} color={isSetActive ? "set" : "gray.500"}>
                 <Label>{key}:</Label> {item?.setBonus.percentStats[key]}%
               </Text>
             );
@@ -75,7 +75,7 @@ const ItemTooltip = ({ item, show }) => {
         {item?.setBonus &&
           Object.keys(item?.setBonus.stats).map((key) => {
             return (
-              <Text color={isSetActive ? "set" : "gray.500"}>
+              <Text key={key} color={isSetActive ? "set" : "gray.500"}>
                 <Label>{key}:</Label> {item?.setBonus.stats[key]}
               </Text>
             );
