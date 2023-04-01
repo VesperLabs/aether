@@ -2,7 +2,14 @@ import React from "react";
 import { isMobile } from "../utils";
 import { Button, KeyboardKey, Box } from "./";
 
-const KeeperButton = ({ keyboardKey, onClick, children, active, sx, ...props }) => {
+const KeeperButton = ({
+  keyboardKey,
+  onClick,
+  children,
+  active,
+  sx,
+  ...props
+}) => {
   return (
     <Button
       sx={{

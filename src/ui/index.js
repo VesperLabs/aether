@@ -28,4 +28,9 @@ export { default as KeyboardButton } from "./KeyboardButton";
 export { default as ModalDropAmount } from "./ModalDropAmount";
 export { default as MessageBox } from "./MessageBox";
 export { useAppContext } from "./App";
-export const TOOLTIP_STYLE = { transition: "none", padding: 12, borderRadius: 5, zIndex: 8888 };
+export const TOOLTIP_STYLE = {
+  transition: "none",
+  padding: 12,
+  borderRadius: 5,
+  zIndex: 8888,
+};

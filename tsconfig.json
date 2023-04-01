@@ -15,9 +15,6 @@
     "jsx": "react",
     "resolveJsonModule": true
   },
-  "include": [
-    "server/**/*", // <-- change this to where your source files are
-    "shared/**/*",
-    "index.d.ts"
-  ]
+  "include": ["server/**/*", "shared/**/*", "index.d.ts"],
+  "references": [{ "path": "./tsconfig.node.json" }]
 }

@@ -1,0 +1,11 @@
+body,
+html,
+#game {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+body,
+html {
+  background: #000;
+}

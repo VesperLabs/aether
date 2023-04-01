@@ -8,6 +8,7 @@ import SceneMain from "./SceneMain";
 import SceneBoot from "./SceneBoot";
 import VJoyPlugin from "./Joystick";
 import SceneHud from "./SceneHud";
+import "./style.css";
 //import { HueRotatePostFX, TintPostFX } from "./PostEffects";
 
 const debug = process.env.DEBUG;

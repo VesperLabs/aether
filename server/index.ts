@@ -52,7 +52,10 @@ class ServerScene extends Phaser.Scene implements ServerScene {
     /* Need to install plugins here in headless mode */
     // this.game.plugins.installScenePlugin("x", X, "x", this.scene.scene, true);
     mapList.forEach((asset: MapAsset) => {
-      this.load.tilemapTiledJSON(asset?.name, path.join(__dirname, `../public/${asset.json}`));
+      this.load.tilemapTiledJSON(
+        asset?.name,
+        path.join(__dirname, `../public/${asset.json}`)
+      );
     });
     this.db = await initDatabase(process.env.MONGO_URL);
   }
@@ -74,7 +77,9 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         //const user = cloneObject(baseUser);
         if (!user) return console.log("❌ Player not found in db");
 
-        const player = scene.roomManager.rooms[user.roomName].playerManager.create({
+        const player = scene.roomManager.rooms[
+          user.roomName
+        ].playerManager.create({
           socketId,
           ...user,
         });
@@ -97,7 +102,9 @@ class ServerScene extends Phaser.Scene implements ServerScene {
 
       socket.on("attack", ({ count, direction }) => {
         const player = scene.players[socketId];
-        socket.to(player.roomName).emit("playerAttack", { socketId, count, direction });
+        socket
+          .to(player.roomName)
+          .emit("playerAttack", { socketId, count, direction });
       });
 
       socket.on("grabLoot", ({ lootId, direction }) => {
@@ -112,21 +119,28 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           let foundItem = player.findInventoryItemById(item.id);
           if (foundItem) {
             /* Delete loot from server */
-            scene.roomManager.rooms[player?.roomName].lootManager.remove(lootId);
+            scene.roomManager.rooms[player?.roomName].lootManager.remove(
+              lootId
+            );
             /* TODO: a function that handles setting an items amount
             - Needs to handle strings and nullish values
              */
-            foundItem.amount = parseInt(foundItem.amount || 0) + parseInt(item?.amount || 0);
+            foundItem.amount =
+              parseInt(foundItem.amount || 0) + parseInt(item?.amount || 0);
           } else {
             /* If our inventory is full we do not pick it up */
-            if (player.isInventoryFull()) return console.log("❌ Inventory full.");
+            if (player.isInventoryFull())
+              return console.log("❌ Inventory full.");
             /* Delete loot from server */
-            scene.roomManager.rooms[player?.roomName].lootManager.remove(lootId);
+            scene.roomManager.rooms[player?.roomName].lootManager.remove(
+              lootId
+            );
             player.addInventoryItem(item);
           }
         } else {
           /* If our inventory is full we do not pick it up */
-          if (player.isInventoryFull()) return console.log("❌ Inventory full.");
+          if (player.isInventoryFull())
+            return console.log("❌ Inventory full.");
           /* Delete loot from server */
           scene.roomManager.rooms[player?.roomName].lootManager.remove(lootId);
           player.addInventoryItem(item);
@@ -163,7 +177,8 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         /* Create hitList for npcs */
         const hitList = [];
         const npcs = scene.roomManager.rooms[roomName]?.npcManager?.getNpcs();
-        const players = scene.roomManager.rooms[roomName]?.playerManager?.getPlayers();
+        const players =
+          scene.roomManager.rooms[roomName]?.playerManager?.getPlayers();
         for (const npc of npcs) {
           /* TODO: verify location of hit before we consider it a hit */
           if (!ids?.includes(npc.id)) continue;
@@ -281,7 +296,10 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           if (!shopSlot?.stock) return;
           if (to?.location === "shop") return;
           from.itemId = shopSlot?.item?.id;
-          fromItem = cloneObject({ ...(shopSlot?.item || {}), id: crypto.randomUUID() });
+          fromItem = cloneObject({
+            ...(shopSlot?.item || {}),
+            id: crypto.randomUUID(),
+          });
         }
         if (to?.location === "inventory") {
           to.itemId = player?.inventory?.[to?.slot]?.id;
@@ -323,7 +341,8 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         /* Equipment -> Equipment */
         if (from?.location === "equipment" && to?.location === "equipment") {
           /* Slots don't match */
-          if (toItem && fromItem && !checkSlotsMatch(fromItem?.slot, to?.slot)) return;
+          if (toItem && fromItem && !checkSlotsMatch(fromItem?.slot, to?.slot))
+            return;
           player?.clearEquipmentSlot(from?.slot);
           player.equipment[to?.slot] = fromItem;
           player.equipment[from?.slot] = toItem;
@@ -387,11 +406,13 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           }
           /* Apply item effects to hero */
           if (playerItem?.effects?.hp) {
-            const hp = (parseInt(playerItem?.effects?.hp) / 100) * player?.stats?.maxHp;
+            const hp =
+              (parseInt(playerItem?.effects?.hp) / 100) * player?.stats?.maxHp;
             player.modifyStat("hp", hp);
           }
           if (playerItem?.effects?.mp) {
-            const mp = (parseInt(playerItem?.effects?.mp) / 100) * player?.stats?.maxMp;
+            const mp =
+              (parseInt(playerItem?.effects?.mp) / 100) * player?.stats?.maxMp;
             player.modifyStat("mp", mp);
           }
         }
@@ -410,7 +431,10 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         const npc = scene.npcs[npcId];
         npc.talkingIds.push(socketId);
         player.state.targetNpcId = npcId;
-        socket.emit("keeperDataUpdate", { npcId: npc?.id, keeperData: npc?.keeperData });
+        socket.emit("keeperDataUpdate", {
+          npcId: npc?.id,
+          keeperData: npc?.keeperData,
+        });
       });
 
       socket.on("message", ({ message }) => {
@@ -466,7 +490,7 @@ new Phaser.Game({
 
 httpServer.listen(process.env.PORT, () => {
   console.log(
-    `💻 Running on ${process.env.SERVER_URL}:${process.env.PORT} @ ${process.env.SERVER_FPS}fps`
+    `💻 Running on ${process.env.SERVER_URL} @ ${process.env.SERVER_FPS}fps`
   );
 });
 

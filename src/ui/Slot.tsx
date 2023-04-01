@@ -12,13 +12,24 @@ const STYLE_EMPTY = (icon) => ({
 });
 const STYLE_NON_EMPTY = (rarity) => ({
   border: (t) => `1px solid ${t.colors[rarity]}`,
-  background: (t) => `radial-gradient(circle, ${t.colors[rarity]} 0%, ${t.colors.shadow[50]} 150%)`,
+  background: (t) =>
+    `radial-gradient(circle, ${t.colors[rarity]} 0%, ${t.colors.shadow[50]} 150%)`,
 });
 const BLANK_IMAGE =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 
 const Slot = React.memo(
-  ({ sx, size = 52, item, slotKey, location, icon, stock, disabled, ...props }) => {
+  ({
+    sx,
+    size = 52,
+    item,
+    slotKey,
+    location,
+    icon,
+    stock,
+    disabled,
+    ...props
+  }) => {
     // component logic here
     const { hero } = useAppContext();
     const [imageData, setImageData] = useState(BLANK_IMAGE);
@@ -27,7 +38,11 @@ const Slot = React.memo(
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [target, setTarget] = useState(null);
     const imageRef = useRef(null);
-    const { dropItem, consumeItem } = useItemEvents({ item, location, slotKey });
+    const { dropItem, consumeItem } = useItemEvents({
+      item,
+      location,
+      slotKey,
+    });
     const shouldBindEvents = item && !disabled;
 
     const handleMouseDown = (e) => {
@@ -47,7 +62,13 @@ const Slot = React.memo(
       });
       setDragging(true);
       setTimeout(
-        () => setTarget(document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY)),
+        () =>
+          setTarget(
+            document.elementFromPoint(
+              e.touches[0].clientX,
+              e.touches[0].clientY
+            )
+          ),
         1
       );
     };
@@ -67,7 +88,9 @@ const Slot = React.memo(
         x: e.touches[0].clientX - imageRef.current.offsetWidth / 2,
         y: e.touches[0].clientY - imageRef.current.offsetHeight / 2,
       });
-      setTarget(document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY));
+      setTarget(
+        document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY)
+      );
     };
 
     const handleMouseUp = (e) => {
@@ -81,7 +104,10 @@ const Slot = React.memo(
     const handleTouchEnd = (e) => {
       if (!dragging) return;
       e.stopPropagation();
-      const t = document.elementFromPoint(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+      const t = document.elementFromPoint(
+        e.changedTouches[0].clientX,
+        e.changedTouches[0].clientY
+      );
       setTarget(t);
       dropItem(t);
       setDragging(false);
@@ -168,9 +194,12 @@ const Slot = React.memo(
     };
 
     const targetMoved = target?.dataset?.tooltipId !== item?.id;
-    const aboutToSell = dragging && target?.closest(".menu-keeper") && location !== "shop";
+    const aboutToSell =
+      dragging && target?.closest(".menu-keeper") && location !== "shop";
     const showTooltip =
-      (dragging && !targetMoved) || (hovering && !isMobile) || (hovering && !isMobile && disabled);
+      (dragging && !targetMoved) ||
+      (hovering && !isMobile) ||
+      (hovering && !isMobile && disabled);
 
     return (
       <Box
@@ -197,7 +226,15 @@ const Slot = React.memo(
         {item && (
           <>
             {item?.amount > 1 && (
-              <Box sx={{ position: "absolute", mt: `1px`, ml: `2px`, fontSize: 0, zIndex: 2 }}>
+              <Box
+                sx={{
+                  position: "absolute",
+                  mt: `1px`,
+                  ml: `2px`,
+                  fontSize: 0,
+                  zIndex: 2,
+                }}
+              >
                 {item?.amount}
               </Box>
             )}
@@ -244,7 +281,8 @@ function useItemEvents({ location, slotKey, item }) {
   return {
     consumeItem: () => {
       /* So far can only consume from inventory */
-      if (location === "inventory") return socket.emit("consumeItem", { item, location });
+      if (location === "inventory")
+        return socket.emit("consumeItem", { item, location });
     },
     dropItem: (target) => {
       if (hero?.state?.isDead) return;
@@ -268,7 +306,12 @@ function useItemEvents({ location, slotKey, item }) {
           return setDropItem({ ...item, location, action: "SHOP", slotKey });
         } else {
           if (["set", "rare", "unique"]?.includes(item?.rarity)) {
-            return setDropItem({ ...item, location, action: "SHOP_CONFIRM", slotKey });
+            return setDropItem({
+              ...item,
+              location,
+              action: "SHOP_CONFIRM",
+              slotKey,
+            });
           } else {
             return socket.emit("moveItem", {
               to: {

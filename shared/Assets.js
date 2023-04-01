@@ -15,7 +15,8 @@ const resolveAsset = (item, user) => {
         textureName = texture;
         break;
       case "armor":
-        textureName = user?.profile?.race + "-" + user?.profile?.gender + "-" + texture;
+        textureName =
+          user?.profile?.race + "-" + user?.profile?.gender + "-" + texture;
         break;
       default:
         textureName = user?.profile?.race + "-" + texture;

@@ -53,7 +53,10 @@ function App({ socket, debug, game }) {
     };
 
     const onPlayerJoin = (payload) => {
-      setMessages((prev) => [...prev, { type: "info", message: "A player has joined the game." }]);
+      setMessages((prev) => [
+        ...prev,
+        { type: "info", message: "A player has joined the game." },
+      ]);
     };
 
     const onHeroInit = (payload = {}) => {
@@ -90,7 +93,8 @@ function App({ socket, debug, game }) {
       setTabKeeper((prev) => {
         if (!prev) {
           socket.emit("chatNpc", { npcId: hero?.state?.targetNpcId });
-          if (hero?.direction !== direction) socket.emit("changeDirection", direction);
+          if (hero?.direction !== direction)
+            socket.emit("changeDirection", direction);
         }
         if (prev) {
           return false;
@@ -230,15 +234,37 @@ const SkillButtons = () => {
       }}
     >
       {showButtonChat && (
-        <SkillButton size={24} iconName="chat" eventName="HERO_CHAT_NPC" keyboardKey="C" />
+        <SkillButton
+          size={24}
+          iconName="chat"
+          eventName="HERO_CHAT_NPC"
+          keyboardKey="C"
+        />
       )}
-      <SkillButton size={24} iconName="grab" eventName="HERO_GRAB" keyboardKey="F" />
-      <SkillButton size={24} iconName="handRight" eventName="HERO_ATTACK" keyboardKey="SPACE" />
+      <SkillButton
+        size={24}
+        iconName="grab"
+        eventName="HERO_GRAB"
+        keyboardKey="F"
+      />
+      <SkillButton
+        size={24}
+        iconName="handRight"
+        eventName="HERO_ATTACK"
+        keyboardKey="SPACE"
+      />
     </Flex>
   );
 };
 
-const MenuButton = ({ keyboardKey, onClick, iconName, isActive, children, sx }) => {
+const MenuButton = ({
+  keyboardKey,
+  onClick,
+  iconName,
+  isActive,
+  children,
+  sx,
+}) => {
   return (
     <Button
       variant="menu"
@@ -249,7 +275,11 @@ const MenuButton = ({ keyboardKey, onClick, iconName, isActive, children, sx }) 
       <Icon icon={`../assets/icons/${iconName}.png`} />
       {children}
       {!isMobile && (
-        <KeyboardKey sx={{ bottom: "-3px", right: "-3px" }} name={keyboardKey} onKeyUp={onClick} />
+        <KeyboardKey
+          sx={{ bottom: "-3px", right: "-3px" }}
+          name={keyboardKey}
+          onKeyUp={onClick}
+        />
       )}
     </Button>
   );
@@ -291,7 +321,15 @@ const MenuBar = () => {
       <MenuKeeper />
       <MenuEquipment />
       <MenuInventory />
-      <Flex sx={{ gap: 1, alignItems: "center", justifyContent: "end", bg: "shadow.30", p: 2 }}>
+      <Flex
+        sx={{
+          gap: 1,
+          alignItems: "center",
+          justifyContent: "end",
+          bg: "shadow.30",
+          p: 2,
+        }}
+      >
         <Box>
           {isConnected ? (
             <Icon icon="../assets/icons/success.png" sx={{ opacity: 0.5 }} />
@@ -314,7 +352,8 @@ const MenuBar = () => {
               onKeyDown={(e) => {
                 const message = e?.target?.value;
                 if (e.keyCode === 13) {
-                  if (message?.trim() !== "") socket.emit("message", { message });
+                  if (message?.trim() !== "")
+                    socket.emit("message", { message });
                   setTabChat(false);
                 }
               }}
@@ -325,7 +364,8 @@ const MenuBar = () => {
                 /* Hack to send if `Done` button is pushed */
                 const message = e?.target?.value;
                 if (message && isMobile) {
-                  if (message?.trim() !== "") socket.emit("message", { message });
+                  if (message?.trim() !== "")
+                    socket.emit("message", { message });
                 }
                 setTabChat(false);
               }}
