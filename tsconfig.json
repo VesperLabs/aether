@@ -6,10 +6,10 @@
     "noEmit": true,
     "strict": false,
     "esModuleInterop": true,
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "lib": ["DOM", "DOM.Iterable", "ESNext", "scripthost"],
     "jsx": "react-jsx",
     "resolveJsonModule": true
   },
-  "include": ["server/**/*", "shared/**/*", "src", "index.d.ts"],
+  "include": ["server/**/*", "shared/**/*", "index.d.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
