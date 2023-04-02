@@ -237,8 +237,8 @@ const SkillButton = ({ eventName, iconName, size, keyboardKey }) => {
       <KeyboardKey
         name={keyboardKey}
         hidden={isMobile}
-        onKeyUp={(e: Event) => {
-          window.dispatchEvent(new Event(eventName));
+        onKeyUp={(e: KeyboardEvent) => {
+          window.dispatchEvent(new KeyboardEvent(eventName));
         }}
       />
     </Box>

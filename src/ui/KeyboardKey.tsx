@@ -1,7 +1,15 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box } from "./";
 
-const getKeyName = (name) => {
+interface KeyboardKeyProps {
+  name: string;
+  onKeyUp?: (e: KeyboardEvent) => void;
+  hidden?: boolean;
+  onKeyDown?: (e: KeyboardEvent) => void;
+  sx?: object;
+}
+
+const getKeyName = (name: string) => {
   let keyName = name.toUpperCase();
   if (name === "ESCAPE") {
     keyName = "ESC";
@@ -12,33 +20,36 @@ const getKeyName = (name) => {
   return keyName.toUpperCase();
 };
 
-const KeyboardKey = ({ name, onKeyUp, hidden, onKeyDown, sx }) => {
+const KeyboardKey: React.FC<KeyboardKeyProps> = ({ name, onKeyUp, hidden, onKeyDown, sx }) => {
   const [isPressed, setIsPressed] = useState(false);
 
   const keyDisplayName = getKeyName(name);
 
-  const handleKeyUp = (e) => {
-    const keyName = getKeyName(e?.key);
+  const handleKeyUp = (e: KeyboardEvent) => {
+    const keyName = getKeyName(e?.key || "");
     if (
-      //@ts-ignore
-      (document.activeElement.type === "text" || e.target.type === "text") &&
+      // @ts-ignore
+      (document.activeElement?.type === "text" || e.target?.type === "text") &&
       keyName !== "ESCAPE"
-    )
+    ) {
       return;
+    }
 
     if (keyName === name) {
-      onKeyUp?.();
+      onKeyUp?.(e);
       setIsPressed(false);
     }
   };
 
-  const handleKeyDown = (e) => {
-    const keyName = getKeyName(e?.key);
-    //@ts-ignore
-    if (document.activeElement.type === "text" || e.target.type === "text") return;
+  const handleKeyDown = (e: KeyboardEvent) => {
+    const keyName = getKeyName(e?.key || "");
+    // @ts-ignore
+    if (document.activeElement?.type === "text" || e.target?.type === "text") {
+      return;
+    }
 
     if (keyName === name) {
-      onKeyDown?.();
+      onKeyDown?.(e);
       setIsPressed(true);
     }
   };
