@@ -1,8 +1,16 @@
-import React, { useRef, useEffect } from "react";
-import { Input as BaseInput } from "theme-ui";
+import React, { useRef, useEffect, FC } from "react";
+import { Input as BaseInput, InputProps as BaseInputProps } from "theme-ui";
 import { useOnClickOutside } from "./hooks";
 
-const Input = ({
+interface InputProps extends BaseInputProps {
+  sx?: any;
+  autoFocus?: boolean;
+  onTouchEnd?: (e: React.TouchEvent<HTMLInputElement>) => void;
+  onClickOutside?: () => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
+}
+
+const Input: FC<InputProps> = ({
   sx,
   autoFocus,
   onTouchEnd,
@@ -10,7 +18,7 @@ const Input = ({
   onBlur = () => {},
   ...props
 }) => {
-  const inputRef = useRef();
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (autoFocus) {
@@ -20,8 +28,8 @@ const Input = ({
 
   useOnClickOutside(inputRef, onClickOutside);
   useEffect(() => {
-    const listener = (e) => {
-      onBlur?.(e);
+    const listener = (e: Event) => {
+      onBlur?.(e as unknown as React.FocusEvent<HTMLInputElement>);
     };
     inputRef?.current?.addEventListener("blur", listener);
     return () => {
@@ -36,7 +44,7 @@ const Input = ({
       onTouchEnd={(e) => {
         /* Disables IOS keyboard Jump */
         e.preventDefault();
-        e.target.focus({ preventScroll: true });
+        (inputRef.current as HTMLInputElement)?.focus({ preventScroll: true });
         return onTouchEnd?.(e);
       }}
       onTouchStart={(e) => {

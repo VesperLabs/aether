@@ -1,7 +1,7 @@
 import React from "react";
 import { Modal, Button, useAppContext } from "./";
 
-const ModalRespawn = () => {
+const ModalRespawn: React.FC = () => {
   const { socket } = useAppContext();
   return (
     <Modal>

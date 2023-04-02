@@ -1,15 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { Flex, Text, Box, useAppContext } from "./";
+import { Flex, Text, useAppContext } from "./";
 import { motion } from "framer-motion";
+
+type MessageData = {
+  from: string;
+  message: string;
+  type: string;
+};
+
+type MessageProps = {
+  data: MessageData;
+};
 
 const MESSAGE_SHOW_TIME = 3000;
 const MessageBox = () => {
   const { messages, tabChat } = useAppContext();
-  const [show, setShow] = useState(true);
+  const [show, setShow] = useState<boolean>(true);
 
   /* Trigger and debounce showing when we get a new message or when they open the box */
   useEffect(() => {
-    let timeout;
+    let timeout: NodeJS.Timeout;
 
     if (!tabChat) {
       timeout = setTimeout(() => {
@@ -24,6 +34,7 @@ const MessageBox = () => {
   return (
     <Flex
       as={motion.div}
+      //@ts-ignore
       animate={{
         opacity: show ? 1 : 0,
       }}
@@ -37,21 +48,21 @@ const MessageBox = () => {
         borderRadius: 3,
       }}
     >
-      {messages?.map((message) => {
+      {messages?.map((message: MessageData) => {
         return <Message data={message} />;
       })}
     </Flex>
   );
 };
 
-const Message = ({ data }) => {
+const Message: React.FC<MessageProps> = ({ data }) => {
   const { from, message, type } = data ?? {};
-  const colorsMap = {
+  const colorsMap: Record<string, string> = {
     chat: "white",
     error: "danger",
     info: "magic",
   };
-  const color = colorsMap?.[type] || "white";
+  const color: string = colorsMap?.[type] || "white";
   return (
     <Flex sx={{ color, gap: 1, flexGrow: 0 }}>
       <Text sx={{ flexShrink: 0 }}>{from || "Server"}:</Text>

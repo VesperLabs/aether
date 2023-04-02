@@ -1,7 +1,13 @@
-import React, { forwardRef } from "react";
-import { Box } from "theme-ui";
+import { forwardRef, HTMLAttributes } from "react";
+import { Box, SxProp } from "theme-ui";
 
-const Icon = forwardRef(({ sx, size = 32, icon, ...props }, ref) => {
+interface IconProps extends HTMLAttributes<HTMLDivElement> {
+  sx?: any;
+  size?: number;
+  icon: string;
+}
+
+const Icon = forwardRef<HTMLDivElement, IconProps>(({ sx, size = 32, icon, ...props }, ref) => {
   return (
     <Box
       ref={ref}

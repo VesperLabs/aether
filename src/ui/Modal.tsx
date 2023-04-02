@@ -1,7 +1,30 @@
-import React from "react";
 import { Box, Flex } from "./";
 
-const Modal = ({ sx, ...props }) => {
+interface ModalProps {
+  sx?: any;
+  children: React.ReactNode;
+}
+
+interface ModalHeaderProps {
+  sx?: any;
+  children: React.ReactNode;
+}
+
+interface ModalBodyProps {
+  sx?: any;
+  children: React.ReactNode;
+}
+
+interface ModalFooterProps {
+  sx?: any;
+  children: React.ReactNode;
+}
+
+const Modal: React.FC<ModalProps> & {
+  Header: React.FC<ModalHeaderProps>;
+  Body: React.FC<ModalBodyProps>;
+  Footer: React.FC<ModalFooterProps>;
+} = ({ sx, ...props }) => {
   return (
     <Flex
       sx={{

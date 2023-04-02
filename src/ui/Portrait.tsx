@@ -7,7 +7,6 @@ const PORTRAIT_SIZE = 54;
 
 function CanvasPreview({ assets }) {
   const canvasRef = useRef(null);
-  const { game } = useAppContext();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -16,8 +15,7 @@ function CanvasPreview({ assets }) {
     canvas.height = 80;
     for (const asset of assets) {
       const [x, y, w, h] = [0, 160, 80, 80];
-      const img = game.textures.get(asset.name).getSourceImage();
-      const tintedCanvas = tintCanvas(imageToCanvas(img), asset?.tint);
+      const tintedCanvas = tintCanvas(imageToCanvas(asset.img), asset?.tint);
       ctx.drawImage(tintedCanvas, x, y, w, h, 0, 0, w, h);
     }
   }, [JSON.stringify(assets)]);
@@ -38,6 +36,7 @@ function CanvasPreview({ assets }) {
 }
 
 const Portrait = ({ user }) => {
+  const getAssetProps = useGetAssetProps();
   const { race, gender } = user?.profile ?? {};
   const userFace = user?.profile?.face;
   const userHair = user?.profile?.hair;
@@ -81,8 +80,12 @@ const Portrait = ({ user }) => {
   );
 };
 
-const getAssetProps = (name, tint) => {
-  return { name, tint };
+const useGetAssetProps = () => {
+  const { game } = useAppContext();
+
+  return (name, tint) => {
+    return { img: game.textures.get(name).getSourceImage(), tint };
+  };
 };
 
 export default Portrait;

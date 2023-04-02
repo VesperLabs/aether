@@ -1,19 +1,20 @@
 import Phaser from "phaser";
 import React from "react";
-import ReactDOM from "react-dom/client";
+import ReactDOM from "react-dom";
 import App from "./ui/App";
-import socketIO from "socket.io-client";
+import socketIOClient from "socket.io-client";
 import AnimatedTiles from "./AnimatedTiles";
 import SceneMain from "./SceneMain";
 import SceneBoot from "./SceneBoot";
 import VJoyPlugin from "./Joystick";
 import SceneHud from "./SceneHud";
 import "./style.css";
-//import { HueRotatePostFX, TintPostFX } from "./PostEffects";
 
-const debug = process.env.DEBUG;
-const socket = socketIO.connect(`${process.env.SERVER_URL}`);
-const root = ReactDOM.createRoot(document.getElementById("root"));
+const debug = process.env.DEBUG === "true";
+const SERVER_URL = process.env.SERVER_URL as string;
+const socket = socketIOClient(SERVER_URL);
+//@ts-ignore
+const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 const gameWidth = window.innerWidth * window.devicePixelRatio;
 const gameHeight = window.innerHeight * window.devicePixelRatio;
 

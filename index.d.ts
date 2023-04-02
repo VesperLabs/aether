@@ -100,9 +100,9 @@ interface Hit {
 }
 
 interface Character extends Phaser.GameObjects.Container {
-  startingCoords: Coordinate;
-  socketId: string;
-  id: string;
+  startingCoords?: Coordinate;
+  socketId?: string;
+  id?: string;
   isHero: boolean;
   roomName: string;
   room: Room;
@@ -141,7 +141,7 @@ interface Npc extends Character {
 }
 
 interface Player extends Character {
-  email: string;
+  email?: string;
   findEquipmentById(id: string): Slot;
   clearEquipmentSlot(id: string): void;
   subtractInventoryItemAtId(id: string, amount: integer);

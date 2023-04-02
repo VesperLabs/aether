@@ -1,39 +1,45 @@
 import React, { useEffect, useState } from "react";
 import { Box } from "./";
 
-const getKeyName = (name) => {
-  let keyName = name.toUpperCase();
-  if (name === "ESCAPE") {
-    keyName = "ESC";
-  }
-  if (name === " ") {
-    keyName = "SPACE";
-  }
-  return keyName.toUpperCase();
+const getKeyName = (name: string) => {
+  if (name === "Escape") return "ESC";
+  if (name === " ") return "SPACE";
+  return name.toUpperCase();
 };
 
-const KeyboardKey = ({ name, onKeyUp, hidden, onKeyDown, sx }) => {
+type KeyboardKeyProps = {
+  name: string;
+  onKeyUp?: (e: Event) => void;
+  hidden?: boolean;
+  onKeyDown?: () => void;
+  sx?: object;
+};
+
+const KeyboardKey = ({ name, onKeyUp, hidden = false, onKeyDown, sx = {} }: KeyboardKeyProps) => {
   const [isPressed, setIsPressed] = useState(false);
 
-  const keyDisplayName = getKeyName(name);
-
-  const handleKeyUp = (e) => {
+  const handleKeyUp = (e: KeyboardEvent) => {
     const keyName = getKeyName(e?.key);
     if (
-      (document.activeElement.type === "text" || e.target.type === "text") &&
+      (document.activeElement instanceof HTMLInputElement ||
+        document.activeElement instanceof HTMLTextAreaElement) &&
       keyName !== "ESCAPE"
     )
       return;
 
     if (keyName === name) {
-      onKeyUp?.();
+      onKeyUp?.(e as Event);
       setIsPressed(false);
     }
   };
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: KeyboardEvent) => {
     const keyName = getKeyName(e?.key);
-    if (document.activeElement.type === "text" || e.target.type === "text") return;
+    if (
+      document.activeElement instanceof HTMLInputElement ||
+      document.activeElement instanceof HTMLTextAreaElement
+    )
+      return;
 
     if (keyName === name) {
       onKeyDown?.();
@@ -68,13 +74,14 @@ const KeyboardKey = ({ name, onKeyUp, hidden, onKeyDown, sx }) => {
         color: "#000",
         fontSize: "10px",
         fontWeight: "bold",
+        transition: "all 0.01s ease-in-out",
         boxShadow: `#CCCCCC 0px ${isPressed ? -1 : -2}px 0px ${isPressed ? 1 : 2}px inset,
                      #000000 0px 0px 0px 1px,
                      #ffffff 0px -1px 0px ${isPressed ? 1 : 2}px inset`,
         ...sx,
       }}
     >
-      {keyDisplayName}
+      {getKeyName(name)}
     </Box>
   );
 };

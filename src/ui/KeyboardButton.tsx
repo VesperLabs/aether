@@ -1,8 +1,16 @@
-import React from "react";
+import React, { FC } from "react";
 import { isMobile } from "../utils";
 import { Button, KeyboardKey, Box } from "./";
 
-const KeeperButton = ({
+interface KeyboardButtonProps {
+  keyboardKey: string;
+  onClick?: () => void;
+  active?: boolean;
+  children?: React.ReactNode;
+  sx?: object;
+}
+
+const KeeperButton: FC<KeyboardButtonProps> = ({
   keyboardKey,
   onClick,
   children,
@@ -28,7 +36,6 @@ const KeeperButton = ({
             sx={{ position: "static", mr: "-2px" }}
             name={keyboardKey}
             onKeyUp={onClick}
-            stopPropagation={true}
           />
         </Box>
       )}

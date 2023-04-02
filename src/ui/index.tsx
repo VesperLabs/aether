@@ -27,6 +27,7 @@ export { default as ModalRespawn } from "./ModalRespawn";
 export { default as KeyboardButton } from "./KeyboardButton";
 export { default as ModalDropAmount } from "./ModalDropAmount";
 export { default as MessageBox } from "./MessageBox";
+export { default as MenuButton } from "./MenuButton";
 export { useAppContext } from "./App";
 export const TOOLTIP_STYLE = {
   transition: "none",

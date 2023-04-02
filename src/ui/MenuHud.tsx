@@ -2,12 +2,21 @@ import React from "react";
 import { Box, useAppContext, Flex, TOOLTIP_STYLE, Portrait } from "./";
 import { Tooltip } from "react-tooltip";
 
-const UserName = ({ sx }) => {
+const UserName = ({ sx }: { sx?: object }) => {
   const { hero } = useAppContext();
   return <Box sx={{ ...sx }}>{hero?.profile?.userName}</Box>;
 };
 
-const Bar = ({ width = 100, height = 12, color = "red", min, max, sx, ...props }) => {
+type BarProps = {
+  width?: number;
+  height?: number;
+  color?: string;
+  min: number;
+  max: number;
+  sx?: object;
+};
+
+const Bar = ({ width = 100, height = 12, color = "red", min, max, sx, ...props }: BarProps) => {
   const percent = Math.round((min / max) * 100) + "%";
   return (
     <Box

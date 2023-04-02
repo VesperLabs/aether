@@ -1,16 +1,5 @@
-import React, { useState } from "react";
-import {
-  Modal,
-  Flex,
-  Button,
-  useAppContext,
-  Slot,
-  Box,
-  Input,
-  Icon,
-  Text,
-  KeyboardButton,
-} from "./";
+import { useState } from "react";
+import { Modal, Flex, useAppContext, Slot, Box, Input, Icon, Text, KeyboardButton } from "./";
 
 const ModalDropAmount = () => {
   const { socket, dropItem, setDropItem } = useAppContext();

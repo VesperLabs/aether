@@ -153,9 +153,7 @@ class AnimatedTiles extends Phaser.Plugins.ScenePlugin {
     }
     // Elapsed time is the delta multiplied by the global rate and the scene timeScale if folowTimeScale is true
     let globalElapsedTime =
-      delta *
-      this.rate *
-      (this.followTimeScale ? this.scene.time.timeScale : 1);
+      delta * this.rate * (this.followTimeScale ? this.scene.time.timeScale : 1);
     this.animatedTiles.forEach((mapAnimData) => {
       if (!mapAnimData.active) {
         return;
@@ -355,8 +353,7 @@ class AnimatedTiles extends Phaser.Plugins.ScenePlugin {
                   tiles.push(tile);
                 }
                 // update index to match current fram of this animation
-                tile.index =
-                  tileAnimData.frames[tileAnimData.currentFrame].tileid;
+                tile.index = tileAnimData.frames[tileAnimData.currentFrame].tileid;
               }
             }
           }

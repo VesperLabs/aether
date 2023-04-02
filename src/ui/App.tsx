@@ -15,12 +15,40 @@ import {
   KeyboardKey,
   Input,
   MessageBox,
+  MenuButton,
 } from "./";
 import { isMobile, getSpinDirection } from "../utils";
 import "react-tooltip/dist/react-tooltip.css";
 import { useViewportSizeEffect } from "./hooks";
+import { Theme } from "theme-ui";
+import { Socket } from "socket.io-client";
 
-const AppContext = createContext({});
+interface AppContextValue {
+  isConnected: boolean;
+  showButtonChat: boolean;
+  setShowButtonChat: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsConnected: React.Dispatch<React.SetStateAction<boolean>>;
+  setTabEquipment: React.Dispatch<React.SetStateAction<boolean>>;
+  setTabInventory: React.Dispatch<React.SetStateAction<boolean>>;
+  setTabKeeper: React.Dispatch<React.SetStateAction<boolean>>;
+  setKeeper: React.Dispatch<React.SetStateAction<undefined>>;
+  setTabChat: React.Dispatch<React.SetStateAction<boolean>>;
+  setDropItem: React.Dispatch<React.SetStateAction<Item | null | false>>;
+  messages: Message[];
+  bottomOffset: number;
+  dropItem: any;
+  tabEquipment: boolean;
+  tabInventory: boolean;
+  tabChat: boolean;
+  keeper: any;
+  tabKeeper: boolean;
+  hero: CharacterState;
+  socket: Socket;
+  debug: boolean;
+  game: Phaser.Game;
+}
+
+const AppContext = createContext<AppContextValue>({} as AppContextValue);
 
 export const useAppContext = () => {
   return useContext(AppContext);
@@ -29,7 +57,7 @@ export const useAppContext = () => {
 function App({ socket, debug, game }) {
   const [isConnected, setIsConnected] = useState(true);
   const [dropItem, setDropItem] = useState();
-  const [hero, setHero] = useState<Player>();
+  const [hero, setHero] = useState<CharacterState>();
   const [keeper, setKeeper] = useState(); // data related to NPC you are chatting with
   const [messages, setMessages] = useState([]);
   const [tabKeeper, setTabKeeper] = useState(false);
@@ -56,14 +84,14 @@ function App({ socket, debug, game }) {
       setMessages((prev) => [...prev, { type: "info", message: "A player has joined the game." }]);
     };
 
-    const onHeroInit = (payload: { players: Array<Player>; socketId: string }) => {
+    const onHeroInit = (payload: { players: Array<CharacterState>; socketId: string }) => {
       const { players, socketId } = payload;
       const player = players?.find((p) => p?.socketId === socketId);
       localStorage.setItem("socketId", socketId);
       setHero(player);
     };
 
-    const onPlayerUpdate = (player = {}) => {
+    const onPlayerUpdate = (player: CharacterState) => {
       const socketId = localStorage.getItem("socketId");
       if (socketId === player?.socketId) {
         setHero(player);
@@ -106,7 +134,7 @@ function App({ socket, debug, game }) {
     };
 
     const onUpdateHud = () => {
-      const hero = game.scene.getScene("SceneMain").hero;
+      const hero: CharacterState = game.scene.getScene("SceneMain").hero;
       setHero((prev) => ({ ...prev, state: hero?.state, stats: hero?.stats }));
     };
 
@@ -155,7 +183,7 @@ function App({ socket, debug, game }) {
   if (!hero) return;
 
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={theme as Theme}>
       <AppContext.Provider
         value={{
           isConnected,
@@ -209,7 +237,7 @@ const SkillButton = ({ eventName, iconName, size, keyboardKey }) => {
       <KeyboardKey
         name={keyboardKey}
         hidden={isMobile}
-        onKeyUp={(e) => {
+        onKeyUp={(e: Event) => {
           window.dispatchEvent(new Event(eventName));
         }}
       />
@@ -235,23 +263,6 @@ const SkillButtons = () => {
       <SkillButton size={24} iconName="grab" eventName="HERO_GRAB" keyboardKey="F" />
       <SkillButton size={24} iconName="handRight" eventName="HERO_ATTACK" keyboardKey="SPACE" />
     </Flex>
-  );
-};
-
-const MenuButton = ({ keyboardKey, onClick, iconName, isActive, children, sx }) => {
-  return (
-    <Button
-      variant="menu"
-      className={isActive ? "active" : ""}
-      onClick={onClick}
-      sx={{ position: "relative", flexShrink: 0, ...sx }}
-    >
-      <Icon icon={`../assets/icons/${iconName}.png`} />
-      {children}
-      {!isMobile && (
-        <KeyboardKey sx={{ bottom: "-3px", right: "-3px" }} name={keyboardKey} onKeyUp={onClick} />
-      )}
-    </Button>
   );
 };
 
@@ -320,7 +331,8 @@ const MenuBar = () => {
               sx={{ flex: 1 }}
               autoFocus={true}
               onKeyDown={(e) => {
-                const message = e?.target?.value;
+                const target = e.target as HTMLInputElement;
+                const message = target?.value;
                 if (e.keyCode === 13) {
                   if (message?.trim() !== "") socket.emit("message", { message });
                   setTabChat(false);

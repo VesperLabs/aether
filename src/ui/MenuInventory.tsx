@@ -27,7 +27,7 @@ const MenuInventory = () => {
             <Slot
               key={idx}
               location="inventory"
-              slotKey={idx}
+              slotKey={`${idx}`}
               icon="./assets/icons/pouch.png"
               item={inventory?.[idx]}
             />

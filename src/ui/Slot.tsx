@@ -5,6 +5,17 @@ import { useAppContext } from "./App";
 import { isMobile, trimCanvas, tintCanvas } from "../utils";
 import { useDoubleTap } from "use-double-tap";
 
+type SlotProps = {
+  sx?: object;
+  size?: integer;
+  item?: Item;
+  slotKey?: string;
+  location?: string;
+  icon?: string;
+  stock?: integer;
+  disabled?: boolean;
+};
+
 const STYLE_EMPTY = (icon) => ({
   background: `${theme.colors.shadow[30]} url(${icon}) center center no-repeat`,
   filter: "grayscale(100%)",
@@ -12,24 +23,13 @@ const STYLE_EMPTY = (icon) => ({
 });
 const STYLE_NON_EMPTY = (rarity) => ({
   border: (t) => `1px solid ${t.colors[rarity]}`,
-  background: (t) =>
-    `radial-gradient(circle, ${t.colors[rarity]} 0%, ${t.colors.shadow[50]} 150%)`,
+  background: (t) => `radial-gradient(circle, ${t.colors[rarity]} 0%, ${t.colors.shadow[50]} 150%)`,
 });
 const BLANK_IMAGE =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 
 const Slot = React.memo(
-  ({
-    sx,
-    size = 52,
-    item,
-    slotKey,
-    location,
-    icon,
-    stock,
-    disabled,
-    ...props
-  }) => {
+  ({ sx, size = 52, item, slotKey, location, icon, stock, disabled, ...props }: SlotProps) => {
     // component logic here
     const { hero } = useAppContext();
     const [imageData, setImageData] = useState(BLANK_IMAGE);
@@ -62,13 +62,7 @@ const Slot = React.memo(
       });
       setDragging(true);
       setTimeout(
-        () =>
-          setTarget(
-            document.elementFromPoint(
-              e.touches[0].clientX,
-              e.touches[0].clientY
-            )
-          ),
+        () => setTarget(document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY)),
         1
       );
     };
@@ -88,9 +82,7 @@ const Slot = React.memo(
         x: e.touches[0].clientX - imageRef.current.offsetWidth / 2,
         y: e.touches[0].clientY - imageRef.current.offsetHeight / 2,
       });
-      setTarget(
-        document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY)
-      );
+      setTarget(document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY));
     };
 
     const handleMouseUp = (e) => {
@@ -104,10 +96,7 @@ const Slot = React.memo(
     const handleTouchEnd = (e) => {
       if (!dragging) return;
       e.stopPropagation();
-      const t = document.elementFromPoint(
-        e.changedTouches[0].clientX,
-        e.changedTouches[0].clientY
-      );
+      const t = document.elementFromPoint(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
       setTarget(t);
       dropItem(t);
       setDragging(false);
@@ -194,12 +183,9 @@ const Slot = React.memo(
     };
 
     const targetMoved = target?.dataset?.tooltipId !== item?.id;
-    const aboutToSell =
-      dragging && target?.closest(".menu-keeper") && location !== "shop";
+    const aboutToSell = dragging && target?.closest(".menu-keeper") && location !== "shop";
     const showTooltip =
-      (dragging && !targetMoved) ||
-      (hovering && !isMobile) ||
-      (hovering && !isMobile && disabled);
+      (dragging && !targetMoved) || (hovering && !isMobile) || (hovering && !isMobile && disabled);
 
     return (
       <Box
@@ -263,7 +249,7 @@ const Slot = React.memo(
       </Box>
     );
   },
-  (prevProps, nextProps) => {
+  (prevProps: any, nextProps: any) => {
     // Only re-render if item id or amount has changed
     const prevItem = prevProps.item;
     const nextItem = nextProps.item;
@@ -281,8 +267,7 @@ function useItemEvents({ location, slotKey, item }) {
   return {
     consumeItem: () => {
       /* So far can only consume from inventory */
-      if (location === "inventory")
-        return socket.emit("consumeItem", { item, location });
+      if (location === "inventory") return socket.emit("consumeItem", { item, location });
     },
     dropItem: (target) => {
       if (hero?.state?.isDead) return;
