@@ -55,6 +55,7 @@ const Slot = React.memo(
     };
 
     const handleTouchStart = (e) => {
+      if (dragging) e.preventDefault();
       e.stopPropagation();
       setPosition({
         x: e.touches[0].clientX - imageRef.current.offsetWidth / 2,
