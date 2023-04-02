@@ -227,7 +227,7 @@ const Slot = React.memo(
             <Icon
               ref={imageRef}
               icon={aboutToSell ? "../assets/icons/gold.png" : imageData}
-              size={size}
+              size={size * 2} // Fixes large images to not get cut off
               sx={{
                 touchAction: "none",
                 userSelect: "none",
@@ -236,6 +236,9 @@ const Slot = React.memo(
                 position: dragging ? "fixed" : "static",
                 left: dragging ? position.x : 0,
                 top: dragging ? position.y : 0,
+                // Fixes large images to not get cut off
+                marginLeft: dragging ? 0 : -size / 2,
+                marginTop: dragging ? 0 : -size / 2,
                 cursor: dragging ? "grabbing" : "grab",
                 transform: dragging ? "scale(4,4)" : "scale(2,2)",
                 imageRendering: "pixelated",

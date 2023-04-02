@@ -17,7 +17,7 @@ function CanvasPreview({ assets }) {
       const tintedCanvas = tintCanvas(imageToCanvas(asset.img), asset?.tint);
       ctx.drawImage(tintedCanvas, x, y, w, h, 0, 0, w, h);
     }
-  }, [assets]);
+  }, [JSON.stringify(assets)]);
 
   useEffect(() => {
     drawCanvas();

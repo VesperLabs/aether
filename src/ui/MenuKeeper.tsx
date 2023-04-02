@@ -70,7 +70,13 @@ const MenuKeeper = () => {
         >
           {shop?.map(({ item }, idx) => {
             return (
-              <Slot location="shop" slotKey={idx} icon="./assets/icons/chest.png" item={item} />
+              <Slot
+                key={idx}
+                location="shop"
+                slotKey={idx}
+                icon="./assets/icons/chest.png"
+                item={item}
+              />
             );
           })}
         </Flex>
