@@ -14,6 +14,9 @@ export default defineConfig({
     "process.env.SERVER_FPS": process.env.SERVER_FPS,
     "process.env.SERVER_URL": JSON.stringify(process.env.SERVER_URL),
   },
+  server: {
+    host: true,
+  },
   build: {
     emptyOutDir: false,
     outDir: "./public",

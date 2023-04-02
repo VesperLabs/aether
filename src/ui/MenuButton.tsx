@@ -1,6 +1,5 @@
 import React from "react";
-import { Button } from "theme-ui";
-import { Icon, KeyboardKey } from "./";
+import { Icon, KeyboardKey, Button } from "./";
 import { isMobile } from "../utils";
 
 interface MenuButtonProps {

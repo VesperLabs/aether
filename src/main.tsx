@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 import App from "./ui/App";
 import socketIOClient from "socket.io-client";
 import AnimatedTiles from "./AnimatedTiles";
@@ -13,7 +13,6 @@ import "./style.css";
 const debug = process.env.DEBUG === "true";
 const SERVER_URL = process.env.SERVER_URL as string;
 const socket = socketIOClient(SERVER_URL);
-//@ts-ignore
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 const gameWidth = window.innerWidth * window.devicePixelRatio;
 const gameHeight = window.innerHeight * window.devicePixelRatio;
