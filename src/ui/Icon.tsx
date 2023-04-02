@@ -10,6 +10,7 @@ interface IconProps extends HTMLAttributes<HTMLDivElement> {
 const Icon = forwardRef<HTMLDivElement, IconProps>(({ sx, size = 32, icon, ...props }, ref) => {
   return (
     <Box
+      className="icon"
       ref={ref}
       sx={{
         height: size,

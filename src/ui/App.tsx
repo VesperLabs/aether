@@ -16,6 +16,7 @@ import {
   Input,
   MessageBox,
   MenuButton,
+  MenuProfile,
 } from "./";
 import { isMobile, getSpinDirection } from "../utils";
 import "react-tooltip/dist/react-tooltip.css";
@@ -33,6 +34,7 @@ interface AppContextValue {
   setTabKeeper: React.Dispatch<React.SetStateAction<boolean>>;
   setKeeper: React.Dispatch<React.SetStateAction<undefined>>;
   setTabChat: React.Dispatch<React.SetStateAction<boolean>>;
+  setTabProfile: React.Dispatch<React.SetStateAction<boolean>>;
   setDropItem: React.Dispatch<React.SetStateAction<Item | null | false>>;
   messages: Message[];
   bottomOffset: number;
@@ -40,7 +42,8 @@ interface AppContextValue {
   tabEquipment: boolean;
   tabInventory: boolean;
   tabChat: boolean;
-  keeper: any;
+  tabProfile: boolean;
+  keeper: any; // data related to NPC you are chatting with
   tabKeeper: boolean;
   hero: CharacterState;
   socket: Socket;
@@ -58,12 +61,13 @@ function App({ socket, debug, game }) {
   const [isConnected, setIsConnected] = useState(true);
   const [dropItem, setDropItem] = useState();
   const [hero, setHero] = useState<CharacterState>();
-  const [keeper, setKeeper] = useState(); // data related to NPC you are chatting with
+  const [keeper, setKeeper] = useState();
   const [messages, setMessages] = useState([]);
   const [tabKeeper, setTabKeeper] = useState(false);
   const [tabEquipment, setTabEquipment] = useState(false);
   const [tabInventory, setTabInventory] = useState(false);
   const [tabChat, setTabChat] = useState(false);
+  const [tabProfile, setTabProfile] = useState(false);
   const [showButtonChat, setShowButtonChat] = useState(false);
   const [bottomOffset, setBottomOffset] = useState(0);
 
@@ -196,11 +200,13 @@ function App({ socket, debug, game }) {
           setKeeper,
           setTabChat,
           setDropItem,
+          setTabProfile,
           messages,
           bottomOffset,
           dropItem,
           tabEquipment,
           tabInventory,
+          tabProfile,
           tabChat,
           keeper,
           tabKeeper,
@@ -258,7 +264,7 @@ const SkillButtons = () => {
       }}
     >
       {showButtonChat && (
-        <SkillButton size={24} iconName="chat" eventName="HERO_CHAT_NPC" keyboardKey="C" />
+        <SkillButton size={24} iconName="chat" eventName="HERO_CHAT_NPC" keyboardKey="X" />
       )}
       <SkillButton size={24} iconName="grab" eventName="HERO_GRAB" keyboardKey="F" />
       <SkillButton size={24} iconName="handRight" eventName="HERO_ATTACK" keyboardKey="SPACE" />
@@ -279,6 +285,8 @@ const MenuBar = () => {
     tabKeeper,
     dropItem,
     setDropItem,
+    tabProfile,
+    setTabProfile,
     bottomOffset,
     socket,
   } = useAppContext();
@@ -302,6 +310,7 @@ const MenuBar = () => {
       <MenuKeeper />
       <MenuEquipment />
       <MenuInventory />
+      <MenuProfile />
       <Flex
         sx={{
           gap: 1,
@@ -353,6 +362,12 @@ const MenuBar = () => {
           )}
         </MenuButton>
         <MenuButton
+          keyboardKey="P"
+          iconName="mirror"
+          isActive={tabProfile}
+          onClick={() => setTabProfile((prev) => !prev)}
+        />
+        <MenuButton
           keyboardKey="E"
           iconName="helmet"
           isActive={tabEquipment}
@@ -365,7 +380,7 @@ const MenuBar = () => {
           onClick={() => setTabInventory((prev) => !prev)}
         />
         <KeyboardKey
-          key={`esc-${tabChat}-${dropItem}-${tabEquipment}-${tabInventory}-${tabKeeper}`}
+          key={`esc-${tabChat}-${dropItem}-${tabEquipment}-${tabInventory}-${tabKeeper}-${tabProfile}`}
           name={"ESCAPE"}
           hidden={true}
           onKeyUp={(e) => {
@@ -373,6 +388,7 @@ const MenuBar = () => {
             if (tabKeeper) return setTabKeeper(false);
             if (tabEquipment) return setTabEquipment(false);
             if (tabInventory) return setTabInventory(false);
+            if (tabProfile) return setTabProfile(false);
             if (tabChat) return setTabChat(false);
           }}
         />

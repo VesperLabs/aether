@@ -428,6 +428,38 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         };
         io.to(player?.roomName).emit("message", message);
       });
+
+      socket.on("updateProfile", (args) => {
+        const hairs = ["hair-1", "hair-2", "hair-3", "hair-4"];
+        const faces = ["face-1", "face-2", "face-3"];
+        const player = scene?.players?.[socketId];
+        const currentHairIndex = hairs.indexOf(player?.profile?.hair?.texture);
+        const currentFaceIndex = faces.indexOf(player?.profile?.face?.texture);
+        let nextHairIndex = currentHairIndex;
+        let nextFaceIndex = currentFaceIndex;
+
+        if (args?.hair === 1) {
+          nextHairIndex = (currentHairIndex + 1) % hairs.length;
+        } else if (args?.hair === -1) {
+          nextHairIndex = (currentHairIndex - 1 + hairs.length) % hairs.length;
+        }
+
+        if (args?.face === 1) {
+          nextFaceIndex = (currentFaceIndex + 1) % faces.length;
+        } else if (args?.face === -1) {
+          nextFaceIndex = (currentFaceIndex - 1 + faces.length) % faces.length;
+        }
+
+        const userName = args?.userName;
+
+        if (args?.userName) player.profile.userName = userName;
+        if (args?.hair) player.profile.hair.texture = hairs[nextHairIndex];
+        if (args?.face) player.profile.face.texture = faces[nextFaceIndex];
+
+        /* Save the user's data */
+        scene.db.updateUser(player);
+        io.to(player?.roomName).emit("playerUpdate", getCharacterState(player));
+      });
     });
   }
   update(time: number, delta: number) {

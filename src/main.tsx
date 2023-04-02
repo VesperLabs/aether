@@ -58,7 +58,7 @@ const game = new Phaser.Game({
 });
 
 document.addEventListener("scroll", (e) => {
-  if (document.documentElement.scrollTop > 0) {
+  if (document.documentElement.scrollTop > 0 || document.documentElement.scrollTop < 0) {
     document.documentElement.scrollTop = 0;
   }
 });

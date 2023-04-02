@@ -3,17 +3,17 @@ import { Icon, KeyboardKey, Button } from "./";
 import { isMobile } from "../utils";
 
 interface MenuButtonProps {
-  keyboardKey: string;
-  onClick: () => void;
-  iconName: string;
-  isActive: boolean;
+  keyboardKey?: string;
+  onClick?: () => void;
+  iconName?: string;
+  isActive?: boolean;
   children?: React.ReactNode;
   sx?: Record<string, unknown>;
 }
 
 const MenuButton = ({
   keyboardKey,
-  onClick,
+  onClick = () => {},
   iconName,
   isActive,
   children,
@@ -26,9 +26,9 @@ const MenuButton = ({
       onClick={onClick}
       sx={{ position: "relative", flexShrink: 0, ...sx }}
     >
-      <Icon icon={`../assets/icons/${iconName}.png`} />
+      <Icon icon={`../assets/icons/${iconName || "grab"}.png`} />
       {children}
-      {!isMobile && (
+      {!isMobile && keyboardKey && (
         <KeyboardKey sx={{ bottom: "-3px", right: "-3px" }} name={keyboardKey} onKeyUp={onClick} />
       )}
     </Button>

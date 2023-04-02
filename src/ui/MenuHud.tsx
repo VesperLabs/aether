@@ -59,7 +59,7 @@ const MenuHud = () => {
     <Box sx={{ top: 2, left: 2, position: "absolute" }}>
       <Tooltip id="hud" style={TOOLTIP_STYLE} />
       <Flex sx={{ gap: 1 }}>
-        <Portrait user={hero} />
+        <Portrait user={hero} filterKeys={["boots", "pants"]} />
         <Flex sx={{ flexDirection: "column", gap: "1px", pointerEvents: "all" }}>
           <UserName />
           <Bar
