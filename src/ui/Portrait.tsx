@@ -1,14 +1,13 @@
-import React, { useRef, useEffect } from "react";
+import { useRef, useEffect, useCallback } from "react";
 import { Box, useAppContext } from "./";
 import { tintCanvas, imageToCanvas } from "../utils";
-import { assetList } from "../../shared/Assets";
 
 const PORTRAIT_SIZE = 54;
 
 function CanvasPreview({ assets }) {
   const canvasRef = useRef(null);
 
-  useEffect(() => {
+  const drawCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     canvas.width = 80;
@@ -18,7 +17,11 @@ function CanvasPreview({ assets }) {
       const tintedCanvas = tintCanvas(imageToCanvas(asset.img), asset?.tint);
       ctx.drawImage(tintedCanvas, x, y, w, h, 0, 0, w, h);
     }
-  }, [JSON.stringify(assets)]);
+  }, [assets]);
+
+  useEffect(() => {
+    drawCanvas();
+  }, [drawCanvas]);
 
   return (
     <Box

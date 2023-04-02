@@ -135,10 +135,10 @@ const Slot = React.memo(
     /* Bind our global movement events */
     useLayoutEffect(() => {
       if (!shouldBindEvents) return;
-      document.addEventListener("touchend", handleTouchEnd);
-      document.addEventListener("mouseup", handleMouseUp);
-      document.addEventListener("mousemove", handleMouseMove);
-      document.addEventListener("touchmove", handleTouchMove);
+      document.addEventListener("touchend", handleTouchEnd, { passive: true });
+      document.addEventListener("mouseup", handleMouseUp, { passive: true });
+      document.addEventListener("mousemove", handleMouseMove, { passive: true });
+      document.addEventListener("touchmove", handleTouchMove, { passive: true });
       return () => {
         document.removeEventListener("touchend", handleTouchEnd);
         document.removeEventListener("mouseup", handleMouseUp);

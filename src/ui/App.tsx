@@ -86,7 +86,7 @@ function App({ socket, debug, game }) {
 
     const onHeroInit = (payload: { players: Array<CharacterState>; socketId: string }) => {
       const { players, socketId } = payload;
-      const player = players?.find((p) => p?.socketId === socketId);
+      const player: CharacterState = players?.find((p) => p?.socketId === socketId);
       localStorage.setItem("socketId", socketId);
       setHero(player);
     };
