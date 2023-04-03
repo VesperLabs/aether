@@ -44,9 +44,15 @@ const MenuProfile = () => {
       <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", width: 592 }}>
         <Flex sx={{ gap: 1 }}>
           <Flex sx={{ flexDirection: "column", gap: 1, alignItems: "center" }}>
-            <Portrait user={hero} size={120} topOffset={28} filterKeys={["accessory", "helmet"]} />
+            <Portrait
+              scale={4}
+              user={hero}
+              size={150}
+              topOffset={90}
+              filterKeys={["accessory", "helmet", "boots", "pants"]}
+            />
             <Input
-              sx={{ width: 150 }}
+              sx={{ width: 150, fontSize: 3 }}
               defaultValue={hero?.profile?.userName}
               onBlur={(e) => {
                 /* Hack to send if `Done` button is pushed */
@@ -79,6 +85,12 @@ const MenuProfile = () => {
               onMinus={() => socket.emit("updateProfile", { skin: { tint: -1 } })}
             >
               Skin
+            </MenuPicker>
+            <MenuPicker
+              onPlus={() => socket.emit("updateProfile", { body: 1 })}
+              onMinus={() => socket.emit("updateProfile", { body: -1 })}
+            >
+              Body
             </MenuPicker>
           </Flex>
         </Flex>

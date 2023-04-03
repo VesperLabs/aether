@@ -434,16 +434,19 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       socket.on("updateProfile", (args) => {
         const hairTextures = ["hair-1", "hair-2", "hair-3", "hair-4"];
         const faceTextures = ["face-1", "face-2", "face-3"];
+        const genders = ["male", "female"];
 
         const player = scene?.players?.[socketId];
         const currentHairTextureIndex = hairTextures.indexOf(player?.profile?.hair?.texture);
         const currentFaceTextureIndex = faceTextures.indexOf(player?.profile?.face?.texture);
         const currentSkinTintIndex = skinTints.indexOf(player?.profile?.tint);
         const currentHairTintIndex = hairTints.indexOf(player?.profile?.hair?.tint);
+        const currentGenderIndex = genders.indexOf(player?.profile?.gender);
         let nextHairTextureIndex = currentHairTextureIndex;
         let nextFaceTextureIndex = currentFaceTextureIndex;
-        let nextSkinTint = currentSkinTintIndex;
+        let nextSkinTintIndex = currentSkinTintIndex;
         let nextHairTintIndex = currentSkinTintIndex;
+        let nextGenderIndex = currentGenderIndex;
 
         if (args?.hair?.texture === 1) {
           nextHairTextureIndex = (currentHairTextureIndex + 1) % hairTextures.length;
@@ -460,9 +463,9 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         }
 
         if (args?.skin?.tint === 1) {
-          nextSkinTint = (currentSkinTintIndex + 1) % skinTints.length;
+          nextSkinTintIndex = (currentSkinTintIndex + 1) % skinTints.length;
         } else if (args?.skin?.tint === -1) {
-          nextSkinTint = (currentSkinTintIndex - 1 + skinTints.length) % skinTints.length;
+          nextSkinTintIndex = (currentSkinTintIndex - 1 + skinTints.length) % skinTints.length;
         }
 
         if (args?.hair?.tint === 1) {
@@ -471,13 +474,20 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           nextHairTintIndex = (currentHairTintIndex - 1 + hairTints.length) % hairTints.length;
         }
 
+        if (args?.body === 1) {
+          nextGenderIndex = (currentGenderIndex + 1) % genders.length;
+        } else if (args?.body === -1) {
+          nextGenderIndex = (currentGenderIndex - 1 + genders.length) % genders.length;
+        }
+
         const userName = args?.userName;
 
         if (args?.userName) player.profile.userName = userName;
         if (args?.hair?.texture) player.profile.hair.texture = hairTextures[nextHairTextureIndex];
         if (args?.face?.texture) player.profile.face.texture = faceTextures[nextFaceTextureIndex];
-        if (args?.skin?.tint) player.profile.tint = skinTints[nextSkinTint];
+        if (args?.skin?.tint) player.profile.tint = skinTints[nextSkinTintIndex];
         if (args?.hair?.tint) player.profile.hair.tint = hairTints[nextHairTintIndex];
+        if (args?.body) player.profile.gender = genders[nextGenderIndex];
 
         /* Save the user's data */
         scene.db.updateUser(player);

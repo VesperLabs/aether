@@ -2,7 +2,7 @@ import { useRef, useEffect } from "react";
 import { Box, useAppContext } from "./";
 import { tintCanvas, imageToCanvas } from "../utils";
 
-function CanvasPreview({ assets, topOffset = 10 }) {
+function CanvasPreview({ assets, topOffset = 10, scale = 2 }) {
   const canvasRef = useRef(null);
   const { game } = useAppContext();
   useEffect(() => {
@@ -23,7 +23,7 @@ function CanvasPreview({ assets, topOffset = 10 }) {
     <Box
       as="canvas"
       sx={{
-        transform: `translate(-50%, ${topOffset}%) scale(2)`,
+        transform: `translate(-50%, ${topOffset}%) scale(${scale})`,
         imageRendering: "pixelated",
         position: "absolute",
         left: "50%",
@@ -38,11 +38,13 @@ const Portrait = ({
   user,
   size = 54,
   topOffset,
+  scale = 2,
   filterKeys = [],
 }: {
   user: CharacterState;
   size?: integer;
   topOffset?: integer;
+  scale?: number;
   filterKeys?: string[];
 }) => {
   const getAssetProps = useGetAssetProps();
@@ -91,7 +93,7 @@ const Portrait = ({
           clipPath: `circle(${size / 2}px at ${size / 2}px ${size / 2}px)`,
         }}
       >
-        <CanvasPreview assets={assets} topOffset={topOffset} />
+        <CanvasPreview assets={assets} topOffset={topOffset} scale={scale} />
       </Box>
     </Box>
   );
