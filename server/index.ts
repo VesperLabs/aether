@@ -99,7 +99,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
 
       socket.on("attack", ({ count, direction }) => {
         const player = scene.players[socketId];
-        socket.to(player.roomName).emit("playerAttack", { socketId, count, direction });
+        socket.to(player?.roomName).emit("playerAttack", { socketId, count, direction });
       });
 
       socket.on("grabLoot", ({ lootId, direction }) => {
@@ -135,7 +135,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         }
         /* Save player */
         scene.db.updateUser(player);
-        io.to(player.roomName).emit("lootGrabbed", {
+        io.to(player?.roomName).emit("lootGrabbed", {
           socketId,
           lootId,
           player: getCharacterState(player),
@@ -156,7 +156,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       socket.on("changeDirection", (direction) => {
         const player = scene.players[socketId];
         player.direction = direction;
-        io.to(player.roomName).emit("changeDirection", { socketId, direction });
+        io.to(player?.roomName).emit("changeDirection", { socketId, direction });
       });
 
       socket.on("hit", ({ ids, spellName }) => {
@@ -254,7 +254,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         if (player?.direction === "down") coords.y += 16;
 
         /* Spawn the loot on the server */
-        scene.roomManager.rooms[player.roomName].lootManager.create({
+        scene.roomManager.rooms[player?.roomName].lootManager.create({
           ...coords,
           item: { ...found, ...(dropAmount ? { amount: dropAmount } : {}) },
           npcId: null,
