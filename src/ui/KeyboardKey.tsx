@@ -5,7 +5,7 @@ interface KeyboardKeyProps {
   name: string;
   onKeyUp?: (e: KeyboardEvent) => void;
   hidden?: boolean;
-  showOnly: boolean;
+  showOnly?: boolean;
   onKeyDown?: (e: KeyboardEvent) => void;
   sx?: object;
 }
