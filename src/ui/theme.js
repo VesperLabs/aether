@@ -64,7 +64,7 @@ export default {
   },
   buttons: {
     menu: {
-      borderRadius: 3,
+      borderRadius: 4,
       padding: 1,
       filter: "grayscale(100%)",
       "*": { opacity: 0.5 },
@@ -72,7 +72,7 @@ export default {
       backgroundColor: "shadow.10",
     },
     wood: {
-      borderRadius: 3,
+      borderRadius: 4,
       py: 1,
       px: 2,
       backgroundColor: "yellow.900",

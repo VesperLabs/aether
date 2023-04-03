@@ -5,6 +5,7 @@ interface KeyboardKeyProps {
   name: string;
   onKeyUp?: (e: KeyboardEvent) => void;
   hidden?: boolean;
+  showOnly: boolean;
   onKeyDown?: (e: KeyboardEvent) => void;
   sx?: object;
 }
@@ -20,7 +21,14 @@ const getKeyName = (name: string) => {
   return keyName.toUpperCase();
 };
 
-const KeyboardKey: React.FC<KeyboardKeyProps> = ({ name, onKeyUp, hidden, onKeyDown, sx }) => {
+const KeyboardKey: React.FC<KeyboardKeyProps> = ({
+  name,
+  onKeyUp,
+  hidden,
+  showOnly,
+  onKeyDown,
+  sx,
+}) => {
   const [isPressed, setIsPressed] = useState(false);
 
   const keyDisplayName = getKeyName(name);
@@ -36,7 +44,7 @@ const KeyboardKey: React.FC<KeyboardKeyProps> = ({ name, onKeyUp, hidden, onKeyD
     }
 
     if (keyName === name) {
-      onKeyUp?.(e);
+      if (!showOnly) onKeyUp?.(e);
       setIsPressed(false);
     }
   };
@@ -49,7 +57,7 @@ const KeyboardKey: React.FC<KeyboardKeyProps> = ({ name, onKeyUp, hidden, onKeyD
     }
 
     if (keyName === name) {
-      onKeyDown?.(e);
+      if (!showOnly) onKeyDown?.(e);
       setIsPressed(true);
     }
   };

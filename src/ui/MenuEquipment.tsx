@@ -1,7 +1,7 @@
-import { Flex, Text, useAppContext, Slot } from "./";
+import { Flex, MenuHeader, useAppContext, Slot } from "./";
 
 const MenuEquipment = () => {
-  const { hero, tabEquipment: show } = useAppContext();
+  const { hero, tabEquipment, setTabEquipment } = useAppContext();
   const equipment = Object.entries(hero?.equipment || {});
 
   return (
@@ -13,13 +13,13 @@ const MenuEquipment = () => {
         justifyContent: "end",
         bg: "shadow.30",
         pointerEvents: "all",
-        display: show ? "flex" : "none",
+        display: tabEquipment ? "flex" : "none",
         "&:hover": {
           zIndex: 999,
         },
       }}
     >
-      <Text>Equipment</Text>
+      <MenuHeader onClick={() => setTabEquipment(false)}>Equipment</MenuHeader>
       <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", maxWidth: 592 }}>
         {equipment?.map(([slotKey, item]) => (
           <Slot

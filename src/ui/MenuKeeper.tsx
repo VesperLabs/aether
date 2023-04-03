@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { Flex, Text, useAppContext, Portrait, Slot, KeyboardButton } from "./";
+import { Flex, Text, useAppContext, MenuHeader, Portrait, Slot, KeyboardButton } from "./";
 
 const MenuKeeper = () => {
-  const { keeper, tabKeeper: show, setTabKeeper } = useAppContext();
+  const { keeper, tabKeeper, setTabKeeper } = useAppContext();
   const [tab, setTab] = useState("greet");
   const { dialogues, shop } = keeper?.keeperData ?? {};
 
@@ -11,8 +11,8 @@ const MenuKeeper = () => {
   const tabGreet = tab === "greet";
 
   useEffect(() => {
-    if (!show) setTab("greet");
-  }, [show]);
+    if (!tabKeeper) setTab("greet");
+  }, [tabKeeper]);
 
   return (
     <Flex
@@ -24,13 +24,13 @@ const MenuKeeper = () => {
         justifyContent: "end",
         bg: "shadow.30",
         pointerEvents: "all",
-        display: show ? "flex" : "none",
+        display: tabKeeper ? "flex" : "none",
         "&:hover": {
           zIndex: 999,
         },
       }}
     >
-      <Text>{keeper?.profile?.userName}</Text>
+      <MenuHeader onClick={() => setTabKeeper(false)}>{keeper?.profile?.userName}</MenuHeader>
       <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", width: 592 }}>
         <Portrait user={keeper} />
         <Flex
@@ -43,7 +43,7 @@ const MenuKeeper = () => {
         >
           <Flex sx={{ bg: "shadow.30", flexDirection: "column", p: 2, gap: 2, borderRadius: 6 }}>
             <Text dangerouslySetInnerHTML={{ __html: dialogues?.[tab] }} />
-            {show && (
+            {tabKeeper && (
               <Flex sx={{ gap: 2 }}>
                 <KeyboardButton keyboardKey="G" onClick={() => setTab("greet")} active={tabGreet}>
                   Greet

@@ -1,8 +1,7 @@
-import React from "react";
-import { Flex, Text, useAppContext, Slot, Icon, Box } from "./";
+import { Flex, Text, useAppContext, Slot, Icon, MenuHeader } from "./";
 
 const MenuInventory = () => {
-  const { hero, tabInventory: show } = useAppContext();
+  const { hero, tabInventory, setTabInventory } = useAppContext();
   const inventory = hero?.inventory || [];
   const maxInventory = new Array(30).fill(null);
 
@@ -14,14 +13,14 @@ const MenuInventory = () => {
         p: 2,
         bg: "shadow.30",
         pointerEvents: "all",
-        display: show ? "flex" : "none",
+        display: tabInventory ? "flex" : "none",
         "&:hover": {
           zIndex: 999,
         },
       }}
     >
       <Flex sx={{ flexWrap: "wrap", justifyContent: "end", gap: 2, flex: 1 }}>
-        <Text>Inventory</Text>
+        <MenuHeader onClick={() => setTabInventory(false)}>Inventory</MenuHeader>
         <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", maxWidth: 592 }}>
           {maxInventory?.map((item, idx) => (
             <Slot

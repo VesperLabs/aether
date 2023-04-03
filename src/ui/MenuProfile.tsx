@@ -1,5 +1,4 @@
-import { Flex, Text, useAppContext, Portrait, Input, MenuButton } from "./";
-
+import { Flex, Text, MenuHeader, useAppContext, Portrait, Input, MenuButton } from "./";
 const MenuPicker = ({ children, onPlus = () => {}, onMinus = () => {} }) => {
   return (
     <Flex
@@ -23,7 +22,7 @@ const MenuPicker = ({ children, onPlus = () => {}, onMinus = () => {} }) => {
 };
 
 const MenuProfile = () => {
-  const { tabProfile: show, hero, socket } = useAppContext();
+  const { tabProfile, setTabProfile, hero, socket } = useAppContext();
 
   return (
     <Flex
@@ -33,7 +32,7 @@ const MenuProfile = () => {
         flexWrap: "wrap",
         justifyContent: "end",
         bg: "shadow.30",
-        display: show ? "flex" : "none",
+        display: tabProfile ? "flex" : "none",
         pointerEvents: "all",
 
         "&:hover": {
@@ -41,7 +40,7 @@ const MenuProfile = () => {
         },
       }}
     >
-      <Text>Profile</Text>
+      <MenuHeader onClick={() => setTabProfile(false)}>Profile</MenuHeader>
       <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", width: 592 }}>
         <Flex sx={{ gap: 1 }}>
           <Flex sx={{ flexDirection: "column", gap: 1, alignItems: "center" }}>

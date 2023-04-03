@@ -7,6 +7,7 @@ interface KeyboardButtonProps {
   onClick?: () => void;
   active?: boolean;
   children?: React.ReactNode;
+  showOnly?: boolean;
   sx?: object;
 }
 
@@ -15,6 +16,7 @@ const KeeperButton: FC<KeyboardButtonProps> = ({
   onClick,
   children,
   active,
+  showOnly,
   sx,
   ...props
 }) => {
@@ -33,6 +35,7 @@ const KeeperButton: FC<KeyboardButtonProps> = ({
       {!isMobile && (
         <Box sx={{ alignSelf: "end" }}>
           <KeyboardKey
+            showOnly={showOnly}
             sx={{ position: "static", mr: "-2px" }}
             name={keyboardKey}
             onKeyUp={onClick}
