@@ -48,8 +48,8 @@ const MessageBox = () => {
         borderRadius: 3,
       }}
     >
-      {messages?.map((message: MessageData) => {
-        return <Message data={message} />;
+      {messages?.map((message: MessageData, idx: integer) => {
+        return <Message key={idx} data={message} />;
       })}
     </Flex>
   );

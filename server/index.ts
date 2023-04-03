@@ -3,6 +3,8 @@ import { config } from "dotenv";
 import "@geckos.io/phaser-on-nodejs";
 config({ path: path.join(__dirname, "/../.env") });
 import { mapList } from "../shared/Maps";
+import skinTints from "../shared/data/skinTints.json";
+import hairTints from "../shared/data/hairTints.json";
 import { Socket, Server } from "socket.io";
 import crypto from "crypto";
 import {
@@ -430,31 +432,52 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       });
 
       socket.on("updateProfile", (args) => {
-        const hairs = ["hair-1", "hair-2", "hair-3", "hair-4"];
-        const faces = ["face-1", "face-2", "face-3"];
-        const player = scene?.players?.[socketId];
-        const currentHairIndex = hairs.indexOf(player?.profile?.hair?.texture);
-        const currentFaceIndex = faces.indexOf(player?.profile?.face?.texture);
-        let nextHairIndex = currentHairIndex;
-        let nextFaceIndex = currentFaceIndex;
+        const hairTextures = ["hair-1", "hair-2", "hair-3", "hair-4"];
+        const faceTextures = ["face-1", "face-2", "face-3"];
 
-        if (args?.hair === 1) {
-          nextHairIndex = (currentHairIndex + 1) % hairs.length;
-        } else if (args?.hair === -1) {
-          nextHairIndex = (currentHairIndex - 1 + hairs.length) % hairs.length;
+        const player = scene?.players?.[socketId];
+        const currentHairTextureIndex = hairTextures.indexOf(player?.profile?.hair?.texture);
+        const currentFaceTextureIndex = faceTextures.indexOf(player?.profile?.face?.texture);
+        const currentSkinTintIndex = skinTints.indexOf(player?.profile?.tint);
+        const currentHairTintIndex = hairTints.indexOf(player?.profile?.hair?.tint);
+        let nextHairTextureIndex = currentHairTextureIndex;
+        let nextFaceTextureIndex = currentFaceTextureIndex;
+        let nextSkinTint = currentSkinTintIndex;
+        let nextHairTintIndex = currentSkinTintIndex;
+
+        if (args?.hair?.texture === 1) {
+          nextHairTextureIndex = (currentHairTextureIndex + 1) % hairTextures.length;
+        } else if (args?.hair?.texture === -1) {
+          nextHairTextureIndex =
+            (currentHairTextureIndex - 1 + hairTextures.length) % hairTextures.length;
         }
 
-        if (args?.face === 1) {
-          nextFaceIndex = (currentFaceIndex + 1) % faces.length;
-        } else if (args?.face === -1) {
-          nextFaceIndex = (currentFaceIndex - 1 + faces.length) % faces.length;
+        if (args?.face?.texture === 1) {
+          nextFaceTextureIndex = (currentFaceTextureIndex + 1) % faceTextures.length;
+        } else if (args?.face?.texture === -1) {
+          nextFaceTextureIndex =
+            (currentFaceTextureIndex - 1 + faceTextures.length) % faceTextures.length;
+        }
+
+        if (args?.skin?.tint === 1) {
+          nextSkinTint = (currentSkinTintIndex + 1) % skinTints.length;
+        } else if (args?.skin?.tint === -1) {
+          nextSkinTint = (currentSkinTintIndex - 1 + skinTints.length) % skinTints.length;
+        }
+
+        if (args?.hair?.tint === 1) {
+          nextHairTintIndex = (currentHairTintIndex + 1) % hairTints.length;
+        } else if (args?.hair?.tint === -1) {
+          nextHairTintIndex = (currentHairTintIndex - 1 + hairTints.length) % hairTints.length;
         }
 
         const userName = args?.userName;
 
         if (args?.userName) player.profile.userName = userName;
-        if (args?.hair) player.profile.hair.texture = hairs[nextHairIndex];
-        if (args?.face) player.profile.face.texture = faces[nextFaceIndex];
+        if (args?.hair?.texture) player.profile.hair.texture = hairTextures[nextHairTextureIndex];
+        if (args?.face?.texture) player.profile.face.texture = faceTextures[nextFaceTextureIndex];
+        if (args?.skin?.tint) player.profile.tint = skinTints[nextSkinTint];
+        if (args?.hair?.tint) player.profile.hair.tint = hairTints[nextHairTintIndex];
 
         /* Save the user's data */
         scene.db.updateUser(player);

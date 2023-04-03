@@ -4,19 +4,20 @@ import { tintCanvas, imageToCanvas } from "../utils";
 
 function CanvasPreview({ assets, topOffset = 10 }) {
   const canvasRef = useRef(null);
-
+  const { game } = useAppContext();
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     canvas.width = 80;
     canvas.height = 80;
     for (const asset of assets) {
-      if (!asset?.img) continue;
+      if (!asset?.name) continue;
+      const img = game?.textures?.get?.(asset?.name)?.getSourceImage();
       const [x, y, w, h] = [0, 160, 80, 80];
-      const tintedCanvas = tintCanvas(imageToCanvas(asset?.img), asset?.tint);
+      const tintedCanvas = tintCanvas(imageToCanvas(img), asset?.tint);
       ctx.drawImage(tintedCanvas, x, y, w, h, 0, 0, w, h);
     }
-  }, [assets]);
+  }, [JSON.stringify(assets)]);
 
   return (
     <Box
@@ -90,17 +91,15 @@ const Portrait = ({
           clipPath: `circle(${size / 2}px at ${size / 2}px ${size / 2}px)`,
         }}
       >
-        <CanvasPreview key={JSON.stringify(assets)} assets={assets} topOffset={topOffset} />
+        <CanvasPreview assets={assets} topOffset={topOffset} />
       </Box>
     </Box>
   );
 };
 
 const useGetAssetProps = () => {
-  const { game } = useAppContext();
-
   return (slotKey: string, name: string, tint: string) => {
-    return { slotKey, img: game?.textures?.get?.(name)?.getSourceImage(), tint };
+    return { slotKey, name, tint };
   };
 };
 

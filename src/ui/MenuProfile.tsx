@@ -11,9 +11,13 @@ const MenuPicker = ({ children, onPlus = () => {}, onMinus = () => {} }) => {
         p: 1,
       }}
     >
-      <MenuButton sx={{ "& .icon": { transform: "rotate(90deg) scaleY(-1)" } }} onClick={onMinus} />
+      <MenuButton
+        size={16}
+        sx={{ "& .icon": { transform: "rotate(90deg) scaleY(-1)" } }}
+        onClick={onMinus}
+      />
       <Text>{children}</Text>
-      <MenuButton sx={{ "& .icon": { transform: "rotate(90deg)" } }} onClick={onPlus} />
+      <MenuButton size={19} sx={{ "& .icon": { transform: "rotate(90deg)" } }} onClick={onPlus} />
     </Flex>
   );
 };
@@ -21,7 +25,7 @@ const MenuPicker = ({ children, onPlus = () => {}, onMinus = () => {} }) => {
 const MenuProfile = () => {
   const { tabProfile: show, hero, socket } = useAppContext();
 
-  return show ? (
+  return (
     <Flex
       sx={{
         gap: 2,
@@ -29,6 +33,7 @@ const MenuProfile = () => {
         flexWrap: "wrap",
         justifyContent: "end",
         bg: "shadow.30",
+        display: show ? "flex" : "none",
         pointerEvents: "all",
 
         "&:hover": {
@@ -39,9 +44,10 @@ const MenuProfile = () => {
       <Text>Profile</Text>
       <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", width: 592 }}>
         <Flex sx={{ gap: 1 }}>
-          <Portrait user={hero} size={120} topOffset={28} filterKeys={["accessory", "helmet"]} />
-          <Flex sx={{ flexDirection: "column", gap: 1 }}>
+          <Flex sx={{ flexDirection: "column", gap: 1, alignItems: "center" }}>
+            <Portrait user={hero} size={120} topOffset={28} filterKeys={["accessory", "helmet"]} />
             <Input
+              sx={{ width: 150 }}
               defaultValue={hero?.profile?.userName}
               onBlur={(e) => {
                 /* Hack to send if `Done` button is pushed */
@@ -49,24 +55,37 @@ const MenuProfile = () => {
                 if (userName?.trim() !== "") socket.emit("updateProfile", { userName });
               }}
             />
+          </Flex>
+          <Flex sx={{ flexDirection: "column", gap: 1 }}>
             <MenuPicker
-              onPlus={() => socket.emit("updateProfile", { hair: 1 })}
-              onMinus={() => socket.emit("updateProfile", { hair: -1 })}
+              onPlus={() => socket.emit("updateProfile", { hair: { texture: 1 } })}
+              onMinus={() => socket.emit("updateProfile", { hair: { texture: -1 } })}
             >
-              Hair
+              Hair Style
             </MenuPicker>
             <MenuPicker
-              onPlus={() => socket.emit("updateProfile", { face: 1 })}
-              onMinus={() => socket.emit("updateProfile", { face: -1 })}
+              onPlus={() => socket.emit("updateProfile", { hair: { tint: 1 } })}
+              onMinus={() => socket.emit("updateProfile", { hair: { tint: -1 } })}
+            >
+              Hair Color
+            </MenuPicker>
+            <MenuPicker
+              onPlus={() => socket.emit("updateProfile", { face: { texture: 1 } })}
+              onMinus={() => socket.emit("updateProfile", { face: { texture: -1 } })}
             >
               Face
             </MenuPicker>
-            <MenuPicker>Skin</MenuPicker>
+            <MenuPicker
+              onPlus={() => socket.emit("updateProfile", { skin: { tint: 1 } })}
+              onMinus={() => socket.emit("updateProfile", { skin: { tint: -1 } })}
+            >
+              Skin
+            </MenuPicker>
           </Flex>
         </Flex>
       </Flex>
     </Flex>
-  ) : null;
+  );
 };
 
 export default MenuProfile;
