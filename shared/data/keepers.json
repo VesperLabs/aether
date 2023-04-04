@@ -345,7 +345,7 @@
       "helmet": null,
       "accessory": null,
       "pants": ["pants", "common", "leatherPants"],
-      "armor": ["armor", "common", "wizardRobe"],
+      "armor": ["armor", "common", "robeWizard"],
       "boots": ["boots", "common", "leatherBoots"]
     },
     "keeperData": {

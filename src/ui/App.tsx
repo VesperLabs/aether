@@ -184,8 +184,6 @@ function App({ socket, debug, game }) {
     setBottomOffset(offset > 0 ? offset : 0);
   });
 
-  if (!hero) return;
-
   return (
     <ThemeProvider theme={theme as Theme}>
       <AppContext.Provider
@@ -216,10 +214,20 @@ function App({ socket, debug, game }) {
           game,
         }}
       >
-        {hero?.state?.isDead && <ModalRespawn />}
-        {dropItem && <ModalDropAmount />}
-        <MenuHud />
-        <MenuBar />
+        <Box
+          sx={{
+            width: "100%",
+            height: "100%",
+            pointerEvents: "none",
+            opacity: hero ? 1 : 0,
+            transition: "opacity 1s ease-in-out",
+          }}
+        >
+          {hero?.state?.isDead && <ModalRespawn />}
+          {dropItem && <ModalDropAmount />}
+          <MenuHud />
+          <MenuBar />
+        </Box>
       </AppContext.Provider>
     </ThemeProvider>
   );
