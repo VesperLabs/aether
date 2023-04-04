@@ -69,7 +69,7 @@ const Portrait = ({
   const pants = getAssetProps("pants", `${race}-${userPants?.texture}`, userPants?.tint);
   const boots = getAssetProps("boots", `${race}-${userBoots?.texture}`, userBoots?.tint);
   const helmet = getAssetProps("helmet", `${race}-${userHelmet?.texture}`, userHelmet?.tint);
-  const assets = [skin, chest, hair, face, pants, boots, armor, helmet, accessory]
+  const assets = [skin, chest, hair, boots, armor, face, pants, helmet, accessory]
     ?.filter(Boolean)
     ?.filter((asset) => !filterKeys.includes(asset.slotKey));
   return (
