@@ -51,11 +51,12 @@ function addInputListeners(scene) {
 }
 
 function addJoystick(scene) {
+  const isTouch = scene.sys.game.device.input.touch;
   scene.joystick = scene.add.joystick({
     sprites: { cap: new RoundButton(scene), base: new RoundButton(scene) },
     singleDirection: false,
     maxDistanceInPixels: 25,
-    device: isMobile ? 1 : 0, // 0 for mouse pointer (computer), 1 for touch pointer (mobile)
+    device: isTouch ? 1 : 0, // 0 for mouse pointer (computer), 1 for touch pointer (mobile)
   });
 }
 
