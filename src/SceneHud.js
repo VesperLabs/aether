@@ -35,10 +35,10 @@ function fadeIn(scene) {
     .setDepth(100001);
   // Create a tween to gradually fade out the black rectangle
   scene.tweens.add({
-    delay: 500,
+    delay: 1000,
     targets: [graphics, dpanel],
     alpha: 0,
-    duration: 300, // adjust the duration as desired
+    duration: 500, // adjust the duration as desired
     onComplete: () => {
       // remove the black rectangle once the tween is complete
       graphics.destroy();
