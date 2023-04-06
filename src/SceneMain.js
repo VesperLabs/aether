@@ -314,7 +314,6 @@ function setCamera(scene, hero) {
   const zoomLevel = Math.floor(
     Phaser.Math.Clamp(baseZoom + viewportArea / 1000000, minZoom, maxZoom)
   );
-  console.log(zoomLevel);
   scene.cameras.main.setZoom(zoomLevel);
   scene.cameras.main.startFollow(hero, true);
   scene.cameras.main.setBounds(0, 0, scene.map.widthInPixels, scene.map.heightInPixels);

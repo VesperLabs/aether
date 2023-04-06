@@ -10,16 +10,16 @@ class SceneBoot extends Phaser.Scene {
     this.socket = socket;
   }
   preload() {
+    const viewportWidth = this.cameras.main.width;
+    const viewportHeight = this.cameras.main.height;
+
     const dpanel = this.add
-      .text(16, 16, "Loading...", {
-        font: "16px monospace",
+      .text(viewportWidth / 2, viewportHeight / 2, "Loading...", {
+        font: "18px monospace",
         fill: "#ffffff",
-        padding: {
-          x: 20,
-          y: 10,
-        },
         backgroundColor: "#000000",
       })
+      .setOrigin(0.5)
       .setScrollFactor(0);
 
     this.load.on("progress", (value) => {
