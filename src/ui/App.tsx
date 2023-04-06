@@ -221,6 +221,7 @@ function App({ socket, debug, game }) {
             pointerEvents: "none",
             opacity: hero ? 1 : 0,
             transition: "opacity 1s ease-in-out",
+            transitionDelay: "2000ms",
           }}
         >
           {hero?.state?.isDead && <ModalRespawn />}
