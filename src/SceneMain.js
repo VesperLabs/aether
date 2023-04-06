@@ -150,6 +150,11 @@ class SceneMain extends Phaser.Scene {
 
     socket.on("remove", (socketId) => removePlayer(scene, socketId));
 
+    // Add event listener for window resize
+    window.addEventListener("resize", () => {
+      setCamera(scene, scene.hero);
+    });
+
     socket.emit("login");
   }
 
@@ -302,7 +307,12 @@ function moveHero(scene, time) {
 }
 
 function setCamera(scene, hero) {
-  scene.cameras.main.setZoom(2);
+  const viewportArea = scene.cameras.main.width * scene.cameras.main.height;
+  const baseZoom = 2;
+  const maxZoom = 6;
+  const minZoom = 2;
+  const zoomLevel = Phaser.Math.Clamp(baseZoom + viewportArea / 1000000, minZoom, maxZoom);
+  scene.cameras.main.setZoom(zoomLevel);
   scene.cameras.main.startFollow(hero, true);
   scene.cameras.main.setBounds(0, 0, scene.map.widthInPixels, scene.map.heightInPixels);
 }
