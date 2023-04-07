@@ -1,36 +1,51 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Box, useAppContext } from "./";
 import { tintCanvas, imageToCanvas } from "../utils";
 
 function CanvasPreview({ assets, topOffset = 10, scale = 2 }) {
   const canvasRef = useRef(null);
+  const [imageUrls, setImageUrls] = useState([]);
   const { game } = useAppContext();
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     canvas.width = 80;
     canvas.height = 80;
+    const urls = [];
     for (const asset of assets) {
       if (!asset?.name) continue;
       const img = game?.textures?.get?.(asset?.name)?.getSourceImage();
       const [x, y, w, h] = [0, 160, 80, 80];
       const tintedCanvas = tintCanvas(imageToCanvas(img), asset?.tint);
       ctx.drawImage(tintedCanvas, x, y, w, h, 0, 0, w, h);
+      const url = canvas.toDataURL();
+      urls.push(url);
     }
+    setImageUrls(urls);
   }, [JSON.stringify(assets)]);
 
   return (
-    <Box
-      as="canvas"
-      sx={{
-        transform: `translate(-50%, ${topOffset}%) scale(${scale})`,
-        imageRendering: "pixelated",
-        position: "absolute",
-        left: "50%",
-        top: 0,
-      }}
-      ref={canvasRef}
-    />
+    <>
+      {imageUrls.map((url, idx) => (
+        <img
+          key={idx}
+          src={url}
+          style={{
+            transform: `translate(-50%, ${topOffset}%) scale(${scale})`,
+            imageRendering: "pixelated",
+            position: "absolute",
+            left: "50%",
+            top: 0,
+          }}
+        />
+      ))}
+      <canvas
+        style={{
+          display: "none",
+        }}
+        ref={canvasRef}
+      />
+    </>
   );
 }
 
@@ -69,7 +84,7 @@ const Portrait = ({
   const pants = getAssetProps("pants", `${race}-${userPants?.texture}`, userPants?.tint);
   const boots = getAssetProps("boots", `${race}-${userBoots?.texture}`, userBoots?.tint);
   const helmet = getAssetProps("helmet", `${race}-${userHelmet?.texture}`, userHelmet?.tint);
-  const assets = [skin, chest, hair, boots, armor, face, pants, helmet, accessory]
+  const assets = [skin, chest, hair, boots, pants, armor, face, helmet, accessory]
     ?.filter(Boolean)
     ?.filter((asset) => !filterKeys.includes(asset.slotKey));
   return (

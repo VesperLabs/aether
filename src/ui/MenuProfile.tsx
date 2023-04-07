@@ -49,7 +49,7 @@ const MenuProfile = () => {
               user={hero}
               size={150}
               topOffset={90}
-              filterKeys={["accessory", "helmet", "boots", "pants"]}
+              filterKeys={["accessory", "helmet", "boots"]}
             />
             <Input
               sx={{ width: 150, fontSize: 3 }}
