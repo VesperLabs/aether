@@ -69,7 +69,6 @@ export default {
       borderRadius: 4,
       py: 1,
       px: 2,
-      filter: "grayscale(100%)",
       backgroundColor: "shadow.30",
     },
     menu: {

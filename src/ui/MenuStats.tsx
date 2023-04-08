@@ -1,10 +1,27 @@
+import { ThemeUIStyleObject } from "theme-ui";
 import { Flex, Text, useAppContext, Slot, Icon, MenuHeader, Grid } from "./";
 
-const COLUMN_STYLES = {
-  gap: 2,
+const COLUMN_STYLES: ThemeUIStyleObject = {
+  gap: 1,
   width: "auto",
-  flex: [1, "unset", "unset"],
+  flex: 1,
   gridTemplateColumns: "2fr 1fr",
+  textAlign: "right",
+  alignItems: "center",
+  whiteSpace: "nowrap",
+  fontSize: [0, 2, 2],
+  "& > *": {
+    py: 1,
+  },
+  "& > :nth-child(odd)": {
+    pr: 1,
+  },
+  "& > :nth-child(even)": {
+    px: 2,
+    fontSize: [0, 1, 2],
+    background: "shadow.20",
+    borderRadius: 6,
+  },
 };
 
 const MenuStats = () => {
