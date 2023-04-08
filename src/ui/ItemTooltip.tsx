@@ -1,4 +1,3 @@
-import React from "react";
 import { Flex, useAppContext, Text, Divider, Icon, TOOLTIP_STYLE } from "./";
 import itemSetList from "../../shared/data/itemSetList.json";
 import { Tooltip } from "react-tooltip";

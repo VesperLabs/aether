@@ -1,5 +1,6 @@
 import Character from "./Character";
 import ItemBuilder from "./ItemBuilder";
+import QuestBuilder from "./QuestBuilder";
 import { getCharacterDirection, distanceTo, randomNumber } from "./utils";
 import crypto from "crypto";
 
@@ -15,6 +16,13 @@ const buildShop = (shop: Array<any>) => {
   return shop?.reduce((acc, entry) => {
     const id = crypto.randomUUID();
     acc.push({ id, ...entry, item: ItemBuilder.buildItem(...entry.item) });
+    return acc;
+  }, []);
+};
+
+const buildQuests = (quests: Array<any>) => {
+  return quests?.reduce((acc, entry) => {
+    acc.push(QuestBuilder.buildQuest(entry));
     return acc;
   }, []);
 };
@@ -40,7 +48,11 @@ class Npc extends Character implements Npc {
     this.drops = args?.drops;
     this.equipment = buildEquipment(equipment);
     this.talkingIds = [];
-    this.keeperData = { ...keeperData, shop: buildShop(keeperData?.shop) };
+    this.keeperData = {
+      ...keeperData,
+      shop: buildShop(keeperData?.shop),
+      quests: buildQuests(keeperData?.quests),
+    };
   }
   setDead() {
     this.state.isDead = true;

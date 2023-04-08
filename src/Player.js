@@ -36,6 +36,7 @@ class Player extends Character {
       this.takeHit({ type: "healHp", amount: this?.stats?.regenHp });
     }
     if (this.state.doMpRegen) {
+      this.takeHit({ type: "healMp", amount: this?.stats?.regenMp });
     }
   }
   initSpriteLayers() {
@@ -230,7 +231,7 @@ class Player extends Character {
   takeHit(hit) {
     const { stats, state } = this;
     if (state.isDead) return;
-    this.scene.add.existing(new Damage(this.scene, this, hit));
+    if (hit?.type !== "healMp") this.scene.add.existing(new Damage(this.scene, this, hit));
     if (hit.type == "death") {
       stats.hp = 0;
       this.doDeath();
@@ -239,6 +240,8 @@ class Player extends Character {
       this.state.lastFlash = Date.now();
       this.state.isFlash = true;
       this.doFlashAnimation("0x00FF00");
+    } else if (hit.type == "healMp") {
+      this.modifyStat("mp", hit?.amount);
     } else {
       this.modifyStat("hp", hit?.amount);
       this.state.lastFlash = Date.now();

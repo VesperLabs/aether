@@ -224,7 +224,7 @@ class ServerCharacter extends Character {
       if (isMpRegenReady && this.stats.mp < this.stats.maxMp) {
         this.state.doMpRegen = true;
         this.state.lastMpRegen = now;
-        this.modifyStat("hp", this.stats.regenMp);
+        this.modifyStat("mp", this.stats.regenMp);
       }
     }
   }

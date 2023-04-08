@@ -1,5 +1,5 @@
 import { ThemeUIStyleObject } from "theme-ui";
-import { Flex, Text, useAppContext, Slot, Icon, MenuHeader, Grid } from "./";
+import { Flex, Text, useAppContext, MenuHeader, Grid } from "./";
 
 const COLUMN_STYLES: ThemeUIStyleObject = {
   gap: 1,
@@ -13,10 +13,10 @@ const COLUMN_STYLES: ThemeUIStyleObject = {
   "& > *": {
     py: 1,
   },
-  "& > :nth-child(odd)": {
+  "& > :nth-of-type(odd)": {
     pr: 1,
   },
-  "& > :nth-child(even)": {
+  "& > :nth-of-type(even)": {
     px: 2,
     fontSize: [0, 1, 2],
     background: "shadow.20",
@@ -27,6 +27,7 @@ const COLUMN_STYLES: ThemeUIStyleObject = {
 const MenuStats = () => {
   const { hero, tabStats, setTabStats } = useAppContext();
   const { stats } = hero ?? {};
+  if (!stats) return null;
   return (
     <Flex
       sx={{

@@ -209,3 +209,11 @@ interface RoomState {
   spells: Array<Spell>;
   loots: Array<Loot>;
 }
+
+interface Quest {
+  id: string;
+  name: string;
+  description: string;
+  reward: number;
+  completed: boolean;
+}

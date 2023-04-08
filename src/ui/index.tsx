@@ -31,6 +31,7 @@ export { default as ModalDropAmount } from "./ModalDropAmount";
 export { default as MessageBox } from "./MessageBox";
 export { default as MenuButton } from "./MenuButton";
 export { default as MenuHeader } from "./MenuHeader";
+export { default as Quest } from "./Quest";
 export { useAppContext } from "./App";
 export const TOOLTIP_STYLE = {
   transition: "none",
@@ -38,3 +39,12 @@ export const TOOLTIP_STYLE = {
   borderRadius: 5,
   zIndex: 8888,
 };
+export const SLOT_SIZE = 52;
+
+export const STYLE_SLOT_EMPTY = (icon) => ({
+  borderRadius: 2,
+  border: (t) => `1px solid ${t.colors.shadow[50]}`,
+  background: (t) => `${t.colors.shadow[30]} url(${icon}) center center no-repeat`,
+  filter: "grayscale(100%)",
+  opacity: 0.5,
+});

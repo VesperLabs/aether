@@ -1,5 +1,5 @@
 import React, { useState, useRef, useLayoutEffect } from "react";
-import { Box, Icon, ItemTooltip, theme } from "./";
+import { Box, Icon, ItemTooltip, SLOT_SIZE, STYLE_SLOT_EMPTY } from "./";
 import { resolveAsset } from "../../shared/Assets";
 import { useAppContext } from "./App";
 import { isMobile, trimCanvas, tintCanvas } from "../utils";
@@ -16,12 +16,8 @@ type SlotProps = {
   disabled?: boolean;
 };
 
-const STYLE_EMPTY = (icon) => ({
-  background: `${theme.colors.shadow[30]} url(${icon}) center center no-repeat`,
-  filter: "grayscale(100%)",
-  opacity: 0.5,
-});
 const STYLE_NON_EMPTY = (rarity) => ({
+  borderRadius: 2,
   border: (t) => `1px solid ${t.colors[rarity]}`,
   background: (t) => `radial-gradient(circle, ${t.colors[rarity]} 0%, ${t.colors.shadow[50]} 150%)`,
 });
@@ -29,7 +25,17 @@ const BLANK_IMAGE =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 
 const Slot = React.memo(
-  ({ sx, size = 52, item, slotKey, location, icon, stock, disabled, ...props }: SlotProps) => {
+  ({
+    sx,
+    size = SLOT_SIZE,
+    item,
+    slotKey,
+    location,
+    icon,
+    stock,
+    disabled,
+    ...props
+  }: SlotProps) => {
     // component logic here
     const { hero } = useAppContext();
     const [imageData, setImageData] = useState(BLANK_IMAGE);
@@ -194,15 +200,14 @@ const Slot = React.memo(
         sx={{
           touchAction: "none",
           userSelect: "none",
-          border: (t) => `1px solid ${t.colors.shadow[50]}`,
-          borderRadius: 2,
+
           pointerEvents: "all",
           overflow: dragging ? "visible" : "hidden",
           width: size,
           height: size,
           top: 0,
           left: 0,
-          ...(item?.rarity ? STYLE_NON_EMPTY(item?.rarity) : STYLE_EMPTY(icon)),
+          ...(item?.rarity ? STYLE_NON_EMPTY(item?.rarity) : STYLE_SLOT_EMPTY(icon)),
           ...sx,
         }}
         {...doubleTabBinds}
