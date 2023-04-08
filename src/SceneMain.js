@@ -313,7 +313,7 @@ function moveHero(scene, time) {
 function setCamera(scene, hero) {
   const viewportArea = scene.cameras.main.width * scene.cameras.main.height;
   const baseZoom = 2;
-  const maxZoom = 6;
+  const maxZoom = 4;
   const minZoom = 2;
   const viewportAreaInPixels = viewportArea; // multiply by square of pixel density
   const zoomLevel = Phaser.Math.Clamp(

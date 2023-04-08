@@ -14,9 +14,19 @@ type BarProps = {
   min: number;
   max: number;
   sx?: object;
+  showText?: boolean;
 };
 
-const Bar = ({ width = 100, height = 12, color = "red", min, max, sx, ...props }: BarProps) => {
+const Bar = ({
+  width = 100,
+  height = 12,
+  color = "red",
+  showText = true,
+  min,
+  max,
+  sx,
+  ...props
+}: BarProps) => {
   const percent = Math.round((min / max) * 100) + "%";
   return (
     <Box
@@ -45,7 +55,7 @@ const Bar = ({ width = 100, height = 12, color = "red", min, max, sx, ...props }
           textAlign: "center",
         }}
       >
-        {`${min} / ${max}`}
+        {showText && `${min} / ${max}`}
       </Box>
       <Box sx={{ bg: color, height: "100%", width: percent }} />
     </Box>
@@ -73,6 +83,14 @@ const MenuHud = () => {
             color="blue.500"
             max={stats?.maxMp}
             min={stats?.mp}
+          />
+          <Bar
+            data-tooltip-content={`EXP: ${stats?.exp} / ${stats?.maxExp}`}
+            color="yellow.50"
+            max={stats?.maxExp}
+            min={stats?.exp}
+            height={6}
+            showText={false}
           />
         </Flex>
       </Flex>
