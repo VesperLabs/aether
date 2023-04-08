@@ -72,8 +72,8 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       const socketId = socket.id;
 
       socket.on("login", async (email = "arf@arf.arf") => {
-        const user = await scene.db.getUserByEmail(email);
-        //const user = cloneObject(baseUser);
+        //const user = await scene.db.getUserByEmail(email);
+        const user = cloneObject(baseUser);
         if (!user) return console.log("❌ Player not found in db");
 
         const player = scene.roomManager.rooms[user.roomName].playerManager.create({
@@ -162,6 +162,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       socket.on("hit", ({ ids, spellName }) => {
         const hero = scene.players[socketId];
         const roomName = hero?.roomName;
+        let didLevel = false;
         /* Create hitList for npcs */
         const hitList: Array<Hit> = [];
         const npcs = scene.roomManager.rooms[roomName]?.npcManager?.getNpcs();
@@ -173,11 +174,14 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           /* If we kill the NPC */
           if (newHit?.type === "death") {
             npc.dropLoot(hero?.stats?.magicFind);
-            /* Add exp */
-            hero.assignExp(npc?.stats?.expValue || 0);
-            io.to(roomName).emit("playerUpdate", getCharacterState(hero));
+            /* Add EXP, check if we leveled */
+            didLevel = hero.assignExp(npc?.stats?.expValue || 0);
           }
           if (newHit) hitList.push(newHit);
+        }
+        /* Send exp update to client */
+        if (hitList?.some((hit) => hit.type === "death")) {
+          io.to(roomName).emit("playerUpdate", getCharacterState(hero), { didLevel });
         }
         for (const player of players) {
           if (!ids?.includes(player.id)) continue;

@@ -59,6 +59,7 @@ const Message: React.FC<MessageProps> = ({ data }) => {
   const { from, message, type } = data ?? {};
   const colorsMap: Record<string, string> = {
     chat: "white",
+    success: "set",
     error: "danger",
     info: "magic",
   };

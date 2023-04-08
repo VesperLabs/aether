@@ -23,6 +23,7 @@ import "react-tooltip/dist/react-tooltip.css";
 import { useViewportSizeEffect } from "./hooks";
 import { Theme } from "theme-ui";
 import { Socket } from "socket.io-client";
+import Player from "../../server/Player";
 
 interface AppContextValue {
   isConnected: boolean;
@@ -95,20 +96,17 @@ function App({ socket, debug, game }) {
       setHero(player);
     };
 
-    const onPlayerUpdate = (player: CharacterState) => {
+    const onPlayerUpdate = (player: CharacterState, args) => {
       const socketId = localStorage.getItem("socketId");
       /* If the player is the current player */
       if (socketId === player?.socketId) {
-        setHero((prev) => {
-          /* If the hero leveled up show a message */
-          if (player?.stats?.level !== prev?.stats?.level) {
-            setMessages((prev) => [
-              ...prev,
-              { type: "info", message: `You are now level ${player?.stats?.level}` },
-            ]);
-          }
-          return player;
-        });
+        setHero(player);
+        if (args?.didLevel) {
+          setMessages((prev) => [
+            ...prev,
+            { type: "success", message: `You are now level ${player?.stats?.level}!` },
+          ]);
+        }
       }
     };
 
