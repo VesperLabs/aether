@@ -24,7 +24,6 @@ import "react-tooltip/dist/react-tooltip.css";
 import { useViewportSizeEffect } from "./hooks";
 import { Theme } from "theme-ui";
 import { Socket } from "socket.io-client";
-import Player from "../../server/Player";
 
 interface AppContextValue {
   isConnected: boolean;

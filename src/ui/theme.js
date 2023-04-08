@@ -76,7 +76,7 @@ export default {
       padding: 1,
       filter: "grayscale(100%)",
       "*": { opacity: 0.5 },
-      "&:hover, &.active": { "*": { opacity: 1 } },
+      "&.active": { "*": { opacity: 1 }, filter: "grayscale(0%)" },
       backgroundColor: "shadow.10",
     },
     wood: {
