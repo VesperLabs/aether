@@ -15,6 +15,7 @@ function CanvasPreview({ assets, topOffset = 10, scale = 2 }) {
     for (const asset of assets) {
       if (!asset?.name) continue;
       const img = game?.textures?.get?.(asset?.name)?.getSourceImage();
+      if (!img?.width) continue;
       const [x, y, w, h] = [0, 160, 80, 80];
       const tintedCanvas = tintCanvas(imageToCanvas(img), asset?.tint);
       ctx.drawImage(tintedCanvas, x, y, w, h, 0, 0, w, h);

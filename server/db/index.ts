@@ -76,6 +76,7 @@ const getDatabaseApi = (db) => ({
 
 export const baseUser = {
   email: "arf@arf.arf",
+  charClass: "warrior",
   baseStats: {
     expValue: 0,
     level: 1,
@@ -102,6 +103,11 @@ export const baseUser = {
     maxExp: 20,
     maxHp: 10,
     maxMp: 10,
+  },
+  stats: {
+    hp: 0,
+    mp: 0,
+    exp: 0,
   },
   gold: 100,
   direction: "down",

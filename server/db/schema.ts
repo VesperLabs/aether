@@ -78,6 +78,10 @@ const userSchema = {
       description: "must be an object and is required",
     },
     profile: profileSchema,
+    charClass: {
+      bsonType: "string",
+      description: "must be a string",
+    },
     gold: {
       bsonType: "number",
       description: "must be a number",

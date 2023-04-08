@@ -50,11 +50,6 @@ class Damage extends Container {
           damageText.setTint("0xFF6666");
         }
         break;
-      case "level":
-        text = "Level Up!";
-        this.duration = 3000;
-        damageText.setTint("0xFF0000", "0xFFFF00", "0x00FFFF", "0x0000FF");
-        break;
       case "exp":
         text = text + " XP";
         damageText.setTint("0xEECCFF");

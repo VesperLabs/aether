@@ -84,7 +84,7 @@ function App({ socket, debug, game }) {
       setMessages((prev) => [...prev, payload]);
     };
 
-    const onPlayerJoin = (payload) => {
+    const onPlayerJoin = () => {
       setMessages((prev) => [...prev, { type: "info", message: "A player has joined the game." }]);
     };
 
@@ -97,8 +97,18 @@ function App({ socket, debug, game }) {
 
     const onPlayerUpdate = (player: CharacterState) => {
       const socketId = localStorage.getItem("socketId");
+      /* If the player is the current player */
       if (socketId === player?.socketId) {
-        setHero(player);
+        setHero((prev) => {
+          /* If the hero leveled up show a message */
+          if (player?.stats?.level !== prev?.stats?.level) {
+            setMessages((prev) => [
+              ...prev,
+              { type: "info", message: `You are now level ${player?.stats?.level}` },
+            ]);
+          }
+          return player;
+        });
       }
     };
 

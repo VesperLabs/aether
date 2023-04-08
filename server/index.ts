@@ -163,19 +163,21 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         const hero = scene.players[socketId];
         const roomName = hero?.roomName;
         /* Create hitList for npcs */
-        const hitList = [];
+        const hitList: Array<Hit> = [];
         const npcs = scene.roomManager.rooms[roomName]?.npcManager?.getNpcs();
         const players = scene.roomManager.rooms[roomName]?.playerManager?.getPlayers();
         for (const npc of npcs) {
           /* TODO: verify location of hit before we consider it a hit */
           if (!ids?.includes(npc.id)) continue;
           const newHit = hero.calculateDamage(npc);
-          if (newHit) hitList.push(newHit);
           /* If we kill the NPC */
           if (newHit?.type === "death") {
             npc.dropLoot(hero?.stats?.magicFind);
+            /* Add exp */
+            hero.assignExp(npc?.stats?.expValue || 0);
+            io.to(roomName).emit("playerUpdate", getCharacterState(hero));
           }
-          /* TODO: Gain exp here */
+          if (newHit) hitList.push(newHit);
         }
         for (const player of players) {
           if (!ids?.includes(player.id)) continue;

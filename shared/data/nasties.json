@@ -3,7 +3,7 @@
     "profile": { "race": "raccoon", "headY": -27, "userName": "Raccoon" },
     "baseStats": {
       "attackDelay": 500,
-      "expValue": 2,
+      "expValue": 1,
       "level": 1,
       "speed": 100,
       "range": 32,
@@ -44,7 +44,7 @@
     "profile": { "race": "slime", "headY": -23, "userName": "Slime" },
     "baseStats": {
       "attackDelay": 500,
-      "expValue": 2,
+      "expValue": 1,
       "level": 1,
       "speed": 100,
       "range": 32,
@@ -121,7 +121,7 @@
     "state": { "isAggro": true },
     "baseStats": {
       "attackDelay": 500,
-      "expValue": 5,
+      "expValue": 4,
       "level": 5,
       "speed": 150,
       "range": 32,
@@ -150,7 +150,7 @@
     "state": { "isAggro": true },
     "baseStats": {
       "attackDelay": 500,
-      "expValue": 4,
+      "expValue": 3,
       "level": 5,
       "speed": 100,
       "range": 32,
@@ -234,7 +234,7 @@
     "state": { "isAggro": true },
     "baseStats": {
       "attackDelay": 500,
-      "expValue": 4,
+      "expValue": 2,
       "level": 5,
       "speed": 100,
       "range": 32,

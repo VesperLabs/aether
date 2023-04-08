@@ -105,6 +105,7 @@ interface Character extends Phaser.GameObjects.Container {
   id?: string;
   isHero: boolean;
   roomName: string;
+  charClass?: CharClass;
   room: Room;
   action: string;
   direction: string;
@@ -124,8 +125,11 @@ interface Character extends Phaser.GameObjects.Container {
   calculateDamage(victim: any);
   calculateStats(): void;
   modifyStat(key: string, amount: number);
+  assignExp(amount: integer): boolean;
   setDead();
 }
+
+type CharClass = "warrior" | "rogue" | "mage" | "cleric";
 
 interface KeeperData {
   dialogues?: any;
@@ -195,6 +199,7 @@ interface CharacterState {
   inventory: any;
   profile: any;
   kind: string;
+  charClass: CharClass;
   gold: integer;
 }
 

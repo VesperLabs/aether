@@ -59,6 +59,7 @@ function getCharacterState(p: Character): CharacterState {
     inventory: p?.inventory,
     profile: p?.profile,
     kind: p?.kind,
+    charClass: p?.charClass,
     gold: p?.gold,
   };
 }

@@ -17,7 +17,7 @@ class ServerCharacter extends Character {
     let ns = cloneObject(this.baseStats);
     let setList = {};
     let activeSets = [];
-    this.stats = { hp: 0, mp: 0, exp: 0 };
+    this.stats = Object.keys(this?.stats)?.length ? this.stats : { hp: 0, mp: 0, exp: 0 };
     /* Normal equipment Stats */
     Object.keys(equipment).forEach((eKey) => {
       if (equipment[eKey]) {
@@ -227,6 +227,27 @@ class ServerCharacter extends Character {
         this.modifyStat("hp", this.stats.regenMp);
       }
     }
+  }
+  assignExp(amount: integer): boolean {
+    let didLevel = false;
+    this.stats.exp += amount;
+    while (this.stats.exp >= this.baseStats.maxExp) {
+      let trailingExp = this.stats.exp - this.baseStats.maxExp;
+      this.stats.exp = trailingExp;
+      this.baseStats.maxExp = Math.floor(this.baseStats.maxExp * 1.4);
+      if (this.charClass == "warrior") this.baseStats.strength += 1;
+      else if (this.charClass == "rogue") this.baseStats.dexterity += 1;
+      else if (this.charClass == "mage") this.baseStats.intelligence += 1;
+      else if (this.charClass == "cleric") this.baseStats.vitality += 1;
+      this.baseStats.strength += 1;
+      this.baseStats.dexterity += 1;
+      this.baseStats.intelligence += 1;
+      this.baseStats.vitality += 1;
+      this.baseStats.level++;
+      didLevel = true;
+    }
+    this.calculateStats();
+    return didLevel;
   }
 }
 

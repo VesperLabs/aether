@@ -6,6 +6,7 @@ class Character extends Phaser.GameObjects.Container {
   id: string;
   isHero: boolean;
   roomName: string;
+  charClass?: CharClass;
   room: Room;
   action: string;
   direction: string;
@@ -40,8 +41,10 @@ class Character extends Phaser.GameObjects.Container {
       direction,
       state = {},
       gold = 0,
+      charClass,
     } = args;
     super(scene, x, y, []);
+    this.charClass = charClass;
     this.startingCoords = { x, y };
     this.socketId = socketId;
     this.id = id;
