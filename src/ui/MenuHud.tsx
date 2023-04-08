@@ -31,6 +31,7 @@ const Bar = ({
   return (
     <Box
       data-tooltip-id="hud"
+      data-tooltip-place="bottom"
       sx={{
         position: "relative",
         overflow: "hidden",
