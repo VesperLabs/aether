@@ -70,7 +70,7 @@ const MenuStats = () => {
             <Text>Armor Pierce</Text>
             <Text>{stats?.armorPierce}</Text>
             <Text>Walk Speed</Text>
-            <Text>{stats?.speed}</Text>
+            <Text>{Math.round(stats?.speed)}</Text>
             <Text>Cast Speed</Text>
             <Text>{stats?.castDelay}</Text>
             <Text>Attack Delay</Text>
