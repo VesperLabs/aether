@@ -42,7 +42,9 @@ const MenuStats = () => {
       }}
     >
       <Flex sx={{ flexWrap: "wrap", justifyContent: "end", gap: 2, flex: 1 }}>
-        <MenuHeader onClick={() => setTabStats(false)}>Stats</MenuHeader>
+        <MenuHeader icon="book" onClick={() => setTabStats(false)}>
+          Stats
+        </MenuHeader>
         <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", width: 592 }}>
           <Grid sx={COLUMN_STYLES}>
             <Text>Strength</Text>

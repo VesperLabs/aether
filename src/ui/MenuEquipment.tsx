@@ -19,7 +19,9 @@ const MenuEquipment = () => {
         },
       }}
     >
-      <MenuHeader onClick={() => setTabEquipment(false)}>Equipment</MenuHeader>
+      <MenuHeader icon="helmet" onClick={() => setTabEquipment(false)}>
+        Equipment
+      </MenuHeader>
       <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", maxWidth: 592 }}>
         {equipment?.map(([slotKey, item]) => (
           <Slot

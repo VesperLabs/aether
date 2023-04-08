@@ -20,7 +20,9 @@ const MenuInventory = () => {
       }}
     >
       <Flex sx={{ flexWrap: "wrap", justifyContent: "end", gap: 2, flex: 1 }}>
-        <MenuHeader onClick={() => setTabInventory(false)}>Inventory</MenuHeader>
+        <MenuHeader icon="bag" onClick={() => setTabInventory(false)}>
+          Inventory
+        </MenuHeader>
         <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", maxWidth: 592 }}>
           {maxInventory?.map((item, idx) => (
             <Slot

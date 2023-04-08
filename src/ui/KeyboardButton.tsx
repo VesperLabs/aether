@@ -27,6 +27,7 @@ const KeeperButton: FC<KeyboardButtonProps> = ({
       sx={{
         gap: 1,
         justifyContent: "center",
+        alignItems: "center",
         ...sx,
       }}
       variant={variant}

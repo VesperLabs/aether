@@ -388,7 +388,7 @@ const MenuBar = () => {
         </MenuButton>
         <MenuButton
           keyboardKey="S"
-          iconName="mirror"
+          iconName="book"
           isActive={tabStats}
           onClick={() => setTabStats((prev) => !prev)}
         />

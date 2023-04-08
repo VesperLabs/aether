@@ -40,7 +40,9 @@ const MenuProfile = () => {
         },
       }}
     >
-      <MenuHeader onClick={() => setTabProfile(false)}>Profile</MenuHeader>
+      <MenuHeader icon="mirror" onClick={() => setTabProfile(false)}>
+        Profile
+      </MenuHeader>
       <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", width: 592 }}>
         <Flex sx={{ gap: 1 }}>
           <Flex sx={{ flexDirection: "column", gap: 1, alignItems: "center" }}>

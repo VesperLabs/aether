@@ -54,9 +54,6 @@ const MenuKeeper = () => {
                 <KeyboardButton keyboardKey="Q" onClick={() => setTab("quests")} active={tabQuests}>
                   Quests
                 </KeyboardButton>
-                <KeyboardButton keyboardKey="C" onClick={() => setTabKeeper(false)} active={true}>
-                  Close
-                </KeyboardButton>
               </Flex>
             )}
           </Flex>
