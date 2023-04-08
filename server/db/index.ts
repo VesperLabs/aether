@@ -47,6 +47,7 @@ const getDatabaseApi = (db) => ({
         { email: player?.email },
         {
           $set: {
+            charClass: player?.charClass,
             x: player?.x,
             y: player?.y,
             //quests: user.quests,
