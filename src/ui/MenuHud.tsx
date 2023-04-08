@@ -68,27 +68,6 @@ const MenuHud = () => {
   return (
     <Box sx={{ top: 2, left: 2, position: "absolute" }}>
       <Tooltip id="hud" style={TOOLTIP_STYLE} />
-      <Box
-        data-tooltip-id="hud"
-        data-tooltip-content={`Level ${stats?.level} ${hero?.charClass} `}
-        sx={{
-          textTransform: "capitalize",
-          bg: "black",
-          position: "absolute",
-          borderRadius: 12,
-          minWidth: 20,
-          textAlign: "center",
-          zIndex: 100,
-          fontSize: 0,
-          top: 42,
-          left: 36,
-          pointerEvents: "all",
-          border: (t) => `1px solid rgba(255,255,255,.85)`,
-          boxShadow: `0px 0px 0px 1px #000`,
-        }}
-      >
-        {stats?.level}
-      </Box>
       <Flex sx={{ gap: 1 }}>
         <Portrait user={hero} filterKeys={["boots", "pants"]} />
         <Flex sx={{ flexDirection: "column", gap: "1px", pointerEvents: "all" }}>
@@ -114,6 +93,27 @@ const MenuHud = () => {
             showText={false}
           />
         </Flex>
+        <Box
+          data-tooltip-place="bottom"
+          data-tooltip-id="hud"
+          data-tooltip-content={`Level ${stats?.level} ${hero?.charClass} `}
+          sx={{
+            textTransform: "capitalize",
+            bg: "black",
+            position: "absolute",
+            borderRadius: 12,
+            minWidth: 20,
+            textAlign: "center",
+            fontSize: 0,
+            top: 42,
+            left: 36,
+            pointerEvents: "all",
+            border: (t) => `1px solid rgba(255,255,255,.85)`,
+            boxShadow: `0px 0px 0px 1px #000`,
+          }}
+        >
+          {stats?.level}
+        </Box>
       </Flex>
     </Box>
   );
