@@ -63,6 +63,15 @@ export default {
     },
   },
   buttons: {
+    header: {
+      flex: 1,
+      maxWidth: 592,
+      borderRadius: 4,
+      py: 1,
+      px: 2,
+      filter: "grayscale(100%)",
+      backgroundColor: "shadow.30",
+    },
     menu: {
       borderRadius: 4,
       padding: 1,

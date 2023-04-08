@@ -85,7 +85,7 @@ export const baseUser = {
     accuracy: 0,
     attackDelay: 100,
     spellDamage: 0,
-    castSpeed: 1000,
+    castDelay: 1000,
     armorPierce: 0,
     dexterity: 20,
     strength: 1,

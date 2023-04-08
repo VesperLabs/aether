@@ -21,6 +21,7 @@ export { default as Portrait } from "./Portrait";
 export { default as MenuKeeper } from "./MenuKeeper";
 export { default as MenuProfile } from "./MenuProfile";
 export { default as MenuHud } from "./MenuHud";
+export { default as MenuStats } from "./MenuStats";
 export { default as KeyboardKey } from "./KeyboardKey";
 export { default as Modal } from "./Modal";
 export { default as Input } from "./Input";

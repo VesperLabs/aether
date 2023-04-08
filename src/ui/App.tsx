@@ -17,6 +17,7 @@ import {
   MessageBox,
   MenuButton,
   MenuProfile,
+  MenuStats,
 } from "./";
 import { isMobile, getSpinDirection } from "../utils";
 import "react-tooltip/dist/react-tooltip.css";
@@ -36,6 +37,7 @@ interface AppContextValue {
   setKeeper: React.Dispatch<React.SetStateAction<undefined>>;
   setTabChat: React.Dispatch<React.SetStateAction<boolean>>;
   setTabProfile: React.Dispatch<React.SetStateAction<boolean>>;
+  setTabStats: React.Dispatch<React.SetStateAction<boolean>>;
   setDropItem: React.Dispatch<React.SetStateAction<Item | null | false>>;
   messages: Message[];
   bottomOffset: number;
@@ -44,6 +46,7 @@ interface AppContextValue {
   tabInventory: boolean;
   tabChat: boolean;
   tabProfile: boolean;
+  tabStats: boolean;
   keeper: any; // data related to NPC you are chatting with
   tabKeeper: boolean;
   hero: CharacterState;
@@ -69,6 +72,7 @@ function App({ socket, debug, game }) {
   const [tabInventory, setTabInventory] = useState(false);
   const [tabChat, setTabChat] = useState(false);
   const [tabProfile, setTabProfile] = useState(false);
+  const [tabStats, setTabStats] = useState(false);
   const [showButtonChat, setShowButtonChat] = useState(false);
   const [bottomOffset, setBottomOffset] = useState(0);
 
@@ -207,6 +211,8 @@ function App({ socket, debug, game }) {
           setTabChat,
           setDropItem,
           setTabProfile,
+          setTabStats,
+          tabStats,
           messages,
           bottomOffset,
           dropItem,
@@ -304,6 +310,8 @@ const MenuBar = () => {
     setDropItem,
     tabProfile,
     setTabProfile,
+    tabStats,
+    setTabStats,
     bottomOffset,
     socket,
   } = useAppContext();
@@ -328,6 +336,7 @@ const MenuBar = () => {
       <MenuEquipment />
       <MenuInventory />
       <MenuProfile />
+      <MenuStats />
       <Flex
         sx={{
           gap: 1,
@@ -379,6 +388,12 @@ const MenuBar = () => {
           )}
         </MenuButton>
         <MenuButton
+          keyboardKey="S"
+          iconName="mirror"
+          isActive={tabStats}
+          onClick={() => setTabStats((prev) => !prev)}
+        />
+        <MenuButton
           keyboardKey="P"
           iconName="mirror"
           isActive={tabProfile}
@@ -397,7 +412,7 @@ const MenuBar = () => {
           onClick={() => setTabInventory((prev) => !prev)}
         />
         <KeyboardKey
-          key={`esc-${tabChat}-${dropItem}-${tabEquipment}-${tabInventory}-${tabKeeper}-${tabProfile}`}
+          key={`esc-${tabChat}-${dropItem}-${tabEquipment}-${tabInventory}-${tabKeeper}-${tabProfile}-${tabStats}`}
           name={"ESCAPE"}
           hidden={true}
           onKeyUp={(e) => {
@@ -405,6 +420,7 @@ const MenuBar = () => {
             if (tabKeeper) return setTabKeeper(false);
             if (tabEquipment) return setTabEquipment(false);
             if (tabInventory) return setTabInventory(false);
+            if (tabStats) return setTabStats(false);
             if (tabProfile) return setTabProfile(false);
             if (tabChat) return setTabChat(false);
           }}

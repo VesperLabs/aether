@@ -8,6 +8,7 @@ interface KeyboardButtonProps {
   active?: boolean;
   children?: React.ReactNode;
   showOnly?: boolean;
+  variant?: "wood" | "header";
   sx?: object;
 }
 
@@ -17,6 +18,7 @@ const KeeperButton: FC<KeyboardButtonProps> = ({
   children,
   active,
   showOnly,
+  variant = "wood",
   sx,
   ...props
 }) => {
@@ -27,7 +29,7 @@ const KeeperButton: FC<KeyboardButtonProps> = ({
         justifyContent: "center",
         ...sx,
       }}
-      variant="wood"
+      variant={variant}
       onClick={onClick}
       {...props}
     >

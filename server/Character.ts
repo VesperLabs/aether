@@ -115,8 +115,8 @@ class ServerCharacter extends Character {
     ns.attackDelay = ns.attackDelay || 0;
     ns.spellDamage = ns.spellDamage || 0;
     ns.attackDelay = 1 - Math.floor(ns.dexterity * 0.5) + ns.attackDelay;
-    ns.castSpeed = ns.castSpeed || 1000;
-    ns.castSpeed = 1 - Math.floor(ns.intelligence * 0.5) + ns.castSpeed;
+    ns.castDelay = ns.castDelay || 1000;
+    ns.castDelay = 1 - Math.floor(ns.intelligence * 0.5) + ns.castDelay;
     ns.spellDamage = ns.spellDamage + Math.floor(ns.intelligence / 10);
     ns.accuracy = ns.accuracy;
     ns.regenHp = ns.regenHp + Math.floor(ns.vitality / 10);
