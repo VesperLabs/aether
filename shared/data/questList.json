@@ -45,7 +45,7 @@
     "dialogues": {
       "description": "<strong>Slay (3) Raccoons</strong> and report back to me."
     },
-    "objective": { "type": "bounty", "target": "raccoon", "amount": 3 },
+    "objectives": [{ "type": "bounty", "target": "raccoon", "amount": 3 }],
     "rewards": {
       "exp": 40,
       "gold": 10,
@@ -57,7 +57,7 @@
     "dialogues": {
       "description": "<strong>Gather (3) Grapes</strong> from <Strong>Raccoons</strong> and report back to me."
     },
-    "objective": { "type": "item", "target": ["stackable", "common", "grapes"], "amount": 3 },
+    "objectives": [{ "type": "item", "target": ["stackable", "common", "grapes"], "amount": 3 }],
     "rewards": {
       "exp": 40,
       "gold": 20
@@ -68,7 +68,7 @@
     "dialogues": {
       "description": "There is one hornet in this part of the woods that needs to be dealt with. <strong>Slay Hawing</strong>."
     },
-    "objective": { "type": "bounty", "target": "hawkwing", "amount": 1 },
+    "objectives": [{ "type": "bounty", "target": "hawkwing", "amount": 1 }],
     "rewards": {
       "exp": 40,
       "gold": 20,
@@ -80,11 +80,13 @@
     "dialogues": {
       "description": "<strong>Gather (3) Spider Meats</strong> from <Strong>Spiders</strong> and report back to me."
     },
-    "objective": {
-      "type": "item",
-      "target": ["stackable", "common", "spiderMeat"],
-      "amount": 3
-    },
+    "objectives": [
+      {
+        "type": "item",
+        "target": ["stackable", "common", "spiderMeat"],
+        "amount": 3
+      }
+    ],
     "rewards": {
       "exp": 60,
       "gold": 20
@@ -95,7 +97,7 @@
     "dialogues": {
       "description": "<strong>Gather (3) Bat Meats</strong> from <Strong>Bats</strong> and report back to me."
     },
-    "objective": { "type": "item", "target": ["stackable", "common", "batMeat"], "amount": 3 },
+    "objectives": [{ "type": "item", "target": ["stackable", "common", "batMeat"], "amount": 3 }],
     "rewards": {
       "exp": 60,
       "gold": 20
@@ -106,7 +108,7 @@
     "dialogues": {
       "description": "<strong>Gather (3) Cheese</strong> from <Strong>Bats and Spiders</strong> and report back to me."
     },
-    "objective": { "type": "item", "target": ["stackable", "common", "cheese"], "amount": 3 },
+    "objectives": [{ "type": "item", "target": ["stackable", "common", "cheese"], "amount": 3 }],
     "rewards": {
       "exp": 60,
       "gold": 20
@@ -129,7 +131,7 @@
     "dialogues": {
       "description": "The graveyard is just north of town. <strong>Gather (3) Skulls</strong> from the <strong>Wraiths and Zombies</strong> there."
     },
-    "objective": { "type": "item", "target": ["stackable", "common", "skull"], "amount": 3 },
+    "objectives": [{ "type": "item", "target": ["stackable", "common", "skull"], "amount": 3 }],
     "rewards": {
       "exp": 120,
       "gold": 30
@@ -140,7 +142,7 @@
     "dialogues": {
       "description": "Travel north to the graveyard and <strong>Slay Chonks</strong>."
     },
-    "objective": { "type": "bounty", "target": "chonks", "amount": 1 },
+    "objectives": [{ "type": "bounty", "target": "chonks", "amount": 1 }],
     "rewards": {
       "exp": 120,
       "gold": 30

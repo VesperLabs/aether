@@ -1,4 +1,3 @@
-import React from "react";
 import { Box, useAppContext, Flex, TOOLTIP_STYLE, Portrait } from "./";
 import { Tooltip } from "react-tooltip";
 

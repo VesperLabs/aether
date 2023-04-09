@@ -213,7 +213,7 @@ interface RoomState {
 interface Quest {
   id: string;
   name: string;
-  description: string;
-  reward: number;
-  completed: boolean;
+  dialogues: any;
+  rewards: Record<string, any>;
+  objectives: Array<any>;
 }

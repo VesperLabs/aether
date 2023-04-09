@@ -1,5 +1,14 @@
 import React, { useState, useRef, useLayoutEffect } from "react";
-import { Box, Icon, ItemTooltip, SLOT_SIZE, STYLE_SLOT_EMPTY } from "./";
+import {
+  Box,
+  Icon,
+  ItemTooltip,
+  SLOT_SIZE,
+  STYLE_SLOT_EMPTY,
+  STYLE_NON_EMPTY,
+  BLANK_IMAGE,
+  SlotAmount,
+} from "./";
 import { resolveAsset } from "../../shared/Assets";
 import { useAppContext } from "./App";
 import { isMobile, trimCanvas, tintCanvas } from "../utils";
@@ -15,14 +24,6 @@ type SlotProps = {
   stock?: integer;
   disabled?: boolean;
 };
-
-const STYLE_NON_EMPTY = (rarity) => ({
-  borderRadius: 2,
-  border: (t) => `1px solid ${t.colors[rarity]}`,
-  background: (t) => `radial-gradient(circle, ${t.colors[rarity]} 0%, ${t.colors.shadow[50]} 150%)`,
-});
-const BLANK_IMAGE =
-  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 
 const Slot = React.memo(
   ({
@@ -200,7 +201,6 @@ const Slot = React.memo(
         sx={{
           touchAction: "none",
           userSelect: "none",
-
           pointerEvents: "all",
           overflow: dragging ? "visible" : "hidden",
           width: size,
@@ -217,19 +217,7 @@ const Slot = React.memo(
       >
         {item && (
           <>
-            {item?.amount > 1 && (
-              <Box
-                sx={{
-                  position: "absolute",
-                  mt: `1px`,
-                  ml: `2px`,
-                  fontSize: 0,
-                  zIndex: 2,
-                }}
-              >
-                {item?.amount}
-              </Box>
-            )}
+            {item?.amount > 1 && <SlotAmount>{item?.amount}</SlotAmount>}
             <Icon
               ref={imageRef}
               icon={aboutToSell ? "../assets/icons/gold.png" : imageData}
