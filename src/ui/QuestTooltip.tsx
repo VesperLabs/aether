@@ -60,11 +60,11 @@ const QuestTooltip = ({ quest, show }: { quest: Quest; show: boolean }) => {
             </Box>
           )}
         </Flex>
-        <Divider />
+        {/* <Divider />
         <Flex sx={{ gap: 1 }}>
           <Button variant="wood">Cancel</Button>
           <Button variant="wood">Accept</Button>
-        </Flex>
+        </Flex> */}
       </Flex>
     </Tooltip>
   );

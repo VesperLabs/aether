@@ -31,8 +31,16 @@ const Quest = ({ quest }: { quest: Quest }) => {
   const isOpen = hovering;
 
   return (
-    <Box sx={BASE_SLOT_STYLE} data-tooltip-id={`tooltip-quest-${quest?.id}`} {...outerMouseBinds}>
-      <Box sx={{ position: "relative", overflow: "hidden", width: SLOT_SIZE, height: SLOT_SIZE }}>
+    <Box sx={BASE_SLOT_STYLE} {...outerMouseBinds}>
+      <Box
+        data-tooltip-id={`tooltip-quest-${quest?.id}`}
+        sx={{
+          position: "relative",
+          overflow: isOpen ? "visible" : "hidden",
+          width: SLOT_SIZE,
+          height: SLOT_SIZE,
+        }}
+      >
         <Icon icon={icon} sx={{ width: "100%", height: "100%", transform: "scale(2)" }} />
       </Box>
       <QuestTooltip quest={quest} show={isOpen} />
