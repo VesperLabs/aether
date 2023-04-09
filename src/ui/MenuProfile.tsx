@@ -44,7 +44,15 @@ const MenuProfile = () => {
         Profile
       </MenuHeader>
       <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", width: 592 }}>
-        <Flex sx={{ flex: 1, justifyContent: "center", gap: 2, alignItems: "center" }}>
+        <Flex
+          sx={{
+            flex: 1,
+            justifyContent: "center",
+            gap: 2,
+            alignItems: "center",
+            flexDirection: ["column", "row", "row"],
+          }}
+        >
           <Portrait
             scale={4}
             user={hero}
@@ -53,7 +61,7 @@ const MenuProfile = () => {
             filterKeys={["accessory", "helmet", "boots"]}
           />
           <Input
-            sx={{ width: 150, fontSize: 3 }}
+            sx={{ width: 150, fontSize: 4 }}
             defaultValue={hero?.profile?.userName}
             onBlur={(e) => {
               /* Hack to send if `Done` button is pushed */
