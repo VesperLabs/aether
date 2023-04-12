@@ -122,6 +122,7 @@ interface Character extends Phaser.GameObjects.Container {
   inventory: any;
   baseStats: any;
   stats: any;
+  quests: Array<PlayerQuest>;
   calculateDamage(victim: any);
   calculateStats(): void;
   modifyStat(key: string, amount: number);
@@ -142,10 +143,12 @@ interface Npc extends Character {
   talkingIds: Array<string>;
   keeperData: KeeperData;
   setDead(): void;
+  dropLoot(magicFind: number): void;
 }
 
 interface Player extends Character {
   email?: string;
+  addQuest(quest: Quest): void;
   findEquipmentById(id: string): Slot;
   clearEquipmentSlot(id: string): void;
   subtractInventoryItemAtId(id: string, amount: integer);
@@ -154,6 +157,7 @@ interface Player extends Character {
   addInventoryItem(item: Item): void;
   setDead(): void;
   isInventoryFull(): boolean;
+  addNpcKill(npc: Npc): void;
 }
 
 interface MapAsset {
@@ -200,6 +204,8 @@ interface CharacterState {
   profile: any;
   kind: string;
   charClass: CharClass;
+  npcKills: Record<string, integer>;
+  quests: Array<PlayerQuest>;
   gold: integer;
 }
 
@@ -215,5 +221,14 @@ interface Quest {
   name: string;
   dialogues: any;
   rewards: Record<string, any>;
-  objectives: Array<any>;
+  objectives: Array<QuestObjective>;
+}
+interface PlayerQuest {
+  id: string;
+  isCompleted?: boolean;
+}
+interface QuestObjective {
+  type: string;
+  target: Array<string> | string;
+  amount: integer;
 }

@@ -25,6 +25,7 @@ class NpcManager {
       const mobData = mobsByKind[npc.kind][npc.name];
       this.create({
         ...mobData,
+        name: npc.name,
         room,
         kind: npc?.kind,
         x: npc?.x,

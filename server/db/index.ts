@@ -50,7 +50,7 @@ const getDatabaseApi = (db) => ({
             charClass: player?.charClass,
             x: player?.x,
             y: player?.y,
-            //quests: user.quests,
+            quests: player?.quests,
             profile: player?.profile,
             direction: player?.direction,
             gold: player.gold,
@@ -112,6 +112,7 @@ export const baseUser = {
   },
   gold: 100,
   direction: "down",
+  quests: [],
   equipment: {
     handRight: ItemBuilder.buildItem("weapon", "set", "hawkwingsPincher"),
     handLeft: ItemBuilder.buildItem("weapon", "set", "hawkwingsTickler"),

@@ -21,6 +21,8 @@ class Character extends Phaser.GameObjects.Container {
   inventory: any;
   baseStats: any;
   stats: any;
+  npcKills: Record<string, number>;
+  quests: Array<PlayerQuest>;
   declare body: Phaser.Physics.Arcade.Body;
   declare state: any;
   constructor(scene: ServerScene | Phaser.Scene, args) {
@@ -42,6 +44,8 @@ class Character extends Phaser.GameObjects.Container {
       state = {},
       gold = 0,
       charClass,
+      npcKills = {},
+      quests = {},
     } = args;
     super(scene, x, y, []);
     this.charClass = charClass;
@@ -85,6 +89,8 @@ class Character extends Phaser.GameObjects.Container {
     this.inventory = inventory;
     this.baseStats = baseStats;
     this.stats = stats;
+    this.npcKills = npcKills;
+    this.quests = quests;
     scene.physics.add.existing(this);
     const bodySize = 8 * (this?.profile?.scale || 1);
     this.body.setCircle(bodySize, -bodySize, -bodySize);

@@ -9,10 +9,22 @@ import {
   SlotAmount,
   STYLE_NON_EMPTY,
   Button,
+  useAppContext,
 } from "./";
 import { Tooltip } from "react-tooltip";
 
-const QuestTooltip = ({ quest, show }: { quest: Quest; show: boolean }) => {
+const QuestTooltip = ({
+  quest,
+  show,
+  playerQuest,
+  setShow,
+}: {
+  quest: Quest;
+  show: boolean;
+  setShow;
+  playerQuest: PlayerQuest;
+}) => {
+  const { socket } = useAppContext();
   const { rewards } = quest ?? {};
   return (
     <Tooltip
@@ -60,11 +72,19 @@ const QuestTooltip = ({ quest, show }: { quest: Quest; show: boolean }) => {
             </Box>
           )}
         </Flex>
-        {/* <Divider />
+        <Divider />
         <Flex sx={{ gap: 1 }}>
-          <Button variant="wood">Cancel</Button>
-          <Button variant="wood">Accept</Button>
-        </Flex> */}
+          <Button variant="wood" onClick={() => setShow(false)}>
+            Cancel
+          </Button>
+          {playerQuest ? (
+            <Button variant="wood">In Progress</Button>
+          ) : (
+            <Button variant="wood" onClick={() => socket.emit("acceptQuest", quest?.id)}>
+              Accept
+            </Button>
+          )}
+        </Flex>
       </Flex>
     </Tooltip>
   );

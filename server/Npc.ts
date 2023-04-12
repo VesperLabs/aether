@@ -32,16 +32,22 @@ class Npc extends Character implements Npc {
   public drops: Array<Drop>;
   public talkingIds: Array<string>;
   public keeperData: KeeperData;
-
+  declare name: string;
   constructor(
     scene: ServerScene,
     {
       equipment = {},
       keeperData = {},
       ...args
-    }: { equipment: Record<string, Array<string>>; keeperData: KeeperData; drops: Array<Drop> }
+    }: {
+      name: string;
+      equipment: Record<string, Array<string>>;
+      keeperData: KeeperData;
+      drops: Array<Drop>;
+    }
   ) {
     super(scene, args);
+    this.name = args?.name;
     this.scene = scene;
     this.state.isRobot = true;
     this.respawnTime = 10000;

@@ -86,6 +86,14 @@ const userSchema = {
       bsonType: "number",
       description: "must be a number",
     },
+    npcKills: {
+      bsonType: "object",
+      description: "must be an object",
+    },
+    quests: {
+      bsonType: "array",
+      description: "must be an array",
+    },
   },
 };
 

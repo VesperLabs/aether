@@ -10,6 +10,13 @@ class Player extends ServerCharacter implements Player {
   setDead() {
     this.state.isDead = true;
   }
+  addNpcKill(npc: Npc) {
+    this.npcKills[npc.name] = this?.npcKills?.[npc?.name] + 1 || 1;
+  }
+  addQuest(quest: Quest) {
+    if (this.quests.find((q) => q?.id === quest?.id)) return;
+    this.quests.push({ id: quest?.id, isCompleted: false });
+  }
   findEquipmentById(id: string): any {
     const [slotName, foundItem] = Object.entries(this?.equipment).find(
       ([_, slotItem]: [string, Item]) => slotItem?.id === id

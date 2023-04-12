@@ -160,13 +160,15 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       });
 
       socket.on("hit", ({ ids, spellName }) => {
-        const hero = scene.players[socketId];
-        const roomName = hero?.roomName;
-        let didLevel = false;
+        const hero: Player = scene.players[socketId];
+        const roomName: string = hero?.roomName;
+        let didLevel: boolean = false;
         /* Create hitList for npcs */
         const hitList: Array<Hit> = [];
-        const npcs = scene.roomManager.rooms[roomName]?.npcManager?.getNpcs();
-        const players = scene.roomManager.rooms[roomName]?.playerManager?.getPlayers();
+        const npcs: Array<Npc> = scene.roomManager.rooms[roomName]?.npcManager?.getNpcs();
+        const players: Array<Player> =
+          scene.roomManager.rooms[roomName]?.playerManager?.getPlayers();
+
         for (const npc of npcs) {
           /* TODO: verify location of hit before we consider it a hit */
           if (!ids?.includes(npc.id)) continue;
@@ -176,6 +178,8 @@ class ServerScene extends Phaser.Scene implements ServerScene {
             npc.dropLoot(hero?.stats?.magicFind);
             /* Add EXP, check if we leveled */
             didLevel = hero.assignExp(npc?.stats?.expValue || 0);
+            /* Add the npc to the players kill list */
+            hero.addNpcKill(npc);
           }
           if (newHit) hitList.push(newHit);
         }
@@ -435,6 +439,19 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           message: args?.message,
         };
         io.to(player?.roomName).emit("message", message);
+      });
+
+      socket.on("acceptQuest", (questId: string) => {
+        const player: Player = scene?.players?.[socketId];
+        const npcId = player?.state?.targetNpcId;
+        const quests = scene?.npcs?.[npcId]?.keeperData?.quests;
+        const currentQuest = quests?.find((q: Quest) => q?.id === questId);
+        if (!player?.quests?.find((q: PlayerQuest) => q?.id === questId)) {
+          player?.addQuest(currentQuest);
+          /* Save the users data */
+          scene.db.updateUser(player);
+          io.to(player?.roomName).emit("playerUpdate", getCharacterState(player));
+        }
       });
 
       socket.on("updateProfile", (args) => {

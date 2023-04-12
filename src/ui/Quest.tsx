@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Box, Icon, BASE_SLOT_STYLE, SLOT_SIZE, QuestTooltip } from "./";
 import { Tooltip } from "react-tooltip";
 
-const Quest = ({ quest }: { quest: Quest }) => {
-  const { rewards, objectives } = quest ?? {};
+const Quest = ({ quest, playerQuest }: { quest: Quest; playerQuest: PlayerQuest }) => {
+  const { objectives } = quest ?? {};
   const [hovering, setHovering] = useState(false);
   const isBounty = objectives?.some((objective) => objective?.type === "bounty");
   const isItem = objectives?.some((objective) => objective?.type === "item");
@@ -28,22 +28,20 @@ const Quest = ({ quest }: { quest: Quest }) => {
     onMouseLeave: handleMouseLeave,
   };
 
-  const isOpen = hovering;
-
   return (
     <Box sx={BASE_SLOT_STYLE} {...outerMouseBinds}>
       <Box
         data-tooltip-id={`tooltip-quest-${quest?.id}`}
         sx={{
           position: "relative",
-          overflow: isOpen ? "visible" : "hidden",
+          overflow: hovering ? "visible" : "hidden",
           width: SLOT_SIZE,
           height: SLOT_SIZE,
         }}
       >
         <Icon icon={icon} sx={{ width: "100%", height: "100%", transform: "scale(2)" }} />
       </Box>
-      <QuestTooltip quest={quest} show={isOpen} />
+      <QuestTooltip quest={quest} show={hovering} setShow={setHovering} playerQuest={playerQuest} />
     </Box>
   );
 };
