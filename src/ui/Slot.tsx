@@ -251,9 +251,10 @@ const Slot = React.memo(
     const prevItem = prevProps.item;
     const nextItem = nextProps.item;
     return (
-      prevItem?.id === nextItem?.id &&
-      prevItem?.amount === nextItem?.amount &&
-      prevItem?.stock === nextItem?.stock
+      prevItem === nextItem ||
+      (prevItem?.id === nextItem?.id &&
+        prevItem?.amount === nextItem?.amount &&
+        prevItem?.stock === nextItem?.stock)
     );
   }
 );
