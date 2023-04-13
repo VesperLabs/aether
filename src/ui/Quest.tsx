@@ -1,12 +1,15 @@
 import { useState } from "react";
-import { Box, Icon, BASE_SLOT_STYLE, SLOT_SIZE, QuestTooltip } from "./";
-import { Tooltip } from "react-tooltip";
+import { Box, Icon, BASE_SLOT_STYLE, SLOT_SIZE, QuestTooltip, useAppContext } from "./";
 
-const Quest = ({ quest, playerQuest }: { quest: Quest; playerQuest: PlayerQuest }) => {
+const Quest = ({ quest }: { quest: Quest }) => {
   const { objectives } = quest ?? {};
+  const { game } = useAppContext();
+  const scene = game?.scene?.getScene?.("SceneMain") as any;
+  const hero: Character = scene?.hero;
   const [hovering, setHovering] = useState(false);
   const isBounty = objectives?.some((objective) => objective?.type === "bounty");
   const isItem = objectives?.some((objective) => objective?.type === "item");
+  const playerQuest: PlayerQuest = hero.getPlayerQuestStatus(quest);
 
   let icon = "./assets/icons/chest.png";
   if (isBounty) {

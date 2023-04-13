@@ -1,5 +1,6 @@
 import ServerCharacter from "./Character";
 import { cloneObject } from "./utils";
+import ItemBuilder from "./ItemBuilder";
 /* Server level Player object */
 class Player extends ServerCharacter implements Player {
   public email: string;
@@ -14,8 +15,37 @@ class Player extends ServerCharacter implements Player {
     this.npcKills[npc.name] = this?.npcKills?.[npc?.name] + 1 || 1;
   }
   addQuest(quest: Quest) {
-    if (this.quests.find((q) => q?.id === quest?.id)) return;
-    this.quests.push({ id: quest?.id, isCompleted: false });
+    if (this.quests.find((q) => q?.questId === quest?.id)) return;
+    this.quests.push({ questId: quest?.id, isCompleted: false });
+  }
+  completeQuest(quest: Quest) {
+    const questItems = quest?.rewards?.items || [];
+    const foundQuest: PlayerQuest = this.getPlayerQuestStatus(quest);
+    if (!foundQuest?.isReady) return false;
+
+    let inventoryFull = false; // Add a variable to track if the inventory is full
+
+    for (const item of questItems) {
+      if (!item) continue;
+      // Check if the inventory is already full before creating a new item
+      // TODO: If we ever give out stackables, we need to modify how this checks
+      if (this.isInventoryFull()) {
+        inventoryFull = true;
+      } else {
+        this.addInventoryItem(item);
+      }
+    }
+
+    if (inventoryFull && questItems.length > 0) {
+      return false; // If the inventory is full, exit the loop and return false
+    }
+
+    this.assignExp(quest?.rewards?.exp);
+    this.gold += quest?.rewards?.gold;
+
+    this.quests.find((q) => q?.questId === quest?.id).isCompleted = true;
+
+    return true; // Return true if the quest is completed
   }
   findEquipmentById(id: string): any {
     const [slotName, foundItem] = Object.entries(this?.equipment).find(

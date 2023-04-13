@@ -54,6 +54,7 @@ const getDatabaseApi = (db) => ({
             profile: player?.profile,
             direction: player?.direction,
             gold: player.gold,
+            npcKills: player?.npcKills,
             //state: player.state,
             //spells: player.spells,
             stats: {

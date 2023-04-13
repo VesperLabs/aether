@@ -38,7 +38,7 @@ const QuestTooltip = ({
           alignItems: "center",
           justifyContent: "center",
           flexDirection: "column",
-          "&  strong": {
+          "& strong": {
             color: "set",
           },
         }}
@@ -77,16 +77,31 @@ const QuestTooltip = ({
           <Button variant="wood" onClick={() => setShow(false)}>
             Cancel
           </Button>
-          {playerQuest ? (
-            <Button variant="wood">In Progress</Button>
-          ) : (
-            <Button variant="wood" onClick={() => socket.emit("acceptQuest", quest?.id)}>
-              Accept
-            </Button>
-          )}
+          <QuestStatusButton playerQuest={playerQuest} quest={quest} socket={socket} />
         </Flex>
       </Flex>
     </Tooltip>
+  );
+};
+
+const QuestStatusButton = ({ playerQuest, quest, socket }) => {
+  if (playerQuest?.isCompleted) {
+    return <Button variant="wood">✅ Done</Button>;
+  }
+  if (playerQuest?.isReady) {
+    return (
+      <Button variant="wood" onClick={() => socket.emit("completeQuest", quest?.id)}>
+        Turn In
+      </Button>
+    );
+  }
+  if (playerQuest) {
+    return <Button variant="wood">In Progress</Button>;
+  }
+  return (
+    <Button variant="wood" onClick={() => socket.emit("acceptQuest", quest?.id)}>
+      Accept
+    </Button>
   );
 };
 

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Flex, Text, useAppContext, MenuHeader, Portrait, Slot, KeyboardButton, Quest } from "./";
 
 const MenuKeeper = () => {
-  const { keeper, tabKeeper, setTabKeeper, hero } = useAppContext();
+  const { keeper, tabKeeper, setTabKeeper } = useAppContext();
   const [tab, setTab] = useState("greet");
   const { dialogues, shop, quests } = keeper?.keeperData ?? {};
 
@@ -24,7 +24,6 @@ const MenuKeeper = () => {
         justifyContent: "end",
         bg: "shadow.30",
         pointerEvents: "all",
-        display: tabKeeper ? "flex" : "none",
         "&:hover": {
           zIndex: 999,
         },
@@ -85,8 +84,7 @@ const MenuKeeper = () => {
           }}
         >
           {quests?.map((quest: Quest, idx: string) => {
-            const heroQuest = hero?.quests?.find((q) => q.id === quest.id);
-            return <Quest key={idx} quest={quest} playerQuest={heroQuest} />;
+            return <Quest key={idx} quest={quest} />;
           })}
         </Flex>
       </Flex>

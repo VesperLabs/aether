@@ -140,6 +140,38 @@ class Character extends Phaser.GameObjects.Container {
     if (leftType === "weapon") this.state.hasWeaponLeft = true;
     if (this.state.hasWeaponRight || this.state.hasWeaponLeft) this.state.hasWeapon = true;
   }
+  getPlayerQuestStatus(quest: Quest) {
+    const playerQuest = this.quests.find((q) => q?.questId === quest?.id);
+    if (!playerQuest) return null;
+    /* Create PlayerQuestObjectives */
+    const objectives = quest.objectives.reduce((acc, objective) => {
+      let isReady = false;
+      /* Check if the player has enough kills of the target NPC */
+      if (objective?.type === "bounty") {
+        const npcKillCount = this.npcKills[objective?.target as string];
+        isReady = npcKillCount >= objective?.amount;
+      }
+      /* Check if the player has enough items of the target item */
+      if (objective?.type === "item") {
+        const item = this.inventory.find(
+          (i: Item) =>
+            i?.slot === objective?.target?.[0] &&
+            i?.rarity === objective?.target?.[1] &&
+            i?.key === objective?.target?.[2]
+        );
+        isReady = item?.amount >= objective?.amount;
+      }
+      /* Add the playerObjective to the list */
+      acc.push({ questId: objective?.questId, objectiveId: objective?.id, isReady });
+      return acc;
+    }, []);
+    return {
+      questId: quest?.id,
+      isReady: objectives?.every((o) => o?.isReady),
+      isCompleted: playerQuest?.isCompleted,
+      objectives,
+    };
+  }
   destroy() {
     if (this.scene) this.scene.events.off("update", this.update, this);
     if (this.scene) this.scene.physics.world.disable(this);

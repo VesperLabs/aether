@@ -88,8 +88,13 @@ function App({ socket, debug, game }) {
       setMessages((prev) => [...prev, payload]);
     };
 
-    const onPlayerJoin = () => {
-      setMessages((prev) => [...prev, { type: "info", message: "A player has joined the game." }]);
+    const onPlayerJoin = (_, args) => {
+      /* Only show player join message if the user logged in, not if entered door */
+      if (args?.isLogin)
+        setMessages((prev) => [
+          ...prev,
+          { type: "info", message: "A player has joined the game." },
+        ]);
     };
 
     const onHeroInit = (payload: { players: Array<CharacterState>; socketId: string }) => {
@@ -331,7 +336,7 @@ const MenuBar = () => {
         <MessageBox />
         <SkillButtons />
       </Flex>
-      <MenuKeeper />
+      {tabKeeper && <MenuKeeper />}
       <MenuEquipment />
       <MenuInventory />
       <MenuProfile />

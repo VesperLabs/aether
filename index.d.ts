@@ -128,6 +128,7 @@ interface Character extends Phaser.GameObjects.Container {
   modifyStat(key: string, amount: number);
   assignExp(amount: integer): boolean;
   setDead();
+  getPlayerQuestStatus(quest: Quest): PlayerQuest | null;
 }
 
 type CharClass = "warrior" | "rogue" | "mage" | "cleric";
@@ -149,6 +150,7 @@ interface Npc extends Character {
 interface Player extends Character {
   email?: string;
   addQuest(quest: Quest): void;
+  completeQuest(quest: Quest): void;
   findEquipmentById(id: string): Slot;
   clearEquipmentSlot(id: string): void;
   subtractInventoryItemAtId(id: string, amount: integer);
@@ -223,12 +225,23 @@ interface Quest {
   rewards: Record<string, any>;
   objectives: Array<QuestObjective>;
 }
-interface PlayerQuest {
-  id: string;
-  isCompleted?: boolean;
-}
+
 interface QuestObjective {
+  id: string;
+  questId: string;
   type: string;
   target: Array<string> | string;
   amount: integer;
+}
+interface PlayerQuest {
+  questId: string;
+  isCompleted?: boolean;
+  isReady?: boolean;
+  objectives?: Array<PlayerQuestObjective>;
+}
+
+interface PlayerQuestObjective {
+  objectiveId: string;
+  questId: string;
+  isReady?: boolean;
 }

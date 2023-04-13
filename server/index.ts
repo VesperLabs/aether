@@ -72,8 +72,8 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       const socketId = socket.id;
 
       socket.on("login", async (email = "arf@arf.arf") => {
-        const user = await scene.db.getUserByEmail(email);
-        //const user = cloneObject(baseUser);
+        //const user = await scene.db.getUserByEmail(email);
+        const user = cloneObject(baseUser);
         if (!user) return console.log("❌ Player not found in db");
 
         const player = scene.roomManager.rooms[user.roomName].playerManager.create({
@@ -94,7 +94,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           ...getRoomState(scene, roomName),
           socketId,
         });
-        socket.to(roomName).emit("playerJoin", getCharacterState(player));
+        socket.to(roomName).emit("playerJoin", getCharacterState(player), { isLogin: true });
       });
 
       socket.on("attack", ({ count, direction }) => {
@@ -213,7 +213,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         scene.roomManager.rooms[oldRoom].playerManager.remove(socketId);
         scene.roomManager.rooms[prev.destMap].playerManager.add(socketId);
 
-        socket.to(prev.destMap).emit("playerJoin", getCharacterState(player));
+        socket.to(prev.destMap).emit("playerJoin", getCharacterState(player), { isDoor: true });
 
         socket.emit("heroInit", {
           ...getRoomState(scene, prev.destMap),
@@ -446,8 +446,25 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         const npcId = player?.state?.targetNpcId;
         const quests = scene?.npcs?.[npcId]?.keeperData?.quests;
         const currentQuest = quests?.find((q: Quest) => q?.id === questId);
-        if (!player?.quests?.find((q: PlayerQuest) => q?.id === questId)) {
+        const foundQuest = player?.getPlayerQuestStatus(currentQuest);
+        /* If the quest wasnt there, we can accept it */
+        if (!foundQuest) {
           player?.addQuest(currentQuest);
+          /* Save the users data */
+          scene.db.updateUser(player);
+          io.to(player?.roomName).emit("playerUpdate", getCharacterState(player));
+        }
+      });
+
+      socket.on("completeQuest", (questId: string) => {
+        const player: Player = scene?.players?.[socketId];
+        const npcId = player?.state?.targetNpcId;
+        const quests = scene?.npcs?.[npcId]?.keeperData?.quests;
+        const currentQuest = quests?.find((q: Quest) => q?.id === questId);
+        const foundQuest = player?.getPlayerQuestStatus(currentQuest);
+        /* If the quest is ready, we turn it in */
+        if (foundQuest?.isReady) {
+          player?.completeQuest(currentQuest);
           /* Save the users data */
           scene.db.updateUser(player);
           io.to(player?.roomName).emit("playerUpdate", getCharacterState(player));
