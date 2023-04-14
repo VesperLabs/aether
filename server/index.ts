@@ -16,6 +16,7 @@ import {
   removePlayer,
   cloneObject,
   checkSlotsMatch,
+  SHOP_INFLATION,
 } from "./utils";
 import { initDatabase, baseUser } from "./db";
 import RoomManager from "./RoomManager";
@@ -72,8 +73,8 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       const socketId = socket.id;
 
       socket.on("login", async (email = "arf@arf.arf") => {
-        //const user = await scene.db.getUserByEmail(email);
-        const user = cloneObject(baseUser);
+        const user = await scene.db.getUserByEmail(email);
+        //const user = cloneObject(baseUser);
         if (!user) return console.log("❌ Player not found in db");
 
         const player = scene.roomManager.rooms[user.roomName].playerManager.create({
@@ -369,6 +370,8 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           /* Always need a free slot */
           if (toItem) return;
           player.gold -= fromItem?.cost || 1;
+          /* Remove inflation cost */
+          fromItem.cost = Math.floor(fromItem.cost / SHOP_INFLATION);
           player.inventory[to?.slot] = fromItem;
         }
 
@@ -464,10 +467,20 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         const foundQuest = player?.getPlayerQuestStatus(currentQuest);
         /* If the quest is ready, we turn it in */
         if (foundQuest?.isReady) {
-          player?.completeQuest(currentQuest);
+          const questResults = player?.completeQuest(currentQuest);
+          /* Quest failed */
+          if (questResults?.error) {
+            const message: Message = {
+              type: "error",
+              message: questResults.error,
+            };
+            return socket.emit("message", message);
+          }
           /* Save the users data */
           scene.db.updateUser(player);
-          io.to(player?.roomName).emit("playerUpdate", getCharacterState(player));
+          io.to(player?.roomName).emit("playerUpdate", getCharacterState(player), {
+            didLevel: questResults?.didLevel,
+          });
         }
       });
 

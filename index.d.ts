@@ -21,8 +21,8 @@ interface Item {
 }
 
 interface Message {
-  from: string;
-  type: "chat";
+  from?: string;
+  type: "chat" | "warning" | "error";
   message: string;
 }
 
@@ -150,7 +150,7 @@ interface Npc extends Character {
 interface Player extends Character {
   email?: string;
   addQuest(quest: Quest): void;
-  completeQuest(quest: Quest): void;
+  completeQuest(quest: Quest): any;
   findEquipmentById(id: string): Slot;
   clearEquipmentSlot(id: string): void;
   subtractInventoryItemAtId(id: string, amount: integer);

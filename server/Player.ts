@@ -37,15 +37,14 @@ class Player extends ServerCharacter implements Player {
     }
 
     if (inventoryFull && questItems.length > 0) {
-      return false; // If the inventory is full, exit the loop and return false
+      return { error: "Cannot turn in quest. Inventory is full" }; // If the inventory is full, exit the loop and return false
     }
 
-    this.assignExp(quest?.rewards?.exp);
+    const didLevel = this.assignExp(quest?.rewards?.exp);
     this.gold += quest?.rewards?.gold;
-
     this.quests.find((q) => q?.questId === quest?.id).isCompleted = true;
 
-    return true; // Return true if the quest is completed
+    return { didLevel };
   }
   findEquipmentById(id: string): any {
     const [slotName, foundItem] = Object.entries(this?.equipment).find(

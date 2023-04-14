@@ -1,7 +1,7 @@
 import Character from "./Character";
 import ItemBuilder from "./ItemBuilder";
 import QuestBuilder from "./QuestBuilder";
-import { getCharacterDirection, distanceTo, randomNumber } from "./utils";
+import { getCharacterDirection, distanceTo, randomNumber, SHOP_INFLATION } from "./utils";
 import crypto from "crypto";
 
 const START_AGGRO_RANGE = 150;
@@ -15,7 +15,9 @@ const buildEquipment = (equipment: Record<string, Array<string>>) =>
 const buildShop = (shop: Array<any>) => {
   return shop?.reduce((acc, entry) => {
     const id = crypto.randomUUID();
-    acc.push({ id, ...entry, item: ItemBuilder.buildItem(...entry.item) });
+    const item: Item | void = ItemBuilder.buildItem(...entry.item);
+    if (item) item.cost = Math.round(item.cost * SHOP_INFLATION);
+    acc.push({ id, ...entry, item });
     return acc;
   }, []);
 };

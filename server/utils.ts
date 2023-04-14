@@ -143,6 +143,8 @@ function checkSlotsMatch(s1, s2) {
   return false;
 }
 
+const SHOP_INFLATION = 2;
+
 export {
   removePlayer,
   getPlayer,
@@ -157,4 +159,5 @@ export {
   distanceTo,
   cloneObject,
   checkSlotsMatch,
+  SHOP_INFLATION,
 };
