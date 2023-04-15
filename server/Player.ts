@@ -20,10 +20,11 @@ class Player extends ServerCharacter implements Player {
   }
   completeQuest(quest: Quest) {
     const questItems = quest?.rewards?.items || [];
+    const objectives = quest?.objectives || [];
     const foundQuest: PlayerQuest = this.getPlayerQuestStatus(quest);
     if (!foundQuest?.isReady) return false;
 
-    let inventoryFull = false; // Add a variable to track if the inventory is full
+    let inventoryFull = false;
 
     for (const item of questItems) {
       if (!item) continue;
@@ -38,6 +39,16 @@ class Player extends ServerCharacter implements Player {
 
     if (inventoryFull && questItems.length > 0) {
       return { error: "Cannot turn in quest. Inventory is full" }; // If the inventory is full, exit the loop and return false
+    }
+
+    /* Remove objective items from inventory */
+    for (const objective of objectives) {
+      if (!objective) continue;
+      /* Only works for stackable items */
+      if (objective?.type === "item") {
+        const itemId = objective?.target?.[2];
+        this.subtractInventoryItemAtId(itemId, objective?.amount);
+      }
     }
 
     const didLevel = this.assignExp(quest?.rewards?.exp);

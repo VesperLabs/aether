@@ -106,7 +106,8 @@ class Player extends Character {
   doAttack(count) {
     const { state } = this;
     if (state.isAttacking) return;
-    if (this?.isHero && !state.hasWeapon) return; /* Heros with no weapon cannot attack */
+    if (this?.isHero && (!state.hasWeapon || state.isDead))
+      return; /* Heros with no weapon cannot attack */
     state.isAttacking = true;
     state.lastAttack = Date.now();
 

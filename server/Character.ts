@@ -52,19 +52,20 @@ class ServerCharacter extends Character {
           Object.keys(equipment[eKey].stats).forEach((key) => {
             let itemStat = equipment[eKey].stats[key];
             if (itemStat) {
-              if (eKey == "handLeft") {
-                if (
-                  (key == "minDamage" || key == "maxDamage") &&
-                  equipment[eKey].type == "weapon"
-                ) {
-                  /* Left handed weapons only add half damage */
-                  ns[key] += Math.floor(itemStat / 2);
-                } else {
-                  ns[key] += itemStat;
-                }
-              } else {
-                ns[key] += itemStat;
-              }
+              ns[key] += itemStat;
+              // if (eKey == "handLeft") {
+              //   if (
+              //     (key == "minDamage" || key == "maxDamage") &&
+              //     equipment[eKey].type == "weapon"
+              //   ) {
+              //     /* Left handed weapons only add half damage */
+              //     ns[key] += Math.floor(itemStat / 2);
+              //   } else {
+              //     ns[key] += itemStat;
+              //   }
+              // } else {
+              //   ns[key] += itemStat;
+              // }
             }
           });
         }
@@ -114,6 +115,7 @@ class ServerCharacter extends Character {
     ns.exp = this.stats.exp || 0;
     ns.attackDelay = ns.attackDelay || 0;
     ns.spellDamage = ns.spellDamage || 0;
+    ns.spellDamage = ns.spellDamage + ns.intelligence * 0.03;
     ns.attackDelay = 1 - Math.floor(ns.dexterity * 0.5) + ns.attackDelay;
     ns.castDelay = ns.castDelay || 1000;
     ns.castDelay = 1 - Math.floor(ns.intelligence * 0.5) + ns.castDelay;
@@ -122,9 +124,8 @@ class ServerCharacter extends Character {
     ns.regenHp = ns.regenHp + Math.floor(ns.vitality / 10);
     ns.regenMp = ns.regenMp + Math.floor(ns.intelligence / 10);
     ns.armorPierce = ns.armorPierce + ns.dexterity + ns.strength;
-    ns.defense = ns.defense + ns.strength * 5;
+    ns.defense = ns.defense + ns.strength;
     ns.critChance = ns.critChance + ns.dexterity * 0.05;
-    ns.critMultiplier = ns.critMultiplier + ns.intelligence * 0.03;
     ns.speed = ns.speed + ns.dexterity * 0.003;
     //ns.blockChance = ns.blockChance + (0 * (ns.dexterity - 15)) / (ns.level * 2);
     ns.blockChance = ns.blockChance;
@@ -161,16 +162,14 @@ class ServerCharacter extends Character {
     const blockRoll = randomNumber(1, 100);
     const critRoll = randomNumber(1, 100);
     const damageRoll = randomNumber(this.stats.minDamage, this.stats.maxDamage);
-
     const damage = damageRoll;
-    const defense = victim.stats.defense || 1;
-    const armorPierce = this.stats.armorPierce || 1;
-    const reduction = armorPierce / defense > 1 ? 1 : armorPierce / defense;
-    const dodgeChange = Math.max(0, victim.stats.dodgeChance - this.stats.accuracy);
+    const defense = Math.max(1, victim.stats.defense || 1); // Minimum defense value of 1
+    const armorPierce = Math.max(1, this.stats.armorPierce || 1); // Minimum armorPierce value of 1
+    const reduction = Math.min(1, armorPierce / defense); // Reduction capped at 1 (100%)
+    const dodgeChance = Math.max(0, victim.stats.dodgeChance - this.stats.accuracy);
     let isCritical = false;
-    let reducedDamage = damage * reduction < 1 ? 1 : damage * reduction;
-
-    if (dodgeRoll < dodgeChange) {
+    let reducedDamage = Math.max(1, damage * reduction); // Minimum reducedDamage value of 1
+    if (dodgeRoll < dodgeChance) {
       return { type: "miss", amount: 0, from: this.id, to: victim.id };
     }
     if (blockRoll < victim.stats.blockChance) {
@@ -178,7 +177,7 @@ class ServerCharacter extends Character {
     }
     if (this.stats.critChance && critRoll <= this.stats.critChance) {
       isCritical = true;
-      reducedDamage = reducedDamage * this?.stats?.critMultiplier || 0;
+      reducedDamage = Math.max(1, reducedDamage * (this?.stats?.critMultiplier || 1)); // Minimum reducedDamage value of 1
     }
     /* Update the victim */
     reducedDamage = Math.floor(reducedDamage);

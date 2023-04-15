@@ -73,8 +73,8 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       const socketId = socket.id;
 
       socket.on("login", async (email = "arf@arf.arf") => {
-        const user = await scene.db.getUserByEmail(email);
-        //const user = cloneObject(baseUser);
+        //const user = await scene.db.getUserByEmail(email);
+        const user = cloneObject(baseUser);
         if (!user) return console.log("❌ Player not found in db");
 
         const player = scene.roomManager.rooms[user.roomName].playerManager.create({
@@ -100,6 +100,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
 
       socket.on("attack", ({ count, direction }) => {
         const player = scene.players[socketId];
+        if (player?.state?.isDead) return;
         socket.to(player?.roomName).emit("playerAttack", { socketId, count, direction });
       });
 
@@ -108,6 +109,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         const loot = cloneObject(scene.loots[lootId]);
         const item = loot?.item;
         if (!loot || !player || !item) return;
+        if (player?.state?.isDead) return;
         /* Face the loot */
         player.direction = direction;
         /* Check where to put loot */
