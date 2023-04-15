@@ -386,6 +386,8 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           if (toItem) return;
           if (fromItem && !checkSlotsMatch(fromItem?.slot, to?.slot)) return;
           player.gold -= fromItem?.cost || 1;
+          /* Remove inflation cost */
+          fromItem.cost = Math.floor(fromItem.cost / SHOP_INFLATION);
           player.equipment[to?.slot] = fromItem;
         }
 

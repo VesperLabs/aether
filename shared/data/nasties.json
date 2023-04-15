@@ -30,13 +30,13 @@
         "type": "stackable",
         "rarity": "common",
         "key": "redApple",
-        "chance": 4
+        "chance": 15
       },
       {
         "type": "stackable",
         "rarity": "common",
         "key": "grapes",
-        "chance": 4
+        "chance": 25
       }
     ]
   },
@@ -71,7 +71,7 @@
         "type": "stackable",
         "rarity": "common",
         "key": "blueSporangium",
-        "chance": 2
+        "chance": 35
       }
     ]
   },
@@ -106,7 +106,7 @@
         "type": "stackable",
         "rarity": "common",
         "key": "redApple",
-        "chance": 4
+        "chance": 25
       }
     ]
   },
@@ -219,13 +219,13 @@
         "type": "stackable",
         "rarity": "common",
         "key": "spiderMeat",
-        "chance": 3
+        "chance": 25
       },
       {
         "type": "stackable",
         "rarity": "common",
         "key": "cheese",
-        "chance": 6
+        "chance": 50
       }
     ]
   },
@@ -261,13 +261,13 @@
         "type": "stackable",
         "rarity": "common",
         "key": "batMeat",
-        "chance": 3
+        "chance": 25
       },
       {
         "type": "stackable",
         "rarity": "common",
         "key": "cheese",
-        "chance": 6
+        "chance": 5
       }
     ]
   },
@@ -309,7 +309,7 @@
         "type": "stackable",
         "rarity": "common",
         "key": "skull",
-        "chance": 4
+        "chance": 25
       }
     ]
   },
@@ -357,7 +357,7 @@
         "type": "stackable",
         "rarity": "common",
         "key": "skull",
-        "chance": 4
+        "chance": 25
       }
     ]
   },
@@ -405,7 +405,7 @@
         "type": "stackable",
         "rarity": "common",
         "key": "skull",
-        "chance": 6
+        "chance": 25
       }
     ]
   },

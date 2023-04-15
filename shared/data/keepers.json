@@ -58,7 +58,7 @@
       "quests": ["slime-roundup", "slime-eggs", "hornet-hunting"],
       "shop": [
         { "item": ["armor", "common", "clothRobe"], "stock": 1 },
-        { "item": ["pants", "common", "clothPants"], "stock": 1 },
+        { "item": ["shield", "common", "barkShield"], "stock": 1 },
         { "item": ["weapon", "common", "dagger"], "stock": 1 }
       ]
     }
