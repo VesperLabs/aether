@@ -126,7 +126,7 @@ export const baseUser = {
     // ring2: ItemBuilder.buildItem("ring", "set", "timmysSignet"),
     // amulet: ItemBuilder.buildItem("amulet", "set", "timmysChain"),
     handRight: null,
-    handLeft: ItemBuilder.buildItem("weapon", "common", "knife"),
+    handLeft: ItemBuilder.buildItem("weapon", "common", "dagger"),
     helmet: null,
     accessory: null,
     pants: null,
