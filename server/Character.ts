@@ -11,6 +11,16 @@ class ServerCharacter extends Character {
     scene.events.once("shutdown", this.destroy, this);
     this.calculateStats();
   }
+  getQuests() {
+    if (!this.quests?.length) return [];
+    return this?.quests?.map((q) => {
+      return {
+        ...q,
+        /* We pass the rewards here so that the items are built with the correct stats */
+        rewards: this.scene.quests[q?.questId]?.rewards,
+      };
+    });
+  }
   calculateStats() {
     const { equipment } = this;
     let totalPercentStats = {};

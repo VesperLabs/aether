@@ -17,21 +17,21 @@ const QuestTooltip = ({
   quest,
   show,
   playerQuest,
+  tooltipId,
   setShow,
+  parent,
 }: {
   quest: Quest;
   show: boolean;
+  tooltipId: string;
   setShow;
   playerQuest: PlayerQuest;
+  parent: string;
 }) => {
   const { socket } = useAppContext();
   const { rewards } = quest ?? {};
   return (
-    <Tooltip
-      id={`tooltip-quest-${quest?.id}`}
-      style={{ ...TOOLTIP_STYLE, pointerEvents: "all" }}
-      isOpen={show}
-    >
+    <Tooltip id={`${tooltipId}`} style={{ ...TOOLTIP_STYLE, pointerEvents: "all" }} isOpen={show}>
       <Flex
         sx={{
           maxWidth: 200,
@@ -75,18 +75,27 @@ const QuestTooltip = ({
         <Divider />
         <Flex sx={{ gap: 1 }}>
           <Button variant="wood" onClick={() => setShow(false)}>
-            Cancel
+            Close
           </Button>
-          <QuestStatusButton playerQuest={playerQuest} quest={quest} socket={socket} />
+          <QuestStatusButton
+            parent={parent}
+            playerQuest={playerQuest}
+            quest={quest}
+            socket={socket}
+          />
         </Flex>
       </Flex>
     </Tooltip>
   );
 };
 
-const QuestStatusButton = ({ playerQuest, quest, socket }) => {
+const QuestStatusButton = ({ playerQuest, quest, socket, parent }) => {
+  if (parent === "player") {
+    //return <Button variant="wood">Abandon</Button>;
+    return <></>;
+  }
   if (playerQuest?.isCompleted) {
-    return <Button variant="wood">✅ Done</Button>;
+    return <Button variant="wood">Done</Button>;
   }
   if (playerQuest?.isReady) {
     return (

@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Box, Icon, BASE_SLOT_STYLE, SLOT_SIZE, QuestTooltip, useAppContext } from "./";
+import { nanoid } from "nanoid";
 
-const Quest = ({ quest }: { quest: Quest }) => {
+const Quest = ({ quest, parent = "keeper" }: { quest: Quest; parent: string }) => {
   const { objectives } = quest ?? {};
   const { game } = useAppContext();
   const scene = game?.scene?.getScene?.("SceneMain") as any;
@@ -10,6 +11,7 @@ const Quest = ({ quest }: { quest: Quest }) => {
   const isBounty = objectives?.some((objective) => objective?.type === "bounty");
   const isItem = objectives?.some((objective) => objective?.type === "item");
   const playerQuest: PlayerQuest = hero.getPlayerQuestStatus(quest);
+  const tooltipId = nanoid();
 
   let icon = "./assets/icons/chest.png";
   if (isBounty) {
@@ -34,7 +36,7 @@ const Quest = ({ quest }: { quest: Quest }) => {
   return (
     <Box sx={BASE_SLOT_STYLE} {...outerMouseBinds}>
       <Box
-        data-tooltip-id={`tooltip-quest-${quest?.id}`}
+        data-tooltip-id={`${tooltipId}`}
         sx={{
           position: "relative",
           overflow: hovering ? "visible" : "hidden",
@@ -43,8 +45,18 @@ const Quest = ({ quest }: { quest: Quest }) => {
         }}
       >
         <Icon icon={icon} sx={{ width: "100%", height: "100%", transform: "scale(2)" }} />
+        <Box sx={{ position: "absolute", bottom: 1, right: 1 }}>
+          {playerQuest?.isCompleted && "✅"}
+        </Box>
       </Box>
-      <QuestTooltip quest={quest} show={hovering} setShow={setHovering} playerQuest={playerQuest} />
+      <QuestTooltip
+        parent={parent}
+        tooltipId={tooltipId}
+        quest={quest}
+        show={hovering}
+        setShow={setHovering}
+        playerQuest={playerQuest}
+      />
     </Box>
   );
 };

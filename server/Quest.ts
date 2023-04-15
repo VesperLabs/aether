@@ -1,5 +1,3 @@
-import ItemBuilder from "./ItemBuilder";
-
 class Quest {
   id: string;
   name: string;
@@ -13,7 +11,7 @@ class Quest {
     this.rewards = {
       exp: args?.rewards?.exp,
       gold: args?.rewards?.gold,
-      items: args?.rewards?.items?.map((item) => ItemBuilder.buildItem(...item)),
+      items: args?.rewards?.items,
     };
     this.objectives = args?.objectives;
   }

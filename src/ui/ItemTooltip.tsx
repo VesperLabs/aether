@@ -4,13 +4,13 @@ import { Tooltip } from "react-tooltip";
 
 const Label = (props) => <Text sx={{ fontWeight: "normal" }} {...props} />;
 
-const ItemTooltip = ({ item, show }) => {
+const ItemTooltip = ({ item, show, tooltipId }) => {
   const { hero } = useAppContext();
   const isSetActive = hero?.state?.activeSets?.includes?.(item?.setName);
   const setDetails = itemSetList?.[item?.setName];
   if (!item) return;
   return (
-    <Tooltip id={item?.id} isOpen={show} style={TOOLTIP_STYLE}>
+    <Tooltip id={tooltipId} isOpen={show} style={TOOLTIP_STYLE}>
       <Flex
         sx={{
           fontWeight: "bold",

@@ -21,6 +21,7 @@ import {
 import { initDatabase, baseUser } from "./db";
 import RoomManager from "./RoomManager";
 import Phaser from "phaser";
+import QuestBuilder from "./QuestBuilder";
 const { SnapshotInterpolation } = require("@geckos.io/snapshot-interpolation");
 
 const express = require("express");
@@ -42,6 +43,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
   public doors: Record<string, Door>;
   public loots: Record<string, Loot>;
   public npcs: Record<string, Npc>;
+  public quests: Record<string, Quest>;
   public players: Record<string, Player>;
   public roomManager: RoomManager;
   public spells: any;
@@ -67,6 +69,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
     this.npcs = {};
     this.loots = {};
     this.spells = {};
+    this.quests = QuestBuilder.buildAllQuests();
     this.roomManager = new RoomManager(scene);
 
     io.on("connection", (socket: Socket) => {
@@ -448,9 +451,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
 
       socket.on("acceptQuest", (questId: string) => {
         const player: Player = scene?.players?.[socketId];
-        const npcId = player?.state?.targetNpcId;
-        const quests = scene?.npcs?.[npcId]?.keeperData?.quests;
-        const currentQuest = quests?.find((q: Quest) => q?.id === questId);
+        const currentQuest = scene.quests?.[questId];
         const foundQuest = player?.getPlayerQuestStatus(currentQuest);
         /* If the quest wasnt there, we can accept it */
         if (!foundQuest) {
@@ -463,9 +464,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
 
       socket.on("completeQuest", (questId: string) => {
         const player: Player = scene?.players?.[socketId];
-        const npcId = player?.state?.targetNpcId;
-        const quests = scene?.npcs?.[npcId]?.keeperData?.quests;
-        const currentQuest = quests?.find((q: Quest) => q?.id === questId);
+        const currentQuest = scene.quests?.[questId];
         const foundQuest = player?.getPlayerQuestStatus(currentQuest);
         /* If the quest is ready, we turn it in */
         if (foundQuest?.isReady) {

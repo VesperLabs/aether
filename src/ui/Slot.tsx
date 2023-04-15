@@ -13,6 +13,7 @@ import { resolveAsset } from "../../shared/Assets";
 import { useAppContext } from "./App";
 import { isMobile, trimCanvas, tintCanvas } from "../utils";
 import { useDoubleTap } from "use-double-tap";
+import { nanoid } from "nanoid";
 
 type SlotProps = {
   sx?: object;
@@ -190,6 +191,7 @@ const Slot = React.memo(
       "data-slot-key": slotKey,
     };
 
+    const tooltipId = nanoid();
     const targetMoved = target?.dataset?.tooltipId !== item?.id;
     const aboutToSell = dragging && target?.closest(".menu-keeper") && location !== "shop";
     const showTooltip =
@@ -197,7 +199,7 @@ const Slot = React.memo(
 
     return (
       <Box
-        data-tooltip-id={item?.id}
+        data-tooltip-id={tooltipId}
         sx={{
           touchAction: "none",
           userSelect: "none",
@@ -240,7 +242,7 @@ const Slot = React.memo(
               {...innerMouseBinds}
               {...dataKeys}
             />
-            <ItemTooltip item={item} show={showTooltip} />
+            <ItemTooltip item={item} show={showTooltip} tooltipId={tooltipId} />
           </>
         )}
       </Box>

@@ -1,6 +1,6 @@
 import ServerCharacter from "./Character";
 import { cloneObject } from "./utils";
-import ItemBuilder from "./ItemBuilder";
+
 /* Server level Player object */
 class Player extends ServerCharacter implements Player {
   public email: string;

@@ -144,7 +144,7 @@ class Character extends Phaser.GameObjects.Container {
     const playerQuest = this.quests.find((q) => q?.questId === quest?.id);
     if (!playerQuest) return null;
     /* Create PlayerQuestObjectives */
-    const objectives = quest.objectives.reduce((acc, objective) => {
+    const objectives = quest?.objectives?.reduce((acc, objective) => {
       let isReady = false;
       /* Check if the player has enough kills of the target NPC */
       if (objective?.type === "bounty") {

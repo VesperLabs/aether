@@ -84,7 +84,7 @@ const MenuKeeper = () => {
           }}
         >
           {quests?.map((quest: Quest, idx: string) => {
-            return <Quest key={idx} quest={quest} />;
+            return <Quest key={idx} quest={quest} parent="keeper" />;
           })}
         </Flex>
       </Flex>

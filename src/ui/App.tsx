@@ -18,6 +18,7 @@ import {
   MenuButton,
   MenuProfile,
   MenuStats,
+  MenuQuests,
 } from "./";
 import { isMobile, getSpinDirection } from "../utils";
 import "react-tooltip/dist/react-tooltip.css";
@@ -37,11 +38,13 @@ interface AppContextValue {
   setTabChat: React.Dispatch<React.SetStateAction<boolean>>;
   setTabProfile: React.Dispatch<React.SetStateAction<boolean>>;
   setTabStats: React.Dispatch<React.SetStateAction<boolean>>;
+  setTabQuests: React.Dispatch<React.SetStateAction<boolean>>;
   setDropItem: React.Dispatch<React.SetStateAction<Item | null | false>>;
   messages: Message[];
   bottomOffset: number;
   dropItem: any;
   tabEquipment: boolean;
+  tabQuests: boolean;
   tabInventory: boolean;
   tabChat: boolean;
   tabProfile: boolean;
@@ -72,6 +75,7 @@ function App({ socket, debug, game }) {
   const [tabChat, setTabChat] = useState(false);
   const [tabProfile, setTabProfile] = useState(false);
   const [tabStats, setTabStats] = useState(false);
+  const [tabQuests, setTabQuests] = useState(false);
   const [showButtonChat, setShowButtonChat] = useState(false);
   const [bottomOffset, setBottomOffset] = useState(0);
 
@@ -216,6 +220,8 @@ function App({ socket, debug, game }) {
           setDropItem,
           setTabProfile,
           setTabStats,
+          setTabQuests,
+          tabQuests,
           tabStats,
           messages,
           bottomOffset,
@@ -317,6 +323,8 @@ const MenuBar = () => {
     tabStats,
     setTabStats,
     bottomOffset,
+    tabQuests,
+    setTabQuests,
     socket,
   } = useAppContext();
 
@@ -340,6 +348,7 @@ const MenuBar = () => {
       <MenuEquipment />
       <MenuInventory />
       <MenuProfile />
+      <MenuQuests />
       <MenuStats />
       <Flex
         sx={{
@@ -391,6 +400,12 @@ const MenuBar = () => {
             />
           )}
         </MenuButton>
+        <MenuButton
+          keyboardKey="Q"
+          iconName="quests"
+          isActive={tabQuests}
+          onClick={() => setTabQuests((prev) => !prev)}
+        />
         <MenuButton
           keyboardKey="S"
           iconName="book"

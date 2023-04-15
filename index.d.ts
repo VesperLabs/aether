@@ -60,6 +60,7 @@ interface ServerScene extends Phaser.Scene {
   doors: Record<string, Door>;
   loots: Record<string, Loot>;
   npcs: Record<string, Character>;
+  quests: Record<string, Quest>;
   players: Record<string, Player>;
   roomManager: RoomManager;
   spells: any;
@@ -129,6 +130,7 @@ interface Character extends Phaser.GameObjects.Container {
   assignExp(amount: integer): boolean;
   setDead();
   getPlayerQuestStatus(quest: Quest): PlayerQuest | null;
+  getQuests(): Array<PlayerQuest>;
 }
 
 type CharClass = "warrior" | "rogue" | "mage" | "cleric";
@@ -237,6 +239,7 @@ interface PlayerQuest {
   questId: string;
   isCompleted?: boolean;
   isReady?: boolean;
+  rewards?: Record<string, any>;
   objectives?: Array<PlayerQuestObjective>;
 }
 

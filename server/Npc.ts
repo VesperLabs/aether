@@ -22,13 +22,6 @@ const buildShop = (shop: Array<any>) => {
   }, []);
 };
 
-const buildQuests = (quests: Array<any>) => {
-  return quests?.reduce((acc, entry) => {
-    acc.push(QuestBuilder.buildQuest(entry));
-    return acc;
-  }, []);
-};
-
 class Npc extends Character implements Npc {
   public respawnTime: number;
   public drops: Array<Drop>;
@@ -59,7 +52,7 @@ class Npc extends Character implements Npc {
     this.keeperData = {
       ...keeperData,
       shop: buildShop(keeperData?.shop),
-      quests: buildQuests(keeperData?.quests),
+      quests: keeperData?.quests?.map((questId: string) => scene?.quests?.[questId]),
     };
   }
   setDead() {

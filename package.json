@@ -11,8 +11,6 @@
     "watch:server": "nodemon --watch \"server/**\" --watch \"shared/**\" --ext \"ts,js,json\" --inspect --exec \"yarn run kill && yarn run server\""
   },
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
     "@emotion/react": "^11.10.6",
     "@geckos.io/phaser-on-nodejs": "^1.2.8",
     "@geckos.io/snapshot-interpolation": "^1.1.0",
@@ -22,7 +20,10 @@
     "express": "^4.18.2",
     "framer-motion": "^10.10.0",
     "mongodb": "^5.1.0",
+    "nanoid": "^4.0.2",
     "phaser": "^3.55.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-tooltip": "^5.10.0",
     "socket.io": "^4.6.0",
     "socket.io-client": "^4.6.0",
@@ -33,9 +34,9 @@
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
     "@vitejs/plugin-react-swc": "^3.0.0",
-    "typescript": "^4.9.3",
-    "vite": "^4.2.0",
+    "nodemon": "^2.0.21",
     "ts-node": "^10.9.1",
-    "nodemon": "^2.0.21"
+    "typescript": "^4.9.3",
+    "vite": "^4.2.0"
   }
 }
