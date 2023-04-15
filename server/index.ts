@@ -344,7 +344,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         /* Equipment -> Equipment */
         if (from?.location === "equipment" && to?.location === "equipment") {
           /* Slots don't match */
-          if (toItem && fromItem && !checkSlotsMatch(fromItem?.slot, to?.slot)) return;
+          if (!checkSlotsMatch(fromItem?.slot, to?.slot)) return;
           player?.clearEquipmentSlot(from?.slot);
           player.equipment[to?.slot] = fromItem;
           player.equipment[from?.slot] = toItem;
