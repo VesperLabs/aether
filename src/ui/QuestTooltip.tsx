@@ -39,7 +39,7 @@ const QuestTooltip = ({
           justifyContent: "center",
           flexDirection: "column",
           "& strong": {
-            color: "set",
+            color: playerQuest?.isReady ? "set" : "warning",
           },
         }}
       >

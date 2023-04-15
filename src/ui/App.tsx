@@ -328,6 +328,17 @@ const MenuBar = () => {
     socket,
   } = useAppContext();
 
+  const escCacheKey = JSON.stringify([
+    tabChat,
+    dropItem,
+    tabEquipment,
+    tabInventory,
+    tabKeeper,
+    tabProfile,
+    tabStats,
+    tabQuests,
+  ]);
+
   return (
     <Flex
       sx={{
@@ -431,7 +442,7 @@ const MenuBar = () => {
           onClick={() => setTabInventory((prev) => !prev)}
         />
         <KeyboardKey
-          key={`esc-${tabChat}-${dropItem}-${tabEquipment}-${tabInventory}-${tabKeeper}-${tabProfile}-${tabStats}`}
+          key={escCacheKey}
           name={"ESCAPE"}
           hidden={true}
           onKeyUp={(e) => {
@@ -439,8 +450,9 @@ const MenuBar = () => {
             if (tabKeeper) return setTabKeeper(false);
             if (tabEquipment) return setTabEquipment(false);
             if (tabInventory) return setTabInventory(false);
-            if (tabStats) return setTabStats(false);
             if (tabProfile) return setTabProfile(false);
+            if (tabQuests) return setTabQuests(false);
+            if (tabStats) return setTabStats(false);
             if (tabChat) return setTabChat(false);
           }}
         />

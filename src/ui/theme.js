@@ -11,6 +11,7 @@ export default {
     common: tColors.white,
     background: tColors.black,
     danger: tColors.red[300],
+    warning: tColors.orange[300],
     shadow: {
       10: "rgba(0,0,0,.10)",
       15: "rgba(0,0,0,.15)",
