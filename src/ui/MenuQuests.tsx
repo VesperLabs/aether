@@ -1,4 +1,4 @@
-import { Flex, useAppContext, MenuHeader, Quest } from "./";
+import { Flex, useAppContext, MenuHeader, Quest, Text } from "./";
 import questList from "../../shared/data/questList.json";
 const MenuQuests = () => {
   const { hero, tabQuests, setTabQuests } = useAppContext();
@@ -33,6 +33,7 @@ const MenuQuests = () => {
             justifySelf: "start",
           }}
         >
+          {quests?.length === 0 && <Text>You are not on any quests.</Text>}
           {quests?.map((quest, idx) => {
             return <Quest key={idx} quest={quest} parent="player" />;
           })}

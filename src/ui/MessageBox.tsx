@@ -2,14 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Flex, Text, useAppContext } from "./";
 import { motion } from "framer-motion";
 
-type MessageData = {
-  from: string;
-  message: string;
-  type: string;
-};
-
 type MessageProps = {
-  data: MessageData;
+  data: Message;
 };
 
 const MESSAGE_SHOW_TIME = 3000;
@@ -48,7 +42,7 @@ const MessageBox = () => {
         borderRadius: 3,
       }}
     >
-      {messages?.map((message: MessageData, idx: integer) => {
+      {messages?.map((message: Message, idx: integer) => {
         return <Message key={idx} data={message} />;
       })}
     </Flex>
