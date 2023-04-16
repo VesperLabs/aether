@@ -15,7 +15,7 @@ const QuestBuilder = {
       rewards: {
         exp: quest?.rewards?.exp,
         gold: quest?.rewards?.gold,
-        items: quest?.rewards?.items?.map((item: Array<string>) => ItemBuilder.buildItem(...item)),
+        items: quest?.rewards?.items?.map((item: BuildItem) => ItemBuilder.buildItem(...item)),
       },
     };
     return new Quest(questData);

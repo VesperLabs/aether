@@ -137,6 +137,7 @@ export const baseUser = {
     amulet: null,
   },
   inventory: [
+    ItemBuilder.buildItem("spell", "common", "fireball"),
     // ItemBuilder.buildItem("armor", "rare", "nutshellPlate"),
     // ItemBuilder.buildItem("weapon", "unique", "darkWhistler"),
     // ItemBuilder.buildItem("weapon", "rare", "katar"),
@@ -151,6 +152,12 @@ export const baseUser = {
     // ItemBuilder.buildItem("shield", "unique", "roundStage"),
     // ItemBuilder.buildItem("stackable", "common", "redApple", 10),
   ],
+  abilities: {
+    1: null,
+    2: null,
+    3: null,
+    4: null,
+  },
   profile: {
     userName: "Player1",
     gender: "female",

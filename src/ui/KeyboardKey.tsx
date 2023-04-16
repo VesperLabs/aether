@@ -4,6 +4,7 @@ import { Box } from "./";
 interface KeyboardKeyProps {
   name: string;
   onKeyUp?: (e: KeyboardEvent) => void;
+  onClick?: () => void;
   hidden?: boolean;
   showOnly?: boolean;
   onKeyDown?: (e: KeyboardEvent) => void;
@@ -24,6 +25,7 @@ const getKeyName = (name: string) => {
 const KeyboardKey: React.FC<KeyboardKeyProps> = ({
   name,
   onKeyUp,
+  onClick,
   hidden,
   showOnly,
   onKeyDown,
@@ -73,7 +75,9 @@ const KeyboardKey: React.FC<KeyboardKeyProps> = ({
 
   return (
     <Box
+      onClick={() => onClick?.()}
       sx={{
+        cursor: typeof onClick === "function" ? "pointer" : "default",
         display: hidden ? "none" : "block",
         position: "absolute",
         bottom: 0,

@@ -305,6 +305,25 @@ const SkillButtons = () => {
   );
 };
 
+const AbilityButtons = () => {
+  return (
+    <Flex
+      sx={{
+        flexDirection: "column",
+        gap: 2,
+        px: 1,
+        justifyContent: "end",
+        alignItems: "flex-end",
+      }}
+    >
+      <SkillButton size={16} iconName="blank" eventName="ABILITY_4" keyboardKey="4" />
+      <SkillButton size={16} iconName="blank" eventName="ABILITY_3" keyboardKey="3" />
+      <SkillButton size={16} iconName="blank" eventName="ABILITY_2" keyboardKey="2" />
+      <SkillButton size={16} iconName="blank" eventName="ABILITY_1" keyboardKey="1" />
+    </Flex>
+  );
+};
+
 const MenuBar = () => {
   const {
     isConnected,
@@ -353,7 +372,10 @@ const MenuBar = () => {
     >
       <Flex sx={{ flex: 1 }}>
         <MessageBox />
-        <SkillButtons />
+        <Flex sx={{ flexDirection: "column" }}>
+          <AbilityButtons />
+          <SkillButtons />
+        </Flex>
       </Flex>
       {tabKeeper && <MenuKeeper />}
       <MenuEquipment />
@@ -418,7 +440,7 @@ const MenuBar = () => {
           onClick={() => setTabQuests((prev) => !prev)}
         />
         <MenuButton
-          keyboardKey="S"
+          keyboardKey="Z"
           iconName="book"
           isActive={tabStats}
           onClick={() => setTabStats((prev) => !prev)}

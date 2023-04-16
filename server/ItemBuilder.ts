@@ -33,6 +33,7 @@ const ItemBuilder = {
       "accessory",
       "ring",
       "amulet",
+      "spell",
     ];
     let type = types[Math.floor(Math.random() * types.length)];
     let theType = itemList[type];
@@ -75,16 +76,20 @@ const ItemBuilder = {
         item = uniquePool[Math.floor(Math.random() * uniquePool.length)];
       }
     }
-    if (commonRoll == 1 && rareRoll == 1 && item == null) {
-      if (commonPool.length > 0) {
-        item = commonPool[Math.floor(Math.random() * commonPool.length)];
-        item.rarity = "rare";
+
+    // todo: later support rare and magic spells
+    if (type! == "spell") {
+      if (commonRoll == 1 && rareRoll == 1 && item == null) {
+        if (commonPool.length > 0) {
+          item = commonPool[Math.floor(Math.random() * commonPool.length)];
+          item.rarity = "rare";
+        }
       }
-    }
-    if (commonRoll == 1 && magicRoll == 1 && item == null) {
-      if (commonPool.length > 0) {
-        item = commonPool[Math.floor(Math.random() * commonPool.length)];
-        item.rarity = "magic";
+      if (commonRoll == 1 && magicRoll == 1 && item == null) {
+        if (commonPool.length > 0) {
+          item = commonPool[Math.floor(Math.random() * commonPool.length)];
+          item.rarity = "magic";
+        }
       }
     }
     if (commonRoll == 1 && item == null) {
@@ -93,6 +98,7 @@ const ItemBuilder = {
         item.rarity = "common";
       }
     }
+
     return item;
   },
   buildItem: (...args: BuildItem) => {

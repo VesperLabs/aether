@@ -23,6 +23,7 @@ class Character extends Phaser.GameObjects.Container {
   stats: any;
   npcKills: Record<string, number>;
   quests: Array<PlayerQuest>;
+  abilities: Record<string, Item>;
   declare body: Phaser.Physics.Arcade.Body;
   declare state: any;
   constructor(scene: ServerScene | Phaser.Scene, args) {
@@ -46,6 +47,7 @@ class Character extends Phaser.GameObjects.Container {
       charClass,
       npcKills = {},
       quests = {},
+      abilities = {},
     } = args;
     super(scene, x, y, []);
     this.charClass = charClass;
@@ -86,6 +88,7 @@ class Character extends Phaser.GameObjects.Container {
     this.gold = gold;
     this.profile = { headY: -47, ...profile };
     this.equipment = equipment;
+    this.abilities = abilities;
     this.inventory = inventory;
     this.baseStats = baseStats;
     this.stats = stats;

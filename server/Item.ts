@@ -18,6 +18,7 @@ class Item implements Item {
   percentStats?: Record<string, number>;
   setName?: string;
   setBonus?: Record<string, number>;
+  mpCost?: number;
 
   constructor(item) {
     this.id = item?.id;
@@ -39,6 +40,7 @@ class Item implements Item {
     this.percentStats = item?.percentStats;
     this.setName = item?.setName;
     this.setBonus = item?.setBonus;
+    this.mpCost = item?.mpCost;
   }
 }
 

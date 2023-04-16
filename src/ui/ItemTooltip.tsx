@@ -2,15 +2,34 @@ import { Flex, useAppContext, Text, Divider, Icon, TOOLTIP_STYLE } from "./";
 import itemSetList from "../../shared/data/itemSetList.json";
 import { Tooltip } from "react-tooltip";
 
+const combineDamageStats = (stats) =>
+  Object.entries(stats).reduce((acc, [key, value]) => {
+    if (key.includes("Damage")) {
+      const keyWithoutPrefix = key.replace("min", "").replace("max", "");
+      if (!acc.hasOwnProperty(keyWithoutPrefix)) {
+        acc[keyWithoutPrefix] = `${stats[`min${keyWithoutPrefix}`]} - ${
+          stats[`max${keyWithoutPrefix}`]
+        }`;
+      }
+    } else {
+      acc[key] = value;
+    }
+    return acc;
+  }, {});
+
 const Label = (props) => <Text sx={{ fontWeight: "normal" }} {...props} />;
 
-const ItemTooltip = ({ item, show, tooltipId }) => {
+const ItemTooltip = ({ item, show }) => {
   const { hero } = useAppContext();
   const isSetActive = hero?.state?.activeSets?.includes?.(item?.setName);
   const setDetails = itemSetList?.[item?.setName];
   if (!item) return;
+
+  const combinedStats = combineDamageStats(item?.stats);
+  const combinedEffects = combineDamageStats(item?.effects);
+
   return (
-    <Tooltip id={tooltipId} isOpen={show} style={TOOLTIP_STYLE}>
+    <Tooltip id={item?.id} isOpen={show} style={TOOLTIP_STYLE}>
       <Flex
         sx={{
           fontWeight: "bold",
@@ -37,25 +56,27 @@ const ItemTooltip = ({ item, show, tooltipId }) => {
             <Label>Slot:</Label> {item?.slot}
           </Text>
         )}
-        {Object.keys(item?.stats).map((key) => {
-          return (
-            <Text key={key}>
-              <Label>{key}:</Label> {item?.stats[key]}
-            </Text>
-          );
-        })}
-        {Object.keys(item?.percentStats).map((key) => {
-          return (
-            <Text key={key}>
-              <Label>{key}:</Label> {item?.percentStats[key]}%
-            </Text>
-          );
-        })}
-        {Object.keys(item?.effects).map((key) => {
+        {Object.keys(combinedStats).map((key) => (
+          <Text key={key}>
+            <Label>{key}:</Label> {combinedStats[key]}
+          </Text>
+        ))}
+        {Object.keys(item?.percentStats).map((key) => (
+          <Text key={key}>
+            <Label>{key}:</Label> {item?.percentStats[key]}%
+          </Text>
+        ))}
+        {Object.keys(combinedEffects).map((key) => {
           if (key == "hp") {
             return (
               <Text key={key}>
-                <Label>+</Label> {item?.effects[key]}% hp
+                <Label>+</Label> {combinedEffects[key]}% hp
+              </Text>
+            );
+          } else {
+            return (
+              <Text key={key}>
+                <Label>{key}:</Label> {combinedEffects[key]}
               </Text>
             );
           }
@@ -80,9 +101,17 @@ const ItemTooltip = ({ item, show, tooltipId }) => {
             );
           })}
         <Divider />
-        <Flex sx={{ alignItems: "center", gap: 1 }}>
-          <Icon icon="../assets/icons/gold.png" size={16} />
-          {item?.cost * (item?.amount || 1)}
+        <Flex sx={{ alignItems: "center", gap: 2 }}>
+          <Flex sx={{ alignItems: "center", gap: "2px" }}>
+            <Icon icon="../assets/icons/gold.png" size={16} />
+            {item?.cost * (item?.amount || 1)}
+          </Flex>
+          {item?.mpCost && (
+            <Flex sx={{ alignItems: "center", gap: "2px" }}>
+              <Icon icon="../assets/icons/mana.png" size={16} />
+              {item?.mpCost}
+            </Flex>
+          )}
         </Flex>
       </Flex>
     </Tooltip>

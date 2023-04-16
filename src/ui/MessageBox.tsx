@@ -26,25 +26,27 @@ const MessageBox = () => {
   }, [tabChat, messages]);
 
   return (
-    <Flex
-      as={motion.div}
-      //@ts-ignore
-      animate={{
-        opacity: show ? 1 : 0,
-      }}
-      sx={{
-        flex: 1,
-        m: 2,
-        flexDirection: "column",
-        justifyContent: "end",
-        height: "20vh",
-        maskImage: `linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1))`,
-        borderRadius: 3,
-      }}
-    >
-      {messages?.map((message: Message, idx: integer) => {
-        return <Message key={idx} data={message} />;
-      })}
+    <Flex sx={{ flex: 1, flexDirection: "column", justifyContent: "flex-start" }}>
+      <Flex
+        as={motion.div}
+        //@ts-ignore
+        animate={{
+          opacity: show ? 1 : 0,
+        }}
+        sx={{
+          flex: 1,
+          m: 2,
+          flexDirection: "column",
+          justifyContent: "end",
+          height: "20vh",
+          maskImage: `linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1))`,
+          borderRadius: 3,
+        }}
+      >
+        {messages?.map((message: Message, idx: integer) => {
+          return <Message key={idx} data={message} />;
+        })}
+      </Flex>
     </Flex>
   );
 };

@@ -75,9 +75,8 @@ export default {
     menu: {
       borderRadius: 4,
       padding: 1,
-      filter: "grayscale(100%)",
       "*": { opacity: 0.5 },
-      "&.active": { "*": { opacity: 1 }, filter: "grayscale(0%)" },
+      "&.active": { "*": { opacity: 1 } },
       backgroundColor: "shadow.10",
     },
     wood: {

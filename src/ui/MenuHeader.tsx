@@ -1,4 +1,4 @@
-import { Flex, KeyboardButton, Text, Icon } from "./";
+import { Flex, KeyboardButton, Text, Icon, Box } from "./";
 import { isMobile } from "../utils";
 
 interface MenuHeaderProps {
@@ -10,10 +10,20 @@ interface MenuHeaderProps {
 const MenuHeader = ({ icon, children, onClick = () => {} }: MenuHeaderProps) => {
   return (
     <Flex sx={{ width: "100%", justifyContent: "end" }}>
-      <KeyboardButton variant={"header"} showOnly={true} onClick={onClick} keyboardKey="ESCAPE">
+      <KeyboardButton
+        variant={"header"}
+        showOnly={true}
+        keyboardKey="ESCAPE"
+        sx={{ cursor: "default" }}
+        onKeyClick={onClick}
+      >
         {icon && <Icon size={22} icon={`../assets/icons/${icon}.png`} />}
         <Text sx={{ flex: 1 }}>{children}</Text>
-        {isMobile && <>❌</>}
+        {isMobile && (
+          <Box onTouchStart={() => onClick()} sx={{ pointerEvents: "all" }}>
+            ❌
+          </Box>
+        )}
       </KeyboardButton>
     </Flex>
   );

@@ -748,5 +748,23 @@
         "effects": {}
       }
     }
+  },
+  "spell": {
+    "common": {
+      "fireball": {
+        "ilvl": 1,
+        "name": "Fireball",
+        "base": "spell",
+        "slot": "spell",
+        "texture": "spell-fire",
+        "target": "enemy",
+        "effects": {
+          "minFireDamage": 4,
+          "maxFireDamage": 5
+        },
+        "mpCost": 5,
+        "cost": 100
+      }
+    }
   }
 }
