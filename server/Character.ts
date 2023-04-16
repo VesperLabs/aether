@@ -124,12 +124,11 @@ class ServerCharacter extends Character {
     ns.maxExp = ns.maxExp || 0;
     ns.exp = this.stats.exp || 0;
     ns.attackDelay = ns.attackDelay || 0;
-    ns.spellDamage = ns.spellDamage || 0;
-    ns.spellDamage = ns.spellDamage + ns.intelligence * 0.03;
+    ns.minSpellDamage = Math.floor((ns.minSpellDamage || 0) + ns.intelligence * 0.03);
+    ns.maxSpellDamage = Math.floor((ns.maxSpellDamage || 0) + ns.intelligence * 0.03);
     ns.attackDelay = 1 - Math.floor(ns.dexterity * 0.5) + ns.attackDelay;
     ns.castDelay = ns.castDelay || 1000;
     ns.castDelay = 1 - Math.floor(ns.intelligence * 0.5) + ns.castDelay;
-    ns.spellDamage = ns.spellDamage + Math.floor(ns.intelligence / 10);
     ns.accuracy = ns.accuracy;
     ns.regenHp = ns.regenHp + Math.floor(ns.vitality / 10);
     ns.regenMp = ns.regenMp + Math.floor(ns.intelligence / 10);
@@ -164,6 +163,48 @@ class ServerCharacter extends Character {
     this.stats = ns;
 
     this.state.activeSets = activeSets;
+  }
+  calculateSpellDamage(victim, abilitySlot) {
+    if (victim?.state?.isDead) return false;
+    const ability = this?.abilities?.[abilitySlot];
+    const spellDamageRoll = randomNumber(this.stats?.minSpellDamage, this.stats?.maxSpellDamage);
+    const fireDamageRoll = randomNumber(
+      ability.effects?.minFireDamage,
+      ability.effects?.maxFireDamage
+    );
+    /* TODO: Calculate resistences */
+    let reducedDamage = spellDamageRoll + fireDamageRoll;
+    /* Npcs lock on and chase when a user hits them */
+    if (victim.state.isRobot) {
+      victim.state.lockedPlayerId = this?.socketId;
+    }
+    /* Update the victim */
+    reducedDamage = Math.floor(reducedDamage);
+    victim.modifyStat("hp", -reducedDamage);
+    victim.state.lastCombat = Date.now();
+    /* Npcs lock on and chase when a user hits them */
+    if (victim.state.isRobot) {
+      victim.state.lockedPlayerId = this?.socketId;
+    }
+    /* Victim killed */
+    if (victim.stats.hp <= 0) {
+      victim.setDead();
+      victim.stats.hp = 0;
+      return {
+        type: "death",
+        isCritical: false,
+        amount: -reducedDamage,
+        from: this.id,
+        to: victim.id,
+      };
+    }
+    return {
+      type: "hit",
+      isCritical: false,
+      amount: -reducedDamage,
+      from: this.id,
+      to: victim.id,
+    };
   }
   calculateDamage(victim) {
     if (victim?.state?.isDead) return false;

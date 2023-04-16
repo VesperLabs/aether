@@ -107,6 +107,16 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         socket.to(player?.roomName).emit("playerAttack", { socketId, count, direction });
       });
 
+      socket.on("castSpell", ({ abilitySlot, castAngle }) => {
+        const player = scene.players[socketId];
+        const { ilvl, base, mpCost = 0 } = player?.abilities?.[abilitySlot] || {};
+        if (player?.state?.isDead || !ilvl || !base) return;
+        if (player.canCastSpell(abilitySlot)) {
+          player.modifyStat("mp", -mpCost);
+          socket.to(player?.roomName).emit("playerCastSpell", { socketId, base, ilvl, castAngle });
+        }
+      });
+
       socket.on("grabLoot", ({ lootId, direction }) => {
         const player = scene.players[socketId];
         const loot = cloneObject(scene.loots[lootId]);
@@ -165,7 +175,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         io.to(player?.roomName).emit("changeDirection", { socketId, direction });
       });
 
-      socket.on("hit", ({ ids, spellName }) => {
+      socket.on("hit", ({ ids, abilitySlot }) => {
         const hero: Player = scene.players[socketId];
         const roomName: string = hero?.roomName;
         let didLevel: boolean = false;
@@ -178,7 +188,9 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         for (const npc of npcs) {
           /* TODO: verify location of hit before we consider it a hit */
           if (!ids?.includes(npc.id)) continue;
-          const newHit = hero.calculateDamage(npc);
+          const newHit = abilitySlot
+            ? hero.calculateSpellDamage(npc, abilitySlot)
+            : hero.calculateDamage(npc);
           /* If we kill the NPC */
           if (newHit?.type === "death") {
             npc.dropLoot(hero?.stats?.magicFind);
@@ -195,7 +207,9 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         }
         for (const player of players) {
           if (!ids?.includes(player.id)) continue;
-          const newHit = hero.calculateDamage(player);
+          const newHit = abilitySlot
+            ? hero.calculateSpellDamage(player, abilitySlot)
+            : hero.calculateDamage(player);
           if (newHit) hitList.push(newHit);
         }
         io.to(roomName).emit("assignDamage", hitList);

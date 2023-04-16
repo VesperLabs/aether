@@ -61,7 +61,9 @@ const MenuStats = () => {
               {stats?.minDamage} - {stats?.maxDamage}
             </Text>
             <Text>Spell Damage</Text>
-            <Text>{stats?.spellDamage?.toFixed(1)}</Text>
+            <Text>
+              {stats?.minSpellDamage} - {stats?.maxSpellDamage}
+            </Text>
           </Grid>
           <Grid sx={COLUMN_STYLES}>
             <Text>Crit Chance</Text>

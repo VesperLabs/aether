@@ -14,6 +14,7 @@ interface Item {
   type?: string;
   requirements?: Record<string, number>;
   cost?: number;
+  mpCost?: number;
   effects?: Record<string, any>;
   percentStats?: Record<string, number>;
   setName?: string;
@@ -126,12 +127,14 @@ interface Character extends Phaser.GameObjects.Container {
   quests: Array<PlayerQuest>;
   abilities: Record<number, Item>;
   calculateDamage(victim: any);
+  calculateSpellDamage(victim: any, abilitySlot: any);
   calculateStats(): void;
   modifyStat(key: string, amount: number);
   assignExp(amount: integer): boolean;
   setDead();
   getPlayerQuestStatus(quest: Quest): PlayerQuest | null;
   getQuests(): Array<PlayerQuest>;
+  canCastSpell(abilitySlot: number): boolean;
 }
 
 type CharClass = "warrior" | "rogue" | "mage" | "cleric";

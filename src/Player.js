@@ -137,8 +137,10 @@ class Player extends Character {
     const { state, isHero } = this || {};
     if (isHero) {
       if (state.isDead || state.isCasting) return;
-      const { spellSlot, castAngle } = spellData || {};
-      this.scene.socket.emit("castSpell", { spellSlot, castAngle });
+      const { abilitySlot, castAngle } = spellData || {};
+      if (!this.canCastSpell(abilitySlot)) return;
+
+      this.scene.socket.emit("castSpell", { abilitySlot, castAngle });
     }
     state.isCasting = true;
     state.lastCast = Date.now();

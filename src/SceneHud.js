@@ -68,8 +68,7 @@ function addInputListeners(scene) {
         const castAngle = hero?.state?.lastAngle;
         mainScene?.hero?.castSpell?.({
           ilvl: ability?.ilvl,
-          caster: hero,
-          spellSlot: e?.detail,
+          abilitySlot: e?.detail,
           spellName: ability?.base,
           castAngle,
         });

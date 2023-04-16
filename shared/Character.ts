@@ -135,6 +135,11 @@ class Character extends Phaser.GameObjects.Container {
       this.state.isCasting = false;
     }
   }
+  canCastSpell(abilitySlot) {
+    const { mpCost } = this?.abilities?.[abilitySlot] || {};
+    if (this?.stats?.mp < mpCost) return false;
+    return true;
+  }
   triggerSecondAttack() {
     if (this.action === "attack_right" && this.state.hasWeaponLeft) {
       this.doAttack(2);

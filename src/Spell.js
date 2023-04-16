@@ -4,7 +4,7 @@ const BLANK_TEXTURE = "human-blank";
 class Spell extends Phaser.GameObjects.Container {
   constructor(
     scene,
-    { id, caster, spellName, maxVisibleTime, maxActiveTime, state, castAngle, ilvl }
+    { id, caster, spellName, abilitySlot, maxVisibleTime, maxActiveTime, state, castAngle, ilvl }
   ) {
     super(scene, caster.x, caster.y);
     this.scene = scene;
@@ -12,6 +12,7 @@ class Spell extends Phaser.GameObjects.Container {
     this.caster = caster;
     this.state = { aliveTime: 0, ...state };
     this.spellName = spellName;
+    this.abilitySlot = abilitySlot;
     this.frame = 0;
     this.hitIds = []; //who has this npc hit?
     this.canHitSelf = false;
@@ -113,7 +114,7 @@ class Spell extends Phaser.GameObjects.Container {
     }
   }
   checkCollisions() {
-    const { spellName, caster, scene, canHitSelf } = this;
+    const { abilitySlot, caster, scene, canHitSelf } = this || {};
     const direction = caster?.direction;
     const npcs = scene.npcs?.getChildren() || [];
     const players = scene.players?.getChildren() || [];
@@ -129,7 +130,7 @@ class Spell extends Phaser.GameObjects.Container {
           if (direction === "right" && victim.x < caster.x) return;
         }
         this.hitIds.push(victim?.id);
-        scene.socket.emit("hit", { ids: this.hitIds, spellName });
+        scene.socket.emit("hit", { ids: this.hitIds, abilitySlot });
       }
     });
   }
