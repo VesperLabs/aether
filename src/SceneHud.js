@@ -57,6 +57,27 @@ function addInputListeners(scene) {
     scene
   );
   window.addEventListener(
+    "HERO_ABILITY",
+    (e) => {
+      const hero = mainScene?.hero;
+      const abilities = hero?.abilities;
+      const ability = abilities?.[e?.detail];
+
+      if (ability?.type === "spell") {
+        // Calculate the angle of the velocity
+        const castAngle = hero?.state?.lastAngle;
+        mainScene?.hero?.castSpell?.({
+          ilvl: ability?.ilvl,
+          caster: hero,
+          spellSlot: e?.detail,
+          spellName: ability?.base,
+          castAngle,
+        });
+      }
+    },
+    scene
+  );
+  window.addEventListener(
     "HERO_GRAB",
     (e) => {
       mainScene?.hero?.doGrab?.();

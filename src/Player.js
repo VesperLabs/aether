@@ -29,6 +29,7 @@ class Player extends Character {
     this.gold = data?.gold;
     this.npcKills = data?.npcKills;
     this.quests = data?.quests;
+    this.abilities = data?.abilities;
     this.drawCharacterFromUserData();
     this.checkAttackHands();
     this.updateHpBar();
@@ -132,6 +133,17 @@ class Player extends Character {
 
     this.scene.add.existing(new Spell(this.scene, { id: null, caster: this, spellName }));
   }
+  castSpell(spellData) {
+    const { state, isHero } = this || {};
+    if (isHero) {
+      if (state.isDead || state.isCasting) return;
+      const { spellSlot, castAngle } = spellData || {};
+      this.scene.socket.emit("castSpell", { spellSlot, castAngle });
+    }
+    state.isCasting = true;
+    state.lastCast = Date.now();
+    this.scene.add.existing(new Spell(this.scene, { ...spellData, caster: this }));
+  }
   doGrab() {
     const GRAB_RANGE = 32;
     const { scene } = this;
@@ -154,9 +166,6 @@ class Player extends Character {
       this.scene.socket.emit("grabLoot", { lootId: closestLoot?.id, direction: this.direction });
     }
   }
-  castSpell(spellData) {
-    this.scene.add.existing(new Spell(this.scene, { ...spellData, caster: this }));
-  }
   setBubbleMessage() {
     this.bubble.setMessage(this.state.bubbleMessage);
   }
@@ -169,6 +178,7 @@ class Player extends Character {
     this.body.setVelocity(0, 0);
     this.state.isDead = true;
     this.state.isAttacking = false;
+    this.state.isCasting = false;
     this.shadow.setVisible(false);
     this.chest.setVisible(false);
     this.face.setVisible(false);
@@ -264,6 +274,7 @@ class Player extends Character {
     drawFrame(this);
     checkIsFlash(this, delta);
     this.checkAttackReady(delta);
+    this.checkCastReady(delta);
     this.setBubbleMessage();
     this.setTalkMenu();
     if (this?.isHero) this.triggerSecondAttack();
@@ -396,6 +407,8 @@ function updateCurrentSpeed(player) {
     player.action = "stand";
   } else {
     player.action = "walk";
+    /* For casting spells */
+    player.state.lastAngle = Math.atan2(player.body.velocity.y, player.body.velocity.x);
   }
 }
 

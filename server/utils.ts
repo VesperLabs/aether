@@ -62,6 +62,7 @@ function getCharacterState(p: Character): CharacterState {
     charClass: p?.charClass,
     npcKills: p?.npcKills,
     quests: p?.getQuests(),
+    abilities: p?.abilities,
     gold: p?.gold,
   };
 }

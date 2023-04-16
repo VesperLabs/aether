@@ -2,7 +2,10 @@ import Phaser from "phaser";
 const Sprite = Phaser.GameObjects.Sprite;
 const BLANK_TEXTURE = "human-blank";
 class Spell extends Phaser.GameObjects.Container {
-  constructor(scene, { id, caster, spellName, maxVisibleTime, maxActiveTime, state }) {
+  constructor(
+    scene,
+    { id, caster, spellName, maxVisibleTime, maxActiveTime, state, castAngle, ilvl }
+  ) {
     super(scene, caster.x, caster.y);
     this.scene = scene;
     this.id = id;
@@ -18,9 +21,9 @@ class Spell extends Phaser.GameObjects.Container {
     scene.physics.add.existing(this);
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
-    this.setDepth(this?.caster?.depth - 10);
     this.isAttack = ["attack_left", "attack_right"]?.includes(spellName);
     if (this.isAttack) {
+      this.setDepth(this?.caster?.depth - 10);
       if (spellName === "attack_left") {
         this.canHitSelf = false;
         this.spell.setTexture("misc-slash");
@@ -76,13 +79,16 @@ class Spell extends Phaser.GameObjects.Container {
       this.caster.add(this.spell);
     }
     if (spellName == "fireball") {
-      // this.spell = new Phaser.GameObjects.Sprite(this.scene, 0, 0, "spell-anim-fireball", 0);
-      // scene.physics.add.existing(this);
-      // this.body.setCircle(32, -32, -32);
-      // const angle = Phaser.Math.Angle.Between(this.x, this.y, cursor.x, cursor.y);
-      // this.scene.physics.velocityFromRotation(angle, 300, this.body.velocity);
-      // this.setRotation(angle);
-      // this.setScale(0.5);
+      const spellSize = 10;
+      this.maxVisibleTime = maxVisibleTime || 1000;
+      this.maxActiveTime = maxActiveTime || 1000;
+      this.setDepth(this?.caster?.depth + 10);
+      this.spell.setTexture("spell-anim-fireball");
+      this.body.setCircle(spellSize, -spellSize, -spellSize);
+      this.scene.physics.velocityFromRotation(castAngle, 300, this.body.velocity);
+      this.spell.setRotation(castAngle);
+      this.spell.setScale(0.25 + ilvl * 0.05);
+      this.add(this.spell);
     }
     if (spellName == "chakra") {
       // this.spell = new Phaser.GameObjects.Sprite(this.scene, 0, 0, "spell-anim-chakra", 0);

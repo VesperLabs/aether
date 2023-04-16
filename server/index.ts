@@ -292,6 +292,10 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           from.itemId = player?.equipment?.[from?.slot]?.id;
           fromItem = cloneObject(player?.findEquipmentById(from?.itemId))?.item;
         }
+        if (from?.location === "abilities") {
+          from.itemId = player?.abilities?.[from?.slot]?.id;
+          fromItem = cloneObject(player?.findAbilityById(from?.itemId))?.item;
+        }
         if (from?.location === "shop") {
           const npcId = player?.state?.targetNpcId;
           const shopSlot = scene?.npcs?.[npcId]?.keeperData?.shop?.[from?.slot];
@@ -311,6 +315,10 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         if (to?.location === "equipment") {
           to.itemId = player?.equipment?.[to?.slot]?.id;
           toItem = cloneObject(player?.findEquipmentById(to?.itemId))?.item;
+        }
+        if (to?.location === "abilities") {
+          to.itemId = player?.abilities?.[to?.slot]?.id;
+          toItem = cloneObject(player?.findAbilityById(to?.itemId))?.item;
         }
 
         /* Same item, return */
@@ -332,12 +340,28 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           player.equipment[from?.slot] = toItem;
         }
 
+        /* Abilities -> Inventory */
+        if (from?.location === "abilities" && to?.location === "inventory") {
+          if (toItem && !checkSlotsMatch(toItem?.type, fromItem?.type)) return;
+          player?.clearAbilitySlot(from?.slot);
+          player.inventory[to?.slot] = fromItem;
+          player.abilities[from?.slot] = toItem;
+        }
+
         /* Inventory -> Equipment */
         if (from?.location === "inventory" && to?.location === "equipment") {
           /* Slots don't match */
           if (fromItem && !checkSlotsMatch(fromItem?.slot, to?.slot)) return;
           player?.deleteInventoryItemAtId(from?.itemId);
           player.equipment[to?.slot] = fromItem;
+          player.inventory[from?.slot] = toItem;
+        }
+
+        /* Inventory -> Abilities */
+        if (from?.location === "inventory" && to?.location === "abilities") {
+          if (fromItem?.type !== "spell") return;
+          player?.deleteInventoryItemAtId(from?.itemId);
+          player.abilities[to?.slot] = fromItem;
           player.inventory[from?.slot] = toItem;
         }
 
@@ -348,6 +372,13 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           player?.clearEquipmentSlot(from?.slot);
           player.equipment[to?.slot] = fromItem;
           player.equipment[from?.slot] = toItem;
+        }
+
+        /* Abilities -> Abilities */
+        if (from?.location === "abilities" && to?.location === "abilities") {
+          player?.clearAbilitySlot(from?.slot);
+          player.abilities[to?.slot] = fromItem;
+          player.abilities[from?.slot] = toItem;
         }
 
         /* Inventory -> Shop */

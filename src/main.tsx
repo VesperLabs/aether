@@ -10,7 +10,7 @@ import VJoyPlugin from "./Joystick";
 import SceneHud from "./SceneHud";
 import "./style.css";
 
-const debug = process.env.DEBUG === "true";
+const debug = process.env.DEBUG;
 const SERVER_URL = process.env.SERVER_URL as string;
 const socket = socketIOClient(SERVER_URL);
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
@@ -48,6 +48,7 @@ const game = new Phaser.Game({
   physics: {
     default: "arcade",
     arcade: {
+      //@ts-ignore2
       debug,
       gravity: {
         y: 0,

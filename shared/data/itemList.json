@@ -754,7 +754,7 @@
       "fireball": {
         "ilvl": 1,
         "name": "Fireball",
-        "base": "spell",
+        "base": "fireball",
         "slot": "spell",
         "texture": "spell-fire",
         "target": "enemy",
@@ -764,6 +764,20 @@
         },
         "mpCost": 5,
         "cost": 100
+      },
+      "fireball-2": {
+        "ilvl": 2,
+        "name": "Fireball",
+        "base": "fireball",
+        "slot": "spell",
+        "texture": "spell-fire",
+        "target": "enemy",
+        "effects": {
+          "minFireDamage": 8,
+          "maxFireDamage": 10
+        },
+        "mpCost": 10,
+        "cost": 200
       }
     }
   }

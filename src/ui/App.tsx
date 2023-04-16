@@ -19,6 +19,7 @@ import {
   MenuProfile,
   MenuStats,
   MenuQuests,
+  MenuAbilities,
 } from "./";
 import { isMobile, getSpinDirection } from "../utils";
 import "react-tooltip/dist/react-tooltip.css";
@@ -40,6 +41,7 @@ interface AppContextValue {
   setTabStats: React.Dispatch<React.SetStateAction<boolean>>;
   setTabQuests: React.Dispatch<React.SetStateAction<boolean>>;
   setDropItem: React.Dispatch<React.SetStateAction<Item | null | false>>;
+  setTabAbilities: React.Dispatch<React.SetStateAction<boolean>>;
   messages: Message[];
   bottomOffset: number;
   dropItem: any;
@@ -49,6 +51,7 @@ interface AppContextValue {
   tabChat: boolean;
   tabProfile: boolean;
   tabStats: boolean;
+  tabAbilities: boolean;
   keeper: any; // data related to NPC you are chatting with
   tabKeeper: boolean;
   hero: CharacterState;
@@ -76,6 +79,7 @@ function App({ socket, debug, game }) {
   const [tabProfile, setTabProfile] = useState(false);
   const [tabStats, setTabStats] = useState(false);
   const [tabQuests, setTabQuests] = useState(false);
+  const [tabAbilities, setTabAbilities] = useState(false);
   const [showButtonChat, setShowButtonChat] = useState(false);
   const [bottomOffset, setBottomOffset] = useState(0);
 
@@ -221,7 +225,9 @@ function App({ socket, debug, game }) {
           setTabProfile,
           setTabStats,
           setTabQuests,
+          setTabAbilities,
           tabQuests,
+          tabAbilities,
           tabStats,
           messages,
           bottomOffset,
@@ -258,26 +264,40 @@ function App({ socket, debug, game }) {
   );
 }
 
-const SkillButton = ({ eventName, iconName, size, keyboardKey }) => {
+const SkillButton = ({
+  eventName,
+  eventDetail,
+  icon,
+  iconName,
+  size,
+  keyboardKey,
+}: {
+  eventDetail?: any;
+  eventName: string;
+  icon?: string;
+  iconName?: string;
+  size: number;
+  keyboardKey: string;
+}) => {
   return (
     <Box sx={{ position: "relative", flexShrink: 0 }}>
       <Button
         variant="menu"
         onTouchStart={(e) => {
-          window.dispatchEvent(new Event(eventName));
+          window.dispatchEvent(new CustomEvent(eventName, { detail: eventDetail }));
         }}
         sx={{
           p: size,
           borderRadius: "100%",
         }}
       >
-        <Icon icon={`../assets/icons/${iconName}.png`} />
+        <Icon icon={icon || `../assets/icons/${iconName}.png`} />
       </Button>
       <KeyboardKey
         name={keyboardKey}
         hidden={isMobile}
         onKeyUp={(e: KeyboardEvent) => {
-          window.dispatchEvent(new KeyboardEvent(eventName));
+          window.dispatchEvent(new CustomEvent(eventName, { detail: eventDetail }));
         }}
       />
     </Box>
@@ -286,6 +306,7 @@ const SkillButton = ({ eventName, iconName, size, keyboardKey }) => {
 
 const SkillButtons = () => {
   const { showButtonChat } = useAppContext();
+
   return (
     <Flex
       sx={{
@@ -306,6 +327,8 @@ const SkillButtons = () => {
 };
 
 const AbilityButtons = () => {
+  const { hero } = useAppContext();
+  const abilities = Object.entries(hero?.abilities || {});
   return (
     <Flex
       sx={{
@@ -316,10 +339,23 @@ const AbilityButtons = () => {
         alignItems: "flex-end",
       }}
     >
-      <SkillButton size={16} iconName="blank" eventName="ABILITY_4" keyboardKey="4" />
-      <SkillButton size={16} iconName="blank" eventName="ABILITY_3" keyboardKey="3" />
-      <SkillButton size={16} iconName="blank" eventName="ABILITY_2" keyboardKey="2" />
-      <SkillButton size={16} iconName="blank" eventName="ABILITY_1" keyboardKey="1" />
+      {abilities
+        ?.filter(([_, item]) => !!item)
+        ?.map(([slotKey, item]) => {
+          const icon = item
+            ? `../assets/atlas/${item?.type}/${item?.texture}.png`
+            : "./assets/icons/blank.png";
+          return (
+            <SkillButton
+              key={slotKey}
+              size={16}
+              icon={icon}
+              eventName={`HERO_ABILITY`}
+              eventDetail={slotKey}
+              keyboardKey={slotKey}
+            />
+          );
+        })}
     </Flex>
   );
 };
@@ -345,6 +381,8 @@ const MenuBar = () => {
     tabQuests,
     setTabQuests,
     socket,
+    tabAbilities,
+    setTabAbilities,
   } = useAppContext();
 
   const escCacheKey = JSON.stringify([
@@ -356,6 +394,7 @@ const MenuBar = () => {
     tabProfile,
     tabStats,
     tabQuests,
+    tabAbilities,
   ]);
 
   return (
@@ -378,6 +417,7 @@ const MenuBar = () => {
         </Flex>
       </Flex>
       {tabKeeper && <MenuKeeper />}
+      <MenuAbilities />
       <MenuEquipment />
       <MenuInventory />
       <MenuProfile />
@@ -434,6 +474,12 @@ const MenuBar = () => {
           )}
         </MenuButton>
         <MenuButton
+          keyboardKey="S"
+          iconName="book"
+          isActive={tabAbilities}
+          onClick={() => setTabAbilities((prev) => !prev)}
+        />
+        <MenuButton
           keyboardKey="Q"
           iconName="quests"
           isActive={tabQuests}
@@ -441,7 +487,7 @@ const MenuBar = () => {
         />
         <MenuButton
           keyboardKey="Z"
-          iconName="book"
+          iconName="stats"
           isActive={tabStats}
           onClick={() => setTabStats((prev) => !prev)}
         />
@@ -470,6 +516,7 @@ const MenuBar = () => {
           onKeyUp={(e) => {
             if (dropItem) return setDropItem(false);
             if (tabKeeper) return setTabKeeper(false);
+            if (tabAbilities) return setTabAbilities(false);
             if (tabEquipment) return setTabEquipment(false);
             if (tabInventory) return setTabInventory(false);
             if (tabProfile) return setTabProfile(false);

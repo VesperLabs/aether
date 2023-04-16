@@ -57,6 +57,12 @@ class Player extends ServerCharacter implements Player {
 
     return { didLevel };
   }
+  findAbilityById(id: string): any {
+    const [slotName, foundItem] = Object.entries(this?.abilities).find(
+      ([_, slotItem]: [string, Item]) => slotItem?.id === id
+    ) || [null, null];
+    return { item: foundItem, slotName };
+  }
   findEquipmentById(id: string): any {
     const [slotName, foundItem] = Object.entries(this?.equipment).find(
       ([_, slotItem]: [string, Item]) => slotItem?.id === id
@@ -120,6 +126,10 @@ class Player extends ServerCharacter implements Player {
   clearEquipmentSlot(slotName: string) {
     if (!this?.equipment?.[slotName]) return;
     this.equipment[slotName] = null;
+  }
+  clearAbilitySlot(slotName: string) {
+    if (!this?.abilities?.[slotName]) return;
+    this.abilities[slotName] = null;
   }
 }
 

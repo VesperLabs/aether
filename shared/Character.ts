@@ -75,14 +75,17 @@ class Character extends Phaser.GameObjects.Container {
       lastCombat: Date.now(),
       lastRegen: Date.now(),
       lastAttack: Date.now(),
+      lastCast: Date.now(),
       lastFlash: Date.now(),
       setFlash: false,
       isIdle: true,
       isAttacking: false,
+      isCasting: false,
       hasWeaponRight: false,
       hasWeaponLeft: false,
       isDead: false,
       activeSets: [],
+      lastAngle: getInitialLastAngle(this.direction),
       ...state,
     };
     this.gold = gold;
@@ -125,6 +128,11 @@ class Character extends Phaser.GameObjects.Container {
     // if (p.action === "attack_left") attackDelay = p?.equipment?.handLeft?.stats?.attackDelay;
     if (Date.now() - this.state.lastAttack > delta + this?.stats?.attackDelay) {
       this.state.isAttacking = false;
+    }
+  }
+  checkCastReady(delta) {
+    if (Date.now() - this.state.lastCast > delta + this?.stats?.castDelay) {
+      this.state.isCasting = false;
     }
   }
   triggerSecondAttack() {
@@ -180,6 +188,17 @@ class Character extends Phaser.GameObjects.Container {
     if (this.scene) this.scene.physics.world.disable(this);
     super.destroy(true);
   }
+}
+
+function getInitialLastAngle(direction) {
+  let angle = 0;
+
+  if (direction === "up") angle = 270;
+  if (direction === "down") angle = 90;
+  if (direction === "left") angle = 180;
+  if (direction === "right") angle = 0;
+
+  return Phaser.Math.DegToRad(angle);
 }
 
 function capitalize(str) {

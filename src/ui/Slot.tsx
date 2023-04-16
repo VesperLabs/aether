@@ -306,7 +306,8 @@ function useItemEvents({ location, slotKey, item }) {
         }
       }
       /* Anywhere -> Anywhere */
-      if (dataset?.slotKey && dataset?.slotKey !== slotKey) {
+      if (dataset?.slotKey) {
+        if (dataset?.location === location && dataset?.slotKey === slotKey) return;
         return socket.emit("moveItem", {
           to: {
             slot: dataset?.slotKey,
