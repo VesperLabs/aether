@@ -167,9 +167,9 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         const player = scene.players[socketId];
         player.state.isDead = false;
         player.stats.hp = Math.floor(player.stats.maxHp);
-        if (player.stats.exp > 0) {
-          player.stats.exp = Math.floor(player.stats.exp * 0.9);
-        }
+        // if (player.stats.exp > 0) {
+        //   player.stats.exp = Math.floor(player.stats.exp * 0.9);
+        // }
         scene.db.updateUser(scene.players?.[socketId]);
         io.to(player?.roomName).emit("respawnPlayer", player?.socketId);
       });
