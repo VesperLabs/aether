@@ -113,6 +113,11 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         if (player?.state?.isDead || !ilvl || !base) return;
         if (player.canCastSpell(abilitySlot)) {
           player.modifyStat("mp", -mpCost);
+          io.to(player?.roomName).emit("modifyPlayerStat", {
+            socketId,
+            type: "mp",
+            amount: -mpCost,
+          });
           socket.to(player?.roomName).emit("playerCastSpell", { socketId, base, ilvl, castAngle });
         }
       });
@@ -178,13 +183,14 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       socket.on("hit", ({ ids, abilitySlot }) => {
         const hero: Player = scene.players[socketId];
         const roomName: string = hero?.roomName;
-        let didLevel: boolean = false;
+
         /* Create hitList for npcs */
         const hitList: Array<Hit> = [];
         const npcs: Array<Npc> = scene.roomManager.rooms[roomName]?.npcManager?.getNpcs();
         const players: Array<Player> =
           scene.roomManager.rooms[roomName]?.playerManager?.getPlayers();
 
+        let totalExpGain: number = 0;
         for (const npc of npcs) {
           /* TODO: verify location of hit before we consider it a hit */
           if (!ids?.includes(npc.id)) continue;
@@ -195,7 +201,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           if (newHit?.type === "death") {
             npc.dropLoot(hero?.stats?.magicFind);
             /* Add EXP, check if we leveled */
-            didLevel = hero.assignExp(npc?.stats?.expValue || 0);
+            totalExpGain += parseInt(npc?.stats?.expValue) || 0;
             /* Add the npc to the players kill list */
             hero.addNpcKill(npc);
           }
@@ -203,7 +209,16 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         }
         /* Send exp update to client */
         if (hitList?.some((hit) => hit.type === "death")) {
-          io.to(roomName).emit("playerUpdate", getCharacterState(hero), { didLevel });
+          const didLevel = hero.assignExp(totalExpGain);
+          if (didLevel) {
+            io.to(roomName).emit("playerUpdate", getCharacterState(hero), { didLevel });
+          } else {
+            io.to(roomName).emit("modifyPlayerStat", {
+              socketId,
+              type: "exp",
+              amount: totalExpGain,
+            });
+          }
         }
         for (const player of players) {
           if (!ids?.includes(player.id)) continue;

@@ -94,7 +94,7 @@ export default {
     hr: {
       my: 2,
       color: tColors.white,
-      opacity: 0.15,
+      opacity: 0.1,
       width: "100%",
     },
     root: {

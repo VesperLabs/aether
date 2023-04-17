@@ -199,7 +199,7 @@ class ServerCharacter extends Character {
       };
     }
     return {
-      type: "hit",
+      type: "hp",
       isCritical: false,
       amount: -reducedDamage,
       from: this.id,
@@ -251,7 +251,7 @@ class ServerCharacter extends Character {
       };
     }
     return {
-      type: "hit",
+      type: "hp",
       isCritical,
       amount: -reducedDamage,
       from: this.id,
@@ -294,6 +294,8 @@ class ServerCharacter extends Character {
       this.baseStats.intelligence += 1;
       this.baseStats.vitality += 1;
       this.baseStats.level++;
+      // this.stats.hp = this.baseStats.maxHp;
+      // this.stats.mp = this.baseStats.maxMp;
       didLevel = true;
     }
     this.calculateStats();

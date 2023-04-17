@@ -5,11 +5,9 @@ import { Tooltip } from "react-tooltip";
 const combineDamageStats = (stats) =>
   Object.entries(stats).reduce((acc, [key, value]) => {
     if (key.includes("Damage")) {
-      const keyWithoutPrefix = key.replace("min", "").replace("max", "");
-      if (!acc.hasOwnProperty(keyWithoutPrefix)) {
-        acc[keyWithoutPrefix] = `${stats[`min${keyWithoutPrefix}`]} - ${
-          stats[`max${keyWithoutPrefix}`]
-        }`;
+      const identifier = key.replace("min", "").replace("max", "");
+      if (!acc.hasOwnProperty(identifier)) {
+        acc[identifier] = `${stats?.[`min${identifier}`] || 0} - ${stats[`max${identifier}`] || 0}`;
       }
     } else {
       acc[key] = value;
@@ -50,12 +48,7 @@ const ItemTooltip = ({ item, show }) => {
         <Text color={item?.rarity}>
           {item?.rarity} {item?.base}
         </Text>
-        <Divider />
-        {item?.slot !== "stackable" && (
-          <Text>
-            <Label>Slot:</Label> {item?.slot}
-          </Text>
-        )}
+        {Object.keys(combinedStats)?.length > 0 && <TextDivider>Stats</TextDivider>}
         {Object.keys(combinedStats).map((key) => (
           <Text key={key}>
             <Label>{key}:</Label> {combinedStats[key]}
@@ -66,6 +59,7 @@ const ItemTooltip = ({ item, show }) => {
             <Label>{key}:</Label> {item?.percentStats[key]}%
           </Text>
         ))}
+        {Object.keys(combinedEffects)?.length > 0 && <TextDivider>Effects</TextDivider>}
         {Object.keys(combinedEffects).map((key) => {
           if (key == "hp") {
             return (
@@ -81,25 +75,28 @@ const ItemTooltip = ({ item, show }) => {
             );
           }
         })}
-        {item?.setBonus && <Divider />}
-        {item?.setBonus && <Text color={isSetActive ? "set" : "gray.500"}>{setDetails?.name}</Text>}
-        {item?.setBonus && <Divider />}
-        {item?.setBonus &&
-          Object.keys(item?.setBonus.percentStats).map((key) => {
-            return (
-              <Text key={key} color={isSetActive ? "set" : "gray.500"}>
-                <Label>{key}:</Label> {item?.setBonus.percentStats[key]}%
-              </Text>
-            );
-          })}
-        {item?.setBonus &&
-          Object.keys(item?.setBonus.stats).map((key) => {
-            return (
-              <Text key={key} color={isSetActive ? "set" : "gray.500"}>
-                <Label>{key}:</Label> {item?.setBonus.stats[key]}
-              </Text>
-            );
-          })}
+        {item?.setBonus && (
+          <>
+            <TextDivider>Set Bonus</TextDivider>
+            <Text color={isSetActive ? "set" : "gray.500"}>{setDetails?.name}</Text>
+            <Divider my={1} />
+            {Object.keys(item?.setBonus.percentStats).map((key) => {
+              return (
+                <Text key={key} color={isSetActive ? "set" : "gray.500"}>
+                  <Label>{key}:</Label> {item?.setBonus.percentStats[key]}%
+                </Text>
+              );
+            })}
+            {Object.keys(item?.setBonus.stats).map((key) => {
+              return (
+                <Text key={key} color={isSetActive ? "set" : "gray.500"}>
+                  <Label>{key}:</Label> {item?.setBonus.stats[key]}
+                </Text>
+              );
+            })}
+          </>
+        )}
+
         <Divider />
         <Flex sx={{ alignItems: "center", gap: 2 }}>
           <Flex sx={{ alignItems: "center", gap: "2px" }}>
@@ -117,5 +114,12 @@ const ItemTooltip = ({ item, show }) => {
     </Tooltip>
   );
 };
+
+const TextDivider = ({ children }) => (
+  <>
+    <Divider sx={{ pt: 2, zIndex: -1 }} />
+    <Text sx={{ mt: -3, pb: 2, mb: -1, color: "gray.500" }}>{children}</Text>
+  </>
+);
 
 export default ItemTooltip;

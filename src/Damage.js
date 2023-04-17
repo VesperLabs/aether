@@ -16,11 +16,22 @@ class Damage extends Container {
     this.setDepth(99999);
     this.victim.hpBar.setVisible(true);
     if (this.victim.kind === "nasty") this.victim.userName.setVisible(true);
+    const isPositive = hit?.amount >= 0;
     const damageText = new BitmapText(scene, 0, 0, "nin-light", hit.amount, damageSize);
+    let show = true;
     switch (hit.type) {
-      case "healHp":
-        text = "+" + text;
-        damageText.setTint("0x99FF99");
+      case "hp":
+        if (isPositive) {
+          text = "+" + text;
+          damageText.setTint("0x99FF99");
+        } else {
+          text = text;
+          if (this.victim.isHero) {
+            damageText.setTint("0xFFFFFF");
+          } else {
+            damageText.setTint("0xFF6666");
+          }
+        }
         break;
       case "miss":
         text = "miss!";
@@ -38,17 +49,12 @@ class Damage extends Container {
           damageText.setTint("0xFFFFFF");
         }
         break;
-      case "hit":
-        text = text;
-        if (this.victim.isHero) {
-          damageText.setTint("0xFFFFFF");
-        } else {
-          damageText.setTint("0xFF6666");
-        }
-        break;
       case "exp":
         text = text + " XP";
         damageText.setTint("0xEECCFF");
+        break;
+      case "mp":
+        show = false;
         break;
       case "death":
         text = text;
@@ -68,13 +74,13 @@ class Damage extends Container {
     damageText.setText(text);
     damageText.setX(-damageText.width / 2);
     damageText.setY(-damageText.height / 2);
-    this.add(damageText);
+    if (show) this.add(damageText);
 
     scene.tweens.add({
       targets: damageText,
       props: {
         x: {
-          value: () => this.randomRange(12 - damageText.width / 2),
+          value: () => this.randomRange(12 - damageText.width / 4),
           ease: "Power1",
         },
         y: {

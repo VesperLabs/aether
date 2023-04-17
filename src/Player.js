@@ -36,10 +36,10 @@ class Player extends Character {
   }
   doRegen() {
     if (this.state.doHpRegen) {
-      this.takeHit({ type: "healHp", amount: this?.stats?.regenHp });
+      this.takeHit({ type: "hp", amount: this?.stats?.regenHp });
     }
     if (this.state.doMpRegen) {
-      this.takeHit({ type: "healMp", amount: this?.stats?.regenMp });
+      this.takeHit({ type: "mp", amount: this?.stats?.regenMp });
     }
   }
   initSpriteLayers() {
@@ -139,7 +139,6 @@ class Player extends Character {
       if (state.isDead || state.isCasting) return;
       const { abilitySlot, castAngle } = spellData || {};
       if (!this.canCastSpell(abilitySlot)) return;
-
       this.scene.socket.emit("castSpell", { abilitySlot, castAngle });
     }
     state.isCasting = true;
@@ -244,25 +243,32 @@ class Player extends Character {
     }
   }
   takeHit(hit) {
-    const { stats, state } = this;
+    const { stats, state, scene } = this || {};
+
+    const { type } = hit || {};
+    const isPositive = hit?.amount >= 0;
     if (state.isDead) return;
-    if (hit?.type !== "healMp") this.scene.add.existing(new Damage(this.scene, this, hit));
-    if (hit.type == "death") {
-      stats.hp = 0;
-      this.doDeath();
-    } else if (hit.type == "healHp") {
-      this.modifyStat("hp", hit?.amount);
-      this.state.lastFlash = Date.now();
-      this.state.isFlash = true;
-      this.doFlashAnimation("0x00FF00");
-    } else if (hit.type == "healMp") {
-      this.modifyStat("mp", hit?.amount);
-    } else {
-      this.modifyStat("hp", hit?.amount);
-      this.state.lastFlash = Date.now();
-      this.state.isFlash = true;
-      this.doFlashAnimation("0xFF0000");
+    scene.add.existing(new Damage(this.scene, this, hit));
+
+    switch (type) {
+      case "death":
+        stats.hp = 0;
+        this.doDeath();
+        break;
+      case "hp":
+        this.modifyStat("hp", hit?.amount);
+        this.doFlashAnimation(isPositive ? "0x00FF00" : "0xFF0000");
+        this.state.lastFlash = Date.now();
+        this.state.isFlash = true;
+        break;
+      case "mp":
+        this.modifyStat("mp", hit?.amount);
+        break;
+      case "exp":
+        this.modifyStat("exp", hit?.amount);
+        break;
     }
+
     /* Not sure events like this is the best approach */
     if (this?.isHero) {
       window.dispatchEvent(new Event("UPDATE_HUD"));

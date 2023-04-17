@@ -14,7 +14,8 @@ class Spell extends Phaser.GameObjects.Container {
     this.spellName = spellName;
     this.abilitySlot = abilitySlot;
     this.frame = 0;
-    this.hitIds = []; //who has this npc hit?
+    this.touchedIds = []; //who has this npc hit?
+    this.hitIds = [];
     this.canHitSelf = false;
     this.maxVisibleTime = maxVisibleTime || 200;
     this.maxActiveTime = maxActiveTime || 100;
@@ -106,20 +107,22 @@ class Spell extends Phaser.GameObjects.Container {
     const isSpellActive = this.state.aliveTime < this.maxActiveTime;
     /* Only check collisions for hero if the spell is active */
     if (this.caster.isHero && isSpellActive) {
+      /* Prime it and then send it */
       this.checkCollisions();
+      this.checkCollisions(true);
     }
     /* Remove the spell */
     if (isSpellExpired) {
       this.destroy();
     }
   }
-  checkCollisions() {
+  checkCollisions(sendServer = false) {
     const { abilitySlot, caster, scene, canHitSelf } = this || {};
     const direction = caster?.direction;
     const npcs = scene.npcs?.getChildren() || [];
     const players = scene.players?.getChildren() || [];
     [...npcs, ...players]?.forEach((victim) => {
-      if (!victim || this.hitIds.includes(victim?.id)) return;
+      if (!victim || this.hitIds.includes(victim?.id) || victim?.state?.isDead) return;
       if (!canHitSelf && victim?.id == caster?.id) return;
       if (scene.physics.overlap(victim, this)) {
         /* For attacks, prevent collision behind the player */
@@ -129,8 +132,14 @@ class Spell extends Phaser.GameObjects.Container {
           if (direction === "left" && victim.x > caster.x) return;
           if (direction === "right" && victim.x < caster.x) return;
         }
-        this.hitIds.push(victim?.id);
-        scene.socket.emit("hit", { ids: this.hitIds, abilitySlot });
+        this.touchedIds.push(victim?.id);
+        if (sendServer) {
+          /* remove hitIds from touchedIds */
+          this.touchedIds = this.touchedIds.filter((id) => !this.hitIds.includes(id));
+          scene.socket.emit("hit", { ids: [...new Set(this.touchedIds)], abilitySlot });
+          /* track which touchedIds were sent to the server */
+          this.hitIds = [...this.hitIds, ...this.touchedIds];
+        }
       }
     });
   }
