@@ -355,7 +355,7 @@
         "shop": "You got to be a wizard to wear what I have, but here's some stuff for sale."
       },
       "quests": ["skull-finding", "chonks-hunting"],
-      "shop": []
+      "shop": [{ "item": ["spell", "common", "fireball"], "stock": 1 }]
     }
   }
 }

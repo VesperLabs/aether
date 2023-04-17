@@ -14,7 +14,6 @@ class Damage extends Container {
     this.victim = victim;
     this.duration = 1000;
     this.setDepth(99999);
-    this.victim.hpBar.setVisible(true);
     if (this.victim.kind === "nasty") this.victim.userName.setVisible(true);
     const isPositive = hit?.amount >= 0;
     const damageText = new BitmapText(scene, 0, 0, "nin-light", hit.amount, damageSize);
@@ -25,6 +24,7 @@ class Damage extends Container {
           text = "+" + text;
           damageText.setTint("0x99FF99");
         } else {
+          this.victim.hpBar.setVisible(true);
           text = text;
           if (this.victim.isHero) {
             damageText.setTint("0xFFFFFF");

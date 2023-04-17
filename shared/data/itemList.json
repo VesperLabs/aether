@@ -762,7 +762,7 @@
           "minFireDamage": 4,
           "maxFireDamage": 5
         },
-        "mpCost": 1,
+        "mpCost": 2,
         "cost": 100
       },
       "fireball-2": {
@@ -776,7 +776,7 @@
           "minFireDamage": 8,
           "maxFireDamage": 10
         },
-        "mpCost": 5,
+        "mpCost": 4,
         "cost": 200
       }
     }

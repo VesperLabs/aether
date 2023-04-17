@@ -46,7 +46,7 @@ const ItemTooltip = ({ item, show }) => {
           {item?.slot == "spell" && <span> (Level {item?.ilvl})</span>}
         </Text>
         <Text color={item?.rarity}>
-          {item?.rarity} {item?.base}
+          {item?.rarity} {item?.type === "spell" ? "spell" : item?.base}
         </Text>
         {Object.keys(combinedStats)?.length > 0 && <TextDivider>Stats</TextDivider>}
         {Object.keys(combinedStats).map((key) => (

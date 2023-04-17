@@ -222,27 +222,42 @@ const ItemBuilder = {
         });
       }
     }
-    if (rarity == "common") {
-      if (item.slot === "stackable") {
-        item.cost = 1 * ilvl;
-      } else {
-        item.cost = 5 * ilvl;
-      }
-    }
+
+    item.cost = getItemCost(item);
+
     if (rarity == "magic") {
       item.name = item.name + " " + randomMod.name;
-      item.cost = 10 * ilvl;
       item.key = item.key.replace("-common-", "-magic-");
     }
     if (rarity == "rare") {
-      item.cost = 50 * ilvl;
       item.key = item.key.replace("-common-", "-rare-");
     }
-    if (rarity == "unique" || rarity == "set") {
-      item.cost = 500 * ilvl;
-    }
+
     return new Item(item);
   },
+};
+
+const getItemCost = (item: Item) => {
+  const ilvl = item?.ilvl || 1;
+  const rarity = item?.rarity;
+  if (item?.cost) return item.cost;
+  if (rarity == "common") {
+    if (item.slot === "stackable") {
+      return 1 * ilvl;
+    } else {
+      return 5 * ilvl;
+    }
+  }
+  if (rarity == "magic") {
+    return 10 * ilvl;
+  }
+  if (rarity == "rare") {
+    return 50 * ilvl;
+  }
+  if (rarity == "unique" || rarity == "set") {
+    return 500 * ilvl;
+  }
+  return 1;
 };
 
 export default ItemBuilder;
