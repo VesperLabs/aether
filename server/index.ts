@@ -434,6 +434,12 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         if (from?.location === "shop" && to?.location === "inventory") {
           /* Always need a free slot */
           if (toItem) return;
+          if (player.gold < fromItem?.cost) {
+            return socket.emit("message", {
+              type: "error",
+              message: "You cannot afford this item",
+            });
+          }
           player.gold -= fromItem?.cost || 1;
           /* Remove inflation cost */
           fromItem.cost = Math.floor(fromItem.cost / SHOP_INFLATION);
@@ -445,6 +451,12 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           /* Always need a free slot */
           if (toItem) return;
           if (fromItem && !checkSlotsMatch(fromItem?.slot, to?.slot)) return;
+          if (player.gold < fromItem?.cost) {
+            return socket.emit("message", {
+              type: "error",
+              message: "You cannot afford this item",
+            });
+          }
           player.gold -= fromItem?.cost || 1;
           /* Remove inflation cost */
           fromItem.cost = Math.floor(fromItem.cost / SHOP_INFLATION);
