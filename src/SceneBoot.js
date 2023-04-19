@@ -51,23 +51,8 @@ class SceneBoot extends Phaser.Scene {
     this.load.image("joy-circle", "./assets/images/joy-circle.png");
     this.load.image("misc-bubble-tail", "./assets/images/bubble-tail.png");
     this.load.image("misc-slash", "./assets/images/slash.png");
-    this.load.spritesheet("misc-bubble", "./assets/images/bubble.png", {
-      frameWidth: 4,
-      frameHeight: 4,
-    });
-    this.load.spritesheet("misc-bars", "./assets/images/bars.png", {
-      frameWidth: 4,
-      frameHeight: 4,
-    });
-    this.load.spritesheet("spell-anim-fireball", "./assets/images/spell-anim-fireball.png", {
-      frameWidth: 150,
-      frameHeight: 150,
-    });
-    this.load.spritesheet("spell-anim-chakra", "./assets/images/spell-anim-chakra.png", {
-      frameWidth: 150,
-      frameHeight: 150,
-    });
     this.load.json("weaponAtlas", "./assets/atlas/weapon.json");
+    loadSpritesheets(this);
   }
   create() {
     createAnims(this.scene.manager.getScene("SceneMain"));
@@ -78,29 +63,28 @@ class SceneBoot extends Phaser.Scene {
 function createAnims(scene) {
   createWalkingAnims(scene);
   createStaticAnims(scene);
+  createSpellAnims(scene);
 }
-
-const SINGLE_FRAME_ANIM_KEYS = [
-  "up-attack_left",
-  "down-attack_left",
-  "left-attack_left",
-  "right-attack_left",
-  "up-attack_right",
-  "down-attack_right",
-  "left-attack_right",
-  "right-attack_right",
-  "up-stand",
-  "down-stand",
-  "left-stand",
-  "right-stand",
-];
-const MULTI_FRAME_ANIM_KEYS = ["up-walk", "down-walk", "left-walk", "right-walk"];
 
 /* Skip making animations for these types */
 const checkSkip = (asset) =>
   ["weapon.json", "icons.json", "stackable.json"]?.some((a) => asset?.atlas?.includes(a));
 
 function createStaticAnims(scene) {
+  const SINGLE_FRAME_ANIM_KEYS = [
+    "up-attack_left",
+    "down-attack_left",
+    "left-attack_left",
+    "right-attack_left",
+    "up-attack_right",
+    "down-attack_right",
+    "left-attack_right",
+    "right-attack_right",
+    "up-stand",
+    "down-stand",
+    "left-stand",
+    "right-stand",
+  ];
   const frameProps = { zeroPad: 0, start: "" };
   for (const asset of assetList) {
     /* Skip non animated atlases */
@@ -118,6 +102,7 @@ function createStaticAnims(scene) {
 }
 
 function createWalkingAnims(scene) {
+  const MULTI_FRAME_ANIM_KEYS = ["up-walk", "down-walk", "left-walk", "right-walk"];
   const frameProps = { zeroPad: 3, start: 0, end: 2 };
   const animProps = { repeat: -1, yoyo: true };
   const animKeys = MULTI_FRAME_ANIM_KEYS;
@@ -135,6 +120,35 @@ function createWalkingAnims(scene) {
       });
     }
   }
+}
+
+function createSpellAnims(scene) {
+  scene.anims.create({
+    key: "spell-anim-fireball",
+    frames: scene.anims.generateFrameNumbers("spell-anim-fireball", { start: 0, end: 5 }),
+    frameRate: 20,
+    repeat: true,
+    yoyo: true,
+  });
+}
+
+function loadSpritesheets(scene) {
+  scene.load.spritesheet("misc-bubble", "./assets/images/bubble.png", {
+    frameWidth: 4,
+    frameHeight: 4,
+  });
+  scene.load.spritesheet("misc-bars", "./assets/images/bars.png", {
+    frameWidth: 4,
+    frameHeight: 4,
+  });
+  scene.load.spritesheet("spell-anim-fireball", "./assets/images/spell-anim-fireball.png", {
+    frameWidth: 150,
+    frameHeight: 150,
+  });
+  scene.load.spritesheet("spell-anim-chakra", "./assets/images/spell-anim-chakra.png", {
+    frameWidth: 150,
+    frameHeight: 150,
+  });
 }
 
 export default SceneBoot;

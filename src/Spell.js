@@ -85,7 +85,7 @@ class Spell extends Phaser.GameObjects.Container {
       this.maxVisibleTime = maxVisibleTime || 1000;
       this.maxActiveTime = maxActiveTime || 1000;
       this.setDepth(this?.caster?.depth + 10);
-      this.spell.setTexture("spell-anim-fireball");
+      this.spell.play("spell-anim-fireball");
       this.body.setCircle(spellSize, -spellSize, -spellSize);
       this.scene.physics.velocityFromRotation(castAngle, 300, this.body.velocity);
       this.spell.setRotation(castAngle);
