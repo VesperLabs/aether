@@ -47,8 +47,10 @@ function fadeIn(scene) {
 }
 
 function addInputListeners(scene) {
+  const isTouch = scene.sys.game.device.input.touch;
   const pointer = scene.input.activePointer;
   const mainScene = scene.scene.manager.getScene("SceneMain");
+
   window.addEventListener(
     "HERO_ATTACK",
     (e) => {
@@ -62,9 +64,13 @@ function addInputListeners(scene) {
       const hero = mainScene?.hero;
       const abilities = hero?.abilities;
       const ability = abilities?.[e?.detail];
+      //const cursorPoint = pointer.positionToCamera(mainScene.cameras.main);
 
       if (ability?.type === "spell") {
         // Calculate the angle of the velocity
+        // const castAngle = isTouch
+        //   ? hero?.state?.lastAngle
+        //   : Phaser.Math.Angle.Between(hero.x, hero.y, cursorPoint.x, cursorPoint.y);
         const castAngle = hero?.state?.lastAngle;
         mainScene?.hero?.castSpell?.({
           ilvl: ability?.ilvl,
@@ -103,7 +109,7 @@ function addJoystick(scene) {
   scene.joystick = scene.add.joystick({
     sprites: { cap: new RoundButton(scene), base: new RoundButton(scene) },
     singleDirection: false,
-    maxDistanceInPixels: 25,
+    maxDistanceInPixels: 50,
     device: isTouch ? 1 : 0, // 0 for mouse pointer (computer), 1 for touch pointer (mobile)
   });
 }
