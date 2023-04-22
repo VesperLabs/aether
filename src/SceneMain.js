@@ -215,7 +215,9 @@ class SceneMain extends Phaser.Scene {
       if (!npc || npc?.state?.isDead) continue;
       /* Don't interpolate npcs who are respawning */
       const latestSnap = SI.vault.getById(npcSnapshot?.older);
+      const newestSnap = SI.vault.getById(npcSnapshot?.newer);
       if (npc?.state?.lastTeleport >= latestSnap?.time) continue;
+      if (npc?.state?.lastTeleport >= newestSnap?.time) continue;
       npc.setPosition(s.x, s.y);
       npc.direction = s?.direction;
       npc.vx = s.vx;
