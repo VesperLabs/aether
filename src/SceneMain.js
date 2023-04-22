@@ -14,6 +14,7 @@ import {
   getSpinDirection,
   distanceTo,
   MUSIC_VOLUME,
+  playAudio,
 } from "./utils";
 const SI = new SnapshotInterpolation(process.env.SERVER_FPS); // the server's fps is 15
 const { RectangleToRectangle } = Phaser.Geom.Intersects;
@@ -102,6 +103,9 @@ class SceneMain extends Phaser.Scene {
       const player = getPlayer(scene, socketId);
       const loot = getLoot(scene, lootId);
       loot?.destroy(true);
+      if (player?.isHero) {
+        playAudio({ scene, audioKey: "item-leather", caster: player });
+      }
       player.updateData(userData);
     });
 

@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { isMobile, getSpinDirection } from "./utils";
+import { playAudio, getSpinDirection } from "./utils";
 
 class SceneHud extends Phaser.Scene {
   constructor(socket) {
@@ -85,7 +85,16 @@ function addInputListeners(scene) {
   window.addEventListener(
     "HERO_GRAB",
     (e) => {
-      mainScene?.hero?.doGrab?.();
+      const hero = mainScene?.hero;
+      hero?.doGrab?.();
+    },
+    scene
+  );
+  window.addEventListener(
+    "ITEM_SELL",
+    (e) => {
+      const hero = mainScene?.hero;
+      playAudio({ scene: mainScene, audioKey: "item-sell", caster: hero });
     },
     scene
   );

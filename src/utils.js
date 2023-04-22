@@ -201,8 +201,8 @@ function distanceTo(first, second) {
 }
 
 /* TODO: Move to DB */
-const MUSIC_VOLUME = 0.25;
-const SFX_VOLUME = 0.5;
+const MUSIC_VOLUME = 0.15;
+const SFX_VOLUME = 0.6;
 
 const playAudio = ({ scene, audioKey, caster }) => {
   const heroPosition = scene.hero?.body?.position;

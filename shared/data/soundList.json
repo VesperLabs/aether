@@ -1,4 +1,6 @@
 [
   { "name": "melee-swing-1", "src": "./assets/audio/melee-swing-1.wav" },
-  { "name": "melee-hit-1", "src": "./assets/audio/melee-hit-1.ogg" }
+  { "name": "melee-hit-1", "src": "./assets/audio/melee-hit-1.ogg" },
+  { "name": "item-leather", "src": "./assets/audio/item-leather.wav" },
+  { "name": "item-sell", "src": "./assets/audio/item-sell.wav" }
 ]
