@@ -22,12 +22,53 @@ class ServerCharacter extends Character {
     });
   }
   calculateStats() {
-    const { equipment } = this;
+    const { equipment = {}, abilities = {}, stats = { hp: 0, mp: 0, exp: 0 } } = this;
     let totalPercentStats = {};
     let ns = cloneObject(this.baseStats);
     let setList = {};
     let activeSets = [];
-    this.stats = Object.keys(this?.stats)?.length ? this.stats : { hp: 0, mp: 0, exp: 0 };
+
+    /* Normal ability Stats */
+    Object.keys(abilities).forEach((eKey) => {
+      if (abilities[eKey]) {
+        if (abilities[eKey].setName) {
+          if (setList[abilities[eKey].setName]) {
+            //checking to see that the weapons are different parts of the set etc...
+            let amountThisItem = 0;
+            Object.keys(abilities).forEach((aKey) => {
+              if (abilities[aKey]) {
+                if (abilities[aKey].key == abilities[eKey].key) {
+                  amountThisItem++;
+                }
+              }
+            });
+            if (amountThisItem == 1) {
+              setList[abilities[eKey].setName]++;
+            }
+          } else {
+            setList[abilities[eKey].setName] = 1;
+          }
+        }
+        if (abilities[eKey].percentStats) {
+          Object.keys(abilities[eKey].percentStats).forEach((key) => {
+            if (!totalPercentStats[key]) {
+              totalPercentStats[key] = abilities[eKey].percentStats[key];
+            } else {
+              totalPercentStats[key] += abilities[eKey].percentStats[key];
+            }
+          });
+        }
+        if (abilities[eKey].stats) {
+          Object.keys(abilities[eKey].stats).forEach((key) => {
+            let itemStat = abilities[eKey].stats[key];
+            if (itemStat) {
+              ns[key] += itemStat;
+            }
+          });
+        }
+      }
+    });
+
     /* Normal equipment Stats */
     Object.keys(equipment).forEach((eKey) => {
       if (equipment[eKey]) {
@@ -63,19 +104,6 @@ class ServerCharacter extends Character {
             let itemStat = equipment[eKey].stats[key];
             if (itemStat) {
               ns[key] += itemStat;
-              // if (eKey == "handLeft") {
-              //   if (
-              //     (key == "minDamage" || key == "maxDamage") &&
-              //     equipment[eKey].type == "weapon"
-              //   ) {
-              //     /* Left handed weapons only add half damage */
-              //     ns[key] += Math.floor(itemStat / 2);
-              //   } else {
-              //     ns[key] += itemStat;
-              //   }
-              // } else {
-              //   ns[key] += itemStat;
-              // }
             }
           });
         }
@@ -122,7 +150,7 @@ class ServerCharacter extends Character {
     ns.regenMp = ns.regenMp || 0;
     ns.magicFind = ns.magicFind || 0;
     ns.maxExp = ns.maxExp || 0;
-    ns.exp = this.stats.exp || 0;
+    ns.exp = stats.exp || 0;
     ns.attackDelay = ns.attackDelay || 0;
     ns.minSpellDamage = Math.floor((ns.minSpellDamage || 0) + ns.intelligence * 0.03);
     ns.maxSpellDamage = Math.floor((ns.maxSpellDamage || 0) + ns.intelligence * 0.03);
@@ -154,12 +182,12 @@ class ServerCharacter extends Character {
     });
 
     //moving values
-    if (this.stats.hp < 1) ns.hp = ns.maxHp;
-    else if (this.stats.hp > ns.maxHp) ns.hp = ns.maxHp;
-    else ns.hp = this.stats.hp;
-    if (this.stats.mp < 1) ns.mp = ns.maxMp;
-    else if (this.stats.mp > ns.maxMp) ns.mp = ns.maxMp;
-    else ns.mp = this.stats.mp;
+    if (stats.hp < 1) ns.hp = ns.maxHp;
+    else if (stats.hp > ns.maxHp) ns.hp = ns.maxHp;
+    else ns.hp = stats.hp;
+    if (stats.mp < 1) ns.mp = ns.maxMp;
+    else if (stats.mp > ns.maxMp) ns.mp = ns.maxMp;
+    else ns.mp = stats.mp;
     this.stats = ns;
 
     this.state.activeSets = activeSets;
