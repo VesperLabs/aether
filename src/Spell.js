@@ -157,6 +157,9 @@ const playSpellAudio = ({ scene, spellName, caster, isAttack }) => {
   if (isAttack) {
     audioKey = "melee-swing-1";
   }
+  if (spellName === "fireball") {
+    audioKey = "spell-fireball";
+  }
   return playAudio({ scene, audioKey, caster });
 };
 
