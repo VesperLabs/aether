@@ -13,6 +13,7 @@ import {
   getLoot,
   getSpinDirection,
   distanceTo,
+  MUSIC_VOLUME,
 } from "./utils";
 const SI = new SnapshotInterpolation(process.env.SERVER_FPS); // the server's fps is 15
 const { RectangleToRectangle } = Phaser.Geom.Intersects;
@@ -386,7 +387,7 @@ function changeMusic(scene, roomName) {
   scene.load.once("complete", () => {
     sound = scene.sound.get(track);
     if (!sound) {
-      sound = scene.sound.add(track, { volume: 0.25, loop: true });
+      sound = scene.sound.add(track, { volume: MUSIC_VOLUME, loop: true });
     }
     sound.play();
   });

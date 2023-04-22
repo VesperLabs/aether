@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { assetList } from "../shared/Assets";
+import soundList from "../shared/data/soundList.json";
 import { mapList, mapImageList } from "../shared/Maps";
 
 class SceneBoot extends Phaser.Scene {
@@ -45,6 +46,9 @@ class SceneBoot extends Phaser.Scene {
     });
     assetList.forEach((asset) => {
       this.load.atlas(asset.texture, asset.src, asset.atlas);
+    });
+    soundList.forEach((asset) => {
+      this.load.audio(asset.name, asset.src);
     });
     this.load.bitmapFont("nin-dark", "./assets/fonts/dark.png", "./assets/fonts/font.xml");
     this.load.bitmapFont("nin-light", "./assets/fonts/light.png", "./assets/fonts/font.xml");

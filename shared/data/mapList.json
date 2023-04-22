@@ -1,22 +1,22 @@
 [
   {
     "name": "grassland",
-    "music": "./assets/audio/grassland.mp3",
+    "music": "./assets/music/grassland.mp3",
     "json": "./assets/tilemaps/grassland.json"
   },
   {
     "name": "grassland-2",
-    "music": "./assets/audio/grassland.mp3",
+    "music": "./assets/music/grassland.mp3",
     "json": "./assets/tilemaps/grassland-2.json"
   },
   {
     "name": "mine",
-    "music": "./assets/audio/mine.mp3",
+    "music": "./assets/music/mine.mp3",
     "json": "./assets/tilemaps/mine.json"
   },
   {
     "name": "town",
-    "music": "./assets/audio/town.mp3",
+    "music": "./assets/music/town.mp3",
     "json": "./assets/tilemaps/town.json"
   },
   {
@@ -25,7 +25,7 @@
   },
   {
     "name": "grassland-graveyard",
-    "music": "./assets/audio/graveyard.mp3",
+    "music": "./assets/music/graveyard.mp3",
     "json": "./assets/tilemaps/grassland-graveyard.json"
   },
   {

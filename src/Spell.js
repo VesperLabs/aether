@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { playAudio } from "./utils";
 const Sprite = Phaser.GameObjects.Sprite;
 const BLANK_TEXTURE = "human-blank";
 class Spell extends Phaser.GameObjects.Container {
@@ -77,7 +78,6 @@ class Spell extends Phaser.GameObjects.Container {
         yoyo: false,
         repeat: 0,
       });
-      /* Add to the caster so that it follows them (Some spells will be just this.add) */
       this.caster.add(this.spell);
     }
     if (spellName == "fireball") {
@@ -97,6 +97,8 @@ class Spell extends Phaser.GameObjects.Container {
       // scene.physics.add.existing(this);
       // this.body.setCircle(64, -64, -64);
     }
+
+    playSpellAudio({ scene, spellName, caster, isAttack: this.isAttack });
   }
   create() {}
   update(time, deltaTime) {
@@ -149,5 +151,13 @@ class Spell extends Phaser.GameObjects.Container {
     super.destroy(true);
   }
 }
+
+const playSpellAudio = ({ scene, spellName, caster, isAttack }) => {
+  let audioKey = null;
+  if (isAttack) {
+    audioKey = "melee-swing-1";
+  }
+  return playAudio({ scene, audioKey, caster });
+};
 
 export default Spell;

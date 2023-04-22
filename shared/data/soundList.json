@@ -1,0 +1,4 @@
+[
+  { "name": "melee-swing-1", "src": "./assets/audio/melee-swing-1.wav" },
+  { "name": "melee-hit-1", "src": "./assets/audio/melee-hit-1.ogg" }
+]
