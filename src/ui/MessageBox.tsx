@@ -26,7 +26,13 @@ const MessageBox = () => {
   }, [tabChat, messages]);
 
   return (
-    <Flex sx={{ flex: 1, flexDirection: "column", justifyContent: "flex-start" }}>
+    <Flex
+      sx={{
+        flex: 1,
+        flexDirection: "column",
+        justifyContent: "flex-start",
+      }}
+    >
       <Flex
         as={motion.div}
         //@ts-ignore
@@ -36,9 +42,9 @@ const MessageBox = () => {
         sx={{
           flex: 1,
           m: 2,
+          maxHeight: "20vh",
           flexDirection: "column",
           justifyContent: "end",
-          height: "20vh",
           maskImage: `linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1))`,
           borderRadius: 3,
         }}

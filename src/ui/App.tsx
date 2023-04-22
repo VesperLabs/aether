@@ -71,7 +71,34 @@ function App({ socket, debug, game }) {
   const [dropItem, setDropItem] = useState();
   const [hero, setHero] = useState<CharacterState>();
   const [keeper, setKeeper] = useState();
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k",
+    "l",
+    "m",
+    "n",
+    "o",
+    "p",
+    "q",
+    "r",
+    "s",
+    "t",
+    "u",
+    "v",
+    "w",
+    "x",
+    "y",
+    "z]",
+  ]);
   const [tabKeeper, setTabKeeper] = useState(false);
   const [tabEquipment, setTabEquipment] = useState(false);
   const [tabInventory, setTabInventory] = useState(false);
@@ -409,7 +436,7 @@ const MenuBar = () => {
         right: 0,
       }}
     >
-      <Flex sx={{ flex: 1 }}>
+      <Flex sx={{ flex: 1, alignItems: "end" }}>
         <MessageBox />
         <Flex sx={{ flexDirection: "column" }}>
           <AbilityButtons />
