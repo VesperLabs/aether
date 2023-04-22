@@ -386,9 +386,9 @@ function changeMusic(scene, roomName) {
   scene.load.once("complete", () => {
     sound = scene.sound.get(track);
     if (!sound) {
-      sound = scene.sound.add(track);
+      sound = scene.sound.add(track, { volume: 0.25, loop: true });
     }
-    sound.play({ volume: 0.25, loop: true });
+    sound.play();
   });
   scene.load.start();
 }
