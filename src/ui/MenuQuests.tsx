@@ -3,11 +3,13 @@ import questList from "../../shared/data/questList.json";
 const MenuQuests = () => {
   const { hero, tabQuests, setTabQuests } = useAppContext();
   const playerQuests = hero?.quests || [];
-  const quests = playerQuests?.map((q: PlayerQuest) => ({
-    id: q?.questId,
-    ...questList?.[q?.questId],
-    rewards: q?.rewards,
-  })) as Quest[];
+  const quests = playerQuests
+    ?.filter((q) => !q?.isCompleted)
+    .map((q: PlayerQuest) => ({
+      id: q?.questId,
+      ...questList?.[q?.questId],
+      rewards: q?.rewards,
+    })) as Quest[];
   return (
     <Flex
       sx={{
@@ -28,9 +30,11 @@ const MenuQuests = () => {
         </MenuHeader>
         <Flex
           sx={{
-            gap: 2,
             display: tabQuests ? "flex" : "none",
-            justifySelf: "start",
+            gap: 2,
+            flexWrap: "wrap",
+            justifyContent: "end",
+            maxWidth: 592,
           }}
         >
           {quests?.length === 0 && <Text>You are not on any quests.</Text>}
