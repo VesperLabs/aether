@@ -291,6 +291,7 @@ class Npc extends Character implements Npc {
         x: this?.x,
         y: this?.y,
         item: ItemBuilder.buildItem(item.type, item.rarity, item.key),
+        npcId: this?.id,
       });
     }
   }
