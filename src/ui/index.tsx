@@ -77,5 +77,7 @@ export const STYLE_NON_EMPTY = (rarity) =>
       `radial-gradient(circle, ${t.colors[rarity]} 0%, ${t.colors.shadow[50]} 150%)`,
   } as ThemeUIStyleObject);
 
+export const HUD_CONTAINER_ID = "hud-container";
+
 export const BLANK_IMAGE =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";

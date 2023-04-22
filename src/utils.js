@@ -222,6 +222,18 @@ const playAudio = ({ scene, audioKey, caster }) => {
   audio.play();
 };
 
+function calculateZoomLevel({
+  viewportArea,
+  baseZoom = 2,
+  maxZoom = 4,
+  minZoom = 2,
+  divisor = 1000000,
+} = {}) {
+  const viewportAreaInPixels = viewportArea; // multiply by square of pixel density
+  const zoomLevel = Phaser.Math.Clamp(baseZoom + viewportAreaInPixels / divisor, minZoom, maxZoom);
+  return zoomLevel;
+}
+
 export {
   SFX_VOLUME,
   MUSIC_VOLUME,
@@ -241,4 +253,5 @@ export {
   imageToCanvas,
   distanceTo,
   playAudio,
+  calculateZoomLevel,
 };

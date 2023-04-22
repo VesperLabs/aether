@@ -20,7 +20,7 @@ const MenuHeader = ({ icon, children, onClick = () => {} }: MenuHeaderProps) => 
         {icon && <Icon size={22} icon={`../assets/icons/${icon}.png`} />}
         <Text sx={{ flex: 1 }}>{children}</Text>
         {isMobile && (
-          <Box onTouchStart={() => onClick()} sx={{ pointerEvents: "all" }}>
+          <Box onTouchEnd={() => onClick()} sx={{ pointerEvents: "all" }}>
             ❌
           </Box>
         )}

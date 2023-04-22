@@ -8,6 +8,7 @@ import {
   STYLE_NON_EMPTY,
   BLANK_IMAGE,
   SlotAmount,
+  HUD_CONTAINER_ID,
 } from "./";
 import { resolveAsset } from "../../shared/Assets";
 import { useAppContext } from "./App";
@@ -38,7 +39,7 @@ const Slot = React.memo(
     ...props
   }: SlotProps) => {
     // component logic here
-    const { hero } = useAppContext();
+    const { hero, zoom } = useAppContext();
     const [imageData, setImageData] = useState(BLANK_IMAGE);
     const [dragging, setDragging] = useState(false);
     const [hovering, setHovering] = useState(false);
@@ -54,8 +55,8 @@ const Slot = React.memo(
 
     const handleMouseDown = (e) => {
       setPosition({
-        x: e.clientX - imageRef.current.offsetWidth / 2,
-        y: e.clientY - imageRef.current.offsetHeight / 2,
+        x: e.clientX / zoom - imageRef.current.offsetWidth / 2,
+        y: e.clientY / zoom - imageRef.current.offsetHeight / 2,
       });
       setDragging(true);
       setTarget(document.elementFromPoint(e.clientX, e.clientY));
@@ -65,8 +66,8 @@ const Slot = React.memo(
       if (dragging) e.preventDefault();
       e.stopPropagation();
       setPosition({
-        x: e.touches[0].clientX - imageRef.current.offsetWidth / 2,
-        y: e.touches[0].clientY - imageRef.current.offsetHeight / 2,
+        x: e.touches[0].clientX / zoom - imageRef.current.offsetWidth / 2,
+        y: e.touches[0].clientY / zoom - imageRef.current.offsetHeight / 2,
       });
       setDragging(true);
       setTimeout(
@@ -77,20 +78,40 @@ const Slot = React.memo(
 
     const handleMouseMove = (e) => {
       if (!dragging) return;
-      setPosition({
-        x: e.clientX - imageRef.current.offsetWidth / 2,
-        y: e.clientY - imageRef.current.offsetHeight / 2,
-      });
-      setTarget(document.elementFromPoint(e.clientX, e.clientY));
+      const x = e.clientX / zoom - imageRef.current.offsetWidth / 2;
+      const y = e.clientY / zoom - imageRef.current.offsetHeight / 2;
+      const t = document.elementFromPoint(e.clientX, e.clientY);
+      setPosition({ x, y });
+      if (t?.nodeName == "CANVAS") {
+        window.dispatchEvent(
+          new CustomEvent("ITEM_DRAG", {
+            detail: {
+              x: e.clientX,
+              y: e.clientY,
+            },
+          })
+        );
+      }
+      setTarget(t);
     };
 
     const handleTouchMove = (e) => {
       if (!dragging) return;
-      setPosition({
-        x: e.touches[0].clientX - imageRef.current.offsetWidth / 2,
-        y: e.touches[0].clientY - imageRef.current.offsetHeight / 2,
-      });
-      setTarget(document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY));
+      const x = e.touches[0].clientX / zoom - imageRef.current.offsetWidth / 2;
+      const y = e.touches[0].clientY / zoom - imageRef.current.offsetHeight / 2;
+      const t = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY);
+      setPosition({ x, y });
+      if (t?.nodeName == "CANVAS") {
+        window.dispatchEvent(
+          new CustomEvent("ITEM_DRAG", {
+            detail: {
+              x: e.touches[0].clientX,
+              y: e.touches[0].clientY,
+            },
+          })
+        );
+      }
+      setTarget(t);
     };
 
     const handleMouseUp = (e) => {
@@ -154,16 +175,6 @@ const Slot = React.memo(
         document.removeEventListener("touchmove", handleTouchMove);
       };
     }, [dragging, item]);
-
-    useLayoutEffect(() => {
-      if (target?.nodeName == "CANVAS") {
-        window.dispatchEvent(
-          new CustomEvent("ITEM_DRAG", {
-            detail: position,
-          })
-        );
-      }
-    }, [position]);
 
     const outerMouseBinds = {
       onMouseEnter: handleMouseEnter,

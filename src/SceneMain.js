@@ -15,6 +15,7 @@ import {
   distanceTo,
   MUSIC_VOLUME,
   playAudio,
+  calculateZoomLevel,
 } from "./utils";
 const SI = new SnapshotInterpolation(process.env.SERVER_FPS); // the server's fps is 15
 const { RectangleToRectangle } = Phaser.Geom.Intersects;
@@ -335,15 +336,7 @@ function moveHero(scene, time) {
 
 function setCamera(scene, hero) {
   const viewportArea = scene.cameras.main.width * scene.cameras.main.height;
-  const baseZoom = 2;
-  const maxZoom = 4;
-  const minZoom = 2;
-  const viewportAreaInPixels = viewportArea; // multiply by square of pixel density
-  const zoomLevel = Phaser.Math.Clamp(
-    Math.round(baseZoom + viewportAreaInPixels / 1000000),
-    minZoom,
-    maxZoom
-  );
+  const zoomLevel = Math.round(calculateZoomLevel({ viewportArea }));
 
   scene.cameras.main.setZoom(zoomLevel);
   scene.cameras.main.startFollow(hero, true);

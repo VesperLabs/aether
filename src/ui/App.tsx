@@ -20,8 +20,9 @@ import {
   MenuStats,
   MenuQuests,
   MenuAbilities,
+  HUD_CONTAINER_ID,
 } from "./";
-import { isMobile, getSpinDirection } from "../utils";
+import { isMobile, getSpinDirection, calculateZoomLevel } from "../utils";
 import "react-tooltip/dist/react-tooltip.css";
 import { useViewportSizeEffect } from "./hooks";
 import { Theme } from "theme-ui";
@@ -58,12 +59,26 @@ interface AppContextValue {
   socket: Socket;
   debug: boolean;
   game: Phaser.Game;
+  zoom: any;
 }
 
 const AppContext = createContext<AppContextValue>({} as AppContextValue);
 
 export const useAppContext = () => {
   return useContext(AppContext);
+};
+
+const getHudZoom = () => {
+  const supportsZoom = "zoom" in document.body.style;
+  if (!supportsZoom) return 1;
+  const viewportArea = window.innerWidth * window.innerHeight;
+  return calculateZoomLevel({
+    viewportArea,
+    baseZoom: 1,
+    maxZoom: 2,
+    minZoom: 1,
+    divisor: 2500000,
+  }).toFixed(1);
 };
 
 function App({ socket, debug, game }) {
@@ -82,6 +97,7 @@ function App({ socket, debug, game }) {
   const [tabAbilities, setTabAbilities] = useState(false);
   const [showButtonChat, setShowButtonChat] = useState(false);
   const [bottomOffset, setBottomOffset] = useState(0);
+  const [zoom, setZoom] = useState(getHudZoom());
 
   useEffect(() => {
     const onConnect = () => {
@@ -206,6 +222,7 @@ function App({ socket, debug, game }) {
     const bodyHeight = window.visualViewport.height;
     let offset = windowHeight - bodyHeight;
     setBottomOffset(offset > 0 ? offset : 0);
+    setZoom(getHudZoom());
   });
 
   return (
@@ -242,12 +259,15 @@ function App({ socket, debug, game }) {
           socket,
           debug,
           game,
+          zoom,
         }}
       >
         <Box
+          id={HUD_CONTAINER_ID}
           sx={{
-            width: "100%",
-            height: "100%",
+            zoom,
+            position: "fixed",
+            inset: 0,
             pointerEvents: "none",
             opacity: hero ? 1 : 0,
             transition: "opacity 1s ease-in-out",
