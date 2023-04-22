@@ -182,6 +182,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
 
       socket.on("hit", ({ ids, abilitySlot }) => {
         const hero: Player = scene.players[socketId];
+        if (!hero || hero?.state?.isDead) return;
         const roomName: string = hero?.roomName;
 
         /* Create hitList for npcs */
@@ -221,6 +222,8 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           }
         }
         for (const player of players) {
+          /* verify location of hit before we consider it a hit */
+
           if (!ids?.includes(player.id)) continue;
           const newHit = abilitySlot
             ? hero.calculateSpellDamage(player, abilitySlot)

@@ -382,7 +382,8 @@ function setPlayerCollision(scene, player, colliders = []) {
 }
 
 function changeMusic(scene, roomName) {
-  const track = getMapByName(roomName).music;
+  const track = getMapByName(roomName)?.music;
+  if (!track) return;
   let sound = scene.sound.get(track);
   if (sound && sound.isPlaying) {
     // Sound is already playing, do nothing
