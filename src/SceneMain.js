@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import Door from "../shared/Door";
+import { getMapByName } from "../shared/Maps";
 import { SnapshotInterpolation } from "@geckos.io/snapshot-interpolation";
 import {
   addPlayer,
@@ -25,6 +26,7 @@ class SceneMain extends Phaser.Scene {
   preload() {
     this.cursorKeys = this.input.keyboard.createCursorKeys();
     this.input.keyboard.removeCapture("SPACE");
+    this.bgMusic = null;
   }
 
   create() {
@@ -372,7 +374,27 @@ function setPlayerCollision(scene, player, colliders = []) {
   );
 }
 
+function changeMusic(scene, roomName) {
+  const track = getMapByName(roomName).music;
+  let sound = scene.sound.get(track);
+  if (sound && sound.isPlaying) {
+    // Sound is already playing, do nothing
+    return;
+  }
+  scene.sound.stopAll();
+  scene.load.audio(track, [track]);
+  scene.load.once("complete", () => {
+    sound = scene.sound.get(track);
+    if (!sound) {
+      sound = scene.sound.add(track);
+    }
+    sound.play({ volume: 0.25, loop: true });
+  });
+  scene.load.start();
+}
+
 function changeMap(scene, roomName) {
+  changeMusic(scene, roomName);
   const tileSetKey = roomName?.split("-")?.[0];
 
   scene.map = scene.make.tilemap({
