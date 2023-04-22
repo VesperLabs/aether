@@ -563,8 +563,9 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         const hairTextures = ["hair-1", "hair-2", "hair-3", "hair-4"];
         const faceTextures = ["face-1", "face-2", "face-3"];
         const genders = ["male", "female"];
-
         const player = scene?.players?.[socketId];
+        if (!player) return;
+
         const currentHairTextureIndex = hairTextures.indexOf(player?.profile?.hair?.texture);
         const currentFaceTextureIndex = faceTextures.indexOf(player?.profile?.face?.texture);
         const currentSkinTintIndex = skinTints.indexOf(player?.profile?.tint);
