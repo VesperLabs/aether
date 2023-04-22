@@ -28,39 +28,38 @@ class ServerCharacter extends Character {
     let setList = {};
     let activeSets = [];
 
-    /* Normal ability Stats */
-    Object.keys(abilities).forEach((eKey) => {
-      if (abilities[eKey]) {
-        if (abilities[eKey].setName) {
-          if (setList[abilities[eKey].setName]) {
-            //checking to see that the weapons are different parts of the set etc...
+    /* Get stats from equipped abilities and items */
+    Object.keys({ ...abilities, ...equipment }).forEach((eKey) => {
+      let item = abilities[eKey] || equipment[eKey];
+      if (item) {
+        if (item.setName) {
+          if (setList[item.setName]) {
             let amountThisItem = 0;
-            Object.keys(abilities).forEach((aKey) => {
-              if (abilities[aKey]) {
-                if (abilities[aKey].key == abilities[eKey].key) {
-                  amountThisItem++;
-                }
+            Object.keys({ ...abilities, ...equipment }).forEach((aKey) => {
+              let aItem = abilities[aKey] || equipment[aKey];
+              if (aItem && aItem.key == item.key) {
+                amountThisItem++;
               }
             });
             if (amountThisItem == 1) {
-              setList[abilities[eKey].setName]++;
+              setList[item.setName]++;
             }
           } else {
-            setList[abilities[eKey].setName] = 1;
+            setList[item.setName] = 1;
           }
         }
-        if (abilities[eKey].percentStats) {
-          Object.keys(abilities[eKey].percentStats).forEach((key) => {
+        if (item.percentStats) {
+          Object.keys(item.percentStats).forEach((key) => {
             if (!totalPercentStats[key]) {
-              totalPercentStats[key] = abilities[eKey].percentStats[key];
+              totalPercentStats[key] = item.percentStats[key];
             } else {
-              totalPercentStats[key] += abilities[eKey].percentStats[key];
+              totalPercentStats[key] += item.percentStats[key];
             }
           });
         }
-        if (abilities[eKey].stats) {
-          Object.keys(abilities[eKey].stats).forEach((key) => {
-            let itemStat = abilities[eKey].stats[key];
+        if (item.stats) {
+          Object.keys(item.stats).forEach((key) => {
+            let itemStat = item.stats[key];
             if (itemStat) {
               ns[key] += itemStat;
             }
@@ -69,47 +68,7 @@ class ServerCharacter extends Character {
       }
     });
 
-    /* Normal equipment Stats */
-    Object.keys(equipment).forEach((eKey) => {
-      if (equipment[eKey]) {
-        if (equipment[eKey].setName) {
-          if (setList[equipment[eKey].setName]) {
-            //checking to see that the weapons are different parts of the set etc...
-            let amountThisItem = 0;
-            Object.keys(equipment).forEach((aKey) => {
-              if (equipment[aKey]) {
-                if (equipment[aKey].key == equipment[eKey].key) {
-                  amountThisItem++;
-                }
-              }
-            });
-            if (amountThisItem == 1) {
-              setList[equipment[eKey].setName]++;
-            }
-          } else {
-            setList[equipment[eKey].setName] = 1;
-          }
-        }
-        if (equipment[eKey].percentStats) {
-          Object.keys(equipment[eKey].percentStats).forEach((key) => {
-            if (!totalPercentStats[key]) {
-              totalPercentStats[key] = equipment[eKey].percentStats[key];
-            } else {
-              totalPercentStats[key] += equipment[eKey].percentStats[key];
-            }
-          });
-        }
-        if (equipment[eKey].stats) {
-          Object.keys(equipment[eKey].stats).forEach((key) => {
-            let itemStat = equipment[eKey].stats[key];
-            if (itemStat) {
-              ns[key] += itemStat;
-            }
-          });
-        }
-      }
-    });
-    /* Sees what set items are worn, if enough are worn, add SET BONUS */
+    /* if more than one set item is equipped, we might have a set bonus */
     Object.keys(setList).forEach((key) => {
       if (ItemBuilder.getSetInfo(key)) {
         let setInfo = ItemBuilder.getSetInfo(key);
@@ -137,7 +96,7 @@ class ServerCharacter extends Character {
       }
     });
 
-    /* WIP: Percent Stats...  */
+    /* percentage stats need to be summed up and added last */
     Object.keys(totalPercentStats).forEach((key) => {
       let percentIncrease = Math.floor(ns[key] * (totalPercentStats[key] / 100));
       if (key == "vitality" || key == "dexterity" || key == "strength" || key == "intelligence")
