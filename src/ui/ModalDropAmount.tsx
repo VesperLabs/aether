@@ -49,6 +49,14 @@ const ModalDropAmount = () => {
                 },
                 from: { slot: slotKey, location, amount },
               });
+              // so that we can play the sell sound
+              if (location !== "shop") {
+                window.dispatchEvent(
+                  new CustomEvent("ITEM_SELL", {
+                    detail: item,
+                  })
+                );
+              }
             } else {
               socket.emit("dropItem", { item, location, amount });
             }

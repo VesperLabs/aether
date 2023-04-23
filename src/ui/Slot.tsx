@@ -308,11 +308,13 @@ function useItemEvents({ location, slotKey, item }) {
             });
           } else {
             // so that we can play the sell sound
-            window.dispatchEvent(
-              new CustomEvent("ITEM_SELL", {
-                detail: item,
-              })
-            );
+            if (location !== "shop") {
+              window.dispatchEvent(
+                new CustomEvent("ITEM_SELL", {
+                  detail: item,
+                })
+              );
+            }
             return socket.emit("moveItem", {
               to: {
                 location: "shop",
