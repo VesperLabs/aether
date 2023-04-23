@@ -8,7 +8,6 @@ import {
   STYLE_NON_EMPTY,
   BLANK_IMAGE,
   SlotAmount,
-  HUD_CONTAINER_ID,
 } from "./";
 import { resolveAsset } from "../../shared/Assets";
 import { useAppContext } from "./App";

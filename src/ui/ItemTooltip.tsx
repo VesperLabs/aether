@@ -1,6 +1,5 @@
-import { Flex, useAppContext, Text, Divider, Icon, TOOLTIP_STYLE } from "./";
+import { Flex, useAppContext, Text, Divider, Icon, Tooltip } from "./";
 import itemSetList from "../../shared/data/itemSetList.json";
-import { Tooltip } from "react-tooltip";
 
 const combineDamageStats = (stats) =>
   Object.entries(stats).reduce((acc, [key, value]) => {
@@ -27,7 +26,7 @@ const ItemTooltip = ({ item, show }) => {
   const combinedEffects = combineDamageStats(item?.effects);
 
   return (
-    <Tooltip id={item?.id} isOpen={show} style={TOOLTIP_STYLE}>
+    <Tooltip id={item?.id} isOpen={show}>
       <Flex
         sx={{
           fontWeight: "bold",

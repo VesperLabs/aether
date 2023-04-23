@@ -37,7 +37,7 @@ const MenuKeeper = () => {
             gap: 1,
             flexDirection: "column",
             flex: 1,
-            minWidth: 300,
+            minWidth: 200,
           }}
         >
           <Flex sx={{ bg: "shadow.30", flexDirection: "column", p: 2, gap: 2, borderRadius: 6 }}>

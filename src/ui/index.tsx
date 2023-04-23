@@ -38,15 +38,9 @@ export { default as SlotAmount } from "./SlotAmount";
 export { default as MenuAbilities } from "./MenuAbilities";
 export { default as Quest } from "./Quest";
 export { default as QuestTooltip } from "./QuestTooltip";
+export { default as Tooltip } from "./Tooltip";
 export { useAppContext } from "./App";
-export const TOOLTIP_STYLE = {
-  opacity: 1,
-  transition: "none",
-  padding: 12,
-  borderRadius: 5,
-  zIndex: 8888,
-  backgroundColor: "rgba(0,0,0,.95)",
-};
+
 export const SLOT_SIZE = 52;
 
 export const BASE_SLOT_STYLE = {

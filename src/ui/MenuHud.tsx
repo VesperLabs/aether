@@ -1,5 +1,4 @@
-import { Box, useAppContext, Flex, TOOLTIP_STYLE, Portrait } from "./";
-import { Tooltip } from "react-tooltip";
+import { Box, useAppContext, Flex, Portrait, Tooltip } from "./";
 
 const UserName = ({ sx }: { sx?: object }) => {
   const { hero } = useAppContext();
@@ -67,7 +66,7 @@ const MenuHud = () => {
   const { stats } = hero ?? {};
   return (
     <Box sx={{ top: 2, left: 2, position: "absolute" }}>
-      <Tooltip id="hud" style={TOOLTIP_STYLE} />
+      <Tooltip id="hud" />
       <Flex sx={{ gap: 1 }}>
         <Portrait user={hero} filterKeys={["boots", "pants"]} />
         <Flex sx={{ flexDirection: "column", gap: "1px", pointerEvents: "all" }}>

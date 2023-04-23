@@ -265,13 +265,13 @@ function App({ socket, debug, game }) {
         <Box
           id={HUD_CONTAINER_ID}
           sx={{
-            zoom,
-            position: "fixed",
-            inset: 0,
+            width: "100%",
+            height: "100%",
             pointerEvents: "none",
             opacity: hero ? 1 : 0,
             transition: "opacity 1s ease-in-out",
             transitionDelay: "2000ms",
+            zoom,
           }}
         >
           {hero?.state?.isDead && <ModalRespawn />}
@@ -427,6 +427,7 @@ const MenuBar = () => {
         bottom: bottomOffset,
         left: 0,
         right: 0,
+        overflowX: "hidden",
       }}
     >
       <Flex sx={{ flex: 1, alignItems: "end" }}>

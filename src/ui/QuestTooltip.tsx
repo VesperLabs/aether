@@ -1,6 +1,5 @@
 import {
   Box,
-  TOOLTIP_STYLE,
   Text,
   Flex,
   Divider,
@@ -10,8 +9,8 @@ import {
   STYLE_NON_EMPTY,
   Button,
   useAppContext,
+  Tooltip,
 } from "./";
-import { Tooltip } from "react-tooltip";
 
 const QuestTooltip = ({
   quest,
@@ -31,7 +30,7 @@ const QuestTooltip = ({
   const { socket } = useAppContext();
   const { rewards } = quest ?? {};
   return (
-    <Tooltip id={`${tooltipId}`} style={{ ...TOOLTIP_STYLE, pointerEvents: "all" }} isOpen={show}>
+    <Tooltip id={`${tooltipId}`} style={{ pointerEvents: "all" }} isOpen={show}>
       <Flex
         sx={{
           maxWidth: 200,
