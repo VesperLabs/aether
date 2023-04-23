@@ -6,6 +6,9 @@ const MenuKeeper = () => {
   const [tab, setTab] = useState("greet");
   const { dialogues, shop, quests } = keeper?.keeperData ?? {};
 
+  const hasQuests = quests?.length > 0;
+  const hasShop = shop?.length > 0;
+
   const tabShop = tab === "shop";
   const tabQuests = tab === "quests";
   const tabGreet = tab === "greet";
@@ -44,15 +47,30 @@ const MenuKeeper = () => {
             <Text dangerouslySetInnerHTML={{ __html: dialogues?.[tab] }} />
             {tabKeeper && (
               <Flex sx={{ gap: 2 }}>
-                <KeyboardButton keyboardKey="G" onClick={() => setTab("greet")} active={tabGreet}>
-                  Greet
-                </KeyboardButton>
-                <KeyboardButton keyboardKey="B" onClick={() => setTab("shop")} active={tabShop}>
-                  Shop
-                </KeyboardButton>
-                <KeyboardButton keyboardKey="Q" onClick={() => setTab("quests")} active={tabQuests}>
-                  Quests
-                </KeyboardButton>
+                {hasQuests ||
+                  (hasShop && (
+                    <KeyboardButton
+                      keyboardKey="G"
+                      onClick={() => setTab("greet")}
+                      active={tabGreet}
+                    >
+                      Greet
+                    </KeyboardButton>
+                  ))}
+                {hasShop && (
+                  <KeyboardButton keyboardKey="B" onClick={() => setTab("shop")} active={tabShop}>
+                    Shop
+                  </KeyboardButton>
+                )}
+                {hasQuests && (
+                  <KeyboardButton
+                    keyboardKey="Q"
+                    onClick={() => setTab("quests")}
+                    active={tabQuests}
+                  >
+                    Quests
+                  </KeyboardButton>
+                )}
               </Flex>
             )}
           </Flex>

@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, Button, useAppContext } from "./";
+import { Modal, KeyboardButton, useAppContext } from "./";
 
 const ModalRespawn: React.FC = () => {
   const { socket } = useAppContext();
@@ -7,15 +7,9 @@ const ModalRespawn: React.FC = () => {
     <Modal>
       <Modal.Body>Would you like to respawn?</Modal.Body>
       <Modal.Footer>
-        <Button
-          variant="wood"
-          sx={{ flex: 1 }}
-          onClick={() => {
-            socket.emit("respawn");
-          }}
-        >
+        <KeyboardButton sx={{ flex: 1 }} onClick={() => socket.emit("respawn")} keyboardKey="R">
           Respawn
-        </Button>
+        </KeyboardButton>
       </Modal.Footer>
     </Modal>
   );

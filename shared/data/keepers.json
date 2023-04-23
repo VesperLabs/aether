@@ -237,7 +237,13 @@
         "shop": "Some useful goods here. I take gold."
       },
       "quests": [],
-      "shop": []
+      "shop": [
+        { "item": ["pants", "common", "leatherPants"], "stock": 1 },
+        { "item": ["armor", "common", "bronzePlate"], "stock": 1 },
+        { "item": ["armor", "common", "bronzeHeavyPlate"], "stock": 1 },
+        { "item": ["boots", "common", "leatherBoots"], "stock": 1 },
+        { "item": ["weapon", "common", "hammer"], "stock": 1 }
+      ]
     }
   },
   "siobhan": {
@@ -296,7 +302,12 @@
         "shop": "See anything you like?"
       },
       "quests": [],
-      "shop": []
+      "shop": [
+        { "item": ["stackable", "common", "smallHpPotion"], "stock": 1 },
+        { "item": ["stackable", "common", "smallMpPotion"], "stock": 1 },
+        { "item": ["stackable", "common", "mediumHpPotion"], "stock": 1 },
+        { "item": ["stackable", "common", "mediumPotionMp"], "stock": 1 }
+      ]
     }
   },
   "danny": {
@@ -355,7 +366,10 @@
         "shop": "You got to be a wizard to wear what I have, but here's some stuff for sale."
       },
       "quests": ["skull-finding", "chonks-hunting"],
-      "shop": [{ "item": ["spell", "common", "fireball"], "stock": 1 }]
+      "shop": [
+        { "item": ["spell", "magic", "fireball"], "stock": 1 },
+        { "item": ["armor", "magic", "wizardRobe"], "stock": 1 }
+      ]
     }
   }
 }

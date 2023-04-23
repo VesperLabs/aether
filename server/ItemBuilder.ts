@@ -189,8 +189,8 @@ const ItemBuilder = {
     let ilvl = item.ilvl;
     let availableMods = [];
     for (var i = 0; i < itemModsList.suffix.length; i++) {
-      //get all mods at this ilvl
-      if (ilvl == itemModsList.suffix[i].ilvl) {
+      //get all allowed mods at this ilevel
+      if (ilvl >= itemModsList.suffix[i].ilvl) {
         availableMods.push(itemModsList.suffix[i]);
       }
     }
@@ -201,8 +201,8 @@ const ItemBuilder = {
           item.stats[key] = 0;
         }
         if (Array.isArray(randomMod.stats[key])) {
-          let low = randomMod.stats[key][0];
-          let high = randomMod.stats[key][1];
+          let low = randomMod.stats[key][0] * ilvl;
+          let high = randomMod.stats[key][1] * ilvl;
           item.stats[key] += Math.floor(Math.random() * (high - low + 1) + low);
         }
       });
@@ -215,8 +215,8 @@ const ItemBuilder = {
             item.stats[key] = 0;
           }
           if (Array.isArray(randomMod.stats[key])) {
-            let low = randomMod.stats[key][0];
-            let high = randomMod.stats[key][1];
+            let low = randomMod.stats[key][0] * ilvl;
+            let high = randomMod.stats[key][1] * ilvl;
             item.stats[key] += Math.floor(Math.random() * (high - low + 1) + low);
           }
         });
