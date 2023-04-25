@@ -428,7 +428,6 @@ const MenuBar = () => {
         bottom: bottomOffset,
         left: 0,
         right: 0,
-        overflowX: "hidden",
       }}
     >
       <Flex sx={{ flex: 1, alignItems: "end", zoom }}>
@@ -438,14 +437,13 @@ const MenuBar = () => {
           <SkillButtons />
         </Flex>
       </Flex>
-      <Box sx={{ position: "relative", zoom }}>
+      <Box sx={{ overflowX: "hidden" }}>
         <Box
           sx={{
             backdropFilter: "blur(10px)",
             zIndex: "-1",
             width: "100%",
-            top: 0,
-            bottom: 0,
+            height: "100%",
             position: "absolute",
           }}
         />
@@ -459,6 +457,7 @@ const MenuBar = () => {
         <Menu
           sx={{
             gap: 1,
+            alignItems: "center",
           }}
         >
           <Box>
@@ -502,42 +501,46 @@ const MenuBar = () => {
               />
             )}
           </MenuButton>
-          <MenuButton
-            keyboardKey="S"
-            iconName="book"
-            isActive={tabAbilities}
-            onClick={() => setTabAbilities((prev) => !prev)}
-          />
-          <MenuButton
-            keyboardKey="Q"
-            iconName="quests"
-            isActive={tabQuests}
-            onClick={() => setTabQuests((prev) => !prev)}
-          />
-          <MenuButton
-            keyboardKey="Z"
-            iconName="stats"
-            isActive={tabStats}
-            onClick={() => setTabStats((prev) => !prev)}
-          />
-          <MenuButton
-            keyboardKey="P"
-            iconName="mirror"
-            isActive={tabProfile}
-            onClick={() => setTabProfile((prev) => !prev)}
-          />
-          <MenuButton
-            keyboardKey="E"
-            iconName="helmet"
-            isActive={tabEquipment}
-            onClick={() => setTabEquipment((prev) => !prev)}
-          />
-          <MenuButton
-            keyboardKey="D"
-            iconName="bag"
-            isActive={tabInventory}
-            onClick={() => setTabInventory((prev) => !prev)}
-          />
+          {!tabChat && (
+            <>
+              <MenuButton
+                keyboardKey="S"
+                iconName="book"
+                isActive={tabAbilities}
+                onClick={() => setTabAbilities((prev) => !prev)}
+              />
+              <MenuButton
+                keyboardKey="Q"
+                iconName="quests"
+                isActive={tabQuests}
+                onClick={() => setTabQuests((prev) => !prev)}
+              />
+              <MenuButton
+                keyboardKey="Z"
+                iconName="stats"
+                isActive={tabStats}
+                onClick={() => setTabStats((prev) => !prev)}
+              />
+              <MenuButton
+                keyboardKey="P"
+                iconName="mirror"
+                isActive={tabProfile}
+                onClick={() => setTabProfile((prev) => !prev)}
+              />
+              <MenuButton
+                keyboardKey="E"
+                iconName="helmet"
+                isActive={tabEquipment}
+                onClick={() => setTabEquipment((prev) => !prev)}
+              />
+              <MenuButton
+                keyboardKey="D"
+                iconName="bag"
+                isActive={tabInventory}
+                onClick={() => setTabInventory((prev) => !prev)}
+              />
+            </>
+          )}
           <KeyboardKey
             key={escCacheKey}
             name={"ESCAPE"}
