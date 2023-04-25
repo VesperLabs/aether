@@ -62,10 +62,10 @@ const Bar = ({
 };
 
 const MenuHud = () => {
-  const { hero } = useAppContext();
+  const { hero, zoom } = useAppContext();
   const { stats } = hero ?? {};
   return (
-    <Box sx={{ top: 2, left: 2, position: "absolute" }}>
+    <Box sx={{ top: 2, left: 2, position: "absolute", zoom }}>
       <Tooltip id="hud" />
       <Flex sx={{ gap: 1 }}>
         <Portrait user={hero} filterKeys={["boots", "pants"]} />

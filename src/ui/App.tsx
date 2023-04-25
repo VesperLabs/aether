@@ -78,8 +78,8 @@ const getHudZoom = () => {
     baseZoom: 1,
     maxZoom: 2,
     minZoom: 1,
-    divisor: 7500000,
-  }).toFixed(1);
+    divisor: 6000000,
+  }).toFixed(2);
 };
 
 function App({ socket, debug, game }) {
@@ -272,7 +272,6 @@ function App({ socket, debug, game }) {
             opacity: hero ? 1 : 0,
             transition: "opacity 1s ease-in-out",
             transitionDelay: "2000ms",
-            zoom,
           }}
         >
           {hero?.state?.isDead && <ModalRespawn />}
@@ -404,6 +403,7 @@ const MenuBar = () => {
     socket,
     tabAbilities,
     setTabAbilities,
+    zoom,
   } = useAppContext();
 
   const escCacheKey = JSON.stringify([
@@ -431,21 +431,22 @@ const MenuBar = () => {
         overflowX: "hidden",
       }}
     >
-      <Flex sx={{ flex: 1, alignItems: "end" }}>
+      <Flex sx={{ flex: 1, alignItems: "end", zoom }}>
         <MessageBox />
         <Flex sx={{ flexDirection: "column" }}>
           <AbilityButtons />
           <SkillButtons />
         </Flex>
       </Flex>
-      <Box>
+      <Box sx={{ position: "relative", zoom }}>
         <Box
           sx={{
-            backdropFilter: "sepia(100%)  saturate(100%)",
+            backdropFilter: "blur(10px)",
             zIndex: "-1",
-            height: "150%",
             width: "100%",
-            position: "fixed",
+            top: 0,
+            bottom: 0,
+            position: "absolute",
           }}
         />
         {tabKeeper && <MenuKeeper />}

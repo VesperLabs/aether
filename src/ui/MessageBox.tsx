@@ -42,7 +42,8 @@ const MessageBox = () => {
         sx={{
           flex: 1,
           m: 2,
-          maxHeight: "20vh",
+          minHeight: "300px",
+          maxHeight: "300px",
           flexDirection: "column",
           justifyContent: "end",
           maskImage: `linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1))`,
