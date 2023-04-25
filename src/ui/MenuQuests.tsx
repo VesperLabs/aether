@@ -1,4 +1,4 @@
-import { Flex, useAppContext, MenuHeader, Quest, Text } from "./";
+import { Flex, Menu, useAppContext, MenuHeader, Quest, Text } from "./";
 import questList from "../../shared/data/questList.json";
 const MenuQuests = () => {
   const { hero, tabQuests, setTabQuests } = useAppContext();
@@ -11,17 +11,9 @@ const MenuQuests = () => {
       rewards: q?.rewards,
     })) as Quest[];
   return (
-    <Flex
+    <Menu
       sx={{
-        flexDirection: "column",
-        gap: 2,
-        p: 2,
-        bg: "shadow.30",
-        pointerEvents: "all",
         display: tabQuests ? "flex" : "none",
-        "&:hover": {
-          zIndex: 999,
-        },
       }}
     >
       <Flex sx={{ flexWrap: "wrap", justifyContent: "end", gap: 2, flex: 1 }}>
@@ -43,7 +35,7 @@ const MenuQuests = () => {
           })}
         </Flex>
       </Flex>
-    </Flex>
+    </Menu>
   );
 };
 

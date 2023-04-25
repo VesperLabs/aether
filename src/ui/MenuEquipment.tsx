@@ -1,22 +1,13 @@
-import { Flex, MenuHeader, useAppContext, Slot } from "./";
+import { Flex, Menu, MenuHeader, useAppContext, Slot } from "./";
 
 const MenuEquipment = () => {
   const { hero, tabEquipment, setTabEquipment } = useAppContext();
   const equipment = Object.entries(hero?.equipment || {});
 
   return (
-    <Flex
+    <Menu
       sx={{
-        gap: 2,
-        p: 2,
-        flexWrap: "wrap",
-        justifyContent: "end",
-        bg: "shadow.30",
-        pointerEvents: "all",
         display: tabEquipment ? "flex" : "none",
-        "&:hover": {
-          zIndex: 999,
-        },
       }}
     >
       <MenuHeader icon="helmet" onClick={() => setTabEquipment(false)}>
@@ -33,7 +24,7 @@ const MenuEquipment = () => {
           />
         ))}
       </Flex>
-    </Flex>
+    </Menu>
   );
 };
 

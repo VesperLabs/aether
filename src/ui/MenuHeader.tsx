@@ -1,8 +1,9 @@
 import { Flex, KeyboardButton, Text, Icon, Box } from "./";
 import { isMobile } from "../utils";
+import React from "react";
 
 interface MenuHeaderProps {
-  children: string;
+  children: React.ReactNode;
   onClick?: () => void;
   icon?: string;
 }
@@ -18,7 +19,7 @@ const MenuHeader = ({ icon, children, onClick = () => {} }: MenuHeaderProps) => 
         onKeyClick={onClick}
       >
         {icon && <Icon size={22} icon={`../assets/icons/${icon}.png`} />}
-        <Text sx={{ flex: 1 }}>{children}</Text>
+        <Text sx={{ display: "flex", flex: 1, gap: 4 }}>{children}</Text>
         {isMobile && (
           <Box onTouchEnd={() => onClick()} sx={{ pointerEvents: "all" }}>
             ❌

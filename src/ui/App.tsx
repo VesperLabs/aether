@@ -21,6 +21,7 @@ import {
   MenuQuests,
   MenuAbilities,
   HUD_CONTAINER_ID,
+  Menu,
 } from "./";
 import { isMobile, getSpinDirection, calculateZoomLevel } from "../utils";
 import "react-tooltip/dist/react-tooltip.css";
@@ -77,7 +78,7 @@ const getHudZoom = () => {
     baseZoom: 1,
     maxZoom: 2,
     minZoom: 1,
-    divisor: 2500000,
+    divisor: 7500000,
   }).toFixed(1);
 };
 
@@ -437,116 +438,123 @@ const MenuBar = () => {
           <SkillButtons />
         </Flex>
       </Flex>
-      {tabKeeper && <MenuKeeper />}
-      <MenuAbilities />
-      <MenuEquipment />
-      <MenuInventory />
-      <MenuProfile />
-      <MenuQuests />
-      <MenuStats />
-      <Flex
-        sx={{
-          gap: 1,
-          alignItems: "center",
-          justifyContent: "end",
-          bg: "shadow.30",
-          p: 2,
-        }}
-      >
-        <Box>
-          {isConnected ? (
-            <Icon icon="../assets/icons/success.png" sx={{ opacity: 0.5 }} />
-          ) : (
-            <Icon icon="../assets/icons/danger.png" sx={{ opacity: 0.5 }} />
-          )}
-        </Box>
-        <Box sx={{ flex: tabChat ? "unset" : 1 }} />
-        <MenuButton
-          keyboardKey={tabChat ? "ENTER" : "T"}
-          iconName="chat"
-          sx={{ flex: tabChat ? 1 : "unset" }}
-          isActive={tabChat}
-          onClick={() => setTabChat((prev) => !prev)}
-        >
-          {tabChat && (
-            <Input
-              sx={{ flex: 1 }}
-              autoFocus={true}
-              onKeyDown={(e) => {
-                const target = e.target as HTMLInputElement;
-                const message = target?.value;
-                if (e.keyCode === 13) {
-                  if (message?.trim() !== "") socket.emit("message", { message });
-                  setTabChat(false);
-                }
-              }}
-              onClickOutside={() => {
-                setTabChat(false);
-              }}
-              onBlur={(e) => {
-                /* Hack to send if `Done` button is pushed */
-                const message = e?.target?.value;
-                if (message && isMobile) {
-                  if (message?.trim() !== "") socket.emit("message", { message });
-                }
-                setTabChat(false);
-              }}
-            />
-          )}
-        </MenuButton>
-        <MenuButton
-          keyboardKey="S"
-          iconName="book"
-          isActive={tabAbilities}
-          onClick={() => setTabAbilities((prev) => !prev)}
-        />
-        <MenuButton
-          keyboardKey="Q"
-          iconName="quests"
-          isActive={tabQuests}
-          onClick={() => setTabQuests((prev) => !prev)}
-        />
-        <MenuButton
-          keyboardKey="Z"
-          iconName="stats"
-          isActive={tabStats}
-          onClick={() => setTabStats((prev) => !prev)}
-        />
-        <MenuButton
-          keyboardKey="P"
-          iconName="mirror"
-          isActive={tabProfile}
-          onClick={() => setTabProfile((prev) => !prev)}
-        />
-        <MenuButton
-          keyboardKey="E"
-          iconName="helmet"
-          isActive={tabEquipment}
-          onClick={() => setTabEquipment((prev) => !prev)}
-        />
-        <MenuButton
-          keyboardKey="D"
-          iconName="bag"
-          isActive={tabInventory}
-          onClick={() => setTabInventory((prev) => !prev)}
-        />
-        <KeyboardKey
-          key={escCacheKey}
-          name={"ESCAPE"}
-          hidden={true}
-          onKeyUp={(e) => {
-            if (dropItem) return setDropItem(false);
-            if (tabKeeper) return setTabKeeper(false);
-            if (tabAbilities) return setTabAbilities(false);
-            if (tabEquipment) return setTabEquipment(false);
-            if (tabInventory) return setTabInventory(false);
-            if (tabProfile) return setTabProfile(false);
-            if (tabQuests) return setTabQuests(false);
-            if (tabStats) return setTabStats(false);
-            if (tabChat) return setTabChat(false);
+      <Box>
+        <Box
+          sx={{
+            backdropFilter: "sepia(100%)  saturate(100%)",
+            zIndex: "-1",
+            height: "150%",
+            width: "100%",
+            position: "fixed",
           }}
         />
-      </Flex>
+        {tabKeeper && <MenuKeeper />}
+        <MenuAbilities />
+        <MenuEquipment />
+        <MenuInventory />
+        <MenuProfile />
+        <MenuQuests />
+        <MenuStats />
+        <Menu
+          sx={{
+            gap: 1,
+          }}
+        >
+          <Box>
+            {isConnected ? (
+              <Icon icon="../assets/icons/success.png" sx={{ opacity: 0.5 }} />
+            ) : (
+              <Icon icon="../assets/icons/danger.png" sx={{ opacity: 0.5 }} />
+            )}
+          </Box>
+          <Box sx={{ flex: tabChat ? "unset" : 1 }} />
+          <MenuButton
+            keyboardKey={tabChat ? "ENTER" : "T"}
+            iconName="chat"
+            sx={{ flex: tabChat ? 1 : "unset" }}
+            isActive={tabChat}
+            onClick={() => setTabChat((prev) => !prev)}
+          >
+            {tabChat && (
+              <Input
+                sx={{ flex: 1 }}
+                autoFocus={true}
+                onKeyDown={(e) => {
+                  const target = e.target as HTMLInputElement;
+                  const message = target?.value;
+                  if (e.keyCode === 13) {
+                    if (message?.trim() !== "") socket.emit("message", { message });
+                    setTabChat(false);
+                  }
+                }}
+                onClickOutside={() => {
+                  setTabChat(false);
+                }}
+                onBlur={(e) => {
+                  /* Hack to send if `Done` button is pushed */
+                  const message = e?.target?.value;
+                  if (message && isMobile) {
+                    if (message?.trim() !== "") socket.emit("message", { message });
+                  }
+                  setTabChat(false);
+                }}
+              />
+            )}
+          </MenuButton>
+          <MenuButton
+            keyboardKey="S"
+            iconName="book"
+            isActive={tabAbilities}
+            onClick={() => setTabAbilities((prev) => !prev)}
+          />
+          <MenuButton
+            keyboardKey="Q"
+            iconName="quests"
+            isActive={tabQuests}
+            onClick={() => setTabQuests((prev) => !prev)}
+          />
+          <MenuButton
+            keyboardKey="Z"
+            iconName="stats"
+            isActive={tabStats}
+            onClick={() => setTabStats((prev) => !prev)}
+          />
+          <MenuButton
+            keyboardKey="P"
+            iconName="mirror"
+            isActive={tabProfile}
+            onClick={() => setTabProfile((prev) => !prev)}
+          />
+          <MenuButton
+            keyboardKey="E"
+            iconName="helmet"
+            isActive={tabEquipment}
+            onClick={() => setTabEquipment((prev) => !prev)}
+          />
+          <MenuButton
+            keyboardKey="D"
+            iconName="bag"
+            isActive={tabInventory}
+            onClick={() => setTabInventory((prev) => !prev)}
+          />
+          <KeyboardKey
+            key={escCacheKey}
+            name={"ESCAPE"}
+            hidden={true}
+            onKeyUp={(e) => {
+              if (dropItem) return setDropItem(false);
+              if (tabKeeper) return setTabKeeper(false);
+              if (tabAbilities) return setTabAbilities(false);
+              if (tabEquipment) return setTabEquipment(false);
+              if (tabInventory) return setTabInventory(false);
+              if (tabProfile) return setTabProfile(false);
+              if (tabQuests) return setTabQuests(false);
+              if (tabStats) return setTabStats(false);
+              if (tabChat) return setTabChat(false);
+            }}
+          />
+        </Menu>
+      </Box>
     </Flex>
   );
 };

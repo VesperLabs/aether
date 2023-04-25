@@ -1,5 +1,15 @@
 import { useState, useEffect } from "react";
-import { Flex, Text, useAppContext, MenuHeader, Portrait, Slot, KeyboardButton, Quest } from "./";
+import {
+  Flex,
+  Menu,
+  Text,
+  useAppContext,
+  MenuHeader,
+  Portrait,
+  Slot,
+  KeyboardButton,
+  Quest,
+} from "./";
 
 const MenuKeeper = () => {
   const { keeper, tabKeeper, setTabKeeper } = useAppContext();
@@ -18,20 +28,7 @@ const MenuKeeper = () => {
   }, [tabKeeper]);
 
   return (
-    <Flex
-      className="menu-keeper"
-      sx={{
-        gap: 2,
-        p: 2,
-        flexWrap: "wrap",
-        justifyContent: "end",
-        bg: "shadow.30",
-        pointerEvents: "all",
-        "&:hover": {
-          zIndex: 999,
-        },
-      }}
-    >
+    <Menu className="menu-keeper">
       <MenuHeader onClick={() => setTabKeeper(false)}>{keeper?.profile?.userName}</MenuHeader>
       <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", width: 592 }}>
         <Portrait user={keeper} />
@@ -106,7 +103,7 @@ const MenuKeeper = () => {
           })}
         </Flex>
       </Flex>
-    </Flex>
+    </Menu>
   );
 };
 

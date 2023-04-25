@@ -1,5 +1,5 @@
 import { ThemeUIStyleObject } from "theme-ui";
-import { Flex, Text, useAppContext, MenuHeader, Grid } from "./";
+import { Menu, Flex, Text, useAppContext, MenuHeader, Grid } from "./";
 
 const COLUMN_STYLES: ThemeUIStyleObject = {
   gap: 1,
@@ -29,17 +29,9 @@ const MenuStats = () => {
   const { stats } = hero ?? {};
   if (!stats) return null;
   return (
-    <Flex
+    <Menu
       sx={{
-        flexDirection: "column",
-        gap: 2,
-        p: 2,
-        bg: "shadow.30",
-        pointerEvents: "all",
         display: tabStats ? "flex" : "none",
-        "&:hover": {
-          zIndex: 999,
-        },
       }}
     >
       <Flex sx={{ flexWrap: "wrap", justifyContent: "end", gap: 2, flex: 1 }}>
@@ -95,7 +87,7 @@ const MenuStats = () => {
           </Grid>
         </Flex>
       </Flex>
-    </Flex>
+    </Menu>
   );
 };
 

@@ -1,4 +1,4 @@
-import { Flex, Box, Text, MenuHeader, useAppContext, Portrait, Input, MenuButton } from "./";
+import { Flex, Menu, Box, Text, MenuHeader, useAppContext, Portrait, Input, MenuButton } from "./";
 const MenuPicker = ({ children, onPlus = () => {}, onMinus = () => {} }) => {
   return (
     <Flex
@@ -25,19 +25,9 @@ const MenuProfile = () => {
   const { tabProfile, setTabProfile, hero, socket } = useAppContext();
 
   return (
-    <Flex
+    <Menu
       sx={{
-        gap: 2,
-        p: 2,
-        flexWrap: "wrap",
-        justifyContent: "end",
-        bg: "shadow.30",
         display: tabProfile ? "flex" : "none",
-        pointerEvents: "all",
-
-        "&:hover": {
-          zIndex: 999,
-        },
       }}
     >
       <MenuHeader icon="mirror" onClick={() => setTabProfile(false)}>
@@ -103,7 +93,7 @@ const MenuProfile = () => {
           </MenuPicker>
         </Flex>
       </Flex>
-    </Flex>
+    </Menu>
   );
 };
 
