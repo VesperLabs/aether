@@ -22,6 +22,7 @@ import {
   MenuAbilities,
   HUD_CONTAINER_ID,
   Menu,
+  ModalLogin,
 } from "./";
 import { isMobile, getSpinDirection, calculateZoomLevel } from "../utils";
 import "react-tooltip/dist/react-tooltip.css";
@@ -30,10 +31,14 @@ import { Theme } from "theme-ui";
 import { Socket } from "socket.io-client";
 
 interface AppContextValue {
+  isLoggedIn: boolean;
   isConnected: boolean;
+  isLoaded: boolean;
   showButtonChat: boolean;
   setShowButtonChat: React.Dispatch<React.SetStateAction<boolean>>;
   setIsConnected: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsLoaded: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
   setTabEquipment: React.Dispatch<React.SetStateAction<boolean>>;
   setTabInventory: React.Dispatch<React.SetStateAction<boolean>>;
   setTabKeeper: React.Dispatch<React.SetStateAction<boolean>>;
@@ -84,6 +89,8 @@ const getHudZoom = () => {
 
 function App({ socket, debug, game }) {
   const [isConnected, setIsConnected] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
   const [dropItem, setDropItem] = useState();
   const [hero, setHero] = useState<CharacterState>();
   const [keeper, setKeeper] = useState();
@@ -107,6 +114,7 @@ function App({ socket, debug, game }) {
 
     const onDisconnect = () => {
       setIsConnected(false);
+      setIsLoggedIn(false);
     };
 
     const onMessage = (payload: Message) => {
@@ -127,6 +135,7 @@ function App({ socket, debug, game }) {
       const player: CharacterState = players?.find((p) => p?.socketId === socketId);
       localStorage.setItem("socketId", socketId);
       setHero(player);
+      setIsLoggedIn(true);
     };
 
     const onPlayerUpdate = (player: CharacterState, args) => {
@@ -190,6 +199,10 @@ function App({ socket, debug, game }) {
       }
     };
 
+    const onGameLoaded = () => {
+      setIsLoaded(true);
+    };
+
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
     socket.on("heroInit", onHeroInit);
@@ -202,6 +215,7 @@ function App({ socket, debug, game }) {
     window.addEventListener("HERO_CHAT_NPC", onHeroChatNpc);
     window.addEventListener("UPDATE_HUD", onUpdateHud);
     window.addEventListener("HERO_RESPAWN", onUpdateHud);
+    window.addEventListener("GAME_LOADED", onGameLoaded);
     return () => {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
@@ -215,6 +229,7 @@ function App({ socket, debug, game }) {
       window.removeEventListener("HERO_CHAT_NPC", onHeroChatNpc);
       window.removeEventListener("UPDATE_HUD", onUpdateHud);
       window.removeEventListener("HERO_RESPAWN", onUpdateHud);
+      window.removeEventListener("GAME_LOADED", onGameLoaded);
     };
   }, []);
 
@@ -230,10 +245,14 @@ function App({ socket, debug, game }) {
     <ThemeProvider theme={theme as Theme}>
       <AppContext.Provider
         value={{
+          isLoaded,
+          setIsLoaded,
           isConnected,
           showButtonChat,
           setShowButtonChat,
           setIsConnected,
+          isLoggedIn,
+          setIsLoggedIn,
           setTabEquipment,
           setTabInventory,
           setTabKeeper,
@@ -263,6 +282,7 @@ function App({ socket, debug, game }) {
           zoom,
         }}
       >
+        {/*!isLoggedIn && isLoaded && <ModalLogin />*/}
         <Box
           id={HUD_CONTAINER_ID}
           sx={{
@@ -309,6 +329,7 @@ const SkillButton = ({
         sx={{
           p: size,
           borderRadius: "100%",
+          backdropFilter: "blur(2px)",
         }}
       >
         <Icon icon={icon || `../assets/icons/${iconName}.png`} />
@@ -437,7 +458,7 @@ const MenuBar = () => {
           <SkillButtons />
         </Flex>
       </Flex>
-      <Box sx={{ overflowX: "hidden" }}>
+      <Box sx={{ overflowX: "hidden", zoom }}>
         <Box
           sx={{
             backdropFilter: "blur(10px)",

@@ -172,6 +172,8 @@ class SceneMain extends Phaser.Scene {
 
     socket.on("remove", (socketId) => removePlayer(scene, socketId));
 
+    socket.emit("login");
+
     // Add event listener for window resize
     this.scale.on(
       "resize",
@@ -180,8 +182,6 @@ class SceneMain extends Phaser.Scene {
       },
       this
     );
-
-    socket.emit("login");
   }
 
   update(time, delta) {

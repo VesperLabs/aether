@@ -77,7 +77,7 @@ const KeyboardKey: React.FC<KeyboardKeyProps> = ({
     <Box
       onClick={() => onClick?.()}
       sx={{
-        cursor: typeof onClick === "function" ? "pointer" : "default",
+        cursor: "pointer",
         display: hidden ? "none" : "block",
         position: "absolute",
         bottom: 0,

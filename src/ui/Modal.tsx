@@ -51,7 +51,12 @@ Modal.Header = ({ sx, ...props }) => {
 };
 
 Modal.Body = ({ sx, ...props }) => {
-  return <Box sx={{ p: 3, borderRadius: 3, bg: "shadow.25", ...sx }} {...props} />;
+  return (
+    <Flex
+      sx={{ p: 3, borderRadius: 3, bg: "shadow.25", flexDirection: "column", ...sx }}
+      {...props}
+    />
+  );
 };
 
 Modal.Footer = ({ sx, ...props }) => {

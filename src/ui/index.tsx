@@ -28,6 +28,7 @@ export { default as KeyboardKey } from "./KeyboardKey";
 export { default as Modal } from "./Modal";
 export { default as Input } from "./Input";
 export { default as ModalRespawn } from "./ModalRespawn";
+export { default as ModalLogin } from "./ModalLogin";
 export { default as KeyboardButton } from "./KeyboardButton";
 export { default as ModalDropAmount } from "./ModalDropAmount";
 export { default as MessageBox } from "./MessageBox";

@@ -94,6 +94,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         if (!roomName) return;
 
         socket.join(roomName);
+        socket.emit("login");
         socket.emit("heroInit", {
           ...getRoomState(scene, roomName),
           socketId,

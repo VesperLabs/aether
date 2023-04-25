@@ -36,7 +36,7 @@ class SceneBoot extends Phaser.Scene {
       });
       this.scene.start("SceneMain");
       this.scene.start("SceneHud");
-      window.dispatchEvent(new Event("GAME_LOAD"));
+      window.dispatchEvent(new Event("GAME_LOADED"));
     });
     mapImageList.forEach((asset) => {
       this.load.image(asset.name, asset.image);
