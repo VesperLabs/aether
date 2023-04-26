@@ -9,7 +9,6 @@ import {
   BLANK_IMAGE,
   SlotAmount,
   Portal,
-  Grid,
 } from "./";
 import { resolveAsset } from "../../shared/Assets";
 import { useAppContext } from "./App";

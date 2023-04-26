@@ -75,8 +75,6 @@ export const useAppContext = () => {
 };
 
 const getHudZoom = () => {
-  const supportsZoom = "zoom" in document.body.style;
-  if (!supportsZoom) return 1;
   const viewportArea = window.innerWidth * window.innerHeight;
   return calculateZoomLevel({
     viewportArea,
