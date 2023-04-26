@@ -5,18 +5,17 @@ import { Button, KeyboardKey, Box } from "./";
 interface KeyboardButtonProps {
   keyboardKey: string;
   onClick?: () => void;
-  onKeyClick?: () => void;
   active?: boolean;
   children?: React.ReactNode;
   showOnly?: boolean;
   variant?: "wood" | "header";
   sx?: object;
+  type?: "button" | "submit" | "reset";
 }
 
 const KeeperButton: FC<KeyboardButtonProps> = ({
   keyboardKey,
   onClick,
-  onKeyClick,
   children,
   active,
   showOnly,
@@ -43,7 +42,6 @@ const KeeperButton: FC<KeyboardButtonProps> = ({
             showOnly={showOnly}
             sx={{ position: "static", mr: "-2px" }}
             name={keyboardKey}
-            onClick={onKeyClick}
             onKeyUp={onClick}
           />
         </Box>

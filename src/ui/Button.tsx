@@ -18,14 +18,14 @@ const Button = forwardRef<HTMLDivElement, ButtonPropsWithRef>(
         // @ts-ignore
         __themeKey="buttons"
         ref={ref}
-        onClick={(e: MouseEvent<HTMLDivElement>) => {
+        onClick={(e) => {
           if (onClick) {
             onClick(e as unknown as MouseEvent<HTMLButtonElement>);
           } else if (onTouchStart) {
             onTouchStart(e as unknown as TouchEvent<HTMLButtonElement>);
           }
         }}
-        onTouchStart={(e: TouchEvent<HTMLDivElement>) => {
+        onTouchStart={(e) => {
           e.stopPropagation();
           if (onTouchStart) {
             onTouchStart(e as unknown as TouchEvent<HTMLButtonElement>);

@@ -32,8 +32,10 @@ export async function initDatabase(uri) {
 }
 
 const getDatabaseApi = (db) => ({
-  getUserByEmail: async (email) => {
-    if (!email) return console.log("❌ Email not provided");
+  getUserByLogin: async ({ email, password }) => {
+    if (!email) console.log("❌ Email not provided");
+    if (!password) console.log("❌ Password not provided");
+    if (!email || !password) return;
     const user = await db.collection("users").findOne({ email });
     console.log(`💾 Found ${user?.email} in db`);
     return user;

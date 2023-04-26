@@ -75,8 +75,8 @@ class ServerScene extends Phaser.Scene implements ServerScene {
     io.on("connection", (socket: Socket) => {
       const socketId = socket.id;
 
-      socket.on("login", async (email = "arf@arf.arf") => {
-        const user = await scene.db.getUserByEmail(email);
+      socket.on("login", async ({ email, password }) => {
+        const user = await scene.db.getUserByLogin({ email, password });
         //const user = cloneObject(baseUser);
         if (!user) return console.log("❌ Player not found in db");
 
@@ -94,11 +94,14 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         if (!roomName) return;
 
         socket.join(roomName);
-        socket.emit("login");
-        socket.emit("heroInit", {
-          ...getRoomState(scene, roomName),
-          socketId,
-        });
+        socket.emit(
+          "heroInit",
+          {
+            ...getRoomState(scene, roomName),
+            socketId,
+          },
+          { isLogin: true }
+        );
         socket.to(roomName).emit("playerJoin", getCharacterState(player), { isLogin: true });
       });
 

@@ -49,7 +49,12 @@ const Modal: React.FC<ModalProps> & {
 };
 
 Modal.Header = ({ sx, ...props }) => {
-  return <Box sx={{ ...sx }} {...props} />;
+  return (
+    <Flex
+      sx={{ p: 2, borderRadius: 3, bg: "shadow.25", flexDirection: "column", ...sx }}
+      {...props}
+    />
+  );
 };
 
 Modal.Body = ({ sx, ...props }) => {

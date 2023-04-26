@@ -61,6 +61,10 @@ export default {
       borderColor: `shadow.30`,
       outline: "none",
       textShadow: "none",
+      "&::placeholder": {
+        color: "text",
+        opacity: 0.15,
+      },
     },
   },
   buttons: {

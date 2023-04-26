@@ -16,7 +16,7 @@ const MenuHeader = ({ icon, children, onClick = () => {} }: MenuHeaderProps) => 
         showOnly={true}
         keyboardKey="ESCAPE"
         sx={{ cursor: "default" }}
-        onKeyClick={onClick}
+        onClick={onClick}
       >
         {icon && <Icon size={22} icon={`../assets/icons/${icon}.png`} />}
         <Text sx={{ display: "flex", flex: 1, gap: 4 }}>{children}</Text>

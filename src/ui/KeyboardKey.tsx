@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Box } from "./";
 
 interface KeyboardKeyProps {
   name: string;
-  onKeyUp?: (e: KeyboardEvent) => void;
-  onClick?: () => void;
+  onKeyUp?: () => void;
   hidden?: boolean;
   showOnly?: boolean;
   onKeyDown?: (e: KeyboardEvent) => void;
@@ -25,12 +24,12 @@ const getKeyName = (name: string) => {
 const KeyboardKey: React.FC<KeyboardKeyProps> = ({
   name,
   onKeyUp,
-  onClick,
   hidden,
   showOnly,
   onKeyDown,
   sx,
 }) => {
+  const ref = useRef(null);
   const [isPressed, setIsPressed] = useState(false);
 
   const keyDisplayName = getKeyName(name);
@@ -40,13 +39,14 @@ const KeyboardKey: React.FC<KeyboardKeyProps> = ({
     if (
       // @ts-ignore
       (document.activeElement?.type === "text" || e.target?.type === "text") &&
-      keyName !== "ESCAPE"
+      keyName !== "ESCAPE" &&
+      keyName !== "ENTER"
     ) {
       return;
     }
 
     if (keyName === name) {
-      if (!showOnly) onKeyUp?.(e);
+      if (!showOnly) ref?.current?.click();
       setIsPressed(false);
     }
   };
@@ -75,7 +75,11 @@ const KeyboardKey: React.FC<KeyboardKeyProps> = ({
 
   return (
     <Box
-      onClick={() => onClick?.()}
+      ref={ref}
+      onClick={(e) => {
+        e.stopPropagation();
+        onKeyUp?.();
+      }}
       sx={{
         cursor: "pointer",
         display: hidden ? "none" : "block",

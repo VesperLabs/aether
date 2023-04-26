@@ -12,9 +12,6 @@ class SceneHud extends Phaser.Scene {
   create() {
     addJoystick(this);
     addInputListeners(this);
-    this.socket.on("login", () => {
-      fadeIn(this);
-    });
   }
   update() {}
 }
@@ -25,18 +22,6 @@ function fadeIn(scene) {
   graphics.fillStyle(0x000000, 1);
   graphics.fillRect(0, 0, scene.cameras.main.width, scene.cameras.main.height);
   graphics.setDepth(100000);
-
-  // Create a tween to gradually fade out the black rectangle
-  scene.tweens.add({
-    delay: 1000,
-    targets: [graphics],
-    alpha: 0,
-    duration: 500, // adjust the duration as desired
-    onComplete: () => {
-      // remove the black rectangle once the tween is complete
-      graphics.destroy();
-    },
-  });
 }
 
 function addInputListeners(scene) {

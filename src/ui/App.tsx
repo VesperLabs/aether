@@ -128,12 +128,12 @@ function App({ socket, debug, game }) {
         ]);
     };
 
-    const onHeroInit = (payload: { players: Array<CharacterState>; socketId: string }) => {
+    const onHeroInit = (payload: { players: Array<CharacterState>; socketId: string }, args) => {
       const { players, socketId } = payload;
       const player: CharacterState = players?.find((p) => p?.socketId === socketId);
       localStorage.setItem("socketId", socketId);
       setHero(player);
-      setIsLoggedIn(true);
+      if (args?.isLogin) setIsLoggedIn(true);
     };
 
     const onPlayerUpdate = (player: CharacterState, args) => {
@@ -239,6 +239,8 @@ function App({ socket, debug, game }) {
     setZoom(getHudZoom());
   });
 
+  const showLogin = !isLoggedIn && isLoaded;
+
   return (
     <ThemeProvider theme={theme as Theme}>
       <AppContext.Provider
@@ -280,22 +282,30 @@ function App({ socket, debug, game }) {
           zoom,
         }}
       >
-        {/*!isLoggedIn && isLoaded && <ModalLogin />*/}
         <Box
-          id={HUD_CONTAINER_ID}
           sx={{
-            height: "100%",
-            pointerEvents: "none",
-            opacity: hero ? 1 : 0,
+            inset: 0,
+            position: "fixed",
+            backgroundColor: "black",
+            opacity: showLogin ? 1 : 0,
             transition: "opacity 1s ease-in-out",
-            transitionDelay: "2000ms",
           }}
-        >
-          {hero?.state?.isDead && <ModalRespawn />}
-          {dropItem && <ModalDropAmount />}
-          <MenuHud />
-          <MenuBar />
-        </Box>
+        />
+        {showLogin && <ModalLogin />}
+        {isLoggedIn && (
+          <Box
+            id={HUD_CONTAINER_ID}
+            sx={{
+              height: "100%",
+              pointerEvents: "none",
+            }}
+          >
+            {hero?.state?.isDead && <ModalRespawn />}
+            {dropItem && <ModalDropAmount />}
+            <MenuHud />
+            <MenuBar />
+          </Box>
+        )}
       </AppContext.Provider>
     </ThemeProvider>
   );
@@ -334,7 +344,7 @@ const SkillButton = ({
       <KeyboardKey
         name={keyboardKey}
         hidden={isMobile}
-        onKeyUp={(e: KeyboardEvent) => {
+        onKeyUp={() => {
           window.dispatchEvent(new CustomEvent(eventName, { detail: eventDetail }));
         }}
       />
@@ -546,7 +556,9 @@ const MenuBar = () => {
                 keyboardKey="E"
                 iconName="helmet"
                 isActive={tabEquipment}
-                onClick={() => setTabEquipment((prev) => !prev)}
+                onClick={() => {
+                  setTabEquipment((prev) => !prev);
+                }}
               />
               <MenuButton
                 keyboardKey="D"
@@ -560,7 +572,7 @@ const MenuBar = () => {
             key={escCacheKey}
             name={"ESCAPE"}
             hidden={true}
-            onKeyUp={(e) => {
+            onKeyUp={() => {
               if (dropItem) return setDropItem(false);
               if (tabKeeper) return setTabKeeper(false);
               if (tabAbilities) return setTabAbilities(false);

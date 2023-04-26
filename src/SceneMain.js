@@ -172,8 +172,6 @@ class SceneMain extends Phaser.Scene {
 
     socket.on("remove", (socketId) => removePlayer(scene, socketId));
 
-    socket.emit("login");
-
     // Add event listener for window resize
     this.scale.on(
       "resize",
@@ -196,7 +194,9 @@ class SceneMain extends Phaser.Scene {
       if (!player.isHero) {
         /* Don't interpolate users who are going through a door */
         const latestSnap = SI.vault.getById(playerSnapshot?.older);
+        const newestSnap = SI.vault.getById(npcSnapshot?.newer);
         if (player?.state?.lastTeleport >= latestSnap?.time) continue;
+        if (player?.state?.lastTeleport >= newestSnap?.time) continue;
         /* Update other player movements */
         player.setPosition(s.x, s.y);
         player.direction = s?.direction;
