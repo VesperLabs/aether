@@ -286,7 +286,6 @@ function App({ socket, debug, game }) {
         <Box
           id={HUD_CONTAINER_ID}
           sx={{
-            width: "100%",
             height: "100%",
             pointerEvents: "none",
             opacity: hero ? 1 : 0,
@@ -449,16 +448,20 @@ const MenuBar = () => {
         bottom: bottomOffset,
         left: 0,
         right: 0,
+
+        width: `calc(100% / ${zoom})`,
+        transform: `scale(${zoom})`,
+        transformOrigin: "bottom left",
       }}
     >
-      <Flex sx={{ flex: 1, alignItems: "end", zoom }}>
+      <Flex sx={{ flex: 1, alignItems: "end" }}>
         <MessageBox />
         <Flex sx={{ flexDirection: "column" }}>
           <AbilityButtons />
           <SkillButtons />
         </Flex>
       </Flex>
-      <Box sx={{ overflowX: "hidden", zoom }}>
+      <Box>
         <Box
           sx={{
             backdropFilter: "blur(10px)",

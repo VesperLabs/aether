@@ -8,6 +8,7 @@ import {
   STYLE_NON_EMPTY,
   BLANK_IMAGE,
   SlotAmount,
+  Portal,
 } from "./";
 import { resolveAsset } from "../../shared/Assets";
 import { useAppContext } from "./App";
@@ -38,7 +39,7 @@ const Slot = React.memo(
     ...props
   }: SlotProps) => {
     // component logic here
-    const { hero, zoom } = useAppContext();
+    const { hero } = useAppContext();
     const [imageData, setImageData] = useState(BLANK_IMAGE);
     const [dragging, setDragging] = useState(false);
     const [hovering, setHovering] = useState(false);
@@ -54,8 +55,8 @@ const Slot = React.memo(
 
     const handleMouseDown = (e) => {
       setPosition({
-        x: e.clientX / zoom - imageRef.current.offsetWidth / 2,
-        y: e.clientY / zoom - imageRef.current.offsetHeight / 2,
+        x: e.clientX - imageRef.current.offsetWidth / 2,
+        y: e.clientY - imageRef.current.offsetHeight / 2,
       });
       setDragging(true);
       setTarget(document.elementFromPoint(e.clientX, e.clientY));
@@ -65,8 +66,8 @@ const Slot = React.memo(
       if (dragging) e.preventDefault();
       e.stopPropagation();
       setPosition({
-        x: e.touches[0].clientX / zoom - imageRef.current.offsetWidth / 2,
-        y: e.touches[0].clientY / zoom - imageRef.current.offsetHeight / 2,
+        x: e.touches[0].clientX - imageRef.current.offsetWidth / 2,
+        y: e.touches[0].clientY - imageRef.current.offsetHeight / 2,
       });
       setDragging(true);
       setTimeout(
@@ -77,8 +78,8 @@ const Slot = React.memo(
 
     const handleMouseMove = (e) => {
       if (!dragging) return;
-      const x = e.clientX / zoom - imageRef.current.offsetWidth / 2;
-      const y = e.clientY / zoom - imageRef.current.offsetHeight / 2;
+      const x = e.clientX - imageRef.current.offsetWidth / 2;
+      const y = e.clientY - imageRef.current.offsetHeight / 2;
       const t = document.elementFromPoint(e.clientX, e.clientY);
       setPosition({ x, y });
       if (t?.nodeName == "CANVAS") {
@@ -96,8 +97,8 @@ const Slot = React.memo(
 
     const handleTouchMove = (e) => {
       if (!dragging) return;
-      const x = e.touches[0].clientX / zoom - imageRef.current.offsetWidth / 2;
-      const y = e.touches[0].clientY / zoom - imageRef.current.offsetHeight / 2;
+      const x = e.touches[0].clientX - imageRef.current.offsetWidth / 2;
+      const y = e.touches[0].clientY - imageRef.current.offsetHeight / 2;
       const t = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY);
       setPosition({ x, y });
       if (t?.nodeName == "CANVAS") {
@@ -228,28 +229,31 @@ const Slot = React.memo(
         {item && (
           <>
             {item?.amount > 1 && <SlotAmount>{item?.amount}</SlotAmount>}
-            <Icon
-              ref={imageRef}
-              icon={aboutToSell ? "../assets/icons/gold.png" : imageData}
-              size={size * 2} // Fixes large images to not get cut off
-              style={{
-                touchAction: "none",
-                userSelect: "none",
-                pointerEvents: dragging ? "none" : "all",
-                zIndex: dragging ? 9999 : 1,
-                position: dragging ? "fixed" : "static",
-                left: (dragging ? position.x : 0) + "px",
-                top: (dragging ? position.y : 0) + "px",
-                // Fixes large images to not get cut off
-                marginLeft: (dragging ? 0 : -size / 2) + "px",
-                marginTop: (dragging ? 0 : -size / 2) + "px",
-                cursor: dragging ? "grabbing" : "grab",
-                transform: dragging ? "scale(4,4)" : "scale(2,2)",
-                imageRendering: "pixelated",
-              }}
-              {...innerMouseBinds}
-              {...dataKeys}
-            />
+            <Portal container={dragging ? document.body : null}>
+              <Icon
+                ref={imageRef}
+                icon={aboutToSell ? "../assets/icons/gold.png" : imageData}
+                size={size * 2} // Fixes large images to not get cut off
+                style={{
+                  touchAction: "none",
+                  userSelect: "none",
+                  pointerEvents: dragging ? "none" : "all",
+                  zIndex: dragging ? 9999 : 1,
+                  position: dragging ? "fixed" : "static",
+                  left: (dragging ? position.x : 0) + "px",
+                  top: (dragging ? position.y : 0) + "px",
+                  // Fixes large images to not get cut off
+                  marginLeft: (dragging ? 0 : -size / 2) + "px",
+                  marginTop: (dragging ? 0 : -size / 2) + "px",
+                  cursor: dragging ? "grabbing" : "grab",
+                  transform: dragging ? "scale(4,4)" : "scale(2,2)",
+                  imageRendering: "pixelated",
+                }}
+                {...innerMouseBinds}
+                {...dataKeys}
+              />
+              ,
+            </Portal>
             <ItemTooltip item={item} show={showTooltip} />
           </>
         )}

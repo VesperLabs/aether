@@ -1,4 +1,4 @@
-import { Box, Flex } from "./";
+import { Box, Flex, useAppContext } from "./";
 
 interface ModalProps {
   sx?: any;
@@ -25,6 +25,7 @@ const Modal: React.FC<ModalProps> & {
   Body: React.FC<ModalBodyProps>;
   Footer: React.FC<ModalFooterProps>;
 } = ({ sx, ...props }) => {
+  const { zoom } = useAppContext();
   return (
     <Flex
       sx={{
@@ -32,12 +33,13 @@ const Modal: React.FC<ModalProps> & {
         gap: 1,
         p: 1,
         borderRadius: 3,
-        position: "absolute",
+        position: "fixed",
         flexDirection: "column",
         top: "50%",
         left: "50%",
         pointerEvents: "all",
-        transform: "translate(-50%, -50%)",
+        transform: `scale(${zoom}) translate(-50%, -50%)`,
+        transformOrigin: "top left",
         ...sx,
       }}
       variant="buttons.wood"

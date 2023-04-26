@@ -65,7 +65,15 @@ const MenuHud = () => {
   const { hero, zoom } = useAppContext();
   const { stats } = hero ?? {};
   return (
-    <Box sx={{ top: 2, left: 2, position: "absolute", zoom }}>
+    <Box
+      sx={{
+        top: 2,
+        left: 2,
+        position: "absolute",
+        transform: `scale(${(1.25 * parseFloat(zoom)).toFixed(1)})`,
+        transformOrigin: "top left",
+      }}
+    >
       <Tooltip id="hud" />
       <Flex sx={{ gap: 1 }}>
         <Portrait user={hero} filterKeys={["boots", "pants"]} />
