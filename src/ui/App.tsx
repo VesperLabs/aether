@@ -447,8 +447,6 @@ const MenuBar = () => {
         position: "fixed",
         bottom: bottomOffset,
         left: 0,
-        right: 0,
-
         width: `calc(100% / ${zoom})`,
         transform: `scale(${zoom})`,
         transformOrigin: "bottom left",

@@ -9,6 +9,7 @@ import {
   BLANK_IMAGE,
   SlotAmount,
   Portal,
+  Grid,
 } from "./";
 import { resolveAsset } from "../../shared/Assets";
 import { useAppContext } from "./App";
@@ -213,7 +214,7 @@ const Slot = React.memo(
           touchAction: "none",
           userSelect: "none",
           pointerEvents: "all",
-          overflow: dragging ? "visible" : "hidden",
+          overflow: "hidden",
           width: size,
           height: size,
           top: 0,
@@ -229,19 +230,40 @@ const Slot = React.memo(
         {item && (
           <>
             {item?.amount > 1 && <SlotAmount>{item?.amount}</SlotAmount>}
+            <Icon
+              icon={imageData}
+              size={size * 2} // Fixes large images to not get cut off
+              style={{
+                touchAction: "none",
+                userSelect: "none",
+                pointerEvents: "all",
+                zIndex: 1,
+                opacity: dragging ? 0.5 : 1,
+                filter: dragging ? "grayscale(100%)" : "none",
+                cursor: dragging ? "grabbing" : "grab",
+                transform: "scale(2,2)",
+                imageRendering: "pixelated",
+                // Fixes large images to not get cut off
+                marginLeft: -size / 2 + "px",
+                marginTop: -size / 2 + "px",
+              }}
+              {...innerMouseBinds}
+              {...dataKeys}
+            />
             <Portal container={dragging ? document.body : null}>
               <Icon
                 ref={imageRef}
                 icon={aboutToSell ? "../assets/icons/gold.png" : imageData}
                 size={size * 2} // Fixes large images to not get cut off
                 style={{
+                  opacity: dragging ? 1 : 0,
                   touchAction: "none",
                   userSelect: "none",
-                  pointerEvents: dragging ? "none" : "all",
-                  zIndex: dragging ? 9999 : 1,
-                  position: dragging ? "fixed" : "static",
-                  left: (dragging ? position.x : 0) + "px",
-                  top: (dragging ? position.y : 0) + "px",
+                  pointerEvents: "none",
+                  zIndex: 999,
+                  position: "fixed",
+                  left: position.x + "px",
+                  top: position.y + "px",
                   // Fixes large images to not get cut off
                   marginLeft: (dragging ? 0 : -size / 2) + "px",
                   marginTop: (dragging ? 0 : -size / 2) + "px",
@@ -249,10 +271,7 @@ const Slot = React.memo(
                   transform: dragging ? "scale(4,4)" : "scale(2,2)",
                   imageRendering: "pixelated",
                 }}
-                {...innerMouseBinds}
-                {...dataKeys}
               />
-              ,
             </Portal>
             <ItemTooltip item={item} show={showTooltip} />
           </>
