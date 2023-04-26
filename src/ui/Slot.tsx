@@ -236,7 +236,7 @@ const Slot = React.memo(
               style={{
                 touchAction: "none",
                 userSelect: "none",
-                pointerEvents: "all",
+                pointerEvents: dragging ? "none" : "all",
                 zIndex: 1,
                 opacity: dragging ? 0.5 : 1,
                 filter: dragging ? "grayscale(100%)" : "none",

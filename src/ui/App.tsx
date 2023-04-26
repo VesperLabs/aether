@@ -459,16 +459,11 @@ const MenuBar = () => {
           <SkillButtons />
         </Flex>
       </Flex>
-      <Box>
-        <Box
-          sx={{
-            backdropFilter: "blur(10px)",
-            zIndex: "-1",
-            width: "100%",
-            height: "100%",
-            position: "absolute",
-          }}
-        />
+      <Box
+        sx={{
+          backdropFilter: "blur(10px)",
+        }}
+      >
         {tabKeeper && <MenuKeeper />}
         <MenuAbilities />
         <MenuEquipment />
