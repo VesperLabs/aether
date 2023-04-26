@@ -287,8 +287,11 @@ function App({ socket, debug, game }) {
             inset: 0,
             position: "fixed",
             backgroundColor: "black",
-            opacity: showLogin ? 1 : 0,
+            opacity: !isLoggedIn ? 1 : 0,
             transition: "opacity 1s ease-in-out",
+            pointerEvents: "none",
+            transitionDelay: "1000ms",
+            zIndex: "modal",
           }}
         />
         {showLogin && <ModalLogin />}
