@@ -177,6 +177,7 @@ const ItemBuilder = {
       item.id = crypto.randomUUID();
     }
     item.key = itemKey;
+    item.tint = item?.tint || "0xFFFFFF";
     item.rarity = rarity;
     item.amount = amount || 1;
     item.type = type;

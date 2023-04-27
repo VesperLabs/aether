@@ -34,9 +34,9 @@ class SceneBoot extends Phaser.Scene {
         let tempText = this.textures.get(asset.texture);
         tempText.add("preview", 0, ...asset.previewRect);
       });
+      window.dispatchEvent(new Event("GAME_LOADED"));
       this.scene.start("SceneMain");
       this.scene.start("SceneHud");
-      window.dispatchEvent(new Event("GAME_LOADED"));
     });
     mapImageList.forEach((asset) => {
       this.load.image(asset.name, asset.image);

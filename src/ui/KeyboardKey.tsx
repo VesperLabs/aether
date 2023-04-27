@@ -7,6 +7,7 @@ interface KeyboardKeyProps {
   hidden?: boolean;
   showOnly?: boolean;
   onKeyDown?: (e: KeyboardEvent) => void;
+  disabled?: boolean;
   sx?: object;
 }
 
@@ -27,6 +28,7 @@ const KeyboardKey: React.FC<KeyboardKeyProps> = ({
   hidden,
   showOnly,
   onKeyDown,
+  disabled,
   sx,
 }) => {
   const ref = useRef(null);
@@ -46,7 +48,7 @@ const KeyboardKey: React.FC<KeyboardKeyProps> = ({
     }
 
     if (keyName === name) {
-      if (!showOnly) ref?.current?.click();
+      if (!showOnly && !disabled) ref?.current?.click();
       setIsPressed(false);
     }
   };
@@ -86,6 +88,7 @@ const KeyboardKey: React.FC<KeyboardKeyProps> = ({
         position: "absolute",
         bottom: 0,
         right: 0,
+        pt: 0,
         bg: "#EEE",
         px: "5px",
         pb: isPressed ? "3px" : "4px",
@@ -93,10 +96,10 @@ const KeyboardKey: React.FC<KeyboardKeyProps> = ({
         textAlign: "center",
         lineHeight: 1,
         borderRadius: 3,
-        textShadow: "none",
         color: "#000",
         fontSize: "10px",
         fontWeight: "bold",
+        textShadow: "none",
         boxShadow: `#CCCCCC 0px ${isPressed ? -1 : -2}px 0px ${isPressed ? 1 : 2}px inset,
                      #000000 0px 0px 0px 1px,
                      #ffffff 0px -1px 0px ${isPressed ? 1 : 2}px inset`,

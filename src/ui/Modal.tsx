@@ -21,7 +21,7 @@ interface ModalFooterProps {
 }
 
 const Modal: React.FC<ModalProps> & {
-  Header: React.FC<ModalHeaderProps>;
+  Header: any;
   Body: React.FC<ModalBodyProps>;
   Footer: React.FC<ModalFooterProps>;
 } = ({ sx, ...props }) => {
@@ -51,7 +51,7 @@ const Modal: React.FC<ModalProps> & {
 Modal.Header = ({ sx, ...props }) => {
   return (
     <Flex
-      sx={{ p: 2, borderRadius: 3, bg: "shadow.25", flexDirection: "column", ...sx }}
+      sx={{ alignItems: "center", p: 2, gap: 1, borderRadius: 3, flex: 1, bg: "shadow.25", ...sx }}
       {...props}
     />
   );

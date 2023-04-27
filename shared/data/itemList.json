@@ -71,7 +71,6 @@
         "base": "scythe",
         "name": "Scythe",
         "texture": "weapon-scythe",
-        "tint": "0xFFFFFF",
         "slot": "hands",
         "stats": {
           "attackDelay": 100,
@@ -85,7 +84,6 @@
         "base": "spear",
         "name": "Spear",
         "texture": "weapon-spear",
-        "tint": "0xFFFFFF",
         "slot": "hands",
         "stats": {
           "attackDelay": 300,

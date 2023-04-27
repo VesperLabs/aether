@@ -10,6 +10,7 @@ interface KeyboardButtonProps {
   showOnly?: boolean;
   variant?: "wood" | "header";
   sx?: object;
+  disabled?: boolean;
   type?: "button" | "submit" | "reset";
 }
 
@@ -21,6 +22,7 @@ const KeeperButton: FC<KeyboardButtonProps> = ({
   showOnly,
   variant = "wood",
   sx,
+  disabled,
   ...props
 }) => {
   return (
@@ -33,6 +35,7 @@ const KeeperButton: FC<KeyboardButtonProps> = ({
       }}
       variant={variant}
       onClick={onClick}
+      disabled={disabled}
       {...props}
     >
       {children}

@@ -82,7 +82,7 @@ const getHudZoom = () => {
     maxZoom: 2,
     minZoom: 1,
     divisor: 6000000,
-  }).toFixed(2);
+  });
 };
 
 function App({ socket, debug, game }) {
@@ -287,14 +287,15 @@ function App({ socket, debug, game }) {
             inset: 0,
             position: "fixed",
             backgroundColor: "black",
-            opacity: !isLoggedIn ? 1 : 0,
-            transition: "opacity 1s ease-in-out",
+            opacity: showLogin ? 1 : 0,
+            transition: "opacity 1s ease-out",
             pointerEvents: "none",
-            transitionDelay: "1000ms",
             zIndex: "modal",
+            transitionDelay: "0.5s",
           }}
-        />
-        {showLogin && <ModalLogin />}
+        >
+          {!isLoggedIn && <ModalLogin />}
+        </Box>
         {isLoggedIn && (
           <Box
             id={HUD_CONTAINER_ID}

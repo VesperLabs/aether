@@ -92,6 +92,9 @@ export default {
       boxShadow: `inset 0px 0px 0px 1px rgba(255,255,255,.25)`,
       bg: "yellow.900",
       position: "relative",
+      "&:disabled": {
+        opacity: 0.5,
+      },
     },
   },
   styles: {

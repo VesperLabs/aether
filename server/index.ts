@@ -18,7 +18,7 @@ import {
   checkSlotsMatch,
   SHOP_INFLATION,
 } from "./utils";
-import { initDatabase, baseUser } from "./db";
+import { initDatabase } from "./db";
 import RoomManager from "./RoomManager";
 import Phaser from "phaser";
 import QuestBuilder from "./QuestBuilder";
@@ -75,10 +75,9 @@ class ServerScene extends Phaser.Scene implements ServerScene {
     io.on("connection", (socket: Socket) => {
       const socketId = socket.id;
 
-      socket.on("login", async ({ email, password }) => {
+      socket.on("login", async ({ email, password } = {}) => {
         const user = await scene.db.getUserByLogin({ email, password });
-        //const user = cloneObject(baseUser);
-        if (!user) return console.log("❌ Player not found in db");
+        if (!user) return socket.emit("formError", { error: "Invalid login" });
 
         const player = scene.roomManager.rooms[user.roomName].playerManager.create({
           socketId,
@@ -105,13 +104,44 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         socket.to(roomName).emit("playerJoin", getCharacterState(player), { isLogin: true });
       });
 
-      socket.on("attack", ({ count, direction }) => {
+      socket.on("register", async ({ email, password, charClass } = {}) => {
+        // Validate email format
+        const emailRegex = /^\S+@\S+\.\S+$/;
+        if (!emailRegex.test(email)) {
+          return socket.emit("formError", { error: "Invalid email format" });
+        }
+
+        // Check if email is already in use
+        const user = await scene.db.getUserByEmail({ email });
+        if (user) {
+          return socket.emit("formError", { error: "Email already in use" });
+        }
+
+        //Validate password strength
+        const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
+        if (password?.length < 4) {
+          return socket.emit("formError", {
+            error: "Weak password",
+          });
+        }
+
+        // Create user if email and password are valid
+        const isCreated = await scene.db.createUser({ email, password, charClass });
+        if (!isCreated) {
+          return socket.emit("formError", { error: "Error creating user" });
+        }
+
+        // Send success message
+        socket.emit("formSuccess", { success: "Account created", email });
+      });
+
+      socket.on("attack", ({ count, direction } = {}) => {
         const player = scene.players[socketId];
         if (player?.state?.isDead) return;
         socket.to(player?.roomName).emit("playerAttack", { socketId, count, direction });
       });
 
-      socket.on("castSpell", ({ abilitySlot, castAngle }) => {
+      socket.on("castSpell", ({ abilitySlot, castAngle } = {}) => {
         const player = scene.players[socketId];
         const { ilvl, base, mpCost = 0 } = player?.abilities?.[abilitySlot] || {};
         if (player?.state?.isDead || !ilvl || !base) return;
@@ -126,7 +156,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         }
       });
 
-      socket.on("grabLoot", ({ lootId, direction }) => {
+      socket.on("grabLoot", ({ lootId, direction } = {}) => {
         const player = scene.players[socketId];
         const loot = cloneObject(scene.loots[lootId]);
         const item = loot?.item;
@@ -184,7 +214,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         io.to(player?.roomName).emit("changeDirection", { socketId, direction });
       });
 
-      socket.on("hit", ({ ids, abilitySlot }) => {
+      socket.on("hit", ({ ids, abilitySlot } = {}) => {
         const hero: Player = scene.players[socketId];
         if (!hero || hero?.state?.isDead) return;
         const roomName: string = hero?.roomName;
@@ -271,7 +301,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         io.emit("remove", socketId);
       });
 
-      socket.on("dropItem", ({ location, item, ...rest }) => {
+      socket.on("dropItem", ({ location, item, ...rest } = {}) => {
         const amount = Math.abs(parseInt(rest?.amount)) || 1;
         const player = scene?.players?.[socketId];
         let found = null;
@@ -316,7 +346,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         io.to(player?.roomName).emit("playerUpdate", getCharacterState(player));
       });
 
-      socket.on("moveItem", ({ to, from }) => {
+      socket.on("moveItem", ({ to, from } = {}) => {
         const player = scene?.players?.[socketId];
         let toItem, fromItem;
         /* Clone the items we are interacting with */
@@ -476,7 +506,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         io.to(player?.roomName).emit("playerUpdate", getCharacterState(player));
       });
 
-      socket.on("consumeItem", ({ location, item }) => {
+      socket.on("consumeItem", ({ location, item } = {}) => {
         const player = scene?.players?.[socketId];
         if (player?.state?.isDead) return;
         let playerItem: Item;
@@ -509,9 +539,9 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         handlePlayerInput(scene, socketId, input); //defined in utilites.js
       });
 
-      socket.on("chatNpc", ({ npcId }) => {
+      socket.on("chatNpc", ({ npcId } = {}) => {
         const player = scene?.players?.[socketId];
-        const npc = scene.npcs[npcId];
+        const npc = scene?.npcs?.[npcId];
         npc.talkingIds.push(socketId);
         player.state.targetNpcId = npcId;
         socket.emit("keeperDataUpdate", {

@@ -230,7 +230,11 @@ function calculateZoomLevel({
   divisor = 1000000,
 } = {}) {
   const viewportAreaInPixels = viewportArea; // multiply by square of pixel density
-  const zoomLevel = Phaser.Math.Clamp(baseZoom + viewportAreaInPixels / divisor, minZoom, maxZoom);
+  const zoomLevel = Phaser.Math.Clamp(
+    baseZoom + viewportAreaInPixels / divisor,
+    minZoom,
+    maxZoom
+  ).toFixed(2);
   return zoomLevel;
 }
 

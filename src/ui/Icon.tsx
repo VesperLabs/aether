@@ -1,13 +1,7 @@
 import { forwardRef, HTMLAttributes } from "react";
 import { Box, SxProp } from "theme-ui";
 
-interface IconProps extends HTMLAttributes<HTMLDivElement> {
-  sx?: any;
-  size?: number;
-  icon: string;
-}
-
-const Icon = forwardRef<HTMLDivElement, IconProps>(({ sx, size = 32, icon, ...props }, ref) => {
+const Icon = forwardRef<HTMLDivElement, any>(({ sx, size = 32, icon, ...props }, ref) => {
   return (
     <Box
       className="icon"
