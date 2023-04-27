@@ -25,7 +25,8 @@ const Modal: React.FC<ModalProps> & {
   Body: React.FC<ModalBodyProps>;
   Footer: React.FC<ModalFooterProps>;
 } = ({ sx, ...props }) => {
-  const { zoom } = useAppContext();
+  const { zoom, bottomOffset } = useAppContext();
+
   return (
     <Flex
       sx={{
@@ -35,10 +36,10 @@ const Modal: React.FC<ModalProps> & {
         borderRadius: 3,
         position: "fixed",
         flexDirection: "column",
-        top: "50%",
+        bottom: bottomOffset > 0 ? bottomOffset + 20 + "px" : "50%",
         left: "50%",
         pointerEvents: "all",
-        transform: `scale(${zoom}) translate(-50%, -50%)`,
+        transform: `scale(${zoom}) translate(-50%, ${bottomOffset > 0 ? "0%" : "50%"})`,
         transformOrigin: "top left",
         ...sx,
       }}
