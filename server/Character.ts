@@ -260,11 +260,11 @@ class ServerCharacter extends Character {
         this.state.lastHpRegen = now;
         this.modifyStat("hp", this.stats.regenHp);
       }
-      if (isMpRegenReady && this.stats.mp < this.stats.maxMp) {
-        this.state.doMpRegen = true;
-        this.state.lastMpRegen = now;
-        this.modifyStat("mp", this.stats.regenMp);
-      }
+    }
+    if (isMpRegenReady && this.stats.mp < this.stats.maxMp) {
+      this.state.doMpRegen = true;
+      this.state.lastMpRegen = now;
+      this.modifyStat("mp", this.stats.regenMp);
     }
   }
   assignExp(amount: integer): boolean {
