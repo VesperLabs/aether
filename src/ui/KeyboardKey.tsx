@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Box } from "./";
+import { Box, Flex } from "./";
 
 interface KeyboardKeyProps {
   name: string;
@@ -76,7 +76,7 @@ const KeyboardKey: React.FC<KeyboardKeyProps> = ({
   }, []);
 
   return (
-    <Box
+    <Flex
       ref={ref}
       onClick={(e) => {
         e.stopPropagation();
@@ -94,20 +94,19 @@ const KeyboardKey: React.FC<KeyboardKeyProps> = ({
         pb: isPressed ? "3px" : "4px",
         minWidth: 16,
         textAlign: "center",
-        lineHeight: 1,
         borderRadius: 3,
+        flexShrink: 0,
         color: "#000",
-        fontSize: "10px",
-        fontWeight: "bold",
-        textShadow: "none",
         boxShadow: `#CCCCCC 0px ${isPressed ? -1 : -2}px 0px ${isPressed ? 1 : 2}px inset,
                      #000000 0px 0px 0px 1px,
                      #ffffff 0px -1px 0px ${isPressed ? 1 : 2}px inset`,
         ...sx,
       }}
     >
-      {keyDisplayName}
-    </Box>
+      <Box sx={{ lineHeight: 1, fontSize: "10px", fontWeight: "bold", textShadow: "none" }}>
+        {keyDisplayName}
+      </Box>
+    </Flex>
   );
 };
 

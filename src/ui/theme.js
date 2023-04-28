@@ -68,7 +68,24 @@ export default {
     },
   },
   buttons: {
+    default: {
+      boxShadow: "0 0",
+      fontSmoothing: "never",
+      verticalAlign: "middle",
+      display: "flex",
+      cursor: "pointer",
+      touchAction: "none",
+      userSelect: "none",
+      pointerEvents: "all",
+      "&:focus": {
+        outline: "none",
+      },
+      "&:disabled": {
+        opacity: 0.5,
+      },
+    },
     header: {
+      variant: "buttons.default",
       flex: 1,
       maxWidth: 592,
       borderRadius: 4,
@@ -77,6 +94,7 @@ export default {
       backgroundColor: "shadow.30",
     },
     menu: {
+      variant: "buttons.default",
       borderRadius: 4,
       padding: 1,
       "*": { opacity: 0.5 },
@@ -84,6 +102,7 @@ export default {
       backgroundColor: "shadow.10",
     },
     wood: {
+      variant: "buttons.default",
       borderRadius: 4,
       py: 1,
       px: 2,
@@ -92,9 +111,6 @@ export default {
       boxShadow: `inset 0px 0px 0px 1px rgba(255,255,255,.25)`,
       bg: "yellow.900",
       position: "relative",
-      "&:disabled": {
-        opacity: 0.5,
-      },
     },
   },
   styles: {

@@ -124,10 +124,10 @@ class ServerCharacter extends Character {
     ns.armorPierce = ns.armorPierce + ns.dexterity + ns.strength;
     ns.defense = ns.defense + ns.strength;
     ns.critChance = ns.critChance + ns.dexterity * 0.05;
-    ns.speed = ns.speed + ns.dexterity * 0.003;
+    ns.speed = ns.speed + ns.dexterity * 0.03;
+    ns.dodgeChance = ns.dodgeChance + ns.dexterity * 0.03;
     //ns.blockChance = ns.blockChance + (0 * (ns.dexterity - 15)) / (ns.level * 2);
     ns.blockChance = ns.blockChance;
-    ns.dodgeChance = ns.dodgeChance;
     if (ns.critChance > 100) ns.critChance = 100;
     if (ns.dodgeChance > 75) ns.dodgeChance = 75;
     if (ns.blockChance > 75) ns.blockChance = 75;

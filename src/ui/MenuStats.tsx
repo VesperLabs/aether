@@ -66,16 +66,16 @@ const MenuStats = () => {
             <Text>{stats?.armorPierce}</Text>
             <Text>Walk Speed</Text>
             <Text>{Math.round(stats?.speed)}</Text>
-            <Text>Cast Speed</Text>
+            <Text>Cast Delay</Text>
             <Text>{stats?.castDelay}</Text>
             <Text>Attack Delay</Text>
             <Text>{stats?.attackDelay}</Text>
           </Grid>
           <Grid sx={COLUMN_STYLES}>
             <Text>Dodge Chance</Text>
-            <Text>{stats?.dodgeChance}%</Text>
+            <Text>{stats?.dodgeChance?.toFixed(1)}%</Text>
             <Text>Block Chance</Text>
-            <Text>{stats?.blockChance}%</Text>
+            <Text>{stats?.blockChance?.toFixed(1)}%</Text>
             <Text>Defense</Text>
             <Text>{stats?.defense}</Text>
             <Text>Regen Hp</Text>

@@ -122,9 +122,10 @@ export const createBaseUser = (charClass) => {
   const isMage = charClass === "mage";
   const isWarrior = charClass === "warrior";
   const isRogue = charClass === "rogue";
+  const isCleric = charClass === "cleric";
 
   const getStartingWeapon = () => {
-    if (isMage) return ItemBuilder.buildItem("weapon", "common", "dagger");
+    if (isMage) return ItemBuilder.buildItem("weapon", "common", "wand");
     if (isWarrior) return ItemBuilder.buildItem("weapon", "common", "axe");
     if (isRogue) return ItemBuilder.buildItem("weapon", "common", "katar");
   };
@@ -141,10 +142,10 @@ export const createBaseUser = (charClass) => {
       maxSpellDamage: 0,
       castDelay: 1000,
       armorPierce: 0,
-      dexterity: 1,
-      strength: 1,
-      vitality: 1,
-      intelligence: 1,
+      dexterity: isRogue ? 3 : 1,
+      strength: isWarrior ? 3 : 1,
+      vitality: isCleric ? 3 : 1,
+      intelligence: isMage ? 3 : 1,
       defense: 0,
       blockChance: 0,
       critChance: 0,

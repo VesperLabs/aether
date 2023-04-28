@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Modal, Flex, Input, KeyboardButton, Icon, useAppContext, Tooltip } from "./";
+import { Modal, Flex, Input, KeyboardButton, Icon, useAppContext, Tooltip, Text } from "./";
 
 const IconPen = ({ sx }: { sx?: any }) => (
   <Icon
@@ -151,7 +151,7 @@ const RegisterForm = ({ onRegisterSuccess }) => {
 
   return (
     <Modal.Body sx={{ gap: 2 }}>
-      <Flex sx={{ justifyContent: "space-around" }}>
+      <Flex sx={{ justifyContent: "space-around", pb: 2 }}>
         <ClickableIcon
           icon={`../assets/icons/axe.png`}
           charClass="warrior"
@@ -219,18 +219,34 @@ const RegisterForm = ({ onRegisterSuccess }) => {
 };
 
 const ClickableIcon = ({ icon, setCharClass, charClass, isSelected }) => {
+  const getDesc = (charClass) => {
+    const desc = {
+      warrior: "Warriors are strong and can take a lot of damage.",
+      rogue: "Rogues are fast and can dodge attacks.",
+      mage: "Mages are powerful and can cast spells.",
+    };
+    return desc[charClass];
+  };
   return (
-    <Icon
-      size={22}
+    //@ts-ignore
+    <Flex
       data-tooltip-id="login"
-      data-tooltip-content={charClass}
-      icon={icon}
+      data-tooltip-content={getDesc(charClass)}
       sx={{
+        flexDirection: "column",
+        alignItems: "center",
         cursor: "pointer",
-        opacity: isSelected ? 1 : 0.25,
+        opacity: isSelected ? 1 : 0.15,
+        gap: 1,
+        "&:hover": {
+          opacity: isSelected ? 1 : 0.65,
+        },
       }}
       onClick={() => setCharClass(charClass)}
-    />
+    >
+      <Icon size={22} icon={icon} />
+      <Text sx={{ fontSize: 0, textTransform: "capitalize" }}>{charClass}</Text>
+    </Flex>
   );
 };
 

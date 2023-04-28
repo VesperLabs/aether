@@ -246,6 +246,18 @@
     "previewRect": [30, 33, 22, 19]
   },
   {
+    "texture": "weapon-wand-stick",
+    "src": "./assets/atlas/hands/weapon-wand-stick.png",
+    "atlas": "./assets/atlas/weapon.json",
+    "previewRect": [31, 30, 23, 23]
+  },
+  {
+    "texture": "weapon-sword-short",
+    "src": "./assets/atlas/hands/weapon-sword-short.png",
+    "atlas": "./assets/atlas/weapon.json",
+    "previewRect": [35, 35, 19, 19]
+  },
+  {
     "texture": "weapon-spear",
     "src": "./assets/atlas/hands/weapon-spear.png",
     "atlas": "./assets/atlas/weapon.json",

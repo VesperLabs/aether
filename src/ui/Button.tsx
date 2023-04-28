@@ -1,4 +1,4 @@
-import { ButtonProps as ThemeButtonProps, Button as BaseButton } from "theme-ui";
+import { ButtonProps as ThemeButtonProps, Button as BaseButton, Flex } from "theme-ui";
 import { forwardRef, ForwardedRef, MouseEvent, TouchEvent } from "react";
 
 export type ButtonProps = ThemeButtonProps & {
@@ -11,11 +11,13 @@ export type ButtonProps = ThemeButtonProps & {
 type ButtonPropsWithRef = ButtonProps & { ref?: ForwardedRef<HTMLButtonElement> };
 
 const Button = forwardRef<HTMLButtonElement, ButtonPropsWithRef>(
-  ({ sx, icon, onTouchEnd, onTouchStart, onClick, ...props }, ref) => {
+  ({ icon, onTouchEnd, onTouchStart, onClick, ...props }, ref) => {
     return (
       <BaseButton
+        //as={Flex}
         // @ts-ignore
         __themeKey="buttons"
+        variant="default"
         ref={ref}
         onClick={(e: MouseEvent<HTMLButtonElement>) => {
           if (onClick) {
@@ -36,17 +38,6 @@ const Button = forwardRef<HTMLButtonElement, ButtonPropsWithRef>(
           e.stopPropagation();
           e.preventDefault();
           return onTouchEnd?.(e);
-        }}
-        sx={{
-          display: "flex",
-          cursor: "pointer",
-          touchAction: "none",
-          userSelect: "none",
-          pointerEvents: "all",
-          "&:focus": {
-            outline: "none",
-          },
-          ...sx,
         }}
         {...props}
       />

@@ -24,6 +24,7 @@ const ItemTooltip = ({ item, show }) => {
 
   const combinedStats = combineDamageStats(item?.stats);
   const combinedEffects = combineDamageStats(item?.effects);
+  const requirements = item?.requirements || {};
 
   return (
     <Tooltip id={item?.id} isOpen={show}>
@@ -74,6 +75,12 @@ const ItemTooltip = ({ item, show }) => {
             );
           }
         })}
+        {Object.keys(requirements)?.length > 0 && <TextDivider>Requirements</TextDivider>}
+        {Object.keys(requirements).map((key) => (
+          <Text key={key}>
+            <Label>{key}:</Label> {requirements[key]}
+          </Text>
+        ))}
         {item?.setBonus && (
           <>
             <TextDivider>Set Bonus</TextDivider>
@@ -95,7 +102,6 @@ const ItemTooltip = ({ item, show }) => {
             })}
           </>
         )}
-
         <Divider />
         <Flex sx={{ alignItems: "center", gap: 2 }}>
           <Flex sx={{ alignItems: "center", gap: "2px" }}>
