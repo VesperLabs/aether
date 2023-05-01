@@ -459,7 +459,10 @@ function playWeapons(player) {
   handRight.setFlipX(right?.flipX);
   handRight.setFlipY(right?.flipY);
   handRight.setAngle(right?.rotation);
-  if (equipment?.handRight?.texture?.includes("katar")) {
+  if (
+    equipment?.handRight?.texture?.includes("katar") ||
+    equipment?.handLeft?.texture?.includes("katar")
+  ) {
     if (action === "attack_right") {
       if (direction === "left") {
         handRight.setAngle(90);
