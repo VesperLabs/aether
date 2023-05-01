@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-
+import { capitalize, getAngleFromDirection } from "./utils";
 class Character extends Phaser.GameObjects.Container {
   startingCoords: Coordinate;
   socketId: string;
@@ -87,7 +87,7 @@ class Character extends Phaser.GameObjects.Container {
       hasWeaponLeft: false,
       isDead: false,
       activeSets: [],
-      lastAngle: getInitialLastAngle(this.direction),
+      lastAngle: Phaser.Math.DegToRad(getAngleFromDirection(this.direction)),
       ...state,
     };
     this.activeItemSlots = activeItemSlots;
@@ -196,22 +196,6 @@ class Character extends Phaser.GameObjects.Container {
     if (this.scene) this.scene.physics.world.disable(this);
     super.destroy(true);
   }
-}
-
-function getInitialLastAngle(direction) {
-  let angle = 0;
-
-  if (direction === "up") angle = 270;
-  if (direction === "down") angle = 90;
-  if (direction === "left") angle = 180;
-  if (direction === "right") angle = 0;
-
-  return Phaser.Math.DegToRad(angle);
-}
-
-function capitalize(str) {
-  if (str.length == 0) return str;
-  return str[0].toUpperCase() + str.substr(1);
 }
 
 export default Character;

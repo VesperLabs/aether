@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { playAudio } from "./utils";
+import { getAngleFromDirection } from "../shared/utils";
 const Sprite = Phaser.GameObjects.Sprite;
 const BLANK_TEXTURE = "human-blank";
 class Spell extends Phaser.GameObjects.Container {
@@ -27,9 +28,10 @@ class Spell extends Phaser.GameObjects.Container {
     this.isAttack = ["attack_left", "attack_right"]?.includes(spellName);
     if (this.isAttack) {
       this.setDepth(this?.caster?.depth - 10);
+      this.canHitSelf = false;
+      this.spell.setTexture("misc-slash");
+      this.spell.setAngle(getAngleFromDirection(caster?.direction) - 90);
       if (spellName === "attack_left") {
-        this.canHitSelf = false;
-        this.spell.setTexture("misc-slash");
         const rangeLeft = caster?.equipment?.handLeft?.stats?.range * 2 || caster?.body?.radius / 8;
         this.body.setCircle(rangeLeft * 16, -rangeLeft * 16, -rangeLeft * 16);
         this.spell.displayWidth = 50 * rangeLeft;
@@ -40,8 +42,6 @@ class Spell extends Phaser.GameObjects.Container {
         }
       }
       if (spellName === "attack_right") {
-        this.canHitSelf = false;
-        this.spell.setTexture("misc-slash");
         const rangeRight =
           caster?.equipment?.handRight?.stats?.range * 2 || caster?.body?.radius / 8;
         this.body.setCircle(rangeRight * 16, -rangeRight * 16, -rangeRight * 16);
@@ -52,20 +52,6 @@ class Spell extends Phaser.GameObjects.Container {
           this.spell.setFlipX(true);
         }
       }
-      if (caster?.direction === "up") {
-        this.spell.setAngle(180);
-      }
-      if (caster?.direction === "down") {
-        this.spell.setAngle(0);
-        this.spell.y = this?.caster?.bodyOffsetY;
-      }
-      if (caster?.direction === "left") {
-        this.spell.setAngle(90);
-      }
-      if (caster?.direction === "right") {
-        this.spell.setAngle(-90);
-      }
-      /* Animate it out */
       scene.tweens.add({
         targets: this.spell,
         props: {
