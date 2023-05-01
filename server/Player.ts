@@ -7,6 +7,7 @@ class Player extends ServerCharacter implements Player {
   constructor(scene: ServerScene, args: Player) {
     super(scene, args);
     this.email = args?.email;
+    this.calculateStats();
   }
   setDead() {
     this.state.isDead = true;

@@ -54,6 +54,7 @@ class Npc extends Character implements Npc {
       shop: buildShop(keeperData?.shop),
       quests: keeperData?.quests?.map((questId: string) => scene?.quests?.[questId]),
     };
+    this.calculateStats();
   }
   setDead() {
     this.state.isDead = true;

@@ -9,7 +9,6 @@ class ServerCharacter extends Character {
     this.room = args?.room;
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
-    this.calculateStats();
   }
   getQuests() {
     if (!this.quests?.length) return [];
