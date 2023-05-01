@@ -1,5 +1,4 @@
 import { Flex, useAppContext, Text, Divider, Icon, Tooltip } from "./";
-import itemSetList from "../../shared/data/itemSetList.json";
 
 const combineDamageStats = (stats) =>
   Object.entries(stats).reduce((acc, [key, value]) => {
@@ -19,7 +18,6 @@ const Label = (props) => <Text sx={{ fontWeight: "normal" }} {...props} />;
 const ItemTooltip = ({ item, show }) => {
   const { hero } = useAppContext();
   const isSetActive = hero?.state?.activeSets?.includes?.(item?.setName);
-  const setDetails = itemSetList?.[item?.setName];
   if (!item) return;
 
   const combinedStats = combineDamageStats(item?.stats);
@@ -87,8 +85,6 @@ const ItemTooltip = ({ item, show }) => {
         {item?.setBonus && (
           <>
             <TextDivider>Set Bonus</TextDivider>
-            {/* <Text color={isSetActive ? "set" : "gray.500"}>{setDetails?.name}</Text>
-            <Divider my={1} /> */}
             {Object.keys(item?.setBonus.percentStats).map((key) => {
               return (
                 <Text key={key} color={isSetActive ? "set" : "gray.500"}>
