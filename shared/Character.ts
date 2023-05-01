@@ -49,6 +49,7 @@ class Character extends Phaser.GameObjects.Container {
       npcKills = {},
       quests = {},
       abilities = {},
+      activeItemSlots = [],
     } = args;
     super(scene, x, y, []);
     this.charClass = charClass;
@@ -89,6 +90,7 @@ class Character extends Phaser.GameObjects.Container {
       lastAngle: getInitialLastAngle(this.direction),
       ...state,
     };
+    this.activeItemSlots = activeItemSlots;
     this.gold = gold;
     this.profile = { headY: -47, ...profile };
     this.equipment = equipment;

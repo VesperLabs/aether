@@ -13,6 +13,7 @@ class Player extends Character {
     super(scene, args);
     this.weaponAtlas = scene.cache.json.get("weaponAtlas");
     this.bodyOffsetY = -14 * (this?.profile?.scale || 1);
+    this.updateData(args);
     this.initSpriteLayers();
     this.drawCharacterFromUserData();
     this.updateHpBar();
@@ -22,15 +23,19 @@ class Player extends Character {
     scene.events.once("shutdown", this.destroy, this);
   }
   updateData(data) {
-    this.equipment = data?.equipment;
+    this.activeItemSlots = data?.activeItemSlots;
+    // filter out equipment slotNames that are not in activeItemsSlots array
+    this.equipment = Object.fromEntries(
+      Object.entries(data?.equipment).filter(([key]) => this.activeItemSlots.includes(key))
+    );
     this.inventory = data?.inventory;
     this.profile = data?.profile;
     this.stats = data?.stats;
     this.gold = data?.gold;
     this.npcKills = data?.npcKills;
     this.quests = data?.quests;
-    this.abilities = data?.abilities;
-    this.activeItemSlots = data?.activeItemSlots;
+  }
+  updateExtas() {
     this.drawCharacterFromUserData();
     this.checkAttackHands();
     this.updateHpBar();

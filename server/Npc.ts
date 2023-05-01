@@ -186,10 +186,10 @@ class Npc extends Character implements Npc {
     }
   }
   moveTowardPoint(coords: Coordinate) {
-    const speed = this.stats.speed;
+    const walkSpeed = this.stats.walkSpeed;
     const angle = Math.atan2(coords.y - this.y, coords.x - this.x);
-    this.vx = speed * Math.cos(angle);
-    this.vy = speed * Math.sin(angle);
+    this.vx = walkSpeed * Math.cos(angle);
+    this.vy = walkSpeed * Math.sin(angle);
     this.body.setVelocity(this.vx, this.vy);
     this.direction = getCharacterDirection(this, { x: this?.x + this.vx, y: this.y + this.vy });
   }
@@ -200,7 +200,7 @@ class Npc extends Character implements Npc {
       if (this.checkInRange(nextPath, 1)) {
         this.nextPath = null;
       } else {
-        // Move the player along the path at the given speed
+        // Move the player along the path at the given walkSpeed
         this.moveTowardPoint(nextPath);
       }
     }
@@ -208,22 +208,22 @@ class Npc extends Character implements Npc {
   moveRandomly(time: number) {
     if (time % 4 > 1) return;
     const randNumber = Math.floor(Math.random() * 6 + 1);
-    const speed = this.stats.speed / 2;
+    const walkSpeed = this.stats.walkSpeed / 2;
     switch (randNumber) {
       case 1:
-        this.vx = -speed;
+        this.vx = -walkSpeed;
         this.direction = "left";
         break;
       case 2:
-        this.vx = speed;
+        this.vx = walkSpeed;
         this.direction = "right";
         break;
       case 3:
-        this.vy = -speed;
+        this.vy = -walkSpeed;
         this.direction = "up";
         break;
       case 4:
-        this.vy = speed;
+        this.vy = walkSpeed;
         this.direction = "down";
         break;
       default:

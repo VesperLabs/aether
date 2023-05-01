@@ -10,7 +10,7 @@
     { "ilvl": 1, "name": "of MP Regen", "stats": { "regenMp": [1, 2] } },
     { "ilvl": 1, "name": "of Magic Find", "stats": { "magicFind": [1, 3] } },
     { "ilvl": 1, "name": "of Max Damage", "stats": { "maxDamage": [1, 2] } },
-    { "ilvl": 1, "name": "of Walk Speed", "stats": { "speed": [1, 3] } },
+    { "ilvl": 1, "name": "of Walk Speed", "stats": { "walkSpeed": [1, 3] } },
     { "ilvl": 1, "name": "of Defense", "stats": { "defense": [1, 2] } },
     { "ilvl": 1, "name": "of Armor Pierce", "stats": { "armorPierce": [1, 2] } },
     { "ilvl": 2, "name": "of Dodge Chance", "stats": { "dodgeChance": [1, 2] } },

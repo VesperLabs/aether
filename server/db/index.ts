@@ -135,7 +135,7 @@ export const createBaseUser = (charClass) => {
     baseStats: {
       expValue: 0,
       level: 1,
-      speed: 100,
+      walkSpeed: 100,
       accuracy: 0,
       attackDelay: 100,
       minSpellDamage: 0,

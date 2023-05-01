@@ -128,13 +128,27 @@ const ItemBuilder = {
       (i: any) => i?.base === item?.base && i.ilvl === 1
     ) as Item;
 
+    /* Stats on all items will start with base item */
     if (baseItem) {
       for (let key in baseItem.requirements || {}) {
         item.requirements[key] = baseItem.requirements[key] * item?.ilvl;
       }
+      if (item.slot !== "stackable") {
+        for (let key in baseItem.stats || {}) {
+          const consistentKeys = ["attackDelay", "castDelay", "range"];
+          let statAmount = 0;
+          if (Array.isArray(baseItem.stats[key])) {
+            const low = baseItem.stats[key][0];
+            const high = baseItem.stats[key][1];
+            statAmount = Math.floor(Math.random() * (high - low + 1) + low);
+          } else {
+            statAmount = baseItem.stats[key];
+          }
+          newStats[key] = consistentKeys?.includes(key) ? statAmount : statAmount * item?.ilvl;
+        }
+      }
     }
 
-    /* TODO: Stats can be be inherited from the base item */
     if (item?.stats) {
       for (let key in item.stats) {
         if (Array.isArray(item.stats[key])) {

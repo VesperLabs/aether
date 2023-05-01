@@ -98,6 +98,7 @@ class SceneMain extends Phaser.Scene {
     socket.on("playerUpdate", (userData) => {
       const player = getPlayer(scene, userData.socketId);
       player.updateData(userData);
+      player.updateExtas();
     });
 
     socket.on("lootGrabbed", ({ socketId, lootId, player: userData }) => {
@@ -274,7 +275,7 @@ function enableDoors(scene) {
 function moveHero(scene, time) {
   const hero = scene?.hero;
   if (hero?.state?.isDead) return hero.body.setVelocity(0, 0);
-  const speed = hero.stats.speed;
+  const walkSpeed = hero.stats.walkSpeed;
   const joystick = scene.game.scene.scenes[2].joystick;
   const left = scene.cursorKeys.left.isDown;
   const right = scene.cursorKeys.right.isDown;
@@ -285,19 +286,19 @@ function moveHero(scene, time) {
   let vy = 0;
 
   if (left) {
-    vx = -speed;
+    vx = -walkSpeed;
     hero.direction = "left";
   }
   if (right) {
-    vx = speed;
+    vx = walkSpeed;
     hero.direction = "right";
   }
   if (up) {
-    vy = -speed;
+    vy = -walkSpeed;
     hero.direction = "up";
   }
   if (down) {
-    vy = speed;
+    vy = walkSpeed;
     hero.direction = "down";
   }
   if (left && right) vx = 0;
@@ -308,8 +309,8 @@ function moveHero(scene, time) {
   }
 
   if (joystick.deltaX || joystick.deltaY) {
-    vx = joystick.deltaX * speed;
-    vy = joystick.deltaY * speed;
+    vx = joystick.deltaX * walkSpeed;
+    vy = joystick.deltaY * walkSpeed;
     hero.direction = getSpinDirection(hero, { x: hero.x + vx, y: hero.y + vy });
   }
 

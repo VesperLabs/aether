@@ -21,9 +21,10 @@ class ServerCharacter extends Character {
       };
     });
   }
+  /* make sure character can wear items */
   calculateActiveItemSlots() {
     const { equipment = {}, abilities = {} } = this;
-    const baseStatKeys = ["vitality", "dexterity", "strength", "intelligence"];
+    const baseStatKeys = ["vitality", "dexterity", "strength", "intelligence", "level"];
     const allItems = Object.entries({ ...equipment, ...abilities });
     const percentStats = Object.fromEntries(baseStatKeys.map((stat) => [stat, 0]));
     const baseStats = {
@@ -50,7 +51,6 @@ class ServerCharacter extends Character {
 
       for (const item of wornItems) {
         // if the item has a requirement and the character doesn't meet it, remove the item from the list
-        // + Math.floor(baseStats[key] * (percentStats[key] / 100))
         if (
           item?.requirements?.[key] >
           baseStats[key] + Math.floor(baseStats[key] * (percentStats[key] / 100))
@@ -73,7 +73,6 @@ class ServerCharacter extends Character {
           const setInfo = ItemBuilder.getSetInfo(item.setName);
           const currentSetItems = setItems.filter((i) => i.setName == item.setName);
           if (currentSetItems?.length >= setInfo?.pieces) {
-            console.log(currentSetItems?.length, setInfo);
             activeSets.push(item.setName);
             //add the set bonus
             if (setInfo?.stats?.[key]) {
@@ -198,7 +197,7 @@ class ServerCharacter extends Character {
     ns.armorPierce = ns.armorPierce + ns.dexterity + ns.strength;
     ns.defense = ns.defense + ns.strength;
     ns.critChance = ns.critChance + ns.dexterity * 0.05;
-    ns.speed = ns.speed + ns.dexterity * 0.03;
+    ns.walkSpeed = ns.walkSpeed + ns.dexterity * 0.03;
     ns.dodgeChance = ns.dodgeChance + ns.dexterity * 0.03;
     //ns.blockChance = ns.blockChance + (0 * (ns.dexterity - 15)) / (ns.level * 2);
     ns.blockChance = ns.blockChance;

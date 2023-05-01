@@ -16,7 +16,7 @@
     "pieces": 2,
     "stats": {
       "dexterity": 10,
-      "speed": 10,
+      "walkSpeed": 10,
       "dodgeChance": 10
     },
     "percentStats": {
@@ -29,7 +29,7 @@
     "stats": {
       "strength": 5,
       "dexterity": 5,
-      "speed": 5,
+      "walkSpeed": 5,
       "dodgeChance": 5,
       "critChance": 5,
       "critMultiplier": 1

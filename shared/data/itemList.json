@@ -41,8 +41,8 @@
         "slot": "hands",
         "stats": {
           "attackDelay": 120,
-          "minDamage": 2,
-          "maxDamage": 3,
+          "minDamage": 1,
+          "maxDamage": 2,
           "range": 1
         },
         "requirements": {
@@ -74,8 +74,8 @@
         "slot": "hands",
         "stats": {
           "attackDelay": 200,
-          "minDamage": 3,
-          "maxDamage": 3,
+          "minDamage": 2,
+          "maxDamage": 2,
           "range": 1
         },
         "requirements": {
@@ -90,7 +90,7 @@
         "slot": "hands",
         "stats": {
           "attackDelay": 150,
-          "minDamage": 2,
+          "minDamage": 1,
           "maxDamage": 3,
           "range": 1
         },
@@ -107,7 +107,7 @@
         "stats": {
           "attackDelay": 100,
           "minDamage": 1,
-          "maxDamage": 3,
+          "maxDamage": 2,
           "range": 1
         },
         "requirements": {
@@ -123,8 +123,8 @@
         "slot": "hands",
         "stats": {
           "attackDelay": 300,
-          "minDamage": 4,
-          "maxDamage": 5,
+          "minDamage": 2,
+          "maxDamage": 4,
           "range": 2
         },
         "requirements": {
@@ -137,12 +137,7 @@
         "name": "Spade",
         "texture": "weapon-spade",
         "slot": "hands",
-        "stats": {
-          "attackDelay": 50,
-          "minDamage": 0,
-          "maxDamage": 3,
-          "range": 1
-        }
+        "stats": {}
       },
       "gladius": {
         "ilvl": 2,
@@ -151,9 +146,6 @@
         "texture": "weapon-gladius",
         "slot": "hands",
         "stats": {
-          "attackDelay": 100,
-          "minDamage": 5,
-          "maxDamage": 5,
           "range": 1.25
         }
       }
@@ -167,11 +159,9 @@
         "tint": "0xCC66FF",
         "slot": "hands",
         "stats": {
-          "attackDelay": 50,
-          "minDamage": 0,
-          "maxDamage": 5,
           "critChance": [1, 10],
-          "range": 1
+          "minDamage": 1,
+          "maxDamage": 2
         }
       },
       "soulEdge": {
@@ -182,8 +172,6 @@
         "slot": "hands",
         "stats": {
           "attackDelay": 250,
-          "minDamage": 8,
-          "maxDamage": 8,
           "critChance": 5,
           "range": 2
         }
@@ -199,10 +187,7 @@
         "tint": "0x77FF77",
         "slot": "hands",
         "stats": {
-          "attackDelay": 100,
-          "minDamage": 3,
-          "maxDamage": 5,
-          "range": 1
+          "dexterity": 5
         }
       },
       "hawkwingsTickler": {
@@ -214,10 +199,7 @@
         "tint": "0xFFFF77",
         "slot": "hands",
         "stats": {
-          "attackDelay": 100,
-          "minDamage": 3,
-          "maxDamage": 5,
-          "range": 1
+          "strength": 5
         }
       }
     }
@@ -232,7 +214,7 @@
         "tint": "0xFFDDCC",
         "slot": "helmet",
         "stats": {
-          "defense": 3
+          "defense": [2, 3]
         }
       },
       "leatherCap": {
@@ -242,9 +224,7 @@
         "texture": "helmet-cap",
         "tint": "0x865027",
         "slot": "helmet",
-        "stats": {
-          "defense": 6
-        }
+        "stats": {}
       }
     },
     "unique": {
@@ -255,8 +235,7 @@
         "texture": "helmet-cap-raccoon",
         "slot": "helmet",
         "stats": {
-          "defense": 5,
-          "speed": [8, 10],
+          "walkSpeed": [8, 10],
           "dodgeChance": [2, 3],
           "critChance": [4, 5],
           "vitality": [3, 5]
@@ -269,7 +248,7 @@
         "texture": "helmet-bunny",
         "slot": "helmet",
         "stats": {
-          "speed": [30, 50]
+          "walkSpeed": [30, 50]
         }
       }
     },
@@ -300,7 +279,7 @@
         "slot": "armor",
         "stats": {
           "defense": 10,
-          "speed": -5
+          "walkSpeed": -5
         },
         "requirements": {
           "strength": 3
@@ -314,7 +293,7 @@
         "tint": "0xFFDDCC",
         "slot": "armor",
         "stats": {
-          "defense": 3
+          "defense": [2, 3]
         }
       },
       "bronzePlate": {
@@ -324,9 +303,7 @@
         "texture": "armor-plate-light",
         "tint": "0xFFCCAA",
         "slot": "armor",
-        "stats": {
-          "defense": 8
-        }
+        "stats": {}
       },
       "bronzeHeavyPlate": {
         "ilvl": 2,
@@ -335,10 +312,7 @@
         "texture": "armor-plate",
         "tint": "0xFFCCAA",
         "slot": "armor",
-        "stats": {
-          "defense": 16,
-          "speed": -8
-        }
+        "stats": {}
       },
       "wizardRobe": {
         "ilvl": 3,
@@ -346,9 +320,7 @@
         "base": "robe",
         "texture": "armor-robe-wizard",
         "slot": "armor",
-        "stats": {
-          "defense": 3
-        }
+        "stats": {}
       }
     },
     "unique": {
@@ -361,14 +333,13 @@
         "slot": "armor",
         "stats": {
           "dodgeChance": 2,
-          "speed": 10,
-          "defense": 5,
+          "walkSpeed": 10,
           "vitality": [5, 10],
           "intelligence": [5, 10],
           "regenHp": 5
         },
         "percentStats": {
-          "regenHp": 15
+          "regenHp": [10, 15]
         }
       }
     },
@@ -382,7 +353,6 @@
         "tint": "0x8800FF",
         "slot": "armor",
         "stats": {
-          "defense": 3,
           "vitality": [5, 10],
           "regenHp": [1, 3]
         }
@@ -399,8 +369,8 @@
         "tint": "0xCC9966",
         "slot": "boots",
         "stats": {
-          "speed": 5,
-          "defense": 1
+          "walkSpeed": 10,
+          "defense": [1, 2]
         }
       },
       "leatherBoots": {
@@ -410,10 +380,7 @@
         "texture": "boots-cloth",
         "tint": "0x865027",
         "slot": "boots",
-        "stats": {
-          "speed": 10,
-          "defense": 4
-        }
+        "stats": {}
       }
     },
     "set": {
@@ -430,8 +397,7 @@
         },
         "stats": {
           "vitality": [8, 10],
-          "speed": [15, 20],
-          "defense": [3, 5]
+          "walkSpeed": [15, 20]
         }
       }
     }
@@ -446,7 +412,7 @@
         "tint": "0xFFDDCC",
         "slot": "pants",
         "stats": {
-          "defense": 3
+          "defense": [1, 2]
         }
       },
       "leatherPants": {
@@ -456,9 +422,7 @@
         "texture": "pants-cloth",
         "tint": "0x865027",
         "slot": "pants",
-        "stats": {
-          "defense": 6
-        }
+        "stats": {}
       }
     },
     "set": {
@@ -471,7 +435,6 @@
         "tint": "0x3333EE",
         "slot": "pants",
         "stats": {
-          "defense": 3,
           "vitality": [5, 10]
         }
       }
@@ -498,11 +461,7 @@
         "base": "shield",
         "texture": "shield-buckler",
         "slot": "hands",
-        "stats": {
-          "attackDelay": 50,
-          "defense": 10,
-          "blockChance": 10
-        }
+        "stats": {}
       }
     },
     "unique": {
@@ -551,7 +510,7 @@
           "accuracy": 5,
           "critChance": [2, 3],
           "dodgeChance": [1, 2],
-          "speed": [1, 2],
+          "walkSpeed": [1, 2],
           "intelligence": [5, 6]
         }
       }
@@ -566,7 +525,7 @@
         "texture": "ring-silver-plain",
         "slot": "ring",
         "stats": {
-          "defense": 1
+          "defense": 2
         }
       },
       "goldRing": {
@@ -575,9 +534,7 @@
         "base": "ring",
         "texture": "ring-gold-plain",
         "slot": "ring",
-        "stats": {
-          "defense": 5
-        }
+        "stats": {}
       }
     },
     "set": {
@@ -588,9 +545,7 @@
         "base": "ring",
         "texture": "ring-silver-sapphire",
         "slot": "ring",
-        "stats": {
-          "defense": 5
-        }
+        "stats": {}
       }
     },
     "unique": {
@@ -619,7 +574,7 @@
         "texture": "amulet-silver-plain",
         "slot": "amulet",
         "stats": {
-          "defense": 1
+          "defense": 2
         }
       },
       "goldAmulet": {
@@ -628,9 +583,7 @@
         "base": "amulet",
         "texture": "amulet-gold-plain",
         "slot": "amulet",
-        "stats": {
-          "defense": 5
-        }
+        "stats": {}
       }
     },
     "set": {
@@ -641,9 +594,7 @@
         "base": "amulet",
         "texture": "amulet-gold-plain",
         "slot": "amulet",
-        "stats": {
-          "defense": 5
-        }
+        "stats": {}
       }
     }
   },
@@ -783,10 +734,7 @@
         "slot": "spell",
         "texture": "spell-fire",
         "target": "enemy",
-        "effects": {
-          "minFireDamage": 4,
-          "maxFireDamage": 6
-        },
+        "effects": {},
         "mpCost": 6,
         "cost": 200
       }

@@ -65,7 +65,7 @@ const MenuStats = () => {
             <Text>Armor Pierce</Text>
             <Text>{stats?.armorPierce}</Text>
             <Text>Walk Speed</Text>
-            <Text>{Math.round(stats?.speed)}</Text>
+            <Text>{Math.round(stats?.walkSpeed)}</Text>
             <Text>Cast Delay</Text>
             <Text>{stats?.castDelay}</Text>
             <Text>Attack Delay</Text>
