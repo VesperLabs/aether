@@ -145,7 +145,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         const player = scene.players[socketId];
         const { ilvl, base, mpCost = 0 } = player?.abilities?.[abilitySlot] || {};
         //if the ability slotId is not in the activeItemSlots return
-        if (!player?.activeItemSlots?.includes?.(abilitySlot)) return;
+        if (!player?.activeItemSlots?.includes?.(`${abilitySlot}`)) return;
         // if dead, no ilvl, no base, return
         if (player?.state?.isDead || !ilvl || !base) return;
         if (player.canCastSpell(abilitySlot)) {

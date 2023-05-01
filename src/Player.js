@@ -28,6 +28,7 @@ class Player extends Character {
     this.equipment = Object.fromEntries(
       Object.entries(data?.equipment).filter(([key]) => this.activeItemSlots.includes(key))
     );
+    this.abilities = data?.abilities;
     this.inventory = data?.inventory;
     this.profile = data?.profile;
     this.stats = data?.stats;

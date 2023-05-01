@@ -43,7 +43,6 @@ function addInputListeners(scene) {
       const abilities = hero?.abilities;
       const ability = abilities?.[e?.detail];
       //const cursorPoint = pointer.positionToCamera(mainScene.cameras.main);
-
       if (ability?.type === "spell") {
         // Calculate the angle of the velocity
         // const castAngle = isTouch

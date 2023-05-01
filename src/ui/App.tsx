@@ -536,7 +536,7 @@ const MenuBar = () => {
           {!tabChat && (
             <>
               <MenuButton
-                keyboardKey="S"
+                keyboardKey="A"
                 iconName="book"
                 isActive={tabAbilities}
                 onClick={() => setTabAbilities((prev) => !prev)}
@@ -548,7 +548,7 @@ const MenuBar = () => {
                 onClick={() => setTabQuests((prev) => !prev)}
               />
               <MenuButton
-                keyboardKey="Z"
+                keyboardKey="S"
                 iconName="stats"
                 isActive={tabStats}
                 onClick={() => setTabStats((prev) => !prev)}
