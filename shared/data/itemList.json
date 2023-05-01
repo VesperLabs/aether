@@ -30,8 +30,7 @@
           "range": 1
         },
         "requirements": {
-          "dexterity": 2,
-          "intelligence": 2
+          "dexterity": 2
         }
       },
       "sword": {
@@ -112,7 +111,7 @@
           "range": 1
         },
         "requirements": {
-          "strength": 2,
+          "strength": 1,
           "dexterity": 2
         }
       },
@@ -143,9 +142,6 @@
           "minDamage": 0,
           "maxDamage": 3,
           "range": 1
-        },
-        "requirements": {
-          "dexterity": 6
         }
       },
       "gladius": {
@@ -159,10 +155,6 @@
           "minDamage": 5,
           "maxDamage": 5,
           "range": 1.25
-        },
-        "requirements": {
-          "strength": 6,
-          "dexterity": 6
         }
       }
     },
@@ -183,7 +175,7 @@
         }
       },
       "soulEdge": {
-        "ilvl": 2,
+        "ilvl": 3,
         "name": "Soul Edge",
         "base": "sword",
         "texture": "weapon-claymore-soul",
@@ -273,7 +265,7 @@
       "theBunnyWhisker": {
         "ilvl": 1,
         "name": "The Bunny Whisker",
-        "base": "helmet",
+        "base": "cap",
         "texture": "helmet-bunny",
         "slot": "helmet",
         "stats": {
@@ -288,18 +280,36 @@
       "nutshellPlate": {
         "ilvl": 1,
         "name": "Nutshell Light Plate",
-        "base": "armor",
+        "base": "light-plate-armor",
         "texture": "armor-plate-light",
         "tint": "0xCC9966",
         "slot": "armor",
         "stats": {
           "defense": 5
+        },
+        "requirements": {
+          "strength": 3
+        }
+      },
+      "nutshellHeavyPlate": {
+        "ilvl": 1,
+        "name": "Nutshell Heavy Plate",
+        "base": "heavy-plate-armor",
+        "texture": "armor-plate",
+        "tint": "0xCC9966",
+        "slot": "armor",
+        "stats": {
+          "defense": 10,
+          "speed": -5
+        },
+        "requirements": {
+          "strength": 3
         }
       },
       "clothRobe": {
         "ilvl": 1,
         "name": "Cloth Robe",
-        "base": "armor",
+        "base": "robe",
         "texture": "armor-robe",
         "tint": "0xFFDDCC",
         "slot": "armor",
@@ -310,7 +320,7 @@
       "bronzePlate": {
         "ilvl": 2,
         "name": "Bronze Light Plate",
-        "base": "armor",
+        "base": "light-plate-armor",
         "texture": "armor-plate-light",
         "tint": "0xFFCCAA",
         "slot": "armor",
@@ -321,19 +331,19 @@
       "bronzeHeavyPlate": {
         "ilvl": 2,
         "name": "Bronze Heavy Plate",
-        "base": "armor",
+        "base": "heavy-plate-armor",
         "texture": "armor-plate",
         "tint": "0xFFCCAA",
         "slot": "armor",
         "stats": {
-          "defense": 10,
-          "speed": -5
+          "defense": 16,
+          "speed": -8
         }
       },
       "wizardRobe": {
         "ilvl": 3,
         "name": "Wizard Robe",
-        "base": "armor",
+        "base": "robe",
         "texture": "armor-robe-wizard",
         "slot": "armor",
         "stats": {

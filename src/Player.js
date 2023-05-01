@@ -30,6 +30,7 @@ class Player extends Character {
     this.npcKills = data?.npcKills;
     this.quests = data?.quests;
     this.abilities = data?.abilities;
+    this.activeItemSlots = data?.activeItemSlots;
     this.drawCharacterFromUserData();
     this.checkAttackHands();
     this.updateHpBar();

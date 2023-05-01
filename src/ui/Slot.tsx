@@ -201,6 +201,8 @@ const Slot = React.memo(
       "data-slot-key": slotKey,
     };
 
+    const isActive =
+      hero?.activeItemSlots?.includes(slotKey) || !["abilities", "equipment"]?.includes(location);
     const targetMoved = target?.dataset?.tooltipId !== item?.id;
     const aboutToSell = dragging && target?.closest(".menu-keeper") && location !== "shop";
     const showTooltip =
@@ -218,7 +220,9 @@ const Slot = React.memo(
           height: size,
           top: 0,
           left: 0,
-          ...(item?.rarity ? STYLE_NON_EMPTY(item?.rarity) : STYLE_SLOT_EMPTY(icon)),
+          ...(item?.rarity
+            ? STYLE_NON_EMPTY({ rarity: item?.rarity, isActive })
+            : STYLE_SLOT_EMPTY(icon)),
           ...sx,
         }}
         {...doubleTabBinds}

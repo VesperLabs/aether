@@ -27,7 +27,8 @@
     "name": "Timmy's Sofa Treasures",
     "pieces": 2,
     "stats": {
-      "strength": 10,
+      "strength": 5,
+      "dexterity": 5,
       "speed": 5,
       "dodgeChance": 5,
       "critChance": 5,

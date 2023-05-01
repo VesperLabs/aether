@@ -20,7 +20,7 @@ interface ModalFooterProps {
   children: React.ReactNode;
 }
 
-const Modal: React.FC<ModalProps> & {
+const Modal: any & {
   Header: any;
   Body: React.FC<ModalBodyProps>;
   Footer: React.FC<ModalFooterProps>;

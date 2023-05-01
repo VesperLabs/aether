@@ -66,13 +66,21 @@ export const STYLE_SLOT_EMPTY = (icon) => ({
   opacity: 0.5,
 });
 
-export const STYLE_NON_EMPTY = (rarity) =>
-  ({
+export const STYLE_NON_EMPTY = ({
+  rarity,
+  isActive = true,
+}: {
+  rarity: string;
+  isActive?: boolean;
+}) => {
+  const color = isActive ? rarity : "danger";
+  return {
     ...BASE_SLOT_STYLE,
-    borderColor: rarity,
+    borderColor: color,
     background: (t) =>
-      `radial-gradient(circle, ${t.colors[rarity]} 0%, ${t.colors.shadow[50]} 150%)`,
-  } as ThemeUIStyleObject);
+      `radial-gradient(circle, ${t.colors[color]} 0%, ${t.colors.shadow[50]} 150%)`,
+  } as ThemeUIStyleObject;
+};
 
 export const HUD_CONTAINER_ID = "hud-container";
 

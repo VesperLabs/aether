@@ -114,7 +114,7 @@ const ItemBuilder = {
         rarity == "magic" || rarity == "rare"
           ? itemList[type]["common"][itemKey]
           : itemList[type][rarity][itemKey];
-      item = cloneObject(item);
+      item = { requirements: {}, ...cloneObject(item) };
     } catch (e) {
       console.log(`🔧 Item not found for ${type} ${rarity} ${itemKey}`);
       return null;
@@ -122,6 +122,19 @@ const ItemBuilder = {
 
     if (!item) return console.log(`🔧 Item not found for ${type} ${rarity} ${itemKey}`);
 
+    /* Get the baseItem */
+    const commonCategory = itemList?.[type]?.["common"];
+    const baseItem = Object.values(commonCategory).find(
+      (i: any) => i?.base === item?.base && i.ilvl === 1
+    ) as Item;
+
+    if (baseItem) {
+      for (let key in baseItem.requirements || {}) {
+        item.requirements[key] = baseItem.requirements[key] * item?.ilvl;
+      }
+    }
+
+    /* TODO: Stats can be be inherited from the base item */
     if (item?.stats) {
       for (let key in item.stats) {
         if (Array.isArray(item.stats[key])) {
@@ -131,7 +144,7 @@ const ItemBuilder = {
         } else {
           newStats[key] = item.stats[key];
         }
-      } //end for
+      }
     }
 
     if (item.percentStats) {
@@ -176,6 +189,7 @@ const ItemBuilder = {
     } else {
       item.id = crypto.randomUUID();
     }
+
     item.key = itemKey;
     item.tint = item?.tint || "0xFFFFFF";
     item.rarity = rarity;

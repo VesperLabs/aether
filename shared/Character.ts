@@ -24,6 +24,7 @@ class Character extends Phaser.GameObjects.Container {
   npcKills: Record<string, number>;
   quests: Array<PlayerQuest>;
   abilities: Record<string, Item>;
+  activeItemSlots: Array<string>;
   declare body: Phaser.Physics.Arcade.Body;
   declare state: any;
   constructor(scene: ServerScene | Phaser.Scene, args) {

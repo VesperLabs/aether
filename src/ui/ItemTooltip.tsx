@@ -76,16 +76,19 @@ const ItemTooltip = ({ item, show }) => {
           }
         })}
         {Object.keys(requirements)?.length > 0 && <TextDivider>Requirements</TextDivider>}
-        {Object.keys(requirements).map((key) => (
-          <Text key={key}>
-            <Label>{key}:</Label> {requirements[key]}
-          </Text>
-        ))}
+        {Object.keys(requirements).map((key) => {
+          const hasRequiredStats = hero?.stats?.[key] >= requirements[key];
+          return (
+            <Text key={key} color={hasRequiredStats ? "text" : "danger"}>
+              <Label>{key}:</Label> {requirements[key]}
+            </Text>
+          );
+        })}
         {item?.setBonus && (
           <>
             <TextDivider>Set Bonus</TextDivider>
-            <Text color={isSetActive ? "set" : "gray.500"}>{setDetails?.name}</Text>
-            <Divider my={1} />
+            {/* <Text color={isSetActive ? "set" : "gray.500"}>{setDetails?.name}</Text>
+            <Divider my={1} /> */}
             {Object.keys(item?.setBonus.percentStats).map((key) => {
               return (
                 <Text key={key} color={isSetActive ? "set" : "gray.500"}>

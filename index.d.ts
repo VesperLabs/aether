@@ -126,8 +126,10 @@ interface Character extends Phaser.GameObjects.Container {
   stats: any;
   quests: Array<PlayerQuest>;
   abilities: Record<number, Item>;
+  activeItemSlots: Array<string>;
   calculateDamage(victim: any);
   calculateSpellDamage(victim: any, abilitySlot: any);
+  calculateActiveItemSlots(): void;
   calculateStats(): void;
   modifyStat(key: string, amount: number);
   assignExp(amount: integer): boolean;
@@ -217,6 +219,7 @@ interface CharacterState {
   charClass: CharClass;
   npcKills: Record<string, integer>;
   quests: Array<PlayerQuest>;
+  activeItemSlots: Array<string>;
   gold: integer;
 }
 

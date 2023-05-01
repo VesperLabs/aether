@@ -21,8 +21,82 @@ class ServerCharacter extends Character {
       };
     });
   }
-  calculateStats() {
+  calculateActiveItemSlots() {
     const { equipment = {}, abilities = {} } = this;
+    const baseStatKeys = ["vitality", "dexterity", "strength", "intelligence"];
+    const allItems = Object.entries({ ...equipment, ...abilities });
+    const percentStats = Object.fromEntries(baseStatKeys.map((stat) => [stat, 0]));
+    const baseStats = {
+      ...Object.fromEntries(baseStatKeys.map((stat) => [stat, 0])),
+      ...this.baseStats,
+    };
+    const activeItemSlots = allItems?.map(([slotKey, _]: [string, Item]) => slotKey);
+    const activeSets = [];
+    const setItems = [];
+
+    for (const key of baseStatKeys) {
+      // get all worn items
+      const wornItems = allItems
+        .map(([slotKey, item]: [string, Item]) => ({
+          slotKey, // the slot key is the key of the item in the equipment or ability object
+          ...item,
+        }))
+        .filter((i) => i)
+        .filter((i) => activeItemSlots.includes(i.slotKey))
+        .sort((a, b) => {
+          // if the item doesn't have a requirement, it should be at the beginning of the list
+          return a?.requirements?.[key] || 0 - b?.requirements?.[key] || 0;
+        });
+
+      for (const item of wornItems) {
+        // if the item has a requirement and the character doesn't meet it, remove the item from the list
+        // + Math.floor(baseStats[key] * (percentStats[key] / 100))
+        if (
+          item?.requirements?.[key] >
+          baseStats[key] + Math.floor(baseStats[key] * (percentStats[key] / 100))
+        ) {
+          activeItemSlots.splice(activeItemSlots.indexOf(item.slotKey), 1);
+          continue;
+        }
+        // if the item has a stat, add it
+        if (item?.stats?.[key]) {
+          baseStats[key] += item?.stats?.[key];
+        }
+        // if the item has a percent stat, add it
+        if (item?.percentStats?.[key]) {
+          percentStats[key] += item.percentStats[key];
+        }
+        // if the item is part of a set check if whole set is worn
+        if (item?.setName) {
+          // add item to set item list if it's not already there
+          if (!setItems.find((i) => i.id === item.id)) setItems.push(item);
+          const setInfo = ItemBuilder.getSetInfo(item.setName);
+          const currentSetItems = setItems.filter((i) => i.setName == item.setName);
+          if (currentSetItems?.length >= setInfo?.pieces) {
+            console.log(currentSetItems?.length, setInfo);
+            activeSets.push(item.setName);
+            //add the set bonus
+            if (setInfo?.stats?.[key]) {
+              baseStats[key] += setInfo?.stats?.[key];
+            }
+            // if the item has a percent stat, add it
+            if (setInfo?.percentStats?.[key]) {
+              percentStats[key] += setInfo.percentStats[key];
+            }
+          }
+        }
+      }
+    }
+
+    this.activeItemSlots = activeItemSlots;
+  }
+  calculateStats() {
+    this.calculateActiveItemSlots();
+    const { equipment = {}, abilities = {} } = this;
+    // disregard items that are not actively equipped
+    const allSlots = Object.keys({ ...abilities, ...equipment }).filter((slot) =>
+      this.activeItemSlots?.includes(slot)
+    );
     let totalPercentStats = {};
     let ns = cloneObject(this.baseStats);
     let setList = {};
@@ -31,13 +105,13 @@ class ServerCharacter extends Character {
     this.stats = Object.keys(this?.stats)?.length ? this.stats : { hp: 0, mp: 0, exp: 0 };
 
     /* Get stats from equipped abilities and items */
-    Object.keys({ ...abilities, ...equipment }).forEach((eKey) => {
+    allSlots.forEach((eKey) => {
       let item = abilities[eKey] || equipment[eKey];
       if (item) {
         if (item.setName) {
           if (setList[item.setName]) {
             let amountThisItem = 0;
-            Object.keys({ ...abilities, ...equipment }).forEach((aKey) => {
+            allSlots.forEach((aKey) => {
               let aItem = abilities[aKey] || equipment[aKey];
               if (aItem && aItem.key == item.key) {
                 amountThisItem++;
@@ -73,7 +147,7 @@ class ServerCharacter extends Character {
     /* if more than one set item is equipped, we might have a set bonus */
     Object.keys(setList).forEach((key) => {
       if (ItemBuilder.getSetInfo(key)) {
-        let setInfo = ItemBuilder.getSetInfo(key);
+        const setInfo = ItemBuilder.getSetInfo(key);
         if (setList[key] >= setInfo.pieces) {
           activeSets.push(key);
           //add percent bonus to totals

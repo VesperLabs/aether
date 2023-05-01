@@ -27,7 +27,7 @@ const ModalLogin = (props: any) => {
   };
 
   return (
-    <Modal {...props}>
+    <Modal {...props} as="form" autoComplete="off" onSubmit={(e) => e.preventDefault()}>
       <Tooltip id="login" />
       <Modal.Header
         sx={{ cursor: "pointer", opacity: isLogin ? 1 : 0.25 }}
