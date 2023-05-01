@@ -380,7 +380,10 @@ const SkillButtons = () => {
 
 const AbilityButtons = () => {
   const { hero } = useAppContext();
-  const abilities = Object.entries(hero?.abilities || {});
+  /* Only make buttons for abilities that can be worn */
+  const abilities = Object.entries(hero?.abilities || {})?.filter(([slotKey, _]) =>
+    hero.activeItemSlots.includes(slotKey)
+  );
   return (
     <Flex
       sx={{

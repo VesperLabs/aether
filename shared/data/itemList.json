@@ -724,6 +724,9 @@
           "minFireDamage": 2,
           "maxFireDamage": 3
         },
+        "requirements": {
+          "intelligence": 3
+        },
         "mpCost": 3,
         "cost": 100
       },
