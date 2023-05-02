@@ -44,8 +44,8 @@ class Spell extends Phaser.GameObjects.Container {
     this.spell = scene.add.existing(new Sprite(scene, 0, 0, "blank", 0));
 
     if (["attack_left", "attack_right"]?.includes(spellName)) {
-      this.caster.add(this.spell);
       this.body.setCircle(spellSize, -spellSize, -spellSize);
+      this.caster.add(this.spell);
     }
     if (spellName == "fireball") {
       this.maxVisibleTime = 1000;
@@ -62,9 +62,9 @@ class Spell extends Phaser.GameObjects.Container {
   update() {
     const now = Date.now();
     const aliveMs = now - this.state.spawnTime;
-    this.state.isExpired = aliveMs > this.maxActiveTime;
     this.body.setVelocity(this.velocityX, this.velocityY);
     this.checkCollisions();
+    this.state.isExpired = aliveMs > this.maxActiveTime;
   }
   checkCollisions() {
     if (this.state.isExpired) return;
