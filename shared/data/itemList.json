@@ -400,6 +400,19 @@
           "walkSpeed": [15, 20]
         }
       }
+    },
+    "unique": {
+      "chickenFeet": {
+        "ilvl": 1,
+        "name": "Chicken Feet",
+        "base": "boots",
+        "texture": "boots-cloth",
+        "tint": "0xFFFF00",
+        "slot": "boots",
+        "stats": {
+          "walkSpeed": [30, 40]
+        }
+      }
     }
   },
   "pants": {

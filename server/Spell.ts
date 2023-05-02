@@ -50,7 +50,6 @@ class Spell extends Phaser.GameObjects.Container {
     if (spellName == "fireball") {
       this.maxVisibleTime = 1000;
       this.maxActiveTime = 1000;
-
       this.body.setCircle(spellSize, -spellSize, -spellSize);
       this.velocityX = Math.cos(castAngle) * 300;
       this.velocityY = Math.sin(castAngle) * 300;
