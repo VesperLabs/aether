@@ -80,7 +80,7 @@ export default {
       "&:focus": {
         outline: "none",
       },
-      "&:disabled": {
+      "&[disabled]": {
         opacity: 0.5,
       },
     },

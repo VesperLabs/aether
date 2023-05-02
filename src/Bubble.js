@@ -97,10 +97,6 @@ class Bubble extends Phaser.GameObjects.Container {
     this.setScale(0.5);
     this.center();
   }
-  setHeadY(headY) {
-    this.headY = headY;
-    this.center();
-  }
   wrapBitmapText = function (bitmapText, maxWidth) {
     var words = bitmapText.text.split(" ");
     let output = "";
@@ -132,7 +128,7 @@ class Bubble extends Phaser.GameObjects.Container {
   }
   center() {
     this.x = -Math.floor((this.width + FRAME_SIZE * 2) / 4);
-    this.y = -(this.height + (FRAME_SIZE * 2) / 2) + this.headY + 7;
+    this.y = -Math.floor(this.height / 2 + (FRAME_SIZE * 2) / 2) + this.headY - 2;
   }
   update() {}
   destroy() {

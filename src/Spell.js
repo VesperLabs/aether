@@ -32,7 +32,6 @@ class Spell extends Phaser.GameObjects.Container {
       this.spell.setTexture("misc-slash");
       this.spell.setAngle(getAngleFromDirection(caster?.direction) - 90);
       if (caster?.direction === "down") {
-        this.spell.setAngle(0);
         this.spell.y = this?.caster?.bodyOffsetY;
       }
       if (spellName === "attack_left") {

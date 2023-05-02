@@ -44,7 +44,7 @@ const KeyboardKey: React.FC<KeyboardKeyProps> = ({
       keyName !== "ESCAPE" &&
       keyName !== "ENTER"
     ) {
-      return;
+      return false;
     }
 
     if (keyName === name) {

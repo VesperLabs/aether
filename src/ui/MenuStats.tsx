@@ -1,5 +1,6 @@
 import { ThemeUIStyleObject } from "theme-ui";
 import { Menu, Flex, Text, useAppContext, MenuHeader, Grid } from "./";
+import { convertMsToS } from "../utils";
 
 const COLUMN_STYLES: ThemeUIStyleObject = {
   gap: 1,
@@ -67,9 +68,9 @@ const MenuStats = () => {
             <Text>Walk Speed</Text>
             <Text>{Math.round(stats?.walkSpeed)}</Text>
             <Text>Cast Delay</Text>
-            <Text>{stats?.castDelay}</Text>
+            <Text>{convertMsToS(stats?.castDelay)}</Text>
             <Text>Attack Delay</Text>
-            <Text>{stats?.attackDelay}</Text>
+            <Text>{convertMsToS(stats?.attackDelay)}</Text>
           </Grid>
           <Grid sx={COLUMN_STYLES}>
             <Text>Dodge Chance</Text>

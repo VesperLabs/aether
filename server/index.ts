@@ -560,6 +560,11 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           type: "chat",
           message: args?.message,
         };
+        if (args?.message?.charAt?.(0) === "!" && args?.message?.length > 1) {
+          player.state.lastBubbleMessage = Date.now();
+          player.state.bubbleMessage = args.message.substr(1);
+          return;
+        }
         io.to(player?.roomName).emit("message", message);
       });
 

@@ -121,8 +121,15 @@ class Player extends ServerCharacter implements Player {
       this.inventory.push(item);
     }
   }
+  checkBubbleMessage() {
+    const now = Date.now();
+    if (now - this.state.lastBubbleMessage > 5000) {
+      this.state.bubbleMessage = null;
+    }
+  }
   update() {
     this.doRegen();
+    this.checkBubbleMessage();
   }
   clearEquipmentSlot(slotName: string) {
     if (!this?.equipment?.[slotName]) return;

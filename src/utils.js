@@ -238,6 +238,10 @@ function calculateZoomLevel({
   return zoomLevel;
 }
 
+function convertMsToS(s) {
+  return (s / 1000).toFixed(2) + "s";
+}
+
 export {
   SFX_VOLUME,
   MUSIC_VOLUME,
@@ -258,4 +262,5 @@ export {
   distanceTo,
   playAudio,
   calculateZoomLevel,
+  convertMsToS,
 };
