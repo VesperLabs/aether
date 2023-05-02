@@ -67,11 +67,15 @@ const Portrait = ({
   const { race, gender } = user?.profile ?? {};
   const userFace = user?.profile?.face;
   const userHair = user?.profile?.hair;
-  const userAccessory = user?.equipment?.accessory;
-  const userArmor = user?.equipment?.armor;
-  const userBoots = user?.equipment?.boots;
-  const userPants = user?.equipment?.pants;
-  const userHelmet = user?.equipment?.helmet;
+  // filter out equipment slotNames that are not in activeItemsSlots array
+  const filteredEquipment = Object.fromEntries(
+    Object.entries(user?.equipment).filter(([key]) => user.activeItemSlots.includes(key))
+  );
+  const userAccessory = filteredEquipment?.accessory;
+  const userArmor = filteredEquipment?.armor;
+  const userBoots = filteredEquipment?.boots;
+  const userPants = filteredEquipment?.pants;
+  const userHelmet = filteredEquipment?.helmet;
   const skin = getAssetProps("skin", race, user?.profile?.tint);
   const chest = getAssetProps("chest", `${race}-${gender}-chest-bare`, user?.profile?.tint);
   const face = getAssetProps("face", `${race}-${userFace?.texture}`, userFace?.tint);

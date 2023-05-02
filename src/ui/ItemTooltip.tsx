@@ -9,7 +9,7 @@ const combineDamageStats = (stats) =>
       }
     } else {
       if (key.includes("Delay")) {
-        acc[key] = value + "ms";
+        acc[key] = convertMsToS(value);
       } else {
         acc[key] = value;
       }
