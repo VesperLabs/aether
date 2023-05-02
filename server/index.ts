@@ -22,6 +22,7 @@ import { initDatabase } from "./db";
 import RoomManager from "./RoomManager";
 import Phaser from "phaser";
 import QuestBuilder from "./QuestBuilder";
+import ItemBuilder from "./ItemBuilder";
 const { SnapshotInterpolation } = require("@geckos.io/snapshot-interpolation");
 
 const express = require("express");
@@ -554,16 +555,32 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       });
 
       socket.on("message", (args) => {
+        if (!args?.message) return;
         const player = scene?.players?.[socketId];
         const message: Message = {
           from: player?.profile?.userName,
           type: "chat",
-          message: args?.message,
+          message: args.message,
         };
-        if (args?.message?.charAt?.(0) === "!" && args?.message?.length > 1) {
+        // chat bubble
+        if (args.message.charAt(0) === "!" && args.message.length > 1) {
           player.state.lastBubbleMessage = Date.now();
           player.state.bubbleMessage = args.message.substr(1);
           return;
+        }
+        if (args.message.charAt(0) === "/") {
+          const command = args.message.substr(1).split(" ");
+          switch (command[0]) {
+            case "drop":
+              const item = command[1].split("-");
+              return scene.roomManager.rooms[player?.roomName].lootManager.create({
+                x: player?.x,
+                y: player?.y,
+                item: ItemBuilder.buildItem(item[0], item[1], item[2]) as Item,
+                npcId: null,
+              });
+              break;
+          }
         }
         io.to(player?.roomName).emit("message", message);
       });
