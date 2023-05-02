@@ -114,13 +114,15 @@ const ItemBuilder = {
         rarity == "magic" || rarity == "rare"
           ? itemList[type]["common"][itemKey]
           : itemList[type][rarity][itemKey];
-      item = { requirements: {}, ...cloneObject(item) };
+      item = cloneObject(item);
     } catch (e) {
       console.log(`🔧 Item not found for ${type} ${rarity} ${itemKey}`);
       return null;
     }
 
     if (!item) return console.log(`🔧 Item not found for ${type} ${rarity} ${itemKey}`);
+
+    item = { ...item, requirements: {} };
 
     /* Get the baseItem */
     const commonCategory = itemList?.[type]?.["common"];

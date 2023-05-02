@@ -8,7 +8,7 @@ const combineDamageStats = (stats) =>
         acc[identifier] = `${stats?.[`min${identifier}`] || 0} - ${stats[`max${identifier}`] || 0}`;
       }
     } else {
-      if (key.includes("Speed")) {
+      if (key.includes("Delay")) {
         acc[key] = value + "ms";
       } else {
         acc[key] = value;
