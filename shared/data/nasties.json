@@ -427,7 +427,7 @@
       "castDelay": 1000,
       "expValue": 8,
       "level": 10,
-      "walkSpeed": 150,
+      "walkSpeed": 90,
       "range": 32,
       "accuracy": 0,
       "armorPierce": 0,

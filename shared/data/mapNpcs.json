@@ -77,5 +77,11 @@
     { "name": "zombie", "x": 496, "y": 336, "kind": "nasty" },
     { "name": "chonks", "x": 1049, "y": 368, "kind": "nasty" }
   ],
-  "dungeon-aqueducts": [{ "name": "wraith", "x": 176, "y": 1488, "kind": "nasty" }]
+  "dungeon-aqueducts": [
+    { "name": "merman", "x": 1357, "y": 1103, "kind": "nasty" },
+    { "name": "merman", "x": 1357, "y": 1103, "kind": "nasty" },
+    { "name": "merman", "x": 267, "y": 444, "kind": "nasty" },
+    { "name": "merman", "x": 855, "y": 266, "kind": "nasty" },
+    { "name": "merman", "x": 1436, "y": 120, "kind": "nasty" }
+  ]
 }

@@ -566,11 +566,6 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       socket.on("message", (args) => {
         if (!args?.message) return;
         const player = scene?.players?.[socketId];
-        const message: Message = {
-          from: player?.profile?.userName,
-          type: "chat",
-          message: args.message,
-        };
         // chat bubble
         if (args.message.charAt(0) === "!" && args.message.length > 1) {
           player.state.lastBubbleMessage = Date.now();
@@ -588,10 +583,18 @@ class ServerScene extends Phaser.Scene implements ServerScene {
                 item: ItemBuilder.buildItem(item[0], item[1], item[2]) as Item,
                 npcId: null,
               });
-              break;
+            case "coords":
+              return socket.emit("message", {
+                type: "info",
+                message: `x: ${Math.round(player.x)} y: ${Math.round(player.y)}`,
+              });
           }
         }
-        io.to(player?.roomName).emit("message", message);
+        io.to(player?.roomName).emit("message", {
+          from: player?.profile?.userName,
+          type: "chat",
+          message: args.message,
+        });
       });
 
       socket.on("acceptQuest", (questId: string) => {

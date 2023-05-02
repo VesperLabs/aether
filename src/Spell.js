@@ -1,13 +1,11 @@
 import Phaser from "phaser";
 import { playAudio } from "./utils";
 import { getAngleFromDirection } from "../shared/utils";
+import spellDetails from "../shared/data/spellDetails.json";
 const Sprite = Phaser.GameObjects.Sprite;
 const BLANK_TEXTURE = "human-blank";
 class Spell extends Phaser.GameObjects.Container {
-  constructor(
-    scene,
-    { id, caster, spellName, abilitySlot, maxVisibleTime, maxActiveTime, state, castAngle, ilvl }
-  ) {
+  constructor(scene, { id, caster, spellName, abilitySlot, state, castAngle, ilvl }) {
     super(scene, caster.x, caster.y);
     this.scene = scene;
     this.id = id;
@@ -18,17 +16,24 @@ class Spell extends Phaser.GameObjects.Container {
     this.frame = 0;
     this.touchedIds = []; //who has this npc hit?
     this.hitIds = [];
-    this.canHitSelf = false;
-    this.maxVisibleTime = maxVisibleTime || 200;
-    this.maxActiveTime = maxActiveTime || 100;
+    this.isAttack = ["attack_left", "attack_right"]?.includes(spellName);
     this.spell = scene.add.existing(new Sprite(scene, 0, 0, BLANK_TEXTURE, 0));
+
+    const details = spellDetails[spellName];
+    this.canHitSelf = details?.canHitSelf;
+    this.maxVisibleTime = details?.maxVisibleTime;
+    this.maxActiveTime = details?.maxActiveTime;
+    this.spellSpeed = details?.spellSpeed;
+    this.bodySize = details?.bodySize;
+    this.scaleBase = details?.scaleBase;
+    this.scaleMultiplier = details?.scaleMultiplier;
+
     scene.physics.add.existing(this);
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
-    this.isAttack = ["attack_left", "attack_right"]?.includes(spellName);
+
     if (this.isAttack) {
       this.setDepth(this?.caster?.depth - 10);
-      this.canHitSelf = false;
       this.spell.setTexture("misc-slash");
       this.spell.setAngle(getAngleFromDirection(caster?.direction) - 90);
       if (caster?.direction === "down") {
@@ -69,19 +74,16 @@ class Spell extends Phaser.GameObjects.Container {
       });
       this.caster.add(this.spell);
     }
-    if (spellName == "fireball") {
-      const spellSize = 10;
-      this.maxVisibleTime = maxVisibleTime || 1000;
-      this.maxActiveTime = maxActiveTime || 1000;
+    if (spellName === "fireball") {
       this.setDepth(this?.caster?.depth + 10);
       this.spell.play("spell-anim-fireball");
-      this.body.setCircle(spellSize, -spellSize, -spellSize);
-      this.scene.physics.velocityFromRotation(castAngle, 300, this.body.velocity);
+      this.body.setCircle(this.bodySize, -this.bodySize, -this.bodySize);
+      this.scene.physics.velocityFromRotation(castAngle, this.spellSpeed, this.body.velocity);
       this.spell.setRotation(castAngle);
-      this.spell.setScale(0.25 + ilvl * 0.05);
+      this.spell.setScale(this.scaleBase + ilvl * this.scaleMultiplier);
       this.add(this.spell);
     }
-    if (spellName == "chakra") {
+    if (spellName === "chakra") {
       // this.spell = new Phaser.GameObjects.Sprite(this.scene, 0, 0, "spell-anim-chakra", 0);
       // scene.physics.add.existing(this);
       // this.body.setCircle(64, -64, -64);

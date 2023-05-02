@@ -1,0 +1,23 @@
+{
+  "attack_left": {
+    "canHitSelf": false,
+    "maxVisibleTime": 200,
+    "maxActiveTime": 100,
+    "bodySize": 32
+  },
+  "attack_right": {
+    "canHitSelf": false,
+    "maxVisibleTime": 200,
+    "maxActiveTime": 100,
+    "bodySize": 32
+  },
+  "fireball": {
+    "maxVisibleTime": 1000,
+    "maxActiveTime": 2000,
+    "canHitSelf": false,
+    "bodySize": 10,
+    "spellSpeed": 300,
+    "scaleBase": 0.25,
+    "scaleMultiplier": 0.05
+  }
+}

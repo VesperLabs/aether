@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 const Sprite = Phaser.GameObjects.Sprite;
+import spellDetails from "../shared/data/spellDetails.json";
 class Spell extends Phaser.GameObjects.Container {
   public id: string;
   public room: Room;
@@ -12,6 +13,10 @@ class Spell extends Phaser.GameObjects.Container {
   private canHitSelf: boolean;
   private maxVisibleTime: integer;
   private maxActiveTime: integer;
+  private bodySize: integer;
+  private scaleBase: number;
+  private scaleMultiplier: number;
+  private spellSpeed: integer;
   private hits: Array<Hit>;
   private spell: Phaser.GameObjects.Sprite;
   declare body: Phaser.Physics.Arcade.Body;
@@ -28,33 +33,34 @@ class Spell extends Phaser.GameObjects.Container {
       spawnTime: Date.now(),
       isExpired: false,
     };
-    this.canHitSelf = false;
-    this.maxVisibleTime = 200;
-    this.maxActiveTime = 100;
     this.velocityX = 0;
     this.velocityY = 0;
+    this.hits = [];
+    this.spell = scene.add.existing(new Sprite(scene, 0, 0, "blank", 0));
 
-    const spellSize = 32; // todo make universal
+    const details = spellDetails?.[spellName];
+    this.canHitSelf = details?.canHitSelf;
+    this.maxVisibleTime = details?.maxVisibleTime;
+    this.maxActiveTime = details?.maxActiveTime;
+    this.bodySize = details?.bodySize;
+    this.spellSpeed = details?.spellSpeed;
+    this.scaleBase = details?.scaleBase;
+    this.scaleMultiplier = details?.scaleMultiplier;
 
     scene.physics.add.existing(this);
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
 
-    this.hits = [];
-    this.spell = scene.add.existing(new Sprite(scene, 0, 0, "blank", 0));
-
     if (["attack_left", "attack_right"]?.includes(spellName)) {
-      this.body.setCircle(spellSize, -spellSize, -spellSize);
+      this.body.setCircle(this?.bodySize, -this?.bodySize, -this?.bodySize);
       this.caster.add(this.spell);
     }
     if (spellName == "fireball") {
-      this.maxVisibleTime = 1000;
-      this.maxActiveTime = 1000;
-      this.body.setCircle(spellSize, -spellSize, -spellSize);
-      this.velocityX = Math.cos(castAngle) * 300;
-      this.velocityY = Math.sin(castAngle) * 300;
+      this.body.setCircle(this?.bodySize, -this?.bodySize, -this?.bodySize);
+      this.velocityX = Math.cos(castAngle) * this?.spellSpeed;
+      this.velocityY = Math.sin(castAngle) * this?.spellSpeed;
       this.spell.setRotation(castAngle);
-      this.spell.setScale(0.25 + ilvl * 0.05);
+      this.spell.setScale(this?.scaleBase + ilvl * this?.scaleMultiplier);
       this.add(this.spell);
     }
   }
