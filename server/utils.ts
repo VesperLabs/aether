@@ -35,9 +35,9 @@ function getRoomState(scene: ServerScene, roomName: String): RoomState {
     npcs: Object.values(scene.npcs)
       ?.filter((n) => n?.room?.name === roomName)
       .map((p) => getCharacterState(p)),
-    spells: Object.values(scene.spells)
-      ?.filter((s) => s?.room?.name === roomName)
-      .map((s) => s?.getTrimmed()),
+    // spells: Object.values(scene.spells)
+    //   ?.filter((s) => s?.room?.name === roomName)
+    //   .map((s) => s?.getTrimmed()),
     loots: Object.values(scene.loots)?.filter((l) => l?.roomName === roomName),
   };
 }

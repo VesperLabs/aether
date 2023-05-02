@@ -473,10 +473,10 @@ function playWeapons(player) {
     }
     if (action === "attack_left") {
       if (direction === "left") {
-        handLeft.setAngle(0);
+        handLeft.setAngle(90);
       }
       if (direction === "right") {
-        handLeft.setAngle(0);
+        handLeft.setAngle(-90);
       }
     }
   }

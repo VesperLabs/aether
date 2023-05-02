@@ -41,7 +41,7 @@ class Spell extends Phaser.GameObjects.Container {
         this.spell.displayWidth = 50 * rangeLeft;
         this.spell.displayHeight = 50 * rangeLeft;
         this.spell.setFlipX(true);
-        if (caster?.equipment?.handLeft?.base === "katar" && caster?.direction === "left") {
+        if (caster?.equipment?.handLeft?.base === "katar" && caster?.direction === "right") {
           this.spell.setFlipX(false);
         }
       }
