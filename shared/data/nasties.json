@@ -3,6 +3,7 @@
     "profile": { "race": "raccoon", "headY": -27, "userName": "Raccoon" },
     "baseStats": {
       "attackDelay": 500,
+      "castDelay": 1000,
       "expValue": 2,
       "level": 1,
       "walkSpeed": 100,
@@ -44,6 +45,7 @@
     "profile": { "race": "slime", "headY": -23, "userName": "Slime" },
     "baseStats": {
       "attackDelay": 500,
+      "castDelay": 1000,
       "expValue": 2,
       "level": 1,
       "walkSpeed": 100,
@@ -79,6 +81,7 @@
     "profile": { "race": "bee", "headY": -34, "userName": "Hornet" },
     "baseStats": {
       "attackDelay": 500,
+      "castDelay": 1000,
       "expValue": 1,
       "level": 1,
       "walkSpeed": 150,
@@ -121,6 +124,7 @@
     "state": { "isAggro": true },
     "baseStats": {
       "attackDelay": 500,
+      "castDelay": 1000,
       "expValue": 4,
       "level": 5,
       "walkSpeed": 150,
@@ -150,6 +154,7 @@
     "state": { "isAggro": true },
     "baseStats": {
       "attackDelay": 500,
+      "castDelay": 1000,
       "expValue": 4,
       "level": 5,
       "walkSpeed": 100,
@@ -192,6 +197,7 @@
     "state": { "isAggro": true },
     "baseStats": {
       "attackDelay": 500,
+      "castDelay": 1000,
       "expValue": 10,
       "level": 10,
       "walkSpeed": 100,
@@ -234,6 +240,7 @@
     "state": { "isAggro": true },
     "baseStats": {
       "attackDelay": 500,
+      "castDelay": 1000,
       "expValue": 3,
       "level": 5,
       "walkSpeed": 100,
@@ -276,6 +283,7 @@
     "state": { "isAggro": true },
     "baseStats": {
       "attackDelay": 500,
+      "castDelay": 1000,
       "expValue": 8,
       "level": 10,
       "walkSpeed": 100,
@@ -318,6 +326,7 @@
     "state": { "isAggro": true },
     "baseStats": {
       "attackDelay": 500,
+      "castDelay": 1000,
       "expValue": 8,
       "level": 10,
       "walkSpeed": 100,
@@ -366,6 +375,7 @@
     "state": { "isAggro": true },
     "baseStats": {
       "attackDelay": 500,
+      "castDelay": 1000,
       "expValue": 12,
       "level": 15,
       "walkSpeed": 100,
@@ -414,6 +424,7 @@
     "state": { "isAggro": true },
     "baseStats": {
       "attackDelay": 500,
+      "castDelay": 1000,
       "expValue": 8,
       "level": 10,
       "walkSpeed": 150,
@@ -435,6 +446,9 @@
       "regenMp": 5,
       "maxHp": 0,
       "maxMp": 0
+    },
+    "abilities": {
+      "1": ["spell", "common", "fireball"]
     },
     "drops": []
   }

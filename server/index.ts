@@ -77,8 +77,17 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       const socketId = socket.id;
 
       socket.on("login", async ({ email, password } = {}) => {
-        const user = await scene.db.getUserByLogin({ email, password });
+        let user = await scene.db.getUserByLogin({ email, password });
         if (!user) return socket.emit("formError", { error: "Invalid login" });
+
+        // disconnect the sockets that are logged in as this user.
+        for (const [socketId, player] of Object.entries(this?.players)) {
+          if (player?.email === user?.email) {
+            io?.sockets?.sockets?.get?.(socketId)?.disconnect?.();
+            // get a fresh user TODO: sometimes this is too slow.. need to think of an await
+            user = await scene.db.getUserByLogin({ email, password });
+          }
+        }
 
         const player = scene.roomManager.rooms[user.roomName].playerManager.create({
           socketId,

@@ -132,6 +132,15 @@ class SceneMain extends Phaser.Scene {
       n.doAttack(count);
     });
 
+    socket.on("npcCastSpell", ({ id, ilvl, base, castAngle }) => {
+      const n = getNpc(scene, id);
+      n?.castSpell?.({
+        ilvl: ilvl,
+        spellName: base,
+        castAngle,
+      });
+    });
+
     socket.on("modifyPlayerStat", ({ amount, type, socketId } = {}) => {
       const p = getPlayer(scene, socketId);
       p.takeHit({ type, amount });

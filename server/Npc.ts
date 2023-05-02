@@ -32,11 +32,13 @@ class Npc extends Character implements Npc {
     scene: ServerScene,
     {
       equipment = {},
+      abilities = {},
       keeperData = {},
       ...args
     }: {
       name: string;
       equipment: Record<string, Array<string>>;
+      abilities: Record<string, Array<string>>;
       keeperData: KeeperData;
       drops: Array<Drop>;
     }
@@ -48,6 +50,7 @@ class Npc extends Character implements Npc {
     this.respawnTime = 10000;
     this.drops = args?.drops;
     this.equipment = buildEquipment(equipment);
+    this.abilities = buildEquipment(abilities);
     this.talkingIds = [];
     this.keeperData = {
       ...keeperData,
@@ -96,6 +99,25 @@ class Npc extends Character implements Npc {
     }
     return true;
   }
+  doCast() {
+    const { scene, room, id, state } = this ?? {};
+    const targetPlayer = scene?.players?.[state?.lockedPlayerId] ?? null;
+    if (state.isCasting || state?.isDead) return;
+    if (targetPlayer?.state?.isDead) return;
+    // Set state to attacking and record attack time
+    this.state.isCasting = true;
+    this.state.lastCast = Date.now();
+    const castAngle = Math.atan2(targetPlayer.y - this.y, targetPlayer.x - this.x);
+    room?.spellManager.create({
+      caster: this,
+      target: targetPlayer,
+      spellName: "fireball",
+      castAngle,
+      ilvl: 1,
+    });
+
+    scene.io.to(room?.name).emit("npcCastSpell", { id, castAngle, base: "fireball", ilvl: 1 });
+  }
   doAttack() {
     let count = 1;
     const { scene, room, direction, id, state } = this ?? {};
@@ -135,6 +157,9 @@ class Npc extends Character implements Npc {
     // Check if attack is ready
     this.checkAttackReady(delta);
 
+    // check if spell is ready
+    this.checkCastReady(delta);
+
     // If dead, do not continue update
     if (state?.isDead) return;
 
@@ -152,6 +177,7 @@ class Npc extends Character implements Npc {
 
     // Determine if player should chase target player or move randomly
     const shouldChasePlayer = isInRange && !targetPlayer?.state?.isDead;
+
     if (shouldChasePlayer) {
       this.moveTowardPoint(targetPlayer);
       this.state.bubbleMessage = "!";
@@ -180,11 +206,21 @@ class Npc extends Character implements Npc {
 
     if (shouldAttackPlayer) {
       // Attack target player after lag delay to ensure we are actually near them
-      setTimeout(() => {
+      return setTimeout(() => {
         this.doAttack();
         // Calculate lag delay based on time elapsed
       }, delta);
     }
+
+    /* TODO: Improve this */
+    // const shouldCastSpell =
+    //   !state?.isCasting &&
+    //   this.checkInRange(targetPlayer, 100) &&
+    //   !this.checkInRange(targetPlayer, 10);
+
+    // if (shouldCastSpell) {
+    //   this.doCast();
+    // }
   }
   moveTowardPoint(coords: Coordinate) {
     const walkSpeed = this.stats.walkSpeed;

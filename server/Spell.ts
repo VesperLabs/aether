@@ -7,6 +7,8 @@ class Spell extends Phaser.GameObjects.Container {
   public target: Character;
   public spellName: string;
   declare state: any;
+  private velocityX: number;
+  private velocityY: number;
   private canHitSelf: boolean;
   private maxVisibleTime: integer;
   private maxActiveTime: integer;
@@ -14,7 +16,7 @@ class Spell extends Phaser.GameObjects.Container {
   private spell: Phaser.GameObjects.Sprite;
   declare body: Phaser.Physics.Arcade.Body;
   declare scene: ServerScene;
-  constructor(scene: ServerScene, { id, room, caster, target, spellName }) {
+  constructor(scene: ServerScene, { id, room, caster, target, spellName, castAngle, ilvl }) {
     super(scene, caster.x, caster.y);
     this.id = id;
     this.scene = scene;
@@ -29,36 +31,57 @@ class Spell extends Phaser.GameObjects.Container {
     this.canHitSelf = false;
     this.maxVisibleTime = 200;
     this.maxActiveTime = 100;
+    this.velocityX = 0;
+    this.velocityY = 0;
+
+    const spellSize = 32; // todo make universal
+
     scene.physics.add.existing(this);
-    const bodySize = 32;
-    this.hits = [];
-    this.spell = scene.add.existing(new Sprite(scene, 0, 0, "blank", 0));
-    this.body.setCircle(bodySize, -bodySize, -bodySize);
-    /* Add to the caster so that it follows them (Some spells will be just this.add) */
-    this.caster.add(this.spell);
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
+
+    this.hits = [];
+    this.spell = scene.add.existing(new Sprite(scene, 0, 0, "blank", 0));
+
+    if (["attack_left", "attack_right"]?.includes(spellName)) {
+      this.caster.add(this.spell);
+      this.body.setCircle(spellSize, -spellSize, -spellSize);
+    }
+    if (spellName == "fireball") {
+      this.maxVisibleTime = 1000;
+      this.maxActiveTime = 1000;
+
+      this.body.setCircle(spellSize, -spellSize, -spellSize);
+      this.velocityX = Math.cos(castAngle) * 300;
+      this.velocityY = Math.sin(castAngle) * 300;
+      this.spell.setRotation(castAngle);
+      this.spell.setScale(0.25 + ilvl * 0.05);
+      this.add(this.spell);
+    }
   }
   update() {
     const now = Date.now();
     const aliveMs = now - this.state.spawnTime;
     this.state.isExpired = aliveMs > this.maxActiveTime;
+    this.body.setVelocity(this.velocityX, this.velocityY);
     this.checkCollisions();
   }
   checkCollisions() {
-    if (!this.state.isExpired) return;
+    if (this.state.isExpired) return;
     const { target, caster, scene, canHitSelf, room } = this;
-    const direction = caster?.direction;
     const players = this.room.playerManager.players?.getChildren() || [];
     const npcs = this.room.npcManager.npcs?.getChildren() || [];
 
     [...npcs, ...players]?.forEach((victim) => {
       /* If the victim is already in the hitList */
       if (!victim || this.hits.some((h) => h?.to == victim?.id)) return;
+
       /* If its not a self-hitting spell */
       if (!canHitSelf && victim?.id === caster?.id) return;
+
       /* If its a single target skip all other targets */
       if (target?.id && victim?.id !== target?.id) return;
+
       if (scene?.physics?.overlap?.(victim, this)) {
         const newHit = caster.calculateDamage(victim);
         if (newHit) this.hits.push(newHit);
