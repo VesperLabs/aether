@@ -35,6 +35,9 @@ class Player extends Character {
     this.gold = data?.gold;
     this.npcKills = data?.npcKills;
     this.quests = data?.quests;
+
+    // update states individually
+    this.state.activeSets = data?.state?.activeSets;
   }
   updateExtas() {
     this.drawCharacterFromUserData();

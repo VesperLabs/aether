@@ -1,6 +1,6 @@
 import { Flex, useAppContext, Text, Divider, Icon, Tooltip } from "./";
 import { convertMsToS } from "../utils";
-const combineDamageStats = (stats) =>
+const combineDamageStats = (stats = {}) =>
   Object.entries(stats).reduce((acc, [key, value]) => {
     if (key.includes("Damage")) {
       const identifier = key.replace("min", "").replace("max", "");
@@ -56,7 +56,7 @@ const ItemTooltip = ({ item, show }) => {
             <Label>{key}:</Label> {combinedStats[key]}
           </Text>
         ))}
-        {Object.keys(item?.percentStats).map((key) => (
+        {Object.keys(item?.percentStats || {}).map((key) => (
           <Text key={key}>
             <Label>{key}:</Label> {item?.percentStats[key]}%
           </Text>
@@ -89,14 +89,14 @@ const ItemTooltip = ({ item, show }) => {
         {item?.setBonus && (
           <>
             <TextDivider>Set Bonus</TextDivider>
-            {Object.keys(item?.setBonus.percentStats).map((key) => {
+            {Object.keys(item?.setBonus?.percentStats || {}).map((key) => {
               return (
                 <Text key={key} color={isSetActive ? "set" : "gray.500"}>
                   <Label>{key}:</Label> {item?.setBonus.percentStats[key]}%
                 </Text>
               );
             })}
-            {Object.keys(item?.setBonus.stats).map((key) => {
+            {Object.keys(item?.setBonus?.stats || {}).map((key) => {
               return (
                 <Text key={key} color={isSetActive ? "set" : "gray.500"}>
                   <Label>{key}:</Label> {item?.setBonus.stats[key]}

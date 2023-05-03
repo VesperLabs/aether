@@ -328,6 +328,14 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           player?.clearEquipmentSlot(slotName);
         }
 
+        /* If the item was dropped from equipment find it and what slot it came from */
+        if (location === "abilities") {
+          const { item: f, slotName } = player?.findAbilityById(item?.id);
+          found = f;
+          /* Remove it from the players equipment */
+          player?.clearAbilitySlot(slotName);
+        }
+
         /* If the item was dropped from inventory find it and what slot it came from */
         if (location === "inventory") {
           found = player?.findInventoryItemById(item?.id);
@@ -339,6 +347,8 @@ class ServerScene extends Phaser.Scene implements ServerScene {
             if (!dropAmount) return;
           }
         }
+
+        if (!found) return;
 
         player?.calculateStats();
 
