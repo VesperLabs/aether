@@ -161,6 +161,8 @@ interface Player extends Character {
   completeQuest(quest: Quest): any;
   findEquipmentById(id: string): Slot;
   findAbilityById(id: string): Slot;
+  subtractAbilityAtId(id: string, amount: integer);
+  deleteAbilityAtId(id: string);
   clearEquipmentSlot(id: string): void;
   clearAbilitySlot(id: string): void;
   subtractInventoryItemAtId(id: string, amount: integer);

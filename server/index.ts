@@ -179,7 +179,8 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         player.direction = direction;
         /* Check where to put loot */
         if (item.type == "stackable") {
-          let foundItem = player.findInventoryItemById(item.id);
+          let foundItem =
+            player.findAbilityById(item.id)?.["item"] || player.findInventoryItemById(item.id);
           if (foundItem) {
             /* Delete loot from server */
             scene.roomManager.rooms[player?.roomName].lootManager.remove(lootId);
@@ -438,7 +439,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
 
         /* Inventory -> Abilities */
         if (from?.location === "inventory" && to?.location === "abilities") {
-          if (fromItem?.type !== "spell") return;
+          if (!["spell", "stackable"].includes(fromItem?.type)) return;
           player?.deleteInventoryItemAtId(from?.itemId);
           player.abilities[to?.slot] = fromItem;
           player.inventory[from?.slot] = toItem;
@@ -458,6 +459,18 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           player?.clearAbilitySlot(from?.slot);
           player.abilities[to?.slot] = fromItem;
           player.abilities[from?.slot] = toItem;
+        }
+
+        /* Abilities -> Shop */
+        if (from?.location === "abilities" && to?.location === "shop") {
+          let sellQty = Math.abs(parseInt(from?.amount)) || 1;
+          const cost = Math.abs(parseInt(fromItem?.cost)) || 1;
+          if (sellQty >= fromItem?.amount) {
+            player?.deleteAbilityAtId(from?.itemId);
+          } else {
+            player?.subtractAbilityAtId(from?.itemId, sellQty);
+          }
+          player.gold += sellQty * cost;
         }
 
         /* Inventory -> Shop */
@@ -513,6 +526,23 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           player.equipment[to?.slot] = fromItem;
         }
 
+        /* Shop -> Abilities */
+        if (from?.location === "shop" && to?.location === "abilities") {
+          /* Always need a free slot */
+          if (toItem) return;
+          if (!["spell", "stackable"].includes(fromItem?.type)) return;
+          if (player.gold < fromItem?.cost) {
+            return socket.emit("message", {
+              type: "error",
+              message: "You cannot afford this item",
+            });
+          }
+          player.gold -= fromItem?.cost || 1;
+          /* Remove inflation cost */
+          fromItem.cost = Math.floor(fromItem.cost / SHOP_INFLATION);
+          player.abilities[to?.slot] = fromItem;
+        }
+
         player?.calculateStats();
         /* Save the users data */
         scene.db.updateUser(player);
@@ -521,8 +551,10 @@ class ServerScene extends Phaser.Scene implements ServerScene {
 
       socket.on("consumeItem", ({ location, item } = {}) => {
         const player = scene?.players?.[socketId];
-        if (player?.state?.isDead) return;
         let playerItem: Item;
+        if (player?.state?.isDead) return;
+        if (!["inventory", "abilities"].includes(location)) return;
+        /* Using an item from the inventory */
         if (location === "inventory") {
           playerItem = player?.findInventoryItemById(item?.id);
           if (playerItem?.base !== "food") return;
@@ -532,16 +564,29 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           } else {
             player?.subtractInventoryItemAtId(item?.id, 1);
           }
-          /* Apply item effects to hero */
-          if (playerItem?.effects?.hp) {
-            const hp = (parseInt(playerItem?.effects?.hp) / 100) * player?.stats?.maxHp;
-            player.modifyStat("hp", hp);
-          }
-          if (playerItem?.effects?.mp) {
-            const mp = (parseInt(playerItem?.effects?.mp) / 100) * player?.stats?.maxMp;
-            player.modifyStat("mp", mp);
+        }
+        /* Using an item from abilities */
+        if (location === "abilities") {
+          const { item: found } = player?.findAbilityById(item?.id);
+          playerItem = found;
+          if (playerItem?.base !== "food") return;
+          if (!playerItem?.amount) return;
+          if (playerItem?.amount <= 1) {
+            player?.deleteAbilityAtId(item?.id);
+          } else {
+            player?.subtractAbilityAtId(item?.id, 1);
           }
         }
+        /* Apply item effects to hero */
+        if (playerItem?.effects?.hp) {
+          const hp = (parseInt(playerItem?.effects?.hp) / 100) * player?.stats?.maxHp;
+          player.modifyStat("hp", hp);
+        }
+        if (playerItem?.effects?.mp) {
+          const mp = (parseInt(playerItem?.effects?.mp) / 100) * player?.stats?.maxMp;
+          player.modifyStat("mp", mp);
+        }
+
         player?.calculateStats();
         /* Save the users data */
         scene.db.updateUser(player);

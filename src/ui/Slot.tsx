@@ -301,7 +301,8 @@ function useItemEvents({ location, slotKey, item }) {
   return {
     consumeItem: () => {
       /* So far can only consume from inventory */
-      if (location === "inventory") return socket.emit("consumeItem", { item, location });
+      if (["inventory", "abilities"].includes(location))
+        return socket.emit("consumeItem", { item, location });
     },
     dropItem: (target) => {
       if (hero?.state?.isDead) return;

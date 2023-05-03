@@ -11,6 +11,8 @@ interface KeyboardKeyProps {
   sx?: object;
 }
 
+const IGNORE_PRESS_ELEMENT_TYPES = ["text", "number"];
+
 const getKeyName = (name: string) => {
   let keyName = name.toUpperCase();
   if (name === "ESCAPE") {
@@ -40,7 +42,10 @@ const KeyboardKey: React.FC<KeyboardKeyProps> = ({
     const keyName = getKeyName(e?.key || "");
     if (
       // @ts-ignore
-      (document.activeElement?.type === "text" || e.target?.type === "text") &&
+      IGNORE_PRESS_ELEMENT_TYPES.some((t) =>
+        // @ts-ignore
+        [document.activeElement?.type, e.target?.type].includes(t)
+      ) &&
       keyName !== "ESCAPE" &&
       keyName !== "ENTER"
     ) {

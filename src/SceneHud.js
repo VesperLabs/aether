@@ -28,6 +28,7 @@ function addInputListeners(scene) {
   const isTouch = scene.sys.game.device.input.touch;
   const pointer = scene.input.activePointer;
   const mainScene = scene.scene.manager.getScene("SceneMain");
+  const socket = scene.socket;
 
   window.addEventListener(
     "HERO_ATTACK",
@@ -55,6 +56,9 @@ function addInputListeners(scene) {
           spellName: ability?.base,
           castAngle,
         });
+      }
+      if (ability?.type === "stackable") {
+        socket.emit("consumeItem", { item: ability, location: "abilities" });
       }
     },
     scene

@@ -58,18 +58,18 @@ class Player extends ServerCharacter implements Player {
 
     return { didLevel };
   }
-  findAbilityById(id: string): any {
-    const [slotName, foundItem] = Object.entries(this?.abilities).find(
-      ([_, slotItem]: [string, Item]) => slotItem?.id === id
-    ) || [null, null];
-    return { item: foundItem, slotName };
-  }
+  /* Equipment */
   findEquipmentById(id: string): any {
     const [slotName, foundItem] = Object.entries(this?.equipment).find(
       ([_, slotItem]: [string, Item]) => slotItem?.id === id
     ) || [null, null];
     return { item: foundItem, slotName };
   }
+  clearEquipmentSlot(slotName: string) {
+    if (!this?.equipment?.[slotName]) return;
+    this.equipment[slotName] = null;
+  }
+  /* Inventory */
   findInventoryItemById(id: string) {
     let returnItem = null;
     for (var i = 0; i < this.inventory.length; i++) {
@@ -121,6 +121,30 @@ class Player extends ServerCharacter implements Player {
       this.inventory.push(item);
     }
   }
+  /* Abilities */
+  findAbilityById(id: string): any {
+    const [slotName, foundItem] = Object.entries(this?.abilities).find(
+      ([_, slotItem]: [string, Item]) => slotItem?.id === id
+    ) || [null, null];
+    return { item: foundItem, slotName };
+  }
+  subtractAbilityAtId(id: string, amount: integer) {
+    const { item: found, slotName } = this.findAbilityById(id);
+    if (found?.amount > amount && amount > 0) {
+      const newAmount = found?.amount - amount;
+      this.abilities[slotName] = { ...found, amount: newAmount };
+      return amount;
+    }
+    return null;
+  }
+  deleteAbilityAtId(id: string) {
+    const { slotName } = this.findAbilityById(id);
+    this.abilities[slotName] = null;
+  }
+  clearAbilitySlot(slotName: string) {
+    if (!this?.abilities?.[slotName]) return;
+    this.abilities[slotName] = null;
+  }
   checkBubbleMessage() {
     const now = Date.now();
     if (now - this.state.lastBubbleMessage > 5000) {
@@ -130,14 +154,6 @@ class Player extends ServerCharacter implements Player {
   update() {
     this.doRegen();
     this.checkBubbleMessage();
-  }
-  clearEquipmentSlot(slotName: string) {
-    if (!this?.equipment?.[slotName]) return;
-    this.equipment[slotName] = null;
-  }
-  clearAbilitySlot(slotName: string) {
-    if (!this?.abilities?.[slotName]) return;
-    this.abilities[slotName] = null;
   }
 }
 
