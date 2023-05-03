@@ -371,10 +371,10 @@ const SkillButtons = () => {
       }}
     >
       {showButtonChat && (
-        <SkillButton size={24} iconName="chat" eventName="HERO_CHAT_NPC" keyboardKey="X" />
+        <SkillButton size={16} iconName="chat" eventName="HERO_CHAT_NPC" keyboardKey="X" />
       )}
-      <SkillButton size={24} iconName="grab" eventName="HERO_GRAB" keyboardKey="F" />
-      <SkillButton size={24} iconName="handRight" eventName="HERO_ATTACK" keyboardKey="SPACE" />
+      <SkillButton size={16} iconName="grab" eventName="HERO_GRAB" keyboardKey="F" />
+      <SkillButton size={16} iconName="handRight" eventName="HERO_ATTACK" keyboardKey="SPACE" />
     </Flex>
   );
 };
