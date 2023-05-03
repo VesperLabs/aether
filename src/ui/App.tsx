@@ -398,8 +398,12 @@ const AbilityButtons = () => {
       {abilities
         ?.filter(([_, item]) => !!item)
         ?.map(([slotKey, item]) => {
+          let texture = item?.texture;
+          if (item.type === "spell") {
+            texture = "spell-" + item.base;
+          }
           const icon = item
-            ? `../assets/atlas/${item?.type}/${item?.texture}.png`
+            ? `../assets/atlas/${item?.type}/${texture}.png`
             : "./assets/icons/blank.png";
           return (
             <SkillButton

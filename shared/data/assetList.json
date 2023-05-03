@@ -426,14 +426,14 @@
     "previewRect": [0, 0, 32, 32]
   },
   {
-    "texture": "spell-fire",
-    "src": "./assets/atlas/spell/spell-fire.png",
+    "texture": "scroll-fire",
+    "src": "./assets/atlas/spell/scroll-fire.png",
     "atlas": "./assets/atlas/32x32-stackable.json",
     "previewRect": [0, 0, 32, 32]
   },
   {
-    "texture": "spell-heal",
-    "src": "./assets/atlas/spell/spell-heal.png",
+    "texture": "scroll-heal",
+    "src": "./assets/atlas/spell/scroll-heal.png",
     "atlas": "./assets/atlas/32x32-stackable.json",
     "previewRect": [0, 0, 32, 32]
   },

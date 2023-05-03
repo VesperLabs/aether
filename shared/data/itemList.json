@@ -731,7 +731,7 @@
         "name": "Fireball",
         "base": "fireball",
         "slot": "spell",
-        "texture": "spell-fire",
+        "texture": "scroll-fire",
         "effects": {
           "minFireDamage": 2,
           "maxFireDamage": 3
@@ -747,7 +747,7 @@
         "name": "Fireball",
         "base": "fireball",
         "slot": "spell",
-        "texture": "spell-fire",
+        "texture": "scroll-fire",
         "effects": {},
         "mpCost": 6,
         "cost": 200
