@@ -3,7 +3,7 @@ import assetList from "./data/assetList.json";
 /* Resolves the right asset compensating for user profile attributes */
 const resolveAsset = (item, user) => {
   let textureName = "";
-  let returnAsset = null;
+  let returnAsset = assetList?.[0]; //defaults to blank
   assetList.forEach((asset) => {
     const texture = item?.texture;
     switch (item?.slot) {
@@ -15,8 +15,7 @@ const resolveAsset = (item, user) => {
         textureName = texture;
         break;
       case "armor":
-        textureName =
-          user?.profile?.race + "-" + user?.profile?.gender + "-" + texture;
+        textureName = user?.profile?.race + "-" + user?.profile?.gender + "-" + texture;
         break;
       default:
         textureName = user?.profile?.race + "-" + texture;
