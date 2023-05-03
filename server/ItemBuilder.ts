@@ -165,6 +165,18 @@ const ItemBuilder = {
       }
     }
 
+    if (item?.effects) {
+      for (let key in item.effects) {
+        if (Array.isArray(item.effects[key])) {
+          let low = item.effects[key][0];
+          let high = item.effects[key][1];
+          newEffects[key] = Math.floor(Math.random() * (high - low + 1) + low);
+        } else {
+          newEffects[key] = item.effects[key];
+        }
+      }
+    }
+
     if (item?.stats) {
       for (let key in item.stats) {
         if (Array.isArray(item.stats[key])) {
