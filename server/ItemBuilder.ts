@@ -122,7 +122,7 @@ const ItemBuilder = {
 
     if (!item) return console.log(`🔧 Item not found for ${type} ${rarity} ${itemKey}`);
 
-    item = { ...item, requirements: {} };
+    item = { effects: {}, requirements: {}, ...item };
 
     /* Get the baseItem */
     const commonCategory = itemList?.[type]?.["common"];
@@ -147,6 +147,20 @@ const ItemBuilder = {
             statAmount = baseItem.stats[key];
           }
           newStats[key] = consistentKeys?.includes(key) ? statAmount : statAmount * item?.ilvl;
+        }
+        for (let key in baseItem.effects || {}) {
+          const consistentKeys = ["attackDelay", "castDelay", "range"];
+          let effectAmount = 0;
+          if (Array.isArray(baseItem.effects[key])) {
+            const low = baseItem.effects[key][0];
+            const high = baseItem.effects[key][1];
+            effectAmount = Math.floor(Math.random() * (high - low + 1) + low);
+          } else {
+            effectAmount = baseItem.effects[key];
+          }
+          newEffects[key] = consistentKeys?.includes(key)
+            ? effectAmount
+            : effectAmount * item?.ilvl;
         }
       }
     }
@@ -194,10 +208,6 @@ const ItemBuilder = {
         }
         item.setBonus = setBonus;
       }
-    }
-
-    if (item.effects) {
-      newEffects = item.effects;
     }
 
     if (item.slot == "stackable") {
