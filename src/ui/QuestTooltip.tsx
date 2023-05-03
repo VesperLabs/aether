@@ -94,7 +94,7 @@ const QuestStatusButton = ({ playerQuest, quest, socket, parent }) => {
     return <></>;
   }
   if (playerQuest?.isCompleted) {
-    return <Button variant="wood">Done</Button>;
+    return <></>;
   }
   if (playerQuest?.isReady) {
     return (
