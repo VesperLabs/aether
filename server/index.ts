@@ -671,6 +671,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
             return socket.emit("message", message);
           }
           /* Save the users data */
+          player.calculateStats();
           scene.db.updateUser(player);
           io.to(player?.roomName).emit("playerUpdate", getCharacterState(player), {
             didLevel: questResults?.didLevel,
