@@ -7,12 +7,12 @@ const combineDamageStats = (stats = {}) =>
       if (!acc.hasOwnProperty(identifier)) {
         acc[identifier] = `${stats?.[`min${identifier}`] || 0} - ${stats[`max${identifier}`] || 0}`;
       }
+    } else if (key.includes("Delay")) {
+      acc[key] = convertMsToS(value);
+    } else if (key.includes("Steal") || key.includes("Chance")) {
+      acc[key] = value + "%";
     } else {
-      if (key.includes("Delay")) {
-        acc[key] = convertMsToS(value);
-      } else {
-        acc[key] = value;
-      }
+      acc[key] = value;
     }
     return acc;
   }, {});

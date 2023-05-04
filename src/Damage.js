@@ -53,7 +53,7 @@ class Damage extends Container {
         break;
       case "exp":
         text = text + " XP";
-        damageText.setTint("0xEECCFF");
+        damageText.setTint("0xFFFF66");
         break;
       case "mp":
         show = false;
@@ -75,19 +75,22 @@ class Damage extends Container {
     }
     damageText.fontSize = damageSize;
     damageText.setText(text);
-    damageText.setX(-damageText.width / 2);
-    damageText.setY(-damageText.height / 2);
+    damageText.setX(-damageText.width / 4);
+    damageText.setY(-damageText.height / 4);
     if (show) this.add(damageText);
 
     scene.tweens.add({
       targets: damageText,
       props: {
         x: {
-          value: () => this.randomRange(12 - damageText.width / 4),
+          value: () =>
+            hit.type === "exp"
+              ? -damageText.width / 4
+              : this.randomRange(12 - damageText.width / 4),
           ease: "Power1",
         },
         y: {
-          value: () => -40,
+          value: () => (hit.type === "exp" ? -damageText.height / 4 : -40),
           ease: "Power1",
         },
         fontSize: {
@@ -96,7 +99,7 @@ class Damage extends Container {
         },
         alpha: {
           value: () => 0,
-          ease: "Power1",
+          ease: "Linear",
         },
       },
       duration: this.duration,

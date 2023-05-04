@@ -88,8 +88,8 @@ class Spell extends Phaser.GameObjects.Container {
       if (target?.id && victim?.id !== target?.id) return;
 
       if (scene?.physics?.overlap?.(victim, this)) {
-        const newHit = caster.calculateDamage(victim);
-        if (newHit) this.hits.push(newHit);
+        const newHits = caster.calculateDamage(victim);
+        if (newHits?.length > 0) this.hits = [...this.hits, ...newHits];
         scene.io.to(room?.name).emit("assignDamage", this.hits);
       }
     });

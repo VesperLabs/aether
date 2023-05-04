@@ -134,6 +134,9 @@ class ServerCharacter extends Character {
         if (item.stats) {
           Object.keys(item.stats).forEach((key) => {
             let itemStat = item.stats[key];
+            if (!ns[key]) {
+              ns[key] = 0;
+            }
             if (itemStat) {
               ns[key] += itemStat;
             }
@@ -198,6 +201,8 @@ class ServerCharacter extends Character {
     ns.critChance = ns.critChance + ns.dexterity * 0.05;
     ns.walkSpeed = ns.walkSpeed + ns.dexterity * 0.03;
     ns.dodgeChance = ns.dodgeChance + ns.dexterity * 0.03;
+    ns.hpSteal = ns.hpSteal || 0;
+    ns.mpSteal = ns.mpSteal || 0;
     //ns.blockChance = ns.blockChance + (0 * (ns.dexterity - 15)) / (ns.level * 2);
     ns.blockChance = ns.blockChance;
     if (ns.critChance > 100) ns.critChance = 100;
@@ -227,6 +232,7 @@ class ServerCharacter extends Character {
   }
   calculateSpellDamage(victim, abilitySlot) {
     if (victim?.state?.isDead) return false;
+    const hits: Array<Hit> = [];
     const ability = this?.abilities?.[abilitySlot];
     const spellDamageRoll = randomNumber(this.stats?.minSpellDamage, this.stats?.maxSpellDamage);
     const fireDamageRoll = randomNumber(
@@ -251,25 +257,26 @@ class ServerCharacter extends Character {
     if (victim.stats.hp <= 0) {
       victim.setDead();
       victim.stats.hp = 0;
-      return {
+      hits.push({
         type: "death",
         isCritical: false,
         amount: -reducedDamage,
         from: this.id,
         to: victim.id,
-      };
+      });
+      return hits;
     }
-    return {
+    hits.push({
       type: "hp",
       isCritical: false,
       amount: -reducedDamage,
       from: this.id,
       to: victim.id,
-    };
+    });
+    return hits;
   }
   calculateDamage(victim) {
     if (victim?.state?.isDead) return false;
-
     const dodgeRoll = randomNumber(1, 100);
     const blockRoll = randomNumber(1, 100);
     const critRoll = randomNumber(1, 100);
@@ -280,6 +287,7 @@ class ServerCharacter extends Character {
     const reduction = Math.min(1, armorPierce / defense); // Reduction capped at 1 (100%)
     const dodgeChance = Math.max(0, victim.stats.dodgeChance - this.stats.accuracy);
     let isCritical = false;
+    let hits = [];
     let reducedDamage = Math.max(1, damage * reduction); // Minimum reducedDamage value of 1
     if (dodgeRoll < dodgeChance) {
       return { type: "miss", amount: 0, from: this.id, to: victim.id };
@@ -299,25 +307,50 @@ class ServerCharacter extends Character {
     if (victim.state.isRobot) {
       victim.state.lockedPlayerId = this?.socketId;
     }
+    /* Add stolen hp */
+    if (this?.stats?.hpSteal > 0) {
+      const hpSteal = Math.round((reducedDamage * this.stats.hpSteal) / 100);
+      this.modifyStat("hp", hpSteal);
+      hits.push({
+        type: "hp",
+        amount: hpSteal,
+        from: victim.id,
+        to: this.id,
+      });
+    }
+    /* Add stolen mp */
+    if (this?.stats?.mpSteal > 0) {
+      const mpSteal = Math.floor((reducedDamage * this.stats.mpSteal) / 100);
+      this.modifyStat("mp", mpSteal);
+      hits.push({
+        type: "mp",
+        amount: mpSteal,
+        from: victim.id,
+        to: this.id,
+      });
+    }
+
     /* Victim killed */
     if (victim.stats.hp <= 0) {
       victim.setDead();
       victim.stats.hp = 0;
-      return {
+      hits.push({
         type: "death",
         isCritical,
         amount: -reducedDamage,
         from: this.id,
         to: victim.id,
-      };
+      });
+      return hits;
     }
-    return {
+    hits.push({
       type: "hp",
       isCritical,
       amount: -reducedDamage,
       from: this.id,
       to: victim.id,
-    };
+    });
+    return hits;
   }
   doRegen() {
     const now = Date.now();

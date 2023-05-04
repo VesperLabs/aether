@@ -234,7 +234,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         const roomName: string = hero?.roomName;
 
         /* Create hitList for npcs */
-        const hitList: Array<Hit> = [];
+        let hitList: Array<Hit> = [];
         const npcs: Array<Npc> = scene.roomManager.rooms[roomName]?.npcManager?.getNpcs();
         const players: Array<Player> =
           scene.roomManager.rooms[roomName]?.playerManager?.getPlayers();
@@ -243,18 +243,18 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         for (const npc of npcs) {
           /* TODO: verify location of hit before we consider it a hit */
           if (!ids?.includes(npc.id)) continue;
-          const newHit = abilitySlot
+          const newHits = abilitySlot
             ? hero.calculateSpellDamage(npc, abilitySlot)
             : hero.calculateDamage(npc);
           /* If we kill the NPC */
-          if (newHit?.type === "death") {
+          if (newHits?.find?.((h: Hit) => h?.type === "death")) {
             npc.dropLoot(hero?.stats?.magicFind);
             /* Add EXP, check if we leveled */
             totalExpGain += parseInt(npc?.stats?.expValue) || 0;
             /* Add the npc to the players kill list */
             hero.addNpcKill(npc);
           }
-          if (newHit) hitList.push(newHit);
+          if (newHits?.length > 0) hitList = [...hitList, ...newHits];
         }
         /* Send exp update to client */
         if (hitList?.some((hit) => hit.type === "death")) {
@@ -271,12 +271,11 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         }
         for (const player of players) {
           /* verify location of hit before we consider it a hit */
-
           if (!ids?.includes(player.id)) continue;
-          const newHit = abilitySlot
+          const newHits = abilitySlot
             ? hero.calculateSpellDamage(player, abilitySlot)
             : hero.calculateDamage(player);
-          if (newHit) hitList.push(newHit);
+          if (newHits?.length > 0) hitList = [...hitList, ...newHits];
         }
         io.to(roomName).emit("assignDamage", hitList);
       });

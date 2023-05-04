@@ -171,6 +171,8 @@
         "texture": "weapon-claymore-soul",
         "slot": "hands",
         "stats": {
+          "hpSteal": [5, 10],
+          "mpSteal": [5, 10],
           "attackDelay": 250,
           "critChance": 5,
           "range": 2

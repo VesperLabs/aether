@@ -93,7 +93,7 @@ const MenuHud = () => {
           />
           <Bar
             data-tooltip-content={`EXP: ${stats?.exp} / ${stats?.maxExp}`}
-            color="yellow.50"
+            color="#FFFF66"
             max={stats?.maxExp}
             min={stats?.exp}
             height={6}
