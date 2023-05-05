@@ -298,7 +298,12 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         scene.roomManager.rooms[oldRoom].playerManager.remove(socketId);
         scene.roomManager.rooms[prev.destMap].playerManager.add(socketId);
 
-        socket.to(prev.destMap).emit("playerJoin", getCharacterState(player), { isDoor: true });
+        socket
+          .to(prev.destMap)
+          .emit("playerJoin", getCharacterState(player), {
+            isDoor: true,
+            lastTeleport: Date.now(),
+          });
 
         socket.emit("heroInit", {
           ...getRoomState(scene, prev.destMap),

@@ -75,7 +75,9 @@ class Npc extends Character implements Npc {
       this.y = this.startingCoords.y;
       this.stats.hp = this.stats.maxHp;
       this.state.isDead = false;
-      this.scene.io.to(this.room.name).emit("respawnNpc", { id: this?.id, x: this.x, y: this.y });
+      this.scene.io
+        .to(this.room.name)
+        .emit("respawnNpc", { id: this?.id, x: this.x, y: this.y, respawnTime: Date.now() });
     }
   }
   checkInRange(target: any, range: number) {

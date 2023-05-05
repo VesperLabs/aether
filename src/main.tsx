@@ -14,8 +14,9 @@ const debug = process.env.DEBUG;
 const SERVER_URL = process.env.SERVER_URL as string;
 const socket = socketIOClient(SERVER_URL);
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
-const gameWidth = window.innerWidth * window.devicePixelRatio;
-const gameHeight = window.innerHeight * window.devicePixelRatio;
+const devicePixelRatio = window.devicePixelRatio || 1;
+const gameWidth = window.innerWidth * devicePixelRatio;
+const gameHeight = window.innerHeight * devicePixelRatio;
 
 const game = new Phaser.Game({
   type: Phaser.AUTO,
@@ -25,7 +26,10 @@ const game = new Phaser.Game({
     width: gameWidth,
     height: gameHeight,
     autoCenter: Phaser.Scale.CENTER_HORIZONTALLY,
-    max: { width: screen.width, height: screen.height },
+    max: {
+      width: screen.width * devicePixelRatio,
+      height: screen.height * devicePixelRatio,
+    },
   },
   roundPixels: false,
   antialias: false,

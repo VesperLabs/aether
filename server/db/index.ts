@@ -33,15 +33,15 @@ export async function initDatabase(uri) {
 
 const getDatabaseApi = (db) => ({
   getUserByEmail: async ({ email }) => {
-    if (!email) console.log("❌ Email not provided");
-    if (!email) return;
+    if (!email) return console.log("❌ Email not provided");
     const user = await db.collection("users").findOne({ email });
     return user;
   },
   getUserByLogin: async ({ email, password = "" }) => {
-    if (!email) console.log("❌ Email not provided");
-    if (!email) return;
-    const user = await db.collection("users").findOne({ email, password });
+    if (!email) return console.log("❌ Email not provided");
+    const user = await db
+      .collection("users")
+      .findOne({ email: `${email}`.toLowerCase(), password });
     console.log(`💾 Found ${email} in db`);
     return user;
   },
@@ -52,7 +52,7 @@ const getDatabaseApi = (db) => ({
     const player = createBaseUser(charClass);
     try {
       await db.collection("users").insertOne({
-        email: email,
+        email: `${email}`.toLowerCase(),
         password,
         charClass: player?.charClass,
         x: player?.x,

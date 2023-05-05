@@ -86,13 +86,14 @@ class SceneMain extends Phaser.Scene {
       setCamera(scene, scene.hero);
     });
 
-    socket.on("playerJoin", (user) => {
+    socket.on("playerJoin", (user, { lastTeleport } = {}) => {
       const player = getPlayer(scene, user.socketId);
       if (player) {
         /* TODO: Maybe update the entire player here too */
-        return (player.state.lastTeleport = Date.now());
+        player.state.lastTeleport = lastTeleport;
+      } else {
+        addPlayer(scene, user);
       }
-      addPlayer(scene, user);
     });
 
     socket.on("playerUpdate", (userData) => {
@@ -162,10 +163,10 @@ class SceneMain extends Phaser.Scene {
       getPlayer(scene, id)?.respawn();
     });
 
-    socket.on("respawnNpc", ({ id, x, y }) => {
+    socket.on("respawnNpc", ({ id, x, y, respawnTime }) => {
       const npc = getNpc(scene, id);
       //interpolation will ignore snapshots prior. (Won't fly across screen)
-      npc.state.lastTeleport = Date.now();
+      npc.state.lastTeleport = respawnTime;
       npc.setPosition(x, y);
       npc?.respawn();
     });
