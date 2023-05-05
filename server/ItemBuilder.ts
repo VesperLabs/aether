@@ -10,7 +10,7 @@ const ItemBuilder = {
   getSetInfo: (setName: string) => {
     return itemSetList[setName];
   },
-  rollDrop: (ilvl, magicFind = 1) => {
+  rollDrop: (ilvl: number, magicFind = 1) => {
     if (magicFind > 100) {
       magicFind = 100;
     }
@@ -40,7 +40,7 @@ const ItemBuilder = {
     if (theType["unique"]) {
       Object.keys(theType["unique"]).forEach((key) => {
         const item = theType["unique"][key];
-        if (item.ilvl == ilvl) {
+        if (item.ilvl <= ilvl) {
           uniquePool.push({
             type: type,
             rarity: "unique",
@@ -53,7 +53,7 @@ const ItemBuilder = {
     if (theType["set"]) {
       Object.keys(theType["set"]).forEach((key) => {
         const item = theType["set"][key];
-        if (item.ilvl == ilvl) {
+        if (item.ilvl <= ilvl) {
           uniquePool.push({ type: type, rarity: "set", key: key, chance: 1 });
         }
       });
@@ -61,7 +61,7 @@ const ItemBuilder = {
     if (theType["common"]) {
       Object.keys(theType["common"]).forEach((key) => {
         const item = theType["common"][key];
-        if (item.ilvl == ilvl) {
+        if (item.ilvl <= ilvl) {
           commonPool.push({
             type: type,
             rarity: "common",
@@ -77,21 +77,19 @@ const ItemBuilder = {
       }
     }
 
-    // todo: later support rare and magic spells
-    if (type! == "spell") {
-      if (commonRoll == 1 && rareRoll == 1 && item == null) {
-        if (commonPool.length > 0) {
-          item = commonPool[Math.floor(Math.random() * commonPool.length)];
-          item.rarity = "rare";
-        }
-      }
-      if (commonRoll == 1 && magicRoll == 1 && item == null) {
-        if (commonPool.length > 0) {
-          item = commonPool[Math.floor(Math.random() * commonPool.length)];
-          item.rarity = "magic";
-        }
+    if (commonRoll == 1 && rareRoll == 1 && item == null) {
+      if (commonPool.length > 0) {
+        item = commonPool[Math.floor(Math.random() * commonPool.length)];
+        item.rarity = "rare";
       }
     }
+    if (commonRoll == 1 && magicRoll == 1 && item == null) {
+      if (commonPool.length > 0) {
+        item = commonPool[Math.floor(Math.random() * commonPool.length)];
+        item.rarity = "magic";
+      }
+    }
+
     if (commonRoll == 1 && item == null) {
       if (commonPool.length > 0) {
         item = commonPool[Math.floor(Math.random() * commonPool.length)];

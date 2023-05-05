@@ -298,12 +298,10 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         scene.roomManager.rooms[oldRoom].playerManager.remove(socketId);
         scene.roomManager.rooms[prev.destMap].playerManager.add(socketId);
 
-        socket
-          .to(prev.destMap)
-          .emit("playerJoin", getCharacterState(player), {
-            isDoor: true,
-            lastTeleport: Date.now(),
-          });
+        socket.to(prev.destMap).emit("playerJoin", getCharacterState(player), {
+          isDoor: true,
+          lastTeleport: Date.now(),
+        });
 
         socket.emit("heroInit", {
           ...getRoomState(scene, prev.destMap),
@@ -635,7 +633,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           const command = args.message.substr(1).split(" ");
           switch (command[0]) {
             case "drop":
-              const item = command[1].split("-");
+              const item = command?.[1]?.split("-");
               return scene.roomManager.rooms[player?.roomName].lootManager.create({
                 x: player?.x,
                 y: player?.y,
@@ -647,6 +645,22 @@ class ServerScene extends Phaser.Scene implements ServerScene {
                 type: "info",
                 message: `x: ${Math.round(player.x)} y: ${Math.round(player.y)}`,
               });
+            case "guns":
+              let gunItem = null;
+              const rarity = command?.[1];
+              if (!["unique", "common", "set", "rare", "magic"]?.includes(rarity)) return;
+              do {
+                gunItem = ItemBuilder.rollDrop(100, 50);
+              } while (gunItem?.rarity !== rarity);
+              if (gunItem) {
+                scene.roomManager.rooms[player?.roomName].lootManager.create({
+                  x: player?.x,
+                  y: player?.y,
+                  item: ItemBuilder.buildItem(gunItem.type, gunItem.rarity, gunItem.key) as Item,
+                  npcId: null,
+                });
+              }
+              return;
           }
         }
         io.to(player?.roomName).emit("message", {
