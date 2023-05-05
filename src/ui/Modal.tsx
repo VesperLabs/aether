@@ -1,15 +1,5 @@
 import { Box, Flex, useAppContext } from "./";
 
-interface ModalProps {
-  sx?: any;
-  children: React.ReactNode;
-}
-
-interface ModalHeaderProps {
-  sx?: any;
-  children: React.ReactNode;
-}
-
 interface ModalBodyProps {
   sx?: any;
   children: React.ReactNode;
@@ -36,7 +26,7 @@ const Modal: any & {
         borderRadius: 3,
         position: "fixed",
         flexDirection: "column",
-        bottom: bottomOffset > 0 ? bottomOffset + 20 + "px" : "50%",
+        bottom: bottomOffset > 0 ? bottomOffset + 80 + "px" : "50%",
         left: "50%",
         pointerEvents: "all",
         transform: `scale(${zoom}) translate(-50%, ${bottomOffset > 0 ? "0%" : "50%"})`,

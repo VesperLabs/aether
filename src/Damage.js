@@ -14,53 +14,54 @@ class Damage extends Container {
     let damageSize = 20;
     this.victim = victim;
     this.duration = 1000;
-    this.setDepth(99999);
+
     if (this.victim.kind === "nasty") this.victim.userName.setVisible(true);
     const isPositive = hit?.amount >= 0;
-    const damageText = new BitmapText(scene, 0, 0, "nin-light", hit.amount, damageSize);
-    let show = true;
+    this.dt = new BitmapText(scene, 0, 0, "nin-light", hit.amount, damageSize);
+
     switch (hit.type) {
       case "hp":
         if (isPositive) {
           text = "+" + text;
-          damageText.setTint("0x99FF99");
+          this.dt.setTint("0x99FF99");
         } else {
           this.victim.hpBar.setVisible(true);
           text = text;
           playAudio({ scene, audioKey: "melee-hit-1", caster: this.victim });
           if (this.victim.isHero) {
-            damageText.setTint("0xFFFFFF");
+            this.dt.setTint("0xFFFFFF");
           } else {
-            damageText.setTint("0xFF6666");
+            this.dt.setTint("0xFF6666");
           }
         }
         break;
       case "miss":
         text = "miss!";
         if (this.victim.isHero) {
-          damageText.setTint("0x9999FF");
+          this.dt.setTint("0x9999FF");
         } else {
-          damageText.setTint("0xFFFFFF");
+          this.dt.setTint("0xFFFFFF");
         }
         break;
       case "block":
         text = "block!";
         if (this.victim.isHero) {
-          damageText.setTint("0xFF99FF");
+          this.dt.setTint("0xFF99FF");
         } else {
-          damageText.setTint("0xFFFFFF");
+          this.dt.setTint("0xFFFFFF");
         }
         break;
       case "exp":
+        damageSize = 15;
         text = text + " XP";
-        damageText.setTint("0xFFFF66");
+        this.dt.setTint("0xFFFF66");
         break;
       case "mp":
-        show = false;
+        this.setVisible(false);
         break;
       case "death":
         text = text;
-        damageText.setTint("0xFF6666");
+        this.dt.setTint("0xFF6666");
         playAudio({ scene, audioKey: "melee-hit-1", caster: this.victim });
         break;
     }
@@ -68,29 +69,24 @@ class Damage extends Container {
       damageSize = 40;
       text = text + "!";
       if (this.victim.isHero) {
-        damageText.setTint("0xFFFFFF");
+        this.dt.setTint("0xFFFFFF");
       } else {
-        damageText.setTint("0xFF8833");
+        this.dt.setTint("0xFF8833");
       }
     }
-    damageText.fontSize = damageSize;
-    damageText.setText(text);
-    damageText.setX(-damageText.width / 4);
-    damageText.setY(-damageText.height / 4);
-    if (show) this.add(damageText);
+    this.dt.fontSize = damageSize;
+    this.dt.setText(text);
+    this.setDepth(99999);
+    this.dt.setOrigin(0.5, 0.5);
+    this.dt.setPosition(this.width / 2, -10);
+
+    this.add(this.dt);
 
     scene.tweens.add({
-      targets: damageText,
+      targets: this.dt,
       props: {
-        x: {
-          value: () =>
-            hit.type === "exp"
-              ? -damageText.width / 4
-              : this.randomRange(12 - damageText.width / 4),
-          ease: "Power1",
-        },
         y: {
-          value: () => (hit.type === "exp" ? -damageText.height / 4 : -40),
+          value: () => (hit.type === "exp" ? -10 : -30),
           ease: "Power1",
         },
         fontSize: {
@@ -118,6 +114,7 @@ class Damage extends Container {
   randomRange(range) {
     return Math.floor(Math.random() * (range * 2 + 1)) - range;
   }
+
   update() {
     this.victim.bringToTop(this);
   }

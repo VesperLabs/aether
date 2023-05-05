@@ -290,10 +290,10 @@ class ServerCharacter extends Character {
     let hits = [];
     let reducedDamage = Math.max(1, damage * reduction); // Minimum reducedDamage value of 1
     if (dodgeRoll < dodgeChance) {
-      return { type: "miss", amount: 0, from: this.id, to: victim.id };
+      return [{ type: "miss", amount: 0, from: this.id, to: victim.id }];
     }
     if (blockRoll < victim.stats.blockChance) {
-      return { type: "block", amount: 0, from: this.id, to: victim.id };
+      return [{ type: "block", amount: 0, from: this.id, to: victim.id }];
     }
     if (this.stats.critChance && critRoll <= this.stats.critChance) {
       isCritical = true;

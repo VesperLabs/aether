@@ -346,6 +346,7 @@ function moveHero(scene, time) {
 }
 
 function setCamera(scene, hero) {
+  if (!hero || !scene?.map) return;
   const viewportArea = scene.cameras.main.width * scene.cameras.main.height;
   const zoomLevel = Math.round(calculateZoomLevel({ viewportArea }));
 
