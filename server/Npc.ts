@@ -105,6 +105,15 @@ class Npc extends Character implements Npc {
     // Destructure relevant properties from 'this'
     const { scene, state, room } = this ?? {};
 
+    // skip updates if no one is in the room
+    if (!room?.playerManager?.hasPlayers()) {
+      this.state.lockedPlayerId = null;
+      this.vx = 0;
+      this.vy = 0;
+      this.body.setVelocity(this.vx, this.vy);
+      return;
+    }
+
     // If dead, do not continue update
     if (state?.isDead) return this.tryRespawn();
 
@@ -127,12 +136,6 @@ class Npc extends Character implements Npc {
     const targetPlayer = scene?.players?.[state?.lockedPlayerId] ?? null;
 
     this.chaseOrMove({ targetPlayer, delta, time });
-
-    // skip updates if no one is in the room
-    if (!room?.playerManager?.hasPlayers()) {
-      return;
-    }
-
     this.intendAttack({ targetPlayer, delta });
     this.intendCastSpell({ targetPlayer, delta });
   }

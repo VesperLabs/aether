@@ -76,9 +76,9 @@ function getTrimmedRoomState(scene: ServerScene, roomName: string): TrimmedRoomS
     npcs: Object.values(scene.npcs)
       ?.filter((p) => p?.room?.name === roomName)
       .map(getTrimmedCharacterState),
-    spells: Object.values(scene.spells)
-      ?.filter((s) => s?.room?.name === roomName)
-      .map((s) => s?.getTrimmed()),
+    // spells: Object.values(scene.spells)
+    //   ?.filter((s) => s?.room?.name === roomName)
+    //   .map((s) => s?.getTrimmed()),
     loots: Object.values(scene.loots)?.filter((l) => l?.roomName === roomName),
   };
 }

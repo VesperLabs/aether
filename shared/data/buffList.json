@@ -1,0 +1,8 @@
+{
+  "evasion": {
+    "duration": 30000,
+    "stats": {
+      "dodgeChance": 5
+    }
+  }
+}
