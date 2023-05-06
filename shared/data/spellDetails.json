@@ -29,5 +29,13 @@
     "bodySize": 10,
     "npcCastRange": [100, 150],
     "npcCastWait": 30000
+  },
+  "brute": {
+    "allowedTargets": ["self"],
+    "maxVisibleTime": 200,
+    "maxActiveTime": 100,
+    "bodySize": 10,
+    "npcCastRange": [100, 150],
+    "npcCastWait": 30000
   }
 }

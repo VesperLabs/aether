@@ -235,9 +235,9 @@ class ServerCharacter extends Character {
     if (ns.dodgeChance > 75) ns.dodgeChance = 75;
     if (ns.blockChance > 75) ns.blockChance = 75;
     ns.maxDamage =
-      ns.maxDamage + Math.floor(1 + ((ns.strength + ns.dexterity / 2) * ns.level) / 100);
+      ns.maxDamage + Math.floor(1 + ((ns.strength * 1.5 + ns.dexterity / 2) * ns.level) / 100);
     ns.minDamage =
-      ns.minDamage + Math.floor(1 + ((ns.strength + ns.dexterity / 2) * ns.level) / 100);
+      ns.minDamage + Math.floor(1 + ((ns.strength * 1.5 + ns.dexterity / 2) * ns.level) / 100);
 
     /* WIP: After Percent Stats...  */
     Object.keys(totalPercentStats).forEach((key) => {
@@ -269,6 +269,7 @@ class ServerCharacter extends Character {
         hits.push({
           type: "buff",
           from: this.id,
+          buffName: name,
           to: victim.id,
         });
         victim.addBuff(name, level);
@@ -437,7 +438,14 @@ class ServerCharacter extends Character {
     const buff = buffList?.[name];
     if (!buff) return false;
 
-    const { duration, stats } = buff;
+    const { duration, stats = {} } = buff;
+    const statsWithLevelMultiplier = {};
+
+    // multiply each stat by the level
+    Object.entries(stats).forEach(([stat, value]: [string, number]) => {
+      statsWithLevelMultiplier[stat] = value * level;
+    });
+
     // look for the buff and remove it if it exists
     const foundBuff = this.buffs.find((b) => b?.name === name);
     // remove it from this.buffs
@@ -445,12 +453,13 @@ class ServerCharacter extends Character {
 
     this.buffs.push({
       name,
-      duration,
+      duration: duration * level,
       level,
-      stats,
+      stats: statsWithLevelMultiplier,
       spawnTime: Date.now(),
     });
   }
+
   expireBuffs() {
     let hasExpiredBuffs = false;
     for (const buff of this.buffs) {

@@ -438,6 +438,30 @@
     "previewRect": [0, 0, 32, 32]
   },
   {
+    "texture": "scroll-blue",
+    "src": "./assets/atlas/spell/scroll-blue.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
+    "texture": "spell-evasion",
+    "src": "./assets/atlas/spell/spell-evasion.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
+    "texture": "spell-brute",
+    "src": "./assets/atlas/spell/spell-brute.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
+    "texture": "spell-fireball",
+    "src": "./assets/atlas/spell/spell-fireball.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
     "texture": "icons",
     "src": "./assets/images/icons.png",
     "atlas": "./assets/atlas/32x32-icons.json",

@@ -733,16 +733,26 @@
         "name": "Fireball",
         "base": "fireball",
         "slot": "spell",
-        "texture": "scroll-red",
+        "texture": "scroll-blue",
         "effects": {
           "minFireDamage": 2,
           "maxFireDamage": 3
         },
         "requirements": {
-          "intelligence": 3
+          "intelligence": 5
         },
         "mpCost": 3,
         "cost": 100
+      },
+      "fireball2": {
+        "ilvl": 2,
+        "name": "Fireball",
+        "base": "fireball",
+        "slot": "spell",
+        "texture": "scroll-blue",
+        "effects": {},
+        "mpCost": 6,
+        "cost": 200
       },
       "evasion": {
         "ilvl": 1,
@@ -754,20 +764,25 @@
           "evasion": 1
         },
         "requirements": {
-          "dexterity": 3
+          "dexterity": 5
         },
         "mpCost": 3,
         "cost": 100
       },
-      "fireball2": {
-        "ilvl": 2,
-        "name": "Fireball",
-        "base": "fireball",
+      "brute": {
+        "ilvl": 1,
+        "name": "Brute",
+        "base": "brute",
         "slot": "spell",
         "texture": "scroll-red",
-        "effects": {},
-        "mpCost": 6,
-        "cost": 200
+        "buffs": {
+          "brute": 1
+        },
+        "requirements": {
+          "strength": 5
+        },
+        "mpCost": 3,
+        "cost": 100
       }
     }
   }

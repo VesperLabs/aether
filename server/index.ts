@@ -99,7 +99,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         const roomName = player?.room?.name;
 
         roomName
-          ? console.log(`🧑🏻‍🦰 ${player?.profile?.userName} connected`)
+          ? console.log(`😀 ${player?.profile?.userName} connected`)
           : console.log("❌ Missing player roomName");
 
         if (!roomName) return;

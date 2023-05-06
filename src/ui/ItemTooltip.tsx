@@ -1,4 +1,5 @@
 import { Flex, useAppContext, Text, Divider, Icon, Tooltip } from "./";
+import buffList from "../../shared/data/buffList.json";
 import { convertMsToS } from "../utils";
 const combineDamageStats = (stats = {}) =>
   Object.entries(stats).reduce((acc, [key, value]) => {
@@ -9,8 +10,8 @@ const combineDamageStats = (stats = {}) =>
       }
     } else if (["hp", "mp"].includes(key)) {
       acc[key] = "+" + value + "%";
-    } else if (key.includes("Delay")) {
-      acc[key] = convertMsToS(value);
+    } else if (key.includes("Delay") || key.includes("duration")) {
+      acc[key] = convertMsToS(value)?.replace(".00", "");
     } else if (key.includes("Steal") || key.includes("Chance")) {
       acc[key] = value + "%";
     } else {
@@ -31,7 +32,8 @@ const ItemTooltip = ({ item, show }) => {
 
   const requirements = item?.requirements || {};
   const buffs = item?.buffs ?? {};
-  const hasEffects = Object.keys({ ...buffs, ...combinedEffects })?.length > 0;
+  const hasEffects = Object.keys(combinedEffects)?.length > 0;
+  const hasBuffs = Object.keys(buffs)?.length > 0;
 
   return (
     <Tooltip id={item?.id} isOpen={show}>
@@ -50,7 +52,7 @@ const ItemTooltip = ({ item, show }) => {
           <Text color="gray.400" sx={{ ml: "2px" }}>
             {item?.amount > 1 && `(${item?.amount})`}
           </Text>
-          {item?.slot == "spell" && <span> (Level {item?.ilvl})</span>}
+          {item?.slot == "spell" && <span> (Lv. {item?.ilvl})</span>}
         </Text>
         <Text color={item?.rarity}>
           {item?.rarity} {item?.type === "spell" ? "spell" : item?.base}
@@ -74,13 +76,25 @@ const ItemTooltip = ({ item, show }) => {
             </Text>
           );
         })}
-        {Object.keys(buffs).map((key) => (
-          <Text key={key}>
-            <Label>
-              Level {buffs[key]} {key}
-            </Label>
-          </Text>
-        ))}
+        {Object.keys(buffs).map((buffName) => {
+          const buffStats = combineDamageStats({
+            duration: buffList?.[buffName]?.duration,
+            ...buffList?.[buffName]?.stats,
+          });
+          return (
+            <>
+              <TextDivider>{buffName} Buff</TextDivider>
+              {Object.keys(buffStats).map((stat) => {
+                return (
+                  <Text key={stat}>
+                    <Label>{stat}:</Label> {buffStats?.[stat]}
+                  </Text>
+                );
+              })}
+            </>
+          );
+        })}
+
         {Object.keys(requirements)?.length > 0 && <TextDivider>Requirements</TextDivider>}
         {Object.keys(requirements).map((key) => {
           const hasRequiredStats = hero?.stats?.[key] >= requirements[key];

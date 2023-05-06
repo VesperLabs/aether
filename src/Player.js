@@ -4,6 +4,7 @@ import Bubble from "./Bubble";
 import Spell from "./Spell";
 import Bar from "./Bar";
 import Damage from "./Damage";
+import BuffRack from "./BuffRack";
 import { distanceTo, getSpinDirection } from "./utils";
 const { Sprite, BitmapText } = Phaser.GameObjects;
 const BLANK_TEXTURE = "human-blank";
@@ -73,6 +74,7 @@ class Player extends Character {
       .existing(new Bar(scene, 0, this?.profile?.headY, 32, 12))
       .setVisible(false);
     this.userName = scene.add.existing(new BitmapText(this.scene, 0, 8, "nin-light").setScale(0.5));
+    this.buffRack = scene.add.existing(new BuffRack(scene, 0, 19, this.buffs));
     this.corpse = scene.add
       .existing(new Sprite(scene, 0, this.bodyOffsetY, "icons", "grave"))
       .setVisible(false);
@@ -96,6 +98,7 @@ class Player extends Character {
     this.add(this.hpBar);
     this.add(this.corpse);
     this.add(this.talkMenu);
+    this.add(this.buffRack);
   }
   drawCharacterFromUserData() {
     const { profile, equipment, state } = this || {};
@@ -325,6 +328,7 @@ function checkIsFlash(p, delta) {
 
 function drawFrame(p) {
   const {
+    buffs,
     skin,
     chest,
     armor,
@@ -344,6 +348,7 @@ function drawFrame(p) {
     bubble,
     hpBar,
     userName,
+    buffRack,
   } = p;
 
   /* Depth sort based on direction */
@@ -386,6 +391,7 @@ function drawFrame(p) {
   }
 
   p.bringToTop(userName);
+  p.bringToTop(buffRack);
   p.bringToTop(bubble);
   p.bringToTop(hpBar);
 
@@ -410,6 +416,7 @@ function drawFrame(p) {
   playWeapons(p);
   handRight.setTexture(equipment?.handRight?.texture);
   handLeft.setTexture(equipment?.handLeft?.texture);
+  buffRack.compareBuffs(buffs);
 }
 
 function updateCurrentSpeed(player) {

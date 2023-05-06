@@ -98,6 +98,7 @@ interface Hit {
   type: string;
   isCritical?: boolean;
   amount?: number;
+  buffName?: string;
   from: string;
   to: string;
 }

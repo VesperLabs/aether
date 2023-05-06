@@ -20,6 +20,9 @@ class Damage extends Container {
     this.dt = new BitmapText(scene, 0, 0, "nin-light", hit.amount, damageSize);
 
     switch (hit.type) {
+      case "buff":
+        text = hit?.buffName;
+        break;
       case "hp":
         if (isPositive) {
           text = "+" + text;
