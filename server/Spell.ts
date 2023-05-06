@@ -10,7 +10,7 @@ class Spell extends Phaser.GameObjects.Container {
   declare state: any;
   private velocityX: number;
   private velocityY: number;
-  private canHitSelf: boolean;
+  private allowedTargets: Array<string>;
   private maxVisibleTime: integer;
   private maxActiveTime: integer;
   private bodySize: integer;
@@ -39,7 +39,7 @@ class Spell extends Phaser.GameObjects.Container {
     this.spell = scene.add.existing(new Sprite(scene, 0, 0, "blank", 0));
 
     const details = spellDetails?.[spellName];
-    this.canHitSelf = details?.canHitSelf;
+    this.allowedTargets = details?.allowedTargets;
     this.maxVisibleTime = details?.maxVisibleTime;
     this.maxActiveTime = details?.maxActiveTime;
     this.bodySize = details?.bodySize;
@@ -73,7 +73,7 @@ class Spell extends Phaser.GameObjects.Container {
   }
   checkCollisions() {
     if (this.state.isExpired) return;
-    const { target, caster, scene, canHitSelf, room } = this;
+    const { target, caster, scene, allowedTargets, room } = this;
     const players = this.room.playerManager.players?.getChildren() || [];
     const npcs = this.room.npcManager.npcs?.getChildren() || [];
 
@@ -82,7 +82,7 @@ class Spell extends Phaser.GameObjects.Container {
       if (!victim || this.hits.some((h) => h?.to == victim?.id)) return;
 
       /* If its not a self-hitting spell */
-      if (!canHitSelf && victim?.id === caster?.id) return;
+      if (!allowedTargets?.includes("self") && victim?.id === caster?.id) return;
 
       /* If its a single target skip all other targets */
       if (target?.id && victim?.id !== target?.id) return;

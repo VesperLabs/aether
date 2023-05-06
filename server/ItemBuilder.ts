@@ -120,7 +120,7 @@ const ItemBuilder = {
 
     if (!item) return console.log(`🔧 Item not found for ${type} ${rarity} ${itemKey}`);
 
-    item = { effects: {}, requirements: {}, ...item };
+    item = { requirements: {}, ...item };
 
     /* Get the baseItem */
     const commonCategory = itemList?.[type]?.["common"];

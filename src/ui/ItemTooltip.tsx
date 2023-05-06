@@ -7,6 +7,8 @@ const combineDamageStats = (stats = {}) =>
       if (!acc.hasOwnProperty(identifier)) {
         acc[identifier] = `${stats?.[`min${identifier}`] || 0} - ${stats[`max${identifier}`] || 0}`;
       }
+    } else if (["hp", "mp"].includes(key)) {
+      acc[key] = "+" + value + "%";
     } else if (key.includes("Delay")) {
       acc[key] = convertMsToS(value);
     } else if (key.includes("Steal") || key.includes("Chance")) {
@@ -26,7 +28,10 @@ const ItemTooltip = ({ item, show }) => {
 
   const combinedStats = combineDamageStats(item?.stats);
   const combinedEffects = combineDamageStats(item?.effects);
+
   const requirements = item?.requirements || {};
+  const buffs = item?.buffs ?? {};
+  const hasEffects = Object.keys({ ...buffs, ...combinedEffects })?.length > 0;
 
   return (
     <Tooltip id={item?.id} isOpen={show}>
@@ -61,22 +66,21 @@ const ItemTooltip = ({ item, show }) => {
             <Label>{key}:</Label> {item?.percentStats[key]}%
           </Text>
         ))}
-        {Object.keys(combinedEffects)?.length > 0 && <TextDivider>Effects</TextDivider>}
+        {hasEffects && <TextDivider>Effects</TextDivider>}
         {Object.keys(combinedEffects).map((key) => {
-          if (key == "hp") {
-            return (
-              <Text key={key}>
-                <Label>+</Label> {combinedEffects[key]}% hp
-              </Text>
-            );
-          } else {
-            return (
-              <Text key={key}>
-                <Label>{key}:</Label> {combinedEffects[key]}
-              </Text>
-            );
-          }
+          return (
+            <Text key={key}>
+              <Label>{key}:</Label> {combinedEffects[key]}
+            </Text>
+          );
         })}
+        {Object.keys(buffs).map((key) => (
+          <Text key={key}>
+            <Label>
+              Level {buffs[key]} {key}
+            </Label>
+          </Text>
+        ))}
         {Object.keys(requirements)?.length > 0 && <TextDivider>Requirements</TextDivider>}
         {Object.keys(requirements).map((key) => {
           const hasRequiredStats = hero?.stats?.[key] >= requirements[key];

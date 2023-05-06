@@ -174,7 +174,7 @@ class Npc extends Character implements Npc {
       if (Date.now() - this.state.lastCast < delta + details?.npcCastWait) continue;
       // attack spells
       if (targetPlayer) {
-        if (!details?.canHitSelf && details?.npcCastRange) {
+        if (details?.allowedTargets?.includes("enemy") && details?.npcCastRange) {
           const [min, max] = details?.npcCastRange || [];
           const isTargetInRange =
             this.checkInRange(targetPlayer, max) && !this.checkInRange(targetPlayer, min);

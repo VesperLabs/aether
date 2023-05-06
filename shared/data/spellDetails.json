@@ -1,20 +1,20 @@
 {
   "attack_left": {
-    "canHitSelf": false,
+    "allowedTargets": ["enemy"],
     "maxVisibleTime": 200,
     "maxActiveTime": 100,
     "bodySize": 32
   },
   "attack_right": {
-    "canHitSelf": false,
+    "allowedTargets": ["enemy"],
     "maxVisibleTime": 200,
     "maxActiveTime": 100,
     "bodySize": 32
   },
   "fireball": {
+    "allowedTargets": ["enemy"],
     "maxVisibleTime": 1000,
     "maxActiveTime": 2000,
-    "canHitSelf": false,
     "bodySize": 10,
     "spellSpeed": 300,
     "scaleBase": 0.25,

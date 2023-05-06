@@ -16,6 +16,7 @@ interface Item {
   cost?: number;
   mpCost?: number;
   effects?: Record<string, any>;
+  buffs?: Record<string, any>;
   percentStats?: Record<string, number>;
   setName?: string;
   setBonus?: Record<string, number>;

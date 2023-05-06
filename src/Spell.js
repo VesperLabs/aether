@@ -18,9 +18,8 @@ class Spell extends Phaser.GameObjects.Container {
     this.hitIds = [];
     this.isAttack = ["attack_left", "attack_right"]?.includes(spellName);
     this.spell = scene.add.existing(new Sprite(scene, 0, 0, BLANK_TEXTURE, 0));
-
     const details = spellDetails[spellName];
-    this.canHitSelf = details?.canHitSelf;
+    this.allowedTargets = details?.allowedTargets;
     this.maxVisibleTime = details?.maxVisibleTime;
     this.maxActiveTime = details?.maxActiveTime;
     this.spellSpeed = details?.spellSpeed;
@@ -110,13 +109,13 @@ class Spell extends Phaser.GameObjects.Container {
     }
   }
   checkCollisions(sendServer = false) {
-    const { abilitySlot, caster, scene, canHitSelf } = this || {};
+    const { abilitySlot, caster, scene, allowedTargets } = this || {};
     const direction = caster?.direction;
     const npcs = scene.npcs?.getChildren() || [];
     const players = scene.players?.getChildren() || [];
     [...npcs, ...players]?.forEach((victim) => {
       if (!victim || this.hitIds.includes(victim?.id) || victim?.state?.isDead) return;
-      if (!canHitSelf && victim?.id == caster?.id) return;
+      if (!allowedTargets?.includes?.("self") && victim?.id == caster?.id) return;
       if (scene.physics.overlap(victim, this)) {
         /* For attacks, prevent collision behind the player */
         if (this.isAttack) {
