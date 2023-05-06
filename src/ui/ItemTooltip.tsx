@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { Flex, useAppContext, Text, Divider, Icon, Tooltip } from "./";
 import buffList from "../../shared/data/buffList.json";
 import { convertMsToS } from "../utils";
@@ -82,7 +83,7 @@ const ItemTooltip = ({ item, show }) => {
             ...buffList?.[buffName]?.stats,
           });
           return (
-            <>
+            <Fragment key={buffName}>
               <TextDivider>{buffName} Buff</TextDivider>
               {Object.keys(buffStats).map((stat) => {
                 return (
@@ -91,7 +92,7 @@ const ItemTooltip = ({ item, show }) => {
                   </Text>
                 );
               })}
-            </>
+            </Fragment>
           );
         })}
 

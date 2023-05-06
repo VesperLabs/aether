@@ -99,7 +99,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         const roomName = player?.room?.name;
 
         roomName
-          ? console.log(`😀 ${player?.profile?.userName} connected`)
+          ? console.log(`🔌 ${player?.profile?.userName} connected`)
           : console.log("❌ Missing player roomName");
 
         if (!roomName) return;
@@ -338,7 +338,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       socket.on("disconnect", () => {
         const player = scene.players?.[socketId];
         scene.db.updateUser(scene.players?.[socketId]);
-        console.log(`🧑🏻‍🦰 ${player?.profile?.userName} disconnected`);
+        console.log(`🔌 ${player?.profile?.userName} disconnected`);
         removePlayer(scene, socketId);
         io.emit("remove", socketId);
       });

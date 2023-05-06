@@ -261,6 +261,7 @@ class Player extends Character {
     const { type } = hit || {};
     const isPositive = hit?.amount >= 0;
     if (state.isDead) return;
+
     scene.add.existing(new Damage(this.scene, this, hit));
 
     switch (type) {

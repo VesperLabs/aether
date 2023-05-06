@@ -12,6 +12,7 @@ class Damage extends Container {
     super(scene, victim.x, victim.y);
     let text = Math.abs(hit.amount);
     let damageSize = 20;
+    let endY = -30;
     this.victim = victim;
     this.duration = 1000;
 
@@ -21,6 +22,7 @@ class Damage extends Container {
 
     switch (hit.type) {
       case "buff":
+        endY = 18;
         text = hit?.buffName;
         break;
       case "hp":
@@ -55,6 +57,7 @@ class Damage extends Container {
         }
         break;
       case "exp":
+        endY = -10;
         damageSize = 15;
         text = text + " XP";
         this.dt.setTint("0xFFFF66");
@@ -89,7 +92,7 @@ class Damage extends Container {
       targets: this.dt,
       props: {
         y: {
-          value: () => (hit.type === "exp" ? -10 : -30),
+          value: () => endY,
           ease: "Power1",
         },
         fontSize: {
