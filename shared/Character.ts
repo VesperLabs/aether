@@ -22,6 +22,7 @@ class Character extends Phaser.GameObjects.Container {
   baseStats: any;
   stats: any;
   npcKills: Record<string, number>;
+  buffs: Array<Buff>;
   quests: Array<PlayerQuest>;
   abilities: Record<string, Item>;
   activeItemSlots: Array<string>;
@@ -48,6 +49,7 @@ class Character extends Phaser.GameObjects.Container {
       charClass,
       npcKills = {},
       quests = {},
+      buffs = [],
       abilities = {},
       activeItemSlots = [],
     } = args;
@@ -90,6 +92,7 @@ class Character extends Phaser.GameObjects.Container {
       lastAngle: Phaser.Math.DegToRad(getAngleFromDirection(this.direction)),
       ...state,
     };
+    this.buffs = buffs;
     this.activeItemSlots = activeItemSlots;
     this.gold = gold;
     this.profile = { headY: -47, ...profile };

@@ -114,6 +114,8 @@ class Npc extends Character implements Npc {
       return;
     }
 
+    this.expireBuffs();
+
     // If dead, do not continue update
     if (state?.isDead) return this.tryRespawn();
 

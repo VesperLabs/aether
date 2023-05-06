@@ -5,6 +5,7 @@ config({ path: path.join(__dirname, "/../.env") });
 import { mapList } from "../shared/Maps";
 import skinTints from "../shared/data/skinTints.json";
 import hairTints from "../shared/data/hairTints.json";
+import spellDetails from "../shared/data/spellDetails.json";
 import { Socket, Server } from "socket.io";
 import crypto from "crypto";
 import {
@@ -17,6 +18,7 @@ import {
   cloneObject,
   checkSlotsMatch,
   SHOP_INFLATION,
+  withExpiredBuffs,
 } from "./utils";
 import { initDatabase } from "./db";
 import RoomManager from "./RoomManager";
@@ -156,17 +158,19 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         const { ilvl, base, mpCost = 0 } = player?.abilities?.[abilitySlot] || {};
         //if the ability slotId is not in the activeItemSlots return
         if (!player?.activeItemSlots?.includes?.(`${abilitySlot}`)) return;
-        // if dead, no ilvl, no base, return
         if (player?.state?.isDead || !ilvl || !base) return;
-        if (player.canCastSpell(abilitySlot)) {
-          player.modifyStat("mp", -mpCost);
-          io.to(player?.roomName).emit("modifyPlayerStat", {
-            socketId,
-            type: "mp",
-            amount: -mpCost,
-          });
-          socket.to(player?.roomName).emit("playerCastSpell", { socketId, base, ilvl, castAngle });
-        }
+        if (!player.canCastSpell(abilitySlot)) return;
+
+        // use the mana
+        player.modifyStat("mp", -mpCost);
+        io.to(player?.roomName).emit("modifyPlayerStat", {
+          socketId,
+          type: "mp",
+          amount: -mpCost,
+        });
+
+        // TODO: spell and attacks for players is handled clientSide. How can we fix it?
+        socket.to(player?.roomName).emit("playerCastSpell", { socketId, base, ilvl, castAngle });
       });
 
       socket.on("grabLoot", ({ lootId, direction } = {}) => {
@@ -229,20 +233,25 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       });
 
       socket.on("hit", ({ ids, abilitySlot } = {}) => {
+        // ability slot will be null for attacks
         const hero: Player = scene.players[socketId];
         if (!hero || hero?.state?.isDead) return;
         const roomName: string = hero?.roomName;
+        const abilityName = hero?.abilities?.[abilitySlot]?.base || "attack_left";
+        const allowedTargets = spellDetails?.[abilityName]?.allowedTargets;
 
         /* Create hitList for npcs */
         let hitList: Array<Hit> = [];
+        let totalExpGain: number = 0;
         const npcs: Array<Npc> = scene.roomManager.rooms[roomName]?.npcManager?.getNpcs();
         const players: Array<Player> =
           scene.roomManager.rooms[roomName]?.playerManager?.getPlayers();
 
-        let totalExpGain: number = 0;
         for (const npc of npcs) {
           /* TODO: verify location of hit before we consider it a hit */
           if (!ids?.includes(npc.id)) continue;
+          // only allow spells to hit intended targets
+          if (!allowedTargets?.includes("enemy")) continue;
           const newHits = abilitySlot
             ? hero.calculateSpellDamage(npc, abilitySlot)
             : hero.calculateDamage(npc);
@@ -270,13 +279,30 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           }
         }
         for (const player of players) {
-          /* verify location of hit before we consider it a hit */
+          /* TODO: verify location of hit before we consider it a hit */
           if (!ids?.includes(player.id)) continue;
+          // only allow spells to hit intended targets
+          if (!allowedTargets?.includes("self")) {
+            if (player.id === hero.id) continue;
+          }
           const newHits = abilitySlot
             ? hero.calculateSpellDamage(player, abilitySlot)
             : hero.calculateDamage(player);
           if (newHits?.length > 0) hitList = [...hitList, ...newHits];
         }
+
+        // anyone who got buffed needs to have their state updated.
+        const buffedEntityIds = hitList?.filter((h) => h?.type === "buff")?.map((h) => h?.to);
+
+        // send each buffed hero and npc their new state
+        if (buffedEntityIds?.length > 0) {
+          const roomState = getRoomState(scene, roomName);
+          io.to(roomName).emit("updateEntities", {
+            npcs: roomState?.npcs?.filter((n) => buffedEntityIds?.includes(n?.id)),
+            players: roomState?.players?.filter((n) => buffedEntityIds?.includes(n?.id)),
+          });
+        }
+
         io.to(roomName).emit("assignDamage", hitList);
       });
 
@@ -776,7 +802,6 @@ class ServerScene extends Phaser.Scene implements ServerScene {
     const scene = this;
     for (const room of Object.values(scene.roomManager.rooms)) {
       room.lootManager.expireLoots();
-
       room.spellManager.expireSpells();
 
       const roomState = getTrimmedRoomState(scene, room.name);
@@ -785,6 +810,18 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       room.vault.add(snapshot);
 
       io.to(room.name).emit("update", room.vault.get());
+
+      // sends a full state involving all players / npcs who have
+      // expired buffs.
+      const trimmedStates = [...roomState?.npcs, ...roomState?.players];
+      if (trimmedStates?.some((n) => n?.state.hasExpiredBuffs)) {
+        // TODO: probably do not need to send full room state here. optimize this.
+        const fullRoomState = getRoomState(scene, room.name);
+        io.to(room.name).emit("updateEntities", {
+          npcs: withExpiredBuffs(scene, fullRoomState?.npcs),
+          players: withExpiredBuffs(scene, fullRoomState?.players),
+        });
+      }
     }
   }
 }

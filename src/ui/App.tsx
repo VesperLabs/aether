@@ -136,6 +136,13 @@ function App({ socket, debug, game }) {
       if (args?.isLogin) setIsLoggedIn(true);
     };
 
+    const onUpdateEntities = (payload: { players: Array<CharacterState>; socketId: string }) => {
+      const { players } = payload;
+      const socketId = localStorage.getItem("socketId");
+      const player: CharacterState = players?.find((p) => p?.socketId === socketId);
+      setHero(player);
+    };
+
     const onPlayerUpdate = (player: CharacterState, args) => {
       const socketId = localStorage.getItem("socketId");
       /* If the player is the current player */
@@ -204,6 +211,7 @@ function App({ socket, debug, game }) {
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
     socket.on("heroInit", onHeroInit);
+    socket.on("updateEntities", onUpdateEntities);
     socket.on("playerUpdate", onPlayerUpdate);
     socket.on("lootGrabbed", onLootGrabbed);
     socket.on("keeperDataUpdate", onKeeperDataUpdate);
@@ -218,6 +226,7 @@ function App({ socket, debug, game }) {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
       socket.off("heroInit", onHeroInit);
+      socket.off("updateEntities", onUpdateEntities);
       socket.off("playerUpdate", onPlayerUpdate);
       socket.off("lootGrabbed", onLootGrabbed);
       socket.off("keeperDataUpdate", onKeeperDataUpdate);

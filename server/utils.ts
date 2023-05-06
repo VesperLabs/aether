@@ -61,6 +61,7 @@ function getCharacterState(p: Character): CharacterState {
     kind: p?.kind,
     charClass: p?.charClass,
     npcKills: p?.npcKills,
+    buffs: p?.buffs,
     quests: p?.getQuests(),
     abilities: p?.abilities,
     activeItemSlots: p?.activeItemSlots,
@@ -147,6 +148,16 @@ function checkSlotsMatch(s1, s2) {
 
 const SHOP_INFLATION = 4;
 
+const withExpiredBuffs = (scene, entities = []) => {
+  return entities
+    ?.filter((entity) => entity?.state.hasExpiredBuffs)
+    ?.map((entity) => {
+      const player = scene.players[entity?.id];
+      player.state.hasExpiredBuffs = false;
+      return entity;
+    });
+};
+
 export {
   removePlayer,
   getPlayer,
@@ -161,5 +172,6 @@ export {
   distanceTo,
   cloneObject,
   checkSlotsMatch,
+  withExpiredBuffs,
   SHOP_INFLATION,
 };

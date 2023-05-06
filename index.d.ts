@@ -96,10 +96,18 @@ interface Room {
 
 interface Hit {
   type: string;
-  isCritical: boolean;
-  amount: number;
+  isCritical?: boolean;
+  amount?: number;
   from: string;
   to: string;
+}
+
+interface Buff {
+  name: string;
+  level: number;
+  duration: number;
+  stats: any;
+  spawnTime: any;
 }
 
 interface Character extends Phaser.GameObjects.Container {
@@ -126,8 +134,10 @@ interface Character extends Phaser.GameObjects.Container {
   baseStats: any;
   stats: any;
   quests: Array<PlayerQuest>;
+  buffs: Array<Buff>;
   abilities: Record<number, Item>;
   activeItemSlots: Array<string>;
+  addBuff(name, level);
   calculateDamage(victim: any);
   calculateSpellDamage(victim: any, abilitySlot: any);
   calculateActiveItemSlots(): void;

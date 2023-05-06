@@ -109,13 +109,12 @@ class Spell extends Phaser.GameObjects.Container {
     }
   }
   checkCollisions(sendServer = false) {
-    const { abilitySlot, caster, scene, allowedTargets } = this || {};
+    const { abilitySlot, caster, scene } = this || {};
     const direction = caster?.direction;
     const npcs = scene.npcs?.getChildren() || [];
     const players = scene.players?.getChildren() || [];
     [...npcs, ...players]?.forEach((victim) => {
       if (!victim || this.hitIds.includes(victim?.id) || victim?.state?.isDead) return;
-      if (!allowedTargets?.includes?.("self") && victim?.id == caster?.id) return;
       if (scene.physics.overlap(victim, this)) {
         /* For attacks, prevent collision behind the player */
         if (this.isAttack) {

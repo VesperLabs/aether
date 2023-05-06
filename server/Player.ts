@@ -152,6 +152,7 @@ class Player extends ServerCharacter implements Player {
     }
   }
   update() {
+    this.expireBuffs();
     this.doRegen();
     this.checkBubbleMessage();
   }

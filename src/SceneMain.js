@@ -102,6 +102,21 @@ class SceneMain extends Phaser.Scene {
       player.updateExtas();
     });
 
+    socket.on("updateEntities", ({ npcs = [], players = [] } = {}) => {
+      for (const p of players) {
+        const player = getPlayer(scene, p.socketId);
+        if (!player) continue;
+        player.updateData(p);
+        player.updateExtas();
+      }
+      for (const n of npcs) {
+        const npc = getNpc(scene, n.socketId);
+        if (!npc) continue;
+        npc.updateData(n);
+        npc.updateExtas();
+      }
+    });
+
     socket.on("lootGrabbed", ({ socketId, lootId, player: userData }) => {
       const player = getPlayer(scene, socketId);
       const loot = getLoot(scene, lootId);

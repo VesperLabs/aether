@@ -1,7 +1,7 @@
 import Character from "../shared/Character";
 import ItemBuilder from "./ItemBuilder";
 import { randomNumber, cloneObject } from "./utils";
-
+import buffList from "../shared/data/buffList.json";
 class ServerCharacter extends Character {
   declare scene: ServerScene;
   constructor(scene: ServerScene, args) {
@@ -22,7 +22,7 @@ class ServerCharacter extends Character {
   }
   /* make sure character can wear items */
   calculateActiveItemSlots() {
-    const { equipment = {}, abilities = {} } = this;
+    const { equipment = {}, abilities = {}, buffs = [] } = this;
     const baseStatKeys = ["vitality", "dexterity", "strength", "intelligence", "level"];
     const allItems = Object.entries({ ...equipment, ...abilities });
     const percentStats = Object.fromEntries(baseStatKeys.map((stat) => [stat, 0]));
@@ -33,6 +33,18 @@ class ServerCharacter extends Character {
     const activeItemSlots = allItems?.map(([slotKey, _]: [string, Item]) => slotKey);
     const activeSets = [];
     const setItems = [];
+
+    // TODO: Buff percentage stats
+    buffs.forEach((buff: Buff) => {
+      if (buff.stats) {
+        Object.keys(buff.stats).forEach((key) => {
+          const buffStat = buff.stats[key];
+          if (baseStats[key]) {
+            baseStats[key] += buffStat;
+          }
+        });
+      }
+    });
 
     for (const key of baseStatKeys) {
       // get all worn items
@@ -90,7 +102,7 @@ class ServerCharacter extends Character {
   }
   calculateStats() {
     this.calculateActiveItemSlots();
-    const { equipment = {}, abilities = {} } = this;
+    const { equipment = {}, abilities = {}, buffs = [] } = this;
     // disregard items that are not actively equipped
     const allSlots = Object.keys({ ...abilities, ...equipment }).filter((slot) =>
       this.activeItemSlots?.includes(slot)
@@ -133,7 +145,7 @@ class ServerCharacter extends Character {
         }
         if (item.stats) {
           Object.keys(item.stats).forEach((key) => {
-            let itemStat = item.stats[key];
+            const itemStat = item.stats[key];
             if (!ns[key]) {
               ns[key] = 0;
             }
@@ -170,6 +182,20 @@ class ServerCharacter extends Character {
             }
           }
         }
+      }
+    });
+
+    buffs.forEach((buff: Buff) => {
+      if (buff.stats) {
+        Object.keys(buff.stats).forEach((key) => {
+          const buffStat = buff.stats[key];
+          if (!ns[key]) {
+            ns[key] = 0;
+          }
+          if (buffStat) {
+            ns[key] += buffStat;
+          }
+        });
       }
     });
 
@@ -230,15 +256,29 @@ class ServerCharacter extends Character {
 
     this.state.activeSets = activeSets;
   }
-  calculateSpellDamage(victim, abilitySlot) {
+  calculateSpellDamage(victim: any, abilitySlot: number) {
     if (victim?.state?.isDead) return false;
     const hits: Array<Hit> = [];
-    const ability = this?.abilities?.[abilitySlot];
+    const { effects = {}, buffs } = this?.abilities?.[abilitySlot] ?? {};
     const spellDamageRoll = randomNumber(this.stats?.minSpellDamage, this.stats?.maxSpellDamage);
-    const fireDamageRoll = randomNumber(
-      ability.effects?.minFireDamage,
-      ability.effects?.maxFireDamage
-    );
+    const fireDamageRoll = randomNumber(effects?.minFireDamage, effects?.maxFireDamage);
+
+    // add buffs if the spell has any
+    if (buffs) {
+      Object.entries(buffs).forEach(([name, level]) => {
+        hits.push({
+          type: "buff",
+          from: this.id,
+          to: victim.id,
+        });
+        victim.addBuff(name, level);
+        victim.calculateStats();
+      });
+    }
+
+    // the spell doesnt do damage,
+    if (!Object.entries(effects)?.length) return hits;
+
     /* TODO: Calculate resistences */
     let reducedDamage = spellDamageRoll + fireDamageRoll;
     /* Npcs lock on and chase when a user hits them */
@@ -259,7 +299,6 @@ class ServerCharacter extends Character {
       victim.stats.hp = 0;
       hits.push({
         type: "death",
-        isCritical: false,
         amount: -reducedDamage,
         from: this.id,
         to: victim.id,
@@ -268,7 +307,6 @@ class ServerCharacter extends Character {
     }
     hits.push({
       type: "hp",
-      isCritical: false,
       amount: -reducedDamage,
       from: this.id,
       to: victim.id,
@@ -394,6 +432,38 @@ class ServerCharacter extends Character {
     }
     this.calculateStats();
     return didLevel;
+  }
+  addBuff(name: string, level: integer) {
+    const buff = buffList?.[name];
+    if (!buff) return false;
+
+    const { duration, stats } = buff;
+    // look for the buff and remove it if it exists
+    const foundBuff = this.buffs.find((b) => b?.name === name);
+    // remove it from this.buffs
+    if (foundBuff) this.buffs.splice(this.buffs.indexOf(foundBuff), 1);
+
+    this.buffs.push({
+      name,
+      duration,
+      level,
+      stats,
+      spawnTime: Date.now(),
+    });
+  }
+  expireBuffs() {
+    let hasExpiredBuffs = false;
+    for (const buff of this.buffs) {
+      if (Date.now() - buff.spawnTime > buff.duration) {
+        hasExpiredBuffs = true;
+        // remove it from this.buffs
+        this.buffs.splice(this.buffs.indexOf(buff), 1);
+      }
+    }
+    if (hasExpiredBuffs) {
+      this.calculateStats();
+      this.state.hasExpiredBuffs = true;
+    }
   }
 }
 
