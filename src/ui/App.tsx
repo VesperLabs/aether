@@ -78,10 +78,9 @@ const getHudZoom = () => {
   const viewportArea = window.innerWidth * window.innerHeight;
   return calculateZoomLevel({
     viewportArea,
-    baseZoom: 1,
+    baseZoom: 0.75,
     maxZoom: 2,
-    minZoom: 1,
-    divisor: 6000000,
+    divisor: 3000000,
   });
 };
 
