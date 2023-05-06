@@ -1,7 +1,7 @@
 import Character from "./Character";
 import ItemBuilder from "./ItemBuilder";
-import QuestBuilder from "./QuestBuilder";
 import { getCharacterDirection, distanceTo, randomNumber, SHOP_INFLATION } from "./utils";
+import spellDetails from "../shared/data/spellDetails.json";
 import crypto from "crypto";
 
 const START_AGGRO_RANGE = 150;
@@ -101,24 +101,88 @@ class Npc extends Character implements Npc {
     }
     return true;
   }
-  doCast() {
-    const { scene, room, id, state } = this ?? {};
+  update(time: number, delta: number) {
+    // Destructure relevant properties from 'this'
+    const { scene, state, room } = this ?? {};
+
+    // If dead, do not continue update
+    if (state?.isDead) return this.tryRespawn();
+
+    // Regenerate health points
+    this.doRegen();
+
+    // Check if attack is ready
+    this.checkAttackReady(delta);
+
+    // check if spell is ready
+    this.checkCastReady(delta);
+
+    // If is nasty and not locked onto a player, lock onto nearest player
+    if (state?.isAggro && !state.lockedPlayerId) {
+      const nearestPlayer = room?.playerManager?.getNearestPlayer(this);
+      this.state.lockedPlayerId = nearestPlayer?.socketId;
+    }
+
+    // Get target player based on locked player ID
     const targetPlayer = scene?.players?.[state?.lockedPlayerId] ?? null;
+
+    this.chaseOrMove({ targetPlayer, delta, time });
+
+    // skip updates if no one is in the room
+    if (!room?.playerManager?.hasPlayers()) {
+      return;
+    }
+
+    this.intendAttack({ targetPlayer, delta });
+    this.intendCastSpell({ targetPlayer, delta });
+  }
+  doCast({ ability, targetPlayer }) {
+    const { scene, room, id, state } = this ?? {};
+
     if (state.isCasting || state?.isDead) return;
-    if (targetPlayer?.state?.isDead) return;
-    // Set state to attacking and record attack time
+
     this.state.isCasting = true;
     this.state.lastCast = Date.now();
     const castAngle = Math.atan2(targetPlayer.y - this.y, targetPlayer.x - this.x);
+
     room?.spellManager.create({
       caster: this,
       target: targetPlayer,
-      spellName: "fireball",
+      spellName: ability?.base,
       castAngle,
-      ilvl: 1,
+      ilvl: ability?.ilvl,
     });
 
-    scene.io.to(room?.name).emit("npcCastSpell", { id, castAngle, base: "fireball", ilvl: 1 });
+    scene.io
+      .to(room?.name)
+      .emit("npcCastSpell", { id, castAngle, base: ability?.base, ilvl: ability?.ilvl });
+  }
+  intendCastSpell({ targetPlayer, delta }) {
+    const { state, abilities } = this ?? {};
+
+    if (state.isCasting || state?.isDead) return;
+
+    let ability = null;
+
+    for (const spell of Object.values(abilities)) {
+      const details = spellDetails?.[spell?.base];
+      if (!details) continue;
+      // some spells like buffs have a long wait time, so we skip them
+      if (Date.now() - this.state.lastCast < delta + details?.npcCastWait) continue;
+      // attack spells
+      if (targetPlayer) {
+        if (!details?.canHitSelf && details?.npcCastRange) {
+          const [min, max] = details?.npcCastRange || [];
+          const isTargetInRange =
+            this.checkInRange(targetPlayer, max) && !this.checkInRange(targetPlayer, min);
+          if (isTargetInRange) ability = spell;
+        }
+      }
+    }
+
+    if (ability) {
+      this.doCast({ targetPlayer, ability });
+    }
   }
   doAttack() {
     let count = 1;
@@ -146,65 +210,10 @@ class Npc extends Character implements Npc {
 
     scene.io.to(room?.name).emit("npcAttack", { id, count, direction });
   }
-  update(time: number, delta: number) {
-    // Destructure relevant properties from 'this'
-    const { scene, state, room } = this ?? {};
-
-    // Regenerate health points
-    this.doRegen();
-
-    // Attempt to respawn if dead
-    this.tryRespawn();
-
-    // Check if attack is ready
-    this.checkAttackReady(delta);
-
-    // check if spell is ready
-    this.checkCastReady(delta);
-
-    // If dead, do not continue update
-    if (state?.isDead) return;
-
-    // If is nasty and not locked onto a player, lock onto nearest player
-    if (state?.isAggro && !state.lockedPlayerId) {
-      const nearestPlayer = room?.playerManager?.getNearestPlayer(this);
-      this.state.lockedPlayerId = nearestPlayer?.socketId;
-    }
-
-    // Get target player based on locked player ID
-    const targetPlayer = scene?.players?.[state?.lockedPlayerId] ?? null;
-
-    // Check if player is in range for aggro
-    const isInRange = this.checkInRange(targetPlayer, START_AGGRO_RANGE);
-
-    // Determine if player should chase target player or move randomly
-    const shouldChasePlayer = isInRange && !targetPlayer?.state?.isDead;
-
-    if (shouldChasePlayer) {
-      this.moveTowardPoint(targetPlayer);
-      this.state.bubbleMessage = "!";
-    } else {
-      this.state.lockedPlayerId = null;
-      /* If the NPC is out of bounds, make it try to get back in bounds */
-      if (this.isOutOfBounds()) {
-        /* TODO: Improve this so that it moves toward the nearest open tile instead */
-        this.moveTowardPointPathed(this.startingCoords);
-      } else {
-        this.state.bubbleMessage = null;
-        if (this.state.isStatic) {
-          this.moveToSpawnAndWait(delta);
-        } else {
-          if (this.talkingIds?.length > 0) {
-            this.checkTalking();
-          } else {
-            this.moveRandomly(time);
-          }
-        }
-      }
-    }
-
+  intendAttack({ targetPlayer, delta }) {
+    const { isAttacking } = this?.state ?? {};
     // Determine if player should attack target player
-    const shouldAttackPlayer = !state?.isAttacking && this.checkInRange(targetPlayer, 1);
+    const shouldAttackPlayer = !isAttacking && this.checkInRange(targetPlayer, 1);
 
     if (shouldAttackPlayer) {
       // Attack target player after lag delay to ensure we are actually near them
@@ -213,16 +222,39 @@ class Npc extends Character implements Npc {
         // Calculate lag delay based on time elapsed
       }, delta);
     }
+  }
+  chaseOrMove({ targetPlayer, delta, time }) {
+    // Check if player is in range for aggro
+    const isInRange = this.checkInRange(targetPlayer, START_AGGRO_RANGE);
 
-    /* TODO: Improve this */
-    // const shouldCastSpell =
-    //   !state?.isCasting &&
-    //   this.checkInRange(targetPlayer, 100) &&
-    //   !this.checkInRange(targetPlayer, 10);
+    // Determine if player should chase target
+    const shouldChasePlayer = isInRange && !targetPlayer?.state?.isDead;
 
-    // if (shouldCastSpell) {
-    //   this.doCast();
-    // }
+    if (shouldChasePlayer) {
+      this.state.bubbleMessage = "!";
+      return this.moveTowardPoint(targetPlayer);
+    }
+
+    // Otherwise NPC just moves randomly
+    this.state.lockedPlayerId = null;
+
+    /* If the NPC is out of bounds, make it try to get back in bounds */
+    if (this.isOutOfBounds()) {
+      /* TODO: Improve this so that it moves toward the nearest open tile instead */
+      return this.moveTowardPointPathed(this.startingCoords);
+    }
+
+    this.state.bubbleMessage = null;
+
+    if (this.state.isStatic) {
+      return this.moveToSpawnAndWait(delta);
+    }
+
+    if (this.talkingIds?.length > 0) {
+      return this.checkTalking();
+    }
+
+    return this.moveRandomly(time);
   }
   moveTowardPoint(coords: Coordinate) {
     const walkSpeed = this.stats.walkSpeed;

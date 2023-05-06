@@ -56,6 +56,9 @@ class PlayerManager {
   getPlayers() {
     return this.players?.getChildren();
   }
+  hasPlayers() {
+    return this?.players?.getChildren?.()?.length > 0;
+  }
 }
 
 export default PlayerManager;

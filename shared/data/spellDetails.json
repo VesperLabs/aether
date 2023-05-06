@@ -18,6 +18,8 @@
     "bodySize": 10,
     "spellSpeed": 300,
     "scaleBase": 0.25,
-    "scaleMultiplier": 0.05
+    "scaleMultiplier": 0.05,
+    "npcCastRange": [50, 100],
+    "npcCastWait": 5000
   }
 }
