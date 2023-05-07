@@ -24,18 +24,22 @@
   },
   "evasion": {
     "allowedTargets": ["self"],
-    "maxVisibleTime": 200,
+    "maxVisibleTime": 2000,
     "maxActiveTime": 100,
-    "bodySize": 10,
+    "bodySize": 32,
     "npcCastRange": [100, 150],
-    "npcCastWait": 30000
+    "npcCastWait": 30000,
+    "scaleBase": 0.6,
+    "tint": "0xCCFFCC"
   },
   "brute": {
     "allowedTargets": ["self"],
-    "maxVisibleTime": 200,
+    "maxVisibleTime": 2000,
     "maxActiveTime": 100,
-    "bodySize": 10,
+    "bodySize": 32,
     "npcCastRange": [100, 150],
-    "npcCastWait": 30000
+    "npcCastWait": 30000,
+    "scaleBase": 0.6,
+    "tint": "0xFFCCCC"
   }
 }

@@ -134,6 +134,13 @@ function createSpellAnims(scene) {
     repeat: true,
     yoyo: true,
   });
+  scene.anims.create({
+    key: "spell-anim-chakra",
+    frames: scene.anims.generateFrameNumbers("spell-anim-chakra", { start: 0, end: 5 }),
+    frameRate: 20,
+    repeat: true,
+    yoyo: true,
+  });
 }
 
 function loadSpritesheets(scene) {

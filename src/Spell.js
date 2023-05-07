@@ -5,7 +5,7 @@ import spellDetails from "../shared/data/spellDetails.json";
 const Sprite = Phaser.GameObjects.Sprite;
 const BLANK_TEXTURE = "human-blank";
 class Spell extends Phaser.GameObjects.Container {
-  constructor(scene, { id, caster, spellName, abilitySlot, state, castAngle, ilvl }) {
+  constructor(scene, { id, caster, spellName, abilitySlot, state, castAngle, ilvl = 1 }) {
     super(scene, caster.x, caster.y);
     this.scene = scene;
     this.id = id;
@@ -24,15 +24,17 @@ class Spell extends Phaser.GameObjects.Container {
     this.maxActiveTime = details?.maxActiveTime;
     this.spellSpeed = details?.spellSpeed;
     this.bodySize = details?.bodySize;
-    this.scaleBase = details?.scaleBase;
-    this.scaleMultiplier = details?.scaleMultiplier;
+    this.scaleBase = details?.scaleBase || 1;
+    this.scaleMultiplier = details?.scaleMultiplier || 0;
+    this.spell.setTint(details?.tint || "0xFFFFFF");
+    this.spell.setScale(this.scaleBase + ilvl * this.scaleMultiplier);
 
     scene.physics.add.existing(this);
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
 
     if (this.isAttack) {
-      this.setDepth(this?.caster?.depth - 10);
+      this.setDepth(this?.caster?.depth - 20);
       this.spell.setTexture("misc-slash");
       this.spell.setAngle(getAngleFromDirection(caster?.direction) - 90);
       if (caster?.direction === "down") {
@@ -79,13 +81,24 @@ class Spell extends Phaser.GameObjects.Container {
       this.body.setCircle(this.bodySize, -this.bodySize, -this.bodySize);
       this.scene.physics.velocityFromRotation(castAngle, this.spellSpeed, this.body.velocity);
       this.spell.setRotation(castAngle);
-      this.spell.setScale(this.scaleBase + ilvl * this.scaleMultiplier);
       this.add(this.spell);
     }
-    if (spellName === "chakra") {
-      // this.spell = new Phaser.GameObjects.Sprite(this.scene, 0, 0, "spell-anim-chakra", 0);
-      // scene.physics.add.existing(this);
-      // this.body.setCircle(64, -64, -64);
+    if (["evasion", "brute"].includes(spellName)) {
+      this.spell.play("spell-anim-chakra");
+      this.body.setCircle(this.bodySize, -this.bodySize, -this.bodySize);
+      scene.tweens.add({
+        targets: this.spell,
+        props: {
+          alpha: {
+            value: () => 0,
+            ease: "Power4",
+          },
+        },
+        duration: this.maxVisibleTime,
+        yoyo: false,
+        repeat: 0,
+      });
+      this.caster.add(this.spell);
     }
 
     playSpellAudio({ scene, spellName, caster, isAttack: this.isAttack });

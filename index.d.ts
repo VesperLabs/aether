@@ -225,6 +225,7 @@ interface CharacterState {
   vy: number;
   stats: any;
   state: any;
+  buffs: Array<Buff>;
   equipment: Record<string, Item>;
   inventory: any;
   abilities: Record<number, Item>;

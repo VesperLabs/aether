@@ -1,4 +1,4 @@
-import { Box, useAppContext, Flex, Portrait, Tooltip } from "./";
+import { Box, useAppContext, Flex, Portrait, Tooltip, Icon } from "./";
 
 const UserName = ({ sx }: { sx?: object }) => {
   const { hero } = useAppContext();
@@ -61,6 +61,26 @@ const Bar = ({
   );
 };
 
+const Buffs = () => {
+  const { hero, zoom } = useAppContext();
+  const buffs = hero?.buffs;
+
+  return (
+    <Flex
+      sx={{
+        mt: 1,
+        gap: 1,
+        transform: `scale(${(0.75 * parseFloat(zoom)).toFixed(1)})`,
+        transformOrigin: "top left",
+      }}
+    >
+      {buffs?.map((buff) => (
+        <Icon key={buff.name} icon={`../assets/atlas/spell/spell-${buff.name}.png`} size={24} />
+      ))}
+    </Flex>
+  );
+};
+
 const MenuHud = () => {
   const { hero, zoom } = useAppContext();
   const { stats } = hero ?? {};
@@ -99,6 +119,7 @@ const MenuHud = () => {
             height={6}
             showText={false}
           />
+          <Buffs />
         </Flex>
         <Box
           data-tooltip-place="bottom"
