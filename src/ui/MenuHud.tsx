@@ -69,14 +69,16 @@ const Buffs = () => {
     <Flex
       sx={{
         mt: 1,
-        gap: 1,
+
         transform: `scale(${(0.75 * parseFloat(zoom)).toFixed(1)})`,
         transformOrigin: "top left",
       }}
     >
-      {buffs?.map((buff) => (
-        <Icon key={buff.name} icon={`../assets/atlas/spell/spell-${buff.name}.png`} size={24} />
-      ))}
+      <Flex sx={{ flexDirection: "row-reverse", gap: 1 }}>
+        {buffs?.map((buff) => (
+          <Icon key={buff.name} icon={`../assets/atlas/spell/spell-${buff.name}.png`} size={24} />
+        ))}
+      </Flex>
     </Flex>
   );
 };

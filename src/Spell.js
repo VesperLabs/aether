@@ -75,6 +75,7 @@ class Spell extends Phaser.GameObjects.Container {
       });
       this.caster.add(this.spell);
     }
+    this.spell.y = caster.bodyOffsetY;
     if (spellName === "fireball") {
       this.setDepth(this?.caster?.depth + 10);
       this.spell.play("spell-anim-fireball");

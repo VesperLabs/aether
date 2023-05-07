@@ -5,6 +5,7 @@ import Spell from "./Spell";
 import Bar from "./Bar";
 import Damage from "./Damage";
 import { distanceTo, getSpinDirection } from "./utils";
+import Buff from "./Buff";
 const { Sprite, BitmapText } = Phaser.GameObjects;
 const BLANK_TEXTURE = "human-blank";
 
@@ -263,6 +264,9 @@ class Player extends Character {
     scene.add.existing(new Damage(this.scene, this, hit));
 
     switch (type) {
+      case "buff":
+        scene.add.existing(new Buff(this.scene, this, hit?.buffName));
+        break;
       case "death":
         stats.hp = 0;
         this.doDeath();
