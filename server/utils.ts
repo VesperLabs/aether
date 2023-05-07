@@ -150,10 +150,12 @@ const SHOP_INFLATION = 4;
 
 const withExpiredBuffs = (scene, entities = []) => {
   return entities
-    ?.filter((entity) => entity?.state.hasExpiredBuffs)
-    ?.map((entity) => {
-      const player = scene.players[entity?.id];
-      player.state.hasExpiredBuffs = false;
+    ?.filter((e) => e?.state.hasExpiredBuffs)
+    ?.map((e) => {
+      const entity = scene?.players?.[e?.id] || scene?.npcs?.[e?.id];
+      if (entity?.state) {
+        entity.state.hasExpiredBuffs = false;
+      }
       return entity;
     });
 };

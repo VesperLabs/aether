@@ -63,6 +63,7 @@ const Portrait = ({
   scale?: number;
   filterKeys?: string[];
 }) => {
+  if (!user?.equipment) return;
   const getAssetProps = useGetAssetProps();
   const { race, gender } = user?.profile ?? {};
   const userFace = user?.profile?.face;
