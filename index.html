@@ -12,6 +12,14 @@
   <body>
     <div id="game"></div>
     <div id="root"></div>
+    <script type="module">
+      /* Monkeypatches warnings */
+      const oldGetContext = HTMLCanvasElement.prototype.getContext;
+      HTMLCanvasElement.prototype.getContext = function (type, options) {
+        const context = oldGetContext.call(this, type, { ...options, willReadFrequently: true });
+        return context;
+      };
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

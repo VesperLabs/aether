@@ -3,11 +3,6 @@ import { playAudio } from "./utils";
 const { Container, BitmapText } = Phaser.GameObjects;
 
 class Damage extends Container {
-  /**
-   * @param {Phaser.Scene} scene
-   * @param {object} user
-   * @memberof Door
-   */
   constructor(scene, victim, hit) {
     super(scene, victim.x, victim.y);
     let text = Math.abs(hit.amount);
@@ -82,7 +77,12 @@ class Damage extends Container {
     this.dt.setOrigin(0.5, 0.5);
     this.dt.setPosition(this.width / 2, -10);
 
-    this.add(this.dt);
+    // exp follows the hero, other damage goes above everything
+    if (hit.type === "exp") {
+      this.victim.add(this.dt);
+    } else {
+      this.add(this.dt);
+    }
 
     scene.tweens.add({
       targets: this.dt,
@@ -106,6 +106,7 @@ class Damage extends Container {
       onComplete: () => {
         this.victim.hpBar.setVisible(false);
         if (this.victim.kind === "nasty") this.victim.userName.setVisible(false);
+        this.dt.destroy();
         this.destroy();
       },
     });
@@ -118,7 +119,7 @@ class Damage extends Container {
   }
 
   update() {
-    this.victim.bringToTop(this);
+    this.victim.bringToTop(this.dt);
   }
   destroy() {
     if (this.scene) this.scene.events.off("update", this.update, this);

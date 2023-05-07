@@ -24,7 +24,7 @@
   },
   "evasion": {
     "allowedTargets": ["self"],
-    "maxVisibleTime": 2000,
+    "maxVisibleTime": 1200,
     "maxActiveTime": 100,
     "bodySize": 32,
     "npcCastRange": [100, 150],
@@ -34,7 +34,7 @@
   },
   "brute": {
     "allowedTargets": ["self"],
-    "maxVisibleTime": 2000,
+    "maxVisibleTime": 1200,
     "maxActiveTime": 100,
     "bodySize": 32,
     "npcCastRange": [100, 150],
