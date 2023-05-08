@@ -31,10 +31,10 @@ function getRoomState(scene: ServerScene, roomName: String): RoomState {
   return {
     players: Object.values(scene.players)
       ?.filter((p) => p?.room?.name === roomName)
-      .map((p) => getCharacterState(p)),
+      .map((p) => getFullCharacterState(p)),
     npcs: Object.values(scene.npcs)
       ?.filter((n) => n?.room?.name === roomName)
-      .map((p) => getCharacterState(p)),
+      .map((p) => getFullCharacterState(p)),
     // spells: Object.values(scene.spells)
     //   ?.filter((s) => s?.room?.name === roomName)
     //   .map((s) => s?.getTrimmed()),
@@ -42,7 +42,7 @@ function getRoomState(scene: ServerScene, roomName: String): RoomState {
   };
 }
 
-function getCharacterState(p: Character): CharacterState {
+function getFullCharacterState(p: Character): FullCharacterState {
   const uid = p?.socketId || p?.id;
   return {
     id: uid, //required for SI
@@ -69,14 +69,14 @@ function getCharacterState(p: Character): CharacterState {
   };
 }
 
-function getTrimmedRoomState(scene: ServerScene, roomName: string): TrimmedRoomState {
+function getTickRoomState(scene: ServerScene, roomName: string): TickRoomState {
   return {
     players: Object.values(scene.players)
       ?.filter((p) => p?.room?.name === roomName)
-      .map(getTrimmedCharacterState),
+      .map(getTickCharacterState),
     npcs: Object.values(scene.npcs)
       ?.filter((p) => p?.room?.name === roomName)
-      .map(getTrimmedCharacterState),
+      .map(getTickCharacterState),
     // spells: Object.values(scene.spells)
     //   ?.filter((s) => s?.room?.name === roomName)
     //   .map((s) => s?.getTrimmed()),
@@ -84,7 +84,7 @@ function getTrimmedRoomState(scene: ServerScene, roomName: string): TrimmedRoomS
   };
 }
 
-function getTrimmedCharacterState(p: Character): TrimmedCharacterState {
+function getTickCharacterState(p: Character): TickCharacterState {
   const uid = p?.socketId || p?.id;
   return {
     id: uid, //required for SI
@@ -96,6 +96,34 @@ function getTrimmedCharacterState(p: Character): TrimmedCharacterState {
     y: p?.y,
     vx: p?.vx,
     vy: p?.vy,
+  };
+}
+
+// gets server and player npcs that have expired buffs (each tick)
+function getBuffRoomState(scene: ServerScene, roomName: string): BuffRoomState {
+  return {
+    players: Object.values(scene.players)
+      ?.filter((p) => p?.room?.name === roomName && p?.state?.hasExpiredBuffs)
+      .map(getBuffCharacterState),
+    npcs: Object.values(scene.npcs)
+      ?.filter((p) => p?.room?.name === roomName && p?.state?.hasExpiredBuffs)
+      .map(getBuffCharacterState),
+  };
+}
+
+function getBuffCharacterState(p: Character): BuffCharacterState {
+  const uid = p?.socketId || p?.id;
+  if (p?.state) {
+    // no longer need to send this to client
+    p.state.hasExpiredBuffs = false;
+  }
+  return {
+    id: uid,
+    socketId: uid,
+    state: p?.state,
+    stats: p?.stats,
+    buffs: p?.buffs,
+    activeItemSlots: p?.activeItemSlots,
   };
 }
 
@@ -148,25 +176,13 @@ function checkSlotsMatch(s1, s2) {
 
 const SHOP_INFLATION = 4;
 
-const withExpiredBuffs = (scene, entities = []) => {
-  return entities
-    ?.filter((e) => e?.state.hasExpiredBuffs)
-    ?.map((e) => {
-      const entity = scene?.players?.[e?.id] || scene?.npcs?.[e?.id];
-      if (entity?.state) {
-        entity.state.hasExpiredBuffs = false;
-      }
-      return entity;
-    });
-};
-
 export {
   removePlayer,
   getPlayer,
-  getTrimmedRoomState,
-  getTrimmedCharacterState,
+  getTickRoomState,
+  getTickCharacterState,
   getRoomState,
-  getCharacterState,
+  getFullCharacterState,
   handlePlayerInput,
   getDoor,
   randomNumber,
@@ -174,6 +190,7 @@ export {
   distanceTo,
   cloneObject,
   checkSlotsMatch,
-  withExpiredBuffs,
+  getBuffRoomState,
+  getBuffCharacterState,
   SHOP_INFLATION,
 };

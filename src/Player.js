@@ -40,6 +40,13 @@ class Player extends Character {
     // update states individually
     this.state.activeSets = data?.state?.activeSets;
   }
+  updateBuffData(data) {
+    this.activeItemSlots = data?.activeItemSlots;
+    this.stats = data?.stats;
+    this.state = data?.state;
+    this.buffs = data?.buffs;
+    this.state.activeSets = data?.state?.activeSets;
+  }
   updateExtas() {
     this.drawCharacterFromUserData();
     this.checkAttackHands();

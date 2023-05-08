@@ -57,7 +57,7 @@ const Portrait = ({
   scale = 2,
   filterKeys = [],
 }: {
-  user: CharacterState;
+  user: FullCharacterState;
   size?: integer;
   topOffset?: integer;
   scale?: number;

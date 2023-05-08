@@ -10,15 +10,15 @@ import { Socket, Server } from "socket.io";
 import crypto from "crypto";
 import {
   handlePlayerInput,
-  getCharacterState,
+  getFullCharacterState,
   getRoomState,
-  getTrimmedRoomState,
+  getTickRoomState,
   getDoor,
   removePlayer,
   cloneObject,
   checkSlotsMatch,
   SHOP_INFLATION,
-  withExpiredBuffs,
+  getBuffRoomState,
 } from "./utils";
 import { initDatabase } from "./db";
 import RoomManager from "./RoomManager";
@@ -113,7 +113,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           },
           { isLogin: true }
         );
-        socket.to(roomName).emit("playerJoin", getCharacterState(player), { isLogin: true });
+        socket.to(roomName).emit("playerJoin", getFullCharacterState(player), { isLogin: true });
       });
 
       socket.on("register", async ({ email, password, charClass } = {}) => {
@@ -211,7 +211,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         io.to(player?.roomName).emit("lootGrabbed", {
           socketId,
           lootId,
-          player: getCharacterState(player),
+          player: getFullCharacterState(player),
         });
       });
 
@@ -269,7 +269,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         if (hitList?.some((hit) => hit.type === "death")) {
           const didLevel = hero.assignExp(totalExpGain);
           if (didLevel) {
-            io.to(roomName).emit("playerUpdate", getCharacterState(hero), { didLevel });
+            io.to(roomName).emit("playerUpdate", getFullCharacterState(hero), { didLevel });
           } else {
             io.to(roomName).emit("modifyPlayerStat", {
               socketId,
@@ -297,7 +297,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         // send each buffed hero and npc their new state
         if (buffedEntityIds?.length > 0) {
           const roomState = getRoomState(scene, roomName);
-          io.to(roomName).emit("updateEntities", {
+          io.to(roomName).emit("buffUpdate", {
             npcs: roomState?.npcs?.filter((n) => buffedEntityIds?.includes(n?.id)),
             players: roomState?.players?.filter((n) => buffedEntityIds?.includes(n?.id)),
           });
@@ -324,7 +324,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         scene.roomManager.rooms[oldRoom].playerManager.remove(socketId);
         scene.roomManager.rooms[prev.destMap].playerManager.add(socketId);
 
-        socket.to(prev.destMap).emit("playerJoin", getCharacterState(player), {
+        socket.to(prev.destMap).emit("playerJoin", getFullCharacterState(player), {
           isDoor: true,
           lastTeleport: Date.now(),
         });
@@ -395,7 +395,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         });
         /* Save the users data */
         scene.db.updateUser(player);
-        io.to(player?.roomName).emit("playerUpdate", getCharacterState(player));
+        io.to(player?.roomName).emit("playerUpdate", getFullCharacterState(player));
       });
 
       socket.on("moveItem", ({ to, from } = {}) => {
@@ -584,7 +584,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         player?.calculateStats();
         /* Save the users data */
         scene.db.updateUser(player);
-        io.to(player?.roomName).emit("playerUpdate", getCharacterState(player));
+        io.to(player?.roomName).emit("playerUpdate", getFullCharacterState(player));
       });
 
       socket.on("consumeItem", ({ location, item } = {}) => {
@@ -628,7 +628,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         player?.calculateStats();
         /* Save the users data */
         scene.db.updateUser(player);
-        io.to(player?.roomName).emit("playerUpdate", getCharacterState(player));
+        io.to(player?.roomName).emit("playerUpdate", getFullCharacterState(player));
       });
 
       socket.on("playerInput", (input) => {
@@ -705,7 +705,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           player?.addQuest(currentQuest);
           /* Save the users data */
           scene.db.updateUser(player);
-          io.to(player?.roomName).emit("playerUpdate", getCharacterState(player));
+          io.to(player?.roomName).emit("playerUpdate", getFullCharacterState(player));
         }
       });
 
@@ -727,7 +727,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           /* Save the users data */
           player.calculateStats();
           scene.db.updateUser(player);
-          io.to(player?.roomName).emit("playerUpdate", getCharacterState(player), {
+          io.to(player?.roomName).emit("playerUpdate", getFullCharacterState(player), {
             didLevel: questResults?.didLevel,
           });
         }
@@ -794,33 +794,25 @@ class ServerScene extends Phaser.Scene implements ServerScene {
 
         /* Save the user's data */
         scene.db.updateUser(player);
-        io.to(player?.roomName).emit("playerUpdate", getCharacterState(player));
+        io.to(player?.roomName).emit("playerUpdate", getFullCharacterState(player));
       });
     });
   }
   update(time: number, delta: number) {
     const scene = this;
     for (const room of Object.values(scene.roomManager.rooms)) {
+      const roomState = getTickRoomState(scene, room.name);
+      const snapshot = SI.snapshot.create(roomState);
+
       room.lootManager.expireLoots();
       room.spellManager.expireSpells();
 
-      const roomState = getTrimmedRoomState(scene, room.name);
-      const snapshot = SI.snapshot.create(roomState);
-
       room.vault.add(snapshot);
-
       io.to(room.name).emit("update", room.vault.get());
 
-      // sends a full state involving all players / npcs who have
-      // expired buffs.
-      const trimmedStates = [...roomState?.npcs, ...roomState?.players];
-      if (trimmedStates?.some((n) => n?.state.hasExpiredBuffs)) {
-        // TODO: probably do not need to send full room state here. optimize this.
-        const fullRoomState = getRoomState(scene, room.name);
-        io.to(room.name).emit("updateEntities", {
-          npcs: withExpiredBuffs(scene, fullRoomState?.npcs),
-          players: withExpiredBuffs(scene, fullRoomState?.players),
-        });
+      /* Expire buffs */
+      if ([...roomState?.npcs, ...roomState?.players]?.some((n) => n?.state.hasExpiredBuffs)) {
+        io.to(room.name).emit("buffUpdate", getBuffRoomState(scene, room.name));
       }
     }
   }

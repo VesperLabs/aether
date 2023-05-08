@@ -191,7 +191,7 @@ interface MapAsset {
   json: string;
 }
 
-interface TrimmedCharacterState {
+interface TickCharacterState {
   id: string;
   socketId: string;
   roomName: string;
@@ -203,9 +203,9 @@ interface TrimmedCharacterState {
   vy: number;
 }
 
-interface TrimmedRoomState {
-  players: Array<TrimmedCharacterState>;
-  npcs: Array<TrimmedCharacterState>;
+interface TickRoomState {
+  players: Array<TickCharacterState>;
+  npcs: Array<TickCharacterState>;
   spells: Array<Spell>;
   loots: Array<Loot>;
 }
@@ -214,7 +214,7 @@ interface Spell {
   id: string;
 }
 
-interface CharacterState {
+interface FullCharacterState {
   id: string;
   socketId: string;
   roomName: string;
@@ -239,10 +239,24 @@ interface CharacterState {
 }
 
 interface RoomState {
-  players: Array<CharacterState>;
-  npcs: Array<CharacterState>;
-  spells: Array<Spell>;
+  players: Array<FullCharacterState>;
+  npcs: Array<FullCharacterState>;
+  spells?: Array<Spell>;
   loots: Array<Loot>;
+}
+
+interface BuffRoomState {
+  players: Array<FullCharacterState>;
+  npcs: Array<FullCharacterState>;
+}
+
+interface BuffCharacterState {
+  id: string;
+  socketId: string;
+  activeItemSlots: Array<string>;
+  buffs: Array<Buff>;
+  stats: any;
+  state: any;
 }
 
 interface Quest {
