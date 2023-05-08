@@ -34,6 +34,7 @@ export { default as ModalDropAmount } from "./ModalDropAmount";
 export { default as MessageBox } from "./MessageBox";
 export { default as MenuButton } from "./MenuButton";
 export { default as MenuHeader } from "./MenuHeader";
+export { default as MenuSocial } from "./MenuSocial";
 export { default as MenuQuests } from "./MenuQuests";
 export { default as SlotAmount } from "./SlotAmount";
 export { default as MenuAbilities } from "./MenuAbilities";

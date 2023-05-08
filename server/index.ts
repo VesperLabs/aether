@@ -160,8 +160,9 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         if (!player?.activeItemSlots?.includes?.(`${abilitySlot}`)) return;
         if (player?.state?.isDead || !ilvl || !base) return;
         if (!player.canCastSpell(abilitySlot)) return;
-
+        if (!player.checkCastReady()) return;
         // use the mana
+        player.state.lastCast = Date.now();
         player.modifyStat("mp", -mpCost);
         io.to(player?.roomName).emit("modifyPlayerStat", {
           socketId,

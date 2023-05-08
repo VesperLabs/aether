@@ -23,6 +23,7 @@ import {
   HUD_CONTAINER_ID,
   Menu,
   ModalLogin,
+  MenuSocial,
 } from "./";
 import { isMobile, getSpinDirection, calculateZoomLevel } from "../utils";
 import "react-tooltip/dist/react-tooltip.css";
@@ -46,6 +47,7 @@ interface AppContextValue {
   setTabChat: React.Dispatch<React.SetStateAction<boolean>>;
   setTabProfile: React.Dispatch<React.SetStateAction<boolean>>;
   setTabStats: React.Dispatch<React.SetStateAction<boolean>>;
+  setTabSocial: React.Dispatch<React.SetStateAction<boolean>>;
   setTabQuests: React.Dispatch<React.SetStateAction<boolean>>;
   setDropItem: React.Dispatch<React.SetStateAction<Item | null | false>>;
   setTabAbilities: React.Dispatch<React.SetStateAction<boolean>>;
@@ -58,6 +60,7 @@ interface AppContextValue {
   tabChat: boolean;
   tabProfile: boolean;
   tabStats: boolean;
+  tabSocial: boolean;
   tabAbilities: boolean;
   keeper: any; // data related to NPC you are chatting with
   tabKeeper: boolean;
@@ -98,6 +101,7 @@ function App({ socket, debug, game }) {
   const [tabChat, setTabChat] = useState(false);
   const [tabProfile, setTabProfile] = useState(false);
   const [tabStats, setTabStats] = useState(false);
+  const [tabSocial, setTabSocial] = useState(false);
   const [tabQuests, setTabQuests] = useState(false);
   const [tabAbilities, setTabAbilities] = useState(false);
   const [showButtonChat, setShowButtonChat] = useState(false);
@@ -273,8 +277,10 @@ function App({ socket, debug, game }) {
           setDropItem,
           setTabProfile,
           setTabStats,
+          setTabSocial,
           setTabQuests,
           setTabAbilities,
+          tabSocial,
           tabQuests,
           tabAbilities,
           tabStats,
@@ -451,6 +457,8 @@ const MenuBar = () => {
     bottomOffset,
     tabQuests,
     setTabQuests,
+    setTabSocial,
+    tabSocial,
     socket,
     tabAbilities,
     setTabAbilities,
@@ -502,6 +510,7 @@ const MenuBar = () => {
         <MenuProfile />
         <MenuQuests />
         <MenuStats />
+        <MenuSocial />
         <Menu
           sx={{
             gap: 1,
@@ -552,6 +561,12 @@ const MenuBar = () => {
           {!tabChat && (
             <>
               <MenuButton
+                keyboardKey="S"
+                iconName="chat"
+                isActive={tabSocial}
+                onClick={() => setTabSocial((prev) => !prev)}
+              />
+              <MenuButton
                 keyboardKey="A"
                 iconName="book"
                 isActive={tabAbilities}
@@ -564,7 +579,7 @@ const MenuBar = () => {
                 onClick={() => setTabQuests((prev) => !prev)}
               />
               <MenuButton
-                keyboardKey="S"
+                keyboardKey="C"
                 iconName="stats"
                 isActive={tabStats}
                 onClick={() => setTabStats((prev) => !prev)}
@@ -598,6 +613,7 @@ const MenuBar = () => {
             onKeyUp={() => {
               if (dropItem) return setDropItem(false);
               if (tabKeeper) return setTabKeeper(false);
+              if (tabSocial) return setTabSocial(false);
               if (tabAbilities) return setTabAbilities(false);
               if (tabEquipment) return setTabEquipment(false);
               if (tabInventory) return setTabInventory(false);
