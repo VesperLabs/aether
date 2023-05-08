@@ -176,6 +176,9 @@ const playSpellAudio = ({ scene, spellName, caster, isAttack }) => {
   if (spellName === "fireball") {
     audioKey = "spell-fireball";
   }
+  if (["evasion", "brute"].includes(spellName)) {
+    audioKey = "spell-buff-1";
+  }
   return playAudio({ scene, audioKey, caster });
 };
 

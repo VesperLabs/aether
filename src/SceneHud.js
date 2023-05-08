@@ -59,6 +59,7 @@ function addInputListeners(scene) {
       }
       if (ability?.type === "stackable") {
         socket.emit("consumeItem", { item: ability, location: "abilities" });
+        playAudio({ scene: mainScene, audioKey: "item-bubble", caster: hero });
       }
     },
     scene
