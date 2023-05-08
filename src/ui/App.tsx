@@ -195,7 +195,7 @@ function App({ socket, debug, game }) {
     const onLootGrabbed = ({ player }) => {
       const socketId = sessionStorage.getItem("socketId");
       if (socketId === player?.socketId) {
-        setHero(player);
+        setHero((prev) => ({ ...prev, inventory: player?.inventory }));
       }
     };
 

@@ -212,6 +212,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         io.to(player?.roomName).emit("lootGrabbed", {
           socketId,
           lootId,
+          /* TODO: This is a big state update. Probably only need to update inventory */
           player: getFullCharacterState(player),
         });
       });
@@ -285,6 +286,9 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           // only allow spells to hit intended targets
           if (!allowedTargets?.includes("self")) {
             if (player.id === hero.id) continue;
+          }
+          if (!allowedTargets?.includes("enemy")) {
+            if (player.id !== hero.id) continue;
           }
           const newHits = abilitySlot
             ? hero.calculateSpellDamage(player, abilitySlot)
