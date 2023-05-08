@@ -19,6 +19,7 @@ class Spell extends Phaser.GameObjects.Container {
     this.isAttack = ["attack_left", "attack_right"]?.includes(spellName);
     this.spell = scene.add.existing(new Sprite(scene, 0, 0, BLANK_TEXTURE, 0));
     const details = spellDetails[spellName];
+    this.layerDepth = details?.layerDepth;
     this.allowedTargets = details?.allowedTargets;
     this.maxVisibleTime = details?.maxVisibleTime;
     this.maxActiveTime = details?.maxActiveTime;
@@ -34,7 +35,6 @@ class Spell extends Phaser.GameObjects.Container {
     scene.events.once("shutdown", this.destroy, this);
 
     if (this.isAttack) {
-      this.setDepth(this?.caster?.depth - 20);
       this.spell.setTexture("misc-slash");
       this.spell.setAngle(getAngleFromDirection(caster?.direction) - 90);
       if (caster?.direction === "down") {
@@ -74,10 +74,11 @@ class Spell extends Phaser.GameObjects.Container {
         repeat: 0,
       });
       this.caster.add(this.spell);
+    } else {
+      this.spell.y = caster.bodyOffsetY;
     }
-    this.spell.y = caster.bodyOffsetY;
+
     if (spellName === "fireball") {
-      this.setDepth(this?.caster?.depth + 10);
       this.spell.play("spell-anim-fireball");
       this.body.setCircle(this.bodySize, -this.bodySize, -this.bodySize);
       this.scene.physics.velocityFromRotation(castAngle, this.spellSpeed, this.body.velocity);
@@ -102,11 +103,13 @@ class Spell extends Phaser.GameObjects.Container {
       this.caster.add(this.spell);
     }
 
+    this.layerSpell();
     playSpellAudio({ scene, spellName, caster, isAttack: this.isAttack });
   }
   create() {}
   update(time, deltaTime) {
     if (!this.scene) return; //sometimes plays an extra loop after destroy
+    this.layerSpell();
     /* Step up the alive time */
     this.state.aliveTime += deltaTime;
     const isSpellExpired = this.state.aliveTime > this.maxVisibleTime;
@@ -120,6 +123,16 @@ class Spell extends Phaser.GameObjects.Container {
     /* Remove the spell */
     if (isSpellExpired) {
       this.destroy();
+    }
+  }
+  layerSpell() {
+    if (this.layerDepth === "bottom") {
+      this.caster.sendToBack(this.spell);
+      this.setDepth(this?.caster?.depth - 20);
+    }
+    if (this.layerDepth === "top") {
+      this.caster.bringToTop(this.spell);
+      this.setDepth(this?.caster?.depth + 10);
     }
   }
   checkCollisions(sendServer = false) {

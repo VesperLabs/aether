@@ -3,13 +3,15 @@
     "allowedTargets": ["enemy"],
     "maxVisibleTime": 200,
     "maxActiveTime": 100,
-    "bodySize": 32
+    "bodySize": 32,
+    "layerDepth": "bottom"
   },
   "attack_right": {
     "allowedTargets": ["enemy"],
     "maxVisibleTime": 200,
     "maxActiveTime": 100,
-    "bodySize": 32
+    "bodySize": 32,
+    "layerDepth": "bottom"
   },
   "fireball": {
     "allowedTargets": ["enemy"],
@@ -20,7 +22,8 @@
     "scaleBase": 0.25,
     "scaleMultiplier": 0.05,
     "npcCastRange": [50, 100],
-    "npcCastWait": 5000
+    "npcCastWait": 5000,
+    "layerDepth": "top"
   },
   "evasion": {
     "allowedTargets": ["self"],
@@ -30,7 +33,8 @@
     "npcCastRange": [100, 150],
     "npcCastWait": 30000,
     "scaleBase": 0.6,
-    "tint": "0xCCFFCC"
+    "tint": "0xCCFFCC",
+    "layerDepth": "bottom"
   },
   "brute": {
     "allowedTargets": ["self"],
@@ -40,6 +44,7 @@
     "npcCastRange": [100, 150],
     "npcCastWait": 30000,
     "scaleBase": 0.6,
-    "tint": "0xFFCCCC"
+    "tint": "0xFFCCCC",
+    "layerDepth": "bottom"
   }
 }
