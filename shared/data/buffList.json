@@ -1,12 +1,12 @@
 {
   "evasion": {
-    "duration": 3000,
+    "duration": 60000,
     "stats": {
       "dodgeChance": 5
     }
   },
   "brute": {
-    "duration": 3000,
+    "duration": 60000,
     "stats": {
       "strength": 10
     }
