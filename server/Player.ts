@@ -10,6 +10,7 @@ class Player extends ServerCharacter implements Player {
     this.calculateStats();
   }
   setDead() {
+    this.expireBuffs(true);
     this.state.isDead = true;
   }
   addNpcKill(npc: Npc) {

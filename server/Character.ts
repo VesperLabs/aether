@@ -460,13 +460,18 @@ class ServerCharacter extends Character {
     });
   }
 
-  expireBuffs() {
+  expireBuffs(forceExpire = false) {
     let hasExpiredBuffs = false;
-    for (const buff of this.buffs) {
-      if (Date.now() - buff.spawnTime > buff.duration) {
-        hasExpiredBuffs = true;
-        // remove it from this.buffs
-        this.buffs.splice(this.buffs.indexOf(buff), 1);
+    if (forceExpire) {
+      hasExpiredBuffs = true;
+      this.buffs = [];
+    } else {
+      for (const buff of this.buffs) {
+        if (Date.now() - buff.spawnTime > buff.duration) {
+          hasExpiredBuffs = true;
+          // remove it from this.buffs
+          this.buffs.splice(this.buffs.indexOf(buff), 1);
+        }
       }
     }
     if (hasExpiredBuffs) {

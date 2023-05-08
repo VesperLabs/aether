@@ -60,6 +60,7 @@ class Npc extends Character implements Npc {
     this.calculateStats();
   }
   setDead() {
+    this.expireBuffs(true);
     this.state.isDead = true;
     this.state.deadTime = Date.now();
     this.state.lockedPlayerId = null;
