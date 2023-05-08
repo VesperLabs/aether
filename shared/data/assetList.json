@@ -444,6 +444,12 @@
     "previewRect": [0, 0, 32, 32]
   },
   {
+    "texture": "scroll-yellow",
+    "src": "./assets/atlas/spell/scroll-yellow.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
     "texture": "spell-evasion",
     "src": "./assets/atlas/spell/spell-evasion.png",
     "atlas": "./assets/atlas/32x32-stackable.json",
@@ -452,6 +458,18 @@
   {
     "texture": "spell-brute",
     "src": "./assets/atlas/spell/spell-brute.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
+    "texture": "spell-genius",
+    "src": "./assets/atlas/spell/spell-genius.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
+    "texture": "spell-endurance",
+    "src": "./assets/atlas/spell/spell-endurance.png",
     "atlas": "./assets/atlas/32x32-stackable.json",
     "previewRect": [0, 0, 32, 32]
   },

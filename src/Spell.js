@@ -4,6 +4,7 @@ import { getAngleFromDirection } from "../shared/utils";
 import spellDetails from "../shared/data/spellDetails.json";
 const Sprite = Phaser.GameObjects.Sprite;
 const BLANK_TEXTURE = "human-blank";
+const BUFF_SPELLS = ["evasion", "brute", "endurance", "genius"];
 class Spell extends Phaser.GameObjects.Container {
   constructor(scene, { id, caster, spellName, abilitySlot, state, castAngle, ilvl = 1 }) {
     super(scene, caster.x, caster.y);
@@ -85,7 +86,7 @@ class Spell extends Phaser.GameObjects.Container {
       this.spell.setRotation(castAngle);
       this.add(this.spell);
     }
-    if (["evasion", "brute"].includes(spellName)) {
+    if (BUFF_SPELLS.includes(spellName)) {
       this.spell.play("spell-anim-chakra");
       this.body.setCircle(this.bodySize, -this.bodySize, -this.bodySize);
       scene.tweens.add({
@@ -176,7 +177,7 @@ const playSpellAudio = ({ scene, spellName, caster, isAttack }) => {
   if (spellName === "fireball") {
     audioKey = "spell-fireball";
   }
-  if (["evasion", "brute"].includes(spellName)) {
+  if (BUFF_SPELLS.includes(spellName)) {
     audioKey = "spell-buff-1";
   }
   return playAudio({ scene, audioKey, caster });

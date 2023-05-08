@@ -10,5 +10,17 @@
     "stats": {
       "strength": 10
     }
+  },
+  "endurance": {
+    "duration": 60000,
+    "stats": {
+      "vitality": 10
+    }
+  },
+  "genius": {
+    "duration": 60000,
+    "stats": {
+      "intelligence": 10
+    }
   }
 }

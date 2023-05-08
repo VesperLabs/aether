@@ -741,7 +741,7 @@
         "requirements": {
           "intelligence": 5
         },
-        "mpCost": 3,
+        "mpCost": 4,
         "cost": 100
       },
       "fireball2": {
@@ -751,7 +751,7 @@
         "slot": "spell",
         "texture": "scroll-blue",
         "effects": {},
-        "mpCost": 6,
+        "mpCost": 8,
         "cost": 200
       },
       "evasion": {
@@ -766,7 +766,7 @@
         "requirements": {
           "dexterity": 5
         },
-        "mpCost": 3,
+        "mpCost": 10,
         "cost": 100
       },
       "brute": {
@@ -781,7 +781,37 @@
         "requirements": {
           "strength": 5
         },
-        "mpCost": 3,
+        "mpCost": 10,
+        "cost": 100
+      },
+      "genius": {
+        "ilvl": 1,
+        "name": "Genius",
+        "base": "genius",
+        "slot": "spell",
+        "texture": "scroll-blue",
+        "buffs": {
+          "genius": 1
+        },
+        "requirements": {
+          "intelligence": 5
+        },
+        "mpCost": 10,
+        "cost": 100
+      },
+      "endurance": {
+        "ilvl": 1,
+        "name": "Endurance",
+        "base": "endurance",
+        "slot": "spell",
+        "texture": "scroll-yellow",
+        "buffs": {
+          "endurance": 1
+        },
+        "requirements": {
+          "vitality": 5
+        },
+        "mpCost": 10,
         "cost": 100
       }
     }
