@@ -138,20 +138,20 @@ function App({ socket, debug, game }) {
     ) => {
       const { players, socketId } = payload;
       const player: FullCharacterState = players?.find((p) => p?.socketId === socketId);
-      localStorage.setItem("socketId", socketId);
+      sessionStorage.setItem("socketId", socketId);
       setHero(player);
       if (args?.isLogin) setIsLoggedIn(true);
     };
 
     const onBuffUpdate = (payload: { players: Array<FullCharacterState>; socketId: string }) => {
       const { players } = payload;
-      const socketId = localStorage.getItem("socketId");
+      const socketId = sessionStorage.getItem("socketId");
       const player: FullCharacterState = players?.find((p) => p?.socketId === socketId);
       setHero((prev) => ({ ...prev, ...player }));
     };
 
     const onPlayerUpdate = (player: FullCharacterState, args) => {
-      const socketId = localStorage.getItem("socketId");
+      const socketId = sessionStorage.getItem("socketId");
       /* If the player is the current player */
       if (socketId === player?.socketId) {
         setHero(player);
@@ -193,7 +193,7 @@ function App({ socket, debug, game }) {
     };
 
     const onLootGrabbed = ({ player }) => {
-      const socketId = localStorage.getItem("socketId");
+      const socketId = sessionStorage.getItem("socketId");
       if (socketId === player?.socketId) {
         setHero(player);
       }
