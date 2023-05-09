@@ -10,7 +10,7 @@ const MenuSocial = () => {
       }}
     >
       <Flex sx={{ flexWrap: "wrap", justifyContent: "end", gap: 2, flex: 1 }}>
-        <MenuHeader icon="chat" onClick={() => setTabSocial(false)}>
+        <MenuHeader icon="social" onClick={() => setTabSocial(false)}>
           Social
         </MenuHeader>
         <Flex

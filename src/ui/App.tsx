@@ -562,7 +562,7 @@ const MenuBar = () => {
             <>
               <MenuButton
                 keyboardKey="S"
-                iconName="chat"
+                iconName="social"
                 isActive={tabSocial}
                 onClick={() => setTabSocial((prev) => !prev)}
               />

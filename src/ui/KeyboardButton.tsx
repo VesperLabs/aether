@@ -34,7 +34,7 @@ const KeeperButton: FC<KeyboardButtonProps> = ({
         ...sx,
       }}
       variant={variant}
-      onClick={onClick}
+      onClick={!showOnly && onClick}
       disabled={disabled}
       {...props}
     >

@@ -69,9 +69,7 @@ const Buffs = () => {
     <Flex
       sx={{
         mt: 1,
-
-        transform: `scale(${(0.75 * parseFloat(zoom)).toFixed(1)})`,
-        transformOrigin: "top left",
+        imageRendering: "pixelated",
       }}
     >
       <Flex sx={{ flexDirection: "row-reverse", gap: 1 }}>
