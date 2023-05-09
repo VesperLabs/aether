@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Modal, Flex, Input, KeyboardButton, Icon, useAppContext, Tooltip, Text } from "./";
+import { Modal, Flex, Input, KeyboardButton, Icon, useAppContext, Tooltip, Text, ICONS } from "./";
 
 const IconPen = ({ sx }: { sx?: any }) => (
   <Icon
@@ -153,25 +153,25 @@ const RegisterForm = ({ onRegisterSuccess }) => {
     <Modal.Body sx={{ gap: 2 }}>
       <Flex sx={{ justifyContent: "space-around", pb: 2 }}>
         <ClickableIcon
-          icon={`../assets/icons/axe.png`}
+          icon={ICONS.WARRIOR}
           charClass="warrior"
           isSelected={charClass === "warrior"}
           setCharClass={setCharClass}
         />
         <ClickableIcon
-          icon={`../assets/icons/katar.png`}
+          icon={ICONS.ROGUE}
           charClass="rogue"
           isSelected={charClass === "rogue"}
           setCharClass={setCharClass}
         />
         <ClickableIcon
-          icon={`../assets/icons/rod.png`}
+          icon={ICONS.MAGE}
           charClass="mage"
           isSelected={charClass === "mage"}
           setCharClass={setCharClass}
         />
         {/* <ClickableIcon
-          icon={`../assets/icons/staff.png`}
+          icon={ICONS.CLERIC}
           charClass="cleric"
           isSelected={charClass === "cleric"}
           setCharClass={setCharClass}

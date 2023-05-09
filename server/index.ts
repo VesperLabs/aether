@@ -788,9 +788,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           nextGenderIndex = (currentGenderIndex - 1 + genders.length) % genders.length;
         }
 
-        const userName = args?.userName.substring(0, 16);
-
-        if (args?.userName) player.profile.userName = userName;
+        if (args?.userName) player.profile.userName = args?.userName?.substring?.(0, 16);
         if (args?.hair?.texture) player.profile.hair.texture = hairTextures[nextHairTextureIndex];
         if (args?.face?.texture) player.profile.face.texture = faceTextures[nextFaceTextureIndex];
         if (args?.skin?.tint) player.profile.tint = skinTints[nextSkinTintIndex];

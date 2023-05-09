@@ -65,6 +65,7 @@ interface AppContextValue {
   keeper: any; // data related to NPC you are chatting with
   tabKeeper: boolean;
   hero: FullCharacterState;
+  players: Array<FullCharacterState>;
   socket: Socket;
   debug: boolean;
   game: Phaser.Game;
@@ -88,6 +89,7 @@ const getHudZoom = () => {
 };
 
 function App({ socket, debug, game }) {
+  const [players, setPlayers] = useState<Array<FullCharacterState>>([]);
   const [isConnected, setIsConnected] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -123,7 +125,12 @@ function App({ socket, debug, game }) {
       setMessages((prev) => [...prev, payload]);
     };
 
-    const onPlayerJoin = (_, args) => {
+    const onPlayerJoin = (player, args) => {
+      /* Keep room list updated */
+      setPlayers((prev) => {
+        const playerExists = prev.some((p) => p?.id === player?.id);
+        return !playerExists ? [...prev, player] : prev;
+      });
       /* Only show player join message if the user logged in, not if entered door */
       if (args?.isLogin)
         setMessages((prev) => [
@@ -132,19 +139,24 @@ function App({ socket, debug, game }) {
         ]);
     };
 
+    const onPlayerLeave = (socketId) => {
+      setPlayers((prev) => prev.filter((player) => player.socketId !== socketId));
+    };
+
     const onHeroInit = (
       payload: { players: Array<FullCharacterState>; socketId: string },
       args
     ) => {
       const { players, socketId } = payload;
       const player: FullCharacterState = players?.find((p) => p?.socketId === socketId);
+      //TODO: get rid of this session storage reference. i think we can just use a state callback here
       sessionStorage.setItem("socketId", socketId);
+      setPlayers(players);
       setHero(player);
       if (args?.isLogin) setIsLoggedIn(true);
     };
 
     const onBuffUpdate = (payload: { players: Array<FullCharacterState>; socketId: string }) => {
-      console.log("arf2");
       const { players } = payload;
       const socketId = sessionStorage.getItem("socketId");
       const player: FullCharacterState = players?.find((p) => p?.socketId === socketId);
@@ -152,10 +164,12 @@ function App({ socket, debug, game }) {
     };
 
     const onPlayerUpdate = (player: FullCharacterState, args) => {
-      console.log("arf");
-      const socketId = sessionStorage.getItem("socketId");
+      /* Keep room list updated */
+      setPlayers((prev) => {
+        return prev.map((p) => (p.id === player?.id ? player : p));
+      });
       /* If the player is the current player */
-      if (socketId === player?.socketId) {
+      if (sessionStorage.getItem("socketId") === player?.socketId) {
         setHero(player);
         if (args?.didLevel) {
           setMessages((prev) => [
@@ -226,6 +240,7 @@ function App({ socket, debug, game }) {
     socket.on("keeperDataUpdate", onKeeperDataUpdate);
     socket.on("message", onMessage);
     socket.on("playerJoin", onPlayerJoin);
+    socket.on("remove", onPlayerLeave);
     window.addEventListener("HERO_NEAR_NPC", onNearNpc);
     window.addEventListener("HERO_CHAT_NPC", onHeroChatNpc);
     window.addEventListener("UPDATE_HUD", onUpdateHud);
@@ -241,6 +256,7 @@ function App({ socket, debug, game }) {
       socket.off("keeperDataUpdate", onKeeperDataUpdate);
       socket.off("message", onMessage);
       socket.off("playerJoin", onPlayerJoin);
+      socket.on("remove", onPlayerLeave);
       window.removeEventListener("HERO_NEAR_NPC", onNearNpc);
       window.removeEventListener("HERO_CHAT_NPC", onHeroChatNpc);
       window.removeEventListener("UPDATE_HUD", onUpdateHud);
@@ -282,6 +298,7 @@ function App({ socket, debug, game }) {
           setTabSocial,
           setTabQuests,
           setTabAbilities,
+          players,
           tabSocial,
           tabQuests,
           tabAbilities,

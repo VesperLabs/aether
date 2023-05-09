@@ -47,6 +47,13 @@ export { useAppContext } from "./App";
 
 export const SLOT_SIZE = 52;
 
+export const ICONS = {
+  WARRIOR: `../assets/icons/axe.png`,
+  ROGUE: `../assets/icons/katar.png`,
+  MAGE: `../assets/icons/rod.png`,
+  CLERIC: `../assets/icons/staff.png`,
+};
+
 export const BASE_SLOT_STYLE = {
   width: SLOT_SIZE,
   height: SLOT_SIZE,
