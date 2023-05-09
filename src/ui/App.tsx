@@ -144,6 +144,7 @@ function App({ socket, debug, game }) {
     };
 
     const onBuffUpdate = (payload: { players: Array<FullCharacterState>; socketId: string }) => {
+      console.log("arf2");
       const { players } = payload;
       const socketId = sessionStorage.getItem("socketId");
       const player: FullCharacterState = players?.find((p) => p?.socketId === socketId);
@@ -151,6 +152,7 @@ function App({ socket, debug, game }) {
     };
 
     const onPlayerUpdate = (player: FullCharacterState, args) => {
+      console.log("arf");
       const socketId = sessionStorage.getItem("socketId");
       /* If the player is the current player */
       if (socketId === player?.socketId) {

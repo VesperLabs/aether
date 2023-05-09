@@ -462,7 +462,7 @@ class ServerCharacter extends Character {
 
   expireBuffs(forceExpire = false) {
     let hasExpiredBuffs = false;
-    if (forceExpire) {
+    if (forceExpire && this.buffs?.length > 0) {
       hasExpiredBuffs = true;
       this.buffs = [];
     } else {
