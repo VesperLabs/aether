@@ -24,13 +24,18 @@ interface Item {
 
 interface Message {
   from?: string;
-  type: "chat" | "warning" | "error";
+  type: "chat" | "warning" | "error" | "party";
   message: string;
 }
 
 interface Slot {
   item: Item;
   slotName: string;
+}
+
+interface PartyInvite {
+  inviterId: string;
+  partyId: string;
 }
 
 interface BuildItem extends Array<any> {
@@ -170,6 +175,7 @@ interface Npc extends Character {
 
 interface Player extends Character {
   email?: string;
+  partyId?: string;
   addQuest(quest: Quest): void;
   completeQuest(quest: Quest): any;
   findEquipmentById(id: string): Slot;

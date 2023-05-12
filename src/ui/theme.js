@@ -77,6 +77,7 @@ export default {
       touchAction: "none",
       userSelect: "none",
       pointerEvents: "all",
+      whiteSpace: "nowrap",
       "&:focus": {
         outline: "none",
       },

@@ -12,9 +12,37 @@ import {
   ICONS,
 } from "./";
 
+const ActionButton = ({ player }) => {
+  const { partyInvites, hero, socket, party } = useAppContext();
+  const invitation = partyInvites?.find((invite: PartyInvite) => invite?.inviterId === player?.id);
+  const playerInParty = party?.members?.find((p) => p?.id === player?.id);
+  const isLeader = party?.members?.find((p) => p?.id === hero?.id)?.isLeader;
+  if (playerInParty) {
+    return isLeader ? (
+      <Button variant="wood">🥾 Kick</Button>
+    ) : (
+      <Button disabled variant="wood">
+        Partied
+      </Button>
+    );
+  }
+  if (invitation) {
+    return (
+      <Button variant="wood" onClick={() => socket.emit("partyAccept", invitation.partyId)}>
+        Accept
+      </Button>
+    );
+  }
+  return (
+    <Button variant="wood" onClick={() => socket.emit("inviteToParty", player?.socketId)}>
+      Invite
+    </Button>
+  );
+};
+
 const MenuSocial = () => {
   const { hero, players, tabSocial, setTabSocial } = useAppContext();
-  const otherPlayers = players?.filter((p) => p);
+  const otherPlayers = players?.filter((p) => p?.id !== hero?.id);
   return tabSocial ? (
     <Menu>
       <Flex sx={{ flexWrap: "wrap", justifyContent: "end", gap: 2, flex: 1 }}>
@@ -23,11 +51,16 @@ const MenuSocial = () => {
         </MenuHeader>
         <Grid
           sx={{
-            gridTemplateColumns: "min-content 1fr min-content 1fr min-content",
+            flex: 1,
+            borderRadius: 5,
+            bg: "shadow.10",
+            p: 1,
+            gridTemplateColumns: "min-content 18em min-content 1fr min-content",
             alignItems: "center",
             gap: 1,
             justifyContent: "end",
             maxWidth: 592,
+            columnGap: 2,
           }}
         >
           {otherPlayers?.map((player) => {
@@ -46,7 +79,7 @@ const MenuSocial = () => {
                   Lv. {player?.stats?.level} {player?.charClass}
                 </Text>
                 <Flex>
-                  <Button variant="wood">Invite</Button>
+                  <ActionButton player={player} />
                 </Flex>
               </Fragment>
             );

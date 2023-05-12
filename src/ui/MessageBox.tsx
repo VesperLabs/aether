@@ -58,18 +58,27 @@ const MessageBox = () => {
   );
 };
 
+const getFrom = (data) => {
+  if (data?.type === "party") {
+    return "Party";
+  }
+  return data?.from ?? "Server";
+};
+
 const Message: React.FC<MessageProps> = ({ data }) => {
   const { from, message, type } = data ?? {};
   const colorsMap: Record<string, string> = {
+    party: "rare",
     chat: "white",
     success: "set",
     error: "danger",
     info: "magic",
   };
+
   const color: string = colorsMap?.[type] || "white";
   return (
     <Flex sx={{ color, gap: 1, flexGrow: 0 }}>
-      <Text sx={{ flexShrink: 0 }}>{from || "Server"}:</Text>
+      <Text sx={{ flexShrink: 0 }}>{getFrom(data)}:</Text>
       <Text sx={{ flex: 1 }}>{message}</Text>
     </Flex>
   );

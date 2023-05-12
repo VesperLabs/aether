@@ -66,6 +66,8 @@ interface AppContextValue {
   tabKeeper: boolean;
   hero: FullCharacterState;
   players: Array<FullCharacterState>;
+  partyInvites: Array<PartyInvite>;
+  party: any;
   socket: Socket;
   debug: boolean;
   game: Phaser.Game;
@@ -89,6 +91,8 @@ const getHudZoom = () => {
 };
 
 function App({ socket, debug, game }) {
+  const [partyInvites, setPartyInvites] = useState<Array<PartyInvite>>([]);
+  const [party, setParty] = useState<any>();
   const [players, setPlayers] = useState<Array<FullCharacterState>>([]);
   const [isConnected, setIsConnected] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -220,6 +224,20 @@ function App({ socket, debug, game }) {
       setHero((prev) => ({ ...prev, state: hero?.state, stats: hero?.stats }));
     };
 
+    const onPartyInvite = (inviteData: PartyInvite) => {
+      // Check if the party invite already exists
+      const existingInvite = partyInvites.find((invite) => invite.partyId === inviteData.partyId);
+      // Party invite already exists, do not add it again
+      if (existingInvite) return;
+      // Party invite doesn't exist, add it to the list
+      setPartyInvites((prevInvites) => [...prevInvites, inviteData]);
+    };
+
+    const onPartyUpdate = ({ message, party }) => {
+      setParty(party);
+      setMessages((prev) => [...prev, { type: "party", message }]);
+    };
+
     const onNearNpc = (e) => {
       setShowButtonChat(!!e?.detail);
       if (!e?.detail) {
@@ -241,6 +259,8 @@ function App({ socket, debug, game }) {
     socket.on("message", onMessage);
     socket.on("playerJoin", onPlayerJoin);
     socket.on("remove", onPlayerLeave);
+    socket.on("partyInvite", onPartyInvite);
+    socket.on("partyUpdate", onPartyUpdate);
     window.addEventListener("HERO_NEAR_NPC", onNearNpc);
     window.addEventListener("HERO_CHAT_NPC", onHeroChatNpc);
     window.addEventListener("UPDATE_HUD", onUpdateHud);
@@ -256,7 +276,9 @@ function App({ socket, debug, game }) {
       socket.off("keeperDataUpdate", onKeeperDataUpdate);
       socket.off("message", onMessage);
       socket.off("playerJoin", onPlayerJoin);
-      socket.on("remove", onPlayerLeave);
+      socket.off("partyInvite", onPartyInvite);
+      socket.off("partyUpdate", onPartyUpdate);
+      socket.off("remove", onPlayerLeave);
       window.removeEventListener("HERO_NEAR_NPC", onNearNpc);
       window.removeEventListener("HERO_CHAT_NPC", onHeroChatNpc);
       window.removeEventListener("UPDATE_HUD", onUpdateHud);
@@ -313,6 +335,8 @@ function App({ socket, debug, game }) {
           keeper,
           tabKeeper,
           hero,
+          partyInvites,
+          party,
           socket,
           debug,
           game,

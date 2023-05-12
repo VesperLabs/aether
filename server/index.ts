@@ -22,6 +22,7 @@ import {
 } from "./utils";
 import { initDatabase } from "./db";
 import RoomManager from "./RoomManager";
+import PartyManager from "./PartyManager";
 import Phaser from "phaser";
 import QuestBuilder from "./QuestBuilder";
 import ItemBuilder from "./ItemBuilder";
@@ -49,6 +50,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
   public quests: Record<string, Quest>;
   public players: Record<string, Player>;
   public roomManager: RoomManager;
+  public partyManager: PartyManager;
   public spells: any;
   public db: any;
   public io: any;
@@ -74,6 +76,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
     this.spells = {};
     this.quests = QuestBuilder.buildAllQuests();
     this.roomManager = new RoomManager(scene);
+    this.partyManager = new PartyManager(scene);
 
     io.on("connection", (socket: Socket) => {
       const socketId = socket.id;
@@ -342,6 +345,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
 
       socket.on("disconnect", () => {
         const player = scene.players?.[socketId];
+        this.partyManager.removeSocketFromParty(socket);
         scene.db.updateUser(scene.players?.[socketId]);
         console.log(`🔌 ${player?.profile?.userName} disconnected`);
         removePlayer(scene, socketId);
@@ -714,6 +718,62 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         }
       });
 
+      socket.on("inviteToParty", (inviteeSocketId: string) => {
+        const player: Player = scene?.players?.[socket.id];
+        const party =
+          this.partyManager.getPartyById(player?.partyId) || this.partyManager.createParty(socket);
+        const invitee: Player = scene?.players?.[inviteeSocketId];
+
+        if (!invitee) {
+          return socket.emit("message", {
+            type: "error",
+            message: "Invalid player to invite.",
+          } as Message);
+        }
+
+        if (invitee.partyId) {
+          return socket.emit("message", {
+            type: "error",
+            message: "Player is already in a party.",
+          } as Message);
+        }
+
+        party.addInvitee(inviteeSocketId);
+
+        const inviteData: PartyInvite = {
+          inviterId: socket.id,
+          partyId: party.id,
+        };
+
+        io.to(inviteeSocketId).emit("partyInvite", inviteData);
+      });
+
+      socket.on("partyAccept", (partyId: string) => {
+        const player: Player = scene.players[socketId];
+        const party = this.partyManager.getPartyById(partyId);
+
+        if (!player || !party) {
+          return;
+        }
+
+        // Check if the player is already a member of the party
+        if (player.partyId === partyId) {
+          return socket.emit("message", {
+            type: "error",
+            message: "You are already a member of this party.",
+          } as Message);
+        }
+
+        if (!party.hasInviteeId(socketId)) {
+          return socket.emit("message", {
+            type: "error",
+            message: "You were not invited to this party.",
+          } as Message);
+        }
+
+        this.partyManager.addSocketToParty(socket, partyId);
+      });
+
       socket.on("completeQuest", (questId: string) => {
         const player: Player = scene?.players?.[socketId];
         const currentQuest = scene.quests?.[questId];
@@ -723,11 +783,10 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           const questResults = player?.completeQuest(currentQuest);
           /* Quest failed */
           if (questResults?.error) {
-            const message: Message = {
+            return socket.emit("message", {
               type: "error",
               message: questResults.error,
-            };
-            return socket.emit("message", message);
+            } as Message);
           }
           /* Save the users data */
           player.calculateStats();
