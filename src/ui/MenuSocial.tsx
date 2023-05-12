@@ -73,6 +73,7 @@ const MenuSocial = () => {
   const partyIds = party?.members?.map((p) => p?.id);
   const otherPlayers = players?.filter((p) => !partyIds?.includes(p?.id) && hero?.id !== p?.id);
   const hasParty = partyIds?.length > 0;
+
   return tabSocial ? (
     <Menu>
       <Flex sx={{ flexWrap: "wrap", justifyContent: "end", gap: 2, flex: 1 }}>
@@ -116,12 +117,13 @@ const MenuSocial = () => {
 
 const SocialPlayerRow = (props: { partyPlayer: any; children: any }) => {
   const { partyPlayer, children } = props;
-  const { players } = useAppContext();
+  const { players, party } = useAppContext();
   const player = players?.find((p) => p?.id === partyPlayer?.id);
-
+  const partyLeader = party?.members?.find((p) => p?.isLeader);
+  const isLeader = partyLeader?.id === partyPlayer?.id;
   return (
     <Fragment key={player?.id}>
-      <Box>
+      <Box sx={{ position: "relative" }}>
         <Portrait
           user={player}
           scale={1}
@@ -129,6 +131,12 @@ const SocialPlayerRow = (props: { partyPlayer: any; children: any }) => {
           topOffset={-20}
           filterKeys={["accessory", "helmet", "boots"]}
         />
+        {isLeader && (
+          <Icon
+            icon="../assets/icons/crown.png"
+            sx={{ position: "absolute", left: "-2px", top: "-11px" }}
+          />
+        )}
       </Box>
       <Text>{player?.profile?.userName}</Text>
       <Icon size={24} icon={ICONS?.[player?.charClass?.toUpperCase()]} />

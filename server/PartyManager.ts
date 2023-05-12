@@ -65,13 +65,9 @@ class PartyManager {
   }
 
   createParty(socket: Socket) {
-    const leaderId = socket?.id;
-    const player: Player = this?.scene?.players?.[leaderId];
     const party = new Party();
-    socket.join(party.socketRoom);
-    party.addMember(leaderId, true);
-    player.partyId = party.id;
     this.parties.push(party);
+    this.addSocketToParty(socket, party?.id, true);
     return party;
   }
 
@@ -84,7 +80,6 @@ class PartyManager {
       const isLeader = party.hasMemberId(playerId)?.isLeader;
       party.removeMember(playerId);
       socket.leave(party.socketRoom);
-      this.broadcastPartyUpdate(party, `${player?.profile?.userName} has left the party.`);
 
       // If the leaving player was the leader, assign a new leader
       if (isLeader && party.members.length > 0) {
@@ -97,16 +92,17 @@ class PartyManager {
         this.removeParty(party.id);
       }
 
+      this.broadcastPartyUpdate(party, `${player?.profile?.userName} has left the party.`);
+
       socket.emit("partyUpdate", {
         message: "You have left the party",
         party: null,
       });
     }
-
-    player.partyId = null;
+    if (player) player.partyId = null;
   }
 
-  addSocketToParty(socket: Socket, partyId: string) {
+  addSocketToParty(socket: Socket, partyId: string, isLeader = false) {
     const playerId = socket?.id;
     const player: Player = this.scene.players[playerId];
     const party = this.getPartyById(partyId);
@@ -125,7 +121,7 @@ class PartyManager {
       }
 
       // Add the player to the new party
-      party.addMember(playerId, false);
+      party.addMember(playerId, isLeader);
       player.partyId = party.id;
       socket.join(party.socketRoom);
       this.scene.io.to(party.socketRoom).emit("partyUpdate", {
