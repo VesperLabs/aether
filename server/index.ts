@@ -732,6 +732,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         }
 
         if (invitee.partyId) {
+        
           return socket.emit("message", {
             type: "error",
             message: "Player is already in a party.",
@@ -772,6 +773,10 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         }
 
         this.partyManager.addSocketToParty(socket, partyId);
+      });
+
+      socket.on("partyLeave", () => {
+        this.partyManager.removeSocketFromParty(socket);
       });
 
       socket.on("completeQuest", (questId: string) => {

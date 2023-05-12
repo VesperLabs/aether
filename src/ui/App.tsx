@@ -67,6 +67,7 @@ interface AppContextValue {
   hero: FullCharacterState;
   players: Array<FullCharacterState>;
   partyInvites: Array<PartyInvite>;
+  setPartyInvites: React.Dispatch<React.SetStateAction<Array<PartyInvite>>>;
   party: any;
   socket: Socket;
   debug: boolean;
@@ -234,6 +235,10 @@ function App({ socket, debug, game }) {
     };
 
     const onPartyUpdate = ({ message, party }) => {
+      // remove the invite
+      setPartyInvites((prev) =>
+        prev?.filter((invite: PartyInvite) => invite?.partyId !== party?.id)
+      );
       setParty(party);
       setMessages((prev) => [...prev, { type: "party", message }]);
     };
@@ -336,6 +341,7 @@ function App({ socket, debug, game }) {
           tabKeeper,
           hero,
           partyInvites,
+          setPartyInvites,
           party,
           socket,
           debug,

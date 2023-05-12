@@ -78,11 +78,11 @@ class PartyManager {
   removeSocketFromParty(socket: Socket) {
     const playerId = socket?.id;
     const player: Player = this?.scene?.players?.[playerId];
-    const party = this.getPartyById(player.partyId);
+    const party = this.getPartyById(player?.partyId);
+
     if (party) {
       const isLeader = party.hasMemberId(playerId)?.isLeader;
       party.removeMember(playerId);
-      player.partyId = null;
       socket.leave(party.socketRoom);
       this.broadcastPartyUpdate(party, `${player?.profile?.userName} has left the party.`);
 
@@ -96,7 +96,14 @@ class PartyManager {
       if (party.members.length === 0) {
         this.removeParty(party.id);
       }
+
+      socket.emit("partyUpdate", {
+        message: "You have left the party",
+        party: null,
+      });
     }
+
+    player.partyId = null;
   }
 
   addSocketToParty(socket: Socket, partyId: string) {

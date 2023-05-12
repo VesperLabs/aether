@@ -6,11 +6,12 @@ interface MenuHeaderProps {
   children: React.ReactNode;
   onClick?: () => void;
   icon?: string;
+  sx?: any;
 }
 
-const MenuHeader = ({ icon, children, onClick = () => {} }: MenuHeaderProps) => {
+const MenuHeader = ({ icon, children, onClick = () => {}, sx }: MenuHeaderProps) => {
   return (
-    <Flex sx={{ width: "100%", justifyContent: "end" }}>
+    <Flex sx={{ width: "100%", justifyContent: "end", ...sx }}>
       <KeyboardButton
         variant={"header"}
         showOnly={true}
