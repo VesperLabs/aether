@@ -78,18 +78,16 @@ const ItemBuilder = {
       }
     }
 
-    if (item?.type !== "bag") {
-      if (commonRoll == 1 && rareRoll == 1 && item == null) {
-        if (commonPool.length > 0) {
-          item = commonPool[Math.floor(Math.random() * commonPool.length)];
-          item.rarity = "rare";
-        }
+    if (commonRoll == 1 && rareRoll == 1 && item == null) {
+      if (commonPool.length > 0) {
+        item = commonPool[Math.floor(Math.random() * commonPool.length)];
+        item.rarity = "rare";
       }
-      if (commonRoll == 1 && magicRoll == 1 && item == null) {
-        if (commonPool.length > 0) {
-          item = commonPool[Math.floor(Math.random() * commonPool.length)];
-          item.rarity = "magic";
-        }
+    }
+    if (commonRoll == 1 && magicRoll == 1 && item == null) {
+      if (commonPool.length > 0) {
+        item = commonPool[Math.floor(Math.random() * commonPool.length)];
+        item.rarity = "magic";
       }
     }
 
@@ -223,12 +221,6 @@ const ItemBuilder = {
       }
     }
 
-    if (item.slot == "stackable") {
-      item.id = itemKey;
-    } else {
-      item.id = crypto.randomUUID();
-    }
-
     item.key = itemKey;
     item.tint = item?.tint || "0xFFFFFF";
     item.rarity = rarity;
@@ -237,6 +229,17 @@ const ItemBuilder = {
     item.stats = newStats;
     item.effects = newEffects;
     item.percentStats = percentStats;
+
+    if (item.slot === "stackable") {
+      item.id = itemKey;
+    } else {
+      item.id = crypto.randomUUID();
+    }
+
+    /* Bags cannot be magic or rare */
+    if (item.base === "bag") {
+      if (["magic", "rare"].includes(item.rarity)) item.rarity = "common";
+    }
 
     /* Magic and Rare Item Spawning */
     let randomMod;
@@ -248,7 +251,8 @@ const ItemBuilder = {
         availableMods.push(itemModsList.suffix[i]);
       }
     }
-    if (rarity == "magic") {
+
+    if (item.rarity == "magic") {
       randomMod = availableMods[Math.floor(Math.random() * availableMods.length)];
       Object.keys(randomMod.stats).forEach((key) => {
         if (!item.stats[key]) {
@@ -261,7 +265,8 @@ const ItemBuilder = {
         }
       });
     }
-    if (rarity == "rare") {
+
+    if (item.rarity == "rare") {
       for (let i = 0; i < 3; i++) {
         randomMod = availableMods[Math.floor(Math.random() * availableMods.length)];
         Object.keys(randomMod.stats).forEach((key) => {
@@ -279,11 +284,11 @@ const ItemBuilder = {
 
     item.cost = getItemCost(item);
 
-    if (rarity == "magic") {
+    if (item.rarity == "magic") {
       item.name = item.name + " " + randomMod.name;
       item.key = item.key.replace("-common-", "-magic-");
     }
-    if (rarity == "rare") {
+    if (item.rarity == "rare") {
       item.key = item.key.replace("-common-", "-rare-");
     }
 

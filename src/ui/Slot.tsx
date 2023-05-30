@@ -382,6 +382,10 @@ function useItemEvents({ location, bagId, slotKey, item }) {
           return setDropItem({ ...item, location, bagId, action: "SHOP", slotKey });
         } else {
           if (["set", "rare", "unique"]?.includes(item?.rarity) || ["bag"]?.includes(item?.base)) {
+            /* Close open bag */
+            if (bagState?.find?.((id) => id === item?.id)) {
+              toggleBagState(item?.id);
+            }
             return setDropItem({
               ...item,
               location,
