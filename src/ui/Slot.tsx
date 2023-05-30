@@ -16,20 +16,34 @@ import { useAppContext } from "./App";
 import { isMobile, trimCanvas, tintCanvas } from "../utils";
 import { useDoubleTap } from "use-double-tap";
 
-const STYLE_BAG_PIE = {
-  sx: {
-    position: "absolute",
-    zIndex: 2,
-    color: "danger",
-    "& circle:first-of-type": {
-      opacity: 0.25,
-      color: "#000",
-    },
-    ml: "2px",
-    mt: "2px",
-  },
-  size: "10px",
-  strokeWidth: "6px",
+const SpaceDonut = ({ percent = 0 }) => {
+  const getColor = () => {
+    if (percent > 0.75) {
+      return "danger";
+    }
+    if (percent > 0.5) {
+      return "yellow.200";
+    }
+    return "set";
+  };
+  return (
+    <Donut
+      sx={{
+        position: "absolute",
+        zIndex: 2,
+        color: getColor(),
+        "& circle:first-of-type": {
+          opacity: 0.25,
+          color: "#000",
+        },
+        ml: "1px",
+        mt: "1px",
+      }}
+      size="12px"
+      strokeWidth="6px"
+      value={percent}
+    />
+  );
 };
 
 type SlotProps = {
@@ -253,11 +267,7 @@ const Slot = React.memo(
         {item && (
           <>
             {item?.base === "bag" && (
-              //@ts-ignore
-              <Donut
-                {...STYLE_BAG_PIE}
-                value={item?.items?.filter((i) => i)?.length / item?.space}
-              />
+              <SpaceDonut percent={item?.items?.filter((i) => i)?.length / item?.space} />
             )}
             {item?.amount > 1 && <SlotAmount>{item?.amount}</SlotAmount>}
             <Icon

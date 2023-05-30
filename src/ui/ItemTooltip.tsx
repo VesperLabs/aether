@@ -35,6 +35,7 @@ const ItemTooltip = ({ item, show }) => {
   const buffs = item?.buffs ?? {};
   const hasEffects = Object.keys(combinedEffects)?.length > 0;
   const hasBuffs = Object.keys(buffs)?.length > 0;
+  const isDoubleClickable = ["food", "bag"].includes(item.base);
 
   return (
     <Tooltip id={item?.id} isOpen={show}>
@@ -56,7 +57,7 @@ const ItemTooltip = ({ item, show }) => {
           {item?.slot == "spell" && <span> (Lv. {item?.ilvl})</span>}
         </Text>
         <Text color={item?.rarity}>
-          {item?.rarity} {item?.type === "spell" ? "spell" : item?.base}
+          {item?.rarity} {item?.type === "spell" ? "spell" : item?.base?.replaceAll("-", " ")}
         </Text>
         {Object.keys(combinedStats)?.length > 0 && <TextDivider>Stats</TextDivider>}
         {Object.keys(combinedStats).map((key) => (
@@ -127,10 +128,26 @@ const ItemTooltip = ({ item, show }) => {
         {item?.space && (
           <>
             <TextDivider>Space</TextDivider>
-            {`${item?.items?.filter((i) => i)?.length || 0} / ${item?.space}`}
+            {`${item?.items?.filter((i: Item) => i)?.length || 0} / ${item?.space}`}
           </>
         )}
         <Divider />
+
+        {isDoubleClickable && (
+          <>
+            <Text
+              sx={{
+                fontStyle: "italic",
+                fontWeight: "normal",
+                color: "gray.400",
+                textTransform: "none",
+              }}
+            >
+              Double click to {item?.base === "food" ? "eat" : "open"}
+            </Text>
+            <Divider />
+          </>
+        )}
         <Flex sx={{ alignItems: "center", gap: 2 }}>
           <Flex sx={{ alignItems: "center", gap: "2px" }}>
             <Icon icon="../assets/icons/gold.png" size={16} />

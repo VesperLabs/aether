@@ -378,7 +378,8 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       });
 
       socket.on("dropItem", ({ location, bagId, item, ...rest } = {}) => {
-        if (item?.base === "bag" && item?.items?.filter((i) => i)?.length > 0) {
+        /* Prevent dropping full bags */
+        if (item?.base === "bag" && item?.items?.filter((i: Item) => i)?.length > 0) {
           return socket.emit("message", {
             type: "error",
             message: "Cannot drop a bag with items inside of it.",
@@ -501,7 +502,11 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         }
 
         /* Cannot put bags in bags */
-        if (fromItem?.base === "bag" && to?.bagId) return;
+        if (fromItem?.base === "bag" && to?.bagId)
+          return socket.emit("message", {
+            type: "error",
+            message: "Cannot put bags in bags.",
+          });
 
         /* Same item, return */
         if (from.itemId === to.itemId) return;
