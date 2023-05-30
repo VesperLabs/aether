@@ -78,7 +78,7 @@ const ItemBuilder = {
       }
     }
 
-    if (item.type !== "bag") {
+    if (item?.type !== "bag") {
       if (commonRoll == 1 && rareRoll == 1 && item == null) {
         if (commonPool.length > 0) {
           item = commonPool[Math.floor(Math.random() * commonPool.length)];
