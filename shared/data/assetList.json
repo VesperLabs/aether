@@ -216,8 +216,14 @@
     "previewRect": [0, 80, 80, 80]
   },
   {
-    "texture": "human-helmet-plate",
-    "src": "./assets/atlas/helmet/helmet-plate.png",
+    "texture": "human-helmet-armet",
+    "src": "./assets/atlas/helmet/helmet-armet.png",
+    "atlas": "./assets/atlas/80x80.json",
+    "previewRect": [0, 80, 80, 80]
+  },
+  {
+    "texture": "human-helmet-horned",
+    "src": "./assets/atlas/helmet/helmet-horned.png",
     "atlas": "./assets/atlas/80x80.json",
     "previewRect": [0, 80, 80, 80]
   },

@@ -203,8 +203,8 @@ function distanceTo(first, second) {
 /* TODO: Move to DB */
 const MUSIC_VOLUME = 0.15;
 const SFX_VOLUME = 0.6;
-const HAIR_HIDING_HELMETS = ["helmet-plate", "helmet-hood"];
-const FACE_HIDING_HELMETS = ["helmet-plate"];
+const HAIR_HIDING_HELMETS = ["helmet-armet", "helmet-hood", "helmet-horned"];
+const FACE_HIDING_HELMETS = ["helmet-armet", "helmet-horned"];
 
 const playAudio = ({ scene, audioKey, caster }) => {
   const heroPosition = scene.hero?.body?.position;

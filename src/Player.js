@@ -232,7 +232,6 @@ class Player extends Character {
     this.state.isDead = false;
     this.stats.hp = this.stats.maxHp;
     this.updateHpBar();
-    this.drawCharacterFromUserData();
     this.shadow.setVisible(true);
     this.chest.setVisible(true);
     this.skin.setVisible(true);
@@ -247,6 +246,7 @@ class Player extends Character {
     this.handRight.setVisible(true);
     this.hpBar.setVisible(false);
     this.corpse.setVisible(false);
+    this.drawCharacterFromUserData();
     if (this.isHero) {
       window.dispatchEvent(new Event("HERO_RESPAWN"));
     }

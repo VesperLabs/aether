@@ -2,7 +2,7 @@ import { Fragment } from "react";
 import { Flex, useAppContext, Text, Divider, Icon, Tooltip } from "./";
 import buffList from "../../shared/data/buffList.json";
 import { convertMsToS } from "../utils";
-const combineDamageStats = (stats = {}) =>
+const formatStats = (stats = {}) =>
   Object.entries(stats).reduce((acc, [key, value]) => {
     if (key.includes("Damage")) {
       const identifier = key.replace("min", "").replace("max", "");
@@ -13,7 +13,7 @@ const combineDamageStats = (stats = {}) =>
       acc[key] = "+" + value + "%";
     } else if (key.includes("Delay") || key.includes("duration")) {
       acc[key] = convertMsToS(value)?.replace(".00", "");
-    } else if (key.includes("Steal") || key.includes("Chance")) {
+    } else if (key.includes("Steal") || key.includes("Chance") || key.includes("Resistance")) {
       acc[key] = value + "%";
     } else {
       acc[key] = value;
@@ -28,8 +28,9 @@ const ItemTooltip = ({ item, show }) => {
   const isSetActive = hero?.state?.activeSets?.includes?.(item?.setName);
   if (!item) return;
 
-  const combinedStats = combineDamageStats(item?.stats);
-  const combinedEffects = combineDamageStats(item?.effects);
+  const combinedStats = formatStats(item?.stats);
+  const combinedSetStats = formatStats(item?.setBonus?.stats);
+  const combinedEffects = formatStats(item?.effects);
 
   const requirements = item?.requirements || {};
   const buffs = item?.buffs ?? {};
@@ -79,7 +80,7 @@ const ItemTooltip = ({ item, show }) => {
           );
         })}
         {Object.keys(buffs).map((buffName) => {
-          const buffStats = combineDamageStats({
+          const buffStats = formatStats({
             duration: buffList?.[buffName]?.duration,
             ...buffList?.[buffName]?.stats,
           });
@@ -116,13 +117,11 @@ const ItemTooltip = ({ item, show }) => {
                 </Text>
               );
             })}
-            {Object.keys(item?.setBonus?.stats || {}).map((key) => {
-              return (
-                <Text key={key} color={isSetActive ? "set" : "gray.500"}>
-                  <Label>{key}:</Label> {item?.setBonus.stats[key]}
-                </Text>
-              );
-            })}
+            {Object.keys(combinedSetStats).map((key) => (
+              <Text key={key} color={isSetActive ? "set" : "gray.500"}>
+                <Label>{key}:</Label> {combinedSetStats[key]}
+              </Text>
+            ))}
           </>
         )}
         {item?.space && (

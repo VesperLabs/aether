@@ -240,11 +240,11 @@
           "defense": [2, 3]
         }
       },
-      "nutshellPlateHelmet": {
+      "nutshellArmet": {
         "ilvl": 1,
-        "name": "Nutshell Plate Helmet",
-        "base": "plate-helmet",
-        "texture": "helmet-plate",
+        "name": "Nutshell Armet",
+        "base": "armet",
+        "texture": "helmet-armet",
         "tint": "0xCC9966",
         "slot": "helmet",
         "stats": {
@@ -270,18 +270,45 @@
           "vitality": [3, 5]
         }
       },
-      "theBunnyWhisker": {
+      "bunnyEars": {
         "ilvl": 1,
-        "name": "The Bunny Whisker",
+        "name": "Bunny Ears",
         "base": "cap",
         "texture": "helmet-bunny",
         "slot": "helmet",
         "stats": {
           "walkSpeed": [30, 50]
         }
+      },
+      "theDragonWhisker": {
+        "ilvl": 3,
+        "name": "The Dragon Whisker",
+        "base": "armet",
+        "texture": "helmet-horned",
+        "tint": "0x66CCFF",
+        "slot": "helmet",
+        "stats": {
+          "fireResistance": [20, 30],
+          "earthResistance": [20, 30],
+          "lightResistance": [20, 30]
+        }
       }
     },
-    "set": {}
+    "set": {
+      "hawkwingsHood": {
+        "ilvl": 1,
+        "setName": "hawkwings",
+        "name": "Hawkwing's Hood",
+        "base": "hood",
+        "texture": "helmet-hood",
+        "tint": "0x77DD77",
+        "slot": "helmet",
+        "stats": {
+          "dexterity": 5,
+          "earthResistance": [10, 15]
+        }
+      }
+    }
   },
   "armor": {
     "common": {

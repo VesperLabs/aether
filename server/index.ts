@@ -20,7 +20,7 @@ import {
   SHOP_INFLATION,
   getBuffRoomState,
 } from "./utils";
-import { initDatabase } from "./db";
+import { initDatabase } from "./db/fake";
 import RoomManager from "./RoomManager";
 import PartyManager from "./PartyManager";
 import Phaser from "phaser";

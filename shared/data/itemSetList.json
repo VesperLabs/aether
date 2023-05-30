@@ -12,12 +12,12 @@
     }
   },
   "hawkwings": {
-    "name": "Hawkwing's Legs",
-    "pieces": 2,
+    "name": "Hawkwing's Arms",
+    "pieces": 3,
     "stats": {
       "dexterity": 10,
-      "walkSpeed": 10,
-      "dodgeChance": 10
+      "walkSpeed": 25,
+      "dodgeChance": 25
     },
     "percentStats": {
       "dexterity": 15
