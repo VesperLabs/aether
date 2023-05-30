@@ -389,7 +389,12 @@ function useItemEvents({ location, bagId, slotKey, item }) {
       }
       /* Anywhere -> Anywhere */
       if (dataset?.slotKey) {
-        if (dataset?.location === location && dataset?.slotKey === slotKey) return;
+        if (
+          dataset?.location === location &&
+          dataset?.slotKey === slotKey &&
+          dataset.bagId === bagId
+        )
+          return;
         return socket.emit("moveItem", {
           to: {
             bagId: dataset?.bagId, //if we have a bag
