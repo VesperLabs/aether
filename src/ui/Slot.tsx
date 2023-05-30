@@ -16,6 +16,22 @@ import { useAppContext } from "./App";
 import { isMobile, trimCanvas, tintCanvas } from "../utils";
 import { useDoubleTap } from "use-double-tap";
 
+const STYLE_BAG_PIE = {
+  sx: {
+    position: "absolute",
+    zIndex: 2,
+    color: "danger",
+    "& circle:first-of-type": {
+      opacity: 0.25,
+      color: "#000",
+    },
+    ml: "2px",
+    mt: "2px",
+  },
+  size: "10px",
+  strokeWidth: "6px",
+};
+
 type SlotProps = {
   sx?: object;
   size?: integer;
@@ -237,21 +253,10 @@ const Slot = React.memo(
         {item && (
           <>
             {item?.base === "bag" && (
+              //@ts-ignore
               <Donut
-                sx={{
-                  position: "absolute",
-                  zIndex: 2,
-                  color: "set",
-                  "& circle:first-of-type": {
-                    opacity: 0.25,
-                    color: "#000",
-                  },
-                  ml: "-1px",
-                  mt: "-1px",
-                }}
-                size={16}
-                strokeWidth={11}
-                value={item?.items?.length / item?.space}
+                {...STYLE_BAG_PIE}
+                value={item?.items?.filter((i) => i)?.length / item?.space}
               />
             )}
             {item?.amount > 1 && <SlotAmount>{item?.amount}</SlotAmount>}
@@ -312,6 +317,7 @@ const Slot = React.memo(
       prevItem === nextItem ||
       (prevItem?.id === nextItem?.id &&
         prevItem?.amount === nextItem?.amount &&
+        JSON.stringify(prevItem?.items) === JSON.stringify(nextItem?.items) &&
         prevItem?.stock === nextItem?.stock)
     );
   }

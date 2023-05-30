@@ -127,7 +127,7 @@ const ItemTooltip = ({ item, show }) => {
         {item?.space && (
           <>
             <TextDivider>Space</TextDivider>
-            {`${item?.items?.length || 0} / ${item?.space}`}
+            {`${item?.items?.filter((i) => i)?.length || 0} / ${item?.space}`}
           </>
         )}
         <Divider />
