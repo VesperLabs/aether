@@ -430,21 +430,16 @@ function drawFrame(p) {
 }
 
 function updateCurrentSpeed(player) {
-  const vx = player?.isHero ? player.body.velocity.x : player.vx;
-  const vy = player?.isHero ? player.body.velocity.y : player.vy;
+  const vx = player.vx;
+  const vy = player.vy;
   player.currentSpeed = Math.max(Math.abs(vx), Math.abs(vy));
 
   /* Action */
   if (player.state.isAttacking) {
     return;
   }
-  if (vx === 0 && vy === 0) {
-    player.action = "stand";
-  } else {
-    player.action = "walk";
-    /* For casting spells */
-    player.state.lastAngle = Math.atan2(player.body.velocity.y, player.body.velocity.x);
-  }
+
+  player.action = player.currentSpeed === 0 ? "stand" : "walk";
 }
 
 function hackFrameRates(player, rate) {

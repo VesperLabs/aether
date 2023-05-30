@@ -226,9 +226,9 @@ class SceneMain extends Phaser.Scene {
         /* Update other player movements */
         player.setPosition(s.x, s.y);
         player.direction = s?.direction;
+        player.vx = s.vx;
+        player.vy = s.vy;
       }
-      player.vx = s.vx;
-      player.vy = s.vy;
     }
 
     moveHero(this, time);
@@ -344,6 +344,9 @@ function moveHero(scene, time) {
     vy = 0;
   }
 
+  hero.vx = vx;
+  hero.vy = vy;
+
   hero.body.setVelocity(vx, vy);
 
   /* If the hero is standing still do not update the server */
@@ -358,6 +361,10 @@ function moveHero(scene, time) {
     });
   }
   hero.state.isIdle = hero.vx === vx && hero.vy === vy && vx === 0 && vy === 0;
+  /* Latest idle check, we set the lastAngle so it's fresh */
+  if (!hero.state.isIdle) {
+    hero.state.lastAngle = Math.atan2(hero.body.velocity.y, hero.body.velocity.x);
+  }
 }
 
 function setCamera(scene, hero) {
