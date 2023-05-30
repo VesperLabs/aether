@@ -13,7 +13,7 @@ const combineDamageStats = (stats = {}) =>
       acc[key] = "+" + value + "%";
     } else if (key.includes("Delay") || key.includes("duration")) {
       acc[key] = convertMsToS(value)?.replace(".00", "");
-    } else if (key.includes("Steal") || key.includes("Chance")) {
+    } else if (key.includes("Steal") || key.includes("Chance") || key.includes("Power")) {
       acc[key] = value + "%";
     } else {
       acc[key] = value;

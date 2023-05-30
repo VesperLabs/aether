@@ -213,9 +213,12 @@ class ServerCharacter extends Character {
     ns.magicFind = ns.magicFind || 0;
     ns.maxExp = ns.maxExp || 0;
     ns.exp = this.stats.exp || 0;
+    ns.fireResistance = ns.fireResistance || 0;
+    ns.lightResistance = ns.lightResistance || 0;
+    ns.coldResistance = ns.coldResistance || 0;
+    ns.earthResistance = ns.earthResistance || 0;
     ns.attackDelay = ns.attackDelay || 0;
-    ns.minSpellDamage = Math.floor((ns.minSpellDamage || 0) + ns.intelligence * 0.03);
-    ns.maxSpellDamage = Math.floor((ns.maxSpellDamage || 0) + ns.intelligence * 0.03);
+    ns.spellPower = (ns.spellPower || 0) + ns.intelligence * 0.25;
     ns.attackDelay = 1 - Math.floor(ns.dexterity * 0.5) + ns.attackDelay;
     ns.castDelay = ns.castDelay || 1000;
     ns.castDelay = 1 - Math.floor(ns.intelligence * 0.5) + ns.castDelay;
@@ -234,6 +237,7 @@ class ServerCharacter extends Character {
     if (ns.critChance > 100) ns.critChance = 100;
     if (ns.dodgeChance > 75) ns.dodgeChance = 75;
     if (ns.blockChance > 75) ns.blockChance = 75;
+
     ns.maxDamage =
       ns.maxDamage + Math.floor(1 + ((ns.strength * 1.5 + ns.dexterity / 2) * ns.level) / 100);
     ns.minDamage =
@@ -260,8 +264,37 @@ class ServerCharacter extends Character {
     if (victim?.state?.isDead) return false;
     const hits: Array<Hit> = [];
     const { effects = {}, buffs } = this?.abilities?.[abilitySlot] ?? {};
-    const spellDamageRoll = randomNumber(this.stats?.minSpellDamage, this.stats?.maxSpellDamage);
+
+    // Get the damage of the spell
     const fireDamageRoll = randomNumber(effects?.minFireDamage, effects?.maxFireDamage);
+    const lightDamageRoll = randomNumber(effects?.minLightDamage, effects?.maxLightDamage);
+    const coldDamageRoll = randomNumber(effects?.minColdDamage, effects?.maxColdDamage);
+    const earthDamageRoll = randomNumber(effects?.minEarthDamage, effects?.maxEarthDamage);
+
+    // 1.) Multiply each damage type by this.stats.spellPower and add it on top
+    const spellPower = (100 + (this.stats.spellPower || 0)) / 100; // Assuming default value of 100 if not provided
+    const fireDamage = fireDamageRoll * spellPower;
+    const lightDamage = lightDamageRoll * spellPower;
+    const coldDamage = coldDamageRoll * spellPower;
+    const earthDamage = earthDamageRoll * spellPower;
+
+    // 2.) Calculate damage reduction based on victim's resistances
+    const fireResistance = (victim.stats.fireResistance || 0) / 100; // Assuming default value of 0 if not provided
+    const lightResistance = (victim.stats.lightResistance || 0) / 100;
+    const coldResistance = (victim.stats.coldResistance || 0) / 100;
+    const earthResistance = (victim.stats.earthResistance || 0) / 100;
+
+    const fireDamageAfterReduction = fireDamage * (1 - fireResistance);
+    const lightDamageAfterReduction = lightDamage * (1 - lightResistance);
+    const coldDamageAfterReduction = coldDamage * (1 - coldResistance);
+    const earthDamageAfterReduction = earthDamage * (1 - earthResistance);
+
+    // Calculate total damage after reduction
+    let totalDamage =
+      fireDamageAfterReduction +
+      lightDamageAfterReduction +
+      coldDamageAfterReduction +
+      earthDamageAfterReduction;
 
     // add buffs if the spell has any
     if (buffs) {
@@ -280,16 +313,11 @@ class ServerCharacter extends Character {
     // the spell doesnt do damage,
     if (!Object.entries(effects)?.length) return hits;
 
-    /* TODO: Calculate resistences */
-    let reducedDamage = spellDamageRoll + fireDamageRoll;
-    /* Npcs lock on and chase when a user hits them */
-    if (victim.state.isRobot) {
-      victim.state.lockedPlayerId = this?.socketId;
-    }
     /* Update the victim */
-    reducedDamage = Math.floor(reducedDamage);
-    victim.modifyStat("hp", -reducedDamage);
+    totalDamage = Math.floor(totalDamage);
+    victim.modifyStat("hp", -totalDamage);
     victim.state.lastCombat = Date.now();
+
     /* Npcs lock on and chase when a user hits them */
     if (victim.state.isRobot) {
       victim.state.lockedPlayerId = this?.socketId;
@@ -300,7 +328,7 @@ class ServerCharacter extends Character {
       victim.stats.hp = 0;
       hits.push({
         type: "death",
-        amount: -reducedDamage,
+        amount: -totalDamage,
         from: this.id,
         to: victim.id,
       });
@@ -308,7 +336,7 @@ class ServerCharacter extends Character {
     }
     hits.push({
       type: "hp",
-      amount: -reducedDamage,
+      amount: -totalDamage,
       from: this.id,
       to: victim.id,
     });

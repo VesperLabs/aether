@@ -1,29 +1,21 @@
 {
   "suffix": [
-    { "ilvl": 1, "name": "of Dexterity", "stats": { "dexterity": [2, 3] } },
-    { "ilvl": 1, "name": "of Strength", "stats": { "strength": [2, 3] } },
-    { "ilvl": 1, "name": "of Vitality", "stats": { "vitality": [2, 3] } },
-    { "ilvl": 1, "name": "of Intelligence", "stats": { "intelligence": [2, 3] } },
-    { "ilvl": 1, "name": "of Critical Chance", "stats": { "critChance": [1, 2] } },
-    { "ilvl": 1, "name": "of Dodge Chance", "stats": { "dodgeChance": [1, 2] } },
-    { "ilvl": 1, "name": "of HP Regen", "stats": { "regenHp": [1, 2] } },
-    { "ilvl": 1, "name": "of MP Regen", "stats": { "regenMp": [1, 2] } },
-    { "ilvl": 1, "name": "of Magic Find", "stats": { "magicFind": [1, 3] } },
-    { "ilvl": 1, "name": "of Max Damage", "stats": { "maxDamage": [1, 2] } },
-    { "ilvl": 1, "name": "of Walk Speed", "stats": { "walkSpeed": [1, 3] } },
-    { "ilvl": 1, "name": "of Defense", "stats": { "defense": [1, 2] } },
-    { "ilvl": 1, "name": "of Armor Pierce", "stats": { "armorPierce": [1, 2] } },
-    { "ilvl": 2, "name": "of Dodge Chance", "stats": { "dodgeChance": [1, 2] } },
-    { "ilvl": 2, "name": "of Attack Speed", "stats": { "attackDelay": [-5, -10] } },
-    {
-      "ilvl": 2,
-      "name": "of Spell Damage",
-      "stats": { "minSpellDamage": [1, 1], "maxSpellDamage": [2, 2] }
-    },
-    {
-      "ilvl": 2,
-      "name": "of Cast Speed",
-      "stats": { "castDelay": [-25, -50] }
-    }
+    { "id": 1, "ilvl": 1, "name": "of Dexterity", "stats": { "dexterity": [2, 3] } },
+    { "id": 2, "ilvl": 1, "name": "of Strength", "stats": { "strength": [2, 3] } },
+    { "id": 3, "ilvl": 1, "name": "of Vitality", "stats": { "vitality": [2, 3] } },
+    { "id": 4, "ilvl": 1, "name": "of Intelligence", "stats": { "intelligence": [2, 3] } },
+    { "id": 5, "ilvl": 1, "name": "of Critical Chance", "stats": { "critChance": [1, 2] } },
+    { "id": 6, "ilvl": 1, "name": "of Dodge Chance", "stats": { "dodgeChance": [1, 2] } },
+    { "id": 7, "ilvl": 1, "name": "of HP Regen", "stats": { "regenHp": [1, 2] } },
+    { "id": 8, "ilvl": 1, "name": "of MP Regen", "stats": { "regenMp": [1, 2] } },
+    { "id": 9, "ilvl": 1, "name": "of Magic Find", "stats": { "magicFind": [1, 3] } },
+    { "id": 10, "ilvl": 1, "name": "of Max Damage", "stats": { "maxDamage": [1, 2] } },
+    { "id": 11, "ilvl": 1, "name": "of Walk Speed", "stats": { "walkSpeed": [1, 3] } },
+    { "id": 12, "ilvl": 1, "name": "of Defense", "stats": { "defense": [1, 2] } },
+    { "id": 13, "ilvl": 1, "name": "of Armor Pierce", "stats": { "armorPierce": [1, 2] } },
+    { "id": 14, "ilvl": 2, "name": "of Dodge Chance", "stats": { "dodgeChance": [1, 2] } },
+    { "id": 15, "ilvl": 2, "name": "of Attack Speed", "stats": { "attackDelay": [-5, -10] } },
+    { "id": 16, "ilvl": 2, "name": "of Spell Power", "stats": { "spellPower": [5, 10] } },
+    { "id": 17, "ilvl": 2, "name": "of Cast Speed", "stats": { "castDelay": [-25, -50] } }
   ]
 }

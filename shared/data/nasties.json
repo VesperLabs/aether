@@ -304,7 +304,8 @@
       "regenHp": 5,
       "regenMp": 5,
       "maxHp": 0,
-      "maxMp": 0
+      "maxMp": 0,
+      "fireResistance": -50
     },
     "drops": [
       {
@@ -347,7 +348,8 @@
       "regenHp": 5,
       "regenMp": 5,
       "maxHp": 0,
-      "maxMp": 0
+      "maxMp": 0,
+      "fireResistance": -50
     },
     "drops": [
       {
@@ -396,7 +398,8 @@
       "regenHp": 5,
       "regenMp": 5,
       "maxHp": 0,
-      "maxMp": 0
+      "maxMp": 0,
+      "fireResistance": -50
     },
     "drops": [
       {
@@ -435,6 +438,7 @@
       "strength": 10,
       "vitality": 20,
       "intelligence": 17,
+      "spellPower": 100,
       "defense": 0,
       "blockChance": 0,
       "dodgeChance": 5,

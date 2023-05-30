@@ -58,8 +58,7 @@
         "slot": "hands",
         "stats": {
           "attackDelay": 200,
-          "minSpellDamage": 1,
-          "maxSpellDamage": 2,
+          "spellPower": 5,
           "range": 1
         },
         "requirements": {
@@ -162,6 +161,17 @@
           "critChance": [1, 10],
           "minDamage": 1,
           "maxDamage": 2
+        }
+      },
+      "twigmansBranch": {
+        "ilvl": 2,
+        "base": "wand",
+        "name": "Twigman's Branch",
+        "texture": "weapon-wand-stick",
+        "slot": "hands",
+        "tint": "0x66FF66",
+        "stats": {
+          "spellPower": 25
         }
       },
       "soulEdge": {

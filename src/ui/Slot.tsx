@@ -381,7 +381,7 @@ function useItemEvents({ location, bagId, slotKey, item }) {
           /* If more than 1, open up the drop modal */
           return setDropItem({ ...item, location, bagId, action: "SHOP", slotKey });
         } else {
-          if (["set", "rare", "unique"]?.includes(item?.rarity)) {
+          if (["set", "rare", "unique"]?.includes(item?.rarity) || ["bag"]?.includes(item?.base)) {
             return setDropItem({
               ...item,
               location,

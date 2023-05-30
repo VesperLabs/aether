@@ -119,7 +119,7 @@
         "shop": "Some useful goods here. I take gold."
       },
       "quests": ["raccoon-hunting", "grape-finding", "hawkwing-hunting"],
-      "shop": []
+      "shop": [{ "item": ["weapon", "common", "scythe"], "stock": 1 }]
     }
   },
   "anthony": {
@@ -178,7 +178,7 @@
         "shop": "Some useful goods here. I take gold."
       },
       "quests": ["spidermeat-finding", "batmeat-finding", "cheese-finding", "hogan-hunting"],
-      "shop": []
+      "shop": [{ "item": ["weapon", "common", "spear"], "stock": 1 }]
     }
   },
   "steve": {
@@ -367,7 +367,11 @@
       },
       "quests": ["skull-finding", "chonks-hunting"],
       "shop": [
-        { "item": ["spell", "magic", "fireball"], "stock": 1 },
+        { "item": ["spell", "common", "fireball"], "stock": 1 },
+        { "item": ["spell", "common", "brute"], "stock": 1 },
+        { "item": ["spell", "common", "endurance"], "stock": 1 },
+        { "item": ["spell", "common", "evasion"], "stock": 1 },
+        { "item": ["spell", "common", "genius"], "stock": 1 },
         { "item": ["armor", "magic", "wizardRobe"], "stock": 1 }
       ]
     }

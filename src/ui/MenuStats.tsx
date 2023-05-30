@@ -53,10 +53,12 @@ const MenuStats = () => {
             <Text>
               {stats?.minDamage} - {stats?.maxDamage}
             </Text>
-            <Text>Spell Damage</Text>
-            <Text>
-              {stats?.minSpellDamage} - {stats?.maxSpellDamage}
-            </Text>
+            <Text>Spell Power</Text>
+            <Text>{stats?.spellPower?.toFixed(1)}%</Text>
+            <Text>Walk Speed</Text>
+            <Text>{Math.round(stats?.walkSpeed)}</Text>
+            <Text>Magic Find</Text>
+            <Text>{stats?.magicFind}%</Text>
           </Grid>
           <Grid sx={COLUMN_STYLES}>
             <Text>Crit Chance</Text>
@@ -65,26 +67,32 @@ const MenuStats = () => {
             <Text>{stats?.critMultiplier?.toFixed(1)}x</Text>
             <Text>Armor Pierce</Text>
             <Text>{stats?.armorPierce}</Text>
-            <Text>Walk Speed</Text>
-            <Text>{Math.round(stats?.walkSpeed)}</Text>
+            <Text>Accuracy</Text>
+            <Text>{stats?.accuracy}</Text>
             <Text>Cast Delay</Text>
             <Text>{convertMsToS(stats?.castDelay)}</Text>
             <Text>Attack Delay</Text>
             <Text>{convertMsToS(stats?.attackDelay)}</Text>
+            <Text>Regen Hp</Text>
+            <Text>+{stats?.regenHp}</Text>
+            <Text>Regen Mp</Text>
+            <Text>+{stats?.regenMp}</Text>
           </Grid>
           <Grid sx={COLUMN_STYLES}>
+            <Text>Fire Resistance</Text>
+            <Text>{stats?.fireResistance?.toFixed(0)}%</Text>
+            <Text>Light Resistance</Text>
+            <Text>{stats?.lightResistance?.toFixed(0)}%</Text>
+            <Text>Cold Resistance</Text>
+            <Text>{stats?.coldResistance?.toFixed(0)}%</Text>
+            <Text>Earth Resistance</Text>
+            <Text>{stats?.earthResistance?.toFixed(0)}%</Text>
             <Text>Dodge Chance</Text>
             <Text>{stats?.dodgeChance?.toFixed(1)}%</Text>
             <Text>Block Chance</Text>
             <Text>{stats?.blockChance?.toFixed(1)}%</Text>
             <Text>Defense</Text>
             <Text>{stats?.defense}</Text>
-            <Text>Regen Hp</Text>
-            <Text>+{stats?.regenHp}</Text>
-            <Text>Regen Mp</Text>
-            <Text>+{stats?.regenMp}</Text>
-            <Text>Magic Find</Text>
-            <Text>{stats?.magicFind}%</Text>
           </Grid>
         </Flex>
       </Flex>
