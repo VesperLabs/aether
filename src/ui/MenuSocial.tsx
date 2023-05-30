@@ -11,6 +11,7 @@ import {
   Button,
   ICONS,
   Box,
+  MENU_MAX_WIDTH,
 } from "./";
 import { ThemeUIStyleObject } from "theme-ui";
 
@@ -83,7 +84,7 @@ const MenuSocial = () => {
           Social
         </MenuHeader>
         {hasPlayers && (
-          <Flex sx={{ flex: 1, maxWidth: 592, gap: 2, flexDirection: "column" }}>
+          <Flex sx={{ flex: 1, maxWidth: MENU_MAX_WIDTH, gap: 2, flexDirection: "column" }}>
             {hasOtherPlayers && (
               <SocialGrid>
                 {otherPlayers?.map((player) => {

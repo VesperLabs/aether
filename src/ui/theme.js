@@ -88,7 +88,7 @@ export default {
     header: {
       variant: "buttons.default",
       flex: 1,
-      maxWidth: 592,
+      maxWidth: 1024,
       borderRadius: 4,
       py: 1,
       px: 2,

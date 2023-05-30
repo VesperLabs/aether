@@ -1,5 +1,5 @@
 import { ThemeUIStyleObject } from "theme-ui";
-
+export const MENU_MAX_WIDTH = 1024;
 export {
   ThemeProvider,
   Box,

@@ -1,4 +1,4 @@
-import { Flex, Menu, MenuHeader, useAppContext, Slot } from "./";
+import { Flex, Menu, MenuHeader, useAppContext, Slot, MENU_MAX_WIDTH } from "./";
 
 const MenuEquipment = () => {
   const { hero, tabEquipment, setTabEquipment } = useAppContext();
@@ -13,7 +13,7 @@ const MenuEquipment = () => {
       <MenuHeader icon={`../assets/icons/helmet.png`} onClick={() => setTabEquipment(false)}>
         Equipment
       </MenuHeader>
-      <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", maxWidth: 592 }}>
+      <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", maxWidth: MENU_MAX_WIDTH }}>
         {equipment?.map(([slotKey, item]) => (
           <Slot
             key={slotKey}

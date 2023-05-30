@@ -1,4 +1,4 @@
-import { Flex, Menu, useAppContext, MenuHeader, Quest, Text } from "./";
+import { Flex, Menu, useAppContext, MenuHeader, Quest, Text, MENU_MAX_WIDTH } from "./";
 import questList from "../../shared/data/questList.json";
 const MenuQuests = () => {
   const { hero, tabQuests, setTabQuests } = useAppContext();
@@ -26,7 +26,7 @@ const MenuQuests = () => {
             gap: 2,
             flexWrap: "wrap",
             justifyContent: "end",
-            maxWidth: 592,
+            maxWidth: MENU_MAX_WIDTH,
           }}
         >
           {quests?.length === 0 && <Text>You are not on any quests.</Text>}

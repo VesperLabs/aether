@@ -185,12 +185,9 @@ class Character extends Phaser.GameObjects.Container {
       }
       /* Check if the player has enough items of the target item */
       if (objective?.type === "item") {
-        const item = this.inventory.find(
-          (i: Item) =>
-            i?.slot === objective?.target?.[0] &&
-            i?.rarity === objective?.target?.[1] &&
-            i?.key === objective?.target?.[2]
-        );
+        const item =
+          this.findInventoryQuestItem(objective?.target as string[]) ||
+          this.findBagQuestItem(objective?.target as string[]);
         isReady = item?.amount >= objective?.amount;
       }
       /* Add the playerObjective to the list */
@@ -203,6 +200,22 @@ class Character extends Phaser.GameObjects.Container {
       isCompleted: playerQuest?.isCompleted,
       objectives,
     };
+  }
+  findInventoryQuestItem(target: Array<string>) {
+    const item = this.inventory.find(
+      (i: Item) => i?.slot === target?.[0] && i?.rarity === target?.[1] && i?.key === target?.[2]
+    );
+    return item;
+  }
+  findBagQuestItem(target: Array<string>) {
+    let item = null;
+    const bags = this?.inventory?.filter((item: Item) => item?.base === "bag");
+    for (const bag of bags) {
+      item = bag?.items?.find?.(
+        (i: Item) => i?.slot === target?.[0] && i?.rarity === target?.[1] && i?.key === target?.[2]
+      );
+    }
+    return item;
   }
   destroy() {
     if (this.scene) this.scene.events.off("update", this.update, this);
