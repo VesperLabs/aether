@@ -246,10 +246,10 @@ class ServerCharacter extends Character {
     });
 
     //moving values
-    if (this.stats.hp < 1) ns.hp = ns.maxHp;
+    if (this.stats.hp < 0) ns.hp = 0;
     else if (this.stats.hp > ns.maxHp) ns.hp = ns.maxHp;
     else ns.hp = this.stats.hp;
-    if (this.stats.mp < 1) ns.mp = ns.maxMp;
+    if (this.stats.mp < 0) ns.mp = 0;
     else if (this.stats.mp > ns.maxMp) ns.mp = ns.maxMp;
     else ns.mp = this.stats.mp;
     this.stats = ns;

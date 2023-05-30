@@ -20,7 +20,7 @@ import {
   SHOP_INFLATION,
   getBuffRoomState,
 } from "./utils";
-import { initDatabase } from "./db";
+import { initDatabase } from "./db/fake";
 import RoomManager from "./RoomManager";
 import PartyManager from "./PartyManager";
 import Phaser from "phaser";
@@ -244,7 +244,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         const roomName: string = hero?.roomName;
         const abilityName = hero?.abilities?.[abilitySlot]?.base || "attack_left";
         const allowedTargets = spellDetails?.[abilityName]?.allowedTargets;
-
+        const party = this.partyManager.getPartyById(hero?.partyId);
         /* Create hitList for npcs */
         let hitList: Array<Hit> = [];
         let totalExpGain: number = 0;
@@ -284,6 +284,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           }
         }
         for (const player of players) {
+          const targetIsInParty = party?.members?.find((m) => m?.id === player?.id);
           /* TODO: verify location of hit before we consider it a hit */
           if (!ids?.includes(player.id)) continue;
           // only allow spells to hit intended targets
@@ -291,7 +292,10 @@ class ServerScene extends Phaser.Scene implements ServerScene {
             if (player.id === hero.id) continue;
           }
           if (!allowedTargets?.includes("enemy")) {
-            if (player.id !== hero.id) continue;
+            if (player.id !== hero.id && !targetIsInParty) continue;
+          }
+          if (!allowedTargets.includes("ally")) {
+            if (targetIsInParty) continue;
           }
           const newHits = abilitySlot
             ? hero.calculateSpellDamage(player, abilitySlot)
@@ -336,6 +340,15 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           isDoor: true,
           lastTeleport: Date.now(),
         });
+
+        // announce room has changed to the party
+        if (player?.partyId) {
+          const party = this.partyManager.getPartyById(player?.partyId);
+          party.updateMember(player?.id, { roomName: player?.roomName });
+          io.to(party.socketRoom).emit("partyUpdate", {
+            party,
+          });
+        }
 
         socket.emit("heroInit", {
           ...getRoomState(scene, prev.destMap),
@@ -732,7 +745,6 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         }
 
         if (invitee.partyId) {
-        
           return socket.emit("message", {
             type: "error",
             message: "Player is already in a party.",
@@ -754,15 +766,16 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         const party = this.partyManager.getPartyById(partyId);
 
         if (!player || !party) {
-          return;
+          return socket.emit("partyUpdate", {
+            message: "Could not find party.",
+            party: null,
+            partyId,
+          });
         }
 
         // Check if the player is already a member of the party
         if (player.partyId === partyId) {
-          return socket.emit("message", {
-            type: "error",
-            message: "You are already a member of this party.",
-          } as Message);
+          return socket.emit("message");
         }
 
         if (!party.hasInviteeId(socketId)) {

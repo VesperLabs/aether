@@ -4,6 +4,7 @@ import { Socket } from "socket.io";
 interface PartyMember {
   id: string;
   isLeader: boolean;
+  roomName: string;
 }
 
 interface PartyInvited {
@@ -30,9 +31,9 @@ class Party {
   removeInvitee(id: string) {
     this.invitees = this.invitees.filter((invitee: PartyInvited) => invitee.id !== id);
   }
-  addMember(id: string, isLeader: boolean) {
+  addMember(id: string, isLeader: boolean, roomName: string) {
     if (!this.hasMemberId(id)) {
-      this.members.push({ id, isLeader });
+      this.members.push({ id, isLeader, roomName });
     }
     if (this.hasInviteeId(id)) {
       this.removeInvitee(id);
@@ -41,10 +42,16 @@ class Party {
   removeMember(id: string) {
     this.members = this.members.filter((member: PartyMember) => member.id !== id);
   }
-  updateMember(id: string, isLeader: boolean) {
+  updateMember(id: string, props: any) {
+    const { isLeader, roomName } = props;
     const member = this.members.find((member: PartyMember) => member.id === id);
     if (member) {
-      member.isLeader = isLeader;
+      if ([true, false]?.includes(isLeader)) {
+        member.isLeader = isLeader;
+      }
+      if (roomName) {
+        member.roomName = roomName;
+      }
     }
   }
   hasMemberId(id: string) {
@@ -121,7 +128,7 @@ class PartyManager {
       }
 
       // Add the player to the new party
-      party.addMember(playerId, isLeader);
+      party.addMember(playerId, isLeader, player?.roomName);
       player.partyId = party.id;
       socket.join(party.socketRoom);
       this.scene.io.to(party.socketRoom).emit("partyUpdate", {

@@ -26,7 +26,7 @@
     "layerDepth": "top"
   },
   "evasion": {
-    "allowedTargets": ["self"],
+    "allowedTargets": ["self", "ally"],
     "maxVisibleTime": 1200,
     "maxActiveTime": 100,
     "bodySize": 32,
@@ -37,7 +37,7 @@
     "layerDepth": "bottom"
   },
   "brute": {
-    "allowedTargets": ["self"],
+    "allowedTargets": ["self", "ally"],
     "maxVisibleTime": 1200,
     "maxActiveTime": 100,
     "bodySize": 32,
@@ -48,7 +48,7 @@
     "layerDepth": "bottom"
   },
   "endurance": {
-    "allowedTargets": ["self"],
+    "allowedTargets": ["self", "ally"],
     "maxVisibleTime": 1200,
     "maxActiveTime": 100,
     "bodySize": 32,
@@ -59,7 +59,7 @@
     "layerDepth": "bottom"
   },
   "genius": {
-    "allowedTargets": ["self"],
+    "allowedTargets": ["self", "ally"],
     "maxVisibleTime": 1200,
     "maxActiveTime": 100,
     "bodySize": 32,

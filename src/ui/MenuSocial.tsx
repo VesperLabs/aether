@@ -12,6 +12,7 @@ import {
   ICONS,
   Box,
 } from "./";
+import { ThemeUIStyleObject } from "theme-ui";
 
 const ActionButton = ({ player }) => {
   const { partyInvites, socket } = useAppContext();
@@ -37,7 +38,7 @@ const ActionButton = ({ player }) => {
 };
 
 const PartyActionButton = ({ player }) => {
-  const { hero, socket, party } = useAppContext();
+  const { hero, socket } = useAppContext();
 
   if (hero?.id === player?.id) {
     return (
@@ -57,7 +58,7 @@ const SocialGrid = (props) => {
         borderRadius: 5,
         bg: "shadow.10",
         p: 1,
-        gridTemplateColumns: "min-content 1fr min-content min-content 1fr",
+        gridTemplateColumns: "min-content 1fr min-content min-content min-content 1fr",
         alignItems: "center",
         gap: 1,
         justifyContent: "end",
@@ -74,8 +75,8 @@ const MenuSocial = () => {
   const otherPlayers = players?.filter((p) => !partyIds?.includes(p?.id) && hero?.id !== p?.id);
   const hasParty = partyIds?.length > 0;
 
-  return tabSocial ? (
-    <Menu>
+  return (
+    <Menu sx={{ display: tabSocial ? "block" : "none" }}>
       <Flex sx={{ flexWrap: "wrap", justifyContent: "end", gap: 2, flex: 1 }}>
         <MenuHeader icon="social" onClick={() => setTabSocial(false)}>
           Social
@@ -110,10 +111,10 @@ const MenuSocial = () => {
         </Flex>
       </Flex>
     </Menu>
-  ) : (
-    <></>
   );
 };
+
+const COLUMN_STYLE: ThemeUIStyleObject = { textTransform: "capitalize", whiteSpace: "nowrap" };
 
 const SocialPlayerRow = (props: { partyPlayer: any; children: any }) => {
   const { partyPlayer, children } = props;
@@ -121,9 +122,11 @@ const SocialPlayerRow = (props: { partyPlayer: any; children: any }) => {
   const player = players?.find((p) => p?.id === partyPlayer?.id);
   const partyLeader = party?.members?.find((p) => p?.isLeader);
   const isLeader = partyLeader?.id === partyPlayer?.id;
+  const classString = player ? `Lv. ${player?.stats?.level} ${player?.charClass}` : null;
+  const playerIcon = player ? ICONS?.[player?.charClass?.toUpperCase()] : null;
   return (
-    <Fragment key={player?.id}>
-      <Box sx={{ position: "relative" }}>
+    <Fragment key={partyPlayer?.id}>
+      <MemoizedColumn player={player} as={Box} sx={{ position: "relative" }}>
         <Portrait
           user={player}
           scale={1}
@@ -137,15 +140,25 @@ const SocialPlayerRow = (props: { partyPlayer: any; children: any }) => {
             sx={{ position: "absolute", left: "-2px", top: "-11px" }}
           />
         )}
-      </Box>
-      <Text>{player?.profile?.userName}</Text>
-      <Icon size={24} icon={ICONS?.[player?.charClass?.toUpperCase()]} />
-      <Text sx={{ textTransform: "capitalize", whiteSpace: "nowrap" }}>
-        Lv. {player?.stats?.level} {player?.charClass}
-      </Text>
+      </MemoizedColumn>
+
+      <MemoizedColumn player={player}>{player?.profile?.userName}</MemoizedColumn>
+      <MemoizedColumn as={Icon} player={player} size={24} icon={playerIcon} />
+      <MemoizedColumn player={player}>{classString}</MemoizedColumn>
+      <Text sx={COLUMN_STYLE}>{partyPlayer?.roomName}</Text>
       <Flex sx={{ justifyContent: "end" }}>{children}</Flex>
     </Fragment>
   );
 };
+
+const MemoizedColumn = memo(
+  (props: any) => {
+    const { as: As = Text, player } = props;
+    return <As sx={COLUMN_STYLE} {...props}></As>;
+  },
+  (prev, next) => {
+    if (prev?.player && !next?.player) return true;
+  }
+);
 
 export default MenuSocial;

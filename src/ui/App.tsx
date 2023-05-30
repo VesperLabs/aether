@@ -234,11 +234,10 @@ function App({ socket, debug, game }) {
       setPartyInvites((prevInvites) => [...prevInvites, inviteData]);
     };
 
-    const onPartyUpdate = ({ message, party }) => {
+    //partyId here seems redundant, but we use it for errors
+    const onPartyUpdate = ({ message, party, partyId }) => {
       // remove the invite
-      setPartyInvites((prev) =>
-        prev?.filter((invite: PartyInvite) => invite?.partyId !== party?.id)
-      );
+      setPartyInvites([]);
       setParty(party);
       setMessages((prev) => [...prev, { type: "party", message }]);
     };
