@@ -34,6 +34,7 @@ const ItemBuilder = {
       "ring",
       "amulet",
       "spell",
+      "bag",
     ];
     let type = types[Math.floor(Math.random() * types.length)];
     let theType = itemList[type];
@@ -77,16 +78,18 @@ const ItemBuilder = {
       }
     }
 
-    if (commonRoll == 1 && rareRoll == 1 && item == null) {
-      if (commonPool.length > 0) {
-        item = commonPool[Math.floor(Math.random() * commonPool.length)];
-        item.rarity = "rare";
+    if (item.type !== "bag") {
+      if (commonRoll == 1 && rareRoll == 1 && item == null) {
+        if (commonPool.length > 0) {
+          item = commonPool[Math.floor(Math.random() * commonPool.length)];
+          item.rarity = "rare";
+        }
       }
-    }
-    if (commonRoll == 1 && magicRoll == 1 && item == null) {
-      if (commonPool.length > 0) {
-        item = commonPool[Math.floor(Math.random() * commonPool.length)];
-        item.rarity = "magic";
+      if (commonRoll == 1 && magicRoll == 1 && item == null) {
+        if (commonPool.length > 0) {
+          item = commonPool[Math.floor(Math.random() * commonPool.length)];
+          item.rarity = "magic";
+        }
       }
     }
 
