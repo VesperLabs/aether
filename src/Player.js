@@ -26,9 +26,7 @@ class Player extends Character {
   updateData(data) {
     this.activeItemSlots = data?.activeItemSlots;
     // filter out equipment slotNames that are not in activeItemsSlots array
-    this.equipment = Object.fromEntries(
-      Object.entries(data?.equipment).filter(([key]) => this.activeItemSlots.includes(key))
-    );
+    this.equipment = data.equipment;
     this.abilities = data?.abilities;
     this.inventory = data?.inventory;
     this.profile = data?.profile;
@@ -39,12 +37,15 @@ class Player extends Character {
     this.buffs = data?.buffs;
     // update states individually
     this.state.activeSets = data?.state?.activeSets;
+    this.updateVisibleEquipment();
   }
   updateBuffData(data) {
     this.activeItemSlots = data?.activeItemSlots;
     this.stats = data?.stats;
     this.buffs = data?.buffs;
     this.state.activeSets = data?.state?.activeSets;
+    // filter out equipment slotNames that are not in activeItemsSlots array
+    this.updateVisibleEquipment();
   }
   updateExtas() {
     this.drawCharacterFromUserData();
@@ -106,7 +107,7 @@ class Player extends Character {
     this.add(this.talkMenu);
   }
   drawCharacterFromUserData() {
-    const { profile, equipment, state } = this || {};
+    const { profile, visibleEquipment, state } = this || {};
     if (profile?.userName) {
       this.userName.setText(profile?.userName);
       this.userName.setX(-this.userName.width / 2);
@@ -118,7 +119,7 @@ class Player extends Character {
     this.hair.setTint(profile?.hair?.tint || "0xFFFFFF");
     this.face.setTint(profile?.face?.tint || "0xFFFFFF");
 
-    for (const [key, slot] of Object.entries(equipment)) {
+    for (const [key, slot] of Object.entries(visibleEquipment)) {
       this?.[key]?.setTint(slot?.tint || "0xFFFFFF");
     }
   }
@@ -349,7 +350,7 @@ function drawFrame(p) {
     shadow,
     direction,
     action,
-    equipment,
+    visibleEquipment,
     profile,
     face,
     hair,
@@ -417,16 +418,16 @@ function drawFrame(p) {
   p?.playAnim(hair, [profile?.race, profile?.hair?.texture, direction, action]);
   p?.playAnim(
     armor,
-    [profile?.race, profile?.gender, equipment?.armor?.texture, direction, action],
+    [profile?.race, profile?.gender, visibleEquipment?.armor?.texture, direction, action],
     p.isHero
   );
-  p?.playAnim(helmet, [profile?.race, equipment?.helmet?.texture, direction, action]);
-  p?.playAnim(boots, [profile?.race, equipment?.boots?.texture, direction, action]);
-  p?.playAnim(pants, [profile?.race, equipment?.pants?.texture, direction, action]);
-  p?.playAnim(accessory, [profile?.race, equipment?.accessory?.texture, direction, action]);
+  p?.playAnim(helmet, [profile?.race, visibleEquipment?.helmet?.texture, direction, action]);
+  p?.playAnim(boots, [profile?.race, visibleEquipment?.boots?.texture, direction, action]);
+  p?.playAnim(pants, [profile?.race, visibleEquipment?.pants?.texture, direction, action]);
+  p?.playAnim(accessory, [profile?.race, visibleEquipment?.accessory?.texture, direction, action]);
   playWeapons(p);
-  handRight.setTexture(equipment?.handRight?.texture);
-  handLeft.setTexture(equipment?.handLeft?.texture);
+  handRight.setTexture(visibleEquipment?.handRight?.texture);
+  handLeft.setTexture(visibleEquipment?.handLeft?.texture);
 }
 
 function updateCurrentSpeed(player) {
@@ -463,7 +464,15 @@ function hackFrameRates(player, rate) {
 }
 
 function playWeapons(player) {
-  const { profile, handLeft, handRight, weaponAtlas: w, action, equipment, direction } = player;
+  const {
+    profile,
+    handLeft,
+    handRight,
+    weaponAtlas: w,
+    action,
+    visibleEquipment,
+    direction,
+  } = player;
   const currentFrame = player?.skin?.anims?.currentFrame;
   const { left, right } = w?.offsets?.[profile?.race]?.[currentFrame.textureFrame] || {};
   handLeft.setPosition(left?.x, left?.y);
@@ -475,8 +484,8 @@ function playWeapons(player) {
   handRight.setFlipY(right?.flipY);
   handRight.setAngle(right?.rotation);
   if (
-    equipment?.handRight?.texture?.includes("katar") ||
-    equipment?.handLeft?.texture?.includes("katar")
+    visibleEquipment?.handRight?.texture?.includes("katar") ||
+    visibleEquipment?.handLeft?.texture?.includes("katar")
   ) {
     if (action === "attack_right") {
       if (direction === "left") {

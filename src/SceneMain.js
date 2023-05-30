@@ -127,9 +127,8 @@ class SceneMain extends Phaser.Scene {
       player.updateData(userData);
     });
 
-    socket.on("playerAttack", ({ socketId, count, direction }) => {
+    socket.on("playerAttack", ({ socketId, count }) => {
       const p = getPlayer(scene, socketId);
-      p.direction = direction;
       p.doAttack(count);
     });
 
@@ -162,9 +161,12 @@ class SceneMain extends Phaser.Scene {
       p.takeHit({ type, amount });
     });
 
+    /* We already recieve direction from other players */
     socket.on("changeDirection", ({ socketId, direction }) => {
       const p = getPlayer(scene, socketId);
-      p.direction = direction;
+      if (p?.isHero) {
+        p.direction = direction;
+      }
     });
 
     socket.on("assignDamage", (hitList = []) => {

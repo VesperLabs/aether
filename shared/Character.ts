@@ -18,6 +18,7 @@ class Character extends Phaser.GameObjects.Container {
   gold: any;
   profile: any;
   equipment: Record<string, Item>;
+  visibleEquipment: Record<string, Item>;
   inventory: any;
   baseStats: any;
   stats: any;
@@ -106,6 +107,7 @@ class Character extends Phaser.GameObjects.Container {
     scene.physics.add.existing(this);
     const bodySize = 8 * (this?.profile?.scale || 1);
     this.body.setCircle(bodySize, -bodySize, -bodySize);
+    this.updateVisibleEquipment();
     this.checkAttackHands();
   }
   doAttack(count: integer) {
@@ -154,13 +156,18 @@ class Character extends Phaser.GameObjects.Container {
       this.doAttack(2);
     }
   }
+  updateVisibleEquipment() {
+    this.visibleEquipment = Object.fromEntries(
+      Object.entries(this?.equipment).filter(([key]) => this.activeItemSlots.includes(key))
+    );
+  }
   checkAttackHands() {
     this.state.hasWeaponRight = false;
     this.state.hasWeaponLeft = false;
     this.state.hasWeapon = false;
     /* Can only attack with a hand if it contains a weapon type item  */
-    const leftType = this.equipment?.handLeft?.type;
-    const rightType = this.equipment?.handRight?.type;
+    const leftType = this.visibleEquipment?.handLeft?.type;
+    const rightType = this.visibleEquipment?.handRight?.type;
     if (rightType === "weapon") this.state.hasWeaponRight = true;
     if (leftType === "weapon") this.state.hasWeaponLeft = true;
     if (this.state.hasWeaponRight || this.state.hasWeaponLeft) this.state.hasWeapon = true;
