@@ -233,19 +233,18 @@ const Slot = React.memo(
       "data-location": location,
       "data-slot-key": slotKey,
       "data-bag-id": bagId,
+      "data-tooltip-id": item?.id + location,
     };
 
     const isActive =
       hero?.activeItemSlots?.includes(slotKey) || !["abilities", "equipment"]?.includes(location);
-    const targetMoved = target?.dataset?.tooltipId !== item?.id;
+    const targetMoved = target?.dataset?.tooltipId !== dataKeys?.["data-tooltip-id"];
     const aboutToSell = dragging && target?.closest(".menu-keeper") && location !== "shop";
     const showTooltip =
       (dragging && !targetMoved) || (hovering && !isMobile) || (hovering && !isMobile && disabled);
-    const tooltipId = `${location}-${item?.id}`;
 
     return (
       <Box
-        data-tooltip-id={tooltipId}
         sx={{
           touchAction: "none",
           userSelect: "none",
@@ -314,7 +313,13 @@ const Slot = React.memo(
                 }}
               />
             </Portal>
-            <ItemTooltip item={item} show={showTooltip} tooltipId={tooltipId} />
+            {item?.id && (
+              <ItemTooltip
+                item={item}
+                show={showTooltip}
+                tooltipId={dataKeys?.["data-tooltip-id"]}
+              />
+            )}
           </>
         )}
       </Box>
