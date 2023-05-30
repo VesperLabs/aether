@@ -36,6 +36,17 @@
     "tint": "0xCCFFCC",
     "layerDepth": "bottom"
   },
+  "haste": {
+    "allowedTargets": ["self", "ally"],
+    "maxVisibleTime": 1200,
+    "maxActiveTime": 100,
+    "bodySize": 32,
+    "npcCastRange": [100, 150],
+    "npcCastWait": 30000,
+    "scaleBase": 0.6,
+    "tint": "0xCCFFFF",
+    "layerDepth": "bottom"
+  },
   "brute": {
     "allowedTargets": ["self", "ally"],
     "maxVisibleTime": 1200,

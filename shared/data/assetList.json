@@ -210,6 +210,18 @@
     "previewRect": [0, 80, 80, 40]
   },
   {
+    "texture": "human-helmet-hood",
+    "src": "./assets/atlas/helmet/helmet-hood.png",
+    "atlas": "./assets/atlas/80x80.json",
+    "previewRect": [0, 80, 80, 80]
+  },
+  {
+    "texture": "human-helmet-plate",
+    "src": "./assets/atlas/helmet/helmet-plate.png",
+    "atlas": "./assets/atlas/80x80.json",
+    "previewRect": [0, 80, 80, 80]
+  },
+  {
     "texture": "human-accessory-glasses",
     "src": "./assets/atlas/accessory/accessory-glasses.png",
     "atlas": "./assets/atlas/80x80.json",
@@ -464,6 +476,12 @@
   {
     "texture": "spell-evasion",
     "src": "./assets/atlas/spell/spell-evasion.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
+    "texture": "spell-haste",
+    "src": "./assets/atlas/spell/spell-haste.png",
     "atlas": "./assets/atlas/32x32-stackable.json",
     "previewRect": [0, 0, 32, 32]
   },

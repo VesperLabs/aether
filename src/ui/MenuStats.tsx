@@ -54,7 +54,7 @@ const MenuStats = () => {
               {stats?.minDamage} - {stats?.maxDamage}
             </Text>
             <Text>Spell Power</Text>
-            <Text>{stats?.spellPower?.toFixed(1)}%</Text>
+            <Text>{stats?.spellPower}</Text>
             <Text>Walk Speed</Text>
             <Text>{Math.round(stats?.walkSpeed)}</Text>
             <Text>Magic Find</Text>

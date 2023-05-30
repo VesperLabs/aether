@@ -4,7 +4,7 @@ import { getAngleFromDirection } from "../shared/utils";
 import spellDetails from "../shared/data/spellDetails.json";
 const Sprite = Phaser.GameObjects.Sprite;
 const BLANK_TEXTURE = "human-blank";
-const BUFF_SPELLS = ["evasion", "brute", "endurance", "genius"];
+const BUFF_SPELLS = ["evasion", "brute", "endurance", "genius", "haste"];
 class Spell extends Phaser.GameObjects.Container {
   constructor(scene, { id, caster, spellName, abilitySlot, state, castAngle, ilvl = 1 }) {
     super(scene, caster.x, caster.y);

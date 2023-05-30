@@ -58,7 +58,7 @@
         "slot": "hands",
         "stats": {
           "attackDelay": 200,
-          "spellPower": 5,
+          "spellPower": 2,
           "range": 1
         },
         "requirements": {
@@ -171,7 +171,7 @@
         "slot": "hands",
         "tint": "0x66FF66",
         "stats": {
-          "spellPower": 25
+          "spellPower": 5
         }
       },
       "soulEdge": {
@@ -229,14 +229,31 @@
           "defense": [2, 3]
         }
       },
-      "leatherCap": {
-        "ilvl": 2,
-        "name": "Leather Cap",
-        "base": "cap",
-        "texture": "helmet-cap",
+      "leatherHood": {
+        "ilvl": 1,
+        "name": "Leather hood",
+        "base": "hood",
+        "texture": "helmet-hood",
         "tint": "0x865027",
         "slot": "helmet",
-        "stats": {}
+        "stats": {
+          "defense": [2, 3]
+        }
+      },
+      "nutshellPlateHelmet": {
+        "ilvl": 1,
+        "name": "Nutshell Plate Helmet",
+        "base": "plate-helmet",
+        "texture": "helmet-plate",
+        "tint": "0xCC9966",
+        "slot": "helmet",
+        "stats": {
+          "defense": 6,
+          "walkSpeed": -5
+        },
+        "requirements": {
+          "strength": 3
+        }
       }
     },
     "unique": {
@@ -775,6 +792,22 @@
         },
         "requirements": {
           "dexterity": 5
+        },
+        "mpCost": 10,
+        "cost": 100
+      },
+      "haste": {
+        "ilvl": 1,
+        "name": "Haste",
+        "base": "haste",
+        "slot": "spell",
+        "texture": "scroll-green",
+        "buffs": {
+          "haste": 1
+        },
+        "requirements": {
+          "dexterity": 5,
+          "intelligence": 5
         },
         "mpCost": 10,
         "cost": 100

@@ -371,6 +371,7 @@
         { "item": ["spell", "common", "brute"], "stock": 1 },
         { "item": ["spell", "common", "endurance"], "stock": 1 },
         { "item": ["spell", "common", "evasion"], "stock": 1 },
+        { "item": ["spell", "common", "haste"], "stock": 1 },
         { "item": ["spell", "common", "genius"], "stock": 1 },
         { "item": ["armor", "magic", "wizardRobe"], "stock": 1 }
       ]

@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import { Box, useAppContext } from "./";
-import { tintCanvas, imageToCanvas } from "../utils";
+import { tintCanvas, imageToCanvas, HAIR_HIDING_HELMETS } from "../utils";
 
 function CanvasPreview({ assets, topOffset = 10, scale = 2 }) {
   const canvasRef = useRef(null);
@@ -68,6 +68,7 @@ const Portrait = ({
   const { race, gender } = user?.profile ?? {};
   const userFace = user?.profile?.face;
   const userHair = user?.profile?.hair;
+
   // filter out equipment slotNames that are not in activeItemsSlots array
   const filteredEquipment = Object.fromEntries(
     Object.entries(user?.equipment).filter(([key]) => user.activeItemSlots.includes(key))
@@ -90,9 +91,15 @@ const Portrait = ({
   const pants = getAssetProps("pants", `${race}-${userPants?.texture}`, userPants?.tint);
   const boots = getAssetProps("boots", `${race}-${userBoots?.texture}`, userBoots?.tint);
   const helmet = getAssetProps("helmet", `${race}-${userHelmet?.texture}`, userHelmet?.tint);
+
+  const obscuredKeys =
+    HAIR_HIDING_HELMETS.includes(userHelmet?.texture) && !filterKeys?.includes("helmet")
+      ? ["hair"]
+      : filterKeys;
+
   const assets = [skin, chest, hair, boots, pants, armor, face, helmet, accessory]
     ?.filter(Boolean)
-    ?.filter((asset) => !filterKeys.includes(asset.slotKey));
+    ?.filter((asset) => !obscuredKeys.includes(asset.slotKey));
   return (
     <Box
       sx={{

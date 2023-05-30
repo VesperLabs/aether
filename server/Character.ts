@@ -218,7 +218,7 @@ class ServerCharacter extends Character {
     ns.coldResistance = ns.coldResistance || 0;
     ns.earthResistance = ns.earthResistance || 0;
     ns.attackDelay = ns.attackDelay || 0;
-    ns.spellPower = (ns.spellPower || 0) + ns.intelligence * 0.25;
+    ns.spellPower = Math.floor((ns.spellPower || 0) + ns.intelligence * 0.25);
     ns.attackDelay = 1 - Math.floor(ns.dexterity * 0.5) + ns.attackDelay;
     ns.castDelay = ns.castDelay || 1000;
     ns.castDelay = 1 - Math.floor(ns.intelligence * 0.5) + ns.castDelay;
@@ -264,19 +264,17 @@ class ServerCharacter extends Character {
     if (victim?.state?.isDead) return false;
     const hits: Array<Hit> = [];
     const { effects = {}, buffs } = this?.abilities?.[abilitySlot] ?? {};
-
+    const spellPower = this?.stats?.spellPower || 0;
     // Get the damage of the spell
     const fireDamageRoll = randomNumber(effects?.minFireDamage, effects?.maxFireDamage);
     const lightDamageRoll = randomNumber(effects?.minLightDamage, effects?.maxLightDamage);
     const coldDamageRoll = randomNumber(effects?.minColdDamage, effects?.maxColdDamage);
     const earthDamageRoll = randomNumber(effects?.minEarthDamage, effects?.maxEarthDamage);
 
-    // 1.) Multiply each damage type by this.stats.spellPower and add it on top
-    const spellPower = (100 + (this.stats.spellPower || 0)) / 100; // Assuming default value of 100 if not provided
-    const fireDamage = fireDamageRoll * spellPower;
-    const lightDamage = lightDamageRoll * spellPower;
-    const coldDamage = coldDamageRoll * spellPower;
-    const earthDamage = earthDamageRoll * spellPower;
+    const fireDamage = fireDamageRoll ? fireDamageRoll + spellPower : 0;
+    const lightDamage = lightDamageRoll ? lightDamageRoll + spellPower : 0;
+    const coldDamage = coldDamageRoll ? coldDamageRoll + spellPower : 0;
+    const earthDamage = earthDamageRoll ? earthDamageRoll + spellPower : 0;
 
     // 2.) Calculate damage reduction based on victim's resistances
     const fireResistance = (victim.stats.fireResistance || 0) / 100; // Assuming default value of 0 if not provided

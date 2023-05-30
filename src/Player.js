@@ -4,7 +4,7 @@ import Bubble from "./Bubble";
 import Spell from "./Spell";
 import Bar from "./Bar";
 import Damage from "./Damage";
-import { distanceTo, getSpinDirection } from "./utils";
+import { distanceTo, getSpinDirection, HAIR_HIDING_HELMETS, FACE_HIDING_HELMETS } from "./utils";
 import Buff from "./Buff";
 const { Sprite, BitmapText } = Phaser.GameObjects;
 const BLANK_TEXTURE = "human-blank";
@@ -121,6 +121,16 @@ class Player extends Character {
 
     for (const [key, slot] of Object.entries(visibleEquipment)) {
       this?.[key]?.setTint(slot?.tint || "0xFFFFFF");
+    }
+
+    /* Helmet types that hide face and hair need to get hidden */
+    this.hair.setVisible(true);
+    if (HAIR_HIDING_HELMETS.includes(this?.visibleEquipment?.helmet?.texture)) {
+      this.hair.setVisible(false);
+    }
+    this.face.setVisible(true);
+    if (FACE_HIDING_HELMETS.includes(this?.visibleEquipment?.helmet?.texture)) {
+      this.face.setVisible(false);
     }
   }
   doAttack(count) {
@@ -381,6 +391,7 @@ function drawFrame(p) {
     p.bringToTop(armor);
     p.bringToTop(face);
     p.bringToTop(accessory);
+    p.bringToTop(helmet);
     p.bringToTop(handRight);
     p.bringToTop(handLeft);
   } else if (direction === "left") {

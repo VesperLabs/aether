@@ -5,6 +5,14 @@
       "dodgeChance": 5
     }
   },
+  "haste": {
+    "duration": 60000,
+    "stats": {
+      "walkSpeed": 25,
+      "attackDelay": -25,
+      "castDelay": -100
+    }
+  },
   "brute": {
     "duration": 60000,
     "stats": {

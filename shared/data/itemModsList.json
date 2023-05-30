@@ -15,7 +15,7 @@
     { "id": 13, "ilvl": 1, "name": "of Armor Pierce", "stats": { "armorPierce": [1, 2] } },
     { "id": 14, "ilvl": 2, "name": "of Dodge Chance", "stats": { "dodgeChance": [1, 2] } },
     { "id": 15, "ilvl": 2, "name": "of Attack Speed", "stats": { "attackDelay": [-5, -10] } },
-    { "id": 16, "ilvl": 2, "name": "of Spell Power", "stats": { "spellPower": [5, 10] } },
+    { "id": 16, "ilvl": 2, "name": "of Spell Power", "stats": { "spellPower": [2, 3] } },
     { "id": 17, "ilvl": 2, "name": "of Cast Speed", "stats": { "castDelay": [-25, -50] } }
   ]
 }
