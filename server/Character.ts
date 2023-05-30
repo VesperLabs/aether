@@ -100,7 +100,7 @@ class ServerCharacter extends Character {
 
     this.activeItemSlots = activeItemSlots;
   }
-  calculateStats() {
+  calculateStats(shouldHeal = false) {
     this.calculateActiveItemSlots();
     const { equipment = {}, abilities = {}, buffs = [] } = this;
     // disregard items that are not actively equipped
@@ -246,10 +246,10 @@ class ServerCharacter extends Character {
     });
 
     //moving values
-    if (this.stats.hp < 0) ns.hp = 0;
+    if (this.stats.hp <= 0) ns.hp = shouldHeal ? ns.maxHp : 0;
     else if (this.stats.hp > ns.maxHp) ns.hp = ns.maxHp;
     else ns.hp = this.stats.hp;
-    if (this.stats.mp < 0) ns.mp = 0;
+    if (this.stats.mp <= 0) ns.mp = shouldHeal ? ns.maxMp : 0;
     else if (this.stats.mp > ns.maxMp) ns.mp = ns.maxMp;
     else ns.mp = this.stats.mp;
     this.stats = ns;

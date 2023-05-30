@@ -93,8 +93,6 @@ const PlayerHud = ({ player }) => {
       sx={{
         gap: 1,
         position: "relative",
-        transform: `scale(${(1.25 * parseFloat(zoom)).toFixed(1)})`,
-        transformOrigin: "top left",
         filter: isOffScreen ? "grayscale(100%)" : "none",
       }}
     >
@@ -108,7 +106,7 @@ const PlayerHud = ({ player }) => {
         topOffset={isHero ? 10 : -16}
       />
       <Flex sx={{ flexDirection: "column", gap: "1px", pointerEvents: "all" }}>
-        <Memoized as={UserName} sx={{ fontSize: isHero ? 2 : 1 }} player={player} />
+        <Memoized as={UserName} sx={{ fontSize: isHero ? 2 : 0 }} player={player} />
         <Bar
           data-tooltip-content={`HP: ${stats?.hp} / ${stats?.maxHp}`}
           color="red.700"
@@ -137,16 +135,9 @@ const PlayerHud = ({ player }) => {
             showText={false}
           />
         )}
-        <Buffs
-          player={player}
-          sx={!isHero ? { transform: `scale(${(0.9 * parseFloat(zoom)).toFixed(1)})` } : {}}
-        />
+        <Buffs player={player} sx={!isHero ? { transform: `scale(0.6)` } : {}} />
       </Flex>
-      <Memoized
-        as={LevelIcon}
-        player={player}
-        sx={!isHero ? { transform: `scale(${(0.9 * parseFloat(zoom)).toFixed(1)})` } : {}}
-      />
+      <Memoized as={LevelIcon} player={player} sx={!isHero ? { transform: `scale(0.6)` } : {}} />
     </Flex>
   );
 };
@@ -179,7 +170,7 @@ const LevelIcon = ({ player, sx }) => {
 };
 
 const MenuHud = () => {
-  const { hero, party, players } = useAppContext();
+  const { hero, party, players, zoom } = useAppContext();
   const partyIds = party?.members?.map((p) => p?.id)?.filter((id) => hero?.id !== id);
   const hasParty = partyIds?.length > 0;
   return (
@@ -188,6 +179,8 @@ const MenuHud = () => {
         top: 2,
         left: 2,
         position: "absolute",
+        transform: `scale(${(1.25 * parseFloat(zoom)).toFixed(1)})`,
+        transformOrigin: "top left",
       }}
     >
       <Tooltip id="hud" />

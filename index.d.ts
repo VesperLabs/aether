@@ -147,7 +147,7 @@ interface Character extends Phaser.GameObjects.Container {
   calculateDamage(victim: any);
   calculateSpellDamage(victim: any, abilitySlot: any);
   calculateActiveItemSlots(): void;
-  calculateStats(): void;
+  calculateStats(shouldHeal?: boolean): void;
   modifyStat(key: string, amount: number);
   assignExp(amount: integer): boolean;
   setDead();

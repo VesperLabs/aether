@@ -57,7 +57,7 @@ class Npc extends Character implements Npc {
       shop: buildShop(keeperData?.shop),
       quests: keeperData?.quests?.map((questId: string) => scene?.quests?.[questId]),
     };
-    this.calculateStats();
+    this.calculateStats(true);
   }
   setDead() {
     this.expireBuffs(true);
@@ -74,7 +74,7 @@ class Npc extends Character implements Npc {
     if (Date.now() - this.state.deadTime >= this.respawnTime) {
       this.x = this.startingCoords.x;
       this.y = this.startingCoords.y;
-      this.stats.hp = this.stats.maxHp;
+      this.calculateStats(true);
       this.state.isDead = false;
       this.scene.io
         .to(this.room.name)
