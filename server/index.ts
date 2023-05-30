@@ -20,7 +20,7 @@ import {
   SHOP_INFLATION,
   getBuffRoomState,
 } from "./utils";
-import { initDatabase } from "./db";
+import { initDatabase } from "./db/fake";
 import RoomManager from "./RoomManager";
 import PartyManager from "./PartyManager";
 import Phaser from "phaser";
@@ -475,7 +475,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           from.itemId = shopSlot?.item?.id;
           fromItem = cloneObject({
             ...(shopSlot?.item || {}),
-            id: crypto.randomUUID(),
+            id: shopSlot?.item?.slot === "stackable" ? from.itemId : crypto.randomUUID(),
           });
         }
         if (from?.location === "bag") {
@@ -666,16 +666,30 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           player.gold += sellQty * cost;
         }
 
-        /* Shop -> Inventory */
-        if (from?.location === "shop" && to?.location === "inventory") {
+        let forceSlot = null;
+        if (from.location === "shop") {
           /* Always need a free slot */
           if (toItem) return;
+          /* Check if can afford */
           if (player.gold < fromItem?.cost) {
             return socket.emit("message", {
               type: "error",
               message: "You cannot afford this item",
             });
           }
+          /* Check if the stackable is already somewhere */
+          forceSlot =
+            player?.findBagItemById(fromItem?.id) ||
+            player.findAbilityById(fromItem.id)?.["item"] ||
+            player.findInventoryItemById(fromItem.id);
+          if (fromItem.type === "stackable" && forceSlot) {
+            player.gold -= fromItem?.cost || 1;
+            forceSlot.amount = parseInt(forceSlot.amount || 0) + parseInt(fromItem?.amount || 0);
+          }
+        }
+
+        /* Shop -> Inventory */
+        if (from?.location === "shop" && to?.location === "inventory" && !forceSlot) {
           player.gold -= fromItem?.cost || 1;
           /* Remove inflation cost */
           fromItem.cost = Math.floor(fromItem.cost / SHOP_INFLATION);
@@ -683,16 +697,8 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         }
 
         /* Shop -> Equipment */
-        if (from?.location === "shop" && to?.location === "equipment") {
-          /* Always need a free slot */
-          if (toItem) return;
+        if (from?.location === "shop" && to?.location === "equipment" && !forceSlot) {
           if (fromItem && !checkSlotsMatch(fromItem?.slot, to?.slot)) return;
-          if (player.gold < fromItem?.cost) {
-            return socket.emit("message", {
-              type: "error",
-              message: "You cannot afford this item",
-            });
-          }
           player.gold -= fromItem?.cost || 1;
           /* Remove inflation cost */
           fromItem.cost = Math.floor(fromItem.cost / SHOP_INFLATION);
@@ -700,16 +706,8 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         }
 
         /* Shop -> Abilities */
-        if (from?.location === "shop" && to?.location === "abilities") {
-          /* Always need a free slot */
-          if (toItem) return;
+        if (from?.location === "shop" && to?.location === "abilities" && !forceSlot) {
           if (!["spell", "stackable"].includes(fromItem?.type)) return;
-          if (player.gold < fromItem?.cost) {
-            return socket.emit("message", {
-              type: "error",
-              message: "You cannot afford this item",
-            });
-          }
           player.gold -= fromItem?.cost || 1;
           /* Remove inflation cost */
           fromItem.cost = Math.floor(fromItem.cost / SHOP_INFLATION);
@@ -717,24 +715,16 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         }
 
         /* Shop -> Bag */
-        if (from?.location === "shop" && to?.location === "bag") {
-          /* Always need a free slot */
-          if (toItem) return;
+        if (from?.location === "shop" && to?.location === "bag" && !forceSlot) {
           if (!to?.bagId) return;
-          if (player.gold < fromItem?.cost) {
-            return socket.emit("message", {
-              type: "error",
-              message: "You cannot afford this item",
-            });
-          }
           player.gold -= fromItem?.cost || 1;
           /* Remove inflation cost */
           fromItem.cost = Math.floor(fromItem.cost / SHOP_INFLATION);
           player.setBagItem(to?.bagId, to?.slot, fromItem);
         }
 
-        player?.calculateStats();
         /* Save the users data */
+        player?.calculateStats();
         scene.db.updateUser(player);
         io.to(player?.roomName).emit("playerUpdate", getFullCharacterState(player));
       });
