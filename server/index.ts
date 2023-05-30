@@ -248,6 +248,8 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         /* Create hitList for npcs */
         let hitList: Array<Hit> = [];
         let totalExpGain: number = 0;
+        let playerIdsToUpdate = []; //ids of players that either got exp or buffs
+        let playerIdsThatLeveled = []; //ids of players who got a level up.
         const npcs: Array<Npc> = scene.roomManager.rooms[roomName]?.npcManager?.getNpcs();
         const players: Array<Player> =
           scene.roomManager.rooms[roomName]?.playerManager?.getPlayers();
@@ -272,15 +274,20 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         }
         /* Send exp update to client */
         if (hitList?.some((hit) => hit.type === "death")) {
-          const didLevel = hero.assignExp(totalExpGain);
-          if (didLevel) {
-            io.to(roomName).emit("playerUpdate", getFullCharacterState(hero), { didLevel });
-          } else {
-            io.to(roomName).emit("modifyPlayerStat", {
-              socketId,
-              type: "exp",
-              amount: totalExpGain,
-            });
+          // either you are in a party, or you are in a fake party object
+          const partyMembers = this.partyManager.getPartyById(hero?.partyId)?.members || [
+            { id: hero?.id, roomName: hero?.roomName },
+          ];
+          // party members in same room will gain exp
+          const partyMembersInRoom = partyMembers?.filter((m) => m?.roomName === hero?.roomName);
+          for (const m of partyMembersInRoom) {
+            const member: Player = scene.players[m?.id];
+            const didLevel = member.assignExp(totalExpGain);
+
+            playerIdsToUpdate.push(member?.id);
+            if (didLevel) {
+              playerIdsThatLeveled.push(member?.id);
+            }
           }
         }
         for (const player of players) {
@@ -305,13 +312,14 @@ class ServerScene extends Phaser.Scene implements ServerScene {
 
         // anyone who got buffed needs to have their state updated.
         const buffedEntityIds = hitList?.filter((h) => h?.type === "buff")?.map((h) => h?.to);
-
+        playerIdsToUpdate = [...playerIdsToUpdate, ...buffedEntityIds];
         // send each buffed hero and npc their new state
-        if (buffedEntityIds?.length > 0) {
+        if (playerIdsToUpdate?.length > 0) {
           const roomState = getRoomState(scene, roomName);
           io.to(roomName).emit("buffUpdate", {
             npcs: roomState?.npcs?.filter((n) => buffedEntityIds?.includes(n?.id)),
-            players: roomState?.players?.filter((n) => buffedEntityIds?.includes(n?.id)),
+            players: roomState?.players?.filter((n) => playerIdsToUpdate?.includes(n?.id)),
+            playerIdsThatLeveled,
           });
         }
 

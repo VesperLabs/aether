@@ -161,11 +161,31 @@ function App({ socket, debug, game }) {
       if (args?.isLogin) setIsLoggedIn(true);
     };
 
-    const onBuffUpdate = (payload: { players: Array<FullCharacterState>; socketId: string }) => {
-      const { players } = payload;
+    const onBuffUpdate = (payload: {
+      players: Array<FullCharacterState>;
+      socketId: string;
+      playerIdsThatLeveled?: Array<string>;
+    }) => {
+      const { players, playerIdsThatLeveled } = payload;
       const socketId = sessionStorage.getItem("socketId");
       const player: FullCharacterState = players?.find((p) => p?.socketId === socketId);
+      /* Keep the hero updated */
       setHero((prev) => ({ ...prev, ...player }));
+      /* Show a message if the hero leveled */
+      if (playerIdsThatLeveled?.includes(player?.id)) {
+        setMessages((prev) => [
+          ...prev,
+          { type: "success", message: `You are now level ${player?.stats?.level}!` },
+        ]);
+      }
+      /* Merge updates into player */
+      setPlayers((prev) => {
+        return prev.map((p: any) => {
+          const foundPlayer = players?.find((x) => p?.id === x?.id);
+          const newPlayerState = foundPlayer ? { ...p, ...player } : p;
+          return newPlayerState as FullCharacterState;
+        });
+      });
     };
 
     const onPlayerUpdate = (player: FullCharacterState, args) => {
@@ -176,6 +196,7 @@ function App({ socket, debug, game }) {
       /* If the player is the current player */
       if (sessionStorage.getItem("socketId") === player?.socketId) {
         setHero(player);
+        // quests can trigger this didLevel
         if (args?.didLevel) {
           setMessages((prev) => [
             ...prev,
@@ -234,12 +255,13 @@ function App({ socket, debug, game }) {
       setPartyInvites((prevInvites) => [...prevInvites, inviteData]);
     };
 
-    //partyId here seems redundant, but we use it for errors
     const onPartyUpdate = ({ message, party, partyId }) => {
       // remove the invite
       setPartyInvites([]);
       setParty(party);
-      setMessages((prev) => [...prev, { type: "party", message }]);
+      if (message) {
+        setMessages((prev) => [...prev, { type: "party", message }]);
+      }
     };
 
     const onNearNpc = (e) => {
