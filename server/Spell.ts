@@ -18,10 +18,15 @@ class Spell extends Phaser.GameObjects.Container {
   private scaleMultiplier: number;
   private spellSpeed: integer;
   private hits: Array<Hit>;
+  private isAttack: boolean;
+  private abilitySlot: number;
   private spell: Phaser.GameObjects.Sprite;
   declare body: Phaser.Physics.Arcade.Body;
   declare scene: ServerScene;
-  constructor(scene: ServerScene, { id, room, caster, target, spellName, castAngle, ilvl }) {
+  constructor(
+    scene: ServerScene,
+    { id, room, caster, target, abilitySlot, spellName, castAngle, ilvl }
+  ) {
     super(scene, caster.x, caster.y);
     this.id = id;
     this.scene = scene;
@@ -37,6 +42,8 @@ class Spell extends Phaser.GameObjects.Container {
     this.velocityY = 0;
     this.hits = [];
     this.spell = scene.add.existing(new Sprite(scene, 0, 0, "blank", 0));
+    this.isAttack = ["attack_left", "attack_right"]?.includes(spellName);
+    this.abilitySlot = abilitySlot;
 
     const details = spellDetails?.[spellName];
     this.allowedTargets = details?.allowedTargets;
@@ -51,7 +58,7 @@ class Spell extends Phaser.GameObjects.Container {
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
 
-    if (["attack_left", "attack_right"]?.includes(spellName)) {
+    if (this.isAttack) {
       this.body.setCircle(this?.bodySize, -this?.bodySize, -this?.bodySize);
       this.caster.add(this.spell);
     }
@@ -73,7 +80,7 @@ class Spell extends Phaser.GameObjects.Container {
   }
   checkCollisions() {
     if (this.state.isExpired) return;
-    const { target, caster, scene, allowedTargets, room } = this;
+    const { target, caster, scene, allowedTargets, room, abilitySlot } = this;
     const players = this.room.playerManager.players?.getChildren() || [];
     const npcs = this.room.npcManager.npcs?.getChildren() || [];
 
@@ -88,7 +95,10 @@ class Spell extends Phaser.GameObjects.Container {
       if (target?.id && victim?.id !== target?.id) return;
 
       if (scene?.physics?.overlap?.(victim, this)) {
-        const newHits = caster.calculateDamage(victim);
+        /* If spell, or attack, calculate damage accordingly */
+        const newHits = this?.isAttack
+          ? caster.calculateDamage(victim)
+          : caster.calculateSpellDamage(victim, abilitySlot);
         if (newHits?.length > 0) this.hits = [...this.hits, ...newHits];
         scene.io.to(room?.name).emit("assignDamage", this.hits);
       }

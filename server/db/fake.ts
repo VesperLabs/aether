@@ -136,8 +136,8 @@ export const createBaseUser = (charClass) => {
       hair: { tint: "0x88FFFF", texture: "hair-3" },
       face: { texture: "face-1" },
     },
-    roomName: "grassland",
-    x: 432,
-    y: 400,
+    roomName: "town",
+    x: 800,
+    y: 1016,
   };
 };

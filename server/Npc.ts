@@ -142,7 +142,7 @@ class Npc extends Character implements Npc {
     this.intendAttack({ targetPlayer, delta });
     this.intendCastSpell({ targetPlayer, delta });
   }
-  doCast({ ability, targetPlayer }) {
+  doCast({ ability, abilitySlot, targetPlayer }) {
     const { scene, room, id, state } = this ?? {};
 
     if (state.isCasting || state?.isDead) return;
@@ -157,6 +157,7 @@ class Npc extends Character implements Npc {
       spellName: ability?.base,
       castAngle,
       ilvl: ability?.ilvl,
+      abilitySlot,
     });
 
     scene.io
@@ -169,8 +170,9 @@ class Npc extends Character implements Npc {
     if (state.isCasting || state?.isDead) return;
 
     let ability = null;
+    let abilitySlot = null;
 
-    for (const spell of Object.values(abilities)) {
+    for (const [slot, spell] of Object.entries(abilities)) {
       const details = spellDetails?.[spell?.base];
       if (!details) continue;
       // some spells like buffs have a long wait time, so we skip them
@@ -181,13 +183,16 @@ class Npc extends Character implements Npc {
           const [min, max] = details?.npcCastRange || [];
           const isTargetInRange =
             this.checkInRange(targetPlayer, max) && !this.checkInRange(targetPlayer, min);
-          if (isTargetInRange) ability = spell;
+          if (isTargetInRange) {
+            abilitySlot = slot;
+            ability = spell;
+          }
         }
       }
     }
 
     if (ability) {
-      this.doCast({ targetPlayer, ability });
+      this.doCast({ targetPlayer, abilitySlot, ability });
     }
   }
   doAttack() {

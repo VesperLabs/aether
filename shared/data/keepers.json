@@ -233,7 +233,6 @@
     "keeperData": {
       "dialogues": {
         "greet": "My name is <strong>Steve</strong>. I am the blacksmith around here.",
-        "quests": "Quests",
         "shop": "Some useful goods here. I take gold."
       },
       "quests": [],
@@ -343,6 +342,7 @@
       "dodgeChance": 25,
       "critChance": 50,
       "critMultiplier": 4,
+      "spellPower": 40,
       "maxDamage": 1,
       "minDamage": 2,
       "regenHp": 20,
@@ -350,8 +350,11 @@
       "maxHp": 0,
       "maxMp": 0
     },
+    "abilities": {
+      "1": ["spell", "common", "fireball"]
+    },
     "equipment": {
-      "handLeft": null,
+      "handLeft": ["weapon", "unique", "twigmansBranch"],
       "handRight": null,
       "helmet": null,
       "accessory": null,
@@ -375,6 +378,63 @@
         { "item": ["spell", "common", "genius"], "stock": 1 },
         { "item": ["armor", "magic", "wizardRobe"], "stock": 1 }
       ]
+    }
+  },
+  "ale": {
+    "profile": {
+      "userName": "Ale",
+      "face": {
+        "texture": "face-1"
+      },
+      "hair": {
+        "texture": "hair-3",
+        "tint": "0xCC9966"
+      },
+      "gender": "female",
+      "race": "human"
+    },
+    "direction": "down",
+    "state": { "isStatic": true },
+    "baseStats": {
+      "expValue": 0,
+      "attackDelay": 100,
+      "level": 40,
+      "walkSpeed": 100,
+      "range": 32,
+      "accuracy": 0,
+      "armorPierce": 5,
+      "dexterity": 40,
+      "strength": 40,
+      "vitality": 46,
+      "intelligence": 40,
+      "defense": 0,
+      "blockChance": 0,
+      "dodgeChance": 25,
+      "critChance": 50,
+      "critMultiplier": 4,
+      "maxDamage": 1,
+      "minDamage": 2,
+      "regenHp": 20,
+      "regenMp": 20,
+      "maxHp": 0,
+      "maxMp": 0
+    },
+    "equipment": {
+      "handLeft": null,
+      "handRight": null,
+      "helmet": null,
+      "accessory": null,
+      "pants": ["pants", "common", "leatherPants"],
+      "armor": ["armor", "common", "clothRobe"],
+      "boots": ["boots", "unique", "chickenFeet"]
+    },
+    "keeperData": {
+      "dialogues": {
+        "greet": "My name is <strong>Ale</strong>. I'm sell fruits.",
+        "shop": "Tasty tasties."
+      },
+      "quests": [],
+      "shop": [{ "item": ["stackable", "common", "grapes"], "stock": 1 }]
     }
   }
 }
