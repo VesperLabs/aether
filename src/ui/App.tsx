@@ -182,7 +182,7 @@ function App({ socket, debug, game }) {
       setPlayers((prev) => {
         return prev.map((p: any) => {
           const foundPlayer = players?.find((x) => p?.id === x?.id);
-          const newPlayerState = foundPlayer ? { ...p, ...player } : p;
+          const newPlayerState = foundPlayer ? { ...p, ...foundPlayer } : p;
           return newPlayerState as FullCharacterState;
         });
       });

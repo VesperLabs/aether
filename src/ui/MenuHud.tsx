@@ -1,8 +1,8 @@
+import { memo } from "react";
 import { Box, useAppContext, Flex, Portrait, Tooltip, Icon } from "./";
 
-const UserName = ({ sx }: { sx?: object }) => {
-  const { hero } = useAppContext();
-  return <Box sx={{ ...sx }}>{hero?.profile?.userName}</Box>;
+const UserName = ({ sx, player }: { player: any; sx?: object }) => {
+  return <Box sx={{ ...sx }}>{player?.profile?.userName}</Box>;
 };
 
 type BarProps = {
@@ -61,18 +61,19 @@ const Bar = ({
   );
 };
 
-const Buffs = () => {
-  const { hero, zoom } = useAppContext();
-  const buffs = hero?.buffs;
+const Buffs = ({ player, sx }) => {
+  const buffs = player?.buffs;
 
   return (
     <Flex
       sx={{
         mt: 1,
+        transformOrigin: "top left",
         imageRendering: "pixelated",
+        ...sx,
       }}
     >
-      <Flex sx={{ flexDirection: "row-reverse", gap: 1 }}>
+      <Flex sx={{ flexDirection: "row-reverse", gap: 1, height: 24 }}>
         {buffs?.map((buff) => (
           <Icon key={buff.name} icon={`../assets/atlas/spell/spell-${buff.name}.png`} size={24} />
         ))}
@@ -81,36 +82,52 @@ const Buffs = () => {
   );
 };
 
-const MenuHud = () => {
-  const { hero, zoom } = useAppContext();
-  const { stats } = hero ?? {};
+const PlayerHud = ({ player }) => {
+  const { zoom, hero } = useAppContext();
+  const { stats } = player ?? {};
+  const isHero = player?.id === hero?.id;
+  const isOffScreen = !player;
+
   return (
-    <Box
+    <Flex
       sx={{
-        top: 2,
-        left: 2,
-        position: "absolute",
+        gap: 1,
+        position: "relative",
         transform: `scale(${(1.25 * parseFloat(zoom)).toFixed(1)})`,
         transformOrigin: "top left",
+        filter: isOffScreen ? "grayscale(100%)" : "none",
       }}
     >
-      <Tooltip id="hud" />
-      <Flex sx={{ gap: 1 }}>
-        <Portrait user={hero} filterKeys={["boots", "pants"]} />
-        <Flex sx={{ flexDirection: "column", gap: "1px", pointerEvents: "all" }}>
-          <UserName />
-          <Bar
-            data-tooltip-content={`HP: ${stats?.hp} / ${stats?.maxHp}`}
-            color="red.700"
-            max={stats?.maxHp}
-            min={stats?.hp}
-          />
-          <Bar
-            data-tooltip-content={`MP: ${stats?.mp} / ${stats?.maxMp}`}
-            color="blue.500"
-            max={stats?.maxMp}
-            min={stats?.mp}
-          />
+      <Memoized
+        as={Portrait}
+        player={player}
+        user={player}
+        filterKeys={["boots", "pants"]}
+        size={isHero ? 54 : 32}
+        scale={isHero ? 2 : 1.25}
+        topOffset={isHero ? 10 : -16}
+      />
+      <Flex sx={{ flexDirection: "column", gap: "1px", pointerEvents: "all" }}>
+        <Memoized as={UserName} sx={{ fontSize: isHero ? 2 : 1 }} player={player} />
+        <Bar
+          data-tooltip-content={`HP: ${stats?.hp} / ${stats?.maxHp}`}
+          color="red.700"
+          max={stats?.maxHp}
+          min={stats?.hp}
+          showText={isHero}
+          width={isHero ? 100 : 50}
+          height={isHero ? 12 : 6}
+        />
+        <Bar
+          data-tooltip-content={`MP: ${stats?.mp} / ${stats?.maxMp}`}
+          color="blue.500"
+          max={stats?.maxMp}
+          min={stats?.mp}
+          showText={isHero}
+          width={isHero ? 100 : 50}
+          height={isHero ? 12 : 6}
+        />
+        {isHero && (
           <Bar
             data-tooltip-content={`EXP: ${stats?.exp} / ${stats?.maxExp}`}
             color="#FFFF66"
@@ -119,32 +136,79 @@ const MenuHud = () => {
             height={6}
             showText={false}
           />
-          <Buffs />
-        </Flex>
-        <Box
-          data-tooltip-place="bottom"
-          data-tooltip-id="hud"
-          data-tooltip-content={`Level ${stats?.level} ${hero?.charClass} `}
-          sx={{
-            textTransform: "capitalize",
-            bg: "black",
-            position: "absolute",
-            borderRadius: 12,
-            minWidth: 20,
-            textAlign: "center",
-            fontSize: 0,
-            top: 42,
-            left: 36,
-            pointerEvents: "all",
-            border: (t) => `1px solid rgba(255,255,255,.85)`,
-            boxShadow: `0px 0px 0px 1px #000`,
-          }}
-        >
-          {stats?.level}
-        </Box>
+        )}
+        <Buffs
+          player={player}
+          sx={!isHero ? { transform: `scale(${(0.9 * parseFloat(zoom)).toFixed(1)})` } : {}}
+        />
+      </Flex>
+      <Memoized
+        as={LevelIcon}
+        player={player}
+        sx={!isHero ? { transform: `scale(${(0.9 * parseFloat(zoom)).toFixed(1)})` } : {}}
+      />
+    </Flex>
+  );
+};
+
+const LevelIcon = ({ player, sx }) => {
+  return (
+    <Box
+      data-tooltip-place="bottom"
+      data-tooltip-id="hud"
+      data-tooltip-content={`Level ${player?.stats?.level} ${player?.charClass} `}
+      sx={{
+        textTransform: "capitalize",
+        borderRadius: 6,
+        minWidth: 20,
+        textAlign: "center",
+        lineHeight: "16px",
+        fontSize: 0,
+        pointerEvents: "all",
+        position: "absolute",
+        background: "black",
+        border: `1px solid white`,
+        boxShadow: `0px 0px 0px 1px black`,
+        transformOrigin: "top left",
+        ...sx,
+      }}
+    >
+      {player?.stats?.level}
+    </Box>
+  );
+};
+
+const MenuHud = () => {
+  const { hero, party, players } = useAppContext();
+  const partyIds = party?.members?.map((p) => p?.id)?.filter((id) => hero?.id !== id);
+  const hasParty = partyIds?.length > 0;
+  return (
+    <Box
+      sx={{
+        top: 2,
+        left: 2,
+        position: "absolute",
+      }}
+    >
+      <Tooltip id="hud" />
+      <PlayerHud player={hero} />
+      <Flex sx={{ flexDirection: "column" }}>
+        {hasParty &&
+          partyIds?.map((id) => <PlayerHud player={players?.find((p) => p?.id === id)} key={id} />)}
       </Flex>
     </Box>
   );
 };
+
+const Memoized = memo(
+  (props: any) => {
+    const { as: As = Text, player } = props;
+    return <As {...props}></As>;
+  },
+  (prev, next) => {
+    if (prev?.player && !next?.player) return true;
+    return false;
+  }
+);
 
 export default MenuHud;

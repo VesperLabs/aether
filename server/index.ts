@@ -349,7 +349,13 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           lastTeleport: Date.now(),
         });
 
+        socket.emit("heroInit", {
+          ...getRoomState(scene, prev.destMap),
+          socketId,
+        });
+
         // announce room has changed to the party
+        // TODO: need a better way of sending a persistant party state instead of this
         if (player?.partyId) {
           const party = this.partyManager.getPartyById(player?.partyId);
           party.updateMember(player?.id, { roomName: player?.roomName });
@@ -357,11 +363,6 @@ class ServerScene extends Phaser.Scene implements ServerScene {
             party,
           });
         }
-
-        socket.emit("heroInit", {
-          ...getRoomState(scene, prev.destMap),
-          socketId,
-        });
       });
 
       socket.on("disconnect", () => {
