@@ -23,7 +23,7 @@ const formatStats = (stats = {}) =>
 
 const Label = (props) => <Text sx={{ fontWeight: "normal" }} {...props} />;
 
-const ItemTooltip = ({ item, show }) => {
+const ItemTooltip = ({ item, tooltipId, show }) => {
   const { hero } = useAppContext();
   const isSetActive = hero?.state?.activeSets?.includes?.(item?.setName);
   if (!item) return;
@@ -39,7 +39,7 @@ const ItemTooltip = ({ item, show }) => {
   const isDoubleClickable = ["food", "bag"].includes(item.base);
 
   return (
-    <Tooltip id={item?.id} isOpen={show}>
+    <Tooltip id={tooltipId} isOpen={show}>
       <Flex
         sx={{
           fontWeight: "bold",

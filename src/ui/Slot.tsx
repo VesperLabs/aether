@@ -241,10 +241,11 @@ const Slot = React.memo(
     const aboutToSell = dragging && target?.closest(".menu-keeper") && location !== "shop";
     const showTooltip =
       (dragging && !targetMoved) || (hovering && !isMobile) || (hovering && !isMobile && disabled);
+    const tooltipId = `${location}-${item?.id}`;
 
     return (
       <Box
-        data-tooltip-id={item?.id}
+        data-tooltip-id={tooltipId}
         sx={{
           touchAction: "none",
           userSelect: "none",
@@ -313,7 +314,7 @@ const Slot = React.memo(
                 }}
               />
             </Portal>
-            <ItemTooltip item={item} show={showTooltip} />
+            <ItemTooltip item={item} show={showTooltip} tooltipId={tooltipId} />
           </>
         )}
       </Box>
