@@ -430,11 +430,14 @@
     },
     "keeperData": {
       "dialogues": {
-        "greet": "My name is <strong>Ale</strong>. I'm sell fruits.",
+        "greet": "My name is <strong>Ale</strong>. I'm sell fruits and veggies.",
         "shop": "Tasty tasties."
       },
       "quests": [],
-      "shop": [{ "item": ["stackable", "common", "grapes"], "stock": 1 }]
+      "shop": [
+        { "item": ["stackable", "common", "grapes"], "stock": 1 },
+        { "item": ["stackable", "common", "redApple"], "stock": 1 }
+      ]
     }
   }
 }

@@ -469,13 +469,17 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         if (from?.location === "shop") {
           const npcId = player?.state?.targetNpcId;
           const shopSlot = scene?.npcs?.[npcId]?.keeperData?.shop?.[from?.slot];
+          const isStackable = shopSlot?.item?.slot === "stackable";
           if (!npcId) return;
           if (!shopSlot?.stock) return;
           if (to?.location === "shop") return;
           from.itemId = shopSlot?.item?.id;
           fromItem = cloneObject({
             ...(shopSlot?.item || {}),
-            id: shopSlot?.item?.slot === "stackable" ? from.itemId : crypto.randomUUID(),
+            /* If its stackable it gets a non-unique ID */
+            id: isStackable ? from.itemId : crypto.randomUUID(),
+            /* Stackable items support amounts */
+            ...(isStackable ? { amount: from?.amount } : {}),
           });
         }
         if (from?.location === "bag") {
@@ -508,8 +512,10 @@ class ServerScene extends Phaser.Scene implements ServerScene {
             message: "Cannot put bags in bags.",
           });
 
-        /* Same item, return */
-        if (from.itemId === to.itemId) return;
+        /* Same non-stackable item, return */
+        if (from.itemId === to.itemId) {
+          if (fromItem?.slot !== "stackable" && toItem?.slot !== "stackable") return;
+        }
 
         /* Inventory -> Inventory */
         if (from?.location === "inventory" && to?.location === "inventory") {
@@ -669,7 +675,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         let forceSlot = null;
         if (from.location === "shop") {
           /* Always need a free slot */
-          if (toItem) return;
+          if (toItem && fromItem?.slot !== "stackable" && toItem?.slot !== "stackable") return;
           /* Check if can afford */
           if (player.gold < fromItem?.cost) {
             return socket.emit("message", {

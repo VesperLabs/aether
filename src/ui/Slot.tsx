@@ -354,8 +354,15 @@ function useItemEvents({ location, bagId, slotKey, item }) {
       }
     },
     dropItem: (target) => {
-      if (hero?.state?.isDead) return;
       const { nodeName, dataset } = target ?? {};
+      if (hero?.state?.isDead) return;
+      if (
+        dataset?.location === location &&
+        dataset?.slotKey === slotKey &&
+        dataset.bagId === bagId
+      ) {
+        return;
+      }
       /* Anywhere -> Ground */
       if (nodeName == "CANVAS" && location !== "shop") {
         if (item?.amount > 1) {
@@ -379,7 +386,7 @@ function useItemEvents({ location, bagId, slotKey, item }) {
       if (target?.closest(".menu-keeper")) {
         if (item?.amount > 1) {
           /* If more than 1, open up the drop modal */
-          return setDropItem({ ...item, location, bagId, action: "SHOP", slotKey });
+          return setDropItem({ ...item, location, bagId, action: "SHOP_SELL_AMOUNT", slotKey });
         } else {
           if (["set", "rare", "unique"]?.includes(item?.rarity) || ["bag"]?.includes(item?.base)) {
             /* Close open bag */
@@ -389,7 +396,7 @@ function useItemEvents({ location, bagId, slotKey, item }) {
             return setDropItem({
               ...item,
               location,
-              action: "SHOP_CONFIRM",
+              action: "SHOP_SELL_CONFIRM",
               slotKey,
               bagId,
             });
@@ -413,12 +420,18 @@ function useItemEvents({ location, bagId, slotKey, item }) {
       }
       /* Anywhere -> Anywhere */
       if (dataset?.slotKey) {
-        if (
-          dataset?.location === location &&
-          dataset?.slotKey === slotKey &&
-          dataset.bagId === bagId
-        )
-          return;
+        if (location === "shop") {
+          if (item?.slot === "stackable") {
+            return setDropItem({
+              ...item,
+              location,
+              action: "SHOP_BUY_AMOUNT",
+              slotKey,
+              bagId,
+              dataset,
+            });
+          }
+        }
         return socket.emit("moveItem", {
           to: {
             bagId: dataset?.bagId, //if we have a bag
