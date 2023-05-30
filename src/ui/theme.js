@@ -1,4 +1,5 @@
 import tColors from "./colors-tailwind.json";
+export const MENU_MAX_WIDTH = 1024;
 
 export default {
   colors: {
@@ -88,7 +89,7 @@ export default {
     header: {
       variant: "buttons.default",
       flex: 1,
-      maxWidth: 1024,
+      maxWidth: MENU_MAX_WIDTH,
       borderRadius: 4,
       py: 1,
       px: 2,

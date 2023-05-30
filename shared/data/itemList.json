@@ -171,7 +171,8 @@
         "slot": "hands",
         "tint": "0x66FF66",
         "stats": {
-          "spellPower": 5
+          "spellPower": 6,
+          "regenMp": [2, 3]
         }
       },
       "soulEdge": {

@@ -1,5 +1,5 @@
 import { ThemeUIStyleObject } from "theme-ui";
-export const MENU_MAX_WIDTH = 1024;
+
 export {
   ThemeProvider,
   Box,
@@ -13,7 +13,7 @@ export {
   Divider,
   Donut,
 } from "theme-ui";
-export { default as theme } from "./theme";
+export { default as theme, MENU_MAX_WIDTH } from "./theme";
 export { default as Button } from "./Button";
 export { default as Icon } from "./Icon";
 export { default as Slot } from "./Slot";
