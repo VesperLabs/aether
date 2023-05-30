@@ -1,6 +1,6 @@
 import Character from "../shared/Character";
 import ItemBuilder from "./ItemBuilder";
-import { randomNumber, cloneObject } from "./utils";
+import { randomNumber, cloneObject, PLAYER_BASE_EXP } from "./utils";
 import buffList from "../shared/data/buffList.json";
 class ServerCharacter extends Character {
   declare scene: ServerScene;
@@ -437,13 +437,17 @@ class ServerCharacter extends Character {
       this.modifyStat("mp", this.stats.regenMp);
     }
   }
+  fillHpMp(): void {
+    this.stats.hp = this.stats.maxHp;
+    this.stats.mp = this.stats.maxMp;
+  }
   assignExp(amount: integer): boolean {
     let didLevel = false;
     this.stats.exp += amount;
     while (this.stats.exp >= this.baseStats.maxExp) {
       let trailingExp = this.stats.exp - this.baseStats.maxExp;
       this.stats.exp = trailingExp;
-      this.baseStats.maxExp = Math.floor(20 * Math.pow(1.5, this.baseStats.level - 1));
+      this.baseStats.maxExp = Math.floor(PLAYER_BASE_EXP * Math.pow(1.5, this.baseStats.level - 1));
       if (this.charClass == "warrior") this.baseStats.strength += 1;
       else if (this.charClass == "rogue") this.baseStats.dexterity += 1;
       else if (this.charClass == "mage") this.baseStats.intelligence += 1;
@@ -455,7 +459,8 @@ class ServerCharacter extends Character {
       this.baseStats.level++;
       didLevel = true;
     }
-    this.calculateStats(didLevel);
+    this.calculateStats();
+    if (didLevel) this.fillHpMp();
     return didLevel;
   }
   addBuff(name: string, level: integer) {

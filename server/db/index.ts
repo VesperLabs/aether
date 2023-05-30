@@ -1,10 +1,11 @@
-import { MongoClient } from "mongodb";
+import { MongoClient, Db } from "mongodb";
 import { userSchema } from "./schema";
 import ItemBuilder from "../ItemBuilder";
+import { PLAYER_BASE_EXP } from "../utils";
 
 export async function initDatabase(uri) {
-  let mongoClient;
-  let db;
+  let mongoClient: MongoClient;
+  let db: Db;
 
   try {
     mongoClient = new MongoClient(uri);
@@ -155,7 +156,7 @@ export const createBaseUser = (charClass) => {
       magicFind: 1,
       regenHp: 1,
       regenMp: 1,
-      maxExp: 20,
+      maxExp: PLAYER_BASE_EXP,
       maxHp: 10,
       maxMp: 10,
     },
@@ -168,46 +169,18 @@ export const createBaseUser = (charClass) => {
     direction: "down",
     quests: [],
     equipment: {
-      // handRight: ItemBuilder.buildItem("weapon", "set", "hawkwingsPincher"),
-      // handLeft: ItemBuilder.buildItem("weapon", "set", "hawkwingsTickler"),
-      // helmet: ItemBuilder.buildItem("helmet", "unique", "theBunnyWhisker"),
-      // accessory: ItemBuilder.buildItem("accessory", "unique", "compoundLenses"),
-      // pants: ItemBuilder.buildItem("pants", "set", "chetsChampions"),
-      // armor: ItemBuilder.buildItem("armor", "set", "chetsPurpleShirt"),
-      // boots: ItemBuilder.buildItem("boots", "set", "chetsNeonKicks"),
-      // ring1: ItemBuilder.buildItem("ring", "unique", "bloodMusic"),
-      // ring2: ItemBuilder.buildItem("ring", "set", "timmysSignet"),
-      // amulet: ItemBuilder.buildItem("amulet", "set", "timmysChain"),
       handRight: null,
       handLeft: getStartingWeapon(),
       helmet: null,
       accessory: null,
-      pants: null,
+      pants: ItemBuilder.buildItem("pants", "common", "clothPants"),
       armor: ItemBuilder.buildItem("armor", "common", "clothRobe"),
       boots: null,
       ring1: null,
       ring2: null,
       amulet: null,
     },
-    inventory: [
-      // ItemBuilder.buildItem("amulet", "set", "timmysChain"),
-      // ItemBuilder.buildItem("ring", "set", "timmysSignet"),
-      // ItemBuilder.buildItem("helmet", "unique", "theBunnyWhisker"),
-      // ItemBuilder.buildItem("spell", "common", "fireball"),
-      // ItemBuilder.buildItem("armor", "rare", "nutshellPlate"),
-      // ItemBuilder.buildItem("weapon", "unique", "darkWhistler"),
-      // ItemBuilder.buildItem("weapon", "rare", "katar"),
-      // ItemBuilder.buildItem("weapon", "rare", "katar"),
-      // ItemBuilder.buildItem("shield", "magic", "buckler"),
-      // ItemBuilder.buildItem("weapon", "magic", "spear"),
-      // ItemBuilder.buildItem("weapon", "unique", "darkWhistler"),
-      // ItemBuilder.buildItem("armor", "unique", "theMossmanProphecy"),
-      // ItemBuilder.buildItem("armor", "rare", "wizardRobe"),
-      // ItemBuilder.buildItem("weapon", "unique", "soulEdge"),
-      // ItemBuilder.buildItem("weapon", "unique", "soulEdge"),
-      // ItemBuilder.buildItem("shield", "unique", "roundStage"),
-      // ItemBuilder.buildItem("stackable", "common", "redApple", 10),
-    ],
+    inventory: [],
     abilities: {
       1: isMage ? ItemBuilder.buildItem("spell", "common", "fireball") : null,
       2: null,

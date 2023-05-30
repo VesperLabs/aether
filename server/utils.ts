@@ -175,6 +175,7 @@ function checkSlotsMatch(s1, s2) {
 }
 
 const SHOP_INFLATION = 4;
+const PLAYER_BASE_EXP = 20;
 
 export {
   removePlayer,
@@ -193,4 +194,5 @@ export {
   getBuffRoomState,
   getBuffCharacterState,
   SHOP_INFLATION,
+  PLAYER_BASE_EXP,
 };

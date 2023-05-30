@@ -1,4 +1,5 @@
 import ItemBuilder from "../ItemBuilder";
+import { PLAYER_BASE_EXP } from "../utils";
 
 export async function initDatabase(uri) {
   return getDatabaseApi();
@@ -65,7 +66,7 @@ export const createBaseUser = (charClass) => {
       magicFind: 1,
       regenHp: 1,
       regenMp: 1,
-      maxExp: 20,
+      maxExp: PLAYER_BASE_EXP,
       maxHp: 10,
       maxMp: 10,
     },
