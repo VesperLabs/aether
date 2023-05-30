@@ -420,6 +420,24 @@
     "previewRect": [0, 0, 32, 32]
   },
   {
+    "texture": "stackable-carrot",
+    "src": "./assets/atlas/stackable/stackable-carrot.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
+    "texture": "stackable-mushroom",
+    "src": "./assets/atlas/stackable/stackable-mushroom.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
+    "texture": "stackable-orange",
+    "src": "./assets/atlas/stackable/stackable-orange.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
     "texture": "stackable-meat",
     "src": "./assets/atlas/stackable/stackable-meat.png",
     "atlas": "./assets/atlas/32x32-stackable.json",

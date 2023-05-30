@@ -728,7 +728,7 @@
         "slot": "stackable",
         "texture": "stackable-apple",
         "effects": {
-          "hp": 20
+          "hp": 15
         }
       },
       "batMeat": {
@@ -768,7 +768,37 @@
         "slot": "stackable",
         "texture": "stackable-grapes",
         "effects": {
-          "hp": 20
+          "hp": 15
+        }
+      },
+      "mushroom": {
+        "ilvl": 1,
+        "name": "Mushroom",
+        "base": "food",
+        "slot": "stackable",
+        "texture": "stackable-mushroom",
+        "effects": {
+          "hp": 15
+        }
+      },
+      "carrot": {
+        "ilvl": 1,
+        "name": "Carrot",
+        "base": "food",
+        "slot": "stackable",
+        "texture": "stackable-carrot",
+        "effects": {
+          "hp": 15
+        }
+      },
+      "orange": {
+        "ilvl": 1,
+        "name": "Orange",
+        "base": "food",
+        "slot": "stackable",
+        "texture": "stackable-orange",
+        "effects": {
+          "hp": 15
         }
       },
       "skull": {

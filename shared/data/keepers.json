@@ -260,7 +260,7 @@
       "race": "human"
     },
     "direction": "down",
-    "state": { "isStatic": true },
+    "state": { "isStatic": false },
     "baseStats": {
       "expValue": 0,
       "attackDelay": 100,
@@ -435,8 +435,11 @@
       },
       "quests": [],
       "shop": [
-        { "item": ["stackable", "common", "grapes"], "stock": 1 },
-        { "item": ["stackable", "common", "redApple"], "stock": 1 }
+        { "item": ["stackable", "common", "carrot"], "stock": 1 },
+        { "item": ["stackable", "common", "redApple"], "stock": 1 },
+        { "item": ["stackable", "common", "mushroom"], "stock": 1 },
+        { "item": ["stackable", "common", "orange"], "stock": 1 },
+        { "item": ["stackable", "common", "grapes"], "stock": 1 }
       ]
     }
   }
