@@ -52,7 +52,7 @@ const ModalDropAmount = () => {
               // so that we can play the sell sound
               if (location !== "shop") {
                 window.dispatchEvent(
-                  new CustomEvent("ITEM_SELL", {
+                  new CustomEvent("AUDIO_ITEM_SELL", {
                     detail: item,
                   })
                 );

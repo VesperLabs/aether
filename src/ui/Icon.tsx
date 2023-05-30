@@ -1,5 +1,5 @@
-import { forwardRef, HTMLAttributes } from "react";
-import { Box, SxProp } from "theme-ui";
+import { forwardRef } from "react";
+import { Box } from "theme-ui";
 
 const Icon = forwardRef<HTMLDivElement, any>(({ sx, size = 32, icon, ...props }, ref) => {
   return (
@@ -12,6 +12,7 @@ const Icon = forwardRef<HTMLDivElement, any>(({ sx, size = 32, icon, ...props },
         backgroundImage: `url(${icon})`,
         backgroundPosition: "center center",
         backgroundRepeat: "no-repeat",
+        imageRendering: "pixelated",
         ...sx,
       }}
       {...props}

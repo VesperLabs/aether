@@ -331,6 +331,11 @@ function useItemEvents({ location, bagId, slotKey, item }) {
       if (!["inventory", "abilities", "bag"].includes(location)) return;
       /* If it is food we are trying to consume it */
       if (item?.base === "food") {
+        window.dispatchEvent(
+          new CustomEvent("AUDIO_ITEM_CONSUME", {
+            detail: item,
+          })
+        );
         return socket.emit("consumeItem", { item, location });
       }
       /* If it is a bag, we open it */
@@ -378,7 +383,7 @@ function useItemEvents({ location, bagId, slotKey, item }) {
             // so that we can play the sell sound
             if (location !== "shop") {
               window.dispatchEvent(
-                new CustomEvent("ITEM_SELL", {
+                new CustomEvent("AUDIO_ITEM_SELL", {
                   detail: item,
                 })
               );

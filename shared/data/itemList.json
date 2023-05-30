@@ -824,7 +824,15 @@
         "base": "bag",
         "slot": "bag",
         "texture": "bag-small-pouch",
-        "space": 5
+        "space": 4
+      },
+      "largePouch": {
+        "ilvl": 2,
+        "name": "Large Pouch",
+        "base": "bag",
+        "slot": "bag",
+        "texture": "bag-large-pouch",
+        "space": 8
       }
     }
   }

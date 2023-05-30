@@ -59,7 +59,11 @@ function addInputListeners(scene) {
       }
       if (ability?.type === "stackable") {
         socket.emit("consumeItem", { item: ability, location: "abilities" });
-        playAudio({ scene: mainScene, audioKey: "item-bubble", caster: hero });
+        window.dispatchEvent(
+          new CustomEvent("AUDIO_ITEM_CONSUME", {
+            detail: item,
+          })
+        );
       }
     },
     scene
@@ -73,7 +77,15 @@ function addInputListeners(scene) {
     scene
   );
   window.addEventListener(
-    "ITEM_SELL",
+    "AUDIO_ITEM_CONSUME",
+    (e) => {
+      const hero = mainScene?.hero;
+      playAudio({ scene: mainScene, audioKey: "item-bubble", caster: hero });
+    },
+    scene
+  );
+  window.addEventListener(
+    "AUDIO_ITEM_SELL",
     (e) => {
       const hero = mainScene?.hero;
       playAudio({ scene: mainScene, audioKey: "item-sell", caster: hero });
