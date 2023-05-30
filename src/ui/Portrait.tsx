@@ -97,7 +97,7 @@ const Portrait = ({
       ? ["hair"]
       : filterKeys;
 
-  const assets = [skin, chest, hair, boots, pants, armor, face, helmet, accessory]
+  const assets = [skin, chest, hair, boots, pants, armor, face, accessory, helmet]
     ?.filter(Boolean)
     ?.filter((asset) => !obscuredKeys.includes(asset.slotKey));
   return (
