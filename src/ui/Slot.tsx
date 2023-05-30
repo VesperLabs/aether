@@ -350,6 +350,9 @@ function useItemEvents({ location, bagId, slotKey, item }) {
           if (["set", "rare", "unique"]?.includes(item?.rarity)) {
             return setDropItem({ ...item, location, action: "DROP_CONFIRM" });
           }
+          if (["bag"]?.includes(item?.base)) {
+            return setDropItem({ ...item, location, action: "DROP_CONFIRM" });
+          }
           return socket.emit("dropItem", { item, location });
         }
       }
@@ -379,7 +382,7 @@ function useItemEvents({ location, bagId, slotKey, item }) {
               to: {
                 location: "shop",
               },
-              from: { slot: slotKey, location },
+              from: { bagId, slot: slotKey, location },
             });
           }
         }

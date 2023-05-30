@@ -482,6 +482,8 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           to.itemId = toItem?.id;
         }
 
+        console.log(from?.bagId, from?.slot);
+
         /* Cannot put bags in bags */
         if (fromItem?.base === "bag" && to?.bagId) return;
 
@@ -497,7 +499,6 @@ class ServerScene extends Phaser.Scene implements ServerScene {
 
         /* Inventory -> Equipment */
         if (from?.location === "inventory" && to?.location === "equipment") {
-          /* Slots don't match */
           if (fromItem && !checkSlotsMatch(fromItem?.slot, to?.slot)) return;
           player?.deleteInventoryItemAtId(from?.itemId);
           player.equipment[to?.slot] = fromItem;
@@ -534,7 +535,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
 
         /* Bag -> Bag */
         if (from?.location === "bag" && to?.location === "bag") {
-          if (!to?.bagId || !from?.bagId) return;
+          if (!from?.bagId || !to?.bagId) return;
           player?.deleteBagItemAtId(from?.itemId);
           player.setBagItem(to?.bagId, to?.slot, fromItem);
           player.setBagItem(from?.bagId, from?.slot, toItem);
@@ -548,9 +549,35 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           player.setBagItem(from?.bagId, from?.slot, toItem);
         }
 
+        /* Bag -> Abilities */
+        if (from?.location === "bag" && to?.location === "abilities") {
+          if (!from?.bagId) return;
+          if (!["spell", "stackable"].includes(fromItem?.type)) return;
+          player?.deleteBagItemAtId(from?.itemId);
+          player.abilities[to?.slot] = fromItem;
+          player.setBagItem(from?.bagId, from?.slot, toItem);
+        }
+
+        /* Bag -> Equipment */
+        if (from?.location === "bag" && to?.location === "equipment") {
+          if (!from?.bagId) return;
+          if (fromItem && !checkSlotsMatch(fromItem?.slot, to?.slot)) return;
+          player?.deleteBagItemAtId(from?.itemId);
+          player.equipment[to?.slot] = fromItem;
+          player.setBagItem(from?.bagId, from?.slot, toItem);
+        }
+
+        /* Bag -> Shop */
+        if (from?.location === "bag" && to?.location === "shop") {
+          if (!from?.bagId) return;
+          let sellQty = Math.abs(parseInt(from?.amount)) || 1;
+          const cost = Math.abs(parseInt(fromItem?.cost)) || 1;
+          player?.deleteBagItemAtId(from?.itemId);
+          player.gold += sellQty * cost;
+        }
+
         /* Equipment -> Equipment */
         if (from?.location === "equipment" && to?.location === "equipment") {
-          /* Slots don't match */
           if (!checkSlotsMatch(fromItem?.slot, to?.slot)) return;
           player?.clearEquipmentSlot(from?.slot);
           player.equipment[to?.slot] = fromItem;
@@ -559,7 +586,6 @@ class ServerScene extends Phaser.Scene implements ServerScene {
 
         /* Equipment -> Inventory */
         if (from?.location === "equipment" && to?.location === "inventory") {
-          /* Slots don't match */
           if (toItem && !checkSlotsMatch(toItem?.slot, from?.slot)) return;
           player?.clearEquipmentSlot(from?.slot);
           player.inventory[to?.slot] = fromItem;
@@ -574,6 +600,15 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           player.gold += sellQty * cost;
         }
 
+        /* Equipment -> Bag */
+        if (from?.location === "equipment" && to?.location === "bag") {
+          if (toItem && !checkSlotsMatch(toItem?.slot, fromItem?.slot)) return;
+          if (!to?.bagId) return;
+          player?.clearEquipmentSlot(from?.slot);
+          player.setBagItem(to?.bagId, to?.slot, fromItem);
+          player.equipment[from?.slot] = toItem;
+        }
+
         /* Abilities -> Abilities */
         if (from?.location === "abilities" && to?.location === "abilities") {
           player?.clearAbilitySlot(from?.slot);
@@ -586,6 +621,15 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           if (toItem && !checkSlotsMatch(toItem?.type, fromItem?.type)) return;
           player?.clearAbilitySlot(from?.slot);
           player.inventory[to?.slot] = fromItem;
+          player.abilities[from?.slot] = toItem;
+        }
+
+        /* Abilities -> Bag */
+        if (from?.location === "abilities" && to?.location === "bag") {
+          if (toItem && !checkSlotsMatch(toItem?.type, fromItem?.type)) return;
+          if (!to?.bagId) return;
+          player?.clearAbilitySlot(from?.slot);
+          player.setBagItem(to?.bagId, to?.slot, fromItem);
           player.abilities[from?.slot] = toItem;
         }
 
@@ -649,6 +693,23 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           /* Remove inflation cost */
           fromItem.cost = Math.floor(fromItem.cost / SHOP_INFLATION);
           player.abilities[to?.slot] = fromItem;
+        }
+
+        /* Shop -> Bag */
+        if (from?.location === "shop" && to?.location === "bag") {
+          /* Always need a free slot */
+          if (toItem) return;
+          if (!to?.bagId) return;
+          if (player.gold < fromItem?.cost) {
+            return socket.emit("message", {
+              type: "error",
+              message: "You cannot afford this item",
+            });
+          }
+          player.gold -= fromItem?.cost || 1;
+          /* Remove inflation cost */
+          fromItem.cost = Math.floor(fromItem.cost / SHOP_INFLATION);
+          player.setBagItem(to?.bagId, to?.slot, fromItem);
         }
 
         player?.calculateStats();
