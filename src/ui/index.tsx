@@ -47,7 +47,7 @@ export { default as Portal } from "./Portal";
 export { default as Menu } from "./Menu";
 export { useAppContext } from "./App";
 
-export const SLOT_SIZE = 52;
+export const SLOT_SIZE = 56;
 
 export const ICONS = {
   WARRIOR: `../assets/icons/axe.png`,
