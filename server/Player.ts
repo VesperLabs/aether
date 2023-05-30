@@ -70,17 +70,6 @@ class Player extends ServerCharacter implements Player {
     if (!this?.equipment?.[slotName]) return;
     this.equipment[slotName] = null;
   }
-  /* Inventory */
-  findInventoryItemById(id: string) {
-    let returnItem = null;
-    for (var i = 0; i < this.inventory.length; i++) {
-      if (this.inventory[i]?.id === id) {
-        returnItem = this.inventory[i];
-        break;
-      }
-    }
-    return returnItem;
-  }
   /* Bag */
   findBagItemById(id: string) {
     let returnItem = null;
@@ -99,6 +88,26 @@ class Player extends ServerCharacter implements Player {
     const bag = this?.inventory?.find((item: Item) => item?.id === bagId);
     return bag?.items?.[slot];
   }
+  subtractBagItemAtId(id: string, amount: integer) {
+    const found = cloneObject(this.findBagItemById(id));
+    if (found?.amount > amount && amount > 0) {
+      const newAmount = found?.amount - amount;
+      this.updateBagItemAtId(id, { ...found, amount: newAmount });
+      return amount;
+    }
+    return null;
+  }
+  updateBagItemAtId(id: string, item: Item) {
+    const bags = this?.inventory?.filter((item: Item) => item?.base === "bag");
+    for (const bag of bags) {
+      for (var i = 0; i < bag?.items?.length; i++) {
+        if (bag?.items?.[i]?.id === id) {
+          bag.items[i] = item;
+          break;
+        }
+      }
+    }
+  }
   deleteBagItemAtId(id: string) {
     const bags = this?.inventory?.filter((item: Item) => item?.base === "bag");
     for (const bag of bags) {
@@ -113,6 +122,17 @@ class Player extends ServerCharacter implements Player {
   setBagItem(bagId: string, slot: string, item: Item) {
     const bag = this?.inventory?.find((item) => item?.id === bagId);
     bag.items[slot] = item;
+  }
+  /* Inventory */
+  findInventoryItemById(id: string) {
+    let returnItem = null;
+    for (var i = 0; i < this.inventory.length; i++) {
+      if (this.inventory[i]?.id === id) {
+        returnItem = this.inventory[i];
+        break;
+      }
+    }
+    return returnItem;
   }
   subtractInventoryItemAtId(id: string, amount: integer) {
     const found = cloneObject(this.findInventoryItemById(id));

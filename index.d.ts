@@ -193,6 +193,7 @@ interface Player extends Character {
   findBagItemBySlot(bagId: string, slot: string);
   deleteBagItemAtId(id: string);
   deleteInventoryItemAtId(id: string);
+  subtractBagItemAtId(id: string, amount: integer);
   addInventoryItem(item: Item): void;
   setDead(): void;
   isInventoryFull(): boolean;

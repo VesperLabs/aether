@@ -324,7 +324,7 @@ const Slot = React.memo(
 );
 
 function useItemEvents({ location, bagId, slotKey, item }) {
-  const { hero, socket, setDropItem, toggleBagState } = useAppContext();
+  const { hero, socket, setDropItem, toggleBagState, bagState } = useAppContext();
 
   return {
     doubleClickItem: () => {
@@ -345,22 +345,26 @@ function useItemEvents({ location, bagId, slotKey, item }) {
       if (nodeName == "CANVAS" && location !== "shop") {
         if (item?.amount > 1) {
           /* If more than 1, open up the drop modal */
-          return setDropItem({ ...item, location, action: "DROP" });
+          return setDropItem({ ...item, location, bagId, action: "DROP" });
         } else {
           if (["set", "rare", "unique"]?.includes(item?.rarity)) {
-            return setDropItem({ ...item, location, action: "DROP_CONFIRM" });
+            return setDropItem({ ...item, location, bagId, action: "DROP_CONFIRM" });
           }
           if (["bag"]?.includes(item?.base)) {
-            return setDropItem({ ...item, location, action: "DROP_CONFIRM" });
+            /* Close open bag */
+            if (bagState?.find?.((id) => id === item?.id)) {
+              toggleBagState(item?.id);
+            }
+            return setDropItem({ ...item, location, bagId, action: "DROP_CONFIRM" });
           }
-          return socket.emit("dropItem", { item, location });
+          return socket.emit("dropItem", { item, bagId, location });
         }
       }
       /* Anywhere -> Shop */
       if (target?.closest(".menu-keeper")) {
         if (item?.amount > 1) {
           /* If more than 1, open up the drop modal */
-          return setDropItem({ ...item, location, action: "SHOP", slotKey });
+          return setDropItem({ ...item, location, bagId, action: "SHOP", slotKey });
         } else {
           if (["set", "rare", "unique"]?.includes(item?.rarity)) {
             return setDropItem({
@@ -368,6 +372,7 @@ function useItemEvents({ location, bagId, slotKey, item }) {
               location,
               action: "SHOP_CONFIRM",
               slotKey,
+              bagId,
             });
           } else {
             // so that we can play the sell sound

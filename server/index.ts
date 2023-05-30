@@ -187,9 +187,11 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         /* Face the loot */
         player.direction = direction;
         /* Check where to put loot */
-        if (item.type == "stackable") {
+        if (item.type === "stackable") {
           let foundItem =
-            player.findAbilityById(item.id)?.["item"] || player.findInventoryItemById(item.id);
+            player?.findBagItemById(item?.id) ||
+            player.findAbilityById(item.id)?.["item"] ||
+            player.findInventoryItemById(item.id);
           if (foundItem) {
             /* Delete loot from server */
             scene.roomManager.rooms[player?.roomName].lootManager.remove(lootId);
@@ -375,12 +377,19 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         io.emit("remove", socketId);
       });
 
-      socket.on("dropItem", ({ location, item, ...rest } = {}) => {
+      socket.on("dropItem", ({ location, bagId, item, ...rest } = {}) => {
+        if (item?.base === "bag" && item?.items?.filter((i) => i)?.length > 0) {
+          return socket.emit("message", {
+            type: "error",
+            message: "Cannot drop a bag with items inside of it.",
+          });
+        }
+
         const amount = Math.abs(parseInt(rest?.amount)) || 1;
         const player = scene?.players?.[socketId];
         let found = null;
         let dropAmount: integer;
-        /* If the item was dropped from equipment find it and what slot it came from */
+
         if (location === "equipment") {
           const { item: f, slotName } = player?.findEquipmentById(item?.id);
           found = f;
@@ -388,7 +397,6 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           player?.clearEquipmentSlot(slotName);
         }
 
-        /* If the item was dropped from equipment find it and what slot it came from */
         if (location === "abilities") {
           const { item: f, slotName } = player?.findAbilityById(item?.id);
           found = f;
@@ -396,7 +404,6 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           player?.clearAbilitySlot(slotName);
         }
 
-        /* If the item was dropped from inventory find it and what slot it came from */
         if (location === "inventory") {
           found = player?.findInventoryItemById(item?.id);
           if (amount >= found?.amount) {
@@ -404,6 +411,17 @@ class ServerScene extends Phaser.Scene implements ServerScene {
             player?.deleteInventoryItemAtId(item?.id);
           } else {
             dropAmount = player?.subtractInventoryItemAtId(item?.id, amount);
+            if (!dropAmount) return;
+          }
+        }
+
+        if (location === "bag") {
+          found = cloneObject(player?.findBagItemById(item?.id));
+          if (amount >= found?.amount) {
+            dropAmount = found?.amount;
+            player?.deleteBagItemAtId(item?.id);
+          } else {
+            dropAmount = player?.subtractBagItemAtId(item?.id, amount);
             if (!dropAmount) return;
           }
         }
@@ -481,8 +499,6 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           toItem = cloneObject(player?.findBagItemBySlot(to?.bagId, to?.slot));
           to.itemId = toItem?.id;
         }
-
-        console.log(from?.bagId, from?.slot);
 
         /* Cannot put bags in bags */
         if (fromItem?.base === "bag" && to?.bagId) return;

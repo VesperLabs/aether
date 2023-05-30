@@ -3,7 +3,7 @@ import { Modal, Flex, useAppContext, Slot, Box, Input, Icon, Text, KeyboardButto
 
 const ModalDropAmount = () => {
   const { socket, dropItem, setDropItem } = useAppContext();
-  const { amount: defaultAmount, location, slotKey, action, ...item } = dropItem ?? {};
+  const { amount: defaultAmount, location, slotKey, bagId, action, ...item } = dropItem ?? {};
   const [amount, setAmount] = useState(defaultAmount);
   const isShop = action?.includes("SHOP");
   const isConfirm = action?.includes("CONFIRM");
@@ -47,7 +47,7 @@ const ModalDropAmount = () => {
                 to: {
                   location: "shop",
                 },
-                from: { slot: slotKey, location, amount },
+                from: { slot: slotKey, bagId, location, amount },
               });
               // so that we can play the sell sound
               if (location !== "shop") {
@@ -58,7 +58,7 @@ const ModalDropAmount = () => {
                 );
               }
             } else {
-              socket.emit("dropItem", { item, location, amount });
+              socket.emit("dropItem", { item, location, bagId, amount });
             }
             setDropItem(null);
           }}
