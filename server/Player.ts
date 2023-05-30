@@ -81,6 +81,24 @@ class Player extends ServerCharacter implements Player {
     }
     return returnItem;
   }
+  /* Bag */
+  findBagItemById(id: string) {
+    let returnItem = null;
+    const bags = this?.inventory?.filter((item: Item) => item?.base === "bag");
+    for (const bag of bags) {
+      for (var i = 0; i < bag?.items?.length; i++) {
+        if (this.inventory[i]?.id === id) {
+          returnItem = this.inventory[i];
+          break;
+        }
+      }
+    }
+    return returnItem;
+  }
+  setBagItem(bagId: string, slot: string, item: Item) {
+    const bag = this?.inventory?.find((item) => item?.id === bagId);
+    bag.items[slot] = item;
+  }
   subtractInventoryItemAtId(id: string, amount: integer) {
     const found = cloneObject(this.findInventoryItemById(id));
     if (found?.amount > amount && amount > 0) {

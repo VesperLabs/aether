@@ -11,6 +11,7 @@ export {
   Spinner,
   Card,
   Divider,
+  Donut,
 } from "theme-ui";
 export { default as theme } from "./theme";
 export { default as Button } from "./Button";
@@ -22,6 +23,7 @@ export { default as MenuInventory } from "./MenuInventory";
 export { default as Portrait } from "./Portrait";
 export { default as MenuKeeper } from "./MenuKeeper";
 export { default as MenuProfile } from "./MenuProfile";
+export { default as MenuBag } from "./MenuBag";
 export { default as MenuHud } from "./MenuHud";
 export { default as MenuStats } from "./MenuStats";
 export { default as KeyboardKey } from "./KeyboardKey";

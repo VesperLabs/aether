@@ -20,6 +20,8 @@ interface Item {
   percentStats?: Record<string, number>;
   setName?: string;
   setBonus?: Record<string, number>;
+  space?: number;
+  items?: Array<Item>;
 }
 
 interface Message {
@@ -186,6 +188,8 @@ interface Player extends Character {
   clearAbilitySlot(id: string): void;
   subtractInventoryItemAtId(id: string, amount: integer);
   findInventoryItemById(id: string);
+  findBagItemById(id: string);
+  setBagItem(bagId: string, slot: string, item: Item);
   deleteInventoryItemAtId(id: string);
   addInventoryItem(item: Item): void;
   setDead(): void;

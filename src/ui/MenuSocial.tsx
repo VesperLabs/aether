@@ -73,42 +73,46 @@ const MenuSocial = () => {
   const { players, hero, tabSocial, setTabSocial, party } = useAppContext();
   const partyIds = party?.members?.map((p) => p?.id);
   const otherPlayers = players?.filter((p) => !partyIds?.includes(p?.id) && hero?.id !== p?.id);
+  const hasOtherPlayers = otherPlayers?.length > 0;
   const hasParty = partyIds?.length > 0;
-
+  const hasPlayers = hasParty || hasOtherPlayers;
   return (
     <Menu sx={{ display: tabSocial ? "block" : "none" }}>
       <Flex sx={{ flexWrap: "wrap", justifyContent: "end", gap: 2, flex: 1 }}>
-        <MenuHeader icon="social" onClick={() => setTabSocial(false)}>
+        <MenuHeader icon={`../assets/icons/social.png`} onClick={() => setTabSocial(false)}>
           Social
         </MenuHeader>
-
-        <Flex sx={{ flex: 1, maxWidth: 592, gap: 2, flexDirection: "column" }}>
-          <SocialGrid>
-            {otherPlayers?.map((player) => {
-              return (
-                <SocialPlayerRow partyPlayer={player} key={player?.id}>
-                  <ActionButton player={player} />
-                </SocialPlayerRow>
-              );
-            })}
-          </SocialGrid>
-          {hasParty && (
-            <>
-              <MenuHeader icon="social" onClick={() => setTabSocial(false)}>
-                Party
-              </MenuHeader>
+        {hasPlayers && (
+          <Flex sx={{ flex: 1, maxWidth: 592, gap: 2, flexDirection: "column" }}>
+            {hasOtherPlayers && (
               <SocialGrid>
-                {party?.members?.map((player) => {
+                {otherPlayers?.map((player) => {
                   return (
                     <SocialPlayerRow partyPlayer={player} key={player?.id}>
-                      <PartyActionButton player={player} />
+                      <ActionButton player={player} />
                     </SocialPlayerRow>
                   );
                 })}
               </SocialGrid>
-            </>
-          )}
-        </Flex>
+            )}
+            {hasParty && (
+              <>
+                <MenuHeader icon={`../assets/icons/social.png`} onClick={() => setTabSocial(false)}>
+                  Party
+                </MenuHeader>
+                <SocialGrid>
+                  {party?.members?.map((player) => {
+                    return (
+                      <SocialPlayerRow partyPlayer={player} key={player?.id}>
+                        <PartyActionButton player={player} />
+                      </SocialPlayerRow>
+                    );
+                  })}
+                </SocialGrid>
+              </>
+            )}
+          </Flex>
+        )}
       </Flex>
     </Menu>
   );

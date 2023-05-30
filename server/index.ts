@@ -470,7 +470,10 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           to.itemId = player?.abilities?.[to?.slot]?.id;
           toItem = cloneObject(player?.findAbilityById(to?.itemId))?.item;
         }
-
+        if (to?.location === "bag") {
+          toItem = cloneObject(player?.findBagItemById(to?.itemId))?.item;
+          to.itemId = toItem?.id;
+        }
         /* Same item, return */
         if (from.itemId === to.itemId) return;
 
@@ -512,6 +515,14 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           if (!["spell", "stackable"].includes(fromItem?.type)) return;
           player?.deleteInventoryItemAtId(from?.itemId);
           player.abilities[to?.slot] = fromItem;
+          player.inventory[from?.slot] = toItem;
+        }
+
+        /* Inventory -> Bag */
+        if (from?.location === "inventory" && to?.location === "bag") {
+          if (!to?.bagId) return;
+          player?.deleteInventoryItemAtId(from?.itemId);
+          player.setBagItem(to?.bagId, to?.slot, fromItem);
           player.inventory[from?.slot] = toItem;
         }
 

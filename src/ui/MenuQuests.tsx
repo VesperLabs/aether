@@ -17,7 +17,7 @@ const MenuQuests = () => {
       }}
     >
       <Flex sx={{ flexWrap: "wrap", justifyContent: "end", gap: 2, flex: 1 }}>
-        <MenuHeader icon="quests" onClick={() => setTabQuests(false)}>
+        <MenuHeader icon={`../assets/icons/quests.png`} onClick={() => setTabQuests(false)}>
           Quests
         </MenuHeader>
         <Flex

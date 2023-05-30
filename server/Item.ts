@@ -20,6 +20,8 @@ class Item implements Item {
   setName?: string;
   setBonus?: Record<string, number>;
   mpCost?: number;
+  space?: number; // amount of slots on bags
+  items?: Array<Item>;
 
   constructor(item) {
     this.id = item?.id;
@@ -43,6 +45,8 @@ class Item implements Item {
     this.setName = item?.setName;
     this.setBonus = item?.setBonus;
     this.mpCost = item?.mpCost;
+    this.space = item?.space;
+    this.items = item?.items || [];
   }
 }
 

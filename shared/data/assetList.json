@@ -366,6 +366,12 @@
     "previewRect": [0, 0, 32, 32]
   },
   {
+    "texture": "bag-small-pouch",
+    "src": "./assets/atlas/bag/bag-small-pouch.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
     "texture": "stackable-skull",
     "src": "./assets/atlas/stackable/stackable-skull.png",
     "atlas": "./assets/atlas/32x32-stackable.json",

@@ -10,7 +10,7 @@ const MenuEquipment = () => {
         display: tabEquipment ? "flex" : "none",
       }}
     >
-      <MenuHeader icon="helmet" onClick={() => setTabEquipment(false)}>
+      <MenuHeader icon={`../assets/icons/helmet.png`} onClick={() => setTabEquipment(false)}>
         Equipment
       </MenuHeader>
       <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", maxWidth: 592 }}>

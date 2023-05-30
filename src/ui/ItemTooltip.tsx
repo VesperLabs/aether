@@ -124,6 +124,12 @@ const ItemTooltip = ({ item, show }) => {
             })}
           </>
         )}
+        {item?.space && (
+          <>
+            <TextDivider>Space</TextDivider>
+            {`${item?.items?.length || 0} / ${item?.space}`}
+          </>
+        )}
         <Divider />
         <Flex sx={{ alignItems: "center", gap: 2 }}>
           <Flex sx={{ alignItems: "center", gap: "2px" }}>

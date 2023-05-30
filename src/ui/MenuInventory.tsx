@@ -13,13 +13,9 @@ const MenuInventory = () => {
   const maxInventory = new Array(30).fill(null);
 
   return (
-    <Menu
-      sx={{
-        display: tabInventory ? "flex" : "none",
-      }}
-    >
+    <Menu sx={{ display: tabInventory ? "block" : "none" }}>
       <Flex sx={{ flexWrap: "wrap", justifyContent: "end", gap: 2, flex: 1 }}>
-        <MenuHeader icon="bag" onClick={() => setTabInventory(false)}>
+        <MenuHeader icon={`../assets/icons/bag.png`} onClick={() => setTabInventory(false)}>
           Inventory
           <GoldDisplay gold={hero?.gold} />
         </MenuHeader>
@@ -29,7 +25,7 @@ const MenuInventory = () => {
               key={idx}
               location="inventory"
               slotKey={`${idx}`}
-              icon="./assets/icons/pouch.png"
+              icon={`../assets/icons/bag.png`}
               item={inventory?.[idx]}
             />
           ))}

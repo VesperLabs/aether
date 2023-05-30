@@ -12,6 +12,7 @@ const resolveAsset = (item, user) => {
       case "amulet":
       case "stackable":
       case "spell":
+      case "bag":
         textureName = texture;
         break;
       case "armor":

@@ -24,6 +24,7 @@ import {
   Menu,
   ModalLogin,
   MenuSocial,
+  MenuBag,
 } from "./";
 import { isMobile, getSpinDirection, calculateZoomLevel } from "../utils";
 import "react-tooltip/dist/react-tooltip.css";
@@ -51,6 +52,8 @@ interface AppContextValue {
   setTabQuests: React.Dispatch<React.SetStateAction<boolean>>;
   setDropItem: React.Dispatch<React.SetStateAction<Item | null | false>>;
   setTabAbilities: React.Dispatch<React.SetStateAction<boolean>>;
+  toggleBagState: React.Dispatch<React.SetStateAction<any>>;
+  bagState: Array<string>;
   messages: Message[];
   bottomOffset: number;
   dropItem: any;
@@ -114,6 +117,20 @@ function App({ socket, debug, game }) {
   const [showButtonChat, setShowButtonChat] = useState(false);
   const [bottomOffset, setBottomOffset] = useState(0);
   const [zoom, setZoom] = useState(getHudZoom());
+  const [bagState, setBagState] = useState([]);
+
+  /* Is the bag open or closed */
+  const toggleBagState = (id: string) => {
+    setBagState((prev) => {
+      if (prev.includes(id)) {
+        // If id is already present, remove it from the array
+        return prev.filter((itemId) => itemId !== id);
+      } else {
+        // If id is not present, add it to the array
+        return [...prev, id];
+      }
+    });
+  };
 
   useEffect(() => {
     const onConnect = () => {
@@ -346,6 +363,8 @@ function App({ socket, debug, game }) {
           setTabSocial,
           setTabQuests,
           setTabAbilities,
+          toggleBagState,
+          bagState,
           players,
           tabSocial,
           tabQuests,
@@ -533,6 +552,8 @@ const MenuBar = () => {
     tabAbilities,
     setTabAbilities,
     zoom,
+    bagState,
+    toggleBagState,
   } = useAppContext();
 
   const escCacheKey = JSON.stringify([
@@ -545,6 +566,7 @@ const MenuBar = () => {
     tabStats,
     tabQuests,
     tabAbilities,
+    ...bagState,
   ]);
 
   return (
@@ -576,6 +598,9 @@ const MenuBar = () => {
         {tabKeeper && <MenuKeeper />}
         <MenuAbilities />
         <MenuEquipment />
+        {bagState?.map((id) => {
+          return <MenuBag key={id} id={id} />;
+        })}
         <MenuInventory />
         <MenuProfile />
         <MenuQuests />
@@ -686,6 +711,7 @@ const MenuBar = () => {
               if (tabSocial) return setTabSocial(false);
               if (tabAbilities) return setTabAbilities(false);
               if (tabEquipment) return setTabEquipment(false);
+              if (bagState?.length > 0) return toggleBagState(bagState?.[bagState?.length - 1]);
               if (tabInventory) return setTabInventory(false);
               if (tabProfile) return setTabProfile(false);
               if (tabQuests) return setTabQuests(false);

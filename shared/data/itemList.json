@@ -815,5 +815,17 @@
         "cost": 100
       }
     }
+  },
+  "bag": {
+    "common": {
+      "smallPouch": {
+        "ilvl": 1,
+        "name": "Small Pouch",
+        "base": "bag",
+        "slot": "bag",
+        "texture": "bag-small-pouch",
+        "space": 5
+      }
+    }
   }
 }

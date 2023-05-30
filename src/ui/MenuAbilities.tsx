@@ -10,7 +10,7 @@ const MenuAbilities = () => {
         display: tabAbilities ? "flex" : "none",
       }}
     >
-      <MenuHeader icon="book" onClick={() => setTabAbilities(false)}>
+      <MenuHeader icon={`../assets/icons/book.png`} onClick={() => setTabAbilities(false)}>
         Abilities
       </MenuHeader>
       <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", maxWidth: 592 }}>

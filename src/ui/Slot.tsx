@@ -9,6 +9,7 @@ import {
   BLANK_IMAGE,
   SlotAmount,
   Portal,
+  Donut,
 } from "./";
 import { resolveAsset } from "../../shared/Assets";
 import { useAppContext } from "./App";
@@ -24,6 +25,7 @@ type SlotProps = {
   icon?: string;
   stock?: integer;
   disabled?: boolean;
+  bagId?: string;
 };
 
 const Slot = React.memo(
@@ -36,6 +38,7 @@ const Slot = React.memo(
     icon,
     stock,
     disabled,
+    bagId,
     ...props
   }: SlotProps) => {
     // component logic here
@@ -46,13 +49,13 @@ const Slot = React.memo(
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [target, setTarget] = useState(null);
     const imageRef = useRef(null);
-    const { dropItem, consumeItem } = useItemEvents({
+    const { dropItem, doubleClickItem } = useItemEvents({
+      bagId,
       item,
       location,
       slotKey,
     });
     const shouldBindEvents = item && !disabled;
-
     const handleMouseDown = (e) => {
       setPosition({
         x: e.clientX - imageRef.current.offsetWidth / 2,
@@ -184,7 +187,7 @@ const Slot = React.memo(
     const doubleTabBinds = useDoubleTap(
       shouldBindEvents
         ? () => {
-            consumeItem();
+            doubleClickItem();
           }
         : null
     );
@@ -199,6 +202,7 @@ const Slot = React.memo(
     const dataKeys = {
       "data-location": location,
       "data-slot-key": slotKey,
+      "data-bag-id": bagId,
     };
 
     const isActive =
@@ -216,13 +220,13 @@ const Slot = React.memo(
           userSelect: "none",
           pointerEvents: "all",
           overflow: "hidden",
-          width: size,
-          height: size,
           top: 0,
           left: 0,
           ...(item?.rarity
             ? STYLE_NON_EMPTY({ rarity: item?.rarity, isActive })
             : STYLE_SLOT_EMPTY(icon)),
+          width: size,
+          height: size,
           ...sx,
         }}
         {...doubleTabBinds}
@@ -232,6 +236,24 @@ const Slot = React.memo(
       >
         {item && (
           <>
+            {item?.base === "bag" && (
+              <Donut
+                sx={{
+                  position: "absolute",
+                  zIndex: 2,
+                  color: "set",
+                  "& circle:first-of-type": {
+                    opacity: 0.25,
+                    color: "#000",
+                  },
+                  ml: "-1px",
+                  mt: "-1px",
+                }}
+                size={16}
+                strokeWidth={11}
+                value={item?.items?.length / item?.space}
+              />
+            )}
             {item?.amount > 1 && <SlotAmount>{item?.amount}</SlotAmount>}
             <Icon
               icon={imageData}
@@ -295,14 +317,20 @@ const Slot = React.memo(
   }
 );
 
-function useItemEvents({ location, slotKey, item }) {
-  const { hero, socket, setDropItem } = useAppContext();
+function useItemEvents({ location, bagId, slotKey, item }) {
+  const { hero, socket, setDropItem, toggleBagState } = useAppContext();
 
   return {
-    consumeItem: () => {
-      /* So far can only consume from inventory */
-      if (["inventory", "abilities"].includes(location))
+    doubleClickItem: () => {
+      if (!["inventory", "abilities", "bag"].includes(location)) return;
+      /* If it is food we are trying to consume it */
+      if (item?.base === "food") {
         return socket.emit("consumeItem", { item, location });
+      }
+      /* If it is a bag, we open it */
+      if (item?.base === "bag") {
+        toggleBagState(item?.id);
+      }
     },
     dropItem: (target) => {
       if (hero?.state?.isDead) return;
@@ -355,10 +383,11 @@ function useItemEvents({ location, slotKey, item }) {
         if (dataset?.location === location && dataset?.slotKey === slotKey) return;
         return socket.emit("moveItem", {
           to: {
+            bagId: dataset?.bagId, //if we have a bag
             slot: dataset?.slotKey,
             location: dataset?.location,
           },
-          from: { slot: slotKey, location },
+          from: { bagId, slot: slotKey, location },
         });
       }
     },
