@@ -743,7 +743,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         const player = scene?.players?.[socketId];
         let playerItem: Item;
         if (player?.state?.isDead) return;
-        if (!["inventory", "abilities"].includes(location)) return;
+        if (!["inventory", "abilities", "bag"].includes(location)) return;
         /* Using an item from the inventory */
         if (location === "inventory") {
           playerItem = player?.findInventoryItemById(item?.id);
@@ -765,6 +765,17 @@ class ServerScene extends Phaser.Scene implements ServerScene {
             player?.deleteAbilityAtId(item?.id);
           } else {
             player?.subtractAbilityAtId(item?.id, 1);
+          }
+        }
+        /* Using an item from the inventory */
+        if (location === "bag") {
+          playerItem = player?.findBagItemById(item?.id);
+          if (playerItem?.base !== "food") return;
+          if (!playerItem?.amount) return;
+          if (playerItem?.amount <= 1) {
+            player?.deleteBagItemAtId(item?.id);
+          } else {
+            player?.subtractBagItemAtId(item?.id, 1);
           }
         }
         /* Apply item effects to hero */
