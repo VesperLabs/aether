@@ -205,10 +205,10 @@ const useGetBaseCharacterDefaults = ({ level = 1, charClass }) => {
       spellPower: 0,
       castDelay: 1000,
       armorPierce: 0,
-      dexterity: isRogue ? 2 * level : level,
-      strength: isWarrior ? 2 * level : level,
-      vitality: isCleric ? 2 * level : level,
-      intelligence: isMage ? 2 * level : level,
+      dexterity: isRogue ? 2 * level + 1 : level,
+      strength: isWarrior ? 2 * level + 1 : level,
+      vitality: isCleric ? 2 * level + 1 : level,
+      intelligence: isMage ? 2 * level + 1 : level,
       defense: 0,
       blockChance: 0,
       critChance: 0,
@@ -221,6 +221,7 @@ const useGetBaseCharacterDefaults = ({ level = 1, charClass }) => {
       regenMp: 0,
       maxHp: 10,
       maxMp: 10,
+      maxExp: PLAYER_BASE_EXP,
     },
   };
 };

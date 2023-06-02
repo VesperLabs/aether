@@ -35,10 +35,11 @@ class NpcManager {
         baseStats: {
           ...baseStats,
           // TODO: For NPCS Add some NPC scaling function...
-          attackDelay: (baseStats?.attackDelay || 100) + 400,
+          attackDelay: baseStats?.attackDelay + 400,
           maxDamage: mobData?.baseStats?.level,
           minDamage: mobData?.baseStats?.level / 2,
           expValue: mobData?.baseStats?.level,
+          maxHp: baseStats?.maxHp + mobData?.baseStats?.level * 4,
           ...mobData?.baseStats,
         },
         name: npc.name,

@@ -18,7 +18,7 @@
     "direction": "down",
     "state": { "isStatic": true },
     "baseStats": {
-      "level": 100
+      "level": 50
     },
     "equipment": {
       "handLeft": ["weapon", "common", "dagger"],
@@ -61,7 +61,7 @@
     "direction": "down",
     "state": { "isStatic": true },
     "baseStats": {
-      "level": 100
+      "level": 50
     },
     "equipment": {
       "handLeft": null,
@@ -100,7 +100,7 @@
     "direction": "down",
     "state": { "isStatic": true },
     "baseStats": {
-      "level": 100
+      "level": 50
     },
     "equipment": {
       "handLeft": null,
@@ -139,7 +139,7 @@
     "direction": "down",
     "state": { "isStatic": false },
     "baseStats": {
-      "level": 100
+      "level": 50
     },
     "equipment": {
       "handLeft": null,
@@ -183,7 +183,7 @@
     "direction": "down",
     "state": { "isStatic": false },
     "baseStats": {
-      "level": 100
+      "level": 50
     },
     "equipment": {
       "handLeft": null,
@@ -227,7 +227,7 @@
     "direction": "down",
     "state": { "isStatic": true },
     "baseStats": {
-      "level": 100
+      "level": 50
     },
     "abilities": {
       "1": ["spell", "common", "fireball"]
@@ -276,7 +276,7 @@
     "direction": "down",
     "state": { "isStatic": true },
     "baseStats": {
-      "level": 100
+      "level": 50
     },
     "equipment": {
       "handLeft": null,
