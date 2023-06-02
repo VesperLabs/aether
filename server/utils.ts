@@ -1,4 +1,5 @@
 //@ts-nocheck
+import ItemBuilder from "./ItemBuilder";
 
 function handlePlayerInput(scene, socketId, input) {
   if (!scene.players) return;
@@ -177,6 +178,53 @@ function checkSlotsMatch(s1, s2) {
 const SHOP_INFLATION = 4;
 const PLAYER_BASE_EXP = 20;
 
+const calculateNextMaxExp = (level) => {
+  return Math.floor(PLAYER_BASE_EXP * Math.pow(1.5, level - 1));
+};
+
+const useGetBaseCharacterDefaults = ({ level = 1, charClass }) => {
+  const isMage = charClass === "mage";
+  const isWarrior = charClass === "warrior";
+  const isRogue = charClass === "rogue";
+  const isCleric = charClass === "cleric";
+
+  const getStartingWeapon = () => {
+    if (isMage) return ItemBuilder.buildItem("weapon", "common", "wand");
+    if (isWarrior) return ItemBuilder.buildItem("weapon", "common", "axe");
+    if (isRogue) return ItemBuilder.buildItem("weapon", "common", "katar");
+  };
+
+  return {
+    startingWeapon: getStartingWeapon(),
+    baseStats: {
+      level,
+      expValue: 0,
+      walkSpeed: 100,
+      accuracy: 0,
+      attackDelay: 100,
+      spellPower: 0,
+      castDelay: 1000,
+      armorPierce: 0,
+      dexterity: isRogue ? 2 * level : level,
+      strength: isWarrior ? 2 * level : level,
+      vitality: isCleric ? 2 * level : level,
+      intelligence: isMage ? 2 * level : level,
+      defense: 0,
+      blockChance: 0,
+      critChance: 0,
+      critMultiplier: 1.5,
+      dodgeChance: 0,
+      maxDamage: 0,
+      minDamage: 0,
+      magicFind: 1,
+      regenHp: 0,
+      regenMp: 0,
+      maxHp: 10,
+      maxMp: 10,
+    },
+  };
+};
+
 export {
   removePlayer,
   getPlayer,
@@ -195,4 +243,6 @@ export {
   getBuffCharacterState,
   SHOP_INFLATION,
   PLAYER_BASE_EXP,
+  calculateNextMaxExp,
+  useGetBaseCharacterDefaults,
 };

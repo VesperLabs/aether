@@ -1,6 +1,6 @@
 import Character from "../shared/Character";
 import ItemBuilder from "./ItemBuilder";
-import { randomNumber, cloneObject, PLAYER_BASE_EXP } from "./utils";
+import { randomNumber, cloneObject, calculateNextMaxExp } from "./utils";
 import buffList from "../shared/data/buffList.json";
 class ServerCharacter extends Character {
   declare scene: ServerScene;
@@ -223,8 +223,8 @@ class ServerCharacter extends Character {
     ns.castDelay = ns.castDelay || 1000;
     ns.castDelay = 1 - Math.floor(ns.intelligence * 0.5) + ns.castDelay;
     ns.accuracy = ns.accuracy;
-    ns.regenHp = ns.regenHp + Math.floor(ns.vitality / 10);
-    ns.regenMp = ns.regenMp + Math.floor(ns.intelligence / 10);
+    ns.regenHp = 1 + ns.regenHp + Math.floor(ns.vitality / 10);
+    ns.regenMp = 1 + ns.regenMp + Math.floor(ns.intelligence / 10);
     ns.armorPierce = ns.armorPierce + ns.dexterity + ns.strength;
     ns.defense = ns.defense + ns.strength;
     ns.critChance = ns.critChance + ns.dexterity * 0.05;
@@ -447,7 +447,7 @@ class ServerCharacter extends Character {
     while (this.stats.exp >= this.baseStats.maxExp) {
       let trailingExp = this.stats.exp - this.baseStats.maxExp;
       this.stats.exp = trailingExp;
-      this.baseStats.maxExp = Math.floor(PLAYER_BASE_EXP * Math.pow(1.5, this.baseStats.level - 1));
+      this.baseStats.maxExp = calculateNextMaxExp(this.baseStats.level);
       if (this.charClass == "warrior") this.baseStats.strength += 1;
       else if (this.charClass == "rogue") this.baseStats.dexterity += 1;
       else if (this.charClass == "mage") this.baseStats.intelligence += 1;

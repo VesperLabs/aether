@@ -14,7 +14,7 @@
           "range": 1
         },
         "requirements": {
-          "dexterity": 3
+          "dexterity": 2
         }
       },
       "dagger": {
@@ -62,7 +62,7 @@
           "range": 1
         },
         "requirements": {
-          "intelligence": 3
+          "intelligence": 2
         }
       },
       "hammer": {
@@ -94,7 +94,7 @@
           "range": 1
         },
         "requirements": {
-          "strength": 3
+          "strength": 2
         }
       },
       "scythe": {
@@ -127,7 +127,7 @@
           "range": 2
         },
         "requirements": {
-          "strength": 6
+          "strength": 5
         }
       },
       "spade": {

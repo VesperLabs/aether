@@ -1,7 +1,7 @@
 import { MongoClient, Db } from "mongodb";
 import { userSchema } from "./schema";
 import ItemBuilder from "../ItemBuilder";
-import { PLAYER_BASE_EXP } from "../utils";
+import { useGetBaseCharacterDefaults } from "../utils";
 
 export async function initDatabase(uri) {
   let mongoClient: MongoClient;
@@ -120,46 +120,11 @@ const getDatabaseApi = (db) => ({
 });
 
 export const createBaseUser = (charClass) => {
-  const isMage = charClass === "mage";
-  const isWarrior = charClass === "warrior";
-  const isRogue = charClass === "rogue";
-  const isCleric = charClass === "cleric";
-
-  const getStartingWeapon = () => {
-    if (isMage) return ItemBuilder.buildItem("weapon", "common", "wand");
-    if (isWarrior) return ItemBuilder.buildItem("weapon", "common", "axe");
-    if (isRogue) return ItemBuilder.buildItem("weapon", "common", "katar");
-  };
+  const { baseStats, startingWeapon } = useGetBaseCharacterDefaults({ level: 1, charClass });
 
   return {
     charClass,
-    baseStats: {
-      expValue: 0,
-      level: 1,
-      walkSpeed: 100,
-      accuracy: 0,
-      attackDelay: 100,
-      spellPower: 0,
-      castDelay: 1000,
-      armorPierce: 0,
-      dexterity: isRogue ? 3 : 1,
-      strength: isWarrior ? 3 : 1,
-      vitality: isCleric ? 3 : 1,
-      intelligence: isMage ? 3 : 1,
-      defense: 0,
-      blockChance: 0,
-      critChance: 0,
-      critMultiplier: 1.5,
-      dodgeChance: 0,
-      maxDamage: 0,
-      minDamage: 0,
-      magicFind: 1,
-      regenHp: 1,
-      regenMp: 1,
-      maxExp: PLAYER_BASE_EXP,
-      maxHp: 10,
-      maxMp: 10,
-    },
+    baseStats,
     stats: {
       hp: 0,
       mp: 0,
@@ -170,7 +135,7 @@ export const createBaseUser = (charClass) => {
     quests: [],
     equipment: {
       handRight: null,
-      handLeft: getStartingWeapon(),
+      handLeft: startingWeapon,
       helmet: null,
       accessory: null,
       pants: ItemBuilder.buildItem("pants", "common", "clothPants"),
@@ -182,7 +147,7 @@ export const createBaseUser = (charClass) => {
     },
     inventory: [],
     abilities: {
-      1: isMage ? ItemBuilder.buildItem("spell", "common", "fireball") : null,
+      1: charClass === "mage" ? ItemBuilder.buildItem("spell", "common", "fireball") : null,
       2: null,
       3: null,
       4: null,

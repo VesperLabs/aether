@@ -3,6 +3,7 @@ import Npc from "./Npc";
 import nasties from "../shared/data/nasties.json";
 import keepers from "../shared/data/keepers.json";
 import mapNpcs from "../shared/data/mapNpcs.json"; //todo need these to live in maps
+import { useGetBaseCharacterDefaults } from "./utils";
 
 const mobsByKind = {
   nasty: nasties,
@@ -23,8 +24,23 @@ class NpcManager {
     const npcs = mapNpcs[room.name];
     for (const npc of npcs) {
       const mobData = mobsByKind[npc.kind][npc.name];
+
+      const { baseStats } = useGetBaseCharacterDefaults({
+        level: mobData?.baseStats?.level,
+        charClass: mobData?.charClass,
+      });
+
       this.create({
         ...mobData,
+        baseStats: {
+          ...baseStats,
+          // TODO: For NPCS Add some NPC scaling function...
+          attackDelay: (baseStats?.attackDelay || 100) + 400,
+          maxDamage: mobData?.baseStats?.level,
+          minDamage: mobData?.baseStats?.level / 2,
+          expValue: mobData?.baseStats?.level,
+          ...mobData?.baseStats,
+        },
         name: npc.name,
         room,
         kind: npc?.kind,

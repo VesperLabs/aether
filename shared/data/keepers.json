@@ -1,5 +1,6 @@
 {
   "tudwick": {
+    "charClass": "warrior",
     "profile": {
       "userName": "Tudwick",
       "face": {
@@ -17,28 +18,7 @@
     "direction": "down",
     "state": { "isStatic": true },
     "baseStats": {
-      "expValue": 0,
-      "attackDelay": 100,
-      "level": 40,
-      "walkSpeed": 100,
-      "range": 32,
-      "accuracy": 0,
-      "armorPierce": 5,
-      "dexterity": 40,
-      "strength": 40,
-      "vitality": 46,
-      "intelligence": 40,
-      "defense": 0,
-      "blockChance": 0,
-      "dodgeChance": 25,
-      "critChance": 50,
-      "critMultiplier": 4,
-      "maxDamage": 1,
-      "minDamage": 2,
-      "regenHp": 20,
-      "regenMp": 20,
-      "maxHp": 0,
-      "maxMp": 0
+      "level": 100
     },
     "equipment": {
       "handLeft": ["weapon", "common", "dagger"],
@@ -64,6 +44,7 @@
     }
   },
   "lynne": {
+    "charClass": "rogue",
     "profile": {
       "userName": "Lynne",
       "face": {
@@ -80,28 +61,7 @@
     "direction": "down",
     "state": { "isStatic": true },
     "baseStats": {
-      "expValue": 0,
-      "attackDelay": 100,
-      "level": 40,
-      "walkSpeed": 100,
-      "range": 32,
-      "accuracy": 0,
-      "armorPierce": 5,
-      "dexterity": 40,
-      "strength": 40,
-      "vitality": 46,
-      "intelligence": 40,
-      "defense": 0,
-      "blockChance": 0,
-      "dodgeChance": 25,
-      "critChance": 50,
-      "critMultiplier": 4,
-      "maxDamage": 1,
-      "minDamage": 2,
-      "regenHp": 20,
-      "regenMp": 20,
-      "maxHp": 0,
-      "maxMp": 0
+      "level": 100
     },
     "equipment": {
       "handLeft": null,
@@ -123,6 +83,7 @@
     }
   },
   "anthony": {
+    "charClass": "warrior",
     "profile": {
       "userName": "Anthony",
       "face": {
@@ -139,28 +100,7 @@
     "direction": "down",
     "state": { "isStatic": true },
     "baseStats": {
-      "expValue": 0,
-      "attackDelay": 100,
-      "level": 40,
-      "walkSpeed": 100,
-      "range": 32,
-      "accuracy": 0,
-      "armorPierce": 5,
-      "dexterity": 40,
-      "strength": 40,
-      "vitality": 46,
-      "intelligence": 40,
-      "defense": 0,
-      "blockChance": 0,
-      "dodgeChance": 25,
-      "critChance": 50,
-      "critMultiplier": 4,
-      "maxDamage": 1,
-      "minDamage": 2,
-      "regenHp": 20,
-      "regenMp": 20,
-      "maxHp": 0,
-      "maxMp": 0
+      "level": 100
     },
     "equipment": {
       "handLeft": null,
@@ -182,6 +122,7 @@
     }
   },
   "steve": {
+    "charClass": "warrior",
     "profile": {
       "userName": "Steve",
       "face": {
@@ -198,28 +139,7 @@
     "direction": "down",
     "state": { "isStatic": false },
     "baseStats": {
-      "expValue": 0,
-      "attackDelay": 100,
-      "level": 40,
-      "walkSpeed": 100,
-      "range": 32,
-      "accuracy": 0,
-      "armorPierce": 5,
-      "dexterity": 40,
-      "strength": 40,
-      "vitality": 46,
-      "intelligence": 40,
-      "defense": 0,
-      "blockChance": 0,
-      "dodgeChance": 25,
-      "critChance": 50,
-      "critMultiplier": 4,
-      "maxDamage": 1,
-      "minDamage": 2,
-      "regenHp": 20,
-      "regenMp": 20,
-      "maxHp": 0,
-      "maxMp": 0
+      "level": 100
     },
     "equipment": {
       "handLeft": null,
@@ -246,6 +166,7 @@
     }
   },
   "siobhan": {
+    "charClass": "wizard",
     "profile": {
       "userName": "Siobhan",
       "face": {
@@ -262,28 +183,7 @@
     "direction": "down",
     "state": { "isStatic": false },
     "baseStats": {
-      "expValue": 0,
-      "attackDelay": 100,
-      "level": 40,
-      "walkSpeed": 100,
-      "range": 32,
-      "accuracy": 0,
-      "armorPierce": 5,
-      "dexterity": 40,
-      "strength": 40,
-      "vitality": 46,
-      "intelligence": 40,
-      "defense": 0,
-      "blockChance": 0,
-      "dodgeChance": 25,
-      "critChance": 50,
-      "critMultiplier": 4,
-      "maxDamage": 1,
-      "minDamage": 2,
-      "regenHp": 20,
-      "regenMp": 20,
-      "maxHp": 0,
-      "maxMp": 0
+      "level": 100
     },
     "equipment": {
       "handLeft": null,
@@ -310,6 +210,7 @@
     }
   },
   "danny": {
+    "charClass": "wizard",
     "profile": {
       "userName": "Danny",
       "face": {
@@ -326,29 +227,7 @@
     "direction": "down",
     "state": { "isStatic": true },
     "baseStats": {
-      "expValue": 0,
-      "attackDelay": 100,
-      "level": 40,
-      "walkSpeed": 100,
-      "range": 32,
-      "accuracy": 0,
-      "armorPierce": 5,
-      "dexterity": 40,
-      "strength": 40,
-      "vitality": 46,
-      "intelligence": 40,
-      "defense": 0,
-      "blockChance": 0,
-      "dodgeChance": 25,
-      "critChance": 50,
-      "critMultiplier": 4,
-      "spellPower": 40,
-      "maxDamage": 1,
-      "minDamage": 2,
-      "regenHp": 20,
-      "regenMp": 20,
-      "maxHp": 0,
-      "maxMp": 0
+      "level": 100
     },
     "abilities": {
       "1": ["spell", "common", "fireball"]
@@ -381,6 +260,7 @@
     }
   },
   "ale": {
+    "charClass": "rogue",
     "profile": {
       "userName": "Ale",
       "face": {
@@ -396,28 +276,7 @@
     "direction": "down",
     "state": { "isStatic": true },
     "baseStats": {
-      "expValue": 0,
-      "attackDelay": 100,
-      "level": 40,
-      "walkSpeed": 100,
-      "range": 32,
-      "accuracy": 0,
-      "armorPierce": 5,
-      "dexterity": 40,
-      "strength": 40,
-      "vitality": 46,
-      "intelligence": 40,
-      "defense": 0,
-      "blockChance": 0,
-      "dodgeChance": 25,
-      "critChance": 50,
-      "critMultiplier": 4,
-      "maxDamage": 1,
-      "minDamage": 2,
-      "regenHp": 20,
-      "regenMp": 20,
-      "maxHp": 0,
-      "maxMp": 0
+      "level": 100
     },
     "equipment": {
       "handLeft": null,

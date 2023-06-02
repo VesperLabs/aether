@@ -1,5 +1,5 @@
 import ItemBuilder from "../ItemBuilder";
-import { PLAYER_BASE_EXP } from "../utils";
+import { useGetBaseCharacterDefaults } from "../utils";
 
 export async function initDatabase(uri) {
   return getDatabaseApi();
@@ -30,46 +30,11 @@ const getDatabaseApi = () => ({
 });
 
 export const createBaseUser = (charClass) => {
-  const isMage = charClass === "mage";
-  const isWarrior = charClass === "warrior";
-  const isRogue = charClass === "rogue";
-  const isCleric = charClass === "cleric";
-
-  const getStartingWeapon = () => {
-    if (isMage) return ItemBuilder.buildItem("weapon", "common", "wand");
-    if (isWarrior) return ItemBuilder.buildItem("weapon", "common", "axe");
-    if (isRogue) return ItemBuilder.buildItem("weapon", "common", "katar");
-  };
+  const { baseStats, startingWeapon } = useGetBaseCharacterDefaults({ level: 1, charClass });
 
   return {
     charClass,
-    baseStats: {
-      expValue: 0,
-      level: 1,
-      walkSpeed: 100,
-      accuracy: 0,
-      attackDelay: 100,
-      spellPower: 0,
-      castDelay: 1000,
-      armorPierce: 0,
-      dexterity: 15,
-      strength: 15,
-      vitality: 15,
-      intelligence: 5,
-      defense: 0,
-      blockChance: 0,
-      critChance: 0,
-      critMultiplier: 1.5,
-      dodgeChance: 0,
-      maxDamage: 0,
-      minDamage: 0,
-      magicFind: 1,
-      regenHp: 1,
-      regenMp: 1,
-      maxExp: PLAYER_BASE_EXP,
-      maxHp: 10,
-      maxMp: 10,
-    },
+    baseStats,
     stats: {
       hp: 25,
       mp: 25,
@@ -90,7 +55,7 @@ export const createBaseUser = (charClass) => {
       // ring2: ItemBuilder.buildItem("ring", "set", "timmysSignet"),
       // amulet: ItemBuilder.buildItem("amulet", "set", "timmysChain"),
       handRight: ItemBuilder.buildItem("weapon", "unique", "twigmansBranch"),
-      handLeft: getStartingWeapon(),
+      handLeft: startingWeapon,
       helmet: null,
       accessory: null,
       pants: null,
