@@ -1,22 +1,23 @@
 import { useRef, useEffect, useState } from "react";
 import { Box, useAppContext } from "./";
 import { tintCanvas, imageToCanvas, HAIR_HIDING_HELMETS } from "../utils";
+import { assetList } from "../../shared/Assets";
 
-function CanvasPreview({ assets, topOffset = 10, scale = 2 }) {
+function CanvasPreview({ assets, topOffset = 10, scale = 2, atlasSize = 80 }) {
   const canvasRef = useRef(null);
   const [imageUrls, setImageUrls] = useState([]);
   const { game } = useAppContext();
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
-    canvas.width = 80;
-    canvas.height = 80;
+    canvas.width = atlasSize;
+    canvas.height = atlasSize;
     const urls = [];
     for (const asset of assets) {
       if (!asset?.name) continue;
       const img = game?.textures?.get?.(asset?.name)?.getSourceImage();
       if (!img?.width) continue;
-      const [x, y, w, h] = [0, 160, 80, 80];
+      const [x, y, w, h] = [0, atlasSize * 2, atlasSize, atlasSize];
       const tintedCanvas = tintCanvas(imageToCanvas(img), asset?.tint);
       ctx.drawImage(tintedCanvas, x, y, w, h, 0, 0, w, h);
       const url = canvas.toDataURL();
@@ -100,6 +101,9 @@ const Portrait = ({
   const assets = [skin, chest, hair, boots, pants, armor, face, accessory, helmet]
     ?.filter(Boolean)
     ?.filter((asset) => !obscuredKeys.includes(asset.slotKey));
+
+  const atlasSize = assetList?.find((a) => a?.texture === race)?.previewRect?.[3];
+
   return (
     <Box
       sx={{
@@ -121,7 +125,12 @@ const Portrait = ({
           clipPath: `circle(${size / 2}px at ${size / 2}px ${size / 2}px)`,
         }}
       >
-        <CanvasPreview assets={assets} topOffset={topOffset} scale={scale} />
+        <CanvasPreview
+          assets={assets}
+          topOffset={race === "human" ? topOffset : -12}
+          scale={scale}
+          atlasSize={atlasSize}
+        />
       </Box>
     </Box>
   );

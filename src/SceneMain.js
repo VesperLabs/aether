@@ -73,10 +73,12 @@ class SceneMain extends Phaser.Scene {
           addPlayer(scene, player);
         }
       }
+      /* Add map npcs */
       for (const npc of npcs) {
         if (getNpc(scene, npc.id)) continue;
         addNpc(scene, npc);
       }
+      /* Add map loot */
       for (const loot of loots) {
         if (getLoot(scene, loot.id)) continue;
         addLoot(scene, loot);
@@ -263,6 +265,13 @@ function checkNpcProximity(scene, time) {
   let closestDistance = Infinity;
 
   hero?.body?.getBounds(coords);
+
+  // Add extra pixels to the hero's bounds
+  const extraPixels = 10; // Adjust this value to add the desired number of extra pixels
+  coords.x -= extraPixels;
+  coords.y -= extraPixels;
+  coords.width += extraPixels * 2;
+  coords.height += extraPixels * 2;
 
   /* Loop through NPCs, if hero is intersecting, find npc wth closest distance to hero */
   const npcs = scene.npcs.getChildren();

@@ -24,6 +24,7 @@ class NpcManager {
     const npcs = mapNpcs[room.name];
     for (const npc of npcs) {
       const mobData = mobsByKind[npc.kind][npc.name];
+      const isKeeper = npc.kind === "keeper";
 
       const { baseStats } = useGetBaseCharacterDefaults({
         level: mobData?.baseStats?.level,
@@ -38,7 +39,7 @@ class NpcManager {
           attackDelay: baseStats?.attackDelay + 400,
           maxDamage: mobData?.baseStats?.level,
           minDamage: mobData?.baseStats?.level / 2,
-          expValue: mobData?.baseStats?.level,
+          expValue: isKeeper ? 0 : mobData?.baseStats?.level,
           maxHp: baseStats?.maxHp + mobData?.baseStats?.level * 4,
           ...mobData?.baseStats,
         },

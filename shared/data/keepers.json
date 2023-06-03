@@ -1,4 +1,36 @@
 {
+  "cat": {
+    "charClass": "warrior",
+    "profile": {
+      "userName": "Cat",
+      "race": "cat",
+      "headY": -27
+    },
+    "baseStats": {
+      "level": 1
+    },
+    "keeperData": {
+      "dialogues": {
+        "greet": "Meow. I take it this isn't the first time you've talked to a cat."
+      }
+    }
+  },
+  "dog": {
+    "charClass": "warrior",
+    "profile": {
+      "userName": "Dog",
+      "race": "dog",
+      "headY": -27
+    },
+    "baseStats": {
+      "level": 1
+    },
+    "keeperData": {
+      "dialogues": {
+        "greet": "Woof. Woof. Greetings adventurer!"
+      }
+    }
+  },
   "tudwick": {
     "charClass": "warrior",
     "profile": {
@@ -15,7 +47,6 @@
       "gender": "male",
       "race": "human"
     },
-    "direction": "down",
     "state": { "isStatic": true },
     "baseStats": {
       "level": 50
@@ -58,7 +89,6 @@
       "gender": "female",
       "race": "human"
     },
-    "direction": "down",
     "state": { "isStatic": true },
     "baseStats": {
       "level": 50
@@ -97,7 +127,6 @@
       "gender": "male",
       "race": "human"
     },
-    "direction": "down",
     "state": { "isStatic": true },
     "baseStats": {
       "level": 50
@@ -136,7 +165,6 @@
       "gender": "male",
       "race": "human"
     },
-    "direction": "down",
     "state": { "isStatic": false },
     "baseStats": {
       "level": 50
@@ -180,7 +208,6 @@
       "gender": "female",
       "race": "human"
     },
-    "direction": "down",
     "state": { "isStatic": false },
     "baseStats": {
       "level": 50
@@ -224,7 +251,6 @@
       "gender": "male",
       "race": "human"
     },
-    "direction": "down",
     "state": { "isStatic": true },
     "baseStats": {
       "level": 50
@@ -273,7 +299,6 @@
       "gender": "female",
       "race": "human"
     },
-    "direction": "down",
     "state": { "isStatic": true },
     "baseStats": {
       "level": 50

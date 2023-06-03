@@ -18,6 +18,7 @@ const MenuKeeper = () => {
 
   const hasQuests = quests?.length > 0;
   const hasShop = shop?.length > 0;
+  const hasGreet = dialogues?.greet?.length > 0;
 
   const tabShop = tab === "shop";
   const tabQuests = tab === "quests";
@@ -26,6 +27,29 @@ const MenuKeeper = () => {
   useEffect(() => {
     if (!tabKeeper) setTab("greet");
   }, [tabKeeper]);
+
+  const KeeperButtons = () => {
+    if (!hasQuests && !hasShop) return;
+    return (
+      <Flex sx={{ gap: 2 }}>
+        {hasGreet && (hasShop || hasQuests) && (
+          <KeyboardButton keyboardKey="G" onClick={() => setTab("greet")} active={tabGreet}>
+            Greet
+          </KeyboardButton>
+        )}
+        {hasShop && (
+          <KeyboardButton keyboardKey="B" onClick={() => setTab("shop")} active={tabShop}>
+            Shop
+          </KeyboardButton>
+        )}
+        {hasQuests && (
+          <KeyboardButton keyboardKey="Q" onClick={() => setTab("quests")} active={tabQuests}>
+            Quests
+          </KeyboardButton>
+        )}
+      </Flex>
+    );
+  };
 
   return (
     <Menu className="menu-keeper">
@@ -42,34 +66,7 @@ const MenuKeeper = () => {
         >
           <Flex sx={{ bg: "shadow.30", flexDirection: "column", p: 2, gap: 2, borderRadius: 6 }}>
             <Text dangerouslySetInnerHTML={{ __html: dialogues?.[tab] }} />
-            {tabKeeper && (
-              <Flex sx={{ gap: 2 }}>
-                {hasQuests ||
-                  (hasShop && (
-                    <KeyboardButton
-                      keyboardKey="G"
-                      onClick={() => setTab("greet")}
-                      active={tabGreet}
-                    >
-                      Greet
-                    </KeyboardButton>
-                  ))}
-                {hasShop && (
-                  <KeyboardButton keyboardKey="B" onClick={() => setTab("shop")} active={tabShop}>
-                    Shop
-                  </KeyboardButton>
-                )}
-                {hasQuests && (
-                  <KeyboardButton
-                    keyboardKey="Q"
-                    onClick={() => setTab("quests")}
-                    active={tabQuests}
-                  >
-                    Quests
-                  </KeyboardButton>
-                )}
-              </Flex>
-            )}
+            {tabKeeper && <KeeperButtons />}
           </Flex>
         </Flex>
         <Flex
