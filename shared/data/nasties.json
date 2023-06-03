@@ -1,12 +1,4 @@
 {
-  "dog": {
-    "charClass": "warrior",
-    "profile": { "race": "dog", "headY": -27, "userName": "Dog" },
-    "baseStats": {
-      "level": 1
-    },
-    "drops": []
-  },
   "raccoon": {
     "charClass": "rogue",
     "profile": { "race": "raccoon", "headY": -27, "userName": "Raccoon" },

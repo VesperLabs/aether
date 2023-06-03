@@ -4,7 +4,7 @@ import { getCharacterDirection, distanceTo, randomNumber, SHOP_INFLATION } from 
 import spellDetails from "../shared/data/spellDetails.json";
 import crypto from "crypto";
 
-const START_AGGRO_RANGE = 120;
+const START_AGGRO_RANGE = 130;
 
 const buildEquipment = (equipment: Record<string, Array<string>>) =>
   Object?.entries(equipment).reduce((acc, [slot, itemArray]: [string, BuildItem]) => {
@@ -237,25 +237,26 @@ class Npc extends Character implements Npc {
   chaseOrMove({ targetPlayer, delta, time }) {
     // Check if player is in range for aggro
     const isInRange = this.checkInRange(targetPlayer, START_AGGRO_RANGE);
+    const shouldStop = this.checkInRange(targetPlayer, 4);
 
     // Determine if player should chase target
     const shouldChasePlayer = isInRange && !targetPlayer?.state?.isDead;
 
+    // Aggroed
     if (shouldChasePlayer) {
       this.state.bubbleMessage = "!";
-      return this.moveTowardPoint(targetPlayer);
+      return shouldStop ? this.standStill() : this.moveTowardPoint(targetPlayer);
     }
 
-    // Otherwise NPC just moves randomly
+    // Otherwise just make them move
     this.state.lockedPlayerId = null;
+    this.state.bubbleMessage = null;
 
     /* If the NPC is out of bounds, make it try to get back in bounds */
     if (this.isOutOfBounds()) {
       /* TODO: Improve this so that it moves toward the nearest open tile instead */
       return this.moveTowardPointPathed(this.startingCoords);
     }
-
-    this.state.bubbleMessage = null;
 
     if (this.state.isStatic) {
       return this.moveToSpawnAndWait(delta);
@@ -314,14 +315,17 @@ class Npc extends Character implements Npc {
     }
     this.body.setVelocity(this.vx, this.vy);
   }
+  standStill() {
+    this.vy = 0;
+    this.vx = 0;
+    return this.body.setVelocity(this.vx, this.vy);
+  }
   moveToSpawnAndWait(delta: number) {
     if (this.checkInRange(this.startingCoords, 1)) {
-      this.vy = 0;
-      this.vx = 0;
       setTimeout(() => {
         this.direction = "down";
       }, delta * 4);
-      return this.body.setVelocity(this.vx, this.vy);
+      return this.standStill();
     }
     this.moveTowardPointPathed(this.startingCoords);
   }
