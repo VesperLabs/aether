@@ -66,7 +66,7 @@
         "quests": "Still listening? Good! Here's some stuff you can do for me.",
         "shop": "Here are some things I found along the trail.  You may find them useful."
       },
-      "quests": ["slime-roundup", "slime-eggs", "hornet-hunting"],
+      "quests": ["slime-roundup", "slime-eggs", "hornet-hunting", "tudwick-shrooms"],
       "shop": [
         { "item": ["armor", "common", "clothRobe"], "stock": 1 },
         { "item": ["shield", "common", "barkShield"], "stock": 1 },

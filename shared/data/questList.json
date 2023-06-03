@@ -2,9 +2,9 @@
   "hornet-hunting": {
     "name": "Hornet Blaster",
     "dialogues": {
-      "description": "<strong>Kill (3) Hornets</strong> and report back to me."
+      "description": "<strong>Kill (10) Hornets</strong> and report back to me."
     },
-    "objectives": [{ "type": "bounty", "target": "hornet", "amount": 3 }],
+    "objectives": [{ "type": "bounty", "target": "hornet", "amount": 10 }],
     "rewards": {
       "exp": 20,
       "gold": 10,
@@ -14,24 +14,41 @@
   "slime-roundup": {
     "name": "Slime Roundup",
     "dialogues": {
-      "description": "I am all about slime and mold, but these blue ones are taking over the wood. <strong>Kill (3) Slimes</strong> and report back to me."
+      "description": "I am all about slime and mold, but these blue ones are taking over the wood. <strong>Kill (10) Slimes</strong> and report back to me."
     },
-    "objectives": [{ "type": "bounty", "target": "slime", "amount": 3 }],
+    "objectives": [{ "type": "bounty", "target": "slime", "amount": 10 }],
     "rewards": {
       "exp": 20,
       "gold": 10,
-      "items": [["pants", "common", "clothPants"]]
+      "items": [["helmet", "common", "clothCap"]]
     }
   },
   "slime-eggs": {
     "name": "Slime Eggs",
     "dialogues": {
-      "description": "Killing slimes is one thing, but best not let their eggs go to waste. Them's good eatin'. <strong>Collect (3) Slime Eggs</strong> and report back to me."
+      "description": "Killing slimes is one thing, but best not let their eggs go to waste. Them's good eatin'. <strong>Collect (3) Blue Sporangium</strong> and report back to me."
     },
     "objectives": [
       {
         "type": "item",
         "target": ["stackable", "common", "blueSporangium"],
+        "amount": 3
+      }
+    ],
+    "rewards": {
+      "exp": 20,
+      "gold": 10
+    }
+  },
+  "tudwick-shrooms": {
+    "name": "Shrooms for Tudwick",
+    "dialogues": {
+      "description": "It has become hard to find mushrooms in these woods, but I know you can buy them in the town up north. <strong>Purchase (3) Mushrooms</strong> and report back to me."
+    },
+    "objectives": [
+      {
+        "type": "item",
+        "target": ["stackable", "common", "mushroom"],
         "amount": 3
       }
     ],
