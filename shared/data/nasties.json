@@ -136,7 +136,7 @@
     "profile": { "race": "zombie", "headY": -44, "userName": "Zombie" },
     "state": { "isAggro": true },
     "baseStats": {
-      "level": 10
+      "level": 8
     },
     "drops": [
       {
@@ -158,7 +158,7 @@
     "profile": { "race": "wraith", "headY": -46, "userName": "Wraith" },
     "state": { "isAggro": true },
     "baseStats": {
-      "level": 10
+      "level": 8
     },
     "drops": [
       {

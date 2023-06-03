@@ -552,11 +552,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         if (from?.location === "inventory" && to?.location === "shop") {
           let sellQty = Math.abs(parseInt(from?.amount)) || 1;
           const cost = Math.abs(parseInt(fromItem?.cost)) || 1;
-          if (sellQty >= fromItem?.amount) {
-            player?.deleteInventoryItemAtId(from?.itemId);
-          } else {
-            player?.subtractInventoryItemAtId(from?.itemId, sellQty);
-          }
+          player?.subtractInventoryItemAtId(from?.itemId, sellQty);
           player.gold += sellQty * cost;
         }
 
@@ -745,11 +741,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           playerItem = player?.findInventoryItemById(item?.id);
           if (playerItem?.base !== "food") return;
           if (!playerItem?.amount) return;
-          if (playerItem?.amount <= 1) {
-            player?.deleteInventoryItemAtId(item?.id);
-          } else {
-            player?.subtractInventoryItemAtId(item?.id, 1);
-          }
+          player?.subtractInventoryItemAtId(item?.id, 1);
         }
         /* Using an item from abilities */
         if (location === "abilities") {

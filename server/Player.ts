@@ -137,9 +137,13 @@ class Player extends ServerCharacter implements Player {
   }
   subtractInventoryItemAtId(id: string, amount: integer) {
     const found = cloneObject(this.findInventoryItemById(id));
-    if (found?.amount > amount && amount > 0) {
+    if (found?.amount >= amount && amount > 0) {
       const newAmount = found?.amount - amount;
-      this.updateInventoryItemAtId(id, { ...found, amount: newAmount });
+      if (newAmount < 1) {
+        this?.deleteInventoryItemAtId(id);
+      } else {
+        this.updateInventoryItemAtId(id, { ...found, amount: newAmount });
+      }
       return amount;
     }
     return null;
