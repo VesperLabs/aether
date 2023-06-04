@@ -4,7 +4,7 @@ import { getCharacterDirection, distanceTo, randomNumber, SHOP_INFLATION } from 
 import spellDetails from "../shared/data/spellDetails.json";
 import crypto from "crypto";
 
-const START_AGGRO_RANGE = 130;
+const AGGRO_KITE_RANGE = 130;
 
 const buildEquipment = (equipment: Record<string, Array<string>>) =>
   Object?.entries(equipment).reduce((acc, [slot, itemArray]: [string, BuildItem]) => {
@@ -132,7 +132,9 @@ class Npc extends Character implements Npc {
     // If is nasty and not locked onto a player, lock onto nearest player
     if (state?.isAggro && !state.lockedPlayerId) {
       const nearestPlayer = room?.playerManager?.getNearestPlayer(this);
-      this.state.lockedPlayerId = nearestPlayer?.socketId;
+      const npcAggroRange = Math.min(20 + this?.baseStats?.level * 2, AGGRO_KITE_RANGE);
+      const isInRange = this.checkInRange(nearestPlayer, npcAggroRange);
+      if (isInRange) this.state.lockedPlayerId = nearestPlayer?.socketId;
     }
 
     // Get target player based on locked player ID
@@ -234,9 +236,12 @@ class Npc extends Character implements Npc {
       }, delta);
     }
   }
+  stillAggro() {
+    return this.state.lockedPlayerId && Date.now() - this.state.lastCombat > 5000;
+  }
   chaseOrMove({ targetPlayer, delta, time }) {
     // Check if player is in range for aggro
-    const isInRange = this.checkInRange(targetPlayer, START_AGGRO_RANGE);
+    const isInRange = this.checkInRange(targetPlayer, AGGRO_KITE_RANGE);
     const shouldStop = this.checkInRange(targetPlayer, 4);
 
     // Determine if player should chase target
