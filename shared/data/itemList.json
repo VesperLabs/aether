@@ -824,7 +824,7 @@
           "maxFireDamage": 3
         },
         "requirements": {
-          "intelligence": 5
+          "intelligence": 4
         },
         "mpCost": 4,
         "cost": 100
@@ -849,7 +849,7 @@
           "evasion": 1
         },
         "requirements": {
-          "dexterity": 5
+          "dexterity": 4
         },
         "mpCost": 10,
         "cost": 100
@@ -864,8 +864,8 @@
           "haste": 1
         },
         "requirements": {
-          "dexterity": 5,
-          "intelligence": 5
+          "dexterity": 4,
+          "intelligence": 4
         },
         "mpCost": 10,
         "cost": 100
@@ -880,7 +880,7 @@
           "brute": 1
         },
         "requirements": {
-          "strength": 5
+          "strength": 4
         },
         "mpCost": 10,
         "cost": 100
@@ -895,7 +895,7 @@
           "genius": 1
         },
         "requirements": {
-          "intelligence": 5
+          "intelligence": 4
         },
         "mpCost": 10,
         "cost": 100
@@ -910,7 +910,7 @@
           "endurance": 1
         },
         "requirements": {
-          "vitality": 5
+          "vitality": 4
         },
         "mpCost": 10,
         "cost": 100
