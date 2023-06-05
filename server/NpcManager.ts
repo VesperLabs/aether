@@ -37,7 +37,7 @@ class NpcManager {
           ...baseStats,
           // TODO: For NPCS Add some NPC scaling function...
           walkSpeed: baseStats?.walkSpeed - 30,
-          attackDelay: baseStats?.attackDelay + 400,
+          attackDelay: baseStats?.attackDelay + 1200,
           maxDamage: mobData?.baseStats?.level,
           minDamage: mobData?.baseStats?.level / 2,
           expValue: isKeeper ? 0 : mobData?.baseStats?.level,

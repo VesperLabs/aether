@@ -3,14 +3,16 @@
     "allowedTargets": ["enemy"],
     "maxVisibleTime": 200,
     "maxActiveTime": 100,
-    "bodySize": 32,
+    "spellSpeed": 200,
+    "bodySize": 4,
     "layerDepth": "bottom"
   },
   "attack_right": {
     "allowedTargets": ["enemy"],
     "maxVisibleTime": 200,
     "maxActiveTime": 100,
-    "bodySize": 32,
+    "spellSpeed": 200,
+    "bodySize": 4,
     "layerDepth": "bottom"
   },
   "fireball": {
