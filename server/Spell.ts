@@ -13,6 +13,7 @@ class Spell extends Phaser.GameObjects.Container {
   private allowedTargets: Array<string>;
   private maxVisibleTime: integer;
   private maxActiveTime: integer;
+  private warningTime: integer;
   private bodySize: integer;
   private scaleBase: number;
   private scaleMultiplier: number;
@@ -53,16 +54,15 @@ class Spell extends Phaser.GameObjects.Container {
     this.spellSpeed = details?.spellSpeed;
     this.scaleBase = details?.scaleBase;
     this.scaleMultiplier = details?.scaleMultiplier;
+    this.warningTime = details?.warningTime || 0;
 
     scene.physics.add.existing(this);
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
 
     if (this.isAttack) {
-      this.body.setCircle(this?.bodySize, -this?.bodySize, -this?.bodySize);
-      this.velocityX = Math.cos(castAngle) * this?.spellSpeed;
-      this.velocityY = Math.sin(castAngle) * this?.spellSpeed;
-      this.spell.setRotation(castAngle);
+      this.x = this.target.x;
+      this.y = this.target.y;
       this.add(this.spell);
     }
     if (spellName == "fireball") {
@@ -76,10 +76,13 @@ class Spell extends Phaser.GameObjects.Container {
   }
   update() {
     const now = Date.now();
-    const aliveMs = now - this.state.spawnTime;
-    this.body.setVelocity(this.velocityX, this.velocityY);
-    this.checkCollisions();
-    this.state.isExpired = aliveMs > this.maxActiveTime;
+    //start after warning time
+    if (now - this.state.spawnTime > this.warningTime) {
+      const aliveMs = now - this.state.spawnTime;
+      this.checkCollisions();
+      this.body.setVelocity(this.velocityX, this.velocityY);
+      this.state.isExpired = aliveMs > this.maxActiveTime;
+    }
   }
   checkCollisions() {
     if (this.state.isExpired) return;

@@ -217,11 +217,14 @@ class Npc extends Character implements Npc {
       this.action = "attack_right";
     }
 
+    const castAngle = Math.atan2(targetPlayer.y - this.y, targetPlayer.x - this.x);
+
     room?.spellManager.create({
       caster: this,
       target: targetPlayer,
-      castAngle: Math.atan2(targetPlayer.y - this.y, targetPlayer.x - this.x),
       spellName: this.action,
+      castAngle,
+      ilvl: 1,
     });
 
     scene.io.to(room?.name).emit("npcAttack", { id, count, direction });
