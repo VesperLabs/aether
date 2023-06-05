@@ -13,7 +13,7 @@ class Spell extends Phaser.GameObjects.Container {
   private allowedTargets: Array<string>;
   private maxVisibleTime: integer;
   private maxActiveTime: integer;
-  private warningTime: integer;
+  private warningDelay: integer;
   private bodySize: integer;
   private scaleBase: number;
   private scaleMultiplier: number;
@@ -54,16 +54,15 @@ class Spell extends Phaser.GameObjects.Container {
     this.spellSpeed = details?.spellSpeed;
     this.scaleBase = details?.scaleBase;
     this.scaleMultiplier = details?.scaleMultiplier;
-    this.warningTime = details?.warningTime || 0;
+    this.warningDelay = details?.warningDelay || 0;
 
     scene.physics.add.existing(this);
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
 
     if (this.isAttack) {
-      this.x = this.target.x;
-      this.y = this.target.y;
-      this.add(this.spell);
+      this.body.setCircle(this?.bodySize, -this?.bodySize, -this?.bodySize);
+      this.caster.add(this.spell);
     }
     if (spellName == "fireball") {
       this.body.setCircle(this?.bodySize, -this?.bodySize, -this?.bodySize);
@@ -77,7 +76,7 @@ class Spell extends Phaser.GameObjects.Container {
   update() {
     const now = Date.now();
     //start after warning time
-    if (now - this.state.spawnTime > this.warningTime) {
+    if (now - this.state.spawnTime > this.warningDelay) {
       const aliveMs = now - this.state.spawnTime;
       this.checkCollisions();
       this.body.setVelocity(this.velocityX, this.velocityY);

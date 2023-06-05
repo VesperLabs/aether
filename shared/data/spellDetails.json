@@ -3,16 +3,16 @@
     "allowedTargets": ["enemy"],
     "maxVisibleTime": 200,
     "maxActiveTime": 100,
-    "warningTime": 100,
-    "bodySize": 3,
+    "warningDelay": 50,
+    "bodySize": 16,
     "layerDepth": "bottom"
   },
   "attack_right": {
     "allowedTargets": ["enemy"],
     "maxVisibleTime": 200,
     "maxActiveTime": 100,
-    "warningTime": 100,
-    "bodySize": 3,
+    "warningDelay": 50,
+    "bodySize": 16,
     "layerDepth": "bottom"
   },
   "fireball": {
