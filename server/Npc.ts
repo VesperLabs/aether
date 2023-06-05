@@ -5,6 +5,7 @@ import spellDetails from "../shared/data/spellDetails.json";
 import crypto from "crypto";
 
 const AGGRO_KITE_RANGE = 130;
+const NPC_CLOSEST_RANGE = 8;
 
 const buildEquipment = (equipment: Record<string, Array<string>>) =>
   Object?.entries(equipment).reduce((acc, [slot, itemArray]: [string, BuildItem]) => {
@@ -202,7 +203,7 @@ class Npc extends Character implements Npc {
     const { scene, room, direction, id, state } = this ?? {};
     const targetPlayer = scene?.players?.[state?.lockedPlayerId] ?? null;
     if (state.isAttacking || state?.isDead) return;
-    if (!this.checkInRange(targetPlayer, 1) || targetPlayer?.state?.isDead) return;
+    if (!this.checkInRange(targetPlayer, NPC_CLOSEST_RANGE) || targetPlayer?.state?.isDead) return;
     // Set state to attacking and record attack time
     this.state.isAttacking = true;
     this.state.lastAttack = Date.now();
@@ -226,7 +227,7 @@ class Npc extends Character implements Npc {
   intendAttack({ targetPlayer, delta }) {
     const { isAttacking } = this?.state ?? {};
     // Determine if player should attack target player
-    const shouldAttackPlayer = !isAttacking && this.checkInRange(targetPlayer, 1);
+    const shouldAttackPlayer = !isAttacking && this.checkInRange(targetPlayer, NPC_CLOSEST_RANGE);
 
     if (shouldAttackPlayer) {
       // Attack target player after lag delay to ensure we are actually near them
@@ -242,7 +243,7 @@ class Npc extends Character implements Npc {
   chaseOrMove({ targetPlayer, delta, time }) {
     // Check if player is in range for aggro
     const isInRange = this.checkInRange(targetPlayer, AGGRO_KITE_RANGE);
-    const shouldStop = this.checkInRange(targetPlayer, 4);
+    const shouldStop = this.checkInRange(targetPlayer, NPC_CLOSEST_RANGE);
 
     // Determine if player should chase target
     const shouldChasePlayer = isInRange && !targetPlayer?.state?.isDead;
