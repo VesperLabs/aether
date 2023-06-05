@@ -41,7 +41,6 @@ class NpcManager {
           maxDamage: mobData?.baseStats?.level,
           minDamage: mobData?.baseStats?.level / 2,
           expValue: isKeeper ? 0 : mobData?.baseStats?.level,
-          maxHp: baseStats?.maxHp + mobData?.baseStats?.level * 4,
           ...mobData?.baseStats,
         },
         name: npc.name,

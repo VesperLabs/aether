@@ -4,7 +4,7 @@ import { getCharacterDirection, distanceTo, randomNumber, SHOP_INFLATION } from 
 import spellDetails from "../shared/data/spellDetails.json";
 import crypto from "crypto";
 
-const AGGRO_KITE_RANGE = 300;
+const AGGRO_KITE_RANGE = 220;
 const NPC_SHOULD_ATTACK_RANGE = 8;
 
 const buildEquipment = (equipment: Record<string, Array<string>>) =>

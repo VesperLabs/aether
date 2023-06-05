@@ -194,6 +194,8 @@ const useGetBaseCharacterDefaults = ({ level = 1, charClass }) => {
     if (isRogue) return ItemBuilder.buildItem("weapon", "common", "katar");
   };
 
+  const startStat = 2 * level + 3;
+
   return {
     startingWeapon: getStartingWeapon(),
     baseStats: {
@@ -205,10 +207,10 @@ const useGetBaseCharacterDefaults = ({ level = 1, charClass }) => {
       spellPower: 0,
       castDelay: 1000,
       armorPierce: 0,
-      dexterity: isRogue ? 2 * level + 3 : level,
-      strength: isWarrior ? 2 * level + 3 : level,
-      vitality: isCleric ? 2 * level + 3 : level,
-      intelligence: isMage ? 2 * level + 3 : level,
+      dexterity: isRogue ? startStat : level,
+      strength: isWarrior ? startStat : level,
+      vitality: isCleric ? startStat : level,
+      intelligence: isMage ? startStat : level,
       defense: 0,
       blockChance: 0,
       critChance: 0,
