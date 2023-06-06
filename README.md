@@ -25,34 +25,34 @@ yarn dev
 
 ## Todo list
 
-####Items
+#### Items
 
 - [ ] Suffix / Prefix system improvements
 - [ ] Spawned item mods `min` needs to take `max` into account
 
-####Cosmetic
+#### Cosmetic
 
 - [ ] Eyes on their own layer so we can tint them
 - [ ] Eye-whites can maybe be their own layer?
 - [ ] Facial hair can maybe be their own layer?
 
-####Systems
+#### Systems
 
 - [ ] Trade window
 - [ ] Minimap
 
-####Professions
+#### Professions
 
 - [ ] Add mining / herbs / treasures to spawn on maps (object layer?)
 
-####Combat
+#### Combat
 
 - [ ] Spell Critical
 - [ ] Back-stab damage
 - [ ] Charge-up attacks
 - [ ] Show warning before enemies attack
 
-####Completed
+#### Completed
 
 - [x] Helmets that can hide hair or face
 - [x] Elemental Damage / Resistances
