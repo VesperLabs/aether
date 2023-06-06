@@ -66,7 +66,9 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       this.load.tilemapTiledJSON(asset?.name, path.join(__dirname, `../public/${asset.json}`));
     });
     // can run in offline mode. we don't connect to any DB or save anything.
-    this.db = (await process.env.ONLINE) ? initDatabase(process.env.MONGO_URL) : initFakeDatabase();
+    this.db = process.env.MONGO_URL
+      ? await initDatabase(process.env.MONGO_URL)
+      : await initFakeDatabase();
   }
   create() {
     const scene = this;
@@ -1055,9 +1057,9 @@ new Phaser.Game({
 
 httpServer.listen(process.env.PORT, () => {
   console.log(
-    `💻 Running ${process.env.ONLINE ? "[online]" : "[offline]"} on ${process.env.SERVER_URL} @ ${
-      process.env.SERVER_FPS
-    }fps`
+    `💻 Running ${process.env.MONGO_URL ? "[online]" : "[offline]"} on ${
+      process.env.SERVER_URL
+    } @ ${process.env.SERVER_FPS}fps`
   );
 });
 

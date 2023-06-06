@@ -7,11 +7,10 @@ A Javascript MMO using `PhaserJS` and `SocketIO`
 ```bash
 # .env file example
 DEBUG=false
-MONGO_URL=
+MONGO_URL= # If blank will go into offline mode. (No saving)
 SERVER_FPS=20
 SERVER_URL=http://localhost:3000
 PORT=3000
-ONLINE=true # Connect to DB? (Airplane mode)
 ```
 
 ## Running
