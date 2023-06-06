@@ -236,6 +236,8 @@ class Npc extends Character implements Npc {
       !isAttacking && this.checkInRange(targetPlayer, NPC_SHOULD_ATTACK_RANGE);
 
     if (shouldAttackPlayer) {
+      // Face them if we are not
+      this.direction = getCharacterDirection(this, targetPlayer);
       // Attack target player after lag delay to ensure we are actually near them
       return setTimeout(() => {
         this.doAttack();
@@ -257,7 +259,6 @@ class Npc extends Character implements Npc {
     // Aggroed
     if (shouldChasePlayer) {
       this.state.bubbleMessage = "!";
-      if (shouldStop) this.direction = getCharacterDirection(this, targetPlayer);
       return shouldStop ? this.standStill() : this.moveTowardPoint(targetPlayer);
     }
 

@@ -140,7 +140,6 @@ function App({ socket, debug, game }) {
     const onDisconnect = () => {
       setIsConnected(false);
       setIsLoggedIn(false);
-      socket.connect();
     };
 
     const onMessage = (payload: Message) => {

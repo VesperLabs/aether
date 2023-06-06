@@ -68,6 +68,12 @@ document.addEventListener("scroll", (e) => {
   }
 });
 
+/* Keep socket connection connected */
+setInterval(() => {
+  if (socket.connected) return;
+  socket.connect();
+}, 3000);
+
 root.render(
   <React.StrictMode>
     <App socket={socket} game={game} debug={debug} />

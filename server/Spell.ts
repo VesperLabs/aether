@@ -62,6 +62,22 @@ class Spell extends Phaser.GameObjects.Container {
 
     if (this.isAttack) {
       this.body.setCircle(this?.bodySize, -this?.bodySize, -this?.bodySize);
+
+      // Map direction values to x and y offsets
+      const directionOffsets = {
+        left: { x: -this?.bodySize / 2, y: 0 },
+        up: { x: 0, y: -this?.bodySize / 2 },
+        right: { x: this?.bodySize / 2, y: 0 },
+        down: { x: 0, y: this?.bodySize / 2 },
+      };
+
+      // Set this.spell's x and y based on the value of this.direction
+      const offset = directionOffsets[caster.direction];
+      if (offset) {
+        this.x = this.x + offset.x;
+        this.y = this.y + offset.y;
+      }
+
       this.add(this.spell);
     }
     if (spellName == "fireball") {

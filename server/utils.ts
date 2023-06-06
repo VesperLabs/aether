@@ -182,6 +182,22 @@ const calculateNextMaxExp = (level) => {
   return Math.floor(PLAYER_BASE_EXP * Math.pow(1.5, level - 1));
 };
 
+function mergeAndAddValues(obj1, obj2) {
+  const mergedStats = { ...obj1 };
+
+  for (const key in obj2) {
+    if (obj2.hasOwnProperty(key)) {
+      if (mergedStats.hasOwnProperty(key)) {
+        mergedStats[key] += obj2[key];
+      } else {
+        mergedStats[key] = obj2[key];
+      }
+    }
+  }
+
+  return mergedStats;
+}
+
 const useGetBaseCharacterDefaults = ({ level = 1, charClass }) => {
   const isMage = charClass === "mage";
   const isWarrior = charClass === "warrior";
@@ -248,4 +264,5 @@ export {
   PLAYER_BASE_EXP,
   calculateNextMaxExp,
   useGetBaseCharacterDefaults,
+  mergeAndAddValues,
 };

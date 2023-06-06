@@ -39,7 +39,8 @@
     "charClass": "rogue",
     "profile": { "race": "bee", "headY": -34, "userName": "Hornet" },
     "baseStats": {
-      "level": 1
+      "level": 1,
+      "walkSpeed": 10
     },
     "drops": [
       {
@@ -61,7 +62,8 @@
     },
     "state": { "isAggro": true },
     "baseStats": {
-      "level": 3
+      "level": 3,
+      "walkSpeed": 10
     },
     "drops": []
   },
