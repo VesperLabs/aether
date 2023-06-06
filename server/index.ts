@@ -21,6 +21,7 @@ import {
   getBuffRoomState,
 } from "./utils";
 import { initDatabase } from "./db/";
+import { initFakeDatabase } from "./db/fake";
 import RoomManager from "./RoomManager";
 import PartyManager from "./PartyManager";
 import Phaser from "phaser";
@@ -64,7 +65,8 @@ class ServerScene extends Phaser.Scene implements ServerScene {
     mapList.forEach((asset: MapAsset) => {
       this.load.tilemapTiledJSON(asset?.name, path.join(__dirname, `../public/${asset.json}`));
     });
-    this.db = await initDatabase(process.env.MONGO_URL);
+    // can run in offline mode. we don't connect to any DB or save anything.
+    this.db = (await process.env.ONLINE) ? initDatabase(process.env.MONGO_URL) : initFakeDatabase();
   }
   create() {
     const scene = this;
@@ -1052,7 +1054,11 @@ new Phaser.Game({
 });
 
 httpServer.listen(process.env.PORT, () => {
-  console.log(`💻 Running on ${process.env.SERVER_URL} @ ${process.env.SERVER_FPS}fps`);
+  console.log(
+    `💻 Running ${process.env.ONLINE ? "[online]" : "[offline]"} on ${process.env.SERVER_URL} @ ${
+      process.env.SERVER_FPS
+    }fps`
+  );
 });
 
 process.on("SIGINT", function () {

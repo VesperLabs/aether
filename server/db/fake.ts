@@ -1,7 +1,7 @@
 import ItemBuilder from "../ItemBuilder";
 import { useGetBaseCharacterDefaults } from "../utils";
 
-export async function initDatabase(uri) {
+export async function initFakeDatabase() {
   return getDatabaseApi();
 }
 
