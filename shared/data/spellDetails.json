@@ -4,7 +4,7 @@
     "maxVisibleTime": 200,
     "maxActiveTime": 100,
     "warningDelay": 50,
-    "bodySize": 12,
+    "bodySize": 16,
     "layerDepth": "bottom"
   },
   "attack_right": {
@@ -12,7 +12,7 @@
     "maxVisibleTime": 200,
     "maxActiveTime": 100,
     "warningDelay": 50,
-    "bodySize": 12,
+    "bodySize": 16,
     "layerDepth": "bottom"
   },
   "fireball": {
