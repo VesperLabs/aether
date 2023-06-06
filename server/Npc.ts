@@ -257,6 +257,7 @@ class Npc extends Character implements Npc {
     // Aggroed
     if (shouldChasePlayer) {
       this.state.bubbleMessage = "!";
+      if (shouldStop) this.direction = getCharacterDirection(this, targetPlayer);
       return shouldStop ? this.standStill() : this.moveTowardPoint(targetPlayer);
     }
 
