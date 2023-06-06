@@ -62,7 +62,7 @@ class Spell extends Phaser.GameObjects.Container {
 
     if (this.isAttack) {
       this.body.setCircle(this?.bodySize, -this?.bodySize, -this?.bodySize);
-      this.caster.add(this.spell);
+      this.add(this.spell);
     }
     if (spellName == "fireball") {
       this.body.setCircle(this?.bodySize, -this?.bodySize, -this?.bodySize);
