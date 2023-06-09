@@ -40,21 +40,20 @@ yarn dev
 
 - [ ] Trade window
 - [ ] Minimap
-
-#### Professions
-
-- [ ] Add mining / herbs / treasures to spawn on maps (object layer?)
+- [ ] Doors that require a key or level to pass through
+- [ ] Map item drops (Mining, Herbs) Professions?
 
 #### Combat
 
-- [ ] Spell Critical
+- [ ] Allow critical strikes on spells
+- [ ] More spells that affect movement, (dives, dodges, pushback etc)
 - [ ] Back-stab damage
-- [ ] Charge-up attacks
+- [ ] Holding down buttons to charge up attacks
 - [ ] Show warning before enemies attack
 
-####Architecture / Performance
+####Performance
 
-- [ ] Better hero predictive movement so we do not have to send x,y @ 60fps and so other players aren't able to hit you when you are not near them.
+- [ ] Predictive hero movement so we do not have to send `[x,y]` @ 60fps and so other players aren't able to hit you when you are not near them.
 - [ ] Multiple `Realms` because 1000 people in a map will not scale.
 - [ ] How to make servers smart about not loading map rooms until a person is actually in them.
 
