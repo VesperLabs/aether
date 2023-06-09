@@ -146,9 +146,11 @@ class Npc extends Character implements Npc {
     this.intendCastSpell({ targetPlayer, delta });
   }
   setLockedPlayerId(id: string) {
-    // make it so they pause a bit before trying to attack
-    this.state.isAttacking = true;
-    this.state.lastAttack = Date.now();
+    if (this.state.lockedPlayerId !== id) {
+      // If they are switching targets, delay their attack a tick
+      this.state.isAttacking = true;
+      this.state.lastAttack = Date.now();
+    }
     this.state.lockedPlayerId = id;
   }
   doCast({ ability, abilitySlot, targetPlayer }) {
