@@ -309,9 +309,16 @@ class Npc extends Character implements Npc {
     }
   }
   moveRandomly(time: number) {
-    if (time % 4 > 1) return;
-    const randNumber = Math.floor(Math.random() * 6 + 1);
+    const changeDirectionDelay = 7; // Number of iterations before changing direction
     const walkSpeed = this.stats.walkSpeed / 2;
+
+    if (time % changeDirectionDelay > 1) {
+      // Keep moving in the current direction
+      this.body.setVelocity(this.vx, this.vy);
+      return;
+    }
+
+    const randNumber = Math.floor(Math.random() * 7 + 1); // Adjusted the range to 1-4
     switch (randNumber) {
       case 1:
         this.vx = -walkSpeed;
