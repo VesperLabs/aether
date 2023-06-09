@@ -52,7 +52,13 @@ yarn dev
 - [ ] Charge-up attacks
 - [ ] Show warning before enemies attack
 
-#### Completed
+####Architecture / Performance
+
+- [ ] Better hero predictive movement so we do not have to send x,y @ 60fps and so other players aren't able to hit you when you are not near them.
+- [ ] Multiple `Realms` because 1000 people in a map will not scale.
+- [ ] How to make servers smart about not loading map rooms until a person is actually in them.
+
+####Completed
 
 - [x] Helmets that can hide hair or face
 - [x] Elemental Damage / Resistances

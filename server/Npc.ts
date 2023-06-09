@@ -64,8 +64,8 @@ class Npc extends Character implements Npc {
     this.expireBuffs(true);
     this.state.isDead = true;
     this.state.deadTime = Date.now();
-    this.state.lockedPlayerId = null;
     this.state.bubbleMessage = null;
+    this.setLockedPlayerId(null);
     this.vx = 0;
     this.vy = 0;
     this.body.setVelocity(this.vx, this.vy);
@@ -109,7 +109,7 @@ class Npc extends Character implements Npc {
 
     // skip updates if no one is in the room
     if (!room?.playerManager?.hasPlayers()) {
-      this.state.lockedPlayerId = null;
+      this.setLockedPlayerId(null);
       this.vx = 0;
       this.vy = 0;
       this.body.setVelocity(this.vx, this.vy);
@@ -135,7 +135,7 @@ class Npc extends Character implements Npc {
       const nearestPlayer = room?.playerManager?.getNearestPlayer(this);
       const npcAggroRange = Math.min(20 + this?.baseStats?.level * 2, AGGRO_KITE_RANGE);
       const isInRange = this.checkInRange(nearestPlayer, npcAggroRange);
-      if (isInRange) this.state.lockedPlayerId = nearestPlayer?.socketId;
+      if (isInRange) this.setLockedPlayerId(nearestPlayer?.socketId);
     }
 
     // Get target player based on locked player ID
@@ -144,6 +144,12 @@ class Npc extends Character implements Npc {
     this.chaseOrMove({ targetPlayer, delta, time });
     this.intendAttack({ targetPlayer, delta });
     this.intendCastSpell({ targetPlayer, delta });
+  }
+  setLockedPlayerId(id: string) {
+    // make it so they pause a bit before trying to attack
+    this.state.isAttacking = true;
+    this.state.lastAttack = Date.now();
+    this.state.lockedPlayerId = id;
   }
   doCast({ ability, abilitySlot, targetPlayer }) {
     const { scene, room, id, state } = this ?? {};
@@ -263,7 +269,7 @@ class Npc extends Character implements Npc {
     }
 
     // Otherwise just make them move
-    this.state.lockedPlayerId = null;
+    this.setLockedPlayerId(null);
     this.state.bubbleMessage = null;
 
     /* If the NPC is out of bounds, make it try to get back in bounds */
