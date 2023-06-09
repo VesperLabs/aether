@@ -318,7 +318,7 @@ class ServerCharacter extends Character {
 
     /* Npcs lock on and chase when a user hits them */
     if (victim.state.isRobot) {
-      victim.state.lockedPlayerId = this?.socketId;
+      victim.setLockedPlayerId(this?.socketId);
     }
     /* Victim killed */
     if (victim.stats.hp <= 0) {
@@ -370,7 +370,7 @@ class ServerCharacter extends Character {
     victim.state.lastCombat = Date.now();
     /* Npcs lock on and chase when a user hits them */
     if (victim.state.isRobot) {
-      victim.state.lockedPlayerId = this?.socketId;
+      victim.setLockedPlayerId(this?.socketId);
     }
     /* Add stolen hp */
     if (this?.stats?.hpSteal > 0) {
