@@ -11,7 +11,6 @@ import {
   addNpc,
   addLoot,
   getLoot,
-  getSpinDirection,
   distanceTo,
   MUSIC_VOLUME,
   playAudio,
@@ -27,8 +26,6 @@ class SceneMain extends Phaser.Scene {
   }
 
   preload() {
-    this.cursorKeys = this.input.keyboard.createCursorKeys();
-    this.input.keyboard.removeCapture("SPACE");
     this.bgMusic = null;
   }
 
@@ -235,7 +232,6 @@ class SceneMain extends Phaser.Scene {
       }
     }
 
-    moveHero(this, time);
     enableDoors(this);
     checkNpcProximity(this, time);
 
@@ -305,76 +301,6 @@ function enableDoors(scene) {
   scene?.hero?.body?.getBounds(coords);
   for (const door of scene.doors.getChildren()) {
     if (!RectangleToRectangle(coords, door.getBounds())) door.isEnabled = true;
-  }
-}
-
-function moveHero(scene, time) {
-  const hero = scene?.hero;
-  if (hero?.state?.isDead) return hero.body.setVelocity(0, 0);
-  const walkSpeed = hero.stats.walkSpeed;
-  const joystick = scene.game.scene.scenes[2].joystick;
-  const left = scene.cursorKeys.left.isDown;
-  const right = scene.cursorKeys.right.isDown;
-  const up = scene.cursorKeys.up.isDown;
-  const down = scene.cursorKeys.down.isDown;
-
-  let vx = 0;
-  let vy = 0;
-
-  if (left) {
-    vx = -walkSpeed;
-    hero.direction = "left";
-  }
-  if (right) {
-    vx = walkSpeed;
-    hero.direction = "right";
-  }
-  if (up) {
-    vy = -walkSpeed;
-    hero.direction = "up";
-  }
-  if (down) {
-    vy = walkSpeed;
-    hero.direction = "down";
-  }
-  if (left && right) vx = 0;
-  if (up && down) vy = 0;
-  if (!left && !right && !up && !down) {
-    vx = 0;
-    vy = 0;
-  }
-
-  if (joystick.deltaX || joystick.deltaY) {
-    vx = joystick.deltaX * walkSpeed;
-    vy = joystick.deltaY * walkSpeed;
-    hero.direction = getSpinDirection(hero, { x: hero.x + vx, y: hero.y + vy });
-  }
-
-  if (hero.state.isAttacking) {
-    vx = 0;
-    vy = 0;
-  }
-
-  hero.vx = vx;
-  hero.vy = vy;
-
-  hero.body.setVelocity(vx, vy);
-
-  /* If the hero is standing still do not update the server */
-  if (!hero.state.isIdle) {
-    //if (time % 2 > 1)
-    scene.socket.emit("playerInput", {
-      vx,
-      vy,
-      x: hero.x,
-      y: hero.y,
-      direction: hero.direction,
-    });
-  }
-  hero.state.isIdle = hero.vx === vx && hero.vy === vy && vx === 0 && vy === 0;
-  /* Latest idle check, we set the lastAngle so it's fresh */
-  if (!hero.state.isIdle) {
-    hero.state.lastAngle = Math.atan2(hero.body.velocity.y, hero.body.velocity.x);
   }
 }
 

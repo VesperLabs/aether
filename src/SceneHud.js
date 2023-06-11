@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { playAudio, getSpinDirection } from "./utils";
+const { W, S, A, D } = Phaser.Input.Keyboard.KeyCodes;
 
 class SceneHud extends Phaser.Scene {
   constructor(socket) {
@@ -8,23 +9,24 @@ class SceneHud extends Phaser.Scene {
     });
     this.socket = socket;
   }
-  preload() {}
+  preload() {
+    this.cursorKeys = this.input.keyboard.createCursorKeys();
+    this.cursorKeys.w = this.input.keyboard.addKey(W);
+    this.cursorKeys.s = this.input.keyboard.addKey(S);
+    this.cursorKeys.a = this.input.keyboard.addKey(A);
+    this.cursorKeys.d = this.input.keyboard.addKey(D);
+    this.input.keyboard.removeCapture("W,A,S,D,SPACE,up,down,left,right");
+  }
   create() {
     addJoystick(this);
-    addInputListeners(this);
+    addGlobalEventListeners(this);
   }
-  update() {}
+  update(time, delta) {
+    moveHero(this, time);
+  }
 }
 
-function fadeIn(scene) {
-  // Create a black rectangle that covers the entire screen
-  const graphics = scene.add.graphics();
-  graphics.fillStyle(0x000000, 1);
-  graphics.fillRect(0, 0, scene.cameras.main.width, scene.cameras.main.height);
-  graphics.setDepth(100000);
-}
-
-function addInputListeners(scene) {
+function addGlobalEventListeners(scene) {
   const isTouch = scene.sys.game.device.input.touch;
   const pointer = scene.input.activePointer;
   const mainScene = scene.scene.manager.getScene("SceneMain");
@@ -105,6 +107,81 @@ function addInputListeners(scene) {
     },
     scene
   );
+}
+
+function moveHero(scene, time) {
+  const mainScene = scene.scene.manager.getScene("SceneMain");
+  const hero = mainScene?.hero;
+
+  if (!hero) return;
+  if (hero?.state?.isDead || document.activeElement.type) return hero.body.setVelocity(0, 0);
+
+  const walkSpeed = hero.stats.walkSpeed;
+  const joystick = scene.game.scene.scenes[2].joystick;
+
+  const up = scene.cursorKeys.w.isDown || scene.cursorKeys.up.isDown;
+  const left = scene.cursorKeys.a.isDown || scene.cursorKeys.left.isDown;
+  const down = scene.cursorKeys.s.isDown || scene.cursorKeys.down.isDown;
+  const right = scene.cursorKeys.d.isDown || scene.cursorKeys.right.isDown;
+
+  let vx = 0;
+  let vy = 0;
+
+  if (left) {
+    vx = -walkSpeed;
+    hero.direction = "left";
+  }
+  if (right) {
+    vx = walkSpeed;
+    hero.direction = "right";
+  }
+  if (up) {
+    vy = -walkSpeed;
+    hero.direction = "up";
+  }
+  if (down) {
+    vy = walkSpeed;
+    hero.direction = "down";
+  }
+  if (left && right) vx = 0;
+  if (up && down) vy = 0;
+  if (!left && !right && !up && !down) {
+    vx = 0;
+    vy = 0;
+  }
+
+  if (joystick.deltaX || joystick.deltaY) {
+    vx = joystick.deltaX * walkSpeed;
+    vy = joystick.deltaY * walkSpeed;
+    hero.direction = getSpinDirection(hero, { x: hero.x + vx, y: hero.y + vy });
+  }
+
+  if (hero.state.isAttacking) {
+    vx = 0;
+    vy = 0;
+  }
+
+  hero.vx = vx;
+  hero.vy = vy;
+
+  hero.body.setVelocity(vx, vy);
+
+  /* If the hero is standing still do not update the server */
+  if (!hero.state.isIdle) {
+    //if (time % 2 > 1)
+    scene.socket.emit("playerInput", {
+      vx,
+      vy,
+      x: hero.x,
+      y: hero.y,
+      direction: hero.direction,
+    });
+  }
+  hero.state.isIdle = hero.vx === vx && hero.vy === vy && vx === 0 && vy === 0;
+  /* Latest idle check, we set the lastAngle so it's fresh */
+  if (!hero.state.isIdle) {
+    hero.state.lastAngle = Math.atan2(hero.body.velocity.y, hero.body.velocity.x);
+  }
 }
 
 function addJoystick(scene) {

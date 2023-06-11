@@ -655,13 +655,13 @@ const MenuBar = () => {
           {!tabChat && (
             <>
               <MenuButton
-                keyboardKey="S"
+                keyboardKey="P"
                 iconName="social"
                 isActive={tabSocial}
                 onClick={() => setTabSocial((prev) => !prev)}
               />
               <MenuButton
-                keyboardKey="A"
+                keyboardKey="X"
                 iconName="book"
                 isActive={tabAbilities}
                 onClick={() => setTabAbilities((prev) => !prev)}
@@ -679,7 +679,7 @@ const MenuBar = () => {
                 onClick={() => setTabStats((prev) => !prev)}
               />
               <MenuButton
-                keyboardKey="P"
+                keyboardKey="V"
                 iconName="mirror"
                 isActive={tabProfile}
                 onClick={() => setTabProfile((prev) => !prev)}
@@ -693,7 +693,7 @@ const MenuBar = () => {
                 }}
               />
               <MenuButton
-                keyboardKey="D"
+                keyboardKey="R"
                 iconName="bag"
                 isActive={tabInventory}
                 onClick={() => setTabInventory((prev) => !prev)}
