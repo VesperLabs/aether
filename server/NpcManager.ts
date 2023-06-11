@@ -35,7 +35,6 @@ class NpcManager {
       const npcBaseStats = {
         ...baseStats,
         walkSpeed: baseStats.walkSpeed - 30,
-        attackDelay: baseStats.attackDelay + 1100,
         minDamage: mobData?.baseStats?.level / 2,
         maxDamage: mobData?.baseStats?.level,
         expValue: isKeeper ? 0 : mobData?.baseStats?.level,
