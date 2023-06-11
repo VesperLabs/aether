@@ -51,13 +51,13 @@ yarn dev
 - [ ] Holding down buttons to charge up attacks
 - [ ] Show warning before enemies attack
 
-####Performance
+#### Performance
 
 - [ ] Predictive hero movement so we do not have to send `[x,y]` @ 60fps and so other players aren't able to hit you when you are not near them.
 - [ ] Multiple `Realms` because 1000 people in a map will not scale.
 - [ ] How to make servers smart about not loading map rooms until a person is actually in them.
 
-####Completed
+#### Completed
 
 - [x] Helmets that can hide hair or face
 - [x] Elemental Damage / Resistances
