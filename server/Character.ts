@@ -223,8 +223,8 @@ class ServerCharacter extends Character {
     ns.castDelay = ns.castDelay || 1000;
     ns.castDelay = 1 - Math.floor(ns.intelligence * 0.5) + ns.castDelay;
     ns.accuracy = ns.accuracy;
-    ns.regenHp = 1 + ns.regenHp + Math.floor(ns.vitality / 10);
-    ns.regenMp = 1 + ns.regenMp + Math.floor(ns.intelligence / 10);
+    ns.regenHp = 1 + ns.regenHp + Math.floor(ns.vitality / 20);
+    ns.regenMp = 1 + ns.regenMp + Math.floor(ns.intelligence / 20);
     ns.armorPierce = ns.armorPierce + ns.dexterity + ns.strength;
     ns.defense = ns.defense + ns.strength;
     ns.critChance = ns.critChance + ns.dexterity * 0.05;
