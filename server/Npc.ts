@@ -6,6 +6,7 @@ import crypto from "crypto";
 
 const AGGRO_KITE_RANGE = 220;
 const NPC_SHOULD_ATTACK_RANGE = 8;
+const NPC_ADDED_ATTACK_DELAY = 1000;
 
 const buildEquipment = (equipment: Record<string, Array<string>>) =>
   Object?.entries(equipment).reduce((acc, [slot, itemArray]: [string, BuildItem]) => {
@@ -89,6 +90,13 @@ class Npc extends Character implements Npc {
     const distance = distanceTo(this, target) - (thisRadius + targetRadius);
     return distance <= range;
   }
+  checkAttackReady(delta) {
+    super.checkAttackReady(delta);
+    const fullAttackDelay = delta + this?.stats?.attackDelay + NPC_ADDED_ATTACK_DELAY;
+    if (Date.now() - this.state.lastAttack > fullAttackDelay) {
+      this.state.npcAttackReady = true;
+    }
+  }
   isOutOfBounds() {
     let npcTileX = this.room.tileMap.worldToTileX(this.x); // Convert NPC's world x-coordinate to tile x-coordinate
     let npcTileY = this.room.tileMap.worldToTileY(this.y); // Convert NPC's world y-coordinate to tile y-coordinate
@@ -147,10 +155,11 @@ class Npc extends Character implements Npc {
   }
   setLockedPlayerId(id: string) {
     // If they are switching targets
-    if (this.state.lockedPlayerId !== id) {
+    if (this.state.lockedPlayerId !== id && id) {
       this.state.isAttacking = true;
-      // give half of their attackDelay
-      this.state.lastAttack = Date.now() - this.stats.attackDelay / 2;
+      // Before they BEGIN attacking
+      this.state.lastAttack = Date.now() - NPC_ADDED_ATTACK_DELAY / 2;
+      this.state.npcAttackReady = false;
     }
     this.state.lockedPlayerId = id;
   }
@@ -217,6 +226,7 @@ class Npc extends Character implements Npc {
     // Set state to attacking and record attack time
     this.state.isAttacking = true;
     this.state.lastAttack = Date.now();
+    this.state.npcAttackReady = false;
 
     /* Switch hands if possible */
     if (this.action === "attack_right" && this.state.hasWeaponLeft) {
@@ -239,7 +249,7 @@ class Npc extends Character implements Npc {
     scene.io.to(room?.name).emit("npcAttack", { id, count, direction });
   }
   intendAttack({ targetPlayer, delta }) {
-    const { isAttacking } = this?.state ?? {};
+    const { isAttacking, npcAttackReady } = this?.state ?? {};
     // Determine if player should attack target player
     const shouldAttackPlayer =
       !isAttacking && this.checkInRange(targetPlayer, NPC_SHOULD_ATTACK_RANGE);
@@ -249,7 +259,7 @@ class Npc extends Character implements Npc {
       this.direction = getCharacterDirection(this, targetPlayer);
       // Attack target player after lag delay to ensure we are actually near them
       return setTimeout(() => {
-        this.doAttack();
+        if (npcAttackReady) this.doAttack();
         // Calculate lag delay based on time elapsed
       }, delta);
     }
