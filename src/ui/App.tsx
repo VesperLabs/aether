@@ -661,7 +661,7 @@ const MenuBar = () => {
                 onClick={() => setTabSocial((prev) => !prev)}
               />
               <MenuButton
-                keyboardKey="X"
+                keyboardKey="V"
                 iconName="book"
                 isActive={tabAbilities}
                 onClick={() => setTabAbilities((prev) => !prev)}
@@ -693,7 +693,7 @@ const MenuBar = () => {
                 }}
               />
               <MenuButton
-                keyboardKey="R"
+                keyboardKey="I"
                 iconName="bag"
                 isActive={tabInventory}
                 onClick={() => setTabInventory((prev) => !prev)}
