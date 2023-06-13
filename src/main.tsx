@@ -62,11 +62,15 @@ const game = new Phaser.Game({
   scene: [new SceneBoot(socket), new SceneMain(socket), new SceneHud(socket)],
 });
 
+/* IOS Autoscroll fix when selecting an input */
 document.addEventListener("scroll", (e) => {
   if (document.documentElement.scrollTop > 0 || document.documentElement.scrollTop < 0) {
     document.documentElement.scrollTop = 0;
   }
 });
+
+/* Disable context menu on canvas */
+document.getElementById("game").addEventListener("contextmenu", (e) => e.preventDefault());
 
 /* Keep socket connection connected */
 setInterval(() => {
