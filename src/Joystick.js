@@ -1,6 +1,6 @@
 /**
  * @author       Florian Vazelle <ponythugflorian@gmail.com>
- * @license      {@link https://opensource.org/licenses/MIT|MIT License}
+ * @license      {@link https://opensource.org/licenses/MIT | MIT License}
  */
 import Phaser from "phaser";
 import { getHeroCoordsRelativeToWindow } from "./utils";
@@ -119,8 +119,8 @@ var Joystick = new Phaser.Class({
   onKeyDown: function (pointer) {
     /* Only left click moves us */
     if (pointer?.button !== 0) return;
-    // Enable update logic of this Joystick.
     this.setActive(true);
+
     // do not show stuff for desktop
     if (this.device === 0) return;
     // Show sprites.
