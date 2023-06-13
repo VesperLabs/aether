@@ -609,6 +609,7 @@ const MenuBar = () => {
           sx={{
             gap: 1,
             alignItems: "center",
+            pointerEvents: "none",
           }}
         >
           <Box>
