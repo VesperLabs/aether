@@ -1,15 +1,20 @@
 import ServerCharacter from "./Character";
-import { cloneObject } from "./utils";
+import { cloneObject, PLAYER_DEFAULT_SPAWN } from "./utils";
 
 /* Server level Player object */
 class Player extends ServerCharacter implements Player {
   public email: string;
   constructor(scene: ServerScene, args: Player) {
     super(scene, args);
+    this.scene = scene;
     this.email = args?.email;
     this.calculateStats(true);
   }
   setDead() {
+    if (this.stats.exp > 0) {
+      this.stats.exp = Math.floor(this.stats.exp * 0.9);
+    }
+    this.scene.db.updateUserRoom({ email: this.email, ...PLAYER_DEFAULT_SPAWN });
     this.expireBuffs(true);
     this.state.isDead = true;
   }

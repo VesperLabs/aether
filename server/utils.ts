@@ -1,6 +1,10 @@
 //@ts-nocheck
 import ItemBuilder from "./ItemBuilder";
 
+const SHOP_INFLATION = 4;
+const PLAYER_BASE_EXP = 20;
+const PLAYER_DEFAULT_SPAWN = { roomName: "grassland", x: 263, y: 928 };
+
 function handlePlayerInput(scene, socketId, input) {
   if (!scene.players) return;
   const { x, y, vx, vy, direction } = input;
@@ -175,9 +179,6 @@ function checkSlotsMatch(s1, s2) {
   return false;
 }
 
-const SHOP_INFLATION = 4;
-const PLAYER_BASE_EXP = 20;
-
 const calculateNextMaxExp = (level) => {
   return Math.floor(PLAYER_BASE_EXP * Math.pow(1.5, level - 1));
 };
@@ -241,6 +242,7 @@ const useGetBaseCharacterDefaults = ({ level = 1, charClass }) => {
       maxMp: 10,
       maxExp: PLAYER_BASE_EXP,
     },
+    ...PLAYER_DEFAULT_SPAWN,
   };
 };
 
@@ -262,6 +264,7 @@ export {
   getBuffCharacterState,
   SHOP_INFLATION,
   PLAYER_BASE_EXP,
+  PLAYER_DEFAULT_SPAWN,
   calculateNextMaxExp,
   useGetBaseCharacterDefaults,
   mergeAndAddValues,
