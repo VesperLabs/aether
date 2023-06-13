@@ -69,9 +69,6 @@ document.addEventListener("scroll", (e) => {
   }
 });
 
-/* Disable context menu on canvas */
-document.getElementById("game").addEventListener("contextmenu", (e) => e.preventDefault());
-
 /* Keep socket connection connected */
 setInterval(() => {
   if (socket.connected) return;

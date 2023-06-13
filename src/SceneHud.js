@@ -32,6 +32,25 @@ function addGlobalEventListeners(scene) {
   const mainScene = scene.scene.manager.getScene("SceneMain");
   const socket = scene.socket;
 
+  /* Disable context menu on canvas */
+  document.getElementById("game").addEventListener("contextmenu", (e) => {
+    e.preventDefault();
+    if (isTouch) return;
+    const cursorPoint = pointer.positionToCamera(mainScene.cameras.main);
+    const direction = getSpinDirection(mainScene?.hero, cursorPoint);
+    if (mainScene?.hero?.direction !== direction) {
+      scene.socket.emit("changeDirection", direction);
+    }
+  });
+  document.getElementById("game").addEventListener("mouseup", function (event) {
+    if (isTouch) return;
+    if (event.button === 2) {
+      // Check if the right mouse button was released
+      const cursorPoint = pointer.positionToCamera(mainScene.cameras.main);
+      mainScene.hero.direction = getSpinDirection(mainScene?.hero, cursorPoint);
+      mainScene?.hero?.doAttack?.(1);
+    }
+  });
   window.addEventListener(
     "HERO_ATTACK",
     (e) => {
@@ -45,13 +64,13 @@ function addGlobalEventListeners(scene) {
       const hero = mainScene?.hero;
       const abilities = hero?.abilities;
       const ability = abilities?.[e?.detail];
-      //const cursorPoint = pointer.positionToCamera(mainScene.cameras.main);
+      const cursorPoint = pointer.positionToCamera(mainScene.cameras.main);
       if (ability?.type === "spell") {
-        // Calculate the angle of the velocity
-        // const castAngle = isTouch
-        //   ? hero?.state?.lastAngle
-        //   : Phaser.Math.Angle.Between(hero.x, hero.y, cursorPoint.x, cursorPoint.y);
-        const castAngle = hero?.state?.lastAngle;
+        /* Hack: Probably better to put this in preferences. */
+        const castAngle = isTouch
+          ? hero?.state?.lastAngle
+          : Phaser.Math.Angle.Between(hero.x, hero.y, cursorPoint.x, cursorPoint.y);
+
         mainScene?.hero?.castSpell?.({
           ilvl: ability?.ilvl,
           abilitySlot: e?.detail,
