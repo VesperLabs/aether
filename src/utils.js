@@ -246,14 +246,10 @@ function getHeroCoordsRelativeToWindow(scene) {
   const hero = mainScene?.hero;
 
   // Calculate the hero's position relative to the camera
-  const heroXRelativeToCamera = hero.x - camera.worldView.x;
-  const heroYRelativeToCamera = hero.y - camera.worldView.y;
+  const x = (hero.x - camera.worldView.x) * zoomLevel;
+  const y = (hero.y - camera.worldView.y) * zoomLevel;
 
-  // Calculate the hero's position relative to the browser window
-  const heroXRelativeToWindow = heroXRelativeToCamera;
-  const heroYRelativeToWindow = heroYRelativeToCamera;
-
-  return { x: heroXRelativeToWindow * zoomLevel, y: heroYRelativeToWindow * zoomLevel };
+  return { x, y };
 }
 
 function convertMsToS(s) {
