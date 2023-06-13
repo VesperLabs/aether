@@ -61,7 +61,9 @@ class Spell extends Phaser.GameObjects.Container {
     scene.events.once("shutdown", this.destroy, this);
 
     if (this.isAttack) {
-      this.body.setCircle(this?.bodySize, -this?.bodySize, -this?.bodySize);
+      /* Take body size of NPC caster in to account when determining attack */
+      const fullBodySize = this.bodySize + (caster?.body?.radius ?? 8) / 2;
+      this.body.setCircle(fullBodySize, -fullBodySize, -fullBodySize);
       this.add(this.spell);
     }
     if (spellName == "fireball") {
