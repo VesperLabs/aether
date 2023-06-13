@@ -19,6 +19,7 @@ import {
   checkSlotsMatch,
   SHOP_INFLATION,
   getBuffRoomState,
+  PLAYER_DEFAULT_SPAWN,
 } from "./utils";
 import { initDatabase } from "./db/";
 import { initFakeDatabase } from "./db/fake";
@@ -229,13 +230,47 @@ class ServerScene extends Phaser.Scene implements ServerScene {
 
       socket.on("respawn", () => {
         const player = scene.players[socketId];
+        const oldRoom = player.room.name;
+        const { roomName: newRoom, x: newX, y: newY } = PLAYER_DEFAULT_SPAWN;
         player.state.isDead = false;
         player.stats.hp = Math.floor(player.stats.maxHp);
-        // if (player.stats.exp > 0) {
-        //   player.stats.exp = Math.floor(player.stats.exp * 0.9);
-        // }
+
+        if (oldRoom !== newRoom) {
+          socket.leave(oldRoom);
+          socket.join(newRoom);
+          socket.to(oldRoom).emit("remove", socketId);
+        }
+
+        scene.roomManager.rooms[oldRoom].playerManager.remove(socketId);
+        scene.roomManager.rooms[newRoom].playerManager.add(socketId);
+
+        player.x = newX;
+        player.y = newY;
+
+        /* Save the new room */
+        scene.db.updateUserRoom(player);
+
+        socket.to(newRoom).emit("playerJoin", getFullCharacterState(player), {
+          isDoor: true,
+          lastTeleport: Date.now(),
+        });
+
+        socket.emit("heroInit", {
+          ...getRoomState(scene, newRoom),
+          socketId,
+        });
+
+        // announce room has changed to the party
+        // TODO: need a better way of sending a persistant party state instead of this
+        if (player?.partyId) {
+          const party = this.partyManager.getPartyById(player?.partyId);
+          party.updateMember(player?.id, { roomName: player?.roomName });
+          io.to(party.socketRoom).emit("partyUpdate", {
+            party,
+          });
+        }
+
         scene.db.updateUser(scene.players?.[socketId]);
-        io.to(player?.roomName).emit("respawnPlayer", player?.socketId);
       });
 
       socket.on("changeDirection", (direction) => {

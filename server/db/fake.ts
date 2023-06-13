@@ -29,10 +29,16 @@ const getDatabaseApi = () => ({
   },
 });
 
-export const createBaseUser = (charClass) => {
-  const { baseStats, startingWeapon } = useGetBaseCharacterDefaults({ level: 1, charClass });
+export const createBaseUser = (charClass: string) => {
+  const { baseStats, startingWeapon, roomName, x, y } = useGetBaseCharacterDefaults({
+    level: 1,
+    charClass,
+  });
 
   return {
+    roomName,
+    x,
+    y,
     charClass,
     baseStats,
     stats: {
@@ -102,8 +108,5 @@ export const createBaseUser = (charClass) => {
       hair: { tint: "0x88FFFF", texture: "hair-3" },
       face: { texture: "face-1" },
     },
-    roomName: "town",
-    x: 800,
-    y: 1016,
   };
 };

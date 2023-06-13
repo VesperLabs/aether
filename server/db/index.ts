@@ -88,7 +88,7 @@ const getDatabaseApi = (db) => ({
         { email: player?.email },
         {
           $set: {
-            roomName: player?.room?.name,
+            roomName: player?.room?.name ?? player?.roomName,
             x: player?.x,
             y: player?.y,
           },
@@ -138,9 +138,15 @@ const getDatabaseApi = (db) => ({
 });
 
 export const createBaseUser = (charClass) => {
-  const { baseStats, startingWeapon } = useGetBaseCharacterDefaults({ level: 1, charClass });
+  const { baseStats, startingWeapon, roomName, x, y } = useGetBaseCharacterDefaults({
+    level: 1,
+    charClass,
+  });
 
   return {
+    roomName,
+    x,
+    y,
     charClass,
     baseStats,
     stats: {
@@ -177,8 +183,5 @@ export const createBaseUser = (charClass) => {
       hair: { tint: "0x88FFFF", texture: "hair-3" },
       face: { texture: "face-1" },
     },
-    roomName: "grassland",
-    x: 432,
-    y: 400,
   };
 };
