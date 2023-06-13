@@ -339,9 +339,6 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         const prev = getDoor(scene, oldRoom, doorName)?.getProps();
         const next = getDoor(scene, prev.destMap, prev.destDoor)?.getProps();
 
-        player.x = next.centerPos.x;
-        player.y = next.centerPos.y;
-
         if (oldRoom !== prev.destMap) {
           socket.leave(oldRoom);
           socket.join(prev.destMap);
@@ -350,6 +347,12 @@ class ServerScene extends Phaser.Scene implements ServerScene {
 
         scene.roomManager.rooms[oldRoom].playerManager.remove(socketId);
         scene.roomManager.rooms[prev.destMap].playerManager.add(socketId);
+
+        player.x = next.centerPos.x;
+        player.y = next.centerPos.y;
+
+        /* Save the new room */
+        scene.db.updateUserRoom(player);
 
         socket.to(prev.destMap).emit("playerJoin", getFullCharacterState(player), {
           isDoor: true,

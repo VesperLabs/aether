@@ -79,6 +79,26 @@ const getDatabaseApi = (db) => ({
     console.log(`💾 Created ${email} to db`);
     return true;
   },
+  updateUserRoom: async (player) => {
+    if (!player?.email) {
+      return console.log("❌ Error while saving player. Player not found");
+    }
+    try {
+      await db.collection("users").findOneAndUpdate(
+        { email: player?.email },
+        {
+          $set: {
+            roomName: player?.room?.name,
+            x: player?.x,
+            y: player?.y,
+          },
+        }
+      );
+    } catch (e) {
+      console.log(JSON.stringify(e?.errInfo?.details));
+    }
+    console.log(`💾 Saved Room ${player?.email} to db`);
+  },
   updateUser: async (player) => {
     if (!player?.email) {
       return console.log("❌ Error while saving player. Player not found");
@@ -90,8 +110,6 @@ const getDatabaseApi = (db) => ({
         {
           $set: {
             charClass: player?.charClass,
-            x: player?.x,
-            y: player?.y,
             quests: player?.quests,
             profile: player?.profile,
             direction: player?.direction,
@@ -107,7 +125,7 @@ const getDatabaseApi = (db) => ({
             equipment: player?.equipment,
             inventory: player.inventory,
             baseStats: player?.baseStats,
-            roomName: player?.room?.name,
+            //roomName: player?.room?.name,
             abilities: player?.abilities,
           },
         }

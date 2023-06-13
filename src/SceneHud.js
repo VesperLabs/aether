@@ -114,7 +114,13 @@ function moveHero(scene, time) {
   const hero = mainScene?.hero;
 
   if (!hero) return;
-  if (hero?.state?.isDead || document.activeElement.type) return hero.body.setVelocity(0, 0);
+  /* If the user is dead or typing stop them from moving */
+  if (hero?.state?.isDead || document.activeElement.type) {
+    hero.vx = 0;
+    hero.vy = 0;
+    hero.body.setVelocity(0, 0);
+    return;
+  }
 
   const walkSpeed = hero.stats.walkSpeed;
   const joystick = scene.game.scene.scenes[2].joystick;
