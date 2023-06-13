@@ -234,6 +234,28 @@ function calculateZoomLevel({ viewportArea, baseZoom = 2, maxZoom = 4, divisor =
   return zoomLevel;
 }
 
+function getGameZoomLevel(scene) {
+  const viewportArea = scene.cameras.main.width * scene.cameras.main.height;
+  return Math.round(calculateZoomLevel({ viewportArea }));
+}
+
+function getHeroCoordsRelativeToWindow(scene) {
+  const mainScene = scene?.scene?.manager?.getScene("SceneMain");
+  const zoomLevel = getGameZoomLevel(mainScene);
+  const camera = mainScene.cameras.main;
+  const hero = mainScene?.hero;
+
+  // Calculate the hero's position relative to the camera
+  const heroXRelativeToCamera = (hero.x - camera.worldView.x) / zoomLevel;
+  const heroYRelativeToCamera = (hero.y - camera.worldView.y) / zoomLevel;
+
+  // Calculate the hero's position relative to the browser window
+  const heroXRelativeToWindow = heroXRelativeToCamera * zoomLevel;
+  const heroYRelativeToWindow = heroYRelativeToCamera * zoomLevel;
+
+  return { x: heroXRelativeToWindow * zoomLevel, y: heroYRelativeToWindow * zoomLevel };
+}
+
 function convertMsToS(s) {
   return (s / 1000).toFixed(2) + "s";
 }
@@ -259,6 +281,8 @@ export {
   playAudio,
   calculateZoomLevel,
   convertMsToS,
+  getGameZoomLevel,
+  getHeroCoordsRelativeToWindow,
   HAIR_HIDING_HELMETS,
   FACE_HIDING_HELMETS,
 };

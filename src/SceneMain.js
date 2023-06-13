@@ -14,7 +14,7 @@ import {
   distanceTo,
   MUSIC_VOLUME,
   playAudio,
-  calculateZoomLevel,
+  getGameZoomLevel,
 } from "./utils";
 const SI = new SnapshotInterpolation(process.env.SERVER_FPS); // the server's fps is 15
 const { RectangleToRectangle } = Phaser.Geom.Intersects;
@@ -306,8 +306,7 @@ function enableDoors(scene) {
 
 function setCamera(scene, hero) {
   if (!hero || !scene?.map) return;
-  const viewportArea = scene.cameras.main.width * scene.cameras.main.height;
-  const zoomLevel = Math.round(calculateZoomLevel({ viewportArea }));
+  const zoomLevel = getGameZoomLevel(scene);
 
   scene.cameras.main.setZoom(zoomLevel);
   scene.cameras.main.startFollow(hero, true);

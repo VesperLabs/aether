@@ -3,6 +3,7 @@
  * @license      {@link https://opensource.org/licenses/MIT|MIT License}
  */
 import Phaser from "phaser";
+import { getHeroCoordsRelativeToWindow } from "./utils";
 
 /**
  * @classdesc
@@ -116,9 +117,12 @@ var Joystick = new Phaser.Class({
    * @param {Phaser.Input.Pointer} pointer -
    */
   onKeyDown: function (pointer) {
+    /* Only left click moves us */
+    if (pointer?.button !== 0) return;
     // Enable update logic of this Joystick.
     this.setActive(true);
-
+    // do not show stuff for desktop
+    if (this.device === 0) return;
     // Show sprites.
     this.layer.setVisible(true);
     this.layer.each(function (obj) {
@@ -159,6 +163,13 @@ var Joystick = new Phaser.Class({
    * @param {number} delta - The delta time, in ms, elapsed since the last frame.
    */
   preUpdate: function (time, delta) {
+    // for desktop hero is always the center
+    if (this.device === 0) {
+      const { x, y } = getHeroCoordsRelativeToWindow(this.scene);
+      this.x = x;
+      this.y = y;
+    }
+
     // Retrieve player input pointers.
     var pointers = this.scene.sys.input.manager.pointers;
 
