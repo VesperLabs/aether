@@ -434,7 +434,7 @@ const SkillButton = ({
   icon?: string;
   iconName?: string;
   size: number;
-  keyboardKey: string;
+  keyboardKey?: string;
 }) => {
   return (
     <Box sx={{ position: "relative", flexShrink: 0 }}>
@@ -451,13 +451,15 @@ const SkillButton = ({
       >
         <Icon icon={icon || `../assets/icons/${iconName}.png`} />
       </Button>
-      <KeyboardKey
-        name={keyboardKey}
-        hidden={isMobile}
-        onKeyUp={() => {
-          window.dispatchEvent(new CustomEvent(eventName, { detail: eventDetail }));
-        }}
-      />
+      {keyboardKey && (
+        <KeyboardKey
+          name={keyboardKey}
+          hidden={isMobile}
+          onKeyUp={() => {
+            window.dispatchEvent(new CustomEvent(eventName, { detail: eventDetail }));
+          }}
+        />
+      )}
     </Box>
   );
 };
