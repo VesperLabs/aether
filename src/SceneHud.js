@@ -35,13 +35,16 @@ function addGlobalEventListeners(scene) {
   /* Disable context menu on canvas */
   document.getElementById("game").addEventListener("contextmenu", (e) => {
     e.preventDefault();
-    if (!isTouch) {
+  });
+  /* Desktop left click attack */
+  document.getElementById("game").addEventListener("mousedown", function (event) {
+    if (!isTouch && event.button === 0) {
       window.dispatchEvent(new CustomEvent("HERO_ATTACK_START"));
     }
   });
-  /* Desktop right click attack */
+  /* Desktop left click attack */
   document.getElementById("game").addEventListener("mouseup", function (event) {
-    if (!isTouch && event.button === 2) {
+    if (!isTouch && event.button === 0) {
       window.dispatchEvent(new CustomEvent("HERO_ATTACK"));
     }
   });

@@ -117,23 +117,21 @@ var Joystick = new Phaser.Class({
    * @param {Phaser.Input.Pointer} pointer -
    */
   onKeyDown: function (pointer) {
-    /* Only left click moves us */
-    if (pointer?.button !== 0) return;
-
-    // do not show stuff for desktop
+    // Mobile
     if (this.device === 1) {
-      // Show sprites.
       this.layer.setVisible(true);
       this.layer.each(function (obj) {
         obj.x = pointer.x;
         obj.y = pointer.y;
       }, this);
-
-      // Set position of this Joystick to the pointer position.
       this.setPosition(pointer.x, pointer.y);
+      this.setActive(true);
     }
-
-    this.setActive(true);
+    // Desktop
+    if (this.device === 0) {
+      /* Right click ONLY */
+      if (pointer?.button !== 0) this.setActive(true);
+    }
   },
 
   /**
@@ -144,16 +142,21 @@ var Joystick = new Phaser.Class({
    * @param {Phaser.Input.Pointer} pointer -
    */
   onKeyUp: function (pointer) {
-    /* Only left click moves us */
-    if (pointer?.button !== 0) return;
-
-    // do not show stuff for desktop
+    // Mobile
     if (this.device === 1) {
       this.layer.setVisible(false);
+      this.setActive(false);
+      this.cursors = new Phaser.Math.Vector2(0, 0);
     }
-
-    this.setActive(false);
-    this.cursors = new Phaser.Math.Vector2(0, 0);
+    // Desktop
+    if (this.device === 0) {
+      /* Right click ONLY */
+      if (pointer?.button !== 0) {
+        this.layer.setVisible(false);
+        this.setActive(false);
+        this.cursors = new Phaser.Math.Vector2(0, 0);
+      }
+    }
   },
 
   /**
