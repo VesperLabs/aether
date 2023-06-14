@@ -251,7 +251,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         scene.db.updateUserRoom(player);
 
         socket.to(newRoom).emit("playerJoin", getFullCharacterState(player), {
-          isDoor: true,
+          isRespawn: true,
           lastTeleport: Date.now(),
         });
 
@@ -390,7 +390,6 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         scene.db.updateUserRoom(player);
 
         socket.to(prev.destMap).emit("playerJoin", getFullCharacterState(player), {
-          isDoor: true,
           lastTeleport: Date.now(),
         });
 

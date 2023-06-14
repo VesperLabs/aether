@@ -85,11 +85,14 @@ class SceneMain extends Phaser.Scene {
       setCamera(scene, scene.hero);
     });
 
-    socket.on("playerJoin", (user, { lastTeleport } = {}) => {
+    socket.on("playerJoin", (user, { lastTeleport, isRespawn } = {}) => {
       const player = getPlayer(scene, user.socketId);
       if (player) {
         /* TODO: Maybe update the entire player here too */
         player.state.lastTeleport = lastTeleport;
+        if (isRespawn) {
+          player?.respawn();
+        }
       } else {
         addPlayer(scene, user);
       }

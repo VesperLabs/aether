@@ -86,6 +86,7 @@ class Character extends Phaser.GameObjects.Container {
       setFlash: false,
       isIdle: true,
       isAttacking: false,
+      isCharging: false,
       isCasting: false,
       hasWeaponRight: false,
       hasWeaponLeft: false,
