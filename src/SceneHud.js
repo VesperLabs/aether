@@ -38,13 +38,13 @@ function addGlobalEventListeners(scene) {
   });
   /* Desktop left click attack */
   document.getElementById("game").addEventListener("mousedown", function (event) {
-    if (!isTouch && event.button === 0) {
+    if (!isTouch && event.button !== 0) {
       window.dispatchEvent(new CustomEvent("HERO_ATTACK_START"));
     }
   });
   /* Desktop left click attack */
   document.getElementById("game").addEventListener("mouseup", function (event) {
-    if (!isTouch && event.button === 0) {
+    if (!isTouch && event.button !== 0) {
       window.dispatchEvent(new CustomEvent("HERO_ATTACK"));
     }
   });
