@@ -149,12 +149,9 @@ var Joystick = new Phaser.Class({
 
     // do not show stuff for desktop
     if (this.device === 1) {
-      // Hide sprites.
       this.layer.setVisible(false);
-      // Reset cursors position.
     }
 
-    // Disable update logic of this Joystick.
     this.setActive(false);
     this.cursors = new Phaser.Math.Vector2(0, 0);
   },

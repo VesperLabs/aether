@@ -450,6 +450,10 @@ function updateCurrentSpeed(player) {
   if (player.state.isAttacking) {
     return;
   }
+  if (player.state.isCharging) {
+    player.action = "stand";
+    return;
+  }
 
   player.action = player.currentSpeed === 0 ? "stand" : "walk";
 }

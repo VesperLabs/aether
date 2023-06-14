@@ -35,25 +35,27 @@ function addGlobalEventListeners(scene) {
   /* Disable context menu on canvas */
   document.getElementById("game").addEventListener("contextmenu", (e) => {
     e.preventDefault();
-    if (isTouch) return;
-    const cursorPoint = pointer.positionToCamera(mainScene.cameras.main);
-    const direction = getSpinDirection(mainScene?.hero, cursorPoint);
-    if (mainScene?.hero?.direction !== direction) {
-      scene.socket.emit("changeDirection", direction);
+    if (!isTouch) {
+      window.dispatchEvent(new CustomEvent("HERO_ATTACK_START"));
     }
   });
+  /* Desktop right click attack */
   document.getElementById("game").addEventListener("mouseup", function (event) {
-    if (isTouch) return;
-    if (event.button === 2) {
-      // Check if the right mouse button was released
-      const cursorPoint = pointer.positionToCamera(mainScene.cameras.main);
-      mainScene.hero.direction = getSpinDirection(mainScene?.hero, cursorPoint);
-      mainScene?.hero?.doAttack?.(1);
+    if (!isTouch && event.button === 2) {
+      window.dispatchEvent(new CustomEvent("HERO_ATTACK"));
     }
   });
   window.addEventListener(
+    "HERO_ATTACK_START",
+    (e) => {
+      mainScene.hero.state.isCharging = true;
+    },
+    scene
+  );
+  window.addEventListener(
     "HERO_ATTACK",
     (e) => {
+      mainScene.hero.state.isCharging = false;
       mainScene?.hero?.doAttack?.(1);
     },
     scene
@@ -129,6 +131,8 @@ function addGlobalEventListeners(scene) {
 }
 
 function moveHero(scene, time) {
+  const isTouch = scene.sys.game.device.input.touch;
+  const pointer = scene.input.activePointer;
   const mainScene = scene.scene.manager.getScene("SceneMain");
   const hero = mainScene?.hero;
 
@@ -181,7 +185,16 @@ function moveHero(scene, time) {
     hero.direction = getSpinDirection(hero, { x: hero.x + vx, y: hero.y + vy });
   }
 
-  if (hero.state.isAttacking) {
+  if (hero?.state.isCharging && !isTouch) {
+    const cursorPoint = pointer.positionToCamera(mainScene.cameras.main);
+    const direction = getSpinDirection(mainScene?.hero, cursorPoint);
+    if (mainScene?.hero?.direction !== direction) {
+      scene.socket.emit("changeDirection", direction);
+      mainScene.hero.direction = direction;
+    }
+  }
+
+  if (hero.state.isAttacking || hero?.state.isCharging) {
     vx = 0;
     vy = 0;
   }
