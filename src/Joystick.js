@@ -130,7 +130,7 @@ var Joystick = new Phaser.Class({
     // Desktop
     if (this.device === 0) {
       /* Right click ONLY */
-      if (pointer?.button !== 0) this.setActive(true);
+      if (pointer?.button === 0) this.setActive(true);
     }
   },
 
@@ -151,7 +151,7 @@ var Joystick = new Phaser.Class({
     // Desktop
     if (this.device === 0) {
       /* Right click ONLY */
-      if (pointer?.button !== 0) {
+      if (pointer?.button === 0) {
         this.layer.setVisible(false);
         this.setActive(false);
         this.cursors = new Phaser.Math.Vector2(0, 0);
