@@ -450,7 +450,7 @@ function updateCurrentSpeed(player) {
   if (player.state.isAttacking) {
     return;
   }
-  if (player.state.isCharging) {
+  if (player.state.isAiming) {
     player.action = "stand";
     return;
   }
