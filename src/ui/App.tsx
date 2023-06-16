@@ -492,11 +492,7 @@ const SkillButtons = () => {
       <SkillButton
         size={16}
         iconName="handRight"
-        onTouchStart={() =>
-          window.dispatchEvent(
-            new CustomEvent("HERO_ATTACK_START", { detail: { skipAiming: true } })
-          )
-        }
+        onTouchStart={() => window.dispatchEvent(new CustomEvent("HERO_ATTACK_START"))}
         onTouchEnd={() => window.dispatchEvent(new CustomEvent("HERO_ATTACK"))}
         keyboardKey="SPACE"
       />
@@ -535,7 +531,7 @@ const AbilityButtons = () => {
               key={slotKey}
               size={16}
               icon={icon}
-              onTouchStart={() => window.dispatchEvent(new CustomEvent("HERO_ATTACK_START"))}
+              onTouchStart={() => window.dispatchEvent(new CustomEvent("HERO_AIM_START"))}
               onTouchEnd={() =>
                 window.dispatchEvent(new CustomEvent("HERO_ABILITY", { detail: slotKey }))
               }
