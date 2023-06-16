@@ -90,10 +90,17 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         let user = await scene.db.getUserByLogin({ email, password });
         if (!user) return socket.emit("formError", { error: "Invalid login" });
 
-        socket["email"] = email;
+        /* Kick the old user if loggin in on same email */
+        for (const [sId, player] of Object.entries(this?.players)) {
+          if (player?.email === user?.email) {
+            const player = scene.players?.[sId];
+            this.partyManager.removeSocketFromParty(socket);
+            console.log(`🔌 ${player?.profile?.userName} disconnected`);
+            removePlayer(scene, sId);
 
-        for (socket of Object.values(io?.sockets?.sockets)) {
-          if (socket["email"] === email) socket.disconnect();
+            io?.sockets?.sockets?.get?.(sId)?.disconnect?.(true);
+            io.emit("remove", sId);
+          }
         }
 
         const player = scene.roomManager.rooms[user.roomName].playerManager.create({
