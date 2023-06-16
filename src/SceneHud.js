@@ -135,6 +135,17 @@ function addGlobalEventListeners(scene) {
   );
 }
 
+function isTypableFieldActive() {
+  const typableTags = ["INPUT", "TEXTAREA", "SELECT", "A"];
+  const activeElement = document.activeElement;
+
+  if (activeElement && typableTags.includes(activeElement.tagName)) {
+    return true;
+  }
+
+  return false;
+}
+
 function moveHero(scene, time) {
   const isTouch = scene.sys.game.device.input.touch;
   const pointer = scene.input.activePointer;
@@ -146,7 +157,7 @@ function moveHero(scene, time) {
 
   if (!hero) return;
   /* If the user is dead or typing stop them from moving */
-  if (hero?.state?.isDead || document.activeElement.type) {
+  if (hero?.state?.isDead || isTypableFieldActive()) {
     hero.vx = 0;
     hero.vy = 0;
     hero.body.setVelocity(0, 0);
