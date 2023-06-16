@@ -53,7 +53,7 @@ function addGlobalEventListeners(scene) {
   window.addEventListener(
     "HERO_ATTACK_START",
     (e) => {
-      if (e?.detail?.skipAiming) return;
+      if (e?.detail?.skipAiming && !isTouch) return;
       mainScene.hero.state.isAiming = true;
     },
     scene
