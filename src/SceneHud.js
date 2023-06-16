@@ -47,13 +47,14 @@ function addGlobalEventListeners(scene) {
   /* Desktop left click attack */
   document.getElementById("game").addEventListener("mouseup", function (event) {
     if (!isTouch && event.button !== 0) {
+      const cursorPoint = pointer.positionToCamera(mainScene.cameras.main);
+      mainScene.hero.direction = getSpinDirection(mainScene?.hero, cursorPoint);
       window.dispatchEvent(new CustomEvent("HERO_ATTACK"));
     }
   });
   window.addEventListener(
-    "HERO_ATTACK_START",
+    "HERO_AIM_START",
     (e) => {
-      if (e?.detail?.skipAiming && !isTouch) return;
       mainScene.hero.state.isAiming = true;
     },
     scene
@@ -63,6 +64,14 @@ function addGlobalEventListeners(scene) {
     (e) => {
       mainScene.hero.state.isAiming = false;
       mainScene?.hero?.doAttack?.(1);
+    },
+    scene
+  );
+  window.addEventListener(
+    "HERO_ATTACK_START",
+    (e) => {
+      /* Implement charge up powerz */
+      mainScene.hero.state.isCharging = true;
     },
     scene
   );

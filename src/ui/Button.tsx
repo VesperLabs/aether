@@ -15,16 +15,20 @@ const Button = forwardRef<HTMLDivElement, any>(
           if (onTouchStart) {
             onTouchStart(e);
           }
-        }}
-        onMouseUp={(e) => {
-          e.stopPropagation();
-          e.preventDefault();
-          if (props?.disabled) return false;
-          if (onTouchEnd) {
-            return onTouchEnd?.(e);
-          } else if (onClick) {
-            onClick(e);
-          }
+          document.addEventListener(
+            "mouseup",
+            (e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              if (props?.disabled) return false;
+              if (onTouchEnd) {
+                return onTouchEnd?.(e);
+              } else if (onClick) {
+                onClick(e);
+              }
+            },
+            { once: true }
+          );
         }}
         onTouchStart={(e) => {
           e.stopPropagation();
