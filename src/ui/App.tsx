@@ -422,15 +422,15 @@ function App({ socket, debug, game }) {
 }
 
 const SkillButton = ({
-  eventName,
-  eventDetail,
+  onTouchStart = () => {},
+  onTouchEnd = () => {},
   icon,
   iconName,
   size,
   keyboardKey,
 }: {
-  eventDetail?: any;
-  eventName: string;
+  onTouchStart?: any;
+  onTouchEnd?: any;
   icon?: string;
   iconName?: string;
   size: number;
@@ -440,9 +440,8 @@ const SkillButton = ({
     <Box sx={{ position: "relative", flexShrink: 0 }}>
       <Button
         variant="menu"
-        onTouchStart={(e) => {
-          window.dispatchEvent(new CustomEvent(eventName, { detail: eventDetail }));
-        }}
+        onTouchStart={(e) => onTouchStart(e)}
+        onTouchEnd={(e) => onTouchEnd(e)}
         sx={{
           p: size,
           borderRadius: "100%",
@@ -455,9 +454,8 @@ const SkillButton = ({
         <KeyboardKey
           name={keyboardKey}
           hidden={isMobile}
-          onKeyUp={() => {
-            window.dispatchEvent(new CustomEvent(eventName, { detail: eventDetail }));
-          }}
+          onKeyDown={(e) => onTouchStart(e)}
+          onKeyUp={(e) => onTouchEnd(e)}
         />
       )}
     </Box>
@@ -478,10 +476,26 @@ const SkillButtons = () => {
       }}
     >
       {showButtonChat && (
-        <SkillButton size={16} iconName="chat" eventName="HERO_CHAT_NPC" keyboardKey="X" />
+        <SkillButton
+          size={16}
+          iconName="chat"
+          onTouchEnd={() => window.dispatchEvent(new CustomEvent("HERO_CHAT_NPC"))}
+          keyboardKey="X"
+        />
       )}
-      <SkillButton size={16} iconName="grab" eventName="HERO_GRAB" keyboardKey="F" />
-      <SkillButton size={16} iconName="handRight" eventName="HERO_ATTACK" keyboardKey="SPACE" />
+      <SkillButton
+        size={16}
+        iconName="grab"
+        onTouchEnd={() => window.dispatchEvent(new CustomEvent("HERO_GRAB"))}
+        keyboardKey="F"
+      />
+      <SkillButton
+        size={16}
+        iconName="handRight"
+        onTouchStart={() => window.dispatchEvent(new CustomEvent("HERO_ATTACK_START"))}
+        onTouchEnd={() => window.dispatchEvent(new CustomEvent("HERO_ATTACK"))}
+        keyboardKey="SPACE"
+      />
     </Flex>
   );
 };
@@ -517,8 +531,10 @@ const AbilityButtons = () => {
               key={slotKey}
               size={16}
               icon={icon}
-              eventName={`HERO_ABILITY`}
-              eventDetail={slotKey}
+              onTouchStart={() => window.dispatchEvent(new CustomEvent("HERO_ATTACK_START"))}
+              onTouchEnd={() =>
+                window.dispatchEvent(new CustomEvent("HERO_ABILITY", { detail: slotKey }))
+              }
               keyboardKey={slotKey}
             />
           );
