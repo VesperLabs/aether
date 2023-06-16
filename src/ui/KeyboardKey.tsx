@@ -3,10 +3,10 @@ import { Box, Flex } from "./";
 
 interface KeyboardKeyProps {
   name: string;
-  onKeyUp?: () => void;
+  onKeyUp?: any;
   hidden?: boolean;
   showOnly?: boolean;
-  onKeyDown?: (e: KeyboardEvent) => void;
+  onKeyDown?: any;
   disabled?: boolean;
   sx?: object;
 }

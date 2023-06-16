@@ -8,6 +8,7 @@ class SceneHud extends Phaser.Scene {
       key: "SceneHud",
     });
     this.socket = socket;
+    this.stickActive = false;
   }
   preload() {
     this.cursorKeys = this.input.keyboard.createCursorKeys();
@@ -82,6 +83,7 @@ function addGlobalEventListeners(scene) {
           spellName: ability?.base,
           castAngle,
         });
+        mainScene.hero.state.isCharging = false;
       }
       if (ability?.type === "stackable") {
         socket.emit("consumeItem", { item: ability, location: "abilities" });
@@ -138,6 +140,9 @@ function moveHero(scene, time) {
   const pointer = scene.input.activePointer;
   const mainScene = scene.scene.manager.getScene("SceneMain");
   const hero = mainScene?.hero;
+  let vx = 0;
+  let vy = 0;
+  let direction = hero?.direction;
 
   if (!hero) return;
   /* If the user is dead or typing stop them from moving */
@@ -156,24 +161,21 @@ function moveHero(scene, time) {
   const down = scene.cursorKeys.s.isDown || scene.cursorKeys.down.isDown;
   const right = scene.cursorKeys.d.isDown || scene.cursorKeys.right.isDown;
 
-  let vx = 0;
-  let vy = 0;
-
   if (left) {
     vx = -walkSpeed;
-    hero.direction = "left";
+    direction = "left";
   }
   if (right) {
     vx = walkSpeed;
-    hero.direction = "right";
+    direction = "right";
   }
   if (up) {
     vy = -walkSpeed;
-    hero.direction = "up";
+    direction = "up";
   }
   if (down) {
     vy = walkSpeed;
-    hero.direction = "down";
+    direction = "down";
   }
   if (left && right) vx = 0;
   if (up && down) vy = 0;
@@ -185,17 +187,21 @@ function moveHero(scene, time) {
   if (joystick.deltaX || joystick.deltaY) {
     vx = joystick.deltaX * walkSpeed;
     vy = joystick.deltaY * walkSpeed;
-    hero.direction = getSpinDirection(hero, { x: hero.x + vx, y: hero.y + vy });
+    direction = getSpinDirection(hero, { x: hero.x + vx, y: hero.y + vy });
+    scene.stickActive = true;
   }
 
+  /* Spin hero when charging on desktop */
   if (hero?.state.isCharging && !isTouch) {
     const cursorPoint = pointer.positionToCamera(mainScene.cameras.main);
-    const direction = getSpinDirection(mainScene?.hero, cursorPoint);
+    direction = getSpinDirection(mainScene?.hero, cursorPoint);
     if (mainScene?.hero?.direction !== direction) {
       scene.socket.emit("changeDirection", direction);
-      mainScene.hero.direction = direction;
     }
   }
+
+  /* Latest idle check, we set the lastAngle so it's fresh */
+  if (vx > 0 || vy > 0) hero.state.lastAngle = Math.atan2(vy, vx);
 
   if (hero.state.isAttacking || hero?.state.isCharging) {
     vx = 0;
@@ -204,6 +210,7 @@ function moveHero(scene, time) {
 
   hero.vx = vx;
   hero.vy = vy;
+  if (!hero.state.isAttacking) hero.direction = direction;
 
   hero.body.setVelocity(vx, vy);
 
@@ -219,10 +226,6 @@ function moveHero(scene, time) {
     });
   }
   hero.state.isIdle = hero.vx === vx && hero.vy === vy && vx === 0 && vy === 0;
-  /* Latest idle check, we set the lastAngle so it's fresh */
-  if (!hero.state.isIdle) {
-    hero.state.lastAngle = Math.atan2(hero.body.velocity.y, hero.body.velocity.x);
-  }
 }
 
 function addJoystick(scene) {

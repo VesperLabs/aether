@@ -1,16 +1,7 @@
-import { ButtonProps as ThemeButtonProps, Button as BaseButton, Flex } from "theme-ui";
-import { forwardRef, ForwardedRef, MouseEvent, TouchEvent } from "react";
+import { Button as Flex } from "theme-ui";
+import { forwardRef, MouseEvent, TouchEvent } from "react";
 
-export type ButtonProps = ThemeButtonProps & {
-  icon?: any;
-  onClick?: (event: MouseEvent<HTMLDivElement>) => void;
-  onTouchEnd?: (event: TouchEvent<HTMLDivElement>) => void;
-  onTouchStart?: (event: TouchEvent<HTMLDivElement>) => void;
-};
-
-type ButtonPropsWithRef = ButtonProps & { ref?: ForwardedRef<HTMLDivElement> };
-
-const Button = forwardRef<HTMLDivElement, ButtonPropsWithRef>(
+const Button = forwardRef<HTMLDivElement, any>(
   ({ icon, onTouchEnd, onTouchStart, onClick, ...props }, ref) => {
     return (
       <Flex
@@ -18,21 +9,30 @@ const Button = forwardRef<HTMLDivElement, ButtonPropsWithRef>(
         __themeKey="buttons"
         variant="default"
         ref={ref}
-        onClick={(e: MouseEvent<HTMLDivElement>) => {
+        type="button"
+        onMouseDown={(e) => {
           if (props?.disabled) return false;
-          if (onClick) {
-            onClick(e as unknown as MouseEvent<HTMLDivElement>);
-          } else if (onTouchStart) {
-            onTouchStart(e as unknown as TouchEvent<HTMLDivElement>);
+          if (onTouchStart) {
+            onTouchStart(e);
           }
         }}
-        onTouchStart={(e: TouchEvent<HTMLDivElement>) => {
+        onMouseUp={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          if (props?.disabled) return false;
+          if (onTouchEnd) {
+            return onTouchEnd?.(e);
+          } else if (onClick) {
+            onClick(e);
+          }
+        }}
+        onTouchStart={(e) => {
           e.stopPropagation();
           if (props?.disabled) return false;
           if (onTouchStart) {
-            onTouchStart(e as unknown as TouchEvent<HTMLDivElement>);
+            onTouchStart(e);
           } else if (onClick) {
-            onClick(e as unknown as MouseEvent<HTMLDivElement>);
+            onClick(e);
           }
         }}
         onTouchEnd={(e) => {
