@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { playAudio, getSpinDirection } from "./utils";
 const { W, S, A, D } = Phaser.Input.Keyboard.KeyCodes;
+const { Between } = Phaser.Math.Angle;
 
 class SceneHud extends Phaser.Scene {
   constructor(socket) {
@@ -70,18 +71,13 @@ function addGlobalEventListeners(scene) {
       const hero = mainScene?.hero;
       const abilities = hero?.abilities;
       const ability = abilities?.[e?.detail];
-      const cursorPoint = pointer.positionToCamera(mainScene.cameras.main);
-      if (ability?.type === "spell") {
-        /* Hack: Probably better to put this in preferences. */
-        const castAngle = isTouch
-          ? hero?.state?.lastAngle
-          : Phaser.Math.Angle.Between(hero.x, hero.y, cursorPoint.x, cursorPoint.y);
 
+      if (ability?.type === "spell") {
         mainScene?.hero?.castSpell?.({
           ilvl: ability?.ilvl,
           abilitySlot: e?.detail,
           spellName: ability?.base,
-          castAngle,
+          castAngle: hero?.state?.lastAngle,
         });
         mainScene.hero.state.isCharging = false;
       }
@@ -199,20 +195,21 @@ function moveHero(scene, time) {
     vx = joystick.deltaX * walkSpeed;
     vy = joystick.deltaY * walkSpeed;
     direction = getSpinDirection(hero, { x: hero.x + vx, y: hero.y + vy });
-    scene.stickActive = true;
+    /* Latest idle check, we set the lastAngle so it's fresh */
+    hero.state.lastAngle = Math.atan2(joystick.deltaY, joystick.deltaX);
   }
 
-  /* Spin hero when charging on desktop */
-  if (hero?.state.isCharging && !isTouch) {
-    const cursorPoint = pointer.positionToCamera(mainScene.cameras.main);
-    direction = getSpinDirection(mainScene?.hero, cursorPoint);
+  /* Spin hero when charging */
+  if (hero?.state.isCharging) {
+    if (!isTouch) {
+      const cursorPoint = pointer.positionToCamera(mainScene.cameras.main);
+      direction = getSpinDirection(mainScene?.hero, cursorPoint);
+      hero.state.lastAngle = Between(hero.x, hero.y, cursorPoint.x, cursorPoint.y);
+    }
     if (mainScene?.hero?.direction !== direction) {
       scene.socket.emit("changeDirection", direction);
     }
   }
-
-  /* Latest idle check, we set the lastAngle so it's fresh */
-  if (vx > 0 || vy > 0) hero.state.lastAngle = Math.atan2(vy, vx);
 
   if (hero.state.isAttacking || hero?.state.isCharging) {
     vx = 0;
