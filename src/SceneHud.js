@@ -53,14 +53,15 @@ function addGlobalEventListeners(scene) {
   window.addEventListener(
     "HERO_ATTACK_START",
     (e) => {
-      mainScene.hero.state.isCharging = true;
+      if (e?.detail?.skipAiming) return;
+      mainScene.hero.state.isAiming = true;
     },
     scene
   );
   window.addEventListener(
     "HERO_ATTACK",
     (e) => {
-      mainScene.hero.state.isCharging = false;
+      mainScene.hero.state.isAiming = false;
       mainScene?.hero?.doAttack?.(1);
     },
     scene
@@ -79,7 +80,7 @@ function addGlobalEventListeners(scene) {
           spellName: ability?.base,
           castAngle: hero?.state?.lastAngle,
         });
-        mainScene.hero.state.isCharging = false;
+        mainScene.hero.state.isAiming = false;
       }
       if (ability?.type === "stackable") {
         socket.emit("consumeItem", { item: ability, location: "abilities" });
@@ -200,7 +201,7 @@ function moveHero(scene, time) {
   }
 
   /* Spin hero when charging */
-  if (hero?.state.isCharging) {
+  if (hero?.state.isAiming) {
     if (!isTouch) {
       const cursorPoint = pointer.positionToCamera(mainScene.cameras.main);
       direction = getSpinDirection(mainScene?.hero, cursorPoint);
@@ -211,7 +212,7 @@ function moveHero(scene, time) {
     }
   }
 
-  if (hero.state.isAttacking || hero?.state.isCharging) {
+  if (hero.state.isAttacking || hero?.state.isAiming) {
     vx = 0;
     vy = 0;
   }
