@@ -29,7 +29,7 @@ class Spell extends Phaser.GameObjects.Container {
     this.scaleBase = details?.scaleBase || 1;
     this.scaleMultiplier = details?.scaleMultiplier || 0;
     this.spell.setTint(details?.tint || "0xFFFFFF");
-    this.spell.setScale(this.scaleBase + ilvl * this.scaleMultiplier);
+    this.setScale(this.scaleBase + ilvl * this.scaleMultiplier);
 
     scene.physics.add.existing(this);
     scene.events.on("update", this.update, this);

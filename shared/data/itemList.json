@@ -839,6 +839,16 @@
         "mpCost": 8,
         "cost": 200
       },
+      "fireball3": {
+        "ilvl": 3,
+        "name": "Fireball",
+        "base": "fireball",
+        "slot": "spell",
+        "texture": "scroll-blue",
+        "effects": {},
+        "mpCost": 12,
+        "cost": 200
+      },
       "evasion": {
         "ilvl": 1,
         "name": "Evasion",
