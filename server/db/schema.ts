@@ -55,7 +55,7 @@ const profileSchema = {
 
 const userSchema = {
   bsonType: "object",
-  required: ["x", "y", "roomName", "baseStats"],
+  required: ["x", "y", "roomName", "baseStats", "updatedAt"],
   properties: {
     x: {
       bsonType: "number",
@@ -93,6 +93,14 @@ const userSchema = {
     quests: {
       bsonType: "array",
       description: "must be an array",
+    },
+    updatedAt: {
+      bsonType: "date",
+      description: "must be a date",
+    },
+    createdAt: {
+      bsonType: "date",
+      description: "must be a date",
     },
   },
 };

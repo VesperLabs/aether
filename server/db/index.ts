@@ -51,6 +51,7 @@ const getDatabaseApi = (db) => ({
       return console.log("❌ Error while creating player. Email not provided");
     }
     const player = createBaseUser(charClass);
+    const { updatedAt, createdAt } = getAuditFields();
     try {
       await db.collection("users").insertOne({
         email: `${email}`.toLowerCase(),
@@ -72,6 +73,8 @@ const getDatabaseApi = (db) => ({
         baseStats: player?.baseStats,
         roomName: player?.roomName,
         abilities: player?.abilities,
+        updatedAt,
+        createdAt,
       });
     } catch (e) {
       console.log(JSON.stringify(e?.errInfo?.details));
@@ -80,6 +83,7 @@ const getDatabaseApi = (db) => ({
     return true;
   },
   updateUserRoom: async (player) => {
+    const { updatedAt } = getAuditFields();
     if (!player?.email) {
       return console.log("❌ Error while saving player. Player not found");
     }
@@ -91,6 +95,7 @@ const getDatabaseApi = (db) => ({
             roomName: player?.room?.name ?? player?.roomName,
             x: player?.x,
             y: player?.y,
+            updatedAt,
           },
         }
       );
@@ -103,6 +108,8 @@ const getDatabaseApi = (db) => ({
     if (!player?.email) {
       return console.log("❌ Error while saving player. Player not found");
     }
+
+    const { updatedAt } = getAuditFields();
 
     try {
       await db.collection("users").findOneAndUpdate(
@@ -127,6 +134,7 @@ const getDatabaseApi = (db) => ({
             baseStats: player?.baseStats,
             //roomName: player?.room?.name,
             abilities: player?.abilities,
+            updatedAt,
           },
         }
       );
@@ -136,6 +144,14 @@ const getDatabaseApi = (db) => ({
     console.log(`💾 Saved ${player?.email} to db`);
   },
 });
+
+function getAuditFields() {
+  const currentDate = new Date();
+  return {
+    createdAt: currentDate,
+    updatedAt: currentDate,
+  };
+}
 
 export const createBaseUser = (charClass) => {
   const { baseStats, startingWeapon, roomName, x, y } = useGetBaseCharacterDefaults({
