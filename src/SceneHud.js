@@ -58,7 +58,9 @@ function addGlobalEventListeners(scene) {
     "HERO_AIM_START",
     (e) => {
       const hero = mainScene?.hero;
-      hero.state.isAiming = true;
+      const abilities = hero?.abilities;
+      const ability = abilities?.[e?.detail];
+      if (!ability?.buffs) hero.state.isAiming = true;
     },
     scene
   );
