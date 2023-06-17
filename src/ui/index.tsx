@@ -44,6 +44,7 @@ export { default as Quest } from "./Quest";
 export { default as QuestTooltip } from "./QuestTooltip";
 export { default as Tooltip } from "./Tooltip";
 export { default as Portal } from "./Portal";
+export { default as SkillButton } from "./SkillButton";
 export { default as Menu } from "./Menu";
 export { useAppContext } from "./App";
 

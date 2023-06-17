@@ -86,6 +86,16 @@ export default {
         opacity: 0.5,
       },
     },
+    skill: {
+      variant: "buttons.default",
+      opacity: 1,
+      backgroundColor: "shadow.30",
+      borderRadius: "100%",
+      backdropFilter: "blur(2px)",
+      "&.active, &:has(.pressed)": {
+        boxShadow: `inset 0px 0px 0px 2px ${tColors.blue[200]}`,
+      },
+    },
     header: {
       variant: "buttons.default",
       flex: 1,
@@ -97,10 +107,19 @@ export default {
     },
     menu: {
       variant: "buttons.default",
-      borderRadius: 4,
+      borderRadius: 6,
       padding: 1,
-      "*": { opacity: 0.5 },
-      "&.active": { "*": { opacity: 1 } },
+      "&.active::before, &:has(.pressed)::before": {
+        content: '" "',
+        display: "block",
+        position: "absolute",
+        width: "100%",
+        height: 4,
+        ml: -1,
+        mt: -1,
+        borderRadius: "6px 6px 0 0",
+        boxShadow: `inset 0px 2px 0px 0px ${tColors.blue[200]}`,
+      },
       backgroundColor: "shadow.10",
     },
     wood: {
