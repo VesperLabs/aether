@@ -40,38 +40,43 @@ function addGlobalEventListeners(scene) {
   });
   /* Desktop left click attack */
   document.getElementById("game").addEventListener("mousedown", function (event) {
+    const hero = mainScene?.hero;
     if (!isTouch && event.button !== 0) {
       window.dispatchEvent(new CustomEvent("HERO_ATTACK_START"));
     }
   });
   /* Desktop left click attack */
   document.getElementById("game").addEventListener("mouseup", function (event) {
+    const hero = mainScene?.hero;
     if (!isTouch && event.button !== 0) {
       const cursorPoint = pointer.positionToCamera(mainScene.cameras.main);
-      mainScene.hero.direction = getSpinDirection(mainScene?.hero, cursorPoint);
+      hero.direction = getSpinDirection(hero, cursorPoint);
       window.dispatchEvent(new CustomEvent("HERO_ATTACK"));
     }
   });
   window.addEventListener(
     "HERO_AIM_START",
     (e) => {
-      mainScene.hero.state.isAiming = true;
+      const hero = mainScene?.hero;
+      hero.state.isAiming = true;
     },
     scene
   );
   window.addEventListener(
     "HERO_ATTACK",
     (e) => {
-      mainScene.hero.state.isAiming = false;
-      mainScene?.hero?.doAttack?.(1);
+      const hero = mainScene?.hero;
+      hero.state.isAiming = false;
+      hero?.doAttack?.(1);
     },
     scene
   );
   window.addEventListener(
     "HERO_ATTACK_START",
     (e) => {
+      const hero = mainScene?.hero;
       /* Implement charge up powerz */
-      mainScene.hero.state.isCharging = true;
+      hero.state.isCharging = true;
     },
     scene
   );
@@ -83,13 +88,13 @@ function addGlobalEventListeners(scene) {
       const ability = abilities?.[e?.detail];
 
       if (ability?.type === "spell") {
-        mainScene?.hero?.castSpell?.({
+        hero?.castSpell?.({
           ilvl: ability?.ilvl,
           abilitySlot: e?.detail,
           spellName: ability?.base,
           castAngle: hero?.state?.lastAngle,
         });
-        mainScene.hero.state.isAiming = false;
+        hero.state.isAiming = false;
       }
       if (ability?.type === "stackable") {
         socket.emit("consumeItem", { item: ability, location: "abilities" });
@@ -113,7 +118,6 @@ function addGlobalEventListeners(scene) {
   window.addEventListener(
     "AUDIO_ITEM_CONSUME",
     (e) => {
-      const hero = mainScene?.hero;
       playAudio({ scene: mainScene, audioKey: "item-bubble", caster: hero });
     },
     scene
@@ -121,7 +125,6 @@ function addGlobalEventListeners(scene) {
   window.addEventListener(
     "AUDIO_ITEM_SELL",
     (e) => {
-      const hero = mainScene?.hero;
       playAudio({ scene: mainScene, audioKey: "item-sell", caster: hero });
     },
     scene
@@ -129,11 +132,12 @@ function addGlobalEventListeners(scene) {
   window.addEventListener(
     "ITEM_DRAG",
     (e) => {
+      const hero = mainScene?.hero;
       pointer.x = e?.detail.x;
       pointer.y = e?.detail.y;
       const cursorPoint = pointer.positionToCamera(mainScene.cameras.main);
-      const direction = getSpinDirection(mainScene?.hero, cursorPoint);
-      if (mainScene?.hero?.direction !== direction) {
+      const direction = getSpinDirection(hero, cursorPoint);
+      if (hero?.direction !== direction) {
         scene.socket.emit("changeDirection", direction);
       }
     },
@@ -228,9 +232,8 @@ function moveHero(scene, time) {
 
   hero.vx = vx;
   hero.vy = vy;
-  if (!hero.state.isAttacking) hero.direction = direction;
-
   hero.body.setVelocity(vx, vy);
+  if (!hero.state.isAttacking) hero.direction = direction;
 
   /* If the hero is standing still do not update the server */
   if (!hero.state.isIdle) {

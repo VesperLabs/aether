@@ -3,6 +3,7 @@ import Character from "../shared/Character";
 import Bubble from "./Bubble";
 import Spell from "./Spell";
 import Bar from "./Bar";
+import Crosshair from "./Crosshair";
 import Damage from "./Damage";
 import { distanceTo, getSpinDirection, HAIR_HIDING_HELMETS, FACE_HIDING_HELMETS } from "./utils";
 import Buff from "./Buff";
@@ -77,6 +78,9 @@ class Player extends Character {
     this.handRight = scene.add.existing(new Sprite(scene, -13, -9, BLANK_TEXTURE));
     this.shadow = scene.add.existing(new Sprite(...defaults));
     this.bubble = scene.add.existing(new Bubble(scene, this?.profile?.headY, this.bubbleMessage));
+    this.crosshair = scene.add.existing(
+      new Crosshair(scene, 0, this.bodyOffsetY, "icons", "crosshair", this, 40)
+    );
     this.hpBar = scene.add
       .existing(new Bar(scene, 0, this?.profile?.headY, 32, 12))
       .setVisible(false);
@@ -101,6 +105,7 @@ class Player extends Character {
     this.add(this.handLeft);
     this.add(this.handRight);
     this.add(this.bubble);
+    if (this.isHero) this.add(this.crosshair);
     this.add(this.userName);
     this.add(this.hpBar);
     this.add(this.corpse);
