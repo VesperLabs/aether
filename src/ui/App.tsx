@@ -490,7 +490,9 @@ const AbilityButtons = () => {
               key={slotKey}
               size={16}
               icon={icon}
-              onTouchStart={() => window.dispatchEvent(new CustomEvent("HERO_AIM_START"))}
+              onTouchStart={() =>
+                window.dispatchEvent(new CustomEvent("HERO_AIM_START", { detail: slotKey }))
+              }
               onTouchEnd={() =>
                 window.dispatchEvent(new CustomEvent("HERO_ABILITY", { detail: slotKey }))
               }
