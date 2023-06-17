@@ -27,6 +27,7 @@ class Character extends Phaser.GameObjects.Container {
   quests: Array<PlayerQuest>;
   abilities: Record<string, Item>;
   activeItemSlots: Array<string>;
+  bodyOffsetY: number;
   declare body: Phaser.Physics.Arcade.Body;
   declare state: any;
   constructor(scene: ServerScene | Phaser.Scene, args) {
@@ -109,6 +110,7 @@ class Character extends Phaser.GameObjects.Container {
     this.quests = quests;
     scene.physics.add.existing(this);
     const bodySize = 8 * (this?.profile?.scale || 1);
+    this.bodyOffsetY = -14 * (this?.profile?.scale || 1);
     this.body.setCircle(bodySize, -bodySize, -bodySize);
     this.updateVisibleEquipment();
     this.checkAttackHands();
