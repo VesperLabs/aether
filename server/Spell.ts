@@ -74,7 +74,7 @@ class Spell extends Phaser.GameObjects.Container {
       this.velocityX = Math.cos(castAngle) * this?.spellSpeed;
       this.velocityY = Math.sin(castAngle) * this?.spellSpeed;
       this.spell.setRotation(castAngle);
-      this.spell.setScale(this?.scaleBase + ilvl * this?.scaleMultiplier);
+      this.setScale(this.scaleBase + ilvl * this.scaleMultiplier);
       this.add(this.spell);
     }
   }
