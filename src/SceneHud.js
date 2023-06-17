@@ -60,7 +60,10 @@ function addGlobalEventListeners(scene) {
       const hero = mainScene?.hero;
       const abilities = hero?.abilities;
       const ability = abilities?.[e?.detail];
-      if (!ability?.buffs) hero.state.isAiming = true;
+      if (!ability?.buffs) {
+        document.getElementById("game").style.cursor = "none";
+        hero.state.isAiming = true;
+      }
     },
     scene
   );
@@ -97,6 +100,7 @@ function addGlobalEventListeners(scene) {
           castAngle: hero?.state?.lastAngle,
         });
         hero.state.isAiming = false;
+        document.getElementById("game").style.cursor = "default";
       }
       if (ability?.type === "stackable") {
         socket.emit("consumeItem", { item: ability, location: "abilities" });
