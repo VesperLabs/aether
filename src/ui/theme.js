@@ -98,12 +98,6 @@ export default {
     },
     header: {
       variant: "buttons.default",
-      flex: 1,
-      maxWidth: MENU_MAX_WIDTH,
-      borderRadius: 4,
-      py: 1,
-      px: 2,
-      backgroundColor: "shadow.30",
     },
     menu: {
       variant: "buttons.default",

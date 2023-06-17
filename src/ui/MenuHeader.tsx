@@ -1,4 +1,4 @@
-import { Flex, KeyboardButton, Text, Icon, Box } from "./";
+import { Flex, KeyboardKey, Text, Icon, Box, MENU_MAX_WIDTH } from "./";
 import { isMobile } from "../utils";
 import React from "react";
 
@@ -11,22 +11,33 @@ interface MenuHeaderProps {
 
 const MenuHeader = ({ icon, children, onClick = () => {}, sx }: MenuHeaderProps) => {
   return (
-    <Flex sx={{ width: "100%", justifyContent: "end", ...sx }}>
-      <KeyboardButton
-        variant={"header"}
-        showOnly={true}
-        keyboardKey="ESCAPE"
-        sx={{ cursor: "default" }}
-        onClick={onClick}
-      >
-        {icon && <Icon size={22} icon={icon} />}
-        <Text sx={{ display: "flex", flex: 1, gap: 4 }}>{children}</Text>
-        {isMobile && (
-          <Box onTouchEnd={() => onClick()} sx={{ pointerEvents: "all" }}>
-            ❌
-          </Box>
-        )}
-      </KeyboardButton>
+    <Flex
+      sx={{
+        width: "100%",
+        justifyContent: "end",
+        position: "relative",
+        maxWidth: MENU_MAX_WIDTH,
+        gap: 1,
+        p: 2,
+        py: 1,
+        alignItems: "center",
+        background: "shadow.30",
+        borderRadius: 6,
+        ...sx,
+      }}
+    >
+      {isMobile ? (
+        <Box onTouchEnd={() => onClick()} sx={{ pointerEvents: "all" }}>
+          ❌
+        </Box>
+      ) : (
+        <Box>
+          <KeyboardKey name={"ESCAPE"} onKeyUp={onClick} sx={{ position: "relative" }} />
+        </Box>
+      )}
+      <Box sx={{ flex: 1 }} />
+      <Text sx={{ display: "flex", gap: 2 }}>{children}</Text>
+      {icon && <Icon size={22} icon={icon} />}
     </Flex>
   );
 };
