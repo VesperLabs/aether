@@ -10,6 +10,7 @@ interface MenuButtonProps {
   children?: React.ReactNode;
   sx?: Record<string, unknown>;
   size?: number;
+  disabled?: boolean;
 }
 
 const MenuButton = ({
@@ -20,9 +21,11 @@ const MenuButton = ({
   children,
   sx,
   size = 38,
+  disabled = false,
 }: MenuButtonProps) => {
   return (
     <Button
+      disabled={disabled}
       variant="menu"
       className={isActive ? "active" : ""}
       onClick={onClick}

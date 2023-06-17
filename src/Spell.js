@@ -76,19 +76,19 @@ class Spell extends Phaser.GameObjects.Container {
       });
       this.caster.add(this.spell);
     } else {
+      /* Make the spell come from the players center */
       this.spell.y = caster.bodyOffsetY;
+      this.body.setCircle(this?.bodySize, -this?.bodySize, -this?.bodySize + caster.bodyOffsetY);
     }
 
     if (spellName === "fireball") {
       this.spell.play("spell-anim-fireball");
-      this.body.setCircle(this.bodySize, -this.bodySize, -this.bodySize);
       this.scene.physics.velocityFromRotation(castAngle, this.spellSpeed, this.body.velocity);
       this.spell.setRotation(castAngle);
       this.add(this.spell);
     }
     if (BUFF_SPELLS.includes(spellName)) {
       this.spell.play("spell-anim-chakra");
-      this.body.setCircle(this.bodySize, -this.bodySize, -this.bodySize);
       scene.tweens.add({
         targets: this.spell,
         props: {

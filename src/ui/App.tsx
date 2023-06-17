@@ -237,6 +237,11 @@ function App({ socket, debug, game }) {
       const hero = scene.hero;
       const npcId = scene?.hero?.state?.targetNpcId;
       const npc = scene.npcs.getChildren().find((n) => n?.id === npcId);
+      if (!npc)
+        return setMessages((prev) => [
+          ...prev,
+          { type: "error", message: "Who are you talking to?" },
+        ]);
       const direction = getSpinDirection(hero, npc);
 
       setTabKeeper((prev) => {
@@ -434,14 +439,13 @@ const SkillButtons = () => {
         alignItems: "flex-end",
       }}
     >
-      {showButtonChat && (
-        <SkillButton
-          size={16}
-          iconName="chat"
-          onTouchEnd={() => window.dispatchEvent(new CustomEvent("HERO_CHAT_NPC"))}
-          keyboardKey="X"
-        />
-      )}
+      <SkillButton
+        size={16}
+        iconName="chat"
+        onTouchEnd={() => window.dispatchEvent(new CustomEvent("HERO_CHAT_NPC"))}
+        keyboardKey="X"
+        sx={{ opacity: showButtonChat ? 1 : 0.5 }}
+      />
       <SkillButton
         size={16}
         iconName="grab"
@@ -599,42 +603,7 @@ const MenuBar = () => {
             )}
           </Box>
           <Box sx={{ flex: tabChat ? "unset" : 1 }} />
-          <MenuButton
-            keyboardKey={tabChat ? "ENTER" : "T"}
-            iconName="chat"
-            sx={{
-              flex: tabChat ? 1 : "unset",
-              "&.active::before, &:has(.pressed)::before": { boxShadow: "none" },
-            }}
-            isActive={tabChat}
-            onClick={() => setTabChat((prev) => !prev)}
-          >
-            {tabChat && (
-              <Input
-                sx={{ flex: 1 }}
-                autoFocus={true}
-                onKeyDown={(e) => {
-                  const target = e.target as HTMLInputElement;
-                  const message = target?.value;
-                  if (e.keyCode === 13) {
-                    if (message?.trim() !== "") socket.emit("message", { message });
-                    setTabChat(false);
-                  }
-                }}
-                onClickOutside={() => {
-                  setTabChat(false);
-                }}
-                onBlur={(e) => {
-                  /* Hack to send if `Done` button is pushed */
-                  const message = e?.target?.value;
-                  if (message && isMobile) {
-                    if (message?.trim() !== "") socket.emit("message", { message });
-                  }
-                  setTabChat(false);
-                }}
-              />
-            )}
-          </MenuButton>
+          <ChatButton />
           {!tabChat && (
             <>
               <MenuButton
@@ -704,6 +673,86 @@ const MenuBar = () => {
         </Menu>
       </Box>
     </Flex>
+  );
+};
+
+const ChatButton = () => {
+  const { tabChat, setTabChat, socket, messages, hero } = useAppContext();
+  const [chatValue, setChatValue] = useState<string>("");
+  const [messageIndex, setMessageIndex] = useState<number>(-1);
+
+  useEffect(() => {
+    if (!tabChat) {
+      setChatValue("");
+      setMessageIndex(-1);
+    }
+  }, [tabChat]);
+
+  return (
+    <MenuButton
+      keyboardKey={tabChat ? "ENTER" : "T"}
+      iconName="chat"
+      sx={{
+        flex: tabChat ? 1 : "unset",
+        "&.active::before, &:has(.pressed)::before": { boxShadow: "none" },
+      }}
+      isActive={tabChat}
+      disabled={tabChat} //hack to prevent double clicks
+      onClick={() => setTabChat((prev) => !prev)}
+    >
+      {tabChat && (
+        <Input
+          sx={{ flex: 1 }}
+          autoFocus={true}
+          value={chatValue}
+          onKeyDown={(e) => {
+            const target = e.target as HTMLInputElement;
+            const message = target?.value;
+
+            if (e.code === "Enter") {
+              if (message?.trim() !== "") {
+                socket.emit("message", { message });
+              }
+              setTabChat(false);
+            }
+
+            if (e.code === "ArrowUp" || e.code === "ArrowDown") {
+              e.preventDefault();
+              const lastMessageIndex =
+                messages?.filter?.((m) => m?.from === hero?.profile?.userName)?.length - 1;
+              let newIndex = messageIndex;
+
+              if (e.code === "ArrowUp") {
+                if (newIndex === -1) {
+                  newIndex = lastMessageIndex;
+                } else {
+                  newIndex = newIndex === 0 ? lastMessageIndex : newIndex - 1;
+                }
+              }
+
+              if (e.code === "ArrowDown") {
+                newIndex = newIndex === lastMessageIndex ? 0 : newIndex + 1;
+              }
+
+              setChatValue(messages?.[newIndex]?.message || "");
+              setMessageIndex(newIndex);
+            }
+          }}
+          onChange={(e: any) => setChatValue(e.target.value)}
+          onClickOutside={() => {
+            setTabChat(false);
+          }}
+          onBlur={(e) => {
+            /* Hack to send if `Done` button is pushed */
+            const message = e?.target?.value;
+            if (message && isMobile) {
+              if (message?.trim() !== "") socket.emit("message", { message });
+            }
+            setTabChat(false);
+          }}
+        />
+      )}
+    </MenuButton>
   );
 };
 

@@ -14,7 +14,6 @@ class Player extends Character {
   constructor(scene, args) {
     super(scene, args);
     this.weaponAtlas = scene.cache.json.get("weaponAtlas");
-    this.bodyOffsetY = -14 * (this?.profile?.scale || 1);
     this.updateData(args);
     this.initSpriteLayers();
     this.drawCharacterFromUserData();

@@ -109,6 +109,9 @@ export default {
       variant: "buttons.default",
       borderRadius: 6,
       padding: 1,
+      "&[disabled]": {
+        opacity: 1,
+      },
       "&.active::before, &:has(.pressed)::before": {
         content: '" "',
         display: "block",
