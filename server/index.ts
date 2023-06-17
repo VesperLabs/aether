@@ -210,14 +210,24 @@ class ServerScene extends Phaser.Scene implements ServerScene {
             foundItem.amount = parseInt(foundItem.amount || 0) + parseInt(item?.amount || 0);
           } else {
             /* If our inventory is full we do not pick it up */
-            if (player.isInventoryFull()) return console.log("❌ Inventory full.");
+            if (player.isInventoryFull()) {
+              return socket.emit("message", {
+                type: "error",
+                message: "Inventory is full.",
+              });
+            }
             /* Delete loot from server */
             scene.roomManager.rooms[player?.roomName].lootManager.remove(lootId);
             player.addInventoryItem(item);
           }
         } else {
           /* If our inventory is full we do not pick it up */
-          if (player.isInventoryFull()) return console.log("❌ Inventory full.");
+          if (player.isInventoryFull()) {
+            return socket.emit("message", {
+              type: "error",
+              message: "Inventory is full.",
+            });
+          }
           /* Delete loot from server */
           scene.roomManager.rooms[player?.roomName].lootManager.remove(lootId);
           player.addInventoryItem(item);

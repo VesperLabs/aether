@@ -83,6 +83,7 @@ const KeyboardKey: React.FC<KeyboardKeyProps> = ({
   return (
     <Flex
       ref={ref}
+      className={isPressed ? "pressed" : ""}
       onClick={(e) => {
         e.stopPropagation();
         onKeyUp?.();

@@ -19,7 +19,7 @@ const MenuButton = ({
   isActive,
   children,
   sx,
-  size = 32,
+  size = 38,
 }: MenuButtonProps) => {
   return (
     <Button

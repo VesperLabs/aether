@@ -2,7 +2,7 @@ import React, { useEffect, useState, createContext, useContext } from "react";
 import {
   ThemeProvider,
   Box,
-  Button,
+  SkillButton,
   theme,
   Flex,
   Icon,
@@ -421,47 +421,6 @@ function App({ socket, debug, game }) {
   );
 }
 
-const SkillButton = ({
-  onTouchStart = () => {},
-  onTouchEnd = () => {},
-  icon,
-  iconName,
-  size,
-  keyboardKey,
-}: {
-  onTouchStart?: any;
-  onTouchEnd?: any;
-  icon?: string;
-  iconName?: string;
-  size: number;
-  keyboardKey?: string;
-}) => {
-  return (
-    <Box sx={{ position: "relative", flexShrink: 0 }}>
-      <Button
-        variant="menu"
-        onTouchStart={(e) => onTouchStart(e)}
-        onTouchEnd={(e) => onTouchEnd(e)}
-        sx={{
-          p: size,
-          borderRadius: "100%",
-          backdropFilter: "blur(2px)",
-        }}
-      >
-        <Icon icon={icon || `../assets/icons/${iconName}.png`} />
-      </Button>
-      {keyboardKey && (
-        <KeyboardKey
-          name={keyboardKey}
-          hidden={isMobile}
-          onKeyDown={(e) => onTouchStart(e)}
-          onKeyUp={(e) => onTouchEnd(e)}
-        />
-      )}
-    </Box>
-  );
-};
-
 const SkillButtons = () => {
   const { showButtonChat } = useAppContext();
 
@@ -641,7 +600,10 @@ const MenuBar = () => {
           <MenuButton
             keyboardKey={tabChat ? "ENTER" : "T"}
             iconName="chat"
-            sx={{ flex: tabChat ? 1 : "unset" }}
+            sx={{
+              flex: tabChat ? 1 : "unset",
+              "&.active::before, &:has(.pressed)::before": { boxShadow: "none" },
+            }}
             isActive={tabChat}
             onClick={() => setTabChat((prev) => !prev)}
           >
@@ -698,7 +660,7 @@ const MenuBar = () => {
                 onClick={() => setTabStats((prev) => !prev)}
               />
               <MenuButton
-                keyboardKey="V"
+                keyboardKey="G"
                 iconName="mirror"
                 isActive={tabProfile}
                 onClick={() => setTabProfile((prev) => !prev)}
