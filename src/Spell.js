@@ -29,7 +29,6 @@ class Spell extends Phaser.GameObjects.Container {
     this.scaleBase = details?.scaleBase || 1;
     this.scaleMultiplier = details?.scaleMultiplier || 0;
     this.spell.setTint(details?.tint || "0xFFFFFF");
-    this.setScale(this.scaleBase + ilvl * this.scaleMultiplier);
 
     scene.physics.add.existing(this);
     scene.events.on("update", this.update, this);
@@ -82,12 +81,14 @@ class Spell extends Phaser.GameObjects.Container {
     }
 
     if (spellName === "fireball") {
+      this.setScale(this.scaleBase + ilvl * this.scaleMultiplier);
       this.spell.play("spell-anim-fireball");
       this.scene.physics.velocityFromRotation(castAngle, this.spellSpeed, this.body.velocity);
       this.spell.setRotation(castAngle);
       this.add(this.spell);
     }
     if (BUFF_SPELLS.includes(spellName)) {
+      this.spell.setScale(this.scaleBase + ilvl * this.scaleMultiplier);
       this.spell.play("spell-anim-chakra");
       scene.tweens.add({
         targets: this.spell,
