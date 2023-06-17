@@ -46,6 +46,8 @@ yarn dev
 #### Combat
 
 - [ ] Allow critical strikes on spells
+- [ ] Ranged weapons
+- [ ] Serverside individual cooldowns for spells
 - [ ] More spells that affect movement, (dives, dodges, pushback etc)
 - [ ] Back-stab damage
 - [ ] Holding down buttons to charge up attacks
@@ -59,6 +61,7 @@ yarn dev
 
 #### Completed
 
+- [x] Hold to aim spells
 - [x] Helmets that can hide hair or face
 - [x] Elemental Damage / Resistances
 - [x] Inventory Bags system

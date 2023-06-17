@@ -144,12 +144,13 @@ class Character extends Phaser.GameObjects.Container {
     }
   }
   checkCastReady(delta: number = 0) {
-    if (Date.now() - this.state.lastCast > delta + this?.stats?.castDelay) {
+    const isCastReady = Date.now() - this.state.lastCast > delta + this?.stats?.castDelay;
+    if (isCastReady) {
       this.state.isCasting = false;
     } else {
       this.state.isCasting = true;
     }
-    return !this.state.isCasting;
+    return isCastReady;
   }
   canCastSpell(abilitySlot) {
     const { mpCost } = this?.abilities?.[abilitySlot] || {};
