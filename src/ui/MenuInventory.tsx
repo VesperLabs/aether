@@ -1,7 +1,7 @@
 import { Flex, Menu, Text, useAppContext, Slot, Icon, MenuHeader, MENU_MAX_WIDTH } from "./";
 
-const GoldDisplay = ({ gold }) => (
-  <Flex sx={{ flex: 1, gap: 1, justifyContent: "end", alignItems: "center", pr: 2 }}>
+const GoldDisplay = ({ gold, sx }) => (
+  <Flex sx={{ flex: 1, gap: 1, justifyContent: "end", alignItems: "center", ...sx }}>
     <Icon icon="../assets/icons/gold.png" size={16} />
     <Text>{gold || 0}</Text>
   </Flex>
@@ -17,10 +17,9 @@ const MenuInventory = () => {
       <Flex sx={{ flexWrap: "wrap", justifyContent: "end", gap: 2, flex: 1 }}>
         <MenuHeader icon={`../assets/icons/bag.png`} onClick={() => setTabInventory(false)}>
           Inventory
-          <GoldDisplay gold={hero?.gold} />
         </MenuHeader>
         <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", maxWidth: MENU_MAX_WIDTH }}>
-          {maxInventory?.map((item, idx) => (
+          {maxInventory?.map((_, idx) => (
             <Slot
               key={idx}
               location="inventory"
@@ -31,6 +30,7 @@ const MenuInventory = () => {
           ))}
         </Flex>
       </Flex>
+      <GoldDisplay gold={hero?.gold} sx={{ mt: 2 }} />
     </Menu>
   );
 };
