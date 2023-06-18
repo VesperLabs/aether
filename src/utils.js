@@ -245,6 +245,8 @@ function getHeroCoordsRelativeToWindow(scene) {
   const camera = mainScene.cameras.main;
   const hero = mainScene?.hero;
 
+  if (!hero) return { x: 0, y: 0 };
+
   // Calculate the hero's position relative to the camera
   const x = (hero.x - camera.worldView.x) * zoomLevel;
   const y = (hero.y - camera.worldView.y) * zoomLevel;
