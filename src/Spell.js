@@ -81,15 +81,13 @@ class Spell extends Phaser.GameObjects.Container {
     }
 
     if (spellName === "fireball") {
-      this.setScale(this.scaleBase + ilvl * this.scaleMultiplier);
       this.spell.play("spell-anim-fireball");
       this.scene.physics.velocityFromRotation(castAngle, this.spellSpeed, this.body.velocity);
       this.spell.setRotation(castAngle);
-      this.add(this.spell);
     }
     if (BUFF_SPELLS.includes(spellName)) {
-      this.spell.setScale(this.scaleBase + ilvl * this.scaleMultiplier);
       this.spell.play("spell-anim-chakra");
+      this.stickToCaster = true;
       scene.tweens.add({
         targets: this.spell,
         props: {
@@ -102,16 +100,17 @@ class Spell extends Phaser.GameObjects.Container {
         yoyo: false,
         repeat: 0,
       });
-      this.caster.add(this.spell);
     }
 
-    this.layerSpell();
+    this.setScale(this.scaleBase + ilvl * this.scaleMultiplier);
+    this.add(this.spell);
+    this.adjustSpellPosition();
     playSpellAudio({ scene, spellName, caster, isAttack: this.isAttack });
   }
   create() {}
   update(time, deltaTime) {
     if (!this.scene) return; //sometimes plays an extra loop after destroy
-    this.layerSpell();
+    this.adjustSpellPosition();
     /* Step up the alive time */
     this.state.aliveTime += deltaTime;
     const isSpellExpired = this.state.aliveTime > this.maxVisibleTime;
@@ -127,7 +126,11 @@ class Spell extends Phaser.GameObjects.Container {
       this.destroy();
     }
   }
-  layerSpell() {
+  adjustSpellPosition() {
+    if (this.stickToCaster) {
+      this.x = this.caster.x;
+      this.y = this.caster.y;
+    }
     if (this.layerDepth === "bottom") {
       this.caster.sendToBack(this.spell);
       this.setDepth(this?.caster?.depth - 20);

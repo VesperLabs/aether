@@ -64,7 +64,6 @@ class Spell extends Phaser.GameObjects.Container {
       /* Take body size of NPC caster in to account when determining attack */
       const fullBodySize = this.bodySize + (caster?.body?.radius ?? 8) / 2;
       this.body.setCircle(fullBodySize, -fullBodySize, -fullBodySize);
-      this.add(this.spell);
     } else {
       /* Make the spell come from the players center */
       this.spell.y = caster.bodyOffsetY;
@@ -75,8 +74,11 @@ class Spell extends Phaser.GameObjects.Container {
       this.velocityY = Math.sin(castAngle) * this?.spellSpeed;
       this.spell.setRotation(castAngle);
       this.setScale(this.scaleBase + ilvl * this.scaleMultiplier);
-      this.add(this.spell);
     }
+
+    this.add(this.spell);
+
+    /* TODO: When we add buffs, make sure they do the same as adjustSpellPosition on clientside */
   }
   update() {
     const now = Date.now();
