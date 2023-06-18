@@ -75,7 +75,6 @@ class Spell extends Phaser.GameObjects.Container {
         yoyo: false,
         repeat: 0,
       });
-      this.stickToCaster = true;
       this.add(this.spell);
     } else {
       /* Make the spell come from the players center */

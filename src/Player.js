@@ -102,11 +102,11 @@ class Player extends Character {
     this.add(this.handLeft);
     this.add(this.handRight);
     this.add(this.bubble);
-    if (this.isHero) this.add(this.crosshair);
     this.add(this.userName);
     this.add(this.hpBar);
     this.add(this.corpse);
     this.add(this.talkMenu);
+    if (this.isHero) this.add(this.crosshair);
   }
   drawCharacterFromUserData() {
     const { profile, visibleEquipment, state } = this || {};
