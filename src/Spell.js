@@ -37,8 +37,10 @@ class Spell extends Phaser.GameObjects.Container {
     if (this.isAttack) {
       this.spell.setTexture("misc-slash");
       this.spell.setAngle(getAngleFromDirection(caster?.direction) - 90);
+      let offsetY = 0;
       if (caster?.direction === "down") {
-        this.spell.y = this?.caster?.bodyOffsetY;
+        offsetY = this?.caster?.bodyOffsetY;
+        this.spell.y = offsetY;
       }
       if (spellName === "attack_left") {
         const rangeLeft = caster?.equipment?.handLeft?.stats?.range * 2 || caster?.body?.radius / 8;
@@ -77,6 +79,7 @@ class Spell extends Phaser.GameObjects.Container {
       this.add(this.spell);
     } else {
       /* Make the spell come from the players center */
+      this.setScale(this.scaleBase + ilvl * this.scaleMultiplier);
       this.body.setCircle(this?.bodySize, -this?.bodySize, -this?.bodySize);
     }
 
@@ -102,7 +105,6 @@ class Spell extends Phaser.GameObjects.Container {
       });
     }
 
-    this.setScale(this.scaleBase + ilvl * this.scaleMultiplier);
     this.add(this.spell);
     this.adjustSpellPosition();
     playSpellAudio({ scene, spellName, caster, isAttack: this.isAttack });
@@ -129,7 +131,7 @@ class Spell extends Phaser.GameObjects.Container {
   adjustSpellPosition() {
     if (this.stickToCaster) {
       this.x = this.caster.x;
-      this.y = this.caster.y;
+      this.y = this.caster.y + this.caster.bodyOffsetY;
     }
     if (this.layerDepth === "bottom") {
       this.caster.sendToBack(this.spell);

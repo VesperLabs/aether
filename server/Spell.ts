@@ -61,7 +61,7 @@ class Spell extends Phaser.GameObjects.Container {
     scene.events.once("shutdown", this.destroy, this);
 
     if (this.isAttack) {
-      /* Take body size of NPC caster in to account when determining attack */
+      /* Take body size of NPC caster in to account. or they wont get close enough to attack */
       const fullBodySize = this.bodySize + (caster?.body?.radius ?? 8) / 2;
       this.body.setCircle(fullBodySize, -fullBodySize, -fullBodySize);
     } else {
