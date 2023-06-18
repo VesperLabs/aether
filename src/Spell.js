@@ -77,8 +77,7 @@ class Spell extends Phaser.GameObjects.Container {
       this.add(this.spell);
     } else {
       /* Make the spell come from the players center */
-      this.spell.y = caster.bodyOffsetY;
-      this.body.setCircle(this?.bodySize, -this?.bodySize, -this?.bodySize + caster.bodyOffsetY);
+      this.body.setCircle(this?.bodySize, -this?.bodySize, -this?.bodySize);
     }
 
     if (spellName === "fireball") {
