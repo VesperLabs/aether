@@ -77,9 +77,7 @@ class Player extends Character {
     this.handRight = scene.add.existing(new Sprite(scene, -13, -9, BLANK_TEXTURE));
     this.shadow = scene.add.existing(new Sprite(...defaults));
     this.bubble = scene.add.existing(new Bubble(scene, this?.profile?.headY, this.bubbleMessage));
-    this.crosshair = scene.add.existing(
-      new Crosshair(scene, 0, this.bodyOffsetY, "icons", "crosshair", this, 40)
-    );
+    this.crosshair = scene.add.existing(new Crosshair(scene, 0, 0, "icons", "crosshair", this, 40));
     this.hpBar = scene.add
       .existing(new Bar(scene, 0, this?.profile?.headY, 32, 12))
       .setVisible(false);
