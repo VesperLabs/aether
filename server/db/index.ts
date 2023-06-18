@@ -21,6 +21,8 @@ export async function initDatabase(uri) {
   /* Create collections  */
   const usersCollectionExists = await db.listCollections({ name: "users" }).hasNext();
   if (!usersCollectionExists) await db.createCollection("users");
+  /* Create indexes */
+  await db.collection("users").createIndex({ email: 1 }, { unique: true });
   /* Add schema */
   await db.command({
     collMod: "users",
