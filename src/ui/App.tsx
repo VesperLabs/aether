@@ -102,7 +102,7 @@ function App({ socket, debug, game }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [dropItem, setDropItem] = useState();
-  const [hero, setHero] = useState<FullCharacterState>();
+  const [hero, setHero] = useState<FullCharacterState>(null);
   const [keeper, setKeeper] = useState();
   const [messages, setMessages] = useState([]);
   const [tabKeeper, setTabKeeper] = useState(false);
@@ -140,6 +140,12 @@ function App({ socket, debug, game }) {
     const onDisconnect = () => {
       setIsConnected(false);
       setIsLoggedIn(false);
+      setMessages([]);
+      setPlayers([]);
+      setParty([]);
+      setPartyInvites([]);
+      setHero(null);
+      setKeeper(null);
     };
 
     const onMessage = (payload: Message) => {

@@ -14,26 +14,26 @@ const MenuQuests = () => {
     <Menu
       sx={{
         display: tabQuests ? "flex" : "none",
+        alignItems: "end",
+        flexDirection: "column",
       }}
     >
-      <Flex sx={{ flexWrap: "wrap", justifyContent: "end", gap: 2, flex: 1 }}>
-        <MenuHeader icon={`../assets/icons/quests.png`} onClick={() => setTabQuests(false)}>
-          Quests
-        </MenuHeader>
-        <Flex
-          sx={{
-            display: tabQuests ? "flex" : "none",
-            gap: 2,
-            flexWrap: "wrap",
-            justifyContent: "end",
-            maxWidth: MENU_MAX_WIDTH,
-          }}
-        >
-          {quests?.length === 0 && <Text>You are not on any quests.</Text>}
-          {quests?.map((quest, idx) => {
-            return <Quest key={idx} quest={quest} parent="player" />;
-          })}
-        </Flex>
+      <MenuHeader icon={`../assets/icons/quests.png`} onClick={() => setTabQuests(false)}>
+        Quests
+      </MenuHeader>
+      <Flex
+        sx={{
+          display: tabQuests ? "flex" : "none",
+          gap: 2,
+          flexWrap: "wrap",
+          justifyContent: "end",
+          maxWidth: MENU_MAX_WIDTH,
+        }}
+      >
+        {quests?.length === 0 && <Text>You are not on any quests.</Text>}
+        {quests?.map((quest, idx) => {
+          return <Quest key={idx} quest={quest} parent="player" />;
+        })}
       </Flex>
     </Menu>
   );

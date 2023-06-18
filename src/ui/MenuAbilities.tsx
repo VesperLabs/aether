@@ -8,6 +8,8 @@ const MenuAbilities = () => {
     <Menu
       sx={{
         display: tabAbilities ? "flex" : "none",
+        alignItems: "end",
+        flexDirection: "column",
       }}
     >
       <MenuHeader icon={`../assets/icons/book.png`} onClick={() => setTabAbilities(false)}>
