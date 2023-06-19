@@ -224,7 +224,12 @@ function moveHero(scene, time) {
     if (!isTouch) {
       const cursorPoint = pointer.positionToCamera(mainScene.cameras.main);
       direction = getSpinDirection(mainScene?.hero, cursorPoint);
-      hero.state.lastAngle = Between(hero.x, hero.y, cursorPoint.x, cursorPoint.y);
+      hero.state.lastAngle = Between(
+        hero.x,
+        hero.y + hero.bodyOffsetY,
+        cursorPoint.x,
+        cursorPoint.y
+      );
     }
     if (mainScene?.hero?.direction !== direction) {
       scene.socket.emit("changeDirection", direction);

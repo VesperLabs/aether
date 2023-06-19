@@ -312,7 +312,7 @@ function setCamera(scene, hero) {
   const zoomLevel = getGameZoomLevel(scene);
 
   scene.cameras.main.setZoom(zoomLevel);
-  scene.cameras.main.startFollow(hero, true);
+  scene.cameras.main.startFollow(hero, true, 1, 1, 0, hero.bodyOffsetY);
   scene.cameras.main.setBounds(0, 0, scene.map.widthInPixels, scene.map.heightInPixels);
 }
 
