@@ -28,7 +28,7 @@ class Spell extends Phaser.GameObjects.Container {
     scene: ServerScene,
     { id, room, caster, target, abilitySlot, spellName, castAngle, ilvl }
   ) {
-    super(scene, caster.x, caster.y);
+    super(scene, caster.x, caster.y + caster.bodyOffsetY);
     this.id = id;
     this.scene = scene;
     this.room = room;

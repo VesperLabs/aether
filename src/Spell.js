@@ -7,7 +7,7 @@ const BLANK_TEXTURE = "human-blank";
 const BUFF_SPELLS = ["evasion", "brute", "endurance", "genius", "haste"];
 class Spell extends Phaser.GameObjects.Container {
   constructor(scene, { id, caster, spellName, abilitySlot, state, castAngle, ilvl = 1 }) {
-    super(scene, caster.x, caster.y);
+    super(scene, caster.x, caster.y + caster.bodyOffsetY);
     this.scene = scene;
     this.id = id;
     this.caster = caster;
@@ -37,11 +37,12 @@ class Spell extends Phaser.GameObjects.Container {
     if (this.isAttack) {
       this.spell.setTexture("misc-slash");
       this.spell.setAngle(getAngleFromDirection(caster?.direction) - 90);
-      let offsetY = 0;
-      if (caster?.direction === "down") {
-        offsetY = this?.caster?.bodyOffsetY;
-        this.spell.y = offsetY;
+
+      /* Hack: Up range is too long. This hack makes the top-down view more realistic */
+      if (caster?.direction === "up") {
+        this.y = this.caster.y;
       }
+
       if (spellName === "attack_left") {
         const rangeLeft = caster?.equipment?.handLeft?.stats?.range * 2 || caster?.body?.radius / 8;
         this.body.setCircle(rangeLeft * 16, -rangeLeft * 16, -rangeLeft * 16);
@@ -77,7 +78,6 @@ class Spell extends Phaser.GameObjects.Container {
       });
       this.add(this.spell);
     } else {
-      /* Make the spell come from the players center */
       this.setScale(this.scaleBase + ilvl * this.scaleMultiplier);
       this.body.setCircle(this?.bodySize, -this?.bodySize, -this?.bodySize);
     }
