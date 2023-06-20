@@ -88,7 +88,7 @@ class Player extends Character {
       .existing(new Sprite(scene, 0, this.bodyOffsetY, "icons", "grave"))
       .setVisible(false);
     this.talkMenu = scene.add
-      .existing(new Sprite(scene, 6, this?.headY, "icons", "chat"))
+      .existing(new Sprite(scene, 6, this?.headY - 6, "icons", "chat"))
       .setVisible(false);
     this.add(this.shadow);
     this.add(this.chest);
@@ -370,6 +370,7 @@ function drawFrame(p) {
     bubble,
     hpBar,
     userName,
+    talkMenu,
   } = p;
 
   /* Depth sort based on direction */
@@ -420,6 +421,7 @@ function drawFrame(p) {
   p.bringToTop(userName);
   p.bringToTop(bubble);
   p.bringToTop(hpBar);
+  p.bringToTop(talkMenu);
 
   p?.playAnim(skin, [profile?.race, direction, action]);
   if (profile?.race === "human") {

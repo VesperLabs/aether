@@ -138,7 +138,7 @@ class Spell extends Phaser.GameObjects.Container {
     }
     if (this.layerDepth === "top") {
       this.caster.bringToTop(this.spell);
-      this.setDepth(this?.caster?.depth + 10);
+      this.setDepth(100 + this.y + this?.body?.height);
     }
   }
   checkCollisions(sendServer = false) {
