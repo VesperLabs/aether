@@ -32,7 +32,12 @@ const MenuHeader = ({ icon, children, onClick = () => {}, sx }: MenuHeaderProps)
         </Box>
       ) : (
         <Box>
-          <KeyboardKey name={"ESCAPE"} onKeyUp={onClick} sx={{ position: "relative" }} />
+          <KeyboardKey
+            showOnly={true}
+            name={"ESCAPE"}
+            onKeyUp={onClick}
+            sx={{ position: "relative" }}
+          />
         </Box>
       )}
       <Box sx={{ flex: 1 }} />
