@@ -76,7 +76,6 @@ class Spell extends Phaser.GameObjects.Container {
         yoyo: false,
         repeat: 0,
       });
-      this.add(this.spell);
     } else {
       this.setScale(this.scaleBase + ilvl * this.scaleMultiplier);
       this.body.setCircle(this?.bodySize, -this?.bodySize, -this?.bodySize);
@@ -133,12 +132,10 @@ class Spell extends Phaser.GameObjects.Container {
       this.y = this.caster.y + this.caster.bodyOffsetY;
     }
     if (this.layerDepth === "bottom") {
-      this.caster.sendToBack(this.spell);
       this.setDepth(this?.caster?.depth - 20);
     }
     if (this.layerDepth === "top") {
-      this.caster.bringToTop(this.spell);
-      this.setDepth(100 + this.y + this?.body?.height);
+      this.setDepth(100 + this.y + this.bodySize);
     }
   }
   checkCollisions(sendServer = false) {
