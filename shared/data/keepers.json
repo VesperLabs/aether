@@ -3,8 +3,7 @@
     "charClass": "warrior",
     "profile": {
       "userName": "Cat",
-      "race": "cat",
-      "headY": -27
+      "race": "cat"
     },
     "baseStats": {
       "level": 1
@@ -13,14 +12,17 @@
       "dialogues": {
         "greet": "Meow. I take it this isn't the first time you've talked to a cat."
       }
+    },
+    "hitBoxSize": {
+      "width": 40,
+      "height": 40
     }
   },
   "dog": {
     "charClass": "warrior",
     "profile": {
       "userName": "Dog",
-      "race": "dog",
-      "headY": -27
+      "race": "dog"
     },
     "baseStats": {
       "level": 1
@@ -29,6 +31,10 @@
       "dialogues": {
         "greet": "Woof. Woof. Greetings adventurer!"
       }
+    },
+    "hitBoxSize": {
+      "width": 40,
+      "height": 40
     }
   },
   "tudwick": {

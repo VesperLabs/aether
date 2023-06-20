@@ -148,7 +148,7 @@ class Spell extends Phaser.GameObjects.Container {
     const players = scene.players?.getChildren() || [];
     [...npcs, ...players]?.forEach((victim) => {
       if (!victim || this.hitIds.includes(victim?.id) || victim?.state?.isDead) return;
-      if (scene.physics.overlap(victim, this)) {
+      if (scene.physics.overlap(victim?.hitBox, this)) {
         /* For attacks, prevent collision behind the player */
         if (this.isAttack) {
           if (direction === "up" && victim.y > caster.y) return;

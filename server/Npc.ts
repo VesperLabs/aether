@@ -43,9 +43,11 @@ class Npc extends Character implements Npc {
       abilities: Record<string, Array<string>>;
       keeperData: KeeperData;
       drops: Array<Drop>;
+      hitBoxSize: any;
     }
   ) {
     super(scene, args);
+
     this.name = args?.name;
     this.scene = scene;
     this.state.isRobot = true;

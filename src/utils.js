@@ -205,6 +205,7 @@ const MUSIC_VOLUME = 0.15;
 const SFX_VOLUME = 0.6;
 const HAIR_HIDING_HELMETS = ["helmet-armet", "helmet-hood", "helmet-horned"];
 const FACE_HIDING_HELMETS = ["helmet-armet", "helmet-horned"];
+const BLANK_TEXTURE = "human-blank";
 
 const playAudio = ({ scene, audioKey, caster }) => {
   const heroPosition = scene.hero?.body?.position;
@@ -283,4 +284,5 @@ export {
   getHeroCoordsRelativeToWindow,
   HAIR_HIDING_HELMETS,
   FACE_HIDING_HELMETS,
+  BLANK_TEXTURE,
 };

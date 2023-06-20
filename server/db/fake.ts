@@ -26,4 +26,10 @@ const getDatabaseApi = () => ({
     }
     console.log(`💾 Saved ${player?.email} to db`);
   },
+  updateUserRoom: async (player) => {
+    if (!player?.email) {
+      return console.log("❌ Error while saving player. Player not found");
+    }
+    console.log(`💾 Saved ${player?.email} to db`);
+  },
 });
