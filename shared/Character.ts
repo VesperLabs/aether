@@ -59,7 +59,7 @@ class Character extends Phaser.GameObjects.Container {
       buffs = [],
       abilities = {},
       activeItemSlots = [],
-      hitBoxSize,
+      hitBoxSize = { width: 24, height: 46 }, //human hitbox
     } = args;
     super(scene, x, y, []);
     this.charClass = charClass;
@@ -125,14 +125,14 @@ class Character extends Phaser.GameObjects.Container {
   }
   createHitBox(scene, hitBoxSize) {
     this.hitBoxSize = hitBoxSize;
-    const { width = 40, height = 60, offsetY = 0 } = this.hitBoxSize ?? {}; // defaults are human hitbox
-    this.hitBox = scene.add.sprite(0, this.bodySize * 2 + offsetY, BLANK_TEXTURE);
+    const { width, height } = this.hitBoxSize ?? {};
+    // scaling works wierd on body, so we need to undo it for the right coords
+    this.hitBox = scene.add.sprite(0, this.bodySize, BLANK_TEXTURE);
     scene.physics.add.existing(this.hitBox);
     this.hitBox.setOrigin(0.5, 1);
     this.hitBox.displayWidth = width;
     this.hitBox.displayHeight = height;
-    this.hitBox.body.setSize(width, height);
-    this.headY = this.body.height - height;
+    this.headY = -height + this.bodySize - 6;
     this.add(this.hitBox);
   }
   doAttack(count: integer) {

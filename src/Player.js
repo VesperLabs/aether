@@ -88,7 +88,7 @@ class Player extends Character {
       .existing(new Sprite(scene, 0, this.bodyOffsetY, "icons", "grave"))
       .setVisible(false);
     this.talkMenu = scene.add
-      .existing(new Sprite(scene, 6, this?.headY - 6, "icons", "chat"))
+      .existing(new Sprite(scene, 6, this?.headY, "icons", "chat"))
       .setVisible(false);
     this.add(this.shadow);
     this.add(this.chest);
