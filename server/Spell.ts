@@ -68,6 +68,7 @@ class Spell extends Phaser.GameObjects.Container {
       /* Make the spell come from the players center */
       this.setScale(this.scaleBase + ilvl * this.scaleMultiplier);
       this.body.setCircle(this?.bodySize, -this?.bodySize, -this?.bodySize);
+      console.log(this?.bodySize);
     }
     if (spellName == "fireball") {
       this.velocityX = Math.cos(castAngle) * this?.spellSpeed;
@@ -105,7 +106,7 @@ class Spell extends Phaser.GameObjects.Container {
       /* If its a single target skip all other targets */
       if (target?.id && victim?.id !== target?.id) return;
 
-      if (scene?.physics?.overlap?.(victim, this)) {
+      if (scene?.physics?.overlap?.(victim?.hitBox, this)) {
         /* If spell, or attack, calculate damage accordingly */
         const newHits = this?.isAttack
           ? caster.calculateDamage(victim)

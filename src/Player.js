@@ -64,6 +64,7 @@ class Player extends Character {
     const scene = this.scene;
     const defaults = [scene, 0, this.bodyOffsetY, BLANK_TEXTURE];
     this.setDepth(100);
+
     this.skin = scene.add.existing(new Sprite(...defaults));
     this.chest = scene.add.existing(new Sprite(...defaults));
     this.face = scene.add.existing(new Sprite(...defaults));
@@ -76,20 +77,18 @@ class Player extends Character {
     this.handLeft = scene.add.existing(new Sprite(scene, 13, -9, BLANK_TEXTURE));
     this.handRight = scene.add.existing(new Sprite(scene, -13, -9, BLANK_TEXTURE));
     this.shadow = scene.add.existing(new Sprite(...defaults));
-    this.bubble = scene.add.existing(new Bubble(scene, this?.profile?.headY, this.bubbleMessage));
+    this.bubble = scene.add.existing(new Bubble(scene, this?.headY, this.bubbleMessage));
     this.crosshair = scene.add.existing(
       new Crosshair(scene, 0, this.bodyOffsetY, "icons", "crosshair", this, 40)
     );
-    this.hpBar = scene.add
-      .existing(new Bar(scene, 0, this?.profile?.headY, 32, 12))
-      .setVisible(false);
+    this.hpBar = scene.add.existing(new Bar(scene, 0, this?.headY, 32, 12)).setVisible(false);
     this.userName = scene.add.existing(new BitmapText(this.scene, 0, 8, "nin-light").setScale(0.5));
     // this.buffRack = scene.add.existing(new BuffRack(scene, 0, 19, this.buffs));
     this.corpse = scene.add
       .existing(new Sprite(scene, 0, this.bodyOffsetY, "icons", "grave"))
       .setVisible(false);
     this.talkMenu = scene.add
-      .existing(new Sprite(scene, 6, this?.profile?.headY - 6, "icons", "chat"))
+      .existing(new Sprite(scene, 6, this?.headY - 6, "icons", "chat"))
       .setVisible(false);
     this.add(this.shadow);
     this.add(this.chest);

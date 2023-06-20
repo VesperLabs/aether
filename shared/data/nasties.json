@@ -1,9 +1,13 @@
 {
   "raccoon": {
     "charClass": "rogue",
-    "profile": { "race": "raccoon", "headY": -27, "userName": "Raccoon" },
+    "profile": { "race": "raccoon", "userName": "Raccoon" },
     "baseStats": {
       "level": 2
+    },
+    "hitBoxSize": {
+      "width": 42,
+      "height": 42
     },
     "drops": [
       {
@@ -22,9 +26,13 @@
   },
   "slime": {
     "charClass": "cleric",
-    "profile": { "race": "slime", "headY": -23, "userName": "Slime" },
+    "profile": { "race": "slime", "userName": "Slime" },
     "baseStats": {
       "level": 1
+    },
+    "hitBoxSize": {
+      "width": 42,
+      "height": 39
     },
     "drops": [
       {
@@ -37,10 +45,14 @@
   },
   "hornet": {
     "charClass": "rogue",
-    "profile": { "race": "bee", "headY": -34, "userName": "Hornet" },
+    "profile": { "race": "bee", "userName": "Hornet" },
     "baseStats": {
       "level": 1,
       "walkSpeed": 10
+    },
+    "hitBoxSize": {
+      "width": 38,
+      "height": 50
     },
     "drops": [
       {
@@ -57,7 +69,6 @@
       "race": "bee",
       "tint": "0x44FFCC",
       "scale": 1.5,
-      "headY": -45,
       "userName": "Hawkwing"
     },
     "state": { "isAggro": true },
@@ -65,14 +76,22 @@
       "level": 3,
       "walkSpeed": 10
     },
+    "hitBoxSize": {
+      "width": 38,
+      "height": 56
+    },
     "drops": []
   },
   "spider": {
     "charClass": "rogue",
-    "profile": { "race": "spider", "headY": -21, "userName": "Spider" },
+    "profile": { "race": "spider", "userName": "Spider" },
     "state": { "isAggro": true },
     "baseStats": {
       "level": 4
+    },
+    "hitBoxSize": {
+      "width": 46,
+      "height": 42
     },
     "drops": [
       {
@@ -89,12 +108,16 @@
       "race": "spider",
       "tint": "0xFF33CC",
       "scale": 2,
-      "headY": -30,
       "userName": "Hogan"
     },
     "state": { "isAggro": true },
     "baseStats": {
       "level": 10
+    },
+    "hitBoxSize": {
+      "width": 60,
+      "height": 60,
+      "offsetY": -10
     },
     "drops": [
       {
@@ -113,10 +136,14 @@
   },
   "bat": {
     "charClass": "rogue",
-    "profile": { "race": "bat", "headY": -30, "userName": "Bat" },
+    "profile": { "race": "bat", "userName": "Bat" },
     "state": { "isAggro": true },
     "baseStats": {
       "level": 3
+    },
+    "hitBoxSize": {
+      "width": 40,
+      "height": 48
     },
     "drops": [
       {
@@ -135,7 +162,7 @@
   },
   "zombie": {
     "charClass": "warrior",
-    "profile": { "race": "zombie", "headY": -44, "userName": "Zombie" },
+    "profile": { "race": "zombie", "userName": "Zombie" },
     "state": { "isAggro": true },
     "baseStats": {
       "level": 8
@@ -157,7 +184,7 @@
   },
   "wraith": {
     "charClass": "mage",
-    "profile": { "race": "wraith", "headY": -46, "userName": "Wraith" },
+    "profile": { "race": "wraith", "userName": "Wraith" },
     "state": { "isAggro": true },
     "baseStats": {
       "level": 8
@@ -185,10 +212,15 @@
   },
   "chonks": {
     "charClass": "cleric",
-    "profile": { "race": "abomination", "tint": "0x88FF88", "headY": -88, "userName": "Chonks" },
+    "profile": { "race": "abomination", "tint": "0x88FF88", "userName": "Chonks" },
     "state": { "isAggro": true },
     "baseStats": {
       "level": 15
+    },
+    "hitBoxSize": {
+      "width": 60,
+      "height": 80,
+      "offsetY": -10
     },
     "drops": [
       {
@@ -213,10 +245,14 @@
   },
   "merman": {
     "charClass": "mage",
-    "profile": { "race": "merman", "headY": -30, "userName": "Merman" },
+    "profile": { "race": "merman", "userName": "Merman" },
     "state": { "isAggro": true },
     "baseStats": {
       "level": 8
+    },
+    "hitBoxSize": {
+      "width": 40,
+      "height": 50
     },
     "abilities": {
       "1": ["spell", "common", "fireball"]

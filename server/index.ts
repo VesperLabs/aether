@@ -21,7 +21,7 @@ import {
   getBuffRoomState,
   PLAYER_DEFAULT_SPAWN,
 } from "./utils";
-import { initDatabase } from "./db/";
+import { initDatabase } from "./db";
 import { initFakeDatabase } from "./db/fake";
 import RoomManager from "./RoomManager";
 import PartyManager from "./PartyManager";

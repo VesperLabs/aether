@@ -71,6 +71,7 @@ function getFullCharacterState(p: Character): FullCharacterState {
     abilities: p?.abilities,
     activeItemSlots: p?.activeItemSlots,
     gold: p?.gold,
+    hitBoxSize: p?.hitBoxSize,
   };
 }
 

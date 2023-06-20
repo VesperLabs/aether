@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { capitalize, getAngleFromDirection } from "./utils";
+const BLANK_TEXTURE = "human-blank";
 class Character extends Phaser.GameObjects.Container {
   startingCoords: Coordinate;
   socketId: string;
@@ -28,6 +29,10 @@ class Character extends Phaser.GameObjects.Container {
   abilities: Record<string, Item>;
   activeItemSlots: Array<string>;
   bodyOffsetY: number;
+  hitBox: any;
+  hitBoxSize: any;
+  headY: number;
+  bodySize: number;
   declare body: Phaser.Physics.Arcade.Body;
   declare state: any;
   constructor(scene: ServerScene | Phaser.Scene, args) {
@@ -54,6 +59,7 @@ class Character extends Phaser.GameObjects.Container {
       buffs = [],
       abilities = {},
       activeItemSlots = [],
+      hitBoxSize,
     } = args;
     super(scene, x, y, []);
     this.charClass = charClass;
@@ -100,7 +106,7 @@ class Character extends Phaser.GameObjects.Container {
     this.buffs = buffs;
     this.activeItemSlots = activeItemSlots;
     this.gold = gold;
-    this.profile = { headY: -47, ...profile };
+    this.profile = profile;
     this.equipment = equipment;
     this.abilities = abilities;
     this.inventory = inventory;
@@ -109,11 +115,25 @@ class Character extends Phaser.GameObjects.Container {
     this.npcKills = npcKills;
     this.quests = quests;
     scene.physics.add.existing(this);
-    const bodySize = 8 * (this?.profile?.scale || 1);
+    this.bodySize = 8 * (this?.profile?.scale || 1);
     this.bodyOffsetY = -14 * (this?.profile?.scale || 1);
-    this.body.setCircle(bodySize, -bodySize, -bodySize);
+    this.body.setCircle(this.bodySize, -this.bodySize, -this.bodySize);
+
+    this.createHitBox(scene, hitBoxSize);
     this.updateVisibleEquipment();
     this.checkAttackHands();
+  }
+  createHitBox(scene, hitBoxSize) {
+    this.hitBoxSize = hitBoxSize;
+    const { width = 40, height = 60, offsetY = 0 } = this.hitBoxSize ?? {}; // defaults are human hitbox
+    this.hitBox = scene.add.sprite(0, this.bodySize * 2 + offsetY, BLANK_TEXTURE);
+    scene.physics.add.existing(this.hitBox);
+    this.hitBox.setOrigin(0.5, 1);
+    this.hitBox.displayWidth = width;
+    this.hitBox.displayHeight = height;
+    this.hitBox.body.setSize(width, height);
+    this.headY = this.body.height - height;
+    this.add(this.hitBox);
   }
   doAttack(count: integer) {
     //placeholder
