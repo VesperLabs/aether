@@ -60,7 +60,8 @@ function addGlobalEventListeners(scene) {
       const hero = mainScene?.hero;
       const abilities = hero?.abilities;
       const ability = abilities?.[e?.detail];
-      if (!ability?.buffs) {
+      const isAimable = !ability?.buffs && ability?.type !== "stackable";
+      if (isAimable) {
         document.getElementById("game").style.cursor = "none";
         hero.state.isAiming = true;
       }
