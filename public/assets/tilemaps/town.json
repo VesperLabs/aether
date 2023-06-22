@@ -370,6 +370,65 @@
         }, 
         {
          "draworder":"topdown",
+         "id":8,
+         "name":"Npcs",
+         "objects":[
+                {
+                 "height":0,
+                 "id":9,
+                 "name":"danny",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1070.24047143808,
+                 "y":1335.4243893166
+                }, 
+                {
+                 "height":0,
+                 "id":10,
+                 "name":"ale",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":800.304153597567,
+                 "y":1017.96407185629
+                }, 
+                {
+                 "height":0,
+                 "id":11,
+                 "name":"dog",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":799.353673605171,
+                 "y":1255.58406995533
+                }, 
+                {
+                 "height":0,
+                 "id":12,
+                 "name":"cat",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1135.82359091341,
+                 "y":468.586636251307
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
          "id":7,
          "name":"Doors",
          "objects":[
@@ -555,8 +614,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":8,
- "nextobjectid":9,
+ "nextlayerid":9,
+ "nextobjectid":13,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.1",

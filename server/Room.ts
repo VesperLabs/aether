@@ -36,7 +36,6 @@ class Room {
     this.npcManager.spawnNpcs();
     this.npcManager.setNpcCollision();
   }
-
   createDoors() {
     const { name, doors, scene } = this;
     this.tileMap
