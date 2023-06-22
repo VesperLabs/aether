@@ -2,12 +2,18 @@ import crypto from "crypto";
 import Npc from "./Npc";
 import nasties from "../shared/data/nasties.json";
 import keepers from "../shared/data/keepers.json";
-import mapNpcs from "../shared/data/mapNpcs.json"; //todo need these to live in maps
 import { useGetBaseCharacterDefaults, mergeAndAddValues } from "./utils";
 
-const mobsByKind = {
-  nasty: nasties,
-  keeper: keepers,
+/* Find NPCs in data lists, and add `kind` to them */
+const getNpcFromLists = (name) => {
+  const keeperKeys = Object.keys(keepers);
+  const nastyKeys = Object.keys(nasties);
+  if (keeperKeys.find((key) => key === name)) {
+    return { ...keepers[name], kind: "keeper" };
+  }
+  if (nastyKeys.find((key) => key === name)) {
+    return { ...nasties[name], kind: "nasty" };
+  }
 };
 
 class NpcManager {
@@ -21,34 +27,35 @@ class NpcManager {
   }
   spawnNpcs() {
     const { room } = this;
-    const npcs = mapNpcs[room.name];
-    for (const npc of npcs) {
-      const mobData = mobsByKind[npc.kind][npc.name];
+    const mapNpcs = this?.room?.tileMap?.getObjectLayer("Npcs")?.objects || [];
+
+    for (const { name, x, y } of mapNpcs) {
+      const npc = getNpcFromLists(name);
       const isKeeper = npc.kind === "keeper";
 
       const { baseStats } = useGetBaseCharacterDefaults({
-        level: mobData?.baseStats?.level,
-        charClass: mobData?.charClass,
+        level: npc?.baseStats?.level,
+        charClass: npc?.charClass,
       });
 
       /* Modifications to base stats for NPCs */
       const npcBaseStats = {
         ...baseStats,
         walkSpeed: baseStats.walkSpeed - 30,
-        minDamage: mobData?.baseStats?.level / 2,
-        maxDamage: mobData?.baseStats?.level,
-        expValue: isKeeper ? 0 : mobData?.baseStats?.level,
+        minDamage: npc?.baseStats?.level / 2,
+        maxDamage: npc?.baseStats?.level,
+        expValue: isKeeper ? 0 : npc?.baseStats?.level,
       };
 
       this.create({
-        ...mobData,
+        ...npc,
         //need to merge these keys together, but add their values
-        baseStats: mergeAndAddValues(npcBaseStats, mobData?.baseStats),
-        name: npc.name,
+        baseStats: mergeAndAddValues(npcBaseStats, npc?.baseStats),
+        name,
         room,
         kind: npc?.kind,
-        x: npc?.x,
-        y: npc?.y,
+        x,
+        y,
         startingCoords: { x: npc?.x, y: npc?.y },
       });
     }

@@ -279,7 +279,7 @@
                  "value":false
                 }],
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":35,
          "x":0,
          "y":0
@@ -287,6 +287,7 @@
         {
          "draworder":"topdown",
          "id":10,
+         "locked":true,
          "name":"Doors",
          "objects":[
                 {
@@ -338,9 +339,164 @@
          "visible":true,
          "x":0,
          "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":26,
+         "name":"Npcs",
+         "objects":[
+                {
+                 "height":0,
+                 "id":34,
+                 "name":"slime",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":304.112626381034,
+                 "y":1010.94012671857
+                }, 
+                {
+                 "height":0,
+                 "id":36,
+                 "name":"slime",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":463.996241043111,
+                 "y":397.039821449548
+                }, 
+                {
+                 "height":0,
+                 "id":37,
+                 "name":"slime",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":592.623047104428,
+                 "y":690.708328438858
+                }, 
+                {
+                 "height":0,
+                 "id":38,
+                 "name":"slime",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":590.861036062493,
+                 "y":975.566780218489
+                }, 
+                {
+                 "height":0,
+                 "id":39,
+                 "name":"slime",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":607.893809467873,
+                 "y":308.939269352755
+                }, 
+                {
+                 "height":0,
+                 "id":40,
+                 "name":"raccoon",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":271.937037472102,
+                 "y":277.810407611888
+                }, 
+                {
+                 "height":0,
+                 "id":41,
+                 "name":"hornet",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":191.47186655703,
+                 "y":624.339245859274
+                }, 
+                {
+                 "height":0,
+                 "id":42,
+                 "name":"slime",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":465.758252085046,
+                 "y":136.26218724304
+                }, 
+                {
+                 "height":0,
+                 "id":43,
+                 "name":"slime",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":767.062140256079,
+                 "y":480.441677434512
+                }, 
+                {
+                 "height":0,
+                 "id":44,
+                 "name":"slime",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":448,
+                 "y":608
+                }, 
+                {
+                 "height":0,
+                 "id":45,
+                 "name":"slime",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":207.917302948432,
+                 "y":393.515799365676
+                }, 
+                {
+                 "height":0,
+                 "id":46,
+                 "name":"tudwick",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":234.934805591448,
+                 "y":884.529543051803
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
         }],
- "nextlayerid":22,
- "nextobjectid":9,
+ "nextlayerid":27,
+ "nextobjectid":47,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.1",

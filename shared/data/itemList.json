@@ -677,7 +677,7 @@
         "slot": "stackable",
         "texture": "stackable-potion-small-hp",
         "effects": {
-          "hp": 25
+          "hp": 10
         }
       },
       "smallMpPotion": {
@@ -687,27 +687,27 @@
         "slot": "stackable",
         "texture": "stackable-potion-small-mp",
         "effects": {
-          "mp": 25
+          "mp": 10
         }
       },
       "mediumHpPotion": {
-        "ilvl": 1,
+        "ilvl": 2,
         "name": "Medium HP Potion",
         "base": "food",
         "slot": "stackable",
         "texture": "stackable-potion-medium-hp",
         "effects": {
-          "hp": 50
+          "hp": 20
         }
       },
       "mediumPotionMp": {
-        "ilvl": 1,
+        "ilvl": 2,
         "name": "Medium MP Potion",
         "base": "food",
         "slot": "stackable",
         "texture": "stackable-potion-medium-mp",
         "effects": {
-          "mp": 50
+          "mp": 20
         }
       },
       "blueSporangium": {
@@ -718,7 +718,7 @@
         "texture": "stackable-bsporangium",
         "tint": "0x88DDFF",
         "effects": {
-          "hp": 15
+          "hp": 5
         }
       },
       "redApple": {
@@ -728,7 +728,7 @@
         "slot": "stackable",
         "texture": "stackable-apple",
         "effects": {
-          "hp": 15
+          "hp": 5
         }
       },
       "batMeat": {
@@ -738,7 +738,7 @@
         "slot": "stackable",
         "texture": "stackable-meat",
         "effects": {
-          "hp": 30
+          "hp": 10
         }
       },
       "spiderMeat": {
@@ -748,7 +748,7 @@
         "slot": "stackable",
         "texture": "stackable-meat",
         "effects": {
-          "hp": 30
+          "hp": 10
         }
       },
       "cheese": {
@@ -758,7 +758,7 @@
         "slot": "stackable",
         "texture": "stackable-cheese",
         "effects": {
-          "hp": 25
+          "hp": 10
         }
       },
       "grapes": {
@@ -768,7 +768,7 @@
         "slot": "stackable",
         "texture": "stackable-grapes",
         "effects": {
-          "hp": 15
+          "hp": 5
         }
       },
       "mushroom": {
@@ -778,7 +778,7 @@
         "slot": "stackable",
         "texture": "stackable-mushroom",
         "effects": {
-          "hp": 15
+          "hp": 5
         }
       },
       "carrot": {
@@ -788,7 +788,7 @@
         "slot": "stackable",
         "texture": "stackable-carrot",
         "effects": {
-          "hp": 15
+          "hp": 5
         }
       },
       "orange": {
@@ -798,7 +798,7 @@
         "slot": "stackable",
         "texture": "stackable-orange",
         "effects": {
-          "hp": 15
+          "hp": 5
         }
       },
       "skull": {
