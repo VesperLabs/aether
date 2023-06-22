@@ -2,7 +2,7 @@
 
 A Javascript MMO using `PhaserJS` and `SocketIO`
 
-## Env Values
+## 🏔️ Environment
 
 ```bash
 # .env file example
@@ -13,17 +13,29 @@ SERVER_URL=http://localhost:3000
 PORT=3000
 ```
 
-## Running
+## 📟 Running
 
 ```bash
 yarn server:watch
-```
-
-```bash
 yarn dev
 ```
 
-## Todo list
+## 🛠️ Tooling
+
+#### Tilesets
+
+- Resample down from `NearestNeighbor` in Photoshop.
+- Tiles need to be `32x32` and extruded to remove edge bleed.
+
+```bash
+npm install --global tile-extruder
+```
+
+```bash
+tile-extruder --tileWidth 32 --tileHeight 32 --input ./public/assets/tilesets/clean/grassland.png --output ./public/assets/tilesets/grassland.png
+```
+
+## ✅ Todo list
 
 #### Items
 
