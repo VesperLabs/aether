@@ -31,6 +31,10 @@ class NpcManager {
 
     for (const { name, x, y } of mapNpcs) {
       const npc = getNpcFromLists(name);
+      if (!npc) {
+        console.log("❌ Map npc is broken or not found");
+        continue;
+      }
       const isKeeper = npc.kind === "keeper";
 
       const { baseStats } = useGetBaseCharacterDefaults({
