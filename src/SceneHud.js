@@ -104,10 +104,14 @@ function addGlobalEventListeners(scene) {
         document.getElementById("game").style.cursor = "default";
       }
       if (ability?.type === "stackable") {
+        /* TODO: Move to server and create a consumeItemFunction */
+        if (!hero?.checkCastReady()) return;
+        hero.state.lastCast = Date.now();
+        hero.state.isCasting = true;
         socket.emit("consumeItem", { item: ability, location: "abilities" });
         window.dispatchEvent(
           new CustomEvent("AUDIO_ITEM_CONSUME", {
-            detail: item,
+            detail: ability,
           })
         );
       }
@@ -125,6 +129,7 @@ function addGlobalEventListeners(scene) {
   window.addEventListener(
     "AUDIO_ITEM_CONSUME",
     (e) => {
+      const hero = mainScene?.hero;
       playAudio({ scene: mainScene, audioKey: "item-bubble", caster: hero });
     },
     scene
@@ -132,6 +137,7 @@ function addGlobalEventListeners(scene) {
   window.addEventListener(
     "AUDIO_ITEM_SELL",
     (e) => {
+      const hero = mainScene?.hero;
       playAudio({ scene: mainScene, audioKey: "item-sell", caster: hero });
     },
     scene
