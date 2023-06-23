@@ -1,7 +1,7 @@
 /* This file and Diablo II are the main reason this game exists */
 import crypto from "crypto";
 import Item from "./Item";
-import { cloneObject } from "./utils";
+import { cloneObject, randomNumber } from "./utils";
 import itemList from "../shared/data/itemList.json";
 import itemSetList from "../shared/data/itemSetList.json";
 import itemModsList from "../shared/data/itemModsList.json";
@@ -10,19 +10,46 @@ const ItemBuilder = {
   getSetInfo: (setName: string) => {
     return itemSetList[setName];
   },
-  rollDrop: (ilvl: number, magicFind = 1) => {
-    if (magicFind > 100) {
-      magicFind = 100;
+  rollDrop: (ilvl: number, magicFind = 0) => {
+    const MAX_MF = 1000;
+    const baseDropChances = [
+      { rarity: "unique", chance: 10000 },
+      { rarity: "rare", chance: 1000 },
+      { rarity: "magic", chance: 100 },
+      { rarity: "common", chance: 20 },
+    ];
+
+    //magicFind = magicFind + 1000;
+    if (magicFind >= MAX_MF) magicFind = MAX_MF - 1;
+    const magicFindFactor = Math.min(magicFind, MAX_MF) / MAX_MF;
+
+    const dropChances = baseDropChances.map(({ rarity, chance }) => ({
+      rarity,
+      chance: Math.round(chance - chance * magicFindFactor),
+    }));
+
+    const rolls = {
+      set: 0,
+      unique: 0,
+      rare: 0,
+      magic: 0,
+      common: 0,
+    };
+
+    //console.log(dropChances);
+    for (const dropChance of dropChances) {
+      const { rarity, chance } = dropChance;
+      const roll = randomNumber(1, Math.floor(chance));
+      //console.log(rarity, roll);
+      if (roll === 1) {
+        rolls[rarity] = 1;
+      }
     }
-    let magicDecimal = magicFind / 100;
-    let commonRoll = Math.floor(Math.random() * 20) + 1;
-    let magicRoll = Math.floor(Math.random() * (5 - Math.floor(4 * magicDecimal))) + 1;
-    let rareRoll = Math.floor(Math.random() * (10 - Math.floor(9 * magicDecimal))) + 1;
-    let uniqueRoll = Math.floor(Math.random() * (20 - Math.floor(18 * magicDecimal))) + 1;
+
     let uniquePool = [];
     let commonPool = [];
     let item = null;
-    //these are the types that we roll
+
     let types = [
       "weapon",
       "helmet",
@@ -36,66 +63,52 @@ const ItemBuilder = {
       "spell",
       "bag",
     ];
+
     let type = types[Math.floor(Math.random() * types.length)];
     let theType = itemList[type];
+
+    const addItemToPool = (pool, rarity, key) => {
+      const item = theType[rarity][key];
+      if (item.ilvl <= ilvl) {
+        pool.push({ type, rarity, key });
+      }
+    };
+
     if (theType["unique"]) {
       Object.keys(theType["unique"]).forEach((key) => {
-        const item = theType["unique"][key];
-        if (item.ilvl <= ilvl) {
-          uniquePool.push({
-            type: type,
-            rarity: "unique",
-            key: key,
-            chance: 1,
-          });
-        }
+        addItemToPool(uniquePool, "unique", key);
       });
     }
+
     if (theType["set"]) {
       Object.keys(theType["set"]).forEach((key) => {
-        const item = theType["set"][key];
-        if (item.ilvl <= ilvl) {
-          uniquePool.push({ type: type, rarity: "set", key: key, chance: 1 });
-        }
+        addItemToPool(uniquePool, "set", key);
       });
     }
+
     if (theType["common"]) {
       Object.keys(theType["common"]).forEach((key) => {
-        const item = theType["common"][key];
-        if (item.ilvl <= ilvl) {
-          commonPool.push({
-            type: type,
-            rarity: "common",
-            key: key,
-            chance: 1,
-          });
-        }
+        addItemToPool(commonPool, "common", key);
       });
     }
-    if (commonRoll == 1 && uniqueRoll == 1 && item == null) {
-      if (uniquePool.length > 0) {
-        item = uniquePool[Math.floor(Math.random() * uniquePool.length)];
-      }
+
+    if (rolls.unique && item == null && uniquePool.length > 0) {
+      item = uniquePool[Math.floor(Math.random() * uniquePool.length)];
     }
 
-    if (commonRoll == 1 && rareRoll == 1 && item == null) {
-      if (commonPool.length > 0) {
-        item = commonPool[Math.floor(Math.random() * commonPool.length)];
-        item.rarity = "rare";
-      }
-    }
-    if (commonRoll == 1 && magicRoll == 1 && item == null) {
-      if (commonPool.length > 0) {
-        item = commonPool[Math.floor(Math.random() * commonPool.length)];
-        item.rarity = "magic";
-      }
+    if (rolls.rare == 1 && item == null && commonPool.length > 0) {
+      item = commonPool[Math.floor(Math.random() * commonPool.length)];
+      item.rarity = "rare";
     }
 
-    if (commonRoll == 1 && item == null) {
-      if (commonPool.length > 0) {
-        item = commonPool[Math.floor(Math.random() * commonPool.length)];
-        item.rarity = "common";
-      }
+    if (rolls.magic == 1 && item == null && commonPool.length > 0) {
+      item = commonPool[Math.floor(Math.random() * commonPool.length)];
+      item.rarity = "magic";
+    }
+
+    if (rolls.common == 1 && item == null && commonPool.length > 0) {
+      item = commonPool[Math.floor(Math.random() * commonPool.length)];
+      item.rarity = "common";
     }
 
     return item;
