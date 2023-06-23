@@ -14,13 +14,13 @@
         "type": "stackable",
         "rarity": "common",
         "key": "redApple",
-        "chance": 15
+        "chance": 5
       },
       {
         "type": "stackable",
         "rarity": "common",
         "key": "grapes",
-        "chance": 25
+        "chance": 4
       }
     ]
   },
@@ -39,7 +39,7 @@
         "type": "stackable",
         "rarity": "common",
         "key": "blueSporangium",
-        "chance": 35
+        "chance": 3
       }
     ]
   },
@@ -59,7 +59,7 @@
         "type": "stackable",
         "rarity": "common",
         "key": "redApple",
-        "chance": 25
+        "chance": 4
       }
     ]
   },
@@ -118,7 +118,7 @@
         "type": "stackable",
         "rarity": "common",
         "key": "batMeat",
-        "chance": 25
+        "chance": 4
       },
       {
         "type": "stackable",
@@ -149,13 +149,13 @@
         "type": "stackable",
         "rarity": "common",
         "key": "spiderMeat",
-        "chance": 25
+        "chance": 4
       },
       {
         "type": "stackable",
         "rarity": "common",
         "key": "cheese",
-        "chance": 50
+        "chance": 2
       }
     ]
   },
@@ -172,13 +172,13 @@
         "type": "stackable",
         "rarity": "common",
         "key": "mediumHpPotion",
-        "chance": 15
+        "chance": 5
       },
       {
         "type": "stackable",
         "rarity": "common",
         "key": "skull",
-        "chance": 25
+        "chance": 4
       }
     ]
   },
@@ -195,19 +195,19 @@
         "type": "stackable",
         "rarity": "common",
         "key": "mediumHpPotion",
-        "chance": 15
+        "chance": 5
       },
       {
         "type": "stackable",
         "rarity": "common",
         "key": "smallHpPotion",
-        "chance": 15
+        "chance": 5
       },
       {
         "type": "stackable",
         "rarity": "common",
         "key": "skull",
-        "chance": 25
+        "chance": 4
       }
     ]
   },
@@ -227,19 +227,19 @@
         "type": "stackable",
         "rarity": "common",
         "key": "mediumHpPotion",
-        "chance": 15
+        "chance": 5
       },
       {
         "type": "stackable",
         "rarity": "common",
         "key": "smallHpPotion",
-        "chance": 15
+        "chance": 5
       },
       {
         "type": "stackable",
         "rarity": "common",
         "key": "skull",
-        "chance": 25
+        "chance": 4
       }
     ]
   },
