@@ -725,9 +725,11 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         }
 
         let forceSlot = null;
+
         if (from.location === "shop") {
           const buyQty = Math.abs(parseInt(fromItem?.amount)) || 1;
           const buyCost = (Math.abs(parseInt(fromItem?.cost)) || 1) * buyQty;
+
           /* Always need a free slot */
           if (toItem && fromItem?.slot !== "stackable" && toItem?.slot !== "stackable") return;
           /* Check if can afford */

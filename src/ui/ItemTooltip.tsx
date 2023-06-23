@@ -1,6 +1,8 @@
 import { Fragment } from "react";
 import { Flex, useAppContext, Text, Divider, Icon, Tooltip } from "./";
 import buffList from "../../shared/data/buffList.json";
+import itemSetList from "../../shared/data/itemSetList.json";
+
 import { convertMsToS } from "../utils";
 const formatStats = (stats = {}) =>
   Object.entries(stats).reduce((acc, [key, value]) => {
@@ -37,6 +39,7 @@ const ItemTooltip = ({ item, tooltipId, show }) => {
   const hasEffects = Object.keys(combinedEffects)?.length > 0;
   const hasBuffs = Object.keys(buffs)?.length > 0;
   const isDoubleClickable = ["food", "bag"].includes(item.base);
+  const numSetPieces = itemSetList?.[item?.setName]?.pieces;
 
   return (
     <Tooltip id={tooltipId} isOpen={show}>
@@ -109,7 +112,9 @@ const ItemTooltip = ({ item, tooltipId, show }) => {
         })}
         {item?.setBonus && (
           <>
-            <TextDivider>Set Bonus</TextDivider>
+            <TextDivider>
+              Set Bonus <Text color={isSetActive ? "set" : "gray.500"}>({numSetPieces} piece)</Text>
+            </TextDivider>
             {Object.keys(item?.setBonus?.percentStats || {}).map((key) => {
               return (
                 <Text key={key} color={isSetActive ? "set" : "gray.500"}>
@@ -164,10 +169,10 @@ const ItemTooltip = ({ item, tooltipId, show }) => {
   );
 };
 
-const TextDivider = ({ children }) => (
+const TextDivider = ({ children, sx }: any) => (
   <>
     <Divider sx={{ pt: 2, zIndex: -1 }} />
-    <Text sx={{ mt: -3, pb: 2, mb: -1, color: "gray.500" }}>{children}</Text>
+    <Text sx={{ mt: -3, pb: 2, mb: -1, color: "gray.500", ...sx }}>{children}</Text>
   </>
 );
 

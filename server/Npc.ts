@@ -396,8 +396,8 @@ class Npc extends Character implements Npc {
     }
     if (this.drops) {
       for (var i = 0; i < this.drops.length; i++) {
-        let rando = randomNumber(1, 100);
-        if (rando <= this.drops[i].chance) {
+        let rando = randomNumber(1, this.drops[i].chance);
+        if (rando === 1) {
           runners.push(this.drops[i]);
         }
       }
