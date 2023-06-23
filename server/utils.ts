@@ -133,7 +133,11 @@ function getBuffCharacterState(p: Character): BuffCharacterState {
   };
 }
 
-function randomNumber(min = 0, max = 0) {
+function randomNumber(min, max) {
+  if (max <= min) {
+    return min;
+  }
+
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 

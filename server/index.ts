@@ -882,7 +882,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
               const rarity = command?.[1];
               if (!["unique", "common", "set", "rare", "magic"]?.includes(rarity)) return;
               do {
-                gunItem = ItemBuilder.rollDrop(100, 50);
+                gunItem = ItemBuilder.rollDrop(100, 100);
               } while (gunItem?.rarity !== rarity);
               if (gunItem) {
                 scene.roomManager.rooms[player?.roomName].lootManager.create({
