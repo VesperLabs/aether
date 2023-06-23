@@ -28,7 +28,7 @@ class Spell extends Phaser.GameObjects.Container {
     scene: ServerScene,
     { id, room, caster, target, abilitySlot, spellName, castAngle, ilvl }
   ) {
-    super(scene, caster.x, caster.y + caster.bodyOffsetY);
+    super(scene, caster.x, caster.y);
     this.id = id;
     this.scene = scene;
     this.room = room;
@@ -66,9 +66,9 @@ class Spell extends Phaser.GameObjects.Container {
       this.body.setCircle(fullBodySize, -fullBodySize, -fullBodySize);
     } else {
       /* Make the spell come from the players center */
+      this.y = caster.y + caster.bodyOffsetY;
       this.setScale(this.scaleBase + ilvl * this.scaleMultiplier);
       this.body.setCircle(this?.bodySize, -this?.bodySize, -this?.bodySize);
-      console.log(this?.bodySize);
     }
     if (spellName == "fireball") {
       this.velocityX = Math.cos(castAngle) * this?.spellSpeed;
