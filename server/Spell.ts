@@ -97,6 +97,8 @@ class Spell extends Phaser.GameObjects.Container {
     const npcs = this.room.npcManager.npcs?.getChildren() || [];
 
     [...npcs, ...players]?.forEach((victim) => {
+      /* For attacks, we look at the body to make them easier to dodge. */
+      const hitBox = this.isAttack ? victim : victim?.hitBox;
       /* If the victim is already in the hitList */
       if (!victim || this.hits.some((h) => h?.to == victim?.id)) return;
 
@@ -106,7 +108,7 @@ class Spell extends Phaser.GameObjects.Container {
       /* If its a single target skip all other targets */
       if (target?.id && victim?.id !== target?.id) return;
 
-      if (scene?.physics?.overlap?.(victim?.hitBox, this)) {
+      if (scene?.physics?.overlap?.(hitBox, this)) {
         /* If spell, or attack, calculate damage accordingly */
         const newHits = this?.isAttack
           ? caster.calculateDamage(victim)

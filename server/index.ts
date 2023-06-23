@@ -537,6 +537,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
             ...(isStackable ? { amount: from?.amount } : {}),
           });
         }
+
         if (from?.location === "bag") {
           fromItem = cloneObject(player?.findBagItemBySlot(from?.bagId, from?.slot));
           from.itemId = fromItem?.id;
@@ -725,10 +726,13 @@ class ServerScene extends Phaser.Scene implements ServerScene {
 
         let forceSlot = null;
         if (from.location === "shop") {
+          const buyQty = Math.abs(parseInt(fromItem?.amount)) || 1;
+          const buyCost = (Math.abs(parseInt(fromItem?.cost)) || 1) * buyQty;
           /* Always need a free slot */
           if (toItem && fromItem?.slot !== "stackable" && toItem?.slot !== "stackable") return;
           /* Check if can afford */
-          if (player.gold < fromItem?.cost) {
+
+          if (player.gold < buyCost) {
             return socket.emit("message", {
               type: "error",
               message: "You cannot afford this item",
@@ -740,44 +744,44 @@ class ServerScene extends Phaser.Scene implements ServerScene {
             player.findAbilityById(fromItem.id)?.["item"] ||
             player.findInventoryItemById(fromItem.id);
           if (fromItem.type === "stackable" && forceSlot) {
-            player.gold -= fromItem?.cost || 1;
+            player.gold -= buyCost || 1;
             forceSlot.amount = parseInt(forceSlot.amount || 0) + parseInt(fromItem?.amount || 0);
           }
-        }
 
-        /* Shop -> Inventory */
-        if (from?.location === "shop" && to?.location === "inventory" && !forceSlot) {
-          player.gold -= fromItem?.cost || 1;
-          /* Remove inflation cost */
-          fromItem.cost = Math.floor(fromItem.cost / SHOP_INFLATION);
-          player.inventory[to?.slot] = fromItem;
-        }
+          /* Shop -> Inventory */
+          if (to?.location === "inventory" && !forceSlot) {
+            player.gold -= buyCost || 1;
+            /* Remove inflation cost */
+            fromItem.cost = Math.floor(fromItem.cost / SHOP_INFLATION);
+            player.inventory[to?.slot] = fromItem;
+          }
 
-        /* Shop -> Equipment */
-        if (from?.location === "shop" && to?.location === "equipment" && !forceSlot) {
-          if (fromItem && !checkSlotsMatch(fromItem?.slot, to?.slot)) return;
-          player.gold -= fromItem?.cost || 1;
-          /* Remove inflation cost */
-          fromItem.cost = Math.floor(fromItem.cost / SHOP_INFLATION);
-          player.equipment[to?.slot] = fromItem;
-        }
+          /* Shop -> Equipment */
+          if (to?.location === "equipment" && !forceSlot) {
+            if (fromItem && !checkSlotsMatch(fromItem?.slot, to?.slot)) return;
+            player.gold -= buyCost || 1;
+            /* Remove inflation cost */
+            fromItem.cost = Math.floor(fromItem.cost / SHOP_INFLATION);
+            player.equipment[to?.slot] = fromItem;
+          }
 
-        /* Shop -> Abilities */
-        if (from?.location === "shop" && to?.location === "abilities" && !forceSlot) {
-          if (!["spell", "stackable"].includes(fromItem?.type)) return;
-          player.gold -= fromItem?.cost || 1;
-          /* Remove inflation cost */
-          fromItem.cost = Math.floor(fromItem.cost / SHOP_INFLATION);
-          player.abilities[to?.slot] = fromItem;
-        }
+          /* Shop -> Abilities */
+          if (to?.location === "abilities" && !forceSlot) {
+            if (!["spell", "stackable"].includes(fromItem?.type)) return;
+            player.gold -= buyCost || 1;
+            /* Remove inflation cost */
+            fromItem.cost = Math.floor(fromItem.cost / SHOP_INFLATION);
+            player.abilities[to?.slot] = fromItem;
+          }
 
-        /* Shop -> Bag */
-        if (from?.location === "shop" && to?.location === "bag" && !forceSlot) {
-          if (!to?.bagId) return;
-          player.gold -= fromItem?.cost || 1;
-          /* Remove inflation cost */
-          fromItem.cost = Math.floor(fromItem.cost / SHOP_INFLATION);
-          player.setBagItem(to?.bagId, to?.slot, fromItem);
+          /* Shop -> Bag */
+          if (to?.location === "bag" && !forceSlot) {
+            if (!to?.bagId) return;
+            player.gold -= buyCost || 1;
+            /* Remove inflation cost */
+            fromItem.cost = Math.floor(fromItem.cost / SHOP_INFLATION);
+            player.setBagItem(to?.bagId, to?.slot, fromItem);
+          }
         }
 
         /* Save the users data */
