@@ -79,7 +79,7 @@ const ModalDropAmount = () => {
             <Text>x</Text>
             <Input
               max={maxAmount}
-              min={0}
+              min={1}
               autoFocus={true}
               type="number"
               pattern="\d*"
@@ -95,7 +95,12 @@ const ModalDropAmount = () => {
         <KeyboardButton sx={{ flex: 1 }} onClick={() => setDropItem(null)} keyboardKey="ESCAPE">
           Cancel
         </KeyboardButton>
-        <KeyboardButton sx={{ flex: 1 }} keyboardKey="ENTER" onClick={handleAction}>
+        <KeyboardButton
+          sx={{ flex: 1 }}
+          keyboardKey="ENTER"
+          onClick={handleAction}
+          disabled={amount < 1}
+        >
           {isShop ? (
             <>
               <Icon icon="../assets/icons/gold.png" size={16} sx={{ flexShrink: 0 }} />
