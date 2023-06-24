@@ -53,9 +53,9 @@
             0, 1030, 1031, 0, 1030, 1031, 0, 1037, 1037, 1038, 1038, 1037, 1038, 1039, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1038,
             1037, 1038, 1039, 1037, 1038, 1036, 1037, 1038, 1028, 1029, 1029, 1045, 1046, 1047, 0, 0, 0, 1044, 1045, 1046, 1047, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1038, 1038, 1038, 1038,
             1045, 1046, 1047, 1045, 1046, 1044, 1045, 1046, 1047, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1034, 1034, 1034, 1034, 1034, 1034, 1034, 1034, 0, 0, 0, 0, 1037, 1037, 1038, 1038, 1037,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1034, 1028, 1042, 1042, 1042, 1042, 1042, 1042, 1042, 0, 0, 0, 0, 0, 0, 0, 0, 1037,
-            1034, 1034, 1034, 1034, 1034, 1034, 1034, 1034, 1034, 1034, 1034, 1034, 0, 0, 0, 0, 0, 1034, 1035, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1037,
-            1042, 1042, 1042, 1042, 1042, 1042, 1042, 1042, 1042, 1042, 1042, 1042, 0, 0, 0, 0, 0, 1034, 1035, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1036, 1037, 1037, 1037, 1041, 1037,
+            711, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1034, 1028, 1042, 1042, 1042, 1042, 1042, 1042, 1042, 0, 0, 0, 0, 0, 0, 0, 0, 1037,
+            775, 1034, 1034, 1034, 1034, 1034, 1034, 1034, 1034, 1034, 1034, 1034, 0, 0, 0, 0, 0, 1034, 1035, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1037,
+            839, 1042, 1042, 1042, 1042, 1042, 1042, 1042, 1042, 1042, 1042, 1042, 0, 0, 0, 0, 0, 1034, 1035, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1036, 1037, 1037, 1037, 1041, 1037,
             0, 0, 1030, 1030, 0, 1030, 1031, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1034, 1035, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1044, 1045, 1036, 1037, 1037, 1038,
             1036, 1037, 1038, 1038, 1037, 1038, 1039, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1034, 1035, 0, 0, 0, 1030, 1031, 0, 0, 0, 0, 0, 0, 1046, 1044, 1045, 1046, 1045,
             1044, 1045, 1046, 1029, 1045, 1046, 1047, 0, 0, 0, 0, 1033, 1034, 1034, 1034, 1034, 1034, 1034, 1035, 0, 1036, 1037, 1038, 1039, 0, 0, 0, 1033, 1034, 1034, 0, 0, 0, 0, 0,
@@ -279,64 +279,8 @@
                  "value":false
                 }],
          "type":"tilelayer",
-         "visible":false,
-         "width":35,
-         "x":0,
-         "y":0
-        }, 
-        {
-         "draworder":"topdown",
-         "id":10,
-         "locked":true,
-         "name":"Doors",
-         "objects":[
-                {
-                 "height":16,
-                 "id":7,
-                 "name":"door-north",
-                 "properties":[
-                        {
-                         "name":"destDoor",
-                         "type":"string",
-                         "value":"door-south"
-                        }, 
-                        {
-                         "name":"destMap",
-                         "type":"string",
-                         "value":"grassland-2"
-                        }],
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":96,
-                 "x":416,
-                 "y":0
-                }, 
-                {
-                 "height":16,
-                 "id":8,
-                 "name":"door-mine",
-                 "properties":[
-                        {
-                         "name":"destDoor",
-                         "type":"string",
-                         "value":"mine-entrance"
-                        }, 
-                        {
-                         "name":"destMap",
-                         "type":"string",
-                         "value":"mine"
-                        }],
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":608,
-                 "y":96
-                }],
-         "opacity":1,
-         "type":"objectgroup",
          "visible":true,
+         "width":35,
          "x":0,
          "y":0
         }, 
@@ -494,9 +438,109 @@
          "visible":true,
          "x":0,
          "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":10,
+         "locked":true,
+         "name":"Doors",
+         "objects":[
+                {
+                 "height":16,
+                 "id":7,
+                 "name":"door-north",
+                 "properties":[
+                        {
+                         "name":"destDoor",
+                         "type":"string",
+                         "value":"door-south"
+                        }, 
+                        {
+                         "name":"destMap",
+                         "type":"string",
+                         "value":"grassland-2"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":96,
+                 "x":416,
+                 "y":0
+                }, 
+                {
+                 "height":16,
+                 "id":8,
+                 "name":"door-mine",
+                 "properties":[
+                        {
+                         "name":"destDoor",
+                         "type":"string",
+                         "value":"mine-entrance"
+                        }, 
+                        {
+                         "name":"destMap",
+                         "type":"string",
+                         "value":"mine"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":608,
+                 "y":96
+                }, 
+                {
+                 "height":96,
+                 "id":47,
+                 "name":"door-west-top",
+                 "properties":[
+                        {
+                         "name":"destDoor",
+                         "type":"string",
+                         "value":"door-east-mid"
+                        }, 
+                        {
+                         "name":"destMap",
+                         "type":"string",
+                         "value":"grassland-3"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":0,
+                 "y":288
+                }, 
+                {
+                 "height":32,
+                 "id":48,
+                 "name":"door-west-bottom",
+                 "properties":[
+                        {
+                         "name":"destDoor",
+                         "type":"string",
+                         "value":"door-east-bottom"
+                        }, 
+                        {
+                         "name":"destMap",
+                         "type":"string",
+                         "value":"grassland-3"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":0,
+                 "y":640
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
         }],
  "nextlayerid":27,
- "nextobjectid":47,
+ "nextobjectid":49,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.1",
