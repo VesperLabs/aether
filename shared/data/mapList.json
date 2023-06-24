@@ -10,6 +10,11 @@
     "json": "./assets/tilemaps/grassland-2.json"
   },
   {
+    "name": "grassland-3",
+    "music": "./assets/music/grassland.mp3",
+    "json": "./assets/tilemaps/grassland-3.json"
+  },
+  {
     "name": "mine",
     "music": "./assets/music/mine.mp3",
     "json": "./assets/tilemaps/mine.json"
