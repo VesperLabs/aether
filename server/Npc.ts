@@ -301,6 +301,12 @@ class Npc extends Character implements Npc {
       return this.checkTalking();
     }
 
+    if (this.state.walkRange) {
+      if (distanceTo(this, this.startingCoords) >= this.state.walkRange) {
+        return this.moveTowardPoint(this.startingCoords);
+      }
+    }
+
     return this.moveRandomly(time);
   }
   moveTowardPoint(coords: Coordinate) {
@@ -388,13 +394,15 @@ class Npc extends Character implements Npc {
     }
   }
   dropLoot(magicFind: number) {
-    if (this.state.noDrops) return;
-    const ilvl = 1 + Math.floor(this.stats.level / 10);
-    const mainDrop = ItemBuilder.rollDrop(ilvl, magicFind);
     let runners = [];
-    if (mainDrop) {
-      runners.push(mainDrop);
+    const ilvl = 1 + Math.floor(this.stats.level / 10);
+
+    /* World drops table */
+    if (!this.state.noWorldDrops) {
+      const mainDrop = ItemBuilder.rollDrop(ilvl, magicFind);
+      if (mainDrop) runners.push(mainDrop);
     }
+    /* World drops table */
     if (this.drops) {
       for (var i = 0; i < this.drops.length; i++) {
         let rando = randomNumber(1, this.drops[i].chance);

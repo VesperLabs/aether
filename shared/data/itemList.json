@@ -281,6 +281,17 @@
           "walkSpeed": [30, 50]
         }
       },
+      "crabHat": {
+        "ilvl": 1,
+        "name": "Crab Hat",
+        "base": "cap",
+        "texture": "helmet-crab",
+        "slot": "helmet",
+        "stats": {
+          "defense": [5, 10]
+        },
+        "cost": "20"
+      },
       "theDragonWhisker": {
         "ilvl": 3,
         "name": "The Dragon Whisker",

@@ -196,6 +196,7 @@ class Character extends Phaser.GameObjects.Container {
     const rightType = this.visibleEquipment?.handRight?.type;
     if (rightType === "weapon") this.state.hasWeaponRight = true;
     if (leftType === "weapon") this.state.hasWeaponLeft = true;
+    if (this.profile.race !== "human") this.state.hasWeaponRight = true;
     if (this.state.hasWeaponRight || this.state.hasWeaponLeft) this.state.hasWeapon = true;
   }
   getPlayerQuestStatus(quest: Quest) {

@@ -146,7 +146,7 @@ class Player extends Character {
 
     let spellName = "attack_right";
     /* Play attack animation frame (human only) */
-    if (this.profile.race === "human") {
+    if (["crab", "human"].includes(this.profile.race)) {
       if (count === 1) {
         /* Will always start with a right attack. Will either swing right or left if has weapon. */
         if (state.hasWeaponRight) this.action = "attack_right";
