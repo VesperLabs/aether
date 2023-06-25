@@ -63,6 +63,19 @@
       }
     ]
   },
+  "fish": {
+    "charClass": "rogue",
+    "profile": { "race": "fish", "userName": "Fish", "tint": "0x8899CC" },
+    "state": { "isAggro": false, "noDrops": true },
+    "baseStats": {
+      "level": 1
+    },
+    "hitBoxSize": {
+      "width": 26,
+      "height": 24
+    },
+    "drops": []
+  },
   "hawkwing": {
     "charClass": "rogue",
     "profile": {
