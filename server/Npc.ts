@@ -388,6 +388,7 @@ class Npc extends Character implements Npc {
     }
   }
   dropLoot(magicFind: number) {
+    if (this.state.noDrops) return;
     const ilvl = 1 + Math.floor(this.stats.level / 10);
     const mainDrop = ItemBuilder.rollDrop(ilvl, magicFind);
     let runners = [];
