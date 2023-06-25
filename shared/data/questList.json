@@ -1,4 +1,40 @@
 {
+  "crab-catching": {
+    "name": "Crab Catching",
+    "dialogues": {
+      "description": "<strong>Kill (10) Crabs</strong> and report back to me."
+    },
+    "objectives": [{ "type": "bounty", "target": "crab", "amount": 10 }],
+    "rewards": {
+      "exp": 20,
+      "gold": 10,
+      "items": []
+    }
+  },
+  "crab-meat": {
+    "name": "Crab Meat",
+    "dialogues": {
+      "description": "<strong>Gather (3) Crab Meat</strong> from <Strong>Crabs</strong> and report back to me."
+    },
+    "objectives": [{ "type": "item", "target": ["stackable", "common", "crabMeat"], "amount": 3 }],
+    "rewards": {
+      "exp": 20,
+      "gold": 10,
+      "items": []
+    }
+  },
+  "fish-spearing": {
+    "name": "Spearing Fish",
+    "dialogues": {
+      "description": "These fish are eating my crabs. <strong>Spear (10) Fish</strong> and report back to me."
+    },
+    "objectives": [{ "type": "bounty", "target": "fish", "amount": 10 }],
+    "rewards": {
+      "exp": 20,
+      "gold": 10,
+      "items": []
+    }
+  },
   "hornet-hunting": {
     "name": "Hornet Blaster",
     "dialogues": {

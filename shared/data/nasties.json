@@ -47,7 +47,7 @@
     "charClass": "rogue",
     "profile": { "race": "bee", "userName": "Hornet" },
     "baseStats": {
-      "level": 1,
+      "level": 2,
       "walkSpeed": 10
     },
     "hitBoxSize": {
@@ -79,7 +79,7 @@
   "crab": {
     "charClass": "rogue",
     "profile": { "race": "crab", "userName": "Crab" },
-    "state": { "isAggro": true, "noWorldDrops": true },
+    "state": { "isAggro": false, "noWorldDrops": true },
     "baseStats": {
       "level": 1
     },
@@ -93,6 +93,12 @@
         "rarity": "unique",
         "key": "crabHat",
         "chance": 20
+      },
+      {
+        "type": "stackable",
+        "rarity": "common",
+        "key": "crabMeat",
+        "chance": 3
       }
     ]
   },
