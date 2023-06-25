@@ -200,6 +200,7 @@ export const createBaseUser = (charClass) => {
       race: "human",
       hair: { tint: "0x88FFFF", texture: "hair-3" },
       face: { texture: "face-1" },
+      whiskers: { texture: "whiskers-0", tint: "0xFFFFFF" },
     },
   };
 };

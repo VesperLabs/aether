@@ -42,6 +42,30 @@
     "previewRect": [0, 160, 80, 80]
   },
   {
+    "texture": "human-whiskers-0",
+    "src": "./assets/atlas/human-blank.png",
+    "atlas": "./assets/atlas/80x80.json",
+    "previewRect": [0, 160, 80, 80]
+  },
+  {
+    "texture": "human-whiskers-1",
+    "src": "./assets/atlas/whiskers/whiskers-1.png",
+    "atlas": "./assets/atlas/80x80.json",
+    "previewRect": [0, 160, 80, 80]
+  },
+  {
+    "texture": "human-whiskers-2",
+    "src": "./assets/atlas/whiskers/whiskers-2.png",
+    "atlas": "./assets/atlas/80x80.json",
+    "previewRect": [0, 160, 80, 80]
+  },
+  {
+    "texture": "human-hair-0",
+    "src": "./assets/atlas/human-blank.png",
+    "atlas": "./assets/atlas/80x80.json",
+    "previewRect": [0, 160, 80, 80]
+  },
+  {
     "texture": "human-hair-1",
     "src": "./assets/atlas/hair/hair-1.png",
     "atlas": "./assets/atlas/80x80.json",
@@ -130,6 +154,12 @@
     "src": "./assets/atlas/mob/crab.png",
     "atlas": "./assets/atlas/80x80.json",
     "previewRect": [50, 100, 90, 90]
+  },
+  {
+    "texture": "orchid",
+    "src": "./assets/atlas/mob/orchid.png",
+    "atlas": "./assets/atlas/80x80.json",
+    "previewRect": [0, 160, 80, 80]
   },
   {
     "texture": "wraith",

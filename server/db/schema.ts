@@ -50,6 +50,7 @@ const profileSchema = {
     },
     hair: hairSchema,
     face: faceSchema,
+    whiskers: hairSchema,
   },
 };
 

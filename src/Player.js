@@ -68,6 +68,7 @@ class Player extends Character {
     this.skin = scene.add.existing(new Sprite(...defaults));
     this.chest = scene.add.existing(new Sprite(...defaults));
     this.face = scene.add.existing(new Sprite(...defaults));
+    this.whiskers = scene.add.existing(new Sprite(...defaults));
     this.hair = scene.add.existing(new Sprite(...defaults));
     this.armor = scene.add.existing(new Sprite(...defaults));
     this.helmet = scene.add.existing(new Sprite(...defaults));
@@ -94,6 +95,7 @@ class Player extends Character {
     this.add(this.chest);
     this.add(this.skin);
     this.add(this.face);
+    this.add(this.whiskers);
     this.add(this.hair);
     this.add(this.accessory);
     this.add(this.armor);
@@ -121,6 +123,7 @@ class Player extends Character {
     this.chest.setTint(profile?.tint || "0xFFFFFF");
     this.hair.setTint(profile?.hair?.tint || "0xFFFFFF");
     this.face.setTint(profile?.face?.tint || "0xFFFFFF");
+    this.whiskers.setTint(profile?.whiskers?.tint || "0xFFFFFF");
 
     for (const [key, slot] of Object.entries(visibleEquipment)) {
       this?.[key]?.setTint(slot?.tint || "0xFFFFFF");
@@ -132,8 +135,10 @@ class Player extends Character {
       this.hair.setVisible(false);
     }
     this.face.setVisible(true);
+    this.whiskers.setVisible(true);
     if (FACE_HIDING_HELMETS.includes(this?.visibleEquipment?.helmet?.texture)) {
       this.face.setVisible(false);
+      this.whiskers.setVisible(false);
     }
   }
   doAttack(count) {
@@ -215,6 +220,7 @@ class Player extends Character {
     this.shadow.setVisible(false);
     this.chest.setVisible(false);
     this.face.setVisible(false);
+    this.whiskers.setVisible(false);
     this.hair.setVisible(false);
     this.accessory.setVisible(false);
     this.armor.setVisible(false);
@@ -239,6 +245,7 @@ class Player extends Character {
     this.chest.setVisible(true);
     this.skin.setVisible(true);
     this.face.setVisible(true);
+    this.whiskers.setVisible(true);
     this.hair.setVisible(true);
     this.accessory.setVisible(true);
     this.armor.setVisible(true);
@@ -263,6 +270,7 @@ class Player extends Character {
     this.boots.setTint(color);
     this.accessory.setTint(color);
     this.face.setTint(color);
+    this.whiskers.setTint(color);
   }
   checkDeath() {
     /* Ensures the textures and depth have been updated for death state */
@@ -366,6 +374,7 @@ function drawFrame(p) {
     visibleEquipment,
     profile,
     face,
+    whiskers,
     hair,
     bubble,
     hpBar,
@@ -386,6 +395,7 @@ function drawFrame(p) {
   if (direction === "up") {
     p.bringToTop(hair);
     p.bringToTop(face);
+    p.bringToTop(whiskers);
     p.bringToTop(accessory);
     p.bringToTop(helmet);
     p.sendToBack(handLeft);
@@ -394,6 +404,7 @@ function drawFrame(p) {
     p.bringToTop(chest);
     p.bringToTop(armor);
     p.bringToTop(face);
+    p.bringToTop(whiskers);
     p.bringToTop(accessory);
     p.bringToTop(helmet);
     p.bringToTop(handRight);
@@ -403,6 +414,7 @@ function drawFrame(p) {
     p.bringToTop(armor);
     p.bringToTop(hair);
     p.bringToTop(face);
+    p.bringToTop(whiskers);
     p.bringToTop(accessory);
     p.bringToTop(helmet);
     p.bringToTop(handLeft);
@@ -412,6 +424,7 @@ function drawFrame(p) {
     p.bringToTop(armor);
     p.bringToTop(hair);
     p.bringToTop(face);
+    p.bringToTop(whiskers);
     p.bringToTop(accessory);
     p.bringToTop(helmet);
     p.sendToBack(handLeft);
@@ -431,6 +444,7 @@ function drawFrame(p) {
     p?.playAnim(chest, [BLANK_TEXTURE, direction, action]);
   }
   p?.playAnim(face, [profile?.race, profile?.face?.texture, direction, action]);
+  p?.playAnim(whiskers, [profile?.race, profile?.whiskers?.texture, direction, action]);
   p?.playAnim(hair, [profile?.race, profile?.hair?.texture, direction, action]);
   p?.playAnim(
     armor,
@@ -469,6 +483,7 @@ function hackFrameRates(player, rate) {
     "chest",
     "skin",
     "face",
+    "whiskers",
     "hair",
     "accessory",
     "armor",

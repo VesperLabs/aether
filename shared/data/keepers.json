@@ -83,6 +83,10 @@
         "texture": "face-2",
         "tint": "0xFFFFFF"
       },
+      "whiskers": {
+        "texture": "whiskers-2",
+        "tint": "0xFFFFFF"
+      },
       "tint": "0x888888",
       "hair": {
         "texture": "hair-1",
@@ -286,6 +290,10 @@
       "userName": "Danny",
       "face": {
         "texture": "face-3",
+        "tint": "0xFFFF00"
+      },
+      "whiskers": {
+        "texture": "whiskers-1",
         "tint": "0xFFFF00"
       },
       "hair": {
