@@ -288,9 +288,9 @@
         "texture": "helmet-crab",
         "slot": "helmet",
         "stats": {
-          "defense": [4, 5],
-          "vitality": [2, 4],
-          "earthResistance": [3, 5]
+          "defense": [2, 3],
+          "vitality": [1, 2],
+          "earthResistance": [2, 3]
         },
         "cost": "20"
       },
