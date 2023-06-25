@@ -43,6 +43,12 @@ class Spell extends Phaser.GameObjects.Container {
         this.y = this.caster.y;
       }
 
+      /* Hack: fixes placement for non-human units .*/
+      if (caster.profile.race !== "human") {
+        const difference = (this.caster.hitBox.body.height - this.caster.body.height) / 2;
+        this.y = this.caster.y - difference;
+      }
+
       if (spellName === "attack_left") {
         const rangeLeft = caster?.equipment?.handLeft?.stats?.range * 2 || caster?.body?.radius / 8;
         this.body.setCircle(rangeLeft * 16, -rangeLeft * 16, -rangeLeft * 16);

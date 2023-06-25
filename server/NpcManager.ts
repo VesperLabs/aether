@@ -29,7 +29,7 @@ class NpcManager {
     const { room } = this;
     const mapNpcs = this?.room?.tileMap?.getObjectLayer("Npcs")?.objects || [];
 
-    for (const { name, x, y } of mapNpcs) {
+    for (const { name, x, y, properties = [] } of mapNpcs) {
       const npc = getNpcFromLists(name);
       if (!npc) {
         console.log("❌ Map npc is broken or not found");
@@ -60,6 +60,13 @@ class NpcManager {
         kind: npc?.kind,
         x,
         y,
+        state: {
+          ...npc.state,
+          ...properties?.reduce((obj, item) => {
+            obj[item.name] = item.value;
+            return obj;
+          }, {}),
+        },
         startingCoords: { x: npc?.x, y: npc?.y },
       });
     }

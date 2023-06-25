@@ -64,9 +64,9 @@
     ]
   },
   "fish": {
-    "charClass": "rogue",
+    "charClass": "cleric",
     "profile": { "race": "fish", "userName": "Fish", "tint": "0x8899CC" },
-    "state": { "isAggro": false, "noDrops": true },
+    "state": { "isAggro": false, "noWorldDrops": true },
     "baseStats": {
       "level": 1
     },
@@ -75,6 +75,26 @@
       "height": 24
     },
     "drops": []
+  },
+  "crab": {
+    "charClass": "rogue",
+    "profile": { "race": "crab", "userName": "Crab" },
+    "state": { "isAggro": true, "noWorldDrops": true },
+    "baseStats": {
+      "level": 1
+    },
+    "hitBoxSize": {
+      "width": 18,
+      "height": 16
+    },
+    "drops": [
+      {
+        "type": "helmet",
+        "rarity": "unique",
+        "key": "crabHat",
+        "chance": 20
+      }
+    ]
   },
   "hawkwing": {
     "charClass": "rogue",

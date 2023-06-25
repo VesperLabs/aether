@@ -126,6 +126,12 @@
     "previewRect": [50, 100, 90, 90]
   },
   {
+    "texture": "crab",
+    "src": "./assets/atlas/mob/crab.png",
+    "atlas": "./assets/atlas/80x80.json",
+    "previewRect": [50, 100, 90, 90]
+  },
+  {
     "texture": "wraith",
     "src": "./assets/atlas/mob/wraith.png",
     "atlas": "./assets/atlas/80x80.json",
@@ -200,6 +206,12 @@
   {
     "texture": "human-helmet-bunny",
     "src": "./assets/atlas/helmet/helmet-bunny.png",
+    "atlas": "./assets/atlas/80x80.json",
+    "previewRect": [0, 140, 80, 80]
+  },
+  {
+    "texture": "human-helmet-crab",
+    "src": "./assets/atlas/helmet/helmet-crab.png",
     "atlas": "./assets/atlas/80x80.json",
     "previewRect": [0, 140, 80, 80]
   },
