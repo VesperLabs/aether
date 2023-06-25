@@ -1065,7 +1065,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
 
         if (args?.whiskers?.tint === 1) {
           nextWhiskersTintIndex = (currentWhiskersTintIndex + 1) % hairTints.length;
-        } else if (args?.hair?.tint === -1) {
+        } else if (args?.whiskers?.tint === -1) {
           nextWhiskersTintIndex =
             (currentWhiskersTintIndex - 1 + hairTints.length) % hairTints.length;
         }
