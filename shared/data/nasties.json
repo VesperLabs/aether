@@ -121,22 +121,6 @@
     },
     "drops": []
   },
-  "orchid": {
-    "charClass": "rogue",
-    "profile": {
-      "race": "orchid",
-      "userName": "Orchid"
-    },
-    "state": { "isAggro": true },
-    "baseStats": {
-      "level": 8
-    },
-    "hitBoxSize": {
-      "width": 26,
-      "height": 24
-    },
-    "drops": []
-  },
   "spider": {
     "charClass": "rogue",
     "profile": { "race": "spider", "userName": "Spider" },
@@ -214,6 +198,22 @@
       }
     ]
   },
+  "orchid": {
+    "charClass": "rogue",
+    "profile": {
+      "race": "orchid",
+      "userName": "Orchid"
+    },
+    "state": { "isAggro": true },
+    "baseStats": {
+      "level": 8
+    },
+    "hitBoxSize": {
+      "width": 26,
+      "height": 24
+    },
+    "drops": []
+  },
   "zombie": {
     "charClass": "warrior",
     "profile": { "race": "zombie", "userName": "Zombie" },
@@ -265,6 +265,24 @@
         "chance": 4
       }
     ]
+  },
+  "bigMomma": {
+    "charClass": "rogue",
+    "profile": {
+      "race": "orchid",
+      "userName": "Big Momma",
+      "scale": 3,
+      "tint": "0x8888FF"
+    },
+    "state": { "isAggro": true },
+    "baseStats": {
+      "level": 15
+    },
+    "hitBoxSize": {
+      "width": 78,
+      "height": 72
+    },
+    "drops": []
   },
   "chonks": {
     "charClass": "cleric",

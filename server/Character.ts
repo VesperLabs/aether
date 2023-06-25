@@ -13,10 +13,11 @@ class ServerCharacter extends Character {
   getQuests() {
     if (!this.quests?.length) return [];
     return this?.quests?.map((q) => {
+      const serverQuest = this.scene.quests[q?.questId];
       return {
-        ...q,
+        ...this.getPlayerQuestStatus(serverQuest),
         /* We pass the rewards here so that the items are built with the correct stats */
-        rewards: this.scene.quests[q?.questId]?.rewards,
+        rewards: serverQuest?.rewards,
       };
     });
   }

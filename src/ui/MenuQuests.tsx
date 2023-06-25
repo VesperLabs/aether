@@ -10,6 +10,7 @@ const MenuQuests = () => {
       ...questList?.[q?.questId],
       rewards: q?.rewards,
     })) as Quest[];
+
   return (
     <Menu
       sx={{

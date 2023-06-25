@@ -113,7 +113,7 @@ const ItemBuilder = {
 
     return item;
   },
-  buildItem: (...args: BuildItem) => {
+  buildItem: (...args: BuildItem): any => {
     const [type, rarity, itemKey, amount] = args;
 
     let item: Item;
