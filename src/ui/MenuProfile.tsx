@@ -74,6 +74,18 @@ const MenuProfile = () => {
             Hair Color
           </MenuPicker>
           <MenuPicker
+            onPlus={() => socket.emit("updateProfile", { whiskers: { texture: 1 } })}
+            onMinus={() => socket.emit("updateProfile", { whiskers: { texture: -1 } })}
+          >
+            Whiskers
+          </MenuPicker>
+          <MenuPicker
+            onPlus={() => socket.emit("updateProfile", { whiskers: { tint: 1 } })}
+            onMinus={() => socket.emit("updateProfile", { whiskers: { tint: -1 } })}
+          >
+            Whiskers Color
+          </MenuPicker>
+          <MenuPicker
             onPlus={() => socket.emit("updateProfile", { face: { texture: 1 } })}
             onMinus={() => socket.emit("updateProfile", { face: { texture: -1 } })}
           >

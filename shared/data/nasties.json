@@ -121,6 +121,22 @@
     },
     "drops": []
   },
+  "orchid": {
+    "charClass": "rogue",
+    "profile": {
+      "race": "orchid",
+      "userName": "Orchid"
+    },
+    "state": { "isAggro": true },
+    "baseStats": {
+      "level": 8
+    },
+    "hitBoxSize": {
+      "width": 26,
+      "height": 24
+    },
+    "drops": []
+  },
   "spider": {
     "charClass": "rogue",
     "profile": { "race": "spider", "userName": "Spider" },

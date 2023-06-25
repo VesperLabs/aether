@@ -69,6 +69,7 @@ const Portrait = ({
   const { race, gender } = user?.profile ?? {};
   const userFace = user?.profile?.face;
   const userHair = user?.profile?.hair;
+  const userWhiskers = user?.profile?.whiskers;
 
   // filter out equipment slotNames that are not in activeItemsSlots array
   const filteredEquipment = Object.fromEntries(
@@ -82,6 +83,11 @@ const Portrait = ({
   const skin = getAssetProps("skin", race, user?.profile?.tint);
   const chest = getAssetProps("chest", `${race}-${gender}-chest-bare`, user?.profile?.tint);
   const face = getAssetProps("face", `${race}-${userFace?.texture}`, userFace?.tint);
+  const whiskers = getAssetProps(
+    "whiskers",
+    `${race}-${userWhiskers?.texture}`,
+    userWhiskers?.tint
+  );
   const hair = getAssetProps("hair", `${race}-${userHair?.texture}`, userHair?.tint);
   const accessory = getAssetProps(
     "accessory",
@@ -98,7 +104,7 @@ const Portrait = ({
       ? ["hair"]
       : filterKeys;
 
-  const assets = [skin, chest, hair, boots, pants, armor, face, accessory, helmet]
+  const assets = [skin, chest, hair, boots, pants, armor, face, whiskers, accessory, helmet]
     ?.filter(Boolean)
     ?.filter((asset) => !obscuredKeys.includes(asset.slotKey));
 
