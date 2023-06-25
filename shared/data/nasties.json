@@ -92,7 +92,7 @@
         "type": "helmet",
         "rarity": "unique",
         "key": "crabHat",
-        "chance": 20
+        "chance": 50
       },
       {
         "type": "stackable",
