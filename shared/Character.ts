@@ -203,22 +203,31 @@ class Character extends Phaser.GameObjects.Container {
     const playerQuest = this.quests.find((q) => q?.questId === quest?.id);
     if (!playerQuest) return null;
     /* Create PlayerQuestObjectives */
-    const objectives = quest?.objectives?.reduce((acc, objective) => {
+    const objectives = quest?.objectives?.reduce((acc, objective, idx) => {
       let isReady = false;
+      let numKilled = 0;
+      let numCollected = 0;
       /* Check if the player has enough kills of the target NPC */
       if (objective?.type === "bounty") {
-        const npcKillCount = this.npcKills[objective?.target as string];
-        isReady = npcKillCount >= objective?.amount;
+        numKilled = this.npcKills[objective?.monster as string] || 0;
+        isReady = numKilled >= objective?.amount;
       }
       /* Check if the player has enough items of the target item */
       if (objective?.type === "item") {
         const item =
-          this.findInventoryQuestItem(objective?.target as string[]) ||
-          this.findBagQuestItem(objective?.target as string[]);
-        isReady = item?.amount >= objective?.amount;
+          this.findInventoryQuestItem(objective?.item as string[]) ||
+          this.findBagQuestItem(objective?.item as string[]);
+        numCollected = item?.amount || 0;
+        isReady = numCollected >= objective?.amount;
       }
       /* Add the playerObjective to the list */
-      acc.push({ questId: objective?.questId, objectiveId: objective?.id, isReady });
+      acc.push({
+        questId: quest?.id,
+        objectiveId: idx,
+        isReady,
+        numKilled,
+        numCollected,
+      });
       return acc;
     }, []);
     return {

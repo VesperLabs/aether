@@ -51,7 +51,7 @@ const ModalDropAmount = () => {
         },
       });
     } else {
-      socket.emit("dropItem", { item, location, bagId, amount: item?.amount });
+      socket.emit("dropItem", { item, location, bagId, amount: amount });
     }
 
     setDropItem(null);

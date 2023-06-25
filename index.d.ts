@@ -287,7 +287,8 @@ interface QuestObjective {
   id: string;
   questId: string;
   type: string;
-  target: Array<string> | string;
+  item?: Array<string>;
+  monster?: string;
   amount: integer;
 }
 interface PlayerQuest {
@@ -302,4 +303,6 @@ interface PlayerQuestObjective {
   objectiveId: string;
   questId: string;
   isReady?: boolean;
+  numCollected?: number;
+  numKilled?: number;
 }

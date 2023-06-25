@@ -45,9 +45,7 @@ tile-extruder --tileWidth 32 --tileHeight 32 --input ./public/assets/tilesets/cl
 
 #### Cosmetic
 
-- [ ] Eyes on their own layer so we can tint them
-- [ ] Eye-whites can maybe be their own layer?
-- [ ] Facial hair can maybe be their own layer?
+- [ ] Animated weapons
 
 #### Systems
 
@@ -58,6 +56,7 @@ tile-extruder --tileWidth 32 --tileHeight 32 --input ./public/assets/tilesets/cl
 
 #### Combat
 
+- [ ] Negative buffs: (Frozen, Stunned, etc.)
 - [ ] Allow critical strikes on spells
 - [ ] Ranged weapons
 - [ ] Serverside individual cooldowns for spells
@@ -82,3 +81,4 @@ tile-extruder --tileWidth 32 --tileHeight 32 --input ./public/assets/tilesets/cl
 - [x] Party system
 - [x] Enemy spells
 - [x] Buffs
+- [x] Facial hair is now Whiskers on its own layer seperate from face.

@@ -4,13 +4,11 @@ import { nanoid } from "nanoid";
 
 const Quest = ({ quest, parent = "keeper" }: { quest: Quest; parent: string }) => {
   const { objectives } = quest ?? {};
-  const { game } = useAppContext();
-  const scene = game?.scene?.getScene?.("SceneMain") as any;
-  const hero: Character = scene?.hero;
+  const { hero } = useAppContext();
   const [hovering, setHovering] = useState(false);
   const isBounty = objectives?.some((objective) => objective?.type === "bounty");
   const isItem = objectives?.some((objective) => objective?.type === "item");
-  const playerQuest: PlayerQuest = hero.getPlayerQuestStatus(quest);
+  const playerQuest: PlayerQuest = hero?.quests?.find((q) => q?.questId === quest?.id);
   const tooltipId = nanoid();
 
   let icon = "./assets/icons/chest.png";

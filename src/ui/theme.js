@@ -83,6 +83,7 @@ export default {
         outline: "none",
       },
       "&[disabled]": {
+        cursor: "default",
         opacity: 0.5,
       },
     },

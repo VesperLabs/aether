@@ -2,9 +2,9 @@
   "crab-catching": {
     "name": "Crab Catching",
     "dialogues": {
-      "description": "<strong>Kill (10) Crabs</strong> and report back to me."
+      "description": "{objective} and report back to me."
     },
-    "objectives": [{ "type": "bounty", "target": "crab", "amount": 10 }],
+    "objectives": [{ "type": "bounty", "monster": "crab", "amount": 10 }],
     "rewards": {
       "exp": 20,
       "gold": 10,
@@ -14,9 +14,9 @@
   "crab-meat": {
     "name": "Crab Meat",
     "dialogues": {
-      "description": "<strong>Gather (3) Crab Meat</strong> from <Strong>Crabs</strong> and report back to me."
+      "description": "{objective} from Crabs and report back to me."
     },
-    "objectives": [{ "type": "item", "target": ["stackable", "common", "crabMeat"], "amount": 3 }],
+    "objectives": [{ "type": "item", "item": ["stackable", "common", "crabMeat"], "amount": 3 }],
     "rewards": {
       "exp": 20,
       "gold": 10,
@@ -26,9 +26,9 @@
   "fish-spearing": {
     "name": "Spearing Fish",
     "dialogues": {
-      "description": "These fish are eating my crabs. <strong>Spear (10) Fish</strong> and report back to me."
+      "description": "These fish are eating my crabs. {objective} and report back to me."
     },
-    "objectives": [{ "type": "bounty", "target": "fish", "amount": 10 }],
+    "objectives": [{ "type": "bounty", "monster": "fish", "amount": 10 }],
     "rewards": {
       "exp": 20,
       "gold": 10,
@@ -38,9 +38,9 @@
   "hornet-hunting": {
     "name": "Hornet Blaster",
     "dialogues": {
-      "description": "<strong>Kill (10) Hornets</strong> and report back to me."
+      "description": "{objective} and report back to me."
     },
-    "objectives": [{ "type": "bounty", "target": "hornet", "amount": 10 }],
+    "objectives": [{ "type": "bounty", "monster": "hornet", "amount": 10 }],
     "rewards": {
       "exp": 20,
       "gold": 10,
@@ -50,9 +50,9 @@
   "slime-roundup": {
     "name": "Slime Roundup",
     "dialogues": {
-      "description": "I am all about slime and mold, but these blue ones are taking over the wood. <strong>Kill (10) Slimes</strong> and report back to me."
+      "description": "I am all about slime and mold, but these blue ones are taking over the wood. {objective} and report back to me."
     },
-    "objectives": [{ "type": "bounty", "target": "slime", "amount": 10 }],
+    "objectives": [{ "type": "bounty", "monster": "slime", "amount": 10 }],
     "rewards": {
       "exp": 20,
       "gold": 10,
@@ -62,12 +62,12 @@
   "slime-eggs": {
     "name": "Slime Eggs",
     "dialogues": {
-      "description": "Killing slimes is one thing, but best not let their eggs go to waste. Them's good eatin'. <strong>Collect (3) Blue Sporangium</strong> and report back to me."
+      "description": "Killing slimes is one thing, but best not let their eggs go to waste. Them's good eatin'. {objective} and report back to me."
     },
     "objectives": [
       {
         "type": "item",
-        "target": ["stackable", "common", "blueSporangium"],
+        "item": ["stackable", "common", "blueSporangium"],
         "amount": 3
       }
     ],
@@ -79,12 +79,12 @@
   "tudwick-shrooms": {
     "name": "Shrooms for Tudwick",
     "dialogues": {
-      "description": "It has become hard to find mushrooms in these woods, but I know you can buy them in the town up north. <strong>Purchase (3) Mushrooms</strong> and report back to me."
+      "description": "It has become hard to find mushrooms in these woods, but I know you can buy them in the town up north. {objective} and report back to me."
     },
     "objectives": [
       {
         "type": "item",
-        "target": ["stackable", "common", "mushroom"],
+        "item": ["stackable", "common", "mushroom"],
         "amount": 3
       }
     ],
@@ -96,9 +96,9 @@
   "raccoon-hunting": {
     "name": "Raccoon Hunting",
     "dialogues": {
-      "description": "<strong>Slay (3) Raccoons</strong> and report back to me."
+      "description": "{objective} and report back to me."
     },
-    "objectives": [{ "type": "bounty", "target": "raccoon", "amount": 3 }],
+    "objectives": [{ "type": "bounty", "monster": "raccoon", "amount": 3 }],
     "rewards": {
       "exp": 40,
       "gold": 10,
@@ -108,9 +108,9 @@
   "grape-finding": {
     "name": "Grape Finder",
     "dialogues": {
-      "description": "<strong>Gather (3) Grapes</strong> from <Strong>Raccoons</strong> and report back to me."
+      "description": "{objective} from raccoons and report back to me."
     },
-    "objectives": [{ "type": "item", "target": ["stackable", "common", "grapes"], "amount": 3 }],
+    "objectives": [{ "type": "item", "item": ["stackable", "common", "grapes"], "amount": 3 }],
     "rewards": {
       "exp": 40,
       "gold": 20
@@ -119,9 +119,9 @@
   "hawkwing-hunting": {
     "name": "Hawkwing Hunter",
     "dialogues": {
-      "description": "There is one hornet in this part of the woods that needs to be dealt with. <strong>Slay Hawing</strong>."
+      "description": "There is one hornet in this part of the woods that needs to be dealt with. {objective}."
     },
-    "objectives": [{ "type": "bounty", "target": "hawkwing", "amount": 1 }],
+    "objectives": [{ "type": "bounty", "monster": "hawkwing", "amount": 1 }],
     "rewards": {
       "exp": 40,
       "gold": 20,
@@ -131,12 +131,12 @@
   "spidermeat-finding": {
     "name": "Sweet Spider Meat",
     "dialogues": {
-      "description": "<strong>Gather (3) Spider Meats</strong> from <Strong>Spiders</strong> and report back to me."
+      "description": "{objective} from spiders and report back to me."
     },
     "objectives": [
       {
         "type": "item",
-        "target": ["stackable", "common", "spiderMeat"],
+        "monster": ["stackable", "common", "spiderMeat"],
         "amount": 3
       }
     ],
@@ -148,9 +148,9 @@
   "batmeat-finding": {
     "name": "Succulent Bat Meat",
     "dialogues": {
-      "description": "<strong>Gather (3) Bat Meats</strong> from <Strong>Bats</strong> and report back to me."
+      "description": "{objective} from bats and report back to me."
     },
-    "objectives": [{ "type": "item", "target": ["stackable", "common", "batMeat"], "amount": 3 }],
+    "objectives": [{ "type": "item", "item": ["stackable", "common", "batMeat"], "amount": 3 }],
     "rewards": {
       "exp": 60,
       "gold": 20
@@ -159,9 +159,9 @@
   "cheese-finding": {
     "name": "That Good Cheese",
     "dialogues": {
-      "description": "<strong>Gather (3) Cheese</strong> from <Strong>Bats and Spiders</strong> and report back to me."
+      "description": "{objective} from bats and spiders and report back to me."
     },
-    "objectives": [{ "type": "item", "target": ["stackable", "common", "cheese"], "amount": 3 }],
+    "objectives": [{ "type": "item", "item": ["stackable", "common", "cheese"], "amount": 3 }],
     "rewards": {
       "exp": 60,
       "gold": 20
@@ -170,9 +170,9 @@
   "hogan-hunting": {
     "name": "Demon Spider",
     "dialogues": {
-      "description": "Travel deep in the mines, find and <strong>Slay Hogan</strong>."
+      "description": "Travel deep in the mines, find and {objective}."
     },
-    "objectives": [{ "type": "bounty", "target": "hogan", "amount": 1 }],
+    "objectives": [{ "type": "bounty", "monster": "hogan", "amount": 1 }],
     "rewards": {
       "exp": 80,
       "gold": 20,
@@ -182,9 +182,9 @@
   "skull-finding": {
     "name": "Undead Skulls",
     "dialogues": {
-      "description": "The graveyard is just north of town. <strong>Gather (3) Skulls</strong> from the <strong>Wraiths and Zombies</strong> there."
+      "description": "The graveyard is just north of town. {objective} from the wraiths and zombies there."
     },
-    "objectives": [{ "type": "item", "target": ["stackable", "common", "skull"], "amount": 3 }],
+    "objectives": [{ "type": "item", "item": ["stackable", "common", "skull"], "amount": 3 }],
     "rewards": {
       "exp": 120,
       "gold": 30
@@ -193,9 +193,9 @@
   "chonks-hunting": {
     "name": "Slay Chonks",
     "dialogues": {
-      "description": "Travel north to the graveyard and <strong>Slay Chonks</strong>."
+      "description": "Travel north to the graveyard and {objective}."
     },
-    "objectives": [{ "type": "bounty", "target": "chonks", "amount": 1 }],
+    "objectives": [{ "type": "bounty", "monster": "chonks", "amount": 1 }],
     "rewards": {
       "exp": 120,
       "gold": 30
