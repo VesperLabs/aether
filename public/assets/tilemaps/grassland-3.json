@@ -792,6 +792,30 @@
                  "width":0,
                  "x":1178.31775700935,
                  "y":2226.54205607477
+                }, 
+                {
+                 "height":0,
+                 "id":77,
+                 "name":"fish",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1645.24871055162,
+                 "y":2168.89588250721
+                }, 
+                {
+                 "height":0,
+                 "id":78,
+                 "name":"fish",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1311.303435615,
+                 "y":1490.51490514905
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -899,7 +923,7 @@
          "y":0
         }],
  "nextlayerid":28,
- "nextobjectid":77,
+ "nextobjectid":79,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.1",
