@@ -123,6 +123,7 @@ const QuestTooltip = ({
             playerQuest={playerQuest}
             quest={quest}
             socket={socket}
+            giverName={giverName}
           />
         </Flex>
       </Flex>
@@ -130,7 +131,7 @@ const QuestTooltip = ({
   );
 };
 
-const QuestStatusButton = ({ playerQuest, quest, socket, parent }) => {
+const QuestStatusButton = ({ playerQuest, quest, socket, parent, giverName }) => {
   if (playerQuest?.isCompleted) {
     return (
       <Button variant="wood" disabled>
@@ -148,7 +149,7 @@ const QuestStatusButton = ({ playerQuest, quest, socket, parent }) => {
   if (playerQuest?.isReady && parent === "player") {
     return (
       <Button variant="wood" disabled>
-        Ready
+        Return to {giverName}
       </Button>
     );
   }
