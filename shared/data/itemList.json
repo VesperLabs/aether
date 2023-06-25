@@ -288,7 +288,9 @@
         "texture": "helmet-crab",
         "slot": "helmet",
         "stats": {
-          "defense": [5, 10]
+          "defense": [4, 5],
+          "vitality": [2, 4],
+          "earthResistance": [3, 5]
         },
         "cost": "20"
       },
@@ -755,6 +757,16 @@
       "spiderMeat": {
         "ilvl": 1,
         "name": "Spider Meat",
+        "base": "food",
+        "slot": "stackable",
+        "texture": "stackable-meat",
+        "effects": {
+          "hp": 10
+        }
+      },
+      "crabMeat": {
+        "ilvl": 1,
+        "name": "Crab Meat",
         "base": "food",
         "slot": "stackable",
         "texture": "stackable-meat",

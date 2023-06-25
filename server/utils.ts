@@ -3,7 +3,7 @@ import ItemBuilder from "./ItemBuilder";
 
 const SHOP_INFLATION = 4;
 const PLAYER_BASE_EXP = 20;
-const PLAYER_DEFAULT_SPAWN = { roomName: "grassland", x: 263, y: 928 };
+const PLAYER_DEFAULT_SPAWN = { roomName: "grassland-3", x: 1496, y: 2028 };
 
 function handlePlayerInput(scene, socketId, input) {
   if (!scene.players) return;

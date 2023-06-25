@@ -37,6 +37,44 @@
       "height": 22
     }
   },
+  "trista": {
+    "charClass": "rogue",
+    "profile": {
+      "userName": "Trista",
+      "face": {
+        "texture": "face-1",
+        "tint": "0xFFFFFF"
+      },
+      "hair": {
+        "texture": "hair-4",
+        "tint": "0x886666"
+      },
+      "gender": "female",
+      "race": "human"
+    },
+    "state": { "isStatic": true },
+    "baseStats": {
+      "level": 50
+    },
+    "equipment": {
+      "handLeft": ["weapon", "common", "spear"],
+      "handRight": null,
+      "helmet": ["helmet", "unique", "crabHat"],
+      "accessory": null,
+      "armor": ["armor", "common", "clothRobe"],
+      "pants": ["pants", "common", "clothPants"],
+      "boots": ["boots", "common", "nutshellBoots"]
+    },
+    "keeperData": {
+      "dialogues": {
+        "greet": "My name is <strong>Trista</strong>. I am the crab warden of this beach.",
+        "quests": "Here are some things you can do for me on this beach.",
+        "shop": "Purchase a spear from me.  It is easier to catch fish that way."
+      },
+      "quests": ["crab-catching", "crab-meat", "fish-spearing"],
+      "shop": [{ "item": ["weapon", "common", "spear"], "stock": 1 }]
+    }
+  },
   "tudwick": {
     "charClass": "warrior",
     "profile": {
