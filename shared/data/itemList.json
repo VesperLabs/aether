@@ -311,6 +311,7 @@
       },
       "crabHat": {
         "ilvl": 1,
+        "setName": "crab",
         "name": "Crab Hat",
         "base": "cap",
         "texture": "helmet-crab",

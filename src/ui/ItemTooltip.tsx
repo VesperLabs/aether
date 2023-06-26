@@ -2,6 +2,7 @@ import { Fragment } from "react";
 import { Flex, useAppContext, Text, Divider, Icon, Tooltip } from "./";
 import buffList from "../../shared/data/buffList.json";
 import itemSetList from "../../shared/data/itemSetList.json";
+import ItemBuilder from "../../server/ItemBuilder";
 
 import { convertMsToS } from "../utils";
 const formatStats = (stats = {}) =>
@@ -34,6 +35,8 @@ const ItemTooltip = ({ item, tooltipId, show }) => {
   const { hero } = useAppContext();
   const isSetActive = hero?.state?.activeSets?.includes?.(item?.setName);
   if (!item) return;
+
+  item.setBonus = ItemBuilder.getSetInfo(item?.setName);
 
   const combinedStats = formatStats(item?.stats);
   const combinedSetStats = formatStats(item?.setBonus?.stats);
