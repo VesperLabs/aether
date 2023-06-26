@@ -90,13 +90,13 @@
     "drops": [
       {
         "type": "helmet",
-        "rarity": "unique",
+        "rarity": "set",
         "key": "crabHat",
         "chance": 50
       },
       {
         "type": "boots",
-        "rarity": "unique",
+        "rarity": "set",
         "key": "crabWalkers",
         "chance": 1000
       },

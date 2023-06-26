@@ -59,11 +59,11 @@
     "equipment": {
       "handLeft": ["weapon", "common", "spear"],
       "handRight": null,
-      "helmet": ["helmet", "unique", "crabHat"],
+      "helmet": ["helmet", "set", "crabHat"],
       "accessory": null,
       "armor": ["armor", "common", "clothRobe"],
       "pants": ["pants", "common", "clothPants"],
-      "boots": ["boots", "common", "nutshellBoots"]
+      "boots": ["boots", "set", "crabWalkers"]
     },
     "keeperData": {
       "dialogues": {

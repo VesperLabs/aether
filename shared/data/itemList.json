@@ -281,20 +281,6 @@
           "walkSpeed": [30, 50]
         }
       },
-      "crabHat": {
-        "ilvl": 1,
-        "name": "Crab Hat",
-        "base": "cap",
-        "texture": "helmet-crab",
-        "slot": "helmet",
-        "exclusive": true,
-        "stats": {
-          "defense": [2, 3],
-          "vitality": [1, 2],
-          "earthResistance": [2, 3]
-        },
-        "cost": "20"
-      },
       "theDragonWhisker": {
         "ilvl": 3,
         "name": "The Dragon Whisker",
@@ -322,6 +308,20 @@
           "dexterity": 5,
           "earthResistance": [10, 15]
         }
+      },
+      "crabHat": {
+        "ilvl": 1,
+        "name": "Crab Hat",
+        "base": "cap",
+        "texture": "helmet-crab",
+        "slot": "helmet",
+        "exclusive": true,
+        "stats": {
+          "defense": [2, 3],
+          "vitality": [1, 2],
+          "earthResistance": [2, 3]
+        },
+        "cost": 20
       }
     }
   },
@@ -467,6 +467,22 @@
           "vitality": [8, 10],
           "walkSpeed": [15, 20]
         }
+      },
+      "crabWalkers": {
+        "ilvl": 1,
+        "setName": "crab",
+        "name": "Crab Walkers",
+        "base": "boots",
+        "texture": "boots-cloth",
+        "tint": "0xFF6644",
+        "slot": "boots",
+        "exclusive": true,
+        "stats": {
+          "earthResistance": [2, 3],
+          "magicFind": [10, 15],
+          "walkSpeed": [10, 15]
+        },
+        "cost": 20
       }
     },
     "unique": {
@@ -479,20 +495,6 @@
         "slot": "boots",
         "stats": {
           "walkSpeed": [30, 40]
-        }
-      },
-      "crabWalkers": {
-        "ilvl": 1,
-        "name": "Crab Walkers",
-        "base": "boots",
-        "texture": "boots-cloth",
-        "tint": "0xFF6644",
-        "slot": "boots",
-        "exclusive": true,
-        "stats": {
-          "earthResistance": [2, 3],
-          "magicFind": [10, 15],
-          "walkSpeed": [10, 15]
         }
       }
     }
