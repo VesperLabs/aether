@@ -15,7 +15,12 @@ const formatStats = (stats = {}) =>
       acc[key] = "+" + value + "%";
     } else if (key.includes("Delay") || key.includes("duration")) {
       acc[key] = convertMsToS(value)?.replace(".00", "");
-    } else if (key.includes("Steal") || key.includes("Chance") || key.includes("Resistance")) {
+    } else if (
+      key.includes("Steal") ||
+      key.includes("Chance") ||
+      key.includes("Resistance") ||
+      key.includes("magicFind")
+    ) {
       acc[key] = value + "%";
     } else {
       acc[key] = value;

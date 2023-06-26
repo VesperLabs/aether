@@ -115,7 +115,12 @@ const QuestTooltip = ({
         </Flex>
         <Divider />
         <Flex sx={{ gap: 1 }}>
-          <Button variant="wood" onClick={() => setShow(false)}>
+          <Button
+            variant="wood"
+            onClick={(e) => {
+              setShow(false);
+            }}
+          >
             Close
           </Button>
           <QuestStatusButton

@@ -95,6 +95,12 @@
         "chance": 50
       },
       {
+        "type": "boots",
+        "rarity": "unique",
+        "key": "crabWalkers",
+        "chance": 1000
+      },
+      {
         "type": "stackable",
         "rarity": "common",
         "key": "crabMeat",

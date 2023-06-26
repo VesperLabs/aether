@@ -69,7 +69,9 @@ const ItemBuilder = {
 
     const addItemToPool = (pool, rarity, key) => {
       const item = theType[rarity][key];
-      if (item.ilvl <= ilvl) {
+      // only add items with low enough iLvl and ones
+      // that aren't exclusive to a single mob to the pool
+      if (item.ilvl <= ilvl && !item?.exclusive) {
         pool.push({ type, rarity, key });
       }
     };

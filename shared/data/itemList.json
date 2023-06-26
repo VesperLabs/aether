@@ -287,6 +287,7 @@
         "base": "cap",
         "texture": "helmet-crab",
         "slot": "helmet",
+        "exclusive": true,
         "stats": {
           "defense": [2, 3],
           "vitality": [1, 2],
@@ -439,7 +440,7 @@
         "tint": "0xCC9966",
         "slot": "boots",
         "stats": {
-          "walkSpeed": 10,
+          "walkSpeed": 5,
           "defense": [1, 2]
         }
       },
@@ -462,9 +463,6 @@
         "texture": "boots-cloth",
         "tint": "0x00FF00",
         "slot": "boots",
-        "requirements": {
-          "level": 6
-        },
         "stats": {
           "vitality": [8, 10],
           "walkSpeed": [15, 20]
@@ -473,7 +471,7 @@
     },
     "unique": {
       "chickenFeet": {
-        "ilvl": 1,
+        "ilvl": 2,
         "name": "Chicken Feet",
         "base": "boots",
         "texture": "boots-cloth",
@@ -481,6 +479,20 @@
         "slot": "boots",
         "stats": {
           "walkSpeed": [30, 40]
+        }
+      },
+      "crabWalkers": {
+        "ilvl": 1,
+        "name": "Crab Walkers",
+        "base": "boots",
+        "texture": "boots-cloth",
+        "tint": "0xFF6644",
+        "slot": "boots",
+        "exclusive": true,
+        "stats": {
+          "earthResistance": [2, 3],
+          "magicFind": [10, 15],
+          "walkSpeed": [10, 15]
         }
       }
     }
