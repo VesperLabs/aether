@@ -203,7 +203,14 @@ class ServerCharacter extends Character {
     /* percentage stats need to be summed up and added last */
     Object.keys(totalPercentStats).forEach((key) => {
       let percentIncrease = Math.floor(ns[key] * (totalPercentStats[key] / 100));
-      if (key == "vitality" || key == "dexterity" || key == "strength" || key == "intelligence")
+      if (
+        // do we need these?
+        key == "vitality" ||
+        key == "dexterity" ||
+        key == "strength" ||
+        key == "intelligence" ||
+        key == "defense"
+      )
         ns[key] += percentIncrease;
     });
     ns.expValue = ns.expValue || 0;

@@ -219,23 +219,6 @@ const ItemBuilder = {
       } //end for
     }
 
-    if (item.setName) {
-      if (itemSetList[item.setName]) {
-        let setBonus = itemSetList[item.setName];
-        if (setBonus.percentStats) {
-          for (let key in setBonus.percentStats) {
-            setBonus.percentStats[key] = parseInt(setBonus.percentStats[key]);
-          }
-        }
-        if (setBonus.stats) {
-          for (let key in setBonus.stats) {
-            setBonus.stats[key] = parseInt(setBonus.stats[key]);
-          }
-        }
-        item.setBonus = setBonus;
-      }
-    }
-
     item.key = itemKey;
     item.tint = item?.tint || "0xFFFFFF";
     item.rarity = rarity;
