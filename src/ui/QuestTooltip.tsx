@@ -15,15 +15,16 @@ import ItemBuilder from "../../server/ItemBuilder";
 import nasties from "../../shared/data/nasties.json";
 import keepers from "../../shared/data/keepers.json";
 
-function getTopLevelKeyWithQuest(obj, quest) {
-  for (const key in obj) {
-    if (obj?.[key]?.keeperData?.quests?.includes(quest)) {
-      return obj?.[key];
+function getKeeperByQuestName(quest) {
+  for (const key in keepers) {
+    if (keepers?.[key]?.keeperData?.quests?.includes(quest)) {
+      return keepers?.[key];
     }
   }
   return null; // Return null if the quest is not found
 }
 
+/* Formats and parses the quest information from dialoge templates */
 const useQuestDialogue = (quest, playerQuest: PlayerQuest) => {
   const { dialogues, objectives } = quest ?? {};
   const objectiveTexts = objectives?.map((objective: QuestObjective, idx) => {
@@ -41,9 +42,10 @@ const useQuestDialogue = (quest, playerQuest: PlayerQuest) => {
       noun = nasties?.[objective?.monster]?.profile?.userName;
       current = playerQuest?.objectives?.[idx]?.numKilled || 0;
     }
-    return `<strong>${verb} (${Math.min(current, objective?.amount)}/${
-      objective?.amount
-    }) ${noun}s</strong>`;
+    const amount = playerQuest
+      ? `(${Math.min(current, objective?.amount)}/${objective?.amount})`
+      : `(${objective?.amount})`;
+    return `<strong>${verb} ${amount} ${noun}s</strong>`;
   });
 
   return dialogues?.description?.replace("{objective}", objectiveTexts?.[0]);
@@ -67,7 +69,9 @@ const QuestTooltip = ({
   const { socket } = useAppContext();
   const { rewards } = quest ?? {};
   const questDialogue = useQuestDialogue(quest, playerQuest);
-  const giverName = getTopLevelKeyWithQuest(keepers, quest?.id)?.profile?.userName;
+  const keeper = getKeeperByQuestName(quest?.id);
+  const giverName = keeper?.profile?.userName;
+
   return (
     <Tooltip id={`${tooltipId}`} style={{ pointerEvents: "all" }} isOpen={show}>
       <Flex
@@ -83,7 +87,8 @@ const QuestTooltip = ({
         }}
       >
         <Text sx={{ fontWeight: "bold" }}>
-          {quest?.name} for {giverName}
+          {quest?.name}
+          <Text sx={{ color: "gray.500" }}> ({giverName})</Text>
         </Text>
         <Divider />
         <Text dangerouslySetInnerHTML={{ __html: questDialogue }} />

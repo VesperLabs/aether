@@ -11,12 +11,12 @@
       "items": []
     }
   },
-  "crab-meat": {
-    "name": "Crab Meat",
+  "crab-shells": {
+    "name": "Crab Shells",
     "dialogues": {
       "description": "{objective} from Crabs and report back to me."
     },
-    "objectives": [{ "type": "item", "item": ["stackable", "common", "crabMeat"], "amount": 3 }],
+    "objectives": [{ "type": "item", "item": ["stackable", "common", "crabShell"], "amount": 3 }],
     "rewards": {
       "exp": 20,
       "gold": 10,

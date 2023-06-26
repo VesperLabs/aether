@@ -53,7 +53,7 @@ class Player extends ServerCharacter implements Player {
       if (!objective) continue;
       /* Only works for stackable items */
       if (objective?.type === "item") {
-        const itemId = objective?.monster?.[2];
+        const itemId = objective?.item?.[2];
         this.subtractInventoryItemAtId(itemId, objective?.amount) ||
           this.subtractBagItemAtId(itemId, objective?.amount);
       }

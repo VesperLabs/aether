@@ -103,7 +103,7 @@
       {
         "type": "stackable",
         "rarity": "common",
-        "key": "crabMeat",
+        "key": "crabShell",
         "chance": 3
       }
     ]

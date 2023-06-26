@@ -779,16 +779,6 @@
           "hp": 10
         }
       },
-      "crabMeat": {
-        "ilvl": 1,
-        "name": "Crab Meat",
-        "base": "food",
-        "slot": "stackable",
-        "texture": "stackable-meat",
-        "effects": {
-          "hp": 10
-        }
-      },
       "cheese": {
         "ilvl": 1,
         "name": "Cheese",
@@ -839,8 +829,17 @@
           "hp": 5
         }
       },
-      "skull": {
+      "crabShell": {
         "ilvl": 2,
+        "tint": "0xFF6644",
+        "name": "Crab Shell",
+        "base": "material",
+        "slot": "stackable",
+        "texture": "stackable-husk",
+        "effects": {}
+      },
+      "skull": {
+        "ilvl": 1,
         "name": "Skull",
         "base": "material",
         "slot": "stackable",

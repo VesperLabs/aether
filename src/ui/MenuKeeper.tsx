@@ -55,7 +55,7 @@ const MenuKeeper = () => {
     <Menu className="menu-keeper">
       <MenuHeader onClick={() => setTabKeeper(false)}>{keeper?.profile?.userName}</MenuHeader>
       <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", width: 592 }}>
-        <Portrait user={keeper} />
+        <Portrait user={keeper} size={70} topOffset={26} scale={2.4} />
         <Flex
           sx={{
             gap: 1,
