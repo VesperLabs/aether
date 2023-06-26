@@ -32,7 +32,7 @@ const Quest = ({ quest, parent = "keeper" }: { quest: Quest; parent: string }) =
   };
 
   return (
-    <Box sx={BASE_SLOT_STYLE} {...outerMouseBinds}>
+    <Box sx={BASE_SLOT_STYLE} {...outerMouseBinds} onTouchStart={(e) => handleMouseEnter(e)}>
       <Box
         data-tooltip-id={`${tooltipId}`}
         sx={{

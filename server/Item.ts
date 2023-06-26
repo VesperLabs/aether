@@ -21,6 +21,7 @@ class Item implements Item {
   setBonus?: Record<string, number>;
   mpCost?: number;
   space?: number; // amount of slots on bags
+  exclusive: boolean; // cannot be dropped on world
   items?: Array<Item>;
 
   constructor(item) {
@@ -46,6 +47,7 @@ class Item implements Item {
     this.setBonus = item?.setBonus;
     this.mpCost = item?.mpCost;
     this.space = item?.space;
+    this.exclusive = item?.exclusive;
     this.items = item?.items || [];
   }
 }
