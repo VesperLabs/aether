@@ -450,6 +450,12 @@
     "previewRect": [0, 0, 32, 32]
   },
   {
+    "texture": "stackable-husk",
+    "src": "./assets/atlas/stackable/stackable-husk.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
     "texture": "stackable-bsporangium",
     "src": "./assets/atlas/stackable/stackable-bsporangium.png",
     "atlas": "./assets/atlas/32x32-stackable.json",
