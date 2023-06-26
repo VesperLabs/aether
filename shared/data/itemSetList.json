@@ -11,6 +11,17 @@
       "intelligence": 15
     }
   },
+  "crab": {
+    "name": "Crustacean Chic",
+    "pieces": 2,
+    "stats": {
+      "vitality": 10,
+      "critChance": 5
+    },
+    "percentStats": {
+      "defense": 5
+    }
+  },
   "hawkwings": {
     "name": "Hawkwing's Arms",
     "pieces": 3,
