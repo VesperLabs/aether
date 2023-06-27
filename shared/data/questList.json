@@ -16,9 +16,9 @@
     "dialogues": {
       "description": "{objective} and report back to me."
     },
-    "objectives": [{ "type": "bounty", "monster": "crab", "amount": 10 }],
+    "objectives": [{ "type": "bounty", "monster": "crab", "amount": 20 }],
     "rewards": {
-      "exp": 10,
+      "exp": 15,
       "gold": 5,
       "items": []
     }
@@ -26,13 +26,13 @@
   "crab-shells": {
     "name": "Crab Shells",
     "dialogues": {
-      "description": "{objective} from Crabs and report back to me."
+      "description": "{objective} from Crabs and report back to me.  I will craft you a remarkable helmet."
     },
-    "objectives": [{ "type": "item", "item": ["stackable", "common", "crabShell"], "amount": 3 }],
+    "objectives": [{ "type": "item", "item": ["stackable", "common", "crabShell"], "amount": 20 }],
     "rewards": {
-      "exp": 10,
+      "exp": 15,
       "gold": 5,
-      "items": []
+      "items": [["helmet", "set", "crabHat"]]
     }
   },
   "fish-spearing": {
