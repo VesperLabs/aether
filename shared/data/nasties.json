@@ -13,12 +13,6 @@
       {
         "type": "stackable",
         "rarity": "common",
-        "key": "redApple",
-        "chance": 5
-      },
-      {
-        "type": "stackable",
-        "rarity": "common",
         "key": "grapes",
         "chance": 4
       }
@@ -59,7 +53,7 @@
         "type": "stackable",
         "rarity": "common",
         "key": "redApple",
-        "chance": 4
+        "chance": 10
       }
     ]
   },
@@ -163,13 +157,13 @@
         "type": "stackable",
         "rarity": "common",
         "key": "batMeat",
-        "chance": 4
+        "chance": 3
       },
       {
         "type": "stackable",
         "rarity": "common",
         "key": "cheese",
-        "chance": 5
+        "chance": 10
       }
     ]
   },
@@ -195,12 +189,6 @@
         "rarity": "common",
         "key": "spiderMeat",
         "chance": 4
-      },
-      {
-        "type": "stackable",
-        "rarity": "common",
-        "key": "cheese",
-        "chance": 2
       }
     ]
   },

@@ -2,7 +2,7 @@
   "find-tudwick": {
     "name": "Find Tudwick",
     "dialogues": {
-      "description": "{objective}.  He should be somewhere in the forest to the east."
+      "description": "{objective}. He should be somewhere in the forest to the east."
     },
     "objectives": [{ "type": "chat", "keeper": "tudwick" }],
     "rewards": {
@@ -40,7 +40,7 @@
     "dialogues": {
       "description": "These fish are eating my crabs. {objective} and report back to me."
     },
-    "objectives": [{ "type": "bounty", "monster": "fish", "amount": 10 }],
+    "objectives": [{ "type": "bounty", "monster": "fish", "amount": 20 }],
     "rewards": {
       "exp": 10,
       "gold": 5,
@@ -50,37 +50,37 @@
   "hornet-hunting": {
     "name": "Hornet Blaster",
     "dialogues": {
-      "description": "{objective} and report back to me."
+      "description": "Listen up, brave soul! The buzzin' hornets have been causing quite a ruckus around here. I need you to take 'em down, {objective}, and make sure they learn their lesson. Return to me triumphant, and I'll make it worth your while."
     },
-    "objectives": [{ "type": "bounty", "monster": "hornet", "amount": 10 }],
+    "objectives": [{ "type": "bounty", "monster": "hornet", "amount": 20 }],
     "rewards": {
       "exp": 20,
       "gold": 10,
-      "items": [["pants", "common", "clothPants"]]
+      "items": [["ring", "common", "silverRing"]]
     }
   },
   "slime-roundup": {
     "name": "Slime Roundup",
     "dialogues": {
-      "description": "I am all about slime and mold, but these blue ones are taking over the wood. {objective} and report back to me."
+      "description": "Prepare yourself, my friend, for an encounter with the slimy menace that plagues our sacred woods. Those pesky blue slimes are multiplying faster than the mushrooms after a rain. Your mission, should you choose to accept, is to {objective}. Return to me, and together we'll restore balance to this green realm."
     },
-    "objectives": [{ "type": "bounty", "monster": "slime", "amount": 10 }],
+    "objectives": [{ "type": "bounty", "monster": "slime", "amount": 20 }],
     "rewards": {
       "exp": 20,
       "gold": 10,
-      "items": [["helmet", "common", "clothCap"]]
+      "items": [["boots", "common", "nutshellBoots"]]
     }
   },
   "slime-eggs": {
     "name": "Slime Eggs",
     "dialogues": {
-      "description": "Killing slimes is one thing, but best not let their eggs go to waste. Them's good eatin'. {objective} and report back to me."
+      "description": "A peculiar request, I know, but hear me out. Slime hunting is one thing, but their eggs? Oh, they're a delicacy! {objective} for me, and we'll turn those slimy offspring into a feast fit for kings. Don't worry, I've got something extra special in store for you if you succeed."
     },
     "objectives": [
       {
         "type": "item",
         "item": ["stackable", "common", "blueSporangium"],
-        "amount": 3
+        "amount": 5
       }
     ],
     "rewards": {
@@ -91,7 +91,7 @@
   "tudwick-shrooms": {
     "name": "Shrooms for Tudwick",
     "dialogues": {
-      "description": "It has become hard to find mushrooms in these woods, but I know you can buy them in the town up north. {objective} and report back to me."
+      "description": "Ah, the elusive mushrooms! The woodland delicacy I've been yearning for. Unfortunately, they're becoming rarer than a unicorn sighting 'round these parts. But fret not! I've heard whispers that you can find 'em in the town up north. {objective} for me, my fungi-loving friend, and I'll reward you handsomely. Trust me, it'll be worth the journey."
     },
     "objectives": [
       {
@@ -136,8 +136,7 @@
     "objectives": [{ "type": "bounty", "monster": "hawkwing", "amount": 1 }],
     "rewards": {
       "exp": 40,
-      "gold": 20,
-      "items": [["pants", "common", "clothPants"]]
+      "gold": 20
     }
   },
   "spidermeat-finding": {

@@ -110,9 +110,9 @@
     },
     "keeperData": {
       "dialogues": {
-        "greet": "My name is <strong>Tudwick</strong> and I don't like wearing shirts. I live in these woods and I have a sweet <em>`stache</em>. What can I do for you?",
-        "quests": "Still listening? Good! Here's some stuff you can do for me.",
-        "shop": "Here are some things I found along the trail.  You may find them useful."
+        "greet": "Well, well, well, look who stumbled into my neck of the woods. I'm <strong>Tudwick</strong>, the forest ranger who defies the conventions of shirts and embraces the wildness of nature. What brings you here, brave traveler? ",
+        "quests": "Ah, still interested, are ya? Well, I've got some intriguing tasks lined up for you, perfect for an adventurous soul like yourself.",
+        "shop": "Behold! I've gathered a curious collection of forest finds on my woodland wanderings. Feast your eyes upon these treasures I've stumbled upon. Who knows? You might find them rather handy on your own journey."
       },
       "quests": ["slime-roundup", "slime-eggs", "hornet-hunting", "tudwick-shrooms"],
       "shop": [
