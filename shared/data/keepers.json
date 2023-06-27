@@ -71,7 +71,7 @@
         "quests": "Here are some things you can do for me on this beach.",
         "shop": "Purchase a spear from me.  It is easier to catch fish that way."
       },
-      "quests": ["crab-catching", "crab-shells", "fish-spearing"],
+      "quests": ["crab-catching", "crab-shells", "fish-spearing", "find-tudwick"],
       "shop": [{ "item": ["weapon", "common", "spear"], "stock": 1 }]
     }
   },

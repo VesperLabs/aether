@@ -237,7 +237,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         io.to(player?.roomName).emit("lootGrabbed", {
           socketId,
           lootId,
-          /* TODO: This is a big state update. Probably only need to update inventory */
+          /* TODO: This is a big state update. Probably only need to update inventory and quests */
           player: getFullCharacterState(player),
         });
       });
@@ -848,13 +848,16 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       });
 
       socket.on("chatNpc", ({ npcId } = {}) => {
-        const player = scene?.players?.[socketId];
+        const player: Player = scene?.players?.[socketId];
         const npc = scene?.npcs?.[npcId];
         npc.talkingIds.push(socketId);
         player.state.targetNpcId = npcId;
+        /* Quests that are of type: chat need to be updated */
+        const playerQuests = player.updateChatQuests(npc.name);
         socket.emit("keeperDataUpdate", {
           npcId: npc?.id,
           keeperData: npc?.keeperData,
+          playerQuests,
         });
       });
 
@@ -987,22 +990,20 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         const currentQuest = scene.quests?.[questId];
         const foundQuest = player?.getPlayerQuestStatus(currentQuest);
         /* If the quest is ready, we turn it in */
-        if (foundQuest?.isReady) {
-          const questResults = player?.completeQuest(currentQuest);
-          /* Quest failed */
-          if (questResults?.error) {
-            return socket.emit("message", {
-              type: "error",
-              message: questResults.error,
-            } as Message);
-          }
-          /* Save the users data */
-          player.calculateStats();
-          scene.db.updateUser(player);
-          io.to(player?.roomName).emit("playerUpdate", getFullCharacterState(player), {
-            didLevel: questResults?.didLevel,
-          });
+        const questResults = player?.completeQuest(currentQuest);
+        /* Quest failed */
+        if (questResults?.error) {
+          return socket.emit("message", {
+            type: "error",
+            message: questResults.error,
+          } as Message);
         }
+        /* Save the users data */
+        player.calculateStats();
+        scene.db.updateUser(player);
+        io.to(player?.roomName).emit("playerUpdate", getFullCharacterState(player), {
+          didLevel: questResults?.didLevel,
+        });
       });
 
       socket.on("updateProfile", (args) => {

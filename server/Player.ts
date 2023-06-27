@@ -25,11 +25,24 @@ class Player extends ServerCharacter implements Player {
     if (this.quests.find((q) => q?.questId === quest?.id)) return;
     this.quests.push({ questId: quest?.id, isCompleted: false });
   }
+  updateChatQuests(npcName: string): Array<PlayerQuest> {
+    const quests = this.scene.quests;
+    const playerQuests = this?.quests.map((playerQuest) => {
+      const quest = quests[playerQuest?.questId];
+      if (quest?.objectives?.some((q) => q?.keeper === npcName && !playerQuest.isCompleted)) {
+        return { ...playerQuest, isReady: true };
+      }
+      return playerQuest;
+    });
+    this.quests = playerQuests;
+    return playerQuests;
+  }
   completeQuest(quest: Quest) {
     const questItems = quest?.rewards?.items || [];
     const objectives = quest?.objectives || [];
     const foundQuest: PlayerQuest = this.getPlayerQuestStatus(quest);
-    if (!foundQuest?.isReady) return false;
+    if (foundQuest?.isCompleted) return { error: "Quest has already been completed." };
+    if (!foundQuest?.isReady) return { error: "Quest objectives are not complete." };
 
     let inventoryFull = false;
 

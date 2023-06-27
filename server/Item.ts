@@ -25,30 +25,41 @@ class Item implements Item {
   items?: Array<Item>;
 
   constructor(item) {
-    this.id = item?.id;
-    this.key = item?.key;
-    this.ilvl = item?.ilvl;
-    this.stats = item?.stats;
-    this.rarity = item?.rarity;
-    this.name = item?.name;
-    this.base = item?.base;
-    this.slot = item?.slot;
-    this.texture = item?.texture;
-    this.tint = item?.tint;
-    this.attackTint = item?.attackTint;
-    this.amount = item?.amount || 1;
-    this.type = item?.type;
-    this.requirements = item?.requirements;
-    this.cost = item?.cost;
-    this.effects = item?.effects;
-    this.buffs = item?.buffs;
-    this.percentStats = item?.percentStats;
-    this.setName = item?.setName;
-    this.setBonus = item?.setBonus;
-    this.mpCost = item?.mpCost;
-    this.space = item?.space;
-    this.exclusive = item?.exclusive;
-    this.items = item?.items || [];
+    const properties = [
+      "id",
+      "key",
+      "ilvl",
+      "stats",
+      "rarity",
+      "name",
+      "base",
+      "slot",
+      "texture",
+      "tint",
+      "attackTint",
+      "amount",
+      "type",
+      "requirements",
+      "cost",
+      "effects",
+      "buffs",
+      "percentStats",
+      "setName",
+      "setBonus",
+      "mpCost",
+      "space",
+      "exclusive",
+      "items",
+    ];
+    for (const prop of properties) {
+      if (item?.[prop] !== null && item?.[prop] !== undefined) {
+        this[prop] = item[prop];
+      } else if (prop === "amount") {
+        this.amount = 1;
+      } else if (prop === "items") {
+        this.items = [];
+      }
+    }
   }
 }
 

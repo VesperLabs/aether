@@ -181,6 +181,7 @@ interface Player extends Character {
   partyId?: string;
   addQuest(quest: Quest): void;
   completeQuest(quest: Quest): any;
+  updateChatQuests(questId: string): Array<PlayerQuest>;
   findEquipmentById(id: string): Slot;
   findAbilityById(id: string): Slot;
   subtractAbilityAtId(id: string, amount: integer);
@@ -289,6 +290,7 @@ interface QuestObjective {
   type: string;
   item?: Array<string>;
   monster?: string;
+  keeper?: string;
   amount: integer;
 }
 interface PlayerQuest {

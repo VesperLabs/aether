@@ -1,4 +1,16 @@
 {
+  "find-tudwick": {
+    "name": "Find Tudwick",
+    "dialogues": {
+      "description": "{objective}.  He should be somewhere in the forest to the east."
+    },
+    "objectives": [{ "type": "chat", "keeper": "tudwick" }],
+    "rewards": {
+      "exp": 20,
+      "gold": 10,
+      "items": []
+    }
+  },
   "crab-catching": {
     "name": "Crab Catching",
     "dialogues": {

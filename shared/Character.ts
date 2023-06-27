@@ -232,7 +232,7 @@ class Character extends Phaser.GameObjects.Container {
     }, []);
     return {
       questId: quest?.id,
-      isReady: objectives?.every((o) => o?.isReady),
+      isReady: objectives?.every((o) => o?.isReady) || playerQuest?.isReady,
       isCompleted: playerQuest?.isCompleted,
       objectives,
     };

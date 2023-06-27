@@ -15,11 +15,11 @@
     "name": "Crustacean Chic",
     "pieces": 2,
     "stats": {
-      "vitality": 10,
       "critChance": 5
     },
     "percentStats": {
-      "defense": 15
+      "defense": 5,
+      "maxHp": 10
     }
   },
   "hawkwings": {
