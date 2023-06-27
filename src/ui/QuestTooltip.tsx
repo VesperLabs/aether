@@ -77,6 +77,12 @@ const QuestTooltip = ({
   const questDialogue = useQuestDialogue(quest, playerQuest);
   const giverName = keeper?.profile?.userName;
 
+  const getQuestColor = () => {
+    if (playerQuest?.isCompleted) return "set";
+    if (playerQuest?.isReady) return "set";
+    return "warning";
+  };
+
   return (
     <Tooltip id={`${tooltipId}`} style={{ pointerEvents: "all" }} isOpen={show}>
       <Flex
@@ -87,11 +93,12 @@ const QuestTooltip = ({
           flexDirection: "column",
           "& strong": {
             fontStyle: "normal",
-            color: playerQuest?.isReady ? "set" : "warning",
+            color: getQuestColor(),
           },
         }}
       >
         <Text sx={{ fontWeight: "bold" }}>
+          {playerQuest?.isCompleted && "🏆 "}
           {quest?.name}
           <Text sx={{ color: "gray.500" }}> ({giverName})</Text>
         </Text>
