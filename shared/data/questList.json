@@ -14,7 +14,7 @@
   "crab-catching": {
     "name": "Crab Catching",
     "dialogues": {
-      "description": "{objective} and report back to me."
+      "description": "Among the coastal sands, a legion of crabs scuttles with resilience and purpose. To truly comprehend their essence, you must face them in battle. {objective}, and you shall gain insight into the cycle of life and the sacrifices we make for growth."
     },
     "objectives": [{ "type": "bounty", "monster": "crab", "amount": 20 }],
     "rewards": {
@@ -23,10 +23,10 @@
       "items": []
     }
   },
-  "crab-shells": {
-    "name": "Crab Shells",
+  "crab-hat": {
+    "name": "The Crab Hat",
     "dialogues": {
-      "description": "{objective} from Crabs and report back to me.  I will craft you a remarkable helmet."
+      "description": "Ah, the legendary helmet of the crab! Indeed, it is a task that requires dedication and bravery. The very essence of the shoreline is woven into these shells. If you wish to contribute, you must {objective} for me. With your help, we can forge a helmet that will withstand the fiercest of tides."
     },
     "objectives": [{ "type": "item", "item": ["stackable", "common", "crabShell"], "amount": 20 }],
     "rewards": {

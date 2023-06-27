@@ -9,6 +9,7 @@ import {
   Slot,
   KeyboardButton,
   Quest,
+  MENU_MAX_WIDTH,
 } from "./";
 
 const MenuKeeper = () => {
@@ -54,7 +55,7 @@ const MenuKeeper = () => {
   return (
     <Menu className="menu-keeper">
       <MenuHeader onClick={() => setTabKeeper(false)}>{keeper?.profile?.userName}</MenuHeader>
-      <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", width: 592 }}>
+      <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", width: MENU_MAX_WIDTH }}>
         <Portrait user={keeper} size={70} topOffset={26} scale={2.4} />
         <Flex
           sx={{
