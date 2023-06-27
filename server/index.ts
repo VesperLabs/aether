@@ -853,11 +853,11 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         npc.talkingIds.push(socketId);
         player.state.targetNpcId = npcId;
         /* Quests that are of type: chat need to be updated */
-        const playerQuests = player.updateChatQuests(npc.name);
+        player.updateChatQuests(npc.name);
         socket.emit("keeperDataUpdate", {
           npcId: npc?.id,
           keeperData: npc?.keeperData,
-          playerQuests,
+          playerQuests: scene?.players?.[socketId].getQuests(),
         });
       });
 
