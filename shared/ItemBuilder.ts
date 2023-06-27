@@ -1,10 +1,10 @@
 /* This file and Diablo II are the main reason this game exists */
 import crypto from "crypto";
-import Item from "./Item";
-import { cloneObject, randomNumber } from "./utils";
-import itemList from "../shared/data/itemList.json";
-import itemSetList from "../shared/data/itemSetList.json";
-import itemModsList from "../shared/data/itemModsList.json";
+import Item from "../server/Item";
+import { cloneObject, randomNumber } from "../server/utils";
+import itemList from "./data/itemList.json";
+import itemSetList from "./data/itemSetList.json";
+import itemModsList from "./data/itemModsList.json";
 
 const ItemBuilder = {
   getSetInfo: (setName: string) => {

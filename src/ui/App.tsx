@@ -140,6 +140,7 @@ function App({ socket, debug, game }) {
     const onDisconnect = () => {
       setIsConnected(false);
       setIsLoggedIn(false);
+      setTabKeeper(false);
       setMessages([]);
       setPlayers([]);
       setParty([]);

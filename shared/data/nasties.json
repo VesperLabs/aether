@@ -95,6 +95,12 @@
         "chance": 50
       },
       {
+        "type": "armor",
+        "rarity": "set",
+        "key": "crabSuit",
+        "chance": 1000
+      },
+      {
         "type": "boots",
         "rarity": "set",
         "key": "crabWalkers",

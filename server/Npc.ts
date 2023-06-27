@@ -1,5 +1,5 @@
 import Character from "./Character";
-import ItemBuilder from "./ItemBuilder";
+import ItemBuilder from "../shared/ItemBuilder";
 import { getCharacterDirection, distanceTo, randomNumber, SHOP_INFLATION } from "./utils";
 import spellDetails from "../shared/data/spellDetails.json";
 import crypto from "crypto";

@@ -27,7 +27,7 @@ import RoomManager from "./RoomManager";
 import PartyManager from "./PartyManager";
 import Phaser from "phaser";
 import QuestBuilder from "./QuestBuilder";
-import ItemBuilder from "./ItemBuilder";
+import ItemBuilder from "../shared/ItemBuilder";
 const { SnapshotInterpolation } = require("@geckos.io/snapshot-interpolation");
 
 const express = require("express");

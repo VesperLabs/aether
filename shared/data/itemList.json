@@ -318,9 +318,7 @@
         "slot": "helmet",
         "exclusive": true,
         "stats": {
-          "defense": [2, 3],
-          "vitality": [1, 2],
-          "earthResistance": [2, 3]
+          "strength": [1, 2]
         },
         "cost": 20
       }
@@ -416,6 +414,20 @@
       }
     },
     "set": {
+      "crabSuit": {
+        "ilvl": 1,
+        "setName": "crab",
+        "name": "Crab Suit",
+        "base": "light-plate-armor",
+        "texture": "armor-plate-light",
+        "slot": "armor",
+        "tint": "0xFF6644",
+        "exclusive": true,
+        "stats": {
+          "strength": [1, 2]
+        },
+        "cost": 20
+      },
       "chetsPurpleShirt": {
         "ilvl": 1,
         "setName": "chets",
@@ -479,9 +491,7 @@
         "slot": "boots",
         "exclusive": true,
         "stats": {
-          "earthResistance": [2, 3],
-          "magicFind": [10, 15],
-          "walkSpeed": [10, 15]
+          "strength": [1, 2]
         },
         "cost": 20
       }

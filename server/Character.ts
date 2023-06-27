@@ -1,5 +1,5 @@
 import Character from "../shared/Character";
-import ItemBuilder from "./ItemBuilder";
+import ItemBuilder from "../shared/ItemBuilder";
 import { randomNumber, cloneObject, calculateNextMaxExp } from "./utils";
 import buffList from "../shared/data/buffList.json";
 class ServerCharacter extends Character {

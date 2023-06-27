@@ -1,6 +1,6 @@
 import { MongoClient, Db } from "mongodb";
 import { userSchema } from "./schema";
-import ItemBuilder from "../ItemBuilder";
+import ItemBuilder from "../../shared/ItemBuilder";
 import { useGetBaseCharacterDefaults } from "../utils";
 
 export async function initDatabase(uri) {
@@ -54,6 +54,7 @@ const getDatabaseApi = (db) => ({
     }
     const player = createBaseUser(charClass);
     const { updatedAt, createdAt } = getAuditFields();
+
     try {
       await db.collection("users").insertOne({
         email: `${email}`.toLowerCase(),
