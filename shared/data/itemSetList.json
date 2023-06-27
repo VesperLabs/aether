@@ -13,13 +13,14 @@
   },
   "crab": {
     "name": "Crustacean Chic",
-    "pieces": 2,
+    "pieces": 3,
     "stats": {
-      "critChance": 5
+      "critChance": 5,
+      "magicFind": 15,
+      "vitality": 5
     },
     "percentStats": {
-      "defense": 5,
-      "maxHp": 10
+      "defense": 5
     }
   },
   "hawkwings": {

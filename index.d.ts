@@ -19,7 +19,6 @@ interface Item {
   buffs?: Record<string, any>;
   percentStats?: Record<string, number>;
   setName?: string;
-  setBonus?: Record<string, number>;
   space?: number;
   items?: Array<Item>;
 }

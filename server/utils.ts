@@ -1,5 +1,5 @@
 //@ts-nocheck
-import ItemBuilder from "./ItemBuilder";
+import ItemBuilder from "../shared/ItemBuilder";
 
 const SHOP_INFLATION = 4;
 const PLAYER_BASE_EXP = 20;

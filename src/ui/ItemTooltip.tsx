@@ -2,7 +2,7 @@ import { Fragment } from "react";
 import { Flex, useAppContext, Text, Divider, Icon, Tooltip } from "./";
 import buffList from "../../shared/data/buffList.json";
 import itemSetList from "../../shared/data/itemSetList.json";
-import ItemBuilder from "../../server/ItemBuilder";
+import ItemBuilder from "../../shared/ItemBuilder";
 
 import { convertMsToS } from "../utils";
 const formatStats = (stats = {}) =>
@@ -36,10 +36,9 @@ const ItemTooltip = ({ item, tooltipId, show }) => {
   const isSetActive = hero?.state?.activeSets?.includes?.(item?.setName);
   if (!item) return;
 
-  item.setBonus = ItemBuilder.getSetInfo(item?.setName);
-
+  const setBonus = ItemBuilder.getSetInfo(item?.setName);
   const combinedStats = formatStats(item?.stats);
-  const combinedSetStats = formatStats(item?.setBonus?.stats);
+  const combinedSetStats = formatStats(setBonus?.stats);
   const combinedEffects = formatStats(item?.effects);
 
   const requirements = item?.requirements || {};
@@ -118,15 +117,15 @@ const ItemTooltip = ({ item, tooltipId, show }) => {
             </Text>
           );
         })}
-        {item?.setBonus && (
+        {setBonus && (
           <>
             <TextDivider>
               Set Bonus <Text color={isSetActive ? "set" : "gray.500"}>({numSetPieces} piece)</Text>
             </TextDivider>
-            {Object.keys(item?.setBonus?.percentStats || {}).map((key) => {
+            {Object.keys(setBonus?.percentStats || {}).map((key) => {
               return (
                 <Text key={key} color={isSetActive ? "set" : "gray.500"}>
-                  <Label>{key}:</Label> {item?.setBonus.percentStats[key]}%
+                  <Label>{key}:</Label> {setBonus.percentStats[key]}%
                 </Text>
               );
             })}

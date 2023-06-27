@@ -6,8 +6,8 @@
     },
     "objectives": [{ "type": "chat", "keeper": "tudwick" }],
     "rewards": {
-      "exp": 20,
-      "gold": 10,
+      "exp": 10,
+      "gold": 5,
       "items": []
     }
   },
@@ -18,8 +18,8 @@
     },
     "objectives": [{ "type": "bounty", "monster": "crab", "amount": 10 }],
     "rewards": {
-      "exp": 20,
-      "gold": 10,
+      "exp": 10,
+      "gold": 5,
       "items": []
     }
   },
@@ -30,8 +30,8 @@
     },
     "objectives": [{ "type": "item", "item": ["stackable", "common", "crabShell"], "amount": 3 }],
     "rewards": {
-      "exp": 20,
-      "gold": 10,
+      "exp": 10,
+      "gold": 5,
       "items": []
     }
   },
@@ -42,8 +42,8 @@
     },
     "objectives": [{ "type": "bounty", "monster": "fish", "amount": 10 }],
     "rewards": {
-      "exp": 20,
-      "gold": 10,
+      "exp": 10,
+      "gold": 5,
       "items": []
     }
   },

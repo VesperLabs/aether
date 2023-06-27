@@ -11,7 +11,7 @@ import {
   useAppContext,
   Tooltip,
 } from "./";
-import ItemBuilder from "../../server/ItemBuilder";
+import ItemBuilder from "../../shared/ItemBuilder";
 import nasties from "../../shared/data/nasties.json";
 import keepers from "../../shared/data/keepers.json";
 

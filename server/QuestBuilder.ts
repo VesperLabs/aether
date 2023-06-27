@@ -1,7 +1,7 @@
 import { cloneObject } from "./utils";
 import questList from "../shared/data/questList.json";
 import Quest from "./Quest";
-import ItemBuilder from "./ItemBuilder";
+import ItemBuilder from "../shared/ItemBuilder";
 
 const QuestBuilder = {
   buildQuest: function (key: string) {
