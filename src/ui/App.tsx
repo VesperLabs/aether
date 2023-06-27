@@ -234,6 +234,7 @@ function App({ socket, debug, game }) {
       const npc = scene.npcs.getChildren().find((n) => n?.id === args?.npcId);
       if (hero?.state?.targetNpcId === args?.npcId) {
         setKeeper({ ...npc, keeperData: args?.keeperData });
+        setHero((prev) => ({ ...prev, quests: args?.playerQuests }));
         setTabKeeper(true);
       }
     };
@@ -620,12 +621,6 @@ const MenuBar = () => {
                 onClick={() => setTabSocial((prev) => !prev)}
               />
               <MenuButton
-                keyboardKey="V"
-                iconName="book"
-                isActive={tabAbilities}
-                onClick={() => setTabAbilities((prev) => !prev)}
-              />
-              <MenuButton
                 keyboardKey="Q"
                 iconName="quests"
                 isActive={tabQuests}
@@ -642,6 +637,12 @@ const MenuBar = () => {
                 iconName="mirror"
                 isActive={tabProfile}
                 onClick={() => setTabProfile((prev) => !prev)}
+              />
+              <MenuButton
+                keyboardKey="V"
+                iconName="book"
+                isActive={tabAbilities}
+                onClick={() => setTabAbilities((prev) => !prev)}
               />
               <MenuButton
                 keyboardKey="E"
@@ -667,13 +668,13 @@ const MenuBar = () => {
               if (dropItem) return setDropItem(false);
               if (tabKeeper) return setTabKeeper(false);
               if (tabSocial) return setTabSocial(false);
+              if (tabQuests) return setTabQuests(false);
+              if (tabStats) return setTabStats(false);
+              if (tabProfile) return setTabProfile(false);
               if (tabAbilities) return setTabAbilities(false);
               if (tabEquipment) return setTabEquipment(false);
               if (bagState?.length > 0) return toggleBagState(bagState?.[bagState?.length - 1]);
               if (tabInventory) return setTabInventory(false);
-              if (tabProfile) return setTabProfile(false);
-              if (tabQuests) return setTabQuests(false);
-              if (tabStats) return setTabStats(false);
               if (tabChat) return setTabChat(false);
             }}
           />

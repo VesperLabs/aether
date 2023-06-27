@@ -32,6 +32,11 @@ const useQuestDialogue = (quest, playerQuest: PlayerQuest) => {
     let noun = null;
     let current = 0;
 
+    if (objective?.type === "chat") {
+      verb = "Talk to";
+      const keeperName = keepers?.[objective?.keeper]?.profile?.userName;
+      return `<strong>${verb} ${keeperName}</strong>`;
+    }
     if (objective?.type === "item") {
       verb = "Collect";
       noun = ItemBuilder.buildItem(...objective.item)?.name;
@@ -68,8 +73,8 @@ const QuestTooltip = ({
 }) => {
   const { socket } = useAppContext();
   const { rewards } = quest ?? {};
-  const questDialogue = useQuestDialogue(quest, playerQuest);
   const keeper = getKeeperByQuestName(quest?.id);
+  const questDialogue = useQuestDialogue(quest, playerQuest);
   const giverName = keeper?.profile?.userName;
 
   return (
@@ -145,7 +150,7 @@ const QuestStatusButton = ({ playerQuest, quest, socket, parent, giverName }) =>
   if (playerQuest?.isCompleted) {
     return (
       <Button variant="wood" disabled>
-        Complete
+        Done
       </Button>
     );
   }

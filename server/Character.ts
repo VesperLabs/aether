@@ -200,7 +200,7 @@ class ServerCharacter extends Character {
       }
     });
 
-    /* percentage stats need to be summed up and added last */
+    /* The base values get calculated here for percentStats */
     Object.keys(totalPercentStats).forEach((key) => {
       let percentIncrease = Math.floor(ns[key] * (totalPercentStats[key] / 100));
       if (
@@ -208,8 +208,7 @@ class ServerCharacter extends Character {
         key == "vitality" ||
         key == "dexterity" ||
         key == "strength" ||
-        key == "intelligence" ||
-        key == "defense"
+        key == "intelligence"
       )
         ns[key] += percentIncrease;
     });
@@ -251,10 +250,10 @@ class ServerCharacter extends Character {
     ns.minDamage =
       ns.minDamage + Math.floor(1 + ((ns.strength * 1.5 + ns.dexterity / 2) * ns.level) / 100);
 
-    /* WIP: After Percent Stats...  */
+    /* Any percentStat value that needs to be pre-calculated goes here  */
     Object.keys(totalPercentStats).forEach((key) => {
       let percentIncrease = Math.floor(ns[key] * (totalPercentStats[key] / 100));
-      if (key == "maxHp" || key == "maxMp") ns[key] += percentIncrease;
+      if (key == "maxHp" || key == "maxMp" || key == "defense") ns[key] += percentIncrease;
     });
 
     //moving values

@@ -8,6 +8,7 @@ const Quest = ({ quest, parent = "keeper" }: { quest: Quest; parent: string }) =
   const [hovering, setHovering] = useState(false);
   const isBounty = objectives?.some((objective) => objective?.type === "bounty");
   const isItem = objectives?.some((objective) => objective?.type === "item");
+  const isChat = objectives?.some((objective) => objective?.type === "chat");
   const playerQuest: PlayerQuest = hero?.quests?.find((q) => q?.questId === quest?.id);
   const tooltipId = nanoid();
 
@@ -16,6 +17,8 @@ const Quest = ({ quest, parent = "keeper" }: { quest: Quest; parent: string }) =
     icon = "./assets/icons/bounty.png";
   } else if (isItem) {
     icon = "./assets/icons/paper.png";
+  } else if (isChat) {
+    icon = "./assets/icons/letter.png";
   }
 
   const handleMouseEnter = (e) => {
@@ -31,6 +34,15 @@ const Quest = ({ quest, parent = "keeper" }: { quest: Quest; parent: string }) =
     onMouseLeave: handleMouseLeave,
   };
 
+  const isReady = playerQuest?.isReady && !playerQuest?.isCompleted;
+  const isCompleted = playerQuest?.isCompleted;
+
+  const getQuestEmoji = () => {
+    if (isCompleted) return "🏆";
+    if (isReady) return "✅";
+    if (playerQuest) return "⏰";
+  };
+
   return (
     <Box sx={BASE_SLOT_STYLE} {...outerMouseBinds} onTouchStart={(e) => handleMouseEnter(e)}>
       <Box
@@ -40,12 +52,11 @@ const Quest = ({ quest, parent = "keeper" }: { quest: Quest; parent: string }) =
           overflow: hovering ? "visible" : "hidden",
           width: SLOT_SIZE,
           height: SLOT_SIZE,
+          filter: isCompleted ? `grayScale(100%)` : "none",
         }}
       >
         <Icon icon={icon} sx={{ width: "100%", height: "100%", transform: "scale(2)" }} />
-        <Box sx={{ position: "absolute", bottom: 1, right: 1 }}>
-          {playerQuest?.isCompleted && "✅"}
-        </Box>
+        <Box sx={{ position: "absolute", bottom: 1, right: 1 }}>{getQuestEmoji()}</Box>
       </Box>
       <QuestTooltip
         parent={parent}
