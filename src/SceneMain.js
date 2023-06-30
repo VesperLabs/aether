@@ -47,6 +47,7 @@ class SceneMain extends Phaser.Scene {
         npc.state.bubbleMessage = s.state.bubbleMessage;
         npc.state.doHpRegen = s.state.doHpRegen;
         npc.state.doMpRegen = s.state.doMpRegen;
+        npc.state.lastCombat = s.state.lastCombat;
         npc.doRegen();
       }
       for (const s of snapshot?.state?.players) {
@@ -54,6 +55,7 @@ class SceneMain extends Phaser.Scene {
         player.state.bubbleMessage = s.state.bubbleMessage;
         player.state.doHpRegen = s.state.doHpRegen;
         player.state.doMpRegen = s.state.doMpRegen;
+        player.state.lastCombat = s.state.lastCombat;
         player.doRegen();
       }
     });

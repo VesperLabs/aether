@@ -190,9 +190,9 @@
     },
     "keeperData": {
       "dialogues": {
-        "greet": "My name is <strong>Anthony</strong>. Some people refer to me as <strong>The Lunchmeat Scholar</strong>. I have eaten just about every lunchmeat that exists.",
+        "greet": "Greetings, kind traveler! I am <strong>Anthony</strong>, renowned as <strong>The Lunchmeat Sage</strong>. Throughout my gastronomic journey, I have savored the essence of every lunchmeat known to humankind.",
         "quests": "These caves are dark and scary, but they are chuck full of great lunchmeats. You have to just know where to look.",
-        "shop": "Some useful goods here. I take gold."
+        "shop": "Step into my humble abode, where you shall find an array of useful goods, all available for the exchange of shiny coins."
       },
       "quests": ["spidermeat-finding", "batmeat-finding", "cheese-finding", "hogan-hunting"],
       "shop": [{ "item": ["weapon", "common", "spear"], "stock": 1 }]

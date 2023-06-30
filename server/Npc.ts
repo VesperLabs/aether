@@ -123,6 +123,7 @@ class Npc extends Character implements Npc {
       this.vx = 0;
       this.vy = 0;
       this.body.setVelocity(this.vx, this.vy);
+      this.stats.hp = this.stats.maxHp; //heal to full
       return;
     }
 

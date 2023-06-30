@@ -272,6 +272,15 @@ class Player extends Character {
     this.face.setTint(color);
     this.whiskers.setTint(color);
   }
+  showHideNameAndBars() {
+    if (this.checkOutOfCombat()) {
+      this.hpBar.setVisible(false);
+      if (this.kind === "nasty") this.userName.setVisible(false);
+    } else {
+      this.hpBar.setVisible(true);
+      if (this.kind === "nasty") this.userName.setVisible(true);
+    }
+  }
   checkDeath() {
     /* Ensures the textures and depth have been updated for death state */
     if (this.state.isDead) {
@@ -330,6 +339,7 @@ class Player extends Character {
     checkIsFlash(this, delta);
     this.checkAttackReady(delta);
     this.checkCastReady(delta);
+    this.showHideNameAndBars();
     this.setBubbleMessage();
     this.setTalkMenu();
     if (this?.isHero) this.triggerSecondAttack();

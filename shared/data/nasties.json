@@ -112,8 +112,9 @@
     },
     "state": { "isAggro": true },
     "baseStats": {
-      "level": 3,
-      "walkSpeed": 10
+      "level": 4,
+      "walkSpeed": 15,
+      "maxHp": 30
     },
     "hitBoxSize": {
       "width": 28,
@@ -138,6 +139,12 @@
         "rarity": "common",
         "key": "spiderMeat",
         "chance": 3
+      },
+      {
+        "type": "stackable",
+        "rarity": "common",
+        "key": "cheese",
+        "chance": 10
       }
     ]
   },

@@ -142,13 +142,13 @@
   "spidermeat-finding": {
     "name": "Sweet Spider Meat",
     "dialogues": {
-      "description": "{objective} from spiders and report back to me."
+      "description": "Ah, courageous wanderer! I beseech you to embark on a noble quest: the pursuit of extraordinary spider meat. Deep within the shadowed recesses of these caves, the arachnids weave their delicate webs. Your mission, should you accept, is to {objective} from these eight-legged creatures. Their succulent meat holds a flavor unmatched by any other."
     },
     "objectives": [
       {
         "type": "item",
-        "monster": ["stackable", "common", "spiderMeat"],
-        "amount": 3
+        "item": ["stackable", "common", "spiderMeat"],
+        "amount": 20
       }
     ],
     "rewards": {
@@ -159,9 +159,9 @@
   "batmeat-finding": {
     "name": "Succulent Bat Meat",
     "dialogues": {
-      "description": "{objective} from bats and report back to me."
+      "description": "Ah, the ethereal flavors of succulent bat meat! Your noble task, should you accept it, is to {objective} from the winged denizens of the night. Return to me with your prize, and you shall be rewarded with culinary wonders beyond your imagination."
     },
-    "objectives": [{ "type": "item", "item": ["stackable", "common", "batMeat"], "amount": 3 }],
+    "objectives": [{ "type": "item", "item": ["stackable", "common", "batMeat"], "amount": 20 }],
     "rewards": {
       "exp": 60,
       "gold": 20
@@ -170,24 +170,24 @@
   "cheese-finding": {
     "name": "That Good Cheese",
     "dialogues": {
-      "description": "{objective} from bats and spiders and report back to me."
+      "description": "Listen carefully, intrepid adventurer! In your journey through these caverns, seek not only the sweet meats of bats but also the delicate strands of spider-spun artistry. {objective} from both bats and spiders, and present them to me."
     },
-    "objectives": [{ "type": "item", "item": ["stackable", "common", "cheese"], "amount": 3 }],
+    "objectives": [{ "type": "item", "item": ["stackable", "common", "cheese"], "amount": 10 }],
     "rewards": {
       "exp": 60,
       "gold": 20
     }
   },
   "hogan-hunting": {
-    "name": "Demon Spider",
+    "name": "In Search of Hogan",
     "dialogues": {
-      "description": "Travel deep in the mines, find and {objective}."
+      "description": "Embark on a perilous expedition, brave soul, to the depths of the mines. There, hidden among shadows, awaits the elusive {objective}, known as the Demon Spider. Only by triumphing over this formidable arachnid shall you earn the acclaim and epicurean rewards befitting a true lunchmeat enthusiast."
     },
     "objectives": [{ "type": "bounty", "monster": "hogan", "amount": 1 }],
     "rewards": {
       "exp": 80,
       "gold": 20,
-      "items": [["pants", "common", "clothPants"]]
+      "items": [["pants", "rare", "clothPants"]]
     }
   },
   "skull-finding": {

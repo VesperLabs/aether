@@ -11,7 +11,6 @@ class Damage extends Container {
     this.victim = victim;
     this.duration = 1000;
 
-    if (this.victim.kind === "nasty") this.victim.userName.setVisible(true);
     const isPositive = hit?.amount >= 0;
     this.dt = new BitmapText(scene, 0, 0, "nin-light", hit.amount, damageSize);
 
@@ -21,7 +20,6 @@ class Damage extends Container {
           text = "+" + text;
           this.dt.setTint("0x99FF99");
         } else {
-          this.victim.hpBar.setVisible(true);
           text = text;
           playAudio({ scene, audioKey: "melee-hit-1", caster: this.victim });
           if (this.victim.isHero) {
@@ -104,8 +102,6 @@ class Damage extends Container {
       yoyo: false,
       repeat: 0,
       onComplete: () => {
-        this.victim.hpBar.setVisible(false);
-        if (this.victim.kind === "nasty") this.victim.userName.setVisible(false);
         this.dt.destroy();
         this.destroy();
       },

@@ -163,6 +163,10 @@ class Character extends Phaser.GameObjects.Container {
       this.state.isAttacking = false;
     }
   }
+  checkOutOfCombat() {
+    const isOutOfCombat = Date.now() - this.state.lastCombat > 5000;
+    return isOutOfCombat;
+  }
   checkCastReady(delta: number = 0) {
     const isCastReady = Date.now() - this.state.lastCast > delta + this?.stats?.castDelay;
     if (isCastReady) {
