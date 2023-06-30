@@ -322,6 +322,7 @@ class ServerCharacter extends Character {
     totalDamage = Math.floor(totalDamage);
     victim.modifyStat("hp", -totalDamage);
     victim.state.lastCombat = Date.now();
+    victim.combatDispelBuffs();
 
     /* Npcs lock on and chase when a user hits them */
     if (victim.state.isRobot) {
@@ -375,6 +376,7 @@ class ServerCharacter extends Character {
     reducedDamage = Math.floor(reducedDamage);
     victim.modifyStat("hp", -reducedDamage);
     victim.state.lastCombat = Date.now();
+    victim.combatDispelBuffs();
     /* Npcs lock on and chase when a user hits them */
     if (victim.state.isRobot) {
       victim.setLockedPlayerId(this?.socketId);
@@ -493,9 +495,18 @@ class ServerCharacter extends Character {
       level,
       stats: statsWithLevelMultiplier,
       spawnTime: Date.now(),
+      dispelInCombat: buff?.dispelInCombat,
     });
   }
-
+  combatDispelBuffs() {
+    for (const buff of this.buffs) {
+      if (buff?.dispelInCombat) {
+        buff.isExpired = true;
+      }
+    }
+  }
+  /* Runs in update loop and removed buffs from player that are expired.
+  Will also flag the player to hasExpiredBuffs so their state gets sent to client */
   expireBuffs(forceExpire = false) {
     let hasExpiredBuffs = false;
     if (forceExpire && this.buffs?.length > 0) {
@@ -503,9 +514,12 @@ class ServerCharacter extends Character {
       this.buffs = [];
     } else {
       for (const buff of this.buffs) {
-        if (Date.now() - buff.spawnTime > buff.duration) {
+        /* Buff timed out */
+        const isTimedOut = Date.now() - buff.spawnTime > buff.duration;
+        /* Buff got expired some other way */
+        const isExpired = buff?.isExpired;
+        if (isExpired || isTimedOut) {
           hasExpiredBuffs = true;
-          // remove it from this.buffs
           this.buffs.splice(this.buffs.indexOf(buff), 1);
         }
       }

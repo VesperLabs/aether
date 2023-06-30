@@ -45,7 +45,7 @@ const ItemTooltip = ({ item, tooltipId, show }) => {
   const buffs = item?.buffs ?? {};
   const hasEffects = Object.keys(combinedEffects)?.length > 0;
   const hasBuffs = Object.keys(buffs)?.length > 0;
-  const isDoubleClickable = ["food", "bag"].includes(item.base);
+  const isDoubleClickable = ["food", "potion", "bag"].includes(item.base);
   const numSetPieces = itemSetList?.[item?.setName]?.pieces;
 
   return (
@@ -154,7 +154,7 @@ const ItemTooltip = ({ item, tooltipId, show }) => {
                 textTransform: "none",
               }}
             >
-              Double click to {item?.base === "food" ? "eat" : "open"}
+              Double click to {["food", "potion"]?.includes(item?.base) ? "consume" : "open"}
             </Text>
             <Divider />
           </>

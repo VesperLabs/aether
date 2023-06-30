@@ -711,7 +711,7 @@
       "smallHpPotion": {
         "ilvl": 1,
         "name": "Small HP Potion",
-        "base": "food",
+        "base": "potion",
         "slot": "stackable",
         "texture": "stackable-potion-small-hp",
         "effects": {
@@ -721,7 +721,7 @@
       "smallMpPotion": {
         "ilvl": 1,
         "name": "Small MP Potion",
-        "base": "food",
+        "base": "potion",
         "slot": "stackable",
         "texture": "stackable-potion-small-mp",
         "effects": {
@@ -731,7 +731,7 @@
       "mediumHpPotion": {
         "ilvl": 2,
         "name": "Medium HP Potion",
-        "base": "food",
+        "base": "potion",
         "slot": "stackable",
         "texture": "stackable-potion-medium-hp",
         "effects": {
@@ -741,7 +741,7 @@
       "mediumPotionMp": {
         "ilvl": 2,
         "name": "Medium MP Potion",
-        "base": "food",
+        "base": "potion",
         "slot": "stackable",
         "texture": "stackable-potion-medium-mp",
         "effects": {
@@ -755,8 +755,8 @@
         "slot": "stackable",
         "texture": "stackable-bsporangium",
         "tint": "0x88DDFF",
-        "effects": {
-          "hp": 5
+        "buffs": {
+          "vitamins": 1
         }
       },
       "redApple": {
@@ -765,8 +765,8 @@
         "base": "food",
         "slot": "stackable",
         "texture": "stackable-apple",
-        "effects": {
-          "hp": 5
+        "buffs": {
+          "vitamins": 1
         }
       },
       "batMeat": {
@@ -775,8 +775,8 @@
         "base": "food",
         "slot": "stackable",
         "texture": "stackable-meat",
-        "effects": {
-          "hp": 10
+        "buffs": {
+          "protein": 1
         }
       },
       "spiderMeat": {
@@ -785,8 +785,8 @@
         "base": "food",
         "slot": "stackable",
         "texture": "stackable-meat",
-        "effects": {
-          "hp": 10
+        "buffs": {
+          "protein": 1
         }
       },
       "cheese": {
@@ -795,8 +795,8 @@
         "base": "food",
         "slot": "stackable",
         "texture": "stackable-cheese",
-        "effects": {
-          "hp": 10
+        "buffs": {
+          "protein": 1
         }
       },
       "grapes": {
@@ -805,8 +805,8 @@
         "base": "food",
         "slot": "stackable",
         "texture": "stackable-grapes",
-        "effects": {
-          "hp": 5
+        "buffs": {
+          "vitamins": 1
         }
       },
       "mushroom": {
@@ -815,8 +815,8 @@
         "base": "food",
         "slot": "stackable",
         "texture": "stackable-mushroom",
-        "effects": {
-          "hp": 5
+        "buffs": {
+          "vitamins": 1
         }
       },
       "carrot": {
@@ -825,8 +825,8 @@
         "base": "food",
         "slot": "stackable",
         "texture": "stackable-carrot",
-        "effects": {
-          "hp": 5
+        "buffs": {
+          "vitamins": 1
         }
       },
       "orange": {
@@ -835,8 +835,8 @@
         "base": "food",
         "slot": "stackable",
         "texture": "stackable-orange",
-        "effects": {
-          "hp": 5
+        "buffs": {
+          "vitamins": 1
         }
       },
       "crabShell": {

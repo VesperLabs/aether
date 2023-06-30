@@ -115,6 +115,8 @@ interface Buff {
   duration: number;
   stats: any;
   spawnTime: any;
+  isExpired?: boolean;
+  dispelInCombat?: boolean;
 }
 
 interface Character extends Phaser.GameObjects.Container {

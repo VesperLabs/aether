@@ -85,6 +85,7 @@ class Character extends Phaser.GameObjects.Container {
       lastHpRegen: Date.now(),
       lastMpRegen: Date.now(),
       lastCombat: Date.now(),
+      lastPotion: Date.now(),
       lastRegen: Date.now(),
       lastAttack: Date.now(),
       lastCast: Date.now(),
@@ -162,6 +163,13 @@ class Character extends Phaser.GameObjects.Container {
     if (Date.now() - this.state.lastAttack > delta + this?.stats?.attackDelay) {
       this.state.isAttacking = false;
     }
+  }
+  checkPotionCooldown() {
+    const cooldown = 10000; // Cooldown time in milliseconds
+    const timeElapsed = Date.now() - this.state.lastPotion;
+    const timeRemaining = Math.max(cooldown - timeElapsed, 0);
+    const percentageRemaining = (timeRemaining / cooldown) * 100;
+    return { percentageRemaining, isReady: percentageRemaining === 0 };
   }
   checkOutOfCombat() {
     const isOutOfCombat = Date.now() - this.state.lastCombat > 5000;
