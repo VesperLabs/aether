@@ -426,7 +426,7 @@ class ServerCharacter extends Character {
   }
   doRegen() {
     const now = Date.now();
-    const isOutOfCombat = now - this.state.lastCombat > 5000;
+    const isOutOfCombat = this.checkOutOfCombat();
     const isHpRegenReady = now - this.state.lastHpRegen > 5000;
     const isMpRegenReady = now - this.state.lastMpRegen > 1000;
     this.state.doHpRegen = false;

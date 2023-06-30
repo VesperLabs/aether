@@ -928,14 +928,26 @@
                 {
                  "height":0,
                  "id":43,
+                 "name":"anthony",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":424.633089281144,
+                 "y":2272.54922332068
+                }, 
+                {
+                 "height":0,
+                 "id":44,
                  "name":"spider",
                  "point":true,
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":842.963970088375,
-                 "y":1978.24609109449
+                 "x":910.237544671011,
+                 "y":1982.34181206643
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -1197,7 +1209,7 @@
          "y":0
         }],
  "nextlayerid":47,
- "nextobjectid":44,
+ "nextobjectid":45,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.1",
