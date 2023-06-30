@@ -23,6 +23,14 @@ class Player extends Character {
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
   }
+  updateState(state) {
+    this.state.lockedPlayerId = state.lockedPlayerId;
+    this.state.bubbleMessage = state.bubbleMessage;
+    this.state.doHpRegen = state.doHpRegen;
+    this.state.doMpRegen = state.doMpRegen;
+    this.state.lastCombat = state.lastCombat;
+    this.state.lastPotion = state.lastPotion;
+  }
   updateData(data) {
     this.activeItemSlots = data?.activeItemSlots;
     // filter out equipment slotNames that are not in activeItemsSlots array
@@ -148,7 +156,6 @@ class Player extends Character {
       return; /* Heros with no weapon cannot attack */
     state.isAttacking = true;
     state.lastAttack = Date.now();
-
     let spellName = "attack_right";
     /* Play attack animation frame (human only) */
     if (["crab", "human"].includes(this.profile.race)) {

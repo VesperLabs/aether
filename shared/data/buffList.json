@@ -30,5 +30,19 @@
     "stats": {
       "intelligence": 10
     }
+  },
+  "protein": {
+    "duration": 30000,
+    "dispelInCombat": true,
+    "stats": {
+      "regenHp": 5
+    }
+  },
+  "vitamins": {
+    "duration": 30000,
+    "dispelInCombat": true,
+    "stats": {
+      "regenMp": 2
+    }
   }
 }

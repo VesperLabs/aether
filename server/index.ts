@@ -800,7 +800,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         /* Using an item from the inventory */
         if (location === "inventory") {
           playerItem = player?.findInventoryItemById(item?.id);
-          if (playerItem?.base !== "food") return;
+          if (!["food", "potion"]?.includes(playerItem?.base)) return;
           if (!playerItem?.amount) return;
           player?.subtractInventoryItemAtId(item?.id, 1);
         }
@@ -808,7 +808,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         if (location === "abilities") {
           const { item: found } = player?.findAbilityById(item?.id);
           playerItem = found;
-          if (playerItem?.base !== "food") return;
+          if (!["food", "potion"]?.includes(playerItem?.base)) return;
           if (!playerItem?.amount) return;
           if (playerItem?.amount <= 1) {
             player?.deleteAbilityAtId(item?.id);
@@ -819,7 +819,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         /* Using an item from the inventory */
         if (location === "bag") {
           playerItem = player?.findBagItemById(item?.id);
-          if (playerItem?.base !== "food") return;
+          if (!["food", "potion"]?.includes(playerItem?.base)) return;
           if (!playerItem?.amount) return;
           if (playerItem?.amount <= 1) {
             player?.deleteBagItemAtId(item?.id);
@@ -827,14 +827,25 @@ class ServerScene extends Phaser.Scene implements ServerScene {
             player?.subtractBagItemAtId(item?.id, 1);
           }
         }
-        /* Apply item effects to hero */
-        if (playerItem?.effects?.hp) {
-          const hp = (parseInt(playerItem?.effects?.hp) / 100) * player?.stats?.maxHp;
-          player.modifyStat("hp", hp);
+        /* If the item has effects */
+        if (playerItem?.base === "potion") {
+          /* Set potion cooldown */
+          player.state.lastPotion = Date.now();
+          if (playerItem?.effects?.hp) {
+            const hp = (parseInt(playerItem?.effects?.hp) / 100) * player?.stats?.maxHp;
+            player.modifyStat("hp", hp);
+          }
+          if (playerItem?.effects?.mp) {
+            const mp = (parseInt(playerItem?.effects?.mp) / 100) * player?.stats?.maxMp;
+            player.modifyStat("mp", mp);
+          }
         }
-        if (playerItem?.effects?.mp) {
-          const mp = (parseInt(playerItem?.effects?.mp) / 100) * player?.stats?.maxMp;
-          player.modifyStat("mp", mp);
+
+        /* If the item has buffs */
+        if (playerItem?.base === "food") {
+          for (const [buffName, level] of Object.entries(playerItem.buffs)) {
+            player.addBuff(buffName, level);
+          }
         }
 
         player?.calculateStats();

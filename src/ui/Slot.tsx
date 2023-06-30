@@ -341,13 +341,12 @@ function useItemEvents({ location, bagId, slotKey, item }) {
     doubleClickItem: () => {
       if (!["inventory", "abilities", "bag"].includes(location)) return;
       /* If it is food we are trying to consume it */
-      if (item?.base === "food") {
+      if (["food", "potion"].includes(item?.base)) {
         window.dispatchEvent(
-          new CustomEvent("AUDIO_ITEM_CONSUME", {
-            detail: item,
+          new CustomEvent("HERO_USE_ITEM", {
+            detail: { item, location },
           })
         );
-        return socket.emit("consumeItem", { item, location });
       }
       /* If it is a bag, we open it */
       if (item?.base === "bag") {

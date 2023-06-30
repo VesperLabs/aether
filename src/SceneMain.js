@@ -43,19 +43,12 @@ class SceneMain extends Phaser.Scene {
       }
       for (const s of snapshot?.state?.npcs) {
         const npc = getNpc(scene, s.id);
-        npc.state.lockedPlayerId = s.state.lockedPlayerId;
-        npc.state.bubbleMessage = s.state.bubbleMessage;
-        npc.state.doHpRegen = s.state.doHpRegen;
-        npc.state.doMpRegen = s.state.doMpRegen;
-        npc.state.lastCombat = s.state.lastCombat;
+        npc.updateState(s?.state);
         npc.doRegen();
       }
       for (const s of snapshot?.state?.players) {
         const player = getPlayer(scene, s.id);
-        player.state.bubbleMessage = s.state.bubbleMessage;
-        player.state.doHpRegen = s.state.doHpRegen;
-        player.state.doMpRegen = s.state.doMpRegen;
-        player.state.lastCombat = s.state.lastCombat;
+        player.updateState(s?.state);
         player.doRegen();
       }
     });

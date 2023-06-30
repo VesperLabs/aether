@@ -103,21 +103,35 @@ function addGlobalEventListeners(scene) {
         hero.state.isAiming = false;
         document.getElementById("game").style.cursor = "default";
       }
-      if (ability?.type === "stackable") {
-        /* TODO: Move to server and create a consumeItemFunction */
-        if (!hero?.checkCastReady()) return;
-        hero.state.lastCast = Date.now();
-        hero.state.isCasting = true;
-        socket.emit("consumeItem", { item: ability, location: "abilities" });
+      /* If it is food we are trying to consume it */
+      if (["food", "potion"]?.includes(ability?.base)) {
         window.dispatchEvent(
-          new CustomEvent("AUDIO_ITEM_CONSUME", {
-            detail: ability,
+          new CustomEvent("HERO_USE_ITEM", {
+            detail: { item: ability, location: "abilities" },
           })
         );
       }
     },
     scene
   );
+  /* TODO: Move to server and create a consumeItemFunction */
+  window.addEventListener("HERO_USE_ITEM", (e) => {
+    const hero = mainScene?.hero;
+    const { item, location } = e?.detail ?? {};
+
+    if (!hero?.checkCastReady()) return;
+
+    hero.state.lastCast = Date.now();
+    hero.state.isCasting = true;
+
+    if (!hero.checkPotionCooldown()?.isReady && item?.base === "potion") return;
+    socket.emit("consumeItem", { item, location });
+    window.dispatchEvent(
+      new CustomEvent("AUDIO_ITEM_CONSUME", {
+        detail: item,
+      })
+    );
+  });
   window.addEventListener(
     "HERO_GRAB",
     (e) => {
