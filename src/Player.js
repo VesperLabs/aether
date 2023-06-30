@@ -301,9 +301,12 @@ class Player extends Character {
         break;
       case "hp":
         this.modifyStat("hp", hit?.amount);
-        this.doFlashAnimation(isPositive ? "0x00FF00" : "0xFF0000");
-        this.state.lastFlash = Date.now();
-        this.state.isFlash = true;
+        if (!isPositive) {
+          // flash red when damaged
+          this.doFlashAnimation("0xFF0000");
+          this.state.lastFlash = Date.now();
+          this.state.isFlash = true;
+        }
         break;
       case "mp":
         this.modifyStat("mp", hit?.amount);
