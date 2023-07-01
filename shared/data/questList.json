@@ -16,10 +16,10 @@
     "dialogues": {
       "description": "Among the coastal sands, a legion of crabs scuttles with resilience and purpose. To truly comprehend their essence, you must face them in battle. {objective}, and you shall gain insight into the cycle of life and the sacrifices we make for growth."
     },
-    "objectives": [{ "type": "bounty", "monster": "crab", "amount": 20 }],
+    "objectives": [{ "type": "bounty", "monster": "crab", "amount": 60 }],
     "rewards": {
       "exp": 15,
-      "gold": 5,
+      "gold": 10,
       "items": []
     }
   },
