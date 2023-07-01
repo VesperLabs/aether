@@ -329,8 +329,7 @@
         "exclusive": true,
         "stats": {
           "strength": [1, 2]
-        },
-        "cost": 20
+        }
       }
     }
   },
