@@ -41,7 +41,6 @@ tile-extruder --tileWidth 32 --tileHeight 32 --input ./public/assets/tilesets/cl
 
 - [ ] Suffix / Prefix system improvements
 - [ ] Spawned item mods `min` needs to take `max` into account
-- [ ] Consumables +HP +MP effects need to scale better
 - [ ] Gloves items
 
 #### Cosmetic
@@ -50,7 +49,7 @@ tile-extruder --tileWidth 32 --tileHeight 32 --input ./public/assets/tilesets/cl
 
 #### Systems
 
-- [ ] Readable signs
+- [ ] Readable signs objects
 - [ ] Trade window
 - [ ] Minimap
 - [ ] Doors that require a key or level to pass through
@@ -84,3 +83,5 @@ tile-extruder --tileWidth 32 --tileHeight 32 --input ./public/assets/tilesets/cl
 - [x] Enemy spells
 - [x] Buffs
 - [x] Facial hair is now Whiskers on its own layer seperate from face.
+- [x] Consumables and Food
+- [x] Cooldowns show in UI
