@@ -71,7 +71,7 @@
     "drops": []
   },
   "crab": {
-    "charClass": "rogue",
+    "charClass": "mage",
     "profile": { "race": "crab", "userName": "Crab" },
     "state": { "isAggro": false, "noWorldDrops": true },
     "baseStats": {
