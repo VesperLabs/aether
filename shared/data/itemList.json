@@ -765,7 +765,7 @@
         "texture": "stackable-bsporangium",
         "tint": "0x88DDFF",
         "buffs": {
-          "vitamins": 1
+          "protein": 1
         }
       },
       "redApple": {
