@@ -312,7 +312,7 @@ const getItemCost = (item: Item) => {
     return 50 * ilvl;
   }
   if (rarity == "unique" || rarity == "set") {
-    return 500 * ilvl;
+    return 100 * ilvl;
   }
   return 1;
 };
