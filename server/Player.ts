@@ -228,10 +228,11 @@ class Player extends ServerCharacter implements Player {
       this.state.bubbleMessage = null;
     }
   }
-  update() {
+  update(time: number, delta: number) {
     this.expireBuffs();
     this.doRegen();
     this.checkBubbleMessage();
+    this.checkAttackReady(delta);
   }
 }
 

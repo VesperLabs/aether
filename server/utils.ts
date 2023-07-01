@@ -1,6 +1,7 @@
 //@ts-nocheck
 import ItemBuilder from "../shared/ItemBuilder";
 
+const PLAYER_BASE_ATTACK_DELAY = 100;
 const SHOP_INFLATION = 4;
 const PLAYER_BASE_EXP = 20;
 const PLAYER_DEFAULT_SPAWN = { roomName: "grassland-3", x: 1496, y: 2028 };
@@ -225,7 +226,7 @@ const useGetBaseCharacterDefaults = ({ level = 1, charClass }) => {
       expValue: 0,
       walkSpeed: 100,
       accuracy: 0,
-      attackDelay: 100,
+      attackDelay: PLAYER_BASE_ATTACK_DELAY,
       spellPower: 0,
       castDelay: 1000,
       armorPierce: 0,

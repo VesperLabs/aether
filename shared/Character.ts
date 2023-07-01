@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { capitalize, getAngleFromDirection } from "./utils";
 const BLANK_TEXTURE = "human-blank";
+const POTION_COOLDOWN = 10000;
 class Character extends Phaser.GameObjects.Container {
   startingCoords: Coordinate;
   socketId: string;
@@ -94,6 +95,7 @@ class Character extends Phaser.GameObjects.Container {
       setFlash: false,
       isIdle: true,
       isAttacking: false,
+      isPotioning: false,
       isCharging: false,
       isCasting: false,
       hasWeaponRight: false,
@@ -160,16 +162,22 @@ class Character extends Phaser.GameObjects.Container {
     // let attackDelay = 0;
     // if (p.action === "attack_right") attackDelay = p?.equipment?.handRight?.stats?.attackDelay;
     // if (p.action === "attack_left") attackDelay = p?.equipment?.handLeft?.stats?.attackDelay;
-    if (Date.now() - this.state.lastAttack > delta + this?.stats?.attackDelay) {
-      this.state.isAttacking = false;
-    }
+    const cooldown = delta + this?.stats?.attackDelay;
+    const timeElapsed = Date.now() - this.state.lastAttack;
+    const timeRemaining = Math.max(cooldown - timeElapsed, 0);
+    const percentageRemaining = (timeRemaining / cooldown) * 100;
+    const isReady = percentageRemaining === 0;
+    this.state.isAttacking = !isReady;
+    return { cooldown, timeRemaining, percentageRemaining, isReady };
   }
   checkPotionCooldown() {
-    const cooldown = 10000; // Cooldown time in milliseconds
+    const cooldown = POTION_COOLDOWN; // Cooldown time in milliseconds
     const timeElapsed = Date.now() - this.state.lastPotion;
     const timeRemaining = Math.max(cooldown - timeElapsed, 0);
     const percentageRemaining = (timeRemaining / cooldown) * 100;
-    return { percentageRemaining, isReady: percentageRemaining === 0 };
+    const isReady = percentageRemaining === 0;
+    this.state.isPotioning = !isReady;
+    return { percentageRemaining, timeRemaining, isReady };
   }
   checkOutOfCombat() {
     const isOutOfCombat = Date.now() - this.state.lastCombat > 5000;
