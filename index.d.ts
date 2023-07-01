@@ -159,6 +159,7 @@ interface Character extends Phaser.GameObjects.Container {
   getQuests(): Array<PlayerQuest>;
   canCastSpell(abilitySlot: number): boolean;
   checkCastReady(delta?: number): boolean;
+  checkAttackReady(delta?: number): any;
 }
 
 type CharClass = "warrior" | "rogue" | "mage" | "cleric";

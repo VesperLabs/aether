@@ -5,7 +5,14 @@ import Spell from "./Spell";
 import Bar from "./Bar";
 import Crosshair from "./Crosshair";
 import Damage from "./Damage";
-import { distanceTo, getSpinDirection, HAIR_HIDING_HELMETS, FACE_HIDING_HELMETS } from "./utils";
+import {
+  distanceTo,
+  getSpinDirection,
+  HAIR_HIDING_HELMETS,
+  FACE_HIDING_HELMETS,
+  PLAYER_GRAB_RANGE,
+  RACES_WITH_ATTACK_ANIMS,
+} from "./utils";
 import Buff from "./Buff";
 const { Sprite, BitmapText } = Phaser.GameObjects;
 const BLANK_TEXTURE = "human-blank";
@@ -29,7 +36,6 @@ class Player extends Character {
     this.state.doHpRegen = state.doHpRegen;
     this.state.doMpRegen = state.doMpRegen;
     this.state.lastCombat = state.lastCombat;
-    this.state.lastPotion = state.lastPotion;
   }
   updateData(data) {
     this.activeItemSlots = data?.activeItemSlots;
@@ -158,7 +164,7 @@ class Player extends Character {
     state.lastAttack = Date.now();
     let spellName = "attack_right";
     /* Play attack animation frame (human only) */
-    if (["crab", "human"].includes(this.profile.race)) {
+    if (RACES_WITH_ATTACK_ANIMS.includes(this.profile.race)) {
       if (count === 1) {
         /* Will always start with a right attack. Will either swing right or left if has weapon. */
         if (state.hasWeaponRight) this.action = "attack_right";
@@ -190,7 +196,6 @@ class Player extends Character {
     this.scene.add.existing(new Spell(this.scene, { ...spellData, caster: this }));
   }
   doGrab() {
-    const GRAB_RANGE = 32;
     const { scene } = this;
     const loots = scene.loots?.getChildren?.();
 
@@ -205,7 +210,7 @@ class Player extends Character {
       }
     });
 
-    if (closestDistance <= GRAB_RANGE) {
+    if (closestDistance <= PLAYER_GRAB_RANGE) {
       /* Spin hero toward the loot, send it all the API */
       this.direction = getSpinDirection(this, closestLoot);
       this.scene.socket.emit("grabLoot", { lootId: closestLoot?.id, direction: this.direction });
@@ -240,9 +245,8 @@ class Player extends Character {
     this.bubble.setVisible(false);
     this.skin.setVisible(false);
     this.corpse.setVisible(true);
-    if (this.isHero) {
-      window.dispatchEvent(new Event("HERO_DEAD"));
-    }
+    if (this.kind === "nasty") this.userName.setVisible(false);
+    if (this.isHero) window.dispatchEvent(new Event("HERO_DEAD"));
   }
   respawn() {
     this.state.isDead = false;
@@ -344,8 +348,11 @@ class Player extends Character {
     updateCurrentSpeed(this);
     drawFrame(this);
     checkIsFlash(this, delta);
-    this.checkAttackReady(delta);
-    this.checkCastReady(delta);
+    if (this.isHero) {
+      this.checkAttackReady(delta);
+      this.checkCastReady(delta);
+      this.checkPotionCooldown(delta);
+    }
     this.showHideNameAndBars();
     this.setBubbleMessage();
     this.setTalkMenu();

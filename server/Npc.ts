@@ -92,7 +92,7 @@ class Npc extends Character implements Npc {
     const distance = distanceTo(this, target) - (thisRadius + targetRadius);
     return distance <= range;
   }
-  checkAttackReady(delta) {
+  checkAttackReady(delta: number): any {
     super.checkAttackReady(delta);
     const fullAttackDelay = delta + this?.stats?.attackDelay + NPC_ADDED_ATTACK_DELAY;
     if (Date.now() - this.state.lastAttack > fullAttackDelay) {

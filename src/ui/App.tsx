@@ -29,7 +29,7 @@ import {
 import { isMobile, getSpinDirection, calculateZoomLevel } from "../utils";
 import "react-tooltip/dist/react-tooltip.css";
 import { useViewportSizeEffect } from "./hooks";
-import { Theme } from "theme-ui";
+import { Donut, Theme } from "theme-ui";
 import { Socket } from "socket.io-client";
 
 interface AppContextValue {
@@ -53,7 +53,9 @@ interface AppContextValue {
   setDropItem: React.Dispatch<React.SetStateAction<Item | null | false>>;
   setTabAbilities: React.Dispatch<React.SetStateAction<boolean>>;
   toggleBagState: React.Dispatch<React.SetStateAction<any>>;
+  setCooldowns: React.Dispatch<React.SetStateAction<any>>;
   bagState: Array<string>;
+  cooldowns: Record<string, any>;
   messages: Message[];
   bottomOffset: number;
   dropItem: any;
@@ -118,6 +120,11 @@ function App({ socket, debug, game }) {
   const [bottomOffset, setBottomOffset] = useState(0);
   const [zoom, setZoom] = useState(getHudZoom());
   const [bagState, setBagState] = useState([]);
+  const [cooldowns, setCooldowns] = useState({
+    ATTACK: { duration: 0, startTime: Date.now() },
+    POTION: { duration: 0, startTime: Date.now() },
+    SPELL: { duration: 0, startTime: Date.now() },
+  });
 
   /* Is the bag open or closed */
   const toggleBagState = (id: string) => {
@@ -301,6 +308,11 @@ function App({ socket, debug, game }) {
       }
     };
 
+    const onStartCooldown = (e) => {
+      const { type, duration, startTime } = e?.detail ?? {};
+      setCooldowns((prev) => ({ ...prev, [type]: { duration, startTime } }));
+    };
+
     const onGameLoaded = () => {
       setIsLoaded(true);
     };
@@ -322,6 +334,7 @@ function App({ socket, debug, game }) {
     window.addEventListener("UPDATE_HUD", onUpdateHud);
     window.addEventListener("HERO_RESPAWN", onUpdateHud);
     window.addEventListener("GAME_LOADED", onGameLoaded);
+    window.addEventListener("HERO_START_COOLDOWN", onStartCooldown);
     return () => {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
@@ -340,6 +353,7 @@ function App({ socket, debug, game }) {
       window.removeEventListener("UPDATE_HUD", onUpdateHud);
       window.removeEventListener("HERO_RESPAWN", onUpdateHud);
       window.removeEventListener("GAME_LOADED", onGameLoaded);
+      window.removeEventListener("HERO_START_COOLDOWN", onStartCooldown);
     };
   }, []);
 
@@ -377,6 +391,8 @@ function App({ socket, debug, game }) {
           setTabQuests,
           setTabAbilities,
           toggleBagState,
+          setCooldowns,
+          cooldowns,
           bagState,
           players,
           tabSocial,
@@ -436,7 +452,7 @@ function App({ socket, debug, game }) {
 }
 
 const SkillButtons = () => {
-  const { showButtonChat } = useAppContext();
+  const { showButtonChat, cooldowns } = useAppContext();
 
   return (
     <Flex
@@ -467,8 +483,63 @@ const SkillButtons = () => {
         onTouchStart={() => window.dispatchEvent(new CustomEvent("HERO_ATTACK_START"))}
         onTouchEnd={() => window.dispatchEvent(new CustomEvent("HERO_ATTACK"))}
         keyboardKey="SPACE"
-      />
+      >
+        <CooldownTimer cooldown={"ATTACK"} />
+      </SkillButton>
     </Flex>
+  );
+};
+
+const CooldownTimer = ({ cooldown }) => {
+  const { cooldowns } = useAppContext();
+  const [percentage, setPercentage] = useState(0);
+  const duration = cooldowns[cooldown]?.duration;
+  const startTime = cooldowns[cooldown]?.startTime;
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const currentTime = Date.now();
+      const elapsedTime = currentTime - startTime;
+
+      const percentageElapsed = elapsedTime / duration;
+
+      setPercentage(percentageElapsed);
+
+      if (elapsedTime >= duration) {
+        setPercentage(1);
+        //setCooldowns((prev) => ({ ...prev, [cooldown]: 0 }));
+        clearInterval(interval);
+      }
+    }, 50);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [startTime, duration]);
+
+  return (
+    <Box>
+      <Donut
+        value={Math.abs(percentage) || 0}
+        size="16"
+        sx={{
+          width: "100%",
+          height: "100%",
+          position: "absolute",
+          top: 0,
+          left: 0,
+          zIndex: -1,
+          "& circle:first-of-type": {
+            opacity: 0,
+            color: "#000",
+          },
+          "& circle:last-of-type": {
+            opacity: 0.25,
+            color: "#FFF",
+          },
+        }}
+      />
+    </Box>
   );
 };
 
@@ -498,6 +569,10 @@ const AbilityButtons = () => {
           const icon = item
             ? `../assets/atlas/${item?.type}/${texture}.png`
             : "./assets/icons/blank.png";
+
+          /* Spells and non-potion items share a cooldown for now */
+          const cooldown = item?.base === "potion" ? "POTION" : "SPELL";
+
           return (
             <SkillButton
               key={slotKey}
@@ -510,7 +585,9 @@ const AbilityButtons = () => {
                 window.dispatchEvent(new CustomEvent("HERO_ABILITY", { detail: slotKey }))
               }
               keyboardKey={slotKey}
-            />
+            >
+              <CooldownTimer cooldown={cooldown} />
+            </SkillButton>
           );
         })}
     </Flex>

@@ -1,5 +1,6 @@
 import { Box, Icon, KeyboardKey, Button } from "./";
 import { isMobile } from "../utils";
+import { ReactNode } from "react";
 
 const SkillButton = ({
   onTouchStart = () => {},
@@ -9,6 +10,7 @@ const SkillButton = ({
   size,
   keyboardKey,
   sx,
+  children,
 }: {
   onTouchStart?: any;
   onTouchEnd?: any;
@@ -17,6 +19,7 @@ const SkillButton = ({
   size: number;
   keyboardKey?: string;
   sx?: any;
+  children?: ReactNode;
 }) => {
   return (
     <Button
@@ -39,6 +42,7 @@ const SkillButton = ({
           onKeyUp={(e) => onTouchEnd(e)}
         />
       )}
+      {children}
     </Button>
   );
 };

@@ -162,6 +162,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       socket.on("attack", ({ count, direction } = {}) => {
         const player = scene.players[socketId];
         if (player?.state?.isDead) return;
+        if (player?.state?.isAttacking) return;
         player.direction = direction;
         socket.to(player?.roomName).emit("playerAttack", { socketId, count });
       });

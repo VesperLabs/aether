@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import { playAudio, getSpinDirection } from "./utils";
 const { W, S, A, D } = Phaser.Input.Keyboard.KeyCodes;
 const { Between } = Phaser.Math.Angle;
+const POTION_COOLDOWN = 10000;
 
 class SceneHud extends Phaser.Scene {
   constructor(socket) {
@@ -40,7 +41,6 @@ function addGlobalEventListeners(scene) {
   });
   /* Desktop left click attack */
   document.getElementById("game").addEventListener("mousedown", function (event) {
-    const hero = mainScene?.hero;
     if (!isTouch && event.button !== 0) {
       window.dispatchEvent(new CustomEvent("HERO_ATTACK_START"));
     }
@@ -73,6 +73,8 @@ function addGlobalEventListeners(scene) {
     (e) => {
       const hero = mainScene?.hero;
       hero.state.isAiming = false;
+      /* Tell the UI to update the cooldown */
+      updateAttackCooldown(hero);
       hero?.doAttack?.(1);
     },
     scene
@@ -94,6 +96,8 @@ function addGlobalEventListeners(scene) {
       const ability = abilities?.[e?.detail];
 
       if (ability?.type === "spell") {
+        /* Tell the UI to update the cooldown */
+        updateSpellCooldown(hero, e?.detail);
         hero?.castSpell?.({
           ilvl: ability?.ilvl,
           abilitySlot: e?.detail,
@@ -105,6 +109,13 @@ function addGlobalEventListeners(scene) {
       }
       /* If it is food we are trying to consume it */
       if (["food", "potion"]?.includes(ability?.base)) {
+        /* Tell the UI to update the cooldowns */
+        if (ability.base === "food") {
+          updateSpellCooldown(hero, e?.detail);
+        }
+        if (ability.base === "potion") {
+          updatePotionCooldown(hero);
+        }
         window.dispatchEvent(
           new CustomEvent("HERO_USE_ITEM", {
             detail: { item: ability, location: "abilities" },
@@ -121,10 +132,13 @@ function addGlobalEventListeners(scene) {
 
     if (!hero?.checkCastReady()) return;
 
-    hero.state.lastCast = Date.now();
-    hero.state.isCasting = true;
-
-    if (!hero.checkPotionCooldown()?.isReady && item?.base === "potion") return;
+    if (item?.base === "potion") {
+      if (hero.state.isPotioning) return;
+      hero.state.lastPotion = Date.now();
+    } else {
+      hero.state.lastCast = Date.now();
+      hero.state.isCasting = true;
+    }
     socket.emit("consumeItem", { item, location });
     window.dispatchEvent(
       new CustomEvent("AUDIO_ITEM_CONSUME", {
@@ -169,6 +183,37 @@ function addGlobalEventListeners(scene) {
       }
     },
     scene
+  );
+}
+
+function updateAttackCooldown(hero) {
+  if (hero.state.isAttacking) return;
+  const attackDelay = hero.stats.attackDelay;
+  const duration = hero.state.hasWeaponLeft ? attackDelay * 2 : attackDelay;
+  window.dispatchEvent(
+    new CustomEvent("HERO_START_COOLDOWN", {
+      detail: { type: "ATTACK", duration: duration, startTime: Date.now() },
+    })
+  );
+}
+
+function updatePotionCooldown(hero) {
+  if (hero.state.isPotioning) return;
+  window.dispatchEvent(
+    new CustomEvent("HERO_START_COOLDOWN", {
+      detail: { type: "POTION", duration: POTION_COOLDOWN, startTime: Date.now() },
+    })
+  );
+}
+
+function updateSpellCooldown(hero, abilitySlot) {
+  if (!hero.canCastSpell(abilitySlot)) return;
+  if (hero.state.isCasting) return;
+  const castDelay = hero.stats.castDelay;
+  window.dispatchEvent(
+    new CustomEvent("HERO_START_COOLDOWN", {
+      detail: { type: "SPELL", duration: castDelay, startTime: Date.now() },
+    })
   );
 }
 
