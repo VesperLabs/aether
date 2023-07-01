@@ -234,6 +234,12 @@
     "previewRect": [0, 160, 80, 80]
   },
   {
+    "texture": "human-helmet-chef",
+    "src": "./assets/atlas/helmet/helmet-chef.png",
+    "atlas": "./assets/atlas/80x80.json",
+    "previewRect": [0, 140, 80, 80]
+  },
+  {
     "texture": "human-helmet-bunny",
     "src": "./assets/atlas/helmet/helmet-bunny.png",
     "atlas": "./assets/atlas/80x80.json",

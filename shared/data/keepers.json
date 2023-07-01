@@ -182,7 +182,7 @@
     "equipment": {
       "handLeft": null,
       "handRight": ["weapon", "magic", "axe"],
-      "helmet": null,
+      "helmet": ["helmet", "unique", "chefHat"],
       "accessory": null,
       "pants": ["pants", "set", "chetsChampions"],
       "armor": ["armor", "set", "chetsPurpleShirt"],
@@ -195,7 +195,10 @@
         "shop": "Step into my humble abode, where you shall find an array of useful goods, all available for the exchange of shiny coins."
       },
       "quests": ["spidermeat-finding", "batmeat-finding", "cheese-finding", "hogan-hunting"],
-      "shop": [{ "item": ["weapon", "common", "spear"], "stock": 1 }]
+      "shop": [
+        { "item": ["weapon", "common", "sword"], "stock": 1 },
+        { "item": ["shield", "common", "buckler"], "stock": 1 }
+      ]
     }
   },
   "steve": {

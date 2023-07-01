@@ -348,8 +348,8 @@ class Player extends Character {
     updateCurrentSpeed(this);
     drawFrame(this);
     checkIsFlash(this, delta);
+    this.checkAttackReady(delta);
     if (this.isHero) {
-      this.checkAttackReady(delta);
       this.checkCastReady(delta);
       this.checkPotionCooldown(delta);
     }

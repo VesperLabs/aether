@@ -13,9 +13,9 @@ const ItemBuilder = {
   rollDrop: (ilvl: number, magicFind = 0) => {
     const MAX_MF = 1000;
     const baseDropChances = [
-      { rarity: "unique", chance: 10000 },
+      { rarity: "unique", chance: 7000 },
       { rarity: "rare", chance: 1000 },
-      { rarity: "magic", chance: 100 },
+      { rarity: "magic", chance: 60 },
       { rarity: "common", chance: 20 },
     ];
 

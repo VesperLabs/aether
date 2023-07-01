@@ -833,12 +833,12 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           /* Set potion cooldown */
           player.state.lastPotion = Date.now();
           if (playerItem?.effects?.hp) {
-            const hp = (parseInt(playerItem?.effects?.hp) / 100) * player?.stats?.maxHp;
-            player.modifyStat("hp", hp);
+            //const hp = (parseInt(playerItem?.effects?.hp) / 100) * player?.stats?.maxHp;
+            player.modifyStat("hp", playerItem?.effects?.hp);
           }
           if (playerItem?.effects?.mp) {
-            const mp = (parseInt(playerItem?.effects?.mp) / 100) * player?.stats?.maxMp;
-            player.modifyStat("mp", mp);
+            //const mp = (parseInt(playerItem?.effects?.mp) / 100) * player?.stats?.maxMp;
+            player.modifyStat("mp", playerItem?.effects?.mp);
           }
         }
 
@@ -890,7 +890,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
               return scene.roomManager.rooms[player?.roomName].lootManager.create({
                 x: player?.x,
                 y: player?.y,
-                item: ItemBuilder.buildItem(item[0], item[1], item[2]) as Item,
+                item: ItemBuilder.buildItem(item[0], item[1], item[2], item[3]) as Item,
                 npcId: null,
               });
             case "coords":
