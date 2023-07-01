@@ -94,7 +94,7 @@ class Npc extends Character implements Npc {
   }
   checkAttackReady(delta: number): any {
     super.checkAttackReady(delta);
-    const fullAttackDelay = delta + this?.stats?.attackDelay + NPC_ADDED_ATTACK_DELAY;
+    const fullAttackDelay = delta + this?.stats?.attackDelay + NPC_ADDED_ATTACK_DELAY / 2;
     if (Date.now() - this.state.lastAttack > fullAttackDelay) {
       this.state.npcAttackReady = true;
     }

@@ -86,7 +86,7 @@ class Character extends Phaser.GameObjects.Container {
       lastHpRegen: Date.now(),
       lastMpRegen: Date.now(),
       lastCombat: Date.now(),
-      lastPotion: Date.now(),
+      lastPotion: Date.now() - POTION_COOLDOWN,
       lastRegen: Date.now(),
       lastAttack: Date.now(),
       lastCast: Date.now(),
