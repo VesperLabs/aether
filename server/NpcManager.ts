@@ -48,6 +48,7 @@ class NpcManager {
         walkSpeed: baseStats.walkSpeed - 30,
         minDamage: npc?.baseStats?.level / 2,
         maxDamage: npc?.baseStats?.level,
+        maxHp: npc?.baseStats?.level * 10,
         expValue: isKeeper ? 0 : npc?.baseStats?.level,
       };
 
