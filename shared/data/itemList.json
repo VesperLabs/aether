@@ -281,6 +281,16 @@
           "walkSpeed": [30, 50]
         }
       },
+      "chefHat": {
+        "ilvl": 1,
+        "name": "Chef Hat",
+        "base": "cap",
+        "texture": "helmet-chef",
+        "slot": "helmet",
+        "stats": {
+          "hpRegen": 5
+        }
+      },
       "theDragonWhisker": {
         "ilvl": 3,
         "name": "The Dragon Whisker",
@@ -735,7 +745,7 @@
         "slot": "stackable",
         "texture": "stackable-potion-medium-hp",
         "effects": {
-          "hp": 20
+          "hp": 30
         }
       },
       "mediumPotionMp": {
@@ -745,7 +755,7 @@
         "slot": "stackable",
         "texture": "stackable-potion-medium-mp",
         "effects": {
-          "mp": 20
+          "mp": 30
         }
       },
       "blueSporangium": {

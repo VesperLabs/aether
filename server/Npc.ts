@@ -420,7 +420,7 @@ class Npc extends Character implements Npc {
       if (runners[i].rarity == "set") break;
       if (runners[i].rarity == "rare") break;
       if (runners[i].rarity == "magic") break;
-      if (runners[i].type != "stackable") break;
+      if (runners[i].type !== "stackable") break;
     }
     /* Spawn the loot on the server */
 

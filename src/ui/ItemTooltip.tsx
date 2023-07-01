@@ -13,7 +13,7 @@ const formatStats = (stats = {}) =>
         acc[identifier] = `${stats?.[`min${identifier}`] || 0} - ${stats[`max${identifier}`] || 0}`;
       }
     } else if (["hp", "mp"].includes(key)) {
-      acc[key] = "+" + value + "%";
+      acc[key] = "+" + value;
     } else if (key.includes("Delay") || key.includes("duration")) {
       acc[key] = convertMsToS(value)?.replace(".00", "");
     } else if (

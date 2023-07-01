@@ -159,7 +159,7 @@
   "batmeat-finding": {
     "name": "Succulent Bat Meat",
     "dialogues": {
-      "description": "Ah, the ethereal flavors of succulent bat meat! Your noble task, should you accept it, is to {objective} from the winged denizens of the night. Return to me with your prize, and you shall be rewarded with culinary wonders beyond your imagination."
+      "description": "Ah, the ethereal flavors of succulent bat meat! Your noble task, should you accept it, is to {objective} from the winged denizens of the night. "
     },
     "objectives": [{ "type": "item", "item": ["stackable", "common", "batMeat"], "amount": 20 }],
     "rewards": {
@@ -175,7 +175,8 @@
     "objectives": [{ "type": "item", "item": ["stackable", "common", "cheese"], "amount": 10 }],
     "rewards": {
       "exp": 60,
-      "gold": 20
+      "gold": 20,
+      "items": [["pants", "rare", "clothPants"]]
     }
   },
   "hogan-hunting": {
@@ -187,7 +188,7 @@
     "rewards": {
       "exp": 80,
       "gold": 20,
-      "items": [["pants", "rare", "clothPants"]]
+      "items": [["helmet", "unique", "chefHat"]]
     }
   },
   "skull-finding": {

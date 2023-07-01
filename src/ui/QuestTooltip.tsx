@@ -50,7 +50,9 @@ const useQuestDialogue = (quest, playerQuest: PlayerQuest) => {
     const amount = playerQuest
       ? `(${Math.min(current, objective?.amount)}/${objective?.amount})`
       : `(${objective?.amount})`;
-    return `<strong>${verb} ${amount} ${noun}s</strong>`;
+    return `<strong>${verb} ${objective?.amount > 1 ? amount : ""} ${noun}${
+      objective?.amount > 1 ? "s" : ""
+    }</strong>`;
   });
 
   return dialogues?.description?.replace("{objective}", objectiveTexts?.[0]);
