@@ -49,7 +49,6 @@ tile-extruder --tileWidth 32 --tileHeight 32 --input ./public/assets/tilesets/cl
 
 #### Systems
 
-- [ ] Readable signs objects
 - [ ] Trade window
 - [ ] Minimap
 - [ ] Doors that require a key or level to pass through
@@ -75,6 +74,7 @@ tile-extruder --tileWidth 32 --tileHeight 32 --input ./public/assets/tilesets/cl
 
 #### Completed
 
+- [x] Readable signs objects
 - [x] Hold to aim spells
 - [x] Helmets that can hide hair or face
 - [x] Elemental Damage / Resistances

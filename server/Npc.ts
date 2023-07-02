@@ -6,7 +6,8 @@ import crypto from "crypto";
 
 const AGGRO_KITE_RANGE = 220;
 const NPC_SHOULD_ATTACK_RANGE = 8;
-const NPC_ADDED_ATTACK_DELAY = 1000;
+const NPC_ADDED_ATTACK_DELAY = 700;
+const NPC_START_ATTACKING_DELAY = 500;
 
 const buildEquipment = (equipment: Record<string, Array<string>>) =>
   Object?.entries(equipment).reduce((acc, [slot, itemArray]: [string, BuildItem]) => {
@@ -94,7 +95,7 @@ class Npc extends Character implements Npc {
   }
   checkAttackReady(delta: number): any {
     super.checkAttackReady(delta);
-    const fullAttackDelay = delta + this?.stats?.attackDelay + NPC_ADDED_ATTACK_DELAY / 2;
+    const fullAttackDelay = delta + this?.stats?.attackDelay + NPC_ADDED_ATTACK_DELAY;
     if (Date.now() - this.state.lastAttack > fullAttackDelay) {
       this.state.npcAttackReady = true;
     }
@@ -160,8 +161,8 @@ class Npc extends Character implements Npc {
     // If they are switching targets
     if (this.state.lockedPlayerId !== id && id) {
       this.state.isAttacking = true;
-      // Before they BEGIN attacking
-      this.state.lastAttack = Date.now() - NPC_ADDED_ATTACK_DELAY / 2;
+      // So they dont immediately respond to an attack with an instant attack.
+      this.state.lastAttack = Date.now() - NPC_START_ATTACKING_DELAY;
       this.state.npcAttackReady = false;
     }
     this.state.lockedPlayerId = id;

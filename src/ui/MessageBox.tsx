@@ -66,7 +66,7 @@ const getFrom = (data) => {
 };
 
 const Message: React.FC<MessageProps> = ({ data }) => {
-  const { from, message, type } = data ?? {};
+  const { message, type } = data ?? {};
   const colorsMap: Record<string, string> = {
     party: "rare",
     chat: "white",
