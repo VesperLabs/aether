@@ -10,6 +10,7 @@ import {
   KeyboardButton,
   Quest,
   MENU_MAX_WIDTH,
+  Box,
 } from "./";
 
 const MenuKeeper = () => {
@@ -32,7 +33,7 @@ const MenuKeeper = () => {
   const KeeperButtons = () => {
     if (!hasQuests && !hasShop) return;
     return (
-      <Flex sx={{ gap: 2 }}>
+      <Flex sx={{ gap: 2, justifyContent: "flex-end" }}>
         {hasGreet && (hasShop || hasQuests) && (
           <KeyboardButton keyboardKey="G" onClick={() => setTab("greet")} active={tabGreet}>
             Greet
@@ -55,19 +56,22 @@ const MenuKeeper = () => {
   return (
     <Menu className="menu-keeper">
       <MenuHeader onClick={() => setTabKeeper(false)}>{keeper?.profile?.userName}</MenuHeader>
-      <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", width: MENU_MAX_WIDTH }}>
-        <Portrait user={keeper} size={70} topOffset={26} scale={2.4} />
-        <Flex
-          sx={{
-            gap: 1,
-            flexDirection: "column",
-            flex: 1,
-            minWidth: 200,
-          }}
-        >
-          <Flex sx={{ bg: "shadow.30", flexDirection: "column", p: 2, gap: 2, borderRadius: 6 }}>
-            <Text dangerouslySetInnerHTML={{ __html: dialogues?.[tab] }} />
-            {tabKeeper && <KeeperButtons />}
+      <Flex sx={{ flexDirection: "column", gap: 2, alignItems: "flex-end" }}>
+        <Flex sx={{ gap: 2, justifyContent: "end" }}>
+          <Portrait user={keeper} size={70} topOffset={26} scale={2.4} />
+          <Flex
+            sx={{
+              gap: 1,
+              flexDirection: "column",
+              flex: 1,
+              minWidth: 200,
+              maxWidth: MENU_MAX_WIDTH / 2,
+            }}
+          >
+            <Flex sx={{ bg: "shadow.30", flexDirection: "column", p: 2, gap: 2, borderRadius: 6 }}>
+              <Text dangerouslySetInnerHTML={{ __html: dialogues?.[tab] }} />
+              {tabKeeper && <KeeperButtons />}
+            </Flex>
           </Flex>
         </Flex>
         <Flex
