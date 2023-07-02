@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import Door from "../shared/Door";
+import Sign from "../shared/Sign";
 import { getMapByName } from "../shared/Maps";
 import { SnapshotInterpolation } from "@geckos.io/snapshot-interpolation";
 import {
@@ -23,10 +24,6 @@ class SceneMain extends Phaser.Scene {
   constructor(socket) {
     super({ key: "SceneMain" });
     this.socket = socket;
-  }
-
-  preload() {
-    this.bgMusic = null;
   }
 
   create() {
@@ -231,7 +228,7 @@ class SceneMain extends Phaser.Scene {
     }
 
     enableDoors(this);
-    checkNpcProximity(this, time);
+    checkEntityProximity(this, time);
 
     if (!npcSnapshot) return;
     /* Update NPC x and y */
@@ -251,11 +248,11 @@ class SceneMain extends Phaser.Scene {
   }
 }
 
-function checkNpcProximity(scene, time) {
+function checkEntityProximity(scene, time) {
   if (time % 4 > 1) return;
   const { hero } = scene ?? {};
   let coords = {};
-  let closestNpc;
+  let closestEntity;
   let closestDistance = Infinity;
 
   hero?.body?.getBounds(coords);
@@ -267,24 +264,26 @@ function checkNpcProximity(scene, time) {
   coords.width += extraPixels * 2;
   coords.height += extraPixels * 2;
 
-  /* Loop through NPCs, if hero is intersecting, find npc wth closest distance to hero */
   const npcs = scene.npcs.getChildren();
-  for (const npc of npcs) {
-    if (npc?.kind !== "keeper") continue;
-    if (RectangleToRectangle(coords, npc.getBounds())) {
-      const distance = distanceTo(npc, hero);
+  const signs = scene.signs.getChildren();
+
+  /* Loop through entities, if hero is intersecting, find npc wth closest distance to hero */
+  for (const entity of [...npcs, ...signs]) {
+    if (!["keeper", "sign"].includes(entity?.kind)) continue;
+    if (RectangleToRectangle(coords, entity.getBounds())) {
+      const distance = distanceTo(entity, hero);
       if (distance < closestDistance) {
-        closestNpc = npc;
+        closestEntity = entity;
         closestDistance = distance;
       }
     }
   }
 
   /* Update the hero to be targeting them */
-  if (closestNpc && !hero.state.isDead) {
-    if (hero.state.targetNpcId !== closestNpc?.id && !closestNpc?.state?.lockedPlayerId) {
-      hero.state.targetNpcId = closestNpc?.id;
-      window.dispatchEvent(new CustomEvent("HERO_NEAR_NPC", { detail: closestNpc?.id }));
+  if (closestEntity && !hero.state.isDead) {
+    if (hero.state.targetNpcId !== closestEntity?.id && !closestEntity?.state?.lockedPlayerId) {
+      hero.state.targetNpcId = closestEntity?.id;
+      window.dispatchEvent(new CustomEvent("HERO_NEAR_NPC", { detail: closestEntity?.id }));
     }
   } else {
     if (hero.state.targetNpcId) {
@@ -390,6 +389,14 @@ function changeMap(scene, roomName) {
   for (const door of mapDoors) {
     const newDoor = new Door(scene, door);
     scene.doors.add(newDoor);
+  }
+  /* Create Signs */
+  if (scene.map.getObjectLayer("Signs")) {
+    const mapSigns = scene.map.getObjectLayer("Signs").objects;
+    for (const sign of mapSigns) {
+      const newSign = new Sign(scene, sign);
+      scene.signs.add(newSign);
+    }
   }
 
   return { collideLayer };

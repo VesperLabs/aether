@@ -251,23 +251,35 @@ function App({ socket, debug, game }) {
       const scene = game.scene.getScene("SceneMain");
       const hero = scene.hero;
       const npcId = scene?.hero?.state?.targetNpcId;
-      const npc = scene.npcs.getChildren().find((n) => n?.id === npcId);
-      if (!npc)
+      const npcs = scene.npcs.getChildren();
+      const signs = scene.signs.getChildren();
+
+      const target = [...npcs, ...signs].find((n) => n?.id === npcId);
+
+      if (!target) {
         return setMessages((prev) => [
           ...prev,
           { type: "error", message: "Who are you talking to?" },
         ]);
-      const direction = getSpinDirection(hero, npc);
+      }
 
-      setTabKeeper((prev) => {
-        if (!prev) {
+      const direction = getSpinDirection(hero, target);
+
+      if (target.kind === "keeper") {
+        return setTabKeeper((prev) => {
+          if (prev) return false; //already talking
           socket.emit("chatNpc", { npcId: hero?.state?.targetNpcId });
           if (hero?.direction !== direction) socket.emit("changeDirection", direction);
-        }
-        if (prev) {
-          return false;
-        }
-      });
+        });
+      }
+
+      if (target.kind === "sign") {
+        return setTabKeeper((prev) => {
+          if (prev) return false; //already talking
+          setMessages((prev) => [...prev, { type: "info", from: "Sign", message: target?.text }]);
+          if (hero?.direction !== direction) socket.emit("changeDirection", direction);
+        });
+      }
     };
 
     const onLootGrabbed = ({ player }) => {

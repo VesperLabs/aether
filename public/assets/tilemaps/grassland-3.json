@@ -670,8 +670,8 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":1289.3533638145,
-                 "y":2142.39059438276
+                 "x":1180.56088623948,
+                 "y":2181.98592944303
                 }, 
                 {
                  "height":0,
@@ -688,8 +688,8 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":1565.49110297424,
-                 "y":1955.41851352219
+                 "x":1567.38241554516,
+                 "y":1930.83145010018
                 }, 
                 {
                  "height":0,
@@ -706,8 +706,8 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":1086.91462709578,
-                 "y":2139.14048949701
+                 "x":1068.51447214711,
+                 "y":2108.63496945053
                 }, 
                 {
                  "height":0,
@@ -724,8 +724,8 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":1391.0300305763,
-                 "y":1973.8995442672
+                 "x":1395.38796201151,
+                 "y":1936.13080516203
                 }, 
                 {
                  "height":0,
@@ -742,8 +742,8 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":1472.34534592407,
-                 "y":2089.67688058072
+                 "x":1419.56595409761,
+                 "y":2090.16109518463
                 }, 
                 {
                  "height":0,
@@ -772,8 +772,8 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":1176.07476635514,
-                 "y":2032.89719626168
+                 "x":1215.78036387596,
+                 "y":1974.79144379219
                 }, 
                 {
                  "height":0,
@@ -790,8 +790,8 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":1178.31775700935,
-                 "y":2226.54205607477
+                 "x":1069.17770236459,
+                 "y":2182.56003342264
                 }, 
                 {
                  "height":0,
@@ -942,6 +942,186 @@
                  "width":0,
                  "x":581.113801452785,
                  "y":487.419728392462
+                }, 
+                {
+                 "height":0,
+                 "id":91,
+                 "name":"crab",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"walkRange",
+                         "type":"int",
+                         "value":120
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1177.18083334145,
+                 "y":2099.98360593804
+                }, 
+                {
+                 "height":0,
+                 "id":92,
+                 "name":"crab",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"walkRange",
+                         "type":"int",
+                         "value":120
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1292.26810076734,
+                 "y":2180.99366771114
+                }, 
+                {
+                 "height":0,
+                 "id":93,
+                 "name":"crab",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"walkRange",
+                         "type":"int",
+                         "value":120
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1293.82142165408,
+                 "y":2101.00716637614
+                }, 
+                {
+                 "height":0,
+                 "id":94,
+                 "name":"crab",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"walkRange",
+                         "type":"int",
+                         "value":120
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1418.50188946876,
+                 "y":2178.32569469685
+                }, 
+                {
+                 "height":0,
+                 "id":95,
+                 "name":"crab",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"walkRange",
+                         "type":"int",
+                         "value":120
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1561.21094117179,
+                 "y":2040.80874718571
+                }, 
+                {
+                 "height":0,
+                 "id":96,
+                 "name":"crab",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"walkRange",
+                         "type":"int",
+                         "value":120
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1607.10827038543,
+                 "y":1877.30001936858
+                }, 
+                {
+                 "height":0,
+                 "id":97,
+                 "name":"crab",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"walkRange",
+                         "type":"int",
+                         "value":120
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1129.18845632384,
+                 "y":2039.51191167926
+                }, 
+                {
+                 "height":0,
+                 "id":98,
+                 "name":"crab",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"walkRange",
+                         "type":"int",
+                         "value":120
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1328.96229983609,
+                 "y":1914.00832177531
+                }, 
+                {
+                 "height":0,
+                 "id":99,
+                 "name":"crab",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"walkRange",
+                         "type":"int",
+                         "value":120
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1598.78955995461,
+                 "y":1988.399949565
+                }, 
+                {
+                 "height":0,
+                 "id":100,
+                 "name":"crab",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"walkRange",
+                         "type":"int",
+                         "value":120
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1504.85436893204,
+                 "y":2074.76989030387
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -1049,7 +1229,7 @@
          "y":0
         }],
  "nextlayerid":28,
- "nextobjectid":91,
+ "nextobjectid":101,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.1",

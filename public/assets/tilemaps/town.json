@@ -370,6 +370,53 @@
         }, 
         {
          "draworder":"topdown",
+         "id":9,
+         "name":"Signs",
+         "objects":[
+                {
+                 "height":0,
+                 "id":13,
+                 "name":"aqueducts",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"text",
+                         "type":"string",
+                         "value":"This house is condemned.  Entry forbidden."
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1473.59154929577,
+                 "y":1253.52112676056
+                }, 
+                {
+                 "height":0,
+                 "id":14,
+                 "name":"town",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"text",
+                         "type":"string",
+                         "value":"Welcome to Willowbrook town!"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1198.94366197183,
+                 "y":1516.72535211268
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
          "id":8,
          "name":"Npcs",
          "objects":[
@@ -614,8 +661,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":9,
- "nextobjectid":13,
+ "nextlayerid":10,
+ "nextobjectid":15,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.1",
