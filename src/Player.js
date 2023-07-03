@@ -502,10 +502,10 @@ function updateCurrentSpeed(player) {
   const vy = player.vy;
   player.currentSpeed = Math.max(Math.abs(vx), Math.abs(vy));
 
-  /* Action */
   if (player.state.isAttacking) {
     return;
   }
+
   if (player.state.isAiming) {
     player.action = "stand";
     return;
