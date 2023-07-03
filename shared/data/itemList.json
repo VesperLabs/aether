@@ -129,8 +129,8 @@
         "slot": "hands",
         "stats": {
           "attackDelay": 300,
-          "minDamage": 2,
-          "maxDamage": 4,
+          "minDamage": 5,
+          "maxDamage": 6,
           "range": 2,
           "spCost": 4
         },
