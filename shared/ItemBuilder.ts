@@ -151,7 +151,7 @@ const ItemBuilder = {
       }
       if (item.slot !== "stackable") {
         for (let key in baseItem.stats || {}) {
-          const consistentKeys = ["attackDelay", "castDelay", "range"];
+          const consistentKeys = ["attackDelay", "castDelay", "range", "spCost"];
           let statAmount = 0;
           if (Array.isArray(baseItem.stats[key])) {
             const low = baseItem.stats[key][0];
@@ -163,7 +163,7 @@ const ItemBuilder = {
           newStats[key] = consistentKeys?.includes(key) ? statAmount : statAmount * item?.ilvl;
         }
         for (let key in baseItem.effects || {}) {
-          const consistentKeys = ["attackDelay", "castDelay", "range"];
+          const consistentKeys = ["attackDelay", "castDelay", "range", "spCost"];
           let effectAmount = 0;
           if (Array.isArray(baseItem.effects[key])) {
             const low = baseItem.effects[key][0];

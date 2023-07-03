@@ -11,7 +11,8 @@
           "attackDelay": 50,
           "minDamage": 1,
           "maxDamage": 1,
-          "range": 1
+          "range": 1,
+          "spCost": 1
         },
         "requirements": {
           "dexterity": 5
@@ -27,7 +28,8 @@
           "attackDelay": 50,
           "minDamage": 0,
           "maxDamage": 1,
-          "range": 1
+          "range": 1,
+          "spCost": 1
         },
         "requirements": {
           "dexterity": 2
@@ -43,7 +45,8 @@
           "attackDelay": 120,
           "minDamage": 1,
           "maxDamage": 2,
-          "range": 1
+          "range": 1,
+          "spCost": 2
         },
         "requirements": {
           "strength": 2,
@@ -59,7 +62,8 @@
         "stats": {
           "attackDelay": 200,
           "spellPower": 2,
-          "range": 1
+          "range": 1,
+          "spCost": 1
         },
         "requirements": {
           "intelligence": 5
@@ -72,10 +76,11 @@
         "texture": "weapon-hammer",
         "slot": "hands",
         "stats": {
-          "attackDelay": 200,
+          "attackDelay": 150,
           "minDamage": 2,
           "maxDamage": 2,
-          "range": 1
+          "range": 1,
+          "spCost": 3
         },
         "requirements": {
           "strength": 5
@@ -91,7 +96,8 @@
           "attackDelay": 150,
           "minDamage": 1,
           "maxDamage": 3,
-          "range": 1
+          "range": 1,
+          "spCost": 2
         },
         "requirements": {
           "strength": 3
@@ -107,7 +113,8 @@
           "attackDelay": 100,
           "minDamage": 1,
           "maxDamage": 2,
-          "range": 1
+          "range": 1,
+          "spCost": 1
         },
         "requirements": {
           "strength": 2,
@@ -124,7 +131,8 @@
           "attackDelay": 300,
           "minDamage": 2,
           "maxDamage": 4,
-          "range": 2
+          "range": 2,
+          "spCost": 4
         },
         "requirements": {
           "strength": 6
@@ -881,10 +889,12 @@
           "minFireDamage": 2,
           "maxFireDamage": 3
         },
+        "stats": {
+          "mpCost": 4
+        },
         "requirements": {
           "intelligence": 4
         },
-        "mpCost": 4,
         "cost": 100
       },
       "fireball2": {
@@ -894,7 +904,6 @@
         "slot": "spell",
         "texture": "scroll-blue",
         "effects": {},
-        "mpCost": 8,
         "cost": 200
       },
       "fireball3": {
@@ -904,7 +913,6 @@
         "slot": "spell",
         "texture": "scroll-blue",
         "effects": {},
-        "mpCost": 12,
         "cost": 200
       },
       "evasion": {
@@ -919,7 +927,9 @@
         "requirements": {
           "dexterity": 4
         },
-        "mpCost": 10,
+        "stats": {
+          "mpCost": 10
+        },
         "cost": 100
       },
       "haste": {
@@ -935,7 +945,9 @@
           "dexterity": 4,
           "intelligence": 4
         },
-        "mpCost": 10,
+        "stats": {
+          "mpCost": 4
+        },
         "cost": 100
       },
       "brute": {
@@ -950,7 +962,9 @@
         "requirements": {
           "strength": 4
         },
-        "mpCost": 10,
+        "stats": {
+          "mpCost": 4
+        },
         "cost": 100
       },
       "genius": {
@@ -965,7 +979,9 @@
         "requirements": {
           "intelligence": 4
         },
-        "mpCost": 10,
+        "stats": {
+          "mpCost": 4
+        },
         "cost": 100
       },
       "endurance": {
@@ -980,7 +996,9 @@
         "requirements": {
           "vitality": 4
         },
-        "mpCost": 10,
+        "stats": {
+          "mpCost": 4
+        },
         "cost": 100
       }
     }

@@ -39,7 +39,6 @@ const Bar = ({
         boxShadow: `0px 0px 0px 1px #000`,
         width,
         height,
-
         ...sx,
       }}
       {...props}
@@ -56,7 +55,7 @@ const Bar = ({
       >
         {showText && `${min} / ${max}`}
       </Box>
-      <Box sx={{ bg: color, height: "100%", width: percent }} />
+      <Box sx={{ bg: color, height: "100%", width: percent, transition: ".5s ease width" }} />
     </Box>
   );
 };
@@ -125,10 +124,19 @@ const PlayerHud = ({ player }) => {
           width={isHero ? 100 : 50}
           height={isHero ? 12 : 6}
         />
+        <Bar
+          data-tooltip-content={`SP: ${stats?.sp} / ${stats?.maxSp}`}
+          color="amber.300"
+          max={stats?.maxSp}
+          min={stats?.sp}
+          width={isHero ? 100 : 50}
+          height={6}
+          showText={false}
+        />
         {isHero && (
           <Bar
             data-tooltip-content={`EXP: ${stats?.exp} / ${stats?.maxExp}`}
-            color="#FFFF66"
+            color="green.500"
             max={stats?.maxExp}
             min={stats?.exp}
             height={6}

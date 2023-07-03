@@ -113,7 +113,7 @@ class ServerCharacter extends Character {
     let setList = {};
     let activeSets = [];
 
-    this.stats = Object.keys(this?.stats)?.length ? this.stats : { hp: 0, mp: 0, exp: 0 };
+    this.stats = Object.keys(this?.stats)?.length ? this.stats : { hp: 0, mp: 0, sp: 0, exp: 0 };
 
     /* Get stats from equipped abilities and items */
     allSlots.forEach((eKey) => {
@@ -215,8 +215,7 @@ class ServerCharacter extends Character {
     ns.expValue = ns.expValue || 0;
     ns.maxHp = ns.maxHp + ns.vitality * 3;
     ns.maxMp = ns.maxMp + ns.intelligence * 3;
-    ns.regenHp = ns.regenHp || 0;
-    ns.regenMp = ns.regenMp || 0;
+    ns.maxSp = ns.maxSp + Math.floor(ns.vitality * 0.03);
     ns.magicFind = ns.magicFind || 0;
     ns.maxExp = ns.maxExp || 0;
     ns.exp = this.stats.exp || 0;
@@ -230,8 +229,9 @@ class ServerCharacter extends Character {
     ns.castDelay = ns.castDelay || 1000;
     ns.castDelay = 1 - Math.floor(ns.intelligence * 0.5) + ns.castDelay;
     ns.accuracy = ns.accuracy;
-    ns.regenHp = 1 + ns.regenHp + Math.floor(ns.vitality / 20);
-    ns.regenMp = 1 + ns.regenMp + Math.floor(ns.intelligence / 20);
+    ns.regenHp = (ns.regenHp || 0) + Math.floor(ns.vitality / 20);
+    ns.regenMp = (ns.regenMp || 0) + Math.floor(ns.intelligence / 20);
+    ns.regenSp = ns.regenSp || 0;
     ns.armorPierce = ns.armorPierce + ns.dexterity + ns.strength;
     ns.defense = ns.defense + ns.strength;
     ns.critChance = ns.critChance + ns.dexterity * 0.05;
@@ -263,6 +263,9 @@ class ServerCharacter extends Character {
     if (this.stats.mp <= 0) ns.mp = shouldHeal ? ns.maxMp : 0;
     else if (this.stats.mp > ns.maxMp) ns.mp = ns.maxMp;
     else ns.mp = this.stats.mp;
+    if (this.stats.sp <= 0) ns.sp = shouldHeal ? ns.maxSp : 0;
+    else if (this.stats.sp > ns.maxSp) ns.sp = ns.maxSp;
+    else ns.sp = this.stats.sp;
     this.stats = ns;
 
     this.state.activeSets = activeSets;
@@ -353,8 +356,18 @@ class ServerCharacter extends Character {
     const dodgeRoll = randomNumber(1, 100);
     const blockRoll = randomNumber(1, 100);
     const critRoll = randomNumber(1, 100);
+
+    // based on the percentage of this.stats.sp out of this.stats.maxSp,
+    // we need to add a damage penalty to this damage roll.
+    // if the percentage is low, the damage is less
     const damageRoll = randomNumber(this.stats.minDamage, this.stats.maxDamage);
-    const damage = damageRoll;
+    // Calculate the percentage of this.stats.sp out of this.stats.maxSp
+    const spPercent = (this.stats.sp / this.stats.maxSp) * 100;
+    // Determine the damage penalty based on the percentage
+    const penalty = spPercent < 25 ? 0.75 : spPercent < 50 ? 0.9 : 1;
+    // Calculate the adjusted damage roll by applying the penalty
+    const damage = damageRoll * penalty;
+
     const defense = Math.max(1, victim.stats.defense || 1); // Minimum defense value of 1
     const armorPierce = Math.max(1, this.stats.armorPierce || 1); // Minimum armorPierce value of 1
     const reduction = Math.min(1, armorPierce / defense); // Reduction capped at 1 (100%)
@@ -431,8 +444,10 @@ class ServerCharacter extends Character {
     const isOutOfCombat = this.checkOutOfCombat();
     const isHpRegenReady = now - this.state.lastHpRegen > 5000;
     const isMpRegenReady = now - this.state.lastMpRegen > 1000;
+    const isSpRegenReady = now - this.state.lastSpRegen > 500;
     this.state.doHpRegen = false;
     this.state.doMpRegen = false;
+    this.state.doSpRegen = false;
     if (isOutOfCombat && !this.state.isDead) {
       if (isHpRegenReady && this.stats.hp < this.stats.maxHp) {
         this.state.doHpRegen = true;
@@ -445,10 +460,16 @@ class ServerCharacter extends Character {
       this.state.lastMpRegen = now;
       this.modifyStat("mp", this.stats.regenMp);
     }
+    if (isSpRegenReady && this.stats.sp < this.stats.maxSp) {
+      this.state.doSpRegen = true;
+      this.state.lastSpRegen = now;
+      this.modifyStat("sp", this.stats.regenSp);
+    }
   }
   fillHpMp(): void {
     this.stats.hp = this.stats.maxHp;
     this.stats.mp = this.stats.maxMp;
+    this.stats.sp = this.stats.maxSp;
   }
   assignExp(amount: integer): boolean {
     let didLevel = false;

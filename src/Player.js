@@ -35,6 +35,7 @@ class Player extends Character {
     this.state.bubbleMessage = state.bubbleMessage;
     this.state.doHpRegen = state.doHpRegen;
     this.state.doMpRegen = state.doMpRegen;
+    this.state.doSpRegen = state.doSpRegen;
     this.state.lastCombat = state.lastCombat;
   }
   updateData(data) {
@@ -72,6 +73,9 @@ class Player extends Character {
     }
     if (this.state.doMpRegen) {
       this.takeHit({ type: "mp", amount: this?.stats?.regenMp });
+    }
+    if (this.state.doSpRegen) {
+      this.takeHit({ type: "sp", amount: this?.stats?.regenSp });
     }
   }
   initSpriteLayers() {
@@ -333,6 +337,9 @@ class Player extends Character {
         break;
       case "mp":
         this.modifyStat("mp", hit?.amount);
+        break;
+      case "sp":
+        this.modifyStat("sp", hit?.amount);
         break;
       case "exp":
         this.modifyStat("exp", hit?.amount);

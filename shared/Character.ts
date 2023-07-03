@@ -2,7 +2,6 @@ import Phaser from "phaser";
 import { capitalize, getAngleFromDirection } from "./utils";
 const BLANK_TEXTURE = "human-blank";
 const POTION_COOLDOWN = 10000;
-const CHARGE_MAX_COOLDOWN = 2000;
 
 class Character extends Phaser.GameObjects.Container {
   startingCoords: Coordinate;
@@ -83,13 +82,14 @@ class Character extends Phaser.GameObjects.Container {
       isAggro: false,
       doHpRegen: false,
       doMpRegen: false,
+      doSpRegen: false,
       lastTeleport: Date.now(),
       deadTime: Date.now(),
       lastHpRegen: Date.now(),
       lastMpRegen: Date.now(),
+      lastSpRegen: Date.now(),
       lastCombat: Date.now(),
       lastPotion: Date.now() - POTION_COOLDOWN,
-      lastRegen: Date.now(),
       lastAttack: Date.now(),
       lastCast: Date.now(),
       lastFlash: Date.now(),
@@ -195,8 +195,8 @@ class Character extends Phaser.GameObjects.Container {
     return isCastReady;
   }
   canCastSpell(abilitySlot) {
-    const { mpCost } = this?.abilities?.[abilitySlot] || {};
-    if (this?.stats?.mp < mpCost) return false;
+    const { stats } = this?.abilities?.[abilitySlot] || {};
+    if (this?.stats?.mp < stats?.mpCost) return false;
     return true;
   }
   triggerSecondAttack() {
@@ -274,6 +274,17 @@ class Character extends Phaser.GameObjects.Container {
       );
     }
     return item;
+  }
+  getAttackSpCost(count: number) {
+    let spCost = 0;
+    if (count === 1) {
+      spCost =
+        this?.equipment?.handRight?.stats?.spCost || this?.equipment?.handLeft?.stats?.spCost;
+    }
+    if (count === 2) {
+      spCost = this?.equipment?.handLeft?.stats?.spCost || 1;
+    }
+    return spCost || 1;
   }
   destroy() {
     if (this.scene) this.scene.events.off("update", this.update, this);

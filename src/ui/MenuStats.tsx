@@ -77,6 +77,8 @@ const MenuStats = () => {
             <Text>+{stats?.regenHp}</Text>
             <Text>Regen Mp</Text>
             <Text>+{stats?.regenMp}</Text>
+            <Text>Regen Sp</Text>
+            <Text>+{stats?.regenSp}</Text>
           </Grid>
           <Grid sx={COLUMN_STYLES}>
             <Text>Fire Resistance</Text>

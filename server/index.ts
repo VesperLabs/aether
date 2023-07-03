@@ -163,13 +163,22 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         const player = scene.players[socketId];
         if (player?.state?.isDead) return;
         if (player?.state?.isAttacking) return;
+        //Get the SP cost of the attack.
+        const spCost = player.getAttackSpCost(count);
         player.direction = direction;
+        player.modifyStat("sp", -spCost);
+        io.to(player?.roomName).emit("modifyPlayerStat", {
+          socketId,
+          type: "sp",
+          amount: -spCost,
+        });
         socket.to(player?.roomName).emit("playerAttack", { socketId, count });
       });
 
       socket.on("castSpell", ({ abilitySlot, castAngle } = {}) => {
         const player = scene.players[socketId];
-        const { ilvl, base, mpCost = 0 } = player?.abilities?.[abilitySlot] || {};
+        const { ilvl, base, stats } = player?.abilities?.[abilitySlot] || {};
+        const mpCost = stats?.mpCost || 1;
         //if the ability slotId is not in the activeItemSlots return
         if (!player?.activeItemSlots?.includes?.(`${abilitySlot}`)) return;
         if (player?.state?.isDead || !ilvl || !base) return;
@@ -248,7 +257,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         const oldRoom = player.room.name;
         const { roomName: newRoom, x: newX, y: newY } = PLAYER_DEFAULT_SPAWN;
         player.state.isDead = false;
-        player.stats.hp = Math.floor(player.stats.maxHp);
+        player.fillHpMp();
 
         if (oldRoom !== newRoom) {
           socket.leave(oldRoom);
