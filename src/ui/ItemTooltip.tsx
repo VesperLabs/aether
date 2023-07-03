@@ -7,6 +7,8 @@ import ItemBuilder from "../../shared/ItemBuilder";
 import { convertMsToS } from "../utils";
 const formatStats = (stats = {}) =>
   Object.entries(stats).reduce((acc, [key, value]) => {
+    // skip these
+    if (["mpCost", "spCost"].includes(key)) return acc;
     if (key.includes("Damage")) {
       const identifier = key.replace("min", "").replace("max", "");
       if (!acc.hasOwnProperty(identifier)) {
@@ -164,10 +166,16 @@ const ItemTooltip = ({ item, tooltipId, show }) => {
             <Icon icon="../assets/icons/gold.png" size={16} />
             {item?.cost * (item?.amount || 1)}
           </Flex>
-          {item?.mpCost && (
+          {item?.stats?.mpCost && (
             <Flex sx={{ alignItems: "center", gap: "2px" }}>
               <Icon icon="../assets/icons/mana.png" size={16} />
-              {item?.mpCost}
+              {item?.stats?.mpCost}
+            </Flex>
+          )}
+          {item?.stats?.spCost && (
+            <Flex sx={{ alignItems: "center", gap: "2px" }}>
+              <Icon icon="../assets/icons/mana.png" size={16} />
+              {item?.stats?.spCost}
             </Flex>
           )}
         </Flex>

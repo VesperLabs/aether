@@ -69,6 +69,7 @@ const getDatabaseApi = (db) => ({
         stats: {
           hp: player?.stats?.hp,
           mp: player?.stats?.mp,
+          sp: player?.stats?.sp,
           exp: player?.stats?.exp,
         },
         equipment: player?.equipment,
@@ -130,6 +131,7 @@ const getDatabaseApi = (db) => ({
             stats: {
               hp: player?.stats?.hp,
               mp: player?.stats?.mp,
+              sp: player?.stats?.sp,
               exp: player?.stats?.exp,
             },
             equipment: player?.equipment,
@@ -171,6 +173,7 @@ export const createBaseUser = (charClass) => {
     stats: {
       hp: 0,
       mp: 0,
+      sp: 0,
       exp: 0,
     },
     gold: 10,

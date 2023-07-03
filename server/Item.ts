@@ -19,7 +19,6 @@ class Item implements Item {
   percentStats?: Record<string, number>;
   setName?: string;
   setBonus?: Record<string, number>;
-  mpCost?: number;
   space?: number; // amount of slots on bags
   exclusive: boolean; // cannot be dropped on world
   items?: Array<Item>;
@@ -45,7 +44,6 @@ class Item implements Item {
     this.percentStats = item?.percentStats;
     this.setName = item?.setName;
     this.setBonus = item?.setBonus;
-    this.mpCost = item?.mpCost;
     this.space = item?.space;
     this.exclusive = item?.exclusive;
     this.items = item?.items || [];

@@ -14,7 +14,6 @@ interface Item {
   type?: string;
   requirements?: Record<string, number>;
   cost?: number;
-  mpCost?: number;
   effects?: Record<string, any>;
   buffs?: Record<string, any>;
   percentStats?: Record<string, number>;
@@ -162,6 +161,7 @@ interface Character extends Phaser.GameObjects.Container {
   canCastSpell(abilitySlot: number): boolean;
   checkCastReady(delta?: number): boolean;
   checkAttackReady(delta?: number): any;
+  getAttackSpCost(count: number): number;
 }
 
 type CharClass = "warrior" | "rogue" | "mage" | "cleric";

@@ -54,6 +54,9 @@ class Damage extends Container {
       case "mp":
         this.setVisible(false);
         break;
+      case "sp":
+        this.setVisible(false);
+        break;
       case "death":
         text = text;
         this.dt.setTint("0xFF6666");
