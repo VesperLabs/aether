@@ -39,8 +39,8 @@
             "fileName": "mine.json",
             "height": 2560,
             "width": 2560,
-            "x": 2464,
-            "y": -960
+            "x": 2752,
+            "y": -1120
         },
         {
             "fileName": "dungeon-aqueducts.json",
@@ -48,6 +48,13 @@
             "width": 1600,
             "x": 2464,
             "y": 1632
+        },
+        {
+            "fileName": "grassland-3.json",
+            "height": 2240,
+            "width": 2240,
+            "x": -2528,
+            "y": 64
         }
     ],
     "onlyShowAdjacentMaps": false,
