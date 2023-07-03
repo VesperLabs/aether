@@ -93,6 +93,7 @@ class Player extends Character {
     this.handRight = scene.add.existing(new Sprite(scene, -13, -9, BLANK_TEXTURE));
     this.shadow = scene.add.existing(new Sprite(...defaults));
     this.bubble = scene.add.existing(new Bubble(scene, this?.headY, this.bubbleMessage));
+
     this.crosshair = scene.add.existing(
       new Crosshair(scene, 0, this.bodyOffsetY, "icons", "crosshair", this, 40)
     );
@@ -123,7 +124,7 @@ class Player extends Character {
     this.add(this.hpBar);
     this.add(this.corpse);
     this.add(this.talkMenu);
-    if (this.isHero) this.add(this.crosshair);
+    this.add(this.crosshair);
   }
   drawCharacterFromUserData() {
     const { profile, visibleEquipment, state } = this || {};
@@ -407,6 +408,7 @@ function drawFrame(p) {
     hpBar,
     userName,
     talkMenu,
+    charge,
   } = p;
 
   /* Depth sort based on direction */
@@ -462,6 +464,7 @@ function drawFrame(p) {
   p.bringToTop(bubble);
   p.bringToTop(hpBar);
   p.bringToTop(talkMenu);
+  p.bringToTop(charge);
 
   p?.playAnim(skin, [profile?.race, direction, action]);
   if (profile?.race === "human") {
