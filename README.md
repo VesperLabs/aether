@@ -45,10 +45,12 @@ tile-extruder --tileWidth 32 --tileHeight 32 --input ./public/assets/tilesets/cl
 
 #### Cosmetic
 
+- [ ] Fix it so attack logic is not based on the player frame
 - [ ] Animated weapons
 
 #### Systems
 
+- [ ] Fix party system to update stats properly
 - [ ] Trade window
 - [ ] Minimap
 - [ ] Doors that require a key or level to pass through
