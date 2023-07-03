@@ -2,6 +2,8 @@ import Phaser from "phaser";
 import { capitalize, getAngleFromDirection } from "./utils";
 const BLANK_TEXTURE = "human-blank";
 const POTION_COOLDOWN = 10000;
+const CHARGE_MAX_COOLDOWN = 2000;
+
 class Character extends Phaser.GameObjects.Container {
   startingCoords: Coordinate;
   socketId: string;

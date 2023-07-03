@@ -62,7 +62,7 @@ tile-extruder --tileWidth 32 --tileHeight 32 --input ./public/assets/tilesets/cl
 - [ ] Serverside individual cooldowns for spells
 - [ ] More spells that affect movement, (dives, dodges, pushback etc)
 - [ ] Back-stab damage
-- [ ] Holding down buttons to charge up attacks
+- [ ] Attack stamina
 - [ ] Show warning before enemies attack
 
 #### Performance

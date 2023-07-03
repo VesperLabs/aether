@@ -9,6 +9,7 @@ class EnergyBall extends Phaser.GameObjects.Sprite {
   private distance: number;
   private initialX: number;
   private initialY: number;
+  public isExpired: boolean;
 
   constructor(scene: Phaser.Scene, x: number, y: number, distance: number) {
     super(scene, x, y, "icons", "energy");
@@ -33,18 +34,18 @@ class EnergyBall extends Phaser.GameObjects.Sprite {
       const velocity = new Phaser.Math.Vector2(
         Math.cos(angleToTarget),
         Math.sin(angleToTarget)
-      ).scale(0.7);
+      ).scale(1);
 
       this.x += velocity.x;
       this.y += velocity.y;
 
-      const scale = Phaser.Math.Linear(this.scaleX, this.targetScale, 0.025);
+      const scale = Phaser.Math.Linear(this.scaleX, this.targetScale, 0.08);
       this.setScale(scale, scale);
 
-      const alpha = Phaser.Math.Linear(this.alpha, this.targetAlpha, 0.03);
+      const alpha = Phaser.Math.Linear(this.alpha, this.targetAlpha, 0.06);
       this.setAlpha(alpha);
     } else {
-      this.reset(); // Reset the energy ball to its initial state
+      this.reset(); // Reset the energy ball to its initial        state
     }
   }
 
@@ -60,33 +61,43 @@ class EnergyBall extends Phaser.GameObjects.Sprite {
     this.setScale(0, 0);
     this.setAlpha(STARTING_ALPHA);
   }
+  destroy() {
+    if (this.scene) this.scene.events.off("update", this.update, this);
+    super.destroy();
+  }
 }
 
 class Charge extends Phaser.GameObjects.Container {
   private distance: number;
-
+  private chargePercent: number;
   constructor(scene, x, y, distance = 24) {
     super(scene, x, y);
     this.distance = distance;
     this.scene = scene;
-
-    for (let i = 0; i < 15; i++) {
-      const energyBall = new EnergyBall(this.scene, this.x, this.y, this.distance);
-      this.add(energyBall);
-    }
+    this.chargePercent = 0;
 
     scene.add.existing(this);
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
   }
+  updateChargePercent(chargePercent: number) {
+    const energyBalls = this.list as EnergyBall[];
+    if (chargePercent === 0 && energyBalls[0]) {
+      energyBalls[0].destroy(); // Destroy the energy ball
+      this.remove(energyBalls[0]); // Remove it from the container
+    } else if (energyBalls.length < chargePercent / 4) {
+      const energyBall = new EnergyBall(this.scene, this.x, this.y, this.distance);
 
+      this.add(energyBall);
+    }
+  }
   update() {
     const energyBalls = this.list as EnergyBall[];
 
     for (let i = energyBalls.length - 1; i >= 0; i--) {
       const energyBall = energyBalls[i];
 
-      if (energyBall.scaleX === 0) {
+      if (energyBall.scaleX === 0 || energyBall.scaleX === TARGET_SCALE) {
         // Generate a random number from 1 to 100
         const randomNumber = Phaser.Math.Between(1, 50);
 

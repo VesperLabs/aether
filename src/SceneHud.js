@@ -25,7 +25,7 @@ class SceneHud extends Phaser.Scene {
     addGlobalEventListeners(this);
   }
   update(time, delta) {
-    moveHero(this, time);
+    moveDirectHero(this, time);
   }
 }
 
@@ -73,9 +73,7 @@ function addGlobalEventListeners(scene) {
     (e) => {
       const hero = mainScene?.hero;
       hero.state.isAiming = false;
-      /* Tell the UI to update the cooldown */
-      updateAttackCooldown(hero);
-      hero?.doAttack?.(1);
+      hero.state.holdingAttack = false;
     },
     scene
   );
@@ -83,8 +81,7 @@ function addGlobalEventListeners(scene) {
     "HERO_ATTACK_START",
     (e) => {
       const hero = mainScene?.hero;
-      /* Implement charge up powerz */
-      hero.state.isCharging = true;
+      hero.state.holdingAttack = true;
     },
     scene
   );
@@ -228,7 +225,7 @@ function isTypableFieldActive() {
   return false;
 }
 
-function moveHero(scene, time) {
+function moveDirectHero(scene, time) {
   const isTouch = scene.sys.game.device.input.touch;
   const pointer = scene.input.activePointer;
   const mainScene = scene.scene.manager.getScene("SceneMain");
@@ -285,7 +282,7 @@ function moveHero(scene, time) {
     hero.state.lastAngle = Math.atan2(joystick.deltaY, joystick.deltaX);
   }
 
-  /* Spin hero when charging */
+  /* Spin hero when aiming */
   if (hero?.state.isAiming) {
     if (!isTouch) {
       const cursorPoint = pointer.positionToCamera(mainScene.cameras.main);
@@ -302,6 +299,11 @@ function moveHero(scene, time) {
     }
   }
 
+  if (hero.state.holdingAttack) {
+    updateAttackCooldown(hero);
+    hero?.doAttack?.(1);
+  }
+
   if (hero.state.isAttacking || hero?.state.isAiming) {
     vx = 0;
     vy = 0;
@@ -310,7 +312,7 @@ function moveHero(scene, time) {
   hero.vx = vx;
   hero.vy = vy;
   hero.body.setVelocity(vx, vy);
-  if (!hero.state.isAttacking) hero.direction = direction;
+  hero.direction = direction;
 
   /* If the hero is standing still do not update the server */
   if (!hero.state.isIdle) {
