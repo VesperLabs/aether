@@ -511,7 +511,7 @@ const CooldownTimer = ({ cooldown }) => {
   useEffect(() => {
     const interval = setInterval(() => {
       const currentTime = Date.now();
-      const elapsedTime = currentTime - (startTime + 100);
+      const elapsedTime = currentTime - startTime;
 
       const percentageElapsed = elapsedTime / duration;
 
@@ -522,7 +522,7 @@ const CooldownTimer = ({ cooldown }) => {
         //setCooldowns((prev) => ({ ...prev, [cooldown]: 0 }));
         clearInterval(interval);
       }
-    }, 50);
+    }, 16);
 
     return () => {
       clearInterval(interval);

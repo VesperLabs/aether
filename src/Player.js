@@ -93,7 +93,6 @@ class Player extends Character {
     this.handRight = scene.add.existing(new Sprite(scene, -13, -9, BLANK_TEXTURE));
     this.shadow = scene.add.existing(new Sprite(...defaults));
     this.bubble = scene.add.existing(new Bubble(scene, this?.headY, this.bubbleMessage));
-
     this.crosshair = scene.add.existing(
       new Crosshair(scene, 0, this.bodyOffsetY, "icons", "crosshair", this, 40)
     );
@@ -124,7 +123,10 @@ class Player extends Character {
     this.add(this.hpBar);
     this.add(this.corpse);
     this.add(this.talkMenu);
-    this.add(this.crosshair);
+
+    if (this.isHero) {
+      this.add(this.crosshair);
+    }
   }
   drawCharacterFromUserData() {
     const { profile, visibleEquipment, state } = this || {};
@@ -350,15 +352,15 @@ class Player extends Character {
     drawFrame(this);
     checkIsFlash(this, delta);
     this.checkAttackReady(delta);
-    if (this.isHero) {
-      this.checkCastReady(delta);
-      this.checkPotionCooldown(delta);
-    }
     this.showHideNameAndBars();
     this.setBubbleMessage();
     this.setTalkMenu();
-    if (this?.isHero) this.triggerSecondAttack();
     this.setDepth(100 + this.y + this?.body?.height);
+    if (this.isHero) {
+      this.checkCastReady(delta);
+      this.checkPotionCooldown(delta);
+      this.triggerSecondAttack();
+    }
   }
   playAnim(sprite, parts) {
     let animKey = parts?.join("-");
@@ -408,7 +410,6 @@ function drawFrame(p) {
     hpBar,
     userName,
     talkMenu,
-    charge,
   } = p;
 
   /* Depth sort based on direction */
@@ -464,7 +465,6 @@ function drawFrame(p) {
   p.bringToTop(bubble);
   p.bringToTop(hpBar);
   p.bringToTop(talkMenu);
-  p.bringToTop(charge);
 
   p?.playAnim(skin, [profile?.race, direction, action]);
   if (profile?.race === "human") {
