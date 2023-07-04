@@ -51,6 +51,10 @@ class SceneMain extends Phaser.Scene {
       }
     });
 
+    socket.on("partyUpdate", ({ party }) => {
+      scene.hero.party = party;
+    });
+
     socket.on("heroInit", ({ socketId, players = [], npcs = [], loots = [] }) => {
       /* Delete everything in the scene */
       resetEntities(scene);
@@ -252,7 +256,8 @@ class SceneMain extends Phaser.Scene {
     This is really only for the PARTY UI hud.
     Probably can check if the hero is in a party before we do this
     to save some resources */
-    if (elapsedTime >= 1000) {
+    if (elapsedTime >= 1000 && this?.hero?.party) {
+      console.log("yo");
       window.dispatchEvent(
         new CustomEvent("UPDATE_ROOM_PLAYERS", {
           detail: { players: this?.players?.getChildren?.() },
