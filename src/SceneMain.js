@@ -24,6 +24,7 @@ class SceneMain extends Phaser.Scene {
   constructor(socket) {
     super({ key: "SceneMain" });
     this.socket = socket;
+    this.lastUpdateTime = 0;
   }
 
   create() {
@@ -205,6 +206,7 @@ class SceneMain extends Phaser.Scene {
   }
 
   update(time, delta) {
+    const elapsedTime = time - this.lastUpdateTime;
     const playerSnapshot = SI.calcInterpolation("x y", "players");
     const npcSnapshot = SI.calcInterpolation("x y", "npcs");
 
@@ -244,6 +246,19 @@ class SceneMain extends Phaser.Scene {
       npc.direction = s?.direction;
       npc.vx = s.vx;
       npc.vy = s.vy;
+    }
+
+    /* Send an update to the UI every 2 seconds.
+    This is really only for the PARTY UI hud.
+    Probably can check if the hero is in a party before we do this
+    to save some resources */
+    if (elapsedTime >= 1000) {
+      window.dispatchEvent(
+        new CustomEvent("UPDATE_ROOM_PLAYERS", {
+          detail: { players: this?.players?.getChildren?.() },
+        })
+      );
+      this.lastUpdateTime = time;
     }
   }
 }

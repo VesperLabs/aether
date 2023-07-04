@@ -233,6 +233,8 @@ function App({ socket, debug, game }) {
             { type: "success", message: `You are now level ${player?.stats?.level}!` },
           ]);
         }
+      } else {
+        console.log("arf");
       }
     };
 
@@ -295,6 +297,27 @@ function App({ socket, debug, game }) {
       setHero((prev) => ({ ...prev, state: hero?.state, stats: hero?.stats }));
     };
 
+    /* Splice in some updates for keeping the party UI in sync */
+    const onUpdateRoomPlayers = (e) => {
+      const otherPlayers = e?.detail?.players?.filter((p) => !p.isHero);
+
+      setPlayers((players) => {
+        return players.map((player) => {
+          if (otherPlayers.some((p) => p.id === player.id)) {
+            const foundPlayer = otherPlayers?.find((p) => p.id === player.id);
+            return {
+              ...player,
+              stats: foundPlayer?.stats,
+              equipment: foundPlayer?.equipment,
+              profile: foundPlayer?.profile,
+            };
+          } else {
+            return player;
+          }
+        });
+      });
+    };
+
     const onPartyInvite = (inviteData: PartyInvite) => {
       // Check if the party invite already exists
       const existingInvite = partyInvites.find((invite) => invite.partyId === inviteData.partyId);
@@ -344,9 +367,11 @@ function App({ socket, debug, game }) {
     window.addEventListener("HERO_NEAR_NPC", onNearNpc);
     window.addEventListener("HERO_CHAT_NPC", onHeroChatNpc);
     window.addEventListener("UPDATE_HUD", onUpdateHud);
+    window.addEventListener("UPDATE_ROOM_PLAYERS", onUpdateRoomPlayers);
     window.addEventListener("HERO_RESPAWN", onUpdateHud);
     window.addEventListener("GAME_LOADED", onGameLoaded);
     window.addEventListener("HERO_START_COOLDOWN", onStartCooldown);
+
     return () => {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
@@ -363,6 +388,7 @@ function App({ socket, debug, game }) {
       window.removeEventListener("HERO_NEAR_NPC", onNearNpc);
       window.removeEventListener("HERO_CHAT_NPC", onHeroChatNpc);
       window.removeEventListener("UPDATE_HUD", onUpdateHud);
+      window.removeEventListener("UPDATE_ROOM_PLAYERS", onUpdateRoomPlayers);
       window.removeEventListener("HERO_RESPAWN", onUpdateHud);
       window.removeEventListener("GAME_LOADED", onGameLoaded);
       window.removeEventListener("HERO_START_COOLDOWN", onStartCooldown);
