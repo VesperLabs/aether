@@ -128,14 +128,14 @@
         "texture": "weapon-spear",
         "slot": "hands",
         "stats": {
-          "attackDelay": 800,
-          "minDamage": 5,
-          "maxDamage": 6,
+          "attackDelay": 500,
+          "minDamage": 4,
+          "maxDamage": 5,
           "range": 2,
           "spCost": 4
         },
         "requirements": {
-          "strength": 6
+          "strength": 5
         }
       },
       "spade": {
@@ -190,9 +190,8 @@
         "texture": "weapon-claymore-soul",
         "slot": "hands",
         "stats": {
-          "hpSteal": [5, 10],
-          "mpSteal": [5, 10],
-          "attackDelay": 700,
+          "hpSteal": [10, 15],
+          "mpSteal": [10, 15],
           "critChance": 5,
           "range": 2
         }
@@ -414,7 +413,7 @@
       "theMossmanProphecy": {
         "ilvl": 1,
         "name": "The Mossman Prophecy",
-        "base": "armor",
+        "base": "robe",
         "texture": "armor-robe",
         "tint": "0x66AA66",
         "slot": "armor",
