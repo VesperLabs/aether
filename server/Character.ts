@@ -229,9 +229,9 @@ class ServerCharacter extends Character {
     ns.castDelay = ns.castDelay || 1000;
     ns.castDelay = 1 - Math.floor(ns.intelligence * 0.5) + ns.castDelay;
     ns.accuracy = ns.accuracy;
-    ns.regenHp = (ns.regenHp || 0) + Math.floor(ns.vitality / 20);
-    ns.regenMp = (ns.regenMp || 0) + Math.floor(ns.intelligence / 20);
-    ns.regenSp = ns.regenSp || 0;
+    ns.regenHp = (ns.regenHp || 1) + Math.floor(ns.vitality / 20);
+    ns.regenMp = (ns.regenMp || 1) + Math.floor(ns.intelligence / 20);
+    ns.regenSp = ns.regenSp || 1;
     ns.armorPierce = ns.armorPierce + ns.dexterity + ns.strength;
     ns.defense = ns.defense + ns.strength;
     ns.critChance = ns.critChance + ns.dexterity * 0.05;
@@ -245,10 +245,10 @@ class ServerCharacter extends Character {
     if (ns.dodgeChance > 75) ns.dodgeChance = 75;
     if (ns.blockChance > 75) ns.blockChance = 75;
 
-    ns.maxDamage =
-      ns.maxDamage + Math.floor(1 + ((ns.strength * 1.5 + ns.dexterity / 2) * ns.level) / 100);
-    ns.minDamage =
-      ns.minDamage + Math.floor(1 + ((ns.strength * 1.5 + ns.dexterity / 2) * ns.level) / 100);
+    const damageCalc = ((ns.strength * 1.5 + ns.dexterity / 2) * ns.level) / 100;
+    const damageModifier = Math.floor(1 + damageCalc);
+    ns.minDamage = ns.minDamage + Math.floor(damageCalc);
+    ns.maxDamage = Math.max(ns.maxDamage + damageModifier, ns.minDamage);
 
     /* Any percentStat value that needs to be pre-calculated goes here  */
     Object.keys(totalPercentStats).forEach((key) => {
@@ -357,16 +357,12 @@ class ServerCharacter extends Character {
     const blockRoll = randomNumber(1, 100);
     const critRoll = randomNumber(1, 100);
 
-    // based on the percentage of this.stats.sp out of this.stats.maxSp,
-    // we need to add a damage penalty to this damage roll.
-    // if the percentage is low, the damage is less
-    const damageRoll = randomNumber(this.stats.minDamage, this.stats.maxDamage);
-    // Calculate the percentage of this.stats.sp out of this.stats.maxSp
-    const spPercent = (this.stats.sp / this.stats.maxSp) * 100;
-    // Determine the damage penalty based on the percentage
-    const penalty = spPercent < 25 ? 0.75 : spPercent < 50 ? 0.9 : 1;
-    // Calculate the adjusted damage roll by applying the penalty
-    const damage = damageRoll * penalty;
+    // damage will be min - max as a factor of the spPercent but capped at 70
+    const percentage = (this.stats.sp / this.stats.maxSp) * 100;
+    const cappedPercentage = percentage > 70 ? 100 : percentage;
+    const range = this.stats.maxDamage - this.stats.minDamage;
+    const damageRange = this.stats.minDamage + (range * cappedPercentage) / 100;
+    const damage = Math.round(damageRange);
 
     const defense = Math.max(1, victim.stats.defense || 1); // Minimum defense value of 1
     const armorPierce = Math.max(1, this.stats.armorPierce || 1); // Minimum armorPierce value of 1
