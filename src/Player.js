@@ -164,30 +164,36 @@ class Player extends Character {
   }
   doAttack(count) {
     const { state } = this;
-
     if (state.isAttacking) return;
     if (this?.isHero && (!state.hasWeapon || state.isDead)) return;
-    if (
-      this?.isHero &&
-      this.checkAttackReady().timeElapsed < Math.max(this.stats.attackDelay, 260) &&
-      count !== 2
-    )
-      return;
-    state.isAttacking = true;
-    state.lastAttack = Date.now();
+
     let spellName = "attack_right";
+    let action = this.action;
+    let attackDelay;
+    const { timeElapsed } = this.checkAttackReady();
+
     /* Play attack animation frame (human only) */
     if (RACES_WITH_ATTACK_ANIMS.includes(this.profile.race)) {
       if (count === 1) {
         /* Will always start with a right attack. Will either swing right or left if has weapon. */
-        if (state.hasWeaponRight) this.action = "attack_right";
-        else if (state.hasWeaponLeft) this.action = "attack_left";
+        if (state.hasWeaponRight) {
+          action = "attack_right";
+          attackDelay = this?.visibleEquipment?.handRight?.stats?.attackDelay;
+        } else if (state.hasWeaponLeft) {
+          action = "attack_left";
+          attackDelay = this?.visibleEquipment?.handLeft?.stats?.attackDelay;
+        }
+        if (this?.isHero && timeElapsed < attackDelay + 60) return;
       } else if (count === 2) {
         /* Always finishes with a left if both hands have weapons */
-        if (state.hasWeaponLeft) this.action = "attack_left";
+        if (state.hasWeaponLeft) action = "attack_left";
       }
-      spellName = this.action;
+      spellName = action;
     }
+
+    state.isAttacking = true;
+    state.lastAttack = Date.now();
+    this.action = action;
 
     // If we are the hero, need to trigger the socket that we attacked
     if (this.isHero) {
@@ -535,7 +541,7 @@ function hackFrameRates(player, rate) {
     "helmet",
   ];
   for (const spriteKey of spriteKeys) {
-    player[spriteKey].anims.msPerFrame = rate;
+    player[spriteKey].anims.msPerFrame = player?.state?.isAttacking ? 100 : rate;
   }
 }
 
