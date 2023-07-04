@@ -169,7 +169,7 @@ class Player extends Character {
     if (this?.isHero && (!state.hasWeapon || state.isDead)) return;
     if (
       this?.isHero &&
-      this.checkAttackReady().timeElapsed < Math.max(this.stats.attackDelay, 160) &&
+      this.checkAttackReady().timeElapsed < Math.max(this.stats.attackDelay, 260) &&
       count !== 2
     )
       return;
