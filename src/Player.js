@@ -564,12 +564,13 @@ function playWeapons(player) {
         handRight.setAngle(90);
       }
       if (direction === "right") {
-        handRight.setAngle(-90);
+        handRight.setAngle(0);
       }
     }
     if (action === "attack_left") {
       if (direction === "left") {
         handLeft.setAngle(90);
+        handLeft.setFlipX(true);
       }
       if (direction === "right") {
         handLeft.setAngle(-90);
