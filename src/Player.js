@@ -164,9 +164,15 @@ class Player extends Character {
   }
   doAttack(count) {
     const { state } = this;
+
     if (state.isAttacking) return;
-    if (this?.isHero && (!state.hasWeapon || state.isDead))
-      return; /* Heros with no weapon cannot attack */
+    if (this?.isHero && (!state.hasWeapon || state.isDead)) return;
+    if (
+      this?.isHero &&
+      this.checkAttackReady().timeElapsed < this.stats.attackDelay * 2 &&
+      count !== 2
+    )
+      return;
     state.isAttacking = true;
     state.lastAttack = Date.now();
     let spellName = "attack_right";
@@ -561,19 +567,19 @@ function playWeapons(player) {
   ) {
     if (action === "attack_right") {
       if (direction === "left") {
-        handRight.setAngle(90);
+        handRight.setAngle(-90);
+        handRight.setFlipY(true);
       }
       if (direction === "right") {
-        handRight.setAngle(0);
+        handRight.setAngle(-90);
       }
     }
     if (action === "attack_left") {
       if (direction === "left") {
         handLeft.setAngle(90);
-        handLeft.setFlipX(true);
       }
       if (direction === "right") {
-        handLeft.setAngle(-90);
+        handLeft.setAngle(0);
       }
     }
   }

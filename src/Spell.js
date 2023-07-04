@@ -56,7 +56,6 @@ class Spell extends Phaser.GameObjects.Container {
         this.spell.displayHeight = 50 * rangeLeft;
         this.spell.setFlipX(true);
         if (caster?.equipment?.handLeft?.base === "katar" && caster?.direction === "right") {
-          this.spell.setFlipX(false);
         }
       }
       if (spellName === "attack_right") {
@@ -67,7 +66,6 @@ class Spell extends Phaser.GameObjects.Container {
         this.spell.displayHeight = 50 * rangeRight;
         this.spell.setFlipX(false);
         if (caster?.equipment?.handRight?.base === "katar" && caster?.direction === "left") {
-          this.spell.setFlipX(true);
         }
       }
       scene.tweens.add({

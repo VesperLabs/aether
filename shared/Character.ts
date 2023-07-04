@@ -170,7 +170,7 @@ class Character extends Phaser.GameObjects.Container {
     const percentageRemaining = (timeRemaining / cooldown) * 100;
     const isReady = percentageRemaining === 0;
     this.state.isAttacking = !isReady;
-    return { cooldown, timeRemaining, percentageRemaining, isReady };
+    return { cooldown, timeRemaining, timeElapsed, percentageRemaining, isReady };
   }
   checkPotionCooldown() {
     const cooldown = POTION_COOLDOWN; // Cooldown time in milliseconds
@@ -184,6 +184,9 @@ class Character extends Phaser.GameObjects.Container {
   checkOutOfCombat() {
     const isOutOfCombat = Date.now() - this.state.lastCombat > 5000;
     return isOutOfCombat;
+  }
+  isDuelWielding() {
+    return this.state.hasWeaponLeft && this.state.hasWeaponRight;
   }
   checkCastReady(delta: number = 0) {
     const isCastReady = Date.now() - this.state.lastCast > delta + this?.stats?.castDelay;
