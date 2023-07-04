@@ -126,7 +126,7 @@ const PlayerHud = ({ player }) => {
         />
         <Bar
           data-tooltip-content={`SP: ${stats?.sp} / ${stats?.maxSp}`}
-          color="amber.300"
+          color="green.500"
           max={stats?.maxSp}
           min={stats?.sp}
           width={isHero ? 100 : 50}
@@ -136,7 +136,7 @@ const PlayerHud = ({ player }) => {
         {isHero && (
           <Bar
             data-tooltip-content={`EXP: ${stats?.exp} / ${stats?.maxExp}`}
-            color="green.500"
+            color="purple.500"
             max={stats?.maxExp}
             min={stats?.exp}
             height={6}

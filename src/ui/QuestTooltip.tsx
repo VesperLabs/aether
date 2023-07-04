@@ -123,7 +123,7 @@ const QuestTooltip = ({
             </Box>
           )}
           {rewards?.exp > 0 && (
-            <Box sx={{ ...STYLE_NON_EMPTY({ rarity: "set" }) }}>
+            <Box sx={{ ...STYLE_NON_EMPTY({ rarity: "legendary" }) }}>
               <SlotAmount>{rewards?.exp}</SlotAmount>
               <Icon
                 icon="./assets/icons/exp.png"
