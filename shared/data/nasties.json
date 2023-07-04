@@ -1,4 +1,36 @@
 {
+  "crab": {
+    "charClass": "mage",
+    "profile": { "race": "crab", "userName": "Crab" },
+    "state": { "isAggro": false },
+    "baseStats": {
+      "level": 1
+    },
+    "hitBoxSize": {
+      "width": 18,
+      "height": 16
+    },
+    "drops": [
+      {
+        "type": "armor",
+        "rarity": "set",
+        "key": "crabSuit",
+        "chance": 1000
+      },
+      {
+        "type": "boots",
+        "rarity": "set",
+        "key": "crabWalkers",
+        "chance": 1000
+      },
+      {
+        "type": "stackable",
+        "rarity": "common",
+        "key": "crabShell",
+        "chance": 3
+      }
+    ]
+  },
   "raccoon": {
     "charClass": "rogue",
     "profile": { "race": "raccoon", "userName": "Raccoon" },
@@ -69,38 +101,6 @@
       "height": 24
     },
     "drops": []
-  },
-  "crab": {
-    "charClass": "mage",
-    "profile": { "race": "crab", "userName": "Crab" },
-    "state": { "isAggro": false, "noWorldDrops": true },
-    "baseStats": {
-      "level": 1
-    },
-    "hitBoxSize": {
-      "width": 18,
-      "height": 16
-    },
-    "drops": [
-      {
-        "type": "armor",
-        "rarity": "set",
-        "key": "crabSuit",
-        "chance": 1000
-      },
-      {
-        "type": "boots",
-        "rarity": "set",
-        "key": "crabWalkers",
-        "chance": 1000
-      },
-      {
-        "type": "stackable",
-        "rarity": "common",
-        "key": "crabShell",
-        "chance": 3
-      }
-    ]
   },
   "hawkwing": {
     "charClass": "rogue",
