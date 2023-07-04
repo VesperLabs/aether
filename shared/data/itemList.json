@@ -8,7 +8,7 @@
         "texture": "weapon-katar",
         "slot": "hands",
         "stats": {
-          "attackDelay": 50,
+          "attackDelay": 150,
           "minDamage": 1,
           "maxDamage": 1,
           "range": 1,
@@ -25,7 +25,7 @@
         "texture": "weapon-dagger",
         "slot": "hands",
         "stats": {
-          "attackDelay": 50,
+          "attackDelay": 150,
           "minDamage": 0,
           "maxDamage": 1,
           "range": 1,
@@ -42,7 +42,7 @@
         "texture": "weapon-sword-short",
         "slot": "hands",
         "stats": {
-          "attackDelay": 120,
+          "attackDelay": 200,
           "minDamage": 1,
           "maxDamage": 2,
           "range": 1,
@@ -60,7 +60,7 @@
         "texture": "weapon-wand-stick",
         "slot": "hands",
         "stats": {
-          "attackDelay": 200,
+          "attackDelay": 300,
           "spellPower": 2,
           "range": 1,
           "spCost": 1
@@ -76,9 +76,9 @@
         "texture": "weapon-hammer",
         "slot": "hands",
         "stats": {
-          "attackDelay": 150,
-          "minDamage": 2,
-          "maxDamage": 2,
+          "attackDelay": 400,
+          "minDamage": 3,
+          "maxDamage": 3,
           "range": 1,
           "spCost": 3
         },
@@ -93,7 +93,7 @@
         "texture": "weapon-axe",
         "slot": "hands",
         "stats": {
-          "attackDelay": 150,
+          "attackDelay": 240,
           "minDamage": 1,
           "maxDamage": 3,
           "range": 1,
@@ -110,7 +110,7 @@
         "texture": "weapon-scythe",
         "slot": "hands",
         "stats": {
-          "attackDelay": 100,
+          "attackDelay": 200,
           "minDamage": 1,
           "maxDamage": 2,
           "range": 1,
@@ -128,7 +128,7 @@
         "texture": "weapon-spear",
         "slot": "hands",
         "stats": {
-          "attackDelay": 300,
+          "attackDelay": 600,
           "minDamage": 5,
           "maxDamage": 6,
           "range": 2,
@@ -192,7 +192,7 @@
         "stats": {
           "hpSteal": [5, 10],
           "mpSteal": [5, 10],
-          "attackDelay": 250,
+          "attackDelay": 350,
           "critChance": 5,
           "range": 2
         }
@@ -575,7 +575,7 @@
         "tint": "0x865027",
         "slot": "hands",
         "stats": {
-          "attackDelay": 50,
+          "attackDelay": 350,
           "defense": 5,
           "blockChance": 5
         }
@@ -598,7 +598,7 @@
         "slot": "hands",
         "stats": {
           "critChance": [4, 5],
-          "attackDelay": 50,
+          "attackDelay": 350,
           "strength": [8, 10],
           "vitality": [8, 10],
           "defense": [15, 20],

@@ -161,10 +161,7 @@ class Character extends Phaser.GameObjects.Container {
     this.stats[key] += intAmount;
   }
   checkAttackReady(delta = 0) {
-    // let attackDelay = 0;
-    // if (p.action === "attack_right") attackDelay = p?.equipment?.handRight?.stats?.attackDelay;
-    // if (p.action === "attack_left") attackDelay = p?.equipment?.handLeft?.stats?.attackDelay;
-    const cooldown = this?.stats?.attackDelay;
+    const cooldown = this?.stats?.attackDelay / 2;
     const timeElapsed = Date.now() - this.state.lastAttack;
     const timeRemaining = Math.max(cooldown - timeElapsed, 0);
     const percentageRemaining = (timeRemaining / cooldown) * 100;
