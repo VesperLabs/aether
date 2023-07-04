@@ -8,6 +8,7 @@ export default {
     unique: tColors.amber[100],
     rare: tColors.fuchsia[300],
     set: tColors.lime[300],
+    legendary: tColors.purple[300],
     magic: tColors.blue[200],
     common: tColors.white,
     background: tColors.black,

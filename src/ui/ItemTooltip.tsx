@@ -174,7 +174,7 @@ const ItemTooltip = ({ item, tooltipId, show }) => {
           )}
           {item?.stats?.spCost && (
             <Flex sx={{ alignItems: "center", gap: "2px" }}>
-              <Icon icon="../assets/icons/stamina.png" size={20} />
+              <Icon icon="../assets/icons/stamina.png" size={16} />
               {"-" + item?.stats?.spCost}
             </Flex>
           )}
