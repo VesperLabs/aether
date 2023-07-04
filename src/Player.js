@@ -561,26 +561,25 @@ function playWeapons(player) {
   handRight.setFlipX(right?.flipX);
   handRight.setFlipY(right?.flipY);
   handRight.setAngle(right?.rotation);
-  if (
-    visibleEquipment?.handRight?.texture?.includes("katar") ||
-    visibleEquipment?.handLeft?.texture?.includes("katar")
-  ) {
-    if (action === "attack_right") {
-      if (direction === "left") {
-        handRight.setAngle(-90);
-        handRight.setFlipY(true);
-      }
-      if (direction === "right") {
-        handRight.setAngle(-90);
-      }
+
+  const isRightKatar = visibleEquipment?.handRight?.texture?.includes("katar");
+  const isLeftKatar = visibleEquipment?.handLeft?.texture?.includes("katar");
+
+  if (action === "attack_right" && isRightKatar) {
+    if (direction === "left") {
+      handRight.setAngle(-90);
+      handRight.setFlipY(true);
     }
-    if (action === "attack_left") {
-      if (direction === "left") {
-        handLeft.setAngle(90);
-      }
-      if (direction === "right") {
-        handLeft.setAngle(0);
-      }
+    if (direction === "right") {
+      handRight.setAngle(-90);
+    }
+  }
+  if (action === "attack_left" && isLeftKatar) {
+    if (direction === "left") {
+      handLeft.setAngle(90);
+    }
+    if (direction === "right") {
+      handLeft.setAngle(0);
     }
   }
 }
