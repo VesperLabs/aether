@@ -8,7 +8,7 @@
         "texture": "weapon-katar",
         "slot": "hands",
         "stats": {
-          "attackDelay": 150,
+          "attackDelay": 200,
           "minDamage": 1,
           "maxDamage": 1,
           "range": 1,
@@ -25,7 +25,7 @@
         "texture": "weapon-dagger",
         "slot": "hands",
         "stats": {
-          "attackDelay": 150,
+          "attackDelay": 200,
           "minDamage": 0,
           "maxDamage": 1,
           "range": 1,
@@ -42,7 +42,7 @@
         "texture": "weapon-sword-short",
         "slot": "hands",
         "stats": {
-          "attackDelay": 200,
+          "attackDelay": 300,
           "minDamage": 1,
           "maxDamage": 2,
           "range": 1,
@@ -76,7 +76,7 @@
         "texture": "weapon-hammer",
         "slot": "hands",
         "stats": {
-          "attackDelay": 400,
+          "attackDelay": 500,
           "minDamage": 3,
           "maxDamage": 3,
           "range": 1,
@@ -93,7 +93,7 @@
         "texture": "weapon-axe",
         "slot": "hands",
         "stats": {
-          "attackDelay": 240,
+          "attackDelay": 350,
           "minDamage": 1,
           "maxDamage": 3,
           "range": 1,
@@ -110,7 +110,7 @@
         "texture": "weapon-scythe",
         "slot": "hands",
         "stats": {
-          "attackDelay": 200,
+          "attackDelay": 300,
           "minDamage": 1,
           "maxDamage": 2,
           "range": 1,
@@ -128,7 +128,7 @@
         "texture": "weapon-spear",
         "slot": "hands",
         "stats": {
-          "attackDelay": 600,
+          "attackDelay": 800,
           "minDamage": 5,
           "maxDamage": 6,
           "range": 2,
@@ -192,7 +192,7 @@
         "stats": {
           "hpSteal": [5, 10],
           "mpSteal": [5, 10],
-          "attackDelay": 350,
+          "attackDelay": 700,
           "critChance": 5,
           "range": 2
         }
@@ -598,7 +598,6 @@
         "slot": "hands",
         "stats": {
           "critChance": [4, 5],
-          "attackDelay": 350,
           "strength": [8, 10],
           "vitality": [8, 10],
           "defense": [15, 20],
