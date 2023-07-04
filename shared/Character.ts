@@ -205,7 +205,10 @@ class Character extends Phaser.GameObjects.Container {
     }
   }
   updateVisibleEquipment() {
-    this.visibleEquipment = Object.fromEntries(
+    this.visibleEquipment = this.getVisibleEquipment();
+  }
+  getVisibleEquipment() {
+    return Object.fromEntries(
       Object.entries(this?.equipment).filter(([key]) => this.activeItemSlots.includes(key))
     );
   }
@@ -276,15 +279,19 @@ class Character extends Phaser.GameObjects.Container {
     return item;
   }
   getAttackSpCost(count: number) {
-    let spCost = 0;
+    const visibleEquipment = this.getVisibleEquipment();
+
     if (count === 1) {
-      spCost =
-        this?.equipment?.handRight?.stats?.spCost || this?.equipment?.handLeft?.stats?.spCost;
+      return (
+        visibleEquipment?.handRight?.stats?.spCost || visibleEquipment?.handLeft?.stats?.spCost || 0
+      );
     }
+
     if (count === 2) {
-      spCost = this?.equipment?.handLeft?.stats?.spCost || 1;
+      return visibleEquipment?.handLeft?.stats?.spCost || 0;
     }
-    return spCost || 1;
+
+    return 1;
   }
   destroy() {
     if (this.scene) this.scene.events.off("update", this.update, this);
