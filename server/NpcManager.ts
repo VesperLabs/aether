@@ -46,9 +46,7 @@ class NpcManager {
       const npcBaseStats = {
         ...baseStats,
         walkSpeed: baseStats.walkSpeed - 30,
-        minDamage: npc?.baseStats?.level / 2,
-        maxDamage: npc?.baseStats?.level,
-        maxHp: npc?.baseStats?.level * 10,
+        maxHp: npc?.baseStats?.level * 4,
         expValue: isKeeper ? 0 : npc?.baseStats?.level,
       };
 
