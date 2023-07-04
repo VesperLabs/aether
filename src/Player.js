@@ -533,8 +533,6 @@ function hackFrameRates(player, rate) {
     "boots",
     "pants",
     "helmet",
-    "handLeft",
-    "handRight",
   ];
   for (const spriteKey of spriteKeys) {
     player[spriteKey].anims.msPerFrame = rate;
