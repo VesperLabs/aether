@@ -232,7 +232,7 @@ class Player extends ServerCharacter implements Player {
     this.expireBuffs();
     this.doRegen();
     this.checkBubbleMessage();
-    this.checkAttackReady(delta);
+    this.checkAttackReady();
   }
 }
 

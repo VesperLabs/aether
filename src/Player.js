@@ -365,7 +365,7 @@ class Player extends Character {
     updateCurrentSpeed(this);
     drawFrame(this);
     checkIsFlash(this, delta);
-    this.checkAttackReady(delta);
+    this.checkAttackReady();
     this.showHideNameAndBars();
     this.setBubbleMessage();
     this.setTalkMenu();
