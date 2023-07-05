@@ -169,7 +169,6 @@ class Player extends Character {
 
     let spellName = "attack_right";
     let action = this.action;
-    let attackDelay;
 
     /* Play attack animation frame (human only) */
     if (RACES_WITH_ATTACK_ANIMS.includes(this.profile.race)) {
@@ -177,10 +176,8 @@ class Player extends Character {
         /* Will always start with a right attack. Will either swing right or left if has weapon. */
         if (state.hasWeaponRight) {
           action = "attack_right";
-          attackDelay = this?.visibleEquipment?.handRight?.stats?.attackDelay;
         } else if (state.hasWeaponLeft) {
           action = "attack_left";
-          attackDelay = this?.visibleEquipment?.handLeft?.stats?.attackDelay;
         }
       } else if (count === 2) {
         /* Always finishes with a left if both hands have weapons */
@@ -372,8 +369,8 @@ class Player extends Character {
     this.setBubbleMessage();
     this.setTalkMenu();
     this.setDepth(100 + this.y + this?.body?.height);
+    this.checkAttackReady();
     if (this.isHero) {
-      this.checkAttackReady();
       this.checkCastReady(delta);
       this.checkPotionCooldown(delta);
       this.triggerSecondAttack();
