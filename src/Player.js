@@ -194,6 +194,7 @@ class Player extends Character {
           action = "attack_left";
           attackDelay = this?.visibleEquipment?.handLeft?.stats?.attackDelay;
         }
+        /* Hack that adds a small pause to show waiting frames to the attack */
         if (this?.isHero && timeElapsed < attackDelay + 60) return;
       } else if (count === 2) {
         /* Always finishes with a left if both hands have weapons */
