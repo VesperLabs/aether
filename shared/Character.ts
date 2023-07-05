@@ -165,11 +165,11 @@ class Character extends Phaser.GameObjects.Container {
     if (this.isDualWielding()) {
       attackDelay = attackDelay / 2;
     }
-    return attackDelay + 60;
+    return attackDelay;
   }
   checkAttackReady() {
     const attackDelay = this.getFullAttackDelay();
-    const cooldown = this?.isDualWielding() ? attackDelay / 2 : attackDelay;
+    const cooldown = attackDelay;
     const timeElapsed = Date.now() - this.state.lastAttack;
     const timeRemaining = Math.max(cooldown - timeElapsed, 0);
     const percentageRemaining = (timeRemaining / cooldown) * 100;

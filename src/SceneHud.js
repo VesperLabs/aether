@@ -185,7 +185,8 @@ function addGlobalEventListeners(scene) {
 
 function updateAttackCooldown(hero) {
   if (hero.state.isAttacking) return;
-  const duration = hero?.getFullAttackDelay();
+  const attackDelay = hero?.getFullAttackDelay();
+  const duration = hero?.isDualWielding() ? attackDelay * 2 : attackDelay;
   window.dispatchEvent(
     new CustomEvent("HERO_START_COOLDOWN", {
       detail: { type: "ATTACK", duration: duration, startTime: Date.now() },
