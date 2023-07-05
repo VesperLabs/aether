@@ -162,6 +162,17 @@ class Player extends Character {
       this.whiskers.setVisible(false);
     }
   }
+  getFullAttackDelay() {
+    const { state } = this;
+    let attackDelay = 0;
+    if (state.hasWeaponRight) {
+      attackDelay += this?.visibleEquipment?.handRight?.stats?.attackDelay;
+    }
+    if (state.hasWeaponLeft) {
+      attackDelay += this?.visibleEquipment?.handLeft?.stats?.attackDelay;
+    }
+    return attackDelay;
+  }
   doAttack(count) {
     const { state } = this;
     if (state.isAttacking) return;
@@ -169,6 +180,8 @@ class Player extends Character {
 
     let spellName = "attack_right";
     let action = this.action;
+    let attackDelay;
+    const { timeElapsed } = this.checkAttackReady();
 
     /* Play attack animation frame (human only) */
     if (RACES_WITH_ATTACK_ANIMS.includes(this.profile.race)) {
@@ -176,9 +189,12 @@ class Player extends Character {
         /* Will always start with a right attack. Will either swing right or left if has weapon. */
         if (state.hasWeaponRight) {
           action = "attack_right";
+          attackDelay = this?.visibleEquipment?.handRight?.stats?.attackDelay;
         } else if (state.hasWeaponLeft) {
           action = "attack_left";
+          attackDelay = this?.visibleEquipment?.handLeft?.stats?.attackDelay;
         }
+        if (this?.isHero && timeElapsed < attackDelay + 60) return;
       } else if (count === 2) {
         /* Always finishes with a left if both hands have weapons */
         if (state.hasWeaponLeft) action = "attack_left";
@@ -365,7 +381,7 @@ class Player extends Character {
     updateCurrentSpeed(this);
     drawFrame(this);
     checkIsFlash(this, delta);
-    this.checkAttackReady();
+    this.checkAttackReady(delta);
     this.showHideNameAndBars();
     this.setBubbleMessage();
     this.setTalkMenu();
@@ -563,6 +579,17 @@ function playWeapons(player) {
 
   const isRightKatar = visibleEquipment?.handRight?.texture?.includes("katar");
   const isLeftKatar = visibleEquipment?.handLeft?.texture?.includes("katar");
+  const isRightShield = visibleEquipment?.handRight?.texture?.includes("shield");
+  const isLeftShield = visibleEquipment?.handLeft?.texture?.includes("shield");
+
+  if (direction === "down") {
+    if (isRightShield) {
+      player.bringToTop(handLeft);
+    }
+    if (isLeftShield) {
+      player.bringToTop(handRight);
+    }
+  }
 
   if (action === "attack_right" && isRightKatar) {
     if (direction === "left") {
