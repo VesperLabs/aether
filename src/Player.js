@@ -162,17 +162,6 @@ class Player extends Character {
       this.whiskers.setVisible(false);
     }
   }
-  getFullAttackDelay() {
-    const { state } = this;
-    let attackDelay = 0;
-    if (state.hasWeaponRight) {
-      attackDelay += this?.visibleEquipment?.handRight?.stats?.attackDelay;
-    }
-    if (state.hasWeaponLeft) {
-      attackDelay += this?.visibleEquipment?.handLeft?.stats?.attackDelay;
-    }
-    return attackDelay;
-  }
   doAttack(count) {
     const { state } = this;
     if (state.isAttacking) return;
@@ -181,7 +170,6 @@ class Player extends Character {
     let spellName = "attack_right";
     let action = this.action;
     let attackDelay;
-    const { timeElapsed } = this.checkAttackReady();
 
     /* Play attack animation frame (human only) */
     if (RACES_WITH_ATTACK_ANIMS.includes(this.profile.race)) {
@@ -194,8 +182,6 @@ class Player extends Character {
           action = "attack_left";
           attackDelay = this?.visibleEquipment?.handLeft?.stats?.attackDelay;
         }
-        /* Hack that adds a small pause to show waiting frames to the attack */
-        if (this?.isHero && timeElapsed < attackDelay + 60) return;
       } else if (count === 2) {
         /* Always finishes with a left if both hands have weapons */
         if (state.hasWeaponLeft) action = "attack_left";
@@ -382,12 +368,12 @@ class Player extends Character {
     updateCurrentSpeed(this);
     drawFrame(this);
     checkIsFlash(this, delta);
-    this.checkAttackReady(delta);
     this.showHideNameAndBars();
     this.setBubbleMessage();
     this.setTalkMenu();
     this.setDepth(100 + this.y + this?.body?.height);
     if (this.isHero) {
+      this.checkAttackReady();
       this.checkCastReady(delta);
       this.checkPotionCooldown(delta);
       this.triggerSecondAttack();

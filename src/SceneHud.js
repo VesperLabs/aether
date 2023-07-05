@@ -299,12 +299,16 @@ function moveDirectHero(scene, time) {
     }
   }
 
-  if (hero.state.holdingAttack && !hero.state.isAttacking) {
+  if (
+    hero.state.holdingAttack &&
+    !hero.state.isAttacking &&
+    hero.state.lastAttack < Date.now() - hero.getFullAttackDelay() - 60
+  ) {
     updateAttackCooldown(hero);
     hero?.doAttack?.(1);
   }
 
-  if (hero.state.isAttacking || hero?.state.isAiming) {
+  if (hero.state.isAttacking || hero?.state.isAiming || hero.state.holdingAttack) {
     vx = 0;
     vy = 0;
   }
