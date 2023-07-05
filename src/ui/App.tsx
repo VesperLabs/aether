@@ -535,7 +535,7 @@ const CooldownTimer = ({ cooldown }) => {
   const startTime = cooldowns[cooldown]?.startTime;
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    const triggerTimer = () => {
       const currentTime = Date.now();
       const elapsedTime = currentTime - startTime;
 
@@ -546,9 +546,12 @@ const CooldownTimer = ({ cooldown }) => {
       if (elapsedTime >= duration) {
         setPercentage(1);
         //setCooldowns((prev) => ({ ...prev, [cooldown]: 0 }));
-        clearInterval(interval);
+        if (interval) clearInterval(interval);
       }
-    }, 16);
+    };
+
+    const interval = setInterval(triggerTimer, 16);
+    triggerTimer();
 
     return () => {
       clearInterval(interval);

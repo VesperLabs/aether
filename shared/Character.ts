@@ -160,8 +160,16 @@ class Character extends Phaser.GameObjects.Container {
     }
     this.stats[key] += intAmount;
   }
+  getFullAttackDelay() {
+    let attackDelay = this.stats.attackDelay;
+    if (this.isDualWielding()) {
+      attackDelay = attackDelay / 2;
+    }
+    return attackDelay + 60;
+  }
   checkAttackReady(delta = 0) {
-    const cooldown = this?.stats?.attackDelay / 2;
+    const attackDelay = this.getFullAttackDelay();
+    const cooldown = this?.isDualWielding() ? attackDelay / 2 : attackDelay;
     const timeElapsed = Date.now() - this.state.lastAttack;
     const timeRemaining = Math.max(cooldown - timeElapsed, 0);
     const percentageRemaining = (timeRemaining / cooldown) * 100;
@@ -182,7 +190,7 @@ class Character extends Phaser.GameObjects.Container {
     const isOutOfCombat = Date.now() - this.state.lastCombat > 5000;
     return isOutOfCombat;
   }
-  isDuelWielding() {
+  isDualWielding() {
     return this.state.hasWeaponLeft && this.state.hasWeaponRight;
   }
   checkCastReady(delta: number = 0) {
