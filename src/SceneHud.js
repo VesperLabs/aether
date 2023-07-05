@@ -185,8 +185,7 @@ function addGlobalEventListeners(scene) {
 
 function updateAttackCooldown(hero) {
   if (hero.state.isAttacking) return;
-  const attackDelay = hero.stats.attackDelay;
-  const duration = hero?.isDuelWielding() ? attackDelay * 2 : attackDelay;
+  const duration = hero?.getFullAttackDelay();
   window.dispatchEvent(
     new CustomEvent("HERO_START_COOLDOWN", {
       detail: { type: "ATTACK", duration: duration, startTime: Date.now() },
@@ -299,7 +298,7 @@ function moveDirectHero(scene, time) {
     }
   }
 
-  if (hero.state.holdingAttack) {
+  if (hero.state.holdingAttack && !hero.state.isAttacking) {
     updateAttackCooldown(hero);
     hero?.doAttack?.(1);
   }
