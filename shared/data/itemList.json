@@ -574,7 +574,7 @@
         "tint": "0x865027",
         "slot": "hands",
         "stats": {
-          "attackDelay": 350,
+          "attackDelay": 200,
           "defense": 5,
           "blockChance": 5
         }
