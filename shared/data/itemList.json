@@ -8,7 +8,7 @@
         "texture": "weapon-katar",
         "slot": "hands",
         "stats": {
-          "attackDelay": 200,
+          "attackDelay": 150,
           "minDamage": 1,
           "maxDamage": 1,
           "range": 1,
@@ -76,7 +76,7 @@
         "texture": "weapon-hammer",
         "slot": "hands",
         "stats": {
-          "attackDelay": 500,
+          "attackDelay": 400,
           "minDamage": 3,
           "maxDamage": 3,
           "range": 1,
@@ -128,9 +128,9 @@
         "texture": "weapon-spear",
         "slot": "hands",
         "stats": {
-          "attackDelay": 500,
-          "minDamage": 4,
-          "maxDamage": 5,
+          "attackDelay": 400,
+          "minDamage": 3,
+          "maxDamage": 4,
           "range": 2,
           "spCost": 4
         },
