@@ -93,8 +93,8 @@ class Npc extends Character implements Npc {
     const distance = distanceTo(this, target) - (thisRadius + targetRadius);
     return distance <= range;
   }
-  checkAttackReady(delta: number): any {
-    const fullAttackDelay = delta + this?.stats?.attackDelay + NPC_ADDED_ATTACK_DELAY;
+  checkAttackReady(): any {
+    const fullAttackDelay = this?.stats?.attackDelay + NPC_ADDED_ATTACK_DELAY;
     if (Date.now() - this.state.lastAttack > fullAttackDelay) {
       this.state.npcAttackReady = true;
       this.state.isAttacking = false;
@@ -139,7 +139,7 @@ class Npc extends Character implements Npc {
     this.doRegen();
 
     // Check if attack is ready
-    this.checkAttackReady(delta);
+    this.checkAttackReady();
 
     // check if spell is ready
     this.checkCastReady(delta);
