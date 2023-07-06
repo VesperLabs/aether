@@ -53,6 +53,23 @@
           "dexterity": 2
         }
       },
+      "scimitar": {
+        "ilvl": 1,
+        "base": "scimitar",
+        "name": "Scimitar",
+        "texture": "weapon-scimitar",
+        "slot": "hands",
+        "stats": {
+          "attackDelay": 220,
+          "minDamage": 0,
+          "maxDamage": 2,
+          "range": 1,
+          "spCost": 1
+        },
+        "requirements": {
+          "dexterity": 3
+        }
+      },
       "wand": {
         "ilvl": 1,
         "base": "wand",
@@ -194,6 +211,18 @@
           "mpSteal": [10, 15],
           "critChance": 5,
           "range": 2
+        }
+      },
+      "foxBlade": {
+        "ilvl": 2,
+        "base": "scimitar",
+        "name": "Fox Blade",
+        "texture": "weapon-scimitar-fox",
+        "slot": "hands",
+        "stats": {
+          "critChance": [1, 5],
+          "hpSteal": [15, 20],
+          "range": 1.25
         }
       }
     },
