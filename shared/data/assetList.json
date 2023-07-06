@@ -372,6 +372,18 @@
     "previewRect": [29, 29, 27, 27]
   },
   {
+    "texture": "weapon-scimitar",
+    "src": "./assets/atlas/hands/weapon-scimitar.png",
+    "atlas": "./assets/atlas/weapon.json",
+    "previewRect": [29, 29, 27, 27]
+  },
+  {
+    "texture": "weapon-scimitar-fox",
+    "src": "./assets/atlas/hands/weapon-scimitar-fox.png",
+    "atlas": "./assets/atlas/weapon.json",
+    "previewRect": [29, 29, 27, 27]
+  },
+  {
     "texture": "shield-round",
     "src": "./assets/atlas/hands/shield-round.png",
     "atlas": "./assets/atlas/weapon.json",
