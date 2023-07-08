@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, Icon, BASE_SLOT_STYLE, SLOT_SIZE, QuestTooltip, useAppContext } from "./";
 import { nanoid } from "nanoid";
+import { isMobile } from "../utils";
 
 const Quest = ({ quest, parent = "keeper" }: { quest: Quest; parent: string }) => {
   const { objectives } = quest ?? {};
@@ -29,10 +30,14 @@ const Quest = ({ quest, parent = "keeper" }: { quest: Quest; parent: string }) =
     setHovering(false);
   };
 
-  const outerMouseBinds = {
-    onMouseEnter: handleMouseEnter,
-    onMouseLeave: handleMouseLeave,
-  };
+  const outerMouseBinds = isMobile
+    ? {
+        onTouchEnd: handleMouseEnter,
+      }
+    : {
+        onMouseEnter: handleMouseEnter,
+        onMouseLeave: handleMouseLeave,
+      };
 
   const isReady = playerQuest?.isReady && !playerQuest?.isCompleted;
   const isCompleted = playerQuest?.isCompleted;
@@ -42,6 +47,14 @@ const Quest = ({ quest, parent = "keeper" }: { quest: Quest; parent: string }) =
     if (isReady) return "✅";
     if (playerQuest) return "⏰";
   };
+
+  useEffect(() => {
+    document.addEventListener("touchstart", handleMouseLeave, { passive: true });
+
+    return () => {
+      document.removeEventListener("touchstart", handleMouseLeave);
+    };
+  }, []);
 
   return (
     <Box sx={BASE_SLOT_STYLE} {...outerMouseBinds} onTouchStart={(e) => handleMouseEnter(e)}>
