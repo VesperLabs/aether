@@ -341,6 +341,7 @@ function App({ socket, debug, game }) {
       setShowButtonChat(!!e?.detail);
       if (!e?.detail) {
         setTabKeeper(false);
+        setSign(false);
       }
     };
 

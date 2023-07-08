@@ -159,7 +159,7 @@ export default {
         touchAction: "manipulation",
       },
       a: {
-        color: "magic",
+        color: "rare",
         textDecoration: "none",
         fontWeight: "bold",
       },
