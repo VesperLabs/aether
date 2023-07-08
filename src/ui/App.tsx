@@ -31,6 +31,7 @@ import "react-tooltip/dist/react-tooltip.css";
 import { useViewportSizeEffect } from "./hooks";
 import { Donut, Theme } from "theme-ui";
 import { Socket } from "socket.io-client";
+import ModalSign from "./ModalSign";
 
 interface AppContextValue {
   isLoggedIn: boolean;
@@ -54,6 +55,8 @@ interface AppContextValue {
   setTabAbilities: React.Dispatch<React.SetStateAction<boolean>>;
   toggleBagState: React.Dispatch<React.SetStateAction<any>>;
   setCooldowns: React.Dispatch<React.SetStateAction<any>>;
+  setSign: React.Dispatch<React.SetStateAction<any>>;
+  sign: string | null;
   bagState: Array<string>;
   cooldowns: Record<string, any>;
   messages: Message[];
@@ -120,6 +123,7 @@ function App({ socket, debug, game }) {
   const [bottomOffset, setBottomOffset] = useState(0);
   const [zoom, setZoom] = useState(getHudZoom());
   const [bagState, setBagState] = useState([]);
+  const [sign, setSign] = useState(null);
   const [cooldowns, setCooldowns] = useState({
     ATTACK: { duration: 0, startTime: Date.now() },
     POTION: { duration: 0, startTime: Date.now() },
@@ -154,6 +158,7 @@ function App({ socket, debug, game }) {
       setPartyInvites([]);
       setHero(null);
       setKeeper(null);
+      setSign(null);
     };
 
     const onMessage = (payload: Message) => {
@@ -265,23 +270,19 @@ function App({ socket, debug, game }) {
         ]);
       }
 
-      const direction = getSpinDirection(hero, target);
-
       if (target.kind === "keeper") {
         return setTabKeeper((prev) => {
           if (prev) return false; //already talking
           socket.emit("chatNpc", { npcId: hero?.state?.targetNpcId });
-          if (hero?.direction !== direction) socket.emit("changeDirection", direction);
         });
       }
 
       if (target.kind === "sign") {
-        return setTabKeeper((prev) => {
-          if (prev) return false; //already talking
-          setMessages((prev) => [...prev, { type: "info", from: "Sign", message: target?.text }]);
-          if (hero?.direction !== direction) socket.emit("changeDirection", direction);
-        });
+        setSign(target?.text);
       }
+
+      const direction = getSpinDirection(hero, target);
+      if (hero?.direction !== direction) socket.emit("changeDirection", direction);
     };
 
     const onLootGrabbed = ({ player }) => {
@@ -430,6 +431,8 @@ function App({ socket, debug, game }) {
           setTabAbilities,
           toggleBagState,
           setCooldowns,
+          setSign,
+          sign,
           cooldowns,
           bagState,
           players,
@@ -480,6 +483,7 @@ function App({ socket, debug, game }) {
           >
             {hero?.state?.isDead && <ModalRespawn />}
             {dropItem && <ModalDropAmount />}
+            {sign && <ModalSign />}
             <MenuHud />
             <MenuBar />
           </Box>
