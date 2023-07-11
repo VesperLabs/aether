@@ -29,7 +29,7 @@ const Modal: any & {
         top: `50%`,
         marginTop: -bottomOffset / 2,
         pointerEvents: "all",
-        transform: `translate(-50%, -50%)`,
+        transform: `scale(${Math.max(1, zoom)}) translate(-50%, -50%)`,
         transformOrigin: "center center",
         ...sx,
       }}
