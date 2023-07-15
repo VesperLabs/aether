@@ -16,9 +16,12 @@ export default defineConfig({
   },
   server: {
     host: true,
+    proxy: {
+      "/assets": "http://localhost:3000",
+    },
   },
   build: {
     emptyOutDir: false,
-    outDir: "./public",
+    outDir: "../public",
   },
 });
