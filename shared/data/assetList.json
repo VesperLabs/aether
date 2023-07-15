@@ -474,6 +474,12 @@
     "previewRect": [0, 0, 32, 32]
   },
   {
+    "texture": "stackable-claw",
+    "src": "./assets/atlas/stackable/stackable-claw.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
     "texture": "stackable-bsporangium",
     "src": "./assets/atlas/stackable/stackable-bsporangium.png",
     "atlas": "./assets/atlas/32x32-stackable.json",

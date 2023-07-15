@@ -23,12 +23,12 @@
       "items": []
     }
   },
-  "crab-shells": {
+  "crab-claws": {
     "name": "The Crab Hat",
     "dialogues": {
       "description": "Ah, the legendary helmet of the crab! Indeed, it is a task that requires dedication and bravery. The very essence of the shoreline is woven into these shells. If you wish to contribute, you must {objective} for me. With your help, we can forge a helmet that will withstand the fiercest of tides."
     },
-    "objectives": [{ "type": "item", "item": ["stackable", "common", "crabShell"], "amount": 20 }],
+    "objectives": [{ "type": "item", "item": ["stackable", "common", "crabClaw"], "amount": 20 }],
     "rewards": {
       "exp": 15,
       "gold": 5,

@@ -883,13 +883,12 @@
           "vitamins": 1
         }
       },
-      "crabShell": {
+      "crabClaw": {
         "ilvl": 1,
-        "tint": "0xFF6644",
-        "name": "Crab Shell",
+        "name": "Crab Claw",
         "base": "food",
         "slot": "stackable",
-        "texture": "stackable-husk",
+        "texture": "stackable-claw",
         "buffs": {
           "protein": 1
         }
