@@ -1,5 +1,4 @@
 import Phaser from "phaser";
-import SceneMain from "../src/SceneMain";
 const Sprite = Phaser.GameObjects.Sprite;
 
 class Sign extends Phaser.GameObjects.Container implements Sign {
