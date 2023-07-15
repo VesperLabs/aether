@@ -254,6 +254,42 @@ const useGetBaseCharacterDefaults = ({ level = 1, charClass }) => {
   };
 };
 
+function filterNullEmpty(data) {
+  if (Array.isArray(data)) {
+    return data.map((item) => filterProperties(item));
+  } else if (typeof data === "object" && data !== null) {
+    const filteredItem = {};
+    for (const [key, value] of Object.entries(data)) {
+      filteredItem[key] = filterProperties(value);
+    }
+    return filteredItem;
+  } else {
+    throw new Error("Invalid input data. Must be an array or an object.");
+  }
+}
+
+function filterProperties(item) {
+  if (!item) return null;
+  const filteredItem = {};
+
+  for (const [key, value] of Object.entries(item)) {
+    if (value === null || typeof value === "undefined") continue;
+    if (!isEmptyObject(value) && !isEmptyArray(value)) {
+      filteredItem[key] = value;
+    }
+  }
+
+  return filteredItem;
+}
+
+function isEmptyObject(obj) {
+  return Object.keys(obj).length === 0 && obj.constructor === Object;
+}
+
+function isEmptyArray(arr) {
+  return Array.isArray(arr) && arr.length === 0;
+}
+
 export {
   removePlayer,
   getPlayer,
@@ -276,4 +312,5 @@ export {
   calculateNextMaxExp,
   useGetBaseCharacterDefaults,
   mergeAndAddValues,
+  filterNullEmpty,
 };

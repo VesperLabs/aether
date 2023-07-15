@@ -1,7 +1,7 @@
 import { MongoClient, Db } from "mongodb";
 import { userSchema } from "./schema";
 import ItemBuilder from "../../shared/ItemBuilder";
-import { useGetBaseCharacterDefaults } from "../utils";
+import { useGetBaseCharacterDefaults, filterNullEmpty } from "../utils";
 
 export async function initDatabase(uri) {
   let mongoClient: MongoClient;
@@ -72,16 +72,16 @@ const getDatabaseApi = (db) => ({
           sp: player?.stats?.sp,
           exp: player?.stats?.exp,
         },
-        equipment: player?.equipment,
-        inventory: player.inventory,
+        equipment: filterNullEmpty(player?.equipment),
+        inventory: filterNullEmpty(player.inventory),
         baseStats: player?.baseStats,
         roomName: player?.roomName,
-        abilities: player?.abilities,
+        abilities: filterNullEmpty(player?.abilities),
         updatedAt,
         createdAt,
       });
     } catch (e) {
-      console.log(JSON.stringify(e?.errInfo?.details));
+      console.log(e);
     }
     console.log(`💾 Created ${email} to db`);
     return true;
@@ -104,7 +104,7 @@ const getDatabaseApi = (db) => ({
         }
       );
     } catch (e) {
-      console.log(JSON.stringify(e?.errInfo?.details));
+      console.log(e);
     }
     console.log(`💾 Saved Room ${player?.email} to db`);
   },
@@ -126,25 +126,23 @@ const getDatabaseApi = (db) => ({
             direction: player?.direction,
             gold: player.gold,
             npcKills: player?.npcKills,
-            //state: player.state,
-            //spells: player.spells,
             stats: {
               hp: player?.stats?.hp,
               mp: player?.stats?.mp,
               sp: player?.stats?.sp,
               exp: player?.stats?.exp,
             },
-            equipment: player?.equipment,
-            inventory: player.inventory,
+            equipment: filterNullEmpty(player?.equipment),
+            inventory: filterNullEmpty(player.inventory),
             baseStats: player?.baseStats,
             //roomName: player?.room?.name,
-            abilities: player?.abilities,
+            abilities: filterNullEmpty(player?.abilities),
             updatedAt,
           },
         }
       );
     } catch (e) {
-      console.log(JSON.stringify(e?.errInfo?.details));
+      console.log(e);
     }
     console.log(`💾 Saved ${player?.email} to db`);
   },
@@ -197,6 +195,8 @@ export const createBaseUser = (charClass) => {
       2: null,
       3: null,
       4: null,
+      5: null,
+      6: null,
     },
     profile: {
       userName: "Player1",
