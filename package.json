@@ -3,12 +3,13 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "kill": "kill -9 $(lsof -i :3000) &>/dev/null | exit 0",
-    "server": "ts-node -r dotenv/config --files server/index.ts",
-    "watch:server": "nodemon --watch \"server/**\" --watch \"shared/**\" --ext \"ts,js,json\" --inspect --exec \"yarn run kill && yarn run server\""
+    "lint": "tsc",
+    "client:dev": "vite client",
+    "client:build": "cd client && vite build",
+    "client:preview": "cd client && vite preview",
+    "server:kill": "kill -9 $(lsof -i :3000) &>/dev/null | exit 0",
+    "server:run": "ts-node -r dotenv/config --files server/index.ts",
+    "server:watch": "nodemon --watch \"server/**\" --watch \"shared/**\" --ext \"ts,js,json\" --inspect --exec \"yarn run server:kill && yarn run server:run\""
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
