@@ -3,11 +3,11 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./ui/App";
 import socketIOClient from "socket.io-client";
-import AnimatedTiles from "./AnimatedTiles";
-import SceneMain from "./SceneMain";
-import SceneBoot from "./SceneBoot";
-import VJoyPlugin from "./Joystick";
-import SceneHud from "./SceneHud";
+import AnimatedTiles from "./game/AnimatedTiles";
+import SceneMain from "./game/SceneMain";
+import SceneBoot from "./game/SceneBoot";
+import VJoyPlugin from "./game/Joystick";
+import SceneHud from "./game/SceneHud";
 import "./style.css";
 
 const debug = process.env.DEBUG;

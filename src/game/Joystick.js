@@ -3,7 +3,7 @@
  * @license      {@link https://opensource.org/licenses/MIT | MIT License}
  */
 import Phaser from "phaser";
-import { getHeroCoordsRelativeToWindow } from "./utils";
+import { getHeroCoordsRelativeToWindow } from "../utils";
 
 /**
  * @classdesc

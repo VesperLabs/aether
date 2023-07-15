@@ -1,7 +1,7 @@
 import Phaser from "phaser";
-import { assetList } from "../shared/Assets";
-import soundList from "../shared/data/soundList.json";
-import { mapList, mapImageList } from "../shared/Maps";
+import { assetList } from "../../shared/Assets";
+import soundList from "../../shared/data/soundList.json";
+import { mapList, mapImageList } from "../../shared/Maps";
 
 class SceneBoot extends Phaser.Scene {
   constructor(socket) {

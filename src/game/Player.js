@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import Character from "../shared/Character";
+import Character from "../../shared/Character";
 import Bubble from "./Bubble";
 import Spell from "./Spell";
 import Bar from "./Bar";
@@ -12,7 +12,7 @@ import {
   FACE_HIDING_HELMETS,
   PLAYER_GRAB_RANGE,
   RACES_WITH_ATTACK_ANIMS,
-} from "./utils";
+} from "../utils";
 import Buff from "./Buff";
 const { Sprite, BitmapText } = Phaser.GameObjects;
 const BLANK_TEXTURE = "human-blank";

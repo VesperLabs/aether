@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { playAudio } from "./utils";
+import { playAudio } from "../utils";
 const { Container, BitmapText } = Phaser.GameObjects;
 
 class Damage extends Container {
