@@ -1,4 +1,4 @@
-import { resolveAsset } from "../shared/Assets";
+import { resolveAsset } from "../../shared/Assets";
 class LootItem extends Phaser.GameObjects.Container {
   constructor(scene, loot) {
     super(scene, loot.x, loot.y);

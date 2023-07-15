@@ -1,5 +1,5 @@
-import Player from "./Player";
-import LootItem from "./LootItem";
+import Player from "./game/Player";
+import LootItem from "./game/LootItem";
 
 function addPlayer(scene, user) {
   const player = new Player(scene, user);

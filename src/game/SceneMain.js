@@ -1,7 +1,7 @@
 import Phaser from "phaser";
-import Door from "../shared/Door";
-import Sign from "../shared/Sign";
-import { getMapByName } from "../shared/Maps";
+import Door from "../../shared/Door";
+import Sign from "../../shared/Sign";
+import { getMapByName } from "../../shared/Maps";
 import { SnapshotInterpolation } from "@geckos.io/snapshot-interpolation";
 import {
   addPlayer,
@@ -16,7 +16,7 @@ import {
   MUSIC_VOLUME,
   playAudio,
   getGameZoomLevel,
-} from "./utils";
+} from "../utils";
 const SI = new SnapshotInterpolation(process.env.SERVER_FPS); // the server's fps is 15
 const { RectangleToRectangle } = Phaser.Geom.Intersects;
 

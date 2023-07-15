@@ -1,7 +1,7 @@
 import Phaser from "phaser";
-import { playAudio } from "./utils";
-import { getAngleFromDirection } from "../shared/utils";
-import spellDetails from "../shared/data/spellDetails.json";
+import { playAudio } from "../utils";
+import { getAngleFromDirection } from "../../shared/utils";
+import spellDetails from "../../shared/data/spellDetails.json";
 const Sprite = Phaser.GameObjects.Sprite;
 const BLANK_TEXTURE = "human-blank";
 const BUFF_SPELLS = ["evasion", "brute", "endurance", "genius", "haste"];
