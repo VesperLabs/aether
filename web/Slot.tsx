@@ -42,7 +42,7 @@ export default function ({ item }) {
         width: SLOT_SIZE,
         height: SLOT_SIZE,
         "&:hover > .icon": {
-          transition: ".2s ease all",
+          transition: ".1s ease all",
           transform: "scale(2)",
         },
         cursor: "pointer",
