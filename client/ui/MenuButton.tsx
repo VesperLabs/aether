@@ -1,5 +1,5 @@
 import React from "react";
-import { Icon, KeyboardKey, Button } from "./";
+import { Icon, KeyboardKey, Button } from "@aether/ui";
 import { isMobile } from "../utils";
 
 interface MenuButtonProps {

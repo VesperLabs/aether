@@ -1,16 +1,5 @@
-import {
-  Box,
-  Text,
-  Flex,
-  Divider,
-  Slot,
-  Icon,
-  SlotAmount,
-  STYLE_NON_EMPTY,
-  Button,
-  useAppContext,
-  Tooltip,
-} from "./";
+import { Slot, SlotAmount, STYLE_NON_EMPTY, useAppContext } from "./";
+import { Box, Text, Flex, Divider, Icon, Button, Tooltip } from "@aether/ui";
 import ItemBuilder from "../../shared/ItemBuilder";
 import nasties from "../../shared/data/nasties.json";
 import keepers from "../../shared/data/keepers.json";

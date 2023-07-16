@@ -1,19 +1,7 @@
 import { Fragment, memo } from "react";
-import {
-  Flex,
-  Menu,
-  useAppContext,
-  MenuHeader,
-  Text,
-  Portrait,
-  Grid,
-  Icon,
-  Button,
-  ICONS,
-  Box,
-  MENU_MAX_WIDTH,
-} from "./";
+import { Menu, useAppContext, MenuHeader, Portrait, ICONS, MENU_MAX_WIDTH } from "./";
 import { ThemeUIStyleObject } from "theme-ui";
+import { Flex, Text, Grid, Icon, Button, Box } from "@aether/ui";
 
 const ActionButton = ({ player }) => {
   const { partyInvites, socket } = useAppContext();

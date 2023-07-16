@@ -1,4 +1,6 @@
-import { Flex, Menu, useAppContext, MenuHeader, Quest, Text, MENU_MAX_WIDTH } from "./";
+import { Menu, useAppContext, MenuHeader, Quest, MENU_MAX_WIDTH } from "./";
+import { Flex, Text } from "@aether/ui";
+
 import questList from "../../shared/data/questList.json";
 const MenuQuests = () => {
   const { hero, tabQuests, setTabQuests } = useAppContext();

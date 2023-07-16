@@ -1,4 +1,4 @@
-import { Flex } from "./";
+import { Flex } from "@aether/ui";
 
 const Menu = (p: any) => {
   const { sx = {}, ...props } = p;

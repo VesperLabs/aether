@@ -1,4 +1,6 @@
-import { Flex, Menu, Box, Text, MenuHeader, useAppContext, Portrait, Input, MenuButton } from "./";
+import { Menu, MenuHeader, useAppContext, Portrait, MenuButton } from "./";
+import { Flex, Text, Input } from "@aether/ui";
+
 const MenuPicker = ({ children, onPlus = () => {}, onMinus = () => {} }) => {
   return (
     <Flex

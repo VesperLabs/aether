@@ -1,4 +1,5 @@
-import { Flex, Menu, MenuHeader, useAppContext, Slot, MENU_MAX_WIDTH } from "./";
+import { Flex } from "@aether/ui";
+import { Menu, MenuHeader, useAppContext, Slot, MENU_MAX_WIDTH } from "./";
 
 const MenuEquipment = () => {
   const { hero, tabEquipment, setTabEquipment } = useAppContext();

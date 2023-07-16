@@ -1,5 +1,6 @@
 import { Fragment } from "react";
-import { Flex, useAppContext, Text, Divider, Icon, Tooltip } from "./";
+import { Flex, Text, Divider, Icon, Tooltip } from "@aether/ui";
+import { useAppContext } from "./";
 import buffList from "../../shared/data/buffList.json";
 import itemSetList from "../../shared/data/itemSetList.json";
 import ItemBuilder from "../../shared/ItemBuilder";

@@ -1,4 +1,4 @@
-import { Box } from "./";
+import { Box } from "@aether/ui";
 
 const SlotAmount = (props) => (
   <Box

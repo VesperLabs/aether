@@ -1,5 +1,4 @@
 import tColors from "./colors-tailwind.json";
-export const MENU_MAX_WIDTH = 1024;
 
 export default {
   colors: {

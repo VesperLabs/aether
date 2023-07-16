@@ -1,4 +1,5 @@
-import { Flex, Menu, Text, useAppContext, Slot, Icon, MenuHeader, MENU_MAX_WIDTH } from "./";
+import { Menu, useAppContext, Slot, MenuHeader, MENU_MAX_WIDTH } from "./";
+import { Flex, Text, Icon } from "@aether/ui";
 
 const GoldDisplay = ({ gold, sx }) => (
   <Flex sx={{ flex: 1, gap: 1, justifyContent: "end", alignItems: "center", ...sx }}>

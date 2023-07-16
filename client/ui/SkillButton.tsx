@@ -1,4 +1,4 @@
-import { Box, Icon, KeyboardKey, Button } from "./";
+import { Icon, KeyboardKey, Button } from "@aether/ui";
 import { isMobile } from "../utils";
 import { ReactNode } from "react";
 

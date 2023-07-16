@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Box, Icon, BASE_SLOT_STYLE, SLOT_SIZE, QuestTooltip, useAppContext } from "./";
+import { Box, Icon } from "@aether/ui";
+import { BASE_SLOT_STYLE, SLOT_SIZE, QuestTooltip, useAppContext } from "./";
 import { nanoid } from "nanoid";
 import { isMobile } from "../utils";
 

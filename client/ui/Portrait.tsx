@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from "react";
-import { Box, useAppContext } from "./";
+import { Box } from "@aether/ui";
+import { useAppContext } from "./";
 import { tintCanvas, imageToCanvas, HAIR_HIDING_HELMETS } from "../utils";
 import { assetList } from "../../shared/Assets";
 

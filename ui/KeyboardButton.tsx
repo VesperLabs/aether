@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { isMobile } from "../utils";
+import { isMobile } from "@aether/ui";
 import { Button, KeyboardKey, Box } from "./";
 
 interface KeyboardButtonProps {

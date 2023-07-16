@@ -1,4 +1,4 @@
-import { Box, Flex, useAppContext } from "./";
+import { Flex } from "./";
 
 interface ModalBodyProps {
   sx?: any;
@@ -14,8 +14,7 @@ const Modal: any & {
   Header: any;
   Body: React.FC<ModalBodyProps>;
   Footer: React.FC<ModalFooterProps>;
-} = ({ sx, ...props }) => {
-  const { zoom, bottomOffset } = useAppContext();
+} = ({ sx, zoom, bottomOffset, ...props }) => {
   return (
     <Flex
       sx={{
