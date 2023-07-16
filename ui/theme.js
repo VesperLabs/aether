@@ -140,7 +140,6 @@ export default {
       width: "100%",
     },
     root: {
-      backgroundColor: "black",
       fontSize: 2,
       fontFamily: "body",
       lineHeight: "body",

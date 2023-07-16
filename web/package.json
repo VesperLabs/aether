@@ -1,0 +1,8 @@
+{
+  "name": "@aether/web",
+  "version": "1.0.1",
+  "private": true,
+  "dependencies": {
+    "wouter": "^2.11.0"
+  }
+}

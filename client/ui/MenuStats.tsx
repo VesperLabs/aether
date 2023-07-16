@@ -1,7 +1,7 @@
 import { ThemeUIStyleObject } from "theme-ui";
 import { Flex, Text, Grid } from "@aether/ui";
 import { Menu, useAppContext, MenuHeader } from "./";
-import { convertMsToS } from "../utils";
+import { convertMsToS } from "@aether/shared";
 
 const COLUMN_STYLES: ThemeUIStyleObject = {
   gap: 1,

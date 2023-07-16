@@ -1,3 +1,4 @@
+import { ThemeUIStyleObject } from "theme-ui";
 export {
   ThemeProvider,
   Box,
@@ -21,4 +22,40 @@ export { default as KeyboardButton } from "./KeyboardButton";
 export { default as Tooltip } from "./Tooltip";
 export { default as Portal } from "./Portal";
 export * from "./hooks";
-export * from "./utils";
+
+export const SLOT_SIZE = 56;
+export const BASE_SLOT_STYLE = {
+  width: SLOT_SIZE,
+  height: SLOT_SIZE,
+  borderRadius: 2,
+  border: (t) => `1px solid ${t.colors.shadow[50]}`,
+  backgroundColor: (t) => `${t.colors.shadow[30]}`,
+  "& > *": {
+    imageRendering: "pixelated",
+  },
+} as ThemeUIStyleObject;
+
+export const STYLE_SLOT_EMPTY = (icon) => ({
+  ...BASE_SLOT_STYLE,
+  filter: "grayscale(100%)",
+  backgroundImage: `url(${icon})`,
+  backgroundRepeat: "no-repeat",
+  backgroundPosition: "center",
+  opacity: 0.5,
+});
+
+export const STYLE_NON_EMPTY = ({
+  rarity,
+  isActive = true,
+}: {
+  rarity: string;
+  isActive?: boolean;
+}) => {
+  const color = isActive ? rarity : "danger";
+  return {
+    ...BASE_SLOT_STYLE,
+    borderColor: color,
+    background: (t) =>
+      `radial-gradient(circle, ${t.colors[color]} 0%, ${t.colors.shadow[50]} 150%)`,
+  } as ThemeUIStyleObject;
+};

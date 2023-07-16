@@ -7,12 +7,17 @@
     "client:dev": "vite client",
     "client:build": "cd client && vite build",
     "client:preview": "cd client && vite preview",
+    "web:dev": "vite web",
+    "web:build": "cd web && vite build",
+    "web:preview": "cd web && vite preview",
     "server:kill": "kill -9 $(lsof -i :3000) &>/dev/null | exit 0",
     "server:run": "ts-node -r dotenv/config --files server/index.ts",
     "server:watch": "nodemon --watch \"server/**\" --watch \"shared/**\" --ext \"ts,js,json\" --inspect --exec \"yarn run server:kill && yarn run server:run\""
   },
   "workspaces": [
-    "ui"
+    "ui",
+    "web",
+    "shared"
   ],
   "dependencies": {
     "@emotion/react": "^11.11.1",

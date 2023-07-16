@@ -294,7 +294,7 @@ const ItemBuilder = {
   },
 };
 
-const getItemCost = (item: Item) => {
+export const getItemCost = (item: Item) => {
   const ilvl = item?.ilvl || 1;
   const rarity = item?.rarity;
   if (item?.cost) return item.cost;

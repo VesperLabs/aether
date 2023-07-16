@@ -1,6 +1,6 @@
 import React from "react";
 import { Icon, KeyboardKey, Button } from "@aether/ui";
-import { isMobile } from "../utils";
+import { isMobile } from "@aether/shared";
 
 interface MenuButtonProps {
   keyboardKey?: string;

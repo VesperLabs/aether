@@ -1,6 +1,6 @@
 import { Flex, KeyboardKey, Text, Icon, Box } from "@aether/ui";
 import { MENU_MAX_WIDTH } from "./";
-import { isMobile } from "../utils";
+import { isMobile } from "@aether/shared";
 import React from "react";
 
 interface MenuHeaderProps {
