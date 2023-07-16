@@ -1,15 +1,12 @@
 import React, { useState, useRef, useLayoutEffect } from "react";
+import { Box, Icon, Portal, Donut } from "@aether/ui";
 import {
-  Box,
-  Icon,
   ItemTooltip,
   SLOT_SIZE,
   STYLE_SLOT_EMPTY,
   STYLE_NON_EMPTY,
   BLANK_IMAGE,
   SlotAmount,
-  Portal,
-  Donut,
 } from "./";
 import { resolveAsset } from "../../shared/Assets";
 import { useAppContext } from "./App";

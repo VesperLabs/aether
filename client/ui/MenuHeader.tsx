@@ -1,4 +1,5 @@
-import { Flex, KeyboardKey, Text, Icon, Box, MENU_MAX_WIDTH } from "./";
+import { Flex, KeyboardKey, Text, Icon, Box } from "@aether/ui";
+import { MENU_MAX_WIDTH } from "./";
 import { isMobile } from "../utils";
 import React from "react";
 

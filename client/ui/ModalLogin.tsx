@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Modal, Flex, Input, KeyboardButton, Icon, useAppContext, Tooltip, Text, ICONS } from "./";
+import { Modal, Flex, Input, KeyboardButton, Icon, Tooltip, Text } from "@aether/ui";
+import { useAppContext, ICONS } from "./";
 
 const IconPen = ({ sx }: { sx?: any }) => (
   <Icon
@@ -16,6 +17,7 @@ const IconPen = ({ sx }: { sx?: any }) => (
 );
 
 const ModalLogin = (props: any) => {
+  const { zoom, bottomOffset } = useAppContext();
   const [activeTab, setActiveTab] = useState("login");
   const [defaultEmail, setDefaultEmail] = useState(localStorage.getItem("email"));
   const isLogin = activeTab === "login";
@@ -27,7 +29,14 @@ const ModalLogin = (props: any) => {
   };
 
   return (
-    <Modal {...props} as="form" autoComplete="off" onSubmit={(e) => e.preventDefault()}>
+    <Modal
+      zoom={zoom}
+      bottomOffset={bottomOffset}
+      {...props}
+      as="form"
+      autoComplete="off"
+      onSubmit={(e) => e.preventDefault()}
+    >
       <Tooltip id="login" />
       <Modal.Header
         sx={{ cursor: "pointer", opacity: isLogin ? 1 : 0.25 }}

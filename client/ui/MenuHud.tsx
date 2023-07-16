@@ -1,5 +1,6 @@
 import { memo } from "react";
-import { Box, useAppContext, Flex, Portrait, Tooltip, Icon } from "./";
+import { Box, Flex, Tooltip, Icon } from "@aether/ui";
+import { useAppContext, Portrait } from "./";
 
 const UserName = ({ sx, player }: { player: any; sx?: object }) => {
   return <Box sx={{ ...sx }}>{player?.profile?.userName}</Box>;

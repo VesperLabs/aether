@@ -1,5 +1,6 @@
 import { ThemeUIStyleObject } from "theme-ui";
-import { Menu, Flex, Text, useAppContext, MenuHeader, Grid } from "./";
+import { Flex, Text, Grid } from "@aether/ui";
+import { Menu, useAppContext, MenuHeader } from "./";
 import { convertMsToS } from "../utils";
 
 const COLUMN_STYLES: ThemeUIStyleObject = {

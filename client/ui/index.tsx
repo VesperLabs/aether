@@ -1,21 +1,5 @@
 import { ThemeUIStyleObject } from "theme-ui";
-
-export {
-  ThemeProvider,
-  Box,
-  Flex,
-  Badge,
-  Field,
-  Grid,
-  Text,
-  Spinner,
-  Card,
-  Divider,
-  Donut,
-} from "theme-ui";
-export { default as theme, MENU_MAX_WIDTH } from "./theme";
-export { default as Button } from "./Button";
-export { default as Icon } from "./Icon";
+export { theme } from "@aether/ui";
 export { default as Slot } from "./Slot";
 export { default as ItemTooltip } from "./ItemTooltip";
 export { default as MenuEquipment } from "./MenuEquipment";
@@ -26,12 +10,8 @@ export { default as MenuProfile } from "./MenuProfile";
 export { default as MenuBag } from "./MenuBag";
 export { default as MenuHud } from "./MenuHud";
 export { default as MenuStats } from "./MenuStats";
-export { default as KeyboardKey } from "./KeyboardKey";
-export { default as Modal } from "./Modal";
-export { default as Input } from "./Input";
 export { default as ModalRespawn } from "./ModalRespawn";
 export { default as ModalLogin } from "./ModalLogin";
-export { default as KeyboardButton } from "./KeyboardButton";
 export { default as ModalDropAmount } from "./ModalDropAmount";
 export { default as MessageBox } from "./MessageBox";
 export { default as MenuButton } from "./MenuButton";
@@ -42,11 +22,11 @@ export { default as SlotAmount } from "./SlotAmount";
 export { default as MenuAbilities } from "./MenuAbilities";
 export { default as Quest } from "./Quest";
 export { default as QuestTooltip } from "./QuestTooltip";
-export { default as Tooltip } from "./Tooltip";
-export { default as Portal } from "./Portal";
 export { default as SkillButton } from "./SkillButton";
 export { default as Menu } from "./Menu";
 export { useAppContext } from "./App";
+
+export const MENU_MAX_WIDTH = 1024;
 
 export const SLOT_SIZE = 56;
 

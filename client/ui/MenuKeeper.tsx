@@ -1,17 +1,6 @@
 import { useState, useEffect } from "react";
-import {
-  Flex,
-  Menu,
-  Text,
-  useAppContext,
-  MenuHeader,
-  Portrait,
-  Slot,
-  KeyboardButton,
-  Quest,
-  MENU_MAX_WIDTH,
-  Box,
-} from "./";
+import { Menu, useAppContext, MenuHeader, Portrait, Slot, Quest, MENU_MAX_WIDTH } from "./";
+import { Flex, Text, KeyboardButton } from "@aether/ui";
 
 const MenuKeeper = () => {
   const { keeper, tabKeeper, setTabKeeper } = useAppContext();

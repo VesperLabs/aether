@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Flex, Text, useAppContext } from "./";
+import { Flex, Text } from "@aether/ui";
+import { useAppContext } from "./";
 import { motion } from "framer-motion";
 
 type MessageProps = {

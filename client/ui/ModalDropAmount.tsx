@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Modal, Flex, useAppContext, Slot, Box, Input, Icon, Text, KeyboardButton } from "./";
+import { useAppContext, Slot } from "./";
+import { Modal, Flex, Input, Icon, Text, KeyboardButton } from "@aether/ui";
 
 const ModalDropAmount = () => {
-  const { socket, dropItem, setDropItem } = useAppContext();
+  const { socket, dropItem, setDropItem, zoom, bottomOffset } = useAppContext();
   const {
     amount: defaultAmount,
     location,
@@ -58,7 +59,7 @@ const ModalDropAmount = () => {
   };
 
   return (
-    <Modal>
+    <Modal zoom={zoom} bottomOffset={bottomOffset}>
       <Modal.Header>
         {isConfirm && <Text>Confirm</Text>}
         {isBuying && <Text>Buy</Text>}

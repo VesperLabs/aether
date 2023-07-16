@@ -1,10 +1,10 @@
-import React from "react";
-import { Modal, KeyboardButton, useAppContext, Icon } from "./";
+import { useAppContext } from "./";
+import { Modal, KeyboardButton, Icon } from "@aether/ui";
 
 const ModalSign: React.FC = () => {
-  const { socket, sign, setSign } = useAppContext();
+  const { sign, setSign, zoom, bottomOffset } = useAppContext();
   return (
-    <Modal>
+    <Modal zoom={zoom} bottomOffset={bottomOffset}>
       <Modal.Header sx={{ paddingLeft: 34 }}>
         <Icon
           icon="../assets/images/sign-1.png"
