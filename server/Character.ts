@@ -16,7 +16,7 @@ class ServerCharacter extends Character {
       const serverQuest = this.scene.quests[q?.questId];
       return {
         ...this.getPlayerQuestStatus(serverQuest),
-        /* We pass the rewards here so that the items are built with the correct stats */
+        /* We pass the rewards here so that the items are built with the correct stat */
         rewards: serverQuest?.rewards,
       };
     });
