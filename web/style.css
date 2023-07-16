@@ -4,3 +4,8 @@ html {
   padding: 0;
   background-color: #713f12 !important;
 }
+body {
+  transform: scale(2);
+  transform-origin: 0 0;
+  width: 48vw;
+}
