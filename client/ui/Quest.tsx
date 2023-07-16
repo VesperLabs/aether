@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { Box, Icon } from "@aether/ui";
-import { BASE_SLOT_STYLE, SLOT_SIZE, QuestTooltip, useAppContext } from "./";
+import { Box, Icon, BASE_SLOT_STYLE, SLOT_SIZE } from "@aether/ui";
+import { QuestTooltip, useAppContext } from "./";
 import { nanoid } from "nanoid";
-import { isMobile } from "../utils";
+import { isMobile } from "@aether/shared";
 
 const Quest = ({ quest, parent = "keeper" }: { quest: Quest; parent: string }) => {
   const { objectives } = quest ?? {};

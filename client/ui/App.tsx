@@ -29,7 +29,8 @@ import {
   Input,
   useViewportSizeEffect,
 } from "@aether/ui";
-import { isMobile, getSpinDirection, calculateZoomLevel } from "../utils";
+import { getSpinDirection, calculateZoomLevel } from "../utils";
+import { isMobile } from "@aether/shared";
 import "react-tooltip/dist/react-tooltip.css";
 import { Donut, Theme } from "theme-ui";
 import { Socket } from "socket.io-client";

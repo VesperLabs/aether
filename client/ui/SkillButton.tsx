@@ -1,5 +1,5 @@
 import { Icon, KeyboardKey, Button } from "@aether/ui";
-import { isMobile } from "../utils";
+import { isMobile } from "@aether/shared";
 import { ReactNode } from "react";
 
 const SkillButton = ({

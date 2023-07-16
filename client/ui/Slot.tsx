@@ -1,16 +1,8 @@
 import React, { useState, useRef, useLayoutEffect } from "react";
-import { Box, Icon, Portal, Donut } from "@aether/ui";
-import {
-  ItemTooltip,
-  SLOT_SIZE,
-  STYLE_SLOT_EMPTY,
-  STYLE_NON_EMPTY,
-  BLANK_IMAGE,
-  SlotAmount,
-} from "./";
-import { resolveAsset } from "../../shared/Assets";
+import { Box, Icon, Portal, Donut, SLOT_SIZE, STYLE_SLOT_EMPTY, STYLE_NON_EMPTY } from "@aether/ui";
+import { ItemTooltip, BLANK_IMAGE, SlotAmount } from "./";
 import { useAppContext } from "./App";
-import { isMobile, trimCanvas, tintCanvas } from "../utils";
+import { isMobile, trimCanvas, tintCanvas, resolveAsset } from "@aether/shared";
 import { useDoubleTap } from "use-double-tap";
 
 const SpaceDonut = ({ percent = 0 }) => {

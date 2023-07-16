@@ -1,4 +1,3 @@
-import { ThemeUIStyleObject } from "theme-ui";
 export { theme } from "@aether/ui";
 export { default as Slot } from "./Slot";
 export { default as ItemTooltip } from "./ItemTooltip";
@@ -28,49 +27,11 @@ export { useAppContext } from "./App";
 
 export const MENU_MAX_WIDTH = 1024;
 
-export const SLOT_SIZE = 56;
-
 export const ICONS = {
   WARRIOR: `../assets/icons/axe.png`,
   ROGUE: `../assets/icons/katar.png`,
   MAGE: `../assets/icons/rod.png`,
   CLERIC: `../assets/icons/staff.png`,
-};
-
-export const BASE_SLOT_STYLE = {
-  width: SLOT_SIZE,
-  height: SLOT_SIZE,
-  borderRadius: 2,
-  border: (t) => `1px solid ${t.colors.shadow[50]}`,
-  backgroundColor: (t) => `${t.colors.shadow[30]}`,
-  "& > *": {
-    imageRendering: "pixelated",
-  },
-} as ThemeUIStyleObject;
-
-export const STYLE_SLOT_EMPTY = (icon) => ({
-  ...BASE_SLOT_STYLE,
-  filter: "grayscale(100%)",
-  backgroundImage: `url(${icon})`,
-  backgroundRepeat: "no-repeat",
-  backgroundPosition: "center",
-  opacity: 0.5,
-});
-
-export const STYLE_NON_EMPTY = ({
-  rarity,
-  isActive = true,
-}: {
-  rarity: string;
-  isActive?: boolean;
-}) => {
-  const color = isActive ? rarity : "danger";
-  return {
-    ...BASE_SLOT_STYLE,
-    borderColor: color,
-    background: (t) =>
-      `radial-gradient(circle, ${t.colors[color]} 0%, ${t.colors.shadow[50]} 150%)`,
-  } as ThemeUIStyleObject;
 };
 
 export const HUD_CONTAINER_ID = "hud-container";

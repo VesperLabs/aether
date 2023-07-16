@@ -1,36 +1,7 @@
 import { Fragment } from "react";
 import { Flex, Text, Divider, Icon, Tooltip } from "@aether/ui";
+import { buffList, itemSetList, ItemBuilder, formatStats } from "@aether/shared";
 import { useAppContext } from "./";
-import buffList from "../../shared/data/buffList.json";
-import itemSetList from "../../shared/data/itemSetList.json";
-import ItemBuilder from "../../shared/ItemBuilder";
-
-import { convertMsToS } from "../utils";
-const formatStats = (stats = {}) =>
-  Object.entries(stats).reduce((acc, [key, value]) => {
-    // skip these
-    if (["mpCost", "spCost"].includes(key)) return acc;
-    if (key.includes("Damage")) {
-      const identifier = key.replace("min", "").replace("max", "");
-      if (!acc.hasOwnProperty(identifier)) {
-        acc[identifier] = `${stats?.[`min${identifier}`] || 0} - ${stats[`max${identifier}`] || 0}`;
-      }
-    } else if (["hp", "mp"].includes(key)) {
-      acc[key] = "+" + value;
-    } else if (key.includes("Delay") || key.includes("duration")) {
-      acc[key] = convertMsToS(value)?.replace(".00", "");
-    } else if (
-      key.includes("Steal") ||
-      key.includes("Chance") ||
-      key.includes("Resistance") ||
-      key.includes("magicFind")
-    ) {
-      acc[key] = value + "%";
-    } else {
-      acc[key] = value;
-    }
-    return acc;
-  }, {});
 
 const Label = (props) => <Text sx={{ fontWeight: "normal" }} {...props} />;
 

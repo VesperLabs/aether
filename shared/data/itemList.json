@@ -477,7 +477,7 @@
         "ilvl": 1,
         "setName": "chets",
         "name": "Chet's Purple Shirt",
-        "base": "armor",
+        "base": "robe",
         "texture": "armor-robe",
         "tint": "0x8800FF",
         "slot": "armor",
