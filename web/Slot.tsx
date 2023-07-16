@@ -94,6 +94,7 @@ const ItemTooltip = ({ item }) => {
           justifyContent: "center",
           flexDirection: "column",
           textTransform: "capitalize",
+          fontSize: "8px",
         }}
       >
         <Text>
