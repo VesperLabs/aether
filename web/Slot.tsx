@@ -58,7 +58,7 @@ export default function ({ item }) {
           pointerEvents: "none",
           imageRendering: "pixelated",
         }}
-      />
+      ></Icon>
     </Box>
   );
 }
@@ -68,7 +68,7 @@ const Label = (props) => <Text sx={{ fontWeight: "normal" }} {...props} />;
 const TextDivider = ({ children, sx }: any) => (
   <>
     <Divider sx={{ pt: 2, zIndex: -1 }} />
-    <Text sx={{ mt: -3, pb: 2, mb: -1, color: "gray.500", ...sx }}>{children}</Text>
+    <Text sx={{ mt: "-14px", pb: 2, mb: -1, color: "gray.500", ...sx }}>{children}</Text>
   </>
 );
 
@@ -99,8 +99,8 @@ const ItemTooltip = ({ item }) => {
       >
         <Text>
           {item?.name}
-          <Text color="gray.400" sx={{ ml: "2px" }}>
-            {item?.amount > 1 && `(${item?.amount})`}
+          <Text color="gray.400" sx={{ ml: "2px", textTransform: "lowercase" }}>
+            {`(${item?.ilvl})`}
           </Text>
           {item?.slot == "spell" && <span> (Lv. {item?.ilvl})</span>}
         </Text>
