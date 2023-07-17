@@ -1,73 +1,14 @@
-import { Box, Flex, Text } from "@aether/ui";
+import { Box, Flex } from "@aether/ui";
 import Slot from "./Slot";
-import { getItemCost, itemList } from "@aether/shared";
-
-function mergeStats(jsonData) {
-  const mergedData = JSON.parse(JSON.stringify(jsonData));
-
-  for (const itemType in mergedData) {
-    const itemRarities = mergedData[itemType];
-
-    if (itemRarities.hasOwnProperty("common")) {
-      const commonItems = itemRarities["common"];
-      const commonKeys = Object.keys(commonItems);
-
-      for (const itemRarity in itemRarities) {
-        const items = itemRarities[itemRarity];
-
-        for (const itemKey in items) {
-          const item = items[itemKey];
-
-          const baseItem = commonKeys
-            .map((key) => commonItems[key])
-            .find((commonItem) => commonItem?.base === item?.base && commonItem?.ilvl === 1);
-
-          if (baseItem) {
-            const ilvlMultiplier = item?.ilvl || 1;
-
-            item.stats = { ...multiplyValues(baseItem.stats, ilvlMultiplier), ...item.stats };
-            item.requirements = {
-              ...multiplyValues(baseItem.requirements, ilvlMultiplier),
-              ...item.requirements,
-            };
-            item.effects = { ...multiplyValues(baseItem.effects, ilvlMultiplier), ...item.effects };
-            item.cost = getItemCost({ ...item, rarity: itemRarity });
-          }
-        }
-      }
-    }
-  }
-
-  return mergedData;
-}
-
-function multiplyValues(obj, multiplier) {
-  const multipliedObj = {};
-  for (const key in obj) {
-    const value = obj[key];
-    if (typeof value === "number") {
-      multipliedObj[key] = value * multiplier;
-    } else if (
-      Array.isArray(value) &&
-      value.length === 2 &&
-      value.every((v) => typeof v === "number")
-    ) {
-      multipliedObj[key] = value.map((v) => v * multiplier);
-    } else {
-      multipliedObj[key] = value;
-    }
-  }
-  return multipliedObj;
-}
+import { itemList } from "@aether/shared";
 
 export default function () {
-  const mergedItemList = mergeStats(itemList);
-  const types = Object.keys(mergedItemList);
+  const types = Object.keys(itemList);
   const rarities = ["common", "set", "unique"];
   return types?.map((type) => {
-    const commonItems = Object.entries(mergedItemList?.[type]?.["common"]);
-    const uniqueItems = Object.entries(mergedItemList?.[type]?.["unique"] || {});
-    const setItems = Object.entries(mergedItemList?.[type]?.["set"] || {});
+    const commonItems = Object.entries(itemList?.[type]?.["common"]);
+    const uniqueItems = Object.entries(itemList?.[type]?.["unique"] || {});
+    const setItems = Object.entries(itemList?.[type]?.["set"] || {});
     return (
       <Box key={type}>
         <Box

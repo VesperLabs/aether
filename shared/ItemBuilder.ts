@@ -2,9 +2,15 @@
 import crypto from "crypto";
 import Item from "../server/Item";
 import { cloneObject, randomNumber } from "../server/utils";
-import itemList from "./data/itemList.json";
+import iList from "./data/itemList.json";
 import itemSetList from "./data/itemSetList.json";
 import itemModsList from "./data/itemModsList.json";
+
+/* These stats do not scale with ilvl */
+const STATIC_STATS = ["attackDelay", "castDelay", "range", "spCost"];
+
+/* We scale our items based on their ilvl and whatever their base is */
+export const itemList = scaleBaseStats(iList);
 
 const ItemBuilder = {
   getSetInfo: (setName: string) => {
@@ -138,47 +144,6 @@ const ItemBuilder = {
 
     item = { requirements: {}, ...item };
 
-    /* Get the baseItem */
-    const commonCategory = itemList?.[type]?.["common"];
-    const baseItem = Object.values(commonCategory).find(
-      (i: any) => i?.base === item?.base && i.ilvl === 1
-    ) as Item;
-
-    /* Stats on all items will start with base item */
-    if (baseItem) {
-      for (let key in baseItem.requirements || {}) {
-        item.requirements[key] = baseItem.requirements[key] * item?.ilvl;
-      }
-      if (item.slot !== "stackable") {
-        for (let key in baseItem.stats || {}) {
-          const consistentKeys = ["attackDelay", "castDelay", "range", "spCost"];
-          let statAmount = 0;
-          if (Array.isArray(baseItem.stats[key])) {
-            const low = baseItem.stats[key][0];
-            const high = baseItem.stats[key][1];
-            statAmount = Math.floor(Math.random() * (high - low + 1) + low);
-          } else {
-            statAmount = baseItem.stats[key];
-          }
-          newStats[key] = consistentKeys?.includes(key) ? statAmount : statAmount * item?.ilvl;
-        }
-        for (let key in baseItem.effects || {}) {
-          const consistentKeys = ["attackDelay", "castDelay", "range", "spCost"];
-          let effectAmount = 0;
-          if (Array.isArray(baseItem.effects[key])) {
-            const low = baseItem.effects[key][0];
-            const high = baseItem.effects[key][1];
-            effectAmount = Math.floor(Math.random() * (high - low + 1) + low);
-          } else {
-            effectAmount = baseItem.effects[key];
-          }
-          newEffects[key] = consistentKeys?.includes(key)
-            ? effectAmount
-            : effectAmount * item?.ilvl;
-        }
-      }
-    }
-
     if (item?.effects) {
       for (let key in item.effects) {
         if (Array.isArray(item.effects[key])) {
@@ -294,7 +259,7 @@ const ItemBuilder = {
   },
 };
 
-export const getItemCost = (item: Item) => {
+export function getItemCost(item: Item) {
   const ilvl = item?.ilvl || 1;
   const rarity = item?.rarity;
   if (item?.cost) return item.cost;
@@ -315,6 +280,74 @@ export const getItemCost = (item: Item) => {
     return 100 * ilvl;
   }
   return 1;
-};
+}
+
+/* Takes in all items in the game. Looks up the base item (ivl 1) and scales stats by ilvl for each item  */
+function scaleBaseStats(jsonData) {
+  const mergedData = JSON.parse(JSON.stringify(jsonData));
+
+  for (const itemType in mergedData) {
+    const itemRarities = mergedData[itemType];
+
+    if (itemRarities.hasOwnProperty("common")) {
+      // Take note of all the possible common items.
+      const commonItems = itemRarities["common"];
+      const commonKeys = Object.keys(commonItems);
+
+      for (const itemRarity in itemRarities) {
+        const items = itemRarities[itemRarity];
+
+        for (const itemKey in items) {
+          const item = items[itemKey];
+
+          // The ilvl1 item we will use as a base.
+          const baseItem = commonKeys
+            .map((key) => commonItems[key])
+            .find((commonItem) => commonItem?.base === item?.base && commonItem?.ilvl === 1);
+
+          // if it exists, we will use it as a base
+          if (baseItem) {
+            const ilvlMultiplier = item?.ilvl || 1;
+
+            item.stats = { ...multiplyValues(baseItem.stats, ilvlMultiplier), ...item.stats };
+            item.requirements = {
+              ...multiplyValues(baseItem.requirements, ilvlMultiplier),
+              ...item.requirements,
+            };
+            item.effects = { ...multiplyValues(baseItem.effects, ilvlMultiplier), ...item.effects };
+            item.cost = getItemCost({ ...item, rarity: itemRarity });
+          }
+        }
+      }
+    }
+  }
+
+  return mergedData;
+}
+
+function multiplyValues(obj, multiplier) {
+  const multipliedObj = {};
+  for (const key in obj) {
+    const value = obj[key];
+    // value is in static stats, do not scale it.
+    if (STATIC_STATS.includes(key)) {
+      multipliedObj[key] = value;
+      // stat is a number, we can scale it
+    } else if (typeof value === "number") {
+      multipliedObj[key] = value * multiplier;
+      // stat is a tuple, scale both values
+    } else if (
+      Array.isArray(value) &&
+      value.length === 2 &&
+      value.every((v) => typeof v === "number")
+    ) {
+      multipliedObj[key] = value.map((v) => v * multiplier);
+      // not sure, leave it alone
+    } else {
+      multipliedObj[key] = value;
+    }
+  }
+  return multipliedObj;
+}
 
 export default ItemBuilder;
