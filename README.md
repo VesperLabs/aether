@@ -16,8 +16,9 @@ PORT=3000
 ## 📟 Running
 
 ```bash
-yarn server:watch
-yarn dev
+yarn server:watch # run the server locally
+yarn client:dev # run the client locally
+yarn web:dev # run the wiki locally
 ```
 
 ## 🛠️ Tooling
