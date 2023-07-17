@@ -46,12 +46,10 @@ tile-extruder --tileWidth 32 --tileHeight 32 --input ./public/assets/tilesets/cl
 
 #### Cosmetic
 
-- [ ] Fix it so attack logic is not based on the player frame
 - [ ] Animated weapons
 
 #### Systems
 
-- [ ] Fix party system to update stats properly
 - [ ] Trade window
 - [ ] Minimap
 - [ ] Doors that require a key or level to pass through
@@ -65,7 +63,6 @@ tile-extruder --tileWidth 32 --tileHeight 32 --input ./public/assets/tilesets/cl
 - [ ] Serverside individual cooldowns for spells
 - [ ] More spells that affect movement, (dives, dodges, pushback etc)
 - [ ] Back-stab damage
-- [ ] Attack stamina
 - [ ] Show warning before enemies attack
 
 #### Performance
@@ -88,3 +85,5 @@ tile-extruder --tileWidth 32 --tileHeight 32 --input ./public/assets/tilesets/cl
 - [x] Facial hair is now Whiskers on its own layer seperate from face.
 - [x] Consumables and Food
 - [x] Cooldowns show in UI
+- [x] Attack stamina
+- [x] Fix party system to update stats properly
