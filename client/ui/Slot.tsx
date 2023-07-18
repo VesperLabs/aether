@@ -2,7 +2,7 @@ import React, { useState, useRef, useLayoutEffect } from "react";
 import { Box, Icon, Portal, Donut, SLOT_SIZE, STYLE_SLOT_EMPTY, STYLE_NON_EMPTY } from "@aether/ui";
 import { ItemTooltip, BLANK_IMAGE, SlotAmount } from "./";
 import { useAppContext } from "./App";
-import { isMobile, trimCanvas, tintCanvas, resolveAsset } from "@aether/shared";
+import { isMobile, trimCanvas, tintCanvas, resolveAsset, assetToCanvas } from "@aether/shared";
 import { useDoubleTap } from "use-double-tap";
 
 const SpaceDonut = ({ percent = 0 }) => {
@@ -165,22 +165,7 @@ const Slot = React.memo(
       if (!item) return;
       const asset = resolveAsset(item, hero);
       if (!asset) return;
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-      ctx.imageSmoothingEnabled = false;
-      const img = new Image();
-
-      img.onload = () => {
-        const [x, y, w, h] = asset.previewRect;
-        canvas.width = w;
-        canvas.height = h;
-        ctx.drawImage(img, x, y, w, h, 0, 0, w, h);
-        const trimmedCanvas = trimCanvas(canvas);
-        const tintedCanvas = tintCanvas(trimmedCanvas, item?.tint);
-        setImageData(tintedCanvas.toDataURL("image/png"));
-      };
-
-      img.src = asset.src;
+      assetToCanvas({ asset, tint: item?.tint, setImageData });
     }, [item]);
 
     /* Bind our global movement events */

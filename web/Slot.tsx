@@ -1,14 +1,14 @@
 import { useLayoutEffect, useState, Fragment } from "react";
 import {
   resolveAsset,
-  trimCanvas,
-  tintCanvas,
   formatStats,
   buffList,
   ItemBuilder,
   itemSetList,
+  assetToCanvas,
 } from "@aether/shared";
 import { Box, Icon, STYLE_NON_EMPTY, SLOT_SIZE, Tooltip, Text, Flex, Divider } from "@aether/ui";
+import { Label, TextDivider, TOOLTIP_STYLE } from "./";
 
 export default function ({ item }) {
   const [imageData, setImageData] = useState<any>();
@@ -17,22 +17,7 @@ export default function ({ item }) {
     if (!item) return;
     const asset = resolveAsset(item, { profile: { race: "human", gender: "female" } });
     if (!asset) return;
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-    ctx.imageSmoothingEnabled = false;
-    const img = new Image();
-
-    img.onload = () => {
-      const [x, y, w, h] = asset.previewRect;
-      canvas.width = w;
-      canvas.height = h;
-      ctx.drawImage(img, x, y, w, h, 0, 0, w, h);
-      const trimmedCanvas = trimCanvas(canvas);
-      const tintedCanvas = tintCanvas(trimmedCanvas, item?.tint);
-      setImageData(tintedCanvas.toDataURL("image/png"));
-    };
-
-    img.src = asset.src;
+    assetToCanvas({ asset, tint: item?.tint, setImageData });
   }, [item]);
 
   return (
@@ -63,15 +48,6 @@ export default function ({ item }) {
   );
 }
 
-const Label = (props) => <Text sx={{ fontWeight: "normal" }} {...props} />;
-
-const TextDivider = ({ children, sx }: any) => (
-  <>
-    <Divider sx={{ pt: 2, zIndex: -1 }} />
-    <Text sx={{ mt: "-14px", pb: 2, mb: -1, color: "gray.500", ...sx }}>{children}</Text>
-  </>
-);
-
 const ItemTooltip = ({ item }) => {
   const stats = formatStats(item?.stats || {});
   const effects = formatStats(item?.effects || {});
@@ -86,17 +62,7 @@ const ItemTooltip = ({ item }) => {
 
   return (
     <Tooltip id={item?.key}>
-      <Flex
-        sx={{
-          fontWeight: "bold",
-          whiteSpace: "nowrap",
-          alignItems: "center",
-          justifyContent: "center",
-          flexDirection: "column",
-          textTransform: "capitalize",
-          fontSize: "8px",
-        }}
-      >
+      <Flex sx={TOOLTIP_STYLE}>
         <Text>
           {item?.name}
           <Text color="gray.400" sx={{ ml: "2px", textTransform: "lowercase" }}>
