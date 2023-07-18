@@ -113,6 +113,25 @@ export function tintCanvas(c, tint = "0xFFFFFF") {
   return copy.canvas;
 }
 
+export function assetToCanvas({ asset, tint, setImageData }) {
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  ctx.imageSmoothingEnabled = false;
+  const img = new Image();
+
+  img.onload = () => {
+    const [x, y, w, h] = asset.previewRect;
+    canvas.width = w;
+    canvas.height = h;
+    ctx.drawImage(img, x, y, w, h, 0, 0, w, h);
+    const trimmedCanvas = trimCanvas(canvas);
+    const tintedCanvas = tintCanvas(trimmedCanvas, tint);
+    setImageData(tintedCanvas.toDataURL("image/png"));
+  };
+
+  img.src = asset.src;
+}
+
 export function convertMsToS(s) {
   return (s / 1000).toFixed(2) + "s";
 }

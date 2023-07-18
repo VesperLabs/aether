@@ -4,7 +4,7 @@ import { itemList } from "@aether/shared";
 
 export default function () {
   const types = Object.keys(itemList);
-  const rarities = ["common", "set", "unique"];
+  //const rarities = ["common", "set", "unique"];
   return types?.map((type) => {
     const commonItems = Object.entries(itemList?.[type]?.["common"]);
     const uniqueItems = Object.entries(itemList?.[type]?.["unique"] || {});
