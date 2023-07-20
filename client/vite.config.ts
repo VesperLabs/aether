@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 require("dotenv").config();
 import react from "@vitejs/plugin-react-swc";
+import path from "path";
 
 console.log(`🛠 DEBUG: ${process.env.DEBUG}`);
 console.log(`🛠 SERVER_FPS: ${process.env.SERVER_FPS}`);
@@ -16,10 +17,8 @@ export default defineConfig({
   },
   server: {
     host: true,
-    proxy: {
-      "/assets": "http://localhost:3000",
-    },
   },
+  publicDir: "../public",
   build: {
     emptyOutDir: false,
     outDir: "../public",

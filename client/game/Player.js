@@ -332,11 +332,14 @@ class Player extends Character {
         break;
       case "death":
         stats.hp = 0;
+        scene.add.existing(new Hit(this.scene, this));
         this.doDeath();
         break;
       case "hp":
         this.modifyStat("hp", hit?.amount);
         if (!isPositive) {
+          // flash red when damaged
+          scene.add.existing(new Hit(this.scene, this));
           this.doFlashAnimation("0xFF0000");
           this.state.lastFlash = Date.now();
           this.state.isFlash = true;

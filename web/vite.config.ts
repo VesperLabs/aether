@@ -7,10 +7,11 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: true,
-    proxy: {
-      "/assets": "http://localhost:3000",
-    },
+    // proxy: {
+    //   "/assets": { target: `http://127.0.0.1:${process.env.PORT}` },
+    // },
   },
+  publicDir: "../public",
   build: {
     emptyOutDir: false,
     outDir: "../public",
