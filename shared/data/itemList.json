@@ -86,16 +86,16 @@
           "intelligence": 5
         }
       },
-      "hammer": {
+      "club": {
         "ilvl": 1,
-        "base": "hammer",
-        "name": "Hammer",
-        "texture": "weapon-hammer",
+        "base": "club",
+        "name": "Club",
+        "texture": "weapon-club",
         "slot": "hands",
         "stats": {
           "attackDelay": 400,
-          "minDamage": 3,
-          "maxDamage": 3,
+          "minDamage": 2,
+          "maxDamage": 2,
           "range": 1,
           "spCost": 3
         },
@@ -112,7 +112,7 @@
         "stats": {
           "attackDelay": 350,
           "minDamage": 1,
-          "maxDamage": 3,
+          "maxDamage": 2,
           "range": 1,
           "spCost": 2
         },
@@ -155,13 +155,19 @@
           "strength": 5
         }
       },
+      "claw": {
+        "ilvl": 2,
+        "base": "katar",
+        "name": "Claw",
+        "texture": "weapon-claw",
+        "slot": "hands"
+      },
       "spade": {
         "ilvl": 2,
         "base": "dagger",
         "name": "Spade",
         "texture": "weapon-spade",
-        "slot": "hands",
-        "stats": {}
+        "slot": "hands"
       },
       "gladius": {
         "ilvl": 2,
@@ -172,6 +178,34 @@
         "stats": {
           "range": 1.25
         }
+      },
+      "talwar": {
+        "ilvl": 2,
+        "base": "scimitar",
+        "name": "Talwar",
+        "texture": "weapon-talwar",
+        "slot": "hands"
+      },
+      "staff": {
+        "ilvl": 2,
+        "base": "wand",
+        "name": "Staff",
+        "texture": "weapon-staff-oak",
+        "slot": "hands"
+      },
+      "hammer": {
+        "ilvl": 2,
+        "base": "club",
+        "name": "Hammer",
+        "texture": "weapon-hammer",
+        "slot": "hands"
+      },
+      "harvester": {
+        "ilvl": 2,
+        "base": "scythe",
+        "name": "Harvester",
+        "texture": "weapon-harvester",
+        "slot": "hands"
       }
     },
     "unique": {

@@ -17,5 +17,4 @@ export const TOOLTIP_STYLE: ThemeUIStyleObject = {
   justifyContent: "center",
   flexDirection: "column",
   textTransform: "capitalize",
-  fontSize: "8px",
 };

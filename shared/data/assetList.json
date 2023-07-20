@@ -321,7 +321,13 @@
     "texture": "weapon-wand-stick",
     "src": "./assets/atlas/hands/weapon-wand-stick.png",
     "atlas": "./assets/atlas/weapon.json",
-    "previewRect": [31, 30, 23, 23]
+    "previewRect": [31, 30, 23, 24]
+  },
+  {
+    "texture": "weapon-staff-oak",
+    "src": "./assets/atlas/hands/weapon-staff-oak.png",
+    "atlas": "./assets/atlas/weapon.json",
+    "previewRect": [30, 30, 24, 23]
   },
   {
     "texture": "weapon-sword-short",
@@ -342,6 +348,12 @@
     "previewRect": [30, 33, 28, 24]
   },
   {
+    "texture": "weapon-club",
+    "src": "./assets/atlas/hands/weapon-club.png",
+    "atlas": "./assets/atlas/weapon.json",
+    "previewRect": [32, 36, 25, 21]
+  },
+  {
     "texture": "weapon-hammer",
     "src": "./assets/atlas/hands/weapon-hammer.png",
     "atlas": "./assets/atlas/weapon.json",
@@ -352,6 +364,12 @@
     "src": "./assets/atlas/hands/weapon-scythe.png",
     "atlas": "./assets/atlas/weapon.json",
     "previewRect": [28, 33, 24, 19]
+  },
+  {
+    "texture": "weapon-harvester",
+    "src": "./assets/atlas/hands/weapon-harvester.png",
+    "atlas": "./assets/atlas/weapon.json",
+    "previewRect": [28, 30, 24, 24]
   },
   {
     "texture": "weapon-claymore-soul",
@@ -366,6 +384,12 @@
     "previewRect": [36, 45, 19, 19]
   },
   {
+    "texture": "weapon-claw",
+    "src": "./assets/atlas/hands/weapon-claw.png",
+    "atlas": "./assets/atlas/weapon.json",
+    "previewRect": [35, 42, 23, 18]
+  },
+  {
     "texture": "weapon-gladius",
     "src": "./assets/atlas/hands/weapon-gladius.png",
     "atlas": "./assets/atlas/weapon.json",
@@ -374,6 +398,12 @@
   {
     "texture": "weapon-scimitar",
     "src": "./assets/atlas/hands/weapon-scimitar.png",
+    "atlas": "./assets/atlas/weapon.json",
+    "previewRect": [29, 29, 27, 27]
+  },
+  {
+    "texture": "weapon-talwar",
+    "src": "./assets/atlas/hands/weapon-talwar.png",
     "atlas": "./assets/atlas/weapon.json",
     "previewRect": [29, 29, 27, 27]
   },

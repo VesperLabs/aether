@@ -12,9 +12,9 @@ const App = () => {
           p: 4,
           gap: 2,
           flexDirection: "column",
-          transform: ["none", "none", "none", "scale(2)"],
-          transformOrigin: "0 0",
-          width: ["auto", "auto", "auto", "48vw"],
+          //transform: ["none", "none", "none", "scale(2)"],
+          //transformOrigin: "0 0",
+          //width: ["auto", "auto", "auto", "48vw"],
         }}
       >
         <Flex sx={{ gap: 3 }}>
