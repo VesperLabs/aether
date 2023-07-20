@@ -242,7 +242,7 @@ const Slot = React.memo(
         {item && (
           <>
             {item?.base === "bag" && (
-              <SpaceDonut percent={item?.items?.filter((i) => i)?.length / item?.space} />
+              <SpaceDonut percent={item?.items?.filter((i) => i)?.length / item?.space || 0} />
             )}
             {item?.amount > 1 && <SlotAmount>{item?.amount}</SlotAmount>}
             <Icon

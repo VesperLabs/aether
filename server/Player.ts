@@ -140,6 +140,9 @@ class Player extends ServerCharacter implements Player {
   }
   setBagItem(bagId: string, slot: string, item: Item) {
     const bag = this?.inventory?.find((item) => item?.id === bagId);
+    if (!bag?.items) {
+      bag.items = [];
+    }
     bag.items[slot] = item;
   }
   /* Inventory */

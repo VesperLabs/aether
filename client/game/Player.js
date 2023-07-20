@@ -14,6 +14,7 @@ import {
   RACES_WITH_ATTACK_ANIMS,
 } from "../utils";
 import Buff from "./Buff";
+import Hit from "./Hit";
 const { Sprite, BitmapText } = Phaser.GameObjects;
 const BLANK_TEXTURE = "human-blank";
 
@@ -336,7 +337,6 @@ class Player extends Character {
       case "hp":
         this.modifyStat("hp", hit?.amount);
         if (!isPositive) {
-          // flash red when damaged
           this.doFlashAnimation("0xFF0000");
           this.state.lastFlash = Date.now();
           this.state.isFlash = true;
