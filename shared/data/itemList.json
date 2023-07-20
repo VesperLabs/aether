@@ -269,7 +269,8 @@
         "slot": "hands",
         "stats": {
           "critChance": [1, 5],
-          "hpSteal": [15, 20],
+          "minFireDamage": 2,
+          "maxFireDamage": 3,
           "range": 1.25
         }
       }

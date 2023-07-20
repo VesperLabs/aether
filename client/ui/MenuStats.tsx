@@ -54,14 +54,26 @@ const MenuStats = () => {
             <Text>
               {stats?.minDamage} - {stats?.maxDamage}
             </Text>
-            <Text>Spell Power</Text>
-            <Text>{stats?.spellPower}</Text>
-            <Text>Walk Speed</Text>
-            <Text>{Math.round(stats?.walkSpeed)}</Text>
-            <Text>Magic Find</Text>
-            <Text>{stats?.magicFind}%</Text>
+            <Text>Fire Damage</Text>
+            <Text>
+              {stats?.minFireDamage} - {stats?.maxFireDamage}
+            </Text>
+            <Text>Cold Damage</Text>
+            <Text>
+              {stats?.minColdDamage} - {stats?.maxColdDamage}
+            </Text>
+            <Text>Light Damage</Text>
+            <Text>
+              {stats?.minLightDamage} - {stats?.maxLightDamage}
+            </Text>
+            <Text>Earth Damage</Text>
+            <Text>
+              {stats?.minEarthDamage} - {stats?.maxEarthDamage}
+            </Text>
           </Grid>
           <Grid sx={COLUMN_STYLES}>
+            <Text>Spell Power</Text>
+            <Text>{stats?.spellPower}</Text>
             <Text>Crit Chance</Text>
             <Text>{stats?.critChance?.toFixed(1)}%</Text>
             <Text>Crit Multiplier</Text>
@@ -74,14 +86,18 @@ const MenuStats = () => {
             <Text>{convertMsToS(stats?.castDelay)}</Text>
             <Text>Attack Delay</Text>
             <Text>{convertMsToS(stats?.attackDelay)}</Text>
+            <Text>Walk Speed</Text>
+            <Text>{Math.round(stats?.walkSpeed)}</Text>
+            <Text>Magic Find</Text>
+            <Text>{stats?.magicFind}%</Text>
+          </Grid>
+          <Grid sx={COLUMN_STYLES}>
             <Text>Regen Hp</Text>
             <Text>+{stats?.regenHp}</Text>
             <Text>Regen Mp</Text>
             <Text>+{stats?.regenMp}</Text>
             <Text>Regen Sp</Text>
             <Text>+{stats?.regenSp}</Text>
-          </Grid>
-          <Grid sx={COLUMN_STYLES}>
             <Text>Fire Resistance</Text>
             <Text>{stats?.fireResistance?.toFixed(0)}%</Text>
             <Text>Light Resistance</Text>

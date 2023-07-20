@@ -1,5 +1,4 @@
 import Phaser from "phaser";
-import { playAudio } from "../utils";
 const { Container, BitmapText } = Phaser.GameObjects;
 
 class Damage extends Container {
@@ -21,7 +20,6 @@ class Damage extends Container {
           this.dt.setTint("0x99FF99");
         } else {
           text = text;
-          playAudio({ scene, audioKey: "melee-hit-1", caster: this.victim });
           if (this.victim.isHero) {
             this.dt.setTint("0xFFFFFF");
           } else {
@@ -60,7 +58,7 @@ class Damage extends Container {
       case "death":
         text = text;
         this.dt.setTint("0xFF6666");
-        playAudio({ scene, audioKey: "melee-hit-1", caster: this.victim });
+
         break;
     }
     if (hit.isCritical) {
