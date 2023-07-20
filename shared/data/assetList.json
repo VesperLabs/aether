@@ -342,6 +342,12 @@
     "previewRect": [24, 0, 32, 60]
   },
   {
+    "texture": "weapon-halberd",
+    "src": "./assets/atlas/hands/weapon-halberd.png",
+    "atlas": "./assets/atlas/weapon.json",
+    "previewRect": [9, 9, 47, 47]
+  },
+  {
     "texture": "weapon-cleaver",
     "src": "./assets/atlas/hands/weapon-cleaver.png",
     "atlas": "./assets/atlas/weapon.json",

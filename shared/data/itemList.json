@@ -200,11 +200,25 @@
         "texture": "weapon-hammer",
         "slot": "hands"
       },
+      "cleaver": {
+        "ilvl": 2,
+        "base": "axe",
+        "name": "Cleaver",
+        "texture": "weapon-cleaver",
+        "slot": "hands"
+      },
       "harvester": {
         "ilvl": 2,
         "base": "scythe",
         "name": "Harvester",
         "texture": "weapon-harvester",
+        "slot": "hands"
+      },
+      "halberd": {
+        "ilvl": 2,
+        "base": "spear",
+        "name": "Halberd",
+        "texture": "weapon-halberd",
         "slot": "hands"
       }
     },
