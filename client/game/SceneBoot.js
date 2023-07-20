@@ -128,33 +128,55 @@ function createWalkingAnims(scene) {
 }
 
 function createSpellAnims(scene) {
+  const animProps = { frameRate: 20 };
   scene.anims.create({
     key: "spell-anim-fireball",
     frames: scene.anims.generateFrameNumbers("spell-anim-fireball", { start: 0, end: 5 }),
-    frameRate: 20,
     repeat: true,
     yoyo: true,
+    frameRate: 20,
   });
   scene.anims.create({
     key: "spell-anim-chakra",
     frames: scene.anims.generateFrameNumbers("spell-anim-chakra", { start: 0, end: 5 }),
-    frameRate: 20,
     repeat: true,
     yoyo: true,
+    frameRate: 20,
   });
   scene.anims.create({
     key: "spell-anim-hits-1",
-    frames: scene.anims.generateFrameNumbers("spell-anim-hits", { start: 0, end: 9 }),
-    frameRate: 20,
+    frames: scene.anims.generateFrameNumbers("spell-anim-hits", { start: 0, end: 8 }),
     repeat: false,
     yoyo: false,
+    frameRate: 20,
   });
   scene.anims.create({
     key: "spell-anim-hits-2",
-    frames: scene.anims.generateFrameNumbers("spell-anim-hits", { start: 9, end: 18 }),
-    frameRate: 20,
+    frames: scene.anims.generateFrameNumbers("spell-anim-hits", { start: 9, end: 17 }),
     repeat: false,
     yoyo: false,
+    frameRate: 20,
+  });
+  scene.anims.create({
+    key: "spell-anim-hits-3",
+    frames: scene.anims.generateFrameNumbers("spell-anim-hits", { start: 18, end: 26 }),
+    repeat: false,
+    yoyo: false,
+    frameRate: 20,
+  });
+  scene.anims.create({
+    key: "spell-anim-hits-4",
+    frames: scene.anims.generateFrameNumbers("spell-anim-hits", { start: 27, end: 35 }),
+    repeat: false,
+    yoyo: false,
+    frameRate: 20,
+  });
+  scene.anims.create({
+    key: "spell-anim-hits-5",
+    frames: scene.anims.generateFrameNumbers("spell-anim-hits", { start: 36, end: 44 }),
+    repeat: false,
+    yoyo: false,
+    frameRate: 20,
   });
 }
 

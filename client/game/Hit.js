@@ -10,11 +10,10 @@ class Hit extends Phaser.GameObjects.Container {
     this.victim = victim;
     this.hit = scene.add.existing(new Sprite(scene, 0, 0, BLANK_TEXTURE, 0));
     this.hit.setOrigin(0.5);
-    this.hit.setScale(0.5, 0.5);
+    this.hit.setScale(0.25, 0.25);
     this.hit.play("spell-anim-hits-1");
     this.victim.add(this.hit);
-    this.hit.y = this.victim.bodyOffsetY;
-    console.log("cool");
+    this.hit.y = this.victim.bodyCenterY;
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
     // Listen for the animation completion event

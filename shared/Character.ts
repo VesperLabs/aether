@@ -31,6 +31,7 @@ class Character extends Phaser.GameObjects.Container {
   abilities: Record<string, Item>;
   activeItemSlots: Array<string>;
   bodyOffsetY: number;
+  bodyCenterY: number;
   hitBox: any;
   hitBoxSize: any;
   headY: number;
@@ -126,6 +127,7 @@ class Character extends Phaser.GameObjects.Container {
 
     this.createHitBox(scene, hitBoxSize);
     this.updateVisibleEquipment();
+
     this.checkAttackHands();
   }
   createHitBox(scene, hitBoxSize) {
@@ -138,6 +140,8 @@ class Character extends Phaser.GameObjects.Container {
     this.hitBox.displayWidth = width;
     this.hitBox.displayHeight = height;
     this.headY = -height + this.bodySize - 6;
+    // hits will go here
+    this.bodyCenterY = this.headY / 2 + this.bodySize;
     this.add(this.hitBox);
   }
   doAttack(count: integer) {
