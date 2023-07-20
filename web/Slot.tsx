@@ -65,9 +65,6 @@ const ItemTooltip = ({ item }) => {
       <Flex sx={TOOLTIP_STYLE}>
         <Text>
           {item?.name}
-          <Text color="gray.400" sx={{ ml: "2px", textTransform: "lowercase" }}>
-            {`(${item?.ilvl})`}
-          </Text>
           {item?.slot == "spell" && <span> (Lv. {item?.ilvl})</span>}
         </Text>
         <Text color={item?.rarity}>
