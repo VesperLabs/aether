@@ -142,6 +142,20 @@ function createSpellAnims(scene) {
     repeat: true,
     yoyo: true,
   });
+  scene.anims.create({
+    key: "spell-anim-hits-1",
+    frames: scene.anims.generateFrameNumbers("spell-anim-hits", { start: 0, end: 9 }),
+    frameRate: 20,
+    repeat: false,
+    yoyo: false,
+  });
+  scene.anims.create({
+    key: "spell-anim-hits-2",
+    frames: scene.anims.generateFrameNumbers("spell-anim-hits", { start: 9, end: 18 }),
+    frameRate: 20,
+    repeat: false,
+    yoyo: false,
+  });
 }
 
 function loadSpritesheets(scene) {
@@ -160,6 +174,10 @@ function loadSpritesheets(scene) {
   scene.load.spritesheet("spell-anim-chakra", "./assets/images/spell-anim-chakra.png", {
     frameWidth: 150,
     frameHeight: 150,
+  });
+  scene.load.spritesheet("spell-anim-hits", "./assets/images/spell-anim-hits.png", {
+    frameWidth: 96,
+    frameHeight: 96,
   });
 }
 

@@ -357,7 +357,7 @@
     "texture": "weapon-club",
     "src": "./assets/atlas/hands/weapon-club.png",
     "atlas": "./assets/atlas/weapon.json",
-    "previewRect": [32, 36, 25, 21]
+    "previewRect": [35, 33, 19, 21]
   },
   {
     "texture": "weapon-hammer",
