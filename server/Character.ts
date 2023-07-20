@@ -413,7 +413,7 @@ class ServerCharacter extends Character {
     const { eleDamage, elements } = this.calculateElementalDamage(this.stats, victim);
     physicalDamage = Math.floor(physicalDamage);
     /* Update our elements array so the client can animate element hits */
-    if (physicalDamage > 0 && elements.length === 0) {
+    if (physicalDamage > 0) {
       elements.unshift("physical");
     }
     const totalDamage = physicalDamage + eleDamage;
