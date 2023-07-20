@@ -318,11 +318,11 @@ class Player extends Character {
     }
   }
   takeHit(hit) {
-    const { stats, state, scene } = this || {};
+    if (this?.state?.isDead) return;
 
-    const { type } = hit || {};
-    const isPositive = hit?.amount >= 0;
-    if (state.isDead) return;
+    const { stats, scene } = this || {};
+    const { type, elements } = hit || {};
+    const isDamage = hit?.amount < 0;
 
     scene.add.existing(new Damage(this.scene, this, hit));
 
@@ -332,14 +332,13 @@ class Player extends Character {
         break;
       case "death":
         stats.hp = 0;
-        scene.add.existing(new Hit(this.scene, this));
+        scene.add.existing(new Hit(this.scene, this, elements));
         this.doDeath();
         break;
       case "hp":
         this.modifyStat("hp", hit?.amount);
-        if (!isPositive) {
-          // flash red when damaged
-          scene.add.existing(new Hit(this.scene, this));
+        if (isDamage) {
+          scene.add.existing(new Hit(this.scene, this, elements));
           this.doFlashAnimation("0xFF0000");
           this.state.lastFlash = Date.now();
           this.state.isFlash = true;

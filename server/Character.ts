@@ -270,16 +270,13 @@ class ServerCharacter extends Character {
 
     this.state.activeSets = activeSets;
   }
-  calculateSpellDamage(victim: any, abilitySlot: number) {
-    if (victim?.state?.isDead) return false;
-    const hits: Array<Hit> = [];
-    const { effects = {}, buffs } = this?.abilities?.[abilitySlot] ?? {};
+  calculateElementalDamage(eleDamages, victim) {
     const spellPower = this?.stats?.spellPower || 0;
     // Get the damage of the spell
-    const fireDamageRoll = randomNumber(effects?.minFireDamage, effects?.maxFireDamage);
-    const lightDamageRoll = randomNumber(effects?.minLightDamage, effects?.maxLightDamage);
-    const coldDamageRoll = randomNumber(effects?.minColdDamage, effects?.maxColdDamage);
-    const earthDamageRoll = randomNumber(effects?.minEarthDamage, effects?.maxEarthDamage);
+    const fireDamageRoll = randomNumber(eleDamages?.minFireDamage, eleDamages?.maxFireDamage);
+    const lightDamageRoll = randomNumber(eleDamages?.minLightDamage, eleDamages?.maxLightDamage);
+    const coldDamageRoll = randomNumber(eleDamages?.minColdDamage, eleDamages?.maxColdDamage);
+    const earthDamageRoll = randomNumber(eleDamages?.minEarthDamage, eleDamages?.maxEarthDamage);
 
     const fireDamage = fireDamageRoll ? fireDamageRoll + spellPower : 0;
     const lightDamage = lightDamageRoll ? lightDamageRoll + spellPower : 0;
@@ -298,11 +295,39 @@ class ServerCharacter extends Character {
     const earthDamageAfterReduction = earthDamage * (1 - earthResistance);
 
     // Calculate total damage after reduction
-    let totalDamage =
+    let eleDamage = Math.floor(
       fireDamageAfterReduction +
-      lightDamageAfterReduction +
-      coldDamageAfterReduction +
-      earthDamageAfterReduction;
+        lightDamageAfterReduction +
+        coldDamageAfterReduction +
+        earthDamageAfterReduction
+    );
+
+    // Create an array called elements that includes fire, light, cold, and earth,
+    // but only damage of each element after reduction is greater than 0.
+    const elements = [];
+    if (fireDamageAfterReduction > 0) {
+      elements.push({ type: "fire", damage: fireDamageAfterReduction });
+    }
+    if (lightDamageAfterReduction > 0) {
+      elements.push({ type: "light", damage: lightDamageAfterReduction });
+    }
+    if (coldDamageAfterReduction > 0) {
+      elements.push({ type: "cold", damage: coldDamageAfterReduction });
+    }
+    if (earthDamageAfterReduction > 0) {
+      elements.push({ type: "earth", damage: earthDamageAfterReduction });
+    }
+
+    // Sort elements array in descending order based on damage amount
+    elements.sort((a, b) => b.damage - a.damage);
+
+    return { eleDamage, elements: elements?.map((d) => d?.type) };
+  }
+  calculateSpellDamage(victim: any, abilitySlot: number) {
+    if (victim?.state?.isDead) return false;
+    const hits: Array<Hit> = [];
+    const { effects = {}, buffs } = this?.abilities?.[abilitySlot] ?? {};
+    const { eleDamage, elements } = this.calculateElementalDamage(effects, victim);
 
     // add buffs if the spell has any
     if (buffs) {
@@ -311,6 +336,7 @@ class ServerCharacter extends Character {
           type: "buff",
           from: this.id,
           buffName: name,
+          elements,
           to: victim.id,
         });
         victim.addBuff(name, level);
@@ -322,8 +348,8 @@ class ServerCharacter extends Character {
     if (!Object.entries(effects)?.length) return hits;
 
     /* Update the victim */
-    totalDamage = Math.floor(totalDamage);
-    victim.modifyStat("hp", -totalDamage);
+
+    victim.modifyStat("hp", -eleDamage);
     victim.state.lastCombat = Date.now();
     victim.combatDispelBuffs();
 
@@ -337,7 +363,8 @@ class ServerCharacter extends Character {
       victim.stats.hp = 0;
       hits.push({
         type: "death",
-        amount: -totalDamage,
+        amount: -eleDamage,
+        elements,
         from: this.id,
         to: victim.id,
       });
@@ -345,7 +372,8 @@ class ServerCharacter extends Character {
     }
     hits.push({
       type: "hp",
-      amount: -totalDamage,
+      amount: -eleDamage,
+      elements,
       from: this.id,
       to: victim.id,
     });
@@ -370,7 +398,7 @@ class ServerCharacter extends Character {
     const dodgeChance = Math.max(0, victim.stats.dodgeChance - this.stats.accuracy);
     let isCritical = false;
     let hits = [];
-    let reducedDamage = Math.max(1, damage * reduction); // Minimum reducedDamage value of 1
+    let physicalDamage = Math.max(1, damage * reduction); // Minimum physicalDamage value of 1
     if (dodgeRoll < dodgeChance) {
       return [{ type: "miss", amount: 0, from: this.id, to: victim.id }];
     }
@@ -379,11 +407,17 @@ class ServerCharacter extends Character {
     }
     if (this.stats.critChance && critRoll <= this.stats.critChance) {
       isCritical = true;
-      reducedDamage = Math.max(1, reducedDamage * (this?.stats?.critMultiplier || 1)); // Minimum reducedDamage value of 1
+      physicalDamage = Math.max(1, physicalDamage * (this?.stats?.critMultiplier || 1)); // Minimum physicalDamage value of 1
     }
-    /* Update the victim */
-    reducedDamage = Math.floor(reducedDamage);
-    victim.modifyStat("hp", -reducedDamage);
+    /* Calculate elemental damage on the weapon */
+    const { eleDamage, elements } = this.calculateElementalDamage(this.stats, victim);
+    physicalDamage = Math.floor(physicalDamage);
+    /* Update our elements array so the client can animate element hits */
+    if (physicalDamage > 0 && elements.length === 0) {
+      elements.unshift("physical");
+    }
+    const totalDamage = physicalDamage + eleDamage;
+    victim.modifyStat("hp", -totalDamage);
     victim.state.lastCombat = Date.now();
     victim.combatDispelBuffs();
     /* Npcs lock on and chase when a user hits them */
@@ -392,7 +426,7 @@ class ServerCharacter extends Character {
     }
     /* Add stolen hp */
     if (this?.stats?.hpSteal > 0) {
-      const hpSteal = Math.round((reducedDamage * this.stats.hpSteal) / 100);
+      const hpSteal = Math.round((physicalDamage * this.stats.hpSteal) / 100);
       this.modifyStat("hp", hpSteal);
       hits.push({
         type: "hp",
@@ -403,7 +437,7 @@ class ServerCharacter extends Character {
     }
     /* Add stolen mp */
     if (this?.stats?.mpSteal > 0) {
-      const mpSteal = Math.floor((reducedDamage * this.stats.mpSteal) / 100);
+      const mpSteal = Math.floor((physicalDamage * this.stats.mpSteal) / 100);
       this.modifyStat("mp", mpSteal);
       hits.push({
         type: "mp",
@@ -420,7 +454,8 @@ class ServerCharacter extends Character {
       hits.push({
         type: "death",
         isCritical,
-        amount: -reducedDamage,
+        amount: -totalDamage,
+        elements,
         from: this.id,
         to: victim.id,
       });
@@ -429,7 +464,8 @@ class ServerCharacter extends Character {
     hits.push({
       type: "hp",
       isCritical,
-      amount: -reducedDamage,
+      amount: -totalDamage,
+      elements,
       from: this.id,
       to: victim.id,
     });

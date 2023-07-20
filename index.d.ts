@@ -101,11 +101,14 @@ interface Room {
   findPath(startCoords: Coordinate, targetCoords: Coordinate);
 }
 
+type Elements = "earth" | "fire" | "cold" | "light" | "physical";
+
 interface Hit {
   type: string;
   isCritical?: boolean;
   amount?: number;
   buffName?: string;
+  elements?: Array<Elements>;
   from: string;
   to: string;
 }
@@ -147,6 +150,7 @@ interface Character extends Phaser.GameObjects.Container {
   buffs: Array<Buff>;
   abilities: Record<number, Item>;
   activeItemSlots: Array<string>;
+  bodyCenterY: number;
   addBuff(name, level);
   calculateDamage(victim: any);
   calculateSpellDamage(victim: any, abilitySlot: any);

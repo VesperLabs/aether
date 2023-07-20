@@ -144,35 +144,35 @@ function createSpellAnims(scene) {
     frameRate: 20,
   });
   scene.anims.create({
-    key: "spell-anim-hits-1",
+    key: "spell-anim-hits-physical",
     frames: scene.anims.generateFrameNumbers("spell-anim-hits", { start: 0, end: 8 }),
     repeat: false,
     yoyo: false,
     frameRate: 20,
   });
   scene.anims.create({
-    key: "spell-anim-hits-2",
+    key: "spell-anim-hits-cold",
     frames: scene.anims.generateFrameNumbers("spell-anim-hits", { start: 9, end: 17 }),
     repeat: false,
     yoyo: false,
     frameRate: 20,
   });
   scene.anims.create({
-    key: "spell-anim-hits-3",
+    key: "spell-anim-hits-fire",
     frames: scene.anims.generateFrameNumbers("spell-anim-hits", { start: 18, end: 26 }),
     repeat: false,
     yoyo: false,
     frameRate: 20,
   });
   scene.anims.create({
-    key: "spell-anim-hits-4",
+    key: "spell-anim-hits-light",
     frames: scene.anims.generateFrameNumbers("spell-anim-hits", { start: 27, end: 35 }),
     repeat: false,
     yoyo: false,
     frameRate: 20,
   });
   scene.anims.create({
-    key: "spell-anim-hits-5",
+    key: "spell-anim-hits-earth",
     frames: scene.anims.generateFrameNumbers("spell-anim-hits", { start: 36, end: 44 }),
     repeat: false,
     yoyo: false,
