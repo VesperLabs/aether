@@ -237,7 +237,7 @@
         }
       },
       "twigmansBranch": {
-        "ilvl": 2,
+        "ilvl": 1,
         "base": "wand",
         "name": "Twigman's Branch",
         "texture": "weapon-wand-stick",
