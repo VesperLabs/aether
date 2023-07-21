@@ -7,6 +7,6 @@
   { "name": "item-bubble", "src": "./assets/audio/item-bubble.mp3" },
   { "name": "spell-fireball", "src": "./assets/audio/spell-fireball.mp3" },
   { "name": "spell-earth", "src": "./assets/audio/spell-earth.mp3" },
-  { "name": "spell-cold", "src": "./assets/audio/spell-cold.mp3" },
+  { "name": "spell-water", "src": "./assets/audio/spell-water.mp3" },
   { "name": "spell-light", "src": "./assets/audio/spell-light.mp3" }
 ]

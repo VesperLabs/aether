@@ -1,7 +1,6 @@
 import { Tooltip as BaseTooltip } from "react-tooltip";
 
 const TOOLTIP_STYLE = {
-  opacity: 1,
   transition: "none",
   padding: 12,
   borderRadius: 5,
@@ -20,7 +19,7 @@ interface TooltipProps {
 
 const Tooltip = ({ children, style, ...props }: TooltipProps) => {
   return (
-    <BaseTooltip style={{ ...TOOLTIP_STYLE, ...style }} {...props}>
+    <BaseTooltip opacity={1} style={{ ...TOOLTIP_STYLE, ...style }} {...props}>
       {children}
     </BaseTooltip>
   );

@@ -35,8 +35,8 @@ class Hit extends Phaser.GameObjects.Container {
       if (elements[i] === "light") {
         playAudio({ scene, audioKey: "spell-light", caster: victim });
       }
-      if (elements[i] === "cold") {
-        playAudio({ scene, audioKey: "spell-cold", caster: victim });
+      if (elements[i] === "water") {
+        playAudio({ scene, audioKey: "spell-water", caster: victim });
       }
     }
 

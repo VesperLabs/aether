@@ -221,7 +221,7 @@ class ServerCharacter extends Character {
     ns.exp = this.stats.exp || 0;
     ns.fireResistance = ns.fireResistance || 0;
     ns.lightResistance = ns.lightResistance || 0;
-    ns.coldResistance = ns.coldResistance || 0;
+    ns.waterResistance = ns.waterResistance || 0;
     ns.earthResistance = ns.earthResistance || 0;
     ns.attackDelay = ns.attackDelay || 0;
     ns.spellPower = Math.floor((ns.spellPower || 0) + ns.intelligence * 0.25);
@@ -275,34 +275,34 @@ class ServerCharacter extends Character {
     // Get the damage of the spell
     const fireDamageRoll = randomNumber(eleDamages?.minFireDamage, eleDamages?.maxFireDamage);
     const lightDamageRoll = randomNumber(eleDamages?.minLightDamage, eleDamages?.maxLightDamage);
-    const coldDamageRoll = randomNumber(eleDamages?.minColdDamage, eleDamages?.maxColdDamage);
+    const waterDamageRoll = randomNumber(eleDamages?.minWaterDamage, eleDamages?.maxWaterDamage);
     const earthDamageRoll = randomNumber(eleDamages?.minEarthDamage, eleDamages?.maxEarthDamage);
 
     const fireDamage = fireDamageRoll ? fireDamageRoll + spellPower : 0;
     const lightDamage = lightDamageRoll ? lightDamageRoll + spellPower : 0;
-    const coldDamage = coldDamageRoll ? coldDamageRoll + spellPower : 0;
+    const waterDamage = waterDamageRoll ? waterDamageRoll + spellPower : 0;
     const earthDamage = earthDamageRoll ? earthDamageRoll + spellPower : 0;
 
     // 2.) Calculate damage reduction based on victim's resistances
     const fireResistance = (victim.stats.fireResistance || 0) / 100; // Assuming default value of 0 if not provided
     const lightResistance = (victim.stats.lightResistance || 0) / 100;
-    const coldResistance = (victim.stats.coldResistance || 0) / 100;
+    const waterResistance = (victim.stats.waterResistance || 0) / 100;
     const earthResistance = (victim.stats.earthResistance || 0) / 100;
 
     const fireDamageAfterReduction = fireDamage * (1 - fireResistance);
     const lightDamageAfterReduction = lightDamage * (1 - lightResistance);
-    const coldDamageAfterReduction = coldDamage * (1 - coldResistance);
+    const waterDamageAfterReduction = waterDamage * (1 - waterResistance);
     const earthDamageAfterReduction = earthDamage * (1 - earthResistance);
 
     // Calculate total damage after reduction
     let eleDamage = Math.floor(
       fireDamageAfterReduction +
         lightDamageAfterReduction +
-        coldDamageAfterReduction +
+        waterDamageAfterReduction +
         earthDamageAfterReduction
     );
 
-    // Create an array called elements that includes fire, light, cold, and earth,
+    // Create an array called elements that includes fire, light, water, and earth,
     // but only damage of each element after reduction is greater than 0.
     const elements = [];
     if (fireDamageAfterReduction > 0) {
@@ -311,8 +311,8 @@ class ServerCharacter extends Character {
     if (lightDamageAfterReduction > 0) {
       elements.push({ type: "light", damage: lightDamageAfterReduction });
     }
-    if (coldDamageAfterReduction > 0) {
-      elements.push({ type: "cold", damage: coldDamageAfterReduction });
+    if (waterDamageAfterReduction > 0) {
+      elements.push({ type: "water", damage: waterDamageAfterReduction });
     }
     if (earthDamageAfterReduction > 0) {
       elements.push({ type: "earth", damage: earthDamageAfterReduction });
