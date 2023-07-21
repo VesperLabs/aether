@@ -196,6 +196,7 @@ class Player extends Character {
       this.scene.socket.emit("attack", { count, direction: this.direction });
     }
 
+    // draw our physical animation. also handles collision...
     this.scene.add.existing(new Spell(this.scene, { id: null, caster: this, spellName }));
   }
   castSpell(spellData) {

@@ -58,9 +58,9 @@ const MenuStats = () => {
             <Text>
               {stats?.minFireDamage} - {stats?.maxFireDamage}
             </Text>
-            <Text>Cold Damage</Text>
+            <Text>Water Damage</Text>
             <Text>
-              {stats?.minColdDamage} - {stats?.maxColdDamage}
+              {stats?.minWaterDamage} - {stats?.maxWaterDamage}
             </Text>
             <Text>Light Damage</Text>
             <Text>
@@ -102,8 +102,8 @@ const MenuStats = () => {
             <Text>{stats?.fireResistance?.toFixed(0)}%</Text>
             <Text>Light Resistance</Text>
             <Text>{stats?.lightResistance?.toFixed(0)}%</Text>
-            <Text>Cold Resistance</Text>
-            <Text>{stats?.coldResistance?.toFixed(0)}%</Text>
+            <Text>Water Resistance</Text>
+            <Text>{stats?.waterResistance?.toFixed(0)}%</Text>
             <Text>Earth Resistance</Text>
             <Text>{stats?.earthResistance?.toFixed(0)}%</Text>
             <Text>Dodge Chance</Text>

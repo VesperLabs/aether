@@ -21,7 +21,11 @@
       "stats": { "minDamage": [0, 1], "maxDamage": [1, 2] }
     },
     { "ilvl": 2, "name": "of Fire", "stats": { "minFireDamage": [0, 1], "maxFireDamage": [1, 2] } },
-    { "ilvl": 2, "name": "of Cold", "stats": { "minColdDamage": [0, 1], "maxColdDamage": [1, 2] } },
+    {
+      "ilvl": 2,
+      "name": "of Water",
+      "stats": { "minWaterDamage": [0, 1], "maxWaterDamage": [1, 2] }
+    },
     {
       "ilvl": 2,
       "name": "of Light",

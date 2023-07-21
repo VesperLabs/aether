@@ -5,21 +5,25 @@ import spellDetails from "../../shared/data/spellDetails.json";
 const Sprite = Phaser.GameObjects.Sprite;
 const BLANK_TEXTURE = "human-blank";
 const BUFF_SPELLS = ["evasion", "brute", "endurance", "genius", "haste"];
+
 class Spell extends Phaser.GameObjects.Container {
-  constructor(scene, { id, caster, spellName, abilitySlot, state, castAngle, ilvl = 1 }) {
+  constructor(
+    scene,
+    { id, caster, spellName, abilitySlot, state, castAngle, ilvl = 1, skipCollision = false }
+  ) {
     super(scene, caster.x, caster.y + caster.bodyOffsetY);
     this.scene = scene;
     this.id = id;
     this.caster = caster;
     this.state = { aliveTime: 0, ...state };
-    this.spellName = spellName;
     this.abilitySlot = abilitySlot;
     this.frame = 0;
     this.touchedIds = []; //who has this npc hit?
     this.hitIds = [];
-    this.isAttack = ["attack_left", "attack_right"]?.includes(spellName);
+    this.isAttack = spellName?.includes("attack_right") || spellName?.includes("attack_left");
+    this.spellName = spellName; //remove the element name
     this.spell = scene.add.existing(new Sprite(scene, 0, 0, BLANK_TEXTURE, 0));
-    const details = spellDetails[spellName];
+    const details = spellDetails[this.spellName];
     this.layerDepth = details?.layerDepth;
     this.allowedTargets = details?.allowedTargets;
     this.maxVisibleTime = details?.maxVisibleTime;
@@ -29,13 +33,16 @@ class Spell extends Phaser.GameObjects.Container {
     this.scaleBase = details?.scaleBase || 1;
     this.scaleMultiplier = details?.scaleMultiplier || 0;
     this.spell.setTint(details?.tint || "0xFFFFFF");
+    this.skipCollision = skipCollision;
 
     scene.physics.add.existing(this);
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
 
     if (this.isAttack) {
-      this.spell.setTexture("misc-slash");
+      let viewSize = 44;
+      let tiltAngle = 56;
+      this.spell.play(`spell-anim-slash-physical`);
       this.spell.setAngle(getAngleFromDirection(caster?.direction) - 90);
 
       /* Hack: Up range is too long. This hack makes the top-down view more realistic */
@@ -49,37 +56,23 @@ class Spell extends Phaser.GameObjects.Container {
         this.y = this.caster.y - difference;
       }
 
-      if (spellName === "attack_left") {
+      if (spellName.includes("attack_left")) {
+        this.setAngle(tiltAngle);
         const rangeLeft = caster?.equipment?.handLeft?.stats?.range * 2 || caster?.body?.radius / 8;
         this.body.setCircle(rangeLeft * 16, -rangeLeft * 16, -rangeLeft * 16);
-        this.spell.displayWidth = 50 * rangeLeft;
-        this.spell.displayHeight = 50 * rangeLeft;
-        this.spell.setFlipX(true);
-        if (caster?.equipment?.handLeft?.base === "katar" && caster?.direction === "right") {
-        }
+        this.spell.displayWidth = viewSize * rangeLeft;
+        this.spell.displayHeight = viewSize * rangeLeft;
+        this.spell.setFlipX(false);
       }
-      if (spellName === "attack_right") {
+      if (spellName.includes("attack_right")) {
+        this.setAngle(-tiltAngle);
         const rangeRight =
           caster?.equipment?.handRight?.stats?.range * 2 || caster?.body?.radius / 8;
         this.body.setCircle(rangeRight * 16, -rangeRight * 16, -rangeRight * 16);
-        this.spell.displayWidth = 50 * rangeRight;
-        this.spell.displayHeight = 50 * rangeRight;
-        this.spell.setFlipX(false);
-        if (caster?.equipment?.handRight?.base === "katar" && caster?.direction === "left") {
-        }
+        this.spell.displayWidth = viewSize * rangeRight;
+        this.spell.displayHeight = viewSize * rangeRight;
+        this.spell.setFlipX(true);
       }
-      scene.tweens.add({
-        targets: this.spell,
-        props: {
-          alpha: {
-            value: () => 0,
-            ease: "Power4",
-          },
-        },
-        duration: this.maxVisibleTime,
-        yoyo: false,
-        repeat: 0,
-      });
     } else {
       this.setScale(this.scaleBase + ilvl * this.scaleMultiplier);
       this.body.setCircle(this?.bodySize, -this?.bodySize, -this?.bodySize);
@@ -120,7 +113,7 @@ class Spell extends Phaser.GameObjects.Container {
     const isSpellExpired = this.state.aliveTime > this.maxVisibleTime;
     const isSpellActive = this.state.aliveTime < this.maxActiveTime;
     /* Only check collisions for hero if the spell is active */
-    if (this.caster.isHero && isSpellActive) {
+    if (this.caster.isHero && isSpellActive && !this.skipCollision) {
       /* Prime it and then send it */
       this.checkCollisions();
       this.checkCollisions(true);
