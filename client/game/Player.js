@@ -5,6 +5,7 @@ import Spell from "./Spell";
 import Bar from "./Bar";
 import Crosshair from "./Crosshair";
 import Damage from "./Damage";
+import WeaponSprite from "./WeaponSprite";
 import {
   distanceTo,
   getSpinDirection,
@@ -84,6 +85,8 @@ class Player extends Character {
     const defaults = [scene, 0, this.bodyOffsetY, BLANK_TEXTURE];
     this.setDepth(100);
 
+    const HandSprite = this?.profile?.race === "human" ? WeaponSprite : Sprite;
+
     this.skin = scene.add.existing(new Sprite(...defaults));
     this.chest = scene.add.existing(new Sprite(...defaults));
     this.face = scene.add.existing(new Sprite(...defaults));
@@ -94,8 +97,8 @@ class Player extends Character {
     this.boots = scene.add.existing(new Sprite(...defaults));
     this.pants = scene.add.existing(new Sprite(...defaults));
     this.accessory = scene.add.existing(new Sprite(...defaults));
-    this.handLeft = scene.add.existing(new Sprite(scene, 13, -9, BLANK_TEXTURE));
-    this.handRight = scene.add.existing(new Sprite(scene, -13, -9, BLANK_TEXTURE));
+    this.handLeft = scene.add.existing(new HandSprite(scene, 13, -9, BLANK_TEXTURE));
+    this.handRight = scene.add.existing(new HandSprite(scene, -13, -9, BLANK_TEXTURE));
     this.shadow = scene.add.existing(new Sprite(...defaults));
     this.bubble = scene.add.existing(new Bubble(scene, this?.headY, this.bubbleMessage));
     this.crosshair = scene.add.existing(
@@ -146,6 +149,11 @@ class Player extends Character {
     this.hair.setTint(profile?.hair?.tint || "0xFFFFFF");
     this.face.setTint(profile?.face?.tint || "0xFFFFFF");
     this.whiskers.setTint(profile?.whiskers?.tint || "0xFFFFFF");
+
+    if (this.profile.race === "human") {
+      if (state.hasWeaponLeft) this.handLeft.setElements(["fire"]);
+      if (state.hasWeaponRight) this.handRight.setElements(["fire"]);
+    }
 
     for (const [key, slot] of Object.entries(visibleEquipment)) {
       this?.[key]?.setTint(slot?.tint || "0xFFFFFF");
@@ -379,6 +387,7 @@ class Player extends Character {
       this.triggerSecondAttack();
     }
   }
+  //
   playAnim(sprite, parts) {
     let animKey = parts?.join("-");
     /* If a part is missing, clear the texture */
