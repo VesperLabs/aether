@@ -65,8 +65,8 @@ class Player extends Character {
     this.updateVisibleEquipment();
   }
   updateExtas() {
-    this.drawCharacterFromUserData();
     this.checkAttackHands();
+    this.drawCharacterFromUserData();
     this.updateHpBar();
   }
   doRegen() {
@@ -151,8 +151,8 @@ class Player extends Character {
     this.whiskers.setTint(profile?.whiskers?.tint || "0xFFFFFF");
 
     if (this.profile.race === "human") {
-      if (state.hasWeaponLeft) this.handLeft.setElements(this.getElements());
-      if (state.hasWeaponRight) this.handRight.setElements(this.getElements());
+      this.handLeft.setElements(state.hasWeaponLeft ? this.getElements() : []);
+      this.handRight.setElements(state.hasWeaponRight ? this.getElements() : []);
     }
 
     for (const [key, slot] of Object.entries(visibleEquipment)) {
