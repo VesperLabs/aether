@@ -728,6 +728,7 @@ const MenuBar = () => {
             gap: 1,
             alignItems: "center",
             pointerEvents: "none",
+            flexDirection: "row",
           }}
         >
           <Box>

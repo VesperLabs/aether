@@ -56,7 +56,7 @@
     "rewards": {
       "exp": 20,
       "gold": 10,
-      "items": [["ring", "common", "silverRing"]]
+      "items": [["ring", "magic", "silverRing"]]
     }
   },
   "slime-roundup": {
@@ -68,7 +68,7 @@
     "rewards": {
       "exp": 20,
       "gold": 10,
-      "items": [["boots", "common", "nutshellBoots"]]
+      "items": [["boots", "magic", "nutshellBoots"]]
     }
   },
   "slime-eggs": {
@@ -126,7 +126,7 @@
     "rewards": {
       "exp": 40,
       "gold": 20,
-      "items": [["pants", "magic", "clothPants"]]
+      "items": [["amulet", "magic", "silverAmulet"]]
     }
   },
   "grape-finding": {
