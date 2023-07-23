@@ -64,7 +64,7 @@
     "dialogues": {
       "description": "Prepare yourself, my friend, for an encounter with the slimy menace that plagues our sacred woods. Those pesky blue slimes are multiplying faster than the mushrooms after a rain. Your mission, should you choose to accept, is to {objective}. Return to me, and together we'll restore balance to this green realm."
     },
-    "objectives": [{ "type": "bounty", "monster": "slime", "amount": 20 }],
+    "objectives": [{ "type": "bounty", "monster": "slime", "amount": 30 }],
     "rewards": {
       "exp": 20,
       "gold": 10,
@@ -80,7 +80,7 @@
       {
         "type": "item",
         "item": ["stackable", "common", "blueSporangium"],
-        "amount": 5
+        "amount": 15
       }
     ],
     "rewards": {
@@ -125,7 +125,7 @@
     "objectives": [{ "type": "bounty", "monster": "raccoon", "amount": 40 }],
     "rewards": {
       "exp": 40,
-      "gold": 10,
+      "gold": 20,
       "items": [["pants", "magic", "clothPants"]]
     }
   },
