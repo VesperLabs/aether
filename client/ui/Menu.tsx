@@ -10,7 +10,9 @@ const Menu = (p: any) => {
         p: 2,
         gap: 2,
         flexWrap: "wrap",
+        flexDirection: "column",
         justifyContent: "end",
+        alignItems: "end",
         bg: "shadow.30",
         pointerEvents: "all",
         "&:hover": {

@@ -207,14 +207,14 @@ const buildItem = (...args: BuildItem): any => {
 
   /* Magic and Rare Item Spawning */
   if (item.rarity == "magic") {
-    const { randomMod } = rollSuffix(item);
+    const { randomMod } = rollSuffix(item, "magic");
     item.name = item.name + " " + randomMod.name;
     item.key = item.key.replace("-common-", "-magic-");
   }
 
   if (item.rarity == "rare") {
     for (let i = 0; i < 3; i++) {
-      rollSuffix(item);
+      rollSuffix(item, "rare");
     }
     item.key = item.key.replace("-common-", "-rare-");
   }
@@ -224,7 +224,7 @@ const buildItem = (...args: BuildItem): any => {
   return new Item(item);
 };
 
-const rollSuffix = (item) => {
+const rollSuffix = (item, rarity) => {
   const ilvl = item.ilvl;
   const modSuffixes = itemModsList?.suffix
     //only get suffixes ilvl or lower
@@ -232,14 +232,16 @@ const rollSuffix = (item) => {
     // suffixes only allowed on certain types
     ?.filter((s) => s.types.includes("*") || s.types.includes(item.type));
   const randomMod = modSuffixes[randomNumber(0, modSuffixes.length - 1)];
+  // magic items get a bit more of a buff
+  const rarityBump = rarity === "magic" ? 1 : 0;
 
   Object.keys(randomMod.stats).forEach((key) => {
     if (!item.stats[key]) {
       item.stats[key] = 0;
     }
     if (Array.isArray(randomMod.stats[key])) {
-      let low = randomMod.stats[key][0] * ilvl;
-      let high = randomMod.stats[key][1] * ilvl;
+      let low = randomMod.stats[key][0] * (ilvl + rarityBump);
+      let high = randomMod.stats[key][1] * (ilvl + rarityBump);
       item.stats[key] += randomNumber(low, high);
     }
   });
