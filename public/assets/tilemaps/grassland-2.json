@@ -306,6 +306,24 @@
                  "width":0,
                  "x":562.810642237599,
                  "y":475.587174739304
+                }, 
+                {
+                 "height":0,
+                 "id":37,
+                 "name":"directions",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"text",
+                         "type":"string",
+                         "value":"Notice: Killer plants have invaded the river west.  Proceed with caution."
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":42.0410944758108,
+                 "y":995.522375367392
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -628,7 +646,7 @@
          "y":0
         }],
  "nextlayerid":19,
- "nextobjectid":37,
+ "nextobjectid":38,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.1",

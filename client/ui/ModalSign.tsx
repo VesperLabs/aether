@@ -1,5 +1,5 @@
 import { useAppContext } from "./";
-import { Modal, KeyboardButton, Icon } from "@aether/ui";
+import { Modal, KeyboardButton, Icon, Box } from "@aether/ui";
 
 const ModalSign: React.FC = () => {
   const { sign, setSign, zoom, bottomOffset } = useAppContext();
@@ -13,7 +13,9 @@ const ModalSign: React.FC = () => {
         />
         Sign
       </Modal.Header>
-      <Modal.Body>{sign}</Modal.Body>
+      <Modal.Body>
+        <Box sx={{ maxWidth: 300, whiteSpace: "normal", lineHeight: 1.5 }}>{sign}</Box>
+      </Modal.Body>
       <Modal.Footer>
         <KeyboardButton sx={{ flex: 1 }} onClick={() => setSign(null)} keyboardKey="ESCAPE">
           Close

@@ -248,17 +248,19 @@
           "regenMp": [2, 3]
         }
       },
-      "soulEdge": {
+      "merwyrmBlade": {
         "ilvl": 3,
-        "name": "Soul Edge",
         "base": "sword",
-        "texture": "weapon-claymore-soul",
+        "name": "Merwyrm Blade",
+        "texture": "weapon-merwyrm-blade",
         "slot": "hands",
         "stats": {
-          "hpSteal": [10, 15],
-          "mpSteal": [10, 15],
-          "critChance": 5,
-          "range": 2
+          "critChance": [4, 5],
+          "minFireDamage": 0,
+          "maxFireDamage": 2,
+          "minWaterDamage": 0,
+          "maxWaterDamage": 2,
+          "range": 1.25
         }
       },
       "foxBlade": {
@@ -272,6 +274,19 @@
           "minFireDamage": 2,
           "maxFireDamage": 3,
           "range": 1.25
+        }
+      },
+      "soulEdge": {
+        "ilvl": 3,
+        "name": "Soul Edge",
+        "base": "sword",
+        "texture": "weapon-claymore-soul",
+        "slot": "hands",
+        "stats": {
+          "hpSteal": [10, 15],
+          "mpSteal": [10, 15],
+          "critChance": 5,
+          "range": 2
         }
       }
     },
@@ -373,20 +388,20 @@
         "texture": "helmet-chef",
         "slot": "helmet",
         "stats": {
-          "hpRegen": 5
+          "regenHp": 5
         }
       },
-      "theDragonWhisker": {
+      "theWyrmWhisker": {
         "ilvl": 3,
-        "name": "The Dragon Whisker",
+        "name": "The Wyrm Whisker",
         "base": "armet",
         "texture": "helmet-horned",
         "tint": "0x66CCFF",
         "slot": "helmet",
         "stats": {
-          "fireResistance": [20, 30],
-          "earthResistance": [20, 30],
-          "lightResistance": [20, 30]
+          "fireResistance": [10, 15],
+          "earthResistance": [10, 15],
+          "lightResistance": [10, 15]
         }
       }
     },
@@ -647,41 +662,70 @@
       "barkShield": {
         "ilvl": 1,
         "name": "Bark Shield",
-        "base": "shield",
+        "base": "kiteShield",
         "texture": "shield-broken",
         "tint": "0x865027",
         "slot": "hands",
         "stats": {
           "attackDelay": 200,
-          "defense": 5,
-          "blockChance": 5
+          "defense": 10,
+          "blockChance": 10
         }
       },
       "buckler": {
-        "ilvl": 2,
+        "ilvl": 1,
         "name": "Buckler",
-        "base": "shield",
+        "base": "roundShield",
         "texture": "shield-buckler",
         "slot": "hands",
-        "stats": {}
+        "stats": {
+          "attackDelay": 150,
+          "defense": 5,
+          "blockChance": 5
+        }
       }
     },
     "unique": {
       "roundStage": {
-        "ilvl": 2,
+        "ilvl": 1,
         "name": "Round Stage",
-        "base": "shield",
+        "base": "roundShield",
         "texture": "shield-round",
         "slot": "hands",
         "stats": {
-          "critChance": [4, 5],
-          "strength": [8, 10],
-          "vitality": [8, 10],
-          "defense": [15, 20],
-          "blockChance": [20, 25]
+          "defense": [6, 10],
+          "blockChance": [10, 15],
+          "accuracy": 5
         },
         "percentStats": {
-          "maxHp": 5
+          "strength": [4, 5],
+          "vitality": [4, 5]
+        }
+      },
+      "osteoCrest": {
+        "ilvl": 1,
+        "name": "Osteo Crest",
+        "base": "kiteShield",
+        "texture": "shield-bone",
+        "slot": "hands",
+        "stats": {
+          "blockChance": [10, 15],
+          "fireResistance": [-5, -10],
+          "regenHp": [3, 4],
+          "hpSteal": [4, 5]
+        }
+      },
+      "wyrmScaleWard": {
+        "ilvl": 2,
+        "name": "Wyrm Scale Ward",
+        "base": "kiteShield",
+        "texture": "shield-wyrm",
+        "slot": "hands",
+        "stats": {
+          "fireResistance": [8, 12],
+          "earthResistance": [8, 12],
+          "defense": [10, 15],
+          "blockChance": [15, 20]
         }
       }
     }
@@ -763,6 +807,22 @@
         "percentStats": {
           "maxHp": [10, 15]
         }
+      },
+      "theLunarHalo": {
+        "ilvl": 1,
+        "name": "The Lunar Halo",
+        "base": "ring",
+        "texture": "ring-silver-sapphire",
+        "slot": "ring",
+        "stats": {
+          "intelligence": 5,
+          "waterResistance": "15",
+          "castDelay": -100,
+          "spellPower": 5
+        },
+        "percentStats": {
+          "maxMp": [5, 10]
+        }
       }
     }
   },
@@ -796,6 +856,22 @@
         "texture": "amulet-gold-plain",
         "slot": "amulet",
         "stats": {}
+      }
+    },
+    "unique": {
+      "forestBeads": {
+        "ilvl": 1,
+        "name": "The Forest Beads",
+        "base": "amulet",
+        "texture": "amulet-beads-green",
+        "slot": "amulet",
+        "stats": {
+          "defense": 3,
+          "vitality": 3,
+          "strength": 3,
+          "intelligence": 3,
+          "dexterity": 3
+        }
       }
     }
   },
@@ -948,6 +1024,30 @@
         "base": "material",
         "slot": "stackable",
         "texture": "stackable-skull",
+        "effects": {}
+      },
+      "shell": {
+        "ilvl": 1,
+        "name": "Shell",
+        "base": "material",
+        "slot": "stackable",
+        "texture": "stackable-shell",
+        "effects": {}
+      },
+      "tooth": {
+        "ilvl": 1,
+        "name": "Tooth",
+        "base": "material",
+        "slot": "stackable",
+        "texture": "stackable-tooth",
+        "effects": {}
+      },
+      "wyrmScale": {
+        "ilvl": 1,
+        "name": "Wyrm Scale",
+        "base": "material",
+        "slot": "stackable",
+        "texture": "stackable-wyrmScale",
         "effects": {}
       }
     }

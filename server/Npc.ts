@@ -155,6 +155,11 @@ class Npc extends Character implements Npc {
     // Get target player based on locked player ID
     const targetPlayer = scene?.players?.[state?.lockedPlayerId] ?? null;
 
+    // If we killed the player already, do not target them anymore
+    if (targetPlayer?.state?.isDead) {
+      this.setLockedPlayerId(null);
+    }
+
     this.chaseOrMove({ targetPlayer, delta, time });
     this.intendAttack({ targetPlayer, delta });
     this.intendCastSpell({ targetPlayer, delta });
@@ -400,8 +405,6 @@ class Npc extends Character implements Npc {
   dropLoot(magicFind: number) {
     let runners = [];
     const ilvl = 1 + Math.floor(this.stats.level / 10);
-
-    /* World drops table */
     if (!this.state.noWorldDrops) {
       const mainDrop = ItemBuilder.rollDrop(ilvl, magicFind);
       if (mainDrop) runners.push(mainDrop);
