@@ -200,8 +200,8 @@ const buildItem = (...args: BuildItem): any => {
     item.id = crypto.randomUUID();
   }
 
-  /* Bags, Spells cannot be magic or rare */
-  if (["bag", "spell"].includes(item.base)) {
+  /* Bags and Spells cannot be magic or rare */
+  if (["bag", "spell"].includes(item.type)) {
     if (["magic", "rare"].includes(item.rarity)) item.rarity = "common";
   }
 
