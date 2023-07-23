@@ -74,14 +74,14 @@ const ItemTooltip = ({ item }) => {
         {Object.keys(stats).map((key) => (
           <Text key={key}>
             <Label>{key}:</Label>{" "}
-            {Array.isArray(stats[key]) ? `${stats[key][0]} - ${stats[key][1]}` : stats[key]}
+            {Array.isArray(stats[key]) ? `${stats[key][0]} ↔ ${stats[key][1]}` : stats[key]}
           </Text>
         ))}
         {Object.keys(percentStats).map((key) => (
           <Text key={key}>
             <Label>{key}:</Label>{" "}
             {Array.isArray(percentStats[key])
-              ? `${percentStats[key][0]}% - ${percentStats[key][1]}%`
+              ? `${percentStats[key][0]}% ↔ ${percentStats[key][1]}%`
               : percentStats[key] + "%"}
           </Text>
         ))}
