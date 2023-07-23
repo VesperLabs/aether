@@ -201,7 +201,8 @@
       "quests": ["spidermeat-finding", "batmeat-finding", "cheese-finding", "hogan-hunting"],
       "shop": [
         { "item": ["weapon", "common", "sword"], "stock": 1 },
-        { "item": ["shield", "common", "buckler"], "stock": 1 }
+        { "item": ["shield", "common", "buckler"], "stock": 1 },
+        { "item": ["stackable", "common", "mushroom"], "stock": 1 }
       ]
     }
   },
@@ -332,7 +333,7 @@
         "quests": "Here are some quests. And no, my wizard robe is not a reward.",
         "shop": "You got to be a wizard to wear what I have, but here's some stuff for sale."
       },
-      "quests": ["skull-finding", "chonks-hunting"],
+      "quests": ["skull-finding", "chonks-hunting", "zombie-hunting"],
       "shop": [
         { "item": ["spell", "common", "fireball"], "stock": 1 },
         { "item": ["spell", "common", "brute"], "stock": 1 },
@@ -380,7 +381,6 @@
       "shop": [
         { "item": ["stackable", "common", "carrot"], "stock": 1 },
         { "item": ["stackable", "common", "redApple"], "stock": 1 },
-        { "item": ["stackable", "common", "mushroom"], "stock": 1 },
         { "item": ["stackable", "common", "orange"], "stock": 1 },
         { "item": ["stackable", "common", "grapes"], "stock": 1 }
       ]

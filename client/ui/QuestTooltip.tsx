@@ -44,7 +44,9 @@ const useQuestDialogue = (quest, playerQuest: PlayerQuest) => {
     }</strong>`;
   });
 
-  return dialogues?.description?.replace("{objective}", objectiveTexts?.[0]);
+  const objText = objectiveTexts?.join(", ");
+
+  return dialogues?.description?.replace("{objective}", objText);
 };
 
 const QuestTooltip = ({

@@ -28,7 +28,7 @@
     "dialogues": {
       "description": "Ah, the legendary helmet of the crab! Indeed, it is a task that requires dedication and bravery. The very essence of the shoreline is woven into these shells. If you wish to contribute, you must {objective} for me. With your help, we can forge a helmet that will withstand the fiercest of tides."
     },
-    "objectives": [{ "type": "item", "item": ["stackable", "common", "crabClaw"], "amount": 20 }],
+    "objectives": [{ "type": "item", "item": ["stackable", "common", "crabClaw"], "amount": 30 }],
     "rewards": {
       "exp": 15,
       "gold": 5,
@@ -91,7 +91,7 @@
   "tudwick-shrooms": {
     "name": "Shrooms for Tudwick",
     "dialogues": {
-      "description": "Ah, the elusive mushrooms! The woodland delicacy I've been yearning for. Unfortunately, they're becoming rarer than a unicorn sighting 'round these parts. But fret not! I've heard whispers that you can find 'em in the town up north. {objective} for me, my fungi-loving friend, and I'll reward you handsomely. Trust me, it'll be worth the journey."
+      "description": "Ah, the elusive mushrooms! The woodland delicacy I've been yearning for. I've heard whispers that you can find 'em in caves around these parts. {objective} for me, my fungi-loving friend, and I'll reward you handsomely."
     },
     "objectives": [
       {
@@ -191,12 +191,26 @@
       "items": [["helmet", "unique", "chefHat"]]
     }
   },
+  "zombie-hunting": {
+    "name": "Zombie Problem",
+    "dialogues": {
+      "description": "The graveyard is just north of town. {objective}."
+    },
+    "objectives": [
+      { "type": "bounty", "monster": "wraith", "amount": 30 },
+      { "type": "bounty", "monster": "zombie", "amount": 30 }
+    ],
+    "rewards": {
+      "exp": 120,
+      "gold": 30
+    }
+  },
   "skull-finding": {
     "name": "Undead Skulls",
     "dialogues": {
       "description": "The graveyard is just north of town. {objective} from the wraiths and zombies there."
     },
-    "objectives": [{ "type": "item", "item": ["stackable", "common", "skull"], "amount": 3 }],
+    "objectives": [{ "type": "item", "item": ["stackable", "common", "skull"], "amount": 20 }],
     "rewards": {
       "exp": 120,
       "gold": 30
@@ -205,12 +219,13 @@
   "chonks-hunting": {
     "name": "Slay Chonks",
     "dialogues": {
-      "description": "Travel north to the graveyard and {objective}."
+      "description": "There is a beast north of the cemetary who has grown fat eating the bodies of the dead. {objective} and I will reward you."
     },
     "objectives": [{ "type": "bounty", "monster": "chonks", "amount": 1 }],
     "rewards": {
       "exp": 120,
-      "gold": 30
+      "gold": 30,
+      "items": [["ring", "rare", "goldRing"]]
     }
   }
 }
