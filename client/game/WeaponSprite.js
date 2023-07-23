@@ -2,10 +2,11 @@ const WEAPON_COLOR_MAP = {
   fire: "0xff0000",
   light: "0xffff00",
   earth: "0x00ff00",
-  water: "0x0000ff",
+  water: "0x0066ff",
 };
 
 const ALPHA_STEP = 0.1;
+const ALPHA_MAX = 1;
 
 class WeaponSprite extends Phaser.GameObjects.Container {
   constructor(scene, x, y, key, frame) {
@@ -102,8 +103,8 @@ class WeaponSprite extends Phaser.GameObjects.Container {
     }
 
     // If the alpha value is greater than 1, set it to 1 and update the current index
-    if (this.alphaValue > 1) {
-      this.alphaValue = 1;
+    if (this.alphaValue > ALPHA_MAX) {
+      this.alphaValue = ALPHA_MAX;
       this.alphaDirection = -ALPHA_STEP;
     }
 
