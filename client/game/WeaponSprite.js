@@ -33,7 +33,7 @@ class WeaponSprite extends Phaser.GameObjects.Container {
     scene.add.existing(this);
 
     this.updateEvent = scene.time.addEvent({
-      delay: 60, // 1000 milliseconds (1 second)
+      delay: 100, // 1000 milliseconds (1 second)
       loop: true, // Set to `true` to repeat the event
       callback: this.update,
       callbackScope: this,

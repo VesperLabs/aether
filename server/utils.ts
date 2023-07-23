@@ -186,7 +186,7 @@ function checkSlotsMatch(s1, s2) {
 }
 
 const calculateNextMaxExp = (level) => {
-  return Math.floor(PLAYER_BASE_EXP * Math.pow(1.5, level - 1));
+  return Math.floor(PLAYER_BASE_EXP * Math.pow(1.75, level - 1));
 };
 
 function mergeAndAddValues(obj1, obj2) {

@@ -36,7 +36,7 @@ const useQuestDialogue = (quest, playerQuest: PlayerQuest) => {
       noun = nasties?.[objective?.monster]?.profile?.userName;
       current = playerQuest?.objectives?.[idx]?.numKilled || 0;
     }
-    const amount = playerQuest
+    const amount = !playerQuest?.isCompleted
       ? `(${Math.min(current, objective?.amount)}/${objective?.amount})`
       : `(${objective?.amount})`;
     return `<strong>${verb} ${objective?.amount > 1 ? amount : ""} ${noun}${

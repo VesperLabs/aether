@@ -4,7 +4,8 @@
     "profile": { "race": "crab", "userName": "Crab" },
     "state": { "isAggro": false },
     "baseStats": {
-      "level": 1
+      "level": 1,
+      "attackDelay": 300
     },
     "hitBoxSize": {
       "width": 18,
@@ -212,7 +213,10 @@
     },
     "state": { "isAggro": true },
     "baseStats": {
-      "level": 8
+      "level": 9,
+      "minEarthDamage": 0,
+      "maxEarthDamage": 1,
+      "blockChance": 5
     },
     "hitBoxSize": {
       "width": 26,
@@ -225,7 +229,7 @@
     "profile": { "race": "zombie", "userName": "Zombie" },
     "state": { "isAggro": true },
     "baseStats": {
-      "level": 8
+      "level": 6
     },
     "hitBoxSize": { "width": 22, "height": 43 },
     "drops": [
@@ -248,7 +252,7 @@
     "profile": { "race": "wraith", "userName": "Wraith" },
     "state": { "isAggro": true },
     "baseStats": {
-      "level": 8
+      "level": 6
     },
     "hitBoxSize": { "width": 22, "height": 43 },
     "drops": [
@@ -276,7 +280,10 @@
     },
     "state": { "isAggro": true },
     "baseStats": {
-      "level": 15
+      "level": 13,
+      "minEarthDamage": 1,
+      "maxEarthDamage": 2,
+      "blockChance": 5
     },
     "hitBoxSize": {
       "width": 78,
@@ -289,7 +296,7 @@
     "profile": { "race": "abomination", "tint": "0x88FF88", "userName": "Chonks" },
     "state": { "isAggro": true },
     "baseStats": {
-      "level": 15
+      "level": 10
     },
     "hitBoxSize": {
       "width": 58,
@@ -315,7 +322,10 @@
     "profile": { "race": "merman", "userName": "Merman" },
     "state": { "isAggro": true },
     "baseStats": {
-      "level": 8
+      "level": 8,
+      "minWaterDamage": 1,
+      "maxWaterDamage": 2,
+      "dodgeChance": 5
     },
     "hitBoxSize": { "width": 24, "height": 32 },
     "abilities": {
