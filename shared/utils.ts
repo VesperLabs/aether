@@ -141,14 +141,16 @@ export const formatStats = (stats = {}) =>
     // skip these
     if (["mpCost", "spCost"].includes(key)) return acc;
 
-    const identifier = key.replace("min", "").replace("max", "");
-    if (!acc.hasOwnProperty(identifier)) {
-      acc[identifier] = formatStat(identifier, [
-        stats?.[`min${identifier}`] || 0,
-        stats[`max${identifier}`] || 0,
-      ]);
-    }
-    if (!key?.includes("max") && !key.includes("min")) {
+    // combine damage min-max into one x - x stat:
+    if ((key?.includes("Damage") && key?.includes("max")) || key?.includes("min")) {
+      const identifier = key.replace("min", "").replace("max", "");
+      if (!acc.hasOwnProperty(identifier)) {
+        acc[identifier] = formatStat(identifier, [
+          stats?.[`min${identifier}`] || 0,
+          stats[`max${identifier}`] || 0,
+        ]);
+      }
+    } else {
       acc[key] = formatStat(key, value);
     }
 

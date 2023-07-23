@@ -331,6 +331,35 @@
     "abilities": {
       "1": ["spell", "common", "fireball"]
     },
-    "drops": []
+    "drops": [
+      {
+        "type": "stackable",
+        "rarity": "common",
+        "key": "shell",
+        "chance": 4
+      }
+    ]
+  },
+  "wyrm": {
+    "charClass": "warrior",
+    "profile": { "race": "wyrm", "userName": "Wyrm", "scale": 2 },
+    "state": { "isAggro": true },
+    "baseStats": {
+      "level": 11,
+      "minFireDamage": 1,
+      "maxFireDamage": 2
+    },
+    "hitBoxSize": { "width": 50, "height": 78 },
+    "abilities": {
+      "1": ["spell", "common", "fireball3"]
+    },
+    "drops": [
+      {
+        "type": "stackable",
+        "rarity": "common",
+        "key": "wyrmScale",
+        "chance": 1
+      }
+    ]
   }
 }

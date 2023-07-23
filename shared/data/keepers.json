@@ -236,10 +236,11 @@
     },
     "keeperData": {
       "dialogues": {
-        "greet": "My name is <strong>Steve</strong>. I am the blacksmith around here.",
-        "shop": "Some useful goods here. I take gold."
+        "greet": "Hail, traveler! I am <strong>Steve</strong>, the master of the forge in these parts.",
+        "shop": "Step up, my friend, and behold the treasures I've crafted, worth their weight in gleaming gold.",
+        "quests": "Seeking adventure, are you? There's always something to stir the blood and test the mettle of a daring soul."
       },
-      "quests": [],
+      "quests": ["merwyrm-blade", "skull-finding"],
       "shop": [
         { "item": ["pants", "common", "leatherPants"], "stock": 1 },
         { "item": ["armor", "common", "bronzePlate"], "stock": 1 },
@@ -279,9 +280,9 @@
     },
     "keeperData": {
       "dialogues": {
-        "greet": "My name is <strong>Siobhan</strong>. I am a purveyor of quality potions.",
-        "quests": "Quests",
-        "shop": "See anything you like?"
+        "greet": "Greetings, dear child. I am <strong>Siobhan</strong>, the nurturing spirit, here to offer my wondrous potions.",
+        "quests": "Embark on sacred journeys, my child, to awaken harmony within your soul.",
+        "shop": "Behold the gifts of nature, my precious one. Find solace in the potion that calls to your heart."
       },
       "quests": [],
       "shop": [
@@ -324,24 +325,23 @@
       "helmet": null,
       "accessory": null,
       "pants": ["pants", "common", "leatherPants"],
-      "armor": ["armor", "common", "wizardRobe"],
-      "boots": ["boots", "common", "leatherBoots"]
+      "armor": ["armor", "rare", "wizardRobe"],
+      "boots": ["boots", "rare", "leatherBoots"]
     },
     "keeperData": {
       "dialogues": {
-        "greet": "My name is <strong>Danny</strong>. I'm the wizard.",
-        "quests": "Here are some quests. And no, my wizard robe is not a reward.",
-        "shop": "You got to be a wizard to wear what I have, but here's some stuff for sale."
+        "greet": "Greetings, mortals! I am <strong>Danny</strong>, the mystical wizard of these realms.",
+        "quests": "Behold! Mystical quests await, woven with the threads of magic, yet my robe remains beyond your grasp.",
+        "shop": "Only wizards may wield the enchanted garbs I possess. Yet, behold, I offer thee some mystical wares for sale."
       },
-      "quests": ["skull-finding", "chonks-hunting", "zombie-hunting"],
+      "quests": ["talk-steve", "chonks-hunting", "zombie-hunting"],
       "shop": [
         { "item": ["spell", "common", "fireball"], "stock": 1 },
         { "item": ["spell", "common", "brute"], "stock": 1 },
         { "item": ["spell", "common", "endurance"], "stock": 1 },
         { "item": ["spell", "common", "evasion"], "stock": 1 },
         { "item": ["spell", "common", "haste"], "stock": 1 },
-        { "item": ["spell", "common", "genius"], "stock": 1 },
-        { "item": ["armor", "magic", "wizardRobe"], "stock": 1 }
+        { "item": ["spell", "common", "genius"], "stock": 1 }
       ]
     }
   },
@@ -374,8 +374,9 @@
     },
     "keeperData": {
       "dialogues": {
-        "greet": "My name is <strong>Ale</strong>. I'm sell fruits and veggies.",
-        "shop": "Tasty tasties."
+        "greet": "Hola, mi nombre es <strong>Ale</strong>. Vendo frutas y verduras frescas.",
+        "shop": "¡Ven a probar estas maravillas del sabor y la diversión!",
+        "quests": "¡Aventuras y desafíos mágicos te esperan en estas misiones asombrosas!"
       },
       "quests": [],
       "shop": [

@@ -204,6 +204,17 @@
       "items": [["helmet", "unique", "chefHat"]]
     }
   },
+  "talk-steve": {
+    "name": "Talk to Steve",
+    "dialogues": {
+      "description": "The blacksmith might be of some help. {objective} and then return to me."
+    },
+    "objectives": [{ "type": "chat", "keeper": "steve" }],
+    "rewards": {
+      "exp": 120,
+      "gold": 30
+    }
+  },
   "zombie-hunting": {
     "name": "Zombie Problem",
     "dialogues": {
@@ -219,14 +230,15 @@
     }
   },
   "skull-finding": {
-    "name": "Undead Skulls",
+    "name": "Shield of Bone",
     "dialogues": {
-      "description": "The graveyard is just north of town. {objective} from the wraiths and zombies there."
+      "description": "Beware, wanderer, for the graveyard lies just north of this cursed town. {Objective} if you dare, amidst the haunting wraiths and soulless zombies that haunt that accursed place. Tread carefully, and if you manage to survive the malevolent specters, I shall imbue your soul with a great shield, crafted from the remnants of the undead. Embrace the darkness, for your fate awaits in the cold embrace of the tomb."
     },
-    "objectives": [{ "type": "item", "item": ["stackable", "common", "skull"], "amount": 20 }],
+    "objectives": [{ "type": "item", "item": ["stackable", "common", "skull"], "amount": 100 }],
     "rewards": {
       "exp": 120,
-      "gold": 30
+      "gold": 30,
+      "items": [["shield", "unique", "osteoCrest"]]
     }
   },
   "chonks-hunting": {
@@ -239,6 +251,21 @@
       "exp": 120,
       "gold": 30,
       "items": [["ring", "rare", "goldRing"]]
+    }
+  },
+  "merwyrm-blade": {
+    "name": "The Merwyrm Blade",
+    "dialogues": {
+      "description": "Below this town are ancient aqueducts. {objective} and I will able to craft from those ingredients an awesome weapon."
+    },
+    "objectives": [
+      { "type": "item", "item": ["stackable", "common", "shell"], "amount": 20 },
+      { "type": "item", "item": ["stackable", "common", "wyrmScale"], "amount": 1 }
+    ],
+    "rewards": {
+      "exp": 160,
+      "gold": 50,
+      "items": [["weapon", "unique", "merwyrmBlade"]]
     }
   }
 }

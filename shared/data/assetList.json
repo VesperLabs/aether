@@ -108,8 +108,8 @@
     "previewRect": [0, 100, 50, 50]
   },
   {
-    "texture": "dragon",
-    "src": "./assets/atlas/mob/dragon.png",
+    "texture": "wyrm",
+    "src": "./assets/atlas/mob/wyrm.png",
     "atlas": "./assets/atlas/50x50.json",
     "previewRect": [0, 100, 50, 50]
   },
@@ -378,6 +378,12 @@
     "previewRect": [28, 30, 24, 24]
   },
   {
+    "texture": "weapon-merwyrm-blade",
+    "src": "./assets/atlas/hands/weapon-merwyrm-blade.png",
+    "atlas": "./assets/atlas/weapon.json",
+    "previewRect": [25, 26, 31, 31]
+  },
+  {
     "texture": "weapon-claymore-soul",
     "src": "./assets/atlas/hands/weapon-claymore-soul.png",
     "atlas": "./assets/atlas/weapon.json",
@@ -438,6 +444,18 @@
     "previewRect": [41, 36, 20, 22]
   },
   {
+    "texture": "shield-wyrm",
+    "src": "./assets/atlas/hands/shield-wyrm.png",
+    "atlas": "./assets/atlas/weapon.json",
+    "previewRect": [38, 35, 24, 23]
+  },
+  {
+    "texture": "shield-bone",
+    "src": "./assets/atlas/hands/shield-bone.png",
+    "atlas": "./assets/atlas/weapon.json",
+    "previewRect": [41, 37, 19, 22]
+  },
+  {
     "texture": "shield-tower",
     "src": "./assets/atlas/hands/shield-tower.png",
     "atlas": "./assets/atlas/weapon.json",
@@ -486,6 +504,18 @@
     "previewRect": [0, 0, 32, 32]
   },
   {
+    "texture": "amulet-beads-red",
+    "src": "./assets/atlas/amulet/amulet-beads-red.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
+    "texture": "amulet-beads-green",
+    "src": "./assets/atlas/amulet/amulet-beads-green.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
     "texture": "bag-small-pouch",
     "src": "./assets/atlas/bag/bag-small-pouch.png",
     "atlas": "./assets/atlas/32x32-stackable.json",
@@ -504,8 +534,20 @@
     "previewRect": [0, 0, 32, 32]
   },
   {
-    "texture": "stackable-husk",
-    "src": "./assets/atlas/stackable/stackable-husk.png",
+    "texture": "stackable-wyrmScale",
+    "src": "./assets/atlas/stackable/stackable-wyrmScale.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
+    "texture": "stackable-shell",
+    "src": "./assets/atlas/stackable/stackable-shell.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
+    "texture": "stackable-tooth",
+    "src": "./assets/atlas/stackable/stackable-tooth.png",
     "atlas": "./assets/atlas/32x32-stackable.json",
     "previewRect": [0, 0, 32, 32]
   },
