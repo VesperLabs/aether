@@ -47,6 +47,12 @@
         "rarity": "common",
         "key": "grapes",
         "chance": 4
+      },
+      {
+        "type": "stackable",
+        "rarity": "common",
+        "key": "smallHpPotion",
+        "chance": 10
       }
     ]
   },
@@ -84,7 +90,7 @@
       {
         "type": "stackable",
         "rarity": "common",
-        "key": "redApple",
+        "key": "smallHpPotion",
         "chance": 10
       }
     ]
@@ -227,7 +233,7 @@
         "type": "stackable",
         "rarity": "common",
         "key": "mediumHpPotion",
-        "chance": 5
+        "chance": 10
       },
       {
         "type": "stackable",
@@ -250,13 +256,7 @@
         "type": "stackable",
         "rarity": "common",
         "key": "mediumHpPotion",
-        "chance": 5
-      },
-      {
-        "type": "stackable",
-        "rarity": "common",
-        "key": "smallHpPotion",
-        "chance": 5
+        "chance": 10
       },
       {
         "type": "stackable",
@@ -300,13 +300,7 @@
         "type": "stackable",
         "rarity": "common",
         "key": "mediumHpPotion",
-        "chance": 5
-      },
-      {
-        "type": "stackable",
-        "rarity": "common",
-        "key": "smallHpPotion",
-        "chance": 5
+        "chance": 10
       },
       {
         "type": "stackable",

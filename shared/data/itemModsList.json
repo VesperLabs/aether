@@ -4,7 +4,6 @@
     { "ilvl": 1, "name": "of Strength", "stats": { "strength": [1, 2] }, "types": ["*"] },
     { "ilvl": 1, "name": "of Vitality", "stats": { "vitality": [1, 2] }, "types": ["*"] },
     { "ilvl": 1, "name": "of Intelligence", "stats": { "intelligence": [1, 2] }, "types": ["*"] },
-
     {
       "ilvl": 1,
       "name": "of HP Regen",
@@ -17,7 +16,12 @@
       "stats": { "regenMp": [1, 2] },
       "types": ["armor", "helmet", "pants", "ring", "accessory", "boots", "shield"]
     },
-    { "ilvl": 1, "name": "of Magic Find", "stats": { "magicFind": [2, 4] }, "types": ["*"] },
+    {
+      "ilvl": 1,
+      "name": "of Magic Find",
+      "stats": { "magicFind": [2, 4] },
+      "types": ["ring", "accessory", "helmet"]
+    },
     {
       "ilvl": 1,
       "name": "of Walk Speed",
@@ -30,9 +34,49 @@
       "stats": { "defense": [1, 2] },
       "types": ["armor", "helmet", "pants", "ring", "accessory", "boots", "shield"]
     },
-    { "ilvl": 1, "name": "of Armor Pierce", "stats": { "armorPierce": [1, 2] }, "types": ["*"] },
+    {
+      "ilvl": 1,
+      "name": "of Fire Resist",
+      "stats": { "fireResistance": [1, 2] },
+      "types": ["armor", "helmet", "pants", "ring", "accessory", "boots", "shield"]
+    },
+    {
+      "ilvl": 1,
+      "name": "of Light Resist",
+      "stats": { "lightResistance": [1, 2] },
+      "types": ["armor", "helmet", "pants", "ring", "accessory", "boots", "shield"]
+    },
+    {
+      "ilvl": 1,
+      "name": "of Earth Resist",
+      "stats": { "earthResistance": [1, 2] },
+      "types": ["armor", "helmet", "pants", "ring", "accessory", "boots", "shield"]
+    },
+    {
+      "ilvl": 1,
+      "name": "of Water Resist",
+      "stats": { "waterResistance": [1, 2] },
+      "types": ["armor", "helmet", "pants", "ring", "accessory", "boots", "shield"]
+    },
+    {
+      "ilvl": 1,
+      "name": "of Armor Pierce",
+      "stats": { "armorPierce": [1, 2] },
+      "types": ["weapon"]
+    },
     { "ilvl": 2, "name": "of Critical Chance", "stats": { "critChance": [1, 2] }, "types": ["*"] },
-    { "ilvl": 2, "name": "of Dodge Chance", "stats": { "dodgeChance": [1, 2] }, "types": ["*"] },
+    {
+      "ilvl": 2,
+      "name": "of Dodge Chance",
+      "stats": { "dodgeChance": [1, 2] },
+      "types": ["armor", "helmet", "pants", "ring", "accessory", "boots", "shield"]
+    },
+    {
+      "ilvl": 2,
+      "name": "of Block Chance",
+      "stats": { "blockChance": [1, 2] },
+      "types": ["shield"]
+    },
     { "ilvl": 2, "name": "of Attack Speed", "stats": { "attackDelay": [-5, -10] }, "types": ["*"] },
     { "ilvl": 2, "name": "of Spell Power", "stats": { "spellPower": [1, 2] }, "types": ["*"] },
     { "ilvl": 2, "name": "of Cast Speed", "stats": { "castDelay": [-25, -50] }, "types": ["*"] },
