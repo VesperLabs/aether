@@ -88,41 +88,53 @@
       "gold": 10
     }
   },
-  "tudwick-shrooms": {
-    "name": "Shrooms for Tudwick",
+  "find-lynne": {
+    "name": "Find Lynne",
     "dialogues": {
-      "description": "Ah, the elusive mushrooms! The woodland delicacy I've been yearning for. I've heard whispers that you can find 'em in caves around these parts. {objective} for me, my fungi-loving friend, and I'll reward you handsomely."
+      "description": "{objective}. She should be tending to the raccoons up north."
+    },
+    "objectives": [{ "type": "chat", "keeper": "lynne" }],
+    "rewards": {
+      "exp": 20,
+      "gold": 10,
+      "items": []
+    }
+  },
+  "shrooms": {
+    "name": "Shrooms",
+    "dialogues": {
+      "description": "Ah, the elusive mushrooms! The woodland delicacy I've been yearning for. I've heard whispers that you can find 'em in caves. {objective} for me, my fungi-loving friend."
     },
     "objectives": [
       {
         "type": "item",
         "item": ["stackable", "common", "mushroom"],
-        "amount": 3
+        "amount": 20
       }
     ],
     "rewards": {
-      "exp": 20,
+      "exp": 40,
       "gold": 10
     }
   },
   "raccoon-hunting": {
     "name": "Raccoon Hunting",
     "dialogues": {
-      "description": "{objective} and report back to me."
+      "description": "Armed with tenacity and skill, your mission is to track down these clever critters, outmaneuver their cunning tricks. Please {objective} and return victorious with tales of your thrilling escapades."
     },
-    "objectives": [{ "type": "bounty", "monster": "raccoon", "amount": 3 }],
+    "objectives": [{ "type": "bounty", "monster": "raccoon", "amount": 40 }],
     "rewards": {
       "exp": 40,
       "gold": 10,
-      "items": [["pants", "common", "clothPants"]]
+      "items": [["pants", "magic", "clothPants"]]
     }
   },
   "grape-finding": {
     "name": "Grape Finder",
     "dialogues": {
-      "description": "{objective} from raccoons and report back to me."
+      "description": "{objective} from raccoons and report back to me. But beware, dear seeker of sweetness, for the raccoons are no ordinary tricksters. With their agile moves and roguish charm, they've guarded their grape cache fiercely, making your journey a thrilling test of skill and strategy."
     },
-    "objectives": [{ "type": "item", "item": ["stackable", "common", "grapes"], "amount": 3 }],
+    "objectives": [{ "type": "item", "item": ["stackable", "common", "grapes"], "amount": 20 }],
     "rewards": {
       "exp": 40,
       "gold": 20
@@ -131,12 +143,13 @@
   "hawkwing-hunting": {
     "name": "Hawkwing Hunter",
     "dialogues": {
-      "description": "There is one hornet in this part of the woods that needs to be dealt with. {objective}."
+      "description": "Amidst this lush wilderness lies a daunting challenge: a colossal, emerald-hued hornet reigning as the undisputed ruler of the woods. A force of nature itself, this formidable creature demands a reckoning - a fierce and daring confrontation awaits. Please {objective} and return to me for a reward."
     },
     "objectives": [{ "type": "bounty", "monster": "hawkwing", "amount": 1 }],
     "rewards": {
       "exp": 40,
-      "gold": 20
+      "gold": 20,
+      "items": [["weapon", "magic", "scythe"]]
     }
   },
   "spidermeat-finding": {
@@ -176,7 +189,7 @@
     "rewards": {
       "exp": 60,
       "gold": 20,
-      "items": [["pants", "rare", "clothPants"]]
+      "items": [["armor", "magic", "clothRobe"]]
     }
   },
   "hogan-hunting": {
