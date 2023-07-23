@@ -89,7 +89,7 @@
       },
       "up-attack_right": {
         "left": {
-          "x": -13,
+          "x": -12,
           "y": -8,
           "flipY": false,
           "flipX": false,
@@ -112,7 +112,7 @@
           "rotation": 0
         },
         "right": {
-          "x": 13,
+          "x": 12,
           "y": -8,
           "flipX": true,
           "flipY": false,

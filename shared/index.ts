@@ -11,7 +11,7 @@ export { default as questList } from "./data/questList.json";
 export { default as skinTints } from "./data/skinTints.json";
 export { default as soundList } from "./data/soundList.json";
 export { default as spellDetails } from "./data/spellDetails.json";
-export { default as ItemBuilder, getItemCost, itemList } from "./ItemBuilder";
+export { default as ItemBuilder, itemList } from "./ItemBuilder";
 export * from "./Assets";
 export * from "./Character";
 export * from "./Door";

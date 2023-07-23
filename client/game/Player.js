@@ -573,8 +573,8 @@ function playWeapons(player) {
   handRight.setFlipY(right?.flipY);
   handRight.setAngle(right?.rotation);
 
-  const isRightKatar = visibleEquipment?.handRight?.texture?.includes("katar");
-  const isLeftKatar = visibleEquipment?.handLeft?.texture?.includes("katar");
+  const isRightFist = visibleEquipment?.handRight?.base?.includes("fist");
+  const isLeftFist = visibleEquipment?.handLeft?.base?.includes("fist");
   const isRightShield = visibleEquipment?.handRight?.texture?.includes("shield");
   const isLeftShield = visibleEquipment?.handLeft?.texture?.includes("shield");
 
@@ -587,7 +587,7 @@ function playWeapons(player) {
     }
   }
 
-  if (action === "attack_right" && isRightKatar) {
+  if (action === "attack_right" && isRightFist) {
     if (direction === "left") {
       handRight.setAngle(-90);
       handRight.setFlipY(true);
@@ -596,7 +596,7 @@ function playWeapons(player) {
       handRight.setAngle(-90);
     }
   }
-  if (action === "attack_left" && isLeftKatar) {
+  if (action === "attack_left" && isLeftFist) {
     if (direction === "left") {
       handLeft.setAngle(90);
     }
