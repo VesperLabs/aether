@@ -3,7 +3,7 @@
     "common": {
       "katar": {
         "ilvl": 1,
-        "base": "katar",
+        "base": "fist",
         "name": "Katar",
         "texture": "weapon-katar",
         "slot": "hands",
@@ -157,7 +157,7 @@
       },
       "claw": {
         "ilvl": 2,
-        "base": "katar",
+        "base": "fist",
         "name": "Claw",
         "texture": "weapon-claw",
         "slot": "hands"
