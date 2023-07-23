@@ -13,6 +13,7 @@ import {
   FACE_HIDING_HELMETS,
   PLAYER_GRAB_RANGE,
   RACES_WITH_ATTACK_ANIMS,
+  deriveElements,
 } from "../utils";
 import Buff from "./Buff";
 import Hit from "./Hit";
@@ -151,8 +152,12 @@ class Player extends Character {
     this.whiskers.setTint(profile?.whiskers?.tint || "0xFFFFFF");
 
     if (this.profile.race === "human") {
-      this.handLeft.setElements(state.hasWeaponLeft ? this.getElements() : []);
-      this.handRight.setElements(state.hasWeaponRight ? this.getElements() : []);
+      this.handLeft.setElements(
+        state.hasWeaponLeft ? deriveElements(visibleEquipment?.handLeft?.stats) : []
+      );
+      this.handRight.setElements(
+        state.hasWeaponRight ? deriveElements(visibleEquipment?.handRight?.stats) : []
+      );
     }
 
     for (const [key, slot] of Object.entries(visibleEquipment)) {
@@ -161,12 +166,12 @@ class Player extends Character {
 
     /* Helmet types that hide face and hair need to get hidden */
     this.hair.setVisible(true);
-    if (HAIR_HIDING_HELMETS.includes(this?.visibleEquipment?.helmet?.texture)) {
+    if (HAIR_HIDING_HELMETS.includes(visibleEquipment?.helmet?.texture)) {
       this.hair.setVisible(false);
     }
     this.face.setVisible(true);
     this.whiskers.setVisible(true);
-    if (FACE_HIDING_HELMETS.includes(this?.visibleEquipment?.helmet?.texture)) {
+    if (FACE_HIDING_HELMETS.includes(visibleEquipment?.helmet?.texture)) {
       this.face.setVisible(false);
       this.whiskers.setVisible(false);
     }

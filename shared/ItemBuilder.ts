@@ -226,7 +226,11 @@ const buildItem = (...args: BuildItem): any => {
 
 const rollSuffix = (item) => {
   const ilvl = item.ilvl;
-  const modSuffixes = itemModsList?.suffix.filter((s) => ilvl >= s.ilvl);
+  const modSuffixes = itemModsList?.suffix
+    //only get suffixes ilvl or lower
+    ?.filter((s) => ilvl >= s.ilvl)
+    // suffixes only allowed on certain types
+    ?.filter((s) => s.types.includes("*") || s.types.includes(item.type));
   const randomMod = modSuffixes[randomNumber(0, modSuffixes.length - 1)];
 
   Object.keys(randomMod.stats).forEach((key) => {
@@ -299,7 +303,6 @@ function scaleBaseStats(jsonData) {
               ...item.requirements,
             };
             item.effects = { ...multiplyValues(baseItem.effects, ilvlMultiplier), ...item.effects };
-            item.cost = getItemCost({ ...item, rarity: itemRarity });
           }
         }
       }

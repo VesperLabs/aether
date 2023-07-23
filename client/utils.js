@@ -160,6 +160,26 @@ function getHeroCoordsRelativeToWindow(scene) {
   return { x, y };
 }
 
+function deriveElements(stats) {
+  const elements = [];
+  for (const [statKey, v] of Object.entries(stats)) {
+    const statValue = Number(v);
+    if (statKey === "maxFireDamage" && statValue > 0) {
+      elements.push("fire");
+    }
+    if (statKey === "maxWaterDamage" && statValue > 0) {
+      elements.push("water");
+    }
+    if (statKey === "maxLightDamage" && statValue > 0) {
+      elements.push("light");
+    }
+    if (statKey === "maxEarthDamage" && statValue > 0) {
+      elements.push("earth");
+    }
+  }
+  return elements;
+}
+
 export {
   SFX_VOLUME,
   MUSIC_VOLUME,
@@ -178,6 +198,7 @@ export {
   calculateZoomLevel,
   getGameZoomLevel,
   getHeroCoordsRelativeToWindow,
+  deriveElements,
   HAIR_HIDING_HELMETS,
   FACE_HIDING_HELMETS,
   BLANK_TEXTURE,

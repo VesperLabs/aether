@@ -1,41 +1,70 @@
 {
   "suffix": [
-    { "ilvl": 1, "name": "of Dexterity", "stats": { "dexterity": [1, 2] } },
-    { "ilvl": 1, "name": "of Strength", "stats": { "strength": [1, 2] } },
-    { "ilvl": 1, "name": "of Vitality", "stats": { "vitality": [1, 2] } },
-    { "ilvl": 1, "name": "of Intelligence", "stats": { "intelligence": [1, 2] } },
-    { "ilvl": 1, "name": "of Critical Chance", "stats": { "critChance": [1, 2] } },
-    { "ilvl": 1, "name": "of Dodge Chance", "stats": { "dodgeChance": [1, 2] } },
-    { "ilvl": 1, "name": "of HP Regen", "stats": { "regenHp": [1, 2] } },
-    { "ilvl": 1, "name": "of MP Regen", "stats": { "regenMp": [1, 2] } },
-    { "ilvl": 1, "name": "of Magic Find", "stats": { "magicFind": [2, 4] } },
-    { "ilvl": 1, "name": "of Walk Speed", "stats": { "walkSpeed": [2, 4] } },
-    { "ilvl": 1, "name": "of Defense", "stats": { "defense": [1, 2] } },
-    { "ilvl": 1, "name": "of Armor Pierce", "stats": { "armorPierce": [1, 2] } },
-    { "ilvl": 2, "name": "of Dodge Chance", "stats": { "dodgeChance": [1, 2] } },
-    { "ilvl": 2, "name": "of Attack Speed", "stats": { "attackDelay": [-5, -10] } },
-    { "ilvl": 2, "name": "of Spell Power", "stats": { "spellPower": [1, 2] } },
+    { "ilvl": 1, "name": "of Dexterity", "stats": { "dexterity": [1, 2] }, "types": ["*"] },
+    { "ilvl": 1, "name": "of Strength", "stats": { "strength": [1, 2] }, "types": ["*"] },
+    { "ilvl": 1, "name": "of Vitality", "stats": { "vitality": [1, 2] }, "types": ["*"] },
+    { "ilvl": 1, "name": "of Intelligence", "stats": { "intelligence": [1, 2] }, "types": ["*"] },
+
+    {
+      "ilvl": 1,
+      "name": "of HP Regen",
+      "stats": { "regenHp": [1, 2] },
+      "types": ["armor", "helmet", "pants", "ring", "accessory", "boots", "shield"]
+    },
+    {
+      "ilvl": 1,
+      "name": "of MP Regen",
+      "stats": { "regenMp": [1, 2] },
+      "types": ["armor", "helmet", "pants", "ring", "accessory", "boots", "shield"]
+    },
+    { "ilvl": 1, "name": "of Magic Find", "stats": { "magicFind": [2, 4] }, "types": ["*"] },
+    {
+      "ilvl": 1,
+      "name": "of Walk Speed",
+      "stats": { "walkSpeed": [2, 4] },
+      "types": ["armor", "helmet", "pants", "ring", "accessory", "boots", "shield"]
+    },
+    {
+      "ilvl": 1,
+      "name": "of Defense",
+      "stats": { "defense": [1, 2] },
+      "types": ["armor", "helmet", "pants", "ring", "accessory", "boots", "shield"]
+    },
+    { "ilvl": 1, "name": "of Armor Pierce", "stats": { "armorPierce": [1, 2] }, "types": ["*"] },
+    { "ilvl": 2, "name": "of Critical Chance", "stats": { "critChance": [1, 2] }, "types": ["*"] },
+    { "ilvl": 2, "name": "of Dodge Chance", "stats": { "dodgeChance": [1, 2] }, "types": ["*"] },
+    { "ilvl": 2, "name": "of Attack Speed", "stats": { "attackDelay": [-5, -10] }, "types": ["*"] },
+    { "ilvl": 2, "name": "of Spell Power", "stats": { "spellPower": [1, 2] }, "types": ["*"] },
+    { "ilvl": 2, "name": "of Cast Speed", "stats": { "castDelay": [-25, -50] }, "types": ["*"] },
     {
       "ilvl": 2,
       "name": "of Damage",
-      "stats": { "minDamage": [0, 1], "maxDamage": [1, 2] }
+      "stats": { "minDamage": [0, 1], "maxDamage": [1, 2] },
+      "types": ["weapon"]
     },
-    { "ilvl": 2, "name": "of Fire", "stats": { "minFireDamage": [0, 1], "maxFireDamage": [1, 2] } },
+    {
+      "ilvl": 2,
+      "name": "of Fire",
+      "stats": { "minFireDamage": [0, 1], "maxFireDamage": [1, 2] },
+      "types": ["weapon"]
+    },
     {
       "ilvl": 2,
       "name": "of Water",
-      "stats": { "minWaterDamage": [0, 1], "maxWaterDamage": [1, 2] }
+      "stats": { "minWaterDamage": [0, 1], "maxWaterDamage": [1, 2] },
+      "types": ["weapon"]
     },
     {
       "ilvl": 2,
       "name": "of Light",
-      "stats": { "minLightDamage": [0, 1], "maxLightDamage": [1, 2] }
+      "stats": { "minLightDamage": [0, 1], "maxLightDamage": [1, 2] },
+      "types": ["weapon"]
     },
     {
       "ilvl": 2,
       "name": "of Earth",
-      "stats": { "minEarthDamage": [0, 1], "maxEarthDamage": [1, 2] }
-    },
-    { "ilvl": 2, "name": "of Cast Speed", "stats": { "castDelay": [-25, -50] } }
+      "stats": { "minEarthDamage": [0, 1], "maxEarthDamage": [1, 2] },
+      "types": ["weapon"]
+    }
   ]
 }
