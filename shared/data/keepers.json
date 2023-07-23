@@ -118,7 +118,7 @@
         "quests": "Ah, still interested, are ya? Well, I've got some intriguing tasks lined up for you, perfect for an adventurous soul like yourself.",
         "shop": "Behold! I've gathered a curious collection of forest finds on my woodland wanderings. Feast your eyes upon these treasures I've stumbled upon. Who knows? You might find them rather handy on your own journey."
       },
-      "quests": ["slime-roundup", "slime-eggs", "hornet-hunting", "tudwick-shrooms"],
+      "quests": ["slime-roundup", "slime-eggs", "hornet-hunting", "find-lynne"],
       "shop": [
         { "item": ["armor", "common", "clothRobe"], "stock": 1 },
         { "item": ["shield", "common", "barkShield"], "stock": 1 },
@@ -160,7 +160,7 @@
         "quests": "In these woods, good production assistants don't grow on trees. Sure, I've got some jobs for you.",
         "shop": "Some useful goods here. I take gold."
       },
-      "quests": ["raccoon-hunting", "grape-finding", "hawkwing-hunting"],
+      "quests": ["raccoon-hunting", "grape-finding", "hawkwing-hunting", "shrooms"],
       "shop": [{ "item": ["weapon", "common", "scythe"], "stock": 1 }]
     }
   },
