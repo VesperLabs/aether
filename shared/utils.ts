@@ -160,13 +160,13 @@ export const formatStats = (stats = {}) =>
 const formatStat = (key, value) => {
   if (key.includes("Damage")) {
     if (Array.isArray(value)) {
-      const formattedValue = value.map((item) => `${item}`).join(" - ");
+      const formattedValue = value.map((item) => `${item}`).join(" ↔ ");
       return formattedValue;
     }
     return value;
   } else if (["hp", "mp"].includes(key)) {
     if (Array.isArray(value)) {
-      const formattedValue = value.map((item) => `+${item}`).join(" - ");
+      const formattedValue = value.map((item) => `+${item}`).join(" ↔ ");
       return formattedValue;
     }
     return "+" + value;
@@ -174,7 +174,7 @@ const formatStat = (key, value) => {
     if (Array.isArray(value)) {
       const formattedValue = value
         .map((item) => convertMsToS(item)?.replace(".00", ""))
-        .join(" - ");
+        .join(" ↔ ");
       return formattedValue;
     }
     return convertMsToS(value)?.replace(".00", "");
@@ -185,7 +185,7 @@ const formatStat = (key, value) => {
     key.includes("magicFind")
   ) {
     if (Array.isArray(value)) {
-      const formattedValue = value.map((item) => `${item}%`).join(" - ");
+      const formattedValue = value.map((item) => `${item}%`).join(" ↔ ");
       return formattedValue;
     }
     return value + "%";
