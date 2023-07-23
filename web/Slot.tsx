@@ -148,7 +148,7 @@ const ItemTooltip = ({ item }) => {
         <Flex sx={{ alignItems: "center", gap: 2 }}>
           <Flex sx={{ alignItems: "center", gap: "2px" }}>
             <Icon icon="../assets/icons/gold.png" size={16} />
-            {item?.cost * (item?.amount || 1)}
+            {ItemBuilder.getItemCost(item)}
           </Flex>
           {item?.stats?.mpCost && (
             <Flex sx={{ alignItems: "center", gap: "2px" }}>

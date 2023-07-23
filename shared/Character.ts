@@ -236,25 +236,6 @@ class Character extends Phaser.GameObjects.Container {
     if (this.profile.race !== "human") this.state.hasWeaponRight = true;
     if (this.state.hasWeaponRight || this.state.hasWeaponLeft) this.state.hasWeapon = true;
   }
-  getElements() {
-    const elements = [];
-    for (const [statKey, v] of Object.entries(this.stats)) {
-      const statValue = Number(v);
-      if (statKey === "maxFireDamage" && statValue > 0) {
-        elements.push("fire");
-      }
-      if (statKey === "maxWaterDamage" && statValue > 0) {
-        elements.push("water");
-      }
-      if (statKey === "maxLightDamage" && statValue > 0) {
-        elements.push("light");
-      }
-      if (statKey === "maxEarthDamage" && statValue > 0) {
-        elements.push("earth");
-      }
-    }
-    return elements;
-  }
   getPlayerQuestStatus(quest: Quest) {
     const playerQuest = this.quests.find((q) => q?.questId === quest?.id);
     if (!playerQuest) return null;
