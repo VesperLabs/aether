@@ -288,6 +288,12 @@
     "previewRect": [0, 140, 80, 80]
   },
   {
+    "texture": "human-accessory-fins",
+    "src": "./assets/atlas/accessory/accessory-fins.png",
+    "atlas": "./assets/atlas/80x80.json",
+    "previewRect": [0, 80, 80, 80]
+  },
+  {
     "texture": "human-boots-cloth",
     "src": "./assets/atlas/boots/boots-cloth.png",
     "atlas": "./assets/atlas/80x80.json",
@@ -378,8 +384,8 @@
     "previewRect": [28, 30, 24, 24]
   },
   {
-    "texture": "weapon-merwyrm-blade",
-    "src": "./assets/atlas/hands/weapon-merwyrm-blade.png",
+    "texture": "weapon-wyrm-blade",
+    "src": "./assets/atlas/hands/weapon-wyrm-blade.png",
     "atlas": "./assets/atlas/weapon.json",
     "previewRect": [25, 26, 31, 31]
   },

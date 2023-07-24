@@ -34,7 +34,7 @@ const MenuKeeper = () => {
           </KeyboardButton>
         )}
         {hasQuests && (
-          <KeyboardButton keyboardKey="Q" onClick={() => setTab("quests")} active={tabQuests}>
+          <KeyboardButton keyboardKey="U" onClick={() => setTab("quests")} active={tabQuests}>
             Quests
           </KeyboardButton>
         )}

@@ -232,7 +232,7 @@
   "skull-finding": {
     "name": "Shield of Bone",
     "dialogues": {
-      "description": "Beware, wanderer, for the graveyard lies just north of this cursed town. {Objective} if you dare, amidst the haunting wraiths and soulless zombies that haunt that accursed place. Tread carefully, and if you manage to survive the malevolent specters, I shall imbue your soul with a great shield, crafted from the remnants of the undead. Embrace the darkness, for your fate awaits in the cold embrace of the tomb."
+      "description": "Beware, wanderer, for the graveyard lies just north of this cursed town. {objective} if you dare, amidst the haunting wraiths and soulless zombies that haunt that accursed place. Tread carefully, and if you manage to survive the malevolent specters, I shall imbue your soul with a great shield, crafted from the remnants of the undead. Embrace the darkness, for your fate awaits in the cold embrace of the tomb."
     },
     "objectives": [{ "type": "item", "item": ["stackable", "common", "skull"], "amount": 100 }],
     "rewards": {
@@ -253,19 +253,28 @@
       "items": [["ring", "rare", "goldRing"]]
     }
   },
-  "merwyrm-blade": {
-    "name": "The Merwyrm Blade",
+  "shell-finding": {
+    "name": "The Merman",
     "dialogues": {
-      "description": "Below this town are ancient aqueducts. {objective} and I will able to craft from those ingredients an awesome weapon."
+      "description": "The merman have been taking over the aqueducts. {objective} and bring them to me. I will forge you a great accessory."
     },
-    "objectives": [
-      { "type": "item", "item": ["stackable", "common", "shell"], "amount": 20 },
-      { "type": "item", "item": ["stackable", "common", "wyrmScale"], "amount": 1 }
-    ],
+    "objectives": [{ "type": "item", "item": ["stackable", "common", "shell"], "amount": 100 }],
     "rewards": {
-      "exp": 160,
+      "exp": 200,
+      "gold": 30,
+      "items": [["accessory", "unique", "mermanFins"]]
+    }
+  },
+  "wyrm-blade": {
+    "name": "The Wyrm Blade",
+    "dialogues": {
+      "description": "Below this town are ancient aqueducts. {objective} and from it I shall temper an awesome weapon."
+    },
+    "objectives": [{ "type": "item", "item": ["stackable", "unique", "wyrmScale"], "amount": 1 }],
+    "rewards": {
+      "exp": 200,
       "gold": 50,
-      "items": [["weapon", "unique", "merwyrmBlade"]]
+      "items": [["weapon", "unique", "wyrmBlade"]]
     }
   }
 }

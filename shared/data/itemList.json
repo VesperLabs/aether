@@ -248,11 +248,11 @@
           "regenMp": [2, 3]
         }
       },
-      "merwyrmBlade": {
+      "wyrmBlade": {
         "ilvl": 3,
         "base": "sword",
-        "name": "Merwyrm Blade",
-        "texture": "weapon-merwyrm-blade",
+        "name": "Wyrm Blade",
+        "texture": "weapon-wyrm-blade",
         "slot": "hands",
         "stats": {
           "critChance": [4, 5],
@@ -702,6 +702,7 @@
         }
       },
       "wyrmScaleWard": {
+        "exclusive": true,
         "ilvl": 2,
         "name": "Wyrm Scale Ward",
         "base": "kiteShield",
@@ -721,7 +722,7 @@
       "glasses": {
         "ilvl": 1,
         "name": "Glasses",
-        "base": "accessory",
+        "base": "glasses",
         "texture": "accessory-glasses",
         "slot": "accessory",
         "stats": {
@@ -731,18 +732,32 @@
     },
     "unique": {
       "compoundLenses": {
-        "ilvl": 1,
+        "ilvl": 2,
         "name": "Compound Lenses",
-        "base": "accessory",
+        "base": "glasses",
         "texture": "accessory-glasses",
         "tint": "0xFF6666",
         "slot": "accessory",
         "stats": {
+          "critChance": [4, 5],
+          "dodgeChance": [4, 5],
+          "walkSpeed": 10,
           "accuracy": 5,
-          "critChance": [2, 3],
-          "dodgeChance": [1, 2],
-          "walkSpeed": [1, 2],
-          "intelligence": [5, 6]
+          "intelligence": 5
+        }
+      },
+      "mermanFins": {
+        "exclusive": true,
+        "ilvl": 2,
+        "name": "Merman Fins",
+        "base": "fins",
+        "texture": "accessory-fins",
+        "slot": "accessory",
+        "stats": {
+          "waterResistance": 10,
+          "dodgeChance": [4, 5],
+          "walkSpeed": 5,
+          "regenMp": 3
         }
       }
     }
@@ -1027,7 +1042,9 @@
         "slot": "stackable",
         "texture": "stackable-tooth",
         "effects": {}
-      },
+      }
+    },
+    "unique": {
       "wyrmScale": {
         "ilvl": 1,
         "name": "Wyrm Scale",
