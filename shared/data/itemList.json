@@ -260,7 +260,7 @@
           "maxFireDamage": 2,
           "minWaterDamage": 0,
           "maxWaterDamage": 2,
-          "range": 1.25
+          "range": 1.4
         }
       },
       "foxBlade": {
@@ -523,20 +523,6 @@
       }
     },
     "set": {
-      "crabSuit": {
-        "ilvl": 1,
-        "setName": "crab",
-        "name": "Crab Suit",
-        "base": "light-plate-armor",
-        "texture": "armor-plate-light",
-        "slot": "armor",
-        "tint": "0xFF6644",
-        "exclusive": true,
-        "stats": {
-          "strength": [1, 2]
-        },
-        "cost": 20
-      },
       "chetsPurpleShirt": {
         "ilvl": 1,
         "setName": "chets",

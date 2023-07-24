@@ -54,6 +54,7 @@ tile-extruder --tileWidth 32 --tileHeight 32 --input ./public/assets/tilesets/cl
 - [ ] Minimap
 - [ ] Doors that require a key or level to pass through
 - [ ] Map item drops (Mining, Herbs) Professions?
+- [ ] Ability to choose from mage-type rogue-type or warrior-type rewards on some quests
 
 #### Combat
 

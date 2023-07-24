@@ -296,6 +296,11 @@
                  "point":true,
                  "properties":[
                         {
+                         "name":"icon",
+                         "type":"string",
+                         "value":"sign-1"
+                        }, 
+                        {
                          "name":"text",
                          "type":"string",
                          "value":"Beware of giant hornets."
@@ -313,6 +318,11 @@
                  "name":"directions",
                  "point":true,
                  "properties":[
+                        {
+                         "name":"icon",
+                         "type":"string",
+                         "value":"sign-1"
+                        }, 
                         {
                          "name":"text",
                          "type":"string",

@@ -63,7 +63,11 @@ interface Drop {
 
 interface Door extends Phaser.Types.Tilemaps.TiledObject {}
 
-interface Sign extends Phaser.Types.Tilemaps.TiledObject {}
+interface Sign extends Phaser.Types.Tilemaps.TiledObject {
+  icon: string;
+  subject: string;
+  text: string;
+}
 
 interface ServerScene extends Phaser.Scene {
   doors: Record<string, Door>;
