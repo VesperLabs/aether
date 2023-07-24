@@ -1240,6 +1240,11 @@
                  "point":true,
                  "properties":[
                         {
+                         "name":"icon",
+                         "type":"string",
+                         "value":"sign-1"
+                        }, 
+                        {
                          "name":"text",
                          "type":"string",
                          "value":"Welcome to the crab dunes."

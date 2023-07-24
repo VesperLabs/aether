@@ -59,7 +59,7 @@ interface AppContextValue {
   toggleBagState: React.Dispatch<React.SetStateAction<any>>;
   setCooldowns: React.Dispatch<React.SetStateAction<any>>;
   setSign: React.Dispatch<React.SetStateAction<any>>;
-  sign: string | null;
+  sign: Sign | null;
   bagState: Array<string>;
   cooldowns: Record<string, any>;
   messages: Message[];
@@ -281,7 +281,7 @@ function App({ socket, debug, game }) {
       }
 
       if (target.kind === "sign") {
-        setSign(target?.text);
+        setSign(target);
       }
 
       const direction = getSpinDirection(hero, target);

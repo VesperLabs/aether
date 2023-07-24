@@ -41,7 +41,7 @@ class Spell extends Phaser.GameObjects.Container {
 
     if (this.isAttack) {
       let viewSize = 44;
-      let tiltAngle = 56;
+      let tiltAngle = 48;
       this.spell.play(`spell-anim-slash-physical`);
       this.spell.setAngle(getAngleFromDirection(caster?.direction) - 90);
 
