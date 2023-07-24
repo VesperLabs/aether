@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 import { Box } from "@aether/ui";
 import { useAppContext } from "./";
-import { HAIR_HIDING_HELMETS } from "../utils";
+import { HAIR_HIDING_HELMETS, ACCESSORY_HIDING_HELMETS } from "../utils";
 import { tintCanvas, imageToCanvas, assetList } from "@aether/shared";
 
 function CanvasPreview({ assets, topOffset = 10, scale = 2, atlasSize = 80 }) {
@@ -52,6 +52,19 @@ function CanvasPreview({ assets, topOffset = 10, scale = 2, atlasSize = 80 }) {
   );
 }
 
+const getObscuredKeys = ({ filterKeys, userHelmet }) => {
+  if (HAIR_HIDING_HELMETS.includes(userHelmet?.texture) && !filterKeys?.includes("helmet")) {
+    filterKeys.push("hair");
+  }
+  if (
+    ACCESSORY_HIDING_HELMETS.includes(userHelmet?.texture) &&
+    !filterKeys?.includes("accessory")
+  ) {
+    filterKeys.push("accessory");
+  }
+  return filterKeys;
+};
+
 const Portrait = ({
   user,
   size = 54,
@@ -100,10 +113,7 @@ const Portrait = ({
   const boots = getAssetProps("boots", `${race}-${userBoots?.texture}`, userBoots?.tint);
   const helmet = getAssetProps("helmet", `${race}-${userHelmet?.texture}`, userHelmet?.tint);
 
-  const obscuredKeys =
-    HAIR_HIDING_HELMETS.includes(userHelmet?.texture) && !filterKeys?.includes("helmet")
-      ? ["hair"]
-      : filterKeys;
+  const obscuredKeys = getObscuredKeys({ filterKeys, userHelmet });
 
   const assets = [skin, chest, hair, boots, pants, armor, face, whiskers, accessory, helmet]
     ?.filter(Boolean)

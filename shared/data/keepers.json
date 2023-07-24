@@ -240,7 +240,7 @@
         "shop": "Step up, my friend, and behold the treasures I've crafted, worth their weight in gleaming gold.",
         "quests": "Seeking adventure, are you? There's always something to stir the blood and test the mettle of a daring soul."
       },
-      "quests": ["merwyrm-blade", "skull-finding"],
+      "quests": ["wyrm-blade", "shell-finding", "skull-finding"],
       "shop": [
         { "item": ["pants", "common", "leatherPants"], "stock": 1 },
         { "item": ["armor", "common", "bronzePlate"], "stock": 1 },

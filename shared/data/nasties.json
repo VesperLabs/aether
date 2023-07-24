@@ -352,7 +352,7 @@
         "type": "stackable",
         "rarity": "common",
         "key": "wyrmScale",
-        "chance": 1
+        "chance": 5
       }
     ]
   }

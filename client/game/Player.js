@@ -14,6 +14,7 @@ import {
   PLAYER_GRAB_RANGE,
   RACES_WITH_ATTACK_ANIMS,
   deriveElements,
+  ACCESSORY_HIDING_HELMETS,
 } from "../utils";
 import Buff from "./Buff";
 import Hit from "./Hit";
@@ -174,6 +175,10 @@ class Player extends Character {
     if (FACE_HIDING_HELMETS.includes(visibleEquipment?.helmet?.texture)) {
       this.face.setVisible(false);
       this.whiskers.setVisible(false);
+    }
+    this.accessory.setVisible(true);
+    if (ACCESSORY_HIDING_HELMETS.includes(visibleEquipment?.helmet?.texture)) {
+      this.accessory.setVisible(false);
     }
   }
   doAttack(count) {
@@ -454,10 +459,10 @@ function drawFrame(p) {
   p.bringToTop(armor);
 
   if (direction === "up") {
+    p.bringToTop(accessory);
     p.bringToTop(hair);
     p.bringToTop(face);
     p.bringToTop(whiskers);
-    p.bringToTop(accessory);
     p.bringToTop(helmet);
     p.sendToBack(handLeft);
     p.sendToBack(handRight);
