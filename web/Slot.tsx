@@ -94,13 +94,19 @@ const ItemTooltip = ({ item }) => {
           );
         })}
         {Object.keys(buffs).map((buffName) => {
+          const buffLevel = buffs[buffName];
           const buffStats = formatStats({
             duration: buffList?.[buffName]?.duration,
-            ...buffList?.[buffName]?.stats,
+            ...Object.entries(buffList?.[buffName]?.stats || {}).reduce((acc, [key, value]) => {
+              acc[key] = Number(value) * Number(buffLevel);
+              return acc;
+            }, {}),
           });
           return (
             <Fragment key={buffName}>
-              <TextDivider>{buffName} Buff</TextDivider>
+              <TextDivider>
+                {buffName} Buff (Lv. {buffLevel})
+              </TextDivider>
               {Object.keys(buffStats).map((stat) => {
                 return (
                   <Text key={stat}>

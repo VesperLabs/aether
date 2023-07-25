@@ -1078,7 +1078,7 @@
     },
     "unique": {
       "wyrmScale": {
-        "ilvl": 1,
+        "ilvl": 2,
         "name": "Wyrm Scale",
         "base": "material",
         "slot": "stackable",
