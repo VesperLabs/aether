@@ -352,7 +352,13 @@
         "type": "stackable",
         "rarity": "common",
         "key": "wyrmScale",
-        "chance": 5
+        "chance": 10
+      },
+      {
+        "type": "shield",
+        "rarity": "unique",
+        "key": "wyrmScaleWard",
+        "chance": 2000
       }
     ]
   }

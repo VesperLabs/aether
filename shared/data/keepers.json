@@ -79,6 +79,52 @@
       ]
     }
   },
+  "sergio": {
+    "charClass": "cleric",
+    "profile": {
+      "userName": "Sergio",
+      "face": {
+        "texture": "face-1"
+      },
+      "hair": {
+        "texture": "hair-5",
+        "tint": "0x553355"
+      },
+      "whiskers": {
+        "texture": "whiskers-3",
+        "tint": "0x553355"
+      },
+      "gender": "male",
+      "race": "human"
+    },
+    "state": { "isStatic": true },
+    "baseStats": {
+      "level": 50
+    },
+    "equipment": {
+      "handLeft": ["weapon", "common", "katar"],
+      "handRight": ["weapon", "common", "katar"],
+      "helmet": null,
+      "accessory": null,
+      "armor": ["armor", "common", "bronzePlate"],
+      "pants": ["pants", "common", "clothPants"],
+      "boots": ["boots", "common", "leatherBoots"]
+    },
+    "keeperData": {
+      "dialogues": {
+        "greet": "Greetings, traveler! I am Sergio, the former keeper of this once-great river valley. The killer plants have overrun its beauty, but I still believe in its revival.",
+        "quests": "Understanding the intricacies of these plants holds the key to restoring the valley's lost splendor. Help me to gather samples and I'll reward you.",
+        "shop": "Check out my gardener's wares to equip yourself. Let's bring life back to this forgotten land!"
+      },
+      "quests": [],
+      "shop": [
+        { "item": ["weapon", "common", "claw"], "stock": 1 },
+        { "item": ["weapon", "common", "staff"], "stock": 1 },
+        { "item": ["weapon", "common", "cleaver"], "stock": 1 },
+        { "item": ["stackable", "common", "mediumHpPotion"], "stock": 1 }
+      ]
+    }
+  },
   "tudwick": {
     "charClass": "warrior",
     "profile": {
