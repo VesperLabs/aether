@@ -254,9 +254,9 @@
     }
   },
   "shell-finding": {
-    "name": "The Merman",
+    "name": "The Mermans Shells",
     "dialogues": {
-      "description": "The merman have been taking over the aqueducts. {objective} and bring them to me. I will forge you a great accessory."
+      "description": "The merman have been taking over the aqueducts below the city. {objective} and bring them to me. I will forge you a great accessory."
     },
     "objectives": [{ "type": "item", "item": ["stackable", "common", "shell"], "amount": 100 }],
     "rewards": {

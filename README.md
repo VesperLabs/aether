@@ -60,7 +60,7 @@ tile-extruder --tileWidth 32 --tileHeight 32 --input ./public/assets/tilesets/cl
 
 - [ ] Negative buffs: (Frozen, Stunned, etc.)
 - [ ] Allow critical strikes on spells
-- [ ] Ranged weapons
+- [ ] Ranged weapons 🏹
 - [ ] Serverside individual cooldowns for spells
 - [ ] More spells that affect movement, (dives, dodges, pushback etc)
 - [ ] Back-stab damage

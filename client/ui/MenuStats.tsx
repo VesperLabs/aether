@@ -1,6 +1,6 @@
 import { ThemeUIStyleObject } from "theme-ui";
 import { Flex, Text, Grid } from "@aether/ui";
-import { Menu, useAppContext, MenuHeader } from "./";
+import { Menu, useAppContext, MenuHeader, MENU_MAX_WIDTH } from "./";
 import { convertMsToS } from "@aether/shared";
 
 const COLUMN_STYLES: ThemeUIStyleObject = {
@@ -39,7 +39,7 @@ const MenuStats = () => {
       <MenuHeader icon={`../assets/icons/stats.png`} onClick={() => setTabStats(false)}>
         Stats
       </MenuHeader>
-      <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", width: 592 }}>
+      <Flex sx={{ gap: 4, flexWrap: "wrap", justifyContent: "end", maxWidth: MENU_MAX_WIDTH }}>
         <Grid sx={COLUMN_STYLES}>
           <Text>Strength</Text>
           <Text>{stats?.strength}</Text>
