@@ -293,7 +293,12 @@ function App({ socket, debug, game }) {
       const socketId = sessionStorage.getItem("socketId");
       if (socketId === player?.socketId) {
         /* Both quests and inventory only need to be updated when we pick an item */
-        setHero((prev) => ({ ...prev, inventory: player?.inventory, quests: player?.quests }));
+        setHero((prev) => ({
+          ...prev,
+          inventory: player?.inventory,
+          quests: player?.quests,
+          abilities: player?.abilities,
+        }));
       }
     };
 
