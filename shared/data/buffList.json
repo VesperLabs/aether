@@ -42,7 +42,7 @@
     "duration": 30000,
     "dispelInCombat": true,
     "stats": {
-      "regenMp": 2
+      "regenMp": 1
     }
   }
 }

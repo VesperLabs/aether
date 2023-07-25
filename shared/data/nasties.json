@@ -199,25 +199,6 @@
       }
     ]
   },
-  "orchid": {
-    "charClass": "rogue",
-    "profile": {
-      "race": "orchid",
-      "userName": "Orchid"
-    },
-    "state": { "isAggro": true },
-    "baseStats": {
-      "level": 9,
-      "minEarthDamage": 0,
-      "maxEarthDamage": 1,
-      "blockChance": 5
-    },
-    "hitBoxSize": {
-      "width": 26,
-      "height": 24
-    },
-    "drops": []
-  },
   "zombie": {
     "charClass": "warrior",
     "profile": { "race": "zombie", "userName": "Zombie" },
@@ -260,6 +241,33 @@
         "type": "stackable",
         "rarity": "common",
         "key": "skull",
+        "chance": 4
+      }
+    ]
+  },
+  "orchid": {
+    "charClass": "rogue",
+    "profile": {
+      "race": "orchid",
+      "userName": "Orchid"
+    },
+    "state": { "isAggro": true },
+    "baseStats": {
+      "level": 9,
+      "minEarthDamage": 0,
+      "maxEarthDamage": 1,
+      "blockChance": 5,
+      "fireResistance": -15
+    },
+    "hitBoxSize": {
+      "width": 26,
+      "height": 24
+    },
+    "drops": [
+      {
+        "type": "stackable",
+        "rarity": "common",
+        "key": "orchidFlower",
         "chance": 4
       }
     ]

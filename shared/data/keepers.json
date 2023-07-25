@@ -116,7 +116,7 @@
         "quests": "Understanding the intricacies of these plants holds the key to restoring the valley's lost splendor. Help me to gather samples and I'll reward you.",
         "shop": "Check out my gardener's wares to equip yourself. Let's bring life back to this forgotten land!"
       },
-      "quests": [],
+      "quests": ["orchid-gathering"],
       "shop": [
         { "item": ["weapon", "common", "claw"], "stock": 1 },
         { "item": ["weapon", "common", "staff"], "stock": 1 },

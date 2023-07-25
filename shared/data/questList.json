@@ -276,5 +276,18 @@
       "gold": 50,
       "items": [["weapon", "unique", "wyrmBlade"]]
     }
+  },
+  "orchid-gathering": {
+    "name": "Orchid Flowers",
+    "dialogues": {
+      "description": "I feel like the secret to these orchids are in their petals. {objective} and bring them to me."
+    },
+    "objectives": [
+      { "type": "item", "item": ["stackable", "common", "orchidFlower"], "amount": 20 }
+    ],
+    "rewards": {
+      "exp": 240,
+      "gold": 80
+    }
   }
 }

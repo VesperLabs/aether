@@ -78,7 +78,7 @@
         "slot": "hands",
         "stats": {
           "attackDelay": 300,
-          "spellPower": 2,
+          "spellPower": 3,
           "range": 1,
           "spCost": 1
         },
@@ -245,10 +245,26 @@
         "tint": "0x66FF66",
         "stats": {
           "spellPower": 6,
-          "regenMp": [2, 3]
+          "regenMp": 1
+        }
+      },
+      "eyeOfForest": {
+        "exclusive": true,
+        "ilvl": 2,
+        "base": "staff",
+        "name": "Eye of the Forest",
+        "tint": "0x99FF99",
+        "texture": "weapon-staff-crystal",
+        "slot": "hands",
+        "stats": {
+          "critChance": [4, 5],
+          "minEarthDamage": 1,
+          "maxEarthDamage": 5,
+          "maxMp": 50
         }
       },
       "wyrmBlade": {
+        "exclusive": true,
         "ilvl": 3,
         "base": "sword",
         "name": "Wyrm Blade",
@@ -762,8 +778,9 @@
           "waterResistance": 10,
           "dodgeChance": [4, 5],
           "walkSpeed": 5,
-          "regenMp": 3,
-          "spellPower": 5
+          "regenMp": 1,
+          "spellPower": 5,
+          "maxMp": 25
         }
       }
     }
@@ -827,7 +844,7 @@
           "spellPower": 5
         },
         "percentStats": {
-          "maxMp": [5, 10]
+          "maxMp": [15, 20]
         }
       }
     }
@@ -1025,7 +1042,7 @@
         }
       },
       "skull": {
-        "ilvl": 1,
+        "ilvl": 2,
         "name": "Skull",
         "base": "material",
         "slot": "stackable",
@@ -1033,7 +1050,7 @@
         "effects": {}
       },
       "shell": {
-        "ilvl": 1,
+        "ilvl": 2,
         "name": "Shell",
         "base": "material",
         "slot": "stackable",
@@ -1041,12 +1058,22 @@
         "effects": {}
       },
       "tooth": {
-        "ilvl": 1,
+        "ilvl": 2,
         "name": "Tooth",
         "base": "material",
         "slot": "stackable",
         "texture": "stackable-tooth",
         "effects": {}
+      },
+      "orchidFlower": {
+        "ilvl": 2,
+        "name": "Orchid Flower",
+        "base": "food",
+        "slot": "stackable",
+        "texture": "stackable-orchid-flower",
+        "buffs": {
+          "vitamins": 2
+        }
       }
     },
     "unique": {
