@@ -32,7 +32,8 @@ import {
 import { getSpinDirection, calculateZoomLevel } from "../utils";
 import { isMobile } from "@aether/shared";
 import "react-tooltip/dist/react-tooltip.css";
-import { Donut, Theme } from "theme-ui";
+import { Theme } from "theme-ui";
+import { Donut, Text } from "@aether/ui";
 import { Socket } from "socket.io-client";
 import ModalSign from "./ModalSign";
 
@@ -611,10 +612,9 @@ const AbilityButtons = () => {
       {abilities
         ?.filter(([_, item]) => !!item)
         ?.map(([slotKey, item]) => {
-          let texture = item?.texture;
-          if (item.type === "spell") {
-            texture = "spell-" + item.base;
-          }
+          const isSpell = item.type === "spell";
+          const texture = !isSpell ? item?.texture : "spell-" + item.base;
+
           const icon = item
             ? `../assets/atlas/${item?.type}/${texture}.png`
             : "./assets/icons/blank.png";
@@ -634,8 +634,26 @@ const AbilityButtons = () => {
                 window.dispatchEvent(new CustomEvent("HERO_ABILITY", { detail: slotKey }))
               }
               keyboardKey={slotKey}
+              sx={{
+                "& > .icon": {
+                  mt: "-6px",
+                  mb: "6px",
+                },
+              }}
             >
               <CooldownTimer cooldown={cooldown} />
+              <Text
+                sx={{
+                  bottom: "13px",
+                  left: 0,
+                  position: "absolute",
+                  fontSize: 0,
+                  textAlign: "center",
+                  width: "100%",
+                }}
+              >
+                {isSpell ? `Lv. ${item?.ilvl}` : item?.amount}
+              </Text>
             </SkillButton>
           );
         })}
