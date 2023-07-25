@@ -1,4 +1,4 @@
-import { Menu, MenuHeader, useAppContext, Portrait, MenuButton } from "./";
+import { Menu, MenuHeader, useAppContext, Portrait, MenuButton, MENU_MAX_WIDTH } from "./";
 import { Flex, Text, Input } from "@aether/ui";
 
 const MenuPicker = ({ children, onPlus = () => {}, onMinus = () => {} }) => {
@@ -35,14 +35,14 @@ const MenuProfile = () => {
       <MenuHeader icon={`../assets/icons/mirror.png`} onClick={() => setTabProfile(false)}>
         Profile
       </MenuHeader>
-      <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", width: 592 }}>
+      <Flex sx={{ gap: 4, flexWrap: "wrap", justifyContent: "end", maxWidth: MENU_MAX_WIDTH }}>
         <Flex
           sx={{
             flex: 1,
             justifyContent: "center",
             gap: 2,
             alignItems: "center",
-            flexDirection: ["column", "row", "row"],
+            flexDirection: ["column", "column", "row"],
           }}
         >
           <Portrait
