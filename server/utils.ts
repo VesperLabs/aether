@@ -205,6 +205,27 @@ function mergeAndAddValues(obj1, obj2) {
   return mergedStats;
 }
 
+function addValuesToExistingKeys(
+  obj1: Record<string, number>,
+  obj2: Record<string, number>
+): Record<string, number> {
+  const result: Record<string, number> = {};
+
+  // Copy obj1 into the result object
+  Object.keys(obj1).forEach((key) => {
+    result[key] = obj1[key];
+  });
+
+  // Add the values from obj2 to the result object
+  Object.keys(result).forEach((key) => {
+    if (obj2.hasOwnProperty(key)) {
+      result[key] += obj2[key];
+    }
+  });
+
+  return result;
+}
+
 const useGetBaseCharacterDefaults = ({ level = 1, charClass }) => {
   const isMage = charClass === "mage";
   const isWarrior = charClass === "warrior";
@@ -313,4 +334,5 @@ export {
   useGetBaseCharacterDefaults,
   mergeAndAddValues,
   filterNullEmpty,
+  addValuesToExistingKeys,
 };

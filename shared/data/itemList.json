@@ -253,7 +253,6 @@
         "ilvl": 2,
         "base": "staff",
         "name": "Eye of the Forest",
-        "tint": "0x99FF99",
         "texture": "weapon-staff-crystal",
         "slot": "hands",
         "stats": {
