@@ -1,6 +1,6 @@
 import Character from "../shared/Character";
 import ItemBuilder from "../shared/ItemBuilder";
-import { randomNumber, cloneObject, calculateNextMaxExp } from "./utils";
+import { randomNumber, cloneObject, calculateNextMaxExp, addValuesToExistingKeys } from "./utils";
 import buffList from "../shared/data/buffList.json";
 class ServerCharacter extends Character {
   declare scene: ServerScene;
@@ -271,17 +271,22 @@ class ServerCharacter extends Character {
     this.state.activeSets = activeSets;
   }
   calculateElementalDamage(eleDamages, victim) {
-    const spellPower = this?.stats?.spellPower || 0;
-    // Get the damage of the spell
-    const fireDamageRoll = randomNumber(eleDamages?.minFireDamage, eleDamages?.maxFireDamage);
-    const lightDamageRoll = randomNumber(eleDamages?.minLightDamage, eleDamages?.maxLightDamage);
-    const waterDamageRoll = randomNumber(eleDamages?.minWaterDamage, eleDamages?.maxWaterDamage);
-    const earthDamageRoll = randomNumber(eleDamages?.minEarthDamage, eleDamages?.maxEarthDamage);
+    const {
+      minFireDamage = 0,
+      maxFireDamage = 0,
+      minLightDamage = 0,
+      maxLightDamage = 0,
+      minWaterDamage = 0,
+      maxWaterDamage = 0,
+      minEarthDamage = 0,
+      maxEarthDamage = 0,
+    } = eleDamages;
 
-    const fireDamage = fireDamageRoll ? fireDamageRoll + spellPower : 0;
-    const lightDamage = lightDamageRoll ? lightDamageRoll + spellPower : 0;
-    const waterDamage = waterDamageRoll ? waterDamageRoll + spellPower : 0;
-    const earthDamage = earthDamageRoll ? earthDamageRoll + spellPower : 0;
+    // Get the damage of the spell
+    const fireDamageRoll = randomNumber(minFireDamage, maxFireDamage);
+    const lightDamageRoll = randomNumber(minLightDamage, maxLightDamage);
+    const waterDamageRoll = randomNumber(minWaterDamage, maxWaterDamage);
+    const earthDamageRoll = randomNumber(minEarthDamage, maxEarthDamage);
 
     // 2.) Calculate damage reduction based on victim's resistances
     const fireResistance = (victim.stats.fireResistance || 0) / 100; // Assuming default value of 0 if not provided
@@ -289,10 +294,10 @@ class ServerCharacter extends Character {
     const waterResistance = (victim.stats.waterResistance || 0) / 100;
     const earthResistance = (victim.stats.earthResistance || 0) / 100;
 
-    const fireDamageAfterReduction = fireDamage * (1 - fireResistance);
-    const lightDamageAfterReduction = lightDamage * (1 - lightResistance);
-    const waterDamageAfterReduction = waterDamage * (1 - waterResistance);
-    const earthDamageAfterReduction = earthDamage * (1 - earthResistance);
+    const fireDamageAfterReduction = fireDamageRoll * (1 - fireResistance);
+    const lightDamageAfterReduction = lightDamageRoll * (1 - lightResistance);
+    const waterDamageAfterReduction = waterDamageRoll * (1 - waterResistance);
+    const earthDamageAfterReduction = earthDamageRoll * (1 - earthResistance);
 
     // Calculate total damage after reduction
     let eleDamage = Math.floor(
@@ -327,7 +332,17 @@ class ServerCharacter extends Character {
     if (victim?.state?.isDead) return false;
     const hits: Array<Hit> = [];
     const { effects = {}, buffs } = this?.abilities?.[abilitySlot] ?? {};
-    let { eleDamage, elements } = this.calculateElementalDamage(effects, victim);
+    // add elemental damage from stats to the spell's damages
+    const baseElementalDamages = addValuesToExistingKeys(effects, this?.stats);
+
+    // add spellpower
+    const dmgWithSpellPower = Object.entries(baseElementalDamages).reduce((acc, [key, value]) => {
+      acc[key] = Number(value) + Number(this?.stats?.spellPower || 0);
+      return acc;
+    }, {});
+
+    // calculate elemental damages
+    let { eleDamage, elements } = this.calculateElementalDamage(dmgWithSpellPower, victim);
     const critRoll = randomNumber(1, 100);
     let isCritical = false;
 
