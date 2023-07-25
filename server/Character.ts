@@ -327,7 +327,9 @@ class ServerCharacter extends Character {
     if (victim?.state?.isDead) return false;
     const hits: Array<Hit> = [];
     const { effects = {}, buffs } = this?.abilities?.[abilitySlot] ?? {};
-    const { eleDamage, elements } = this.calculateElementalDamage(effects, victim);
+    let { eleDamage, elements } = this.calculateElementalDamage(effects, victim);
+    const critRoll = randomNumber(1, 100);
+    let isCritical = false;
 
     // add buffs if the spell has any
     if (buffs) {
@@ -347,8 +349,15 @@ class ServerCharacter extends Character {
     // the spell doesnt do damage,
     if (!Object.entries(effects)?.length) return hits;
 
-    /* Update the victim */
+    if (this.stats.critChance && critRoll <= this.stats.critChance) {
+      isCritical = true;
+      eleDamage = Math.max(1, eleDamage * (this?.stats?.critMultiplier || 1)); // Minimum physicalDamage value of 1
+    }
 
+    // round it
+    eleDamage = Math.floor(eleDamage);
+
+    /* Update the victim */
     victim.modifyStat("hp", -eleDamage);
     victim.state.lastCombat = Date.now();
     victim.combatDispelBuffs();
@@ -367,6 +376,7 @@ class ServerCharacter extends Character {
         elements,
         from: this.id,
         to: victim.id,
+        isCritical,
       });
       return hits;
     }
@@ -376,6 +386,7 @@ class ServerCharacter extends Character {
       elements,
       from: this.id,
       to: victim.id,
+      isCritical,
     });
     return hits;
   }

@@ -348,6 +348,12 @@
     "previewRect": [30, 30, 24, 23]
   },
   {
+    "texture": "weapon-staff-crystal",
+    "src": "./assets/atlas/hands/weapon-staff-crystal.png",
+    "atlas": "./assets/atlas/weapon.json",
+    "previewRect": [32, 31, 23, 23]
+  },
+  {
     "texture": "weapon-sword-short",
     "src": "./assets/atlas/hands/weapon-sword-short.png",
     "atlas": "./assets/atlas/weapon.json",
@@ -560,6 +566,12 @@
   {
     "texture": "stackable-shell",
     "src": "./assets/atlas/stackable/stackable-shell.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
+    "texture": "stackable-orchid-flower",
+    "src": "./assets/atlas/stackable/stackable-orchid-flower.png",
     "atlas": "./assets/atlas/32x32-stackable.json",
     "previewRect": [0, 0, 32, 32]
   },
