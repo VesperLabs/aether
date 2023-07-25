@@ -46,18 +46,14 @@ class ServerScene extends Phaser.Scene implements ServerScene {
     super({ key: "ServerScene" });
     this.io = io;
   }
-  async preload() {
+  preload() {
     /* Need to install plugins here in headless mode */
     // this.game.plugins.installScenePlugin("x", X, "x", this.scene.scene, true);
     mapList.forEach((asset: MapAsset) => {
       this.load.tilemapTiledJSON(asset?.name, path.join(__dirname, `../public/${asset.json}`));
     });
-    // can run in offline mode. we don't connect to any DB or save anything.
-    this.db = process.env.MONGO_URL
-      ? await initDatabase(process.env.MONGO_URL)
-      : await initFakeDatabase();
   }
-  create() {
+  async create() {
     const scene = this;
     const io = this.io;
     this.players = {};
@@ -68,6 +64,11 @@ class ServerScene extends Phaser.Scene implements ServerScene {
     this.quests = QuestBuilder.buildAllQuests();
     this.roomManager = new RoomManager(scene);
     this.partyManager = new PartyManager(scene);
+
+    // can run in offline mode. we don't connect to any DB or save anything.
+    this.db = process.env.MONGO_URL
+      ? await initDatabase(process.env.MONGO_URL)
+      : await initFakeDatabase();
 
     io.on("connection", (socket: Socket) => {
       const socketId = socket.id;
@@ -889,6 +890,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
                 npcId: null,
               });
             case "coords":
+              scene.db.updateUserRoom(player);
               return socket.emit("message", {
                 type: "info",
                 message: `x: ${Math.round(player.x)} y: ${Math.round(player.y)}`,
@@ -1014,9 +1016,9 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       });
 
       socket.on("updateProfile", (args) => {
-        const hairTextures = ["hair-0", "hair-1", "hair-2", "hair-3", "hair-4"];
+        const hairTextures = ["hair-0", "hair-1", "hair-2", "hair-3", "hair-4", "hair-5"];
         const faceTextures = ["face-1", "face-2", "face-3"];
-        const whiskersTextures = ["whiskers-0", "whiskers-1", "whiskers-2"];
+        const whiskersTextures = ["whiskers-0", "whiskers-1", "whiskers-2", "whiskers-3"];
         const genders = ["male", "female"];
         const player = scene?.players?.[socketId];
         if (!player) return;

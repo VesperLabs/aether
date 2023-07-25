@@ -26,7 +26,7 @@
   "crab-claws": {
     "name": "The Crab Hat",
     "dialogues": {
-      "description": "Ah, the legendary helmet of the crab! Indeed, it is a task that requires dedication and bravery. The very essence of the shoreline is woven into these shells. If you wish to contribute, you must {objective} for me. With your help, we can forge a helmet that will withstand the fiercest of tides."
+      "description": "Ah, the legendary helmet of the crab! Indeed, it is a task that requires dedication and bravery. The very essence of the shoreline is woven into these crabs. If you wish to contribute, you must {objective} for me. With your help, we can forge a helmet that will withstand the fiercest of tides."
     },
     "objectives": [{ "type": "item", "item": ["stackable", "common", "crabClaw"], "amount": 30 }],
     "rewards": {
@@ -234,7 +234,7 @@
     "dialogues": {
       "description": "Beware, wanderer, for the graveyard lies just north of this cursed town. {objective} if you dare, amidst the haunting wraiths and soulless zombies that haunt that accursed place. Tread carefully, and if you manage to survive the malevolent specters, I shall imbue your soul with a great shield, crafted from the remnants of the undead. Embrace the darkness, for your fate awaits in the cold embrace of the tomb."
     },
-    "objectives": [{ "type": "item", "item": ["stackable", "common", "skull"], "amount": 100 }],
+    "objectives": [{ "type": "item", "item": ["stackable", "common", "skull"], "amount": 200 }],
     "rewards": {
       "exp": 120,
       "gold": 30,
@@ -258,7 +258,7 @@
     "dialogues": {
       "description": "The merman have been taking over the aqueducts below the city. {objective} and bring them to me. I will forge you a great accessory."
     },
-    "objectives": [{ "type": "item", "item": ["stackable", "common", "shell"], "amount": 100 }],
+    "objectives": [{ "type": "item", "item": ["stackable", "common", "shell"], "amount": 200 }],
     "rewards": {
       "exp": 200,
       "gold": 30,

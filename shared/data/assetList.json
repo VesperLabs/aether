@@ -60,6 +60,12 @@
     "previewRect": [0, 160, 80, 80]
   },
   {
+    "texture": "human-whiskers-3",
+    "src": "./assets/atlas/whiskers/whiskers-3.png",
+    "atlas": "./assets/atlas/80x80.json",
+    "previewRect": [0, 160, 80, 80]
+  },
+  {
     "texture": "human-hair-0",
     "src": "./assets/atlas/human-blank.png",
     "atlas": "./assets/atlas/80x80.json",
@@ -86,6 +92,12 @@
   {
     "texture": "human-hair-4",
     "src": "./assets/atlas/hair/hair-4.png",
+    "atlas": "./assets/atlas/80x80.json",
+    "previewRect": [0, 160, 80, 80]
+  },
+  {
+    "texture": "human-hair-5",
+    "src": "./assets/atlas/hair/hair-5.png",
     "atlas": "./assets/atlas/80x80.json",
     "previewRect": [0, 160, 80, 80]
   },

@@ -117,7 +117,7 @@
           "spCost": 2
         },
         "requirements": {
-          "strength": 3
+          "strength": 5
         }
       },
       "scythe": {
@@ -428,7 +428,11 @@
         "slot": "helmet",
         "exclusive": true,
         "stats": {
-          "strength": [1, 2]
+          "strength": 2,
+          "waterResistance": 5,
+          "maxHp": 10,
+          "maxMp": 10,
+          "regenHp": 1
         }
       }
     }
@@ -586,7 +590,8 @@
         "slot": "boots",
         "exclusive": true,
         "stats": {
-          "strength": [1, 2]
+          "strength": 2,
+          "walkSpeed": [10, 15]
         },
         "cost": 20
       }
@@ -757,7 +762,8 @@
           "waterResistance": 10,
           "dodgeChance": [4, 5],
           "walkSpeed": 5,
-          "regenMp": 3
+          "regenMp": 3,
+          "spellPower": 5
         }
       }
     }
@@ -817,7 +823,6 @@
         "slot": "ring",
         "stats": {
           "intelligence": 5,
-          "waterResistance": "15",
           "castDelay": -100,
           "spellPower": 5
         },
