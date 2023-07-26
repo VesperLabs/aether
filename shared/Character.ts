@@ -253,7 +253,8 @@ class Character extends Phaser.GameObjects.Container {
       if (objective?.type === "item") {
         const item =
           this.findInventoryQuestItem(objective?.item as string[]) ||
-          this.findBagQuestItem(objective?.item as string[]);
+          this.findBagQuestItem(objective?.item as string[]) ||
+          this.findAbilityQuestItem(objective?.item as string[]);
         numCollected = item?.amount || 0;
         isReady = numCollected >= objective?.amount;
       }
@@ -289,6 +290,15 @@ class Character extends Phaser.GameObjects.Container {
       );
     }
     return item;
+  }
+  findAbilityQuestItem(target: Array<string>): any {
+    const [slotName, foundItem] = Object.entries(this?.abilities).find(
+      ([_, slotItem]: [string, Item]) =>
+        slotItem?.slot === target?.[0] &&
+        slotItem?.rarity === target?.[1] &&
+        slotItem?.key === target?.[2]
+    ) || [null, null];
+    return foundItem;
   }
   getAttackSpCost(count: number) {
     const visibleEquipment = this.getVisibleEquipment();
