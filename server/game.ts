@@ -453,8 +453,13 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         if (location === "abilities") {
           const { item: f, slotName } = player?.findAbilityById(item?.id);
           found = f;
-          /* Remove it from the players equipment */
-          player?.clearAbilitySlot(slotName);
+          if (amount >= found?.amount) {
+            dropAmount = found?.amount;
+            player?.clearAbilitySlot(slotName);
+          } else {
+            dropAmount = player?.subtractAbilityAtId(item?.id, amount);
+            if (!dropAmount) return;
+          }
         }
 
         if (location === "inventory") {
