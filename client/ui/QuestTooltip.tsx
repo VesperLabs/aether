@@ -20,6 +20,7 @@ const useQuestDialogue = (quest, playerQuest: PlayerQuest) => {
     let verb = "";
     let noun = null;
     let current = 0;
+    let amount: string = "";
 
     if (objective?.type === "chat") {
       verb = "Talk to";
@@ -36,10 +37,16 @@ const useQuestDialogue = (quest, playerQuest: PlayerQuest) => {
       noun = nasties?.[objective?.monster]?.profile?.userName;
       current = playerQuest?.objectives?.[idx]?.numKilled || 0;
     }
-    const amount = !playerQuest?.isCompleted
-      ? `(${Math.min(current, objective?.amount)}/${objective?.amount})`
-      : `(${objective?.amount})`;
-    return `<strong>${verb} ${amount} ${noun}${objective?.amount > 1 ? "s" : ""}</strong>`;
+
+    if (playerQuest?.isCompleted || !playerQuest) {
+      amount = `${objective?.amount}`;
+    } else {
+      amount = `(${Math.min(current, objective?.amount)}/${objective?.amount})`;
+    }
+
+    return `<strong>${verb} ${amount} ${noun}${
+      objective?.amount > 1 && !noun.endsWith("s") ? "s" : ""
+    }</strong>`;
   });
 
   const objText = objectiveTexts?.join(", ");
