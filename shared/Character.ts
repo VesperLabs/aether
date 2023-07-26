@@ -285,10 +285,14 @@ class Character extends Phaser.GameObjects.Container {
     let item = null;
     const bags = this?.inventory?.filter((item: Item) => item?.base === "bag");
     for (const bag of bags) {
-      item = bag?.items?.find?.(
+      const found = bag?.items?.find?.(
         (i: Item) => i?.slot === target?.[0] && i?.rarity === target?.[1] && i?.key === target?.[2]
       );
+      if (found) {
+        return found;
+      }
     }
+
     return item;
   }
   findAbilityQuestItem(target: Array<string>): any {
