@@ -294,7 +294,7 @@
   "weed-wacker": {
     "name": "Weed Wacker",
     "dialogues": {
-      "description": "{objective} and return to me."
+      "description": "The wild Orchids are running rampant. {objective} and I will give you an hairloom of the wilds."
     },
     "objectives": [{ "type": "bounty", "monster": "orchid", "amount": 200 }],
     "rewards": {
