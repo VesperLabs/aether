@@ -364,11 +364,10 @@
         "tint": "0xCC9966",
         "slot": "helmet",
         "stats": {
-          "defense": 6,
-          "walkSpeed": -5
+          "defense": [6, 7]
         },
         "requirements": {
-          "strength": 3
+          "strength": 6
         }
       }
     },
@@ -411,7 +410,7 @@
         "name": "The Wyrm Whisker",
         "base": "armet",
         "texture": "helmet-horned",
-        "tint": "0x66CCFF",
+        "tint": "0x55FF77",
         "slot": "helmet",
         "stats": {
           "fireResistance": [10, 15],
@@ -427,7 +426,7 @@
         "name": "Hawkwing's Hood",
         "base": "hood",
         "texture": "helmet-hood",
-        "tint": "0x77DD77",
+        "tint": "0x99CC66",
         "slot": "helmet",
         "stats": {
           "dexterity": 5,
@@ -462,10 +461,10 @@
         "tint": "0xCC9966",
         "slot": "armor",
         "stats": {
-          "defense": 5
+          "defense": [5, 6]
         },
         "requirements": {
-          "strength": 3
+          "strength": 4
         }
       },
       "nutshellHeavyPlate": {
@@ -476,11 +475,10 @@
         "tint": "0xCC9966",
         "slot": "armor",
         "stats": {
-          "defense": 10,
-          "walkSpeed": -5
+          "defense": [9, 12]
         },
         "requirements": {
-          "strength": 3
+          "strength": 8
         }
       },
       "clothRobe": {
@@ -494,12 +492,26 @@
           "defense": [2, 3]
         }
       },
+      "leatherCoat": {
+        "ilvl": 1,
+        "name": "Leather Coat",
+        "base": "coat",
+        "texture": "armor-coat-leather",
+        "slot": "armor",
+        "stats": {
+          "defense": [3, 4]
+        },
+        "requirements": {
+          "strength": 3,
+          "dexterity": 3
+        }
+      },
       "bronzePlate": {
         "ilvl": 2,
         "name": "Bronze Light Plate",
         "base": "light-plate-armor",
         "texture": "armor-plate-light",
-        "tint": "0xFFCCAA",
+        "tint": "0xFFEEAA",
         "slot": "armor",
         "stats": {}
       },
@@ -508,7 +520,7 @@
         "name": "Bronze Heavy Plate",
         "base": "heavy-plate-armor",
         "texture": "armor-plate",
-        "tint": "0xFFCCAA",
+        "tint": "0xFFEEAA",
         "slot": "armor",
         "stats": {}
       },
@@ -538,6 +550,19 @@
         },
         "percentStats": {
           "regenHp": [10, 15]
+        }
+      },
+      "couriersCamouflage": {
+        "ilvl": 1,
+        "name": "Courier's Camouflage",
+        "base": "coat",
+        "tint": "0x66CCFF",
+        "texture": "armor-coat",
+        "slot": "armor",
+        "stats": {
+          "walkSpeed": 10,
+          "castDelay": [-100, -150],
+          "attackDelay": [-45, -60]
         }
       }
     },
