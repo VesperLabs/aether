@@ -213,7 +213,7 @@ const buildItem = (...args: BuildItem): any => {
   }
 
   if (item.rarity == "rare") {
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 4; i++) {
       rollSuffix(item, "rare");
     }
     item.key = item.key.replace("-common-", "-rare-");

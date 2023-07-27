@@ -287,7 +287,32 @@
     ],
     "rewards": {
       "exp": 240,
-      "gold": 80
+      "gold": 80,
+      "items": [["ring", "rare", "goldRing"]]
+    }
+  },
+  "weed-wacker": {
+    "name": "Weed Wacker",
+    "dialogues": {
+      "description": "{objective} and return to me."
+    },
+    "objectives": [{ "type": "bounty", "monster": "orchid", "amount": 200 }],
+    "rewards": {
+      "exp": 240,
+      "gold": 80,
+      "items": [["weapon", "unique", "eyeOfForest"]]
+    }
+  },
+  "big-momma": {
+    "name": "Big Momma",
+    "dialogues": {
+      "description": "There is an orchid that's grown three times the size one should. {objective} and return to me."
+    },
+    "objectives": [{ "type": "bounty", "monster": "bigMomma", "amount": 1 }],
+    "rewards": {
+      "exp": 240,
+      "gold": 80,
+      "items": [["armor", "rare", "leatherCoat"]]
     }
   }
 }

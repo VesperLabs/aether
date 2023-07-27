@@ -228,8 +228,32 @@
     "previewRect": [0, 160, 80, 80]
   },
   {
+    "texture": "human-female-armor-coat-leather",
+    "src": "./assets/atlas/female/armor/armor-coat-leather.png",
+    "atlas": "./assets/atlas/80x80.json",
+    "previewRect": [0, 160, 80, 80]
+  },
+  {
+    "texture": "human-female-armor-coat",
+    "src": "./assets/atlas/female/armor/armor-coat.png",
+    "atlas": "./assets/atlas/80x80.json",
+    "previewRect": [0, 160, 80, 80]
+  },
+  {
     "texture": "human-male-armor-robe",
     "src": "./assets/atlas/male/armor/armor-robe.png",
+    "atlas": "./assets/atlas/80x80.json",
+    "previewRect": [0, 160, 80, 80]
+  },
+  {
+    "texture": "human-male-armor-coat-leather",
+    "src": "./assets/atlas/male/armor/armor-coat-leather.png",
+    "atlas": "./assets/atlas/80x80.json",
+    "previewRect": [0, 160, 80, 80]
+  },
+  {
+    "texture": "human-male-armor-coat",
+    "src": "./assets/atlas/male/armor/armor-coat.png",
     "atlas": "./assets/atlas/80x80.json",
     "previewRect": [0, 160, 80, 80]
   },
