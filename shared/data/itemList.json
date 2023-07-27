@@ -379,10 +379,11 @@
         "texture": "helmet-cap-raccoon",
         "slot": "helmet",
         "stats": {
-          "walkSpeed": [8, 10],
-          "dodgeChance": [2, 3],
           "critChance": [4, 5],
-          "vitality": [3, 5]
+          "walkSpeed": [4, 5],
+          "attackDelay": [-20, -30],
+          "vitality": 5,
+          "dexterity": 5
         }
       },
       "bunnyEars": {
@@ -392,7 +393,8 @@
         "texture": "helmet-bunny",
         "slot": "helmet",
         "stats": {
-          "walkSpeed": [30, 50]
+          "walkSpeed": [20, 30],
+          "dodgeChance": 5
         }
       },
       "chefHat": {
@@ -645,7 +647,7 @@
         "tint": "0xFFFF00",
         "slot": "boots",
         "stats": {
-          "walkSpeed": [30, 40]
+          "walkSpeed": [30, 35]
         }
       }
     }
