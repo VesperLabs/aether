@@ -3,7 +3,7 @@ import { playAudio, getSpinDirection } from "../utils";
 const { W, S, A, D } = Phaser.Input.Keyboard.KeyCodes;
 const { Between } = Phaser.Math.Angle;
 const POTION_COOLDOWN = 10000;
-import { spellDetails } from "@aether/shared";
+import { spellDetails } from "../..shared";
 class SceneHud extends Phaser.Scene {
   constructor(socket) {
     super({
