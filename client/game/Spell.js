@@ -83,9 +83,19 @@ class Spell extends Phaser.GameObjects.Container {
       this.scene.physics.velocityFromRotation(castAngle, this.spellSpeed, this.body.velocity);
       this.spell.setRotation(castAngle);
     }
+    if (spellName === "waterball") {
+      this.spell.play("spell-anim-waterball");
+      this.scene.physics.velocityFromRotation(castAngle, this.spellSpeed, this.body.velocity);
+      this.spell.setRotation(castAngle);
+    }
+    if (spellName === "voltball") {
+      this.spell.play("spell-anim-voltball");
+      this.scene.physics.velocityFromRotation(castAngle, this.spellSpeed, this.body.velocity);
+      this.spell.setRotation(castAngle);
+    }
     if (spellName === "quake") {
       this.body.setSize(this?.bodySize * 4, this?.bodySize * 2);
-      this.y = this.caster.y;
+      this.y = this.caster.y + 6;
       this.body.setOffset(-this.bodySize * 2, -this.bodySize);
       this.spell.play("spell-anim-quake");
     }
@@ -184,6 +194,15 @@ const playSpellAudio = ({ scene, spellName, caster, isAttack }) => {
   }
   if (spellName === "fireball") {
     audioKey = "spell-fireball";
+  }
+  if (spellName === "waterball") {
+    audioKey = "spell-water";
+  }
+  if (spellName === "voltball") {
+    audioKey = "spell-light";
+  }
+  if (spellName === "quake") {
+    audioKey = "spell-earth";
   }
   if (BUFF_SPELLS.includes(spellName)) {
     audioKey = "spell-buff-1";

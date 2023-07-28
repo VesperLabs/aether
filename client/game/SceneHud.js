@@ -60,7 +60,7 @@ function addGlobalEventListeners(scene) {
       const hero = mainScene?.hero;
       const abilities = hero?.abilities;
       const ability = abilities?.[e?.detail];
-      const details = spellDetails?.[ability?.key];
+      const details = spellDetails?.[ability?.base];
       const isAimable = details?.isAimable;
       if (isAimable) {
         document.getElementById("game").style.cursor = "none";
