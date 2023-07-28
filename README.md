@@ -62,7 +62,7 @@ tile-extruder --tileWidth 32 --tileHeight 32 --input ./public/assets/tilesets/cl
 - [ ] Allow critical strikes on spells
 - [ ] Ranged weapons 🏹
 - [ ] Serverside individual cooldowns for spells
-- [ ] More spells that affect movement, (dives, dodges, pushback etc)
+- [ ] More spells that effect movement, (dives, dodges, pushback etc)
 - [ ] Back-stab damage
 - [ ] Show warning before enemies attack
 
