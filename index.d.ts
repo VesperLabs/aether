@@ -69,6 +69,15 @@ interface Sign extends Phaser.Types.Tilemaps.TiledObject {
   text: string;
 }
 
+interface ServerMetrics {
+  playersOnline: number;
+  npcsLoaded: number;
+  doorsLoaded: number;
+  lootsOnGround: number;
+  serverSpawnTime: number;
+  upTime: number;
+}
+
 interface ServerScene extends Phaser.Scene {
   doors: Record<string, Door>;
   loots: Record<string, Loot>;

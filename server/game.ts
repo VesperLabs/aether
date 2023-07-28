@@ -1128,36 +1128,48 @@ class ServerScene extends Phaser.Scene implements ServerScene {
   }
 }
 
-const game = ({ httpServer }) => {
-  const io = new Server(httpServer, {
-    cors: {
-      origin: "*",
-    },
-  });
+class Game {
+  io: Server;
+  game: Phaser.Game;
+  spawnTime: number;
+  constructor({ httpServer }) {
+    this.spawnTime = Date.now();
 
-  return new Phaser.Game({
-    type: Phaser.HEADLESS,
-    width: 1280,
-    height: 720,
-    banner: false,
-    audio: {
-      disableWebAudio: true,
-      noAudio: true,
-    },
-    fps: {
-      target: parseInt(process.env.SERVER_FPS),
-    },
-    roundPixels: false,
-    physics: {
-      default: "arcade",
-      arcade: {
-        gravity: {
-          y: 0,
+    this.io = new Server(httpServer, {
+      cors: {
+        origin: "*",
+      },
+    });
+
+    this.game = new Phaser.Game({
+      type: Phaser.HEADLESS,
+      width: 1280,
+      height: 720,
+      banner: false,
+      audio: {
+        disableWebAudio: true,
+        noAudio: true,
+      },
+      fps: {
+        target: parseInt(process.env.SERVER_FPS),
+      },
+      roundPixels: false,
+      physics: {
+        default: "arcade",
+        arcade: {
+          gravity: {
+            y: 0,
+          },
         },
       },
-    },
-    scene: [new ServerScene({ io })],
-  });
-};
+      scene: [new ServerScene({ io: this.io })],
+    });
+  }
+  getUptime() {
+    const currentTime = Date.now();
+    const uptimeInMilliseconds = currentTime - this.spawnTime;
+    return uptimeInMilliseconds;
+  }
+}
 
-export default game;
+export default Game;

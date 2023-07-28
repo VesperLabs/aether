@@ -11,6 +11,9 @@ export default defineConfig({
     //   "/assets": { target: `http://127.0.0.1:${process.env.PORT}` },
     // },
   },
+  define: {
+    "process.env.SERVER_URL": JSON.stringify(process.env.SERVER_URL),
+  },
   publicDir: "../public",
   build: {
     emptyOutDir: false,
