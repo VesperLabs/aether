@@ -133,28 +133,42 @@ function createSpellAnims(scene) {
   scene.anims.create({
     key: "spell-anim-fireball",
     frames: scene.anims.generateFrameNumbers("spell-anim-fireball", { start: 0, end: 5 }),
-    repeat: true,
+    repeat: -1,
     yoyo: true,
+    frameRate: 20,
+  });
+  scene.anims.create({
+    key: "spell-anim-waterball",
+    frames: scene.anims.generateFrameNumbers("spell-anim-balls", { start: 40, end: 49 }),
+    repeat: -1,
+    yoyo: false,
+    frameRate: 20,
+  });
+  scene.anims.create({
+    key: "spell-anim-voltball",
+    frames: scene.anims.generateFrameNumbers("spell-anim-balls", { start: 10, end: 19 }),
+    repeat: -1,
+    yoyo: false,
     frameRate: 20,
   });
   scene.anims.create({
     key: "spell-anim-chakra",
     frames: scene.anims.generateFrameNumbers("spell-anim-chakra", { start: 0, end: 5 }),
-    repeat: true,
+    repeat: -1,
     yoyo: true,
     frameRate: 20,
   });
   scene.anims.create({
     key: "spell-anim-hits-physical",
     frames: scene.anims.generateFrameNumbers("spell-anim-hits", { start: 0, end: 8 }),
-    repeat: false,
+    repeat: 0,
     yoyo: false,
     frameRate: 20,
   });
   scene.anims.create({
     key: "spell-anim-quake",
     frames: scene.anims.generateFrameNumbers("spell-anim-quake", { start: 0, end: 5 }),
-    repeat: false,
+    repeat: 0,
     yoyo: false,
     frameRate: 20,
   });
@@ -162,28 +176,28 @@ function createSpellAnims(scene) {
   scene.anims.create({
     key: "spell-anim-hits-water",
     frames: scene.anims.generateFrameNumbers("spell-anim-hits", { start: 9, end: 17 }),
-    repeat: false,
+    repeat: 0,
     yoyo: false,
     frameRate: 20,
   });
   scene.anims.create({
     key: "spell-anim-hits-fire",
     frames: scene.anims.generateFrameNumbers("spell-anim-hits", { start: 18, end: 26 }),
-    repeat: false,
+    repeat: 0,
     yoyo: false,
     frameRate: 20,
   });
   scene.anims.create({
     key: "spell-anim-hits-light",
     frames: scene.anims.generateFrameNumbers("spell-anim-hits", { start: 27, end: 35 }),
-    repeat: false,
+    repeat: 0,
     yoyo: false,
     frameRate: 20,
   });
   scene.anims.create({
     key: "spell-anim-hits-earth",
     frames: scene.anims.generateFrameNumbers("spell-anim-hits", { start: 36, end: 44 }),
-    repeat: false,
+    repeat: 0,
     yoyo: false,
     frameRate: 20,
   });
@@ -209,6 +223,10 @@ function loadSpritesheets(scene) {
   scene.load.spritesheet("spell-anim-fireball", "./assets/images/spell-anim-fireball.png", {
     frameWidth: 150,
     frameHeight: 150,
+  });
+  scene.load.spritesheet("spell-anim-balls", "./assets/images/spell-anim-balls.png", {
+    frameWidth: 96,
+    frameHeight: 96,
   });
   scene.load.spritesheet("spell-anim-chakra", "./assets/images/spell-anim-chakra.png", {
     frameWidth: 150,

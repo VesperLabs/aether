@@ -28,6 +28,32 @@
     "npcCastWait": 5000,
     "layerDepth": "top"
   },
+  "waterball": {
+    "isAimable": true,
+    "allowedTargets": ["enemy"],
+    "maxVisibleTime": 1000,
+    "maxActiveTime": 2000,
+    "bodySize": 16,
+    "spellSpeed": 200,
+    "scaleBase": 0.25,
+    "scaleMultiplier": 0.1,
+    "npcCastRange": [50, 200],
+    "npcCastWait": 5000,
+    "layerDepth": "top"
+  },
+  "voltball": {
+    "isAimable": true,
+    "allowedTargets": ["enemy"],
+    "maxVisibleTime": 1000,
+    "maxActiveTime": 2000,
+    "bodySize": 16,
+    "spellSpeed": 200,
+    "scaleBase": 0.25,
+    "scaleMultiplier": 0.1,
+    "npcCastRange": [50, 200],
+    "npcCastWait": 5000,
+    "layerDepth": "top"
+  },
   "quake": {
     "allowedTargets": ["enemy"],
     "maxVisibleTime": 2000,

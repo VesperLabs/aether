@@ -77,13 +77,31 @@
         "texture": "weapon-wand-stick",
         "slot": "hands",
         "stats": {
-          "attackDelay": 300,
+          "attackDelay": 150,
           "spellPower": 3,
           "range": 1,
           "spCost": 1
         },
         "requirements": {
           "intelligence": 5
+        }
+      },
+      "staff": {
+        "ilvl": 1,
+        "base": "staff",
+        "name": "Staff",
+        "texture": "weapon-staff-oak",
+        "slot": "hands",
+        "stats": {
+          "minDamage": 1,
+          "maxDamage": 1,
+          "attackDelay": 300,
+          "spellPower": 3,
+          "range": 1.15,
+          "spCost": 2
+        },
+        "requirements": {
+          "intelligence": 6
         }
       },
       "club": {
@@ -184,13 +202,6 @@
         "base": "scimitar",
         "name": "Talwar",
         "texture": "weapon-talwar",
-        "slot": "hands"
-      },
-      "staff": {
-        "ilvl": 2,
-        "base": "wand",
-        "name": "Staff",
-        "texture": "weapon-staff-oak",
         "slot": "hands"
       },
       "hammer": {
@@ -1144,6 +1155,40 @@
         },
         "stats": {
           "mpCost": 5
+        },
+        "requirements": {
+          "intelligence": 4
+        }
+      },
+      "waterball": {
+        "ilvl": 1,
+        "name": "Waterball",
+        "base": "waterball",
+        "slot": "spell",
+        "texture": "scroll-blue",
+        "effects": {
+          "minWaterDamage": 2,
+          "maxWaterDamage": 3
+        },
+        "stats": {
+          "mpCost": 4
+        },
+        "requirements": {
+          "intelligence": 4
+        }
+      },
+      "voltball": {
+        "ilvl": 1,
+        "name": "Voltball",
+        "base": "voltball",
+        "slot": "spell",
+        "texture": "scroll-blue",
+        "effects": {
+          "minLightDamage": 0,
+          "maxLightDamage": 4
+        },
+        "stats": {
+          "mpCost": 4
         },
         "requirements": {
           "intelligence": 4
