@@ -1128,7 +1128,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
   }
 }
 
-class Game {
+export default class Game {
   io: Server;
   game: Phaser.Game;
   spawnTime: number;
@@ -1171,5 +1171,3 @@ class Game {
     return uptimeInMilliseconds;
   }
 }
-
-export default Game;

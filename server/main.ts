@@ -1,6 +1,6 @@
 import path from "path";
 import { config } from "dotenv";
-import Game from "./Game";
+import GameServer from "./GameServer";
 //import { getFullCharacterState } from "./utils";
 
 config({ path: path.join(__dirname, "/../.env") });
@@ -9,7 +9,7 @@ const express = require("express");
 const app = express();
 const http = require("http");
 const httpServer = http.createServer(app);
-const aetherServer = new Game({ httpServer });
+const aetherServer = new GameServer({ httpServer });
 app.use(
   cors({
     origin: "*", // Replace with your allowed origin
