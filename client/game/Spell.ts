@@ -1,6 +1,7 @@
+// @ts-nocheck
 import Phaser from "phaser";
 import { playAudio } from "../utils";
-const { spellDetails, getAngleFromDirection } = require("@aether/shared");
+import { spellDetails, getAngleFromDirection } from "@aether/shared";
 const Sprite = Phaser.GameObjects.Sprite;
 const BLANK_TEXTURE = "human-blank";
 const BUFF_SPELLS = ["evasion", "brute", "endurance", "genius", "haste"];
