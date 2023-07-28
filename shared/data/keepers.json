@@ -67,7 +67,7 @@
     },
     "keeperData": {
       "dialogues": {
-        "greet": "Greetings, traveler! I am <strong>Trista</strong>, the Crab Warden, guardian of these shores. Be sure to join our <a target='_blank' href='https://discord.com/invite/yadDyqpb6D'>Discord</a> channel for updates.",
+        "greet": "Greetings, traveler! I am <strong>Trista</strong>, the Crab Warden, guardian of these shores. Be sure to join our <a target='_blank' href='https://discord.com/invite/yadDyqpb6D'>Discord</a> channel for updates. Looking for more info about the game? Check out our <a target='_blank' href='https://aether.onrender.com/items'>Wiki</a>.",
         "quests": "Your readiness and willingness to confront these quests warms my heart, noble adventurer. Remember, the journey itself is as valuable as the destination. The sea watches over you, and with each trial you overcome, you shall forge your legend in the annals of this realm.",
         "shop": "Ah, the tools of the sea are myriad, and I have just the item to aid you in your piscine pursuits. Feast your eyes upon this exquisite spear, crafted with precision and blessed by the currents themselves. With this weapon in your hands, catching fish shall become a dance of elegance and efficiency."
       },

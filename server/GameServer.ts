@@ -46,14 +46,19 @@ class ServerScene extends Phaser.Scene implements ServerScene {
     super({ key: "ServerScene" });
     this.io = io;
   }
-  preload() {
+  async preload() {
     /* Need to install plugins here in headless mode */
     // this.game.plugins.installScenePlugin("x", X, "x", this.scene.scene, true);
     mapList.forEach((asset: MapAsset) => {
       this.load.tilemapTiledJSON(asset?.name, path.join(__dirname, `../public/${asset.json}`));
     });
+
+    // can run in offline mode. we don't connect to any DB or save anything.
+    this.db = process.env.MONGO_URL
+      ? await initDatabase(process.env.MONGO_URL)
+      : await initFakeDatabase();
   }
-  async create() {
+  create() {
     const scene = this;
     const io = this.io;
     this.players = {};
@@ -64,11 +69,6 @@ class ServerScene extends Phaser.Scene implements ServerScene {
     this.quests = QuestBuilder.buildAllQuests();
     this.roomManager = new RoomManager(scene);
     this.partyManager = new PartyManager(scene);
-
-    // can run in offline mode. we don't connect to any DB or save anything.
-    this.db = process.env.MONGO_URL
-      ? await initDatabase(process.env.MONGO_URL)
-      : await initFakeDatabase();
 
     io.on("connection", (socket: Socket) => {
       const socketId = socket.id;
