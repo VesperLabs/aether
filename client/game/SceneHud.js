@@ -3,7 +3,7 @@ import { playAudio, getSpinDirection } from "../utils";
 const { W, S, A, D } = Phaser.Input.Keyboard.KeyCodes;
 const { Between } = Phaser.Math.Angle;
 const POTION_COOLDOWN = 10000;
-
+import { spellDetails } from "@aether/shared";
 class SceneHud extends Phaser.Scene {
   constructor(socket) {
     super({
@@ -60,7 +60,8 @@ function addGlobalEventListeners(scene) {
       const hero = mainScene?.hero;
       const abilities = hero?.abilities;
       const ability = abilities?.[e?.detail];
-      const isAimable = !ability?.buffs && ability?.type !== "stackable";
+      const details = spellDetails?.[ability?.key];
+      const isAimable = details?.isAimable;
       if (isAimable) {
         document.getElementById("game").style.cursor = "none";
         hero.state.isAiming = true;

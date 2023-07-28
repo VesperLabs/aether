@@ -75,6 +75,11 @@ class Spell extends Phaser.GameObjects.Container {
       this.velocityY = Math.sin(castAngle) * this?.spellSpeed;
       this.spell.setRotation(castAngle);
     }
+    if (spellName == "quake") {
+      this.body.setSize(this?.bodySize * 4, this?.bodySize * 2);
+      this.y = this.caster.y;
+      this.body.setOffset(-this.bodySize * 2, -this.bodySize);
+    }
 
     this.add(this.spell);
 
