@@ -347,7 +347,10 @@
         "key": "orchidFlower",
         "chance": 4
       }
-    ]
+    ],
+    "abilities": {
+      "1": ["spell", "common", "quake"]
+    }
   },
   "bigMomma": {
     "charClass": "rogue",

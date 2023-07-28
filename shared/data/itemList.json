@@ -1130,26 +1130,24 @@
         },
         "requirements": {
           "intelligence": 4
+        }
+      },
+      "quake": {
+        "ilvl": 1,
+        "name": "Quake",
+        "base": "quake",
+        "slot": "spell",
+        "texture": "scroll-blue",
+        "effects": {
+          "minEarthDamage": 4,
+          "maxEarthDamage": 5
         },
-        "cost": 100
-      },
-      "fireball2": {
-        "ilvl": 2,
-        "name": "Fireball",
-        "base": "fireball",
-        "slot": "spell",
-        "texture": "scroll-blue",
-        "effects": {},
-        "cost": 200
-      },
-      "fireball3": {
-        "ilvl": 3,
-        "name": "Fireball",
-        "base": "fireball",
-        "slot": "spell",
-        "texture": "scroll-blue",
-        "effects": {},
-        "cost": 200
+        "stats": {
+          "mpCost": 5
+        },
+        "requirements": {
+          "intelligence": 4
+        }
       },
       "evasion": {
         "ilvl": 1,
@@ -1165,8 +1163,7 @@
         },
         "stats": {
           "mpCost": 10
-        },
-        "cost": 100
+        }
       },
       "haste": {
         "ilvl": 1,
@@ -1183,8 +1180,7 @@
         },
         "stats": {
           "mpCost": 4
-        },
-        "cost": 100
+        }
       },
       "brute": {
         "ilvl": 1,
@@ -1200,8 +1196,7 @@
         },
         "stats": {
           "mpCost": 4
-        },
-        "cost": 100
+        }
       },
       "genius": {
         "ilvl": 1,
@@ -1217,8 +1212,7 @@
         },
         "stats": {
           "mpCost": 4
-        },
-        "cost": 100
+        }
       },
       "endurance": {
         "ilvl": 1,
@@ -1234,8 +1228,21 @@
         },
         "stats": {
           "mpCost": 4
-        },
-        "cost": 100
+        }
+      },
+      "fireball2": {
+        "ilvl": 2,
+        "name": "Fireball",
+        "base": "fireball",
+        "slot": "spell",
+        "texture": "scroll-blue"
+      },
+      "fireball3": {
+        "ilvl": 3,
+        "name": "Fireball",
+        "base": "fireball",
+        "slot": "spell",
+        "texture": "scroll-blue"
       }
     }
   },

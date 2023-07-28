@@ -744,6 +744,12 @@
     "previewRect": [0, 0, 32, 32]
   },
   {
+    "texture": "spell-quake",
+    "src": "./assets/atlas/spell/spell-quake.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
     "texture": "icons",
     "src": "./assets/images/icons.png",
     "atlas": "./assets/atlas/32x32-icons.json",

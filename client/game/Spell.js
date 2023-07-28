@@ -1,7 +1,6 @@
 import Phaser from "phaser";
 import { playAudio } from "../utils";
-import { getAngleFromDirection } from "../../shared/utils";
-import spellDetails from "../../shared/data/spellDetails.json";
+import { spellDetails, getAngleFromDirection } from "@aether/shared";
 const Sprite = Phaser.GameObjects.Sprite;
 const BLANK_TEXTURE = "human-blank";
 const BUFF_SPELLS = ["evasion", "brute", "endurance", "genius", "haste"];
@@ -33,6 +32,7 @@ class Spell extends Phaser.GameObjects.Container {
     this.scaleBase = details?.scaleBase || 1;
     this.scaleMultiplier = details?.scaleMultiplier || 0;
     this.spell.setTint(details?.tint || "0xFFFFFF");
+    this.shouldFade = details?.shouldFade || false;
     this.skipCollision = skipCollision;
 
     scene.physics.add.existing(this);
@@ -83,9 +83,18 @@ class Spell extends Phaser.GameObjects.Container {
       this.scene.physics.velocityFromRotation(castAngle, this.spellSpeed, this.body.velocity);
       this.spell.setRotation(castAngle);
     }
+    if (spellName === "quake") {
+      this.body.setSize(this?.bodySize * 4, this?.bodySize * 2);
+      this.y = this.caster.y;
+      this.body.setOffset(-this.bodySize * 2, -this.bodySize);
+      this.spell.play("spell-anim-quake");
+    }
     if (BUFF_SPELLS.includes(spellName)) {
       this.spell.play("spell-anim-chakra");
       this.stickToCaster = true;
+    }
+
+    if (this.shouldFade) {
       scene.tweens.add({
         targets: this.spell,
         props: {
@@ -120,7 +129,7 @@ class Spell extends Phaser.GameObjects.Container {
     }
     /* Remove the spell */
     if (isSpellExpired) {
-      this.destroy();
+      this.destroy(true);
     }
   }
   adjustSpellPosition() {

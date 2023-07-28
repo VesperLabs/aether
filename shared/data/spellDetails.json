@@ -16,6 +16,7 @@
     "layerDepth": "bottom"
   },
   "fireball": {
+    "isAimable": true,
     "allowedTargets": ["enemy"],
     "maxVisibleTime": 1000,
     "maxActiveTime": 2000,
@@ -27,6 +28,19 @@
     "npcCastWait": 5000,
     "layerDepth": "top"
   },
+  "quake": {
+    "allowedTargets": ["enemy"],
+    "maxVisibleTime": 2000,
+    "maxActiveTime": 500,
+    "bodySize": 32,
+    "spellSpeed": 0,
+    "scaleBase": 0.35,
+    "scaleMultiplier": 0.1,
+    "npcCastRange": [0, 16],
+    "npcCastWait": 5000,
+    "layerDepth": "bottom",
+    "shouldFade": true
+  },
   "evasion": {
     "allowedTargets": ["self", "ally"],
     "maxVisibleTime": 1200,
@@ -36,7 +50,8 @@
     "npcCastWait": 30000,
     "scaleBase": 0.6,
     "tint": "0xCCFFCC",
-    "layerDepth": "bottom"
+    "layerDepth": "bottom",
+    "shouldFade": true
   },
   "haste": {
     "allowedTargets": ["self", "ally"],
@@ -47,7 +62,8 @@
     "npcCastWait": 30000,
     "scaleBase": 0.6,
     "tint": "0xCCFFFF",
-    "layerDepth": "bottom"
+    "layerDepth": "bottom",
+    "shouldFade": true
   },
   "brute": {
     "allowedTargets": ["self", "ally"],
@@ -58,7 +74,8 @@
     "npcCastWait": 30000,
     "scaleBase": 0.6,
     "tint": "0xFFCCCC",
-    "layerDepth": "bottom"
+    "layerDepth": "bottom",
+    "shouldFade": true
   },
   "endurance": {
     "allowedTargets": ["self", "ally"],
@@ -69,7 +86,8 @@
     "npcCastWait": 30000,
     "scaleBase": 0.6,
     "tint": "0xFFFFCC",
-    "layerDepth": "bottom"
+    "layerDepth": "bottom",
+    "shouldFade": true
   },
   "genius": {
     "allowedTargets": ["self", "ally"],
@@ -80,6 +98,7 @@
     "npcCastWait": 30000,
     "scaleBase": 0.6,
     "tint": "0xCCCCFF",
-    "layerDepth": "bottom"
+    "layerDepth": "bottom",
+    "shouldFade": true
   }
 }
