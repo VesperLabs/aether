@@ -130,6 +130,7 @@ class Npc extends Character implements Npc {
       return;
     }
 
+    this.checkIsResting();
     this.expireBuffs();
 
     // If dead, do not continue update

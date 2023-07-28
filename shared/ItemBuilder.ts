@@ -253,6 +253,9 @@ function getItemCost(item: Item) {
   const ilvl = item?.ilvl || 1;
   const rarity = item?.rarity;
   if (item?.cost) return item.cost;
+  if (item.slot === "spell") {
+    return 50 * ilvl;
+  }
   if (rarity == "common") {
     if (item.slot === "stackable") {
       return 1 * ilvl;
