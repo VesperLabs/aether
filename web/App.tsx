@@ -40,6 +40,7 @@ const App = () => {
 
 const Metrics = () => {
   const [metrics, setMetrics] = useState<ServerMetrics>();
+  const [isLoading, setLoading] = useState<Boolean>(true);
 
   useEffect(() => {
     fetch(`${process.env.SERVER_URL}/metrics`, {
@@ -48,12 +49,24 @@ const Metrics = () => {
       .then((response) => response.json())
       .then((data) => {
         setMetrics(data);
+        setLoading(false);
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        setLoading(false);
+      });
   }, []);
 
+  if (isLoading) {
+    return "";
+  }
+
   if (!metrics) {
-    return <Text>Server: Offline</Text>;
+    return (
+      <>
+        <Box sx={{ flex: 1 }} />
+        <Text>Server: Offline</Text>
+      </>
+    );
   }
 
   return (
