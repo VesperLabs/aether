@@ -1,26 +1,7 @@
-import { Fragment } from "react";
-import { Box, Flex, Icon } from "@aether/ui";
+import { Box, Flex } from "@aether/ui";
 import Slot from "./Slot";
 import { itemList } from "@aether/shared";
-
-const resolveTypeIcon = (type) => {
-  if (type === "shield") {
-    type = "handLeft";
-  }
-  if (type === "weapon") {
-    type = "handRight";
-  }
-  if (type === "ring") {
-    type = "ring1";
-  }
-  if (type === "stackable") {
-    type = "mana";
-  }
-  if (type === "spell") {
-    type = "book";
-  }
-  return `assets/icons/${type}.png`;
-};
+import RowTitle from "./RowTitle";
 
 export default function () {
   const types = Object.keys(itemList);
@@ -51,9 +32,7 @@ export default function () {
 
     return (
       <Flex sx={{ gap: 2, flexDirection: "column", mb: 4 }}>
-        <RowTitle>
-          <Icon icon={resolveTypeIcon(type)} /> {type}
-        </RowTitle>
+        <RowTitle icon={type}>{type}</RowTitle>
         {[...Array(99)]
           .map((_, index) => index + 1)
           .map((ilvl) => {
@@ -78,21 +57,3 @@ export default function () {
     );
   });
 }
-
-const RowTitle = ({ sx, ...props }: any) => (
-  <Flex
-    sx={{
-      gap: 1,
-      alignItems: "center",
-      fontWeight: "bold",
-      background: "shadow.20",
-      px: 2,
-      py: 1,
-      borderRadius: 8,
-      textTransform: "capitalize",
-      width: "100%",
-      ...sx,
-    }}
-    {...props}
-  />
-);

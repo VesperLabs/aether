@@ -13,7 +13,7 @@
     "server:kill:unix": "kill -9 $(lsof -i :3000) &>/dev/null | exit 0",
     "server:kill:win": "",
     "server:kill": "node -e \"require('child_process').execSync(process.platform.startsWith('win') ? 'npm run server:kill:win' : 'npm run server:kill:unix')\"",
-    "server:run": "ts-node -r dotenv/config --files server/index.ts",
+    "server:run": "ts-node -r dotenv/config --files server/main.ts",
     "server:watch": "nodemon --watch \"server/**\" --watch \"shared/**\" --ext \"ts,js,json\" --inspect --exec \"npm run server:kill && npm run server:run\""
   },
   "workspaces": [
