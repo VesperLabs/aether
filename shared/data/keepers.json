@@ -383,6 +383,9 @@
       "quests": ["talk-steve", "chonks-hunting", "zombie-hunting"],
       "shop": [
         { "item": ["spell", "common", "fireball"], "stock": 1 },
+        { "item": ["spell", "common", "voltball"], "stock": 1 },
+        { "item": ["spell", "common", "waterball"], "stock": 1 },
+        { "item": ["spell", "common", "quake"], "stock": 1 },
         { "item": ["spell", "common", "brute"], "stock": 1 },
         { "item": ["spell", "common", "endurance"], "stock": 1 },
         { "item": ["spell", "common", "evasion"], "stock": 1 },

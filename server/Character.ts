@@ -499,20 +499,15 @@ class ServerCharacter extends Character {
   }
   doRegen() {
     const now = Date.now();
-    const isOutOfCombat = this.checkOutOfCombat();
+    // we only regen HP if we have are out of combat (have rest buff) or have another regen buff
+    const hasRegenBuff = this.buffs?.some((b) => ["rest"]?.includes(b?.name));
     const isHpRegenReady = now - this.state.lastHpRegen > 5000;
     const isMpRegenReady = now - this.state.lastMpRegen > 1000;
     const isSpRegenReady = now - this.state.lastSpRegen > 600;
     this.state.doHpRegen = false;
     this.state.doMpRegen = false;
     this.state.doSpRegen = false;
-    if (isOutOfCombat && !this.state.isDead) {
-      if (isHpRegenReady && this.stats.hp < this.stats.maxHp) {
-        this.state.doHpRegen = true;
-        this.state.lastHpRegen = now;
-        this.modifyStat("hp", this.stats.regenHp);
-      }
-    }
+
     if (isMpRegenReady && this.stats.mp < this.stats.maxMp) {
       this.state.doMpRegen = true;
       this.state.lastMpRegen = now;
@@ -522,6 +517,14 @@ class ServerCharacter extends Character {
       this.state.doSpRegen = true;
       this.state.lastSpRegen = now;
       this.modifyStat("sp", this.stats.regenSp);
+    }
+
+    if (hasRegenBuff && !this.state.isDead) {
+      if (isHpRegenReady && this.stats.hp < this.stats.maxHp) {
+        this.state.doHpRegen = true;
+        this.state.lastHpRegen = now;
+        this.modifyStat("hp", this.stats.regenHp);
+      }
     }
   }
   fillHpMp(): void {
@@ -577,6 +580,18 @@ class ServerCharacter extends Character {
       dispelInCombat: buff?.dispelInCombat,
     });
   }
+  //checks if out of combat, adds rest buff it should be resting
+  checkIsResting() {
+    const isOutOfCombat = this.checkOutOfCombat();
+    const isResting = this.buffs?.some((b) => b?.name === "rest");
+    //if (this.profile.userName === "Player1") console.log(isResting);
+    if (isOutOfCombat && !isResting) {
+      this.addBuff("rest", 1);
+      this.state.hasExpiredBuffs = true;
+      return true;
+    }
+    return isResting;
+  }
   combatDispelBuffs() {
     for (const buff of this.buffs) {
       if (buff?.dispelInCombat) {
@@ -587,23 +602,24 @@ class ServerCharacter extends Character {
   /* Runs in update loop and removed buffs from player that are expired.
   Will also flag the player to hasExpiredBuffs so their state gets sent to client */
   expireBuffs(forceExpire = false) {
-    let hasExpiredBuffs = false;
+    let hasBuffUpdates = false;
     if (forceExpire && this.buffs?.length > 0) {
-      hasExpiredBuffs = true;
+      hasBuffUpdates = true;
       this.buffs = [];
     } else {
       for (const buff of this.buffs) {
         /* Buff timed out */
+        const limitedBuff = buff.duration > 0; // -1 is an unlimited buff
         const isTimedOut = Date.now() - buff.spawnTime > buff.duration;
         /* Buff got expired some other way */
         const isExpired = buff?.isExpired;
-        if (isExpired || isTimedOut) {
-          hasExpiredBuffs = true;
+        if (isExpired || (isTimedOut && limitedBuff)) {
+          hasBuffUpdates = true;
           this.buffs.splice(this.buffs.indexOf(buff), 1);
         }
       }
     }
-    if (hasExpiredBuffs) {
+    if (hasBuffUpdates) {
       this.calculateStats();
       this.state.hasExpiredBuffs = true;
     }

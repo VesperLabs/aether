@@ -44,5 +44,9 @@
     "stats": {
       "regenMp": 1
     }
+  },
+  "rest": {
+    "duration": -1,
+    "dispelInCombat": true
   }
 }
