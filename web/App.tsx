@@ -11,19 +11,6 @@ function msToHours(ms) {
 }
 
 const App = () => {
-  const [metrics, setMetrics] = useState<ServerMetrics>();
-
-  useEffect(() => {
-    fetch(`${process.env.SERVER_URL}/metrics`, {
-      method: "GET",
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setMetrics(data);
-      })
-      .catch((error) => console.log(error));
-  }, []);
-
   return (
     <ThemeProvider theme={theme as Theme}>
       <Flex
@@ -40,11 +27,7 @@ const App = () => {
         <Flex sx={{ gap: 3 }}>
           <Link href="/items">Items</Link>
           <Link href="/monsters">Monsters</Link>
-          <Box sx={{ flex: 1 }} />
-          <Text>Players Online: {metrics?.playersOnline}</Text>
-          <Text>Loots: {metrics?.lootsOnGround}</Text>
-          <Text>Npcs: {metrics?.npcsLoaded}</Text>
-          <Text>Uptime: {msToHours(metrics?.upTime)}</Text>
+          <Metrics />
         </Flex>
         <Box>
           <Route path="/items" component={PageItems as any} />
@@ -52,6 +35,35 @@ const App = () => {
         </Box>
       </Flex>
     </ThemeProvider>
+  );
+};
+
+const Metrics = () => {
+  const [metrics, setMetrics] = useState<ServerMetrics>();
+
+  useEffect(() => {
+    fetch(`${process.env.SERVER_URL}/metrics`, {
+      method: "GET",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setMetrics(data);
+      })
+      .catch((error) => console.log(error));
+  }, []);
+
+  if (!metrics) {
+    return <Text>Server: Offline</Text>;
+  }
+
+  return (
+    <>
+      <Box sx={{ flex: 1 }} />
+      <Text>Players Online: {metrics?.playersOnline}</Text>
+      <Text>Loots: {metrics?.lootsOnGround}</Text>
+      <Text>Npcs: {metrics?.npcsLoaded}</Text>
+      <Text>Uptime: {msToHours(metrics?.upTime)}</Text>
+    </>
   );
 };
 
