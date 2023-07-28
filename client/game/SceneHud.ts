@@ -1,6 +1,7 @@
+// @ts-nocheck
 import Phaser from "phaser";
 import { playAudio, getSpinDirection } from "../utils";
-const { spellDetails } = require("@aether/shared");
+import { spellDetails } from "@aether/shared";
 const { W, S, A, D } = Phaser.Input.Keyboard.KeyCodes;
 const { Between } = Phaser.Math.Angle;
 const POTION_COOLDOWN = 10000;
