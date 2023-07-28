@@ -1,9 +1,10 @@
 import Phaser from "phaser";
 import { playAudio, getSpinDirection } from "../utils";
+const { spellDetails } = require("@aether/shared");
 const { W, S, A, D } = Phaser.Input.Keyboard.KeyCodes;
 const { Between } = Phaser.Math.Angle;
 const POTION_COOLDOWN = 10000;
-import { spellDetails } from "../..shared";
+
 class SceneHud extends Phaser.Scene {
   constructor(socket) {
     super({
@@ -60,7 +61,7 @@ function addGlobalEventListeners(scene) {
       const hero = mainScene?.hero;
       const abilities = hero?.abilities;
       const ability = abilities?.[e?.detail];
-      const details = spellDetails?.[ability?.base];
+      const details = spellDetails?.[ability?.key];
       const isAimable = details?.isAimable;
       if (isAimable) {
         document.getElementById("game").style.cursor = "none";
