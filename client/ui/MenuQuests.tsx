@@ -21,7 +21,7 @@ const MenuQuests = () => {
         flexDirection: "column",
       }}
     >
-      <MenuHeader icon={`../assets/icons/quests.png`} onClick={() => setTabQuests(false)}>
+      <MenuHeader icon={`./assets/icons/quests.png`} onClick={() => setTabQuests(false)}>
         Quests
       </MenuHeader>
       <Flex

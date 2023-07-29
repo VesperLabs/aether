@@ -5,7 +5,7 @@ import { useAppContext, ICONS } from "./";
 const IconPen = ({ sx }: { sx?: any }) => (
   <Icon
     size={22}
-    icon={`../assets/icons/pen.png`}
+    icon={`./assets/icons/pen.png`}
     sx={{
       position: "absolute",
       mt: "-27px",
@@ -43,7 +43,7 @@ const ModalLogin = (props: any) => {
         onClick={() => setActiveTab("login")}
       >
         <IconPen sx={{ transform: isLogin ? "scale(1)" : "scale(0)" }} />
-        <Icon size={22} icon={`../assets/icons/book.png`} />
+        <Icon size={22} icon={`./assets/icons/book.png`} />
         Login
       </Modal.Header>
       {isLogin && <LoginForm defaultEmail={defaultEmail} />}
@@ -52,7 +52,7 @@ const ModalLogin = (props: any) => {
         onClick={() => setActiveTab("register")}
       >
         <IconPen sx={{ transform: isRegister ? "scale(1)" : "scale(0)" }} />
-        <Icon size={22} icon={`../assets/icons/book.png`} />
+        <Icon size={22} icon={`./assets/icons/book.png`} />
         Register
       </Modal.Header>
       {isRegister && <RegisterForm onRegisterSuccess={onRegisterSuccess} />}

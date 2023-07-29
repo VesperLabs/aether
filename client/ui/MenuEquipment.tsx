@@ -11,7 +11,7 @@ const MenuEquipment = () => {
         display: tabEquipment ? "flex" : "none",
       }}
     >
-      <MenuHeader icon={`../assets/icons/helmet.png`} onClick={() => setTabEquipment(false)}>
+      <MenuHeader icon={`./assets/icons/helmet.png`} onClick={() => setTabEquipment(false)}>
         Equipment
       </MenuHeader>
       <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", maxWidth: MENU_MAX_WIDTH }}>
@@ -20,7 +20,7 @@ const MenuEquipment = () => {
             key={slotKey}
             location="equipment"
             slotKey={slotKey}
-            icon={`../assets/icons/${slotKey}.png`}
+            icon={`./assets/icons/${slotKey}.png`}
             item={item}
           />
         ))}

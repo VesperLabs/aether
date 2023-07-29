@@ -104,7 +104,7 @@ const ModalDropAmount = () => {
         >
           {isShop ? (
             <>
-              <Icon icon="../assets/icons/gold.png" size={16} sx={{ flexShrink: 0 }} />
+              <Icon icon="./assets/icons/gold.png" size={16} sx={{ flexShrink: 0 }} />
               <Text>{amount * item?.cost}</Text>
             </>
           ) : (

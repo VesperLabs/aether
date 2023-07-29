@@ -31,7 +31,7 @@ const MenuButton = ({
       onClick={onClick}
       sx={{ position: "relative", flexShrink: 0, ...sx }}
     >
-      <Icon size={size} icon={`../assets/icons/${iconName || "grab"}.png`} />
+      <Icon size={size} icon={`./assets/icons/${iconName || "grab"}.png`} />
       {children}
       {!isMobile && keyboardKey && (
         <KeyboardKey sx={{ bottom: "-3px", right: "-3px" }} name={keyboardKey} onKeyUp={onClick} />

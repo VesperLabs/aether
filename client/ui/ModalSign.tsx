@@ -4,7 +4,7 @@ import { Modal, KeyboardButton, Icon, Box } from "@aether/ui";
 const ModalSign: React.FC = () => {
   const { sign, setSign, zoom, bottomOffset } = useAppContext();
   const hasIcon = sign?.icon !== "sign-blank";
-  const icon = hasIcon ? `../assets/images/${sign?.icon}.png` : `../assets/icons/chat.png`;
+  const icon = hasIcon ? `./assets/images/${sign?.icon}.png` : `./assets/icons/chat.png`;
   return (
     <Modal zoom={zoom} bottomOffset={bottomOffset}>
       <Modal.Header sx={{ paddingLeft: 34 }}>

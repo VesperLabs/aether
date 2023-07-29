@@ -33,7 +33,7 @@ const SkillButton = ({
         ...sx,
       }}
     >
-      <Icon icon={icon || `../assets/icons/${iconName}.png`} />
+      <Icon icon={icon || `./assets/icons/${iconName}.png`} />
       {keyboardKey && (
         <KeyboardKey
           name={keyboardKey}
