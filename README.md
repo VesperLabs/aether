@@ -11,6 +11,7 @@ MONGO_URL= # If blank will go into offline mode. (No saving)
 SERVER_FPS=20
 SERVER_URL=http://localhost:3000
 PORT=3000
+ASSETS_URL= # Where to load images from (Leave blank for DEV)
 ```
 
 ## 📟 Running
