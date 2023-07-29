@@ -88,6 +88,9 @@ class SceneMain extends Phaser.Scene {
         /* TODO: Maybe update the entire player here too */
         player.state.lastTeleport = lastTeleport;
         if (isRespawn) {
+          // manually update coords so the player won't flicker in place before respawning
+          player.x = user.x;
+          player.y = user.y;
           player?.respawn();
         }
       } else {
@@ -173,10 +176,6 @@ class SceneMain extends Phaser.Scene {
         getNpc(scene, hit?.to)?.takeHit?.(hit);
         getPlayer(scene, hit?.to)?.takeHit?.(hit);
       }
-    });
-
-    socket.on("respawnPlayer", (id) => {
-      getPlayer(scene, id)?.respawn();
     });
 
     socket.on("respawnNpc", ({ id, x, y, respawnTime }) => {
