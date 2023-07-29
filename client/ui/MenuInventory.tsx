@@ -3,7 +3,7 @@ import { Flex, Text, Icon } from "@aether/ui";
 
 const GoldDisplay = ({ gold, sx }) => (
   <Flex sx={{ flex: 1, gap: 1, justifyContent: "end", alignItems: "center", ...sx }}>
-    <Icon icon="../assets/icons/gold.png" size={16} />
+    <Icon icon="./assets/icons/gold.png" size={16} />
     <Text>{gold || 0}</Text>
   </Flex>
 );
@@ -16,7 +16,7 @@ const MenuInventory = () => {
   return (
     <Menu sx={{ display: tabInventory ? "block" : "none" }}>
       <Flex sx={{ flexWrap: "wrap", justifyContent: "end", gap: 2, flex: 1 }}>
-        <MenuHeader icon={`../assets/icons/bag.png`} onClick={() => setTabInventory(false)}>
+        <MenuHeader icon={`./assets/icons/bag.png`} onClick={() => setTabInventory(false)}>
           Inventory
         </MenuHeader>
         <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", maxWidth: MENU_MAX_WIDTH }}>
@@ -25,7 +25,7 @@ const MenuInventory = () => {
               key={idx}
               location="inventory"
               slotKey={`${idx}`}
-              icon={`../assets/icons/bag.png`}
+              icon={`./assets/icons/bag.png`}
               item={inventory?.[idx]}
             />
           ))}

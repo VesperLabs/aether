@@ -142,18 +142,18 @@ const ItemTooltip = ({ item, tooltipId, show }) => {
         )}
         <Flex sx={{ alignItems: "center", gap: 2 }}>
           <Flex sx={{ alignItems: "center", gap: "2px" }}>
-            <Icon icon="../assets/icons/gold.png" size={16} />
+            <Icon icon="./assets/icons/gold.png" size={16} />
             {item?.cost * (item?.amount || 1)}
           </Flex>
           {item?.stats?.mpCost && (
             <Flex sx={{ alignItems: "center", gap: "2px" }}>
-              <Icon icon="../assets/icons/mana.png" size={16} />
+              <Icon icon="./assets/icons/mana.png" size={16} />
               {"-" + item?.stats?.mpCost}
             </Flex>
           )}
           {item?.stats?.spCost && (
             <Flex sx={{ alignItems: "center", gap: "2px" }}>
-              <Icon icon="../assets/icons/stamina.png" size={16} />
+              <Icon icon="./assets/icons/stamina.png" size={16} />
               {"-" + item?.stats?.spCost}
             </Flex>
           )}

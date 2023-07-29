@@ -621,7 +621,7 @@ const AbilityButtons = () => {
           const texture = !isSpell ? item?.texture : "spell-" + item.base;
 
           const icon = item
-            ? `../assets/atlas/${item?.type}/${texture}.png`
+            ? `./assets/atlas/${item?.type}/${texture}.png`
             : "./assets/icons/blank.png";
 
           /* Spells and non-potion items share a cooldown for now */
@@ -756,9 +756,9 @@ const MenuBar = () => {
         >
           <Box>
             {isConnected ? (
-              <Icon icon="../assets/icons/success.png" sx={{ opacity: 0.5 }} />
+              <Icon icon="./assets/icons/success.png" sx={{ opacity: 0.5 }} />
             ) : (
-              <Icon icon="../assets/icons/danger.png" sx={{ opacity: 0.5 }} />
+              <Icon icon="./assets/icons/danger.png" sx={{ opacity: 0.5 }} />
             )}
           </Box>
           <Box sx={{ flex: tabChat ? "unset" : 1 }} />

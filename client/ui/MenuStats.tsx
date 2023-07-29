@@ -36,7 +36,7 @@ const MenuStats = () => {
         display: tabStats ? "flex" : "none",
       }}
     >
-      <MenuHeader icon={`../assets/icons/stats.png`} onClick={() => setTabStats(false)}>
+      <MenuHeader icon={`./assets/icons/stats.png`} onClick={() => setTabStats(false)}>
         Stats
       </MenuHeader>
       <Flex sx={{ gap: 4, flexWrap: "wrap", justifyContent: "end", maxWidth: MENU_MAX_WIDTH }}>

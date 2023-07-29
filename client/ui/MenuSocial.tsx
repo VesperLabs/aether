@@ -76,7 +76,7 @@ const MenuSocial = () => {
         flexDirection: "column",
       }}
     >
-      <MenuHeader icon={`../assets/icons/social.png`} onClick={() => setTabSocial(false)}>
+      <MenuHeader icon={`./assets/icons/social.png`} onClick={() => setTabSocial(false)}>
         Social
       </MenuHeader>
       {hasPlayers && (
@@ -94,7 +94,7 @@ const MenuSocial = () => {
           )}
           {hasParty && (
             <>
-              <MenuHeader icon={`../assets/icons/social.png`} onClick={() => setTabSocial(false)}>
+              <MenuHeader icon={`./assets/icons/social.png`} onClick={() => setTabSocial(false)}>
                 Party
               </MenuHeader>
               <SocialGrid>
@@ -136,7 +136,7 @@ const SocialPlayerRow = (props: { partyPlayer: any; children: any }) => {
         />
         {isLeader && (
           <Icon
-            icon="../assets/icons/crown.png"
+            icon="./assets/icons/crown.png"
             sx={{ position: "absolute", left: "-2px", top: "-11px" }}
           />
         )}

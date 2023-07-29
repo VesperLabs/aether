@@ -32,7 +32,7 @@ const MenuProfile = () => {
         display: tabProfile ? "flex" : "none",
       }}
     >
-      <MenuHeader icon={`../assets/icons/mirror.png`} onClick={() => setTabProfile(false)}>
+      <MenuHeader icon={`./assets/icons/mirror.png`} onClick={() => setTabProfile(false)}>
         Profile
       </MenuHeader>
       <Flex sx={{ gap: 4, flexWrap: "wrap", justifyContent: "end", maxWidth: MENU_MAX_WIDTH }}>

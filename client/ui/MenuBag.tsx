@@ -9,7 +9,7 @@ const MenuBag = ({ id }) => {
   return (
     <Menu>
       <MenuHeader
-        icon={`../assets/atlas/bag/${bag?.texture}.png`}
+        icon={`./assets/atlas/bag/${bag?.texture}.png`}
         onClick={() => toggleBagState(id)}
       >
         {bag?.name}
@@ -21,7 +21,7 @@ const MenuBag = ({ id }) => {
             location="bag"
             slotKey={`${idx}`}
             bagId={bag?.id}
-            icon={`../assets/atlas/bag/${bag?.texture}.png`}
+            icon={`./assets/atlas/bag/${bag?.texture}.png`}
             item={bag?.items?.[idx]}
           />
         ))}

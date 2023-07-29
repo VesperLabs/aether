@@ -268,7 +268,7 @@ const Slot = React.memo(
             <Portal container={dragging ? document.body : null}>
               <Icon
                 ref={imageRef}
-                icon={aboutToSell ? "../assets/icons/gold.png" : imageData}
+                icon={aboutToSell ? "./assets/icons/gold.png" : imageData}
                 size={size * 2} // Fixes large images to not get cut off
                 style={{
                   opacity: dragging ? 1 : 0,
