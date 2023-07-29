@@ -60,7 +60,7 @@ class Spell extends Phaser.GameObjects.Container {
       if (spellName.includes("attack_left")) {
         this.setAngle(tiltAngle);
         const rangeLeft = caster?.equipment?.handLeft?.stats?.range * 2 || caster?.body?.radius / 8;
-        this.body.setCircle(rangeLeft * 16, -rangeLeft * 16, -rangeLeft * 16);
+        this.body.setCircle(rangeLeft * 14, -rangeLeft * 14, -rangeLeft * 14);
         this.spell.displayWidth = viewSize * rangeLeft;
         this.spell.displayHeight = viewSize * rangeLeft;
         this.spell.setFlipX(false);
@@ -69,7 +69,7 @@ class Spell extends Phaser.GameObjects.Container {
         this.setAngle(-tiltAngle);
         const rangeRight =
           caster?.equipment?.handRight?.stats?.range * 2 || caster?.body?.radius / 8;
-        this.body.setCircle(rangeRight * 16, -rangeRight * 16, -rangeRight * 16);
+        this.body.setCircle(rangeRight * 14, -rangeRight * 14, -rangeRight * 14);
         this.spell.displayWidth = viewSize * rangeRight;
         this.spell.displayHeight = viewSize * rangeRight;
         this.spell.setFlipX(true);
