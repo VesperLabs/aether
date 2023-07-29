@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 require("dotenv").config();
 import react from "@vitejs/plugin-react-swc";
+// yo
 
 console.log(`🛠 DEBUG: ${process.env.DEBUG}`);
 console.log(`🛠 SERVER_FPS: ${process.env.SERVER_FPS}`);
