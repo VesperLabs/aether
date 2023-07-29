@@ -4,6 +4,7 @@ import { Link, Route } from "wouter";
 import PageItems from "./PageItems";
 import PageNasties from "./PageNasties";
 import { useEffect, useState } from "react";
+import RowTitle from "./RowTitle";
 function msToHours(ms) {
   if (!ms) return 0;
   const millisecondsInHour = 60 * 60 * 1000; // Number of milliseconds in an hour
@@ -23,11 +24,11 @@ const App = () => {
           //width: ["auto", "auto", "auto", "48vw"],
         }}
       >
-        <Text sx={{ fontSize: 6 }}>Aether Wiki</Text>
+        <Metrics />
+        <Text sx={{ fontSize: 6, mt: 2 }}>Aether Wiki</Text>
         <Flex sx={{ gap: 3 }}>
           <Link href="/items">Items</Link>
           <Link href="/monsters">Monsters</Link>
-          <Metrics />
         </Flex>
         <Box>
           <Route path="/items" component={PageItems as any} />
@@ -60,23 +61,34 @@ const Metrics = () => {
     return "";
   }
 
-  if (!metrics) {
-    return (
-      <>
-        <Box sx={{ flex: 1 }} />
-        <Text>Server: Offline</Text>
-      </>
-    );
-  }
-
   return (
-    <>
-      <Box sx={{ flex: 1 }} />
-      <Text>Players Online: {metrics?.playersOnline}</Text>
-      <Text>Loots: {metrics?.lootsOnGround}</Text>
-      <Text>Npcs: {metrics?.npcsLoaded}</Text>
-      <Text>Uptime: {msToHours(metrics?.upTime)}</Text>
-    </>
+    <RowTitle
+      sx={{
+        gap: 3,
+        position: "absolute",
+        top: 0,
+        left: 0,
+        borderRadius: 0,
+        fontSize: 1,
+        fontWeight: "normal",
+        borderBottom: `1px solid rgba(255,255,200,.25)`,
+      }}
+    >
+      {metrics ? (
+        <>
+          <Box sx={{ flex: 1 }} />
+          <Text>Players: {metrics?.playersOnline}</Text>
+          <Text>Loots: {metrics?.lootsOnGround}</Text>
+          <Text>Npcs: {metrics?.npcsLoaded}</Text>
+          <Text>Uptime: {msToHours(metrics?.upTime)}</Text>
+        </>
+      ) : (
+        <>
+          <Box sx={{ flex: 1 }} />
+          <Text>Server: Offline</Text>
+        </>
+      )}
+    </RowTitle>
   );
 };
 
