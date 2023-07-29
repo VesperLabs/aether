@@ -118,6 +118,7 @@ export function assetToCanvas({ asset, tint, setImageData }) {
   const ctx = canvas.getContext("2d");
   ctx.imageSmoothingEnabled = false;
   const img = new Image();
+  img.crossOrigin = "Anonymous";
 
   img.onload = () => {
     const [x, y, w, h] = asset.previewRect;

@@ -19,7 +19,7 @@ export default ({ mode }) => {
         name: "replace-url",
         transform(code, id) {
           return process.env.ASSETS_URL
-            ? code.replace(/\.\/assets\//g, process.env.ASSETS_URL)
+            ? code.replace(/\.\/assets\//g, process.env.ASSETS_URL + "/")
             : code;
         },
       },
