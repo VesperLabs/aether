@@ -183,8 +183,7 @@ class Player extends Character {
   }
   doAttack(count) {
     const { state } = this;
-    if (state.isAttacking) return;
-    if (this?.isHero && (!state.hasWeapon || state.isDead)) return;
+    if (this?.isHero && (!state.hasWeapon || state.isDead || state.isAttacking)) return;
 
     let spellName = "attack_right";
     let action = this.action;
