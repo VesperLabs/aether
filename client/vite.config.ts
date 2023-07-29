@@ -2,11 +2,14 @@ import { defineConfig } from "vite";
 require("dotenv").config();
 import react from "@vitejs/plugin-react-swc";
 
-console.log(`🛠 DEBUG: ${process.env.DEBUG}`);
-console.log(`🛠 SERVER_FPS: ${process.env.SERVER_FPS}`);
-console.log(`🛠 SERVER_URL: ${process.env.SERVER_URL}`);
+if (process.env) {
+  console.log(`🛠 DEBUG: ${process.env.DEBUG}`);
+  console.log(`🛠 SERVER_FPS: ${process.env.SERVER_FPS}`);
+  console.log(`🛠 SERVER_URL: ${process.env.SERVER_URL}`);
+}
 
-const config = {
+// https://vitejs.dev/config/
+export default defineConfig({
   plugins: [react()],
   define: {
     "process.env.DEBUG": process.env.DEBUG,
@@ -22,11 +25,4 @@ const config = {
     emptyOutDir: false,
     outDir: "../public",
   },
-};
-
-// if (process.env.ASSET_PROXY) {
-//   config.server["proxy"] = { "/assets": { target: process.env.ASSET_PROXY } };
-// }
-
-// https://vitejs.dev/config/
-export default defineConfig(config);
+});
