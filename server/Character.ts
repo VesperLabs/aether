@@ -405,7 +405,7 @@ class ServerCharacter extends Character {
     });
     return hits;
   }
-  calculateDamage(victim) {
+  calculateAttackDamage(victim) {
     if (victim?.state?.isDead) return false;
     const dodgeRoll = randomNumber(1, 100);
     const blockRoll = randomNumber(1, 100);
@@ -496,6 +496,12 @@ class ServerCharacter extends Character {
       to: victim.id,
     });
     return hits;
+  }
+  calculateDamage(victim: any, abilitySlot: number) {
+    /* If abilityslot is blank we are doing an attack */
+    return abilitySlot
+      ? this.calculateSpellDamage(victim, abilitySlot)
+      : this.calculateAttackDamage(victim);
   }
   doRegen() {
     const now = Date.now();

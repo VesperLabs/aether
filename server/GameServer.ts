@@ -312,9 +312,9 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           if (!ids?.includes(npc.id)) continue;
           // only allow spells to hit intended targets
           if (!allowedTargets?.includes("enemy")) continue;
-          const newHits = abilitySlot
-            ? hero.calculateSpellDamage(npc, abilitySlot)
-            : hero.calculateDamage(npc);
+
+          const newHits = hero.calculateDamage(npc, abilitySlot);
+
           /* If we kill the NPC */
           if (newHits?.find?.((h: Hit) => h?.type === "death")) {
             npc.dropLoot(hero?.stats?.magicFind);
@@ -357,9 +357,8 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           if (!allowedTargets.includes("ally")) {
             if (targetIsInParty) continue;
           }
-          const newHits = abilitySlot
-            ? hero.calculateSpellDamage(player, abilitySlot)
-            : hero.calculateDamage(player);
+          const newHits = hero.calculateDamage(player, abilitySlot);
+
           if (newHits?.length > 0) hitList = [...hitList, ...newHits];
         }
 
