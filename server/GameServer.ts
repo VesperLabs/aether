@@ -896,7 +896,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
               });
               return socket.emit("message", {
                 from: player?.profile?.userName,
-                type: "info",
+                type: "chat",
                 message: args.message,
               });
             case "coords":
@@ -922,7 +922,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
               }
               return socket.emit("message", {
                 from: player?.profile?.userName,
-                type: "info",
+                type: "chat",
                 message: args.message,
               });
           }

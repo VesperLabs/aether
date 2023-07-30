@@ -25,6 +25,7 @@ export { default as SkillButton } from "./SkillButton";
 export { default as Menu } from "./Menu";
 export { default as ModalSign } from "./ModalSign";
 export { default as ModalError } from "./ModalError";
+export { default as StatusIcon } from "./StatusIcon";
 export { useAppContext } from "./App";
 
 export const MENU_MAX_WIDTH = 1024;

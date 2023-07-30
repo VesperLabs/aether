@@ -21,6 +21,7 @@ import {
   MenuBag,
   ModalSign,
   ModalError,
+  StatusIcon,
 } from "./";
 import {
   ThemeProvider,
@@ -760,13 +761,7 @@ const MenuBar = () => {
             flexDirection: "row",
           }}
         >
-          <Box>
-            {isConnected ? (
-              <Icon icon="./assets/icons/success.png" sx={{ opacity: 0.5 }} />
-            ) : (
-              <Icon icon="./assets/icons/danger.png" sx={{ opacity: 0.5 }} />
-            )}
-          </Box>
+          <StatusIcon />
           <Box sx={{ flex: tabChat ? "unset" : 1 }} />
           <ChatButton />
           {!tabChat && (
