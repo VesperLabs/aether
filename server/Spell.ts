@@ -43,7 +43,7 @@ class Spell extends Phaser.GameObjects.Container {
     this.velocityY = 0;
     this.hits = [];
     this.spell = scene.add.existing(new Sprite(scene, 0, 0, "blank", 0));
-    this.isAttack = ["attack_left", "attack_right"]?.includes(spellName);
+    this.isAttack = !abilitySlot;
     this.abilitySlot = abilitySlot;
 
     const details = spellDetails?.[spellName];
@@ -125,9 +125,8 @@ class Spell extends Phaser.GameObjects.Container {
 
       if (scene?.physics?.overlap?.(hitBox, this)) {
         /* If spell, or attack, calculate damage accordingly */
-        const newHits = this?.isAttack
-          ? caster.calculateDamage(victim)
-          : caster.calculateSpellDamage(victim, abilitySlot);
+        const newHits = caster.calculateDamage(victim, abilitySlot);
+
         if (newHits?.length > 0) this.hits = [...this.hits, ...newHits];
         scene.io.to(room?.name).emit("assignDamage", this.hits);
       }
