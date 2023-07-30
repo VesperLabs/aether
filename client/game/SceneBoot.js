@@ -3,6 +3,14 @@ import { assetList } from "../../shared/Assets";
 import soundList from "../../shared/data/soundList.json";
 import { mapList, mapImageList } from "../../shared/Maps";
 
+const onLoadError = (value) => {
+  window.dispatchEvent(
+    new CustomEvent("LOAD_ERROR", {
+      detail: value,
+    })
+  );
+};
+
 class SceneBoot extends Phaser.Scene {
   constructor(socket) {
     super({
@@ -23,9 +31,11 @@ class SceneBoot extends Phaser.Scene {
       .setOrigin(0.5)
       .setScrollFactor(0);
 
-    this.load.on("progress", (value) => {
-      dpanel.setText("Loading... " + Math.floor(value * 100) + "%");
-    });
+    this.load
+      .on("progress", (value) => {
+        dpanel.setText("Loading... " + Math.floor(value * 100) + "%");
+      })
+      .on("loaderror", onLoadError);
 
     // Register a load complete event to launch the title screen when all files are loaded
     this.load.on("complete", () => {
@@ -38,6 +48,7 @@ class SceneBoot extends Phaser.Scene {
       this.scene.start("SceneMain");
       this.scene.start("SceneHud");
     });
+
     mapImageList.forEach((asset) => {
       this.load.image(asset.name, asset.image);
     });

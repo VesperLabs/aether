@@ -1,4 +1,4 @@
-import { Flex } from "./";
+import { Box, Flex } from "./";
 
 interface ModalBodyProps {
   sx?: any;
@@ -10,10 +10,16 @@ interface ModalFooterProps {
   children: React.ReactNode;
 }
 
+interface ModalOverlayProps {
+  sx?: any;
+  children: React.ReactNode;
+}
+
 const Modal: any & {
   Header: any;
   Body: React.FC<ModalBodyProps>;
   Footer: React.FC<ModalFooterProps>;
+  Overlay: React.FC<ModalOverlayProps>;
 } = ({ sx, zoom, bottomOffset, ...props }) => {
   return (
     <Flex
@@ -33,6 +39,24 @@ const Modal: any & {
         ...sx,
       }}
       variant="buttons.wood"
+      {...props}
+    />
+  );
+};
+
+Modal.Overlay = ({ sx, ...props }) => {
+  return (
+    <Box
+      sx={{
+        position: "fixed",
+        inset: "0 0 0 0",
+        backgroundColor: "#000000",
+        zIndex: "modal",
+        backgroundSize: "cover",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "center center",
+        ...sx,
+      }}
       {...props}
     />
   );

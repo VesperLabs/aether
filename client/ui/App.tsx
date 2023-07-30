@@ -19,6 +19,8 @@ import {
   ModalLogin,
   MenuSocial,
   MenuBag,
+  ModalSign,
+  ModalError,
 } from "./";
 import {
   ThemeProvider,
@@ -28,6 +30,7 @@ import {
   KeyboardKey,
   Input,
   useViewportSizeEffect,
+  Modal,
 } from "@aether/ui";
 import { getSpinDirection, calculateZoomLevel } from "../utils";
 import { isMobile } from "@aether/shared";
@@ -35,7 +38,6 @@ import "react-tooltip/dist/react-tooltip.css";
 import { Theme } from "theme-ui";
 import { Donut, Text } from "@aether/ui";
 import { Socket } from "socket.io-client";
-import ModalSign from "./ModalSign";
 
 interface AppContextValue {
   isLoggedIn: boolean;
@@ -60,6 +62,8 @@ interface AppContextValue {
   toggleBagState: React.Dispatch<React.SetStateAction<any>>;
   setCooldowns: React.Dispatch<React.SetStateAction<any>>;
   setSign: React.Dispatch<React.SetStateAction<any>>;
+  setError: React.Dispatch<React.SetStateAction<any>>;
+  error: any;
   sign: Sign | null;
   bagState: Array<string>;
   cooldowns: Record<string, any>;
@@ -128,6 +132,7 @@ function App({ socket, debug, game }) {
   const [zoom, setZoom] = useState(getHudZoom());
   const [bagState, setBagState] = useState([]);
   const [sign, setSign] = useState(null);
+  const [error, setError] = useState(null);
   const [cooldowns, setCooldowns] = useState({
     ATTACK: { duration: 0, startTime: Date.now() },
     POTION: { duration: 0, startTime: Date.now() },
@@ -359,6 +364,14 @@ function App({ socket, debug, game }) {
       setCooldowns((prev) => ({ ...prev, [type]: { duration, startTime } }));
     };
 
+    const onLoadError = () => {
+      setError({
+        title: "Error",
+        description:
+          "There was a problem loading some assets.  This is probably because I'm in the process of deploying a new version.  Refresh and come back later if stuff isn't loading.",
+      });
+    };
+
     const onGameLoaded = () => {
       setIsLoaded(true);
     };
@@ -380,6 +393,7 @@ function App({ socket, debug, game }) {
     window.addEventListener("UPDATE_HUD", onUpdateHud);
     window.addEventListener("UPDATE_ROOM_PLAYERS", onUpdateRoomPlayers);
     window.addEventListener("HERO_RESPAWN", onUpdateHud);
+    window.addEventListener("LOAD_ERROR", onLoadError);
     window.addEventListener("GAME_LOADED", onGameLoaded);
     window.addEventListener("HERO_START_COOLDOWN", onStartCooldown);
 
@@ -401,6 +415,7 @@ function App({ socket, debug, game }) {
       window.removeEventListener("UPDATE_HUD", onUpdateHud);
       window.removeEventListener("UPDATE_ROOM_PLAYERS", onUpdateRoomPlayers);
       window.removeEventListener("HERO_RESPAWN", onUpdateHud);
+      window.removeEventListener("LOAD_ERROR", onLoadError);
       window.removeEventListener("GAME_LOADED", onGameLoaded);
       window.removeEventListener("HERO_START_COOLDOWN", onStartCooldown);
     };
@@ -442,6 +457,8 @@ function App({ socket, debug, game }) {
           toggleBagState,
           setCooldowns,
           setSign,
+          setError,
+          error,
           sign,
           cooldowns,
           bagState,
@@ -481,7 +498,9 @@ function App({ socket, debug, game }) {
             transitionDelay: "0.5s",
           }}
         >
+          <Modal.Overlay sx={{ backgroundImage: "url(./assets/images/bg.jpg)" }} />
           {!isLoggedIn && <ModalLogin />}
+          {error && <ModalError />}
         </Box>
         {isLoggedIn && (
           <Box
