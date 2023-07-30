@@ -49,6 +49,7 @@ function addGlobalEventListeners(scene) {
   });
   /* Desktop left click attack */
   document.getElementById("game").addEventListener("mouseup", function (event) {
+    if (!mainScene?.hero) return;
     const hero = mainScene?.hero;
     if (!isTouch && event.button !== 0) {
       const cursorPoint = pointer.positionToCamera(mainScene.cameras.main);
@@ -59,6 +60,7 @@ function addGlobalEventListeners(scene) {
   window.addEventListener(
     "HERO_AIM_START",
     (e) => {
+      if (!mainScene?.hero) return;
       const hero = mainScene?.hero;
       const abilities = hero?.abilities;
       const ability = abilities?.[e?.detail];
@@ -74,6 +76,7 @@ function addGlobalEventListeners(scene) {
   window.addEventListener(
     "HERO_ATTACK",
     (e) => {
+      if (!mainScene?.hero) return;
       const hero = mainScene?.hero;
       hero.state.isAiming = false;
       hero.state.holdingAttack = false;
@@ -83,6 +86,7 @@ function addGlobalEventListeners(scene) {
   window.addEventListener(
     "HERO_ATTACK_START",
     (e) => {
+      if (!mainScene?.hero) return;
       const hero = mainScene?.hero;
       hero.state.holdingAttack = true;
     },
