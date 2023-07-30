@@ -5,11 +5,7 @@ import PageItems from "./PageItems";
 import PageNasties from "./PageNasties";
 import { useEffect, useState } from "react";
 import RowTitle from "./RowTitle";
-function msToHours(ms) {
-  if (!ms) return 0;
-  const millisecondsInHour = 60 * 60 * 1000; // Number of milliseconds in an hour
-  return (ms / millisecondsInHour).toFixed(2) + " hours";
-}
+import { msToHours } from "@aether/shared";
 
 const App = () => {
   return (
