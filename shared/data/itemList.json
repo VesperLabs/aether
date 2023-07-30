@@ -323,22 +323,13 @@
         "name": "Hawkwing's Pincher",
         "base": "scythe",
         "texture": "weapon-scythe",
-        "tint": "0x77FF77",
+        "tint": "0x99CC66",
         "slot": "hands",
         "stats": {
-          "dexterity": 5
-        }
-      },
-      "hawkwingsTickler": {
-        "ilvl": 1,
-        "setName": "hawkwings",
-        "name": "Hawkwing's Tickler",
-        "base": "scythe",
-        "texture": "weapon-scythe",
-        "tint": "0xFFFF77",
-        "slot": "hands",
-        "stats": {
-          "strength": 5
+          "dexterity": 5,
+          "maxDamage": 5,
+          "minEarthDamage": 1,
+          "maxEarthDamage": 3
         }
       }
     }

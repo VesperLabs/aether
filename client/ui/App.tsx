@@ -170,8 +170,8 @@ function App({ socket, debug, game }) {
       setSign(null);
     };
 
-    const onMessage = (payload: Message) => {
-      setMessages((prev) => [...prev, payload]);
+    const addMessage = (payload: Message) => {
+      setMessages((prev) => [...prev, { ...payload, timestamp: Date.now() }]);
     };
 
     const onPlayerJoin = (player, args) => {
@@ -181,11 +181,7 @@ function App({ socket, debug, game }) {
         return !playerExists ? [...prev, player] : prev;
       });
       /* Only show player join message if the user logged in, not if entered door */
-      if (args?.isLogin)
-        setMessages((prev) => [
-          ...prev,
-          { type: "info", message: "A player has joined the game." },
-        ]);
+      if (args?.isLogin) addMessage({ type: "info", message: "A player has joined the game." });
     };
 
     const onPlayerLeave = (socketId) => {
@@ -217,10 +213,7 @@ function App({ socket, debug, game }) {
       setHero((prev) => ({ ...prev, ...player }));
       /* Show a message if the hero leveled */
       if (playerIdsThatLeveled?.includes(player?.id)) {
-        setMessages((prev) => [
-          ...prev,
-          { type: "success", message: `You are now level ${player?.stats?.level}!` },
-        ]);
+        addMessage({ type: "success", message: `You are now level ${player?.stats?.level}!` });
       }
       /* Merge updates into player */
       setPlayers((prev) => {
@@ -242,10 +235,7 @@ function App({ socket, debug, game }) {
         setHero(player);
         // quests can trigger this didLevel
         if (args?.didLevel) {
-          setMessages((prev) => [
-            ...prev,
-            { type: "success", message: `You are now level ${player?.stats?.level}!` },
-          ]);
+          addMessage({ type: "success", message: `You are now level ${player?.stats?.level}!` });
         }
       } else {
         console.log("arf");
@@ -273,10 +263,7 @@ function App({ socket, debug, game }) {
       const target = [...npcs, ...signs].find((n) => n?.id === npcId);
 
       if (!target) {
-        return setMessages((prev) => [
-          ...prev,
-          { type: "error", message: "Who are you talking to?" },
-        ]);
+        return addMessage({ type: "error", message: "Who are you talking to?" });
       }
 
       if (target.kind === "keeper") {
@@ -347,7 +334,7 @@ function App({ socket, debug, game }) {
       setPartyInvites([]);
       setParty(party);
       if (message) {
-        setMessages((prev) => [...prev, { type: "party", message }]);
+        addMessage({ type: "party", message });
       }
     };
 
@@ -383,7 +370,7 @@ function App({ socket, debug, game }) {
     socket.on("playerUpdate", onPlayerUpdate);
     socket.on("lootGrabbed", onLootGrabbed);
     socket.on("keeperDataUpdate", onKeeperDataUpdate);
-    socket.on("message", onMessage);
+    socket.on("message", addMessage);
     socket.on("playerJoin", onPlayerJoin);
     socket.on("remove", onPlayerLeave);
     socket.on("partyInvite", onPartyInvite);
@@ -405,7 +392,7 @@ function App({ socket, debug, game }) {
       socket.off("playerUpdate", onPlayerUpdate);
       socket.off("lootGrabbed", onLootGrabbed);
       socket.off("keeperDataUpdate", onKeeperDataUpdate);
-      socket.off("message", onMessage);
+      socket.off("message", addMessage);
       socket.off("playerJoin", onPlayerJoin);
       socket.off("partyInvite", onPartyInvite);
       socket.off("partyUpdate", onPartyUpdate);

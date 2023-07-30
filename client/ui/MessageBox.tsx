@@ -49,6 +49,7 @@ const MessageBox = () => {
           justifyContent: "end",
           maskImage: `linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1))`,
           borderRadius: 3,
+          pointerEvents: tabChat ? "all" : "none",
         }}
       >
         {messages?.map((message: Message, idx: integer) => {
@@ -77,10 +78,20 @@ const Message: React.FC<MessageProps> = ({ data }) => {
   };
 
   const color: string = colorsMap?.[type] || "white";
+  const isOld = Date.now() - data?.timestamp > 5000;
+
   return (
-    <Flex sx={{ color, gap: 1, flexGrow: 0 }}>
-      <Text sx={{ flexShrink: 0 }}>{getFrom(data)}:</Text>
-      <Text sx={{ flex: 1 }}>{message}</Text>
+    <Flex>
+      <Flex
+        onMouseDown={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }}
+        sx={{ color, gap: 1, flexGrow: 0, opacity: isOld ? 0.5 : 1, "&:hover": { opacity: 1 } }}
+      >
+        <Text sx={{ flexShrink: 0 }}>{getFrom(data)}:</Text>
+        <Text sx={{ flex: 1 }}>{message}</Text>
+      </Flex>
     </Flex>
   );
 };

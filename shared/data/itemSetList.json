@@ -26,11 +26,13 @@
   },
   "hawkwings": {
     "name": "Hawkwing's Arms",
-    "pieces": 3,
+    "pieces": 2,
     "stats": {
       "dexterity": 10,
       "walkSpeed": 25,
-      "dodgeChance": 25
+      "dodgeChance": 25,
+      "minEarthDamage": 5,
+      "maxEarthDamage": 5
     },
     "percentStats": {
       "dexterity": 15
