@@ -888,11 +888,16 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           switch (command[0]) {
             case "drop":
               const item = command?.[1]?.split("-");
-              return scene.roomManager.rooms[player?.roomName].lootManager.create({
+              scene.roomManager.rooms[player?.roomName].lootManager.create({
                 x: player?.x,
                 y: player?.y,
                 item: ItemBuilder.buildItem(item[0], item[1], item[2], item[3]) as Item,
                 npcId: null,
+              });
+              return socket.emit("message", {
+                from: player?.profile?.userName,
+                type: "info",
+                message: args.message,
               });
             case "coords":
               scene.db.updateUserRoom(player);
@@ -915,7 +920,11 @@ class ServerScene extends Phaser.Scene implements ServerScene {
                   npcId: null,
                 });
               }
-              return;
+              return socket.emit("message", {
+                from: player?.profile?.userName,
+                type: "info",
+                message: args.message,
+              });
           }
         }
         io.to(player?.roomName).emit("message", {

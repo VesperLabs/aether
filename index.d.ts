@@ -24,8 +24,9 @@ interface Item {
 
 interface Message {
   from?: string;
-  type: "chat" | "warning" | "error" | "party";
+  type: "chat" | "warning" | "error" | "party" | "success" | "info";
   message: string;
+  timestamp?: number;
 }
 
 interface Slot {
