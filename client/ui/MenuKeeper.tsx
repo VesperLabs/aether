@@ -67,7 +67,9 @@ const MenuKeeper = () => {
           sx={{
             gap: 2,
             display: tabShop ? "flex" : "none",
+            flexWrap: "wrap",
             justifySelf: "start",
+            justifyContent: "end",
           }}
         >
           {shop?.map(({ item }, idx) => {
@@ -85,8 +87,10 @@ const MenuKeeper = () => {
         <Flex
           sx={{
             gap: 2,
+            flexWrap: "wrap",
             display: tabQuests ? "flex" : "none",
             justifySelf: "start",
+            justifyContent: "end",
           }}
         >
           {quests?.map((quest: Quest, idx: string) => {

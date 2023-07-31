@@ -1,7 +1,7 @@
 import { Box, Icon, Tooltip, Flex, Text, Divider } from "@aether/ui";
 import { useAppContext } from ".";
 import { useEffect, useState } from "react";
-import { msToHours } from "@aether/shared";
+import { isMobile, msToHours } from "@aether/shared";
 
 const STATUS_TOOLTIP_ID = "STATUS_TOOLTIP_ID";
 
@@ -62,18 +62,29 @@ const StatusToolTip = ({ show }) => {
 };
 
 const StatusIcon = () => {
-  const [show, setShow] = useState(false);
+  const [hovering, setHovering] = useState(false);
+
+  const handleMouseEnter = (e) => {
+    setHovering(true);
+  };
+
+  const handleMouseLeave = (e) => {
+    setHovering(false);
+  };
+
+  const outerMouseBinds = isMobile
+    ? {
+        onTouchStart: handleMouseEnter,
+        onTouchEnd: handleMouseLeave,
+      }
+    : {
+        onMouseEnter: handleMouseEnter,
+        onMouseLeave: handleMouseLeave,
+      };
   const { isConnected } = useAppContext();
   return (
-    <Box
-      data-tooltip-id={STATUS_TOOLTIP_ID}
-      sx={{ pointerEvents: "all" }}
-      onMouseEnter={() => {
-        setShow(true);
-      }}
-      onMouseLeave={() => setShow(false)}
-    >
-      <StatusToolTip show={show} />
+    <Box data-tooltip-id={STATUS_TOOLTIP_ID} sx={{ pointerEvents: "all" }} {...outerMouseBinds}>
+      <StatusToolTip show={hovering} />
       {isConnected ? (
         <Icon icon="./assets/icons/success.png" sx={{ opacity: 0.5 }} />
       ) : (
