@@ -28,12 +28,19 @@ app.use(express.static(path.join(__dirname, "../public")));
 app.get("/metrics", (req, res) => {
   const scene = aetherServer?.game?.scene?.scenes?.[0] as ServerScene;
   const { players, npcs, loots, doors } = scene ?? {};
+
+  const endTime = Date.now();
+  const clientTimestamp = req?.query?.timestamp
+    ? parseInt(req?.query?.timestamp as string, 10)
+    : endTime;
+
   const metrics: ServerMetrics = {
     playersOnline: Object.keys(players).length,
     npcsLoaded: Object.keys(npcs).length,
     doorsLoaded: Object.keys(doors).length,
     lootsOnGround: Object.keys(loots).length,
     serverSpawnTime: aetherServer?.spawnTime,
+    ping: endTime - clientTimestamp,
     upTime: aetherServer?.getUptime(),
   };
   res.json(metrics);

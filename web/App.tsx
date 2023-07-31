@@ -40,7 +40,7 @@ const Metrics = () => {
   const [isLoading, setLoading] = useState<Boolean>(true);
 
   useEffect(() => {
-    fetch(`${process.env.SERVER_URL}/metrics`, {
+    fetch(`${process.env.SERVER_URL}/metrics?timestamp=${Date.now()}`, {
       method: "GET",
     })
       .then((response) => response.json())
@@ -77,6 +77,7 @@ const Metrics = () => {
           <Text>Loots: {metrics?.lootsOnGround}</Text>
           <Text>Npcs: {metrics?.npcsLoaded}</Text>
           <Text>Uptime: {msToHours(metrics?.upTime)}</Text>
+          <Text>Ping: {metrics?.ping}</Text>
         </>
       ) : (
         <>
