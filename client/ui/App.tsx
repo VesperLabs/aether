@@ -238,8 +238,6 @@ function App({ socket, debug, game }) {
         if (args?.didLevel) {
           addMessage({ type: "success", message: `You are now level ${player?.stats?.level}!` });
         }
-      } else {
-        console.log("arf");
       }
     };
 

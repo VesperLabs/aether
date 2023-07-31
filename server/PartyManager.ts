@@ -80,7 +80,7 @@ class PartyManager {
 
   removeSocketFromParty(socket: Socket) {
     const playerId = socket?.id;
-    const player: Player = this?.scene?.players?.[playerId];
+    const player: ServerPlayer = this?.scene?.players?.[playerId];
     const party = this.getPartyById(player?.partyId);
 
     if (party) {
@@ -111,7 +111,7 @@ class PartyManager {
 
   addSocketToParty(socket: Socket, partyId: string, isLeader = false) {
     const playerId = socket?.id;
-    const player: Player = this.scene.players[playerId];
+    const player: ServerPlayer = this.scene.players[playerId];
     const party = this.getPartyById(partyId);
 
     if (party && player && !player.partyId) {

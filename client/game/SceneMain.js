@@ -131,7 +131,7 @@ class SceneMain extends Phaser.Scene {
 
     socket.on("playerAttack", ({ socketId, count }) => {
       const p = getPlayer(scene, socketId);
-      p.doAttack(count);
+      p.doAttack({ count });
     });
 
     socket.on("playerCastSpell", ({ socketId, ilvl, base, castAngle }) => {
@@ -146,7 +146,7 @@ class SceneMain extends Phaser.Scene {
     socket.on("npcAttack", ({ id, count, direction }) => {
       const n = getNpc(scene, id);
       n.direction = direction;
-      n.doAttack(count);
+      n.doAttack({ count });
     });
 
     socket.on("npcCastSpell", ({ id, ilvl, base, castAngle }) => {
@@ -256,7 +256,6 @@ class SceneMain extends Phaser.Scene {
     Probably can check if the hero is in a party before we do this
     to save some resources */
     if (elapsedTime >= 1000 && this?.hero?.party) {
-      console.log("yo");
       window.dispatchEvent(
         new CustomEvent("UPDATE_ROOM_PLAYERS", {
           detail: { players: this?.players?.getChildren?.() },

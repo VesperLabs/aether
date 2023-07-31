@@ -6,7 +6,7 @@ const ANIMATION_COMPLETE_EVENT = Phaser.Animations.Events.ANIMATION_COMPLETE;
 
 class Hit extends Phaser.GameObjects.Container {
   hits: any;
-  victim: Player;
+  victim: Character;
   elements: Array<Elements>;
   constructor(scene, victim, elements: Array<Elements>) {
     super(scene, victim.x, victim.y);

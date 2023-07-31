@@ -181,7 +181,7 @@ class Player extends Character {
       this.accessory.setVisible(false);
     }
   }
-  doAttack(count) {
+  doAttack({ count }) {
     const { state } = this;
     if (this?.isHero && (!state.hasWeapon || state.isDead || state.isAttacking)) return;
 
@@ -190,18 +190,7 @@ class Player extends Character {
 
     /* Play attack animation frame (human only) */
     if (RACES_WITH_ATTACK_ANIMS.includes(this.profile.race)) {
-      if (count === 1) {
-        /* Will always start with a right attack. Will either swing right or left if has weapon. */
-        if (state.hasWeaponRight) {
-          action = "attack_right";
-        } else if (state.hasWeaponLeft) {
-          action = "attack_left";
-        }
-      } else if (count === 2) {
-        /* Always finishes with a left if both hands have weapons */
-        if (state.hasWeaponLeft) action = "attack_left";
-      }
-      spellName = action;
+      action = spellName = this.getAttackActionName({ count });
     }
 
     state.isAttacking = true;
