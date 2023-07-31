@@ -14,7 +14,6 @@ class Spell extends Phaser.GameObjects.Container {
   private allowedTargets: Array<string>;
   private maxVisibleTime: integer;
   private maxActiveTime: integer;
-  private warningDelay: integer;
   private bodySize: integer;
   private scaleBase: number;
   private scaleMultiplier: number;
@@ -30,7 +29,7 @@ class Spell extends Phaser.GameObjects.Container {
     scene: ServerScene,
     { id, room, caster, target, abilitySlot, spellName, castAngle, ilvl }
   ) {
-    super(scene, caster.x, caster.y);
+    super(scene, caster.x, caster.y + caster.bodyOffsetY);
     this.id = id;
     this.scene = scene;
     this.room = room;
@@ -56,7 +55,6 @@ class Spell extends Phaser.GameObjects.Container {
     this.spellSpeed = details?.spellSpeed;
     this.scaleBase = details?.scaleBase;
     this.scaleMultiplier = details?.scaleMultiplier || 1;
-    this.warningDelay = details?.warningDelay || 0;
 
     scene.physics.add.existing(this);
     scene.events.on("update", this.update, this);
@@ -71,8 +69,6 @@ class Spell extends Phaser.GameObjects.Container {
       /* Hack: Up range is too long. This hack makes the top-down view more realistic */
       if (caster?.direction === "up") {
         this.y = this.caster.y;
-      } else {
-        this.y = caster.y + caster.bodyOffsetY;
       }
 
       /* Hack: fixes placement for non-human units .*/
@@ -94,8 +90,6 @@ class Spell extends Phaser.GameObjects.Container {
         this.spell.displayHeight = viewSize * rangeRight;
       }
     } else {
-      /* Make the spell come from the players center */
-      this.y = caster.y + caster.bodyOffsetY;
       this.setScale(this.scaleBase + ilvl * this.scaleMultiplier);
       this.body.setCircle(this?.bodySize, -this?.bodySize, -this?.bodySize);
     }
@@ -130,13 +124,9 @@ class Spell extends Phaser.GameObjects.Container {
   update() {
     const now = Date.now();
     this.adjustSpellPosition();
-    //start after warning time
-    if (now - this.state.spawnTime > this.warningDelay) {
-      const aliveMs = now - this.state.spawnTime;
-      this.checkCollisions();
-      this.body.setVelocity(this.velocityX, this.velocityY);
-      this.state.isExpired = aliveMs > this.maxActiveTime;
-    }
+    this.checkCollisions();
+    this.body.setVelocity(this.velocityX, this.velocityY);
+    this.state.isExpired = now - this.state.spawnTime > this.maxActiveTime;
   }
   checkCollisions() {
     const { target, caster, scene, allowedTargets, abilitySlot } = this;
@@ -152,8 +142,9 @@ class Spell extends Phaser.GameObjects.Container {
       /* If its a single target skip all other targets */
       if (target?.id && victim?.id !== target?.id) return true;
 
-      // const hitBox = this.isAttack ? victim : victim?.hitBox;
-      if (scene.physics.overlap(victim?.hitBox, this)) {
+      /* For NPCS, make their attack radius less */
+      const hitBox = this.isAttack && this?.caster?.kind !== "player" ? victim : victim?.hitBox;
+      if (scene.physics.overlap(hitBox, this)) {
         /* For attacks, prevent collision behind the player */
         if (this.isAttack) {
           if (direction === "up" && victim.y > caster.y) return true;
