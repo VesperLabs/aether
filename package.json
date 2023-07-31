@@ -40,7 +40,8 @@
     "socket.io": "^4.7.1",
     "socket.io-client": "^4.7.1",
     "theme-ui": "^0.15.5",
-    "use-double-tap": "^1.3.4"
+    "use-double-tap": "^1.3.4",
+    "eiows": "^6.6.2"
   },
   "devDependencies": {
     "@types/node": "^20.4.2",
