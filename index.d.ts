@@ -77,6 +77,7 @@ interface ServerMetrics {
   lootsOnGround: number;
   serverSpawnTime: number;
   upTime: number;
+  ping: number;
 }
 
 interface ServerScene extends Phaser.Scene {

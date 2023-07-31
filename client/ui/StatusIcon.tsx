@@ -19,7 +19,7 @@ const StatusToolTip = ({ show }) => {
 
   useEffect(() => {
     if (!show) return;
-    fetch(`${process.env.SERVER_URL}/metrics`, {
+    fetch(`${process.env.SERVER_URL}/metrics?timestamp=${Date.now()}`, {
       method: "GET",
     })
       .then((response) => response.json())
@@ -55,6 +55,7 @@ const StatusToolTip = ({ show }) => {
         <Text>Loots: {metrics?.lootsOnGround}</Text>
         <Text>Npcs: {metrics?.npcsLoaded}</Text>
         <Text>Uptime: {msToHours(metrics?.upTime)}</Text>
+        <Text>Ping: {metrics?.ping}</Text>
       </Flex>
     </Tooltip>
   );
