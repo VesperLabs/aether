@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 const Sprite = Phaser.GameObjects.Sprite;
 import spellDetails from "../shared/data/spellDetails.json";
+const BUFF_SPELLS = ["evasion", "brute", "endurance", "genius", "haste"];
 class Spell extends Phaser.GameObjects.Container {
   public id: string;
   public room: Room;
@@ -18,12 +19,13 @@ class Spell extends Phaser.GameObjects.Container {
   private scaleBase: number;
   private scaleMultiplier: number;
   private spellSpeed: integer;
-  private hits: Array<Hit>;
+  private hitIds: Array<string>;
   private isAttack: boolean;
   private abilitySlot: number;
   private spell: Phaser.GameObjects.Sprite;
   declare body: Phaser.Physics.Arcade.Body;
   declare scene: ServerScene;
+  declare stickToCaster: boolean;
   constructor(
     scene: ServerScene,
     { id, room, caster, target, abilitySlot, spellName, castAngle, ilvl }
@@ -41,7 +43,7 @@ class Spell extends Phaser.GameObjects.Container {
     };
     this.velocityX = 0;
     this.velocityY = 0;
-    this.hits = [];
+    this.hitIds = [];
     this.spell = scene.add.existing(new Sprite(scene, 0, 0, "blank", 0));
     this.isAttack = !abilitySlot;
     this.abilitySlot = abilitySlot;
@@ -53,7 +55,7 @@ class Spell extends Phaser.GameObjects.Container {
     this.bodySize = details?.bodySize;
     this.spellSpeed = details?.spellSpeed;
     this.scaleBase = details?.scaleBase;
-    this.scaleMultiplier = details?.scaleMultiplier;
+    this.scaleMultiplier = details?.scaleMultiplier || 1;
     this.warningDelay = details?.warningDelay || 0;
 
     scene.physics.add.existing(this);
@@ -61,9 +63,36 @@ class Spell extends Phaser.GameObjects.Container {
     scene.events.once("shutdown", this.destroy, this);
 
     if (this.isAttack) {
+      let viewSize = 44;
       /* Take body size of NPC caster in to account. or they wont get close enough to attack */
       const fullBodySize = this.bodySize + (caster?.body?.radius ?? 8) / 2;
       this.body.setCircle(fullBodySize, -fullBodySize, -fullBodySize);
+
+      /* Hack: Up range is too long. This hack makes the top-down view more realistic */
+      if (caster?.direction === "up") {
+        this.y = this.caster.y;
+      } else {
+        this.y = caster.y + caster.bodyOffsetY;
+      }
+
+      /* Hack: fixes placement for non-human units .*/
+      if (caster.profile.race !== "human") {
+        const difference = (this.caster.hitBox.body.height - this.caster.body.height) / 2;
+        this.y = this.caster.y - difference;
+      }
+
+      if (spellName.includes("attack_left")) {
+        const rangeLeft = caster?.equipment?.handLeft?.stats?.range * 2 || fullBodySize;
+        this.body.setCircle(rangeLeft * 14, -rangeLeft * 14, -rangeLeft * 14);
+        this.spell.displayWidth = viewSize * rangeLeft;
+        this.spell.displayHeight = viewSize * rangeLeft;
+      }
+      if (spellName.includes("attack_right")) {
+        const rangeRight = caster?.equipment?.handRight?.stats?.range * 2 || fullBodySize;
+        this.body.setCircle(rangeRight * 14, -rangeRight * 14, -rangeRight * 14);
+        this.spell.displayWidth = viewSize * rangeRight;
+        this.spell.displayHeight = viewSize * rangeRight;
+      }
     } else {
       /* Make the spell come from the players center */
       this.y = caster.y + caster.bodyOffsetY;
@@ -90,13 +119,17 @@ class Spell extends Phaser.GameObjects.Container {
       this.y = this.caster.y + 6;
       this.body.setOffset(-this.bodySize * 2, -this.bodySize);
     }
+    if (BUFF_SPELLS.includes(spellName)) {
+      this.stickToCaster = true;
+    }
 
     this.add(this.spell);
-
+    this.adjustSpellPosition();
     /* TODO: When we add buffs, make sure they do the same as adjustSpellPosition on clientside */
   }
   update() {
     const now = Date.now();
+    this.adjustSpellPosition();
     //start after warning time
     if (now - this.state.spawnTime > this.warningDelay) {
       const aliveMs = now - this.state.spawnTime;
@@ -106,31 +139,43 @@ class Spell extends Phaser.GameObjects.Container {
     }
   }
   checkCollisions() {
-    if (this.state.isExpired) return;
-    const { target, caster, scene, allowedTargets, room, abilitySlot } = this;
+    const { target, caster, scene, allowedTargets, abilitySlot } = this;
+    const direction = caster?.direction;
     const players = this.room.playerManager.players?.getChildren() || [];
     const npcs = this.room.npcManager.npcs?.getChildren() || [];
-
-    [...npcs, ...players]?.forEach((victim) => {
-      /* For attacks, we look at the body to make them easier to dodge. */
-      const hitBox = this.isAttack ? victim : victim?.hitBox;
-      /* If the victim is already in the hitList */
-      if (!victim || this.hits.some((h) => h?.to == victim?.id)) return;
+    [...npcs, ...players]?.every((victim) => {
+      if (!victim || this.hitIds.includes(victim?.id) || victim?.state?.isDead) return true;
 
       /* If its not a self-hitting spell */
-      if (!allowedTargets?.includes("self") && victim?.id === caster?.id) return;
+      if (!allowedTargets?.includes("self") && victim?.id === caster?.id) return true;
 
       /* If its a single target skip all other targets */
-      if (target?.id && victim?.id !== target?.id) return;
+      if (target?.id && victim?.id !== target?.id) return true;
 
-      if (scene?.physics?.overlap?.(hitBox, this)) {
-        /* If spell, or attack, calculate damage accordingly */
-        const newHits = caster.calculateDamage(victim, abilitySlot);
+      // const hitBox = this.isAttack ? victim : victim?.hitBox;
+      if (scene.physics.overlap(victim?.hitBox, this)) {
+        /* For attacks, prevent collision behind the player */
+        if (this.isAttack) {
+          if (direction === "up" && victim.y > caster.y) return true;
+          if (direction === "down" && victim.y < caster.y) return true;
+          if (direction === "left" && victim.x > caster.x) return true;
+          if (direction === "right" && victim.x < caster.x) return true;
+        }
 
-        if (newHits?.length > 0) this.hits = [...this.hits, ...newHits];
-        scene.io.to(room?.name).emit("assignDamage", this.hits);
+        // keep track of all the characters this spell hit
+        this.hitIds.push(victim.id);
+        this.hitIds = [...new Set(this.hitIds)];
+        // send one hit at a time
+        this.caster.doHit([victim.id], abilitySlot);
       }
+      return true;
     });
+  }
+  adjustSpellPosition() {
+    if (this.stickToCaster) {
+      this.x = this.caster.x;
+      this.y = this.caster.y + this.caster.bodyOffsetY;
+    }
   }
   getTrimmed() {
     return {

@@ -2,6 +2,7 @@ import Character from "../shared/Character";
 import ItemBuilder from "../shared/ItemBuilder";
 import { randomNumber, cloneObject, calculateNextMaxExp, addValuesToExistingKeys } from "./utils";
 import buffList from "../shared/data/buffList.json";
+
 class ServerCharacter extends Character {
   declare scene: ServerScene;
   constructor(scene: ServerScene, args) {
@@ -269,6 +270,10 @@ class ServerCharacter extends Character {
     this.stats = ns;
 
     this.state.activeSets = activeSets;
+
+    //update server data on what hands we have items in
+    this.visibleEquipment = this.getVisibleEquipment();
+    this.checkAttackHands();
   }
   calculateElementalDamage(eleDamages, victim) {
     const {
@@ -328,8 +333,8 @@ class ServerCharacter extends Character {
 
     return { eleDamage, elements: elements?.map((d) => d?.type) };
   }
-  calculateSpellDamage(victim: any, abilitySlot: number) {
-    if (victim?.state?.isDead) return false;
+  calculateSpellDamage(victim: any, abilitySlot: number): Array<Hit> {
+    if (victim?.state?.isDead) return [];
     const hits: Array<Hit> = [];
     const { effects = {}, buffs } = this?.abilities?.[abilitySlot] ?? {};
     // add elemental damage from stats to the spell's damages
@@ -405,8 +410,8 @@ class ServerCharacter extends Character {
     });
     return hits;
   }
-  calculateAttackDamage(victim) {
-    if (victim?.state?.isDead) return false;
+  calculateAttackDamage(victim): Array<Hit> {
+    if (victim?.state?.isDead) return [];
     const dodgeRoll = randomNumber(1, 100);
     const blockRoll = randomNumber(1, 100);
     const critRoll = randomNumber(1, 100);
@@ -497,7 +502,7 @@ class ServerCharacter extends Character {
     });
     return hits;
   }
-  calculateDamage(victim: any, abilitySlot: number) {
+  calculateDamage(victim: any, abilitySlot: number): Array<Hit> {
     /* If abilityslot is blank we are doing an attack */
     return abilitySlot
       ? this.calculateSpellDamage(victim, abilitySlot)
@@ -590,7 +595,6 @@ class ServerCharacter extends Character {
   checkIsResting() {
     const isOutOfCombat = this.checkOutOfCombat();
     const isResting = this.buffs?.some((b) => b?.name === "rest");
-    //if (this.profile.userName === "Player1") console.log(isResting);
     if (isOutOfCombat && !isResting) {
       this.addBuff("rest", 1);
       this.state.hasExpiredBuffs = true;
@@ -629,6 +633,9 @@ class ServerCharacter extends Character {
       this.calculateStats();
       this.state.hasExpiredBuffs = true;
     }
+  }
+  doHit(ids, abilitySlot) {
+    //placeholder
   }
 }
 

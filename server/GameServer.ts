@@ -2,7 +2,6 @@ import "@geckos.io/phaser-on-nodejs";
 import { mapList } from "../shared/Maps";
 import skinTints from "../shared/data/skinTints.json";
 import hairTints from "../shared/data/hairTints.json";
-import spellDetails from "../shared/data/spellDetails.json";
 import { Socket, Server } from "socket.io";
 import path from "path";
 import crypto from "crypto";
@@ -35,7 +34,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
   public loots: Record<string, Loot>;
   public npcs: Record<string, Npc>;
   public quests: Record<string, Quest>;
-  public players: Record<string, Player>;
+  public players: Record<string, ServerPlayer>;
   public roomManager: RoomManager;
   public partyManager: PartyManager;
   public spells: any;
@@ -148,39 +147,16 @@ class ServerScene extends Phaser.Scene implements ServerScene {
 
       socket.on("attack", ({ count, direction } = {}) => {
         const player = scene.players[socketId];
-        if (player?.state?.isDead) return;
-        if (player?.state?.isAttacking) return;
-        //Get the SP cost of the attack.
-        const spCost = player.getAttackSpCost(count);
-        player.direction = direction;
-        player.modifyStat("sp", -spCost);
-        io.to(player?.roomName).emit("modifyPlayerStat", {
-          socketId,
-          type: "sp",
-          amount: -spCost,
-        });
+        player.doAttack({ count, direction });
+        // update players other than the player that we attacked
         socket.to(player?.roomName).emit("playerAttack", { socketId, count });
       });
 
       socket.on("castSpell", ({ abilitySlot, castAngle } = {}) => {
         const player = scene.players[socketId];
-        const { ilvl, base, stats } = player?.abilities?.[abilitySlot] || {};
-        const mpCost = stats?.mpCost || 1;
-        //if the ability slotId is not in the activeItemSlots return
-        if (!player?.activeItemSlots?.includes?.(`${abilitySlot}`)) return;
-        if (player?.state?.isDead || !ilvl || !base) return;
-        if (!player.canCastSpell(abilitySlot)) return;
-        if (!player.checkCastReady()) return;
-        // use the mana
-        player.state.lastCast = Date.now();
-        player.modifyStat("mp", -mpCost);
-        io.to(player?.roomName).emit("modifyPlayerStat", {
-          socketId,
-          type: "mp",
-          amount: -mpCost,
-        });
+        const { ilvl, base } = player?.abilities?.[abilitySlot] || {};
+        player.doCast({ abilitySlot, castAngle });
 
-        // TODO: spell and attacks for players is handled clientSide. How can we fix it?
         socket.to(player?.roomName).emit("playerCastSpell", { socketId, base, ilvl, castAngle });
       });
 
@@ -288,94 +264,6 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         const player = scene.players[socketId];
         player.direction = direction;
         io.to(player?.roomName).emit("changeDirection", { socketId, direction });
-      });
-
-      socket.on("hit", ({ ids, abilitySlot } = {}) => {
-        // ability slot will be null for attacks
-        const hero: Player = scene.players[socketId];
-        if (!hero || hero?.state?.isDead) return;
-        const roomName: string = hero?.roomName;
-        const abilityName = hero?.abilities?.[abilitySlot]?.base || "attack_left";
-        const allowedTargets = spellDetails?.[abilityName]?.allowedTargets;
-        const party = this.partyManager.getPartyById(hero?.partyId);
-        /* Create hitList for npcs */
-        let hitList: Array<Hit> = [];
-        let totalExpGain: number = 0;
-        let playerIdsToUpdate = []; //ids of players that either got exp or buffs
-        let playerIdsThatLeveled = []; //ids of players who got a level up.
-        const npcs: Array<Npc> = scene.roomManager.rooms[roomName]?.npcManager?.getNpcs();
-        const players: Array<Player> =
-          scene.roomManager.rooms[roomName]?.playerManager?.getPlayers();
-
-        for (const npc of npcs) {
-          /* TODO: verify location of hit before we consider it a hit */
-          if (!ids?.includes(npc.id)) continue;
-          // only allow spells to hit intended targets
-          if (!allowedTargets?.includes("enemy")) continue;
-
-          const newHits = hero.calculateDamage(npc, abilitySlot);
-
-          /* If we kill the NPC */
-          if (newHits?.find?.((h: Hit) => h?.type === "death")) {
-            npc.dropLoot(hero?.stats?.magicFind);
-            /* Add EXP, check if we leveled */
-            totalExpGain += parseInt(npc?.stats?.expValue) || 0;
-            /* Add the npc to the players kill list */
-            hero.addNpcKill(npc);
-          }
-          if (newHits?.length > 0) hitList = [...hitList, ...newHits];
-        }
-        /* Send exp update to client */
-        if (hitList?.some((hit) => hit.type === "death")) {
-          // either you are in a party, or you are in a fake party object
-          const partyMembers = this.partyManager.getPartyById(hero?.partyId)?.members || [
-            { id: hero?.id, roomName: hero?.roomName },
-          ];
-          // party members in same room will gain exp
-          const partyMembersInRoom = partyMembers?.filter((m) => m?.roomName === hero?.roomName);
-          for (const m of partyMembersInRoom) {
-            const member: Player = scene.players[m?.id];
-            const didLevel = member.assignExp(totalExpGain);
-
-            playerIdsToUpdate.push(member?.id);
-            if (didLevel) {
-              playerIdsThatLeveled.push(member?.id);
-            }
-          }
-        }
-        for (const player of players) {
-          const targetIsInParty = party?.members?.find((m) => m?.id === player?.id);
-          /* TODO: verify location of hit before we consider it a hit */
-          if (!ids?.includes(player.id)) continue;
-          // only allow spells to hit intended targets
-          if (!allowedTargets?.includes("self")) {
-            if (player.id === hero.id) continue;
-          }
-          if (!allowedTargets?.includes("enemy")) {
-            if (player.id !== hero.id && !targetIsInParty) continue;
-          }
-          if (!allowedTargets.includes("ally")) {
-            if (targetIsInParty) continue;
-          }
-          const newHits = hero.calculateDamage(player, abilitySlot);
-
-          if (newHits?.length > 0) hitList = [...hitList, ...newHits];
-        }
-
-        // anyone who got buffed needs to have their state updated.
-        const buffedEntityIds = hitList?.filter((h) => h?.type === "buff")?.map((h) => h?.to);
-        playerIdsToUpdate = [...playerIdsToUpdate, ...buffedEntityIds];
-        // send each buffed hero and npc their new state
-        if (playerIdsToUpdate?.length > 0) {
-          const roomState = getRoomState(scene, roomName);
-          io.to(roomName).emit("buffUpdate", {
-            npcs: roomState?.npcs?.filter((n) => buffedEntityIds?.includes(n?.id)),
-            players: roomState?.players?.filter((n) => playerIdsToUpdate?.includes(n?.id)),
-            playerIdsThatLeveled,
-          });
-        }
-
-        io.to(roomName).emit("assignDamage", hitList);
       });
 
       socket.on("enterDoor", (doorName) => {
@@ -860,7 +748,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       });
 
       socket.on("chatNpc", ({ npcId } = {}) => {
-        const player: Player = scene?.players?.[socketId];
+        const player: ServerPlayer = scene?.players?.[socketId];
         const npc = scene?.npcs?.[npcId];
         npc.talkingIds.push(socketId);
         player.state.targetNpcId = npcId;
@@ -934,7 +822,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       });
 
       socket.on("acceptQuest", (questId: string) => {
-        const player: Player = scene?.players?.[socketId];
+        const player: ServerPlayer = scene?.players?.[socketId];
         const currentQuest = scene.quests?.[questId];
         const foundQuest = player?.getPlayerQuestStatus(currentQuest);
         /* If the quest wasnt there, we can accept it */
@@ -947,10 +835,10 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       });
 
       socket.on("inviteToParty", (inviteeSocketId: string) => {
-        const player: Player = scene?.players?.[socket.id];
+        const player: ServerPlayer = scene?.players?.[socket.id];
         const party =
           this.partyManager.getPartyById(player?.partyId) || this.partyManager.createParty(socket);
-        const invitee: Player = scene?.players?.[inviteeSocketId];
+        const invitee: ServerPlayer = scene?.players?.[inviteeSocketId];
 
         if (!invitee) {
           return socket.emit("message", {
@@ -977,7 +865,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       });
 
       socket.on("partyAccept", (partyId: string) => {
-        const player: Player = scene.players[socketId];
+        const player: ServerPlayer = scene.players[socketId];
         const party = this.partyManager.getPartyById(partyId);
 
         if (!player || !party) {
@@ -1008,7 +896,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       });
 
       socket.on("completeQuest", (questId: string) => {
-        const player: Player = scene?.players?.[socketId];
+        const player: ServerPlayer = scene?.players?.[socketId];
         const currentQuest = scene.quests?.[questId];
         const foundQuest = player?.getPlayerQuestStatus(currentQuest);
         /* If the quest is ready, we turn it in */

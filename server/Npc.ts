@@ -403,6 +403,38 @@ class Npc extends Character implements Npc {
       }
     }
   }
+  doHit(ids: any, abilitySlot: any): void {
+    const { scene } = this ?? {};
+    const roomName: string = this?.room?.name;
+    const players: Array<ServerPlayer> =
+      scene.roomManager.rooms[roomName]?.playerManager?.getPlayers();
+
+    const abilityName = this?.abilities?.[abilitySlot]?.base || "attack_left";
+    const allowedTargets = spellDetails?.[abilityName]?.allowedTargets;
+    const targetIsInParty = false;
+
+    let hitList: Array<Hit> = [];
+
+    for (const player of players) {
+      /* TODO: verify location of hit before we consider it a hit */
+      if (!ids?.includes(player.id)) continue;
+      // only allow spells to hit intended targets
+      if (!allowedTargets?.includes("self")) {
+        if (player.id === this.id) continue;
+      }
+      if (!allowedTargets?.includes("enemy")) {
+        if (player.id !== this.id && !targetIsInParty) continue;
+      }
+      if (!allowedTargets.includes("ally")) {
+        if (targetIsInParty) continue;
+      }
+      const newHits = this.calculateDamage(player, abilitySlot);
+
+      if (newHits?.length > 0) hitList = [...hitList, ...newHits];
+    }
+
+    scene.io.to(roomName).emit("assignDamage", hitList);
+  }
   dropLoot(magicFind: number) {
     let runners = [];
     const ilvl = 1 + Math.floor(this.stats.level / 10);

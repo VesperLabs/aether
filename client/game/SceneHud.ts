@@ -312,7 +312,7 @@ function moveDirectHero(scene, time) {
     hero.state.lastAttack < Date.now() - hero.getFullAttackDelay() - 60
   ) {
     updateAttackCooldown(hero);
-    hero?.doAttack?.(1);
+    hero?.doAttack?.({ count: 1 });
   }
 
   if (hero.state.isAttacking || hero?.state.isAiming || hero.state.holdingAttack) {

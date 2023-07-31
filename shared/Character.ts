@@ -144,7 +144,7 @@ class Character extends Phaser.GameObjects.Container {
     this.bodyCenterY = this.headY / 2 + this.bodySize;
     this.add(this.hitBox);
   }
-  doAttack(count: integer) {
+  doAttack(props: any) {
     //placeholder
   }
   modifyStat(key: string, amount: any) {
@@ -213,7 +213,7 @@ class Character extends Phaser.GameObjects.Container {
   }
   triggerSecondAttack() {
     if (this.action === "attack_right" && this.state.hasWeaponLeft) {
-      this.doAttack(2);
+      this.doAttack({ count: 2 });
     }
   }
   updateVisibleEquipment() {
@@ -235,6 +235,21 @@ class Character extends Phaser.GameObjects.Container {
     if (leftType === "weapon") this.state.hasWeaponLeft = true;
     if (this.profile.race !== "human") this.state.hasWeaponRight = true;
     if (this.state.hasWeaponRight || this.state.hasWeaponLeft) this.state.hasWeapon = true;
+  }
+  getAttackActionName({ count }) {
+    let actionName = this.action;
+    if (count === 1) {
+      /* Will always start with a right attack. Will either swing right or left if has weapon. */
+      if (this.state.hasWeaponRight) {
+        actionName = "attack_right";
+      } else if (this.state.hasWeaponLeft) {
+        actionName = "attack_left";
+      }
+    } else if (count === 2) {
+      /* Always finishes with a left if both hands have weapons */
+      if (this.state.hasWeaponLeft) actionName = "attack_left";
+    }
+    return actionName;
   }
   getPlayerQuestStatus(quest: Quest) {
     const playerQuest = this.quests.find((q) => q?.questId === quest?.id);

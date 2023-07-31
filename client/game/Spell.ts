@@ -60,7 +60,7 @@ class Spell extends Phaser.GameObjects.Container {
       if (spellName.includes("attack_left")) {
         this.setAngle(tiltAngle);
         const rangeLeft = caster?.equipment?.handLeft?.stats?.range * 2 || caster?.body?.radius / 8;
-        this.body.setCircle(rangeLeft * 14, -rangeLeft * 14, -rangeLeft * 14);
+
         this.spell.displayWidth = viewSize * rangeLeft;
         this.spell.displayHeight = viewSize * rangeLeft;
         this.spell.setFlipX(false);
@@ -69,7 +69,7 @@ class Spell extends Phaser.GameObjects.Container {
         this.setAngle(-tiltAngle);
         const rangeRight =
           caster?.equipment?.handRight?.stats?.range * 2 || caster?.body?.radius / 8;
-        this.body.setCircle(rangeRight * 14, -rangeRight * 14, -rangeRight * 14);
+
         this.spell.displayWidth = viewSize * rangeRight;
         this.spell.displayHeight = viewSize * rangeRight;
         this.spell.setFlipX(true);
@@ -131,13 +131,6 @@ class Spell extends Phaser.GameObjects.Container {
     /* Step up the alive time */
     this.state.aliveTime += deltaTime;
     const isSpellExpired = this.state.aliveTime > this.maxVisibleTime;
-    const isSpellActive = this.state.aliveTime < this.maxActiveTime;
-    /* Only check collisions for hero if the spell is active */
-    if (this.caster.isHero && isSpellActive && !this.skipCollision) {
-      /* Prime it and then send it */
-      this.checkCollisions();
-      this.checkCollisions(true);
-    }
     /* Remove the spell */
     if (isSpellExpired) {
       this.destroy(true);
@@ -154,32 +147,6 @@ class Spell extends Phaser.GameObjects.Container {
     if (this.layerDepth === "top") {
       this.setDepth(100 + this.y + this.bodySize);
     }
-  }
-  checkCollisions(sendServer = false) {
-    const { abilitySlot, caster, scene } = this || {};
-    const direction = caster?.direction;
-    const npcs = scene.npcs?.getChildren() || [];
-    const players = scene.players?.getChildren() || [];
-    [...npcs, ...players]?.forEach((victim) => {
-      if (!victim || this.hitIds.includes(victim?.id) || victim?.state?.isDead) return;
-      if (scene.physics.overlap(victim?.hitBox, this)) {
-        /* For attacks, prevent collision behind the player */
-        if (this.isAttack) {
-          if (direction === "up" && victim.y > caster.y) return;
-          if (direction === "down" && victim.y < caster.y) return;
-          if (direction === "left" && victim.x > caster.x) return;
-          if (direction === "right" && victim.x < caster.x) return;
-        }
-        this.touchedIds.push(victim?.id);
-        if (sendServer) {
-          /* remove hitIds from touchedIds */
-          this.touchedIds = this.touchedIds.filter((id) => !this.hitIds.includes(id));
-          scene.socket.emit("hit", { ids: [...new Set(this.touchedIds)], abilitySlot });
-          /* track which touchedIds were sent to the server */
-          this.hitIds = [...this.hitIds, ...this.touchedIds];
-        }
-      }
-    });
   }
   destroy() {
     if (this.scene) this.scene.events.off("update", this.update, this);

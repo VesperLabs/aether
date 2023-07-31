@@ -84,7 +84,8 @@ interface ServerScene extends Phaser.Scene {
   loots: Record<string, Loot>;
   npcs: Record<string, Character>;
   quests: Record<string, Quest>;
-  players: Record<string, Player>;
+  players: Record<string, ServerPlayer>;
+  partyManager: any;
   roomManager: RoomManager;
   spells: any;
   db: any;
@@ -152,7 +153,7 @@ interface Character extends Phaser.GameObjects.Container {
   body: Phaser.Physics.Arcade.Body;
   vx: any;
   vy: any;
-  kind: any;
+  kind: string;
   state: any;
   gold: any;
   profile: any;
@@ -165,6 +166,9 @@ interface Character extends Phaser.GameObjects.Container {
   abilities: Record<number, Item>;
   activeItemSlots: Array<string>;
   bodyCenterY: number;
+  hitBox: any;
+  bodyOffsetY: number;
+  doHit(ids, abilitySlot): void;
   addBuff(name, level);
   calculateAttackDamage(victim: any);
   calculateSpellDamage(victim: any, abilitySlot: number);
@@ -199,7 +203,7 @@ interface Npc extends Character {
   dropLoot(magicFind: number): void;
 }
 
-interface Player extends Character {
+interface ServerPlayer extends Character {
   email?: string;
   partyId?: string;
   addQuest(quest: Quest): void;
@@ -220,6 +224,8 @@ interface Player extends Character {
   deleteInventoryItemAtId(id: string);
   subtractBagItemAtId(id: string, amount: integer);
   addInventoryItem(item: Item): void;
+  doAttack(props?: any): void;
+  doCast(props?: any): void;
   setDead(): void;
   isInventoryFull(): boolean;
   addNpcKill(npc: Npc): void;
