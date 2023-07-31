@@ -145,6 +145,10 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         socket.emit("formSuccess", { success: "Account created", email });
       });
 
+      socket.on("latency", function (startTime, cb) {
+        cb(startTime);
+      });
+
       socket.on("attack", ({ count, direction } = {}) => {
         const player = scene.players[socketId];
         player.doAttack({ count, direction });
