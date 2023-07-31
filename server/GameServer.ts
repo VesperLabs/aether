@@ -1039,6 +1039,10 @@ export default class Game {
       cors: {
         origin: "*",
       },
+      wsEngine: require("eiows").Server,
+      perMessageDeflate: {
+        threshold: 32768,
+      },
     });
 
     this.game = new Phaser.Game({
