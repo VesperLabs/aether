@@ -54,7 +54,7 @@ const Metrics = () => {
   }, []);
 
   if (isLoading) {
-    return "";
+    return <></>;
   }
 
   return (
