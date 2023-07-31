@@ -3,7 +3,6 @@
     "allowedTargets": ["enemy"],
     "maxVisibleTime": 200,
     "maxActiveTime": 100,
-    "warningDelay": 50,
     "bodySize": 16,
     "layerDepth": "bottom"
   },
@@ -11,7 +10,6 @@
     "allowedTargets": ["enemy"],
     "maxVisibleTime": 200,
     "maxActiveTime": 100,
-    "warningDelay": 50,
     "bodySize": 16,
     "layerDepth": "bottom"
   },
