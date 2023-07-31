@@ -3,6 +3,7 @@ import { mapList } from "../shared/Maps";
 import skinTints from "../shared/data/skinTints.json";
 import hairTints from "../shared/data/hairTints.json";
 import { Socket, Server } from "socket.io";
+import eiows from "eiows";
 import path from "path";
 import crypto from "crypto";
 import {
@@ -1039,7 +1040,7 @@ export default class Game {
       cors: {
         origin: "*",
       },
-      wsEngine: require("eiows").Server,
+      wsEngine: eiows.Server,
       perMessageDeflate: {
         threshold: 32768,
       },
