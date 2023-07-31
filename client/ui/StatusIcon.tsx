@@ -14,8 +14,9 @@ const TextDivider = ({ children, sx }: any) => (
 
 const StatusToolTip = ({ show }) => {
   const [metrics, setMetrics] = useState<ServerMetrics>();
+  const [socketPing, setSocketPing] = useState<number>();
   const [isLoading, setLoading] = useState<Boolean>(true);
-  const { isConnected } = useAppContext();
+  const { isConnected, socket } = useAppContext();
 
   useEffect(() => {
     if (!show) return;
@@ -30,6 +31,12 @@ const StatusToolTip = ({ show }) => {
       .catch((error) => {
         setLoading(false);
       });
+
+    //using sockets to calculate latency instead of webserver
+    socket.emit("latency", Date.now(), function (startTime) {
+      var latency = Date.now() - startTime;
+      setSocketPing(latency);
+    });
   }, [show]);
 
   if (isLoading) {
@@ -55,7 +62,7 @@ const StatusToolTip = ({ show }) => {
         <Text>Loots: {metrics?.lootsOnGround}</Text>
         <Text>Npcs: {metrics?.npcsLoaded}</Text>
         <Text>Uptime: {msToHours(metrics?.upTime)}</Text>
-        <Text>Ping: {metrics?.ping}</Text>
+        <Text>Ping: {socketPing}</Text>
       </Flex>
     </Tooltip>
   );
