@@ -40,6 +40,15 @@ const getDatabaseApi = (db) => ({
     const user = await db.collection("users").findOne({ email });
     return user;
   },
+  getAllUsers: async () => {
+    try {
+      const users = await db.collection("users").find().toArray();
+      return users;
+    } catch (error) {
+      console.error("Error while fetching all users:", error);
+      throw error;
+    }
+  },
   getUserByLogin: async ({ email, password = "" }) => {
     if (!email) return console.log("❌ Email not provided");
     const user = await db

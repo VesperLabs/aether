@@ -18,8 +18,6 @@ import {
   getBuffRoomState,
   PLAYER_DEFAULT_SPAWN,
 } from "./utils";
-import { initDatabase } from "./db";
-import { initFakeDatabase } from "./db/fake";
 import RoomManager from "./RoomManager";
 import PartyManager from "./PartyManager";
 import Phaser from "phaser";
@@ -41,9 +39,10 @@ class ServerScene extends Phaser.Scene implements ServerScene {
   public db: any;
   public io: any;
 
-  constructor({ io }) {
+  constructor({ io, db }) {
     super({ key: "ServerScene" });
     this.io = io;
+    this.db = db;
   }
   async preload() {
     /* Need to install plugins here in headless mode */
@@ -51,11 +50,6 @@ class ServerScene extends Phaser.Scene implements ServerScene {
     mapList.forEach((asset: MapAsset) => {
       this.load.tilemapTiledJSON(asset?.name, path.join(__dirname, `../public/${asset.json}`));
     });
-
-    // can run in offline mode. we don't connect to any DB or save anything.
-    this.db = process.env.MONGO_URL
-      ? await initDatabase(process.env.MONGO_URL)
-      : await initFakeDatabase();
   }
   create() {
     const scene = this;
@@ -1032,7 +1026,8 @@ export default class Game {
   io: Server;
   game: Phaser.Game;
   spawnTime: number;
-  constructor({ httpServer }) {
+  db: any;
+  constructor({ httpServer, db }) {
     this.spawnTime = Date.now();
 
     this.io = new Server(httpServer, {
@@ -1040,6 +1035,8 @@ export default class Game {
         origin: "*",
       },
     });
+
+    this.db = db;
 
     this.game = new Phaser.Game({
       type: Phaser.HEADLESS,
@@ -1062,7 +1059,7 @@ export default class Game {
           },
         },
       },
-      scene: [new ServerScene({ io: this.io })],
+      scene: [new ServerScene({ io: this.io, db: this.db })],
     });
   }
   getUptime() {

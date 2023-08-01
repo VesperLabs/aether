@@ -1,7 +1,9 @@
 import path from "path";
 import { config } from "dotenv";
 import GameServer from "./GameServer";
-//import { getFullCharacterState } from "./utils";
+import { initDatabase } from "./db";
+import { initFakeDatabase } from "./db/fake";
+import ServerCharacter from "./Character";
 
 config({ path: path.join(__dirname, "/../.env") });
 const cors = require("cors");
@@ -9,50 +11,75 @@ const express = require("express");
 const app = express();
 const http = require("http");
 const httpServer = http.createServer(app);
-const aetherServer = new GameServer({ httpServer });
-app.use(
-  cors({
-    origin: "*", // Replace with your allowed origin
-  })
-);
 
-app.use(express.static(path.join(__dirname, "../public")));
+async function initialize() {
+  // can run in offline mode. we don't connect to any DB or save anything.
+  const db = process.env.MONGO_URL
+    ? await initDatabase(process.env.MONGO_URL)
+    : await initFakeDatabase();
 
-// app.get("/players/all", (req, res) => {
-//   const scene = game.game.scene.scenes?.[0] as ServerScene;
-//   const { players } = scene ?? {};
-//   const playerStates = Object.values(players).map(getFullCharacterState);
-//   res.json(playerStates);
-// });
+  const aetherServer = new GameServer({ httpServer, db });
 
-app.get("/metrics", (req, res) => {
-  const scene = aetherServer?.game?.scene?.scenes?.[0] as ServerScene;
-  const { players, npcs, loots, doors } = scene ?? {};
-
-  const endTime = Date.now();
-  const clientTimestamp = req?.query?.timestamp
-    ? parseInt(req?.query?.timestamp as string, 10)
-    : endTime;
-
-  const metrics: ServerMetrics = {
-    playersOnline: Object.keys(players).length,
-    npcsLoaded: Object.keys(npcs).length,
-    doorsLoaded: Object.keys(doors).length,
-    lootsOnGround: Object.keys(loots).length,
-    serverSpawnTime: aetherServer?.spawnTime,
-    ping: endTime - clientTimestamp,
-    upTime: aetherServer?.getUptime(),
-  };
-  res.json(metrics);
-});
-
-httpServer.listen(process.env.PORT, () => {
-  console.log(
-    `💻 Running ${process.env.MONGO_URL ? "[online]" : "[offline]"} on ${
-      process.env.SERVER_URL
-    } @ ${process.env.SERVER_FPS}fps`
+  app.use(
+    cors({
+      origin: "*", // Replace with your allowed origin
+    })
   );
-});
+
+  app.use(express.static(path.join(__dirname, "../public")));
+
+  // app.get("/metrics/players", (req, res) => {
+  //   const scene = aetherServer?.game?.scene?.scenes?.[0] as ServerScene;
+  //   const { players } = scene ?? {};
+  //   const playerStates = Object.values(players).map(getFullCharacterState);
+  //   res.json(playerStates);
+  // });
+
+  // app.get("/players/all", async (req, res) => {
+  //   const players = await db.getAllUsers();
+  //   const scene = aetherServer?.game?.scene?.scenes?.[0] as ServerScene;
+  //   res.json(
+  //     players?.map((p) => {
+  //       const char = new ServerCharacter(scene, p);
+  //       char.calculateStats();
+  //       return {
+  //         equipment: char?.equipment,
+  //         activeItemSlots: char?.activeItemSlots,
+  //         profile: char?.profile,
+  //       };
+  //     })
+  //   );
+  // });
+
+  app.get("/metrics", (req, res) => {
+    const scene = aetherServer?.game?.scene?.scenes?.[0] as ServerScene;
+    const { players, npcs, loots, doors } = scene ?? {};
+
+    const endTime = Date.now();
+    const clientTimestamp = req?.query?.timestamp
+      ? parseInt(req?.query?.timestamp as string, 10)
+      : endTime;
+
+    const metrics: ServerMetrics = {
+      playersOnline: Object.keys(players).length,
+      npcsLoaded: Object.keys(npcs).length,
+      doorsLoaded: Object.keys(doors).length,
+      lootsOnGround: Object.keys(loots).length,
+      serverSpawnTime: aetherServer?.spawnTime,
+      ping: endTime - clientTimestamp,
+      upTime: aetherServer?.getUptime(),
+    };
+    res.json(metrics);
+  });
+
+  httpServer.listen(process.env.PORT, () => {
+    console.log(
+      `💻 Running ${process.env.MONGO_URL ? "[online]" : "[offline]"} on ${
+        process.env.SERVER_URL
+      } @ ${process.env.SERVER_FPS}fps`
+    );
+  });
+}
 
 process.on("SIGINT", function () {
   process.exit();
@@ -61,3 +88,5 @@ process.on("SIGINT", function () {
 process.once("SIGUSR2", function () {
   process.exit();
 });
+
+initialize();
