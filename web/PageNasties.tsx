@@ -1,5 +1,5 @@
 import { Box, Flex } from "@aether/ui";
-import Model from "./Model";
+import NpcRender from "./NpcRender";
 import { nasties } from "@aether/shared";
 import RowTitle from "./RowTitle";
 
@@ -11,7 +11,7 @@ export default function () {
         {Object.entries(nasties)?.map(([key, nasty]) => {
           return (
             <Box key={key}>
-              <Model model={{ ...nasty, key }} />
+              <NpcRender model={{ ...nasty, key }} />
             </Box>
           );
         })}

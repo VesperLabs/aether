@@ -42,7 +42,7 @@ const getDatabaseApi = (db) => ({
   },
   getAllUsers: async () => {
     try {
-      const users = await db.collection("users").find().toArray();
+      const users = await db.collection("users").find().sort({ "baseStats.level": -1 }).toArray();
       return users;
     } catch (error) {
       console.error("Error while fetching all users:", error);

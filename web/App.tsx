@@ -6,6 +6,7 @@ import PageNasties from "./PageNasties";
 import { useEffect, useState } from "react";
 import RowTitle from "./RowTitle";
 import { msToHours } from "@aether/shared";
+import PagePlayers from "./PagePlayers";
 
 const App = () => {
   return (
@@ -25,10 +26,12 @@ const App = () => {
         <Flex sx={{ gap: 3 }}>
           <Link href="/items">Items</Link>
           <Link href="/monsters">Monsters</Link>
+          <Link href="/players">Players</Link>
         </Flex>
         <Box>
           <Route path="/items" component={PageItems as any} />
           <Route path="/monsters" component={PageNasties as any} />
+          <Route path="/players" component={PagePlayers as any} />
         </Box>
       </Flex>
     </ThemeProvider>
