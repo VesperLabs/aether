@@ -1,8 +1,14 @@
 import { useRef, useEffect, useState } from "react";
 import { Box } from "@aether/ui";
 import { useAppContext } from "./";
-import { HAIR_HIDING_HELMETS, ACCESSORY_HIDING_HELMETS } from "../utils";
-import { tintCanvas, imageToCanvas, assetList } from "@aether/shared";
+import {
+  tintCanvas,
+  imageToCanvas,
+  assetList,
+  filterVisibleEquipment,
+  HAIR_HIDING_HELMETS,
+  ACCESSORY_HIDING_HELMETS,
+} from "@aether/shared";
 
 function CanvasPreview({ assets, topOffset = 10, scale = 2, atlasSize = 80 }) {
   const canvasRef = useRef(null);
@@ -85,10 +91,7 @@ const Portrait = ({
   const userHair = user?.profile?.hair;
   const userWhiskers = user?.profile?.whiskers;
 
-  // filter out equipment slotNames that are not in activeItemsSlots array
-  const filteredEquipment = Object.fromEntries(
-    Object.entries(user?.equipment).filter(([key]) => user.activeItemSlots.includes(key))
-  );
+  const filteredEquipment = filterVisibleEquipment(user);
   const userAccessory = filteredEquipment?.accessory;
   const userArmor = filteredEquipment?.armor;
   const userBoots = filteredEquipment?.boots;

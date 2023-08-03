@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { capitalize, getAngleFromDirection } from "./utils";
+import { capitalize, getAngleFromDirection, filterVisibleEquipment } from "./utils";
 const BLANK_TEXTURE = "human-blank";
 const POTION_COOLDOWN = 10000;
 
@@ -220,9 +220,7 @@ class Character extends Phaser.GameObjects.Container {
     this.visibleEquipment = this.getVisibleEquipment();
   }
   getVisibleEquipment() {
-    return Object.fromEntries(
-      Object.entries(this?.equipment).filter(([key]) => this.activeItemSlots.includes(key))
-    );
+    return filterVisibleEquipment(this as FullCharacterState);
   }
   checkAttackHands() {
     this.state.hasWeaponRight = false;

@@ -1,5 +1,11 @@
+// @ts-nocheck
 import Phaser from "phaser";
-import Character from "../../shared/Character";
+import {
+  Character,
+  HAIR_HIDING_HELMETS,
+  FACE_HIDING_HELMETS,
+  ACCESSORY_HIDING_HELMETS,
+} from "@aether/shared";
 import Bubble from "./Bubble";
 import Spell from "./Spell";
 import Bar from "./Bar";
@@ -9,12 +15,9 @@ import WeaponSprite from "./WeaponSprite";
 import {
   distanceTo,
   getSpinDirection,
-  HAIR_HIDING_HELMETS,
-  FACE_HIDING_HELMETS,
   PLAYER_GRAB_RANGE,
   RACES_WITH_ATTACK_ANIMS,
   deriveElements,
-  ACCESSORY_HIDING_HELMETS,
 } from "../utils";
 import Buff from "./Buff";
 import Hit from "./Hit";

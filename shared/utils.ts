@@ -1,3 +1,7 @@
+export const HAIR_HIDING_HELMETS = ["helmet-armet", "helmet-hood", "helmet-horned"];
+export const FACE_HIDING_HELMETS = ["helmet-armet", "helmet-horned"];
+export const ACCESSORY_HIDING_HELMETS = ["helmet-armet", "helmet-horned"];
+
 export function getAngleFromDirection(direction) {
   let angle = 0;
 
@@ -113,7 +117,7 @@ export function tintCanvas(c, tint = "0xFFFFFF") {
   return copy.canvas;
 }
 
-export function assetToCanvas({ asset, tint, setImageData }) {
+export function assetToCanvas({ asset, tint, setImageData, shouldTrim = true }) {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
   ctx.imageSmoothingEnabled = false;
@@ -125,7 +129,7 @@ export function assetToCanvas({ asset, tint, setImageData }) {
     canvas.width = w;
     canvas.height = h;
     ctx.drawImage(img, x, y, w, h, 0, 0, w, h);
-    const trimmedCanvas = trimCanvas(canvas);
+    const trimmedCanvas = shouldTrim ? trimCanvas(canvas) : canvas;
     const tintedCanvas = tintCanvas(trimmedCanvas, tint);
     setImageData(tintedCanvas.toDataURL("image/png"));
   };
@@ -199,4 +203,10 @@ export function msToHours(ms) {
   if (!ms) return 0;
   const millisecondsInHour = 60 * 60 * 1000; // Number of milliseconds in an hour
   return (ms / millisecondsInHour).toFixed(2) + " hrs";
+}
+
+export function filterVisibleEquipment(player: FullCharacterState) {
+  return Object.fromEntries(
+    Object.entries(player?.equipment).filter(([key]) => player.activeItemSlots.includes(key))
+  );
 }

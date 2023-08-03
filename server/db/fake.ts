@@ -13,6 +13,7 @@ const getDatabaseApi = () => ({
     if (!email) return console.log("❌ Email not provided");
     return { email, ...createBaseUser("warrior") };
   },
+  getAllUsers: async () => {},
   createUser: async ({ email, charClass, password }) => {
     if (!email) {
       return console.log("❌ Error while creating player. Email not provided");

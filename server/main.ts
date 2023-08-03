@@ -35,21 +35,22 @@ async function initialize() {
   //   res.json(playerStates);
   // });
 
-  // app.get("/players/all", async (req, res) => {
-  //   const players = await db.getAllUsers();
-  //   const scene = aetherServer?.game?.scene?.scenes?.[0] as ServerScene;
-  //   res.json(
-  //     players?.map((p) => {
-  //       const char = new ServerCharacter(scene, p);
-  //       char.calculateStats();
-  //       return {
-  //         equipment: char?.equipment,
-  //         activeItemSlots: char?.activeItemSlots,
-  //         profile: char?.profile,
-  //       };
-  //     })
-  //   );
-  // });
+  app.get("/players/all", async (req, res) => {
+    const players = await db.getAllUsers();
+    const scene = aetherServer?.game?.scene?.scenes?.[0] as ServerScene;
+    res.json(
+      players?.map((p) => {
+        const char = new ServerCharacter(scene, p);
+        char.calculateStats();
+        return {
+          stats: char?.stats,
+          equipment: char?.equipment,
+          activeItemSlots: char?.activeItemSlots,
+          profile: char?.profile,
+        };
+      })
+    );
+  });
 
   app.get("/metrics", (req, res) => {
     const scene = aetherServer?.game?.scene?.scenes?.[0] as ServerScene;

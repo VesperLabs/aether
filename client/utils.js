@@ -106,9 +106,6 @@ function distanceTo(first, second) {
 /* TODO: Move to DB */
 const MUSIC_VOLUME = 0.05;
 const SFX_VOLUME = 0.6;
-const HAIR_HIDING_HELMETS = ["helmet-armet", "helmet-hood", "helmet-horned"];
-const FACE_HIDING_HELMETS = ["helmet-armet", "helmet-horned"];
-const ACCESSORY_HIDING_HELMETS = ["helmet-armet", "helmet-horned"];
 const BLANK_TEXTURE = "human-blank";
 const PLAYER_GRAB_RANGE = 32;
 const RACES_WITH_ATTACK_ANIMS = ["crab", "human"];
@@ -200,9 +197,6 @@ export {
   getGameZoomLevel,
   getHeroCoordsRelativeToWindow,
   deriveElements,
-  HAIR_HIDING_HELMETS,
-  ACCESSORY_HIDING_HELMETS,
-  FACE_HIDING_HELMETS,
   BLANK_TEXTURE,
   PLAYER_GRAB_RANGE,
   RACES_WITH_ATTACK_ANIMS,
