@@ -68,7 +68,7 @@ const Metrics = () => {
         top: 0,
         left: 0,
         borderRadius: 0,
-        fontSize: 1,
+        fontSize: [0, 1, 1],
         fontWeight: "normal",
         borderBottom: `1px solid rgba(255,255,200,.25)`,
       }}
