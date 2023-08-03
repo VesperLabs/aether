@@ -207,7 +207,7 @@ export default function PlayerRender({ player }) {
   const assets = getPlayerEquipmentAssets(player);
 
   return (
-    <Flex sx={{ flexDirection: "column", alignItems: "center" }}>
+    <Flex sx={{ flexDirection: "column", alignItems: "center", mx: -2 }}>
       <CanvasPreview assets={assets} />
       <Flex sx={{ mt: -4, gap: 1, alignItems: "center" }}>
         <Text>{player?.profile?.userName}</Text>
