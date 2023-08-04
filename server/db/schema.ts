@@ -99,6 +99,10 @@ const userSchema = {
       bsonType: "date",
       description: "must be a date",
     },
+    activeItemSlots: {
+      bsonType: "array",
+      description: "must be an array",
+    },
     createdAt: {
       bsonType: "date",
       description: "must be a date",
