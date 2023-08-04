@@ -41,6 +41,8 @@ async function initialize() {
     let ret = [];
     for (const player of players) {
       ret.push({
+        id: player?._id,
+        charClass: player?.charClass,
         stats: player?.baseStats,
         equipment: player?.equipment,
         activeItemSlots: player?.activeItemSlots,

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Modal, Flex, Input, KeyboardButton, Icon, Tooltip, Text } from "@aether/ui";
-import { useAppContext, ICONS } from "./";
+import { useAppContext } from "./";
+import { CLASS_ICON_MAP } from "@aether/shared";
 
 const IconPen = ({ sx }: { sx?: any }) => (
   <Icon
@@ -162,25 +163,25 @@ const RegisterForm = ({ onRegisterSuccess }) => {
     <Modal.Body sx={{ gap: 2 }}>
       <Flex sx={{ justifyContent: "space-around", pb: 2 }}>
         <ClickableIcon
-          icon={ICONS.WARRIOR}
+          icon={CLASS_ICON_MAP.WARRIOR}
           charClass="warrior"
           isSelected={charClass === "warrior"}
           setCharClass={setCharClass}
         />
         <ClickableIcon
-          icon={ICONS.ROGUE}
+          icon={CLASS_ICON_MAP.ROGUE}
           charClass="rogue"
           isSelected={charClass === "rogue"}
           setCharClass={setCharClass}
         />
         <ClickableIcon
-          icon={ICONS.MAGE}
+          icon={CLASS_ICON_MAP.MAGE}
           charClass="mage"
           isSelected={charClass === "mage"}
           setCharClass={setCharClass}
         />
         {/* <ClickableIcon
-          icon={ICONS.CLERIC}
+          icon={CLASS_ICON_MAP.CLERIC}
           charClass="cleric"
           isSelected={charClass === "cleric"}
           setCharClass={setCharClass}

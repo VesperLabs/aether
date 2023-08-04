@@ -30,13 +30,6 @@ export { useAppContext } from "./App";
 
 export const MENU_MAX_WIDTH = 1024;
 
-export const ICONS = {
-  WARRIOR: `./assets/icons/axe.png`,
-  ROGUE: `./assets/icons/katar.png`,
-  MAGE: `./assets/icons/rod.png`,
-  CLERIC: `./assets/icons/staff.png`,
-};
-
 export const HUD_CONTAINER_ID = "hud-container";
 
 export const BLANK_IMAGE =

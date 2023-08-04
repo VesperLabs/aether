@@ -1,7 +1,7 @@
 import { useLayoutEffect, useState } from "react";
 import { assetToCanvas, assetList } from "@aether/shared";
-import { Box, Icon, STYLE_NON_EMPTY, Tooltip, Text, Flex, Divider } from "@aether/ui";
-import { Label, TextDivider, TOOLTIP_STYLE } from "./";
+import { Box, Icon, STYLE_NON_EMPTY, Tooltip, Text, Flex } from "@aether/ui";
+import { TOOLTIP_STYLE } from "./";
 
 const SLOT_SIZE = 100;
 
