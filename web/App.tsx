@@ -9,6 +9,17 @@ import { msToHours } from "@aether/shared";
 import PagePlayers from "./PagePlayers";
 import PageHome from "./PageHome";
 
+const STATIC_ROW_STYLES = {
+  gap: 3,
+  position: "absolute",
+  borderRadius: 0,
+  fontSize: [0, 1, 1],
+  fontWeight: "normal",
+  border: `1px solid rgba(255,255,200,.25)`,
+  whiteSpace: "nowrap",
+  left: 0,
+};
+
 const RouterLink = ({ href, children }) => {
   const [page] = useLocation();
   const isActive = href === page;
@@ -45,7 +56,38 @@ const App = () => {
           <Route path="/players" component={PagePlayers as any} />
         </Box>
       </Flex>
+      <Footer />
     </ThemeProvider>
+  );
+};
+
+const Footer = () => {
+  const currentYear = new Date().getFullYear();
+
+  return (
+    <RowTitle
+      sx={{
+        ...STATIC_ROW_STYLES,
+        display: "flex",
+        bottom: 0,
+        borderWidth: "1px 0 0 0",
+        justifyContent: "center",
+        textTransform: "none",
+        gap: 2,
+      }}
+    >
+      <Box>
+        &copy; {currentYear}{" "}
+        <a target="_blank" href="https://github.com/VesperLabs">
+          Vesper Labs
+        </a>
+        .
+      </Box>
+      <Box sx={{ opacity: 0.25 }}>|</Box>
+      <Box>
+        Made with <span style={{ color: "red" }}>&#10084;</span> in Madrid, Spain.
+      </Box>
+    </RowTitle>
   );
 };
 
@@ -66,21 +108,15 @@ const Metrics = () => {
   return (
     <RowTitle
       sx={{
-        gap: 3,
-        position: "absolute",
+        ...STATIC_ROW_STYLES,
         top: 0,
-        left: 0,
-        borderRadius: 0,
-        fontSize: [0, 1, 1],
-        fontWeight: "normal",
-        borderBottom: `1px solid rgba(255,255,200,.25)`,
-        whiteSpace: "nowrap",
+        borderWidth: "0 0 1px 0",
       }}
     >
       {metrics ? (
         <>
           <Box sx={{ flex: 1 }} />
-          <Text>Players: {metrics?.playersOnline ?? "-"}</Text>
+          <Text>Online: {metrics?.playersOnline ?? "-"}</Text>
           <Text>Loots: {metrics?.lootsOnGround ?? "-"}</Text>
           <Text>Npcs: {metrics?.npcsLoaded ?? "-"}</Text>
           <Text>Uptime: {metrics?.upTime ? msToHours(metrics?.upTime) : "-"}</Text>
