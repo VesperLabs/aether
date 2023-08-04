@@ -68,6 +68,7 @@ const Footer = () => {
     <RowTitle
       sx={{
         ...STATIC_ROW_STYLES,
+        position: "absolute",
         display: "flex",
         bottom: 0,
         borderWidth: "1px 0 0 0",
