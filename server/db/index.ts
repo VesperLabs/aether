@@ -146,6 +146,7 @@ const getDatabaseApi = (db) => ({
             baseStats: player?.baseStats,
             //roomName: player?.room?.name,
             abilities: filterNullEmpty(player?.abilities),
+            activeItemSlots: player?.activeItemSlots,
             updatedAt,
           },
         }

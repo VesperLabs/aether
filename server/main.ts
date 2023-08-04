@@ -37,19 +37,16 @@ async function initialize() {
 
   app.get("/players/all", async (req, res) => {
     const players = await db.getAllUsers();
-    const scene = aetherServer?.game?.scene?.scenes?.[0] as ServerScene;
-    res.json(
-      players?.map((p) => {
-        const char = new ServerCharacter(scene, p);
-        char.calculateStats();
-        return {
-          stats: char?.stats,
-          equipment: char?.equipment,
-          activeItemSlots: char?.activeItemSlots,
-          profile: char?.profile,
-        };
-      })
-    );
+    let ret = [];
+    for (const player of players) {
+      ret.push({
+        stats: player?.baseStats,
+        equipment: player?.equipment,
+        activeItemSlots: player?.activeItemSlots,
+        profile: player?.profile,
+      });
+    }
+    res.json(ret);
   });
 
   app.get("/metrics", (req, res) => {

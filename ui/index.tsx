@@ -11,6 +11,7 @@ export {
   Card,
   Divider,
   Donut,
+  Link,
 } from "theme-ui";
 export { default as theme } from "./theme";
 export { default as Button } from "./Button";

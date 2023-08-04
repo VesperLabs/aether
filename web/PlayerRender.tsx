@@ -5,7 +5,7 @@ import {
   resolveAsset,
   tintCanvas,
 } from "@aether/shared";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Box, Flex, Text } from "@aether/ui";
 import weaponAtlas from "../public/assets/atlas/weapon.json";
 
@@ -39,6 +39,8 @@ const drawImageOnNewCanvas = (image, tint) => {
 function CanvasPreview({ assets }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const atlas = weaponAtlas.offsets.human["down-stand"];
+  const [loading, setLoading] = useState<Boolean>(true);
+  const [canvasAlpha, setCanvasAlpha] = useState<number>(0);
   useEffect(() => {
     if (!canvasRef.current) return;
 
@@ -46,6 +48,7 @@ function CanvasPreview({ assets }) {
     const ctx = canvas.getContext("2d");
     ctx.imageSmoothingEnabled = false;
 
+    let i = 0;
     const mergeImages = async () => {
       for (const asset of assets) {
         const img = await loadImage(asset.src);
@@ -89,8 +92,11 @@ function CanvasPreview({ assets }) {
 
           // Restore the original alpha value
           ctx.globalAlpha = prevAlpha;
+          i += 0.1;
+          setCanvasAlpha(i);
         }
       }
+      setLoading(false);
     };
 
     mergeImages();
@@ -109,6 +115,7 @@ function CanvasPreview({ assets }) {
           position: "absolute",
           left: "50%",
           top: "50%",
+          opacity: loading ? canvasAlpha : 1,
         }}
       />
     </Box>
