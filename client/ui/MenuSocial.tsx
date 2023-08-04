@@ -1,7 +1,8 @@
 import { Fragment, memo } from "react";
-import { Menu, useAppContext, MenuHeader, Portrait, ICONS, MENU_MAX_WIDTH } from "./";
+import { Menu, useAppContext, MenuHeader, Portrait, MENU_MAX_WIDTH } from "./";
 import { ThemeUIStyleObject } from "theme-ui";
 import { Flex, Text, Grid, Icon, Button, Box } from "@aether/ui";
+import { CLASS_ICON_MAP } from "@aether/shared";
 
 const ActionButton = ({ player }) => {
   const { partyInvites, socket } = useAppContext();
@@ -123,7 +124,7 @@ const SocialPlayerRow = (props: { partyPlayer: any; children: any }) => {
   const partyLeader = party?.members?.find((p) => p?.isLeader);
   const isLeader = partyLeader?.id === partyPlayer?.id;
   const classString = player ? `Lv. ${player?.stats?.level} ${player?.charClass}` : null;
-  const playerIcon = player ? ICONS?.[player?.charClass?.toUpperCase()] : null;
+  const playerIcon = player ? CLASS_ICON_MAP?.[player?.charClass?.toUpperCase()] : null;
   return (
     <Fragment key={partyPlayer?.id}>
       <MemoizedColumn player={player} as={Box} sx={{ position: "relative" }}>

@@ -4,10 +4,13 @@ import {
   filterVisibleEquipment,
   resolveAsset,
   tintCanvas,
+  CLASS_ICON_MAP,
 } from "@aether/shared";
 import { useEffect, useRef, useState } from "react";
-import { Box, Flex, Text } from "@aether/ui";
+import { Box, Flex, Icon, Text } from "@aether/ui";
 import weaponAtlas from "../public/assets/atlas/weapon.json";
+import { Tooltip } from "react-tooltip";
+import { TOOLTIP_STYLE } from "./";
 
 type PlayerAsset = {
   tint?: string;
@@ -214,12 +217,32 @@ export default function PlayerRender({ player }) {
   const assets = getPlayerEquipmentAssets(player);
 
   return (
-    <Flex sx={{ flexDirection: "column", alignItems: "center", mx: -2 }}>
+    <Flex
+      sx={{ flexDirection: "column", alignItems: "center", mx: -2 }}
+      data-tooltip-id={player?.id}
+      data-tooltip-place="bottom"
+    >
       <CanvasPreview assets={assets} />
       <Flex sx={{ mt: -4, gap: 1, alignItems: "center" }}>
+        <Icon
+          size={22}
+          icon={CLASS_ICON_MAP?.[player?.charClass?.toUpperCase()]}
+          sx={{ transform: "scale(.75)", imageRendering: "smooth" }}
+        />
         <Text>{player?.profile?.userName}</Text>
         <Text sx={{ opacity: 0.5 }}>(Lv. {player?.stats?.level})</Text>
       </Flex>
+      {/* <PlayerTooltip player={player} /> */}
     </Flex>
   );
 }
+
+const PlayerTooltip = ({ player }) => {
+  return (
+    <Tooltip id={player?.id}>
+      <Flex sx={TOOLTIP_STYLE}>
+        <Icon icon={CLASS_ICON_MAP?.[player?.charClass?.toUpperCase()]} />
+      </Flex>
+    </Tooltip>
+  );
+};

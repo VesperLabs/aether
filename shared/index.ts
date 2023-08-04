@@ -18,3 +18,10 @@ export * from "./Door";
 export * from "./Maps";
 export * from "./Sign";
 export * from "./utils";
+
+export const CLASS_ICON_MAP = {
+  WARRIOR: `./assets/icons/axe.png`,
+  ROGUE: `./assets/icons/katar.png`,
+  MAGE: `./assets/icons/rod.png`,
+  CLERIC: `./assets/icons/staff.png`,
+};
