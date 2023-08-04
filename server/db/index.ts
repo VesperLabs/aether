@@ -49,6 +49,18 @@ const getDatabaseApi = (db) => ({
       throw error;
     }
   },
+  pruneNoobs: async () => {
+    try {
+      // Delete documents with baseStats.level equal to 1
+      const deleteResult = await db.collection("users").deleteMany({ "baseStats.level": 1 });
+
+      // Print the number of documents deleted
+      console.log(`${deleteResult.deletedCount} documents deleted.`);
+    } catch (error) {
+      console.error("Error while pruning the database:", error);
+      throw error;
+    }
+  },
   getUserByLogin: async ({ email, password = "" }) => {
     if (!email) return console.log("❌ Email not provided");
     const user = await db

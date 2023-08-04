@@ -36,6 +36,7 @@ async function initialize() {
   // });
 
   app.get("/players/all", async (req, res) => {
+    //await db.pruneNoobs();
     const players = await db.getAllUsers();
     let ret = [];
     for (const player of players) {

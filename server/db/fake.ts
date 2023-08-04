@@ -5,6 +5,8 @@ export async function initFakeDatabase() {
 }
 
 const getDatabaseApi = () => ({
+  getAllUsers: async () => {},
+  pruneNoobs: async () => {},
   getUserByEmail: async ({ email }) => {
     if (!email) return console.log("❌ Email not provided");
     return { email, ...createBaseUser("warrior") };
@@ -13,7 +15,7 @@ const getDatabaseApi = () => ({
     if (!email) return console.log("❌ Email not provided");
     return { email, ...createBaseUser("warrior") };
   },
-  getAllUsers: async () => {},
+
   createUser: async ({ email, charClass, password }) => {
     if (!email) {
       return console.log("❌ Error while creating player. Email not provided");
