@@ -2,6 +2,19 @@
 
 A Javascript MMO using `PhaserJS` and `SocketIO`
 
+## ⚡️ Install
+
+```bash
+# Run the install
+npm install
+```
+
+```bash
+# If NPM fails installing canvas pkg
+# https://flaviocopes.com/fix-node-canvas-error-pre-gyp-macos/
+brew install pkg-config cairo pango libpng jpeg giflib librsvg
+```
+
 ## 🏔️ Environment
 
 ```bash
