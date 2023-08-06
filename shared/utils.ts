@@ -207,6 +207,6 @@ export function msToHours(ms) {
 
 export function filterVisibleEquipment(player: FullCharacterState) {
   return Object.fromEntries(
-    Object.entries(player?.equipment).filter(([key]) => player.activeItemSlots.includes(key))
+    Object.entries(player?.equipment).filter(([key]) => player?.activeItemSlots?.includes(key))
   );
 }
