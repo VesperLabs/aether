@@ -286,6 +286,71 @@
         }, 
         {
          "draworder":"topdown",
+         "id":28,
+         "name":"Loots",
+         "objects":[
+                {
+                 "height":0,
+                 "id":61,
+                 "name":"mushroom",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"item",
+                         "type":"string",
+                         "value":"[{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"mushroom\", \"amount\": [1,1], \"chance\": 1 }]"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":652.540783798987,
+                 "y":334.708419276205
+                }, 
+                {
+                 "height":0,
+                 "id":62,
+                 "name":"mushroom",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"item",
+                         "type":"string",
+                         "value":"[{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"mushroom\", \"amount\": [1,1], \"chance\": 1 }]"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":207.200450028127,
+                 "y":525.03281455091
+                }, 
+                {
+                 "height":0,
+                 "id":63,
+                 "name":"mushroom",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"item",
+                         "type":"string",
+                         "value":"[{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"mushroom\", \"amount\": [1,1], \"chance\": 1 }]"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":334.708419276205,
+                 "y":206.262891430714
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
          "id":27,
          "name":"Signs",
          "objects":[
@@ -620,11 +685,11 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":28,
- "nextobjectid":61,
+ "nextlayerid":29,
+ "nextobjectid":64,
  "orientation":"orthogonal",
  "renderorder":"right-down",
- "tiledversion":"1.10.1",
+ "tiledversion":"1.10.2",
  "tileheight":32,
  "tilesets":[
         {

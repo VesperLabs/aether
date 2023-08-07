@@ -220,12 +220,24 @@ function createSpellAnims(scene) {
     yoyo: false,
     frameRate: 60,
   });
+  scene.anims.create({
+    key: "loot-anim-sparkle",
+    frames: scene.anims.generateFrameNumbers("loot-anim-sparkle", { start: 0, end: 6 }),
+    repeat: -1,
+    yoyo: true,
+    frameRate: 20,
+    repeatDelay: 3000,
+  });
 }
 
 function loadSpritesheets(scene) {
   scene.load.spritesheet("misc-bubble", "./assets/images/bubble.png", {
     frameWidth: 4,
     frameHeight: 4,
+  });
+  scene.load.spritesheet("loot-anim-sparkle", "./assets/images/loot-anim-sparkle.png", {
+    frameWidth: 7,
+    frameHeight: 7,
   });
   scene.load.spritesheet("misc-bars", "./assets/images/bars.png", {
     frameWidth: 4,

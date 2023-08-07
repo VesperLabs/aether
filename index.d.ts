@@ -53,6 +53,7 @@ interface Loot {
   y: number;
   item: Item;
   dropTime: number;
+  expiredSince?: number;
 }
 
 interface Drop {
