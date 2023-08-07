@@ -9,16 +9,24 @@ export default function () {
         Welcome to Aether MMO. The game is under active development, but feel free to look around.
       </Text>
       <Flex sx={{ gap: 2, flexWrap: "wrap" }}>
-        <a href="http://aether.up.railway.app" target="_blank">
-          <Button variant="wood" sx={{ px: 4, py: 2 }}>
-            Play Now
-          </Button>
-        </a>
-        <a href="https://discord.gg/yadDyqpb6D" target="_blank">
-          <Button variant="wood" sx={{ px: 4, py: 2 }}>
-            Join Discord
-          </Button>
-        </a>
+        <Button
+          as={Link}
+          href="https://discord.gg/yadDyqpb6D"
+          target="_blank"
+          variant="wood"
+          sx={{ px: 4, py: 2 }}
+        >
+          Play Now
+        </Button>
+        <Button
+          as={Link}
+          href="https://discord.gg/yadDyqpb6D"
+          target="_blank"
+          variant="wood"
+          sx={{ px: 4, py: 2 }}
+        >
+          Join Discord
+        </Button>
       </Flex>
     </Flex>
   );
