@@ -159,6 +159,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       });
 
       socket.on("grabLoot", ({ lootId, direction } = {}) => {
+        if (scene.loots[lootId]?.expiredSince) return; //loot expired, do not let them pick it
         const player = scene.players[socketId];
         const loot = cloneObject(scene.loots[lootId]);
         const item = loot?.item;
@@ -1008,6 +1009,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       const roomState = getTickRoomState(scene, room.name);
       const snapshot = SI.snapshot.create(roomState);
 
+      room.lootManager.spawnMapLoots();
       room.lootManager.expireLoots();
       room.spellManager.expireSpells();
 

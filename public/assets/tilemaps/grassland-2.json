@@ -286,6 +286,53 @@
         }, 
         {
          "draworder":"topdown",
+         "id":19,
+         "name":"Loots",
+         "objects":[
+                {
+                 "height":0,
+                 "id":38,
+                 "name":"mushroom",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"item",
+                         "type":"string",
+                         "value":"[{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"mushroom\", \"amount\": [1,2], \"chance\": 1 }]"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":195.926285160039,
+                 "y":931.13482056256
+                }, 
+                {
+                 "height":0,
+                 "id":39,
+                 "name":"mushroom",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"item",
+                         "type":"string",
+                         "value":"[{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"mushroom\", \"amount\": [1,1], \"chance\": 1 }]"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":143.125293289535,
+                 "y":398.873768183951
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
          "id":18,
          "name":"Signs",
          "objects":[
@@ -633,11 +680,11 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":19,
- "nextobjectid":38,
+ "nextlayerid":21,
+ "nextobjectid":40,
  "orientation":"orthogonal",
  "renderorder":"right-down",
- "tiledversion":"1.10.1",
+ "tiledversion":"1.10.2",
  "tileheight":32,
  "tilesets":[
         {
