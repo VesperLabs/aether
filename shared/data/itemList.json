@@ -1074,34 +1074,38 @@
         "name": "Skull",
         "base": "material",
         "slot": "stackable",
-        "texture": "stackable-skull",
-        "effects": {}
+        "texture": "stackable-skull"
       },
       "shell": {
         "ilvl": 2,
         "name": "Shell",
         "base": "material",
         "slot": "stackable",
-        "texture": "stackable-shell",
-        "effects": {}
+        "texture": "stackable-shell"
       },
       "tooth": {
         "ilvl": 2,
         "name": "Tooth",
         "base": "material",
         "slot": "stackable",
-        "texture": "stackable-tooth",
-        "effects": {}
+        "texture": "stackable-tooth"
       },
       "orchidFlower": {
         "ilvl": 2,
         "name": "Orchid Flower",
         "base": "food",
         "slot": "stackable",
-        "texture": "stackable-orchid-flower",
+        "texture": "stackable-flower-orchid",
         "buffs": {
           "vitamins": 2
         }
+      },
+      "stone": {
+        "ilvl": 2,
+        "name": "Stone",
+        "base": "material",
+        "slot": "stackable",
+        "texture": "stackable-stone"
       }
     },
     "unique": {
@@ -1110,8 +1114,14 @@
         "name": "Wyrm Scale",
         "base": "material",
         "slot": "stackable",
-        "texture": "stackable-wyrmScale",
-        "effects": {}
+        "texture": "stackable-scale-wyrm"
+      },
+      "goldOre": {
+        "ilvl": 2,
+        "name": "Gold Ore",
+        "base": "material",
+        "slot": "stackable",
+        "texture": "stackable-ore-gold"
       }
     }
   },

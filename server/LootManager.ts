@@ -4,8 +4,8 @@ import { randomNumber } from "./utils";
 import { ItemBuilder } from "@aether/shared";
 
 const LOOT_EXPIRE_TIME = 600000; //10min;
-const LOOT_BUFFER_DELETE_TIME = 5000;
-const LOOT_SPAWN_CYCLE_TIME = 300000; //20min;
+const LOOT_BUFFER_DELETE_TIME = 2000;
+const LOOT_SPAWN_CYCLE_TIME = 300000; //5min;
 interface CreateLoot {
   x: number;
   y: number;
@@ -35,8 +35,8 @@ class LootManager {
     this.scene = scene;
     this.room = room;
     this.loots = [];
+    this.lastMapLootSpawn = Date.now() - LOOT_SPAWN_CYCLE_TIME;
     this.mapLootList = initiateMapLootList(this.room.tileMap);
-    this.lastMapLootSpawn = Date.now();
   }
   create(lootSpawn: CreateLoot) {
     const { x, y, item, npcId, texture } = lootSpawn ?? {};
@@ -77,9 +77,9 @@ class LootManager {
       const mapItems = mapLoot?.items;
 
       // if we already have loot in this position, skip spawning it.
-      const spotHasLoot = this.loots.find(
-        (l) => l?.x === mapLoot.x && l?.y === mapLoot.y && !l?.expiredSince
-      );
+      const spotHasLoot = this.loots
+        .filter((l) => !l?.expiredSince)
+        .find((l) => l?.x === mapLoot.x && l?.y === mapLoot.y);
       if (spotHasLoot) continue;
 
       let runners = [];
