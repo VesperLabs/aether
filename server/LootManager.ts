@@ -3,9 +3,9 @@ import crypto from "crypto";
 import { randomNumber } from "./utils";
 import { ItemBuilder } from "@aether/shared";
 
-const LOOT_EXPIRE_TIME = 300000; //5min;
+const LOOT_EXPIRE_TIME = 600000; //10min;
 const LOOT_BUFFER_DELETE_TIME = 5000;
-const LOOT_SPAWN_CYCLE_TIME = 300000;
+const LOOT_SPAWN_CYCLE_TIME = 300000; //20min;
 interface CreateLoot {
   x: number;
   y: number;
@@ -73,13 +73,14 @@ class LootManager {
     // skip if we aren't ready to spawn on this map yet
     if (!readyToSpawn) return;
     this.lastMapLootSpawn = now;
-    const lootToSpawn = [];
     for (const mapLoot of this.mapLootList) {
       const mapItems = mapLoot?.items;
 
       // if we already have loot in this position, skip spawning it.
-      const alreadyHasLoot = this.loots.find((l) => l?.x === mapLoot.x && l?.y === mapLoot.y);
-      if (alreadyHasLoot) continue;
+      const spotHasLoot = this.loots.find(
+        (l) => l?.x === mapLoot.x && l?.y === mapLoot.y && !l?.expiredSince
+      );
+      if (spotHasLoot) continue;
 
       let runners = [];
 
