@@ -40,9 +40,13 @@ const getDatabaseApi = (db) => ({
     const user = await db.collection("users").findOne({ email });
     return user;
   },
-  getAllUsers: async () => {
+  getAllUsers: async ({ sortBy = "baseStats.maxExp" }) => {
     try {
-      const users = await db.collection("users").find().sort({ "baseStats.maxExp": -1 }).toArray();
+      const users = await db
+        .collection("users")
+        .find()
+        .sort({ [sortBy]: -1 })
+        .toArray();
       return users;
     } catch (error) {
       console.error("Error while fetching all users:", error);

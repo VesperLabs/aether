@@ -232,7 +232,7 @@ export default function PlayerRender({ player }) {
         <Text>{player?.profile?.userName}</Text>
         <Text sx={{ opacity: 0.5 }}>(Lv. {player?.stats?.level})</Text>
       </Flex>
-      {/* <PlayerTooltip player={player} /> */}
+      <PlayerTooltip player={player} />
     </Flex>
   );
 }
@@ -240,9 +240,7 @@ export default function PlayerRender({ player }) {
 const PlayerTooltip = ({ player }) => {
   return (
     <Tooltip id={player?.id}>
-      <Flex sx={TOOLTIP_STYLE}>
-        <Icon icon={CLASS_ICON_MAP?.[player?.charClass?.toUpperCase()]} />
-      </Flex>
+      <Flex sx={TOOLTIP_STYLE}>Last Login {player?.updatedAt}</Flex>
     </Tooltip>
   );
 };

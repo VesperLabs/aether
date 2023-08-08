@@ -36,8 +36,9 @@ async function initialize() {
   // });
 
   app.get("/players/all", async (req, res) => {
+    const sortBy = req?.query?.sortBy || "updatedAt";
     //await db.pruneNoobs();
-    const players = await db.getAllUsers();
+    const players = await db.getAllUsers({ sortBy });
     let ret = [];
     for (const player of players) {
       ret.push({
@@ -47,6 +48,7 @@ async function initialize() {
         equipment: player?.equipment,
         activeItemSlots: player?.activeItemSlots,
         profile: player?.profile,
+        updatedAt: player?.updatedAt,
       });
     }
     res.json(ret);
