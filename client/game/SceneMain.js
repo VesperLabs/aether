@@ -74,7 +74,7 @@ class SceneMain extends Phaser.Scene {
       }
       /* Add map loot */
       for (const loot of loots) {
-        if (loot?.expiredSince) return;
+        if (loot?.expiredSince) continue;
         if (getLoot(scene, loot.id)) continue;
         addLoot(scene, loot);
       }
