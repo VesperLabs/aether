@@ -8,7 +8,7 @@ export default function () {
   const [isLoading, setLoading] = useState<Boolean>(true);
 
   useEffect(() => {
-    fetch(`${process.env.SERVER_URL}/players/all`, {
+    fetch(`${process.env.SERVER_URL}/players/all?sortBy=updatedAt`, {
       method: "GET",
     })
       .then((response) => response.json())
