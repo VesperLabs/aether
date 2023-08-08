@@ -35,7 +35,7 @@ class SceneMain extends Phaser.Scene {
       if (!snapshot?.state) return;
       SI.snapshot.add(snapshot);
       for (const loot of scene?.loots?.getChildren()) {
-        if (snapshot?.state?.loots?.find((l) => l?.expiredSince)) {
+        if (snapshot?.state?.loots?.find((l) => l?.id === loot?.id && l?.expiredSince)) {
           loot.destroy(true);
         }
       }
@@ -74,6 +74,7 @@ class SceneMain extends Phaser.Scene {
       }
       /* Add map loot */
       for (const loot of loots) {
+        if (loot?.expiredSince) return;
         if (getLoot(scene, loot.id)) continue;
         addLoot(scene, loot);
       }

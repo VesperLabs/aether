@@ -11,7 +11,7 @@ export default function () {
       <Flex sx={{ gap: 2, flexWrap: "wrap" }}>
         <Button
           as={Link}
-          href="https://discord.gg/yadDyqpb6D"
+          href="https://aether.up.railway.app"
           target="_blank"
           variant="wood"
           sx={{ px: 4, py: 2 }}

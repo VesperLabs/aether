@@ -60,7 +60,7 @@ class LootManager {
     for (const loot of loots) {
       const isExpired = now - loot.dropTime > LOOT_EXPIRE_TIME;
       if (isExpired) {
-        loot.expiredSince = Date.now();
+        loot.expiredSince = now;
       }
       // give the loot update bit of time to hit all users before we wipe it from the server
       const shouldDelete = now - loot.expiredSince > LOOT_BUFFER_DELETE_TIME;
