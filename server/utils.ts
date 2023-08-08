@@ -4,8 +4,8 @@ import ItemBuilder from "../shared/ItemBuilder";
 const PLAYER_BASE_ATTACK_DELAY = 100;
 const SHOP_INFLATION = 4;
 const PLAYER_BASE_EXP = 20;
-//const PLAYER_DEFAULT_SPAWN = { roomName: "grassland-3", x: 1496, y: 2028 };
-const PLAYER_DEFAULT_SPAWN = { roomName: "grassland-2", x: 239, y: 990 };
+const PLAYER_DEFAULT_SPAWN = { roomName: "grassland-3", x: 1496, y: 2028 };
+//const PLAYER_DEFAULT_SPAWN = { roomName: "grassland-2", x: 239, y: 990 };
 
 function handlePlayerInput(scene, socketId, input) {
   if (!scene.players) return;

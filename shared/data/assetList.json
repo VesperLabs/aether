@@ -582,8 +582,20 @@
     "previewRect": [0, 0, 32, 32]
   },
   {
-    "texture": "stackable-wyrmScale",
-    "src": "./assets/atlas/stackable/stackable-wyrmScale.png",
+    "texture": "stackable-stone",
+    "src": "./assets/atlas/stackable/stackable-stone.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
+    "texture": "stackable-scale-wyrm",
+    "src": "./assets/atlas/stackable/stackable-scale-wyrm.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
+    "texture": "stackable-ore-gold",
+    "src": "./assets/atlas/stackable/stackable-ore-gold.png",
     "atlas": "./assets/atlas/32x32-stackable.json",
     "previewRect": [0, 0, 32, 32]
   },
@@ -594,8 +606,8 @@
     "previewRect": [0, 0, 32, 32]
   },
   {
-    "texture": "stackable-orchid-flower",
-    "src": "./assets/atlas/stackable/stackable-orchid-flower.png",
+    "texture": "stackable-flower-orchid",
+    "src": "./assets/atlas/stackable/stackable-flower-orchid.png",
     "atlas": "./assets/atlas/32x32-stackable.json",
     "previewRect": [0, 0, 32, 32]
   },
