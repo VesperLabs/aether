@@ -5,7 +5,7 @@ import { ItemBuilder } from "@aether/shared";
 
 const LOOT_EXPIRE_TIME = 300000; //5min;
 const LOOT_BUFFER_DELETE_TIME = 5000;
-const LOOT_SPAWN_CYCLE_TIME = LOOT_EXPIRE_TIME + LOOT_BUFFER_DELETE_TIME; //little more than the expre time
+const LOOT_SPAWN_CYCLE_TIME = 300000;
 interface CreateLoot {
   x: number;
   y: number;
@@ -58,13 +58,12 @@ class LootManager {
     const { loots } = this;
     for (const loot of loots) {
       const isExpired = now - loot.dropTime > LOOT_EXPIRE_TIME;
-      if (isExpired && !loot?.expiredSince) {
-        loot.expiredSince = now;
-      }
-      // give the loot update bit of time to hit all users before we wipe it from the server
-      const shouldDelete = now - loot.expiredSince > LOOT_BUFFER_DELETE_TIME;
-      if (shouldDelete) {
-        this.remove(loot?.id);
+      if (isExpired) {
+        if (!loot?.expiredSince) loot.expiredSince = now;
+        // give the loot update bit of time to hit all users before we wipe it from the server
+        if (now - loot.expiredSince > LOOT_BUFFER_DELETE_TIME) {
+          this.remove(loot?.id);
+        }
       }
     }
   }
