@@ -71,6 +71,8 @@ class LootManager {
       const isExpired = now - loot.dropTime > LOOT_EXPIRE_TIME;
       if (isExpired) {
         if (!loot?.expiredSince && !loot?.isPermanent) loot.expiredSince = now;
+      }
+      if (loot.expiredSince) {
         // give the loot update bit of time to hit all users before we wipe it from the server
         if (now - loot.expiredSince > LOOT_BUFFER_DELETE_TIME) {
           this.remove(loot?.id);
@@ -85,13 +87,16 @@ class LootManager {
     if (!readyToSpawn) return;
     this.lastMapLootSpawn = now;
     for (const mapLoot of this.mapLootList) {
-      const mapItems = mapLoot?.items;
+      // do not spawn if there is already a perm loot here
+      if (this.loots.find((l) => l?.x === mapLoot.x && l?.y === mapLoot.y && l?.isPermanent)) {
+        continue;
+      }
 
       // turn the arrays to items, pick which to spawn
+      const mapItems = mapLoot?.items;
       let runners = [];
       for (const mapItem of mapItems) {
-        let rando = randomNumber(1, mapItem.chance);
-        if (rando === 1) {
+        if (randomNumber(1, mapItem.chance) === 1) {
           // decide how many to spawn randomly.
           const amount = randomNumber(mapItem?.amount?.[0], mapItem?.amount?.[1]);
           const item = ItemBuilder.buildItem(mapItem?.type, mapItem?.rarity, mapItem?.key, amount);
@@ -111,14 +116,6 @@ class LootManager {
       }
 
       if (item) {
-        // if we already have loot in this position, force it to expire so we
-        // can spawn some fresh loot
-        for (const l of this.loots) {
-          if (l?.x === mapLoot.x && l?.y === mapLoot.y && l?.isPermanent) {
-            l.expiredSince = now;
-          }
-        }
-
         /* TODO: Send all at once instead of many updates */
         this.create({
           x: mapLoot?.x,
