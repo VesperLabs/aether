@@ -9,6 +9,8 @@ class Loot implements Loot {
   dropTime: number;
   expiredSince?: number;
   texture?: string;
+  grabMessage?: boolean;
+  isPermanent?: boolean;
 
   constructor(loot?: {
     id?: string;
@@ -17,6 +19,8 @@ class Loot implements Loot {
     y: number;
     item: Item;
     texture?: string; //custom texture for how it shows on map
+    grabMessage?: boolean;
+    isPermanent?: boolean;
   }) {
     this.id = loot?.id || crypto.randomUUID();
     this.roomName = loot?.roomName;
@@ -25,6 +29,8 @@ class Loot implements Loot {
     this.item = loot.item;
     this.dropTime = Date.now();
     this.texture = loot?.texture;
+    this.grabMessage = loot?.grabMessage;
+    this.isPermanent = loot?.isPermanent;
   }
 }
 

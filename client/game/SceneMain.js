@@ -120,10 +120,10 @@ class SceneMain extends Phaser.Scene {
       }
     });
 
-    socket.on("lootGrabbed", ({ socketId, lootId, player: userData }) => {
+    socket.on("lootGrabbed", ({ socketId, loot, player: userData }) => {
+      const lootId = loot?.id;
       const player = getPlayer(scene, socketId);
-      const loot = getLoot(scene, lootId);
-      loot?.destroy(true);
+      getLoot(scene, lootId)?.destroy(true);
       if (player?.isHero) {
         playAudio({ scene, audioKey: "item-leather", caster: player });
       }

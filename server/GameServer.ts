@@ -208,7 +208,8 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         scene.db.updateUser(player);
         io.to(player?.roomName).emit("lootGrabbed", {
           socketId,
-          lootId,
+          item,
+          loot,
           /* TODO: This is a big state update. Probably only need to update inventory and quests */
           player: getFullCharacterState(player),
         });

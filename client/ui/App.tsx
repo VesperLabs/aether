@@ -280,7 +280,8 @@ function App({ socket, debug, game }) {
       if (hero?.direction !== direction) socket.emit("changeDirection", direction);
     };
 
-    const onLootGrabbed = ({ player }) => {
+    const onLootGrabbed = ({ player, loot, item }) => {
+      console.log(loot, item);
       const socketId = sessionStorage.getItem("socketId");
       if (socketId === player?.socketId) {
         /* Both quests and inventory only need to be updated when we pick an item */
