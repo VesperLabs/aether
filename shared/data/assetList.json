@@ -600,6 +600,18 @@
     "previewRect": [0, 0, 32, 32]
   },
   {
+    "texture": "stackable-leaves",
+    "src": "./assets/atlas/stackable/stackable-leaves.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
+    "texture": "stackable-crystal",
+    "src": "./assets/atlas/stackable/stackable-crystal.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
     "texture": "stackable-shell",
     "src": "./assets/atlas/stackable/stackable-shell.png",
     "atlas": "./assets/atlas/32x32-stackable.json",

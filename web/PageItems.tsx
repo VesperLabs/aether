@@ -14,6 +14,20 @@ export default function () {
         ...v,
       })
     );
+    const magicItems = Object.entries(itemList?.[type]?.["magic"] || {})?.map(
+      ([key, v]: [string, Item]) => ({
+        key,
+        rarity: "magic",
+        ...v,
+      })
+    );
+    const rareItems = Object.entries(itemList?.[type]?.["rare"] || {})?.map(
+      ([key, v]: [string, Item]) => ({
+        key,
+        rarity: "rare",
+        ...v,
+      })
+    );
     const uniqueItems = Object.entries(itemList?.[type]?.["unique"] || {})?.map(
       ([key, v]: [string, Item]) => ({
         key,
@@ -28,7 +42,7 @@ export default function () {
         ...v,
       })
     );
-    const allItems = [...commonItems, ...uniqueItems, ...setItems];
+    const allItems = [...commonItems, ...magicItems, ...rareItems, ...uniqueItems, ...setItems];
 
     return (
       <Flex sx={{ gap: 2, flexDirection: "column", mb: 4 }}>

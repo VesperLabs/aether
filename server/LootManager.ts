@@ -87,11 +87,6 @@ class LootManager {
     for (const mapLoot of this.mapLootList) {
       const mapItems = mapLoot?.items;
 
-      // if we already have loot in this position, skip spawning it.
-      if (this.loots.find((l) => l?.x === mapLoot.x && l?.y === mapLoot.y && l?.isPermanent)) {
-        continue;
-      }
-
       // turn the arrays to items, pick which to spawn
       let runners = [];
       for (const mapItem of mapItems) {
@@ -116,6 +111,14 @@ class LootManager {
       }
 
       if (item) {
+        // if we already have loot in this position, force it to expire so we
+        // can spawn some fresh loot
+        for (const l of this.loots) {
+          if (l?.x === mapLoot.x && l?.y === mapLoot.y && l?.isPermanent) {
+            l.expiredSince = now;
+          }
+        }
+
         /* TODO: Send all at once instead of many updates */
         this.create({
           x: mapLoot?.x,
