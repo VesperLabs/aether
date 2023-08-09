@@ -54,6 +54,8 @@ interface Loot {
   item: Item;
   dropTime: number;
   expiredSince?: number;
+  grabMessage?: boolean;
+  isPermanent?: boolean;
 }
 
 interface Drop {

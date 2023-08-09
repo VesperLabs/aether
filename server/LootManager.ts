@@ -12,6 +12,8 @@ interface CreateLoot {
   item: Item;
   npcId?: string;
   texture?: string;
+  grabMessage?: boolean;
+  isPermanent?: boolean;
 }
 
 function initiateMapLootList(tileMap) {
@@ -39,12 +41,21 @@ class LootManager {
     this.mapLootList = initiateMapLootList(this.room.tileMap);
   }
   create(lootSpawn: CreateLoot) {
-    const { x, y, item, npcId, texture } = lootSpawn ?? {};
+    const { x, y, item, npcId, texture, grabMessage, isPermanent } = lootSpawn ?? {};
     /* Optional npcId to to drop locally on an npc. */
     if (!x || !y || !item) return;
     const { scene, room } = this;
     const id = crypto.randomUUID();
-    scene.loots[id] = new Loot({ id, x, y, roomName: room?.name, item, texture });
+    scene.loots[id] = new Loot({
+      id,
+      x,
+      y,
+      roomName: room?.name,
+      item,
+      texture,
+      grabMessage,
+      isPermanent,
+    });
     this.loots.push(scene.loots[id]);
     this.scene.io.to(room?.name).emit("lootSpawned", { loot: scene.loots[id], npcId });
   }
@@ -59,7 +70,7 @@ class LootManager {
     for (const loot of loots) {
       const isExpired = now - loot.dropTime > LOOT_EXPIRE_TIME;
       if (isExpired) {
-        if (!loot?.expiredSince) loot.expiredSince = now;
+        if (!loot?.expiredSince && !loot?.isPermanent) loot.expiredSince = now;
         // give the loot update bit of time to hit all users before we wipe it from the server
         if (now - loot.expiredSince > LOOT_BUFFER_DELETE_TIME) {
           this.remove(loot?.id);
@@ -77,14 +88,12 @@ class LootManager {
       const mapItems = mapLoot?.items;
 
       // if we already have loot in this position, skip spawning it.
-      const spotHasLoot = this.loots
-        .filter((l) => !l?.expiredSince)
-        .find((l) => l?.x === mapLoot.x && l?.y === mapLoot.y);
-      if (spotHasLoot) continue;
-
-      let runners = [];
+      if (this.loots.find((l) => l?.x === mapLoot.x && l?.y === mapLoot.y && l?.isPermanent)) {
+        continue;
+      }
 
       // turn the arrays to items, pick which to spawn
+      let runners = [];
       for (const mapItem of mapItems) {
         let rando = randomNumber(1, mapItem.chance);
         if (rando === 1) {
@@ -112,6 +121,8 @@ class LootManager {
           x: mapLoot?.x,
           y: mapLoot?.y,
           texture: "loot-anim-sparkle",
+          grabMessage: true,
+          isPermanent: true,
           item,
         });
       }
