@@ -125,16 +125,22 @@ const rollDrop = (ilvl: number, magicFind = 0) => {
 const buildItem = (...args: BuildItem): any => {
   const [type, rarity, itemKey, amount] = args;
 
+  let shouldSpawnMods = true;
   let item: Item;
   let newStats = {};
   let newEffects = {};
   let percentStats = {}; //holds all of the % values to be calculated together after stats..
 
   try {
-    item =
-      rarity == "magic" || rarity == "rare"
-        ? itemList[type]["common"][itemKey]
-        : itemList[type][rarity][itemKey];
+    item = itemList[type]["common"][itemKey];
+    if (!item) {
+      item = itemList[type][rarity][itemKey];
+      if (item) {
+        // we dont want to spawn mods
+        // the item just has a magic / rare color
+        shouldSpawnMods = false;
+      }
+    }
     item = cloneObject(item);
   } catch (e) {
     console.log(`🔧 Item not found for ${type} ${rarity} ${itemKey}`);
@@ -206,13 +212,13 @@ const buildItem = (...args: BuildItem): any => {
   }
 
   /* Magic and Rare Item Spawning */
-  if (item.rarity == "magic") {
+  if (item.rarity == "magic" && shouldSpawnMods) {
     const { randomMod } = rollSuffix(item, "magic");
     item.name = item.name + " " + randomMod.name;
     item.key = item.key.replace("-common-", "-magic-");
   }
 
-  if (item.rarity == "rare") {
+  if (item.rarity == "rare" && shouldSpawnMods) {
     for (let i = 0; i < 4; i++) {
       rollSuffix(item, "rare");
     }

@@ -1069,6 +1069,20 @@
           "protein": 1
         }
       },
+      "leaves": {
+        "ilvl": 1,
+        "name": "Leaves",
+        "base": "material",
+        "slot": "stackable",
+        "texture": "stackable-leaves"
+      },
+      "stone": {
+        "ilvl": 1,
+        "name": "Stone",
+        "base": "material",
+        "slot": "stackable",
+        "texture": "stackable-stone"
+      },
       "skull": {
         "ilvl": 2,
         "name": "Skull",
@@ -1099,13 +1113,24 @@
         "buffs": {
           "vitamins": 2
         }
-      },
-      "stone": {
-        "ilvl": 2,
-        "name": "Stone",
+      }
+    },
+    "magic": {
+      "blueCrystal": {
+        "ilvl": 1,
+        "name": "Blue Crystal",
+        "tint": "0x66CCFF",
         "base": "material",
         "slot": "stackable",
-        "texture": "stackable-stone"
+        "texture": "stackable-crystal"
+      },
+      "redCrystal": {
+        "ilvl": 1,
+        "name": "Red Crystal",
+        "tint": "0xFF6633",
+        "base": "material",
+        "slot": "stackable",
+        "texture": "stackable-crystal"
       }
     },
     "unique": {

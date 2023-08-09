@@ -342,6 +342,24 @@
                  "width":0,
                  "x":334.708419276205,
                  "y":206.262891430714
+                }, 
+                {
+                 "height":0,
+                 "id":64,
+                 "name":"leaves",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"item",
+                         "type":"string",
+                         "value":"[{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"leaves\", \"amount\": [1,1], \"chance\": 2 }]"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":207.632694838427,
+                 "y":363.043886950891
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -686,7 +704,7 @@
          "y":0
         }],
  "nextlayerid":29,
- "nextobjectid":64,
+ "nextobjectid":65,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.2",
