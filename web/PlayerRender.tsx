@@ -5,12 +5,13 @@ import {
   resolveAsset,
   tintCanvas,
   CLASS_ICON_MAP,
+  questList,
 } from "@aether/shared";
 import { useEffect, useRef, useState } from "react";
 import { Box, Flex, Icon, Text } from "@aether/ui";
 import weaponAtlas from "../public/assets/atlas/weapon.json";
 import { Tooltip } from "react-tooltip";
-import { TOOLTIP_STYLE } from "./";
+import { TOOLTIP_STYLE, Label } from "./";
 
 type PlayerAsset = {
   tint?: string;
@@ -238,9 +239,18 @@ export default function PlayerRender({ player }) {
 }
 
 const PlayerTooltip = ({ player }) => {
+  const completedQuests = player?.quests?.filter((q) => q?.isCompleted)?.length;
+  const totalQuests = Object.keys(questList)?.length;
   return (
-    <Tooltip id={player?.id}>
-      <Flex sx={TOOLTIP_STYLE}>Last Login {player?.updatedAt}</Flex>
+    <Tooltip id={player?.id} style={{ zIndex: 99999 }}>
+      <Flex sx={TOOLTIP_STYLE}>
+        <Text>
+          <Label>Last Login:</Label> {new Date(player?.updatedAt)?.toLocaleDateString("en-US")}
+        </Text>
+        <Text>
+          <Label>Completed Quests:</Label> {`${completedQuests} / ${totalQuests}`}
+        </Text>
+      </Flex>
     </Tooltip>
   );
 };

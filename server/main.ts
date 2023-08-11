@@ -49,6 +49,7 @@ async function initialize() {
         activeItemSlots: player?.activeItemSlots,
         profile: player?.profile,
         updatedAt: player?.updatedAt,
+        quests: player?.quests,
       });
     }
     res.json(ret);
