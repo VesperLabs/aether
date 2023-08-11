@@ -616,7 +616,7 @@
                         {
                          "name":"item",
                          "type":"string",
-                         "value":"[{ \"type\": \"stackable\", \"rarity\": \"magic\", \"key\": \"redCrystal\", \"amount\": [1,1], \"chance\": 50 }]"
+                         "value":"[{ \"type\": \"stackable\", \"rarity\": \"rare\", \"key\": \"redCrystal\", \"amount\": [1,1], \"chance\": 50 }]"
                         }],
                  "rotation":0,
                  "type":"",
@@ -624,6 +624,114 @@
                  "width":0,
                  "x":1259.41190457319,
                  "y":365.380042799398
+                }, 
+                {
+                 "height":0,
+                 "id":51,
+                 "name":"mushroom",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"item",
+                         "type":"string",
+                         "value":"[{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"mushroom\", \"amount\": [1,1], \"chance\": 1 },{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"shitake\", \"amount\": [1,1], \"chance\": 10 }]"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":751.750399213856,
+                 "y":495.025181181673
+                }, 
+                {
+                 "height":0,
+                 "id":52,
+                 "name":"mushroom",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"item",
+                         "type":"string",
+                         "value":"[{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"mushroom\", \"amount\": [1,1], \"chance\": 1 },{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"shitake\", \"amount\": [1,1], \"chance\": 10 }]"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1039.18437538386,
+                 "y":1936.49428817099
+                }, 
+                {
+                 "height":0,
+                 "id":53,
+                 "name":"mushroom",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"item",
+                         "type":"string",
+                         "value":"[{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"mushroom\", \"amount\": [1,2], \"chance\": 1 },{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"shitake\", \"amount\": [1,2], \"chance\": 10 }]"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":258.567743520452,
+                 "y":2249.72362117676
+                }, 
+                {
+                 "height":0,
+                 "id":54,
+                 "name":"mushroom",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"item",
+                         "type":"string",
+                         "value":"[{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"mushroom\", \"amount\": [1,1], \"chance\": 1 },{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"shitake\", \"amount\": [1,1], \"chance\": 10 }]"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":752.364574376612,
+                 "y":2448.10219874708
+                }, 
+                {
+                 "height":0,
+                 "id":55,
+                 "name":"mushroom",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"item",
+                         "type":"string",
+                         "value":"[{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"mushroom\", \"amount\": [1,2], \"chance\": 1 },{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"shitake\", \"amount\": [1,2], \"chance\": 10 }]"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":2433.97617000369,
+                 "y":2087.58137820906
+                }, 
+                {
+                 "height":0,
+                 "id":56,
+                 "name":"mushroom",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"item",
+                         "type":"string",
+                         "value":"[{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"mushroom\", \"amount\": [1,1], \"chance\": 1 },{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"shitake\", \"amount\": [1,1], \"chance\": 10 }]"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":2031.07726323547,
+                 "y":1520.69770298489
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -1326,10 +1434,10 @@
          "y":0
         }],
  "nextlayerid":49,
- "nextobjectid":50,
+ "nextobjectid":57,
  "orientation":"orthogonal",
  "renderorder":"right-down",
- "tiledversion":"1.10.2",
+ "tiledversion":"1.10.1",
  "tileheight":32,
  "tilesets":[
         {
