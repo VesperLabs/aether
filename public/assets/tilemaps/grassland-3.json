@@ -502,7 +502,7 @@
                 {
                  "height":0,
                  "id":103,
-                 "name":"mushroom",
+                 "name":"mushroom,shitake",
                  "point":true,
                  "properties":[
                         {
@@ -574,13 +574,13 @@
                 {
                  "height":0,
                  "id":107,
-                 "name":"mushroom",
+                 "name":"mushroom,shitake",
                  "point":true,
                  "properties":[
                         {
                          "name":"item",
                          "type":"string",
-                         "value":"[{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"mushroom\", \"amount\": [1,1], \"chance\": 2 }]"
+                         "value":"[{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"mushroom\", \"amount\": [1,1], \"chance\": 1 },{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"shitake\", \"amount\": [1,1], \"chance\": 10 }]"
                         }],
                  "rotation":0,
                  "type":"",
@@ -592,13 +592,13 @@
                 {
                  "height":0,
                  "id":108,
-                 "name":"mushroom",
+                 "name":"mushroom,shitake",
                  "point":true,
                  "properties":[
                         {
                          "name":"item",
                          "type":"string",
-                         "value":"[{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"mushroom\", \"amount\": [1,1], \"chance\": 2}]"
+                         "value":"[{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"mushroom\", \"amount\": [1,1], \"chance\": 1 },{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"shitake\", \"amount\": [1,1], \"chance\": 10 }]"
                         }],
                  "rotation":0,
                  "type":"",
@@ -714,6 +714,60 @@
                  "width":0,
                  "x":1104.06564714659,
                  "y":1747.48228273032
+                }, 
+                {
+                 "height":0,
+                 "id":117,
+                 "name":"shell",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"item",
+                         "type":"string",
+                         "value":"[{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"egg\", \"amount\": [1,1], \"chance\": 1 }]"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":624.154153509055,
+                 "y":1297.28684668428
+                }, 
+                {
+                 "height":0,
+                 "id":118,
+                 "name":"mushroom",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"item",
+                         "type":"string",
+                         "value":"[{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"mushroom\", \"amount\": [1,1], \"chance\": 1 }]"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":588.235294117647,
+                 "y":1524.07559764934
+                }, 
+                {
+                 "height":0,
+                 "id":119,
+                 "name":"mushroom",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"item",
+                         "type":"string",
+                         "value":"[{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"mushroom\", \"amount\": [1,1], \"chance\": 1 }]"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":779.368973583614,
+                 "y":1426.37074228333
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -897,8 +951,8 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":1180.56088623948,
-                 "y":2181.98592944303
+                 "x":1191.97185217775,
+                 "y":2197.9612817566
                 }, 
                 {
                  "height":0,
@@ -1017,8 +1071,8 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":1069.17770236459,
-                 "y":2182.56003342264
+                 "x":1058.33728472324,
+                 "y":2211.08744826831
                 }, 
                 {
                  "height":0,
@@ -1185,8 +1239,8 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":1177.18083334145,
-                 "y":2099.98360593804
+                 "x":1195.43837884268,
+                 "y":2101.12470253187
                 }, 
                 {
                  "height":0,
@@ -1361,6 +1415,24 @@
                  "width":0,
                  "x":1615.08824260502,
                  "y":650.633855331842
+                }, 
+                {
+                 "height":0,
+                 "id":120,
+                 "name":"crab",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"walkRange",
+                         "type":"int",
+                         "value":120
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1121.1274034347,
+                 "y":2148.68488617561
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -1480,7 +1552,7 @@
          "y":0
         }],
  "nextlayerid":31,
- "nextobjectid":117,
+ "nextobjectid":121,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.1",

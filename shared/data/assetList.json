@@ -678,6 +678,12 @@
     "previewRect": [0, 0, 32, 32]
   },
   {
+    "texture": "stackable-egg",
+    "src": "./assets/atlas/stackable/stackable-egg.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
     "texture": "stackable-mushroom",
     "src": "./assets/atlas/stackable/stackable-mushroom.png",
     "atlas": "./assets/atlas/32x32-stackable.json",
