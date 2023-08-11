@@ -1036,7 +1036,7 @@
         "slot": "stackable",
         "texture": "stackable-mushroom",
         "buffs": {
-          "vitamins": 1
+          "protein": 1
         }
       },
       "carrot": {
@@ -1083,6 +1083,16 @@
         "slot": "stackable",
         "texture": "stackable-stone"
       },
+      "shitake": {
+        "ilvl": 2,
+        "name": "Shitake",
+        "base": "food",
+        "slot": "stackable",
+        "texture": "stackable-shitake",
+        "buffs": {
+          "protein": 2
+        }
+      },
       "skull": {
         "ilvl": 2,
         "name": "Skull",
@@ -1104,18 +1114,42 @@
         "slot": "stackable",
         "texture": "stackable-tooth"
       },
+      "daisy": {
+        "ilvl": 2,
+        "name": "Daisy",
+        "base": "material",
+        "slot": "stackable",
+        "texture": "stackable-flower-daisy"
+      },
       "orchidFlower": {
         "ilvl": 2,
         "name": "Orchid Flower",
-        "base": "food",
+        "base": "material",
         "slot": "stackable",
-        "texture": "stackable-flower-orchid",
-        "buffs": {
-          "vitamins": 2
-        }
+        "texture": "stackable-flower-orchid"
       }
     },
     "magic": {
+      "ginseng": {
+        "ilvl": 1,
+        "name": "Ginseng",
+        "tint": "0xFFEE99",
+        "base": "food",
+        "slot": "stackable",
+        "texture": "stackable-root",
+        "buffs": {
+          "stimulant": 1
+        }
+      }
+    },
+    "rare": {
+      "clover": {
+        "ilvl": 1,
+        "name": "Clover",
+        "base": "material",
+        "slot": "stackable",
+        "texture": "stackable-clover"
+      },
       "blueCrystal": {
         "ilvl": 1,
         "name": "Blue Crystal",

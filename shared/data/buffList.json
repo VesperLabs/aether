@@ -45,6 +45,13 @@
       "regenMp": 1
     }
   },
+  "stimulant": {
+    "duration": 15000,
+    "dispelInCombat": true,
+    "stats": {
+      "regenSp": 1
+    }
+  },
   "rest": {
     "duration": -1,
     "dispelInCombat": true
