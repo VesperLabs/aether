@@ -1019,6 +1019,16 @@
           "protein": 1
         }
       },
+      "egg": {
+        "ilvl": 1,
+        "name": "Egg",
+        "base": "food",
+        "slot": "stackable",
+        "texture": "stackable-egg",
+        "buffs": {
+          "protein": 1
+        }
+      },
       "grapes": {
         "ilvl": 1,
         "name": "Grapes",
