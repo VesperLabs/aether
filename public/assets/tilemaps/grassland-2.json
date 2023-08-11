@@ -324,6 +324,42 @@
                  "width":0,
                  "x":143.125293289535,
                  "y":398.873768183951
+                }, 
+                {
+                 "height":0,
+                 "id":40,
+                 "name":"leaves",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"item",
+                         "type":"string",
+                         "value":"[{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"leaves\", \"amount\": [1,1], \"chance\": 2 }]"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":462.534690101758,
+                 "y":843.868845718985
+                }, 
+                {
+                 "height":0,
+                 "id":41,
+                 "name":"leaves",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"item",
+                         "type":"string",
+                         "value":"[{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"leaves\", \"amount\": [1,1], \"chance\": 2 }]"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":463.048617535204,
+                 "y":588.446911296125
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -681,10 +717,10 @@
          "y":0
         }],
  "nextlayerid":21,
- "nextobjectid":40,
+ "nextobjectid":42,
  "orientation":"orthogonal",
  "renderorder":"right-down",
- "tiledversion":"1.10.2",
+ "tiledversion":"1.10.1",
  "tileheight":32,
  "tilesets":[
         {

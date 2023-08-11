@@ -516,6 +516,114 @@
                  "width":0,
                  "x":515.374514744013,
                  "y":1733.69894193491
+                }, 
+                {
+                 "height":0,
+                 "id":104,
+                 "name":"shell",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"item",
+                         "type":"string",
+                         "value":"[{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"shell\", \"amount\": [1,1], \"chance\": 5 }]"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1396.34083667386,
+                 "y":2182.64980984685
+                }, 
+                {
+                 "height":0,
+                 "id":105,
+                 "name":"shell",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"item",
+                         "type":"string",
+                         "value":"[{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"shell\", \"amount\": [1,1], \"chance\": 5 }]"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":2196.5258505499,
+                 "y":1799.25994449584
+                }, 
+                {
+                 "height":0,
+                 "id":106,
+                 "name":"leaves",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"item",
+                         "type":"string",
+                         "value":"[{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"leaves\", \"amount\": [1,1], \"chance\": 2 }]"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1039.67519786206,
+                 "y":1357.79627916538
+                }, 
+                {
+                 "height":0,
+                 "id":107,
+                 "name":"mushroom",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"item",
+                         "type":"string",
+                         "value":"[{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"mushroom\", \"amount\": [1,1], \"chance\": 2 }]"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":943.056840374139,
+                 "y":1327.47456059204
+                }, 
+                {
+                 "height":0,
+                 "id":108,
+                 "name":"mushroom",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"item",
+                         "type":"string",
+                         "value":"[{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"mushroom\", \"amount\": [1,1], \"chance\": 2}]"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1070.51084386885,
+                 "y":1359.85198889917
+                }, 
+                {
+                 "height":0,
+                 "id":109,
+                 "name":"leaves",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"item",
+                         "type":"string",
+                         "value":"[{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"leaves\", \"amount\": [1,1], \"chance\": 2 }]"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1392.74334463974,
+                 "y":558.125192722787
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -1282,10 +1390,10 @@
          "y":0
         }],
  "nextlayerid":31,
- "nextobjectid":104,
+ "nextobjectid":110,
  "orientation":"orthogonal",
  "renderorder":"right-down",
- "tiledversion":"1.10.2",
+ "tiledversion":"1.10.1",
  "tileheight":32,
  "tilesets":[
         {
