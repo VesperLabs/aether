@@ -333,9 +333,7 @@
     "state": { "isAggro": true },
     "baseStats": {
       "level": 9,
-      "minEarthDamage": 0,
-      "maxEarthDamage": 1,
-      "blockChance": 5,
+      "dodgeChance": 5,
       "earthResistance": 50,
       "fireResistance": -15
     },
@@ -348,6 +346,46 @@
         "type": "stackable",
         "rarity": "common",
         "key": "orchidFlower",
+        "chance": 4
+      }
+    ]
+  },
+  "earthElemental": {
+    "charClass": "mage",
+    "profile": {
+      "race": "earth-elemental",
+      "userName": "Earth Elemental"
+    },
+    "state": { "isAggro": false },
+    "baseStats": {
+      "level": 9,
+      "minEarthDamage": 1,
+      "maxEarthDamage": 2,
+      "earthResistance": 50,
+      "fireResistance": 50,
+      "waterResistance": -50
+    },
+    "hitBoxSize": {
+      "width": 26,
+      "height": 42
+    },
+    "drops": [
+      {
+        "type": "stackable",
+        "rarity": "magic",
+        "key": "ginseng",
+        "chance": 10
+      },
+      {
+        "type": "stackable",
+        "rarity": "common",
+        "key": "leaves",
+        "chance": 4
+      },
+      {
+        "type": "stackable",
+        "rarity": "common",
+        "key": "stone",
         "chance": 4
       }
     ],
@@ -365,9 +403,7 @@
     },
     "state": { "isAggro": true },
     "baseStats": {
-      "level": 13,
-      "minEarthDamage": 1,
-      "maxEarthDamage": 2,
+      "level": 14,
       "earthResistance": 50,
       "fireResistance": -15,
       "blockChance": 5
