@@ -355,15 +355,15 @@
             1010, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1010, 1010, 1010, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1010, 1010,
             1010, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1010, 0, 0, 0, 0, 0, 0, 0, 1010, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1010, 1010, 1010,
             1010, 1010, 1010, 1010, 1010, 1010, 1010, 1010, 1010, 1010, 1010, 1010, 1010, 1010, 1010, 1010, 1010, 1010, 1010, 1010, 1010, 1010, 1010, 1010, 1010, 1010, 1010, 1010, 1010, 1010, 0, 0, 0, 0, 0, 0, 0, 1010, 1010, 1010, 1010, 1010, 1010, 1010, 1010, 1010, 1010, 1010, 1010, 1010,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1010, 1010, 0, 0, 1010, 1010, 1010, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1010, 1010, 1010, 0, 0, 0, 0, 0, 0, 0, 1010, 1010,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1010, 1010, 0, 0, 1010, 1010, 1010, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1010, 1010, 1010, 0, 0, 0, 0, 1010, 0, 0, 1010, 1010,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1010, 1010,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
          "height":50,
          "id":6,
          "name":"Collide",
-         "opacity":1,
+         "opacity":0.37,
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":50,
          "x":0,
          "y":0
@@ -447,6 +447,114 @@
                  "width":0,
                  "x":47.2813238770685,
                  "y":1553.08870387501
+                }, 
+                {
+                 "height":0,
+                 "id":17,
+                 "name":"redApple,orange,grapes",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"item",
+                         "type":"string",
+                         "value":"[{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"redApple\", \"amount\": [1,1], \"chance\": 3 },{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"orange\", \"amount\": [1,1], \"chance\": 3 },{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"grapes\", \"amount\": [1,1], \"chance\": 3 }]"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1454.68108914584,
+                 "y":1510.6303618053
+                }, 
+                {
+                 "height":0,
+                 "id":18,
+                 "name":"redApple,orange,grapes",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"item",
+                         "type":"string",
+                         "value":"[{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"redApple\", \"amount\": [1,1], \"chance\": 3 },{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"orange\", \"amount\": [1,1], \"chance\": 3 },{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"grapes\", \"amount\": [1,1], \"chance\": 3 }]"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":525.301504413776,
+                 "y":1381.94703468855
+                }, 
+                {
+                 "height":0,
+                 "id":19,
+                 "name":"redApple,orange,grapes",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"item",
+                         "type":"string",
+                         "value":"[{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"redApple\", \"amount\": [1,1], \"chance\": 3 },{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"orange\", \"amount\": [1,1], \"chance\": 3 },{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"grapes\", \"amount\": [1,1], \"chance\": 3 }]"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1485.76401840109,
+                 "y":932.487877657591
+                }, 
+                {
+                 "height":0,
+                 "id":20,
+                 "name":"redApple,orange,grapes",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"item",
+                         "type":"string",
+                         "value":"[{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"redApple\", \"amount\": [1,1], \"chance\": 3 },{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"orange\", \"amount\": [1,1], \"chance\": 3 },{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"grapes\", \"amount\": [1,1], \"chance\": 3 }]"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1261.96692776327,
+                 "y":1189.85453189109
+                }, 
+                {
+                 "height":0,
+                 "id":21,
+                 "name":"daisy",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"item",
+                         "type":"string",
+                         "value":"[{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"daisy\", \"amount\": [1,1], \"chance\": 1 }]"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":752.206887977123,
+                 "y":1230.26233992291
+                }, 
+                {
+                 "height":0,
+                 "id":22,
+                 "name":"daisy",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"item",
+                         "type":"string",
+                         "value":"[{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"daisy\", \"amount\": [1,1], \"chance\": 1 }]"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":815.616063657839,
+                 "y":1262.58858634838
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -464,12 +572,18 @@
                  "id":9,
                  "name":"danny",
                  "point":true,
+                 "properties":[
+                        {
+                         "name":"walkRange",
+                         "type":"string",
+                         "value":"120"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":1070.24047143808,
-                 "y":1335.4243893166
+                 "x":934.115846869398,
+                 "y":774.610202160666
                 }, 
                 {
                  "height":0,
@@ -492,8 +606,8 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":799.353673605171,
-                 "y":1255.58406995533
+                 "x":253.772563765286,
+                 "y":1222.31591658274
                 }, 
                 {
                  "height":0,
@@ -506,6 +620,24 @@
                  "width":0,
                  "x":1135.82359091341,
                  "y":468.586636251307
+                }, 
+                {
+                 "height":0,
+                 "id":23,
+                 "name":"rae",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"walkRange",
+                         "type":"string",
+                         "value":"120"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1074.76582914161,
+                 "y":1367.83866403826
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -701,7 +833,7 @@
          "y":0
         }],
  "nextlayerid":11,
- "nextobjectid":17,
+ "nextobjectid":24,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.1",

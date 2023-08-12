@@ -103,13 +103,13 @@
   "shrooms": {
     "name": "Shrooms",
     "dialogues": {
-      "description": "Ah, the elusive mushrooms! The woodland delicacy I've been yearning for. I've heard whispers that you can find 'em in caves. {objective} for me, my fungi-loving friend."
+      "description": "Ah, the elusive mushrooms! The woodland delicacy I've been yearning for. I've heard whispers that you can find 'em all over the place. {objective} for me, my fungi-loving friend."
     },
     "objectives": [
       {
         "type": "item",
         "item": ["stackable", "common", "mushroom"],
-        "amount": 20
+        "amount": 30
       }
     ],
     "rewards": {
@@ -202,6 +202,39 @@
       "exp": 80,
       "gold": 20,
       "items": [["helmet", "unique", "chefHat"]]
+    }
+  },
+  "fauna-gatherer": {
+    "name": "Gather Fauna",
+    "dialogues": {
+      "description": "Search for flowers, and leaf piles. {objective} and bring them to me.  I can use them for my studies."
+    },
+    "objectives": [
+      { "type": "item", "item": ["stackable", "magic", "ginseng"], "amount": 1 },
+      { "type": "item", "item": ["stackable", "common", "daisy"], "amount": 30 },
+      { "type": "item", "item": ["stackable", "common", "leaves"], "amount": 50 }
+    ],
+    "rewards": {
+      "exp": 100,
+      "gold": 30,
+      "items": [["amulet", "unique", "forestBeads"]]
+    }
+  },
+  "shitake-search": {
+    "name": "Shitake Finder",
+    "dialogues": {
+      "description": "{objective}.  These show up in the same places as mushrooms, but can be much rarer to find."
+    },
+    "objectives": [
+      {
+        "type": "item",
+        "item": ["stackable", "common", "shitake"],
+        "amount": 20
+      }
+    ],
+    "rewards": {
+      "exp": 100,
+      "gold": 10
     }
   },
   "talk-steve": {

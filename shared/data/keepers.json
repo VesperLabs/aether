@@ -358,7 +358,7 @@
       "gender": "male",
       "race": "human"
     },
-    "state": { "isStatic": true },
+    "state": { "isStatic": false },
     "baseStats": {
       "level": 50
     },
@@ -392,6 +392,43 @@
         { "item": ["spell", "common", "haste"], "stock": 1 },
         { "item": ["spell", "common", "genius"], "stock": 1 }
       ]
+    }
+  },
+  "rae": {
+    "charClass": "cleric",
+    "profile": {
+      "userName": "Rae",
+      "face": {
+        "texture": "face-1"
+      },
+      "hair": {
+        "texture": "hair-4",
+        "tint": "0xFF6666"
+      },
+      "gender": "female",
+      "race": "human"
+    },
+    "state": { "isStatic": false },
+    "baseStats": {
+      "level": 50
+    },
+    "equipment": {
+      "handLeft": null,
+      "handRight": ["weapon", "unique", "foxBlade"],
+      "helmet": null,
+      "accessory": ["accessory", "unique", "compoundLenses"],
+      "pants": ["pants", "common", "leatherPants"],
+      "armor": ["armor", "common", "leatherCoat"],
+      "boots": ["boots", "common", "leatherBoots"]
+    },
+    "keeperData": {
+      "dialogues": {
+        "greet": "My name is Rae. I'm a bit curious about some of the fauna in these lands.",
+        "shop": "I've got some curiousities for sale you may find useful.",
+        "quests": "I'm pretty busy here in town, but there are some things you can collect for me."
+      },
+      "quests": ["fauna-gatherer", "shitake-search"],
+      "shop": []
     }
   },
   "ale": {
