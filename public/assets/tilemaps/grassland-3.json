@@ -1511,6 +1511,18 @@
                  "width":0,
                  "x":1035.51401869159,
                  "y":777.570093457944
+                }, 
+                {
+                 "height":0,
+                 "id":126,
+                 "name":"orchid",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1109.80068404293,
+                 "y":1020.16747257931
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -1630,7 +1642,7 @@
          "y":0
         }],
  "nextlayerid":31,
- "nextobjectid":126,
+ "nextobjectid":127,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.1",

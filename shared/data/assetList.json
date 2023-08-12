@@ -180,6 +180,12 @@
     "previewRect": [0, 160, 80, 80]
   },
   {
+    "texture": "wolf",
+    "src": "./assets/atlas/mob/wolf.png",
+    "atlas": "./assets/atlas/80x80.json",
+    "previewRect": [0, 160, 80, 80]
+  },
+  {
     "texture": "wraith",
     "src": "./assets/atlas/mob/wraith.png",
     "atlas": "./assets/atlas/80x80.json",

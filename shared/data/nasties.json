@@ -113,7 +113,7 @@
     },
     "state": { "isAggro": true },
     "baseStats": {
-      "level": 4,
+      "level": 5,
       "walkSpeed": 15
     },
     "hitBoxSize": {
@@ -411,6 +411,23 @@
     "hitBoxSize": {
       "width": 78,
       "height": 72
+    },
+    "drops": []
+  },
+  "wolf": {
+    "charClass": "rogue",
+    "profile": {
+      "race": "wolf",
+      "userName": "Wolf",
+      "tint": "0xCCBBAA"
+    },
+    "state": { "isAggro": true },
+    "baseStats": {
+      "level": 14
+    },
+    "hitBoxSize": {
+      "width": 31,
+      "height": 28
     },
     "drops": []
   }
