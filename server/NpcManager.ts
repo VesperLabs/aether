@@ -31,6 +31,7 @@ class NpcManager {
 
     for (const { name, x, y, properties = [] } of mapNpcs) {
       const npc = getNpcFromLists(name);
+      const baseLevel = npc?.baseStats?.level;
       if (!npc) {
         console.log(`❌ Map npc "${name}" is broken or not found in ${room.name}`);
         continue;
@@ -38,16 +39,20 @@ class NpcManager {
       const isKeeper = npc.kind === "keeper";
 
       const { baseStats } = useGetBaseCharacterDefaults({
-        level: npc?.baseStats?.level,
+        level: baseLevel,
         charClass: npc?.charClass,
       });
 
-      /* Modifications to base stats for NPCs */
+      // remove level so it does not get added twice
       const { level, ...npcBaseStats } = {
         ...baseStats,
         walkSpeed: baseStats.walkSpeed - 30,
-        maxHp: npc?.baseStats?.level * 5,
-        expValue: isKeeper ? 0 : npc?.baseStats?.level,
+        maxHp: baseLevel * 5,
+        intelligence: baseLevel * 2,
+        strength: baseLevel * 2,
+        dexterity: baseLevel * 2,
+        vitality: baseLevel * 2,
+        expValue: isKeeper ? 0 : baseLevel,
       };
 
       this.create({

@@ -45,9 +45,13 @@ async function initialize() {
     res.json(keeperStates);
   });
 
+  app.get("/players/prune", async (req, res) => {
+    await db.pruneNoobs();
+    res.json({ string: "ok" });
+  });
+
   app.get("/players/all", async (req, res) => {
     const sortBy = req?.query?.sortBy || "updatedAt";
-    //await db.pruneNoobs();
     const players = await db.getAllUsers({ sortBy });
     let ret = [];
     for (const player of players) {
