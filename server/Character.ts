@@ -233,7 +233,7 @@ class ServerCharacter extends Character {
     ns.regenHp = (ns.regenHp || 1) + Math.floor(ns.vitality / 20);
     ns.regenMp = (ns.regenMp || 1) + Math.floor(ns.intelligence / 20);
     ns.regenSp = ns.regenSp || 1;
-    ns.armorPierce = ns.armorPierce + ns.dexterity + ns.strength / 2;
+    ns.armorPierce = ns.armorPierce + ns.dexterity * 0.75 + ns.strength * 0.5;
     ns.defense = ns.defense + ns.strength;
     ns.critChance = ns.critChance + ns.dexterity * 0.05;
     ns.walkSpeed = ns.walkSpeed + ns.dexterity * 0.03;
@@ -246,7 +246,7 @@ class ServerCharacter extends Character {
     if (ns.dodgeChance > 75) ns.dodgeChance = 75;
     if (ns.blockChance > 75) ns.blockChance = 75;
 
-    const damageCalc = ((ns.strength * 1.75 + ns.dexterity / 2) * ns.level) / 100;
+    const damageCalc = ((ns.strength * 1.5 + ns.dexterity / 2) * ns.level) / 100;
     const damageModifier = Math.floor(1 + damageCalc);
     ns.minDamage = ns.minDamage + Math.floor(damageCalc);
     ns.maxDamage = Math.max(ns.maxDamage + damageModifier, ns.minDamage);

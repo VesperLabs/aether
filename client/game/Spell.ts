@@ -7,10 +7,7 @@ const BLANK_TEXTURE = "human-blank";
 const BUFF_SPELLS = ["evasion", "brute", "endurance", "genius", "haste"];
 
 class Spell extends Phaser.GameObjects.Container {
-  constructor(
-    scene,
-    { id, caster, spellName, abilitySlot, state, castAngle, ilvl = 1, skipCollision = false }
-  ) {
+  constructor(scene, { id, caster, spellName, abilitySlot, state, castAngle, ilvl = 1 }) {
     super(scene, caster.x, caster.y + caster.bodyOffsetY);
     this.scene = scene;
     this.id = id;
@@ -34,11 +31,11 @@ class Spell extends Phaser.GameObjects.Container {
     this.scaleMultiplier = details?.scaleMultiplier || 0;
     this.spell.setTint(details?.tint || "0xFFFFFF");
     this.shouldFade = details?.shouldFade || false;
-    this.skipCollision = skipCollision;
 
     scene.physics.add.existing(this);
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
+    this.body.setCircle(this?.bodySize, -this?.bodySize, -this?.bodySize);
 
     if (this.isAttack) {
       let viewSize = 44;
@@ -76,7 +73,6 @@ class Spell extends Phaser.GameObjects.Container {
       }
     } else {
       this.setScale(this.scaleBase + ilvl * this.scaleMultiplier);
-      this.body.setCircle(this?.bodySize, -this?.bodySize, -this?.bodySize);
     }
 
     if (spellName === "fireball") {

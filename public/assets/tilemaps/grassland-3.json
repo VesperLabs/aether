@@ -1502,18 +1502,6 @@
                 }, 
                 {
                  "height":0,
-                 "id":125,
-                 "name":"earthElemental",
-                 "point":true,
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":0,
-                 "x":1035.51401869159,
-                 "y":777.570093457944
-                }, 
-                {
-                 "height":0,
                  "id":126,
                  "name":"orchid",
                  "point":true,

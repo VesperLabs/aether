@@ -74,8 +74,9 @@
       "quests": ["crab-catching", "crab-claws", "fish-spearing", "find-tudwick"],
       "shop": [
         { "item": ["weapon", "common", "spear"], "stock": 1 },
-        { "item": ["weapon", "common", "dagger"], "stock": 1 },
-        { "item": ["armor", "common", "clothRobe"], "stock": 1 }
+        { "item": ["boots", "common", "nutshellBoots"], "stock": 1 },
+        { "item": ["armor", "common", "clothRobe"], "stock": 1 },
+        { "item": ["pants", "common", "clothPants"], "stock": 1 }
       ]
     }
   },

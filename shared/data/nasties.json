@@ -113,8 +113,8 @@
     },
     "state": { "isAggro": true },
     "baseStats": {
-      "level": 5,
-      "walkSpeed": 15
+      "level": 6,
+      "walkSpeed": 20
     },
     "hitBoxSize": {
       "width": 28,
@@ -332,9 +332,8 @@
     },
     "state": { "isAggro": true },
     "baseStats": {
-      "level": 9,
-      "dodgeChance": 5,
-      "earthResistance": 50,
+      "level": 7,
+      "earthResistance": 25,
       "fireResistance": -15
     },
     "hitBoxSize": {
@@ -358,7 +357,7 @@
     },
     "state": { "isAggro": false },
     "baseStats": {
-      "level": 9,
+      "level": 8,
       "minEarthDamage": 1,
       "maxEarthDamage": 2,
       "earthResistance": 50,
@@ -403,7 +402,7 @@
     },
     "state": { "isAggro": true },
     "baseStats": {
-      "level": 14,
+      "level": 13,
       "earthResistance": 50,
       "fireResistance": -15,
       "blockChance": 5
