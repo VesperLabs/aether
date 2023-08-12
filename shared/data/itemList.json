@@ -1379,6 +1379,17 @@
         "texture": "bag-large-pouch",
         "space": 8
       }
+    },
+    "unique": {
+      "exclusive": true,
+      "raesBasket": {
+        "ilvl": 2,
+        "name": "Rae's Basket",
+        "base": "bag",
+        "slot": "bag",
+        "texture": "bag-basket",
+        "space": 10
+      }
     }
   }
 }

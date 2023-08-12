@@ -136,8 +136,9 @@ const buildItem = (...args: BuildItem): any => {
     if (!item) {
       item = itemList[type][rarity][itemKey];
       if (item) {
-        // we dont want to spawn mods
-        // the item just has a magic / rare color
+        // if the item is found under "rare" or "magic"
+        // in our itemList, the item just has a magic / rare color
+        // and we do not just want to spawn mods on it
         shouldSpawnMods = false;
       }
     }

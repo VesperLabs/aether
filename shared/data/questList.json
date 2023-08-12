@@ -217,7 +217,7 @@
     "rewards": {
       "exp": 100,
       "gold": 30,
-      "items": [["amulet", "unique", "forestBeads"]]
+      "items": [["bag", "unique", "raesBasket"]]
     }
   },
   "shitake-search": {
