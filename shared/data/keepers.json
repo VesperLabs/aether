@@ -288,6 +288,7 @@
       },
       "quests": ["wyrm-blade", "shell-finding", "skull-finding"],
       "shop": [
+        { "item": ["shield", "common", "buckler"], "stock": 1 },
         { "item": ["pants", "common", "leatherPants"], "stock": 1 },
         { "item": ["armor", "common", "bronzePlate"], "stock": 1 },
         { "item": ["armor", "common", "bronzeHeavyPlate"], "stock": 1 },

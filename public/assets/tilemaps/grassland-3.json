@@ -1499,6 +1499,18 @@
                  "width":0,
                  "x":270.421484520701,
                  "y":1426.70645281611
+                }, 
+                {
+                 "height":0,
+                 "id":125,
+                 "name":"earthElemental",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1035.51401869159,
+                 "y":777.570093457944
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -1618,7 +1630,7 @@
          "y":0
         }],
  "nextlayerid":31,
- "nextobjectid":125,
+ "nextobjectid":126,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.1",
