@@ -191,19 +191,23 @@ const calculateNextMaxExp = (level) => {
 };
 
 function mergeAndAddValues(obj1, obj2) {
-  const mergedStats = { ...obj1 };
+  const result = {};
 
-  for (const key in obj2) {
-    if (obj2.hasOwnProperty(key)) {
-      if (mergedStats.hasOwnProperty(key)) {
-        mergedStats[key] += obj2[key];
-      } else {
-        mergedStats[key] = obj2[key];
-      }
+  for (const key in obj1) {
+    if (obj1.hasOwnProperty(key) && obj2.hasOwnProperty(key)) {
+      result[key] = obj1[key] + obj2[key];
+    } else {
+      result[key] = obj1[key];
     }
   }
 
-  return mergedStats;
+  for (const key in obj2) {
+    if (!obj1.hasOwnProperty(key)) {
+      result[key] = obj2[key];
+    }
+  }
+
+  return result;
 }
 
 function addValuesToExistingKeys(

@@ -46,12 +46,15 @@ class NpcManager {
       // remove level so it does not get added twice
       const { level, ...npcBaseStats } = {
         ...baseStats,
+        maxHp: 0,
+        maxMp: 0,
+        maxDamage: baseStats.maxDamage + 1,
+        minDamage: baseStats.minDamage + 1,
         walkSpeed: baseStats.walkSpeed - 30,
-        maxHp: baseLevel * 5,
-        intelligence: baseLevel * 2,
-        strength: baseLevel * 2,
-        dexterity: baseLevel * 2,
-        vitality: baseLevel * 2,
+        intelligence: baseStats.intelligence + baseLevel * 2,
+        strength: baseStats.strength + baseLevel * 2,
+        dexterity: baseStats.dexterity + baseLevel * 2,
+        vitality: baseStats.vitality + baseLevel * 2,
         expValue: isKeeper ? 0 : baseLevel,
       };
 
