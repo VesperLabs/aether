@@ -43,7 +43,7 @@ class NpcManager {
       });
 
       /* Modifications to base stats for NPCs */
-      const npcBaseStats = {
+      const { level, ...npcBaseStats } = {
         ...baseStats,
         walkSpeed: baseStats.walkSpeed - 30,
         maxHp: npc?.baseStats?.level * 5,

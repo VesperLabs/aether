@@ -2,6 +2,7 @@ import { Box, Flex } from "@aether/ui";
 import Slot from "./Slot";
 import { itemList } from "@aether/shared";
 import RowTitle from "./RowTitle";
+import { Fragment } from "react";
 
 export default function () {
   const types = Object.keys(itemList);
@@ -45,26 +46,28 @@ export default function () {
     const allItems = [...commonItems, ...magicItems, ...rareItems, ...uniqueItems, ...setItems];
 
     return (
-      <Flex sx={{ gap: 2, flexDirection: "column", mb: 4 }}>
+      <Flex key={type} sx={{ gap: 2, flexDirection: "column", mb: 4 }}>
         <RowTitle icon={type}>{type}</RowTitle>
         {[...Array(99)]
           .map((_, index) => index + 1)
-          .map((ilvl) => {
+          .map((ilvl, idx) => {
             const items = allItems?.filter((i: any) => i?.ilvl === ilvl);
             const hasItems = items?.length > 0;
             return hasItems ? (
-              <>
+              <Fragment key={`${ilvl}-${idx}`}>
                 <RowTitle sx={{ background: "shadow.10", fontWeight: "normal" }}>
                   Tier {ilvl}
                 </RowTitle>
                 <Flex sx={{ flexWrap: "wrap", gap: 2 }}>
-                  {items?.map((item) => (
-                    <Box key={ilvl}>
-                      <Slot item={{ ...item }} />
-                    </Box>
-                  ))}
+                  {items?.map((item) => {
+                    return (
+                      <Box key={item?.key + item?.name}>
+                        <Slot item={{ ...item }} />
+                      </Box>
+                    );
+                  })}
                 </Flex>
-              </>
+              </Fragment>
             ) : null;
           })}
       </Flex>
