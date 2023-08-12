@@ -427,7 +427,7 @@
         "shop": "I've got some curiousities for sale you may find useful.",
         "quests": "I'm pretty busy here in town, but there are some things you can collect for me."
       },
-      "quests": ["fauna-gatherer", "shitake-search"],
+      "quests": ["fauna-gatherer", "shitake-search", "talk-sergio"],
       "shop": []
     }
   },
