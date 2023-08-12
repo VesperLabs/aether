@@ -229,7 +229,7 @@
       {
         "type": "item",
         "item": ["stackable", "common", "shitake"],
-        "amount": 20
+        "amount": 8
       }
     ],
     "rewards": {
@@ -240,11 +240,22 @@
   "talk-steve": {
     "name": "Talk to Steve",
     "dialogues": {
-      "description": "The blacksmith might be of some help. {objective} and then return to me."
+      "description": "Your gear kind of sucks. The blacksmith might be able to help. You can find his shop in the north-east part of town. {objective} and then return to me."
     },
     "objectives": [{ "type": "chat", "keeper": "steve" }],
     "rewards": {
-      "exp": 120,
+      "exp": 50,
+      "gold": 30
+    }
+  },
+  "talk-sergio": {
+    "name": "Talk to Sergio",
+    "dialogues": {
+      "description": "I used to do research with a guy named Sergio. Last I saw, he headed west to study a new species of plants. If you head that way, {objective} and let me know what he's been doing."
+    },
+    "objectives": [{ "type": "chat", "keeper": "sergio" }],
+    "rewards": {
+      "exp": 60,
       "gold": 30
     }
   },
