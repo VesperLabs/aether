@@ -4,6 +4,7 @@ import GameServer from "./GameServer";
 import { initDatabase } from "./db";
 import { initFakeDatabase } from "./db/fake";
 import ServerCharacter from "./Character";
+import { getFullCharacterState } from "./utils";
 
 config({ path: path.join(__dirname, "/../.env") });
 const cors = require("cors");
@@ -34,6 +35,15 @@ async function initialize() {
   //   const playerStates = Object.values(players).map(getFullCharacterState);
   //   res.json(playerStates);
   // });
+
+  app.get("/keepers/all", (req, res) => {
+    const scene = aetherServer?.game?.scene?.scenes?.[0] as ServerScene;
+    const { npcs } = scene ?? {};
+    const keeperStates = Object.values(npcs)
+      ?.filter((n) => n?.kind === "keeper" && n?.profile?.race === "human")
+      .map(getFullCharacterState);
+    res.json(keeperStates);
+  });
 
   app.get("/players/all", async (req, res) => {
     const sortBy = req?.query?.sortBy || "updatedAt";

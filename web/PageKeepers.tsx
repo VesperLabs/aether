@@ -1,21 +1,20 @@
 import { Box, Flex, Text } from "@aether/ui";
 import RowTitle from "./RowTitle";
-import { useEffect, useState } from "react";
 import PlayerRender from "./PlayerRender";
+import { useEffect, useState } from "react";
 import { TOOLTIP_STYLE, Label } from "./";
 import { Tooltip } from "react-tooltip";
 import { questList } from "@aether/shared";
 
 export default function () {
-  const [players, setPlayers] = useState<Array<FullCharacterState>>();
-
+  const [keepers, setKeepers] = useState([]);
   useEffect(() => {
-    fetch(`${process.env.SERVER_URL}/players/all?sortBy=updatedAt`, {
+    fetch(`${process.env.SERVER_URL}/keepers/all`, {
       method: "GET",
     })
       .then((response) => response.json())
       .then((data) => {
-        setPlayers(data);
+        setKeepers(data);
       })
       .catch((error) => {});
   }, []);
@@ -24,11 +23,11 @@ export default function () {
     <Flex sx={{ gap: 2, flexDirection: "column", mb: 4 }}>
       <RowTitle icon={"social"}>Players</RowTitle>
       <Flex sx={{ gap: 2, flexWrap: "wrap" }}>
-        {players?.map((player, idx) => {
+        {keepers?.map((keeper, idx) => {
           return (
             <Box key={idx}>
-              <PlayerRender player={player} />
-              <PlayerTooltip player={player} />
+              <PlayerRender player={keeper} />
+              <KeeperTooltip keeper={keeper} />
             </Box>
           );
         })}
@@ -37,17 +36,12 @@ export default function () {
   );
 }
 
-const PlayerTooltip = ({ player }) => {
-  const completedQuests = player?.quests?.filter((q) => q?.isCompleted)?.length;
-  const totalQuests = Object.keys(questList)?.length;
+const KeeperTooltip = ({ keeper }) => {
   return (
-    <Tooltip id={player?.id} style={{ zIndex: 99999 }}>
+    <Tooltip id={keeper?.id} style={{ zIndex: 99999 }}>
       <Flex sx={TOOLTIP_STYLE}>
         <Text>
-          <Label>Last Login:</Label> {new Date(player?.updatedAt)?.toLocaleDateString("en-US")}
-        </Text>
-        <Text>
-          <Label>Completed Quests:</Label> {`${completedQuests} / ${totalQuests}`}
+          <Label>Map:</Label> {keeper?.roomName}
         </Text>
       </Flex>
     </Tooltip>
