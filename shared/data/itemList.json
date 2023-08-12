@@ -115,7 +115,7 @@
           "minDamage": 2,
           "maxDamage": 2,
           "range": 1,
-          "spCost": 3
+          "spCost": 2
         },
         "requirements": {
           "strength": 5
@@ -130,7 +130,7 @@
         "stats": {
           "attackDelay": 350,
           "minDamage": 1,
-          "maxDamage": 2,
+          "maxDamage": 3,
           "range": 1,
           "spCost": 2
         },

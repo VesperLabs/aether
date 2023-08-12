@@ -225,7 +225,7 @@ export const createBaseUser = (charClass) => {
       6: null,
     },
     profile: {
-      userName: "Player1",
+      userName: "Noob",
       gender: "female",
       race: "human",
       hair: { tint: "0x88FFFF", texture: "hair-3" },
