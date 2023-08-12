@@ -718,7 +718,7 @@
                 {
                  "height":0,
                  "id":117,
-                 "name":"shell",
+                 "name":"egg",
                  "point":true,
                  "properties":[
                         {
@@ -1433,6 +1433,72 @@
                  "width":0,
                  "x":1121.1274034347,
                  "y":2148.68488617561
+                }, 
+                {
+                 "height":0,
+                 "id":121,
+                 "name":"hornet",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"walkRange",
+                         "type":"string",
+                         "value":"250"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":688.797712296407,
+                 "y":1781.6735049111
+                }, 
+                {
+                 "height":0,
+                 "id":122,
+                 "name":"hornet",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"walkRange",
+                         "type":"string",
+                         "value":"250"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":687.554395126197,
+                 "y":1585.85105060301
+                }, 
+                {
+                 "height":0,
+                 "id":123,
+                 "name":"hornet",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"walkRange",
+                         "type":"string",
+                         "value":"250"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":977.247295785155,
+                 "y":1533.01007086908
+                }, 
+                {
+                 "height":0,
+                 "id":124,
+                 "name":"raccoon",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":270.421484520701,
+                 "y":1426.70645281611
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -1552,7 +1618,7 @@
          "y":0
         }],
  "nextlayerid":31,
- "nextobjectid":121,
+ "nextobjectid":125,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.1",
