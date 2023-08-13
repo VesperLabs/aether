@@ -187,7 +187,7 @@
     },
     "objectives": [{ "type": "item", "item": ["stackable", "common", "cheese"], "amount": 10 }],
     "rewards": {
-      "exp": 60,
+      "exp": 80,
       "gold": 20,
       "items": [["armor", "magic", "clothRobe"]]
     }

@@ -195,7 +195,13 @@
         "type": "stackable",
         "rarity": "common",
         "key": "spiderMeat",
-        "chance": 4
+        "chance": 2
+      },
+      {
+        "type": "stackable",
+        "rarity": "common",
+        "key": "cheese",
+        "chance": 10
       }
     ]
   },

@@ -396,6 +396,18 @@
     "previewRect": [35, 35, 19, 19]
   },
   {
+    "texture": "weapon-sword-tizona",
+    "src": "./assets/atlas/hands/weapon-sword-tizona.png",
+    "atlas": "./assets/atlas/weapon.json",
+    "previewRect": [31, 30, 23, 23]
+  },
+  {
+    "texture": "weapon-sword-colada",
+    "src": "./assets/atlas/hands/weapon-sword-colada.png",
+    "atlas": "./assets/atlas/weapon.json",
+    "previewRect": [30, 29, 24, 24]
+  },
+  {
     "texture": "weapon-spear",
     "src": "./assets/atlas/hands/weapon-spear.png",
     "atlas": "./assets/atlas/weapon.json",
