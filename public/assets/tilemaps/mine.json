@@ -1205,6 +1205,18 @@
                  "width":0,
                  "x":934.450838128597,
                  "y":430.322742056542
+                }, 
+                {
+                 "height":0,
+                 "id":61,
+                 "name":"spider",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1640.67069604211,
+                 "y":1984.79235718464
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -1500,7 +1512,7 @@
          "y":0
         }],
  "nextlayerid":49,
- "nextobjectid":61,
+ "nextobjectid":62,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.1",
