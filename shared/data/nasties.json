@@ -184,7 +184,7 @@
     },
     "state": { "isAggro": true },
     "baseStats": {
-      "level": 10
+      "level": 7
     },
     "hitBoxSize": {
       "width": 50,
