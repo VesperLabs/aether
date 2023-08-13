@@ -246,7 +246,7 @@ class ServerCharacter extends Character {
     if (ns.dodgeChance > 75) ns.dodgeChance = 75;
     if (ns.blockChance > 75) ns.blockChance = 75;
 
-    const damageCalc = ((ns.strength * 1.5 + ns.dexterity / 2) * ns.level) / 100;
+    const damageCalc = ((ns.strength * 2 + ns.dexterity / 2) * ns.level) / 100;
     const damageModifier = Math.floor(1 + damageCalc);
     ns.minDamage = ns.minDamage + Math.floor(damageCalc);
     ns.maxDamage = Math.max(ns.maxDamage + damageModifier, ns.minDamage);
