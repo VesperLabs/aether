@@ -16,7 +16,8 @@
     "pieces": 2,
     "stats": {
       "dodgeChance": 5,
-      "blockChance": 20,
+      "blockChance": 25,
+      "critChance": 25,
       "magicFind": 15
     },
     "percentStats": {

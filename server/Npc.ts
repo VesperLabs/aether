@@ -148,7 +148,7 @@ class Npc extends Character implements Npc {
     // If is nasty and not locked onto a player, lock onto nearest player
     if (state?.isAggro && !state.lockedPlayerId) {
       const nearestPlayer = room?.playerManager?.getNearestPlayer(this);
-      const npcAggroRange = Math.min(20 + this?.baseStats?.level * 2, AGGRO_KITE_RANGE);
+      const npcAggroRange = Math.min(10 + this?.baseStats?.level * 8, AGGRO_KITE_RANGE);
       const isInRange = this.checkInRange(nearestPlayer, npcAggroRange);
       if (isInRange) this.setLockedPlayerId(nearestPlayer?.socketId);
     }
@@ -290,7 +290,7 @@ class Npc extends Character implements Npc {
     // Aggroed
     if (shouldChasePlayer) {
       this.state.bubbleMessage = "!";
-      return shouldStop ? this.standStill() : this.moveTowardPoint(targetPlayer);
+      return shouldStop ? this.standStill() : this.moveTowardPointPathed(targetPlayer);
     }
 
     // Otherwise just make them move
