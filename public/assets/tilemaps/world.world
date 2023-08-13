@@ -39,8 +39,8 @@
             "fileName": "mine.json",
             "height": 2560,
             "width": 2560,
-            "x": 2752,
-            "y": -1120
+            "x": 2464,
+            "y": -960
         },
         {
             "fileName": "dungeon-aqueducts.json",
