@@ -11,6 +11,18 @@
       "intelligence": 15
     }
   },
+  "cids": {
+    "name": "El Cid's Swords",
+    "pieces": 2,
+    "stats": {
+      "dodgeChance": 5,
+      "blockChance": 20,
+      "magicFind": 15
+    },
+    "percentStats": {
+      "strength": 10
+    }
+  },
   "crab": {
     "name": "Crustacean Chic",
     "pieces": 2,
