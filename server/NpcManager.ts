@@ -55,7 +55,7 @@ class NpcManager {
         strength: baseStats.strength + baseLevel * 2,
         dexterity: baseStats.dexterity + baseLevel * 2,
         vitality: baseStats.vitality + baseLevel * 2,
-        expValue: isKeeper ? 0 : baseLevel,
+        expValue: isKeeper ? 0 : Math.floor(baseLevel * 1.5),
       };
 
       this.create({
