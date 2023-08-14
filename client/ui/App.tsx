@@ -177,10 +177,11 @@ function App({ socket, debug, game }) {
 
     const onPlayerJoin = (player, args) => {
       /* Keep room list updated */
-      setPlayers((prev) => {
+      setPlayers((prev = []) => {
         const playerExists = prev.some((p) => p?.id === player?.id);
-        return !playerExists ? [...prev, player] : prev;
+        return !playerExists ? prev.concat(player) : prev;
       });
+
       /* Only show player join message if the user logged in, not if entered door */
       if (args?.isLogin) addMessage({ type: "info", message: "A player has joined the game." });
     };
@@ -281,12 +282,13 @@ function App({ socket, debug, game }) {
     };
 
     const onLootGrabbed = ({ player, loot }) => {
-      if (loot?.grabMessage) {
-        const item = loot?.item;
-        addMessage({ type: "success", message: `Found ${item?.name} x${item?.amount || 1}` });
-      }
       const socketId = sessionStorage.getItem("socketId");
+      // only affect the player that grabbed the loot
       if (socketId === player?.socketId) {
+        if (loot?.grabMessage) {
+          const item = loot?.item;
+          addMessage({ type: "success", message: `Found ${item?.name} x${item?.amount || 1}` });
+        }
         /* Both quests and inventory only need to be updated when we pick an item */
         setHero((prev) => ({
           ...prev,
@@ -328,6 +330,10 @@ function App({ socket, debug, game }) {
       const existingInvite = partyInvites.find((invite) => invite.partyId === inviteData.partyId);
       // Party invite already exists, do not add it again
       if (existingInvite) return;
+      addMessage({
+        type: "party",
+        message: `${inviteData?.inviter?.profile?.userName} has invited you to their party.`,
+      });
       // Party invite doesn't exist, add it to the list
       setPartyInvites((prevInvites) => [...prevInvites, inviteData]);
     };

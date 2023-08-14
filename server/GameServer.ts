@@ -856,7 +856,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         party.addInvitee(inviteeSocketId);
 
         const inviteData: PartyInvite = {
-          inviterId: socket.id,
+          inviter: getFullCharacterState(player),
           partyId: party.id,
         };
 
