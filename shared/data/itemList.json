@@ -771,7 +771,7 @@
         "stats": {
           "attackDelay": 200,
           "defense": 10,
-          "blockChance": 10
+          "blockChance": 15
         }
       },
       "buckler": {
@@ -783,7 +783,7 @@
         "stats": {
           "attackDelay": 150,
           "defense": 10,
-          "blockChance": 5
+          "blockChance": 10
         }
       }
     },
@@ -796,7 +796,7 @@
         "slot": "hands",
         "stats": {
           "defense": [6, 10],
-          "blockChance": [10, 15],
+          "blockChance": [15, 20],
           "accuracy": 5
         },
         "percentStats": {
@@ -812,7 +812,7 @@
         "texture": "shield-bone",
         "slot": "hands",
         "stats": {
-          "blockChance": [10, 15],
+          "blockChance": [25, 30],
           "fireResistance": [-5, -10],
           "regenHp": [3, 4],
           "hpSteal": [4, 5]
@@ -826,10 +826,10 @@
         "texture": "shield-wyrm",
         "slot": "hands",
         "stats": {
+          "blockChance": [25, 30],
           "fireResistance": [8, 12],
           "earthResistance": [8, 12],
-          "defense": [10, 15],
-          "blockChance": [15, 20]
+          "defense": [10, 15]
         }
       }
     }
