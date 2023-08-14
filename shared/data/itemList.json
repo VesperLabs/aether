@@ -311,7 +311,7 @@
         "stats": {
           "hpSteal": [10, 15],
           "mpSteal": [10, 15],
-          "critChance": 5,
+          "critChance": 15,
           "range": 2
         }
       }
@@ -679,7 +679,8 @@
         "tint": "0xFFFF00",
         "slot": "boots",
         "stats": {
-          "walkSpeed": [30, 35]
+          "walkSpeed": [30, 35],
+          "magicFind": [10, 15]
         }
       }
     }
