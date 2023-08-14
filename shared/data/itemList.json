@@ -596,7 +596,7 @@
         "stats": {
           "walkSpeed": 10,
           "castDelay": [-100, -150],
-          "attackDelay": [-45, -60]
+          "attackDelay": [-35, -40]
         }
       }
     },
@@ -714,10 +714,46 @@
         "name": "Chet's Champions",
         "base": "pants",
         "texture": "pants-cloth",
-        "tint": "0x3333EE",
+        "tint": "0x6666DD",
         "slot": "pants",
         "stats": {
           "vitality": [5, 10]
+        }
+      }
+    },
+    "unique": {
+      "ferrousLeggings": {
+        "ilvl": 1,
+        "name": "Ferrous Leggings",
+        "base": "pants",
+        "texture": "pants-cloth",
+        "tint": "0xFF6644",
+        "slot": "pants",
+        "stats": {
+          "maxHp": [5, 10],
+          "walkSpeed": [6, 8],
+          "defense": [4, 5],
+          "attackDelay": [-25, -30],
+          "fireResistance": 10,
+          "regenHp": [3, 4]
+        }
+      },
+      "hauntedTrousers": {
+        "ilvl": 1,
+        "name": "Haunted Trousers",
+        "base": "pants",
+        "texture": "pants-cloth",
+        "tint": "0x22AACC",
+        "slot": "pants",
+        "stats": {
+          "maxMp": [10, 15],
+          "castDelay": [-25, -35],
+          "defense": [4, 5],
+          "waterResistance": 10,
+          "spellPower": [5, 6]
+        },
+        "percentStats": {
+          "intelligence": 5
         }
       }
     }
@@ -834,10 +870,11 @@
         "texture": "accessory-fins",
         "slot": "accessory",
         "stats": {
+          "defense": [5, 10],
           "waterResistance": 10,
           "dodgeChance": [4, 5],
           "walkSpeed": 5,
-          "regenMp": 1,
+          "regenMp": 2,
           "spellPower": 5,
           "maxMp": 25
         }
@@ -899,7 +936,7 @@
         "slot": "ring",
         "stats": {
           "intelligence": 5,
-          "castDelay": -100,
+          "castDelay": -50,
           "spellPower": 5
         },
         "percentStats": {
