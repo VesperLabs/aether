@@ -283,9 +283,6 @@
     "state": { "isAggro": true },
     "baseStats": {
       "level": 8,
-      "minWaterDamage": 1,
-      "maxWaterDamage": 2,
-      "dodgeChance": 5,
       "waterResistance": 50
     },
     "hitBoxSize": { "width": 24, "height": 32 },
