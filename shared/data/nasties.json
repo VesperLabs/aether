@@ -428,7 +428,8 @@
     },
     "state": { "isAggro": true },
     "baseStats": {
-      "level": 14
+      "level": 9,
+      "walkSpeed": 30
     },
     "hitBoxSize": {
       "width": 31,

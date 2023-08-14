@@ -102,6 +102,33 @@ class Npc extends Character implements Npc {
       this.state.isAttacking = true;
     }
   }
+  // help me write this function.  need to check if the NPC is adjacent to a collision tile.
+  isNearCollideTile() {
+    let npcTileX = this.room.tileMap.worldToTileX(this.x); // Convert NPC's world x-coordinate to tile x-coordinate
+    let npcTileY = this.room.tileMap.worldToTileY(this.y); // Convert NPC's world y-coordinate to tile y-coordinate
+
+    // Define all neighboring tile coordinates (including diagonals)
+    const neighboringTiles = [
+      { x: npcTileX - 1, y: npcTileY }, // Left
+      { x: npcTileX + 1, y: npcTileY }, // Right
+      { x: npcTileX, y: npcTileY - 1 }, // Up
+      { x: npcTileX, y: npcTileY + 1 }, // Down
+      { x: npcTileX - 1, y: npcTileY - 1 }, // Diagonal Up-Left
+      { x: npcTileX + 1, y: npcTileY - 1 }, // Diagonal Up-Right
+      { x: npcTileX - 1, y: npcTileY + 1 }, // Diagonal Down-Left
+      { x: npcTileX + 1, y: npcTileY + 1 }, // Diagonal Down-Right
+    ];
+
+    // Check if any neighboring tile has a collision property
+    for (const tileCoords of neighboringTiles) {
+      const tile = this.room.collideLayer?.getTileAt(tileCoords.x, tileCoords.y);
+      if (tile?.properties?.collides) {
+        return true; // Found a neighboring collision tile
+      }
+    }
+
+    return false; // No neighboring collision tile found
+  }
   isOutOfBounds() {
     let npcTileX = this.room.tileMap.worldToTileX(this.x); // Convert NPC's world x-coordinate to tile x-coordinate
     let npcTileY = this.room.tileMap.worldToTileY(this.y); // Convert NPC's world y-coordinate to tile y-coordinate
@@ -290,7 +317,16 @@ class Npc extends Character implements Npc {
     // Aggroed
     if (shouldChasePlayer) {
       this.state.bubbleMessage = "!";
-      return shouldStop ? this.standStill() : this.moveTowardPointPathed(targetPlayer);
+      if (shouldStop) {
+        return this.standStill();
+      }
+      if (this.isNearCollideTile()) {
+        console.log("arf");
+        return this.moveTowardPointPathed(targetPlayer);
+      } else {
+        console.log("charf");
+        return this.moveTowardPoint(targetPlayer);
+      }
     }
 
     // Otherwise just make them move
