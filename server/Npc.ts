@@ -321,10 +321,8 @@ class Npc extends Character implements Npc {
         return this.standStill();
       }
       if (this.isNearCollideTile()) {
-        console.log("arf");
         return this.moveTowardPointPathed(targetPlayer);
       } else {
-        console.log("charf");
         return this.moveTowardPoint(targetPlayer);
       }
     }
@@ -473,7 +471,8 @@ class Npc extends Character implements Npc {
   }
   dropLoot(magicFind: number) {
     let runners = [];
-    const ilvl = 1 + Math.floor(this.stats.level / 10);
+    const ilvl = 1 + Math.floor(this.stats.level / 5);
+    console.log(ilvl);
     if (!this.state.noWorldDrops) {
       const mainDrop = ItemBuilder.rollDrop(ilvl, magicFind);
       if (mainDrop) runners.push(mainDrop);
