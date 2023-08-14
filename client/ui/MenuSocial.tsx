@@ -6,7 +6,9 @@ import { CLASS_ICON_MAP } from "@aether/shared";
 
 const ActionButton = ({ player }) => {
   const { partyInvites, socket } = useAppContext();
-  const invitation = partyInvites?.find((invite: PartyInvite) => invite?.inviterId === player?.id);
+  const invitation = partyInvites?.find(
+    (invite: PartyInvite) => invite?.inviter?.id === player?.id
+  );
   if (invitation) {
     return (
       <Button

@@ -35,7 +35,7 @@ interface Slot {
 }
 
 interface PartyInvite {
-  inviterId: string;
+  inviter: FullCharacterState;
   partyId: string;
 }
 
