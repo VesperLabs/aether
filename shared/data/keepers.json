@@ -474,5 +474,49 @@
         { "item": ["stackable", "common", "grapes"], "stock": 1 }
       ]
     }
+  },
+  "derek": {
+    "charClass": "warrior",
+    "profile": {
+      "userName": "Derek",
+      "face": {
+        "texture": "face-2"
+      },
+      "hair": {
+        "texture": "hair-5",
+        "tint": "0x665555"
+      },
+      "whiskers": {
+        "texture": "whiskers-1",
+        "tint": "0x665555"
+      },
+      "gender": "male",
+      "race": "human"
+    },
+    "state": { "isStatic": true },
+    "baseStats": {
+      "level": 50
+    },
+    "equipment": {
+      "handLeft": ["weapon", "common", "cleaver"],
+      "handRight": ["shield", "common", "buckler"],
+      "helmet": null,
+      "accessory": null,
+      "armor": ["armor", "unique", "couriersCamouflage"],
+      "pants": ["pants", "unique", "ferrousLeggings"],
+      "boots": ["boots", "common", "leatherBoots"]
+    },
+    "keeperData": {
+      "dialogues": {
+        "greet": "Welcome to the Aery Peaks",
+        "quests": "Here are my quests.",
+        "shop": "Here is my shop."
+      },
+      "quests": [],
+      "shop": [
+        { "item": ["weapon", "common", "cleaver"], "stock": 1 },
+        { "item": ["stackable", "common", "mediumHpPotion"], "stock": 1 }
+      ]
+    }
   }
 }

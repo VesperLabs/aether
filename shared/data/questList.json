@@ -302,7 +302,7 @@
     "dialogues": {
       "description": "The merman have been taking over the aqueducts below the city. {objective} and bring them to me. I will forge you a great accessory."
     },
-    "objectives": [{ "type": "item", "item": ["stackable", "common", "shell"], "amount": 200 }],
+    "objectives": [{ "type": "item", "item": ["stackable", "common", "shell"], "amount": 100 }],
     "rewards": {
       "exp": 200,
       "gold": 30,
