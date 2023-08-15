@@ -1027,7 +1027,7 @@
           "hp": 30
         }
       },
-      "mediumPotionMp": {
+      "mediumMpPotion": {
         "ilvl": 2,
         "name": "Medium MP Potion",
         "base": "potion",

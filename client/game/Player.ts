@@ -149,6 +149,7 @@ class Player extends Character {
       this.userName.setTint(profile?.userNameTint);
     }
     this.skin.setScale(profile?.scale || 1);
+    this.shadow.setScale(profile?.scale || 1);
     this.skin.setTint(profile?.tint || "0xFFFFFF");
     this.chest.setTint(profile?.tint || "0xFFFFFF");
     this.hair.setTint(profile?.hair?.tint || "0xFFFFFF");
@@ -496,10 +497,10 @@ function drawFrame(p) {
   p?.playAnim(skin, [profile?.race, direction, action]);
   if (profile?.race === "human") {
     p?.playAnim(chest, [profile?.race, profile?.gender, "chest-bare", direction, action]);
-    p?.playAnim(shadow, [profile?.race, "shadow", direction, action]);
   } else {
     p?.playAnim(chest, [BLANK_TEXTURE, direction, action]);
   }
+  p?.playAnim(shadow, ["shadow", direction, action]);
   p?.playAnim(face, [profile?.race, profile?.face?.texture, direction, action]);
   p?.playAnim(whiskers, [profile?.race, profile?.whiskers?.texture, direction, action]);
   p?.playAnim(hair, [profile?.race, profile?.hair?.texture, direction, action]);

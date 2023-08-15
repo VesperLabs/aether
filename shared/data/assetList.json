@@ -6,8 +6,8 @@
     "previewRect": [0, 160, 80, 80]
   },
   {
-    "texture": "human-shadow",
-    "src": "./assets/atlas/human-shadow.png",
+    "texture": "shadow",
+    "src": "./assets/atlas/shadow.png",
     "atlas": "./assets/atlas/80x80.json",
     "previewRect": [0, 160, 80, 80]
   },

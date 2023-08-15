@@ -29,6 +29,10 @@
     "json": "./assets/tilemaps/townInside.json"
   },
   {
+    "name": "townInside-tents",
+    "json": "./assets/tilemaps/townInside-tents.json"
+  },
+  {
     "name": "grassland-graveyard",
     "music": "./assets/music/graveyard.mp3",
     "json": "./assets/tilemaps/grassland-graveyard.json"
