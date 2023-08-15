@@ -384,8 +384,20 @@
     "previewRect": [31, 30, 23, 24]
   },
   {
+    "texture": "weapon-wand-ball",
+    "src": "./assets/atlas/hands/weapon-wand-ball.png",
+    "atlas": "./assets/atlas/weapon.json",
+    "previewRect": [31, 30, 23, 24]
+  },
+  {
     "texture": "weapon-staff-oak",
     "src": "./assets/atlas/hands/weapon-staff-oak.png",
+    "atlas": "./assets/atlas/weapon.json",
+    "previewRect": [30, 30, 24, 23]
+  },
+  {
+    "texture": "weapon-staff-metal",
+    "src": "./assets/atlas/hands/weapon-staff-metal.png",
     "atlas": "./assets/atlas/weapon.json",
     "previewRect": [30, 30, 24, 23]
   },

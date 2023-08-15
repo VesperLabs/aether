@@ -204,6 +204,21 @@
         "texture": "weapon-talwar",
         "slot": "hands"
       },
+      "rod": {
+        "ilvl": 2,
+        "base": "wand",
+        "name": "Rod",
+        "texture": "weapon-wand-ball",
+        "slot": "hands"
+      },
+      "scepter": {
+        "ilvl": 2,
+        "base": "staff",
+        "name": "Scepter",
+        "texture": "weapon-staff-metal",
+        "tint": "0xFFEEAA",
+        "slot": "hands"
+      },
       "hammer": {
         "ilvl": 2,
         "base": "club",
