@@ -508,11 +508,11 @@
     },
     "keeperData": {
       "dialogues": {
-        "greet": "Welcome to the Aery Peaks",
+        "greet": "Welcome to the Aery Peaks.  Please, share my fire.  There is much that needs to be done here.",
         "quests": "Here are my quests.",
         "shop": "Here is my shop."
       },
-      "quests": [],
+      "quests": ["wolf-pelts"],
       "shop": [
         { "item": ["weapon", "common", "cleaver"], "stock": 1 },
         { "item": ["stackable", "common", "mediumHpPotion"], "stock": 1 }
