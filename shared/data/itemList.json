@@ -1000,42 +1000,36 @@
       "smallHpPotion": {
         "ilvl": 1,
         "name": "Small HP Potion",
-        "base": "potion",
+        "base": "hpPotion",
         "slot": "stackable",
         "texture": "stackable-potion-small-hp",
         "effects": {
-          "hp": 10
+          "hp": 15
         }
       },
       "smallMpPotion": {
         "ilvl": 1,
         "name": "Small MP Potion",
-        "base": "potion",
+        "base": "mpPotion",
         "slot": "stackable",
         "texture": "stackable-potion-small-mp",
         "effects": {
-          "mp": 10
+          "mp": 15
         }
       },
       "mediumHpPotion": {
         "ilvl": 2,
         "name": "Medium HP Potion",
-        "base": "potion",
+        "base": "hpPotion",
         "slot": "stackable",
-        "texture": "stackable-potion-medium-hp",
-        "effects": {
-          "hp": 30
-        }
+        "texture": "stackable-potion-medium-hp"
       },
       "mediumMpPotion": {
         "ilvl": 2,
         "name": "Medium MP Potion",
-        "base": "potion",
+        "base": "mpPotion",
         "slot": "stackable",
-        "texture": "stackable-potion-medium-mp",
-        "effects": {
-          "mp": 30
-        }
+        "texture": "stackable-potion-medium-mp"
       },
       "blueSporangium": {
         "ilvl": 1,
