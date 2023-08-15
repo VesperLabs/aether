@@ -1610,6 +1610,50 @@
                  "width":352,
                  "x":672,
                  "y":0
+                }, 
+                {
+                 "height":16,
+                 "id":129,
+                 "name":"tent-1",
+                 "properties":[
+                        {
+                         "name":"destDoor",
+                         "type":"string",
+                         "value":"tent-1"
+                        }, 
+                        {
+                         "name":"destMap",
+                         "type":"string",
+                         "value":"townInside-tents"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":1472,
+                 "y":1888
+                }, 
+                {
+                 "height":16,
+                 "id":130,
+                 "name":"tent-2",
+                 "properties":[
+                        {
+                         "name":"destDoor",
+                         "type":"string",
+                         "value":"tent-2"
+                        }, 
+                        {
+                         "name":"destMap",
+                         "type":"string",
+                         "value":"townInside-tents"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":1312,
+                 "y":2016
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -1675,7 +1719,7 @@
          "y":0
         }],
  "nextlayerid":31,
- "nextobjectid":129,
+ "nextobjectid":131,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.1",

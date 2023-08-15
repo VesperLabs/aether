@@ -55,6 +55,20 @@
             "width": 2240,
             "x": -2528,
             "y": 64
+        },
+        {
+            "fileName": "grassland-peaks.json",
+            "height": 1120,
+            "width": 1120,
+            "x": -2336,
+            "y": -1056
+        },
+        {
+            "fileName": "grassland-peaks-2.json",
+            "height": 1120,
+            "width": 1120,
+            "x": -3456,
+            "y": -1056
         }
     ],
     "onlyShowAdjacentMaps": false,
