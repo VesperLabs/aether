@@ -377,16 +377,24 @@
           "defense": [2, 3]
         }
       },
-      "leatherHood": {
+      "clothHood": {
         "ilvl": 1,
-        "name": "Leather hood",
+        "name": "Cloth hood",
         "base": "hood",
         "texture": "helmet-hood",
-        "tint": "0x865027",
+        "tint": "0xFFDDCC",
         "slot": "helmet",
         "stats": {
           "defense": [2, 3]
         }
+      },
+      "leatherHood": {
+        "ilvl": 2,
+        "name": "Leather hood",
+        "base": "hood",
+        "texture": "helmet-hood",
+        "tint": "0x865027",
+        "slot": "helmet"
       },
       "nutshellArmet": {
         "ilvl": 1,
@@ -401,6 +409,14 @@
         "requirements": {
           "strength": 6
         }
+      },
+      "bronzeArmet": {
+        "ilvl": 2,
+        "name": "Bronze Armet",
+        "base": "armet",
+        "texture": "helmet-armet",
+        "tint": "0xFFEEAA",
+        "slot": "helmet"
       }
     },
     "unique": {
@@ -436,7 +452,26 @@
         "texture": "helmet-chef",
         "slot": "helmet",
         "stats": {
-          "regenHp": 5
+          "regenHp": 5,
+          "vitality": 10,
+          "fireResistance": 15
+        }
+      },
+      "wolfMask": {
+        "ilvl": 2,
+        "name": "Wolf Mask",
+        "base": "cap",
+        "texture": "helmet-wolf",
+        "slot": "helmet",
+        "tint": "0xCCBBAA",
+        "stats": {
+          "attackDelay": [-30, -40],
+          "walkSpeed": [20, 30],
+          "minDamage": 1,
+          "maxDamage": 2
+        },
+        "percentStats": {
+          "dexterity": 5
         }
       },
       "theWyrmWhisker": {
@@ -450,6 +485,11 @@
           "fireResistance": [10, 15],
           "earthResistance": [10, 15],
           "lightResistance": [10, 15]
+        },
+        "percentStats": {
+          "strength": 10,
+          "dexterity": 10,
+          "vitality": 10
         }
       }
     },
@@ -526,11 +566,12 @@
           "defense": [2, 3]
         }
       },
-      "leatherCoat": {
+      "clothCoat": {
         "ilvl": 1,
-        "name": "Leather Coat",
+        "name": "Cloth Coat",
         "base": "coat",
-        "texture": "armor-coat-leather",
+        "texture": "armor-coat",
+        "tint": "0xFFDDCC",
         "slot": "armor",
         "stats": {
           "defense": [3, 4]
@@ -557,6 +598,13 @@
         "tint": "0xFFEEAA",
         "slot": "armor",
         "stats": {}
+      },
+      "leatherCoat": {
+        "ilvl": 2,
+        "name": "Leather Coat",
+        "base": "coat",
+        "texture": "armor-coat-leather",
+        "slot": "armor"
       },
       "wizardRobe": {
         "ilvl": 3,
@@ -1186,6 +1234,13 @@
         "base": "material",
         "slot": "stackable",
         "texture": "stackable-tooth"
+      },
+      "wolfPelt": {
+        "ilvl": 2,
+        "name": "Wolf Pelt",
+        "base": "material",
+        "slot": "stackable",
+        "texture": "stackable-pelt"
       },
       "daisy": {
         "ilvl": 2,

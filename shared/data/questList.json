@@ -358,5 +358,23 @@
       "gold": 80,
       "items": [["armor", "rare", "leatherCoat"]]
     }
+  },
+  "wolf-pelts": {
+    "name": "Winter Wolves",
+    "dialogues": {
+      "description": "{objective} from the wolves in these mountains. I can make you something good from the materials."
+    },
+    "objectives": [
+      {
+        "type": "item",
+        "item": ["stackable", "common", "wolfPelt"],
+        "amount": 100
+      }
+    ],
+    "rewards": {
+      "exp": 300,
+      "gold": 10,
+      "items": [["helmet", "unique", "wolfMask"]]
+    }
   }
 }

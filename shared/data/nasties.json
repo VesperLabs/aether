@@ -374,6 +374,12 @@
     "drops": [
       {
         "type": "stackable",
+        "rarity": "unique",
+        "key": "goldOre",
+        "chance": 30
+      },
+      {
+        "type": "stackable",
         "rarity": "magic",
         "key": "ginseng",
         "chance": 10
@@ -406,6 +412,7 @@
     "state": { "isAggro": true },
     "baseStats": {
       "level": 13,
+      "walkSpeed": 10,
       "earthResistance": 50,
       "fireResistance": -15,
       "blockChance": 5
@@ -426,12 +433,19 @@
     "state": { "isAggro": true },
     "baseStats": {
       "level": 9,
-      "walkSpeed": 30
+      "walkSpeed": 20
     },
     "hitBoxSize": {
       "width": 31,
       "height": 28
     },
-    "drops": []
+    "drops": [
+      {
+        "type": "stackable",
+        "rarity": "common",
+        "key": "wolfPelt",
+        "chance": 2
+      }
+    ]
   }
 }
