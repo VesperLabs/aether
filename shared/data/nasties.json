@@ -465,9 +465,9 @@
     },
     "drops": [
       {
-        "type": "boots",
-        "rarity": "set",
-        "key": "crabWalkers",
+        "type": "armor",
+        "rarity": "unique",
+        "key": "iceCrabShell",
         "chance": 1000
       },
       {
