@@ -662,6 +662,23 @@
           "castDelay": [-100, -150],
           "attackDelay": [-35, -40]
         }
+      },
+      "iceCrabShell": {
+        "ilvl": 2,
+        "name": "The Ice Crab Shell",
+        "base": "heavy-plate-armor",
+        "tint": "0x8899CC",
+        "texture": "armor-plate",
+        "slot": "armor",
+        "stats": {
+          "waterResistance": [30, 35],
+          "defense": [35, 40],
+          "blockChance": 5
+        },
+        "percentStats": {
+          "vitality": 15,
+          "strength": 15
+        }
       }
     },
     "set": {

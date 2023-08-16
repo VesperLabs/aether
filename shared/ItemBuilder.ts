@@ -19,10 +19,14 @@ const getSetInfo = (setName: string) => {
 const rollDrop = (ilvl: number, magicFind = 0) => {
   const MAX_MF = 1000;
   const baseDropChances = [
-    { rarity: "unique", chance: 10000 },
-    { rarity: "rare", chance: 1000 },
-    { rarity: "magic", chance: 100 },
-    { rarity: "common", chance: 50 },
+    // { rarity: "unique", chance: 10000 },
+    // { rarity: "rare", chance: 1000 },
+    // { rarity: "magic", chance: 100 },
+    // { rarity: "common", chance: 50 },
+    { rarity: "unique", chance: 5000 },
+    { rarity: "rare", chance: 500 },
+    { rarity: "magic", chance: 50 },
+    { rarity: "common", chance: 25 },
   ];
 
   //magicFind = magicFind + 1000;
