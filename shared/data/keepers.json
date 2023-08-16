@@ -512,7 +512,7 @@
         "quests": "Time to make your mark, my friend. Here are things you can do for me.",
         "shop": "Prepare to be intrigued. Feast your eyes on what I've gathered for sale."
       },
-      "quests": ["wolf-pelts", "wolf-culling"],
+      "quests": ["ice-crab-claws", "wolf-pelts", "wolf-culling"],
       "shop": [
         { "item": ["weapon", "common", "cleaver"], "stock": 1 },
         { "item": ["stackable", "common", "mediumHpPotion"], "stock": 1 }

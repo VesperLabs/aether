@@ -370,6 +370,23 @@
       "items": [["armor", "rare", "leatherCoat"]]
     }
   },
+  "ice-crab-claws": {
+    "name": "Ice Crab Claws",
+    "dialogues": {
+      "description": "{objective} from the crabs around here.  They are really good to eat."
+    },
+    "objectives": [
+      {
+        "type": "item",
+        "item": ["stackable", "common", "iceCrabClaw"],
+        "amount": 60
+      }
+    ],
+    "rewards": {
+      "exp": 280,
+      "gold": 80
+    }
+  },
   "wolf-culling": {
     "name": "Wolf Culling",
     "dialogues": {
