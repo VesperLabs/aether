@@ -324,6 +324,24 @@
                  "width":0,
                  "x":409.429280397022,
                  "y":493.520816101461
+                }, 
+                {
+                 "height":0,
+                 "id":66,
+                 "name":"shell",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"item",
+                         "type":"string",
+                         "value":"[{ \"type\": \"stackable\", \"rarity\": \"common\", \"key\": \"shell\", \"amount\": [1,1], \"chance\": 5 }]"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":785.355211988997,
+                 "y":683.866072275443
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -473,6 +491,30 @@
                  "width":0,
                  "x":694.224932635528,
                  "y":555.359859995621
+                }, 
+                {
+                 "height":0,
+                 "id":64,
+                 "name":"fish",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":976.123595505618,
+                 "y":964.887640449438
+                }, 
+                {
+                 "height":0,
+                 "id":65,
+                 "name":"fish",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":834.269662921348,
+                 "y":514.044943820225
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -481,7 +523,7 @@
          "y":0
         }],
  "nextlayerid":21,
- "nextobjectid":64,
+ "nextobjectid":67,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.1",
@@ -2035,6 +2077,366 @@
                          "tileid":1481
                         }],
                  "id":973
+                }, 
+                {
+                 "animation":[
+                        {
+                         "duration":500,
+                         "tileid":1584
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1588
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1592
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1596
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1872
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1876
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1880
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1884
+                        }],
+                 "id":1584
+                }, 
+                {
+                 "animation":[
+                        {
+                         "duration":500,
+                         "tileid":1585
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1589
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1593
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1597
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1873
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1877
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1881
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1885
+                        }],
+                 "id":1585
+                }, 
+                {
+                 "animation":[
+                        {
+                         "duration":500,
+                         "tileid":1586
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1590
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1594
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1598
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1874
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1878
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1882
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1886
+                        }],
+                 "id":1586
+                }, 
+                {
+                 "animation":[
+                        {
+                         "duration":500,
+                         "tileid":1587
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1591
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1595
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1599
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1875
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1879
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1883
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1887
+                        }],
+                 "id":1587
+                }, 
+                {
+                 "animation":[
+                        {
+                         "duration":500,
+                         "tileid":1680
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1684
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1688
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1692
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1968
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1972
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1976
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1980
+                        }],
+                 "id":1680
+                }, 
+                {
+                 "animation":[
+                        {
+                         "duration":500,
+                         "tileid":1681
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1685
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1689
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1693
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1969
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1973
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1977
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1981
+                        }],
+                 "id":1681
+                }, 
+                {
+                 "animation":[
+                        {
+                         "duration":500,
+                         "tileid":1682
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1686
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1690
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1694
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1970
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1974
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1978
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1982
+                        }],
+                 "id":1682
+                }, 
+                {
+                 "animation":[
+                        {
+                         "duration":500,
+                         "tileid":1683
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1687
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1691
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1695
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1971
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1975
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1979
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1983
+                        }],
+                 "id":1683
+                }, 
+                {
+                 "animation":[
+                        {
+                         "duration":500,
+                         "tileid":1777
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1781
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1785
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1789
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":2065
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":2069
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":2073
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":2077
+                        }],
+                 "id":1777
+                }, 
+                {
+                 "animation":[
+                        {
+                         "duration":500,
+                         "tileid":1778
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1782
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1786
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":1790
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":2066
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":2070
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":2074
+                        }, 
+                        {
+                         "duration":500,
+                         "tileid":2078
+                        }],
+                 "id":1778
                 }],
          "tilewidth":32,
          "wangsets":[
@@ -2073,6 +2475,18 @@
                         {
                          "color":"#ff00d8",
                          "name":"Snow",
+                         "probability":1,
+                         "tile":-1
+                        }, 
+                        {
+                         "color":"#2172bf",
+                         "name":"Frozen Water",
+                         "probability":1,
+                         "tile":-1
+                        }, 
+                        {
+                         "color":"#371654",
+                         "name":"Deep Water",
                          "probability":1,
                          "tile":-1
                         }],
@@ -2540,6 +2954,30 @@
                          "wangid":[0, 6, 0, 4, 0, 3, 0, 3]
                         }, 
                         {
+                         "tileid":1610,
+                         "wangid":[0, 7, 0, 8, 0, 7, 0, 7]
+                        }, 
+                        {
+                         "tileid":1611,
+                         "wangid":[0, 7, 0, 8, 0, 8, 0, 7]
+                        }, 
+                        {
+                         "tileid":1612,
+                         "wangid":[0, 7, 0, 7, 0, 7, 0, 7]
+                        }, 
+                        {
+                         "tileid":1613,
+                         "wangid":[0, 7, 0, 7, 0, 8, 0, 7]
+                        }, 
+                        {
+                         "tileid":1614,
+                         "wangid":[0, 8, 0, 7, 0, 8, 0, 8]
+                        }, 
+                        {
+                         "tileid":1615,
+                         "wangid":[0, 8, 0, 8, 0, 7, 0, 8]
+                        }, 
+                        {
                          "tileid":1632,
                          "wangid":[0, 4, 0, 4, 0, 6, 0, 6]
                         }, 
@@ -2588,13 +3026,38 @@
                          "wangid":[0, 4, 0, 6, 0, 3, 0, 3]
                         }, 
                         {
+                         "tileid":1706,
+                         "wangid":[0, 7, 0, 7, 0, 7, 0, 7]
+                        }, 
+                        {
+                         "tileid":1707,
+                         "wangid":[0, 8, 0, 8, 0, 8, 0, 8]
+                        }, 
+                        {
+                         "tileid":1708,
+                         "wangid":[0, 7, 0, 7, 0, 7, 0, 7]
+                        }, 
+                        {
+                         "tileid":1709,
+                         "wangid":[0, 7, 0, 7, 0, 8, 0, 8]
+                        }, 
+                        {
+                         "tileid":1710,
+                         "wangid":[0, 7, 0, 8, 0, 8, 0, 8]
+                        }, 
+                        {
+                         "tileid":1711,
+                         "wangid":[0, 8, 0, 8, 0, 8, 0, 7]
+                        }, 
+                        {
                          "tileid":1728,
                          "wangid":[0, 4, 0, 4, 0, 6, 0, 6]
                         }, 
                         {
                          "tileid":1732,
                          "wangid":[0, 6, 0, 6, 0, 4, 0, 4]
-                        }, 
+                        },
+                    
                         {
                          "tileid":1733,
                          "wangid":[0, 5, 0, 6, 0, 5, 0, 5]
@@ -2632,6 +3095,22 @@
                          "wangid":[0, 6, 0, 4, 0, 3, 0, 3]
                         }, 
                         {
+                         "tileid":1802,
+                         "wangid":[0, 8, 0, 8, 0, 7, 0, 7]
+                        }, 
+                        {
+                         "tileid":1803,
+                         "wangid":[0, 8, 0, 8, 0, 8, 0, 8]
+                        }, 
+                        {
+                         "tileid":1804,
+                         "wangid":[0, 7, 0, 7, 0, 7, 0, 7]
+                        }, 
+                        {
+                         "tileid":1805,
+                         "wangid":[0, 7, 0, 7, 0, 7, 0, 7]
+                        }, 
+                        {
                          "tileid":1824,
                          "wangid":[0, 4, 0, 4, 0, 6, 0, 6]
                         }, 
@@ -2642,8 +3121,7 @@
                         {
                          "tileid":1829,
                          "wangid":[0, 6, 0, 5, 0, 5, 0, 5]
-                        },
-                    
+                        }, 
                         {
                          "tileid":1830,
                          "wangid":[0, 5, 0, 5, 0, 5, 0, 6]
@@ -2663,6 +3141,22 @@
                         {
                          "tileid":1869,
                          "wangid":[0, 4, 0, 6, 0, 3, 0, 3]
+                        }, 
+                        {
+                         "tileid":1898,
+                         "wangid":[0, 8, 0, 7, 0, 7, 0, 7]
+                        }, 
+                        {
+                         "tileid":1899,
+                         "wangid":[0, 7, 0, 7, 0, 7, 0, 7]
+                        }, 
+                        {
+                         "tileid":1900,
+                         "wangid":[0, 8, 0, 7, 0, 7, 0, 8]
+                        }, 
+                        {
+                         "tileid":1901,
+                         "wangid":[0, 7, 0, 7, 0, 7, 0, 8]
                         }, 
                         {
                          "tileid":1920,
@@ -2703,7 +3197,8 @@
                         {
                          "tileid":2058,
                          "wangid":[0, 3, 0, 3, 0, 6, 0, 4]
-                        }, 
+                        },
+                    
                         {
                          "tileid":2059,
                          "wangid":[0, 3, 0, 4, 0, 6, 0, 3]
@@ -2773,6 +3268,30 @@
                          "wangid":[0, 4, 0, 6, 0, 3, 0, 3]
                         }, 
                         {
+                         "tileid":2282,
+                         "wangid":[0, 6, 0, 7, 0, 6, 0, 6]
+                        }, 
+                        {
+                         "tileid":2283,
+                         "wangid":[0, 6, 0, 7, 0, 7, 0, 6]
+                        }, 
+                        {
+                         "tileid":2284,
+                         "wangid":[0, 6, 0, 7, 0, 7, 0, 6]
+                        }, 
+                        {
+                         "tileid":2285,
+                         "wangid":[0, 6, 0, 6, 0, 7, 0, 6]
+                        }, 
+                        {
+                         "tileid":2286,
+                         "wangid":[0, 7, 0, 6, 0, 7, 0, 7]
+                        }, 
+                        {
+                         "tileid":2287,
+                         "wangid":[0, 7, 0, 7, 0, 6, 0, 7]
+                        }, 
+                        {
                          "tileid":2314,
                          "wangid":[0, 3, 0, 3, 0, 6, 0, 6]
                         }, 
@@ -2783,11 +3302,34 @@
                         {
                          "tileid":2318,
                          "wangid":[0, 6, 0, 3, 0, 3, 0, 3]
-                        },
-                    
+                        }, 
                         {
                          "tileid":2319,
                          "wangid":[0, 3, 0, 3, 0, 3, 0, 6]
+                        }, 
+                        {
+                         "tileid":2378,
+                         "wangid":[0, 7, 0, 7, 0, 6, 0, 6]
+                        }, 
+                        {
+                         "tileid":2379,
+                         "wangid":[0, 7, 0, 7, 0, 7, 0, 7]
+                        }, 
+                        {
+                         "tileid":2380,
+                         "wangid":[0, 7, 0, 7, 0, 7, 0, 7]
+                        }, 
+                        {
+                         "tileid":2381,
+                         "wangid":[0, 6, 0, 6, 0, 7, 0, 7]
+                        }, 
+                        {
+                         "tileid":2382,
+                         "wangid":[0, 6, 0, 7, 0, 7, 0, 7]
+                        }, 
+                        {
+                         "tileid":2383,
+                         "wangid":[0, 7, 0, 7, 0, 7, 0, 6]
                         }, 
                         {
                          "tileid":2410,
@@ -2796,6 +3338,23 @@
                         {
                          "tileid":2413,
                          "wangid":[0, 6, 0, 6, 0, 3, 0, 3]
+                        },
+                    
+                        {
+                         "tileid":2474,
+                         "wangid":[0, 7, 0, 7, 0, 6, 0, 6]
+                        }, 
+                        {
+                         "tileid":2475,
+                         "wangid":[0, 7, 0, 7, 0, 7, 0, 7]
+                        }, 
+                        {
+                         "tileid":2476,
+                         "wangid":[0, 7, 0, 7, 0, 7, 0, 7]
+                        }, 
+                        {
+                         "tileid":2477,
+                         "wangid":[0, 6, 0, 6, 0, 7, 0, 7]
                         }, 
                         {
                          "tileid":2506,
@@ -2812,6 +3371,22 @@
                         {
                          "tileid":2509,
                          "wangid":[0, 6, 0, 6, 0, 6, 0, 3]
+                        }, 
+                        {
+                         "tileid":2570,
+                         "wangid":[0, 7, 0, 6, 0, 6, 0, 6]
+                        }, 
+                        {
+                         "tileid":2571,
+                         "wangid":[0, 7, 0, 6, 0, 6, 0, 7]
+                        }, 
+                        {
+                         "tileid":2572,
+                         "wangid":[0, 7, 0, 6, 0, 6, 0, 7]
+                        }, 
+                        {
+                         "tileid":2573,
+                         "wangid":[0, 6, 0, 6, 0, 6, 0, 7]
                         }]
                 }]
         }, 

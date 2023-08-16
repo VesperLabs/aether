@@ -340,11 +340,22 @@
     "dialogues": {
       "description": "The wild Orchids are running rampant. {objective} and I will give you an hairloom of the wilds."
     },
-    "objectives": [{ "type": "bounty", "monster": "orchid", "amount": 200 }],
+    "objectives": [{ "type": "bounty", "monster": "orchid", "amount": 120 }],
     "rewards": {
       "exp": 240,
       "gold": 80,
       "items": [["weapon", "unique", "eyeOfForest"]]
+    }
+  },
+  "talk-derek": {
+    "name": "Talk to Derek",
+    "dialogues": {
+      "description": "I used to know a ranger from the north. Went by the name of Derek. If you find him up in the mountains, let me know."
+    },
+    "objectives": [{ "type": "chat", "keeper": "derek" }],
+    "rewards": {
+      "exp": 200,
+      "gold": 40
     }
   },
   "big-momma": {
@@ -359,8 +370,20 @@
       "items": [["armor", "rare", "leatherCoat"]]
     }
   },
+  "wolf-culling": {
+    "name": "Wolf Culling",
+    "dialogues": {
+      "description": "The wolves up here are hungry and will attack you at first sight. Help me {objective}."
+    },
+    "objectives": [{ "type": "bounty", "monster": "wolf", "amount": 120 }],
+    "rewards": {
+      "exp": 300,
+      "gold": 100,
+      "items": [["accessory", "rare", "goggles"]]
+    }
+  },
   "wolf-pelts": {
-    "name": "Winter Wolves",
+    "name": "Winter Wolf Pelts",
     "dialogues": {
       "description": "{objective} from the wolves in these mountains. I can make you something good from the materials."
     },
@@ -373,7 +396,7 @@
     ],
     "rewards": {
       "exp": 300,
-      "gold": 10,
+      "gold": 100,
       "items": [["helmet", "unique", "wolfMask"]]
     }
   }
