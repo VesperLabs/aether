@@ -26,7 +26,7 @@ const rollDrop = (ilvl: number, magicFind = 0) => {
     { rarity: "unique", chance: 5000 },
     { rarity: "rare", chance: 500 },
     { rarity: "magic", chance: 50 },
-    { rarity: "common", chance: 25 },
+    { rarity: "common", chance: 50 },
   ];
 
   //magicFind = magicFind + 1000;
