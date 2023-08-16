@@ -69,6 +69,13 @@
             "width": 1120,
             "x": -3456,
             "y": -1056
+        },
+        {
+            "fileName": "townInside-tents.json",
+            "height": 1600,
+            "width": 2240,
+            "x": 4128,
+            "y": 1632
         }
     ],
     "onlyShowAdjacentMaps": false,

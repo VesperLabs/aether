@@ -1,7 +1,7 @@
 {
   "crab": {
     "charClass": "mage",
-    "profile": { "race": "crab", "userName": "Crab" },
+    "profile": { "race": "crab", "userName": "Crab", "tint": "0xFF6600" },
     "state": { "isAggro": false },
     "baseStats": {
       "level": 1,
@@ -445,6 +445,36 @@
         "rarity": "common",
         "key": "wolfPelt",
         "chance": 2
+      }
+    ]
+  },
+  "iceCrab": {
+    "charClass": "mage",
+    "profile": { "race": "crab", "userName": "Ice Crab", "tint": "0x8899CC" },
+    "state": { "isAggro": false },
+    "baseStats": {
+      "level": 8,
+      "waterResistance": 50
+    },
+    "hitBoxSize": {
+      "width": 18,
+      "height": 16
+    },
+    "abilities": {
+      "1": ["spell", "common", "waterball"]
+    },
+    "drops": [
+      {
+        "type": "boots",
+        "rarity": "set",
+        "key": "crabWalkers",
+        "chance": 1000
+      },
+      {
+        "type": "stackable",
+        "rarity": "common",
+        "key": "iceCrabClaw",
+        "chance": 3
       }
     ]
   }

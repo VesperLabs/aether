@@ -8,7 +8,7 @@
         "texture": "weapon-katar",
         "slot": "hands",
         "stats": {
-          "attackDelay": 150,
+          "attackDelay": 140,
           "minDamage": 0,
           "maxDamage": 1,
           "range": 1,
@@ -25,7 +25,7 @@
         "texture": "weapon-dagger",
         "slot": "hands",
         "stats": {
-          "attackDelay": 200,
+          "attackDelay": 180,
           "minDamage": 0,
           "maxDamage": 1,
           "range": 1,
@@ -42,7 +42,7 @@
         "texture": "weapon-sword-short",
         "slot": "hands",
         "stats": {
-          "attackDelay": 300,
+          "attackDelay": 220,
           "minDamage": 1,
           "maxDamage": 2,
           "range": 1,
@@ -60,7 +60,7 @@
         "texture": "weapon-scimitar",
         "slot": "hands",
         "stats": {
-          "attackDelay": 220,
+          "attackDelay": 200,
           "minDamage": 0,
           "maxDamage": 2,
           "range": 1,
@@ -77,7 +77,7 @@
         "texture": "weapon-wand-stick",
         "slot": "hands",
         "stats": {
-          "attackDelay": 150,
+          "attackDelay": 180,
           "spellPower": 3,
           "range": 1,
           "spCost": 1
@@ -128,9 +128,9 @@
         "texture": "weapon-axe",
         "slot": "hands",
         "stats": {
-          "attackDelay": 350,
+          "attackDelay": 300,
           "minDamage": 1,
-          "maxDamage": 3,
+          "maxDamage": 2,
           "range": 1,
           "spCost": 2
         },
@@ -149,11 +149,11 @@
           "minDamage": 1,
           "maxDamage": 2,
           "range": 1,
-          "spCost": 1
+          "spCost": 2
         },
         "requirements": {
           "strength": 2,
-          "dexterity": 3
+          "dexterity": 5
         }
       },
       "spear": {
@@ -164,10 +164,10 @@
         "slot": "hands",
         "stats": {
           "attackDelay": 400,
-          "minDamage": 3,
-          "maxDamage": 4,
+          "minDamage": 2,
+          "maxDamage": 3,
           "range": 2,
-          "spCost": 4
+          "spCost": 3
         },
         "requirements": {
           "strength": 5
@@ -473,6 +473,7 @@
         }
       },
       "wolfMask": {
+        "exclusive": true,
         "ilvl": 2,
         "name": "Wolf Mask",
         "base": "cap",
@@ -723,7 +724,7 @@
         "name": "Crab Walkers",
         "base": "boots",
         "texture": "boots-cloth",
-        "tint": "0xFF6644",
+        "tint": "0xFF6600",
         "slot": "boots",
         "exclusive": true,
         "stats": {
@@ -908,11 +909,19 @@
         "stats": {
           "accuracy": 1
         }
+      },
+      "goggles": {
+        "ilvl": 2,
+        "name": "Goggles",
+        "base": "glasses",
+        "tint": "0xCCCCFF",
+        "texture": "accessory-glasses",
+        "slot": "accessory"
       }
     },
     "unique": {
       "compoundLenses": {
-        "ilvl": 2,
+        "ilvl": 1,
         "name": "Compound Lenses",
         "base": "glasses",
         "texture": "accessory-glasses",
@@ -1197,9 +1206,10 @@
       },
       "crabClaw": {
         "ilvl": 1,
-        "name": "Crab Claw",
+        "name": "Red Crab Claw",
         "base": "food",
         "slot": "stackable",
+        "tint": "0xFF6600",
         "texture": "stackable-claw",
         "buffs": {
           "protein": 1
@@ -1270,6 +1280,17 @@
         "base": "material",
         "slot": "stackable",
         "texture": "stackable-flower-orchid"
+      },
+      "iceCrabClaw": {
+        "ilvl": 2,
+        "name": "Ice Crab Claw",
+        "base": "food",
+        "slot": "stackable",
+        "tint": "0x8899CC",
+        "texture": "stackable-claw",
+        "buffs": {
+          "protein": 2
+        }
       }
     },
     "magic": {
@@ -1514,8 +1535,8 @@
       }
     },
     "unique": {
-      "exclusive": true,
       "raesBasket": {
+        "exclusive": true,
         "ilvl": 2,
         "name": "Rae's Basket",
         "base": "bag",
