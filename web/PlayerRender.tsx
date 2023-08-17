@@ -154,6 +154,7 @@ const getPlayerEquipmentAssets = (player: FullCharacterState) => {
     "hair",
     "pants",
     "boots",
+    "gloves",
     "armor",
     "face",
     "whiskers",
