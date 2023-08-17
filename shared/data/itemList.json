@@ -697,6 +697,21 @@
       }
     }
   },
+  "gloves": {
+    "common": {
+      "clothGloves": {
+        "ilvl": 1,
+        "name": "Cloth Gloves",
+        "base": "gloves",
+        "texture": "gloves-cloth",
+        "tint": "0xFFDDCC",
+        "slot": "gloves",
+        "stats": {
+          "defense": [1, 2]
+        }
+      }
+    }
+  },
   "boots": {
     "common": {
       "nutshellBoots": {

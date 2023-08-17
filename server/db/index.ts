@@ -57,7 +57,9 @@ const getDatabaseApi = (db) => ({
     try {
       // Delete documents with baseStats.level equal to 1
       const deleteResult = await db.collection("users").deleteMany({ "baseStats.level": 1 });
-
+      // const updateResult = await db
+      //   .collection("users")
+      //   .updateMany({}, { $set: { "equipment.gloves": null } });
       // Print the number of documents deleted
       console.log(`${deleteResult.deletedCount} documents deleted.`);
     } catch (error) {
@@ -65,6 +67,7 @@ const getDatabaseApi = (db) => ({
       throw error;
     }
   },
+
   getUserByLogin: async ({ email, password = "" }) => {
     if (!email) return console.log("❌ Email not provided");
     const user = await db
@@ -210,6 +213,7 @@ export const createBaseUser = (charClass) => {
       accessory: null,
       pants: ItemBuilder.buildItem("pants", "common", "clothPants"),
       armor: ItemBuilder.buildItem("armor", "common", "clothRobe"),
+      gloves: null,
       boots: null,
       ring1: null,
       ring2: null,

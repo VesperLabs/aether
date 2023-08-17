@@ -348,10 +348,16 @@
     "previewRect": [0, 80, 80, 80]
   },
   {
+    "texture": "human-gloves-cloth",
+    "src": "./assets/atlas/gloves/gloves-cloth.png",
+    "atlas": "./assets/atlas/80x80.json",
+    "previewRect": [29, 351, 22, 18]
+  },
+  {
     "texture": "human-boots-cloth",
     "src": "./assets/atlas/boots/boots-cloth.png",
     "atlas": "./assets/atlas/80x80.json",
-    "previewRect": [0, 173, 80, 80]
+    "previewRect": [29, 349, 22, 20]
   },
   {
     "texture": "human-pants-cloth",
