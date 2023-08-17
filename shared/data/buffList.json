@@ -8,7 +8,7 @@
   "haste": {
     "duration": 60000,
     "stats": {
-      "walkSpeed": 25,
+      "walkSpeed": 20,
       "attackDelay": -25,
       "castDelay": -100
     }
@@ -16,19 +16,19 @@
   "brute": {
     "duration": 60000,
     "stats": {
-      "strength": 10
+      "strength": 6
     }
   },
   "endurance": {
     "duration": 60000,
     "stats": {
-      "vitality": 10
+      "maxHp": 15
     }
   },
   "genius": {
     "duration": 60000,
     "stats": {
-      "intelligence": 10
+      "intelligence": 6
     }
   },
   "protein": {

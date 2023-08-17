@@ -1,6 +1,6 @@
 import ServerCharacter from "./Character";
 import { cloneObject, getRoomState, PLAYER_DEFAULT_SPAWN } from "./utils";
-import spellDetails from "../shared/data/spellDetails.json";
+import { spellDetails, MAX_INVENTORY_ITEMS } from "@aether/shared";
 
 /* Server level Player object */
 class Player extends ServerCharacter implements ServerPlayer {
@@ -231,7 +231,7 @@ class Player extends ServerCharacter implements ServerPlayer {
     }
   }
   isInventoryFull() {
-    return this?.inventory?.every(Boolean) && this?.inventory?.length >= 30;
+    return this?.inventory?.every(Boolean) && this?.inventory?.length >= MAX_INVENTORY_ITEMS;
   }
   updateInventoryItemAtId(id: string, item: Item) {
     for (var i = 0; i < this.inventory.length; i++) {

@@ -257,7 +257,7 @@
         "tint": "0xCC66FF",
         "slot": "hands",
         "stats": {
-          "critChance": [1, 10],
+          "critChance": [10, 15],
           "minDamage": 1,
           "maxDamage": 2
         }
@@ -296,7 +296,7 @@
         "texture": "weapon-wyrm-blade",
         "slot": "hands",
         "stats": {
-          "critChance": [4, 5],
+          "critChance": [10, 15],
           "minFireDamage": 0,
           "maxFireDamage": 2,
           "minWaterDamage": 0,
@@ -311,7 +311,7 @@
         "texture": "weapon-scimitar-fox",
         "slot": "hands",
         "stats": {
-          "critChance": [1, 5],
+          "critChance": [10, 15],
           "minFireDamage": 2,
           "maxFireDamage": 3,
           "range": 1.25
@@ -326,7 +326,7 @@
         "stats": {
           "hpSteal": [10, 15],
           "mpSteal": [10, 15],
-          "critChance": 15,
+          "critChance": 20,
           "range": 2
         }
       }
@@ -594,7 +594,7 @@
         },
         "requirements": {
           "strength": 3,
-          "dexterity": 3
+          "dexterity": 2
         }
       },
       "bronzePlate": {
@@ -659,8 +659,8 @@
         "slot": "armor",
         "stats": {
           "walkSpeed": 10,
-          "castDelay": [-100, -150],
-          "attackDelay": [-35, -40]
+          "castDelay": [-90, -100],
+          "attackDelay": [-25, -30]
         }
       },
       "iceCrabShell": {
@@ -722,12 +722,12 @@
   },
   "boots": {
     "common": {
-      "nutshellBoots": {
+      "clothBoots": {
         "ilvl": 1,
-        "name": "Nutshell Boots",
+        "name": "Cloth Boots",
         "base": "boots",
         "texture": "boots-cloth",
-        "tint": "0xCC9966",
+        "tint": "0xFFDDCC",
         "slot": "boots",
         "stats": {
           "walkSpeed": 5,
@@ -1404,7 +1404,7 @@
           "mpCost": 4
         },
         "requirements": {
-          "intelligence": 4
+          "intelligence": 5
         }
       },
       "quake": {
@@ -1421,7 +1421,7 @@
           "mpCost": 5
         },
         "requirements": {
-          "intelligence": 4
+          "intelligence": 5
         }
       },
       "waterball": {
@@ -1438,7 +1438,7 @@
           "mpCost": 4
         },
         "requirements": {
-          "intelligence": 4
+          "intelligence": 5
         }
       },
       "voltball": {
@@ -1455,7 +1455,7 @@
           "mpCost": 4
         },
         "requirements": {
-          "intelligence": 4
+          "intelligence": 5
         }
       },
       "evasion": {
@@ -1468,7 +1468,7 @@
           "evasion": 1
         },
         "requirements": {
-          "dexterity": 4
+          "dexterity": 8
         },
         "stats": {
           "mpCost": 10
@@ -1484,8 +1484,8 @@
           "haste": 1
         },
         "requirements": {
-          "dexterity": 4,
-          "intelligence": 4
+          "dexterity": 8,
+          "intelligence": 8
         },
         "stats": {
           "mpCost": 4
@@ -1501,7 +1501,7 @@
           "brute": 1
         },
         "requirements": {
-          "strength": 4
+          "strength": 8
         },
         "stats": {
           "mpCost": 4
@@ -1517,7 +1517,7 @@
           "genius": 1
         },
         "requirements": {
-          "intelligence": 4
+          "intelligence": 8
         },
         "stats": {
           "mpCost": 4
@@ -1533,7 +1533,8 @@
           "endurance": 1
         },
         "requirements": {
-          "vitality": 4
+          "vitality": 8,
+          "intelligence": 8
         },
         "stats": {
           "mpCost": 4
@@ -1546,12 +1547,124 @@
         "slot": "spell",
         "texture": "scroll-blue"
       },
+      "quake2": {
+        "ilvl": 2,
+        "name": "Quake",
+        "base": "quake",
+        "slot": "spell",
+        "texture": "scroll-blue"
+      },
+      "waterball2": {
+        "ilvl": 2,
+        "name": "Waterball",
+        "base": "waterball",
+        "slot": "spell",
+        "texture": "scroll-blue"
+      },
+      "voltball2": {
+        "ilvl": 2,
+        "name": "Voltball",
+        "base": "voltball",
+        "slot": "spell",
+        "texture": "scroll-blue"
+      },
+      "evasion2": {
+        "ilvl": 2,
+        "name": "Evasion",
+        "base": "evasion",
+        "slot": "spell",
+        "texture": "scroll-green"
+      },
+      "haste2": {
+        "ilvl": 2,
+        "name": "Haste",
+        "base": "haste",
+        "slot": "spell",
+        "texture": "scroll-green"
+      },
+      "brute2": {
+        "ilvl": 2,
+        "name": "Brute",
+        "base": "brute",
+        "slot": "spell",
+        "texture": "scroll-red"
+      },
+      "genius2": {
+        "ilvl": 2,
+        "name": "Genius",
+        "base": "genius",
+        "slot": "spell",
+        "texture": "scroll-blue"
+      },
+      "endurance2": {
+        "ilvl": 2,
+        "name": "Endurance",
+        "base": "endurance",
+        "slot": "spell",
+        "texture": "scroll-yellow"
+      },
       "fireball3": {
         "ilvl": 3,
         "name": "Fireball",
         "base": "fireball",
         "slot": "spell",
         "texture": "scroll-blue"
+      },
+      "quake3": {
+        "ilvl": 3,
+        "name": "Quake",
+        "base": "quake",
+        "slot": "spell",
+        "texture": "scroll-blue"
+      },
+      "waterball3": {
+        "ilvl": 3,
+        "name": "Waterball",
+        "base": "waterball",
+        "slot": "spell",
+        "texture": "scroll-blue"
+      },
+      "voltball3": {
+        "ilvl": 3,
+        "name": "Voltball",
+        "base": "voltball",
+        "slot": "spell",
+        "texture": "scroll-blue"
+      },
+      "evasion3": {
+        "ilvl": 3,
+        "name": "Evasion",
+        "base": "evasion",
+        "slot": "spell",
+        "texture": "scroll-green"
+      },
+      "haste3": {
+        "ilvl": 3,
+        "name": "Haste",
+        "base": "haste",
+        "slot": "spell",
+        "texture": "scroll-green"
+      },
+      "brute3": {
+        "ilvl": 3,
+        "name": "Brute",
+        "base": "brute",
+        "slot": "spell",
+        "texture": "scroll-red"
+      },
+      "genius3": {
+        "ilvl": 3,
+        "name": "Genius",
+        "base": "genius",
+        "slot": "spell",
+        "texture": "scroll-blue"
+      },
+      "endurance3": {
+        "ilvl": 3,
+        "name": "Endurance",
+        "base": "endurance",
+        "slot": "spell",
+        "texture": "scroll-yellow"
       }
     }
   },
