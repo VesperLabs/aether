@@ -351,13 +351,19 @@
     "texture": "human-gloves-cloth",
     "src": "./assets/atlas/gloves/gloves-cloth.png",
     "atlas": "./assets/atlas/80x80.json",
-    "previewRect": [29, 351, 22, 18]
+    "previewRect": [9, 331, 22, 18]
   },
   {
     "texture": "human-boots-cloth",
     "src": "./assets/atlas/boots/boots-cloth.png",
     "atlas": "./assets/atlas/80x80.json",
-    "previewRect": [29, 349, 22, 20]
+    "previewRect": [9, 330, 22, 20]
+  },
+  {
+    "texture": "human-boots-wings",
+    "src": "./assets/atlas/boots/boots-cloth.png",
+    "atlas": "./assets/atlas/80x80.json",
+    "previewRect": [49, 328, 21, 23]
   },
   {
     "texture": "human-pants-cloth",

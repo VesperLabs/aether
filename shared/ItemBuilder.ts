@@ -66,6 +66,7 @@ const rollDrop = (ilvl: number, magicFind = 0) => {
     "armor",
     "boots",
     "pants",
+    "gloves",
     "shield",
     "accessory",
     "ring",

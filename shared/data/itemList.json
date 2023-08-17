@@ -709,6 +709,14 @@
         "stats": {
           "defense": [1, 2]
         }
+      },
+      "leatherGloves": {
+        "ilvl": 2,
+        "name": "Leather Gloves",
+        "base": "gloves",
+        "texture": "gloves-cloth",
+        "tint": "0x865027",
+        "slot": "gloves"
       }
     }
   },
@@ -771,7 +779,7 @@
         "ilvl": 2,
         "name": "Chicken Feet",
         "base": "boots",
-        "texture": "boots-cloth",
+        "texture": "boots-wings",
         "tint": "0xFFFF00",
         "slot": "boots",
         "stats": {
