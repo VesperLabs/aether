@@ -710,6 +710,20 @@
           "defense": [1, 2]
         }
       },
+      "nutshellGauntlets": {
+        "ilvl": 1,
+        "name": "Nutshell Gauntlets",
+        "base": "gauntlets",
+        "texture": "gloves-plate",
+        "tint": "0xCC9966",
+        "slot": "gloves",
+        "stats": {
+          "defense": [3, 4]
+        },
+        "requirements": {
+          "strength": 6
+        }
+      },
       "leatherGloves": {
         "ilvl": 2,
         "name": "Leather Gloves",
@@ -717,6 +731,44 @@
         "texture": "gloves-cloth",
         "tint": "0x865027",
         "slot": "gloves"
+      },
+      "bronzeGauntlets": {
+        "ilvl": 2,
+        "name": "Bronze Gauntlets",
+        "base": "gauntlets",
+        "texture": "gloves-plate",
+        "tint": "0xFFEEAA",
+        "slot": "gloves"
+      }
+    },
+    "unique": {
+      "flamingFinger": {
+        "ilvl": 1,
+        "name": "The Flaming Finger",
+        "base": "gloves",
+        "texture": "gloves-cloth",
+        "tint": "0xFF4400",
+        "slot": "gloves",
+        "stats": {
+          "maxHp": 10,
+          "maxMp": 10,
+          "minFireDamage": 1,
+          "maxFireDamage": 2,
+          "castDelay": -50
+        }
+      },
+      "aeryMitts": {
+        "ilvl": 2,
+        "name": "Aery Mitts",
+        "base": "gloves",
+        "texture": "gloves-fur",
+        "tint": "0x66CCFF",
+        "slot": "gloves",
+        "stats": {
+          "waterResistance": [10, 15],
+          "minWaterDamage": 2,
+          "maxWaterDamage": 3
+        }
       }
     }
   },
@@ -734,6 +786,20 @@
           "defense": [1, 2]
         }
       },
+      "nutshellGreaves": {
+        "ilvl": 1,
+        "name": "Nutshell Greaves",
+        "base": "greaves",
+        "texture": "boots-plate",
+        "tint": "0xCC9966",
+        "slot": "boots",
+        "stats": {
+          "defense": [3, 4]
+        },
+        "requirements": {
+          "strength": 6
+        }
+      },
       "leatherBoots": {
         "ilvl": 2,
         "name": "Leather Boots",
@@ -742,6 +808,14 @@
         "tint": "0x865027",
         "slot": "boots",
         "stats": {}
+      },
+      "bronzeGreaves": {
+        "ilvl": 2,
+        "name": "Bronze Greaves",
+        "base": "greaves",
+        "texture": "boots-plate",
+        "tint": "0xFFEEAA",
+        "slot": "boots"
       }
     },
     "set": {

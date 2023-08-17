@@ -354,6 +354,18 @@
     "previewRect": [9, 331, 22, 18]
   },
   {
+    "texture": "human-gloves-fur",
+    "src": "./assets/atlas/gloves/gloves-cloth.png",
+    "atlas": "./assets/atlas/80x80.json",
+    "previewRect": [50, 329, 20, 22]
+  },
+  {
+    "texture": "human-gloves-plate",
+    "src": "./assets/atlas/gloves/gloves-cloth.png",
+    "atlas": "./assets/atlas/80x80.json",
+    "previewRect": [91, 329, 19, 22]
+  },
+  {
     "texture": "human-boots-cloth",
     "src": "./assets/atlas/boots/boots-cloth.png",
     "atlas": "./assets/atlas/80x80.json",
@@ -364,6 +376,12 @@
     "src": "./assets/atlas/boots/boots-cloth.png",
     "atlas": "./assets/atlas/80x80.json",
     "previewRect": [49, 328, 21, 23]
+  },
+  {
+    "texture": "human-boots-plate",
+    "src": "./assets/atlas/boots/boots-cloth.png",
+    "atlas": "./assets/atlas/80x80.json",
+    "previewRect": [88, 329, 23, 22]
   },
   {
     "texture": "human-pants-cloth",
