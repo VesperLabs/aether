@@ -1298,24 +1298,14 @@
           "protein": 1
         }
       },
-      "carrot": {
-        "ilvl": 1,
-        "name": "Carrot",
-        "base": "food",
-        "slot": "stackable",
-        "texture": "stackable-carrot",
-        "buffs": {
-          "vitamins": 1
-        }
-      },
       "orange": {
-        "ilvl": 1,
+        "ilvl": 2,
         "name": "Orange",
         "base": "food",
         "slot": "stackable",
         "texture": "stackable-orange",
         "buffs": {
-          "vitamins": 1
+          "vitamins": 2
         }
       },
       "crabClaw": {
@@ -1342,6 +1332,16 @@
         "base": "material",
         "slot": "stackable",
         "texture": "stackable-stone"
+      },
+      "carrot": {
+        "ilvl": 2,
+        "name": "Carrot",
+        "base": "food",
+        "slot": "stackable",
+        "texture": "stackable-carrot",
+        "buffs": {
+          "vitamins": 2
+        }
       },
       "shitake": {
         "ilvl": 2,
