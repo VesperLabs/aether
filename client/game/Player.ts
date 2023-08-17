@@ -100,6 +100,7 @@ class Player extends Character {
     this.armor = scene.add.existing(new Sprite(...defaults));
     this.helmet = scene.add.existing(new Sprite(...defaults));
     this.boots = scene.add.existing(new Sprite(...defaults));
+    this.gloves = scene.add.existing(new Sprite(...defaults));
     this.pants = scene.add.existing(new Sprite(...defaults));
     this.accessory = scene.add.existing(new Sprite(...defaults));
     this.handLeft = scene.add.existing(new HandSprite(scene, 13, -9, BLANK_TEXTURE));
@@ -127,6 +128,7 @@ class Player extends Character {
     this.add(this.accessory);
     this.add(this.armor);
     this.add(this.boots);
+    this.add(this.gloves);
     this.add(this.pants);
     this.add(this.helmet);
     this.add(this.handLeft);
@@ -264,6 +266,7 @@ class Player extends Character {
     this.armor.setVisible(false);
     this.helmet.setVisible(false);
     this.boots.setVisible(false);
+    this.gloves.setVisible(false);
     this.pants.setVisible(false);
     this.handLeft.setVisible(false);
     this.handRight.setVisible(false);
@@ -288,6 +291,7 @@ class Player extends Character {
     this.armor.setVisible(true);
     this.helmet.setVisible(true);
     this.boots.setVisible(true);
+    this.gloves.setVisible(true);
     this.pants.setVisible(true);
     this.handLeft.setVisible(true);
     this.handRight.setVisible(true);
@@ -305,6 +309,7 @@ class Player extends Character {
     this.armor.setTint(color);
     this.helmet.setTint(color);
     this.boots.setTint(color);
+    this.gloves.setTint(color);
     this.accessory.setTint(color);
     this.face.setTint(color);
     this.whiskers.setTint(color);
@@ -425,6 +430,7 @@ function drawFrame(p) {
     handLeft,
     handRight,
     pants,
+    gloves,
     boots,
     shadow,
     direction,
@@ -448,6 +454,7 @@ function drawFrame(p) {
   p.bringToTop(chest);
   p.bringToTop(pants);
   p.bringToTop(boots);
+  p.bringToTop(gloves);
   p.bringToTop(armor);
 
   if (direction === "up") {
@@ -461,6 +468,7 @@ function drawFrame(p) {
   } else if (direction === "down") {
     p.bringToTop(chest);
     p.bringToTop(armor);
+    p.bringToTop(gloves);
     p.bringToTop(face);
     p.bringToTop(whiskers);
     p.bringToTop(accessory);
@@ -475,6 +483,7 @@ function drawFrame(p) {
     p.bringToTop(whiskers);
     p.bringToTop(accessory);
     p.bringToTop(helmet);
+    p.bringToTop(gloves);
     p.bringToTop(handLeft);
     p.sendToBack(handRight);
   } else if (direction === "right") {
@@ -485,6 +494,7 @@ function drawFrame(p) {
     p.bringToTop(whiskers);
     p.bringToTop(accessory);
     p.bringToTop(helmet);
+    p.bringToTop(gloves);
     p.sendToBack(handLeft);
     p.bringToTop(handRight);
   }
@@ -511,6 +521,7 @@ function drawFrame(p) {
   );
   p?.playAnim(helmet, [profile?.race, visibleEquipment?.helmet?.texture, direction, action]);
   p?.playAnim(boots, [profile?.race, visibleEquipment?.boots?.texture, direction, action]);
+  p?.playAnim(gloves, [profile?.race, visibleEquipment?.gloves?.texture, direction, action]);
   p?.playAnim(pants, [profile?.race, visibleEquipment?.pants?.texture, direction, action]);
   p?.playAnim(accessory, [profile?.race, visibleEquipment?.accessory?.texture, direction, action]);
   playWeapons(p);
@@ -546,6 +557,7 @@ function hackFrameRates(player, rate) {
     "accessory",
     "armor",
     "boots",
+    "gloves",
     "pants",
     "helmet",
   ];

@@ -1,7 +1,7 @@
 import assetList from "./data/assetList.json";
 
 /* Resolves the right asset compensating for user profile attributes */
-const resolveAsset = (item, user) => {
+const resolveAsset = (item, user, isSlot = false) => {
   const { profile } = user ?? {};
   const { race, gender, face, hair, whiskers } = profile ?? {};
   let textureName = "";
