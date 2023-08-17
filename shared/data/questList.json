@@ -68,7 +68,7 @@
     "rewards": {
       "exp": 20,
       "gold": 10,
-      "items": [["boots", "magic", "nutshellBoots"]]
+      "items": [["boots", "magic", "clothBoots"]]
     }
   },
   "slime-eggs": {

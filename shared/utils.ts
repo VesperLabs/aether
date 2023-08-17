@@ -1,6 +1,7 @@
 export const HAIR_HIDING_HELMETS = ["helmet-armet", "helmet-hood", "helmet-horned"];
 export const FACE_HIDING_HELMETS = ["helmet-armet", "helmet-horned"];
 export const ACCESSORY_HIDING_HELMETS = ["helmet-armet", "helmet-horned"];
+export const MAX_INVENTORY_ITEMS = 32;
 
 export function getAngleFromDirection(direction) {
   let angle = 0;

@@ -1,3 +1,4 @@
+import { MAX_INVENTORY_ITEMS } from "@aether/shared";
 import { Menu, useAppContext, Slot, MenuHeader, MENU_MAX_WIDTH } from "./";
 import { Flex, Text, Icon } from "@aether/ui";
 
@@ -11,7 +12,7 @@ const GoldDisplay = ({ gold, sx }) => (
 const MenuInventory = () => {
   const { hero, tabInventory, setTabInventory } = useAppContext();
   const inventory = hero?.inventory || [];
-  const maxInventory = new Array(30).fill(null);
+  const maxInventory = new Array(MAX_INVENTORY_ITEMS).fill(null);
 
   return (
     <Menu sx={{ display: tabInventory ? "block" : "none" }}>

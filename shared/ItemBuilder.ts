@@ -319,6 +319,10 @@ function scaleBaseStats(jsonData) {
               ...multiplyValues(baseItem.requirements, ilvlMultiplier),
               ...item.requirements,
             };
+            item.buffs = {
+              ...multiplyValues(baseItem.buffs, ilvlMultiplier),
+              ...item.buffs,
+            };
             item.effects = { ...multiplyValues(baseItem.effects, ilvlMultiplier), ...item.effects };
           }
         }

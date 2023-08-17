@@ -74,7 +74,7 @@
       "quests": ["crab-catching", "crab-claws", "fish-spearing", "find-tudwick"],
       "shop": [
         { "item": ["weapon", "common", "spear"], "stock": 1 },
-        { "item": ["boots", "common", "nutshellBoots"], "stock": 1 },
+        { "item": ["gloves", "common", "clothGloves"], "stock": 1 },
         { "item": ["armor", "common", "clothRobe"], "stock": 1 },
         { "item": ["pants", "common", "clothPants"], "stock": 1 }
       ]
@@ -158,7 +158,7 @@
       "gloves": ["gloves", "common", "clothGloves"],
       "armor": null,
       "pants": ["pants", "common", "clothPants"],
-      "boots": ["boots", "common", "nutshellBoots"]
+      "boots": ["boots", "common", "leatherBoots"]
     },
     "keeperData": {
       "dialogues": {
@@ -168,7 +168,7 @@
       },
       "quests": ["slime-roundup", "slime-eggs", "hornet-hunting", "find-lynne"],
       "shop": [
-        { "item": ["armor", "common", "clothRobe"], "stock": 1 },
+        { "item": ["boots", "common", "clothBoots"], "stock": 1 },
         { "item": ["shield", "common", "barkShield"], "stock": 1 },
         { "item": ["weapon", "common", "dagger"], "stock": 1 }
       ]
@@ -200,7 +200,7 @@
       "accessory": null,
       "armor": ["armor", "unique", "theMossmanProphecy"],
       "pants": ["pants", "common", "clothPants"],
-      "boots": ["boots", "common", "nutshellBoots"]
+      "boots": ["boots", "common", "clothBoots"]
     },
     "keeperData": {
       "dialogues": {
@@ -209,7 +209,10 @@
         "shop": "Some useful goods here. I take gold."
       },
       "quests": ["raccoon-hunting", "grape-finding", "hawkwing-hunting", "shrooms"],
-      "shop": [{ "item": ["weapon", "common", "scythe"], "stock": 1 }]
+      "shop": [
+        { "item": ["weapon", "common", "scythe"], "stock": 1 },
+        { "item": ["armor", "common", "clothCoat"], "stock": 1 }
+      ]
     }
   },
   "anthony": {
@@ -292,6 +295,8 @@
       "shop": [
         { "item": ["shield", "common", "buckler"], "stock": 1 },
         { "item": ["pants", "common", "leatherPants"], "stock": 1 },
+        { "item": ["gloves", "common", "leatherGloves"], "stock": 1 },
+        { "item": ["armor", "common", "leatherCoat"], "stock": 1 },
         { "item": ["armor", "common", "bronzePlate"], "stock": 1 },
         { "item": ["armor", "common", "bronzeHeavyPlate"], "stock": 1 },
         { "item": ["boots", "common", "leatherBoots"], "stock": 1 },
@@ -325,7 +330,7 @@
       "accessory": null,
       "pants": ["pants", "common", "clothPants"],
       "armor": ["armor", "common", "clothRobe"],
-      "boots": ["boots", "common", "nutshellBoots"]
+      "boots": ["boots", "common", "clothBoots"]
     },
     "keeperData": {
       "dialogues": {
@@ -385,15 +390,10 @@
       },
       "quests": ["talk-steve", "chonks-hunting", "zombie-hunting"],
       "shop": [
+        { "item": ["weapon", "common", "wand"], "stock": 1 },
         { "item": ["spell", "common", "fireball"], "stock": 1 },
-        { "item": ["spell", "common", "voltball"], "stock": 1 },
-        { "item": ["spell", "common", "waterball"], "stock": 1 },
-        { "item": ["spell", "common", "quake"], "stock": 1 },
-        { "item": ["spell", "common", "brute"], "stock": 1 },
         { "item": ["spell", "common", "endurance"], "stock": 1 },
-        { "item": ["spell", "common", "evasion"], "stock": 1 },
-        { "item": ["spell", "common", "haste"], "stock": 1 },
-        { "item": ["spell", "common", "genius"], "stock": 1 }
+        { "item": ["spell", "common", "evasion"], "stock": 1 }
       ]
     }
   },
@@ -431,7 +431,10 @@
         "quests": "I'm pretty busy here in town, but there are some things you can collect for me."
       },
       "quests": ["fauna-gatherer", "shitake-search", "talk-sergio"],
-      "shop": []
+      "shop": [
+        { "item": ["weapon", "common", "scimitar"], "stock": 1 },
+        { "item": ["armor", "common", "clothCoat"], "stock": 1 }
+      ]
     }
   },
   "ale": {
