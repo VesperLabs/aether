@@ -1268,16 +1268,6 @@
           "protein": 1
         }
       },
-      "egg": {
-        "ilvl": 1,
-        "name": "Egg",
-        "base": "food",
-        "slot": "stackable",
-        "texture": "stackable-egg",
-        "buffs": {
-          "protein": 1
-        }
-      },
       "grapes": {
         "ilvl": 1,
         "name": "Grapes",
@@ -1299,13 +1289,13 @@
         }
       },
       "orange": {
-        "ilvl": 2,
+        "ilvl": 1,
         "name": "Orange",
         "base": "food",
         "slot": "stackable",
         "texture": "stackable-orange",
         "buffs": {
-          "vitamins": 2
+          "vitamins": 1
         }
       },
       "crabClaw": {
@@ -1332,6 +1322,16 @@
         "base": "material",
         "slot": "stackable",
         "texture": "stackable-stone"
+      },
+      "egg": {
+        "ilvl": 2,
+        "name": "Egg",
+        "base": "food",
+        "slot": "stackable",
+        "texture": "stackable-egg",
+        "buffs": {
+          "protein": 2
+        }
       },
       "carrot": {
         "ilvl": 2,
