@@ -20,7 +20,7 @@
     "rewards": {
       "exp": 15,
       "gold": 10,
-      "items": []
+      "items": [["gloves", "magic", "clothGloves"]]
     }
   },
   "crab-claws": {

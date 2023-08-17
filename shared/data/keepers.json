@@ -155,6 +155,7 @@
       "handRight": null,
       "helmet": ["helmet", "unique", "tudwicksCap"],
       "accessory": null,
+      "gloves": ["gloves", "common", "clothGloves"],
       "armor": null,
       "pants": ["pants", "common", "clothPants"],
       "boots": ["boots", "common", "nutshellBoots"]
