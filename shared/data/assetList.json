@@ -354,6 +354,12 @@
     "previewRect": [9, 331, 22, 18]
   },
   {
+    "texture": "human-gloves-bracers",
+    "src": "./assets/atlas/gloves/gloves-cloth.png",
+    "atlas": "./assets/atlas/80x80.json",
+    "previewRect": [131, 330, 17, 21]
+  },
+  {
     "texture": "human-gloves-fur",
     "src": "./assets/atlas/gloves/gloves-cloth.png",
     "atlas": "./assets/atlas/80x80.json",
@@ -552,10 +558,28 @@
     "previewRect": [40, 36, 20, 22]
   },
   {
+    "texture": "shield-oval",
+    "src": "./assets/atlas/hands/shield-oval.png",
+    "atlas": "./assets/atlas/weapon.json",
+    "previewRect": [41, 36, 18, 22]
+  },
+  {
     "texture": "shield-broken",
     "src": "./assets/atlas/hands/shield-broken.png",
     "atlas": "./assets/atlas/weapon.json",
     "previewRect": [44, 38, 17, 23]
+  },
+  {
+    "texture": "shield-kite",
+    "src": "./assets/atlas/hands/shield-kite.png",
+    "atlas": "./assets/atlas/weapon.json",
+    "previewRect": [43, 36, 17, 23]
+  },
+  {
+    "texture": "shield-tower",
+    "src": "./assets/atlas/hands/shield-tower.png",
+    "atlas": "./assets/atlas/weapon.json",
+    "previewRect": [44, 36, 16, 24]
   },
   {
     "texture": "shield-buckler",

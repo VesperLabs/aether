@@ -28,6 +28,7 @@
     "name": "Crustacean Chic",
     "pieces": 2,
     "stats": {
+      "walkSpeed": 25,
       "dodgeChance": 5,
       "waterResistance": 25,
       "magicFind": 15,

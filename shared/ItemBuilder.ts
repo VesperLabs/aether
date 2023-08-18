@@ -337,18 +337,23 @@ function multiplyValues(obj, multiplier) {
   const multipliedObj = {};
   for (const key in obj) {
     const value = obj[key];
+    const isNumberArray =
+      Array.isArray(value) && value.length === 2 && value.every((v) => typeof v === "number");
     // value is in static stats, do not scale it.
     if (STATIC_STATS.includes(key)) {
       multipliedObj[key] = value;
+      // can put values that don't scale linear here...
+    } else if (key === "blockChance") {
+      if (isNumberArray) {
+        multipliedObj[key] = value.map((v) => v + (multiplier - 1) * 5);
+      } else {
+        multipliedObj[key] = value + (multiplier - 1) * 5;
+      }
       // stat is a number, we can scale it
     } else if (typeof value === "number") {
       multipliedObj[key] = value * multiplier;
       // stat is a tuple, scale both values
-    } else if (
-      Array.isArray(value) &&
-      value.length === 2 &&
-      value.every((v) => typeof v === "number")
-    ) {
+    } else if (isNumberArray) {
       multipliedObj[key] = value.map((v) => v * multiplier);
       // not sure, leave it alone
     } else {
