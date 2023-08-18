@@ -22,7 +22,16 @@
     },
     "percentStats": {
       "strength": 10
-    }
+    },
+    "triggers": [
+      {
+        "event": "onAttackHit",
+        "type": "buff",
+        "name": "slow",
+        "level": 2,
+        "chance": 5
+      }
+    ]
   },
   "crab": {
     "name": "Crustacean Chic",
@@ -53,7 +62,7 @@
     }
   },
   "timmys": {
-    "name": "Timmy's Sofa Treasures",
+    "name": "Timmy's Sofa Cache",
     "pieces": 2,
     "stats": {
       "strength": 5,

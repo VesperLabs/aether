@@ -73,7 +73,9 @@
     "type": "debuff",
     "duration": 1000,
     "stats": {
-      "walkSpeed": -15
+      "walkSpeed": -15,
+      "attackDelay": 50,
+      "castDelay": 100
     }
   }
 }
