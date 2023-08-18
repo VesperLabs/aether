@@ -54,6 +54,7 @@ const ItemTooltip = ({ item }) => {
   const percentStats = formatStats(item?.percentStats || {});
   const requirements = formatStats(item?.requirements || {});
   const buffs = item?.buffs || {};
+  const triggers = item?.triggers || [];
 
   const setBonus = ItemBuilder.getSetInfo(item?.setName);
   const numSetPieces = itemSetList?.[item?.setName]?.pieces;
@@ -115,6 +116,19 @@ const ItemTooltip = ({ item }) => {
                 );
               })}
             </Fragment>
+          );
+        })}
+        {Object.keys(triggers)?.length > 0 && <TextDivider>Triggers</TextDivider>}
+        {triggers?.map((trigger: Trigger, idx) => {
+          return (
+            <Text key={idx}>
+              <Label>
+                {Math.floor(100 / trigger?.chance)}% chance{" "}
+                {trigger?.event === "onAttackHit" ? "on hit" : "on hurt"}:{" "}
+              </Label>
+              {trigger?.name}{" "}
+              <Text sx={{ fontSize: 0, color: "gray.400" }}>(Lv.{trigger?.level})</Text>
+            </Text>
           );
         })}
         {Object.keys(requirements)?.length > 0 && <TextDivider>Requirements</TextDivider>}

@@ -6,7 +6,7 @@ export const Label = (props) => <Text sx={{ fontWeight: "normal" }} {...props} /
 export const TextDivider = ({ children, sx }: any) => (
   <>
     <Divider sx={{ pt: 2, zIndex: -1 }} />
-    <Text sx={{ mt: "-14px", pb: 2, mb: -1, color: "gray.500", ...sx }}>{children}</Text>
+    <Text sx={{ mt: "-17px", pb: 2, mb: -1, color: "gray.500", ...sx }}>{children}</Text>
   </>
 );
 

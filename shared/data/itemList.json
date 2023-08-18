@@ -219,11 +219,11 @@
         "tint": "0xFFEEAA",
         "slot": "hands"
       },
-      "hammer": {
+      "cudgel": {
         "ilvl": 2,
         "base": "club",
-        "name": "Hammer",
-        "texture": "weapon-hammer",
+        "name": "Cudgel",
+        "texture": "weapon-cudgel",
         "slot": "hands"
       },
       "cleaver": {
@@ -245,6 +245,13 @@
         "base": "spear",
         "name": "Halberd",
         "texture": "weapon-halberd",
+        "slot": "hands"
+      },
+      "hammer": {
+        "ilvl": 3,
+        "base": "club",
+        "name": "Hammer",
+        "texture": "weapon-hammer",
         "slot": "hands"
       }
     },
@@ -329,6 +336,26 @@
           "critChance": 20,
           "range": 2
         }
+      },
+      "melonBasher": {
+        "ilvl": 3,
+        "base": "club",
+        "name": "The Melon Basher",
+        "texture": "weapon-hammer",
+        "tint": "0xFFCC88",
+        "slot": "hands",
+        "stats": {
+          "critChance": [10, 15]
+        },
+        "triggers": [
+          {
+            "event": "onAttackHit",
+            "type": "buff",
+            "name": "stun",
+            "level": 2,
+            "chance": 20
+          }
+        ]
       }
     },
     "set": {

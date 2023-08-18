@@ -16,6 +16,7 @@ class Item implements Item {
   cost?: number;
   effects?: Record<string, any>;
   buffs?: Record<string, any>;
+  triggers?: Array<Trigger>;
   percentStats?: Record<string, number>;
   setName?: string;
   setBonus?: Record<string, number>;
@@ -40,6 +41,7 @@ class Item implements Item {
     this.requirements = item?.requirements;
     this.cost = item?.cost;
     this.effects = item?.effects;
+    this.triggers = item?.triggers;
     this.buffs = item?.buffs;
     this.percentStats = item?.percentStats;
     this.setName = item?.setName;

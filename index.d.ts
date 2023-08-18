@@ -16,10 +16,19 @@ interface Item {
   cost?: number;
   effects?: Record<string, any>;
   buffs?: Record<string, any>;
+  triggers?: Array<Trigger>;
   percentStats?: Record<string, number>;
   setName?: string;
   space?: number;
   items?: Array<Item>;
+}
+
+interface Trigger {
+  event: "onAttackHit" | "onHurt";
+  type: "buff" | "spell";
+  name: string;
+  level: number;
+  chance: number;
 }
 
 interface Message {

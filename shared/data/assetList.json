@@ -492,6 +492,12 @@
     "previewRect": [32, 36, 25, 21]
   },
   {
+    "texture": "weapon-cudgel",
+    "src": "./assets/atlas/hands/weapon-cudgel.png",
+    "atlas": "./assets/atlas/weapon.json",
+    "previewRect": [36, 36, 21, 21]
+  },
+  {
     "texture": "weapon-scythe",
     "src": "./assets/atlas/hands/weapon-scythe.png",
     "atlas": "./assets/atlas/weapon.json",
