@@ -1,14 +1,14 @@
 {
   "evasion": {
     "type": "buff",
-    "duration": 60000,
+    "duration": 30000,
     "stats": {
       "dodgeChance": 5
     }
   },
   "haste": {
     "type": "buff",
-    "duration": 60000,
+    "duration": 30000,
     "stats": {
       "walkSpeed": 20,
       "attackDelay": -25,
@@ -17,21 +17,21 @@
   },
   "brute": {
     "type": "buff",
-    "duration": 60000,
+    "duration": 30000,
     "stats": {
       "strength": 6
     }
   },
   "endurance": {
     "type": "buff",
-    "duration": 60000,
+    "duration": 30000,
     "stats": {
       "maxHp": 15
     }
   },
   "genius": {
     "type": "buff",
-    "duration": 60000,
+    "duration": 30000,
     "stats": {
       "intelligence": 6
     }
