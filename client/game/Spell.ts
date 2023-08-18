@@ -1,10 +1,9 @@
 // @ts-nocheck
 import Phaser from "phaser";
 import { playAudio } from "../utils";
-import { spellDetails, getAngleFromDirection } from "@aether/shared";
+import { spellDetails, getAngleFromDirection, BUFF_SPELLS } from "@aether/shared";
 const Sprite = Phaser.GameObjects.Sprite;
 const BLANK_TEXTURE = "human-blank";
-const BUFF_SPELLS = ["evasion", "brute", "endurance", "genius", "haste"];
 
 class Spell extends Phaser.GameObjects.Container {
   constructor(scene, { id, caster, spellName, abilitySlot, state, castAngle, ilvl = 1 }) {

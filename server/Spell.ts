@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 const Sprite = Phaser.GameObjects.Sprite;
-import spellDetails from "../shared/data/spellDetails.json";
-const BUFF_SPELLS = ["evasion", "brute", "endurance", "genius", "haste"];
+import { spellDetails, BUFF_SPELLS } from "@aether/shared";
+
 class Spell extends Phaser.GameObjects.Container {
   public id: string;
   public room: Room;
