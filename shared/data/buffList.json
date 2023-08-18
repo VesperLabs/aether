@@ -1,11 +1,13 @@
 {
   "evasion": {
+    "type": "buff",
     "duration": 60000,
     "stats": {
       "dodgeChance": 5
     }
   },
   "haste": {
+    "type": "buff",
     "duration": 60000,
     "stats": {
       "walkSpeed": 20,
@@ -14,24 +16,28 @@
     }
   },
   "brute": {
+    "type": "buff",
     "duration": 60000,
     "stats": {
       "strength": 6
     }
   },
   "endurance": {
+    "type": "buff",
     "duration": 60000,
     "stats": {
       "maxHp": 15
     }
   },
   "genius": {
+    "type": "buff",
     "duration": 60000,
     "stats": {
       "intelligence": 6
     }
   },
   "protein": {
+    "type": "buff",
     "duration": 30000,
     "dispelInCombat": true,
     "stats": {
@@ -39,6 +45,7 @@
     }
   },
   "vitamins": {
+    "type": "buff",
     "duration": 30000,
     "dispelInCombat": true,
     "stats": {
@@ -46,6 +53,7 @@
     }
   },
   "stimulant": {
+    "type": "buff",
     "duration": 15000,
     "dispelInCombat": true,
     "stats": {
@@ -53,7 +61,19 @@
     }
   },
   "rest": {
+    "type": "buff",
     "duration": -1,
     "dispelInCombat": true
+  },
+  "stun": {
+    "type": "debuff",
+    "duration": 250
+  },
+  "slow": {
+    "type": "debuff",
+    "duration": 1000,
+    "stats": {
+      "walkSpeed": -15
+    }
   }
 }

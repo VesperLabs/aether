@@ -870,6 +870,18 @@
     "previewRect": [0, 0, 32, 32]
   },
   {
+    "texture": "spell-slow",
+    "src": "./assets/atlas/spell/spell-slow.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
+    "texture": "spell-stun",
+    "src": "./assets/atlas/spell/spell-stun.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
     "texture": "spell-evasion",
     "src": "./assets/atlas/spell/spell-evasion.png",
     "atlas": "./assets/atlas/32x32-stackable.json",

@@ -144,6 +144,9 @@ class Character extends Phaser.GameObjects.Container {
     this.bodyCenterY = this.headY / 2 + this.bodySize;
     this.add(this.hitBox);
   }
+  hasBuff(name: string): boolean {
+    return this.buffs?.some((b) => b?.name === name);
+  }
   doAttack(props: any) {
     //placeholder
   }

@@ -2,7 +2,7 @@ export const HAIR_HIDING_HELMETS = ["helmet-armet", "helmet-hood", "helmet-horne
 export const FACE_HIDING_HELMETS = ["helmet-armet", "helmet-horned"];
 export const ACCESSORY_HIDING_HELMETS = ["helmet-armet", "helmet-horned"];
 export const MAX_INVENTORY_ITEMS = 32;
-export const BUFF_SPELLS = ["evasion", "brute", "endurance", "genius", "haste"];
+export const BUFF_SPELLS = ["evasion", "brute", "endurance", "genius", "haste", "stun", "slow"];
 
 export function getAngleFromDirection(direction) {
   let angle = 0;

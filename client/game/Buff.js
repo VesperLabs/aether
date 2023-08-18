@@ -12,7 +12,7 @@ class Buff extends Phaser.GameObjects.Container {
 
     this.scale = 0;
     this.alpha = 0;
-    this.buff.y = this.victim.bodyOffsetY;
+    this.buff.y = this.victim.bodyCenterY;
 
     scene.tweens.add({
       targets: this.buff,
@@ -26,7 +26,7 @@ class Buff extends Phaser.GameObjects.Container {
           ease: "Linear",
         },
       },
-      duration: 300,
+      duration: 500,
       yoyo: false,
       repeat: 0,
       onComplete: () => {

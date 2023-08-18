@@ -63,7 +63,14 @@ class Player extends Character {
   }
   updateBuffData(data) {
     this.activeItemSlots = data?.activeItemSlots;
-    this.stats = data?.stats;
+    // Update properties within stats object, excluding hp, mp, and sp
+    if (data.stats) {
+      for (const key in data.stats) {
+        if (key !== "hp" && key !== "mp" && key !== "sp") {
+          this.stats[key] = data.stats[key];
+        }
+      }
+    }
     this.buffs = data?.buffs;
     this.state.activeSets = data?.state?.activeSets;
     // filter out equipment slotNames that are not in activeItemsSlots array
@@ -189,6 +196,7 @@ class Player extends Character {
   }
   doAttack({ count }) {
     const { state } = this;
+    if (this?.hasBuff("stun")) return;
     if (this?.isHero && (!state.hasWeapon || state.isDead || state.isAttacking)) return;
 
     let spellName = "attack_right";
@@ -215,6 +223,7 @@ class Player extends Character {
     const { state, isHero } = this || {};
     if (isHero) {
       if (state.isDead || state.isCasting) return;
+      if (this?.hasBuff("stun")) return;
       const { abilitySlot, castAngle } = spellData || {};
       if (!this.canCastSpell(abilitySlot)) return;
       this.scene.socket.emit("castSpell", { abilitySlot, castAngle });

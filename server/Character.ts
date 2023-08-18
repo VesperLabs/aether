@@ -361,6 +361,7 @@ class ServerCharacter extends Character {
           elements,
           to: victim.id,
         });
+
         victim.addBuff(name, level);
         victim.calculateStats();
       });
@@ -590,14 +591,15 @@ class ServerCharacter extends Character {
       spawnTime: Date.now(),
       dispelInCombat: buff?.dispelInCombat,
     });
+
+    this.state.hasBuffChanges = true;
   }
   //checks if out of combat, adds rest buff it should be resting
   checkIsResting() {
     const isOutOfCombat = this.checkOutOfCombat();
-    const isResting = this.buffs?.some((b) => b?.name === "rest");
+    const isResting = this.hasBuff("rest");
     if (isOutOfCombat && !isResting) {
       this.addBuff("rest", 1);
-      this.state.hasExpiredBuffs = true;
       return true;
     }
     return isResting;
@@ -610,7 +612,7 @@ class ServerCharacter extends Character {
     }
   }
   /* Runs in update loop and removed buffs from player that are expired.
-  Will also flag the player to hasExpiredBuffs so their state gets sent to client */
+  Will also flag the player to hasBuffChanges so their state gets sent to client */
   expireBuffs(forceExpire = false) {
     let hasBuffUpdates = false;
     if (forceExpire && this.buffs?.length > 0) {
@@ -631,7 +633,7 @@ class ServerCharacter extends Character {
     }
     if (hasBuffUpdates) {
       this.calculateStats();
-      this.state.hasExpiredBuffs = true;
+      this.state.hasBuffChanges = true;
     }
   }
   doHit(ids, abilitySlot) {

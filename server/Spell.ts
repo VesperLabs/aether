@@ -29,7 +29,7 @@ class Spell extends Phaser.GameObjects.Container {
     scene: ServerScene,
     { id, room, caster, target, abilitySlot, spellName, castAngle, ilvl }
   ) {
-    super(scene, caster.x, caster.y + caster.bodyOffsetY);
+    super(scene, caster.x, caster.y + caster.bodyCenterY);
     this.id = id;
     this.scene = scene;
     this.room = room;
@@ -165,7 +165,7 @@ class Spell extends Phaser.GameObjects.Container {
   adjustSpellPosition() {
     if (this.stickToCaster) {
       this.x = this.caster.x;
-      this.y = this.caster.y + this.caster.bodyOffsetY;
+      this.y = this.caster.y + this.caster.bodyCenterY;
     }
   }
   getTrimmed() {
