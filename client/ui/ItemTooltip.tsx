@@ -89,7 +89,6 @@ const ItemTooltip = ({ item, tooltipId, show }) => {
             </Fragment>
           );
         })}
-        {Object.keys(triggers)?.length > 0 && <TextDivider>Triggers</TextDivider>}
         {triggers?.map((trigger: Trigger, idx) => {
           return (
             <Text key={idx}>
@@ -98,7 +97,7 @@ const ItemTooltip = ({ item, tooltipId, show }) => {
                 {trigger?.event === "onAttackHit" ? "on hit" : "on hurt"}:{" "}
               </Label>
               {trigger?.name}{" "}
-              <Text sx={{ fontSize: 0, color: "gray.400" }}>(Lv.{trigger?.level})</Text>
+              <Text sx={{ fontSize: 0, color: "gray.400" }}>(Lv. {trigger?.level})</Text>
             </Text>
           );
         })}
@@ -114,7 +113,10 @@ const ItemTooltip = ({ item, tooltipId, show }) => {
         {setBonus && (
           <>
             <TextDivider>
-              Set Bonus <Text color={isSetActive ? "set" : "gray.500"}>({numSetPieces} piece)</Text>
+              {setBonus?.name}{" "}
+              <Text color={isSetActive ? "set" : "gray.500"} sx={{ fontSize: 0 }}>
+                ({numSetPieces} piece)
+              </Text>
             </TextDivider>
             {Object.keys(setBonus?.percentStats || {}).map((key) => {
               return (
@@ -128,6 +130,18 @@ const ItemTooltip = ({ item, tooltipId, show }) => {
                 <Label>{key}:</Label> {combinedSetStats[key]}
               </Text>
             ))}
+            {setBonus?.triggers?.map((trigger: Trigger, idx) => {
+              return (
+                <Text key={idx} color={isSetActive ? "set" : "gray.500"}>
+                  <Label>
+                    {Math.floor(100 / trigger?.chance)}% chance{" "}
+                    {trigger?.event === "onAttackHit" ? "on hit" : "on hurt"}:{" "}
+                  </Label>
+                  {trigger?.name}{" "}
+                  <Text sx={{ fontSize: 0, color: "gray.400" }}>(Lv. {trigger?.level})</Text>
+                </Text>
+              );
+            })}
           </>
         )}
         {item?.space && (

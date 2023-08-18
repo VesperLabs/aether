@@ -73,16 +73,20 @@ const Buffs = ({ player, sx }) => {
       }}
     >
       <Flex sx={{ flexDirection: "row-reverse", gap: 1, height: 24 }}>
-        {buffs?.map((buff) => (
-          <Icon
-            key={buff.name}
-            icon={`./assets/atlas/spell/spell-${buff.name}.png`}
-            size={24}
-            data-tooltip-content={buff?.name.charAt(0).toUpperCase() + buff?.name.slice(1)}
-            data-tooltip-id="hud"
-            data-tooltip-place="bottom"
-          />
-        ))}
+        {buffs?.map((buff: Buff) => {
+          return (
+            <Icon
+              key={buff.name}
+              icon={`./assets/atlas/spell/spell-${buff.name}.png`}
+              size={24}
+              data-tooltip-content={
+                "Lv." + buff?.level + " " + buff?.name.charAt(0).toUpperCase() + buff?.name.slice(1)
+              }
+              data-tooltip-id="hud"
+              data-tooltip-place="bottom"
+            />
+          );
+        })}
       </Flex>
     </Flex>
   );

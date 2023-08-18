@@ -182,14 +182,19 @@ class ServerCharacter extends Character {
                 totalPercentStats[key] += setInfo.percentStats[key];
               }
             });
-            if (setInfo.stats) {
-              Object.keys(setInfo.stats).forEach((key) => {
-                let itemStat = setInfo.stats[key];
-                if (itemStat) {
-                  ns[key] += itemStat;
-                }
-              });
-            }
+          }
+          if (setInfo.stats) {
+            Object.keys(setInfo.stats).forEach((key) => {
+              let itemStat = setInfo.stats[key];
+              if (itemStat) {
+                ns[key] += itemStat;
+              }
+            });
+          }
+          if (setInfo.triggers) {
+            setInfo?.triggers?.forEach((trigger: Trigger) => {
+              ns.triggers.push(trigger);
+            });
           }
         }
       }

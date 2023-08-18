@@ -118,7 +118,6 @@ const ItemTooltip = ({ item }) => {
             </Fragment>
           );
         })}
-        {Object.keys(triggers)?.length > 0 && <TextDivider>Triggers</TextDivider>}
         {triggers?.map((trigger: Trigger, idx) => {
           return (
             <Text key={idx}>
@@ -127,7 +126,7 @@ const ItemTooltip = ({ item }) => {
                 {trigger?.event === "onAttackHit" ? "on hit" : "on hurt"}:{" "}
               </Label>
               {trigger?.name}{" "}
-              <Text sx={{ fontSize: 0, color: "gray.400" }}>(Lv.{trigger?.level})</Text>
+              <Text sx={{ fontSize: 0, color: "gray.400" }}>(Lv. {trigger?.level})</Text>
             </Text>
           );
         })}
@@ -139,10 +138,14 @@ const ItemTooltip = ({ item }) => {
             </Text>
           );
         })}
+
         {setBonus && (
           <>
             <TextDivider>
-              Set Bonus <Text color="set">({numSetPieces} piece)</Text>
+              {setBonus?.name}{" "}
+              <Text color="set" sx={{ fontSize: 0 }}>
+                ({numSetPieces} piece)
+              </Text>
             </TextDivider>
             {Object.keys(setBonus?.percentStats || {}).map((key) => {
               return (
@@ -156,6 +159,18 @@ const ItemTooltip = ({ item }) => {
                 <Label>{key}:</Label> {setStats[key]}
               </Text>
             ))}
+            {setBonus?.triggers?.map((trigger: Trigger, idx) => {
+              return (
+                <Text key={idx} color={"set"}>
+                  <Label>
+                    {Math.floor(100 / trigger?.chance)}% chance{" "}
+                    {trigger?.event === "onAttackHit" ? "on hit" : "on hurt"}:{" "}
+                  </Label>
+                  {trigger?.name}{" "}
+                  <Text sx={{ fontSize: 0, color: "gray.400" }}>(Lv. {trigger?.level})</Text>
+                </Text>
+              );
+            })}
           </>
         )}
         {item?.space && (

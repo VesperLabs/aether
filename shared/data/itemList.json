@@ -568,7 +568,16 @@
           "strength": 10,
           "dexterity": 10,
           "vitality": 10
-        }
+        },
+        "triggers": [
+          {
+            "event": "onHurt",
+            "type": "buff",
+            "name": "brute",
+            "level": 2,
+            "chance": 5
+          }
+        ]
       }
     },
     "set": {
@@ -757,7 +766,16 @@
           "walkSpeed": 10,
           "castDelay": [-90, -100],
           "attackDelay": [-25, -30]
-        }
+        },
+        "triggers": [
+          {
+            "event": "onHurt",
+            "type": "buff",
+            "name": "evasion",
+            "level": 1,
+            "chance": 10
+          }
+        ]
       },
       "iceCrabShell": {
         "ilvl": 2,
@@ -774,7 +792,16 @@
         "percentStats": {
           "vitality": 15,
           "strength": 15
-        }
+        },
+        "triggers": [
+          {
+            "event": "onHurt",
+            "type": "buff",
+            "name": "endurance",
+            "level": 2,
+            "chance": 10
+          }
+        ]
       }
     },
     "set": {
@@ -1786,7 +1813,7 @@
           "evasion": 1
         },
         "requirements": {
-          "dexterity": 8
+          "intelligence": 8
         },
         "stats": {
           "mpCost": 10
@@ -1802,7 +1829,6 @@
           "haste": 1
         },
         "requirements": {
-          "dexterity": 8,
           "intelligence": 8
         },
         "stats": {
@@ -1819,7 +1845,7 @@
           "brute": 1
         },
         "requirements": {
-          "strength": 8
+          "intelligence": 8
         },
         "stats": {
           "mpCost": 4
@@ -1851,7 +1877,6 @@
           "endurance": 1
         },
         "requirements": {
-          "vitality": 8,
           "intelligence": 8
         },
         "stats": {
