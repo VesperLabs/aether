@@ -427,7 +427,7 @@
         "name": "Leather hood",
         "base": "hood",
         "texture": "helmet-hood",
-        "tint": "0x865027",
+        "tint": "0xAA7744",
         "slot": "helmet"
       },
       "nutshellArmet": {
@@ -820,7 +820,7 @@
         "name": "Leather Bracers",
         "base": "bracers",
         "texture": "gloves-bracers",
-        "tint": "0x865027",
+        "tint": "0xAA7744",
         "slot": "gloves"
       },
       "bronzeGauntlets": {
@@ -921,7 +921,7 @@
         "name": "Leather Boots",
         "base": "boots",
         "texture": "boots-cloth",
-        "tint": "0x865027",
+        "tint": "0xAA7744",
         "slot": "boots",
         "stats": {}
       },
@@ -1014,7 +1014,7 @@
         "name": "Leather Pants",
         "base": "pants",
         "texture": "pants-cloth",
-        "tint": "0x865027",
+        "tint": "0xAA7744",
         "slot": "pants",
         "stats": {}
       },
