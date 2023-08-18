@@ -96,7 +96,7 @@ const ItemTooltip = ({ item }) => {
         {Object.keys(buffs).map((buffName) => {
           const buffLevel = buffs[buffName];
           const buffStats = formatStats({
-            duration: buffList?.[buffName]?.duration,
+            duration: Number(buffList?.[buffName]?.duration) * Number(buffLevel),
             ...Object.entries(buffList?.[buffName]?.stats || {}).reduce((acc, [key, value]) => {
               acc[key] = Number(value) * Number(buffLevel);
               return acc;
