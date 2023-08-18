@@ -1734,7 +1734,7 @@
         "name": "Fireball",
         "base": "fireball",
         "slot": "spell",
-        "texture": "scroll-blue",
+        "texture": "scroll-red",
         "effects": {
           "minFireDamage": 2,
           "maxFireDamage": 3
@@ -1751,7 +1751,7 @@
         "name": "Quake",
         "base": "quake",
         "slot": "spell",
-        "texture": "scroll-blue",
+        "texture": "scroll-green",
         "effects": {
           "minEarthDamage": 4,
           "maxEarthDamage": 5
@@ -1791,7 +1791,7 @@
         "name": "Voltball",
         "base": "voltball",
         "slot": "spell",
-        "texture": "scroll-blue",
+        "texture": "scroll-yellow",
         "effects": {
           "minLightDamage": 0,
           "maxLightDamage": 4
@@ -1808,7 +1808,7 @@
         "name": "Evasion",
         "base": "evasion",
         "slot": "spell",
-        "texture": "scroll-green",
+        "texture": "scroll-gray",
         "buffs": {
           "evasion": 1
         },
@@ -1824,7 +1824,7 @@
         "name": "Haste",
         "base": "haste",
         "slot": "spell",
-        "texture": "scroll-green",
+        "texture": "scroll-gray",
         "buffs": {
           "haste": 1
         },
@@ -1840,7 +1840,7 @@
         "name": "Brute",
         "base": "brute",
         "slot": "spell",
-        "texture": "scroll-red",
+        "texture": "scroll-gray",
         "buffs": {
           "brute": 1
         },
@@ -1856,7 +1856,7 @@
         "name": "Genius",
         "base": "genius",
         "slot": "spell",
-        "texture": "scroll-blue",
+        "texture": "scroll-gray",
         "buffs": {
           "genius": 1
         },
@@ -1872,7 +1872,7 @@
         "name": "Endurance",
         "base": "endurance",
         "slot": "spell",
-        "texture": "scroll-yellow",
+        "texture": "scroll-gray",
         "buffs": {
           "endurance": 1
         },
@@ -1887,127 +1887,109 @@
         "ilvl": 2,
         "name": "Fireball",
         "base": "fireball",
-        "slot": "spell",
-        "texture": "scroll-blue"
+        "slot": "spell"
       },
       "quake2": {
         "ilvl": 2,
         "name": "Quake",
         "base": "quake",
-        "slot": "spell",
-        "texture": "scroll-blue"
+        "slot": "spell"
       },
       "waterball2": {
         "ilvl": 2,
         "name": "Waterball",
         "base": "waterball",
-        "slot": "spell",
-        "texture": "scroll-blue"
+        "slot": "spell"
       },
       "voltball2": {
         "ilvl": 2,
         "name": "Voltball",
         "base": "voltball",
-        "slot": "spell",
-        "texture": "scroll-blue"
+        "slot": "spell"
       },
       "evasion2": {
         "ilvl": 2,
         "name": "Evasion",
         "base": "evasion",
-        "slot": "spell",
-        "texture": "scroll-green"
+        "slot": "spell"
       },
       "haste2": {
         "ilvl": 2,
         "name": "Haste",
         "base": "haste",
-        "slot": "spell",
-        "texture": "scroll-green"
+        "slot": "spell"
       },
       "brute2": {
         "ilvl": 2,
         "name": "Brute",
         "base": "brute",
-        "slot": "spell",
-        "texture": "scroll-red"
+        "slot": "spell"
       },
       "genius2": {
         "ilvl": 2,
         "name": "Genius",
         "base": "genius",
-        "slot": "spell",
-        "texture": "scroll-blue"
+        "slot": "spell"
       },
       "endurance2": {
         "ilvl": 2,
         "name": "Endurance",
         "base": "endurance",
-        "slot": "spell",
-        "texture": "scroll-yellow"
+        "slot": "spell"
       },
       "fireball3": {
         "ilvl": 3,
         "name": "Fireball",
         "base": "fireball",
-        "slot": "spell",
-        "texture": "scroll-blue"
+        "slot": "spell"
       },
       "quake3": {
         "ilvl": 3,
         "name": "Quake",
         "base": "quake",
-        "slot": "spell",
-        "texture": "scroll-blue"
+        "slot": "spell"
       },
       "waterball3": {
         "ilvl": 3,
         "name": "Waterball",
         "base": "waterball",
-        "slot": "spell",
-        "texture": "scroll-blue"
+        "slot": "spell"
       },
       "voltball3": {
         "ilvl": 3,
         "name": "Voltball",
         "base": "voltball",
-        "slot": "spell",
-        "texture": "scroll-blue"
+        "slot": "spell"
       },
       "evasion3": {
         "ilvl": 3,
         "name": "Evasion",
         "base": "evasion",
-        "slot": "spell",
-        "texture": "scroll-green"
+        "slot": "spell"
       },
       "haste3": {
         "ilvl": 3,
         "name": "Haste",
         "base": "haste",
-        "slot": "spell",
-        "texture": "scroll-green"
+        "slot": "spell"
       },
       "brute3": {
         "ilvl": 3,
         "name": "Brute",
         "base": "brute",
-        "slot": "spell",
-        "texture": "scroll-red"
+        "slot": "spell"
       },
       "genius3": {
         "ilvl": 3,
         "name": "Genius",
         "base": "genius",
-        "slot": "spell",
-        "texture": "scroll-blue"
+        "slot": "spell"
       },
       "endurance3": {
         "ilvl": 3,
         "name": "Endurance",
         "base": "endurance",
-        "slot": "spell",
-        "texture": "scroll-yellow"
+        "slot": "spell"
       }
     }
   },
