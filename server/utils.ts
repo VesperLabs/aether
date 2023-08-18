@@ -13,6 +13,11 @@ function handlePlayerInput(scene, socketId, input) {
   const player = getPlayer(scene, socketId);
   if (!player) return;
   if (player.state.isDead) return;
+  if (player?.hasBuff("stun")) {
+    player.vx = 0;
+    player.vy = 0;
+    return;
+  }
   player.x = x;
   player.y = y;
   player.vx = vx;
@@ -111,10 +116,10 @@ function getTickCharacterState(p: Character): TickCharacterState {
 function getBuffRoomState(scene: ServerScene, roomName: string): BuffRoomState {
   return {
     players: Object.values(scene.players)
-      ?.filter((p) => p?.room?.name === roomName && p?.state?.hasExpiredBuffs)
+      ?.filter((p) => p?.room?.name === roomName && p?.state?.hasBuffChanges)
       .map(getBuffCharacterState),
     npcs: Object.values(scene.npcs)
-      ?.filter((p) => p?.room?.name === roomName && p?.state?.hasExpiredBuffs)
+      ?.filter((p) => p?.room?.name === roomName && p?.state?.hasBuffChanges)
       .map(getBuffCharacterState),
   };
 }
@@ -123,7 +128,7 @@ function getBuffCharacterState(p: Character): BuffCharacterState {
   const uid = p?.socketId || p?.id;
   if (p?.state) {
     // no longer need to send this to client
-    p.state.hasExpiredBuffs = false;
+    p.state.hasBuffChanges = false;
   }
   return {
     id: uid,

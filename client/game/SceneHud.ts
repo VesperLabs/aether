@@ -240,10 +240,9 @@ function moveDirectHero(scene, time) {
   let vx = 0;
   let vy = 0;
   let direction = hero?.direction;
-
   if (!hero) return;
   /* If the user is dead or typing stop them from moving */
-  if (hero?.state?.isDead || isTypableFieldActive()) {
+  if (hero?.state?.isDead || isTypableFieldActive() || hero?.hasBuff("stun")) {
     hero.vx = 0;
     hero.vy = 0;
     hero.body.setVelocity(0, 0);

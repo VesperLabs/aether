@@ -7,7 +7,7 @@ const BLANK_TEXTURE = "human-blank";
 
 class Spell extends Phaser.GameObjects.Container {
   constructor(scene, { id, caster, spellName, abilitySlot, state, castAngle, ilvl = 1 }) {
-    super(scene, caster.x, caster.y + caster.bodyOffsetY);
+    super(scene, caster.x, caster.y + caster.bodyCenterY);
     this.scene = scene;
     this.id = id;
     this.caster = caster;
@@ -96,7 +96,7 @@ class Spell extends Phaser.GameObjects.Container {
       this.spell.play("spell-anim-quake");
     }
     if (BUFF_SPELLS.includes(spellName)) {
-      this.spell.play("spell-anim-chakra");
+      if (details?.type === "buff") this.spell.play("spell-anim-chakra");
       this.stickToCaster = true;
     }
 
@@ -134,7 +134,7 @@ class Spell extends Phaser.GameObjects.Container {
   adjustSpellPosition() {
     if (this.stickToCaster) {
       this.x = this.caster.x;
-      this.y = this.caster.y + this.caster.bodyOffsetY;
+      this.y = this.caster.y + this.caster.bodyCenterY;
     }
     if (this.layerDepth === "bottom") {
       this.setDepth(this?.caster?.depth - 20);

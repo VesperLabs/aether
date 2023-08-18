@@ -160,6 +160,13 @@ class Npc extends Character implements Npc {
     this.checkIsResting();
     this.expireBuffs();
 
+    if (this.hasBuff("stun")) {
+      this.vx = 0;
+      this.vy = 0;
+      this.body.setVelocity(this.vx, this.vy);
+      return;
+    }
+
     // If dead, do not continue update
     if (state?.isDead) return this.tryRespawn();
 

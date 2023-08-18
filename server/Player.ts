@@ -23,6 +23,7 @@ class Player extends ServerCharacter implements ServerPlayer {
   doAttack({ count, direction }) {
     if (this?.state?.isDead) return;
     if (this?.state?.isAttacking) return;
+    if (this?.hasBuff("stun")) return;
     const { scene, room, id, socketId } = this ?? {};
 
     const spellName = this.getAttackActionName({ count });
@@ -46,6 +47,7 @@ class Player extends ServerCharacter implements ServerPlayer {
     const ability = this?.abilities?.[abilitySlot];
 
     //if the ability slotId is not in the activeItemSlots return
+    if (this?.hasBuff("stun")) return;
     if (!this?.activeItemSlots?.includes?.(`${abilitySlot}`)) return;
     if (!ability || this?.state?.isDead || !ability?.ilvl || !ability?.base) return;
     if (!this.canCastSpell(abilitySlot)) return;

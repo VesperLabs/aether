@@ -1703,6 +1703,9 @@
           "minEarthDamage": 4,
           "maxEarthDamage": 5
         },
+        "buffs": {
+          "stun": 1
+        },
         "stats": {
           "mpCost": 5
         },
@@ -1719,6 +1722,9 @@
         "effects": {
           "minWaterDamage": 2,
           "maxWaterDamage": 3
+        },
+        "buffs": {
+          "slow": 1
         },
         "stats": {
           "mpCost": 4
