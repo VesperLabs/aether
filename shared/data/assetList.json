@@ -852,6 +852,12 @@
     "previewRect": [0, 0, 32, 32]
   },
   {
+    "texture": "scroll-gray",
+    "src": "./assets/atlas/spell/scroll-gray.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
     "texture": "scroll-red",
     "src": "./assets/atlas/spell/scroll-red.png",
     "atlas": "./assets/atlas/32x32-stackable.json",
