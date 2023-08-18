@@ -389,7 +389,7 @@
         "tint": "0xFFDDCC",
         "slot": "helmet",
         "stats": {
-          "defense": [2, 3]
+          "defense": [1, 2]
         }
       },
       "clothHood": {
@@ -401,7 +401,26 @@
         "slot": "helmet",
         "stats": {
           "defense": [2, 3]
+        },
+        "requirements": {
+          "dexterity": 2
         }
+      },
+      "silkCap": {
+        "ilvl": 2,
+        "name": "Silk Cap",
+        "base": "cap",
+        "texture": "helmet-cap",
+        "tint": "0xFFFFFF",
+        "slot": "helmet"
+      },
+      "wizardCap": {
+        "ilvl": 3,
+        "name": "Wizard Cap",
+        "base": "cap",
+        "texture": "helmet-cap",
+        "tint": "0x666699",
+        "slot": "helmet"
       },
       "leatherHood": {
         "ilvl": 2,
@@ -431,6 +450,22 @@
         "base": "armet",
         "texture": "helmet-armet",
         "tint": "0xFFEEAA",
+        "slot": "helmet"
+      },
+      "ghoulhideHood": {
+        "ilvl": 3,
+        "name": "Ghoulhide Hood",
+        "base": "hood",
+        "texture": "helmet-hood",
+        "tint": "0x889988",
+        "slot": "helmet"
+      },
+      "ironArmet": {
+        "ilvl": 3,
+        "name": "Iron Armet",
+        "base": "armet",
+        "texture": "helmet-armet",
+        "tint": "0xEEDDDD",
         "slot": "helmet"
       }
     },
@@ -476,7 +511,7 @@
         "exclusive": true,
         "ilvl": 2,
         "name": "Wolf Mask",
-        "base": "cap",
+        "base": "hood",
         "texture": "helmet-wolf",
         "slot": "helmet",
         "tint": "0xCCBBAA",
@@ -543,6 +578,32 @@
   },
   "armor": {
     "common": {
+      "clothRobe": {
+        "ilvl": 1,
+        "name": "Cloth Robe",
+        "base": "robe",
+        "texture": "armor-robe",
+        "tint": "0xFFDDCC",
+        "slot": "armor",
+        "stats": {
+          "defense": [2, 3],
+          "maxMp": 2
+        }
+      },
+      "clothCoat": {
+        "ilvl": 1,
+        "name": "Cloth Coat",
+        "base": "coat",
+        "texture": "armor-coat",
+        "tint": "0xFFDDCC",
+        "slot": "armor",
+        "stats": {
+          "defense": [3, 4]
+        },
+        "requirements": {
+          "dexterity": 2
+        }
+      },
       "nutshellPlate": {
         "ilvl": 1,
         "name": "Nutshell Light Plate",
@@ -571,31 +632,20 @@
           "strength": 8
         }
       },
-      "clothRobe": {
-        "ilvl": 1,
-        "name": "Cloth Robe",
+      "silkRobe": {
+        "ilvl": 2,
+        "name": "Silk Robe",
         "base": "robe",
         "texture": "armor-robe",
-        "tint": "0xFFDDCC",
-        "slot": "armor",
-        "stats": {
-          "defense": [2, 3]
-        }
+        "tint": "0xFFFFFF",
+        "slot": "armor"
       },
-      "clothCoat": {
-        "ilvl": 1,
-        "name": "Cloth Coat",
+      "leatherCoat": {
+        "ilvl": 2,
+        "name": "Leather Coat",
         "base": "coat",
-        "texture": "armor-coat",
-        "tint": "0xFFDDCC",
-        "slot": "armor",
-        "stats": {
-          "defense": [3, 4]
-        },
-        "requirements": {
-          "strength": 3,
-          "dexterity": 2
-        }
+        "texture": "armor-coat-leather",
+        "slot": "armor"
       },
       "bronzePlate": {
         "ilvl": 2,
@@ -615,18 +665,37 @@
         "slot": "armor",
         "stats": {}
       },
-      "leatherCoat": {
-        "ilvl": 2,
-        "name": "Leather Coat",
-        "base": "coat",
-        "texture": "armor-coat-leather",
-        "slot": "armor"
-      },
       "wizardRobe": {
         "ilvl": 3,
         "name": "Wizard Robe",
         "base": "robe",
         "texture": "armor-robe-wizard",
+        "slot": "armor",
+        "stats": {}
+      },
+      "ghoulhideCoat": {
+        "ilvl": 3,
+        "name": "Ghoulhide Coat",
+        "base": "coat",
+        "texture": "armor-coat",
+        "tint": "0x889988",
+        "slot": "armor"
+      },
+      "ironPlate": {
+        "ilvl": 3,
+        "name": "Iron Light Plate",
+        "base": "light-plate-armor",
+        "texture": "armor-plate-light",
+        "tint": "0xEEDDDD",
+        "slot": "armor",
+        "stats": {}
+      },
+      "ironHeavyPlate": {
+        "ilvl": 3,
+        "name": "Iron Heavy Plate",
+        "base": "heavy-plate-armor",
+        "texture": "armor-plate",
+        "tint": "0xEEDDDD",
         "slot": "armor",
         "stats": {}
       }
@@ -640,7 +709,7 @@
         "tint": "0x66AA66",
         "slot": "armor",
         "stats": {
-          "dodgeChance": 2,
+          "dodgeChance": 5,
           "walkSpeed": 10,
           "vitality": [5, 10],
           "intelligence": [5, 10],
@@ -710,6 +779,20 @@
           "defense": [1, 2]
         }
       },
+      "clothBracers": {
+        "ilvl": 1,
+        "name": "Cloth Bracers",
+        "base": "bracers",
+        "texture": "gloves-bracers",
+        "tint": "0xFFDDCC",
+        "slot": "gloves",
+        "stats": {
+          "defense": [2, 3]
+        },
+        "requirements": {
+          "dexterity": 2
+        }
+      },
       "nutshellGauntlets": {
         "ilvl": 1,
         "name": "Nutshell Gauntlets",
@@ -724,11 +807,19 @@
           "strength": 6
         }
       },
-      "leatherGloves": {
+      "silkGloves": {
         "ilvl": 2,
-        "name": "Leather Gloves",
+        "name": "Silk Gloves",
         "base": "gloves",
         "texture": "gloves-cloth",
+        "tint": "0xFFFFFF",
+        "slot": "gloves"
+      },
+      "leatherBracers": {
+        "ilvl": 2,
+        "name": "Leather Bracers",
+        "base": "bracers",
+        "texture": "gloves-bracers",
         "tint": "0x865027",
         "slot": "gloves"
       },
@@ -738,6 +829,30 @@
         "base": "gauntlets",
         "texture": "gloves-plate",
         "tint": "0xFFEEAA",
+        "slot": "gloves"
+      },
+      "wizardGloves": {
+        "ilvl": 3,
+        "name": "Wizard Gloves",
+        "base": "gloves",
+        "texture": "gloves-cloth",
+        "tint": "0x666699",
+        "slot": "gloves"
+      },
+      "ghoulhideBracers": {
+        "ilvl": 3,
+        "name": "Ghoulhide Bracers",
+        "base": "bracers",
+        "texture": "gloves-bracers",
+        "tint": "0x889988",
+        "slot": "gloves"
+      },
+      "ironGauntlets": {
+        "ilvl": 3,
+        "name": "Iron Gauntlets",
+        "base": "gauntlets",
+        "texture": "gloves-plate",
+        "tint": "0xEEDDDD",
         "slot": "gloves"
       }
     },
@@ -794,6 +909,7 @@
         "tint": "0xCC9966",
         "slot": "boots",
         "stats": {
+          "walkSpeed": 5,
           "defense": [3, 4]
         },
         "requirements": {
@@ -815,6 +931,22 @@
         "base": "greaves",
         "texture": "boots-plate",
         "tint": "0xFFEEAA",
+        "slot": "boots"
+      },
+      "ghoulhideBoots": {
+        "ilvl": 3,
+        "name": "Ghoulhide Boots",
+        "base": "boots",
+        "texture": "boots-cloth",
+        "tint": "0x889988",
+        "slot": "boots"
+      },
+      "ironGreaves": {
+        "ilvl": 3,
+        "name": "Iron Greaves",
+        "base": "greaves",
+        "texture": "boots-plate",
+        "tint": "0xEEDDDD",
         "slot": "boots"
       }
     },
@@ -842,8 +974,9 @@
         "slot": "boots",
         "exclusive": true,
         "stats": {
-          "strength": 2,
-          "walkSpeed": [10, 15]
+          "waterResistance": [5, 6],
+          "strength": [2, 3],
+          "walkSpeed": 20
         },
         "cost": 20
       }
@@ -882,6 +1015,15 @@
         "base": "pants",
         "texture": "pants-cloth",
         "tint": "0x865027",
+        "slot": "pants",
+        "stats": {}
+      },
+      "ghoulhidePants": {
+        "ilvl": 3,
+        "name": "Ghoulhide Pants",
+        "base": "pants",
+        "texture": "pants-cloth",
+        "tint": "0x889988",
         "slot": "pants",
         "stats": {}
       }
@@ -939,22 +1081,9 @@
   },
   "shield": {
     "common": {
-      "barkShield": {
+      "woodenBuckler": {
         "ilvl": 1,
-        "name": "Bark Shield",
-        "base": "kiteShield",
-        "texture": "shield-broken",
-        "tint": "0x865027",
-        "slot": "hands",
-        "stats": {
-          "attackDelay": 200,
-          "defense": 10,
-          "blockChance": 15
-        }
-      },
-      "buckler": {
-        "ilvl": 1,
-        "name": "Buckler",
+        "name": "Wooden Buckler",
         "base": "roundShield",
         "texture": "shield-buckler",
         "slot": "hands",
@@ -962,7 +1091,90 @@
           "attackDelay": 150,
           "defense": 10,
           "blockChance": 10
+        },
+        "requirements": {
+          "strength": 3
         }
+      },
+      "barkShield": {
+        "ilvl": 1,
+        "name": "Bark Shield",
+        "base": "kiteShield",
+        "texture": "shield-broken",
+        "tint": "0x996622",
+        "slot": "hands",
+        "stats": {
+          "attackDelay": 200,
+          "defense": 10,
+          "blockChance": 15
+        },
+        "requirements": {
+          "strength": 5
+        }
+      },
+      "woodenTowerShield": {
+        "ilvl": 1,
+        "name": "Wooden Tower Shield",
+        "base": "towerShield",
+        "texture": "shield-tower",
+        "slot": "hands",
+        "tint": "0x996622",
+        "stats": {
+          "attackDelay": 250,
+          "defense": 15,
+          "blockChance": 20
+        },
+        "requirements": {
+          "strength": 8
+        }
+      },
+      "bronzeRoundShield": {
+        "ilvl": 2,
+        "name": "Bronze Round Shield",
+        "base": "roundShield",
+        "texture": "shield-oval",
+        "tint": "0xFFEEAA",
+        "slot": "hands"
+      },
+      "bronzeKiteShield": {
+        "ilvl": 2,
+        "name": "Bronze Kite Shield",
+        "base": "kiteShield",
+        "texture": "shield-kite",
+        "tint": "0xFFEEAA",
+        "slot": "hands"
+      },
+      "bronzeTowerShield": {
+        "ilvl": 2,
+        "name": "Bronze Tower Shield",
+        "base": "towerShield",
+        "texture": "shield-tower",
+        "tint": "0xFFEEAA",
+        "slot": "hands"
+      },
+      "ironRoundShield": {
+        "ilvl": 3,
+        "name": "Iron Round Shield",
+        "base": "roundShield",
+        "texture": "shield-oval",
+        "tint": "0xEEDDDD",
+        "slot": "hands"
+      },
+      "ironKiteShield": {
+        "ilvl": 3,
+        "name": "Iron Kite Shield",
+        "base": "kiteShield",
+        "texture": "shield-kite",
+        "tint": "0xEEDDDD",
+        "slot": "hands"
+      },
+      "ironTowerShield": {
+        "ilvl": 3,
+        "name": "Iron Tower Shield",
+        "base": "towerShield",
+        "texture": "shield-tower",
+        "tint": "0xEEDDDD",
+        "slot": "hands"
       }
     },
     "unique": {
@@ -990,7 +1202,7 @@
         "texture": "shield-bone",
         "slot": "hands",
         "stats": {
-          "blockChance": [25, 30],
+          "blockChance": [20, 25],
           "fireResistance": [-5, -10],
           "regenHp": [3, 4],
           "hpSteal": [4, 5]
