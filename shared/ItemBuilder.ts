@@ -313,16 +313,12 @@ function scaleBaseStats(jsonData) {
           // if it exists, we will use it as a base
           if (baseItem) {
             const ilvlMultiplier = item?.ilvl || 1;
-
             item.stats = { ...multiplyValues(baseItem.stats, ilvlMultiplier), ...item.stats };
             item.requirements = {
               ...multiplyValues(baseItem.requirements, ilvlMultiplier),
               ...item.requirements,
             };
-            item.buffs = {
-              ...multiplyValues(baseItem.buffs, ilvlMultiplier),
-              ...item.buffs,
-            };
+            item.buffs = item.buffs || multiplyValues(baseItem.buffs, ilvlMultiplier);
             item.effects = { ...multiplyValues(baseItem.effects, ilvlMultiplier), ...item.effects };
           }
         }
