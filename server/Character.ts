@@ -113,8 +113,11 @@ class ServerCharacter extends Character {
     let ns = cloneObject(this.baseStats);
     let setList = {};
     let activeSets = [];
-
     this.stats = Object.keys(this?.stats)?.length ? this.stats : { hp: 0, mp: 0, sp: 0, exp: 0 };
+
+    if (!ns?.triggers) {
+      ns.triggers = [];
+    }
 
     /* Get stats from equipped abilities and items */
     allSlots.forEach((eKey) => {
@@ -154,6 +157,11 @@ class ServerCharacter extends Character {
             if (itemStat) {
               ns[key] += itemStat;
             }
+          });
+        }
+        if (item?.triggers) {
+          item?.triggers?.forEach((trigger) => {
+            ns.triggers.push(trigger);
           });
         }
       }
@@ -428,6 +436,7 @@ class ServerCharacter extends Character {
     const armorPierce = Math.max(1, this.stats.armorPierce || 1); // Minimum armorPierce value of 1
     const reduction = Math.min(1, armorPierce / defense); // Reduction capped at 1 (100%)
     const dodgeChance = Math.max(0, victim.stats.dodgeChance - this.stats.accuracy);
+
     let isCritical = false;
     let hits = [];
     let physicalDamage = Math.max(1, damage * reduction); // Minimum physicalDamage value of 1
@@ -456,6 +465,50 @@ class ServerCharacter extends Character {
     if (victim.state.isRobot) {
       victim.setLockedPlayerId(this?.socketId);
     }
+
+    // onAttackHit if we have some
+    const onHitTriggers = this?.stats?.triggers?.filter((t: Trigger) => t?.event === "onAttackHit");
+    if (onHitTriggers?.length) {
+      onHitTriggers?.forEach((trigger: Trigger) => {
+        const { name, level, type, chance } = trigger ?? {};
+        const roll = randomNumber(1, chance);
+        if (roll === 1) {
+          if (type === "buff") {
+            hits.push({
+              type: "buff",
+              from: this.id,
+              buffName: name,
+              elements,
+              to: victim.id,
+            });
+            victim.addBuff(name, level);
+            victim.calculateStats();
+          }
+        }
+      });
+    }
+    // onHurt triggers if we have them
+    const onHurtTriggers = victim?.stats?.triggers?.filter((t: Trigger) => t?.event === "onHurt");
+    if (onHurtTriggers?.length) {
+      onHurtTriggers?.forEach((trigger: Trigger) => {
+        const { name, level, type, chance } = trigger ?? {};
+        const roll = randomNumber(1, chance);
+        if (roll === 1) {
+          if (type === "buff") {
+            hits.push({
+              type: "buff",
+              from: this.id,
+              buffName: name,
+              elements,
+              to: victim.id,
+            });
+            victim.addBuff(name, level);
+            victim.calculateStats();
+          }
+        }
+      });
+    }
+
     /* Add stolen hp */
     if (this?.stats?.hpSteal > 0) {
       const hpSteal = Math.max(Math.round((physicalDamage * this.stats.hpSteal) / 100), 1);

@@ -17,6 +17,7 @@ const ItemTooltip = ({ item, tooltipId, show }) => {
 
   const requirements = item?.requirements || {};
   const buffs = item?.buffs ?? {};
+  const triggers = item?.triggers ?? [];
   const hasEffects = Object.keys(combinedEffects)?.length > 0;
   const hasBuffs = Object.keys(buffs)?.length > 0;
   const isDoubleClickable = ["food", "potion", "bag"].includes(item.base);
@@ -88,7 +89,19 @@ const ItemTooltip = ({ item, tooltipId, show }) => {
             </Fragment>
           );
         })}
-
+        {Object.keys(triggers)?.length > 0 && <TextDivider>Triggers</TextDivider>}
+        {triggers?.map((trigger: Trigger, idx) => {
+          return (
+            <Text key={idx}>
+              <Label>
+                {Math.floor(100 / trigger?.chance)}% chance{" "}
+                {trigger?.event === "onAttackHit" ? "on hit" : "on hurt"}:{" "}
+              </Label>
+              {trigger?.name}{" "}
+              <Text sx={{ fontSize: 0, color: "gray.400" }}>(Lv.{trigger?.level})</Text>
+            </Text>
+          );
+        })}
         {Object.keys(requirements)?.length > 0 && <TextDivider>Requirements</TextDivider>}
         {Object.keys(requirements).map((key) => {
           const hasRequiredStats = hero?.stats?.[key] >= requirements[key];
