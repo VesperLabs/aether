@@ -252,7 +252,7 @@
       "quests": ["spidermeat-finding", "batmeat-finding", "cheese-finding", "hogan-hunting"],
       "shop": [
         { "item": ["weapon", "common", "sword"], "stock": 1 },
-        { "item": ["shield", "common", "buckler"], "stock": 1 },
+        { "item": ["shield", "common", "woodenBuckler"], "stock": 1 },
         { "item": ["stackable", "common", "mushroom"], "stock": 1 }
       ]
     }
@@ -293,9 +293,9 @@
       },
       "quests": ["wyrm-blade", "shell-finding", "skull-finding"],
       "shop": [
-        { "item": ["shield", "common", "buckler"], "stock": 1 },
+        { "item": ["shield", "common", "woodenBuckler"], "stock": 1 },
         { "item": ["pants", "common", "leatherPants"], "stock": 1 },
-        { "item": ["gloves", "common", "leatherGloves"], "stock": 1 },
+        { "item": ["gloves", "common", "leatherBracers"], "stock": 1 },
         { "item": ["armor", "common", "leatherCoat"], "stock": 1 },
         { "item": ["armor", "common", "bronzePlate"], "stock": 1 },
         { "item": ["armor", "common", "bronzeHeavyPlate"], "stock": 1 },
@@ -343,7 +343,7 @@
         { "item": ["stackable", "common", "smallHpPotion"], "stock": 1 },
         { "item": ["stackable", "common", "smallMpPotion"], "stock": 1 },
         { "item": ["stackable", "common", "mediumHpPotion"], "stock": 1 },
-        { "item": ["stackable", "common", "mediumPotionMp"], "stock": 1 }
+        { "item": ["stackable", "common", "mediumMpPotion"], "stock": 1 }
       ]
     }
   },
@@ -503,7 +503,7 @@
     },
     "equipment": {
       "handLeft": ["weapon", "common", "cleaver"],
-      "handRight": ["shield", "common", "buckler"],
+      "handRight": ["shield", "common", "woodenBuckler"],
       "helmet": null,
       "accessory": null,
       "armor": ["armor", "unique", "couriersCamouflage"],
