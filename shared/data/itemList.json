@@ -1179,19 +1179,18 @@
     },
     "unique": {
       "roundStage": {
-        "ilvl": 1,
+        "ilvl": 3,
         "name": "Round Stage",
         "base": "roundShield",
         "texture": "shield-round",
         "slot": "hands",
         "stats": {
-          "defense": [6, 10],
-          "blockChance": [15, 20],
-          "accuracy": 5
+          "blockChance": [25, 30],
+          "accuracy": 10
         },
         "percentStats": {
-          "strength": [4, 5],
-          "vitality": [4, 5]
+          "strength": [15, 20],
+          "vitality": [15, 20]
         }
       },
       "osteoCrest": {
