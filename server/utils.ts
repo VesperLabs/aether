@@ -3,7 +3,7 @@ import ItemBuilder from "../shared/ItemBuilder";
 
 const PLAYER_BASE_ATTACK_DELAY = 100;
 const SHOP_INFLATION = 4;
-const PLAYER_BASE_EXP = 5;
+const PLAYER_BASE_EXP = 20;
 const PLAYER_DEFAULT_SPAWN = { roomName: "grassland-3", x: 1496, y: 2028 };
 //const PLAYER_DEFAULT_SPAWN = { roomName: "grassland-2", x: 239, y: 990 };
 
@@ -116,10 +116,10 @@ function getTickCharacterState(p: Character): TickCharacterState {
 function getBuffRoomState(scene: ServerScene, roomName: string): BuffRoomState {
   return {
     players: Object.values(scene.players)
-      ?.filter((p) => p?.room?.name === roomName && p?.state?.hasBuffChanges)
+      ?.filter((p) => p?.room?.name === roomName && p?.state?.hasExpiredBuffs)
       .map(getBuffCharacterState),
     npcs: Object.values(scene.npcs)
-      ?.filter((p) => p?.room?.name === roomName && p?.state?.hasBuffChanges)
+      ?.filter((p) => p?.room?.name === roomName && p?.state?.hasExpiredBuffs)
       .map(getBuffCharacterState),
   };
 }
@@ -128,7 +128,7 @@ function getBuffCharacterState(p: Character): BuffCharacterState {
   const uid = p?.socketId || p?.id;
   if (p?.state) {
     // no longer need to send this to client
-    p.state.hasBuffChanges = false;
+    p.state.hasExpiredBuffs = false;
   }
   return {
     id: uid,
