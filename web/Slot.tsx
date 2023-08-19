@@ -69,7 +69,7 @@ const ItemTooltip = ({ item }) => {
           {item?.slot == "spell" && <span> (Lv. {item?.ilvl})</span>}
         </Text>
         <Text color={item?.rarity}>
-          {item?.rarity} {item?.type === "spell" ? "spell" : item?.base?.replaceAll("-", " ")}
+          {item?.rarity} {item?.slot === "spell" ? "spell" : item?.base?.replaceAll("-", " ")}
         </Text>
         {Object.keys(stats)?.length > 0 && <TextDivider>Stats</TextDivider>}
         {Object.keys(stats).map((key) => (
