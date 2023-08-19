@@ -924,6 +924,12 @@
     "previewRect": [0, 0, 32, 32]
   },
   {
+    "texture": "spell-regeneration",
+    "src": "./assets/atlas/spell/spell-regeneration.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
     "texture": "spell-fireball",
     "src": "./assets/atlas/spell/spell-fireball.png",
     "atlas": "./assets/atlas/32x32-stackable.json",

@@ -370,7 +370,6 @@ class ServerCharacter extends Character {
         hits.push({
           type: "buff",
           from: this.id,
-          amount: 0,
           buffName: name,
           elements,
           to: victim.id,
@@ -568,11 +567,15 @@ class ServerCharacter extends Character {
   doRegen() {
     const now = Date.now();
     // we only regen HP if we have are out of combat (have rest buff) or have another regen buff
-    const hasRegenBuff = this.buffs?.some((b) => ["rest"]?.includes(b?.name));
+    const isResting = this.buffs?.some((b) => ["rest"]?.includes(b?.name));
+    const regenBuff = this.buffs?.find((b) => ["regeneration"]?.includes(b?.name));
+    const isHpBuffRegenReady = now - this.state.lastHpBuffRegen > 5000;
     const isHpRegenReady = now - this.state.lastHpRegen > 5000;
     const isMpRegenReady = now - this.state.lastMpRegen > 1000;
     const isSpRegenReady = now - this.state.lastSpRegen > 600;
+
     this.state.doHpRegen = false;
+    this.state.doHpBuffRegen = false;
     this.state.doMpRegen = false;
     this.state.doSpRegen = false;
 
@@ -581,13 +584,22 @@ class ServerCharacter extends Character {
       this.state.lastMpRegen = now;
       this.modifyStat("mp", this.stats.regenMp);
     }
+
     if (isSpRegenReady && this.stats.sp < this.stats.maxSp) {
       this.state.doSpRegen = true;
       this.state.lastSpRegen = now;
       this.modifyStat("sp", this.stats.regenSp);
     }
 
-    if (hasRegenBuff && !this.state.isDead) {
+    if (regenBuff && !this.state.isDead) {
+      if (isHpBuffRegenReady && this.stats.hp < this.stats.maxHp) {
+        this.state.doHpBuffRegen = true;
+        this.state.lastHpBuffRegen = now;
+        this.modifyStat("hp", regenBuff?.stats?.regenHp || 0);
+      }
+    }
+
+    if (isResting && !this.state.isDead) {
       if (isHpRegenReady && this.stats.hp < this.stats.maxHp) {
         this.state.doHpRegen = true;
         this.state.lastHpRegen = now;

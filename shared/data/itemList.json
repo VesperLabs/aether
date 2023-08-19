@@ -1097,22 +1097,6 @@
       }
     },
     "unique": {
-      "ferrousLeggings": {
-        "ilvl": 1,
-        "name": "Ferrous Leggings",
-        "base": "pants",
-        "texture": "pants-cloth",
-        "tint": "0xFF6644",
-        "slot": "pants",
-        "stats": {
-          "maxHp": [5, 10],
-          "walkSpeed": [6, 8],
-          "defense": [4, 5],
-          "attackDelay": [-25, -30],
-          "fireResistance": 10,
-          "regenHp": [3, 4]
-        }
-      },
       "hauntedTrousers": {
         "ilvl": 1,
         "name": "Haunted Trousers",
@@ -1121,15 +1105,61 @@
         "tint": "0x22AACC",
         "slot": "pants",
         "stats": {
-          "maxMp": [10, 15],
+          "critChance": [5, 6],
           "castDelay": [-25, -35],
-          "defense": [4, 5],
-          "waterResistance": 10,
-          "spellPower": [5, 6]
+          "dodgeChance": [5, 6],
+          "dexterity": [5, 6]
         },
         "percentStats": {
-          "intelligence": 5
+          "dexterity": 5
         }
+      },
+      "greenTeaThreads": {
+        "ilvl": 2,
+        "name": "Green Tea's Threads",
+        "base": "pants",
+        "texture": "pants-cloth",
+        "tint": "0x44AA66",
+        "slot": "pants",
+        "stats": {
+          "castDelay": [-25, -35],
+          "walkSpeed": 30,
+          "spellPower": [5, 6]
+        },
+        "triggers": [
+          {
+            "event": "onHurt",
+            "type": "buff",
+            "name": "regeneration",
+            "level": 2,
+            "chance": 10
+          }
+        ]
+      },
+      "ferrousLeggings": {
+        "ilvl": 3,
+        "name": "Ferrous Leggings",
+        "base": "pants",
+        "texture": "pants-cloth",
+        "tint": "0xFF6644",
+        "slot": "pants",
+        "stats": {
+          "maxHp": [15, 20],
+          "walkSpeed": [10, 15],
+          "defense": [10, 15],
+          "attackDelay": [-25, -30],
+          "fireResistance": [10, 15],
+          "regenHp": [5, 6]
+        },
+        "triggers": [
+          {
+            "event": "onHurt",
+            "type": "buff",
+            "name": "brute",
+            "level": 2,
+            "chance": 10
+          }
+        ]
       }
     }
   },
@@ -1808,7 +1838,7 @@
         "name": "Evasion",
         "base": "evasion",
         "slot": "spell",
-        "texture": "scroll-gray",
+        "texture": "scroll-green",
         "buffs": {
           "evasion": 1
         },
@@ -1824,7 +1854,7 @@
         "name": "Haste",
         "base": "haste",
         "slot": "spell",
-        "texture": "scroll-gray",
+        "texture": "scroll-green",
         "buffs": {
           "haste": 1
         },
@@ -1840,7 +1870,7 @@
         "name": "Brute",
         "base": "brute",
         "slot": "spell",
-        "texture": "scroll-gray",
+        "texture": "scroll-red",
         "buffs": {
           "brute": 1
         },
@@ -1856,7 +1886,7 @@
         "name": "Genius",
         "base": "genius",
         "slot": "spell",
-        "texture": "scroll-gray",
+        "texture": "scroll-blue",
         "buffs": {
           "genius": 1
         },
@@ -1872,9 +1902,25 @@
         "name": "Endurance",
         "base": "endurance",
         "slot": "spell",
-        "texture": "scroll-gray",
+        "texture": "scroll-yellow",
         "buffs": {
           "endurance": 1
+        },
+        "requirements": {
+          "intelligence": 8
+        },
+        "stats": {
+          "mpCost": 4
+        }
+      },
+      "regeneration": {
+        "ilvl": 1,
+        "name": "Regeneration",
+        "base": "regeneration",
+        "slot": "spell",
+        "texture": "scroll-gray",
+        "buffs": {
+          "regeneration": 1
         },
         "requirements": {
           "intelligence": 8

@@ -96,7 +96,7 @@ class Spell extends Phaser.GameObjects.Container {
       this.spell.play("spell-anim-quake");
     }
     if (BUFF_SPELLS.includes(spellName)) {
-      if (details?.type === "buff") this.spell.play("spell-anim-chakra");
+      this.spell.play("spell-anim-chakra");
       this.stickToCaster = true;
     }
 
