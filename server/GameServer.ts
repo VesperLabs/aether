@@ -1019,7 +1019,6 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       /* Expire buffs */
       if ([...roomState?.npcs, ...roomState?.players]?.some((n) => n?.state.hasBuffChanges)) {
         io.to(room.name).emit("buffUpdate", getBuffRoomState(scene, room.name));
-        console.log("arf");
       }
     }
   }
