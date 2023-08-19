@@ -367,7 +367,7 @@ class Player extends ServerCharacter implements ServerPlayer {
     }
 
     // anyone who got buffed needs to have their state updated.
-    const buffedEntityIds = hitList?.filter((h) => h?.type === "buff")?.map((h) => h?.to);
+    const buffedEntityIds = hitList?.map((h) => h?.to);
     playerIdsToUpdate = [...playerIdsToUpdate, ...buffedEntityIds];
     // send each buffed hero and npc their new state
     if (playerIdsToUpdate?.length > 0) {
@@ -379,7 +379,7 @@ class Player extends ServerCharacter implements ServerPlayer {
       });
     }
 
-    scene.io.to(roomName).emit("assignDamage", hitList);
+    scene.io.to(roomName).emit("assignDamage", hitList, true);
   }
 }
 

@@ -64,8 +64,8 @@ class Player extends Character {
   updateBuffData(data) {
     this.activeItemSlots = data?.activeItemSlots;
     // Update properties within stats object, excluding hp, mp, and sp
-    this.stats = data?.stats;
     this.buffs = data?.buffs;
+    this.stats = data?.stats;
     this.state.activeSets = data?.state?.activeSets;
     // filter out equipment slotNames that are not in activeItemsSlots array
     this.updateVisibleEquipment();
@@ -355,7 +355,7 @@ class Player extends Character {
         this.doDeath();
         break;
       case "hp":
-        this.modifyStat("hp", hit?.amount);
+        if (!hit?.nullify) this.modifyStat("hp", hit?.amount);
         if (isDamage) {
           scene.add.existing(new Hit(this.scene, this, elements));
           this.doFlashAnimation("0xFF0000");
@@ -364,13 +364,13 @@ class Player extends Character {
         }
         break;
       case "mp":
-        this.modifyStat("mp", hit?.amount);
+        if (!hit?.nullify) this.modifyStat("mp", hit?.amount);
         break;
       case "sp":
-        this.modifyStat("sp", hit?.amount);
+        if (!hit?.nullify) this.modifyStat("sp", hit?.amount);
         break;
       case "exp":
-        this.modifyStat("exp", hit?.amount);
+        if (!hit?.nullify) this.modifyStat("exp", hit?.amount);
         break;
     }
 
