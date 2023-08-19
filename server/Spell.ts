@@ -48,6 +48,9 @@ class Spell extends Phaser.GameObjects.Container {
     this.abilitySlot = abilitySlot;
 
     const details = spellDetails?.[spellName];
+    if (!details) {
+      throw new Error("Shit, the spell does not exist in spellDetails!");
+    }
     this.allowedTargets = details?.allowedTargets;
     this.maxVisibleTime = details?.maxVisibleTime;
     this.maxActiveTime = details?.maxActiveTime;

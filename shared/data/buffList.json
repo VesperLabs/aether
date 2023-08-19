@@ -60,6 +60,13 @@
       "regenSp": 1
     }
   },
+  "regeneration": {
+    "type": "buff",
+    "duration": 30000,
+    "stats": {
+      "regenHp": 3
+    }
+  },
   "rest": {
     "type": "buff",
     "duration": -1,

@@ -41,6 +41,7 @@ class Player extends Character {
     this.state.lockedPlayerId = state.lockedPlayerId;
     this.state.bubbleMessage = state.bubbleMessage;
     this.state.doHpRegen = state.doHpRegen;
+    this.state.doHpBuffRegen = state.doHpBuffRegen;
     this.state.doMpRegen = state.doMpRegen;
     this.state.doSpRegen = state.doSpRegen;
     this.state.lastCombat = state.lastCombat;
@@ -78,6 +79,10 @@ class Player extends Character {
   doRegen() {
     if (this.state.doHpRegen) {
       this.takeHit({ type: "hp", amount: this?.stats?.regenHp });
+    }
+    if (this.state.doHpBuffRegen) {
+      const regenBuff = this.buffs?.find((b) => ["regeneration"]?.includes(b?.name));
+      this.takeHit({ type: "hp", amount: regenBuff?.stats?.regenHp });
     }
     if (this.state.doMpRegen) {
       this.takeHit({ type: "mp", amount: this?.stats?.regenMp });
