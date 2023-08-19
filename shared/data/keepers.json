@@ -305,7 +305,7 @@
     }
   },
   "siobhan": {
-    "charClass": "wizard",
+    "charClass": "mage",
     "profile": {
       "userName": "Siobhan",
       "face": {
@@ -348,7 +348,7 @@
     }
   },
   "danny": {
-    "charClass": "wizard",
+    "charClass": "mage",
     "profile": {
       "userName": "Danny",
       "face": {
