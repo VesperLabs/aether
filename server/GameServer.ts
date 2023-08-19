@@ -732,7 +732,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         /* If the item has buffs */
         if (playerItem?.base === "food") {
           for (const [buffName, level] of Object.entries(playerItem.buffs)) {
-            player.addBuff(buffName, level);
+            player.addBuff(buffName, level, false);
           }
         }
 

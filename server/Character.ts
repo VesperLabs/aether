@@ -377,7 +377,6 @@ class ServerCharacter extends Character {
         });
 
         victim.addBuff(name, level);
-        victim.calculateStats();
       });
     }
 
@@ -488,7 +487,6 @@ class ServerCharacter extends Character {
               to: victim.id,
             });
             victim.addBuff(name, level);
-            victim.calculateStats();
           }
         }
       });
@@ -509,7 +507,6 @@ class ServerCharacter extends Character {
               to: victim.id,
             });
             victim.addBuff(name, level);
-            victim.calculateStats();
           }
         }
       });
@@ -625,7 +622,7 @@ class ServerCharacter extends Character {
     if (didLevel) this.fillHpMp();
     return didLevel;
   }
-  addBuff(name: string, level: integer) {
+  addBuff(name: string, level: integer, shouldCalculateStats = true) {
     const buff = buffList?.[name];
     if (!buff) return false;
 
@@ -651,6 +648,8 @@ class ServerCharacter extends Character {
       dispelInCombat: buff?.dispelInCombat,
     });
 
+    if (shouldCalculateStats) this.calculateStats();
+
     this.state.hasBuffChanges = true;
   }
   //checks if out of combat, adds rest buff it should be resting
@@ -658,7 +657,7 @@ class ServerCharacter extends Character {
     const isOutOfCombat = this.checkOutOfCombat();
     const isResting = this.hasBuff("rest");
     if (isOutOfCombat && !isResting) {
-      this.addBuff("rest", 1);
+      this.addBuff("rest", 1, false);
       return true;
     }
     return isResting;
