@@ -64,13 +64,7 @@ class Player extends Character {
   updateBuffData(data) {
     this.activeItemSlots = data?.activeItemSlots;
     // Update properties within stats object, excluding hp, mp, and sp
-    if (data.stats) {
-      for (const key in data.stats) {
-        if (key !== "hp" && key !== "mp" && key !== "sp") {
-          this.stats[key] = data.stats[key];
-        }
-      }
-    }
+    this.stats = data?.stats;
     this.buffs = data?.buffs;
     this.state.activeSets = data?.state?.activeSets;
     // filter out equipment slotNames that are not in activeItemsSlots array
