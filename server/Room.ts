@@ -72,7 +72,7 @@ class Room {
     easystar.setAcceptableTiles([0]);
     easystar.enableDiagonals();
     //easystar.enableCornerCutting();
-    easystar.setIterationsPerCalculation(100);
+    easystar.setIterationsPerCalculation(1000);
     easystar.setTileCost(1, 1);
     easystar.setTileCost(0, 0);
     return easystar;
