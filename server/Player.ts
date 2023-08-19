@@ -366,20 +366,16 @@ class Player extends ServerCharacter implements ServerPlayer {
       if (newHits?.length > 0) hitList = [...hitList, ...newHits];
     }
 
-    // anyone who got buffed needs to have their state updated.
-    const buffedEntityIds = hitList?.map((h) => h?.to);
-    playerIdsToUpdate = [...playerIdsToUpdate, ...buffedEntityIds];
     // send each buffed hero and npc their new state
     if (playerIdsToUpdate?.length > 0) {
       const roomState = getRoomState(scene, roomName);
       scene.io.to(roomName).emit("buffUpdate", {
-        npcs: roomState?.npcs?.filter((n) => buffedEntityIds?.includes(n?.id)),
         players: roomState?.players?.filter((n) => playerIdsToUpdate?.includes(n?.id)),
         playerIdsThatLeveled,
       });
     }
 
-    scene.io.to(roomName).emit("assignDamage", hitList, true);
+    scene.io.to(roomName).emit("assignDamage", hitList);
   }
 }
 

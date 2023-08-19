@@ -145,7 +145,7 @@ class Player extends Character {
     }
   }
   drawCharacterFromUserData() {
-    const { profile, visibleEquipment, state } = this || {};
+    const { profile, visibleEquipment, state, stats } = this || {};
     if (profile?.userName) {
       this.userName.setText(profile?.userName);
       this.userName.setX(-this.userName.width / 2);
@@ -355,7 +355,7 @@ class Player extends Character {
         this.doDeath();
         break;
       case "hp":
-        if (!hit?.nullify) this.modifyStat("hp", hit?.amount);
+        this.modifyStat("hp", hit?.amount);
         if (isDamage) {
           scene.add.existing(new Hit(this.scene, this, elements));
           this.doFlashAnimation("0xFF0000");
@@ -364,13 +364,13 @@ class Player extends Character {
         }
         break;
       case "mp":
-        if (!hit?.nullify) this.modifyStat("mp", hit?.amount);
+        this.modifyStat("mp", hit?.amount);
         break;
       case "sp":
-        if (!hit?.nullify) this.modifyStat("sp", hit?.amount);
+        this.modifyStat("sp", hit?.amount);
         break;
       case "exp":
-        if (!hit?.nullify) this.modifyStat("exp", hit?.amount);
+        this.modifyStat("exp", hit?.amount);
         break;
     }
 
