@@ -1983,6 +1983,12 @@
         "base": "endurance",
         "slot": "spell"
       },
+      "regeneration2": {
+        "ilvl": 2,
+        "name": "Regeneration",
+        "base": "regeneration",
+        "slot": "spell"
+      },
       "fireball3": {
         "ilvl": 3,
         "name": "Fireball",
@@ -2035,6 +2041,12 @@
         "ilvl": 3,
         "name": "Endurance",
         "base": "endurance",
+        "slot": "spell"
+      },
+      "regeneration3": {
+        "ilvl": 3,
+        "name": "Regeneration",
+        "base": "regeneration",
         "slot": "spell"
       }
     }
