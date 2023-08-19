@@ -116,10 +116,10 @@ function getTickCharacterState(p: Character): TickCharacterState {
 function getBuffRoomState(scene: ServerScene, roomName: string): BuffRoomState {
   return {
     players: Object.values(scene.players)
-      ?.filter((p) => p?.room?.name === roomName && p?.state?.hasExpiredBuffs)
+      ?.filter((p) => p?.room?.name === roomName && p?.state?.hasBuffChanges)
       .map(getBuffCharacterState),
     npcs: Object.values(scene.npcs)
-      ?.filter((p) => p?.room?.name === roomName && p?.state?.hasExpiredBuffs)
+      ?.filter((p) => p?.room?.name === roomName && p?.state?.hasBuffChanges)
       .map(getBuffCharacterState),
   };
 }
@@ -128,7 +128,7 @@ function getBuffCharacterState(p: Character): BuffCharacterState {
   const uid = p?.socketId || p?.id;
   if (p?.state) {
     // no longer need to send this to client
-    p.state.hasExpiredBuffs = false;
+    p.state.hasBuffChanges = false;
   }
   return {
     id: uid,
