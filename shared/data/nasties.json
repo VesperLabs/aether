@@ -61,9 +61,6 @@
       "width": 24,
       "height": 23
     },
-    "abilities": {
-      "1": ["spell", "common", "quake"]
-    },
     "drops": [
       {
         "type": "stackable",

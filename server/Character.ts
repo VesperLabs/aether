@@ -370,6 +370,7 @@ class ServerCharacter extends Character {
         hits.push({
           type: "buff",
           from: this.id,
+          amount: 0,
           buffName: name,
           elements,
           to: victim.id,
