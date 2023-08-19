@@ -160,13 +160,6 @@ class Npc extends Character implements Npc {
     this.checkIsResting();
     this.expireBuffs();
 
-    if (this.hasBuff("stun")) {
-      this.vx = 0;
-      this.vy = 0;
-      this.body.setVelocity(this.vx, this.vy);
-      return;
-    }
-
     // If dead, do not continue update
     if (state?.isDead) return this.tryRespawn();
 
@@ -193,6 +186,13 @@ class Npc extends Character implements Npc {
     // If we killed the player already, do not target them anymore
     if (targetPlayer?.state?.isDead) {
       this.setLockedPlayerId(null);
+    }
+
+    if (this.hasBuff("stun")) {
+      this.vx = 0;
+      this.vy = 0;
+      this.body.setVelocity(this.vx, this.vy);
+      return;
     }
 
     this.chaseOrMove({ targetPlayer, delta, time });

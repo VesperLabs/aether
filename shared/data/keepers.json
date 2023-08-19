@@ -300,7 +300,7 @@
         { "item": ["armor", "common", "bronzePlate"], "stock": 1 },
         { "item": ["armor", "common", "bronzeHeavyPlate"], "stock": 1 },
         { "item": ["boots", "common", "leatherBoots"], "stock": 1 },
-        { "item": ["weapon", "common", "hammer"], "stock": 1 }
+        { "item": ["weapon", "common", "cudgel"], "stock": 1 }
       ]
     }
   },

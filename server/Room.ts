@@ -69,6 +69,7 @@ class Room {
     }
     const easystar = new EasyStar.js();
     easystar.setGrid(grid);
+    easystar.enableSync();
     easystar.setAcceptableTiles([0]);
     easystar.enableDiagonals();
     //easystar.enableCornerCutting();
