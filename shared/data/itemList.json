@@ -42,7 +42,7 @@
         "texture": "weapon-sword-short",
         "slot": "hands",
         "stats": {
-          "attackDelay": 220,
+          "attackDelay": 260,
           "minDamage": 1,
           "maxDamage": 2,
           "range": 1,
@@ -111,7 +111,7 @@
         "texture": "weapon-club",
         "slot": "hands",
         "stats": {
-          "attackDelay": 400,
+          "attackDelay": 420,
           "minDamage": 2,
           "maxDamage": 2,
           "range": 1,
@@ -152,7 +152,6 @@
           "spCost": 2
         },
         "requirements": {
-          "strength": 2,
           "dexterity": 5
         }
       },
@@ -163,7 +162,7 @@
         "texture": "weapon-spear",
         "slot": "hands",
         "stats": {
-          "attackDelay": 400,
+          "attackDelay": 500,
           "minDamage": 2,
           "maxDamage": 3,
           "range": 2,
