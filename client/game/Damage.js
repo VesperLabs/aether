@@ -14,6 +14,8 @@ class Damage extends Container {
     this.dt = new BitmapText(scene, 0, 0, "nin-light", hit.amount, damageSize);
 
     switch (hit.type) {
+      case "buff":
+        break;
       case "hp":
         if (isPositive) {
           text = "+" + text;
@@ -58,7 +60,6 @@ class Damage extends Container {
       case "death":
         text = text;
         this.dt.setTint("0xFF6666");
-
         break;
     }
     if (hit.isCritical) {
