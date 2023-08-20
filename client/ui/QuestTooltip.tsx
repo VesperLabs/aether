@@ -56,16 +56,16 @@ const useQuestDialogue = (quest, playerQuest: PlayerQuest) => {
 
 const QuestTooltip = ({
   quest,
-  show,
   playerQuest,
+  show,
   tooltipId,
-  setShow,
+  onClose,
   parent,
 }: {
   quest: Quest;
-  show: boolean;
   tooltipId: string;
-  setShow;
+  show: boolean;
+  onClose;
   playerQuest: PlayerQuest;
   parent: string;
 }) => {
@@ -82,7 +82,7 @@ const QuestTooltip = ({
   };
 
   return (
-    <Tooltip id={`${tooltipId}`} style={{ pointerEvents: "all" }} isOpen={show}>
+    <Tooltip id={tooltipId} style={{ pointerEvents: "all" }} isOpen={show}>
       <Flex
         sx={{
           maxWidth: 200,
@@ -133,7 +133,7 @@ const QuestTooltip = ({
           <Button
             variant="wood"
             onClick={(e) => {
-              setShow(false);
+              onClose(e);
             }}
           >
             Close

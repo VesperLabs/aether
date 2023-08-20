@@ -27,7 +27,6 @@ import {
   ThemeProvider,
   Box,
   Flex,
-  Icon,
   KeyboardKey,
   Input,
   useViewportSizeEffect,
@@ -90,6 +89,8 @@ interface AppContextValue {
   debug: boolean;
   game: Phaser.Game;
   zoom: any;
+  currentTooltipId: string;
+  setCurrentTooltipId: React.Dispatch<React.SetStateAction<any>>;
 }
 
 const AppContext = createContext<AppContextValue>({} as AppContextValue);
@@ -109,6 +110,7 @@ const getHudZoom = () => {
 };
 
 function App({ socket, debug, game }) {
+  const [currentTooltipId, setCurrentTooltipId] = useState(null);
   const [partyInvites, setPartyInvites] = useState<Array<PartyInvite>>([]);
   const [party, setParty] = useState<any>();
   const [players, setPlayers] = useState<Array<FullCharacterState>>([]);
@@ -480,6 +482,8 @@ function App({ socket, debug, game }) {
           debug,
           game,
           zoom,
+          currentTooltipId,
+          setCurrentTooltipId,
         }}
       >
         <Box
