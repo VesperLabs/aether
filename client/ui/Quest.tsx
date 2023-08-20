@@ -1,18 +1,17 @@
-import { useEffect, useState } from "react";
 import { Box, Icon, BASE_SLOT_STYLE, SLOT_SIZE } from "@aether/ui";
 import { QuestTooltip, useAppContext } from "./";
 import { nanoid } from "nanoid";
 import { isMobile } from "@aether/shared";
+import { useMemo } from "react";
 
 const Quest = ({ quest, parent = "keeper" }: { quest: Quest; parent: string }) => {
   const { objectives } = quest ?? {};
-  const { hero } = useAppContext();
-  const [hovering, setHovering] = useState(false);
+  const { hero, currentTooltipId, setCurrentTooltipId } = useAppContext();
   const isBounty = objectives?.some((objective) => objective?.type === "bounty");
   const isItem = objectives?.some((objective) => objective?.type === "item");
   const isChat = objectives?.some((objective) => objective?.type === "chat");
   const playerQuest: PlayerQuest = hero?.quests?.find((q) => q?.questId === quest?.id);
-  const tooltipId = nanoid();
+  const TOOLTIP_ID = useMemo(() => nanoid(), []);
 
   let icon = "./assets/icons/chest.png";
   if (isBounty) {
@@ -24,11 +23,11 @@ const Quest = ({ quest, parent = "keeper" }: { quest: Quest; parent: string }) =
   }
 
   const handleMouseEnter = (e) => {
-    setHovering(true);
+    setCurrentTooltipId(TOOLTIP_ID);
   };
 
   const handleMouseLeave = (e) => {
-    setHovering(false);
+    setCurrentTooltipId(null);
   };
 
   const outerMouseBinds = isMobile
@@ -49,21 +48,15 @@ const Quest = ({ quest, parent = "keeper" }: { quest: Quest; parent: string }) =
     if (playerQuest) return "⏰";
   };
 
-  useEffect(() => {
-    document.addEventListener("touchstart", handleMouseLeave, { passive: true });
-
-    return () => {
-      document.removeEventListener("touchstart", handleMouseLeave);
-    };
-  }, []);
+  const show = currentTooltipId === TOOLTIP_ID;
 
   return (
     <Box sx={BASE_SLOT_STYLE} {...outerMouseBinds} onTouchStart={(e) => handleMouseEnter(e)}>
       <Box
-        data-tooltip-id={`${tooltipId}`}
+        data-tooltip-id={TOOLTIP_ID}
         sx={{
           position: "relative",
-          overflow: hovering ? "visible" : "hidden",
+          overflow: show ? "visible" : "hidden",
           width: SLOT_SIZE,
           height: SLOT_SIZE,
           filter: isCompleted ? `grayScale(100%)` : "none",
@@ -74,10 +67,10 @@ const Quest = ({ quest, parent = "keeper" }: { quest: Quest; parent: string }) =
       </Box>
       <QuestTooltip
         parent={parent}
-        tooltipId={tooltipId}
+        tooltipId={TOOLTIP_ID}
         quest={quest}
-        show={hovering}
-        setShow={setHovering}
+        show={show}
+        onClose={handleMouseLeave}
         playerQuest={playerQuest}
       />
     </Box>

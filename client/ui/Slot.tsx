@@ -214,8 +214,7 @@ const Slot = React.memo(
     const tooltipId = `${location}-${item?.id}`;
     const targetMoved = target?.dataset?.tooltipId !== tooltipId;
     const aboutToSell = dragging && target?.closest(".menu-keeper") && location !== "shop";
-    const showTooltip =
-      (dragging && !targetMoved) || (hovering && !isMobile) || (hovering && !isMobile && disabled);
+    const showTooltip = (dragging && !targetMoved) || hovering;
 
     return (
       <Box
