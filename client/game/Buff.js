@@ -10,24 +10,24 @@ class Buff extends Phaser.GameObjects.Container {
     this.buff.setOrigin(0.5);
     this.victim.add(this.buff);
 
-    this.scale = 0;
-    this.alpha = 0;
+    this.buff.scale = 2;
+    this.buff.alpha = 0;
     this.buff.y = this.victim.bodyCenterY;
 
     scene.tweens.add({
       targets: this.buff,
       props: {
         scale: {
-          value: () => 2,
+          value: () => 0,
           ease: "Linear",
         },
         alpha: {
-          value: () => 0,
+          value: () => 1,
           ease: "Linear",
         },
       },
       duration: 500,
-      yoyo: false,
+      yoyo: true,
       repeat: 0,
       onComplete: () => {
         this.buff.destroy();
