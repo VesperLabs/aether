@@ -1,7 +1,12 @@
 import Phaser from "phaser";
-import { capitalize, getAngleFromDirection, filterVisibleEquipment } from "./utils";
-const BLANK_TEXTURE = "human-blank";
-const POTION_COOLDOWN = 10000;
+import {
+  capitalize,
+  getAngleFromDirection,
+  filterVisibleEquipment,
+  BLANK_TEXTURE,
+  POTION_COOLDOWN,
+  BODY_SIZE,
+} from "./utils";
 
 class Character extends Phaser.GameObjects.Container {
   startingCoords: Coordinate;
@@ -36,6 +41,7 @@ class Character extends Phaser.GameObjects.Container {
   hitBoxSize: any;
   headY: number;
   bodySize: number;
+  proScale: number;
   declare body: Phaser.Physics.Arcade.Body;
   declare state: any;
   constructor(scene: ServerScene | Phaser.Scene, args) {
@@ -123,9 +129,10 @@ class Character extends Phaser.GameObjects.Container {
     this.npcKills = npcKills;
     this.quests = quests;
     scene.physics.add.existing(this);
-    this.bodySize = 8 * (this?.profile?.scale || 1);
-    this.bodyOffsetY = -14 * (this?.profile?.scale || 1);
-    this.body.setCircle(this.bodySize, -this.bodySize, -this.bodySize);
+    this.proScale = this?.profile?.scale || 1;
+    this.bodySize = BODY_SIZE * this.proScale;
+    this.bodyOffsetY = -14 * this.proScale;
+    this.body.setCircle(BODY_SIZE, -BODY_SIZE, -BODY_SIZE);
 
     this.createHitBox(scene, hitBoxSize);
     this.updateVisibleEquipment();

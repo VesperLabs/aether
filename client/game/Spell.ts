@@ -41,7 +41,7 @@ class Spell extends Phaser.GameObjects.Container {
       let tiltAngle = 48;
       this.spell.play(`spell-anim-slash-physical`);
       this.spell.setAngle(getAngleFromDirection(caster?.direction) - 90);
-
+      this.stickToCaster = true;
       /* Hack: Up range is too long. This hack makes the top-down view more realistic */
       if (caster?.direction === "up") {
         this.y = this.caster.y;
@@ -70,6 +70,7 @@ class Spell extends Phaser.GameObjects.Container {
         this.spell.displayHeight = viewSize * rangeRight;
         this.spell.setFlipX(true);
       }
+      this.setScale(this?.caster?.proScale);
     } else {
       this.setScale(this.scaleBase + ilvl * this.scaleMultiplier);
     }
