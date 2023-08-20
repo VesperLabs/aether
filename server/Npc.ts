@@ -88,8 +88,8 @@ class Npc extends Character implements Npc {
   }
   checkInRange(target: any, range: number) {
     if (!target) return;
-    const thisRadius = this?.body?.radius || 8;
-    const targetRadius = target?.body?.radius || 8;
+    const thisRadius = this?.bodySize || 8;
+    const targetRadius = target?.bodySize || 8;
     const distance = distanceTo(this, target) - (thisRadius + targetRadius);
     return distance <= range;
   }

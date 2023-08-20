@@ -30,7 +30,6 @@ class Buff extends Phaser.GameObjects.Container {
       yoyo: true,
       repeat: 0,
       onComplete: () => {
-        this.buff.destroy();
         this.destroy();
       },
     });
@@ -39,10 +38,12 @@ class Buff extends Phaser.GameObjects.Container {
     scene.events.once("shutdown", this.destroy, this);
   }
   update() {
+    if (this?.victim?.state?.isDead) this.destroy();
     this.victim.bringToTop(this.buff);
   }
   destroy() {
     if (this.scene) this.scene.events.off("update", this.update, this);
+    this.buff.destroy();
     super.destroy();
   }
 }
