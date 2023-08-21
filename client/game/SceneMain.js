@@ -144,9 +144,10 @@ class SceneMain extends Phaser.Scene {
       });
     });
 
-    socket.on("npcAttack", ({ id, count, direction }) => {
+    socket.on("npcAttack", ({ id, count, direction, castAngle }) => {
       const n = getNpc(scene, id);
-      n.doAttack({ count, direction });
+      n.state.lastAngle = castAngle;
+      n.doAttack({ count, direction, castAngle });
     });
 
     socket.on("npcCastSpell", ({ id, ilvl, base, castAngle }) => {

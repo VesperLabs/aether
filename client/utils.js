@@ -157,7 +157,7 @@ function getHeroCoordsRelativeToWindow(scene) {
   return { x, y };
 }
 
-function deriveElements(stats) {
+function deriveElements(stats = {}) {
   const elements = [];
   for (const [statKey, v] of Object.entries(stats)) {
     const statValue = Number(v);

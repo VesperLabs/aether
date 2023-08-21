@@ -48,6 +48,14 @@ class ServerCharacter extends Character {
       }
     });
 
+    if (
+      (this.hasRangedWeapon("equipment") && this.isDualWielding("equipment")) ||
+      this.hasShield("equipment")
+    ) {
+      activeItemSlots.splice(activeItemSlots.indexOf("handLeft"), 1);
+      activeItemSlots.splice(activeItemSlots.indexOf("handRight"), 1);
+    }
+
     for (const key of baseStatKeys) {
       // get all worn items
       const wornItems = allItems
@@ -98,14 +106,6 @@ class ServerCharacter extends Character {
           }
         }
       }
-    }
-
-    if (
-      (this.hasRangedWeapon("equipment") && this.isDualWielding("equipment")) ||
-      this.hasShield("equipment")
-    ) {
-      activeItemSlots.splice(activeItemSlots.indexOf("handLeft"), 1);
-      activeItemSlots.splice(activeItemSlots.indexOf("handRight"), 1);
     }
 
     this.activeItemSlots = activeItemSlots;

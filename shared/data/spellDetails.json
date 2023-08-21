@@ -20,10 +20,6 @@
     "maxActiveTime": 2000,
     "bodySize": 8,
     "spellSpeed": 350,
-    "scaleBase": 0,
-    "scaleMultiplier": 1,
-    "npcCastRange": [50, 200],
-    "npcCastWait": 5000,
     "layerDepth": "top"
   },
   "attack_right_ranged": {
@@ -33,10 +29,6 @@
     "maxActiveTime": 2000,
     "bodySize": 8,
     "spellSpeed": 350,
-    "scaleBase": 0,
-    "scaleMultiplier": 1,
-    "npcCastRange": [50, 200],
-    "npcCastWait": 5000,
     "layerDepth": "top"
   },
   "fireball": {

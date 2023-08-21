@@ -1,7 +1,7 @@
 // @ts-nocheck
 import Phaser from "phaser";
 import { playAudio, getSpinDirection } from "../utils";
-import { spellDetails, POTION_COOLDOWN } from "@aether/shared";
+import { spellDetails, POTION_COOLDOWN, getAngleFromDirection } from "@aether/shared";
 const { W, S, A, D } = Phaser.Input.Keyboard.KeyCodes;
 const { Between } = Phaser.Math.Angle;
 
@@ -284,6 +284,11 @@ function moveDirectHero(scene, time) {
   if (!left && !right && !up && !down) {
     vx = 0;
     vy = 0;
+  }
+
+  /* Keeps bows facing the right direction if you try to spin out of an attack */
+  if (hero.state.isAttacking && (vx || vy)) {
+    lastAngle = Phaser.Math.DegToRad(getAngleFromDirection(direction));
   }
 
   if (joystick.deltaX || joystick.deltaY) {

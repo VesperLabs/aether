@@ -536,7 +536,7 @@ function updateCurrentSpeed(player) {
   const vy = player.vy;
   player.currentSpeed = Math.max(Math.abs(vx), Math.abs(vy));
 
-  if (player.state.isAttacking) {
+  if (player.state.isAttacking && player?.kind !== "nasty" && player?.kind !== "keeper") {
     return;
   }
 
@@ -589,6 +589,7 @@ function playWeapons(player) {
   handRight.setFlipY(right?.flipY);
   handRight.setAngle(right?.rotation);
 
+  const bowAngleOffset = Phaser.Math.DegToRad(-135);
   const isRightRanged = player.hasRangedWeaponRight();
   const isLeftRanged = player.hasRangedWeaponLeft();
   const isRightFist = visibleEquipment?.handRight?.base?.includes("fist");
@@ -617,19 +618,19 @@ function playWeapons(player) {
     }
   }
 
-  if (action === "attack_right") {
-    if (isRightRanged) {
+  if (isRightRanged) {
+    if (action === "attack_right") {
       handRight.setFlipY(false);
       handRight.setFlipX(false);
-      handRight.setRotation(player.state.lastAngle + Phaser.Math.DegToRad(-135));
+      handRight.setRotation(player.state.lastAngle + bowAngleOffset);
     }
   }
 
-  if (action === "attack_left") {
-    if (isLeftRanged) {
+  if (isLeftRanged) {
+    if (action === "attack_left") {
       handLeft.setFlipY(false);
       handLeft.setFlipX(false);
-      handLeft.setRotation(player.state.lastAngle + Phaser.Math.DegToRad(-135));
+      handLeft.setRotation(player.state.lastAngle + bowAngleOffset);
     }
   }
 
