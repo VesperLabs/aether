@@ -302,10 +302,12 @@ function moveDirectHero(scene, time) {
       lastAngle = Between(hero.x, hero.y + hero.bodyOffsetY, cursorPoint.x, cursorPoint.y);
     }
     if (hero?.state?.lastAngle !== lastAngle) {
-      hero.state.lastAngle = lastAngle;
+      //TODO only send this if the difference is greater than 10 or something
       scene.socket.emit("changeDirection", { direction, lastAngle: hero.state.lastAngle });
     }
   }
+
+  hero.state.lastAngle = lastAngle;
 
   if (
     hero.state.holdingAttack &&
