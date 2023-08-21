@@ -206,19 +206,24 @@ class Character extends Phaser.GameObjects.Container {
     const isOutOfCombat = Date.now() - this.state.lastCombat > 5000;
     return isOutOfCombat;
   }
-  isDualWielding() {
-    return this.hasWeaponLeft() && this.hasWeaponRight();
+  isDualWielding(key = "visibleEquipment") {
+    return this.hasWeaponLeft(key) && this.hasWeaponRight(key);
   }
-  hasWeapon() {
-    return this.hasWeaponLeft() || this.hasWeaponRight();
+  hasWeapon(key = "visibleEquipment") {
+    return this.hasWeaponLeft(key) || this.hasWeaponRight(key);
   }
-  hasWeaponLeft() {
-    return ["weapon", "ranged"].includes(this.visibleEquipment?.handLeft?.type);
+  hasWeaponLeft(key = "visibleEquipment") {
+    return ["weapon", "ranged"].includes(this?.[key]?.handLeft?.type);
   }
-  hasWeaponRight() {
+  hasWeaponRight(key = "visibleEquipment") {
     return (
-      ["weapon", "ranged"].includes(this.visibleEquipment?.handRight?.type) ||
-      this.profile.race !== "human"
+      ["weapon", "ranged"].includes(this?.[key]?.handRight?.type) || this.profile.race !== "human"
+    );
+  }
+  hasShield(key = "visibleEquipment") {
+    return (
+      ["shield"].includes(this?.[key]?.handRight?.type) ||
+      ["shield"].includes(this?.[key]?.handLeft?.type)
     );
   }
   hasRangedWeaponLeft(key = "visibleEquipment") {
@@ -227,8 +232,8 @@ class Character extends Phaser.GameObjects.Container {
   hasRangedWeaponRight(key = "visibleEquipment") {
     return ["ranged"].includes(this?.[key]?.handRight?.type);
   }
-  hasRangedWeapon() {
-    return this.hasRangedWeaponLeft() || this.hasRangedWeaponRight();
+  hasRangedWeapon(key = "visibleEquipment") {
+    return this.hasRangedWeaponLeft(key) || this.hasRangedWeaponRight(key);
   }
   checkCastReady(delta: number = 0) {
     const isCastReady = Date.now() - this.state.lastCast > delta + this?.stats?.castDelay;
