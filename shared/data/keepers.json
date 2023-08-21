@@ -57,6 +57,7 @@
       "level": 50
     },
     "equipment": {
+      "handLeft": ["weapon", "common", "spear"],
       "handRight": null,
       "helmet": ["helmet", "set", "crabHat"],
       "accessory": null,
