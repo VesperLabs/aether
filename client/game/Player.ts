@@ -188,7 +188,7 @@ class Player extends Character {
   }
   doAttack({ count, castAngle, direction }) {
     const { state } = this;
-    this.direction = direction;
+
     if (this?.hasBuff("stun")) return;
     if (this?.isHero && (!this.hasWeapon() || state.isDead || state.isAttacking)) return;
 
@@ -197,7 +197,7 @@ class Player extends Character {
     state.isAttacking = true;
     state.lastAttack = Date.now();
     this.action = action;
-
+    this.direction = direction || this.direction;
     // If we are the hero, need to trigger the socket that we attacked
     if (this.isHero) {
       this.scene.socket.emit("attack", {
