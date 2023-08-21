@@ -9,11 +9,11 @@ const getDatabaseApi = () => ({
   pruneNoobs: async () => {},
   getUserByEmail: async ({ email }) => {
     if (!email) return console.log("❌ Email not provided");
-    return { email, ...createBaseUser("warrior") };
+    return { email, ...createBaseUser("rogue") };
   },
   getUserByLogin: async ({ email, password = "" }) => {
     if (!email) return console.log("❌ Email not provided");
-    return { email, ...createBaseUser("warrior") };
+    return { email, ...createBaseUser("rogue") };
   },
 
   createUser: async ({ email, charClass, password }) => {

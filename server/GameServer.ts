@@ -263,7 +263,6 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         const player = scene.players[socketId];
         player.direction = direction;
         if (typeof lastAngle !== "undefined") player.state.lastAngle = lastAngle;
-        io.to(player?.roomName).emit("changeDirection", { socketId, direction, lastAngle });
       });
 
       socket.on("enterDoor", (doorName) => {

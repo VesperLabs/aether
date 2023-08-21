@@ -164,15 +164,6 @@ class SceneMain extends Phaser.Scene {
       p.takeHit({ type, amount });
     });
 
-    /* We already recieve direction from other players */
-    socket.on("changeDirection", ({ socketId, direction, lastAngle }) => {
-      const p = getPlayer(scene, socketId);
-      p.direction = direction;
-      if (typeof lastAngle !== "undefined") {
-        p.state.lastAngle = lastAngle;
-      }
-    });
-
     socket.on("assignDamage", (hitList = []) => {
       for (const hit of hitList) {
         getNpc(scene, hit?.to)?.takeHit?.(hit);
