@@ -586,6 +586,8 @@ class ServerCharacter extends Character {
     this.state.doMpRegen = false;
     this.state.doSpRegen = false;
 
+    if (this.state.isDead) return;
+
     if (isMpRegenReady && this.stats.mp < this.stats.maxMp) {
       this.state.doMpRegen = true;
       this.state.lastMpRegen = now;
@@ -598,7 +600,7 @@ class ServerCharacter extends Character {
       this.modifyStat("sp", this.stats.regenSp);
     }
 
-    if (regenBuff && !this.state.isDead) {
+    if (regenBuff) {
       if (isHpBuffRegenReady && this.stats.hp < this.stats.maxHp) {
         this.state.doHpBuffRegen = true;
         this.state.lastHpBuffRegen = now;
@@ -606,7 +608,7 @@ class ServerCharacter extends Character {
       }
     }
 
-    if (isResting && !this.state.isDead) {
+    if (isResting) {
       if (isHpRegenReady && this.stats.hp < this.stats.maxHp) {
         this.state.doHpRegen = true;
         this.state.lastHpRegen = now;
