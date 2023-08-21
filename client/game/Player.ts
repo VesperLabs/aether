@@ -536,7 +536,7 @@ function updateCurrentSpeed(player) {
   const vy = player.vy;
   player.currentSpeed = Math.max(Math.abs(vx), Math.abs(vy));
 
-  if (player.state.isAttacking && player?.kind !== "nasty" && player?.kind !== "keeper") {
+  if (player.state.isAttacking && player?.isHero) {
     return;
   }
 
