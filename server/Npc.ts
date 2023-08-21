@@ -275,7 +275,7 @@ class Npc extends Character implements Npc {
     this.state.npcAttackReady = false;
 
     /* Switch hands if possible */
-    if (this.action === "attack_right" && this.state.hasWeaponLeft) {
+    if (this.action === "attack_right" && this.hasWeaponLeft()) {
       this.action = "attack_left";
       count = 2;
     } else {

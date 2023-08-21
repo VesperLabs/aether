@@ -286,7 +286,6 @@ class ServerCharacter extends Character {
 
     //update server data on what hands we have items in
     this.visibleEquipment = this.getVisibleEquipment();
-    this.checkAttackHands();
   }
   calculateElementalDamage(eleDamages, victim) {
     const {

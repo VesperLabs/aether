@@ -109,8 +109,6 @@ class Character extends Phaser.GameObjects.Container {
       isPotioning: false,
       isCharging: false,
       isCasting: false,
-      hasWeaponRight: false,
-      hasWeaponLeft: false,
       // npcAttackReady: false, /* Used on server for only NPCs */
       isDead: false,
       activeSets: [],
@@ -136,8 +134,6 @@ class Character extends Phaser.GameObjects.Container {
 
     this.createHitBox(scene, hitBoxSize);
     this.updateVisibleEquipment();
-
-    this.checkAttackHands();
   }
   createHitBox(scene, hitBoxSize) {
     this.hitBoxSize = hitBoxSize;
@@ -207,7 +203,16 @@ class Character extends Phaser.GameObjects.Container {
     return isOutOfCombat;
   }
   isDualWielding() {
-    return this.state.hasWeaponLeft && this.state.hasWeaponRight;
+    return this.hasWeaponLeft() && this.hasWeaponRight();
+  }
+  hasWeapon() {
+    return this.hasWeaponLeft() || this.hasWeaponRight();
+  }
+  hasWeaponLeft() {
+    return this.visibleEquipment?.handLeft?.type === "weapon";
+  }
+  hasWeaponRight() {
+    return this.visibleEquipment?.handRight?.type === "weapon" || this.profile.race !== "human";
   }
   checkCastReady(delta: number = 0) {
     const isCastReady = Date.now() - this.state.lastCast > delta + this?.stats?.castDelay;
@@ -224,7 +229,7 @@ class Character extends Phaser.GameObjects.Container {
     return true;
   }
   triggerSecondAttack() {
-    if (this.action === "attack_right" && this.state.hasWeaponLeft) {
+    if (this.action === "attack_right" && this.hasWeaponLeft()) {
       this.doAttack({ count: 2 });
     }
   }
@@ -234,30 +239,18 @@ class Character extends Phaser.GameObjects.Container {
   getVisibleEquipment() {
     return filterVisibleEquipment(this as FullCharacterState);
   }
-  checkAttackHands() {
-    this.state.hasWeaponRight = false;
-    this.state.hasWeaponLeft = false;
-    this.state.hasWeapon = false;
-    /* Can only attack with a hand if it contains a weapon type item  */
-    const leftType = this.visibleEquipment?.handLeft?.type;
-    const rightType = this.visibleEquipment?.handRight?.type;
-    if (rightType === "weapon") this.state.hasWeaponRight = true;
-    if (leftType === "weapon") this.state.hasWeaponLeft = true;
-    if (this.profile.race !== "human") this.state.hasWeaponRight = true;
-    if (this.state.hasWeaponRight || this.state.hasWeaponLeft) this.state.hasWeapon = true;
-  }
   getAttackActionName({ count }) {
     let actionName = this.action;
     if (count === 1) {
       /* Will always start with a right attack. Will either swing right or left if has weapon. */
-      if (this.state.hasWeaponRight) {
+      if (this.hasWeaponRight()) {
         actionName = "attack_right";
-      } else if (this.state.hasWeaponLeft) {
+      } else if (this.hasWeaponLeft()) {
         actionName = "attack_left";
       }
     } else if (count === 2) {
       /* Always finishes with a left if both hands have weapons */
-      if (this.state.hasWeaponLeft) actionName = "attack_left";
+      if (this.hasWeaponLeft()) actionName = "attack_left";
     }
     return actionName;
   }
