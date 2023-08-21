@@ -280,7 +280,7 @@ function App({ socket, debug, game }) {
       }
 
       const direction = getSpinDirection(hero, target);
-      if (hero?.direction !== direction) socket.emit("changeDirection", direction);
+      if (hero?.direction !== direction) socket.emit("changeDirection", { direction });
     };
 
     const onLootGrabbed = ({ player, loot }) => {

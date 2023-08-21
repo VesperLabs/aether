@@ -19,7 +19,8 @@ class Spell extends Phaser.GameObjects.Container {
   private scaleMultiplier: number;
   private spellSpeed: integer;
   private hitIds: Array<string>;
-  private isAttack: boolean;
+  private isAttackMelee: boolean;
+  private isAttackRanged: boolean;
   private abilitySlot: number;
   private spell: Phaser.GameObjects.Sprite;
   declare body: Phaser.Physics.Arcade.Body;
@@ -27,7 +28,7 @@ class Spell extends Phaser.GameObjects.Container {
   declare stickToCaster: boolean;
   constructor(
     scene: ServerScene,
-    { id, room, caster, target, abilitySlot, spellName, castAngle, ilvl }
+    { id, room, caster, target, abilitySlot, spellName, castAngle = 0, ilvl = 1 }
   ) {
     super(scene, caster.x, caster.y + caster.bodyCenterY);
     this.id = id;
@@ -44,26 +45,28 @@ class Spell extends Phaser.GameObjects.Container {
     this.velocityY = 0;
     this.hitIds = [];
     this.spell = scene.add.existing(new Sprite(scene, 0, 0, "blank", 0));
-    this.isAttack = !abilitySlot;
+    this.isAttackMelee = spellName === "attack_right" || spellName === "attack_left";
+    this.isAttackRanged = spellName === "attack_right_ranged" || spellName === "attack_left_ranged";
     this.abilitySlot = abilitySlot;
 
     const details = spellDetails?.[spellName];
     if (!details) {
       throw new Error("Shit, the spell does not exist in spellDetails!");
     }
+
     this.allowedTargets = details?.allowedTargets;
     this.maxVisibleTime = details?.maxVisibleTime;
     this.maxActiveTime = details?.maxActiveTime;
     this.bodySize = details?.bodySize;
     this.spellSpeed = details?.spellSpeed;
-    this.scaleBase = details?.scaleBase;
-    this.scaleMultiplier = details?.scaleMultiplier || 1;
+    this.scaleBase = details?.scaleBase ?? 1;
+    this.scaleMultiplier = details?.scaleMultiplier ?? 0;
 
     scene.physics.add.existing(this);
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
 
-    if (this.isAttack) {
+    if (this.isAttackMelee) {
       let viewSize = 44;
       /* Take body size of NPC caster in to account. or they wont get close enough to attack */
       const fullBodySize = this.bodySize + (caster?.body?.radius ?? 8) / 2;
@@ -95,6 +98,12 @@ class Spell extends Phaser.GameObjects.Container {
     } else {
       this.setScale(this.scaleBase + ilvl * this.scaleMultiplier);
       this.body.setCircle(this?.bodySize, -this?.bodySize, -this?.bodySize);
+    }
+
+    if (this.isAttackRanged) {
+      this.velocityX = Math.cos(castAngle) * this?.spellSpeed;
+      this.velocityY = Math.sin(castAngle) * this?.spellSpeed;
+      this.spell.setRotation(castAngle);
     }
     if (spellName == "fireball") {
       this.velocityX = Math.cos(castAngle) * this?.spellSpeed;
@@ -146,10 +155,11 @@ class Spell extends Phaser.GameObjects.Container {
       if (target?.id && victim?.id !== target?.id) return true;
 
       /* For NPCS, make their attack radius less */
-      const hitBox = this.isAttack && this?.caster?.kind !== "player" ? victim : victim?.hitBox;
+      const hitBox =
+        this.isAttackMelee && this?.caster?.kind !== "player" ? victim : victim?.hitBox;
       if (scene.physics.overlap(hitBox, this)) {
         /* For attacks, prevent collision behind the player */
-        if (this.isAttack) {
+        if (this.isAttackMelee) {
           if (direction === "up" && victim.y > caster.y) return true;
           if (direction === "down" && victim.y < caster.y) return true;
           if (direction === "left" && victim.x > caster.x) return true;

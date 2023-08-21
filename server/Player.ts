@@ -20,13 +20,13 @@ class Player extends ServerCharacter implements ServerPlayer {
     this.expireBuffs(true);
     this.state.isDead = true;
   }
-  doAttack({ count, direction }) {
+  doAttack({ count, direction, castAngle }) {
     if (this?.state?.isDead) return;
     if (this?.state?.isAttacking) return;
     if (this?.hasBuff("stun")) return;
     const { scene, room, id, socketId } = this ?? {};
 
-    const spellName = this.getAttackActionName({ count });
+    const { spellName } = this.getAttackActionName({ count });
     const spCost = this.getAttackSpCost(count);
 
     this.direction = direction;
@@ -38,8 +38,13 @@ class Player extends ServerCharacter implements ServerPlayer {
       amount: -spCost,
     });
 
+    if (castAngle) {
+      this.state.lastAngle = castAngle;
+    }
+
     room?.spellManager.create({
       caster: this,
+      castAngle,
       spellName,
     });
   }

@@ -79,6 +79,7 @@ function addGlobalEventListeners(scene) {
       const hero = mainScene?.hero;
       hero.state.isAiming = false;
       hero.state.holdingAttack = false;
+      document.getElementById("game").style.cursor = "default";
     },
     scene
   );
@@ -88,6 +89,11 @@ function addGlobalEventListeners(scene) {
       if (!mainScene?.hero) return;
       const hero = mainScene?.hero;
       hero.state.holdingAttack = true;
+      const isAimable = hero.hasRangedWeapon();
+      if (isAimable) {
+        document.getElementById("game").style.cursor = "none";
+        hero.state.isAiming = true;
+      }
     },
     scene
   );
@@ -182,7 +188,7 @@ function addGlobalEventListeners(scene) {
       const cursorPoint = pointer.positionToCamera(mainScene.cameras.main);
       const direction = getSpinDirection(hero, cursorPoint);
       if (hero?.direction !== direction) {
-        scene.socket.emit("changeDirection", direction);
+        scene.socket.emit("changeDirection", { direction });
       }
     },
     scene
@@ -236,6 +242,7 @@ function moveDirectHero(scene, time) {
   const pointer = scene.input.activePointer;
   const mainScene = scene.scene.manager.getScene("SceneMain");
   const hero = mainScene?.hero;
+  let lastAngle = hero?.state?.lastAngle;
   let vx = 0;
   let vy = 0;
   let direction = hero?.direction;
@@ -284,7 +291,7 @@ function moveDirectHero(scene, time) {
     vy = joystick.deltaY * walkSpeed;
     direction = getSpinDirection(hero, { x: hero.x + vx, y: hero.y + vy });
     /* Latest idle check, we set the lastAngle so it's fresh */
-    hero.state.lastAngle = Math.atan2(joystick.deltaY, joystick.deltaX);
+    lastAngle = Math.atan2(joystick.deltaY, joystick.deltaX);
   }
 
   /* Spin hero when aiming */
@@ -292,25 +299,22 @@ function moveDirectHero(scene, time) {
     if (!isTouch) {
       const cursorPoint = pointer.positionToCamera(mainScene.cameras.main);
       direction = getSpinDirection(mainScene?.hero, cursorPoint);
-      hero.state.lastAngle = Between(
-        hero.x,
-        hero.y + hero.bodyOffsetY,
-        cursorPoint.x,
-        cursorPoint.y
-      );
+      lastAngle = Between(hero.x, hero.y + hero.bodyOffsetY, cursorPoint.x, cursorPoint.y);
     }
-    if (mainScene?.hero?.direction !== direction) {
-      scene.socket.emit("changeDirection", direction);
+    if (hero?.state?.lastAngle !== lastAngle) {
+      hero.state.lastAngle = lastAngle;
+      scene.socket.emit("changeDirection", { direction, lastAngle: hero.state.lastAngle });
     }
   }
 
   if (
     hero.state.holdingAttack &&
+    hero?.hasWeapon() &&
     !hero.state.isAttacking &&
     hero.state.lastAttack < Date.now() - hero.getFullAttackDelay() - 60
   ) {
     updateAttackCooldown(hero);
-    hero?.doAttack?.({ count: 1 });
+    hero?.doAttack?.({ count: 1, castAngle: hero.state.lastAngle, direction });
   }
 
   if (hero.state.isAttacking || hero?.state.isAiming || hero.state.holdingAttack) {

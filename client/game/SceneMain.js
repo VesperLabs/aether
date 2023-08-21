@@ -130,9 +130,9 @@ class SceneMain extends Phaser.Scene {
       player.updateData(userData);
     });
 
-    socket.on("playerAttack", ({ socketId, count }) => {
+    socket.on("playerAttack", ({ socketId, count, castAngle, direction }) => {
       const p = getPlayer(scene, socketId);
-      p.doAttack({ count });
+      p.doAttack({ count, castAngle, direction });
     });
 
     socket.on("playerCastSpell", ({ socketId, ilvl, base, castAngle }) => {
@@ -146,8 +146,7 @@ class SceneMain extends Phaser.Scene {
 
     socket.on("npcAttack", ({ id, count, direction }) => {
       const n = getNpc(scene, id);
-      n.direction = direction;
-      n.doAttack({ count });
+      n.doAttack({ count, direction });
     });
 
     socket.on("npcCastSpell", ({ id, ilvl, base, castAngle }) => {
@@ -165,10 +164,11 @@ class SceneMain extends Phaser.Scene {
     });
 
     /* We already recieve direction from other players */
-    socket.on("changeDirection", ({ socketId, direction }) => {
+    socket.on("changeDirection", ({ socketId, direction, lastAngle }) => {
       const p = getPlayer(scene, socketId);
-      if (p?.isHero) {
-        p.direction = direction;
+      p.direction = direction;
+      if (typeof lastAngle !== "undefined") {
+        p.state.lastAngle = lastAngle;
       }
     });
 

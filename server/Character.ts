@@ -100,6 +100,11 @@ class ServerCharacter extends Character {
       }
     }
 
+    if (this.hasRangedWeaponLeft("equipment") && this.hasRangedWeaponRight("equipment")) {
+      activeItemSlots.splice(activeItemSlots.indexOf("handLeft"), 1);
+      activeItemSlots.splice(activeItemSlots.indexOf("handRight"), 1);
+    }
+
     this.activeItemSlots = activeItemSlots;
   }
   calculateStats(shouldHeal = false) {

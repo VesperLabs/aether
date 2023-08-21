@@ -143,11 +143,11 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         cb(startTime);
       });
 
-      socket.on("attack", ({ count, direction } = {}) => {
+      socket.on("attack", ({ count, direction, castAngle } = {}) => {
         const player = scene.players[socketId];
-        player.doAttack({ count, direction });
+        player.doAttack({ count, direction, castAngle });
         // update players other than the player that we attacked
-        socket.to(player?.roomName).emit("playerAttack", { socketId, count });
+        socket.to(player?.roomName).emit("playerAttack", { socketId, count, direction, castAngle });
       });
 
       socket.on("castSpell", ({ abilitySlot, castAngle } = {}) => {
@@ -259,10 +259,11 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         scene.db.updateUser(scene.players?.[socketId]);
       });
 
-      socket.on("changeDirection", (direction) => {
+      socket.on("changeDirection", ({ direction, lastAngle }) => {
         const player = scene.players[socketId];
         player.direction = direction;
-        io.to(player?.roomName).emit("changeDirection", { socketId, direction });
+        if (typeof lastAngle !== "undefined") player.state.lastAngle = lastAngle;
+        io.to(player?.roomName).emit("changeDirection", { socketId, direction, lastAngle });
       });
 
       socket.on("enterDoor", (doorName) => {

@@ -12,13 +12,7 @@ import Bar from "./Bar";
 import Crosshair from "./Crosshair";
 import Damage from "./Damage";
 import WeaponSprite from "./WeaponSprite";
-import {
-  distanceTo,
-  getSpinDirection,
-  PLAYER_GRAB_RANGE,
-  RACES_WITH_ATTACK_ANIMS,
-  deriveElements,
-} from "../utils";
+import { distanceTo, getSpinDirection, PLAYER_GRAB_RANGE, deriveElements } from "../utils";
 import Buff from "./Buff";
 import Hit from "./Hit";
 const { Sprite, BitmapText } = Phaser.GameObjects;
@@ -192,18 +186,13 @@ class Player extends Character {
       this.accessory.setVisible(false);
     }
   }
-  doAttack({ count }) {
+  doAttack({ count, castAngle, direction }) {
     const { state } = this;
+    this.direction = direction;
     if (this?.hasBuff("stun")) return;
     if (this?.isHero && (!this.hasWeapon() || state.isDead || state.isAttacking)) return;
 
-    let spellName = "attack_right";
-    let action = this.action;
-
-    /* Play attack animation frame (human only) */
-    if (RACES_WITH_ATTACK_ANIMS.includes(this.profile.race)) {
-      action = spellName = this.getAttackActionName({ count });
-    }
+    const { action, spellName } = this.getAttackActionName({ count });
 
     state.isAttacking = true;
     state.lastAttack = Date.now();
@@ -211,11 +200,17 @@ class Player extends Character {
 
     // If we are the hero, need to trigger the socket that we attacked
     if (this.isHero) {
-      this.scene.socket.emit("attack", { count, direction: this.direction });
+      this.scene.socket.emit("attack", {
+        count,
+        direction: this.direction,
+        castAngle,
+      });
     }
 
-    // draw our physical animation. also handles collision...
-    this.scene.add.existing(new Spell(this.scene, { id: null, caster: this, spellName }));
+    // draw our physical animation.
+    this.scene.add.existing(
+      new Spell(this.scene, { id: null, caster: this, spellName, castAngle })
+    );
   }
   castSpell(spellData) {
     const { state, isHero } = this || {};
@@ -594,10 +589,12 @@ function playWeapons(player) {
   handRight.setFlipY(right?.flipY);
   handRight.setAngle(right?.rotation);
 
+  const isRightRanged = player.hasRangedWeaponRight();
+  const isLeftRanged = player.hasRangedWeaponLeft();
   const isRightFist = visibleEquipment?.handRight?.base?.includes("fist");
   const isLeftFist = visibleEquipment?.handLeft?.base?.includes("fist");
-  const isRightShield = visibleEquipment?.handRight?.texture?.includes("shield");
-  const isLeftShield = visibleEquipment?.handLeft?.texture?.includes("shield");
+  const isRightShield = visibleEquipment?.handRight?.type === "shield";
+  const isLeftShield = visibleEquipment?.handLeft?.type === "shield";
 
   if (direction === "down") {
     if (isRightShield) {
@@ -608,21 +605,42 @@ function playWeapons(player) {
     }
   }
 
-  if (action === "attack_right" && isRightFist) {
-    if (direction === "left") {
-      handRight.setAngle(-90);
-      handRight.setFlipY(true);
-    }
-    if (direction === "right") {
-      handRight.setAngle(-90);
+  if (action === "attack_right") {
+    if (isRightFist) {
+      if (direction === "left") {
+        handRight.setAngle(-90);
+        handRight.setFlipY(true);
+      }
+      if (direction === "right") {
+        handRight.setAngle(-90);
+      }
     }
   }
-  if (action === "attack_left" && isLeftFist) {
-    if (direction === "left") {
-      handLeft.setAngle(90);
+
+  if (action === "attack_right") {
+    if (isRightRanged) {
+      handRight.setFlipY(false);
+      handRight.setFlipX(false);
+      handRight.setRotation(player.state.lastAngle + Phaser.Math.DegToRad(-135));
     }
-    if (direction === "right") {
-      handLeft.setAngle(0);
+  }
+
+  if (action === "attack_left") {
+    if (isLeftRanged) {
+      handLeft.setFlipY(false);
+      handLeft.setFlipX(false);
+      handLeft.setRotation(player.state.lastAngle + Phaser.Math.DegToRad(-135));
+    }
+  }
+
+  if (action === "attack_left") {
+    if (isLeftFist) {
+      if (direction === "left") {
+        handLeft.setAngle(90);
+      }
+      if (direction === "right") {
+        handLeft.setAngle(0);
+      }
     }
   }
 }
