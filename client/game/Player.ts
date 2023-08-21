@@ -72,7 +72,6 @@ class Player extends Character {
     this.updateVisibleEquipment();
   }
   updateExtas() {
-    this.checkAttackHands();
     this.drawCharacterFromUserData();
     this.updateHpBar();
   }
@@ -166,10 +165,10 @@ class Player extends Character {
 
     if (this.profile.race === "human") {
       this.handLeft.setElements(
-        state.hasWeaponLeft ? deriveElements(visibleEquipment?.handLeft?.stats) : []
+        this.hasWeaponLeft() ? deriveElements(visibleEquipment?.handLeft?.stats) : []
       );
       this.handRight.setElements(
-        state.hasWeaponRight ? deriveElements(visibleEquipment?.handRight?.stats) : []
+        this.hasWeaponRight() ? deriveElements(visibleEquipment?.handRight?.stats) : []
       );
     }
 
@@ -196,7 +195,7 @@ class Player extends Character {
   doAttack({ count }) {
     const { state } = this;
     if (this?.hasBuff("stun")) return;
-    if (this?.isHero && (!state.hasWeapon || state.isDead || state.isAttacking)) return;
+    if (this?.isHero && (!this.hasWeapon() || state.isDead || state.isAttacking)) return;
 
     let spellName = "attack_right";
     let action = this.action;
