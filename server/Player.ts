@@ -42,6 +42,9 @@ class Player extends ServerCharacter implements ServerPlayer {
       this.state.lastAngle = castAngle;
     }
 
+    this.state.lastAttack = Date.now();
+    this.state.isAttacking = true;
+
     room?.spellManager.create({
       caster: this,
       castAngle,
