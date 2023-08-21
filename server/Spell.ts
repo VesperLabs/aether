@@ -84,13 +84,13 @@ class Spell extends Phaser.GameObjects.Container {
       }
 
       if (spellName.includes("attack_left")) {
-        const rangeLeft = caster?.equipment?.handLeft?.stats?.range * 2 || fullBodySize;
+        const rangeLeft = caster?.getMeleeRange("handLeft");
         this.body.setCircle(rangeLeft * 14, -rangeLeft * 14, -rangeLeft * 14);
         this.spell.displayWidth = viewSize * rangeLeft;
         this.spell.displayHeight = viewSize * rangeLeft;
       }
       if (spellName.includes("attack_right")) {
-        const rangeRight = caster?.equipment?.handRight?.stats?.range * 2 || fullBodySize;
+        const rangeRight = caster?.getMeleeRange("handRight");
         this.body.setCircle(rangeRight * 14, -rangeRight * 14, -rangeRight * 14);
         this.spell.displayWidth = viewSize * rangeRight;
         this.spell.displayHeight = viewSize * rangeRight;

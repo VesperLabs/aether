@@ -202,6 +202,9 @@ class Character extends Phaser.GameObjects.Container {
     this.state.isPotioning = !isReady;
     return { percentageRemaining, timeRemaining, isReady };
   }
+  getMeleeRange(hand = "handLeft") {
+    return (this?.visibleEquipment?.[hand]?.stats?.range || 1) * 2;
+  }
   checkOutOfCombat() {
     const isOutOfCombat = Date.now() - this.state.lastCombat > 5000;
     return isOutOfCombat;
@@ -261,10 +264,11 @@ class Character extends Phaser.GameObjects.Container {
     return filterVisibleEquipment(this as FullCharacterState);
   }
   getAttackActionName({ count }) {
-    let action, spellName;
+    let action = this.action;
+    let spellName = "attack_right";
 
     if (!RACES_WITH_ATTACK_ANIMS.includes(this.profile.race)) {
-      return { action: this.action, spellName: "attack_right" };
+      return { action, spellName };
     }
 
     if (count === 1) {

@@ -98,8 +98,6 @@ class Npc extends Character implements Npc {
     if (Date.now() - this.state.lastAttack > fullAttackDelay) {
       this.state.npcAttackReady = true;
       this.state.isAttacking = false;
-    } else {
-      this.state.isAttacking = true;
     }
   }
   // help me write this function.  need to check if the NPC is adjacent to a collision tile.
@@ -202,7 +200,6 @@ class Npc extends Character implements Npc {
   setLockedPlayerId(id: string) {
     // If they are switching targets
     if (this.state.lockedPlayerId !== id && id) {
-      this.state.isAttacking = true;
       // So they dont immediately respond to an attack with an instant attack.
       this.state.lastAttack = Date.now() - NPC_START_ATTACKING_DELAY;
       this.state.npcAttackReady = false;
@@ -267,7 +264,10 @@ class Npc extends Character implements Npc {
     const { scene, room, direction, id, state } = this ?? {};
     const targetPlayer = scene?.players?.[state?.lockedPlayerId] ?? null;
     if (state.isAttacking || state?.isDead) return;
-    if (!this.checkInRange(targetPlayer, NPC_SHOULD_ATTACK_RANGE) || targetPlayer?.state?.isDead)
+    if (
+      !this.checkInRange(targetPlayer, this.getShouldAttackRange()) ||
+      targetPlayer?.state?.isDead
+    )
       return;
     // Set state to attacking and record attack time
     this.state.isAttacking = true;
@@ -275,12 +275,8 @@ class Npc extends Character implements Npc {
     this.state.npcAttackReady = false;
 
     /* Switch hands if possible */
-    if (this.action === "attack_right" && this.hasWeaponLeft()) {
-      this.action = "attack_left";
-      count = 2;
-    } else {
-      this.action = "attack_right";
-    }
+    const { spellName } = this.getAttackActionName({ count });
+    this.action = spellName;
 
     const castAngle = Math.atan2(targetPlayer.y - this.y, targetPlayer.x - this.x);
 
@@ -292,13 +288,14 @@ class Npc extends Character implements Npc {
       ilvl: 1,
     });
 
-    scene.io.to(room?.name).emit("npcAttack", { id, count, direction });
+    scene.io.to(room?.name).emit("npcAttack", { id, count, direction, castAngle });
   }
   intendAttack({ targetPlayer, delta }) {
     const { isAttacking, npcAttackReady } = this?.state ?? {};
+
     // Determine if player should attack target player
     const shouldAttackPlayer =
-      !isAttacking && this.checkInRange(targetPlayer, NPC_SHOULD_ATTACK_RANGE);
+      !isAttacking && this.checkInRange(targetPlayer, this.getShouldAttackRange());
 
     if (shouldAttackPlayer) {
       // Face them if we are not
@@ -316,7 +313,7 @@ class Npc extends Character implements Npc {
   chaseOrMove({ targetPlayer, delta, time }) {
     // Check if player is in range for aggro
     const isInRange = this.checkInRange(targetPlayer, AGGRO_KITE_RANGE);
-    const shouldStop = this.checkInRange(targetPlayer, NPC_SHOULD_ATTACK_RANGE);
+    const shouldStop = this.checkInRange(targetPlayer, this.getShouldAttackRange());
 
     // Determine if player should chase target
     const shouldChasePlayer = isInRange && !targetPlayer?.state?.isDead;
@@ -359,6 +356,9 @@ class Npc extends Character implements Npc {
     }
 
     return this.moveRandomly(time);
+  }
+  getShouldAttackRange() {
+    return this?.hasRangedWeapon() ? NPC_SHOULD_ATTACK_RANGE * 20 : NPC_SHOULD_ATTACK_RANGE;
   }
   moveTowardPoint(coords: Coordinate) {
     const walkSpeed = this.stats.walkSpeed;

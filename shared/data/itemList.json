@@ -42,9 +42,9 @@
         "texture": "weapon-sword-short",
         "slot": "hands",
         "stats": {
-          "attackDelay": 260,
+          "attackDelay": 220,
           "minDamage": 1,
-          "maxDamage": 2,
+          "maxDamage": 1,
           "range": 1,
           "spCost": 2
         },
@@ -128,7 +128,7 @@
         "texture": "weapon-axe",
         "slot": "hands",
         "stats": {
-          "attackDelay": 300,
+          "attackDelay": 320,
           "minDamage": 1,
           "maxDamage": 2,
           "range": 1,
@@ -145,7 +145,7 @@
         "texture": "weapon-scythe",
         "slot": "hands",
         "stats": {
-          "attackDelay": 300,
+          "attackDelay": 320,
           "minDamage": 1,
           "maxDamage": 2,
           "range": 1,
@@ -330,6 +330,8 @@
         "texture": "weapon-claymore-soul",
         "slot": "hands",
         "stats": {
+          "minDamage": 4,
+          "maxDamage": 5,
           "hpSteal": [10, 15],
           "mpSteal": [10, 15],
           "critChance": 20,
