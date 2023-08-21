@@ -21,10 +21,11 @@ class Player extends ServerCharacter implements ServerPlayer {
     this.state.isDead = true;
   }
   doAttack({ count, direction, castAngle }) {
+    this.checkAttackReady();
     if (this?.state?.isDead) return;
     if (this?.state?.isAttacking) return;
     if (this?.hasBuff("stun")) return;
-    const { scene, room, id, socketId } = this ?? {};
+    const { scene, room, socketId } = this ?? {};
 
     const { spellName } = this.getAttackActionName({ count });
     const spCost = this.getAttackSpCost(count);
@@ -299,7 +300,6 @@ class Player extends ServerCharacter implements ServerPlayer {
     this.expireBuffs();
     this.doRegen();
     this.checkBubbleMessage();
-    this.checkAttackReady();
   }
   doHit(ids, abilitySlot): void {
     const { scene } = this ?? {};
