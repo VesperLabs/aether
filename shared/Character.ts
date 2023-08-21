@@ -6,6 +6,7 @@ import {
   BLANK_TEXTURE,
   POTION_COOLDOWN,
   BODY_SIZE,
+  RACES_WITH_ATTACK_ANIMS,
 } from "./utils";
 
 class Character extends Phaser.GameObjects.Container {
@@ -155,6 +156,9 @@ class Character extends Phaser.GameObjects.Container {
   doAttack(props: any) {
     //placeholder
   }
+  doAttackRanged(props: any) {
+    //placeholder
+  }
   modifyStat(key: string, amount: any) {
     const stat: integer = parseInt(this?.stats?.[key]);
     const intAmount: integer = parseInt(amount);
@@ -209,10 +213,22 @@ class Character extends Phaser.GameObjects.Container {
     return this.hasWeaponLeft() || this.hasWeaponRight();
   }
   hasWeaponLeft() {
-    return this.visibleEquipment?.handLeft?.type === "weapon";
+    return ["weapon", "ranged"].includes(this.visibleEquipment?.handLeft?.type);
   }
   hasWeaponRight() {
-    return this.visibleEquipment?.handRight?.type === "weapon" || this.profile.race !== "human";
+    return (
+      ["weapon", "ranged"].includes(this.visibleEquipment?.handRight?.type) ||
+      this.profile.race !== "human"
+    );
+  }
+  hasRangedWeaponLeft(key = "visibleEquipment") {
+    return ["ranged"].includes(this?.[key]?.handLeft?.type);
+  }
+  hasRangedWeaponRight(key = "visibleEquipment") {
+    return ["ranged"].includes(this?.[key]?.handRight?.type);
+  }
+  hasRangedWeapon() {
+    return this.hasRangedWeaponLeft() || this.hasRangedWeaponRight();
   }
   checkCastReady(delta: number = 0) {
     const isCastReady = Date.now() - this.state.lastCast > delta + this?.stats?.castDelay;
@@ -230,7 +246,7 @@ class Character extends Phaser.GameObjects.Container {
   }
   triggerSecondAttack() {
     if (this.action === "attack_right" && this.hasWeaponLeft()) {
-      this.doAttack({ count: 2 });
+      this.doAttack({ count: 2, castAngle: this.state.lastAngle });
     }
   }
   updateVisibleEquipment() {
@@ -240,19 +256,26 @@ class Character extends Phaser.GameObjects.Container {
     return filterVisibleEquipment(this as FullCharacterState);
   }
   getAttackActionName({ count }) {
-    let actionName = this.action;
-    if (count === 1) {
-      /* Will always start with a right attack. Will either swing right or left if has weapon. */
-      if (this.hasWeaponRight()) {
-        actionName = "attack_right";
-      } else if (this.hasWeaponLeft()) {
-        actionName = "attack_left";
-      }
-    } else if (count === 2) {
-      /* Always finishes with a left if both hands have weapons */
-      if (this.hasWeaponLeft()) actionName = "attack_left";
+    let action, spellName;
+
+    if (!RACES_WITH_ATTACK_ANIMS.includes(this.profile.race)) {
+      return { action: this.action, spellName: "attack_right" };
     }
-    return actionName;
+
+    if (count === 1) {
+      if (this.hasWeaponRight()) {
+        action = "attack_right";
+        spellName = this.hasRangedWeaponRight() ? action + "_ranged" : action;
+      } else if (this.hasWeaponLeft()) {
+        action = "attack_left";
+        spellName = this.hasRangedWeaponLeft() ? action + "_ranged" : action;
+      }
+    } else if (count === 2 && this.hasWeaponLeft()) {
+      action = "attack_left";
+      spellName = this.hasRangedWeaponLeft() ? action + "_ranged" : action;
+    }
+
+    return { action, spellName };
   }
   getPlayerQuestStatus(quest: Quest) {
     const playerQuest = this.quests.find((q) => q?.questId === quest?.id);
