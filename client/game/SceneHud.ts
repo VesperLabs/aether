@@ -303,7 +303,7 @@ function moveDirectHero(scene, time) {
     }
     if (hero?.state?.lastAngle !== lastAngle) {
       //TODO only send this if the difference is greater than 10 or something
-      scene.socket.emit("changeDirection", { direction, lastAngle: hero.state.lastAngle });
+      scene.socket.emit("changeDirection", { direction, lastAngle });
     }
   }
 
