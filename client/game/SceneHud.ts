@@ -32,7 +32,6 @@ class SceneHud extends Phaser.Scene {
 
 function addGlobalEventListeners(scene) {
   const isTouch = scene.sys.game.device.input.touch;
-  const pointer = scene.input.activePointer;
   const mainScene = scene.scene.manager.getScene("SceneMain");
   const socket = scene.socket;
 
@@ -51,6 +50,7 @@ function addGlobalEventListeners(scene) {
     if (!mainScene?.hero) return;
     const hero = mainScene?.hero;
     if (!isTouch && event.button !== 0) {
+      const pointer = scene.input.activePointer;
       const cursorPoint = pointer.positionToCamera(mainScene.cameras.main);
       hero.direction = getSpinDirection(hero, cursorPoint);
       window.dispatchEvent(new CustomEvent("HERO_ATTACK"));
@@ -183,11 +183,14 @@ function addGlobalEventListeners(scene) {
     "ITEM_DRAG",
     (e) => {
       const hero = mainScene?.hero;
+      const pointer = scene.input.activePointer;
       pointer.x = e?.detail.x;
       pointer.y = e?.detail.y;
       const cursorPoint = pointer.positionToCamera(mainScene.cameras.main);
-      const direction = getSpinDirection(hero, cursorPoint);
+      const direction = getSpinDirection({ x: hero.x, y: hero.y + hero.bodyOffsetY }, cursorPoint);
+      const lastAngle = Between(hero.x, hero.y + hero.bodyOffsetY, cursorPoint.x, cursorPoint.y);
       if (hero?.direction !== direction) {
+        hero.direction = direction;
         scene.socket.emit("changeDirection", { direction });
       }
     },
@@ -303,7 +306,7 @@ function moveDirectHero(scene, time) {
   if (hero?.state.isAiming) {
     if (!isTouch) {
       const cursorPoint = pointer.positionToCamera(mainScene.cameras.main);
-      direction = getSpinDirection(mainScene?.hero, cursorPoint);
+      direction = getSpinDirection({ x: hero.x, y: hero.y + hero.bodyOffsetY }, cursorPoint);
       lastAngle = Between(hero.x, hero.y + hero.bodyOffsetY, cursorPoint.x, cursorPoint.y);
     }
     if (hero?.state?.lastAngle !== lastAngle) {

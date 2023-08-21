@@ -213,7 +213,11 @@ class Npc extends Character implements Npc {
 
     this.state.isCasting = true;
     this.state.lastCast = Date.now();
-    const castAngle = Math.atan2(targetPlayer.y - this.y, targetPlayer.x - this.x);
+
+    const castAngle = (this.state.lastAngle = Math.atan2(
+      targetPlayer.y - this.y,
+      targetPlayer.x - this.x
+    ));
 
     room?.spellManager.create({
       caster: this,
@@ -278,7 +282,10 @@ class Npc extends Character implements Npc {
     const { spellName } = this.getAttackActionName({ count });
     this.action = spellName;
 
-    const castAngle = Math.atan2(targetPlayer.y - this.y, targetPlayer.x - this.x);
+    const castAngle = (this.state.lastAngle = Math.atan2(
+      targetPlayer.y - this.y,
+      targetPlayer.x - this.x
+    ));
 
     room?.spellManager.create({
       caster: this,

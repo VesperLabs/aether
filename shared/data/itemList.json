@@ -1173,7 +1173,7 @@
         "texture": "ranged-bow",
         "slot": "hands",
         "stats": {
-          "attackDelay": 1000,
+          "attackDelay": 500,
           "minDamage": 0,
           "maxDamage": 1,
           "spCost": 3

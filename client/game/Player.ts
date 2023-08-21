@@ -39,6 +39,7 @@ class Player extends Character {
     this.state.doMpRegen = state.doMpRegen;
     this.state.doSpRegen = state.doSpRegen;
     this.state.lastCombat = state.lastCombat;
+    if (!this.isHero) this.state.lastAngle = state.lastAngle;
   }
   updateData(data) {
     this.activeItemSlots = data?.activeItemSlots;
@@ -536,7 +537,7 @@ function updateCurrentSpeed(player) {
   const vy = player.vy;
   player.currentSpeed = Math.max(Math.abs(vx), Math.abs(vy));
 
-  if (player.state.isAttacking && player?.isHero) {
+  if (player.state.isAttacking) {
     return;
   }
 
