@@ -1162,6 +1162,26 @@
       }
     }
   },
+  "ranged": {
+    "common": {
+      "bow": {
+        "ilvl": 1,
+        "base": "bow",
+        "name": "Bow",
+        "texture": "ranged-bow",
+        "slot": "hands",
+        "stats": {
+          "attackDelay": 1000,
+          "minDamage": 0,
+          "maxDamage": 1,
+          "spCost": 3
+        },
+        "requirements": {
+          "dexterity": 5
+        }
+      }
+    }
+  },
   "shield": {
     "common": {
       "woodenBuckler": {

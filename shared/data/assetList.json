@@ -612,6 +612,12 @@
     "previewRect": [42, 35, 16, 24]
   },
   {
+    "texture": "ranged-bow",
+    "src": "./assets/atlas/hands/ranged-bow.png",
+    "atlas": "./assets/atlas/weapon.json",
+    "previewRect": [43, 34, 24, 22]
+  },
+  {
     "texture": "ring-silver-plain",
     "src": "./assets/atlas/ring/ring-silver-plain.png",
     "atlas": "./assets/atlas/32x32-stackable.json",
