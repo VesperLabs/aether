@@ -59,6 +59,7 @@ const KeyboardKey: React.FC<KeyboardKeyProps> = ({
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.repeat) return;
     const keyName = getKeyName(e?.key || "");
     // @ts-ignore
     if (document.activeElement?.type === "text" || e.target?.type === "text") {
