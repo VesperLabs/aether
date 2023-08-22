@@ -546,10 +546,15 @@ function updateCurrentSpeed(player) {
     return;
   }
 
-  if (player.state.isAiming) {
-    player.action = "stand";
+  // for bows
+  if (player.state.isHoldingAttack) {
     if (player.hasRangedWeaponLeft()) player.action = "attack_left";
     if (player.hasRangedWeaponRight()) player.action = "attack_right";
+    return;
+  }
+
+  if (player.state.isAiming) {
+    player.action = "stand";
     return;
   }
 

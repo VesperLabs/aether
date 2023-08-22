@@ -67,7 +67,7 @@ function addGlobalEventListeners(scene) {
       const isAimable = details?.isAimable;
       if (isAimable) {
         document.getElementById("game").style.cursor = "none";
-        hero.state.isAiming = true;
+        scene.socket.emit("updateState", { isAiming: true });
       }
     },
     scene
@@ -91,12 +91,11 @@ function addGlobalEventListeners(scene) {
     (e) => {
       if (!mainScene?.hero) return;
       const hero = mainScene?.hero;
-      const isAiming = hero.hasRangedWeapon();
-      if (isAiming) {
+      const isAimable = hero.hasRangedWeapon();
+      if (isAimable) {
         document.getElementById("game").style.cursor = "none";
-        hero.state.isAiming = true;
       }
-      scene.socket.emit("updateState", { isAiming, isHoldingAttack: true });
+      scene.socket.emit("updateState", { isAiming: isAimable, isHoldingAttack: true });
     },
     scene
   );
@@ -116,7 +115,7 @@ function addGlobalEventListeners(scene) {
           spellName: ability?.base,
           castAngle: hero?.state?.lastAngle,
         });
-        hero.state.isAiming = false;
+        scene.socket.emit("updateState", { isAiming: false });
         document.getElementById("game").style.cursor = "default";
       }
       /* If it is food we are trying to consume it */
