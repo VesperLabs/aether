@@ -1179,7 +1179,7 @@
           "spCost": 3
         },
         "requirements": {
-          "dexterity": 5
+          "dexterity": 3
         }
       }
     }
