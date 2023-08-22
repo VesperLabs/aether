@@ -253,6 +253,7 @@ class Character extends Phaser.GameObjects.Container {
     return true;
   }
   triggerSecondAttack() {
+    if (this.state.isAttacking) return;
     if (this.action === "attack_right" && this.hasWeaponLeft()) {
       this.doAttack({ count: 2, castAngle: this.state.lastAngle });
     }

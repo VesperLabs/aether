@@ -80,6 +80,12 @@ function addGlobalEventListeners(scene) {
       hero.state.isAiming = false;
       hero.state.holdingAttack = false;
       document.getElementById("game").style.cursor = "default";
+      const isAimable = hero.hasRangedWeapon();
+
+      if (isAimable) {
+        updateAttackCooldown(hero);
+        hero?.doAttack?.({ count: 1, castAngle: hero.state.lastAngle, direction: hero.direction });
+      }
     },
     scene
   );
@@ -188,7 +194,7 @@ function addGlobalEventListeners(scene) {
       pointer.y = e?.detail.y;
       const cursorPoint = pointer.positionToCamera(mainScene.cameras.main);
       const direction = getSpinDirection({ x: hero.x, y: hero.y + hero.bodyOffsetY }, cursorPoint);
-      const lastAngle = Between(hero.x, hero.y + hero.bodyOffsetY, cursorPoint.x, cursorPoint.y);
+
       if (hero?.direction !== direction) {
         hero.direction = direction;
         scene.socket.emit("changeDirection", { direction });
@@ -320,6 +326,7 @@ function moveDirectHero(scene, time) {
   if (
     hero.state.holdingAttack &&
     hero?.hasWeapon() &&
+    !hero.hasRangedWeapon() &&
     !hero.state.isAttacking &&
     hero.state.lastAttack < Date.now() - hero.getFullAttackDelay() - 60
   ) {
@@ -327,7 +334,11 @@ function moveDirectHero(scene, time) {
     hero?.doAttack?.({ count: 1, castAngle: hero.state.lastAngle, direction });
   }
 
-  if (hero.state.isAttacking || hero?.state.isAiming || hero.state.holdingAttack) {
+  if (
+    (!hero.hasRangedWeapon() && hero.state.isAttacking) ||
+    hero?.state.isAiming ||
+    hero.state.holdingAttack
+  ) {
     vx = 0;
     vy = 0;
   }
