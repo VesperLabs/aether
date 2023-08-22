@@ -264,7 +264,6 @@ class Npc extends Character implements Npc {
     }
   }
   doAttack() {
-    let count = 1;
     const { scene, room, direction, id, state } = this ?? {};
     const targetPlayer = scene?.players?.[state?.lockedPlayerId] ?? null;
     if (state.isAttacking || state?.isDead) return;
@@ -273,6 +272,9 @@ class Npc extends Character implements Npc {
       targetPlayer?.state?.isDead
     )
       return;
+
+    // decides what hand ot hit with
+    const count = this.action === "attack_right" && this.hasWeaponLeft ? 2 : 1;
     // Set state to attacking and record attack time
     this.state.isAttacking = true;
     this.state.lastAttack = Date.now();

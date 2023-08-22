@@ -199,6 +199,7 @@ class Player extends Character {
     state.lastAttack = Date.now();
     this.action = action;
     this.direction = direction || this.direction;
+
     // If we are the hero, need to trigger the socket that we attacked
     if (this.isHero) {
       this.scene.socket.emit("attack", {
@@ -537,12 +538,16 @@ function updateCurrentSpeed(player) {
   const vy = player.vy;
   player.currentSpeed = Math.max(Math.abs(vx), Math.abs(vy));
 
-  if (player.state.isAttacking) {
+  const canMoveRanged = player.isHero && player.hasRangedWeapon();
+
+  if (player.state.isAttacking && !canMoveRanged) {
     return;
   }
 
   if (player.state.isAiming) {
     player.action = "stand";
+    if (player.hasRangedWeaponLeft()) player.action = "attack_left";
+    if (player.hasRangedWeaponRight()) player.action = "attack_right";
     return;
   }
 
