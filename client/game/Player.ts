@@ -39,9 +39,12 @@ class Player extends Character {
     this.state.doMpRegen = state.doMpRegen;
     this.state.doSpRegen = state.doSpRegen;
     this.state.lastCombat = state.lastCombat;
-    this.state.isAiming = state.isAiming;
-    this.state.isHoldingAttack = state.isHoldingAttack;
-    if (!this.isHero) this.state.lastAngle = state.lastAngle;
+
+    if (!this.isHero) {
+      this.state.lastAngle = state.lastAngle;
+      this.state.isAiming = state.isAiming;
+      this.state.isHoldingAttack = state.isHoldingAttack;
+    }
   }
   updateData(data) {
     this.activeItemSlots = data?.activeItemSlots;
