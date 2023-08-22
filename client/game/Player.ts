@@ -553,7 +553,7 @@ function updateCurrentSpeed(player) {
   if (player.state.isHoldingAttack) {
     if (player.hasRangedWeaponLeft()) player.action = "attack_left";
     if (player.hasRangedWeaponRight()) player.action = "attack_right";
-    return;
+    if (player.hasRangedWeapon()) return;
   }
 
   if (player.state.isAiming) {

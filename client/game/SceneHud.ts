@@ -126,7 +126,7 @@ function addGlobalEventListeners(scene) {
           spellName: ability?.base,
           castAngle: hero?.state?.lastAngle,
         });
-        hero.state.isAiming = true;
+        hero.state.isAiming = false;
         scene.socket.emit("updateState", { isAiming: hero.state.isAiming });
         document.getElementById("game").style.cursor = "default";
       }
