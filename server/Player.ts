@@ -31,6 +31,7 @@ class Player extends ServerCharacter implements ServerPlayer {
     const spCost = this.getAttackSpCost(count);
 
     this.direction = direction;
+
     this.modifyStat("sp", -spCost);
 
     scene.io.to(this?.roomName).emit("modifyPlayerStat", {
@@ -64,6 +65,7 @@ class Player extends ServerCharacter implements ServerPlayer {
 
     // use the mana
     const mpCost = ability?.stats?.mpCost || 1;
+
     this.state.lastCast = Date.now();
     this.modifyStat("mp", -mpCost);
     this.scene.io.to(this?.roomName).emit("modifyPlayerStat", {

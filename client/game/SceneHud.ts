@@ -64,10 +64,11 @@ function addGlobalEventListeners(scene) {
       const abilities = hero?.abilities;
       const ability = abilities?.[e?.detail];
       const details = spellDetails?.[ability?.base];
-      const isAimable = details?.isAimable;
-      if (isAimable) {
+
+      if (details?.isAimable) {
+        hero.state.isAiming = true;
         document.getElementById("game").style.cursor = "none";
-        scene.socket.emit("updateState", { isAiming: true });
+        scene.socket.emit("updateState", { isAiming: hero.state.isAiming });
       }
     },
     scene
@@ -82,7 +83,13 @@ function addGlobalEventListeners(scene) {
         updateAttackCooldown(hero);
         hero?.doAttack?.({ count: 1, castAngle: hero.state.lastAngle, direction: hero.direction });
       }
-      scene.socket.emit("updateState", { isAiming: false, isHoldingAttack: false });
+      // update the state optimistically
+      hero.state.isAiming = false;
+      hero.state.isHoldingAttack = false;
+      scene.socket.emit("updateState", {
+        isAiming: hero.state.isAiming,
+        isHoldingAttack: hero.state.isHoldingAttack,
+      });
     },
     scene
   );
@@ -91,11 +98,15 @@ function addGlobalEventListeners(scene) {
     (e) => {
       if (!mainScene?.hero) return;
       const hero = mainScene?.hero;
-      const isAimable = hero.hasRangedWeapon();
-      if (isAimable) {
+      hero.state.isHoldingAttack = true;
+      if (hero.hasRangedWeapon()) {
+        hero.state.isAiming = true;
         document.getElementById("game").style.cursor = "none";
       }
-      scene.socket.emit("updateState", { isAiming: isAimable, isHoldingAttack: true });
+      scene.socket.emit("updateState", {
+        isAiming: hero.state.isAiming,
+        isHoldingAttack: hero.state.isHoldingAttack,
+      });
     },
     scene
   );
@@ -115,7 +126,8 @@ function addGlobalEventListeners(scene) {
           spellName: ability?.base,
           castAngle: hero?.state?.lastAngle,
         });
-        scene.socket.emit("updateState", { isAiming: false });
+        hero.state.isAiming = true;
+        scene.socket.emit("updateState", { isAiming: hero.state.isAiming });
         document.getElementById("game").style.cursor = "default";
       }
       /* If it is food we are trying to consume it */
