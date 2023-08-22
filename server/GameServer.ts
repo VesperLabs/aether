@@ -158,6 +158,18 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         socket.to(player?.roomName).emit("playerCastSpell", { socketId, base, ilvl, castAngle });
       });
 
+      socket.on("updateState", (state) => {
+        const player = scene.players[socketId];
+
+        // Loop through each key in the state object
+        for (const key in state) {
+          if (state.hasOwnProperty(key)) {
+            // Update the corresponding key in player's state
+            player.state[key] = state[key];
+          }
+        }
+      });
+
       socket.on("grabLoot", ({ lootId, direction } = {}) => {
         if (scene.loots[lootId]?.expiredSince) return; //loot expired, do not let them pick it
         const player = scene.players[socketId];
