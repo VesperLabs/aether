@@ -245,7 +245,7 @@ const useGetBaseCharacterDefaults = ({ level = 1, charClass }) => {
   const getStartingWeapon = () => {
     if (isMage) return ItemBuilder.buildItem("weapon", "common", "wand");
     if (isWarrior) return ItemBuilder.buildItem("weapon", "common", "axe");
-    if (isRogue) return ItemBuilder.buildItem("ranged", "common", "bow");
+    if (isRogue) return ItemBuilder.buildItem("weapon", "common", "katar");
   };
 
   const startStat = 2 * level + 3;
