@@ -7,6 +7,7 @@ import {
   POTION_COOLDOWN,
   BODY_SIZE,
   RACES_WITH_ATTACK_ANIMS,
+  RANGE_MULTIPLIER,
 } from "./utils";
 
 class Character extends Phaser.GameObjects.Container {
@@ -202,8 +203,8 @@ class Character extends Phaser.GameObjects.Container {
     this.state.isPotioning = !isReady;
     return { percentageRemaining, timeRemaining, isReady };
   }
-  getMeleeRange(hand = "handLeft") {
-    return (this?.visibleEquipment?.[hand]?.stats?.range || 1) * 2;
+  getWeaponRange(hand = "handLeft") {
+    return (this?.visibleEquipment?.[hand]?.stats?.range || 1) * 2 * RANGE_MULTIPLIER;
   }
   checkOutOfCombat() {
     const isOutOfCombat = Date.now() - this.state.lastCombat > 5000;

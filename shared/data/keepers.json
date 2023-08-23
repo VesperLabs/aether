@@ -73,7 +73,7 @@
       },
       "quests": ["crab-catching", "crab-claws", "fish-spearing", "find-tudwick"],
       "shop": [
-        { "item": ["ranged", "common", "bow"], "stock": 1 },
+        { "item": ["ranged", "common", "shortBow"], "stock": 1 },
         { "item": ["gloves", "common", "clothGloves"], "stock": 1 },
         { "item": ["armor", "common", "clothRobe"], "stock": 1 },
         { "item": ["pants", "common", "clothPants"], "stock": 1 }
@@ -151,7 +151,7 @@
       "level": 50
     },
     "equipment": {
-      "handLeft": ["ranged", "common", "bow"],
+      "handLeft": ["ranged", "common", "shortBow"],
       "handRight": null,
       "helmet": ["helmet", "unique", "tudwicksCap"],
       "accessory": null,

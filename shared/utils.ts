@@ -2,6 +2,7 @@ export const HAIR_HIDING_HELMETS = ["helmet-armet", "helmet-hood", "helmet-horne
 export const FACE_HIDING_HELMETS = ["helmet-armet", "helmet-horned"];
 export const ACCESSORY_HIDING_HELMETS = ["helmet-armet", "helmet-horned"];
 export const MAX_INVENTORY_ITEMS = 32;
+export const RANGE_MULTIPLIER = 14; //weapon range multiplier
 export const BUFF_SPELLS = [
   "evasion",
   "brute",
@@ -224,4 +225,10 @@ export function filterVisibleEquipment(player: FullCharacterState) {
   return Object.fromEntries(
     Object.entries(player?.equipment).filter(([key]) => player?.activeItemSlots?.includes(key))
   );
+}
+
+export function distanceTo(first, second) {
+  let dx = second?.x - first?.x;
+  let dy = second?.y - first?.y;
+  return Math.sqrt(dx * dx + dy * dy);
 }
