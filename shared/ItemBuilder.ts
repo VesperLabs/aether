@@ -219,9 +219,11 @@ const buildItem = (...args: BuildItem): any => {
 
   /* Magic and Rare Item Spawning */
   if (item.rarity == "magic" && shouldSpawnMods) {
-    const { randomMod } = rollSuffix(item, "magic");
-    item.name = item.name + " " + randomMod.name;
-    item.key = item.key.replace("-common-", "-magic-");
+    const randomMod = rollSuffix(item, "magic");
+    if (randomMod) {
+      item.name = item.name + " " + randomMod.name;
+      item.key = item.key.replace("-common-", "-magic-");
+    }
   }
 
   if (item.rarity == "rare" && shouldSpawnMods) {
@@ -244,6 +246,8 @@ const rollSuffix = (item, rarity) => {
     // suffixes only allowed on certain types
     ?.filter((s) => s.types.includes("*") || s.types.includes(item.type));
   const randomMod = modSuffixes[randomNumber(0, modSuffixes.length - 1)];
+
+  if (!randomMod) return null;
   // magic items get a bit more of a buff
   const rarityBump = rarity === "magic" ? 1 : 0;
 
@@ -258,7 +262,7 @@ const rollSuffix = (item, rarity) => {
     }
   });
 
-  return { randomMod };
+  return randomMod;
 };
 
 function getItemCost(item: Item) {

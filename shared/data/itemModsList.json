@@ -142,7 +142,7 @@
       "ilvl": 1,
       "name": "of Armor Pierce",
       "stats": { "armorPierce": [1, 2] },
-      "types": ["weapon"]
+      "types": ["weapon", "ranged"]
     },
     { "ilvl": 2, "name": "of Critical Chance", "stats": { "critChance": [1, 2] }, "types": ["*"] },
     {
@@ -158,8 +158,15 @@
         "accessory",
         "boots",
         "shield",
-        "amulet"
+        "amulet",
+        "ranged"
       ]
+    },
+    {
+      "ilvl": 2,
+      "name": "of Distance",
+      "stats": { "range": [0.25, 0.25] },
+      "types": ["ranged"]
     },
     {
       "ilvl": 2,
@@ -174,31 +181,31 @@
       "ilvl": 2,
       "name": "of Damage",
       "stats": { "minDamage": [0, 1], "maxDamage": [1, 2] },
-      "types": ["weapon"]
+      "types": ["weapon", "ranged"]
     },
     {
       "ilvl": 2,
       "name": "of Fire",
       "stats": { "minFireDamage": [0, 1], "maxFireDamage": [1, 2] },
-      "types": ["weapon"]
+      "types": ["weapon", "ranged"]
     },
     {
       "ilvl": 2,
       "name": "of Water",
       "stats": { "minWaterDamage": [0, 1], "maxWaterDamage": [1, 2] },
-      "types": ["weapon"]
+      "types": ["weapon", "ranged"]
     },
     {
       "ilvl": 2,
       "name": "of Light",
       "stats": { "minLightDamage": [0, 1], "maxLightDamage": [1, 2] },
-      "types": ["weapon"]
+      "types": ["weapon", "ranged"]
     },
     {
       "ilvl": 2,
       "name": "of Earth",
       "stats": { "minEarthDamage": [0, 1], "maxEarthDamage": [1, 2] },
-      "types": ["weapon"]
+      "types": ["weapon", "ranged"]
     }
   ]
 }
