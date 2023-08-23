@@ -1168,7 +1168,7 @@
     "common": {
       "shortBow": {
         "ilvl": 1,
-        "base": "bow",
+        "base": "shortBow",
         "name": "Short Bow",
         "texture": "ranged-bow",
         "slot": "hands",
@@ -1182,6 +1182,13 @@
         "requirements": {
           "dexterity": 3
         }
+      },
+      "swiftBow": {
+        "ilvl": 2,
+        "base": "shortBow",
+        "name": "Swift Bow",
+        "texture": "ranged-bow",
+        "slot": "hands"
       }
     }
   },
