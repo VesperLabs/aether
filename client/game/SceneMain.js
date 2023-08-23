@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import Door from "../../shared/Door";
 import Sign from "../../shared/Sign";
 import { getMapByName } from "../../shared/Maps";
+import { distanceTo } from "../../shared/utils";
 import { SnapshotInterpolation } from "@geckos.io/snapshot-interpolation";
 import {
   addPlayer,
@@ -12,7 +13,6 @@ import {
   addNpc,
   addLoot,
   getLoot,
-  distanceTo,
   MUSIC_VOLUME,
   playAudio,
   getGameZoomLevel,

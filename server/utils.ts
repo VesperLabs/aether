@@ -170,12 +170,6 @@ function getCharacterDirection(character, point) {
   }
 }
 
-function distanceTo(first, second) {
-  let dx = second?.x - first?.x;
-  let dy = second?.y - first?.y;
-  return Math.sqrt(dx * dx + dy * dy);
-}
-
 function cloneObject(obj) {
   return obj ? JSON.parse(JSON.stringify(obj)) : null;
 }
@@ -332,7 +326,6 @@ export {
   getDoor,
   randomNumber,
   getCharacterDirection,
-  distanceTo,
   cloneObject,
   checkSlotsMatch,
   getBuffRoomState,

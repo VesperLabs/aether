@@ -1,5 +1,6 @@
 import Player from "./game/Player";
 import LootItem from "./game/LootItem";
+import { distanceTo } from "@aether/shared";
 
 function addPlayer(scene, user) {
   const player = new Player(scene, user);
@@ -97,12 +98,6 @@ function getSpinDirection(hero, point) {
   }
 }
 
-function distanceTo(first, second) {
-  let dx = second?.x - first?.x;
-  let dy = second?.y - first?.y;
-  return Math.sqrt(dx * dx + dy * dy);
-}
-
 /* TODO: Move to DB */
 const MUSIC_VOLUME = 0.05;
 const SFX_VOLUME = 0.6;
@@ -190,7 +185,6 @@ export {
   resetEntities,
   constrainVelocity,
   getSpinDirection,
-  distanceTo,
   playAudio,
   calculateZoomLevel,
   getGameZoomLevel,

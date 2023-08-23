@@ -5,6 +5,7 @@ import {
   HAIR_HIDING_HELMETS,
   FACE_HIDING_HELMETS,
   ACCESSORY_HIDING_HELMETS,
+  distanceTo,
 } from "@aether/shared";
 import Bubble from "./Bubble";
 import Spell from "./Spell";
@@ -12,7 +13,7 @@ import Bar from "./Bar";
 import Crosshair from "./Crosshair";
 import Damage from "./Damage";
 import WeaponSprite from "./WeaponSprite";
-import { distanceTo, getSpinDirection, PLAYER_GRAB_RANGE, deriveElements } from "../utils";
+import { getSpinDirection, PLAYER_GRAB_RANGE, deriveElements } from "../utils";
 import Buff from "./Buff";
 import Hit from "./Hit";
 const { Sprite, BitmapText } = Phaser.GameObjects;

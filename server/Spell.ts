@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 const Sprite = Phaser.GameObjects.Sprite;
-import { spellDetails, BUFF_SPELLS } from "@aether/shared";
+import { spellDetails, BUFF_SPELLS, distanceTo } from "@aether/shared";
 
 class Spell extends Phaser.GameObjects.Container {
   public id: string;
@@ -8,12 +8,14 @@ class Spell extends Phaser.GameObjects.Container {
   public caster: Character;
   public target: Character;
   public spellName: string;
+  public spawnPoint: Coordinate;
   declare state: any;
   private velocityX: number;
   private velocityY: number;
   private allowedTargets: Array<string>;
   private maxVisibleTime: integer;
   private maxActiveTime: integer;
+  private maxDistance: integer;
   private bodySize: integer;
   private scaleBase: number;
   private scaleMultiplier: number;
@@ -30,7 +32,10 @@ class Spell extends Phaser.GameObjects.Container {
     scene: ServerScene,
     { id, room, caster, target, abilitySlot, spellName, castAngle = 0, ilvl = 1 }
   ) {
-    super(scene, caster.x, caster.y + caster.bodyCenterY);
+    const spawnPoint = { x: caster.x, y: caster.y + caster.bodyCenterY };
+    super(scene, spawnPoint.x, spawnPoint.y);
+
+    this.spawnPoint = spawnPoint;
     this.id = id;
     this.scene = scene;
     this.room = room;
@@ -61,12 +66,14 @@ class Spell extends Phaser.GameObjects.Container {
     this.spellSpeed = details?.spellSpeed;
     this.scaleBase = details?.scaleBase ?? 1;
     this.scaleMultiplier = details?.scaleMultiplier ?? 0;
+    this.maxDistance = details?.maxDistance ?? -1; //for ranged attacks
 
     scene.physics.add.existing(this);
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
 
     if (this.isAttackMelee) {
+      this.stickToCaster = true;
       let viewSize = 44;
       /* Take body size of NPC caster in to account. or they wont get close enough to attack */
       const fullBodySize = this.bodySize + (caster?.body?.radius ?? 8) / 2;
@@ -84,14 +91,14 @@ class Spell extends Phaser.GameObjects.Container {
       }
 
       if (spellName.includes("attack_left")) {
-        const rangeLeft = caster?.getMeleeRange("handLeft");
-        this.body.setCircle(rangeLeft * 14, -rangeLeft * 14, -rangeLeft * 14);
+        const rangeLeft = caster?.getWeaponRange("handLeft");
+        this.body.setCircle(rangeLeft, -rangeLeft, -rangeLeft);
         this.spell.displayWidth = viewSize * rangeLeft;
         this.spell.displayHeight = viewSize * rangeLeft;
       }
       if (spellName.includes("attack_right")) {
-        const rangeRight = caster?.getMeleeRange("handRight");
-        this.body.setCircle(rangeRight * 14, -rangeRight * 14, -rangeRight * 14);
+        const rangeRight = caster?.getWeaponRange("handRight");
+        this.body.setCircle(rangeRight, -rangeRight, -rangeRight);
         this.spell.displayWidth = viewSize * rangeRight;
         this.spell.displayHeight = viewSize * rangeRight;
       }
@@ -104,6 +111,9 @@ class Spell extends Phaser.GameObjects.Container {
       this.velocityX = Math.cos(castAngle) * this?.spellSpeed;
       this.velocityY = Math.sin(castAngle) * this?.spellSpeed;
       this.spell.setRotation(castAngle);
+      this.maxDistance = spellName.includes("attack_left_ranged")
+        ? caster?.getWeaponRange("handLeft")
+        : caster?.getWeaponRange("handRight");
     }
     if (spellName == "fireball") {
       this.velocityX = Math.cos(castAngle) * this?.spellSpeed;
@@ -134,13 +144,16 @@ class Spell extends Phaser.GameObjects.Container {
     /* TODO: When we add buffs, make sure they do the same as adjustSpellPosition on clientside */
   }
   update() {
-    const now = Date.now();
+    this.state.isExpired =
+      this?.maxDistance > -1
+        ? distanceTo(this, this.spawnPoint) >= this.maxDistance
+        : Date.now() - this.state.spawnTime > this.maxActiveTime;
+    if (this.state.isExpired) return;
     this.adjustSpellPosition();
     this.checkCollisions();
-    this.body.setVelocity(this.velocityX, this.velocityY);
-    this.state.isExpired = now - this.state.spawnTime > this.maxActiveTime;
   }
   checkCollisions() {
+    if (this?.state?.isExpired) return;
     const { target, caster, scene, allowedTargets, abilitySlot } = this;
     const direction = caster?.direction;
     const players = this.room.playerManager.players?.getChildren() || [];
@@ -179,7 +192,9 @@ class Spell extends Phaser.GameObjects.Container {
     if (this.stickToCaster) {
       this.x = this.caster.x;
       this.y = this.caster.y + this.caster.bodyCenterY;
+      return;
     }
+    this.body.setVelocity(this.velocityX, this.velocityY);
   }
   getTrimmed() {
     return {
