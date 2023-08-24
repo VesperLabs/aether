@@ -609,8 +609,9 @@ const CooldownTimer = ({ cooldown }) => {
             color: "#000",
           },
           "& circle:last-of-type": {
-            opacity: 0.15,
+            opacity: percentage < 1 ? 0.15 : 0,
             color: "#FFF",
+            transition: ".3s ease opacity",
           },
         }}
       />
