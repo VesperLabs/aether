@@ -74,7 +74,7 @@
   },
   "stun": {
     "type": "debuff",
-    "duration": 250
+    "duration": 500
   },
   "slow": {
     "type": "debuff",
