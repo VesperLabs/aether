@@ -77,7 +77,7 @@
     {
       "ilvl": 1,
       "name": "of Fire Resist",
-      "stats": { "fireResistance": [1, 2] },
+      "stats": { "fireResistance": [2, 3] },
       "types": [
         "armor",
         "helmet",
@@ -93,7 +93,7 @@
     {
       "ilvl": 1,
       "name": "of Light Resist",
-      "stats": { "lightResistance": [1, 2] },
+      "stats": { "lightResistance": [2, 3] },
       "types": [
         "armor",
         "helmet",
@@ -109,7 +109,7 @@
     {
       "ilvl": 1,
       "name": "of Earth Resist",
-      "stats": { "earthResistance": [1, 2] },
+      "stats": { "earthResistance": [2, 3] },
       "types": [
         "armor",
         "helmet",
@@ -125,7 +125,7 @@
     {
       "ilvl": 1,
       "name": "of Water Resist",
-      "stats": { "waterResistance": [1, 2] },
+      "stats": { "waterResistance": [2, 3] },
       "types": [
         "armor",
         "helmet",
