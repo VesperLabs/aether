@@ -368,7 +368,13 @@ class Npc extends Character implements Npc {
     return this.moveRandomly(time);
   }
   getShouldAttackRange() {
-    return this?.hasRangedWeapon() ? NPC_SHOULD_ATTACK_RANGE * 20 : NPC_SHOULD_ATTACK_RANGE;
+    if (this?.hasRangedWeaponLeft()) {
+      return this?.getWeaponRange("handLeft");
+    }
+    if (this?.hasRangedWeaponRight()) {
+      return this?.getWeaponRange("handRight");
+    }
+    return NPC_SHOULD_ATTACK_RANGE;
   }
   moveTowardPoint(coords: Coordinate) {
     const walkSpeed = this.stats.walkSpeed;

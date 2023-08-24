@@ -88,7 +88,7 @@
   },
   "evasion": {
     "allowedTargets": ["self", "ally"],
-    "maxVisibleTime": 1200,
+    "maxVisibleTime": 2200,
     "maxActiveTime": 100,
     "bodySize": 32,
     "npcCastRange": [100, 150],
@@ -100,7 +100,7 @@
   },
   "haste": {
     "allowedTargets": ["self", "ally"],
-    "maxVisibleTime": 1200,
+    "maxVisibleTime": 2200,
     "maxActiveTime": 100,
     "bodySize": 32,
     "npcCastRange": [100, 150],
@@ -112,7 +112,7 @@
   },
   "brute": {
     "allowedTargets": ["self", "ally"],
-    "maxVisibleTime": 1200,
+    "maxVisibleTime": 2200,
     "maxActiveTime": 100,
     "bodySize": 32,
     "npcCastRange": [100, 150],
@@ -124,7 +124,7 @@
   },
   "endurance": {
     "allowedTargets": ["self", "ally"],
-    "maxVisibleTime": 1200,
+    "maxVisibleTime": 2200,
     "maxActiveTime": 100,
     "bodySize": 32,
     "npcCastRange": [100, 150],
@@ -136,7 +136,7 @@
   },
   "genius": {
     "allowedTargets": ["self", "ally"],
-    "maxVisibleTime": 1200,
+    "maxVisibleTime": 2200,
     "maxActiveTime": 100,
     "bodySize": 32,
     "npcCastRange": [100, 150],
@@ -148,7 +148,7 @@
   },
   "regeneration": {
     "allowedTargets": ["self", "ally"],
-    "maxVisibleTime": 1200,
+    "maxVisibleTime": 2200,
     "maxActiveTime": 100,
     "bodySize": 32,
     "npcCastRange": [100, 150],
