@@ -76,7 +76,7 @@
   "quake": {
     "allowedTargets": ["enemy"],
     "maxVisibleTime": 2000,
-    "maxActiveTime": 500,
+    "maxActiveTime": 100,
     "bodySize": 32,
     "spellSpeed": 0,
     "scaleBase": 0.35,
