@@ -243,7 +243,12 @@ function updateSpellCooldown(hero, abilitySlot) {
   const baseCooldown = spellDetails?.[spellName]?.baseCooldown ?? 0;
   window.dispatchEvent(
     new CustomEvent("HERO_START_COOLDOWN", {
-      detail: { spellName, duration: castDelay + baseCooldown, startTime: Date.now() },
+      detail: {
+        spellName,
+        duration: castDelay + baseCooldown,
+        sharedDuration: castDelay,
+        startTime: Date.now(),
+      },
     })
   );
 }

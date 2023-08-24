@@ -354,10 +354,14 @@ function App({ socket, debug, game }) {
     };
 
     const onStartCooldown = (e) => {
-      const { spellName, duration, startTime } = e?.detail ?? {};
-      // TODO: If the spellName !== 'attack', 'potion', we need to also update the `global` one.
-      // the nons can animate as well if it changes
-      setCooldowns((prev) => ({ ...prev, [spellName]: { duration, startTime } }));
+      const { spellName, duration, startTime, sharedDuration } = e?.detail ?? {};
+      setCooldowns((prev) => {
+        // spellName !== 'attack', 'potion' update the shared base cooldown
+        if (sharedDuration) {
+          prev["global"] = { duration: sharedDuration, startTime };
+        }
+        return { ...prev, [spellName]: { duration, startTime } };
+      });
     };
 
     const onLoadError = () => {
@@ -562,8 +566,8 @@ const SkillButtons = () => {
 const CooldownTimer = ({ cooldown }) => {
   const { cooldowns } = useAppContext();
   const [percentage, setPercentage] = useState(0);
-  const duration = cooldowns[cooldown]?.duration ?? 0;
-  const startTime = cooldowns[cooldown]?.startTime ?? Date.now();
+  let duration = cooldowns[cooldown]?.duration ?? 0;
+  let startTime = cooldowns[cooldown]?.startTime ?? Date.now();
 
   useEffect(() => {
     const triggerTimer = () => {
@@ -576,7 +580,6 @@ const CooldownTimer = ({ cooldown }) => {
 
       if (elapsedTime >= duration) {
         setPercentage(1);
-        //setCooldowns((prev) => ({ ...prev, [cooldown]: 0 }));
         if (interval) clearInterval(interval);
       }
     };
@@ -606,7 +609,7 @@ const CooldownTimer = ({ cooldown }) => {
             color: "#000",
           },
           "& circle:last-of-type": {
-            opacity: 0.25,
+            opacity: 0.15,
             color: "#FFF",
           },
         }}
@@ -663,6 +666,7 @@ const AbilityButtons = () => {
                 },
               }}
             >
+              <CooldownTimer cooldown={"global"} />
               <CooldownTimer cooldown={cooldown} />
               <Text
                 sx={{
