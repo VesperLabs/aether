@@ -355,6 +355,8 @@ function App({ socket, debug, game }) {
 
     const onStartCooldown = (e) => {
       const { spellName, duration, startTime } = e?.detail ?? {};
+      // TODO: If the spellName !== 'attack', 'potion', we need to also update the `global` one.
+      // the nons can animate as well if it changes
       setCooldowns((prev) => ({ ...prev, [spellName]: { duration, startTime } }));
     };
 

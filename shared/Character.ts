@@ -243,11 +243,14 @@ class Character extends Phaser.GameObjects.Container {
   }
   checkCastReady(spellName?: string) {
     const now = Date.now();
-    const baseCooldown = spellDetails?.[spellName]?.baseCooldown ?? 0;
-    if (spellName && this.state.lastCast?.[spellName]) {
-      return now - this.state.lastCast?.[spellName] > this?.stats?.castDelay + baseCooldown;
+    let isThisSpellReady = true;
+    if (spellName) {
+      const baseCooldown = spellDetails?.[spellName]?.baseCooldown ?? 0;
+      const lastCast = this.state.lastCast?.[spellName] ?? Date.now() - POTION_COOLDOWN;
+      isThisSpellReady = now - lastCast > this?.stats?.castDelay + baseCooldown;
     }
-    return now - this.state.lastCast.global > this?.stats?.castDelay;
+    const isGlobalReady = now - this.state.lastCast.global > this?.stats?.castDelay;
+    return isThisSpellReady && isGlobalReady;
   }
   canCastSpell(abilitySlot) {
     if (this.state.isDead) return false;
