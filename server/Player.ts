@@ -59,14 +59,13 @@ class Player extends ServerCharacter implements ServerPlayer {
     //if the ability slotId is not in the activeItemSlots return
     if (this?.hasBuff("stun")) return;
     if (!this?.activeItemSlots?.includes?.(`${abilitySlot}`)) return;
-    if (!ability || this?.state?.isDead || !ability?.ilvl || !ability?.base) return;
+    if (!ability || !ability?.ilvl || !ability?.base) return;
     if (!this.canCastSpell(abilitySlot)) return;
-    if (!this.checkCastReady()) return;
 
     // use the mana
     const mpCost = ability?.stats?.mpCost || 1;
 
-    this.state.lastCast = Date.now();
+    this.state.lastCast.global = Date.now();
     this.modifyStat("mp", -mpCost);
     this.scene.io.to(this?.roomName).emit("modifyPlayerStat", {
       socketId: this.socketId,

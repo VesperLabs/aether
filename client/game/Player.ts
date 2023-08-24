@@ -222,15 +222,13 @@ class Player extends Character {
   }
   castSpell(spellData) {
     const { state, isHero } = this || {};
+    const { abilitySlot, castAngle } = spellData || {};
     if (isHero) {
-      if (state.isDead || state.isCasting) return;
-      if (this?.hasBuff("stun")) return;
-      const { abilitySlot, castAngle } = spellData || {};
       if (!this.canCastSpell(abilitySlot)) return;
+      if (this?.hasBuff("stun")) return;
       this.scene.socket.emit("castSpell", { abilitySlot, castAngle });
     }
-    state.isCasting = true;
-    state.lastCast = Date.now();
+    state.lastCast.global = Date.now();
     this.scene.add.existing(new Spell(this.scene, { ...spellData, caster: this }));
   }
   doGrab() {
@@ -266,7 +264,6 @@ class Player extends Character {
     this.body.setVelocity(0, 0);
     this.state.isDead = true;
     this.state.isAttacking = false;
-    this.state.isCasting = false;
     this.shadow.setVisible(false);
     this.chest.setVisible(false);
     this.face.setVisible(false);
@@ -399,7 +396,6 @@ class Player extends Character {
     this.setDepth(100 + this.y + this?.body?.height);
     this.checkAttackReady();
     if (this.isHero) {
-      this.checkCastReady(delta);
       this.checkPotionCooldown(delta);
       this.triggerSecondAttack();
     }

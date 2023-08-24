@@ -168,9 +168,6 @@ class Npc extends Character implements Npc {
     // Check if attack is ready
     this.checkAttackReady();
 
-    // check if spell is ready
-    this.checkCastReady(delta);
-
     // If is nasty and not locked onto a player, lock onto nearest player
     if (state?.isAggro && !state.lockedPlayerId) {
       const nearestPlayer = room?.playerManager?.getNearestPlayer(this);
@@ -210,10 +207,8 @@ class Npc extends Character implements Npc {
   doCast({ ability, abilitySlot, targetPlayer }) {
     const { scene, room, id, state } = this ?? {};
 
-    if (state.isCasting || state?.isDead) return;
-
-    this.state.isCasting = true;
-    this.state.lastCast = Date.now();
+    if (!this.canCastSpell(abilitySlot)) return;
+    this.state.lastCast.global = Date.now();
 
     const castAngle = (this.state.lastAngle = Math.atan2(
       targetPlayer.y - this.y,
@@ -236,7 +231,7 @@ class Npc extends Character implements Npc {
   intendCastSpell({ targetPlayer, delta }) {
     const { state, abilities } = this ?? {};
 
-    if (state.isCasting || state?.isDead) return;
+    if (!this.checkCastReady() || state?.isDead) return;
 
     let ability = null;
     let abilitySlot = null;
@@ -245,7 +240,7 @@ class Npc extends Character implements Npc {
       const details = spellDetails?.[spell?.base];
       if (!details) continue;
       // some spells like buffs have a long wait time, so we skip them
-      if (Date.now() - this.state.lastCast < delta + details?.npcCastWait) continue;
+      if (Date.now() - this.state.lastCast.global < delta + details?.npcCastWait) continue;
       // attack spells
       if (targetPlayer) {
         if (details?.allowedTargets?.includes("enemy") && details?.npcCastRange) {
@@ -374,6 +369,7 @@ class Npc extends Character implements Npc {
     if (this?.hasRangedWeaponRight()) {
       return this?.getWeaponRange("handRight");
     }
+    /* TODO: melee attack range too? */
     return NPC_SHOULD_ATTACK_RANGE;
   }
   moveTowardPoint(coords: Coordinate) {

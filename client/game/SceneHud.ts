@@ -153,14 +153,13 @@ function addGlobalEventListeners(scene) {
     const hero = mainScene?.hero;
     const { item, location } = e?.detail ?? {};
 
-    if (!hero?.checkCastReady()) return;
+    if (!hero.checkCastReady()) return;
 
     if (item?.base === "potion") {
       if (hero.state.isPotioning) return;
       hero.state.lastPotion = Date.now();
     } else {
-      hero.state.lastCast = Date.now();
-      hero.state.isCasting = true;
+      hero.state.lastCast.global = Date.now();
     }
     socket.emit("consumeItem", { item, location });
     window.dispatchEvent(
@@ -234,7 +233,6 @@ function updatePotionCooldown(hero) {
 
 function updateSpellCooldown(hero, abilitySlot) {
   if (!hero.canCastSpell(abilitySlot)) return;
-  if (hero.state.isCasting) return;
   const castDelay = hero.stats.castDelay;
   window.dispatchEvent(
     new CustomEvent("HERO_START_COOLDOWN", {
