@@ -523,7 +523,7 @@ function App({ socket, debug, game }) {
 }
 
 const SkillButtons = () => {
-  const { showButtonChat, cooldowns } = useAppContext();
+  const { showButtonChat } = useAppContext();
 
   return (
     <Flex

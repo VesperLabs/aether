@@ -9,6 +9,7 @@ import {
   RACES_WITH_ATTACK_ANIMS,
   RANGE_MULTIPLIER,
 } from "./utils";
+import { spellDetails } from ".";
 
 class Character extends Phaser.GameObjects.Container {
   startingCoords: Coordinate;
@@ -102,7 +103,9 @@ class Character extends Phaser.GameObjects.Container {
       lastCombat: Date.now() - POTION_COOLDOWN,
       lastPotion: Date.now() - POTION_COOLDOWN,
       lastAttack: Date.now() - POTION_COOLDOWN,
-      lastCast: Date.now() - POTION_COOLDOWN,
+      lastCast: {
+        global: Date.now() - POTION_COOLDOWN,
+      },
       lastFlash: Date.now(),
       lastDoorEntered: null,
       setFlash: false,
@@ -110,7 +113,6 @@ class Character extends Phaser.GameObjects.Container {
       isAttacking: false,
       isPotioning: false,
       isCharging: false,
-      isCasting: false,
       // npcAttackReady: false, /* Used on server for only NPCs */
       isDead: false,
       activeSets: [],
@@ -239,19 +241,17 @@ class Character extends Phaser.GameObjects.Container {
   hasRangedWeapon(key = "visibleEquipment") {
     return this.hasRangedWeaponLeft(key) || this.hasRangedWeaponRight(key);
   }
-  checkCastReady(delta: number = 0) {
-    const isCastReady = Date.now() - this.state.lastCast > delta + this?.stats?.castDelay;
-    if (isCastReady) {
-      this.state.isCasting = false;
-    } else {
-      this.state.isCasting = true;
-    }
+  checkCastReady(spellName?: string) {
+    const baseCooldown = spellDetails?.[spellName]?.baseCooldown ?? 0;
+    const isCastReady = Date.now() - this.state.lastCast.global > this?.stats?.castDelay;
     return isCastReady;
   }
   canCastSpell(abilitySlot) {
-    const { stats } = this?.abilities?.[abilitySlot] || {};
-    if (this?.stats?.mp < stats?.mpCost) return false;
-    return true;
+    if (this.state.isDead) return false;
+    const ability: Item = this?.abilities?.[abilitySlot];
+    if (!this.checkCastReady(ability?.base)) return false;
+    const mpCost = ability?.stats?.mpCost ?? 0;
+    return this?.stats?.mp >= mpCost;
   }
   triggerSecondAttack() {
     if (this.state.isAttacking) return;

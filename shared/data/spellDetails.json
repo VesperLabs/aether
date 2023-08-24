@@ -84,7 +84,8 @@
     "npcCastRange": [0, 16],
     "npcCastWait": 5000,
     "layerDepth": "bottom",
-    "shouldFade": true
+    "shouldFade": true,
+    "baseCooldown": 3000
   },
   "evasion": {
     "allowedTargets": ["self", "ally"],
