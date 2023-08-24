@@ -205,11 +205,15 @@ class Npc extends Character implements Npc {
     this.state.lockedPlayerId = id;
   }
   doCast({ ability, abilitySlot, targetPlayer }) {
-    const { scene, room, id, state } = this ?? {};
-
     if (!this.canCastSpell(abilitySlot)) return;
-    this.state.lastCast.global = Date.now();
 
+    const { scene, room, id } = this ?? {};
+    const spellName = ability?.base;
+
+    this.state.lastCast.global = Date.now();
+    if (spellName) {
+      this.state.lastCast[spellName] = Date.now();
+    }
     const castAngle = (this.state.lastAngle = Math.atan2(
       targetPlayer.y - this.y,
       targetPlayer.x - this.x
@@ -218,7 +222,7 @@ class Npc extends Character implements Npc {
     room?.spellManager.create({
       caster: this,
       target: targetPlayer,
-      spellName: ability?.base,
+      spellName,
       castAngle,
       ilvl: ability?.ilvl,
       abilitySlot,

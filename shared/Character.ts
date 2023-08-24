@@ -242,9 +242,12 @@ class Character extends Phaser.GameObjects.Container {
     return this.hasRangedWeaponLeft(key) || this.hasRangedWeaponRight(key);
   }
   checkCastReady(spellName?: string) {
+    const now = Date.now();
     const baseCooldown = spellDetails?.[spellName]?.baseCooldown ?? 0;
-    const isCastReady = Date.now() - this.state.lastCast.global > this?.stats?.castDelay;
-    return isCastReady;
+    if (spellName && this.state.lastCast?.[spellName]) {
+      return now - this.state.lastCast?.[spellName] > this?.stats?.castDelay + baseCooldown;
+    }
+    return now - this.state.lastCast.global > this?.stats?.castDelay;
   }
   canCastSpell(abilitySlot) {
     if (this.state.isDead) return false;
