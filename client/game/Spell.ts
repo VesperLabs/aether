@@ -150,7 +150,7 @@ class Spell extends Phaser.GameObjects.Container {
     this.state.isExpired =
       this?.maxDistance > -1
         ? distanceTo(this, this.spawnPoint) >= this.maxDistance
-        : Date.now() - this.state.spawnTime > this.maxActiveTime;
+        : Date.now() - this.state.spawnTime > this.maxVisibleTime;
     if (!this.scene || this.state.isExpired) return this.destroy(true);
     this.adjustSpellPosition();
   }
