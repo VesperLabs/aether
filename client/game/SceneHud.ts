@@ -217,7 +217,7 @@ function updateAttackCooldown(hero) {
   const duration = hero?.isDualWielding() ? attackDelay * 2 : attackDelay;
   window.dispatchEvent(
     new CustomEvent("HERO_START_COOLDOWN", {
-      detail: { type: "ATTACK", duration: duration, startTime: Date.now() },
+      detail: { spellName: "attack", duration: duration, startTime: Date.now() },
     })
   );
 }
@@ -226,17 +226,24 @@ function updatePotionCooldown(hero) {
   if (hero.state.isPotioning) return;
   window.dispatchEvent(
     new CustomEvent("HERO_START_COOLDOWN", {
-      detail: { type: "POTION", duration: POTION_COOLDOWN, startTime: Date.now() },
+      detail: {
+        spellName: "potion",
+        duration: POTION_COOLDOWN,
+        startTime: Date.now(),
+      },
     })
   );
 }
 
 function updateSpellCooldown(hero, abilitySlot) {
   if (!hero.canCastSpell(abilitySlot)) return;
-  const castDelay = hero.stats.castDelay;
+  const castDelay = hero?.stats?.castDelay;
+  const ability = hero?.abilities?.[abilitySlot];
+  const spellName = ability?.base;
+  const baseCooldown = spellDetails?.[spellName]?.baseCooldown ?? 0;
   window.dispatchEvent(
     new CustomEvent("HERO_START_COOLDOWN", {
-      detail: { type: "SPELL", duration: castDelay, startTime: Date.now() },
+      detail: { spellName, duration: castDelay + baseCooldown, startTime: Date.now() },
     })
   );
 }

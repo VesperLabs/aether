@@ -222,13 +222,18 @@ class Player extends Character {
   }
   castSpell(spellData) {
     const { state, isHero } = this || {};
-    const { abilitySlot, castAngle } = spellData || {};
+    const { abilitySlot, castAngle, spellName } = spellData || {};
     if (isHero) {
       if (!this.canCastSpell(abilitySlot)) return;
       if (this?.hasBuff("stun")) return;
       this.scene.socket.emit("castSpell", { abilitySlot, castAngle });
+      //optimistic update
+      state.lastCast.global = Date.now();
+      if (spellName) {
+        state.lastCast[spellName] = Date.now();
+      }
     }
-    state.lastCast.global = Date.now();
+
     this.scene.add.existing(new Spell(this.scene, { ...spellData, caster: this }));
   }
   doGrab() {

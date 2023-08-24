@@ -136,11 +136,7 @@ function App({ socket, debug, game }) {
   const [bagState, setBagState] = useState([]);
   const [sign, setSign] = useState(null);
   const [error, setError] = useState(null);
-  const [cooldowns, setCooldowns] = useState({
-    ATTACK: { duration: 0, startTime: Date.now() },
-    POTION: { duration: 0, startTime: Date.now() },
-    SPELL: { duration: 0, startTime: Date.now() },
-  });
+  const [cooldowns, setCooldowns] = useState({});
 
   /* Is the bag open or closed */
   const toggleBagState = (id: string) => {
@@ -358,8 +354,8 @@ function App({ socket, debug, game }) {
     };
 
     const onStartCooldown = (e) => {
-      const { type, duration, startTime } = e?.detail ?? {};
-      setCooldowns((prev) => ({ ...prev, [type]: { duration, startTime } }));
+      const { spellName, duration, startTime } = e?.detail ?? {};
+      setCooldowns((prev) => ({ ...prev, [spellName]: { duration, startTime } }));
     };
 
     const onLoadError = () => {
@@ -555,7 +551,7 @@ const SkillButtons = () => {
         onTouchEnd={() => window.dispatchEvent(new CustomEvent("HERO_ATTACK"))}
         keyboardKey="SPACE"
       >
-        <CooldownTimer cooldown={"ATTACK"} />
+        <CooldownTimer cooldown={"attack"} />
       </SkillButton>
     </Flex>
   );
@@ -564,8 +560,8 @@ const SkillButtons = () => {
 const CooldownTimer = ({ cooldown }) => {
   const { cooldowns } = useAppContext();
   const [percentage, setPercentage] = useState(0);
-  const duration = cooldowns[cooldown]?.duration;
-  const startTime = cooldowns[cooldown]?.startTime;
+  const duration = cooldowns[cooldown]?.duration ?? 0;
+  const startTime = cooldowns[cooldown]?.startTime ?? Date.now();
 
   useEffect(() => {
     const triggerTimer = () => {
@@ -644,7 +640,7 @@ const AbilityButtons = () => {
             : "./assets/icons/blank.png";
 
           /* Spells and non-potion items share a cooldown for now */
-          const cooldown = item?.base === "potion" ? "POTION" : "SPELL";
+          const cooldown = item?.base;
 
           return (
             <SkillButton

@@ -55,17 +55,20 @@ class Player extends ServerCharacter implements ServerPlayer {
   }
   doCast({ abilitySlot, castAngle }): void {
     const ability = this?.abilities?.[abilitySlot];
-
+    const spellName = ability?.base;
     //if the ability slotId is not in the activeItemSlots return
     if (this?.hasBuff("stun")) return;
     if (!this?.activeItemSlots?.includes?.(`${abilitySlot}`)) return;
-    if (!ability || !ability?.ilvl || !ability?.base) return;
+    if (!ability || !ability?.ilvl || !spellName) return;
     if (!this.canCastSpell(abilitySlot)) return;
 
     // use the mana
     const mpCost = ability?.stats?.mpCost || 1;
 
     this.state.lastCast.global = Date.now();
+    if (spellName) {
+      this.state.lastCast[spellName] = Date.now();
+    }
     this.modifyStat("mp", -mpCost);
     this.scene.io.to(this?.roomName).emit("modifyPlayerStat", {
       socketId: this.socketId,
@@ -76,7 +79,7 @@ class Player extends ServerCharacter implements ServerPlayer {
     this.room?.spellManager.create({
       caster: this,
       //target: targetPlayer,
-      spellName: ability?.base,
+      spellName,
       castAngle,
       ilvl: ability?.ilvl,
       abilitySlot,
