@@ -48,10 +48,13 @@ class ServerCharacter extends Character {
       }
     });
 
-    if (
-      (this.hasRangedWeapon("equipment") && this.isDualWielding("equipment")) ||
-      this.hasShield("equipment")
-    ) {
+    // Double shields or Bow+Other is a nono
+    const hasRangedAndOther =
+      this.hasRangedWeapon("equipment") &&
+      (this.isDualWielding("equipment") || this.hasShield("equipment"));
+    const hasDoubleShields = this.hasShieldLeft("equipment") && this.hasShieldRight("equipment");
+
+    if (hasRangedAndOther || hasDoubleShields) {
       activeItemSlots.splice(activeItemSlots.indexOf("handLeft"), 1);
       activeItemSlots.splice(activeItemSlots.indexOf("handRight"), 1);
     }

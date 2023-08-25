@@ -226,11 +226,14 @@ class Character extends Phaser.GameObjects.Container {
       ["weapon", "ranged"].includes(this?.[key]?.handRight?.type) || this.profile.race !== "human"
     );
   }
+  hasShieldLeft(key = "visibleEquipment") {
+    return ["shield"].includes(this?.[key]?.handLeft?.type);
+  }
+  hasShieldRight(key = "visibleEquipment") {
+    return ["shield"].includes(this?.[key]?.handRight?.type);
+  }
   hasShield(key = "visibleEquipment") {
-    return (
-      ["shield"].includes(this?.[key]?.handRight?.type) ||
-      ["shield"].includes(this?.[key]?.handLeft?.type)
-    );
+    return this.hasShieldLeft(key) || this.hasShieldRight(key);
   }
   hasRangedWeaponLeft(key = "visibleEquipment") {
     return ["ranged"].includes(this?.[key]?.handLeft?.type);
