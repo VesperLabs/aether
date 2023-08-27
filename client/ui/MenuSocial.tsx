@@ -131,11 +131,11 @@ const SocialPlayerRow = (props: { partyPlayer: any; children: any }) => {
     <Fragment key={partyPlayer?.id}>
       <MemoizedColumn player={player} as={Box} sx={{ position: "relative" }}>
         <Portrait
-          user={player}
-          scale={1}
+          player={player}
+          scale={0.5}
           size={25}
-          topOffset={-20}
-          filterKeys={["accessory", "helmet", "boots"]}
+          topOffset={13}
+          filteredSlots={["boots", "pants", "hands", "gloves"]}
         />
         {isLeader && (
           <Icon

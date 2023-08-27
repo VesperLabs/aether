@@ -563,7 +563,7 @@ const SkillButtons = () => {
   );
 };
 
-const CooldownTimer = ({ cooldown }) => {
+const CooldownTimer = ({ cooldown, color = "#FFF" }) => {
   const { cooldowns } = useAppContext();
   const [percentage, setPercentage] = useState(0);
   let duration = cooldowns[cooldown]?.duration ?? 0;
@@ -610,7 +610,7 @@ const CooldownTimer = ({ cooldown }) => {
           },
           "& circle:last-of-type": {
             opacity: percentage < 1 ? 0.15 : 0,
-            color: "#FFF",
+            color,
             transition: ".3s ease opacity",
           },
         }}
@@ -668,7 +668,7 @@ const AbilityButtons = () => {
               }}
             >
               <CooldownTimer cooldown={"global"} />
-              <CooldownTimer cooldown={cooldown} />
+              <CooldownTimer cooldown={cooldown} color="set" />
               <Text
                 sx={{
                   bottom: "13px",
