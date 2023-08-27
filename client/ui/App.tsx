@@ -33,7 +33,7 @@ import {
   Modal,
 } from "@aether/ui";
 import { getSpinDirection, calculateZoomLevel } from "../utils";
-import { isMobile } from "@aether/shared";
+import { applyTintToImage, isMobile } from "@aether/shared";
 import "react-tooltip/dist/react-tooltip.css";
 import { Theme } from "theme-ui";
 import { Donut, Text } from "@aether/ui";
@@ -621,10 +621,29 @@ const CooldownTimer = ({ cooldown, color = "#FFF" }) => {
 
 const AbilityButtons = () => {
   const { hero } = useAppContext();
-  /* Only make buttons for abilities that can be worn */
-  const abilities = Object.entries(hero?.abilities || {})?.filter(([slotKey, _]) =>
+  const abilities = Object.entries(hero?.abilities || {}).filter(([slotKey, _]) =>
     hero.activeItemSlots.includes(slotKey)
   );
+
+  const applyTintAndSetIcon = async (item) => {
+    const isSpell = item.type === "spell";
+    const texture = !isSpell ? item?.texture : "spell-" + item.base;
+
+    const iconURL = `./assets/atlas/${item?.type}/${texture}.png`;
+
+    if (item?.tint && iconURL) {
+      try {
+        const tintedCanvas = await applyTintToImage(iconURL, item?.tint); // Replace "0xFF0000" with the desired tint color
+        return tintedCanvas.toDataURL("image/png");
+      } catch (error) {
+        console.error("Error applying tint to icon:", error);
+        return iconURL;
+      }
+    }
+
+    return iconURL;
+  };
+
   return (
     <Flex
       sx={{
@@ -635,56 +654,67 @@ const AbilityButtons = () => {
         alignItems: "flex-end",
       }}
     >
-      {abilities
-        ?.filter(([_, item]) => !!item)
-        ?.map(([slotKey, item]) => {
-          const isSpell = item.type === "spell";
-          const texture = !isSpell ? item?.texture : "spell-" + item.base;
-
-          const icon = item
-            ? `./assets/atlas/${item?.type}/${texture}.png`
-            : "./assets/icons/blank.png";
-
-          /* Spells and non-potion items share a cooldown for now */
-          const cooldown = item?.base;
-
-          return (
-            <SkillButton
-              key={slotKey}
-              size={16}
-              icon={icon}
-              onTouchStart={() =>
-                window.dispatchEvent(new CustomEvent("HERO_AIM_START", { detail: slotKey }))
-              }
-              onTouchEnd={() =>
-                window.dispatchEvent(new CustomEvent("HERO_ABILITY", { detail: slotKey }))
-              }
-              keyboardKey={slotKey}
-              sx={{
-                "& > .icon": {
-                  mt: "-6px",
-                  mb: "6px",
-                },
-              }}
-            >
-              <CooldownTimer cooldown={"global"} />
-              <CooldownTimer cooldown={cooldown} color="set" />
-              <Text
-                sx={{
-                  bottom: "13px",
-                  left: 0,
-                  position: "absolute",
-                  fontSize: 0,
-                  textAlign: "center",
-                  width: "100%",
-                }}
-              >
-                {isSpell ? `Lv. ${item?.ilvl}` : item?.amount}
-              </Text>
-            </SkillButton>
-          );
-        })}
+      {abilities.map(([slotKey, item]) => (
+        <React.Fragment key={slotKey}>
+          {item && (
+            <TintedIconLoader
+              slotKey={slotKey}
+              item={item}
+              applyTintAndSetIcon={applyTintAndSetIcon}
+            />
+          )}
+        </React.Fragment>
+      ))}
     </Flex>
+  );
+};
+
+const TintedIconLoader = ({ slotKey, item, applyTintAndSetIcon }) => {
+  const isSpell = item.type === "spell";
+  const cooldown = item?.base;
+  const [tintedIcon, setTintedIcon] = useState("./assets/icons/blank.png");
+
+  useEffect(() => {
+    const loadTintedIcon = async () => {
+      const newTintedIcon = await applyTintAndSetIcon(item);
+      setTintedIcon(newTintedIcon);
+    };
+
+    loadTintedIcon();
+  }, [applyTintAndSetIcon, item]);
+
+  return (
+    <SkillButton
+      key={slotKey}
+      size={16}
+      icon={tintedIcon}
+      onTouchStart={() =>
+        window.dispatchEvent(new CustomEvent("HERO_AIM_START", { detail: slotKey }))
+      }
+      onTouchEnd={() => window.dispatchEvent(new CustomEvent("HERO_ABILITY", { detail: slotKey }))}
+      keyboardKey={slotKey}
+      sx={{
+        "& > .icon": {
+          mt: "-6px",
+          mb: "6px",
+        },
+      }}
+    >
+      <CooldownTimer cooldown={"global"} />
+      <CooldownTimer cooldown={cooldown} color="set" />
+      <Text
+        sx={{
+          bottom: "13px",
+          left: 0,
+          position: "absolute",
+          fontSize: 0,
+          textAlign: "center",
+          width: "100%",
+        }}
+      >
+        {isSpell ? `Lv. ${item?.ilvl}` : item?.amount}
+      </Text>
+    </SkillButton>
   );
 };
 
