@@ -46,11 +46,11 @@ const MenuProfile = () => {
           }}
         >
           <Portrait
-            scale={4}
-            user={hero}
+            scale={2.25}
+            player={hero}
             size={150}
-            topOffset={90}
-            filterKeys={["accessory", "helmet", "boots"]}
+            topOffset={48}
+            filteredSlots={["accessory", "helmet", "boots", "hands", "gloves"]}
           />
           <Input
             sx={{ width: 150, fontSize: 4 }}

@@ -93,10 +93,11 @@ const Buffs = ({ player, sx }) => {
 };
 
 const PlayerHud = ({ player }) => {
-  const { zoom, hero } = useAppContext();
-  const { stats } = player ?? {};
+  const { hero } = useAppContext();
+  const { stats, profile, equipment } = player ?? {};
   const isHero = player?.id === hero?.id;
   const isOffScreen = !player;
+  const memoProps = { equipment, profile };
 
   return (
     <Flex
@@ -109,14 +110,19 @@ const PlayerHud = ({ player }) => {
       <Memoized
         as={Portrait}
         player={player}
-        user={player}
-        filterKeys={["boots", "pants"]}
+        filteredSlots={["boots", "pants"]}
         size={isHero ? 54 : 32}
-        scale={isHero ? 2 : 1.25}
-        topOffset={isHero ? 10 : -16}
+        scale={isHero ? 1 : 0.57}
+        topOffset={isHero ? 22 : 12}
+        memoProps={memoProps}
       />
       <Flex sx={{ flexDirection: "column", gap: "1px", pointerEvents: "all" }}>
-        <Memoized as={UserName} sx={{ fontSize: isHero ? 2 : 0 }} player={player} />
+        <Memoized
+          as={UserName}
+          sx={{ fontSize: isHero ? 2 : 0 }}
+          player={player}
+          memoProps={memoProps}
+        />
         <Bar
           data-tooltip-content={`HP: ${stats?.hp} / ${stats?.maxHp}`}
           color="red.700"
@@ -156,7 +162,12 @@ const PlayerHud = ({ player }) => {
         )}
         <Buffs player={player} sx={!isHero ? { transform: `scale(0.6)` } : {}} />
       </Flex>
-      <Memoized as={LevelIcon} player={player} sx={!isHero ? { transform: `scale(0.6)` } : {}} />
+      <Memoized
+        as={LevelIcon}
+        player={player}
+        sx={!isHero ? { transform: `scale(0.6)` } : {}}
+        memoProps={memoProps}
+      />
     </Flex>
   );
 };
@@ -214,11 +225,12 @@ const MenuHud = () => {
 
 const Memoized = memo(
   (props: any) => {
-    const { as: As = Text, player } = props;
+    const { as: As = Text } = props;
     return <As {...props}></As>;
   },
   (prev, next) => {
     if (prev?.player && !next?.player) return true;
+    if (JSON.stringify(prev?.memoProps) === JSON.stringify(next?.memoProps)) return true;
     return false;
   }
 );
