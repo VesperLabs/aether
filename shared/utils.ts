@@ -95,6 +95,7 @@ export function trimCanvas(c) {
 export async function loadImageFromURL(url) {
   return new Promise((resolve, reject) => {
     const image = new Image();
+    image.crossOrigin = "Anonymous";
     image.onload = () => resolve(image);
     image.onerror = reject;
     image.src = url;
@@ -104,6 +105,7 @@ export async function loadImageFromURL(url) {
 export async function applyTintToImage(imageUrl, tint) {
   try {
     const image = await loadImageFromURL(imageUrl);
+
     const canvas = imageToCanvas(image);
     const tintedCanvas = tintCanvas(canvas, tint);
     return tintedCanvas;
