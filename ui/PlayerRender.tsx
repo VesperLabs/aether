@@ -4,6 +4,7 @@ import {
   filterVisibleEquipment,
   resolveAsset,
   tintCanvas,
+  loadCacheImage,
 } from "@aether/shared";
 import { useEffect, useRef } from "react";
 import { Box } from "@aether/ui";
@@ -54,7 +55,7 @@ function PlayerRender({ player, sx, shouldBuffer = true, filteredSlots, ...props
       btx.clearRect(0, 0, MIN_CANVAS_SIZE, MIN_CANVAS_SIZE);
 
       for (const asset of assets) {
-        const img = await loadImage(asset.src);
+        const img = await loadCacheImage(asset.src);
 
         const isLeftWeapon = asset.slotKey === "handLeft";
         const isRightWeapon = asset.slotKey === "handRight";
@@ -136,17 +137,6 @@ function PlayerRender({ player, sx, shouldBuffer = true, filteredSlots, ...props
       />
     </Box>
   );
-}
-
-// Utility function to load an image and handle the onload event as a Promise
-function loadImage(src) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.crossOrigin = "Anonymous";
-    img.onload = () => resolve(img);
-    img.onerror = () => reject(new Error(`Failed to load image: ${src}`));
-    img.src = src;
-  });
 }
 
 const getObscuredKeys = ({ filteredSlots, visibleParts }) => {

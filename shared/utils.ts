@@ -94,20 +94,8 @@ export function trimCanvas(c) {
   return copy.canvas;
 }
 
-export async function loadImageFromURL(url) {
-  return new Promise((resolve, reject) => {
-    const image = new Image();
-    image.crossOrigin = "Anonymous";
-    image.onload = () => resolve(image);
-    image.onerror = reject;
-    image.src = url;
-  });
-}
-
-export async function applyTintToImage(imageUrl, tint) {
+export function applyTintToImage(image, tint) {
   try {
-    const image = await loadImageFromURL(imageUrl);
-
     const canvas = imageToCanvas(image);
     const tintedCanvas = tintCanvas(canvas, tint);
     return tintedCanvas;
@@ -159,23 +147,24 @@ export function tintCanvas(c, tint = "0xFFFFFF") {
 }
 
 export function assetToCanvas({ asset, tint, setImageData, shouldTrim = true }) {
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
-  ctx.imageSmoothingEnabled = false;
-  const img = new Image();
-  img.crossOrigin = "Anonymous";
+  loadCacheImage(asset.src)
+    .then((img) => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      ctx.imageSmoothingEnabled = false;
 
-  img.onload = () => {
-    const [x, y, w, h] = asset.previewRect;
-    canvas.width = w;
-    canvas.height = h;
-    ctx.drawImage(img, x, y, w, h, 0, 0, w, h);
-    const trimmedCanvas = shouldTrim ? trimCanvas(canvas) : canvas;
-    const tintedCanvas = tintCanvas(trimmedCanvas, tint);
-    setImageData(tintedCanvas.toDataURL("image/png"));
-  };
+      const [x, y, w, h] = asset.previewRect;
+      canvas.width = w;
+      canvas.height = h;
+      ctx.drawImage(img, x, y, w, h, 0, 0, w, h);
 
-  img.src = asset.src;
+      const trimmedCanvas = shouldTrim ? trimCanvas(canvas) : canvas;
+      const tintedCanvas = tintCanvas(trimmedCanvas, tint);
+      setImageData(tintedCanvas.toDataURL("image/png"));
+    })
+    .catch((error) => {
+      console.error("Error loading or processing image:", error);
+    });
 }
 
 export function convertMsToS(s) {
@@ -256,4 +245,23 @@ export function distanceTo(first, second) {
   let dx = second?.x - first?.x;
   let dy = second?.y - first?.y;
   return Math.sqrt(dx * dx + dy * dy);
+}
+
+// Utility function to load an image and handle the onload event as a Promise
+const imageCache = {}; // In-memory cache for images
+export function loadCacheImage(src) {
+  if (imageCache[src]) {
+    return Promise.resolve(imageCache[src]); // Return cached image if available
+  }
+
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "Anonymous";
+    img.onload = () => {
+      imageCache[src] = img; // Cache the loaded image
+      resolve(img);
+    };
+    img.onerror = () => reject(new Error(`Failed to load image: ${src}`));
+    img.src = src;
+  });
 }
