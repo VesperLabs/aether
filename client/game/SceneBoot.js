@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import { assetList } from "../../shared/Assets";
 import soundList from "../../shared/data/soundList.json";
 import { mapList, mapImageList } from "../../shared/Maps";
+import { IMAGE_CACHE } from "@aether/shared";
 
 const onLoadError = (value) => {
   window.dispatchEvent(
@@ -44,6 +45,15 @@ class SceneBoot extends Phaser.Scene {
         let tempText = this.textures.get(asset.texture);
         tempText.add("preview", 0, ...asset.previewRect);
       });
+
+      /* Inject textures into game cache */
+      this.textures.each(function (texture) {
+        const key = assetList.find((t) => t?.texture === texture.key)?.src;
+        if (key && texture.source[0].image) {
+          IMAGE_CACHE[key] = texture.source[0].image;
+        }
+      });
+
       window.dispatchEvent(new Event("GAME_LOADED"));
       this.scene.start("SceneMain");
       this.scene.start("SceneHud");
