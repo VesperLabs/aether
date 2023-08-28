@@ -1,4 +1,4 @@
-import { POTION_BASES, applyTintToImage } from "@aether/shared";
+import { POTION_BASES, applyTintToImage, loadCacheImage } from "@aether/shared";
 import { CooldownTimer, SkillButton, useAppContext } from "./";
 import { Flex, Text } from "@aether/ui";
 import React, { useEffect, useState } from "react";
@@ -61,12 +61,12 @@ const AbilityButtons = () => {
   const applyTintAndSetIcon = async (item) => {
     const isSpell = item.type === "spell";
     const texture = !isSpell ? item?.texture : "spell-" + item.base;
-
     const iconURL = `./assets/atlas/${item?.type}/${texture}.png`;
 
     if (item?.tint && iconURL) {
       try {
-        const tintedCanvas = await applyTintToImage(iconURL, item?.tint); // Replace "0xFF0000" with the desired tint color
+        const image = await loadCacheImage(iconURL);
+        const tintedCanvas = applyTintToImage(image, item?.tint); // Replace "0xFF0000" with the desired tint color
         return tintedCanvas.toDataURL("image/png");
       } catch (error) {
         console.error("Error applying tint to icon:", error);
