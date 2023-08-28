@@ -94,11 +94,10 @@ const Buffs = ({ player, sx }) => {
 
 const PlayerHud = ({ player }) => {
   const { hero } = useAppContext();
-  const { stats, profile, equipment } = player ?? {};
+  const { stats, profile, activeItemSlots } = player ?? {};
   const isHero = player?.id === hero?.id;
   const isOffScreen = !player;
-  const memoProps = { equipment, profile };
-
+  const memoProps = { activeItemSlots, profile };
   return (
     <Flex
       sx={{

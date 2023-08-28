@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import { Flex, Text, Divider, Icon, Tooltip } from "@aether/ui";
-import { buffList, itemSetList, ItemBuilder, formatStats } from "@aether/shared";
+import { buffList, itemSetList, ItemBuilder, formatStats, CONSUMABLES_BASES } from "@aether/shared";
 import { useAppContext } from "./";
 
 const Label = (props) => <Text sx={{ fontWeight: "normal" }} {...props} />;
@@ -20,7 +20,7 @@ const ItemTooltip = ({ item, tooltipId, show }) => {
   const triggers = item?.triggers ?? [];
   const hasEffects = Object.keys(combinedEffects)?.length > 0;
   const hasBuffs = Object.keys(buffs)?.length > 0;
-  const isDoubleClickable = ["food", "potion", "bag"].includes(item.base);
+  const isDoubleClickable = [...CONSUMABLES_BASES, "bag"].includes(item.base);
   const numSetPieces = itemSetList?.[item?.setName]?.pieces;
 
   return (
@@ -162,7 +162,7 @@ const ItemTooltip = ({ item, tooltipId, show }) => {
                 textTransform: "none",
               }}
             >
-              Double click to {["food", "potion"]?.includes(item?.base) ? "consume" : "open"}
+              Double click to {CONSUMABLES_BASES?.includes(item?.base) ? "consume" : "open"}
             </Text>
             <Divider />
           </>

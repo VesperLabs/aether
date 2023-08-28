@@ -156,7 +156,7 @@ const SocialPlayerRow = (props: { partyPlayer: any; children: any }) => {
 
 const MemoizedColumn = memo(
   (props: any) => {
-    const { as: As = Text, player } = props;
+    const { as: As = Text } = props;
     return <As sx={COLUMN_STYLE} {...props}></As>;
   },
   (prev, next) => {
