@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import { assetList } from "../../shared/Assets";
 import soundList from "../../shared/data/soundList.json";
 import { mapList, mapImageList } from "../../shared/Maps";
-import { IMAGE_CACHE } from "@aether/shared";
+import { IMAGE_CACHE } from "../../shared/utils";
 
 const onLoadError = (value) => {
   window.dispatchEvent(
