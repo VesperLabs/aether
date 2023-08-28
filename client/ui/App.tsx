@@ -1,42 +1,19 @@
 import React, { useEffect, useState, createContext, useContext } from "react";
 import {
-  SkillButton,
   theme,
-  MenuEquipment,
-  MenuInventory,
-  MenuKeeper,
   MenuHud,
   ModalRespawn,
   ModalDropAmount,
-  MessageBox,
-  MenuButton,
-  MenuProfile,
-  MenuStats,
-  MenuQuests,
-  MenuAbilities,
   HUD_CONTAINER_ID,
-  Menu,
   ModalLogin,
-  MenuSocial,
-  MenuBag,
   ModalSign,
   ModalError,
-  StatusIcon,
+  MenuBar,
 } from "./";
-import {
-  ThemeProvider,
-  Box,
-  Flex,
-  KeyboardKey,
-  Input,
-  useViewportSizeEffect,
-  Modal,
-} from "@aether/ui";
+import { ThemeProvider, Box, useViewportSizeEffect, Modal } from "@aether/ui";
 import { getSpinDirection, calculateZoomLevel } from "../utils";
-import { POTION_BASES, applyTintToImage, isMobile } from "@aether/shared";
 import "react-tooltip/dist/react-tooltip.css";
 import { Theme } from "theme-ui";
-import { Donut, Text } from "@aether/ui";
 import { Socket } from "socket.io-client";
 
 interface AppContextValue {
@@ -151,231 +128,228 @@ function App({ socket, debug, game }) {
     });
   };
 
-  useEffect(() => {
-    const onConnect = () => {
-      setIsConnected(true);
-    };
+  const addMessage = (payload: Message) => {
+    setMessages((prev) => [...prev, { ...payload, timestamp: Date.now() }]);
+  };
 
-    const onDisconnect = () => {
-      setIsConnected(false);
-      setIsLoggedIn(false);
-      setTabKeeper(false);
-      setMessages([]);
-      setPlayers([]);
-      setParty([]);
-      setPartyInvites([]);
-      setHero(null);
-      setKeeper(null);
-      setSign(null);
-    };
+  const onConnect = () => {
+    setIsConnected(true);
+  };
 
-    const addMessage = (payload: Message) => {
-      setMessages((prev) => [...prev, { ...payload, timestamp: Date.now() }]);
-    };
+  const onDisconnect = () => {
+    setIsConnected(false);
+    setIsLoggedIn(false);
+    setTabKeeper(false);
+    setMessages([]);
+    setPlayers([]);
+    setParty([]);
+    setPartyInvites([]);
+    setHero(null);
+    setKeeper(null);
+    setSign(null);
+  };
 
-    const onPlayerJoin = (player, args) => {
-      /* Keep room list updated */
-      setPlayers((prev = []) => {
-        const playerExists = prev.some((p) => p?.id === player?.id);
-        return !playerExists ? prev.concat(player) : prev;
+  const onPlayerJoin = (player, args) => {
+    /* Keep room list updated */
+    setPlayers((prev = []) => {
+      const playerExists = prev.some((p) => p?.id === player?.id);
+      return !playerExists ? prev.concat(player) : prev;
+    });
+
+    /* Only show player join message if the user logged in, not if entered door */
+    if (args?.isLogin) addMessage({ type: "info", message: "A player has joined the game." });
+  };
+
+  const onPlayerLeave = (socketId) => {
+    setPlayers((prev) => prev.filter((player) => player.socketId !== socketId));
+  };
+
+  const onHeroInit = (payload: { players: Array<FullCharacterState>; socketId: string }, args) => {
+    const { players, socketId } = payload;
+    const player: FullCharacterState = players?.find((p) => p?.socketId === socketId);
+    //TODO: get rid of this session storage reference. i think we can just use a state callback here
+    sessionStorage.setItem("socketId", socketId);
+    setPlayers(players);
+    setHero(player);
+    if (args?.isLogin) setIsLoggedIn(true);
+  };
+
+  const onBuffUpdate = (payload: {
+    players: Array<FullCharacterState>;
+    socketId: string;
+    playerIdsThatLeveled?: Array<string>;
+  }) => {
+    const { players, playerIdsThatLeveled } = payload;
+    const socketId = sessionStorage.getItem("socketId");
+    const player: FullCharacterState = players?.find((p) => p?.socketId === socketId);
+    /* Keep the hero updated */
+    setHero((prev) => ({ ...prev, ...player }));
+    /* Show a message if the hero leveled */
+    if (playerIdsThatLeveled?.includes(player?.id)) {
+      addMessage({ type: "success", message: `You are now level ${player?.stats?.level}!` });
+    }
+    /* Merge updates into player */
+    setPlayers((prev) => {
+      return prev.map((p: any) => {
+        const foundPlayer = players?.find((x) => p?.id === x?.id);
+        const newPlayerState = foundPlayer ? { ...p, ...foundPlayer } : p;
+        return newPlayerState as FullCharacterState;
       });
+    });
+  };
 
-      /* Only show player join message if the user logged in, not if entered door */
-      if (args?.isLogin) addMessage({ type: "info", message: "A player has joined the game." });
-    };
-
-    const onPlayerLeave = (socketId) => {
-      setPlayers((prev) => prev.filter((player) => player.socketId !== socketId));
-    };
-
-    const onHeroInit = (
-      payload: { players: Array<FullCharacterState>; socketId: string },
-      args
-    ) => {
-      const { players, socketId } = payload;
-      const player: FullCharacterState = players?.find((p) => p?.socketId === socketId);
-      //TODO: get rid of this session storage reference. i think we can just use a state callback here
-      sessionStorage.setItem("socketId", socketId);
-      setPlayers(players);
+  const onPlayerUpdate = (player: FullCharacterState, args) => {
+    /* Keep room list updated */
+    setPlayers((prev) => {
+      return prev.map((p) => (p.id === player?.id ? player : p));
+    });
+    /* If the player is the current player */
+    if (sessionStorage.getItem("socketId") === player?.socketId) {
       setHero(player);
-      if (args?.isLogin) setIsLoggedIn(true);
-    };
-
-    const onBuffUpdate = (payload: {
-      players: Array<FullCharacterState>;
-      socketId: string;
-      playerIdsThatLeveled?: Array<string>;
-    }) => {
-      const { players, playerIdsThatLeveled } = payload;
-      const socketId = sessionStorage.getItem("socketId");
-      const player: FullCharacterState = players?.find((p) => p?.socketId === socketId);
-      /* Keep the hero updated */
-      setHero((prev) => ({ ...prev, ...player }));
-      /* Show a message if the hero leveled */
-      if (playerIdsThatLeveled?.includes(player?.id)) {
+      // quests can trigger this didLevel
+      if (args?.didLevel) {
         addMessage({ type: "success", message: `You are now level ${player?.stats?.level}!` });
       }
-      /* Merge updates into player */
-      setPlayers((prev) => {
-        return prev.map((p: any) => {
-          const foundPlayer = players?.find((x) => p?.id === x?.id);
-          const newPlayerState = foundPlayer ? { ...p, ...foundPlayer } : p;
-          return newPlayerState as FullCharacterState;
-        });
-      });
-    };
+    }
+  };
 
-    const onPlayerUpdate = (player: FullCharacterState, args) => {
-      /* Keep room list updated */
-      setPlayers((prev) => {
-        return prev.map((p) => (p.id === player?.id ? player : p));
+  const onKeeperDataUpdate = (args) => {
+    const scene = game.scene.getScene("SceneMain");
+    const hero = scene.hero;
+    const npc = scene.npcs.getChildren().find((n) => n?.id === args?.npcId);
+    if (hero?.state?.targetNpcId === args?.npcId) {
+      setKeeper({ ...npc, keeperData: args?.keeperData });
+      setHero((prev) => ({ ...prev, quests: args?.playerQuests }));
+      setTabKeeper(true);
+    }
+  };
+
+  const onHeroChatNpc = () => {
+    const scene = game.scene.getScene("SceneMain");
+    const hero = scene.hero;
+    const npcId = scene?.hero?.state?.targetNpcId;
+    const npcs = scene.npcs.getChildren();
+    const signs = scene.signs.getChildren();
+
+    const target = [...npcs, ...signs].find((n) => n?.id === npcId);
+
+    if (!target) {
+      return addMessage({ type: "error", message: "Who are you talking to?" });
+    }
+
+    if (target.kind === "keeper") {
+      return setTabKeeper((prev) => {
+        if (prev) return false; //already talking
+        socket.emit("chatNpc", { npcId: hero?.state?.targetNpcId });
       });
-      /* If the player is the current player */
-      if (sessionStorage.getItem("socketId") === player?.socketId) {
-        setHero(player);
-        // quests can trigger this didLevel
-        if (args?.didLevel) {
-          addMessage({ type: "success", message: `You are now level ${player?.stats?.level}!` });
+    }
+
+    if (target.kind === "sign") {
+      setSign(target);
+    }
+
+    const direction = getSpinDirection(hero, target);
+    if (hero?.direction !== direction) socket.emit("changeDirection", { direction });
+  };
+
+  const onLootGrabbed = ({ player, loot }) => {
+    const socketId = sessionStorage.getItem("socketId");
+    // only affect the player that grabbed the loot
+    if (socketId === player?.socketId) {
+      if (loot?.grabMessage) {
+        const item = loot?.item;
+        addMessage({ type: "success", message: `Found ${item?.name} x${item?.amount || 1}` });
+      }
+      /* Both quests and inventory only need to be updated when we pick an item */
+      setHero((prev) => ({
+        ...prev,
+        inventory: player?.inventory,
+        quests: player?.quests,
+        abilities: player?.abilities,
+      }));
+    }
+  };
+
+  const onUpdateHud = () => {
+    const hero: FullCharacterState = game.scene.getScene("SceneMain").hero;
+    setHero((prev) => ({ ...prev, state: hero?.state, stats: hero?.stats }));
+  };
+
+  /* Splice in some updates for keeping the party UI in sync */
+  const onUpdateRoomPlayers = (e) => {
+    const otherPlayers = e?.detail?.players?.filter((p) => !p.isHero);
+
+    setPlayers((players) => {
+      return players.map((player) => {
+        if (otherPlayers.some((p) => p.id === player.id)) {
+          const foundPlayer = otherPlayers?.find((p) => p.id === player.id);
+          return {
+            ...player,
+            stats: foundPlayer?.stats,
+            equipment: foundPlayer?.equipment,
+            profile: foundPlayer?.profile,
+          };
+        } else {
+          return player;
         }
-      }
-    };
-
-    const onKeeperDataUpdate = (args) => {
-      const scene = game.scene.getScene("SceneMain");
-      const hero = scene.hero;
-      const npc = scene.npcs.getChildren().find((n) => n?.id === args?.npcId);
-      if (hero?.state?.targetNpcId === args?.npcId) {
-        setKeeper({ ...npc, keeperData: args?.keeperData });
-        setHero((prev) => ({ ...prev, quests: args?.playerQuests }));
-        setTabKeeper(true);
-      }
-    };
-
-    const onHeroChatNpc = () => {
-      const scene = game.scene.getScene("SceneMain");
-      const hero = scene.hero;
-      const npcId = scene?.hero?.state?.targetNpcId;
-      const npcs = scene.npcs.getChildren();
-      const signs = scene.signs.getChildren();
-
-      const target = [...npcs, ...signs].find((n) => n?.id === npcId);
-
-      if (!target) {
-        return addMessage({ type: "error", message: "Who are you talking to?" });
-      }
-
-      if (target.kind === "keeper") {
-        return setTabKeeper((prev) => {
-          if (prev) return false; //already talking
-          socket.emit("chatNpc", { npcId: hero?.state?.targetNpcId });
-        });
-      }
-
-      if (target.kind === "sign") {
-        setSign(target);
-      }
-
-      const direction = getSpinDirection(hero, target);
-      if (hero?.direction !== direction) socket.emit("changeDirection", { direction });
-    };
-
-    const onLootGrabbed = ({ player, loot }) => {
-      const socketId = sessionStorage.getItem("socketId");
-      // only affect the player that grabbed the loot
-      if (socketId === player?.socketId) {
-        if (loot?.grabMessage) {
-          const item = loot?.item;
-          addMessage({ type: "success", message: `Found ${item?.name} x${item?.amount || 1}` });
-        }
-        /* Both quests and inventory only need to be updated when we pick an item */
-        setHero((prev) => ({
-          ...prev,
-          inventory: player?.inventory,
-          quests: player?.quests,
-          abilities: player?.abilities,
-        }));
-      }
-    };
-
-    const onUpdateHud = () => {
-      const hero: FullCharacterState = game.scene.getScene("SceneMain").hero;
-      setHero((prev) => ({ ...prev, state: hero?.state, stats: hero?.stats }));
-    };
-
-    /* Splice in some updates for keeping the party UI in sync */
-    const onUpdateRoomPlayers = (e) => {
-      const otherPlayers = e?.detail?.players?.filter((p) => !p.isHero);
-
-      setPlayers((players) => {
-        return players.map((player) => {
-          if (otherPlayers.some((p) => p.id === player.id)) {
-            const foundPlayer = otherPlayers?.find((p) => p.id === player.id);
-            return {
-              ...player,
-              stats: foundPlayer?.stats,
-              equipment: foundPlayer?.equipment,
-              profile: foundPlayer?.profile,
-            };
-          } else {
-            return player;
-          }
-        });
       });
-    };
+    });
+  };
 
-    const onPartyInvite = (inviteData: PartyInvite) => {
-      // Check if the party invite already exists
-      const existingInvite = partyInvites.find((invite) => invite.partyId === inviteData.partyId);
-      // Party invite already exists, do not add it again
-      if (existingInvite) return;
-      addMessage({
-        type: "party",
-        message: `${inviteData?.inviter?.profile?.userName} has invited you to their party.`,
-      });
-      // Party invite doesn't exist, add it to the list
-      setPartyInvites((prevInvites) => [...prevInvites, inviteData]);
-    };
+  const onPartyInvite = (inviteData: PartyInvite) => {
+    // Check if the party invite already exists
+    const existingInvite = partyInvites.find((invite) => invite.partyId === inviteData.partyId);
+    // Party invite already exists, do not add it again
+    if (existingInvite) return;
+    addMessage({
+      type: "party",
+      message: `${inviteData?.inviter?.profile?.userName} has invited you to their party.`,
+    });
+    // Party invite doesn't exist, add it to the list
+    setPartyInvites((prevInvites) => [...prevInvites, inviteData]);
+  };
 
-    const onPartyUpdate = ({ message, party, partyId }) => {
-      // remove the invite
-      setPartyInvites([]);
-      setParty(party);
-      if (message) {
-        addMessage({ type: "party", message });
+  const onPartyUpdate = ({ message, party, partyId }) => {
+    // remove the invite
+    setPartyInvites([]);
+    setParty(party);
+    if (message) {
+      addMessage({ type: "party", message });
+    }
+  };
+
+  const onNearNpc = (e) => {
+    setShowButtonChat(!!e?.detail);
+    if (!e?.detail) {
+      setTabKeeper(false);
+      setSign(false);
+    }
+  };
+
+  const onStartCooldown = (e) => {
+    const { spellName, duration, startTime, sharedDuration } = e?.detail ?? {};
+    setCooldowns((prev) => {
+      // spellName !== 'attack', 'potion' update the shared base cooldown
+      if (sharedDuration) {
+        prev["global"] = { duration: sharedDuration, startTime };
       }
-    };
+      return { ...prev, [spellName]: { duration, startTime } };
+    });
+  };
 
-    const onNearNpc = (e) => {
-      setShowButtonChat(!!e?.detail);
-      if (!e?.detail) {
-        setTabKeeper(false);
-        setSign(false);
-      }
-    };
+  const onLoadError = () => {
+    setError({
+      title: "Error",
+      description:
+        "There was a problem loading some assets.  This is probably because I'm in the process of deploying a new version.  Refresh and come back later if stuff isn't loading.",
+    });
+  };
 
-    const onStartCooldown = (e) => {
-      const { spellName, duration, startTime, sharedDuration } = e?.detail ?? {};
-      setCooldowns((prev) => {
-        // spellName !== 'attack', 'potion' update the shared base cooldown
-        if (sharedDuration) {
-          prev["global"] = { duration: sharedDuration, startTime };
-        }
-        return { ...prev, [spellName]: { duration, startTime } };
-      });
-    };
+  const onGameLoaded = () => {
+    setIsLoaded(true);
+  };
 
-    const onLoadError = () => {
-      setError({
-        title: "Error",
-        description:
-          "There was a problem loading some assets.  This is probably because I'm in the process of deploying a new version.  Refresh and come back later if stuff isn't loading.",
-      });
-    };
-
-    const onGameLoaded = () => {
-      setIsLoaded(true);
-    };
-
+  useEffect(() => {
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
     socket.on("heroInit", onHeroInit);
@@ -396,7 +370,6 @@ function App({ socket, debug, game }) {
     window.addEventListener("LOAD_ERROR", onLoadError);
     window.addEventListener("GAME_LOADED", onGameLoaded);
     window.addEventListener("HERO_START_COOLDOWN", onStartCooldown);
-
     return () => {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
@@ -523,442 +496,5 @@ function App({ socket, debug, game }) {
     </ThemeProvider>
   );
 }
-
-const SkillButtons = () => {
-  const { showButtonChat } = useAppContext();
-
-  return (
-    <Flex
-      sx={{
-        gap: 2,
-        p: 1,
-        py: 2,
-        justifyContent: "end",
-        alignItems: "flex-end",
-      }}
-    >
-      <SkillButton
-        size={16}
-        iconName="chat"
-        onTouchEnd={() => window.dispatchEvent(new CustomEvent("HERO_CHAT_NPC"))}
-        keyboardKey="X"
-        sx={{ opacity: showButtonChat ? 1 : 0.5 }}
-      />
-      <SkillButton
-        size={16}
-        iconName="grab"
-        onTouchEnd={() => window.dispatchEvent(new CustomEvent("HERO_GRAB"))}
-        keyboardKey="F"
-      />
-      <SkillButton
-        size={16}
-        iconName="handRight"
-        onTouchStart={() => window.dispatchEvent(new CustomEvent("HERO_ATTACK_START"))}
-        onTouchEnd={() => window.dispatchEvent(new CustomEvent("HERO_ATTACK"))}
-        keyboardKey="SPACE"
-      >
-        <CooldownTimer cooldown={"attack"} />
-      </SkillButton>
-    </Flex>
-  );
-};
-
-const CooldownTimer = ({ cooldown, color = "#FFF" }) => {
-  const { cooldowns } = useAppContext();
-  const [percentage, setPercentage] = useState(0);
-  let duration = cooldowns[cooldown]?.duration ?? 0;
-  let startTime = cooldowns[cooldown]?.startTime ?? Date.now();
-
-  useEffect(() => {
-    const triggerTimer = () => {
-      const currentTime = Date.now();
-      const elapsedTime = currentTime - startTime;
-
-      const percentageElapsed = elapsedTime / duration;
-
-      setPercentage(percentageElapsed);
-
-      if (elapsedTime >= duration) {
-        setPercentage(1);
-        if (interval) clearInterval(interval);
-      }
-    };
-
-    const interval = setInterval(triggerTimer, 16);
-    triggerTimer();
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, [startTime, duration]);
-
-  return (
-    <Box>
-      <Donut
-        value={Math.abs(percentage) || 0}
-        size="16"
-        sx={{
-          width: "100%",
-          height: "100%",
-          position: "absolute",
-          top: 0,
-          left: 0,
-          zIndex: -1,
-          "& circle:first-of-type": {
-            opacity: 0,
-            color: "#000",
-          },
-          "& circle:last-of-type": {
-            opacity: percentage < 1 ? 0.15 : 0,
-            color,
-            transition: ".3s ease opacity",
-          },
-        }}
-      />
-    </Box>
-  );
-};
-
-const AbilityButtons = () => {
-  const { hero } = useAppContext();
-  const abilities = Object.entries(hero?.abilities || {}).filter(([slotKey, _]) =>
-    hero.activeItemSlots.includes(slotKey)
-  );
-
-  const applyTintAndSetIcon = async (item) => {
-    const isSpell = item.type === "spell";
-    const texture = !isSpell ? item?.texture : "spell-" + item.base;
-
-    const iconURL = `./assets/atlas/${item?.type}/${texture}.png`;
-
-    if (item?.tint && iconURL) {
-      try {
-        const tintedCanvas = await applyTintToImage(iconURL, item?.tint); // Replace "0xFF0000" with the desired tint color
-        return tintedCanvas.toDataURL("image/png");
-      } catch (error) {
-        console.error("Error applying tint to icon:", error);
-        return iconURL;
-      }
-    }
-
-    return iconURL;
-  };
-
-  return (
-    <Flex
-      sx={{
-        flexDirection: "column",
-        gap: 2,
-        px: 1,
-        justifyContent: "end",
-        alignItems: "flex-end",
-      }}
-    >
-      {abilities.map(([slotKey, item]) => (
-        <React.Fragment key={slotKey}>
-          {item && (
-            <TintedIconLoader
-              slotKey={slotKey}
-              item={item}
-              applyTintAndSetIcon={applyTintAndSetIcon}
-            />
-          )}
-        </React.Fragment>
-      ))}
-    </Flex>
-  );
-};
-
-const TintedIconLoader = ({ slotKey, item, applyTintAndSetIcon }) => {
-  const isSpell = item.type === "spell";
-  const cooldown = POTION_BASES.includes(item?.base) ? "potion" : item?.base;
-  const [tintedIcon, setTintedIcon] = useState("./assets/icons/blank.png");
-
-  useEffect(() => {
-    const loadTintedIcon = async () => {
-      const newTintedIcon = await applyTintAndSetIcon(item);
-      setTintedIcon(newTintedIcon);
-    };
-
-    loadTintedIcon();
-  }, [applyTintAndSetIcon, item]);
-
-  return (
-    <SkillButton
-      key={slotKey}
-      size={16}
-      icon={tintedIcon}
-      onTouchStart={() =>
-        window.dispatchEvent(new CustomEvent("HERO_AIM_START", { detail: slotKey }))
-      }
-      onTouchEnd={() => window.dispatchEvent(new CustomEvent("HERO_ABILITY", { detail: slotKey }))}
-      keyboardKey={slotKey}
-      sx={{
-        "& > .icon": {
-          mt: "-6px",
-          mb: "6px",
-        },
-      }}
-    >
-      <CooldownTimer cooldown={"global"} />
-      <CooldownTimer cooldown={cooldown} color="set" />
-      <Text
-        sx={{
-          bottom: "13px",
-          left: 0,
-          position: "absolute",
-          fontSize: 0,
-          textAlign: "center",
-          width: "100%",
-        }}
-      >
-        {isSpell ? `Lv. ${item?.ilvl}` : item?.amount}
-      </Text>
-    </SkillButton>
-  );
-};
-
-const MenuBar = () => {
-  const {
-    isConnected,
-    tabEquipment,
-    setTabEquipment,
-    tabInventory,
-    setTabInventory,
-    tabChat,
-    setTabKeeper,
-    setTabChat,
-    tabKeeper,
-    dropItem,
-    setDropItem,
-    tabProfile,
-    setTabProfile,
-    tabStats,
-    setTabStats,
-    bottomOffset,
-    tabQuests,
-    setTabQuests,
-    setTabSocial,
-    tabSocial,
-    socket,
-    tabAbilities,
-    setTabAbilities,
-    zoom,
-    bagState,
-    toggleBagState,
-  } = useAppContext();
-
-  const escCacheKey = JSON.stringify([
-    tabChat,
-    dropItem,
-    tabEquipment,
-    tabInventory,
-    tabKeeper,
-    tabProfile,
-    tabStats,
-    tabQuests,
-    tabAbilities,
-    ...bagState,
-  ]);
-
-  return (
-    <Flex
-      sx={{
-        flexDirection: "column",
-        pointerEvents: "none",
-        boxSizing: "border-box",
-        position: "fixed",
-        bottom: bottomOffset,
-        left: 0,
-        width: `calc(100% / ${zoom})`,
-        transform: `scale(${zoom})`,
-        transformOrigin: "bottom left",
-      }}
-    >
-      <Flex sx={{ flex: 1, alignItems: "end" }}>
-        <MessageBox />
-        <Flex sx={{ flexDirection: "column" }}>
-          <AbilityButtons />
-          <SkillButtons />
-        </Flex>
-      </Flex>
-      <Box
-        sx={{
-          backdropFilter: "blur(10px)",
-        }}
-      >
-        {tabKeeper && <MenuKeeper />}
-        <MenuAbilities />
-        <MenuEquipment />
-        {bagState?.map((id) => {
-          return <MenuBag key={id} id={id} />;
-        })}
-        <MenuInventory />
-        <MenuProfile />
-        <MenuQuests />
-        <MenuStats />
-        <MenuSocial />
-        <Menu
-          sx={{
-            gap: 1,
-            alignItems: "center",
-            pointerEvents: "none",
-            flexDirection: "row",
-          }}
-        >
-          <StatusIcon />
-          <Box sx={{ flex: tabChat ? "unset" : 1 }} />
-          <ChatButton />
-          {!tabChat && (
-            <>
-              <MenuButton
-                keyboardKey="P"
-                iconName="social"
-                isActive={tabSocial}
-                onClick={() => setTabSocial((prev) => !prev)}
-              />
-              <MenuButton
-                keyboardKey="Q"
-                iconName="quests"
-                isActive={tabQuests}
-                onClick={() => setTabQuests((prev) => !prev)}
-              />
-              <MenuButton
-                keyboardKey="C"
-                iconName="stats"
-                isActive={tabStats}
-                onClick={() => setTabStats((prev) => !prev)}
-              />
-              <MenuButton
-                keyboardKey="G"
-                iconName="mirror"
-                isActive={tabProfile}
-                onClick={() => setTabProfile((prev) => !prev)}
-              />
-              <MenuButton
-                keyboardKey="V"
-                iconName="book"
-                isActive={tabAbilities}
-                onClick={() => setTabAbilities((prev) => !prev)}
-              />
-              <MenuButton
-                keyboardKey="E"
-                iconName="helmet"
-                isActive={tabEquipment}
-                onClick={() => {
-                  setTabEquipment((prev) => !prev);
-                }}
-              />
-              <MenuButton
-                keyboardKey="I"
-                iconName="bag"
-                isActive={tabInventory}
-                onClick={() => setTabInventory((prev) => !prev)}
-              />
-            </>
-          )}
-          <KeyboardKey
-            key={escCacheKey}
-            name={"ESCAPE"}
-            hidden={true}
-            onKeyUp={() => {
-              if (dropItem) return setDropItem(false);
-              if (tabKeeper) return setTabKeeper(false);
-              if (tabSocial) return setTabSocial(false);
-              if (tabQuests) return setTabQuests(false);
-              if (tabStats) return setTabStats(false);
-              if (tabProfile) return setTabProfile(false);
-              if (tabAbilities) return setTabAbilities(false);
-              if (tabEquipment) return setTabEquipment(false);
-              if (bagState?.length > 0) return toggleBagState(bagState?.[bagState?.length - 1]);
-              if (tabInventory) return setTabInventory(false);
-              if (tabChat) return setTabChat(false);
-            }}
-          />
-        </Menu>
-      </Box>
-    </Flex>
-  );
-};
-
-const ChatButton = () => {
-  const { tabChat, setTabChat, socket, messages, hero } = useAppContext();
-  const [chatValue, setChatValue] = useState<string>("");
-  const [messageIndex, setMessageIndex] = useState<number>(-1);
-
-  useEffect(() => {
-    if (!tabChat) {
-      setChatValue("");
-      setMessageIndex(-1);
-    }
-  }, [tabChat]);
-
-  return (
-    <MenuButton
-      keyboardKey={tabChat ? "ENTER" : "T"}
-      iconName="chat"
-      sx={{
-        flex: tabChat ? 1 : "unset",
-        "&.active::before, &:has(.pressed)::before": { boxShadow: "none" },
-      }}
-      isActive={tabChat}
-      disabled={tabChat} //hack to prevent double clicks
-      onClick={() => setTabChat((prev) => !prev)}
-    >
-      {tabChat && (
-        <Input
-          sx={{ flex: 1 }}
-          autoFocus={true}
-          value={chatValue}
-          onKeyDown={(e) => {
-            const target = e.target as HTMLInputElement;
-            const message = target?.value;
-
-            if (e.code === "Enter") {
-              if (message?.trim() !== "") {
-                socket.emit("message", { message });
-              }
-              setTabChat(false);
-            }
-
-            if (e.code === "ArrowUp" || e.code === "ArrowDown") {
-              e.preventDefault();
-              const lastMessageIndex =
-                messages?.filter?.((m) => m?.from === hero?.profile?.userName)?.length - 1;
-              let newIndex = messageIndex;
-
-              if (e.code === "ArrowUp") {
-                if (newIndex === -1) {
-                  newIndex = lastMessageIndex;
-                } else {
-                  newIndex = newIndex === 0 ? lastMessageIndex : newIndex - 1;
-                }
-              }
-
-              if (e.code === "ArrowDown") {
-                newIndex = newIndex === lastMessageIndex ? 0 : newIndex + 1;
-              }
-
-              setChatValue(messages?.[newIndex]?.message || "");
-              setMessageIndex(newIndex);
-            }
-          }}
-          onChange={(e: any) => setChatValue(e.target.value)}
-          onClickOutside={() => {
-            setTabChat(false);
-          }}
-          onBlur={(e) => {
-            /* Hack to send if `Done` button is pushed */
-            const message = e?.target?.value;
-            if (message && isMobile) {
-              if (message?.trim() !== "") socket.emit("message", { message });
-            }
-            setTabChat(false);
-          }}
-        />
-      )}
-    </MenuButton>
-  );
-};
 
 export default App;
