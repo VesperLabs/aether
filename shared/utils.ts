@@ -248,17 +248,18 @@ export function distanceTo(first, second) {
 }
 
 // Utility function to load an image and handle the onload event as a Promise
-const imageCache = {}; // In-memory cache for images
+export const IMAGE_CACHE = {}; // In-memory cache for images
+
 export function loadCacheImage(src) {
-  if (imageCache[src]) {
-    return Promise.resolve(imageCache[src]); // Return cached image if available
+  if (IMAGE_CACHE[src]) {
+    return Promise.resolve(IMAGE_CACHE[src]); // Return cached image if available
   }
 
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.crossOrigin = "Anonymous";
     img.onload = () => {
-      imageCache[src] = img; // Cache the loaded image
+      IMAGE_CACHE[src] = img; // Cache the loaded image
       resolve(img);
     };
     img.onerror = () => reject(new Error(`Failed to load image: ${src}`));
