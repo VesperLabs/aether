@@ -1,7 +1,13 @@
 // @ts-nocheck
 import Phaser from "phaser";
 import { playAudio, getSpinDirection } from "../utils";
-import { spellDetails, POTION_COOLDOWN, getAngleFromDirection } from "@aether/shared";
+import {
+  spellDetails,
+  POTION_COOLDOWN,
+  getAngleFromDirection,
+  CONSUMABLES_BASES,
+  POTION_BASES,
+} from "@aether/shared";
 const { W, S, A, D } = Phaser.Input.Keyboard.KeyCodes;
 const { Between } = Phaser.Math.Angle;
 
@@ -130,13 +136,14 @@ function addGlobalEventListeners(scene) {
         scene.socket.emit("updateState", { isAiming: hero.state.isAiming });
         document.getElementById("game").style.cursor = "default";
       }
+
       /* If it is food we are trying to consume it */
-      if (["food", "potion"]?.includes(ability?.base)) {
+      if (CONSUMABLES_BASES?.includes(ability?.base)) {
         /* Tell the UI to update the cooldowns */
         if (ability.base === "food") {
           updateSpellCooldown(hero, e?.detail);
         }
-        if (ability.base === "potion") {
+        if (POTION_BASES.includes(ability.base)) {
           updatePotionCooldown(hero);
         }
         window.dispatchEvent(
@@ -155,7 +162,7 @@ function addGlobalEventListeners(scene) {
 
     if (!hero.checkCastReady()) return;
 
-    if (item?.base === "potion") {
+    if (POTION_BASES.includes(item.base)) {
       if (hero.state.isPotioning) return;
       hero.state.lastPotion = Date.now();
     } else {

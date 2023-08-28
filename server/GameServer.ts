@@ -23,6 +23,7 @@ import PartyManager from "./PartyManager";
 import Phaser from "phaser";
 import QuestBuilder from "./QuestBuilder";
 import ItemBuilder from "../shared/ItemBuilder";
+import { CONSUMABLES_BASES, POTION_BASES } from "@aether/shared";
 const { SnapshotInterpolation } = require("@geckos.io/snapshot-interpolation");
 const SI = new SnapshotInterpolation();
 global.phaserOnNodeFPS = parseInt(process.env.SERVER_FPS);
@@ -700,7 +701,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         /* Using an item from the inventory */
         if (location === "inventory") {
           playerItem = player?.findInventoryItemById(item?.id);
-          if (!["food", "potion"]?.includes(playerItem?.base)) return;
+          if (!CONSUMABLES_BASES?.includes(playerItem?.base)) return;
           if (!playerItem?.amount) return;
           player?.subtractInventoryItemAtId(item?.id, 1);
         }
@@ -708,7 +709,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         if (location === "abilities") {
           const { item: found } = player?.findAbilityById(item?.id);
           playerItem = found;
-          if (!["food", "potion"]?.includes(playerItem?.base)) return;
+          if (!CONSUMABLES_BASES?.includes(playerItem?.base)) return;
           if (!playerItem?.amount) return;
           if (playerItem?.amount <= 1) {
             player?.deleteAbilityAtId(item?.id);
@@ -719,7 +720,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         /* Using an item from the inventory */
         if (location === "bag") {
           playerItem = player?.findBagItemById(item?.id);
-          if (!["food", "potion"]?.includes(playerItem?.base)) return;
+          if (!CONSUMABLES_BASES?.includes(playerItem?.base)) return;
           if (!playerItem?.amount) return;
           if (playerItem?.amount <= 1) {
             player?.deleteBagItemAtId(item?.id);
@@ -728,7 +729,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           }
         }
         /* If the item has effects */
-        if (playerItem?.base === "potion") {
+        if (POTION_BASES.includes(playerItem.base)) {
           /* Set potion cooldown */
           player.state.lastPotion = Date.now();
           if (playerItem?.effects?.hp) {

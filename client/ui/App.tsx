@@ -33,7 +33,7 @@ import {
   Modal,
 } from "@aether/ui";
 import { getSpinDirection, calculateZoomLevel } from "../utils";
-import { applyTintToImage, isMobile } from "@aether/shared";
+import { POTION_BASES, applyTintToImage, isMobile } from "@aether/shared";
 import "react-tooltip/dist/react-tooltip.css";
 import { Theme } from "theme-ui";
 import { Donut, Text } from "@aether/ui";
@@ -671,7 +671,7 @@ const AbilityButtons = () => {
 
 const TintedIconLoader = ({ slotKey, item, applyTintAndSetIcon }) => {
   const isSpell = item.type === "spell";
-  const cooldown = item?.base;
+  const cooldown = POTION_BASES.includes(item?.base) ? "potion" : item?.base;
   const [tintedIcon, setTintedIcon] = useState("./assets/icons/blank.png");
 
   useEffect(() => {

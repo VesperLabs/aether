@@ -2,7 +2,7 @@ import React, { useState, useRef, useLayoutEffect } from "react";
 import { Box, Icon, Portal, Donut, SLOT_SIZE, STYLE_SLOT_EMPTY, STYLE_NON_EMPTY } from "@aether/ui";
 import { ItemTooltip, BLANK_IMAGE, SlotAmount } from "./";
 import { useAppContext } from "./App";
-import { isMobile, resolveAsset, assetToCanvas } from "@aether/shared";
+import { resolveAsset, assetToCanvas, CONSUMABLES_BASES } from "@aether/shared";
 import { useDoubleTap } from "use-double-tap";
 
 const SpaceDonut = ({ percent = 0 }) => {
@@ -314,7 +314,7 @@ function useItemEvents({ location, bagId, slotKey, item }) {
     doubleClickItem: () => {
       if (!["inventory", "abilities", "bag"].includes(location)) return;
       /* If it is food we are trying to consume it */
-      if (["food", "potion"].includes(item?.base)) {
+      if (CONSUMABLES_BASES.includes(item?.base)) {
         window.dispatchEvent(
           new CustomEvent("HERO_USE_ITEM", {
             detail: { item, location },
