@@ -55,7 +55,10 @@ const Portrait = memo(
     );
   },
   (prev, next) => {
-    return prev?.player?.activeItemSlots === next?.player?.activeItemSlots;
+    return (
+      prev?.player?.activeItemSlots === next?.player?.activeItemSlots &&
+      prev?.player?.equipment === prev?.player?.equipment
+    );
   }
 );
 
