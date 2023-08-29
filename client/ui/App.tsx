@@ -201,7 +201,7 @@ function App({ socket, debug, game }) {
   const onPlayerUpdate = (player: FullCharacterState, args) => {
     const currentPlayerSocketId = sessionStorage.getItem("socketId");
     const isCurrentPlayer = currentPlayerSocketId === player.socketId;
-
+    //cool
     setPlayers((prev) => {
       return prev.map((p) => (p.id === player.id ? player : p));
     });
