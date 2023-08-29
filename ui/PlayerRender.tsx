@@ -6,7 +6,7 @@ import {
   tintCanvas,
   loadCacheImage,
 } from "@aether/shared";
-import { useEffect, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 import { Box } from "@aether/ui";
 import weaponAtlas from "../public/assets/atlas/weapon.json";
 const MIN_CANVAS_SIZE = 100;
@@ -98,42 +98,51 @@ const mergeImages = async ({ shouldBuffer, buffCanvasRef, canvasRef, assets }) =
   }
 };
 
-function PlayerRender({ player, sx, shouldBuffer = true, filteredSlots, ...props }: any) {
-  const assets = getPlayerEquipmentAssets({ player, filteredSlots });
-  const buffCanvasRef = useRef<HTMLCanvasElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+const PlayerRender = memo(
+  ({ player, sx, shouldBuffer = true, filteredSlots, ...props }: any) => {
+    const assets = getPlayerEquipmentAssets({ player, filteredSlots });
+    const buffCanvasRef = useRef<HTMLCanvasElement>(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  useEffect(() => {
-    if (!buffCanvasRef.current || !canvasRef?.current) return;
-    mergeImages({ shouldBuffer, buffCanvasRef, canvasRef, assets });
-  }, [JSON.stringify(player?.equipment)]);
+    useEffect(() => {
+      if (!buffCanvasRef.current || !canvasRef?.current) return;
+      mergeImages({ shouldBuffer, buffCanvasRef, canvasRef, assets });
+    }, [JSON.stringify(player?.equipment), JSON.stringify(player?.profile)]);
 
-  return (
-    <Box sx={{ position: "relative", height: 160, width: 160, ...sx }} {...props}>
-      <canvas
-        ref={canvasRef}
-        width={MIN_CANVAS_SIZE}
-        height={MIN_CANVAS_SIZE}
-        style={{
-          zIndex: 0,
-          transform: `translate(-50%, -50%) scale(2)`,
-          imageRendering: "pixelated",
-          position: "absolute",
-          left: "50%",
-          top: "50%",
-        }}
-      />
-      <canvas
-        ref={buffCanvasRef}
-        width={MIN_CANVAS_SIZE}
-        height={MIN_CANVAS_SIZE}
-        style={{
-          display: "none",
-        }}
-      />
-    </Box>
-  );
-}
+    return (
+      <Box sx={{ position: "relative", height: 160, width: 160, ...sx }} {...props}>
+        <canvas
+          ref={canvasRef}
+          width={MIN_CANVAS_SIZE}
+          height={MIN_CANVAS_SIZE}
+          style={{
+            zIndex: 0,
+            transform: `translate(-50%, -50%) scale(2)`,
+            imageRendering: "pixelated",
+            position: "absolute",
+            left: "50%",
+            top: "50%",
+          }}
+        />
+        <canvas
+          ref={buffCanvasRef}
+          width={MIN_CANVAS_SIZE}
+          height={MIN_CANVAS_SIZE}
+          style={{
+            display: "none",
+          }}
+        />
+      </Box>
+    );
+  },
+  (prev, next) => {
+    return (
+      prev?.player?.profile === next?.player?.profile &&
+      prev?.player?.activeItemSlots === next?.player?.activeItemSlots &&
+      prev?.player?.equipment === prev?.player?.equipment
+    );
+  }
+);
 
 const getObscuredKeys = ({ filteredSlots, visibleParts }) => {
   const helmetTexture = visibleParts?.helmet?.texture;

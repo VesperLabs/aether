@@ -4,6 +4,7 @@ export { default as ItemTooltip } from "./ItemTooltip";
 export { default as MenuEquipment } from "./MenuEquipment";
 export { default as MenuInventory } from "./MenuInventory";
 export { default as Portrait } from "./Portrait";
+export { default as BigPortrait } from "./BigPortrait";
 export { default as MenuKeeper } from "./MenuKeeper";
 export { default as MenuProfile } from "./MenuProfile";
 export { default as MenuBag } from "./MenuBag";
