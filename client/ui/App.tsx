@@ -199,16 +199,17 @@ function App({ socket, debug, game }) {
   };
 
   const onPlayerUpdate = (player: FullCharacterState, args) => {
-    /* Keep room list updated */
+    const currentPlayerSocketId = sessionStorage.getItem("socketId");
+    const isCurrentPlayer = currentPlayerSocketId === player.socketId;
+
     setPlayers((prev) => {
-      return prev.map((p) => (p.id === player?.id ? player : p));
+      return prev.map((p) => (p.id === player.id ? player : p));
     });
-    /* If the player is the current player */
-    if (sessionStorage.getItem("socketId") === player?.socketId) {
+
+    if (isCurrentPlayer) {
       setHero(player);
-      // quests can trigger this didLevel
       if (args?.didLevel) {
-        addMessage({ type: "success", message: `You are now level ${player?.stats?.level}!` });
+        addMessage({ type: "success", message: `You are now level ${player.stats?.level}!` });
       }
     }
   };
