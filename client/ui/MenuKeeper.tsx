@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Menu, useAppContext, MenuHeader, Portrait, Slot, Quest, MENU_MAX_WIDTH } from "./";
+import { Menu, useAppContext, MenuHeader, BigPortrait, Slot, Quest, MENU_MAX_WIDTH } from "./";
 import { Flex, Text, KeyboardButton } from "@aether/ui";
 
 const MenuKeeper = () => {
@@ -47,13 +47,7 @@ const MenuKeeper = () => {
       <MenuHeader onClick={() => setTabKeeper(false)}>{keeper?.profile?.userName}</MenuHeader>
       <Flex sx={{ flexDirection: "column", gap: 2, alignItems: "flex-end" }}>
         <Flex sx={{ gap: 2, justifyContent: "end" }}>
-          <Portrait
-            player={keeper}
-            filteredSlots={["boots", "pants"]}
-            size={54}
-            scale={1}
-            topOffset={22}
-          />
+          <BigPortrait player={keeper} filteredSlots={["boots", "pants", "hands"]} />
           <Flex
             sx={{
               gap: 1,

@@ -1,5 +1,13 @@
-import { Menu, MenuHeader, useAppContext, Portrait, MenuButton, MENU_MAX_WIDTH } from "./";
-import { Flex, Text, Input } from "@aether/ui";
+import {
+  Menu,
+  MenuHeader,
+  useAppContext,
+  Portrait,
+  MenuButton,
+  MENU_MAX_WIDTH,
+  BigPortrait,
+} from "./";
+import { Flex, Text, Input, Box } from "@aether/ui";
 
 const MenuPicker = ({ children, onPlus = () => {}, onMinus = () => {} }) => {
   return (
@@ -42,15 +50,15 @@ const MenuProfile = () => {
             justifyContent: "center",
             gap: 2,
             alignItems: "center",
-            flexDirection: ["column", "column", "row"],
+            flexDirection: "column",
           }}
         >
-          <Portrait
-            scale={2.25}
+          <Box sx={{ flex: 1 }} />
+          <BigPortrait
+            showShadow={false}
+            height={440}
             player={hero}
-            size={150}
-            topOffset={48}
-            filteredSlots={["accessory", "helmet", "boots", "hands", "gloves"]}
+            filteredSlots={["accessory", "helmet", "hands"]}
           />
           <Input
             sx={{ width: 150, fontSize: 4 }}

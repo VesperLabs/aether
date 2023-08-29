@@ -1,6 +1,25 @@
 import { Box, PlayerRender } from "@aether/ui";
 import { memo } from "react";
 
+const applyRoundedStyle = ({ size }) => {
+  return {
+    border: `1px solid #000`,
+    borderRadius: size,
+    width: size + 2,
+    height: size + 2,
+    "& > div": {
+      border: `1px solid #FFF`,
+      borderRadius: size,
+      width: size,
+      height: size,
+      bg: "shadow.30",
+      position: "relative",
+      overflow: "hidden",
+      clipPath: `circle(${size / 2}px at ${size / 2}px ${size / 2}px)`,
+    },
+  };
+};
+
 const Portrait = memo(
   ({
     player,
@@ -20,25 +39,11 @@ const Portrait = memo(
     return (
       <Box
         sx={{
-          border: `1px solid #000`,
-          borderRadius: size,
-          width: size + 2,
-          height: size + 2,
+          ...applyRoundedStyle({ size }),
           ...sx,
         }}
       >
-        <Box
-          sx={{
-            border: `1px solid #FFF`,
-            borderRadius: size,
-            width: size,
-            height: size,
-            bg: "shadow.30",
-            position: "relative",
-            overflow: "hidden",
-            clipPath: `circle(${size / 2}px at ${size / 2}px ${size / 2}px)`,
-          }}
-        >
+        <Box>
           <PlayerRender
             player={player}
             filteredSlots={filteredSlots}
