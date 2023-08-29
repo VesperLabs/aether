@@ -38,79 +38,75 @@ const drawImageOnNewCanvas = (image, tint) => {
   return canvas;
 };
 
+const mergeImages = async ({ shouldBuffer, buffCanvasRef, canvasRef, assets }) => {
+  const atlas = weaponAtlas.offsets.human["down-stand"];
+  const buffCanvas = shouldBuffer ? buffCanvasRef.current : canvasRef?.current;
+  const btx = buffCanvas.getContext("2d");
+  btx.imageSmoothingEnabled = false;
+  // Clear the buffer canvas before drawing
+  btx.clearRect(0, 0, MIN_CANVAS_SIZE, MIN_CANVAS_SIZE);
+  for (const asset of assets) {
+    const img = await loadCacheImage(asset.src);
+
+    const isLeftWeapon = asset.slotKey === "handLeft";
+    const isRightWeapon = asset.slotKey === "handRight";
+    const isWeapon = isLeftWeapon || isRightWeapon;
+
+    if (img) {
+      const [x, y, w, h] = asset.previewRect;
+
+      // Apply transformations if it's a weapon
+      if (isWeapon) {
+        const transforms = isLeftWeapon ? atlas.left : atlas.right;
+        const { x: tx, y: ty, flipX } = transforms;
+        btx.save(); // Save the current context state before applying transformations
+        btx.translate(MIN_CANVAS_SIZE / 2 + tx, MIN_CANVAS_SIZE / 2 + ty + 14); // Translate to the center of the buffer canvas
+        if (flipX) btx.scale(-1, 1); // Flip horizontally if required
+        btx.drawImage(drawImageOnNewCanvas(img, asset.tint), -w / 2, -h / 2, w, h); // Draw the image centered at (0, 0)
+        btx.restore(); // Restore the context state to remove applied transformations
+      } else {
+        // Draw the image on the buffer canvas without transformations
+        btx.drawImage(
+          drawImageOnNewCanvas(img, asset.tint),
+          x,
+          y,
+          w,
+          h,
+          (MIN_CANVAS_SIZE - w) / 2,
+          (MIN_CANVAS_SIZE - h) / 2,
+          w,
+          h
+        );
+      }
+    }
+  }
+  if (canvasRef.current && shouldBuffer) {
+    const mainCanvas = canvasRef.current;
+    const mainCtx = mainCanvas.getContext("2d");
+    mainCtx.clearRect(0, 0, mainCanvas.width, mainCanvas.height);
+    mainCtx.drawImage(
+      buffCanvas,
+      0,
+      0,
+      MIN_CANVAS_SIZE,
+      MIN_CANVAS_SIZE,
+      0,
+      0,
+      mainCanvas.width,
+      mainCanvas.height
+    );
+  }
+};
+
 function PlayerRender({ player, sx, shouldBuffer = true, filteredSlots, ...props }: any) {
   const assets = getPlayerEquipmentAssets({ player, filteredSlots });
   const buffCanvasRef = useRef<HTMLCanvasElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const atlas = weaponAtlas.offsets.human["down-stand"];
 
   useEffect(() => {
     if (!buffCanvasRef.current || !canvasRef?.current) return;
-    const buffCanvas = shouldBuffer ? buffCanvasRef.current : canvasRef?.current;
-    const btx = buffCanvas.getContext("2d");
-    btx.imageSmoothingEnabled = false;
-
-    const mergeImages = async () => {
-      // Clear the buffer canvas before drawing
-      btx.clearRect(0, 0, MIN_CANVAS_SIZE, MIN_CANVAS_SIZE);
-
-      for (const asset of assets) {
-        const img = await loadCacheImage(asset.src);
-
-        const isLeftWeapon = asset.slotKey === "handLeft";
-        const isRightWeapon = asset.slotKey === "handRight";
-        const isWeapon = isLeftWeapon || isRightWeapon;
-
-        if (img) {
-          const [x, y, w, h] = asset.previewRect;
-
-          // Apply transformations if it's a weapon
-          if (isWeapon) {
-            const transforms = isLeftWeapon ? atlas.left : atlas.right;
-            const { x: tx, y: ty, flipX } = transforms;
-
-            btx.save(); // Save the current context state before applying transformations
-            btx.translate(MIN_CANVAS_SIZE / 2 + tx, MIN_CANVAS_SIZE / 2 + ty + 14); // Translate to the center of the buffer canvas
-            if (flipX) btx.scale(-1, 1); // Flip horizontally if required
-            btx.drawImage(drawImageOnNewCanvas(img, asset.tint), -w / 2, -h / 2, w, h); // Draw the image centered at (0, 0)
-            btx.restore(); // Restore the context state to remove applied transformations
-          } else {
-            // Draw the image on the buffer canvas without transformations
-            btx.drawImage(
-              drawImageOnNewCanvas(img, asset.tint),
-              x,
-              y,
-              w,
-              h,
-              (MIN_CANVAS_SIZE - w) / 2,
-              (MIN_CANVAS_SIZE - h) / 2,
-              w,
-              h
-            );
-          }
-        }
-      }
-
-      if (canvasRef.current && shouldBuffer) {
-        const mainCanvas = canvasRef.current;
-        const mainCtx = mainCanvas.getContext("2d");
-        mainCtx.clearRect(0, 0, mainCanvas.width, mainCanvas.height);
-        mainCtx.drawImage(
-          buffCanvas,
-          0,
-          0,
-          MIN_CANVAS_SIZE,
-          MIN_CANVAS_SIZE,
-          0,
-          0,
-          mainCanvas.width,
-          mainCanvas.height
-        );
-      }
-    };
-
-    mergeImages();
-  }, [player?.equipment]);
+    mergeImages({ shouldBuffer, buffCanvasRef, canvasRef, assets });
+  }, [JSON.stringify(player?.equipment)]);
 
   return (
     <Box sx={{ position: "relative", height: 160, width: 160, ...sx }} {...props}>
