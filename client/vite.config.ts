@@ -1,9 +1,9 @@
+//@ts-nocheck
 import { defineConfig, loadEnv } from "vite";
 require("dotenv").config();
 import react from "@vitejs/plugin-react-swc";
 const path = require("path");
 const parentDir = path.resolve(__dirname, "..");
-import million from "million/compiler";
 
 export default ({ mode }) => {
   process.env = Object.assign(process.env, loadEnv(mode, parentDir, ""));
@@ -15,8 +15,6 @@ export default ({ mode }) => {
   return defineConfig({
     envDir: "../",
     plugins: [
-      million.vite({ auto: true }),
-      react(),
       {
         name: "replace-url",
         transform(code, id) {
@@ -25,6 +23,7 @@ export default ({ mode }) => {
             : code;
         },
       },
+      react(),
     ],
     define: {
       "process.env.DEBUG": process.env.DEBUG,

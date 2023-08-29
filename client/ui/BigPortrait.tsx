@@ -1,4 +1,5 @@
-import { Flex, Box, PlayerRender } from "@aether/ui";
+import { Box, PlayerRender } from "@aether/ui";
+import { getFullCharacterState } from "../../server/utils";
 
 export default function BigPortrait({
   player,
@@ -6,7 +7,7 @@ export default function BigPortrait({
   width = 160,
   height,
   showShadow = true,
-}) {
+}: any) {
   return (
     <Box
       sx={{
