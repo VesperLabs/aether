@@ -612,10 +612,16 @@
     "previewRect": [42, 35, 16, 24]
   },
   {
-    "texture": "ranged-bow",
-    "src": "./assets/atlas/hands/ranged-bow.png",
+    "texture": "ranged-shortbow",
+    "src": "./assets/atlas/hands/ranged-shortbow.png",
     "atlas": "./assets/atlas/weapon.json",
     "previewRect": [43, 34, 24, 22]
+  },
+  {
+    "texture": "ranged-shortbow-metal",
+    "src": "./assets/atlas/hands/ranged-shortbow-metal.png",
+    "atlas": "./assets/atlas/weapon.json",
+    "previewRect": [45, 33, 22, 22]
   },
   {
     "texture": "ring-silver-plain",
