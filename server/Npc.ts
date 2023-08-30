@@ -274,7 +274,7 @@ class Npc extends Character implements Npc {
       return;
 
     // decides what hand ot hit with
-    const count = this.action === "attack_right" && this.hasWeaponLeft ? 2 : 1;
+    const count = this.action === "attack_right" && this.hasWeaponLeft() ? 2 : 1;
     // Set state to attacking and record attack time
     this.state.isAttacking = true;
     this.state.lastAttack = Date.now();
@@ -388,11 +388,9 @@ class Npc extends Character implements Npc {
     const { nextPath } = this ?? {};
     this.room.findPath(this, targetCoords);
     if (nextPath) {
+      this.moveTowardPoint(nextPath);
       if (this.checkInRange(nextPath, 1)) {
         this.nextPath = null;
-      } else {
-        // Move the player along the path at the given walkSpeed
-        this.moveTowardPoint(nextPath);
       }
     }
   }
