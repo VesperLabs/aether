@@ -7,6 +7,7 @@ export default function BigPortrait({
   width = 160,
   height,
   showShadow = true,
+  sx,
 }: any) {
   return (
     <Box
@@ -16,11 +17,12 @@ export default function BigPortrait({
         maxWidth: width,
         alignSelf: "end",
         pointerEvents: "none",
+        ...sx,
       }}
     >
       <Box
         sx={{
-          bottom: 0,
+          bottom: `3px`,
           height: height ?? width * 1.5,
           width: width,
           overflow: "hidden",
@@ -44,6 +46,7 @@ export default function BigPortrait({
             height: width / 4,
             bottom: 0,
             position: "absolute",
+            borderBottom: (t) => `3px solid ${t.colors.shadow[30]}`,
           }}
         />
       )}

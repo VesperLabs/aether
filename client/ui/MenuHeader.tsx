@@ -4,7 +4,7 @@ import { isMobile } from "@aether/shared";
 import React from "react";
 
 interface MenuHeaderProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   onClick?: () => void;
   icon?: string;
   sx?: any;

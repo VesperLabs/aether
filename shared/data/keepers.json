@@ -198,6 +198,7 @@
       "handRight": ["weapon", "common", "scythe"],
       "helmet": null,
       "accessory": null,
+      "gloves": ["gloves", "common", "clothGloves"],
       "armor": ["armor", "unique", "theMossmanProphecy"],
       "pants": ["pants", "common", "clothPants"],
       "boots": ["boots", "common", "clothBoots"]
@@ -239,6 +240,7 @@
       "handRight": ["weapon", "magic", "axe"],
       "helmet": ["helmet", "unique", "chefHat"],
       "accessory": null,
+      "gloves": ["gloves", "common", "clothGloves"],
       "pants": ["pants", "set", "chetsChampions"],
       "armor": ["armor", "set", "chetsPurpleShirt"],
       "boots": ["boots", "set", "chetsNeonKicks"]
@@ -281,6 +283,7 @@
       "handRight": ["weapon", "common", "hammer"],
       "helmet": null,
       "accessory": null,
+      "gloves": ["gloves", "common", "leatherBracers"],
       "pants": ["pants", "common", "leatherPants"],
       "armor": ["armor", "common", "bronzeHeavyPlate"],
       "boots": ["boots", "common", "leatherBoots"]
@@ -378,6 +381,7 @@
       "handRight": null,
       "helmet": null,
       "accessory": null,
+      "gloves": ["gloves", "common", "wizardGloves"],
       "pants": ["pants", "common", "leatherPants"],
       "armor": ["armor", "rare", "wizardRobe"],
       "boots": ["boots", "rare", "leatherBoots"]
@@ -420,6 +424,7 @@
       "handRight": ["weapon", "unique", "foxBlade"],
       "helmet": null,
       "accessory": ["accessory", "unique", "compoundLenses"],
+      "gloves": ["gloves", "unique", "flamingFinger"],
       "pants": ["pants", "common", "leatherPants"],
       "armor": ["armor", "common", "leatherCoat"],
       "boots": ["boots", "common", "leatherBoots"]
@@ -460,6 +465,7 @@
       "handRight": null,
       "helmet": null,
       "accessory": null,
+      "gloves": ["gloves", "common", "silkGloves"],
       "pants": ["pants", "common", "leatherPants"],
       "armor": ["armor", "common", "clothRobe"],
       "boots": ["boots", "unique", "chickenFeet"]
