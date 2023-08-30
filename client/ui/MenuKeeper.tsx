@@ -22,7 +22,14 @@ const MenuKeeper = () => {
   const KeeperButtons = () => {
     if (!hasQuests && !hasShop) return;
     return (
-      <Flex sx={{ gap: 2, justifyContent: "flex-end" }}>
+      <Flex
+        sx={{
+          gap: 2,
+          mt: 2,
+          justifyContent: "flex-end",
+          transform: "scale(1.25) translate(-10%,-10%)",
+        }}
+      >
         {hasGreet && (hasShop || hasQuests) && (
           <KeyboardButton keyboardKey="G" onClick={() => setTab("greet")} active={tabGreet}>
             Greet
@@ -44,10 +51,12 @@ const MenuKeeper = () => {
 
   return (
     <Menu className="menu-keeper">
-      <MenuHeader onClick={() => setTabKeeper(false)}>{keeper?.profile?.userName}</MenuHeader>
+      <MenuHeader icon="./assets/icons/chat.png" onClick={() => setTabKeeper(false)}>
+        Npc
+      </MenuHeader>
       <Flex sx={{ flexDirection: "column", gap: 2, alignItems: "flex-end" }}>
         <Flex sx={{ gap: 2, justifyContent: "end" }}>
-          <BigPortrait player={keeper} filteredSlots={["boots", "pants", "hands"]} />
+          <BigPortrait player={keeper} filteredSlots={["boots", "hands"]} sx={{ ml: 4 }} />
           <Flex
             sx={{
               gap: 1,
@@ -58,7 +67,17 @@ const MenuKeeper = () => {
             }}
           >
             <Flex sx={{ bg: "shadow.30", flexDirection: "column", p: 2, gap: 2, borderRadius: 6 }}>
-              <Text dangerouslySetInnerHTML={{ __html: dialogues?.[tab] }} />
+              <Text>
+                <Text as="span" sx={{ fontWeight: "bold", color: "set" }}>
+                  {keeper?.profile?.userName}:{" "}
+                </Text>
+                <Text
+                  as="span"
+                  dangerouslySetInnerHTML={{
+                    __html: dialogues?.[tab],
+                  }}
+                />
+              </Text>
               {tabKeeper && <KeeperButtons />}
             </Flex>
           </Flex>
