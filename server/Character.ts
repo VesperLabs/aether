@@ -603,7 +603,7 @@ class ServerCharacter extends Character {
       this.modifyStat("sp", this.stats.regenSp);
     }
 
-    if (regenBuff) {
+    if (regenBuff && !isResting) {
       if (isHpBuffRegenReady && this.stats.hp < this.stats.maxHp) {
         this.state.doHpBuffRegen = true;
         this.state.lastHpBuffRegen = now;
