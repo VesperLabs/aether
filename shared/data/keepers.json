@@ -328,7 +328,7 @@
     },
     "equipment": {
       "handLeft": null,
-      "handRight": null,
+      "handRight": ["ranged", "common", "shortBow"],
       "helmet": null,
       "accessory": null,
       "pants": ["pants", "common", "clothPants"],
@@ -377,7 +377,7 @@
       "1": ["spell", "common", "fireball"]
     },
     "equipment": {
-      "handLeft": ["weapon", "unique", "twigmansBranch"],
+      "handLeft": ["weapon", "common", "rod"],
       "handRight": null,
       "helmet": null,
       "accessory": null,
@@ -461,7 +461,7 @@
       "level": 50
     },
     "equipment": {
-      "handLeft": null,
+      "handLeft": ["weapon", "common", "cudgel"],
       "handRight": null,
       "helmet": null,
       "accessory": null,
