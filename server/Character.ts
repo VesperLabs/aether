@@ -265,10 +265,14 @@ class ServerCharacter extends Character {
     ns.hpSteal = ns.hpSteal || 0;
     ns.mpSteal = ns.mpSteal || 0;
     //ns.blockChance = ns.blockChance + (0 * (ns.dexterity - 15)) / (ns.level * 2);
-    ns.blockChance = ns.blockChance;
+
+    // Capped values
+    if (ns.walkSpeed < 1) ns.walkSpeed = 1;
     if (ns.critChance > 100) ns.critChance = 100;
     if (ns.dodgeChance > 75) ns.dodgeChance = 75;
     if (ns.blockChance > 75) ns.blockChance = 75;
+    if (ns.castDelay < 100) ns.castDelay = 100;
+    if (ns.attackDelay < 50) ns.attackDelay = 50;
 
     const damageCalc = ((ns.strength * 2 + ns.dexterity / 2) * ns.level) / 100;
     const damageModifier = Math.floor(1 + damageCalc);
@@ -281,7 +285,7 @@ class ServerCharacter extends Character {
       if (key == "maxHp" || key == "maxMp" || key == "defense") ns[key] += percentIncrease;
     });
 
-    //moving values
+    // Moving values
     if (this.stats.hp <= 0) ns.hp = shouldHeal ? ns.maxHp : 0;
     else if (this.stats.hp > ns.maxHp) ns.hp = ns.maxHp;
     else ns.hp = this.stats.hp;

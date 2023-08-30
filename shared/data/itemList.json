@@ -1211,8 +1211,8 @@
             "event": "onAttackHit",
             "type": "buff",
             "name": "slow",
-            "level": 5,
-            "chance": 4
+            "level": 2,
+            "chance": 3
           }
         ]
       }
