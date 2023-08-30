@@ -1170,7 +1170,7 @@
         "ilvl": 1,
         "base": "shortBow",
         "name": "Short Bow",
-        "texture": "ranged-bow",
+        "texture": "ranged-shortbow",
         "slot": "hands",
         "stats": {
           "range": 4.5,
@@ -1187,8 +1187,34 @@
         "ilvl": 2,
         "base": "shortBow",
         "name": "Swift Bow",
-        "texture": "ranged-bow",
+        "texture": "ranged-shortbow",
         "slot": "hands"
+      }
+    },
+    "unique": {
+      "stickyWicket": {
+        "ilvl": 2,
+        "base": "shortBow",
+        "texture": "ranged-shortbow-metal",
+        "name": "The Sticky Wicket",
+        "slot": "hands",
+        "tint": "0x88CCCC",
+        "stats": {
+          "range": 6,
+          "attackDelay": 500,
+          "minWaterDamage": 1,
+          "maxWaterDamage": 2,
+          "dodgeChance": [5, 10]
+        },
+        "triggers": [
+          {
+            "event": "onAttackHit",
+            "type": "buff",
+            "name": "slow",
+            "level": 1,
+            "chance": 2
+          }
+        ]
       }
     }
   },
