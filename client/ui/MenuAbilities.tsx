@@ -1,23 +1,24 @@
 import { Flex } from "@aether/ui";
 import { Menu, MenuHeader, useAppContext, Slot, MENU_MAX_WIDTH } from "./";
+import { memo } from "react";
+import { arePropsEqualWithKeys } from "@aether/shared";
 
-const MenuAbilities = () => {
-  const { hero, tabAbilities, setTabAbilities } = useAppContext();
-  const abilities = Object.entries(hero?.abilities || {});
+const MenuAbilities = memo(({ player, isOpen, setIsOpen }: any) => {
+  const abilities = Object.entries(player?.abilities || {});
 
   return (
     <Menu
       sx={{
-        display: tabAbilities ? "flex" : "none",
+        display: isOpen ? "flex" : "none",
         alignItems: "end",
         flexDirection: "column",
       }}
     >
-      <MenuHeader icon={`./assets/icons/book.png`} onClick={() => setTabAbilities(false)}>
+      <MenuHeader icon={`./assets/icons/book.png`} onClick={() => setIsOpen(false)}>
         Abilities
       </MenuHeader>
       <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", maxWidth: MENU_MAX_WIDTH }}>
-        {abilities?.map(([slotKey, item]) => (
+        {abilities?.map(([slotKey, item]: [string, Item]) => (
           <Slot
             key={slotKey}
             location="abilities"
@@ -29,6 +30,6 @@ const MenuAbilities = () => {
       </Flex>
     </Menu>
   );
-};
+}, arePropsEqualWithKeys(["isOpen", "player.abilities"]));
 
 export default MenuAbilities;
