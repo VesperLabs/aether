@@ -91,7 +91,7 @@ const MenuBar = () => {
         }}
       >
         {tabKeeper && <MenuKeeper />}
-        <MenuAbilities />
+        <MenuAbilities player={hero} isOpen={tabAbilities} setIsOpen={setTabAbilities} />
         <MenuEquipment player={hero} isOpen={tabEquipment} setIsOpen={setTabEquipment} />
         {bagState?.map((id) => {
           return <MenuBag player={hero} toggleBagState={toggleBagState} key={id} id={id} />;
