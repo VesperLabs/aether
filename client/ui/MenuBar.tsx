@@ -16,8 +16,8 @@ import {
   StatusIcon,
   useAppContext,
   MenuButton,
-} from ".";
-import SkillButtons from "./SkillButtons";
+  SkillButtons,
+} from "./";
 
 const MenuBar = () => {
   const {
