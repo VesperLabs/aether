@@ -45,6 +45,8 @@ const MenuBar = () => {
     setTabAbilities,
     zoom,
     bagState,
+    players,
+    party,
     toggleBagState,
   } = useAppContext();
 
@@ -96,8 +98,14 @@ const MenuBar = () => {
         <MenuInventory player={hero} isOpen={tabInventory} setIsOpen={setTabInventory} />
         <MenuProfile player={hero} isOpen={tabProfile} setIsOpen={setTabProfile} />
         <MenuQuests player={hero} isOpen={tabQuests} setIsOpen={setTabQuests} />
-        <MenuStats />
-        <MenuSocial />
+        <MenuStats player={hero} isOpen={tabStats} setIsOpen={setTabStats} />
+        <MenuSocial
+          hero={hero}
+          players={players}
+          party={party}
+          isOpen={tabSocial}
+          setIsOpen={setTabSocial}
+        />
         <Menu
           sx={{
             gap: 1,

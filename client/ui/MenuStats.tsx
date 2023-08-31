@@ -1,7 +1,8 @@
 import { ThemeUIStyleObject } from "theme-ui";
 import { Flex, Text, Grid } from "@aether/ui";
-import { Menu, useAppContext, MenuHeader, MENU_MAX_WIDTH } from "./";
-import { convertMsToS } from "@aether/shared";
+import { Menu, MenuHeader, MENU_MAX_WIDTH } from "./";
+import { arePropsEqualWithKeys, convertMsToS } from "@aether/shared";
+import { memo } from "react";
 
 const COLUMN_STYLES: ThemeUIStyleObject = {
   gap: 1,
@@ -26,17 +27,16 @@ const COLUMN_STYLES: ThemeUIStyleObject = {
   },
 };
 
-const MenuStats = () => {
-  const { hero, tabStats, setTabStats } = useAppContext();
-  const { stats } = hero ?? {};
+const MenuStats = memo(({ player, isOpen, setIsOpen }: any) => {
+  const { stats } = player ?? {};
   if (!stats) return null;
   return (
     <Menu
       sx={{
-        display: tabStats ? "flex" : "none",
+        display: isOpen ? "flex" : "none",
       }}
     >
-      <MenuHeader icon={`./assets/icons/stats.png`} onClick={() => setTabStats(false)}>
+      <MenuHeader icon={`./assets/icons/stats.png`} onClick={() => setIsOpen(false)}>
         Stats
       </MenuHeader>
       <Flex sx={{ gap: 4, flexWrap: "wrap", justifyContent: "end", maxWidth: MENU_MAX_WIDTH }}>
@@ -115,6 +115,6 @@ const MenuStats = () => {
       </Flex>
     </Menu>
   );
-};
+}, arePropsEqualWithKeys(["isOpen", "player.stats"]));
 
 export default MenuStats;
