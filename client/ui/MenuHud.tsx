@@ -1,6 +1,7 @@
 import { memo } from "react";
 import { Box, Flex, Tooltip, Icon } from "@aether/ui";
 import { useAppContext, Portrait } from "./";
+import { arePropsEqualWithKeys } from "@aether/shared";
 
 const UserName = ({ sx, player }: { player: any; sx?: object }) => {
   return <Box sx={{ ...sx }}>{player?.profile?.userName}</Box>;
@@ -61,7 +62,7 @@ const Bar = ({
   );
 };
 
-const Buffs = ({ player, sx }) => {
+const Buffs = memo(({ player, sx }: any) => {
   const buffs = player?.buffs;
   return (
     <Flex
@@ -90,12 +91,10 @@ const Buffs = ({ player, sx }) => {
       </Flex>
     </Flex>
   );
-};
+}, arePropsEqualWithKeys(["player.buffs"]));
 
-const PlayerHud = ({ player }) => {
-  const { hero } = useAppContext();
+const PlayerHud = memo(({ player, isBig }: any) => {
   const { stats, profile, equipment, activeItemSlots } = player ?? {};
-  const isHero = player?.id === hero?.id;
   const isOffScreen = !player;
   const memoProps = { activeItemSlots, equipment, profile };
   return (
@@ -110,15 +109,15 @@ const PlayerHud = ({ player }) => {
         as={Portrait}
         player={player}
         filteredSlots={["boots", "pants"]}
-        size={isHero ? 54 : 32}
-        scale={isHero ? 1 : 0.57}
-        topOffset={isHero ? 22 : 12}
+        size={isBig ? 54 : 32}
+        scale={isBig ? 1 : 0.57}
+        topOffset={isBig ? 22 : 12}
         memoProps={memoProps}
       />
       <Flex sx={{ flexDirection: "column", gap: "1px", pointerEvents: "all" }}>
         <Memoized
           as={UserName}
-          sx={{ fontSize: isHero ? 2 : 0 }}
+          sx={{ fontSize: isBig ? 2 : 0 }}
           player={player}
           memoProps={memoProps}
         />
@@ -127,29 +126,29 @@ const PlayerHud = ({ player }) => {
           color="red.700"
           max={stats?.maxHp}
           min={stats?.hp}
-          showText={isHero}
-          width={isHero ? 100 : 50}
-          height={isHero ? 12 : 6}
+          showText={isBig}
+          width={isBig ? 100 : 50}
+          height={isBig ? 12 : 6}
         />
         <Bar
           data-tooltip-content={`MP: ${stats?.mp} / ${stats?.maxMp}`}
           color="blue.500"
           max={stats?.maxMp}
           min={stats?.mp}
-          showText={isHero}
-          width={isHero ? 100 : 50}
-          height={isHero ? 12 : 6}
+          showText={isBig}
+          width={isBig ? 100 : 50}
+          height={isBig ? 12 : 6}
         />
         <Bar
           data-tooltip-content={`SP: ${stats?.sp} / ${stats?.maxSp}`}
           color="green.500"
           max={stats?.maxSp}
           min={stats?.sp}
-          width={isHero ? 100 : 50}
+          width={isBig ? 100 : 50}
           height={6}
           showText={false}
         />
-        {isHero && (
+        {isBig && (
           <Bar
             data-tooltip-content={`EXP: ${stats?.exp} / ${stats?.maxExp}`}
             color="purple.400"
@@ -159,17 +158,17 @@ const PlayerHud = ({ player }) => {
             showText={false}
           />
         )}
-        <Buffs player={player} sx={!isHero ? { transform: `scale(0.6)` } : {}} />
+        <Buffs player={player} sx={!isBig ? { transform: `scale(0.6)` } : {}} />
       </Flex>
       <Memoized
         as={LevelIcon}
         player={player}
-        sx={!isHero ? { transform: `scale(0.6)` } : {}}
+        sx={!isBig ? { transform: `scale(0.6)` } : {}}
         memoProps={memoProps}
       />
     </Flex>
   );
-};
+}, arePropsEqualWithKeys(["player.stats", "player.profile", "player.equipment", "player.activeItemSlots", "player.buffs"]));
 
 const LevelIcon = ({ player, sx }) => {
   return (
@@ -213,25 +212,20 @@ const MenuHud = () => {
       }}
     >
       <Tooltip id="hud" />
-      <PlayerHud player={hero} />
+      <PlayerHud player={hero} isBig={true} />
       <Flex sx={{ flexDirection: "column" }}>
         {hasParty &&
-          partyIds?.map((id) => <PlayerHud player={players?.find((p) => p?.id === id)} key={id} />)}
+          partyIds?.map((id) => (
+            <PlayerHud isBig={false} player={players?.find((p) => p?.id === id)} key={id} />
+          ))}
       </Flex>
     </Box>
   );
 };
 
-const Memoized = memo(
-  (props: any) => {
-    const { as: As = Text } = props;
-    return <As {...props}></As>;
-  },
-  (prev, next) => {
-    if (prev?.player && !next?.player) return true;
-    if (JSON.stringify(prev?.memoProps) === JSON.stringify(next?.memoProps)) return true;
-    return false;
-  }
-);
+const Memoized = memo((props: any) => {
+  const { as: As = Text } = props;
+  return <As {...props}></As>;
+}, arePropsEqualWithKeys(["memoProps"]));
 
 export default MenuHud;

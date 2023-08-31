@@ -1,3 +1,4 @@
+import { isEqual, get } from "lodash";
 export const HAIR_HIDING_HELMETS = ["helmet-armet", "helmet-hood", "helmet-horned"];
 export const FACE_HIDING_HELMETS = ["helmet-armet", "helmet-horned"];
 export const ACCESSORY_HIDING_HELMETS = ["helmet-armet", "helmet-horned"];
@@ -265,4 +266,15 @@ export function loadCacheImage(src) {
     img.onerror = () => reject(new Error(`Failed to load image: ${src}`));
     img.src = src;
   });
+}
+
+export function arePropsEqualWithKeys(keys) {
+  return (prevProps, nextProps) => {
+    for (const key of keys) {
+      if (!isEqual(get(prevProps, key), get(nextProps, key))) {
+        return false;
+      }
+    }
+    return true;
+  };
 }

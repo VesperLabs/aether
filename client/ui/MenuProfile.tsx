@@ -1,3 +1,4 @@
+import { memo } from "react";
 import {
   Menu,
   MenuHeader,
@@ -8,6 +9,7 @@ import {
   BigPortrait,
 } from "./";
 import { Flex, Text, Input, Box } from "@aether/ui";
+import { arePropsEqualWithKeys } from "@aether/shared";
 
 const MenuPicker = ({ children, onPlus = () => {}, onMinus = () => {} }) => {
   return (
@@ -31,16 +33,16 @@ const MenuPicker = ({ children, onPlus = () => {}, onMinus = () => {} }) => {
   );
 };
 
-const MenuProfile = () => {
-  const { tabProfile, setTabProfile, hero, socket } = useAppContext();
+const MenuProfile = memo(({ player, isOpen, setIsOpen }: any) => {
+  const { socket } = useAppContext();
 
   return (
     <Menu
       sx={{
-        display: tabProfile ? "flex" : "none",
+        display: isOpen ? "flex" : "none",
       }}
     >
-      <MenuHeader icon={`./assets/icons/mirror.png`} onClick={() => setTabProfile(false)}>
+      <MenuHeader icon={`./assets/icons/mirror.png`} onClick={() => setIsOpen(false)}>
         Profile
       </MenuHeader>
       <Flex sx={{ gap: 4, flexWrap: "wrap", justifyContent: "end", maxWidth: MENU_MAX_WIDTH }}>
@@ -57,12 +59,12 @@ const MenuProfile = () => {
           <BigPortrait
             showShadow={false}
             height={440}
-            player={hero}
+            player={player}
             filteredSlots={["accessory", "helmet", "hands"]}
           />
           <Input
             sx={{ width: 150, fontSize: 4 }}
-            defaultValue={hero?.profile?.userName}
+            defaultValue={player?.profile?.userName}
             onBlur={(e) => {
               /* Hack to send if `Done` button is pushed */
               const userName = e?.target?.value;
@@ -117,6 +119,6 @@ const MenuProfile = () => {
       </Flex>
     </Menu>
   );
-};
+}, arePropsEqualWithKeys(["player.profile", "player.equipment", "player.activeItemSlots", "isOpen"]));
 
 export default MenuProfile;
