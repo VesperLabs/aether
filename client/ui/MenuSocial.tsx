@@ -64,7 +64,6 @@ const SocialGrid = (props) => {
 };
 
 const MenuSocial = memo(({ players, hero, isOpen, setIsOpen, party }: any) => {
-  if (!isOpen) return;
   const partyIds = party?.members?.map((p) => p?.id);
   const otherPlayers = players?.filter((p) => !partyIds?.includes(p?.id) && hero?.id !== p?.id);
   const hasOtherPlayers = otherPlayers?.length > 0;
@@ -115,7 +114,7 @@ const MenuSocial = memo(({ players, hero, isOpen, setIsOpen, party }: any) => {
       )}
     </Menu>
   );
-}, arePropsEqualWithKeys(["isOpen", "players", "party", "hero.id"]));
+}, arePropsEqualWithKeys(["isOpen", "party", "hero.id", "players"]));
 
 const COLUMN_STYLE: ThemeUIStyleObject = { textTransform: "capitalize", whiteSpace: "nowrap" };
 
@@ -144,9 +143,8 @@ const SocialPlayerRow = (props: { partyPlayer: any; children: any }) => {
           />
         )}
       </MemoizedColumn>
-
       <MemoizedColumn player={player}>{player?.profile?.userName}</MemoizedColumn>
-      <MemoizedColumn as={Icon} player={player} size={24} icon={playerIcon} />
+      <MemoizedColumn player={player} as={Icon} size={24} icon={playerIcon} />
       <MemoizedColumn player={player}>{classString}</MemoizedColumn>
       <Text sx={COLUMN_STYLE}>{partyPlayer?.roomName}</Text>
       <Flex sx={{ justifyContent: "end" }}>{children}</Flex>
