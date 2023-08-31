@@ -1,8 +1,13 @@
-import React, { useState, useRef, useLayoutEffect } from "react";
+import React, { useState, useRef, useLayoutEffect, memo } from "react";
 import { Box, Icon, Portal, Donut, SLOT_SIZE, STYLE_SLOT_EMPTY, STYLE_NON_EMPTY } from "@aether/ui";
 import { ItemTooltip, BLANK_IMAGE, SlotAmount } from "./";
 import { useAppContext } from "./App";
-import { resolveAsset, assetToCanvas, CONSUMABLES_BASES } from "@aether/shared";
+import {
+  resolveAsset,
+  assetToCanvas,
+  CONSUMABLES_BASES,
+  arePropsEqualWithKeys,
+} from "@aether/shared";
 import { useDoubleTap } from "use-double-tap";
 
 const SpaceDonut = ({ percent = 0 }) => {
@@ -47,7 +52,7 @@ type SlotProps = {
   bagId?: string;
 };
 
-const Slot = React.memo(
+const Slot = memo(
   ({
     sx,
     size = SLOT_SIZE,
@@ -60,7 +65,6 @@ const Slot = React.memo(
     bagId,
     ...props
   }: SlotProps) => {
-    // component logic here
     const { hero } = useAppContext();
     const [imageData, setImageData] = useState(BLANK_IMAGE);
     const [dragging, setDragging] = useState(false);
@@ -293,18 +297,7 @@ const Slot = React.memo(
       </Box>
     );
   },
-  (prevProps: any, nextProps: any) => {
-    // Only re-render if item id or amount has changed
-    const prevItem = prevProps.item;
-    const nextItem = nextProps.item;
-    return (
-      prevItem === nextItem ||
-      (prevItem?.id === nextItem?.id &&
-        prevItem?.amount === nextItem?.amount &&
-        JSON.stringify(prevItem?.items) === JSON.stringify(nextItem?.items) &&
-        prevItem?.stock === nextItem?.stock)
-    );
-  }
+  arePropsEqualWithKeys(["id", "amount", "items", "stock", "item.id"])
 );
 
 function useItemEvents({ location, bagId, slotKey, item }) {

@@ -29,6 +29,7 @@ export { default as ModalError } from "./ModalError";
 export { default as StatusIcon } from "./StatusIcon";
 export { default as CooldownTimer } from "./CooldownTimer";
 export { default as AbilityButtons } from "./AbilityButtons";
+export { default as SkillButtons } from "./SkillButtons";
 export { default as ChatButton } from "./ChatButton";
 export { default as MenuBar } from "./MenuBar";
 export { useAppContext } from "./App";
