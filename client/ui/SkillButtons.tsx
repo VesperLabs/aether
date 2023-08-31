@@ -1,7 +1,9 @@
 import { Flex } from "@aether/ui";
 import { CooldownTimer, SkillButton, useAppContext } from "./";
+import { memo } from "react";
+import { arePropsEqualWithKeys } from "@aether/shared";
 
-const SkillButtons = () => {
+const SkillButtons = memo(({ cooldowns }: any) => {
   const { showButtonChat } = useAppContext();
 
   return (
@@ -34,10 +36,10 @@ const SkillButtons = () => {
         onTouchEnd={() => window.dispatchEvent(new CustomEvent("HERO_ATTACK"))}
         keyboardKey="SPACE"
       >
-        <CooldownTimer cooldown={"attack"} />
+        <CooldownTimer cooldown={cooldowns["attack"]} />
       </SkillButton>
     </Flex>
   );
-};
+}, arePropsEqualWithKeys(["cooldowns"]));
 
 export default SkillButtons;
