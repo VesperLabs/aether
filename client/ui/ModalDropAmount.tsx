@@ -3,7 +3,7 @@ import { useAppContext, Slot } from "./";
 import { Modal, Flex, Input, Icon, Text, KeyboardButton } from "@aether/ui";
 
 const ModalDropAmount = () => {
-  const { socket, dropItem, setDropItem, zoom, bottomOffset } = useAppContext();
+  const { socket, dropItem, setDropItem, zoom, bottomOffset, hero } = useAppContext();
   const {
     amount: defaultAmount,
     location,
@@ -74,7 +74,7 @@ const ModalDropAmount = () => {
           width: "300px",
         }}
       >
-        <Slot item={{ ...item, id: item?.id + "modal" }} disabled={true} />
+        <Slot player={hero} item={{ ...item, id: item?.id + "modal" }} disabled={true} />
         {!isConfirm && (
           <Flex sx={{ flex: 1, alignItems: "center", gap: 2, minWidth: 100 }}>
             <Text>x</Text>

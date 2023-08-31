@@ -61,6 +61,7 @@ const QuestTooltip = ({
   tooltipId,
   onClose,
   parent,
+  player,
 }: {
   quest: Quest;
   tooltipId: string;
@@ -68,6 +69,7 @@ const QuestTooltip = ({
   onClose;
   playerQuest: PlayerQuest;
   parent: string;
+  player: FullCharacterState;
 }) => {
   const { socket } = useAppContext();
   const { rewards } = quest ?? {};
@@ -107,7 +109,7 @@ const QuestTooltip = ({
         <Divider />
         <Flex sx={{ gap: 2 }}>
           {rewards?.items?.map((reward: Item, idx: string) => {
-            return <Slot item={reward} key={idx} disabled={true} />;
+            return <Slot player={player} item={reward} key={idx} disabled={true} />;
           })}
           {rewards?.gold > 0 && (
             <Box sx={{ ...STYLE_NON_EMPTY({ rarity: "unique" }) }}>

@@ -50,6 +50,7 @@ type SlotProps = {
   stock?: integer;
   disabled?: boolean;
   bagId?: string;
+  player: FullCharacterState;
 };
 
 const Slot = memo(
@@ -63,9 +64,9 @@ const Slot = memo(
     stock,
     disabled,
     bagId,
+    player,
     ...props
   }: SlotProps) => {
-    const { hero } = useAppContext();
     const [imageData, setImageData] = useState(BLANK_IMAGE);
     const [dragging, setDragging] = useState(false);
     const [hovering, setHovering] = useState(false);
@@ -73,6 +74,7 @@ const Slot = memo(
     const [target, setTarget] = useState(null);
     const imageRef = useRef(null);
     const { dropItem, doubleClickItem } = useItemEvents({
+      player,
       bagId,
       item,
       location,
@@ -167,7 +169,7 @@ const Slot = memo(
     /* Loads the item canvas data out of the texture */
     useLayoutEffect(() => {
       if (!item) return;
-      const asset = resolveAsset(item, hero);
+      const asset = resolveAsset(item, player);
       if (!asset) return;
       assetToCanvas({ asset, tint: item?.tint, setImageData });
     }, [item]);
@@ -214,7 +216,7 @@ const Slot = memo(
     };
 
     const isActive =
-      hero?.activeItemSlots?.includes(slotKey) || !["abilities", "equipment"]?.includes(location);
+      player?.activeItemSlots?.includes(slotKey) || !["abilities", "equipment"]?.includes(location);
     const tooltipId = `${location}-${item?.id}`;
     const targetMoved = target?.dataset?.tooltipId !== tooltipId;
     const aboutToSell = dragging && target?.closest(".menu-keeper") && location !== "shop";
@@ -291,7 +293,7 @@ const Slot = memo(
                 }}
               />
             </Portal>
-            <ItemTooltip item={item} show={showTooltip} tooltipId={tooltipId} />
+            <ItemTooltip player={player} item={item} show={showTooltip} tooltipId={tooltipId} />
           </>
         )}
       </Box>
@@ -300,113 +302,21 @@ const Slot = memo(
   arePropsEqualWithKeys(["id", "amount", "items", "stock", "item.id"])
 );
 
-function useItemEvents({ location, bagId, slotKey, item }) {
-  const { hero, socket, setDropItem, toggleBagState, bagState } = useAppContext();
-
+function useItemEvents({ location, bagId, slotKey, item, player }) {
   return {
     doubleClickItem: () => {
-      if (!["inventory", "abilities", "bag"].includes(location)) return;
-      /* If it is food we are trying to consume it */
-      if (CONSUMABLES_BASES.includes(item?.base)) {
-        window.dispatchEvent(
-          new CustomEvent("HERO_USE_ITEM", {
-            detail: { item, location },
-          })
-        );
-      }
-      /* If it is a bag, we open it */
-      if (item?.base === "bag") {
-        toggleBagState(item?.id);
-      }
+      window.dispatchEvent(
+        new CustomEvent("HERO_DOUBLE_CLICK_ITEM", {
+          detail: { item, location },
+        })
+      );
     },
     dropItem: (target) => {
-      const { nodeName, dataset } = target ?? {};
-      if (hero?.state?.isDead) return;
-      if (
-        dataset?.location === location &&
-        dataset?.slotKey === slotKey &&
-        dataset.bagId === bagId
-      ) {
-        return;
-      }
-      /* Anywhere -> Ground */
-      if (nodeName == "CANVAS" && location !== "shop") {
-        if (item?.amount > 1) {
-          /* If more than 1, open up the drop modal */
-          return setDropItem({ ...item, location, bagId, action: "DROP" });
-        } else {
-          if (["set", "rare", "unique"]?.includes(item?.rarity)) {
-            return setDropItem({ ...item, location, bagId, action: "DROP_CONFIRM" });
-          }
-          if (["bag"]?.includes(item?.base)) {
-            /* Close open bag */
-            if (bagState?.find?.((id) => id === item?.id)) {
-              toggleBagState(item?.id);
-            }
-            return setDropItem({ ...item, location, bagId, action: "DROP_CONFIRM" });
-          }
-          return socket.emit("dropItem", { item, bagId, location });
-        }
-      }
-      /* Anywhere -> Shop */
-      if (target?.closest(".menu-keeper")) {
-        if (item?.amount > 1) {
-          /* If more than 1, open up the drop modal */
-          return setDropItem({ ...item, location, bagId, action: "SHOP_SELL_AMOUNT", slotKey });
-        } else {
-          if (["set", "rare", "unique"]?.includes(item?.rarity) || ["bag"]?.includes(item?.base)) {
-            /* Close open bag */
-            if (bagState?.find?.((id) => id === item?.id)) {
-              toggleBagState(item?.id);
-            }
-            return setDropItem({
-              ...item,
-              location,
-              action: "SHOP_SELL_CONFIRM",
-              slotKey,
-              bagId,
-            });
-          } else {
-            // so that we can play the sell sound
-            if (location !== "shop") {
-              window.dispatchEvent(
-                new CustomEvent("AUDIO_ITEM_SELL", {
-                  detail: item,
-                })
-              );
-            }
-            return socket.emit("moveItem", {
-              to: {
-                location: "shop",
-              },
-              from: { bagId, slot: slotKey, location },
-            });
-          }
-        }
-      }
-      /* Anywhere -> Anywhere */
-      if (dataset?.slotKey) {
-        if (location === "shop") {
-          if (item?.slot === "stackable") {
-            return setDropItem({
-              ...item,
-              location,
-              action: "SHOP_BUY_AMOUNT",
-              slotKey,
-              bagId,
-              dataset,
-            });
-          }
-        }
-        return socket.emit("moveItem", {
-          to: {
-            bagId: dataset?.bagId, //if we have a bag
-            slot: dataset?.slotKey,
-            location: dataset?.location,
-          },
-          from: { bagId, slot: slotKey, location },
-        });
-      }
+      window.dispatchEvent(
+        new CustomEvent("HERO_DROP_ITEM", {
+          detail: { item, location, bagId, slotKey, player, target },
+        })
+      );
     },
   };
 }

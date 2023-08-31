@@ -18,6 +18,7 @@ const MenuEquipment = memo(({ player, isOpen, setIsOpen }: any) => {
         {equipment?.map(([slotKey, item]: [string, Item]) => (
           <Slot
             key={slotKey}
+            player={player}
             location="equipment"
             slotKey={slotKey}
             icon={`./assets/icons/${slotKey}.png`}
