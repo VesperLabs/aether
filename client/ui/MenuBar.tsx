@@ -47,6 +47,7 @@ const MenuBar = () => {
     bagState,
     players,
     party,
+    cooldowns,
     toggleBagState,
   } = useAppContext();
 
@@ -80,8 +81,8 @@ const MenuBar = () => {
       <Flex sx={{ flex: 1, alignItems: "end" }}>
         <MessageBox />
         <Flex sx={{ flexDirection: "column" }}>
-          <AbilityButtons />
-          <SkillButtons />
+          <AbilityButtons hero={hero} cooldowns={cooldowns} />
+          <SkillButtons cooldowns={cooldowns} />
         </Flex>
       </Flex>
       <Box

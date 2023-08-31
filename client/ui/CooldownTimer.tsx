@@ -1,12 +1,11 @@
-import { useEffect, useState } from "react";
-import { useAppContext } from ".";
+import { memo, useEffect, useState } from "react";
 import { Box, Donut } from "@aether/ui";
+import { arePropsEqualWithKeys } from "@aether/shared";
 
-const CooldownTimer = ({ cooldown, color = "#FFF" }) => {
-  const { cooldowns } = useAppContext();
+const CooldownTimer = memo(({ cooldown, color = "#FFF" }: any) => {
   const [percentage, setPercentage] = useState(0);
-  let duration = cooldowns[cooldown]?.duration ?? 0;
-  let startTime = cooldowns[cooldown]?.startTime ?? Date.now();
+  let duration = cooldown?.duration ?? 0;
+  let startTime = cooldown?.startTime ?? Date.now();
 
   useEffect(() => {
     const triggerTimer = () => {
@@ -56,6 +55,6 @@ const CooldownTimer = ({ cooldown, color = "#FFF" }) => {
       />
     </Box>
   );
-};
+}, arePropsEqualWithKeys(["cooldown"]));
 
 export default CooldownTimer;

@@ -1,9 +1,14 @@
-import { POTION_BASES, applyTintToImage, loadCacheImage } from "@aether/shared";
-import { CooldownTimer, SkillButton, useAppContext } from "./";
+import {
+  POTION_BASES,
+  applyTintToImage,
+  arePropsEqualWithKeys,
+  loadCacheImage,
+} from "@aether/shared";
+import { CooldownTimer, SkillButton } from "./";
 import { Flex, Text } from "@aether/ui";
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 
-const TintedIconLoader = ({ slotKey, item, applyTintAndSetIcon }) => {
+const TintedIconLoader = ({ cooldowns, slotKey, item, applyTintAndSetIcon }) => {
   const isSpell = item.type === "spell";
   const cooldown = POTION_BASES.includes(item?.base) ? "potion" : item?.base;
   const [tintedIcon, setTintedIcon] = useState("./assets/icons/blank.png");
@@ -34,8 +39,8 @@ const TintedIconLoader = ({ slotKey, item, applyTintAndSetIcon }) => {
         },
       }}
     >
-      <CooldownTimer cooldown={"global"} />
-      <CooldownTimer cooldown={cooldown} color="set" />
+      <CooldownTimer cooldown={cooldowns["global"]} />
+      <CooldownTimer cooldown={cooldowns[cooldown]} color="set" />
       <Text
         sx={{
           bottom: "13px",
@@ -52,8 +57,7 @@ const TintedIconLoader = ({ slotKey, item, applyTintAndSetIcon }) => {
   );
 };
 
-const AbilityButtons = () => {
-  const { hero } = useAppContext();
+const AbilityButtons = memo(({ hero, cooldowns }: any) => {
   const abilities = Object.entries(hero?.abilities || {}).filter(([slotKey, _]) =>
     hero.activeItemSlots.includes(slotKey)
   );
@@ -91,6 +95,7 @@ const AbilityButtons = () => {
         <React.Fragment key={slotKey}>
           {item && (
             <TintedIconLoader
+              cooldowns={cooldowns}
               slotKey={slotKey}
               item={item}
               applyTintAndSetIcon={applyTintAndSetIcon}
@@ -100,6 +105,6 @@ const AbilityButtons = () => {
       ))}
     </Flex>
   );
-};
+}, arePropsEqualWithKeys(["hero.abilities", "cooldowns"]));
 
 export default AbilityButtons;
