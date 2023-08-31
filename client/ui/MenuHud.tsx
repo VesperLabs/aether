@@ -2,6 +2,7 @@ import { memo } from "react";
 import { Box, Flex, Tooltip, Icon } from "@aether/ui";
 import { useAppContext, Portrait } from "./";
 import { arePropsEqualWithKeys } from "@aether/shared";
+import { cloneDeep } from "lodash";
 
 const UserName = ({ sx, player }: { player: any; sx?: object }) => {
   return <Box sx={{ ...sx }}>{player?.profile?.userName}</Box>;
@@ -97,6 +98,7 @@ const PlayerHud = memo(({ player, isBig }: any) => {
   const { stats, profile, equipment, activeItemSlots } = player ?? {};
   const isOffScreen = !player;
   const memoProps = { activeItemSlots, equipment, profile };
+
   return (
     <Flex
       sx={{
@@ -201,6 +203,7 @@ const MenuHud = () => {
   const { hero, party, players, zoom } = useAppContext();
   const partyIds = party?.members?.map((p) => p?.id)?.filter((id) => hero?.id !== id);
   const hasParty = partyIds?.length > 0;
+
   return (
     <Box
       sx={{
@@ -212,20 +215,31 @@ const MenuHud = () => {
       }}
     >
       <Tooltip id="hud" />
-      <PlayerHud player={hero} isBig={true} />
+      <PlayerHud player={cloneDeep(hero)} isBig={true} />
       <Flex sx={{ flexDirection: "column" }}>
         {hasParty &&
           partyIds?.map((id) => (
-            <PlayerHud isBig={false} player={players?.find((p) => p?.id === id)} key={id} />
+            <PlayerHud
+              isBig={false}
+              player={cloneDeep(players?.find((p) => p?.id === id))}
+              key={id}
+            />
           ))}
       </Flex>
     </Box>
   );
 };
 
-const Memoized = memo((props: any) => {
-  const { as: As = Text } = props;
-  return <As {...props}></As>;
-}, arePropsEqualWithKeys(["memoProps"]));
+const Memoized = memo(
+  (props: any) => {
+    const { as: As = Text } = props;
+    return <As {...props}></As>;
+  },
+  (prev, next) => {
+    if (prev?.player && !next?.player) return true;
+    if (JSON.stringify(prev?.memoProps) === JSON.stringify(next?.memoProps)) return true;
+    return false;
+  }
+);
 
 export default MenuHud;

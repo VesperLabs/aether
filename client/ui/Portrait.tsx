@@ -1,3 +1,4 @@
+import { arePropsEqualWithKeys } from "@aether/shared";
 import { Box, PlayerRender } from "@aether/ui";
 import { memo } from "react";
 
@@ -59,12 +60,7 @@ const Portrait = memo(
       </Box>
     );
   },
-  (prev, next) => {
-    return (
-      prev?.player?.activeItemSlots === next?.player?.activeItemSlots &&
-      prev?.player?.equipment === prev?.player?.equipment
-    );
-  }
+  arePropsEqualWithKeys(["player.activeItemSlots", "player.equipment"])
 );
 
 export default Portrait;
