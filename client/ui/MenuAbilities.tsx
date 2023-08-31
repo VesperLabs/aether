@@ -20,6 +20,7 @@ const MenuAbilities = memo(({ player, isOpen, setIsOpen }: any) => {
       <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", maxWidth: MENU_MAX_WIDTH }}>
         {abilities?.map(([slotKey, item]: [string, Item]) => (
           <Slot
+            player={player}
             key={slotKey}
             location="abilities"
             slotKey={slotKey}

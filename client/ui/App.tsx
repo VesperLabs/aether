@@ -15,6 +15,7 @@ import { getSpinDirection, calculateZoomLevel } from "../utils";
 import "react-tooltip/dist/react-tooltip.css";
 import { Theme } from "theme-ui";
 import { Socket } from "socket.io-client";
+import { CONSUMABLES_BASES } from "@aether/shared";
 
 interface AppContextValue {
   isLoggedIn: boolean;
@@ -349,6 +350,110 @@ function App({ socket, debug, game }) {
     setIsLoaded(true);
   };
 
+  function onDoubleClickItem(e) {
+    const { item, location } = e?.detail ?? {};
+    if (!["inventory", "abilities", "bag"].includes(location)) return;
+    /* If it is food we are trying to consume it */
+    if (CONSUMABLES_BASES.includes(item?.base)) {
+      window.dispatchEvent(
+        new CustomEvent("HERO_USE_ITEM", {
+          detail: { item, location },
+        })
+      );
+    }
+    /* If it is a bag, we open it */
+    if (item?.base === "bag") {
+      toggleBagState(item?.id);
+    }
+  }
+
+  function onDropItem(e) {
+    const { target, location, bagId, slotKey, item, player } = e?.detail ?? {};
+    const { nodeName, dataset } = target ?? {};
+    if (hero?.state?.isDead) return;
+    if (dataset?.location === location && dataset?.slotKey === slotKey && dataset.bagId === bagId) {
+      return;
+    }
+    /* Anywhere -> Ground */
+    if (nodeName == "CANVAS" && location !== "shop") {
+      if (item?.amount > 1) {
+        /* If more than 1, open up the drop modal */
+        return setDropItem({ ...item, location, bagId, action: "DROP" });
+      } else {
+        if (["set", "rare", "unique"]?.includes(item?.rarity)) {
+          return setDropItem({ ...item, location, bagId, action: "DROP_CONFIRM" });
+        }
+        if (["bag"]?.includes(item?.base)) {
+          /* Close open bag */
+          if (bagState?.find?.((id) => id === item?.id)) {
+            toggleBagState(item?.id);
+          }
+          return setDropItem({ ...item, location, bagId, action: "DROP_CONFIRM" });
+        }
+        return socket.emit("dropItem", { item, bagId, location });
+      }
+    }
+    /* Anywhere -> Shop */
+    if (target?.closest(".menu-keeper")) {
+      if (item?.amount > 1) {
+        /* If more than 1, open up the drop modal */
+        return setDropItem({ ...item, location, bagId, action: "SHOP_SELL_AMOUNT", slotKey });
+      } else {
+        if (["set", "rare", "unique"]?.includes(item?.rarity) || ["bag"]?.includes(item?.base)) {
+          /* Close open bag */
+          if (bagState?.find?.((id) => id === item?.id)) {
+            toggleBagState(item?.id);
+          }
+          return setDropItem({
+            ...item,
+            location,
+            action: "SHOP_SELL_CONFIRM",
+            slotKey,
+            bagId,
+          });
+        } else {
+          // so that we can play the sell sound
+          if (location !== "shop") {
+            window.dispatchEvent(
+              new CustomEvent("AUDIO_ITEM_SELL", {
+                detail: item,
+              })
+            );
+          }
+          return socket.emit("moveItem", {
+            to: {
+              location: "shop",
+            },
+            from: { bagId, slot: slotKey, location },
+          });
+        }
+      }
+    }
+    /* Anywhere -> Anywhere */
+    if (dataset?.slotKey) {
+      if (location === "shop") {
+        if (item?.slot === "stackable") {
+          return setDropItem({
+            ...item,
+            location,
+            action: "SHOP_BUY_AMOUNT",
+            slotKey,
+            bagId,
+            dataset,
+          });
+        }
+      }
+      return socket.emit("moveItem", {
+        to: {
+          bagId: dataset?.bagId, //if we have a bag
+          slot: dataset?.slotKey,
+          location: dataset?.location,
+        },
+        from: { bagId, slot: slotKey, location },
+      });
+    }
+  }
+
   useEffect(() => {
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
@@ -370,6 +475,8 @@ function App({ socket, debug, game }) {
     window.addEventListener("LOAD_ERROR", onLoadError);
     window.addEventListener("GAME_LOADED", onGameLoaded);
     window.addEventListener("HERO_START_COOLDOWN", onStartCooldown);
+    window.addEventListener("HERO_DROP_ITEM", onDropItem);
+    window.addEventListener("HERO_DOUBLE_CLICK_ITEM", onDoubleClickItem);
     return () => {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
@@ -391,6 +498,8 @@ function App({ socket, debug, game }) {
       window.removeEventListener("LOAD_ERROR", onLoadError);
       window.removeEventListener("GAME_LOADED", onGameLoaded);
       window.removeEventListener("HERO_START_COOLDOWN", onStartCooldown);
+      window.removeEventListener("HERO_DROP_ITEM", onDropItem);
+      window.removeEventListener("HERO_DOUBLE_CLICK_ITEM", onDoubleClickItem);
     };
   }, []);
 

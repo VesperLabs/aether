@@ -66,6 +66,7 @@ const Quest = ({ quest, parent = "keeper" }: { quest: Quest; parent: string }) =
         <Box sx={{ position: "absolute", bottom: 1, right: 1 }}>{getQuestEmoji()}</Box>
       </Box>
       <QuestTooltip
+        player={hero}
         parent={parent}
         tooltipId={TOOLTIP_ID}
         quest={quest}

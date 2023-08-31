@@ -1,13 +1,11 @@
 import { Fragment } from "react";
 import { Flex, Text, Divider, Icon, Tooltip } from "@aether/ui";
 import { buffList, itemSetList, ItemBuilder, formatStats, CONSUMABLES_BASES } from "@aether/shared";
-import { useAppContext } from "./";
 
 const Label = (props) => <Text sx={{ fontWeight: "normal" }} {...props} />;
 
-const ItemTooltip = ({ item, tooltipId, show }) => {
-  const { hero } = useAppContext();
-  const isSetActive = hero?.state?.activeSets?.includes?.(item?.setName);
+const ItemTooltip = ({ player, item, tooltipId, show }) => {
+  const isSetActive = player?.state?.activeSets?.includes?.(item?.setName);
   if (!item) return;
 
   const setBonus = ItemBuilder.getSetInfo(item?.setName);
@@ -103,7 +101,7 @@ const ItemTooltip = ({ item, tooltipId, show }) => {
         })}
         {Object.keys(requirements)?.length > 0 && <TextDivider>Requirements</TextDivider>}
         {Object.keys(requirements).map((key) => {
-          const hasRequiredStats = hero?.stats?.[key] >= requirements[key];
+          const hasRequiredStats = player?.stats?.[key] >= requirements[key];
           return (
             <Text key={key} color={hasRequiredStats ? "text" : "danger"}>
               <Label>{key}:</Label> {requirements[key]}
