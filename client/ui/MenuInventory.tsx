@@ -1,6 +1,7 @@
-import { MAX_INVENTORY_ITEMS } from "@aether/shared";
-import { Menu, useAppContext, Slot, MenuHeader, MENU_MAX_WIDTH } from "./";
+import { MAX_INVENTORY_ITEMS, arePropsEqualWithKeys } from "@aether/shared";
+import { Menu, Slot, MenuHeader, MENU_MAX_WIDTH } from "./";
 import { Flex, Text, Icon } from "@aether/ui";
+import { memo } from "react";
 
 const GoldDisplay = ({ gold, sx }) => (
   <Flex sx={{ flex: 1, gap: 1, justifyContent: "end", alignItems: "center", ...sx }}>
@@ -9,15 +10,13 @@ const GoldDisplay = ({ gold, sx }) => (
   </Flex>
 );
 
-const MenuInventory = () => {
-  const { hero, tabInventory, setTabInventory } = useAppContext();
-  const inventory = hero?.inventory || [];
+const MenuInventory = memo(({ player, isOpen, setIsOpen }: any) => {
+  const inventory = player?.inventory || [];
   const maxInventory = new Array(MAX_INVENTORY_ITEMS).fill(null);
-
   return (
-    <Menu sx={{ display: tabInventory ? "block" : "none" }}>
+    <Menu sx={{ display: isOpen ? "block" : "none" }}>
       <Flex sx={{ flexWrap: "wrap", justifyContent: "end", gap: 2, flex: 1 }}>
-        <MenuHeader icon={`./assets/icons/bag.png`} onClick={() => setTabInventory(false)}>
+        <MenuHeader icon={`./assets/icons/bag.png`} onClick={() => setIsOpen(false)}>
           Inventory
         </MenuHeader>
         <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", maxWidth: MENU_MAX_WIDTH }}>
@@ -32,9 +31,9 @@ const MenuInventory = () => {
           ))}
         </Flex>
       </Flex>
-      <GoldDisplay gold={hero?.gold} sx={{ mt: 2 }} />
+      <GoldDisplay gold={player?.gold} sx={{ mt: 2 }} />
     </Menu>
   );
-};
+}, arePropsEqualWithKeys(["isOpen", "player.inventory", "player.gold"]));
 
 export default MenuInventory;

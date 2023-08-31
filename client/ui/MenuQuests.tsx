@@ -1,10 +1,10 @@
-import { Menu, useAppContext, MenuHeader, Quest, MENU_MAX_WIDTH } from "./";
+import { Menu, MenuHeader, Quest, MENU_MAX_WIDTH } from "./";
 import { Flex, Text } from "@aether/ui";
+import { arePropsEqualWithKeys, questList } from "@aether/shared";
+import { memo } from "react";
 
-import questList from "../../shared/data/questList.json";
-const MenuQuests = () => {
-  const { hero, tabQuests, setTabQuests } = useAppContext();
-  const playerQuests = hero?.quests || [];
+const MenuQuests = memo(({ player, isOpen, setIsOpen }: any) => {
+  const playerQuests = player?.quests || [];
   const quests = playerQuests
     ?.filter((q) => !q?.isCompleted)
     .map((q: PlayerQuest) => ({
@@ -16,17 +16,16 @@ const MenuQuests = () => {
   return (
     <Menu
       sx={{
-        display: tabQuests ? "flex" : "none",
+        display: isOpen ? "flex" : "none",
         alignItems: "end",
         flexDirection: "column",
       }}
     >
-      <MenuHeader icon={`./assets/icons/quests.png`} onClick={() => setTabQuests(false)}>
+      <MenuHeader icon={`./assets/icons/quests.png`} onClick={() => setIsOpen(false)}>
         Quests
       </MenuHeader>
       <Flex
         sx={{
-          display: tabQuests ? "flex" : "none",
           gap: 2,
           flexWrap: "wrap",
           justifyContent: "end",
@@ -40,6 +39,6 @@ const MenuQuests = () => {
       </Flex>
     </Menu>
   );
-};
+}, arePropsEqualWithKeys(["isOpen", "player.quests", "currentTooltipId"]));
 
 export default MenuQuests;

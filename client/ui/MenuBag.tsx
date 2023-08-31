@@ -1,9 +1,10 @@
-import { Flex, Text, Icon } from "@aether/ui";
-import { Menu, useAppContext, Slot, MenuHeader, MENU_MAX_WIDTH } from "./";
+import { Flex } from "@aether/ui";
+import { Menu, Slot, MenuHeader, MENU_MAX_WIDTH } from "./";
+import { memo } from "react";
+import { arePropsEqualWithKeys } from "@aether/shared";
 
-const MenuBag = ({ id }) => {
-  const { hero, toggleBagState } = useAppContext();
-  const bag = hero?.inventory?.find((item: Item) => item?.id === id);
+const MenuBag = memo(({ id, player, toggleBagState }: any) => {
+  const bag = player?.inventory?.find((item: Item) => item?.id === id);
   const maxInventory = new Array(bag?.space).fill(null);
 
   return (
@@ -28,6 +29,6 @@ const MenuBag = ({ id }) => {
       </Flex>
     </Menu>
   );
-};
+}, arePropsEqualWithKeys(["id", "player.inventory"]));
 
 export default MenuBag;
