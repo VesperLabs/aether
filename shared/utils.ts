@@ -238,7 +238,9 @@ export function msToHours(ms) {
 
 export function filterVisibleEquipment(player: FullCharacterState) {
   return Object.fromEntries(
-    Object.entries(player?.equipment).filter(([key]) => player?.activeItemSlots?.includes(key))
+    Object.entries(player?.equipment ?? {}).filter(([key]) =>
+      player?.activeItemSlots?.includes(key)
+    )
   );
 }
 
@@ -270,11 +272,6 @@ export function loadCacheImage(src) {
 
 export function arePropsEqualWithKeys(keys) {
   return (prevProps, nextProps) => {
-    for (const key of keys) {
-      if (!isEqual(get(prevProps, key), get(nextProps, key))) {
-        return false;
-      }
-    }
-    return true;
+    return keys.every((key) => isEqual(get(prevProps, key), get(nextProps, key)));
   };
 }
