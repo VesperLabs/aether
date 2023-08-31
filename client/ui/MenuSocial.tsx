@@ -2,7 +2,7 @@ import { Fragment, memo } from "react";
 import { Menu, useAppContext, MenuHeader, Portrait, MENU_MAX_WIDTH } from "./";
 import { ThemeUIStyleObject } from "theme-ui";
 import { Flex, Text, Grid, Icon, Button, Box } from "@aether/ui";
-import { CLASS_ICON_MAP } from "@aether/shared";
+import { CLASS_ICON_MAP, arePropsEqualWithKeys } from "@aether/shared";
 
 const ActionButton = ({ player }) => {
   const { partyInvites, socket } = useAppContext();
@@ -63,8 +63,8 @@ const SocialGrid = (props) => {
   );
 };
 
-const MenuSocial = () => {
-  const { players, hero, tabSocial, setTabSocial, party } = useAppContext();
+const MenuSocial = memo(({ players, hero, isOpen, setIsOpen, party }: any) => {
+  if (!isOpen) return;
   const partyIds = party?.members?.map((p) => p?.id);
   const otherPlayers = players?.filter((p) => !partyIds?.includes(p?.id) && hero?.id !== p?.id);
   const hasOtherPlayers = otherPlayers?.length > 0;
@@ -73,13 +73,13 @@ const MenuSocial = () => {
   return (
     <Menu
       sx={{
-        display: tabSocial ? "flex" : "none",
+        display: isOpen ? "flex" : "none",
         flex: 1,
         alignItems: "end",
         flexDirection: "column",
       }}
     >
-      <MenuHeader icon={`./assets/icons/social.png`} onClick={() => setTabSocial(false)}>
+      <MenuHeader icon={`./assets/icons/social.png`} onClick={() => setIsOpen(false)}>
         Social
       </MenuHeader>
       {hasPlayers && (
@@ -97,7 +97,7 @@ const MenuSocial = () => {
           )}
           {hasParty && (
             <>
-              <MenuHeader icon={`./assets/icons/social.png`} onClick={() => setTabSocial(false)}>
+              <MenuHeader icon={`./assets/icons/social.png`} onClick={() => setIsOpen(false)}>
                 Party
               </MenuHeader>
               <SocialGrid>
@@ -115,7 +115,7 @@ const MenuSocial = () => {
       )}
     </Menu>
   );
-};
+}, arePropsEqualWithKeys(["isOpen", "players", "party", "hero.id"]));
 
 const COLUMN_STYLE: ThemeUIStyleObject = { textTransform: "capitalize", whiteSpace: "nowrap" };
 
