@@ -94,6 +94,7 @@ const LoginForm = ({ defaultEmail }) => {
       />
       <Input
         autoFocus={defaultEmail}
+        autoComplete="weak-password"
         type="password"
         placeholder="Password"
         value={password}
