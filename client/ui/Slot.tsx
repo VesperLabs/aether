@@ -1,14 +1,9 @@
-import React, { useState, useRef, useLayoutEffect, memo } from "react";
+import { useState, useRef, useLayoutEffect, memo } from "react";
 import { Box, Icon, Portal, Donut, SLOT_SIZE, STYLE_SLOT_EMPTY, STYLE_NON_EMPTY } from "@aether/ui";
 import { ItemTooltip, BLANK_IMAGE, SlotAmount } from "./";
-import { useAppContext } from "./App";
-import {
-  resolveAsset,
-  assetToCanvas,
-  CONSUMABLES_BASES,
-  arePropsEqualWithKeys,
-} from "@aether/shared";
+import { resolveAsset, assetToCanvas, arePropsEqualWithKeys } from "@aether/shared";
 import { useDoubleTap } from "use-double-tap";
+import { isEqual, get } from "lodash";
 
 const SpaceDonut = ({ percent = 0 }) => {
   const getColor = () => {
@@ -299,7 +294,21 @@ const Slot = memo(
       </Box>
     );
   },
-  arePropsEqualWithKeys(["id", "amount", "items", "stock", "item.id"])
+  (prevProps, nextProps) => {
+    if (get(prevProps, "item.rarity") === "set" || get(nextProps, "item.rarity") === "set") {
+      if (
+        !isEqual(
+          get(prevProps, "player.state.activeSets"),
+          get(nextProps, "player.state.activeSets")
+        )
+      ) {
+        return false;
+      }
+    }
+    return ["id", "amount", "items", "stock", "item.id"].every((key) =>
+      isEqual(get(prevProps, key), get(nextProps, key))
+    );
+  }
 );
 
 function useItemEvents({ location, bagId, slotKey, item, player }) {
