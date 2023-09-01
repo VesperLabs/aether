@@ -50,7 +50,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
     mapList.forEach((asset: MapAsset) => {
       let assetPath = path.join(__dirname, `../public/${asset.json}`);
 
-      if (process.env.NODE_ENV === "PRODUCTION") {
+      if (process.env.SERVER_ENV === "PRODUCTION") {
         assetPath = path.join(__dirname, `../../public/${asset.json}`);
       }
 
