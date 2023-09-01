@@ -48,12 +48,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
     /* Need to install plugins here in headless mode */
     // this.game.plugins.installScenePlugin("x", X, "x", this.scene.scene, true);
     mapList.forEach((asset: MapAsset) => {
-      let assetPath = path.join(__dirname, `../public/${asset.json}`);
-
-      if (process.env.SERVER_ENV === "PRODUCTION") {
-        assetPath = path.join(__dirname, `../../public/${asset.json}`);
-      }
-
+      const assetPath = path.join(__dirname, `${process.env.PUBLIC_DIR}/${asset.json}`);
       this.load.tilemapTiledJSON(asset?.name, assetPath);
     });
   }
