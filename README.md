@@ -25,6 +25,7 @@ SERVER_FPS=20
 SERVER_URL=http://localhost:3000
 PORT=3000
 ASSETS_URL= # Where to load images from (Leave blank for DEV)
+PUBLIC_DIR=../public # For live it needs to be ../../public
 ```
 
 ## 📟 Running
