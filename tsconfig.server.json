@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "CommonJS", // Target CommonJS modules
+    "moduleResolution": "Node",
+    "allowJs": true,
+    "noEmit": false,
+    "strict": false,
+    "esModuleInterop": true,
+    "lib": ["DOM", "DOM.Iterable", "ESNext", "scripthost"],
+    "jsx": "react-jsx",
+    "resolveJsonModule": true,
+    "outDir": "dist",
+    "rootDir": "."
+  },
+  "include": ["server/**/*", "shared/**/*", "index.d.ts"],
+
+  "references": [{ "path": "./tsconfig.node.json" }]
+}

@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 const Sprite = Phaser.GameObjects.Sprite;
-import { spellDetails, BUFF_SPELLS, distanceTo } from "@aether/shared";
+import { spellDetails, BUFF_SPELLS, distanceTo } from "../shared";
 
 class Spell extends Phaser.GameObjects.Container {
   public id: string;

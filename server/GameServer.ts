@@ -1,7 +1,5 @@
 import "@geckos.io/phaser-on-nodejs";
 import { mapList } from "../shared/Maps";
-import skinTints from "../shared/data/skinTints.json";
-import hairTints from "../shared/data/hairTints.json";
 import { Socket, Server } from "socket.io";
 import path from "path";
 import crypto from "crypto";
@@ -23,7 +21,7 @@ import PartyManager from "./PartyManager";
 import Phaser from "phaser";
 import QuestBuilder from "./QuestBuilder";
 import ItemBuilder from "../shared/ItemBuilder";
-import { CONSUMABLES_BASES, POTION_BASES } from "@aether/shared";
+import { CONSUMABLES_BASES, POTION_BASES, skinTints, hairTints } from "../shared";
 const { SnapshotInterpolation } = require("@geckos.io/snapshot-interpolation");
 const SI = new SnapshotInterpolation();
 global.phaserOnNodeFPS = parseInt(process.env.SERVER_FPS);
@@ -45,13 +43,21 @@ class ServerScene extends Phaser.Scene implements ServerScene {
     this.io = io;
     this.db = db;
   }
+
   async preload() {
     /* Need to install plugins here in headless mode */
     // this.game.plugins.installScenePlugin("x", X, "x", this.scene.scene, true);
     mapList.forEach((asset: MapAsset) => {
-      this.load.tilemapTiledJSON(asset?.name, path.join(__dirname, `../public/${asset.json}`));
+      let assetPath = path.join(__dirname, `../public/${asset.json}`);
+
+      if (process.env.NODE_ENV === "PRODUCTION") {
+        assetPath = path.join(__dirname, `../../public/${asset.json}`);
+      }
+
+      this.load.tilemapTiledJSON(asset?.name, assetPath);
     });
   }
+
   create() {
     const scene = this;
     const io = this.io;
