@@ -6,7 +6,12 @@ build({
   entryPoints: ["server/main.ts"],
   bundle: true,
   minify: true,
-  external: Object.keys(dependencies).concat(Object.keys(peerDependencies || [])),
+  external: [
+    // Add 'dotenv' as an external dependency
+    "dotenv",
+    ...Object.keys(dependencies),
+    ...Object.keys(peerDependencies || []),
+  ],
   platform: "node", // for CJS
   outfile: "dist/server.js",
   define: {
