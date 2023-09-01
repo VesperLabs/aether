@@ -27,7 +27,7 @@ async function initialize() {
     })
   );
 
-  app.use(express.static(path.join(__dirname, "../public")));
+  app.use(express.static(path.join(__dirname, process.env.PUBLIC_DIR)));
 
   // app.get("/metrics/players", (req, res) => {
   //   const scene = aetherServer?.game?.scene?.scenes?.[0] as ServerScene;
@@ -92,9 +92,9 @@ async function initialize() {
 
   httpServer.listen(process.env.PORT, () => {
     console.log(
-      `💻 Running ${process.env.NODE_ENV} - ${
-        process.env.MONGO_URL ? "[online]" : "[offline]"
-      } on ${process.env.SERVER_URL} @ ${process.env.SERVER_FPS}fps`
+      `💻 Running ${process.env.MONGO_URL ? "[online]" : "[offline]"} on ${
+        process.env.SERVER_URL
+      } @ ${process.env.SERVER_FPS}fps`
     );
   });
 }
