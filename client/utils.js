@@ -1,6 +1,6 @@
 import Player from "./game/Player";
 import LootItem from "./game/LootItem";
-import { distanceTo } from "@aether/shared";
+import { distanceTo } from "../shared/utils";
 
 function addPlayer(scene, user) {
   const player = new Player(scene, user);
