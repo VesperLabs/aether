@@ -92,9 +92,9 @@ async function initialize() {
 
   httpServer.listen(process.env.PORT, () => {
     console.log(
-      `💻 Running ${process.env.MONGO_URL ? "[online]" : "[offline]"} on ${
-        process.env.SERVER_URL
-      } @ ${process.env.SERVER_FPS}fps`
+      `💻 Running ${process.env.NODE_ENV} - ${
+        process.env.MONGO_URL ? "[online]" : "[offline]"
+      } on ${process.env.SERVER_URL} @ ${process.env.SERVER_FPS}fps`
     );
   });
 }
