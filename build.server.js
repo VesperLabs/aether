@@ -14,6 +14,6 @@ build({
     "process.env.SERVER_FPS": JSON.stringify(process.env.SERVER_FPS),
     "process.env.MONGO_URL": JSON.stringify(process.env.MONGO_URL),
     "process.env.SERVER_URL": JSON.stringify(process.env.SERVER_URL),
-    "process.env.PORT": JSON.stringify(process.env.PORT),
+    "process.env.PORT": JSON.stringify(process.env.PORT ?? 3000),
   },
 });
