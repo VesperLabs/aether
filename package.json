@@ -16,7 +16,7 @@
     "server:run": "node --max-old-space-size=4096 -- node_modules/.bin/ts-node -P tsconfig.json --transpile-only -r dotenv/config --files server/main.ts",
     "server:dev": "ts-node -r dotenv/config --files server/main.ts",
     "server:watch": "nodemon --watch \"server/**\" --watch \"shared/**\" --ext \"ts,js,json\" --inspect --exec \"npm run server:kill && npm run server:dev\"",
-    "server:build": "tsc --project tsconfig.server.json && node -r dotenv/config dist/server/main.js"
+    "server:build": "tsc --project tsconfig.server.json && node -r dotenv/config --max-old-space-size=4096 dist/server/main.js"
   },
   "workspaces": [
     "ui",
