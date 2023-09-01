@@ -10,14 +10,6 @@
     "jsx": "react-jsx",
     "resolveJsonModule": true
   },
-  "include": [
-    "server/**/*",
-    "shared/**/*",
-    "index.d.ts",
-    "client/**/*",
-    "ui/**/*",
-    "web/**/*",
-    "shared/**/*"
-  ],
+  "include": ["server/**/*", "shared/**/*", "index.d.ts", "client/**/*", "ui/**/*", "web/**/*"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

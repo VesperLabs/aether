@@ -99,6 +99,7 @@ const MenuKeeper = () => {
                 slotKey={idx}
                 icon="./assets/icons/chest.png"
                 item={item}
+                player={null}
               />
             );
           })}
