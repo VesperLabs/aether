@@ -17,7 +17,7 @@
     "server:watch": "nodemon --watch \"server/**\" --watch \"shared/**\" --ext \"ts,js,json\" --inspect --exec \"npm run server:kill && npm run server:dev\"",
     "clean": "rm -rf node_modules",
     "server:build": "node -r dotenv/config build.server.js",
-    "server:run": "node -r dotenv/config dist/server.js"
+    "server:run": "node -r dotenv/config --optimize-for-size --max-old-space-size=512 dist/server.js"
   },
   "workspaces": [
     "ui",
