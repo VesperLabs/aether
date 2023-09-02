@@ -3,8 +3,7 @@ import { config } from "dotenv";
 import GameServer from "./GameServer";
 import { initDatabase } from "./db";
 import { initFakeDatabase } from "./db/fake";
-import ServerCharacter from "./Character";
-import { getFullCharacterState } from "./utils";
+import { calculateStats, getFullCharacterState } from "./utils";
 
 config({ path: path.join(__dirname, "/../.env") });
 const cors = require("cors");
@@ -55,11 +54,15 @@ async function initialize() {
     const players = await db.getAllUsers({ sortBy });
     let ret = [];
     for (const player of players) {
+      calculateStats(player, false);
       ret.push({
         id: player?._id,
         charClass: player?.charClass,
-        stats: player?.baseStats,
+        stats: player?.stats,
+        state: player?.state,
+        abilities: player?.abilities,
         equipment: player?.equipment,
+        inventory: player?.inventory,
         activeItemSlots: player?.activeItemSlots,
         profile: player?.profile,
         updatedAt: player?.updatedAt,

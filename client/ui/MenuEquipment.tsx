@@ -3,7 +3,7 @@ import { Menu, MenuHeader, Slot, MENU_MAX_WIDTH } from "./";
 import { arePropsEqualWithKeys } from "@aether/shared";
 import { memo } from "react";
 
-const MenuEquipment = memo(({ player, isOpen, setIsOpen }: any) => {
+const MenuEquipment = memo(({ player, isOpen, setIsOpen, slotsEnabled = true }: any) => {
   const equipment = Object.entries(player?.equipment || {});
   return (
     <Menu
@@ -23,6 +23,7 @@ const MenuEquipment = memo(({ player, isOpen, setIsOpen }: any) => {
             slotKey={slotKey}
             icon={`./assets/icons/${slotKey}.png`}
             item={item}
+            disabled={!slotsEnabled}
           />
         ))}
       </Flex>

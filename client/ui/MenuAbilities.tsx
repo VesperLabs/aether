@@ -1,9 +1,9 @@
 import { Flex } from "@aether/ui";
-import { Menu, MenuHeader, useAppContext, Slot, MENU_MAX_WIDTH } from "./";
+import { Menu, MenuHeader, Slot, MENU_MAX_WIDTH } from "./";
 import { memo } from "react";
 import { arePropsEqualWithKeys } from "@aether/shared";
 
-const MenuAbilities = memo(({ player, isOpen, setIsOpen }: any) => {
+const MenuAbilities = memo(({ player, isOpen, setIsOpen, slotsEnabled = true }: any) => {
   const abilities = Object.entries(player?.abilities || {});
 
   return (
@@ -26,6 +26,7 @@ const MenuAbilities = memo(({ player, isOpen, setIsOpen }: any) => {
             slotKey={slotKey}
             icon="./assets/icons/book.png"
             item={item}
+            disabled={!slotsEnabled}
           />
         ))}
       </Flex>

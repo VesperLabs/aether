@@ -22,7 +22,8 @@
   "workspaces": [
     "ui",
     "web",
-    "shared"
+    "shared",
+    "client"
   ],
   "dependencies": {
     "@emotion/react": "^11.11.1",

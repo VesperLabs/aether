@@ -10,7 +10,7 @@ const GoldDisplay = ({ gold, sx }) => (
   </Flex>
 );
 
-const MenuInventory = memo(({ player, isOpen, setIsOpen }: any) => {
+const MenuInventory = memo(({ player, isOpen, setIsOpen, slotsEnabled = true }: any) => {
   const inventory = player?.inventory || [];
   const maxInventory = new Array(MAX_INVENTORY_ITEMS).fill(null);
   return (
@@ -28,6 +28,7 @@ const MenuInventory = memo(({ player, isOpen, setIsOpen }: any) => {
               slotKey={`${idx}`}
               icon={`./assets/icons/bag.png`}
               item={inventory?.[idx]}
+              disabled={slotsEnabled}
             />
           ))}
         </Flex>

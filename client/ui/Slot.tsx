@@ -62,7 +62,6 @@ const Slot = memo(
     player,
     ...props
   }: SlotProps) => {
-    console.log("H");
     const [imageData, setImageData] = useState(BLANK_IMAGE);
     const [dragging, setDragging] = useState(false);
     const [hovering, setHovering] = useState(false);
