@@ -222,6 +222,7 @@ const Slot = memo(
 
     return (
       <Box
+        className="slot"
         sx={{
           touchAction: "none",
           userSelect: "none",
