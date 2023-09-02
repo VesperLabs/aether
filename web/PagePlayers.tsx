@@ -82,7 +82,7 @@ export default function () {
         <Box
           sx={{
             pointerEvents: "all",
-            backdropFilter: "brightness(60%) blur(25px)",
+            backdropFilter: "brightness(80%) blur(25px)",
             borderRadius: "10px 10px 0 0",
             "& > *": { background: "transparent" },
           }}
