@@ -67,42 +67,48 @@ export default function () {
           })}
         </Flex>
       </Flex>
-      <Flex
+      <Box
         sx={{
           position: "fixed",
           left: 0,
           right: 0,
           bottom: 0,
-          flexDirection: "column",
-          alignItems: "flex-end",
+          maxHeight: "100vh",
+          width: "100%",
           zIndex: 999999999999,
+          overflowY: "auto",
           pointerEvents: "none",
+          "&::-webkit-scrollbar": {
+            display: "none",
+          },
         }}
       >
-        <Box
-          sx={{
-            pointerEvents: "all",
-            backdropFilter: "brightness(80%) blur(25px)",
-            borderRadius: "10px 10px 0 0",
-            "& > div": { backgroundColor: "transparent" },
-          }}
-        >
-          {[
-            { Component: MenuEquipment, key: "equipment" },
-            { Component: MenuInventory, key: "inventory" },
-            { Component: MenuStats, key: "stats" },
-            { Component: MenuAbilities, key: "abilities" },
-          ].map(({ Component, key }, idx) => (
-            <Component
-              key={key}
-              player={currentPlayer}
-              isOpen={tabs[key]}
-              slotsEnabled={false}
-              setIsOpen={() => setTabKey(key, false)}
-            />
-          ))}
-        </Box>
-      </Flex>
+        <Flex sx={{ flexDirection: "column", alignItems: "flex-end", justifyContent: "flex-end" }}>
+          <Box
+            sx={{
+              pointerEvents: "all",
+              backdropFilter: "brightness(80%) blur(25px)",
+              borderRadius: "10px 10px 0 0",
+              "& > div": { backgroundColor: "transparent" },
+            }}
+          >
+            {[
+              { Component: MenuEquipment, key: "equipment" },
+              { Component: MenuInventory, key: "inventory" },
+              { Component: MenuStats, key: "stats" },
+              { Component: MenuAbilities, key: "abilities" },
+            ].map(({ Component, key }, idx) => (
+              <Component
+                key={key}
+                player={currentPlayer}
+                isOpen={tabs[key]}
+                slotsEnabled={false}
+                setIsOpen={() => setTabKey(key, false)}
+              />
+            ))}
+          </Box>
+        </Flex>
+      </Box>
       <KeyboardKey
         key={escCacheKey}
         name={"ESCAPE"}
