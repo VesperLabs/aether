@@ -5,24 +5,50 @@ import PlayerRender from "./PlayerRender";
 import { TOOLTIP_STYLE, Label } from "./";
 import { Tooltip } from "react-tooltip";
 import { questList } from "@aether/shared";
-import { MenuAbilities, MenuEquipment, MenuInventory, MenuQuests, MenuStats } from "@aether/client";
+import {
+  MenuAbilities,
+  MenuBag,
+  MenuEquipment,
+  MenuInventory,
+  MenuQuests,
+  MenuStats,
+} from "@aether/client";
 
 export default function () {
   const [players, setPlayers] = useState<Array<FullCharacterState>>();
   const [currentPlayer, setCurrentPlayer] = useState(null);
+  const [bagState, setBagState] = useState([]);
   const [tabs, setTabs] = useState({
     equipment: false,
     inventory: false,
     stats: false,
     abilities: false,
   });
+  const escCacheKey = JSON.stringify(tabs);
+
+  /* Is the bag open or closed */
+  const toggleBagState = (id: string) => {
+    setBagState((prev) => {
+      if (prev.includes(id)) {
+        // If id is already present, remove it from the array
+        return prev.filter((itemId) => itemId !== id);
+      } else {
+        // If id is not present, add it to the array
+        return [...prev, id];
+      }
+    });
+  };
 
   const setTabKey = (key: string, value: boolean) => setTabs((prev) => ({ ...prev, [key]: value }));
 
-  useEffect(() => {
-    if (Object.values(tabs)?.every((v) => !v)) return setCurrentPlayer(false);
-  }, [tabs]);
+  const handleClickItem = (e) => {
+    const { id, base } = e.target.dataset ?? {};
+    if (base === "bag") {
+      toggleBagState(id);
+    }
+  };
 
+  /* Fetch player data */
   useEffect(() => {
     fetch(`${process.env.SERVER_URL}/players/all?sortBy=updatedAt`, {
       method: "GET",
@@ -34,7 +60,18 @@ export default function () {
       .catch((error) => {});
   }, []);
 
-  const escCacheKey = JSON.stringify(tabs);
+  /* If no tabs are open, clear player selection */
+  useEffect(() => {
+    if (Object.values(tabs)?.every((v) => !v)) return setCurrentPlayer(false);
+  }, [tabs]);
+
+  /* Detect clicks */
+  useEffect(() => {
+    document.addEventListener("click", handleClickItem);
+    return () => {
+      document.removeEventListener("click", handleClickItem);
+    };
+  }, []);
 
   return (
     <>
@@ -92,6 +129,12 @@ export default function () {
               "& > div": { backgroundColor: "transparent" },
             }}
           >
+            <MenuBag
+              player={currentPlayer}
+              bagState={bagState}
+              slotsEnabled={false}
+              toggleBagState={toggleBagState}
+            />
             {[
               { Component: MenuEquipment, key: "equipment" },
               { Component: MenuInventory, key: "inventory" },
@@ -114,6 +157,7 @@ export default function () {
         name={"ESCAPE"}
         hidden={true}
         onKeyUp={() => {
+          if (bagState?.length > 0) return toggleBagState(bagState?.[bagState?.length - 1]);
           for (const key of Object.keys(tabs)) {
             if (tabs[key]) return setTabKey(key, false);
           }

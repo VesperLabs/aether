@@ -204,12 +204,6 @@ const Slot = memo(
         }
       : {};
 
-    const dataKeys = {
-      "data-location": location,
-      "data-slot-key": slotKey,
-      "data-bag-id": bagId,
-    };
-
     const isActive =
       player?.activeItemSlots?.includes(slotKey) || !["abilities", "equipment"]?.includes(location);
     const tooltipId = `${location}-${item?.id}`;
@@ -217,9 +211,17 @@ const Slot = memo(
     const aboutToSell = dragging && target?.closest(".menu-keeper") && location !== "shop";
     const showTooltip = isMobile ? hovering : (dragging && !targetMoved) || hovering;
 
+    const dataKeys = {
+      "data-location": location,
+      "data-slot-key": slotKey,
+      "data-bag-id": bagId,
+      "data-id": item?.id,
+      "data-tooltip-id": tooltipId,
+      "data-base": item?.base,
+    };
+
     return (
       <Box
-        data-tooltip-id={tooltipId}
         sx={{
           touchAction: "none",
           userSelect: "none",
