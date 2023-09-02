@@ -118,12 +118,18 @@ export default function () {
           "&::-webkit-scrollbar": {
             display: "none",
           },
-          "& *": {
-            pointerEvents: "all",
-          },
         }}
       >
-        <Flex sx={{ flexDirection: "column", alignItems: "flex-end", justifyContent: "flex-end" }}>
+        <Flex
+          sx={{
+            flexDirection: "column",
+            alignItems: "flex-end",
+            justifyContent: "flex-end",
+            "& *": {
+              pointerEvents: "all",
+            },
+          }}
+        >
           <Box
             sx={{
               backdropFilter: "brightness(80%) blur(25px)",
