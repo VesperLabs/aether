@@ -1,8 +1,12 @@
 import Character from "../shared/Character";
 import ItemBuilder from "../shared/ItemBuilder";
-import { randomNumber, cloneObject, calculateNextMaxExp, addValuesToExistingKeys } from "./utils";
+import {
+  randomNumber,
+  calculateNextMaxExp,
+  addValuesToExistingKeys,
+  calculateStats,
+} from "./utils";
 import buffList from "../shared/data/buffList.json";
-
 class ServerCharacter extends Character {
   declare scene: ServerScene;
   constructor(scene: ServerScene, args) {
@@ -113,195 +117,6 @@ class ServerCharacter extends Character {
 
     this.activeItemSlots = activeItemSlots;
   }
-  calculateStats(shouldHeal = false) {
-    this.calculateActiveItemSlots();
-    const { equipment = {}, abilities = {}, buffs = [] } = this;
-    // disregard items that are not actively equipped
-    const allSlots = Object.keys({ ...abilities, ...equipment }).filter((slot) =>
-      this.activeItemSlots?.includes(slot)
-    );
-    let totalPercentStats = {};
-    let ns = cloneObject(this.baseStats);
-    let setList = {};
-    let activeSets = [];
-    this.stats = Object.keys(this?.stats)?.length ? this.stats : { hp: 0, mp: 0, sp: 0, exp: 0 };
-
-    if (!ns?.triggers) {
-      ns.triggers = [];
-    }
-
-    /* Get stats from equipped abilities and items */
-    allSlots.forEach((eKey) => {
-      let item = abilities[eKey] || equipment[eKey];
-      if (item) {
-        if (item.setName) {
-          if (setList[item.setName]) {
-            let amountThisItem = 0;
-            allSlots.forEach((aKey) => {
-              let aItem = abilities[aKey] || equipment[aKey];
-              if (aItem && aItem.key == item.key) {
-                amountThisItem++;
-              }
-            });
-            if (amountThisItem == 1) {
-              setList[item.setName]++;
-            }
-          } else {
-            setList[item.setName] = 1;
-          }
-        }
-        if (item.percentStats) {
-          Object.keys(item.percentStats).forEach((key) => {
-            if (!totalPercentStats[key]) {
-              totalPercentStats[key] = item.percentStats[key];
-            } else {
-              totalPercentStats[key] += item.percentStats[key];
-            }
-          });
-        }
-        if (item.stats) {
-          Object.keys(item.stats).forEach((key) => {
-            const itemStat = item.stats[key];
-            if (!ns[key]) {
-              ns[key] = 0;
-            }
-            if (itemStat) {
-              ns[key] += itemStat;
-            }
-          });
-        }
-        if (item?.triggers) {
-          item?.triggers?.forEach((trigger) => {
-            ns.triggers.push(trigger);
-          });
-        }
-      }
-    });
-
-    /* if more than one set item is equipped, we might have a set bonus */
-    Object.keys(setList).forEach((key) => {
-      if (ItemBuilder.getSetInfo(key)) {
-        const setInfo = ItemBuilder.getSetInfo(key);
-        if (setList[key] >= setInfo.pieces) {
-          activeSets.push(key);
-          //add percent bonus to totals
-          if (setInfo.percentStats) {
-            Object.keys(setInfo.percentStats).forEach((key) => {
-              if (!totalPercentStats[key]) {
-                totalPercentStats[key] = setInfo.percentStats[key];
-              } else {
-                totalPercentStats[key] += setInfo.percentStats[key];
-              }
-            });
-          }
-          if (setInfo.stats) {
-            Object.keys(setInfo.stats).forEach((key) => {
-              let itemStat = setInfo.stats[key];
-              if (itemStat) {
-                ns[key] += itemStat;
-              }
-            });
-          }
-          if (setInfo.triggers) {
-            setInfo?.triggers?.forEach((trigger: Trigger) => {
-              ns.triggers.push(trigger);
-            });
-          }
-        }
-      }
-    });
-
-    buffs.forEach((buff: Buff) => {
-      if (buff.stats) {
-        Object.keys(buff.stats).forEach((key) => {
-          const buffStat = buff.stats[key];
-          if (!ns[key]) {
-            ns[key] = 0;
-          }
-          if (buffStat) {
-            ns[key] += buffStat;
-          }
-        });
-      }
-    });
-
-    /* The base values get calculated here for percentStats */
-    Object.keys(totalPercentStats).forEach((key) => {
-      let percentIncrease = Math.floor(ns[key] * (totalPercentStats[key] / 100));
-      if (
-        // do we need these?
-        key == "vitality" ||
-        key == "dexterity" ||
-        key == "strength" ||
-        key == "intelligence"
-      )
-        ns[key] += percentIncrease;
-    });
-    ns.expValue = ns.expValue || 0;
-    ns.maxHp = ns.maxHp + ns.vitality * 3;
-    ns.maxMp = ns.maxMp + ns.intelligence * 3;
-    ns.maxSp = ns.maxSp + Math.floor(ns.vitality * 0.03);
-    ns.magicFind = ns.magicFind || 0;
-    ns.maxExp = ns.maxExp || 0;
-    ns.exp = this.stats.exp || 0;
-    ns.fireResistance = ns.fireResistance || 0;
-    ns.lightResistance = ns.lightResistance || 0;
-    ns.waterResistance = ns.waterResistance || 0;
-    ns.earthResistance = ns.earthResistance || 0;
-    ns.attackDelay = ns.attackDelay || 0;
-    ns.spellPower = Math.floor((ns.spellPower || 0) + ns.intelligence * 0.25);
-    ns.attackDelay = 1 - Math.floor(ns.dexterity * 0.5) + ns.attackDelay;
-    ns.castDelay = ns.castDelay || 1000;
-    ns.castDelay = 1 - Math.floor(ns.intelligence * 0.5) + ns.castDelay;
-    ns.accuracy = ns.accuracy;
-    ns.regenHp = (ns.regenHp || 1) + Math.floor(ns.vitality / 20);
-    ns.regenMp = (ns.regenMp || 1) + Math.floor(ns.intelligence / 20);
-    ns.regenSp = ns.regenSp || 1;
-    ns.armorPierce = ns.armorPierce + ns.dexterity * 0.75 + ns.strength * 0.5;
-    ns.defense = ns.defense + ns.strength;
-    ns.critChance = ns.critChance + ns.dexterity * 0.05;
-    ns.walkSpeed = ns.walkSpeed + ns.dexterity * 0.03;
-    ns.dodgeChance = ns.dodgeChance + ns.dexterity * 0.05;
-    ns.hpSteal = ns.hpSteal || 0;
-    ns.mpSteal = ns.mpSteal || 0;
-    //ns.blockChance = ns.blockChance + (0 * (ns.dexterity - 15)) / (ns.level * 2);
-
-    // Capped values
-    if (ns.walkSpeed < 15) ns.walkSpeed = 15;
-    if (ns.critChance > 100) ns.critChance = 100;
-    if (ns.dodgeChance > 75) ns.dodgeChance = 75;
-    if (ns.blockChance > 75) ns.blockChance = 75;
-    if (ns.castDelay < 100) ns.castDelay = 100;
-    if (ns.attackDelay < 100) ns.attackDelay = 100;
-
-    const damageCalc = ((ns.strength * 2 + ns.dexterity / 2) * ns.level) / 100;
-    const damageModifier = Math.floor(1 + damageCalc);
-    ns.minDamage = ns.minDamage + Math.floor(damageCalc);
-    ns.maxDamage = Math.max(ns.maxDamage + damageModifier, ns.minDamage);
-
-    /* Any percentStat value that needs to be pre-calculated goes here  */
-    Object.keys(totalPercentStats).forEach((key) => {
-      let percentIncrease = Math.floor(ns[key] * (totalPercentStats[key] / 100));
-      if (key == "maxHp" || key == "maxMp" || key == "defense") ns[key] += percentIncrease;
-    });
-
-    // Moving values
-    if (this.stats.hp <= 0) ns.hp = shouldHeal ? ns.maxHp : 0;
-    else if (this.stats.hp > ns.maxHp) ns.hp = ns.maxHp;
-    else ns.hp = this.stats.hp;
-    if (this.stats.mp <= 0) ns.mp = shouldHeal ? ns.maxMp : 0;
-    else if (this.stats.mp > ns.maxMp) ns.mp = ns.maxMp;
-    else ns.mp = this.stats.mp;
-    if (this.stats.sp <= 0) ns.sp = shouldHeal ? ns.maxSp : 0;
-    else if (this.stats.sp > ns.maxSp) ns.sp = ns.maxSp;
-    else ns.sp = this.stats.sp;
-    this.stats = ns;
-
-    this.state.activeSets = activeSets;
-
-    //update server data on what hands we have items in
-    this.visibleEquipment = this.getVisibleEquipment();
-  }
   calculateElementalDamage(eleDamages, victim) {
     const {
       minFireDamage = 0,
@@ -359,6 +174,12 @@ class ServerCharacter extends Character {
     elements.sort((a, b) => b.damage - a.damage);
 
     return { eleDamage, elements: elements?.map((d) => d?.type) };
+  }
+  calculateStats(shouldHeal = false) {
+    this.calculateActiveItemSlots();
+    calculateStats(this, shouldHeal);
+    //update server data on what hands we have items in
+    this.visibleEquipment = this.getVisibleEquipment();
   }
   calculateSpellDamage(victim: any, abilitySlot: number): Array<Hit> {
     if (victim?.state?.isDead) return [];
