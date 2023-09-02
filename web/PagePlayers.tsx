@@ -143,12 +143,6 @@ export default function () {
                 "& > div": { backgroundColor: "transparent" },
               }}
             >
-              <MenuBag
-                player={currentPlayer}
-                bagState={bagState}
-                slotsEnabled={false}
-                toggleBagState={toggleBagState}
-              />
               {[
                 { Component: MenuEquipment, key: "equipment" },
                 { Component: MenuInventory, key: "inventory" },
@@ -163,6 +157,12 @@ export default function () {
                   setIsOpen={() => setTabKey(key, false)}
                 />
               ))}
+              <MenuBag
+                player={currentPlayer}
+                bagState={bagState}
+                slotsEnabled={false}
+                toggleBagState={toggleBagState}
+              />
             </Box>
           </Flex>
         </Box>
