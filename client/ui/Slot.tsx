@@ -216,12 +216,12 @@ const Slot = memo(
       "data-slot-key": slotKey,
       "data-bag-id": bagId,
       "data-id": item?.id,
-      "data-tooltip-id": tooltipId,
       "data-base": item?.base,
     };
 
     return (
       <Box
+        data-tooltip-id={tooltipId}
         className="slot"
         sx={{
           touchAction: "none",
