@@ -83,7 +83,9 @@ export default function () {
           sx={{
             pointerEvents: "all",
             backdropFilter: "blur(25px)",
-            "& > *:first-of-type": { borderRadius: "10px 10px 0 0" },
+            borderRadius: "10px 10px 0 0",
+            bg: "shadow.20",
+            "& > *": { background: "transparent" },
           }}
         >
           {[
