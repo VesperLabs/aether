@@ -133,11 +133,6 @@ export default function () {
               "& *": {
                 pointerEvents: "all",
               },
-              //@ts-ignore
-              "& .icon, & .slot": {
-                pointerEvents: "all!important",
-                touchAction: "auto!important",
-              },
             }}
           >
             <Box

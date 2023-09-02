@@ -222,7 +222,6 @@ const Slot = memo(
     return (
       <Box
         data-tooltip-id={tooltipId}
-        className="slot"
         sx={{
           touchAction: "none",
           userSelect: "none",
