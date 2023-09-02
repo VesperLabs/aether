@@ -1,7 +1,7 @@
 import { useState, useRef, useLayoutEffect, memo } from "react";
 import { Box, Icon, Portal, Donut, SLOT_SIZE, STYLE_SLOT_EMPTY, STYLE_NON_EMPTY } from "@aether/ui";
 import { ItemTooltip, BLANK_IMAGE, SlotAmount } from "./";
-import { resolveAsset, assetToCanvas, arePropsEqualWithKeys } from "@aether/shared";
+import { resolveAsset, assetToCanvas, arePropsEqualWithKeys, isMobile } from "@aether/shared";
 import { useDoubleTap } from "use-double-tap";
 import { isEqual, get } from "lodash";
 
@@ -62,6 +62,7 @@ const Slot = memo(
     player,
     ...props
   }: SlotProps) => {
+    console.log("H");
     const [imageData, setImageData] = useState(BLANK_IMAGE);
     const [dragging, setDragging] = useState(false);
     const [hovering, setHovering] = useState(false);
@@ -215,7 +216,7 @@ const Slot = memo(
     const tooltipId = `${location}-${item?.id}`;
     const targetMoved = target?.dataset?.tooltipId !== tooltipId;
     const aboutToSell = dragging && target?.closest(".menu-keeper") && location !== "shop";
-    const showTooltip = (dragging && !targetMoved) || hovering;
+    const showTooltip = isMobile ? hovering : (dragging && !targetMoved) || hovering;
 
     return (
       <Box
@@ -295,16 +296,24 @@ const Slot = memo(
     );
   },
   (prevProps, nextProps) => {
-    if (get(prevProps, "item.rarity") === "set" || get(nextProps, "item.rarity") === "set") {
-      if (
-        !isEqual(
-          get(prevProps, "player.state.activeSets"),
-          get(nextProps, "player.state.activeSets")
-        )
-      ) {
+    if (prevProps.location === "equipment") {
+      const itemSlotsChanged = !isEqual(
+        get(prevProps, "player.activeItemSlots"),
+        get(nextProps, "player.activeItemSlots")
+      );
+      const activeSetsChanged = !isEqual(
+        get(prevProps, "player.state.activeSets"),
+        get(nextProps, "player.state.activeSets")
+      );
+      const isSetRarityChanged =
+        (get(prevProps, "item.rarity") === "set" || get(nextProps, "item.rarity") === "set") &&
+        activeSetsChanged;
+
+      if (isSetRarityChanged || itemSlotsChanged) {
         return false;
       }
     }
+
     return ["id", "amount", "items", "stock", "item.id"].every((key) =>
       isEqual(get(prevProps, key), get(nextProps, key))
     );
