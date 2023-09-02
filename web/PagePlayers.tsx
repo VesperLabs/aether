@@ -69,30 +69,38 @@ export default function () {
       </Flex>
       <Flex
         sx={{
-          backdropFilter: "blur(25px)",
           position: "fixed",
           left: 0,
           right: 0,
           bottom: 0,
-          "& > *": { flex: 1 },
           flexDirection: "column",
-          zIndex: 12000,
+          alignItems: "flex-end",
+          zIndex: 999999999999,
+          pointerEvents: "none",
         }}
       >
-        {[
-          { Component: MenuEquipment, key: "equipment" },
-          { Component: MenuInventory, key: "inventory" },
-          { Component: MenuStats, key: "stats" },
-          { Component: MenuAbilities, key: "abilities" },
-        ].map(({ Component, key }, idx) => (
-          <Component
-            key={key}
-            player={currentPlayer}
-            isOpen={tabs[key]}
-            slotsEnabled={false}
-            setIsOpen={() => setTabKey(key, false)}
-          />
-        ))}
+        <Box
+          sx={{
+            pointerEvents: "all",
+            backdropFilter: "blur(25px)",
+            "& > *:first-of-type": { borderRadius: "10px 10px 0 0" },
+          }}
+        >
+          {[
+            { Component: MenuEquipment, key: "equipment" },
+            { Component: MenuInventory, key: "inventory" },
+            { Component: MenuStats, key: "stats" },
+            { Component: MenuAbilities, key: "abilities" },
+          ].map(({ Component, key }, idx) => (
+            <Component
+              key={key}
+              player={currentPlayer}
+              isOpen={tabs[key]}
+              slotsEnabled={false}
+              setIsOpen={() => setTabKey(key, false)}
+            />
+          ))}
+        </Box>
       </Flex>
       <KeyboardKey
         key={escCacheKey}

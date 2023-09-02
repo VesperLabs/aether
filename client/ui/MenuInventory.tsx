@@ -14,24 +14,26 @@ const MenuInventory = memo(({ player, isOpen, setIsOpen, slotsEnabled = true }: 
   const inventory = player?.inventory || [];
   const maxInventory = new Array(MAX_INVENTORY_ITEMS).fill(null);
   return (
-    <Menu sx={{ display: isOpen ? "block" : "none" }}>
-      <Flex sx={{ flexWrap: "wrap", justifyContent: "end", gap: 2, flex: 1 }}>
-        <MenuHeader icon={`./assets/icons/bag.png`} onClick={() => setIsOpen(false)}>
-          Inventory
-        </MenuHeader>
-        <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", maxWidth: MENU_MAX_WIDTH }}>
-          {maxInventory?.map((_, idx) => (
-            <Slot
-              player={player}
-              key={idx}
-              location="inventory"
-              slotKey={`${idx}`}
-              icon={`./assets/icons/bag.png`}
-              item={inventory?.[idx]}
-              disabled={slotsEnabled}
-            />
-          ))}
-        </Flex>
+    <Menu
+      sx={{
+        display: isOpen ? "flex" : "none",
+      }}
+    >
+      <MenuHeader icon={`./assets/icons/bag.png`} onClick={() => setIsOpen(false)}>
+        Inventory
+      </MenuHeader>
+      <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", maxWidth: MENU_MAX_WIDTH }}>
+        {maxInventory?.map((_, idx) => (
+          <Slot
+            player={player}
+            key={idx}
+            location="inventory"
+            slotKey={`${idx}`}
+            icon={`./assets/icons/bag.png`}
+            item={inventory?.[idx]}
+            disabled={!slotsEnabled}
+          />
+        ))}
       </Flex>
       <GoldDisplay gold={player?.gold} sx={{ mt: 2 }} />
     </Menu>
