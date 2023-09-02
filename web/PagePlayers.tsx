@@ -77,6 +77,8 @@ export default function () {
           alignItems: "flex-end",
           zIndex: 999999999999,
           pointerEvents: "none",
+          maxHeight: "100dvh",
+          overflowY: "auto",
         }}
       >
         <Box
