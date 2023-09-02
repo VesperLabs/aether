@@ -110,55 +110,62 @@ export default function () {
           left: 0,
           right: 0,
           bottom: 0,
-          maxHeight: "100vh",
-          width: "100%",
           zIndex: 999999999999,
-          overflowY: "auto",
           pointerEvents: "none",
-          "&::-webkit-scrollbar": {
-            display: "none",
-          },
         }}
       >
-        <Flex
+        <Box
           sx={{
-            flexDirection: "column",
-            alignItems: "flex-end",
-            justifyContent: "flex-end",
-            "& *": {
-              pointerEvents: "all",
+            overflowY: "auto",
+            maxHeight: "100dvh",
+            "&::-webkit-scrollbar": {
+              display: "none",
             },
+            pointerEvents: ["all", "none", "none"],
+            position: "relative",
           }}
         >
-          <Box
+          <Flex
             sx={{
-              backdropFilter: "brightness(80%) blur(25px)",
-              borderRadius: "10px 10px 0 0",
-              "& > div": { backgroundColor: "transparent" },
+              flexDirection: "column",
+              alignItems: "flex-end",
+              justifyContent: "flex-end",
+              "& *": {
+                pointerEvents: "all",
+              },
             }}
           >
-            <MenuBag
-              player={currentPlayer}
-              bagState={bagState}
-              slotsEnabled={false}
-              toggleBagState={toggleBagState}
-            />
-            {[
-              { Component: MenuEquipment, key: "equipment" },
-              { Component: MenuInventory, key: "inventory" },
-              { Component: MenuStats, key: "stats" },
-              { Component: MenuAbilities, key: "abilities" },
-            ].map(({ Component, key }, idx) => (
-              <Component
-                key={key}
+            <Box
+              sx={{
+                backgroundColor: ["#713f12", "shadow.30", "shadow.30"],
+                backdropFilter: ["none", "blur(15px)", "blur(15px)"],
+                borderRadius: "10px 10px 0 0",
+                "& > div": { backgroundColor: "transparent" },
+              }}
+            >
+              <MenuBag
                 player={currentPlayer}
-                isOpen={tabs[key]}
+                bagState={bagState}
                 slotsEnabled={false}
-                setIsOpen={() => setTabKey(key, false)}
+                toggleBagState={toggleBagState}
               />
-            ))}
-          </Box>
-        </Flex>
+              {[
+                { Component: MenuEquipment, key: "equipment" },
+                { Component: MenuInventory, key: "inventory" },
+                { Component: MenuStats, key: "stats" },
+                { Component: MenuAbilities, key: "abilities" },
+              ].map(({ Component, key }, idx) => (
+                <Component
+                  key={key}
+                  player={currentPlayer}
+                  isOpen={tabs[key]}
+                  slotsEnabled={false}
+                  setIsOpen={() => setTabKey(key, false)}
+                />
+              ))}
+            </Box>
+          </Flex>
+        </Box>
       </Box>
       <KeyboardKey
         key={escCacheKey}
