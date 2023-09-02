@@ -28,7 +28,7 @@ const MenuHeader = ({ icon, children, onClick = () => {}, sx }: MenuHeaderProps)
       }}
     >
       {isMobile ? (
-        <Box onTouchEnd={() => onClick()} sx={{ pointerEvents: "all" }}>
+        <Box onClick={() => onClick()} sx={{ pointerEvents: "all" }}>
           ❌
         </Box>
       ) : (
