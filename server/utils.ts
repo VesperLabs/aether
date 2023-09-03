@@ -504,6 +504,8 @@ const calculateStats = (player, shouldHeal = false) => {
   player.state.activeSets = activeSets;
 };
 
+const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
+
 export {
   removePlayer,
   getPlayer,
@@ -528,4 +530,5 @@ export {
   filterNullEmpty,
   addValuesToExistingKeys,
   calculateStats,
+  sleep,
 };

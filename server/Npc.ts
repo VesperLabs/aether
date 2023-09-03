@@ -1,7 +1,7 @@
 import Character from "./Character";
 import ItemBuilder from "../shared/ItemBuilder";
 import { distanceTo } from "../shared/utils";
-import { getCharacterDirection, randomNumber, SHOP_INFLATION } from "./utils";
+import { getCharacterDirection, randomNumber, SHOP_INFLATION, sleep } from "./utils";
 import spellDetails from "../shared/data/spellDetails.json";
 import crypto from "crypto";
 
@@ -228,10 +228,10 @@ class Npc extends Character implements Npc {
       .to(room?.name)
       .emit("npcCastSpell", { id, castAngle, base: ability?.base, ilvl: ability?.ilvl });
   }
-  intendCastSpell({ targetPlayer, delta }) {
+  async intendCastSpell({ targetPlayer, delta }) {
     const { state, abilities } = this ?? {};
 
-    if (!this.checkCastReady() || state?.isDead) return;
+    if (!this.checkCastReady() || state?.isDead || state.isAiming) return;
 
     let ability = null;
     let abilitySlot = null;
@@ -256,7 +256,10 @@ class Npc extends Character implements Npc {
     }
 
     if (ability) {
+      this.state.isAiming = true;
+      await sleep(NPC_START_ATTACKING_DELAY);
       this.doCast({ targetPlayer, abilitySlot, ability });
+      this.state.isAiming = false;
     }
   }
   doAttack({ target, direction, castAngle }) {
@@ -298,7 +301,6 @@ class Npc extends Character implements Npc {
     if (shouldAttackPlayer && npcAttackReady) {
       this.direction = getCharacterDirection(this, targetPlayer);
       this.state.isAiming = true;
-      this.state.bubbleMessage = "!";
 
       const castAngle = (this.state.lastAngle = Math.atan2(
         targetPlayer.y - this.y,
@@ -313,7 +315,7 @@ class Npc extends Character implements Npc {
         y: targetPlayer.y,
       };
 
-      await new Promise((resolve) => setTimeout(resolve, NPC_START_ATTACKING_DELAY));
+      await sleep(NPC_START_ATTACKING_DELAY);
       this.doAttack({ target, direction, castAngle });
     }
   }
@@ -331,7 +333,7 @@ class Npc extends Character implements Npc {
 
     // Aggroed
     if (shouldChasePlayer) {
-      if (!this.state.isAiming) this.state.bubbleMessage = "?";
+      this.state.bubbleMessage = this.state.isAiming ? "!" : "?";
       if (shouldStop) {
         return this.standStill();
       }

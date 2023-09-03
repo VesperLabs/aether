@@ -56,6 +56,9 @@
     "baseStats": {
       "level": 50
     },
+    "abilities": {
+      "1": ["spell", "common", "waterball"]
+    },
     "equipment": {
       "handLeft": ["weapon", "common", "spear"],
       "handRight": null,
