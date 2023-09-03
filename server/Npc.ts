@@ -185,21 +185,17 @@ class Npc extends Character implements Npc {
     }
 
     if (this.hasBuff("stun")) {
-      this.vx = 0;
-      this.vy = 0;
-      this.body.setVelocity(this.vx, this.vy);
-      return;
+      return this.standStill();
     }
 
     this.chaseOrMove({ targetPlayer, delta, time });
-    this.intendAttack({ targetPlayer, delta });
+    this.intendAttack({ targetPlayer });
     this.intendCastSpell({ targetPlayer, delta });
   }
   setLockedPlayerId(id: string) {
     // If they are switching targets
     if (this.state.lockedPlayerId !== id && id) {
-      // So they dont immediately respond to an attack with an instant attack.
-      this.state.lastAttack = Date.now() - NPC_START_ATTACKING_DELAY;
+      this.state.lastAttack = Date.now();
       this.state.npcAttackReady = false;
     }
     this.state.lockedPlayerId = id;
@@ -263,20 +259,17 @@ class Npc extends Character implements Npc {
       this.doCast({ targetPlayer, abilitySlot, ability });
     }
   }
-  doAttack() {
+  doAttack({ target, castAngle }) {
     const { scene, room, direction, id, state } = this ?? {};
     const targetPlayer = scene?.players?.[state?.lockedPlayerId] ?? null;
     if (state.isAttacking || state?.isDead) return;
-    if (
-      !this.checkInRange(targetPlayer, this.getShouldAttackRange()) ||
-      targetPlayer?.state?.isDead
-    )
-      return;
+    if (!targetPlayer || targetPlayer?.state?.isDead) return;
 
     // decides what hand ot hit with
     const count = this.action === "attack_right" && this.hasWeaponLeft() ? 2 : 1;
     // Set state to attacking and record attack time
     this.state.isAttacking = true;
+    this.state.isAiming = false;
     this.state.lastAttack = Date.now();
     this.state.npcAttackReady = false;
 
@@ -284,14 +277,9 @@ class Npc extends Character implements Npc {
     const { spellName } = this.getAttackActionName({ count });
     this.action = spellName;
 
-    const castAngle = (this.state.lastAngle = Math.atan2(
-      targetPlayer.y - this.y,
-      targetPlayer.x - this.x
-    ));
-
     room?.spellManager.create({
       caster: this,
-      target: targetPlayer,
+      target,
       spellName: this.action,
       castAngle,
       ilvl: 1,
@@ -299,21 +287,31 @@ class Npc extends Character implements Npc {
 
     scene.io.to(room?.name).emit("npcAttack", { id, count, direction, castAngle });
   }
-  intendAttack({ targetPlayer, delta }) {
-    const { isAttacking, npcAttackReady } = this?.state ?? {};
+  async intendAttack({ targetPlayer }) {
+    const { isAttacking, npcAttackReady, isAiming } = this?.state ?? {};
 
     // Determine if player should attack target player
     const shouldAttackPlayer =
-      !isAttacking && this.checkInRange(targetPlayer, this.getShouldAttackRange());
+      !isAttacking && !isAiming && this.checkInRange(targetPlayer, this.getShouldAttackRange());
 
-    if (shouldAttackPlayer) {
-      // Face them if we are not
+    if (shouldAttackPlayer && npcAttackReady) {
       this.direction = getCharacterDirection(this, targetPlayer);
-      // Attack target player after lag delay to ensure we are actually near them
-      return setTimeout(() => {
-        if (npcAttackReady) this.doAttack();
-        // Calculate lag delay based on time elapsed
-      }, delta);
+      this.state.isAiming = true;
+      this.state.bubbleMessage = "!";
+
+      const castAngle = (this.state.lastAngle = Math.atan2(
+        targetPlayer.y - this.y,
+        targetPlayer.x - this.x
+      ));
+
+      const target = {
+        id: targetPlayer.id,
+        x: targetPlayer.x,
+        y: targetPlayer.y,
+      };
+
+      await new Promise((resolve) => setTimeout(resolve, NPC_START_ATTACKING_DELAY));
+      this.doAttack({ target, castAngle });
     }
   }
   stillAggro() {
@@ -322,14 +320,15 @@ class Npc extends Character implements Npc {
   chaseOrMove({ targetPlayer, delta, time }) {
     // Check if player is in range for aggro
     const isInRange = this.checkInRange(targetPlayer, AGGRO_KITE_RANGE);
-    const shouldStop = this.checkInRange(targetPlayer, this.getShouldAttackRange());
+    const shouldStop =
+      this.checkInRange(targetPlayer, this.getShouldAttackRange()) || this.state.isAiming;
 
     // Determine if player should chase target
     const shouldChasePlayer = isInRange && !targetPlayer?.state?.isDead;
 
     // Aggroed
     if (shouldChasePlayer) {
-      this.state.bubbleMessage = "!";
+      if (!this.state.isAiming) this.state.bubbleMessage = "?";
       if (shouldStop) {
         return this.standStill();
       }
