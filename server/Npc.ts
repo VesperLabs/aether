@@ -8,7 +8,7 @@ import crypto from "crypto";
 const AGGRO_KITE_RANGE = 220;
 const NPC_SHOULD_ATTACK_RANGE = 8;
 const NPC_ADDED_ATTACK_DELAY = 700;
-const NPC_START_ATTACKING_DELAY = 500;
+const NPC_START_ATTACKING_DELAY = 300;
 
 const buildEquipment = (equipment: Record<string, Array<string>>) =>
   Object?.entries(equipment).reduce((acc, [slot, itemArray]: [string, BuildItem]) => {
