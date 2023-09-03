@@ -73,7 +73,7 @@ class Spell extends Phaser.GameObjects.Container {
     scene.events.once("shutdown", this.destroy, this);
 
     if (this.isAttackMelee) {
-      this.stickToCaster = true;
+      //this.stickToCaster = true;
       let viewSize = 44;
       /* Take body size of NPC caster in to account. or they wont get close enough to attack */
       const fullBodySize = this.bodySize + (caster?.body?.radius ?? 8) / 2;
