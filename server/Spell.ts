@@ -167,16 +167,13 @@ class Spell extends Phaser.GameObjects.Container {
       /* If its a single target skip all other targets */
       if (target?.id && victim?.id !== target?.id) return true;
 
-      /* For NPCS, make their attack radius less */
-      const hitBox =
-        this.isAttackMelee && this?.caster?.kind !== "player" ? victim : victim?.hitBox;
-      if (scene.physics.overlap(hitBox, this)) {
+      if (scene.physics.overlap(victim.hitBox, this)) {
         /* For attacks, prevent collision behind the player */
         if (this.isAttackMelee) {
-          if (direction === "up" && victim.y > caster.y) return true;
-          if (direction === "down" && victim.y < caster.y) return true;
-          if (direction === "left" && victim.x > caster.x) return true;
-          if (direction === "right" && victim.x < caster.x) return true;
+          if (direction === "up" && (victim.y > caster.y || target?.y > caster.y)) return true;
+          if (direction === "down" && (victim.y < caster.y || target?.y < caster.y)) return true;
+          if (direction === "left" && (victim.x > caster.x || target?.x > caster.x)) return true;
+          if (direction === "right" && (victim.x < caster.x || target?.x < caster.x)) return true;
         }
 
         // keep track of all the characters this spell hit
