@@ -259,8 +259,8 @@ class Npc extends Character implements Npc {
       this.doCast({ targetPlayer, abilitySlot, ability });
     }
   }
-  doAttack({ target, castAngle }) {
-    const { scene, room, direction, id, state } = this ?? {};
+  doAttack({ target, direction, castAngle }) {
+    const { scene, room, id, state } = this ?? {};
     const targetPlayer = scene?.players?.[state?.lockedPlayerId] ?? null;
     if (state.isAttacking || state?.isDead) return;
     if (!targetPlayer || targetPlayer?.state?.isDead) return;
@@ -281,6 +281,7 @@ class Npc extends Character implements Npc {
       caster: this,
       target,
       spellName: this.action,
+      direction,
       castAngle,
       ilvl: 1,
     });
@@ -304,6 +305,8 @@ class Npc extends Character implements Npc {
         targetPlayer.x - this.x
       ));
 
+      const direction = `${this.direction}`;
+
       const target = {
         id: targetPlayer.id,
         x: targetPlayer.x,
@@ -311,7 +314,7 @@ class Npc extends Character implements Npc {
       };
 
       await new Promise((resolve) => setTimeout(resolve, NPC_START_ATTACKING_DELAY));
-      this.doAttack({ target, castAngle });
+      this.doAttack({ target, direction, castAngle });
     }
   }
   stillAggro() {

@@ -2,14 +2,14 @@
   "attack_left": {
     "allowedTargets": ["enemy"],
     "maxVisibleTime": 200,
-    "maxActiveTime": 100,
+    "maxActiveTime": 60,
     "bodySize": 16,
     "layerDepth": "bottom"
   },
   "attack_right": {
     "allowedTargets": ["enemy"],
     "maxVisibleTime": 200,
-    "maxActiveTime": 100,
+    "maxActiveTime": 60,
     "bodySize": 8,
     "layerDepth": "bottom"
   },

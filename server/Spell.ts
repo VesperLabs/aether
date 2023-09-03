@@ -21,6 +21,7 @@ class Spell extends Phaser.GameObjects.Container {
   private scaleMultiplier: number;
   private spellSpeed: integer;
   private hitIds: Array<string>;
+  private direction: string;
   private isAttackMelee: boolean;
   private isAttackRanged: boolean;
   private abilitySlot: number;
@@ -28,9 +29,10 @@ class Spell extends Phaser.GameObjects.Container {
   declare body: Phaser.Physics.Arcade.Body;
   declare scene: ServerScene;
   declare stickToCaster: boolean;
+
   constructor(
     scene: ServerScene,
-    { id, room, caster, target, abilitySlot, spellName, castAngle = 0, ilvl = 1 }
+    { id, room, caster, direction, target, abilitySlot, spellName, castAngle = 0, ilvl = 1 }
   ) {
     const spawnPoint = { x: caster.x, y: caster.y + caster.bodyCenterY };
     super(scene, spawnPoint.x, spawnPoint.y);
@@ -42,6 +44,7 @@ class Spell extends Phaser.GameObjects.Container {
     this.caster = caster;
     this.target = target;
     this.spellName = spellName;
+    this.direction = direction ?? caster?.direction;
     this.state = {
       spawnTime: Date.now(),
       isExpired: false,
@@ -73,7 +76,7 @@ class Spell extends Phaser.GameObjects.Container {
     scene.events.once("shutdown", this.destroy, this);
 
     if (this.isAttackMelee) {
-      //this.stickToCaster = true;
+      this.stickToCaster = true;
       let viewSize = 44;
       /* Take body size of NPC caster in to account. or they wont get close enough to attack */
       const fullBodySize = this.bodySize + (caster?.body?.radius ?? 8) / 2;
@@ -155,7 +158,7 @@ class Spell extends Phaser.GameObjects.Container {
   checkCollisions() {
     if (this?.state?.isExpired) return;
     const { target, caster, scene, allowedTargets, abilitySlot } = this;
-    const direction = caster?.direction;
+    const direction = this?.direction;
     const players = this.room.playerManager.players?.getChildren() || [];
     const npcs = this.room.npcManager.npcs?.getChildren() || [];
     [...npcs, ...players]?.every((victim) => {
@@ -170,10 +173,10 @@ class Spell extends Phaser.GameObjects.Container {
       if (scene.physics.overlap(victim.hitBox, this)) {
         /* For attacks, prevent collision behind the player */
         if (this.isAttackMelee) {
-          if (direction === "up" && (victim.y > caster.y || target?.y > caster.y)) return true;
-          if (direction === "down" && (victim.y < caster.y || target?.y < caster.y)) return true;
-          if (direction === "left" && (victim.x > caster.x || target?.x > caster.x)) return true;
-          if (direction === "right" && (victim.x < caster.x || target?.x < caster.x)) return true;
+          if (direction === "up" && victim.y > caster.y) return true;
+          if (direction === "down" && victim.y < caster.y) return true;
+          if (direction === "left" && victim.x > caster.x) return true;
+          if (direction === "right" && victim.x < caster.x) return true;
         }
 
         // keep track of all the characters this spell hit
