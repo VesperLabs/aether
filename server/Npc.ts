@@ -8,7 +8,7 @@ import crypto from "crypto";
 const AGGRO_KITE_RANGE = 220;
 const NPC_SHOULD_ATTACK_RANGE = 8;
 const NPC_ADDED_ATTACK_DELAY = 700;
-const NPC_START_ATTACKING_DELAY = 300;
+const NPC_START_ATTACKING_DELAY = 500;
 
 const buildEquipment = (equipment: Record<string, Array<string>>) =>
   Object?.entries(equipment).reduce((acc, [slot, itemArray]: [string, BuildItem]) => {
@@ -272,7 +272,6 @@ class Npc extends Character implements Npc {
     const count = this.action === "attack_right" && this.hasWeaponLeft() ? 2 : 1;
     // Set state to attacking and record attack time
     this.state.isAttacking = true;
-    this.state.isAiming = false;
     this.state.lastAttack = Date.now();
     this.state.npcAttackReady = false;
 
@@ -317,6 +316,7 @@ class Npc extends Character implements Npc {
 
       await sleep(NPC_START_ATTACKING_DELAY);
       this.doAttack({ target, direction, castAngle });
+      this.state.isAiming = false;
     }
   }
   stillAggro() {
