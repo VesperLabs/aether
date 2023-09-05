@@ -258,7 +258,12 @@ class Player extends Character {
     }
   }
   setBubbleMessage() {
-    this.bubble.setMessage(this.state.bubbleMessage);
+    const inputString = this.state.bubbleMessage ?? "";
+    const regex = /^0x[0-9A-Fa-f]+/; // Match the color hex at the beginning
+    const colorHex = inputString.match(regex)?.[0];
+    const remainingString = inputString.replace(regex, "");
+    this.bubble.setTint(colorHex ?? "0xFFFFFF");
+    this.bubble.setMessage(remainingString);
   }
   updateHpBar() {
     const { stats } = this;

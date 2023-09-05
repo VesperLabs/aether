@@ -71,6 +71,19 @@ class Bubble extends Phaser.GameObjects.Container {
     this.add(this.bubbleText);
     this.setMessage(this.message);
   }
+  setTint(tintColor) {
+    // Set tint for all the sprites in the Bubble
+    this.tl.setTint(tintColor);
+    this.bl.setTint(tintColor);
+    this.tr.setTint(tintColor);
+    this.br.setTint(tintColor);
+    this.top.setTint(tintColor);
+    this.bot.setTint(tintColor);
+    this.left.setTint(tintColor);
+    this.right.setTint(tintColor);
+    this.bg.setTint(tintColor);
+    this.tail.setTint(tintColor);
+  }
   setMessage(message) {
     if (!message) {
       return this.setVisible(false);
