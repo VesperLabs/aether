@@ -331,7 +331,9 @@ class Npc extends Character implements Npc {
     if (targetPlayer) {
       const isInRange = this.checkInRange(targetPlayer, AGGRO_KITE_RANGE);
       const shouldStop =
-        this.checkInRange(targetPlayer, this.getShouldAttackRange()) || this.state.isAiming;
+        this.checkInRange(targetPlayer, this.getShouldAttackRange()) ||
+        this.state.isAiming ||
+        this.state.isAttacking;
 
       // Determine if player should chase target
       const shouldChasePlayer = isInRange && !targetPlayer?.state?.isDead;

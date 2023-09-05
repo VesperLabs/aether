@@ -8,20 +8,20 @@ const COLUMN_STYLES: ThemeUIStyleObject = {
   gap: 1,
   width: "auto",
   flex: 1,
-  gridTemplateColumns: "2fr 1fr",
+  gridTemplateColumns: "2fr 1.5fr",
   textAlign: "right",
   alignItems: "center",
   whiteSpace: "nowrap",
-  fontSize: [0, 2, 2],
+  fontSize: [0, 1, 2],
   "& > *": {
     py: 1,
   },
   "& > :nth-of-type(odd)": {
     pr: 1,
+    fontSize: [0, 1, 1],
   },
   "& > :nth-of-type(even)": {
     px: 2,
-    fontSize: [0, 1, 2],
     background: "shadow.20",
     borderRadius: 6,
   },
@@ -39,7 +39,7 @@ const MenuStats = memo(({ player, isOpen, setIsOpen }: any) => {
       <MenuHeader icon={`./assets/icons/stats.png`} onClick={() => setIsOpen(false)}>
         Stats
       </MenuHeader>
-      <Flex sx={{ gap: 4, flexWrap: "wrap", justifyContent: "end", maxWidth: MENU_MAX_WIDTH }}>
+      <Flex sx={{ gap: 3, flexWrap: "wrap", justifyContent: "end", maxWidth: MENU_MAX_WIDTH }}>
         <Grid sx={COLUMN_STYLES}>
           <Text>Strength</Text>
           <Text>{stats?.strength}</Text>
