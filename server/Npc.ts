@@ -6,9 +6,10 @@ import spellDetails from "../shared/data/spellDetails.json";
 import crypto from "crypto";
 
 const AGGRO_KITE_RANGE = 220;
-const NPC_ATTACK_ADDED_DELAY = 700;
-const NPC_WARNING_DELAY = 300;
 const NPC_SHOULD_ATTACK_RANGE = 8;
+// both combined is time between attacks. game designed to have ~ 700 total. (500 here + stats.attackDelay below)
+const NPC_ATTACK_ADDED_DELAY = 200;
+const NPC_WARNING_DELAY = 300;
 
 const buildEquipment = (equipment: Record<string, Array<string>>) =>
   Object?.entries(equipment).reduce((acc, [slot, itemArray]: [string, BuildItem]) => {

@@ -452,7 +452,7 @@ const calculateStats = (player, shouldHeal = false) => {
   ns.lightResistance = ns.lightResistance || 0;
   ns.waterResistance = ns.waterResistance || 0;
   ns.earthResistance = ns.earthResistance || 0;
-  ns.attackDelay = ns.attackDelay || 0;
+  ns.attackDelay = ns.attackDelay + ns.dexterity * 0.03 || 0;
   ns.spellPower = Math.floor((ns.spellPower || 0) + ns.intelligence * 0.25);
   ns.attackDelay = 1 - Math.floor(ns.dexterity * 0.5) + ns.attackDelay;
   ns.castDelay = ns.castDelay || 1000;
