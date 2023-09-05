@@ -6,9 +6,9 @@ import spellDetails from "../shared/data/spellDetails.json";
 import crypto from "crypto";
 
 const AGGRO_KITE_RANGE = 220;
-const NPC_SHOULD_ATTACK_RANGE = 8;
 const NPC_ATTACK_ADDED_DELAY = 700;
 const NPC_WARNING_DELAY = 300;
+const NPC_SHOULD_ATTACK_RANGE = 8;
 
 const buildEquipment = (equipment: Record<string, Array<string>>) =>
   Object?.entries(equipment).reduce((acc, [slot, itemArray]: [string, BuildItem]) => {
@@ -231,7 +231,7 @@ class Npc extends Character implements Npc {
   async intendCastSpell({ targetPlayer, delta }) {
     const { state, abilities } = this ?? {};
 
-    if (!this.checkCastReady() || state?.isDead || state.isAiming) return;
+    if (!this.checkCastReady() || state?.isDead || state.isAiming || !targetPlayer) return;
 
     let ability = null;
     let abilitySlot = null;
@@ -293,6 +293,8 @@ class Npc extends Character implements Npc {
   async intendAttack({ targetPlayer }) {
     const { isAttacking, npcAttackReady, isAiming } = this?.state ?? {};
 
+    if (!targetPlayer) return;
+
     // Determine if player should attack target player
     const shouldAttackPlayer =
       !isAttacking && !isAiming && this.checkInRange(targetPlayer, this.getShouldAttackRange());
@@ -324,23 +326,26 @@ class Npc extends Character implements Npc {
   }
   chaseOrMove({ targetPlayer, delta, time }) {
     // Check if player is in range for aggro
-    const isInRange = this.checkInRange(targetPlayer, AGGRO_KITE_RANGE);
-    const shouldStop =
-      this.checkInRange(targetPlayer, this.getShouldAttackRange()) || this.state.isAiming;
 
-    // Determine if player should chase target
-    const shouldChasePlayer = isInRange && !targetPlayer?.state?.isDead;
+    if (targetPlayer) {
+      const isInRange = this.checkInRange(targetPlayer, AGGRO_KITE_RANGE);
+      const shouldStop =
+        this.checkInRange(targetPlayer, this.getShouldAttackRange()) || this.state.isAiming;
 
-    // Aggroed
-    if (shouldChasePlayer) {
-      this.state.bubbleMessage = this.state.isAiming ? "0xFFAAAA!" : "?";
-      if (shouldStop) {
-        return this.standStill();
-      }
-      if (this.isNearCollideTile()) {
-        return this.moveTowardPointPathed(targetPlayer);
-      } else {
-        return this.moveTowardPoint(targetPlayer);
+      // Determine if player should chase target
+      const shouldChasePlayer = isInRange && !targetPlayer?.state?.isDead;
+
+      // Aggroed
+      if (shouldChasePlayer) {
+        this.state.bubbleMessage = this.state.isAiming ? "0xFFAAAA!" : "?";
+        if (shouldStop) {
+          return this.standStill();
+        }
+        if (this.isNearCollideTile()) {
+          return this.moveTowardPointPathed(targetPlayer);
+        } else {
+          return this.moveTowardPoint(targetPlayer);
+        }
       }
     }
 

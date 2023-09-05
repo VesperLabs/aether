@@ -75,13 +75,12 @@ class Spell extends Phaser.GameObjects.Container {
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
 
+    this.setScale(this.scaleBase + ilvl * this.scaleMultiplier);
+    this.body.setCircle(this?.bodySize, -this?.bodySize, -this?.bodySize);
+
     if (this.isAttackMelee) {
       this.stickToCaster = true;
       let viewSize = 44;
-      /* Take body size of NPC caster in to account. or they wont get close enough to attack */
-      const fullBodySize = this.bodySize + (caster?.body?.radius ?? 8) / 2;
-      this.body.setCircle(fullBodySize, -fullBodySize, -fullBodySize);
-
       /* Hack: Up range is too long. This hack makes the top-down view more realistic */
       if (caster?.direction === "up") {
         this.y = this.caster.y;
@@ -105,9 +104,6 @@ class Spell extends Phaser.GameObjects.Container {
         this.spell.displayWidth = viewSize * rangeRight;
         this.spell.displayHeight = viewSize * rangeRight;
       }
-    } else {
-      this.setScale(this.scaleBase + ilvl * this.scaleMultiplier);
-      this.body.setCircle(this?.bodySize, -this?.bodySize, -this?.bodySize);
     }
 
     if (this.isAttackRanged) {
