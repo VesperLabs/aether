@@ -7,8 +7,8 @@ import crypto from "crypto";
 
 const AGGRO_KITE_RANGE = 220;
 const NPC_SHOULD_ATTACK_RANGE = 8;
-const NPC_ADDED_ATTACK_DELAY = 700;
-const NPC_START_ATTACKING_DELAY = 500;
+const NPC_ATTACK_ADDED_DELAY = 700;
+const NPC_WARNING_DELAY = 300;
 
 const buildEquipment = (equipment: Record<string, Array<string>>) =>
   Object?.entries(equipment).reduce((acc, [slot, itemArray]: [string, BuildItem]) => {
@@ -95,7 +95,7 @@ class Npc extends Character implements Npc {
     return distance <= range;
   }
   checkAttackReady(): any {
-    const fullAttackDelay = this?.stats?.attackDelay + NPC_ADDED_ATTACK_DELAY;
+    const fullAttackDelay = this?.stats?.attackDelay + NPC_ATTACK_ADDED_DELAY;
     if (Date.now() - this.state.lastAttack > fullAttackDelay) {
       this.state.npcAttackReady = true;
       this.state.isAttacking = false;
@@ -257,7 +257,7 @@ class Npc extends Character implements Npc {
 
     if (ability) {
       this.state.isAiming = true;
-      await sleep(NPC_START_ATTACKING_DELAY);
+      await sleep(NPC_WARNING_DELAY + this?.stats?.castDelay);
       this.doCast({ targetPlayer, abilitySlot, ability });
       this.state.isAiming = false;
     }
@@ -314,7 +314,7 @@ class Npc extends Character implements Npc {
         y: targetPlayer.y,
       };
 
-      await sleep(NPC_START_ATTACKING_DELAY);
+      await sleep(NPC_WARNING_DELAY + this?.stats?.attackDelay);
       this.doAttack({ target, direction, castAngle });
       this.state.isAiming = false;
     }
@@ -333,7 +333,7 @@ class Npc extends Character implements Npc {
 
     // Aggroed
     if (shouldChasePlayer) {
-      this.state.bubbleMessage = this.state.isAiming ? "!" : "?";
+      this.state.bubbleMessage = this.state.isAiming ? "0xFFAAAA!" : "?";
       if (shouldStop) {
         return this.standStill();
       }
