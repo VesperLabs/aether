@@ -161,8 +161,8 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       });
 
       socket.on("updateState", (state) => {
-        const player = scene.players[socketId];
-
+        const player = scene?.players?.[socketId];
+        if (!player) return;
         // Loop through each key in the state object
         for (const key in state) {
           if (state.hasOwnProperty(key)) {

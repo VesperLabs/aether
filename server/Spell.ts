@@ -161,6 +161,8 @@ class Spell extends Phaser.GameObjects.Container {
     const direction = this?.direction;
     const players = this.room.playerManager.players?.getChildren() || [];
     const npcs = this.room.npcManager.npcs?.getChildren() || [];
+    const isNpcSingleTarget = target?.id && caster?.kind !== "player";
+
     [...npcs, ...players]?.every((victim) => {
       if (!victim || this.hitIds.includes(victim?.id) || victim?.state?.isDead) return true;
 
@@ -170,7 +172,8 @@ class Spell extends Phaser.GameObjects.Container {
       /* If its a single target skip all other targets */
       if (target?.id && victim?.id !== target?.id) return true;
 
-      if (scene.physics.overlap(victim.hitBox, this)) {
+      const body = isNpcSingleTarget ? victim : victim?.hitBox;
+      if (scene.physics.overlap(body, this)) {
         /* For attacks, prevent collision behind the player */
         if (this.isAttackMelee) {
           if (direction === "up" && victim.y > caster.y) return true;
