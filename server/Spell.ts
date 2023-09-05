@@ -157,7 +157,7 @@ class Spell extends Phaser.GameObjects.Container {
     const direction = this?.direction;
     const players = this.room.playerManager.players?.getChildren() || [];
     const npcs = this.room.npcManager.npcs?.getChildren() || [];
-    const isNpcSingleTargetMelee = target?.id && caster?.kind !== "player";
+    const isNpcSingleTargetMelee = target?.id && caster?.kind !== "player" && this.isAttackMelee;
 
     [...npcs, ...players]?.every((victim) => {
       if (!victim || this.hitIds.includes(victim?.id) || victim?.state?.isDead) return true;

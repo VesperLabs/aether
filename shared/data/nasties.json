@@ -4,8 +4,7 @@
     "profile": { "race": "crab", "userName": "Crab", "tint": "0xFF6600" },
     "state": { "isAggro": false },
     "baseStats": {
-      "level": 1,
-      "attackDelay": 300
+      "level": 1
     },
     "hitBoxSize": {
       "width": 18,
