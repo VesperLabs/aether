@@ -10,7 +10,7 @@
     "allowedTargets": ["enemy"],
     "maxVisibleTime": 200,
     "maxActiveTime": 60,
-    "bodySize": 8,
+    "bodySize": 16,
     "layerDepth": "bottom"
   },
   "attack_left_ranged": {
