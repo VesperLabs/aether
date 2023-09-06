@@ -13,8 +13,10 @@ import {
   MenuQuests,
   MenuStats,
 } from "@aether/client";
+import { useLocation } from "wouter";
 
 export default function () {
+  const [page] = useLocation();
   const [players, setPlayers] = useState<Array<FullCharacterState>>();
   const [currentPlayer, setCurrentPlayer] = useState(null);
   const [bagState, setBagState] = useState([]);
@@ -24,6 +26,8 @@ export default function () {
     stats: false,
     abilities: false,
   });
+
+  const isPlayersPage = page === "/players";
   const escCacheKey = JSON.stringify(tabs);
 
   /* Is the bag open or closed */
@@ -50,7 +54,8 @@ export default function () {
 
   /* Fetch player data */
   useEffect(() => {
-    fetch(`${process.env.SERVER_URL}/players/all?sortBy=updatedAt`, {
+    if (!["/keepers", "/players"]?.includes(page)) return;
+    fetch(`${process.env.SERVER_URL}${page}/all?sortBy=updatedAt`, {
       method: "GET",
     })
       .then((response) => response.json())
@@ -92,7 +97,7 @@ export default function () {
                 onClick={() => {
                   setCurrentPlayer(player);
                   setTabKey("stats", true);
-                  setTabKey("inventory", true);
+                  isPlayersPage && setTabKey("inventory", true);
                   setTabKey("equipment", true);
                   setTabKey("abilities", true);
                 }}
