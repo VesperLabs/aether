@@ -209,7 +209,11 @@ const Slot = memo(
     const tooltipId = `${location}-${item?.id}`;
     const targetMoved = target?.dataset?.tooltipId !== tooltipId;
     const aboutToSell = dragging && target?.closest(".menu-keeper") && location !== "shop";
-    const showTooltip = isMobile ? hovering : (dragging && !targetMoved) || hovering;
+
+    /* When to show the tooltip */
+    const showTooltipDesktop = (dragging && !targetMoved) || hovering;
+    const showTooltipMobile = disabled ? hovering : dragging && !targetMoved;
+    const showTooltip = isMobile ? showTooltipMobile : showTooltipDesktop;
 
     const dataKeys = {
       "data-location": location,
