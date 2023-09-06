@@ -83,6 +83,7 @@ interface Sign extends Phaser.Types.Tilemaps.TiledObject {
 }
 
 interface ServerMetrics {
+  totalPlayers: number;
   playersOnline: number;
   npcsLoaded: number;
   doorsLoaded: number;

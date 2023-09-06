@@ -6,6 +6,7 @@ export async function initFakeDatabase() {
 
 const getDatabaseApi = () => ({
   getAllUsers: async () => {},
+  countAllUsers: async () => {},
   pruneNoobs: async () => {},
   getUserByEmail: async ({ email }) => {
     if (!email) return console.log("❌ Email not provided");
