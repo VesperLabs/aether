@@ -8,7 +8,6 @@ import RowTitle from "./RowTitle";
 import { msToHours } from "@aether/shared";
 import PagePlayers from "./PagePlayers";
 import PageHome from "./PageHome";
-import PageKeepers from "./PageKeepers";
 
 const STATIC_ROW_STYLES = {
   gap: 3,
@@ -56,7 +55,7 @@ const App = () => {
           <Route path="/items" component={PageItems as any} />
           <Route path="/monsters" component={PageNasties as any} />
           <Route path="/players" component={PagePlayers as any} />
-          <Route path="/keepers" component={PageKeepers as any} />
+          <Route path="/keepers" component={PagePlayers as any} />
         </Box>
       </Flex>
       <Footer />
