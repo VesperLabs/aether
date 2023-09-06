@@ -210,7 +210,7 @@ class Character extends Phaser.GameObjects.Container {
     if (weaponRange) {
       return (this?.visibleEquipment?.[hand]?.stats?.range || 1) * RANGE_MULTIPLIER;
       /* NPCs attack at this range  */
-    } else return 8 + this.bodySize * this.proScale;
+    } else return 8 + this.bodySize;
   }
   checkOutOfCombat() {
     const isOutOfCombat = Date.now() - this.state.lastCombat > 5000;
