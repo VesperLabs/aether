@@ -72,8 +72,9 @@ async function initialize() {
     res.json(ret);
   });
 
-  app.get("/metrics", (req, res) => {
+  app.get("/metrics", async (req, res) => {
     const scene = aetherServer?.game?.scene?.scenes?.[0] as ServerScene;
+    const totalPlayers = await db.countAllUsers();
     const { players, npcs, loots, doors } = scene ?? {};
 
     const endTime = Date.now();
@@ -83,6 +84,7 @@ async function initialize() {
 
     const metrics: ServerMetrics = {
       playersOnline: Object.keys(players).length,
+      totalPlayers: totalPlayers ?? 0,
       npcsLoaded: Object.keys(npcs).length,
       doorsLoaded: Object.keys(doors).length,
       lootsOnGround: Object.keys(loots).length,

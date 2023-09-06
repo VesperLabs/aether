@@ -190,15 +190,26 @@ export default function () {
 const PlayerTooltip = ({ player }) => {
   const completedQuests = player?.quests?.filter((q) => q?.isCompleted)?.length;
   const totalQuests = Object.keys(questList)?.length;
+  const isKeeper = player?.kind === "keeper";
   return (
     <Tooltip id={player?.id} style={{ zIndex: 99999 }}>
       <Flex sx={TOOLTIP_STYLE}>
-        <Text>
-          <Label>Last Login:</Label> {new Date(player?.updatedAt)?.toLocaleDateString("en-US")}
-        </Text>
-        <Text>
-          <Label>Completed Quests:</Label> {`${completedQuests} / ${totalQuests}`}
-        </Text>
+        {!isKeeper ? (
+          <>
+            <Text>
+              <Label>Last Login:</Label> {new Date(player?.updatedAt)?.toLocaleDateString("en-US")}
+            </Text>
+            <Text>
+              <Label>Completed Quests:</Label> {`${completedQuests} / ${totalQuests}`}
+            </Text>
+          </>
+        ) : (
+          <>
+            <Text>
+              <Label>Map:</Label> {player?.roomName}
+            </Text>
+          </>
+        )}
       </Flex>
     </Tooltip>
   );
