@@ -38,7 +38,7 @@ const RowTitle = ({ icon, sx, children, ...props }: any) => (
     }}
     {...props}
   >
-    <Icon icon={resolveTypeIcon(icon)} />
+    {icon && <Icon icon={resolveTypeIcon(icon)} />}
     {children}
   </Flex>
 );
