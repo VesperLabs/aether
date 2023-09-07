@@ -3,97 +3,61 @@ import { userSchema } from "./schema";
 import ItemBuilder from "../../shared/ItemBuilder";
 import { useGetBaseCharacterDefaults, filterNullEmpty } from "../utils";
 
-export async function initDatabase(uri) {
-  let mongoClient: MongoClient;
-  let db: Db;
-
-  try {
-    mongoClient = new MongoClient(uri);
-    console.log(`💾 Connecting to db on ${uri}`);
-    await mongoClient.connect();
-    console.log("💾 Connected to db");
-    db = mongoClient.db("aether");
-  } catch (error) {
-    console.error("❌ Connection to db failed", error);
-    process.exit();
-  }
-
-  /* Create collections  */
-  const usersCollectionExists = await db.listCollections({ name: "users" }).hasNext();
-  if (!usersCollectionExists) await db.createCollection("users");
-  /* Create indexes */
-  await db.collection("users").createIndex({ email: 1 }, { unique: true });
-  /* Add schema */
-  await db.command({
-    collMod: "users",
-    validator: { $jsonSchema: userSchema },
-    validationLevel: "strict",
-    validationAction: "error",
-  });
-
-  return getDatabaseApi(db);
-}
-
 const getDatabaseApi = (db) => ({
   getUserByEmail: async ({ email }) => {
-    if (!email) return console.log("❌ Email not provided");
-    const user = await db.collection("users").findOne({ email });
-    return user;
+    return execute("getUserByEmail", async () => {
+      if (!email) return console.log("❌ Email not provided");
+      const user = await db.collection("users").findOne({ email });
+      return user;
+    });
   },
   getAllUsers: async (args?: any) => {
-    const { sortBy = "baseStats.maxExp" } = args ?? {};
-    try {
+    return execute("getAllUsers", async () => {
+      const { sortBy = "baseStats.maxExp", page = 1, pageSize = 10 } = args ?? {};
+      const skip = (page - 1) * pageSize;
       const users = await db
         .collection("users")
         .find()
         .sort({ [sortBy]: -1 })
+        .skip(skip)
+        .limit(pageSize)
         .toArray();
+
       return users;
-    } catch (error) {
-      console.error("Error while fetching all users:", error);
-      throw error;
-    }
+    });
   },
   countAllUsers: async () => {
-    try {
+    return execute("getAllUsers", async () => {
       const count = await db.collection("users").countDocuments();
       return count;
-    } catch (error) {
-      console.error("Error while counting all users:", error);
-      throw error;
-    }
+    });
   },
   pruneNoobs: async () => {
-    try {
+    return execute("getAllUsers", async () => {
       // Delete documents with baseStats.level equal to 1
       const deleteResult = await db.collection("users").deleteMany({ "baseStats.level": 1 });
       // const updateResult = await db
       //   .collection("users")
       //   .updateMany({}, { $set: { "equipment.gloves": null } });
       // Print the number of documents deleted
-      console.log(`${deleteResult.deletedCount} documents deleted.`);
-    } catch (error) {
-      console.error("Error while pruning the database:", error);
-      throw error;
-    }
+    });
   },
-
   getUserByLogin: async ({ email, password = "" }) => {
-    if (!email) return console.log("❌ Email not provided");
-    const user = await db
-      .collection("users")
-      .findOne({ email: `${email}`.toLowerCase(), password });
-    console.log(`💾 Found ${email} in db`);
-    return user;
+    return execute("getAllUsers", async () => {
+      if (!email) return console.log("❌ Email not provided");
+      const user = await db
+        .collection("users")
+        .findOne({ email: `${email}`.toLowerCase(), password });
+      return user;
+    });
   },
   createUser: async ({ email, charClass, password }) => {
-    if (!email) {
-      return console.log("❌ Error while creating player. Email not provided");
-    }
-    const player = createBaseUser(charClass);
-    const { updatedAt, createdAt } = getAuditFields();
-
-    try {
+    return execute("getAllUsers", async () => {
+      if (!email) {
+        return console.log("❌ Error while creating player. Email not provided");
+      }
+      const player = createBaseUser(charClass);
+      const { updatedAt, createdAt } = getAuditFields();
       await db.collection("users").insertOne({
         email: `${email}`.toLowerCase(),
         password,
@@ -118,18 +82,15 @@ const getDatabaseApi = (db) => ({
         updatedAt,
         createdAt,
       });
-    } catch (e) {
-      console.log(e);
-    }
-    console.log(`💾 Created ${email} to db`);
-    return true;
+      return true;
+    });
   },
   updateUserRoom: async (player) => {
-    const { updatedAt } = getAuditFields();
-    if (!player?.email) {
-      return console.log("❌ Error while saving player. Player not found");
-    }
-    try {
+    return execute("getAllUsers", async () => {
+      const { updatedAt } = getAuditFields();
+      if (!player?.email) {
+        return console.log("❌ Error while saving player. Player not found");
+      }
       await db.collection("users").findOneAndUpdate(
         { email: player?.email },
         {
@@ -141,19 +102,14 @@ const getDatabaseApi = (db) => ({
           },
         }
       );
-    } catch (e) {
-      console.log(e);
-    }
-    console.log(`💾 Saved Room ${player?.email} to db`);
+    });
   },
   updateUser: async (player) => {
-    if (!player?.email) {
-      return console.log("❌ Error while saving player. Player not found");
-    }
-
-    const { updatedAt } = getAuditFields();
-
-    try {
+    return execute("getAllUsers", async () => {
+      if (!player?.email) {
+        return console.log("❌ Error while saving player. Player not found");
+      }
+      const { updatedAt } = getAuditFields();
       await db.collection("users").findOneAndUpdate(
         { email: player?.email },
         {
@@ -180,12 +136,21 @@ const getDatabaseApi = (db) => ({
           },
         }
       );
-    } catch (e) {
-      console.log(e);
-    }
-    console.log(`💾 Saved ${player?.email} to db`);
+    });
   },
 });
+
+async function execute(operationName, operation, onError = () => {}) {
+  try {
+    const res = await operation();
+    //console.log(`🔧 ${operationName} succeeded`);
+    return res;
+  } catch (error) {
+    console.error(`❌ ${operationName} failed`, error);
+    onError();
+    throw error;
+  }
+}
 
 function getAuditFields() {
   const currentDate = new Date();
@@ -193,6 +158,43 @@ function getAuditFields() {
     createdAt: currentDate,
     updatedAt: currentDate,
   };
+}
+
+export async function initDatabase(uri: string) {
+  let mongoClient: MongoClient;
+  let db: Db;
+
+  await execute(
+    "Connect to DB",
+    async () => {
+      mongoClient = new MongoClient(uri);
+      await mongoClient.connect();
+      db = mongoClient.db("aether");
+    },
+    () => {
+      process.exit();
+    }
+  );
+
+  await execute("Create users collection", async () => {
+    const usersCollectionExists = await db.listCollections({ name: "users" }).hasNext();
+    if (!usersCollectionExists) await db.createCollection("users");
+  });
+
+  await execute("Create user indexes", async () => {
+    await db.collection("users").createIndex({ email: 1 }, { unique: true });
+  });
+
+  await execute("Add user schema", async () => {
+    await db.command({
+      collMod: "users",
+      validator: { $jsonSchema: userSchema },
+      validationLevel: "strict",
+      validationAction: "error",
+    });
+  });
+
+  return getDatabaseApi(db);
 }
 
 export const createBaseUser = (charClass) => {

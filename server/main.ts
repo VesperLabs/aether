@@ -4,6 +4,7 @@ import GameServer from "./GameServer";
 import { initDatabase } from "./db";
 import { initFakeDatabase } from "./db/fake";
 import { calculateStats, getFullCharacterState } from "./utils";
+import { paginate } from "./middleware";
 
 config({ path: path.join(__dirname, "/../.env") });
 const cors = require("cors");
@@ -49,13 +50,15 @@ async function initialize() {
     res.json({ string: "ok" });
   });
 
-  app.get("/players/all", async (req, res) => {
+  // Your route using the pagination middleware
+  app.get("/players/all", paginate, async (req, res) => {
     const sortBy = req?.query?.sortBy || "updatedAt";
-    const players = await db.getAllUsers({ sortBy });
-    let ret = [];
-    for (const player of players) {
+    const { page, pageSize } = req;
+    const players = await db.getAllUsers({ sortBy, page, pageSize });
+
+    const ret = players.map((player) => {
       calculateStats(player, false);
-      ret.push({
+      return {
         id: player?._id,
         charClass: player?.charClass,
         stats: player?.stats,
@@ -67,8 +70,9 @@ async function initialize() {
         profile: player?.profile,
         updatedAt: player?.updatedAt,
         quests: player?.quests,
-      });
-    }
+      };
+    });
+
     res.json(ret);
   });
 
