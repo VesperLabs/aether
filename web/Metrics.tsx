@@ -1,21 +1,11 @@
 import { msToHours } from "@aether/shared";
-import { useState, useEffect } from "react";
 import { Box, Text } from "@aether/ui";
 import { STATIC_ROW_STYLES, RowTitle } from ".";
+import { useQuery } from "react-query";
+import { fetchMetrics } from "./api";
 
 const Metrics = () => {
-  const [metrics, setMetrics] = useState<ServerMetrics>();
-
-  useEffect(() => {
-    fetch(`${process.env.SERVER_URL}/metrics?timestamp=${Date.now()}`, {
-      method: "GET",
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setMetrics(data);
-      })
-      .catch((error) => {});
-  }, []);
+  const { data: metrics, isLoading: loadingMetrics } = useQuery("metrics", fetchMetrics);
 
   return (
     <RowTitle

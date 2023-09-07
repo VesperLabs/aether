@@ -14,10 +14,11 @@ import {
   MenuStats,
 } from "@aether/client";
 import { useLocation } from "wouter";
+import { useQuery } from "react-query";
+import { fetchPlayers } from "./api";
 
 export default function () {
   const [page] = useLocation();
-  const [players, setPlayers] = useState<Array<FullCharacterState>>();
   const [currentPlayer, setCurrentPlayer] = useState(null);
   const [bagState, setBagState] = useState([]);
   const [tabs, setTabs] = useState({
@@ -29,6 +30,11 @@ export default function () {
 
   const isPlayersPage = page === "/players";
   const escCacheKey = JSON.stringify(tabs);
+
+  const { data: players, isLoading: loadingPlayers } = useQuery(
+    ["players", { kind: page, sortBy: "updatedAt" }],
+    fetchPlayers
+  );
 
   /* Is the bag open or closed */
   const toggleBagState = (id: string) => {
@@ -51,19 +57,6 @@ export default function () {
       toggleBagState(id);
     }
   };
-
-  /* Fetch player data */
-  useEffect(() => {
-    if (!["/keepers", "/players"]?.includes(page)) return;
-    fetch(`${process.env.SERVER_URL}${page}/all?sortBy=updatedAt`, {
-      method: "GET",
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setPlayers(data);
-      })
-      .catch((error) => {});
-  }, []);
 
   /* If no tabs are open, clear player selection */
   useEffect(() => {
