@@ -29,7 +29,7 @@ export default function ({ player }: any) {
           opacity: loading ? 0.1 : 0,
           zIndex: 0,
           mb: -FULL_CANVAS_SIZE,
-          transition: ".2s ease all",
+          transition: ".3s ease all",
         }}
       >
         <img
@@ -37,7 +37,7 @@ export default function ({ player }: any) {
           src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAAAXNSR0IArs4c6QAAAjlJREFUeF7tmkFug0AQBPH/H50IyRy8Bpz1DKFaqtyimElTNY3llR+LPygCD1QawywKgS2BQhQCIwCLY0MUAiMAi2NDFAIjAItjQxQCIwCLY0MUAiMAi2NDFAIjAItjQxQCIwCLY0MUAiMAi2NDFAIjAItjQxQCIwCLY0MUAiMAi2NDFAIjAItjQxQCIwCLY0MU0k7gZ2di7KLFBl+WZU/E6Cbu/uICP4n/RcYmJ+oeo8J+ISNOikLa39JqA9OEzDyqIt9PFFJb6ParFdKOtDZQITV+7VcrpB1pbaBCavzar1ZIO9LaQIXU+LVfnSZkBfDNZ5GY+4wJOqzijJSoe4wK61lW+xOyPHCmGR6dlHGfD6jIiDn1TXpkKeTijZ8Z3yEjoiUpDVHIzPpe/NpOGfiWJDREIRdv/Mz4o6/4zEhaly7mq0L0hihkZn3/4bWjkKNt/xRl7zrkMiJDHZxbbVlnHlfjm/h2Lfa+scFOVr4i5FOTbv+7Qm5X8BpAIQopE/CRVUbYO0AhvTzL0xRSRtg7QCG9PMvTFFJG2DtAIb08y9MUUkbYO0AhvTzL0xRSRtg74EjI2UlwzIlETNCDE+DxNHf9fe/IvnclLpyWKuRCJPeOVsi9/N/+u0IUAiMAi2NDFAIjAItjQxQCIwCLY0MUAiMAi2NDFAIjAItjQxQCIwCLY0MUAiMAi2NDFAIjAItjQxQCIwCLY0MUAiMAi2NDFAIjAItjQxQCIwCLY0MUAiMAi2NDYEJ+Ac+aM2UEX1usAAAAAElFTkSuQmCC"
         />
       </Box>
-      <Box sx={{ opacity: loading ? 0 : 1, transition: ".2s ease all" }}>
+      <Box sx={{ opacity: loading ? 0 : 1, transition: ".5s ease all" }}>
         <PlayerRender
           player={player}
           shouldBuffer={false}
