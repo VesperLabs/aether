@@ -22,7 +22,11 @@ export { default as Input } from "./Input";
 export { default as KeyboardButton } from "./KeyboardButton";
 export { default as Tooltip } from "./Tooltip";
 export { default as Portal } from "./Portal";
-export { default as PlayerRender } from "./PlayerRender";
+export {
+  default as PlayerRender,
+  PLAYER_RENDER_CANVAS_STYLE,
+  FULL_CANVAS_SIZE,
+} from "./PlayerRender";
 export * from "./hooks";
 
 export const SLOT_SIZE = 56;

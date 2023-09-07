@@ -33,16 +33,16 @@ export default function () {
   const { bagState, toggleBagState } = useToggleBagState();
   const { tabs, setTabKey } = useSetTabs();
   const kind = location?.split("/")?.[1];
+  const currentPage = parseInt(params?.page ?? 1);
 
-  const { data: playerData, isLoading } = useQuery(
-    ["players", { kind, sortBy: "updatedAt", ...params, limit: MAX_ITEMS }],
-    fetchPlayers
-  );
-
-  const showLoadMore = !isLoading && playerData?.length === MAX_ITEMS;
+  const { data: playerData, isLoading } = useQuery({
+    queryKey: ["players", { kind, sortBy: "updatedAt", page: currentPage, limit: MAX_ITEMS }],
+    queryFn: fetchPlayers,
+    keepPreviousData: true,
+  });
 
   const handleLoadMore = () => {
-    navigate(`/${kind}/` + (parseInt(params?.page ?? 1) + 1));
+    navigate(`/${kind}/` + (currentPage + 1));
   };
 
   const handleClickItem = (e) => {
@@ -84,7 +84,11 @@ export default function () {
             const isActive = currentPlayer?.id === player?.id;
             return (
               <Box
-                sx={{ ...PLAYER_BOX_STYLES, bg: isActive ? "shadow.20" : "transparent" }}
+                sx={{
+                  ...PLAYER_BOX_STYLES,
+                  position: "relative",
+                  bg: isActive ? "shadow.20" : "transparent",
+                }}
                 key={idx}
                 onClick={() => {
                   setCurrentPlayer(player);
@@ -94,12 +98,12 @@ export default function () {
                   setTabKey("abilities", true);
                 }}
               >
-                <PlayerRender player={player} />
+                <PlayerRender player={player} onLoadComplete={(v) => console.log(v)} />
                 <PlayerTooltip player={player} />
               </Box>
             );
           })}
-          <LoadMore onClick={handleLoadMore} show={showLoadMore} />
+          <LoadMore onClick={handleLoadMore} players={players} isLoading={isLoading} />
         </Flex>
       </Flex>
       <Box
@@ -210,27 +214,36 @@ const useToggleBagState = () => {
   return { bagState, toggleBagState };
 };
 
-const LoadMore = ({ onClick, show }) => (
-  <Box
-    sx={{
-      ...PLAYER_BOX_STYLES,
-      opacity: show ? 0.5 : 0,
-      "& canvas": { opacity: 0.25 },
-      "&:hover": { opacity: show ? 1 : 0 },
-      transition: ".2s ease all",
-    }}
-    onClick={show && onClick}
-  >
+const LoadMore = ({ onClick, players, isLoading }) => {
+  const show = isLoading || players?.length === MAX_ITEMS;
+  return (
+    <Box
+      sx={{
+        ...PLAYER_BOX_STYLES,
+        opacity: show ? 0.5 : 0,
+        "&:hover": { opacity: show ? 1 : 0 },
+      }}
+      onClick={show ? onClick : () => {}}
+    >
+      <BlankPlayer userName="Load more..." />
+    </Box>
+  );
+};
+
+const BlankPlayer = ({ userName, sx, ...props }: any) => (
+  <Box sx={{ "& canvas": { opacity: 0.25 }, transition: ".2s ease all", ...sx }} {...props}>
     <PlayerRender
       player={{
         id: "xxx",
         profile: {
           tint: "0x000000",
-          userName: "Load more...",
+          userName,
           gender: "male",
           race: "human",
+          hair: {
+            tint: "0x000000",
+          },
         },
-        updatedAt: "2023-09-03T12:48:46.821Z",
       }}
     />
   </Box>
