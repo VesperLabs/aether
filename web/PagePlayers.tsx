@@ -30,7 +30,7 @@ export default function () {
   const { tabs, setTabKey } = useSetTabs();
   const [_, kind] = location?.split("/") ?? [];
 
-  const { data, fetchNextPage, hasNextPage } = useInfiniteQuery({
+  const { data, fetchNextPage, hasNextPage, isFetching } = useInfiniteQuery({
     queryKey: ["players", { kind, sortBy: "updatedAt" }],
     queryFn: fetchPlayers,
     getNextPageParam: (lastPage) => {
@@ -106,7 +106,7 @@ export default function () {
               </Box>
             );
           })}
-          <LoadMore onClick={handleLoadMore} hasNextPage={hasNextPage} />
+          <LoadMore onClick={handleLoadMore} hasNextPage={hasNextPage} isFetching={isFetching} />
         </Flex>
       </Flex>
       <Box
@@ -217,16 +217,17 @@ const useToggleBagState = () => {
   return { bagState, toggleBagState };
 };
 
-const LoadMore = ({ onClick, hasNextPage }) => {
+const LoadMore = ({ onClick, hasNextPage, isFetching }) => {
+  const show = !isFetching && hasNextPage;
   return (
     <Box
       sx={{
         ...PLAYER_BOX_STYLES,
-        opacity: hasNextPage ? 0.5 : 0,
-        "&:hover": { opacity: hasNextPage ? 1 : 0 },
+        opacity: show ? 0.5 : 0,
+        "&:hover": { opacity: show ? 1 : 0 },
         transition: ".2s ease all",
       }}
-      onClick={hasNextPage ? onClick : () => {}}
+      onClick={show ? onClick : () => {}}
     >
       <BlankPlayer userName="Load more..." />
     </Box>
