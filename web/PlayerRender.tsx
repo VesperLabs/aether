@@ -32,12 +32,12 @@ export default function ({ player }: any) {
           opacity: loading ? 0.1 : 0,
           zIndex: 0,
           mb: -FULL_CANVAS_SIZE,
-          transition: ".3s ease all",
+          transition: loading ? ".3s ease all" : "none",
         }}
       >
         <img style={PLAYER_RENDER_CANVAS_STYLE} src={LOADING_CANVAS_IMAGE} />
       </Box>
-      <Box sx={{ opacity: loading ? 0 : 1, transition: ".5s ease all" }}>
+      <Box sx={{ opacity: loading ? 0 : 1, transition: ".3s ease all" }}>
         <PlayerRender
           player={player}
           shouldBuffer={false}

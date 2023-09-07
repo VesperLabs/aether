@@ -40,7 +40,7 @@ export default function () {
 
   const players = data?.pages
     ? [].concat(...data?.pages?.map((p) => p?.data))
-    : [...new Array(5)]?.map((a, idx) => {
+    : [...new Array(3)]?.map((a, idx) => {
         return {
           id: idx,
           profile: {
@@ -238,7 +238,6 @@ const BlankPlayer = ({ userName, sx, ...props }: any) => (
   <Box sx={{ "& canvas": { opacity: 0.15 }, ...sx }} {...props}>
     <PlayerRender
       player={{
-        id: "xxx",
         profile: {
           tint: "0x000000",
           userName,
