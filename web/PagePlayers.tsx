@@ -1,4 +1,4 @@
-import { Box, Flex, KeyboardKey, Text } from "@aether/ui";
+import { Box, Button, Flex, KeyboardKey, Text } from "@aether/ui";
 import RowTitle from "./RowTitle";
 import { useEffect, useState } from "react";
 import PlayerRender from "./PlayerRender";
@@ -16,19 +16,34 @@ import {
 import { useLocation, useParams } from "wouter";
 import { useQuery } from "react-query";
 import { fetchPlayers } from "./api";
+import { uniqBy } from "lodash";
+
+const MAX_ITEMS = 10;
+const PLAYER_BOX_STYLES = {
+  cursor: "pointer",
+  borderRadius: 7,
+  pb: 2,
+};
 
 export default function () {
-  const [location] = useLocation();
+  const [location, navigate] = useLocation();
   const params = useParams();
+  const [players, setPlayers] = useState([]);
   const [currentPlayer, setCurrentPlayer] = useState(null);
   const { bagState, toggleBagState } = useToggleBagState();
   const { tabs, setTabKey } = useSetTabs();
   const kind = location?.split("/")?.[1];
 
-  const { data: players } = useQuery(
-    ["players", { kind, sortBy: "updatedAt", page: 0, limit: 15, ...params }],
+  const { data: playerData, isLoading } = useQuery(
+    ["players", { kind, sortBy: "updatedAt", ...params, limit: MAX_ITEMS }],
     fetchPlayers
   );
+
+  const showLoadMore = !isLoading && playerData?.length === MAX_ITEMS;
+
+  const handleLoadMore = () => {
+    navigate(`/${kind}/` + (parseInt(params?.page ?? 1) + 1));
+  };
 
   const handleClickItem = (e) => {
     const { id, base } = e.target.dataset ?? {};
@@ -36,6 +51,13 @@ export default function () {
       toggleBagState(id);
     }
   };
+
+  /* Load more functionality */
+  useEffect(() => {
+    if (playerData) {
+      setPlayers((prev) => uniqBy([...prev, ...playerData], "id"));
+    }
+  }, [playerData]);
 
   /* If no tabs are open, clear player selection */
   useEffect(() => {
@@ -62,12 +84,7 @@ export default function () {
             const isActive = currentPlayer?.id === player?.id;
             return (
               <Box
-                sx={{
-                  bg: isActive ? "shadow.20" : "transparent",
-                  cursor: "pointer",
-                  borderRadius: 7,
-                  pb: 2,
-                }}
+                sx={{ ...PLAYER_BOX_STYLES, bg: isActive ? "shadow.20" : "transparent" }}
                 key={idx}
                 onClick={() => {
                   setCurrentPlayer(player);
@@ -82,6 +99,7 @@ export default function () {
               </Box>
             );
           })}
+          <LoadMore onClick={handleLoadMore} show={showLoadMore} />
         </Flex>
       </Flex>
       <Box
@@ -191,6 +209,32 @@ const useToggleBagState = () => {
 
   return { bagState, toggleBagState };
 };
+
+const LoadMore = ({ onClick, show }) => (
+  <Box
+    sx={{
+      ...PLAYER_BOX_STYLES,
+      opacity: show ? 0.5 : 0,
+      "& canvas": { opacity: 0.25 },
+      "&:hover": { opacity: show ? 1 : 0 },
+      transition: ".2s ease all",
+    }}
+    onClick={show && onClick}
+  >
+    <PlayerRender
+      player={{
+        id: "xxx",
+        profile: {
+          tint: "0x000000",
+          userName: "Load more...",
+          gender: "male",
+          race: "human",
+        },
+        updatedAt: "2023-09-03T12:48:46.821Z",
+      }}
+    />
+  </Box>
+);
 
 const PlayerTooltip = ({ player }) => {
   const completedQuests = player?.quests?.filter((q) => q?.isCompleted)?.length;
