@@ -9,7 +9,18 @@ import {
 import { memo, useEffect, useRef } from "react";
 import { Box } from "@aether/ui";
 import weaponAtlas from "../public/assets/atlas/weapon.json";
+
+export const FULL_CANVAS_SIZE = 160;
 const MIN_CANVAS_SIZE = 100;
+
+export const PLAYER_RENDER_CANVAS_STYLE: any = {
+  zIndex: 0,
+  transform: `translate(-50%, -50%) scale(2)`,
+  imageRendering: "pixelated",
+  position: "absolute",
+  left: "50%",
+  top: "50%",
+};
 
 type PlayerAsset = {
   tint?: string;
@@ -39,6 +50,7 @@ const drawImageOnNewCanvas = (image, tint) => {
 };
 
 const mergeImages = async ({ shouldBuffer, buffCanvasRef, canvasRef, assets }) => {
+  if (!buffCanvasRef.current || !canvasRef?.current) return;
   const atlas = weaponAtlas.offsets.human["down-stand"];
   const buffCanvas = shouldBuffer ? buffCanvasRef.current : canvasRef?.current;
   const btx = buffCanvas.getContext("2d");
@@ -47,7 +59,6 @@ const mergeImages = async ({ shouldBuffer, buffCanvasRef, canvasRef, assets }) =
   btx.clearRect(0, 0, MIN_CANVAS_SIZE, MIN_CANVAS_SIZE);
   for (const asset of assets) {
     const img = await loadCacheImage(asset.src);
-
     const isLeftWeapon = asset.slotKey === "handLeft";
     const isRightWeapon = asset.slotKey === "handRight";
     const isWeapon = isLeftWeapon || isRightWeapon;
@@ -99,30 +110,36 @@ const mergeImages = async ({ shouldBuffer, buffCanvasRef, canvasRef, assets }) =
 };
 
 const PlayerRender = memo(
-  ({ player, sx, shouldBuffer = true, filteredSlots, ...props }: any) => {
+  ({
+    player,
+    sx,
+    shouldBuffer = true,
+    filteredSlots,
+    onLoadComplete = () => {},
+    ...props
+  }: any) => {
     const assets = getPlayerEquipmentAssets({ player, filteredSlots });
     const buffCanvasRef = useRef<HTMLCanvasElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
     useEffect(() => {
-      if (!buffCanvasRef.current || !canvasRef?.current) return;
-      mergeImages({ shouldBuffer, buffCanvasRef, canvasRef, assets });
+      const mergeImagesAsync = async () => {
+        await mergeImages({ shouldBuffer, buffCanvasRef, canvasRef, assets });
+        onLoadComplete(true);
+      };
+      mergeImagesAsync(); // Call the async function here
     }, [JSON.stringify(player?.equipment), JSON.stringify(player?.profile)]);
 
     return (
-      <Box sx={{ position: "relative", height: 160, width: 160, ...sx }} {...props}>
+      <Box
+        sx={{ position: "relative", height: FULL_CANVAS_SIZE, width: FULL_CANVAS_SIZE, ...sx }}
+        {...props}
+      >
         <canvas
           ref={canvasRef}
           width={MIN_CANVAS_SIZE}
           height={MIN_CANVAS_SIZE}
-          style={{
-            zIndex: 0,
-            transform: `translate(-50%, -50%) scale(2)`,
-            imageRendering: "pixelated",
-            position: "absolute",
-            left: "50%",
-            top: "50%",
-          }}
+          style={PLAYER_RENDER_CANVAS_STYLE}
         />
         <canvas
           ref={buffCanvasRef}
