@@ -14,11 +14,9 @@ import {
   MenuStats,
 } from "@aether/client";
 import { useLocation } from "wouter";
-import { useInfiniteQuery, useQuery } from "react-query";
+import { useInfiniteQuery } from "react-query";
 import { fetchPlayers } from "./api";
-import { uniqBy } from "lodash";
 
-const MAX_ITEMS = 20;
 const PLAYER_BOX_STYLES = {
   cursor: "pointer",
   borderRadius: 7,
@@ -27,19 +25,21 @@ const PLAYER_BOX_STYLES = {
 
 export default function () {
   const [location] = useLocation();
-  const [currentPage, setCurrentPage] = useState(1);
   const [currentPlayer, setCurrentPlayer] = useState(null);
   const { bagState, toggleBagState } = useToggleBagState();
   const { tabs, setTabKey } = useSetTabs();
   const [_, kind] = location?.split("/") ?? [];
 
-  const { data, fetchNextPage } = useInfiniteQuery({
-    queryKey: ["players", { kind, sortBy: "updatedAt", limit: MAX_ITEMS }],
+  const { data, fetchNextPage, hasNextPage } = useInfiniteQuery({
+    queryKey: ["players", { kind, sortBy: "updatedAt" }],
     queryFn: fetchPlayers,
+    getNextPageParam: (lastPage) => {
+      return lastPage?.pageInfo?.nextPage;
+    },
   });
 
   const players = data?.pages
-    ? [].concat(...data?.pages)
+    ? [].concat(...data?.pages?.map((p) => p?.data))
     : [...new Array(5)]?.map((a, idx) => {
         return {
           id: idx,
@@ -52,11 +52,7 @@ export default function () {
       });
 
   const handleLoadMore = () => {
-    setCurrentPage((p) => {
-      const pageParam = p + 1;
-      fetchNextPage({ pageParam });
-      return pageParam;
-    });
+    hasNextPage && fetchNextPage();
   };
 
   const handleClickItem = (e) => {
@@ -110,7 +106,7 @@ export default function () {
               </Box>
             );
           })}
-          <LoadMore onClick={handleLoadMore} players={players} />
+          <LoadMore onClick={handleLoadMore} hasNextPage={hasNextPage} />
         </Flex>
       </Flex>
       <Box
@@ -221,17 +217,16 @@ const useToggleBagState = () => {
   return { bagState, toggleBagState };
 };
 
-const LoadMore = ({ onClick, players }) => {
-  const show = players?.length === MAX_ITEMS;
+const LoadMore = ({ onClick, hasNextPage }) => {
   return (
     <Box
       sx={{
         ...PLAYER_BOX_STYLES,
-        opacity: show ? 0.5 : 0,
-        "&:hover": { opacity: show ? 1 : 0 },
+        opacity: hasNextPage ? 0.5 : 0,
+        "&:hover": { opacity: hasNextPage ? 1 : 0 },
         transition: ".2s ease all",
       }}
-      onClick={show ? onClick : () => {}}
+      onClick={hasNextPage ? onClick : () => {}}
     >
       <BlankPlayer userName="Load more..." />
     </Box>
