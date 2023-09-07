@@ -40,7 +40,7 @@ export default function () {
 
   const players = data?.pages
     ? [].concat(...data?.pages)
-    : [...new Array(MAX_ITEMS)]?.map((a, idx) => {
+    : [...new Array(5)]?.map((a, idx) => {
         return {
           id: idx,
           profile: {
