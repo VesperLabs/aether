@@ -222,6 +222,7 @@ const LoadMore = ({ onClick, players, isLoading }) => {
         ...PLAYER_BOX_STYLES,
         opacity: show ? 0.5 : 0,
         "&:hover": { opacity: show ? 1 : 0 },
+        transition: ".2s ease all",
       }}
       onClick={show ? onClick : () => {}}
     >
@@ -231,7 +232,7 @@ const LoadMore = ({ onClick, players, isLoading }) => {
 };
 
 const BlankPlayer = ({ userName, sx, ...props }: any) => (
-  <Box sx={{ "& canvas": { opacity: 0.25 }, transition: ".2s ease all", ...sx }} {...props}>
+  <Box sx={{ "& canvas": { opacity: 0.15 }, ...sx }} {...props}>
     <PlayerRender
       player={{
         id: "xxx",
@@ -241,6 +242,7 @@ const BlankPlayer = ({ userName, sx, ...props }: any) => (
           gender: "male",
           race: "human",
           hair: {
+            texture: "hair-3",
             tint: "0x000000",
           },
         },

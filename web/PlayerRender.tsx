@@ -26,7 +26,7 @@ export default function ({ player }: any) {
           height: FULL_CANVAS_SIZE,
           width: FULL_CANVAS_SIZE,
           position: "relative",
-          opacity: loading ? 0.25 : 0,
+          opacity: loading ? 0.1 : 0,
           zIndex: 0,
           mb: -FULL_CANVAS_SIZE,
           transition: ".2s ease all",
