@@ -7,7 +7,9 @@ export async function fetchPlayers({ queryKey, pageParam = 1 }) {
     throw new Error(`${_key} response was not ok`);
   }
 
-  return response.json();
+  const res = await response.json();
+
+  return res;
 }
 
 export async function fetchMetrics({ queryKey }) {

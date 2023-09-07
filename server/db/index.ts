@@ -11,20 +11,17 @@ const getDatabaseApi = (db) => ({
       return user;
     });
   },
-  getAllUsers: async (args?: any) => {
-    return execute("getAllUsers", async () => {
-      const { sortBy = "baseStats.maxExp", page = 1, limit = 10 } = args ?? {};
-      const skip = (page - 1) * limit;
-      const users = await db
-        .collection("users")
-        .find()
-        .sort({ [sortBy]: -1 })
-        .skip(skip)
-        .limit(limit)
-        .toArray();
+  getAllUsers: async ({ page = 1, pageSize = 10, sortBy = "updatedAt" }) => {
+    const skip = (page - 1) * pageSize;
+    const users = await db
+      .collection("users")
+      .find()
+      .sort({ [sortBy]: -1 })
+      .skip(skip)
+      .limit(pageSize)
+      .toArray();
 
-      return users;
-    });
+    return users;
   },
   countAllUsers: async () => {
     return execute("getAllUsers", async () => {

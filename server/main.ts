@@ -4,7 +4,6 @@ import GameServer from "./GameServer";
 import { initDatabase } from "./db";
 import { initFakeDatabase } from "./db/fake";
 import { calculateStats, getFullCharacterState } from "./utils";
-import { paginate } from "./middleware";
 
 config({ path: path.join(__dirname, "/../.env") });
 const cors = require("cors");
@@ -36,24 +35,50 @@ async function initialize() {
   //   res.json(playerStates);
   // });
 
-  app.get("/keepers/all", (req, res) => {
+  app.get("/keepers/all", async (req, res) => {
     const scene = aetherServer?.game?.scene?.scenes?.[0] as ServerScene;
     const { npcs } = scene ?? {};
+
+    // Pagination parameters
+    const { page = 1, pageSize = 10 } = req.query;
+
+    // Filter and map keeper states as before
     const keeperStates = Object.values(npcs)
       ?.filter((n) => n?.kind === "keeper" && n?.profile?.race === "human")
       .map(getFullCharacterState);
-    res.json(keeperStates);
+
+    // Calculate the start and end indices for the current page
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+
+    // Get the current page of data
+    const currentPageData = keeperStates.slice(startIndex, endIndex);
+
+    // Calculate hasNextPage based on whether there is more data
+    const hasNextPage = endIndex < keeperStates.length;
+
+    // Create the pageInfo object
+    const pageInfo = {
+      nextPage: hasNextPage ? parseInt(page) + 1 : null,
+      hasNextPage,
+      pageSize: Number(pageSize),
+      currentPage: Number(page),
+      totalCount: keeperStates.length,
+    };
+
+    // Return the current page data along with pageInfo
+    res.json({ data: currentPageData, pageInfo });
   });
 
-  app.get("/players/prune", async (req, res) => {
-    await db.pruneNoobs();
-    res.json({ string: "ok" });
-  });
+  // Define an API route that supports pagination
+  app.get("/players/all", async (req, res) => {
+    const { page = 1, pageSize = 10, sortBy = "updatedAt" } = req.query;
 
-  app.get("/players/all", paginate, async (req, res) => {
-    const sortBy = req?.query?.sortBy || "updatedAt";
-    const { page, limit } = req;
-    const players = await db.getAllUsers({ sortBy, page, limit });
+    const players = await db.getAllUsers({
+      page: Number(page),
+      pageSize: Number(pageSize),
+      sortBy,
+    });
 
     const ret = players.map((player) => {
       calculateStats(player, false);
@@ -72,7 +97,24 @@ async function initialize() {
       };
     });
 
-    res.json(ret);
+    // Assuming you have the total count of users in the database
+    const totalCount = await db.countAllUsers();
+
+    // Calculate pagination information
+    const hasNextPage = page * pageSize < totalCount;
+    const nextPage = hasNextPage ? parseInt(page) + 1 : null;
+
+    // Create the pageInfo object
+    const pageInfo = {
+      nextPage,
+      hasNextPage,
+      pageSize: Number(pageSize),
+      currentPage: Number(page),
+      totalCount,
+    };
+
+    // Return the data along with pageInfo
+    res.json({ data: ret, pageInfo });
   });
 
   app.get("/metrics", async (req, res) => {
@@ -96,6 +138,11 @@ async function initialize() {
       upTime: aetherServer?.getUptime(),
     };
     res.json(metrics);
+  });
+
+  app.get("/players/prune", async (req, res) => {
+    await db.pruneNoobs();
+    res.json({ string: "ok" });
   });
 
   httpServer.listen(process.env.PORT, () => {
