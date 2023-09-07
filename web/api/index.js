@@ -1,11 +1,12 @@
-export async function fetchPlayers({ queryKey }) {
-  const [_key, { kind, sortBy, page, limit }] = queryKey;
+export async function fetchPlayers({ queryKey, pageParam = 1 }) {
+  const [_key, { kind, sortBy, limit }] = queryKey;
   const response = await fetch(
-    `${process.env.SERVER_URL}/${kind}/all?sortBy=${sortBy}&page=${page}&limit=${limit}`
+    `${process.env.SERVER_URL}/${kind}/all?sortBy=${sortBy}&page=${pageParam}&limit=${limit}`
   );
   if (!response.ok) {
     throw new Error(`${_key} response was not ok`);
   }
+
   return response.json();
 }
 

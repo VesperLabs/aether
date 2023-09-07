@@ -14,7 +14,7 @@ import {
   MenuStats,
 } from "@aether/client";
 import { useLocation } from "wouter";
-import { useQuery } from "react-query";
+import { useInfiniteQuery, useQuery } from "react-query";
 import { fetchPlayers } from "./api";
 import { uniqBy } from "lodash";
 
@@ -27,22 +27,36 @@ const PLAYER_BOX_STYLES = {
 
 export default function () {
   const [location] = useLocation();
-  const [players, setPlayers] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
   const [currentPlayer, setCurrentPlayer] = useState(null);
   const { bagState, toggleBagState } = useToggleBagState();
   const { tabs, setTabKey } = useSetTabs();
   const [_, kind] = location?.split("/") ?? [];
-  //@ts-ignore
-  const [currentPage, setCurrentPage] = useState(1);
 
-  const { data: playerData, isLoading } = useQuery({
-    queryKey: ["players", { kind, sortBy: "updatedAt", page: currentPage, limit: MAX_ITEMS }],
+  const { data, fetchNextPage } = useInfiniteQuery({
+    queryKey: ["players", { kind, sortBy: "updatedAt", limit: MAX_ITEMS }],
     queryFn: fetchPlayers,
-    keepPreviousData: true,
   });
 
+  const players = data?.pages
+    ? [].concat(...data?.pages)
+    : [...new Array(MAX_ITEMS)]?.map((a, idx) => {
+        return {
+          id: idx,
+          profile: {
+            userName: "Loading...",
+            gender: "male",
+            race: "human",
+          },
+        };
+      });
+
   const handleLoadMore = () => {
-    setCurrentPage((p) => p + 1);
+    setCurrentPage((p) => {
+      const pageParam = p + 1;
+      fetchNextPage({ pageParam });
+      return pageParam;
+    });
   };
 
   const handleClickItem = (e) => {
@@ -51,13 +65,6 @@ export default function () {
       toggleBagState(id);
     }
   };
-
-  /* Load more functionality */
-  useEffect(() => {
-    if (playerData) {
-      setPlayers((prev) => uniqBy([...prev, ...playerData], "id"));
-    }
-  }, [playerData]);
 
   /* If no tabs are open, clear player selection */
   useEffect(() => {
@@ -98,12 +105,12 @@ export default function () {
                   setTabKey("abilities", true);
                 }}
               >
-                <PlayerRender player={player} onLoadComplete={(v) => console.log(v)} />
+                <PlayerRender player={player} />
                 <PlayerTooltip player={player} />
               </Box>
             );
           })}
-          <LoadMore onClick={handleLoadMore} playerData={playerData} />
+          <LoadMore onClick={handleLoadMore} players={players} />
         </Flex>
       </Flex>
       <Box
@@ -214,8 +221,8 @@ const useToggleBagState = () => {
   return { bagState, toggleBagState };
 };
 
-const LoadMore = ({ onClick, playerData }) => {
-  const show = playerData?.length === MAX_ITEMS;
+const LoadMore = ({ onClick, players }) => {
+  const show = players?.length === MAX_ITEMS;
   return (
     <Box
       sx={{
