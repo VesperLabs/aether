@@ -1,6 +1,8 @@
 export async function fetchPlayers({ queryKey }) {
-  const [_key, { sortBy, kind }] = queryKey;
-  const response = await fetch(`${process.env.SERVER_URL}${kind}/all?sortBy=${sortBy}`);
+  const [_key, { kind, sortBy, page, limit }] = queryKey;
+  const response = await fetch(
+    `${process.env.SERVER_URL}/${kind}/all?sortBy=${sortBy}&page=${page}&limit=${limit}`
+  );
   if (!response.ok) {
     throw new Error(`${_key} response was not ok`);
   }

@@ -12,15 +12,16 @@ const getDatabaseApi = (db) => ({
     });
   },
   getAllUsers: async (args?: any) => {
+    console.log(args);
     return execute("getAllUsers", async () => {
-      const { sortBy = "baseStats.maxExp", page = 1, pageSize = 10 } = args ?? {};
-      const skip = (page - 1) * pageSize;
+      const { sortBy = "baseStats.maxExp", page = 1, limit = 10 } = args ?? {};
+      const skip = (page - 1) * limit;
       const users = await db
         .collection("users")
         .find()
         .sort({ [sortBy]: -1 })
         .skip(skip)
-        .limit(pageSize)
+        .limit(limit)
         .toArray();
 
       return users;

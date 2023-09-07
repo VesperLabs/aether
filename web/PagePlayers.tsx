@@ -13,43 +13,22 @@ import {
   MenuQuests,
   MenuStats,
 } from "@aether/client";
-import { useLocation } from "wouter";
+import { useLocation, useParams } from "wouter";
 import { useQuery } from "react-query";
 import { fetchPlayers } from "./api";
 
 export default function () {
-  const [page] = useLocation();
+  const [location] = useLocation();
+  const params = useParams();
   const [currentPlayer, setCurrentPlayer] = useState(null);
-  const [bagState, setBagState] = useState([]);
-  const [tabs, setTabs] = useState({
-    equipment: false,
-    inventory: false,
-    stats: false,
-    abilities: false,
-  });
+  const { bagState, toggleBagState } = useToggleBagState();
+  const { tabs, setTabKey } = useSetTabs();
+  const kind = location?.split("/")?.[1];
 
-  const isPlayersPage = page === "/players";
-  const escCacheKey = JSON.stringify(tabs);
-
-  const { data: players, isLoading: loadingPlayers } = useQuery(
-    ["players", { kind: page, sortBy: "updatedAt" }],
+  const { data: players } = useQuery(
+    ["players", { kind, sortBy: "updatedAt", page: 0, limit: 15, ...params }],
     fetchPlayers
   );
-
-  /* Is the bag open or closed */
-  const toggleBagState = (id: string) => {
-    setBagState((prev) => {
-      if (prev.includes(id)) {
-        // If id is already present, remove it from the array
-        return prev.filter((itemId) => itemId !== id);
-      } else {
-        // If id is not present, add it to the array
-        return [...prev, id];
-      }
-    });
-  };
-
-  const setTabKey = (key: string, value: boolean) => setTabs((prev) => ({ ...prev, [key]: value }));
 
   const handleClickItem = (e) => {
     const { id, base } = e.target.dataset ?? {};
@@ -70,6 +49,9 @@ export default function () {
       document.removeEventListener("click", handleClickItem);
     };
   }, []);
+
+  const isPlayersPage = location === "/players";
+  const escCacheKey = JSON.stringify(tabs);
 
   return (
     <>
@@ -179,6 +161,36 @@ export default function () {
     </>
   );
 }
+
+const useSetTabs = () => {
+  const [tabs, setTabs] = useState({
+    equipment: false,
+    inventory: false,
+    stats: false,
+    abilities: false,
+  });
+  const setTabKey = (key: string, value: boolean) => setTabs((prev) => ({ ...prev, [key]: value }));
+
+  return { setTabKey, tabs };
+};
+
+const useToggleBagState = () => {
+  const [bagState, setBagState] = useState([]);
+  /* Is the bag open or closed */
+  const toggleBagState = (id: string) => {
+    setBagState((prev) => {
+      if (prev.includes(id)) {
+        // If id is already present, remove it from the array
+        return prev.filter((itemId) => itemId !== id);
+      } else {
+        // If id is not present, add it to the array
+        return [...prev, id];
+      }
+    });
+  };
+
+  return { bagState, toggleBagState };
+};
 
 const PlayerTooltip = ({ player }) => {
   const completedQuests = player?.quests?.filter((q) => q?.isCompleted)?.length;
