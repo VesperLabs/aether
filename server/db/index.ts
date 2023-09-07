@@ -12,7 +12,6 @@ const getDatabaseApi = (db) => ({
     });
   },
   getAllUsers: async (args?: any) => {
-    console.log(args);
     return execute("getAllUsers", async () => {
       const { sortBy = "baseStats.maxExp", page = 1, limit = 10 } = args ?? {};
       const skip = (page - 1) * limit;

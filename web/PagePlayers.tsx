@@ -13,12 +13,12 @@ import {
   MenuQuests,
   MenuStats,
 } from "@aether/client";
-import { useLocation, useParams } from "wouter";
+import { useLocation } from "wouter";
 import { useQuery } from "react-query";
 import { fetchPlayers } from "./api";
 import { uniqBy } from "lodash";
 
-const MAX_ITEMS = 10;
+const MAX_ITEMS = 20;
 const PLAYER_BOX_STYLES = {
   cursor: "pointer",
   borderRadius: 7,
@@ -26,14 +26,14 @@ const PLAYER_BOX_STYLES = {
 };
 
 export default function () {
-  const [location, navigate] = useLocation();
-  const params = useParams();
+  const [location] = useLocation();
   const [players, setPlayers] = useState([]);
   const [currentPlayer, setCurrentPlayer] = useState(null);
   const { bagState, toggleBagState } = useToggleBagState();
   const { tabs, setTabKey } = useSetTabs();
-  const kind = location?.split("/")?.[1];
-  const currentPage = parseInt(params?.page ?? 1);
+  const [_, kind] = location?.split("/") ?? [];
+  //@ts-ignore
+  const [currentPage, setCurrentPage] = useState(1);
 
   const { data: playerData, isLoading } = useQuery({
     queryKey: ["players", { kind, sortBy: "updatedAt", page: currentPage, limit: MAX_ITEMS }],
@@ -42,7 +42,7 @@ export default function () {
   });
 
   const handleLoadMore = () => {
-    navigate(`/${kind}/` + (currentPage + 1));
+    setCurrentPage((p) => p + 1);
   };
 
   const handleClickItem = (e) => {
@@ -103,7 +103,7 @@ export default function () {
               </Box>
             );
           })}
-          <LoadMore onClick={handleLoadMore} players={players} isLoading={isLoading} />
+          <LoadMore onClick={handleLoadMore} playerData={playerData} />
         </Flex>
       </Flex>
       <Box
@@ -214,8 +214,8 @@ const useToggleBagState = () => {
   return { bagState, toggleBagState };
 };
 
-const LoadMore = ({ onClick, players, isLoading }) => {
-  const show = isLoading || players?.length === MAX_ITEMS;
+const LoadMore = ({ onClick, playerData }) => {
+  const show = playerData?.length === MAX_ITEMS;
   return (
     <Box
       sx={{
