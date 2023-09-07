@@ -30,7 +30,7 @@ export default function () {
   const { tabs, setTabKey } = useSetTabs();
   const [_, kind] = location?.split("/") ?? [];
 
-  const { data, fetchNextPage, hasNextPage, isFetching } = useInfiniteQuery({
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
     queryKey: ["players", { kind, sortBy: "updatedAt" }],
     queryFn: fetchPlayers,
     getNextPageParam: (lastPage) => {
@@ -43,6 +43,7 @@ export default function () {
     : [...new Array(3)]?.map((a, idx) => {
         return {
           id: idx,
+          isGhost: true,
           profile: {
             userName: "Loading...",
             gender: "male",
@@ -106,7 +107,11 @@ export default function () {
               </Box>
             );
           })}
-          <LoadMore onClick={handleLoadMore} hasNextPage={hasNextPage} isFetching={isFetching} />
+          <LoadMore
+            onClick={handleLoadMore}
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+          />
         </Flex>
       </Flex>
       <Box
@@ -217,8 +222,8 @@ const useToggleBagState = () => {
   return { bagState, toggleBagState };
 };
 
-const LoadMore = ({ onClick, hasNextPage, isFetching }) => {
-  const show = !isFetching && hasNextPage;
+const LoadMore = ({ onClick, hasNextPage, isFetchingNextPage }) => {
+  const show = !isFetchingNextPage && hasNextPage;
   return (
     <Box
       sx={{

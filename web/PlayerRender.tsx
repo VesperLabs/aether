@@ -17,7 +17,7 @@ export default function ({ player }: any) {
   const [loading, setLoading] = useState(true);
   const playerLevel = player?.stats?.level;
   const icon = CLASS_ICON_MAP?.[player?.charClass?.toUpperCase()];
-
+  const showGhost = loading || player?.isGhost;
   return (
     <Flex
       sx={{ flexDirection: "column", alignItems: "center", mx: -2 }}
@@ -29,15 +29,15 @@ export default function ({ player }: any) {
           height: FULL_CANVAS_SIZE,
           width: FULL_CANVAS_SIZE,
           position: "relative",
-          opacity: loading ? 0.1 : 0,
+          opacity: showGhost ? 0.1 : 0,
           zIndex: 0,
           mb: -FULL_CANVAS_SIZE,
-          transition: loading ? ".3s ease all" : "none",
+          transition: showGhost ? ".3s ease all" : "none",
         }}
       >
         <img style={PLAYER_RENDER_CANVAS_STYLE} src={LOADING_CANVAS_IMAGE} />
       </Box>
-      <Box sx={{ opacity: loading ? 0 : 1, transition: ".3s ease all" }}>
+      <Box sx={{ opacity: showGhost ? 0 : 1, transition: ".3s ease all" }}>
         <PlayerRender
           player={player}
           shouldBuffer={false}
