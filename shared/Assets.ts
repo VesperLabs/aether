@@ -38,7 +38,8 @@ const resolveAsset = (item, user, isSlot = false) => {
       break;
   }
 
-  return assetList?.find((asset) => textureName === asset?.texture) || assetList?.[0];
+  const asset = assetList?.find((asset) => textureName === asset?.texture) || assetList?.[0];
+  return { ...asset, src: process.env.SERVER_URL + "/" + asset.src };
 };
 
 export { assetList, resolveAsset };

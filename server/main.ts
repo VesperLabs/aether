@@ -50,11 +50,10 @@ async function initialize() {
     res.json({ string: "ok" });
   });
 
-  // Your route using the pagination middleware
   app.get("/players/all", paginate, async (req, res) => {
     const sortBy = req?.query?.sortBy || "updatedAt";
-    const { page, pageSize } = req;
-    const players = await db.getAllUsers({ sortBy, page, pageSize });
+    const { page, limit } = req;
+    const players = await db.getAllUsers({ sortBy, page, limit });
 
     const ret = players.map((player) => {
       calculateStats(player, false);

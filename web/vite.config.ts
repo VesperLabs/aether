@@ -7,6 +7,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: true,
+    origin: "http://localhost:3000",
   },
   define: {
     "process.env.SERVER_URL": JSON.stringify(process.env.SERVER_URL),

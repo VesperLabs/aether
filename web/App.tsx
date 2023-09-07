@@ -34,8 +34,8 @@ const App = () => {
             <Route path="/" component={PageHome as any} />
             <Route path="/items" component={PageItems as any} />
             <Route path="/monsters" component={PageNasties as any} />
-            <Route path="/players" component={PagePlayers as any} />
-            <Route path="/keepers" component={PagePlayers as any} />
+            <Route path="/players/:page?" component={PagePlayers} />
+            <Route path="/keepers/:page?" component={PagePlayers} />
           </Box>
         </Flex>
         <Footer />

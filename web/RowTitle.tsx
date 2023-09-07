@@ -16,7 +16,8 @@ const resolveTypeIcon = (type) => {
   if (type === "spell") {
     type = "book";
   }
-  return `assets/icons/${type}.png`;
+
+  return process.env.SERVER_URL + "/" + `./assets/icons/${type}.png`;
 };
 
 export { resolveTypeIcon };
@@ -37,7 +38,7 @@ const RowTitle = ({ icon, sx, children, ...props }: any) => (
     }}
     {...props}
   >
-    {icon && <Icon icon={resolveTypeIcon(icon)} />}
+    <Icon icon={resolveTypeIcon(icon)} />
     {children}
   </Flex>
 );
