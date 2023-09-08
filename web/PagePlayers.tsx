@@ -114,69 +114,28 @@ export default function () {
           />
         </Flex>
       </Flex>
-      <Box
-        sx={{
-          position: "fixed",
-          left: 0,
-          right: 0,
-          bottom: 0,
-          zIndex: 999999999999,
-          pointerEvents: "none",
-        }}
-      >
-        <Box
-          sx={{
-            overflowY: "auto",
-            maxHeight: "100dvh",
-            "&::-webkit-scrollbar": {
-              display: "none",
-            },
-            pointerEvents: ["all", "none", "none"],
-            position: "relative",
-          }}
-        >
-          <Flex
-            sx={{
-              flexDirection: "column",
-              alignItems: "flex-end",
-              justifyContent: "flex-end",
-              "& *": {
-                pointerEvents: "all",
-              },
-            }}
-          >
-            <Box
-              sx={{
-                backgroundColor: ["#713f12", "shadow.30", "shadow.30"],
-                backdropFilter: ["none", "blur(15px)", "blur(15px)"],
-                borderRadius: "10px 10px 0 0",
-                "& > div": { backgroundColor: "transparent" },
-              }}
-            >
-              {[
-                { Component: MenuEquipment, key: "equipment" },
-                { Component: MenuInventory, key: "inventory" },
-                { Component: MenuStats, key: "stats" },
-                { Component: MenuAbilities, key: "abilities" },
-              ].map(({ Component, key }, idx) => (
-                <Component
-                  key={key}
-                  player={currentPlayer}
-                  isOpen={tabs[key]}
-                  slotsEnabled={false}
-                  setIsOpen={() => setTabKey(key, false)}
-                />
-              ))}
-              <MenuBag
-                player={currentPlayer}
-                bagState={bagState}
-                slotsEnabled={false}
-                toggleBagState={toggleBagState}
-              />
-            </Box>
-          </Flex>
-        </Box>
-      </Box>
+      <MenuHolder>
+        {[
+          { Component: MenuEquipment, key: "equipment" },
+          { Component: MenuInventory, key: "inventory" },
+          { Component: MenuStats, key: "stats" },
+          { Component: MenuAbilities, key: "abilities" },
+        ].map(({ Component, key }, idx) => (
+          <Component
+            key={key}
+            player={currentPlayer}
+            isOpen={tabs[key]}
+            slotsEnabled={false}
+            setIsOpen={() => setTabKey(key, false)}
+          />
+        ))}
+        <MenuBag
+          player={currentPlayer}
+          bagState={bagState}
+          slotsEnabled={false}
+          toggleBagState={toggleBagState}
+        />
+      </MenuHolder>
       <KeyboardKey
         key={escCacheKey}
         name={"ESCAPE"}
@@ -191,6 +150,55 @@ export default function () {
     </>
   );
 }
+
+const MenuHolder = ({ children }) => {
+  return (
+    <Box
+      sx={{
+        position: "fixed",
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 999999999999,
+        pointerEvents: "none",
+      }}
+    >
+      <Box
+        sx={{
+          overflowY: "auto",
+          maxHeight: "100dvh",
+          "&::-webkit-scrollbar": {
+            display: "none",
+          },
+          pointerEvents: ["all", "none", "none"],
+          position: "relative",
+        }}
+      >
+        <Flex
+          sx={{
+            flexDirection: "column",
+            alignItems: "flex-end",
+            justifyContent: "flex-end",
+            "& *": {
+              pointerEvents: "all",
+            },
+          }}
+        >
+          <Box
+            sx={{
+              backgroundColor: ["#713f12", "shadow.30", "shadow.30"],
+              backdropFilter: ["none", "blur(15px)", "blur(15px)"],
+              borderRadius: "10px 10px 0 0",
+              "& > div": { backgroundColor: "transparent" },
+            }}
+          >
+            {children}
+          </Box>
+        </Flex>
+      </Box>
+    </Box>
+  );
+};
 
 const useSetTabs = () => {
   const [tabs, setTabs] = useState({
