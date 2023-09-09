@@ -322,7 +322,6 @@ const Slot = memo(
         get(prevProps, "player.stats"),
         get(nextProps, "player.stats")
       );
-      console.log(playerStatsChanged);
       if (playerStatsChanged) return false;
     }
 
