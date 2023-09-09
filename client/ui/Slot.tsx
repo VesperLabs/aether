@@ -204,8 +204,7 @@ const Slot = memo(
         }
       : {};
 
-    const isActive =
-      player?.activeItemSlots?.includes(slotKey) || !["abilities", "equipment"]?.includes(location);
+    const isActive = getIsItemActive({ item, player, location, slotKey });
     const tooltipId = `${location}-${item?.id}`;
     const targetMoved = target?.dataset?.tooltipId !== tooltipId;
     const aboutToSell = dragging && target?.closest(".menu-keeper") && location !== "shop";
@@ -313,10 +312,18 @@ const Slot = memo(
       const isSetRarityChanged =
         (get(prevProps, "item.rarity") === "set" || get(nextProps, "item.rarity") === "set") &&
         activeSetsChanged;
-
       if (isSetRarityChanged || itemSlotsChanged) {
         return false;
       }
+    }
+    /* Update the items that have requirements when the users stats change */
+    if (prevProps?.item?.requirements) {
+      const playerStatsChanged = !isEqual(
+        get(prevProps, "player.stats"),
+        get(nextProps, "player.stats")
+      );
+      console.log(playerStatsChanged);
+      if (playerStatsChanged) return false;
     }
 
     return ["id", "amount", "items", "stock", "item.id"].every((key) =>
@@ -324,6 +331,18 @@ const Slot = memo(
     );
   }
 );
+
+function getIsItemActive({ item, slotKey, player, location }) {
+  if (["abilities", "equipment"]?.includes(location)) {
+    return player?.activeItemSlots?.includes(slotKey);
+  }
+  if (["shop", "inventory"]?.includes(location)) {
+    return Object.keys(item?.requirements || {}).every((key) => {
+      return player?.stats?.[key] >= item?.requirements?.[key];
+    });
+  }
+  return true;
+}
 
 function useItemEvents({ location, bagId, slotKey, item, player }) {
   return {

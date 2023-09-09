@@ -3,7 +3,7 @@ import { Menu, useAppContext, MenuHeader, BigPortrait, Slot, Quest, MENU_MAX_WID
 import { Flex, Text, KeyboardButton } from "@aether/ui";
 
 const MenuKeeper = () => {
-  const { keeper, tabKeeper, setTabKeeper } = useAppContext();
+  const { hero, keeper, tabKeeper, setTabKeeper } = useAppContext();
   const [tab, setTab] = useState("greet");
   const { dialogues, shop, quests } = keeper?.keeperData ?? {};
 
@@ -92,14 +92,15 @@ const MenuKeeper = () => {
           }}
         >
           {shop?.map(({ item }, idx) => {
+            console.log(item);
             return (
               <Slot
                 key={idx}
                 location="shop"
-                slotKey={idx}
+                slotKey={item?.slot}
                 icon="./assets/icons/chest.png"
                 item={item}
-                player={keeper}
+                player={hero}
               />
             );
           })}
