@@ -79,17 +79,12 @@ class Spell extends Phaser.GameObjects.Container {
     this.body.setCircle(this?.bodySize, -this?.bodySize, -this?.bodySize);
 
     if (this.isAttackMelee) {
-      this.stickToCaster = true;
+      //this.stickToCaster = true;
       let viewSize = 44;
-      /* Hack: Up range is too long. This hack makes the top-down view more realistic */
-      if (caster?.direction === "up") {
-        this.y = this.caster.y;
-      }
 
-      /* Hack: fixes placement for non-human units .*/
-      if (caster.profile.race !== "human") {
-        const difference = (this.caster.hitBox.body.height - this.caster.body.height) / 2;
-        this.y = this.caster.y - difference;
+      /* Hack: Up range is too long. This hack makes the top-down view more realistic */
+      if (caster?.direction === "up" || caster.profile.race !== "human") {
+        this.y = this.caster.y;
       }
 
       if (spellName.includes("attack_left")) {
