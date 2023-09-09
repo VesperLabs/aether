@@ -135,7 +135,6 @@ class Character extends Phaser.GameObjects.Container {
     this.bodySize = BODY_SIZE * this.proScale;
     this.bodyOffsetY = -14 * this.proScale;
     this.body.setCircle(BODY_SIZE, -BODY_SIZE, -BODY_SIZE);
-
     this.createHitBox(scene, hitBoxSize);
     this.updateVisibleEquipment();
   }

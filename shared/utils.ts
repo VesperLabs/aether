@@ -17,7 +17,7 @@ export const BUFF_SPELLS = [
 export const BLANK_TEXTURE = "human-blank";
 export const POTION_COOLDOWN = 10000;
 export const BODY_SIZE = 8;
-export const RACES_WITH_ATTACK_ANIMS = ["crab", "human"];
+export const RACES_WITH_ATTACK_ANIMS = ["crab", "human", "bear", "wolf", "slime"];
 export const POTION_BASES = ["hpPotion", "mpPotion"];
 export const CONSUMABLES_BASES = ["food", ...POTION_BASES];
 
