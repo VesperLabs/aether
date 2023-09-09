@@ -186,6 +186,12 @@
     "previewRect": [0, 160, 80, 80]
   },
   {
+    "texture": "bear-brown",
+    "src": "./assets/atlas/mob/bear-brown.png",
+    "atlas": "./assets/atlas/80x80.json",
+    "previewRect": [0, 160, 80, 80]
+  },
+  {
     "texture": "wraith",
     "src": "./assets/atlas/mob/wraith.png",
     "atlas": "./assets/atlas/80x80.json",
