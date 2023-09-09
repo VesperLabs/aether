@@ -447,6 +447,23 @@
       }
     ]
   },
+  "bear": {
+    "charClass": "cleric",
+    "profile": {
+      "race": "bear-brown",
+      "userName": "Bear"
+    },
+    "state": { "isAggro": true },
+    "baseStats": {
+      "level": 10,
+      "walkSpeed": 20
+    },
+    "hitBoxSize": {
+      "width": 36,
+      "height": 38
+    },
+    "drops": []
+  },
   "iceCrab": {
     "charClass": "mage",
     "profile": { "race": "crab", "userName": "Ice Crab", "tint": "0x8899CC" },

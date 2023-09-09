@@ -447,7 +447,7 @@
                 {
                  "height":0,
                  "id":57,
-                 "name":"wolf",
+                 "name":"bear",
                  "point":true,
                  "rotation":0,
                  "type":"",
@@ -515,6 +515,18 @@
                  "width":0,
                  "x":834.269662921348,
                  "y":514.044943820225
+                }, 
+                {
+                 "height":0,
+                 "id":67,
+                 "name":"wolf",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":380.788365862993,
+                 "y":847.684653654803
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -523,7 +535,7 @@
          "y":0
         }],
  "nextlayerid":21,
- "nextobjectid":67,
+ "nextobjectid":68,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.1",
