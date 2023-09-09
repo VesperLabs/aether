@@ -65,8 +65,9 @@ export default function () {
 
   /* If no tabs are open, clear player selection */
   useEffect(() => {
-    if (Object.values(tabs)?.every((v) => !v)) return setCurrentPlayer(false);
-  }, [tabs]);
+    if (Object.values(tabs)?.every((v) => !v) && bagState?.length === 0)
+      return setCurrentPlayer(false);
+  }, [tabs, bagState]);
 
   /* Detect clicks */
   useEffect(() => {
