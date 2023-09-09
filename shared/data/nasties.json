@@ -450,13 +450,14 @@
   "bear": {
     "charClass": "cleric",
     "profile": {
-      "race": "bear-brown",
-      "userName": "Bear"
+      "race": "bear",
+      "userName": "Bear",
+      "tint": "0xAA7744"
     },
     "state": { "isAggro": true },
     "baseStats": {
-      "level": 10,
-      "walkSpeed": 20
+      "level": 11,
+      "walkSpeed": 10
     },
     "hitBoxSize": {
       "width": 36,

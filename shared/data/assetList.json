@@ -186,8 +186,8 @@
     "previewRect": [0, 160, 80, 80]
   },
   {
-    "texture": "bear-brown",
-    "src": "./assets/atlas/mob/bear-brown.png",
+    "texture": "bear",
+    "src": "./assets/atlas/mob/bear.png",
     "atlas": "./assets/atlas/80x80.json",
     "previewRect": [0, 160, 80, 80]
   },
