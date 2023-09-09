@@ -231,7 +231,7 @@ const useToggleBagState = () => {
 };
 
 const LoadMore = ({ onClick, hasNextPage, isFetchingNextPage }) => {
-  const show = !isFetchingNextPage && hasNextPage;
+  const show = hasNextPage;
   return (
     <Box
       sx={{
@@ -242,7 +242,7 @@ const LoadMore = ({ onClick, hasNextPage, isFetchingNextPage }) => {
       }}
       onClick={show ? onClick : () => {}}
     >
-      <BlankPlayer userName="Load more..." />
+      <BlankPlayer userName={isFetchingNextPage ? "Loading..." : "Load more ➜"} />
     </Box>
   );
 };
