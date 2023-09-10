@@ -21,6 +21,7 @@ import PartyManager from "./PartyManager";
 import Phaser from "phaser";
 import QuestBuilder from "./QuestBuilder";
 import ItemBuilder from "../shared/ItemBuilder";
+import { isNil } from "lodash";
 import { CONSUMABLES_BASES, POTION_BASES, skinTints, hairTints } from "../shared";
 const { SnapshotInterpolation } = require("@geckos.io/snapshot-interpolation");
 const SI = new SnapshotInterpolation();
@@ -466,6 +467,11 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           } else {
             to.slot = player.findOpenBagSlot(to?.bagId, fromItem);
             toItem = cloneObject(player?.findBagItemBySlot(to?.bagId, to?.slot));
+            if (isNil(to?.slot))
+              return socket.emit("message", {
+                type: "error",
+                message: "Bag is full.",
+              });
           }
           to.itemId = toItem?.id;
         }
