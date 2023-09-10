@@ -60,7 +60,7 @@ const Portrait = memo(
       </Box>
     );
   },
-  arePropsEqualWithKeys(["player.activeItemSlots", "player.equipment"])
+  arePropsEqualWithKeys(["player.activeItemSlots", "player.equipment", "player.profile"])
 );
 
 export default Portrait;
