@@ -97,7 +97,7 @@ const Buffs = memo(({ player, sx }: any) => {
 const PlayerHud = memo(({ player, isBig }: any) => {
   const { stats, profile, equipment, activeItemSlots } = player ?? {};
   const isOffScreen = !player;
-  const memoProps = { activeItemSlots, equipment, profile };
+  const memoProps = { activeItemSlots, equipment, profile, level: player?.stats?.level };
 
   return (
     <Flex
