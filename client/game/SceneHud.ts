@@ -65,7 +65,7 @@ function addGlobalEventListeners(scene) {
   window.addEventListener(
     "HERO_AIM_START",
     (e) => {
-      if (!mainScene?.hero) return;
+      if (!mainScene?.hero || isTypableFieldActive()) return;
       const hero = mainScene?.hero;
       const abilities = hero?.abilities;
       const ability = abilities?.[e?.detail];
@@ -122,7 +122,6 @@ function addGlobalEventListeners(scene) {
       const hero = mainScene?.hero;
       const abilities = hero?.abilities;
       const ability = abilities?.[e?.detail];
-
       if (ability?.type === "spell") {
         /* Tell the UI to update the cooldown */
         updateSpellCooldown(hero, e?.detail);

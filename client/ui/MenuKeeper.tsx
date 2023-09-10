@@ -92,12 +92,11 @@ const MenuKeeper = () => {
           }}
         >
           {shop?.map(({ item }, idx) => {
-            console.log(item);
             return (
               <Slot
                 key={idx}
                 location="shop"
-                slotKey={item?.slot}
+                slotKey={idx}
                 icon="./assets/icons/chest.png"
                 item={item}
                 player={hero}

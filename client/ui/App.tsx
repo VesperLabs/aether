@@ -368,9 +368,10 @@ function App({ socket, debug, game }) {
   }
 
   function onDropItem(e) {
-    const { target, location, bagId, slotKey, item, player } = e?.detail ?? {};
+    const { target, location, bagId, slotKey, item } = e?.detail ?? {};
     const { nodeName, dataset } = target ?? {};
     if (hero?.state?.isDead) return;
+    /* Not moving an item anywhere. (Same slot) */
     if (dataset?.location === location && dataset?.slotKey === slotKey && dataset.bagId === bagId) {
       return;
     }
@@ -442,6 +443,17 @@ function App({ socket, debug, game }) {
             dataset,
           });
         }
+      }
+      /* Dragging directly on to a bag */
+      if (item?.base !== "bag" && dataset?.base === "bag") {
+        return socket.emit("moveItem", {
+          to: {
+            bagId: dataset?.id, //if we have a bag
+            slot: null,
+            location: "bag",
+          },
+          from: { bagId, slot: slotKey, location },
+        });
       }
       return socket.emit("moveItem", {
         to: {
