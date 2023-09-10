@@ -76,8 +76,8 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         for (const [sId, player] of Object.entries(this?.players)) {
           if (player?.email === user?.email) {
             const player = scene.players?.[sId];
-            this.partyManager.removeSocketFromParty(socket);
             console.log(`🔌 ${player?.profile?.userName} disconnected`);
+            this.partyManager.removeSocketFromParty(socket);
             removePlayer(scene, sId);
 
             io?.sockets?.sockets?.get?.(sId)?.disconnect?.(true);
@@ -184,7 +184,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         /* Check where to put loot */
         if (item.type === "stackable") {
           let foundItem =
-            player?.findBagItemById(item?.id) ||
+            player?.findBagItemById(item?.id)?.["item"] ||
             player.findAbilityById(item.id)?.["item"] ||
             player.findInventoryItemById(item.id);
           if (foundItem) {
@@ -322,9 +322,9 @@ class ServerScene extends Phaser.Scene implements ServerScene {
 
       socket.on("disconnect", () => {
         const player = scene.players?.[socketId];
-        this.partyManager.removeSocketFromParty(socket);
         scene.db.updateUser(scene.players?.[socketId]);
-        console.log(`🔌 ${player?.profile?.userName} disconnected`);
+        console.log(`🔌 ${player?.profile?.userName ?? "Anonymous"} disconnected`);
+        this.partyManager.removeSocketFromParty(socket);
         removePlayer(scene, socketId);
         io.emit("remove", socketId);
       });
@@ -374,7 +374,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         }
 
         if (location === "bag") {
-          found = cloneObject(player?.findBagItemById(item?.id));
+          found = cloneObject(player?.findBagItemById(item?.id)?.["item"]);
           if (amount >= found?.amount) {
             dropAmount = found?.amount;
             player?.deleteBagItemAtId(item?.id);
@@ -459,7 +459,14 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           toItem = cloneObject(player?.findAbilityById(to?.itemId))?.item;
         }
         if (to?.location === "bag") {
-          toItem = cloneObject(player?.findBagItemBySlot(to?.bagId, to?.slot));
+          /* Dragging directly into a bag */
+          if (to?.slot) {
+            toItem = cloneObject(player?.findBagItemBySlot(to?.bagId, to?.slot));
+            /* Dragging on a bag */
+          } else {
+            to.slot = player.findOpenBagSlot(to?.bagId, fromItem);
+            toItem = cloneObject(player?.findBagItemBySlot(to?.bagId, to?.slot));
+          }
           to.itemId = toItem?.id;
         }
 
@@ -644,7 +651,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           }
           /* Check if the stackable is already somewhere */
           forceSlot =
-            player?.findBagItemById(fromItem?.id) ||
+            player?.findBagItemById(fromItem?.id)?.["item"] ||
             player.findAbilityById(fromItem.id)?.["item"] ||
             player.findInventoryItemById(fromItem.id);
           if (fromItem.type === "stackable" && forceSlot) {
@@ -720,7 +727,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         }
         /* Using an item from the inventory */
         if (location === "bag") {
-          playerItem = player?.findBagItemById(item?.id);
+          playerItem = player?.findBagItemById(item?.id)?.["item"];
           if (!CONSUMABLES_BASES?.includes(playerItem?.base)) return;
           if (!playerItem?.amount) return;
           if (playerItem?.amount <= 1) {

@@ -159,24 +159,26 @@ class Player extends ServerCharacter implements ServerPlayer {
   }
   /* Bag */
   findBagItemById(id: string) {
-    let returnItem = null;
+    let item = null;
+    let slotName = null;
     const bags = this?.inventory?.filter((item: Item) => item?.base === "bag");
     for (const bag of bags) {
       for (var i = 0; i < bag?.items?.length; i++) {
         if (bag?.items?.[i]?.id === id) {
-          returnItem = bag?.items?.[i];
+          item = bag?.items?.[i];
+          slotName = i;
           break;
         }
       }
     }
-    return returnItem;
+    return { slotName, item };
   }
   findBagItemBySlot(bagId: string, slot: string) {
     const bag = this?.inventory?.find((item: Item) => item?.id === bagId);
     return bag?.items?.[slot];
   }
   subtractBagItemAtId(id: string, amount: integer) {
-    const found = cloneObject(this.findBagItemById(id));
+    const found = cloneObject(this.findBagItemById(id)?.["item"]);
     if (found?.amount > amount && amount > 0) {
       const newAmount = found?.amount - amount;
       this.updateBagItemAtId(id, { ...found, amount: newAmount });
@@ -212,6 +214,24 @@ class Player extends ServerCharacter implements ServerPlayer {
       bag.items = [];
     }
     bag.items[slot] = item;
+  }
+  findOpenBagSlot(bagId: string, item: Item) {
+    const bag = this?.inventory?.find((item: Item) => item?.id === bagId);
+    const bagItems = bag?.items ?? [null];
+    let openSlot;
+    /* Find a stackable slot */
+    for (var i = 0; i < bagItems?.length; i++) {
+      if (bagItems?.[i]?.id === item?.id) {
+        console.log("ehh");
+        openSlot = i;
+        break;
+      }
+      if (!bagItems?.[i]?.id) {
+        openSlot = i;
+        break;
+      }
+    }
+    return openSlot;
   }
   /* Inventory */
   findInventoryItemById(id: string) {
