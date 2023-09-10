@@ -122,7 +122,7 @@
       },
       "quests": ["orchid-gathering", "weed-wacker", "big-momma", "talk-derek"],
       "shop": [
-        { "item": ["weapon", "common", "claw"], "stock": 1 },
+        { "item": ["weapon", "common", "spikes"], "stock": 1 },
         { "item": ["weapon", "common", "staff"], "stock": 1 },
         { "item": ["weapon", "common", "cleaver"], "stock": 1 },
         { "item": ["stackable", "common", "mediumHpPotion"], "stock": 1 }

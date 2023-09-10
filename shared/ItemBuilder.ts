@@ -134,8 +134,9 @@ const buildItem = (...args: BuildItem): any => {
   let item: Item;
   let newStats = {};
   let newEffects = {};
-  let percentStats = {}; //holds all of the % values to be calculated together after stats..
+  let percentStats = {};
 
+  // Lookup the item in the itemList
   try {
     item = itemList[type]["common"][itemKey];
     if (!item) {
@@ -157,6 +158,7 @@ const buildItem = (...args: BuildItem): any => {
 
   item = { requirements: {}, ...item };
 
+  // build the attributes of the item
   if (item?.effects) {
     for (let key in item.effects) {
       if (Array.isArray(item.effects[key])) {
