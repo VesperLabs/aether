@@ -263,7 +263,7 @@
       "claymore": {
         "ilvl": 3,
         "base": "sword",
-        "name": "Gladius",
+        "name": "Claymore",
         "texture": "weapon-claymore",
         "slot": "hands",
         "stats": {
