@@ -573,6 +573,28 @@
                  "width":128,
                  "x":576,
                  "y":1104
+                }, 
+                {
+                 "height":16,
+                 "id":32,
+                 "name":"tent-graveyard",
+                 "properties":[
+                        {
+                         "name":"destDoor",
+                         "type":"string",
+                         "value":"tent-graveyard"
+                        }, 
+                        {
+                         "name":"destMap",
+                         "type":"string",
+                         "value":"townInside-tents"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":160,
+                 "y":128
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -581,7 +603,7 @@
          "y":0
         }],
  "nextlayerid":24,
- "nextobjectid":32,
+ "nextobjectid":33,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.1",
