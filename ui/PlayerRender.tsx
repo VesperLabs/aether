@@ -129,7 +129,7 @@ const PlayerRender = memo(
       };
       mergeImagesAsync(); // Call the async function here
     }, [JSON.stringify(player?.equipment), JSON.stringify(player?.profile)]);
-
+    console.log("poop");
     return (
       <Box
         sx={{ position: "relative", height: FULL_CANVAS_SIZE, width: FULL_CANVAS_SIZE, ...sx }}

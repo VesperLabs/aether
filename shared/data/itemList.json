@@ -545,12 +545,13 @@
         "tint": "0xCCBBAA",
         "stats": {
           "attackDelay": [-30, -40],
+          "critChance": 15,
           "walkSpeed": [20, 30],
           "minDamage": 1,
           "maxDamage": 2
         },
         "percentStats": {
-          "dexterity": 5
+          "dexterity": 25
         }
       },
       "theWyrmWhisker": {
