@@ -221,11 +221,12 @@ class Player extends ServerCharacter implements ServerPlayer {
     let openSlot;
     /* Find a stackable slot */
     for (var i = 0; i < bagItems?.length; i++) {
+      // Item found (Stackable)
       if (bagItems?.[i]?.id === item?.id) {
-        console.log("ehh");
         openSlot = i;
         break;
       }
+      // New item
       if (!bagItems?.[i]?.id) {
         openSlot = i;
         break;

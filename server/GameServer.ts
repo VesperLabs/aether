@@ -640,15 +640,19 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           const buyCost = (Math.abs(parseInt(fromItem?.cost)) || 1) * buyQty;
 
           /* Always need a free slot */
-          if (toItem && fromItem?.slot !== "stackable" && toItem?.slot !== "stackable") return;
-          /* Check if can afford */
+          /* TODO: Fix it so we can buy a stackable no matter what if it exists */
+          const stackableToStackable = fromItem?.id === toItem?.id;
+          const itemToBlank = !toItem?.id;
+          if (!stackableToStackable && !itemToBlank) return;
 
+          /* Check if can afford */
           if (player.gold < buyCost) {
             return socket.emit("message", {
               type: "error",
               message: "You cannot afford this item",
             });
           }
+
           /* Check if the stackable is already somewhere */
           forceSlot =
             player?.findBagItemById(fromItem?.id)?.["item"] ||
