@@ -337,7 +337,7 @@ function getIsItemActive({ item, slotKey, player, location }) {
   if (["abilities", "equipment"]?.includes(location)) {
     return player?.activeItemSlots?.includes(slotKey);
   }
-  if (["shop", "inventory"]?.includes(location)) {
+  if (["shop", "inventory", "bag"]?.includes(location)) {
     return Object.keys(item?.requirements || {}).every((key) => {
       return player?.stats?.[key] >= item?.requirements?.[key];
     });
