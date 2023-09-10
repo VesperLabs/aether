@@ -121,11 +121,11 @@
           "strength": 5
         }
       },
-      "axe": {
+      "hatchet": {
         "ilvl": 1,
         "base": "axe",
-        "name": "Axe",
-        "texture": "weapon-axe",
+        "name": "Hatchet",
+        "texture": "weapon-hatchet",
         "slot": "hands",
         "stats": {
           "attackDelay": 320,
@@ -172,18 +172,18 @@
           "strength": 5
         }
       },
-      "claw": {
+      "spikes": {
         "ilvl": 2,
         "base": "fist",
-        "name": "Claw",
-        "texture": "weapon-claw",
+        "name": "Spikes",
+        "texture": "weapon-spikes",
         "slot": "hands"
       },
-      "spade": {
+      "cinquedea": {
         "ilvl": 2,
         "base": "dagger",
-        "name": "Spade",
-        "texture": "weapon-spade",
+        "name": "Cinquedea",
+        "texture": "weapon-cinquedea",
         "slot": "hands"
       },
       "gladius": {
@@ -225,11 +225,11 @@
         "texture": "weapon-cudgel",
         "slot": "hands"
       },
-      "cleaver": {
+      "tomahawk": {
         "ilvl": 2,
         "base": "axe",
-        "name": "Cleaver",
-        "texture": "weapon-cleaver",
+        "name": "Tomahawk",
+        "texture": "weapon-tomahawk",
         "slot": "hands"
       },
       "harvester": {
@@ -246,11 +246,42 @@
         "texture": "weapon-halberd",
         "slot": "hands"
       },
+      "claw": {
+        "ilvl": 3,
+        "base": "fist",
+        "name": "Claw",
+        "texture": "weapon-claw",
+        "slot": "hands"
+      },
+      "dirk": {
+        "ilvl": 3,
+        "base": "dagger",
+        "name": "Dirk",
+        "texture": "weapon-dirk",
+        "slot": "hands"
+      },
+      "claymore": {
+        "ilvl": 3,
+        "base": "sword",
+        "name": "Gladius",
+        "texture": "weapon-claymore",
+        "slot": "hands",
+        "stats": {
+          "range": 1.25
+        }
+      },
       "hammer": {
         "ilvl": 3,
         "base": "club",
         "name": "Hammer",
         "texture": "weapon-hammer",
+        "slot": "hands"
+      },
+      "cleaver": {
+        "ilvl": 3,
+        "base": "axe",
+        "name": "Cleaver",
+        "texture": "weapon-cleaver",
         "slot": "hands"
       }
     },
@@ -260,7 +291,7 @@
         "base": "dagger",
         "name": "Dark Whistler",
         "texture": "weapon-dagger",
-        "tint": "0xCC66FF",
+        "tint": "0xAA88AA",
         "slot": "hands",
         "stats": {
           "critChance": [10, 15],

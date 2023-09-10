@@ -405,17 +405,29 @@
     "texture": "weapon-dagger",
     "src": "./assets/atlas/hands/weapon-dagger.png",
     "atlas": "./assets/atlas/weapon.json",
+    "previewRect": [39, 38, 15, 16]
+  },
+  {
+    "texture": "weapon-cinquedea",
+    "src": "./assets/atlas/hands/weapon-cinquedea.png",
+    "atlas": "./assets/atlas/weapon.json",
+    "previewRect": [39, 39, 16, 16]
+  },
+  {
+    "texture": "weapon-dirk",
+    "src": "./assets/atlas/hands/weapon-dirk.png",
+    "atlas": "./assets/atlas/weapon.json",
     "previewRect": [37, 37, 17, 17]
   },
   {
-    "texture": "weapon-spade",
-    "src": "./assets/atlas/hands/weapon-spade.png",
+    "texture": "weapon-hatchet",
+    "src": "./assets/atlas/hands/weapon-hatchet.png",
     "atlas": "./assets/atlas/weapon.json",
     "previewRect": [35, 36, 18, 17]
   },
   {
-    "texture": "weapon-axe",
-    "src": "./assets/atlas/hands/weapon-axe.png",
+    "texture": "weapon-tomahawk",
+    "src": "./assets/atlas/hands/weapon-tomahawk.png",
     "atlas": "./assets/atlas/weapon.json",
     "previewRect": [30, 33, 22, 19]
   },
@@ -534,6 +546,12 @@
     "previewRect": [36, 45, 19, 19]
   },
   {
+    "texture": "weapon-spikes",
+    "src": "./assets/atlas/hands/weapon-spikes.png",
+    "atlas": "./assets/atlas/weapon.json",
+    "previewRect": [35, 45, 19, 18]
+  },
+  {
     "texture": "weapon-claw",
     "src": "./assets/atlas/hands/weapon-claw.png",
     "atlas": "./assets/atlas/weapon.json",
@@ -543,7 +561,13 @@
     "texture": "weapon-gladius",
     "src": "./assets/atlas/hands/weapon-gladius.png",
     "atlas": "./assets/atlas/weapon.json",
-    "previewRect": [29, 29, 27, 27]
+    "previewRect": [30, 30, 26, 26]
+  },
+  {
+    "texture": "weapon-claymore",
+    "src": "./assets/atlas/hands/weapon-claymore.png",
+    "atlas": "./assets/atlas/weapon.json",
+    "previewRect": [29, 29, 28, 28]
   },
   {
     "texture": "weapon-scimitar",
