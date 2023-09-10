@@ -52,6 +52,8 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       const assetPath = path.join(__dirname, `${process.env.PUBLIC_DIR}/${asset.json}`);
       this.load.tilemapTiledJSON(asset?.name, assetPath);
     });
+    /* Should we pause or resume? */
+    shouldPause(this);
   }
 
   create() {
@@ -90,6 +92,9 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           socketId,
           ...user,
         });
+
+        /* Should we pause or resume? */
+        shouldPause(scene);
 
         const roomName = player?.room?.name;
 
@@ -328,6 +333,8 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         this.partyManager.removeSocketFromParty(socket);
         removePlayer(scene, socketId);
         io.emit("remove", socketId);
+        /* Should we pause or resume? */
+        shouldPause(scene);
       });
 
       socket.on("dropItem", ({ location, bagId, item, ...rest } = {}) => {
@@ -1034,6 +1041,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
     });
   }
   update(time: number, delta: number) {
+    /* Memory saver */
     const scene = this;
     const io = scene.io;
     for (const room of Object.values(scene.roomManager.rooms)) {
@@ -1099,5 +1107,15 @@ export default class Game {
     const currentTime = Date.now();
     const uptimeInMilliseconds = currentTime - this.spawnTime;
     return uptimeInMilliseconds;
+  }
+}
+
+function shouldPause(scene) {
+  if (Object.keys(scene.players ?? {})?.length === 0) {
+    scene.scene.pause();
+    console.log("🚦 Game empty. Pausing.");
+  } else {
+    scene.scene.resume();
+    console.log("🚦 Player joined. Resuming.");
   }
 }
