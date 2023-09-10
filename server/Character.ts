@@ -74,14 +74,15 @@ class ServerCharacter extends Character {
         .filter((i) => activeItemSlots.includes(i.slotKey))
         .sort((a, b) => {
           // if the item doesn't have a requirement, it should be at the beginning of the list
-          return a?.requirements?.[key] || 0 - b?.requirements?.[key] || 0;
+          return (a?.requirements?.[key] ?? 0) - (b?.requirements?.[key] ?? 0);
         });
 
       for (const item of wornItems) {
         // if the item has a requirement and the character doesn't meet it, remove the item from the list
+        const percentStatMultiplier = percentStats[key] / 100 ?? 1;
         if (
           item?.requirements?.[key] >
-          baseStats[key] + Math.floor(baseStats[key] * (percentStats[key] / 100))
+          baseStats[key] + Math.floor(baseStats[key] * percentStatMultiplier)
         ) {
           activeItemSlots.splice(activeItemSlots.indexOf(item.slotKey), 1);
           continue;
