@@ -270,6 +270,20 @@
           "range": 1.25
         }
       },
+      "shamshir": {
+        "ilvl": 3,
+        "base": "scimitar",
+        "name": "Shamshir",
+        "texture": "weapon-shamshir",
+        "slot": "hands"
+      },
+      "baton": {
+        "ilvl": 3,
+        "base": "wand",
+        "name": "Baton",
+        "texture": "weapon-wand-clover",
+        "slot": "hands"
+      },
       "hammer": {
         "ilvl": 3,
         "base": "club",

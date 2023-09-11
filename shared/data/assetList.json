@@ -450,6 +450,12 @@
     "previewRect": [31, 30, 23, 24]
   },
   {
+    "texture": "weapon-wand-clover",
+    "src": "./assets/atlas/hands/weapon-wand-clover.png",
+    "atlas": "./assets/atlas/weapon.json",
+    "previewRect": [35, 35, 19, 19]
+  },
+  {
     "texture": "weapon-staff-oak",
     "src": "./assets/atlas/hands/weapon-staff-oak.png",
     "atlas": "./assets/atlas/weapon.json",
@@ -586,6 +592,12 @@
     "src": "./assets/atlas/hands/weapon-talwar.png",
     "atlas": "./assets/atlas/weapon.json",
     "previewRect": [29, 29, 27, 27]
+  },
+  {
+    "texture": "weapon-shamshir",
+    "src": "./assets/atlas/hands/weapon-shamshir.png",
+    "atlas": "./assets/atlas/weapon.json",
+    "previewRect": [33, 27, 20, 26]
   },
   {
     "texture": "weapon-scimitar-fox",
