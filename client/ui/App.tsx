@@ -9,6 +9,7 @@ import {
   ModalSign,
   ModalError,
   MenuBar,
+  ModalHome,
 } from "./";
 import { ThemeProvider, Box, useViewportSizeEffect, Modal } from "@aether/ui";
 import { getSpinDirection, calculateZoomLevel } from "../utils";
@@ -41,6 +42,8 @@ interface AppContextValue {
   setCooldowns: React.Dispatch<React.SetStateAction<any>>;
   setSign: React.Dispatch<React.SetStateAction<any>>;
   setError: React.Dispatch<React.SetStateAction<any>>;
+  setHomeModal: React.Dispatch<React.SetStateAction<FullCharacterState | null>>;
+  homeModal: FullCharacterState | null;
   error: any;
   sign: Sign | null;
   bagState: Array<string>;
@@ -115,6 +118,7 @@ function App({ socket, debug, game }) {
   const [sign, setSign] = useState(null);
   const [error, setError] = useState(null);
   const [cooldowns, setCooldowns] = useState({});
+  const [homeModal, setHomeModal] = useState(null);
 
   /* Is the bag open or closed */
   const toggleBagState = (id: string) => {
@@ -552,6 +556,8 @@ function App({ socket, debug, game }) {
           setCooldowns,
           setSign,
           setError,
+          setHomeModal,
+          homeModal,
           error,
           sign,
           cooldowns,
@@ -609,6 +615,7 @@ function App({ socket, debug, game }) {
             {hero?.state?.isDead && <ModalRespawn />}
             {dropItem && <ModalDropAmount />}
             {sign && <ModalSign />}
+            {homeModal?.profile && <ModalHome />}
             <MenuHud />
             <MenuBar />
           </Box>

@@ -2,6 +2,7 @@ import { MongoClient, Db } from "mongodb";
 import { userSchema } from "./schema";
 import ItemBuilder from "../../shared/ItemBuilder";
 import { useGetBaseCharacterDefaults, filterNullEmpty } from "../utils";
+import { omitBy, isNil } from "lodash";
 
 const getDatabaseApi = (db) => ({
   getUserByEmail: async ({ email }) => {
@@ -82,21 +83,25 @@ const getDatabaseApi = (db) => ({
       return true;
     });
   },
-  updateUserRoom: async (player) => {
+  updateUserMapDetails: async (args) => {
     return execute("getAllUsers", async () => {
       const { updatedAt } = getAuditFields();
-      if (!player?.email) {
+      if (!args?.email) {
         return console.log("❌ Error while saving player. Player not found");
       }
       await db.collection("users").findOneAndUpdate(
-        { email: player?.email },
+        { email: args?.email },
         {
-          $set: {
-            roomName: player?.room?.name ?? player?.roomName,
-            x: player?.x,
-            y: player?.y,
-            updatedAt,
-          },
+          $set: omitBy(
+            {
+              roomName: args?.room?.name ?? args?.roomName,
+              x: args?.x,
+              y: args?.y,
+              spawn: args?.spawn,
+              updatedAt,
+            },
+            isNil
+          ),
         }
       );
     });

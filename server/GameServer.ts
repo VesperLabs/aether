@@ -237,7 +237,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       socket.on("respawn", () => {
         const player = scene.players[socketId];
         const oldRoom = player.room.name;
-        const { roomName: newRoom, x: newX, y: newY } = PLAYER_DEFAULT_SPAWN;
+        const { roomName: newRoom, x: newX, y: newY } = player?.spawn ?? PLAYER_DEFAULT_SPAWN;
         player.state.isDead = false;
         player.fillHpMp();
 
@@ -254,7 +254,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         player.y = newY;
 
         /* Save the new room */
-        scene.db.updateUserRoom(player);
+        scene.db.updateUserMapDetails(player);
 
         socket.to(newRoom).emit("playerJoin", getFullCharacterState(player), {
           isRespawn: true,
@@ -304,7 +304,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         player.y = next.centerPos.y;
 
         /* Save the new room */
-        scene.db.updateUserRoom(player);
+        scene.db.updateUserMapDetails(player);
 
         socket.to(prev.destMap).emit("playerJoin", getFullCharacterState(player), {
           lastTeleport: Date.now(),
@@ -824,7 +824,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
                 message: args.message,
               });
             case "coords":
-              scene.db.updateUserRoom(player);
+              scene.db.updateUserMapDetails(player);
               return socket.emit("message", {
                 type: "info",
                 message: `x: ${Math.round(player.x)} y: ${Math.round(player.y)}`,
@@ -930,6 +930,16 @@ class ServerScene extends Phaser.Scene implements ServerScene {
 
       socket.on("partyLeave", () => {
         this.partyManager.removeSocketFromParty(socket);
+      });
+
+      socket.on("setSpawn", (spawn: SpawnPoint) => {
+        const player: ServerPlayer = scene.players[socketId];
+        player.spawn = spawn;
+        this.db.updateUserMapDetails({ email: player.email, spawn });
+        return socket.emit("message", {
+          type: "info",
+          message: "You have changed your spawn point.",
+        } as Message);
       });
 
       socket.on("completeQuest", (questId: string) => {

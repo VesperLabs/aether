@@ -10,7 +10,7 @@ const getDatabaseApi = () => ({
   pruneNoobs: async () => {},
   createUser: async () => true,
   updateUser: async () => {},
-  updateUserRoom: async () => {},
+  updateUserMapDetails: async () => {},
   getUserByEmail: async ({ email }) => {
     if (!email) return console.log("❌ Email not provided");
     return { email, ...createBaseUser("rogue") };

@@ -5,18 +5,21 @@ import { spellDetails, MAX_INVENTORY_ITEMS } from "../shared";
 /* Server level Player object */
 class Player extends ServerCharacter implements ServerPlayer {
   public email: string;
+  public spawn: SpawnPoint;
   constructor(scene: ServerScene, args: Player) {
     super(scene, args);
     this.scene = scene;
     this.email = args?.email;
     this.kind = "player";
+    this.spawn = args?.spawn;
     this.calculateStats(true);
   }
   setDead() {
     if (this.stats.exp > 0) {
       this.stats.exp = Math.floor(this.stats.exp * 0.9);
     }
-    this.scene.db.updateUserRoom({ email: this.email, ...PLAYER_DEFAULT_SPAWN });
+    const spawnPoint: SpawnPoint = this?.spawn ?? PLAYER_DEFAULT_SPAWN;
+    this.scene.db.updateUserMapDetails({ email: this.email, ...spawnPoint });
     this.expireBuffs(true);
     this.state.isDead = true;
   }

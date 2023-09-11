@@ -207,6 +207,7 @@ interface KeeperData {
   dialogues?: any;
   quests?: any;
   shop?: any;
+  home?: Coordinate;
 }
 
 interface Npc extends Character {
@@ -220,6 +221,7 @@ interface Npc extends Character {
 interface ServerPlayer extends Character {
   email?: string;
   partyId?: string;
+  spawn: SpawnPoint;
   addQuest(quest: Quest): void;
   completeQuest(quest: Quest): any;
   updateChatQuests(questId: string): Array<PlayerQuest>;
@@ -274,6 +276,12 @@ interface Spell {
   id: string;
 }
 
+interface SpawnPoint {
+  x: number;
+  y: number;
+  roomName: string;
+}
+
 interface FullCharacterState {
   id: string;
   socketId: string;
@@ -297,6 +305,7 @@ interface FullCharacterState {
   activeItemSlots: Array<string>;
   gold: integer;
   hitBoxSize: any;
+  keeperData?: KeeperData;
 }
 
 interface RoomState {

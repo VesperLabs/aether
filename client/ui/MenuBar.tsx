@@ -21,6 +21,8 @@ import {
 
 const MenuBar = () => {
   const {
+    homeModal,
+    setHomeModal,
     tabEquipment,
     setTabEquipment,
     tabInventory,
@@ -170,6 +172,7 @@ const MenuBar = () => {
             hidden={true}
             onKeyUp={() => {
               if (dropItem) return setDropItem(false);
+              if (homeModal) return setHomeModal(null);
               if (tabKeeper) return setTabKeeper(false);
               if (tabSocial) return setTabSocial(false);
               if (tabQuests) return setTabQuests(false);
