@@ -267,7 +267,7 @@
         "texture": "weapon-claymore",
         "slot": "hands",
         "stats": {
-          "range": 1.25
+          "range": 1.15
         }
       },
       "shamshir": {
@@ -282,6 +282,13 @@
         "base": "wand",
         "name": "Baton",
         "texture": "weapon-wand-clover",
+        "slot": "hands"
+      },
+      "decanter": {
+        "ilvl": 3,
+        "base": "staff",
+        "name": "Decanter",
+        "texture": "weapon-staff-decanter",
         "slot": "hands"
       },
       "hammer": {

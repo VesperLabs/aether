@@ -214,6 +214,11 @@ const buildItem = (...args: BuildItem): any => {
     item.id = crypto.randomUUID();
   }
 
+  /* Default slots on bags */
+  if (item?.space) {
+    item.items = new Array(item.space).fill(null);
+  }
+
   /* Bags and Spells cannot be magic or rare */
   if (["bag", "spell"].includes(item.type)) {
     if (["magic", "rare"].includes(item.rarity)) item.rarity = "common";

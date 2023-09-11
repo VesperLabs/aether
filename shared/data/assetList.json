@@ -468,6 +468,12 @@
     "previewRect": [30, 30, 24, 23]
   },
   {
+    "texture": "weapon-staff-decanter",
+    "src": "./assets/atlas/hands/weapon-staff-decanter.png",
+    "atlas": "./assets/atlas/weapon.json",
+    "previewRect": [31, 30, 24, 24]
+  },
+  {
     "texture": "weapon-staff-crystal",
     "src": "./assets/atlas/hands/weapon-staff-crystal.png",
     "atlas": "./assets/atlas/weapon.json",
