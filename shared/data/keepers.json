@@ -124,7 +124,7 @@
       "shop": [
         { "item": ["weapon", "common", "spikes"], "stock": 1 },
         { "item": ["weapon", "common", "staff"], "stock": 1 },
-        { "item": ["weapon", "common", "cleaver"], "stock": 1 },
+        { "item": ["weapon", "common", "tomahawk"], "stock": 1 },
         { "item": ["stackable", "common", "mediumHpPotion"], "stock": 1 }
       ]
     }
@@ -527,7 +527,7 @@
       },
       "quests": ["ice-crab-claws", "wolf-pelts", "wolf-culling"],
       "shop": [
-        { "item": ["weapon", "common", "cleaver"], "stock": 1 },
+        { "item": ["weapon", "common", "tomahawk"], "stock": 1 },
         { "item": ["stackable", "common", "mediumHpPotion"], "stock": 1 }
       ]
     }
