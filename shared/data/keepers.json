@@ -240,7 +240,7 @@
     },
     "equipment": {
       "handLeft": null,
-      "handRight": ["weapon", "magic", "axe"],
+      "handRight": ["weapon", "magic", "hatchet"],
       "helmet": ["helmet", "unique", "chefHat"],
       "accessory": null,
       "gloves": ["gloves", "common", "clothGloves"],

@@ -978,6 +978,30 @@
     "previewRect": [0, 0, 32, 32]
   },
   {
+    "texture": "spell-adrenaline",
+    "src": "./assets/atlas/spell/spell-adrenaline.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
+    "texture": "spell-stimulant",
+    "src": "./assets/atlas/spell/spell-stimulant.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
+    "texture": "spell-siphon",
+    "src": "./assets/atlas/spell/spell-siphon.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
+    "texture": "spell-vampire",
+    "src": "./assets/atlas/spell/spell-vampire.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
     "texture": "spell-quake",
     "src": "./assets/atlas/spell/spell-quake.png",
     "atlas": "./assets/atlas/32x32-stackable.json",

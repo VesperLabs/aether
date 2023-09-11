@@ -25,7 +25,7 @@ interface Item {
 
 interface Trigger {
   event: "onAttackHit" | "onHurt";
-  type: "buff" | "spell";
+  type: "buff" | "spell" | "debuff";
   name: string;
   level: number;
   chance: number;

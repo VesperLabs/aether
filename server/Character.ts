@@ -319,6 +319,16 @@ class ServerCharacter extends Character {
               from: this.id,
               buffName: name,
               elements,
+              to: this.id,
+            });
+            this.addBuff(name, level);
+          }
+          if (type === "debuff") {
+            hits.push({
+              type: "buff",
+              from: this.id,
+              buffName: name,
+              elements,
               to: victim.id,
             });
             victim.addBuff(name, level);
