@@ -123,7 +123,8 @@
       "dialogues": {
         "greet": "Greetings, traveler! I am Sergio, the former keeper of this once-great river valley. The killer plants have overrun its beauty, but I still believe in its revival.",
         "quests": "Understanding the intricacies of these plants holds the key to restoring the valley's lost splendor. Help me to gather samples and I'll reward you.",
-        "shop": "Check out my gardener's wares to equip yourself. Let's bring life back to this forgotten land!"
+        "shop": "Check out my gardener's wares to equip yourself. Let's bring life back to this forgotten land!",
+        "home": "Please, make yourself at home."
       },
       "quests": ["orchid-gathering", "weed-wacker", "big-momma", "talk-derek"],
       "shop": [
@@ -131,7 +132,11 @@
         { "item": ["weapon", "common", "staff"], "stock": 1 },
         { "item": ["weapon", "common", "tomahawk"], "stock": 1 },
         { "item": ["stackable", "common", "mediumHpPotion"], "stock": 1 }
-      ]
+      ],
+      "home": {
+        "x": 1554,
+        "y": 664
+      }
     }
   },
   "tudwick": {
