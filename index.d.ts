@@ -245,7 +245,7 @@ interface ServerPlayer extends Character {
   doCast(props?: any): void;
   setDead(): void;
   isInventoryFull(): boolean;
-  addNpcKill(npc: Npc): void;
+  addNpcKill(npcName: string): void;
 }
 
 interface MapAsset {

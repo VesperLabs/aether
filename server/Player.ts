@@ -88,8 +88,8 @@ class Player extends ServerCharacter implements ServerPlayer {
       abilitySlot,
     });
   }
-  addNpcKill(npc: Npc) {
-    this.npcKills[npc.name] = this?.npcKills?.[npc?.name] + 1 || 1;
+  addNpcKill(npcName: string) {
+    this.npcKills[npcName] = this?.npcKills?.[npcName] + 1 || 1;
   }
   addQuest(quest: Quest) {
     if (this.quests.find((q) => q?.questId === quest?.id)) return;
@@ -341,6 +341,7 @@ class Player extends ServerCharacter implements ServerPlayer {
     const party = scene.partyManager.getPartyById(hero?.partyId);
     /* Create hitList for npcs */
     let hitList: Array<Hit> = [];
+    let npcKills: Array<string> = [];
     let totalExpGain: number = 0;
     let playerIdsToUpdate = []; //ids of players that either got exp or buffs
     let playerIdsThatLeveled = []; //ids of players who got a level up.
@@ -359,8 +360,6 @@ class Player extends ServerCharacter implements ServerPlayer {
         npc.dropLoot(hero?.stats?.magicFind);
         /* Add EXP, check if we leveled */
         totalExpGain += parseInt(npc?.stats?.expValue) || 0;
-        /* Add the npc to the players kill list */
-        hero.addNpcKill(npc);
       }
       if (newHits?.length > 0) hitList = [...hitList, ...newHits];
     }
@@ -374,9 +373,13 @@ class Player extends ServerCharacter implements ServerPlayer {
       // party members in same room will gain exp
       const partyMembersInRoom = partyMembers?.filter((m) => m?.roomName === hero?.roomName);
       for (const m of partyMembersInRoom) {
-        const member: ServerPlayer = scene.players[m?.id];
+        const member: ServerPlayer = scene?.players?.[m?.id];
+        if (!member) continue;
         const didLevel = member.assignExp(totalExpGain);
-
+        /* Add the npc to the players kill list */
+        for (const npcName of npcKills) {
+          member.addNpcKill(npcName);
+        }
         playerIdsToUpdate.push(member?.id);
         if (didLevel) {
           playerIdsThatLeveled.push(member?.id);
