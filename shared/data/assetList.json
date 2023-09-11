@@ -411,7 +411,13 @@
     "texture": "weapon-cinquedea",
     "src": "./assets/atlas/hands/weapon-cinquedea.png",
     "atlas": "./assets/atlas/weapon.json",
-    "previewRect": [39, 39, 16, 16]
+    "previewRect": [38, 38, 16, 16]
+  },
+  {
+    "texture": "weapon-dagger-carnage",
+    "src": "./assets/atlas/hands/weapon-dagger-carnage.png",
+    "atlas": "./assets/atlas/weapon.json",
+    "previewRect": [34, 35, 20, 20]
   },
   {
     "texture": "weapon-dirk",
