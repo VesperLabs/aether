@@ -383,8 +383,8 @@
         "ilvl": 3,
         "base": "dagger",
         "name": "Carnage Drinker",
-        "texture": "weapon-dirk",
-        "tint": "0xCC6666",
+        "texture": "weapon-dagger-carnage",
+        "tint": "0xFF9999",
         "slot": "hands",
         "stats": {
           "minFireDamage": 1,
