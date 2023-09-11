@@ -325,6 +325,31 @@
           "maxMp": 50
         }
       },
+      "rushsteelRazor": {
+        "ilvl": 2,
+        "base": "dagger",
+        "name": "Rushsteel Razor",
+        "texture": "weapon-cinquedea",
+        "tint": "0xFFFF55",
+        "slot": "hands",
+        "stats": {
+          "minLightDamage": 1,
+          "maxLightDamage": 2,
+          "critChance": [10, 15],
+          "minDamage": 1,
+          "maxDamage": 2,
+          "attackDelay": 140
+        },
+        "triggers": [
+          {
+            "event": "onAttackHit",
+            "type": "buff",
+            "name": "adrenaline",
+            "level": 2,
+            "chance": 15
+          }
+        ]
+      },
       "wyrmBlade": {
         "exclusive": true,
         "ilvl": 3,
@@ -354,6 +379,31 @@
           "range": 1.25
         }
       },
+      "carnageDrinker": {
+        "ilvl": 3,
+        "base": "dagger",
+        "name": "Carnage Drinker",
+        "texture": "weapon-dirk",
+        "tint": "0xCC6666",
+        "slot": "hands",
+        "stats": {
+          "minFireDamage": 1,
+          "maxFireDamage": 2,
+          "critChance": [15, 20],
+          "minDamage": 2,
+          "maxDamage": 3,
+          "attackDelay": 140
+        },
+        "triggers": [
+          {
+            "event": "onAttackHit",
+            "type": "buff",
+            "name": "vampire",
+            "level": 2,
+            "chance": 15
+          }
+        ]
+      },
       "soulEdge": {
         "ilvl": 3,
         "name": "Soul Edge",
@@ -361,6 +411,7 @@
         "texture": "weapon-claymore-soul",
         "slot": "hands",
         "stats": {
+          "attackDelay": 400,
           "minDamage": 4,
           "maxDamage": 5,
           "hpSteal": [10, 15],
@@ -382,7 +433,7 @@
         "triggers": [
           {
             "event": "onAttackHit",
-            "type": "buff",
+            "type": "debuff",
             "name": "stun",
             "level": 2,
             "chance": 20
@@ -1241,7 +1292,7 @@
         "triggers": [
           {
             "event": "onAttackHit",
-            "type": "buff",
+            "type": "debuff",
             "name": "slow",
             "level": 2,
             "chance": 3

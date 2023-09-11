@@ -22,6 +22,27 @@
       "strength": 6
     }
   },
+  "adrenaline": {
+    "type": "buff",
+    "duration": 1000,
+    "stats": {
+      "regenSp": 1
+    }
+  },
+  "siphon": {
+    "type": "buff",
+    "duration": 5000,
+    "stats": {
+      "mpSteal": 5
+    }
+  },
+  "vampire": {
+    "type": "buff",
+    "duration": 5000,
+    "stats": {
+      "hpSteal": 5
+    }
+  },
   "endurance": {
     "type": "buff",
     "duration": 30000,
