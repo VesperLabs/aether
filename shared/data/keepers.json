@@ -72,7 +72,8 @@
       "dialogues": {
         "greet": "Greetings, traveler! I am <strong>Trista</strong>, the Crab Warden, guardian of these shores. Be sure to join our <a target='_blank' href='https://discord.com/invite/yadDyqpb6D'>Discord</a> channel for updates. Looking for more info about the game? Check out our <a target='_blank' href='https://aether.onrender.com/items'>Wiki</a>.",
         "quests": "Your readiness and willingness to confront these quests warms my heart, noble adventurer. Remember, the journey itself is as valuable as the destination. The sea watches over you, and with each trial you overcome, you shall forge your legend in the annals of this realm.",
-        "shop": "Ah, the tools of the sea are myriad, and I have just the item to aid you in your piscine pursuits. Feast your eyes upon this exquisite bow, crafted with precision and blessed by the currents themselves. With this weapon in your hands, sniping fish shall become a dance of elegance and efficiency."
+        "shop": "Ah, the tools of the sea are myriad, and I have just the item to aid you in your piscine pursuits. Feast your eyes upon this exquisite bow, crafted with precision and blessed by the currents themselves. With this weapon in your hands, sniping fish shall become a dance of elegance and efficiency.",
+        "home": "You can set your home here so that when you die, you respawn by the campfire.  Pretty convenient, huh?"
       },
       "quests": ["crab-catching", "crab-claws", "fish-spearing", "find-tudwick"],
       "shop": [
@@ -80,7 +81,11 @@
         { "item": ["gloves", "common", "clothGloves"], "stock": 1 },
         { "item": ["armor", "common", "clothRobe"], "stock": 1 },
         { "item": ["pants", "common", "clothPants"], "stock": 1 }
-      ]
+      ],
+      "home": {
+        "x": 1496,
+        "y": 2028
+      }
     }
   },
   "sergio": {
@@ -167,14 +172,19 @@
       "dialogues": {
         "greet": "Well, well, well, look who stumbled into my neck of the woods. I'm <strong>Tudwick</strong>, the forest ranger who defies the conventions of shirts and embraces the wildness of nature. What brings you here, brave traveler? ",
         "quests": "Ah, still interested, are ya? Well, I've got some intriguing tasks lined up for you, perfect for an adventurous soul like yourself.",
-        "shop": "Behold! I've gathered a curious collection of forest finds on my woodland wanderings. Feast your eyes upon these treasures I've stumbled upon. Who knows? You might find them rather handy on your own journey."
+        "shop": "Behold! I've gathered a curious collection of forest finds on my woodland wanderings. Feast your eyes upon these treasures I've stumbled upon. Who knows? You might find them rather handy on your own journey.",
+        "home": "These woods make a great home."
       },
       "quests": ["slime-roundup", "slime-eggs", "hornet-hunting", "find-lynne"],
       "shop": [
         { "item": ["boots", "common", "clothBoots"], "stock": 1 },
         { "item": ["shield", "common", "barkShield"], "stock": 1 },
         { "item": ["weapon", "common", "dagger"], "stock": 1 }
-      ]
+      ],
+      "home": {
+        "x": 253,
+        "y": 581
+      }
     }
   },
   "lynne": {
@@ -210,13 +220,18 @@
       "dialogues": {
         "greet": "My name is <strong>Lynne</strong>.  I am trying to film a nature documentary out here, but the critters keep attacking me.",
         "quests": "In these woods, good production assistants don't grow on trees. Sure, I've got some jobs for you.",
-        "shop": "Some useful goods here. I take gold."
+        "shop": "Some useful goods here. I take gold.",
+        "home": "Please make your self at home."
       },
       "quests": ["raccoon-hunting", "grape-finding", "hawkwing-hunting", "shrooms"],
       "shop": [
         { "item": ["weapon", "common", "scythe"], "stock": 1 },
         { "item": ["armor", "common", "clothCoat"], "stock": 1 }
-      ]
+      ],
+      "home": {
+        "x": 442,
+        "y": 567
+      }
     }
   },
   "anthony": {
@@ -523,13 +538,15 @@
       "dialogues": {
         "greet": "Well met, traveler! Welcome to the Aery Peaks, where I answer to the name Derek. As the ranger overseeing these lands, I invite you to share in the warmth of our campfire. Many a task awaits the willing.",
         "quests": "Time to make your mark, my friend. Here are things you can do for me.",
-        "shop": "Prepare to be intrigued. Feast your eyes on what I've gathered for sale."
+        "shop": "Prepare to be intrigued. Feast your eyes on what I've gathered for sale.",
+        "home": "It's not much, but sure -- You can make my campfire your home if you want."
       },
       "quests": ["ice-crab-claws", "wolf-pelts", "wolf-culling"],
       "shop": [
         { "item": ["weapon", "common", "tomahawk"], "stock": 1 },
         { "item": ["stackable", "common", "mediumHpPotion"], "stock": 1 }
-      ]
+      ],
+      "home": { "x": 560, "y": 597 }
     }
   }
 }

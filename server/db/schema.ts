@@ -24,6 +24,25 @@ const faceSchema = {
   },
 };
 
+const spawnSchema = {
+  bsonType: "object",
+  required: ["x", "y", "roomName"],
+  properties: {
+    x: {
+      bsonType: "number",
+      description: "must be a number and is required",
+    },
+    y: {
+      bsonType: "number",
+      description: "must be a number and is required",
+    },
+    roomName: {
+      bsonType: "string",
+      description: "must be a string and is required",
+    },
+  },
+};
+
 const profileSchema = {
   bsonType: "object",
   required: ["race", "userName"],
@@ -79,6 +98,7 @@ const userSchema = {
       description: "must be an object and is required",
     },
     profile: profileSchema,
+    spawn: spawnSchema,
     charClass: {
       bsonType: "string",
       description: "must be a string",

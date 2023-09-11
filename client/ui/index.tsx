@@ -12,6 +12,7 @@ export { default as MenuHud } from "./MenuHud";
 export { default as MenuStats } from "./MenuStats";
 export { default as ModalRespawn } from "./ModalRespawn";
 export { default as ModalLogin } from "./ModalLogin";
+export { default as ModalHome } from "./ModalHome";
 export { default as ModalDropAmount } from "./ModalDropAmount";
 export { default as MessageBox } from "./MessageBox";
 export { default as MenuButton } from "./MenuButton";

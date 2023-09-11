@@ -26,9 +26,15 @@ const MenuPicker = ({ children, onPlus = () => {}, onMinus = () => {} }) => {
         size={16}
         sx={{ "& .icon": { transform: "rotate(90deg) scaleY(-1)" } }}
         onClick={onMinus}
+        iconName="grab"
       />
       <Text>{children}</Text>
-      <MenuButton size={19} sx={{ "& .icon": { transform: "rotate(90deg)" } }} onClick={onPlus} />
+      <MenuButton
+        iconName="grab"
+        size={19}
+        sx={{ "& .icon": { transform: "rotate(90deg)" } }}
+        onClick={onPlus}
+      />
     </Flex>
   );
 };
