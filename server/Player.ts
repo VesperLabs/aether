@@ -360,6 +360,7 @@ class Player extends ServerCharacter implements ServerPlayer {
         npc.dropLoot(hero?.stats?.magicFind);
         /* Add EXP, check if we leveled */
         totalExpGain += parseInt(npc?.stats?.expValue) || 0;
+        npcKills.push(npc?.name);
       }
       if (newHits?.length > 0) hitList = [...hitList, ...newHits];
     }
