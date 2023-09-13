@@ -540,6 +540,12 @@
     "previewRect": [28, 33, 24, 19]
   },
   {
+    "texture": "weapon-sickle",
+    "src": "./assets/atlas/hands/weapon-sickle.png",
+    "atlas": "./assets/atlas/weapon.json",
+    "previewRect": [28, 33, 24, 19]
+  },
+  {
     "texture": "weapon-harvester",
     "src": "./assets/atlas/hands/weapon-harvester.png",
     "atlas": "./assets/atlas/weapon.json",
