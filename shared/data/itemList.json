@@ -311,6 +311,13 @@
         "name": "Harvester",
         "texture": "weapon-harvester",
         "slot": "hands"
+      },
+      "spetum": {
+        "ilvl": 3,
+        "base": "spear",
+        "name": "Spetum",
+        "texture": "weapon-spetum",
+        "slot": "hands"
       }
     },
     "unique": {
@@ -472,30 +479,26 @@
     "set": {
       "tizona": {
         "setName": "cids",
-        "ilvl": 1,
+        "ilvl": 2,
         "base": "sword",
         "name": "Tizona",
         "texture": "weapon-sword-tizona",
         "slot": "hands",
         "stats": {
           "range": 1.25,
-          "minDamage": 3,
-          "maxDamage": 3,
           "blockChance": 5,
           "critChance": 5
         }
       },
       "colada": {
         "setName": "cids",
-        "ilvl": 1,
+        "ilvl": 2,
         "base": "sword",
         "name": "Colada",
         "texture": "weapon-sword-colada",
         "slot": "hands",
         "stats": {
           "range": 1.25,
-          "minDamage": 3,
-          "maxDamage": 3,
           "blockChance": 5,
           "critChance": 5
         }
@@ -510,9 +513,8 @@
         "slot": "hands",
         "stats": {
           "dexterity": 5,
-          "maxDamage": 5,
           "minEarthDamage": 1,
-          "maxEarthDamage": 3
+          "maxEarthDamage": 2
         }
       }
     }

@@ -507,6 +507,12 @@
     "texture": "weapon-halberd",
     "src": "./assets/atlas/hands/weapon-halberd.png",
     "atlas": "./assets/atlas/weapon.json",
+    "previewRect": [10, 11, 46, 45]
+  },
+  {
+    "texture": "weapon-spetum",
+    "src": "./assets/atlas/hands/weapon-spetum.png",
+    "atlas": "./assets/atlas/weapon.json",
     "previewRect": [9, 9, 47, 47]
   },
   {
