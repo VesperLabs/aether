@@ -164,6 +164,18 @@
     },
     {
       "ilvl": 2,
+      "name": "of Hp Steal",
+      "stats": { "hpSteal": [1, 2] },
+      "types": ["ring", "amulet", "ranged", "weapon"]
+    },
+    {
+      "ilvl": 2,
+      "name": "of Mp Steal",
+      "stats": { "mpSteal": [1, 2] },
+      "types": ["ring", "amulet", "ranged", "weapon"]
+    },
+    {
+      "ilvl": 2,
       "name": "of Distance",
       "stats": { "range": [0.25, 0.25] },
       "types": ["ranged"]
