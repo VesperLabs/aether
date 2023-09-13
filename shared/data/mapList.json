@@ -46,6 +46,10 @@
     "json": "./assets/tilemaps/grassland-peaks-2.json"
   },
   {
+    "name": "grassland-peaks-3",
+    "json": "./assets/tilemaps/grassland-peaks-3.json"
+  },
+  {
     "name": "dungeon-aqueducts",
     "json": "./assets/tilemaps/dungeon-aqueducts.json"
   }
