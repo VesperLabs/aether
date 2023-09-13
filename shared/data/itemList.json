@@ -232,11 +232,11 @@
         "texture": "weapon-tomahawk",
         "slot": "hands"
       },
-      "harvester": {
+      "sickle": {
         "ilvl": 2,
         "base": "scythe",
-        "name": "Harvester",
-        "texture": "weapon-harvester",
+        "name": "Sickle",
+        "texture": "weapon-sickle",
         "slot": "hands"
       },
       "halberd": {
@@ -303,6 +303,13 @@
         "base": "axe",
         "name": "Cleaver",
         "texture": "weapon-cleaver",
+        "slot": "hands"
+      },
+      "harvester": {
+        "ilvl": 3,
+        "base": "scythe",
+        "name": "Harvester",
+        "texture": "weapon-harvester",
         "slot": "hands"
       }
     },
@@ -1524,21 +1531,32 @@
   },
   "ring": {
     "common": {
-      "silverRing": {
+      "copperRing": {
         "ilvl": 1,
-        "name": "Silver Ring",
+        "name": "Copper Ring",
         "base": "ring",
-        "texture": "ring-silver-plain",
+        "tint": "0xDDCCBB",
+        "texture": "ring-gold-plain",
         "slot": "ring",
         "stats": {
           "defense": 2
         }
       },
-      "goldRing": {
+      "bronzeRing": {
         "ilvl": 2,
-        "name": "Gold Ring",
+        "name": "Bronze Ring",
+        "tint": "0xFFEEAA",
         "base": "ring",
-        "texture": "ring-gold-plain",
+        "texture": "ring-silver-plain",
+        "slot": "ring",
+        "stats": {}
+      },
+      "ironRing": {
+        "ilvl": 3,
+        "name": "Iron Ring",
+        "base": "ring",
+        "tint": "0xEEDDDD",
+        "texture": "ring-silver-plain",
         "slot": "ring",
         "stats": {}
       }
@@ -1590,19 +1608,30 @@
     "common": {
       "silverAmulet": {
         "ilvl": 1,
-        "name": "Silver Amulet",
+        "name": "Copper Amulet",
         "base": "amulet",
-        "texture": "amulet-silver-plain",
+        "tint": "0xDDCCBB",
+        "texture": "amulet-gold-plain",
         "slot": "amulet",
         "stats": {
           "defense": 2
         }
       },
-      "goldAmulet": {
+      "bronzeAmulet": {
         "ilvl": 2,
-        "name": "Gold Amulet",
+        "name": "Bronze Amulet",
+        "tint": "0xFFEEAA",
         "base": "amulet",
-        "texture": "amulet-gold-plain",
+        "texture": "amulet-silver-plain",
+        "slot": "amulet",
+        "stats": {}
+      },
+      "ironAmulet": {
+        "ilvl": 3,
+        "name": "Iron Amulet",
+        "tint": "0xEEDDDD",
+        "base": "amulet",
+        "texture": "amulet-silver-plain",
         "slot": "amulet",
         "stats": {}
       }
