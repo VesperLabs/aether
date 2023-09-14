@@ -1468,8 +1468,8 @@
         "slot": "hands",
         "stats": {
           "blockChance": [25, 30],
-          "fireResistance": [8, 12],
-          "earthResistance": [8, 12],
+          "fireResistance": [10, 15],
+          "earthResistance": [10, 15],
           "defense": [10, 15]
         }
       }
