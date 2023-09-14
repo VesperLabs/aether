@@ -314,9 +314,9 @@
     "drops": [
       {
         "type": "stackable",
-        "rarity": "common",
+        "rarity": "unique",
         "key": "wyrmScale",
-        "chance": 5
+        "chance": 4
       },
       {
         "type": "shield",
