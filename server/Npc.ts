@@ -211,6 +211,9 @@ class Npc extends Character implements Npc {
     if (spellName) {
       this.state.lastCast[spellName] = Date.now();
     }
+
+    if (this?.hasBuff("stun")) return;
+
     const castAngle = (this.state.lastAngle = Math.atan2(
       targetPlayer.y - this.y,
       targetPlayer.x - this.x
@@ -275,6 +278,8 @@ class Npc extends Character implements Npc {
     this.state.isAttacking = true;
     this.state.lastAttack = Date.now();
     this.state.npcAttackReady = false;
+
+    if (this?.hasBuff("stun")) return;
 
     /* Switch hands if possible */
     const { spellName } = this.getAttackActionName({ count });
