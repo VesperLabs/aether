@@ -1292,7 +1292,7 @@
         "ilvl": 1,
         "base": "shortBow",
         "name": "Short Bow",
-        "texture": "ranged-shortbow",
+        "texture": "ranged-shortBow",
         "slot": "hands",
         "stats": {
           "range": 4.5,
@@ -1305,11 +1305,35 @@
           "dexterity": 3
         }
       },
+      "longBow": {
+        "ilvl": 1,
+        "base": "longBow",
+        "name": "Long Bow",
+        "texture": "ranged-longBow",
+        "slot": "hands",
+        "stats": {
+          "range": 7,
+          "attackDelay": 900,
+          "minDamage": 1,
+          "maxDamage": 1,
+          "spCost": 3
+        },
+        "requirements": {
+          "dexterity": 5
+        }
+      },
       "swiftBow": {
         "ilvl": 2,
         "base": "shortBow",
         "name": "Swift Bow",
-        "texture": "ranged-shortbow",
+        "texture": "ranged-shortBow",
+        "slot": "hands"
+      },
+      "greatBow": {
+        "ilvl": 2,
+        "base": "longBow",
+        "name": "Great Bow",
+        "texture": "ranged-longBow",
         "slot": "hands"
       }
     },
@@ -1317,7 +1341,7 @@
       "stickyWicket": {
         "ilvl": 2,
         "base": "shortBow",
-        "texture": "ranged-shortbow-metal",
+        "texture": "ranged-shortBow-metal",
         "name": "The Sticky Wicket",
         "slot": "hands",
         "tint": "0x88CCCC",
