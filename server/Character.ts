@@ -415,15 +415,18 @@ class ServerCharacter extends Character {
     // we only regen HP if we have are out of combat (have rest buff) or have another regen buff
     const isResting = this.buffs?.some((b) => ["rest"]?.includes(b?.name));
     const regenBuff = this.buffs?.find((b) => ["regeneration"]?.includes(b?.name));
+    const poisonBuff = this.buffs?.find((b) => ["poison"]?.includes(b?.name));
     const isHpBuffRegenReady = now - this.state.lastHpBuffRegen > 5000;
     const isHpRegenReady = now - this.state.lastHpRegen > 5000;
     const isMpRegenReady = now - this.state.lastMpRegen > 1000;
     const isSpRegenReady = now - this.state.lastSpRegen > 600;
+    const isBuffPoisonReady = now - this.state.lastBuffPoison > 1000;
 
     this.state.doHpRegen = false;
     this.state.doHpBuffRegen = false;
     this.state.doMpRegen = false;
     this.state.doSpRegen = false;
+    this.state.doBuffPoison = false;
 
     if (this.state.isDead) return;
 
@@ -454,6 +457,20 @@ class ServerCharacter extends Character {
         this.modifyStat("hp", this.stats.regenHp);
       }
     }
+
+    if (poisonBuff) {
+      if (isBuffPoisonReady) {
+        const amount = -(poisonBuff?.stats?.poisonDamage || 0);
+        this.state.doBuffPoison = true;
+        this.state.lastBuffPoison = now;
+        this.state.lastCombat = Date.now();
+        this.combatDispelBuffs();
+        this.modifyStat("hp", amount);
+      }
+    }
+  }
+  setDead() {
+    //placeholder
   }
   fillHpMp(): void {
     this.stats.hp = this.stats.maxHp;
@@ -486,7 +503,7 @@ class ServerCharacter extends Character {
     const buff = buffList?.[name];
     if (!buff) return false;
 
-    const { duration, stats = {} } = buff;
+    const { duration, stats = {}, scaleDuration = true } = buff;
     const statsWithLevelMultiplier = {};
 
     // multiply each stat by the level
@@ -501,7 +518,7 @@ class ServerCharacter extends Character {
 
     this.buffs.push({
       name,
-      duration: duration * level,
+      duration: scaleDuration ? duration * level : duration,
       level,
       stats: statsWithLevelMultiplier,
       spawnTime: Date.now(),
@@ -516,7 +533,8 @@ class ServerCharacter extends Character {
   checkIsResting() {
     const isOutOfCombat = this.checkOutOfCombat();
     const isResting = this.hasBuff("rest");
-    if (isOutOfCombat && !isResting) {
+    const isPoisoned = this.hasBuff("poison");
+    if (isOutOfCombat && !isResting && !isPoisoned) {
       this.addBuff("rest", 1, false);
       return true;
     }

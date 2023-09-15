@@ -332,7 +332,16 @@
           "critChance": [10, 15],
           "minDamage": 1,
           "maxDamage": 2
-        }
+        },
+        "triggers": [
+          {
+            "event": "onAttackHit",
+            "type": "debuff",
+            "name": "poison",
+            "level": 1,
+            "chance": 5
+          }
+        ]
       },
       "twigmansBranch": {
         "ilvl": 1,
@@ -1537,8 +1546,7 @@
         "ilvl": 1,
         "name": "Copper Ring",
         "base": "ring",
-        "tint": "0xDDCCBB",
-        "texture": "ring-gold-plain",
+        "texture": "ring-copper-plain",
         "slot": "ring",
         "stats": {
           "defense": 2

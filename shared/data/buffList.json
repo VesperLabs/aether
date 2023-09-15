@@ -99,11 +99,20 @@
   },
   "slow": {
     "type": "debuff",
-    "duration": 1000,
+    "duration": 3000,
+    "scaleDuration": false,
     "stats": {
       "walkSpeed": -15,
       "attackDelay": 50,
       "castDelay": 100
+    }
+  },
+  "poison": {
+    "type": "debuff",
+    "scaleDuration": false,
+    "duration": 6000,
+    "stats": {
+      "poisonDamage": 1
     }
   }
 }

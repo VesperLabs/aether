@@ -702,6 +702,12 @@
     "previewRect": [0, 0, 32, 32]
   },
   {
+    "texture": "ring-copper-plain",
+    "src": "./assets/atlas/ring/ring-copper-plain.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
     "texture": "ring-silver-sapphire",
     "src": "./assets/atlas/ring/ring-silver-sapphire.png",
     "atlas": "./assets/atlas/32x32-stackable.json",
@@ -956,6 +962,12 @@
   {
     "texture": "scroll-yellow",
     "src": "./assets/atlas/spell/scroll-yellow.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
+    "texture": "spell-poison",
+    "src": "./assets/atlas/spell/spell-poison.png",
     "atlas": "./assets/atlas/32x32-stackable.json",
     "previewRect": [0, 0, 32, 32]
   },
