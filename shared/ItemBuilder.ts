@@ -61,6 +61,7 @@ const rollDrop = (ilvl: number, magicFind = 0) => {
   let item = null;
 
   let types = [
+    "ranged",
     "weapon",
     "helmet",
     "armor",
