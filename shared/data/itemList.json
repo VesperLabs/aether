@@ -338,8 +338,8 @@
             "event": "onAttackHit",
             "type": "debuff",
             "name": "poison",
-            "level": 1,
-            "chance": 5
+            "level": 2,
+            "chance": 4
           }
         ]
       },
