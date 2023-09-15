@@ -24,7 +24,8 @@
   },
   "adrenaline": {
     "type": "buff",
-    "duration": 1000,
+    "scaleDuration": false,
+    "duration": 5000,
     "stats": {
       "regenSp": 1
     }
