@@ -115,5 +115,13 @@
     "stats": {
       "poisonDamage": 1
     }
+  },
+  "fortune": {
+    "type": "buff",
+    "scaleDuration": false,
+    "duration": 10000,
+    "stats": {
+      "magicFind": 25
+    }
   }
 }
