@@ -645,7 +645,8 @@
         }
       },
       "chefHat": {
-        "ilvl": 1,
+        "exclusive": true,
+        "ilvl": 2,
         "name": "Chef Hat",
         "base": "cap",
         "texture": "helmet-chef",
@@ -674,6 +675,33 @@
         "percentStats": {
           "dexterity": 25
         }
+      },
+      "luckyStarCoronet": {
+        "ilvl": 3,
+        "name": "Lucky Star Coronet",
+        "base": "cap",
+        "tint": "0xDDCCBB",
+        "texture": "helmet-crown-gold",
+        "slot": "helmet",
+        "stats": {
+          "magicFind": [50, 60]
+        },
+        "percentStats": {
+          "intelligence": 15,
+          "vitality": 15
+        },
+        "requirements": {
+          "intelligence": 15
+        },
+        "triggers": [
+          {
+            "event": "onAttackHit",
+            "type": "buff",
+            "name": "siphon",
+            "level": 2,
+            "chance": 15
+          }
+        ]
       },
       "theWyrmWhisker": {
         "ilvl": 3,

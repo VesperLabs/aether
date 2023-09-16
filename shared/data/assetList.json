@@ -342,6 +342,12 @@
     "previewRect": [0, 80, 80, 40]
   },
   {
+    "texture": "human-helmet-crown-gold",
+    "src": "./assets/atlas/helmet/helmet-crown-gold.png",
+    "atlas": "./assets/atlas/80x80.json",
+    "previewRect": [0, 80, 80, 40]
+  },
+  {
     "texture": "human-helmet-hood",
     "src": "./assets/atlas/helmet/helmet-hood.png",
     "atlas": "./assets/atlas/80x80.json",
