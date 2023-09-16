@@ -970,7 +970,7 @@
             "event": "onHurt",
             "type": "buff",
             "name": "fortune",
-            "level": 4,
+            "level": 2,
             "chance": 4
           }
         ]
