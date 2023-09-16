@@ -930,7 +930,7 @@
         "ilvl": 3,
         "name": "Fate Shroud",
         "base": "robe",
-        "tint": "0xFFFF88",
+        "tint": "0xFFDD55",
         "texture": "armor-robe-wizard-white",
         "slot": "armor",
         "stats": { "maxMp": 20, "magicFind": [100, 150] },
