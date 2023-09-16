@@ -26,10 +26,10 @@
     ]
   },
   "raccoon": {
-    "charClass": "rogue",
+    "charClass": "warrior",
     "profile": { "race": "raccoon", "userName": "Raccoon" },
     "baseStats": {
-      "level": 2
+      "level": 3
     },
     "hitBoxSize": {
       "width": 26,
@@ -54,7 +54,7 @@
     "charClass": "cleric",
     "profile": { "race": "slime", "userName": "Slime" },
     "baseStats": {
-      "level": 1
+      "level": 2
     },
     "hitBoxSize": {
       "width": 24,
@@ -122,11 +122,11 @@
     "drops": []
   },
   "spider": {
-    "charClass": "rogue",
+    "charClass": "warrior",
     "profile": { "race": "spider", "userName": "Spider" },
     "state": { "isAggro": true },
     "baseStats": {
-      "level": 4
+      "level": 5
     },
     "hitBoxSize": {
       "width": 28,
@@ -152,7 +152,7 @@
     "profile": { "race": "bat", "userName": "Bat" },
     "state": { "isAggro": true },
     "baseStats": {
-      "level": 3
+      "level": 4
     },
     "hitBoxSize": {
       "width": 18,
@@ -232,7 +232,7 @@
     "profile": { "race": "wraith", "userName": "Wraith" },
     "state": { "isAggro": true },
     "baseStats": {
-      "level": 6
+      "level": 7
     },
     "hitBoxSize": { "width": 22, "height": 43 },
     "drops": [
@@ -334,7 +334,7 @@
     },
     "state": { "isAggro": true },
     "baseStats": {
-      "level": 7,
+      "level": 9,
       "earthResistance": 25,
       "fireResistance": -15
     },
@@ -431,7 +431,7 @@
     },
     "state": { "isAggro": true },
     "baseStats": {
-      "level": 9,
+      "level": 10,
       "walkSpeed": 20
     },
     "hitBoxSize": {
