@@ -925,6 +925,27 @@
             "chance": 10
           }
         ]
+      },
+      "fateShroud": {
+        "ilvl": 3,
+        "name": "Fate Shroud",
+        "base": "robe",
+        "tint": "0xFFFF88",
+        "texture": "armor-robe-wizard-white",
+        "slot": "armor",
+        "stats": { "maxMp": 20, "magicFind": [100, 150] },
+        "percentStats": {
+          "strength": 10
+        },
+        "triggers": [
+          {
+            "event": "onHurt",
+            "type": "buff",
+            "name": "fortune",
+            "level": 4,
+            "chance": 4
+          }
+        ]
       }
     },
     "set": {
@@ -1338,6 +1359,27 @@
       }
     },
     "unique": {
+      "cruelBarb": {
+        "ilvl": 1,
+        "base": "longBow",
+        "texture": "ranged-longBow",
+        "name": "Cruel Barb",
+        "slot": "hands",
+        "tint": "0x99EE66",
+        "stats": {
+          "critChance": 15,
+          "critMultiplier": 1
+        },
+        "triggers": [
+          {
+            "event": "onAttackHit",
+            "type": "debuff",
+            "name": "poison",
+            "level": 2,
+            "chance": 3
+          }
+        ]
+      },
       "stickyWicket": {
         "ilvl": 2,
         "base": "shortBow",

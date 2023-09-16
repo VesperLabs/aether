@@ -277,13 +277,31 @@
   },
   {
     "texture": "human-female-armor-robe-wizard",
-    "src": "./assets/atlas/female/armor/armor-robe-wizard.png",
+    "src": "./assets/atlas/armor/armor-robe-wizard.png",
     "atlas": "./assets/atlas/80x80.json",
     "previewRect": [0, 160, 80, 80]
   },
   {
     "texture": "human-male-armor-robe-wizard",
-    "src": "./assets/atlas/male/armor/armor-robe-wizard.png",
+    "src": "./assets/atlas/armor/armor-robe-wizard.png",
+    "atlas": "./assets/atlas/80x80.json",
+    "previewRect": [0, 160, 80, 80]
+  },
+  {
+    "texture": "human-male-armor-robe-wizard-white",
+    "src": "./assets/atlas/armor/armor-robe-wizard-white.png",
+    "atlas": "./assets/atlas/80x80.json",
+    "previewRect": [0, 160, 80, 80]
+  },
+  {
+    "texture": "human-female-armor-robe-wizard-white",
+    "src": "./assets/atlas/armor/armor-robe-wizard-white.png",
+    "atlas": "./assets/atlas/80x80.json",
+    "previewRect": [0, 160, 80, 80]
+  },
+  {
+    "texture": "human-male-armor-robe-wizard",
+    "src": "./assets/atlas/armor/armor-robe-wizard.png",
     "atlas": "./assets/atlas/80x80.json",
     "previewRect": [0, 160, 80, 80]
   },
@@ -974,6 +992,12 @@
   {
     "texture": "spell-poison",
     "src": "./assets/atlas/spell/spell-poison.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
+    "texture": "spell-fortune",
+    "src": "./assets/atlas/spell/spell-fortune.png",
     "atlas": "./assets/atlas/32x32-stackable.json",
     "previewRect": [0, 0, 32, 32]
   },
