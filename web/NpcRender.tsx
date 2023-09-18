@@ -7,7 +7,7 @@ const SLOT_SIZE = 100;
 
 export default function ({ model }) {
   const [imageData, setImageData] = useState<any>();
-  /* Loads the model canvas data out of the texture */
+  /* Loads the model canvas data out of the textures */
   useLayoutEffect(() => {
     if (!model) return;
     const asset = assetList?.find((a) => a?.texture === model?.profile?.race);
