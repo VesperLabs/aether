@@ -1341,7 +1341,7 @@
         "ilvl": 1,
         "base": "shortBow",
         "name": "Short Bow",
-        "texture": "ranged-shortBow",
+        "texture": "ranged-short-bow",
         "slot": "hands",
         "stats": {
           "range": 4.5,
@@ -1375,7 +1375,7 @@
         "ilvl": 2,
         "base": "shortBow",
         "name": "Swift Bow",
-        "texture": "ranged-shortBow",
+        "texture": "ranged-short-bow",
         "slot": "hands"
       },
       "greatBow": {
@@ -1411,7 +1411,7 @@
       "stickyWicket": {
         "ilvl": 2,
         "base": "shortBow",
-        "texture": "ranged-shortBow-metal",
+        "texture": "ranged-short-bow-metal",
         "name": "The Sticky Wicket",
         "slot": "hands",
         "tint": "0x88CCCC",
