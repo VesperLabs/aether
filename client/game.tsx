@@ -64,6 +64,7 @@ const game = new Phaser.Game({
 });
 
 if (REDIRECT_URL) {
+  /* Will redirect */
   window.location.href = REDIRECT_URL;
 } else {
   root.render(
