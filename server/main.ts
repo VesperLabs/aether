@@ -12,6 +12,19 @@ const app = express();
 const http = require("http");
 const httpServer = http.createServer(app);
 
+function redirectInit() {
+  app.use(
+    cors({
+      origin: "*", // Replace with your allowed origin
+    })
+  );
+
+  app.use(express.static(path.join(__dirname, process.env.PUBLIC_DIR)));
+
+  httpServer.listen(process.env.PORT, () => {
+    console.log(`💻 Running in redirect mode to ${process.env.REDIRECT_URL}`);
+  });
+}
 async function initialize() {
   // can run in offline mode. we don't connect to any DB or save anything.
   const db = process.env.MONGO_URL
@@ -162,4 +175,4 @@ process.once("SIGUSR2", function () {
   process.exit();
 });
 
-initialize();
+process.env.REDIRECT_URL ? redirectInit() : initialize();
