@@ -12,6 +12,7 @@ import "./style.css";
 
 const debug = process.env.DEBUG;
 const SERVER_URL = process.env.SERVER_URL as string;
+const REDIRECT_URL = process.env.REDIRECT_URL as string;
 const socket = socketIOClient(SERVER_URL);
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 const devicePixelRatio = window.devicePixelRatio || 1;
@@ -62,21 +63,24 @@ const game = new Phaser.Game({
   scene: [new SceneBoot(socket), new SceneMain(socket), new SceneHud(socket)],
 });
 
-/* IOS Autoscroll fix when selecting an input */
-document.addEventListener("scroll", (e) => {
-  if (document.documentElement.scrollTop > 0 || document.documentElement.scrollTop < 0) {
-    document.documentElement.scrollTop = 0;
-  }
-});
+if (REDIRECT_URL) {
+  window.location.href = REDIRECT_URL;
+} else {
+  root.render(
+    <React.StrictMode>
+      <App socket={socket} game={game} debug={debug} />
+    </React.StrictMode>
+  );
+  /* IOS Autoscroll fix when selecting an input */
+  document.addEventListener("scroll", (e) => {
+    if (document.documentElement.scrollTop > 0 || document.documentElement.scrollTop < 0) {
+      document.documentElement.scrollTop = 0;
+    }
+  });
 
-/* Keep socket connection connected */
-setInterval(() => {
-  if (socket.connected) return;
-  socket.connect();
-}, 3000);
-
-root.render(
-  <React.StrictMode>
-    <App socket={socket} game={game} debug={debug} />
-  </React.StrictMode>
-);
+  /* Keep socket connection connected */
+  setInterval(() => {
+    if (socket.connected) return;
+    socket.connect();
+  }, 3000);
+}
