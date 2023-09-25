@@ -1,6 +1,7 @@
 import "@geckos.io/phaser-on-nodejs";
 import { mapList } from "../shared/Maps";
 import { Socket, Server } from "socket.io";
+import eiows from "eiows";
 import path from "path";
 import crypto from "crypto";
 import {
@@ -1084,6 +1085,10 @@ export default class Game {
     this.io = new Server(httpServer, {
       cors: {
         origin: "*",
+      },
+      wsEngine: eiows.Server,
+      perMessageDeflate: {
+        threshold: 32768,
       },
     });
 
