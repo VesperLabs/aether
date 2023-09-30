@@ -28,12 +28,14 @@ export default function () {
           Join Discord
         </Button>
       </Flex>
-      <Box
-        as="img"
-        //@ts-ignore
-        src="./assets/screenshots/1.png"
-        sx={{ maxWidth: "1440px", borderRadius: 20, border: `1px solid #000` }}
-      />
+      <Link href={process.env.SERVER_URL}>
+        <Box
+          as="img"
+          //@ts-ignore
+          src="./assets/screenshots/1.png"
+          sx={{ maxWidth: "1440px", borderRadius: 20, border: `1px solid #000` }}
+        />
+      </Link>
     </Flex>
   );
 }
