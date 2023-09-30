@@ -33,7 +33,13 @@ export default function () {
           as="img"
           //@ts-ignore
           src="./assets/screenshots/1.png"
-          sx={{ maxWidth: "1440px", borderRadius: 20, border: `1px solid #000` }}
+          sx={{
+            maxWidth: "1440px",
+            width: "100%",
+            borderRadius: 20,
+            border: `1px solid #000`,
+            mt: 2,
+          }}
         />
       </Link>
     </Flex>
