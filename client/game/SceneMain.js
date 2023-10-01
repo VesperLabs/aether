@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import Door from "../../shared/Door";
 import Sign from "../../shared/Sign";
 import { getMapByName } from "../../shared/Maps";
-import { distanceTo } from "../../shared/utils";
+import { distanceTo, isMobile } from "../../shared/utils";
 import { SnapshotInterpolation } from "@geckos.io/snapshot-interpolation";
 import {
   addPlayer,
@@ -19,6 +19,7 @@ import {
 } from "../utils";
 const SI = new SnapshotInterpolation(process.env.SERVER_FPS); // the server's fps is 15
 const { RectangleToRectangle } = Phaser.Geom.Intersects;
+const MINI_MAP_SIZE = 200;
 
 class SceneMain extends Phaser.Scene {
   constructor(socket) {
@@ -199,8 +200,14 @@ class SceneMain extends Phaser.Scene {
       },
       this
     );
-  }
 
+    this.createMinimap();
+  }
+  createMinimap() {
+    if (isMobile) return;
+    // Create the minimap camera
+    this.minimap = this.cameras.add(0, 0, MINI_MAP_SIZE, MINI_MAP_SIZE);
+  }
   update(time, delta) {
     const elapsedTime = time - this.lastUpdateTime;
     const playerSnapshot = SI.calcInterpolation("x y", "players");
@@ -312,6 +319,23 @@ function enableDoors(scene) {
   }
 }
 
+function setMinimap(scene, hero) {
+  if (!hero || !scene?.map || isMobile) return;
+
+  // Calculate the x-coordinate to position the minimap on the far right
+  scene.minimap.setPosition(Math.round(scene.scale.width - MINI_MAP_SIZE), 0); // Rounded to the nearest integer
+
+  // Set the bounds of the minimap to match the map's dimensions
+  scene.minimap.setBounds(0, 0, scene.map.widthInPixels, scene.map.heightInPixels);
+
+  // Set the zoom level for the minimap (adjust as needed)
+  const minimapZoomLevel = 0.25;
+  scene.minimap.setZoom(minimapZoomLevel);
+
+  // Follow the hero with the minimap camera
+  scene.minimap.startFollow(hero, true, 0.5, 0.5, 0, 0);
+}
+
 function setCamera(scene, hero) {
   if (!hero || !scene?.map) return;
   const zoomLevel = getGameZoomLevel(scene);
@@ -319,6 +343,8 @@ function setCamera(scene, hero) {
   scene.cameras.main.setZoom(zoomLevel);
   scene.cameras.main.startFollow(hero, true, 1, 1, 0, hero.bodyOffsetY);
   scene.cameras.main.setBounds(0, 0, scene.map.widthInPixels, scene.map.heightInPixels);
+
+  setMinimap(scene, hero);
 }
 
 function setPlayerCollision(scene, player, colliders = []) {

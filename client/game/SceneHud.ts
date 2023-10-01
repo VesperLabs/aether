@@ -31,6 +31,11 @@ class SceneHud extends Phaser.Scene {
     addJoystick(this);
     addGlobalEventListeners(this);
   }
+  createMinimap() {
+    if (isMobile) return;
+    // Create the minimap camera
+    this.minimap = this.cameras.add(0, 0, MINI_MAP_SIZE, MINI_MAP_SIZE);
+  }
   update(time, delta) {
     moveDirectHero(this, time);
   }
