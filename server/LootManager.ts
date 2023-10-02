@@ -41,7 +41,7 @@ class LootManager {
     this.mapLootList = initiateMapLootList(this.room.tileMap);
   }
   create(lootSpawn: CreateLoot) {
-    const { x, y, item, npcId, texture, grabMessage, isPermanent } = lootSpawn ?? {};
+    const { x, y, item, npcId, texture, grabMessage = true, isPermanent } = lootSpawn ?? {};
     /* Optional npcId to to drop locally on an npc. */
     if (!x || !y || !item) return;
     const { scene, room } = this;
@@ -121,7 +121,6 @@ class LootManager {
           x: mapLoot?.x,
           y: mapLoot?.y,
           texture: "loot-anim-sparkle",
-          grabMessage: true,
           isPermanent: true,
           item,
         });

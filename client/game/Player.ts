@@ -156,6 +156,7 @@ class Player extends Character {
   }
   drawCharacterFromUserData() {
     const { profile, visibleEquipment, state, stats } = this || {};
+    const isBoss = profile?.scale > 1;
     if (profile?.userName) {
       this.userName.setText(profile?.userName);
       this.userName.setX(-this.userName.width / 2);
@@ -163,6 +164,8 @@ class Player extends Character {
     }
     this.skin.setScale(profile?.scale || 1);
     this.shadow.setScale(profile?.scale || 1);
+    this.corpse.setScale(isBoss ? profile?.scale / 2 : 1);
+    this.corpse.setTint(isBoss ? "0xAA88AA" : "0xCC9966");
     this.skin.setTint(profile?.tint || "0xFFFFFF");
     this.chest.setTint(profile?.tint || "0xFFFFFF");
     this.hair.setTint(profile?.hair?.tint || "0xFFFFFF");
