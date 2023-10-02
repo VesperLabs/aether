@@ -75,6 +75,7 @@ const Message: React.FC<MessageProps> = ({ data }) => {
     success: "set",
     error: "danger",
     info: "magic",
+    muted: "gray.200",
   };
 
   const color: string = colorsMap?.[type] || "white";
@@ -90,7 +91,7 @@ const Message: React.FC<MessageProps> = ({ data }) => {
         sx={{ color, gap: 1, flexGrow: 0, opacity: isOld ? 0.5 : 1, "&:hover": { opacity: 1 } }}
       >
         <Text sx={{ flexShrink: 0 }}>{getFrom(data)}:</Text>
-        <Text sx={{ flex: 1 }}>{message}</Text>
+        <Text sx={{ flex: 1 }} dangerouslySetInnerHTML={{ __html: message }} />
       </Flex>
     </Flex>
   );
