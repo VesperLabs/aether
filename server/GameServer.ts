@@ -1,6 +1,7 @@
 import "@geckos.io/phaser-on-nodejs";
 import { mapList } from "../shared/Maps";
 import { Socket, Server } from "socket.io";
+import eiows from "eiows";
 import path from "path";
 import crypto from "crypto";
 import {
@@ -23,9 +24,6 @@ import QuestBuilder from "./QuestBuilder";
 import ItemBuilder from "../shared/ItemBuilder";
 import { isNil } from "lodash";
 import { CONSUMABLES_BASES, POTION_BASES, skinTints, hairTints } from "../shared";
-
-const eiows = process.env.WS_USE_EIOWS ? require("eiows") : null;
-
 const { SnapshotInterpolation } = require("@geckos.io/snapshot-interpolation");
 const SI = new SnapshotInterpolation();
 global.phaserOnNodeFPS = parseInt(process.env.SERVER_FPS);
@@ -1088,7 +1086,7 @@ export default class Game {
       cors: {
         origin: "*",
       },
-      ...(process.env.WS_USE_EIOWS ? { wsEngine: eiows?.Server } : {}),
+      wsEngine: eiows.Server,
       perMessageDeflate: {
         threshold: 32768,
       },

@@ -26,7 +26,6 @@ SERVER_URL=http://localhost:3000
 PORT=3000
 ASSETS_URL= # Where to load images from (Leave blank for DEV)
 PUBLIC_DIR=../public # Running server loads assets from here
-WS_USE_EIOWS=true # Whether or not to use C++ websockets package
 ```
 
 ## 📟 Running
