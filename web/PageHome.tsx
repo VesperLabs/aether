@@ -30,17 +30,27 @@ export default function () {
       </Flex>
       <Link href={process.env.SERVER_URL}>
         <Box
-          as="img"
-          //@ts-ignore
-          src="./assets/screenshots/1.png"
           sx={{
-            maxWidth: "1440px",
-            width: "100%",
             borderRadius: 20,
             border: `1px solid #000`,
+            overflow: "hidden",
             mt: 2,
+            backgroundColor: "shadow.20",
           }}
-        />
+        >
+          <Box
+            as="img"
+            //@ts-ignore
+            src="./assets/screenshots/1.png"
+            sx={{
+              display: "block",
+              maxWidth: "1440px",
+              width: "100%",
+              borderRadius: 20,
+              aspectRatio: "16 / 9",
+            }}
+          />
+        </Box>
       </Link>
     </Flex>
   );
