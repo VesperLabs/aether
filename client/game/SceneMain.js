@@ -320,7 +320,7 @@ function enableDoors(scene) {
 }
 
 function setMinimap(scene, hero) {
-  if (!hero || !scene?.map || isMobile) return;
+  if (!hero || !scene?.map || !scene.minimap) return;
 
   // Calculate the x-coordinate to position the minimap on the far right
   scene.minimap.setPosition(Math.round(scene.scale.width - MINI_MAP_SIZE), 0); // Rounded to the nearest integer
