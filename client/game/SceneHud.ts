@@ -29,6 +29,7 @@ class SceneHud extends Phaser.Scene {
     this.cursorKeys.a = this.input.keyboard.addKey(A);
     this.cursorKeys.d = this.input.keyboard.addKey(D);
     this.input.keyboard.removeCapture("W,A,S,D,SPACE,up,down,left,right");
+    this.input.addPointer();
   }
   create() {
     addJoystick(this);
@@ -416,7 +417,13 @@ function addJoystick(scene) {
     sprites: { cap: new RoundButton(scene), base: new RoundButton(scene) },
     singleDirection: false,
     maxDistanceInPixels: 50,
-    device: isTouch ? 1 : 0, // 0 for mouse pointer (computer), 1 for touch pointer (mobile)
+    device: isTouch ? 1 : 0, // 0 for mouse pointer (computer), 1, 2, 3 for touch pointers (mobile)
+  });
+  scene.joystick2 = scene.add.joystick({
+    sprites: { cap: new RoundButton(scene), base: new RoundButton(scene) },
+    singleDirection: false,
+    maxDistanceInPixels: 50,
+    device: 2, // 0 for mouse pointer (computer), 1, 2, 3 for touch pointers (mobile)
   });
 }
 
