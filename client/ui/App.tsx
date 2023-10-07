@@ -43,6 +43,7 @@ interface AppContextValue {
   setSign: React.Dispatch<React.SetStateAction<any>>;
   setError: React.Dispatch<React.SetStateAction<any>>;
   setHomeModal: React.Dispatch<React.SetStateAction<FullCharacterState | null>>;
+  addMessage: React.Dispatch<React.SetStateAction<Message>>;
   homeModal: FullCharacterState | null;
   error: any;
   sign: Sign | null;
@@ -152,6 +153,10 @@ function App({ socket, debug, game }) {
     setHero(null);
     setKeeper(null);
     setSign(null);
+  };
+
+  const onSettingToggled = (e) => {
+    addMessage({ type: "info", message: e?.detail });
   };
 
   const onPlayerJoin = (player, args) => {
@@ -498,6 +503,7 @@ function App({ socket, debug, game }) {
     window.addEventListener("HERO_START_COOLDOWN", onStartCooldown);
     window.addEventListener("HERO_DROP_ITEM", onDropItem);
     window.addEventListener("HERO_DOUBLE_CLICK_ITEM", onDoubleClickItem);
+    window.addEventListener("SETTING_TOGGLED", onSettingToggled);
     return () => {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
@@ -521,6 +527,7 @@ function App({ socket, debug, game }) {
       window.removeEventListener("HERO_START_COOLDOWN", onStartCooldown);
       window.removeEventListener("HERO_DROP_ITEM", onDropItem);
       window.removeEventListener("HERO_DOUBLE_CLICK_ITEM", onDoubleClickItem);
+      window.removeEventListener("SETTING_TOGGLED", onSettingToggled);
     };
   }, []);
 
@@ -545,6 +552,7 @@ function App({ socket, debug, game }) {
           setShowButtonChat,
           setIsConnected,
           isLoggedIn,
+          addMessage,
           setIsLoggedIn,
           setTabEquipment,
           setTabInventory,

@@ -13,9 +13,9 @@ import {
   addNpc,
   addLoot,
   getLoot,
-  MUSIC_VOLUME,
   playAudio,
   getGameZoomLevel,
+  changeMusic,
 } from "../utils";
 const SI = new SnapshotInterpolation(process.env.SERVER_FPS); // the server's fps is 15
 const { RectangleToRectangle } = Phaser.Geom.Intersects;
@@ -26,6 +26,9 @@ class SceneMain extends Phaser.Scene {
     super({ key: "SceneMain" });
     this.socket = socket;
     this.lastUpdateTime = 0;
+    this.userSettings = {
+      playMusic: true,
+    };
   }
 
   create() {
@@ -378,33 +381,14 @@ function setPlayerCollision(scene, player, colliders = []) {
   );
 }
 
-function changeMusic(scene, roomName) {
-  const track = getMapByName(roomName)?.music;
-  if (!track) return;
-  let sound = scene.sound.get(track);
-  if (sound && sound.isPlaying) {
-    // Sound is already playing, do nothing
-    return;
-  }
-  scene.sound.stopAll();
-  scene.load.audio(track, [track]);
-  scene.load.once("complete", () => {
-    sound = scene.sound.get(track);
-    if (!sound) {
-      sound = scene.sound.add(track, { volume: MUSIC_VOLUME, loop: true });
-    }
-    sound.play();
-  });
-  scene.load.start();
-}
-
 function changeMap(scene, roomName) {
-  changeMusic(scene, roomName);
   const tileSetKey = roomName?.split("-")?.[0];
 
+  scene.roomName = roomName;
   scene.map = scene.make.tilemap({
     key: roomName,
   });
+  changeMusic(scene);
 
   const tileSet = scene.map.addTilesetImage("tileset-" + tileSetKey);
   const tilesetShadows = scene.map.addTilesetImage("tileset-" + tileSetKey + "-shadows");

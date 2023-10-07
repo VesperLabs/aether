@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { playAudio, getSpinDirection } from "../utils";
+import { playAudio, getSpinDirection, changeMusic } from "../utils";
 import {
   spellDetails,
   POTION_COOLDOWN,
@@ -201,6 +201,27 @@ function addGlobalEventListeners(scene) {
     },
     scene
   );
+  window.addEventListener(
+    "TOGGLE_MUSIC",
+    (e) => {
+      const playMusic = mainScene?.userSettings?.playMusic;
+      const detail = playMusic ? "Background music: OFF" : "Background music: ON";
+      if (playMusic) {
+        mainScene.userSettings.playMusic = false;
+        mainScene.sound.stopAll();
+      } else {
+        mainScene.userSettings.playMusic = true;
+        changeMusic(mainScene);
+      }
+      window.dispatchEvent(
+        new CustomEvent("SETTING_TOGGLED", {
+          detail,
+        })
+      );
+    },
+    scene
+  );
+
   window.addEventListener(
     "ITEM_DRAG",
     (e: CustomEvent) => {
