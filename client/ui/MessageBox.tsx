@@ -62,9 +62,12 @@ const MessageBox = () => {
 
 const getFrom = (data) => {
   if (data?.type === "party") {
-    return "Party";
+    return "Party:";
   }
-  return data?.from ?? "Server";
+  if (data?.from) {
+    return `${data?.from}:`;
+  }
+  return "";
 };
 
 const Message: React.FC<MessageProps> = ({ data }) => {
@@ -80,7 +83,7 @@ const Message: React.FC<MessageProps> = ({ data }) => {
 
   const color: string = colorsMap?.[type] || "white";
   const isOld = Date.now() - data?.timestamp > 5000;
-
+  const from = getFrom(data);
   return (
     <Flex>
       <Flex
@@ -90,7 +93,7 @@ const Message: React.FC<MessageProps> = ({ data }) => {
         }}
         sx={{ color, gap: 1, flexGrow: 0, opacity: isOld ? 0.5 : 1, "&:hover": { opacity: 1 } }}
       >
-        <Text sx={{ flexShrink: 0 }}>{getFrom(data)}:</Text>
+        {from ? <Text sx={{ flexShrink: 0, fontWeight: "bold" }}>{from}</Text> : null}
         <Text sx={{ flex: 1 }} dangerouslySetInnerHTML={{ __html: message }} />
       </Flex>
     </Flex>
