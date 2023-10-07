@@ -1,4 +1,3 @@
-// @ts-nocheck
 import Phaser from "phaser";
 import { playAudio, getSpinDirection } from "../utils";
 import {
@@ -8,10 +7,14 @@ import {
   CONSUMABLES_BASES,
   POTION_BASES,
 } from "@aether/shared";
+import { Socket } from "socket.io";
 const { W, S, A, D } = Phaser.Input.Keyboard.KeyCodes;
 const { Between } = Phaser.Math.Angle;
 
 class SceneHud extends Phaser.Scene {
+  stickActive: boolean;
+  socket: Socket;
+  cursorKeys: any;
   constructor(socket) {
     super({
       key: "SceneHud",
@@ -30,11 +33,6 @@ class SceneHud extends Phaser.Scene {
   create() {
     addJoystick(this);
     addGlobalEventListeners(this);
-  }
-  createMinimap() {
-    if (isMobile) return;
-    // Create the minimap camera
-    this.minimap = this.cameras.add(0, 0, MINI_MAP_SIZE, MINI_MAP_SIZE);
   }
   update(time, delta) {
     moveDirectHero(this, time);
@@ -69,7 +67,7 @@ function addGlobalEventListeners(scene) {
   });
   window.addEventListener(
     "HERO_AIM_START",
-    (e) => {
+    (e: CustomEvent) => {
       if (!mainScene?.hero || isTypableFieldActive()) return;
       const hero = mainScene?.hero;
       const abilities = hero?.abilities;
@@ -123,7 +121,7 @@ function addGlobalEventListeners(scene) {
   );
   window.addEventListener(
     "HERO_ABILITY",
-    (e) => {
+    (e: CustomEvent) => {
       const hero = mainScene?.hero;
       const abilities = hero?.abilities;
       const ability = abilities?.[e?.detail];
@@ -160,7 +158,7 @@ function addGlobalEventListeners(scene) {
     scene
   );
   /* TODO: Move to server and create a consumeItemFunction */
-  window.addEventListener("HERO_USE_ITEM", (e) => {
+  window.addEventListener("HERO_USE_ITEM", (e: CustomEvent) => {
     const hero = mainScene?.hero;
     const { item, location } = e?.detail ?? {};
 
@@ -205,7 +203,7 @@ function addGlobalEventListeners(scene) {
   );
   window.addEventListener(
     "ITEM_DRAG",
-    (e) => {
+    (e: CustomEvent) => {
       const hero = mainScene?.hero;
       const pointer = scene.input.activePointer;
       pointer.x = e?.detail.x;
