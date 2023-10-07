@@ -250,6 +250,7 @@ const Slot = memo(
               <SpaceDonut percent={item?.items?.filter((i) => i)?.length / item?.space || 0} />
             )}
             {item?.amount > 1 && <SlotAmount>{item?.amount}</SlotAmount>}
+            {item?.slot === 'spell' && <SlotAmount>Lvl. {item?.ilvl}</SlotAmount>}
             <Icon
               icon={imageData}
               size={size * 2} // Fixes large images to not get cut off
