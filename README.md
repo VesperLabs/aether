@@ -65,16 +65,16 @@ tile-extruder --tileWidth 32 --tileHeight 32 --input ./public/assets/tilesets/cl
 #### Systems
 
 - [ ] Trade window
-- [ ] Minimap
+- [ ] Crafting system
+- [ ] Better minimap (Show / Hide)
+- [ ] UserSettings (Music on / off)
 - [ ] Doors that require a key or level to pass through
 - [ ] Ability to choose from mage-type rogue-type or warrior-type rewards on some quests
 
 #### Combat
 
-- [ ] Serverside individual cooldowns for spells
 - [ ] More spells that effect movement, (dives, dodges, pushback etc)
 - [ ] Back-stab damage
-- [ ] Show warning before enemies attack
 
 #### Performance
 
@@ -84,6 +84,8 @@ tile-extruder --tileWidth 32 --tileHeight 32 --input ./public/assets/tilesets/cl
 
 #### Completed
 
+- [x] Show warning before enemies attack
+- [x] Serverside individual cooldowns for spells
 - [x] Move spell cooldowns to serverside check (Separate cooldowns)
 - [x] Gloves items
 - [x] Map item drops (Mining, Herbs)
