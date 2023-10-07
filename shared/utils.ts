@@ -37,9 +37,8 @@ export function capitalize(str) {
   return str[0].toUpperCase() + str.substr(1);
 }
 
-export const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-  navigator.userAgent
-);
+export const isMobile =
+  /Android|Mobile|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
 export function trimCanvas(c) {
   let ctx = c.getContext("2d"),
