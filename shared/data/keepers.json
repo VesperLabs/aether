@@ -413,7 +413,8 @@
       "dialogues": {
         "greet": "Greetings, mortals! I am <strong>Danny</strong>, the mystical wizard of these realms.",
         "quests": "Behold! Mystical quests await, woven with the threads of magic, yet my robe remains beyond your grasp.",
-        "shop": "Only wizards may wield the enchanted garbs I possess. Yet, behold, I offer thee some mystical wares for sale."
+        "shop": "Only wizards may wield the enchanted garbs I possess. Yet, behold, I offer thee some mystical wares for sale.",
+        "home": "Setting your home here would be a wise choice!"
       },
       "quests": ["talk-steve", "chonks-hunting", "zombie-hunting"],
       "shop": [
@@ -421,7 +422,8 @@
         { "item": ["spell", "common", "fireball"], "stock": 1 },
         { "item": ["spell", "common", "endurance"], "stock": 1 },
         { "item": ["spell", "common", "evasion"], "stock": 1 }
-      ]
+      ],
+      "home": { "x": 1087, "y": 1396 }
     }
   },
   "rae": {
