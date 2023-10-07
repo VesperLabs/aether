@@ -269,11 +269,12 @@ function App({ socket, debug, game }) {
       if (loot?.grabMessage) {
         const item = loot?.item;
         addMessage({
-          type: "muted",
-          message: `Found <span style="font-weight: bold; color: ${theme.colors[item?.rarity]}">${
-            item?.name
-          }</span> x${item?.amount || 1}`,
-        } as Message);
+            type: "muted",
+            message: `Found <span style="font-weight: bold; color: ${theme.colors[item?.rarity]}">
+              ${item?.name}
+              ${item?.slot === "spell" ? ` (Lvl. ${item?.ilvl})`: ''}
+              </span>${item?.amount > 1 ? ` x${item?.amount}`: ''}`,
+          } as Message);
       }
       /* Both quests and inventory only need to be updated when we pick an item */
       setHero((prev) => ({
