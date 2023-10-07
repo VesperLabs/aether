@@ -387,8 +387,8 @@ function moveDirectHero(scene, time) {
     hero?.state.isAiming ||
     hero.state.isHoldingAttack
   ) {
-    vx = 0;
-    vy = 0;
+    vx = vx / 2;
+    vy = vy / 2;
   }
 
   hero.vx = vx;

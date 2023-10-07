@@ -166,12 +166,12 @@ class Spell extends Phaser.GameObjects.Container {
       const body = isNpcSingleTargetMelee ? victim : victim?.hitBox;
       if (scene.physics.overlap(body, this)) {
         /* For attacks, prevent collision behind the player */
-        if (this.isAttackMelee) {
-          if (direction === "up" && victim.y > caster.y) return true;
-          if (direction === "down" && victim.y < caster.y) return true;
-          if (direction === "left" && victim.x > caster.x) return true;
-          if (direction === "right" && victim.x < caster.x) return true;
-        }
+        // if (this.isAttackMelee) {
+        //   if (direction === "up" && victim.y > caster.y) return true;
+        //   if (direction === "down" && victim.y < caster.y) return true;
+        //   if (direction === "left" && victim.x > caster.x) return true;
+        //   if (direction === "right" && victim.x < caster.x) return true;
+        // }
 
         // keep track of all the characters this spell hit
         this.hitIds.push(victim.id);
