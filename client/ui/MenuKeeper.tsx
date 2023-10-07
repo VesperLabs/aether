@@ -89,7 +89,7 @@ const MenuKeeper = () => {
       </MenuHeader>
       <Flex sx={{ flexDirection: "column", gap: 2, alignItems: "flex-end" }}>
         <Flex sx={{ gap: 2, justifyContent: "end" }}>
-          <BigPortrait player={keeper} filteredSlots={["boots", "hands"]} sx={{ ml: 4 }} />
+          <BigPortrait player={keeper} filteredSlots={["hands"]} sx={{ ml: 4 }} />
           <Flex
             sx={{
               gap: 1,
@@ -99,7 +99,16 @@ const MenuKeeper = () => {
               maxWidth: MENU_MAX_WIDTH / 2,
             }}
           >
-            <Flex sx={{ bg: "shadow.30", flexDirection: "column", p: 2, gap: 3, borderRadius: 6 }}>
+            <Flex
+              sx={{
+                bg: "shadow.30",
+                flexDirection: "column",
+                p: 2,
+                gap: 3,
+                borderRadius: 6,
+                flex: 1,
+              }}
+            >
               <Text sx={{ lineHeight: 1.5 }}>
                 <Text as="span" sx={{ fontWeight: "bold", color: "set" }}>
                   {keeper?.profile?.userName}:{" "}
