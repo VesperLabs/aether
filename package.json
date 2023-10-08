@@ -18,7 +18,8 @@
     "clean": "rm -rf node_modules",
     "server:build": "node -r dotenv/config build.server.js",
     "server:run": "node -r dotenv/config --optimize-for-size --max-old-space-size=512 dist/server.js",
-    "test": "vitest",
+    "test:husky": "vitest run",
+    "test:dev": "vitest",
     "prepare": "husky install"
   },
   "workspaces": [
