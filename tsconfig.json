@@ -17,7 +17,8 @@
     "client/**/*",
     "ui/**/*",
     "web/**/*",
-    "shared/**/*"
+    "shared/**/*",
+    "@testing-library/jest-dom/vitest"
   ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
