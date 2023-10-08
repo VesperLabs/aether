@@ -14,7 +14,7 @@ export {
   Link,
 } from "theme-ui";
 export { default as theme } from "./theme";
-export { default as Button } from "./Button";
+export { default as Button } from "./Button/Button";
 export { default as Icon } from "./Icon";
 export { default as KeyboardKey } from "./KeyboardKey";
 export { default as Modal } from "./Modal";
