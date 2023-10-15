@@ -729,6 +729,37 @@
             "chance": 5
           }
         ]
+      },
+      "demonicJakeHead": {
+        "exclusive": true,
+        "ilvl": 10,
+        "name": "The Demonic Cranium of Action Jake",
+        "base": "cap",
+        "texture": "helmet-jake",
+        "slot": "helmet",
+        "tint": "0xFF5555",
+        "stats": {
+          "intelligence": 1000,
+          "strength": 1000,
+          "dexterity": 1000,
+          "vitality": 1000,
+          "critMultiplier": 10,
+          "critChance": 100
+        }
+      },
+      "jakeHead": {
+        "exclusive": true,
+        "ilvl": 10,
+        "name": "The Cranium of Action Jake",
+        "base": "cap",
+        "texture": "helmet-jake",
+        "slot": "helmet",
+        "stats": {
+          "intelligence": 10,
+          "strength": 10,
+          "dexterity": 10,
+          "vitality": 10
+        }
       }
     },
     "set": {
