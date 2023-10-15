@@ -811,11 +811,13 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           const command = args.message.substr(1).split(" ");
           switch (command[0]) {
             case "drop":
-              const item = command?.[1]?.split("-");
+              const itemParams = command?.[1]?.split?.("-");
+              if (!itemParams?.length) return;
+              const [itemType, itemRarity, itemKey, itemAmount] = itemParams ?? [];
               scene.roomManager.rooms[player?.roomName].lootManager.create({
                 x: player?.x,
                 y: player?.y,
-                item: ItemBuilder.buildItem(item[0], item[1], item[2], item[3]) as Item,
+                item: ItemBuilder.buildItem(itemType, itemRarity, itemKey, itemAmount) as Item,
                 npcId: null,
               });
               return socket.emit("message", {
