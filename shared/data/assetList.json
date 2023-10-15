@@ -360,6 +360,12 @@
     "previewRect": [0, 80, 80, 80]
   },
   {
+    "texture": "human-helmet-jake",
+    "src": "./assets/atlas/helmet/helmet-jake.png",
+    "atlas": "./assets/atlas/80x80.json",
+    "previewRect": [0, 160, 80, 80]
+  },
+  {
     "texture": "human-helmet-horned",
     "src": "./assets/atlas/helmet/helmet-horned.png",
     "atlas": "./assets/atlas/80x80.json",
