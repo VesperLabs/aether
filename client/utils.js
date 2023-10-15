@@ -101,7 +101,7 @@ function getSpinDirection(hero, point) {
 
 /* TODO: Move to DB */
 const MUSIC_VOLUME = 0.05;
-const SFX_VOLUME = 0.6;
+const SFX_VOLUME = 0.25;
 const BLANK_TEXTURE = "human-blank";
 const PLAYER_GRAB_RANGE = 32;
 
