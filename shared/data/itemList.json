@@ -490,7 +490,12 @@
         "base": "club",
         "name": "Hotdog",
         "texture": "weapon-hotdog",
-        "slot": "hands"
+        "slot": "hands",
+        "stats": {
+          "range": 1.25,
+          "critChance": 25,
+          "attackDelay": -40
+        }
       }
     },
     "set": {
