@@ -492,9 +492,11 @@
         "texture": "weapon-hotdog",
         "slot": "hands",
         "stats": {
+          "minDamage": 0,
+          "maxDamage": 0,
           "range": 1.25,
           "critChance": 25,
-          "attackDelay": -40
+          "attackDelay": 0
         }
       }
     },
