@@ -468,6 +468,12 @@
     "previewRect": [30, 33, 22, 19]
   },
   {
+    "texture": "weapon-hotdog",
+    "src": "./assets/atlas/hands/weapon-hotdog.png",
+    "atlas": "./assets/atlas/weapon.json",
+    "previewRect": [27, 27, 28, 28]
+  },
+  {
     "texture": "weapon-wand-stick",
     "src": "./assets/atlas/hands/weapon-wand-stick.png",
     "atlas": "./assets/atlas/weapon.json",

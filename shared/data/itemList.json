@@ -483,6 +483,14 @@
             "chance": 20
           }
         ]
+      },
+      "hotDog": {
+        "exclusive": true,
+        "ilvl": 1,
+        "base": "club",
+        "name": "Hotdog",
+        "texture": "weapon-hotdog",
+        "slot": "hands"
       }
     },
     "set": {
