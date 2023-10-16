@@ -1612,20 +1612,6 @@
         "tint": "0xCCCCFF",
         "texture": "accessory-glasses",
         "slot": "accessory"
-      },
-      "jakeMask": {
-        "exclusive": true,
-        "ilvl": 10,
-        "name": "Action Jake Mask",
-        "base": "cap",
-        "texture": "accessory-jake",
-        "slot": "accessory",
-        "stats": {
-          "intelligence": 10,
-          "strength": 10,
-          "dexterity": 10,
-          "vitality": 10
-        }
       }
     },
     "unique": {
@@ -1659,6 +1645,20 @@
           "regenMp": 2,
           "spellPower": 5,
           "maxMp": 25
+        }
+      },
+      "jakeMask": {
+        "exclusive": true,
+        "ilvl": 10,
+        "name": "Action Jake Mask",
+        "base": "cap",
+        "texture": "accessory-jake",
+        "slot": "accessory",
+        "stats": {
+          "intelligence": 10,
+          "strength": 10,
+          "dexterity": 10,
+          "vitality": 10
         }
       }
     }
