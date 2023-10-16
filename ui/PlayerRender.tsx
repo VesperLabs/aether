@@ -5,6 +5,8 @@ import {
   resolveAsset,
   tintCanvas,
   loadCacheImage,
+  HAIR_HIDING_ACCESSORIES,
+  FACE_HIDING_ACCESSORIES,
 } from "@aether/shared";
 import { memo, useEffect, useRef } from "react";
 import { Box } from "@aether/ui";
@@ -163,11 +165,18 @@ const PlayerRender = memo(
 
 const getObscuredKeys = ({ filteredSlots, visibleParts }) => {
   const helmetTexture = visibleParts?.helmet?.texture;
+  const accessoryTexture = visibleParts?.accessory?.texture;
   if (HAIR_HIDING_HELMETS.includes(helmetTexture) && !filteredSlots?.includes("helmet")) {
     filteredSlots.push("hair");
   }
   if (ACCESSORY_HIDING_HELMETS.includes(helmetTexture)) {
     filteredSlots.push("accessory");
+  }
+  if (HAIR_HIDING_ACCESSORIES.includes(accessoryTexture)) {
+    filteredSlots.push("hair");
+  }
+  if (FACE_HIDING_ACCESSORIES.includes(accessoryTexture)) {
+    filteredSlots.push("face");
   }
   return filteredSlots;
 };

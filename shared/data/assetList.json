@@ -360,8 +360,8 @@
     "previewRect": [0, 80, 80, 80]
   },
   {
-    "texture": "human-helmet-jake",
-    "src": "./assets/atlas/helmet/helmet-jake.png",
+    "texture": "human-accessory-jake",
+    "src": "./assets/atlas/accessory/accessory-jake.png",
     "atlas": "./assets/atlas/80x80.json",
     "previewRect": [0, 160, 80, 80]
   },
@@ -471,7 +471,7 @@
     "texture": "weapon-hotdog",
     "src": "./assets/atlas/hands/weapon-hotdog.png",
     "atlas": "./assets/atlas/weapon.json",
-    "previewRect": [27, 27, 28, 28]
+    "previewRect": [25, 25, 30, 30]
   },
   {
     "texture": "weapon-wand-stick",

@@ -186,9 +186,9 @@
       "stats": { "blockChance": [1, 2] },
       "types": ["shield"]
     },
-    { "ilvl": 2, "name": "of Attack Speed", "stats": { "attackDelay": [-5, -10] }, "types": ["*"] },
+    { "ilvl": 2, "name": "of Attack Speed", "stats": { "attackDelay": [-5, -6] }, "types": ["*"] },
     { "ilvl": 2, "name": "of Spell Power", "stats": { "spellPower": [1, 2] }, "types": ["*"] },
-    { "ilvl": 2, "name": "of Cast Speed", "stats": { "castDelay": [-25, -50] }, "types": ["*"] },
+    { "ilvl": 2, "name": "of Cast Speed", "stats": { "castDelay": [-20, -30] }, "types": ["*"] },
     {
       "ilvl": 2,
       "name": "of Damage",

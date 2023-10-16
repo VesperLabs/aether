@@ -496,7 +496,7 @@
           "maxDamage": 0,
           "range": 1.25,
           "critChance": 25,
-          "attackDelay": 0
+          "attackDelay": 140
         }
       }
     },
@@ -643,7 +643,7 @@
         "stats": {
           "critChance": [4, 5],
           "walkSpeed": [4, 5],
-          "attackDelay": [-20, -30],
+          "attackDelay": -15,
           "vitality": 5,
           "dexterity": 5
         }
@@ -681,7 +681,7 @@
         "slot": "helmet",
         "tint": "0xCCBBAA",
         "stats": {
-          "attackDelay": [-30, -40],
+          "attackDelay": [-15, -20],
           "critChance": 15,
           "walkSpeed": [20, 30],
           "minDamage": 1,
@@ -744,37 +744,6 @@
             "chance": 5
           }
         ]
-      },
-      "demonicJakeHead": {
-        "exclusive": true,
-        "ilvl": 10,
-        "name": "The Demonic Cranium of Action Jake",
-        "base": "cap",
-        "texture": "helmet-jake",
-        "slot": "helmet",
-        "tint": "0xFF5555",
-        "stats": {
-          "intelligence": 1000,
-          "strength": 1000,
-          "dexterity": 1000,
-          "vitality": 1000,
-          "critMultiplier": 10,
-          "critChance": 100
-        }
-      },
-      "jakeHead": {
-        "exclusive": true,
-        "ilvl": 10,
-        "name": "The Cranium of Action Jake",
-        "base": "cap",
-        "texture": "helmet-jake",
-        "slot": "helmet",
-        "stats": {
-          "intelligence": 10,
-          "strength": 10,
-          "dexterity": 10,
-          "vitality": 10
-        }
       }
     },
     "set": {
@@ -962,7 +931,7 @@
         "stats": {
           "walkSpeed": 10,
           "castDelay": [-90, -100],
-          "attackDelay": [-25, -30]
+          "attackDelay": [-15, -20]
         },
         "triggers": [
           {
@@ -1365,7 +1334,7 @@
           "maxHp": [15, 20],
           "walkSpeed": [10, 15],
           "defense": [10, 15],
-          "attackDelay": [-25, -30],
+          "attackDelay": [-15, -20],
           "fireResistance": [10, 15],
           "regenHp": [5, 6]
         },
@@ -1643,6 +1612,20 @@
         "tint": "0xCCCCFF",
         "texture": "accessory-glasses",
         "slot": "accessory"
+      },
+      "jakeMask": {
+        "exclusive": true,
+        "ilvl": 10,
+        "name": "Action Jake Mask",
+        "base": "cap",
+        "texture": "accessory-jake",
+        "slot": "accessory",
+        "stats": {
+          "intelligence": 10,
+          "strength": 10,
+          "dexterity": 10,
+          "vitality": 10
+        }
       }
     },
     "unique": {
