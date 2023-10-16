@@ -6,6 +6,8 @@ import {
   FACE_HIDING_HELMETS,
   ACCESSORY_HIDING_HELMETS,
   distanceTo,
+  FACE_HIDING_ACCESSORIES,
+  HAIR_HIDING_ACCESSORIES,
 } from "@aether/shared";
 import Bubble from "./Bubble";
 import Spell from "./Spell";
@@ -190,7 +192,9 @@ class Player extends Character {
     if (HAIR_HIDING_HELMETS.includes(visibleEquipment?.helmet?.texture)) {
       this.hair.setVisible(false);
     }
-    this.face.setVisible(true);
+    if (HAIR_HIDING_ACCESSORIES.includes(visibleEquipment?.accessory?.texture)) {
+      this.hair.setVisible(false);
+    }
     this.whiskers.setVisible(true);
     if (FACE_HIDING_HELMETS.includes(visibleEquipment?.helmet?.texture)) {
       this.face.setVisible(false);
@@ -199,6 +203,10 @@ class Player extends Character {
     this.accessory.setVisible(true);
     if (ACCESSORY_HIDING_HELMETS.includes(visibleEquipment?.helmet?.texture)) {
       this.accessory.setVisible(false);
+    }
+    this.face.setVisible(true);
+    if (FACE_HIDING_ACCESSORIES.includes(visibleEquipment?.accessory?.texture)) {
+      this.face.setVisible(false);
     }
   }
   doAttack({ count, castAngle, direction }) {

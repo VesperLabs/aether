@@ -472,11 +472,12 @@ const calculateStats = (player, shouldHeal = false) => {
 
   // Capped values
   if (ns.walkSpeed < 15) ns.walkSpeed = 15;
+  if (ns.walkSpeed > 600) ns.walkSpeed = 600;
   if (ns.critChance > 100) ns.critChance = 100;
   if (ns.dodgeChance > 75) ns.dodgeChance = 75;
   if (ns.blockChance > 75) ns.blockChance = 75;
-  if (ns.castDelay < 100) ns.castDelay = 100;
-  if (ns.attackDelay < 100) ns.attackDelay = 100;
+  if (ns.castDelay < 200) ns.castDelay = 200;
+  if (ns.attackDelay < 200) ns.attackDelay = 200;
 
   const damageCalc = ((ns.strength * 2 + ns.dexterity / 2) * ns.level) / 100;
   const damageModifier = Math.floor(1 + damageCalc);
