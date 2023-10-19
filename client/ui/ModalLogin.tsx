@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Modal, Flex, Input, KeyboardButton, Icon, Tooltip, Text } from "@aether/ui";
+import { Modal, Flex, Input, KeyboardButton, Icon, Tooltip, Text, Box } from "@aether/ui";
 import { useAppContext } from "./";
 import { CLASS_ICON_MAP } from "@aether/shared";
 
@@ -18,11 +18,13 @@ const IconPen = ({ sx }: { sx?: any }) => (
 );
 
 const ModalLogin = (props: any) => {
+  const storedEmail = localStorage.getItem("email");
   const { zoom, bottomOffset } = useAppContext();
-  const [activeTab, setActiveTab] = useState("login");
-  const [defaultEmail, setDefaultEmail] = useState(localStorage.getItem("email"));
+  const [defaultEmail, setDefaultEmail] = useState(storedEmail);
+  const [activeTab, setActiveTab] = useState(storedEmail ? "login" : "demo");
   const isLogin = activeTab === "login";
   const isRegister = activeTab === "register";
+  const isDemo = activeTab === "demo";
 
   const onRegisterSuccess = (payload: any) => {
     setDefaultEmail(payload?.email);
@@ -37,6 +39,7 @@ const ModalLogin = (props: any) => {
       as="form"
       autoComplete="off"
       onSubmit={(e) => e.preventDefault()}
+      sx={{ width: 220 }}
     >
       <Tooltip id="login" />
       <Modal.Header
@@ -57,7 +60,37 @@ const ModalLogin = (props: any) => {
         Register
       </Modal.Header>
       {isRegister && <RegisterForm onRegisterSuccess={onRegisterSuccess} />}
+      <Modal.Header
+        sx={{ cursor: "pointer", opacity: isDemo ? 1 : 0.25 }}
+        onClick={() => setActiveTab("demo")}
+      >
+        <IconPen sx={{ transform: isDemo ? "scale(1)" : "scale(0)" }} />
+        <Icon size={22} icon={`./assets/icons/book.png`} />
+        Try Demo
+      </Modal.Header>
+      {isDemo && <DemoForm />}
     </Modal>
+  );
+};
+
+const DemoForm = () => {
+  const { socket } = useAppContext();
+  const [charClass, setCharClass] = useState("warrior");
+
+  const handleDemoLogin = () => {
+    socket.emit("demoLogin", { charClass });
+  };
+
+  return (
+    <Modal.Body sx={{ gap: 2 }}>
+      <CharClassSelect charClass={charClass} setCharClass={setCharClass} />
+      <ErrorBox>
+        Note: your progress will not be saved. For that you will need to click "Register".
+      </ErrorBox>
+      <KeyboardButton sx={{ flex: 1 }} onClick={() => handleDemoLogin()} keyboardKey="ENTER">
+        Play
+      </KeyboardButton>
+    </Modal.Body>
   );
 };
 
@@ -71,6 +104,12 @@ const LoginForm = ({ defaultEmail }) => {
   const onFormError = (payload: any) => {
     setError(payload?.error);
     setIsLoading(false);
+  };
+
+  const handleLogin = () => {
+    socket.emit("login", { email, password });
+    localStorage.setItem("email", email);
+    setIsLoading(true);
   };
 
   useEffect(() => {
@@ -103,26 +142,11 @@ const LoginForm = ({ defaultEmail }) => {
           setError("");
         }}
       />
-      <Flex
-        sx={{
-          borderRadius: 3,
-          background: "shadow.10",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "danger",
-          height: 30,
-        }}
-      >
-        {error}
-      </Flex>
+      <ErrorBox>{error}</ErrorBox>
       <KeyboardButton
         sx={{ flex: 1 }}
         disabled={isLoading}
-        onClick={() => {
-          socket.emit("login", { email, password });
-          localStorage.setItem("email", email);
-          setIsLoading(true);
-        }}
+        onClick={() => handleLogin()}
         keyboardKey="ENTER"
       >
         Login
@@ -162,32 +186,7 @@ const RegisterForm = ({ onRegisterSuccess }) => {
 
   return (
     <Modal.Body sx={{ gap: 2 }}>
-      <Flex sx={{ justifyContent: "space-around", pb: 2 }}>
-        <ClickableIcon
-          icon={CLASS_ICON_MAP.WARRIOR}
-          charClass="warrior"
-          isSelected={charClass === "warrior"}
-          setCharClass={setCharClass}
-        />
-        <ClickableIcon
-          icon={CLASS_ICON_MAP.ROGUE}
-          charClass="rogue"
-          isSelected={charClass === "rogue"}
-          setCharClass={setCharClass}
-        />
-        <ClickableIcon
-          icon={CLASS_ICON_MAP.MAGE}
-          charClass="mage"
-          isSelected={charClass === "mage"}
-          setCharClass={setCharClass}
-        />
-        {/* <ClickableIcon
-          icon={CLASS_ICON_MAP.CLERIC}
-          charClass="cleric"
-          isSelected={charClass === "cleric"}
-          setCharClass={setCharClass}
-        /> */}
-      </Flex>
+      <CharClassSelect charClass={charClass} setCharClass={setCharClass} />
       <Input
         autoFocus={true}
         placeholder="Email"
@@ -206,18 +205,7 @@ const RegisterForm = ({ onRegisterSuccess }) => {
           setError("");
         }}
       />
-      <Flex
-        sx={{
-          borderRadius: 3,
-          background: "shadow.10",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "danger",
-          height: 30,
-        }}
-      >
-        {error}
-      </Flex>
+      <ErrorBox>{error}</ErrorBox>
       <KeyboardButton
         sx={{ flex: 1 }}
         onClick={() => socket.emit("register", { email, password, charClass })}
@@ -257,6 +245,57 @@ const ClickableIcon = ({ icon, setCharClass, charClass, isSelected }) => {
     >
       <Icon size={22} icon={icon} />
       <Text sx={{ fontSize: 0, textTransform: "capitalize" }}>{charClass}</Text>
+    </Flex>
+  );
+};
+
+const ErrorBox = ({ children }) => {
+  return (
+    <Flex
+      sx={{
+        borderRadius: 3,
+        background: "shadow.10",
+        alignItems: "center",
+        justifyContent: "center",
+        color: "danger",
+        minHeight: 30,
+        p: 2,
+        whiteSpace: "normal",
+        fontSize: 1,
+      }}
+    >
+      {children}
+    </Flex>
+  );
+};
+
+const CharClassSelect = ({ charClass, setCharClass }) => {
+  return (
+    <Flex sx={{ justifyContent: "space-around", pb: 2 }}>
+      <ClickableIcon
+        icon={CLASS_ICON_MAP.WARRIOR}
+        charClass="warrior"
+        isSelected={charClass === "warrior"}
+        setCharClass={setCharClass}
+      />
+      <ClickableIcon
+        icon={CLASS_ICON_MAP.ROGUE}
+        charClass="rogue"
+        isSelected={charClass === "rogue"}
+        setCharClass={setCharClass}
+      />
+      <ClickableIcon
+        icon={CLASS_ICON_MAP.MAGE}
+        charClass="mage"
+        isSelected={charClass === "mage"}
+        setCharClass={setCharClass}
+      />
+      {/* <ClickableIcon
+    icon={CLASS_ICON_MAP.CLERIC}
+    charClass="cleric"
+    isSelected={charClass === "cleric"}
+    setCharClass={setCharClass}
+  /> */}
     </Flex>
   );
 };

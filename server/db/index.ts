@@ -86,6 +86,9 @@ const getDatabaseApi = (db) => ({
   updateUserMapDetails: async (args) => {
     return execute("getAllUsers", async () => {
       const { updatedAt } = getAuditFields();
+      if (args?.isDemoAccount) {
+        return; // console.log("🍔 Demo account. no need to save.");
+      }
       if (!args?.email) {
         return console.log("❌ Error while saving player. Player not found");
       }
@@ -108,6 +111,9 @@ const getDatabaseApi = (db) => ({
   },
   updateUser: async (player) => {
     return execute("getAllUsers", async () => {
+      if (player?.isDemoAccount) {
+        return; // console.log("🍔 Demo account. no need to save.");
+      }
       if (!player?.email) {
         return console.log("❌ Error while saving player. Player not found");
       }

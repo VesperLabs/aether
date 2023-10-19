@@ -220,6 +220,7 @@ interface Npc extends Character {
 
 interface ServerPlayer extends Character {
   email?: string;
+  isDemoAccount?: boolean;
   partyId?: string;
   spawn: SpawnPoint;
   addQuest(quest: Quest): void;

@@ -23,6 +23,7 @@ import QuestBuilder from "./QuestBuilder";
 import ItemBuilder from "../shared/ItemBuilder";
 import { isNil } from "lodash";
 import { CONSUMABLES_BASES, POTION_BASES, skinTints, hairTints } from "../shared";
+import { createBaseUser } from "./db";
 const { SnapshotInterpolation } = require("@geckos.io/snapshot-interpolation");
 const SI = new SnapshotInterpolation();
 global.phaserOnNodeFPS = parseInt(process.env.SERVER_FPS);
@@ -70,6 +71,39 @@ class ServerScene extends Phaser.Scene implements ServerScene {
 
     io.on("connection", (socket: Socket) => {
       const socketId = socket.id;
+
+      socket.on("demoLogin", async ({ charClass } = {}) => {
+        if (!charClass) return socket.emit("formError", { error: "No class" });
+
+        const user = createBaseUser(charClass);
+        const player = scene.roomManager.rooms[user.roomName].playerManager.create({
+          socketId,
+          isDemoAccount: true,
+          ...user,
+        });
+
+        /* Should we pause or resume? */
+        shouldPause(scene);
+
+        const roomName = player?.room?.name;
+
+        roomName
+          ? console.log(`🔌 ${player?.profile?.userName} connected`)
+          : console.log("❌ Missing player roomName");
+
+        if (!roomName) return;
+
+        socket.join(roomName);
+        socket.emit(
+          "heroInit",
+          {
+            ...getRoomState(scene, roomName),
+            socketId,
+          },
+          { isLogin: true }
+        );
+        socket.to(roomName).emit("playerJoin", getFullCharacterState(player), { isLogin: true });
+      });
 
       socket.on("login", async ({ email, password } = {}) => {
         let user = await scene.db.getUserByLogin({ email, password });

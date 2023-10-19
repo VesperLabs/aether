@@ -5,11 +5,13 @@ import { spellDetails, MAX_INVENTORY_ITEMS } from "../shared";
 /* Server level Player object */
 class Player extends ServerCharacter implements ServerPlayer {
   public email: string;
+  public isDemoAccount?: boolean;
   public spawn: SpawnPoint;
   constructor(scene: ServerScene, args: Player) {
     super(scene, args);
     this.scene = scene;
     this.email = args?.email;
+    this.isDemoAccount = args?.isDemoAccount;
     this.kind = "player";
     this.spawn = args?.spawn;
     this.calculateStats(true);
