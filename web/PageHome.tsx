@@ -14,18 +14,20 @@ export default function () {
           href={process.env.SERVER_URL}
           target="_blank"
           variant="wood"
-          sx={{ px: 4, py: 2 }}
+          sx={{ px: 3, py: 1, display: "flex", gap: 2, alignItems: "center" }}
         >
-          Play Now
+          <Text sx={{ fontSize: 5 }}>🎮</Text>
+          <Text>Launch Game</Text>
         </Button>
         <Button
           as={Link}
           href="https://discord.gg/yadDyqpb6D"
           target="_blank"
           variant="wood"
-          sx={{ px: 4, py: 2 }}
+          sx={{ px: 3, py: 1, display: "flex", gap: 2, alignItems: "center" }}
         >
-          Join Discord
+          <Text sx={{ fontSize: 5, textShadow: "none" }}>👾</Text>
+          <Text>Join Discord</Text>
         </Button>
       </Flex>
       <Link href={process.env.SERVER_URL}>
