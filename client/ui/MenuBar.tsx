@@ -168,13 +168,6 @@ const MenuBar = () => {
             </>
           )}
           <KeyboardKey
-            name="M"
-            hidden={true}
-            onKeyUp={() => {
-              window.dispatchEvent(new CustomEvent("TOGGLE_MUSIC"));
-            }}
-          />
-          <KeyboardKey
             key={escCacheKey}
             name={"ESCAPE"}
             hidden={true}
