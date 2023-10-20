@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import Door from "../../shared/Door";
 import Sign from "../../shared/Sign";
 import { getMapByName } from "../../shared/Maps";
-import { distanceTo, isMobile } from "../../shared/utils";
+import { distanceTo, isMobile, MINI_MAP_SIZE } from "../../shared/utils";
 import { SnapshotInterpolation } from "@geckos.io/snapshot-interpolation";
 import {
   addPlayer,
@@ -19,21 +19,25 @@ import {
 } from "../utils";
 const SI = new SnapshotInterpolation(process.env.SERVER_FPS); // the server's fps is 15
 const { RectangleToRectangle } = Phaser.Geom.Intersects;
-const MINI_MAP_SIZE = 200;
 
 class SceneMain extends Phaser.Scene {
   constructor(socket) {
     super({ key: "SceneMain" });
     this.socket = socket;
     this.lastUpdateTime = 0;
+
     this.userSettings = {
       playMusic: true,
+      showMinimap: !isMobile,
     };
   }
 
   create() {
     const scene = this;
     const socket = scene?.socket;
+
+    //create minimap
+    scene.minimap = scene.cameras.add(0, 0, MINI_MAP_SIZE, MINI_MAP_SIZE);
 
     socket.on("update", (snapshot) => {
       if (!snapshot?.state) return;
@@ -83,8 +87,8 @@ class SceneMain extends Phaser.Scene {
         addLoot(scene, loot);
       }
       const { collideLayer } = changeMap(scene, scene.hero.roomName);
-      setPlayerCollision(scene, scene.hero, [collideLayer]);
-      setCamera(scene, scene.hero);
+      initPlayerCollision(scene, scene.hero, [collideLayer]);
+      initCamera(scene, scene.hero);
     });
 
     socket.on("playerJoin", (user, { lastTeleport, isRespawn } = {}) => {
@@ -199,17 +203,48 @@ class SceneMain extends Phaser.Scene {
     this.scale.on(
       "resize",
       () => {
-        setCamera(scene, scene.hero);
+        initCamera(scene, scene.hero);
       },
       this
     );
-
-    this.createMinimap();
   }
-  createMinimap() {
-    if (isMobile) return;
-    // Create the minimap camera
-    this.minimap = this.cameras.add(0, 0, MINI_MAP_SIZE, MINI_MAP_SIZE);
+  toggleMusic() {
+    if (this?.userSettings?.playMusic) {
+      this.userSettings.playMusic = false;
+      return this.sound.stopAll();
+    } else {
+      this.userSettings.playMusic = true;
+      this.changeMusic();
+    }
+  }
+  toggleMinimap() {
+    if (this?.userSettings?.showMinimap) {
+      this.userSettings.showMinimap = false;
+    } else {
+      this.userSettings.showMinimap = true;
+    }
+    this.minimap.setVisible(this?.userSettings?.showMinimap);
+  }
+  changeMusic() {
+    const scene = this;
+    if (!scene.userSettings.playMusic) return; // user does not want music
+    const track = getMapByName(scene?.roomName)?.music;
+    if (!track) return;
+    let sound = scene.sound.get(track);
+    if (sound && sound.isPlaying) {
+      // Sound is already playing, do nothing
+      return;
+    }
+    scene.sound.stopAll();
+    scene.load.audio(track, [track]);
+    scene.load.once("complete", () => {
+      sound = scene.sound.get(track);
+      if (!sound) {
+        sound = scene.sound.add(track, { volume: MUSIC_VOLUME, loop: true });
+      }
+      sound.play();
+    });
+    scene.load.start();
   }
   update(time, delta) {
     const elapsedTime = time - this.lastUpdateTime;
@@ -322,9 +357,11 @@ function enableDoors(scene) {
   }
 }
 
-function setMinimap(scene, hero) {
+function initMiniMap(scene, hero) {
   if (!hero || !scene?.map || !scene.minimap) return;
 
+  // Only show the minimap if its enabled
+  scene.minimap.setVisible(scene?.userSettings?.showMinimap);
   // Calculate the x-coordinate to position the minimap on the far right
   scene.minimap.setPosition(Math.round(scene.scale.width - MINI_MAP_SIZE), 0); // Rounded to the nearest integer
 
@@ -339,7 +376,7 @@ function setMinimap(scene, hero) {
   scene.minimap.startFollow(hero, true, 0.5, 0.5, 0, 0);
 }
 
-function setCamera(scene, hero) {
+function initCamera(scene, hero) {
   if (!hero || !scene?.map) return;
   const zoomLevel = getGameZoomLevel(scene);
 
@@ -347,10 +384,10 @@ function setCamera(scene, hero) {
   scene.cameras.main.startFollow(hero, true, 1, 1, 0, hero.bodyOffsetY);
   scene.cameras.main.setBounds(0, 0, scene.map.widthInPixels, scene.map.heightInPixels);
 
-  setMinimap(scene, hero);
+  initMiniMap(scene, hero);
 }
 
-function setPlayerCollision(scene, player, colliders = []) {
+function initPlayerCollision(scene, player, colliders = []) {
   scene.physics.world.colliders.destroy();
   scene.physics.world.setBounds(0, 0, scene.map.widthInPixels, scene.map.heightInPixels);
   player.body.setCollideWorldBounds(true);
