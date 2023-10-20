@@ -662,7 +662,7 @@ const MenuGlobalKeys = () => {
       >
         <KeyboardKey
           name="N"
-          hidden={userSettings?.showMinimap}
+          hidden={!userSettings?.showMinimap}
           onKeyUp={() => {
             window.dispatchEvent(new CustomEvent("TOGGLE_MINIMAP"));
           }}
