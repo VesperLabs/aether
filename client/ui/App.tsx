@@ -16,7 +16,7 @@ import { getSpinDirection, calculateZoomLevel } from "../utils";
 import "react-tooltip/dist/react-tooltip.css";
 import { Theme } from "theme-ui";
 import { Socket } from "socket.io-client";
-import { CONSUMABLES_BASES, MINI_MAP_SIZE } from "@aether/shared";
+import { CONSUMABLES_BASES, MINI_MAP_SIZE, isMobile } from "@aether/shared";
 
 interface AppContextValue {
   isLoggedIn: boolean;
@@ -122,7 +122,7 @@ function App({ socket, debug, game }) {
   const [error, setError] = useState(null);
   const [cooldowns, setCooldowns] = useState({});
   const [homeModal, setHomeModal] = useState(null);
-  const [userSettings, setUserSettings] = useState({});
+  const [userSettings, setUserSettings] = useState({ showMinimap: !isMobile });
 
   /* Is the bag open or closed */
   const toggleBagState = (id: string) => {
