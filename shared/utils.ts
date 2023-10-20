@@ -22,6 +22,7 @@ export const BODY_SIZE = 8;
 export const RACES_WITH_ATTACK_ANIMS = ["crab", "human", "bear", "wolf", "slime"];
 export const POTION_BASES = ["hpPotion", "mpPotion"];
 export const CONSUMABLES_BASES = ["food", ...POTION_BASES];
+export const MINI_MAP_SIZE = 160;
 
 export function getAngleFromDirection(direction) {
   let angle = 0;

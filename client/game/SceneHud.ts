@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { playAudio, getSpinDirection, changeMusic } from "../utils";
+import { playAudio, getSpinDirection } from "../utils";
 import {
   spellDetails,
   POTION_COOLDOWN,
@@ -12,15 +12,14 @@ const { W, S, A, D } = Phaser.Input.Keyboard.KeyCodes;
 const { Between } = Phaser.Math.Angle;
 
 class SceneHud extends Phaser.Scene {
-  stickActive: boolean;
   socket: Socket;
   cursorKeys: any;
+  rectangleContainer: any;
   constructor(socket) {
     super({
       key: "SceneHud",
     });
     this.socket = socket;
-    this.stickActive = false;
   }
   preload() {
     this.cursorKeys = this.input.keyboard.createCursorKeys();
@@ -205,24 +204,33 @@ function addGlobalEventListeners(scene) {
   window.addEventListener(
     "TOGGLE_MUSIC",
     (e) => {
-      const playMusic = mainScene?.userSettings?.playMusic;
-      const detail = playMusic ? "Background music: OFF" : "Background music: ON";
-      if (playMusic) {
-        mainScene.userSettings.playMusic = false;
-        mainScene.sound.stopAll();
-      } else {
-        mainScene.userSettings.playMusic = true;
-        changeMusic(mainScene);
-      }
+      const name = "playMusic";
+      const value = mainScene?.userSettings?.[name];
+      const message = value ? "Background music: OFF" : "Background music: ON";
+      mainScene.toggleMusic();
       window.dispatchEvent(
         new CustomEvent("SETTING_TOGGLED", {
-          detail,
+          detail: { message, name, value },
         })
       );
     },
     scene
   );
-
+  window.addEventListener(
+    "TOGGLE_MINIMAP",
+    (e) => {
+      const name = "showMinimap";
+      const value = mainScene?.userSettings?.[name];
+      const message = value ? "Minimap: OFF" : "Minimap: ON";
+      mainScene.toggleMinimap();
+      window.dispatchEvent(
+        new CustomEvent("SETTING_TOGGLED", {
+          detail: { message, name, value },
+        })
+      );
+    },
+    scene
+  );
   window.addEventListener(
     "ITEM_DRAG",
     (e: CustomEvent) => {
