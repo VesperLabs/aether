@@ -11,12 +11,12 @@ import {
   MenuBar,
   ModalHome,
 } from "./";
-import { ThemeProvider, Box, useViewportSizeEffect, Modal } from "@aether/ui";
+import { ThemeProvider, Box, useViewportSizeEffect, Modal, KeyboardKey } from "@aether/ui";
 import { getSpinDirection, calculateZoomLevel } from "../utils";
 import "react-tooltip/dist/react-tooltip.css";
 import { Theme } from "theme-ui";
 import { Socket } from "socket.io-client";
-import { CONSUMABLES_BASES } from "@aether/shared";
+import { CONSUMABLES_BASES, MINI_MAP_SIZE } from "@aether/shared";
 
 interface AppContextValue {
   isLoggedIn: boolean;
@@ -44,6 +44,8 @@ interface AppContextValue {
   setError: React.Dispatch<React.SetStateAction<any>>;
   setHomeModal: React.Dispatch<React.SetStateAction<FullCharacterState | null>>;
   addMessage: React.Dispatch<React.SetStateAction<Message>>;
+  setUserSettings: React.Dispatch<React.SetStateAction<any>>;
+  userSettings: any;
   homeModal: FullCharacterState | null;
   error: any;
   sign: Sign | null;
@@ -120,6 +122,7 @@ function App({ socket, debug, game }) {
   const [error, setError] = useState(null);
   const [cooldowns, setCooldowns] = useState({});
   const [homeModal, setHomeModal] = useState(null);
+  const [userSettings, setUserSettings] = useState({});
 
   /* Is the bag open or closed */
   const toggleBagState = (id: string) => {
@@ -156,7 +159,11 @@ function App({ socket, debug, game }) {
   };
 
   const onSettingToggled = (e) => {
-    addMessage({ type: "info", message: e?.detail });
+    const setting = e?.detail;
+    addMessage({ type: "info", message: setting?.message });
+    setUserSettings((prev) => {
+      return { ...prev, [setting?.name]: setting?.value };
+    });
   };
 
   const onPlayerJoin = (player, args) => {
@@ -599,6 +606,8 @@ function App({ socket, debug, game }) {
           zoom,
           currentTooltipId,
           setCurrentTooltipId,
+          userSettings,
+          setUserSettings,
         }}
       >
         <Box
@@ -629,6 +638,7 @@ function App({ socket, debug, game }) {
             {dropItem && <ModalDropAmount />}
             {sign && <ModalSign />}
             {homeModal?.profile && <ModalHome />}
+            <MenuGlobalKeys />
             <MenuHud />
             <MenuBar />
           </Box>
@@ -637,5 +647,36 @@ function App({ socket, debug, game }) {
     </ThemeProvider>
   );
 }
+
+const MenuGlobalKeys = () => {
+  const { userSettings } = useAppContext();
+  return (
+    <>
+      <Box
+        sx={{
+          position: "fixed",
+          top: MINI_MAP_SIZE + 6,
+          right: MINI_MAP_SIZE - 12,
+          zIndex: 100000,
+        }}
+      >
+        <KeyboardKey
+          name="N"
+          hidden={userSettings?.showMinimap}
+          onKeyUp={() => {
+            window.dispatchEvent(new CustomEvent("TOGGLE_MINIMAP"));
+          }}
+        />
+      </Box>
+      <KeyboardKey
+        name="M"
+        hidden={true}
+        onKeyUp={() => {
+          window.dispatchEvent(new CustomEvent("TOGGLE_MUSIC"));
+        }}
+      />
+    </>
+  );
+};
 
 export default App;
