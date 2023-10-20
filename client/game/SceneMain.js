@@ -37,7 +37,9 @@ class SceneMain extends Phaser.Scene {
     const socket = scene?.socket;
 
     //create minimap
-    scene.minimap = scene.cameras.add(0, 0, MINI_MAP_SIZE, MINI_MAP_SIZE);
+    if (!isMobile) {
+      scene.minimap = scene.cameras.add(0, 0, MINI_MAP_SIZE, MINI_MAP_SIZE);
+    }
 
     socket.on("update", (snapshot) => {
       if (!snapshot?.state) return;
