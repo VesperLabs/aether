@@ -210,7 +210,7 @@ function addGlobalEventListeners(scene) {
       mainScene.toggleMusic();
       window.dispatchEvent(
         new CustomEvent("SETTING_TOGGLED", {
-          detail: { message, name, value },
+          detail: { message, name, value: !value },
         })
       );
     },
@@ -225,7 +225,7 @@ function addGlobalEventListeners(scene) {
       mainScene.toggleMinimap();
       window.dispatchEvent(
         new CustomEvent("SETTING_TOGGLED", {
-          detail: { message, name, value },
+          detail: { message, name, value: !value },
         })
       );
     },
