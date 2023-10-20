@@ -15,6 +15,8 @@ const ChatButton = () => {
     }
   }, [tabChat]);
 
+  const myMessages = messages?.filter?.((m) => m?.from === hero?.profile?.userName);
+
   return (
     <MenuButton
       keyboardKey={tabChat ? "ENTER" : "T"}
@@ -46,7 +48,7 @@ const ChatButton = () => {
             if (e.code === "ArrowUp" || e.code === "ArrowDown") {
               e.preventDefault();
               const lastMessageIndex =
-                messages?.filter?.((m) => m?.from === hero?.profile?.userName)?.length - 1;
+                myMessages?.filter?.((m) => m?.from === hero?.profile?.userName)?.length - 1;
               let newIndex = messageIndex;
 
               if (e.code === "ArrowUp") {
@@ -61,7 +63,7 @@ const ChatButton = () => {
                 newIndex = newIndex === lastMessageIndex ? 0 : newIndex + 1;
               }
 
-              setChatValue(messages?.[newIndex]?.message || "");
+              setChatValue(myMessages?.[newIndex]?.message || "");
               setMessageIndex(newIndex);
             }
           }}
