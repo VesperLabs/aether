@@ -109,7 +109,7 @@ class Character extends Phaser.GameObjects.Container {
         global: Date.now() - POTION_COOLDOWN,
       },
       lastFlash: Date.now(),
-      lastDoorEntered: null,
+      isEnteringDoor: false,
       setFlash: false,
       isIdle: true,
       isAttacking: false,

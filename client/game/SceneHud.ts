@@ -406,7 +406,7 @@ function moveDirectHero(scene, time) {
   hero.direction = direction;
 
   /* If the hero is standing still do not update the server */
-  if (!hero.state.isIdle) {
+  if (!hero.state.isIdle && !hero.state.isEnteringDoor) {
     //if (time % 2 > 1)
     scene.socket.emit("playerInput", {
       vx,
@@ -414,6 +414,7 @@ function moveDirectHero(scene, time) {
       x: hero.x,
       y: hero.y,
       direction: hero.direction,
+      roomName: hero.roomName,
     });
   }
   hero.state.isIdle = hero.vx === vx && hero.vy === vy && vx === 0 && vy === 0;
