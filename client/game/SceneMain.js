@@ -77,6 +77,9 @@ class SceneMain extends Phaser.Scene {
           addPlayer(scene, player);
         }
       }
+      // tell the client we are not currently entering a door.
+      // this tells the hud not to send x/y events
+      scene.hero.state.isEnteringDoor = false;
       /* Add map npcs */
       for (const npc of npcs) {
         if (getNpc(scene, npc.id)) continue;
@@ -98,10 +101,10 @@ class SceneMain extends Phaser.Scene {
       if (player) {
         /* TODO: Maybe update the entire player here too */
         player.state.lastTeleport = lastTeleport;
+        // manually update coords so the player won't flicker in place before respawning
+        player.x = user.x;
+        player.y = user.y;
         if (isRespawn) {
-          // manually update coords so the player won't flicker in place before respawning
-          player.x = user.x;
-          player.y = user.y;
           player?.respawn();
         }
       } else {
@@ -259,9 +262,10 @@ class SceneMain extends Phaser.Scene {
       const player = getPlayer(this, s.socketId);
       if (!player || player?.state?.isDead) continue;
       if (!player.isHero) {
-        /* Don't interpolate users who are going through a door */
+        if (s?.roomName !== this?.roomName) continue;
+        /* Don't interpolate players who are respawning */
         const latestSnap = SI.vault.getById(playerSnapshot?.older);
-        const newestSnap = SI.vault.getById(npcSnapshot?.newer);
+        const newestSnap = SI.vault.getById(playerSnapshot?.newer);
         if (player?.state?.lastTeleport >= latestSnap?.time) continue;
         if (player?.state?.lastTeleport >= newestSnap?.time) continue;
         /* Update other player movements */
@@ -283,6 +287,7 @@ class SceneMain extends Phaser.Scene {
       /* Don't interpolate npcs who are respawning */
       const latestSnap = SI.vault.getById(npcSnapshot?.older);
       const newestSnap = SI.vault.getById(npcSnapshot?.newer);
+      if (s?.roomName !== this?.roomName) continue;
       if (npc?.state?.lastTeleport >= latestSnap?.time) continue;
       if (npc?.state?.lastTeleport >= newestSnap?.time) continue;
       npc.setPosition(s.x, s.y);
@@ -409,6 +414,7 @@ function initPlayerCollision(scene, player, colliders = []) {
       }
       /* If the door is not disabled let it teleport */
       if (!door.heroSpawn || door.isEnabled) {
+        player.state.isEnteringDoor = true;
         door.destroy();
         /* Wait for the door to go away before emitting the event */
         setTimeout(() => {
