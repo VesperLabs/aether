@@ -329,10 +329,9 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           socket.leave(oldRoom);
           socket.join(prev.destMap);
           socket.to(oldRoom).emit("remove", socketId);
+          scene.roomManager.rooms[oldRoom].playerManager.remove(socketId);
+          scene.roomManager.rooms[prev.destMap].playerManager.add(socketId);
         }
-
-        scene.roomManager.rooms[oldRoom].playerManager.remove(socketId);
-        scene.roomManager.rooms[prev.destMap].playerManager.add(socketId);
 
         player.x = next.centerPos.x;
         player.y = next.centerPos.y;

@@ -9,7 +9,7 @@ const PLAYER_DEFAULT_SPAWN = { roomName: "grassland-3", x: 1496, y: 2028 };
 
 function handlePlayerInput(scene, socketId, input) {
   if (!scene.players) return;
-  const { x, y, vx, vy, direction } = input;
+  const { x, y, vx, vy, direction, roomName } = input;
   const player = getPlayer(scene, socketId);
   if (!player) return;
   if (player.state.isDead) return;
@@ -18,6 +18,7 @@ function handlePlayerInput(scene, socketId, input) {
     player.vy = 0;
     return;
   }
+  if (player.roomName !== roomName) return; //player is changing room
   player.x = x;
   player.y = y;
   player.vx = vx;
