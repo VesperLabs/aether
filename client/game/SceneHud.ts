@@ -166,9 +166,9 @@ function addGlobalEventListeners(scene) {
 
     if (POTION_BASES.includes(item.base)) {
       if (hero.state.isPotioning) return;
-      hero.state.lastPotion = Date.now();
+      hero.state.lastPotion = new Date().getTime();
     } else {
-      hero.state.lastCast.global = Date.now();
+      hero.state.lastCast.global = new Date().getTime();
     }
     socket.emit("consumeItem", { item, location });
     window.dispatchEvent(
@@ -256,7 +256,7 @@ function updateAttackCooldown(hero) {
   const duration = hero?.isDualWielding() ? attackDelay * 2 : attackDelay;
   window.dispatchEvent(
     new CustomEvent("HERO_START_COOLDOWN", {
-      detail: { spellName: "attack", duration: duration, startTime: Date.now() },
+      detail: { spellName: "attack", duration: duration, startTime: new Date().getTime() },
     })
   );
 }
@@ -268,7 +268,7 @@ function updatePotionCooldown(hero) {
       detail: {
         spellName: "potion",
         duration: POTION_COOLDOWN,
-        startTime: Date.now(),
+        startTime: new Date().getTime(),
       },
     })
   );
@@ -286,7 +286,7 @@ function updateSpellCooldown(hero, abilitySlot) {
         spellName,
         duration: castDelay + baseCooldown,
         sharedDuration: castDelay,
-        startTime: Date.now(),
+        startTime: new Date().getTime(),
       },
     })
   );
@@ -385,7 +385,7 @@ function moveDirectHero(scene, time) {
     hero?.hasWeapon() &&
     !hero.hasRangedWeapon() &&
     !hero.state.isAttacking &&
-    hero.state.lastAttack < Date.now() - hero.getFullAttackDelay() - 60
+    hero.state.lastAttack < new Date().getTime() - hero.getFullAttackDelay() - 60
   ) {
     updateAttackCooldown(hero);
     hero?.doAttack?.({ count: 1, castAngle: hero.state.lastAngle, direction });

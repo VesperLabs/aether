@@ -292,7 +292,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
 
         socket.to(newRoom).emit("playerJoin", getFullCharacterState(player), {
           isRespawn: true,
-          lastTeleport: Date.now(),
+          lastTeleport: new Date().getTime(),
         });
 
         socket.emit("heroInit", {
@@ -340,7 +340,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         scene.db.updateUserMapDetails(player);
 
         socket.to(prev.destMap).emit("playerJoin", getFullCharacterState(player), {
-          lastTeleport: Date.now(),
+          lastTeleport: new Date().getTime(),
         });
 
         socket.emit("heroInit", {
@@ -789,7 +789,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         /* If the item has effects */
         if (POTION_BASES.includes(playerItem.base)) {
           /* Set potion cooldown */
-          player.state.lastPotion = Date.now();
+          player.state.lastPotion = new Date().getTime();
           if (playerItem?.effects?.hp) {
             //const hp = (parseInt(playerItem?.effects?.hp) / 100) * player?.stats?.maxHp;
             player.modifyStat("hp", playerItem?.effects?.hp);
@@ -836,7 +836,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         const player = scene?.players?.[socketId];
         // chat bubble
         if (args.message.charAt(0) === "!" && args.message.length > 1) {
-          player.state.lastBubbleMessage = Date.now();
+          player.state.lastBubbleMessage = new Date().getTime();
           player.state.bubbleMessage = args.message.substr(1);
           return;
         }
@@ -1114,7 +1114,7 @@ export default class Game {
   spawnTime: number;
   db: any;
   constructor({ httpServer, db }) {
-    this.spawnTime = Date.now();
+    this.spawnTime = new Date().getTime();
 
     this.io = new Server(httpServer, {
       cors: {
@@ -1152,7 +1152,7 @@ export default class Game {
     });
   }
   getUptime() {
-    const currentTime = Date.now();
+    const currentTime = new Date().getTime();
     const uptimeInMilliseconds = currentTime - this.spawnTime;
     return uptimeInMilliseconds;
   }

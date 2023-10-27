@@ -20,7 +20,7 @@ const StatusToolTip = ({ show }) => {
 
   useEffect(() => {
     if (!show) return;
-    fetch(`${process.env.SERVER_URL}/metrics?timestamp=${Date.now()}`, {
+    fetch(`${process.env.SERVER_URL}/metrics?timestamp=${new Date().getTime()}`, {
       method: "GET",
     })
       .then((response) => response.json())
@@ -33,8 +33,8 @@ const StatusToolTip = ({ show }) => {
       });
 
     //using sockets to calculate latency instead of webserver
-    socket.emit("latency", Date.now(), function (startTime) {
-      var latency = Date.now() - startTime;
+    socket.emit("latency", new Date().getTime(), function (startTime) {
+      var latency = new Date().getTime() - startTime;
       setSocketPing(latency);
     });
   }, [show]);

@@ -145,7 +145,7 @@ class AppServer {
       const totalPlayers = await db.countAllUsers();
       const { players, npcs, loots, doors } = scene ?? {};
 
-      const endTime = Date.now();
+      const endTime = new Date().getTime();
       const clientTimestamp = req?.query?.timestamp
         ? parseInt(req?.query?.timestamp as string, 10)
         : endTime;

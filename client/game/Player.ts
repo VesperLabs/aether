@@ -218,7 +218,7 @@ class Player extends Character {
     const { action, spellName } = this.getAttackActionName({ count });
 
     state.isAttacking = true;
-    state.lastAttack = Date.now();
+    state.lastAttack = new Date().getTime();
     this.action = action;
     this.direction = direction || this.direction;
 
@@ -244,9 +244,9 @@ class Player extends Character {
       if (this?.hasBuff("stun")) return;
       this.scene.socket.emit("castSpell", { abilitySlot, castAngle });
       //optimistic update
-      state.lastCast.global = Date.now();
+      state.lastCast.global = new Date().getTime();
       if (spellName) {
-        state.lastCast[spellName] = Date.now();
+        state.lastCast[spellName] = new Date().getTime();
       }
     }
 
@@ -389,7 +389,7 @@ class Player extends Character {
         if (isDamage) {
           scene.add.existing(new Hit(this.scene, this, elements));
           this.doFlashAnimation("0xFF0000");
-          this.state.lastFlash = Date.now();
+          this.state.lastFlash = new Date().getTime();
           this.state.isFlash = true;
         }
         break;
@@ -446,7 +446,7 @@ class Player extends Character {
 
 function checkIsFlash(p, delta) {
   /* Let us attack again when it is ready */
-  if (Date.now() - p.state.lastFlash > delta + 50 && p.state.isFlash) {
+  if (new Date().getTime() - p.state.lastFlash > delta + 50 && p.state.isFlash) {
     p.state.isFlash = false;
     p.drawCharacterFromUserData();
   }
