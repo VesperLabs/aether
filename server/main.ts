@@ -158,6 +158,7 @@ class AppServer {
         lootsOnGround: Object.keys(loots).length,
         serverSpawnTime: aetherServer?.spawnTime,
         ping: endTime - clientTimestamp,
+        serverTimestamp: endTime,
         upTime: aetherServer?.getUptime(),
       };
       res.json(metrics);
