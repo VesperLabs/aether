@@ -14,7 +14,9 @@ export async function fetchPlayers({ queryKey, pageParam = 1 }) {
 
 export async function fetchMetrics({ queryKey }) {
   const [_key] = queryKey;
-  const response = await fetch(`${process.env.SERVER_URL}/metrics?timestamp=${Date.now()}`);
+  const response = await fetch(
+    `${process.env.SERVER_URL}/metrics?timestamp=${new Date().getTime()}`
+  );
   if (!response.ok) {
     throw new Error(`${_key} response was not ok`);
   }

@@ -5,11 +5,11 @@ import { arePropsEqualWithKeys } from "@aether/shared";
 const CooldownTimer = memo(({ cooldown, color = "#FFF" }: any) => {
   const [percentage, setPercentage] = useState(0);
   let duration = cooldown?.duration ?? 0;
-  let startTime = cooldown?.startTime ?? Date.now();
+  let startTime = cooldown?.startTime ?? new Date().getTime();
 
   useEffect(() => {
     const triggerTimer = () => {
-      const currentTime = Date.now();
+      const currentTime = new Date().getTime();
       const elapsedTime = currentTime - startTime;
 
       const percentageElapsed = elapsedTime / duration;
