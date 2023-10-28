@@ -95,20 +95,20 @@ class Character extends Phaser.GameObjects.Container {
       doHpBuffRegen: false,
       doMpRegen: false,
       doSpRegen: false,
-      lastTeleport: new Date().getTime(),
-      deadTime: new Date().getTime(),
-      lastBuffPoison: new Date().getTime(),
-      lastHpRegen: new Date().getTime(),
-      lastHpBuffRegen: new Date().getTime(),
-      lastMpRegen: new Date().getTime(),
-      lastSpRegen: new Date().getTime(),
-      lastCombat: new Date().getTime() - POTION_COOLDOWN,
-      lastPotion: new Date().getTime() - POTION_COOLDOWN,
-      lastAttack: new Date().getTime() - POTION_COOLDOWN,
+      lastTeleport: Date.now(),
+      deadTime: Date.now(),
+      lastBuffPoison: Date.now(),
+      lastHpRegen: Date.now(),
+      lastHpBuffRegen: Date.now(),
+      lastMpRegen: Date.now(),
+      lastSpRegen: Date.now(),
+      lastCombat: Date.now() - POTION_COOLDOWN,
+      lastPotion: Date.now() - POTION_COOLDOWN,
+      lastAttack: Date.now() - POTION_COOLDOWN,
       lastCast: {
-        global: new Date().getTime() - POTION_COOLDOWN,
+        global: Date.now() - POTION_COOLDOWN,
       },
-      lastFlash: new Date().getTime(),
+      lastFlash: Date.now(),
       isEnteringDoor: false,
       setFlash: false,
       isIdle: true,
@@ -190,7 +190,7 @@ class Character extends Phaser.GameObjects.Container {
   checkAttackReady() {
     const attackDelay = this.getFullAttackDelay();
     const cooldown = attackDelay;
-    const timeElapsed = new Date().getTime() - this.state.lastAttack;
+    const timeElapsed = Date.now() - this.state.lastAttack;
     const timeRemaining = Math.max(cooldown - timeElapsed, 0);
     const percentageRemaining = (timeRemaining / cooldown) * 100;
     const isReady = percentageRemaining === 0;
@@ -199,7 +199,7 @@ class Character extends Phaser.GameObjects.Container {
   }
   checkPotionCooldown() {
     const cooldown = POTION_COOLDOWN; // Cooldown time in milliseconds
-    const timeElapsed = new Date().getTime() - this.state.lastPotion;
+    const timeElapsed = Date.now() - this.state.lastPotion;
     const timeRemaining = Math.max(cooldown - timeElapsed, 0);
     const percentageRemaining = (timeRemaining / cooldown) * 100;
     const isReady = percentageRemaining === 0;
@@ -214,7 +214,7 @@ class Character extends Phaser.GameObjects.Container {
     } else return 8 + this.bodySize;
   }
   checkOutOfCombat() {
-    const isOutOfCombat = new Date().getTime() - this.state.lastCombat > 5000;
+    const isOutOfCombat = Date.now() - this.state.lastCombat > 5000;
     return isOutOfCombat;
   }
   isDualWielding(key = "visibleEquipment") {
@@ -250,11 +250,11 @@ class Character extends Phaser.GameObjects.Container {
     return this.hasRangedWeaponLeft(key) || this.hasRangedWeaponRight(key);
   }
   checkCastReady(spellName?: string) {
-    const now = new Date().getTime();
+    const now = Date.now();
     let isThisSpellReady = true;
     if (spellName) {
       const baseCooldown = spellDetails?.[spellName]?.baseCooldown ?? 0;
-      const lastCast = this.state.lastCast?.[spellName] ?? new Date().getTime() - POTION_COOLDOWN;
+      const lastCast = this.state.lastCast?.[spellName] ?? Date.now() - POTION_COOLDOWN;
       isThisSpellReady = now - lastCast > this?.stats?.castDelay + baseCooldown;
     }
     const isGlobalReady = now - this.state.lastCast.global > this?.stats?.castDelay;

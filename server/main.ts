@@ -145,7 +145,7 @@ class AppServer {
       const totalPlayers = await db.countAllUsers();
       const { players, npcs, loots, doors } = scene ?? {};
 
-      const endTime = new Date().getTime();
+      const endTime = Date.now();
       const clientTimestamp = req?.query?.timestamp
         ? parseInt(req?.query?.timestamp as string, 10)
         : endTime;
@@ -158,7 +158,7 @@ class AppServer {
         lootsOnGround: Object.keys(loots).length,
         serverSpawnTime: aetherServer?.spawnTime,
         ping: endTime - clientTimestamp,
-        serverTimestamp: endTime,
+        serverTime: new Date().toString(),
         upTime: aetherServer?.getUptime(),
       };
       res.json(metrics);

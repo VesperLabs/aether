@@ -69,7 +69,7 @@ class Npc extends Character implements Npc {
   setDead() {
     this.expireBuffs(true);
     this.state.isDead = true;
-    this.state.deadTime = new Date().getTime();
+    this.state.deadTime = Date.now();
     this.state.bubbleMessage = null;
     this.setLockedPlayerId(null);
     this.vx = 0;
@@ -78,19 +78,17 @@ class Npc extends Character implements Npc {
   }
   tryRespawn() {
     if (!this.state.isDead) return;
-    if (new Date().getTime() - this.state.deadTime >= this.respawnTime) {
+    if (Date.now() - this.state.deadTime >= this.respawnTime) {
       this.x = this.startingCoords.x;
       this.y = this.startingCoords.y;
       this.calculateStats(true);
       this.state.isDead = false;
-      this.scene.io
-        .to(this.room.name)
-        .emit("respawnNpc", {
-          id: this?.id,
-          x: this.x,
-          y: this.y,
-          respawnTime: new Date().getTime(),
-        });
+      this.scene.io.to(this.room.name).emit("respawnNpc", {
+        id: this?.id,
+        x: this.x,
+        y: this.y,
+        respawnTime: Date.now(),
+      });
     }
   }
   checkInRange(target: any, range: number) {
@@ -102,7 +100,7 @@ class Npc extends Character implements Npc {
   }
   checkAttackReady(): any {
     const fullAttackDelay = this?.stats?.attackDelay + NPC_ATTACK_ADDED_DELAY;
-    if (new Date().getTime() - this.state.lastAttack > fullAttackDelay) {
+    if (Date.now() - this.state.lastAttack > fullAttackDelay) {
       this.state.npcAttackReady = true;
       this.state.isAttacking = false;
     }
@@ -201,7 +199,7 @@ class Npc extends Character implements Npc {
   setLockedPlayerId(id: string) {
     // If they are switching targets
     if (this.state.lockedPlayerId !== id && id) {
-      this.state.lastAttack = new Date().getTime();
+      this.state.lastAttack = Date.now();
       this.state.npcAttackReady = false;
     }
     this.state.lockedPlayerId = id;
@@ -212,9 +210,9 @@ class Npc extends Character implements Npc {
     const { scene, room, id } = this ?? {};
     const spellName = ability?.base;
 
-    this.state.lastCast.global = new Date().getTime();
+    this.state.lastCast.global = Date.now();
     if (spellName) {
-      this.state.lastCast[spellName] = new Date().getTime();
+      this.state.lastCast[spellName] = Date.now();
     }
 
     if (this?.hasBuff("stun")) return;
@@ -249,8 +247,7 @@ class Npc extends Character implements Npc {
       const details = spellDetails?.[spell?.base];
       if (!details) continue;
       // some spells like buffs have a long wait time, so we skip them
-      if (new Date().getTime() - this.state.lastCast.global < delta + details?.npcCastWait)
-        continue;
+      if (Date.now() - this.state.lastCast.global < delta + details?.npcCastWait) continue;
       // attack spells
       if (targetPlayer) {
         if (details?.allowedTargets?.includes("enemy") && details?.npcCastRange) {
@@ -282,7 +279,7 @@ class Npc extends Character implements Npc {
     const count = this.action === "attack_right" && this.hasWeaponLeft() ? 2 : 1;
     // Set state to attacking and record attack time
     this.state.isAttacking = true;
-    this.state.lastAttack = new Date().getTime();
+    this.state.lastAttack = Date.now();
     this.state.npcAttackReady = false;
 
     if (this?.hasBuff("stun")) return;
@@ -334,7 +331,7 @@ class Npc extends Character implements Npc {
     }
   }
   stillAggro() {
-    return this.state.lockedPlayerId && new Date().getTime() - this.state.lastCombat > 5000;
+    return this.state.lockedPlayerId && Date.now() - this.state.lastCombat > 5000;
   }
   chaseOrMove({ targetPlayer, delta, time }) {
     // Check if player is in range for aggro

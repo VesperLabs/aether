@@ -138,7 +138,7 @@ function App({ socket, debug, game }) {
   };
 
   const addMessage = (payload: Message) => {
-    setMessages((prev) => [...prev, { ...payload, timestamp: new Date().getTime() }]);
+    setMessages((prev) => [...prev, { ...payload, timestamp: Date.now() }]);
   };
 
   const onConnect = () => {
