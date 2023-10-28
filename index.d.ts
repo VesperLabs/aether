@@ -89,7 +89,7 @@ interface ServerMetrics {
   doorsLoaded: number;
   lootsOnGround: number;
   serverSpawnTime: number;
-  serverTimestamp: number;
+  serverTime: string;
   upTime: number;
   ping: number;
 }

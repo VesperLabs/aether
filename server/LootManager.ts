@@ -37,7 +37,7 @@ class LootManager {
     this.scene = scene;
     this.room = room;
     this.loots = [];
-    this.lastMapLootSpawn = new Date().getTime() - LOOT_SPAWN_CYCLE_TIME;
+    this.lastMapLootSpawn = Date.now() - LOOT_SPAWN_CYCLE_TIME;
     this.mapLootList = initiateMapLootList(this.room.tileMap);
   }
   create(lootSpawn: CreateLoot) {
@@ -65,7 +65,7 @@ class LootManager {
     if (this.scene.loots[id]) delete this.scene.loots[id];
   }
   expireLoots() {
-    const now = new Date().getTime();
+    const now = Date.now();
     const { loots } = this;
     for (const loot of loots) {
       const isExpired = now - loot.dropTime > LOOT_EXPIRE_TIME;
@@ -81,7 +81,7 @@ class LootManager {
     }
   }
   spawnMapLoots() {
-    const now = new Date().getTime();
+    const now = Date.now();
     const readyToSpawn = now - this.lastMapLootSpawn > LOOT_SPAWN_CYCLE_TIME;
     // skip if we aren't ready to spawn on this map yet
     if (!readyToSpawn) return;

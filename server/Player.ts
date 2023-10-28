@@ -49,7 +49,7 @@ class Player extends ServerCharacter implements ServerPlayer {
       this.state.lastAngle = castAngle;
     }
 
-    this.state.lastAttack = new Date().getTime();
+    this.state.lastAttack = Date.now();
     this.state.isAttacking = true;
 
     room?.spellManager.create({
@@ -70,9 +70,9 @@ class Player extends ServerCharacter implements ServerPlayer {
     // use the mana
     const mpCost = ability?.stats?.mpCost || 1;
 
-    this.state.lastCast.global = new Date().getTime();
+    this.state.lastCast.global = Date.now();
     if (spellName) {
-      this.state.lastCast[spellName] = new Date().getTime();
+      this.state.lastCast[spellName] = Date.now();
     }
     this.modifyStat("mp", -mpCost);
     this.scene.io.to(this?.roomName).emit("modifyPlayerStat", {
@@ -320,7 +320,7 @@ class Player extends ServerCharacter implements ServerPlayer {
     this.abilities[slotName] = null;
   }
   checkBubbleMessage() {
-    const now = new Date().getTime();
+    const now = Date.now();
     if (now - this.state.lastBubbleMessage > 5000) {
       this.state.bubbleMessage = null;
     }

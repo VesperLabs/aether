@@ -82,7 +82,7 @@ const Message: React.FC<MessageProps> = ({ data }) => {
   };
 
   const color: string = colorsMap?.[type] || "white";
-  const isOld = new Date().getTime() - data?.timestamp > 5000;
+  const isOld = Date.now() - data?.timestamp > 5000;
   const from = getFrom(data);
   return (
     <Flex>

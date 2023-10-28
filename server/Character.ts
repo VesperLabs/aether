@@ -228,7 +228,7 @@ class ServerCharacter extends Character {
 
     /* Update the victim */
     victim.modifyStat("hp", -eleDamage);
-    victim.state.lastCombat = new Date().getTime();
+    victim.state.lastCombat = Date.now();
     victim.combatDispelBuffs();
 
     /* Npcs lock on and chase when a user hits them */
@@ -299,7 +299,7 @@ class ServerCharacter extends Character {
     }
     const totalDamage = physicalDamage + eleDamage;
     victim.modifyStat("hp", -totalDamage);
-    victim.state.lastCombat = new Date().getTime();
+    victim.state.lastCombat = Date.now();
     victim.combatDispelBuffs();
     /* Npcs lock on and chase when a user hits them */
     if (victim.state.isRobot) {
@@ -411,7 +411,7 @@ class ServerCharacter extends Character {
       : this.calculateAttackDamage(victim);
   }
   doRegen() {
-    const now = new Date().getTime();
+    const now = Date.now();
     // we only regen HP if we have are out of combat (have rest buff) or have another regen buff
     const isResting = this.buffs?.some((b) => ["rest"]?.includes(b?.name));
     const regenBuff = this.buffs?.find((b) => ["regeneration"]?.includes(b?.name));
@@ -463,7 +463,7 @@ class ServerCharacter extends Character {
         const amount = -(poisonBuff?.stats?.poisonDamage || 0);
         this.state.doBuffPoison = true;
         this.state.lastBuffPoison = now;
-        this.state.lastCombat = new Date().getTime();
+        this.state.lastCombat = Date.now();
         this.combatDispelBuffs();
         this.modifyStat("hp", amount);
       }
@@ -521,7 +521,7 @@ class ServerCharacter extends Character {
       duration: scaleDuration ? duration * level : duration,
       level,
       stats: statsWithLevelMultiplier,
-      spawnTime: new Date().getTime(),
+      spawnTime: Date.now(),
       dispelInCombat: buff?.dispelInCombat,
     });
 
@@ -558,7 +558,7 @@ class ServerCharacter extends Character {
       for (const buff of this.buffs) {
         /* Buff timed out */
         const limitedBuff = buff.duration > 0; // -1 is an unlimited buff
-        const isTimedOut = new Date().getTime() - buff.spawnTime > buff.duration;
+        const isTimedOut = Date.now() - buff.spawnTime > buff.duration;
         /* Buff got expired some other way */
         const isExpired = buff?.isExpired;
         if (isExpired || (isTimedOut && limitedBuff)) {

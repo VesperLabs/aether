@@ -46,7 +46,7 @@ class Spell extends Phaser.GameObjects.Container {
     this.spellName = spellName;
     this.direction = direction ?? caster?.direction;
     this.state = {
-      spawnTime: new Date().getTime(),
+      spawnTime: Date.now(),
       isExpired: false,
     };
     this.velocityX = 0;
@@ -141,7 +141,7 @@ class Spell extends Phaser.GameObjects.Container {
     this.state.isExpired =
       this?.maxDistance > -1
         ? distanceTo(this, this.spawnPoint) >= this.maxDistance
-        : new Date().getTime() - this.state.spawnTime > this.maxActiveTime;
+        : Date.now() - this.state.spawnTime > this.maxActiveTime;
     if (this.state.isExpired) return;
     this.adjustSpellPosition();
     this.checkCollisions();

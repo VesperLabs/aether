@@ -27,7 +27,7 @@ class Loot implements Loot {
     this.x = loot.x;
     this.y = loot.y;
     this.item = loot.item;
-    this.dropTime = new Date().getTime();
+    this.dropTime = Date.now();
     this.texture = loot?.texture;
     this.grabMessage = loot?.grabMessage;
     this.isPermanent = loot?.isPermanent;
