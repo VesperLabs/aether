@@ -25,6 +25,30 @@ RUN pip3 --version
 # Set working directory
 WORKDIR /app
 
+ARG DEBUG
+ARG MONGO_URL
+ARG SERVER_FPS
+ARG SERVER_URL
+ARG PORT
+ARG ASSETS_URL
+ARG PUBLIC_DIR
+
+ENV DEBUG=$DEBUG
+ENV MONGO_URL=$MONGO_URL
+ENV SERVER_FPS=$SERVER_FPS
+ENV SERVER_URL=$SERVER_URL
+ENV PORT=$PORT
+ENV ASSETS_URL=$ASSETS_URL
+ENV PUBLIC_DIR=$PUBLIC_DIR
+
+RUN echo "DEBUG: $DEBUG" && \
+    echo "MONGO_URL: $MONGO_URL" && \
+    echo "SERVER_FPS: $SERVER_FPS" && \
+    echo "SERVER_URL: $SERVER_URL" && \
+    echo "PORT: $PORT" && \
+    echo "ASSETS_URL: $ASSETS_URL" && \
+    echo "PUBLIC_DIR: $PUBLIC_DIR"
+
 # Install global dependencies
 RUN npm install -g vite
 
