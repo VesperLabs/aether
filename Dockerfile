@@ -4,8 +4,8 @@ FROM node:lts-alpine
 # Set the working directory in the container
 WORKDIR /app
 
-# Install Python 3
-RUN apk add --no-cache python3 && \
+# Install Python 3 and pip3
+RUN apk add --no-cache python3 py3-pip && \
     if [ ! -e /usr/bin/python ]; then ln -sf python3 /usr/bin/python; fi && \
     python3 --version && \
     pip3 --version
