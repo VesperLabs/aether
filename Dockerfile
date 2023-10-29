@@ -1,0 +1,66 @@
+# ---- Build Stage ----
+FROM node:lts AS build
+
+# Update package lists
+RUN apt-get update
+
+# Install each package individually
+RUN apt-get install -y python3
+RUN apt-get install -y python3-pip
+RUN apt-get install -y pkg-config
+RUN apt-get install -y libcairo2-dev
+RUN apt-get install -y libpango1.0-dev
+RUN apt-get install -y libpng-dev
+RUN apt-get install -y libjpeg-dev
+RUN apt-get install -y libgif-dev
+RUN apt-get install -y librsvg2-dev
+
+# Clean up APT cache
+RUN rm -rf /var/lib/apt/lists/*
+
+# Check Python and Pip version
+RUN python3 --version
+RUN pip3 --version
+
+# Set working directory
+WORKDIR /app
+
+# Install global dependencies
+RUN npm install -g vite
+
+# Copy package.json and package-lock.json before other files
+# Utilize Docker cache to save re-installing dependencies if unchanged
+COPY ./package*.json ./
+COPY ./client/package*.json ./client/
+COPY ./server/package*.json ./server/
+
+# Install npm dependencies
+RUN npm install
+
+# Copy everything over
+COPY . .
+
+# Build the client and the server
+RUN npm run client:build
+RUN npm run server:build
+
+# ---- Production Stage ----
+FROM node:lts AS production
+
+WORKDIR /app
+
+# Copy necessary files and directories from the previous stage
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/package*.json ./
+COPY --from=build /app/public ./public  
+COPY --from=build /app/dist ./dist 
+
+# Here we reinstall the canvas module specifically in the production environment
+RUN npm install canvas --build-from-source
+
+# Expose necessary ports (adjust if needed)
+EXPOSE 8000
+
+
+# This assumes you have a start script in your server's package.json
+CMD ["npm", "run", "server:run"]

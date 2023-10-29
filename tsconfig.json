@@ -8,7 +8,13 @@
     "esModuleInterop": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext", "scripthost"],
     "jsx": "react-jsx",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "paths": {
+      "@aether/ui": ["./ui"],
+      "@aether/server": ["./server"],
+      "@aether/shared": ["./shared"],
+      "@aether/client": ["./client"]
+    }
   },
   "include": [
     "server/**/*",
