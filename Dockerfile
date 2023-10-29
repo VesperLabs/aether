@@ -3,6 +3,7 @@ FROM node:lts
 
 # Set the working directory in the container
 WORKDIR /app
+ENV NODE_ENV production
 
 # Update package lists
 RUN apt-get update
