@@ -33,6 +33,8 @@ RUN npm install -g vite
 COPY ./package*.json ./
 COPY ./client/package*.json ./client/
 COPY ./server/package*.json ./server/
+COPY ./server/package*.json ./ui/
+COPY ./server/package*.json ./shared/
 
 # Install npm dependencies
 RUN npm install
