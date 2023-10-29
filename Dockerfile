@@ -2,10 +2,37 @@
 FROM node:lts
 
 # Set the working directory in the container
-WORKDIR /
+WORKDIR /app
+
+# Update package lists
+RUN apt-get update
+
+# Install each package individually
+RUN apt-get install -y python3
+RUN apt-get install -y python3-pip
+RUN apt-get install -y pkg-config
+RUN apt-get install -y libcairo2-dev
+RUN apt-get install -y libpango1.0-dev
+RUN apt-get install -y libpng-dev
+RUN apt-get install -y libjpeg-dev
+RUN apt-get install -y libgif-dev
+RUN apt-get install -y librsvg2-dev
+
+# Clean up APT cache
+RUN rm -rf /var/lib/apt/lists/*
+
+# Check Python and Pip version
+RUN python3 --version
+RUN pip3 --version
+
+# Copy package.json and package-lock.json (if available)
+COPY package*.json ./
 
 # Install app dependencies
 RUN npm install
+
+# Copy the rest of the application
+COPY . .
 
 # Build the application
 RUN npm run server:build && npm run client:build
