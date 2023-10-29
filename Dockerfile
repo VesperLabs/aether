@@ -4,9 +4,6 @@ FROM node:lts-alpine
 # Set the working directory in the container
 WORKDIR /app
 
-# Update package lists and install ntp
-RUN apk --no-cache add ntp
-
 COPY . /app
 
 RUN npm install
