@@ -29,8 +29,7 @@ RUN pip3 --version
 # Copy package.json and package-lock.json (if available)
 COPY package*.json ./
 
-# Install app dependencies
-RUN npm install
+RUN npm install husky --no-save && npm install
 
 # Copy the rest of the application
 COPY . .
