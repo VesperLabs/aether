@@ -1,6 +1,8 @@
 # Use an official Node.js LTS version as the base image
 FROM node:lts
 
+# Set the working directory in the container
+WORKDIR /
 
 # Install app dependencies
 RUN npm install
