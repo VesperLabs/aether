@@ -1,17 +1,9 @@
 # Use an official Node.js LTS version as the base image
 FROM node:lts
 
-# Set the working directory in the container
-WORKDIR /app
-
-# Copy package.json and package-lock.json (if available)
-COPY package*.json ./
 
 # Install app dependencies
 RUN npm install
-
-# Copy the rest of the application
-COPY . .
 
 # Build the application
 RUN npm run server:build && npm run client:build
