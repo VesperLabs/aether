@@ -1,8 +1,11 @@
 # ---- Build Stage ----
 FROM node:lts AS build
 
-# Update package lists
-RUN apt-get update
+# Install NTP
+RUN apt-get update && apt-get install -y ntp
+
+# Synchronize time with NTP server (you can choose a different server if needed)
+RUN service ntp start
 
 # Install each package individually
 RUN apt-get install -y python3
