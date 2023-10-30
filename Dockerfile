@@ -4,7 +4,7 @@ FROM node:lts AS build
 # Update package lists
 RUN apt-get update
 
-RUN apt-get install ntp
+RUN apt-get install -y ntp
 RUN apt-get install -y tzdata && \
     ln -fs /usr/share/zoneinfo/UTC /etc/localtime && \
     dpkg-reconfigure -f noninteractive tzdata
