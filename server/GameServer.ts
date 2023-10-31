@@ -71,6 +71,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
 
     io.on("connection", (socket: Socket) => {
       const socketId = socket.id;
+      let peerId = null;
 
       socket.on("demoLogin", async ({ charClass } = {}) => {
         if (!charClass) return socket.emit("formError", { error: "No class" });
@@ -78,6 +79,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         const user = createBaseUser(charClass);
         const player = scene.roomManager.rooms[user.roomName].playerManager.create({
           socketId,
+          peerId,
           isDemoAccount: true,
           ...user,
         });
@@ -102,6 +104,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           },
           { isLogin: true }
         );
+
         socket.to(roomName).emit("playerJoin", getFullCharacterState(player), { isLogin: true });
       });
 
@@ -124,6 +127,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
 
         const player = scene.roomManager.rooms[user.roomName].playerManager.create({
           socketId,
+          peerId,
           ...user,
         });
 
@@ -1082,6 +1086,16 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         /* Save the user's data */
         scene.db.updateUser(player);
         io.to(player?.roomName).emit("playerUpdate", getFullCharacterState(player));
+      });
+
+      socket.on("peerInit", (pId) => {
+        peerId = pId;
+      });
+      socket.on("peerConnect", ({ peerId, socketId }) => {
+        socket.to(socketId).emit("connectPeer", { peerId, socketId });
+      });
+      socket.on("peerConnect", ({ peerId, socketId }) => {
+        socket.to(socketId).emit("connectPeer", { peerId, socketId });
       });
     });
   }

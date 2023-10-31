@@ -278,6 +278,7 @@ class SceneMain extends Phaser.Scene {
 
     enableDoors(this);
     checkEntityProximity(this, time);
+    checkPlayerProximity(this, time);
 
     if (!npcSnapshot) return;
     /* Update NPC x and y */
@@ -311,29 +312,22 @@ class SceneMain extends Phaser.Scene {
   }
 }
 
-function checkEntityProximity(scene, time) {
-  if (time % 4 > 1) return;
-  const { hero } = scene ?? {};
-  let coords = {};
+// adds some extra pixels around an entity
+function extendBounds(bounds, extraPixels) {
+  return {
+    x: bounds.x - extraPixels,
+    y: bounds.y - extraPixels,
+    width: bounds.width + 2 * extraPixels,
+    height: bounds.height + 2 * extraPixels,
+  };
+}
+
+function getClosestEntity(hero, entities) {
   let closestEntity;
   let closestDistance = Infinity;
-
-  hero?.body?.getBounds(coords);
-
-  // Add extra pixels to the hero's bounds
-  const extraPixels = 10; // Adjust this value to add the desired number of extra pixels
-  coords.x -= extraPixels;
-  coords.y -= extraPixels;
-  coords.width += extraPixels * 2;
-  coords.height += extraPixels * 2;
-
-  const npcs = scene.npcs.getChildren();
-  const signs = scene.signs.getChildren();
-
-  /* Loop through entities, if hero is intersecting, find npc wth closest distance to hero */
-  for (const entity of [...npcs, ...signs]) {
+  for (const entity of entities) {
     if (!["keeper", "sign"].includes(entity?.kind)) continue;
-    if (RectangleToRectangle(coords, entity.getBounds())) {
+    if (RectangleToRectangle(hero, entity.getBounds())) {
       const distance = distanceTo(entity, hero);
       if (distance < closestDistance) {
         closestEntity = entity;
@@ -341,18 +335,78 @@ function checkEntityProximity(scene, time) {
       }
     }
   }
+  return closestEntity;
+}
 
-  /* Update the hero to be targeting them */
-  if (closestEntity && !hero.state.isDead) {
-    if (hero.state.targetNpcId !== closestEntity?.id && !closestEntity?.state?.lockedPlayerId) {
-      hero.state.targetNpcId = closestEntity?.id;
-      window.dispatchEvent(new CustomEvent("HERO_NEAR_NPC", { detail: closestEntity?.id }));
+// Modify to return all nearby players
+function getNearbyPlayers(hero, players) {
+  let nearbyPlayers = [];
+  for (const player of players) {
+    if (player.isHero) continue;
+    if (distanceTo(player, hero) < 100) {
+      nearbyPlayers.push(player);
     }
-  } else {
-    if (hero.state.targetNpcId) {
-      hero.state.targetNpcId = null;
-      window.dispatchEvent(new CustomEvent("HERO_NEAR_NPC", { detail: null }));
+  }
+  return nearbyPlayers; // returns a list of player objects
+}
+
+function checkPlayerProximity(scene, time) {
+  if (time % 11 > 1) return;
+  const { hero } = scene ?? {};
+
+  if (!hero || hero.state.isDead) return;
+
+  const players = scene.players.getChildren();
+
+  // Get the list of nearby players
+  const nearbyPlayers = getNearbyPlayers(hero, players);
+  const nearbyPeerIds = nearbyPlayers.map((player) => player.peerId);
+
+  // If hero.state.nearbyPeerIds doesn't exist, initialize it
+  if (!hero.state.nearbyPeerIds) {
+    hero.state.nearbyPeerIds = [];
+  }
+
+  // Identify players that have newly entered the hero's proximity
+  for (const peerId of nearbyPeerIds) {
+    if (!hero.state.nearbyPeerIds.includes(peerId)) {
+      console.log("NEAR");
+      window.dispatchEvent(new CustomEvent("HERO_NEAR_PLAYER", { detail: { peerId } }));
     }
+  }
+
+  // Identify players that have left the hero's proximity
+  for (const peerId of hero.state.nearbyPeerIds) {
+    if (!nearbyPeerIds.includes(peerId)) {
+      console.log("FAR");
+      window.dispatchEvent(new CustomEvent("HERO_AWAY_PLAYER", { detail: { peerId } }));
+    }
+  }
+
+  // Update the hero's state to the new list of nearby players
+  hero.state.nearbyPeerIds = nearbyPeerIds;
+}
+
+function checkEntityProximity(scene, time) {
+  if (time % 11 > 1) return;
+  const { hero } = scene ?? {};
+
+  if (!hero || hero.state.isDead) return;
+
+  const heroBounds = extendBounds(hero?.body?.getBounds({}), 10); // 10 is for extraPixels
+  const entities = [...scene.npcs.getChildren(), ...scene.signs.getChildren()];
+  const closestEntity = getClosestEntity(heroBounds, entities);
+
+  if (
+    closestEntity &&
+    hero.state.targetNpcId !== closestEntity?.id &&
+    !closestEntity?.state?.lockedPlayerId
+  ) {
+    hero.state.targetNpcId = closestEntity?.id;
+    window.dispatchEvent(new CustomEvent("HERO_NEAR_NPC", { detail: closestEntity?.id }));
+  } else if (!closestEntity && hero.state.targetNpcId) {
+    hero.state.targetNpcId = null;
+    window.dispatchEvent(new CustomEvent("HERO_NEAR_NPC", { detail: null }));
   }
 }
 

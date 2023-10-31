@@ -14,6 +14,7 @@ import { spellDetails } from ".";
 class Character extends Phaser.GameObjects.Container {
   startingCoords: Coordinate;
   socketId: string;
+  peerId: string;
   id: string;
   isHero: boolean;
   roomName: string;
@@ -52,6 +53,7 @@ class Character extends Phaser.GameObjects.Container {
       x,
       y,
       socketId,
+      peerId,
       id,
       isHero = false,
       room,
@@ -77,6 +79,7 @@ class Character extends Phaser.GameObjects.Container {
     this.charClass = charClass;
     this.startingCoords = { x, y };
     this.socketId = socketId;
+    this.peerId = peerId;
     this.id = id;
     this.isHero = isHero;
     this.roomName = roomName;

@@ -4,31 +4,29 @@ import GameServer from "./GameServer";
 import { initDatabase } from "./db";
 import { initFakeDatabase } from "./db/fake";
 import { calculateStats, getFullCharacterState } from "./utils";
+import { PeerServer, PeerServerEvents } from "peer";
 import { default as http, Server } from "http";
 config({ path: path.join(__dirname, "/../.env") });
 const cors = require("cors");
 const express = require("express");
 
+const PEER_SERVER_PATH = process.env.PEER_SERVER_PATH ?? "/peerjs";
+const PEER_SERVER_PORT = parseInt(process.env.PEER_SERVER_PORT);
+const PORT = process.env.PORT;
+const MONGO_URL = process.env.MONGO_URL;
+const SERVER_URL = process.env.SERVER_URL;
+const SERVER_FPS = process.env.SERVER_FPS;
+
 class AppServer {
   private app;
   private httpServer: Server;
+  private peerServer: PeerServerEvents;
 
   constructor() {
     this.app = express();
     this.httpServer = http.createServer(this.app);
-  }
-
-  redirectInit() {
-    this.app.use(
-      cors({
-        origin: "*", // Replace with your allowed origin
-      })
-    );
-
-    this.app.use(express.static(path.join(__dirname, process.env.PUBLIC_DIR)));
-
-    this.httpServer.listen(process.env.PORT, () => {
-      console.log(`💻 Running in redirect mode to ${process.env.REDIRECT_URL}`);
+    this.peerServer = PeerServer({ port: PEER_SERVER_PORT, path: PEER_SERVER_PATH }, (e) => {
+      console.log(`💻 Peerserver @ ${PEER_SERVER_PATH}:${PEER_SERVER_PORT}`);
     });
   }
 
@@ -40,7 +38,6 @@ class AppServer {
 
     const app = this.app;
     const httpServer = this.httpServer;
-
     const aetherServer = new GameServer({ httpServer, db });
 
     app.use(
@@ -169,11 +166,9 @@ class AppServer {
       res.json({ string: "ok" });
     });
 
-    httpServer.listen(process.env.PORT, () => {
+    httpServer.listen(PORT, () => {
       console.log(
-        `💻 Running ${process.env.MONGO_URL ? "[online]" : "[offline]"} on ${
-          process.env.SERVER_URL
-        } @ ${process.env.SERVER_FPS}fps`
+        `💻 Running ${MONGO_URL ? "[online]" : "[offline]"} on ${SERVER_URL} @ ${SERVER_FPS}fps`
       );
     });
   }
@@ -189,8 +184,4 @@ process.once("SIGUSR2", function () {
 
 const server = new AppServer();
 
-if (process.env.REDIRECT_URL) {
-  server.redirectInit();
-} else {
-  server.initialize();
-}
+server.initialize();
