@@ -48,6 +48,7 @@ ENV PORT=$PORT
 ENV ASSETS_URL=$ASSETS_URL
 ENV PUBLIC_DIR=$PUBLIC_DIR
 ENV PEER_SERVER_PORT=$PEER_SERVER_PORT
+ENV PEER_CLIENT_PORT=$PEER_CLIENT_PORT
 
 RUN echo "DEBUG: $DEBUG" && \
     echo "MONGO_URL: $MONGO_URL" && \
@@ -56,7 +57,8 @@ RUN echo "DEBUG: $DEBUG" && \
     echo "PORT: $PORT" && \
     echo "ASSETS_URL: $ASSETS_URL" && \
     echo "PUBLIC_DIR: $PUBLIC_DIR" && \
-    echo "PEER_SERVER_PORT: $PEER_SERVER_PORT"
+    echo "PEER_SERVER_PORT: $PEER_SERVER_PORT" && \
+    echo "PEER_CLIENT_PORT: $PEER_CLIENT_PORT"
 
 # Install global dependencies
 RUN npm install -g vite
