@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { Box, Flex, Modal } from "@aether/ui";
+import { Flex } from "@aether/ui";
 import { isMobile } from "../../shared/utils";
 import { useAppContext } from "../ui";
 import { useOnMountUnsafe } from "./useOnMountSafe";
@@ -10,11 +10,13 @@ const peers = {};
 const VIDEO_SIZE = 50;
 
 function VideoFrame() {
+  const showVideo = getQueryParam("video") === "true";
   const { peer, socket } = useAppContext();
   const myVideoRef = useRef(null);
   const videoGridRef = useRef(null);
 
   useOnMountUnsafe(() => {
+    if (!showVideo) return;
     if (isMobile) return;
     // tell the server which peer we are
     peer.on("open", (peerId) => {
@@ -86,8 +88,6 @@ function VideoFrame() {
       videoGridRef.current.append(video);
     }
   }
-
-  const showVideo = getQueryParam("video") === "true";
 
   return showVideo ? (
     <Flex

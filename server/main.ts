@@ -10,7 +10,6 @@ config({ path: path.join(__dirname, "/../.env") });
 const cors = require("cors");
 const express = require("express");
 
-const PEER_SERVER_PATH = process.env.PEER_SERVER_PATH ?? "/peerjs";
 const PEER_SERVER_PORT = parseInt(process.env.PEER_SERVER_PORT);
 const PORT = process.env.PORT;
 const MONGO_URL = process.env.MONGO_URL;
@@ -25,8 +24,8 @@ class AppServer {
   constructor() {
     this.app = express();
     this.httpServer = http.createServer(this.app);
-    this.peerServer = PeerServer({ port: PEER_SERVER_PORT, path: PEER_SERVER_PATH }, (e) => {
-      console.log(`💻 Peerserver @ ${PEER_SERVER_PATH}:${PEER_SERVER_PORT}`);
+    this.peerServer = PeerServer({ port: PEER_SERVER_PORT }, (e) => {
+      console.log(`💻 Peerserver @ /peerjs:${PEER_SERVER_PORT}`);
     });
   }
 
