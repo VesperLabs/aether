@@ -194,6 +194,12 @@ function changeMusic(scene) {
   scene.load.start();
 }
 
+const getQueryParam = (param) => {
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  return urlParams.get(param);
+};
+
 export {
   SFX_VOLUME,
   MUSIC_VOLUME,
@@ -215,4 +221,5 @@ export {
   BLANK_TEXTURE,
   PLAYER_GRAB_RANGE,
   changeMusic,
+  getQueryParam,
 };
