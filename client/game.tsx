@@ -14,13 +14,15 @@ import Peer from "peerjs";
 const debug = process.env.DEBUG;
 const SERVER_URL = process.env.SERVER_URL as string;
 const REDIRECT_URL = process.env.REDIRECT_URL as string;
-const PEER_PORT = parseInt(process.env.PEER_CLIENT_PORT) ?? parseInt(process.env.PEER_SERVER_PORT);
+const PEER_CLIENT_PORT = parseInt(process.env.PEER_CLIENT_PORT);
+const PEER_CLIENT_PATH = process.env.PEER_CLIENT_PATH as string;
 
 const socket = socketIOClient(SERVER_URL);
 
 const peer = new Peer(undefined, {
   host: "/",
-  port: PEER_PORT,
+  ...(PEER_CLIENT_PORT ? { port: PEER_CLIENT_PORT } : {}),
+  ...(PEER_CLIENT_PATH ? { path: PEER_CLIENT_PATH } : {}),
 });
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
