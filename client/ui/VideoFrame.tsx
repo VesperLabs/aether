@@ -4,14 +4,16 @@ import { isMobile } from "../../shared/utils";
 import { useAppContext } from "../ui";
 import { useOnMountUnsafe } from "./useOnMountSafe";
 import { getQueryParam } from "../utils";
+import { MediaConnection } from "peerjs";
 
-const peers = {};
+const peers: Record<string, MediaConnection> = {};
 const VIDEO_SIZE = "8vh";
 
 export default function VideoFrame() {
   const showVideo = getQueryParam("video") === "true";
   const { peer } = useAppContext();
   const videoGridRef = useRef(null);
+
   const myStream = useUserMedia({
     video: {
       width: { min: 100, ideal: 720 },
@@ -24,12 +26,12 @@ export default function VideoFrame() {
   });
 
   function connectToNewUser(peerId, stream) {
-    const call = peer.call(peerId, stream);
+    const call: MediaConnection = peer.call(peerId, stream);
     const video = document.createElement("video");
-    call.on("stream", (userVideoStream) => {
+    call.once("stream", (userVideoStream) => {
       addVideoStream(video, userVideoStream, peerId);
     });
-    call.on("close", () => {
+    call.once("close", () => {
       document.getElementById(peerId).remove();
       delete peers[peerId];
     });
@@ -59,19 +61,19 @@ export default function VideoFrame() {
     const handleCall = (call) => {
       call.answer(myStream);
       const video = document.createElement("video");
-      call.on("stream", (userVideoStream) => {
+      call.once("stream", (userVideoStream) => {
         addVideoStream(video, userVideoStream, call?.peer);
       });
     };
 
     // Function to handle new user connection.
-    const handleHeroNearPlayer = (e) => {
+    const handleHeroNearPlayer = (e: CustomEvent) => {
       const peerId = e?.detail?.peerId;
       connectToNewUser(peerId, myStream);
     };
 
     // Function to handle user disconnection.
-    const handleHeroAwayPlayer = (e) => {
+    const handleHeroAwayPlayer = (e: CustomEvent) => {
       const peerId = e?.detail?.peerId;
       if (peers[peerId]) {
         peers[peerId].close();
@@ -86,9 +88,9 @@ export default function VideoFrame() {
       peer.off("call", handleCall);
       window.removeEventListener("HERO_NEAR_PLAYER", handleHeroNearPlayer);
       window.removeEventListener("HERO_AWAY_PLAYER", handleHeroAwayPlayer);
-      // Object.values(peers).forEach((peerConnection) => {
-      //   peerConnection.close();
-      // });
+      Object.values(peers).forEach((peerCall: MediaConnection) => {
+        peerCall.close();
+      });
     };
   }, [showVideo, isMobile, myStream]);
 
