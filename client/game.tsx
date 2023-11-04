@@ -14,12 +14,15 @@ import Peer from "peerjs";
 const debug = process.env.DEBUG;
 const SERVER_URL = process.env.SERVER_URL as string;
 const REDIRECT_URL = process.env.REDIRECT_URL as string;
+const PEER_PORT = parseInt(process.env.PEER_CLIENT_PORT) ?? parseInt(process.env.PEER_SERVER_PORT);
+
 const socket = socketIOClient(SERVER_URL);
+
 const peer = new Peer(undefined, {
   host: "/",
-  port: 9000,
-  path: "/peerjs",
+  port: PEER_PORT,
 });
+
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 const devicePixelRatio = window.devicePixelRatio || 1;
 const gameWidth = window.innerWidth * devicePixelRatio;
