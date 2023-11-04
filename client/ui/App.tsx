@@ -17,6 +17,8 @@ import "react-tooltip/dist/react-tooltip.css";
 import { Theme } from "theme-ui";
 import { Socket } from "socket.io-client";
 import { CONSUMABLES_BASES, MINI_MAP_SIZE, isMobile } from "@aether/shared";
+import Peer from "peerjs";
+import VideoFrame from "./VideoFrame";
 
 interface AppContextValue {
   isLoggedIn: boolean;
@@ -70,6 +72,7 @@ interface AppContextValue {
   setPartyInvites: React.Dispatch<React.SetStateAction<Array<PartyInvite>>>;
   party: any;
   socket: Socket;
+  peer: Peer;
   debug: boolean;
   game: Phaser.Game;
   zoom: any;
@@ -93,7 +96,7 @@ const getHudZoom = () => {
   });
 };
 
-function App({ socket, debug, game }) {
+function App({ socket, peer, debug, game }) {
   const [currentTooltipId, setCurrentTooltipId] = useState(null);
   const [partyInvites, setPartyInvites] = useState<Array<PartyInvite>>([]);
   const [party, setParty] = useState<any>();
@@ -601,6 +604,7 @@ function App({ socket, debug, game }) {
           setPartyInvites,
           party,
           socket,
+          peer,
           debug,
           game,
           zoom,
@@ -626,6 +630,7 @@ function App({ socket, debug, game }) {
           {!isLoggedIn && <ModalLogin />}
           {error && <ModalError />}
         </Box>
+        <VideoFrame />
         {isLoggedIn && (
           <Box
             id={HUD_CONTAINER_ID}

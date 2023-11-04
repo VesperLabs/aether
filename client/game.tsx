@@ -9,11 +9,17 @@ import SceneBoot from "./game/SceneBoot";
 import VJoyPlugin from "./game/Joystick";
 import SceneHud from "./game/SceneHud";
 import "./style.css";
+import Peer from "peerjs";
 
 const debug = process.env.DEBUG;
 const SERVER_URL = process.env.SERVER_URL as string;
 const REDIRECT_URL = process.env.REDIRECT_URL as string;
 const socket = socketIOClient(SERVER_URL);
+const peer = new Peer(undefined, {
+  host: "/",
+  port: 9000,
+  path: "/peerjs",
+});
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 const devicePixelRatio = window.devicePixelRatio || 1;
 const gameWidth = window.innerWidth * devicePixelRatio;
@@ -69,7 +75,7 @@ if (REDIRECT_URL) {
 } else {
   root.render(
     <React.StrictMode>
-      <App socket={socket} game={game} debug={debug} />
+      <App socket={socket} peer={peer} game={game} debug={debug} />
     </React.StrictMode>
   );
   /* IOS Autoscroll fix when selecting an input */
