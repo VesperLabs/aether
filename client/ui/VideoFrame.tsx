@@ -26,9 +26,8 @@ function VideoFrame() {
     navigator.mediaDevices
       .getUserMedia({
         video: {
-          width: { min: 320, ideal: 1920 },
-          height: { min: 320, ideal: 1920 },
-          aspectRatio: { ideal: 1 },
+          width: { min: 100, ideal: 720 },
+          height: { min: 100, ideal: 720 },
         },
         audio: {
           sampleSize: 16,
@@ -99,7 +98,12 @@ function VideoFrame() {
         position: "fixed",
         inset: "0 0 0 0",
         gap: 2,
-        "& video": { width: VIDEO_SIZE, height: VIDEO_SIZE, borderRadius: "100%" },
+        "& video": {
+          width: VIDEO_SIZE,
+          height: VIDEO_SIZE,
+          borderRadius: "100%",
+          objectFit: "cover",
+        },
       }}
     >
       <video src="" autoPlay={true} muted={true} ref={myVideoRef}></video>
