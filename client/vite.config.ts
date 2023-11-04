@@ -12,6 +12,7 @@ export default ({ mode }) => {
   console.log(`🛠 SERVER_URL: ${process.env.SERVER_URL}`);
   console.log(`🛠 ASSETS_URL: ${process.env.ASSETS_URL}`);
   console.log(`🛠 PEER_SERVER_PORT: ${process.env.PEER_SERVER_PORT}`);
+  console.log(`🛠 PEER_CLIENT_PORT: ${process.env.PEER_CLIENT_PORT}`);
 
   return defineConfig({
     envDir: "../",
@@ -32,6 +33,7 @@ export default ({ mode }) => {
       "process.env.SERVER_URL": JSON.stringify(process.env.SERVER_URL),
       "process.env.ASSETS_URL": JSON.stringify(process.env.ASSETS_URL),
       "process.env.PEER_SERVER_PORT": JSON.stringify(process.env.PEER_SERVER_PORT),
+      "process.env.PEER_CLIENT_PORT": JSON.stringify(process.env.PEER_CLIENT_PORT),
     },
     server: {
       host: true,
