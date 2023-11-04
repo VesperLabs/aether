@@ -60,6 +60,7 @@ function getFullCharacterState(p: Character): FullCharacterState {
   return {
     id: uid, //required for SI
     socketId: uid,
+    peerId: p?.peerId,
     roomName: p?.room?.name,
     x: p?.x,
     y: p?.y,

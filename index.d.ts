@@ -221,6 +221,7 @@ interface Npc extends Character {
 
 interface ServerPlayer extends Character {
   email?: string;
+  peerId?: string;
   isDemoAccount?: boolean;
   partyId?: string;
   spawn: SpawnPoint;
