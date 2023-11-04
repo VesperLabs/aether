@@ -11,7 +11,7 @@ export default ({ mode }) => {
   console.log(`🛠 SERVER_FPS: ${process.env.SERVER_FPS}`);
   console.log(`🛠 SERVER_URL: ${process.env.SERVER_URL}`);
   console.log(`🛠 ASSETS_URL: ${process.env.ASSETS_URL}`);
-  console.log(`🛠 REDIRECT_URL: ${process.env.REDIRECT_URL}`);
+  console.log(`🛠 PEER_SERVER_PORT: ${process.env.PEER_SERVER_PORT}`);
 
   return defineConfig({
     envDir: "../",
@@ -31,7 +31,7 @@ export default ({ mode }) => {
       "process.env.SERVER_FPS": process.env.SERVER_FPS,
       "process.env.SERVER_URL": JSON.stringify(process.env.SERVER_URL),
       "process.env.ASSETS_URL": JSON.stringify(process.env.ASSETS_URL),
-      "process.env.REDIRECT_URL": JSON.stringify(process.env.REDIRECT_URL),
+      "process.env.PEER_SERVER_PORT": JSON.stringify(process.env.PEER_SERVER_PORT),
     },
     server: {
       host: true,
