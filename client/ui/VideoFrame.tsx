@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Flex } from "@aether/ui";
 import { isMobile } from "../../shared/utils";
 import { useAppContext } from "../ui";
@@ -6,58 +6,21 @@ import { useOnMountUnsafe } from "./useOnMountSafe";
 import { getQueryParam } from "../utils";
 
 const peers = {};
+const VIDEO_SIZE = "8vh";
 
-const VIDEO_SIZE = 50;
-
-function VideoFrame() {
+export default function VideoFrame() {
   const showVideo = getQueryParam("video") === "true";
-  const { peer, socket } = useAppContext();
-  const myVideoRef = useRef(null);
+  const { peer } = useAppContext();
   const videoGridRef = useRef(null);
-
-  useOnMountUnsafe(() => {
-    if (!showVideo) return;
-    if (isMobile) return;
-    // tell the server which peer we are
-    peer.on("open", (peerId) => {
-      socket.emit("peerInit", peerId);
-    });
-
-    navigator.mediaDevices
-      .getUserMedia({
-        video: {
-          width: { min: 100, ideal: 720 },
-          height: { min: 100, ideal: 720 },
-        },
-        audio: {
-          sampleSize: 16,
-          channelCount: 2,
-        },
-      })
-      .then((stream) => {
-        addVideoStream(myVideoRef.current, stream, "me");
-
-        peer.on("call", (call) => {
-          call.answer(stream);
-          const video = document.createElement("video");
-          call.on("stream", (userVideoStream) => {
-            addVideoStream(video, userVideoStream, call?.peer);
-          });
-        });
-
-        window.addEventListener("HERO_NEAR_PLAYER", (e: CustomEvent) => {
-          const peerId = e?.detail?.peerId;
-
-          connectToNewUser(peerId, stream);
-        });
-      });
-
-    window.addEventListener("HERO_AWAY_PLAYER", (e: CustomEvent) => {
-      const peerId = e?.detail?.peerId;
-      if (peers[peerId]) {
-        peers[peerId].close();
-      }
-    });
+  const myStream = useUserMedia({
+    video: {
+      width: { min: 100, ideal: 720 },
+      height: { min: 100, ideal: 720 },
+    },
+    audio: {
+      sampleSize: 16,
+      channelCount: 2,
+    },
   });
 
   function connectToNewUser(peerId, stream) {
@@ -88,6 +51,47 @@ function VideoFrame() {
     }
   }
 
+  useEffect(() => {
+    // If the conditions aren't met, don't set up the effect.
+    if (!showVideo || isMobile || !myStream) return;
+
+    // Function to handle incoming calls.
+    const handleCall = (call) => {
+      call.answer(myStream);
+      const video = document.createElement("video");
+      call.on("stream", (userVideoStream) => {
+        addVideoStream(video, userVideoStream, call?.peer);
+      });
+    };
+
+    // Function to handle new user connection.
+    const handleHeroNearPlayer = (e) => {
+      const peerId = e?.detail?.peerId;
+      connectToNewUser(peerId, myStream);
+    };
+
+    // Function to handle user disconnection.
+    const handleHeroAwayPlayer = (e) => {
+      const peerId = e?.detail?.peerId;
+      if (peers[peerId]) {
+        peers[peerId].close();
+      }
+    };
+
+    peer.on("call", handleCall);
+    window.addEventListener("HERO_NEAR_PLAYER", handleHeroNearPlayer);
+    window.addEventListener("HERO_AWAY_PLAYER", handleHeroAwayPlayer);
+
+    return () => {
+      peer.off("call", handleCall);
+      window.removeEventListener("HERO_NEAR_PLAYER", handleHeroNearPlayer);
+      window.removeEventListener("HERO_AWAY_PLAYER", handleHeroAwayPlayer);
+      // Object.values(peers).forEach((peerConnection) => {
+      //   peerConnection.close();
+      // });
+    };
+  }, [showVideo, isMobile, myStream]);
+
   return showVideo ? (
     <Flex
       className="video-chat"
@@ -106,10 +110,47 @@ function VideoFrame() {
         },
       }}
     >
-      <video src="" autoPlay={true} muted={true} ref={myVideoRef}></video>
+      <Video isMuted={true} stream={myStream} />
       <div id="video-grid" ref={videoGridRef}></div>
     </Flex>
   ) : null;
 }
 
-export default VideoFrame;
+const Video = ({ stream, isMuted = false, peerId = "me" }) => {
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.srcObject = stream;
+    }
+  }, [stream]);
+
+  return (
+    <video
+      ref={videoRef}
+      autoPlay
+      muted={isMuted}
+      playsInline // This is often needed for auto-play to work on mobile devices
+      id={peerId}
+    />
+  );
+};
+
+export function useUserMedia(requestedMedia) {
+  const [mediaStream, setMediaStream] = useState(null);
+
+  useOnMountUnsafe(() => {
+    async function enableStream() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia(requestedMedia);
+        setMediaStream(stream);
+      } catch (err) {}
+    }
+
+    if (!mediaStream) {
+      enableStream();
+    }
+  });
+
+  return mediaStream;
+}

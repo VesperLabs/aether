@@ -491,6 +491,10 @@ function App({ socket, peer, debug, game }) {
   }
 
   useEffect(() => {
+    // tell the server which peer we are
+    peer.on("open", (peerId) => {
+      socket.emit("peerInit", peerId);
+    });
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
     socket.on("heroInit", onHeroInit);
