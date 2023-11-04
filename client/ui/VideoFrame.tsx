@@ -1,10 +1,13 @@
 import { useRef } from "react";
-import { Modal } from "@aether/ui";
+import { Box, Flex, Modal } from "@aether/ui";
 import { isMobile } from "../../shared/utils";
 import { useAppContext } from "../ui";
 import { useOnMountUnsafe } from "./useOnMountSafe";
+import { getQueryParam } from "../utils";
 
 const peers = {};
+
+const VIDEO_SIZE = 50;
 
 function VideoFrame() {
   const { peer, socket } = useAppContext();
@@ -20,8 +23,15 @@ function VideoFrame() {
 
     navigator.mediaDevices
       .getUserMedia({
-        video: { height: 300, width: 300 },
-        audio: true,
+        video: {
+          width: { min: 320, ideal: 1920 },
+          height: { min: 320, ideal: 1920 },
+          aspectRatio: { ideal: 1 },
+        },
+        audio: {
+          sampleSize: 16,
+          channelCount: 2,
+        },
       })
       .then((stream) => {
         addVideoStream(myVideoRef.current, stream, "me");
@@ -77,14 +87,25 @@ function VideoFrame() {
     }
   }
 
-  return (
-    <Modal>
-      <Modal.Body sx={{ "& video": { width: 100, height: 100 } }}>
-        <video src="" autoPlay={true} muted={true} ref={myVideoRef}></video>
-        <div id="video-grid" ref={videoGridRef}></div>
-      </Modal.Body>
-    </Modal>
-  );
+  const showVideo = getQueryParam("video") === "true";
+
+  return showVideo ? (
+    <Flex
+      className="video-chat"
+      sx={{
+        pointerEvents: "none",
+        justifyContent: "center",
+        zIndex: 9999,
+        position: "fixed",
+        inset: "0 0 0 0",
+        gap: 2,
+        "& video": { width: VIDEO_SIZE, height: VIDEO_SIZE, borderRadius: "100%" },
+      }}
+    >
+      <video src="" autoPlay={true} muted={true} ref={myVideoRef}></video>
+      <div id="video-grid" ref={videoGridRef}></div>
+    </Flex>
+  ) : null;
 }
 
 export default VideoFrame;
