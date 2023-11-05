@@ -343,7 +343,7 @@ function getNearbyPlayers(hero, players) {
   let nearbyPlayers = [];
   for (const player of players) {
     if (player.isHero) continue;
-    if (distanceTo(player, hero) < 100) {
+    if (distanceTo(player, hero) < 200) {
       nearbyPlayers.push(player);
     }
   }
