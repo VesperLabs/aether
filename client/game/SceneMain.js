@@ -30,6 +30,7 @@ class SceneMain extends Phaser.Scene {
       playMusic: true,
       showMinimap: !isMobile,
     };
+    this.nearbyPeerIds = [];
   }
 
   create() {
@@ -362,21 +363,16 @@ function checkPlayerProximity(scene, time) {
   const nearbyPlayers = getNearbyPlayers(hero, players);
   const nearbyPeerIds = nearbyPlayers.map((player) => player.peerId);
 
-  // If hero.state.nearbyPeerIds doesn't exist, initialize it
-  if (!hero.state.nearbyPeerIds) {
-    hero.state.nearbyPeerIds = [];
-  }
-
   // Identify players that have newly entered the hero's proximity
   for (const peerId of nearbyPeerIds) {
-    if (!hero.state.nearbyPeerIds.includes(peerId)) {
+    if (!scene.nearbyPeerIds.includes(peerId)) {
       console.log("NEAR");
       window.dispatchEvent(new CustomEvent("HERO_NEAR_PLAYER", { detail: { peerId } }));
     }
   }
 
   // Identify players that have left the hero's proximity
-  for (const peerId of hero.state.nearbyPeerIds) {
+  for (const peerId of scene.nearbyPeerIds) {
     if (!nearbyPeerIds.includes(peerId)) {
       console.log("FAR");
       window.dispatchEvent(new CustomEvent("HERO_AWAY_PLAYER", { detail: { peerId } }));
@@ -384,7 +380,7 @@ function checkPlayerProximity(scene, time) {
   }
 
   // Update the hero's state to the new list of nearby players
-  hero.state.nearbyPeerIds = nearbyPeerIds;
+  scene.nearbyPeerIds = nearbyPeerIds;
 }
 
 function checkEntityProximity(scene, time) {
