@@ -16,8 +16,8 @@ export default function VideoFrame() {
 
   const myStream = useUserMedia({
     video: {
-      width: { min: 100, ideal: 720 },
-      height: { min: 100, ideal: 720 },
+      width: { min: 100, ideal: 320 },
+      height: { min: 100, ideal: 320 },
     },
     audio: {
       sampleSize: 16,
@@ -55,7 +55,7 @@ export default function VideoFrame() {
 
   useEffect(() => {
     // If the conditions aren't met, don't set up the effect.
-    if (!showVideo || isMobile || !myStream) return;
+    if (!showVideo || !myStream) return;
 
     // Function to handle incoming calls.
     const handleCall = (call) => {
@@ -112,7 +112,7 @@ export default function VideoFrame() {
         },
       }}
     >
-      <Video isMuted={true} stream={myStream} />
+      {myStream?.active && <Video isMuted={true} stream={myStream} />}
       <div id="video-grid" ref={videoGridRef}></div>
     </Flex>
   ) : null;
