@@ -146,7 +146,9 @@ export function useUserMedia(requestedMedia) {
       try {
         const stream = await navigator.mediaDevices.getUserMedia(requestedMedia);
         setMediaStream(stream);
-      } catch (err) {}
+      } catch (err) {
+        setMediaStream(new MediaStream());
+      }
     }
 
     if (!mediaStream) {
