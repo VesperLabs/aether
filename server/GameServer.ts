@@ -76,7 +76,13 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       socket.on("demoLogin", async ({ charClass } = {}) => {
         if (!charClass) return socket.emit("formError", { error: "No class" });
 
+        /* Only let one connection at a time */
+        if (Object.keys(this?.players).find((k) => k === socket?.id)) {
+          return;
+        }
+
         const user = createBaseUser(charClass);
+
         const player = scene.roomManager.rooms[user.roomName].playerManager.create({
           socketId,
           peerId,

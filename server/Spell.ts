@@ -138,10 +138,11 @@ class Spell extends Phaser.GameObjects.Container {
     /* TODO: When we add buffs, make sure they do the same as adjustSpellPosition on clientside */
   }
   update() {
-    this.state.isExpired =
-      this?.maxDistance > -1
-        ? distanceTo(this, this.spawnPoint) >= this.maxDistance
-        : Date.now() - this.state.spawnTime > this.maxActiveTime;
+    const isRanged = this?.maxDistance > -1;
+    this.state.isExpired = isRanged
+      ? distanceTo(this, this.spawnPoint) >= this.maxDistance
+      : Date.now() - this.state.spawnTime > this.maxActiveTime;
+
     if (this.state.isExpired) return;
     this.adjustSpellPosition();
     this.checkCollisions();
@@ -177,6 +178,7 @@ class Spell extends Phaser.GameObjects.Container {
         this.hitIds.push(victim.id);
         this.hitIds = [...new Set(this.hitIds)];
         // send one hit at a time
+
         this.caster.doHit([victim.id], abilitySlot);
       }
       return true;
