@@ -226,7 +226,7 @@ interface ServerPlayer extends Character {
   partyId?: string;
   spawn: SpawnPoint;
   addQuest(quest: Quest): void;
-  completeQuest(quest: Quest): any;
+  completeQuest(questId: string): any;
   updateChatQuests(questId: string): Array<PlayerQuest>;
   findEquipmentById(id: string): Slot;
   findAbilityById(id: string): Slot;

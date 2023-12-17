@@ -109,10 +109,12 @@ class Player extends ServerCharacter implements ServerPlayer {
     this.quests = playerQuests;
     return playerQuests;
   }
-  completeQuest(quest: Quest) {
+  completeQuest(questId: string) {
+    const quest = this.scene.quests?.[questId];
     const questItems = quest?.rewards?.items || [];
     const objectives = quest?.objectives || [];
     const foundQuest: PlayerQuest = this.getPlayerQuestStatus(quest);
+
     if (foundQuest?.isCompleted) return { error: "Quest has already been completed." };
     if (!foundQuest?.isReady) return { error: "Quest objectives are not complete." };
 

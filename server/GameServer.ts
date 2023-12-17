@@ -78,7 +78,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
 
         /* Only let one connection at a time */
         if (Object.keys(this?.players).find((k) => k === socket?.id)) {
-          return;
+          return console.log("❌ Socket already logged in");
         }
 
         const user = createBaseUser(charClass);
@@ -117,6 +117,11 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       socket.on("login", async ({ email, password } = {}) => {
         let user = await scene.db.getUserByLogin({ email, password });
         if (!user) return socket.emit("formError", { error: "Invalid login" });
+
+        /* Only let one connection at a time */
+        if (Object.keys(this?.players).find((k) => k === socket?.id)) {
+          return console.log("❌ Socket already logged in");
+        }
 
         /* Kick the old user if loggin in on same email */
         for (const [sId, player] of Object.entries(this?.players)) {
@@ -989,10 +994,8 @@ class ServerScene extends Phaser.Scene implements ServerScene {
 
       socket.on("completeQuest", (questId: string) => {
         const player: ServerPlayer = scene?.players?.[socketId];
-        const currentQuest = scene.quests?.[questId];
-        const foundQuest = player?.getPlayerQuestStatus(currentQuest);
         /* If the quest is ready, we turn it in */
-        const questResults = player?.completeQuest(currentQuest);
+        const questResults = player?.completeQuest(questId);
         /* Quest failed */
         if (questResults?.error) {
           return socket.emit("message", {
