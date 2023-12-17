@@ -43,7 +43,7 @@ const KeeperButton: FC<KeyboardButtonProps> = ({
         <Box sx={{ alignSelf: "end" }}>
           <KeyboardKey
             showOnly={showOnly}
-            sx={{ position: "static", mr: "-2px" }}
+            sx={{ position: "static", mr: "-2px", pointerEvents: "none" }}
             name={keyboardKey}
             onKeyUp={!disabled ? onClick : () => {}}
           />
