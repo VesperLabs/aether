@@ -148,7 +148,7 @@ class Player extends ServerCharacter implements ServerPlayer {
     }
 
     const didLevel = this.assignExp(quest?.rewards?.exp);
-    this.gold += quest?.rewards?.gold;
+    this.gold += quest?.rewards?.gold ?? 0;
     this.quests.find((q) => q?.questId === quest?.id).isCompleted = true;
 
     return { didLevel };

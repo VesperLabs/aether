@@ -1,5 +1,5 @@
 import { Box, PlayerRender } from "@aether/ui";
-import { getFullCharacterState } from "../../server/utils";
+import { useAppContext } from ".";
 
 export default function BigPortrait({
   player,
