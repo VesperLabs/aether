@@ -39,8 +39,8 @@ const MenuKeeper = () => {
         sx={{
           gap: 2,
           mt: 2,
-          justifyContent: "flex-end",
-          transform: "scale(1.25) translate(-10%,-10%)",
+          flexWrap: "wrap",
+          justifyContent: "end",
         }}
       >
         {hasGreet && (hasShop || hasQuests) && (

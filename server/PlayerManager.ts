@@ -40,10 +40,10 @@ class PlayerManager {
   getNearestPlayer(player1) {
     const players = this.players?.getChildren();
 
-    let closestPlayer;
+    let closestPlayer: ServerPlayer;
     let closestDistance = Infinity;
 
-    players.forEach((player2) => {
+    players.forEach((player2: ServerPlayer) => {
       const distance = distanceTo(player2, player1);
       if (distance < closestDistance) {
         closestPlayer = player2;
