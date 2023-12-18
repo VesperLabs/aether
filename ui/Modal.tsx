@@ -55,6 +55,7 @@ Modal.Overlay = ({ sx, ...props }) => {
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
         backgroundPosition: "center center",
+        pointerEvents: "all",
         ...sx,
       }}
       {...props}

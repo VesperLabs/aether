@@ -25,13 +25,13 @@ const getDatabaseApi = (db) => ({
     return users;
   },
   countAllUsers: async () => {
-    return execute("getAllUsers", async () => {
+    return execute("countAllUsers", async () => {
       const count = await db.collection("users").countDocuments();
       return count;
     });
   },
   pruneNoobs: async () => {
-    return execute("getAllUsers", async () => {
+    return execute("pruneNoobs", async () => {
       // Delete documents with baseStats.level equal to 1
       const deleteResult = await db.collection("users").deleteMany({ "baseStats.level": 1 });
       // const updateResult = await db
@@ -41,7 +41,7 @@ const getDatabaseApi = (db) => ({
     });
   },
   getUserByLogin: async ({ email, password = "" }) => {
-    return execute("getAllUsers", async () => {
+    return execute("getUserByLogin", async () => {
       if (!email) return console.log("❌ Email not provided");
       const user = await db
         .collection("users")
@@ -50,7 +50,7 @@ const getDatabaseApi = (db) => ({
     });
   },
   createUser: async ({ email, charClass, password }) => {
-    return execute("getAllUsers", async () => {
+    return execute("createUser", async () => {
       if (!email) {
         return console.log("❌ Error while creating player. Email not provided");
       }
@@ -84,7 +84,7 @@ const getDatabaseApi = (db) => ({
     });
   },
   updateUserMapDetails: async (args) => {
-    return execute("getAllUsers", async () => {
+    return execute("updateUserMapDetails", async () => {
       const { updatedAt } = getAuditFields();
       if (args?.isDemoAccount) {
         return; // console.log("🍔 Demo account. no need to save.");
@@ -109,8 +109,28 @@ const getDatabaseApi = (db) => ({
       );
     });
   },
+  updateUserSetting: async (player, { name, value }) => {
+    return execute("updateUserSetting", async () => {
+      const { updatedAt } = getAuditFields();
+      if (player?.isDemoAccount) {
+        return; // console.log("🍔 Demo account. no need to save.");
+      }
+      if (!player?.email) {
+        return console.log("❌ Error while saving player. Player not found");
+      }
+      await db.collection("users").findOneAndUpdate(
+        { email: player?.email },
+        {
+          $set: {
+            [`userSettings.${name}`]: value,
+            updatedAt,
+          },
+        }
+      );
+    });
+  },
   updateUser: async (player) => {
-    return execute("getAllUsers", async () => {
+    return execute("updateUser", async () => {
       if (player?.isDemoAccount) {
         return; // console.log("🍔 Demo account. no need to save.");
       }
@@ -255,6 +275,10 @@ export const createBaseUser = (charClass) => {
       hair: { tint: "0x88FFFF", texture: "hair-3" },
       face: { texture: "face-1" },
       whiskers: { texture: "whiskers-3", tint: "0x88FFFF" },
+    },
+    userSettings: {
+      playMusic: true,
+      showMinimap: true,
     },
   };
 };

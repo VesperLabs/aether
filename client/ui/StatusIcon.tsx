@@ -68,7 +68,7 @@ const StatusToolTip = ({ show }) => {
   );
 };
 
-const StatusIcon = () => {
+const StatusIcon = (props) => {
   const [hovering, setHovering] = useState(false);
 
   const handleMouseEnter = (e) => {
@@ -90,13 +90,27 @@ const StatusIcon = () => {
       };
   const { isConnected } = useAppContext();
   return (
-    <Box data-tooltip-id={STATUS_TOOLTIP_ID} sx={{ pointerEvents: "all" }} {...outerMouseBinds}>
+    <Box
+      sx={{
+        pointerEvents: "all",
+        top: 34,
+        left: "-6px",
+        position: "absolute",
+      }}
+    >
       <StatusToolTip show={hovering} />
-      {isConnected ? (
-        <Icon icon="./assets/icons/success.png" sx={{ opacity: 0.5 }} />
-      ) : (
-        <Icon icon="./assets/icons/danger.png" sx={{ opacity: 0.5 }} />
-      )}
+      <Box
+        data-tooltip-id={STATUS_TOOLTIP_ID}
+        {...outerMouseBinds}
+        {...props}
+        sx={{ transform: "scale(.75)" }}
+      >
+        {isConnected ? (
+          <Icon icon="./assets/icons/success.png" />
+        ) : (
+          <Icon icon="./assets/icons/danger.png" />
+        )}
+      </Box>
     </Box>
   );
 };
