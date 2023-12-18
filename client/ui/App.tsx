@@ -19,6 +19,7 @@ import { Socket } from "socket.io-client";
 import { CONSUMABLES_BASES, MINI_MAP_SIZE, isMobile } from "@aether/shared";
 import Peer from "peerjs";
 import VideoFrame from "./VideoFrame";
+import ModalSettings from "./ModalSettings";
 
 interface AppContextValue {
   isLoggedIn: boolean;
@@ -40,6 +41,7 @@ interface AppContextValue {
   setTabQuests: React.Dispatch<React.SetStateAction<boolean>>;
   setDropItem: React.Dispatch<React.SetStateAction<Item | null | false>>;
   setTabAbilities: React.Dispatch<React.SetStateAction<boolean>>;
+  setTabSettings: React.Dispatch<React.SetStateAction<boolean>>;
   toggleBagState: React.Dispatch<React.SetStateAction<any>>;
   setCooldowns: React.Dispatch<React.SetStateAction<any>>;
   setSign: React.Dispatch<React.SetStateAction<any>>;
@@ -47,7 +49,7 @@ interface AppContextValue {
   setHomeModal: React.Dispatch<React.SetStateAction<FullCharacterState | null>>;
   addMessage: React.Dispatch<React.SetStateAction<Message>>;
   setUserSettings: React.Dispatch<React.SetStateAction<any>>;
-  userSettings: any;
+  userSettings: UserSettings;
   homeModal: FullCharacterState | null;
   error: any;
   sign: Sign | null;
@@ -64,6 +66,7 @@ interface AppContextValue {
   tabStats: boolean;
   tabSocial: boolean;
   tabAbilities: boolean;
+  tabSettings: boolean;
   keeper: any; // data related to NPC you are chatting with
   tabKeeper: boolean;
   hero: FullCharacterState;
@@ -117,6 +120,7 @@ function App({ socket, peer, debug, game }) {
   const [tabSocial, setTabSocial] = useState(false);
   const [tabQuests, setTabQuests] = useState(false);
   const [tabAbilities, setTabAbilities] = useState(false);
+  const [tabSettings, setTabSettings] = useState(false);
   const [showButtonChat, setShowButtonChat] = useState(false);
   const [bottomOffset, setBottomOffset] = useState(0);
   const [zoom, setZoom] = useState(getHudZoom());
@@ -125,7 +129,7 @@ function App({ socket, peer, debug, game }) {
   const [error, setError] = useState(null);
   const [cooldowns, setCooldowns] = useState({});
   const [homeModal, setHomeModal] = useState(null);
-  const [userSettings, setUserSettings] = useState({ showMinimap: !isMobile });
+  const [userSettings, setUserSettings] = useState({ showMinimap: !isMobile, playMusic: true });
 
   /* Is the bag open or closed */
   const toggleBagState = (id: string) => {
@@ -161,14 +165,6 @@ function App({ socket, peer, debug, game }) {
     setSign(null);
   };
 
-  const onSettingToggled = (e) => {
-    const setting = e?.detail;
-    addMessage({ type: "info", message: setting?.message });
-    setUserSettings((prev) => {
-      return { ...prev, [setting?.name]: setting?.value };
-    });
-  };
-
   const onPlayerJoin = (player, args) => {
     /* Keep room list updated */
     setPlayers((prev = []) => {
@@ -184,14 +180,20 @@ function App({ socket, peer, debug, game }) {
     setPlayers((prev) => prev.filter((player) => player.socketId !== socketId));
   };
 
-  const onHeroInit = (payload: { players: Array<FullCharacterState>; socketId: string }, args) => {
+  const onHeroInit = (
+    payload: { players: Array<FullCharacterState>; socketId: string; userSettings: UserSettings },
+    args
+  ) => {
     const { players, socketId } = payload;
     const player: FullCharacterState = players?.find((p) => p?.socketId === socketId);
     //TODO: get rid of this session storage reference. i think we can just use a state callback here
     sessionStorage.setItem("socketId", socketId);
     setPlayers(players);
     setHero(player);
-    if (args?.isLogin) setIsLoggedIn(true);
+    if (args?.isLogin) {
+      setIsLoggedIn(true);
+      setUserSettings(payload?.userSettings);
+    }
   };
 
   const onBuffUpdate = (payload: {
@@ -490,6 +492,13 @@ function App({ socket, peer, debug, game }) {
     }
   }
 
+  function onUpdateUserSetting({ name, value }) {
+    setUserSettings((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  }
+
   useEffect(() => {
     // tell the server which peer we are
     peer.on("open", (peerId) => {
@@ -507,6 +516,7 @@ function App({ socket, peer, debug, game }) {
     socket.on("remove", onPlayerLeave);
     socket.on("partyInvite", onPartyInvite);
     socket.on("partyUpdate", onPartyUpdate);
+    socket.on("updateUserSetting", onUpdateUserSetting);
     window.addEventListener("HERO_NEAR_NPC", onNearNpc);
     window.addEventListener("HERO_CHAT_NPC", onHeroChatNpc);
     window.addEventListener("UPDATE_HUD", onUpdateHud);
@@ -517,7 +527,7 @@ function App({ socket, peer, debug, game }) {
     window.addEventListener("HERO_START_COOLDOWN", onStartCooldown);
     window.addEventListener("HERO_DROP_ITEM", onDropItem);
     window.addEventListener("HERO_DOUBLE_CLICK_ITEM", onDoubleClickItem);
-    window.addEventListener("SETTING_TOGGLED", onSettingToggled);
+
     return () => {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
@@ -531,6 +541,7 @@ function App({ socket, peer, debug, game }) {
       socket.off("partyInvite", onPartyInvite);
       socket.off("partyUpdate", onPartyUpdate);
       socket.off("remove", onPlayerLeave);
+      socket.off("updateUserSetting", onUpdateUserSetting);
       window.removeEventListener("HERO_NEAR_NPC", onNearNpc);
       window.removeEventListener("HERO_CHAT_NPC", onHeroChatNpc);
       window.removeEventListener("UPDATE_HUD", onUpdateHud);
@@ -541,7 +552,6 @@ function App({ socket, peer, debug, game }) {
       window.removeEventListener("HERO_START_COOLDOWN", onStartCooldown);
       window.removeEventListener("HERO_DROP_ITEM", onDropItem);
       window.removeEventListener("HERO_DOUBLE_CLICK_ITEM", onDoubleClickItem);
-      window.removeEventListener("SETTING_TOGGLED", onSettingToggled);
     };
   }, []);
 
@@ -580,6 +590,7 @@ function App({ socket, peer, debug, game }) {
           setTabQuests,
           setTabAbilities,
           toggleBagState,
+          setTabSettings,
           setCooldowns,
           setSign,
           setError,
@@ -600,6 +611,7 @@ function App({ socket, peer, debug, game }) {
           tabEquipment,
           tabInventory,
           tabProfile,
+          tabSettings,
           tabChat,
           keeper,
           tabKeeper,
@@ -630,7 +642,9 @@ function App({ socket, peer, debug, game }) {
             transitionDelay: "0.5s",
           }}
         >
-          <Modal.Overlay sx={{ backgroundImage: "url(./assets/images/bg.jpg)" }} />
+          <Modal.Overlay
+            sx={{ backgroundImage: "url(./assets/images/bg.jpg)", pointerEvents: "none" }}
+          />
           {!isLoggedIn && <ModalLogin />}
           {error && <ModalError />}
         </Box>
@@ -647,6 +661,7 @@ function App({ socket, peer, debug, game }) {
             {dropItem && <ModalDropAmount />}
             {sign && <ModalSign />}
             {homeModal?.profile && <ModalHome />}
+            {tabSettings && <ModalSettings />}
             <MenuGlobalKeys />
             <MenuHud />
             <MenuBar />
@@ -658,7 +673,7 @@ function App({ socket, peer, debug, game }) {
 }
 
 const MenuGlobalKeys = () => {
-  const { userSettings } = useAppContext();
+  const { userSettings, socket } = useAppContext();
   return (
     <>
       <Box
@@ -670,20 +685,16 @@ const MenuGlobalKeys = () => {
         }}
       >
         <KeyboardKey
-          name="N"
+          name="M"
           hidden={!userSettings?.showMinimap}
-          onKeyUp={() => {
-            window.dispatchEvent(new CustomEvent("TOGGLE_MINIMAP"));
-          }}
+          onKeyUp={() =>
+            socket.emit("updateUserSetting", {
+              name: "showMinimap",
+              value: !userSettings.showMinimap,
+            })
+          }
         />
       </Box>
-      <KeyboardKey
-        name="M"
-        hidden={true}
-        onKeyUp={() => {
-          window.dispatchEvent(new CustomEvent("TOGGLE_MUSIC"));
-        }}
-      />
     </>
   );
 };

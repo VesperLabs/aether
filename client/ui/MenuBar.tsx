@@ -13,7 +13,6 @@ import {
   MenuSocial,
   MenuStats,
   MessageBox,
-  StatusIcon,
   useAppContext,
   MenuButton,
   SkillButtons,
@@ -41,6 +40,8 @@ const MenuBar = () => {
     tabQuests,
     setTabQuests,
     setTabSocial,
+    tabSettings,
+    setTabSettings,
     tabSocial,
     hero,
     tabAbilities,
@@ -50,7 +51,6 @@ const MenuBar = () => {
     players,
     party,
     cooldowns,
-    addMessage,
     toggleBagState,
   } = useAppContext();
 
@@ -116,7 +116,6 @@ const MenuBar = () => {
             flexDirection: "row",
           }}
         >
-          <StatusIcon />
           <Box sx={{ flex: tabChat ? "unset" : 1 }} />
           <ChatButton />
           {!tabChat && (
@@ -165,6 +164,12 @@ const MenuBar = () => {
                 isActive={tabInventory}
                 onClick={() => setTabInventory((prev) => !prev)}
               />
+              <MenuButton
+                keyboardKey="Z"
+                iconName="pen"
+                isActive={tabSettings}
+                onClick={() => setTabSettings((prev) => !prev)}
+              />
             </>
           )}
           <KeyboardKey
@@ -183,6 +188,7 @@ const MenuBar = () => {
               if (tabEquipment) return setTabEquipment(false);
               if (bagState?.length > 0) return toggleBagState(bagState?.[bagState?.length - 1]);
               if (tabInventory) return setTabInventory(false);
+              if (tabSettings) return setTabSettings(false);
               if (tabChat) return setTabChat(false);
             }}
           />

@@ -7,11 +7,13 @@ class Player extends ServerCharacter implements ServerPlayer {
   public email: string;
   public isDemoAccount?: boolean;
   public spawn: SpawnPoint;
+  public userSettings: UserSettings;
   constructor(scene: ServerScene, args: Player) {
     super(scene, args);
     this.scene = scene;
     this.email = args?.email;
     this.isDemoAccount = args?.isDemoAccount;
+    this.userSettings = args?.userSettings;
     this.kind = "player";
     this.spawn = args?.spawn;
     this.calculateStats(true);

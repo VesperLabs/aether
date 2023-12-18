@@ -16,6 +16,7 @@ import {
   playAudio,
   getGameZoomLevel,
   changeMusic,
+  MUSIC_VOLUME,
 } from "../utils";
 const SI = new SnapshotInterpolation(process.env.SERVER_FPS); // the server's fps is 15
 const { RectangleToRectangle } = Phaser.Geom.Intersects;
@@ -25,10 +26,9 @@ class SceneMain extends Phaser.Scene {
     super({ key: "SceneMain" });
     this.socket = socket;
     this.lastUpdateTime = 0;
-
     this.userSettings = {
       playMusic: true,
-      showMinimap: !isMobile,
+      showMinimap: true,
     };
     this.nearbyPeerIds = [];
   }
@@ -66,36 +66,41 @@ class SceneMain extends Phaser.Scene {
       scene.hero.party = party;
     });
 
-    socket.on("heroInit", ({ socketId, players = [], npcs = [], loots = [] }) => {
-      /* Delete everything in the scene */
-      resetEntities(scene);
-      /* Add players that don't exist */
-      for (const player of players) {
-        if (getPlayer(scene, player.socketId)) continue;
-        if (socketId === player.socketId) {
-          scene.hero = addPlayer(scene, { ...player, isHero: true });
-        } else {
-          addPlayer(scene, player);
+    socket.on(
+      "heroInit",
+      ({ socketId, players = [], npcs = [], loots = [], userSettings = {} }) => {
+        /* Delete everything in the scene */
+        resetEntities(scene);
+        /* Add players that don't exist */
+        for (const player of players) {
+          if (getPlayer(scene, player.socketId)) continue;
+          if (socketId === player.socketId) {
+            scene.hero = addPlayer(scene, { ...player, isHero: true });
+            console.log(userSettings);
+            this.userSettings = { ...this.userSettings, ...userSettings };
+          } else {
+            addPlayer(scene, player);
+          }
         }
+        // tell the client we are not currently entering a door.
+        // this tells the hud not to send x/y events
+        scene.hero.state.isEnteringDoor = false;
+        /* Add map npcs */
+        for (const npc of npcs) {
+          if (getNpc(scene, npc.id)) continue;
+          addNpc(scene, npc);
+        }
+        /* Add map loot */
+        for (const loot of loots) {
+          if (loot?.expiredSince) continue;
+          if (getLoot(scene, loot.id)) continue;
+          addLoot(scene, loot);
+        }
+        const { collideLayer } = changeMap(scene, scene.hero.roomName);
+        initPlayerCollision(scene, scene.hero, [collideLayer]);
+        initCamera(scene, scene.hero);
       }
-      // tell the client we are not currently entering a door.
-      // this tells the hud not to send x/y events
-      scene.hero.state.isEnteringDoor = false;
-      /* Add map npcs */
-      for (const npc of npcs) {
-        if (getNpc(scene, npc.id)) continue;
-        addNpc(scene, npc);
-      }
-      /* Add map loot */
-      for (const loot of loots) {
-        if (loot?.expiredSince) continue;
-        if (getLoot(scene, loot.id)) continue;
-        addLoot(scene, loot);
-      }
-      const { collideLayer } = changeMap(scene, scene.hero.roomName);
-      initPlayerCollision(scene, scene.hero, [collideLayer]);
-      initCamera(scene, scene.hero);
-    });
+    );
 
     socket.on("playerJoin", (user, { lastTeleport, isRespawn } = {}) => {
       const player = getPlayer(scene, user.socketId);
@@ -205,6 +210,14 @@ class SceneMain extends Phaser.Scene {
 
     socket.on("remove", (socketId) => removePlayer(scene, socketId));
 
+    socket.on("updateUserSetting", ({ name, value }) => {
+      if (name === "showMinimap") {
+        this.toggleMinimap(value);
+      }
+      if (name === "playMusic") {
+        this.toggleMusic(value);
+      }
+    });
     // Add event listener for window resize
     this.scale.on(
       "resize",
@@ -214,22 +227,14 @@ class SceneMain extends Phaser.Scene {
       this
     );
   }
-  toggleMusic() {
-    if (this?.userSettings?.playMusic) {
-      this.userSettings.playMusic = false;
-      return this.sound.stopAll();
-    } else {
-      this.userSettings.playMusic = true;
-      this.changeMusic();
-    }
+  // user setting functions
+  toggleMusic(value) {
+    this.userSettings.playMusic = value;
+    return value ? this.changeMusic() : this.sound.stopAll();
   }
-  toggleMinimap() {
-    if (this?.userSettings?.showMinimap) {
-      this.userSettings.showMinimap = false;
-    } else {
-      this.userSettings.showMinimap = true;
-    }
-    this.minimap.setVisible(this?.userSettings?.showMinimap);
+  toggleMinimap(value) {
+    this.userSettings.showMinimap = value;
+    return this.minimap.setVisible(value);
   }
   changeMusic() {
     const scene = this;

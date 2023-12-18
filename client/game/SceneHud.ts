@@ -202,36 +202,6 @@ function addGlobalEventListeners(scene) {
     scene
   );
   window.addEventListener(
-    "TOGGLE_MUSIC",
-    (e) => {
-      const name = "playMusic";
-      const value = mainScene?.userSettings?.[name];
-      const message = value ? "Background music: OFF" : "Background music: ON";
-      mainScene.toggleMusic();
-      window.dispatchEvent(
-        new CustomEvent("SETTING_TOGGLED", {
-          detail: { message, name, value: !value },
-        })
-      );
-    },
-    scene
-  );
-  window.addEventListener(
-    "TOGGLE_MINIMAP",
-    (e) => {
-      const name = "showMinimap";
-      const value = mainScene?.userSettings?.[name];
-      const message = value ? "Minimap: OFF" : "Minimap: ON";
-      mainScene.toggleMinimap();
-      window.dispatchEvent(
-        new CustomEvent("SETTING_TOGGLED", {
-          detail: { message, name, value: !value },
-        })
-      );
-    },
-    scene
-  );
-  window.addEventListener(
     "ITEM_DRAG",
     (e: CustomEvent) => {
       const hero = mainScene?.hero;

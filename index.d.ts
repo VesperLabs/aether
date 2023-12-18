@@ -221,6 +221,7 @@ interface Npc extends Character {
 
 interface ServerPlayer extends Character {
   email?: string;
+  userSettings?: UserSettings;
   peerId?: string;
   isDemoAccount?: boolean;
   partyId?: string;
@@ -249,6 +250,11 @@ interface ServerPlayer extends Character {
   setDead(): void;
   isInventoryFull(): boolean;
   addNpcKill(npcName: string): void;
+}
+
+interface UserSettings {
+  playMusic: boolean;
+  showMinimap: boolean;
 }
 
 interface MapAsset {

@@ -24,6 +24,20 @@ const faceSchema = {
   },
 };
 
+const userSettingsSchema = {
+  bsonType: "object",
+  properties: {
+    playMusic: {
+      bsonType: "bool",
+      description: "must be a boolean",
+    },
+    showMinimap: {
+      bsonType: "bool",
+      description: "must be a boolean",
+    },
+  },
+};
+
 const spawnSchema = {
   bsonType: "object",
   required: ["x", "y", "roomName"],
@@ -127,6 +141,7 @@ const userSchema = {
       bsonType: "date",
       description: "must be a date",
     },
+    userSettings: userSettingsSchema,
   },
 };
 

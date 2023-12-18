@@ -22,6 +22,7 @@ export { default as Input } from "./Input";
 export { default as KeyboardButton } from "./KeyboardButton";
 export { default as Tooltip } from "./Tooltip";
 export { default as Portal } from "./Portal";
+export { default as Switch } from "./Switch";
 export {
   default as PlayerRender,
   PLAYER_RENDER_CANVAS_STYLE,

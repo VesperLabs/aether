@@ -106,6 +106,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           "heroInit",
           {
             ...getRoomState(scene, roomName),
+            userSettings: player.userSettings,
             socketId,
           },
           { isLogin: true }
@@ -158,6 +159,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
           "heroInit",
           {
             ...getRoomState(scene, roomName),
+            userSettings: player.userSettings,
             socketId,
           },
           { isLogin: true }
@@ -1096,7 +1098,14 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         scene.db.updateUser(player);
         io.to(player?.roomName).emit("playerUpdate", getFullCharacterState(player));
       });
-
+      socket.on("updateUserSetting", async ({ name, value }) => {
+        const player: ServerPlayer = scene.players[socketId];
+        await scene.db.updateUserSetting(player, {
+          name,
+          value,
+        });
+        socket.emit("updateUserSetting", { name, value });
+      });
       socket.on("peerInit", (pId) => {
         peerId = pId;
       });

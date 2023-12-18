@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { Box, Flex, Tooltip, Icon } from "@aether/ui";
-import { useAppContext, Portrait } from "./";
+import { useAppContext, Portrait, StatusIcon } from "./";
 import { arePropsEqualWithKeys } from "@aether/shared";
 import { cloneDeep } from "lodash";
 
@@ -216,6 +216,7 @@ const MenuHud = () => {
     >
       <Tooltip id="hud" />
       <PlayerHud player={cloneDeep(hero)} isBig={true} />
+      <StatusIcon />
       <Flex sx={{ flexDirection: "column" }}>
         {hasParty &&
           partyIds?.map((id) => (
