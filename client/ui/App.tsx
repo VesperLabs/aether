@@ -686,7 +686,7 @@ const MenuGlobalKeys = () => {
       >
         <KeyboardKey
           name="M"
-          hidden={!userSettings?.showMinimap}
+          hidden={!userSettings?.showMinimap || isMobile}
           onKeyUp={() =>
             socket.emit("updateUserSetting", {
               name: "showMinimap",
