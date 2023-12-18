@@ -79,6 +79,7 @@ const getDatabaseApi = (db) => ({
         abilities: filterNullEmpty(player?.abilities),
         updatedAt,
         createdAt,
+        userSettings: player?.userSettings,
       });
       return true;
     });
