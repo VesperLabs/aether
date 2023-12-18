@@ -114,6 +114,10 @@ const MenuBar = () => {
             alignItems: "center",
             pointerEvents: "none",
             flexDirection: "row",
+            flexWrap: "nowrap",
+            "& > button": {
+              flexShrink: 1,
+            },
           }}
         >
           <Box sx={{ flex: tabChat ? "unset" : 1 }} />
