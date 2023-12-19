@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { assetList } from "../../shared/Assets";
 import soundList from "../../shared/data/soundList.json";
+import iconList from "../../shared/data/iconList.json";
 import { mapList, mapImageList } from "../../shared/Maps";
 import { IMAGE_CACHE } from "../../shared/utils";
 
@@ -58,7 +59,9 @@ class SceneBoot extends Phaser.Scene {
       this.scene.start("SceneMain");
       this.scene.start("SceneHud");
     });
-
+    iconList.forEach((asset) => {
+      this.load.image(asset.name, asset.src);
+    });
     mapImageList.forEach((asset) => {
       this.load.image(asset.name, asset.image);
     });
