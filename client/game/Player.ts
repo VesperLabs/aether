@@ -156,13 +156,19 @@ class Player extends Character {
       this.add(this.crosshair);
     }
   }
+  updateUserName() {
+    const { profile, scene, stats } = this || {};
+    const mainScene = scene.scene.manager.getScene("SceneMain");
+    const level = mainScene?.userSettings?.charLevels ? ` lv. ${stats.level}` : "";
+    this.userName.setText(`${profile?.userName}${level}`);
+    this.userName.setX(-this.userName.width / 2);
+    this.userName.setTint(profile?.userNameTint);
+  }
   drawCharacterFromUserData() {
-    const { profile, visibleEquipment, state, stats } = this || {};
+    const { profile, visibleEquipment, scene } = this || {};
     const isBoss = profile?.scale > 1;
     if (profile?.userName) {
-      this.userName.setText(profile?.userName);
-      this.userName.setX(-this.userName.width / 2);
-      this.userName.setTint(profile?.userNameTint);
+      this.updateUserName();
     }
     this.skin.setScale(profile?.scale || 1);
     this.shadow.setScale(profile?.scale || 1);

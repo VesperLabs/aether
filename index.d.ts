@@ -256,6 +256,7 @@ interface UserSettings {
   playMusic: boolean;
   showMinimap: boolean;
   videoChat: boolean;
+  charLevels: boolean;
 }
 
 interface MapAsset {

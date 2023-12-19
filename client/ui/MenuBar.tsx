@@ -125,6 +125,12 @@ const MenuBar = () => {
           {!tabChat && (
             <>
               <MenuButton
+                keyboardKey="Z"
+                iconName="pen"
+                isActive={tabSettings}
+                onClick={() => setTabSettings((prev) => !prev)}
+              />
+              <MenuButton
                 keyboardKey="P"
                 iconName="social"
                 isActive={tabSocial}
@@ -167,12 +173,6 @@ const MenuBar = () => {
                 iconName="bag"
                 isActive={tabInventory}
                 onClick={() => setTabInventory((prev) => !prev)}
-              />
-              <MenuButton
-                keyboardKey="Z"
-                iconName="pen"
-                isActive={tabSettings}
-                onClick={() => setTabSettings((prev) => !prev)}
               />
             </>
           )}
