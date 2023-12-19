@@ -30,7 +30,8 @@ class Player extends ServerCharacter implements ServerPlayer {
   doAttack({ count, direction, castAngle }) {
     this.checkAttackReady();
     if (this?.state?.isDead) return;
-    if (this?.state?.isAttacking) return;
+    /* TODO: Serverside attack may not actually be ready. Need to think about this */
+    //if (this?.state?.isAttacking) return;
     if (this?.hasBuff("stun")) return;
     const { scene, room, socketId } = this ?? {};
 
