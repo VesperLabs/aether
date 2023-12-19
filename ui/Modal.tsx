@@ -36,6 +36,7 @@ const Modal: any & {
         pointerEvents: "all",
         transform: `scale(${Math.max(1, zoom)}) translate(-50%, -50%)`,
         transformOrigin: "center center",
+        cursor: "default",
         ...sx,
       }}
       variant="buttons.wood"

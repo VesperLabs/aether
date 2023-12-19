@@ -29,6 +29,7 @@ export const DEFAULT_USER_SETTINGS: UserSettings = {
   showMinimap: true,
   playMusic: true,
   videoChat: false,
+  charLevels: false,
 };
 
 export function getAngleFromDirection(direction) {
