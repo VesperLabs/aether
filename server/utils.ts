@@ -4,6 +4,7 @@ import ItemBuilder from "../shared/ItemBuilder";
 const PLAYER_BASE_ATTACK_DELAY = 100;
 const SHOP_INFLATION = 4;
 const PLAYER_BASE_EXP = 30;
+const PLAYER_LEVEL_UP_MULTIPLIER = 1.75;
 const PLAYER_DEFAULT_SPAWN = { roomName: "grassland-3", x: 1496, y: 2028 };
 //const PLAYER_DEFAULT_SPAWN = { roomName: "grassland-2", x: 239, y: 990 };
 
@@ -188,7 +189,7 @@ function checkSlotsMatch(s1, s2) {
 }
 
 const calculateNextMaxExp = (level) => {
-  return Math.floor(PLAYER_BASE_EXP * Math.pow(1.75, level - 1));
+  return Math.floor(PLAYER_BASE_EXP * Math.pow(PLAYER_LEVEL_UP_MULTIPLIER, level - 1));
 };
 
 function mergeAndAddValues(obj1, obj2) {
