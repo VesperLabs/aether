@@ -1,4 +1,6 @@
 import { isEqual, get } from "lodash";
+export const isMobile =
+  /Android|Mobile|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 export const HAIR_HIDING_HELMETS = ["helmet-armet", "helmet-hood", "helmet-horned", "helmet-jake"];
 export const FACE_HIDING_HELMETS = ["helmet-armet", "helmet-horned", "helmet-jake"];
 export const ACCESSORY_HIDING_HELMETS = ["helmet-armet", "helmet-horned"];
@@ -23,6 +25,11 @@ export const RACES_WITH_ATTACK_ANIMS = ["crab", "human", "bear", "wolf", "slime"
 export const POTION_BASES = ["hpPotion", "mpPotion"];
 export const CONSUMABLES_BASES = ["food", ...POTION_BASES];
 export const MINI_MAP_SIZE = 160;
+export const DEFAULT_USER_SETTINGS: UserSettings = {
+  showMinimap: true,
+  playMusic: true,
+  videoChat: false,
+};
 
 export function getAngleFromDirection(direction) {
   let angle = 0;
@@ -39,9 +46,6 @@ export function capitalize(str) {
   if (str.length == 0) return str;
   return str[0].toUpperCase() + str.substr(1);
 }
-
-export const isMobile =
-  /Android|Mobile|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
 export function trimCanvas(c) {
   let ctx = c.getContext("2d"),

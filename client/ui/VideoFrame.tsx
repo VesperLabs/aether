@@ -3,16 +3,15 @@ import { Flex } from "@aether/ui";
 import { isMobile } from "../../shared/utils";
 import { useAppContext } from "../ui";
 import { useOnMountUnsafe } from "./useOnMountSafe";
-import { getQueryParam } from "../utils";
 import { MediaConnection } from "peerjs";
 
 const peers: Record<string, MediaConnection> = {};
 const VIDEO_SIZE = "8vh";
 
 export default function VideoFrame() {
-  const showVideo = getQueryParam("video") === "true";
-  const { peer } = useAppContext();
+  const { peer, userSettings } = useAppContext();
   const videoGridRef = useRef(null);
+  const showVideo = userSettings?.videoChat;
 
   const myStream = useUserMedia({
     video: {
@@ -104,6 +103,7 @@ export default function VideoFrame() {
         position: "fixed",
         inset: "0 0 0 0",
         gap: 2,
+
         "& video": {
           width: VIDEO_SIZE,
           height: VIDEO_SIZE,
