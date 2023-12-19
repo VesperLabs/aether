@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import Door from "../../shared/Door";
 import Sign from "../../shared/Sign";
 import { getMapByName } from "../../shared/Maps";
-import { distanceTo, isMobile, MINI_MAP_SIZE } from "../../shared/utils";
+import { DEFAULT_USER_SETTINGS, distanceTo, isMobile, MINI_MAP_SIZE } from "../../shared/utils";
 import { SnapshotInterpolation } from "@geckos.io/snapshot-interpolation";
 import {
   addPlayer,
@@ -26,10 +26,7 @@ class SceneMain extends Phaser.Scene {
     super({ key: "SceneMain" });
     this.socket = socket;
     this.lastUpdateTime = 0;
-    this.userSettings = {
-      playMusic: true,
-      showMinimap: true,
-    };
+    this.userSettings = DEFAULT_USER_SETTINGS;
     this.nearbyPeerIds = [];
   }
 

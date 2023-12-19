@@ -255,6 +255,7 @@ interface ServerPlayer extends Character {
 interface UserSettings {
   playMusic: boolean;
   showMinimap: boolean;
+  videoChat: boolean;
 }
 
 interface MapAsset {

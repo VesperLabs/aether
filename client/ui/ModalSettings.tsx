@@ -4,7 +4,7 @@ import { Modal, KeyboardButton, Icon, Switch, Flex } from "@aether/ui";
 
 const ModalSettings: React.FC = () => {
   const { setTabSettings, userSettings, zoom, bottomOffset, socket } = useAppContext();
-  const { showMinimap, playMusic } = userSettings ?? {};
+  const { showMinimap, playMusic, videoChat } = userSettings ?? {};
   return (
     <>
       <Modal.Overlay sx={{ backgroundColor: "shadow.50" }} />
@@ -19,6 +19,7 @@ const ModalSettings: React.FC = () => {
               flexDirection: "column",
               maxWidth: 300,
               minWidth: 200,
+              justifyContent: "end",
               gap: 2,
             }}
           >
@@ -40,6 +41,16 @@ const ModalSettings: React.FC = () => {
               onChange={(e) => {
                 socket.emit("updateUserSetting", {
                   name: "playMusic",
+                  value: e.target.checked,
+                });
+              }}
+            />
+            <Switch
+              label={`Video Chat: ${videoChat ? "ON" : "OFF"}`}
+              checked={videoChat}
+              onChange={(e) => {
+                socket.emit("updateUserSetting", {
+                  name: "videoChat",
                   value: e.target.checked,
                 });
               }}

@@ -16,7 +16,7 @@ import { getSpinDirection, calculateZoomLevel } from "../utils";
 import "react-tooltip/dist/react-tooltip.css";
 import { Theme } from "theme-ui";
 import { Socket } from "socket.io-client";
-import { CONSUMABLES_BASES, MINI_MAP_SIZE, isMobile } from "@aether/shared";
+import { CONSUMABLES_BASES, MINI_MAP_SIZE, DEFAULT_USER_SETTINGS, isMobile } from "@aether/shared";
 import Peer from "peerjs";
 import VideoFrame from "./VideoFrame";
 import ModalSettings from "./ModalSettings";
@@ -129,7 +129,7 @@ function App({ socket, peer, debug, game }) {
   const [error, setError] = useState(null);
   const [cooldowns, setCooldowns] = useState({});
   const [homeModal, setHomeModal] = useState(null);
-  const [userSettings, setUserSettings] = useState({ showMinimap: !isMobile, playMusic: true });
+  const [userSettings, setUserSettings] = useState(DEFAULT_USER_SETTINGS);
 
   /* Is the bag open or closed */
   const toggleBagState = (id: string) => {

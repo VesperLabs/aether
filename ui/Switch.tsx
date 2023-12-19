@@ -17,6 +17,9 @@ export default function ({
           backgroundColor: "set",
           transition: ".5s ease all",
         },
+        "& > span": {
+          width: "auto",
+        },
         ...sx,
       }}
       {...props}

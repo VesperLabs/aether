@@ -3,6 +3,7 @@ import { userSchema } from "./schema";
 import ItemBuilder from "../../shared/ItemBuilder";
 import { useGetBaseCharacterDefaults, filterNullEmpty } from "../utils";
 import { omitBy, isNil } from "lodash";
+import { DEFAULT_USER_SETTINGS } from "../../shared/utils";
 
 const getDatabaseApi = (db) => ({
   getUserByEmail: async ({ email }) => {
@@ -277,9 +278,6 @@ export const createBaseUser = (charClass) => {
       face: { texture: "face-1" },
       whiskers: { texture: "whiskers-3", tint: "0x88FFFF" },
     },
-    userSettings: {
-      playMusic: true,
-      showMinimap: true,
-    },
+    userSettings: DEFAULT_USER_SETTINGS,
   };
 };
