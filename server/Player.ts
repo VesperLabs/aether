@@ -28,12 +28,13 @@ class Player extends ServerCharacter implements ServerPlayer {
     this.state.isDead = true;
   }
   doAttack({ count, direction, castAngle }) {
-    this.checkAttackReady();
-    if (this?.state?.isDead) return;
-    /* TODO: Serverside attack may not actually be ready. Need to think about this */
-    //if (this?.state?.isAttacking) return;
-    if (this?.hasBuff("stun")) return;
     const { scene, room, socketId } = this ?? {};
+
+    if (this?.hasBuff("stun")) return;
+    if (this?.state?.isDead) return;
+    /* Serverside attack may not actually be ready. */
+    const { percentageRemaining } = this.checkAttackReady();
+    if (percentageRemaining > 5) return;
 
     const { spellName } = this.getAttackActionName({ count });
     const spCost = this.getAttackSpCost(count);
@@ -228,7 +229,7 @@ class Player extends ServerCharacter implements ServerPlayer {
   findOpenBagSlot(bagId: string, item: Item) {
     const bag = this?.inventory?.find((item: Item) => item?.id === bagId);
     const bagItems = bag?.items ?? [null];
-    let openSlot;
+    let openSlot: integer;
     /* Find a stackable slot */
     for (var i = 0; i < bagItems?.length; i++) {
       // Item found (Stackable)
