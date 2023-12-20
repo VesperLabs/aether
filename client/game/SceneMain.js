@@ -320,27 +320,14 @@ class SceneMain extends Phaser.Scene {
   }
 }
 
-// adds some extra pixels around an entity
-function extendBounds(bounds, extraPixels) {
-  return {
-    x: bounds.x - extraPixels,
-    y: bounds.y - extraPixels,
-    width: bounds.width + 2 * extraPixels,
-    height: bounds.height + 2 * extraPixels,
-  };
-}
-
 function getClosestEntity(hero, entities) {
   let closestEntity;
-  let closestDistance = Infinity;
+  let closestDistance = 80;
   for (const entity of entities) {
-    if (!["keeper", "sign"].includes(entity?.kind)) continue;
-    if (RectangleToRectangle(hero, entity.getBounds())) {
-      const distance = distanceTo(entity, hero);
-      if (distance < closestDistance) {
-        closestEntity = entity;
-        closestDistance = distance;
-      }
+    const distance = distanceTo(entity, hero);
+    if (distance < closestDistance) {
+      closestEntity = entity;
+      closestDistance = distance;
     }
   }
   return closestEntity;
@@ -396,9 +383,10 @@ function checkEntityProximity(scene, time) {
 
   if (!hero || hero.state.isDead) return;
 
-  const heroBounds = extendBounds(hero?.body?.getBounds({}), 10); // 10 is for extraPixels
-  const entities = [...scene.npcs.getChildren(), ...scene.signs.getChildren()];
-  const closestEntity = getClosestEntity(heroBounds, entities);
+  const entities = [...scene.npcs.getChildren(), ...scene.signs.getChildren()]?.filter((e) =>
+    ["sign", "keeper"]?.includes(e.kind)
+  );
+  const closestEntity = getClosestEntity(hero, entities);
 
   if (
     closestEntity &&
