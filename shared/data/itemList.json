@@ -2260,6 +2260,22 @@
           "hpCost": 10
         }
       },
+      "stealth": {
+        "ilvl": 1,
+        "name": "Stealth",
+        "base": "stealth",
+        "slot": "spell",
+        "texture": "scroll-gray",
+        "buffs": {
+          "stealth": 1
+        },
+        "requirements": {
+          "charClass": "rogue"
+        },
+        "stats": {
+          "spCost": 5
+        }
+      },
       "fireball2": {
         "ilvl": 2,
         "name": "Fireball",
