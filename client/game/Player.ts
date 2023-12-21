@@ -8,6 +8,8 @@ import {
   distanceTo,
   FACE_HIDING_ACCESSORIES,
   HAIR_HIDING_ACCESSORIES,
+  MIN_STEALTH_ALPHA,
+  calculateStealthVisibilityPercent,
 } from "@aether/shared";
 import Bubble from "./Bubble";
 import Spell from "./Spell";
@@ -293,6 +295,7 @@ class Player extends Character {
     this.hpBar.setPercent(percent);
   }
   doDeath() {
+    this.setAlpha(1);
     this.body.setVelocity(0, 0);
     this.state.isDead = true;
     this.state.isAttacking = false;
@@ -415,6 +418,26 @@ class Player extends Character {
       window.dispatchEvent(new Event("UPDATE_HUD"));
     }
     this.updateHpBar();
+  }
+  checkStealth({ distance }) {
+    const isStealthed = this.buffs?.find((b) => ["stealth"]?.includes(b?.name));
+    if (!isStealthed) {
+      // if this player is not stealthed
+      if (this.alpha === 1) return;
+      this.alpha = approachAlpha(this.alpha, 1, 0.25);
+    } else if (this.isHero) {
+      // always will see your own player at this alpha
+      this.alpha = approachAlpha(this.alpha, MIN_STEALTH_ALPHA, 0.1);
+    } else {
+      // how we see other stealthed players
+      const targetAlpha = calculateStealthVisibilityPercent({
+        distance,
+        observer: this?.scene?.hero,
+        player: this,
+      });
+      this.alpha = approachAlpha(this.alpha, targetAlpha, 0.1);
+    }
+    return this.setAlpha(this.alpha);
   }
   update(time, delta) {
     if (this.checkDeath()) return;
@@ -591,6 +614,18 @@ function updateCurrentSpeed(player) {
   }
 
   player.action = player.currentSpeed === 0 ? "stand" : "walk";
+}
+
+function approachAlpha(currentAlpha, targetAlpha, step) {
+  const difference = Math.abs(targetAlpha - currentAlpha);
+
+  if (difference <= step) {
+    return targetAlpha;
+  } else if (currentAlpha < targetAlpha) {
+    return currentAlpha + step;
+  } else {
+    return currentAlpha - step;
+  }
 }
 
 function hackFrameRates(player, rate) {

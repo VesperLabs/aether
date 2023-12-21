@@ -257,7 +257,7 @@ class Character extends Phaser.GameObjects.Container {
     let isThisSpellReady = true;
     if (spellName) {
       const baseCooldown = spellDetails?.[spellName]?.baseCooldown ?? 0;
-      const lastCast = this.state.lastCast?.[spellName] ?? Date.now() - POTION_COOLDOWN;
+      const lastCast = this.state.lastCast?.[spellName] ?? 0;
       isThisSpellReady = now - lastCast > this?.stats?.castDelay + baseCooldown;
     }
     const isGlobalReady = now - this.state.lastCast.global > this?.stats?.castDelay;

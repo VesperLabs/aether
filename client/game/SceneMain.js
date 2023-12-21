@@ -337,8 +337,12 @@ function getClosestEntity(hero, entities) {
 function getNearbyPlayers(hero, players) {
   let nearbyPlayers = [];
   for (const player of players) {
+    const distance = distanceTo(player, hero);
+    // adjust player stealth
+    player.checkStealth({ distance });
+    // do not need to do anything else for hero
     if (player.isHero) continue;
-    if (distanceTo(player, hero) < 200) {
+    if (distance < 200) {
       nearbyPlayers.push(player);
     }
   }
@@ -346,7 +350,7 @@ function getNearbyPlayers(hero, players) {
 }
 
 function checkPlayerProximity(scene, time) {
-  if (time % 11 > 1) return;
+  if (time % 6 > 1) return;
   const { hero } = scene ?? {};
 
   if (!hero || hero.state.isDead) return;
