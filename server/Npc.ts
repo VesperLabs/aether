@@ -172,8 +172,9 @@ class Npc extends Character implements Npc {
     // Check if attack is ready
     this.checkAttackReady();
 
-    // If is nasty and not locked onto a player, lock onto nearest player
-    this.handleAggroState();
+    if (state?.isAggro && state?.lockedPlayerId) {
+      this.handleAggroState();
+    }
 
     // Get target player based on locked player ID
     const targetPlayer = scene?.players?.[state?.lockedPlayerId] ?? null;
@@ -191,20 +192,20 @@ class Npc extends Character implements Npc {
     this.intendAttack({ targetPlayer });
     this.intendCastSpell({ targetPlayer, delta });
   }
-  // targetPlayer is only supplied when we already have a lockedTarget
-  handleAggroState(targetPlayer?: ServerPlayer) {
-    const { state, room } = this ?? {};
-    if (!state?.isAggro || (state.lockedPlayerId && !targetPlayer)) {
-      return; // Early return if not in the required state
-    }
+  // targetPlayer is only supplied when we already have a lockedtar
+  handleAggroState() {
+    const { room, state, scene } = this ?? {};
 
-    const nearestPlayer = targetPlayer ?? room?.playerManager?.getNearestPlayer(this);
+    const nearestPlayer =
+      scene?.players?.[state?.lockedPlayerId] || room?.playerManager?.getNearestPlayer(this);
 
     if (!nearestPlayer) {
       return false; // Early return if no nearest player found
     }
 
-    const npcAggroRange = calculateNpcAggroRange(this, AGGRO_KITE_RANGE);
+    const npcAggroRange = state?.lockedPlayerId
+      ? AGGRO_KITE_RANGE // running away from the NPC
+      : calculateNpcAggroRange(this, AGGRO_KITE_RANGE); // NPC has not aggroed us yet
     if (!this.checkInRange(nearestPlayer, npcAggroRange)) {
       return false; // Early return if player is out of range
     }
@@ -215,7 +216,8 @@ class Npc extends Character implements Npc {
         return false; // Early return if stealth player is out of adjusted range
       }
     }
-    if (!targetPlayer) this.setLockedPlayerId(nearestPlayer?.socketId);
+
+    this.setLockedPlayerId(nearestPlayer?.socketId);
     return true;
   }
   setLockedPlayerId(id: string) {
@@ -359,7 +361,7 @@ class Npc extends Character implements Npc {
     // Check if player is in range for aggro
 
     if (targetPlayer) {
-      const isInRange = this.handleAggroState(targetPlayer);
+      const isInRange = this.handleAggroState();
       const shouldStop =
         this.checkInRange(targetPlayer, this.getShouldAttackRange()) ||
         this.state.isAiming ||
