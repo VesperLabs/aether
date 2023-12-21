@@ -17,6 +17,7 @@ export const BUFF_SPELLS = [
   "stun",
   "slow",
   "regeneration",
+  "stealth",
 ];
 export const BLANK_TEXTURE = "human-blank";
 export const POTION_COOLDOWN = 10000;
@@ -25,6 +26,7 @@ export const RACES_WITH_ATTACK_ANIMS = ["crab", "human", "bear", "wolf", "slime"
 export const POTION_BASES = ["hpPotion", "mpPotion"];
 export const CONSUMABLES_BASES = ["food", ...POTION_BASES];
 export const MINI_MAP_SIZE = 160;
+export const MIN_STEALTH_ALPHA = 0.5;
 export const DEFAULT_USER_SETTINGS: UserSettings = {
   showMinimap: true,
   playMusic: true,
@@ -292,4 +294,32 @@ export function itemHasRequiredStats({ requirements, player, key }) {
   }
 
   return playerStat >= requiredStat;
+}
+
+export function calculateStealthVisibilityPercent({
+  distance,
+  observer,
+  player,
+  maxVisibilityRange = 200,
+}) {
+  const BASE_VISIBILITY_RANGE = 50; // Base visibility range when levels are equal
+  const LEVEL_ADVANTAGE_FACTOR = 0.1; // Factor for extending visibility per level difference
+
+  const heroLevel = observer?.stats?.level ?? 1;
+  const playerLevel = player?.stats?.level ?? 1;
+
+  // Calculate level difference
+  let levelDifference = heroLevel - playerLevel;
+
+  // Extend visibility range based on level difference, capped at maxVisibilityRange
+  let visibilityRange = Math.min(
+    BASE_VISIBILITY_RANGE + levelDifference * LEVEL_ADVANTAGE_FACTOR * BASE_VISIBILITY_RANGE,
+    maxVisibilityRange
+  );
+
+  // Calculate visibility percentage
+  let percent = 1 - Math.min(distance / visibilityRange, 1);
+  percent = Math.max(0, Math.min(percent, MIN_STEALTH_ALPHA)); // Ensure percent is between 0 and 1
+
+  return percent;
 }
