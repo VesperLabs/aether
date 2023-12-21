@@ -267,8 +267,10 @@ class Character extends Phaser.GameObjects.Container {
     if (this.state.isDead) return false;
     const ability: Item = this?.abilities?.[abilitySlot];
     if (!this.checkCastReady(ability?.base)) return false;
-    const mpCost = ability?.stats?.mpCost ?? 0;
-    return this?.stats?.mp >= mpCost;
+    const mpCost = ability?.stats?.mpCost || 0;
+    const hpCost = ability?.stats?.hpCost || 0;
+    const spCost = ability?.stats?.spCost || 0;
+    return this?.stats?.mp >= mpCost && this?.stats?.hp > hpCost && this?.stats?.sp >= spCost;
   }
   triggerSecondAttack() {
     if (this.state.isAttacking) return;

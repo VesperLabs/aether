@@ -78,15 +78,22 @@ class ServerCharacter extends Character {
         });
 
       for (const item of wornItems) {
+        const itemRequirement = item?.requirements?.[key];
+
+        // if the item has a required char class and player does not meet it, remove from the list
+        if (key === "charClass") {
+          if (this?.charClass !== itemRequirement)
+            activeItemSlots.splice(activeItemSlots.indexOf(item.slotKey), 1);
+          continue;
+        }
+
         // if the item has a requirement and the character doesn't meet it, remove the item from the list
         const percentStatMultiplier = percentStats[key] / 100 ?? 1;
-        if (
-          item?.requirements?.[key] >
-          baseStats[key] + Math.floor(baseStats[key] * percentStatMultiplier)
-        ) {
+        if (itemRequirement > baseStats[key] + Math.floor(baseStats[key] * percentStatMultiplier)) {
           activeItemSlots.splice(activeItemSlots.indexOf(item.slotKey), 1);
           continue;
         }
+
         // if the item has a stat, add it
         if (item?.stats?.[key]) {
           baseStats[key] += item?.stats?.[key];

@@ -83,7 +83,7 @@
           "spCost": 1
         },
         "requirements": {
-          "intelligence": 5
+          "intelligence": 3
         }
       },
       "staff": {
@@ -94,14 +94,14 @@
         "slot": "hands",
         "stats": {
           "minDamage": 1,
-          "maxDamage": 1,
+          "maxDamage": 2,
           "attackDelay": 300,
-          "spellPower": 3,
+          "spellPower": 2,
           "range": 1.15,
           "spCost": 2
         },
         "requirements": {
-          "intelligence": 6
+          "vitality": 3
         }
       },
       "club": {
@@ -2094,6 +2094,7 @@
           "mpCost": 4
         },
         "requirements": {
+          "charClass": "mage",
           "intelligence": 5
         }
       },
@@ -2114,6 +2115,7 @@
           "mpCost": 5
         },
         "requirements": {
+          "charClass": "mage",
           "intelligence": 5
         }
       },
@@ -2134,13 +2136,14 @@
           "mpCost": 4
         },
         "requirements": {
+          "charClass": "mage",
           "intelligence": 5
         }
       },
-      "voltball": {
+      "lightball": {
         "ilvl": 1,
-        "name": "Voltball",
-        "base": "voltball",
+        "name": "Lightball",
+        "base": "lightball",
         "slot": "spell",
         "texture": "scroll-yellow",
         "effects": {
@@ -2148,10 +2151,11 @@
           "maxLightDamage": 4
         },
         "stats": {
-          "mpCost": 4
+          "hpCost": 1
         },
         "requirements": {
-          "intelligence": 5
+          "charClass": "cleric",
+          "vitality": 5
         }
       },
       "evasion": {
@@ -2164,7 +2168,8 @@
           "evasion": 1
         },
         "requirements": {
-          "intelligence": 8
+          "charClass": "rogue",
+          "dexterity": 5
         },
         "stats": {
           "mpCost": 10
@@ -2180,10 +2185,11 @@
           "haste": 1
         },
         "requirements": {
-          "intelligence": 8
+          "charClass": "cleric",
+          "level": 8
         },
         "stats": {
-          "mpCost": 4
+          "hpCost": 4
         }
       },
       "brute": {
@@ -2196,7 +2202,8 @@
           "brute": 1
         },
         "requirements": {
-          "intelligence": 8
+          "charClass": "warrior",
+          "level": 5
         },
         "stats": {
           "mpCost": 4
@@ -2212,7 +2219,8 @@
           "genius": 1
         },
         "requirements": {
-          "intelligence": 8
+          "charClass": "mage",
+          "level": 5
         },
         "stats": {
           "mpCost": 4
@@ -2228,10 +2236,11 @@
           "endurance": 1
         },
         "requirements": {
-          "intelligence": 8
+          "charClass": "cleric",
+          "level": 5
         },
         "stats": {
-          "mpCost": 4
+          "hpCost": 4
         }
       },
       "regeneration": {
@@ -2244,10 +2253,11 @@
           "regeneration": 1
         },
         "requirements": {
-          "intelligence": 8
+          "charClass": "cleric",
+          "level": 5
         },
         "stats": {
-          "mpCost": 4
+          "hpCost": 10
         }
       },
       "fireball2": {
@@ -2268,10 +2278,10 @@
         "base": "waterball",
         "slot": "spell"
       },
-      "voltball2": {
+      "lightball2": {
         "ilvl": 2,
-        "name": "Voltball",
-        "base": "voltball",
+        "name": "Lightball",
+        "base": "lightball",
         "slot": "spell"
       },
       "evasion2": {
@@ -2328,10 +2338,10 @@
         "base": "waterball",
         "slot": "spell"
       },
-      "voltball3": {
+      "lightball3": {
         "ilvl": 3,
-        "name": "Voltball",
-        "base": "voltball",
+        "name": "Lightball",
+        "base": "lightball",
         "slot": "spell"
       },
       "evasion3": {

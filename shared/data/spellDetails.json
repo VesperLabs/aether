@@ -59,7 +59,7 @@
     "npcCastWait": 5000,
     "layerDepth": "top"
   },
-  "voltball": {
+  "lightball": {
     "isAimable": true,
     "allowedTargets": ["enemy"],
     "maxVisibleTime": 1000,

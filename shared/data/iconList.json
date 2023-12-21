@@ -36,6 +36,7 @@
   { "name": "icon-chest", "src": "./assets/icons/chest.png" },
   { "name": "icon-grab", "src": "./assets/icons/grab.png" },
   { "name": "icon-mana", "src": "./assets/icons/mana.png" },
+  { "name": "icon-health", "src": "./assets/icons/health.png" },
   { "name": "icon-quests", "src": "./assets/icons/quests.png" },
   { "name": "icon-staff", "src": "./assets/icons/staff.png" }
 ]

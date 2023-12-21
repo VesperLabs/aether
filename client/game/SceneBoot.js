@@ -169,7 +169,7 @@ function createSpellAnims(scene) {
     frameRate: 20,
   });
   scene.anims.create({
-    key: "spell-anim-voltball",
+    key: "spell-anim-lightball",
     frames: scene.anims.generateFrameNumbers("spell-anim-balls", { start: 10, end: 19 }),
     repeat: -1,
     yoyo: false,

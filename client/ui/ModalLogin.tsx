@@ -222,7 +222,8 @@ const ClickableIcon = ({ icon, setCharClass, charClass, isSelected }) => {
     const desc = {
       warrior: "Warriors are strong and can take a lot of damage.",
       rogue: "Rogues are fast and can dodge attacks.",
-      mage: "Mages are powerful and can cast spells.",
+      mage: "Mages are powerful spellcasters and can do heavy damage.",
+      cleric: "Clerics are powerful healers but consume their own life-force in the process.",
     };
     return desc[charClass];
   };
@@ -290,12 +291,12 @@ const CharClassSelect = ({ charClass, setCharClass }) => {
         isSelected={charClass === "mage"}
         setCharClass={setCharClass}
       />
-      {/* <ClickableIcon
-    icon={CLASS_ICON_MAP.CLERIC}
-    charClass="cleric"
-    isSelected={charClass === "cleric"}
-    setCharClass={setCharClass}
-  /> */}
+      <ClickableIcon
+        icon={CLASS_ICON_MAP.CLERIC}
+        charClass="cleric"
+        isSelected={charClass === "cleric"}
+        setCharClass={setCharClass}
+      />
     </Flex>
   );
 };

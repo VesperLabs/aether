@@ -1,7 +1,7 @@
 import { useState, useRef, useLayoutEffect, memo } from "react";
 import { Box, Icon, Portal, Donut, SLOT_SIZE, STYLE_SLOT_EMPTY, STYLE_NON_EMPTY } from "@aether/ui";
 import { ItemTooltip, BLANK_IMAGE, SlotAmount } from "./";
-import { resolveAsset, assetToCanvas, arePropsEqualWithKeys, isMobile } from "@aether/shared";
+import { resolveAsset, assetToCanvas, isMobile, itemHasRequiredStats } from "@aether/shared";
 import { useDoubleTap } from "use-double-tap";
 import { isEqual, get } from "lodash";
 
@@ -250,7 +250,7 @@ const Slot = memo(
               <SpaceDonut percent={item?.items?.filter((i) => i)?.length / item?.space || 0} />
             )}
             {item?.amount > 1 && <SlotAmount>{item?.amount}</SlotAmount>}
-            {item?.slot === 'spell' && <SlotAmount>Lvl. {item?.ilvl}</SlotAmount>}
+            {item?.slot === "spell" && <SlotAmount>Lvl. {item?.ilvl}</SlotAmount>}
             <Icon
               icon={imageData}
               size={size * 2} // Fixes large images to not get cut off
@@ -340,7 +340,7 @@ function getIsItemActive({ item, slotKey, player, location }) {
   }
   if (["shop", "inventory", "bag"]?.includes(location)) {
     return Object.keys(item?.requirements || {}).every((key) => {
-      return player?.stats?.[key] >= item?.requirements?.[key];
+      return itemHasRequiredStats({ requirements: item?.requirements, player, key });
     });
   }
   return true;
