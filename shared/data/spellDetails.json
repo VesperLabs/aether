@@ -158,5 +158,18 @@
     "tint": "0xFFFFFF",
     "layerDepth": "bottom",
     "shouldFade": true
+  },
+  "stealth": {
+    "allowedTargets": ["self"],
+    "maxVisibleTime": 2200,
+    "maxActiveTime": 100,
+    "bodySize": 32,
+    "npcCastRange": [100, 150],
+    "npcCastWait": 30000,
+    "scaleBase": 0.6,
+    "tint": "0x000000",
+    "layerDepth": "bottom",
+    "shouldFade": true,
+    "baseCooldown": 30000
   }
 }

@@ -1,6 +1,6 @@
 import Character from "./Character";
 import ItemBuilder from "../shared/ItemBuilder";
-import { distanceTo } from "../shared/utils";
+import { calculateStealthVisibilityPercent, distanceTo } from "../shared/utils";
 import { getCharacterDirection, randomNumber, SHOP_INFLATION, sleep } from "./utils";
 import spellDetails from "../shared/data/spellDetails.json";
 import crypto from "crypto";
@@ -173,12 +173,7 @@ class Npc extends Character implements Npc {
     this.checkAttackReady();
 
     // If is nasty and not locked onto a player, lock onto nearest player
-    if (state?.isAggro && !state.lockedPlayerId) {
-      const nearestPlayer = room?.playerManager?.getNearestPlayer(this);
-      const npcAggroRange = Math.min(10 + this?.baseStats?.level * 8, AGGRO_KITE_RANGE);
-      const isInRange = this.checkInRange(nearestPlayer, npcAggroRange);
-      if (isInRange) this.setLockedPlayerId(nearestPlayer?.socketId);
-    }
+    this.handleAggroState();
 
     // Get target player based on locked player ID
     const targetPlayer = scene?.players?.[state?.lockedPlayerId] ?? null;
@@ -195,6 +190,33 @@ class Npc extends Character implements Npc {
     this.chaseOrMove({ targetPlayer, delta, time });
     this.intendAttack({ targetPlayer });
     this.intendCastSpell({ targetPlayer, delta });
+  }
+  // targetPlayer is only supplied when we already have a lockedTarget
+  handleAggroState(targetPlayer?: ServerPlayer) {
+    const { state, room } = this ?? {};
+    if (!state?.isAggro || (state.lockedPlayerId && !targetPlayer)) {
+      return; // Early return if not in the required state
+    }
+
+    const nearestPlayer = targetPlayer ?? room?.playerManager?.getNearestPlayer(this);
+
+    if (!nearestPlayer) {
+      return false; // Early return if no nearest player found
+    }
+
+    const npcAggroRange = calculateNpcAggroRange(this, AGGRO_KITE_RANGE);
+    if (!this.checkInRange(nearestPlayer, npcAggroRange)) {
+      return false; // Early return if player is out of range
+    }
+
+    if (nearestPlayer.hasBuff("stealth")) {
+      const newNpcAggroRange = calculateStealthAggroRange(nearestPlayer, this, npcAggroRange);
+      if (!this.checkInRange(nearestPlayer, newNpcAggroRange)) {
+        return false; // Early return if stealth player is out of adjusted range
+      }
+    }
+    if (!targetPlayer) this.setLockedPlayerId(nearestPlayer?.socketId);
+    return true;
   }
   setLockedPlayerId(id: string) {
     // If they are switching targets
@@ -337,7 +359,7 @@ class Npc extends Character implements Npc {
     // Check if player is in range for aggro
 
     if (targetPlayer) {
-      const isInRange = this.checkInRange(targetPlayer, AGGRO_KITE_RANGE);
+      const isInRange = this.handleAggroState(targetPlayer);
       const shouldStop =
         this.checkInRange(targetPlayer, this.getShouldAttackRange()) ||
         this.state.isAiming ||
@@ -348,6 +370,7 @@ class Npc extends Character implements Npc {
 
       // Aggroed
       if (shouldChasePlayer) {
+        targetPlayer.expireBuff("stealth");
         this.state.bubbleMessage = this.state.isAiming ? "0xFFAAAA!" : "?";
         if (shouldStop) {
           return this.standStill();
@@ -549,6 +572,22 @@ class Npc extends Character implements Npc {
       });
     }
   }
+}
+
+function calculateNpcAggroRange(npc, AGGRO_KITE_RANGE) {
+  return Math.min(10 + npc?.baseStats?.level * 8, AGGRO_KITE_RANGE);
+}
+
+function calculateStealthAggroRange(nearestPlayer: ServerPlayer, npc: Npc, npcAggroRange: integer) {
+  const newNpcAggroRange =
+    npcAggroRange *
+    calculateStealthVisibilityPercent({
+      distance: distanceTo(nearestPlayer, npc),
+      observer: npc,
+      player: nearestPlayer,
+      maxVisibilityRange: npcAggroRange,
+    });
+  return newNpcAggroRange;
 }
 
 export default Npc;

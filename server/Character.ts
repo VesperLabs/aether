@@ -554,6 +554,13 @@ class ServerCharacter extends Character {
       }
     }
   }
+  expireBuff(name) {
+    for (const buff of this.buffs) {
+      if (buff?.name === name) {
+        buff.isExpired = true;
+      }
+    }
+  }
   /* Runs in update loop and removed buffs from player that are expired.
   Will also flag the player to hasBuffChanges so their state gets sent to client */
   expireBuffs(forceExpire = false) {
