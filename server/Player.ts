@@ -62,6 +62,16 @@ class Player extends ServerCharacter implements ServerPlayer {
       spellName,
     });
   }
+  modifyStatIfCostExists(statType, cost) {
+    if (cost > 0) {
+      this.modifyStat(statType, -cost);
+      this.scene.io.to(this?.roomName).emit("modifyPlayerStat", {
+        socketId: this.socketId,
+        type: statType,
+        amount: -cost,
+      });
+    }
+  }
   doCast({ abilitySlot, castAngle }): void {
     const ability = this?.abilities?.[abilitySlot];
     const spellName = ability?.base;
@@ -71,19 +81,16 @@ class Player extends ServerCharacter implements ServerPlayer {
     if (!ability || !ability?.ilvl || !spellName) return;
     if (!this.canCastSpell(abilitySlot)) return;
 
-    // use the mana
-    const mpCost = ability?.stats?.mpCost || 1;
-
     this.state.lastCast.global = Date.now();
+
     if (spellName) {
       this.state.lastCast[spellName] = Date.now();
     }
-    this.modifyStat("mp", -mpCost);
-    this.scene.io.to(this?.roomName).emit("modifyPlayerStat", {
-      socketId: this.socketId,
-      type: "mp",
-      amount: -mpCost,
-    });
+
+    // Modify stats if there's a cost
+    this.modifyStatIfCostExists("mp", ability?.stats?.mpCost || 0);
+    this.modifyStatIfCostExists("hp", ability?.stats?.hpCost || 0);
+    this.modifyStatIfCostExists("sp", ability?.stats?.spCost || 0);
 
     this.room?.spellManager.create({
       caster: this,

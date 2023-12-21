@@ -165,6 +165,11 @@ class AppServer {
       res.json({ string: "ok" });
     });
 
+    app.get("/players/pruneItem", async (req, res) => {
+      await db.pruneItemByKey("voltball");
+      res.json({ string: "ok" });
+    });
+
     httpServer.listen(PORT, () => {
       console.log(
         `💻 Running ${MONGO_URL ? "[online]" : "[offline]"} on ${SERVER_URL} @ ${SERVER_FPS}fps`

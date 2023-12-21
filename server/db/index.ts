@@ -41,6 +41,56 @@ const getDatabaseApi = (db) => ({
       // Print the number of documents deleted
     });
   },
+  pruneItemByKey: async (keyToRemove) => {
+    return execute("pruneItemByKey", async () => {
+      const cursor = db.collection("users").find({});
+
+      await cursor.forEach(async (doc) => {
+        let updateNeeded = false;
+
+        // Update equipment
+        for (let slot in doc.equipment) {
+          if (doc.equipment[slot]?.key === keyToRemove) {
+            doc.equipment[slot] = null;
+            updateNeeded = true;
+          }
+        }
+
+        // Update abilities
+        for (let slot in doc.abilities) {
+          if (doc.abilities[slot]?.key === keyToRemove) {
+            doc.abilities[slot] = null;
+            updateNeeded = true;
+          }
+        }
+
+        // Update inventory and nested items
+        doc.inventory = doc.inventory.map((item) => {
+          let itemUpdated = false;
+          if (item?.key === keyToRemove) {
+            itemUpdated = true;
+            return null;
+          }
+          if (item?.items) {
+            item.items = item.items.map((nestedItem) => {
+              if (nestedItem?.key === keyToRemove) {
+                itemUpdated = true;
+                return null;
+              }
+              return nestedItem;
+            });
+          }
+          updateNeeded = updateNeeded || itemUpdated;
+          return item;
+        });
+
+        // Save the updated document only if necessary
+        if (updateNeeded) {
+          await db.collection("users").updateOne({ _id: doc._id }, { $set: doc });
+        }
+      });
+    });
+  },
   getUserByLogin: async ({ email, password = "" }) => {
     return execute("getUserByLogin", async () => {
       if (!email) return console.log("❌ Email not provided");
@@ -264,7 +314,7 @@ export const createBaseUser = (charClass) => {
     inventory: [],
     abilities: {
       1: charClass === "mage" ? ItemBuilder.buildItem("spell", "common", "fireball") : null,
-      2: null,
+      2: charClass === "cleric" ? ItemBuilder.buildItem("spell", "common", "lightball") : null,
       3: null,
       4: null,
       5: null,

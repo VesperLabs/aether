@@ -109,8 +109,8 @@ class Spell extends Phaser.GameObjects.Container {
       this.velocityY = Math.sin(castAngle) * this?.spellSpeed;
       this.spell.setRotation(castAngle);
     }
-    if (spellName === "voltball") {
-      this.spell.play("spell-anim-voltball");
+    if (spellName === "lightball") {
+      this.spell.play("spell-anim-lightball");
       this.velocityX = Math.cos(castAngle) * this?.spellSpeed;
       this.velocityY = Math.sin(castAngle) * this?.spellSpeed;
       this.spell.setRotation(castAngle);
@@ -186,7 +186,7 @@ const playSpellAudio = ({ scene, spellName, caster, isAttackMelee }) => {
   if (spellName === "waterball") {
     audioKey = "spell-water";
   }
-  if (spellName === "voltball") {
+  if (spellName === "lightball") {
     audioKey = "spell-light";
   }
   if (spellName === "quake") {

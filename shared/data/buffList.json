@@ -19,7 +19,7 @@
     "type": "buff",
     "duration": 30000,
     "stats": {
-      "strength": 6
+      "defense": 20
     }
   },
   "adrenaline": {
@@ -55,7 +55,7 @@
     "type": "buff",
     "duration": 30000,
     "stats": {
-      "intelligence": 6
+      "maxMp": 15
     }
   },
   "protein": {
@@ -63,7 +63,7 @@
     "duration": 30000,
     "dispelInCombat": true,
     "stats": {
-      "regenHp": 5
+      "regenHp": 3
     }
   },
   "vitamins": {
@@ -92,7 +92,8 @@
   "rest": {
     "type": "buff",
     "duration": -1,
-    "dispelInCombat": true
+    "dispelInCombat": true,
+    "scaleDuration": false
   },
   "stun": {
     "type": "debuff",
@@ -123,5 +124,11 @@
     "stats": {
       "magicFind": 25
     }
+  },
+  "stealth": {
+    "type": "buff",
+    "scaleDuration": false,
+    "duration": -1,
+    "dispelInCombat": true
   }
 }

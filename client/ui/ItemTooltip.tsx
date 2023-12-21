@@ -1,8 +1,13 @@
 import { Fragment } from "react";
 import { Flex, Text, Divider, Icon, Tooltip } from "@aether/ui";
-import { buffList, itemSetList, ItemBuilder, formatStats, CONSUMABLES_BASES } from "@aether/shared";
-
-const Label = (props) => <Text sx={{ fontWeight: "normal" }} {...props} />;
+import {
+  buffList,
+  itemSetList,
+  ItemBuilder,
+  formatStats,
+  CONSUMABLES_BASES,
+  itemHasRequiredStats,
+} from "@aether/shared";
 
 const ItemTooltip = ({ player, item, tooltipId, show }) => {
   const isSetActive = player?.state?.activeSets?.includes?.(item?.setName);
@@ -101,9 +106,11 @@ const ItemTooltip = ({ player, item, tooltipId, show }) => {
         })}
         {Object.keys(requirements)?.length > 0 && <TextDivider>Requirements</TextDivider>}
         {Object.keys(requirements).map((key) => {
-          const hasRequiredStats = player?.stats?.[key] >= requirements[key];
           return (
-            <Text key={key} color={hasRequiredStats ? "text" : "danger"}>
+            <Text
+              key={key}
+              color={itemHasRequiredStats({ requirements, player, key }) ? "text" : "danger"}
+            >
               <Label>{key}:</Label> {requirements[key]}
             </Text>
           );
@@ -176,6 +183,12 @@ const ItemTooltip = ({ player, item, tooltipId, show }) => {
               {"-" + item?.stats?.mpCost}
             </Flex>
           )}
+          {item?.stats?.hpCost && (
+            <Flex sx={{ alignItems: "center", gap: "2px" }}>
+              <Icon icon="./assets/icons/health.png" size={16} />
+              {"-" + item?.stats?.hpCost}
+            </Flex>
+          )}
           {item?.stats?.spCost && (
             <Flex sx={{ alignItems: "center", gap: "2px" }}>
               <Icon icon="./assets/icons/stamina.png" size={16} />
@@ -188,6 +201,7 @@ const ItemTooltip = ({ player, item, tooltipId, show }) => {
   );
 };
 
+const Label = (props) => <Text sx={{ fontWeight: "normal" }} {...props} />;
 const TextDivider = ({ children, sx }: any) => (
   <>
     <Divider sx={{ pt: 2, zIndex: -1 }} />

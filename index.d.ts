@@ -12,7 +12,7 @@ interface Item {
   attackTint?: string;
   amount?: number;
   type?: string;
-  requirements?: Record<string, number>;
+  requirements?: Record<string, any>;
   cost?: number;
   effects?: Record<string, any>;
   buffs?: Record<string, any>;

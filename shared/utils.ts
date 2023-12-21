@@ -182,7 +182,7 @@ export function convertMsToS(s) {
 export const formatStats = (stats = {}) =>
   Object.entries(stats).reduce((acc, [key, value]) => {
     // skip these
-    if (["mpCost", "spCost"].includes(key)) return acc;
+    if (["mpCost", "hpCost", "spCost"].includes(key)) return acc;
 
     // combine damage min-max into one x - x stat:
     if ((key?.includes("Damage") && key?.includes("max")) || key?.includes("min")) {
@@ -281,4 +281,15 @@ export function arePropsEqualWithKeys(keys) {
   return (prevProps, nextProps) => {
     return keys.every((key) => isEqual(get(prevProps, key), get(nextProps, key)));
   };
+}
+
+export function itemHasRequiredStats({ requirements, player, key }) {
+  const playerStat = player?.stats?.[key];
+  const requiredStat = requirements[key];
+
+  if (key === "charClass") {
+    return player?.charClass === requiredStat;
+  }
+
+  return playerStat >= requiredStat;
 }
