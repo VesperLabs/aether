@@ -172,7 +172,7 @@ class Npc extends Character implements Npc {
     // Check if attack is ready
     this.checkAttackReady();
 
-    if (state?.isAggro && state?.lockedPlayerId) {
+    if (state?.isAggro) {
       this.handleAggroState();
     }
 
