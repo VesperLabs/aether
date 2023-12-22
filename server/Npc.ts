@@ -252,6 +252,8 @@ class Npc extends Character implements Npc {
       targetPlayer.x - this.x
     ));
 
+    this.dispelBuffsByProperty("dispelOnCast", true);
+
     room?.spellManager.create({
       caster: this,
       target: targetPlayer,
@@ -317,6 +319,8 @@ class Npc extends Character implements Npc {
     /* Switch hands if possible */
     const { spellName } = this.getAttackActionName({ count });
     this.action = spellName;
+
+    this.dispelBuffsByProperty("dispelOnAttack", true);
 
     room?.spellManager.create({
       caster: this,

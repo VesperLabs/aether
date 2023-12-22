@@ -129,6 +129,8 @@
     "type": "buff",
     "scaleDuration": false,
     "duration": -1,
-    "dispelInCombat": true
+    "dispelInCombat": true,
+    "dispelOnAttack": true,
+    "dispelOnCast": true
   }
 }

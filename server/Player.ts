@@ -56,6 +56,8 @@ class Player extends ServerCharacter implements ServerPlayer {
     this.state.lastAttack = Date.now();
     this.state.isAttacking = true;
 
+    this.dispelBuffsByProperty("dispelOnAttack", true);
+
     room?.spellManager.create({
       caster: this,
       castAngle,
@@ -91,6 +93,8 @@ class Player extends ServerCharacter implements ServerPlayer {
     this.modifyStatIfCostExists("mp", ability?.stats?.mpCost || 0);
     this.modifyStatIfCostExists("hp", ability?.stats?.hpCost || 0);
     this.modifyStatIfCostExists("sp", ability?.stats?.spCost || 0);
+
+    this.dispelBuffsByProperty("dispelOnCast", true);
 
     this.room?.spellManager.create({
       caster: this,

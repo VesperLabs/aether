@@ -236,7 +236,7 @@ class ServerCharacter extends Character {
     /* Update the victim */
     victim.modifyStat("hp", -eleDamage);
     victim.state.lastCombat = Date.now();
-    victim.combatDispelBuffs();
+    victim.dispelBuffsByProperty("dispelInCombat", true);
 
     /* Npcs lock on and chase when a user hits them */
     if (victim.state.isRobot) {
@@ -307,7 +307,7 @@ class ServerCharacter extends Character {
     const totalDamage = physicalDamage + eleDamage;
     victim.modifyStat("hp", -totalDamage);
     victim.state.lastCombat = Date.now();
-    victim.combatDispelBuffs();
+    victim.dispelBuffsByProperty("dispelInCombat", true);
     /* Npcs lock on and chase when a user hits them */
     if (victim.state.isRobot) {
       victim.setLockedPlayerId(this?.socketId);
@@ -471,7 +471,7 @@ class ServerCharacter extends Character {
         this.state.doBuffPoison = true;
         this.state.lastBuffPoison = now;
         this.state.lastCombat = Date.now();
-        this.combatDispelBuffs();
+        this.dispelBuffsByProperty("dispelInCombat", true);
         this.modifyStat("hp", amount);
       }
     }
@@ -530,6 +530,8 @@ class ServerCharacter extends Character {
       stats: statsWithLevelMultiplier,
       spawnTime: Date.now(),
       dispelInCombat: buff?.dispelInCombat,
+      dispelOnAttack: buff?.dispelOnAttack,
+      dispelOnCast: buff?.dispelOnCast,
     });
 
     if (shouldCalculateStats) this.calculateStats();
@@ -547,9 +549,9 @@ class ServerCharacter extends Character {
     }
     return isResting;
   }
-  combatDispelBuffs() {
+  dispelBuffsByProperty(prop: keyof Buff, value = true) {
     for (const buff of this.buffs) {
-      if (buff?.dispelInCombat) {
+      if (buff?.[prop] === value) {
         buff.isExpired = true;
       }
     }
