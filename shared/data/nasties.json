@@ -447,6 +447,34 @@
       }
     ]
   },
+  "whiteFang": {
+    "charClass": "rogue",
+    "profile": {
+      "race": "wolf",
+      "userName": "White Fang"
+    },
+    "state": { "isAggro": true },
+    "baseStats": {
+      "level": 11,
+      "maxHp": 400,
+      "walkSpeed": 20
+    },
+    "hitBoxSize": {
+      "width": 31,
+      "height": 28
+    },
+    "abilities": {
+      "1": ["spell", "common", "stealth"]
+    },
+    "drops": [
+      {
+        "type": "stackable",
+        "rarity": "common",
+        "key": "wolfPelt",
+        "chance": 2
+      }
+    ]
+  },
   "bear": {
     "charClass": "cleric",
     "profile": {
