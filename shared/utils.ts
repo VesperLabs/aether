@@ -314,7 +314,7 @@ export function calculateStealthVisibilityPercent({
   // Factor in stealthBuff's level
   const levelDifference = Math.max(
     0,
-    observerLevel - (Math.floor(playerLevel / 2) + stealthBuffLevel * 3)
+    observerLevel - (Math.floor(playerLevel / 5) + stealthBuffLevel * 5)
   );
 
   // Extend visibility range based on level difference, capped at maxVisibilityRange
