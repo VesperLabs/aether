@@ -2169,7 +2169,7 @@
         },
         "requirements": {
           "charClass": "rogue",
-          "dexterity": 5
+          "dexterity": 3
         },
         "stats": {
           "mpCost": 10
@@ -2186,7 +2186,7 @@
         },
         "requirements": {
           "charClass": "cleric",
-          "level": 8
+          "level": 3
         },
         "stats": {
           "hpCost": 4
@@ -2203,7 +2203,7 @@
         },
         "requirements": {
           "charClass": "warrior",
-          "level": 5
+          "level": 3
         },
         "stats": {
           "mpCost": 4
@@ -2220,7 +2220,7 @@
         },
         "requirements": {
           "charClass": "mage",
-          "level": 5
+          "level": 3
         },
         "stats": {
           "mpCost": 4
@@ -2237,7 +2237,7 @@
         },
         "requirements": {
           "charClass": "cleric",
-          "level": 5
+          "level": 3
         },
         "stats": {
           "hpCost": 4
@@ -2254,7 +2254,7 @@
         },
         "requirements": {
           "charClass": "cleric",
-          "level": 5
+          "level": 3
         },
         "stats": {
           "hpCost": 10
@@ -2270,7 +2270,8 @@
           "stealth": 1
         },
         "requirements": {
-          "charClass": "rogue"
+          "charClass": "rogue",
+          "level": 3
         },
         "stats": {
           "spCost": 5
@@ -2336,6 +2337,12 @@
         "base": "regeneration",
         "slot": "spell"
       },
+      "stealth2": {
+        "ilvl": 2,
+        "name": "Stealth",
+        "base": "stealth",
+        "slot": "spell"
+      },
       "fireball3": {
         "ilvl": 3,
         "name": "Fireball",
@@ -2394,6 +2401,12 @@
         "ilvl": 3,
         "name": "Regeneration",
         "base": "regeneration",
+        "slot": "spell"
+      },
+      "stealth3": {
+        "ilvl": 3,
+        "name": "Stealth",
+        "base": "stealth",
         "slot": "spell"
       }
     }
