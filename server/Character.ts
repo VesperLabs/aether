@@ -485,6 +485,7 @@ class ServerCharacter extends Character {
     this.stats.sp = this.stats.maxSp;
   }
   assignExp(amount: integer): boolean {
+    if (!Number.isInteger(amount)) return false;
     let didLevel = false;
     this.stats.exp += amount;
     while (this.stats.exp >= this.baseStats.maxExp) {
@@ -510,7 +511,7 @@ class ServerCharacter extends Character {
     const buff = buffList?.[name];
     if (!buff) return false;
 
-    const { duration, stats = {}, scaleDuration = true } = buff;
+    const { duration, stats = {}, scaleDuration = true, scaleStats = true } = buff;
     const statsWithLevelMultiplier = {};
 
     // multiply each stat by the level
@@ -527,7 +528,7 @@ class ServerCharacter extends Character {
       name,
       duration: scaleDuration ? duration * level : duration,
       level,
-      stats: statsWithLevelMultiplier,
+      stats: scaleStats ? statsWithLevelMultiplier : stats,
       spawnTime: Date.now(),
       dispelInCombat: buff?.dispelInCombat,
       dispelOnAttack: buff?.dispelOnAttack,

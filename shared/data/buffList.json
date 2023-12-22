@@ -128,9 +128,13 @@
   "stealth": {
     "type": "buff",
     "scaleDuration": false,
+    "scaleStats": false,
     "duration": -1,
     "dispelInCombat": true,
     "dispelOnAttack": true,
-    "dispelOnCast": true
+    "dispelOnCast": true,
+    "stats": {
+      "walkSpeed": -50
+    }
   }
 }
