@@ -26,11 +26,17 @@ const BLANK_TEXTURE = "human-blank";
 class Player extends Character {
   constructor(scene, args) {
     super(scene, args);
+
+    if (this.hasBuff("stealth")) {
+      this.setAlpha(0);
+    }
+
     this.weaponAtlas = scene.cache.json.get("weaponAtlas");
     this.updateData(args);
     this.initSpriteLayers();
     this.drawCharacterFromUserData();
     this.updateHpBar();
+
     if (this.state.isDead) this.doDeath();
     if (this.kind === "nasty") this.userName.setVisible(false);
     scene.events.on("update", this.update, this);
@@ -86,11 +92,11 @@ class Player extends Character {
       this.takeHit({ type: "hp", amount: this?.stats?.regenHp });
     }
     if (this.state.doBuffPoison) {
-      const poisonBuff = this.buffs?.find((b) => ["poison"]?.includes(b?.name));
+      const poisonBuff = this.getBuff("poison");
       this.takeHit({ type: "hp", amount: -(poisonBuff?.stats?.poisonDamage || 0) });
     }
     if (this.state.doHpBuffRegen) {
-      const regenBuff = this.buffs?.find((b) => ["regeneration"]?.includes(b?.name));
+      const regenBuff = this.getBuff("regeneration");
       this.takeHit({ type: "hp", amount: regenBuff?.stats?.regenHp });
     }
     if (this.state.doMpRegen) {
@@ -420,24 +426,26 @@ class Player extends Character {
     this.updateHpBar();
   }
   checkStealth({ distance }) {
-    const isStealthed = this.buffs?.find((b) => ["stealth"]?.includes(b?.name));
-    if (!isStealthed) {
+    const stealthBuff = this.getBuff("stealth");
+    let alpha = this.alpha;
+    if (!stealthBuff) {
       // if this player is not stealthed
-      if (this.alpha === 1) return;
-      this.alpha = approachAlpha(this.alpha, 1, 0.25);
+      if (alpha === 1) return;
+      alpha = approachAlpha(alpha, 1, 0.25);
     } else if (this.isHero) {
       // always will see your own player at this alpha
-      this.alpha = approachAlpha(this.alpha, MIN_STEALTH_ALPHA, 0.1);
+      alpha = approachAlpha(alpha, MIN_STEALTH_ALPHA, 0.1);
     } else {
       // how we see other stealthed players
       const targetAlpha = calculateStealthVisibilityPercent({
         distance,
         observer: this?.scene?.hero,
+        stealthBuff,
         player: this,
       });
-      this.alpha = approachAlpha(this.alpha, targetAlpha, 0.1);
+      alpha = approachAlpha(alpha, targetAlpha, 0.1);
     }
-    return this.setAlpha(this.alpha);
+    return this.setAlpha(alpha);
   }
   update(time, delta) {
     if (this.checkDeath()) return;

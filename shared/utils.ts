@@ -300,19 +300,25 @@ export function calculateStealthVisibilityPercent({
   distance,
   observer,
   player,
+  stealthBuff,
   maxVisibilityRange = 200,
 }) {
-  const BASE_VISIBILITY_RANGE = 50; // Base visibility range when levels are equal
-  const LEVEL_ADVANTAGE_FACTOR = 0.1; // Factor for extending visibility per level difference
+  const BASE_VISIBILITY_RANGE = 20; // Base visibility range when levels are equal
+  const LEVEL_ADVANTAGE_FACTOR = 0.5; // Factor for extending visibility per level difference
 
-  const heroLevel = observer?.stats?.level ?? 1;
+  const observerLevel = observer?.stats?.level ?? 1;
   const playerLevel = player?.stats?.level ?? 1;
+  const stealthBuffLevel = stealthBuff?.level ?? 1;
 
   // Calculate level difference
-  let levelDifference = heroLevel - playerLevel;
+  // Factor in stealthBuff's level
+  const levelDifference = Math.max(
+    0,
+    observerLevel - (Math.floor(playerLevel / 2) + stealthBuffLevel * 3)
+  );
 
   // Extend visibility range based on level difference, capped at maxVisibilityRange
-  let visibilityRange = Math.min(
+  const visibilityRange = Math.min(
     BASE_VISIBILITY_RANGE + levelDifference * LEVEL_ADVANTAGE_FACTOR * BASE_VISIBILITY_RANGE,
     maxVisibilityRange
   );

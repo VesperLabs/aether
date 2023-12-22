@@ -160,6 +160,9 @@ class Character extends Phaser.GameObjects.Container {
   hasBuff(name: string): boolean {
     return this.buffs?.some((b) => b?.name === name);
   }
+  getBuff(name: string): Buff {
+    return this.buffs?.find((b) => b?.name === name);
+  }
   doAttack(props: any) {
     //placeholder
   }
