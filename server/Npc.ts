@@ -210,8 +210,14 @@ class Npc extends Character implements Npc {
       return false; // Early return if player is out of range
     }
 
-    if (nearestPlayer.hasBuff("stealth")) {
-      const newNpcAggroRange = calculateStealthAggroRange(nearestPlayer, this, npcAggroRange);
+    const stealthBuff = nearestPlayer.getBuff("stealth");
+    if (stealthBuff) {
+      const newNpcAggroRange = calculateStealthAggroRange({
+        nearestPlayer,
+        npc: this,
+        npcAggroRange,
+        stealthBuff,
+      });
       if (!this.checkInRange(nearestPlayer, newNpcAggroRange)) {
         return false; // Early return if stealth player is out of adjusted range
       }
@@ -580,13 +586,24 @@ function calculateNpcAggroRange(npc, AGGRO_KITE_RANGE) {
   return Math.min(10 + npc?.baseStats?.level * 8, AGGRO_KITE_RANGE);
 }
 
-function calculateStealthAggroRange(nearestPlayer: ServerPlayer, npc: Npc, npcAggroRange: integer) {
+function calculateStealthAggroRange({
+  nearestPlayer,
+  npc,
+  npcAggroRange,
+  stealthBuff,
+}: {
+  nearestPlayer: ServerPlayer;
+  npc: Npc;
+  npcAggroRange: integer;
+  stealthBuff: Buff;
+}) {
   const newNpcAggroRange =
     npcAggroRange *
     calculateStealthVisibilityPercent({
       distance: distanceTo(nearestPlayer, npc),
       observer: npc,
       player: nearestPlayer,
+      stealthBuff,
       maxVisibilityRange: npcAggroRange,
     });
   return newNpcAggroRange;
