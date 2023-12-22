@@ -107,7 +107,8 @@
     "scaleBase": 0.6,
     "tint": "0xCCFFFF",
     "layerDepth": "bottom",
-    "shouldFade": true
+    "shouldFade": true,
+    "baseCooldown": 30000
   },
   "brute": {
     "allowedTargets": ["self", "ally"],
@@ -151,7 +152,8 @@
     "scaleBase": 0.6,
     "tint": "0xFFFFFF",
     "layerDepth": "bottom",
-    "shouldFade": true
+    "shouldFade": true,
+    "baseCooldown": 30000
   },
   "stealth": {
     "allowedTargets": ["self"],

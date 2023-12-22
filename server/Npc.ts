@@ -1,6 +1,6 @@
 import Character from "./Character";
 import ItemBuilder from "../shared/ItemBuilder";
-import { calculateStealthVisibilityPercent, distanceTo } from "../shared/utils";
+import { BUFF_SPELLS, calculateStealthVisibilityPercent, distanceTo } from "../shared/utils";
 import { getCharacterDirection, randomNumber, SHOP_INFLATION, sleep } from "./utils";
 import spellDetails from "../shared/data/spellDetails.json";
 import crypto from "crypto";
@@ -296,14 +296,20 @@ class Npc extends Character implements Npc {
     return details && this.checkCastReady(spellName);
   }
   isTargetSuitableForSpell(targetPlayer, spell) {
-    const details = spellDetails?.[spell?.base];
+    const spellName = spell?.base;
+    const details = spellDetails?.[spellName];
     // attack spells
     if (targetPlayer && details?.allowedTargets?.includes("enemy") && details?.npcCastRange) {
       const [min, max] = details.npcCastRange;
       return this.checkInRange(targetPlayer, max) && !this.checkInRange(targetPlayer, min);
     }
     // auras
-    return !targetPlayer && details?.allowedTargets?.includes("self");
+    if (!targetPlayer && details?.allowedTargets?.includes("self")) {
+      if (BUFF_SPELLS.includes(spellName)) {
+        // if we already have the buff, don't recast
+        return !this.hasBuff(spellName);
+      }
+    }
   }
   doAttack({ target, direction, castAngle }) {
     const { scene, room, id, state } = this ?? {};
