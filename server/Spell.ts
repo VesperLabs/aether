@@ -178,7 +178,6 @@ class Spell extends Phaser.GameObjects.Container {
         this.hitIds.push(victim.id);
         this.hitIds = [...new Set(this.hitIds)];
         // send one hit at a time
-
         this.caster.doHit([victim.id], abilitySlot);
       }
       return true;

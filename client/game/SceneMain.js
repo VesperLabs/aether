@@ -325,9 +325,13 @@ function getClosestEntity(hero, entities) {
   let closestDistance = 80;
   for (const entity of entities) {
     const distance = distanceTo(entity, hero);
-    if (distance < closestDistance) {
-      closestEntity = entity;
-      closestDistance = distance;
+    if (["sign", "keeper"]?.includes(entity?.kind)) {
+      if (distance < closestDistance) {
+        closestEntity = entity;
+        closestDistance = distance;
+      }
+    } else {
+      entity.checkStealth({ distance });
     }
   }
   return closestEntity;
@@ -387,9 +391,7 @@ function checkEntityProximity(scene, time) {
 
   if (!hero || hero.state.isDead) return;
 
-  const entities = [...scene.npcs.getChildren(), ...scene.signs.getChildren()]?.filter((e) =>
-    ["sign", "keeper"]?.includes(e.kind)
-  );
+  const entities = [...scene.npcs.getChildren(), ...scene.signs.getChildren()];
   const closestEntity = getClosestEntity(hero, entities);
 
   if (

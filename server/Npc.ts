@@ -8,8 +8,8 @@ import crypto from "crypto";
 const AGGRO_KITE_RANGE = 220;
 const NPC_SHOULD_ATTACK_RANGE = 8;
 // both combined is time between attacks. game designed to have ~ 700 total. (500 here + stats.attackDelay below)
-const NPC_ATTACK_ADDED_DELAY = 200;
-const NPC_WARNING_DELAY = 300;
+const NPC_ATTACK_ADDED_DELAY = 300;
+const NPC_WARNING_DELAY = 200;
 
 const buildEquipment = (equipment: Record<string, Array<string>>) =>
   Object?.entries(equipment).reduce((acc, [slot, itemArray]: [string, BuildItem]) => {
@@ -190,7 +190,7 @@ class Npc extends Character implements Npc {
 
     this.chaseOrMove({ targetPlayer, delta, time });
     this.intendAttack({ targetPlayer });
-    this.intendCastSpell({ targetPlayer, delta });
+    this.intendCastSpell({ targetPlayer });
   }
   // targetPlayer is only supplied when we already have a lockedtar
   handleAggroState() {
@@ -234,23 +234,20 @@ class Npc extends Character implements Npc {
     }
     this.state.lockedPlayerId = id;
   }
-  doCast({ ability, abilitySlot, targetPlayer }) {
+  doCast({ ability, abilitySlot, targetPlayer, castAngle }) {
     if (!this.canCastSpell(abilitySlot)) return;
 
     const { scene, room, id } = this ?? {};
     const spellName = ability?.base;
 
     this.state.lastCast.global = Date.now();
+
+    // set the individual cooldown
     if (spellName) {
       this.state.lastCast[spellName] = Date.now();
     }
 
     if (this?.hasBuff("stun")) return;
-
-    const castAngle = (this.state.lastAngle = Math.atan2(
-      targetPlayer.y - this.y,
-      targetPlayer.x - this.x
-    ));
 
     this.dispelBuffsByProperty("dispelOnCast", true);
 
@@ -267,39 +264,46 @@ class Npc extends Character implements Npc {
       .to(room?.name)
       .emit("npcCastSpell", { id, castAngle, base: ability?.base, ilvl: ability?.ilvl });
   }
-  async intendCastSpell({ targetPlayer, delta }) {
-    const { state, abilities } = this ?? {};
+  async intendCastSpell({ targetPlayer }) {
+    if (!this.checkCastReady() || this?.state?.isDead || this?.state?.isAiming) return;
 
-    if (!this.checkCastReady() || state?.isDead || state.isAiming || !targetPlayer) return;
-
-    let ability = null;
-    let abilitySlot = null;
-
-    for (const [slot, spell] of Object.entries(abilities)) {
-      const details = spellDetails?.[spell?.base];
-      if (!details) continue;
-      // some spells like buffs have a long wait time, so we skip them
-      if (Date.now() - this.state.lastCast.global < delta + details?.npcCastWait) continue;
-      // attack spells
-      if (targetPlayer) {
-        if (details?.allowedTargets?.includes("enemy") && details?.npcCastRange) {
-          const [min, max] = details?.npcCastRange || [];
-          const isTargetInRange =
-            this.checkInRange(targetPlayer, max) && !this.checkInRange(targetPlayer, min);
-          if (isTargetInRange) {
-            abilitySlot = slot;
-            ability = spell;
-          }
-        }
-      }
-    }
+    const { ability, abilitySlot, castAngle } = this.findSuitableAbility(targetPlayer);
 
     if (ability) {
       this.state.isAiming = true;
       await sleep(NPC_WARNING_DELAY + this?.stats?.castDelay);
-      this.doCast({ targetPlayer, abilitySlot, ability });
+      this.doCast({ targetPlayer, abilitySlot, ability, castAngle });
       this.state.isAiming = false;
     }
+  }
+  findSuitableAbility(targetPlayer) {
+    for (const [slot, spell] of Object.entries(this.abilities)) {
+      if (this.isSpellCastable(spell) && this.isTargetSuitableForSpell(targetPlayer, spell)) {
+        return {
+          ability: spell,
+          abilitySlot: slot,
+          castAngle: targetPlayer
+            ? Math.atan2(targetPlayer.y - this.y, targetPlayer.x - this.x)
+            : 0,
+        };
+      }
+    }
+    return {};
+  }
+  isSpellCastable(spell) {
+    const spellName = spell?.base;
+    const details = spellDetails?.[spellName];
+    return details && this.checkCastReady(spellName);
+  }
+  isTargetSuitableForSpell(targetPlayer, spell) {
+    const details = spellDetails?.[spell?.base];
+    // attack spells
+    if (targetPlayer && details?.allowedTargets?.includes("enemy") && details?.npcCastRange) {
+      const [min, max] = details.npcCastRange;
+      return this.checkInRange(targetPlayer, max) && !this.checkInRange(targetPlayer, min);
+    }
+    // auras
+    return !targetPlayer && details?.allowedTargets?.includes("self");
   }
   doAttack({ target, direction, castAngle }) {
     const { scene, room, id, state } = this ?? {};
@@ -450,8 +454,8 @@ class Npc extends Character implements Npc {
     }
   }
   moveRandomly(time: number) {
-    const changeDirectionDelay = 7; // Number of iterations before changing direction
-    const walkSpeed = this.stats.walkSpeed / 2;
+    const changeDirectionDelay = 9; // Number of iterations before changing direction
+    const walkSpeed = this.stats.walkSpeed / 2.5;
 
     if (time % changeDirectionDelay > 1) {
       // Keep moving in the current direction
@@ -514,10 +518,10 @@ class Npc extends Character implements Npc {
     }
   }
   doHit(ids: any, abilitySlot: any): void {
-    const { scene } = this ?? {};
-    const roomName: string = this?.room?.name;
-    const players: Array<ServerPlayer> =
-      scene.roomManager.rooms[roomName]?.playerManager?.getPlayers();
+    const { scene, room } = this ?? {};
+    const roomName: string = room?.name;
+    const npcs: Array<Npc> = room?.npcManager?.getNpcs();
+    const players: Array<ServerPlayer> = room?.playerManager?.getPlayers();
 
     const abilityName = this?.abilities?.[abilitySlot]?.base || "attack_left";
     const allowedTargets = spellDetails?.[abilityName]?.allowedTargets;
@@ -525,8 +529,9 @@ class Npc extends Character implements Npc {
 
     let hitList: Array<Hit> = [];
 
+    /* TODO: verify location of hit before we consider it a hit */
+
     for (const player of players) {
-      /* TODO: verify location of hit before we consider it a hit */
       if (!ids?.includes(player.id)) continue;
       // only allow spells to hit intended targets
       if (!allowedTargets?.includes("self")) {
@@ -540,6 +545,12 @@ class Npc extends Character implements Npc {
       }
       const newHits = this.calculateDamage(player, abilitySlot);
 
+      if (newHits?.length > 0) hitList = [...hitList, ...newHits];
+    }
+
+    // npcs so far can only target themselves with spells.
+    if (allowedTargets?.includes("self") && ids?.includes(this.id)) {
+      const newHits = this.calculateDamage(this, abilitySlot);
       if (newHits?.length > 0) hitList = [...hitList, ...newHits];
     }
 
