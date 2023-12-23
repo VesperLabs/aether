@@ -19,7 +19,7 @@
     "type": "buff",
     "duration": 30000,
     "stats": {
-      "defense": 20
+      "defense": 30
     }
   },
   "adrenaline": {

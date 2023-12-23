@@ -29,7 +29,14 @@ class ServerCharacter extends Character {
   /* make sure character can wear items */
   calculateActiveItemSlots() {
     const { equipment = {}, abilities = {}, buffs = [] } = this;
-    const baseStatKeys = ["vitality", "dexterity", "strength", "intelligence", "level"];
+    const baseStatKeys = [
+      "vitality",
+      "dexterity",
+      "strength",
+      "intelligence",
+      "level",
+      "charClass",
+    ];
     const allItems = Object.entries({ ...equipment, ...abilities });
     const percentStats = Object.fromEntries(baseStatKeys.map((stat) => [stat, 0]));
     const baseStats = {
@@ -82,9 +89,10 @@ class ServerCharacter extends Character {
 
         // if the item has a required char class and player does not meet it, remove from the list
         if (key === "charClass") {
-          if (this?.charClass !== itemRequirement)
+          if (itemRequirement && this?.charClass !== itemRequirement) {
             activeItemSlots.splice(activeItemSlots.indexOf(item.slotKey), 1);
-          continue;
+            continue;
+          }
         }
 
         // if the item has a requirement and the character doesn't meet it, remove the item from the list
