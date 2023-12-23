@@ -8,6 +8,8 @@ import {
   CONSUMABLES_BASES,
   itemHasRequiredStats,
 } from "@aether/shared";
+import TooltipLabel from "./TooltipLabel";
+import TextDivider from "./TextDivider";
 
 const ItemTooltip = ({ player, item, tooltipId, show }) => {
   const isSetActive = player?.state?.activeSets?.includes?.(item?.setName);
@@ -51,19 +53,19 @@ const ItemTooltip = ({ player, item, tooltipId, show }) => {
         {Object.keys(combinedStats)?.length > 0 && <TextDivider>Stats</TextDivider>}
         {Object.keys(combinedStats).map((key) => (
           <Text key={key}>
-            <Label>{key}:</Label> {combinedStats[key]}
+            <TooltipLabel>{key}:</TooltipLabel> {combinedStats[key]}
           </Text>
         ))}
         {Object.keys(item?.percentStats || {}).map((key) => (
           <Text key={key}>
-            <Label>{key}:</Label> {item?.percentStats[key]}%
+            <TooltipLabel>{key}:</TooltipLabel> {item?.percentStats[key]}%
           </Text>
         ))}
         {hasEffects && <TextDivider>Effects</TextDivider>}
         {Object.keys(combinedEffects).map((key) => {
           return (
             <Text key={key}>
-              <Label>{key}:</Label> {combinedEffects[key]}
+              <TooltipLabel>{key}:</TooltipLabel> {combinedEffects[key]}
             </Text>
           );
         })}
@@ -85,7 +87,7 @@ const ItemTooltip = ({ player, item, tooltipId, show }) => {
               {Object.keys(buffStats).map((stat) => {
                 return (
                   <Text key={stat}>
-                    <Label>{stat}:</Label> {buffStats?.[stat]}
+                    <TooltipLabel>{stat}:</TooltipLabel> {buffStats?.[stat]}
                   </Text>
                 );
               })}
@@ -95,10 +97,10 @@ const ItemTooltip = ({ player, item, tooltipId, show }) => {
         {triggers?.map((trigger: Trigger, idx) => {
           return (
             <Text key={idx}>
-              <Label>
+              <TooltipLabel>
                 {Math.floor(100 / trigger?.chance)}% chance{" "}
                 {trigger?.event === "onAttackHit" ? "on hit" : "on hurt"}:{" "}
-              </Label>
+              </TooltipLabel>
               {trigger?.name}{" "}
               <Text sx={{ fontSize: 0, color: "gray.400" }}>(Lv. {trigger?.level})</Text>
             </Text>
@@ -111,7 +113,7 @@ const ItemTooltip = ({ player, item, tooltipId, show }) => {
               key={key}
               color={itemHasRequiredStats({ requirements, player, key }) ? "text" : "danger"}
             >
-              <Label>{key}:</Label> {requirements[key]}
+              <TooltipLabel>{key}:</TooltipLabel> {requirements[key]}
             </Text>
           );
         })}
@@ -126,22 +128,22 @@ const ItemTooltip = ({ player, item, tooltipId, show }) => {
             {Object.keys(setBonus?.percentStats || {}).map((key) => {
               return (
                 <Text key={key} color={isSetActive ? "set" : "gray.500"}>
-                  <Label>{key}:</Label> {setBonus.percentStats[key]}%
+                  <TooltipLabel>{key}:</TooltipLabel> {setBonus.percentStats[key]}%
                 </Text>
               );
             })}
             {Object.keys(combinedSetStats).map((key) => (
               <Text key={key} color={isSetActive ? "set" : "gray.500"}>
-                <Label>{key}:</Label> {combinedSetStats[key]}
+                <TooltipLabel>{key}:</TooltipLabel> {combinedSetStats[key]}
               </Text>
             ))}
             {setBonus?.triggers?.map((trigger: Trigger, idx) => {
               return (
                 <Text key={idx} color={isSetActive ? "set" : "gray.500"}>
-                  <Label>
+                  <TooltipLabel>
                     {Math.floor(100 / trigger?.chance)}% chance{" "}
                     {trigger?.event === "onAttackHit" ? "on hit" : "on hurt"}:{" "}
-                  </Label>
+                  </TooltipLabel>
                   {trigger?.name}{" "}
                   <Text sx={{ fontSize: 0, color: "gray.400" }}>(Lv. {trigger?.level})</Text>
                 </Text>
@@ -200,13 +202,5 @@ const ItemTooltip = ({ player, item, tooltipId, show }) => {
     </Tooltip>
   );
 };
-
-const Label = (props) => <Text sx={{ fontWeight: "normal" }} {...props} />;
-const TextDivider = ({ children, sx }: any) => (
-  <>
-    <Divider sx={{ pt: 2, zIndex: -1 }} />
-    <Text sx={{ mt: -3, pb: 2, mb: -1, color: "gray.500", ...sx }}>{children}</Text>
-  </>
-);
 
 export default ItemTooltip;

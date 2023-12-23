@@ -19,7 +19,8 @@
     "type": "buff",
     "duration": 30000,
     "stats": {
-      "defense": 30
+      "minDamage": 1,
+      "maxDamage": 1
     }
   },
   "adrenaline": {
@@ -93,7 +94,8 @@
     "type": "buff",
     "duration": -1,
     "dispelInCombat": true,
-    "scaleDuration": false
+    "scaleDuration": false,
+    "description": "Regenerates HP while out of combat"
   },
   "stun": {
     "type": "debuff",
@@ -135,6 +137,7 @@
     "dispelOnCast": true,
     "stats": {
       "walkSpeed": -50
-    }
+    },
+    "description": "Hidden from sight while you are out of combat"
   }
 }
