@@ -1,77 +1,66 @@
 {
   "find-tudwick": {
+    "level": 1,
     "name": "Find Tudwick",
     "dialogues": {
       "description": "{objective}. He should be somewhere in the forest to the east."
     },
-    "objectives": [{ "type": "chat", "keeper": "tudwick" }],
-    "rewards": {
-      "exp": 15,
-      "gold": 5,
-      "items": []
-    }
+    "objectives": [{ "type": "chat", "keeper": "tudwick" }]
   },
   "crab-catching": {
+    "level": 1,
     "name": "Crab Catching",
     "dialogues": {
       "description": "Among the coastal sands, a legion of crabs scuttles with resilience and purpose. To truly comprehend their essence, you must face them in battle. {objective}, and you shall gain insight into the cycle of life and the sacrifices we make for growth."
     },
     "objectives": [{ "type": "bounty", "monster": "crab", "amount": 60 }],
     "rewards": {
-      "exp": 15,
-      "gold": 10,
       "items": [["gloves", "magic", "clothGloves"]]
     }
   },
   "crab-claws": {
+    "level": 1,
     "name": "The Crab Hat",
     "dialogues": {
       "description": "Ah, the legendary helmet of the crab! Indeed, it is a task that requires dedication and bravery. The very essence of the shoreline is woven into these crabs. If you wish to contribute, you must {objective} for me. With your help, we can forge a helmet that will withstand the fiercest of tides."
     },
     "objectives": [{ "type": "item", "item": ["stackable", "common", "crabClaw"], "amount": 30 }],
     "rewards": {
-      "exp": 15,
-      "gold": 5,
       "items": [["helmet", "set", "crabHat"]]
     }
   },
   "fish-spearing": {
+    "level": 1,
     "name": "Spearing Fish",
     "dialogues": {
       "description": "These fish are eating my crabs. {objective} and report back to me."
     },
-    "objectives": [{ "type": "bounty", "monster": "fish", "amount": 20 }],
-    "rewards": {
-      "exp": 15,
-      "gold": 5,
-      "items": []
-    }
+    "objectives": [{ "type": "bounty", "monster": "fish", "amount": 20 }]
   },
   "hornet-hunting": {
+    "level": 2,
     "name": "Hornet Blaster",
     "dialogues": {
       "description": "Listen up, brave soul! The buzzin' hornets have been causing quite a ruckus around here. I need you to take 'em down, {objective}, and make sure they learn their lesson. Return to me triumphant, and I'll make it worth your while."
     },
     "objectives": [{ "type": "bounty", "monster": "hornet", "amount": 20 }],
     "rewards": {
-      "exp": 15,
-      "gold": 10,
       "items": [["ring", "magic", "copperRing"]]
     }
   },
   "slime-roundup": {
+    "level": 2,
     "name": "Slime Roundup",
     "dialogues": {
       "description": "Prepare yourself, my friend, for an encounter with the slimy menace that plagues our sacred woods. Those pesky blue slimes are multiplying faster than the mushrooms after a rain. Your mission, should you choose to accept, is to {objective}. Return to me, and together we'll restore balance to this green realm."
     },
     "objectives": [{ "type": "bounty", "monster": "slime", "amount": 30 }],
     "rewards": {
-      "exp": 15,
-      "gold": 10,
       "items": [["boots", "magic", "clothBoots"]]
     }
   },
   "slime-eggs": {
+    "level": 2,
     "name": "Slime Eggs",
     "dialogues": {
       "description": "A peculiar request, I know, but hear me out. Slime hunting is one thing, but their eggs? Oh, they're a delicacy! {objective} for me, and we'll turn those slimy offspring into a feast fit for kings. Don't worry, I've got something extra special in store for you if you succeed."
@@ -82,25 +71,18 @@
         "item": ["stackable", "common", "blueSporangium"],
         "amount": 15
       }
-    ],
-    "rewards": {
-      "exp": 15,
-      "gold": 10
-    }
+    ]
   },
   "find-lynne": {
+    "level": 2,
     "name": "Find Lynne",
     "dialogues": {
       "description": "{objective}. She should be tending to the raccoons up north."
     },
-    "objectives": [{ "type": "chat", "keeper": "lynne" }],
-    "rewards": {
-      "exp": 15,
-      "gold": 10,
-      "items": []
-    }
+    "objectives": [{ "type": "chat", "keeper": "lynne" }]
   },
   "shrooms": {
+    "level": 2,
     "name": "Shrooms",
     "dialogues": {
       "description": "Ah, the elusive mushrooms! The woodland delicacy I've been yearning for. I've heard whispers that you can find 'em all over the place. {objective} for me, my fungi-loving friend."
@@ -111,48 +93,40 @@
         "item": ["stackable", "common", "mushroom"],
         "amount": 30
       }
-    ],
-    "rewards": {
-      "exp": 15,
-      "gold": 10
-    }
+    ]
   },
   "raccoon-hunting": {
+    "level": 3,
     "name": "Raccoon Hunting",
     "dialogues": {
       "description": "Armed with tenacity and skill, your mission is to track down these clever critters, outmaneuver their cunning tricks. Please {objective} and return victorious with tales of your thrilling escapades."
     },
     "objectives": [{ "type": "bounty", "monster": "raccoon", "amount": 40 }],
     "rewards": {
-      "exp": 15,
-      "gold": 20,
       "items": [["amulet", "magic", "silverAmulet"]]
     }
   },
   "grape-finding": {
+    "level": 3,
     "name": "Grape Finder",
     "dialogues": {
       "description": "{objective} from raccoons and report back to me. But beware, dear seeker of sweetness, for the raccoons are no ordinary tricksters. With their agile moves and roguish charm, they've guarded their grape cache fiercely, making your journey a thrilling test of skill and strategy."
     },
-    "objectives": [{ "type": "item", "item": ["stackable", "common", "grapes"], "amount": 20 }],
-    "rewards": {
-      "exp": 40,
-      "gold": 20
-    }
+    "objectives": [{ "type": "item", "item": ["stackable", "common", "grapes"], "amount": 20 }]
   },
   "hawkwing-hunting": {
+    "level": 4,
     "name": "Hawkwing Hunter",
     "dialogues": {
       "description": "Amidst this lush wilderness lies a daunting challenge: a colossal, emerald-hued hornet reigning as the undisputed ruler of the woods. A force of nature itself, this formidable creature demands a reckoning - a fierce and daring confrontation awaits. Please {objective} and return to me for a reward."
     },
     "objectives": [{ "type": "bounty", "monster": "hawkwing", "amount": 1 }],
     "rewards": {
-      "exp": 15,
-      "gold": 20,
       "items": [["weapon", "magic", "scythe"]]
     }
   },
   "spidermeat-finding": {
+    "level": 4,
     "name": "Sweet Spider Meat",
     "dialogues": {
       "description": "Ah, courageous wanderer! I beseech you to embark on a noble quest: the pursuit of extraordinary spider meat. Deep within the shadowed recesses of these caves, the arachnids weave their delicate webs. Your mission, should you accept, is to {objective} from these eight-legged creatures. Their succulent meat holds a flavor unmatched by any other."
@@ -163,48 +137,40 @@
         "item": ["stackable", "common", "spiderMeat"],
         "amount": 20
       }
-    ],
-    "rewards": {
-      "exp": 15,
-      "gold": 20
-    }
+    ]
   },
   "batmeat-finding": {
+    "level": 4,
     "name": "Succulent Bat Meat",
     "dialogues": {
       "description": "Ah, the ethereal flavors of succulent bat meat! Your noble task, should you accept it, is to {objective} from the winged denizens of the night. "
     },
-    "objectives": [{ "type": "item", "item": ["stackable", "common", "batMeat"], "amount": 20 }],
-    "rewards": {
-      "exp": 15,
-      "gold": 20
-    }
+    "objectives": [{ "type": "item", "item": ["stackable", "common", "batMeat"], "amount": 20 }]
   },
   "cheese-finding": {
+    "level": 4,
     "name": "That Good Cheese",
     "dialogues": {
       "description": "Listen carefully, intrepid adventurer! In your journey through these caverns, seek not only the sweet meats of bats but also the delicate strands of spider-spun artistry. {objective} from both bats and spiders, and present them to me."
     },
     "objectives": [{ "type": "item", "item": ["stackable", "common", "cheese"], "amount": 10 }],
     "rewards": {
-      "exp": 15,
-      "gold": 20,
       "items": [["armor", "magic", "clothRobe"]]
     }
   },
   "hogan-hunting": {
+    "level": 5,
     "name": "In Search of Hogan",
     "dialogues": {
       "description": "Embark on a perilous expedition, brave soul, to the depths of the mines. There, hidden among shadows, awaits the elusive {objective}, known as the Demon Spider. Only by triumphing over this formidable arachnid shall you earn the acclaim and epicurean rewards befitting a true lunchmeat enthusiast."
     },
     "objectives": [{ "type": "bounty", "monster": "hogan", "amount": 1 }],
     "rewards": {
-      "exp": 15,
-      "gold": 20,
       "items": [["helmet", "unique", "chefHat"]]
     }
   },
   "fauna-gatherer": {
+    "level": 5,
     "name": "Gather Fauna",
     "dialogues": {
       "description": "Search for flowers, and leaf piles. {objective} and bring them to me.  I can use them for my studies."
@@ -215,12 +181,11 @@
       { "type": "item", "item": ["stackable", "common", "leaves"], "amount": 50 }
     ],
     "rewards": {
-      "exp": 15,
-      "gold": 30,
       "items": [["bag", "unique", "raesBasket"]]
     }
   },
   "shitake-search": {
+    "level": 5,
     "name": "Shitake Finder",
     "dialogues": {
       "description": "{objective}.  These show up in the same places as mushrooms, but can be much rarer to find."
@@ -231,35 +196,26 @@
         "item": ["stackable", "common", "shitake"],
         "amount": 8
       }
-    ],
-    "rewards": {
-      "exp": 15,
-      "gold": 10
-    }
+    ]
   },
   "talk-steve": {
+    "level": 3,
     "name": "Talk to Steve",
     "dialogues": {
       "description": "Your gear kind of sucks. The blacksmith might be able to help. You can find his shop in the north-east part of town. {objective} and then return to me."
     },
-    "objectives": [{ "type": "chat", "keeper": "steve" }],
-    "rewards": {
-      "exp": 15,
-      "gold": 30
-    }
+    "objectives": [{ "type": "chat", "keeper": "steve" }]
   },
   "talk-sergio": {
+    "level": 3,
     "name": "Talk to Sergio",
     "dialogues": {
       "description": "I used to do research with a guy named Sergio. Last I saw, he headed west to study a new species of plants. If you head that way, {objective} and let me know what he's been doing."
     },
-    "objectives": [{ "type": "chat", "keeper": "sergio" }],
-    "rewards": {
-      "exp": 15,
-      "gold": 30
-    }
+    "objectives": [{ "type": "chat", "keeper": "sergio" }]
   },
   "zombie-hunting": {
+    "level": 6,
     "name": "Zombie Problem",
     "dialogues": {
       "description": "The graveyard is just north of town. {objective}."
@@ -267,61 +223,54 @@
     "objectives": [
       { "type": "bounty", "monster": "wraith", "amount": 30 },
       { "type": "bounty", "monster": "zombie", "amount": 30 }
-    ],
-    "rewards": {
-      "exp": 15,
-      "gold": 30
-    }
+    ]
   },
   "skull-finding": {
+    "level": 6,
     "name": "Shield of Bone",
     "dialogues": {
       "description": "Beware, wanderer, for the graveyard lies just north of this cursed town. {objective} if you dare, amidst the haunting wraiths and soulless zombies that haunt that accursed place. Tread carefully, and if you manage to survive the malevolent specters, I shall imbue your soul with a great shield, crafted from the remnants of the undead. Embrace the darkness, for your fate awaits in the cold embrace of the tomb."
     },
     "objectives": [{ "type": "item", "item": ["stackable", "common", "skull"], "amount": 200 }],
     "rewards": {
-      "exp": 15,
-      "gold": 30,
       "items": [["shield", "unique", "osteoCrest"]]
     }
   },
   "chonks-hunting": {
+    "level": 7,
     "name": "Slay Chonks",
     "dialogues": {
       "description": "There is a beast north of the cemetary who has grown fat eating the bodies of the dead. {objective} and I will reward you."
     },
     "objectives": [{ "type": "bounty", "monster": "chonks", "amount": 1 }],
     "rewards": {
-      "exp": 15,
-      "gold": 30,
       "items": [["ring", "rare", "bronzeRing"]]
     }
   },
   "shell-finding": {
+    "level": 8,
     "name": "The Mermans Shells",
     "dialogues": {
       "description": "The merman have been taking over the aqueducts below the city. {objective} and bring them to me. I will forge you a great accessory."
     },
     "objectives": [{ "type": "item", "item": ["stackable", "common", "shell"], "amount": 100 }],
     "rewards": {
-      "exp": 15,
-      "gold": 30,
       "items": [["accessory", "unique", "mermanFins"]]
     }
   },
   "wyrm-blade": {
+    "level": 8,
     "name": "The Wyrm Blade",
     "dialogues": {
       "description": "Below this town are ancient aqueducts. {objective} and from it I shall temper an awesome weapon."
     },
     "objectives": [{ "type": "item", "item": ["stackable", "unique", "wyrmScale"], "amount": 1 }],
     "rewards": {
-      "exp": 15,
-      "gold": 50,
       "items": [["weapon", "unique", "wyrmBlade"]]
     }
   },
   "orchid-gathering": {
+    "level": 9,
     "name": "Orchid Flowers",
     "dialogues": {
       "description": "I feel like the secret to these orchids are in their petals. {objective} and bring them to me."
@@ -330,47 +279,41 @@
       { "type": "item", "item": ["stackable", "common", "orchidFlower"], "amount": 20 }
     ],
     "rewards": {
-      "exp": 15,
-      "gold": 80,
       "items": [["ring", "rare", "bronzeRing"]]
     }
   },
   "weed-wacker": {
+    "level": 9,
     "name": "Weed Wacker",
     "dialogues": {
       "description": "The wild Orchids are running rampant. {objective} and I will give you an hairloom of the wilds."
     },
     "objectives": [{ "type": "bounty", "monster": "orchid", "amount": 120 }],
     "rewards": {
-      "exp": 15,
-      "gold": 80,
       "items": [["weapon", "unique", "eyeOfForest"]]
     }
   },
   "talk-derek": {
+    "level": 3,
     "name": "Talk to Derek",
     "dialogues": {
       "description": "I used to know a ranger from the north. Went by the name of Derek. If you find him up in the mountains, let me know."
     },
-    "objectives": [{ "type": "chat", "keeper": "derek" }],
-    "rewards": {
-      "exp": 15,
-      "gold": 40
-    }
+    "objectives": [{ "type": "chat", "keeper": "derek" }]
   },
   "big-momma": {
+    "level": 11,
     "name": "Big Momma",
     "dialogues": {
       "description": "There is an orchid that's grown three times the size one should. {objective} and return to me."
     },
     "objectives": [{ "type": "bounty", "monster": "bigMomma", "amount": 1 }],
     "rewards": {
-      "exp": 15,
-      "gold": 80,
       "items": [["armor", "rare", "leatherCoat"]]
     }
   },
   "ice-crab-claws": {
+    "level": 10,
     "name": "Ice Crab Claws",
     "dialogues": {
       "description": "{objective} from the crabs around here.  They are really good to eat."
@@ -381,25 +324,21 @@
         "item": ["stackable", "common", "iceCrabClaw"],
         "amount": 60
       }
-    ],
-    "rewards": {
-      "exp": 15,
-      "gold": 80
-    }
+    ]
   },
   "wolf-culling": {
+    "level": 11,
     "name": "Wolf Culling",
     "dialogues": {
       "description": "The wolves up here are hungry and will attack you at first sight. Help me {objective}."
     },
     "objectives": [{ "type": "bounty", "monster": "wolf", "amount": 120 }],
     "rewards": {
-      "exp": 15,
-      "gold": 100,
       "items": [["accessory", "rare", "goggles"]]
     }
   },
   "wolf-pelts": {
+    "level": 11,
     "name": "Winter Wolf Pelts",
     "dialogues": {
       "description": "{objective} from the wolves in these mountains. I can make you something good from the materials."
@@ -412,8 +351,6 @@
       }
     ],
     "rewards": {
-      "exp": 15,
-      "gold": 100,
       "items": [["helmet", "unique", "wolfMask"]]
     }
   }

@@ -1,7 +1,7 @@
 import { MongoClient, Db } from "mongodb";
 import { userSchema } from "./schema";
 import ItemBuilder from "../../shared/ItemBuilder";
-import { useGetBaseCharacterDefaults, filterNullEmpty } from "../utils";
+import { useGetBaseCharacterDefaults, filterNullEmpty, calculateNextMaxExp } from "../utils";
 import { omitBy, isNil } from "lodash";
 import { DEFAULT_USER_SETTINGS } from "../../shared/utils";
 
@@ -29,6 +29,25 @@ const getDatabaseApi = (db) => ({
     return execute("countAllUsers", async () => {
       const count = await db.collection("users").countDocuments();
       return count;
+    });
+  },
+  updateUsersMaxExp: async () => {
+    return execute("updateUsersMaxExp", async () => {
+      const users = db.collection("users");
+
+      // Find users and iterate through each user
+      const cursor = users.find();
+      while (await cursor.hasNext()) {
+        const user = await cursor.next();
+        const level = user.baseStats.level;
+        const newMaxExp = calculateNextMaxExp(level);
+
+        // Update user's maxExp
+        await users.updateOne(
+          { _id: user._id },
+          { $set: { "baseStats.maxExp": newMaxExp, "stats.exp": 0 } }
+        );
+      }
     });
   },
   pruneNoobs: async () => {
