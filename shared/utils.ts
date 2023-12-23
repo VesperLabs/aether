@@ -7,6 +7,7 @@ export const ACCESSORY_HIDING_HELMETS = ["helmet-armet", "helmet-horned"];
 export const FACE_HIDING_ACCESSORIES = ["accessory-jake"];
 export const HAIR_HIDING_ACCESSORIES = ["accessory-jake"];
 export const MAX_INVENTORY_ITEMS = 32;
+export const ILVL_MULTIPLIER = 4; // ilvl * this = monster level that can drop it
 export const RANGE_MULTIPLIER = 28; //weapon range multiplier
 export const BUFF_SPELLS = [
   "evasion",

@@ -5,6 +5,7 @@ import { cloneObject, randomNumber } from "../server/utils";
 import iList from "./data/itemList.json";
 import itemSetList from "./data/itemSetList.json";
 import itemModsList from "./data/itemModsList.json";
+import { ILVL_MULTIPLIER } from "./utils";
 
 /* These stats do not scale with ilvl */
 const STATIC_STATS = ["attackDelay", "castDelay", "range", "spCost"];
@@ -325,10 +326,12 @@ function scaleBaseStats(jsonData) {
           // if it exists, we will use it as a base
           if (baseItem) {
             const ilvlMultiplier = item?.ilvl || 1;
+            const reqLevel = Math.floor(ilvlMultiplier * ILVL_MULTIPLIER);
             item.texture = item?.texture || baseItem?.texture;
             item.slot = item?.slot || baseItem?.slot;
             item.stats = { ...multiplyValues(baseItem.stats, ilvlMultiplier), ...item.stats };
             item.requirements = {
+              ...(reqLevel > ILVL_MULTIPLIER && { level: reqLevel }), // default required level
               ...multiplyValues(baseItem.requirements, ilvlMultiplier),
               ...item.requirements,
             };
