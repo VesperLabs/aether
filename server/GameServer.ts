@@ -882,13 +882,15 @@ class ServerScene extends Phaser.Scene implements ServerScene {
                 message: `x: ${Math.round(player.x)} y: ${Math.round(player.y)}`,
               });
             case "ding":
-              console.log(parseInt(command?.[1]));
               const didLevel = player.assignExp(parseInt(command?.[1]));
               const roomState = getRoomState(scene, player?.roomName);
               scene.io.to(player?.roomName).emit("buffUpdate", {
                 players: roomState?.players?.filter((n) => n?.id === player?.id),
                 playerIdsThatLeveled: didLevel ? [player?.id] : [],
               });
+            case "booty":
+              player.gold += parseInt(command?.[1]);
+              io.to(player?.roomName).emit("playerUpdate", getFullCharacterState(player));
             case "guns":
               let gunItem = null;
               const rarity = command?.[1];
