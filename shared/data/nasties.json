@@ -506,7 +506,8 @@
       "height": 16
     },
     "abilities": {
-      "1": ["spell", "common", "waterball"]
+      "1": ["spell", "common", "waterball"],
+      "2": ["spell", "common", "guard"]
     },
     "drops": [
       {

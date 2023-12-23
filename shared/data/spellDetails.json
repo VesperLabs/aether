@@ -132,6 +132,17 @@
     "layerDepth": "bottom",
     "shouldFade": true
   },
+  "guard": {
+    "allowedTargets": ["self", "ally"],
+    "maxVisibleTime": 2200,
+    "maxActiveTime": 100,
+    "bodySize": 32,
+    "npcCastRange": [100, 150],
+    "scaleBase": 0.6,
+    "tint": "0xCCDDFF",
+    "layerDepth": "bottom",
+    "shouldFade": true
+  },
   "genius": {
     "allowedTargets": ["self", "ally"],
     "maxVisibleTime": 2200,

@@ -2209,6 +2209,23 @@
           "mpCost": 4
         }
       },
+      "guard": {
+        "ilvl": 1,
+        "name": "Guard",
+        "base": "guard",
+        "slot": "spell",
+        "texture": "scroll-red",
+        "buffs": {
+          "guard": 1
+        },
+        "requirements": {
+          "charClass": "warrior",
+          "level": 3
+        },
+        "stats": {
+          "mpCost": 4
+        }
+      },
       "genius": {
         "ilvl": 1,
         "name": "Genius",
@@ -2319,6 +2336,12 @@
         "base": "brute",
         "slot": "spell"
       },
+      "guard2": {
+        "ilvl": 2,
+        "name": "Guard",
+        "base": "guard",
+        "slot": "spell"
+      },
       "genius2": {
         "ilvl": 2,
         "name": "Genius",
@@ -2383,6 +2406,12 @@
         "ilvl": 3,
         "name": "Brute",
         "base": "brute",
+        "slot": "spell"
+      },
+      "guard3": {
+        "ilvl": 3,
+        "name": "Guard",
+        "base": "guard",
         "slot": "spell"
       },
       "genius3": {

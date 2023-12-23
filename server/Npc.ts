@@ -298,6 +298,7 @@ class Npc extends Character implements Npc {
   isTargetSuitableForSpell(targetPlayer, spell) {
     const spellName = spell?.base;
     const details = spellDetails?.[spellName];
+
     // attack spells
     if (targetPlayer && details?.allowedTargets?.includes("enemy") && details?.npcCastRange) {
       const [min, max] = details.npcCastRange;
@@ -306,8 +307,10 @@ class Npc extends Character implements Npc {
     // auras
     if (!targetPlayer && details?.allowedTargets?.includes("self")) {
       if (BUFF_SPELLS.includes(spellName)) {
+        const targetProbability = 0.01; // 1% chance to consider the target suitable
+        const randomCheck = Math.random() < targetProbability; // Random check
         // if we already have the buff, don't recast
-        return !this.hasBuff(spellName);
+        return !this.hasBuff(spellName) && randomCheck;
       }
     }
   }
