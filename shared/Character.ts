@@ -189,7 +189,7 @@ class Character extends Phaser.GameObjects.Container {
   getFullAttackDelay() {
     let attackDelay = this.stats.attackDelay;
     if (this.isDualWielding()) {
-      attackDelay = attackDelay / 2;
+      attackDelay = (attackDelay + 60) / 2;
     }
     return attackDelay;
   }
@@ -274,12 +274,6 @@ class Character extends Phaser.GameObjects.Container {
     const hpCost = ability?.stats?.hpCost || 0;
     const spCost = ability?.stats?.spCost || 0;
     return this?.stats?.mp >= mpCost && this?.stats?.hp > hpCost && this?.stats?.sp >= spCost;
-  }
-  triggerSecondAttack() {
-    if (this.state.isAttacking) return;
-    if (this.action === "attack_right" && this.hasWeaponLeft()) {
-      this.doAttack({ count: 2, castAngle: this.state.lastAngle });
-    }
   }
   updateVisibleEquipment() {
     this.visibleEquipment = this.getVisibleEquipment();

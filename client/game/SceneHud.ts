@@ -223,7 +223,7 @@ function addGlobalEventListeners(scene) {
 function updateAttackCooldown(hero) {
   if (hero.state.isAttacking) return;
   const attackDelay = hero?.getFullAttackDelay();
-  const duration = hero?.isDualWielding() ? attackDelay * 2 : attackDelay;
+  const duration = attackDelay;
   window.dispatchEvent(
     new CustomEvent("HERO_START_COOLDOWN", {
       detail: { spellName: "attack", duration: duration, startTime: Date.now() },
@@ -358,7 +358,12 @@ function moveDirectHero(scene, time) {
     hero.state.lastAttack < Date.now() - hero.getFullAttackDelay() - 60
   ) {
     updateAttackCooldown(hero);
-    hero?.doAttack?.({ count: 1, castAngle: hero.state.lastAngle, direction });
+    hero.state.lastAttackCount = hero.state.lastAttackCount === 1 && hero.isDualWielding() ? 2 : 1;
+    hero?.doAttack?.({
+      count: hero.state.lastAttackCount,
+      castAngle: hero.state.lastAngle,
+      direction,
+    });
   }
 
   if (
