@@ -499,6 +499,7 @@ class ServerCharacter extends Character {
     while (this.stats.exp >= this.baseStats.maxExp) {
       let trailingExp = this.stats.exp - this.baseStats.maxExp;
       this.stats.exp = trailingExp;
+      this.baseStats.level++;
       this.baseStats.maxExp = calculateNextMaxExp(this.baseStats.level);
       if (this.charClass == "warrior") this.baseStats.strength += 1;
       else if (this.charClass == "rogue") this.baseStats.dexterity += 1;
@@ -508,7 +509,6 @@ class ServerCharacter extends Character {
       this.baseStats.dexterity += 1;
       this.baseStats.intelligence += 1;
       this.baseStats.vitality += 1;
-      this.baseStats.level++;
       didLevel = true;
     }
     this.calculateStats();

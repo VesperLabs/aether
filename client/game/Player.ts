@@ -416,7 +416,7 @@ class Player extends Character {
         this.modifyStat("sp", hit?.amount);
         break;
       case "exp":
-        this.modifyStat("exp", hit?.amount);
+        // we don't update EXP the same way
         break;
     }
 
@@ -424,6 +424,7 @@ class Player extends Character {
     if (this?.isHero) {
       window.dispatchEvent(new Event("UPDATE_HUD"));
     }
+
     this.updateHpBar();
   }
   checkStealth({ distance }) {

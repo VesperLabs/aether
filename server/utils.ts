@@ -3,8 +3,7 @@ import ItemBuilder from "../shared/ItemBuilder";
 
 const PLAYER_BASE_ATTACK_DELAY = 100;
 const SHOP_INFLATION = 4;
-const PLAYER_BASE_EXP = 30;
-const PLAYER_LEVEL_UP_MULTIPLIER = 1.75;
+const PLAYER_BASE_EXP = 20; // Define the base experience for level 1
 const PLAYER_DEFAULT_SPAWN = { roomName: "grassland-3", x: 1496, y: 2028 };
 //const PLAYER_DEFAULT_SPAWN = { roomName: "grassland-2", x: 239, y: 990 };
 
@@ -188,8 +187,28 @@ function checkSlotsMatch(s1, s2) {
   return false;
 }
 
+const calculateExpValue = (player: ServerPlayer, mob: Npc) => {
+  const playerLevel = parseInt(player?.stats?.level) ?? 0;
+  const mobLevel = parseInt(mob?.stats?.level) ?? 0;
+  if (playerLevel - mobLevel > 5) {
+    return 0;
+  } else return 1;
+};
+
 const calculateNextMaxExp = (level) => {
-  return Math.floor(PLAYER_BASE_EXP * Math.pow(PLAYER_LEVEL_UP_MULTIPLIER, level - 1));
+  const baseExp = PLAYER_BASE_EXP; // Base experience for the first level
+  const expIncreasePerLevel = PLAYER_BASE_EXP; // Fixed amount of additional EXP required per level
+  const additionalIncreasePerLevel = PLAYER_BASE_EXP * 0.5; // Small linear increase in the EXP increase per level
+
+  let totalExp = baseExp;
+  let currentIncrease = expIncreasePerLevel;
+
+  for (let i = 2; i <= level; i++) {
+    currentIncrease += additionalIncreasePerLevel; // Linearly increase the exp required for each subsequent level
+    totalExp += currentIncrease;
+  }
+
+  return Math.floor(totalExp);
 };
 
 function mergeAndAddValues(obj1, obj2) {
@@ -252,7 +271,6 @@ const useGetBaseCharacterDefaults = ({ level = 1, charClass }) => {
     startingWeapon: getStartingWeapon(),
     baseStats: {
       level,
-      expValue: 0,
       walkSpeed: 100,
       accuracy: 0,
       attackDelay: PLAYER_BASE_ATTACK_DELAY,
@@ -445,7 +463,7 @@ const calculateStats = (player, shouldHeal = false) => {
     )
       ns[key] += percentIncrease;
   });
-  ns.expValue = ns.expValue || 0;
+
   ns.maxHp = ns.maxHp + ns.vitality * 3;
   ns.maxMp = ns.maxMp + ns.intelligence * 3;
   ns.maxSp = ns.maxSp + Math.floor(ns.vitality * 0.03);
@@ -535,5 +553,6 @@ export {
   filterNullEmpty,
   addValuesToExistingKeys,
   calculateStats,
+  calculateExpValue,
   sleep,
 };

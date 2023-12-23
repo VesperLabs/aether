@@ -49,7 +49,7 @@ class Damage extends Container {
         endY = -10;
         damageSize = 15;
         text = text + " XP";
-        this.dt.setTint("0xFFFF66");
+        this.dt.setTint("0xd8b4fe"); // purple.300
         break;
       case "mp":
         this.setVisible(false);
