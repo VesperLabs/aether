@@ -1,5 +1,5 @@
 import ServerCharacter from "./Character";
-import { cloneObject, getRoomState, PLAYER_DEFAULT_SPAWN } from "./utils";
+import { calculateExpValue, cloneObject, getRoomState, PLAYER_DEFAULT_SPAWN } from "./utils";
 import { spellDetails, MAX_INVENTORY_ITEMS } from "../shared";
 
 /* Server level Player object */
@@ -360,7 +360,7 @@ class Player extends ServerCharacter implements ServerPlayer {
     const party = scene.partyManager.getPartyById(hero?.partyId);
     /* Create hitList for npcs */
     let hitList: Array<Hit> = [];
-    let npcKills: Array<string> = [];
+    let npcKills: Array<Npc> = [];
     let totalExpGain: number = 0;
     let playerIdsToUpdate = []; //ids of players that either got exp or buffs
     let playerIdsThatLeveled = []; //ids of players who got a level up.
@@ -378,8 +378,8 @@ class Player extends ServerCharacter implements ServerPlayer {
       if (newHits?.find?.((h: Hit) => h?.type === "death")) {
         npc.dropLoot(hero?.stats?.magicFind);
         /* Add EXP, check if we leveled */
-        totalExpGain += parseInt(npc?.stats?.expValue) || 0;
-        npcKills.push(npc?.name);
+        totalExpGain += calculateExpValue(hero, npc);
+        npcKills.push(npc);
       }
       if (newHits?.length > 0) hitList = [...hitList, ...newHits];
     }
@@ -397,8 +397,14 @@ class Player extends ServerCharacter implements ServerPlayer {
         if (!member) continue;
         const didLevel = member.assignExp(totalExpGain);
         /* Add the npc to the players kill list */
-        for (const npcName of npcKills) {
-          member.addNpcKill(npcName);
+        for (const killedNpc of npcKills) {
+          member.addNpcKill(killedNpc?.name);
+          hitList.push({
+            type: "exp",
+            amount: calculateExpValue(hero, killedNpc),
+            from: killedNpc.id,
+            to: member.id,
+          });
         }
         playerIdsToUpdate.push(member?.id);
         if (didLevel) {

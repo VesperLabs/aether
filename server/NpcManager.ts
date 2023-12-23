@@ -2,7 +2,7 @@ import crypto from "crypto";
 import Npc from "./Npc";
 import nasties from "../shared/data/nasties.json";
 import keepers from "../shared/data/keepers.json";
-import { useGetBaseCharacterDefaults, mergeAndAddValues } from "./utils";
+import { useGetBaseCharacterDefaults, mergeAndAddValues, PLAYER_BASE_EXP } from "./utils";
 
 /* Find NPCs in data lists, and add `kind` to them */
 const getNpcFromLists = (name) => {
@@ -55,7 +55,6 @@ class NpcManager {
         strength: baseStats.strength + baseLevel * 2,
         dexterity: baseStats.dexterity + baseLevel * 2,
         vitality: baseStats.vitality + baseLevel * 2,
-        expValue: isKeeper ? 0 : Math.floor(baseLevel * 1.4),
       };
 
       this.create({

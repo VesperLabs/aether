@@ -6,7 +6,7 @@
     },
     "objectives": [{ "type": "chat", "keeper": "tudwick" }],
     "rewards": {
-      "exp": 10,
+      "exp": 15,
       "gold": 5,
       "items": []
     }
@@ -42,7 +42,7 @@
     },
     "objectives": [{ "type": "bounty", "monster": "fish", "amount": 20 }],
     "rewards": {
-      "exp": 10,
+      "exp": 15,
       "gold": 5,
       "items": []
     }
@@ -54,7 +54,7 @@
     },
     "objectives": [{ "type": "bounty", "monster": "hornet", "amount": 20 }],
     "rewards": {
-      "exp": 20,
+      "exp": 15,
       "gold": 10,
       "items": [["ring", "magic", "copperRing"]]
     }
@@ -66,7 +66,7 @@
     },
     "objectives": [{ "type": "bounty", "monster": "slime", "amount": 30 }],
     "rewards": {
-      "exp": 20,
+      "exp": 15,
       "gold": 10,
       "items": [["boots", "magic", "clothBoots"]]
     }
@@ -84,7 +84,7 @@
       }
     ],
     "rewards": {
-      "exp": 20,
+      "exp": 15,
       "gold": 10
     }
   },
@@ -95,7 +95,7 @@
     },
     "objectives": [{ "type": "chat", "keeper": "lynne" }],
     "rewards": {
-      "exp": 20,
+      "exp": 15,
       "gold": 10,
       "items": []
     }
@@ -113,7 +113,7 @@
       }
     ],
     "rewards": {
-      "exp": 40,
+      "exp": 15,
       "gold": 10
     }
   },
@@ -124,7 +124,7 @@
     },
     "objectives": [{ "type": "bounty", "monster": "raccoon", "amount": 40 }],
     "rewards": {
-      "exp": 40,
+      "exp": 15,
       "gold": 20,
       "items": [["amulet", "magic", "silverAmulet"]]
     }
@@ -147,7 +147,7 @@
     },
     "objectives": [{ "type": "bounty", "monster": "hawkwing", "amount": 1 }],
     "rewards": {
-      "exp": 40,
+      "exp": 15,
       "gold": 20,
       "items": [["weapon", "magic", "scythe"]]
     }
@@ -165,7 +165,7 @@
       }
     ],
     "rewards": {
-      "exp": 60,
+      "exp": 15,
       "gold": 20
     }
   },
@@ -176,7 +176,7 @@
     },
     "objectives": [{ "type": "item", "item": ["stackable", "common", "batMeat"], "amount": 20 }],
     "rewards": {
-      "exp": 60,
+      "exp": 15,
       "gold": 20
     }
   },
@@ -187,7 +187,7 @@
     },
     "objectives": [{ "type": "item", "item": ["stackable", "common", "cheese"], "amount": 10 }],
     "rewards": {
-      "exp": 80,
+      "exp": 15,
       "gold": 20,
       "items": [["armor", "magic", "clothRobe"]]
     }
@@ -199,7 +199,7 @@
     },
     "objectives": [{ "type": "bounty", "monster": "hogan", "amount": 1 }],
     "rewards": {
-      "exp": 80,
+      "exp": 15,
       "gold": 20,
       "items": [["helmet", "unique", "chefHat"]]
     }
@@ -215,7 +215,7 @@
       { "type": "item", "item": ["stackable", "common", "leaves"], "amount": 50 }
     ],
     "rewards": {
-      "exp": 100,
+      "exp": 15,
       "gold": 30,
       "items": [["bag", "unique", "raesBasket"]]
     }
@@ -233,7 +233,7 @@
       }
     ],
     "rewards": {
-      "exp": 100,
+      "exp": 15,
       "gold": 10
     }
   },
@@ -244,7 +244,7 @@
     },
     "objectives": [{ "type": "chat", "keeper": "steve" }],
     "rewards": {
-      "exp": 50,
+      "exp": 15,
       "gold": 30
     }
   },
@@ -255,7 +255,7 @@
     },
     "objectives": [{ "type": "chat", "keeper": "sergio" }],
     "rewards": {
-      "exp": 60,
+      "exp": 15,
       "gold": 30
     }
   },
@@ -269,7 +269,7 @@
       { "type": "bounty", "monster": "zombie", "amount": 30 }
     ],
     "rewards": {
-      "exp": 120,
+      "exp": 15,
       "gold": 30
     }
   },
@@ -280,7 +280,7 @@
     },
     "objectives": [{ "type": "item", "item": ["stackable", "common", "skull"], "amount": 200 }],
     "rewards": {
-      "exp": 120,
+      "exp": 15,
       "gold": 30,
       "items": [["shield", "unique", "osteoCrest"]]
     }
@@ -292,7 +292,7 @@
     },
     "objectives": [{ "type": "bounty", "monster": "chonks", "amount": 1 }],
     "rewards": {
-      "exp": 120,
+      "exp": 15,
       "gold": 30,
       "items": [["ring", "rare", "bronzeRing"]]
     }
@@ -304,7 +304,7 @@
     },
     "objectives": [{ "type": "item", "item": ["stackable", "common", "shell"], "amount": 100 }],
     "rewards": {
-      "exp": 200,
+      "exp": 15,
       "gold": 30,
       "items": [["accessory", "unique", "mermanFins"]]
     }
@@ -316,7 +316,7 @@
     },
     "objectives": [{ "type": "item", "item": ["stackable", "unique", "wyrmScale"], "amount": 1 }],
     "rewards": {
-      "exp": 200,
+      "exp": 15,
       "gold": 50,
       "items": [["weapon", "unique", "wyrmBlade"]]
     }
@@ -330,7 +330,7 @@
       { "type": "item", "item": ["stackable", "common", "orchidFlower"], "amount": 20 }
     ],
     "rewards": {
-      "exp": 240,
+      "exp": 15,
       "gold": 80,
       "items": [["ring", "rare", "bronzeRing"]]
     }
@@ -342,7 +342,7 @@
     },
     "objectives": [{ "type": "bounty", "monster": "orchid", "amount": 120 }],
     "rewards": {
-      "exp": 240,
+      "exp": 15,
       "gold": 80,
       "items": [["weapon", "unique", "eyeOfForest"]]
     }
@@ -354,7 +354,7 @@
     },
     "objectives": [{ "type": "chat", "keeper": "derek" }],
     "rewards": {
-      "exp": 200,
+      "exp": 15,
       "gold": 40
     }
   },
@@ -365,7 +365,7 @@
     },
     "objectives": [{ "type": "bounty", "monster": "bigMomma", "amount": 1 }],
     "rewards": {
-      "exp": 240,
+      "exp": 15,
       "gold": 80,
       "items": [["armor", "rare", "leatherCoat"]]
     }
@@ -383,7 +383,7 @@
       }
     ],
     "rewards": {
-      "exp": 280,
+      "exp": 15,
       "gold": 80
     }
   },
@@ -394,7 +394,7 @@
     },
     "objectives": [{ "type": "bounty", "monster": "wolf", "amount": 120 }],
     "rewards": {
-      "exp": 300,
+      "exp": 15,
       "gold": 100,
       "items": [["accessory", "rare", "goggles"]]
     }
@@ -412,7 +412,7 @@
       }
     ],
     "rewards": {
-      "exp": 300,
+      "exp": 15,
       "gold": 100,
       "items": [["helmet", "unique", "wolfMask"]]
     }
