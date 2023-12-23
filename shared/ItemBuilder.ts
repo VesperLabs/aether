@@ -325,18 +325,19 @@ function scaleBaseStats(jsonData) {
 
           // if it exists, we will use it as a base
           if (baseItem) {
-            const ilvlMultiplier = item?.ilvl || 1;
-            const reqLevel = Math.floor(ilvlMultiplier * ILVL_MULTIPLIER);
+            const ilvl = item?.ilvl || 1;
+            const levelScale = ILVL_MULTIPLIER;
+            const reqLevel = Math.floor(ilvl * levelScale);
             item.texture = item?.texture || baseItem?.texture;
             item.slot = item?.slot || baseItem?.slot;
-            item.stats = { ...multiplyValues(baseItem.stats, ilvlMultiplier), ...item.stats };
+            item.stats = { ...multiplyValues(baseItem.stats, ilvl), ...item.stats };
             item.requirements = {
-              ...(reqLevel > ILVL_MULTIPLIER && { level: reqLevel }), // default required level
-              ...multiplyValues(baseItem.requirements, ilvlMultiplier),
+              ...(reqLevel > levelScale && { level: reqLevel }), // default required level
+              ...multiplyValues(baseItem.requirements, ilvl),
               ...item.requirements,
             };
-            item.buffs = item.buffs || multiplyValues(baseItem.buffs, ilvlMultiplier);
-            item.effects = { ...multiplyValues(baseItem.effects, ilvlMultiplier), ...item.effects };
+            item.buffs = item.buffs || multiplyValues(baseItem.buffs, ilvl);
+            item.effects = { ...multiplyValues(baseItem.effects, ilvl), ...item.effects };
           }
         }
       }
