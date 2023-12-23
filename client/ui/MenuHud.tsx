@@ -1,8 +1,11 @@
-import { memo } from "react";
-import { Box, Flex, Tooltip, Icon } from "@aether/ui";
+import { memo, useEffect, useState } from "react";
+import { Box, Flex, Tooltip, Icon, Text, Divider } from "@aether/ui";
 import { useAppContext, Portrait, StatusIcon } from "./";
-import { arePropsEqualWithKeys } from "@aether/shared";
+import { arePropsEqualWithKeys, formatStats } from "@aether/shared";
 import { cloneDeep } from "lodash";
+import TextDivider from "./TextDivider";
+import TooltipLabel from "./TooltipLabel";
+import { buffList } from "@aether/shared";
 
 const UserName = ({ sx, player }: { player: any; sx?: object }) => {
   return <Box sx={{ ...sx }}>{player?.profile?.userName}</Box>;
@@ -63,6 +66,93 @@ const Bar = ({
   );
 };
 
+const BuffTooltip = ({ buff, tooltipId, timeLeft, player }) => {
+  const stats = buff?.name === "rest" ? { regenHp: player?.stats?.regenHp } : buff?.stats;
+  const combinedStats = formatStats(stats);
+  const description = buffList?.[buff?.name]?.description;
+  const displayTime = timeLeft < 0 ? "∞" : (timeLeft / 1000)?.toFixed(0);
+  return (
+    <Tooltip id={tooltipId}>
+      <Flex
+        sx={{
+          maxWidth: 100,
+          textAlign: "center",
+          fontWeight: "bold",
+          alignItems: "center",
+          justifyContent: "center",
+          flexDirection: "column",
+          textTransform: "capitalize",
+          fontSize: 0,
+        }}
+      >
+        <Text>
+          {"Lv." + buff?.level + " " + buff?.name.charAt(0).toUpperCase() + buff?.name.slice(1)}
+        </Text>
+        <TextDivider>Time: {displayTime}</TextDivider>
+        {Object.keys(combinedStats).map((key) => (
+          <Text key={key}>
+            <TooltipLabel>{key}:</TooltipLabel> {combinedStats[key]}
+          </Text>
+        ))}
+        {!!description && <Divider />}
+        <TooltipLabel sx={{ textTransform: "none", fontWeight: "normal", fontStyle: "italic" }}>
+          {description}
+        </TooltipLabel>
+      </Flex>
+    </Tooltip>
+  );
+};
+
+const Buff = ({ buff, tooltipId, player }) => {
+  const [timeLeft, setTimeLeft] = useState<any>();
+
+  useEffect(() => {
+    const updateTimeLeft = () => {
+      const timeDiff = buff?.spawnTime + buff?.duration - Date.now();
+      setTimeLeft(timeDiff);
+    };
+
+    updateTimeLeft(); // Initial update
+    const intervalId = setInterval(updateTimeLeft, 1000); // Update every second
+
+    return () => clearInterval(intervalId);
+  }, [buff]);
+
+  // Determine if the blinking animation should be applied
+  const isBlinking = timeLeft >= 0 && timeLeft <= buff?.duration * 0.25;
+
+  // Define the blinking style
+  const blinkingStyle = isBlinking
+    ? {
+        "@keyframes blink": {
+          "0%, 100%": { opacity: 1 },
+          "50%": { opacity: 0 },
+        },
+        animation: "blink 1s linear infinite",
+      }
+    : {};
+
+  return (
+    <>
+      {/*@ts-ignore-next-line*/}
+      <BuffTooltip
+        key={buff?.name}
+        buff={buff}
+        tooltipId={tooltipId}
+        timeLeft={timeLeft}
+        player={player}
+      />
+      <Icon
+        icon={`./assets/atlas/spell/spell-${buff.name}.png`}
+        size={24}
+        data-tooltip-place="bottom"
+        data-tooltip-id={tooltipId}
+        sx={blinkingStyle} // Apply the blinking style conditionally
+      />
+    </>
+  );
+};
+
 const Buffs = memo(({ player, sx }: any) => {
   const buffs = player?.buffs;
   return (
@@ -76,18 +166,8 @@ const Buffs = memo(({ player, sx }: any) => {
     >
       <Flex sx={{ flexDirection: "row-reverse", gap: 1, height: 24 }}>
         {buffs?.map((buff: Buff) => {
-          return (
-            <Icon
-              key={buff.name}
-              icon={`./assets/atlas/spell/spell-${buff.name}.png`}
-              size={24}
-              data-tooltip-content={
-                "Lv." + buff?.level + " " + buff?.name.charAt(0).toUpperCase() + buff?.name.slice(1)
-              }
-              data-tooltip-id="hud"
-              data-tooltip-place="bottom"
-            />
-          );
+          const tooltipId = `buffs-${buff?.name}-${player?.id}`;
+          return <Buff key={tooltipId} tooltipId={tooltipId} buff={buff} player={player} />;
         })}
       </Flex>
     </Flex>

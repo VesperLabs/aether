@@ -1,13 +1,7 @@
 import { isMobile } from "../../shared/utils";
 import { useAppContext } from "./";
-import { Modal, KeyboardButton, Icon, Switch, Flex, Divider, Text, Box } from "@aether/ui";
-
-const TextDivider = ({ children, sx }: any) => (
-  <Box py={2}>
-    <Divider sx={{ my: 0, mb: -2, mt: 2, zIndex: -1 }} />
-    <Text sx={{ pb: 2, mb: -1, color: "#d5c1a7	", ...sx }}>{children}</Text>
-  </Box>
-);
+import { Modal, KeyboardButton, Icon, Switch, Flex } from "@aether/ui";
+import TextDivider from "./TextDivider";
 
 const ModalSettings: React.FC = () => {
   const { setTabSettings, userSettings, zoom, bottomOffset, socket } = useAppContext();
@@ -67,7 +61,9 @@ const ModalSettings: React.FC = () => {
                 });
               }}
             />
-            <TextDivider>Experimental</TextDivider>
+            <TextDivider color="#d5c1a7" sx={{ textAlign: "left" }}>
+              🧪 Experimental
+            </TextDivider>
             <Switch
               label={`Video Chat: ${videoChat ? "ON" : "OFF"}`}
               checked={videoChat}
