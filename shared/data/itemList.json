@@ -685,10 +685,8 @@
           "critChance": 15,
           "walkSpeed": [20, 30],
           "minDamage": 1,
-          "maxDamage": 2
-        },
-        "percentStats": {
-          "dexterity": 25
+          "maxDamage": 2,
+          "dexterity": 10
         }
       },
       "luckyStarCoronet": {
@@ -699,11 +697,9 @@
         "texture": "helmet-crown-gold",
         "slot": "helmet",
         "stats": {
-          "magicFind": [50, 60]
-        },
-        "percentStats": {
-          "intelligence": 15,
-          "vitality": 15
+          "magicFind": [50, 60],
+          "intelligence": 10,
+          "vitality": 10
         },
         "requirements": {
           "intelligence": 15
@@ -728,9 +724,7 @@
         "stats": {
           "fireResistance": [10, 15],
           "earthResistance": [10, 15],
-          "lightResistance": [10, 15]
-        },
-        "percentStats": {
+          "lightResistance": [10, 15],
           "strength": 10,
           "dexterity": 10,
           "vitality": 10
@@ -916,9 +910,6 @@
           "vitality": [5, 10],
           "intelligence": [5, 10],
           "regenHp": 5
-        },
-        "percentStats": {
-          "regenHp": [10, 15]
         }
       },
       "couriersCamouflage": {
@@ -953,9 +944,7 @@
         "stats": {
           "waterResistance": [30, 35],
           "defense": [35, 40],
-          "blockChance": 5
-        },
-        "percentStats": {
+          "blockChance": 5,
           "vitality": 15,
           "strength": 15
         },
@@ -976,10 +965,7 @@
         "tint": "0xFFDD55",
         "texture": "armor-robe-wizard-white",
         "slot": "armor",
-        "stats": { "maxMp": 20, "magicFind": [100, 150] },
-        "percentStats": {
-          "strength": 10
-        },
+        "stats": { "maxMp": 20, "magicFind": 100, "maxHp": [30, 40] },
         "triggers": [
           {
             "event": "onHurt",
@@ -1001,8 +987,8 @@
         "tint": "0x8800FF",
         "slot": "armor",
         "stats": {
-          "vitality": [5, 10],
-          "regenHp": [1, 3]
+          "vitality": [8, 10],
+          "regenHp": [1, 2]
         }
       }
     }
@@ -1296,9 +1282,6 @@
           "castDelay": [-25, -35],
           "dodgeChance": [5, 6],
           "dexterity": [5, 6]
-        },
-        "percentStats": {
-          "dexterity": 5
         }
       },
       "greenTeaThreads": {
@@ -1555,10 +1538,8 @@
         "texture": "shield-round",
         "slot": "hands",
         "stats": {
-          "blockChance": [25, 30],
-          "accuracy": 10
-        },
-        "percentStats": {
+          "blockChance": 25,
+          "accuracy": 10,
           "strength": [15, 20],
           "vitality": [15, 20]
         }
@@ -1571,7 +1552,7 @@
         "texture": "shield-bone",
         "slot": "hands",
         "stats": {
-          "blockChance": [20, 25],
+          "blockChance": 25,
           "fireResistance": [-5, -10],
           "regenHp": [3, 4],
           "hpSteal": [4, 5]
@@ -1585,7 +1566,7 @@
         "texture": "shield-wyrm",
         "slot": "hands",
         "stats": {
-          "blockChance": [25, 30],
+          "blockChance": 30,
           "fireResistance": [10, 15],
           "earthResistance": [10, 15],
           "defense": [10, 15]
@@ -1713,11 +1694,12 @@
         "texture": "ring-silver-ruby",
         "slot": "ring",
         "stats": {
-          "regenHp": [4, 5],
-          "maxHp": [15, 20]
+          "regenHp": [3, 4],
+          "maxHp": [15, 20],
+          "strength": 5
         },
         "percentStats": {
-          "maxHp": [10, 15]
+          "maxHp": 15
         }
       },
       "theLunarHalo": {
@@ -1732,7 +1714,7 @@
           "spellPower": 5
         },
         "percentStats": {
-          "maxMp": [15, 20]
+          "maxMp": 15
         }
       }
     }
