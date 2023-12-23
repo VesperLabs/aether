@@ -18,6 +18,7 @@ export const BUFF_SPELLS = [
   "slow",
   "regeneration",
   "stealth",
+  "guard",
 ];
 export const BLANK_TEXTURE = "human-blank";
 export const POTION_COOLDOWN = 10000;

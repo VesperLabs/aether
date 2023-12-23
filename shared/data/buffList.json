@@ -23,6 +23,13 @@
       "maxDamage": 1
     }
   },
+  "guard": {
+    "type": "guard",
+    "duration": 30000,
+    "stats": {
+      "defense": 25
+    }
+  },
   "adrenaline": {
     "type": "buff",
     "scaleDuration": false,
