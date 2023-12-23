@@ -26,7 +26,7 @@ export const RACES_WITH_ATTACK_ANIMS = ["crab", "human", "bear", "wolf", "slime"
 export const POTION_BASES = ["hpPotion", "mpPotion"];
 export const CONSUMABLES_BASES = ["food", ...POTION_BASES];
 export const MINI_MAP_SIZE = 160;
-export const MIN_STEALTH_ALPHA = 0.5;
+export const MIN_STEALTH_ALPHA = 0.4;
 export const DEFAULT_USER_SETTINGS: UserSettings = {
   showMinimap: true,
   playMusic: true,
