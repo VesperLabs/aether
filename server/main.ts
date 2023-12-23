@@ -165,10 +165,10 @@ class AppServer {
       res.json({ string: "ok" });
     });
 
-    app.get("/players/pruneItem", async (req, res) => {
-      await db.pruneItemByKey("voltball");
-      res.json({ string: "ok" });
-    });
+    // app.get("/players/pruneItem", async (req, res) => {
+    //   await db.pruneItemByKey("voltball");
+    //   res.json({ string: "ok" });
+    // });
 
     httpServer.listen(PORT, () => {
       console.log(

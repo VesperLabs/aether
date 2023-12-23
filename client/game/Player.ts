@@ -224,10 +224,11 @@ class Player extends Character {
     }
   }
   doAttack({ count, castAngle, direction }) {
-    const { state } = this;
+    const { state, isHero } = this;
+    const { isDead, isAttacking, isHoldingAttack } = state ?? {};
 
-    if (this?.hasBuff("stun")) return;
-    if (this?.isHero && (!this.hasWeapon() || state.isDead || state.isAttacking)) return;
+    if (this.hasBuff("stun")) return;
+    if (isHero && (!this.hasWeapon() || isDead || isAttacking || !isHoldingAttack)) return;
 
     const { action, spellName } = this.getAttackActionName({ count });
 
@@ -237,7 +238,7 @@ class Player extends Character {
     this.direction = direction || this.direction;
 
     // If we are the hero, need to trigger the socket that we attacked
-    if (this.isHero) {
+    if (isHero) {
       this.scene.socket.emit("attack", {
         count,
         direction: this.direction,
@@ -460,7 +461,6 @@ class Player extends Character {
     this.checkAttackReady();
     if (this.isHero) {
       this.checkPotionCooldown(delta);
-      this.triggerSecondAttack();
     }
   }
   //
