@@ -54,6 +54,7 @@ const getDatabaseApi = (db) => ({
     return execute("pruneNoobs", async () => {
       // Delete documents with baseStats.level equal to 1
       const deleteResult = await db.collection("users").deleteMany({ "baseStats.level": 1 });
+      //const deleteResult = await db.collection("users").deleteMany({ email: /@arf.arf/ });
       // const updateResult = await db
       //   .collection("users")
       //   .updateMany({}, { $set: { "equipment.gloves": null } });
