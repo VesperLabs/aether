@@ -1,6 +1,11 @@
 import Character from "./Character";
 import ItemBuilder from "../shared/ItemBuilder";
-import { BUFF_SPELLS, calculateStealthVisibilityPercent, distanceTo } from "../shared/utils";
+import {
+  BUFF_SPELLS,
+  ILVL_MULTIPLIER,
+  calculateStealthVisibilityPercent,
+  distanceTo,
+} from "../shared/utils";
 import { getCharacterDirection, randomNumber, SHOP_INFLATION, sleep } from "./utils";
 import spellDetails from "../shared/data/spellDetails.json";
 import crypto from "crypto";
@@ -567,8 +572,10 @@ class Npc extends Character implements Npc {
   }
   dropLoot(magicFind: number) {
     let runners = [];
-    /* I.E: A monster of lvl 10 will have ilvl 3 */
-    const ilvl = 1 + Math.floor(this.stats.level / 5);
+    /* I.E: A monster of lvl 12 will have ilvl 3 */
+    /* I.E: A monster of lvl 8 will have ilvl 2 */
+    /* I.E: A monster of lvl 1 will have ilvl 1 */
+    const ilvl = Math.max(1, Math.floor(this.stats.level / ILVL_MULTIPLIER));
 
     if (!this.state.noWorldDrops) {
       const mainDrop = ItemBuilder.rollDrop(ilvl, magicFind);

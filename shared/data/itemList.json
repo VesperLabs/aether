@@ -930,7 +930,7 @@
             "type": "buff",
             "name": "evasion",
             "level": 1,
-            "chance": 10
+            "chance": 15
           }
         ]
       },
@@ -954,7 +954,7 @@
             "type": "buff",
             "name": "endurance",
             "level": 2,
-            "chance": 10
+            "chance": 15
           }
         ]
       },
@@ -1302,7 +1302,7 @@
             "type": "buff",
             "name": "regeneration",
             "level": 2,
-            "chance": 10
+            "chance": 30
           }
         ]
       },
@@ -1327,7 +1327,7 @@
             "type": "buff",
             "name": "brute",
             "level": 2,
-            "chance": 10
+            "chance": 30
           }
         ]
       }
@@ -1538,15 +1538,15 @@
         "texture": "shield-round",
         "slot": "hands",
         "stats": {
-          "blockChance": 25,
+          "blockChance": 20,
           "accuracy": 10,
-          "strength": [15, 20],
-          "vitality": [15, 20]
+          "strength": 10,
+          "vitality": 10
         }
       },
       "osteoCrest": {
         "exclusive": true,
-        "ilvl": 1,
+        "ilvl": 2,
         "name": "Osteo Crest",
         "base": "kiteShield",
         "texture": "shield-bone",
@@ -1566,10 +1566,10 @@
         "texture": "shield-wyrm",
         "slot": "hands",
         "stats": {
-          "blockChance": 30,
+          "blockChance": 25,
           "fireResistance": [10, 15],
           "earthResistance": [10, 15],
-          "defense": [10, 15]
+          "defense": [20, 25]
         }
       }
     }
@@ -1683,7 +1683,10 @@
         "base": "ring",
         "texture": "ring-silver-sapphire",
         "slot": "ring",
-        "stats": {}
+        "stats": {
+          "strength": 3,
+          "vitality": 3
+        }
       }
     },
     "unique": {
@@ -1759,7 +1762,10 @@
         "base": "amulet",
         "texture": "amulet-gold-plain",
         "slot": "amulet",
-        "stats": {}
+        "stats": {
+          "maxHp": 20,
+          "maxMp": 20
+        }
       }
     },
     "unique": {
