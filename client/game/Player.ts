@@ -364,7 +364,7 @@ class Player extends Character {
     this.whiskers.setTint(color);
   }
   showHideNameAndBars() {
-    if (this.checkOutOfCombat()) {
+    if (this.checkOutOfCombat() && !this?.state?.isHovering) {
       this.hpBar.setVisible(false);
       if (this.kind === "nasty") this.userName.setVisible(false);
     } else {
