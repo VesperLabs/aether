@@ -4,7 +4,7 @@ import Quest from "./Quest";
 import ItemBuilder from "../shared/ItemBuilder";
 
 const QUEST_GOLD_MULTIPLIER = 15;
-const QUEST_EXP_MULTIPLIER = 10;
+const QUEST_EXP_MULTIPLIER = 15;
 
 const QuestBuilder = {
   buildQuest: function (key: string) {

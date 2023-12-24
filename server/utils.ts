@@ -3,7 +3,7 @@ import ItemBuilder from "../shared/ItemBuilder";
 
 const PLAYER_BASE_ATTACK_DELAY = 100;
 const SHOP_INFLATION = 4;
-const PLAYER_BASE_EXP = 20; // Define the base experience for level 1
+const PLAYER_BASE_EXP = 100; // Define the base experience for level 1
 const PLAYER_DEFAULT_SPAWN = { roomName: "grassland-3", x: 1496, y: 2028 };
 //const PLAYER_DEFAULT_SPAWN = { roomName: "grassland-2", x: 239, y: 990 };
 
@@ -187,12 +187,20 @@ function checkSlotsMatch(s1, s2) {
   return false;
 }
 
-const calculateExpValue = (player: ServerPlayer, mob: Npc) => {
-  const playerLevel = parseInt(player?.stats?.level) ?? 0;
-  const mobLevel = parseInt(mob?.stats?.level) ?? 0;
-  if (playerLevel - mobLevel > 5) {
-    return 0;
-  } else return 1;
+const calculateExpValue = (player, mob) => {
+  const playerLevel = parseInt(player?.stats?.level) || 0;
+  const mobLevel = parseInt(mob?.stats?.level) || 0;
+  const levelDiff = Math.max(0, playerLevel - mobLevel);
+
+  if (levelDiff > 5) return 0; // Mob too wimpy
+
+  let expMultiplier = 0.25;
+  if (levelDiff > 4) expMultiplier = 0; // Mob weak. no multiplier on level.
+  else if (levelDiff > 3) expMultiplier = 0.1;
+  else if (levelDiff > 2) expMultiplier = 0.15;
+  else if (levelDiff > 1) expMultiplier = 0.2;
+
+  return 1 + Math.floor(playerLevel * expMultiplier);
 };
 
 const calculateNextMaxExp = (level) => {

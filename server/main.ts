@@ -91,7 +91,7 @@ class AppServer {
 
     // Define an API route that supports pagination
     app.get("/players/all", async (req, res) => {
-      const { page = 1, pageSize = 10, sortBy = "updatedAt" } = req.query;
+      const { page = 1, pageSize = 20, sortBy = "updatedAt" } = req.query;
 
       const players = await db.getAllUsers({
         page: Number(page),

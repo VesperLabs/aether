@@ -327,12 +327,13 @@ function scaleBaseStats(jsonData) {
           if (baseItem) {
             const ilvl = item?.ilvl || 1;
             const levelScale = ILVL_MULTIPLIER;
-            const reqLevel = Math.floor(ilvl * levelScale);
+            const reqLevel = Math.floor((ilvl - 1) * levelScale) - 2;
+            const hasLevelReq = reqLevel > 0 && item?.slot !== "bag" && item?.base !== "material";
             item.texture = item?.texture || baseItem?.texture;
             item.slot = item?.slot || baseItem?.slot;
             item.stats = { ...multiplyValues(baseItem.stats, ilvl), ...item.stats };
             item.requirements = {
-              ...(reqLevel > levelScale && { level: reqLevel }), // default required level
+              ...(hasLevelReq && { level: reqLevel }), // default required level
               ...multiplyValues(baseItem.requirements, ilvl),
               ...item.requirements,
             };
