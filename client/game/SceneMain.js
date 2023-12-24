@@ -320,21 +320,32 @@ class SceneMain extends Phaser.Scene {
   }
 }
 
-function getClosestEntity(hero, entities) {
+function getClosestEntity({ scene, hero, entities }) {
   let closestEntity;
   let closestDistance = 80;
-  for (const entity of entities) {
+
+  const cursorPoint = scene.input.activePointer.positionToCamera(scene.cameras.main);
+
+  entities.forEach((entity) => {
+    updateHoverState(entity, cursorPoint);
+
     const distance = distanceTo(entity, hero);
-    if (["sign", "keeper"]?.includes(entity?.kind)) {
-      if (distance < closestDistance) {
-        closestEntity = entity;
-        closestDistance = distance;
-      }
+    if (["sign", "keeper"].includes(entity?.kind) && distance < closestDistance) {
+      closestEntity = entity;
+      closestDistance = distance;
     } else {
       entity.checkStealth({ distance });
     }
-  }
+  });
+
   return closestEntity;
+}
+
+function updateHoverState(entity, cursorPoint) {
+  if (!entity.state) return;
+  const cursorDistance = distanceTo(entity, cursorPoint);
+  const hoverDistance = (entity?.hitBoxSize?.width + entity?.hitBoxSize?.height) / 2;
+  entity.state.isHovering = cursorDistance < hoverDistance;
 }
 
 // Modify to return all nearby players
@@ -392,7 +403,7 @@ function checkEntityProximity(scene, time) {
   if (!hero || hero.state.isDead) return;
 
   const entities = [...scene.npcs.getChildren(), ...scene.signs.getChildren()];
-  const closestEntity = getClosestEntity(hero, entities);
+  const closestEntity = getClosestEntity({ scene, hero, entities });
 
   if (
     closestEntity &&

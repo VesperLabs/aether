@@ -122,6 +122,7 @@ class Character extends Phaser.GameObjects.Container {
       isDead: false,
       activeSets: [],
       lastAngle: Phaser.Math.DegToRad(getAngleFromDirection(this.direction)),
+      isHovering: false,
       ...state,
     };
     this.buffs = buffs;
