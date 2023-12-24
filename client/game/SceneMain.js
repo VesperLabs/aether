@@ -329,7 +329,8 @@ function getClosestEntity({ scene, hero, entities }) {
 
   for (const entity of entities) {
     const cursorDistance = distanceTo(entity, cursorPoint);
-    if (entity.state) {
+
+    if (entity.state && !isMobile) {
       entity.state.isHovering =
         cursorDistance < (entity?.hitBoxSize?.width + entity?.hitBoxSize?.height) / 2;
     }
