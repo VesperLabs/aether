@@ -285,8 +285,9 @@ class SceneMain extends Phaser.Scene {
     }
 
     enableDoors(this);
-    checkEntityProximity(this, time);
-    checkPlayerProximity(this, time);
+    // checkEntityProximity(this, time);
+    // checkPlayerProximity(this, time);
+    checkProximities(this, time);
 
     if (!npcSnapshot) return;
     /* Update NPC x and y */
@@ -320,91 +321,28 @@ class SceneMain extends Phaser.Scene {
   }
 }
 
-function getClosestEntity({ scene, hero, entities }) {
-  let closestEntity;
-  let closestDistance = 80;
-
-  const pointer = scene.input.activePointer;
-  const cursorPoint = pointer.positionToCamera(scene.cameras.main);
-
-  for (const entity of entities) {
-    const cursorDistance = distanceTo(entity, cursorPoint);
-
-    if (entity.state && !isMobile) {
-      entity.state.isHovering =
-        cursorDistance < (entity?.hitBoxSize?.width + entity?.hitBoxSize?.height) / 2;
-    }
-
-    const distance = distanceTo(entity, hero);
-    if (["sign", "keeper"]?.includes(entity?.kind)) {
-      if (distance < closestDistance) {
-        closestEntity = entity;
-        closestDistance = distance;
-      }
-    } else {
-      entity.checkStealth({ distance });
-    }
-  }
-  return closestEntity;
-}
-
-// Modify to return all nearby players
-function getNearbyPlayers(hero, players) {
-  let nearbyPlayers = [];
-  for (const player of players) {
-    const distance = distanceTo(player, hero);
-    // adjust player stealth
-    player.checkStealth({ distance });
-    // do not need to do anything else for hero
-    if (player.isHero) continue;
-    if (distance < 200) {
-      nearbyPlayers.push(player);
-    }
-  }
-  return nearbyPlayers; // returns a list of player objects
-}
-
-function checkPlayerProximity(scene, time) {
-  if (time % 6 > 1) return;
-  const { hero } = scene ?? {};
-
-  if (!hero || hero.state.isDead) return;
-
-  const players = scene.players.getChildren();
-
-  // Get the list of nearby players
-  const nearbyPlayers = getNearbyPlayers(hero, players);
+function triggerPlayerProximity(scene, nearbyPlayers) {
   const nearbyPeerIds = nearbyPlayers.map((player) => player.peerId);
 
-  // Identify players that have newly entered the hero's proximity
   for (const peerId of nearbyPeerIds) {
     if (!scene.nearbyPeerIds.includes(peerId)) {
-      console.log("NEAR");
+      // console.log("NEAR");
       window.dispatchEvent(new CustomEvent("HERO_NEAR_PLAYER", { detail: { peerId } }));
     }
   }
 
-  // Identify players that have left the hero's proximity
   for (const peerId of scene.nearbyPeerIds) {
     if (!nearbyPeerIds.includes(peerId)) {
-      console.log("FAR");
+      // console.log("FAR");
       window.dispatchEvent(new CustomEvent("HERO_AWAY_PLAYER", { detail: { peerId } }));
     }
   }
 
-  // Update the hero's state to the new list of nearby players
   scene.nearbyPeerIds = nearbyPeerIds;
 }
 
-function checkEntityProximity(scene, time) {
-  if (time % 11 > 1) return;
+function triggerEntityProximity(scene, closestEntity) {
   const { hero } = scene ?? {};
-
-  if (!hero || hero.state.isDead) return;
-
-  const entities = [...scene.npcs.getChildren(), ...scene.signs.getChildren()];
-  const closestEntity = getClosestEntity({ scene, hero, entities });
-
   if (
     closestEntity &&
     hero.state.targetNpcId !== closestEntity?.id &&
@@ -416,6 +354,59 @@ function checkEntityProximity(scene, time) {
     hero.state.targetNpcId = null;
     window.dispatchEvent(new CustomEvent("HERO_NEAR_NPC", { detail: null }));
   }
+}
+
+function checkProximities(scene, time) {
+  const { hero } = scene ?? {};
+  if (time % 8 > 1) return;
+  if (!hero) return;
+
+  const entities = [
+    ...scene.npcs.getChildren(),
+    ...scene.signs.getChildren(),
+    ...scene.players.getChildren(),
+  ];
+
+  let closestEntity;
+  let NPC_CLOSEST_DISTANCE = 80;
+  let PLAYER_CLOSEST_DISTANCE = 200;
+
+  let nearbyPlayers = [];
+  const pointer = scene.input.activePointer;
+  const cursorPoint = pointer.positionToCamera(scene.cameras.main);
+
+  for (const entity of entities) {
+    const distance = distanceTo(entity, hero);
+
+    if (entity.kind === "player") {
+      if (entity.isHero) continue; // do not need to do anything else for hero
+      if (distance < PLAYER_CLOSEST_DISTANCE) {
+        nearbyPlayers.push(entity);
+      }
+    }
+
+    if (["sign", "keeper"]?.includes(entity?.kind)) {
+      if (distance < NPC_CLOSEST_DISTANCE) {
+        closestEntity = entity;
+        NPC_CLOSEST_DISTANCE = distance;
+      }
+    }
+
+    if (entity.kind !== "sign") {
+      entity.checkStealth({ distance });
+    }
+
+    if (["nasty", "keeper"]?.includes(entity?.kind)) {
+      const cursorDistance = distanceTo(entity, cursorPoint);
+      if (entity.state && !isMobile) {
+        entity.state.isHovering =
+          cursorDistance < (entity?.hitBoxSize?.width + entity?.hitBoxSize?.height) / 2;
+      }
+    }
+  }
+
+  triggerEntityProximity(scene, closestEntity);
+  triggerPlayerProximity(scene, nearbyPlayers);
 }
 
 function enableDoors(scene) {
