@@ -2081,8 +2081,7 @@
           "mpCost": 4
         },
         "requirements": {
-          "charClass": "mage",
-          "intelligence": 5
+          "charClass": "mage"
         }
       },
       "quake": {
@@ -2102,8 +2101,7 @@
           "mpCost": 5
         },
         "requirements": {
-          "charClass": "mage",
-          "intelligence": 5
+          "charClass": "mage"
         }
       },
       "waterball": {
@@ -2123,8 +2121,7 @@
           "mpCost": 4
         },
         "requirements": {
-          "charClass": "mage",
-          "intelligence": 5
+          "charClass": "mage"
         }
       },
       "lightball": {
@@ -2141,8 +2138,7 @@
           "hpCost": 1
         },
         "requirements": {
-          "charClass": "cleric",
-          "vitality": 5
+          "charClass": "cleric"
         }
       },
       "evasion": {
@@ -2155,8 +2151,7 @@
           "evasion": 1
         },
         "requirements": {
-          "charClass": "rogue",
-          "dexterity": 3
+          "charClass": "rogue"
         },
         "stats": {
           "mpCost": 10
@@ -2172,8 +2167,7 @@
           "haste": 1
         },
         "requirements": {
-          "charClass": "cleric",
-          "level": 3
+          "charClass": "cleric"
         },
         "stats": {
           "hpCost": 4
@@ -2189,8 +2183,7 @@
           "brute": 1
         },
         "requirements": {
-          "charClass": "warrior",
-          "level": 3
+          "charClass": "warrior"
         },
         "stats": {
           "mpCost": 4
@@ -2206,8 +2199,7 @@
           "guard": 1
         },
         "requirements": {
-          "charClass": "warrior",
-          "level": 3
+          "charClass": "warrior"
         },
         "stats": {
           "mpCost": 4
@@ -2223,8 +2215,7 @@
           "genius": 1
         },
         "requirements": {
-          "charClass": "mage",
-          "level": 3
+          "charClass": "mage"
         },
         "stats": {
           "mpCost": 4
@@ -2240,8 +2231,7 @@
           "endurance": 1
         },
         "requirements": {
-          "charClass": "cleric",
-          "level": 3
+          "charClass": "cleric"
         },
         "stats": {
           "hpCost": 4
@@ -2257,8 +2247,7 @@
           "regeneration": 1
         },
         "requirements": {
-          "charClass": "cleric",
-          "level": 3
+          "charClass": "cleric"
         },
         "stats": {
           "hpCost": 10
@@ -2274,8 +2263,7 @@
           "stealth": 1
         },
         "requirements": {
-          "charClass": "rogue",
-          "level": 3
+          "charClass": "rogue"
         },
         "stats": {
           "spCost": 5
