@@ -368,7 +368,7 @@ function checkProximities(scene, time) {
   ];
 
   let closestEntity;
-  let NPC_CLOSEST_DISTANCE = 80;
+  let closestDistance = 80;
   let PLAYER_CLOSEST_DISTANCE = 200;
 
   let nearbyPlayers = [];
@@ -379,16 +379,15 @@ function checkProximities(scene, time) {
     const distance = distanceTo(entity, hero);
 
     if (entity.kind === "player") {
-      if (entity.isHero) continue; // do not need to do anything else for hero
       if (distance < PLAYER_CLOSEST_DISTANCE) {
-        nearbyPlayers.push(entity);
+        if (!entity.isHero) nearbyPlayers.push(entity);
       }
     }
 
     if (["sign", "keeper"]?.includes(entity?.kind)) {
-      if (distance < NPC_CLOSEST_DISTANCE) {
+      if (distance < closestDistance) {
         closestEntity = entity;
-        NPC_CLOSEST_DISTANCE = distance;
+        closestDistance = distance;
       }
     }
 
