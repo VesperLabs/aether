@@ -1020,6 +1020,12 @@
     "previewRect": [0, 0, 32, 32]
   },
   {
+    "texture": "spell-rest",
+    "src": "./assets/atlas/spell/spell-rest.png",
+    "atlas": "./assets/atlas/32x32-stackable.json",
+    "previewRect": [0, 0, 32, 32]
+  },
+  {
     "texture": "spell-slow",
     "src": "./assets/atlas/spell/spell-slow.png",
     "atlas": "./assets/atlas/32x32-stackable.json",

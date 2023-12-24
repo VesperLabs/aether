@@ -20,6 +20,7 @@ import WeaponSprite from "./WeaponSprite";
 import { getSpinDirection, PLAYER_GRAB_RANGE, deriveElements } from "../utils";
 import Buff from "./Buff";
 import Hit from "./Hit";
+import BuffRack from "./BuffRack";
 const { Sprite, BitmapText } = Phaser.GameObjects;
 const BLANK_TEXTURE = "human-blank";
 
@@ -82,10 +83,12 @@ class Player extends Character {
     this.state.activeSets = data?.state?.activeSets;
     // filter out equipment slotNames that are not in activeItemsSlots array
     this.updateVisibleEquipment();
+    this.updateExtas();
   }
   updateExtas() {
     this.drawCharacterFromUserData();
     this.updateHpBar();
+    this.buffRack.compareBuffs(this.buffs);
   }
   doRegen() {
     if (this.state.doHpRegen) {
@@ -133,7 +136,7 @@ class Player extends Character {
     );
     this.hpBar = scene.add.existing(new Bar(scene, 0, this?.headY, 32, 12)).setVisible(false);
     this.userName = scene.add.existing(new BitmapText(this.scene, 0, 8, "nin-light").setScale(0.5));
-    // this.buffRack = scene.add.existing(new BuffRack(scene, 0, 19, this.buffs));
+    this.buffRack = scene.add.existing(new BuffRack(scene, 0, 19, this.buffs)).setVisible(false);
     this.corpse = scene.add
       .existing(new Sprite(scene, 0, this.bodyOffsetY, "icons", "grave"))
       .setVisible(false);
@@ -159,6 +162,7 @@ class Player extends Character {
     this.add(this.hpBar);
     this.add(this.corpse);
     this.add(this.talkMenu);
+    this.add(this.buffRack);
 
     if (this.isHero) {
       this.add(this.crosshair);
@@ -365,11 +369,15 @@ class Player extends Character {
   }
   showHideNameAndBars() {
     if (this.checkOutOfCombat() && !this?.state?.isHovering) {
+      this.buffRack.setVisible(false);
       this.hpBar.setVisible(false);
       if (this.kind === "nasty") this.userName.setVisible(false);
     } else {
       this.hpBar.setVisible(true);
       if (this.kind === "nasty") this.userName.setVisible(true);
+      if (this?.state?.isHovering) {
+        this.buffRack.setVisible(true);
+      }
     }
   }
   checkDeath() {
