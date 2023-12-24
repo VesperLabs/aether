@@ -942,8 +942,8 @@
         "texture": "armor-plate",
         "slot": "armor",
         "stats": {
-          "waterResistance": [30, 35],
-          "defense": [35, 40],
+          "waterResistance": [20, 35],
+          "defense": 25,
           "blockChance": 5,
           "vitality": 10,
           "strength": 10

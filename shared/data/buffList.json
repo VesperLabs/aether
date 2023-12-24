@@ -27,7 +27,7 @@
     "type": "guard",
     "duration": 30000,
     "stats": {
-      "defense": 25
+      "defense": 15
     }
   },
   "adrenaline": {

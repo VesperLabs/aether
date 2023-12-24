@@ -572,10 +572,10 @@ class Npc extends Character implements Npc {
   }
   dropLoot(magicFind: number) {
     let runners = [];
-    /* I.E: A monster of lvl 12 will drop ilvl 3 */
-    /* I.E: A monster of lvl 8 will drop ilvl 2 */
-    /* I.E: A monster of lvl 1 will drop ilvl 1 */
-    const ilvl = Math.floor(this.stats.level / ILVL_MULTIPLIER);
+    /* I.E: A monster of lvl 8 will drop ilvl 2 items
+            A monster of lvl 16 will drop ilvl 3 items
+    */
+    const ilvl = 1 + Math.floor(this.stats.level / ILVL_MULTIPLIER);
 
     if (!this.state.noWorldDrops) {
       const mainDrop = ItemBuilder.rollDrop(ilvl, magicFind);

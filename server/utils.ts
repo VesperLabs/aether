@@ -187,6 +187,9 @@ function checkSlotsMatch(s1, s2) {
   return false;
 }
 
+// exp gain from mobs is based on the players
+// level and difference between player and mob level with a
+// cap at 5 level difference.
 const calculateExpValue = (player, mob) => {
   const playerLevel = parseInt(player?.stats?.level) || 0;
   const mobLevel = parseInt(mob?.stats?.level) || 0;
