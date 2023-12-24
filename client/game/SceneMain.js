@@ -324,34 +324,33 @@ function getClosestEntity({ scene, hero, entities }) {
   let closestEntity;
   let closestDistance = 80;
 
-  const cursorPoint = scene.input.activePointer.positionToCamera(scene.cameras.main);
+  const pointer = scene.input.activePointer;
+  const cursorPoint = pointer.positionToCamera(scene.cameras.main);
 
   for (const entity of entities) {
-    if (!entity.state) continue; // not initialized yet.
-    updateHoverState(entity, cursorPoint);
+    const cursorDistance = distanceTo(entity, cursorPoint);
+    if (entity.state) {
+      entity.state.isHovering =
+        cursorDistance < (entity?.hitBoxSize?.width + entity?.hitBoxSize?.height) / 2;
+    }
+
     const distance = distanceTo(entity, hero);
-    if (["sign", "keeper"].includes(entity?.kind) && distance < closestDistance) {
-      closestEntity = entity;
-      closestDistance = distance;
+    if (["sign", "keeper"]?.includes(entity?.kind)) {
+      if (distance < closestDistance) {
+        closestEntity = entity;
+        closestDistance = distance;
+      }
     } else {
       entity.checkStealth({ distance });
     }
   }
-
   return closestEntity;
-}
-
-function updateHoverState(entity, cursorPoint) {
-  const cursorDistance = distanceTo(entity, cursorPoint);
-  const hoverDistance = (entity?.hitBoxSize?.width + entity?.hitBoxSize?.height) / 2;
-  entity.state.isHovering = cursorDistance < hoverDistance;
 }
 
 // Modify to return all nearby players
 function getNearbyPlayers(hero, players) {
   let nearbyPlayers = [];
   for (const player of players) {
-    if (!player.state) continue; // not initialized yet.
     const distance = distanceTo(player, hero);
     // adjust player stealth
     player.checkStealth({ distance });
