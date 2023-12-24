@@ -396,7 +396,7 @@
       },
       "wyrmBlade": {
         "exclusive": true,
-        "ilvl": 3,
+        "ilvl": 2,
         "base": "sword",
         "name": "Wyrm Blade",
         "texture": "weapon-wyrm-blade",
@@ -424,7 +424,7 @@
         }
       },
       "carnageDrinker": {
-        "ilvl": 3,
+        "ilvl": 2,
         "base": "dagger",
         "name": "Carnage Drinker",
         "texture": "weapon-dagger-carnage",
@@ -465,7 +465,7 @@
         }
       },
       "melonBasher": {
-        "ilvl": 3,
+        "ilvl": 2,
         "base": "club",
         "name": "The Melon Basher",
         "texture": "weapon-hammer",
@@ -945,8 +945,8 @@
           "waterResistance": [30, 35],
           "defense": [35, 40],
           "blockChance": 5,
-          "vitality": 15,
-          "strength": 15
+          "vitality": 10,
+          "strength": 10
         },
         "triggers": [
           {
@@ -1094,8 +1094,6 @@
         "stats": {
           "maxHp": 10,
           "maxMp": 10,
-          "minFireDamage": 1,
-          "maxFireDamage": 2,
           "castDelay": -50
         }
       },
@@ -1107,9 +1105,10 @@
         "tint": "0x66CCFF",
         "slot": "gloves",
         "stats": {
-          "waterResistance": [10, 15],
-          "minWaterDamage": 2,
-          "maxWaterDamage": 3
+          "maxMp": 50,
+          "intelligence": 5,
+          "castDelay": -25,
+          "waterResistance": [10, 15]
         }
       }
     }
@@ -1187,8 +1186,8 @@
         "tint": "0x00FF00",
         "slot": "boots",
         "stats": {
-          "vitality": [8, 10],
-          "walkSpeed": [15, 20]
+          "vitality": [5, 6],
+          "walkSpeed": 20
         }
       },
       "crabWalkers": {
@@ -1315,7 +1314,7 @@
         "slot": "pants",
         "stats": {
           "maxHp": [15, 20],
-          "walkSpeed": [10, 15],
+          "walkSpeed": 15,
           "defense": [10, 15],
           "attackDelay": [-15, -20],
           "fireResistance": [10, 15],
