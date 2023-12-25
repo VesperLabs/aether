@@ -197,26 +197,29 @@ const calculateExpValue = (player, mob) => {
 
   if (levelDiff > 5) return 0; // Mob too wimpy
 
-  let expMultiplier = 0.25;
-  if (levelDiff > 4) expMultiplier = 0; // Mob weak. no multiplier on level.
-  else if (levelDiff > 3) expMultiplier = 0.1;
-  else if (levelDiff > 2) expMultiplier = 0.15;
-  else if (levelDiff > 1) expMultiplier = 0.2;
+  // Define level difference mappings
+  const levelDiffMappings = {
+    5: { multiplier: 0, min: 0 },
+    4: { multiplier: 0.1, min: 0 },
+    3: { multiplier: 0.15, min: 1 },
+    2: { multiplier: 0.2, min: 1 },
+    1: { multiplier: 0.25, min: 2 },
+    0: { multiplier: 0.25, min: 2 },
+  };
 
-  return 1 + Math.floor(playerLevel * expMultiplier);
+  // Get the corresponding multiplier and min values
+  const { multiplier, min } = levelDiffMappings[Math.min(levelDiff, 5)];
+
+  return 1 + Math.max(min, Math.floor(playerLevel * multiplier));
 };
 
+// how much exp required for next level each time player levels up
 const calculateNextMaxExp = (level) => {
-  const baseExp = PLAYER_BASE_EXP; // Base experience for the first level
-  const expIncreasePerLevel = PLAYER_BASE_EXP; // Fixed amount of additional EXP required per level
-  const additionalIncreasePerLevel = PLAYER_BASE_EXP * 0.5; // Small linear increase in the EXP increase per level
-
+  const baseExp = PLAYER_BASE_EXP;
   let totalExp = baseExp;
-  let currentIncrease = expIncreasePerLevel;
 
   for (let i = 2; i <= level; i++) {
-    currentIncrease += additionalIncreasePerLevel; // Linearly increase the exp required for each subsequent level
-    totalExp += currentIncrease;
+    totalExp += baseExp + baseExp * 0.5 * (i - 1);
   }
 
   return Math.floor(totalExp);
