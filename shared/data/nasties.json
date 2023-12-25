@@ -451,7 +451,8 @@
     "charClass": "rogue",
     "profile": {
       "race": "wolf",
-      "userName": "White Fang"
+      "userName": "White Fang",
+      "scale": 1.5
     },
     "state": { "isAggro": true },
     "baseStats": {
@@ -460,8 +461,8 @@
       "walkSpeed": 20
     },
     "hitBoxSize": {
-      "width": 31,
-      "height": 28
+      "width": 41,
+      "height": 38
     },
     "abilities": {
       "1": ["spell", "common", "stealth"]
