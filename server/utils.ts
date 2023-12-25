@@ -190,31 +190,18 @@ function checkSlotsMatch(s1, s2) {
 // exp gain from mobs is based on the players
 // level and difference between player and mob level with a
 // cap at 5 level difference.
-const calculateExpValue = (player, mob) => {
+function calculateExpValue(player, mob) {
   const playerLevel = parseInt(player?.stats?.level) || 0;
   const mobLevel = parseInt(mob?.stats?.level) || 0;
   const levelDiff = Math.max(0, playerLevel - mobLevel);
 
   if (levelDiff > 5) return 0; // Mob too wimpy
 
-  // Define level difference mappings
-  const levelDiffMappings = {
-    5: { multiplier: 0.1, min: 0 },
-    4: { multiplier: 0.15, min: 0 },
-    3: { multiplier: 0.2, min: 1 },
-    2: { multiplier: 0.25, min: 1 },
-    1: { multiplier: 0.3, min: 2 },
-    0: { multiplier: 0.35, min: 3 },
-  };
-
-  // Get the corresponding multiplier and min values
-  const { multiplier, min } = levelDiffMappings[Math.min(levelDiff, 5)];
-
-  return 1 + Math.max(min, Math.floor(playerLevel * multiplier));
-};
+  return 1 + Math.max(2, Math.floor(playerLevel * 0.5));
+}
 
 // how much exp required for next level each time player levels up
-const calculateNextMaxExp = (level) => {
+function calculateNextMaxExp(level) {
   const baseExp = PLAYER_BASE_EXP;
   let totalExp = baseExp;
 
@@ -223,7 +210,7 @@ const calculateNextMaxExp = (level) => {
   }
 
   return Math.floor(totalExp);
-};
+}
 
 function mergeAndAddValues(obj1, obj2) {
   const result = {};
@@ -266,7 +253,7 @@ function addValuesToExistingKeys(
   return result;
 }
 
-const useGetBaseCharacterDefaults = ({ level = 1, charClass }) => {
+function useGetBaseCharacterDefaults({ level = 1, charClass }) {
   const isMage = charClass === "mage";
   const isWarrior = charClass === "warrior";
   const isRogue = charClass === "rogue";
@@ -313,7 +300,7 @@ const useGetBaseCharacterDefaults = ({ level = 1, charClass }) => {
     },
     ...PLAYER_DEFAULT_SPAWN,
   };
-};
+}
 
 function filterNullEmpty(data) {
   if (Array.isArray(data)) {
@@ -351,7 +338,7 @@ function isEmptyArray(arr) {
   return Array.isArray(arr) && arr.length === 0;
 }
 
-const calculateStats = (player, shouldHeal = false) => {
+function calculateStats(player, shouldHeal = false) {
   const { equipment = {}, abilities = {}, buffs = [] } = player;
   // disregard items that are not actively equipped
   const allSlots = Object.keys({ ...abilities, ...equipment }).filter((slot) =>
@@ -539,9 +526,11 @@ const calculateStats = (player, shouldHeal = false) => {
   player.stats = ns;
 
   player.state.activeSets = activeSets;
-};
+}
 
-const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
+function sleep(delay) {
+  return new Promise((resolve) => setTimeout(resolve, delay));
+}
 
 export {
   removePlayer,
