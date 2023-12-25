@@ -5,7 +5,7 @@ import keepers from "../shared/data/keepers.json";
 import { useGetBaseCharacterDefaults, mergeAndAddValues, PLAYER_BASE_EXP } from "./utils";
 
 /* Find NPCs in data lists, and add `kind` to them */
-const getNpcFromLists = (name) => {
+function getNpcFromLists(name) {
   const keeperKeys = Object.keys(keepers);
   const nastyKeys = Object.keys(nasties);
   if (keeperKeys.find((key) => key === name)) {
@@ -14,7 +14,7 @@ const getNpcFromLists = (name) => {
   if (nastyKeys.find((key) => key === name)) {
     return { ...nasties[name], kind: "nasty" };
   }
-};
+}
 
 class NpcManager {
   public scene: ServerScene;
