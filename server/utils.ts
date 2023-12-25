@@ -199,12 +199,12 @@ const calculateExpValue = (player, mob) => {
 
   // Define level difference mappings
   const levelDiffMappings = {
-    5: { multiplier: 0, min: 0 },
-    4: { multiplier: 0.1, min: 0 },
-    3: { multiplier: 0.15, min: 1 },
-    2: { multiplier: 0.2, min: 1 },
-    1: { multiplier: 0.25, min: 2 },
-    0: { multiplier: 0.25, min: 2 },
+    5: { multiplier: 0.1, min: 0 },
+    4: { multiplier: 0.15, min: 0 },
+    3: { multiplier: 0.2, min: 1 },
+    2: { multiplier: 0.25, min: 1 },
+    1: { multiplier: 0.3, min: 2 },
+    0: { multiplier: 0.35, min: 3 },
   };
 
   // Get the corresponding multiplier and min values
@@ -219,7 +219,7 @@ const calculateNextMaxExp = (level) => {
   let totalExp = baseExp;
 
   for (let i = 2; i <= level; i++) {
-    totalExp += baseExp + baseExp * 0.5 * (i - 1);
+    totalExp += baseExp + baseExp * 0.15 * (i - 1);
   }
 
   return Math.floor(totalExp);
