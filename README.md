@@ -1,5 +1,7 @@
 ## Aether Online
 
+![Tests](https://github.com/vesperlabs/aether/actions/workflows/tests.js.yml/badge.svg)
+
 A Javascript MMO using `PhaserJS` and `SocketIO`
 
 ## ⚡️ Install
