@@ -456,8 +456,8 @@
     },
     "state": { "isAggro": true },
     "baseStats": {
-      "level": 11,
-      "maxHp": 400,
+      "level": 12,
+      "maxHp": 300,
       "walkSpeed": 20
     },
     "hitBoxSize": {
@@ -499,7 +499,7 @@
     "profile": { "race": "crab", "userName": "Ice Crab", "tint": "0x8899CC" },
     "state": { "isAggro": false },
     "baseStats": {
-      "level": 8,
+      "level": 9,
       "waterResistance": 50
     },
     "hitBoxSize": {

@@ -193,11 +193,17 @@ function checkSlotsMatch(s1, s2) {
 function calculateExpValue(player, mob) {
   const playerLevel = parseInt(player?.stats?.level) || 0;
   const mobLevel = parseInt(mob?.stats?.level) || 0;
-  const levelDiff = Math.max(0, playerLevel - mobLevel);
 
-  if (levelDiff > 5) return 0; // Mob too wimpy
+  const mobGreaterBy = Math.max(0, playerLevel - mobLevel);
 
-  return 1 + Math.max(2, Math.floor(playerLevel * 0.5));
+  // Players will still get some exp if they somehow manage to slay a giant mob
+  // They just won't get the nut of the exp because they're probably too weak to kill
+  // It themselves.
+  const levelMultiplier = mobLevel > playerLevel ? mobLevel : playerLevel;
+
+  if (mobGreaterBy > 5) return 0; // Mob too wimpy. no exp.
+
+  return 1 + Math.max(2, Math.floor(levelMultiplier * 0.5));
 }
 
 // how much exp required for next level each time player levels up
@@ -206,7 +212,7 @@ function calculateNextMaxExp(level) {
   let totalExp = baseExp;
 
   for (let i = 2; i <= level; i++) {
-    totalExp += baseExp + baseExp * 0.15 * (i - 1);
+    totalExp += baseExp + baseExp * 0.1 * (i - 1);
   }
 
   return Math.floor(totalExp);
@@ -320,6 +326,14 @@ function filterProperties(item) {
   if (!item) return null;
   const filteredItem = {};
 
+  const isEmptyObject = (obj: Object) => {
+    return Object.keys(obj).length === 0 && obj.constructor === Object;
+  };
+
+  const isEmptyArray = (arr: Array) => {
+    return Array.isArray(arr) && arr.length === 0;
+  };
+
   for (const [key, value] of Object.entries(item)) {
     if (value === null || typeof value === "undefined") continue;
     if (!isEmptyObject(value) && !isEmptyArray(value)) {
@@ -328,14 +342,6 @@ function filterProperties(item) {
   }
 
   return filteredItem;
-}
-
-function isEmptyObject(obj) {
-  return Object.keys(obj).length === 0 && obj.constructor === Object;
-}
-
-function isEmptyArray(arr) {
-  return Array.isArray(arr) && arr.length === 0;
 }
 
 function calculateStats(player, shouldHeal = false) {
@@ -348,6 +354,7 @@ function calculateStats(player, shouldHeal = false) {
   let ns = cloneObject(player.baseStats);
   let setList = {};
   let activeSets = [];
+
   player.state = player.state ?? {};
   player.stats = Object.keys(player?.stats)?.length
     ? player.stats
@@ -441,12 +448,23 @@ function calculateStats(player, shouldHeal = false) {
   buffs.forEach((buff: Buff) => {
     if (buff.stats) {
       Object.keys(buff.stats).forEach((key) => {
-        const buffStat = buff.stats[key];
+        const amount = buff.stats[key];
         if (!ns[key]) {
           ns[key] = 0;
         }
-        if (buffStat) {
-          ns[key] += buffStat;
+        if (amount) {
+          ns[key] += amount;
+        }
+      });
+    }
+    if (buff.percentStats) {
+      Object.keys(buff.percentStats).forEach((key) => {
+        const amount = buff.percentStats[key];
+        if (!totalPercentStats[key]) {
+          totalPercentStats[key] = 0;
+        }
+        if (amount) {
+          totalPercentStats[key] += amount;
         }
       });
     }
@@ -510,7 +528,8 @@ function calculateStats(player, shouldHeal = false) {
   /* Any percentStat value that needs to be pre-calculated goes here  */
   Object.keys(totalPercentStats).forEach((key) => {
     let percentIncrease = Math.floor(ns[key] * (totalPercentStats[key] / 100));
-    if (key == "maxHp" || key == "maxMp" || key == "defense") ns[key] += percentIncrease;
+    if (key == "maxHp" || key == "maxMp" || key == "defense" || key == "walkSpeed")
+      ns[key] += percentIncrease;
   });
 
   // Moving values

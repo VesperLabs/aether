@@ -47,13 +47,20 @@ class ServerCharacter extends Character {
     const activeSets = [];
     const setItems = [];
 
-    // TODO: Buff percentage stats
     buffs.forEach((buff: Buff) => {
       if (buff.stats) {
         Object.keys(buff.stats).forEach((key) => {
-          const buffStat = buff.stats[key];
+          const amount = buff.stats[key];
           if (baseStats[key]) {
-            baseStats[key] += buffStat;
+            baseStats[key] += amount;
+          }
+        });
+      }
+      if (buff.percentStats) {
+        Object.keys(buff.percentStats).forEach((key) => {
+          const amount = buff.stats[key];
+          if (percentStats[key]) {
+            percentStats[key] += amount;
           }
         });
       }
@@ -519,12 +526,22 @@ class ServerCharacter extends Character {
     const buff = buffList?.[name];
     if (!buff) return false;
 
-    const { duration, stats = {}, scaleDuration = true, scaleStats = true } = buff;
-    const statsWithLevelMultiplier = {};
+    const {
+      duration,
+      stats = {},
+      percentStats = {},
+      scaleDuration = true,
+      scaleStats = true,
+    } = buff;
+    const scaledStats = {};
+    const scaledPercentStats = {};
 
     // multiply each stat by the level
     Object.entries(stats).forEach(([stat, value]: [string, number]) => {
-      statsWithLevelMultiplier[stat] = value * level;
+      scaledStats[stat] = value * level;
+    });
+    Object.entries(percentStats).forEach(([stat, value]: [string, number]) => {
+      scaledPercentStats[stat] = value * level;
     });
 
     // look for the buff and remove it if it exists
@@ -536,7 +553,8 @@ class ServerCharacter extends Character {
       name,
       duration: scaleDuration ? duration * level : duration,
       level,
-      stats: scaleStats ? statsWithLevelMultiplier : stats,
+      stats: scaleStats ? scaledStats : stats,
+      percentStats: scaleStats ? scaledPercentStats : percentStats,
       spawnTime: Date.now(),
       dispelInCombat: buff?.dispelInCombat,
       dispelOnAttack: buff?.dispelOnAttack,

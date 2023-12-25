@@ -142,7 +142,7 @@
     "dispelInCombat": true,
     "dispelOnAttack": true,
     "dispelOnCast": true,
-    "stats": {
+    "percentStats": {
       "walkSpeed": -50
     },
     "description": "Hidden from sight while you are out of combat"

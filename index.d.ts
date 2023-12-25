@@ -147,7 +147,8 @@ interface Buff {
   name: string;
   level: number;
   duration: number;
-  stats: any;
+  stats: Record<string, any>;
+  percentStats?: Record<string, any>;
   spawnTime: any;
   isExpired?: boolean;
   dispelInCombat?: boolean;
@@ -186,7 +187,7 @@ interface Character extends Phaser.GameObjects.Container {
   hitBox: any;
   bodyOffsetY: number;
   doHit(ids, abilitySlot): void;
-  addBuff(name, level, shouldCalculateStats: boolean);
+  addBuff(name: string, level, shouldCalculateStats: boolean);
   calculateAttackDamage(victim: any);
   calculateSpellDamage(victim: any, abilitySlot: number);
   calculateDamage(victim: any, abilitySlot: number);

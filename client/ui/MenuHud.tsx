@@ -94,6 +94,11 @@ const BuffTooltip = ({ buff, tooltipId, timeLeft, player }) => {
             <TooltipLabel>{key}:</TooltipLabel> {combinedStats[key]}
           </Text>
         ))}
+        {Object.keys(buff?.percentStats || {}).map((key) => (
+          <Text key={key}>
+            <TooltipLabel>{key}:</TooltipLabel> {buff?.percentStats[key]}%
+          </Text>
+        ))}
         {!!description && <Divider />}
         <TooltipLabel sx={{ textTransform: "none", fontWeight: "normal", fontStyle: "italic" }}>
           {description}
