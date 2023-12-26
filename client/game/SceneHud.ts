@@ -128,12 +128,18 @@ function addGlobalEventListeners(scene) {
       if (ability?.type === "spell") {
         /* Tell the UI to update the cooldown */
         updateSpellCooldown(hero, e?.detail);
-        hero?.castSpell?.({
-          ilvl: ability?.ilvl,
-          abilitySlot: e?.detail,
-          spellName: ability?.base,
-          castAngle: hero?.state?.lastAngle,
-        });
+        if (ability?.isMeleeAttack) {
+          hero?.doAttack?.({
+            castAngle: hero.state.lastAngle,
+          });
+        } else {
+          hero?.doCast?.({
+            ilvl: ability?.ilvl,
+            abilitySlot: e?.detail,
+            spellName: ability?.base,
+            castAngle: hero?.state?.lastAngle,
+          });
+        }
         hero.state.isAiming = false;
         scene.socket.emit("updateState", { isAiming: hero.state.isAiming });
         document.getElementById("game").style.cursor = "default";

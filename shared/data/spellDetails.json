@@ -1,19 +1,29 @@
 {
-  "attack_melee": {
+  "attack-melee": {
     "allowedTargets": ["enemy"],
+    "isMeleeAttack": true,
     "maxVisibleTime": 200,
     "maxActiveTime": 120,
     "bodySize": 16,
     "layerDepth": "bottom"
   },
-  "attack_ranged": {
+  "attack-ranged": {
     "isAimable": true,
+    "isRangedAttack": true,
     "allowedTargets": ["enemy"],
     "maxVisibleTime": 2000,
     "maxActiveTime": 2000,
     "bodySize": 8,
     "spellSpeed": 350,
     "layerDepth": "top"
+  },
+  "flame-slash": {
+    "allowedTargets": ["enemy"],
+    "isMeleeAttack": true,
+    "maxVisibleTime": 200,
+    "maxActiveTime": 120,
+    "bodySize": 16,
+    "layerDepth": "bottom"
   },
   "fireball": {
     "isAimable": true,

@@ -22,8 +22,8 @@ class Spell extends Phaser.GameObjects.Container {
   private spellSpeed: integer;
   private hitIds: Array<string>;
   private direction: string;
-  private isAttackMelee: boolean;
-  private isAttackRanged: boolean;
+  private isMeleeAttack: boolean;
+  private isRangedAttack: boolean;
   private abilitySlot: number;
   private spell: Phaser.GameObjects.Sprite;
   declare body: Phaser.Physics.Arcade.Body;
@@ -54,17 +54,16 @@ class Spell extends Phaser.GameObjects.Container {
     this.velocityY = 0;
     this.hitIds = [];
     this.spell = scene.add.existing(new Sprite(scene, 0, 0, "blank", 0));
-    this.isAttackMelee = spellName === "attack_melee";
-    this.isAttackRanged = spellName === "attack_ranged";
-
     this.abilitySlot = abilitySlot;
-    this.action = action;
+    this.action = action ?? "attack_right";
 
     const details = spellDetails?.[spellName];
     if (!details) {
       throw new Error("Shit, the spell does not exist in spellDetails!");
     }
 
+    this.isMeleeAttack = details?.isMeleeAttack;
+    this.isRangedAttack = details?.isRangedAttack;
     this.allowedTargets = details?.allowedTargets;
     this.maxVisibleTime = details?.maxVisibleTime;
     this.maxActiveTime = details?.maxActiveTime;
@@ -81,7 +80,7 @@ class Spell extends Phaser.GameObjects.Container {
     this.setScale(this.scaleBase + ilvl * this.scaleMultiplier);
     this.body.setCircle(this?.bodySize, -this?.bodySize, -this?.bodySize);
 
-    if (this.isAttackMelee) {
+    if (this.isMeleeAttack) {
       //this.stickToCaster = true;
       let viewSize = 44;
 
@@ -104,7 +103,7 @@ class Spell extends Phaser.GameObjects.Container {
       }
     }
 
-    if (this.isAttackRanged) {
+    if (this.isRangedAttack) {
       this.velocityX = Math.cos(castAngle) * this?.spellSpeed;
       this.velocityY = Math.sin(castAngle) * this?.spellSpeed;
       this.spell.setRotation(castAngle);
@@ -156,7 +155,7 @@ class Spell extends Phaser.GameObjects.Container {
     const direction = this?.direction;
     const players = this.room.playerManager.players?.getChildren() || [];
     const npcs = this.room.npcManager.npcs?.getChildren() || [];
-    const isNpcSingleTargetMelee = target?.id && caster?.kind !== "player" && this.isAttackMelee;
+    const isNpcSingleTargetMelee = target?.id && caster?.kind !== "player" && this.isMeleeAttack;
 
     [...npcs, ...players]?.every((victim) => {
       if (!victim || this.hitIds.includes(victim?.id) || victim?.state?.isDead) return true;
@@ -170,7 +169,7 @@ class Spell extends Phaser.GameObjects.Container {
       const body = isNpcSingleTargetMelee ? victim : victim?.hitBox;
       if (scene.physics.overlap(body, this)) {
         /* For attacks, prevent collision behind the player */
-        if (this.isAttackMelee) {
+        if (this.isMeleeAttack) {
           if (direction === "up" && victim.y > caster.y) return true;
           if (direction === "down" && victim.y < caster.y) return true;
           if (direction === "left" && victim.x > caster.x) return true;

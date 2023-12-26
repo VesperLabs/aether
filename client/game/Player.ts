@@ -255,7 +255,7 @@ class Player extends Character {
       new Spell(this.scene, { id: null, caster: this, spellName, castAngle, action })
     );
   }
-  castSpell(spellData) {
+  doCast(spellData) {
     const { state, isHero } = this || {};
     const { abilitySlot, castAngle, spellName } = spellData || {};
     if (isHero) {
