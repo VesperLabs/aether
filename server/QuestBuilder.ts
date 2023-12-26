@@ -1,10 +1,7 @@
-import { cloneObject } from "./utils";
+import { QUEST_EXP_MULTIPLIER, QUEST_GOLD_MULTIPLIER, cloneObject } from "./utils";
 import questList from "../shared/data/questList.json";
 import Quest from "./Quest";
 import ItemBuilder from "../shared/ItemBuilder";
-
-const QUEST_GOLD_MULTIPLIER = 15;
-const QUEST_EXP_MULTIPLIER = 15;
 
 const QuestBuilder = {
   buildQuest: function (key: string) {

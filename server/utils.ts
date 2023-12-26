@@ -2,8 +2,12 @@
 import ItemBuilder from "../shared/ItemBuilder";
 
 const PLAYER_BASE_ATTACK_DELAY = 100;
+
 const SHOP_INFLATION = 4;
-const PLAYER_BASE_EXP = 100; // Define the base experience for level 1
+const PLAYER_BASE_EXP = 50; // Define the base experience for level 1
+const QUEST_GOLD_MULTIPLIER = Math.floor(PLAYER_BASE_EXP * 0.1);
+const QUEST_EXP_MULTIPLIER = Math.floor(PLAYER_BASE_EXP / 2);
+
 const PLAYER_DEFAULT_SPAWN = { roomName: "grassland-3", x: 1496, y: 2028 };
 //const PLAYER_DEFAULT_SPAWN = { roomName: "grassland-2", x: 239, y: 990 };
 
@@ -194,16 +198,15 @@ function calculateExpValue(player, mob) {
   const playerLevel = parseInt(player?.stats?.level) || 0;
   const mobLevel = parseInt(mob?.stats?.level) || 0;
 
-  const mobGreaterBy = Math.max(0, playerLevel - mobLevel);
+  const playerGreaterBy = Math.max(0, playerLevel - mobLevel);
 
-  // Players will still get some exp if they somehow manage to slay a giant mob
-  // They just won't get the nut of the exp because they're probably too weak to kill
-  // It themselves.
+  // Exp from a mob is capped at the mobs level for players that are lower level
+  // than the mob.
   const levelMultiplier = mobLevel > playerLevel ? mobLevel : playerLevel;
 
-  if (mobGreaterBy > 5) return 0; // Mob too wimpy. no exp.
+  if (playerGreaterBy > 5) return 0; // Mob too wimpy. no exp.
 
-  return 1 + Math.max(2, Math.floor(levelMultiplier * 0.5));
+  return Math.max(3, Math.floor(levelMultiplier * 0.5));
 }
 
 // how much exp required for next level each time player levels up
@@ -569,6 +572,8 @@ export {
   SHOP_INFLATION,
   PLAYER_BASE_EXP,
   PLAYER_DEFAULT_SPAWN,
+  QUEST_GOLD_MULTIPLIER,
+  QUEST_EXP_MULTIPLIER,
   calculateNextMaxExp,
   useGetBaseCharacterDefaults,
   mergeAndAddValues,
