@@ -23,14 +23,14 @@ class Spell extends Phaser.GameObjects.Container {
     this.velocityY = 0;
     this.spell = scene.add.existing(new Sprite(scene, 0, 0, BLANK_TEXTURE, 0));
 
-    this.isAttackMelee = spellName === "attack_melee";
-    this.isAttackRanged = spellName === "attack_ranged";
-
     const details = spellDetails?.[spellName];
+
     if (!details) {
       throw new Error("Shit, the spell does not exist in spellDetails!");
     }
 
+    this.isMeleeAttack = details?.isMeleeAttack;
+    this.isRangedAttack = details?.isRangedAttack;
     this.layerDepth = details?.layerDepth;
     this.allowedTargets = details?.allowedTargets;
     this.maxVisibleTime = details?.maxVisibleTime;
@@ -42,6 +42,7 @@ class Spell extends Phaser.GameObjects.Container {
     this.spell.setTint(details?.tint || "0xFFFFFF");
     this.shouldFade = details?.shouldFade || false;
     this.maxDistance = details?.maxDistance ?? -1; //for ranged attacks
+    this.action = action ?? "attack_right";
 
     scene.physics.add.existing(this);
     scene.events.on("update", this.update, this);
@@ -49,10 +50,17 @@ class Spell extends Phaser.GameObjects.Container {
 
     this.body.setCircle(this?.bodySize, -this?.bodySize, -this?.bodySize);
 
-    if (this.isAttackMelee) {
+    if (this.isMeleeAttack) {
       let viewSize = 44;
       let tiltAngle = 48;
-      this.spell.play(`spell-anim-slash-physical`);
+
+      this.spell.play(
+        {
+          "attack-melee": "spell-anim-slash-physical",
+          "flame-slash": "spell-anim-slash-fire",
+        }[this.spellName]
+      );
+
       this.spell.setAngle(getAngleFromDirection(caster?.direction) - 90);
       this.stickToCaster = true;
       /* Hack: Up range is too long. This hack makes the top-down view more realistic */
@@ -66,7 +74,7 @@ class Spell extends Phaser.GameObjects.Container {
         this.y = this.caster.y - difference;
       }
 
-      if (action.includes("attack_left")) {
+      if (this.action.includes("attack_left")) {
         this.setAngle(tiltAngle);
         const rangeLeft = caster?.equipment?.handLeft?.stats?.range * 2 || caster?.body?.radius / 8;
 
@@ -74,7 +82,7 @@ class Spell extends Phaser.GameObjects.Container {
         this.spell.displayHeight = viewSize * rangeLeft;
         this.spell.setFlipX(false);
       }
-      if (action.includes("attack_right")) {
+      if (this.action.includes("attack_right")) {
         this.setAngle(-tiltAngle);
         const rangeRight =
           caster?.equipment?.handRight?.stats?.range * 2 || caster?.body?.radius / 8;
@@ -88,12 +96,12 @@ class Spell extends Phaser.GameObjects.Container {
       this.setScale(this.scaleBase + ilvl * this.scaleMultiplier);
     }
 
-    if (this.isAttackRanged) {
+    if (this.isRangedAttack) {
       this.spell.setTexture("icons", "arrow");
       this.velocityX = Math.cos(castAngle) * this?.spellSpeed;
       this.velocityY = Math.sin(castAngle) * this?.spellSpeed;
       this.spell.setRotation(castAngle + 0.785398163);
-      this.maxDistance = action.includes("attack_left")
+      this.maxDistance = spellAction.includes("attack_left")
         ? caster?.getWeaponRange("handLeft")
         : caster?.getWeaponRange("handRight");
     }
@@ -143,7 +151,7 @@ class Spell extends Phaser.GameObjects.Container {
 
     this.add(this.spell);
     this.adjustSpellPosition();
-    playSpellAudio({ scene, spellName, caster, isAttackMelee: this.isAttackMelee });
+    playSpellAudio({ scene, spellName, caster, isMeleeAttack: this.isMeleeAttack });
   }
   create() {}
   update() {
@@ -175,9 +183,9 @@ class Spell extends Phaser.GameObjects.Container {
   }
 }
 
-const playSpellAudio = ({ scene, spellName, caster, isAttackMelee }) => {
+const playSpellAudio = ({ scene, spellName, caster, isMeleeAttack }) => {
   let audioKey = null;
-  if (isAttackMelee) {
+  if (isMeleeAttack) {
     audioKey = "melee-swing-1";
   }
   if (spellName === "fireball") {

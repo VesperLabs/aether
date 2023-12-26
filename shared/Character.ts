@@ -284,7 +284,7 @@ class Character extends Phaser.GameObjects.Container {
   }
   getAttackActionName({ count }) {
     let action = this.action;
-    let spellName = "attack_right";
+    let spellName = "attack-melee";
 
     if (!RACES_WITH_ATTACK_ANIMS.includes(this.profile.race)) {
       return { action, spellName };
@@ -293,14 +293,14 @@ class Character extends Phaser.GameObjects.Container {
     if (count === 1) {
       if (this.hasWeaponRight()) {
         action = "attack_right";
-        spellName = this.hasRangedWeaponRight() ? "attack_ranged" : "attack_melee";
+        spellName = this.hasRangedWeaponRight() ? "attack-ranged" : "attack-melee";
       } else if (this.hasWeaponLeft()) {
         action = "attack_left";
-        spellName = this.hasRangedWeaponLeft() ? "attack_ranged" : "attack_melee";
+        spellName = this.hasRangedWeaponLeft() ? "attack-ranged" : "attack-melee";
       }
     } else if (count === 2 && this.hasWeaponLeft()) {
       action = "attack_left";
-      spellName = this.hasRangedWeaponRight() ? "attack_ranged" : "attack_melee";
+      spellName = this.hasRangedWeaponRight() ? "attack-ranged" : "attack-melee";
     }
 
     return { action, spellName };

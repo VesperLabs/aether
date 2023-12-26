@@ -2067,6 +2067,24 @@
   },
   "spell": {
     "common": {
+      "flameSlash": {
+        "exclusive": true,
+        "ilvl": 1,
+        "name": "Flame Slash",
+        "base": "flame-slash",
+        "slot": "spell",
+        "texture": "scroll-red",
+        "effects": {
+          "minFireDamage": 2,
+          "maxFireDamage": 3
+        },
+        "stats": {
+          "mpCost": 4
+        },
+        "requirements": {
+          "charClass": "warrior"
+        }
+      },
       "fireball": {
         "ilvl": 1,
         "name": "Fireball",

@@ -234,6 +234,13 @@ function createSpellAnims(scene) {
     frameRate: 60,
   });
   scene.anims.create({
+    key: "spell-anim-slash-fire",
+    frames: scene.anims.generateFrameNumbers("spell-anim-slash", { start: 0, end: 8 }),
+    repeat: false,
+    yoyo: false,
+    frameRate: 60,
+  });
+  scene.anims.create({
     key: "loot-anim-sparkle",
     frames: scene.anims.generateFrameNumbers("loot-anim-sparkle", { start: 0, end: 6 }),
     repeat: -1,
