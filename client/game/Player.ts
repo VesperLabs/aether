@@ -369,16 +369,14 @@ class Player extends Character {
     this.whiskers.setTint(color);
   }
   showHideNameAndBars() {
-    if (this.checkOutOfCombat() && !this?.state?.isHovering) {
-      this.buffRack.setVisible(false);
-      this.hpBar.setVisible(false);
-      if (this.kind === "nasty") this.userName.setVisible(false);
-    } else {
-      this.hpBar.setVisible(true);
-      if (this.kind === "nasty") this.userName.setVisible(true);
-      if (this?.state?.isHovering) {
-        this.buffRack.setVisible(true);
-      }
+    const { state, scene } = this ?? {};
+    const shouldShow = !this.checkOutOfCombat() || state?.isHovering;
+
+    this.hpBar.setVisible(shouldShow);
+    this.buffRack.setVisible(shouldShow && state?.isHovering);
+
+    if (this.kind === "nasty") {
+      this.userName.setVisible(shouldShow);
     }
   }
   checkDeath() {
