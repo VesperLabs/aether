@@ -335,16 +335,17 @@ class Npc extends Character implements Npc {
     if (this?.hasBuff("stun")) return;
 
     /* Switch hands if possible */
-    const { spellName } = this.getAttackActionName({ count });
-    this.action = spellName;
+    const { spellName, action } = this.getAttackActionName({ count });
+    this.action = action;
 
     this.dispelBuffsByProperty("dispelOnAttack", true);
 
     room?.spellManager.create({
       caster: this,
       target,
-      spellName: this.action,
+      spellName,
       direction,
+      action,
       castAngle,
       ilvl: 1,
     });
@@ -531,13 +532,13 @@ class Npc extends Character implements Npc {
       }
     }
   }
-  doHit(ids: any, abilitySlot: any): void {
+  doHit(ids: Array<string>, abilitySlot: number, attackSpellName: string): void {
     const { scene, room } = this ?? {};
     const roomName: string = room?.name;
     const npcs: Array<Npc> = room?.npcManager?.getNpcs();
     const players: Array<ServerPlayer> = room?.playerManager?.getPlayers();
 
-    const abilityName = this?.abilities?.[abilitySlot]?.base || "attack_left";
+    const abilityName = this?.abilities?.[abilitySlot]?.base || attackSpellName; // spellName is used for "attack_melee" and "attack_ranged"
     const allowedTargets = spellDetails?.[abilityName]?.allowedTargets;
     const targetIsInParty = false;
 

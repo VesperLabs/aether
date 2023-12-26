@@ -29,10 +29,11 @@ class Spell extends Phaser.GameObjects.Container {
   declare body: Phaser.Physics.Arcade.Body;
   declare scene: ServerScene;
   declare stickToCaster: boolean;
+  private action: string;
 
   constructor(
     scene: ServerScene,
-    { id, room, caster, direction, target, abilitySlot, spellName, castAngle = 0, ilvl = 1 }
+    { id, room, caster, direction, target, abilitySlot, spellName, action, castAngle = 0, ilvl = 1 }
   ) {
     const spawnPoint = { x: caster.x, y: caster.y + caster.bodyCenterY };
     super(scene, spawnPoint.x, spawnPoint.y);
@@ -53,9 +54,10 @@ class Spell extends Phaser.GameObjects.Container {
     this.velocityY = 0;
     this.hitIds = [];
     this.spell = scene.add.existing(new Sprite(scene, 0, 0, "blank", 0));
-    this.isAttackMelee = spellName === "attack_right" || spellName === "attack_left";
-    this.isAttackRanged = spellName === "attack_right_ranged" || spellName === "attack_left_ranged";
+    this.isAttackMelee = spellName === "attack_melee";
+    this.isAttackRanged = spellName === "attack_ranged";
     this.abilitySlot = abilitySlot;
+    this.action = action;
 
     const details = spellDetails?.[spellName];
     if (!details) {
@@ -87,13 +89,13 @@ class Spell extends Phaser.GameObjects.Container {
         this.y = this.caster.y;
       }
 
-      if (spellName.includes("attack_left")) {
+      if (this.action.includes("attack_left")) {
         const rangeLeft = caster?.getWeaponRange("handLeft");
         this.body.setCircle(rangeLeft, -rangeLeft, -rangeLeft);
         this.spell.displayWidth = viewSize * rangeLeft;
         this.spell.displayHeight = viewSize * rangeLeft;
       }
-      if (spellName.includes("attack_right")) {
+      if (this.action.includes("attack_right")) {
         const rangeRight = caster?.getWeaponRange("handRight");
         this.body.setCircle(rangeRight, -rangeRight, -rangeRight);
         this.spell.displayWidth = viewSize * rangeRight;
@@ -105,7 +107,7 @@ class Spell extends Phaser.GameObjects.Container {
       this.velocityX = Math.cos(castAngle) * this?.spellSpeed;
       this.velocityY = Math.sin(castAngle) * this?.spellSpeed;
       this.spell.setRotation(castAngle);
-      this.maxDistance = spellName.includes("attack_left_ranged")
+      this.maxDistance = this.action.includes("attack_left_ranged")
         ? caster?.getWeaponRange("handLeft")
         : caster?.getWeaponRange("handRight");
     }
@@ -149,7 +151,7 @@ class Spell extends Phaser.GameObjects.Container {
   }
   checkCollisions() {
     if (this?.state?.isExpired) return;
-    const { target, caster, scene, allowedTargets, abilitySlot } = this;
+    const { target, caster, scene, allowedTargets, abilitySlot, spellName } = this;
     const direction = this?.direction;
     const players = this.room.playerManager.players?.getChildren() || [];
     const npcs = this.room.npcManager.npcs?.getChildren() || [];
@@ -178,7 +180,7 @@ class Spell extends Phaser.GameObjects.Container {
         this.hitIds.push(victim.id);
         this.hitIds = [...new Set(this.hitIds)];
         // send one hit at a time
-        this.caster.doHit([victim.id], abilitySlot);
+        this.caster.doHit([victim.id], abilitySlot, spellName); // if we don't have an ability slot, we are doing an attack
       }
       return true;
     });

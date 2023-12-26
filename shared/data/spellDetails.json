@@ -1,28 +1,12 @@
 {
-  "attack_left": {
+  "attack_melee": {
     "allowedTargets": ["enemy"],
     "maxVisibleTime": 200,
     "maxActiveTime": 120,
     "bodySize": 16,
     "layerDepth": "bottom"
   },
-  "attack_right": {
-    "allowedTargets": ["enemy"],
-    "maxVisibleTime": 200,
-    "maxActiveTime": 120,
-    "bodySize": 16,
-    "layerDepth": "bottom"
-  },
-  "attack_left_ranged": {
-    "isAimable": true,
-    "allowedTargets": ["enemy"],
-    "maxVisibleTime": 2000,
-    "maxActiveTime": 2000,
-    "bodySize": 8,
-    "spellSpeed": 350,
-    "layerDepth": "top"
-  },
-  "attack_right_ranged": {
+  "attack_ranged": {
     "isAimable": true,
     "allowedTargets": ["enemy"],
     "maxVisibleTime": 2000,

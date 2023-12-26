@@ -252,7 +252,7 @@ class Player extends Character {
 
     // draw our physical animation.
     this.scene.add.existing(
-      new Spell(this.scene, { id: null, caster: this, spellName, castAngle })
+      new Spell(this.scene, { id: null, caster: this, spellName, castAngle, action })
     );
   }
   castSpell(spellData) {

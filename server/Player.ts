@@ -36,7 +36,7 @@ class Player extends ServerCharacter implements ServerPlayer {
     const { percentageRemaining } = this.checkAttackReady();
     if (percentageRemaining > 5) return;
 
-    const { spellName } = this.getAttackActionName({ count });
+    const { spellName, action } = this.getAttackActionName({ count });
     const spCost = this.getAttackSpCost(count);
 
     this.direction = direction;
@@ -62,6 +62,7 @@ class Player extends ServerCharacter implements ServerPlayer {
       caster: this,
       castAngle,
       spellName,
+      action,
     });
   }
   modifyStatIfCostExists(statType, cost) {
@@ -349,14 +350,14 @@ class Player extends ServerCharacter implements ServerPlayer {
     this.doRegen();
     this.checkBubbleMessage();
   }
-  doHit(ids, abilitySlot): void {
+  doHit(ids: Array<string>, abilitySlot: number, attackSpellName: string): void {
     const { scene } = this ?? {};
     // ability slot will be null for attacks
     const hero: ServerPlayer = this;
     if (!hero || hero?.state?.isDead) return;
     const roomName: string = hero?.roomName;
     const room = scene.roomManager.rooms[roomName];
-    const abilityName = hero?.abilities?.[abilitySlot]?.base || "attack_left";
+    const abilityName = hero?.abilities?.[abilitySlot]?.base || attackSpellName; // spellName is used for "attack_melee" and "attack_ranged"
     const allowedTargets = spellDetails?.[abilityName]?.allowedTargets;
     const party = scene.partyManager.getPartyById(hero?.partyId);
     /* Create hitList for npcs */
