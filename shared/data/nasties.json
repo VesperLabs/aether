@@ -51,7 +51,7 @@
     ]
   },
   "slime": {
-    "charClass": "cleric",
+    "charClass": "mage",
     "profile": { "race": "slime", "userName": "Slime" },
     "baseStats": {
       "level": 2
@@ -90,7 +90,7 @@
     ]
   },
   "fish": {
-    "charClass": "cleric",
+    "charClass": "warrior",
     "profile": { "race": "fish", "userName": "Fish", "tint": "0x8899CC" },
     "state": { "isAggro": false, "noWorldDrops": true },
     "baseStats": {
