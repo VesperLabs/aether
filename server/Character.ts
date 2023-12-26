@@ -615,7 +615,7 @@ class ServerCharacter extends Character {
       this.state.hasBuffChanges = true;
     }
   }
-  doHit(ids, abilitySlot) {
+  doHit(ids: Array<string>, abilitySlot: number, spellName: string): void {
     //placeholder
   }
 }

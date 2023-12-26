@@ -6,7 +6,7 @@ const Sprite = Phaser.GameObjects.Sprite;
 const BLANK_TEXTURE = "human-blank";
 
 class Spell extends Phaser.GameObjects.Container {
-  constructor(scene, { id, caster, spellName, abilitySlot, castAngle = 0, ilvl = 1 }) {
+  constructor(scene, { id, caster, spellName, action, castAngle = 0, ilvl = 1 }) {
     const spawnPoint = { x: caster.x, y: caster.y + caster.bodyCenterY };
     super(scene, spawnPoint.x, spawnPoint.y);
 
@@ -22,9 +22,9 @@ class Spell extends Phaser.GameObjects.Container {
     this.velocityX = 0;
     this.velocityY = 0;
     this.spell = scene.add.existing(new Sprite(scene, 0, 0, BLANK_TEXTURE, 0));
-    this.isAttackMelee = spellName === "attack_right" || spellName === "attack_left";
-    this.isAttackRanged = spellName === "attack_right_ranged" || spellName === "attack_left_ranged";
-    this.abilitySlot = abilitySlot;
+
+    this.isAttackMelee = spellName === "attack_melee";
+    this.isAttackRanged = spellName === "attack_ranged";
 
     const details = spellDetails?.[spellName];
     if (!details) {
@@ -66,7 +66,7 @@ class Spell extends Phaser.GameObjects.Container {
         this.y = this.caster.y - difference;
       }
 
-      if (spellName.includes("attack_left")) {
+      if (action.includes("attack_left")) {
         this.setAngle(tiltAngle);
         const rangeLeft = caster?.equipment?.handLeft?.stats?.range * 2 || caster?.body?.radius / 8;
 
@@ -74,7 +74,7 @@ class Spell extends Phaser.GameObjects.Container {
         this.spell.displayHeight = viewSize * rangeLeft;
         this.spell.setFlipX(false);
       }
-      if (spellName.includes("attack_right")) {
+      if (action.includes("attack_right")) {
         this.setAngle(-tiltAngle);
         const rangeRight =
           caster?.equipment?.handRight?.stats?.range * 2 || caster?.body?.radius / 8;
@@ -93,7 +93,7 @@ class Spell extends Phaser.GameObjects.Container {
       this.velocityX = Math.cos(castAngle) * this?.spellSpeed;
       this.velocityY = Math.sin(castAngle) * this?.spellSpeed;
       this.spell.setRotation(castAngle + 0.785398163);
-      this.maxDistance = spellName.includes("attack_left_ranged")
+      this.maxDistance = action.includes("attack_left")
         ? caster?.getWeaponRange("handLeft")
         : caster?.getWeaponRange("handRight");
     }

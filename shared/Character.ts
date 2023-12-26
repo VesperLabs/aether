@@ -283,24 +283,23 @@ class Character extends Phaser.GameObjects.Container {
     return filterVisibleEquipment(this as FullCharacterState);
   }
   getAttackActionName({ count }) {
-    let action = this.action;
-    let spellName = "attack_right";
-
     if (!RACES_WITH_ATTACK_ANIMS.includes(this.profile.race)) {
-      return { action, spellName };
+      return { action: this.action, spellName: "attack_right" };
     }
+
+    let action = "attack_right";
+    let spellName = "attack_melee";
 
     if (count === 1) {
       if (this.hasWeaponRight()) {
-        action = "attack_right";
-        spellName = this.hasRangedWeaponRight() ? action + "_ranged" : action;
+        spellName = this.hasRangedWeaponRight() ? "attack_ranged" : "attack_melee";
       } else if (this.hasWeaponLeft()) {
         action = "attack_left";
-        spellName = this.hasRangedWeaponLeft() ? action + "_ranged" : action;
+        spellName = this.hasRangedWeaponLeft() ? "attack_ranged" : "attack_melee";
       }
     } else if (count === 2 && this.hasWeaponLeft()) {
       action = "attack_left";
-      spellName = this.hasRangedWeaponLeft() ? action + "_ranged" : action;
+      spellName = this.hasRangedWeaponRight() ? "attack_ranged" : "attack_melee";
     }
 
     return { action, spellName };
