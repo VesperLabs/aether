@@ -535,7 +535,6 @@ class Npc extends Character implements Npc {
   doHit(ids: Array<string>, abilitySlot: number, attackSpellName: string): void {
     const { scene, room } = this ?? {};
     const roomName: string = room?.name;
-    const npcs: Array<Npc> = room?.npcManager?.getNpcs();
     const players: Array<ServerPlayer> = room?.playerManager?.getPlayers();
 
     const abilityName = this?.abilities?.[abilitySlot]?.base || attackSpellName; // spellName is used for "attack_melee" and "attack_ranged"
