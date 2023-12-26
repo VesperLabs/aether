@@ -56,6 +56,7 @@ class Spell extends Phaser.GameObjects.Container {
     this.spell = scene.add.existing(new Sprite(scene, 0, 0, "blank", 0));
     this.isAttackMelee = spellName === "attack_melee";
     this.isAttackRanged = spellName === "attack_ranged";
+
     this.abilitySlot = abilitySlot;
     this.action = action;
 
@@ -107,7 +108,7 @@ class Spell extends Phaser.GameObjects.Container {
       this.velocityX = Math.cos(castAngle) * this?.spellSpeed;
       this.velocityY = Math.sin(castAngle) * this?.spellSpeed;
       this.spell.setRotation(castAngle);
-      this.maxDistance = this.action.includes("attack_left_ranged")
+      this.maxDistance = this.action.includes("attack_left")
         ? caster?.getWeaponRange("handLeft")
         : caster?.getWeaponRange("handRight");
     }

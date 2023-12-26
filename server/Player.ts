@@ -358,6 +358,7 @@ class Player extends ServerCharacter implements ServerPlayer {
     const roomName: string = hero?.roomName;
     const room = scene.roomManager.rooms[roomName];
     const abilityName = hero?.abilities?.[abilitySlot]?.base || attackSpellName; // spellName is used for "attack_melee" and "attack_ranged"
+    console.log(abilityName);
     const allowedTargets = spellDetails?.[abilityName]?.allowedTargets;
     const party = scene.partyManager.getPartyById(hero?.partyId);
     /* Create hitList for npcs */
