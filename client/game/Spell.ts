@@ -101,7 +101,7 @@ class Spell extends Phaser.GameObjects.Container {
       this.velocityX = Math.cos(castAngle) * this?.spellSpeed;
       this.velocityY = Math.sin(castAngle) * this?.spellSpeed;
       this.spell.setRotation(castAngle + 0.785398163);
-      this.maxDistance = spellAction.includes("attack_left")
+      this.maxDistance = action.includes("attack_left")
         ? caster?.getWeaponRange("handLeft")
         : caster?.getWeaponRange("handRight");
     }
