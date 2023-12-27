@@ -135,6 +135,37 @@ class ServerCharacter extends Character {
     }
 
     this.activeItemSlots = activeItemSlots;
+    this.updateVisibleEquipment();
+
+    // Post calculations rely on full equipment to be corrected.
+    for (const key of ["weaponType"]) {
+      const wornItems = allItems
+        .map(([slotKey, item]: [string, Item]) => ({
+          slotKey, // the slot key is the key of the item in the equipment or ability object
+          ...item,
+        }))
+        .filter((i) => i)
+        .filter((i) => activeItemSlots.includes(i.slotKey))
+        .sort((a, b) => {
+          // if the item doesn't have a requirement, it should be at the beginning of the list
+          return (a?.requirements?.[key] ?? 0) - (b?.requirements?.[key] ?? 0);
+        });
+
+      for (const item of wornItems) {
+        const itemRequirement = item?.requirements?.[key];
+        // melee spell attacks require a melee weapon
+        if (key === "weaponType") {
+          if (itemRequirement) {
+            if (!this.hasVisibleWeaponType(itemRequirement)) {
+              activeItemSlots.splice(activeItemSlots.indexOf(item.slotKey), 1);
+              continue;
+            }
+          }
+        }
+      }
+    }
+
+    this.activeItemSlots = activeItemSlots;
   }
   calculateElementalDamage(eleDamages, victim) {
     const {

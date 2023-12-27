@@ -144,6 +144,7 @@ class Character extends Phaser.GameObjects.Container {
     this.createHitBox(scene, hitBoxSize);
     this.updateVisibleEquipment();
   }
+
   createHitBox(scene, hitBoxSize) {
     this.hitBoxSize = hitBoxSize;
     const { width, height } = this.hitBoxSize ?? {};
@@ -224,61 +225,117 @@ class Character extends Phaser.GameObjects.Container {
     const isOutOfCombat = Date.now() - this.state.lastCombat > 5000;
     return isOutOfCombat;
   }
-  isDualWielding(key = "visibleEquipment") {
-    return this.hasWeaponLeft(key) && this.hasWeaponRight(key);
+  static hasWeapon(character, key = "visibleEquipment") {
+    return Character.hasWeaponLeft(character, key) || Character.hasWeaponRight(character, key);
   }
-  hasWeapon(key = "visibleEquipment") {
-    return this.hasWeaponLeft(key) || this.hasWeaponRight(key);
+  static hasWeaponLeft(character, key = "visibleEquipment") {
+    return ["weapon", "ranged"].includes(character?.[key]?.handLeft?.type);
   }
-  hasWeaponLeft(key = "visibleEquipment") {
-    return ["weapon", "ranged"].includes(this?.[key]?.handLeft?.type);
-  }
-  hasWeaponRight(key = "visibleEquipment") {
+  static hasWeaponRight(character, key = "visibleEquipment") {
     return (
-      ["weapon", "ranged"].includes(this?.[key]?.handRight?.type) || this.profile.race !== "human"
+      ["weapon", "ranged"].includes(character?.[key]?.handRight?.type) ||
+      character.profile.race !== "human"
     );
   }
-  hasShieldLeft(key = "visibleEquipment") {
-    return ["shield"].includes(this?.[key]?.handLeft?.type);
+  static hasShieldLeft(character, key = "visibleEquipment") {
+    return ["shield"].includes(character?.[key]?.handLeft?.type);
   }
-  hasShieldRight(key = "visibleEquipment") {
-    return ["shield"].includes(this?.[key]?.handRight?.type);
+  static hasShieldRight(character, key = "visibleEquipment") {
+    return ["shield"].includes(character?.[key]?.handRight?.type);
   }
-  hasShield(key = "visibleEquipment") {
-    return this.hasShieldLeft(key) || this.hasShieldRight(key);
+  static hasShield(character, key = "visibleEquipment") {
+    return Character.hasShieldLeft(character, key) || Character.hasShieldRight(character, key);
   }
-  hasRangedWeaponLeft(key = "visibleEquipment") {
-    return ["ranged"].includes(this?.[key]?.handLeft?.type);
+  static hasRangedWeaponLeft(character, key = "visibleEquipment") {
+    return ["ranged"].includes(character?.[key]?.handLeft?.type);
   }
-  hasRangedWeaponRight(key = "visibleEquipment") {
-    return ["ranged"].includes(this?.[key]?.handRight?.type);
+  static hasRangedWeaponRight(character, key = "visibleEquipment") {
+    return ["ranged"].includes(character?.[key]?.handRight?.type);
   }
-
-  hasRangedWeapon(key = "visibleEquipment") {
-    return this.hasRangedWeaponLeft(key) || this.hasRangedWeaponRight(key);
+  static hasRangedWeapon(character, key = "visibleEquipment") {
+    return (
+      Character.hasRangedWeaponLeft(character, key) ||
+      Character.hasRangedWeaponRight(character, key)
+    );
   }
-  hasMeleeWeaponLeft(key = "visibleEquipment") {
-    return ["melee"].includes(this?.[key]?.handLeft?.type);
+  static hasMeleeWeaponLeft(character, key = "visibleEquipment") {
+    return ["weapon"].includes(character?.[key]?.handLeft?.type);
   }
-  hasMeleeWeaponRight(key = "visibleEquipment") {
-    return ["melee"].includes(this?.[key]?.handRight?.type);
+  static hasMeleeWeaponRight(character, key = "visibleEquipment") {
+    return ["weapon"].includes(character?.[key]?.handRight?.type);
   }
-  hasMeleeWeapon(key = "visibleEquipment") {
-    return this.hasMeleeWeaponLeft(key) || this.hasMeleeWeaponRight(key);
+  static hasMeleeWeapon(character, key = "visibleEquipment") {
+    return (
+      Character.hasMeleeWeaponLeft(character, key) || Character.hasMeleeWeaponRight(character, key)
+    );
   }
-  hasAttackableWeapons(key = "visibleEquipment") {
+  static hasAttackableWeapons(character, key = "visibleEquipment") {
     // Double shields or Bow+Other is a nono
     const hasRangedAndOther =
-      this.hasRangedWeapon(key) && (this.isDualWielding(key) || this.hasShield(key));
-    const hasDoubleShields = this.hasShieldLeft(key) && this.hasShieldRight(key);
+      Character.hasRangedWeapon(character, key) &&
+      (Character.isDualWielding(character, key) || Character.hasShield(character, key));
+    const hasDoubleShields =
+      Character.hasShieldLeft(character, key) && Character.hasShieldRight(character, key);
     if (hasRangedAndOther || hasDoubleShields) return false;
     return true;
   }
-  hasVisibleWeaponType(weaponType: "melee" | "ranged") {
-    if (weaponType === "melee" && this.hasAttackableWeapons() && this.hasMeleeWeapon()) {
+  static hasVisibleWeaponType(character, weaponType: "melee" | "ranged", key = "visibleEquipment") {
+    if (
+      weaponType === "melee" &&
+      Character.hasAttackableWeapons(character, key) &&
+      Character.hasMeleeWeapon(character, key)
+    ) {
       return true;
     }
     return false;
+  }
+  static isDualWielding(character, key = "visibleEquipment") {
+    return Character.hasWeaponLeft(character, key) && Character.hasWeaponRight(character, key);
+  }
+  isDualWielding(key = "visibleEquipment") {
+    return Character.isDualWielding(this, key);
+  }
+  hasWeaponLeft(key = "visibleEquipment") {
+    return Character.hasWeaponLeft(this, key);
+  }
+  hasWeaponRight(key = "visibleEquipment") {
+    return Character.hasWeaponRight(this, key);
+  }
+  hasShieldLeft(key = "visibleEquipment") {
+    return Character.hasShieldLeft(this, key);
+  }
+  hasShieldRight(key = "visibleEquipment") {
+    return Character.hasShieldRight(this, key);
+  }
+  hasRangedWeaponLeft(key = "visibleEquipment") {
+    return Character.hasRangedWeaponLeft(this, key);
+  }
+  hasRangedWeaponRight(key = "visibleEquipment") {
+    return Character.hasRangedWeaponRight(this, key);
+  }
+  hasMeleeWeaponLeft(key = "visibleEquipment") {
+    return Character.hasMeleeWeaponLeft(this, key);
+  }
+  hasMeleeWeaponRight(key = "visibleEquipment") {
+    return Character.hasMeleeWeaponRight(this, key);
+  }
+  hasWeapon(key = "visibleEquipment") {
+    return Character.hasWeapon(this, key);
+  }
+  hasShield(key = "visibleEquipment") {
+    return Character.hasShield(this, key);
+  }
+  hasRangedWeapon(key = "visibleEquipment") {
+    return Character.hasRangedWeapon(this, key);
+  }
+  hasMeleeWeapon(key = "visibleEquipment") {
+    return Character.hasMeleeWeapon(this, key);
+  }
+  hasAttackableWeapons(key = "visibleEquipment") {
+    return Character.hasAttackableWeapons(this, key);
+  }
+  hasVisibleWeaponType(weaponType, key = "visibleEquipment") {
+    return Character.hasVisibleWeaponType(this, weaponType, key);
   }
   checkCastReady(spellName?: string) {
     const now = Date.now();

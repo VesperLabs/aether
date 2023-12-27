@@ -1,4 +1,5 @@
 import { isEqual, get } from "lodash";
+import { Character } from ".";
 export const isMobile =
   /Android|Mobile|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 export const HAIR_HIDING_HELMETS = ["helmet-armet", "helmet-hood", "helmet-horned", "helmet-jake"];
@@ -293,6 +294,13 @@ export function itemHasRequiredStats({ requirements, player, key }) {
 
   if (key === "charClass") {
     return player?.charClass === requiredStat;
+  }
+
+  if (key === "weaponType") {
+    return Character.hasVisibleWeaponType(
+      { ...player, visibleEquipment: filterVisibleEquipment(player) },
+      "melee"
+    );
   }
 
   return playerStat >= requiredStat;
