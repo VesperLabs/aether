@@ -62,7 +62,8 @@ const TintedIconLoader = ({ cooldowns, slotKey, item, applyTintAndSetIcon }) => 
       }}
     >
       <CooldownTimer cooldown={cooldowns["global"]} />
-      <CooldownTimer cooldown={cooldowns[cooldown]} color="set" />
+      <CooldownTimer cooldown={cooldowns[cooldown]} />
+      {details?.isMeleeAttack && <CooldownTimer cooldown={cooldowns["attack"]} />}
       <Text
         sx={{
           bottom: "13px",
