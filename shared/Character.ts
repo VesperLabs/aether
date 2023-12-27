@@ -253,8 +253,32 @@ class Character extends Phaser.GameObjects.Container {
   hasRangedWeaponRight(key = "visibleEquipment") {
     return ["ranged"].includes(this?.[key]?.handRight?.type);
   }
+
   hasRangedWeapon(key = "visibleEquipment") {
     return this.hasRangedWeaponLeft(key) || this.hasRangedWeaponRight(key);
+  }
+  hasMeleeWeaponLeft(key = "visibleEquipment") {
+    return ["melee"].includes(this?.[key]?.handLeft?.type);
+  }
+  hasMeleeWeaponRight(key = "visibleEquipment") {
+    return ["melee"].includes(this?.[key]?.handRight?.type);
+  }
+  hasMeleeWeapon(key = "visibleEquipment") {
+    return this.hasMeleeWeaponLeft(key) || this.hasMeleeWeaponRight(key);
+  }
+  hasAttackableWeapons(key = "visibleEquipment") {
+    // Double shields or Bow+Other is a nono
+    const hasRangedAndOther =
+      this.hasRangedWeapon(key) && (this.isDualWielding(key) || this.hasShield(key));
+    const hasDoubleShields = this.hasShieldLeft(key) && this.hasShieldRight(key);
+    if (hasRangedAndOther || hasDoubleShields) return false;
+    return true;
+  }
+  hasVisibleWeaponType(weaponType: "melee" | "ranged") {
+    if (weaponType === "melee" && this.hasAttackableWeapons() && this.hasMeleeWeapon()) {
+      return true;
+    }
+    return false;
   }
   checkCastReady(spellName?: string) {
     const now = Date.now();
@@ -267,19 +291,35 @@ class Character extends Phaser.GameObjects.Container {
     const isGlobalReady = now - this.state.lastCast.global > this?.stats?.castDelay;
     return isThisSpellReady && isGlobalReady;
   }
-  canCastSpell(abilitySlot) {
+  canCastSpell(abilitySlot, shouldUpdateState = true) {
+    //if the ability slotId is not in the activeItemSlots return
+    if (this?.hasBuff("stun")) return;
     if (this.state.isDead) return false;
+    if (!abilitySlot) return true; //ignore attacks
+    if (this.kind === "player") {
+      if (!this?.activeItemSlots?.includes?.(`${abilitySlot}`)) return;
+    }
+
     const ability: Item = this?.abilities?.[abilitySlot];
-    if (!this.checkCastReady(ability?.base)) return false;
+    const spellName = ability?.base;
+    if (!this.checkCastReady(spellName)) return false;
     const mpCost = ability?.stats?.mpCost || 0;
     const hpCost = ability?.stats?.hpCost || 0;
     const spCost = ability?.stats?.spCost || 0;
+
+    if (shouldUpdateState) {
+      this.state.lastCast.global = Date.now();
+      if (spellName) {
+        this.state.lastCast[spellName] = Date.now();
+      }
+    }
+
     return this?.stats?.mp >= mpCost && this?.stats?.hp > hpCost && this?.stats?.sp >= spCost;
   }
   getAbilityDetails(abilitySlot: number) {
     const ability: Item = this?.abilities?.[abilitySlot];
     const spellName = ability?.base;
-    return { ability, details: spellDetails?.[spellName], spellName };
+    return { ...ability, ...spellDetails?.[spellName], spellName };
   }
   updateVisibleEquipment() {
     this.visibleEquipment = this.getVisibleEquipment();
@@ -287,28 +327,34 @@ class Character extends Phaser.GameObjects.Container {
   getVisibleEquipment() {
     return filterVisibleEquipment(this as FullCharacterState);
   }
-  getAttackActionName({ count }) {
-    let action = this.action;
-    let spellName = "attack-melee";
+  getAttackActionName({ count, abilitySlot }: { count: number; abilitySlot?: number }) {
+    const ability = this.getAbilityDetails(abilitySlot);
 
+    let spellName = "attack-melee";
+    let action = this.action;
+
+    // Check if the race of the profile has attack animations
     if (!RACES_WITH_ATTACK_ANIMS.includes(this.profile.race)) {
       return { action, spellName };
     }
 
+    // Determine the action and spell name based on the count and weapon availability
     if (count === 1) {
       if (this.hasWeaponRight()) {
         action = "attack_right";
-        spellName = this.hasRangedWeaponRight() ? "attack-ranged" : "attack-melee";
+        spellName =
+          ability?.base ?? (this.hasRangedWeaponRight() ? "attack-ranged" : "attack-melee");
       } else if (this.hasWeaponLeft()) {
         action = "attack_left";
-        spellName = this.hasRangedWeaponLeft() ? "attack-ranged" : "attack-melee";
+        spellName =
+          ability?.base ?? (this.hasRangedWeaponLeft() ? "attack-ranged" : "attack-melee");
       }
     } else if (count === 2 && this.hasWeaponLeft()) {
       action = "attack_left";
-      spellName = this.hasRangedWeaponRight() ? "attack-ranged" : "attack-melee";
+      spellName = ability?.base ?? (this.hasRangedWeaponRight() ? "attack-ranged" : "attack-melee");
     }
 
-    return { action, spellName };
+    return { ...ability, action, spellName };
   }
   getPlayerQuestStatus(quest: Quest) {
     const playerQuest = this.quests.find((q) => q?.questId === quest?.id);

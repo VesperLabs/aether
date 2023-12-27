@@ -202,19 +202,23 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         cb(startTime);
       });
 
-      socket.on("attack", ({ count, direction, castAngle } = {}) => {
+      socket.on("attack", ({ count, direction, castAngle, abilitySlot } = {}) => {
         const player = scene.players[socketId];
-        player.doAttack({ count, direction, castAngle });
-        // update players other than the player that we attacked
-        socket.to(player?.roomName).emit("playerAttack", { socketId, count, direction, castAngle });
+
+        // attack-spells like flame-slash also respect the spell-cooldown...
+        if (abilitySlot && !player.canCastSpell(abilitySlot)) return;
+
+        player.doAttack({ count, direction, castAngle, abilitySlot });
+
+        socket
+          .to(player?.roomName)
+          .emit("playerAttack", { socketId, count, direction, castAngle, abilitySlot });
       });
 
       socket.on("castSpell", ({ abilitySlot, castAngle } = {}) => {
         const player = scene.players[socketId];
-        const { ilvl, base } = player?.abilities?.[abilitySlot] || {};
         player.doCast({ abilitySlot, castAngle });
-
-        socket.to(player?.roomName).emit("playerCastSpell", { socketId, base, ilvl, castAngle });
+        socket.to(player?.roomName).emit("playerCastSpell", { socketId, abilitySlot, castAngle });
       });
 
       socket.on("updateState", (state) => {

@@ -227,15 +227,19 @@ class Player extends Character {
       this.face.setVisible(false);
     }
   }
-  doAttack({ count, castAngle, direction }) {
+  doAttack({ count, castAngle, direction, abilitySlot }) {
     const { state, isHero } = this;
     const { isDead, isAttacking, isHoldingAttack } = state ?? {};
 
-    if (this.hasBuff("stun")) return;
-    if (isHero && (!this.hasWeapon() || isDead || isAttacking || !isHoldingAttack)) return;
+    if (this?.hasBuff("stun")) return;
+    if (isHero) {
+      if (!this.hasWeapon() || isDead || isAttacking || !isHoldingAttack) return;
+      if (!this.canCastSpell(abilitySlot)) return;
+    }
 
-    const { action, spellName } = this.getAttackActionName({ count });
+    const { action, spellName } = this.getAttackActionName({ count, abilitySlot });
 
+    state.lastAttackCount = count;
     state.isAttacking = true;
     state.lastAttack = Date.now();
     this.action = action;
@@ -247,6 +251,7 @@ class Player extends Character {
         count,
         direction: this.direction,
         castAngle,
+        abilitySlot,
       });
     }
 
@@ -255,21 +260,17 @@ class Player extends Character {
       new Spell(this.scene, { id: null, caster: this, spellName, castAngle, action })
     );
   }
-  doCast(spellData) {
-    const { state, isHero } = this || {};
-    const { abilitySlot, castAngle, spellName } = spellData || {};
+  doCast({ abilitySlot, castAngle }) {
+    const { isHero } = this || {};
+    const ability = this.getAbilityDetails(abilitySlot);
+
     if (isHero) {
       if (!this.canCastSpell(abilitySlot)) return;
       if (this?.hasBuff("stun")) return;
       this.scene.socket.emit("castSpell", { abilitySlot, castAngle });
-      //optimistic update
-      state.lastCast.global = Date.now();
-      if (spellName) {
-        state.lastCast[spellName] = Date.now();
-      }
     }
 
-    this.scene.add.existing(new Spell(this.scene, { ...spellData, caster: this }));
+    this.scene.add.existing(new Spell(this.scene, { ...ability, castAngle, caster: this }));
   }
   doGrab() {
     const { scene } = this;

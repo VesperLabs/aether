@@ -245,15 +245,6 @@ class Npc extends Character implements Npc {
     const { scene, room, id } = this ?? {};
     const spellName = ability?.base;
 
-    this.state.lastCast.global = Date.now();
-
-    // set the individual cooldown
-    if (spellName) {
-      this.state.lastCast[spellName] = Date.now();
-    }
-
-    if (this?.hasBuff("stun")) return;
-
     this.dispelBuffsByProperty("dispelOnCast", true);
 
     room?.spellManager.create({
@@ -265,9 +256,7 @@ class Npc extends Character implements Npc {
       abilitySlot,
     });
 
-    scene.io
-      .to(room?.name)
-      .emit("npcCastSpell", { id, castAngle, base: ability?.base, ilvl: ability?.ilvl });
+    scene.io.to(room?.name).emit("npcCastSpell", { id, castAngle, abilitySlot });
   }
   async intendCastSpell({ targetPlayer }) {
     if (!this.checkCastReady() || this?.state?.isDead || this?.state?.isAiming) return;
@@ -536,7 +525,6 @@ class Npc extends Character implements Npc {
     const { scene, room } = this ?? {};
     const roomName: string = room?.name;
     const players: Array<ServerPlayer> = room?.playerManager?.getPlayers();
-
     const abilityName = this?.abilities?.[abilitySlot]?.base || attackSpellName; // spellName is used for "attack_melee" and "attack_ranged"
     const allowedTargets = spellDetails?.[abilityName]?.allowedTargets;
     const targetIsInParty = false;
@@ -557,14 +545,14 @@ class Npc extends Character implements Npc {
       if (!allowedTargets.includes("ally")) {
         if (targetIsInParty) continue;
       }
-      const newHits = this.calculateDamage(player, abilitySlot);
+      const newHits = this.calculateDamage(player, abilitySlot, attackSpellName);
 
       if (newHits?.length > 0) hitList = [...hitList, ...newHits];
     }
 
     // npcs so far can only target themselves with spells.
     if (allowedTargets?.includes("self") && ids?.includes(this.id)) {
-      const newHits = this.calculateDamage(this, abilitySlot);
+      const newHits = this.calculateDamage(this, abilitySlot, attackSpellName);
       if (newHits?.length > 0) hitList = [...hitList, ...newHits];
     }
 

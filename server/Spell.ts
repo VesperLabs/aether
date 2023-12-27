@@ -13,7 +13,6 @@ class Spell extends Phaser.GameObjects.Container {
   private velocityX: number;
   private velocityY: number;
   private allowedTargets: Array<string>;
-  private maxVisibleTime: integer;
   private maxActiveTime: integer;
   private maxDistance: integer;
   private bodySize: integer;
@@ -57,15 +56,15 @@ class Spell extends Phaser.GameObjects.Container {
     this.abilitySlot = abilitySlot;
     this.action = action ?? "attack_right";
 
-    const details = spellDetails?.[spellName];
+    let details = spellDetails?.[spellName];
     if (!details) {
-      throw new Error("Shit, the spell does not exist in spellDetails!");
+      console.log("❌ Shit, the spell does not exist in spellDetails!");
+      details = spellDetails?.["attack-melee"];
     }
 
     this.isMeleeAttack = details?.isMeleeAttack;
     this.isRangedAttack = details?.isRangedAttack;
     this.allowedTargets = details?.allowedTargets;
-    this.maxVisibleTime = details?.maxVisibleTime;
     this.maxActiveTime = details?.maxActiveTime;
     this.bodySize = details?.bodySize;
     this.spellSpeed = details?.spellSpeed;
@@ -196,7 +195,6 @@ class Spell extends Phaser.GameObjects.Container {
   getTrimmed() {
     return {
       id: this?.id,
-      maxVisibleTime: this?.maxVisibleTime,
       maxActiveTime: this?.maxActiveTime,
       roomName: this?.room?.name,
       spellName: this?.spellName,

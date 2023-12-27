@@ -188,9 +188,9 @@ interface Character extends Phaser.GameObjects.Container {
   bodyOffsetY: number;
   doHit(ids: Array<string>, abilitySlot: number, spellName: string): void;
   addBuff(name: string, level, shouldCalculateStats: boolean);
-  calculateAttackDamage(victim: any);
+  calculateAttackDamage(victim: any, abilitySlot: number);
   calculateSpellDamage(victim: any, abilitySlot: number);
-  calculateDamage(victim: any, abilitySlot: number);
+  calculateDamage(victim: any, abilitySlot: number, spellName: string);
   calculateActiveItemSlots(): void;
   calculateStats(shouldHeal?: boolean): void;
   fillHpMp(): void;
@@ -202,6 +202,7 @@ interface Character extends Phaser.GameObjects.Container {
   canCastSpell(abilitySlot: number): boolean;
   checkCastReady(spellName?: string): boolean;
   checkAttackReady(): any;
+  getAbilityDetails(abilitySlot: number);
   getAttackSpCost(count: number): number;
 }
 

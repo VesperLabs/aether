@@ -70,9 +70,9 @@ function addGlobalEventListeners(scene) {
     (e: CustomEvent) => {
       if (!mainScene?.hero || isTypableFieldActive()) return;
       const hero = mainScene?.hero;
-      const { details } = hero.getAbilityDetails(e?.detail);
+      const { isAimable } = hero.getAbilityDetails(e?.detail);
 
-      if (details?.isAimable) {
+      if (isAimable) {
         hero.state.isAiming = true;
         document.getElementById("game").style.cursor = "none";
         scene.socket.emit("updateState", { isAiming: hero.state.isAiming });
@@ -81,18 +81,23 @@ function addGlobalEventListeners(scene) {
     scene
   );
   window.addEventListener(
-    "HERO_ATTACK",
-    (e) => {
-      if (!mainScene?.hero) return;
+    "HERO_ATTACK", // we let go of the attack button
+    (e: CustomEvent) => {
       const hero = mainScene?.hero;
+      if (!hero) return;
+
       document.getElementById("game").style.cursor = "default";
+
+      // shoot arrows etc
       if (hero.hasRangedWeapon()) {
         updateAttackCooldown(hero);
         hero?.doAttack?.({ count: 1, castAngle: hero.state.lastAngle, direction: hero.direction });
       }
-      // update the state optimistically
+
+      // release these states
       hero.state.isAiming = false;
       hero.state.isHoldingAttack = false;
+
       scene.socket.emit("updateState", {
         isAiming: hero.state.isAiming,
         isHoldingAttack: hero.state.isHoldingAttack,
@@ -102,10 +107,13 @@ function addGlobalEventListeners(scene) {
   );
   window.addEventListener(
     "HERO_ATTACK_START",
-    (e) => {
+    (e: CustomEvent) => {
       if (!mainScene?.hero) return;
       const hero = mainScene?.hero;
+
       hero.state.isHoldingAttack = true;
+      hero.state.lastAbilitySlot = e?.detail;
+
       if (hero.hasRangedWeapon()) {
         hero.state.isAiming = true;
         document.getElementById("game").style.cursor = "none";
@@ -122,16 +130,14 @@ function addGlobalEventListeners(scene) {
     (e: CustomEvent) => {
       const hero = mainScene?.hero;
       const abilitySlot = e?.detail;
-      const { ability, spellName } = hero.getAbilityDetails(abilitySlot);
+      const { ilvl, type, spellName } = hero.getAbilityDetails(abilitySlot);
 
-      if (ability?.type === "spell") {
+      if (type === "spell") {
         /* Tell the UI to update the cooldown */
         updateSpellCooldown(hero, abilitySlot);
 
         hero?.doCast?.({
-          ilvl: ability?.ilvl,
           abilitySlot,
-          spellName,
           castAngle: hero?.state?.lastAngle,
         });
 
@@ -238,7 +244,7 @@ function updatePotionCooldown(hero) {
 }
 
 function updateSpellCooldown(hero, abilitySlot) {
-  if (!hero.canCastSpell(abilitySlot)) return;
+  if (!hero.canCastSpell(abilitySlot, false)) return;
   const castDelay = hero?.stats?.castDelay;
   const ability = hero?.abilities?.[abilitySlot];
   const spellName = ability?.base;
@@ -342,6 +348,7 @@ function moveDirectHero(scene, time) {
   }
 
   hero.state.lastAngle = lastAngle;
+  const lastAbilitySlot = hero?.state?.lastAbilitySlot;
 
   if (
     hero.state.isHoldingAttack &&
@@ -350,12 +357,13 @@ function moveDirectHero(scene, time) {
     !hero.state.isAttacking &&
     hero.state.lastAttack < Date.now() - hero.getFullAttackDelay() - 60
   ) {
-    updateAttackCooldown(hero);
-    hero.state.lastAttackCount = hero.state.lastAttackCount === 1 && hero.isDualWielding() ? 2 : 1;
+    lastAbilitySlot ? updateSpellCooldown(hero, lastAbilitySlot) : updateAttackCooldown(hero);
+
     hero?.doAttack?.({
-      count: hero.state.lastAttackCount,
+      count: hero.state.lastAttackCount === 1 && hero.isDualWielding() ? 2 : 1,
       castAngle: hero.state.lastAngle,
       direction,
+      abilitySlot: lastAbilitySlot,
     });
   }
 
