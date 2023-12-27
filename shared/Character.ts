@@ -276,6 +276,11 @@ class Character extends Phaser.GameObjects.Container {
     const spCost = ability?.stats?.spCost || 0;
     return this?.stats?.mp >= mpCost && this?.stats?.hp > hpCost && this?.stats?.sp >= spCost;
   }
+  getAbilityDetails(abilitySlot: number) {
+    const ability: Item = this?.abilities?.[abilitySlot];
+    const spellName = ability?.base;
+    return { ability, details: spellDetails?.[spellName], spellName };
+  }
   updateVisibleEquipment() {
     this.visibleEquipment = this.getVisibleEquipment();
   }

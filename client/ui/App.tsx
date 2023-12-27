@@ -16,7 +16,13 @@ import { getSpinDirection, calculateZoomLevel } from "../utils";
 import "react-tooltip/dist/react-tooltip.css";
 import { Theme } from "theme-ui";
 import { Socket } from "socket.io-client";
-import { CONSUMABLES_BASES, MINI_MAP_SIZE, DEFAULT_USER_SETTINGS, isMobile } from "@aether/shared";
+import {
+  CONSUMABLES_BASES,
+  MINI_MAP_SIZE,
+  DEFAULT_USER_SETTINGS,
+  isMobile,
+  POTION_BASES,
+} from "@aether/shared";
 import Peer from "peerjs";
 import VideoFrame from "./VideoFrame";
 import ModalSettings from "./ModalSettings";
@@ -378,9 +384,11 @@ function App({ socket, peer, debug, game }) {
 
   function onDoubleClickItem(e) {
     const { item, location } = e?.detail ?? {};
+    const isConsumable = CONSUMABLES_BASES.includes(item?.base);
+
     if (!["inventory", "abilities", "bag"].includes(location)) return;
     /* If it is food we are trying to consume it */
-    if (CONSUMABLES_BASES.includes(item?.base)) {
+    if (isConsumable) {
       window.dispatchEvent(
         new CustomEvent("HERO_USE_ITEM", {
           detail: { item, location },
