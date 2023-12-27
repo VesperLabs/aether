@@ -70,9 +70,7 @@ function addGlobalEventListeners(scene) {
     (e: CustomEvent) => {
       if (!mainScene?.hero || isTypableFieldActive()) return;
       const hero = mainScene?.hero;
-      const abilities = hero?.abilities;
-      const ability = abilities?.[e?.detail];
-      const details = spellDetails?.[ability?.base];
+      const { details } = hero.getAbilityDetails(e?.detail);
 
       if (details?.isAimable) {
         hero.state.isAiming = true;
@@ -123,42 +121,23 @@ function addGlobalEventListeners(scene) {
     "HERO_ABILITY",
     (e: CustomEvent) => {
       const hero = mainScene?.hero;
-      const abilities = hero?.abilities;
-      const ability = abilities?.[e?.detail];
+      const abilitySlot = e?.detail;
+      const { ability, spellName } = hero.getAbilityDetails(abilitySlot);
+
       if (ability?.type === "spell") {
         /* Tell the UI to update the cooldown */
-        updateSpellCooldown(hero, e?.detail);
-        if (ability?.isMeleeAttack) {
-          hero?.doAttack?.({
-            castAngle: hero.state.lastAngle,
-          });
-        } else {
-          hero?.doCast?.({
-            ilvl: ability?.ilvl,
-            abilitySlot: e?.detail,
-            spellName: ability?.base,
-            castAngle: hero?.state?.lastAngle,
-          });
-        }
+        updateSpellCooldown(hero, abilitySlot);
+
+        hero?.doCast?.({
+          ilvl: ability?.ilvl,
+          abilitySlot,
+          spellName,
+          castAngle: hero?.state?.lastAngle,
+        });
+
         hero.state.isAiming = false;
         scene.socket.emit("updateState", { isAiming: hero.state.isAiming });
         document.getElementById("game").style.cursor = "default";
-      }
-
-      /* If it is food we are trying to consume it */
-      if (CONSUMABLES_BASES?.includes(ability?.base)) {
-        /* Tell the UI to update the cooldowns */
-        if (ability.base === "food") {
-          updateSpellCooldown(hero, e?.detail);
-        }
-        if (POTION_BASES.includes(ability.base)) {
-          updatePotionCooldown(hero);
-        }
-        window.dispatchEvent(
-          new CustomEvent("HERO_USE_ITEM", {
-            detail: { item: ability, location: "abilities" },
-          })
-        );
       }
     },
     scene
@@ -170,13 +149,20 @@ function addGlobalEventListeners(scene) {
 
     if (!hero.checkCastReady()) return;
 
-    if (POTION_BASES.includes(item.base)) {
-      if (hero.state.isPotioning) return;
-      hero.state.lastPotion = Date.now();
-    } else {
-      hero.state.lastCast.global = Date.now();
+    /* If it is food we are trying to consume it */
+    if (CONSUMABLES_BASES?.includes(item?.base)) {
+      /* Tell the UI to update the cooldowns */
+      if (item.base === "food") {
+        updateSpellCooldown(hero, e?.detail);
+      }
+      if (POTION_BASES.includes(item.base)) {
+        if (hero.state.isPotioning) return; /* TODO: Needs to happen serverside */
+        updatePotionCooldown(hero);
+      }
     }
+
     socket.emit("consumeItem", { item, location });
+
     window.dispatchEvent(
       new CustomEvent("AUDIO_ITEM_CONSUME", {
         detail: item,
@@ -239,6 +225,7 @@ function updateAttackCooldown(hero) {
 
 function updatePotionCooldown(hero) {
   if (hero.state.isPotioning) return;
+  hero.state.lastPotion = Date.now();
   window.dispatchEvent(
     new CustomEvent("HERO_START_COOLDOWN", {
       detail: {

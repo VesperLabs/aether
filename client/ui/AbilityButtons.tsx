@@ -1,4 +1,5 @@
 import {
+  CONSUMABLES_BASES,
   POTION_BASES,
   applyTintToImage,
   arePropsEqualWithKeys,
@@ -10,7 +11,9 @@ import React, { memo, useEffect, useState } from "react";
 
 const TintedIconLoader = ({ cooldowns, slotKey, item, applyTintAndSetIcon }) => {
   const isSpell = item.type === "spell";
-  const cooldown = POTION_BASES.includes(item?.base) ? "potion" : item?.base;
+  const isPotion = POTION_BASES.includes(item?.base);
+  const isConsumable = CONSUMABLES_BASES.includes(item?.base);
+  const cooldown = isPotion ? "potion" : item?.base;
   const [tintedIcon, setTintedIcon] = useState("./assets/icons/blank.png");
 
   useEffect(() => {
@@ -22,6 +25,15 @@ const TintedIconLoader = ({ cooldowns, slotKey, item, applyTintAndSetIcon }) => 
     loadTintedIcon();
   }, [applyTintAndSetIcon, item]);
 
+  const handleTouchEnd = () => {
+    if (isConsumable) {
+      return window.dispatchEvent(
+        new CustomEvent("HERO_USE_ITEM", { detail: { item, location: "abilities" } })
+      );
+    }
+    return window.dispatchEvent(new CustomEvent("HERO_ABILITY", { detail: slotKey }));
+  };
+
   return (
     <SkillButton
       key={slotKey}
@@ -30,7 +42,7 @@ const TintedIconLoader = ({ cooldowns, slotKey, item, applyTintAndSetIcon }) => 
       onTouchStart={() =>
         window.dispatchEvent(new CustomEvent("HERO_AIM_START", { detail: slotKey }))
       }
-      onTouchEnd={() => window.dispatchEvent(new CustomEvent("HERO_ABILITY", { detail: slotKey }))}
+      onTouchEnd={handleTouchEnd}
       keyboardKey={slotKey}
       sx={{
         "& > .icon": {
