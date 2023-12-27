@@ -143,16 +143,15 @@ class SceneMain extends Phaser.Scene {
       player.updateData(userData);
     });
 
-    socket.on("playerAttack", ({ socketId, count, castAngle, direction }) => {
+    socket.on("playerAttack", ({ socketId, count, castAngle, direction, abilitySlot }) => {
       const p = getPlayer(scene, socketId);
-      p.doAttack({ count, castAngle, direction });
+      p.doAttack({ count, castAngle, direction, abilitySlot });
     });
 
-    socket.on("playerCastSpell", ({ socketId, ilvl, base, castAngle }) => {
+    socket.on("playerCastSpell", ({ socketId, abilitySlot, castAngle }) => {
       const p = getPlayer(scene, socketId);
-      p?.castSpell?.({
-        ilvl: ilvl,
-        spellName: base,
+      p?.doCast?.({
+        abilitySlot,
         castAngle,
       });
     });
@@ -163,11 +162,10 @@ class SceneMain extends Phaser.Scene {
       n.doAttack({ count, direction, castAngle });
     });
 
-    socket.on("npcCastSpell", ({ id, ilvl, base, castAngle }) => {
+    socket.on("npcCastSpell", ({ id, abilitySlot, castAngle }) => {
       const n = getNpc(scene, id);
-      n?.castSpell?.({
-        ilvl: ilvl,
-        spellName: base,
+      n?.doCast?.({
+        abilitySlot,
         castAngle,
       });
     });

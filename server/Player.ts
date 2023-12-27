@@ -27,17 +27,21 @@ class Player extends ServerCharacter implements ServerPlayer {
     this.expireBuffs(true);
     this.state.isDead = true;
   }
-  doAttack({ count, direction, castAngle }) {
+  doAttack({ count, direction, castAngle, abilitySlot }) {
     const { scene, room, socketId } = this ?? {};
 
     if (this?.hasBuff("stun")) return;
     if (this?.state?.isDead) return;
+
     /* Serverside attack may not actually be ready. */
     const { percentageRemaining } = this.checkAttackReady();
     if (percentageRemaining > 5) return;
 
-    const { spellName, action } = this.getAttackActionName({ count });
+    const { stats, ...spellDetails } = this.getAttackActionName({ count, abilitySlot });
     const spCost = this.getAttackSpCost(count);
+    this.modifyStatIfCostExists("mp", stats?.mpCost || 0);
+    this.modifyStatIfCostExists("hp", stats?.hpCost || 0);
+    this.modifyStatIfCostExists("sp", spCost + stats?.spCost || 0);
 
     this.direction = direction;
 
@@ -60,9 +64,10 @@ class Player extends ServerCharacter implements ServerPlayer {
 
     room?.spellManager.create({
       caster: this,
+      //target: targetPlayer,
       castAngle,
-      spellName,
-      action,
+      abilitySlot,
+      ...spellDetails,
     });
   }
   modifyStatIfCostExists(statType, cost) {
@@ -76,24 +81,13 @@ class Player extends ServerCharacter implements ServerPlayer {
     }
   }
   doCast({ abilitySlot, castAngle }): void {
-    const ability = this?.abilities?.[abilitySlot];
-    const spellName = ability?.base;
-    //if the ability slotId is not in the activeItemSlots return
-    if (this?.hasBuff("stun")) return;
-    if (!this?.activeItemSlots?.includes?.(`${abilitySlot}`)) return;
-    if (!ability || !ability?.ilvl || !spellName) return;
+    const { spellName, ilvl, stats } = this.getAbilityDetails(abilitySlot);
+    if (!ilvl || !spellName) return;
     if (!this.canCastSpell(abilitySlot)) return;
-
-    this.state.lastCast.global = Date.now();
-
-    if (spellName) {
-      this.state.lastCast[spellName] = Date.now();
-    }
-
     // Modify stats if there's a cost
-    this.modifyStatIfCostExists("mp", ability?.stats?.mpCost || 0);
-    this.modifyStatIfCostExists("hp", ability?.stats?.hpCost || 0);
-    this.modifyStatIfCostExists("sp", ability?.stats?.spCost || 0);
+    this.modifyStatIfCostExists("mp", stats?.mpCost || 0);
+    this.modifyStatIfCostExists("hp", stats?.hpCost || 0);
+    this.modifyStatIfCostExists("sp", stats?.spCost || 0);
 
     this.dispelBuffsByProperty("dispelOnCast", true);
 
@@ -102,7 +96,7 @@ class Player extends ServerCharacter implements ServerPlayer {
       //target: targetPlayer,
       spellName,
       castAngle,
-      ilvl: ability?.ilvl,
+      ilvl,
       abilitySlot,
     });
   }
@@ -374,7 +368,7 @@ class Player extends ServerCharacter implements ServerPlayer {
       // only allow spells to hit intended targets
       if (!allowedTargets?.includes("enemy")) continue;
 
-      const newHits = hero.calculateDamage(npc, abilitySlot);
+      const newHits = hero.calculateDamage(npc, abilitySlot, attackSpellName);
 
       /* If we kill the NPC */
       if (newHits?.find?.((h: Hit) => h?.type === "death")) {
@@ -428,7 +422,7 @@ class Player extends ServerCharacter implements ServerPlayer {
       if (!allowedTargets.includes("ally")) {
         if (targetIsInParty) continue;
       }
-      const newHits = hero.calculateDamage(player, abilitySlot);
+      const newHits = hero.calculateDamage(player, abilitySlot, attackSpellName);
 
       if (newHits?.length > 0) hitList = [...hitList, ...newHits];
     }

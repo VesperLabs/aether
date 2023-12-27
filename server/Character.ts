@@ -5,8 +5,10 @@ import {
   calculateNextMaxExp,
   addValuesToExistingKeys,
   calculateStats,
+  mergeAndAddValues,
 } from "./utils";
 import buffList from "../shared/data/buffList.json";
+import { spellDetails } from "@aether/shared";
 class ServerCharacter extends Character {
   declare scene: ServerScene;
   constructor(scene: ServerScene, args) {
@@ -66,13 +68,7 @@ class ServerCharacter extends Character {
       }
     });
 
-    // Double shields or Bow+Other is a nono
-    const hasRangedAndOther =
-      this.hasRangedWeapon("equipment") &&
-      (this.isDualWielding("equipment") || this.hasShield("equipment"));
-    const hasDoubleShields = this.hasShieldLeft("equipment") && this.hasShieldRight("equipment");
-
-    if (hasRangedAndOther || hasDoubleShields) {
+    if (!this.hasAttackableWeapons("equipment")) {
       activeItemSlots.splice(activeItemSlots.indexOf("handLeft"), 1);
       activeItemSlots.splice(activeItemSlots.indexOf("handRight"), 1);
     }
@@ -207,7 +203,7 @@ class ServerCharacter extends Character {
   calculateSpellDamage(victim: any, abilitySlot: number): Array<Hit> {
     if (victim?.state?.isDead) return [];
     const hits: Array<Hit> = [];
-    const { effects = {}, buffs } = this?.abilities?.[abilitySlot] ?? {};
+    const { effects = {}, buffs } = this?.getAbilityDetails(abilitySlot);
     // add elemental damage from stats to the spell's damages
     const baseElementalDamages = addValuesToExistingKeys(effects, this?.stats);
 
@@ -281,8 +277,11 @@ class ServerCharacter extends Character {
     });
     return hits;
   }
-  calculateAttackDamage(victim): Array<Hit> {
+  calculateAttackDamage(victim, abilityDetails: any): Array<Hit> {
     if (victim?.state?.isDead) return [];
+
+    const mergedStats = mergeAndAddValues(this.stats, abilityDetails?.effects); //if this is an attack-spell like flameslash, add its extra values.
+
     const dodgeRoll = randomNumber(1, 100);
     const blockRoll = randomNumber(1, 100);
     const critRoll = randomNumber(1, 100);
@@ -312,8 +311,10 @@ class ServerCharacter extends Character {
       isCritical = true;
       physicalDamage = Math.max(1, physicalDamage * (this?.stats?.critMultiplier || 1)); // Minimum physicalDamage value of 1
     }
+
     /* Calculate elemental damage on the weapon */
-    const { eleDamage, elements } = this.calculateElementalDamage(this.stats, victim);
+    const { eleDamage, elements } = this.calculateElementalDamage(mergedStats, victim);
+
     physicalDamage = Math.floor(physicalDamage);
     /* Update our elements array so the client can animate element hits */
     if (physicalDamage > 0) {
@@ -426,11 +427,11 @@ class ServerCharacter extends Character {
     });
     return hits;
   }
-  calculateDamage(victim: any, abilitySlot: number): Array<Hit> {
-    /* If abilityslot is blank we are doing an attack */
-    return abilitySlot
-      ? this.calculateSpellDamage(victim, abilitySlot)
-      : this.calculateAttackDamage(victim);
+  calculateDamage(victim: any, abilitySlot: number, attackSpellName: string): Array<Hit> {
+    const { isMeleeAttack = false } = abilitySlot ? this?.getAbilityDetails(abilitySlot) : {};
+    return attackSpellName || isMeleeAttack
+      ? this.calculateAttackDamage(victim, abilitySlot)
+      : this.calculateSpellDamage(victim, abilitySlot);
   }
   doRegen() {
     const now = Date.now();

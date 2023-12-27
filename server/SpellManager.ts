@@ -14,7 +14,7 @@ class SpellManager {
   create(spellData) {
     const { scene, room, spells } = this;
     const id = crypto.randomUUID();
-    scene.spells[id] = new Spell(scene, { id, room, ...spellData });
+    scene.spells[id] = new Spell(scene, { room, ...spellData, id });
     scene.add.existing(scene.spells[id]);
     spells.add(scene.spells[id]);
     return scene?.spells?.[id];

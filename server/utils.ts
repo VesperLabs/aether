@@ -221,7 +221,7 @@ function calculateNextMaxExp(level) {
   return Math.floor(totalExp);
 }
 
-function mergeAndAddValues(obj1, obj2) {
+function mergeAndAddValues(obj1 = {}, obj2 = {}) {
   const result = {};
 
   for (const key in obj1) {

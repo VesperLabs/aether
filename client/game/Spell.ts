@@ -5,6 +5,11 @@ import { spellDetails, getAngleFromDirection, BUFF_SPELLS, distanceTo } from "@a
 const Sprite = Phaser.GameObjects.Sprite;
 const BLANK_TEXTURE = "human-blank";
 
+const SPELL_NAME_ANIM_MAP = {
+  "attack-melee": "spell-anim-slash-physical",
+  "flame-slash": "spell-anim-slash-fire",
+};
+
 class Spell extends Phaser.GameObjects.Container {
   constructor(scene, { id, caster, spellName, action, castAngle = 0, ilvl = 1 }) {
     const spawnPoint = { x: caster.x, y: caster.y + caster.bodyCenterY };
@@ -23,10 +28,11 @@ class Spell extends Phaser.GameObjects.Container {
     this.velocityY = 0;
     this.spell = scene.add.existing(new Sprite(scene, 0, 0, BLANK_TEXTURE, 0));
 
-    const details = spellDetails?.[spellName];
+    let details = spellDetails?.[spellName];
 
     if (!details) {
-      throw new Error("Shit, the spell does not exist in spellDetails!");
+      console.log("❌ Shit, the spell does not exist in spellDetails!");
+      details = spellDetails?.["attack-melee"];
     }
 
     this.isMeleeAttack = details?.isMeleeAttack;
@@ -34,7 +40,6 @@ class Spell extends Phaser.GameObjects.Container {
     this.layerDepth = details?.layerDepth;
     this.allowedTargets = details?.allowedTargets;
     this.maxVisibleTime = details?.maxVisibleTime;
-    this.maxActiveTime = details?.maxActiveTime;
     this.spellSpeed = details?.spellSpeed;
     this.bodySize = details?.bodySize;
     this.scaleBase = details?.scaleBase ?? 1;
@@ -53,15 +58,13 @@ class Spell extends Phaser.GameObjects.Container {
     if (this.isMeleeAttack) {
       let viewSize = 44;
       let tiltAngle = 48;
+      const attackSpellAnim = SPELL_NAME_ANIM_MAP[this.spellName];
+      const numFrames = this.scene.anims.get(attackSpellAnim)?.frames?.length;
 
-      this.spell.play(
-        {
-          "attack-melee": "spell-anim-slash-physical",
-          "flame-slash": "spell-anim-slash-fire",
-        }[this.spellName]
-      );
-
+      this.spell.play(attackSpellAnim);
+      this.spell.anims.msPerFrame = Math.floor(this.maxVisibleTime / numFrames);
       this.spell.setAngle(getAngleFromDirection(caster?.direction) - 90);
+
       this.stickToCaster = true;
       /* Hack: Up range is too long. This hack makes the top-down view more realistic */
       if (caster?.direction === "up") {

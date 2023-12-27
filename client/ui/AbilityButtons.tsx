@@ -4,6 +4,7 @@ import {
   applyTintToImage,
   arePropsEqualWithKeys,
   loadCacheImage,
+  spellDetails,
 } from "@aether/shared";
 import { CooldownTimer, SkillButton } from "./";
 import { Flex, Text } from "@aether/ui";
@@ -13,6 +14,7 @@ const TintedIconLoader = ({ cooldowns, slotKey, item, applyTintAndSetIcon }) => 
   const isSpell = item.type === "spell";
   const isPotion = POTION_BASES.includes(item?.base);
   const isConsumable = CONSUMABLES_BASES.includes(item?.base);
+  const details = spellDetails?.[item?.base];
   const cooldown = isPotion ? "potion" : item?.base;
   const [tintedIcon, setTintedIcon] = useState("./assets/icons/blank.png");
 
@@ -31,7 +33,17 @@ const TintedIconLoader = ({ cooldowns, slotKey, item, applyTintAndSetIcon }) => 
         new CustomEvent("HERO_USE_ITEM", { detail: { item, location: "abilities" } })
       );
     }
+    if (details?.isMeleeAttack) {
+      return window.dispatchEvent(new CustomEvent("HERO_ATTACK"));
+    }
     return window.dispatchEvent(new CustomEvent("HERO_ABILITY", { detail: slotKey }));
+  };
+
+  const handleTouchStart = () => {
+    if (details?.isMeleeAttack) {
+      return window.dispatchEvent(new CustomEvent("HERO_ATTACK_START", { detail: slotKey }));
+    }
+    return window.dispatchEvent(new CustomEvent("HERO_AIM_START", { detail: slotKey }));
   };
 
   return (
@@ -39,9 +51,7 @@ const TintedIconLoader = ({ cooldowns, slotKey, item, applyTintAndSetIcon }) => 
       key={slotKey}
       size={16}
       icon={tintedIcon}
-      onTouchStart={() =>
-        window.dispatchEvent(new CustomEvent("HERO_AIM_START", { detail: slotKey }))
-      }
+      onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
       keyboardKey={slotKey}
       sx={{
