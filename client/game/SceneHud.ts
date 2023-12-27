@@ -34,8 +34,8 @@ class SceneHud extends Phaser.Scene {
     addJoystick(this);
     addGlobalEventListeners(this);
   }
-  update(time, delta) {
-    moveDirectHero(this, time);
+  update() {
+    moveDirectHero(this);
   }
 }
 
@@ -130,7 +130,7 @@ function addGlobalEventListeners(scene) {
     (e: CustomEvent) => {
       const hero = mainScene?.hero;
       const abilitySlot = e?.detail;
-      const { ilvl, type, spellName } = hero.getAbilityDetails(abilitySlot);
+      const { type } = hero.getAbilityDetails(abilitySlot);
 
       if (type === "spell") {
         /* Tell the UI to update the cooldown */
@@ -272,7 +272,7 @@ function isTypableFieldActive() {
   return false;
 }
 
-function moveDirectHero(scene, time) {
+function moveDirectHero(scene) {
   const isTouch = scene.sys.game.device.input.touch;
   const pointer = scene.input.activePointer;
   const mainScene = scene.scene.manager.getScene("SceneMain");
@@ -357,7 +357,14 @@ function moveDirectHero(scene, time) {
     !hero.state.isAttacking &&
     hero.state.lastAttack < Date.now() - hero.getFullAttackDelay() - 60
   ) {
-    lastAbilitySlot ? updateSpellCooldown(hero, lastAbilitySlot) : updateAttackCooldown(hero);
+    if (lastAbilitySlot) {
+      updateSpellCooldown(hero, lastAbilitySlot);
+      if (hero.canCastSpell(lastAbilitySlot, false)) {
+        updateAttackCooldown(hero);
+      }
+    } else {
+      updateAttackCooldown(hero);
+    }
 
     hero?.doAttack?.({
       count: hero.state.lastAttackCount === 1 && hero.isDualWielding() ? 2 : 1,

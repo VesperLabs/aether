@@ -23,7 +23,8 @@
     "maxVisibleTime": 300,
     "maxActiveTime": 120,
     "bodySize": 16,
-    "layerDepth": "bottom"
+    "layerDepth": "bottom",
+    "baseCooldown": 1000
   },
   "fireball": {
     "isAimable": true,
