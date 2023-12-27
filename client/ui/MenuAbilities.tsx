@@ -32,6 +32,6 @@ const MenuAbilities = memo(({ player, isOpen, setIsOpen, slotsEnabled = true }: 
       </Flex>
     </Menu>
   );
-}, arePropsEqualWithKeys(["isOpen", "player.abilities"]));
+}, arePropsEqualWithKeys(["isOpen", "player.abilities", "player.activeItemSlots", "player.stats"]));
 
 export default MenuAbilities;

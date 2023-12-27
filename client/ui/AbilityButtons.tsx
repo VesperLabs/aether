@@ -127,6 +127,6 @@ const AbilityButtons = memo(({ hero, cooldowns }: any) => {
       ))}
     </Flex>
   );
-}, arePropsEqualWithKeys(["hero.abilities", "cooldowns"]));
+}, arePropsEqualWithKeys(["hero.abilities", "cooldowns", "hero.activeItemSlots"]));
 
 export default AbilityButtons;

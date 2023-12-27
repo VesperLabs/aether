@@ -2067,24 +2067,6 @@
   },
   "spell": {
     "common": {
-      "flameSlash": {
-        "exclusive": true,
-        "ilvl": 1,
-        "name": "Flame Slash",
-        "base": "flame-slash",
-        "slot": "spell",
-        "texture": "scroll-red",
-        "effects": {
-          "minFireDamage": 2,
-          "maxFireDamage": 3
-        },
-        "stats": {
-          "mpCost": 4
-        },
-        "requirements": {
-          "charClass": "warrior"
-        }
-      },
       "fireball": {
         "ilvl": 1,
         "name": "Fireball",
@@ -2287,6 +2269,24 @@
           "spCost": 5
         }
       },
+      "flameSlash": {
+        "ilvl": 1,
+        "name": "Flame Slash",
+        "base": "flame-slash",
+        "slot": "spell",
+        "texture": "scroll-red",
+        "effects": {
+          "minFireDamage": 3,
+          "maxFireDamage": 4
+        },
+        "stats": {
+          "mpCost": 4
+        },
+        "requirements": {
+          "charClass": "warrior",
+          "weaponType": "melee"
+        }
+      },
       "fireball2": {
         "ilvl": 2,
         "name": "Fireball",
@@ -2359,6 +2359,12 @@
         "base": "stealth",
         "slot": "spell"
       },
+      "flameSlash2": {
+        "ilvl": 2,
+        "name": "Flame Slash",
+        "base": "flame-slash",
+        "slot": "spell"
+      },
       "fireball3": {
         "ilvl": 3,
         "name": "Fireball",
@@ -2429,6 +2435,12 @@
         "ilvl": 3,
         "name": "Stealth",
         "base": "stealth",
+        "slot": "spell"
+      },
+      "flameSlash3": {
+        "ilvl": 3,
+        "name": "Flame Slash",
+        "base": "flame-slash",
         "slot": "spell"
       }
     }
