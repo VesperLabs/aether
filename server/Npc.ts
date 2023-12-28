@@ -526,46 +526,42 @@ class Npc extends Character implements Npc {
       }
     }
   }
-  doHit(ids, abilitySlot) {
+  doHit(ids: Array<string>, abilitySlot: number): void {
     const { scene, room } = this ?? {};
-    const roomName = room?.name;
-    const players = room?.playerManager?.getPlayers();
+    const roomName: string = room?.name;
+    const players: Array<ServerPlayer> = room?.playerManager?.getPlayers();
     const { allowedTargets } = this.getAbilityDetails(abilitySlot);
+    const targetIsInParty = false;
 
-    let hitList = [];
+    let hitList: Array<Hit> = [];
 
-    // Check if a player is a valid target based on the ability's allowed targets
-    const isValidTarget = (player, allowedTargets) => {
-      const isSelf = player.id === this.id;
-      const isEnemy = !isSelf;
-      const isAlly = !isEnemy;
+    /* TODO: verify location of hit before we consider it a hit */
 
-      return (
-        (allowedTargets.includes("self") && isSelf) ||
-        (allowedTargets.includes("enemy") && isEnemy) ||
-        (allowedTargets.includes("ally") && isAlly)
-      );
-    };
-
-    // Apply damage calculation to a valid player
-    const applyDamage = (player) => {
-      const newHits = this.calculateDamage(player, abilitySlot);
-      if (newHits?.length > 0) {
-        hitList = [...hitList, ...newHits];
-      }
-    };
-
-    // Process each player
     for (const player of players) {
-      if (ids.includes(player.id) && isValidTarget(player, allowedTargets)) {
-        applyDamage(player);
+      if (!ids?.includes(player.id)) continue;
+      // only allow spells to hit intended targets
+      if (!allowedTargets?.includes("self")) {
+        if (player.id === this.id) continue;
       }
+      if (!allowedTargets?.includes("enemy")) {
+        if (player.id !== this.id && !targetIsInParty) continue;
+      }
+      if (!allowedTargets.includes("ally")) {
+        if (targetIsInParty) continue;
+      }
+      const newHits = this.calculateDamage(player, abilitySlot);
+
+      if (newHits?.length > 0) hitList = [...hitList, ...newHits];
     }
 
-    // Emit the calculated damage to the room
+    // npcs so far can only target themselves with spells.
+    if (allowedTargets?.includes("self") && ids?.includes(this.id)) {
+      const newHits = this.calculateDamage(this, abilitySlot);
+      if (newHits?.length > 0) hitList = [...hitList, ...newHits];
+    }
+
     scene.io.to(roomName).emit("assignDamage", hitList);
   }
-
   dropLoot(magicFind: number) {
     let runners = [];
     /* I.E: A monster of lvl 8 will drop ilvl 2 items
