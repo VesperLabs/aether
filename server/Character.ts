@@ -231,10 +231,10 @@ class ServerCharacter extends Character {
     //update server data on what hands we have items in
     this.visibleEquipment = this.getVisibleEquipment();
   }
-  calculateSpellDamage(victim: any, abilitySlot: number): Array<Hit> {
+  calculateSpellDamage(victim: any, abilityDetails: any): Array<Hit> {
     if (victim?.state?.isDead) return [];
     const hits: Array<Hit> = [];
-    const { effects = {}, buffs } = this?.getAbilityDetails(abilitySlot);
+    const { effects = {}, buffs } = abilityDetails ?? {};
     // add elemental damage from stats to the spell's damages
     const baseElementalDamages = addValuesToExistingKeys(effects, this?.stats);
 
@@ -308,7 +308,7 @@ class ServerCharacter extends Character {
     });
     return hits;
   }
-  calculateAttackDamage(victim, abilityDetails: any): Array<Hit> {
+  calculateAttackDamage(victim: any, abilityDetails: any): Array<Hit> {
     if (victim?.state?.isDead) return [];
 
     const mergedStats = mergeAndAddValues(this.stats, abilityDetails?.effects); //if this is an attack-spell like flameslash, add its extra values.
@@ -458,11 +458,12 @@ class ServerCharacter extends Character {
     });
     return hits;
   }
-  calculateDamage(victim: any, abilitySlot: number, attackSpellName: string): Array<Hit> {
-    const { isMeleeAttack = false } = abilitySlot ? this?.getAbilityDetails(abilitySlot) : {};
-    return attackSpellName || isMeleeAttack
-      ? this.calculateAttackDamage(victim, abilitySlot)
-      : this.calculateSpellDamage(victim, abilitySlot);
+  calculateDamage(victim: any, abilitySlot: number): Array<Hit> {
+    if (victim?.state?.isDead) return [];
+    const abilityDetails = this?.getAbilityDetails(abilitySlot);
+    return !abilitySlot || abilityDetails?.isMeleeAttack
+      ? this.calculateAttackDamage(victim, abilityDetails)
+      : this.calculateSpellDamage(victim, abilityDetails);
   }
   doRegen() {
     const now = Date.now();
@@ -647,7 +648,7 @@ class ServerCharacter extends Character {
       this.state.hasBuffChanges = true;
     }
   }
-  doHit(ids: Array<string>, abilitySlot: number, spellName: string): void {
+  doHit(ids: Array<string>, abilitySlot: number): void {
     //placeholder
   }
 }

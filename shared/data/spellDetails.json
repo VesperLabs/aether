@@ -43,8 +43,8 @@
   "waterball": {
     "isAimable": true,
     "allowedTargets": ["enemy"],
-    "maxVisibleTime": 1000,
-    "maxActiveTime": 1000,
+    "maxVisibleTime": 1400,
+    "maxActiveTime": 1400,
     "maxDistance": 120,
     "bodySize": 16,
     "spellSpeed": 200,
@@ -57,8 +57,8 @@
   "lightball": {
     "isAimable": true,
     "allowedTargets": ["enemy"],
-    "maxVisibleTime": 1000,
-    "maxActiveTime": 1000,
+    "maxVisibleTime": 1400,
+    "maxActiveTime": 1400,
     "maxDistance": 120,
     "bodySize": 16,
     "spellSpeed": 200,

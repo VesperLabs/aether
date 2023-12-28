@@ -8,6 +8,7 @@ class Player extends ServerCharacter implements ServerPlayer {
   public isDemoAccount?: boolean;
   public spawn: SpawnPoint;
   public userSettings: UserSettings;
+  public partyId: string;
   constructor(scene: ServerScene, args: Player) {
     super(scene, args);
     this.scene = scene;
@@ -344,99 +345,75 @@ class Player extends ServerCharacter implements ServerPlayer {
     this.doRegen();
     this.checkBubbleMessage();
   }
-  doHit(ids: Array<string>, abilitySlot: number, attackSpellName: string): void {
+
+  doHit(ids: Array<string>, abilitySlot: number): void {
     const { scene } = this ?? {};
-    // ability slot will be null for attacks
-    const hero: ServerPlayer = this;
-    if (!hero || hero?.state?.isDead) return;
-    const roomName: string = hero?.roomName;
-    const room = scene.roomManager.rooms[roomName];
-    const abilityName = hero?.abilities?.[abilitySlot]?.base || attackSpellName; // spellName is used for "attack_melee" and "attack_ranged"
-    const allowedTargets = spellDetails?.[abilityName]?.allowedTargets;
-    const party = scene.partyManager.getPartyById(hero?.partyId);
-    /* Create hitList for npcs */
-    let hitList: Array<Hit> = [];
-    let npcKills: Array<Npc> = [];
-    let totalExpGain: number = 0;
-    let playerIdsToUpdate = []; //ids of players that either got exp or buffs
-    let playerIdsThatLeveled = []; //ids of players who got a level up.
-    const npcs: Array<Npc> = room?.npcManager?.getNpcs();
-    const players: Array<ServerPlayer> = room?.playerManager?.getPlayers();
+    if (!this || this?.state?.isDead) return;
 
-    for (const npc of npcs) {
-      if (!ids?.includes(npc.id)) continue;
-      // only allow spells to hit intended targets
-      if (!allowedTargets?.includes("enemy")) continue;
+    const room = scene?.roomManager.rooms[this.roomName];
+    const { allowedTargets } = this.getAbilityDetails(abilitySlot);
+    const party = scene?.partyManager.getPartyById(this?.partyId);
 
-      const newHits = hero.calculateDamage(npc, abilitySlot, attackSpellName);
+    let hitList = [];
+    let npcKills = [];
+    let totalExpGain = 0;
+    let playerIdsToUpdate = [];
+    let playerIdsThatLeveled = [];
 
-      /* If we kill the NPC */
-      if (newHits?.find?.((h: Hit) => h?.type === "death")) {
-        npc.dropLoot(hero?.stats?.magicFind);
-        /* Add EXP, check if we leveled */
-        totalExpGain += calculateExpValue(hero, npc);
-        npcKills.push(npc);
-      }
-      if (newHits?.length > 0) hitList = [...hitList, ...newHits];
-    }
+    const npcs = room?.npcManager?.getNpcs();
+    const players = room?.playerManager?.getPlayers();
 
-    /* Send exp update to client */
-    if (hitList?.some((hit) => hit.type === "death")) {
-      // either you are in a party, or you are in a fake party object
-      const partyMembers = scene.partyManager.getPartyById(hero?.partyId)?.members || [
-        { id: hero?.id, roomName: hero?.roomName },
-      ];
-      // party members in same room will gain exp
-      const partyMembersInRoom = partyMembers?.filter((m) => m?.roomName === hero?.roomName);
-      for (const m of partyMembersInRoom) {
-        const member: ServerPlayer = scene?.players?.[m?.id];
-        if (!member) continue;
-        const didLevel = member.assignExp(totalExpGain);
-        /* Add the npc to the players kill list */
-        for (const killedNpc of npcKills) {
-          member.addNpcKill(killedNpc?.name);
-          hitList.push({
-            type: "exp",
-            amount: calculateExpValue(hero, killedNpc),
-            from: killedNpc.id,
-            to: member.id,
-          });
+    const processNpcs = () => {
+      for (const npc of npcs) {
+        if (!ids.includes(npc.id)) continue;
+        if (!allowedTargets.includes("enemy")) continue;
+
+        const newHits = this.calculateDamage(npc, abilitySlot);
+
+        if (newHits.find((hit) => hit.type === "death")) {
+          npc.dropLoot(this.stats.magicFind);
+          totalExpGain += calculateExpValue(this, npc);
+          npcKills.push(npc);
         }
-        playerIdsToUpdate.push(member?.id);
-        if (didLevel) {
-          playerIdsThatLeveled.push(member?.id);
+
+        if (newHits.length > 0) {
+          hitList.push(...newHits);
         }
       }
-    }
-    for (const player of players) {
-      const targetIsInParty = party?.members?.find((m) => m?.id === player?.id);
-      /* TODO: verify location of hit before we consider it a hit */
-      if (!ids?.includes(player.id)) continue;
-      // only allow spells to hit intended targets
-      if (!allowedTargets?.includes("self")) {
-        if (player.id === hero.id) continue;
-      }
-      if (!allowedTargets?.includes("enemy")) {
-        if (player.id !== hero.id && !targetIsInParty) continue;
-      }
-      if (!allowedTargets.includes("ally")) {
-        if (targetIsInParty) continue;
-      }
-      const newHits = hero.calculateDamage(player, abilitySlot, attackSpellName);
+    };
 
-      if (newHits?.length > 0) hitList = [...hitList, ...newHits];
-    }
+    const processPlayers = () => {
+      for (const player of players) {
+        const targetIsInParty = party ? party.members.find((m) => m.id === player.id) : false;
+        if (!ids.includes(player.id)) continue;
+        if (!allowedTargets.includes("self") && player.id === this.id) continue;
+        if (!allowedTargets.includes("enemy") && player.id !== this.id && !targetIsInParty)
+          continue;
+        if (!allowedTargets.includes("ally") && targetIsInParty) continue;
 
-    // send each buffed hero and npc their new state
-    if (playerIdsToUpdate?.length > 0) {
-      const roomState = getRoomState(scene, roomName);
-      scene.io.to(roomName).emit("buffUpdate", {
-        players: roomState?.players?.filter((n) => playerIdsToUpdate?.includes(n?.id)),
+        const newHits = this.calculateDamage(player, abilitySlot);
+        if (newHits.length > 0) {
+          hitList.push(...newHits);
+        }
+      }
+    };
+
+    const sendBuffUpdates = () => {
+      const roomState = getRoomState(scene, this.roomName);
+      scene.io.to(this.roomName).emit("buffUpdate", {
+        players: roomState.players.filter((player) => playerIdsToUpdate.includes(player.id)),
         playerIdsThatLeveled,
       });
+    };
+
+    processNpcs();
+    processPlayers();
+
+    if (playerIdsToUpdate.length > 0) {
+      sendBuffUpdates();
     }
 
-    scene.io.to(roomName).emit("assignDamage", hitList);
+    scene.io.to(this.roomName).emit("assignDamage", hitList);
   }
 }
 

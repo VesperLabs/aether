@@ -374,8 +374,16 @@ class Character extends Phaser.GameObjects.Container {
     return this?.stats?.mp >= mpCost && this?.stats?.hp > hpCost && this?.stats?.sp >= spCost;
   }
   getAbilityDetails(abilitySlot: number) {
-    const ability: Item = this?.abilities?.[abilitySlot];
-    const spellName = ability?.base;
+    let ability: Item;
+    let spellName: string;
+
+    if (!abilitySlot) {
+      spellName = this.hasRangedWeapon() ? "attack-ranged" : "attack-melee";
+    } else {
+      ability = this?.abilities?.[abilitySlot];
+      spellName = ability?.base;
+    }
+
     return { ...ability, ...spellDetails?.[spellName], spellName };
   }
   updateVisibleEquipment() {

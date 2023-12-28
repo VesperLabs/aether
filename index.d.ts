@@ -186,11 +186,11 @@ interface Character extends Phaser.GameObjects.Container {
   bodyCenterY: number;
   hitBox: any;
   bodyOffsetY: number;
-  doHit(ids: Array<string>, abilitySlot: number, spellName: string): void;
+  doHit(ids: Array<string>, abilitySlot: number): void;
   addBuff(name: string, level, shouldCalculateStats: boolean);
   calculateAttackDamage(victim: any, abilitySlot: number);
   calculateSpellDamage(victim: any, abilitySlot: number);
-  calculateDamage(victim: any, abilitySlot: number, spellName: string);
+  calculateDamage(victim: any, abilitySlot: number);
   calculateActiveItemSlots(): void;
   calculateStats(shouldHeal?: boolean): void;
   fillHpMp(): void;
