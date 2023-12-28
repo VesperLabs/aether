@@ -409,6 +409,35 @@ class Player extends ServerCharacter implements ServerPlayer {
     processNpcs();
     processPlayers();
 
+    /* Send exp update to client */
+    if (hitList?.some((hit) => hit.type === "death")) {
+      // either you are in a party, or you are in a fake party object
+      const partyMembers = scene.partyManager.getPartyById(this?.partyId)?.members || [
+        { id: this?.id, roomName: this?.roomName },
+      ];
+      // party members in same room will gain exp
+      const partyMembersInRoom = partyMembers?.filter((m) => m?.roomName === this?.roomName);
+      for (const m of partyMembersInRoom) {
+        const member: ServerPlayer = scene?.players?.[m?.id];
+        if (!member) continue;
+        const didLevel = member.assignExp(totalExpGain);
+        /* Add the npc to the players kill list */
+        for (const killedNpc of npcKills) {
+          member.addNpcKill(killedNpc?.name);
+          hitList.push({
+            type: "exp",
+            amount: calculateExpValue(this, killedNpc),
+            from: killedNpc.id,
+            to: member.id,
+          });
+        }
+        playerIdsToUpdate.push(member?.id);
+        if (didLevel) {
+          playerIdsThatLeveled.push(member?.id);
+        }
+      }
+    }
+
     if (playerIdsToUpdate.length > 0) {
       sendBuffUpdates();
     }
