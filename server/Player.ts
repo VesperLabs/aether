@@ -363,51 +363,35 @@ class Player extends ServerCharacter implements ServerPlayer {
     const npcs = room?.npcManager?.getNpcs();
     const players = room?.playerManager?.getPlayers();
 
-    const processNpcs = () => {
-      for (const npc of npcs) {
-        if (!ids.includes(npc.id)) continue;
-        if (!allowedTargets.includes("enemy")) continue;
+    for (const npc of npcs) {
+      if (!ids.includes(npc.id)) continue;
+      if (!allowedTargets.includes("enemy")) continue;
 
-        const newHits = this.calculateDamage(npc, abilitySlot);
+      const newHits = this.calculateDamage(npc, abilitySlot);
 
-        if (newHits.find((hit) => hit.type === "death")) {
-          npc.dropLoot(this.stats.magicFind);
-          totalExpGain += calculateExpValue(this, npc);
-          npcKills.push(npc);
-        }
-
-        if (newHits.length > 0) {
-          hitList.push(...newHits);
-        }
+      if (newHits.find((hit) => hit.type === "death")) {
+        npc.dropLoot(this.stats.magicFind);
+        totalExpGain += calculateExpValue(this, npc);
+        npcKills.push(npc);
       }
-    };
 
-    const processPlayers = () => {
-      for (const player of players) {
-        const targetIsInParty = party ? party.members.find((m) => m.id === player.id) : false;
-        if (!ids.includes(player.id)) continue;
-        if (!allowedTargets.includes("self") && player.id === this.id) continue;
-        if (!allowedTargets.includes("enemy") && player.id !== this.id && !targetIsInParty)
-          continue;
-        if (!allowedTargets.includes("ally") && targetIsInParty) continue;
-
-        const newHits = this.calculateDamage(player, abilitySlot);
-        if (newHits.length > 0) {
-          hitList.push(...newHits);
-        }
+      if (newHits.length > 0) {
+        hitList.push(...newHits);
       }
-    };
+    }
 
-    const sendBuffUpdates = () => {
-      const roomState = getRoomState(scene, this.roomName);
-      scene.io.to(this.roomName).emit("buffUpdate", {
-        players: roomState.players.filter((player) => playerIdsToUpdate.includes(player.id)),
-        playerIdsThatLeveled,
-      });
-    };
+    for (const player of players) {
+      const targetIsInParty = party ? party.members.find((m) => m.id === player.id) : false;
+      if (!ids.includes(player.id)) continue;
+      if (!allowedTargets.includes("self") && player.id === this.id) continue;
+      if (!allowedTargets.includes("enemy") && player.id !== this.id && !targetIsInParty) continue;
+      if (!allowedTargets.includes("ally") && targetIsInParty) continue;
 
-    processNpcs();
-    processPlayers();
+      const newHits = this.calculateDamage(player, abilitySlot);
+      if (newHits.length > 0) {
+        hitList.push(...newHits);
+      }
+    }
 
     /* Send exp update to client */
     if (hitList?.some((hit) => hit.type === "death")) {
@@ -439,7 +423,11 @@ class Player extends ServerCharacter implements ServerPlayer {
     }
 
     if (playerIdsToUpdate.length > 0) {
-      sendBuffUpdates();
+      const roomState = getRoomState(scene, this.roomName);
+      scene.io.to(this.roomName).emit("buffUpdate", {
+        players: roomState.players.filter((player) => playerIdsToUpdate.includes(player.id)),
+        playerIdsThatLeveled,
+      });
     }
 
     scene.io.to(this.roomName).emit("assignDamage", hitList);
