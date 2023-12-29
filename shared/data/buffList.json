@@ -132,7 +132,8 @@
     "duration": 10000,
     "stats": {
       "magicFind": 25
-    }
+    },
+    "description": "You feel lucky, punk.  Increased chance to find loot."
   },
   "stealth": {
     "type": "buff",

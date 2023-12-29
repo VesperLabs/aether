@@ -298,7 +298,7 @@ export async function initDatabase(uri: string) {
 }
 
 export const createBaseUser = (charClass) => {
-  const { baseStats, startingWeapon, roomName, x, y } = useGetBaseCharacterDefaults({
+  const { baseStats, startingWeapon, startingSpell, roomName, x, y } = useGetBaseCharacterDefaults({
     level: 1,
     charClass,
   });
@@ -333,8 +333,8 @@ export const createBaseUser = (charClass) => {
     },
     inventory: [],
     abilities: {
-      1: charClass === "mage" ? ItemBuilder.buildItem("spell", "common", "fireball") : null,
-      2: charClass === "cleric" ? ItemBuilder.buildItem("spell", "common", "lightball") : null,
+      1: startingSpell,
+      2: null,
       3: null,
       4: null,
       5: null,
