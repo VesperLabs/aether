@@ -275,10 +275,18 @@ function useGetBaseCharacterDefaults({ level = 1, charClass }) {
     if (isRogue) return ItemBuilder.buildItem("weapon", "common", "katar");
   };
 
+  const getStartingSpell = () => {
+    if (isCleric) return ItemBuilder.buildItem("spell", "common", "lightball");
+    if (isMage) return ItemBuilder.buildItem("spell", "common", "fireball");
+    if (isWarrior) return ItemBuilder.buildItem("spell", "common", "flameSlash");
+    if (isRogue) return ItemBuilder.buildItem("spell", "common", "stealth");
+  };
+
   const startStat = 2 * level + 3;
 
   return {
     startingWeapon: getStartingWeapon(),
+    startingSpell: getStartingSpell(),
     baseStats: {
       level,
       walkSpeed: 100,

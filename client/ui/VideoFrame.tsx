@@ -31,7 +31,7 @@ export default function VideoFrame() {
       addVideoStream(video, userVideoStream, peerId);
     });
     call.once("close", () => {
-      document.getElementById(peerId).remove();
+      document.getElementById(peerId)?.remove?.();
       delete peers[peerId];
     });
 
