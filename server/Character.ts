@@ -460,10 +460,19 @@ class ServerCharacter extends Character {
   }
   calculateDamage(victim: any, abilitySlot: number): Array<Hit> {
     if (victim?.state?.isDead) return [];
+    let hitList = [];
     const abilityDetails = this?.getAbilityDetails(abilitySlot);
-    return !abilitySlot || abilityDetails?.isMeleeAttack
-      ? this.calculateAttackDamage(victim, abilityDetails)
-      : this.calculateSpellDamage(victim, abilityDetails);
+    if (!abilitySlot || abilityDetails?.isMeleeAttack) {
+      hitList = this.calculateAttackDamage(victim, abilityDetails);
+    } else {
+      hitList = this.calculateSpellDamage(victim, abilityDetails);
+    }
+
+    // Casting stealth won't dispel anything.
+    if (abilityDetails?.spellName !== "stealth") {
+      victim.dispelBuffsByProperty("dispelAfterAttack", true);
+    }
+    return hitList;
   }
   doRegen() {
     const now = Date.now();
@@ -590,8 +599,8 @@ class ServerCharacter extends Character {
       percentStats: scaleStats ? scaledPercentStats : percentStats,
       spawnTime: Date.now(),
       dispelInCombat: buff?.dispelInCombat,
-      dispelOnAttack: buff?.dispelOnAttack,
-      dispelOnCast: buff?.dispelOnCast,
+      dispelBeforeAttack: buff?.dispelBeforeAttack,
+      dispelAfterAttack: buff?.dispelAfterAttack,
     });
 
     if (shouldCalculateStats) this.calculateStats();

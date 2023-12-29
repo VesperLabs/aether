@@ -245,7 +245,7 @@ class Npc extends Character implements Npc {
     const { scene, room, id } = this ?? {};
     const spellName = ability?.base;
 
-    this.dispelBuffsByProperty("dispelOnCast", true);
+    this.dispelBuffsByProperty("dispelBeforeAttack", true);
 
     room?.spellManager.create({
       caster: this,
@@ -327,7 +327,7 @@ class Npc extends Character implements Npc {
     const { spellName, action } = this.getAttackActionName({ count });
     this.action = action;
 
-    this.dispelBuffsByProperty("dispelOnAttack", true);
+    this.dispelBuffsByProperty("dispelBeforeAttack", true);
 
     room?.spellManager.create({
       caster: this,

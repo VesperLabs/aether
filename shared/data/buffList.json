@@ -141,8 +141,10 @@
     "scaleStats": false,
     "duration": -1,
     "dispelInCombat": true,
-    "dispelOnAttack": true,
-    "dispelOnCast": true,
+    "dispelAfterAttack": true,
+    "stats": {
+      "critChance": 100
+    },
     "percentStats": {
       "walkSpeed": -50
     },
