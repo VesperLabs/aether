@@ -1,11 +1,12 @@
 import Phaser from "phaser";
 const Sprite = Phaser.GameObjects.Sprite;
 import { spellDetails, BUFF_SPELLS, distanceTo } from "../shared";
+import ServerCharacter from "./Character";
 
 class Spell extends Phaser.GameObjects.Container {
   public id: string;
   public room: Room;
-  public caster: Character;
+  public caster: ServerCharacter;
   public target: Character;
   public spellName: string;
   public spawnPoint: Coordinate;
@@ -144,7 +145,13 @@ class Spell extends Phaser.GameObjects.Container {
       ? distanceTo(this, this.spawnPoint) >= this.maxDistance
       : Date.now() - this.state.spawnTime > this.maxActiveTime;
 
-    if (this.state.isExpired) return;
+    if (this.state.isExpired) {
+      // Casting stealth won't dispel anything.
+      if (this?.spellName !== "stealth") {
+        this?.caster?.dispelBuffsByProperty("dispelAfterAttack");
+      }
+      return;
+    }
     this.adjustSpellPosition();
     this.checkCollisions();
   }

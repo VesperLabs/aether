@@ -278,7 +278,7 @@ class ServerCharacter extends Character {
     /* Update the victim */
     victim.modifyStat("hp", -eleDamage);
     victim.state.lastCombat = Date.now();
-    victim.dispelBuffsByProperty("dispelInCombat", true);
+    victim.dispelBuffsByProperty("dispelInCombat");
 
     /* Npcs lock on and chase when a user hits them */
     if (victim.state.isRobot) {
@@ -354,7 +354,7 @@ class ServerCharacter extends Character {
     const totalDamage = physicalDamage + eleDamage;
     victim.modifyStat("hp", -totalDamage);
     victim.state.lastCombat = Date.now();
-    victim.dispelBuffsByProperty("dispelInCombat", true);
+    victim.dispelBuffsByProperty("dispelInCombat");
     /* Npcs lock on and chase when a user hits them */
     if (victim.state.isRobot) {
       victim.setLockedPlayerId(this?.socketId);
@@ -469,7 +469,7 @@ class ServerCharacter extends Character {
     }
     // Casting stealth won't dispel anything.
     if (abilityDetails?.spellName !== "stealth") {
-      this.dispelBuffsByProperty("dispelOnHit", true);
+      this.dispelBuffsByProperty("dispelOnHit");
     }
     return hitList;
   }
@@ -527,7 +527,7 @@ class ServerCharacter extends Character {
         this.state.doBuffPoison = true;
         this.state.lastBuffPoison = now;
         this.state.lastCombat = Date.now();
-        this.dispelBuffsByProperty("dispelInCombat", true);
+        this.dispelBuffsByProperty("dispelInCombat");
         this.modifyStat("hp", amount);
       }
     }
@@ -600,6 +600,7 @@ class ServerCharacter extends Character {
       dispelInCombat: buff?.dispelInCombat,
       dispelOnHit: buff?.dispelOnHit,
       dispelBeforeAttack: buff?.dispelBeforeAttack,
+      dispelAfterAttack: buff?.dispelAfterAttack,
     });
 
     if (shouldCalculateStats) this.calculateStats();
