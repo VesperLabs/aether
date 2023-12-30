@@ -140,6 +140,7 @@
     "scaleDuration": false,
     "scaleStats": false,
     "duration": -1,
+    "dispelAfterAttack": true,
     "dispelInCombat": true,
     "dispelOnHit": true,
     "stats": {

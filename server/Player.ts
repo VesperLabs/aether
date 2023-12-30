@@ -61,7 +61,7 @@ class Player extends ServerCharacter implements ServerPlayer {
     this.state.lastAttack = Date.now();
     this.state.isAttacking = true;
 
-    this.dispelBuffsByProperty("dispelBeforeAttack", true);
+    this.dispelBuffsByProperty("dispelBeforeAttack");
 
     room?.spellManager.create({
       caster: this,
@@ -90,7 +90,7 @@ class Player extends ServerCharacter implements ServerPlayer {
     this.modifyStatIfCostExists("hp", stats?.hpCost || 0);
     this.modifyStatIfCostExists("sp", stats?.spCost || 0);
 
-    this.dispelBuffsByProperty("dispelBeforeAttack", true);
+    this.dispelBuffsByProperty("dispelBeforeAttack");
 
     this.room?.spellManager.create({
       caster: this,

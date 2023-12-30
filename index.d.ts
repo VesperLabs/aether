@@ -154,6 +154,7 @@ interface Buff {
   dispelInCombat?: boolean;
   dispelOnHit?: boolean;
   dispelBeforeAttack?: boolean;
+  dispelAfterAttack?: boolean;
 }
 
 interface Character extends Phaser.GameObjects.Container {
