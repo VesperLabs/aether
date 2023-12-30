@@ -171,6 +171,6 @@
     "tint": "0x777777",
     "layerDepth": "bottom",
     "shouldFade": true,
-    "baseCooldown": 30000
+    "baseCooldown": 20000
   }
 }
