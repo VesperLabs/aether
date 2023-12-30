@@ -469,7 +469,7 @@ class ServerCharacter extends Character {
     }
     // Casting stealth won't dispel anything.
     if (abilityDetails?.spellName !== "stealth") {
-      victim.dispelBuffsByProperty("dispelOnHit", true);
+      this.dispelBuffsByProperty("dispelOnHit", true);
     }
     return hitList;
   }
