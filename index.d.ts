@@ -152,8 +152,8 @@ interface Buff {
   spawnTime: any;
   isExpired?: boolean;
   dispelInCombat?: boolean;
+  dispelOnHit?: boolean;
   dispelBeforeAttack?: boolean;
-  dispelAfterAttack?: boolean;
 }
 
 interface Character extends Phaser.GameObjects.Container {

@@ -467,10 +467,9 @@ class ServerCharacter extends Character {
     } else {
       hitList = this.calculateSpellDamage(victim, abilityDetails);
     }
-
     // Casting stealth won't dispel anything.
     if (abilityDetails?.spellName !== "stealth") {
-      victim.dispelBuffsByProperty("dispelAfterAttack", true);
+      victim.dispelBuffsByProperty("dispelOnHit", true);
     }
     return hitList;
   }
@@ -599,8 +598,8 @@ class ServerCharacter extends Character {
       percentStats: scaleStats ? scaledPercentStats : percentStats,
       spawnTime: Date.now(),
       dispelInCombat: buff?.dispelInCombat,
+      dispelOnHit: buff?.dispelOnHit,
       dispelBeforeAttack: buff?.dispelBeforeAttack,
-      dispelAfterAttack: buff?.dispelAfterAttack,
     });
 
     if (shouldCalculateStats) this.calculateStats();

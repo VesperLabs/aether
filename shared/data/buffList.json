@@ -141,7 +141,7 @@
     "scaleStats": false,
     "duration": -1,
     "dispelInCombat": true,
-    "dispelAfterAttack": true,
+    "dispelOnHit": true,
     "stats": {
       "critChance": 100
     },
