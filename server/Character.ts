@@ -177,6 +177,8 @@ class ServerCharacter extends Character {
       maxWaterDamage = 0,
       minEarthDamage = 0,
       maxEarthDamage = 0,
+      minHolyDamage = 0,
+      maxHolyDamage = 0,
     } = eleDamages;
 
     // Get the damage of the spell
@@ -184,6 +186,7 @@ class ServerCharacter extends Character {
     const lightDamageRoll = randomNumber(minLightDamage, maxLightDamage);
     const waterDamageRoll = randomNumber(minWaterDamage, maxWaterDamage);
     const earthDamageRoll = randomNumber(minEarthDamage, maxEarthDamage);
+    const holyDamageRoll = randomNumber(minHolyDamage, maxHolyDamage);
 
     // 2.) Calculate damage reduction based on victim's resistances
     const fireResistance = (victim.stats.fireResistance || 0) / 100; // Assuming default value of 0 if not provided
@@ -195,6 +198,9 @@ class ServerCharacter extends Character {
     const lightDamageAfterReduction = lightDamageRoll * (1 - lightResistance);
     const waterDamageAfterReduction = waterDamageRoll * (1 - waterResistance);
     const earthDamageAfterReduction = earthDamageRoll * (1 - earthResistance);
+
+    // Holy damage isn't reduced
+    const holyDamage = Math.floor(holyDamageRoll);
 
     // Calculate total damage after reduction
     let eleDamage = Math.floor(
@@ -223,7 +229,7 @@ class ServerCharacter extends Character {
     // Sort elements array in descending order based on damage amount
     elements.sort((a, b) => b.damage - a.damage);
 
-    return { eleDamage, elements: elements?.map((d) => d?.type) };
+    return { eleDamage, holyDamage, elements: elements?.map((d) => d?.type) };
   }
   calculateStats(shouldHeal = false) {
     this.calculateActiveItemSlots();
@@ -238,16 +244,17 @@ class ServerCharacter extends Character {
     // add elemental damage from stats to the spell's damages
     const baseElementalDamages = addValuesToExistingKeys(effects, this?.stats);
 
-    // add spellpower
+    // factor in spellpower
     const dmgWithSpellPower = Object.entries(baseElementalDamages).reduce((acc, [key, value]) => {
       acc[key] = Number(value) + Number(this?.stats?.spellPower || 0);
       return acc;
     }, {});
 
     // calculate elemental damages
-    let { eleDamage, elements } = this.calculateElementalDamage(dmgWithSpellPower, victim);
-    const critRoll = randomNumber(1, 100);
-    let isCritical = false;
+    let { eleDamage, holyDamage, elements } = this.calculateElementalDamage(
+      dmgWithSpellPower,
+      victim
+    );
 
     // add buffs if the spell has any
     if (buffs) {
@@ -267,45 +274,56 @@ class ServerCharacter extends Character {
     // the spell doesnt do damage,
     if (!Object.entries(effects)?.length) return hits;
 
+    // Spell Crits
+    const critRoll = randomNumber(1, 100);
+    let isCritical = false;
     if (this.stats.critChance && critRoll <= this.stats.critChance) {
       isCritical = true;
-      eleDamage = Math.max(1, eleDamage * (this?.stats?.critMultiplier || 1)); // Minimum physicalDamage value of 1
+      eleDamage = Math.floor(Math.max(1, eleDamage * (this?.stats?.critMultiplier || 1))); // Minimum physicalDamage value of 1
+      holyDamage = Math.floor(Math.max(1, holyDamage * (this?.stats?.critMultiplier || 1))); // Minimum physicalDamage value of 1
     }
 
-    // round it
-    eleDamage = Math.floor(eleDamage);
-
-    /* Update the victim */
-    victim.modifyStat("hp", -eleDamage);
-    victim.state.lastCombat = Date.now();
-    victim.dispelBuffsByProperty("dispelInCombat");
-
-    /* Npcs lock on and chase when a user hits them */
-    if (victim.state.isRobot) {
-      victim.setLockedPlayerId(this?.socketId);
-    }
-    /* Victim killed */
-    if (victim.stats.hp <= 0) {
-      victim.setDead();
-      victim.stats.hp = 0;
+    if (Math.abs(holyDamage) > 0) {
+      victim.modifyStat("hp", holyDamage);
       hits.push({
-        type: "death",
+        type: "hp",
+        amount: holyDamage,
+        elements: ["holy"],
+        from: this.id,
+        to: victim.id,
+        isCritical,
+      });
+    }
+    if (Math.abs(eleDamage) > 0) {
+      victim.modifyStat("hp", -eleDamage);
+      victim.state.lastCombat = Date.now();
+      victim.dispelBuffsByProperty("dispelInCombat");
+      /* Npc aggro when they are hit or hit a player */
+      victim.setLockedPlayerId(this?.id);
+      /* Victim killed */
+      if (victim.stats.hp <= 0) {
+        victim.setDead();
+        victim.stats.hp = 0;
+        hits.push({
+          type: "death",
+          amount: -eleDamage,
+          elements,
+          from: this.id,
+          to: victim.id,
+          isCritical,
+        });
+        return hits;
+      }
+      hits.push({
+        type: "hp",
         amount: -eleDamage,
         elements,
         from: this.id,
         to: victim.id,
         isCritical,
       });
-      return hits;
     }
-    hits.push({
-      type: "hp",
-      amount: -eleDamage,
-      elements,
-      from: this.id,
-      to: victim.id,
-      isCritical,
-    });
+
     return hits;
   }
   calculateAttackDamage(victim: any, abilityDetails: any): Array<Hit> {
@@ -353,11 +371,12 @@ class ServerCharacter extends Character {
     }
     const totalDamage = physicalDamage + eleDamage;
     victim.modifyStat("hp", -totalDamage);
-    victim.state.lastCombat = Date.now();
-    victim.dispelBuffsByProperty("dispelInCombat");
-    /* Npcs lock on and chase when a user hits them */
-    if (victim.state.isRobot) {
-      victim.setLockedPlayerId(this?.socketId);
+
+    if (totalDamage > 0) {
+      victim.state.lastCombat = Date.now();
+      victim.dispelBuffsByProperty("dispelInCombat");
+      /* Npc aggro when they are hit or hit a player */
+      victim.setLockedPlayerId(this?.id);
     }
 
     // onAttackHit if we have some
@@ -658,6 +677,9 @@ class ServerCharacter extends Character {
     }
   }
   doHit(ids: Array<string>, abilitySlot: number): void {
+    //placeholder
+  }
+  setLockedPlayerId(id: string) {
     //placeholder
   }
 }

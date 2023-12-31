@@ -131,7 +131,7 @@ interface Room {
   findPath(startCoords: Coordinate, targetCoords: Coordinate);
 }
 
-type Elements = "earth" | "fire" | "water" | "light" | "physical";
+type Elements = "earth" | "fire" | "water" | "light" | "physical" | "holy";
 
 interface Hit {
   type: string;

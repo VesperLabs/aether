@@ -95,7 +95,7 @@
         "stats": {
           "minDamage": 1,
           "maxDamage": 2,
-          "attackDelay": 300,
+          "attackDelay": 350,
           "spellPower": 2,
           "range": 1.15,
           "spCost": 2
@@ -2141,6 +2141,23 @@
           "charClass": "cleric"
         }
       },
+      "holyball": {
+        "ilvl": 1,
+        "name": "Holyball",
+        "base": "holyball",
+        "slot": "spell",
+        "texture": "scroll-gray",
+        "effects": {
+          "minHolyDamage": 3,
+          "maxHolyDamage": 4
+        },
+        "stats": {
+          "hpCost": 4
+        },
+        "requirements": {
+          "charClass": "cleric"
+        }
+      },
       "evasion": {
         "ilvl": 1,
         "name": "Evasion",
@@ -2289,164 +2306,112 @@
       },
       "fireball2": {
         "ilvl": 2,
-        "name": "Fireball",
-        "base": "fireball",
-        "slot": "spell"
+        "base": "fireball"
       },
       "quake2": {
         "ilvl": 2,
-        "name": "Quake",
-        "base": "quake",
-        "slot": "spell"
+        "base": "quake"
       },
       "waterball2": {
         "ilvl": 2,
-        "name": "Waterball",
-        "base": "waterball",
-        "slot": "spell"
+        "base": "waterball"
       },
       "lightball2": {
         "ilvl": 2,
-        "name": "Lightball",
-        "base": "lightball",
-        "slot": "spell"
+        "base": "lightball"
       },
       "evasion2": {
         "ilvl": 2,
-        "name": "Evasion",
-        "base": "evasion",
-        "slot": "spell"
+        "base": "evasion"
       },
       "haste2": {
         "ilvl": 2,
-        "name": "Haste",
-        "base": "haste",
-        "slot": "spell"
+        "base": "haste"
       },
       "brute2": {
         "ilvl": 2,
-        "name": "Brute",
-        "base": "brute",
-        "slot": "spell"
+        "base": "brute"
       },
       "guard2": {
         "ilvl": 2,
-        "name": "Guard",
-        "base": "guard",
-        "slot": "spell"
+        "base": "guard"
       },
       "genius2": {
         "ilvl": 2,
-        "name": "Genius",
-        "base": "genius",
-        "slot": "spell"
+        "base": "genius"
       },
       "endurance2": {
         "ilvl": 2,
-        "name": "Endurance",
-        "base": "endurance",
-        "slot": "spell"
+        "base": "endurance"
       },
       "regeneration2": {
         "ilvl": 2,
-        "name": "Regeneration",
-        "base": "regeneration",
-        "slot": "spell"
+        "base": "regeneration"
       },
       "stealth2": {
         "ilvl": 2,
-        "name": "Stealth",
-        "base": "stealth",
-        "slot": "spell"
+        "base": "stealth"
       },
       "flameSlash2": {
         "ilvl": 2,
-        "name": "Flame Slash",
-        "base": "flame-slash",
-        "slot": "spell"
+        "base": "flame-slash"
       },
       "fireball3": {
         "ilvl": 3,
-        "name": "Fireball",
-        "base": "fireball",
-        "slot": "spell"
+        "base": "fireball"
       },
       "quake3": {
         "ilvl": 3,
-        "name": "Quake",
-        "base": "quake",
-        "slot": "spell"
+        "base": "quake"
       },
       "waterball3": {
         "ilvl": 3,
-        "name": "Waterball",
-        "base": "waterball",
-        "slot": "spell"
+        "base": "waterball"
       },
       "lightball3": {
         "ilvl": 3,
-        "name": "Lightball",
-        "base": "lightball",
-        "slot": "spell"
+        "base": "lightball"
       },
       "evasion3": {
         "ilvl": 3,
-        "name": "Evasion",
-        "base": "evasion",
-        "slot": "spell"
+        "base": "evasion"
       },
       "haste3": {
         "ilvl": 3,
-        "name": "Haste",
-        "base": "haste",
-        "slot": "spell"
+        "base": "haste"
       },
       "brute3": {
         "ilvl": 3,
-        "name": "Brute",
-        "base": "brute",
-        "slot": "spell"
+        "base": "brute"
       },
       "guard3": {
         "ilvl": 3,
-        "name": "Guard",
-        "base": "guard",
-        "slot": "spell"
+        "base": "guard"
       },
       "genius3": {
         "ilvl": 3,
-        "name": "Genius",
-        "base": "genius",
-        "slot": "spell"
+        "base": "genius"
       },
       "endurance3": {
         "ilvl": 3,
-        "name": "Endurance",
-        "base": "endurance",
-        "slot": "spell"
+        "base": "endurance"
       },
       "regeneration3": {
         "ilvl": 3,
-        "name": "Regeneration",
-        "base": "regeneration",
-        "slot": "spell"
+        "base": "regeneration"
       },
       "stealth3": {
         "ilvl": 3,
-        "name": "Stealth",
-        "base": "stealth",
-        "slot": "spell"
+        "base": "stealth"
       },
       "flameSlash3": {
         "ilvl": 3,
-        "name": "Flame Slash",
-        "base": "flame-slash",
-        "slot": "spell"
+        "base": "flame-slash"
       }
     }
   },
   "bag": {
-    "common": {
+    "rare": {
       "smallPouch": {
         "ilvl": 1,
         "name": "Small Pouch",
@@ -2462,6 +2427,14 @@
         "slot": "bag",
         "texture": "bag-large-pouch",
         "space": 8
+      },
+      "mediumPouch": {
+        "ilvl": 3,
+        "name": "Large Pouch",
+        "base": "bag",
+        "slot": "bag",
+        "texture": "bag-large-pouch",
+        "space": 12
       }
     },
     "unique": {

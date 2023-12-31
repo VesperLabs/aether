@@ -38,6 +38,9 @@ class Hit extends Phaser.GameObjects.Container {
       if (elements[i] === "water") {
         playAudio({ scene, audioKey: "spell-water", caster: victim });
       }
+      if (elements[i] === "holy") {
+        playAudio({ scene, audioKey: "spell-holy", caster: victim });
+      }
     }
 
     scene.events.on("update", this.update, this);

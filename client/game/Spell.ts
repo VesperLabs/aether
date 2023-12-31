@@ -48,6 +48,7 @@ class Spell extends Phaser.GameObjects.Container {
     this.shouldFade = details?.shouldFade || false;
     this.maxDistance = details?.maxDistance ?? -1; //for ranged attacks
     this.action = action ?? "attack_right";
+    this.isMissile = details?.isMissile ?? false;
 
     scene.physics.add.existing(this);
     scene.events.on("update", this.update, this);
@@ -108,20 +109,8 @@ class Spell extends Phaser.GameObjects.Container {
         ? caster?.getWeaponRange("handLeft")
         : caster?.getWeaponRange("handRight");
     }
-    if (spellName === "fireball") {
-      this.spell.play("spell-anim-fireball");
-      this.velocityX = Math.cos(castAngle) * this?.spellSpeed;
-      this.velocityY = Math.sin(castAngle) * this?.spellSpeed;
-      this.spell.setRotation(castAngle);
-    }
-    if (spellName === "waterball") {
-      this.spell.play("spell-anim-waterball");
-      this.velocityX = Math.cos(castAngle) * this?.spellSpeed;
-      this.velocityY = Math.sin(castAngle) * this?.spellSpeed;
-      this.spell.setRotation(castAngle);
-    }
-    if (spellName === "lightball") {
-      this.spell.play("spell-anim-lightball");
+    if (this.isMissile) {
+      this.spell.play(`spell-anim-${spellName}`);
       this.velocityX = Math.cos(castAngle) * this?.spellSpeed;
       this.velocityY = Math.sin(castAngle) * this?.spellSpeed;
       this.spell.setRotation(castAngle);
@@ -130,7 +119,7 @@ class Spell extends Phaser.GameObjects.Container {
       this.body.setSize(this?.bodySize * 4, this?.bodySize * 2);
       this.y = this.caster.y + 6;
       this.body.setOffset(-this.bodySize * 2, -this.bodySize);
-      this.spell.play("spell-anim-quake");
+      this.spell.play(`spell-anim-${spellName}`);
     }
     if (BUFF_SPELLS.includes(spellName)) {
       this.spell.play("spell-anim-chakra");

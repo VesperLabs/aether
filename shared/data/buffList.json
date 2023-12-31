@@ -113,7 +113,7 @@
     "duration": 3000,
     "scaleDuration": false,
     "stats": {
-      "walkSpeed": -15,
+      "walkSpeed": -25,
       "attackDelay": 50,
       "castDelay": 100
     }

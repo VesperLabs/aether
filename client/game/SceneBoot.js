@@ -176,6 +176,13 @@ function createSpellAnims(scene) {
     frameRate: 20,
   });
   scene.anims.create({
+    key: "spell-anim-holyball",
+    frames: scene.anims.generateFrameNumbers("spell-anim-balls", { start: 10, end: 19 }),
+    repeat: -1,
+    yoyo: false,
+    frameRate: 20,
+  });
+  scene.anims.create({
     key: "spell-anim-chakra",
     frames: scene.anims.generateFrameNumbers("spell-anim-chakra", { start: 0, end: 5 }),
     repeat: -1,
@@ -221,6 +228,13 @@ function createSpellAnims(scene) {
   scene.anims.create({
     key: "spell-anim-hits-earth",
     frames: scene.anims.generateFrameNumbers("spell-anim-hits", { start: 36, end: 44 }),
+    repeat: 0,
+    yoyo: false,
+    frameRate: 20,
+  });
+  scene.anims.create({
+    key: "spell-anim-hits-holy",
+    frames: scene.anims.generateFrameNumbers("spell-anim-hits", { start: 45, end: 53 }),
     repeat: 0,
     yoyo: false,
     frameRate: 20,

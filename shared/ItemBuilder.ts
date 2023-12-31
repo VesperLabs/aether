@@ -138,26 +138,21 @@ const buildItem = (...args: BuildItem): any => {
   let newEffects = {};
   let percentStats = {};
 
-  // Lookup the item in the itemList
-  try {
-    item = itemList[type]["common"][itemKey];
-    if (!item) {
-      item = itemList[type][rarity][itemKey];
-      if (item) {
-        // if the item is found under "rare" or "magic"
-        // in our itemList, the item just has a magic / rare color
-        // and we do not just want to spawn mods on it
-        shouldSpawnMods = false;
-      }
+  item = itemList?.[type]?.["common"]?.[itemKey];
+  if (!item) {
+    item = itemList?.[type]?.[rarity]?.[itemKey];
+    if (item) {
+      // if the item is found under "rare" or "magic"
+      // in our itemList, the item just has a magic / rare color
+      // and we do not just want to spawn mods on it
+      shouldSpawnMods = false;
     }
-    item = cloneObject(item);
-  } catch (e) {
+  }
+  if (!item) {
     console.log(`🔧 Item not found for ${type} ${rarity} ${itemKey}`);
     return null;
   }
-
-  if (!item) return console.log(`🔧 Item not found for ${type} ${rarity} ${itemKey}`);
-
+  item = cloneObject(item);
   item = { requirements: {}, ...item };
 
   // build the attributes of the item
@@ -221,8 +216,8 @@ const buildItem = (...args: BuildItem): any => {
     item.items = new Array(item.space).fill(null);
   }
 
-  /* Bags and Spells cannot be magic or rare */
-  if (["bag", "spell"].includes(item.type)) {
+  /* Bags and Spells cannot be magic or rare unless they were found in item table */
+  if (["bag", "spell"].includes(item.type) && shouldSpawnMods) {
     if (["magic", "rare"].includes(item.rarity)) item.rarity = "common";
   }
 
@@ -331,6 +326,7 @@ function scaleBaseStats(jsonData) {
             const hasLevelReq = reqLevel > 0 && item?.slot !== "bag" && item?.base !== "material";
             item.texture = item?.texture || baseItem?.texture;
             item.slot = item?.slot || baseItem?.slot;
+            item.name = item?.name || baseItem?.name;
             item.stats = { ...multiplyValues(baseItem.stats, ilvl), ...item.stats };
             item.requirements = {
               ...(hasLevelReq && { level: reqLevel }), // default required level
