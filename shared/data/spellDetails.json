@@ -24,7 +24,8 @@
     "maxActiveTime": 120,
     "bodySize": 16,
     "layerDepth": "bottom",
-    "baseCooldown": 1000
+    "baseCooldown": 1000,
+    "description": "A melee attack that deals extra fire damage to enemies."
   },
   "fireball": {
     "isAimable": true,
@@ -39,7 +40,8 @@
     "scaleMultiplier": 0.1,
     "npcCastRange": [50, 200],
     "npcCastWait": 5000,
-    "layerDepth": "top"
+    "layerDepth": "top",
+    "description": "Aim to shoot. Deals fire damage to enemies."
   },
   "waterball": {
     "isAimable": true,
@@ -54,7 +56,8 @@
     "scaleMultiplier": 0.1,
     "npcCastRange": [50, 200],
     "npcCastWait": 5000,
-    "layerDepth": "top"
+    "layerDepth": "top",
+    "description": "Aim to shoot. Deals water damage to enemies."
   },
   "lightball": {
     "isAimable": true,
@@ -69,7 +72,8 @@
     "scaleMultiplier": 0.1,
     "npcCastRange": [50, 200],
     "npcCastWait": 5000,
-    "layerDepth": "top"
+    "layerDepth": "top",
+    "description": "Aim to shoot. Deals light damage to enemies."
   },
   "holyball": {
     "isAimable": true,
@@ -86,7 +90,8 @@
     "npcCastRange": [50, 200],
     "npcCastWait": 5000,
     "layerDepth": "top",
-    "baseCooldown": 5000
+    "baseCooldown": 5000,
+    "description": "Aim to shoot. Heals holy damage to allies."
   },
   "quake": {
     "allowedTargets": ["enemy"],
@@ -100,7 +105,8 @@
     "npcCastWait": 5000,
     "layerDepth": "bottom",
     "shouldFade": true,
-    "baseCooldown": 3000
+    "baseCooldown": 3000,
+    "description": "Emits a ring of earth damage around hero damage to enemies."
   },
   "evasion": {
     "allowedTargets": ["self", "ally"],

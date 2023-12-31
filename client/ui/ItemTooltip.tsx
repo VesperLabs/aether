@@ -7,6 +7,7 @@ import {
   formatStats,
   CONSUMABLES_BASES,
   itemHasRequiredStats,
+  spellDetails,
 } from "@aether/shared";
 import TooltipLabel from "./TooltipLabel";
 import TextDivider from "./TextDivider";
@@ -26,6 +27,7 @@ const ItemTooltip = ({ player, item, tooltipId, show }) => {
   const hasEffects = Object.keys(combinedEffects)?.length > 0;
   const hasBuffs = Object.keys(buffs)?.length > 0;
   const isDoubleClickable = [...CONSUMABLES_BASES, "bag"].includes(item.base);
+  const isSpell = item?.type === "spell";
   const numSetPieces = itemSetList?.[item?.setName]?.pieces;
 
   return (
@@ -170,6 +172,25 @@ const ItemTooltip = ({ player, item, tooltipId, show }) => {
               }}
             >
               Double click to {CONSUMABLES_BASES?.includes(item?.base) ? "consume" : "open"}
+            </Text>
+            <Divider />
+          </>
+        )}
+
+        {isSpell && spellDetails?.[item?.base]?.description && (
+          <>
+            <Text
+              sx={{
+                textAlign: "center",
+                maxWidth: 200,
+                fontStyle: "italic",
+                fontWeight: "normal",
+                color: "gray.400",
+                textTransform: "none",
+                whiteSpace: "normal",
+              }}
+            >
+              {spellDetails?.[item?.base]?.description}
             </Text>
             <Divider />
           </>
