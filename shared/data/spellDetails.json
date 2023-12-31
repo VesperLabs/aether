@@ -106,7 +106,7 @@
     "layerDepth": "bottom",
     "shouldFade": true,
     "baseCooldown": 3000,
-    "description": "Emits a ring of earth damage around hero damage to enemies."
+    "description": "Emits a ring of earth damage around hero. Damages enemies."
   },
   "evasion": {
     "allowedTargets": ["self", "ally"],
