@@ -2321,6 +2321,10 @@
         "ilvl": 2,
         "base": "lightball"
       },
+      "holyball2": {
+        "ilvl": 2,
+        "base": "holyball"
+      },
       "evasion2": {
         "ilvl": 2,
         "base": "evasion"
@@ -2372,6 +2376,10 @@
       "lightball3": {
         "ilvl": 3,
         "base": "lightball"
+      },
+      "holyball3": {
+        "ilvl": 3,
+        "base": "holyball"
       },
       "evasion3": {
         "ilvl": 3,
