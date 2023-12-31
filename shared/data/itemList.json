@@ -363,9 +363,10 @@
         "texture": "weapon-staff-crystal",
         "slot": "hands",
         "stats": {
+          "spellPower": 6,
           "critChance": [4, 5],
           "minEarthDamage": 1,
-          "maxEarthDamage": 5,
+          "maxEarthDamage": 2,
           "maxMp": 50
         }
       },
