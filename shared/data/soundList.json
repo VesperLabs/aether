@@ -8,5 +8,6 @@
   { "name": "spell-fireball", "src": "./assets/audio/spell-fireball.mp3" },
   { "name": "spell-earth", "src": "./assets/audio/spell-earth.mp3" },
   { "name": "spell-water", "src": "./assets/audio/spell-water.mp3" },
-  { "name": "spell-light", "src": "./assets/audio/spell-light.mp3" }
+  { "name": "spell-light", "src": "./assets/audio/spell-light.mp3" },
+  { "name": "spell-holy", "src": "./assets/audio/spell-holy.wav" }
 ]

@@ -169,6 +169,9 @@ function deriveElements(stats = {}) {
     if (statKey === "maxEarthDamage" && statValue > 0) {
       elements.push("earth");
     }
+    if (statKey === "maxHolyDamage" && statValue > 0) {
+      elements.push("holy");
+    }
   }
   return elements;
 }

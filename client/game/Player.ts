@@ -415,6 +415,10 @@ class Player extends Character {
           this.doFlashAnimation("0xFF0000");
           this.state.lastFlash = Date.now();
           this.state.isFlash = true;
+        } else {
+          if (elements?.includes("holy")) {
+            scene.add.existing(new Hit(this.scene, this, elements));
+          }
         }
         break;
       case "mp":

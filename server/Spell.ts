@@ -30,6 +30,7 @@ class Spell extends Phaser.GameObjects.Container {
   declare scene: ServerScene;
   declare stickToCaster: boolean;
   private action: string;
+  private isMissile: boolean;
 
   constructor(
     scene: ServerScene,
@@ -72,6 +73,7 @@ class Spell extends Phaser.GameObjects.Container {
     this.scaleBase = details?.scaleBase ?? 1;
     this.scaleMultiplier = details?.scaleMultiplier ?? 0;
     this.maxDistance = details?.maxDistance ?? -1; //for ranged attacks
+    this.isMissile = details?.isMissile ?? false;
 
     scene.physics.add.existing(this);
     scene.events.on("update", this.update, this);
@@ -111,17 +113,8 @@ class Spell extends Phaser.GameObjects.Container {
         ? caster?.getWeaponRange("handLeft")
         : caster?.getWeaponRange("handRight");
     }
-    if (spellName == "fireball") {
-      this.velocityX = Math.cos(castAngle) * this?.spellSpeed;
-      this.velocityY = Math.sin(castAngle) * this?.spellSpeed;
-      this.spell.setRotation(castAngle);
-    }
-    if (spellName == "waterball") {
-      this.velocityX = Math.cos(castAngle) * this?.spellSpeed;
-      this.velocityY = Math.sin(castAngle) * this?.spellSpeed;
-      this.spell.setRotation(castAngle);
-    }
-    if (spellName == "lightball") {
+    if (this.isMissile) {
+      // for the ball attacks
       this.velocityX = Math.cos(castAngle) * this?.spellSpeed;
       this.velocityY = Math.sin(castAngle) * this?.spellSpeed;
       this.spell.setRotation(castAngle);
