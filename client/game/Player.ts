@@ -96,11 +96,12 @@ class Player extends Character {
     }
     if (this.state.doBuffPoison) {
       const poisonBuff = this.getBuff("poison");
-      this.takeHit({ type: "hp", amount: -(poisonBuff?.stats?.poisonDamage || 0) });
+      if (poisonBuff) this.takeHit({ type: "hp", amount: -(poisonBuff?.stats?.poisonDamage || 0) });
     }
     if (this.state.doHpBuffRegen) {
       const regenBuff = this.getBuff("regeneration");
-      this.takeHit({ type: "hp", amount: regenBuff?.stats?.regenHp, elements: ["holy"] });
+      if (regenBuff)
+        this.takeHit({ type: "hp", amount: regenBuff?.stats?.regenHp, elements: ["holy"] });
     }
     if (this.state.doMpRegen) {
       this.takeHit({ type: "mp", amount: this?.stats?.regenMp });

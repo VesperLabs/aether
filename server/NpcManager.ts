@@ -49,7 +49,7 @@ class NpcManager {
         maxMp: 0,
         maxDamage: baseStats.maxDamage + 1,
         minDamage: baseStats.minDamage + 1,
-        walkSpeed: baseStats.walkSpeed,
+        walkSpeed: baseStats.walkSpeed - 30,
         intelligence: baseStats.intelligence + baseLevel * 2,
         strength: baseStats.strength + baseLevel * 2,
         dexterity: baseStats.dexterity + baseLevel * 2,

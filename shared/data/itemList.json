@@ -1344,7 +1344,7 @@
         "stats": {
           "range": 4.5,
           "attackDelay": 700,
-          "minDamage": 0,
+          "minDamage": 1,
           "maxDamage": 1,
           "spCost": 3
         },
@@ -1362,7 +1362,7 @@
           "range": 7,
           "attackDelay": 900,
           "minDamage": 1,
-          "maxDamage": 1,
+          "maxDamage": 2,
           "spCost": 3
         },
         "requirements": {
