@@ -583,7 +583,7 @@ class ServerCharacter extends Character {
     if (didLevel) this.fillHpMp();
     return didLevel;
   }
-  addBuff({ name, level, caster, shouldCalculateStats }: AddBuffArgs) {
+  addBuff({ name, level, caster, shouldCalculateStats = true }: AddBuffArgs) {
     const buff = cloneObject(buffList?.[name]);
     if (!buff) return false;
 
