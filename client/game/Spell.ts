@@ -86,7 +86,9 @@ class Spell extends Phaser.GameObjects.Container {
         this.spell.displayHeight = viewSize * rangeLeft;
         this.spell.setFlipX(false);
       }
-      if (this.action.includes("attack_right")) {
+
+      // npcs without attack animations will stand here
+      if (this.action.includes("attack_right") || this.action === "stand") {
         this.setAngle(-tiltAngle);
         const rangeRight =
           caster?.equipment?.handRight?.stats?.range * 2 || caster?.body?.radius / 8;

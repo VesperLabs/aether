@@ -97,7 +97,9 @@ class Spell extends Phaser.GameObjects.Container {
         this.spell.displayWidth = viewSize * rangeLeft;
         this.spell.displayHeight = viewSize * rangeLeft;
       }
-      if (this.action.includes("attack_right")) {
+
+      // npcs without attack animations will stand here
+      if (this.action.includes("attack_right") || this.action === "stand") {
         const rangeRight = caster?.getWeaponRange("handRight");
         this.body.setCircle(rangeRight, -rangeRight, -rangeRight);
         this.spell.displayWidth = viewSize * rangeRight;
@@ -150,7 +152,7 @@ class Spell extends Phaser.GameObjects.Container {
   }
   checkCollisions() {
     if (this?.state?.isExpired) return;
-    const { target, caster, scene, allowedTargets, abilitySlot, spellName } = this;
+    const { target, caster, scene, allowedTargets, abilitySlot } = this;
     const direction = this?.direction;
     const players = this.room.playerManager.players?.getChildren() || [];
     const npcs = this.room.npcManager.npcs?.getChildren() || [];

@@ -58,7 +58,6 @@ class Npc extends Character implements Npc {
 
     this.name = args?.name;
     this.scene = scene;
-    this.state.isRobot = true;
     this.respawnTime = 10000;
     this.drops = args?.drops;
     this.equipment = buildEquipment(equipment);
