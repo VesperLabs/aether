@@ -494,7 +494,7 @@ function calculateStats(player, shouldHeal = false) {
       ns[key] += percentIncrease;
   });
 
-  ns.maxHp = ns.maxHp + ns.vitality * 5;
+  ns.maxHp = ns.maxHp + ns.vitality * 3;
   ns.maxMp = ns.maxMp + ns.intelligence * 3;
   ns.maxSp = ns.maxSp + Math.floor(ns.vitality * 0.03);
   ns.magicFind = ns.magicFind || 0;

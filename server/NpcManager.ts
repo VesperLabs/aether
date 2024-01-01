@@ -36,7 +36,6 @@ class NpcManager {
         console.log(`❌ Map npc "${name}" is broken or not found in ${room.name}`);
         continue;
       }
-      const isKeeper = npc.kind === "keeper";
 
       const { baseStats } = useGetBaseCharacterDefaults({
         level: baseLevel,
@@ -50,11 +49,11 @@ class NpcManager {
         maxMp: 0,
         maxDamage: baseStats.maxDamage + 1,
         minDamage: baseStats.minDamage + 1,
-        walkSpeed: baseStats.walkSpeed - 30,
+        walkSpeed: baseStats.walkSpeed,
         intelligence: baseStats.intelligence + baseLevel * 2,
         strength: baseStats.strength + baseLevel * 2,
         dexterity: baseStats.dexterity + baseLevel * 2,
-        vitality: baseStats.vitality + baseLevel * 2,
+        vitality: baseStats.vitality + baseLevel * 5,
       };
 
       this.create({
