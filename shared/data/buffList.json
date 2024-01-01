@@ -102,7 +102,7 @@
     "duration": -1,
     "dispelInCombat": true,
     "scaleDuration": false,
-    "description": "Regenerates HP while out of combat"
+    "description": "Regenerating HP while you are out of combat."
   },
   "stun": {
     "type": "debuff",
@@ -133,7 +133,7 @@
     "stats": {
       "magicFind": 25
     },
-    "description": "You feel lucky, punk.  Increased chance to find loot."
+    "description": "Increased chance to find loot from slain enemies."
   },
   "stealth": {
     "type": "buff",
@@ -149,6 +149,6 @@
     "percentStats": {
       "walkSpeed": -50
     },
-    "description": "Hidden from sight while you are out of combat"
+    "description": "Hidden from sight while you are out of combat."
   }
 }
