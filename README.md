@@ -70,8 +70,6 @@ tile-extruder --tileWidth 32 --tileHeight 32 --input ./public/assets/tilesets/cl
 
 - [ ] Trade window
 - [ ] Crafting system
-- [ ] Better minimap (Show / Hide)
-- [ ] UserSettings (Music on / off)
 - [ ] Doors that require a key or level to pass through
 - [ ] Ability to choose from mage-type rogue-type or warrior-type rewards on some quests
 
@@ -79,6 +77,7 @@ tile-extruder --tileWidth 32 --tileHeight 32 --input ./public/assets/tilesets/cl
 
 - [ ] More spells that effect movement, (dives, dodges, pushback etc)
 - [ ] Back-stab damage
+- [ ] Second joystick casts last used attack (mobile)
 
 #### Performance
 
@@ -109,3 +108,5 @@ tile-extruder --tileWidth 32 --tileHeight 32 --input ./public/assets/tilesets/cl
 - [x] Cooldowns show in UI
 - [x] Attack stamina
 - [x] Fix party system to update stats properly
+- [x] UserSettings minimap (on / off)
+- [x] UserSettings music (on / off)

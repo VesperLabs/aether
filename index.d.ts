@@ -143,6 +143,13 @@ interface Hit {
   to: string;
 }
 
+interface AddBuffArgs {
+  name: string;
+  level: number;
+  caster: Character;
+  shouldCalculateStats?: boolean;
+}
+
 interface Buff {
   name: string;
   level: number;
@@ -188,7 +195,7 @@ interface Character extends Phaser.GameObjects.Container {
   hitBox: any;
   bodyOffsetY: number;
   doHit(ids: Array<string>, abilitySlot: number): void;
-  addBuff(name: string, level, shouldCalculateStats: boolean);
+  addBuff(args: AddBuffArgs);
   calculateAttackDamage(victim: any, abilitySlot: number);
   calculateSpellDamage(victim: any, abilitySlot: number);
   calculateDamage(victim: any, abilitySlot: number);

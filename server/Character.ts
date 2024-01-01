@@ -6,6 +6,7 @@ import {
   addValuesToExistingKeys,
   calculateStats,
   mergeAndAddValues,
+  cloneObject,
 } from "./utils";
 import buffList from "../shared/data/buffList.json";
 import { spellDetails } from "@aether/shared";
@@ -267,7 +268,7 @@ class ServerCharacter extends Character {
           to: victim.id,
         });
 
-        victim.addBuff(name, level);
+        victim.addBuff({ name, level, caster: this });
       });
     }
 
@@ -394,7 +395,7 @@ class ServerCharacter extends Character {
               elements,
               to: this.id,
             });
-            this.addBuff(name, level);
+            this.addBuff({ name, level, caster: this });
           }
           if (type === "debuff") {
             hits.push({
@@ -404,7 +405,7 @@ class ServerCharacter extends Character {
               elements,
               to: victim.id,
             });
-            victim.addBuff(name, level);
+            victim.addBuff({ name, level, caster: this });
           }
         }
       });
@@ -424,7 +425,7 @@ class ServerCharacter extends Character {
               elements,
               to: victim.id,
             });
-            victim.addBuff(name, level);
+            victim.addBuff({ name, level, caster: this });
           }
         }
       });
@@ -524,7 +525,7 @@ class ServerCharacter extends Character {
       this.modifyStat("sp", this.stats.regenSp);
     }
 
-    if (regenBuff && !isResting) {
+    if (regenBuff) {
       if (isHpBuffRegenReady && this.stats.hp < this.stats.maxHp) {
         this.state.doHpBuffRegen = true;
         this.state.lastHpBuffRegen = now;
@@ -582,44 +583,40 @@ class ServerCharacter extends Character {
     if (didLevel) this.fillHpMp();
     return didLevel;
   }
-  addBuff(name: string, level: integer, shouldCalculateStats = true) {
-    const buff = buffList?.[name];
+  addBuff({ name, level, caster, shouldCalculateStats }: AddBuffArgs) {
+    const buff = cloneObject(buffList?.[name]);
     if (!buff) return false;
 
-    const {
-      duration,
-      stats = {},
-      percentStats = {},
-      scaleDuration = true,
-      scaleStats = true,
-    } = buff;
-    const scaledStats = {};
-    const scaledPercentStats = {};
+    // Simplify scaling logic
+    const scaleStats = (stats) => {
+      return Object.fromEntries(
+        Object.entries(stats).map(([stat, value]: [string, number]) => [stat, value * level])
+      );
+    };
 
-    // multiply each stat by the level
-    Object.entries(stats).forEach(([stat, value]: [string, number]) => {
-      scaledStats[stat] = value * level;
-    });
-    Object.entries(percentStats).forEach(([stat, value]: [string, number]) => {
-      scaledPercentStats[stat] = value * level;
-    });
+    const finalStats = buff?.scaleStats ? scaleStats(buff.stats || {}) : buff.stats || {};
+    const scaledPercentStats = buff?.scaleStats
+      ? scaleStats(buff.percentStats || {})
+      : buff.percentStats || {};
 
-    // look for the buff and remove it if it exists
-    const foundBuff = this.buffs.find((b) => b?.name === name);
-    // remove it from this.buffs
-    if (foundBuff) this.buffs.splice(this.buffs.indexOf(foundBuff), 1);
+    // Remove existing buff more efficiently
+    this.buffs = this.buffs.filter((b) => b?.name !== name);
 
+    // factor in caster's spellpower
+    if (name === "regeneration") {
+      finalStats.regenHp =
+        Number(buff?.stats?.regenHp || 0) + Math.floor(Number(caster?.stats?.spellPower || 1) / 5);
+    }
+
+    // Add the new buff
     this.buffs.push({
+      ...buff,
       name,
-      duration: scaleDuration ? duration * level : duration,
+      duration: buff.scaleDuration ? buff.duration * level : buff.duration,
       level,
-      stats: scaleStats ? scaledStats : stats,
-      percentStats: scaleStats ? scaledPercentStats : percentStats,
+      stats: finalStats,
+      percentStats: scaledPercentStats,
       spawnTime: Date.now(),
-      dispelInCombat: buff?.dispelInCombat,
-      dispelOnHit: buff?.dispelOnHit,
-      dispelBeforeAttack: buff?.dispelBeforeAttack,
-      dispelAfterAttack: buff?.dispelAfterAttack,
     });
 
     if (shouldCalculateStats) this.calculateStats();
@@ -632,7 +629,7 @@ class ServerCharacter extends Character {
     const isResting = this.hasBuff("rest");
     const isPoisoned = this.hasBuff("poison");
     if (isOutOfCombat && !isResting && !isPoisoned) {
-      this.addBuff("rest", 1, false);
+      this.addBuff({ name: "rest", level: 1, caster: this, shouldCalculateStats: false });
       return true;
     }
     return isResting;

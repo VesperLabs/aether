@@ -92,7 +92,7 @@ class Player extends Character {
   }
   doRegen() {
     if (this.state.doHpRegen) {
-      this.takeHit({ type: "hp", amount: this?.stats?.regenHp });
+      this.takeHit({ type: "hp", amount: this?.stats?.regenHp }, false);
     }
     if (this.state.doBuffPoison) {
       const poisonBuff = this.getBuff("poison");
@@ -100,7 +100,7 @@ class Player extends Character {
     }
     if (this.state.doHpBuffRegen) {
       const regenBuff = this.getBuff("regeneration");
-      this.takeHit({ type: "hp", amount: regenBuff?.stats?.regenHp });
+      this.takeHit({ type: "hp", amount: regenBuff?.stats?.regenHp, elements: ["holy"] });
     }
     if (this.state.doMpRegen) {
       this.takeHit({ type: "mp", amount: this?.stats?.regenMp });
@@ -390,14 +390,16 @@ class Player extends Character {
       return true;
     }
   }
-  takeHit(hit) {
+  takeHit(hit, showDamage = true) {
     if (this?.state?.isDead) return;
 
     const { stats, scene } = this || {};
     const { type, elements } = hit || {};
     const isDamage = hit?.amount < 0;
 
-    scene.add.existing(new Damage(this.scene, this, hit));
+    if (showDamage) {
+      scene.add.existing(new Damage(this.scene, this, hit));
+    }
 
     switch (type) {
       case "buff":

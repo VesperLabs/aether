@@ -25,7 +25,7 @@
     "bodySize": 16,
     "layerDepth": "bottom",
     "baseCooldown": 1000,
-    "description": "A melee attack that deals extra fire damage to enemies."
+    "description": "A melee attack that deals extra fire damage to enemies"
   },
   "fireball": {
     "isAimable": true,
@@ -41,7 +41,7 @@
     "npcCastRange": [50, 200],
     "npcCastWait": 5000,
     "layerDepth": "top",
-    "description": "Aim to shoot. Deals fire damage to enemies."
+    "description": "Deals fire damage to enemies this spell passes through."
   },
   "waterball": {
     "isAimable": true,
@@ -57,7 +57,7 @@
     "npcCastRange": [50, 200],
     "npcCastWait": 5000,
     "layerDepth": "top",
-    "description": "Aim to shoot. Deals water damage to enemies."
+    "description": "Deals water damage to enemies this spell passes through."
   },
   "lightball": {
     "isAimable": true,
@@ -73,7 +73,7 @@
     "npcCastRange": [50, 200],
     "npcCastWait": 5000,
     "layerDepth": "top",
-    "description": "Aim to shoot. Deals light damage to enemies."
+    "description": "Deals light damage to enemies this spell passes through."
   },
   "holyball": {
     "isAimable": true,
@@ -91,7 +91,7 @@
     "npcCastWait": 5000,
     "layerDepth": "top",
     "baseCooldown": 5000,
-    "description": "Aim to shoot. Heals holy damage to allies."
+    "description": "Aim to shoot. Holy damage will heal allies."
   },
   "quake": {
     "allowedTargets": ["enemy"],
@@ -162,7 +162,8 @@
     "scaleBase": 0.6,
     "tint": "0xCCDDFF",
     "layerDepth": "bottom",
-    "shouldFade": true
+    "shouldFade": true,
+    "description": "Grants increased defense while active."
   },
   "genius": {
     "allowedTargets": ["self", "ally"],
@@ -173,7 +174,8 @@
     "scaleBase": 0.6,
     "tint": "0xCCCCFF",
     "layerDepth": "bottom",
-    "shouldFade": true
+    "shouldFade": true,
+    "description": "Grants an increased MP pool while active."
   },
   "regeneration": {
     "allowedTargets": ["self", "ally"],
@@ -185,7 +187,8 @@
     "tint": "0xFFFFFF",
     "layerDepth": "bottom",
     "shouldFade": true,
-    "baseCooldown": 30000
+    "baseCooldown": 30000,
+    "description": "Grants HP regeneration while active.  Effects are boosted by caster spell power."
   },
   "stealth": {
     "allowedTargets": ["self"],
