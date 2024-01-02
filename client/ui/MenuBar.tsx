@@ -79,6 +79,7 @@ const MenuBar = () => {
         width: `calc(100% / ${zoom})`,
         transform: `scale(${zoom})`,
         transformOrigin: "bottom left",
+        zIndex: "menus",
       }}
     >
       <Flex sx={{ flex: 1, alignItems: "end" }}>
@@ -91,6 +92,14 @@ const MenuBar = () => {
       <Box
         sx={{
           backdropFilter: "blur(10px)",
+          overflowY: "scroll",
+          maxHeight: `calc(100vh / ${zoom})`,
+          pointerEvents: "all",
+          scrollbarWidth: "none", // Firefox
+          msOverflowStyle: "none", // Internet Explorer and Edge
+          "&::-webkit-scrollbar": {
+            display: "none", // Chrome, Safari, Opera
+          },
         }}
       >
         {tabKeeper && <MenuKeeper />}
@@ -111,6 +120,8 @@ const MenuBar = () => {
         <Menu
           sx={{
             gap: 1,
+            position: "sticky",
+            bottom: 0,
             alignItems: "center",
             pointerEvents: "none",
             flexDirection: "row",
