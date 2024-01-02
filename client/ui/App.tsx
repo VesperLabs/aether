@@ -689,7 +689,7 @@ const MenuGlobalKeys = () => {
           position: "fixed",
           top: MINI_MAP_SIZE + 6,
           right: MINI_MAP_SIZE - 12,
-          zIndex: 100000,
+          zIndex: "minimap",
         }}
       >
         <KeyboardKey

@@ -24,6 +24,8 @@ export default {
   },
   zIndices: {
     modal: "999999",
+    menus: "99999",
+    minimap: "9999",
   },
   fonts: {
     body: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
