@@ -68,9 +68,8 @@ const MenuBar = () => {
   ]);
 
   return (
-    <Flex
+    <Box
       sx={{
-        flexDirection: "column",
         pointerEvents: "none",
         boxSizing: "border-box",
         position: "fixed",
@@ -91,15 +90,16 @@ const MenuBar = () => {
       </Flex>
       <Box
         sx={{
+          position: "relative",
           backdropFilter: "blur(10px)",
-          overflowY: "scroll",
-          maxHeight: `calc(100vh / ${zoom})`,
           pointerEvents: "all",
-          scrollbarWidth: "none", // Firefox
-          msOverflowStyle: "none", // Internet Explorer and Edge
-          "&::-webkit-scrollbar": {
-            display: "none", // Chrome, Safari, Opera
-          },
+          // overflowY: "scroll",
+          // maxHeight: `calc(100vh / ${zoom})`,
+          // scrollbarWidth: "none",
+          // msOverflowStyle: "none",
+          // "&::-webkit-scrollbar": {
+          //   display: "none",
+          // },
         }}
       >
         {tabKeeper && <MenuKeeper />}
@@ -117,6 +117,8 @@ const MenuBar = () => {
           isOpen={tabSocial}
           setIsOpen={setTabSocial}
         />
+      </Box>
+      <Box>
         <Menu
           sx={{
             gap: 1,
@@ -192,6 +194,7 @@ const MenuBar = () => {
             name={"ESCAPE"}
             hidden={true}
             onKeyUp={() => {
+              if (tabChat) return setTabChat(false);
               if (dropItem) return setDropItem(false);
               if (homeModal) return setHomeModal(null);
               if (tabKeeper) return setTabKeeper(false);
@@ -204,12 +207,11 @@ const MenuBar = () => {
               if (bagState?.length > 0) return toggleBagState(bagState?.[bagState?.length - 1]);
               if (tabInventory) return setTabInventory(false);
               if (tabSettings) return setTabSettings(false);
-              if (tabChat) return setTabChat(false);
             }}
           />
         </Menu>
       </Box>
-    </Flex>
+    </Box>
   );
 };
 
