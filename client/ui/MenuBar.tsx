@@ -116,98 +116,96 @@ const MenuBar = () => {
           isOpen={tabSocial}
           setIsOpen={setTabSocial}
         />
-      </Box>
-
-      <Menu
-        sx={{
-          borderTop: `1px solid transparent`,
-          gap: 1,
-          alignItems: "center",
-          pointerEvents: "none",
-          flexDirection: "row",
-          flexWrap: "nowrap",
-          "& > button": {
-            flexShrink: 1,
-          },
-        }}
-      >
-        <Box sx={{ flex: tabChat ? "unset" : 1 }} />
-        <ChatButton />
-        {!tabChat && (
-          <>
-            <MenuButton
-              keyboardKey="Z"
-              iconName="pen"
-              isActive={tabSettings}
-              onClick={() => setTabSettings((prev) => !prev)}
-            />
-            <MenuButton
-              keyboardKey="P"
-              iconName="social"
-              isActive={tabSocial}
-              onClick={() => setTabSocial((prev) => !prev)}
-            />
-            <MenuButton
-              keyboardKey="Q"
-              iconName="quests"
-              isActive={tabQuests}
-              onClick={() => setTabQuests((prev) => !prev)}
-            />
-            <MenuButton
-              keyboardKey="I"
-              iconName="stats"
-              isActive={tabStats}
-              onClick={() => setTabStats((prev) => !prev)}
-            />
-            <MenuButton
-              keyboardKey="G"
-              iconName="mirror"
-              isActive={tabProfile}
-              onClick={() => setTabProfile((prev) => !prev)}
-            />
-            <MenuButton
-              keyboardKey="V"
-              iconName="book"
-              isActive={tabAbilities}
-              onClick={() => setTabAbilities((prev) => !prev)}
-            />
-            <MenuButton
-              keyboardKey="E"
-              iconName="helmet"
-              isActive={tabEquipment}
-              onClick={() => {
-                setTabEquipment((prev) => !prev);
-              }}
-            />
-            <MenuButton
-              keyboardKey="C"
-              iconName="bag"
-              isActive={tabInventory}
-              onClick={() => setTabInventory((prev) => !prev)}
-            />
-          </>
-        )}
-        <KeyboardKey
-          key={escCacheKey}
-          name={"ESCAPE"}
-          hidden={true}
-          onKeyUp={() => {
-            if (tabChat) return setTabChat(false);
-            if (dropItem) return setDropItem(false);
-            if (homeModal) return setHomeModal(null);
-            if (tabKeeper) return setTabKeeper(false);
-            if (tabSocial) return setTabSocial(false);
-            if (tabQuests) return setTabQuests(false);
-            if (tabStats) return setTabStats(false);
-            if (tabProfile) return setTabProfile(false);
-            if (tabAbilities) return setTabAbilities(false);
-            if (tabEquipment) return setTabEquipment(false);
-            if (bagState?.length > 0) return toggleBagState(bagState?.[bagState?.length - 1]);
-            if (tabInventory) return setTabInventory(false);
-            if (tabSettings) return setTabSettings(false);
+        <Menu
+          sx={{
+            gap: 1,
+            alignItems: "center",
+            pointerEvents: "none",
+            flexDirection: "row",
+            flexWrap: "nowrap",
+            "& > button": {
+              flexShrink: 1,
+            },
           }}
-        />
-      </Menu>
+        >
+          <Box sx={{ flex: tabChat ? "unset" : 1 }} />
+          <ChatButton />
+          {!tabChat && (
+            <>
+              <MenuButton
+                keyboardKey="Z"
+                iconName="pen"
+                isActive={tabSettings}
+                onClick={() => setTabSettings((prev) => !prev)}
+              />
+              <MenuButton
+                keyboardKey="P"
+                iconName="social"
+                isActive={tabSocial}
+                onClick={() => setTabSocial((prev) => !prev)}
+              />
+              <MenuButton
+                keyboardKey="Q"
+                iconName="quests"
+                isActive={tabQuests}
+                onClick={() => setTabQuests((prev) => !prev)}
+              />
+              <MenuButton
+                keyboardKey="I"
+                iconName="stats"
+                isActive={tabStats}
+                onClick={() => setTabStats((prev) => !prev)}
+              />
+              <MenuButton
+                keyboardKey="G"
+                iconName="mirror"
+                isActive={tabProfile}
+                onClick={() => setTabProfile((prev) => !prev)}
+              />
+              <MenuButton
+                keyboardKey="V"
+                iconName="book"
+                isActive={tabAbilities}
+                onClick={() => setTabAbilities((prev) => !prev)}
+              />
+              <MenuButton
+                keyboardKey="E"
+                iconName="helmet"
+                isActive={tabEquipment}
+                onClick={() => {
+                  setTabEquipment((prev) => !prev);
+                }}
+              />
+              <MenuButton
+                keyboardKey="C"
+                iconName="bag"
+                isActive={tabInventory}
+                onClick={() => setTabInventory((prev) => !prev)}
+              />
+            </>
+          )}
+          <KeyboardKey
+            key={escCacheKey}
+            name={"ESCAPE"}
+            hidden={true}
+            onKeyUp={() => {
+              if (tabChat) return setTabChat(false);
+              if (dropItem) return setDropItem(false);
+              if (homeModal) return setHomeModal(null);
+              if (tabKeeper) return setTabKeeper(false);
+              if (tabSocial) return setTabSocial(false);
+              if (tabQuests) return setTabQuests(false);
+              if (tabStats) return setTabStats(false);
+              if (tabProfile) return setTabProfile(false);
+              if (tabAbilities) return setTabAbilities(false);
+              if (tabEquipment) return setTabEquipment(false);
+              if (bagState?.length > 0) return toggleBagState(bagState?.[bagState?.length - 1]);
+              if (tabInventory) return setTabInventory(false);
+              if (tabSettings) return setTabSettings(false);
+            }}
+          />
+        </Menu>
+      </Box>
     </Box>
   );
 };
