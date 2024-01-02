@@ -160,8 +160,8 @@ const MenuHolder = ({ children }) => {
         left: 0,
         right: 0,
         bottom: 0,
-        zIndex: 999999999999,
         pointerEvents: "none",
+        zIndex: "modal",
       }}
     >
       <Box
