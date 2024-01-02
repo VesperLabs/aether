@@ -23,10 +23,11 @@ export default {
     },
   },
   zIndices: {
-    draggable: 9999999,
-    modal: 999999,
-    menus: 99999,
-    minimap: 9999,
+    tooltip: 9999999,
+    draggable: 999999,
+    modal: 99999,
+    menus: 9999,
+    minimap: 999,
   },
   fonts: {
     body: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',

@@ -1,11 +1,12 @@
 import { memo, useEffect, useState } from "react";
-import { Box, Flex, Tooltip, Icon, Text, Divider } from "@aether/ui";
+import { Box, Flex, Icon, Text, Divider } from "@aether/ui";
 import { useAppContext, Portrait, StatusIcon } from "./";
 import { arePropsEqualWithKeys, formatStats } from "@aether/shared";
 import { cloneDeep } from "lodash";
 import TextDivider from "./TextDivider";
 import TooltipLabel from "./TooltipLabel";
 import { buffList } from "@aether/shared";
+import Tooltip from "./Tooltip";
 
 const UserName = ({ sx, player }: { player: any; sx?: object }) => {
   return <Box sx={{ ...sx }}>{player?.profile?.userName}</Box>;
@@ -75,14 +76,12 @@ const BuffTooltip = ({ buff, tooltipId, timeLeft, player }) => {
     <Tooltip id={tooltipId}>
       <Flex
         sx={{
-          maxWidth: 100,
           textAlign: "center",
           fontWeight: "bold",
           alignItems: "center",
           justifyContent: "center",
           flexDirection: "column",
           textTransform: "capitalize",
-          fontSize: 0,
         }}
       >
         <Text>
@@ -100,7 +99,9 @@ const BuffTooltip = ({ buff, tooltipId, timeLeft, player }) => {
           </Text>
         ))}
         {!!description && <Divider />}
-        <TooltipLabel sx={{ textTransform: "none", fontWeight: "normal", fontStyle: "italic" }}>
+        <TooltipLabel
+          sx={{ textTransform: "none", fontWeight: "normal", fontStyle: "italic", maxWidth: 200 }}
+        >
           {description}
         </TooltipLabel>
       </Flex>

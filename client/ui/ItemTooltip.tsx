@@ -1,5 +1,5 @@
 import { Fragment } from "react";
-import { Flex, Text, Divider, Icon, Tooltip } from "@aether/ui";
+import { Flex, Text, Divider, Icon } from "@aether/ui";
 import {
   buffList,
   itemSetList,
@@ -11,6 +11,7 @@ import {
 } from "@aether/shared";
 import TooltipLabel from "./TooltipLabel";
 import TextDivider from "./TextDivider";
+import Tooltip from "./Tooltip";
 
 const ItemTooltip = ({ player, item, tooltipId, show }) => {
   const isSetActive = player?.state?.activeSets?.includes?.(item?.setName);
