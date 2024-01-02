@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { Modal, Flex, Input, KeyboardButton, Icon, Tooltip, Text, Box } from "@aether/ui";
+import { Modal, Flex, Input, KeyboardButton, Icon, Text } from "@aether/ui";
 import { useAppContext } from "./";
 import { CLASS_ICON_MAP } from "@aether/shared";
+import Tooltip from "./Tooltip";
 
 const IconPen = ({ sx }: { sx?: any }) => (
   <Icon

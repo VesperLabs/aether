@@ -1,8 +1,9 @@
 import { Slot, SlotAmount, useAppContext } from "./";
-import { Box, Text, Flex, Divider, Icon, Button, Tooltip, STYLE_NON_EMPTY } from "@aether/ui";
+import { Box, Text, Flex, Divider, Icon, Button, STYLE_NON_EMPTY } from "@aether/ui";
 import ItemBuilder from "../../shared/ItemBuilder";
 import nasties from "../../shared/data/nasties.json";
 import keepers from "../../shared/data/keepers.json";
+import Tooltip from "./Tooltip";
 
 function getKeeperByQuestName(quest) {
   for (const key in keepers) {

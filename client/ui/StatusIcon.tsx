@@ -1,7 +1,8 @@
-import { Box, Icon, Tooltip, Flex, Text, Divider } from "@aether/ui";
+import { Box, Icon, Flex, Text, Divider } from "@aether/ui";
 import { useAppContext } from ".";
 import { useEffect, useState } from "react";
 import { isMobile, msToHours } from "@aether/shared";
+import Tooltip from "./Tooltip";
 
 const STATUS_TOOLTIP_ID = "STATUS_TOOLTIP_ID";
 
@@ -106,9 +107,9 @@ const StatusIcon = (props) => {
         sx={{ transform: "scale(.75)" }}
       >
         {isConnected ? (
-          <Icon icon="./assets/icons/success.png" />
+          <Icon size={24} icon="./assets/icons/success.png" />
         ) : (
-          <Icon icon="./assets/icons/danger.png" />
+          <Icon size={24} icon="./assets/icons/danger.png" />
         )}
       </Box>
     </Box>
