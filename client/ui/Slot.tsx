@@ -1,5 +1,14 @@
 import { useState, useRef, useLayoutEffect, memo } from "react";
-import { Box, Icon, Portal, Donut, SLOT_SIZE, STYLE_SLOT_EMPTY, STYLE_NON_EMPTY } from "@aether/ui";
+import {
+  Box,
+  Icon,
+  Portal,
+  Donut,
+  SLOT_SIZE,
+  STYLE_SLOT_EMPTY,
+  STYLE_NON_EMPTY,
+  theme,
+} from "@aether/ui";
 import { ItemTooltip, BLANK_IMAGE, SlotAmount } from "./";
 import { resolveAsset, assetToCanvas, isMobile, itemHasRequiredStats } from "@aether/shared";
 import { useDoubleTap } from "use-double-tap";
@@ -281,7 +290,7 @@ const Slot = memo(
                   touchAction: "none",
                   userSelect: "none",
                   pointerEvents: "none",
-                  zIndex: 999,
+                  zIndex: theme.zIndices.draggable,
                   position: "fixed",
                   left: position.x + "px",
                   top: position.y + "px",
