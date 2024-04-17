@@ -1,5 +1,5 @@
 # ---- Build Stage ----
-FROM node:current AS build
+FROM node:21 AS build
 
 # Update package lists
 RUN apt-get update
