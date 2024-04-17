@@ -1,3 +1,5 @@
+// "@geckos.io/phaser-on-nodejs": "^1.2.9",
+
 import crypto from "crypto";
 import { Socket } from "socket.io";
 

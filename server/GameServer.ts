@@ -1,4 +1,4 @@
-import "@geckos.io/phaser-on-nodejs";
+import "./Phaser.ts";
 import { mapList } from "../shared/Maps";
 import { Socket, Server } from "socket.io";
 import path from "path";

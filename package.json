@@ -28,7 +28,6 @@
   ],
   "dependencies": {
     "@emotion/react": "^11.11.1",
-    "@geckos.io/phaser-on-nodejs": "^1.2.8",
     "@geckos.io/snapshot-interpolation": "^1.1.0",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
