@@ -1,3 +1,4 @@
+import "./monkeypatches";
 import path from "path";
 import { config } from "dotenv";
 import GameServer from "./GameServer";
