@@ -1,28 +1,14 @@
 # ---- Build Stage ----
-FROM alpine:3.19 as build
-ENV NODE_VERSION 21.7.3
+FROM node:21.7.3 AS build
 
 # Update package lists
 RUN apt-get update
 
-# Trying to sync NTP (Doesn't work)
-# RUN apt-get install -y ntp
-# RUN apt-get install -y tzdata && \
-#     ln -fs /usr/share/zoneinfo/UTC /etc/localtime && \
-#     dpkg-reconfigure -f noninteractive tzdata
+# Install required packages
+RUN apt-get install -y python3 python3-pip pkg-config libcairo2-dev libpango1.0-dev \
+    libpng-dev libjpeg-dev libgif-dev librsvg2-dev
 
-# Install each package individually
-RUN apt-get install -y python3
-RUN apt-get install -y python3-pip
-RUN apt-get install -y pkg-config
-RUN apt-get install -y libcairo2-dev
-RUN apt-get install -y libpango1.0-dev
-RUN apt-get install -y libpng-dev
-RUN apt-get install -y libjpeg-dev
-RUN apt-get install -y libgif-dev
-RUN apt-get install -y librsvg2-dev
-
-# Clean up APT cache
+# Clean up APT cache to reduce image size
 RUN rm -rf /var/lib/apt/lists/*
 
 # Check Python and Pip version
@@ -32,6 +18,7 @@ RUN pip3 --version
 # Set working directory
 WORKDIR /app
 
+# Define build-time variables
 ARG DEBUG
 ARG MONGO_URL
 ARG SERVER_FPS
@@ -43,6 +30,7 @@ ARG PEER_SERVER_PORT
 ARG PEER_CLIENT_PORT
 ARG PEER_CLIENT_PATH
 
+# Set environment variables
 ENV DEBUG=$DEBUG
 ENV MONGO_URL=$MONGO_URL
 ENV SERVER_FPS=$SERVER_FPS
@@ -54,55 +42,40 @@ ENV PEER_SERVER_PORT=$PEER_SERVER_PORT
 ENV PEER_CLIENT_PORT=$PEER_CLIENT_PORT
 ENV PEER_CLIENT_PATH=$PEER_CLIENT_PATH
 
-RUN echo "DEBUG: $DEBUG" && \
-    echo "MONGO_URL: $MONGO_URL" && \
-    echo "SERVER_FPS: $SERVER_FPS" && \
-    echo "SERVER_URL: $SERVER_URL" && \
-    echo "PORT: $PORT" && \
-    echo "ASSETS_URL: $ASSETS_URL" && \
-    echo "PUBLIC_DIR: $PUBLIC_DIR" && \
-    echo "PEER_SERVER_PORT: $PEER_SERVER_PORT" && \
-    echo "PEER_CLIENT_PORT: $PEER_CLIENT_PORT" && \
-    echo "PEER_CLIENT_PATH: $PEER_CLIENT_PATH"
-
 # Install global dependencies
 RUN npm install -g vite
 
-# Copy package.json and package-lock.json before other files
-# Utilize Docker cache to save re-installing dependencies if unchanged
+# Copy package files and install dependencies
 COPY ./package*.json ./
 COPY ./client/package*.json ./client/
 COPY ./server/package*.json ./server/
 COPY ./ui/package*.json ./ui/
 COPY ./shared/package*.json ./shared/
-
-# Install npm dependencies
 RUN npm install
 
-# Copy everything over
+# Copy all other project files
 COPY . .
 
-# Build the client and the server
+# Build the client and server
 RUN npm run client:build
 RUN npm run server:build
 
 # ---- Production Stage ----
-FROM node:lts AS production
+FROM node:21.7.3 AS production
 
 WORKDIR /app
 
-# Copy necessary files and directories from the previous stage
+# Copy necessary files from the build stage
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/package*.json ./
 COPY --from=build /app/public ./public  
 COPY --from=build /app/dist ./dist 
 
-# Here we reinstall the canvas module specifically in the production environment
+# Install canvas module
 RUN npm install canvas --build-from-source
 
-# Expose necessary ports (adjust if needed)
+# Expose necessary ports
 EXPOSE 8000
 
-
-# This assumes you have a start script in your server's package.json
+# Start the server
 CMD ["npm", "run", "server:run"]
