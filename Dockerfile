@@ -1,5 +1,6 @@
 # ---- Build Stage ----
-FROM node:latest as build
+FROM alpine:3.19
+ENV NODE_VERSION 21.7.3
 
 # Update package lists
 RUN apt-get update
