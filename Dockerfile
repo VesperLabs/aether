@@ -1,5 +1,5 @@
 # ---- Build Stage ----
-FROM node:21.7.3-alpine AS build
+FROM node:latest as build
 
 # Update package lists
 RUN apt-get update
