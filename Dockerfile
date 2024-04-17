@@ -1,5 +1,5 @@
 # ---- Build Stage ----
-FROM alpine:3.19
+FROM alpine:3.19 as build
 ENV NODE_VERSION 21.7.3
 
 # Update package lists
