@@ -6,6 +6,8 @@ import { initFakeDatabase } from "./db/fake";
 import { calculateStats, getFullCharacterState } from "./utils";
 import { PeerServer, PeerServerEvents } from "peer";
 import { default as http, Server } from "http";
+import { createProxyMiddleware } from "http-proxy-middleware";
+
 config({ path: path.join(__dirname, "/../.env") });
 const cors = require("cors");
 const express = require("express");
@@ -174,6 +176,17 @@ class AppServer {
     //   await db.updateUsersMaxExp();
     //   res.json({ string: "ok" });
     // });
+
+    // Set up the proxy middleware to route /peerjs to the PeerJS server
+    app.use(
+      "/peerjs",
+      createProxyMiddleware({
+        target: `http://localhost:${PEER_SERVER_PORT}/peerjs`,
+        changeOrigin: true,
+        ws: true, // Enable WebSocket proxying if PeerJS uses WebSockets
+        pathRewrite: { "^/peerjs": "" },
+      })
+    );
 
     httpServer.listen(PORT, () => {
       console.log(

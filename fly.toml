@@ -1,14 +1,8 @@
-# fly.toml app configuration file generated for vesperlabs on 2024-04-18T01:28:57+02:00
-#
-# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
-#
-
+# fly.toml app configuration file
 app = 'vesperlabs'
 primary_region = 'mad'
 kill_signal = 'SIGINT'
 kill_timeout = '5s'
-
-[build]
 
 [env]
   ASSETS_URL = 'https://aether.onrender.com/assets'
@@ -16,7 +10,6 @@ kill_timeout = '5s'
   GIT_BRANCH = 'main'
   GIT_REPO = 'git@github.com:VesperLabs/aether.git'
   NODE_ENV = 'production'
-  PEER_CLIENT_PATH = '/peerjs'
   PEER_CLIENT_PORT = '443'
   PEER_SERVER_PORT = '9000'
   PORT = '8000'
@@ -51,26 +44,6 @@ kill_timeout = '5s'
   [[services.tcp_checks]]
     interval = '10s'
     timeout = '2s'
-
-# Additional service for PeerJS on port 9000
-[[services]]
-  protocol = "tcp"
-  internal_port = 9000
-
-  [[services.ports]]
-    port = 443
-    handlers = ["tls", "http"]
-
-  [services.http_checks]
-    interval = "15s"
-    grace_period = "10s"
-    timeout = "2s"
-    method = "get"
-    path = "/peerjs"
-    protocol = "http"
-    tls = true
-    [services.http_checks.headers]
-      Host = ["vesperlabs.fly.dev"]
 
 [[vm]]
   memory = '512mb'
