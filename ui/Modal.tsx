@@ -81,6 +81,7 @@ Modal.Body = ({ sx, ...props }) => {
         borderRadius: 3,
         bg: "shadow.25",
         whiteSpace: "wrap",
+        flexDirection: "column",
         ...sx,
       }}
       {...props}
