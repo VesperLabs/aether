@@ -1,11 +1,8 @@
 import { Text, Button, Flex, Link, Box } from "@aether/ui";
 import RowTitle from "./RowTitle";
 import ModalConnecting from "./ModalConnecting";
-import { useState } from "react";
 
 export default function () {
-  const [isOpening, setIsOpening] = useState(false);
-
   return (
     <Flex sx={{ gap: 2, flexDirection: "column", mb: 4 }}>
       <RowTitle icon={"pen"}>Welcome</RowTitle>
@@ -14,7 +11,8 @@ export default function () {
       </Text>
       <Flex sx={{ gap: 2, flexWrap: "wrap" }}>
         <Button
-          onClick={() => setIsOpening(true)}
+          as={Link}
+          href={process.env.SERVER_URL}
           target="_blank"
           variant="wood"
           sx={{ px: 3, py: 1, display: "flex", gap: 2, alignItems: "center" }}
@@ -51,7 +49,6 @@ export default function () {
           }}
         />
       </Link>
-      {isOpening && <ModalConnecting />}
     </Flex>
   );
 }

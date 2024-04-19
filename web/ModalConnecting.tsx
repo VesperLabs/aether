@@ -1,17 +1,6 @@
 import { Modal, Icon } from "@aether/ui";
-import { useQuery } from "react-query";
-import { fetchMetrics } from "./api";
-import { useEffect } from "react";
 
 export const ModalConnecting: React.FC = () => {
-  const { data: metrics } = useQuery("metrics", fetchMetrics);
-
-  useEffect(() => {
-    if (metrics) {
-      window.location.href = process.env.SERVER_URL;
-    }
-  }, [metrics]);
-
   return (
     <>
       <Modal.Overlay />
@@ -22,7 +11,7 @@ export const ModalConnecting: React.FC = () => {
             size={42}
             sx={{ position: "absolute", left: 0 }}
           />
-          Spinning up
+          Give'r a sec...
         </Modal.Header>
         <Modal.Body>
           I'm on the free tier, so please be patient while the application spins up.
