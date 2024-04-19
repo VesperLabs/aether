@@ -20,7 +20,7 @@ const Modal: any & {
   Body: React.FC<ModalBodyProps>;
   Footer: React.FC<ModalFooterProps>;
   Overlay: React.FC<ModalOverlayProps>;
-} = ({ sx, zoom, bottomOffset, ...props }) => {
+} = ({ sx, zoom = 1, bottomOffset, ...props }) => {
   return (
     <Flex
       sx={{
@@ -76,7 +76,13 @@ Modal.Header = ({ sx, ...props }) => {
 Modal.Body = ({ sx, ...props }) => {
   return (
     <Flex
-      sx={{ p: 3, borderRadius: 3, bg: "shadow.25", flexDirection: "column", ...sx }}
+      sx={{
+        p: 3,
+        borderRadius: 3,
+        bg: "shadow.25",
+        whiteSpace: "wrap",
+        ...sx,
+      }}
       {...props}
     />
   );
