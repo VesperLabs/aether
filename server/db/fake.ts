@@ -5,7 +5,7 @@ export async function initFakeDatabase() {
 }
 
 const getDatabaseApi = () => ({
-  getAllUsers: async () => {},
+  getAllUsers: async () => [],
   countAllUsers: async () => {},
   pruneNoobs: async () => {},
   createUser: async () => true,
