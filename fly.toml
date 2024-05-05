@@ -27,13 +27,13 @@ kill_timeout = '5s'
   internal_port = 8000
   force_https = true
   processes = ['app']
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
 
 [[services]]
   protocol = 'tcp'
   internal_port = 8000
-  auto_stop_machines = true
-  auto_start_machines = true
-  min_machines_running = 0
 
   [[services.ports]]
     port = 80
@@ -47,10 +47,12 @@ kill_timeout = '5s'
     hard_limit = 25
     soft_limit = 20
 
-  [[services.tcp_checks]]
-    port = 443
+  [[services.http_checks]]
     interval = '10s'
     timeout = '2s'
+    grace_period = '10s'
+    method = 'get'
+    path = '/health'  # Make sure to adjust the path to where your application has a health-check endpoint
 
 [[vm]]
   memory = '512mb'

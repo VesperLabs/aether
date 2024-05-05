@@ -162,9 +162,13 @@ class AppServer {
       res.json(metrics);
     });
 
-    app.get("/players/prune", async (req, res) => {
+    app.get("/players/prune", async (_, res) => {
       await db.pruneNoobs();
       res.json({ string: "ok" });
+    });
+
+    app.get("/health", (_, res) => {
+      res.status(200).json({ status: "ok" });
     });
 
     // app.get("/players/pruneItem", async (req, res) => {
