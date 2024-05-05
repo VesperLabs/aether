@@ -31,33 +31,14 @@ kill_timeout = '5s'
   auto_start_machines = true
   min_machines_running = 0
 
-[[services]]
-  protocol = 'tcp'
-  internal_port = 8080
-  auto_stop_machines = true
-  auto_start_machines = true
-  min_machines_running = 0
 
-  [[services.ports]]
-    port = 80
-    handlers = ['http']
+[[http_service.checks]]
+  grace_period = "30s"  
+  interval = "15s"   
+  method = "get"   
+  path = "/health"   
+  timeout = "2s"   
 
-  [[services.ports]]
-    port = 443
-    handlers = ['tls', 'http']
-
-  [services.concurrency]
-    hard_limit = 25
-    soft_limit = 20
-
-  [services.http_checks]
-    grace_period = "30s"  
-    interval = "15s"   
-    method = "get"   
-    path = "/health"   
-    timeout = "2s"   
-    protocol = "http"  
-    tls_skip_verify = false 
 
 [[vm]]
   memory = '512mb'
