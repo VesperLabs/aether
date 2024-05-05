@@ -1,8 +1,14 @@
-# fly.toml app configuration file
+# fly.toml app configuration file generated for vesperlabs on 2024-05-05T15:18:14+02:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
 app = 'vesperlabs'
 primary_region = 'mad'
 kill_signal = 'SIGINT'
 kill_timeout = '5s'
+
+[build]
 
 [env]
   ASSETS_URL = 'https://aether.onrender.com/assets'
@@ -20,14 +26,14 @@ kill_timeout = '5s'
 [http_service]
   internal_port = 8000
   force_https = true
-  auto_stop_machines = true
-  auto_start_machines = true
-  min_machines_running = 0
   processes = ['app']
 
 [[services]]
   protocol = 'tcp'
   internal_port = 8000
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
 
   [[services.ports]]
     port = 80
@@ -42,6 +48,7 @@ kill_timeout = '5s'
     soft_limit = 20
 
   [[services.tcp_checks]]
+    port = 443
     interval = '10s'
     timeout = '2s'
 
