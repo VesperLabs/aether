@@ -18,13 +18,13 @@ kill_timeout = '5s'
   NODE_ENV = 'production'
   PEER_CLIENT_PORT = '443'
   PEER_SERVER_PORT = '9000'
-  PORT = '8000'
+  PORT = '8080'
   PUBLIC_DIR = '../public'
   SERVER_FPS = '20'
   SERVER_URL = 'https://vesperlabs.fly.dev'
 
 [http_service]
-  internal_port = 8000
+  internal_port = 8080
   force_https = true
   processes = ['app']
   auto_stop_machines = true
@@ -33,7 +33,10 @@ kill_timeout = '5s'
 
 [[services]]
   protocol = 'tcp'
-  internal_port = 8000
+  internal_port = 8080
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
 
   [[services.ports]]
     port = 80
@@ -47,12 +50,14 @@ kill_timeout = '5s'
     hard_limit = 25
     soft_limit = 20
 
-  [[services.http_checks]]
-    interval = '10s'
-    timeout = '2s'
-    grace_period = '10s'
-    method = 'get'
-    path = '/health'  # Make sure to adjust the path to where your application has a health-check endpoint
+  [services.http_checks]
+    grace_period = "30s"  
+    interval = "15s"   
+    method = "get"   
+    path = "/health"   
+    timeout = "2s"   
+    protocol = "http"  
+    tls_skip_verify = false 
 
 [[vm]]
   memory = '512mb'

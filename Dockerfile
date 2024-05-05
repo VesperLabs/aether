@@ -75,7 +75,7 @@ COPY --from=build /app/dist ./dist
 RUN npm install canvas --build-from-source
 
 # Expose necessary ports
-EXPOSE 8000
+EXPOSE 8080
 
 # Start the server
 CMD ["npm", "run", "server:run"]
