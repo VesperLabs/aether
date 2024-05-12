@@ -10,6 +10,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { useQuery } from "react-query";
 import { fetchMetrics } from "./api";
 import ModalConnecting from "./ModalConnecting";
+import { useEffect, useState } from "react";
 
 const queryClient = new QueryClient();
 
@@ -50,8 +51,19 @@ const App = () => {
 };
 
 const LoadingProvider = ({ children }) => {
-  const { data: metrics } = useQuery("metrics", fetchMetrics);
-  return metrics ? children : <ModalConnecting />;
+  const [polling, setPolling] = useState(true);
+
+  const { data: metrics } = useQuery("metrics", fetchMetrics, {
+    refetchInterval: polling ? 1000 : false, // Poll every 5000ms when polling is true
+    refetchIntervalInBackground: true,
+    enabled: polling, // Control the activation of the query based on the polling state
+  });
+
+  useEffect(() => {
+    if (metrics?.ping) setPolling(false); // Stop polling when ping is detected
+  }, [metrics]);
+
+  return !polling ? children : <ModalConnecting />;
 };
 
 export default App;
