@@ -60,7 +60,7 @@ const LoadingProvider = ({ children }) => {
   });
 
   useEffect(() => {
-    if (metrics?.ping) setPolling(false); // Stop polling when ping is detected
+    if (metrics?.npcsLoaded) setPolling(false); // Stop polling when ping is detected
   }, [metrics]);
 
   return !polling ? children : <ModalConnecting />;
