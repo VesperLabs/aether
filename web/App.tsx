@@ -54,15 +54,16 @@ const LoadingProvider = ({ children }) => {
   const [polling, setPolling] = useState(true);
 
   const { data: metrics } = useQuery("metrics", fetchMetrics, {
-    refetchInterval: polling ? 1000 : false, // Poll every 5000ms when polling is true
+    refetchInterval: polling ? 1000 : false,
     refetchIntervalInBackground: true,
-    enabled: polling, // Control the activation of the query based on the polling state
+    enabled: polling,
   });
 
   useEffect(() => {
-    console.log(metrics?.totalPlayers);
-    if (metrics?.totalPlayers) setPolling(false); // Stop polling when ping is detected
-  }, [metrics?.totalPlayers]);
+    if (metrics && metrics?.ping < 1000) {
+      setPolling(false); // Stop polling when ping is detected
+    }
+  }, [metrics]);
 
   return !polling ? children : <ModalConnecting />;
 };
