@@ -51,6 +51,7 @@ const Button = forwardRef<HTMLDivElement, any>(
         tabIndex={-1}
         __themeKey="buttons"
         variant="default"
+        // @ts-ignore
         ref={ref}
         type="button"
         {...(!isLink && { onTouchStart: handleTouchStart, onMouseDown: handleMouseDown })}

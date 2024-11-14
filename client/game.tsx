@@ -67,6 +67,7 @@ const game = new Phaser.Game({
       //@ts-ignore2
       debug,
       gravity: {
+        x: 0,
         y: 0,
       },
     },

@@ -1,7 +1,7 @@
 import Player from "./game/Player";
 import LootItem from "./game/LootItem";
-import { distanceTo } from "../shared/utils";
-import { getMapByName } from "../shared/Maps";
+import { distanceTo } from "@aether/shared/utils";
+import { getMapByName } from "@aether/shared/Maps";
 
 function addPlayer(scene, user) {
   const player = new Player(scene, user);
@@ -123,7 +123,12 @@ const playAudio = ({ scene, audioKey, caster }) => {
   audio.play();
 };
 
-function calculateZoomLevel({ viewportArea, baseZoom = 2, maxZoom = 4, divisor = 1000000 } = {}) {
+function calculateZoomLevel({
+  viewportArea = 0,
+  baseZoom = 2,
+  maxZoom = 4,
+  divisor = 1000000,
+} = {}) {
   const viewportAreaInPixels = viewportArea; // multiply by square of pixel density
   const zoomLevel = Phaser.Math.Clamp(
     baseZoom + viewportAreaInPixels / divisor,
@@ -135,7 +140,7 @@ function calculateZoomLevel({ viewportArea, baseZoom = 2, maxZoom = 4, divisor =
 
 function getGameZoomLevel(scene) {
   const viewportArea = scene.cameras.main.width * scene.cameras.main.height;
-  return Math.round(calculateZoomLevel({ viewportArea }));
+  return Math.round(parseInt(calculateZoomLevel({ viewportArea })));
 }
 
 function getHeroCoordsRelativeToWindow(scene) {

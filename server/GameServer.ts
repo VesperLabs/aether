@@ -1,4 +1,4 @@
-import "./Phaser.ts";
+import "./Phaser";
 import { mapList } from "../shared/Maps";
 import { Socket, Server } from "socket.io";
 import path from "path";
@@ -1190,6 +1190,7 @@ export default class Game {
         default: "arcade",
         arcade: {
           gravity: {
+            x: 0,
             y: 0,
           },
         },

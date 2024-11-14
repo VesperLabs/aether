@@ -42,7 +42,7 @@ export default function () {
     ? [].concat(...data?.pages?.map((p) => p?.data))
     : [...new Array(3)]?.map((a, idx) => {
         return {
-          id: idx,
+          id: `player-${idx}`,
           isGhost: true,
           profile: {
             userName: "Loading...",
