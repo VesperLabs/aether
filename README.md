@@ -40,6 +40,12 @@ npm run client:dev # run the client locally
 npm run web:dev # run the wiki locally
 ```
 
+## 🚀 Deploying
+
+```bash
+fly deploy
+```
+
 ## 🛠️ Tooling
 
 #### Tilesets
