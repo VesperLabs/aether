@@ -20,8 +20,8 @@ export * from "./Sign";
 export * from "./utils";
 
 export const CLASS_ICON_MAP = {
-  WARRIOR: process.env.SERVER_URL + `/assets/icons/axe.png`,
-  ROGUE: process.env.SERVER_URL + `/assets/icons/katar.png`,
-  MAGE: process.env.SERVER_URL + `/assets/icons/rod.png`,
-  CLERIC: process.env.SERVER_URL + `/assets/icons/staff.png`,
+  WARRIOR: `./assets/icons/axe.png`,
+  ROGUE: `./assets/icons/katar.png`,
+  MAGE: `./assets/icons/rod.png`,
+  CLERIC: `./assets/icons/staff.png`,
 };
