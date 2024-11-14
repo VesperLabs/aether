@@ -43,7 +43,7 @@ ENV PEER_CLIENT_PORT=$PEER_CLIENT_PORT
 ENV PEER_CLIENT_PATH=$PEER_CLIENT_PATH
 
 # Install global dependencies
-RUN npm install -g vite
+RUN npm install -g vite@4.3.9
 
 # Copy package files and install dependencies
 COPY ./package*.json ./
