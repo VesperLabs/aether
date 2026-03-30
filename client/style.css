@@ -1,11 +1,22 @@
-body,
 html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: #000;
+}
 #game {
   margin: 0;
   padding: 0;
   overflow: hidden;
+  position: fixed;
+  inset: 0;
+  /* Fills viewport with integer layout box; avoids subpixel #game bounds when resizing */
 }
-body,
-html {
-  background: #000;
+
+/* Nearest-neighbor when the browser scales the WebGL canvas to the window (reduces black/empty hairlines). */
+#game canvas {
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
 }

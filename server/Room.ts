@@ -4,7 +4,7 @@ import Door from "../shared/Door";
 import LootManager from "./LootManager";
 import SpellManager from "./SpellManager";
 import EasyStar from "easystarjs";
-import { Vault } from "@geckos.io/snapshot-interpolation";
+import { SnapshotVault } from "../shared/netSnapshot";
 
 class Room {
   public scene: ServerScene;
@@ -12,7 +12,7 @@ class Room {
   public collideLayer: Phaser.Tilemaps.TilemapLayer;
   public name: string;
   public doors: Phaser.Physics.Arcade.Group;
-  public vault: Vault;
+  public vault: SnapshotVault;
   public npcManager: NpcManager;
   public playerManager: PlayerManager;
   public lootManager: LootManager;
@@ -25,7 +25,7 @@ class Room {
     this.tileMap = scene.make.tilemap({ key: name });
     this.name = name;
     this.doors = scene.physics.add.group();
-    this.vault = new Vault();
+    this.vault = new SnapshotVault();
     this.npcManager = new NpcManager(this.scene, this);
     this.playerManager = new PlayerManager(this.scene, this);
     this.lootManager = new LootManager(this.scene, this);

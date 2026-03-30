@@ -27,8 +27,9 @@ const peer = new Peer(undefined, {
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 const devicePixelRatio = window.devicePixelRatio || 1;
-const gameWidth = window.innerWidth * devicePixelRatio;
-const gameHeight = window.innerHeight * devicePixelRatio;
+/* Integer buffer size; fractional canvas CSS vs backing store causes compositor seams (hairlines at map edge). */
+const gameWidth = Math.floor(window.innerWidth * devicePixelRatio);
+const gameHeight = Math.floor(window.innerHeight * devicePixelRatio);
 
 const game = new Phaser.Game({
   type: Phaser.AUTO,
@@ -38,12 +39,12 @@ const game = new Phaser.Game({
     width: gameWidth,
     height: gameHeight,
     autoCenter: Phaser.Scale.CENTER_HORIZONTALLY,
+    autoRound: true,
     max: {
-      width: screen.width * devicePixelRatio,
-      height: screen.height * devicePixelRatio,
+      width: Math.floor(screen.width * devicePixelRatio),
+      height: Math.floor(screen.height * devicePixelRatio),
     },
   },
-  roundPixels: false,
   antialias: false,
   pixelArt: true,
   //pipeline: { HueRotatePostFX, TintPostFX },

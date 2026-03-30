@@ -24,8 +24,7 @@ import ItemBuilder from "../shared/ItemBuilder";
 import { isNil } from "lodash";
 import { CONSUMABLES_BASES, POTION_BASES, skinTints, hairTints, DEFAULT_SERVER_FPS } from "../shared";
 import { createBaseUser } from "./db";
-const { SnapshotInterpolation } = require("@geckos.io/snapshot-interpolation");
-const SI = new SnapshotInterpolation();
+import { createSnapshot } from "../shared/netSnapshot";
 
 const serverFps =
   parseInt(process.env.SERVER_FPS || String(DEFAULT_SERVER_FPS), 10) || DEFAULT_SERVER_FPS;
@@ -1140,7 +1139,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
     const io = scene.io;
     for (const room of Object.values(scene.roomManager.rooms)) {
       const roomState = getTickRoomState(scene, room.name);
-      const snapshot = SI.snapshot.create(roomState);
+      const snapshot = createSnapshot(roomState);
 
       room.lootManager.spawnMapLoots();
       room.lootManager.expireLoots();

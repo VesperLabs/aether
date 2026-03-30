@@ -14,6 +14,7 @@ export { default as spellDetails } from "./data/spellDetails.json";
 export { default as ItemBuilder, itemList } from "./ItemBuilder";
 export { default as Character } from "./Character";
 export * from "./constants";
+export * from "./netSnapshot";
 export * from "./netWire";
 export * from "./Assets";
 export * from "./Door";

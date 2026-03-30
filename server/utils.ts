@@ -137,10 +137,11 @@ function getTickCharacterState(p: Character): TickCharacterState {
     /* room omitted: snapshot is already scoped to one room; saves bytes per entity per tick */
     d: encodeWireDirection(p?.direction),
     state: getTickStateLite(p),
-    x: Math.round(p?.x),
-    y: Math.round(p?.y),
-    vx: vx === 0 ? 0 : Math.round(vx),
-    vy: vy === 0 ? 0 : Math.round(vy),
+    /* Floats: rounding broke small velocities (→0) and stepped positions for snapshot interpolation */
+    x: p?.x ?? 0,
+    y: p?.y ?? 0,
+    vx,
+    vy,
   };
 }
 
