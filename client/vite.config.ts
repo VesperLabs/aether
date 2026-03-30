@@ -33,12 +33,13 @@ export default ({ mode, command }) => {
       react(),
     ],
     define: {
-      "process.env.DEBUG": process.env.DEBUG,
-      "process.env.SERVER_FPS": process.env.SERVER_FPS,
-      "process.env.SERVER_URL": JSON.stringify(process.env.SERVER_URL),
-      "process.env.ASSETS_URL": JSON.stringify(process.env.ASSETS_URL),
-      "process.env.PEER_CLIENT_PORT": JSON.stringify(process.env.PEER_CLIENT_PORT),
-      "process.env.PEER_CLIENT_PATH": JSON.stringify(process.env.PEER_CLIENT_PATH),
+      /* Values must be JSON-serialized literals; undefined breaks esbuild in CI/Docker with no .env */
+      "process.env.DEBUG": JSON.stringify(process.env.DEBUG ?? ""),
+      "process.env.SERVER_FPS": JSON.stringify(process.env.SERVER_FPS ?? ""),
+      "process.env.SERVER_URL": JSON.stringify(process.env.SERVER_URL ?? ""),
+      "process.env.ASSETS_URL": JSON.stringify(process.env.ASSETS_URL ?? ""),
+      "process.env.PEER_CLIENT_PORT": JSON.stringify(process.env.PEER_CLIENT_PORT ?? ""),
+      "process.env.PEER_CLIENT_PATH": JSON.stringify(process.env.PEER_CLIENT_PATH ?? ""),
     },
     server: {
       host: true,
