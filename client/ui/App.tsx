@@ -10,7 +10,6 @@ import {
   ModalError,
   MenuBar,
   ModalHome,
-  MenuButton,
 } from "./";
 import { ThemeProvider, Box, useViewportSizeEffect, Modal, KeyboardKey } from "@aether/ui";
 import { getSpinDirection, calculateZoomLevel } from "../utils";
@@ -19,15 +18,14 @@ import { Theme } from "theme-ui";
 import { Socket } from "socket.io-client";
 import {
   CONSUMABLES_BASES,
-  MINI_MAP_SIZE,
   DEFAULT_USER_SETTINGS,
+  MINI_MAP_SIZE,
   isMobile,
   POTION_BASES,
 } from "@aether/shared";
 import Peer from "peerjs";
 import VideoFrame from "./VideoFrame";
 import ModalSettings from "./ModalSettings";
-
 interface AppContextValue {
   isLoggedIn: boolean;
   isConnected: boolean;
@@ -57,6 +55,12 @@ interface AppContextValue {
   addMessage: React.Dispatch<React.SetStateAction<Message>>;
   setUserSettings: React.Dispatch<React.SetStateAction<any>>;
   userSettings: UserSettings;
+  /** Local camera stream when video chat is enabled (for HUD portrait + WebRTC). */
+  localVideoChatStream: MediaStream | null;
+  setLocalVideoChatStream: React.Dispatch<React.SetStateAction<MediaStream | null>>;
+  /** Remote camera streams keyed by PeerJS id (HUD portrait overlay). */
+  remoteVideoStreams: Record<string, MediaStream>;
+  setRemoteVideoStreams: React.Dispatch<React.SetStateAction<Record<string, MediaStream>>>;
   homeModal: FullCharacterState | null;
   error: any;
   sign: Sign | null;
@@ -136,12 +140,9 @@ function App({ socket, peer, debug, game }) {
   const [error, setError] = useState(null);
   const [cooldowns, setCooldowns] = useState({});
   const [homeModal, setHomeModal] = useState(null);
-  const [userSettings, setUserSettings] = useState(() => {
-    if (typeof window === "undefined") return DEFAULT_USER_SETTINGS;
-    const v = localStorage.getItem("aether-videoChat");
-    if (v === null) return DEFAULT_USER_SETTINGS;
-    return { ...DEFAULT_USER_SETTINGS, videoChat: v === "true" };
-  });
+  const [userSettings, setUserSettings] = useState<UserSettings>(() => DEFAULT_USER_SETTINGS);
+  const [localVideoChatStream, setLocalVideoChatStream] = useState<MediaStream | null>(null);
+  const [remoteVideoStreams, setRemoteVideoStreams] = useState<Record<string, MediaStream>>({});
 
   /* Is the bag open or closed */
   const toggleBagState = (id: string) => {
@@ -167,6 +168,10 @@ function App({ socket, peer, debug, game }) {
   const onDisconnect = () => {
     setIsConnected(false);
     setIsLoggedIn(false);
+    setUserSettings(DEFAULT_USER_SETTINGS);
+    setLocalVideoChatStream(null);
+    setRemoteVideoStreams({});
+    setTabSettings(false);
     setTabKeeper(false);
     setMessages([]);
     setPlayers([]);
@@ -204,17 +209,10 @@ function App({ socket, peer, debug, game }) {
     setHero(player);
     if (args?.isLogin) {
       setIsLoggedIn(true);
-      const localVideoOn = localStorage.getItem("aether-videoChat") === "true";
-      const serverVideo = !!payload?.userSettings?.videoChat;
-      const videoChat = localVideoOn || serverVideo;
       setUserSettings({
+        ...DEFAULT_USER_SETTINGS,
         ...payload?.userSettings,
-        videoChat,
       });
-      localStorage.setItem("aether-videoChat", String(videoChat));
-      if (localVideoOn && !serverVideo) {
-        socket.emit("updateUserSetting", { name: "videoChat", value: true });
-      }
     }
   };
 
@@ -518,6 +516,7 @@ function App({ socket, peer, debug, game }) {
 
   function onUpdateUserSetting({ name, value }) {
     setUserSettings((prev) => ({
+      ...DEFAULT_USER_SETTINGS,
       ...prev,
       [name]: value,
     }));
@@ -652,6 +651,10 @@ function App({ socket, peer, debug, game }) {
           setCurrentTooltipId,
           userSettings,
           setUserSettings,
+          localVideoChatStream,
+          setLocalVideoChatStream,
+          remoteVideoStreams,
+          setRemoteVideoStreams,
         }}
       >
         <Box
@@ -671,22 +674,9 @@ function App({ socket, peer, debug, game }) {
           />
           {!isLoggedIn && <ModalLogin />}
           {error && <ModalError />}
-          {showLogin && (
-            <Box
-              sx={{
-                position: "fixed",
-                bottom: 16,
-                right: 16,
-                zIndex: 100000,
-                pointerEvents: "all",
-              }}
-            >
-              <MenuButton iconName="pen" onClick={() => setTabSettings(true)} />
-            </Box>
-          )}
         </Box>
         <VideoFrame />
-        {tabSettings && <ModalSettings />}
+        {isLoggedIn && tabSettings && <ModalSettings />}
         {isLoggedIn && (
           <Box
             id={HUD_CONTAINER_ID}

@@ -13,6 +13,14 @@ const STATIC_STATS = ["attackDelay", "castDelay", "range", "spCost"];
 /* We scale our items based on their ilvl and whatever their base is */
 export const itemList = scaleBaseStats(iList);
 
+/** Only these rarities are valid for buildItem (prevents arbitrary strings + common-base relabeling). */
+export const ITEM_BUILD_RARITIES = ["common", "magic", "rare", "unique", "set"] as const;
+const ITEM_BUILD_RARITY_SET = new Set<string>(ITEM_BUILD_RARITIES);
+
+export function isItemBuildRarity(r: string): boolean {
+  return ITEM_BUILD_RARITY_SET.has(r);
+}
+
 const getSetInfo = (setName: string) => {
   return itemSetList[setName];
 };
@@ -138,16 +146,32 @@ const buildItem = (...args: BuildItem): any => {
   let newEffects = {};
   let percentStats = {};
 
-  item = itemList?.[type]?.["common"]?.[itemKey];
-  if (!item) {
+  if (typeof rarity !== "string" || !isItemBuildRarity(rarity)) {
+    console.log(`🔧 Unknown rarity "${rarity}" for ${type} ${itemKey}`);
+    return null;
+  }
+
+  /*
+   * Resolve by requested rarity — do not load common and then relabel as unique/set/magic/rare.
+   * (Previously /drop weapon-unique-sword could spawn a common sword tagged unique.)
+   */
+  if (rarity === "unique") {
+    item = itemList?.[type]?.unique?.[itemKey];
+    shouldSpawnMods = false;
+  } else if (rarity === "set") {
+    item = itemList?.[type]?.set?.[itemKey];
+    shouldSpawnMods = false;
+  } else if (rarity === "common") {
+    item = itemList?.[type]?.common?.[itemKey];
+  } else if (rarity === "magic" || rarity === "rare") {
     item = itemList?.[type]?.[rarity]?.[itemKey];
     if (item) {
-      // if the item is found under "rare" or "magic"
-      // in our itemList, the item just has a magic / rare color
-      // and we do not just want to spawn mods on it
       shouldSpawnMods = false;
+    } else {
+      item = itemList?.[type]?.common?.[itemKey];
     }
   }
+
   if (!item) {
     console.log(`🔧 Item not found for ${type} ${rarity} ${itemKey}`);
     return null;

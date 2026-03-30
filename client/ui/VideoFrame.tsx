@@ -1,143 +1,203 @@
-import { useEffect, useRef, useState } from "react";
-import { Flex } from "@aether/ui";
+import { useEffect, useReducer, useRef, useState } from "react";
 import { useAppContext } from "../ui";
 import { MediaConnection } from "peerjs";
-
-const peers: Record<string, MediaConnection> = {};
-const VIDEO_SIZE = "8vh";
+import { streamHasUsableVideo } from "./videoChatUtils";
 
 const DEFAULT_MEDIA_CONSTRAINTS: MediaStreamConstraints = {
   video: {
-    width: { min: 100, ideal: 320 },
-    height: { min: 100, ideal: 320 },
+    width: { min: 160, ideal: 480, max: 1280 },
+    height: { min: 120, ideal: 360, max: 720 },
+    facingMode: "user",
   },
   audio: {
-    sampleSize: 16,
-    channelCount: 2,
+    echoCancellation: true,
+    noiseSuppression: true,
+    channelCount: 1,
   },
 };
 
+/** Only the lexicographically smaller PeerJS id initiates the call — avoids WebRTC glare when both sides called each other. */
+function shouldInitiateCall(myPeerId: string | null, remotePeerId: string): boolean {
+  if (!myPeerId || !remotePeerId || myPeerId === remotePeerId) return false;
+  return myPeerId < remotePeerId;
+}
+
+/** Match MenuHud proximity row fade-out so video doesn’t cut to black before the plate fades. */
+const REMOTE_PEER_REMOVE_DELAY_MS = 380;
+
 export default function VideoFrame() {
-  const { peer, userSettings } = useAppContext();
-  const videoGridRef = useRef(null);
+  const { peer, userSettings, setLocalVideoChatStream, setRemoteVideoStreams } = useAppContext();
+  const peersRef = useRef<Record<string, MediaConnection>>({});
+  const myPeerIdRef = useRef<string | null>(null);
+  const awayRemoveTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
   const showVideo = userSettings?.videoChat;
 
-  /* Only request camera/mic after the user enables video chat in settings (avoids prompt on load). */
   const myStream = useUserMedia(showVideo, DEFAULT_MEDIA_CONSTRAINTS);
+  const [, resyncVideoUi] = useReducer((n: number) => n + 1, 0);
 
-  function connectToNewUser(peerId, stream) {
-    const call: MediaConnection = peer.call(peerId, stream);
-    const video = document.createElement("video");
-    call.once("stream", (userVideoStream) => {
-      addVideoStream(video, userVideoStream, peerId);
-    });
-    call.once("close", () => {
-      document.getElementById(peerId)?.remove?.();
-      delete peers[peerId];
-    });
-
-    peers[peerId] = call;
-  }
-
-  function addVideoStream(video, stream, peerId?: string) {
-    video.id = peerId;
-    if (peerId === "me") {
-      video.muted = true;
-    }
-    video.srcObject = stream;
-    video.addEventListener("loadedmetadata", () => {
-      video.play();
-    });
-    if (!document.getElementById(peerId)) {
-      videoGridRef.current.append(video);
-    }
-  }
+  const streamOk = streamHasUsableVideo(myStream);
 
   useEffect(() => {
-    // If the conditions aren't met, don't set up the effect.
-    if (!showVideo || !myStream) return;
+    if (!showVideo) {
+      setRemoteVideoStreams({});
+    }
+  }, [showVideo, setRemoteVideoStreams]);
 
-    // Function to handle incoming calls.
-    const handleCall = (call) => {
-      call.answer(myStream);
-      const video = document.createElement("video");
-      call.once("stream", (userVideoStream) => {
-        addVideoStream(video, userVideoStream, call?.peer);
+  useEffect(() => {
+    const syncId = () => {
+      if (peer.open && peer.id) myPeerIdRef.current = peer.id;
+    };
+    syncId();
+    peer.on("open", syncId);
+    return () => {
+      peer.off("open", syncId);
+    };
+  }, [peer]);
+
+  useEffect(() => {
+    if (!myStream) return;
+    const tracks = myStream.getVideoTracks();
+    const bump = () => resyncVideoUi();
+    tracks.forEach((t) => {
+      t.addEventListener("unmute", bump);
+      t.addEventListener("mute", bump);
+      t.addEventListener("ended", bump);
+    });
+    return () => {
+      tracks.forEach((t) => {
+        t.removeEventListener("unmute", bump);
+        t.removeEventListener("mute", bump);
+        t.removeEventListener("ended", bump);
       });
     };
+  }, [myStream]);
 
-    // Function to handle new user connection.
-    const handleHeroNearPlayer = (e: CustomEvent) => {
-      const peerId = e?.detail?.peerId;
+  useEffect(() => {
+    if (!showVideo) {
+      setLocalVideoChatStream(null);
+      return;
+    }
+    setLocalVideoChatStream(myStream);
+    return () => setLocalVideoChatStream(null);
+  }, [showVideo, myStream, setLocalVideoChatStream]);
+
+  useEffect(() => {
+    if (!showVideo || !streamOk) return;
+
+    const peers = peersRef.current;
+
+    function removeRemote(peerId: string) {
+      const conn = peers[peerId];
+      delete peers[peerId];
+      conn?.close?.();
+      setRemoteVideoStreams((prev) => {
+        if (!(peerId in prev)) return prev;
+        const next = { ...prev };
+        delete next[peerId];
+        return next;
+      });
+    }
+
+    function registerRemoteStream(peerId: string, stream: MediaStream) {
+      setRemoteVideoStreams((prev) => ({ ...prev, [peerId]: stream }));
+    }
+
+    function connectToNewUser(remotePeerId: string, stream: MediaStream, forceRetry = false) {
+      if (!remotePeerId || !streamHasUsableVideo(stream)) return;
+
+      /* On forceRetry (resync), close any stale call so we can re-attempt. */
+      if (peers[remotePeerId]) {
+        if (!forceRetry) return;
+        removeRemote(remotePeerId);
+      }
+
+      const myId = myPeerIdRef.current;
+      if (!shouldInitiateCall(myId, remotePeerId)) return;
+
+      const call = peer.call(remotePeerId, stream);
+
+      call.on("stream", (userVideoStream: MediaStream) => {
+        registerRemoteStream(remotePeerId, userVideoStream);
+      });
+      call.on("close", () => removeRemote(remotePeerId));
+      call.on("error", () => removeRemote(remotePeerId));
+
+      peers[remotePeerId] = call;
+    }
+
+    const handleCall = (call: MediaConnection) => {
+      if (!streamHasUsableVideo(myStream)) {
+        call.close();
+        return;
+      }
+      const remoteId = call.peer;
+      /* Close any stale outgoing call so the incoming one wins. */
+      if (peers[remoteId]) {
+        peers[remoteId].close();
+        delete peers[remoteId];
+      }
+      call.answer(myStream);
+      call.on("stream", (userVideoStream: MediaStream) => {
+        registerRemoteStream(remoteId, userVideoStream);
+      });
+      call.on("close", () => removeRemote(remoteId));
+      call.on("error", () => removeRemote(remoteId));
+      peers[remoteId] = call;
+    };
+
+    const handleHeroNearPlayer = (e: Event) => {
+      const peerId = (e as CustomEvent<{ peerId?: string }>)?.detail?.peerId;
+      if (!peerId) return;
+      const pending = awayRemoveTimersRef.current.get(peerId);
+      if (pending) {
+        clearTimeout(pending);
+        awayRemoveTimersRef.current.delete(peerId);
+      }
       connectToNewUser(peerId, myStream);
     };
 
-    // Function to handle user disconnection.
-    const handleHeroAwayPlayer = (e: CustomEvent) => {
-      const peerId = e?.detail?.peerId;
-      if (peers[peerId]) {
-        peers[peerId].close();
+    const handleHeroAwayPlayer = (e: Event) => {
+      const peerId = (e as CustomEvent<{ peerId?: string }>)?.detail?.peerId;
+      if (!peerId) return;
+      const pending = awayRemoveTimersRef.current.get(peerId);
+      if (pending) clearTimeout(pending);
+      const t = setTimeout(() => {
+        awayRemoveTimersRef.current.delete(peerId);
+        removeRemote(peerId);
+      }, REMOTE_PEER_REMOVE_DELAY_MS);
+      awayRemoveTimersRef.current.set(peerId, t);
+    };
+
+    /* Resync for players who were already nearby when video chat was enabled.
+       Dispatched AFTER listeners are attached so HERO_NEAR_PLAYER is caught. */
+    const handleStreamReady = () => {
+      for (const id of Object.keys(peers)) {
+        connectToNewUser(id, myStream, true);
       }
+      window.dispatchEvent(new CustomEvent("VIDEO_CHAT_STREAM_READY"));
     };
 
     peer.on("call", handleCall);
+    peer.on("open", handleStreamReady);
     window.addEventListener("HERO_NEAR_PLAYER", handleHeroNearPlayer);
     window.addEventListener("HERO_AWAY_PLAYER", handleHeroAwayPlayer);
 
+    /* Fire once immediately now that listeners are set up. */
+    window.dispatchEvent(new CustomEvent("VIDEO_CHAT_STREAM_READY"));
+
     return () => {
+      awayRemoveTimersRef.current.forEach((timer) => clearTimeout(timer));
+      awayRemoveTimersRef.current.clear();
       peer.off("call", handleCall);
+      peer.off("open", handleStreamReady);
       window.removeEventListener("HERO_NEAR_PLAYER", handleHeroNearPlayer);
       window.removeEventListener("HERO_AWAY_PLAYER", handleHeroAwayPlayer);
-      Object.values(peers).forEach((peerCall: MediaConnection) => {
-        peerCall.close();
-      });
+      [...Object.keys(peers)].forEach((id) => removeRemote(id));
     };
-  }, [showVideo, myStream, peer]);
+  }, [showVideo, myStream, peer, streamOk, setRemoteVideoStreams]);
 
-  return showVideo ? (
-    <Flex
-      className="video-chat"
-      sx={{
-        pointerEvents: "none",
-        justifyContent: "center",
-        zIndex: 9999,
-        position: "fixed",
-        inset: "0 0 0 0",
-        gap: 2,
-
-        "& video": {
-          width: VIDEO_SIZE,
-          height: VIDEO_SIZE,
-          borderRadius: "100%",
-          objectFit: "cover",
-        },
-      }}
-    >
-      {myStream?.active && <Video isMuted={true} stream={myStream} />}
-      <div id="video-grid" ref={videoGridRef}></div>
-    </Flex>
-  ) : null;
+  return null;
 }
-
-const Video = ({ stream, isMuted = false, peerId = "me" }) => {
-  const videoRef = useRef(null);
-
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.srcObject = stream;
-    }
-  }, [stream]);
-
-  return (
-    <video
-      ref={videoRef}
-      autoPlay
-      muted={isMuted}
-      playsInline // This is often needed for auto-play to work on mobile devices
-      id={peerId}
-    />
-  );
-};
 
 export function useUserMedia(enabled: boolean, requestedMedia: MediaStreamConstraints) {
   const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);

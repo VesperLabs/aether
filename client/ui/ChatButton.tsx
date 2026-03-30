@@ -19,7 +19,8 @@ const ChatButton = () => {
 
   return (
     <MenuButton
-      keyboardKey={tabChat ? "ENTER" : "T"}
+      /* Enter opens chat; hide shortcut while open so Enter in the input only sends/closes */
+      keyboardKey={tabChat ? undefined : "ENTER"}
       iconName="chat"
       sx={{
         flex: tabChat ? 1 : "unset",
@@ -38,7 +39,8 @@ const ChatButton = () => {
             const target = e.target as HTMLInputElement;
             const message = target?.value;
 
-            if (e.code === "Enter") {
+            if (e.code === "Enter" && !e.nativeEvent.isComposing) {
+              e.preventDefault();
               if (message?.trim() !== "") {
                 socket.emit("message", { message });
               }

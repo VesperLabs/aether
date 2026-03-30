@@ -34,7 +34,12 @@ const MenuButton = ({
       {iconName && <Icon size={size} icon={`./assets/icons/${iconName}.png`} />}
       {children}
       {!isMobile && keyboardKey && (
-        <KeyboardKey sx={{ bottom: "-3px", right: "-3px" }} name={keyboardKey} onKeyUp={onClick} />
+        <KeyboardKey
+          sx={{ bottom: "-3px", right: "-3px" }}
+          name={keyboardKey}
+          onKeyUp={onClick}
+          disabled={disabled}
+        />
       )}
     </Button>
   );

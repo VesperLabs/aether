@@ -47,7 +47,8 @@ class SceneMain extends Phaser.Scene {
     this.socket = socket;
     this.lastUpdateTime = 0;
     this.userSettings = DEFAULT_USER_SETTINGS;
-    this.nearbyPeerIds = [];
+    /** @type {Array<{ socketId: string, peerId?: string | null }>} */
+    this.nearbyRemotePlayers = [];
   }
 
   create() {
@@ -85,7 +86,10 @@ class SceneMain extends Phaser.Scene {
     });
 
     socket.on("heroInit", (args) => {
-      const { socketId, players = [], npcs = [], loots = [], userSettings = {} } = args ?? {};
+      const { socketId, players = [], npcs = [], loots = [] } = args ?? {};
+      if (args && Object.prototype.hasOwnProperty.call(args, "userSettings")) {
+        this.userSettings = { ...DEFAULT_USER_SETTINGS, ...args.userSettings };
+      }
       /* Delete everything in the scene */
       resetEntities(scene);
       netInterp.seedFromHeroInit(heroInitToTickExpanded({ players, npcs, loots }));
@@ -94,7 +98,6 @@ class SceneMain extends Phaser.Scene {
         if (getPlayer(scene, player.socketId)) continue;
         if (socketId === player.socketId) {
           scene.hero = addPlayer(scene, { ...player, isHero: true });
-          this.userSettings = { ...this.userSettings, ...userSettings };
         } else {
           addPlayer(scene, player);
         }
@@ -236,6 +239,21 @@ class SceneMain extends Phaser.Scene {
         this.toggleCharLevels();
       }
     });
+
+    const onVideoChatStreamReady = () => {
+      for (const { peerId, socketId } of scene.nearbyRemotePlayers ?? []) {
+        if (peerId && socketId) {
+          window.dispatchEvent(
+            new CustomEvent("HERO_NEAR_PLAYER", { detail: { peerId, socketId } })
+          );
+        }
+      }
+    };
+    window.addEventListener("VIDEO_CHAT_STREAM_READY", onVideoChatStreamReady);
+    scene.events.once("shutdown", () => {
+      window.removeEventListener("VIDEO_CHAT_STREAM_READY", onVideoChatStreamReady);
+    });
+
     // Add event listener for window resize
     this.scale.on(
       "resize",
@@ -342,23 +360,31 @@ class SceneMain extends Phaser.Scene {
 }
 
 function triggerPlayerProximity(scene, nearbyPlayers) {
-  const nearbyPeerIds = nearbyPlayers.map((player) => player.peerId);
+  const next = nearbyPlayers
+    .map((player) => ({
+      socketId: player.socketId,
+      peerId: player.peerId || null,
+    }))
+    .filter((x) => x.socketId);
 
-  for (const peerId of nearbyPeerIds) {
-    if (!scene.nearbyPeerIds.includes(peerId)) {
-      // console.log("NEAR");
-      window.dispatchEvent(new CustomEvent("HERO_NEAR_PLAYER", { detail: { peerId } }));
+  const prev = scene.nearbyRemotePlayers || [];
+  const sameSocket = (a, b) => a.socketId === b.socketId;
+
+  for (const n of next) {
+    if (!prev.some((p) => sameSocket(p, n))) {
+      window.dispatchEvent(
+        new CustomEvent("HERO_NEAR_PLAYER", { detail: { socketId: n.socketId, peerId: n.peerId } })
+      );
     }
   }
-
-  for (const peerId of scene.nearbyPeerIds) {
-    if (!nearbyPeerIds.includes(peerId)) {
-      // console.log("FAR");
-      window.dispatchEvent(new CustomEvent("HERO_AWAY_PLAYER", { detail: { peerId } }));
+  for (const p of prev) {
+    if (!next.some((n) => sameSocket(n, p))) {
+      window.dispatchEvent(
+        new CustomEvent("HERO_AWAY_PLAYER", { detail: { socketId: p.socketId, peerId: p.peerId } })
+      );
     }
   }
-
-  scene.nearbyPeerIds = nearbyPeerIds;
+  scene.nearbyRemotePlayers = next;
 }
 
 function triggerEntityProximity(scene, closestEntity) {

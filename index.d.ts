@@ -313,6 +313,7 @@ interface SpawnPoint {
 interface FullCharacterState {
   id: string;
   socketId: string;
+  peerId?: string;
   roomName: string;
   direction: string;
   x: number;

@@ -20,7 +20,7 @@ import RoomManager from "./RoomManager";
 import PartyManager from "./PartyManager";
 import Phaser from "phaser";
 import QuestBuilder from "./QuestBuilder";
-import ItemBuilder from "../shared/ItemBuilder";
+import ItemBuilder, { isItemBuildRarity, ITEM_BUILD_RARITIES } from "../shared/ItemBuilder";
 import { isNil } from "lodash";
 import { CONSUMABLES_BASES, POTION_BASES, skinTints, hairTints, DEFAULT_SERVER_FPS } from "../shared";
 import { createBaseUser } from "./db";
@@ -869,15 +869,44 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         }
         if (args.message.charAt(0) === "/") {
           const command = args.message.substr(1).split(" ");
+          const cmdErr = (message: string) =>
+            socket.emit("message", { type: "error", message } as Message);
+
           switch (command[0]) {
-            case "drop":
-              const itemParams = command?.[1]?.split?.("-");
-              if (!itemParams?.length) return;
-              const [itemType, itemRarity, itemKey, itemAmount] = itemParams ?? [];
+            case "drop": {
+              const raw = command[1]?.trim();
+              if (!raw) {
+                return cmdErr(
+                  "Usage: /drop <type>-<rarity>-<itemKey>-<amount> — four hyphen-separated parts, e.g. /drop weapon-common-sword-1"
+                );
+              }
+              const itemParams = raw.split("-");
+              const [itemType, itemRarity, itemKey, itemAmount] = itemParams;
+              if (!itemType || !itemRarity || !itemKey || itemAmount === undefined || itemAmount === "") {
+                return cmdErr(
+                  "Usage: /drop <type>-<rarity>-<itemKey>-<amount> — four hyphen-separated parts, e.g. /drop weapon-common-sword-1"
+                );
+              }
+              if (!isItemBuildRarity(itemRarity)) {
+                return cmdErr(
+                  `Invalid rarity "${itemRarity}". Use one of: ${ITEM_BUILD_RARITIES.join(", ")}.`
+                );
+              }
+              const built = ItemBuilder.buildItem(
+                itemType,
+                itemRarity,
+                itemKey,
+                itemAmount
+              ) as Item | null;
+              if (!built) {
+                return cmdErr(
+                  "Invalid /drop: no item matches that type, rarity, and key. Usage: /drop <type>-<rarity>-<itemKey>-<amount>"
+                );
+              }
               scene.roomManager.rooms[player?.roomName].lootManager.create({
                 x: player?.x,
                 y: player?.y,
-                item: ItemBuilder.buildItem(itemType, itemRarity, itemKey, itemAmount) as Item,
+                item: built,
                 npcId: null,
               });
               return socket.emit("message", {
@@ -885,26 +914,42 @@ class ServerScene extends Phaser.Scene implements ServerScene {
                 type: "chat",
                 message: args.message,
               });
+            }
             case "coords":
               scene.db.updateUserMapDetails(player);
               return socket.emit("message", {
                 type: "info",
                 message: `x: ${Math.round(player.x)} y: ${Math.round(player.y)}`,
               });
-            case "ding":
-              const didLevel = player.assignExp(parseInt(command?.[1]));
+            case "ding": {
+              const exp = parseInt(command[1], 10);
+              if (!Number.isFinite(exp)) {
+                return cmdErr("Usage: /ding <experience> — positive integer XP to grant.");
+              }
+              const didLevel = player.assignExp(exp);
               const roomState = getRoomState(scene, player?.roomName);
               return scene.io.to(player?.roomName).emit("buffUpdate", {
                 players: roomState?.players?.filter((n) => n?.id === player?.id),
                 playerIdsThatLeveled: didLevel ? [player?.id] : [],
               });
-            case "booty":
-              player.gold += parseInt(command?.[1]);
+            }
+            case "booty": {
+              const gold = parseInt(command[1], 10);
+              if (!Number.isFinite(gold) || gold <= 0) {
+                return cmdErr("Usage: /booty <amount> — positive integer gold to add.");
+              }
+              player.gold += gold;
               return io.to(player?.roomName).emit("playerUpdate", getFullCharacterState(player));
-            case "guns":
+            }
+            case "guns": {
+              const gunRarities = ["unique", "common", "set", "rare", "magic"] as const;
+              const rarity = command[1];
+              if (!rarity || !gunRarities.includes(rarity as (typeof gunRarities)[number])) {
+                return cmdErr(
+                  "Usage: /guns <rarity> — rarity must be exactly one of: unique, common, set, rare, magic."
+                );
+              }
               let gunItem = null;
-              const rarity = command?.[1];
-              if (!["unique", "common", "set", "rare", "magic"]?.includes(rarity)) return;
               do {
                 gunItem = ItemBuilder.rollDrop(100, 100);
               } while (gunItem?.rarity !== rarity);
@@ -921,6 +966,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
                 type: "chat",
                 message: args.message,
               });
+            }
           }
         }
         io.to(player?.roomName).emit("message", {
@@ -1126,11 +1172,16 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         });
         socket.emit("updateUserSetting", { name, value });
       });
-      socket.on("peerInit", (pId) => {
+      socket.on("peerInit", (pId: string) => {
         peerId = pId;
-      });
-      socket.on("peerConnect", ({ peerId, socketId }) => {
-        socket.to(socketId).emit("connectPeer", { peerId, socketId });
+        const player = scene.players[socketId];
+        if (player) {
+          player.peerId = pId;
+          const roomName = player.room?.name;
+          if (roomName) {
+            io.to(roomName).emit("playerUpdate", getFullCharacterState(player));
+          }
+        }
       });
       socket.on("peerConnect", ({ peerId, socketId }) => {
         socket.to(socketId).emit("connectPeer", { peerId, socketId });

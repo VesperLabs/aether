@@ -64,6 +64,7 @@ class Player extends Character {
     }
   }
   updateData(data) {
+    if (data?.peerId !== undefined) this.peerId = data.peerId;
     this.activeItemSlots = data?.activeItemSlots;
     // filter out equipment slotNames that are not in activeItemsSlots array
     this.equipment = data.equipment;

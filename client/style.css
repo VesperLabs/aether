@@ -33,3 +33,45 @@ body {
   image-rendering: pixelated;
   image-rendering: crisp-edges;
 }
+
+/* Proximity video chat — PIP circles */
+@keyframes video-chat-pip-in {
+  from {
+    opacity: 0;
+    transform: scale(0.88);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes video-chat-pip-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.88);
+  }
+}
+
+.video-chat-pip,
+.video-chat-self-wrap {
+  animation: video-chat-pip-in 0.48s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.video-chat-pip-out {
+  animation: video-chat-pip-out 0.32s cubic-bezier(0.55, 0, 1, 0.45) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .video-chat-pip,
+  .video-chat-self-wrap,
+  .video-chat-pip-out {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}

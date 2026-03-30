@@ -11,7 +11,27 @@ interface KeyboardKeyProps {
   sx?: object;
 }
 
-const IGNORE_PRESS_ELEMENT_TYPES = ["text", "number"];
+const IGNORE_PRESS_ELEMENT_TYPES = ["text", "number", "textarea"];
+
+/** True if the last Enter keydown started in an input/textarea (survives keyup after unmount). */
+let enterKeydownFromEditableField = false;
+
+function isEditableFieldTarget(target: EventTarget | null): boolean {
+  if (!target || !(target instanceof HTMLElement)) return false;
+  if (target.isContentEditable) return true;
+  if (target.tagName === "TEXTAREA") return true;
+  const type = (target as HTMLInputElement).type;
+  return IGNORE_PRESS_ELEMENT_TYPES.includes(type);
+}
+
+function onEnterKeyDownCapture(e: KeyboardEvent) {
+  if (e.key !== "Enter") return;
+  enterKeydownFromEditableField = isEditableFieldTarget(e.target);
+}
+
+if (typeof window !== "undefined") {
+  window.addEventListener("keydown", onEnterKeyDownCapture, true);
+}
 
 const getKeyName = (name: string) => {
   let keyName = name.toUpperCase();
@@ -22,6 +42,14 @@ const getKeyName = (name: string) => {
     keyName = "SPACE";
   }
   return keyName.toUpperCase();
+};
+
+/** Short label for the key badge (logical name still matches via getKeyName). */
+const getKeyDisplayLabel = (name: string) => {
+  if (getKeyName(name) === "ENTER") {
+    return "↵";
+  }
+  return getKeyName(name);
 };
 
 const KeyboardKey: React.FC<KeyboardKeyProps> = ({
@@ -36,18 +64,26 @@ const KeyboardKey: React.FC<KeyboardKeyProps> = ({
   const ref = useRef(null);
   const [isPressed, setIsPressed] = useState(false);
 
-  const keyDisplayName = getKeyName(name);
+  const keyDisplayName = getKeyDisplayLabel(name);
 
   const handleKeyUp = (e: KeyboardEvent) => {
     const keyName = getKeyName(e?.key || "");
+    /* Enter: chat submit unmounts input before keyup; don't treat that keyup as HUD Enter. */
+    if (keyName === "ENTER" && enterKeydownFromEditableField) {
+      enterKeydownFromEditableField = false;
+      if (name === "ENTER") {
+        setIsPressed(false);
+        return;
+      }
+    }
+    /* Don't fire HUD shortcuts while typing in inputs; ESC still works (e.g. close modals). */
     if (
       // @ts-ignore
       IGNORE_PRESS_ELEMENT_TYPES.some((t) =>
         // @ts-ignore
         [document.activeElement?.type, e.target?.type].includes(t)
       ) &&
-      keyName !== "ESCAPE" &&
-      keyName !== "ENTER"
+      keyName !== "ESCAPE"
     ) {
       return false;
     }

@@ -1,8 +1,41 @@
 import { useState, useEffect } from "react";
-import { Modal, Flex, Input, KeyboardButton, Icon, Text } from "@aether/ui";
+import { Modal, Flex, Input, KeyboardButton, Icon, Text, Box } from "@aether/ui";
 import { useAppContext } from "./";
 import { CLASS_ICON_MAP } from "@aether/shared";
 import Tooltip from "./Tooltip";
+
+const accordionEase = "cubic-bezier(0.33, 1, 0.68, 1)";
+const accordionDuration = "0.3s";
+
+/** Single open panel; collapsed rows use 0fr height (see TabPanel). */
+const TabPanel = ({ open, children }: { open: boolean; children: React.ReactNode }) => (
+  <Box
+    sx={{
+      display: "grid",
+      gridTemplateRows: open ? "1fr" : "0fr",
+      transition: `grid-template-rows ${accordionDuration} ${accordionEase}`,
+      "@media (prefers-reduced-motion: reduce)": {
+        transition: "none",
+      },
+    }}
+  >
+    <Box
+      sx={{
+        minHeight: 0,
+        overflow: "hidden",
+        pointerEvents: open ? "auto" : "none",
+        opacity: open ? 1 : 0,
+        transition: `opacity ${accordionDuration} ${accordionEase}`,
+        "@media (prefers-reduced-motion: reduce)": {
+          transition: "none",
+        },
+      }}
+      aria-hidden={!open}
+    >
+      {children}
+    </Box>
+  </Box>
+);
 
 const IconPen = ({ sx }: { sx?: any }) => (
   <Icon
@@ -23,6 +56,7 @@ const ModalLogin = (props: any) => {
   const { zoom, bottomOffset } = useAppContext();
   const [defaultEmail, setDefaultEmail] = useState(storedEmail);
   const [activeTab, setActiveTab] = useState(storedEmail ? "login" : "demo");
+
   const isLogin = activeTab === "login";
   const isRegister = activeTab === "register";
   const isDemo = activeTab === "demo";
@@ -51,7 +85,9 @@ const ModalLogin = (props: any) => {
         <Icon size={22} icon={`./assets/icons/book.png`} />
         Login
       </Modal.Header>
-      {isLogin && <LoginForm defaultEmail={defaultEmail} />}
+      <TabPanel open={isLogin}>
+        <LoginForm defaultEmail={defaultEmail} isActive={isLogin} />
+      </TabPanel>
       <Modal.Header
         sx={{ cursor: "pointer", opacity: isRegister ? 1 : 0.25 }}
         onClick={() => setActiveTab("register")}
@@ -60,7 +96,9 @@ const ModalLogin = (props: any) => {
         <Icon size={22} icon={`./assets/icons/book.png`} />
         Register
       </Modal.Header>
-      {isRegister && <RegisterForm onRegisterSuccess={onRegisterSuccess} />}
+      <TabPanel open={isRegister}>
+        <RegisterForm onRegisterSuccess={onRegisterSuccess} isActive={isRegister} />
+      </TabPanel>
       <Modal.Header
         sx={{ cursor: "pointer", opacity: isDemo ? 1 : 0.25 }}
         onClick={() => setActiveTab("demo")}
@@ -69,7 +107,9 @@ const ModalLogin = (props: any) => {
         <Icon size={22} icon={`./assets/icons/book.png`} />
         Try Demo
       </Modal.Header>
-      {isDemo && <DemoForm />}
+      <TabPanel open={isDemo}>
+        <DemoForm />
+      </TabPanel>
     </Modal>
   );
 };
@@ -95,7 +135,7 @@ const DemoForm = () => {
   );
 };
 
-const LoginForm = ({ defaultEmail }) => {
+const LoginForm = ({ defaultEmail, isActive }: { defaultEmail: string; isActive: boolean }) => {
   const { socket } = useAppContext();
   const [email, setEmail] = useState(defaultEmail);
   const [password, setPassword] = useState("");
@@ -103,6 +143,7 @@ const LoginForm = ({ defaultEmail }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const onFormError = (payload: any) => {
+    if (!isActive) return;
     setError(payload?.error);
     setIsLoading(false);
   };
@@ -114,17 +155,17 @@ const LoginForm = ({ defaultEmail }) => {
   };
 
   useEffect(() => {
+    if (!isActive) return;
     socket.on("formError", onFormError);
-
     return () => {
       socket.off("formError", onFormError);
     };
-  }, [socket]);
+  }, [socket, isActive]);
 
   return (
     <Modal.Body sx={{ gap: 2 }}>
       <Input
-        autoFocus={!defaultEmail}
+        autoFocus={isActive && !defaultEmail}
         placeholder="Email"
         value={email}
         onChange={(e) => {
@@ -133,7 +174,7 @@ const LoginForm = ({ defaultEmail }) => {
         }}
       />
       <Input
-        autoFocus={defaultEmail}
+        autoFocus={isActive && !!defaultEmail}
         autoComplete="weak-password"
         type="password"
         placeholder="Password"
@@ -156,7 +197,13 @@ const LoginForm = ({ defaultEmail }) => {
   );
 };
 
-const RegisterForm = ({ onRegisterSuccess }) => {
+const RegisterForm = ({
+  onRegisterSuccess,
+  isActive,
+}: {
+  onRegisterSuccess: (payload: any) => void;
+  isActive: boolean;
+}) => {
   const { socket } = useAppContext();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -164,32 +211,36 @@ const RegisterForm = ({ onRegisterSuccess }) => {
   const [charClass, setCharClass] = useState("warrior");
 
   const onFormError = (payload: any) => {
+    if (!isActive) return;
     setError(payload?.error);
   };
 
   const onFormSuccess = (payload: any) => {
+    if (!isActive) return;
     onRegisterSuccess(payload);
   };
 
   useEffect(() => {
+    if (!isActive) return;
     socket.on("formError", onFormError);
     return () => {
       socket.off("formError", onFormError);
     };
-  }, [socket]);
+  }, [socket, isActive]);
 
   useEffect(() => {
+    if (!isActive) return;
     socket.on("formSuccess", onFormSuccess);
     return () => {
       socket.off("formSuccess", onFormSuccess);
     };
-  }, [socket]);
+  }, [socket, isActive]);
 
   return (
     <Modal.Body sx={{ gap: 2 }}>
       <CharClassSelect charClass={charClass} setCharClass={setCharClass} />
       <Input
-        autoFocus={true}
+        autoFocus={isActive}
         placeholder="Email"
         value={email}
         onChange={(e) => {
