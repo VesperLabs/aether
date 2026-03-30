@@ -83,9 +83,7 @@ class Spell extends Phaser.GameObjects.Container {
     this.body.setCircle(this?.bodySize, -this?.bodySize, -this?.bodySize);
 
     if (this.isMeleeAttack) {
-      /* Must match client Spell: arc follows the caster each frame or overlap is only valid at
-       * spawn position and melee feels far shorter than weapon range. */
-      this.stickToCaster = true;
+      //this.stickToCaster = true;
       let viewSize = 44;
 
       /* Hack: Up range is too long. This hack makes the top-down view more realistic */
@@ -160,15 +158,6 @@ class Spell extends Phaser.GameObjects.Container {
     const npcs = this.room.npcManager.npcs?.getChildren() || [];
     const isNpcSingleTargetMelee = target?.id && caster?.kind !== "player" && this.isMeleeAttack;
 
-    const shouldSkipMeleeFacing = (victim: Character) => {
-      if (!this.isMeleeAttack) return false;
-      if (direction === "up" && victim.y > caster.y) return true;
-      if (direction === "down" && victim.y < caster.y) return true;
-      if (direction === "left" && victim.x > caster.x) return true;
-      if (direction === "right" && victim.x < caster.x) return true;
-      return false;
-    };
-
     [...npcs, ...players]?.every((victim) => {
       if (!victim || this.hitIds.includes(victim?.id) || victim?.state?.isDead) return true;
 
@@ -181,7 +170,12 @@ class Spell extends Phaser.GameObjects.Container {
       const body = isNpcSingleTargetMelee ? victim : victim?.hitBox;
       if (scene.physics.overlap(body, this)) {
         /* For attacks, prevent collision behind the player */
-        if (shouldSkipMeleeFacing(victim)) return true;
+        if (this.isMeleeAttack) {
+          if (direction === "up" && victim.y > caster.y) return true;
+          if (direction === "down" && victim.y < caster.y) return true;
+          if (direction === "left" && victim.x > caster.x) return true;
+          if (direction === "right" && victim.x < caster.x) return true;
+        }
 
         // keep track of all the characters this spell hit
         this.hitIds.push(victim.id);
