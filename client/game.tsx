@@ -72,6 +72,11 @@ const game = new Phaser.Game({
       },
     },
   },
+  /* Default Phaser image loading is XHR → blob → object URL. Use <img src> instead (clearer in DevTools; required for WebGL + CDN with CORS). */
+  loader: {
+    imageLoadType: "HTMLImageElement",
+    crossOrigin: "anonymous",
+  },
   scene: [new SceneBoot(socket), new SceneMain(socket), new SceneHud(socket)],
 });
 
