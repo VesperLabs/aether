@@ -13,6 +13,14 @@ import { useEffect, useState } from "react";
 
 const queryClient = new QueryClient();
 
+/** Wiki "Give'r a sec" is for Fly cold start; skip on local dev / localhost so the UI loads immediately. */
+function shouldSkipWarmupModal(): boolean {
+  if (import.meta.env.DEV) return true;
+  if (typeof window === "undefined") return false;
+  const h = window.location.hostname;
+  return h === "localhost" || h === "127.0.0.1" || h === "[::1]";
+}
+
 const App = () => {
   return (
     <ThemeProvider theme={theme as Theme}>
@@ -50,9 +58,9 @@ const App = () => {
 };
 
 const LoadingProvider = ({ children }) => {
-  const [polling, setPolling] = useState(true);
+  const [polling, setPolling] = useState(() => !shouldSkipWarmupModal());
 
-  const { data: metrics } = useQuery({
+  const { isSuccess, isError } = useQuery({
     queryKey: ["metrics"],
     queryFn: fetchMetrics,
     refetchInterval: polling ? 1000 : false,
@@ -61,10 +69,13 @@ const LoadingProvider = ({ children }) => {
   });
 
   useEffect(() => {
-    if (metrics && metrics?.ping < 1000) {
-      setPolling(false); // Stop polling when ping is detected
+    /* Don't gate on metrics.ping: it's serverTime - client query timestamp and can be huge with
+     * clock skew or slow links, which left the modal up forever. Cold-start: keep polling until
+     * the first successful response; if the server is down, show the wiki with "Offline" metrics. */
+    if (isSuccess || isError) {
+      setPolling(false);
     }
-  }, [metrics]);
+  }, [isSuccess, isError]);
 
   return !polling ? children : <ModalConnecting />;
 };
