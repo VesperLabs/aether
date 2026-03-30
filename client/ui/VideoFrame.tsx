@@ -1,7 +1,7 @@
 import { useEffect, useReducer, useRef, useState } from "react";
 import { useAppContext } from "../ui";
 import { MediaConnection } from "peerjs";
-import { streamHasUsableVideo } from "./videoChatUtils";
+import { streamHasUsableVideo, canUseVideoChat } from "./videoChatUtils";
 
 const DEFAULT_MEDIA_CONSTRAINTS: MediaStreamConstraints = {
   video: {
@@ -30,7 +30,7 @@ export default function VideoFrame() {
   const peersRef = useRef<Record<string, MediaConnection>>({});
   const myPeerIdRef = useRef<string | null>(null);
   const awayRemoveTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
-  const showVideo = userSettings?.videoChat;
+  const showVideo = !!userSettings?.videoChat && canUseVideoChat();
 
   const myStream = useUserMedia(showVideo, DEFAULT_MEDIA_CONSTRAINTS);
   const [, resyncVideoUi] = useReducer((n: number) => n + 1, 0);
@@ -234,12 +234,31 @@ export function useUserMedia(enabled: boolean, requestedMedia: MediaStreamConstr
     let stream: MediaStream | null = null;
 
     async function enableStream() {
-      try {
-        stream = await navigator.mediaDevices.getUserMedia(requestedMedia);
-        if (!cancelled) setMediaStream(stream);
-      } catch {
+      const gUM = navigator.mediaDevices?.getUserMedia?.bind(navigator.mediaDevices);
+      if (!gUM) {
         if (!cancelled) setMediaStream(new MediaStream());
+        return;
       }
+      /* iOS Safari often rejects { width: { min, ideal, max } }; try simpler constraints after failure. */
+      const attempts: MediaStreamConstraints[] = [
+        requestedMedia,
+        {
+          video: { facingMode: "user" },
+          audio: { echoCancellation: true, noiseSuppression: true, channelCount: 1 },
+        },
+        { video: true, audio: true },
+      ];
+      for (const constraints of attempts) {
+        try {
+          stream = await gUM(constraints);
+          if (!cancelled) setMediaStream(stream);
+          return;
+        } catch {
+          stream?.getTracks().forEach((t) => t.stop());
+          stream = null;
+        }
+      }
+      if (!cancelled) setMediaStream(new MediaStream());
     }
 
     enableStream();

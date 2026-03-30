@@ -8,6 +8,7 @@ export default function ({
   label?: string;
   checked: any;
   onChange: any;
+  disabled?: boolean;
 }) {
   return (
     <Switch
