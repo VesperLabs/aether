@@ -96,6 +96,12 @@ function createAnims(scene) {
   createSpellAnims(scene);
 }
 
+/** Avoid "AnimationManager key already exists" when SceneBoot.create re-runs (HMR / scene restart). */
+function createAnimIfMissing(scene, config) {
+  if (scene.anims.exists(config.key)) return;
+  scene.anims.create(config);
+}
+
 /* Skip making animations for these types */
 const checkSkip = (asset) =>
   ["weapon.json", "icons.json", "stackable.json"]?.some((a) => asset?.atlas?.includes(a));
@@ -120,7 +126,7 @@ function createStaticAnims(scene) {
     /* Skip non animated atlases */
     if (checkSkip(asset)) continue;
     for (const animKey of SINGLE_FRAME_ANIM_KEYS) {
-      scene.anims.create({
+      createAnimIfMissing(scene, {
         key: asset.texture + "-" + animKey,
         frames: scene.anims.generateFrameNames(asset.texture, {
           prefix: animKey,
@@ -140,7 +146,7 @@ function createWalkingAnims(scene) {
     /* Skip non animated atlases */
     if (checkSkip(asset)) continue;
     for (const animKey of animKeys) {
-      scene.anims.create({
+      createAnimIfMissing(scene, {
         key: asset.texture + "-" + animKey,
         frames: scene.anims.generateFrameNames(asset.texture, {
           prefix: animKey + ".",
@@ -154,49 +160,49 @@ function createWalkingAnims(scene) {
 
 function createSpellAnims(scene) {
   //spells
-  scene.anims.create({
+  createAnimIfMissing(scene, {
     key: "spell-anim-fireball",
     frames: scene.anims.generateFrameNumbers("spell-anim-fireball", { start: 0, end: 5 }),
     repeat: -1,
     yoyo: true,
     frameRate: 20,
   });
-  scene.anims.create({
+  createAnimIfMissing(scene, {
     key: "spell-anim-waterball",
     frames: scene.anims.generateFrameNumbers("spell-anim-balls", { start: 40, end: 49 }),
     repeat: -1,
     yoyo: false,
     frameRate: 20,
   });
-  scene.anims.create({
+  createAnimIfMissing(scene, {
     key: "spell-anim-lightball",
     frames: scene.anims.generateFrameNumbers("spell-anim-balls", { start: 10, end: 19 }),
     repeat: -1,
     yoyo: false,
     frameRate: 20,
   });
-  scene.anims.create({
+  createAnimIfMissing(scene, {
     key: "spell-anim-holyball",
     frames: scene.anims.generateFrameNumbers("spell-anim-balls", { start: 10, end: 19 }),
     repeat: -1,
     yoyo: false,
     frameRate: 20,
   });
-  scene.anims.create({
+  createAnimIfMissing(scene, {
     key: "spell-anim-chakra",
     frames: scene.anims.generateFrameNumbers("spell-anim-chakra", { start: 0, end: 5 }),
     repeat: -1,
     yoyo: true,
     frameRate: 20,
   });
-  scene.anims.create({
+  createAnimIfMissing(scene, {
     key: "spell-anim-hits-physical",
     frames: scene.anims.generateFrameNumbers("spell-anim-hits", { start: 0, end: 8 }),
     repeat: 0,
     yoyo: false,
     frameRate: 20,
   });
-  scene.anims.create({
+  createAnimIfMissing(scene, {
     key: "spell-anim-quake",
     frames: scene.anims.generateFrameNumbers("spell-anim-quake", { start: 0, end: 5 }),
     repeat: 0,
@@ -204,35 +210,35 @@ function createSpellAnims(scene) {
     frameRate: 20,
   });
   //hits
-  scene.anims.create({
+  createAnimIfMissing(scene, {
     key: "spell-anim-hits-water",
     frames: scene.anims.generateFrameNumbers("spell-anim-hits", { start: 9, end: 17 }),
     repeat: 0,
     yoyo: false,
     frameRate: 20,
   });
-  scene.anims.create({
+  createAnimIfMissing(scene, {
     key: "spell-anim-hits-fire",
     frames: scene.anims.generateFrameNumbers("spell-anim-hits", { start: 18, end: 26 }),
     repeat: 0,
     yoyo: false,
     frameRate: 20,
   });
-  scene.anims.create({
+  createAnimIfMissing(scene, {
     key: "spell-anim-hits-light",
     frames: scene.anims.generateFrameNumbers("spell-anim-hits", { start: 27, end: 35 }),
     repeat: 0,
     yoyo: false,
     frameRate: 20,
   });
-  scene.anims.create({
+  createAnimIfMissing(scene, {
     key: "spell-anim-hits-earth",
     frames: scene.anims.generateFrameNumbers("spell-anim-hits", { start: 36, end: 44 }),
     repeat: 0,
     yoyo: false,
     frameRate: 20,
   });
-  scene.anims.create({
+  createAnimIfMissing(scene, {
     key: "spell-anim-hits-holy",
     frames: scene.anims.generateFrameNumbers("spell-anim-hits", { start: 45, end: 53 }),
     repeat: 0,
@@ -240,21 +246,21 @@ function createSpellAnims(scene) {
     frameRate: 20,
   });
   //slashes
-  scene.anims.create({
+  createAnimIfMissing(scene, {
     key: "spell-anim-slash-physical",
     frames: scene.anims.generateFrameNumbers("spell-anim-slash", { start: 18, end: 26 }),
     repeat: false,
     yoyo: false,
     frameRate: 60,
   });
-  scene.anims.create({
+  createAnimIfMissing(scene, {
     key: "spell-anim-slash-fire",
     frames: scene.anims.generateFrameNumbers("spell-anim-slash", { start: 0, end: 8 }),
     repeat: false,
     yoyo: false,
     frameRate: 60,
   });
-  scene.anims.create({
+  createAnimIfMissing(scene, {
     key: "loot-anim-sparkle",
     frames: scene.anims.generateFrameNumbers("loot-anim-sparkle", { start: 0, end: 6 }),
     repeat: -1,

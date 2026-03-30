@@ -1,5 +1,8 @@
+import "./Phaser";
 import path from "path";
 import { config } from "dotenv";
+import cors from "cors";
+import express from "express";
 import GameServer from "./GameServer";
 import { initDatabase } from "./db";
 import { initFakeDatabase } from "./db/fake";
@@ -9,8 +12,6 @@ import { default as http, Server } from "http";
 import { createProxyMiddleware } from "http-proxy-middleware";
 
 config({ path: path.join(__dirname, "/../.env") });
-const cors = require("cors");
-const express = require("express");
 
 const PEER_SERVER_PORT = parseInt(process.env.PEER_SERVER_PORT);
 const PORT = process.env.PORT;
@@ -26,7 +27,7 @@ class AppServer {
   constructor() {
     this.app = express();
     this.httpServer = http.createServer(this.app);
-    this.peerServer = PeerServer({ port: PEER_SERVER_PORT }, (e) => {
+    this.peerServer = PeerServer({ port: PEER_SERVER_PORT }, (_e) => {
       console.log(`💻 Peerserver @ /peerjs:${PEER_SERVER_PORT}`);
     });
   }

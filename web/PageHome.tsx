@@ -1,6 +1,5 @@
 import { Text, Button, Flex, Link, Box } from "@aether/ui";
 import RowTitle from "./RowTitle";
-import ModalConnecting from "./ModalConnecting";
 
 export default function () {
   return (

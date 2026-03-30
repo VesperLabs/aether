@@ -1,11 +1,14 @@
-//@ts-nocheck
+import path from "node:path";
 import { defineConfig, loadEnv } from "vite";
-require("dotenv").config();
 import react from "@vitejs/plugin-react-swc";
-const path = require("path");
-const parentDir = path.resolve(__dirname, "..");
+import dotenv from "dotenv";
 
-export default ({ mode }) => {
+dotenv.config();
+
+/** Repo root when Vite is run from `client/` (see npm scripts). */
+const parentDir = path.resolve(process.cwd(), "..");
+
+export default ({ mode, command }) => {
   process.env = Object.assign(process.env, loadEnv(mode, parentDir, ""));
   console.log(`🛠 DEBUG: ${process.env.DEBUG}`);
   console.log(`🛠 SERVER_FPS: ${process.env.SERVER_FPS}`);
@@ -16,6 +19,8 @@ export default ({ mode }) => {
 
   return defineConfig({
     envDir: "../",
+    // Dev serves static assets from public; build writes into public — avoid copying public onto itself
+    publicDir: command === "serve" ? "../public" : false,
     plugins: [
       {
         name: "replace-url",
@@ -38,7 +43,6 @@ export default ({ mode }) => {
     server: {
       host: true,
     },
-    publicDir: "../public", //serves this folder for our dev instance.
     build: {
       assetsDir: "./", //puts our js files 1 directory up from the /assets folder
       emptyOutDir: false, //we dont want to delete the public folder. its where we store pics

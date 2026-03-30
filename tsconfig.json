@@ -1,10 +1,11 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "bundler",
     "allowJs": true,
     "noEmit": true,
     "strict": false,
+    "skipLibCheck": true,
     "esModuleInterop": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext", "scripthost"],
     "jsx": "react-jsx",
@@ -13,9 +14,7 @@
       "@aether/ui": ["./ui"],
       "@aether/server": ["./server"],
       "@aether/shared": ["./shared"],
-      "@aether/client": ["./client"],
-      // workaround for: https://github.com/vitest-dev/vitest/issues/4567
-      "rollup/parseAst": ["./node_modules/rollup/dist/parseAst"]
+      "@aether/client": ["./client"]
     }
   },
   "include": [

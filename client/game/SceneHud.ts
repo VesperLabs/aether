@@ -11,6 +11,9 @@ import { Socket } from "socket.io";
 const { W, S, A, D } = Phaser.Input.Keyboard.KeyCodes;
 const { Between } = Phaser.Math.Angle;
 
+/** Max rate for playerInput while moving (server still gets full x,y,vx,vy snapshots). */
+const PLAYER_INPUT_THROTTLE_MS = 50;
+
 class SceneHud extends Phaser.Scene {
   socket: Socket;
   cursorKeys: any;
@@ -390,15 +393,34 @@ function moveDirectHero(scene) {
 
   /* If the hero is standing still do not update the server */
   if (!hero.state.isIdle && !hero.state.isEnteringDoor) {
-    //if (time % 2 > 1)
-    scene.socket.emit("playerInput", {
+    if (!scene._playerInputNet) {
+      scene._playerInputNet = { lastEmitAt: 0, lastEmitted: null };
+    }
+    const net = scene._playerInputNet;
+    const payload = {
       vx,
       vy,
       x: hero.x,
       y: hero.y,
       direction: hero.direction,
       roomName: hero.roomName,
-    });
+    };
+    const now = Date.now();
+    const stopped = vx === 0 && vy === 0;
+    const wasMoving =
+      net.lastEmitted && (net.lastEmitted.vx !== 0 || net.lastEmitted.vy !== 0);
+    const flushNow =
+      !net.lastEmitted ||
+      (stopped && wasMoving) ||
+      (net.lastEmitted &&
+        (net.lastEmitted.direction !== direction || net.lastEmitted.roomName !== hero.roomName)) ||
+      now - net.lastEmitAt >= PLAYER_INPUT_THROTTLE_MS;
+
+    if (flushNow) {
+      scene.socket.emit("playerInput", payload);
+      net.lastEmitAt = now;
+      net.lastEmitted = { ...payload };
+    }
   }
   hero.state.isIdle = hero.vx === vx && hero.vy === vy && vx === 0 && vy === 0;
 }

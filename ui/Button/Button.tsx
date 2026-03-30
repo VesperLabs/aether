@@ -2,7 +2,7 @@ import { Button as Flex } from "theme-ui";
 import { forwardRef, useState } from "react";
 
 const Button = forwardRef<HTMLDivElement, any>(
-  ({ icon, onTouchEnd, onTouchStart, onClick, ...props }, ref) => {
+  ({ icon: _icon, onTouchEnd, onTouchStart, onClick, ...props }, ref) => {
     const [className, setClassName] = useState("");
 
     // if we are using this as a link we disable the click events

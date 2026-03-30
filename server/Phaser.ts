@@ -2,6 +2,18 @@ declare global {
   var phaserOnNodeFPS: number;
 }
 
+/* Phaser 3.90 WebGLRenderer uses `if (typeof WEBGL_DEBUG)` which is always truthy, so it always
+ * requires phaser3spectorjs (browser-only). Stub it before any Phaser load on Node. */
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const NodeModule = require("module") as typeof import("module");
+const origRequire = NodeModule.prototype.require;
+NodeModule.prototype.require = function (id: string) {
+  if (id === "phaser3spectorjs") {
+    return {};
+  }
+  return origRequire.apply(this, arguments as unknown as [string]);
+} as typeof NodeModule.prototype.require;
+
 import Canvas from "canvas";
 import jsdom from "jsdom";
 import path from "path";
@@ -43,6 +55,11 @@ const noop = () => {};
 const document = dom.window.document;
 const window = dom.window;
 window.focus = () => {};
+
+/* Phaser 3.90+ ScaleManager references global `screen` (browser API). */
+const screenStub = { orientation: null as null };
+(global as unknown as { screen: typeof screenStub }).screen = screenStub;
+(window as unknown as { screen: typeof screenStub }).screen = screenStub;
 
 global.document = document as any;
 global.window = window as any;

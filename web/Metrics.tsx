@@ -1,11 +1,14 @@
 import { msToHours } from "@aether/shared";
 import { Box, Text } from "@aether/ui";
 import { STATIC_ROW_STYLES, RowTitle } from ".";
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import { fetchMetrics } from "./api";
 
 const Metrics = () => {
-  const { data: metrics, isLoading: loadingMetrics } = useQuery("metrics", fetchMetrics);
+  const { data: metrics } = useQuery({
+    queryKey: ["metrics"],
+    queryFn: fetchMetrics,
+  });
 
   return (
     <RowTitle

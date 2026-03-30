@@ -1,28 +1,29 @@
 import { useEffect, useRef, useState } from "react";
 import { Flex } from "@aether/ui";
-import { isMobile } from "../../shared/utils";
 import { useAppContext } from "../ui";
-import { useOnMountUnsafe } from "./useOnMountSafe";
 import { MediaConnection } from "peerjs";
 
 const peers: Record<string, MediaConnection> = {};
 const VIDEO_SIZE = "8vh";
+
+const DEFAULT_MEDIA_CONSTRAINTS: MediaStreamConstraints = {
+  video: {
+    width: { min: 100, ideal: 320 },
+    height: { min: 100, ideal: 320 },
+  },
+  audio: {
+    sampleSize: 16,
+    channelCount: 2,
+  },
+};
 
 export default function VideoFrame() {
   const { peer, userSettings } = useAppContext();
   const videoGridRef = useRef(null);
   const showVideo = userSettings?.videoChat;
 
-  const myStream = useUserMedia({
-    video: {
-      width: { min: 100, ideal: 320 },
-      height: { min: 100, ideal: 320 },
-    },
-    audio: {
-      sampleSize: 16,
-      channelCount: 2,
-    },
-  });
+  /* Only request camera/mic after the user enables video chat in settings (avoids prompt on load). */
+  const myStream = useUserMedia(showVideo, DEFAULT_MEDIA_CONSTRAINTS);
 
   function connectToNewUser(peerId, stream) {
     const call: MediaConnection = peer.call(peerId, stream);
@@ -91,7 +92,7 @@ export default function VideoFrame() {
         peerCall.close();
       });
     };
-  }, [showVideo, isMobile, myStream]);
+  }, [showVideo, myStream, peer]);
 
   return showVideo ? (
     <Flex
@@ -138,23 +139,37 @@ const Video = ({ stream, isMuted = false, peerId = "me" }) => {
   );
 };
 
-export function useUserMedia(requestedMedia) {
-  const [mediaStream, setMediaStream] = useState(null);
+export function useUserMedia(enabled: boolean, requestedMedia: MediaStreamConstraints) {
+  const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
 
-  useOnMountUnsafe(() => {
+  useEffect(() => {
+    if (!enabled) {
+      setMediaStream((prev) => {
+        prev?.getTracks().forEach((t) => t.stop());
+        return null;
+      });
+      return;
+    }
+
+    let cancelled = false;
+    let stream: MediaStream | null = null;
+
     async function enableStream() {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia(requestedMedia);
-        setMediaStream(stream);
-      } catch (err) {
-        setMediaStream(new MediaStream());
+        stream = await navigator.mediaDevices.getUserMedia(requestedMedia);
+        if (!cancelled) setMediaStream(stream);
+      } catch {
+        if (!cancelled) setMediaStream(new MediaStream());
       }
     }
 
-    if (!mediaStream) {
-      enableStream();
-    }
-  });
+    enableStream();
+
+    return () => {
+      cancelled = true;
+      stream?.getTracks().forEach((t) => t.stop());
+    };
+  }, [enabled, requestedMedia]);
 
   return mediaStream;
 }

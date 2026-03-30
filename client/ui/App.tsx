@@ -10,6 +10,7 @@ import {
   ModalError,
   MenuBar,
   ModalHome,
+  MenuButton,
 } from "./";
 import { ThemeProvider, Box, useViewportSizeEffect, Modal, KeyboardKey } from "@aether/ui";
 import { getSpinDirection, calculateZoomLevel } from "../utils";
@@ -135,7 +136,12 @@ function App({ socket, peer, debug, game }) {
   const [error, setError] = useState(null);
   const [cooldowns, setCooldowns] = useState({});
   const [homeModal, setHomeModal] = useState(null);
-  const [userSettings, setUserSettings] = useState(DEFAULT_USER_SETTINGS);
+  const [userSettings, setUserSettings] = useState(() => {
+    if (typeof window === "undefined") return DEFAULT_USER_SETTINGS;
+    const v = localStorage.getItem("aether-videoChat");
+    if (v === null) return DEFAULT_USER_SETTINGS;
+    return { ...DEFAULT_USER_SETTINGS, videoChat: v === "true" };
+  });
 
   /* Is the bag open or closed */
   const toggleBagState = (id: string) => {
@@ -198,7 +204,17 @@ function App({ socket, peer, debug, game }) {
     setHero(player);
     if (args?.isLogin) {
       setIsLoggedIn(true);
-      setUserSettings(payload?.userSettings);
+      const localVideoOn = localStorage.getItem("aether-videoChat") === "true";
+      const serverVideo = !!payload?.userSettings?.videoChat;
+      const videoChat = localVideoOn || serverVideo;
+      setUserSettings({
+        ...payload?.userSettings,
+        videoChat,
+      });
+      localStorage.setItem("aether-videoChat", String(videoChat));
+      if (localVideoOn && !serverVideo) {
+        socket.emit("updateUserSetting", { name: "videoChat", value: true });
+      }
     }
   };
 
@@ -655,8 +671,22 @@ function App({ socket, peer, debug, game }) {
           />
           {!isLoggedIn && <ModalLogin />}
           {error && <ModalError />}
+          {showLogin && (
+            <Box
+              sx={{
+                position: "fixed",
+                bottom: 16,
+                right: 16,
+                zIndex: 100000,
+                pointerEvents: "all",
+              }}
+            >
+              <MenuButton iconName="pen" onClick={() => setTabSettings(true)} />
+            </Box>
+          )}
         </Box>
         <VideoFrame />
+        {tabSettings && <ModalSettings />}
         {isLoggedIn && (
           <Box
             id={HUD_CONTAINER_ID}
@@ -669,7 +699,6 @@ function App({ socket, peer, debug, game }) {
             {dropItem && <ModalDropAmount />}
             {sign && <ModalSign />}
             {homeModal?.profile && <ModalHome />}
-            {tabSettings && <ModalSettings />}
             <MenuGlobalKeys />
             <MenuHud />
             <MenuBar />

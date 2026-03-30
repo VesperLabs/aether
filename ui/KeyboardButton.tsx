@@ -18,7 +18,7 @@ const KeeperButton: FC<KeyboardButtonProps> = ({
   keyboardKey,
   onClick,
   children,
-  active,
+  active: _active,
   showOnly,
   variant = "wood",
   sx,

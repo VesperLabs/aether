@@ -1,9 +1,11 @@
+import dotenv from "dotenv";
 import { defineConfig } from "vite";
-require("dotenv").config();
 import react from "@vitejs/plugin-react-swc";
 
+dotenv.config();
+
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   plugins: [react()],
   server: {
     host: true,
@@ -12,9 +14,9 @@ export default defineConfig({
   define: {
     "process.env.SERVER_URL": JSON.stringify(process.env.SERVER_URL),
   },
-  publicDir: "../public",
+  publicDir: command === "serve" ? "../public" : false,
   build: {
     emptyOutDir: false,
     outDir: "../public",
   },
-});
+}));

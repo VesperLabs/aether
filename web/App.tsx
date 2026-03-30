@@ -6,8 +6,7 @@ import PageItems from "./PageItems";
 import PageNasties from "./PageNasties";
 import PagePlayers from "./PagePlayers";
 import PageHome from "./PageHome";
-import { QueryClient, QueryClientProvider } from "react-query";
-import { useQuery } from "react-query";
+import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { fetchMetrics } from "./api";
 import ModalConnecting from "./ModalConnecting";
 import { useEffect, useState } from "react";
@@ -53,7 +52,9 @@ const App = () => {
 const LoadingProvider = ({ children }) => {
   const [polling, setPolling] = useState(true);
 
-  const { data: metrics } = useQuery("metrics", fetchMetrics, {
+  const { data: metrics } = useQuery({
+    queryKey: ["metrics"],
+    queryFn: fetchMetrics,
     refetchInterval: polling ? 1000 : false,
     refetchIntervalInBackground: true,
     enabled: polling,

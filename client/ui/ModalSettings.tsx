@@ -4,8 +4,20 @@ import { Modal, KeyboardButton, Icon, Switch, Flex } from "@aether/ui";
 import TextDivider from "./TextDivider";
 
 const ModalSettings: React.FC = () => {
-  const { setTabSettings, userSettings, zoom, bottomOffset, socket } = useAppContext();
+  const { setTabSettings, userSettings, setUserSettings, zoom, bottomOffset, socket, isLoggedIn } =
+    useAppContext();
   const { showMinimap, playMusic, videoChat, charLevels } = userSettings ?? {};
+
+  const persistSetting = (name: string, value: boolean) => {
+    setUserSettings((prev) => ({ ...prev, [name]: value }));
+    if (name === "videoChat") {
+      localStorage.setItem("aether-videoChat", String(value));
+    }
+    if (isLoggedIn) {
+      socket.emit("updateUserSetting", { name, value });
+    }
+  };
+
   return (
     <>
       <Modal.Overlay sx={{ backgroundColor: "shadow.50" }} onClick={() => setTabSettings(null)} />
@@ -29,38 +41,33 @@ const ModalSettings: React.FC = () => {
               },
             }}
           >
-            {!isMobile && (
+            {isLoggedIn && !isMobile && (
               <Switch
                 label={`Minimap: ${showMinimap ? "ON" : "OFF"}`}
                 checked={showMinimap}
                 onChange={(e) => {
-                  socket.emit("updateUserSetting", {
-                    name: "showMinimap",
-                    value: e.target.checked,
-                  });
+                  persistSetting("showMinimap", e.target.checked);
                 }}
               />
             )}
-            <Switch
-              label={`Music: ${playMusic ? "ON" : "OFF"}`}
-              checked={playMusic}
-              onChange={(e) => {
-                socket.emit("updateUserSetting", {
-                  name: "playMusic",
-                  value: e.target.checked,
-                });
-              }}
-            />
-            <Switch
-              label={`Show Character Levels: ${charLevels ? "ON" : "OFF"}`}
-              checked={charLevels}
-              onChange={(e) => {
-                socket.emit("updateUserSetting", {
-                  name: "charLevels",
-                  value: e.target.checked,
-                });
-              }}
-            />
+            {isLoggedIn && (
+              <Switch
+                label={`Music: ${playMusic ? "ON" : "OFF"}`}
+                checked={playMusic}
+                onChange={(e) => {
+                  persistSetting("playMusic", e.target.checked);
+                }}
+              />
+            )}
+            {isLoggedIn && (
+              <Switch
+                label={`Show Character Levels: ${charLevels ? "ON" : "OFF"}`}
+                checked={charLevels}
+                onChange={(e) => {
+                  persistSetting("charLevels", e.target.checked);
+                }}
+              />
+            )}
             <TextDivider color="#d5c1a7" sx={{ textAlign: "left" }}>
               🧪 Experimental
             </TextDivider>
@@ -68,10 +75,7 @@ const ModalSettings: React.FC = () => {
               label={`Video Chat: ${videoChat ? "ON" : "OFF"}`}
               checked={videoChat}
               onChange={(e) => {
-                socket.emit("updateUserSetting", {
-                  name: "videoChat",
-                  value: e.target.checked,
-                });
+                persistSetting("videoChat", e.target.checked);
               }}
             />
           </Flex>

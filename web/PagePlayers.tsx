@@ -1,4 +1,4 @@
-import { Box, Button, Flex, KeyboardKey, Text } from "@aether/ui";
+import { Box, Flex, KeyboardKey, Text } from "@aether/ui";
 import RowTitle from "./RowTitle";
 import { useEffect, useState } from "react";
 import PlayerRender from "./PlayerRender";
@@ -10,11 +10,10 @@ import {
   MenuBag,
   MenuEquipment,
   MenuInventory,
-  MenuQuests,
   MenuStats,
 } from "@aether/client";
 import { useLocation } from "wouter";
-import { useInfiniteQuery } from "react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { fetchPlayers } from "./api";
 
 const PLAYER_BOX_STYLES = {
@@ -33,6 +32,7 @@ export default function () {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
     queryKey: ["players", { kind, sortBy: "updatedAt" }],
     queryFn: fetchPlayers,
+    initialPageParam: 1,
     getNextPageParam: (lastPage) => {
       return lastPage?.pageInfo?.nextPage;
     },
@@ -121,7 +121,7 @@ export default function () {
           { Component: MenuInventory, key: "inventory" },
           { Component: MenuStats, key: "stats" },
           { Component: MenuAbilities, key: "abilities" },
-        ].map(({ Component, key }, idx) => (
+        ].map(({ Component, key }) => (
           <Component
             key={key}
             player={currentPlayer}
