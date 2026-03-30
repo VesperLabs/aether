@@ -17,7 +17,7 @@ export default ({ mode, command }) => {
   console.log(`🛠 ASSETS_URL: ${process.env.ASSETS_URL}`);
   console.log(`🛠 PEER_CLIENT_PORT: ${process.env.PEER_CLIENT_PORT}`);
   console.log(`🛠 PEER_CLIENT_PATH: ${process.env.PEER_CLIENT_PATH}`);
-  console.log(`🛠 TURN_URLS: ${process.env.TURN_URLS ? "(set)" : "(empty)"}`);
+  console.log(`🛠 METERED_APP_NAME: ${process.env.METERED_APP_NAME ? "(set)" : "(empty)"}`);
 
   return defineConfig({
     envDir: "../",
@@ -44,9 +44,9 @@ export default ({ mode, command }) => {
       "process.env.ASSETS_URL": JSON.stringify(process.env.ASSETS_URL ?? ""),
       "process.env.PEER_CLIENT_PORT": JSON.stringify(process.env.PEER_CLIENT_PORT ?? ""),
       "process.env.PEER_CLIENT_PATH": JSON.stringify(process.env.PEER_CLIENT_PATH ?? ""),
-      "process.env.TURN_URLS": JSON.stringify(process.env.TURN_URLS ?? ""),
-      "process.env.TURN_USERNAME": JSON.stringify(process.env.TURN_USERNAME ?? ""),
-      "process.env.TURN_CREDENTIAL": JSON.stringify(process.env.TURN_CREDENTIAL ?? ""),
+      "process.env.METERED_APP_NAME": JSON.stringify(process.env.METERED_APP_NAME ?? ""),
+      "process.env.METERED_API_KEY": JSON.stringify(process.env.METERED_API_KEY ?? ""),
+      "process.env.METERED_REGION": JSON.stringify(process.env.METERED_REGION ?? ""),
     },
     server: {
       host: true,
