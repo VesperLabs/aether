@@ -1,5 +1,5 @@
 # ---- Build Stage ----
-FROM node:21.7.3 AS build
+FROM node:22-bookworm AS build
 
 # Update package lists
 RUN apt-get update
@@ -42,13 +42,10 @@ ENV PEER_SERVER_PORT=$PEER_SERVER_PORT
 ENV PEER_CLIENT_PORT=$PEER_CLIENT_PORT
 ENV PEER_CLIENT_PATH=$PEER_CLIENT_PATH
 
-# Install global dependencies
-RUN npm install -g vite@4.3.9
-
-# Copy package files and install dependencies
+# Copy workspace manifests first (layer cache)
 COPY ./package*.json ./
 COPY ./client/package*.json ./client/
-COPY ./server/package*.json ./server/
+COPY ./web/package*.json ./web/
 COPY ./ui/package*.json ./ui/
 COPY ./shared/package*.json ./shared/
 RUN npm install
@@ -56,12 +53,12 @@ RUN npm install
 # Copy all other project files
 COPY . .
 
-# Build the client and server
+# Game client + server (uses workspace Vite; marketing `web` is built separately e.g. Render)
 RUN npm run client:build
 RUN npm run server:build
 
 # ---- Production Stage ----
-FROM node:21.7.3 AS production
+FROM node:22-bookworm AS production
 
 WORKDIR /app
 

@@ -2,14 +2,17 @@
   "name": "aether",
   "private": true,
   "version": "0.0.0",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
     "lint": "tsc && eslint .",
-    "client:dev": "vite client",
-    "client:build": "cd client && vite build",
-    "client:preview": "cd client && vite preview",
-    "web:dev": "vite web",
-    "web:build": "cd web && vite build",
-    "web:preview": "cd web && vite preview",
+    "client:dev": "npm run dev -w @aether/client",
+    "client:build": "npm run build -w @aether/client",
+    "client:preview": "npm run preview -w @aether/client",
+    "web:dev": "npm run dev -w @aether/web",
+    "web:build": "npm run build -w @aether/web",
+    "web:preview": "npm run preview -w @aether/web",
     "server:kill:unix": "kill -9 $(lsof -i :3000) &>/dev/null | exit 0",
     "server:kill:win": "",
     "server:kill": "node -e \"require('child_process').execSync(process.platform.startsWith('win') ? 'npm run server:kill:win' : 'npm run server:kill:unix')\"",
@@ -69,7 +72,7 @@
     "ts-patch": "^3.3.0",
     "typescript": "^6.0.2",
     "typescript-eslint": "8.57.3-alpha.3",
-    "vite": "^8.0.3",
+    "vite": "^7.1.0",
     "vitest": "^4.1.2"
   }
 }
