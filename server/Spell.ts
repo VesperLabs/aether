@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 const Sprite = Phaser.GameObjects.Sprite;
-import { spellDetails, BUFF_SPELLS, distanceTo, MELEE_NET_SLACK_PX } from "../shared";
+import { spellDetails, BUFF_SPELLS, distanceTo } from "../shared";
 import ServerCharacter from "./Character";
 
 class Spell extends Phaser.GameObjects.Container {
@@ -158,8 +158,6 @@ class Spell extends Phaser.GameObjects.Container {
     const npcs = this.room.npcManager.npcs?.getChildren() || [];
     const isNpcSingleTargetMelee = target?.id && caster?.kind !== "player" && this.isMeleeAttack;
 
-    const meleeHand = this.action.includes("attack_left") ? "handLeft" : "handRight";
-
     const shouldSkipMeleeFacing = (victim: Character) => {
       if (!this.isMeleeAttack) return false;
       if (direction === "up" && victim.y > caster.y) return true;
@@ -179,17 +177,7 @@ class Spell extends Phaser.GameObjects.Container {
       if (target?.id && victim?.id !== target?.id) return true;
       /* Make hitbox smaller for npc melee hits. */
       const body = isNpcSingleTargetMelee ? victim : victim?.hitBox;
-      const overlap = scene.physics.overlap(body, this);
-      const playerVsNastyMelee =
-        this.isMeleeAttack &&
-        caster?.kind === "player" &&
-        victim?.kind === "nasty" &&
-        !overlap;
-      const reachFallback =
-        playerVsNastyMelee &&
-        distanceTo(caster, victim) <= caster.getWeaponRange(meleeHand) + MELEE_NET_SLACK_PX;
-
-      if (overlap || reachFallback) {
+      if (scene.physics.overlap(body, this)) {
         /* For attacks, prevent collision behind the player */
         if (shouldSkipMeleeFacing(victim)) return true;
 
