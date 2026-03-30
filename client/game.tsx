@@ -17,7 +17,10 @@ const REDIRECT_URL = process.env.REDIRECT_URL as string;
 const PEER_CLIENT_PORT = parseInt(process.env.PEER_CLIENT_PORT);
 const PEER_CLIENT_PATH = process.env.PEER_CLIENT_PATH as string;
 
-const socket = socketIOClient(SERVER_URL);
+/* Default is polling → websocket upgrade; prefer websocket first (lower latency on Fly / HTTPS). */
+const socket = socketIOClient(SERVER_URL, {
+  transports: ["websocket", "polling"],
+});
 
 const peer = new Peer(undefined, {
   host: "/",

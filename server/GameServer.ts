@@ -1196,21 +1196,16 @@ export default class Game {
     this.spawnTime = Date.now();
 
     this.io = new Server(httpServer, {
+      /* Bundled client — do not serve the legacy /socket.io/socket.io.js asset. */
+      serveClient: false,
+      /* Match client preference: websocket first, polling fallback (Engine default is the reverse). */
+      transports: ["websocket", "polling"],
       cors: {
         origin: "*",
       },
-      /* WebSocket permessage-deflate: skip tiny frames; compress JSON ticks (often 4–100+ KB). */
-      perMessageDeflate: {
-        threshold: 2048,
-        zlibDeflateOptions: {
-          chunkSize: 8 * 1024,
-          memLevel: 8,
-          level: 4,
-        },
-        zlibInflateOptions: { chunkSize: 16 * 1024 },
-        clientNoContextTakeover: true,
-        serverNoContextTakeover: true,
-      },
+      /* Fly / TLS terminators often mishandle WS permessage-deflate → "Invalid frame header" in logs.
+         Uncompressed WS is fine for Socket.IO; re-enable compression only if you verify the edge proxy. */
+      perMessageDeflate: false,
     });
 
     this.db = db;
