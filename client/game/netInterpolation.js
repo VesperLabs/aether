@@ -22,10 +22,15 @@ export function createNetInterpolator(options = {}) {
   const serverFps = options.serverFps ?? DEFAULT_SERVER_FPS;
   const bufferTicks = options.bufferTicks ?? 2;
   const maxSnapshots = options.maxSnapshots ?? 120;
-  const bufferMs = (1000 / serverFps) * bufferTicks;
+  const extraBufferMs = options.extraBufferMs ?? 0;
+  const bufferMs = (1000 / serverFps) * bufferTicks + extraBufferMs;
 
   let timeOffset = -1;
   const vault = [];
+
+  /** Hard resync only on large drift (tab sleep, reconnect); smooth small jitter from RTT spikes. */
+  const CLOCK_HARD_RESYNC_MS = 400;
+  const CLOCK_SMOOTH = 0.22;
 
   function addSnapshot(snapshot) {
     if (!snapshot?.time) return;
@@ -35,8 +40,11 @@ export function createNetInterpolator(options = {}) {
       timeOffset = timeNow - ts;
     } else {
       const o = timeNow - ts;
-      if (Math.abs(timeOffset - o) > 50) {
+      const drift = o - timeOffset;
+      if (Math.abs(drift) > CLOCK_HARD_RESYNC_MS) {
         timeOffset = o;
+      } else {
+        timeOffset += drift * CLOCK_SMOOTH;
       }
     }
     vault.push(snapshot);

@@ -3,7 +3,11 @@ import Door from "../../shared/Door";
 import Sign from "../../shared/Sign";
 import { getMapByName } from "../../shared/Maps";
 import { DEFAULT_USER_SETTINGS, distanceTo, isMobile, MINI_MAP_SIZE } from "../../shared/utils";
-import { DEFAULT_SERVER_FPS, INTERPOLATION_BUFFER_TICKS } from "../../shared/constants";
+import {
+  DEFAULT_SERVER_FPS,
+  EXTRA_INTERPOLATION_BUFFER_MS,
+  INTERPOLATION_BUFFER_TICKS,
+} from "../../shared/constants";
 import { decodeWireDirection } from "../../shared/netWire";
 import { createNetInterpolator } from "./netInterpolation";
 
@@ -31,6 +35,7 @@ const serverTickHz = (() => {
 const netInterp = createNetInterpolator({
   serverFps: serverTickHz,
   bufferTicks: INTERPOLATION_BUFFER_TICKS,
+  extraBufferMs: EXTRA_INTERPOLATION_BUFFER_MS,
 });
 const { RectangleToRectangle } = Phaser.Geom.Intersects;
 

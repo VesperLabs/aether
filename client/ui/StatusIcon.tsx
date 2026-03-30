@@ -32,13 +32,32 @@ const StatusToolTip = ({ show }) => {
       .catch((error) => {
         setLoading(false);
       });
-
-    //using sockets to calculate latency instead of webserver
-    socket.emit("latency", Date.now(), function (startTime) {
-      var latency = Date.now() - startTime;
-      setSocketPing(latency);
-    });
   }, [show]);
+
+  useEffect(() => {
+    if (!show) return;
+    let cancelled = false;
+    let smoothed: number | undefined;
+
+    const measure = () => {
+      if (!socket.connected) return;
+      const t0 = performance.now();
+      socket.emit("latency", () => {
+        if (cancelled) return;
+        const ms = Math.round(performance.now() - t0);
+        smoothed = smoothed === undefined ? ms : Math.round(smoothed * 0.65 + ms * 0.35);
+        setSocketPing(smoothed);
+      });
+    };
+
+    measure();
+    const intervalId = window.setInterval(measure, 1500);
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(intervalId);
+    };
+  }, [show, socket]);
 
   if (isLoading) {
     return <></>;

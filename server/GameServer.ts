@@ -200,8 +200,8 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         socket.emit("formSuccess", { success: "Account created", email });
       });
 
-      socket.on("latency", function (startTime, cb) {
-        cb(startTime);
+      socket.on("latency", (ack: unknown) => {
+        if (typeof ack === "function") (ack as () => void)();
       });
 
       socket.on("attack", ({ count, direction, castAngle, abilitySlot } = {}) => {
@@ -1168,8 +1168,17 @@ export default class Game {
       cors: {
         origin: "*",
       },
+      /* WebSocket permessage-deflate: skip tiny frames; compress JSON ticks (often 4–100+ KB). */
       perMessageDeflate: {
-        threshold: 32768,
+        threshold: 2048,
+        zlibDeflateOptions: {
+          chunkSize: 8 * 1024,
+          memLevel: 8,
+          level: 4,
+        },
+        zlibInflateOptions: { chunkSize: 16 * 1024 },
+        clientNoContextTakeover: true,
+        serverNoContextTakeover: true,
       },
     });
 
