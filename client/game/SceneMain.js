@@ -7,9 +7,10 @@ import {
   DEFAULT_SERVER_FPS,
   EXTRA_INTERPOLATION_BUFFER_MS,
   INTERPOLATION_BUFFER_TICKS,
-  NET_DISPLAY_LEAD_MAX_PX,
 } from "../../shared/constants";
 import { decodeWireDirection } from "../../shared/netWire";
+import { expandTickState } from "../../shared/wireTick";
+import { heroInitToTickExpanded } from "../../shared/tickDelta";
 import { createNetInterpolator } from "./netInterpolation";
 
 const ASSETS_BASE = process.env.ASSETS_URL || "";
@@ -37,7 +38,6 @@ const netInterp = createNetInterpolator({
   serverFps: serverTickHz,
   bufferTicks: INTERPOLATION_BUFFER_TICKS,
   extraBufferMs: EXTRA_INTERPOLATION_BUFFER_MS,
-  displayLeadMaxPx: NET_DISPLAY_LEAD_MAX_PX,
 });
 const { RectangleToRectangle } = Phaser.Geom.Intersects;
 
@@ -61,18 +61,19 @@ class SceneMain extends Phaser.Scene {
 
     socket.on("update", (snapshot) => {
       if (!snapshot?.state) return;
-      netInterp.addSnapshot(snapshot);
+      const expanded = { ...snapshot, state: expandTickState(snapshot.state) };
+      netInterp.addSnapshot(expanded);
       for (const loot of scene?.loots?.getChildren()) {
-        if (snapshot?.state?.loots?.find((l) => l?.id === loot?.id && l?.expiredSince)) {
+        if (expanded?.state?.loots?.find((l) => l?.id === loot?.id && l?.expiredSince)) {
           loot.destroy(true);
         }
       }
-      for (const s of snapshot?.state?.npcs) {
+      for (const s of expanded?.state?.npcs) {
         const npc = getNpc(scene, s.id);
         npc.updateState(s?.state);
         npc.doRegen();
       }
-      for (const s of snapshot?.state?.players) {
+      for (const s of expanded?.state?.players) {
         const player = getPlayer(scene, s.id);
         player.updateState(s?.state);
         player.doRegen();
@@ -87,6 +88,7 @@ class SceneMain extends Phaser.Scene {
       const { socketId, players = [], npcs = [], loots = [], userSettings = {} } = args ?? {};
       /* Delete everything in the scene */
       resetEntities(scene);
+      netInterp.seedFromHeroInit(heroInitToTickExpanded({ players, npcs, loots }));
       /* Add players that don't exist */
       for (const player of players) {
         if (getPlayer(scene, player.socketId)) continue;
@@ -287,7 +289,7 @@ class SceneMain extends Phaser.Scene {
     /* Remote players only (hero is predicted locally). Hermite + buffered server time. */
     if (playerSnapshot) {
       for (const s of playerSnapshot?.state) {
-        const player = getPlayer(this, s.socketId);
+        const player = getPlayer(this, s.socketId ?? s.id);
         if (!player || player?.state?.isDead) continue;
         if (!player.isHero) {
           if (s?.roomName != null && s.roomName !== this?.roomName) continue;

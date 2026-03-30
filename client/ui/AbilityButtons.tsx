@@ -3,20 +3,24 @@ import {
   POTION_BASES,
   applyTintToImage,
   arePropsEqualWithKeys,
+  isMobile,
   loadCacheImage,
   spellDetails,
 } from "@aether/shared";
-import { CooldownTimer, SkillButton } from "./";
-import { Flex, Text } from "@aether/ui";
+import { CooldownTimer, ItemTooltip, SkillButton } from "./";
+import { Box, Flex, Text } from "@aether/ui";
 import React, { memo, useEffect, useState } from "react";
 
-const TintedIconLoader = ({ cooldowns, slotKey, item, applyTintAndSetIcon }) => {
+const TintedIconLoader = ({ cooldowns, slotKey, item, applyTintAndSetIcon, hero }) => {
   const isSpell = item.type === "spell";
   const isPotion = POTION_BASES.includes(item?.base);
   const isConsumable = CONSUMABLES_BASES.includes(item?.base);
   const details = spellDetails?.[item?.base];
   const cooldown = isPotion ? "potion" : item?.base;
   const [tintedIcon, setTintedIcon] = useState("./assets/icons/blank.png");
+  const [hovering, setHovering] = useState(false);
+  const tooltipId = `abilities-${item?.id}`;
+  const showTooltip = !isMobile && hovering;
 
   useEffect(() => {
     const loadTintedIcon = async () => {
@@ -47,36 +51,48 @@ const TintedIconLoader = ({ cooldowns, slotKey, item, applyTintAndSetIcon }) => 
   };
 
   return (
-    <SkillButton
-      key={slotKey}
-      size={16}
-      icon={tintedIcon}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-      keyboardKey={slotKey}
+    <Box
+      data-tooltip-id={tooltipId}
+      onMouseEnter={() => setHovering(true)}
+      onMouseLeave={() => setHovering(false)}
       sx={{
-        "& > .icon": {
-          mt: "-6px",
-          mb: "6px",
-        },
+        position: "relative",
+        display: "inline-block",
+        pointerEvents: "all",
       }}
     >
-      <CooldownTimer cooldown={cooldowns["global"]} />
-      <CooldownTimer cooldown={cooldowns[cooldown]} />
-      {details?.isMeleeAttack && <CooldownTimer cooldown={cooldowns["attack"]} />}
-      <Text
+      <SkillButton
+        key={slotKey}
+        size={16}
+        icon={tintedIcon}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        keyboardKey={slotKey}
         sx={{
-          bottom: "13px",
-          left: 0,
-          position: "absolute",
-          fontSize: 0,
-          textAlign: "center",
-          width: "100%",
+          "& > .icon": {
+            mt: "-6px",
+            mb: "6px",
+          },
         }}
       >
-        {isSpell ? `Lv. ${item?.ilvl}` : item?.amount}
-      </Text>
-    </SkillButton>
+        <CooldownTimer cooldown={cooldowns["global"]} />
+        <CooldownTimer cooldown={cooldowns[cooldown]} />
+        {details?.isMeleeAttack && <CooldownTimer cooldown={cooldowns["attack"]} />}
+        <Text
+          sx={{
+            bottom: "13px",
+            left: 0,
+            position: "absolute",
+            fontSize: 0,
+            textAlign: "center",
+            width: "100%",
+          }}
+        >
+          {isSpell ? `Lv. ${item?.ilvl}` : item?.amount}
+        </Text>
+      </SkillButton>
+      <ItemTooltip player={hero} item={item} show={showTooltip} tooltipId={tooltipId} />
+    </Box>
   );
 };
 
@@ -122,12 +138,19 @@ const AbilityButtons = memo(({ hero, cooldowns }: any) => {
               slotKey={slotKey}
               item={item}
               applyTintAndSetIcon={applyTintAndSetIcon}
+              hero={hero}
             />
           )}
         </React.Fragment>
       ))}
     </Flex>
   );
-}, arePropsEqualWithKeys(["hero.abilities", "cooldowns", "hero.activeItemSlots"]));
+}, arePropsEqualWithKeys([
+  "hero.abilities",
+  "cooldowns",
+  "hero.activeItemSlots",
+  "hero.stats",
+  "hero.state",
+]));
 
 export default AbilityButtons;

@@ -83,7 +83,9 @@ class Spell extends Phaser.GameObjects.Container {
     this.body.setCircle(this?.bodySize, -this?.bodySize, -this?.bodySize);
 
     if (this.isMeleeAttack) {
-      //this.stickToCaster = true;
+      /* Must match client Spell: arc follows the caster each frame or overlap is only valid at
+       * spawn position and melee feels far shorter than weapon range. */
+      this.stickToCaster = true;
       let viewSize = 44;
 
       /* Hack: Up range is too long. This hack makes the top-down view more realistic */

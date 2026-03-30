@@ -24,7 +24,11 @@ import ItemBuilder from "../shared/ItemBuilder";
 import { isNil } from "lodash";
 import { CONSUMABLES_BASES, POTION_BASES, skinTints, hairTints, DEFAULT_SERVER_FPS } from "../shared";
 import { createBaseUser } from "./db";
-import { createSnapshot } from "../shared/netSnapshot";
+import { cloneDeep } from "lodash";
+import { createSnapshot, createDeltaSnapshot } from "../shared/netSnapshot";
+import { SNAPSHOT_KEYFRAME_INTERVAL } from "../shared/constants";
+import { compactTickDeltaForWire, diffTickStates } from "../shared/tickDelta";
+import { compactTickState } from "../shared/wireTick";
 
 const serverFps =
   parseInt(process.env.SERVER_FPS || String(DEFAULT_SERVER_FPS), 10) || DEFAULT_SERVER_FPS;
@@ -1138,20 +1142,47 @@ class ServerScene extends Phaser.Scene implements ServerScene {
     const scene = this;
     const io = scene.io;
     for (const room of Object.values(scene.roomManager.rooms)) {
-      const roomState = getTickRoomState(scene, room.name);
-      const snapshot = createSnapshot(roomState);
-
+      /* Simulate first so snapshots match what clients see on the next frame (loot expiry, spawns). */
       room.lootManager.spawnMapLoots();
       room.lootManager.expireLoots();
       room.spellManager.expireSpells();
 
-      room.vault.add(snapshot);
-      io.to(room.name).emit("update", room.vault.get());
+      room.snapshotSeq += 1;
 
-      /* Expire buffs */
-      if ([...roomState?.npcs, ...roomState?.players]?.some((n) => n?.state.hasBuffChanges)) {
+      const roomClients = io.sockets.adapter.rooms.get(room.name)?.size ?? 0;
+
+      const hasBuffChanges = [...Object.values(scene.players), ...Object.values(scene.npcs)].some(
+        (n: { room?: { name?: string }; state?: { hasBuffChanges?: boolean } }) =>
+          n?.room?.name === room.name && n?.state?.hasBuffChanges,
+      );
+      if (hasBuffChanges && roomClients > 0) {
         io.to(room.name).emit("buffUpdate", getBuffRoomState(scene, room.name));
       }
+
+      if (roomClients === 0) {
+        room.lastEmittedSnapshot = null;
+        continue;
+      }
+
+      const expanded = getTickRoomState(scene, room.name);
+
+      const isKeyframe =
+        room.snapshotSeq % SNAPSHOT_KEYFRAME_INTERVAL === 0 || room.lastEmittedSnapshot === null;
+
+      if (isKeyframe) {
+        const snapshot = createSnapshot(compactTickState(expanded), room.snapshotSeq);
+        room.lastEmittedSnapshot = cloneDeep(expanded);
+        io.to(room.name).emit("update", snapshot);
+        continue;
+      }
+
+      const { delta, rm, isEmpty } = diffTickStates(room.lastEmittedSnapshot!, expanded);
+      if (isEmpty) {
+        continue;
+      }
+      room.lastEmittedSnapshot = cloneDeep(expanded);
+      const snap = createDeltaSnapshot(compactTickDeltaForWire(delta), rm, room.snapshotSeq);
+      io.to(room.name).emit("update", snap);
     }
   }
 }

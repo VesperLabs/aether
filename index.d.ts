@@ -278,7 +278,8 @@ interface MapAsset {
 
 interface TickCharacterState {
   id: string;
-  socketId: string;
+  /** Duplicate of id on tick wire removed; optional for typing. */
+  socketId?: string;
   /** Omitted when snapshot is already room-scoped (saves bandwidth). */
   roomName?: string;
   /** 0–3 wire direction; preferred over `direction` string on the wire. */

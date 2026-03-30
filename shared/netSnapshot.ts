@@ -8,7 +8,13 @@ export type NetSnapshotState = Record<string, unknown[]>;
 export type NetSnapshot = {
   id: string;
   time: number;
+  /** Monotonic room tick index (for ordering / future delta encoding). */
+  seq?: number;
   state: NetSnapshotState;
+  /** When true, `state` is a compact delta; client merges onto the previous keyframe. */
+  delta?: boolean;
+  /** Removed entity ids (compact keys: p / n / l). */
+  rm?: { p?: string[]; n?: string[]; l?: string[] };
 };
 
 function newSnapshotId(): string {
@@ -30,12 +36,29 @@ function assertEntitiesHaveIds(state: object): void {
 }
 
 /** One tick payload for a room: { players, npcs, loots, ... } */
-export function createSnapshot(state: object): NetSnapshot {
+export function createSnapshot(state: object, seq?: number): NetSnapshot {
   assertEntitiesHaveIds(state);
   return {
     id: newSnapshotId(),
     time: Date.now(),
+    ...(seq !== undefined ? { seq } : {}),
     state: state as NetSnapshotState,
+  };
+}
+
+export function createDeltaSnapshot(
+  stateCompact: Record<string, unknown>,
+  rm: { p?: string[]; n?: string[]; l?: string[] } | undefined,
+  seq: number,
+): NetSnapshot {
+  assertEntitiesHaveIds(stateCompact);
+  return {
+    id: newSnapshotId(),
+    time: Date.now(),
+    seq,
+    delta: true,
+    ...(rm ? { rm } : {}),
+    state: stateCompact as NetSnapshotState,
   };
 }
 

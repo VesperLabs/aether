@@ -4,28 +4,29 @@ import Door from "../shared/Door";
 import LootManager from "./LootManager";
 import SpellManager from "./SpellManager";
 import EasyStar from "easystarjs";
-import { SnapshotVault } from "../shared/netSnapshot";
-
+import type { TickStateExpanded } from "../shared/wireTick";
 class Room {
   public scene: ServerScene;
   public tileMap: Phaser.Tilemaps.Tilemap;
   public collideLayer: Phaser.Tilemaps.TilemapLayer;
   public name: string;
   public doors: Phaser.Physics.Arcade.Group;
-  public vault: SnapshotVault;
   public npcManager: NpcManager;
   public playerManager: PlayerManager;
   public lootManager: LootManager;
   public spellManager: SpellManager;
   public easystar: EasyStar.js;
   public colliders: Array<any>;
+  /** Monotonic per-room tick id for snapshots (ordering, future deltas). */
+  public snapshotSeq = 0;
+  /** Last tick state sent to clients (for delta encoding). Cleared when room has no subscribers. */
+  public lastEmittedSnapshot: TickStateExpanded | null = null;
 
   constructor(scene: ServerScene, { name }: { name: string }) {
     this.scene = scene;
     this.tileMap = scene.make.tilemap({ key: name });
     this.name = name;
     this.doors = scene.physics.add.group();
-    this.vault = new SnapshotVault();
     this.npcManager = new NpcManager(this.scene, this);
     this.playerManager = new PlayerManager(this.scene, this);
     this.lootManager = new LootManager(this.scene, this);

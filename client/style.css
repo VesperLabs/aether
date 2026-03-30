@@ -3,14 +3,27 @@ body {
   margin: 0;
   padding: 0;
   height: 100%;
+  width: 100%;
+  max-width: 100%;
+  /* Prevent horizontal page scroll (trackpad / touch) from moving the viewport over the game */
+  overflow-x: hidden;
+  overflow-y: hidden;
+  overscroll-behavior: none;
   background: #000;
 }
+
+#root {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 #game {
   margin: 0;
   padding: 0;
   overflow: hidden;
   position: fixed;
   inset: 0;
+  touch-action: none;
   /* Fills viewport with integer layout box; avoids subpixel #game bounds when resizing */
 }
 

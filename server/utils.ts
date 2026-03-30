@@ -1,6 +1,7 @@
 //@ts-nocheck
 import ItemBuilder from "../shared/ItemBuilder";
 import { decodeWireDirection, encodeWireDirection } from "../shared/netWire";
+import { pickTickStateLite } from "../shared/tickState";
 
 const PLAYER_BASE_ATTACK_DELAY = 100;
 
@@ -91,6 +92,17 @@ function getFullCharacterState(p: Character): FullCharacterState {
   };
 }
 
+/**
+ * Tick sync for ground loot: no `item` blob — clients already have full item from lootSpawned / heroInit.
+ * Cuts most of the JSON on busy maps (item trees were repeated every 20Hz).
+ */
+/** Tick loot: client only needs id + expiredSince (destroy when both match). Full props from spawn / heroInit. */
+function getLootTickWire(l: Loot) {
+  const o: { id: string; expiredSince?: number } = { id: l.id };
+  if (l.expiredSince != null) o.expiredSince = l.expiredSince;
+  return o;
+}
+
 function getTickRoomState(scene: ServerScene, roomName: string): TickRoomState {
   return {
     players: Object.values(scene.players)
@@ -102,7 +114,9 @@ function getTickRoomState(scene: ServerScene, roomName: string): TickRoomState {
     // spells: Object.values(scene.spells)
     //   ?.filter((s) => s?.room?.name === roomName)
     //   .map((s) => s?.getTrimmed()),
-    loots: Object.values(scene.loots)?.filter((l) => l?.roomName === roomName),
+    loots: Object.values(scene.loots)
+      ?.filter((l) => l?.roomName === roomName)
+      .map(getLootTickWire),
   };
 }
 
@@ -110,21 +124,7 @@ function getTickRoomState(scene: ServerScene, roomName: string): TickRoomState {
  * Only fields used by client `Player.updateState` — not the full state blob (huge JSON every tick).
  */
 function getTickStateLite(p: Character) {
-  const s = p?.state;
-  if (!s) return {};
-  return {
-    lockedPlayerId: s.lockedPlayerId,
-    bubbleMessage: s.bubbleMessage,
-    doHpRegen: s.doHpRegen,
-    doBuffPoison: s.doBuffPoison,
-    doHpBuffRegen: s.doHpBuffRegen,
-    doMpRegen: s.doMpRegen,
-    doSpRegen: s.doSpRegen,
-    lastCombat: s.lastCombat,
-    lastAngle: s.lastAngle,
-    isAiming: s.isAiming,
-    isHoldingAttack: s.isHoldingAttack,
-  };
+  return pickTickStateLite(p?.state);
 }
 
 function getTickCharacterState(p: Character): TickCharacterState {
@@ -132,8 +132,7 @@ function getTickCharacterState(p: Character): TickCharacterState {
   const vx = p?.vx ?? 0;
   const vy = p?.vy ?? 0;
   return {
-    id: uid, //required for SI
-    socketId: uid,
+    id: uid, //required for SI (same as socketId for players; omit duplicate key on wire)
     /* room omitted: snapshot is already scoped to one room; saves bytes per entity per tick */
     d: encodeWireDirection(p?.direction),
     state: getTickStateLite(p),
