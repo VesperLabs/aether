@@ -22,11 +22,14 @@ import Phaser from "phaser";
 import QuestBuilder from "./QuestBuilder";
 import ItemBuilder from "../shared/ItemBuilder";
 import { isNil } from "lodash";
-import { CONSUMABLES_BASES, POTION_BASES, skinTints, hairTints } from "../shared";
+import { CONSUMABLES_BASES, POTION_BASES, skinTints, hairTints, DEFAULT_SERVER_FPS } from "../shared";
 import { createBaseUser } from "./db";
 const { SnapshotInterpolation } = require("@geckos.io/snapshot-interpolation");
 const SI = new SnapshotInterpolation();
-global.phaserOnNodeFPS = parseInt(process.env.SERVER_FPS);
+
+const serverFps =
+  parseInt(process.env.SERVER_FPS || String(DEFAULT_SERVER_FPS), 10) || DEFAULT_SERVER_FPS;
+global.phaserOnNodeFPS = serverFps;
 
 class ServerScene extends Phaser.Scene implements ServerScene {
   public doors: Record<string, Door>;
@@ -1183,7 +1186,7 @@ export default class Game {
         noAudio: true,
       },
       fps: {
-        target: parseInt(process.env.SERVER_FPS),
+        target: serverFps,
       },
       roundPixels: false,
       physics: {

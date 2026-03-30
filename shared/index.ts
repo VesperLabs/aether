@@ -13,6 +13,7 @@ export { default as soundList } from "./data/soundList.json";
 export { default as spellDetails } from "./data/spellDetails.json";
 export { default as ItemBuilder, itemList } from "./ItemBuilder";
 export { default as Character } from "./Character";
+export * from "./constants";
 export * from "./Assets";
 export * from "./Door";
 export * from "./Maps";

@@ -10,6 +10,14 @@ kill_timeout = '5s'
 
 [build]
 # Node version is defined in Dockerfile (node:22-bookworm)
+# These are passed as Docker build ARGs so Vite can bake them into the client bundle at build time.
+# Runtime-only [env] values are NOT visible during `docker build`.
+  [build.args]
+    ASSETS_URL = 'https://aether.onrender.com/assets'
+    SERVER_URL = 'https://vesperlabs.fly.dev'
+    SERVER_FPS = '20'
+    PEER_CLIENT_PORT = '443'
+    DEBUG = 'false'
 
 [env]
   ASSETS_URL = 'https://aether.onrender.com/assets'

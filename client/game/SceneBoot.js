@@ -5,6 +5,15 @@ import iconList from "../../shared/data/iconList.json";
 import { mapList, mapImageList } from "../../shared/Maps";
 import { IMAGE_CACHE } from "../../shared/utils";
 
+/**
+ * Rewrite a `./assets/…` path to the CDN base URL when ASSETS_URL is set.
+ * JSON data files contain `./assets/` paths that the Vite transform plugin cannot
+ * rewrite (it only processes JS/TS modules), so we do it here at runtime.
+ */
+const ASSETS_BASE = process.env.ASSETS_URL || "";
+const assetUrl = (src) =>
+  ASSETS_BASE ? src.replace(/^\.\/assets\//, ASSETS_BASE + "/") : src;
+
 const onLoadError = (value) => {
   window.dispatchEvent(
     new CustomEvent("LOAD_ERROR", {
@@ -60,28 +69,28 @@ class SceneBoot extends Phaser.Scene {
       this.scene.start("SceneHud");
     });
     iconList.forEach((asset) => {
-      this.load.image(asset.name, asset.src);
+      this.load.image(asset.name, assetUrl(asset.src));
     });
     mapImageList.forEach((asset) => {
-      this.load.image(asset.name, asset.image);
+      this.load.image(asset.name, assetUrl(asset.image));
     });
     mapList.forEach((asset) => {
-      this.load.tilemapTiledJSON(asset.name, asset.json);
+      this.load.tilemapTiledJSON(asset.name, assetUrl(asset.json));
     });
     assetList.forEach((asset) => {
-      this.load.atlas(asset.texture, asset.src, asset.atlas);
+      this.load.atlas(asset.texture, assetUrl(asset.src), assetUrl(asset.atlas));
     });
     soundList.forEach((asset) => {
-      this.load.audio(asset.name, asset.src);
+      this.load.audio(asset.name, assetUrl(asset.src));
     });
-    this.load.bitmapFont("nin-dark", "./assets/fonts/dark.png", "./assets/fonts/font.xml");
-    this.load.bitmapFont("nin-light", "./assets/fonts/light.png", "./assets/fonts/font.xml");
-    this.load.image("joy-circle", "./assets/images/joy-circle.png");
-    this.load.image("misc-bubble-tail", "./assets/images/bubble-tail.png");
-    this.load.image("misc-slash", "./assets/images/slash.png");
-    this.load.image("sign-1", "./assets/images/sign-1.png");
-    this.load.image("sign-blank", "./assets/images/sign-blank.png");
-    this.load.json("weaponAtlas", "./assets/atlas/weapon.json");
+    this.load.bitmapFont("nin-dark", assetUrl("./assets/fonts/dark.png"), assetUrl("./assets/fonts/font.xml"));
+    this.load.bitmapFont("nin-light", assetUrl("./assets/fonts/light.png"), assetUrl("./assets/fonts/font.xml"));
+    this.load.image("joy-circle", assetUrl("./assets/images/joy-circle.png"));
+    this.load.image("misc-bubble-tail", assetUrl("./assets/images/bubble-tail.png"));
+    this.load.image("misc-slash", assetUrl("./assets/images/slash.png"));
+    this.load.image("sign-1", assetUrl("./assets/images/sign-1.png"));
+    this.load.image("sign-blank", assetUrl("./assets/images/sign-blank.png"));
+    this.load.json("weaponAtlas", assetUrl("./assets/atlas/weapon.json"));
     loadSpritesheets(this);
   }
   create() {
@@ -271,39 +280,39 @@ function createSpellAnims(scene) {
 }
 
 function loadSpritesheets(scene) {
-  scene.load.spritesheet("misc-bubble", "./assets/images/bubble.png", {
+  scene.load.spritesheet("misc-bubble", assetUrl("./assets/images/bubble.png"), {
     frameWidth: 4,
     frameHeight: 4,
   });
-  scene.load.spritesheet("loot-anim-sparkle", "./assets/images/loot-anim-sparkle.png", {
+  scene.load.spritesheet("loot-anim-sparkle", assetUrl("./assets/images/loot-anim-sparkle.png"), {
     frameWidth: 7,
     frameHeight: 7,
   });
-  scene.load.spritesheet("misc-bars", "./assets/images/bars.png", {
+  scene.load.spritesheet("misc-bars", assetUrl("./assets/images/bars.png"), {
     frameWidth: 4,
     frameHeight: 4,
   });
-  scene.load.spritesheet("spell-anim-fireball", "./assets/images/spell-anim-fireball.png", {
+  scene.load.spritesheet("spell-anim-fireball", assetUrl("./assets/images/spell-anim-fireball.png"), {
     frameWidth: 150,
     frameHeight: 150,
   });
-  scene.load.spritesheet("spell-anim-balls", "./assets/images/spell-anim-balls.png", {
+  scene.load.spritesheet("spell-anim-balls", assetUrl("./assets/images/spell-anim-balls.png"), {
     frameWidth: 96,
     frameHeight: 96,
   });
-  scene.load.spritesheet("spell-anim-chakra", "./assets/images/spell-anim-chakra.png", {
+  scene.load.spritesheet("spell-anim-chakra", assetUrl("./assets/images/spell-anim-chakra.png"), {
     frameWidth: 150,
     frameHeight: 150,
   });
-  scene.load.spritesheet("spell-anim-hits", "./assets/images/spell-anim-hits.png", {
+  scene.load.spritesheet("spell-anim-hits", assetUrl("./assets/images/spell-anim-hits.png"), {
     frameWidth: 96,
     frameHeight: 96,
   });
-  scene.load.spritesheet("spell-anim-quake", "./assets/images/spell-anim-quake.png", {
+  scene.load.spritesheet("spell-anim-quake", assetUrl("./assets/images/spell-anim-quake.png"), {
     frameWidth: 192,
     frameHeight: 96,
   });
-  scene.load.spritesheet("spell-anim-slash", "./assets/images/spell-anim-slash.png", {
+  scene.load.spritesheet("spell-anim-slash", assetUrl("./assets/images/spell-anim-slash.png"), {
     frameWidth: 96,
     frameHeight: 96,
   });

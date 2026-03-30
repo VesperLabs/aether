@@ -3,6 +3,11 @@ import Door from "../../shared/Door";
 import Sign from "../../shared/Sign";
 import { getMapByName } from "../../shared/Maps";
 import { DEFAULT_USER_SETTINGS, distanceTo, isMobile, MINI_MAP_SIZE } from "../../shared/utils";
+import { DEFAULT_SERVER_FPS } from "../../shared/constants";
+
+const ASSETS_BASE = process.env.ASSETS_URL || "";
+const assetUrl = (src) =>
+  ASSETS_BASE ? src.replace(/^\.\/assets\//, ASSETS_BASE + "/") : src;
 import { SnapshotInterpolation } from "@geckos.io/snapshot-interpolation";
 import {
   addPlayer,
@@ -18,7 +23,11 @@ import {
   changeMusic,
   MUSIC_VOLUME,
 } from "../utils";
-const SI = new SnapshotInterpolation(process.env.SERVER_FPS); // the server's fps is 15
+const serverTickHz = (() => {
+  const n = Number(process.env.SERVER_FPS);
+  return Number.isFinite(n) && n > 0 ? n : DEFAULT_SERVER_FPS;
+})();
+const SI = new SnapshotInterpolation(serverTickHz);
 const { RectangleToRectangle } = Phaser.Geom.Intersects;
 
 class SceneMain extends Phaser.Scene {
@@ -247,7 +256,7 @@ class SceneMain extends Phaser.Scene {
       return;
     }
     scene.sound.stopAll();
-    scene.load.audio(track, [track]);
+    scene.load.audio(track, [assetUrl(track)]);
     scene.load.once("complete", () => {
       sound = scene.sound.get(track);
       if (!sound) {
@@ -259,49 +268,47 @@ class SceneMain extends Phaser.Scene {
   }
   update(time, delta) {
     const elapsedTime = time - this.lastUpdateTime;
+    if (!this.socket || !this?.hero?.body) return;
+
     const playerSnapshot = SI.calcInterpolation("x y", "players");
     const npcSnapshot = SI.calcInterpolation("x y", "npcs");
 
-    if (!this.socket || !this?.hero?.body || !playerSnapshot) return;
-    /* Update Player x and y */
-    for (const s of playerSnapshot?.state) {
-      const player = getPlayer(this, s.socketId);
-      if (!player || player?.state?.isDead) continue;
-      if (!player.isHero) {
-        if (s?.roomName !== this?.roomName) continue;
-        /* Don't interpolate players who are respawning */
-        const latestSnap = SI.vault.getById(playerSnapshot?.older);
-        const newestSnap = SI.vault.getById(playerSnapshot?.newer);
-        if (player?.state?.lastTeleport >= latestSnap?.time) continue;
-        if (player?.state?.lastTeleport >= newestSnap?.time) continue;
-        /* Update other player movements */
-        player.setPosition(s.x, s.y);
-        player.direction = s?.direction;
-        player.vx = s.vx;
-        player.vy = s.vy;
+    /* Remote players only (hero is predicted locally). Each stream interpolates independently. */
+    if (playerSnapshot) {
+      for (const s of playerSnapshot?.state) {
+        const player = getPlayer(this, s.socketId);
+        if (!player || player?.state?.isDead) continue;
+        if (!player.isHero) {
+          if (s?.roomName !== this?.roomName) continue;
+          const latestSnap = SI.vault.getById(playerSnapshot?.older);
+          const newestSnap = SI.vault.getById(playerSnapshot?.newer);
+          if (player?.state?.lastTeleport >= latestSnap?.time) continue;
+          if (player?.state?.lastTeleport >= newestSnap?.time) continue;
+          player.setPosition(s.x, s.y);
+          player.direction = s?.direction;
+          player.vx = s.vx;
+          player.vy = s.vy;
+        }
       }
     }
 
     enableDoors(this);
-    // checkEntityProximity(this, time);
-    // checkPlayerProximity(this, time);
     checkProximities(this, time);
 
-    if (!npcSnapshot) return;
-    /* Update NPC x and y */
-    for (const s of npcSnapshot?.state) {
-      const npc = getNpc(this, s.id);
-      if (!npc || npc?.state?.isDead) continue;
-      /* Don't interpolate npcs who are respawning */
-      const latestSnap = SI.vault.getById(npcSnapshot?.older);
-      const newestSnap = SI.vault.getById(npcSnapshot?.newer);
-      if (s?.roomName !== this?.roomName) continue;
-      if (npc?.state?.lastTeleport >= latestSnap?.time) continue;
-      if (npc?.state?.lastTeleport >= newestSnap?.time) continue;
-      npc.setPosition(s.x, s.y);
-      npc.direction = s?.direction;
-      npc.vx = s.vx;
-      npc.vy = s.vy;
+    if (npcSnapshot) {
+      for (const s of npcSnapshot?.state) {
+        const npc = getNpc(this, s.id);
+        if (!npc || npc?.state?.isDead) continue;
+        const latestSnap = SI.vault.getById(npcSnapshot?.older);
+        const newestSnap = SI.vault.getById(npcSnapshot?.newer);
+        if (s?.roomName !== this?.roomName) continue;
+        if (npc?.state?.lastTeleport >= latestSnap?.time) continue;
+        if (npc?.state?.lastTeleport >= newestSnap?.time) continue;
+        npc.setPosition(s.x, s.y);
+        npc.direction = s?.direction;
+        npc.vx = s.vx;
+        npc.vy = s.vy;
+      }
     }
 
     /* Send an update to the UI every 2 seconds.

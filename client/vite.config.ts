@@ -2,6 +2,7 @@ import path from "node:path";
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import dotenv from "dotenv";
+import { DEFAULT_SERVER_FPS } from "../shared/constants";
 
 dotenv.config();
 
@@ -34,8 +35,10 @@ export default ({ mode, command }) => {
     ],
     define: {
       /* Values must be JSON-serialized literals; undefined breaks esbuild in CI/Docker with no .env */
-      "process.env.DEBUG": JSON.stringify(process.env.DEBUG ?? ""),
-      "process.env.SERVER_FPS": JSON.stringify(process.env.SERVER_FPS ?? ""),
+      "process.env.DEBUG": process.env.DEBUG === "true",
+      "process.env.SERVER_FPS": JSON.stringify(
+        process.env.SERVER_FPS ?? String(DEFAULT_SERVER_FPS)
+      ),
       "process.env.SERVER_URL": JSON.stringify(process.env.SERVER_URL ?? ""),
       "process.env.ASSETS_URL": JSON.stringify(process.env.ASSETS_URL ?? ""),
       "process.env.PEER_CLIENT_PORT": JSON.stringify(process.env.PEER_CLIENT_PORT ?? ""),
