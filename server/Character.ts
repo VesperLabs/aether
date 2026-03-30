@@ -10,6 +10,10 @@ import {
 } from "./utils";
 import buffList from "../shared/data/buffList.json";
 import { spellDetails } from "@aether/shared";
+
+/** Part of spell power applied to elemental spell min/max (full power was melting warriors in PvP). */
+const SPELL_POWER_ELEMENTAL_FACTOR = 0.5;
+
 class ServerCharacter extends Character {
   declare scene: ServerScene;
   constructor(scene: ServerScene, args) {
@@ -245,9 +249,13 @@ class ServerCharacter extends Character {
     // add elemental damage from stats to the spell's damages
     const baseElementalDamages = addValuesToExistingKeys(effects, this?.stats);
 
-    // factor in spellpower
+    /* Spell power was added at full value to min/max — mages could 2-shot warriors in PvP.
+     * Only part of spell power should scale elemental rolls (rest still helps heals / other uses). */
+    const spellPowerBonus = Math.floor(
+      Number(this?.stats?.spellPower || 0) * SPELL_POWER_ELEMENTAL_FACTOR
+    );
     const dmgWithSpellPower = Object.entries(baseElementalDamages).reduce((acc, [key, value]) => {
-      acc[key] = Number(value) + Number(this?.stats?.spellPower || 0);
+      acc[key] = Number(value) + spellPowerBonus;
       return acc;
     }, {});
 

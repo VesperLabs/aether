@@ -345,6 +345,7 @@ function useGetBaseCharacterDefaults({ level = 1, charClass }) {
       maxMp: 10,
       maxSp: 20,
       maxExp: PLAYER_BASE_EXP,
+      ...(isWarrior ? { fireResistance: 10 } : {}),
     },
     ...PLAYER_DEFAULT_SPAWN,
   };

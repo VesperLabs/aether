@@ -2075,7 +2075,7 @@
         "slot": "spell",
         "texture": "scroll-red",
         "effects": {
-          "minFireDamage": 2,
+          "minFireDamage": 1,
           "maxFireDamage": 3
         },
         "stats": {
