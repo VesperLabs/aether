@@ -7,6 +7,7 @@ import {
   DEFAULT_SERVER_FPS,
   EXTRA_INTERPOLATION_BUFFER_MS,
   INTERPOLATION_BUFFER_TICKS,
+  NET_DISPLAY_LEAD_MAX_PX,
 } from "../../shared/constants";
 import { decodeWireDirection } from "../../shared/netWire";
 import { createNetInterpolator } from "./netInterpolation";
@@ -36,6 +37,7 @@ const netInterp = createNetInterpolator({
   serverFps: serverTickHz,
   bufferTicks: INTERPOLATION_BUFFER_TICKS,
   extraBufferMs: EXTRA_INTERPOLATION_BUFFER_MS,
+  displayLeadMaxPx: NET_DISPLAY_LEAD_MAX_PX,
 });
 const { RectangleToRectangle } = Phaser.Geom.Intersects;
 
