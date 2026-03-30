@@ -111,7 +111,8 @@ export default function VideoFrame() {
         removeRemote(remotePeerId);
       }
 
-      const myId = myPeerIdRef.current;
+      /* Prefer live peer.id — ref can lag; without id neither side initiates across NAT. */
+      const myId = peer.open && peer.id ? peer.id : myPeerIdRef.current;
       if (!shouldInitiateCall(myId, remotePeerId)) return;
 
       const call = peer.call(remotePeerId, stream);
@@ -182,8 +183,8 @@ export default function VideoFrame() {
     window.addEventListener("HERO_NEAR_PLAYER", handleHeroNearPlayer);
     window.addEventListener("HERO_AWAY_PLAYER", handleHeroAwayPlayer);
 
-    /* Fire once immediately now that listeners are set up. */
-    window.dispatchEvent(new CustomEvent("VIDEO_CHAT_STREAM_READY"));
+    /* Resync only after PeerJS signaling is open — otherwise shouldInitiateCall had no id and WAN never connected. */
+    if (peer.open) handleStreamReady();
 
     return () => {
       awayRemoveTimersRef.current.forEach((timer) => clearTimeout(timer));

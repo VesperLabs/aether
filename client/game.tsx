@@ -10,6 +10,7 @@ import VJoyPlugin from "./game/Joystick";
 import SceneHud from "./game/SceneHud";
 import "./style.css";
 import Peer from "peerjs";
+import { getPeerRtcConfiguration } from "./webrtcPeerConfig";
 
 const debug = process.env.DEBUG;
 const SERVER_URL = process.env.SERVER_URL as string;
@@ -26,6 +27,7 @@ const peer = new Peer(undefined, {
   host: "/",
   ...(PEER_CLIENT_PORT ? { port: PEER_CLIENT_PORT } : {}),
   ...(PEER_CLIENT_PATH ? { path: PEER_CLIENT_PATH } : {}),
+  config: getPeerRtcConfiguration(),
 });
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
