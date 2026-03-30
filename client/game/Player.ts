@@ -44,19 +44,23 @@ class Player extends Character {
     scene.events.once("shutdown", this.destroy, this);
   }
   updateState(state) {
-    this.state.lockedPlayerId = state.lockedPlayerId;
-    this.state.bubbleMessage = state.bubbleMessage;
-    this.state.doHpRegen = state.doHpRegen;
-    this.state.doBuffPoison = state.doBuffPoison;
-    this.state.doHpBuffRegen = state.doHpBuffRegen;
-    this.state.doMpRegen = state.doMpRegen;
-    this.state.doSpRegen = state.doSpRegen;
-    this.state.lastCombat = state.lastCombat;
+    if (!state) return;
+    const patch = (key: string) => {
+      if (state[key] !== undefined) (this.state as any)[key] = state[key];
+    };
+    patch("lockedPlayerId");
+    patch("bubbleMessage");
+    patch("doHpRegen");
+    patch("doBuffPoison");
+    patch("doHpBuffRegen");
+    patch("doMpRegen");
+    patch("doSpRegen");
+    patch("lastCombat");
 
     if (!this.isHero) {
-      this.state.lastAngle = state.lastAngle;
-      this.state.isAiming = state.isAiming;
-      this.state.isHoldingAttack = state.isHoldingAttack;
+      patch("lastAngle");
+      patch("isAiming");
+      patch("isHoldingAttack");
     }
   }
   updateData(data) {

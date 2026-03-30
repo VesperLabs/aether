@@ -1,5 +1,6 @@
 //@ts-nocheck
 import ItemBuilder from "../shared/ItemBuilder";
+import { decodeWireDirection, encodeWireDirection } from "../shared/netWire";
 
 const PLAYER_BASE_ATTACK_DELAY = 100;
 
@@ -13,7 +14,7 @@ const PLAYER_DEFAULT_SPAWN = { roomName: "grassland-3", x: 1496, y: 2028 };
 
 function handlePlayerInput(scene, socketId, input) {
   if (!scene.players) return;
-  const { x, y, vx, vy, direction, roomName } = input;
+  const { x, y, vx, vy, d, direction, roomName } = input;
   const player = getPlayer(scene, socketId);
   if (!player) return;
   if (player.state.isDead) return;
@@ -22,12 +23,14 @@ function handlePlayerInput(scene, socketId, input) {
     player.vy = 0;
     return;
   }
-  if (player.roomName !== roomName) return; //player is changing room
+  const effectiveRoom = roomName ?? player.roomName;
+  if (player.roomName !== effectiveRoom) return; // player is changing room
   player.x = x;
   player.y = y;
   player.vx = vx;
   player.vy = vy;
-  player.direction = direction;
+  player.direction =
+    typeof d === "number" ? decodeWireDirection(d, player.direction) : direction ?? player.direction;
 }
 
 function removePlayer(scene, socketId) {
@@ -103,18 +106,41 @@ function getTickRoomState(scene: ServerScene, roomName: string): TickRoomState {
   };
 }
 
+/**
+ * Only fields used by client `Player.updateState` — not the full state blob (huge JSON every tick).
+ */
+function getTickStateLite(p: Character) {
+  const s = p?.state;
+  if (!s) return {};
+  return {
+    lockedPlayerId: s.lockedPlayerId,
+    bubbleMessage: s.bubbleMessage,
+    doHpRegen: s.doHpRegen,
+    doBuffPoison: s.doBuffPoison,
+    doHpBuffRegen: s.doHpBuffRegen,
+    doMpRegen: s.doMpRegen,
+    doSpRegen: s.doSpRegen,
+    lastCombat: s.lastCombat,
+    lastAngle: s.lastAngle,
+    isAiming: s.isAiming,
+    isHoldingAttack: s.isHoldingAttack,
+  };
+}
+
 function getTickCharacterState(p: Character): TickCharacterState {
   const uid = p?.socketId || p?.id;
+  const vx = p?.vx ?? 0;
+  const vy = p?.vy ?? 0;
   return {
     id: uid, //required for SI
     socketId: uid,
-    roomName: p?.room?.name,
-    direction: p?.direction,
-    state: p?.state,
-    x: p?.x,
-    y: p?.y,
-    vx: p?.vx,
-    vy: p?.vy,
+    /* room omitted: snapshot is already scoped to one room; saves bytes per entity per tick */
+    d: encodeWireDirection(p?.direction),
+    state: getTickStateLite(p),
+    x: Math.round(p?.x),
+    y: Math.round(p?.y),
+    vx: vx === 0 ? 0 : Math.round(vx),
+    vy: vy === 0 ? 0 : Math.round(vy),
   };
 }
 

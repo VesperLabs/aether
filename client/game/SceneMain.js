@@ -4,6 +4,7 @@ import Sign from "../../shared/Sign";
 import { getMapByName } from "../../shared/Maps";
 import { DEFAULT_USER_SETTINGS, distanceTo, isMobile, MINI_MAP_SIZE } from "../../shared/utils";
 import { DEFAULT_SERVER_FPS } from "../../shared/constants";
+import { decodeWireDirection } from "../../shared/netWire";
 
 const ASSETS_BASE = process.env.ASSETS_URL || "";
 const assetUrl = (src) =>
@@ -48,6 +49,8 @@ class SceneMain extends Phaser.Scene {
       scene.minimap = scene.cameras.add(0, 0, MINI_MAP_SIZE, MINI_MAP_SIZE);
     }
 
+    scene._remoteNet = { players: new Map(), npcs: new Map() };
+
     socket.on("update", (snapshot) => {
       if (!snapshot?.state) return;
       SI.snapshot.add(snapshot);
@@ -76,6 +79,8 @@ class SceneMain extends Phaser.Scene {
       const { socketId, players = [], npcs = [], loots = [], userSettings = {} } = args ?? {};
       /* Delete everything in the scene */
       resetEntities(scene);
+      scene._remoteNet.players.clear();
+      scene._remoteNet.npcs.clear();
       /* Add players that don't exist */
       for (const player of players) {
         if (getPlayer(scene, player.socketId)) continue;
@@ -273,23 +278,35 @@ class SceneMain extends Phaser.Scene {
     const playerSnapshot = SI.calcInterpolation("x y", "players");
     const npcSnapshot = SI.calcInterpolation("x y", "npcs");
 
-    /* Remote players only (hero is predicted locally). Each stream interpolates independently. */
+    /* Remote players only (hero is predicted locally). SI interpolates between server ticks at low Hz. */
     if (playerSnapshot) {
       for (const s of playerSnapshot?.state) {
         const player = getPlayer(this, s.socketId);
         if (!player || player?.state?.isDead) continue;
         if (!player.isHero) {
-          if (s?.roomName !== this?.roomName) continue;
+          if (s?.roomName != null && s.roomName !== this?.roomName) continue;
           const latestSnap = SI.vault.getById(playerSnapshot?.older);
           const newestSnap = SI.vault.getById(playerSnapshot?.newer);
           if (player?.state?.lastTeleport >= latestSnap?.time) continue;
           if (player?.state?.lastTeleport >= newestSnap?.time) continue;
           player.setPosition(s.x, s.y);
-          player.direction = s?.direction;
-          player.vx = s.vx;
-          player.vy = s.vy;
+          player.direction =
+            typeof s.d === "number"
+              ? decodeWireDirection(s.d, player.direction)
+              : s.direction ?? player.direction;
+          player.vx = s.vx ?? 0;
+          player.vy = s.vy ?? 0;
+          this._remoteNet.players.set(s.socketId, {
+            x: s.x,
+            y: s.y,
+            vx: s.vx,
+            vy: s.vy,
+            t: performance.now(),
+          });
         }
       }
+    } else {
+      extrapolateRemotePlayers(this, delta);
     }
 
     enableDoors(this);
@@ -301,14 +318,26 @@ class SceneMain extends Phaser.Scene {
         if (!npc || npc?.state?.isDead) continue;
         const latestSnap = SI.vault.getById(npcSnapshot?.older);
         const newestSnap = SI.vault.getById(npcSnapshot?.newer);
-        if (s?.roomName !== this?.roomName) continue;
+        if (s?.roomName != null && s.roomName !== this?.roomName) continue;
         if (npc?.state?.lastTeleport >= latestSnap?.time) continue;
         if (npc?.state?.lastTeleport >= newestSnap?.time) continue;
         npc.setPosition(s.x, s.y);
-        npc.direction = s?.direction;
-        npc.vx = s.vx;
-        npc.vy = s.vy;
+        npc.direction =
+          typeof s.d === "number"
+            ? decodeWireDirection(s.d, npc.direction)
+            : s.direction ?? npc.direction;
+        npc.vx = s.vx ?? 0;
+        npc.vy = s.vy ?? 0;
+        this._remoteNet.npcs.set(s.id, {
+          x: s.x,
+          y: s.y,
+          vx: s.vx,
+          vy: s.vy,
+          t: performance.now(),
+        });
       }
+    } else {
+      extrapolateNpcs(this, delta);
     }
 
     /* Send an update to the UI every 2 seconds.
@@ -523,6 +552,41 @@ function changeMap(scene, roomName) {
   }
 
   return { collideLayer };
+}
+
+/** Max ms to extrapolate after last SI sample (buffer underrun / jitter at low tick rate). */
+const EXTRAPOLATE_MAX_MS = 150;
+
+function extrapolateRemotePlayers(scene, delta) {
+  const now = performance.now();
+  const dt = delta / 1000;
+  for (const [socketId, st] of scene._remoteNet.players) {
+    if (now - st.t > EXTRAPOLATE_MAX_MS) continue;
+    const player = getPlayer(scene, socketId);
+    if (!player || player.isHero || player?.state?.isDead) continue;
+    if (player.roomName !== scene.roomName) continue;
+    st.x += st.vx * dt;
+    st.y += st.vy * dt;
+    player.setPosition(st.x, st.y);
+    player.vx = st.vx;
+    player.vy = st.vy;
+  }
+}
+
+function extrapolateNpcs(scene, delta) {
+  const now = performance.now();
+  const dt = delta / 1000;
+  for (const [id, st] of scene._remoteNet.npcs) {
+    if (now - st.t > EXTRAPOLATE_MAX_MS) continue;
+    const npc = getNpc(scene, id);
+    if (!npc || npc?.state?.isDead) continue;
+    if (npc.roomName !== scene.roomName) continue;
+    st.x += st.vx * dt;
+    st.y += st.vy * dt;
+    npc.setPosition(st.x, st.y);
+    npc.vx = st.vx;
+    npc.vy = st.vy;
+  }
 }
 
 export default SceneMain;

@@ -279,9 +279,13 @@ interface MapAsset {
 interface TickCharacterState {
   id: string;
   socketId: string;
-  roomName: string;
-  direction: string;
-  state: any;
+  /** Omitted when snapshot is already room-scoped (saves bandwidth). */
+  roomName?: string;
+  /** 0–3 wire direction; preferred over `direction` string on the wire. */
+  d?: number;
+  direction?: string;
+  /** Tick-only subset of `state` (not full server state). */
+  state: Record<string, unknown>;
   x: number;
   y: number;
   vx: number;

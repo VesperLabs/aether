@@ -6,6 +6,7 @@ import {
   getAngleFromDirection,
   CONSUMABLES_BASES,
   POTION_BASES,
+  encodeWireDirection,
 } from "@aether/shared";
 import { Socket } from "socket.io";
 const { W, S, A, D } = Phaser.Input.Keyboard.KeyCodes;
@@ -397,14 +398,24 @@ function moveDirectHero(scene) {
       scene._playerInputNet = { lastEmitAt: 0, lastEmitted: null };
     }
     const net = scene._playerInputNet;
-    const payload = {
-      vx,
-      vy,
-      x: hero.x,
-      y: hero.y,
-      direction: hero.direction,
-      roomName: hero.roomName,
+    const d = encodeWireDirection(direction);
+    const payload: {
+      vx: number;
+      vy: number;
+      x: number;
+      y: number;
+      d: number;
+      roomName?: string;
+    } = {
+      vx: Math.round(vx),
+      vy: Math.round(vy),
+      x: Math.round(hero.x),
+      y: Math.round(hero.y),
+      d,
     };
+    if (!net.lastEmitted || net.lastEmitted.roomName !== hero.roomName) {
+      payload.roomName = hero.roomName;
+    }
     const now = Date.now();
     const stopped = vx === 0 && vy === 0;
     const wasMoving =
@@ -413,13 +424,20 @@ function moveDirectHero(scene) {
       !net.lastEmitted ||
       (stopped && wasMoving) ||
       (net.lastEmitted &&
-        (net.lastEmitted.direction !== direction || net.lastEmitted.roomName !== hero.roomName)) ||
+        (net.lastEmitted.d !== d || net.lastEmitted.roomName !== hero.roomName)) ||
       now - net.lastEmitAt >= PLAYER_INPUT_THROTTLE_MS;
 
     if (flushNow) {
       scene.socket.emit("playerInput", payload);
       net.lastEmitAt = now;
-      net.lastEmitted = { ...payload };
+      net.lastEmitted = {
+        vx: payload.vx,
+        vy: payload.vy,
+        x: payload.x,
+        y: payload.y,
+        d: payload.d,
+        roomName: hero.roomName,
+      };
     }
   }
   hero.state.isIdle = hero.vx === vx && hero.vy === vy && vx === 0 && vy === 0;
