@@ -1198,8 +1198,8 @@ export default class Game {
     this.io = new Server(httpServer, {
       /* Bundled client — do not serve the legacy /socket.io/socket.io.js asset. */
       serveClient: false,
-      /* Match client preference: websocket first, polling fallback (Engine default is the reverse). */
-      transports: ["websocket", "polling"],
+      /* WebSocket only — must match client (no polling transport). */
+      transports: ["websocket"],
       cors: {
         origin: "*",
       },

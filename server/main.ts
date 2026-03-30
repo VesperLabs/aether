@@ -8,7 +8,8 @@ import { initDatabase } from "./db";
 import { initFakeDatabase } from "./db/fake";
 import { calculateStats, getFullCharacterState } from "./utils";
 import { PeerServer, PeerServerEvents } from "peer";
-import { default as http, Server } from "http";
+import { default as http, IncomingMessage, Server } from "http";
+import type { Socket as NetSocket } from "net";
 import { createProxyMiddleware } from "http-proxy-middleware";
 
 config({ path: path.join(__dirname, "/../.env") });
@@ -183,16 +184,26 @@ class AppServer {
     //   res.json({ string: "ok" });
     // });
 
-    // Set up the proxy middleware to route /peerjs to the PeerJS server
-    app.use(
-      "/peerjs",
-      createProxyMiddleware({
-        target: `http://localhost:${PEER_SERVER_PORT}/peerjs`,
-        changeOrigin: true,
-        ws: true, // Enable WebSocket proxying if PeerJS uses WebSockets
-        pathRewrite: { "^/peerjs": "" },
-      })
-    );
+    /* Peer HTTP + WS: do NOT use ws:true — that subscribes to every `upgrade` on the shared
+     * http.Server and can race Socket.IO behind Fly's edge (invalid WebSocket frame headers).
+     * Socket.IO attaches first (GameServer); we only forward /peerjs upgrades manually. */
+    const peerProxy = createProxyMiddleware({
+      target: `http://localhost:${PEER_SERVER_PORT}/peerjs`,
+      changeOrigin: true,
+      ws: false,
+      pathRewrite: { "^/peerjs": "" },
+    });
+    app.use("/peerjs", peerProxy);
+
+    const peerUpgrade = (peerProxy as unknown as {
+      upgrade?: (req: IncomingMessage, socket: NetSocket, head: Buffer) => void;
+    }).upgrade;
+
+    httpServer.on("upgrade", (req, socket, head) => {
+      const path = req.url?.split("?")[0] ?? "";
+      if (!path.startsWith("/peerjs")) return;
+      peerUpgrade?.(req, socket as NetSocket, head);
+    });
 
     httpServer.listen(PORT, () => {
       console.log(

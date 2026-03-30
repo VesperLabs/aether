@@ -40,6 +40,8 @@ kill_timeout = '5s'
   auto_start_machines = true
   min_machines_running = 0
 
+  [http_service.http_options]
+    idle_timeout = 900
 
   [[http_service.checks]]
     interval = '5s'
