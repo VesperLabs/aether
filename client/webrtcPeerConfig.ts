@@ -38,6 +38,7 @@ export async function getPeerRtcConfiguration(): Promise<RTCConfiguration> {
         throw new Error(`Metered HTTP ${res.status}`);
       }
       const iceServers = (await res.json()) as RTCIceServer[];
+      console.log("[WebRTC] Metered ICE servers loaded:", JSON.stringify(iceServers, null, 2));
       return {
         ...base,
         iceServers,
@@ -45,6 +46,8 @@ export async function getPeerRtcConfiguration(): Promise<RTCConfiguration> {
     } catch (e) {
       console.warn("[WebRTC] Metered TURN credentials failed, using fallback ICE list.", e);
     }
+  } else {
+    console.warn("[WebRTC] METERED_APP_NAME or METERED_API_KEY not set — using fallback ICE (TURN unavailable).");
   }
 
   return getFallbackRtcConfiguration();

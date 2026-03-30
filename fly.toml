@@ -13,9 +13,7 @@ kill_timeout = '5s'
 # These are passed as Docker build ARGs so Vite can bake them into the client bundle at build time.
 # Runtime-only [env] values are NOT visible during `docker build`.
 #
-# Metered TURN: set METERED_APP_NAME to your app subdomain from metered.ca (public).
-# Do NOT commit METERED_API_KEY — pass at deploy: `fly deploy --build-arg METERED_API_KEY=...`
-# METERED_REGION must match your Metered app (e.g. global, us_east, europe) — see Metered dashboard / docs.
+# Metered TURN — credential API key is client-safe (baked into JS bundle, visible to end users anyway).
   [build.args]
     ASSETS_URL = 'https://aether.onrender.com/assets'
     SERVER_URL = 'https://vesperlabs.fly.dev'
@@ -23,6 +21,7 @@ kill_timeout = '5s'
     PEER_CLIENT_PORT = '443'
     DEBUG = 'false'
     METERED_APP_NAME = 'asyndesis'
+    METERED_API_KEY = 'e0761f10792087e26f63d5097966e9710fbc'
     METERED_REGION = 'global'
 
 [env]
