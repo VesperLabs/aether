@@ -1,5 +1,5 @@
-import Character from "@aether/shared/Character";
-import ItemBuilder from "@aether/shared/ItemBuilder";
+import Character from "../shared/Character";
+import ItemBuilder from "../shared/ItemBuilder";
 import {
   randomNumber,
   calculateNextMaxExp,
@@ -8,7 +8,7 @@ import {
   mergeAndAddValues,
   cloneObject,
 } from "./utils";
-import buffList from "@aether/shared/data/buffList.json";
+import buffList from "../shared/data/buffList.json";
 import { spellDetails } from "@aether/shared";
 
 /** Part of spell power applied to elemental spell min/max (full power was melting warriors in PvP). */

@@ -1,13 +1,9 @@
-/**
- * Delta encoding for tick snapshots.
- *
- * `diffTickStates` compares the server's last emitted snapshot against the next one and
- * produces a compact patch (changed entities + removed ids). `mergeTickDelta` applies a
- * patch onto the client's running baseline. `compactTickDeltaForWire` drops empty buckets
- * so idle ticks send almost nothing.
- */
+import { encodeWireDirection } from "./netWire";
+import { pickTickStateLite } from "./tickState";
+import { expandTickState, type TickStateExpanded } from "./wireTick";
 
-import { expandTickState, type TickStateExpanded } from "./tickState";
+export type { TickStateExpanded } from "./wireTick";
+export { expandTickState } from "./wireTick";
 
 export type TickRmCompact = { p?: string[]; n?: string[]; l?: string[] };
 
@@ -56,31 +52,6 @@ export function mergeTickDelta(
   };
 }
 
-/**
- * Field-wise compare for the tick-lite shape (id/d/x/y/vx/vy + nested `state`).
- * `JSON.stringify` was a hot path on busy rooms — this avoids allocating a string for every
- * unchanged entity every tick, and only pays the stringify cost for the small `state` object.
- */
-function tickEntityEquals(a: Record<string, unknown>, b: Record<string, unknown>): boolean {
-  if (a === b) return true;
-  if (a.d !== b.d) return false;
-  if (a.x !== b.x) return false;
-  if (a.y !== b.y) return false;
-  if (a.vx !== b.vx) return false;
-  if (a.vy !== b.vy) return false;
-  if (
-    (a as { expiredSince?: unknown }).expiredSince !==
-    (b as { expiredSince?: unknown }).expiredSince
-  ) {
-    return false;
-  }
-  const sa = a.state;
-  const sb = b.state;
-  if (sa === sb) return true;
-  if (!sa || !sb) return false;
-  return JSON.stringify(sa) === JSON.stringify(sb);
-}
-
 export function diffTickStates(
   prev: TickStateExpanded,
   next: TickStateExpanded,
@@ -109,12 +80,7 @@ export function diffTickStates(
         delta[bucket].push(eNext);
         continue;
       }
-      if (
-        !tickEntityEquals(
-          ePrev as Record<string, unknown>,
-          eNext as Record<string, unknown>,
-        )
-      ) {
+      if (JSON.stringify(ePrev) !== JSON.stringify(eNext)) {
         delta[bucket].push(eNext);
       }
     }
@@ -128,4 +94,39 @@ export function diffTickStates(
     !rm;
 
   return { delta, rm, isEmpty };
+}
+
+/** Baseline for delta merge — same wire shape as tick snapshots (heroInit uses full character objects). */
+export function heroInitToTickExpanded(args: {
+  players?: unknown[];
+  npcs?: unknown[];
+  loots?: unknown[];
+}): TickStateExpanded {
+  const players = (args.players ?? []).map((raw: Record<string, unknown>) => ({
+    id: raw.socketId ?? raw.id,
+    d: encodeWireDirection(raw.direction as string),
+    state: pickTickStateLite(raw.state as Record<string, unknown>),
+    x: raw.x,
+    y: raw.y,
+    vx: (raw.vx as number) ?? 0,
+    vy: (raw.vy as number) ?? 0,
+  }));
+
+  const npcs = (args.npcs ?? []).map((raw: Record<string, unknown>) => ({
+    id: raw.id,
+    d: encodeWireDirection(raw.direction as string),
+    state: pickTickStateLite(raw.state as Record<string, unknown>),
+    x: raw.x,
+    y: raw.y,
+    vx: (raw.vx as number) ?? 0,
+    vy: (raw.vy as number) ?? 0,
+  }));
+
+  const loots = (args.loots ?? []).map((raw: Record<string, unknown>) => {
+    const o: { id: string; expiredSince?: number } = { id: String(raw.id) };
+    if (raw.expiredSince != null) o.expiredSince = raw.expiredSince as number;
+    return o;
+  });
+
+  return { players, npcs, loots };
 }

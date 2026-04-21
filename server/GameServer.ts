@@ -1,5 +1,5 @@
 import "./Phaser";
-import { mapList } from "@aether/shared/Maps";
+import { mapList } from "../shared/Maps";
 import { Socket, Server } from "socket.io";
 import path from "path";
 import crypto from "crypto";
@@ -20,28 +20,15 @@ import RoomManager from "./RoomManager";
 import PartyManager from "./PartyManager";
 import Phaser from "phaser";
 import QuestBuilder from "./QuestBuilder";
-import ItemBuilder, { isItemBuildRarity, ITEM_BUILD_RARITIES } from "@aether/shared/ItemBuilder";
+import ItemBuilder, { isItemBuildRarity, ITEM_BUILD_RARITIES } from "../shared/ItemBuilder";
 import { isNil } from "lodash";
-import { CONSUMABLES_BASES, POTION_BASES, skinTints, hairTints, DEFAULT_SERVER_FPS } from "@aether/shared";
+import { CONSUMABLES_BASES, POTION_BASES, skinTints, hairTints, DEFAULT_SERVER_FPS } from "../shared";
 import { createBaseUser } from "./db";
-import {
-  createSnapshot,
-  createDeltaSnapshot,
-  SNAPSHOT_KEYFRAME_INTERVAL,
-  compactTickDeltaForWire,
-  compactTickState,
-  diffTickStates,
-  type TickStateExpanded,
-} from "@aether/shared/net";
-
-/**
- * getTickRoomState already builds fresh per-entity objects each tick, so a shallow
- * bucket copy is enough to keep lastEmittedSnapshot immune from later-tick mutation.
- * cloneDeep on the full room state every tick was a needless 20 Hz allocation.
- */
-function shallowCloneTickState(s: TickStateExpanded): TickStateExpanded {
-  return { players: s.players.slice(), npcs: s.npcs.slice(), loots: s.loots.slice() };
-}
+import { cloneDeep } from "lodash";
+import { createSnapshot, createDeltaSnapshot } from "../shared/netSnapshot";
+import { SNAPSHOT_KEYFRAME_INTERVAL } from "../shared/constants";
+import { compactTickDeltaForWire, diffTickStates } from "../shared/tickDelta";
+import { compactTickState } from "../shared/wireTick";
 
 const serverFps =
   parseInt(process.env.SERVER_FPS || String(DEFAULT_SERVER_FPS), 10) || DEFAULT_SERVER_FPS;
@@ -1235,7 +1222,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
 
       if (isKeyframe) {
         const snapshot = createSnapshot(compactTickState(expanded), room.snapshotSeq);
-        room.lastEmittedSnapshot = shallowCloneTickState(expanded);
+        room.lastEmittedSnapshot = cloneDeep(expanded);
         io.to(room.name).emit("update", snapshot);
         continue;
       }
@@ -1244,7 +1231,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       if (isEmpty) {
         continue;
       }
-      room.lastEmittedSnapshot = shallowCloneTickState(expanded);
+      room.lastEmittedSnapshot = cloneDeep(expanded);
       const snap = createDeltaSnapshot(compactTickDeltaForWire(delta), rm, room.snapshotSeq);
       io.to(room.name).emit("update", snap);
     }

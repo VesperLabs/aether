@@ -1,9 +1,6 @@
 /**
- * Tick cadence + client interpolation tuning. All netcode constants live here so the
- * server, client, and build tooling share one source of truth.
+ * Default Phaser / socket tick rate when SERVER_FPS is unset.
  */
-
-/** Default Phaser / socket tick rate when SERVER_FPS is unset. */
 export const DEFAULT_SERVER_FPS = 20;
 
 /** Client render delay in server ticks: (1000 / SERVER_FPS) * ticks ms. 2 ≈ lower latency than 3. */

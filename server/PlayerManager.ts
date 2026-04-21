@@ -1,5 +1,5 @@
 import Player from "./Player";
-import { distanceTo } from "@aether/shared";
+import { distanceTo } from "../shared";
 class PlayerManager {
   public scene: ServerScene;
   public room: Room;

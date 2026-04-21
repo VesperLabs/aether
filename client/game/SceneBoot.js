@@ -1,9 +1,9 @@
 import Phaser from "phaser";
-import { assetList } from "@aether/shared/Assets";
-import soundList from "@aether/shared/data/soundList.json";
-import iconList from "@aether/shared/data/iconList.json";
-import { mapList, mapImageList } from "@aether/shared/Maps";
-import { IMAGE_CACHE } from "@aether/shared/utils";
+import { assetList } from "../../shared/Assets";
+import soundList from "../../shared/data/soundList.json";
+import iconList from "../../shared/data/iconList.json";
+import { mapList, mapImageList } from "../../shared/Maps";
+import { IMAGE_CACHE } from "../../shared/utils";
 
 /**
  * Rewrite a `./assets/…` path to the CDN base URL when ASSETS_URL is set.

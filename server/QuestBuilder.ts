@@ -1,7 +1,7 @@
 import { QUEST_EXP_MULTIPLIER, QUEST_GOLD_MULTIPLIER, cloneObject } from "./utils";
-import questList from "@aether/shared/data/questList.json";
+import questList from "../shared/data/questList.json";
 import Quest from "./Quest";
-import ItemBuilder from "@aether/shared/ItemBuilder";
+import ItemBuilder from "../shared/ItemBuilder";
 
 const QuestBuilder = {
   buildQuest: function (key: string) {

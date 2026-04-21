@@ -1,13 +1,13 @@
 import Character from "./Character";
-import ItemBuilder from "@aether/shared/ItemBuilder";
+import ItemBuilder from "../shared/ItemBuilder";
 import {
   BUFF_SPELLS,
   ILVL_MULTIPLIER,
   calculateStealthVisibilityPercent,
   distanceTo,
-} from "@aether/shared/utils";
+} from "../shared/utils";
 import { getCharacterDirection, randomNumber, SHOP_INFLATION, sleep } from "./utils";
-import spellDetails from "@aether/shared/data/spellDetails.json";
+import spellDetails from "../shared/data/spellDetails.json";
 import crypto from "crypto";
 
 const AGGRO_KITE_RANGE = 220;

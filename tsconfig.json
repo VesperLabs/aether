@@ -12,13 +12,9 @@
     "resolveJsonModule": true,
     "paths": {
       "@aether/ui": ["./ui"],
-      "@aether/ui/*": ["./ui/*"],
       "@aether/server": ["./server"],
-      "@aether/server/*": ["./server/*"],
       "@aether/shared": ["./shared"],
-      "@aether/shared/*": ["./shared/*"],
-      "@aether/client": ["./client"],
-      "@aether/client/*": ["./client/*"]
+      "@aether/client": ["./client"]
     }
   },
   "include": [

@@ -1,10 +1,10 @@
 import NpcManager from "./NpcManager";
 import PlayerManager from "./PlayerManager";
-import Door from "@aether/shared/Door";
+import Door from "../shared/Door";
 import LootManager from "./LootManager";
 import SpellManager from "./SpellManager";
 import EasyStar from "easystarjs";
-import type { TickStateExpanded } from "@aether/shared/net";
+import type { TickStateExpanded } from "../shared/wireTick";
 class Room {
   public scene: ServerScene;
   public tileMap: Phaser.Tilemaps.Tilemap;

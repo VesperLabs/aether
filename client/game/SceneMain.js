@@ -1,16 +1,16 @@
 import Phaser from "phaser";
-import Door from "@aether/shared/Door";
-import Sign from "@aether/shared/Sign";
-import { getMapByName } from "@aether/shared/Maps";
-import { DEFAULT_USER_SETTINGS, distanceTo, isMobile, MINI_MAP_SIZE } from "@aether/shared/utils";
+import Door from "../../shared/Door";
+import Sign from "../../shared/Sign";
+import { getMapByName } from "../../shared/Maps";
+import { DEFAULT_USER_SETTINGS, distanceTo, isMobile, MINI_MAP_SIZE } from "../../shared/utils";
 import {
   DEFAULT_SERVER_FPS,
   EXTRA_INTERPOLATION_BUFFER_MS,
   INTERPOLATION_BUFFER_TICKS,
-  decodeWireDirection,
-  expandTickState,
-  heroInitToTickExpanded,
-} from "@aether/shared/net";
+} from "../../shared/constants";
+import { decodeWireDirection } from "../../shared/netWire";
+import { expandTickState } from "../../shared/wireTick";
+import { heroInitToTickExpanded } from "../../shared/tickDelta";
 import { createNetInterpolator } from "./netInterpolation";
 
 const ASSETS_BASE = process.env.ASSETS_URL || "";

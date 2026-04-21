@@ -1,4 +1,4 @@
-import { resolveAsset } from "@aether/shared/Assets";
+import { resolveAsset } from "../../shared/Assets";
 const Sprite = Phaser.GameObjects.Sprite;
 const BLANK_TEXTURE = "human-blank";
 
