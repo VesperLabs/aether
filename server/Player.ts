@@ -385,7 +385,9 @@ class Player extends ServerCharacter implements ServerPlayer {
       if (!ids.includes(player.id)) continue;
       if (!allowedTargets.includes("self") && player.id === this.id) continue;
       if (!allowedTargets.includes("enemy") && player.id !== this.id && !targetIsInParty) continue;
-      if (!allowedTargets.includes("ally") && targetIsInParty) continue;
+      /* `targetIsInParty` is also true for self (you're a member of your own party), so exclude
+       * self here — otherwise self-only spells like stealth get filtered out when partied. */
+      if (!allowedTargets.includes("ally") && targetIsInParty && player.id !== this.id) continue;
 
       const newHits = this.calculateDamage(player, abilitySlot);
       if (newHits.length > 0) {
