@@ -1,5 +1,5 @@
 import Room from "./Room";
-import { mapList } from "../shared/Maps";
+import { mapList } from "@aether/shared/Maps";
 
 class RoomManager {
   public scene: ServerScene;

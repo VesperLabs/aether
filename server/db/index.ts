@@ -1,9 +1,9 @@
 import { MongoClient, Db } from "mongodb";
 import { userSchema } from "./schema";
-import ItemBuilder from "../../shared/ItemBuilder";
+import ItemBuilder from "@aether/shared/ItemBuilder";
 import { useGetBaseCharacterDefaults, filterNullEmpty, calculateNextMaxExp } from "../utils";
 import { omitBy, isNil } from "lodash";
-import { DEFAULT_USER_SETTINGS } from "../../shared/utils";
+import { DEFAULT_USER_SETTINGS } from "@aether/shared/utils";
 
 const getDatabaseApi = (db) => ({
   getUserByEmail: async ({ email }) => {

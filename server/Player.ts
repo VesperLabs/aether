@@ -1,6 +1,6 @@
 import ServerCharacter from "./Character";
 import { calculateExpValue, cloneObject, getRoomState, PLAYER_DEFAULT_SPAWN } from "./utils";
-import { spellDetails, MAX_INVENTORY_ITEMS } from "../shared";
+import { spellDetails, MAX_INVENTORY_ITEMS } from "@aether/shared";
 
 /* Server level Player object */
 class Player extends ServerCharacter implements ServerPlayer {
