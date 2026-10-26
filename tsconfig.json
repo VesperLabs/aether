@@ -11,17 +11,8 @@
     "jsx": "react-jsx",
     "resolveJsonModule": true,
     "paths": {
-      "@aether/*": ["./*"]
+      "@/*": ["./src/*"]
     }
   },
-  "include": [
-    "server/**/*",
-    "shared/**/*",
-    "index.d.ts",
-    "client/**/*",
-    "ui/**/*",
-    "web/**/*",
-    "shared/**/*",
-    "@testing-library/jest-dom/vitest"
-  ]
+  "include": ["src/**/*", "@testing-library/jest-dom/vitest"]
 }

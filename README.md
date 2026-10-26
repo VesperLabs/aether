@@ -27,7 +27,7 @@ SERVER_FPS=20
 SERVER_URL=http://localhost:3000
 PORT=3000
 ASSETS_URL= # Where to load images from (Leave blank for DEV)
-PUBLIC_DIR=../public # Running server loads assets from here
+PUBLIC_DIR=public # Running server loads assets from here (relative to the repo root)
 PEER_SERVER_PORT=9000 # Where the server runs the peerjs instance
 PEER_CLIENT_PORT=9000 # (Optional) Where the client listens for peerjs
 ```
