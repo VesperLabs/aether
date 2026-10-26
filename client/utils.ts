@@ -1,3 +1,4 @@
+import Phaser from "phaser";
 import Player from "./game/Player";
 import LootItem from "./game/LootItem";
 import { distanceTo } from "@aether/shared/utils";
@@ -133,7 +134,7 @@ function calculateZoomLevel({
   const zoomLevel = Phaser.Math.Clamp(
     baseZoom + viewportAreaInPixels / divisor,
     baseZoom,
-    maxZoom
+    maxZoom,
   ).toFixed(2);
   return zoomLevel;
 }

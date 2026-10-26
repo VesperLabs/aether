@@ -251,8 +251,8 @@ export function msToHours(ms) {
 export function filterVisibleEquipment(player: FullCharacterState) {
   return Object.fromEntries(
     Object.entries(player?.equipment ?? {}).filter(([key]) =>
-      player?.activeItemSlots?.includes(key)
-    )
+      player?.activeItemSlots?.includes(key),
+    ),
   );
 }
 
@@ -299,7 +299,7 @@ export function itemHasRequiredStats({ requirements, player, key }) {
   if (key === "weaponType") {
     return Character.hasVisibleWeaponType(
       { ...player, visibleEquipment: filterVisibleEquipment(player) },
-      "melee"
+      "melee",
     );
   }
 
@@ -324,13 +324,13 @@ export function calculateStealthVisibilityPercent({
   // Factor in stealthBuff's level
   const levelDifference = Math.max(
     0,
-    observerLevel - (Math.floor(playerLevel / 2) + stealthBuffLevel * 4)
+    observerLevel - (Math.floor(playerLevel / 2) + stealthBuffLevel * 4),
   );
 
   // Extend visibility range based on level difference, capped at maxVisibilityRange
   const visibilityRange = Math.min(
     BASE_VISIBILITY_RANGE + levelDifference * LEVEL_ADVANTAGE_FACTOR * BASE_VISIBILITY_RANGE,
-    maxVisibilityRange
+    maxVisibilityRange,
   );
 
   // Calculate visibility percentage

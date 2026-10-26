@@ -22,7 +22,13 @@ import Phaser from "phaser";
 import QuestBuilder from "./QuestBuilder";
 import ItemBuilder, { isItemBuildRarity, ITEM_BUILD_RARITIES } from "../shared/ItemBuilder";
 import { isNil } from "lodash";
-import { CONSUMABLES_BASES, POTION_BASES, skinTints, hairTints, DEFAULT_SERVER_FPS } from "../shared";
+import {
+  CONSUMABLES_BASES,
+  POTION_BASES,
+  skinTints,
+  hairTints,
+  DEFAULT_SERVER_FPS,
+} from "../shared";
 import { createBaseUser } from "./db";
 import { cloneDeep } from "lodash";
 import { createSnapshot, createDeltaSnapshot } from "../shared/netSnapshot";
@@ -115,7 +121,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
             userSettings: player.userSettings,
             socketId,
           },
-          { isLogin: true }
+          { isLogin: true },
         );
 
         socket.to(roomName).emit("playerJoin", getFullCharacterState(player), { isLogin: true });
@@ -168,7 +174,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
             userSettings: player.userSettings,
             socketId,
           },
-          { isLogin: true }
+          { isLogin: true },
         );
         socket.to(roomName).emit("playerJoin", getFullCharacterState(player), { isLogin: true });
       });
@@ -187,7 +193,6 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         }
 
         //Validate password strength
-        const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
         if (password?.length < 4) {
           return socket.emit("formError", {
             error: "Weak password",
@@ -412,14 +417,14 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         let dropAmount: integer;
 
         if (location === "equipment") {
-          const { item: f, slotName } = player?.findEquipmentById(item?.id);
+          const { item: f, slotName } = player?.findEquipmentById(item?.id) ?? {};
           found = f;
           /* Remove it from the players equipment */
           player?.clearEquipmentSlot(slotName);
         }
 
         if (location === "abilities") {
-          const { item: f, slotName } = player?.findAbilityById(item?.id);
+          const { item: f, slotName } = player?.findAbilityById(item?.id) ?? {};
           found = f;
           if (amount >= found?.amount) {
             dropAmount = found?.amount;
@@ -792,7 +797,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         }
         /* Using an item from abilities */
         if (location === "abilities") {
-          const { item: found } = player?.findAbilityById(item?.id);
+          const { item: found } = player?.findAbilityById(item?.id) ?? {};
           playerItem = found;
           if (!CONSUMABLES_BASES?.includes(playerItem?.base)) return;
           if (!playerItem?.amount) return;
@@ -877,30 +882,36 @@ class ServerScene extends Phaser.Scene implements ServerScene {
               const raw = command[1]?.trim();
               if (!raw) {
                 return cmdErr(
-                  "Usage: /drop <type>-<rarity>-<itemKey>-<amount> — four hyphen-separated parts, e.g. /drop weapon-common-sword-1"
+                  "Usage: /drop <type>-<rarity>-<itemKey>-<amount> — four hyphen-separated parts, e.g. /drop weapon-common-sword-1",
                 );
               }
               const itemParams = raw.split("-");
               const [itemType, itemRarity, itemKey, itemAmount] = itemParams;
-              if (!itemType || !itemRarity || !itemKey || itemAmount === undefined || itemAmount === "") {
+              if (
+                !itemType ||
+                !itemRarity ||
+                !itemKey ||
+                itemAmount === undefined ||
+                itemAmount === ""
+              ) {
                 return cmdErr(
-                  "Usage: /drop <type>-<rarity>-<itemKey>-<amount> — four hyphen-separated parts, e.g. /drop weapon-common-sword-1"
+                  "Usage: /drop <type>-<rarity>-<itemKey>-<amount> — four hyphen-separated parts, e.g. /drop weapon-common-sword-1",
                 );
               }
               if (!isItemBuildRarity(itemRarity)) {
                 return cmdErr(
-                  `Invalid rarity "${itemRarity}". Use one of: ${ITEM_BUILD_RARITIES.join(", ")}.`
+                  `Invalid rarity "${itemRarity}". Use one of: ${ITEM_BUILD_RARITIES.join(", ")}.`,
                 );
               }
               const built = ItemBuilder.buildItem(
                 itemType,
                 itemRarity,
                 itemKey,
-                itemAmount
+                itemAmount,
               ) as Item | null;
               if (!built) {
                 return cmdErr(
-                  "Invalid /drop: no item matches that type, rarity, and key. Usage: /drop <type>-<rarity>-<itemKey>-<amount>"
+                  "Invalid /drop: no item matches that type, rarity, and key. Usage: /drop <type>-<rarity>-<itemKey>-<amount>",
                 );
               }
               scene.roomManager.rooms[player?.roomName].lootManager.create({
@@ -946,7 +957,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
               const rarity = command[1];
               if (!rarity || !gunRarities.includes(rarity as (typeof gunRarities)[number])) {
                 return cmdErr(
-                  "Usage: /guns <rarity> — rarity must be exactly one of: unique, common, set, rare, magic."
+                  "Usage: /guns <rarity> — rarity must be exactly one of: unique, common, set, rare, magic.",
                 );
               }
               let gunItem = null;
@@ -1090,7 +1101,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
         const currentHairTextureIndex = hairTextures.indexOf(player?.profile?.hair?.texture);
         const currentFaceTextureIndex = faceTextures.indexOf(player?.profile?.face?.texture);
         const currentWhiskersTextureIndex = whiskersTextures.indexOf(
-          player?.profile?.whiskers?.texture
+          player?.profile?.whiskers?.texture,
         );
         const currentSkinTintIndex = skinTints.indexOf(player?.profile?.tint);
         const currentHairTintIndex = hairTints.indexOf(player?.profile?.hair?.tint);

@@ -138,7 +138,7 @@ class Player extends Character {
     this.shadow = scene.add.existing(new Sprite(...defaults));
     this.bubble = scene.add.existing(new Bubble(scene, this?.headY, this.bubbleMessage));
     this.crosshair = scene.add.existing(
-      new Crosshair(scene, 0, this.bodyOffsetY, "icons", "crosshair", this, 40)
+      new Crosshair(scene, 0, this.bodyOffsetY, "icons", "crosshair", this, 40),
     );
     this.hpBar = scene.add.existing(new Bar(scene, 0, this?.headY, 32, 12)).setVisible(false);
     this.userName = scene.add.existing(new BitmapText(this.scene, 0, 8, "nin-light").setScale(0.5));
@@ -183,7 +183,7 @@ class Player extends Character {
     this.userName.setTint(profile?.userNameTint);
   }
   drawCharacterFromUserData() {
-    const { profile, visibleEquipment, scene } = this || {};
+    const { profile, visibleEquipment } = this || {};
     const isBoss = profile?.scale > 1;
     if (profile?.userName) {
       this.updateUserName();
@@ -200,10 +200,10 @@ class Player extends Character {
 
     if (this.profile.race === "human") {
       this.handLeft.setElements(
-        this.hasWeaponLeft() ? deriveElements(visibleEquipment?.handLeft?.stats) : []
+        this.hasWeaponLeft() ? deriveElements(visibleEquipment?.handLeft?.stats) : [],
       );
       this.handRight.setElements(
-        this.hasWeaponRight() ? deriveElements(visibleEquipment?.handRight?.stats) : []
+        this.hasWeaponRight() ? deriveElements(visibleEquipment?.handRight?.stats) : [],
       );
     }
 
@@ -263,7 +263,7 @@ class Player extends Character {
 
     // draw our physical animation.
     this.scene.add.existing(
-      new Spell(this.scene, { id: null, caster: this, spellName, castAngle, action })
+      new Spell(this.scene, { id: null, caster: this, spellName, castAngle, action }),
     );
   }
   doCast({ abilitySlot, castAngle }) {
@@ -376,7 +376,7 @@ class Player extends Character {
     this.whiskers.setTint(color);
   }
   showHideNameAndBars() {
-    const { state, scene } = this ?? {};
+    const { state } = this ?? {};
     const shouldShow = !this.checkOutOfCombat() || state?.isHovering;
 
     this.hpBar.setVisible(shouldShow);
@@ -607,7 +607,7 @@ function drawFrame(p) {
   p?.playAnim(
     armor,
     [profile?.race, profile?.gender, visibleEquipment?.armor?.texture, direction, action],
-    p.isHero
+    p.isHero,
   );
   p?.playAnim(helmet, [profile?.race, visibleEquipment?.helmet?.texture, direction, action]);
   p?.playAnim(boots, [profile?.race, visibleEquipment?.boots?.texture, direction, action]);

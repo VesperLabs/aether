@@ -35,6 +35,9 @@ PEER_CLIENT_PORT=9000 # (Optional) Where the client listens for peerjs
 ## 📟 Running
 
 ```bash
+npm run dev # run server, client and wiki together
+
+# or individually
 npm run server:watch # run the server locally
 npm run client:dev # run the client locally
 npm run web:dev # run the wiki locally

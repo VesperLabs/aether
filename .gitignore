@@ -25,3 +25,4 @@ public/assets/index-*
 *.njsproj
 *.sln
 *.sw?
+.playwright-mcp/

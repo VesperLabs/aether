@@ -52,7 +52,7 @@ class Npc extends Character implements Npc {
       keeperData: KeeperData;
       drops: Array<Drop>;
       hitBoxSize: any;
-    }
+    },
   ) {
     super(scene, args);
 
@@ -355,7 +355,7 @@ class Npc extends Character implements Npc {
 
       let castAngle = (this.state.lastAngle = Math.atan2(
         targetPlayer.y - this.y,
-        targetPlayer.x - this.x
+        targetPlayer.x - this.x,
       ));
 
       const direction = `${this.direction}`;

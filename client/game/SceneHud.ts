@@ -82,7 +82,7 @@ function addGlobalEventListeners(scene) {
         scene.socket.emit("updateState", { isAiming: hero.state.isAiming });
       }
     },
-    scene
+    scene,
   );
   window.addEventListener(
     "HERO_ATTACK", // we let go of the attack button
@@ -107,7 +107,7 @@ function addGlobalEventListeners(scene) {
         isHoldingAttack: hero.state.isHoldingAttack,
       });
     },
-    scene
+    scene,
   );
   window.addEventListener(
     "HERO_ATTACK_START",
@@ -127,7 +127,7 @@ function addGlobalEventListeners(scene) {
         isHoldingAttack: hero.state.isHoldingAttack,
       });
     },
-    scene
+    scene,
   );
   window.addEventListener(
     "HERO_ABILITY",
@@ -150,7 +150,7 @@ function addGlobalEventListeners(scene) {
         document.getElementById("game").style.cursor = "default";
       }
     },
-    scene
+    scene,
   );
   /* TODO: Move to server and create a consumeItemFunction */
   window.addEventListener("HERO_USE_ITEM", (e: CustomEvent) => {
@@ -176,7 +176,7 @@ function addGlobalEventListeners(scene) {
     window.dispatchEvent(
       new CustomEvent("AUDIO_ITEM_CONSUME", {
         detail: item,
-      })
+      }),
     );
   });
   window.addEventListener(
@@ -185,7 +185,7 @@ function addGlobalEventListeners(scene) {
       const hero = mainScene?.hero;
       hero?.doGrab?.();
     },
-    scene
+    scene,
   );
   window.addEventListener(
     "AUDIO_ITEM_CONSUME",
@@ -193,7 +193,7 @@ function addGlobalEventListeners(scene) {
       const hero = mainScene?.hero;
       playAudio({ scene: mainScene, audioKey: "item-bubble", caster: hero });
     },
-    scene
+    scene,
   );
   window.addEventListener(
     "AUDIO_ITEM_SELL",
@@ -201,7 +201,7 @@ function addGlobalEventListeners(scene) {
       const hero = mainScene?.hero;
       playAudio({ scene: mainScene, audioKey: "item-sell", caster: hero });
     },
-    scene
+    scene,
   );
   window.addEventListener(
     "ITEM_DRAG",
@@ -218,7 +218,7 @@ function addGlobalEventListeners(scene) {
         scene.socket.emit("changeDirection", { direction });
       }
     },
-    scene
+    scene,
   );
 }
 
@@ -229,7 +229,7 @@ function updateAttackCooldown(hero) {
   window.dispatchEvent(
     new CustomEvent("HERO_START_COOLDOWN", {
       detail: { spellName: "attack", duration: duration, startTime: Date.now() },
-    })
+    }),
   );
 }
 
@@ -243,7 +243,7 @@ function updatePotionCooldown(hero) {
         duration: POTION_COOLDOWN,
         startTime: Date.now(),
       },
-    })
+    }),
   );
 }
 
@@ -261,7 +261,7 @@ function updateSpellCooldown(hero, abilitySlot) {
         sharedDuration: castDelay,
         startTime: Date.now(),
       },
-    })
+    }),
   );
 }
 
@@ -418,8 +418,7 @@ function moveDirectHero(scene) {
     }
     const now = Date.now();
     const stopped = vx === 0 && vy === 0;
-    const wasMoving =
-      net.lastEmitted && (net.lastEmitted.vx !== 0 || net.lastEmitted.vy !== 0);
+    const wasMoving = net.lastEmitted && (net.lastEmitted.vx !== 0 || net.lastEmitted.vy !== 0);
     const flushNow =
       !net.lastEmitted ||
       (stopped && wasMoving) ||

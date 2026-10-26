@@ -9,7 +9,6 @@ import {
   cloneObject,
 } from "./utils";
 import buffList from "../shared/data/buffList.json";
-import { spellDetails } from "@aether/shared";
 
 /** Part of spell power applied to elemental spell min/max (full power was melting warriors in PvP). */
 const SPELL_POWER_ELEMENTAL_FACTOR = 0.5;
@@ -212,7 +211,7 @@ class ServerCharacter extends Character {
       fireDamageAfterReduction +
         lightDamageAfterReduction +
         waterDamageAfterReduction +
-        earthDamageAfterReduction
+        earthDamageAfterReduction,
     );
 
     // Create an array called elements that includes fire, light, water, and earth,
@@ -252,7 +251,7 @@ class ServerCharacter extends Character {
     /* Spell power was added at full value to min/max — mages could 2-shot warriors in PvP.
      * Only part of spell power should scale elemental rolls (rest still helps heals / other uses). */
     const spellPowerBonus = Math.floor(
-      Number(this?.stats?.spellPower || 0) * SPELL_POWER_ELEMENTAL_FACTOR
+      Number(this?.stats?.spellPower || 0) * SPELL_POWER_ELEMENTAL_FACTOR,
     );
     const dmgWithSpellPower = Object.entries(baseElementalDamages).reduce((acc, [key, value]) => {
       acc[key] = Number(value) + spellPowerBonus;
@@ -262,7 +261,7 @@ class ServerCharacter extends Character {
     // calculate elemental damages
     let { eleDamage, holyDamage, elements } = this.calculateElementalDamage(
       dmgWithSpellPower,
-      victim
+      victim,
     );
 
     // add buffs if the spell has any
@@ -598,7 +597,7 @@ class ServerCharacter extends Character {
     // Simplify scaling logic
     const scaleStats = (stats) => {
       return Object.fromEntries(
-        Object.entries(stats).map(([stat, value]: [string, number]) => [stat, value * level])
+        Object.entries(stats).map(([stat, value]: [string, number]) => [stat, value * level]),
       );
     };
 

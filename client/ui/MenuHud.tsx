@@ -160,125 +160,131 @@ const Buff = ({ buff, tooltipId, player }) => {
   );
 };
 
-const Buffs = memo(({ player, sx }: any) => {
-  const buffs = player?.buffs;
-  return (
-    <Flex
-      sx={{
-        mt: 1,
-        transformOrigin: "top left",
-        imageRendering: "pixelated",
-        ...sx,
-      }}
-    >
-      <Flex sx={{ flexDirection: "row-reverse", gap: 1, height: 24 }}>
-        {buffs?.map((buff: Buff) => {
-          const tooltipId = `buffs-${buff?.name}-${player?.id}`;
-          return <Buff key={tooltipId} tooltipId={tooltipId} buff={buff} player={player} />;
-        })}
+const Buffs = memo(
+  ({ player, sx }: any) => {
+    const buffs = player?.buffs;
+    return (
+      <Flex
+        sx={{
+          mt: 1,
+          transformOrigin: "top left",
+          imageRendering: "pixelated",
+          ...sx,
+        }}
+      >
+        <Flex sx={{ flexDirection: "row-reverse", gap: 1, height: 24 }}>
+          {buffs?.map((buff: Buff) => {
+            const tooltipId = `buffs-${buff?.name}-${player?.id}`;
+            return <Buff key={tooltipId} tooltipId={tooltipId} buff={buff} player={player} />;
+          })}
+        </Flex>
       </Flex>
-    </Flex>
-  );
-}, arePropsEqualWithKeys(["player.buffs"]));
+    );
+  },
+  arePropsEqualWithKeys(["player.buffs"]),
+);
 
-const PlayerHud = memo(({ player, isBig, portraitVideoStream, isNearby = false }: any) => {
-  const { stats, profile, equipment, activeItemSlots } = player ?? {};
-  const isOffScreen = !player;
-  const videoStream = portraitVideoStream ?? null;
-  const memoProps = {
-    activeItemSlots,
-    equipment,
-    profile,
-    level: player?.stats?.level,
-    useVideoPortrait: !!videoStream,
-  };
+const PlayerHud = memo(
+  ({ player, isBig, portraitVideoStream, isNearby = false }: any) => {
+    const { stats, profile, equipment, activeItemSlots } = player ?? {};
+    const isOffScreen = !player;
+    const videoStream = portraitVideoStream ?? null;
+    const memoProps = {
+      activeItemSlots,
+      equipment,
+      profile,
+      level: player?.stats?.level,
+      useVideoPortrait: !!videoStream,
+    };
 
-  return (
-    <Flex
-      sx={{
-        gap: 1,
-        position: "relative",
-        filter: isOffScreen ? "grayscale(100%)" : "none",
-      }}
-    >
-      <Memoized
-        as={Portrait}
-        player={player}
-        videoStream={videoStream}
-        muteVideo={isNearby ? false : isBig}
-        filteredSlots={["boots", "pants"]}
-        size={isBig ? 54 : 32}
-        scale={isBig ? 1 : 0.57}
-        topOffset={isBig ? 22 : 12}
-        memoProps={memoProps}
-      />
-      <Flex sx={{ flexDirection: "column", gap: "1px", pointerEvents: "all" }}>
+    return (
+      <Flex
+        sx={{
+          gap: 1,
+          position: "relative",
+          filter: isOffScreen ? "grayscale(100%)" : "none",
+        }}
+      >
         <Memoized
-          as={UserName}
-          sx={{ fontSize: isBig ? 2 : 0 }}
+          as={Portrait}
           player={player}
+          videoStream={videoStream}
+          muteVideo={isNearby ? false : isBig}
+          filteredSlots={["boots", "pants"]}
+          size={isBig ? 54 : 32}
+          scale={isBig ? 1 : 0.57}
+          topOffset={isBig ? 22 : 12}
           memoProps={memoProps}
         />
-        <Bar
-          data-tooltip-content={`HP: ${stats?.hp} / ${stats?.maxHp}`}
-          color="red.700"
-          max={stats?.maxHp}
-          min={stats?.hp}
-          showText={isBig}
-          width={isBig ? 100 : 50}
-          height={isBig ? 12 : 6}
-        />
-        {!isNearby && (
-          <>
+        <Flex sx={{ flexDirection: "column", gap: "1px", pointerEvents: "all" }}>
+          <Memoized
+            as={UserName}
+            sx={{ fontSize: isBig ? 2 : 0 }}
+            player={player}
+            memoProps={memoProps}
+          />
+          <Bar
+            data-tooltip-content={`HP: ${stats?.hp} / ${stats?.maxHp}`}
+            color="red.700"
+            max={stats?.maxHp}
+            min={stats?.hp}
+            showText={isBig}
+            width={isBig ? 100 : 50}
+            height={isBig ? 12 : 6}
+          />
+          {!isNearby && (
+            <>
+              <Bar
+                data-tooltip-content={`MP: ${stats?.mp} / ${stats?.maxMp}`}
+                color="blue.500"
+                max={stats?.maxMp}
+                min={stats?.mp}
+                showText={isBig}
+                width={isBig ? 100 : 50}
+                height={isBig ? 12 : 6}
+              />
+              <Bar
+                data-tooltip-content={`SP: ${stats?.sp} / ${stats?.maxSp}`}
+                color="green.500"
+                max={stats?.maxSp}
+                min={stats?.sp}
+                width={isBig ? 100 : 50}
+                height={6}
+                showText={false}
+              />
+            </>
+          )}
+          {isBig && (
             <Bar
-              data-tooltip-content={`MP: ${stats?.mp} / ${stats?.maxMp}`}
-              color="blue.500"
-              max={stats?.maxMp}
-              min={stats?.mp}
-              showText={isBig}
-              width={isBig ? 100 : 50}
-              height={isBig ? 12 : 6}
-            />
-            <Bar
-              data-tooltip-content={`SP: ${stats?.sp} / ${stats?.maxSp}`}
-              color="green.500"
-              max={stats?.maxSp}
-              min={stats?.sp}
-              width={isBig ? 100 : 50}
+              data-tooltip-content={`EXP: ${stats?.exp} / ${stats?.maxExp}`}
+              color="purple.400"
+              max={stats?.maxExp}
+              min={stats?.exp}
               height={6}
               showText={false}
             />
-          </>
-        )}
-        {isBig && (
-          <Bar
-            data-tooltip-content={`EXP: ${stats?.exp} / ${stats?.maxExp}`}
-            color="purple.400"
-            max={stats?.maxExp}
-            min={stats?.exp}
-            height={6}
-            showText={false}
-          />
-        )}
-        <Buffs player={player} sx={!isBig ? { transform: `scale(0.6)` } : {}} />
+          )}
+          <Buffs player={player} sx={!isBig ? { transform: `scale(0.6)` } : {}} />
+        </Flex>
+        <Memoized
+          as={LevelIcon}
+          player={player}
+          sx={!isBig ? { transform: `scale(0.6)` } : {}}
+          memoProps={memoProps}
+        />
       </Flex>
-      <Memoized
-        as={LevelIcon}
-        player={player}
-        sx={!isBig ? { transform: `scale(0.6)` } : {}}
-        memoProps={memoProps}
-      />
-    </Flex>
-  );
-}, arePropsEqualWithKeys([
-  "player.stats",
-  "player.profile",
-  "player.equipment",
-  "player.activeItemSlots",
-  "player.buffs",
-  "portraitVideoStream",
-  "isNearby",
-]));
+    );
+  },
+  arePropsEqualWithKeys([
+    "player.stats",
+    "player.profile",
+    "player.equipment",
+    "player.activeItemSlots",
+    "player.buffs",
+    "portraitVideoStream",
+    "isNearby",
+  ]),
+);
 
 const LevelIcon = ({ player, sx }) => {
   return (
@@ -313,7 +319,7 @@ const NEARBY_EXIT_MS = 380;
 function remotePortraitStream(
   videoChatOn: boolean,
   remoteVideoStreams: Record<string, MediaStream>,
-  player: FullCharacterState | null | undefined
+  player: FullCharacterState | null | undefined,
 ): MediaStream | null {
   if (!videoChatOn || !player?.peerId) return null;
   const s = remoteVideoStreams[player.peerId];
@@ -397,7 +403,7 @@ const MenuHud = () => {
   const nearbyNonPartyIds = nearbySocketIds.filter((sid) => {
     if (!sid || partyIdSet.has(String(sid)) || String(sid) === String(hero?.id)) return false;
     return !!players?.some(
-      (pl) => String(pl?.socketId) === String(sid) || String(pl?.id) === String(sid)
+      (pl) => String(pl?.socketId) === String(sid) || String(pl?.id) === String(sid),
     );
   });
 
@@ -412,11 +418,7 @@ const MenuHud = () => {
       }}
     >
       <Tooltip id="hud" />
-      <PlayerHud
-        player={cloneDeep(hero)}
-        isBig={true}
-        portraitVideoStream={heroPortraitVideo}
-      />
+      <PlayerHud player={cloneDeep(hero)} isBig={true} portraitVideoStream={heroPortraitVideo} />
       <StatusIcon />
       <Flex sx={{ flexDirection: "row", alignItems: "flex-start", gap: 3 }}>
         <Flex sx={{ flexDirection: "column" }}>
@@ -437,7 +439,8 @@ const MenuHud = () => {
           <Flex sx={{ flexDirection: "column", gap: "2px" }}>
             {nearbyNonPartyIds.map((socketId) => {
               const p = players?.find(
-                (pl) => String(pl?.socketId) === String(socketId) || String(pl?.id) === String(socketId)
+                (pl) =>
+                  String(pl?.socketId) === String(socketId) || String(pl?.id) === String(socketId),
               );
               if (!p) return null;
               const isExiting = exitingNearbyIds.has(socketId);
@@ -475,7 +478,7 @@ const Memoized = memo(
     if (prev?.player && !next?.player) return true;
     if (JSON.stringify(prev?.memoProps) === JSON.stringify(next?.memoProps)) return true;
     return false;
-  }
+  },
 );
 
 export default MenuHud;

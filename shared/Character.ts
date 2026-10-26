@@ -176,8 +176,8 @@ class Character extends Phaser.GameObjects.Container {
     const intAmount: integer = parseInt(amount);
 
     const maxStat = this?.stats?.["max" + capitalize(key)];
-    if (typeof stat === undefined) return;
-    if (typeof maxStat === undefined) return;
+    if (typeof stat === "undefined") return;
+    if (typeof maxStat === "undefined") return;
     if (stat + intAmount > maxStat) {
       this.stats[key] = maxStat;
       return;
@@ -462,7 +462,7 @@ class Character extends Phaser.GameObjects.Container {
   }
   findInventoryQuestItem(target: Array<string>) {
     const item = this.inventory.find(
-      (i: Item) => i?.slot === target?.[0] && i?.rarity === target?.[1] && i?.key === target?.[2]
+      (i: Item) => i?.slot === target?.[0] && i?.rarity === target?.[1] && i?.key === target?.[2],
     );
     return item;
   }
@@ -471,7 +471,7 @@ class Character extends Phaser.GameObjects.Container {
     const bags = this?.inventory?.filter((item: Item) => item?.base === "bag");
     for (const bag of bags) {
       const found = bag?.items?.find?.(
-        (i: Item) => i?.slot === target?.[0] && i?.rarity === target?.[1] && i?.key === target?.[2]
+        (i: Item) => i?.slot === target?.[0] && i?.rarity === target?.[1] && i?.key === target?.[2],
       );
       if (found) {
         return found;
@@ -481,11 +481,11 @@ class Character extends Phaser.GameObjects.Container {
     return item;
   }
   findAbilityQuestItem(target: Array<string>): any {
-    const [slotName, foundItem] = Object.entries(this?.abilities).find(
+    const [_slotName, foundItem] = Object.entries(this?.abilities).find(
       ([_, slotItem]: [string, Item]) =>
         slotItem?.slot === target?.[0] &&
         slotItem?.rarity === target?.[1] &&
-        slotItem?.key === target?.[2]
+        slotItem?.key === target?.[2],
     ) || [null, null];
     return foundItem;
   }

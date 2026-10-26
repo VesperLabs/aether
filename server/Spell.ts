@@ -34,7 +34,18 @@ class Spell extends Phaser.GameObjects.Container {
 
   constructor(
     scene: ServerScene,
-    { id, room, caster, direction, target, abilitySlot, spellName, action, castAngle = 0, ilvl = 1 }
+    {
+      id,
+      room,
+      caster,
+      direction,
+      target,
+      abilitySlot,
+      spellName,
+      action,
+      castAngle = 0,
+      ilvl = 1,
+    },
   ) {
     const spawnPoint = { x: caster.x, y: caster.y + caster.bodyCenterY };
     super(scene, spawnPoint.x, spawnPoint.y);

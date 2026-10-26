@@ -7,7 +7,7 @@ import { CLASS_ICON_MAP, arePropsEqualWithKeys } from "@aether/shared";
 const ActionButton = ({ player }) => {
   const { partyInvites, socket } = useAppContext();
   const invitation = partyInvites?.find(
-    (invite: PartyInvite) => invite?.inviter?.id === player?.id
+    (invite: PartyInvite) => invite?.inviter?.id === player?.id,
   );
   if (invitation) {
     return (
@@ -63,58 +63,61 @@ const SocialGrid = (props) => {
   );
 };
 
-const MenuSocial = memo(({ players, hero, isOpen, setIsOpen, party }: any) => {
-  const partyIds = party?.members?.map((p) => p?.id);
-  const otherPlayers = players?.filter((p) => !partyIds?.includes(p?.id) && hero?.id !== p?.id);
-  const hasOtherPlayers = otherPlayers?.length > 0;
-  const hasParty = partyIds?.length > 0;
-  const hasPlayers = hasParty || hasOtherPlayers;
-  return (
-    <Menu
-      sx={{
-        display: isOpen ? "flex" : "none",
-        flex: 1,
-        alignItems: "end",
-        flexDirection: "column",
-      }}
-    >
-      <MenuHeader icon={`./assets/icons/social.png`} onClick={() => setIsOpen(false)}>
-        Social
-      </MenuHeader>
-      {hasPlayers && (
-        <>
-          {hasOtherPlayers && (
-            <SocialGrid>
-              {otherPlayers?.map((player) => {
-                return (
-                  <SocialPlayerRow partyPlayer={player} key={player?.id}>
-                    <ActionButton player={player} />
-                  </SocialPlayerRow>
-                );
-              })}
-            </SocialGrid>
-          )}
-          {hasParty && (
-            <>
-              <MenuHeader icon={`./assets/icons/social.png`} onClick={() => setIsOpen(false)}>
-                Party
-              </MenuHeader>
+const MenuSocial = memo(
+  ({ players, hero, isOpen, setIsOpen, party }: any) => {
+    const partyIds = party?.members?.map((p) => p?.id);
+    const otherPlayers = players?.filter((p) => !partyIds?.includes(p?.id) && hero?.id !== p?.id);
+    const hasOtherPlayers = otherPlayers?.length > 0;
+    const hasParty = partyIds?.length > 0;
+    const hasPlayers = hasParty || hasOtherPlayers;
+    return (
+      <Menu
+        sx={{
+          display: isOpen ? "flex" : "none",
+          flex: 1,
+          alignItems: "end",
+          flexDirection: "column",
+        }}
+      >
+        <MenuHeader icon={`./assets/icons/social.png`} onClick={() => setIsOpen(false)}>
+          Social
+        </MenuHeader>
+        {hasPlayers && (
+          <>
+            {hasOtherPlayers && (
               <SocialGrid>
-                {party?.members?.map((player) => {
+                {otherPlayers?.map((player) => {
                   return (
                     <SocialPlayerRow partyPlayer={player} key={player?.id}>
-                      <PartyActionButton player={player} />
+                      <ActionButton player={player} />
                     </SocialPlayerRow>
                   );
                 })}
               </SocialGrid>
-            </>
-          )}
-        </>
-      )}
-    </Menu>
-  );
-}, arePropsEqualWithKeys(["isOpen", "party", "hero.id", "players"]));
+            )}
+            {hasParty && (
+              <>
+                <MenuHeader icon={`./assets/icons/social.png`} onClick={() => setIsOpen(false)}>
+                  Party
+                </MenuHeader>
+                <SocialGrid>
+                  {party?.members?.map((player) => {
+                    return (
+                      <SocialPlayerRow partyPlayer={player} key={player?.id}>
+                        <PartyActionButton player={player} />
+                      </SocialPlayerRow>
+                    );
+                  })}
+                </SocialGrid>
+              </>
+            )}
+          </>
+        )}
+      </Menu>
+    );
+  },
+  arePropsEqualWithKeys(["isOpen", "party", "hero.id", "players"]),
+);
 
 const COLUMN_STYLE: ThemeUIStyleObject = { textTransform: "capitalize", whiteSpace: "nowrap" };
 
@@ -159,7 +162,7 @@ const MemoizedColumn = memo(
   },
   (prev, next) => {
     if (prev?.player && !next?.player) return true;
-  }
+  },
 );
 
 export default MenuSocial;

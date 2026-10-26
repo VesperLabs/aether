@@ -1,3 +1,4 @@
+import Phaser from "phaser";
 import React, { useEffect, useState, createContext, useContext } from "react";
 import {
   theme,
@@ -11,18 +12,12 @@ import {
   MenuBar,
   ModalHome,
 } from "./";
-import { ThemeProvider, Box, useViewportSizeEffect, Modal, KeyboardKey } from "@aether/ui";
+import { ThemeUIProvider, Box, useViewportSizeEffect, Modal, KeyboardKey } from "@aether/ui";
 import { getSpinDirection, calculateZoomLevel } from "../utils";
 import "react-tooltip/dist/react-tooltip.css";
 import { Theme } from "theme-ui";
 import { Socket } from "socket.io-client";
-import {
-  CONSUMABLES_BASES,
-  DEFAULT_USER_SETTINGS,
-  MINI_MAP_SIZE,
-  isMobile,
-  POTION_BASES,
-} from "@aether/shared";
+import { CONSUMABLES_BASES, DEFAULT_USER_SETTINGS, MINI_MAP_SIZE, isMobile } from "@aether/shared";
 import Peer from "peerjs";
 import VideoFrame from "./VideoFrame";
 import ModalSettings from "./ModalSettings";
@@ -199,7 +194,7 @@ function App({ socket, peer, debug, game }) {
 
   const onHeroInit = (
     payload: { players: Array<FullCharacterState>; socketId: string; userSettings: UserSettings },
-    args
+    args,
   ) => {
     const { players, socketId } = payload;
     const player: FullCharacterState = players?.find((p) => p?.socketId === socketId);
@@ -406,7 +401,7 @@ function App({ socket, peer, debug, game }) {
       window.dispatchEvent(
         new CustomEvent("HERO_USE_ITEM", {
           detail: { item, location },
-        })
+        }),
       );
     }
     /* If it is a bag, we open it */
@@ -466,7 +461,7 @@ function App({ socket, peer, debug, game }) {
             window.dispatchEvent(
               new CustomEvent("AUDIO_ITEM_SELL", {
                 detail: item,
-              })
+              }),
             );
           }
           return socket.emit("moveItem", {
@@ -589,7 +584,7 @@ function App({ socket, peer, debug, game }) {
   const showLogin = !isLoggedIn && isLoaded;
 
   return (
-    <ThemeProvider theme={theme as Theme}>
+    <ThemeUIProvider theme={theme as Theme}>
       <AppContext.Provider
         value={{
           isLoaded,
@@ -695,7 +690,7 @@ function App({ socket, peer, debug, game }) {
           </Box>
         )}
       </AppContext.Provider>
-    </ThemeProvider>
+    </ThemeUIProvider>
   );
 }
 

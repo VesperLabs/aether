@@ -14,8 +14,7 @@ import { heroInitToTickExpanded } from "../../shared/tickDelta";
 import { createNetInterpolator } from "./netInterpolation";
 
 const ASSETS_BASE = process.env.ASSETS_URL || "";
-const assetUrl = (src) =>
-  ASSETS_BASE ? src.replace(/^\.\/assets\//, ASSETS_BASE + "/") : src;
+const assetUrl = (src) => (ASSETS_BASE ? src.replace(/^\.\/assets\//, ASSETS_BASE + "/") : src);
 import {
   addPlayer,
   getPlayer,
@@ -61,20 +60,21 @@ class SceneMain extends Phaser.Scene {
     }
 
     socket.on("update", (snapshot) => {
-      if (!snapshot?.state) return;
+      /* Ignore ticks that arrive before heroInit has created the entity groups */
+      if (!snapshot?.state || !scene.loots) return;
       const expanded = { ...snapshot, state: expandTickState(snapshot.state) };
       netInterp.addSnapshot(expanded);
-      for (const loot of scene?.loots?.getChildren()) {
+      for (const loot of scene?.loots?.getChildren() ?? []) {
         if (expanded?.state?.loots?.find((l) => l?.id === loot?.id && l?.expiredSince)) {
           loot.destroy(true);
         }
       }
-      for (const s of expanded?.state?.npcs) {
+      for (const s of expanded?.state?.npcs ?? []) {
         const npc = getNpc(scene, s.id);
         npc.updateState(s?.state);
         npc.doRegen();
       }
-      for (const s of expanded?.state?.players) {
+      for (const s of expanded?.state?.players ?? []) {
         const player = getPlayer(scene, s.id);
         player.updateState(s?.state);
         player.doRegen();
@@ -244,7 +244,7 @@ class SceneMain extends Phaser.Scene {
       for (const { peerId, socketId } of scene.nearbyRemotePlayers ?? []) {
         if (peerId && socketId) {
           window.dispatchEvent(
-            new CustomEvent("HERO_NEAR_PLAYER", { detail: { peerId, socketId } })
+            new CustomEvent("HERO_NEAR_PLAYER", { detail: { peerId, socketId } }),
           );
         }
       }
@@ -260,7 +260,7 @@ class SceneMain extends Phaser.Scene {
       () => {
         initCamera(scene, scene.hero);
       },
-      this
+      this,
     );
   }
   // user setting functions
@@ -273,7 +273,7 @@ class SceneMain extends Phaser.Scene {
   toggleCharLevels() {
     const scene = this;
     [...scene.players.getChildren(), ...scene.npcs.getChildren()].forEach((a) =>
-      a.updateUserName()
+      a.updateUserName(),
     );
   }
   changeMusic() {
@@ -306,7 +306,7 @@ class SceneMain extends Phaser.Scene {
 
     /* Remote players only (hero is predicted locally). Hermite + buffered server time. */
     if (playerSnapshot) {
-      for (const s of playerSnapshot?.state) {
+      for (const s of playerSnapshot?.state ?? []) {
         const player = getPlayer(this, s.socketId ?? s.id);
         if (!player || player?.state?.isDead) continue;
         if (!player.isHero) {
@@ -317,7 +317,7 @@ class SceneMain extends Phaser.Scene {
           player.direction =
             typeof s.d === "number"
               ? decodeWireDirection(s.d, player.direction)
-              : s.direction ?? player.direction;
+              : (s.direction ?? player.direction);
           player.vx = s.vx ?? 0;
           player.vy = s.vy ?? 0;
         }
@@ -328,7 +328,7 @@ class SceneMain extends Phaser.Scene {
     checkProximities(this, time);
 
     if (npcSnapshot) {
-      for (const s of npcSnapshot?.state) {
+      for (const s of npcSnapshot?.state ?? []) {
         const npc = getNpc(this, s.id);
         if (!npc || npc?.state?.isDead) continue;
         if (s?.roomName != null && s.roomName !== this?.roomName) continue;
@@ -338,7 +338,7 @@ class SceneMain extends Phaser.Scene {
         npc.direction =
           typeof s.d === "number"
             ? decodeWireDirection(s.d, npc.direction)
-            : s.direction ?? npc.direction;
+            : (s.direction ?? npc.direction);
         npc.vx = s.vx ?? 0;
         npc.vy = s.vy ?? 0;
       }
@@ -352,7 +352,7 @@ class SceneMain extends Phaser.Scene {
       window.dispatchEvent(
         new CustomEvent("UPDATE_ROOM_PLAYERS", {
           detail: { players: this?.players?.getChildren?.() },
-        })
+        }),
       );
       this.lastUpdateTime = time;
     }
@@ -373,14 +373,14 @@ function triggerPlayerProximity(scene, nearbyPlayers) {
   for (const n of next) {
     if (!prev.some((p) => sameSocket(p, n))) {
       window.dispatchEvent(
-        new CustomEvent("HERO_NEAR_PLAYER", { detail: { socketId: n.socketId, peerId: n.peerId } })
+        new CustomEvent("HERO_NEAR_PLAYER", { detail: { socketId: n.socketId, peerId: n.peerId } }),
       );
     }
   }
   for (const p of prev) {
     if (!next.some((n) => sameSocket(n, p))) {
       window.dispatchEvent(
-        new CustomEvent("HERO_AWAY_PLAYER", { detail: { socketId: p.socketId, peerId: p.peerId } })
+        new CustomEvent("HERO_AWAY_PLAYER", { detail: { socketId: p.socketId, peerId: p.peerId } }),
       );
     }
   }
@@ -520,7 +520,7 @@ function initPlayerCollision(scene, player, colliders = []) {
         }, 1);
       }
     },
-    scene
+    scene,
   );
 }
 

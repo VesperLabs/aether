@@ -47,7 +47,9 @@ export async function getPeerRtcConfiguration(): Promise<RTCConfiguration> {
       console.warn("[WebRTC] Metered TURN credentials failed, using fallback ICE list.", e);
     }
   } else {
-    console.warn("[WebRTC] METERED_APP_NAME or METERED_API_KEY not set — using fallback ICE (TURN unavailable).");
+    console.warn(
+      "[WebRTC] METERED_APP_NAME or METERED_API_KEY not set — using fallback ICE (TURN unavailable).",
+    );
   }
 
   return getFallbackRtcConfiguration();

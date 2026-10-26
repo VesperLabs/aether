@@ -15,11 +15,7 @@ function compactRm(rm: { p: string[]; n: string[]; l: string[] }): TickRmCompact
   return Object.keys(o).length ? o : undefined;
 }
 
-function mergeBucket(
-  bucket: unknown[],
-  delta: unknown[],
-  rmIds: string[] | undefined,
-): unknown[] {
+function mergeBucket(bucket: unknown[], delta: unknown[], rmIds: string[] | undefined): unknown[] {
   const map = new Map((bucket ?? []).map((e: { id: unknown }) => [String(e.id), e]));
   for (const id of rmIds ?? []) map.delete(id);
   for (const e of delta ?? []) {
@@ -88,10 +84,7 @@ export function diffTickStates(
 
   const rm = compactRm(rmAcc);
   const isEmpty =
-    delta.players.length === 0 &&
-    delta.npcs.length === 0 &&
-    delta.loots.length === 0 &&
-    !rm;
+    delta.players.length === 0 && delta.npcs.length === 0 && delta.loots.length === 0 && !rm;
 
   return { delta, rm, isEmpty };
 }

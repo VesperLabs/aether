@@ -11,7 +11,7 @@ export default function () {
       <Flex sx={{ gap: 2, flexWrap: "wrap" }}>
         <Button
           as={Link}
-          href={process.env.SERVER_URL}
+          href={process.env.GAME_URL}
           target="_blank"
           variant="wood"
           sx={{ px: 3, py: 1, display: "flex", gap: 2, alignItems: "center" }}
@@ -30,7 +30,7 @@ export default function () {
           <Text>Join Discord</Text>
         </Button>
       </Flex>
-      <Link href={process.env.SERVER_URL}>
+      <Link href={process.env.GAME_URL}>
         <Box
           as="img"
           //@ts-ignore

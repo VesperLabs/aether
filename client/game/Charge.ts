@@ -1,3 +1,4 @@
+import Phaser from "phaser";
 const STARTING_ALPHA = 1;
 const TARGET_SCALE = 1;
 
@@ -26,14 +27,14 @@ class EnergyBall extends Phaser.GameObjects.Sprite {
       this.x,
       this.y,
       this.targetX,
-      this.targetY
+      this.targetY,
     );
 
     if (distanceToTarget > 1) {
       const angleToTarget = Phaser.Math.Angle.Between(this.x, this.y, this.targetX, this.targetY);
       const velocity = new Phaser.Math.Vector2(
         Math.cos(angleToTarget),
-        Math.sin(angleToTarget)
+        Math.sin(angleToTarget),
       ).scale(1);
 
       this.x += velocity.x;

@@ -16,11 +16,7 @@ const Footer = () => {
     >
       <Box>
         Made with ❤️ in Barcelona, Spain by{" "}
-        <a
-          target="_blank"
-          rel="noopener noreferrer"
-          href="https://trevordesign.com"
-        >
+        <a target="_blank" rel="noopener noreferrer" href="https://trevordesign.com">
           TrevorDesign
         </a>
       </Box>

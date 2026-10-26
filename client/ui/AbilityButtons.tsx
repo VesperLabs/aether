@@ -34,7 +34,7 @@ const TintedIconLoader = ({ cooldowns, slotKey, item, applyTintAndSetIcon, hero 
   const handleTouchEnd = () => {
     if (isConsumable) {
       return window.dispatchEvent(
-        new CustomEvent("HERO_USE_ITEM", { detail: { item, location: "abilities" } })
+        new CustomEvent("HERO_USE_ITEM", { detail: { item, location: "abilities" } }),
       );
     }
     if (details?.isMeleeAttack) {
@@ -96,61 +96,64 @@ const TintedIconLoader = ({ cooldowns, slotKey, item, applyTintAndSetIcon, hero 
   );
 };
 
-const AbilityButtons = memo(({ hero, cooldowns }: any) => {
-  const abilities = Object.entries(hero?.abilities || {}).filter(([slotKey, _]) =>
-    hero.activeItemSlots.includes(slotKey)
-  );
+const AbilityButtons = memo(
+  ({ hero, cooldowns }: any) => {
+    const abilities = Object.entries(hero?.abilities || {}).filter(([slotKey, _]) =>
+      hero.activeItemSlots.includes(slotKey),
+    );
 
-  const applyTintAndSetIcon = async (item) => {
-    const isSpell = item.type === "spell";
-    const texture = !isSpell ? item?.texture : "spell-" + item.base;
-    const iconURL = `./assets/atlas/${item?.type}/${texture}.png`;
+    const applyTintAndSetIcon = async (item) => {
+      const isSpell = item.type === "spell";
+      const texture = !isSpell ? item?.texture : "spell-" + item.base;
+      const iconURL = `./assets/atlas/${item?.type}/${texture}.png`;
 
-    if (item?.tint && iconURL) {
-      try {
-        const image = await loadCacheImage(iconURL);
-        const tintedCanvas = applyTintToImage(image, item?.tint); // Replace "0xFF0000" with the desired tint color
-        return tintedCanvas.toDataURL("image/png");
-      } catch (error) {
-        console.error("Error applying tint to icon:", error);
-        return iconURL;
+      if (item?.tint && iconURL) {
+        try {
+          const image = await loadCacheImage(iconURL);
+          const tintedCanvas = applyTintToImage(image, item?.tint); // Replace "0xFF0000" with the desired tint color
+          return tintedCanvas.toDataURL("image/png");
+        } catch (error) {
+          console.error("Error applying tint to icon:", error);
+          return iconURL;
+        }
       }
-    }
 
-    return iconURL;
-  };
+      return iconURL;
+    };
 
-  return (
-    <Flex
-      sx={{
-        flexDirection: "column",
-        gap: 2,
-        px: 1,
-        justifyContent: "end",
-        alignItems: "flex-end",
-      }}
-    >
-      {abilities.map(([slotKey, item]) => (
-        <React.Fragment key={slotKey}>
-          {item && (
-            <TintedIconLoader
-              cooldowns={cooldowns}
-              slotKey={slotKey}
-              item={item}
-              applyTintAndSetIcon={applyTintAndSetIcon}
-              hero={hero}
-            />
-          )}
-        </React.Fragment>
-      ))}
-    </Flex>
-  );
-}, arePropsEqualWithKeys([
-  "hero.abilities",
-  "cooldowns",
-  "hero.activeItemSlots",
-  "hero.stats",
-  "hero.state",
-]));
+    return (
+      <Flex
+        sx={{
+          flexDirection: "column",
+          gap: 2,
+          px: 1,
+          justifyContent: "end",
+          alignItems: "flex-end",
+        }}
+      >
+        {abilities.map(([slotKey, item]) => (
+          <React.Fragment key={slotKey}>
+            {item && (
+              <TintedIconLoader
+                cooldowns={cooldowns}
+                slotKey={slotKey}
+                item={item}
+                applyTintAndSetIcon={applyTintAndSetIcon}
+                hero={hero}
+              />
+            )}
+          </React.Fragment>
+        ))}
+      </Flex>
+    );
+  },
+  arePropsEqualWithKeys([
+    "hero.abilities",
+    "cooldowns",
+    "hero.activeItemSlots",
+    "hero.stats",
+    "hero.state",
+  ]),
+);
 
 export default AbilityButtons;

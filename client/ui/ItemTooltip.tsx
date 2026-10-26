@@ -26,7 +26,6 @@ const ItemTooltip = ({ player, item, tooltipId, show }) => {
   const buffs = item?.buffs ?? {};
   const triggers = item?.triggers ?? [];
   const hasEffects = Object.keys(combinedEffects)?.length > 0;
-  const hasBuffs = Object.keys(buffs)?.length > 0;
   const isDoubleClickable = [...CONSUMABLES_BASES, "bag"].includes(item.base);
   const isSpell = item?.type === "spell";
   const numSetPieces = itemSetList?.[item?.setName]?.pieces;

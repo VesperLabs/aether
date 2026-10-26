@@ -213,7 +213,7 @@ class AnimatedTiles extends Phaser.Plugins.ScenePlugin {
         layer.splice(pos, 1);
       } else {
         console.error(
-          "This shouldn't happen. Not at all. Blame Phaser Animated Tiles plugin. You'll be fine though."
+          "This shouldn't happen. Not at all. Blame Phaser Animated Tiles plugin. You'll be fine though.",
         );
       }
     });
@@ -262,7 +262,7 @@ class AnimatedTiles extends Phaser.Plugins.ScenePlugin {
             animatedTileData.next = animatedTileData.frames[0].duration;
             // set correct currentFrame if animation starts with different tile than the one with animation flag
             animatedTileData.currentFrame = animatedTileData.frames.findIndex(
-              (f) => f.tileid === index + tileset.firstgid
+              (f) => f.tileid === index + tileset.firstgid,
             );
             // Go through all layers for tiles
             map.layers.forEach((layer) => {
@@ -297,7 +297,7 @@ class AnimatedTiles extends Phaser.Plugins.ScenePlugin {
             animatedTiles.push(animatedTileData);
           }
         });
-      }
+      },
     );
     map.layers.forEach((layer, layerIndex) => {
       // layer indices array of booleans whether to animate tiles on layer or not

@@ -20,8 +20,8 @@ class SpellManager {
     return scene?.spells?.[id];
   }
   expireSpells() {
-    const { spells, scene } = this;
-    for (const spell of spells?.getChildren()) {
+    const { spells } = this;
+    for (const spell of spells?.getChildren() ?? []) {
       if (spell?.state?.isExpired) {
         this.remove(spell?.id);
       }

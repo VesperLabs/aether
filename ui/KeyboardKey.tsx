@@ -81,7 +81,7 @@ const KeyboardKey: React.FC<KeyboardKeyProps> = ({
       // @ts-ignore
       IGNORE_PRESS_ELEMENT_TYPES.some((t) =>
         // @ts-ignore
-        [document.activeElement?.type, e.target?.type].includes(t)
+        [document.activeElement?.type, e.target?.type].includes(t),
       ) &&
       keyName !== "ESCAPE"
     ) {

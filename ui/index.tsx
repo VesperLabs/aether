@@ -1,6 +1,6 @@
 import { ThemeUIStyleObject } from "theme-ui";
 export {
-  ThemeProvider,
+  ThemeUIProvider,
   Box,
   Flex,
   Badge,

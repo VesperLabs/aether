@@ -31,7 +31,9 @@ function handlePlayerInput(scene, socketId, input) {
   player.vx = vx;
   player.vy = vy;
   player.direction =
-    typeof d === "number" ? decodeWireDirection(d, player.direction) : direction ?? player.direction;
+    typeof d === "number"
+      ? decodeWireDirection(d, player.direction)
+      : (direction ?? player.direction);
 }
 
 function removePlayer(scene, socketId) {
@@ -53,7 +55,7 @@ function getDoor(scene, roomName, doorName) {
   return scene?.doors?.[roomName]?.[doorName];
 }
 
-function getRoomState(scene: ServerScene, roomName: String): RoomState {
+function getRoomState(scene: ServerScene, roomName: string): RoomState {
   return {
     players: Object.values(scene.players)
       ?.filter((p) => p?.room?.name === roomName)
@@ -274,7 +276,7 @@ function mergeAndAddValues(obj1 = {}, obj2 = {}) {
 
 function addValuesToExistingKeys(
   obj1: Record<string, number>,
-  obj2: Record<string, number>
+  obj2: Record<string, number>,
 ): Record<string, number> {
   const result: Record<string, number> = {};
 
@@ -369,7 +371,7 @@ function filterProperties(item) {
   if (!item) return null;
   const filteredItem = {};
 
-  const isEmptyObject = (obj: Object) => {
+  const isEmptyObject = (obj: object) => {
     return Object.keys(obj).length === 0 && obj.constructor === Object;
   };
 
@@ -391,7 +393,7 @@ function calculateStats(player, shouldHeal = false) {
   const { equipment = {}, abilities = {}, buffs = [] } = player;
   // disregard items that are not actively equipped
   const allSlots = Object.keys({ ...abilities, ...equipment }).filter((slot) =>
-    player.activeItemSlots?.includes(slot)
+    player.activeItemSlots?.includes(slot),
   );
   let totalPercentStats = {};
   let ns = cloneObject(player.baseStats);
@@ -541,7 +543,6 @@ function calculateStats(player, shouldHeal = false) {
   ns.attackDelay = 1 - Math.floor(ns.dexterity * 0.5) + ns.attackDelay;
   ns.castDelay = ns.castDelay || 1000;
   ns.castDelay = 1 - Math.floor(ns.intelligence * 0.5) + ns.castDelay;
-  ns.accuracy = ns.accuracy;
   ns.regenHp = (ns.regenHp || 1) + Math.floor(ns.vitality / 20);
   ns.regenMp = (ns.regenMp || 1) + Math.floor(ns.intelligence / 20);
   ns.regenSp = ns.regenSp || 1;

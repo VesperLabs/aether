@@ -88,7 +88,7 @@ const mergeImages = async ({ shouldBuffer, buffCanvasRef, canvasRef, assets }) =
           (MIN_CANVAS_SIZE - w) / 2,
           (MIN_CANVAS_SIZE - h) / 2,
           w,
-          h
+          h,
         );
       }
     }
@@ -106,7 +106,7 @@ const mergeImages = async ({ shouldBuffer, buffCanvasRef, canvasRef, assets }) =
       0,
       0,
       mainCanvas.width,
-      mainCanvas.height
+      mainCanvas.height,
     );
   }
 };
@@ -160,7 +160,7 @@ const PlayerRender = memo(
       prev?.player?.activeItemSlots === next?.player?.activeItemSlots &&
       prev?.player?.equipment === prev?.player?.equipment
     );
-  }
+  },
 );
 
 const getObscuredKeys = ({ filteredSlots, visibleParts }) => {

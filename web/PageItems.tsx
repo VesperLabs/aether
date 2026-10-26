@@ -13,35 +13,35 @@ export default function () {
         key,
         rarity: "common",
         ...v,
-      })
+      }),
     );
     const magicItems = Object.entries(itemList?.[type]?.["magic"] || {})?.map(
       ([key, v]: [string, Item]) => ({
         key,
         rarity: "magic",
         ...v,
-      })
+      }),
     );
     const rareItems = Object.entries(itemList?.[type]?.["rare"] || {})?.map(
       ([key, v]: [string, Item]) => ({
         key,
         rarity: "rare",
         ...v,
-      })
+      }),
     );
     const uniqueItems = Object.entries(itemList?.[type]?.["unique"] || {})?.map(
       ([key, v]: [string, Item]) => ({
         key,
         rarity: "unique",
         ...v,
-      })
+      }),
     );
     const setItems = Object.entries(itemList?.[type]?.["set"] || {})?.map(
       ([key, v]: [string, Item]) => ({
         key,
         rarity: "set",
         ...v,
-      })
+      }),
     );
     const allItems = [...commonItems, ...magicItems, ...rareItems, ...uniqueItems, ...setItems];
 

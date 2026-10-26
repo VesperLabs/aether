@@ -44,7 +44,7 @@ class Bar extends Phaser.GameObjects.Container {
         .setFrame(4)
         .setOrigin(0, 0)
         .setDisplaySize(width - FRAME_SIZE - FRAME_SIZE, FRAME_SIZE)
-        .setTint(color)
+        .setTint(color),
     );
 
     // Add everything to the container

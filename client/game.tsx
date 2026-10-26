@@ -54,7 +54,6 @@ async function startApp() {
     },
     antialias: false,
     pixelArt: true,
-    //pipeline: { HueRotatePostFX, TintPostFX },
     plugins: {
       scene: [
         {
@@ -91,7 +90,7 @@ async function startApp() {
   root.render(
     <React.StrictMode>
       <App socket={socket} peer={peer} game={game} debug={debug} />
-    </React.StrictMode>
+    </React.StrictMode>,
   );
 
   /* IOS Autoscroll fix when selecting an input */
