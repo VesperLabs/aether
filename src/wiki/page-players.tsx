@@ -8,7 +8,19 @@ import { questList } from "@/shared/content";
 import { MenuAbilities, MenuBag, MenuEquipment, MenuInventory, MenuStats } from "@/client";
 import { useLocation } from "wouter";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { fetchPlayers } from "./api";
+import { fetchPlayers, type PlayersQueryKey } from "./api";
+import type { HudCharacter } from "@/client/hud/app/context";
+import type { ReactNode } from "react";
+import type { ThemeUIStyleObject } from "theme-ui";
+
+/** A player or keeper as the wiki lists it: what the server sends, or a loading placeholder. */
+export type WikiPlayer = Partial<HudCharacter> & {
+  id: string;
+  isGhost?: boolean;
+  updatedAt?: string | number;
+};
+
+type TabKey = "equipment" | "inventory" | "stats" | "abilities";
 
 const PLAYER_BOX_STYLES = {
   cursor: "pointer",
@@ -18,13 +30,13 @@ const PLAYER_BOX_STYLES = {
 
 export function PagePlayers() {
   const [location] = useLocation();
-  const [currentPlayer, setCurrentPlayer] = useState(null);
+  const [currentPlayer, setCurrentPlayer] = useState<WikiPlayer | null>(null);
   const { bagState, toggleBagState } = useToggleBagState();
   const { tabs, setTabKey } = useSetTabs();
   const [_, kind] = location?.split("/") ?? [];
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-    queryKey: ["players", { kind, sortBy: "updatedAt" }],
+    queryKey: ["players", { kind, sortBy: "updatedAt" }] as PlayersQueryKey,
     queryFn: fetchPlayers,
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
@@ -32,8 +44,8 @@ export function PagePlayers() {
     },
   });
 
-  const players = data?.pages
-    ? [].concat(...data?.pages?.map((p) => p?.data))
+  const players: WikiPlayer[] = data?.pages
+    ? data.pages.flatMap((p) => p?.data as WikiPlayer[])
     : [...new Array(3)]?.map((a, idx) => {
         return {
           id: `player-${idx}`,
@@ -50,17 +62,17 @@ export function PagePlayers() {
     hasNextPage && fetchNextPage();
   };
 
-  const handleClickItem = (e) => {
-    const { id, base } = e.target.dataset ?? {};
+  const handleClickItem = (e: MouseEvent) => {
+    const { id, base } = (e.target as HTMLElement).dataset ?? {};
     if (base === "bag") {
-      toggleBagState(id);
+      toggleBagState(id as string);
     }
   };
 
   /* If no tabs are open, clear player selection */
   useEffect(() => {
     if (Object.values(tabs)?.every((v) => !v) && bagState?.length === 0)
-      return setCurrentPlayer(false);
+      return setCurrentPlayer(null);
   }, [tabs, bagState]);
 
   /* Detect clicks */
@@ -119,9 +131,9 @@ export function PagePlayers() {
           <Component
             key={key}
             player={currentPlayer}
-            isOpen={tabs[key]}
+            isOpen={tabs[key as TabKey]}
             slotsEnabled={false}
-            setIsOpen={() => setTabKey(key, false)}
+            setIsOpen={() => setTabKey(key as TabKey, false)}
           />
         ))}
         <MenuBag
@@ -137,7 +149,7 @@ export function PagePlayers() {
         hidden={true}
         onKeyUp={() => {
           if (bagState?.length > 0) return toggleBagState(bagState?.[bagState?.length - 1]);
-          for (const key of Object.keys(tabs)) {
+          for (const key of Object.keys(tabs) as TabKey[]) {
             if (tabs[key]) return setTabKey(key, false);
           }
         }}
@@ -146,7 +158,7 @@ export function PagePlayers() {
   );
 }
 
-const MenuHolder = ({ children }) => {
+const MenuHolder = ({ children }: { children?: ReactNode }) => {
   return (
     <Box
       sx={{
@@ -196,19 +208,19 @@ const MenuHolder = ({ children }) => {
 };
 
 const useSetTabs = () => {
-  const [tabs, setTabs] = useState({
+  const [tabs, setTabs] = useState<Record<TabKey, boolean>>({
     equipment: false,
     inventory: false,
     stats: false,
     abilities: false,
   });
-  const setTabKey = (key: string, value: boolean) => setTabs((prev) => ({ ...prev, [key]: value }));
+  const setTabKey = (key: TabKey, value: boolean) => setTabs((prev) => ({ ...prev, [key]: value }));
 
   return { setTabKey, tabs };
 };
 
 const useToggleBagState = () => {
-  const [bagState, setBagState] = useState([]);
+  const [bagState, setBagState] = useState<string[]>([]);
   /* Is the bag open or closed */
   const toggleBagState = (id: string) => {
     setBagState((prev) => {
@@ -225,7 +237,15 @@ const useToggleBagState = () => {
   return { bagState, toggleBagState };
 };
 
-const LoadMore = ({ onClick, hasNextPage, isFetchingNextPage }) => {
+const LoadMore = ({
+  onClick,
+  hasNextPage,
+  isFetchingNextPage,
+}: {
+  onClick: () => void;
+  hasNextPage: boolean;
+  isFetchingNextPage: boolean;
+}) => {
   const show = hasNextPage;
   return (
     <Box
@@ -242,8 +262,8 @@ const LoadMore = ({ onClick, hasNextPage, isFetchingNextPage }) => {
   );
 };
 
-const BlankPlayer = ({ userName, sx, ...props }: any) => (
-  <Box sx={{ "& canvas": { opacity: 0.15 }, ...sx }} {...props}>
+const BlankPlayer = ({ userName, sx }: { userName: string; sx?: ThemeUIStyleObject }) => (
+  <Box sx={{ "& canvas": { opacity: 0.15 }, ...sx }}>
     <PlayerRender
       player={{
         profile: {
@@ -261,8 +281,8 @@ const BlankPlayer = ({ userName, sx, ...props }: any) => (
   </Box>
 );
 
-const PlayerTooltip = ({ player }) => {
-  const completedQuests = player?.quests?.filter((q) => q?.isCompleted)?.length;
+const PlayerTooltip = ({ player }: { player: WikiPlayer }) => {
+  const completedQuests = player?.quests?.filter((q: { isCompleted?: boolean }) => q?.isCompleted)?.length;
   const totalQuests = Object.keys(questList)?.length;
   const isKeeper = player?.kind === "keeper";
   return (
@@ -271,7 +291,7 @@ const PlayerTooltip = ({ player }) => {
         {!isKeeper ? (
           <>
             <Text>
-              <Label>Last Login:</Label> {new Date(player?.updatedAt)?.toLocaleDateString("en-US")}
+              <Label>Last Login:</Label> {new Date(player?.updatedAt ?? NaN)?.toLocaleDateString("en-US")}
             </Text>
             <Text>
               <Label>Completed Quests:</Label> {`${completedQuests} / ${totalQuests}`}

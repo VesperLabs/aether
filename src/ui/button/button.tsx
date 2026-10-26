@@ -3,7 +3,7 @@ import { forwardRef, useState, type ComponentProps } from "react";
 
 /** Press handlers get a React event from the element or a DOM event from the document listener. */
 // oxlint-disable-next-line typescript/no-explicit-any
-type PressHandler = (event: any) => unknown;
+export type PressHandler =(event: any) => unknown;
 
 /** theme-ui reads `__themeKey` to pick the theme section, but its prop types leave it out. */
 const THEME_KEY = { __themeKey: "buttons" };

@@ -1,6 +1,8 @@
 import { Icon, KeyboardKey, Button } from "@/ui";
 import { isMobile } from "@/ui/is-mobile";
-import { ReactNode } from "react";
+import type { PressHandler } from "@/ui/button/button";
+import type { ReactNode } from "react";
+import type { ThemeUIStyleObject } from "theme-ui";
 
 export const SkillButton = ({
   onTouchStart = () => {},
@@ -12,13 +14,13 @@ export const SkillButton = ({
   sx,
   children,
 }: {
-  onTouchStart?: any;
-  onTouchEnd?: any;
+  onTouchStart?: PressHandler;
+  onTouchEnd?: PressHandler;
   icon?: string;
   iconName?: string;
   size: number;
   keyboardKey?: string;
-  sx?: any;
+  sx?: ThemeUIStyleObject;
   children?: ReactNode;
 }) => {
   return (
@@ -39,7 +41,7 @@ export const SkillButton = ({
           name={keyboardKey}
           hidden={isMobile}
           onKeyDown={(e) => onTouchStart(e)}
-          onKeyUp={(e) => onTouchEnd(e)}
+          onKeyUp={() => onTouchEnd(undefined)}
         />
       )}
       {children}

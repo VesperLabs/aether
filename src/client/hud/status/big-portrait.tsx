@@ -1,5 +1,5 @@
 import type { ThemeUIStyleObject } from "theme-ui";
-import { Box, PlayerRender, type theme } from "@/ui";
+import { Box, PlayerRender, theme } from "@/ui";
 import type { HudCharacter } from "@/client/hud/app/context";
 
 export function BigPortrait({
@@ -39,7 +39,7 @@ export function BigPortrait({
         }}
       >
         <PlayerRender
-          player={player}
+          player={player ?? undefined}
           filteredSlots={filteredSlots}
           sx={{ transform: `translate(-50%, 0) scale(3)`, top: "50%", left: "50%" }}
         />
@@ -54,7 +54,7 @@ export function BigPortrait({
             height: width / 4,
             bottom: 0,
             position: "absolute",
-            borderBottom: (t: typeof theme) => `3px solid ${t.colors.shadow[30]}`,
+            borderBottom: `3px solid ${theme.colors.shadow[30]}`,
           }}
         />
       )}

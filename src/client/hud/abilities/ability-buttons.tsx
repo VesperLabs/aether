@@ -1,4 +1,5 @@
-import { spellDetails } from "@/shared/content";
+import { spellDetails, type BuiltItem, type SpellDefinition } from "@/shared/content";
+import type { Cooldown, HudCharacter } from "@/client/hud/app/context";
 import { CONSUMABLES_BASES, POTION_BASES } from "@/shared/rules/inventory";
 import { applyTintToImage, loadCacheImage } from "@/ui/image-tint";
 import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
@@ -9,11 +10,29 @@ import { SkillButton } from "./skill-button";
 import { Box, Flex, Text } from "@/ui";
 import React, { memo, useEffect, useState } from "react";
 
-const TintedIconLoader = ({ cooldowns, slotKey, item, applyTintAndSetIcon, hero }) => {
+/** An entry of the hero's `abilities`: a spell or an item on the action bar. */
+type AbilityItem = BuiltItem;
+type Cooldowns = Record<string, Cooldown>;
+
+interface TintedIconLoaderProps {
+  cooldowns: Cooldowns;
+  slotKey: string;
+  item: AbilityItem;
+  applyTintAndSetIcon: (item: AbilityItem) => Promise<string>;
+  hero: HudCharacter;
+}
+
+const TintedIconLoader = ({
+  cooldowns,
+  slotKey,
+  item,
+  applyTintAndSetIcon,
+  hero,
+}: TintedIconLoaderProps) => {
   const isSpell = item.type === "spell";
   const isPotion = POTION_BASES.includes(item?.base);
   const isConsumable = CONSUMABLES_BASES.includes(item?.base);
-  const details = spellDetails?.[item?.base];
+  const details = spellDetails[item.base as keyof typeof spellDetails] as SpellDefinition | undefined;
   const cooldown = isPotion ? "potion" : item?.base;
   const [tintedIcon, setTintedIcon] = useState("./assets/icons/blank.png");
   const [hovering, setHovering] = useState(false);
@@ -95,12 +114,12 @@ const TintedIconLoader = ({ cooldowns, slotKey, item, applyTintAndSetIcon, hero 
 };
 
 export const AbilityButtons = memo(
-  ({ hero, cooldowns }: any) => {
-    const abilities = Object.entries(hero?.abilities || {}).filter(([slotKey, _]) =>
+  ({ hero, cooldowns }: { hero: HudCharacter; cooldowns: Cooldowns }) => {
+    const abilities = Object.entries((hero?.abilities || {}) as Record<string, AbilityItem | null>).filter(([slotKey, _]) =>
       hero.activeItemSlots.includes(slotKey),
     );
 
-    const applyTintAndSetIcon = async (item) => {
+    const applyTintAndSetIcon = async (item: AbilityItem) => {
       const isSpell = item.type === "spell";
       const texture = !isSpell ? item?.texture : "spell-" + item.base;
       const iconURL = `./assets/atlas/${item?.type}/${texture}.png`;
@@ -109,7 +128,7 @@ export const AbilityButtons = memo(
         try {
           const image = await loadCacheImage(iconURL);
           const tintedCanvas = applyTintToImage(image, item?.tint); // Replace "0xFF0000" with the desired tint color
-          return tintedCanvas.toDataURL("image/png");
+          return tintedCanvas ? tintedCanvas.toDataURL("image/png") : iconURL;
         } catch (error) {
           console.error("Error applying tint to icon:", error);
           return iconURL;

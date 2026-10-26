@@ -68,8 +68,7 @@ async function startApp() {
     physics: {
       default: "arcade",
       arcade: {
-        //@ts-ignore2
-        debug,
+        debug: !!debug,
         gravity: {
           x: 0,
           y: 0,

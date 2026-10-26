@@ -1,6 +1,7 @@
-import { memo, useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState, type ElementType } from "react";
+import type { ThemeUIStyleObject } from "theme-ui";
 import { Box, Flex, Text } from "@/ui";
-import { useAppContext } from "@/client/hud/app/context";
+import { useAppContext, type HudCharacter } from "@/client/hud/app/context";
 import { Portrait } from "@/client/hud/status/portrait";
 import { StatusIcon } from "@/client/hud/status/status-icon";
 import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
@@ -9,12 +10,22 @@ import { Bar } from "@/client/hud/status/stat-bar";
 import { Buffs } from "@/client/hud/status/buffs";
 import { Tooltip } from "@/client/hud/tooltips/tooltip";
 
-const UserName = ({ sx, player }: { player: any; sx?: object }) => {
+const UserName = ({ sx, player }: { player?: Partial<HudCharacter> | null; sx?: ThemeUIStyleObject }) => {
   return <Box sx={{ ...sx }}>{player?.profile?.userName}</Box>;
 };
 
 const PlayerHud = memo(
-  ({ player, isBig, portraitVideoStream, isNearby = false }: any) => {
+  ({
+    player,
+    isBig,
+    portraitVideoStream,
+    isNearby = false,
+  }: {
+    player?: Partial<HudCharacter> | null;
+    isBig: boolean;
+    portraitVideoStream?: MediaStream | null;
+    isNearby?: boolean;
+  }) => {
     const { stats, profile, equipment, activeItemSlots } = player ?? {};
     const isOffScreen = !player;
     const videoStream = portraitVideoStream ?? null;
@@ -115,7 +126,13 @@ const PlayerHud = memo(
   ]),
 );
 
-const LevelIcon = ({ player, sx }) => {
+const LevelIcon = ({
+  player,
+  sx,
+}: {
+  player?: Partial<HudCharacter> | null;
+  sx?: ThemeUIStyleObject;
+}) => {
   return (
     <Box
       data-tooltip-place="bottom"
@@ -170,7 +187,9 @@ export const MenuHud = () => {
   const [exitingNearbyIds, setExitingNearbyIds] = useState<Set<string>>(() => new Set());
   const nearbyExitTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
-  const partyIds = party?.members?.map((p) => p?.id)?.filter((id) => hero?.id !== id);
+  const partyIds = party?.members
+    ?.map((p: { id?: string }) => p?.id)
+    ?.filter((id: string | undefined) => hero?.id !== id);
   const hasParty = partyIds?.length > 0;
   const videoChatOn = !!userSettings?.videoChat;
 
@@ -256,7 +275,7 @@ export const MenuHud = () => {
       <Flex sx={{ flexDirection: "row", alignItems: "flex-start", gap: 3 }}>
         <Flex sx={{ flexDirection: "column" }}>
           {hasParty &&
-            partyIds?.map((id) => {
+            partyIds?.map((id: string) => {
               const p = players?.find((pl) => pl?.id === id);
               return (
                 <PlayerHud
@@ -303,7 +322,7 @@ export const MenuHud = () => {
 };
 
 const Memoized = memo(
-  (props: any) => {
+  (props: { as?: ElementType; player?: unknown; memoProps?: unknown } & Record<string, unknown>) => {
     const { as: As = Text } = props;
     return <As {...props}></As>;
   },

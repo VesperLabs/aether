@@ -1,8 +1,12 @@
 import { useState, useEffect } from "react";
+import type { ThemeUIStyleObject } from "theme-ui";
 import { Modal, Flex, Input, KeyboardButton, Icon, Text, Box } from "@/ui";
 import { useAppContext } from "@/client/hud/app/context";
-import { CLASS_ICON_MAP } from "@/shared/content";
+import { CLASS_ICON_MAP, type CharClass } from "@/shared/content";
 import { Tooltip } from "@/client/hud/tooltips/tooltip";
+
+/** The `formSuccess` message from the server. */
+type FormSuccess = { success: string; email?: string };
 
 const accordionEase = "cubic-bezier(0.33, 1, 0.68, 1)";
 const accordionDuration = "0.3s";
@@ -37,7 +41,7 @@ const TabPanel = ({ open, children }: { open: boolean; children: React.ReactNode
   </Box>
 );
 
-const IconPen = ({ sx }: { sx?: any }) => (
+const IconPen = ({ sx }: { sx?: ThemeUIStyleObject }) => (
   <Icon
     size={22}
     icon={`./assets/icons/pen.png`}
@@ -51,7 +55,7 @@ const IconPen = ({ sx }: { sx?: any }) => (
   />
 );
 
-export const ModalLogin = (props: any) => {
+export const ModalLogin = () => {
   const storedEmail = localStorage.getItem("email") ?? "";
   const { zoom, bottomOffset } = useAppContext();
   const [defaultEmail, setDefaultEmail] = useState(storedEmail);
@@ -61,8 +65,8 @@ export const ModalLogin = (props: any) => {
   const isRegister = activeTab === "register";
   const isDemo = activeTab === "demo";
 
-  const onRegisterSuccess = (payload: any) => {
-    setDefaultEmail(payload?.email);
+  const onRegisterSuccess = (payload: FormSuccess) => {
+    setDefaultEmail(payload?.email ?? "");
     setTimeout(() => setActiveTab("login"), 100);
   };
 
@@ -70,9 +74,8 @@ export const ModalLogin = (props: any) => {
     <Modal
       zoom={zoom}
       bottomOffset={bottomOffset}
-      {...props}
       as="form"
-      autoComplete="off"
+      {...{ autoComplete: "off" }}
       onSubmit={(e) => e.preventDefault()}
       sx={{ width: 220 }}
     >
@@ -116,7 +119,7 @@ export const ModalLogin = (props: any) => {
 
 const DemoForm = () => {
   const { socket } = useAppContext();
-  const [charClass, setCharClass] = useState("warrior");
+  const [charClass, setCharClass] = useState<CharClass>("warrior");
 
   const handleDemoLogin = () => {
     socket.emit("demoLogin", { charClass });
@@ -142,7 +145,7 @@ const LoginForm = ({ defaultEmail, isActive }: { defaultEmail: string; isActive:
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const onFormError = (payload: any) => {
+  const onFormError = (payload: { error: string }) => {
     if (!isActive) return;
     setError(payload?.error);
     setIsLoading(false);
@@ -201,21 +204,21 @@ const RegisterForm = ({
   onRegisterSuccess,
   isActive,
 }: {
-  onRegisterSuccess: (payload: any) => void;
+  onRegisterSuccess: (payload: FormSuccess) => void;
   isActive: boolean;
 }) => {
   const { socket } = useAppContext();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [charClass, setCharClass] = useState("warrior");
+  const [charClass, setCharClass] = useState<CharClass>("warrior");
 
-  const onFormError = (payload: any) => {
+  const onFormError = (payload: { error: string }) => {
     if (!isActive) return;
     setError(payload?.error);
   };
 
-  const onFormSuccess = (payload: any) => {
+  const onFormSuccess = (payload: FormSuccess) => {
     if (!isActive) return;
     onRegisterSuccess(payload);
   };
@@ -269,9 +272,16 @@ const RegisterForm = ({
   );
 };
 
-const ClickableIcon = ({ icon, setCharClass, charClass, isSelected }) => {
-  const getDesc = (charClass) => {
-    const desc = {
+interface ClickableIconProps {
+  icon: string;
+  setCharClass: (charClass: CharClass) => void;
+  charClass: CharClass;
+  isSelected: boolean;
+}
+
+const ClickableIcon = ({ icon, setCharClass, charClass, isSelected }: ClickableIconProps) => {
+  const getDesc = (charClass: CharClass) => {
+    const desc: Record<CharClass, string> = {
       warrior: "Warriors are strong and can take a lot of damage.",
       rogue: "Rogues are fast and can dodge attacks.",
       mage: "Mages are powerful spellcasters and can do heavy damage.",
@@ -280,7 +290,6 @@ const ClickableIcon = ({ icon, setCharClass, charClass, isSelected }) => {
     return desc[charClass];
   };
   return (
-    //@ts-ignore
     <Flex
       data-tooltip-id="login"
       data-tooltip-content={getDesc(charClass)}
@@ -302,7 +311,7 @@ const ClickableIcon = ({ icon, setCharClass, charClass, isSelected }) => {
   );
 };
 
-const ErrorBox = ({ children }) => {
+const ErrorBox = ({ children }: { children?: React.ReactNode }) => {
   return (
     <Flex
       sx={{
@@ -322,7 +331,13 @@ const ErrorBox = ({ children }) => {
   );
 };
 
-const CharClassSelect = ({ charClass, setCharClass }) => {
+const CharClassSelect = ({
+  charClass,
+  setCharClass,
+}: {
+  charClass: CharClass;
+  setCharClass: (charClass: CharClass) => void;
+}) => {
   return (
     <Flex sx={{ justifyContent: "space-around", pb: 2 }}>
       <ClickableIcon

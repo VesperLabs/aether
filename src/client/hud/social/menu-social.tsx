@@ -29,7 +29,7 @@ const ActionButton = ({ player }: { player: SocialPlayer }) => {
     );
   }
   return (
-    <Button variant="wood" onClick={() => socket.emit("inviteToParty", player?.socketId)}>
+    <Button variant="wood" onClick={() => player?.socketId && socket.emit("inviteToParty", player.socketId)}>
       Invite
     </Button>
   );

@@ -5,7 +5,7 @@ import { Box, PlayerRender } from "@/ui";
 import { memo, useEffect, useLayoutEffect, useRef, useState, type AnimationEvent } from "react";
 import { streamHasUsableVideo } from "@/client/hud/video/video-support";
 
-const applyRoundedStyle = ({ size }: { size: number }) => {
+const applyRoundedStyle = ({ size }: { size: number }): ThemeUIStyleObject => {
   return {
     border: `1px solid #000`,
     borderRadius: size,

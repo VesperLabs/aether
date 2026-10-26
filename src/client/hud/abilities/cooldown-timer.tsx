@@ -1,9 +1,10 @@
 import { memo, useEffect, useState } from "react";
 import { Box, Donut } from "@/ui";
+import type { Cooldown } from "@/client/hud/app/context";
 import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
 
 export const CooldownTimer = memo(
-  ({ cooldown, color = "#FFF" }: any) => {
+  ({ cooldown, color = "#FFF" }: { cooldown?: Cooldown; color?: string }) => {
     const [percentage, setPercentage] = useState(0);
     let duration = cooldown?.duration ?? 0;
     let startTime = cooldown?.startTime ?? Date.now();

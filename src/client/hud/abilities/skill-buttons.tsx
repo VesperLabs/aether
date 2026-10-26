@@ -1,4 +1,5 @@
 import { Flex } from "@/ui";
+import type { Cooldown } from "@/client/hud/app/context";
 import { CooldownTimer } from "./cooldown-timer";
 import { SkillButton } from "./skill-button";
 import { useAppContext } from "@/client/hud/app/context";
@@ -6,7 +7,7 @@ import { memo } from "react";
 import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
 
 export const SkillButtons = memo(
-  ({ cooldowns }: any) => {
+  ({ cooldowns }: { cooldowns: Record<string, Cooldown> }) => {
     const { showButtonChat } = useAppContext();
 
     return (

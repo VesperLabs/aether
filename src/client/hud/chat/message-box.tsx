@@ -37,9 +37,7 @@ export const MessageBox = () => {
     >
       <Flex
         as={motion.div}
-        animate={{
-          opacity: show ? 1 : 0,
-        }}
+        {...{ animate: { opacity: show ? 1 : 0 } }}
         sx={{
           flex: 1,
           m: 2,

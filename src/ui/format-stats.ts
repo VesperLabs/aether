@@ -63,7 +63,7 @@ const formatStat = (key: string, value: FormattedStat): FormattedStat => {
   }
 };
 
-export function msToHours(ms: number) {
+export function msToHours(ms?: number) {
   if (!ms) return 0;
   const millisecondsInHour = 60 * 60 * 1000; // Number of milliseconds in an hour
   return (ms / millisecondsInHour).toFixed(2) + " hrs";

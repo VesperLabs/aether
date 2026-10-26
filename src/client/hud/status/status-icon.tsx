@@ -1,20 +1,21 @@
 import { Box, Icon, Flex, Text, Divider } from "@/ui";
 import { useAppContext } from "@/client/hud/app/context";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import type { ThemeUIStyleObject } from "theme-ui";
 import { isMobile } from "@/ui/is-mobile";
 import { msToHours } from "@/ui/format-stats";
 import { Tooltip } from "@/client/hud/tooltips/tooltip";
 
 const STATUS_TOOLTIP_ID = "STATUS_TOOLTIP_ID";
 
-const TextDivider = ({ children, sx }: any) => (
+const TextDivider = ({ children, sx }: { children?: ReactNode; sx?: ThemeUIStyleObject }) => (
   <>
     <Divider sx={{ pt: 0, zIndex: -1 }} />
     <Text sx={{ mt: -3, pb: 2, mb: -1, color: "gray.500", ...sx }}>{children}</Text>
   </>
 );
 
-const StatusToolTip = ({ show }) => {
+const StatusToolTip = ({ show }: { show: boolean }) => {
   const [metrics, setMetrics] = useState<ServerMetrics>();
   const [socketPing, setSocketPing] = useState<number>();
   const [isLoading, setLoading] = useState<boolean>(true);
@@ -89,14 +90,14 @@ const StatusToolTip = ({ show }) => {
   );
 };
 
-export const StatusIcon = (props) => {
+export const StatusIcon = () => {
   const [hovering, setHovering] = useState(false);
 
-  const handleMouseEnter = (e) => {
+  const handleMouseEnter = () => {
     setHovering(true);
   };
 
-  const handleMouseLeave = (e) => {
+  const handleMouseLeave = () => {
     setHovering(false);
   };
 
@@ -123,7 +124,6 @@ export const StatusIcon = (props) => {
       <Box
         data-tooltip-id={STATUS_TOOLTIP_ID}
         {...outerMouseBinds}
-        {...props}
         sx={{ transform: "scale(.75)" }}
       >
         {isConnected ? (

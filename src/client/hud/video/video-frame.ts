@@ -188,7 +188,7 @@ export function VideoFrame() {
         clearTimeout(pending);
         awayRemoveTimersRef.current.delete(peerId);
       }
-      connectToNewUser(peerId, myStream);
+      connectToNewUser(peerId, myStream ?? undefined);
     };
 
     const handleHeroAwayPlayer = (e: Event) => {
@@ -207,7 +207,7 @@ export function VideoFrame() {
        Dispatched AFTER listeners are attached so HERO_NEAR_PLAYER is caught. */
     const handleStreamReady = () => {
       for (const id of Object.keys(peers)) {
-        connectToNewUser(id, myStream, true);
+        connectToNewUser(id, myStream ?? undefined, true);
       }
       window.dispatchEvent(new CustomEvent("VIDEO_CHAT_STREAM_READY"));
     };
