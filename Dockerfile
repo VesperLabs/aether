@@ -42,12 +42,8 @@ ENV DEBUG=$DEBUG \
     METERED_API_KEY=$METERED_API_KEY \
     METERED_REGION=$METERED_REGION
 
-# Copy workspace manifests first so the install layer caches on unchanged deps.
+# Copy manifests first so the install layer caches on unchanged deps.
 COPY package.json package-lock.json ./
-COPY client/package.json ./client/
-COPY web/package.json ./web/
-COPY ui/package.json ./ui/
-COPY shared/package.json ./shared/
 
 # `npm ci` is faster + deterministic; cache mount avoids redownloading tarballs across builds.
 RUN --mount=type=cache,target=/root/.npm \

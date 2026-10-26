@@ -11,10 +11,7 @@
     "jsx": "react-jsx",
     "resolveJsonModule": true,
     "paths": {
-      "@aether/ui": ["./ui"],
-      "@aether/server": ["./server"],
-      "@aether/shared": ["./shared"],
-      "@aether/client": ["./client"]
+      "@aether/*": ["./*"]
     }
   },
   "include": [

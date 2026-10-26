@@ -3,11 +3,11 @@ import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import { DEFAULT_SERVER_FPS } from "../shared/constants";
 
-/** Repo root when Vite is run from `client/` (see npm scripts). */
-const parentDir = path.resolve(process.cwd(), "..");
+/** Repo root. Vite is run from the root with `--config` (see npm scripts). */
+const repoRoot = path.resolve(__dirname, "..");
 
 export default ({ mode, command }) => {
-  process.env = Object.assign(process.env, loadEnv(mode, parentDir, ""));
+  process.env = Object.assign(process.env, loadEnv(mode, repoRoot, ""));
   console.log(`🛠 DEBUG: ${process.env.DEBUG}`);
   console.log(`🛠 SERVER_FPS: ${process.env.SERVER_FPS}`);
   console.log(`🛠 SERVER_URL: ${process.env.SERVER_URL}`);
@@ -17,9 +17,11 @@ export default ({ mode, command }) => {
   console.log(`🛠 METERED_APP_NAME: ${process.env.METERED_APP_NAME ? "(set)" : "(empty)"}`);
 
   return defineConfig({
-    envDir: "../",
+    root: __dirname,
+    resolve: { tsconfigPaths: true },
+    envDir: repoRoot,
     // Dev serves static assets from public; build writes into public — avoid copying public onto itself
-    publicDir: command === "serve" ? "../public" : false,
+    publicDir: command === "serve" ? path.join(repoRoot, "public") : false,
     plugins: [
       {
         name: "replace-url",
@@ -53,7 +55,7 @@ export default ({ mode, command }) => {
     build: {
       assetsDir: "./", //puts our js files 1 directory up from the /assets folder
       emptyOutDir: false, //we dont want to delete the public folder. its where we store pics
-      outDir: "../public",
+      outDir: path.join(repoRoot, "public"),
     },
   });
 };

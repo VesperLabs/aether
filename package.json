@@ -7,12 +7,12 @@
   },
   "scripts": {
     "lint": "oxlint",
-    "client:dev": "npm run dev -w @aether/client",
-    "client:build": "npm run build -w @aether/client",
-    "client:preview": "npm run preview -w @aether/client",
-    "web:dev": "npm run dev -w @aether/web",
-    "web:build": "npm run build -w @aether/web",
-    "web:preview": "npm run preview -w @aether/web",
+    "client:dev": "vite --config client/vite.config.ts",
+    "client:build": "vite build --config client/vite.config.ts",
+    "client:preview": "vite preview --config client/vite.config.ts",
+    "web:dev": "vite --config web/vite.config.ts",
+    "web:build": "vite build --config web/vite.config.ts",
+    "web:preview": "vite preview --config web/vite.config.ts",
     "server:dev": "tsx --env-file-if-exists=.env server/main.ts",
     "server:watch": "tsx watch --inspect --env-file-if-exists=.env server/main.ts",
     "clean": "rm -rf node_modules",
@@ -27,12 +27,6 @@
     "check:format": "oxfmt --check",
     "check": "npm run check:format && npm run lint && npm run typecheck && npm run test"
   },
-  "workspaces": [
-    "ui",
-    "web",
-    "shared",
-    "client"
-  ],
   "dependencies": {
     "@tanstack/react-query": "^5.105.0",
     "canvas": "^3.2.3",
@@ -54,7 +48,8 @@
     "socket.io": "^4.8.4",
     "socket.io-client": "^4.8.4",
     "theme-ui": "^0.17.4",
-    "use-double-tap": "^1.3.7"
+    "use-double-tap": "^1.3.7",
+    "wouter": "^3.13.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^7.0.1",
