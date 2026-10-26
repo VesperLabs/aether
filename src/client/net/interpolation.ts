@@ -6,7 +6,7 @@
  * - Real collision is server-side Phaser; the client only displays interpolated poses.
  */
 
-import { DEFAULT_SERVER_FPS } from "@/shared/constants";
+import { DEFAULT_SERVER_FPS } from "@/shared/network";
 import { expandTickState, mergeTickDelta } from "@/shared/network/sync";
 
 function lerp(a, b, t) {

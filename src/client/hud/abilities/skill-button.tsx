@@ -1,5 +1,5 @@
 import { Icon, KeyboardKey, Button } from "@/ui";
-import { isMobile } from "@/shared";
+import { isMobile } from "@/ui/is-mobile";
 import { ReactNode } from "react";
 
 export const SkillButton = ({

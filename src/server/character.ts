@@ -1,4 +1,4 @@
-import { CharacterModel } from "@/shared/character-model";
+import { CharacterModel } from "@/shared/rules/character";
 import { ItemBuilder } from "@/shared/content";
 import { applyCalculatedStats } from "./character-stats";
 import {

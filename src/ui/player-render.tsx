@@ -2,12 +2,11 @@ import { resolveAsset } from "@/shared/content";
 import {
   ACCESSORY_HIDING_HELMETS,
   HAIR_HIDING_HELMETS,
-  filterVisibleEquipment,
-  tintCanvas,
-  loadCacheImage,
   HAIR_HIDING_ACCESSORIES,
   FACE_HIDING_ACCESSORIES,
-} from "@/shared";
+} from "@/shared/content";
+import { filterVisibleEquipment } from "@/shared/rules/character";
+import { tintCanvas, loadCacheImage } from "@/ui/image-tint";
 import { memo, useEffect, useRef } from "react";
 import { Box } from "@/ui";
 import weaponAtlas from "../../public/assets/atlas/weapon.json";

@@ -1,7 +1,7 @@
 import Phaser from "phaser";
-import { Door } from "@/shared/door";
-import { Sign } from "@/shared/sign";
-import { MINI_MAP_SIZE } from "@/shared/utils";
+import { Door } from "@/client/views/door";
+import { Sign } from "@/client/views/sign";
+import { MINI_MAP_SIZE } from "@/client/views/minimap-size";
 import { changeMusic } from "@/client/audio/music";
 import { getGameZoomLevel } from "./camera-zoom";
 

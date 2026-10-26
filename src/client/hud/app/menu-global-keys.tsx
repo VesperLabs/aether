@@ -1,5 +1,6 @@
 import { Box, KeyboardKey } from "@/ui";
-import { MINI_MAP_SIZE, isMobile } from "@/shared";
+import { MINI_MAP_SIZE } from "@/client/views/minimap-size";
+import { isMobile } from "@/ui/is-mobile";
 import { useAppContext } from "./context";
 
 export const MenuGlobalKeys = () => {

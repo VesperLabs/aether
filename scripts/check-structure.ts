@@ -16,7 +16,7 @@ type Rule =
 
 /** Paths (relative to the repo root) that are allowed to break a rule for now. */
 const LEGACY: Record<Rule, string[]> = {
-  "banned-name": ["src/shared/utils.ts"],
+  "banned-name": [],
   "folder-case": [],
   "manager-class": [],
   "spec-file": [],

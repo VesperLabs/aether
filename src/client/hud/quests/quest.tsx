@@ -2,7 +2,7 @@ import { Box, Icon, BASE_SLOT_STYLE, SLOT_SIZE } from "@/ui";
 import { QuestTooltip } from "./quest-tooltip";
 import { useAppContext } from "@/client/hud/app/context";
 import { nanoid } from "nanoid";
-import { isMobile } from "@/shared";
+import { isMobile } from "@/ui/is-mobile";
 import { useMemo } from "react";
 
 export const Quest = ({ quest, parent = "keeper" }: { quest: Quest; parent: string }) => {

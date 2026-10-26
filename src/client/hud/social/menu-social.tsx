@@ -3,7 +3,8 @@ import { useAppContext } from "@/client/hud/app/context";
 import { Portrait } from "@/client/hud/status/portrait";
 import { ThemeUIStyleObject } from "theme-ui";
 import { Flex, Text, Grid, Icon, Button, Box, MENU_MAX_WIDTH, Menu, MenuHeader } from "@/ui";
-import { CLASS_ICON_MAP, arePropsEqualWithKeys } from "@/shared";
+import { CLASS_ICON_MAP } from "@/shared/content";
+import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
 
 const ActionButton = ({ player }) => {
   const { partyInvites, socket } = useAppContext();

@@ -1,6 +1,7 @@
 import { ThemeUIStyleObject } from "theme-ui";
 import { Flex, Text, Grid, MENU_MAX_WIDTH, Menu, MenuHeader } from "@/ui";
-import { arePropsEqualWithKeys, convertMsToS } from "@/shared";
+import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
+import { convertMsToS } from "@/ui/format-stats";
 import { memo } from "react";
 
 const COLUMN_STYLES: ThemeUIStyleObject = {

@@ -1,7 +1,8 @@
 import { Fragment } from "react";
 import { Flex, Text, Divider, Icon } from "@/ui";
 import { buffList, itemSetList, ItemBuilder, spellDetails } from "@/shared/content";
-import { formatStats, CONSUMABLES_BASES, itemHasRequiredStats } from "@/shared";
+import { formatStats } from "@/ui/format-stats";
+import { CONSUMABLES_BASES, itemHasRequiredStats } from "@/shared/rules/inventory";
 import { TooltipLabel } from "./tooltip-label";
 import { TextDivider } from "@/client/hud/menu/text-divider";
 import { Tooltip } from "./tooltip";

@@ -1,5 +1,5 @@
 import { ItemBuilder } from "@/shared/content";
-import { DEFAULT_USER_SETTINGS } from "@/shared/utils";
+import { DEFAULT_USER_SETTINGS } from "@/shared/rules/world";
 import { getBaseCharacterDefaults } from "../auth/character-defaults";
 
 export const createBaseUser = (charClass) => {

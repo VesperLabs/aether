@@ -5,7 +5,7 @@ import {
   ACCESSORY_HIDING_HELMETS,
   FACE_HIDING_ACCESSORIES,
   HAIR_HIDING_ACCESSORIES,
-} from "@/shared";
+} from "@/shared/content";
 import { Crosshair } from "@/client/input/crosshair";
 import { Bubble } from "./bubble";
 import { Bar } from "./bar";

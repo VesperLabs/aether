@@ -3,7 +3,7 @@ import { Box, Flex, Text } from "@/ui";
 import { useAppContext } from "@/client/hud/app/context";
 import { Portrait } from "@/client/hud/status/portrait";
 import { StatusIcon } from "@/client/hud/status/status-icon";
-import { arePropsEqualWithKeys } from "@/shared";
+import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
 import { streamHasUsableVideo } from "@/client/hud/video/video-support";
 import { cloneDeep } from "lodash";
 import { Bar } from "@/client/hud/status/stat-bar";

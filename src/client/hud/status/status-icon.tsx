@@ -1,7 +1,8 @@
 import { Box, Icon, Flex, Text, Divider } from "@/ui";
 import { useAppContext } from "@/client/hud/app/context";
 import { useEffect, useState } from "react";
-import { isMobile, msToHours } from "@/shared";
+import { isMobile } from "@/ui/is-mobile";
+import { msToHours } from "@/ui/format-stats";
 import { Tooltip } from "@/client/hud/tooltips/tooltip";
 
 const STATUS_TOOLTIP_ID = "STATUS_TOOLTIP_ID";

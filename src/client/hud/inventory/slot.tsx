@@ -13,7 +13,9 @@ import { ItemTooltip } from "@/client/hud/tooltips/item-tooltip";
 import { BLANK_IMAGE } from "@/client/hud/app/constants";
 import { SlotAmount } from "./slot-amount";
 import { resolveAsset } from "@/shared/content";
-import { assetToCanvas, isMobile, itemHasRequiredStats } from "@/shared";
+import { assetToCanvas } from "@/ui/image-tint";
+import { isMobile } from "@/ui/is-mobile";
+import { itemHasRequiredStats } from "@/shared/rules/inventory";
 import { useDoubleTap } from "use-double-tap";
 import { isEqual, get } from "lodash";
 

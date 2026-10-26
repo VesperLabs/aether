@@ -1,4 +1,5 @@
-import { distanceTo, isMobile } from "@/shared/utils";
+import { distanceTo } from "@/shared/rules/world";
+import { isMobile } from "@/ui/is-mobile";
 
 function triggerPlayerProximity(scene, nearbyPlayers) {
   const next = nearbyPlayers

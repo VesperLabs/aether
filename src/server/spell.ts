@@ -1,4 +1,4 @@
-import { distanceTo } from "@/shared/utils";
+import { distanceTo } from "@/shared/rules/world";
 import { entitiesInRoom } from "@/shared/rules/world";
 import { shapesOverlap, type Shape } from "@/shared/rules/movement";
 import {

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { MenuButton } from "@/client/hud/menu/menu-button";
 import { useAppContext } from "@/client/hud/app/context";
 import { Input } from "@/ui";
-import { isMobile } from "@/shared";
+import { isMobile } from "@/ui/is-mobile";
 
 export const ChatButton = () => {
   const { tabChat, setTabChat, socket, messages, hero } = useAppContext();

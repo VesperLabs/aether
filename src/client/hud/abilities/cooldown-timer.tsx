@@ -1,6 +1,6 @@
 import { memo, useEffect, useState } from "react";
 import { Box, Donut } from "@/ui";
-import { arePropsEqualWithKeys } from "@/shared";
+import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
 
 export const CooldownTimer = memo(
   ({ cooldown, color = "#FFF" }: any) => {

@@ -259,30 +259,6 @@ interface MapAsset {
   json: string;
 }
 
-interface TickCharacterState {
-  id: string;
-  /** Duplicate of id on tick wire removed; optional for typing. */
-  socketId?: string;
-  /** Omitted when snapshot is already room-scoped (saves bandwidth). */
-  roomName?: string;
-  /** 0–3 wire direction; preferred over `direction` string on the wire. */
-  d?: number;
-  direction?: string;
-  /** Tick-only subset of `state` (not full server state). */
-  state: Record<string, unknown>;
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-}
-
-interface TickRoomState {
-  players: Array<TickCharacterState>;
-  npcs: Array<TickCharacterState>;
-  spells: Array<Spell>;
-  loots: Array<Loot>;
-}
-
 interface Spell {
   id: string;
 }
@@ -318,27 +294,6 @@ interface FullCharacterState {
   gold: integer;
   hitBoxSize: any;
   keeperData?: KeeperData;
-}
-
-interface RoomState {
-  players: Array<FullCharacterState>;
-  npcs: Array<FullCharacterState>;
-  spells?: Array<Spell>;
-  loots: Array<Loot>;
-}
-
-interface BuffRoomState {
-  players: Array<FullCharacterState>;
-  npcs: Array<FullCharacterState>;
-}
-
-interface BuffCharacterState {
-  id: string;
-  socketId: string;
-  activeItemSlots: Array<string>;
-  buffs: Array<Buff>;
-  stats: any;
-  state: any;
 }
 
 interface Quest {

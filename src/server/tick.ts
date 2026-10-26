@@ -8,7 +8,7 @@ import {
   compactTickState,
   diffTickStates,
 } from "@/shared/network";
-import { SNAPSHOT_KEYFRAME_INTERVAL } from "@/shared/constants";
+import { SNAPSHOT_KEYFRAME_INTERVAL } from "@/shared/network";
 import { getBuffRoomState, getTickRoomState } from "@/server/net/room-sync";
 import { updateRoomLoot } from "./loot-adapter";
 import { expireSpells } from "./spell-adapter";

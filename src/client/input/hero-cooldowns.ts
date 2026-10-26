@@ -1,5 +1,5 @@
 import { spellDetails } from "@/shared/content";
-import { POTION_COOLDOWN } from "@/shared";
+import { POTION_COOLDOWN } from "@/shared/rules/combat";
 
 export function updateAttackCooldown(hero) {
   if (hero.state.isAttacking) return;

@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import { assetList, soundList, iconList, mapList, mapImageList } from "@/shared/content";
-import { IMAGE_CACHE } from "@/shared/utils";
+import { IMAGE_CACHE } from "@/ui/image-tint";
 
 /**
  * Rewrite a `./assets/…` path to the CDN base URL when ASSETS_URL is set.

@@ -3,7 +3,7 @@ import { useAppContext } from "@/client/hud/app/context";
 import { MenuButton } from "@/client/hud/menu/menu-button";
 import { BigPortrait } from "@/client/hud/status/big-portrait";
 import { Flex, Text, Input, Box, MENU_MAX_WIDTH, Menu, MenuHeader } from "@/ui";
-import { arePropsEqualWithKeys } from "@/shared";
+import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
 
 const MenuPicker = ({ children, onPlus = () => {}, onMinus = () => {} }) => {
   return (

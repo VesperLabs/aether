@@ -35,3 +35,9 @@ export function getCharacterDirection(character: Point, point: Point): CardinalD
     }
   }
 }
+
+export function distanceTo(first: Point, second: Point) {
+  const dx = second?.x - first?.x;
+  const dy = second?.y - first?.y;
+  return Math.sqrt(dx * dx + dy * dy);
+}

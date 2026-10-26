@@ -1,4 +1,4 @@
-import { arePropsEqualWithKeys } from "@/shared";
+import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
 import { Box, PlayerRender } from "@/ui";
 import { memo, useEffect, useLayoutEffect, useRef, useState, type AnimationEvent } from "react";
 import { streamHasUsableVideo } from "@/client/hud/video/video-support";

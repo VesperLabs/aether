@@ -1,6 +1,6 @@
 import { playAudio } from "@/client/audio/play-audio";
 import { getSpinDirection } from "@/client/input/spin-direction";
-import { CONSUMABLES_BASES, POTION_BASES } from "@/shared";
+import { CONSUMABLES_BASES, POTION_BASES } from "@/shared/rules/inventory";
 import { updateAttackCooldown, updatePotionCooldown, updateSpellCooldown } from "./hero-cooldowns";
 import { isTypableFieldActive } from "./typable-field";
 

@@ -1,7 +1,7 @@
 // @ts-nocheck
 import Phaser from "phaser";
 import { playAudio } from "@/client/audio/play-audio";
-import { getAngleFromDirection, distanceTo } from "@/shared";
+import { getAngleFromDirection, distanceTo } from "@/shared/rules/world";
 import {
   BUFF_SPELLS,
   getSpellShape,

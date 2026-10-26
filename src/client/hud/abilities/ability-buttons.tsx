@@ -1,12 +1,8 @@
 import { spellDetails } from "@/shared/content";
-import {
-  CONSUMABLES_BASES,
-  POTION_BASES,
-  applyTintToImage,
-  arePropsEqualWithKeys,
-  isMobile,
-  loadCacheImage,
-} from "@/shared";
+import { CONSUMABLES_BASES, POTION_BASES } from "@/shared/rules/inventory";
+import { applyTintToImage, loadCacheImage } from "@/ui/image-tint";
+import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
+import { isMobile } from "@/ui/is-mobile";
 import { CooldownTimer } from "./cooldown-timer";
 import { ItemTooltip } from "@/client/hud/tooltips/item-tooltip";
 import { SkillButton } from "./skill-button";

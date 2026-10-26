@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Modal, Flex, Input, KeyboardButton, Icon, Text, Box } from "@/ui";
 import { useAppContext } from "@/client/hud/app/context";
-import { CLASS_ICON_MAP } from "@/shared";
+import { CLASS_ICON_MAP } from "@/shared/content";
 import { Tooltip } from "@/client/hud/tooltips/tooltip";
 
 const accordionEase = "cubic-bezier(0.33, 1, 0.68, 1)";

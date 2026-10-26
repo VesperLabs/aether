@@ -5,7 +5,6 @@ import { Slot } from "@/client/hud/inventory/slot";
 import { Quest } from "@/client/hud/quests/quest";
 import { MenuButton } from "@/client/hud/menu/menu-button";
 import { Flex, Text, MENU_MAX_WIDTH, Menu, MenuHeader } from "@/ui";
-import { capitalize } from "@/shared";
 
 export const MenuKeeper = () => {
   const { hero, keeper, tabKeeper, setTabKeeper, setHomeModal } = useAppContext();
@@ -157,3 +156,8 @@ export const MenuKeeper = () => {
     </Menu>
   );
 };
+
+function capitalize(str: string) {
+  if (str.length == 0) return str;
+  return str[0].toUpperCase() + str.substr(1);
+}

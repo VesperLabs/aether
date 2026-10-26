@@ -7,7 +7,7 @@ import {
   Text,
   Box,
 } from "@/ui";
-import { CLASS_ICON_MAP } from "@/shared";
+import { CLASS_ICON_MAP } from "@/shared/content";
 import { useState } from "react";
 
 const LOADING_CANVAS_IMAGE =

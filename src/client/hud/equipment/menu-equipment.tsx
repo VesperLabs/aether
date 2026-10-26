@@ -1,6 +1,6 @@
 import { Flex, MENU_MAX_WIDTH, Menu, MenuHeader } from "@/ui";
 import { Slot } from "@/client/hud/inventory/slot";
-import { arePropsEqualWithKeys } from "@/shared";
+import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
 import { memo } from "react";
 
 export const MenuEquipment = memo(

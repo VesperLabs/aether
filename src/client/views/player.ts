@@ -1,6 +1,7 @@
 // @ts-nocheck
-import { Character } from "@/shared/character";
-import { distanceTo, MIN_STEALTH_ALPHA, calculateStealthVisibilityPercent } from "@/shared";
+import { Character } from "./character";
+import { distanceTo } from "@/shared/rules/world";
+import { MIN_STEALTH_ALPHA, calculateStealthVisibilityPercent } from "@/shared/rules/combat";
 import { Spell } from "./spell";
 import { getSpinDirection } from "@/client/input/spin-direction";
 import { applyAppearance, createSpriteLayers } from "./player-layers";

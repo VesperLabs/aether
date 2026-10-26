@@ -1,6 +1,6 @@
 import { useLayoutEffect, useState } from "react";
 import { assetList } from "@/shared/content";
-import { assetToCanvas } from "@/shared";
+import { assetToCanvas } from "@/ui/image-tint";
 import { Box, Icon, STYLE_NON_EMPTY, Tooltip, Text, Flex } from "@/ui";
 import { TOOLTIP_STYLE } from ".";
 

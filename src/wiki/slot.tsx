@@ -1,6 +1,7 @@
 import { useLayoutEffect, useState, Fragment } from "react";
 import { resolveAsset, buffList, ItemBuilder, itemSetList } from "@/shared/content";
-import { formatStats, assetToCanvas } from "@/shared";
+import { formatStats } from "@/ui/format-stats";
+import { assetToCanvas } from "@/ui/image-tint";
 import { Box, Icon, STYLE_NON_EMPTY, SLOT_SIZE, Tooltip, Text, Flex, Divider } from "@/ui";
 import { Label, TextDivider, TOOLTIP_STYLE } from ".";
 

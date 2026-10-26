@@ -1,4 +1,5 @@
 export { CONSUMABLES_BASES, MAX_INVENTORY_ITEMS, POTION_BASES, SHOP_INFLATION } from "./constants";
+export { itemHasRequiredStats } from "./requirements";
 export { consumeItem } from "./consume";
 export type { ConsumeRequest, ConsumeResult } from "./consume";
 export { dropItem } from "./drop";

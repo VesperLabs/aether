@@ -1,6 +1,6 @@
 import { Server } from "socket.io";
 import { createTickLoop } from "@/shared/rules/world";
-import { DEFAULT_SERVER_FPS } from "@/shared/constants";
+import { DEFAULT_SERVER_FPS } from "@/shared/network";
 import type { ClientToServerEvents, GameIo, ServerToClientEvents } from "@/shared/network";
 import { createServerWorld } from "./game-world";
 import { listenForConnections } from "./net/connection";

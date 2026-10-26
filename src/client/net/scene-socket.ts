@@ -1,4 +1,4 @@
-import { DEFAULT_USER_SETTINGS } from "@/shared/utils";
+import { DEFAULT_USER_SETTINGS } from "@/shared/rules/world";
 import { heroInitToTickExpanded, expandTickState } from "@/shared/network/sync";
 import { netInterp } from "@/client/net/scene-interpolation";
 import { playAudio } from "@/client/audio/play-audio";

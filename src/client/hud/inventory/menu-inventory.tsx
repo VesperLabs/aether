@@ -1,4 +1,5 @@
-import { MAX_INVENTORY_ITEMS, arePropsEqualWithKeys } from "@/shared";
+import { MAX_INVENTORY_ITEMS } from "@/shared/rules/inventory";
+import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
 import { Slot } from "./slot";
 import { Flex, Text, Icon, MENU_MAX_WIDTH, Menu, MenuHeader } from "@/ui";
 import { memo } from "react";

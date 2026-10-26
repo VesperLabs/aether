@@ -14,10 +14,3 @@ export const EXTRA_INTERPOLATION_BUFFER_MS = 32;
 
 /** Full snapshot every N ticks (~1s at 20Hz); other ticks send deltas for idle entities / loot. */
 export const SNAPSHOT_KEYFRAME_INTERVAL = 20;
-
-export const CLASS_ICON_MAP = {
-  WARRIOR: `./assets/icons/axe.png`,
-  ROGUE: `./assets/icons/katar.png`,
-  MAGE: `./assets/icons/rod.png`,
-  CLERIC: `./assets/icons/staff.png`,
-};

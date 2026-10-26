@@ -1,6 +1,7 @@
 import { memo, useEffect, useState } from "react";
 import { Divider, Flex, Icon, Text } from "@/ui";
-import { arePropsEqualWithKeys, formatStats } from "@/shared";
+import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
+import { formatStats } from "@/ui/format-stats";
 import { buffList } from "@/shared/content";
 import { Tooltip } from "@/client/hud/tooltips/tooltip";
 import { TooltipLabel } from "@/client/hud/tooltips/tooltip-label";

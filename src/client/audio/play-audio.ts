@@ -1,4 +1,4 @@
-import { distanceTo } from "@/shared/utils";
+import { distanceTo } from "@/shared/rules/world";
 
 /* TODO: Move to DB */
 const SFX_VOLUME = 0.25;

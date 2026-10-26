@@ -1,5 +1,6 @@
 export { assetList } from "./assets/asset-list";
 export type { AssetDefinition, NamedFileDefinition } from "./assets/asset-types";
+export { CLASS_ICON_MAP } from "./assets/class-icons";
 export { iconList } from "./assets/icon-list";
 export { resolveAsset } from "./assets/resolve-asset";
 export { soundList } from "./assets/sound-list";
@@ -7,6 +8,13 @@ export { hairTints, skinTints } from "./assets/tints";
 export { buffList, type BuffName } from "./buffs/buff-list";
 export type { BuffDefinition } from "./buffs/buff-types";
 export type { TriggerDefinition } from "./buffs/trigger-types";
+export {
+  ACCESSORY_HIDING_HELMETS,
+  FACE_HIDING_ACCESSORIES,
+  FACE_HIDING_HELMETS,
+  HAIR_HIDING_ACCESSORIES,
+  HAIR_HIDING_HELMETS,
+} from "./items/hiding";
 export { Item } from "./items/item";
 export { ITEM_BUILD_RARITIES, ItemBuilder, isItemBuildRarity } from "./items/item-builder";
 export { itemData } from "./items/item-data";

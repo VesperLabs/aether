@@ -14,7 +14,7 @@ import { getSpinDirection } from "@/client/input/spin-direction";
 import { getHudZoom } from "./hud-zoom";
 import "react-tooltip/dist/react-tooltip.css";
 import { Theme } from "theme-ui";
-import { DEFAULT_USER_SETTINGS } from "@/shared";
+import { DEFAULT_USER_SETTINGS } from "@/shared/rules/world";
 import { VideoFrame } from "@/client/hud/video/video-frame";
 import { ModalSettings } from "@/client/hud/settings/modal-settings";
 import { AppContext } from "./context";

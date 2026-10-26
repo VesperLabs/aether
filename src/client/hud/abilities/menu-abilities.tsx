@@ -1,7 +1,7 @@
 import { Flex, MENU_MAX_WIDTH, Menu, MenuHeader } from "@/ui";
 import { Slot } from "@/client/hud/inventory/slot";
 import { memo } from "react";
-import { arePropsEqualWithKeys } from "@/shared";
+import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
 
 export const MenuAbilities = memo(
   ({ player, isOpen, setIsOpen, slotsEnabled = true }: any) => {

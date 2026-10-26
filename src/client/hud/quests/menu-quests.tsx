@@ -1,7 +1,7 @@
 import { Quest } from "./quest";
 import { Flex, Text, MENU_MAX_WIDTH, Menu, MenuHeader } from "@/ui";
 import { questList } from "@/shared/content";
-import { arePropsEqualWithKeys } from "@/shared";
+import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
 import { memo } from "react";
 
 export const MenuQuests = memo(

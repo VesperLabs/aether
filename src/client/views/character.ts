@@ -1,6 +1,7 @@
 import Phaser from "phaser";
-import { BLANK_TEXTURE } from "./utils";
-import { BODY_SIZE, withCharacterModel } from "./character-model";
+import { BODY_SIZE, withCharacterModel } from "@/shared/rules/character";
+
+const BLANK_TEXTURE = "human-blank";
 
 /**
  * The Phaser side of a character, used by the client. The data and rules are in the shared

@@ -1,5 +1,5 @@
 import React from "react";
-import { CONSUMABLES_BASES } from "@/shared";
+import { CONSUMABLES_BASES } from "@/shared/rules/inventory";
 import type { ClientGameSocket } from "@/shared/network";
 
 interface ItemEventDeps {

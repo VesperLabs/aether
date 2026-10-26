@@ -1,6 +1,8 @@
 import Phaser from "phaser";
 import { getMapByName } from "@/shared/content";
-import { DEFAULT_USER_SETTINGS, isMobile, MINI_MAP_SIZE } from "@/shared/utils";
+import { DEFAULT_USER_SETTINGS } from "@/shared/rules/world";
+import { isMobile } from "@/ui/is-mobile";
+import { MINI_MAP_SIZE } from "@/client/views/minimap-size";
 import { decodeWireDirection } from "@/shared/network/sync";
 import { netInterp } from "@/client/net/scene-interpolation";
 import { bindSceneSocket } from "@/client/net/scene-socket";

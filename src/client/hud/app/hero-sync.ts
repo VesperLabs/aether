@@ -1,6 +1,6 @@
 import React from "react";
 import { theme } from "@/ui";
-import { DEFAULT_USER_SETTINGS } from "@/shared";
+import { DEFAULT_USER_SETTINGS } from "@/shared/rules/world";
 
 interface HeroSyncDeps {
   addMessage: (payload: Message) => void;

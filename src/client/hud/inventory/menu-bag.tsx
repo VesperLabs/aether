@@ -1,7 +1,7 @@
 import { Flex, MENU_MAX_WIDTH, Menu, MenuHeader } from "@/ui";
 import { Slot } from "./slot";
 import { memo } from "react";
-import { arePropsEqualWithKeys } from "@/shared";
+import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
 
 export const MenuBag = memo(
   ({ bagState, player, toggleBagState, slotsEnabled = true }: any) => {
