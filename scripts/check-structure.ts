@@ -16,7 +16,7 @@ type Rule =
 
 /** Paths (relative to the repo root) that are allowed to break a rule for now. */
 const LEGACY: Record<Rule, string[]> = {
-  "banned-name": ["src/client/utils.ts", "src/shared/utils.ts"],
+  "banned-name": ["src/shared/utils.ts"],
   "folder-case": [],
   "manager-class": [
     "src/server/npc-manager.ts",
@@ -25,17 +25,11 @@ const LEGACY: Record<Rule, string[]> = {
   ],
   "spec-file": [],
   "tsx-without-jsx": [
-    "src/client/ui/index.tsx",
-    "src/client/ui/video-frame.tsx",
+    "src/client/hud/video/video-frame.tsx",
     "src/ui/index.tsx",
     "src/ui/portal.tsx",
   ],
-  "index-logic": [
-    "src/client/ui/index.tsx",
-    "src/ui/index.tsx",
-    "src/wiki/api/index.js",
-    "src/wiki/index.tsx",
-  ],
+  "index-logic": ["src/ui/index.tsx", "src/wiki/api/index.js", "src/wiki/index.tsx"],
 };
 
 const ROOTS = ["src", "scripts"];

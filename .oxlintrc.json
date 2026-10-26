@@ -330,11 +330,11 @@
     },
     {
       "files": [
-        "src/client/game/player.ts",
-        "src/client/game/scene-hud.ts",
-        "src/client/game/scene-main.js",
-        "src/client/ui/app.tsx",
-        "src/client/ui/menu-hud.tsx"
+        "src/client/views/player.ts",
+        "src/client/scenes/hud-scene.ts",
+        "src/client/scenes/main-scene.js",
+        "src/client/hud/app/app.tsx",
+        "src/client/hud/menu/menu-hud.tsx"
       ],
       "rules": {
         "max-lines": "off"

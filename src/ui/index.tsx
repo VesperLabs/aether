@@ -24,6 +24,7 @@ export { Tooltip } from "./tooltip";
 export { Portal } from "./portal";
 export { Switch } from "./switch";
 export { PlayerRender, PLAYER_RENDER_CANVAS_STYLE, FULL_CANVAS_SIZE } from "./player-render";
+export { Menu, MenuHeader, MENU_MAX_WIDTH } from "./menu";
 export * from "./hooks";
 
 export const SLOT_SIZE = 56;

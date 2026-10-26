@@ -1,17 +1,17 @@
 import Phaser from "phaser";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { App } from "./ui/app";
+import { App } from "@/client/hud/app/app";
 import socketIOClient from "socket.io-client";
 import type { ClientGameSocket } from "@/shared/network";
-import { AnimatedTiles } from "./game/animated-tiles";
-import { SceneMain } from "./game/scene-main";
-import { SceneBoot } from "./game/scene-boot";
-import { VJoyPlugin } from "./game/joystick";
-import { SceneHud } from "./game/scene-hud";
+import { AnimatedTiles } from "@/client/views/animated-tiles";
+import { SceneMain } from "@/client/scenes/main-scene";
+import { SceneBoot } from "@/client/scenes/boot-scene";
+import { VJoyPlugin } from "@/client/input/joystick";
+import { SceneHud } from "@/client/scenes/hud-scene";
 import "./style.css";
 import Peer from "peerjs";
-import { getPeerRtcConfiguration } from "./webrtc-peer-config";
+import { getPeerRtcConfiguration } from "@/client/hud/video/webrtc-peer-config";
 
 const debug = process.env.DEBUG;
 const SERVER_URL = process.env.SERVER_URL as string;
