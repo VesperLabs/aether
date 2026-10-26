@@ -1,9 +1,12 @@
-export function convertMsToS(s) {
+export function convertMsToS(s: number) {
   return (s / 1000).toFixed(2) + "s";
 }
 
-export const formatStats = (stats = {}) =>
-  Object.entries(stats).reduce((acc, [key, value]) => {
+type StatValue = number | string;
+type FormattedStat = StatValue | StatValue[];
+
+export const formatStats = (stats: Record<string, StatValue> = {}) =>
+  Object.entries(stats).reduce<Record<string, FormattedStat>>((acc, [key, value]) => {
     // skip these
     if (["mpCost", "hpCost", "spCost"].includes(key)) return acc;
 
@@ -23,7 +26,7 @@ export const formatStats = (stats = {}) =>
     return acc;
   }, {});
 
-const formatStat = (key, value) => {
+const formatStat = (key: string, value: FormattedStat): FormattedStat => {
   if (key.includes("Damage")) {
     if (Array.isArray(value)) {
       const formattedValue = value.map((item) => `${item}`).join(" ↔ ");
@@ -39,11 +42,11 @@ const formatStat = (key, value) => {
   } else if (key.includes("Delay") || key.includes("duration")) {
     if (Array.isArray(value)) {
       const formattedValue = value
-        .map((item) => convertMsToS(item)?.replace(".00", ""))
+        .map((item) => convertMsToS(Number(item))?.replace(".00", ""))
         .join(" ↔ ");
       return formattedValue;
     }
-    return convertMsToS(value)?.replace(".00", "");
+    return convertMsToS(Number(value))?.replace(".00", "");
   } else if (
     key.includes("Steal") ||
     key.includes("Chance") ||
@@ -60,7 +63,7 @@ const formatStat = (key, value) => {
   }
 };
 
-export function msToHours(ms) {
+export function msToHours(ms: number) {
   if (!ms) return 0;
   const millisecondsInHour = 60 * 60 * 1000; // Number of milliseconds in an hour
   return (ms / millisecondsInHour).toFixed(2) + " hrs";

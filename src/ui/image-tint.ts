@@ -1,12 +1,12 @@
 // Utility function to load an image and handle the onload event as a Promise
-export const IMAGE_CACHE: Record<string, CanvasImageSource> = {}; // In-memory cache for images
+export const IMAGE_CACHE: Record<string, HTMLImageElement> = {}; // In-memory cache for images
 
 /** A canvas always has a 2d context in the browsers we run in. */
 function context2d(canvas: HTMLCanvasElement) {
   return canvas.getContext("2d") as CanvasRenderingContext2D;
 }
 
-export function loadCacheImage(src: string): Promise<CanvasImageSource> {
+export function loadCacheImage(src: string): Promise<HTMLImageElement> {
   if (IMAGE_CACHE[src]) {
     return Promise.resolve(IMAGE_CACHE[src]); // Return cached image if available
   }

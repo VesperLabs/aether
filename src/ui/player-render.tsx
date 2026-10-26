@@ -1,4 +1,4 @@
-import { resolveAsset } from "@/shared/content";
+import { resolveAsset, type BuiltItem, type MobProfile } from "@/shared/content";
 import {
   ACCESSORY_HIDING_HELMETS,
   HAIR_HIDING_HELMETS,
@@ -7,14 +7,15 @@ import {
 } from "@/shared/content";
 import { filterVisibleEquipment } from "@/shared/rules/character";
 import { tintCanvas, loadCacheImage } from "@/ui/image-tint";
-import { memo, useEffect, useRef } from "react";
+import { memo, useEffect, useRef, type ComponentProps, type RefObject } from "react";
+import type { CSSProperties } from "react";
 import { Box } from "@/ui";
 import weaponAtlas from "../../public/assets/atlas/weapon.json";
 
 export const FULL_CANVAS_SIZE = 160;
 const MIN_CANVAS_SIZE = 100;
 
-export const PLAYER_RENDER_CANVAS_STYLE: any = {
+export const PLAYER_RENDER_CANVAS_STYLE: CSSProperties = {
   zIndex: 0,
   transform: `translate(-50%, -50%) scale(2)`,
   imageRendering: "pixelated",
@@ -27,15 +28,25 @@ type PlayerAsset = {
   tint?: string;
   texture: string;
   src: string;
-  previewRect: any;
-  slot: string;
-  atlas: string;
+  previewRect: number[];
+  slot?: string;
+  atlas?: string;
   slotKey?: string;
 };
 
-const drawImageOnNewCanvas = (image, tint) => {
+/** The parts of a character the renderer reads: how it looks and what it wears. */
+export interface RenderablePlayer {
+  profile?: MobProfile;
+  equipment?: Record<string, BuiltItem | null | undefined>;
+  activeItemSlots?: string[];
+}
+
+/** A look layer (hair, face...) built from the profile; it has no item behind it. */
+type LookPart = { slot: string; texture?: string; tint?: string };
+
+const drawImageOnNewCanvas = (image: HTMLImageElement, tint: string | undefined) => {
   const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
+  const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
   canvas.width = image.width;
   canvas.height = image.height;
 
@@ -50,11 +61,21 @@ const drawImageOnNewCanvas = (image, tint) => {
   return canvas;
 };
 
-const mergeImages = async ({ shouldBuffer, buffCanvasRef, canvasRef, assets }) => {
+const mergeImages = async ({
+  shouldBuffer,
+  buffCanvasRef,
+  canvasRef,
+  assets,
+}: {
+  shouldBuffer: boolean;
+  buffCanvasRef: RefObject<HTMLCanvasElement | null>;
+  canvasRef: RefObject<HTMLCanvasElement | null>;
+  assets: PlayerAsset[];
+}) => {
   if (!buffCanvasRef.current || !canvasRef?.current) return;
   const atlas = weaponAtlas.offsets.human["down-stand"];
-  const buffCanvas = shouldBuffer ? buffCanvasRef.current : canvasRef?.current;
-  const btx = buffCanvas.getContext("2d");
+  const buffCanvas = (shouldBuffer ? buffCanvasRef.current : canvasRef?.current) as HTMLCanvasElement;
+  const btx = buffCanvas.getContext("2d") as CanvasRenderingContext2D;
   btx.imageSmoothingEnabled = false;
   // Clear the buffer canvas before drawing
   btx.clearRect(0, 0, MIN_CANVAS_SIZE, MIN_CANVAS_SIZE);
@@ -94,7 +115,7 @@ const mergeImages = async ({ shouldBuffer, buffCanvasRef, canvasRef, assets }) =
   }
   if (canvasRef.current && shouldBuffer) {
     const mainCanvas = canvasRef.current;
-    const mainCtx = mainCanvas.getContext("2d");
+    const mainCtx = mainCanvas.getContext("2d") as CanvasRenderingContext2D;
     mainCtx.clearRect(0, 0, mainCanvas.width, mainCanvas.height);
     mainCtx.drawImage(
       buffCanvas,
@@ -110,6 +131,13 @@ const mergeImages = async ({ shouldBuffer, buffCanvasRef, canvasRef, assets }) =
   }
 };
 
+type PlayerRenderProps = Omit<ComponentProps<typeof Box>, "ref"> & {
+  player?: RenderablePlayer;
+  shouldBuffer?: boolean;
+  filteredSlots?: string[];
+  onLoadComplete?: (loaded: boolean) => void;
+};
+
 export const PlayerRender = memo(
   ({
     player,
@@ -118,7 +146,7 @@ export const PlayerRender = memo(
     filteredSlots,
     onLoadComplete = () => {},
     ...props
-  }: any) => {
+  }: PlayerRenderProps) => {
     const assets = getPlayerEquipmentAssets({ player, filteredSlots });
     const buffCanvasRef = useRef<HTMLCanvasElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -162,19 +190,25 @@ export const PlayerRender = memo(
   },
 );
 
-const getObscuredKeys = ({ filteredSlots, visibleParts }) => {
+const getObscuredKeys = ({
+  filteredSlots,
+  visibleParts,
+}: {
+  filteredSlots: string[];
+  visibleParts: Record<string, { texture?: string } | null | undefined>;
+}) => {
   const helmetTexture = visibleParts?.helmet?.texture;
   const accessoryTexture = visibleParts?.accessory?.texture;
-  if (HAIR_HIDING_HELMETS.includes(helmetTexture) && !filteredSlots?.includes("helmet")) {
+  if (HAIR_HIDING_HELMETS.includes(helmetTexture as string) && !filteredSlots?.includes("helmet")) {
     filteredSlots.push("hair");
   }
-  if (ACCESSORY_HIDING_HELMETS.includes(helmetTexture)) {
+  if (ACCESSORY_HIDING_HELMETS.includes(helmetTexture as string)) {
     filteredSlots.push("accessory");
   }
-  if (HAIR_HIDING_ACCESSORIES.includes(accessoryTexture)) {
+  if (HAIR_HIDING_ACCESSORIES.includes(accessoryTexture as string)) {
     filteredSlots.push("hair");
   }
-  if (FACE_HIDING_ACCESSORIES.includes(accessoryTexture)) {
+  if (FACE_HIDING_ACCESSORIES.includes(accessoryTexture as string)) {
     filteredSlots.push("face");
   }
   return filteredSlots;
@@ -184,7 +218,7 @@ const getPlayerEquipmentAssets = ({
   player,
   filteredSlots = [],
 }: {
-  player: FullCharacterState;
+  player?: RenderablePlayer;
   filteredSlots?: Array<string>;
 }) => {
   const keyOrder = [
@@ -203,42 +237,42 @@ const getPlayerEquipmentAssets = ({
     "handRight",
   ];
 
-  const visibleParts = {
+  const visibleParts: Record<string, LookPart | BuiltItem | null | undefined> = {
     hair: {
       slot: "hair",
       texture: player?.profile?.hair?.texture,
       tint: player?.profile?.hair?.tint,
-    } as Item,
+    } as LookPart,
     face: {
       slot: "face",
       texture: player?.profile?.face?.texture,
       tint: player?.profile?.face?.tint,
-    } as Item,
+    } as LookPart,
     whiskers: {
       slot: "whiskers",
       texture: player?.profile?.whiskers?.texture,
       tint: player?.profile?.whiskers?.tint,
-    } as Item,
+    } as LookPart,
     skin: {
       slot: "skin",
       tint: player?.profile?.tint,
-    } as Item,
+    } as LookPart,
     chest: {
       slot: "chest",
       tint: player?.profile?.tint,
-    } as Item,
-    ...filterVisibleEquipment(player),
+    } as LookPart,
+    ...filterVisibleEquipment(player ?? {}),
   };
 
-  function resolvePreviewRect({ key }) {
+  function resolvePreviewRect({ key }: { key: string }) {
     const isWeapon = ["handLeft", "handRight"]?.includes(key);
-    const isSmallSprite = ["dog", "cat"]?.includes(player?.profile?.race);
+    const isSmallSprite = ["dog", "cat"]?.includes(player?.profile?.race as string);
     if (isWeapon) return [0, 0, MIN_CANVAS_SIZE, MIN_CANVAS_SIZE];
     if (isSmallSprite) return [0, 100, 50, 80];
     return [0, 160, 80, 80];
   }
 
-  const playerAssets: Array<PlayerAsset> = keyOrder?.reduce((acc, key) => {
+  const playerAssets: Array<PlayerAsset> = keyOrder?.reduce<PlayerAsset[]>((acc, key) => {
     const item = visibleParts[key];
     if (item) {
       const assetRes = resolveAsset(item, player);
@@ -255,5 +289,5 @@ const getPlayerEquipmentAssets = ({
   }, []);
 
   const obscuredKeys = getObscuredKeys({ filteredSlots, visibleParts });
-  return playerAssets?.filter((asset) => !obscuredKeys.includes(asset?.slot));
+  return playerAssets?.filter((asset) => !obscuredKeys.includes(asset?.slot as string));
 };

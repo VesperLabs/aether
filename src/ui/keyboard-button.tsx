@@ -34,7 +34,7 @@ export const KeyboardButton: FC<KeyboardButtonProps> = ({
         ...sx,
       }}
       variant={variant}
-      onClick={!showOnly && onClick}
+      onClick={!showOnly ? onClick : undefined}
       disabled={disabled}
       {...props}
     >

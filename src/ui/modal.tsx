@@ -1,26 +1,10 @@
+import type { ComponentProps } from "react";
 import { Box, Flex } from ".";
 
-interface ModalBodyProps {
-  sx?: any;
-  children: React.ReactNode;
-}
+type FlexProps = ComponentProps<typeof Flex>;
+type ModalProps = FlexProps & { zoom?: number; bottomOffset?: number };
 
-interface ModalFooterProps {
-  sx?: any;
-  children: React.ReactNode;
-}
-
-interface ModalOverlayProps {
-  sx?: any;
-  children: React.ReactNode;
-}
-
-export const Modal: any & {
-  Header: any;
-  Body: React.FC<ModalBodyProps>;
-  Footer: React.FC<ModalFooterProps>;
-  Overlay: React.FC<ModalOverlayProps>;
-} = ({ sx, zoom = 1, bottomOffset, ...props }) => {
+const ModalRoot = ({ sx, zoom = 1, bottomOffset = 0, ...props }: ModalProps) => {
   return (
     <Flex
       sx={{
@@ -45,7 +29,7 @@ export const Modal: any & {
   );
 };
 
-Modal.Overlay = ({ sx, ...props }) => {
+const ModalOverlay = ({ sx, ...props }: ComponentProps<typeof Box>) => {
   return (
     <Box
       sx={{
@@ -64,7 +48,7 @@ Modal.Overlay = ({ sx, ...props }) => {
   );
 };
 
-Modal.Header = ({ sx, ...props }) => {
+const ModalHeader = ({ sx, ...props }: FlexProps) => {
   return (
     <Flex
       sx={{ alignItems: "center", p: 2, gap: 1, borderRadius: 3, flex: 1, bg: "shadow.25", ...sx }}
@@ -73,7 +57,7 @@ Modal.Header = ({ sx, ...props }) => {
   );
 };
 
-Modal.Body = ({ sx, ...props }) => {
+const ModalBody = ({ sx, ...props }: FlexProps) => {
   return (
     <Flex
       sx={{
@@ -89,6 +73,13 @@ Modal.Body = ({ sx, ...props }) => {
   );
 };
 
-Modal.Footer = ({ sx, ...props }) => {
+const ModalFooter = ({ sx, ...props }: FlexProps) => {
   return <Flex sx={{ gap: 1, flex: 1, ...sx }} {...props} />;
 };
+
+export const Modal = Object.assign(ModalRoot, {
+  Overlay: ModalOverlay,
+  Header: ModalHeader,
+  Body: ModalBody,
+  Footer: ModalFooter,
+});

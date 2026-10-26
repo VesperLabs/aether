@@ -1,14 +1,30 @@
 import { Button as Flex } from "theme-ui";
-import { forwardRef, useState } from "react";
+import { forwardRef, useState, type ComponentProps } from "react";
 
-export const Button = forwardRef<HTMLDivElement, any>(
+/** Press handlers get a React event from the element or a DOM event from the document listener. */
+// oxlint-disable-next-line typescript/no-explicit-any
+type PressHandler = (event: any) => unknown;
+
+export type ButtonProps = Omit<
+  ComponentProps<typeof Flex>,
+  "ref" | "onClick" | "onTouchStart" | "onTouchEnd"
+> & {
+  icon?: string;
+  href?: string;
+  disabled?: boolean;
+  onClick?: PressHandler;
+  onTouchStart?: PressHandler;
+  onTouchEnd?: PressHandler;
+};
+
+export const Button = forwardRef<HTMLDivElement, ButtonProps>(
   ({ icon: _icon, onTouchEnd, onTouchStart, onClick, ...props }, ref) => {
     const [className, setClassName] = useState("");
 
     // if we are using this as a link we disable the click events
     const isLink = props?.href;
 
-    const handleMouseDown = (e) => {
+    const handleMouseDown = (e: React.MouseEvent) => {
       if (props?.disabled) return false;
       setClassName("active");
       if (onTouchStart) onTouchStart(e);
@@ -26,7 +42,7 @@ export const Button = forwardRef<HTMLDivElement, any>(
       );
     };
 
-    const handleTouchStart = (e) => {
+    const handleTouchStart = (e: React.TouchEvent) => {
       e.stopPropagation();
       if (props?.disabled) return false;
       setClassName("active");

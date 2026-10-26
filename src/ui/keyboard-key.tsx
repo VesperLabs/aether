@@ -13,6 +13,11 @@ interface KeyboardKeyProps {
 
 const IGNORE_PRESS_ELEMENT_TYPES = ["text", "number", "textarea"];
 
+/** The `type` of an input element, if the target is one. */
+function inputType(target: EventTarget | Element | null) {
+  return (target as HTMLInputElement | null)?.type;
+}
+
 /** True if the last Enter keydown started in an input/textarea (survives keyup after unmount). */
 let enterKeydownFromEditableField = false;
 
@@ -61,7 +66,7 @@ export const KeyboardKey: React.FC<KeyboardKeyProps> = ({
   disabled,
   sx,
 }) => {
-  const ref = useRef(null);
+  const ref = useRef<HTMLDivElement>(null);
   const [isPressed, setIsPressed] = useState(false);
 
   const keyDisplayName = getKeyDisplayLabel(name);
@@ -78,10 +83,8 @@ export const KeyboardKey: React.FC<KeyboardKeyProps> = ({
     }
     /* Don't fire HUD shortcuts while typing in inputs; ESC still works (e.g. close modals). */
     if (
-      // @ts-ignore
       IGNORE_PRESS_ELEMENT_TYPES.some((t) =>
-        // @ts-ignore
-        [document.activeElement?.type, e.target?.type].includes(t),
+        [inputType(document.activeElement), inputType(e.target)].includes(t),
       ) &&
       keyName !== "ESCAPE"
     ) {
@@ -97,8 +100,7 @@ export const KeyboardKey: React.FC<KeyboardKeyProps> = ({
   const handleKeyDown = (e: KeyboardEvent) => {
     if (e.repeat) return;
     const keyName = getKeyName(e?.key || "");
-    // @ts-ignore
-    if (document.activeElement?.type === "text" || e.target?.type === "text") {
+    if (inputType(document.activeElement) === "text" || inputType(e.target) === "text") {
       return;
     }
 

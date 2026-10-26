@@ -1,12 +1,12 @@
 import path from "node:path";
-import { defineConfig, loadEnv } from "vite";
+import { defineConfig, loadEnv, type ConfigEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import { DEFAULT_SERVER_FPS } from "../shared/network/sync/timing";
 
 /** Repo root. Vite is run from the root with `--config` (see npm scripts). */
 const repoRoot = path.resolve(__dirname, "../..");
 
-export default ({ mode, command }) => {
+export default ({ mode, command }: ConfigEnv) => {
   process.env = Object.assign(process.env, loadEnv(mode, repoRoot, ""));
   console.log(`🛠 DEBUG: ${process.env.DEBUG}`);
   console.log(`🛠 SERVER_FPS: ${process.env.SERVER_FPS}`);
