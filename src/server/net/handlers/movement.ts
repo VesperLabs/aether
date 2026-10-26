@@ -6,6 +6,7 @@ import {
   PLAYER_DEFAULT_SPAWN,
 } from "../../utils";
 import type { ParsedCommand } from "@/shared/network";
+import { legacyUpdateMemberRoom } from "../../party-adapter";
 import type { CommandContext } from "@/server/net/command-context";
 
 export function playerInput(ctx: CommandContext, input: ParsedCommand<"playerInput">) {
@@ -68,13 +69,7 @@ export function enterDoor(ctx: CommandContext, doorName: ParsedCommand<"enterDoo
 
   // announce room has changed to the party
   // TODO: need a better way of sending a persistant party state instead of this
-  if (player?.partyId) {
-    const party = scene.partyManager.getPartyById(player?.partyId);
-    party.updateMember(player?.id, { roomName: player?.roomName });
-    io.to(party.socketRoom).emit("partyUpdate", {
-      party,
-    });
-  }
+  legacyUpdateMemberRoom(scene, player);
 }
 
 export function respawn(ctx: CommandContext) {
@@ -112,13 +107,7 @@ export function respawn(ctx: CommandContext) {
 
   // announce room has changed to the party
   // TODO: need a better way of sending a persistant party state instead of this
-  if (player?.partyId) {
-    const party = scene.partyManager.getPartyById(player?.partyId);
-    party.updateMember(player?.id, { roomName: player?.roomName });
-    io.to(party.socketRoom).emit("partyUpdate", {
-      party,
-    });
-  }
+  legacyUpdateMemberRoom(scene, player);
 
   scene.db.updateUser(scene.players?.[socketId]);
 }

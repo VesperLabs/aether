@@ -6,7 +6,7 @@ import { Server } from "socket.io";
 import path from "path";
 import { getTickRoomState, getBuffRoomState } from "./utils";
 import { RoomManager } from "./room-manager";
-import { PartyManager } from "./party-manager";
+import { createPartyState, type PartyState } from "@/shared/rules/party";
 import Phaser from "phaser";
 import { DEFAULT_SERVER_FPS } from "../shared";
 import { cloneDeep } from "lodash";
@@ -35,7 +35,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
   public quests: Record<string, Quest>;
   public players: Record<string, ServerPlayer>;
   public roomManager: RoomManager;
-  public partyManager: PartyManager;
+  public partyState: PartyState = createPartyState();
   public spells: any;
   public db: any;
   public io: any;
@@ -68,7 +68,6 @@ class ServerScene extends Phaser.Scene implements ServerScene {
     this.spells = {};
     this.quests = QuestBuilder.buildAllQuests();
     this.roomManager = new RoomManager(scene);
-    this.partyManager = new PartyManager(scene);
     subscribeStats(this.gameEvents, (characterId, amount, kill) => {
       const member = this.players[characterId];
       if (!member) return;

@@ -1,5 +1,6 @@
 import type { GameSocket } from "@/shared/network";
 import { removePlayer } from "../utils";
+import { legacyLeaveParty } from "../party-adapter";
 import type { CommandContext } from "./command-context";
 import { registerCommands } from "./dispatcher";
 import { commandHandlers } from "./handlers/command-handlers";
@@ -23,7 +24,7 @@ export function listenForConnections(scene: ServerScene) {
       const player = scene.players?.[socketId];
       scene.db.updateUser(scene.players?.[socketId]);
       console.log(`🔌 ${player?.profile?.userName ?? "Anonymous"} disconnected`);
-      scene.partyManager.removeSocketFromParty(socket);
+      legacyLeaveParty(scene, socket);
       removePlayer(scene, socketId);
       scene.io.emit("remove", socketId);
       /* Should we pause or resume? */

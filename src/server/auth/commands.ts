@@ -1,4 +1,5 @@
 import { getFullCharacterState, getRoomState, removePlayer } from "../utils";
+import { legacyLeaveParty } from "../party-adapter";
 import { createBaseUser } from "../persistence";
 import { shouldPause } from "../net/scene-pause";
 import type { ParsedCommand } from "@/shared/network";
@@ -65,7 +66,7 @@ export async function login(ctx: CommandContext, { email, password }: ParsedComm
     if (player?.email === user?.email) {
       const player = scene.players?.[sId];
       console.log(`🔌 ${player?.profile?.userName} disconnected`);
-      scene.partyManager.removeSocketFromParty(socket);
+      legacyLeaveParty(scene, socket);
       removePlayer(scene, sId);
 
       io?.sockets?.sockets?.get?.(sId)?.disconnect?.(true);

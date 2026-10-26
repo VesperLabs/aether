@@ -1,6 +1,7 @@
 import { ServerCharacter } from "./character";
 import { cloneObject, getRoomState, PLAYER_DEFAULT_SPAWN } from "./utils";
 import { expForMobKill } from "@/shared/rules/stats";
+import { isPartyMember, sharedRecipientIds } from "@/shared/rules/party";
 import type { MobKilledEvent } from "@/shared/rules/events";
 import { MAX_INVENTORY_ITEMS } from "../shared";
 
@@ -354,7 +355,6 @@ export class Player extends ServerCharacter implements ServerPlayer {
 
     const room = scene?.roomManager.rooms[this.roomName];
     const { allowedTargets } = this.getAbilityDetails(abilitySlot);
-    const party = scene?.partyManager.getPartyById(this?.partyId);
 
     let hitList = [];
     let npcKills = [];
@@ -381,7 +381,7 @@ export class Player extends ServerCharacter implements ServerPlayer {
     }
 
     for (const player of players) {
-      const targetIsInParty = party ? party.members.find((m) => m.id === player.id) : false;
+      const targetIsInParty = isPartyMember(scene.partyState, this?.partyId, player.id);
       if (!ids.includes(player.id)) continue;
       if (!allowedTargets.includes("self") && player.id === this.id) continue;
       if (!allowedTargets.includes("enemy") && player.id !== this.id && !targetIsInParty) continue;
@@ -398,13 +398,13 @@ export class Player extends ServerCharacter implements ServerPlayer {
     /* Send exp update to client */
     if (hitList?.some((hit) => hit.type === "death")) {
       // either you are in a party, or you are in a fake party object
-      const partyMembers = scene.partyManager.getPartyById(this?.partyId)?.members || [
-        { id: this?.id, roomName: this?.roomName },
-      ];
       // party members in same room share the kill
-      const recipients: ServerPlayer[] = partyMembers
-        ?.filter((m) => m?.roomName === this?.roomName)
-        .map((m) => scene?.players?.[m?.id])
+      const recipients: ServerPlayer[] = sharedRecipientIds(scene.partyState, {
+        partyId: this?.partyId,
+        id: this?.id,
+        roomName: this?.roomName,
+      })
+        .map((id) => scene?.players?.[id])
         .filter(Boolean);
       const levelsBefore = recipients.map((member) => member.baseStats.level);
       // Read once so a level-up part way through the kills doesn't change what later kills are worth.

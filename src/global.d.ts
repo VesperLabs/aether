@@ -100,7 +100,7 @@ interface ServerScene extends Phaser.Scene {
   npcs: Record<string, Npc>;
   quests: Record<string, Quest>;
   players: Record<string, ServerPlayer>;
-  partyManager: any;
+  partyState: import("@/shared/rules/party").PartyState;
   roomManager: RoomManager;
   spells: any;
   db: any;
