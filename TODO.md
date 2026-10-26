@@ -111,3 +111,8 @@ Found during the migration and left alone so behaviour stayed identical. Fix aft
 - [ ] **Wiki:** `fetchPlayers` builds the URL from `limit`, which `PagePlayers` never sets, so the request is `...&limit=undefined`
 - [ ] **Client:** `StatusIcon` spread an undefined `props` onto its box (never passed any); removed. `menu-social` `Invite` emitted `inviteToParty` with an undefined `socketId` for a player without one; it now skips the emit.
 - [ ] **Types:** `client/input/joystick.ts` still casts `Phaser` to `any` for `Phaser.Class` (untyped in Phaser 4)
+- [x] **Exploit:** `updateState` wrote any client key into `player.state` (now only `isAiming` / `isHoldingAttack`)
+- [x] **Exploit:** `respawn` healed and teleported a living player
+- [x] **Exploit:** `enterDoor` worked from anywhere in the room
+- [x] **Exploit:** `playerInput` trusted client positions (speed hacks, walking through walls); now validated with a `positionCorrection` snap-back
+- [x] **Exploit:** `chatNpc`, shop buy/sell and `setSpawn` worked from any distance, and `setSpawn` trusted client coordinates
