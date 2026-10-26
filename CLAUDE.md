@@ -26,6 +26,7 @@ Server-authoritative online game: Phaser + React client, Node + socket.io server
 - In code: `PascalCase` for types, classes and components; `camelCase` for functions, variables, events and commands; `SCREAMING_CASE` only for top-level constants.
 - Unit tests go next to the code (`foo.test.ts`). Game scenario tests go in `src/shared/rules/tests/`, integration tests in `src/server/tests/`.
 - Move code in small steps that keep `npm run check` passing.
+- Commit messages and PR titles are [conventional commits](https://www.conventionalcommits.org) (`feat:`, `fix:`, `refactor:`, `docs:`, `test:`, `ci:`, `chore:`), enforced by commitlint. release-please uses them to bump the version.
 
 ## Commands
 
