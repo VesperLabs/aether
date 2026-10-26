@@ -1,0 +1,128 @@
+// @vitest-environment node
+import http from "node:http";
+import type { AddressInfo } from "node:net";
+import { io as connect, type Socket } from "socket.io-client";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import "../phaser";
+import { initFakeDatabase } from "../db/fake";
+import { GameServer } from "../game-server";
+
+/**
+ * Boots the real game server in-process (offline mode, fake database) on a random port
+ * and talks to it with a socket.io client, like the browser does.
+ */
+let httpServer: http.Server;
+let gameServer: GameServer;
+let url: string;
+const sockets: Socket[] = [];
+
+type Anything = any;
+
+function once<T = Anything>(socket: Socket, event: string, timeoutMs = 5000): Promise<T[]> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(
+      () => reject(new Error(`timed out waiting for "${event}"`)),
+      timeoutMs,
+    );
+    socket.once(event, (...args: T[]) => {
+      clearTimeout(timer);
+      resolve(args);
+    });
+  });
+}
+
+async function connectSocket() {
+  const socket = connect(url, { transports: ["websocket"], forceNew: true });
+  sockets.push(socket);
+  await once(socket, "connect");
+  return socket;
+}
+
+async function login(charClass = "warrior") {
+  const socket = await connectSocket();
+  const heroInit = once(socket, "heroInit");
+  socket.emit("demoLogin", { charClass });
+  const [state, meta] = await heroInit;
+  return { socket, state, meta };
+}
+
+const ping = (socket: Socket) =>
+  new Promise<boolean>((resolve) => socket.emit("latency", () => resolve(true)));
+
+beforeAll(async () => {
+  process.env.PUBLIC_DIR = "public";
+  httpServer = http.createServer();
+  gameServer = new GameServer({ httpServer, db: await initFakeDatabase() });
+  await new Promise<void>((resolve) => httpServer.listen(0, "127.0.0.1", resolve));
+  url = `http://127.0.0.1:${(httpServer.address() as AddressInfo).port}`;
+}, 60000);
+
+afterAll(async () => {
+  sockets.forEach((s) => s.disconnect());
+  gameServer?.game?.destroy(true);
+  gameServer?.io?.close();
+});
+
+describe("game server", () => {
+  it("demoLogin sends heroInit with the hero and room state", async () => {
+    const { socket, state, meta } = await login("warrior");
+    expect(meta).toEqual({ isLogin: true });
+    expect(state.socketId).toBe(socket.id);
+    expect(state.userSettings).toBeTruthy();
+    const hero = state.players.find((p: Anything) => p.socketId === socket.id);
+    expect(hero).toBeTruthy();
+    expect(hero.charClass).toBe("warrior");
+    expect(hero.stats.maxHp).toBeGreaterThan(0);
+    expect(hero.equipment.armor.base).toBe("robe");
+    expect(Array.isArray(state.npcs)).toBe(true);
+  });
+
+  it("demoLogin without a class answers with a formError", async () => {
+    const socket = await connectSocket();
+    const error = once(socket, "formError");
+    socket.emit("demoLogin", {});
+    expect((await error)[0]).toEqual({ error: "No class" });
+  });
+
+  it("answers latency pings with an ack", async () => {
+    const { socket } = await login("rogue");
+    expect(await ping(socket)).toBe(true);
+  });
+
+  it("broadcasts chat messages to the room", async () => {
+    const { socket } = await login("mage");
+    const message = once(socket, "message");
+    socket.emit("message", { message: "hello world" });
+    const [msg] = await message;
+    expect(msg).toMatchObject({ type: "chat", message: "hello world" });
+  });
+
+  it("moveItem moves an equipped item to the inventory and broadcasts playerUpdate", async () => {
+    const { socket, state } = await login("warrior");
+    const hero = state.players.find((p: Anything) => p.socketId === socket.id);
+    const armorId = hero.equipment.armor.id;
+    const update = once(socket, "playerUpdate");
+    socket.emit("moveItem", {
+      from: { location: "equipment", slot: "armor" },
+      to: { location: "inventory", slot: 0 },
+    });
+    const [player] = await update;
+    expect(player.equipment.armor).toBeFalsy();
+    expect(player.inventory[0].id).toBe(armorId);
+  });
+
+  it("dropItem removes an equipped item from the hero", async () => {
+    const { socket, state } = await login("warrior");
+    const hero = state.players.find((p: Anything) => p.socketId === socket.id);
+    const update = once(socket, "playerUpdate");
+    socket.emit("dropItem", { location: "equipment", item: { id: hero.equipment.armor.id } });
+    const [player] = await update;
+    expect(player.equipment.armor).toBeFalsy();
+  });
+
+  it("consumeItem on a missing item is ignored", async () => {
+    const { socket } = await login("cleric");
+    socket.emit("consumeItem", { location: "inventory", item: { id: "nope" } });
+    expect(await ping(socket)).toBe(true);
+  });
+});
