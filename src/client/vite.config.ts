@@ -3,6 +3,7 @@ import { defineConfig, loadEnv, type ConfigEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import { DEFAULT_SERVER_FPS } from "../shared/network/sync/timing";
 import { getAppVersion } from "../../scripts/app-version";
+import { rewriteAssetUrls } from "../../scripts/assets-url";
 
 /** Repo root. Vite is run from the root with `--config` (see npm scripts). */
 const repoRoot = path.resolve(__dirname, "../..");
@@ -29,9 +30,7 @@ export default ({ mode, command }: ConfigEnv) => {
       {
         name: "replace-url",
         transform(code, id) {
-          return process.env.ASSETS_URL
-            ? code.replace(/\.\/assets\//g, process.env.ASSETS_URL + "/")
-            : code;
+          return process.env.ASSETS_URL ? rewriteAssetUrls(code, process.env.ASSETS_URL) : code;
         },
       },
       react(),
