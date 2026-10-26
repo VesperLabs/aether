@@ -8,7 +8,7 @@ export interface ConnectionSession {
 
 /** Everything a command handler needs to know about who sent the command and where. */
 export interface CommandContext {
-  scene: ServerScene;
+  world: ServerWorld;
   io: GameIo;
   socket: GameSocket;
   socketId: string;

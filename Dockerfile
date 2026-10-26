@@ -1,15 +1,7 @@
 # syntax=docker/dockerfile:1.7
 
 # ---- Build Stage ----
-# Has dev headers + tooling so `npm ci` can compile `canvas` once.
 FROM node:26-bookworm AS build
-
-# Cache apt layers between builds; use -dev packages for canvas's native build.
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
-    --mount=type=cache,target=/var/lib/apt,sharing=locked \
-    apt-get update && apt-get install -y --no-install-recommends \
-      python3 pkg-config \
-      libcairo2-dev libpango1.0-dev libpng-dev libjpeg-dev libgif-dev librsvg2-dev
 
 WORKDIR /app
 
@@ -60,14 +52,7 @@ RUN --mount=type=cache,target=/root/.npm \
 
 
 # ---- Production Stage ----
-# Only the runtime shared libs that `canvas`'s compiled binding links against.
 FROM node:26-bookworm-slim AS production
-
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
-    --mount=type=cache,target=/var/lib/apt,sharing=locked \
-    apt-get update && apt-get install -y --no-install-recommends \
-      libcairo2 libpango-1.0-0 libpangocairo-1.0-0 \
-      libjpeg62-turbo libgif7 librsvg2-2 libpng16-16
 
 WORKDIR /app
 

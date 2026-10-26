@@ -1,5 +1,8 @@
 import { isEqual, get } from "lodash";
 import { hasVisibleWeaponType } from "./rules/combat";
+export { getAngleFromDirection } from "./rules/world";
+export { BODY_SIZE, filterVisibleEquipment } from "./character-model";
+import { filterVisibleEquipment } from "./character-model";
 export { CONSUMABLES_BASES, MAX_INVENTORY_ITEMS, POTION_BASES } from "./rules/inventory";
 export {
   MIN_STEALTH_ALPHA,
@@ -17,7 +20,6 @@ export const ACCESSORY_HIDING_HELMETS = ["helmet-armet", "helmet-horned"];
 export const FACE_HIDING_ACCESSORIES = ["accessory-jake"];
 export const HAIR_HIDING_ACCESSORIES = ["accessory-jake"];
 export const BLANK_TEXTURE = "human-blank";
-export const BODY_SIZE = 8;
 export const MINI_MAP_SIZE = 160;
 export const DEFAULT_USER_SETTINGS: UserSettings = {
   showMinimap: true,
@@ -25,17 +27,6 @@ export const DEFAULT_USER_SETTINGS: UserSettings = {
   videoChat: false,
   charLevels: false,
 };
-
-export function getAngleFromDirection(direction) {
-  let angle = 0;
-
-  if (direction === "up") angle = 270;
-  if (direction === "down") angle = 90;
-  if (direction === "left") angle = 180;
-  if (direction === "right") angle = 0;
-
-  return angle;
-}
 
 export function capitalize(str) {
   if (str.length == 0) return str;
@@ -235,14 +226,6 @@ export function msToHours(ms) {
   if (!ms) return 0;
   const millisecondsInHour = 60 * 60 * 1000; // Number of milliseconds in an hour
   return (ms / millisecondsInHour).toFixed(2) + " hrs";
-}
-
-export function filterVisibleEquipment(player: FullCharacterState) {
-  return Object.fromEntries(
-    Object.entries(player?.equipment ?? {}).filter(([key]) =>
-      player?.activeItemSlots?.includes(key),
-    ),
-  );
 }
 
 export function distanceTo(first, second) {

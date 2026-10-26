@@ -5,8 +5,8 @@ export function attack(
   ctx: CommandContext,
   { count, direction, castAngle, abilitySlot }: ParsedCommand<"attack"> = {},
 ) {
-  const { scene, socket, socketId } = ctx;
-  const player = scene.players[socketId];
+  const { world, socket, socketId } = ctx;
+  const player = world.players[socketId];
 
   // attack-spells like flame-slash also respect the spell-cooldown...
   if (abilitySlot && !player.canCastSpell(abilitySlot as number)) return;
@@ -22,8 +22,8 @@ export function castSpell(
   ctx: CommandContext,
   { abilitySlot, castAngle }: ParsedCommand<"castSpell"> = {},
 ) {
-  const { scene, socket, socketId } = ctx;
-  const player = scene.players[socketId];
+  const { world, socket, socketId } = ctx;
+  const player = world.players[socketId];
   player.doCast({ abilitySlot, castAngle });
   socket.to(player?.roomName).emit("playerCastSpell", { socketId, abilitySlot, castAngle });
 }

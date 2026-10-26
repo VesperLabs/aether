@@ -7,9 +7,9 @@ export function latency(ctx: CommandContext, ack: ParsedCommand<"latency">) {
 }
 
 export function peerInit(ctx: CommandContext, pId: ParsedCommand<"peerInit">) {
-  const { scene, socketId, io, session } = ctx;
+  const { world, socketId, io, session } = ctx;
   session.peerId = pId;
-  const player = scene.players[socketId];
+  const player = world.players[socketId];
   if (player) {
     player.peerId = pId;
     const roomName = player.room?.name;
@@ -31,9 +31,9 @@ export async function updateUserSetting(
   ctx: CommandContext,
   { name, value }: ParsedCommand<"updateUserSetting">,
 ) {
-  const { scene, socket, socketId } = ctx;
-  const player: ServerPlayer = scene.players[socketId];
-  await scene.db.updateUserSetting(player, {
+  const { world, socket, socketId } = ctx;
+  const player: ServerPlayer = world.players[socketId];
+  await world.db.updateUserSetting(player, {
     name,
     value,
   });

@@ -3,7 +3,6 @@ import http from "node:http";
 import type { AddressInfo } from "node:net";
 import { io as connect, type Socket } from "socket.io-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import "../phaser";
 import { initFakeDatabase } from "../persistence";
 import { GameServer } from "../game-server";
 
@@ -47,19 +46,19 @@ async function login(charClass: string) {
   const heroInit = once(socket, "heroInit");
   socket.emit("demoLogin", { charClass });
   await heroInit;
-  const scene = (gameServer.game.scene as Anything).getScene("ServerScene");
-  const player = scene.players[socket.id as string];
+  const world = gameServer.world as Anything;
+  const player = world.players[socket.id as string];
   const events: Record<string, Anything[]> = {};
   for (const name of ["assignDamage", "modifyPlayerStat", "buffUpdate"]) {
     events[name] = [];
     socket.on(name, (payload: Anything) => events[name].push(payload));
   }
-  return { socket, scene, player, events };
+  return { socket, world, player, events };
 }
 
 /** A mob in the player's room, set up to die to one hit and to never dodge or block. */
-function weakMobNear(scene: Anything, player: Anything, offset: { x: number; y: number }) {
-  const mob = Object.values<Anything>(scene.npcs).find(
+function weakMobNear(world: Anything, player: Anything, offset: { x: number; y: number }) {
+  const mob = Object.values<Anything>(world.npcs).find(
     (npc) => npc.room?.name === player.roomName && !npc.state.isDead,
   );
   mob.stats.hp = 1;
@@ -83,14 +82,13 @@ beforeAll(async () => {
 
 afterAll(async () => {
   sockets.forEach((s) => s.disconnect());
-  gameServer?.game?.destroy(true);
-  gameServer?.io?.close();
+  gameServer?.close();
 });
 
 describe("attacking", () => {
   it("attacks a mob until it dies, and the killer gets exp and kill credit", async () => {
-    const { socket, scene, player, events } = await login("warrior");
-    const { mob, place } = weakMobNear(scene, player, { x: 0, y: 0 });
+    const { socket, world, player, events } = await login("warrior");
+    const { mob, place } = weakMobNear(world, player, { x: 0, y: 0 });
     const expBefore = player.stats.exp;
 
     await until(
@@ -146,8 +144,8 @@ describe("casting spells", () => {
   });
 
   it("kills a mob with a spell", async () => {
-    const { socket, scene, player, events } = await login("mage");
-    const { mob, place } = weakMobNear(scene, player, { x: 12, y: 0 });
+    const { socket, world, player, events } = await login("mage");
+    const { mob, place } = weakMobNear(world, player, { x: 12, y: 0 });
     player.stats.mp = player.stats.maxMp;
 
     await until(

@@ -3,7 +3,6 @@ import http from "node:http";
 import type { AddressInfo } from "node:net";
 import { io as connect, type Socket } from "socket.io-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import "../phaser";
 import { initFakeDatabase } from "../persistence";
 import { GameServer } from "../game-server";
 
@@ -46,11 +45,11 @@ async function login(charClass: string) {
   const heroInit = once(socket, "heroInit");
   socket.emit("demoLogin", { charClass });
   await heroInit;
-  const scene = (gameServer.game.scene as Anything).getScene("ServerScene");
-  const player = scene.players[socket.id as string];
+  const world = gameServer.world as Anything;
+  const player = world.players[socket.id as string];
   const attacks: Anything[] = [];
   socket.on("npcAttack", (payload: Anything) => attacks.push(payload));
-  return { socket, scene, player, attacks };
+  return { socket, world, player, attacks };
 }
 
 beforeAll(async () => {
@@ -63,14 +62,13 @@ beforeAll(async () => {
 
 afterAll(async () => {
   sockets.forEach((s) => s.disconnect());
-  gameServer?.game?.destroy(true);
-  gameServer?.io?.close();
+  gameServer?.close();
 });
 
 describe("npc behavior", () => {
   it("a mob notices a nearby player, locks on and attacks them", async () => {
-    const { scene, player, attacks, socket } = await login("warrior");
-    const mob = Object.values<Anything>(scene.npcs).find(
+    const { world, player, attacks, socket } = await login("warrior");
+    const mob = Object.values<Anything>(world.npcs).find(
       (npc) =>
         npc.room?.name === player.roomName &&
         npc.kind === "nasty" &&

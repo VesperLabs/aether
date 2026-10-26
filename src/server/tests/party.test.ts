@@ -3,7 +3,6 @@ import http from "node:http";
 import type { AddressInfo } from "node:net";
 import { io as connect, type Socket } from "socket.io-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import "../phaser";
 import { initFakeDatabase } from "../persistence";
 import { GameServer } from "../game-server";
 
@@ -66,8 +65,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   sockets.forEach((s) => s.disconnect());
-  gameServer?.game?.destroy(true);
-  gameServer?.io?.close();
+  gameServer?.close();
 });
 
 describe("party", () => {

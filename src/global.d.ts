@@ -94,43 +94,18 @@ interface ServerMetrics {
   ping: number;
 }
 
-interface ServerScene extends Phaser.Scene {
-  doors: Record<string, Door>;
-  loots: Record<string, Loot>;
-  npcs: Record<string, Npc>;
-  quests: Record<string, Quest>;
-  players: Record<string, ServerPlayer>;
-  partyState: import("@/shared/rules/party").PartyState;
-  roomManager: RoomManager;
-  spells: any;
+type ServerWorld = import("@/shared/rules/world").World<ServerPlayer, Npc, any, Loot, Quest> & {
   db: any;
   io: any;
-  gameEvents: import("@/shared/rules/world").GameEventBus;
-}
+  loop: import("@/shared/rules/world").TickLoop;
+};
 
 interface Coordinate {
   x: number;
   y: number;
 }
 
-interface RoomManager {
-  scene: ServerScene;
-  rooms: Record<string, Room>;
-}
-
-interface Room {
-  scene: ServerScene;
-  name: string;
-  tileMap: Phaser.Tilemaps.Tilemap;
-  collideLayer: Phaser.Tilemaps.TilemapLayer;
-  doors: Phaser.Physics.Arcade.Group;
-  colliders: Array<any>;
-  spellState: any;
-  playerManager: any;
-  npcManager: any;
-  lootState: any;
-  findPath(startCoords: Coordinate, targetCoords: Coordinate);
-}
+type Room = import("@/shared/rules/world").RoomData;
 
 type Elements = "earth" | "fire" | "water" | "light" | "physical" | "holy";
 
@@ -165,7 +140,14 @@ interface Buff {
   dispelAfterAttack?: boolean;
 }
 
-interface Character extends Phaser.GameObjects.Container {
+interface Character {
+  x: number;
+  y: number;
+  world?: ServerWorld;
+  update?(time: number, delta: number): void;
+  /** Phaser container methods, used by the client's sprites. */
+  add?(...args: any[]): any;
+  bringToTop?(...args: any[]): any;
   startingCoords?: Coordinate;
   socketId?: string;
   id?: string;
@@ -177,7 +159,6 @@ interface Character extends Phaser.GameObjects.Container {
   direction: string;
   currentSpeed: number;
   nextPath: Coordinate;
-  body: Phaser.Physics.Arcade.Body;
   vx: any;
   vy: any;
   kind: string;
@@ -193,7 +174,8 @@ interface Character extends Phaser.GameObjects.Container {
   abilities: Record<number, Item>;
   activeItemSlots: Array<string>;
   bodyCenterY: number;
-  hitBox: any;
+  hitBoxSize: { width: number; height: number };
+  bodySize: number;
   bodyOffsetY: number;
   doHit(ids: Array<string>, abilitySlot: number): void;
   addBuff(args: AddBuffArgs);
@@ -225,6 +207,7 @@ interface KeeperData {
 }
 
 interface Npc extends Character {
+  name?: string;
   drops: Array<Drop>;
   talkingIds: Array<string>;
   keeperData: KeeperData;

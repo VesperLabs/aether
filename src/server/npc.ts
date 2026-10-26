@@ -11,14 +11,14 @@ import {
   type NpcDecision,
 } from "@/shared/rules/npc-behavior";
 import { canHitPlayer } from "@/shared/rules/spells";
-import { getCharacterDirection } from "@/shared/rules/world";
+import { entitiesInRoom, getCharacterDirection } from "@/shared/rules/world";
+import { findNextWaypoint, isSolidTile, worldToTileX, worldToTileY } from "@/shared/rules/movement";
 
 const sleep = (delay: number) => new Promise((resolve) => setTimeout(resolve, delay));
 
 /**
  * An NPC. What it does each tick is decided by `rules/npc-behavior`; this class builds the input
- * for it and carries out the answer with the movement, physics and socket code (Phase 4 removes
- * Phaser from the server).
+ * for it and carries out the answer with the movement and socket code.
  */
 export class Npc extends Character implements Npc {
   public respawnTime: number;
@@ -27,7 +27,7 @@ export class Npc extends Character implements Npc {
   public keeperData: KeeperData;
   declare name: string;
   constructor(
-    scene: ServerScene,
+    world: ServerWorld,
     {
       equipment = {},
       abilities = {},
@@ -42,10 +42,10 @@ export class Npc extends Character implements Npc {
       hitBoxSize: any;
     },
   ) {
-    super(scene, args);
+    super(world, args);
 
     this.name = args?.name;
-    this.scene = scene;
+    this.world = world;
     this.respawnTime = 10000;
     this.drops = args?.drops;
     this.equipment = buildEquipment(equipment);
@@ -54,7 +54,7 @@ export class Npc extends Character implements Npc {
     this.keeperData = {
       ...keeperData,
       shop: buildShop(keeperData?.shop),
-      quests: keeperData?.quests?.map((questId: string) => scene?.quests?.[questId]),
+      quests: keeperData?.quests?.map((questId: string) => world?.quests?.[questId]),
     };
     this.calculateStats(true);
   }
@@ -66,7 +66,6 @@ export class Npc extends Character implements Npc {
     this.setLockedPlayerId(null);
     this.vx = 0;
     this.vy = 0;
-    this.body.setVelocity(this.vx, this.vy);
   }
   tryRespawn() {
     if (!this.state.isDead) return;
@@ -81,7 +80,7 @@ export class Npc extends Character implements Npc {
       this.y = this.startingCoords.y;
       this.calculateStats(true);
       this.state.isDead = false;
-      this.scene.io.to(this.room.name).emit("respawnNpc", {
+      this.world.io.to(this.room.name).emit("respawnNpc", {
         id: this?.id,
         x: this.x,
         y: this.y,
@@ -94,31 +93,29 @@ export class Npc extends Character implements Npc {
   }
   // is the NPC adjacent to a collision tile?
   isNearCollideTile() {
-    const { tileMap, collideLayer } = this.room;
-    const npcTileX = tileMap.worldToTileX(this.x);
-    const npcTileY = tileMap.worldToTileY(this.y);
+    const { grid } = this.room.map;
+    const npcTileX = worldToTileX(grid, this.x);
+    const npcTileY = worldToTileY(grid, this.y);
 
     // All neighboring tiles, including diagonals
     for (let dx = -1; dx <= 1; dx++) {
       for (let dy = -1; dy <= 1; dy++) {
         if (dx === 0 && dy === 0) continue;
-        if (collideLayer?.getTileAt(npcTileX + dx, npcTileY + dy)?.properties?.collides) {
-          return true;
-        }
+        if (isSolidTile(grid, npcTileX + dx, npcTileY + dy)) return true;
       }
     }
     return false;
   }
   isOutOfBounds() {
-    const { tileMap, collideLayer } = this.room;
-    const npcTileX = tileMap.worldToTileX(this.x);
-    const npcTileY = tileMap.worldToTileY(this.y);
+    const { map } = this.room;
+    const npcTileX = worldToTileX(map.grid, this.x);
+    const npcTileY = worldToTileY(map.grid, this.y);
     if (
       this.x >= 0 &&
       this.y >= 0 &&
-      this.x < tileMap?.widthInPixels &&
-      this.y < tileMap?.heightInPixels &&
-      !collideLayer?.getTileAt(npcTileX, npcTileY)?.properties?.collides
+      this.x < map.widthInPixels &&
+      this.y < map.heightInPixels &&
+      !isSolidTile(map.grid, npcTileX, npcTileY)
     ) {
       return false;
     }
@@ -129,11 +126,10 @@ export class Npc extends Character implements Npc {
     const { state, room } = this ?? {};
 
     // skip updates if no one is in the room
-    if (!room?.playerManager?.hasPlayers()) {
+    if (!room || entitiesInRoom(this.world.players, room.name).length === 0) {
       this.setLockedPlayerId(null);
       this.vx = 0;
       this.vy = 0;
-      this.body.setVelocity(this.vx, this.vy);
       this.stats.hp = this.stats.maxHp; //heal to full
       return;
     }
@@ -151,7 +147,7 @@ export class Npc extends Character implements Npc {
     this.applyDecision(decision, delta);
   }
   applyDecision(decision: NpcDecision, delta: number) {
-    const { state, scene } = this;
+    const { state, world } = this;
     if (state.npcAttackReady !== decision.npcAttackReady) {
       state.npcAttackReady = decision.npcAttackReady;
     }
@@ -162,9 +158,9 @@ export class Npc extends Character implements Npc {
     }
     if (decision.bubbleMessage !== undefined) state.bubbleMessage = decision.bubbleMessage;
 
-    const targetPlayer = scene?.players?.[decision.targetPlayerId];
+    const targetPlayer = world?.players?.[decision.targetPlayerId];
     if (decision.expireStealthOfPlayerId) {
-      (scene?.players?.[decision.expireStealthOfPlayerId] as any)?.expireBuff("stealth");
+      (world?.players?.[decision.expireStealthOfPlayerId] as any)?.expireBuff("stealth");
     }
 
     this.performMovement(decision.movement, targetPlayer, delta);
@@ -192,7 +188,7 @@ export class Npc extends Character implements Npc {
       case "wander": {
         const { type: _type, ...change } = movement;
         Object.assign(this, change);
-        return this.body.setVelocity(this.vx, this.vy);
+        return;
       }
     }
   }
@@ -211,7 +207,7 @@ export class Npc extends Character implements Npc {
   doCast({ ability, abilitySlot, targetPlayer, castAngle }) {
     if (!this.canCastSpell(abilitySlot)) return;
 
-    const { scene, room, id } = this ?? {};
+    const { world, room, id } = this ?? {};
     const spellName = ability?.base;
 
     this.dispelBuffsByProperty("dispelBeforeAttack");
@@ -226,7 +222,7 @@ export class Npc extends Character implements Npc {
         abilitySlot,
       });
 
-    scene.io.to(room?.name).emit("npcCastSpell", { id, castAngle, abilitySlot });
+    world.io.to(room?.name).emit("npcCastSpell", { id, castAngle, abilitySlot });
   }
   async intendCastSpell(action: Extract<NpcAction, { type: "cast" }>, targetPlayer: ServerPlayer) {
     const { ability, abilitySlot } = action;
@@ -239,8 +235,8 @@ export class Npc extends Character implements Npc {
     this.state.isAiming = false;
   }
   doAttack({ target, direction, castAngle }) {
-    const { scene, room, id, state } = this ?? {};
-    const targetPlayer = scene?.players?.[state?.lockedPlayerId] ?? null;
+    const { world, room, id, state } = this ?? {};
+    const targetPlayer = world?.players?.[state?.lockedPlayerId] ?? null;
     if (state.isAttacking || state?.isDead) return;
     if (!targetPlayer || targetPlayer?.state?.isDead) return;
 
@@ -270,7 +266,7 @@ export class Npc extends Character implements Npc {
         ilvl: 1,
       });
 
-    scene.io.to(room?.name).emit("npcAttack", { id, count, direction, castAngle });
+    world.io.to(room?.name).emit("npcAttack", { id, count, direction, castAngle });
   }
   async intendAttack(action: Extract<NpcAction, { type: "attack" }>, targetPlayer: ServerPlayer) {
     this.direction = action.direction;
@@ -298,12 +294,11 @@ export class Npc extends Character implements Npc {
     const angle = Math.atan2(coords.y - this.y, coords.x - this.x);
     this.vx = walkSpeed * Math.cos(angle);
     this.vy = walkSpeed * Math.sin(angle);
-    this.body.setVelocity(this.vx, this.vy);
     this.direction = getCharacterDirection(this, { x: this?.x + this.vx, y: this.y + this.vy });
   }
   moveTowardPointPathed(targetCoords: Coordinate) {
     const { nextPath } = this ?? {};
-    this.room.findPath(this, targetCoords);
+    this.findPath(targetCoords);
     if (nextPath) {
       this.moveTowardPoint(nextPath);
       if (this.checkInRange(nextPath, 1)) {
@@ -311,27 +306,30 @@ export class Npc extends Character implements Npc {
       }
     }
   }
+  /** Looks up the next tile on the way to the target. Walked towards on the following tick. */
+  findPath(targetCoords: Coordinate) {
+    const next = findNextWaypoint(this.room.pathfinder, this, targetCoords);
+    if (JSON.stringify(next) !== JSON.stringify(this.nextPath)) this.nextPath = next;
+  }
   standStill() {
     this.vy = 0;
     this.vx = 0;
-    return this.body.setVelocity(this.vx, this.vy);
   }
   checkTalking() {
-    const scene = this.scene;
+    const world = this.world;
     this.vy = 0;
     this.vx = 0;
-    this.body.setVelocity(this.vx, this.vy);
 
-    const ended = decideTalkingEnded(this, this.talkingIds, (id) => scene?.players?.[id]);
+    const ended = decideTalkingEnded(this, this.talkingIds, (id) => world?.players?.[id]);
     for (const playerId of ended) {
       const index = this.talkingIds.indexOf(playerId);
       if (index !== -1) this.talkingIds.splice(index, 1);
     }
   }
   doHit(ids: Array<string>, abilitySlot: number): void {
-    const { scene, room } = this ?? {};
+    const { world, room } = this ?? {};
     const roomName: string = room?.name;
-    const players: Array<ServerPlayer> = room?.playerManager?.getPlayers();
+    const players = entitiesInRoom(this.world.players, roomName);
     const { allowedTargets } = this.getAbilityDetails(abilitySlot);
 
     let hitList: Array<Hit> = [];
@@ -355,6 +353,6 @@ export class Npc extends Character implements Npc {
       if (newHits?.length > 0) hitList = [...hitList, ...newHits];
     }
 
-    scene.io.to(roomName).emit("assignDamage", hitList);
+    world.io.to(roomName).emit("assignDamage", hitList);
   }
 }

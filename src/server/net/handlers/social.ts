@@ -9,9 +9,9 @@ import type { ParsedCommand } from "@/shared/network";
 import type { CommandContext } from "@/server/net/command-context";
 
 export function chatNpc(ctx: CommandContext, { npcId }: ParsedCommand<"chatNpc"> = {}) {
-  const { scene, socket, socketId } = ctx;
-  const player: ServerPlayer = scene?.players?.[socketId];
-  const npc = scene?.npcs?.[npcId];
+  const { world, socket, socketId } = ctx;
+  const player: ServerPlayer = world?.players?.[socketId];
+  const npc = world?.npcs?.[npcId];
   npc.talkingIds.push(socketId);
   player.state.targetNpcId = npcId;
   /* Quests that are of type: chat need to be updated */
@@ -19,27 +19,27 @@ export function chatNpc(ctx: CommandContext, { npcId }: ParsedCommand<"chatNpc">
   socket.emit("keeperDataUpdate", {
     npcId: npc?.id,
     keeperData: npc?.keeperData,
-    playerQuests: scene?.players?.[socketId].getQuests(),
+    playerQuests: world?.players?.[socketId].getQuests(),
   });
 }
 
 export function acceptQuest(ctx: CommandContext, questId: ParsedCommand<"acceptQuest">) {
-  const { scene, socketId, io } = ctx;
-  const player: ServerPlayer = scene?.players?.[socketId];
-  const currentQuest = scene.quests?.[questId];
+  const { world, socketId, io } = ctx;
+  const player: ServerPlayer = world?.players?.[socketId];
+  const currentQuest = world.quests?.[questId];
   const foundQuest = player?.getPlayerQuestStatus(currentQuest);
   /* If the quest wasnt there, we can accept it */
   if (!foundQuest) {
     player?.addQuest(currentQuest);
     /* Save the users data */
-    scene.db.updateUser(player);
+    world.db.updateUser(player);
     io.to(player?.roomName).emit("playerUpdate", getFullCharacterState(player));
   }
 }
 
 export function completeQuest(ctx: CommandContext, questId: ParsedCommand<"completeQuest">) {
-  const { scene, socket, socketId, io } = ctx;
-  const player: ServerPlayer = scene?.players?.[socketId];
+  const { world, socket, socketId, io } = ctx;
+  const player: ServerPlayer = world?.players?.[socketId];
   /* If the quest is ready, we turn it in */
   const questResults = player?.completeQuest(questId);
   /* Quest failed */
@@ -51,7 +51,7 @@ export function completeQuest(ctx: CommandContext, questId: ParsedCommand<"compl
   }
   /* Save the users data */
   player.calculateStats();
-  scene.db.updateUser(player);
+  world.db.updateUser(player);
   io.to(player?.roomName).emit("playerUpdate", getFullCharacterState(player), {
     didLevel: questResults?.didLevel,
   });
@@ -61,21 +61,21 @@ export function inviteToParty(
   ctx: CommandContext,
   inviteeSocketId: ParsedCommand<"inviteToParty">,
 ) {
-  legacyInviteToParty(ctx.scene, ctx.socket, inviteeSocketId);
+  legacyInviteToParty(ctx.world, ctx.socket, inviteeSocketId);
 }
 
 export function partyAccept(ctx: CommandContext, partyId: ParsedCommand<"partyAccept">) {
-  legacyAcceptPartyInvite(ctx.scene, ctx.socket, partyId);
+  legacyAcceptPartyInvite(ctx.world, ctx.socket, partyId);
 }
 
 export function partyLeave(ctx: CommandContext) {
-  legacyLeaveParty(ctx.scene, ctx.socket);
+  legacyLeaveParty(ctx.world, ctx.socket);
 }
 
 export function message(ctx: CommandContext, args: ParsedCommand<"message">) {
-  const { scene, io } = ctx;
+  const { world, io } = ctx;
   if (!args?.message) return;
-  const player = scene?.players?.[ctx.socketId];
+  const player = world?.players?.[ctx.socketId];
   // chat bubble
   if (args.message.charAt(0) === "!" && args.message.length > 1) {
     player.state.lastBubbleMessage = Date.now();

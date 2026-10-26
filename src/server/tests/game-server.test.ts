@@ -3,7 +3,6 @@ import http from "node:http";
 import type { AddressInfo } from "node:net";
 import { io as connect, type Socket } from "socket.io-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import "../phaser";
 import { initFakeDatabase } from "../persistence";
 import { GameServer } from "../game-server";
 
@@ -46,9 +45,8 @@ async function login(charClass = "warrior") {
   return { socket, state, meta };
 }
 
-/** The live loot on the ground, straight from the scene. */
-const serverLoots = (): Record<string, Anything> =>
-  (gameServer.game.scene.getScene("ServerScene") as Anything).loots;
+/** The live loot on the ground, straight from the world. */
+const serverLoots = (): Record<string, Anything> => (gameServer.world as Anything).loots;
 
 const ping = (socket: Socket) =>
   new Promise<boolean>((resolve) => socket.emit("latency", () => resolve(true)));
@@ -63,8 +61,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   sockets.forEach((s) => s.disconnect());
-  gameServer?.game?.destroy(true);
-  gameServer?.io?.close();
+  gameServer?.close();
 });
 
 describe("game server", () => {

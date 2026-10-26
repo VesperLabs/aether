@@ -4,14 +4,14 @@ import { legacyLeaveParty } from "../party-adapter";
 import type { CommandContext } from "./command-context";
 import { registerCommands } from "./dispatcher";
 import { commandHandlers } from "./handlers/command-handlers";
-import { shouldPause } from "./scene-pause";
+import { shouldPause } from "./world-pause";
 
 /** Wires every new socket to the command dispatcher and cleans up when it goes away. */
-export function listenForConnections(scene: ServerScene) {
-  scene.io.on("connection", (socket: GameSocket) => {
+export function listenForConnections(world: ServerWorld) {
+  world.io.on("connection", (socket: GameSocket) => {
     const ctx: CommandContext = {
-      scene,
-      io: scene.io,
+      world,
+      io: world.io,
       socket,
       socketId: socket.id,
       session: { peerId: null },
@@ -21,14 +21,14 @@ export function listenForConnections(scene: ServerScene) {
 
     socket.on("disconnect", () => {
       const { socketId } = ctx;
-      const player = scene.players?.[socketId];
-      scene.db.updateUser(scene.players?.[socketId]);
+      const player = world.players?.[socketId];
+      world.db.updateUser(world.players?.[socketId]);
       console.log(`🔌 ${player?.profile?.userName ?? "Anonymous"} disconnected`);
-      legacyLeaveParty(scene, socket);
-      removePlayer(scene, socketId);
-      scene.io.emit("remove", socketId);
+      legacyLeaveParty(world, socket);
+      removePlayer(world, socketId);
+      world.io.emit("remove", socketId);
       /* Should we pause or resume? */
-      shouldPause(scene);
+      shouldPause(world);
     });
   });
 }

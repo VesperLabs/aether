@@ -39,10 +39,10 @@ Do the pure ones first. Write tests as each one moves.
 
 ## Phase 4: Game core without Phaser on the server
 
-- [ ] `movement`: tilemap collision, box collision and movement math, easystar pathfinding (from `Room.ts`)
-- [ ] A `World` object in `rules/world/` replacing `ServerScene`, with a fixed-tick loop
-- [ ] Delete `server/Phaser.ts`, then remove `canvas`, `jsdom`, the `require` swap and the canvas build packages from the Dockerfile
-- [ ] Make game entities plain data. `Character` no longer extends `Phaser.GameObjects.Container`.
+- [x] `movement`: tilemap collision, box collision and movement math, easystar pathfinding (from `Room.ts`)
+- [x] A `World` object in `rules/world/` replacing `ServerScene`, with a fixed-tick loop
+- [x] Delete `server/Phaser.ts`, then remove `canvas`, `jsdom`, the `require` swap and the canvas build packages from the Dockerfile
+- [x] Make game entities plain data. The server's `Character` no longer extends Phaser (shared `character-model.ts` mixin; the client class in `shared/character.ts` still mixes it into a Container). Remaining: server entities are still classes with methods that call the rules, and `character-model.ts` is loose-typed and lives outside `rules/` until it is strict-clean.
 - [ ] Client: sprites to `src/client/views/` as displays of game state, input to `input/`, interpolation and prediction to `net/`, and run the rules on the client for movement prediction (files are moved and `utils.ts` is gone; sprites are still Phaser-driven state and there is no prediction yet)
 - [x] Client: group `client/ui/` into `src/client/hud/<feature>/`
 - [ ] Remove any leftover loose files from `src/shared/` so it holds only `content/`, `rules/` and `network/`
@@ -90,3 +90,6 @@ Found during the migration and left alone so behaviour stayed identical. Fix aft
 - [ ] **Client:** `wiki/page-players.tsx` imports the player menus from `@/client`, which breaks "wiki never imports client". Move them (and `Slot`/`ItemTooltip`, which need the app context) into `src/ui/` or make them props-only.
 - [ ] **Client audio:** `MainScene.changeMusic` duplicates `audio/music.ts` `changeMusic` (the scene copy adds the `ASSETS_URL` prefix, so the module version loads tracks from the wrong URL on a CDN). Keep one.
 - [ ] **Client:** `views/player.ts` is still `// @ts-nocheck`, and Phaser classes declare their fields as `declare x: any` after the JS→TS conversion. Type them properly once entities are plain data.
+- [ ] **Movement:** NPC wall collision uses the profile-scaled `bodySize` as the box; Phaser used a fixed radius of 8
+- [ ] **Movement:** `Npc.waitAtSpawn` and the NPC attack/cast windups use bare `setTimeout`/`sleep`, so they keep running after the world is stopped and can't be driven by a test tick
+- [ ] **Server:** `shouldPause` logs "Game empty. Pausing." once at boot even though nothing was running

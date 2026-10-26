@@ -24,8 +24,8 @@ export function runAdminCommand(ctx: CommandContext, rawMessage: string): boolea
 }
 
 function execute(ctx: CommandContext, rawMessage: string, command: string[]) {
-  const { scene, socket, io } = ctx;
-  const player = scene?.players?.[ctx.socketId];
+  const { world, socket, io } = ctx;
+  const player = world?.players?.[ctx.socketId];
   const args = { message: rawMessage };
   const cmdErr = (message: string) => socket.emit("message", { type: "error", message });
 
@@ -55,7 +55,7 @@ function execute(ctx: CommandContext, rawMessage: string, command: string[]) {
           "Invalid /drop: no item matches that type, rarity, and key. Usage: /drop <type>-<rarity>-<itemKey>-<amount>",
         );
       }
-      spawnLoot(scene, player?.roomName, {
+      spawnLoot(world, player?.roomName, {
         x: player?.x,
         y: player?.y,
         item: built,
@@ -68,7 +68,7 @@ function execute(ctx: CommandContext, rawMessage: string, command: string[]) {
       });
     }
     case "coords":
-      scene.db.updateUserMapDetails(player);
+      world.db.updateUserMapDetails(player);
       return socket.emit("message", {
         type: "info",
         message: `x: ${Math.round(player.x)} y: ${Math.round(player.y)}`,
@@ -79,8 +79,8 @@ function execute(ctx: CommandContext, rawMessage: string, command: string[]) {
         return cmdErr("Usage: /ding <experience> — positive integer XP to grant.");
       }
       const didLevel = player.assignExp(exp);
-      const roomState = getRoomState(scene, player?.roomName);
-      return scene.io.to(player?.roomName).emit("buffUpdate", {
+      const roomState = getRoomState(world, player?.roomName);
+      return world.io.to(player?.roomName).emit("buffUpdate", {
         players: roomState?.players?.filter((n) => n?.id === player?.id),
         playerIdsThatLeveled: didLevel ? [player?.id] : [],
       });
@@ -106,7 +106,7 @@ function execute(ctx: CommandContext, rawMessage: string, command: string[]) {
         gunItem = ItemBuilder.rollDrop(100, 100);
       } while (gunItem?.rarity !== rarity);
       if (gunItem) {
-        spawnLoot(scene, player?.roomName, {
+        spawnLoot(world, player?.roomName, {
           x: player?.x,
           y: player?.y,
           item: ItemBuilder.buildItem(gunItem.type, gunItem.rarity, gunItem.key) as Item,

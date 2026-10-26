@@ -5,6 +5,14 @@ export interface Point {
 
 export type CardinalDirection = "up" | "down" | "left" | "right";
 
+/** The angle in degrees a direction points at (0 is right, 90 is down). */
+export function getAngleFromDirection(direction: string): number {
+  if (direction === "up") return 270;
+  if (direction === "down") return 90;
+  if (direction === "left") return 180;
+  return 0;
+}
+
 /** Which of the four directions points from `character` toward `point` (horizontal wins ties). */
 export function getCharacterDirection(character: Point, point: Point): CardinalDirection {
   const dx = point.x - character.x;
