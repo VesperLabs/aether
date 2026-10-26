@@ -25,7 +25,7 @@ jobs:
           # Deploy the exact commit CI tested
           ref: ${{ github.event.workflow_run.head_sha }}
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy --remote-only
+      - run: flyctl deploy --remote-only --build-arg GIT_SHA=${{ github.event.workflow_run.head_sha }}
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
@@ -46,7 +46,7 @@ jobs:
           LAST=$(gh run list --workflow deploy.yml --branch main --status success --limit 1 --json headSha --jq '.[0].headSha // empty')
           if [ -z "$LAST" ] || ! git cat-file -e "$LAST" 2>/dev/null; then
             echo "render=true" >> "$GITHUB_OUTPUT"
-          elif git diff --quiet "$LAST" HEAD -- public web ui shared package-lock.json; then
+          elif git diff --quiet "$LAST" HEAD -- public src package.json package-lock.json render.yaml scripts; then
             echo "render=false" >> "$GITHUB_OUTPUT"
           else
             echo "render=true" >> "$GITHUB_OUTPUT"

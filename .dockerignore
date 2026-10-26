@@ -33,4 +33,5 @@ fly.toml
 .github
 .husky
 .playwright-mcp
+.claude
 coverage

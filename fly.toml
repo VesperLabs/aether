@@ -33,7 +33,7 @@ NODE_ENV = 'production'
 PEER_CLIENT_PORT = '443'
 PEER_SERVER_PORT = '9000'
 PORT = '8080'
-PUBLIC_DIR = '../public'
+PUBLIC_DIR = 'public'
 SERVER_FPS = '20'
 SERVER_URL = 'https://vesperlabs.fly.dev'
 

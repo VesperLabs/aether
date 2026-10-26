@@ -1,0 +1,54 @@
+import type { Npc } from "./npc";
+import type { Player } from "./player";
+import { entitiesInRoom, nearestTo } from "@/shared/rules/world";
+import type { NpcBehaviorInput, NpcPlayerView } from "@/shared/rules/npc-behavior";
+
+/** What the behavior rules need to know about a player. */
+const toPlayerView = (player: Player | undefined): NpcPlayerView | null =>
+  player
+    ? {
+        socketId: player.socketId,
+        x: player.x,
+        y: player.y,
+        bodySize: player.bodySize,
+        isDead: player.state?.isDead,
+        stats: player.stats,
+        stealthBuff: player.getBuff("stealth"),
+      }
+    : null;
+
+/** Copies what the NPC behavior rules read from a legacy `Npc` into plain data. */
+export function buildNpcBehaviorInput(npc: Npc, time: number, delta: number): NpcBehaviorInput {
+  const { state, world, room } = npc;
+  const lockedPlayer = toPlayerView(world?.players?.[state?.lockedPlayerId as string]);
+  const nearestPlayer =
+    state?.isAggro || lockedPlayer
+      ? toPlayerView(nearestTo(entitiesInRoom(world.players, room?.name), npc))
+      : null;
+  return {
+    now: Date.now(),
+    time,
+    delta,
+    npc: {
+      x: npc.x,
+      y: npc.y,
+      bodySize: npc.bodySize,
+      baseLevel: npc.baseStats?.level,
+      stats: npc.stats,
+      startingCoords: npc.startingCoords,
+      hasTalkers: npc.talkingIds?.length > 0,
+      abilities: npc.abilities,
+      buffs: npc.buffs,
+      weapons: {
+        handLeft: npc.hasRangedWeaponLeft() ? { range: npc.getWeaponRange("handLeft") } : null,
+        handRight: npc.hasRangedWeaponRight() ? { range: npc.getWeaponRange("handRight") } : null,
+      },
+    },
+    state,
+    isStunned: npc.hasBuff("stun"),
+    lockedPlayer,
+    nearestPlayer,
+    isNearCollideTile: npc.isNearCollideTile(),
+    isOutOfBounds: npc.isOutOfBounds(),
+  };
+}

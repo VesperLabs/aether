@@ -1,0 +1,28 @@
+import { Box } from "@/ui";
+import { STATIC_ROW_STYLES, RowTitle } from ".";
+
+export const Footer = () => {
+  return (
+    <RowTitle
+      sx={{
+        ...STATIC_ROW_STYLES,
+        position: "absolute",
+        display: "flex",
+        bottom: 0,
+        borderWidth: "1px 0 0 0",
+        justifyContent: "center",
+        textTransform: "none",
+      }}
+    >
+      <Box>
+        Made with ❤️ in Barcelona, Spain by{" "}
+        <a target="_blank" rel="noopener noreferrer" href="https://trevordesign.com">
+          TrevorDesign
+        </a>
+        <Box as="span" sx={{ opacity: 0.5, ml: 2 }}>
+          {__APP_VERSION__}
+        </Box>
+      </Box>
+    </RowTitle>
+  );
+};

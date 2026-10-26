@@ -1,0 +1,63 @@
+import type { ThemeUIStyleObject } from "theme-ui";
+import { Box, PlayerRender, theme } from "@/ui";
+import type { HudCharacter } from "@/client/hud/app/context";
+
+export function BigPortrait({
+  player,
+  filteredSlots,
+  width = 160,
+  height,
+  showShadow = true,
+  sx,
+}: {
+  player?: Partial<HudCharacter> | null;
+  filteredSlots?: string[];
+  width?: number;
+  height?: number;
+  showShadow?: boolean;
+  sx?: ThemeUIStyleObject;
+}) {
+  return (
+    <Box
+      sx={{
+        position: "relative",
+        width: width,
+        maxWidth: width,
+        alignSelf: "end",
+        pointerEvents: "none",
+        ...sx,
+      }}
+    >
+      <Box
+        sx={{
+          bottom: `3px`,
+          height: height ?? width * 1.5,
+          width: width,
+          overflow: "hidden",
+          position: "absolute",
+          zIndex: 2,
+        }}
+      >
+        <PlayerRender
+          player={player ?? undefined}
+          filteredSlots={filteredSlots}
+          sx={{ transform: `translate(-50%, 0) scale(3)`, top: "50%", left: "50%" }}
+        />
+      </Box>
+      {showShadow && (
+        <Box
+          sx={{
+            zIndex: 0,
+            background: "shadow.10",
+            borderRadius: "12px",
+            width: "100%",
+            height: width / 4,
+            bottom: 0,
+            position: "absolute",
+            borderBottom: `3px solid ${theme.colors.shadow[30]}`,
+          }}
+        />
+      )}
+    </Box>
+  );
+}

@@ -1,0 +1,65 @@
+import path from "node:path";
+import { defineConfig, loadEnv, type ConfigEnv } from "vite";
+import react from "@vitejs/plugin-react-swc";
+import { DEFAULT_SERVER_FPS } from "../shared/network/sync/timing";
+import { getAppVersion } from "../../scripts/app-version";
+
+/** Repo root. Vite is run from the root with `--config` (see npm scripts). */
+const repoRoot = path.resolve(__dirname, "../..");
+
+export default ({ mode, command }: ConfigEnv) => {
+  process.env = Object.assign(process.env, loadEnv(mode, repoRoot, ""));
+  console.log(`🛠 DEBUG: ${process.env.DEBUG}`);
+  console.log(`🛠 SERVER_FPS: ${process.env.SERVER_FPS}`);
+  console.log(`🛠 SERVER_URL: ${process.env.SERVER_URL}`);
+  console.log(`🛠 ASSETS_URL: ${process.env.ASSETS_URL}`);
+  console.log(`🛠 PEER_CLIENT_PORT: ${process.env.PEER_CLIENT_PORT}`);
+  console.log(`🛠 PEER_CLIENT_PATH: ${process.env.PEER_CLIENT_PATH}`);
+  console.log(`🛠 METERED_APP_NAME: ${process.env.METERED_APP_NAME ? "(set)" : "(empty)"}`);
+
+  return defineConfig({
+    root: __dirname,
+    /* Separate dep caches: the client and wiki dev servers run side by side and would invalidate a shared one. */
+    cacheDir: path.join(repoRoot, "node_modules/.vite/client"),
+    resolve: { tsconfigPaths: true },
+    envDir: repoRoot,
+    // Dev serves static assets from public; build writes into public — avoid copying public onto itself
+    publicDir: command === "serve" ? path.join(repoRoot, "public") : false,
+    plugins: [
+      {
+        name: "replace-url",
+        transform(code, id) {
+          return process.env.ASSETS_URL
+            ? code.replace(/\.\/assets\//g, process.env.ASSETS_URL + "/")
+            : code;
+        },
+      },
+      react(),
+    ],
+    define: {
+      /* Values must be JSON-serialized literals; undefined breaks esbuild in CI/Docker with no .env */
+      "process.env.DEBUG": process.env.DEBUG === "true",
+      "process.env.SERVER_FPS": JSON.stringify(
+        process.env.SERVER_FPS ?? String(DEFAULT_SERVER_FPS),
+      ),
+      "process.env.SERVER_URL": JSON.stringify(process.env.SERVER_URL ?? ""),
+      __APP_VERSION__: JSON.stringify(getAppVersion(repoRoot)),
+      "process.env.ASSETS_URL": JSON.stringify(process.env.ASSETS_URL ?? ""),
+      "process.env.PEER_CLIENT_PORT": JSON.stringify(process.env.PEER_CLIENT_PORT ?? ""),
+      "process.env.PEER_CLIENT_PATH": JSON.stringify(process.env.PEER_CLIENT_PATH ?? ""),
+      "process.env.METERED_APP_NAME": JSON.stringify(process.env.METERED_APP_NAME ?? ""),
+      "process.env.METERED_API_KEY": JSON.stringify(process.env.METERED_API_KEY ?? ""),
+      "process.env.METERED_REGION": JSON.stringify(process.env.METERED_REGION ?? ""),
+    },
+    server: {
+      host: true,
+      port: 5174,
+      strictPort: true,
+    },
+    build: {
+      assetsDir: "./", //puts our js files 1 directory up from the /assets folder
+      emptyOutDir: false, //we dont want to delete the public folder. its where we store pics
+      outDir: path.join(repoRoot, "public"),
+    },
+  });
+};

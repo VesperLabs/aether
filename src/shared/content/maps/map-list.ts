@@ -1,0 +1,49 @@
+import type { MapDefinition } from "./map-types";
+
+export const mapList = [
+  {
+    name: "grassland",
+    music: "./assets/music/grassland.mp3",
+    json: "./assets/tilemaps/grassland.json",
+  },
+  {
+    name: "grassland-2",
+    music: "./assets/music/grassland.mp3",
+    json: "./assets/tilemaps/grassland-2.json",
+  },
+  {
+    name: "grassland-3",
+    music: "./assets/music/grassland.mp3",
+    json: "./assets/tilemaps/grassland-3.json",
+  },
+  {
+    name: "mine",
+    music: "./assets/music/mine.mp3",
+    json: "./assets/tilemaps/mine.json",
+  },
+  {
+    name: "town",
+    music: "./assets/music/town.mp3",
+    json: "./assets/tilemaps/town.json",
+  },
+  { name: "townInside", json: "./assets/tilemaps/townInside.json" },
+  { name: "townInside-tents", json: "./assets/tilemaps/townInside-tents.json" },
+  {
+    name: "grassland-graveyard",
+    music: "./assets/music/graveyard.mp3",
+    json: "./assets/tilemaps/grassland-graveyard.json",
+  },
+  { name: "grassland-peaks", json: "./assets/tilemaps/grassland-peaks.json" },
+  {
+    name: "grassland-peaks-2",
+    json: "./assets/tilemaps/grassland-peaks-2.json",
+  },
+  {
+    name: "grassland-peaks-3",
+    json: "./assets/tilemaps/grassland-peaks-3.json",
+  },
+  {
+    name: "dungeon-aqueducts",
+    json: "./assets/tilemaps/dungeon-aqueducts.json",
+  },
+] as const satisfies readonly MapDefinition[];
