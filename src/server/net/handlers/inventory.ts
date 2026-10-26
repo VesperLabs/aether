@@ -1,7 +1,8 @@
 import { getFullCharacterState, cloneObject } from "../../utils";
-import { CONSUMABLES_BASES, POTION_BASES } from "@/shared";
 import { addStackAmounts, resolveGrab } from "@/shared/rules/loot";
 import { removeLoot, spawnLoot } from "../../loot-adapter";
+import { consumeItem as consumeItemRule, dropItem as dropItemRule } from "@/shared/rules/inventory";
+import { applyInventoryState, toInventoryState } from "../../player-inventory";
 import type { ParsedCommand } from "@/shared/network";
 import type { CommandContext } from "@/server/net/command-context";
 
@@ -53,149 +54,62 @@ export function grabLoot(
   });
 }
 
-export function dropItem(
-  ctx: CommandContext,
-  { location, bagId, item, ...rest }: ParsedCommand<"dropItem"> = {},
-) {
+export function dropItem(ctx: CommandContext, request: ParsedCommand<"dropItem"> = {}) {
   const { scene, socket, socketId, io } = ctx;
-  /* Prevent dropping full bags */
-  if (item?.base === "bag" && item?.items?.filter((i: Item) => i)?.length > 0) {
-    return socket.emit("message", {
-      type: "error",
-      message: "Cannot drop a bag with items inside of it.",
-    });
-  }
-
-  const amount = Math.abs(parseInt(String(rest?.amount))) || 1;
   const player = scene?.players?.[socketId];
-  let found = null;
-  let dropAmount: integer;
-
-  if (location === "equipment") {
-    const { item: f, slotName } = player?.findEquipmentById(item?.id) ?? {};
-    found = f;
-    /* Remove it from the players equipment */
-    player?.clearEquipmentSlot(slotName);
+  if (!player) return;
+  const result = dropItemRule(toInventoryState(player), request ?? {});
+  if (result.dropped === false) {
+    if (result.error) socket.emit("message", { type: "error", message: result.error });
+    return;
   }
+  applyInventoryState(player, result.state);
 
-  if (location === "abilities") {
-    const { item: f, slotName } = player?.findAbilityById(item?.id) ?? {};
-    found = f;
-    if (amount >= found?.amount) {
-      dropAmount = found?.amount;
-      player?.clearAbilitySlot(slotName);
-    } else {
-      dropAmount = player?.subtractAbilityAtId(item?.id, amount);
-      if (!dropAmount) return;
-    }
-  }
-
-  if (location === "inventory") {
-    found = player?.findInventoryItemById(item?.id);
-    if (amount >= found?.amount) {
-      dropAmount = found?.amount;
-      player?.deleteInventoryItemAtId(item?.id);
-    } else {
-      dropAmount = player?.subtractInventoryItemAtId(item?.id, amount);
-      if (!dropAmount) return;
-    }
-  }
-
-  if (location === "bag") {
-    found = cloneObject(player?.findBagItemById(item?.id)?.["item"]);
-    if (amount >= found?.amount) {
-      dropAmount = found?.amount;
-      player?.deleteBagItemAtId(item?.id);
-    } else {
-      dropAmount = player?.subtractBagItemAtId(item?.id, amount);
-      if (!dropAmount) return;
-    }
-  }
-
-  if (!found) return;
-
-  player?.calculateStats();
+  player.calculateStats();
 
   /* Make the item pop up where they dropped it */
-  const coords: Coordinate = { x: player?.x, y: player?.y };
-  if (player?.direction === "left") coords.x -= 16;
-  if (player?.direction === "right") coords.x += 16;
-  if (player?.direction === "up") coords.y -= 16;
-  if (player?.direction === "down") coords.y += 16;
+  const coords: Coordinate = { x: player.x, y: player.y };
+  if (player.direction === "left") coords.x -= 16;
+  if (player.direction === "right") coords.x += 16;
+  if (player.direction === "up") coords.y -= 16;
+  if (player.direction === "down") coords.y += 16;
 
   /* Spawn the loot on the server */
-  spawnLoot(scene, player?.roomName, {
+  spawnLoot(scene, player.roomName, {
     ...coords,
-    item: { ...found, ...(dropAmount ? { amount: dropAmount } : {}) },
+    item: result.item,
     npcId: null,
   });
   /* Save the users data */
   scene.db.updateUser(player);
-  io.to(player?.roomName).emit("playerUpdate", getFullCharacterState(player));
+  io.to(player.roomName).emit("playerUpdate", getFullCharacterState(player));
 }
 
-export function consumeItem(
-  ctx: CommandContext,
-  { location, item }: ParsedCommand<"consumeItem"> = {},
-) {
+export function consumeItem(ctx: CommandContext, request: ParsedCommand<"consumeItem"> = {}) {
   const { scene, socketId, io } = ctx;
   const player = scene?.players?.[socketId];
-  let playerItem: Item;
-  if (player?.state?.isDead) return;
-  if (!["inventory", "abilities", "bag"].includes(location)) return;
-  /* Using an item from the inventory */
-  if (location === "inventory") {
-    playerItem = player?.findInventoryItemById(item?.id);
-    if (!CONSUMABLES_BASES?.includes(playerItem?.base)) return;
-    if (!playerItem?.amount) return;
-    player?.subtractInventoryItemAtId(item?.id, 1);
-  }
-  /* Using an item from abilities */
-  if (location === "abilities") {
-    const { item: found } = player?.findAbilityById(item?.id) ?? {};
-    playerItem = found;
-    if (!CONSUMABLES_BASES?.includes(playerItem?.base)) return;
-    if (!playerItem?.amount) return;
-    if (playerItem?.amount <= 1) {
-      player?.deleteAbilityAtId(item?.id);
-    } else {
-      player?.subtractAbilityAtId(item?.id, 1);
-    }
-  }
-  /* Using an item from the inventory */
-  if (location === "bag") {
-    playerItem = player?.findBagItemById(item?.id)?.["item"];
-    if (!CONSUMABLES_BASES?.includes(playerItem?.base)) return;
-    if (!playerItem?.amount) return;
-    if (playerItem?.amount <= 1) {
-      player?.deleteBagItemAtId(item?.id);
-    } else {
-      player?.subtractBagItemAtId(item?.id, 1);
-    }
-  }
+  if (!player || player.state?.isDead) return;
+  const result = consumeItemRule(toInventoryState(player), request ?? {});
+  if (!result.consumed) return;
+  applyInventoryState(player, result.state);
+
   /* If the item has effects */
-  if (POTION_BASES.includes(playerItem.base)) {
+  if (result.isPotion) {
     /* Set potion cooldown */
     player.state.lastPotion = Date.now();
-    if (playerItem?.effects?.hp) {
-      //const hp = (parseInt(playerItem?.effects?.hp) / 100) * player?.stats?.maxHp;
-      player.modifyStat("hp", playerItem?.effects?.hp);
-    }
-    if (playerItem?.effects?.mp) {
-      //const mp = (parseInt(playerItem?.effects?.mp) / 100) * player?.stats?.maxMp;
-      player.modifyStat("mp", playerItem?.effects?.mp);
-    }
+    if (result.hp) player.modifyStat("hp", result.hp);
+    if (result.mp) player.modifyStat("mp", result.mp);
   }
 
   /* If the item has buffs */
-  if (playerItem?.base === "food") {
-    for (const [buffName, level] of Object.entries(playerItem.buffs)) {
+  if (result.isFood) {
+    for (const [buffName, level] of Object.entries(result.buffs)) {
       player.addBuff({ name: buffName, level, caster: player, shouldCalculateStats: false });
     }
   }
 
-  player?.calculateStats();
+  player.calculateStats();
   /* Save the users data */
   scene.db.updateUser(player);
-  io.to(player?.roomName).emit("playerUpdate", getFullCharacterState(player));
+  io.to(player.roomName).emit("playerUpdate", getFullCharacterState(player));
 }

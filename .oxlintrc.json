@@ -337,7 +337,6 @@
         "src/client/ui/menu-hud.tsx",
         "src/server/character.ts",
         "src/server/npc.ts",
-        "src/server/player.ts",
         "src/shared/character.ts"
       ],
       "rules": {

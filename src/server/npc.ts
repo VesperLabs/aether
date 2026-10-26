@@ -1,7 +1,8 @@
 import { ServerCharacter as Character } from "./character";
 import { ItemBuilder, spellDetails } from "@/shared/content";
 import { BUFF_SPELLS, calculateStealthVisibilityPercent, distanceTo } from "@/shared/utils";
-import { getCharacterDirection, SHOP_INFLATION, sleep } from "./utils";
+import { getCharacterDirection, sleep } from "./utils";
+import { SHOP_INFLATION } from "@/shared/rules/inventory";
 import crypto from "crypto";
 
 const AGGRO_KITE_RANGE = 220;

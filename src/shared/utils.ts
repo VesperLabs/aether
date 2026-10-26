@@ -1,5 +1,6 @@
 import { isEqual, get } from "lodash";
 import { Character } from ".";
+export { CONSUMABLES_BASES, MAX_INVENTORY_ITEMS, POTION_BASES } from "./rules/inventory";
 export const isMobile =
   /Android|Mobile|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 export const HAIR_HIDING_HELMETS = ["helmet-armet", "helmet-hood", "helmet-horned", "helmet-jake"];
@@ -7,7 +8,6 @@ export const FACE_HIDING_HELMETS = ["helmet-armet", "helmet-horned", "helmet-jak
 export const ACCESSORY_HIDING_HELMETS = ["helmet-armet", "helmet-horned"];
 export const FACE_HIDING_ACCESSORIES = ["accessory-jake"];
 export const HAIR_HIDING_ACCESSORIES = ["accessory-jake"];
-export const MAX_INVENTORY_ITEMS = 32;
 export const RANGE_MULTIPLIER = 28; //weapon range multiplier
 export const BUFF_SPELLS = [
   "evasion",
@@ -25,8 +25,6 @@ export const BLANK_TEXTURE = "human-blank";
 export const POTION_COOLDOWN = 10000;
 export const BODY_SIZE = 8;
 export const RACES_WITH_ATTACK_ANIMS = ["crab", "human", "bear", "wolf", "slime"];
-export const POTION_BASES = ["hpPotion", "mpPotion"];
-export const CONSUMABLES_BASES = ["food", ...POTION_BASES];
 export const MINI_MAP_SIZE = 160;
 export const MIN_STEALTH_ALPHA = 0.4;
 export const DEFAULT_USER_SETTINGS: UserSettings = {
