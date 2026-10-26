@@ -1,17 +1,18 @@
-import React from "react";
-import { Flex, Box, Text } from "theme-ui";
+import React, { type ComponentProps } from "react";
+import { Flex, Box, Text, type ThemeUIStyleObject } from "theme-ui";
 import { KeyboardKey } from "./keyboard-key";
 import { Icon } from "./icon";
 import { isMobile } from "@/ui/is-mobile";
 
 export const MENU_MAX_WIDTH = 1024;
 
-export const Menu = (p: any) => {
-  const { sx = {}, ...props } = p;
+/** theme-ui reads `__themeKey` to pick the theme section, but its prop types leave it out. */
+const THEME_KEY = { __themeKey: "menus" };
+
+export const Menu = ({ sx = {}, ...props }: ComponentProps<typeof Flex>) => {
   return (
     <Flex
-      // @ts-ignore
-      __themeKey="menus"
+      {...THEME_KEY}
       sx={{
         p: 2,
         gap: 2,
@@ -35,7 +36,7 @@ interface MenuHeaderProps {
   children?: React.ReactNode;
   onClick?: () => void;
   icon?: string;
-  sx?: any;
+  sx?: ThemeUIStyleObject;
 }
 
 export const MenuHeader = ({ icon, children, onClick = () => {}, sx }: MenuHeaderProps) => {

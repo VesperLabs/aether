@@ -1,14 +1,15 @@
 import React, { useEffect, useState, useRef } from "react";
+import type { ThemeUIStyleObject } from "theme-ui";
 import { Box, Flex } from ".";
 
 interface KeyboardKeyProps {
   name: string;
-  onKeyUp?: any;
+  onKeyUp?: () => void;
   hidden?: boolean;
   showOnly?: boolean;
-  onKeyDown?: any;
+  onKeyDown?: (e: KeyboardEvent) => void;
   disabled?: boolean;
-  sx?: object;
+  sx?: ThemeUIStyleObject;
 }
 
 const IGNORE_PRESS_ELEMENT_TYPES = ["text", "number", "textarea"];

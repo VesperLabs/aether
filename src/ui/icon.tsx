@@ -1,7 +1,9 @@
-import { forwardRef } from "react";
+import { forwardRef, type ComponentProps } from "react";
 import { Box } from "theme-ui";
 
-export const Icon = forwardRef<HTMLDivElement, any>(({ sx, size = 32, icon, ...props }, ref) => {
+type IconProps = Omit<ComponentProps<typeof Box>, "ref"> & { icon?: string; size?: number };
+
+export const Icon = forwardRef<HTMLDivElement, IconProps>(({ sx, size = 32, icon, ...props }, ref) => {
   return (
     <Box
       className="icon"

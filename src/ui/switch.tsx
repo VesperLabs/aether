@@ -1,15 +1,7 @@
+import type { ComponentProps } from "react";
 import { Switch as ThemeUiSwitch } from "theme-ui";
 
-export function Switch({
-  sx,
-  ...props
-}: {
-  sx?: any;
-  label?: string;
-  checked: any;
-  onChange: any;
-  disabled?: boolean;
-}) {
+export function Switch({ sx, ...props }: ComponentProps<typeof ThemeUiSwitch>) {
   return (
     <ThemeUiSwitch
       sx={{

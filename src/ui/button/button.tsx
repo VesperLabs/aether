@@ -5,6 +5,9 @@ import { forwardRef, useState, type ComponentProps } from "react";
 // oxlint-disable-next-line typescript/no-explicit-any
 type PressHandler = (event: any) => unknown;
 
+/** theme-ui reads `__themeKey` to pick the theme section, but its prop types leave it out. */
+const THEME_KEY = { __themeKey: "buttons" };
+
 export type ButtonProps = Omit<
   ComponentProps<typeof Flex>,
   "ref" | "onClick" | "onTouchStart" | "onTouchEnd"
@@ -17,7 +20,7 @@ export type ButtonProps = Omit<
   onTouchEnd?: PressHandler;
 };
 
-export const Button = forwardRef<HTMLDivElement, ButtonProps>(
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ icon: _icon, onTouchEnd, onTouchStart, onClick, ...props }, ref) => {
     const [className, setClassName] = useState("");
 
@@ -65,9 +68,8 @@ export const Button = forwardRef<HTMLDivElement, ButtonProps>(
       <Flex
         className={className}
         tabIndex={-1}
-        __themeKey="buttons"
+        {...THEME_KEY}
         variant="default"
-        // @ts-ignore
         ref={ref}
         type="button"
         {...(!isLink && { onTouchStart: handleTouchStart, onMouseDown: handleMouseDown })}

@@ -3,7 +3,6 @@ import { Input as BaseInput, InputProps as BaseInputProps } from "theme-ui";
 import { useOnClickOutside } from "./hooks";
 
 interface InputProps extends BaseInputProps {
-  sx?: any;
   autoFocus?: boolean;
   onTouchEnd?: (e: React.TouchEvent<HTMLInputElement>) => void;
   onClickOutside?: () => void;
