@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["typescript", "import", "react"],
+  "plugins": ["typescript", "import", "react", "unicorn"],
   "env": {
     "browser": true,
     "node": true,
@@ -33,7 +33,325 @@
         "allowTaggedTemplates": true
       }
     ],
-    "typescript/no-this-alias": "off"
+    "typescript/no-this-alias": "off",
+    "max-lines": [
+      "error",
+      {
+        "max": 400
+      }
+    ],
+    "unicorn/filename-case": [
+      "error",
+      {
+        "case": "kebabCase"
+      }
+    ],
+    "import/no-default-export": "error",
+    "unicorn/no-new-array": "off",
+    "unicorn/no-useless-fallback-in-spread": "off",
+    "unicorn/no-useless-spread": "off"
   },
-  "ignorePatterns": ["dist/**", "public/**"]
+  "ignorePatterns": ["dist/**", "public/**"],
+  "overrides": [
+    {
+      "files": ["src/shared/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@/server",
+                  "@/server/**",
+                  "@/client",
+                  "@/client/**",
+                  "@/wiki",
+                  "@/wiki/**",
+                  "@/ui",
+                  "@/ui/**"
+                ],
+                "message": "shared/ never imports server/, client/, wiki/ or ui/."
+              },
+              {
+                "regex": "^\\.{1,2}/(.*/)?(server|client|wiki|ui)(/|$)",
+                "message": "shared/ never imports server/, client/, wiki/ or ui/."
+              },
+              {
+                "group": ["@/shared/rules/*/**"],
+                "message": "Import a rules feature only through its index.ts (ARCHITECTURE.md, Import rules)."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/shared/content/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@/server",
+                  "@/server/**",
+                  "@/client",
+                  "@/client/**",
+                  "@/wiki",
+                  "@/wiki/**",
+                  "@/ui",
+                  "@/ui/**",
+                  "@/shared/rules",
+                  "@/shared/rules/**",
+                  "@/shared/network",
+                  "@/shared/network/**"
+                ],
+                "message": "shared/content imports nothing else from the repo."
+              },
+              {
+                "regex": "^\\.{1,2}/(.*/)?(server|client|wiki|ui|rules|network)(/|$)",
+                "message": "shared/content imports nothing else from the repo."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/shared/rules/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@/server",
+                  "@/server/**",
+                  "@/client",
+                  "@/client/**",
+                  "@/wiki",
+                  "@/wiki/**",
+                  "@/ui",
+                  "@/ui/**",
+                  "@/shared/network",
+                  "@/shared/network/**"
+                ],
+                "message": "shared/rules imports only shared/content, never network, apps or ui."
+              },
+              {
+                "regex": "^\\.{1,2}/(.*/)?(server|client|wiki|ui|network)(/|$)",
+                "message": "shared/rules imports only shared/content, never network, apps or ui."
+              },
+              {
+                "group": ["@/shared/rules/*/**"],
+                "message": "Import a rules feature only through its index.ts (ARCHITECTURE.md, Import rules)."
+              }
+            ],
+            "paths": [
+              {
+                "name": "phaser",
+                "message": "shared/rules must not depend on engines, IO or the DOM (ARCHITECTURE.md)."
+              },
+              {
+                "name": "socket.io",
+                "message": "shared/rules must not depend on engines, IO or the DOM (ARCHITECTURE.md)."
+              },
+              {
+                "name": "socket.io-client",
+                "message": "shared/rules must not depend on engines, IO or the DOM (ARCHITECTURE.md)."
+              },
+              {
+                "name": "mongodb",
+                "message": "shared/rules must not depend on engines, IO or the DOM (ARCHITECTURE.md)."
+              },
+              {
+                "name": "express",
+                "message": "shared/rules must not depend on engines, IO or the DOM (ARCHITECTURE.md)."
+              },
+              {
+                "name": "react",
+                "message": "shared/rules must not depend on engines, IO or the DOM (ARCHITECTURE.md)."
+              },
+              {
+                "name": "react-dom",
+                "message": "shared/rules must not depend on engines, IO or the DOM (ARCHITECTURE.md)."
+              },
+              {
+                "name": "canvas",
+                "message": "shared/rules must not depend on engines, IO or the DOM (ARCHITECTURE.md)."
+              },
+              {
+                "name": "jsdom",
+                "message": "shared/rules must not depend on engines, IO or the DOM (ARCHITECTURE.md)."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/shared/network/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@/server",
+                  "@/server/**",
+                  "@/client",
+                  "@/client/**",
+                  "@/wiki",
+                  "@/wiki/**",
+                  "@/ui",
+                  "@/ui/**"
+                ],
+                "message": "shared/ never imports server/, client/, wiki/ or ui/."
+              },
+              {
+                "regex": "^\\.{1,2}/(.*/)?(server|client|wiki|ui)(/|$)",
+                "message": "shared/ never imports server/, client/, wiki/ or ui/."
+              },
+              {
+                "group": ["@/shared/rules/*/**"],
+                "message": "Import a rules feature only through its index.ts (ARCHITECTURE.md, Import rules)."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/server/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@/client", "@/client/**", "@/wiki", "@/wiki/**"],
+                "message": "server/, client/ and wiki/ never import each other."
+              },
+              {
+                "regex": "^\\.{1,2}/(.*/)?(client|wiki)(/|$)",
+                "message": "server/, client/ and wiki/ never import each other."
+              },
+              {
+                "group": ["@/shared/rules/*/**"],
+                "message": "Import a rules feature only through its index.ts (ARCHITECTURE.md, Import rules)."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/client/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@/server", "@/server/**", "@/wiki", "@/wiki/**"],
+                "message": "server/, client/ and wiki/ never import each other."
+              },
+              {
+                "regex": "^\\.{1,2}/(.*/)?(server|wiki)(/|$)",
+                "message": "server/, client/ and wiki/ never import each other."
+              },
+              {
+                "group": ["@/shared/rules/*/**"],
+                "message": "Import a rules feature only through its index.ts (ARCHITECTURE.md, Import rules)."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/wiki/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@/server",
+                  "@/server/**",
+                  "@/client",
+                  "@/client/**",
+                  "@/shared/rules",
+                  "@/shared/rules/**",
+                  "@/shared/network",
+                  "@/shared/network/**"
+                ],
+                "message": "wiki imports only shared/content and ui, and never server/ or client/."
+              },
+              {
+                "regex": "^\\.{1,2}/(.*/)?(server|client)(/|$)",
+                "message": "wiki imports only shared/content and ui, and never server/ or client/."
+              },
+              {
+                "group": ["@/shared/rules/*/**"],
+                "message": "Import a rules feature only through its index.ts (ARCHITECTURE.md, Import rules)."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/ui/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@/shared/rules/*/**"],
+                "message": "Import a rules feature only through its index.ts (ARCHITECTURE.md, Import rules)."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["**/*.config.ts", "**/*.config.js"],
+      "rules": {
+        "import/no-default-export": "off"
+      }
+    },
+    {
+      "files": [
+        "src/client/game/player.ts",
+        "src/client/game/scene-hud.ts",
+        "src/client/game/scene-main.js",
+        "src/client/ui/app.tsx",
+        "src/client/ui/menu-hud.tsx",
+        "src/server/character.ts",
+        "src/server/game-server.ts",
+        "src/server/npc.ts",
+        "src/server/player.ts",
+        "src/server/utils.ts",
+        "src/shared/character.ts",
+        "src/shared/item-builder.ts"
+      ],
+      "rules": {
+        "max-lines": "off"
+      }
+    },
+    {
+      "files": ["src/shared/item-builder.ts", "src/wiki/page-players.tsx"],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    }
+  ]
 }
