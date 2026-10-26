@@ -1,6 +1,13 @@
-import { DEFAULT_USER_SETTINGS } from "@/shared/rules/world";
-import { heroInitToTickExpanded, expandTickState } from "@/shared/network/sync";
+import { DEFAULT_USER_SETTINGS, type UserSettings } from "@/shared/rules/world";
+import {
+  heroInitToTickExpanded,
+  expandTickState,
+  type FullCharacterWire,
+  type LootTickWire,
+} from "@/shared/network/sync";
+import type { LootItem } from "@/client/views/loot-item";
 import { netInterp } from "@/client/net/scene-interpolation";
+import type { TickEntity } from "@/client/net/interpolation";
 import { playAudio } from "@/client/audio/play-audio";
 import {
   addPlayer,
@@ -12,10 +19,11 @@ import {
   addLoot,
   getLoot,
 } from "@/client/scenes/scene-entities";
+import type { SceneMain } from "@/client/scenes/main-scene";
 import { changeMap, initCamera, initPlayerCollision } from "@/client/scenes/main-map";
 
 /** Registers every server message the main scene reacts to. */
-export function bindSceneSocket(scene) {
+export function bindSceneSocket(scene: SceneMain) {
   const socket = scene.socket;
 
   socket.on("update", (snapshot) => {
@@ -23,18 +31,21 @@ export function bindSceneSocket(scene) {
     if (!snapshot?.state || !scene.loots) return;
     const expanded = { ...snapshot, state: expandTickState(snapshot.state) };
     netInterp.addSnapshot(expanded);
-    for (const loot of scene?.loots?.getChildren() ?? []) {
-      if (expanded?.state?.loots?.find((l) => l?.id === loot?.id && l?.expiredSince)) {
-        loot.destroy(true);
+    const expiredLoots = expanded.state.loots as LootTickWire[];
+    for (const loot of (scene?.loots?.getChildren() ?? []) as LootItem[]) {
+      if (expiredLoots.find((l) => l?.id === loot?.id && l?.expiredSince)) {
+        loot.destroy();
       }
     }
-    for (const s of expanded?.state?.npcs ?? []) {
+    for (const s of expanded.state.npcs as TickEntity[]) {
       const npc = getNpc(scene, s.id);
+      if (!npc) continue;
       npc.updateState(s?.state);
       npc.doRegen();
     }
-    for (const s of expanded?.state?.players ?? []) {
+    for (const s of expanded.state.players as TickEntity[]) {
       const player = getPlayer(scene, s.id);
+      if (!player) continue;
       player.updateState(s?.state);
       player.doRegen();
     }
@@ -80,7 +91,7 @@ export function bindSceneSocket(scene) {
     initCamera(scene, scene.hero);
   });
 
-  socket.on("playerJoin", (user, { lastTeleport, isRespawn }: any = {}) => {
+  socket.on("playerJoin", (user, { lastTeleport, isRespawn } = {}) => {
     const player = getPlayer(scene, user.socketId);
     if (player) {
       /* TODO: Maybe update the entire player here too */
@@ -98,6 +109,7 @@ export function bindSceneSocket(scene) {
 
   socket.on("playerUpdate", (userData) => {
     const player = getPlayer(scene, userData.socketId);
+    if (!player) return;
     player.updateData(userData);
     player.updateExtas();
   });
@@ -120,30 +132,36 @@ export function bindSceneSocket(scene) {
   socket.on("lootGrabbed", ({ socketId, loot, player: userData }) => {
     const lootId = loot?.id;
     const player = getPlayer(scene, socketId);
-    getLoot(scene, lootId)?.destroy(true);
+    getLoot(scene, lootId)?.destroy();
     if (player?.isHero) {
       playAudio({ scene, audioKey: "item-leather", caster: player });
     }
-    player.updateData(userData);
+    player?.updateData(userData as FullCharacterWire);
   });
 
   socket.on("playerAttack", ({ socketId, count, castAngle, direction, abilitySlot }) => {
     const p = getPlayer(scene, socketId);
-    p.doAttack({ count, castAngle, direction, abilitySlot });
+    p?.doAttack({
+      count: count as number,
+      castAngle: castAngle ?? undefined,
+      direction: direction ?? undefined,
+      abilitySlot: abilitySlot ?? undefined,
+    });
   });
 
   socket.on("playerCastSpell", ({ socketId, abilitySlot, castAngle }) => {
     const p = getPlayer(scene, socketId);
     p?.doCast?.({
-      abilitySlot,
-      castAngle,
+      abilitySlot: abilitySlot ?? undefined,
+      castAngle: castAngle ?? undefined,
     });
   });
 
   socket.on("npcAttack", ({ id, count, direction, castAngle }) => {
     const n = getNpc(scene, id);
+    if (!n) return;
     n.state.lastAngle = castAngle;
-    n.doAttack({ count, direction, castAngle });
+    n.doAttack({ count: count as number, direction, castAngle });
   });
 
   socket.on("npcCastSpell", ({ id, abilitySlot, castAngle }) => {
@@ -154,9 +172,9 @@ export function bindSceneSocket(scene) {
     });
   });
 
-  socket.on("modifyPlayerStat", ({ amount, type, socketId }: any = {}) => {
+  socket.on("modifyPlayerStat", ({ amount, type, socketId }) => {
     const p = getPlayer(scene, socketId);
-    p.takeHit({ type, amount });
+    p?.takeHit({ type, amount });
   });
 
   socket.on("assignDamage", (hitList = []) => {
@@ -168,6 +186,7 @@ export function bindSceneSocket(scene) {
 
   socket.on("respawnNpc", ({ id, x, y, respawnTime }) => {
     const npc = getNpc(scene, id);
+    if (!npc) return;
     //interpolation will ignore snapshots prior. (Won't fly across screen)
     npc.state.lastTeleport = respawnTime;
     npc.setPosition(x, y);
@@ -186,7 +205,10 @@ export function bindSceneSocket(scene) {
 
   socket.on("remove", (socketId) => removePlayer(scene, socketId));
 
-  socket.on("updateUserSetting", ({ name, value }) => {
+  socket.on("updateUserSetting", (setting) => {
+    // Every user setting is an on/off switch.
+    const name = setting.name as keyof UserSettings;
+    const value = setting.value as boolean;
     scene.userSettings[name] = value;
     if (name === "showMinimap") {
       scene.toggleMinimap(value);
