@@ -1,18 +1,19 @@
-import { ItemBuilder } from "@/shared/content";
+import { ItemBuilder, type CharClass } from "@/shared/content";
 import { DEFAULT_USER_SETTINGS } from "@/shared/rules/world";
 import { getBaseCharacterDefaults } from "../auth/character-defaults";
 
-export const createBaseUser = (charClass) => {
+export const createBaseUser = (charClass?: string | null) => {
   const { baseStats, startingWeapon, startingSpell, roomName, x, y } = getBaseCharacterDefaults({
     level: 1,
-    charClass,
+    /* Comes straight from the client; unknown classes get no starting gear. */
+    charClass: charClass as CharClass | undefined,
   });
 
   return {
     roomName,
     x,
     y,
-    charClass,
+    charClass: charClass as CharClass | undefined,
     baseStats,
     stats: {
       hp: 0,

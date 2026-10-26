@@ -3,13 +3,13 @@ const isEmptyObject = (obj: object) => Object.keys(obj).length === 0 && obj.cons
 const isEmptyArray = (arr: unknown) => Array.isArray(arr) && arr.length === 0;
 
 /** Drops null, undefined and empty object or array properties of an item. */
-export function filterProperties(item: Record<string, any> | null | undefined) {
+export function filterProperties(item: Record<string, unknown> | null | undefined) {
   if (!item) return null;
-  const filteredItem: Record<string, any> = {};
+  const filteredItem: Record<string, unknown> = {};
 
   for (const [key, value] of Object.entries(item)) {
     if (value === null || typeof value === "undefined") continue;
-    if (!isEmptyObject(value) && !isEmptyArray(value)) {
+    if (!isEmptyObject(value as object) && !isEmptyArray(value)) {
       filteredItem[key] = value;
     }
   }
@@ -22,7 +22,7 @@ export function filterNullEmpty(data: unknown) {
   if (Array.isArray(data)) {
     return data.map((item) => filterProperties(item));
   } else if (typeof data === "object" && data !== null) {
-    const filteredItem: Record<string, any> = {};
+    const filteredItem: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(data)) {
       filteredItem[key] = filterProperties(value);
     }

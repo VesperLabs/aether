@@ -1,15 +1,8 @@
-import { calculateStats } from "@/shared/rules/stats";
+import { calculateStats, type StatsInput } from "@/shared/rules/stats";
+import type { CharacterState } from "./character-state";
 
 /** The fields of a character (live or loaded from the database) that stats are calculated from. */
-interface StatsHolder {
-  baseStats: any;
-  stats: any;
-  state?: any;
-  equipment?: any;
-  abilities?: any;
-  buffs?: any;
-  activeItemSlots?: string[];
-}
+type StatsHolder = StatsInput & { state?: CharacterState };
 
 /**
  * Legacy adapter for the pure `calculateStats` rule: pass the character's plain data in, then

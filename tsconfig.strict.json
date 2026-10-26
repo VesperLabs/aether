@@ -8,6 +8,7 @@
     "src/shared/content/**/*",
     "src/shared/rules/**/*",
     "src/shared/network/**/*",
+    "src/server/**/*",
     "src/global.d.ts",
     "src/client/**/*",
     "src/ui/**/*",

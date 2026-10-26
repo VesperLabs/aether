@@ -6,15 +6,26 @@ import {
   expireBuffByName,
   expireBuffs,
   runRegen,
+  type ActiveBuff,
+  type RegenTimers,
 } from "@/shared/rules/buffs";
+import type { CharacterState } from "./character-state";
+
+/** What a buff needs to know about the character that cast it. */
+export interface BuffRequest {
+  name: string;
+  level: number;
+  caster?: { stats?: { spellPower?: number } };
+  shouldCalculateStats?: boolean;
+}
 
 /** The fields of a server character the buff rules read and write. */
 interface BuffHolder {
-  buffs: any[];
-  stats: any;
-  state: any;
+  buffs: ActiveBuff[];
+  stats: Record<string, number>;
+  state: CharacterState;
   calculateStats(shouldHeal?: boolean): void;
-  addBuff(args: AddBuffArgs): unknown;
+  addBuff(args: BuffRequest): unknown;
   dispelBuffsByProperty(prop: string, value?: unknown): void;
 }
 
@@ -25,7 +36,7 @@ interface BuffHolder {
 
 export function applyAddBuff(
   character: BuffHolder,
-  { name, level, caster, shouldCalculateStats = true }: AddBuffArgs,
+  { name, level, caster, shouldCalculateStats = true }: BuffRequest,
 ) {
   const buff = createBuff({
     name,
@@ -68,7 +79,7 @@ export function applyRegen(character: BuffHolder) {
     isDead: character.state.isDead,
     buffs: character.buffs,
     stats: character.stats,
-    timers: character.state,
+    timers: character.state as RegenTimers,
     now,
   });
   Object.assign(character.state, flags, timers);
@@ -80,7 +91,7 @@ export function applyRegen(character: BuffHolder) {
 }
 
 /** Out of combat and not poisoned: starts resting. Returns whether the character is resting. */
-export function applyCheckIsResting(character: BuffHolder & { id?: string }) {
+export function applyCheckIsResting(character: BuffHolder & { stats: { spellPower?: number } }) {
   const { shouldAddRest, isResting } = checkResting(
     character.buffs,
     character.state.lastCombat,
@@ -90,7 +101,7 @@ export function applyCheckIsResting(character: BuffHolder & { id?: string }) {
     character.addBuff({
       name: "rest",
       level: 1,
-      caster: character as unknown as Character,
+      caster: character,
       shouldCalculateStats: false,
     });
   }

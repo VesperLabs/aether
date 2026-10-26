@@ -46,7 +46,7 @@ Do the pure ones first. Write tests as each one moves.
 - [ ] Client: sprites to `src/client/views/` as displays of game state, input to `input/`, interpolation and prediction to `net/`, and run the rules on the client for movement prediction (files are moved and `utils.ts` is gone; sprites are still Phaser-driven state and there is no prediction yet)
 - [x] Client: group `client/ui/` into `src/client/hud/<feature>/`
 - [x] Remove any leftover loose files from `src/shared/` so it holds only `content/`, `rules/` and `network/`
-- [ ] Convert the remaining `.js` files to TypeScript (done, `allowJs` is off) and turn on strict mode repo-wide (not yet)
+- [ ] Convert the remaining `.js` files to TypeScript (done, `allowJs` is off) and turn on strict mode repo-wide (`src/server/` is strict now, along with `shared/content`, `shared/rules`, `shared/network`; the client, ui and wiki are not yet)
 - [x] Replace lodash with modern JS where possible
 
 ## Done when
@@ -101,3 +101,10 @@ Found during the migration and left alone so behaviour stayed identical. Fix aft
 - [ ] **Client:** `scenes/boot-scene.ts` passes `start: ""` to `generateFrameNames` (typed as a number) and `repeat: false` was changed to `0`.
 - [ ] **Client:** the Phaser entities' `destroy(true)` calls pass an argument that the overridden `destroy()` ignores.
 
+- [ ] **Server:** `grabLoot` and `changeDirection` assign `direction` straight from the payload, so a missing direction sets `player.direction` to `undefined`
+- [ ] **Server:** `chatNpc` with an unknown `npcId` and `enterDoor` with an unknown door name throw (the lookups are used without a check)
+- [ ] **Server:** `/keepers/all` and `/players/all` do arithmetic on the raw query strings (`startIndex + pageSize` concatenates), so pagination breaks when `page` and `pageSize` are passed
+- [ ] **Persistence:** `pruneItemByKey` passes an async callback to the cursor's `forEach`, which doesn't await it, so the updates are fire-and-forget
+- [ ] **Types:** a player that left its room (door, disconnect) holds `room = null` and `roomName = null`, but `CharacterModel` types both as always set; widen the model and fix the callers (see `detachFromRoom` in `server/player-room.ts`)
+- [ ] **Types:** plain attacks have no ability slot, so `Spell` calls `doHit(ids, undefined)`; `abilitySlot` is `number` in most signatures but a numeric string at runtime (`NpcAction`, object keys)
+- [ ] **Types:** `CharacterState`, `CharacterArgs` and `NpcDefinition` in `src/server/` are `Record<string, any>` aliases for the untyped state bag, constructor args and content definitions. Replace them with real types, and the global `Item`, `Buff`, `Character`, `Quest` and `Loot` in `src/global.d.ts` with the content and rules types, once the client no longer uses them.

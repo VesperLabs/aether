@@ -8,7 +8,7 @@ import { registerRoutes } from "./http/routes";
 import { PeerServer, PeerServerEvents } from "peer";
 import { default as http, Server } from "http";
 
-const PEER_SERVER_PORT = parseInt(process.env.PEER_SERVER_PORT);
+const PEER_SERVER_PORT = parseInt(process.env.PEER_SERVER_PORT ?? "");
 const PORT = process.env.PORT;
 const MONGO_URL = process.env.MONGO_URL;
 const SERVER_URL = process.env.SERVER_URL;

@@ -1,12 +1,7 @@
 import type { InventoryState } from "@/shared/rules/inventory";
 
 /** The fields of a player that the inventory rules read and write. */
-interface InventoryHolder {
-  inventory: any;
-  equipment: any;
-  abilities: any;
-  gold: any;
-}
+type InventoryHolder = InventoryState;
 
 /**
  * Legacy adapters for the pure inventory rules: copy the player's plain data in, then store

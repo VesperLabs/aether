@@ -1,3 +1,4 @@
+import type { ServerWorld } from "./server-world";
 import { moveBodyFreely, moveBodyThroughMap } from "@/shared/rules/movement";
 import type { Frame, System } from "@/shared/rules/world";
 import {
@@ -6,6 +7,7 @@ import {
   compactTickDeltaForWire,
   compactTickState,
   diffTickStates,
+  type TickStateExpanded,
 } from "@/shared/network";
 import { SNAPSHOT_KEYFRAME_INTERVAL } from "@/shared/network";
 import { getBuffRoomState, getTickRoomState } from "@/server/net/room-sync";
@@ -27,7 +29,7 @@ const moveNpcs: System<ServerWorld> = (world, { delta }) => {
 /** Flies spells along their velocity. They ignore walls. */
 const moveSpells: System<ServerWorld> = (world, { delta }) => {
   const seconds = Math.min(delta, MAX_STEP_MS) / 1000;
-  for (const spell of Object.values<any>(world.spells)) {
+  for (const spell of Object.values(world.spells)) {
     if (spell.stickToCaster || spell.state.isExpired) continue;
     moveBodyFreely(spell, { x: spell.velocityX, y: spell.velocityY }, seconds);
   }
@@ -37,7 +39,7 @@ const moveSpells: System<ServerWorld> = (world, { delta }) => {
 const updateEntities: System<ServerWorld> = (world, { time, delta }) => {
   for (const player of Object.values(world.players)) player.update?.(time, delta);
   for (const npc of Object.values(world.npcs)) npc.update?.(time, delta);
-  for (const spell of Object.values<any>(world.spells)) spell.update();
+  for (const spell of Object.values(world.spells)) spell.update();
 };
 
 /** Loot, finished spells, and sending each room's state to the clients in it. */
@@ -77,7 +79,10 @@ const updateRooms: System<ServerWorld> = (world: ServerWorld, _frame: Frame) => 
       continue;
     }
 
-    const { delta, rm, isEmpty } = diffTickStates(room.lastEmittedSnapshot as any, expanded);
+    const { delta, rm, isEmpty } = diffTickStates(
+      room.lastEmittedSnapshot as TickStateExpanded,
+      expanded,
+    );
     if (isEmpty) continue;
     room.lastEmittedSnapshot = structuredClone(expanded);
     const snap = createDeltaSnapshot(compactTickDeltaForWire(delta), rm, room.snapshotSeq);

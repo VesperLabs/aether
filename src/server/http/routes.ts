@@ -1,13 +1,20 @@
 import type { Express } from "express";
 
+import type { Database } from "../persistence/database";
 import type { GameServer } from "../game-server";
 import { applyCalculatedStats } from "../character-stats";
 import { getFullCharacterState } from "@/shared/network/sync";
 
+/**
+ * Query string values as the client sent them. The pagination below relies on JavaScript's
+ * coercion of these strings, so they stay loosely typed until the endpoints are fixed.
+ */
+// oxlint-disable-next-line typescript/no-explicit-any
+type UnparsedQuery = Record<string, any>;
+
 interface RouteDeps {
   aetherServer: GameServer;
-  // oxlint-disable-next-line typescript/no-explicit-any
-  db: any;
+  db: Database;
 }
 
 /** The JSON endpoints the wiki and the host platform call. */
@@ -24,7 +31,7 @@ export function registerRoutes(app: Express, { aetherServer, db }: RouteDeps) {
     const { npcs } = world ?? {};
 
     // Pagination parameters
-    const { page = 1, pageSize = 10 } = req.query as Record<string, any>;
+    const { page = 1, pageSize = 10 } = req.query as UnparsedQuery;
 
     // Filter and map keeper states as before
     const keeperStates = Object.values(npcs)
@@ -56,7 +63,7 @@ export function registerRoutes(app: Express, { aetherServer, db }: RouteDeps) {
 
   // Define an API route that supports pagination
   app.get("/players/all", async (req, res) => {
-    const { page = 1, pageSize = 20, sortBy = "updatedAt" } = req.query as Record<string, any>;
+    const { page = 1, pageSize = 20, sortBy = "updatedAt" } = req.query as UnparsedQuery;
 
     const players = await db.getAllUsers({
       page: Number(page),

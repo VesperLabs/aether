@@ -1,3 +1,4 @@
+import type { ServerWorld } from "../server-world";
 import type { GameIo, GameSocket } from "@/shared/network";
 
 /** Things that belong to one connection and outlive a single command. */

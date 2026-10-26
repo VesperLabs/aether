@@ -114,7 +114,7 @@ export async function register(
   const { world, socket } = ctx;
   // Validate email format
   const emailRegex = /^\S+@\S+\.\S+$/;
-  if (!emailRegex.test(email)) {
+  if (!emailRegex.test(`${email}`)) {
     return socket.emit("formError", { error: "Invalid email format" });
   }
 
@@ -125,7 +125,7 @@ export async function register(
   }
 
   //Validate password strength
-  if (password?.length < 4) {
+  if (password != null && password.length < 4) {
     return socket.emit("formError", {
       error: "Weak password",
     });
@@ -138,5 +138,5 @@ export async function register(
   }
 
   // Send success message
-  socket.emit("formSuccess", { success: "Account created", email });
+  socket.emit("formSuccess", { success: "Account created", email: email ?? undefined });
 }

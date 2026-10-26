@@ -1,3 +1,4 @@
+import type { ServerWorld } from "./server-world";
 import { CharacterModel } from "@/shared/rules/character";
 import { ItemBuilder } from "@/shared/content";
 import { applyCalculatedStats } from "./character-stats";
@@ -17,10 +18,17 @@ import {
 } from "./character-buffs";
 import { getPlayerQuests } from "@/shared/rules/quests";
 import { calculateNextMaxExp } from "@/shared/rules/stats";
+import type { ElementalDamages } from "@/shared/rules/combat";
+import type { AbilityDetails } from "./character-combat";
+import type { BuffRequest } from "./character-buffs";
+
+/** What a character is created from: the shared constructor args, plus the room it is in. */
+// Legacy: loaded users and NPC definitions both flow in here untyped.
+export type CharacterArgs = Record<string, any>;
 
 export class ServerCharacter extends CharacterModel {
   world: ServerWorld;
-  constructor(world: ServerWorld, args) {
+  constructor(world: ServerWorld, args: CharacterArgs) {
     super();
     this.world = world;
     this.initCharacter(args);
@@ -50,8 +58,8 @@ export class ServerCharacter extends CharacterModel {
       ...this.baseStats,
     };
     const activeItemSlots = allItems?.map(([slotKey, _]: [string, Item]) => slotKey);
-    const activeSets = [];
-    const setItems = [];
+    const activeSets: string[] = [];
+    const setItems: Item[] = [];
 
     buffs.forEach((buff: Buff) => {
       if (buff.stats) {
@@ -171,7 +179,7 @@ export class ServerCharacter extends CharacterModel {
 
     this.activeItemSlots = activeItemSlots;
   }
-  calculateElementalDamage(eleDamages, victim) {
+  calculateElementalDamage(eleDamages: ElementalDamages, victim: ServerCharacter) {
     return applyElementalDamage(eleDamages, victim);
   }
   calculateStats(shouldHeal = false) {
@@ -180,13 +188,19 @@ export class ServerCharacter extends CharacterModel {
     //update server data on what hands we have items in
     this.visibleEquipment = this.getVisibleEquipment();
   }
-  calculateSpellDamage(victim: any, abilityDetails: any): Array<Hit> {
+  calculateSpellDamage(
+    victim: ServerCharacter,
+    abilityDetails: AbilityDetails | undefined,
+  ): Array<Hit> {
     return applySpellDamage(this, victim, abilityDetails);
   }
-  calculateAttackDamage(victim: any, abilityDetails: any): Array<Hit> {
+  calculateAttackDamage(
+    victim: ServerCharacter,
+    abilityDetails: AbilityDetails | undefined,
+  ): Array<Hit> {
     return applyAttackDamage(this, victim, abilityDetails);
   }
-  calculateDamage(victim: any, abilitySlot: number): Array<Hit> {
+  calculateDamage(victim: ServerCharacter, abilitySlot?: number): Array<Hit> {
     return applyDamage(this, victim, abilitySlot);
   }
   doRegen() {
@@ -200,7 +214,7 @@ export class ServerCharacter extends CharacterModel {
     this.stats.mp = this.stats.maxMp;
     this.stats.sp = this.stats.maxSp;
   }
-  assignExp(amount: integer): boolean {
+  assignExp(amount: number): boolean {
     if (!Number.isInteger(amount)) return false;
     let didLevel = false;
     this.stats.exp += amount;
@@ -223,7 +237,7 @@ export class ServerCharacter extends CharacterModel {
     if (didLevel) this.fillHpMp();
     return didLevel;
   }
-  addBuff(args: AddBuffArgs) {
+  addBuff(args: BuffRequest) {
     return applyAddBuff(this, args);
   }
   //checks if out of combat, adds rest buff it should be resting
@@ -233,7 +247,7 @@ export class ServerCharacter extends CharacterModel {
   dispelBuffsByProperty(prop: keyof Buff, value = true) {
     applyDispel(this, prop, value);
   }
-  expireBuff(name) {
+  expireBuff(name: string) {
     applyExpireBuff(this, name);
   }
   /* Runs in update loop and removed buffs from player that are expired.
@@ -241,10 +255,10 @@ export class ServerCharacter extends CharacterModel {
   expireBuffs(forceExpire = false) {
     applyExpireBuffs(this, forceExpire);
   }
-  doHit(ids: Array<string>, abilitySlot: number): void {
+  doHit(ids: Array<string>, abilitySlot?: number): void {
     //placeholder
   }
-  setLockedPlayerId(id: string) {
+  setLockedPlayerId(id: string | null | undefined) {
     //placeholder
   }
 }

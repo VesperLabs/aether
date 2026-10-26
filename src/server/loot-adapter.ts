@@ -1,3 +1,4 @@
+import type { ServerWorld } from "./server-world";
 import crypto from "crypto";
 import { ItemBuilder } from "@/shared/content";
 import { createLoot, expireLoots, isMapLootDue, planMapLootSpawns } from "@/shared/rules/loot";

@@ -94,7 +94,7 @@ export interface ServerToClientEvents {
     npcs?: BuffCharacterWire[];
     playerIdsThatLeveled?: string[];
   }) => void;
-  lootSpawned: (payload: { loot: LootMessage; npcId: string | null }) => void;
+  lootSpawned: (payload: { loot: LootMessage; npcId?: string | null }) => void;
   lootGrabbed: (payload: { socketId: string; loot: LootMessage; player: CharacterMessage }) => void;
   keeperDataUpdate: (payload: {
     npcId: string;

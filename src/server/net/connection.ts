@@ -1,3 +1,4 @@
+import type { ServerWorld } from "../server-world";
 import type { GameSocket } from "@/shared/network";
 import { removePlayer } from "../remove-player";
 import { legacyLeaveParty } from "../party-adapter";

@@ -1,3 +1,4 @@
+import type { ServerWorld } from "../server-world";
 /** Pauses the game loop while nobody is connected and resumes it when someone joins. */
 export function shouldPause(world: ServerWorld) {
   if (Object.keys(world.players ?? {})?.length === 0) {

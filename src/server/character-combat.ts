@@ -2,38 +2,45 @@ import {
   calculateElementalDamage,
   calculateHpSteal,
   calculateMpSteal,
+  type ElementalDamages,
   rollAttack,
   rollTriggers,
 } from "@/shared/rules/combat";
-import { rollSpellCrit, rollSpellDamage } from "@/shared/rules/spells";
+import { rollSpellCrit, rollSpellDamage, type getAbilityDetails } from "@/shared/rules/spells";
+import type { ServerCharacter } from "./character";
+
+/** An ability's item data merged with its spell definition. */
+export type AbilityDetails = ReturnType<typeof getAbilityDetails>;
 
 /**
  * Legacy adapters for the pure combat and spell damage rules: roll the dice with `Math.random`,
  * then apply the outcome to the live characters (hp, buffs, aggro, death) in the same order as
  * before. Delete in Phase 4 when entities become plain data.
  *
- * `attacker` and `victim` are server characters (`ServerCharacter`); they stay `any` here because
- * the class is what this is being pulled out of.
  */
 
 const rng = () => Math.random();
 
-export function applyElementalDamage(eleDamages: any, victim: any) {
+export function applyElementalDamage(eleDamages: ElementalDamages, victim: ServerCharacter) {
   return calculateElementalDamage(eleDamages, victim.stats, rng);
 }
 
 /** What happens to a victim that took damage: combat flag, dispels, and the mob targeting its attacker. */
-function markHurt(attacker: any, victim: any) {
+function markHurt(attacker: ServerCharacter, victim: ServerCharacter) {
   victim.state.lastCombat = Date.now();
   victim.dispelBuffsByProperty("dispelInCombat");
   /* Npc aggro when they are hit or hit a player */
   victim.setLockedPlayerId(attacker?.id);
 }
 
-export function applySpellDamage(attacker: any, victim: any, abilityDetails: any): Array<Hit> {
+export function applySpellDamage(
+  attacker: ServerCharacter,
+  victim: ServerCharacter,
+  abilityDetails: AbilityDetails | undefined,
+): Array<Hit> {
   if (victim?.state?.isDead) return [];
   const hits: Array<Hit> = [];
-  const { effects = {}, buffs } = abilityDetails ?? {};
+  const { effects = {}, buffs } = abilityDetails ?? ({} as Partial<AbilityDetails>);
 
   const rolled = rollSpellDamage(effects, attacker?.stats, victim.stats, rng);
   const elements = rolled.elements as Elements[];
@@ -41,7 +48,7 @@ export function applySpellDamage(attacker: any, victim: any, abilityDetails: any
 
   // add buffs if the spell has any
   if (buffs) {
-    Object.entries(buffs).forEach(([name, level]) => {
+    Object.entries(buffs as Record<string, number>).forEach(([name, level]) => {
       hits.push({
         type: "buff",
         from: attacker.id,
@@ -104,7 +111,11 @@ export function applySpellDamage(attacker: any, victim: any, abilityDetails: any
   return hits;
 }
 
-export function applyAttackDamage(attacker: any, victim: any, abilityDetails: any): Array<Hit> {
+export function applyAttackDamage(
+  attacker: ServerCharacter,
+  victim: ServerCharacter,
+  abilityDetails: AbilityDetails | undefined,
+): Array<Hit> {
   if (victim?.state?.isDead) return [];
 
   const roll = rollAttack(attacker.stats, victim.stats, abilityDetails?.effects, rng);
@@ -177,7 +188,11 @@ export function applyAttackDamage(attacker: any, victim: any, abilityDetails: an
 }
 
 /** An attack (no ability slot, or a melee attack-spell) or a spell hitting `victim`. */
-export function applyDamage(attacker: any, victim: any, abilitySlot: number): Array<Hit> {
+export function applyDamage(
+  attacker: ServerCharacter,
+  victim: ServerCharacter,
+  abilitySlot?: number,
+): Array<Hit> {
   if (victim?.state?.isDead) return [];
   let hitList: Array<Hit>;
   const abilityDetails = attacker?.getAbilityDetails(abilitySlot);

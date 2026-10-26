@@ -48,13 +48,6 @@ interface PartyInvite {
   partyId: string;
 }
 
-interface BuildItem extends Array<any> {
-  0?: string;
-  1?: string;
-  2?: string;
-  3?: number;
-}
-
 interface Loot {
   id: string;
   roomName: string;
@@ -94,12 +87,6 @@ interface ServerMetrics {
   ping: number;
 }
 
-type ServerWorld = import("@/shared/rules/world").World<ServerPlayer, Npc, any, Loot, Quest> & {
-  db: any;
-  io: any;
-  loop: import("@/shared/rules/world").TickLoop;
-};
-
 interface Coordinate {
   x: number;
   y: number;
@@ -117,13 +104,6 @@ interface Hit {
   elements?: Array<Elements>;
   from: string;
   to: string;
-}
-
-interface AddBuffArgs {
-  name: string;
-  level: number;
-  caster: Character;
-  shouldCalculateStats?: boolean;
 }
 
 interface Buff {
@@ -199,13 +179,6 @@ interface Character {
 
 type CharClass = "warrior" | "rogue" | "mage" | "cleric";
 
-interface KeeperData {
-  dialogues?: any;
-  quests?: any;
-  shop?: any;
-  home?: Coordinate;
-}
-
 interface Npc extends Character {
   name?: string;
   drops: Array<Drop>;
@@ -214,49 +187,11 @@ interface Npc extends Character {
   setDead(): void;
 }
 
-interface ServerPlayer extends Character {
-  email?: string;
-  userSettings?: UserSettings;
-  peerId?: string;
-  isDemoAccount?: boolean;
-  partyId?: string;
-  spawn: SpawnPoint;
-  addQuest(quest: Quest): void;
-  completeQuest(questId: string): any;
-  updateChatQuests(questId: string): Array<PlayerQuest>;
-  findEquipmentById(id: string): Slot;
-  findAbilityById(id: string): Slot;
-  subtractAbilityAtId(id: string, amount: integer);
-  deleteAbilityAtId(id: string);
-  clearEquipmentSlot(id: string): void;
-  clearAbilitySlot(id: string): void;
-  subtractInventoryItemAtId(id: string, amount: integer);
-  findInventoryItemById(id: string);
-  findBagItemById(id: string);
-  setBagItem(bagId: string, slot: string, item: Item);
-  findOpenBagSlot(bagId: string, item: Item);
-  findBagItemBySlot(bagId: string, slot: string);
-  deleteBagItemAtId(id: string);
-  deleteInventoryItemAtId(id: string);
-  subtractBagItemAtId(id: string, amount: integer);
-  addInventoryItem(item: Item): void;
-  doAttack(props?: any): void;
-  doCast(props?: any): void;
-  setDead(): void;
-  isInventoryFull(): boolean;
-  addNpcKill(npcName: string): void;
-}
-
 interface UserSettings {
   playMusic: boolean;
   showMinimap: boolean;
   videoChat: boolean;
   charLevels: boolean;
-}
-
-interface MapAsset {
-  name: string;
-  json: string;
 }
 
 interface Spell {
@@ -327,4 +262,17 @@ interface PlayerQuestObjective {
   isReady?: boolean;
   numCollected?: number;
   numKilled?: number;
+}
+interface AddBuffArgs {
+  name: string;
+  level: number;
+  caster: Character;
+  shouldCalculateStats?: boolean;
+}
+
+interface KeeperData {
+  dialogues?: any;
+  quests?: any;
+  shop?: any;
+  home?: Coordinate;
 }

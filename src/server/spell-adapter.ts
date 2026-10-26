@@ -1,8 +1,9 @@
+import type { ServerWorld } from "./server-world";
 import crypto from "crypto";
-import { Spell } from "./spell";
+import { Spell, type SpellArgs } from "./spell";
 
 /** Casts a spell in the room. */
-export function createSpell(room: Room, spellData: any): Spell {
+export function createSpell(room: Room, spellData: Omit<SpellArgs, "id" | "room">): Spell {
   const world: ServerWorld = spellData.caster.world;
   const id = crypto.randomUUID();
   world.spells[id] = new Spell(world, { room, ...spellData, id });

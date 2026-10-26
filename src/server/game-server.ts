@@ -1,4 +1,7 @@
+import type { ServerWorld } from "./server-world";
+import type { Server as HttpServer } from "http";
 import { Server } from "socket.io";
+import type { Database } from "./persistence/database";
 import { createTickLoop } from "@/shared/rules/world";
 import { DEFAULT_SERVER_FPS } from "@/shared/network";
 import type { ClientToServerEvents, GameIo, ServerToClientEvents } from "@/shared/network";
@@ -14,8 +17,8 @@ export class GameServer {
   io: GameIo;
   world: ServerWorld;
   spawnTime: number;
-  db: any;
-  constructor({ httpServer, db }) {
+  db: Database;
+  constructor({ httpServer, db }: { httpServer: HttpServer; db: Database }) {
     this.spawnTime = Date.now();
 
     this.io = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
