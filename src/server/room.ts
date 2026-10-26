@@ -4,7 +4,7 @@ import { Door } from "@/shared/door";
 import { LootManager } from "./loot-manager";
 import { SpellManager } from "./spell-manager";
 import EasyStar from "easystarjs";
-import type { TickStateExpanded } from "@/shared/network";
+import type { TickStateExpanded } from "@/shared/network/sync";
 export class Room {
   public scene: ServerScene;
   public tileMap: Phaser.Tilemaps.Tilemap;

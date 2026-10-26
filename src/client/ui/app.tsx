@@ -16,7 +16,7 @@ import { ThemeUIProvider, Box, useViewportSizeEffect, Modal, KeyboardKey } from 
 import { getSpinDirection, calculateZoomLevel } from "../utils";
 import "react-tooltip/dist/react-tooltip.css";
 import { Theme } from "theme-ui";
-import { Socket } from "socket.io-client";
+import type { ClientGameSocket } from "@/shared/network";
 import { CONSUMABLES_BASES, DEFAULT_USER_SETTINGS, MINI_MAP_SIZE, isMobile } from "@/shared";
 import Peer from "peerjs";
 import { VideoFrame } from "./video-frame";
@@ -80,7 +80,7 @@ interface AppContextValue {
   partyInvites: Array<PartyInvite>;
   setPartyInvites: React.Dispatch<React.SetStateAction<Array<PartyInvite>>>;
   party: any;
-  socket: Socket;
+  socket: ClientGameSocket;
   peer: Peer;
   debug: boolean;
   game: Phaser.Game;

@@ -1,4 +1,4 @@
-import { createBaseUser } from ".";
+import { createBaseUser } from "./base-user";
 
 export async function initFakeDatabase() {
   return getDatabaseApi();

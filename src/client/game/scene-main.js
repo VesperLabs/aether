@@ -8,7 +8,11 @@ import {
   EXTRA_INTERPOLATION_BUFFER_MS,
   INTERPOLATION_BUFFER_TICKS,
 } from "@/shared/constants";
-import { decodeWireDirection, expandTickState, heroInitToTickExpanded } from "@/shared/network";
+import {
+  decodeWireDirection,
+  expandTickState,
+  heroInitToTickExpanded,
+} from "@/shared/network/sync";
 import { createNetInterpolator } from "./net-interpolation";
 
 const ASSETS_BASE = process.env.ASSETS_URL || "";

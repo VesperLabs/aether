@@ -3,6 +3,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { App } from "./ui/app";
 import socketIOClient from "socket.io-client";
+import type { ClientGameSocket } from "@/shared/network";
 import { AnimatedTiles } from "./game/animated-tiles";
 import { SceneMain } from "./game/scene-main";
 import { SceneBoot } from "./game/scene-boot";
@@ -19,7 +20,7 @@ const PEER_CLIENT_PORT = parseInt(process.env.PEER_CLIENT_PORT);
 const PEER_CLIENT_PATH = process.env.PEER_CLIENT_PATH as string;
 
 /* WebSocket only — no polling (no long-poll fallback). */
-const socket = socketIOClient(SERVER_URL, {
+const socket: ClientGameSocket = socketIOClient(SERVER_URL, {
   transports: ["websocket"],
 });
 

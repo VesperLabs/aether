@@ -336,7 +336,6 @@
         "src/client/ui/app.tsx",
         "src/client/ui/menu-hud.tsx",
         "src/server/character.ts",
-        "src/server/game-server.ts",
         "src/server/npc.ts",
         "src/server/player.ts",
         "src/server/utils.ts",

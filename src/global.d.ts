@@ -97,7 +97,7 @@ interface ServerMetrics {
 interface ServerScene extends Phaser.Scene {
   doors: Record<string, Door>;
   loots: Record<string, Loot>;
-  npcs: Record<string, Character>;
+  npcs: Record<string, Npc>;
   quests: Record<string, Quest>;
   players: Record<string, ServerPlayer>;
   partyManager: any;

@@ -4,7 +4,7 @@ import type { AddressInfo } from "node:net";
 import { io as connect, type Socket } from "socket.io-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import "../phaser";
-import { initFakeDatabase } from "../db/fake";
+import { initFakeDatabase } from "../persistence";
 import { GameServer } from "../game-server";
 
 /**
@@ -124,5 +124,35 @@ describe("game server", () => {
     const { socket } = await login("cleric");
     socket.emit("consumeItem", { location: "inventory", item: { id: "nope" } });
     expect(await ping(socket)).toBe(true);
+  });
+
+  it("drops payloads that do not match the command schema", async () => {
+    const { socket } = await login("warrior");
+    socket.emit("moveItem" as never, "garbage" as never);
+    socket.emit("playerInput" as never, { x: "far", y: 1, vx: 0, vy: 0 } as never);
+    socket.emit("message" as never, { message: 42 } as never);
+    expect(await ping(socket)).toBe(true);
+  });
+
+  it("survives a command from a socket that never logged in", async () => {
+    const socket = await connectSocket();
+    socket.emit("attack", { count: 1 });
+    expect(await ping(socket)).toBe(true);
+  });
+
+  it("treats admin chat commands as plain chat unless DEBUG is true", async () => {
+    const { socket } = await login("rogue");
+    const chat = once(socket, "message");
+    socket.emit("message", { message: "/coords" });
+    expect((await chat)[0]).toMatchObject({ type: "chat", message: "/coords" });
+
+    process.env.DEBUG = "true";
+    try {
+      const info = once(socket, "message");
+      socket.emit("message", { message: "/coords" });
+      expect((await info)[0]).toMatchObject({ type: "info" });
+    } finally {
+      delete process.env.DEBUG;
+    }
   });
 });
