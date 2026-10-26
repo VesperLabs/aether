@@ -1,7 +1,7 @@
 import { Loot } from "./loot";
 import crypto from "crypto";
 import { randomNumber } from "./utils";
-import { ItemBuilder } from "../shared";
+import { ItemBuilder } from "@/shared/content";
 
 const LOOT_EXPIRE_TIME = 600000; //10min;
 const LOOT_BUFFER_DELETE_TIME = 2000;

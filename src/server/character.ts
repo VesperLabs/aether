@@ -1,5 +1,5 @@
 import { Character } from "@/shared/character";
-import { ItemBuilder } from "@/shared/item-builder";
+import { ItemBuilder, buffList } from "@/shared/content";
 import {
   randomNumber,
   calculateNextMaxExp,
@@ -8,7 +8,6 @@ import {
   mergeAndAddValues,
   cloneObject,
 } from "./utils";
-import buffList from "@/shared/data/buff-list.json";
 
 /** Part of spell power applied to elemental spell min/max (full power was melting warriors in PvP). */
 const SPELL_POWER_ELEMENTAL_FACTOR = 0.5;

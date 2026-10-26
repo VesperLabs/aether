@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { resolveAsset } from "@/shared/assets";
+import { resolveAsset } from "@/shared/content";
 const Sprite = Phaser.GameObjects.Sprite;
 const BLANK_TEXTURE = "human-blank";
 

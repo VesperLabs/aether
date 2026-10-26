@@ -1,8 +1,5 @@
 import Phaser from "phaser";
-import { assetList } from "@/shared/assets";
-import soundList from "@/shared/data/sound-list.json";
-import iconList from "@/shared/data/icon-list.json";
-import { mapList, mapImageList } from "@/shared/maps";
+import { assetList, soundList, iconList, mapList, mapImageList } from "@/shared/content";
 import { IMAGE_CACHE } from "@/shared/utils";
 
 /**

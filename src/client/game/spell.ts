@@ -1,7 +1,8 @@
 // @ts-nocheck
 import Phaser from "phaser";
 import { playAudio } from "../utils";
-import { spellDetails, getAngleFromDirection, BUFF_SPELLS, distanceTo } from "@/shared";
+import { spellDetails } from "@/shared/content";
+import { getAngleFromDirection, BUFF_SPELLS, distanceTo } from "@/shared";
 const Sprite = Phaser.GameObjects.Sprite;
 const BLANK_TEXTURE = "human-blank";
 

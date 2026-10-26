@@ -336,19 +336,17 @@
         "src/client/ui/app.tsx",
         "src/client/ui/menu-hud.tsx",
         "src/server/character.ts",
-        "src/server/game-server.ts",
         "src/server/npc.ts",
         "src/server/player.ts",
         "src/server/utils.ts",
-        "src/shared/character.ts",
-        "src/shared/item-builder.ts"
+        "src/shared/character.ts"
       ],
       "rules": {
         "max-lines": "off"
       }
     },
     {
-      "files": ["src/shared/item-builder.ts", "src/wiki/page-players.tsx"],
+      "files": ["src/wiki/page-players.tsx"],
       "rules": {
         "no-restricted-imports": "off"
       }

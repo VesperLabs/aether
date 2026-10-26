@@ -1,8 +1,6 @@
 import { Slot, SlotAmount, useAppContext } from ".";
 import { Box, Text, Flex, Divider, Icon, Button, STYLE_NON_EMPTY } from "@/ui";
-import { ItemBuilder } from "@/shared/item-builder";
-import nasties from "@/shared/data/nasties.json";
-import keepers from "@/shared/data/keepers.json";
+import { ItemBuilder, nasties, keepers } from "@/shared/content";
 import { Tooltip } from "./tooltip";
 
 function getKeeperByQuestName(quest) {

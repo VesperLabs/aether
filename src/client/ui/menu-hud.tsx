@@ -6,7 +6,7 @@ import { streamHasUsableVideo } from "./video-chat-utils";
 import { cloneDeep } from "lodash";
 import { TextDivider } from "./text-divider";
 import { TooltipLabel } from "./tooltip-label";
-import { buffList } from "@/shared";
+import { buffList } from "@/shared/content";
 import { Tooltip } from "./tooltip";
 
 const UserName = ({ sx, player }: { player: any; sx?: object }) => {

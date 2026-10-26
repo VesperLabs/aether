@@ -1,7 +1,6 @@
 import crypto from "crypto";
 import { Npc } from "./npc";
-import nasties from "@/shared/data/nasties.json";
-import keepers from "@/shared/data/keepers.json";
+import { nasties, keepers } from "@/shared/content";
 import { useGetBaseCharacterDefaults, mergeAndAddValues } from "./utils";
 
 /* Find NPCs in data lists, and add `kind` to them */

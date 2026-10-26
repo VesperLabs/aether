@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 const Sprite = Phaser.GameObjects.Sprite;
-import { spellDetails, BUFF_SPELLS, distanceTo } from "../shared";
+import { spellDetails } from "@/shared/content";
+import { BUFF_SPELLS, distanceTo } from "../shared";
 import { ServerCharacter } from "./character";
 
 export class Spell extends Phaser.GameObjects.Container {

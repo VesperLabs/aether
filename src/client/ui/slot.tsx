@@ -10,7 +10,8 @@ import {
   theme,
 } from "@/ui";
 import { ItemTooltip, BLANK_IMAGE, SlotAmount } from ".";
-import { resolveAsset, assetToCanvas, isMobile, itemHasRequiredStats } from "@/shared";
+import { resolveAsset } from "@/shared/content";
+import { assetToCanvas, isMobile, itemHasRequiredStats } from "@/shared";
 import { useDoubleTap } from "use-double-tap";
 import { isEqual, get } from "lodash";
 

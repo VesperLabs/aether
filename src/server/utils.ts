@@ -1,7 +1,6 @@
 //@ts-nocheck
-import { ItemBuilder } from "@/shared/item-builder";
-import { decodeWireDirection, encodeWireDirection } from "@/shared/net-wire";
-import { pickTickStateLite } from "@/shared/tick-state";
+import { ItemBuilder } from "@/shared/content";
+import { decodeWireDirection, encodeWireDirection, pickTickStateLite } from "@/shared/network/sync";
 
 const PLAYER_BASE_ATTACK_DELAY = 100;
 

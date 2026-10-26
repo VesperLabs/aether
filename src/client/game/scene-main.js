@@ -1,16 +1,18 @@
 import Phaser from "phaser";
 import { Door } from "@/shared/door";
 import { Sign } from "@/shared/sign";
-import { getMapByName } from "@/shared/maps";
+import { getMapByName } from "@/shared/content";
 import { DEFAULT_USER_SETTINGS, distanceTo, isMobile, MINI_MAP_SIZE } from "@/shared/utils";
 import {
   DEFAULT_SERVER_FPS,
   EXTRA_INTERPOLATION_BUFFER_MS,
   INTERPOLATION_BUFFER_TICKS,
 } from "@/shared/constants";
-import { decodeWireDirection } from "@/shared/net-wire";
-import { expandTickState } from "@/shared/wire-tick";
-import { heroInitToTickExpanded } from "@/shared/tick-delta";
+import {
+  decodeWireDirection,
+  expandTickState,
+  heroInitToTickExpanded,
+} from "@/shared/network/sync";
 import { createNetInterpolator } from "./net-interpolation";
 
 const ASSETS_BASE = process.env.ASSETS_URL || "";

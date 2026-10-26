@@ -1,0 +1,62 @@
+import type { BuffDefinition } from "./buff-types";
+
+export const buffList = {
+  evasion: { type: "buff", duration: 30000, stats: { dodgeChance: 5 } },
+  haste: {
+    type: "buff",
+    duration: 30000,
+    stats: { walkSpeed: 20, attackDelay: -25, castDelay: -100 },
+  },
+  brute: { type: "buff", duration: 30000, stats: { minDamage: 1, maxDamage: 1 } },
+  guard: { type: "guard", duration: 30000, stats: { defense: 15 } },
+  adrenaline: { type: "buff", scaleDuration: false, duration: 5000, stats: { regenSp: 1 } },
+  siphon: { type: "buff", duration: 5000, stats: { mpSteal: 5 } },
+  vampire: { type: "buff", duration: 5000, stats: { hpSteal: 5 } },
+  endurance: { type: "buff", duration: 30000, stats: { maxHp: 15 } },
+  genius: { type: "buff", duration: 30000, stats: { maxMp: 15 } },
+  protein: { type: "buff", duration: 30000, dispelInCombat: true, stats: { regenHp: 3 } },
+  vitamins: { type: "buff", duration: 30000, dispelInCombat: true, stats: { regenMp: 1 } },
+  stimulant: { type: "buff", duration: 15000, dispelInCombat: true, stats: { regenSp: 1 } },
+  regeneration: { type: "buff", duration: 30000, stats: { regenHp: 3 } },
+  rest: {
+    type: "buff",
+    duration: -1,
+    dispelInCombat: true,
+    scaleDuration: false,
+    description: "Regenerating HP while you are out of combat.",
+  },
+  stun: { type: "debuff", duration: 500 },
+  slow: {
+    type: "debuff",
+    duration: 3000,
+    scaleDuration: false,
+    stats: { walkSpeed: -25, attackDelay: 50, castDelay: 100 },
+  },
+  poison: {
+    type: "debuff",
+    scaleDuration: false,
+    duration: 6000,
+    stats: { poisonDamage: 1 },
+  },
+  fortune: {
+    type: "buff",
+    scaleDuration: false,
+    duration: 10000,
+    stats: { magicFind: 25 },
+    description: "Increased chance to find loot from slain enemies.",
+  },
+  stealth: {
+    type: "buff",
+    scaleDuration: false,
+    scaleStats: false,
+    duration: -1,
+    dispelAfterAttack: true,
+    dispelInCombat: true,
+    dispelOnHit: true,
+    stats: { critChance: 100 },
+    percentStats: { walkSpeed: -50 },
+    description: "Hidden from sight while you are out of combat.",
+  },
+} as const satisfies Readonly<Record<string, BuffDefinition>>;
+
+export type BuffName = keyof typeof buffList;
