@@ -1,5 +1,6 @@
 import "./phaser";
 import { createGameEventBus, type GameEventBus } from "@/shared/rules/world";
+import { subscribeQuests } from "@/shared/rules/quests";
 import { subscribeStats } from "@/shared/rules/stats";
 import { mapList, QuestBuilder } from "@/shared/content";
 import { Server } from "socket.io";
@@ -73,7 +74,9 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       const member = this.players[characterId];
       if (!member) return;
       member.assignExp(amount);
-      member.addNpcKill(kill.mobName);
+    });
+    subscribeQuests(this.gameEvents, (characterId, mobName) => {
+      this.players[characterId]?.addNpcKill(mobName);
     });
 
     listenForConnections(scene);
