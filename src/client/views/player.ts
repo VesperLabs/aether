@@ -1,11 +1,19 @@
-// @ts-nocheck
-import { Character } from "./character";
+import Phaser from "phaser";
+import type { FullCharacterWire, PartyMessage } from "@/shared/network";
+import type { BuffCharacterWire } from "@/shared/network/sync";
+import type { SceneMain } from "@/client/scenes/main-scene";
+import { Character, type CharacterArgs } from "./character";
 import { distanceTo } from "@/shared/rules/world";
 import { MIN_STEALTH_ALPHA, calculateStealthVisibilityPercent } from "@/shared/rules/combat";
 import { Spell } from "./spell";
 import { getSpinDirection } from "@/client/input/spin-direction";
 import { applyAppearance, createSpriteLayers } from "./player-layers";
-import { applyHit } from "./player-hit";
+import { applyHit, type HitEffect } from "./player-hit";
+import type { Bubble } from "./bubble";
+import type { Bar } from "./bar";
+import type { BuffRack } from "./buff-rack";
+import type { WeaponSprite } from "./weapon-sprite";
+import type { Crosshair } from "@/client/input/crosshair";
 import {
   approachAlpha,
   checkIsFlash,
@@ -16,8 +24,47 @@ import {
 const BLANK_TEXTURE = "human-blank";
 const PLAYER_GRAB_RANGE = 32;
 
+type Sprite = Phaser.GameObjects.Sprite;
+
+/** The part of a character that changes with its buffs. */
+type BuffUpdate = BuffCharacterWire | FullCharacterWire;
+
+/** What an attack or a cast needs from the server message that triggered it. */
+interface AttackArgs {
+  count?: number | null;
+  castAngle?: number | null;
+  direction?: string | null;
+  abilitySlot?: number | string | null;
+}
+
 export class Player extends Character {
-  constructor(scene, args) {
+  declare scene: SceneMain;
+  /** Only the hero has a party. */
+  party?: PartyMessage | null;
+  declare weaponAtlas: unknown;
+  declare skin: Sprite;
+  declare chest: Sprite;
+  declare face: Sprite;
+  declare whiskers: Sprite;
+  declare hair: Sprite;
+  declare armor: Sprite;
+  declare helmet: Sprite;
+  declare boots: Sprite;
+  declare gloves: Sprite;
+  declare pants: Sprite;
+  declare accessory: Sprite;
+  /** Humans get an elemental border on their weapons, everything else a plain sprite. */
+  declare handLeft: Sprite | WeaponSprite;
+  declare handRight: Sprite | WeaponSprite;
+  declare shadow: Sprite;
+  declare bubble: Bubble;
+  declare crosshair: Crosshair;
+  declare hpBar: Bar;
+  declare userName: Phaser.GameObjects.BitmapText;
+  declare buffRack: BuffRack;
+  declare corpse: Sprite;
+  declare talkMenu: Sprite;
+  constructor(scene: SceneMain, args: CharacterArgs) {
     super(scene, args);
 
     if (this.hasBuff("stealth")) {
@@ -35,10 +82,10 @@ export class Player extends Character {
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
   }
-  updateState(state) {
+  updateState(state: Record<string, unknown> | undefined) {
     if (!state) return;
     const patch = (key: string) => {
-      if (state[key] !== undefined) (this.state as any)[key] = state[key];
+      if (state[key] !== undefined) this.state[key] = state[key];
     };
     patch("lockedPlayerId");
     patch("bubbleMessage");
@@ -55,7 +102,7 @@ export class Player extends Character {
       patch("isHoldingAttack");
     }
   }
-  updateData(data) {
+  updateData(data: FullCharacterWire) {
     if (data?.peerId !== undefined) this.peerId = data.peerId;
     this.activeItemSlots = data?.activeItemSlots;
     // filter out equipment slotNames that are not in activeItemsSlots array
@@ -72,7 +119,7 @@ export class Player extends Character {
     this.state.activeSets = data?.state?.activeSets;
     this.updateVisibleEquipment();
   }
-  updateBuffData(data) {
+  updateBuffData(data: BuffUpdate) {
     this.activeItemSlots = data?.activeItemSlots;
     // Update properties within stats object, excluding hp, mp, and sp
     this.buffs = data?.buffs;
@@ -121,7 +168,7 @@ export class Player extends Character {
   drawCharacterFromUserData() {
     applyAppearance(this);
   }
-  doAttack({ count, castAngle, direction, abilitySlot }) {
+  doAttack({ count, castAngle, direction, abilitySlot }: AttackArgs) {
     const { state, isHero } = this;
     const { isDead, isAttacking, isHoldingAttack } = state ?? {};
 
@@ -154,7 +201,7 @@ export class Player extends Character {
       new Spell(this.scene, { id: null, caster: this, spellName, castAngle, action }),
     );
   }
-  doCast({ abilitySlot, castAngle }) {
+  doCast({ abilitySlot, castAngle }: AttackArgs) {
     const { isHero } = this || {};
     const ability = this.getAbilityDetails(abilitySlot);
 
@@ -284,10 +331,10 @@ export class Player extends Character {
       return true;
     }
   }
-  takeHit(hit, showDamage = true) {
+  takeHit(hit: HitEffect, showDamage = true) {
     applyHit(this, hit, showDamage);
   }
-  checkStealth({ distance }) {
+  checkStealth({ distance }: { distance: number }) {
     const stealthBuff = this.getBuff("stealth");
     let alpha = this.alpha;
     if (!stealthBuff) {
@@ -309,7 +356,7 @@ export class Player extends Character {
     }
     return this.setAlpha(alpha);
   }
-  update(time, delta) {
+  update(_time: number, delta: number) {
     if (this.checkDeath()) return;
     hackFrameRates(this, Math.round(80 + 2500 / (this.currentSpeed + 10)));
     updateCurrentSpeed(this);
@@ -325,7 +372,7 @@ export class Player extends Character {
     }
   }
   //
-  playAnim(sprite, parts) {
+  playAnim(sprite: Sprite, parts: Array<string | undefined>) {
     let animKey = parts?.join("-");
     /* If a part is missing, clear the texture */
     if (parts?.some((p) => !p)) animKey = `${BLANK_TEXTURE}-${this?.direction}-${this?.action}`;

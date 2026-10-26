@@ -1,36 +1,42 @@
 import Phaser from "phaser";
 import { getMapByName } from "@/shared/content";
-import { DEFAULT_USER_SETTINGS } from "@/shared/rules/world";
+import { DEFAULT_USER_SETTINGS, type UserSettings } from "@/shared/rules/world";
+import type { ClientGameSocket } from "@/shared/network";
+import type { Player } from "@/client/views/player";
 import { isMobile } from "@/ui/is-mobile";
 import { MINI_MAP_SIZE } from "@/client/views/minimap-size";
 import { decodeWireDirection } from "@/shared/network/sync";
 import { netInterp } from "@/client/net/scene-interpolation";
 import { bindSceneSocket } from "@/client/net/scene-socket";
 import { MUSIC_VOLUME } from "@/client/audio/music";
-import { getPlayer, getNpc } from "./scene-entities";
+import { getPlayer, getNpc, getNpcs, getPlayers } from "./scene-entities";
 import { enableDoors, initCamera } from "./main-map";
 import { checkProximities } from "./proximity";
 
 const ASSETS_BASE = process.env.ASSETS_URL || "";
-const assetUrl = (src) => (ASSETS_BASE ? src.replace(/^\.\/assets\//, ASSETS_BASE + "/") : src);
+const assetUrl = (src: string) => (ASSETS_BASE ? src.replace(/^\.\/assets\//, ASSETS_BASE + "/") : src);
 
 export class SceneMain extends Phaser.Scene {
-  declare hero: any;
-  declare lastUpdateTime: any;
-  declare loots: any;
-  declare npcs: any;
-  declare players: any;
-  declare roomName: any;
-  declare minimap: any;
-  declare nearbyRemotePlayers: any;
-  declare socket: any;
-  declare userSettings: any;
-  constructor(socket) {
+  /** Set by `heroInit`; the entity groups below exist from then on. */
+  declare hero: Player;
+  lastUpdateTime: number;
+  declare loots: Phaser.Physics.Arcade.Group;
+  declare npcs: Phaser.Physics.Arcade.Group;
+  declare players: Phaser.Physics.Arcade.Group;
+  declare doors: Phaser.Physics.Arcade.StaticGroup;
+  declare signs: Phaser.Physics.Arcade.StaticGroup;
+  declare map: Phaser.Tilemaps.Tilemap;
+  declare animatedTiles?: { init(map: Phaser.Tilemaps.Tilemap): void };
+  declare roomName: string;
+  declare minimap?: Phaser.Cameras.Scene2D.Camera;
+  nearbyRemotePlayers: Array<{ socketId: string; peerId?: string | null }>;
+  socket: ClientGameSocket;
+  userSettings: UserSettings;
+  constructor(socket: ClientGameSocket) {
     super({ key: "SceneMain" });
     this.socket = socket;
     this.lastUpdateTime = 0;
     this.userSettings = DEFAULT_USER_SETTINGS;
-    /** @type {Array<{ socketId: string, peerId?: string | null }>} */
     this.nearbyRemotePlayers = [];
   }
 
@@ -68,17 +74,15 @@ export class SceneMain extends Phaser.Scene {
     );
   }
   // user setting functions
-  toggleMusic(value) {
+  toggleMusic(value: boolean) {
     return value ? this.changeMusic() : this.sound.stopAll();
   }
-  toggleMinimap(value) {
-    return this.minimap.setVisible(value);
+  toggleMinimap(value: boolean) {
+    return this.minimap?.setVisible(value);
   }
   toggleCharLevels() {
     const scene = this;
-    [...scene.players.getChildren(), ...scene.npcs.getChildren()].forEach((a) =>
-      a.updateUserName(),
-    );
+    [...getPlayers(scene), ...getNpcs(scene)].forEach((a) => a.updateUserName());
   }
   changeMusic() {
     const scene = this;
@@ -101,7 +105,7 @@ export class SceneMain extends Phaser.Scene {
     });
     scene.load.start();
   }
-  update(time, delta) {
+  update(time: number) {
     const elapsedTime = time - this.lastUpdateTime;
     if (!this.socket || !this?.hero?.body) return;
 

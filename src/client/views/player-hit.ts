@@ -1,9 +1,14 @@
+import type { HitMessage } from "@/shared/network";
+import type { Player } from "./player";
 import { Damage } from "./damage";
 import { Buff } from "./buff";
 import { Hit } from "./hit";
 
+/** A hit as the client plays it. Regen and stat changes have no attacker or target. */
+export type HitEffect = Pick<HitMessage, "type"> & Partial<Omit<HitMessage, "type">>;
+
 /** Applies one hit (damage, buff, death, stat change) to a character and plays its effects. */
-export function applyHit(player, hit, showDamage = true) {
+export function applyHit(player: Player, hit: HitEffect, showDamage = true) {
   if (player?.state?.isDead) return;
 
   const { stats, scene } = player || {};

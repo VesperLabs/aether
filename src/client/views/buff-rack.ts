@@ -1,10 +1,11 @@
 import Phaser from "phaser";
+import type { ActiveBuff } from "@/shared/rules/buffs";
 
 const Sprite = Phaser.GameObjects.Sprite;
 
 export class BuffRack extends Phaser.GameObjects.Container {
-  declare buffs: any;
-  constructor(scene, x, y, buffs = []) {
+  declare buffs: Array<{ name: string; sprite: Phaser.GameObjects.Sprite }>;
+  constructor(scene: Phaser.Scene, x: number, y: number, buffs: ActiveBuff[] = []) {
     super(scene, x, y);
     this.buffs = [];
     buffs.forEach((buff) => {
@@ -13,7 +14,7 @@ export class BuffRack extends Phaser.GameObjects.Container {
     this.center();
   }
 
-  addBuff(buff) {
+  addBuff(buff: ActiveBuff) {
     // will add a sprite to this container with a texture of `spell-${buff.name}`
     const sprite = new Sprite(this.scene, 0, 0, `spell-${buff.name}`);
     sprite.setScale(0.5);
@@ -22,7 +23,7 @@ export class BuffRack extends Phaser.GameObjects.Container {
     this.center();
   }
 
-  removeBuff(buff) {
+  removeBuff(buff: ActiveBuff) {
     // find a sprite in this.buffs with a texture of `spell-${buff.name}`
     const index = this.buffs.findIndex((b) => b.name === buff.name);
     if (index !== -1) {
@@ -50,7 +51,7 @@ export class BuffRack extends Phaser.GameObjects.Container {
     });
   }
 
-  compareBuffs(buffs) {
+  compareBuffs(buffs: ActiveBuff[]) {
     const buffNames = buffs.map((buff) => buff.name);
     this.buffs.forEach((buff) => {
       if (!buffNames.includes(buff.name)) {

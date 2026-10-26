@@ -7,9 +7,33 @@
  */
 
 import { DEFAULT_SERVER_FPS } from "@/shared/network";
-import { expandTickState, mergeTickDelta } from "@/shared/network/sync";
+import {
+  expandTickState,
+  mergeTickDelta,
+  type NetSnapshot,
+  type TickCharacterWire,
+  type TickStateExpanded,
+} from "@/shared/network/sync";
 
-function lerp(a, b, t) {
+/** A character pose from a tick. Heroinit seeds also carry the room and a plain direction. */
+export type TickEntity = TickCharacterWire & {
+  socketId?: string;
+  roomName?: string;
+  direction?: string;
+};
+
+/** A snapshot whose state has been expanded and merged, as the vault stores it. */
+type VaultSnapshot = Omit<NetSnapshot, "state"> & { state: TickStateExpanded };
+
+export interface InterpolatedEntities {
+  state: TickEntity[];
+  olderId: string;
+  newerId: string;
+  olderTime: number;
+  newerTime: number;
+}
+
+function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t;
 }
 
@@ -34,15 +58,15 @@ export function createNetInterpolator(
   const bufferMs = (1000 / serverFps) * bufferTicks + extraBufferMs;
 
   let timeOffset = -1;
-  const vault = [];
+  const vault: VaultSnapshot[] = [];
   /** Authoritative merged tick state (delta ticks apply on top). */
-  let lastMergedState = null;
+  let lastMergedState: TickStateExpanded | null = null;
 
   /** Hard resync only on large drift (tab sleep, reconnect); smooth small jitter from RTT spikes. */
   const CLOCK_HARD_RESYNC_MS = 400;
   const CLOCK_SMOOTH = 0.22;
 
-  function insertSnapshotSorted(snapshot) {
+  function insertSnapshotSorted(snapshot: VaultSnapshot) {
     const t = snapshot.time;
     let lo = 0;
     let hi = vault.length;
@@ -57,9 +81,9 @@ export function createNetInterpolator(
     }
   }
 
-  function addSnapshot(snapshot) {
+  function addSnapshot(snapshot: NetSnapshot) {
     if (!snapshot?.time) return;
-    let expanded;
+    let expanded: TickStateExpanded;
     if (snapshot.delta) {
       if (!lastMergedState) return;
       expanded = mergeTickDelta(lastMergedState, snapshot.state, snapshot.rm);
@@ -85,7 +109,7 @@ export function createNetInterpolator(
     insertSnapshotSorted(normalized);
   }
 
-  function seedFromHeroInit(expanded) {
+  function seedFromHeroInit(expanded: TickStateExpanded) {
     vault.length = 0;
     timeOffset = -1;
     lastMergedState = JSON.parse(JSON.stringify(expanded));
@@ -94,7 +118,7 @@ export function createNetInterpolator(
   /**
    * Largest index i with vault[i].time <= serverTime (vault sorted ascending by time).
    */
-  function rightmostLeq(serverTime) {
+  function rightmostLeq(serverTime: number) {
     let lo = -1;
     let hi = vault.length - 1;
     while (lo < hi) {
@@ -105,17 +129,7 @@ export function createNetInterpolator(
     return lo;
   }
 
-  /**
-   * @param {"players" | "npcs"} key
-   * @returns {null | {
-   *   state: object[],
-   *   olderId: string,
-   *   newerId: string,
-   *   olderTime: number,
-   *   newerTime: number
-   * }}
-   */
-  function interpolateEntityList(key) {
+  function interpolateEntityList(key: "players" | "npcs"): InterpolatedEntities | null {
     if (timeOffset === -1 || vault.length < 2) return null;
 
     const serverTime = Date.now() - timeOffset - bufferMs;
@@ -134,9 +148,9 @@ export function createNetInterpolator(
     let u = (serverTime - t0) / dur;
     u = Math.max(0, Math.min(1, u));
 
-    const olderArr = older.state[key] || [];
-    const newerArr = newer.state[key] || [];
-    const out = [];
+    const olderArr = (older.state[key] || []) as TickEntity[];
+    const newerArr = (newer.state[key] || []) as TickEntity[];
+    const out: TickEntity[] = [];
 
     for (const e1 of newerArr) {
       const e0 = olderArr.find((e) => e.id === e1.id);

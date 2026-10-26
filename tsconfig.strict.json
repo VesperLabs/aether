@@ -4,5 +4,13 @@
     "strict": true,
     "allowJs": false
   },
-  "include": ["src/shared/content/**/*", "src/shared/rules/**/*", "src/shared/network/**/*"]
+  "include": [
+    "src/shared/content/**/*",
+    "src/shared/rules/**/*",
+    "src/shared/network/**/*",
+    "src/global.d.ts",
+    "src/client/**/*",
+    "src/ui/**/*",
+    "src/wiki/**/*"
+  ]
 }

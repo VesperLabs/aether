@@ -1,6 +1,8 @@
-// @ts-nocheck
 import Phaser from "phaser";
 import { playAudio } from "@/client/audio/play-audio";
+import type { Point } from "@/shared/rules/world";
+import type { Player } from "./player";
+import { toTint } from "./tint";
 import { getAngleFromDirection, distanceTo } from "@/shared/rules/world";
 import {
   BUFF_SPELLS,
@@ -14,13 +16,48 @@ import {
 const Sprite = Phaser.GameObjects.Sprite;
 const BLANK_TEXTURE = "human-blank";
 
-const SPELL_NAME_ANIM_MAP = {
+const SPELL_NAME_ANIM_MAP: Record<string, string> = {
   "attack-melee": "spell-anim-slash-physical",
   "flame-slash": "spell-anim-slash-fire",
 };
 
+/** What a spell is cast from: an ability's details, or the plain attack of a swing. */
+export interface SpellArgs {
+  id?: string | null;
+  caster: Player;
+  spellName: string;
+  action?: string;
+  castAngle?: number;
+  ilvl?: number;
+}
+
 export class Spell extends Phaser.GameObjects.Container {
-  constructor(scene, { id, caster, spellName, action, castAngle = 0, ilvl = 1 }) {
+  declare body: Phaser.Physics.Arcade.Body;
+  declare id: string | null | undefined;
+  declare spawnPoint: Point;
+  declare caster: Player;
+  declare spellName: string;
+  declare spellState: { spawnTime: number; isExpired: boolean };
+  declare velocityX: number;
+  declare velocityY: number;
+  declare spell: Phaser.GameObjects.Sprite;
+  declare isMeleeAttack?: boolean;
+  declare isRangedAttack?: boolean;
+  declare layerDepth?: string;
+  declare allowedTargets?: readonly string[];
+  /** Every spell that is cast defines these, see `getSpellShape`. */
+  declare maxVisibleTime: number;
+  declare spellSpeed: number;
+  declare bodySize: number;
+  declare shouldFade: boolean;
+  declare maxDistance: number;
+  declare action: string;
+  declare isMissile: boolean;
+  declare stickToCaster?: boolean;
+  constructor(
+    scene: Phaser.Scene,
+    { id, caster, spellName, action, castAngle = 0, ilvl = 1 }: SpellArgs,
+  ) {
     const spawnPoint = { x: caster.x, y: caster.y + caster.bodyCenterY };
     super(scene, spawnPoint.x, spawnPoint.y);
 
@@ -29,7 +66,7 @@ export class Spell extends Phaser.GameObjects.Container {
     this.scene = scene;
     this.caster = caster;
     this.spellName = spellName;
-    this.state = {
+    this.spellState = {
       spawnTime: Date.now(),
       isExpired: false,
     };
@@ -45,10 +82,10 @@ export class Spell extends Phaser.GameObjects.Container {
     this.isRangedAttack = shape.isRangedAttack;
     this.layerDepth = details?.layerDepth;
     this.allowedTargets = shape.allowedTargets;
-    this.maxVisibleTime = shape.maxVisibleTime;
-    this.spellSpeed = shape.spellSpeed;
-    this.bodySize = shape.bodySize;
-    this.spell.setTint(details?.tint || "0xFFFFFF");
+    this.maxVisibleTime = shape.maxVisibleTime as number;
+    this.spellSpeed = shape.spellSpeed as number;
+    this.bodySize = shape.bodySize as number;
+    this.spell.setTint(toTint(details?.tint || "0xFFFFFF"));
     this.shouldFade = details?.shouldFade || false;
     this.maxDistance = shape.maxDistance; //for ranged attacks
     this.action = action ?? "attack_right";
@@ -67,7 +104,7 @@ export class Spell extends Phaser.GameObjects.Container {
       const numFrames = this.scene.anims.get(attackSpellAnim)?.frames?.length;
 
       this.spell.play(attackSpellAnim);
-      this.spell.anims.msPerFrame = Math.floor(this.maxVisibleTime / numFrames);
+      this.spell.anims.msPerFrame = Math.floor(this.maxVisibleTime / (numFrames as number));
       this.spell.setAngle(getAngleFromDirection(caster?.direction) - 90);
 
       this.stickToCaster = true;
@@ -78,7 +115,7 @@ export class Spell extends Phaser.GameObjects.Container {
 
       /* Hack: fixes placement for non-human units .*/
       if (caster.profile.race !== "human") {
-        const difference = (this.caster.hitBox.body.height - this.caster.body.height) / 2;
+        const difference = ((this.caster.hitBox.body as Phaser.Physics.Arcade.Body).height - this.caster.body.height) / 2;
         this.y = this.caster.y - difference;
       }
 
@@ -110,7 +147,7 @@ export class Spell extends Phaser.GameObjects.Container {
       this.spell.setTexture("icons", "arrow");
       ({ x: this.velocityX, y: this.velocityY } = getSpellVelocity(castAngle, this.spellSpeed));
       this.spell.setRotation(castAngle + 0.785398163);
-      this.maxDistance = action.includes("attack_left")
+      this.maxDistance = this.action.includes("attack_left")
         ? caster?.getWeaponRange("handLeft")
         : caster?.getWeaponRange("handRight");
     }
@@ -151,14 +188,14 @@ export class Spell extends Phaser.GameObjects.Container {
   }
   create() {}
   update() {
-    this.state.isExpired = isSpellExpired({
+    this.spellState.isExpired = isSpellExpired({
       maxDistance: this.maxDistance,
       distanceFromSpawn: distanceTo(this, this.spawnPoint),
-      spawnTime: this.state.spawnTime,
+      spawnTime: this.spellState.spawnTime,
       lifetime: this.maxVisibleTime,
       now: Date.now(),
     });
-    if (!this.scene || this.state.isExpired) return this.destroy(true);
+    if (!this.scene || this.spellState.isExpired) return this.destroy();
     this.adjustSpellPosition();
   }
   adjustSpellPosition() {
@@ -182,7 +219,17 @@ export class Spell extends Phaser.GameObjects.Container {
   }
 }
 
-const playSpellAudio = ({ scene, spellName, caster, isMeleeAttack }) => {
+const playSpellAudio = ({
+  scene,
+  spellName,
+  caster,
+  isMeleeAttack,
+}: {
+  scene: Phaser.Scene;
+  spellName: string;
+  caster: Player;
+  isMeleeAttack?: boolean;
+}) => {
   let audioKey = null;
   if (isMeleeAttack) {
     audioKey = "melee-swing-1";

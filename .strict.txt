@@ -1,0 +1,820 @@
+src/client/game.tsx(17,35): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/client/game.tsx(30,25): error TS2345: Argument of type 'undefined' is not assignable to parameter of type 'string'.
+src/client/hud/abilities/ability-buttons.tsx(12,29): error TS7031: Binding element 'cooldowns' implicitly has an 'any' type.
+src/client/hud/abilities/ability-buttons.tsx(12,40): error TS7031: Binding element 'slotKey' implicitly has an 'any' type.
+src/client/hud/abilities/ability-buttons.tsx(12,49): error TS7031: Binding element 'item' implicitly has an 'any' type.
+src/client/hud/abilities/ability-buttons.tsx(12,55): error TS7031: Binding element 'applyTintAndSetIcon' implicitly has an 'any' type.
+src/client/hud/abilities/ability-buttons.tsx(12,76): error TS7031: Binding element 'hero' implicitly has an 'any' type.
+src/client/hud/abilities/ability-buttons.tsx(16,19): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ readonly "attack-melee": { readonly allowedTargets: readonly ["enemy"]; readonly isMeleeAttack: true; readonly maxVisibleTime: 200; readonly maxActiveTime: 120; readonly bodySize: 16; readonly layerDepth: "bottom"; }; ... 14 more ...; readonly stealth: { ...; }; }'.
+src/client/hud/abilities/ability-buttons.tsx(103,40): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/client/hud/abilities/ability-buttons.tsx(112,18): error TS18047: 'tintedCanvas' is possibly 'null'.
+src/client/hud/abilities/ability-buttons.tsx(134,13): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+src/client/hud/abilities/menu-abilities.tsx(22,27): error TS2345: Argument of type '([slotKey, item]: [string, Item]) => JSX.Element' is not assignable to parameter of type '(value: [string, unknown], index: number, array: [string, unknown][]) => Element'.
+  Types of parameters '__0' and 'value' are incompatible.
+    Type '[string, unknown]' is not assignable to type '[string, Item]'.
+      Type at position 1 in source is not compatible with type at position 1 in target.
+        Type 'unknown' is not assignable to type 'Item'.
+src/client/hud/abilities/skill-button.tsx(27,22): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/client/hud/abilities/skill-button.tsx(28,20): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/client/hud/abilities/skill-button.tsx(41,23): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/client/hud/abilities/skill-button.tsx(42,21): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/client/hud/app/app.tsx(24,23): error TS7031: Binding element 'socket' implicitly has an 'any' type.
+src/client/hud/app/app.tsx(24,31): error TS7031: Binding element 'peer' implicitly has an 'any' type.
+src/client/hud/app/app.tsx(24,37): error TS7031: Binding element 'debug' implicitly has an 'any' type.
+src/client/hud/app/app.tsx(24,44): error TS7031: Binding element 'game' implicitly has an 'any' type.
+src/client/hud/app/app.tsx(33,56): error TS2345: Argument of type 'null' is not assignable to parameter of type 'FullCharacterState | (() => FullCharacterState)'.
+src/client/hud/app/app.tsx(60,17): error TS2345: Argument of type '(prev: never[]) => string[]' is not assignable to parameter of type 'SetStateAction<never[]>'.
+  Type '(prev: never[]) => string[]' is not assignable to type '(prevState: never[]) => never[]'.
+    Type 'string[]' is not assignable to type 'never[]'.
+      Type 'string' is not assignable to type 'never'.
+src/client/hud/app/app.tsx(61,25): error TS2345: Argument of type 'string' is not assignable to parameter of type 'never'.
+src/client/hud/app/app.tsx(72,17): error TS2345: Argument of type '(prev: never[]) => { from?: string | undefined; type: "chat" | "error" | "info" | "muted" | "party" | "success" | "warning"; message: string; timestamp: number; }[]' is not assignable to parameter of type 'SetStateAction<never[]>'.
+  Type '(prev: never[]) => { from?: string | undefined; type: "chat" | "error" | "info" | "muted" | "party" | "success" | "warning"; message: string; timestamp: number; }[]' is not assignable to type '(prevState: never[]) => never[]'.
+    Type '{ from?: string | undefined; type: "chat" | "error" | "info" | "muted" | "party" | "success" | "warning"; message: string; timestamp: number; }[]' is not assignable to type 'never[]'.
+      Type '{ from?: string; type: "chat" | "warning" | "error" | "party" | "success" | "info" | "muted"; message: string; timestamp: number; }' is not assignable to type 'never'.
+src/client/hud/app/app.tsx(102,13): error TS2345: Argument of type 'null' is not assignable to parameter of type 'SetStateAction<FullCharacterState>'.
+src/client/hud/app/app.tsx(103,15): error TS2345: Argument of type 'null' is not assignable to parameter of type 'SetStateAction<undefined>'.
+src/client/hud/app/app.tsx(107,31): error TS7006: Parameter 'args' implicitly has an 'any' type.
+src/client/hud/app/app.tsx(110,48): error TS7006: Parameter 'n' implicitly has an 'any' type.
+src/client/hud/app/app.tsx(132,27): error TS2345: Argument of type '(prev: boolean) => false | undefined' is not assignable to parameter of type 'SetStateAction<boolean>'.
+  Type '(prev: boolean) => false | undefined' is not assignable to type '(prevState: boolean) => boolean'.
+    Type 'boolean | undefined' is not assignable to type 'boolean'.
+      Type 'undefined' is not assignable to type 'boolean'.
+src/client/hud/app/app.tsx(152,32): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/client/hud/app/app.tsx(153,54): error TS7006: Parameter 'p' implicitly has an 'any' type.
+src/client/hud/app/app.tsx(157,32): error TS7006: Parameter 'p' implicitly has an 'any' type.
+src/client/hud/app/app.tsx(158,51): error TS7006: Parameter 'p' implicitly has an 'any' type.
+src/client/hud/app/app.tsx(185,28): error TS7031: Binding element 'message' implicitly has an 'any' type.
+src/client/hud/app/app.tsx(185,37): error TS7031: Binding element 'party' implicitly has an 'any' type.
+src/client/hud/app/app.tsx(185,44): error TS7031: Binding element 'partyId' implicitly has an 'any' type.
+src/client/hud/app/app.tsx(194,22): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/client/hud/app/app.tsx(198,15): error TS2345: Argument of type 'false' is not assignable to parameter of type 'SetStateAction<null>'.
+src/client/hud/app/app.tsx(202,28): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/client/hud/app/app.tsx(207,9): error TS7053: Element implicitly has an 'any' type because expression of type '"global"' can't be used to index type '{}'.
+  Property 'global' does not exist on type '{}'.
+src/client/hud/app/app.tsx(215,7): error TS2353: Object literal may only specify known properties, and 'title' does not exist in type '(prevState: null) => null'.
+src/client/hud/app/app.tsx(225,34): error TS7031: Binding element 'name' implicitly has an 'any' type.
+src/client/hud/app/app.tsx(225,40): error TS7031: Binding element 'value' implicitly has an 'any' type.
+src/client/hud/app/app.tsx(235,22): error TS7006: Parameter 'peerId' implicitly has an 'any' type.
+src/client/hud/app/app.tsx(281,24): error TS18047: 'window.visualViewport' is possibly 'null'.
+src/client/hud/app/app.tsx(300,11): error TS2322: Type '(payload: Message) => void' is not assignable to type 'Dispatch<SetStateAction<Message>>'.
+  Types of parameters 'payload' and 'value' are incompatible.
+    Type 'SetStateAction<Message>' is not assignable to type 'Message'.
+      Type '(prevState: Message) => Message' is not assignable to type 'Message'.
+src/client/hud/app/app.tsx(307,11): error TS2322: Type 'Dispatch<SetStateAction<undefined>>' is not assignable to type 'Dispatch<SetStateAction<false | Item | null>>'.
+  Type 'SetStateAction<false | Item | null>' is not assignable to type 'SetStateAction<undefined>'.
+    Type 'null' is not assignable to type 'SetStateAction<undefined>'.
+src/client/hud/app/app.tsx(318,11): error TS2322: Type 'Dispatch<SetStateAction<null>>' is not assignable to type 'Dispatch<SetStateAction<FullCharacterState | null>>'.
+  Type 'SetStateAction<FullCharacterState | null>' is not assignable to type 'SetStateAction<null>'.
+    Type 'FullCharacterState' is not assignable to type 'SetStateAction<null>'.
+      Type 'FullCharacterState' provides no match for the signature '(prevState: null): null'.
+src/client/hud/app/app.tsx(348,11): error TS2322: Type 'null' is not assignable to type 'string'.
+src/client/hud/app/app.tsx(389,25): error TS2339: Property 'profile' does not exist on type 'never'.
+src/client/hud/app/hero-sync.ts(21,25): error TS7006: Parameter 'player' implicitly has an 'any' type.
+src/client/hud/app/hero-sync.ts(21,33): error TS7006: Parameter 'args' implicitly has an 'any' type.
+src/client/hud/app/hero-sync.ts(32,26): error TS7006: Parameter 'socketId' implicitly has an 'any' type.
+src/client/hud/app/hero-sync.ts(38,5): error TS7006: Parameter 'args' implicitly has an 'any' type.
+src/client/hud/app/hero-sync.ts(41,11): error TS2322: Type 'FullCharacterState | undefined' is not assignable to type 'FullCharacterState'.
+  Type 'undefined' is not assignable to type 'FullCharacterState'.
+src/client/hud/app/hero-sync.ts(62,11): error TS2322: Type 'FullCharacterState | undefined' is not assignable to type 'FullCharacterState'.
+  Type 'undefined' is not assignable to type 'FullCharacterState'.
+src/client/hud/app/hero-sync.ts(79,55): error TS7006: Parameter 'args' implicitly has an 'any' type.
+src/client/hud/app/hero-sync.ts(94,28): error TS7031: Binding element 'player' implicitly has an 'any' type.
+src/client/hud/app/hero-sync.ts(94,36): error TS7031: Binding element 'loot' implicitly has an 'any' type.
+src/client/hud/app/hero-sync.ts(102,68): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ inherit: string; current: string; transparent: string; black: string; white: string; slate: { "50": string; "100": string; "200": string; "300": string; "400": string; "500": string; "600": string; "700": string; "800": string; "900": string; }; ... 36 more ...; shadow: { ...; }; }'.
+src/client/hud/app/item-events.ts(21,30): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/client/hud/app/item-events.ts(40,23): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/client/hud/auth/modal-login.tsx(76,18): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/client/hud/auth/modal-login.tsx(272,26): error TS7031: Binding element 'icon' implicitly has an 'any' type.
+src/client/hud/auth/modal-login.tsx(272,32): error TS7031: Binding element 'setCharClass' implicitly has an 'any' type.
+src/client/hud/auth/modal-login.tsx(272,46): error TS7031: Binding element 'charClass' implicitly has an 'any' type.
+src/client/hud/auth/modal-login.tsx(272,57): error TS7031: Binding element 'isSelected' implicitly has an 'any' type.
+src/client/hud/auth/modal-login.tsx(273,20): error TS7006: Parameter 'charClass' implicitly has an 'any' type.
+src/client/hud/auth/modal-login.tsx(280,12): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ warrior: string; rogue: string; mage: string; cleric: string; }'.
+src/client/hud/auth/modal-login.tsx(305,21): error TS7031: Binding element 'children' implicitly has an 'any' type.
+src/client/hud/auth/modal-login.tsx(325,28): error TS7031: Binding element 'charClass' implicitly has an 'any' type.
+src/client/hud/auth/modal-login.tsx(325,39): error TS7031: Binding element 'setCharClass' implicitly has an 'any' type.
+src/client/hud/chat/message-box.tsx(63,18): error TS7006: Parameter 'data' implicitly has an 'any' type.
+src/client/hud/chat/message-box.tsx(85,30): error TS18048: 'data.timestamp' is possibly 'undefined'.
+src/client/hud/equipment/menu-equipment.tsx(19,27): error TS2345: Argument of type '([slotKey, item]: [string, Item]) => JSX.Element' is not assignable to parameter of type '(value: [string, unknown], index: number, array: [string, unknown][]) => Element'.
+  Types of parameters '__0' and 'value' are incompatible.
+    Type '[string, unknown]' is not assignable to type '[string, Item]'.
+      Type at position 1 in source is not compatible with type at position 1 in target.
+        Type 'unknown' is not assignable to type 'Item'.
+src/client/hud/inventory/menu-bag.tsx(8,27): error TS7006: Parameter 'id' implicitly has an 'any' type.
+src/client/hud/inventory/menu-inventory.tsx(7,24): error TS7031: Binding element 'gold' implicitly has an 'any' type.
+src/client/hud/inventory/menu-inventory.tsx(7,30): error TS7031: Binding element 'sx' implicitly has an 'any' type.
+src/client/hud/inventory/slot-amount.tsx(3,28): error TS7006: Parameter 'props' implicitly has an 'any' type.
+src/client/hud/inventory/slot.tsx(93,30): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/client/hud/inventory/slot.tsx(95,24): error TS18047: 'imageRef.current' is possibly 'null'.
+src/client/hud/inventory/slot.tsx(96,24): error TS18047: 'imageRef.current' is possibly 'null'.
+src/client/hud/inventory/slot.tsx(99,17): error TS2345: Argument of type 'Element | null' is not assignable to parameter of type 'SetStateAction<null>'.
+  Type 'Element' is not assignable to type 'SetStateAction<null>'.
+    Type 'Element' provides no match for the signature '(prevState: null): null'.
+src/client/hud/inventory/slot.tsx(102,31): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/client/hud/inventory/slot.tsx(106,35): error TS18047: 'imageRef.current' is possibly 'null'.
+src/client/hud/inventory/slot.tsx(107,35): error TS18047: 'imageRef.current' is possibly 'null'.
+src/client/hud/inventory/slot.tsx(111,25): error TS2345: Argument of type 'Element | null' is not assignable to parameter of type 'SetStateAction<null>'.
+  Type 'Element' is not assignable to type 'SetStateAction<null>'.
+    Type 'Element' provides no match for the signature '(prevState: null): null'.
+src/client/hud/inventory/slot.tsx(116,30): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/client/hud/inventory/slot.tsx(118,29): error TS18047: 'imageRef.current' is possibly 'null'.
+src/client/hud/inventory/slot.tsx(119,29): error TS18047: 'imageRef.current' is possibly 'null'.
+src/client/hud/inventory/slot.tsx(132,17): error TS2345: Argument of type 'Element | null' is not assignable to parameter of type 'SetStateAction<null>'.
+  Type 'Element' is not assignable to type 'SetStateAction<null>'.
+    Type 'Element' provides no match for the signature '(prevState: null): null'.
+src/client/hud/inventory/slot.tsx(135,30): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/client/hud/inventory/slot.tsx(137,40): error TS18047: 'imageRef.current' is possibly 'null'.
+src/client/hud/inventory/slot.tsx(138,40): error TS18047: 'imageRef.current' is possibly 'null'.
+src/client/hud/inventory/slot.tsx(151,17): error TS2345: Argument of type 'Element | null' is not assignable to parameter of type 'SetStateAction<null>'.
+  Type 'Element' is not assignable to type 'SetStateAction<null>'.
+    Type 'Element' provides no match for the signature '(prevState: null): null'.
+src/client/hud/inventory/slot.tsx(154,28): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/client/hud/inventory/slot.tsx(157,17): error TS2345: Argument of type 'Element | null' is not assignable to parameter of type 'SetStateAction<null>'.
+  Type 'Element' is not assignable to type 'SetStateAction<null>'.
+    Type 'Element' provides no match for the signature '(prevState: null): null'.
+src/client/hud/inventory/slot.tsx(162,29): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/client/hud/inventory/slot.tsx(166,17): error TS2345: Argument of type 'Element | null' is not assignable to parameter of type 'SetStateAction<null>'.
+  Type 'Element' is not assignable to type 'SetStateAction<null>'.
+    Type 'Element' provides no match for the signature '(prevState: null): null'.
+src/client/hud/inventory/slot.tsx(171,31): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/client/hud/inventory/slot.tsx(174,31): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/client/hud/inventory/slot.tsx(223,33): error TS2339: Property 'dataset' does not exist on type 'never'.
+src/client/hud/inventory/slot.tsx(224,45): error TS2339: Property 'closest' does not exist on type 'never'.
+src/client/hud/inventory/slot.tsx(264,36): error TS2532: Object is possibly 'undefined'.
+src/client/hud/inventory/slot.tsx(264,76): error TS18048: 'item.space' is possibly 'undefined'.
+src/client/hud/inventory/slot.tsx(266,14): error TS18048: 'item.amount' is possibly 'undefined'.
+src/client/hud/inventory/slot.tsx(351,28): error TS7031: Binding element 'item' implicitly has an 'any' type.
+src/client/hud/inventory/slot.tsx(351,34): error TS7031: Binding element 'slotKey' implicitly has an 'any' type.
+src/client/hud/inventory/slot.tsx(351,43): error TS7031: Binding element 'player' implicitly has an 'any' type.
+src/client/hud/inventory/slot.tsx(351,51): error TS7031: Binding element 'location' implicitly has an 'any' type.
+src/client/hud/inventory/slot.tsx(363,26): error TS7031: Binding element 'location' implicitly has an 'any' type.
+src/client/hud/inventory/slot.tsx(363,36): error TS7031: Binding element 'bagId' implicitly has an 'any' type.
+src/client/hud/inventory/slot.tsx(363,43): error TS7031: Binding element 'slotKey' implicitly has an 'any' type.
+src/client/hud/inventory/slot.tsx(363,52): error TS7031: Binding element 'item' implicitly has an 'any' type.
+src/client/hud/inventory/slot.tsx(363,58): error TS7031: Binding element 'player' implicitly has an 'any' type.
+src/client/hud/inventory/slot.tsx(372,16): error TS7006: Parameter 'target' implicitly has an 'any' type.
+src/client/hud/menu/menu-hud.tsx(118,22): error TS7031: Binding element 'player' implicitly has an 'any' type.
+src/client/hud/menu/menu-hud.tsx(118,30): error TS7031: Binding element 'sx' implicitly has an 'any' type.
+src/client/hud/menu/menu-hud.tsx(173,41): error TS7006: Parameter 'p' implicitly has an 'any' type.
+src/client/hud/menu/menu-hud.tsx(173,63): error TS7006: Parameter 'id' implicitly has an 'any' type.
+src/client/hud/menu/menu-hud.tsx(259,28): error TS7006: Parameter 'id' implicitly has an 'any' type.
+src/client/hud/menu/text-divider.tsx(4,20): error TS7006: Parameter 'hex' implicitly has an 'any' type.
+src/client/hud/profile/menu-profile.tsx(8,23): error TS7031: Binding element 'children' implicitly has an 'any' type.
+src/client/hud/quests/menu-quests.tsx(11,17): error TS7006: Parameter 'q' implicitly has an 'any' type.
+src/client/hud/quests/menu-quests.tsx(14,12): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ readonly "find-tudwick": { readonly level: 1; readonly name: "Find Tudwick"; readonly dialogues: { readonly description: "{objective}. He should be somewhere in the forest to the east."; }; readonly objectives: readonly [...]; }; ... 30 more ...; readonly "wolf-pelts": { ...; }; }'.
+  No index signature with a parameter of type 'string' was found on type '{ readonly "find-tudwick": { readonly level: 1; readonly name: "Find Tudwick"; readonly dialogues: { readonly description: "{objective}. He should be somewhere in the forest to the east."; }; readonly objectives: readonly [...]; }; ... 30 more ...; readonly "wolf-pelts": { ...; }; }'.
+src/client/hud/quests/quest-tooltip.tsx(8,31): error TS7006: Parameter 'quest' implicitly has an 'any' type.
+src/client/hud/quests/quest-tooltip.tsx(10,9): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ readonly cat: { readonly charClass: "warrior"; readonly profile: { readonly userName: "Cat"; readonly race: "cat"; }; readonly baseStats: { readonly level: 1; }; readonly keeperData: { readonly dialogues: { readonly greet: "Meow. I take it this isn't the first time you've talked to a cat."; }; }; readonly hitBoxSi...'.
+  No index signature with a parameter of type 'string' was found on type '{ readonly cat: { readonly charClass: "warrior"; readonly profile: { readonly userName: "Cat"; readonly race: "cat"; }; readonly baseStats: { readonly level: 1; }; readonly keeperData: { readonly dialogues: { readonly greet: "Meow. I take it this isn't the first time you've talked to a cat."; }; }; readonly hitBoxSi...'.
+src/client/hud/quests/quest-tooltip.tsx(11,14): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ readonly cat: { readonly charClass: "warrior"; readonly profile: { readonly userName: "Cat"; readonly race: "cat"; }; readonly baseStats: { readonly level: 1; }; readonly keeperData: { readonly dialogues: { readonly greet: "Meow. I take it this isn't the first time you've talked to a cat."; }; }; readonly hitBoxSi...'.
+  No index signature with a parameter of type 'string' was found on type '{ readonly cat: { readonly charClass: "warrior"; readonly profile: { readonly userName: "Cat"; readonly race: "cat"; }; readonly baseStats: { readonly level: 1; }; readonly keeperData: { readonly dialogues: { readonly greet: "Meow. I take it this isn't the first time you've talked to a cat."; }; }; readonly hitBoxSi...'.
+src/client/hud/quests/quest-tooltip.tsx(18,27): error TS7006: Parameter 'quest' implicitly has an 'any' type.
+src/client/hud/quests/quest-tooltip.tsx(20,70): error TS7006: Parameter 'idx' implicitly has an 'any' type.
+src/client/hud/quests/quest-tooltip.tsx(28,36): error TS2538: Type 'undefined' cannot be used as an index type.
+src/client/hud/quests/quest-tooltip.tsx(33,39): error TS2488: Type 'string[] | undefined' must have a '[Symbol.iterator]()' method that returns an iterator.
+src/client/hud/quests/quest-tooltip.tsx(38,24): error TS2538: Type 'undefined' cannot be used as an index type.
+src/client/hud/quests/quest-tooltip.tsx(45,38): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/client/hud/quests/quest-tooltip.tsx(49,7): error TS18048: 'objective.amount' is possibly 'undefined'.
+src/client/hud/quests/quest-tooltip.tsx(70,3): error TS7008: Member 'onClose' implicitly has an 'any' type.
+src/client/hud/quests/quest-tooltip.tsx(138,23): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/client/hud/quests/quest-tooltip.tsx(157,30): error TS7031: Binding element 'playerQuest' implicitly has an 'any' type.
+src/client/hud/quests/quest-tooltip.tsx(157,43): error TS7031: Binding element 'quest' implicitly has an 'any' type.
+src/client/hud/quests/quest-tooltip.tsx(157,50): error TS7031: Binding element 'socket' implicitly has an 'any' type.
+src/client/hud/quests/quest-tooltip.tsx(157,58): error TS7031: Binding element 'parent' implicitly has an 'any' type.
+src/client/hud/quests/quest-tooltip.tsx(157,66): error TS7031: Binding element 'giverName' implicitly has an 'any' type.
+src/client/hud/quests/quest.tsx(14,9): error TS2322: Type 'PlayerQuest | undefined' is not assignable to type 'PlayerQuest'.
+  Type 'undefined' is not assignable to type 'PlayerQuest'.
+src/client/hud/quests/quest.tsx(26,29): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/client/hud/quests/quest.tsx(30,29): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/client/hud/settings/modal-settings.tsx(10,90): error TS2345: Argument of type 'null' is not assignable to parameter of type 'SetStateAction<boolean>'.
+src/client/hud/settings/modal-settings.tsx(22,43): error TS2345: Argument of type 'null' is not assignable to parameter of type 'SetStateAction<boolean>'.
+src/client/hud/settings/user-settings-form.tsx(19,22): error TS7006: Parameter 'prev' implicitly has an 'any' type.
+src/client/hud/settings/user-settings-form.tsx(31,24): error TS7006: Parameter 'prev' implicitly has an 'any' type.
+src/client/hud/settings/user-settings-form.tsx(61,22): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/client/hud/settings/user-settings-form.tsx(69,20): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/client/hud/settings/user-settings-form.tsx(76,20): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/client/hud/settings/user-settings-form.tsx(87,20): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/client/hud/shop/menu-keeper.tsx(129,25): error TS7031: Binding element 'item' implicitly has an 'any' type.
+src/client/hud/shop/menu-keeper.tsx(129,33): error TS7006: Parameter 'idx' implicitly has an 'any' type.
+src/client/hud/social/menu-social.tsx(9,25): error TS7031: Binding element 'player' implicitly has an 'any' type.
+src/client/hud/social/menu-social.tsx(34,30): error TS7031: Binding element 'player' implicitly has an 'any' type.
+src/client/hud/social/menu-social.tsx(47,21): error TS7006: Parameter 'props' implicitly has an 'any' type.
+src/client/hud/social/menu-social.tsx(70,43): error TS7006: Parameter 'p' implicitly has an 'any' type.
+src/client/hud/social/menu-social.tsx(71,43): error TS7006: Parameter 'p' implicitly has an 'any' type.
+src/client/hud/social/menu-social.tsx(91,37): error TS7006: Parameter 'player' implicitly has an 'any' type.
+src/client/hud/social/menu-social.tsx(106,41): error TS7006: Parameter 'player' implicitly has an 'any' type.
+src/client/hud/social/menu-social.tsx(130,45): error TS7006: Parameter 'p' implicitly has an 'any' type.
+src/client/hud/social/menu-social.tsx(133,31): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ WARRIOR: string; ROGUE: string; MAGE: string; CLERIC: string; }'.
+  No index signature with a parameter of type 'string' was found on type '{ WARRIOR: string; ROGUE: string; MAGE: string; CLERIC: string; }'.
+src/client/hud/social/menu-social.tsx(138,11): error TS2322: Type 'FullCharacterState | undefined' is not assignable to type 'FullCharacterState'.
+  Type 'undefined' is not assignable to type 'FullCharacterState'.
+src/client/hud/social/menu-social.tsx(165,3): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type '(prev: Readonly<any>, next: Readonly<any>) => true | undefined' is not assignable to parameter of type '(prevProps: Readonly<any>, nextProps: Readonly<any>) => boolean'.
+      Type 'boolean | undefined' is not assignable to type 'boolean'.
+        Type 'undefined' is not assignable to type 'boolean'.
+src/client/hud/status/big-portrait.tsx(48,47): error TS18048: 't.colors' is possibly 'undefined'.
+src/client/hud/status/big-portrait.tsx(48,47): error TS18048: 't.colors.shadow' is possibly 'undefined'.
+src/client/hud/status/buffs.tsx(10,24): error TS7031: Binding element 'buff' implicitly has an 'any' type.
+src/client/hud/status/buffs.tsx(10,30): error TS7031: Binding element 'tooltipId' implicitly has an 'any' type.
+src/client/hud/status/buffs.tsx(10,41): error TS7031: Binding element 'timeLeft' implicitly has an 'any' type.
+src/client/hud/status/buffs.tsx(10,51): error TS7031: Binding element 'player' implicitly has an 'any' type.
+src/client/hud/status/buffs.tsx(13,23): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ readonly evasion: { readonly type: "buff"; readonly duration: 30000; readonly stats: { readonly dodgeChance: 5; }; }; readonly haste: { readonly type: "buff"; readonly duration: 30000; readonly stats: { readonly walkSpeed: 20; readonly attackDelay: -25; readonly castDelay: -100; }; }; ... 16 more ...; readonly ste...'.
+src/client/hud/status/buffs.tsx(33,50): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+src/client/hud/status/buffs.tsx(52,17): error TS7031: Binding element 'buff' implicitly has an 'any' type.
+src/client/hud/status/buffs.tsx(52,23): error TS7031: Binding element 'tooltipId' implicitly has an 'any' type.
+src/client/hud/status/buffs.tsx(52,34): error TS7031: Binding element 'player' implicitly has an 'any' type.
+src/client/hud/status/status-icon.tsx(17,26): error TS7031: Binding element 'show' implicitly has an 'any' type.
+src/client/hud/status/status-icon.tsx(92,28): error TS7006: Parameter 'props' implicitly has an 'any' type.
+src/client/hud/status/status-icon.tsx(95,29): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/client/hud/status/status-icon.tsx(99,29): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/client/hud/tooltips/item-tooltip.tsx(10,31): error TS7031: Binding element 'player' implicitly has an 'any' type.
+src/client/hud/tooltips/item-tooltip.tsx(10,39): error TS7031: Binding element 'item' implicitly has an 'any' type.
+src/client/hud/tooltips/item-tooltip.tsx(10,45): error TS7031: Binding element 'tooltipId' implicitly has an 'any' type.
+src/client/hud/tooltips/item-tooltip.tsx(10,56): error TS7031: Binding element 'show' implicitly has an 'any' type.
+src/client/hud/tooltips/item-tooltip.tsx(25,24): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ readonly chets: { readonly name: "Chet's Leisureware"; readonly pieces: 3; readonly stats: { readonly vitality: 10; readonly intelligence: 10; }; readonly percentStats: { readonly vitality: 15; readonly intelligence: 15; }; }; readonly cids: { ...; }; readonly crab: { ...; }; readonly hawkwings: { ...; }; readonly...'.
+src/client/hud/tooltips/item-tooltip.tsx(52,50): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+src/client/hud/tooltips/item-tooltip.tsx(64,52): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+src/client/hud/tooltips/item-tooltip.tsx(71,30): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ readonly evasion: { readonly type: "buff"; readonly duration: 30000; readonly stats: { readonly dodgeChance: 5; }; }; readonly haste: { readonly type: "buff"; readonly duration: 30000; readonly stats: { readonly walkSpeed: 20; readonly attackDelay: -25; readonly castDelay: -100; }; }; ... 16 more ...; readonly ste...'.
+  No index signature with a parameter of type 'string' was found on type '{ readonly evasion: { readonly type: "buff"; readonly duration: 30000; readonly stats: { readonly dodgeChance: 5; }; }; readonly haste: { readonly type: "buff"; readonly duration: 30000; readonly stats: { readonly walkSpeed: 20; readonly attackDelay: -25; readonly castDelay: -100; }; }; ... 16 more ...; readonly ste...'.
+src/client/hud/tooltips/item-tooltip.tsx(72,31): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ readonly evasion: { readonly type: "buff"; readonly duration: 30000; readonly stats: { readonly dodgeChance: 5; }; }; readonly haste: { readonly type: "buff"; readonly duration: 30000; readonly stats: { readonly walkSpeed: 20; readonly attackDelay: -25; readonly castDelay: -100; }; }; ... 16 more ...; readonly ste...'.
+  No index signature with a parameter of type 'string' was found on type '{ readonly evasion: { readonly type: "buff"; readonly duration: 30000; readonly stats: { readonly dodgeChance: 5; }; }; readonly haste: { readonly type: "buff"; readonly duration: 30000; readonly stats: { readonly walkSpeed: 20; readonly attackDelay: -25; readonly castDelay: -100; }; }; ... 16 more ...; readonly ste...'.
+src/client/hud/tooltips/item-tooltip.tsx(73,15): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+src/client/hud/tooltips/item-tooltip.tsx(86,59): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+src/client/hud/tooltips/item-tooltip.tsx(93,43): error TS7006: Parameter 'idx' implicitly has an 'any' type.
+src/client/hud/tooltips/item-tooltip.tsx(133,54): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+src/client/hud/tooltips/item-tooltip.tsx(136,57): error TS7006: Parameter 'idx' implicitly has an 'any' type.
+src/client/hud/tooltips/item-tooltip.tsx(174,21): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ readonly "attack-melee": { readonly allowedTargets: readonly ["enemy"]; readonly isMeleeAttack: true; readonly maxVisibleTime: 200; readonly maxActiveTime: 120; readonly bodySize: 16; readonly layerDepth: "bottom"; }; ... 14 more ...; readonly stealth: { ...; }; }'.
+src/client/hud/tooltips/item-tooltip.tsx(187,16): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ readonly "attack-melee": { readonly allowedTargets: readonly ["enemy"]; readonly isMeleeAttack: true; readonly maxVisibleTime: 200; readonly maxActiveTime: 120; readonly bodySize: 16; readonly layerDepth: "bottom"; }; ... 14 more ...; readonly stealth: { ...; }; }'.
+src/client/hud/tooltips/tooltip-label.tsx(3,30): error TS7006: Parameter 'props' implicitly has an 'any' type.
+src/client/hud/video/video-frame.ts(166,19): error TS2345: Argument of type 'MediaStream | null' is not assignable to parameter of type 'MediaStream | undefined'.
+  Type 'null' is not assignable to type 'MediaStream | undefined'.
+src/client/hud/video/video-frame.ts(191,32): error TS2345: Argument of type 'MediaStream | null' is not assignable to parameter of type 'MediaStream'.
+  Type 'null' is not assignable to type 'MediaStream'.
+src/client/hud/video/video-frame.ts(210,30): error TS2345: Argument of type 'MediaStream | null' is not assignable to parameter of type 'MediaStream'.
+  Type 'null' is not assignable to type 'MediaStream'.
+src/client/input/crosshair.ts(7,15): error TS7006: Parameter 'scene' implicitly has an 'any' type.
+src/client/input/crosshair.ts(7,22): error TS7006: Parameter 'x' implicitly has an 'any' type.
+src/client/input/crosshair.ts(7,25): error TS7006: Parameter 'y' implicitly has an 'any' type.
+src/client/input/crosshair.ts(7,28): error TS7006: Parameter 'textureKey' implicitly has an 'any' type.
+src/client/input/crosshair.ts(7,40): error TS7006: Parameter 'frame' implicitly has an 'any' type.
+src/client/input/crosshair.ts(7,47): error TS7006: Parameter 'player' implicitly has an 'any' type.
+src/client/input/crosshair.ts(7,55): error TS7006: Parameter 'distance' implicitly has an 'any' type.
+src/client/input/hero-cooldowns.ts(4,38): error TS7006: Parameter 'hero' implicitly has an 'any' type.
+src/client/input/hero-cooldowns.ts(15,38): error TS7006: Parameter 'hero' implicitly has an 'any' type.
+src/client/input/hero-cooldowns.ts(29,37): error TS7006: Parameter 'hero' implicitly has an 'any' type.
+src/client/input/hero-cooldowns.ts(29,43): error TS7006: Parameter 'abilitySlot' implicitly has an 'any' type.
+src/client/input/hero-cooldowns.ts(34,24): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ readonly "attack-melee": { readonly allowedTargets: readonly ["enemy"]; readonly isMeleeAttack: true; readonly maxVisibleTime: 200; readonly maxActiveTime: 120; readonly bodySize: 16; readonly layerDepth: "bottom"; }; ... 14 more ...; readonly stealth: { ...; }; }'.
+src/client/input/hero-events.ts(8,41): error TS7006: Parameter 'scene' implicitly has an 'any' type.
+src/client/input/hero-events.ts(14,3): error TS2531: Object is possibly 'null'.
+src/client/input/hero-events.ts(18,3): error TS2531: Object is possibly 'null'.
+src/client/input/hero-events.ts(24,3): error TS2531: Object is possibly 'null'.
+src/client/input/hero-events.ts(36,5): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type '(e: CustomEvent) => void' is not assignable to parameter of type 'EventListenerOrEventListenerObject'.
+      Type '(e: CustomEvent) => void' is not assignable to type 'EventListener'.
+        Types of parameters 'e' and 'evt' are incompatible.
+          Type 'Event' is missing the following properties from type 'CustomEvent<any>': detail, initCustomEvent
+src/client/input/hero-events.ts(43,9): error TS2531: Object is possibly 'null'.
+src/client/input/hero-events.ts(51,5): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type '(e: CustomEvent) => void' is not assignable to parameter of type 'EventListenerOrEventListenerObject'.
+      Type '(e: CustomEvent) => void' is not assignable to type 'EventListener'.
+        Types of parameters 'e' and 'evt' are incompatible.
+          Type 'Event' is missing the following properties from type 'CustomEvent<any>': detail, initCustomEvent
+src/client/input/hero-events.ts(55,7): error TS2531: Object is possibly 'null'.
+src/client/input/hero-events.ts(76,5): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type '(e: CustomEvent) => void' is not assignable to parameter of type 'EventListenerOrEventListenerObject'.
+      Type '(e: CustomEvent) => void' is not assignable to type 'EventListener'.
+        Types of parameters 'e' and 'evt' are incompatible.
+          Type 'Event' is missing the following properties from type 'CustomEvent<any>': detail, initCustomEvent
+src/client/input/hero-events.ts(85,9): error TS2531: Object is possibly 'null'.
+src/client/input/hero-events.ts(96,5): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type '(e: CustomEvent) => void' is not assignable to parameter of type 'EventListenerOrEventListenerObject'.
+      Type '(e: CustomEvent) => void' is not assignable to type 'EventListener'.
+        Types of parameters 'e' and 'evt' are incompatible.
+          Type 'Event' is missing the following properties from type 'CustomEvent<any>': detail, initCustomEvent
+src/client/input/hero-events.ts(112,9): error TS2531: Object is possibly 'null'.
+src/client/input/hero-events.ts(118,44): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type '(e: CustomEvent) => void' is not assignable to parameter of type 'EventListenerOrEventListenerObject'.
+      Type '(e: CustomEvent) => void' is not assignable to type 'EventListener'.
+        Types of parameters 'e' and 'evt' are incompatible.
+          Type 'Event' is missing the following properties from type 'CustomEvent<any>': detail, initCustomEvent
+src/client/input/hero-events.ts(170,5): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type '(e: CustomEvent) => void' is not assignable to parameter of type 'EventListenerOrEventListenerObject'.
+      Type '(e: CustomEvent) => void' is not assignable to type 'EventListener'.
+        Types of parameters 'e' and 'evt' are incompatible.
+          Type 'Event' is missing the following properties from type 'CustomEvent<any>': detail, initCustomEvent
+src/client/input/hero-movement.ts(11,32): error TS7006: Parameter 'scene' implicitly has an 'any' type.
+src/client/input/hud-joystick.ts(3,29): error TS7006: Parameter 'scene' implicitly has an 'any' type.
+src/client/input/hud-joystick.ts(20,15): error TS7006: Parameter 'scene' implicitly has an 'any' type.
+src/client/input/joystick.ts(24,33): error TS7006: Parameter 'scene' implicitly has an 'any' type.
+src/client/input/joystick.ts(24,40): error TS7006: Parameter 'settings' implicitly has an 'any' type.
+src/client/input/joystick.ts(95,5): error TS7023: 'get' implicitly has return type 'any' because it does not have a return type annotation and is referenced directly or indirectly in one of its return expressions.
+src/client/input/joystick.ts(96,19): error TS2339: Property 'cursors' does not exist on type '{ get: () => any; }'.
+src/client/input/joystick.ts(96,36): error TS2339: Property 'maxDistanceInPixels' does not exist on type '{ get: () => any; }'.
+src/client/input/joystick.ts(107,5): error TS7023: 'get' implicitly has return type 'any' because it does not have a return type annotation and is referenced directly or indirectly in one of its return expressions.
+src/client/input/joystick.ts(108,19): error TS2339: Property 'cursors' does not exist on type '{ get: () => any; }'.
+src/client/input/joystick.ts(108,36): error TS2339: Property 'maxDistanceInPixels' does not exist on type '{ get: () => any; }'.
+src/client/input/joystick.ts(119,24): error TS7006: Parameter 'pointer' implicitly has an 'any' type.
+src/client/input/joystick.ts(128,33): error TS7006: Parameter 'obj' implicitly has an 'any' type.
+src/client/input/joystick.ts(144,22): error TS7006: Parameter 'pointer' implicitly has an 'any' type.
+src/client/input/joystick.ts(173,24): error TS7006: Parameter 'time' implicitly has an 'any' type.
+src/client/input/joystick.ts(173,30): error TS7006: Parameter 'delta' implicitly has an 'any' type.
+src/client/input/joystick.ts(216,31): error TS7006: Parameter 'gameObject' implicitly has an 'any' type.
+src/client/input/joystick.ts(217,22): error TS2683: 'this' implicitly has type 'any' because it does not have a type annotation.
+src/client/input/joystick.ts(218,22): error TS2683: 'this' implicitly has type 'any' because it does not have a type annotation.
+src/client/input/joystick.ts(260,35): error TS7006: Parameter 'scene' implicitly has an 'any' type.
+src/client/input/joystick.ts(260,42): error TS7006: Parameter 'pluginManager' implicitly has an 'any' type.
+src/client/input/joystick.ts(261,32): error TS2554: Expected 4 arguments, but got 3.
+src/client/input/joystick.ts(278,30): error TS7006: Parameter 'settings' implicitly has an 'any' type.
+src/client/input/joystick.ts(292,30): error TS7006: Parameter 'config' implicitly has an 'any' type.
+src/client/input/joystick.ts(292,38): error TS7006: Parameter 'addToScene' implicitly has an 'any' type.
+src/client/input/spin-direction.ts(1,34): error TS7006: Parameter 'hero' implicitly has an 'any' type.
+src/client/input/spin-direction.ts(1,40): error TS7006: Parameter 'point' implicitly has an 'any' type.
+src/client/net/player-input.ts(7,33): error TS7006: Parameter 'scene' implicitly has an 'any' type.
+src/client/net/player-input.ts(7,40): error TS7006: Parameter 'hero' implicitly has an 'any' type.
+src/client/net/player-input.ts(7,46): error TS7006: Parameter 'vx' implicitly has an 'any' type.
+src/client/net/player-input.ts(7,50): error TS7006: Parameter 'vy' implicitly has an 'any' type.
+src/client/net/player-input.ts(7,54): error TS7006: Parameter 'direction' implicitly has an 'any' type.
+src/client/net/scene-socket.ts(18,33): error TS7006: Parameter 'scene' implicitly has an 'any' type.
+src/client/net/scene-socket.ts(21,24): error TS7006: Parameter 'snapshot' implicitly has an 'any' type.
+src/client/net/scene-socket.ts(27,41): error TS7006: Parameter 'l' implicitly has an 'any' type.
+src/client/net/scene-socket.ts(33,7): error TS18048: 'npc' is possibly 'undefined'.
+src/client/net/scene-socket.ts(34,7): error TS18048: 'npc' is possibly 'undefined'.
+src/client/net/scene-socket.ts(38,7): error TS18048: 'player' is possibly 'undefined'.
+src/client/net/scene-socket.ts(39,7): error TS18048: 'player' is possibly 'undefined'.
+src/client/net/scene-socket.ts(43,31): error TS7031: Binding element 'party' implicitly has an 'any' type.
+src/client/net/scene-socket.ts(47,26): error TS7006: Parameter 'args' implicitly has an 'any' type.
+src/client/net/scene-socket.ts(79,45): error TS2322: Type 'any' is not assignable to type 'never'.
+src/client/net/scene-socket.ts(83,28): error TS7006: Parameter 'user' implicitly has an 'any' type.
+src/client/net/scene-socket.ts(99,30): error TS7006: Parameter 'userData' implicitly has an 'any' type.
+src/client/net/scene-socket.ts(101,5): error TS18048: 'player' is possibly 'undefined'.
+src/client/net/scene-socket.ts(102,5): error TS18048: 'player' is possibly 'undefined'.
+src/client/net/scene-socket.ts(107,41): error TS2339: Property 'id' does not exist on type 'never'.
+src/client/net/scene-socket.ts(113,35): error TS2339: Property 'id' does not exist on type 'never'.
+src/client/net/scene-socket.ts(120,31): error TS7031: Binding element 'socketId' implicitly has an 'any' type.
+src/client/net/scene-socket.ts(120,41): error TS7031: Binding element 'loot' implicitly has an 'any' type.
+src/client/net/scene-socket.ts(120,55): error TS7031: Binding element 'userData' implicitly has an 'any' type.
+src/client/net/scene-socket.ts(123,37): error TS2554: Expected 0 arguments, but got 1.
+src/client/net/scene-socket.ts(127,5): error TS18048: 'player' is possibly 'undefined'.
+src/client/net/scene-socket.ts(130,32): error TS7031: Binding element 'socketId' implicitly has an 'any' type.
+src/client/net/scene-socket.ts(130,42): error TS7031: Binding element 'count' implicitly has an 'any' type.
+src/client/net/scene-socket.ts(130,49): error TS7031: Binding element 'castAngle' implicitly has an 'any' type.
+src/client/net/scene-socket.ts(130,60): error TS7031: Binding element 'direction' implicitly has an 'any' type.
+src/client/net/scene-socket.ts(130,71): error TS7031: Binding element 'abilitySlot' implicitly has an 'any' type.
+src/client/net/scene-socket.ts(132,5): error TS18048: 'p' is possibly 'undefined'.
+src/client/net/scene-socket.ts(135,35): error TS7031: Binding element 'socketId' implicitly has an 'any' type.
+src/client/net/scene-socket.ts(135,45): error TS7031: Binding element 'abilitySlot' implicitly has an 'any' type.
+src/client/net/scene-socket.ts(135,58): error TS7031: Binding element 'castAngle' implicitly has an 'any' type.
+src/client/net/scene-socket.ts(143,29): error TS7031: Binding element 'id' implicitly has an 'any' type.
+src/client/net/scene-socket.ts(143,33): error TS7031: Binding element 'count' implicitly has an 'any' type.
+src/client/net/scene-socket.ts(143,40): error TS7031: Binding element 'direction' implicitly has an 'any' type.
+src/client/net/scene-socket.ts(143,51): error TS7031: Binding element 'castAngle' implicitly has an 'any' type.
+src/client/net/scene-socket.ts(145,5): error TS18048: 'n' is possibly 'undefined'.
+src/client/net/scene-socket.ts(146,5): error TS18048: 'n' is possibly 'undefined'.
+src/client/net/scene-socket.ts(149,32): error TS7031: Binding element 'id' implicitly has an 'any' type.
+src/client/net/scene-socket.ts(149,36): error TS7031: Binding element 'abilitySlot' implicitly has an 'any' type.
+src/client/net/scene-socket.ts(149,49): error TS7031: Binding element 'castAngle' implicitly has an 'any' type.
+src/client/net/scene-socket.ts(159,5): error TS18048: 'p' is possibly 'undefined'.
+src/client/net/scene-socket.ts(164,26): error TS2339: Property 'to' does not exist on type 'never'.
+src/client/net/scene-socket.ts(165,29): error TS2339: Property 'to' does not exist on type 'never'.
+src/client/net/scene-socket.ts(169,30): error TS7031: Binding element 'id' implicitly has an 'any' type.
+src/client/net/scene-socket.ts(169,34): error TS7031: Binding element 'x' implicitly has an 'any' type.
+src/client/net/scene-socket.ts(169,37): error TS7031: Binding element 'y' implicitly has an 'any' type.
+src/client/net/scene-socket.ts(169,40): error TS7031: Binding element 'respawnTime' implicitly has an 'any' type.
+src/client/net/scene-socket.ts(172,5): error TS18048: 'npc' is possibly 'undefined'.
+src/client/net/scene-socket.ts(173,5): error TS18048: 'npc' is possibly 'undefined'.
+src/client/net/scene-socket.ts(177,31): error TS7031: Binding element 'loot' implicitly has an 'any' type.
+src/client/net/scene-socket.ts(177,37): error TS7031: Binding element 'npcId' implicitly has an 'any' type.
+src/client/net/scene-socket.ts(187,24): error TS7006: Parameter 'socketId' implicitly has an 'any' type.
+src/client/net/scene-socket.ts(189,37): error TS7031: Binding element 'name' implicitly has an 'any' type.
+src/client/net/scene-socket.ts(189,43): error TS7031: Binding element 'value' implicitly has an 'any' type.
+src/client/scenes/boot-scene.ts(11,19): error TS7006: Parameter 'src' implicitly has an 'any' type.
+src/client/scenes/boot-scene.ts(13,22): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/client/scenes/boot-scene.ts(23,15): error TS7006: Parameter 'socket' implicitly has an 'any' type.
+src/client/scenes/boot-scene.ts(43,24): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/client/scenes/boot-scene.ts(61,11): error TS7053: Element implicitly has an 'any' type because expression of type '"./assets/atlas/accessory/accessory-fins.png" | "./assets/atlas/accessory/accessory-glasses.png" | "./assets/atlas/accessory/accessory-jake.png" | "./assets/atlas/amulet/amulet-beads-green.png" | ... 172 more ... | "./assets/images/icons.png"' can't be used to index type '{}'.
+  Property './assets/atlas/accessory/accessory-fins.png' does not exist on type '{}'.
+src/client/scenes/boot-scene.ts(63,10): error TS2345: Argument of type 'undefined' is not assignable to parameter of type 'object'.
+src/client/scenes/boot-scene.ts(108,22): error TS7006: Parameter 'scene' implicitly has an 'any' type.
+src/client/scenes/boot-scene.ts(115,30): error TS7006: Parameter 'scene' implicitly has an 'any' type.
+src/client/scenes/boot-scene.ts(115,37): error TS7006: Parameter 'config' implicitly has an 'any' type.
+src/client/scenes/boot-scene.ts(121,20): error TS7006: Parameter 'asset' implicitly has an 'any' type.
+src/client/scenes/boot-scene.ts(124,28): error TS7006: Parameter 'scene' implicitly has an 'any' type.
+src/client/scenes/boot-scene.ts(155,29): error TS7006: Parameter 'scene' implicitly has an 'any' type.
+src/client/scenes/boot-scene.ts(176,27): error TS7006: Parameter 'scene' implicitly has an 'any' type.
+src/client/scenes/boot-scene.ts(288,27): error TS7006: Parameter 'scene' implicitly has an 'any' type.
+src/client/scenes/camera-zoom.ts(18,34): error TS7006: Parameter 'scene' implicitly has an 'any' type.
+src/client/scenes/camera-zoom.ts(23,47): error TS7006: Parameter 'scene' implicitly has an 'any' type.
+src/client/scenes/hud-scene.ts(13,15): error TS7006: Parameter 'socket' implicitly has an 'any' type.
+src/client/scenes/hud-scene.ts(20,23): error TS2531: Object is possibly 'null'.
+src/client/scenes/hud-scene.ts(21,25): error TS2531: Object is possibly 'null'.
+src/client/scenes/hud-scene.ts(22,25): error TS2531: Object is possibly 'null'.
+src/client/scenes/hud-scene.ts(23,25): error TS2531: Object is possibly 'null'.
+src/client/scenes/hud-scene.ts(24,25): error TS2531: Object is possibly 'null'.
+src/client/scenes/hud-scene.ts(25,5): error TS2531: Object is possibly 'null'.
+src/client/scenes/main-map.ts(10,29): error TS7006: Parameter 'scene' implicitly has an 'any' type.
+src/client/scenes/main-map.ts(18,22): error TS7006: Parameter 'scene' implicitly has an 'any' type.
+src/client/scenes/main-map.ts(18,29): error TS7006: Parameter 'hero' implicitly has an 'any' type.
+src/client/scenes/main-map.ts(37,28): error TS7006: Parameter 'scene' implicitly has an 'any' type.
+src/client/scenes/main-map.ts(37,35): error TS7006: Parameter 'hero' implicitly has an 'any' type.
+src/client/scenes/main-map.ts(48,37): error TS7006: Parameter 'scene' implicitly has an 'any' type.
+src/client/scenes/main-map.ts(48,44): error TS7006: Parameter 'player' implicitly has an 'any' type.
+src/client/scenes/main-map.ts(60,6): error TS7006: Parameter 'hero' implicitly has an 'any' type.
+src/client/scenes/main-map.ts(60,12): error TS7006: Parameter 'door' implicitly has an 'any' type.
+src/client/scenes/main-map.ts(80,27): error TS7006: Parameter 'scene' implicitly has an 'any' type.
+src/client/scenes/main-map.ts(80,34): error TS7006: Parameter 'roomName' implicitly has an 'any' type.
+src/client/scenes/proximity.ts(4,33): error TS7006: Parameter 'scene' implicitly has an 'any' type.
+src/client/scenes/proximity.ts(4,40): error TS7006: Parameter 'nearbyPlayers' implicitly has an 'any' type.
+src/client/scenes/proximity.ts(6,11): error TS7006: Parameter 'player' implicitly has an 'any' type.
+src/client/scenes/proximity.ts(10,14): error TS7006: Parameter 'x' implicitly has an 'any' type.
+src/client/scenes/proximity.ts(13,23): error TS7006: Parameter 'a' implicitly has an 'any' type.
+src/client/scenes/proximity.ts(13,26): error TS7006: Parameter 'b' implicitly has an 'any' type.
+src/client/scenes/proximity.ts(16,21): error TS7006: Parameter 'p' implicitly has an 'any' type.
+src/client/scenes/proximity.ts(23,21): error TS7006: Parameter 'n' implicitly has an 'any' type.
+src/client/scenes/proximity.ts(32,33): error TS7006: Parameter 'scene' implicitly has an 'any' type.
+src/client/scenes/proximity.ts(32,40): error TS7006: Parameter 'closestEntity' implicitly has an 'any' type.
+src/client/scenes/proximity.ts(47,34): error TS7006: Parameter 'scene' implicitly has an 'any' type.
+src/client/scenes/proximity.ts(47,41): error TS7006: Parameter 'time' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(25,15): error TS7006: Parameter 'scene' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(25,22): error TS7006: Parameter 'pluginManager' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(58,24): error TS2531: Object is possibly 'null'.
+src/client/views/animated-tiles.ts(65,8): error TS7006: Parameter 'map' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(75,61): error TS2345: Argument of type 'true' is not assignable to parameter of type 'never'.
+src/client/views/animated-tiles.ts(90,11): error TS7006: Parameter 'rate' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(98,26): error TS7006: Parameter 'animatedTiles' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(99,32): error TS7006: Parameter 'animatedTile' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(106,37): error TS7006: Parameter 'animatedTiles' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(120,35): error TS7006: Parameter 'mapAnimData' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(122,44): error TS7006: Parameter 'tileAnimData' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(128,59): error TS7006: Parameter 'tileAnimData' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(141,36): error TS7006: Parameter 'animatedTile' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(157,14): error TS7006: Parameter 'time' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(157,20): error TS7006: Parameter 'delta' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(163,51): error TS2531: Object is possibly 'null'.
+src/client/views/animated-tiles.ts(164,33): error TS7006: Parameter 'mapAnimData' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(170,42): error TS7006: Parameter 'animatedTile' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(192,39): error TS7006: Parameter 'layer' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(192,46): error TS7006: Parameter 'layerIndex' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(203,15): error TS7006: Parameter 'animatedTile' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(203,29): error TS7006: Parameter 'layer' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(204,9): error TS7034: Variable 'tilesToRemove' implicitly has type 'any[]' in some locations where its type cannot be determined.
+src/client/views/animated-tiles.ts(206,20): error TS7006: Parameter 'tile' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(217,5): error TS7005: Variable 'tilesToRemove' implicitly has an 'any[]' type.
+src/client/views/animated-tiles.ts(238,5): error TS2322: Type 'undefined' is not assignable to type 'Scene | null'.
+src/client/views/animated-tiles.ts(241,20): error TS7006: Parameter 'map' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(243,9): error TS7034: Variable 'animatedTiles' implicitly has type 'any[]' in some locations where its type cannot be determined.
+src/client/views/animated-tiles.ts(247,8): error TS7006: Parameter 'tileset' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(261,48): error TS7006: Parameter 'frameData' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(272,16): error TS7006: Parameter 'f' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(275,33): error TS7006: Parameter 'layer' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(288,19): error TS7034: Variable 'tiles' implicitly has type 'any[]' in some locations where its type cannot be determined.
+src/client/views/animated-tiles.ts(290,35): error TS7006: Parameter 'tileRow' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(292,34): error TS7006: Parameter 'tile' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(301,43): error TS7005: Variable 'tiles' implicitly has an 'any[]' type.
+src/client/views/animated-tiles.ts(309,25): error TS7006: Parameter 'layer' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(309,32): error TS7006: Parameter 'layerIndex' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(314,12): error TS7005: Variable 'animatedTiles' implicitly has an 'any[]' type.
+src/client/views/animated-tiles.ts(317,13): error TS7006: Parameter 'layer' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(317,20): error TS7006: Parameter 'tile' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(317,26): error TS7006: Parameter 'x' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(317,29): error TS7006: Parameter 'y' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(328,7): error TS7034: Variable 'container' implicitly has type 'any[]' in some locations where its type cannot be determined.
+src/client/views/animated-tiles.ts(332,35): error TS7006: Parameter 'mapAnimData' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(340,5): error TS7005: Variable 'container' implicitly has an 'any[]' type.
+src/client/views/animated-tiles.ts(346,42): error TS7006: Parameter 'tileAnimData' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(347,37): error TS7006: Parameter 'tiles' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(347,44): error TS7006: Parameter 'layerIndex' implicitly has an 'any' type.
+src/client/views/animated-tiles.ts(375,45): error TS7006: Parameter 'PluginManager' implicitly has an 'any' type.
+src/client/views/bubble.ts(27,15): error TS7006: Parameter 'scene' implicitly has an 'any' type.
+src/client/views/bubble.ts(27,22): error TS7006: Parameter 'headY' implicitly has an 'any' type.
+src/client/views/bubble.ts(27,29): error TS7006: Parameter 'message' implicitly has an 'any' type.
+src/client/views/bubble.ts(88,11): error TS7006: Parameter 'tintColor' implicitly has an 'any' type.
+src/client/views/bubble.ts(101,14): error TS7006: Parameter 'message' implicitly has an 'any' type.
+src/client/views/bubble.ts(127,30): error TS7006: Parameter 'bitmapText' implicitly has an 'any' type.
+src/client/views/bubble.ts(127,42): error TS7006: Parameter 'maxWidth' implicitly has an 'any' type.
+src/client/views/bubble.ts(146,14): error TS2683: 'this' implicitly has type 'any' because it does not have a type annotation.
+src/client/views/bubble.ts(150,7): error TS7006: Parameter 'str' implicitly has an 'any' type.
+src/client/views/bubble.ts(150,12): error TS7006: Parameter 'num' implicitly has an 'any' type.
+src/client/views/bubble.ts(151,74): error TS7006: Parameter 'all' implicitly has an 'any' type.
+src/client/views/bubble.ts(151,79): error TS7006: Parameter 'text' implicitly has an 'any' type.
+src/client/views/bubble.ts(151,85): error TS7006: Parameter 'char' implicitly has an 'any' type.
+src/client/views/buff-rack.ts(21,23): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/client/views/charge.ts(6,11): error TS2564: Property 'targetScale' has no initializer and is not definitely assigned in the constructor.
+src/client/views/charge.ts(7,11): error TS2564: Property 'targetAlpha' has no initializer and is not definitely assigned in the constructor.
+src/client/views/charge.ts(8,11): error TS2564: Property 'targetX' has no initializer and is not definitely assigned in the constructor.
+src/client/views/charge.ts(9,11): error TS2564: Property 'targetY' has no initializer and is not definitely assigned in the constructor.
+src/client/views/charge.ts(13,10): error TS2564: Property 'isExpired' has no initializer and is not definitely assigned in the constructor.
+src/client/views/charge.ts(74,15): error TS7006: Parameter 'scene' implicitly has an 'any' type.
+src/client/views/charge.ts(74,22): error TS7006: Parameter 'x' implicitly has an 'any' type.
+src/client/views/charge.ts(74,25): error TS7006: Parameter 'y' implicitly has an 'any' type.
+src/client/views/damage.ts(8,15): error TS7006: Parameter 'scene' implicitly has an 'any' type.
+src/client/views/damage.ts(8,22): error TS7006: Parameter 'victim' implicitly has an 'any' type.
+src/client/views/damage.ts(8,30): error TS7006: Parameter 'hit' implicitly has an 'any' type.
+src/client/views/damage.ts(116,15): error TS7006: Parameter 'range' implicitly has an 'any' type.
+src/client/views/door.ts(9,18): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/client/views/door.ts(12,39): error TS7006: Parameter 'p' implicitly has an 'any' type.
+src/client/views/door.ts(13,38): error TS7006: Parameter 'p' implicitly has an 'any' type.
+src/client/views/door.ts(14,5): error TS2322: Type 'number | undefined' is not assignable to type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/client/views/door.ts(15,5): error TS2322: Type 'number | undefined' is not assignable to type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/client/views/door.ts(17,10): error TS18048: 'x' is possibly 'undefined'.
+src/client/views/door.ts(17,14): error TS18048: 'width' is possibly 'undefined'.
+src/client/views/door.ts(18,10): error TS18048: 'y' is possibly 'undefined'.
+src/client/views/door.ts(18,14): error TS18048: 'height' is possibly 'undefined'.
+src/client/views/hit.ts(11,15): error TS7006: Parameter 'scene' implicitly has an 'any' type.
+src/client/views/hit.ts(11,22): error TS7006: Parameter 'victim' implicitly has an 'any' type.
+src/client/views/hit.ts(24,7): error TS2722: Cannot invoke an object which is possibly 'undefined'.
+src/client/views/hit.ts(49,27): error TS7006: Parameter 'animation' implicitly has an 'any' type.
+src/client/views/hit.ts(49,38): error TS7006: Parameter 'frame' implicitly has an 'any' type.
+src/client/views/hit.ts(49,45): error TS7006: Parameter 'sprite' implicitly has an 'any' type.
+src/client/views/hit.ts(57,7): error TS2722: Cannot invoke an object which is possibly 'undefined'.
+src/client/views/loot-item.ts(12,15): error TS7006: Parameter 'scene' implicitly has an 'any' type.
+src/client/views/loot-item.ts(12,22): error TS7006: Parameter 'loot' implicitly has an 'any' type.
+src/client/views/loot-item.ts(27,17): error TS7006: Parameter 'loot' implicitly has an 'any' type.
+src/client/views/player-animation.ts(5,30): error TS7006: Parameter 'p' implicitly has an 'any' type.
+src/client/views/player-animation.ts(5,33): error TS7006: Parameter 'delta' implicitly has an 'any' type.
+src/client/views/player-animation.ts(13,27): error TS7006: Parameter 'p' implicitly has an 'any' type.
+src/client/views/player-animation.ts(122,36): error TS7006: Parameter 'player' implicitly has an 'any' type.
+src/client/views/player-animation.ts(148,31): error TS7006: Parameter 'currentAlpha' implicitly has an 'any' type.
+src/client/views/player-animation.ts(148,45): error TS7006: Parameter 'targetAlpha' implicitly has an 'any' type.
+src/client/views/player-animation.ts(148,58): error TS7006: Parameter 'step' implicitly has an 'any' type.
+src/client/views/player-animation.ts(160,32): error TS7006: Parameter 'player' implicitly has an 'any' type.
+src/client/views/player-animation.ts(160,40): error TS7006: Parameter 'rate' implicitly has an 'any' type.
+src/client/views/player-animation.ts(180,22): error TS7006: Parameter 'player' implicitly has an 'any' type.
+src/client/views/player-hit.ts(16,20): error TS18048: 'hit.amount' is possibly 'undefined'.
+src/client/views/player-hit.ts(24,57): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/client/views/player-hit.ts(28,56): error TS2345: Argument of type 'string[] | undefined' is not assignable to parameter of type 'Elements[]'.
+  Type 'undefined' is not assignable to type 'Elements[]'.
+src/client/views/player-hit.ts(34,58): error TS2345: Argument of type 'string[] | undefined' is not assignable to parameter of type 'Elements[]'.
+  Type 'undefined' is not assignable to type 'Elements[]'.
+src/client/views/player-hit.ts(40,60): error TS2345: Argument of type 'string[]' is not assignable to parameter of type 'Elements[]'.
+  Type 'string' is not assignable to type 'Elements'.
+src/client/views/player-layers.ts(20,36): error TS7006: Parameter 'player' implicitly has an 'any' type.
+src/client/views/player-layers.ts(88,33): error TS7006: Parameter 'player' implicitly has an 'any' type.
+src/client/views/player.ts(163,30): error TS2339: Property 'userSettings' does not exist on type 'Scene'.
+src/client/views/player.ts(178,30): error TS2345: Argument of type 'string | number | null | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/client/views/player.ts(181,62): error TS2322: Type 'number | null | undefined' is not assignable to type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/client/views/player.ts(181,69): error TS2322: Type 'string | number | null | undefined' is not assignable to type 'number | undefined'.
+  Type 'null' is not assignable to type 'number | undefined'.
+src/client/views/player.ts(201,66): error TS2322: Type 'number | null | undefined' is not assignable to type 'number | undefined'.
+  Type 'null' is not assignable to type 'number | undefined'.
+src/client/views/player.ts(206,44): error TS2345: Argument of type 'string | number | null | undefined' is not assignable to parameter of type 'number | undefined'.
+  Type 'null' is not assignable to type 'number | undefined'.
+src/client/views/player.ts(209,30): error TS2345: Argument of type 'string | number | null | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/client/views/player.ts(214,65): error TS2322: Type 'number | null | undefined' is not assignable to type 'number | undefined'.
+  Type 'null' is not assignable to type 'number | undefined'.
+src/client/views/player.ts(224,35): error TS2739: Type 'GameObject' is missing the following properties from type 'Point': x, y
+src/client/views/player.ts(234,65): error TS2339: Property 'id' does not exist on type 'never'.
+src/client/views/player.ts(302,23): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
+src/client/views/player.ts(303,23): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
+src/client/views/player.ts(304,24): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
+src/client/views/player.ts(305,24): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
+src/client/views/player.ts(306,25): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
+src/client/views/player.ts(307,24): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
+src/client/views/player.ts(308,25): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
+src/client/views/player.ts(309,28): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
+src/client/views/player.ts(310,23): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
+src/client/views/player.ts(311,27): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
+src/client/views/player.ts(371,32): error TS2554: Expected 0 arguments, but got 1.
+src/client/views/player.ts(383,34): error TS2554: Expected 1-2 arguments, but got 3.
+src/client/views/sign.ts(21,35): error TS7006: Parameter 'p' implicitly has an 'any' type.
+src/client/views/sign.ts(22,35): error TS7006: Parameter 'p' implicitly has an 'any' type.
+src/client/views/sign.ts(23,38): error TS7006: Parameter 'p' implicitly has an 'any' type.
+src/client/views/spell.ts(87,24): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
+src/client/views/spell.ts(197,71): error TS2554: Expected 0 arguments, but got 1.
+src/client/views/weapon-sprite.ts(20,15): error TS7006: Parameter 'scene' implicitly has an 'any' type.
+src/client/views/weapon-sprite.ts(20,22): error TS7006: Parameter 'x' implicitly has an 'any' type.
+src/client/views/weapon-sprite.ts(20,25): error TS7006: Parameter 'y' implicitly has an 'any' type.
+src/client/views/weapon-sprite.ts(20,28): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/client/views/weapon-sprite.ts(20,33): error TS7006: Parameter 'frame' implicitly has an 'any' type.
+src/client/views/weapon-sprite.ts(57,11): error TS7006: Parameter 'tint' implicitly has an 'any' type.
+src/client/views/weapon-sprite.ts(60,12): error TS7006: Parameter 'flip' implicitly has an 'any' type.
+src/client/views/weapon-sprite.ts(62,33): error TS7006: Parameter 'borderSprite' implicitly has an 'any' type.
+src/client/views/weapon-sprite.ts(66,14): error TS7006: Parameter 'texture' implicitly has an 'any' type.
+src/client/views/weapon-sprite.ts(68,33): error TS7006: Parameter 'borderSprite' implicitly has an 'any' type.
+src/client/views/weapon-sprite.ts(72,12): error TS7006: Parameter 'flip' implicitly has an 'any' type.
+src/client/views/weapon-sprite.ts(74,33): error TS7006: Parameter 'borderSprite' implicitly has an 'any' type.
+src/client/views/weapon-sprite.ts(85,28): error TS7006: Parameter 'color' implicitly has an 'any' type.
+src/client/views/weapon-sprite.ts(87,33): error TS7006: Parameter 'borderSprite' implicitly has an 'any' type.
+src/client/views/weapon-sprite.ts(91,27): error TS7006: Parameter 'alpha' implicitly has an 'any' type.
+src/client/views/weapon-sprite.ts(92,33): error TS7006: Parameter 'borderSprite' implicitly has an 'any' type.
+src/client/views/weapon-sprite.ts(122,20): error TS7006: Parameter 'color' implicitly has an 'any' type.
+src/client/vite.config.ts(9,19): error TS7031: Binding element 'mode' implicitly has an 'any' type.
+src/client/vite.config.ts(9,25): error TS7031: Binding element 'command' implicitly has an 'any' type.
+src/ui/button/button.tsx(11,30): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/ui/button/button.tsx(29,31): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/ui/format-stats.ts(1,30): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/ui/format-stats.ts(14,9): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+src/ui/format-stats.ts(15,11): error TS7053: Element implicitly has an 'any' type because expression of type '`min${string}`' can't be used to index type '{}'.
+src/ui/format-stats.ts(16,11): error TS7053: Element implicitly has an 'any' type because expression of type '`max${string}`' can't be used to index type '{}'.
+src/ui/format-stats.ts(20,7): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+src/ui/format-stats.ts(26,21): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/ui/format-stats.ts(26,26): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/ui/format-stats.ts(63,27): error TS7006: Parameter 'ms' implicitly has an 'any' type.
+src/ui/hooks.ts(69,35): error TS7006: Parameter 'ref' implicitly has an 'any' type.
+src/ui/hooks.ts(69,40): error TS7006: Parameter 'handler' implicitly has an 'any' type.
+src/ui/hooks.ts(72,25): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/ui/image-tint.ts(4,32): error TS7006: Parameter 'src' implicitly has an 'any' type.
+src/ui/image-tint.ts(5,7): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
+src/ui/image-tint.ts(6,28): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
+src/ui/image-tint.ts(13,7): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
+src/ui/image-tint.ts(21,28): error TS7006: Parameter 'c' implicitly has an 'any' type.
+src/ui/image-tint.ts(41,9): error TS2322: Type 'number' is not assignable to type 'null'.
+src/ui/image-tint.ts(45,9): error TS2322: Type 'number' is not assignable to type 'null'.
+src/ui/image-tint.ts(47,9): error TS2322: Type 'number' is not assignable to type 'null'.
+src/ui/image-tint.ts(51,9): error TS2322: Type 'number' is not assignable to type 'null'.
+src/ui/image-tint.ts(53,9): error TS2322: Type 'number' is not assignable to type 'null'.
+src/ui/image-tint.ts(57,9): error TS2322: Type 'number' is not assignable to type 'null'.
+src/ui/image-tint.ts(59,9): error TS2322: Type 'number' is not assignable to type 'null'.
+src/ui/image-tint.ts(64,20): error TS18047: 'bound.bottom' is possibly 'null'.
+src/ui/image-tint.ts(64,39): error TS18047: 'bound.top' is possibly 'null'.
+src/ui/image-tint.ts(65,17): error TS18047: 'bound.right' is possibly 'null'.
+src/ui/image-tint.ts(65,35): error TS18047: 'bound.left' is possibly 'null'.
+src/ui/image-tint.ts(69,3): error TS18047: 'copy' is possibly 'null'.
+src/ui/image-tint.ts(70,3): error TS18047: 'copy' is possibly 'null'.
+src/ui/image-tint.ts(71,3): error TS18047: 'copy' is possibly 'null'.
+src/ui/image-tint.ts(72,10): error TS18047: 'copy' is possibly 'null'.
+src/ui/image-tint.ts(75,34): error TS7006: Parameter 'image' implicitly has an 'any' type.
+src/ui/image-tint.ts(75,41): error TS7006: Parameter 'tint' implicitly has an 'any' type.
+src/ui/image-tint.ts(86,31): error TS7006: Parameter 'image' implicitly has an 'any' type.
+src/ui/image-tint.ts(91,3): error TS18047: 'context' is possibly 'null'.
+src/ui/image-tint.ts(95,28): error TS7006: Parameter 'c' implicitly has an 'any' type.
+src/ui/image-tint.ts(106,3): error TS18047: 'copy' is possibly 'null'.
+src/ui/image-tint.ts(107,3): error TS18047: 'copy' is possibly 'null'.
+src/ui/image-tint.ts(108,3): error TS18047: 'copy2' is possibly 'null'.
+src/ui/image-tint.ts(109,3): error TS18047: 'copy2' is possibly 'null'.
+src/ui/image-tint.ts(110,3): error TS18047: 'copy3' is possibly 'null'.
+src/ui/image-tint.ts(111,3): error TS18047: 'copy3' is possibly 'null'.
+src/ui/image-tint.ts(113,3): error TS18047: 'copy' is possibly 'null'.
+src/ui/image-tint.ts(114,3): error TS18047: 'copy2' is possibly 'null'.
+src/ui/image-tint.ts(115,3): error TS18047: 'copy3' is possibly 'null'.
+src/ui/image-tint.ts(117,3): error TS18047: 'copy2' is possibly 'null'.
+src/ui/image-tint.ts(118,3): error TS18047: 'copy2' is possibly 'null'.
+src/ui/image-tint.ts(119,3): error TS18047: 'copy2' is possibly 'null'.
+src/ui/image-tint.ts(120,3): error TS18047: 'copy3' is possibly 'null'.
+src/ui/image-tint.ts(121,3): error TS18047: 'copy3' is possibly 'null'.
+src/ui/image-tint.ts(121,19): error TS18047: 'copy2' is possibly 'null'.
+src/ui/image-tint.ts(122,3): error TS18047: 'copy' is possibly 'null'.
+src/ui/image-tint.ts(123,3): error TS18047: 'copy' is possibly 'null'.
+src/ui/image-tint.ts(123,18): error TS18047: 'copy3' is possibly 'null'.
+src/ui/image-tint.ts(124,10): error TS18047: 'copy' is possibly 'null'.
+src/ui/image-tint.ts(127,33): error TS7031: Binding element 'asset' implicitly has an 'any' type.
+src/ui/image-tint.ts(127,40): error TS7031: Binding element 'tint' implicitly has an 'any' type.
+src/ui/image-tint.ts(127,46): error TS7031: Binding element 'setImageData' implicitly has an 'any' type.
+src/ui/image-tint.ts(132,7): error TS18047: 'ctx' is possibly 'null'.
+src/ui/image-tint.ts(137,7): error TS18047: 'ctx' is possibly 'null'.
+src/ui/keyboard-key.tsx(92,49): error TS2339: Property 'click' does not exist on type 'never'.
+src/ui/modal.tsx(23,8): error TS7031: Binding element 'sx' implicitly has an 'any' type.
+src/ui/modal.tsx(23,22): error TS7031: Binding element 'bottomOffset' implicitly has an 'any' type.
+src/ui/modal.tsx(48,20): error TS7031: Binding element 'sx' implicitly has an 'any' type.
+src/ui/modal.tsx(67,19): error TS7031: Binding element 'sx' implicitly has an 'any' type.
+src/ui/modal.tsx(76,17): error TS7031: Binding element 'sx' implicitly has an 'any' type.
+src/ui/modal.tsx(92,19): error TS7031: Binding element 'sx' implicitly has an 'any' type.
+src/ui/player-render.tsx(36,31): error TS7006: Parameter 'image' implicitly has an 'any' type.
+src/ui/player-render.tsx(36,38): error TS7006: Parameter 'tint' implicitly has an 'any' type.
+src/ui/player-render.tsx(43,3): error TS18047: 'ctx' is possibly 'null'.
+src/ui/player-render.tsx(53,30): error TS7031: Binding element 'shouldBuffer' implicitly has an 'any' type.
+src/ui/player-render.tsx(53,44): error TS7031: Binding element 'buffCanvasRef' implicitly has an 'any' type.
+src/ui/player-render.tsx(53,59): error TS7031: Binding element 'canvasRef' implicitly has an 'any' type.
+src/ui/player-render.tsx(53,70): error TS7031: Binding element 'assets' implicitly has an 'any' type.
+src/ui/player-render.tsx(165,28): error TS7031: Binding element 'filteredSlots' implicitly has an 'any' type.
+src/ui/player-render.tsx(165,43): error TS7031: Binding element 'visibleParts' implicitly has an 'any' type.
+src/ui/player-render.tsx(233,33): error TS7031: Binding element 'key' implicitly has an 'any' type.
+src/ui/player-render.tsx(242,18): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ hair: Item; face: Item; whiskers: Item; skin: Item; chest: Item; }'.
+  No index signature with a parameter of type 'string' was found on type '{ hair: Item; face: Item; whiskers: Item; skin: Item; chest: Item; }'.
+src/ui/player-render.tsx(252,16): error TS2345: Argument of type 'PlayerAsset' is not assignable to parameter of type 'never'.
+src/ui/portal.ts(3,26): error TS7031: Binding element 'children' implicitly has an 'any' type.
+src/ui/portal.ts(3,36): error TS7031: Binding element 'container' implicitly has an 'any' type.
+src/ui/slot-style.ts(8,31): error TS18048: 't.colors' is possibly 'undefined'.
+src/ui/slot-style.ts(8,31): error TS18048: 't.colors.shadow' is possibly 'undefined'.
+src/ui/slot-style.ts(9,30): error TS18048: 't.colors' is possibly 'undefined'.
+src/ui/slot-style.ts(9,30): error TS18048: 't.colors.shadow' is possibly 'undefined'.
+src/ui/slot-style.ts(15,34): error TS7006: Parameter 'icon' implicitly has an 'any' type.
+src/ui/slot-style.ts(36,34): error TS18048: 't.colors' is possibly 'undefined'.
+src/ui/slot-style.ts(36,57): error TS18048: 't.colors' is possibly 'undefined'.
+src/ui/slot-style.ts(36,57): error TS18048: 't.colors.shadow' is possibly 'undefined'.
+src/wiki/api/fetchers.ts(1,38): error TS7031: Binding element 'queryKey' implicitly has an 'any' type.
+src/wiki/api/fetchers.ts(15,38): error TS7031: Binding element 'queryKey' implicitly has an 'any' type.
+src/wiki/app.tsx(60,28): error TS7031: Binding element 'children' implicitly has an 'any' type.
+src/wiki/layout.tsx(5,23): error TS7006: Parameter 'props' implicitly has an 'any' type.
+src/wiki/layout.tsx(14,30): error TS7031: Binding element 'href' implicitly has an 'any' type.
+src/wiki/layout.tsx(14,36): error TS7031: Binding element 'children' implicitly has an 'any' type.
+src/wiki/npc-render.tsx(9,29): error TS7031: Binding element 'model' implicitly has an 'any' type.
+src/wiki/npc-render.tsx(56,25): error TS7031: Binding element 'model' implicitly has an 'any' type.
+src/wiki/page-items.tsx(12,7): error TS2345: Argument of type '([key, v]: [string, Item]) => { id: string; key: string; ilvl: number; rarity: string; stats?: Record<string, number>; name: string; base: string; slot: string; texture: string; tint?: string; ... 11 more ...; items?: Array<Item>; }' is not assignable to parameter of type '(value: [string, Loose], index: number, array: [string, Loose][]) => { id: string; key: string; ilvl: number; rarity: string; stats?: Record<string, number> | undefined; ... 16 more ...; items?: Item[] | undefined; }'.
+  Types of parameters '__0' and 'value' are incompatible.
+    Type '[string, Loose]' is not assignable to type '[string, Item]'.
+      Type at position 1 in source is not compatible with type at position 1 in target.
+        Type 'Loose' is missing the following properties from type 'Item': id, key, ilvl, rarity, and 4 more.
+src/wiki/page-items.tsx(13,9): error TS2783: 'key' is specified more than once, so this usage will be overwritten.
+src/wiki/page-items.tsx(14,9): error TS2783: 'rarity' is specified more than once, so this usage will be overwritten.
+src/wiki/page-items.tsx(19,7): error TS2345: Argument of type '([key, v]: [string, Item]) => { id: string; key: string; ilvl: number; rarity: string; stats?: Record<string, number>; name: string; base: string; slot: string; texture: string; tint?: string; ... 11 more ...; items?: Array<Item>; }' is not assignable to parameter of type '(value: [string, Loose], index: number, array: [string, Loose][]) => { id: string; key: string; ilvl: number; rarity: string; stats?: Record<string, number> | undefined; ... 16 more ...; items?: Item[] | undefined; }'.
+  Types of parameters '__0' and 'value' are incompatible.
+    Type '[string, Loose]' is not assignable to type '[string, Item]'.
+      Type at position 1 in source is not compatible with type at position 1 in target.
+        Type 'Loose' is missing the following properties from type 'Item': id, key, ilvl, rarity, and 4 more.
+src/wiki/page-items.tsx(20,9): error TS2783: 'key' is specified more than once, so this usage will be overwritten.
+src/wiki/page-items.tsx(21,9): error TS2783: 'rarity' is specified more than once, so this usage will be overwritten.
+src/wiki/page-items.tsx(26,7): error TS2345: Argument of type '([key, v]: [string, Item]) => { id: string; key: string; ilvl: number; rarity: string; stats?: Record<string, number>; name: string; base: string; slot: string; texture: string; tint?: string; ... 11 more ...; items?: Array<Item>; }' is not assignable to parameter of type '(value: [string, Loose], index: number, array: [string, Loose][]) => { id: string; key: string; ilvl: number; rarity: string; stats?: Record<string, number> | undefined; ... 16 more ...; items?: Item[] | undefined; }'.
+  Types of parameters '__0' and 'value' are incompatible.
+    Type '[string, Loose]' is not assignable to type '[string, Item]'.
+      Type at position 1 in source is not compatible with type at position 1 in target.
+        Type 'Loose' is missing the following properties from type 'Item': id, key, ilvl, rarity, and 4 more.
+src/wiki/page-items.tsx(27,9): error TS2783: 'key' is specified more than once, so this usage will be overwritten.
+src/wiki/page-items.tsx(28,9): error TS2783: 'rarity' is specified more than once, so this usage will be overwritten.
+src/wiki/page-items.tsx(33,7): error TS2345: Argument of type '([key, v]: [string, Item]) => { id: string; key: string; ilvl: number; rarity: string; stats?: Record<string, number>; name: string; base: string; slot: string; texture: string; tint?: string; ... 11 more ...; items?: Array<Item>; }' is not assignable to parameter of type '(value: [string, Loose], index: number, array: [string, Loose][]) => { id: string; key: string; ilvl: number; rarity: string; stats?: Record<string, number> | undefined; ... 16 more ...; items?: Item[] | undefined; }'.
+  Types of parameters '__0' and 'value' are incompatible.
+    Type '[string, Loose]' is not assignable to type '[string, Item]'.
+      Type at position 1 in source is not compatible with type at position 1 in target.
+        Type 'Loose' is missing the following properties from type 'Item': id, key, ilvl, rarity, and 4 more.
+src/wiki/page-items.tsx(34,9): error TS2783: 'key' is specified more than once, so this usage will be overwritten.
+src/wiki/page-items.tsx(35,9): error TS2783: 'rarity' is specified more than once, so this usage will be overwritten.
+src/wiki/page-items.tsx(40,7): error TS2345: Argument of type '([key, v]: [string, Item]) => { id: string; key: string; ilvl: number; rarity: string; stats?: Record<string, number>; name: string; base: string; slot: string; texture: string; tint?: string; ... 11 more ...; items?: Array<Item>; }' is not assignable to parameter of type '(value: [string, Loose], index: number, array: [string, Loose][]) => { id: string; key: string; ilvl: number; rarity: string; stats?: Record<string, number> | undefined; ... 16 more ...; items?: Item[] | undefined; }'.
+  Types of parameters '__0' and 'value' are incompatible.
+    Type '[string, Loose]' is not assignable to type '[string, Item]'.
+      Type at position 1 in source is not compatible with type at position 1 in target.
+        Type 'Loose' is missing the following properties from type 'Item': id, key, ilvl, rarity, and 4 more.
+src/wiki/page-items.tsx(41,9): error TS2783: 'key' is specified more than once, so this usage will be overwritten.
+src/wiki/page-items.tsx(42,9): error TS2783: 'rarity' is specified more than once, so this usage will be overwritten.
+src/wiki/page-players.tsx(53,28): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/wiki/page-players.tsx(63,31): error TS2345: Argument of type 'false' is not assignable to parameter of type 'SetStateAction<null>'.
+src/wiki/page-players.tsx(83,45): error TS2339: Property 'id' does not exist on type 'never'.
+src/wiki/page-players.tsx(93,36): error TS2345: Argument of type '{ id: string; isGhost: boolean; profile: { userName: string; gender: string; race: string; }; }' is not assignable to parameter of type 'SetStateAction<null>'.
+  Type '{ id: string; isGhost: boolean; profile: { userName: string; gender: string; race: string; }; }' provides no match for the signature '(prevState: null): null'.
+src/wiki/page-players.tsx(122,21): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ equipment: boolean; inventory: boolean; stats: boolean; abilities: boolean; }'.
+  No index signature with a parameter of type 'string' was found on type '{ equipment: boolean; inventory: boolean; stats: boolean; abilities: boolean; }'.
+src/wiki/page-players.tsx(141,17): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ equipment: boolean; inventory: boolean; stats: boolean; abilities: boolean; }'.
+  No index signature with a parameter of type 'string' was found on type '{ equipment: boolean; inventory: boolean; stats: boolean; abilities: boolean; }'.
+src/wiki/page-players.tsx(149,23): error TS7031: Binding element 'children' implicitly has an 'any' type.
+src/wiki/page-players.tsx(214,17): error TS2345: Argument of type '(prev: never[]) => string[]' is not assignable to parameter of type 'SetStateAction<never[]>'.
+  Type '(prev: never[]) => string[]' is not assignable to type '(prevState: never[]) => never[]'.
+    Type 'string[]' is not assignable to type 'never[]'.
+      Type 'string' is not assignable to type 'never'.
+src/wiki/page-players.tsx(215,25): error TS2345: Argument of type 'string' is not assignable to parameter of type 'never'.
+src/wiki/page-players.tsx(228,21): error TS7031: Binding element 'onClick' implicitly has an 'any' type.
+src/wiki/page-players.tsx(228,30): error TS7031: Binding element 'hasNextPage' implicitly has an 'any' type.
+src/wiki/page-players.tsx(228,43): error TS7031: Binding element 'isFetchingNextPage' implicitly has an 'any' type.
+src/wiki/page-players.tsx(264,26): error TS7031: Binding element 'player' implicitly has an 'any' type.
+src/wiki/page-players.tsx(265,51): error TS7006: Parameter 'q' implicitly has an 'any' type.
+src/wiki/player-render.tsx(19,16): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ WARRIOR: string; ROGUE: string; MAGE: string; CLERIC: string; }'.
+src/wiki/player-render.tsx(44,28): error TS7006: Parameter 'status' implicitly has an 'any' type.
+src/wiki/row-title.tsx(3,26): error TS7006: Parameter 'type' implicitly has an 'any' type.
+src/wiki/slot.tsx(8,24): error TS7031: Binding element 'item' implicitly has an 'any' type.
+src/wiki/slot.tsx(46,24): error TS7031: Binding element 'item' implicitly has an 'any' type.
+src/wiki/slot.tsx(55,24): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ readonly chets: { readonly name: "Chet's Leisureware"; readonly pieces: 3; readonly stats: { readonly vitality: 10; readonly intelligence: 10; }; readonly percentStats: { readonly vitality: 15; readonly intelligence: 15; }; }; readonly cids: { ...; }; readonly crab: { ...; }; readonly hawkwings: { ...; }; readonly...'.
+src/wiki/slot.tsx(73,28): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+src/wiki/slot.tsx(73,45): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+src/wiki/slot.tsx(73,64): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+src/wiki/slot.tsx(73,82): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+src/wiki/slot.tsx(79,28): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+src/wiki/slot.tsx(80,20): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+src/wiki/slot.tsx(80,47): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+src/wiki/slot.tsx(81,17): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+src/wiki/slot.tsx(88,38): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+src/wiki/slot.tsx(95,30): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ readonly evasion: { readonly type: "buff"; readonly duration: 30000; readonly stats: { readonly dodgeChance: 5; }; }; readonly haste: { readonly type: "buff"; readonly duration: 30000; readonly stats: { readonly walkSpeed: 20; readonly attackDelay: -25; readonly castDelay: -100; }; }; ... 16 more ...; readonly ste...'.
+  No index signature with a parameter of type 'string' was found on type '{ readonly evasion: { readonly type: "buff"; readonly duration: 30000; readonly stats: { readonly dodgeChance: 5; }; }; readonly haste: { readonly type: "buff"; readonly duration: 30000; readonly stats: { readonly walkSpeed: 20; readonly attackDelay: -25; readonly castDelay: -100; }; }; ... 16 more ...; readonly ste...'.
+src/wiki/slot.tsx(96,31): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ readonly evasion: { readonly type: "buff"; readonly duration: 30000; readonly stats: { readonly dodgeChance: 5; }; }; readonly haste: { readonly type: "buff"; readonly duration: 30000; readonly stats: { readonly walkSpeed: 20; readonly attackDelay: -25; readonly castDelay: -100; }; }; ... 16 more ...; readonly ste...'.
+  No index signature with a parameter of type 'string' was found on type '{ readonly evasion: { readonly type: "buff"; readonly duration: 30000; readonly stats: { readonly dodgeChance: 5; }; }; readonly haste: { readonly type: "buff"; readonly duration: 30000; readonly stats: { readonly walkSpeed: 20; readonly attackDelay: -25; readonly castDelay: -100; }; }; ... 16 more ...; readonly ste...'.
+src/wiki/slot.tsx(97,15): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+src/wiki/slot.tsx(109,45): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+src/wiki/slot.tsx(116,43): error TS7006: Parameter 'idx' implicitly has an 'any' type.
+src/wiki/slot.tsx(132,38): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+src/wiki/slot.tsx(154,40): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+src/wiki/slot.tsx(157,57): error TS7006: Parameter 'idx' implicitly has an 'any' type.

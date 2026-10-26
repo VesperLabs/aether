@@ -4,8 +4,16 @@ const Sprite = Phaser.GameObjects.Sprite;
 const FRAME_SIZE = 4;
 
 export class Bar extends Phaser.GameObjects.Container {
-  declare bar: any;
-  constructor(scene, x, y, width, height, percent = 0, color = 0xff0000) {
+  declare bar: Phaser.GameObjects.Sprite;
+  constructor(
+    scene: Phaser.Scene,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    percent = 0,
+    color = 0xff0000,
+  ) {
     super(scene, x, y);
     this.width = width;
     this.height = height;
@@ -66,7 +74,7 @@ export class Bar extends Phaser.GameObjects.Container {
   center() {
     this.x = -Math.floor(this.width / 4);
   }
-  setPercent(percent) {
+  setPercent(percent: number) {
     const newWidth = (this.width - FRAME_SIZE - FRAME_SIZE) * percent;
     this.bar.setDisplaySize(newWidth, this.bar.height);
   }

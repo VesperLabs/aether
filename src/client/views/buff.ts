@@ -1,10 +1,11 @@
 import Phaser from "phaser";
+import type { Player } from "./player";
 const Sprite = Phaser.GameObjects.Sprite;
 
 export class Buff extends Phaser.GameObjects.Container {
-  declare buff: any;
-  declare victim: any;
-  constructor(scene, victim, buffName) {
+  declare buff: Phaser.GameObjects.Sprite;
+  declare victim: Player;
+  constructor(scene: Phaser.Scene, victim: Player, buffName: string) {
     super(scene, victim.x, victim.y);
 
     this.victim = victim;
