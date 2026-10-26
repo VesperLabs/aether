@@ -1,8 +1,7 @@
 import crypto from "crypto";
 import { Npc } from "./npc";
 import { nasties, keepers } from "@/shared/content";
-import { useGetBaseCharacterDefaults } from "./utils";
-import { mergeAndAddValues } from "@/shared/rules/stats";
+import { getBaseStats, mergeAndAddValues } from "@/shared/rules/stats";
 
 /* Find NPCs in data lists, and add `kind` to them */
 function getNpcFromLists(name) {
@@ -37,10 +36,7 @@ export class NpcManager {
         continue;
       }
 
-      const { baseStats } = useGetBaseCharacterDefaults({
-        level: baseLevel,
-        charClass: npc?.charClass,
-      });
+      const baseStats = getBaseStats({ level: baseLevel, charClass: npc?.charClass });
 
       // remove level so it does not get added twice
       const { level: _level, ...npcBaseStats } = {

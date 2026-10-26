@@ -1,5 +1,5 @@
 import type { GameSocket } from "@/shared/network";
-import { removePlayer } from "../utils";
+import { removePlayer } from "../remove-player";
 import { legacyLeaveParty } from "../party-adapter";
 import type { CommandContext } from "./command-context";
 import { registerCommands } from "./dispatcher";
