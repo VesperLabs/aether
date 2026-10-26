@@ -1,10 +1,5 @@
 export { Character } from "./character";
 export * from "./constants";
-export * from "./net-snapshot";
-export * from "./net-wire";
-export * from "./wire-tick";
-export * from "./tick-state";
-export * from "./tick-delta";
 export * from "./door";
 export * from "./sign";
 export * from "./utils";

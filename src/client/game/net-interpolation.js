@@ -7,7 +7,7 @@
  */
 
 import { DEFAULT_SERVER_FPS } from "@/shared/constants";
-import { expandTickState, mergeTickDelta } from "@/shared/tick-delta";
+import { expandTickState, mergeTickDelta } from "@/shared/network";
 
 function lerp(a, b, t) {
   return a + (b - a) * t;

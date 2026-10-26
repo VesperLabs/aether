@@ -31,10 +31,14 @@ import { isNil } from "lodash";
 import { CONSUMABLES_BASES, POTION_BASES, DEFAULT_SERVER_FPS } from "../shared";
 import { createBaseUser } from "./db";
 import { cloneDeep } from "lodash";
-import { createSnapshot, createDeltaSnapshot } from "@/shared/net-snapshot";
+import {
+  createSnapshot,
+  createDeltaSnapshot,
+  compactTickDeltaForWire,
+  diffTickStates,
+  compactTickState,
+} from "@/shared/network";
 import { SNAPSHOT_KEYFRAME_INTERVAL } from "@/shared/constants";
-import { compactTickDeltaForWire, diffTickStates } from "@/shared/tick-delta";
-import { compactTickState } from "@/shared/wire-tick";
 
 const serverFps =
   parseInt(process.env.SERVER_FPS || String(DEFAULT_SERVER_FPS), 10) || DEFAULT_SERVER_FPS;

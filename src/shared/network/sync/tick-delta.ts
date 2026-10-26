@@ -16,7 +16,9 @@ function compactRm(rm: { p: string[]; n: string[]; l: string[] }): TickRmCompact
 }
 
 function mergeBucket(bucket: unknown[], delta: unknown[], rmIds: string[] | undefined): unknown[] {
-  const map = new Map((bucket ?? []).map((e: { id: unknown }) => [String(e.id), e]));
+  const map = new Map<string, unknown>(
+    ((bucket ?? []) as { id: unknown }[]).map((e) => [String(e.id), e]),
+  );
   for (const id of rmIds ?? []) map.delete(id);
   for (const e of delta ?? []) {
     if (e && typeof e === "object" && e !== null && "id" in e) {
@@ -64,8 +66,12 @@ export function diffTickStates(
   (["players", "npcs", "loots"] as const).forEach((bucket) => {
     const prevArr = prev[bucket];
     const nextArr = next[bucket];
-    const prevMap = new Map(prevArr.map((e: { id: unknown }) => [String(e.id), e]));
-    const nextMap = new Map(nextArr.map((e: { id: unknown }) => [String(e.id), e]));
+    const prevMap = new Map<string, unknown>(
+      (prevArr as { id: unknown }[]).map((e) => [String(e.id), e]),
+    );
+    const nextMap = new Map<string, unknown>(
+      (nextArr as { id: unknown }[]).map((e) => [String(e.id), e]),
+    );
 
     for (const id of prevMap.keys()) {
       if (!nextMap.has(id)) rmAcc[bucketToRm[bucket]].push(id);
@@ -95,7 +101,7 @@ export function heroInitToTickExpanded(args: {
   npcs?: unknown[];
   loots?: unknown[];
 }): TickStateExpanded {
-  const players = (args.players ?? []).map((raw: Record<string, unknown>) => ({
+  const players = ((args.players ?? []) as Record<string, unknown>[]).map((raw) => ({
     id: raw.socketId ?? raw.id,
     d: encodeWireDirection(raw.direction as string),
     state: pickTickStateLite(raw.state as Record<string, unknown>),
@@ -105,7 +111,7 @@ export function heroInitToTickExpanded(args: {
     vy: (raw.vy as number) ?? 0,
   }));
 
-  const npcs = (args.npcs ?? []).map((raw: Record<string, unknown>) => ({
+  const npcs = ((args.npcs ?? []) as Record<string, unknown>[]).map((raw) => ({
     id: raw.id,
     d: encodeWireDirection(raw.direction as string),
     state: pickTickStateLite(raw.state as Record<string, unknown>),
@@ -115,7 +121,7 @@ export function heroInitToTickExpanded(args: {
     vy: (raw.vy as number) ?? 0,
   }));
 
-  const loots = (args.loots ?? []).map((raw: Record<string, unknown>) => {
+  const loots = ((args.loots ?? []) as Record<string, unknown>[]).map((raw) => {
     const o: { id: string; expiredSince?: number } = { id: String(raw.id) };
     if (raw.expiredSince != null) o.expiredSince = raw.expiredSince as number;
     return o;

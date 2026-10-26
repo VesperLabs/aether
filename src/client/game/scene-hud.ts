@@ -1,13 +1,8 @@
 import Phaser from "phaser";
 import { playAudio, getSpinDirection } from "../utils";
 import { spellDetails } from "@/shared/content";
-import {
-  POTION_COOLDOWN,
-  getAngleFromDirection,
-  CONSUMABLES_BASES,
-  POTION_BASES,
-  encodeWireDirection,
-} from "@/shared";
+import { encodeWireDirection } from "@/shared/network";
+import { POTION_COOLDOWN, getAngleFromDirection, CONSUMABLES_BASES, POTION_BASES } from "@/shared";
 import { Socket } from "socket.io";
 const { W, S, A, D } = Phaser.Input.Keyboard.KeyCodes;
 const { Between } = Phaser.Math.Angle;
