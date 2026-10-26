@@ -112,21 +112,55 @@ describe("quests", () => {
     });
   });
 
-  it("completeQuest fails when the reward does not fit and the inventory is full", async () => {
+  it("completeQuest with a full inventory grants nothing and cannot be farmed by retrying", async () => {
     const { socket } = await login();
     socket.emit("acceptQuest", "crab-catching");
     await once(socket, "playerUpdate");
     const player = world().players[socket.id as string];
     player.npcKills.crab = 60;
     player.inventory = Array.from({ length: 32 }, (_, i) => ({ id: `junk-${i}`, base: "junk" }));
+    const goldBefore = player.gold;
+    const expBefore = player.stats.exp;
 
-    const message = once(socket, "message");
-    socket.emit("completeQuest", "crab-catching");
-    expect((await message)[0]).toMatchObject({
-      type: "error",
-      message: "Cannot turn in quest. Inventory is full",
-    });
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const message = once(socket, "message");
+      socket.emit("completeQuest", "crab-catching");
+      expect((await message)[0]).toMatchObject({
+        type: "error",
+        message: "Cannot turn in quest. Inventory is full",
+      });
+    }
     expect(player.quests[0].isCompleted).toBe(false);
+    expect(player.inventory).toHaveLength(32);
+    expect(player.inventory.every((i: Anything) => i?.base === "junk")).toBe(true);
+    expect(player.gold).toBe(goldBefore);
+    expect(player.stats.exp).toBe(expBefore);
+  });
+
+  it("completeQuest consumes exactly the quest items", async () => {
+    const { socket } = await login();
+    socket.emit("acceptQuest", "crab-claws");
+    await once(socket, "playerUpdate");
+    const player = world().players[socket.id as string];
+    const quest = world().quests["crab-claws"];
+    const [slot, rarity, key] = quest.objectives[0].item;
+    const need = quest.objectives[0].amount;
+    const stack = (id: string, amount: number) => ({ id, slot, rarity, key, amount });
+    const other = { id: "other", slot, rarity, key: "otherKey", amount: 7 };
+    player.inventory = [stack("s1", need), other];
+    const update = once(socket, "playerUpdate");
+    socket.emit("completeQuest", "crab-claws");
+    await update;
+    expect(player.quests[0].isCompleted).toBe(true);
+    expect(player.inventory.some((i: Anything) => i?.key === key)).toBe(false);
+    expect(player.inventory.find((i: Anything) => i?.id === "other")?.amount).toBe(7);
+  });
+
+  it("accepting an unknown quest adds nothing", async () => {
+    const { socket } = await login();
+    socket.emit("acceptQuest", "no-such-quest");
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    expect(world().players[socket.id as string].quests).toHaveLength(0);
   });
 
   it("counts mob kills for every recipient of a mobKilled event", async () => {

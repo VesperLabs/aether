@@ -3,6 +3,7 @@ import {
   acceptQuest,
   completeQuest,
   getPlayerQuestStatus,
+  takeQuestItems,
   type QuestProgressInput,
 } from "@/shared/rules/quests";
 
@@ -13,11 +14,7 @@ interface QuestPlayer {
   inventory: QuestProgressInput["inventory"];
   abilities: QuestProgressInput["abilities"];
   gold: number;
-  isInventoryFull(): boolean;
   addInventoryItem(item: Item): void;
-  subtractInventoryItemAtId(id: string, amount: number): unknown;
-  subtractBagItemAtId(id: string, amount: number): unknown;
-  subtractAbilityAtId(id: string, amount: number): unknown;
   assignExp(amount: number): boolean;
 }
 
@@ -31,8 +28,9 @@ export function applyAcceptQuest(player: QuestPlayer, quest: Quest) {
 }
 
 /**
- * Legacy adapter for the pure `completeQuest` rule: hands the player the reward items, takes the
- * quest items, awards exp and gold, and marks the quest completed.
+ * Legacy adapter for the pure `completeQuest` rule: when the rule allows it, takes the quest
+ * items, hands the player the reward items, awards exp and gold, and marks the quest completed.
+ * On an error nothing is changed.
  */
 export function applyCompleteQuest(
   player: QuestPlayer,
@@ -42,16 +40,19 @@ export function applyCompleteQuest(
     status: getPlayerQuestStatus(player, quest),
     quest,
     inventory: player.inventory,
+    abilities: player.abilities,
     maxInventoryItems: MAX_INVENTORY_ITEMS,
   });
-  for (const item of result.itemsToAdd) player.addInventoryItem(item as Item);
   if (result.error) return { error: result.error };
 
-  for (const { itemId, amount } of result.itemsToRemove) {
-    player.subtractInventoryItemAtId(itemId, amount) ||
-      player.subtractBagItemAtId(itemId, amount) ||
-      player.subtractAbilityAtId(itemId, amount);
+  for (const { item, amount } of result.itemsToRemove) {
+    const taken = takeQuestItems(player, item, amount);
+    if (taken) {
+      player.inventory = taken.inventory;
+      player.abilities = taken.abilities;
+    }
   }
+  for (const item of result.itemsToAdd) player.addInventoryItem(item as Item);
   const didLevel = player.assignExp(result.exp as number);
   player.gold += result.gold;
   (player.quests.find((q) => q?.questId === quest?.id) as PlayerQuest).isCompleted = true;

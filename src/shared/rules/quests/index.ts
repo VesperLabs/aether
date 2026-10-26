@@ -8,6 +8,7 @@ export {
   getPlayerQuests,
   markKeeperObjectivesReady,
   nextNpcKillCount,
+  takeQuestItems,
 } from "./rules";
 export type {
   CompleteQuestInput,

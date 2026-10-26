@@ -28,6 +28,7 @@ export function acceptQuest(ctx: CommandContext, questId: ParsedCommand<"acceptQ
   const { world, socketId, io } = ctx;
   const player: Player = world?.players?.[socketId];
   const currentQuest = world.quests?.[questId];
+  if (!currentQuest) return;
   const foundQuest = player?.getPlayerQuestStatus(currentQuest);
   /* If the quest wasnt there, we can accept it */
   if (!foundQuest) {

@@ -43,7 +43,7 @@ export interface PlayerQuestObjectiveStatus {
 
 export interface PlayerQuestStatus {
   questId: string;
-  isReady: boolean | undefined;
+  isReady: boolean;
   isCompleted: boolean | undefined;
   objectives: PlayerQuestObjectiveStatus[] | undefined;
 }
@@ -132,7 +132,7 @@ export function getPlayerQuestStatus(
   );
   return {
     questId: quest?.id as string,
-    isReady: objectives?.every((o) => o?.isReady) || playerQuest?.isReady,
+    isReady: objectives?.every((o) => o?.isReady) || playerQuest?.isReady || false,
     isCompleted: playerQuest?.isCompleted,
     objectives,
   };
@@ -156,8 +156,9 @@ export function getPlayerQuests<
 /** The record to add when a player accepts a quest, or null when the player already has it. */
 export function acceptQuest(
   progress: Pick<QuestProgressInput, "quests">,
-  questId: string,
+  questId: string | undefined,
 ): PlayerQuestRecord | null {
+  if (!questId) return null;
   if (progress.quests.find((q) => q?.questId === questId)) return null;
   return { questId, isCompleted: false };
 }
@@ -191,67 +192,93 @@ export interface CompleteQuestInput {
   quest: Pick<QuestDefinition, "id" | "objectives" | "rewards"> | undefined;
   /** The inventory slots (empty ones are null), to see whether reward items fit. */
   inventory: (QuestItem | null | undefined)[];
+  /** The ability slots, which may also hold quest items. */
+  abilities?: Record<string, QuestItem | null | undefined>;
   maxInventoryItems: number;
 }
 
 export interface CompleteQuestResult {
-  /** Why the quest cannot be turned in. */
+  /** Why the quest cannot be turned in. When set, nothing may be changed. */
   error?: string;
-  /**
-   * Reward items that fit in the inventory. They are given even when `error` is set, because
-   * the game hands items out one by one and fails afterwards if some did not fit.
-   */
+  /** Reward items to give. Empty when `error` is set. */
   itemsToAdd: unknown[];
-  /** Quest items to take from the player, by item key. */
-  itemsToRemove: { itemId: string; amount: number }[];
+  /** Quest items to take from the player: `[slot, rarity, key]` and how many. */
+  itemsToRemove: { item: string[]; amount: number }[];
   exp: number | undefined;
   gold: number;
 }
 
 /**
- * Turning a quest in: checks the quest is ready, works out which reward items fit and which
- * quest items are taken. Applying the result (items, exp, gold, marking it completed) is up to
- * the caller.
+ * Takes exactly `amount` of the item matching `[slot, rarity, key]`, from loose inventory stacks,
+ * then bags, then abilities. Returns null (and changes nothing) when the player has fewer.
+ */
+export function takeQuestItems(
+  carried: Pick<QuestProgressInput, "inventory" | "abilities">,
+  target: string[] | undefined,
+  amount: number,
+): Pick<QuestProgressInput, "inventory" | "abilities"> | null {
+  let left = amount;
+  /* Takes from one slot, returning what the slot becomes. */
+  const take = (item: QuestItem | null | undefined): QuestItem | null | undefined => {
+    if (left <= 0 || !item || !matchesTarget(item, target)) return item;
+    const have = item.amount ?? 1;
+    const used = Math.min(have, left);
+    left -= used;
+    return used >= have ? null : { ...item, amount: have - used };
+  };
+  const inventory = carried.inventory.map((item) => take(item));
+  const withBags = inventory.map((item) =>
+    item?.base === "bag" && item.items ? { ...item, items: item.items.map((i) => take(i)) } : item,
+  );
+  const abilities: Record<string, QuestItem | null | undefined> = {};
+  for (const [slotName, item] of Object.entries(carried.abilities)) {
+    const next = take(item);
+    if (next) abilities[slotName] = next;
+  }
+  if (left > 0) return null;
+  return { inventory: withBags, abilities };
+}
+
+/**
+ * Turning a quest in is all or nothing: checks the quest is ready, that every quest item is
+ * carried and that every reward item fits once the quest items are gone. Applying the result
+ * (take items, give items, exp, gold, mark completed) is up to the caller, and only when there
+ * is no `error`.
  */
 export function completeQuest(input: CompleteQuestInput): CompleteQuestResult {
   const { status, quest, maxInventoryItems } = input;
-  const rewardItems = quest?.rewards?.items || [];
+  const rewardItems = (quest?.rewards?.items || []).filter(Boolean);
   const objectives = quest?.objectives || [];
   const empty: CompleteQuestResult = { itemsToAdd: [], itemsToRemove: [], exp: undefined, gold: 0 };
 
   if (status?.isCompleted) return { ...empty, error: "Quest has already been completed." };
   if (!status?.isReady) return { ...empty, error: "Quest objectives are not complete." };
 
-  /* Place reward items into a copy of the inventory the way the player's inventory does. */
-  const slots: (QuestItem | null | undefined)[] = [...input.inventory];
-  const itemsToAdd: unknown[] = [];
-  let inventoryFull = false;
-  for (const item of rewardItems) {
-    if (!item) continue;
-    if (slots.every(Boolean) && slots.length >= maxInventoryItems) {
-      inventoryFull = true;
-    } else {
-      itemsToAdd.push(item);
-      const free = slots.findIndex((s) => !s?.id);
-      if (free === -1) slots.push({ id: "reward" });
-      else slots[free] = { id: "reward" };
-    }
-  }
-  if (inventoryFull && rewardItems.length > 0) {
-    return { ...empty, itemsToAdd, error: "Cannot turn in quest. Inventory is full" };
-  }
-
   const itemsToRemove: CompleteQuestResult["itemsToRemove"] = [];
+  let carried: Pick<QuestProgressInput, "inventory" | "abilities"> = {
+    inventory: input.inventory,
+    abilities: input.abilities ?? {},
+  };
   for (const objective of objectives) {
-    if (!objective) continue;
-    /* Only works for stackable items */
-    if (objective.type === "item") {
-      itemsToRemove.push({
-        itemId: objective.item?.[2] as string,
-        amount: objective.amount as number,
-      });
-    }
+    if (objective?.type !== "item") continue;
+    const amount = objective.amount ?? 1;
+    const next = takeQuestItems(carried, objective.item, amount);
+    if (!next) return { ...empty, error: "Quest objectives are not complete." };
+    carried = next;
+    itemsToRemove.push({ item: objective.item as string[], amount });
   }
 
-  return { itemsToAdd, itemsToRemove, exp: quest?.rewards?.exp, gold: quest?.rewards?.gold ?? 0 };
+  /* Every reward needs a slot of its own, counted after the quest items are gone. */
+  const slots = carried.inventory;
+  const free = slots.filter((s) => !s?.id).length + Math.max(0, maxInventoryItems - slots.length);
+  if (rewardItems.length > free) {
+    return { ...empty, error: "Cannot turn in quest. Inventory is full" };
+  }
+
+  return {
+    itemsToAdd: rewardItems,
+    itemsToRemove,
+    exp: quest?.rewards?.exp,
+    gold: quest?.rewards?.gold ?? 0,
+  };
 }

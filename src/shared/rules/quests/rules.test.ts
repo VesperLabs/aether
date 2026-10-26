@@ -9,6 +9,7 @@ import {
   getPlayerQuests,
   markKeeperObjectivesReady,
   nextNpcKillCount,
+  takeQuestItems,
   type QuestDefinition,
   type QuestProgressInput,
 } from "./rules";
@@ -68,7 +69,7 @@ describe("getPlayerQuestStatus", () => {
     const quests = [{ questId: "crabs" }];
     expect(getPlayerQuestStatus(progress({ quests, npcKills: { crab: 2 } }), bounty)).toMatchObject(
       {
-        isReady: undefined,
+        isReady: false,
         objectives: [{ numKilled: 2, isReady: false, objectiveId: 0 }],
       },
     );
@@ -84,7 +85,7 @@ describe("getPlayerQuestStatus", () => {
     expect(status({ inventory: [clawItem(30)] })?.isReady).toBe(true);
     expect(status({ inventory: [{ base: "bag", items: [clawItem(30)] }] })?.isReady).toBe(true);
     expect(status({ abilities: { a: clawItem(29) } })).toMatchObject({
-      isReady: undefined,
+      isReady: false,
       objectives: [{ numCollected: 29 }],
     });
   });
@@ -158,10 +159,15 @@ describe("completeQuest", () => {
   });
 
   it("returns the reward and the items to remove", () => {
-    const result = completeQuest(input({ quest: { ...bounty, objectives: collect.objectives } }));
+    const result = completeQuest(
+      input({
+        quest: { ...bounty, objectives: collect.objectives },
+        inventory: [clawItem(30)],
+      }),
+    );
     expect(result).toEqual({
       itemsToAdd: [{ id: "gloves" }],
-      itemsToRemove: [{ itemId: "crabClaw", amount: 30 }],
+      itemsToRemove: [{ item: claw, amount: 30 }],
       exp: 25,
       gold: 5,
     });
@@ -171,16 +177,71 @@ describe("completeQuest", () => {
     expect(completeQuest(input({ quest: chat })).gold).toBe(0);
   });
 
-  it("fails when the reward does not fit, still handing out the items that did", () => {
+  it("fails with no changes when the rewards do not all fit", () => {
     const quest = { ...bounty, rewards: { exp: 1, items: [{ id: "a" }, null, { id: "b" }] } };
     const inventory = [{ id: "x" }, { id: "y" }, { id: "z" }];
     const result = completeQuest(input({ quest, inventory }));
     expect(result.error).toBe("Cannot turn in quest. Inventory is full");
-    expect(result.itemsToAdd).toEqual([{ id: "a" }]);
+    expect(result.itemsToAdd).toEqual([]);
+    expect(result.itemsToRemove).toEqual([]);
+  });
+
+  it("counts the slots the quest items free up", () => {
+    const quest = { ...collect, rewards: { items: [{ id: "a" }] } };
+    const inventory = [clawItem(30), { id: "y" }, { id: "z" }, { id: "w" }];
+    expect(completeQuest(input({ quest, inventory })).error).toBeUndefined();
+    /* A stack that is only partly taken frees no slot. */
+    expect(
+      completeQuest(input({ quest, inventory: [clawItem(31), ...inventory.slice(1)] })).error,
+    ).toBe("Cannot turn in quest. Inventory is full");
+  });
+
+  it("refuses when the quest items are not all carried", () => {
+    const result = completeQuest(input({ quest: collect, inventory: [clawItem(10)] }));
+    expect(result.error).toBe("Quest objectives are not complete.");
+    expect(result.itemsToRemove).toEqual([]);
   });
 
   it("reuses empty slots before growing the inventory", () => {
     const inventory = [{ id: "x" }, null, { id: "y" }, { id: "z" }];
     expect(completeQuest(input({ inventory })).error).toBeUndefined();
+  });
+});
+
+describe("takeQuestItems", () => {
+  it("takes an exact amount, emptying the slot", () => {
+    const result = takeQuestItems({ inventory: [clawItem(30)], abilities: {} }, claw, 30);
+    expect(result?.inventory).toEqual([null]);
+  });
+
+  it("takes from several stacks across inventory, bags and abilities by key", () => {
+    const bag = { id: "bag", base: "bag", items: [clawItem(5, "c2"), null] };
+    const carried = {
+      inventory: [clawItem(10, "c1"), bag],
+      abilities: { 1: clawItem(5, "c3") },
+    };
+    const result = takeQuestItems(carried, claw, 18)!;
+    expect(result.inventory[0]).toBeNull();
+    expect((result.inventory[1] as any).items[0]).toBeNull();
+    expect(result.abilities).toEqual({ 1: clawItem(2, "c3") });
+    /* The input is not changed. */
+    expect(carried.inventory[0]).toEqual(clawItem(10, "c1"));
+  });
+
+  it("changes nothing when there are not enough", () => {
+    expect(takeQuestItems({ inventory: [clawItem(5)], abilities: {} }, claw, 6)).toBeNull();
+  });
+});
+
+describe("quest defaults", () => {
+  it("does not accept an unknown quest id", () => {
+    expect(acceptQuest(progress(), undefined)).toBeNull();
+  });
+
+  it("is not ready (false, not undefined) until finished", () => {
+    const status = getPlayerQuestStatus(progress({ quests: [{ questId: "tudwick" }] }), {
+      id: "tudwick",
+    });
+    expect(status?.isReady).toBe(false);
   });
 });
