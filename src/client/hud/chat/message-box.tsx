@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Flex, Text } from "@/ui";
-import { useAppContext } from "@/client/hud/app/app";
+import { useAppContext } from "@/client/hud/app/context";
 import { motion } from "framer-motion";
 
 type MessageProps = {

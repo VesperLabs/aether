@@ -1,5 +1,4 @@
-import Phaser from "phaser";
-import React, { useEffect, useState, createContext, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import { theme } from "@/ui";
 import { MenuHud } from "@/client/hud/menu/menu-hud";
 import { ModalRespawn } from "@/client/hud/status/modal-respawn";
@@ -10,100 +9,18 @@ import { ModalSign } from "@/client/hud/menu/modal-sign";
 import { ModalError } from "@/client/hud/menu/modal-error";
 import { MenuBar } from "@/client/hud/menu/menu-bar";
 import { ModalHome } from "@/client/hud/shop/modal-home";
-import { ThemeUIProvider, Box, useViewportSizeEffect, Modal, KeyboardKey } from "@/ui";
+import { ThemeUIProvider, Box, useViewportSizeEffect, Modal } from "@/ui";
 import { getSpinDirection } from "@/client/input/spin-direction";
-import { calculateZoomLevel } from "@/client/scenes/camera-zoom";
+import { getHudZoom } from "./hud-zoom";
 import "react-tooltip/dist/react-tooltip.css";
 import { Theme } from "theme-ui";
-import type { ClientGameSocket } from "@/shared/network";
-import { CONSUMABLES_BASES, DEFAULT_USER_SETTINGS, MINI_MAP_SIZE, isMobile } from "@/shared";
-import Peer from "peerjs";
+import { DEFAULT_USER_SETTINGS } from "@/shared";
 import { VideoFrame } from "@/client/hud/video/video-frame";
 import { ModalSettings } from "@/client/hud/settings/modal-settings";
-interface AppContextValue {
-  isLoggedIn: boolean;
-  isConnected: boolean;
-  isLoaded: boolean;
-  showButtonChat: boolean;
-  setShowButtonChat: React.Dispatch<React.SetStateAction<boolean>>;
-  setIsConnected: React.Dispatch<React.SetStateAction<boolean>>;
-  setIsLoaded: React.Dispatch<React.SetStateAction<boolean>>;
-  setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
-  setTabEquipment: React.Dispatch<React.SetStateAction<boolean>>;
-  setTabInventory: React.Dispatch<React.SetStateAction<boolean>>;
-  setTabKeeper: React.Dispatch<React.SetStateAction<boolean>>;
-  setKeeper: React.Dispatch<React.SetStateAction<undefined>>;
-  setTabChat: React.Dispatch<React.SetStateAction<boolean>>;
-  setTabProfile: React.Dispatch<React.SetStateAction<boolean>>;
-  setTabStats: React.Dispatch<React.SetStateAction<boolean>>;
-  setTabSocial: React.Dispatch<React.SetStateAction<boolean>>;
-  setTabQuests: React.Dispatch<React.SetStateAction<boolean>>;
-  setDropItem: React.Dispatch<React.SetStateAction<Item | null | false>>;
-  setTabAbilities: React.Dispatch<React.SetStateAction<boolean>>;
-  setTabSettings: React.Dispatch<React.SetStateAction<boolean>>;
-  toggleBagState: React.Dispatch<React.SetStateAction<any>>;
-  setCooldowns: React.Dispatch<React.SetStateAction<any>>;
-  setSign: React.Dispatch<React.SetStateAction<any>>;
-  setError: React.Dispatch<React.SetStateAction<any>>;
-  setHomeModal: React.Dispatch<React.SetStateAction<FullCharacterState | null>>;
-  addMessage: React.Dispatch<React.SetStateAction<Message>>;
-  setUserSettings: React.Dispatch<React.SetStateAction<any>>;
-  userSettings: UserSettings;
-  /** Local camera stream when video chat is enabled (for HUD portrait + WebRTC). */
-  localVideoChatStream: MediaStream | null;
-  setLocalVideoChatStream: React.Dispatch<React.SetStateAction<MediaStream | null>>;
-  /** Remote camera streams keyed by PeerJS id (HUD portrait overlay). */
-  remoteVideoStreams: Record<string, MediaStream>;
-  setRemoteVideoStreams: React.Dispatch<React.SetStateAction<Record<string, MediaStream>>>;
-  homeModal: FullCharacterState | null;
-  error: any;
-  sign: Sign | null;
-  bagState: Array<string>;
-  cooldowns: Record<string, any>;
-  messages: Message[];
-  bottomOffset: number;
-  dropItem: any;
-  tabEquipment: boolean;
-  tabQuests: boolean;
-  tabInventory: boolean;
-  tabChat: boolean;
-  tabProfile: boolean;
-  tabStats: boolean;
-  tabSocial: boolean;
-  tabAbilities: boolean;
-  tabSettings: boolean;
-  keeper: any; // data related to NPC you are chatting with
-  tabKeeper: boolean;
-  hero: FullCharacterState;
-  players: Array<FullCharacterState>;
-  partyInvites: Array<PartyInvite>;
-  setPartyInvites: React.Dispatch<React.SetStateAction<Array<PartyInvite>>>;
-  party: any;
-  socket: ClientGameSocket;
-  peer: Peer;
-  debug: boolean;
-  game: Phaser.Game;
-  zoom: any;
-  currentTooltipId: string;
-  setCurrentTooltipId: React.Dispatch<React.SetStateAction<any>>;
-}
-
-const AppContext = createContext<AppContextValue>({} as AppContextValue);
-
-export const useAppContext = () => {
-  return useContext(AppContext);
-};
-
-const getHudZoom = () => {
-  const viewportArea = window.innerWidth * window.innerHeight;
-  return calculateZoomLevel({
-    viewportArea,
-    baseZoom: 0.75,
-    maxZoom: 2,
-    divisor: 3000000,
-  });
-};
-
+import { AppContext } from "./context";
+import { createHeroSyncHandlers } from "./hero-sync";
+import { createItemEventHandlers } from "./item-events";
+import { MenuGlobalKeys } from "./menu-global-keys";
 export function App({ socket, peer, debug, game }) {
   const [currentTooltipId, setCurrentTooltipId] = useState(null);
   const [partyInvites, setPartyInvites] = useState<Array<PartyInvite>>([]);
@@ -155,6 +72,17 @@ export function App({ socket, peer, debug, game }) {
     setMessages((prev) => [...prev, { ...payload, timestamp: Date.now() }]);
   };
 
+  const { onPlayerJoin, onPlayerLeave, onHeroInit, onBuffUpdate, onPlayerUpdate, onLootGrabbed } =
+    createHeroSyncHandlers({ addMessage, setPlayers, setHero, setIsLoggedIn, setUserSettings });
+
+  const { onDoubleClickItem, onDropItem } = createItemEventHandlers({
+    hero,
+    bagState,
+    toggleBagState,
+    setDropItem,
+    socket,
+  });
+
   const onConnect = () => {
     setIsConnected(true);
   };
@@ -174,79 +102,6 @@ export function App({ socket, peer, debug, game }) {
     setHero(null);
     setKeeper(null);
     setSign(null);
-  };
-
-  const onPlayerJoin = (player, args) => {
-    /* Keep room list updated */
-    setPlayers((prev = []) => {
-      const playerExists = prev.some((p) => p?.id === player?.id);
-      return !playerExists ? prev.concat(player) : prev;
-    });
-
-    /* Only show player join message if the user logged in, not if entered door */
-    if (args?.isLogin) addMessage({ type: "info", message: "A player has joined the game." });
-  };
-
-  const onPlayerLeave = (socketId) => {
-    setPlayers((prev) => prev.filter((player) => player.socketId !== socketId));
-  };
-
-  const onHeroInit = (
-    payload: { players: Array<FullCharacterState>; socketId: string; userSettings: UserSettings },
-    args,
-  ) => {
-    const { players, socketId } = payload;
-    const player: FullCharacterState = players?.find((p) => p?.socketId === socketId);
-    //TODO: get rid of this session storage reference. i think we can just use a state callback here
-    sessionStorage.setItem("socketId", socketId);
-    setPlayers(players);
-    setHero(player);
-    if (args?.isLogin) {
-      setIsLoggedIn(true);
-      setUserSettings({
-        ...DEFAULT_USER_SETTINGS,
-        ...payload?.userSettings,
-      });
-    }
-  };
-
-  const onBuffUpdate = (payload: {
-    players: Array<FullCharacterState>;
-    socketId: string;
-    playerIdsThatLeveled?: Array<string>;
-  }) => {
-    const { players, playerIdsThatLeveled } = payload;
-    const socketId = sessionStorage.getItem("socketId");
-    const player: FullCharacterState = players?.find((p) => p?.socketId === socketId);
-    /* Keep the hero updated */
-    setHero((prev) => ({ ...prev, ...player }));
-    /* Show a message if the hero leveled */
-    if (playerIdsThatLeveled?.includes(player?.id)) {
-      addMessage({ type: "success", message: `You are now level ${player?.stats?.level}!` });
-    }
-    /* Merge updates into player */
-    setPlayers((prev) => {
-      return prev.map((p: any) => {
-        const foundPlayer = players?.find((x) => p?.id === x?.id);
-        const newPlayerState = foundPlayer ? { ...p, ...foundPlayer } : p;
-        return newPlayerState as FullCharacterState;
-      });
-    });
-  };
-
-  const onPlayerUpdate = (player: FullCharacterState, args) => {
-    const currentPlayerSocketId = sessionStorage.getItem("socketId");
-    const isCurrentPlayer = currentPlayerSocketId === player.socketId;
-    setPlayers((prev) => {
-      return prev.map((p) => (p.id === player.id ? player : p));
-    });
-
-    if (isCurrentPlayer) {
-      setHero(player);
-      if (args?.didLevel) {
-        addMessage({ type: "success", message: `You are now level ${player.stats?.level}!` });
-      }
-    }
   };
 
   const onKeeperDataUpdate = (args) => {
@@ -286,29 +141,6 @@ export function App({ socket, peer, debug, game }) {
 
     const direction = getSpinDirection(hero, target);
     if (hero?.direction !== direction) socket.emit("changeDirection", { direction });
-  };
-
-  const onLootGrabbed = ({ player, loot }) => {
-    const socketId = sessionStorage.getItem("socketId");
-    // only affect the player that grabbed the loot
-    if (socketId === player?.socketId) {
-      if (loot?.grabMessage) {
-        const item = loot?.item;
-        addMessage({
-          type: "muted",
-          message: `Found <span style="font-weight: bold; color: ${theme.colors[item?.rarity]}">${
-            item?.name
-          }</span> x${item?.amount || 1}`,
-        } as Message);
-      }
-      /* Both quests and inventory only need to be updated when we pick an item */
-      setHero((prev) => ({
-        ...prev,
-        inventory: player?.inventory,
-        quests: player?.quests,
-        abilities: player?.abilities,
-      }));
-    }
   };
 
   const onUpdateHud = () => {
@@ -390,124 +222,6 @@ export function App({ socket, peer, debug, game }) {
     setIsLoaded(true);
   };
 
-  function onDoubleClickItem(e) {
-    const { item, location } = e?.detail ?? {};
-    const isConsumable = CONSUMABLES_BASES.includes(item?.base);
-
-    if (!["inventory", "abilities", "bag"].includes(location)) return;
-    /* If it is food we are trying to consume it */
-    if (isConsumable) {
-      window.dispatchEvent(
-        new CustomEvent("HERO_USE_ITEM", {
-          detail: { item, location },
-        }),
-      );
-    }
-    /* If it is a bag, we open it */
-    if (item?.base === "bag") {
-      toggleBagState(item?.id);
-    }
-  }
-
-  function onDropItem(e) {
-    const { target, location, bagId, slotKey, item } = e?.detail ?? {};
-    const { nodeName, dataset } = target ?? {};
-    if (hero?.state?.isDead) return;
-    /* Not moving an item anywhere. (Same slot) */
-    if (dataset?.location === location && dataset?.slotKey === slotKey && dataset.bagId === bagId) {
-      return;
-    }
-    /* Anywhere -> Ground */
-    if (nodeName == "CANVAS" && location !== "shop") {
-      if (item?.amount > 1) {
-        /* If more than 1, open up the drop modal */
-        return setDropItem({ ...item, location, bagId, action: "DROP" });
-      } else {
-        if (["set", "rare", "unique"]?.includes(item?.rarity)) {
-          return setDropItem({ ...item, location, bagId, action: "DROP_CONFIRM" });
-        }
-        if (["bag"]?.includes(item?.base)) {
-          /* Close open bag */
-          if (bagState?.find?.((id) => id === item?.id)) {
-            toggleBagState(item?.id);
-          }
-          return setDropItem({ ...item, location, bagId, action: "DROP_CONFIRM" });
-        }
-        return socket.emit("dropItem", { item, bagId, location });
-      }
-    }
-    /* Anywhere -> Shop */
-    if (target?.closest(".menu-keeper")) {
-      if (item?.amount > 1) {
-        /* If more than 1, open up the drop modal */
-        return setDropItem({ ...item, location, bagId, action: "SHOP_SELL_AMOUNT", slotKey });
-      } else {
-        if (["set", "rare", "unique"]?.includes(item?.rarity) || ["bag"]?.includes(item?.base)) {
-          /* Close open bag */
-          if (bagState?.find?.((id) => id === item?.id)) {
-            toggleBagState(item?.id);
-          }
-          return setDropItem({
-            ...item,
-            location,
-            action: "SHOP_SELL_CONFIRM",
-            slotKey,
-            bagId,
-          });
-        } else {
-          // so that we can play the sell sound
-          if (location !== "shop") {
-            window.dispatchEvent(
-              new CustomEvent("AUDIO_ITEM_SELL", {
-                detail: item,
-              }),
-            );
-          }
-          return socket.emit("moveItem", {
-            to: {
-              location: "shop",
-            },
-            from: { bagId, slot: slotKey, location },
-          });
-        }
-      }
-    }
-    /* Anywhere -> Anywhere */
-    if (dataset?.slotKey) {
-      if (location === "shop") {
-        if (item?.slot === "stackable") {
-          return setDropItem({
-            ...item,
-            location,
-            action: "SHOP_BUY_AMOUNT",
-            slotKey,
-            bagId,
-            dataset,
-          });
-        }
-      }
-      /* Dragging directly on to a bag */
-      if (item?.base !== "bag" && dataset?.base === "bag") {
-        return socket.emit("moveItem", {
-          to: {
-            bagId: dataset?.id, //if we have a bag
-            slot: null,
-            location: "bag",
-          },
-          from: { bagId, slot: slotKey, location },
-        });
-      }
-      return socket.emit("moveItem", {
-        to: {
-          bagId: dataset?.bagId, //if we have a bag
-          slot: dataset?.slotKey,
-          location: dataset?.location,
-        },
-        from: { bagId, slot: slotKey, location },
-      });
-    }
-  }
-
   function onUpdateUserSetting({ name, value }) {
     setUserSettings((prev) => ({
       ...DEFAULT_USER_SETTINGS,
@@ -521,54 +235,44 @@ export function App({ socket, peer, debug, game }) {
     peer.on("open", (peerId) => {
       socket.emit("peerInit", peerId);
     });
-    socket.on("connect", onConnect);
-    socket.on("disconnect", onDisconnect);
-    socket.on("heroInit", onHeroInit);
-    socket.on("buffUpdate", onBuffUpdate);
-    socket.on("playerUpdate", onPlayerUpdate);
-    socket.on("lootGrabbed", onLootGrabbed);
-    socket.on("keeperDataUpdate", onKeeperDataUpdate);
-    socket.on("message", addMessage);
-    socket.on("playerJoin", onPlayerJoin);
-    socket.on("remove", onPlayerLeave);
-    socket.on("partyInvite", onPartyInvite);
-    socket.on("partyUpdate", onPartyUpdate);
-    socket.on("updateUserSetting", onUpdateUserSetting);
-    window.addEventListener("HERO_NEAR_NPC", onNearNpc);
-    window.addEventListener("HERO_CHAT_NPC", onHeroChatNpc);
-    window.addEventListener("UPDATE_HUD", onUpdateHud);
-    window.addEventListener("UPDATE_ROOM_PLAYERS", onUpdateRoomPlayers);
-    window.addEventListener("HERO_RESPAWN", onUpdateHud);
-    window.addEventListener("LOAD_ERROR", onLoadError);
-    window.addEventListener("GAME_LOADED", onGameLoaded);
-    window.addEventListener("HERO_START_COOLDOWN", onStartCooldown);
-    window.addEventListener("HERO_DROP_ITEM", onDropItem);
-    window.addEventListener("HERO_DOUBLE_CLICK_ITEM", onDoubleClickItem);
+    const socketHandlers = {
+      connect: onConnect,
+      disconnect: onDisconnect,
+      heroInit: onHeroInit,
+      buffUpdate: onBuffUpdate,
+      playerUpdate: onPlayerUpdate,
+      lootGrabbed: onLootGrabbed,
+      keeperDataUpdate: onKeeperDataUpdate,
+      message: addMessage,
+      playerJoin: onPlayerJoin,
+      remove: onPlayerLeave,
+      partyInvite: onPartyInvite,
+      partyUpdate: onPartyUpdate,
+      updateUserSetting: onUpdateUserSetting,
+    };
+    const windowHandlers = {
+      HERO_NEAR_NPC: onNearNpc,
+      HERO_CHAT_NPC: onHeroChatNpc,
+      UPDATE_HUD: onUpdateHud,
+      UPDATE_ROOM_PLAYERS: onUpdateRoomPlayers,
+      HERO_RESPAWN: onUpdateHud,
+      LOAD_ERROR: onLoadError,
+      GAME_LOADED: onGameLoaded,
+      HERO_START_COOLDOWN: onStartCooldown,
+      HERO_DROP_ITEM: onDropItem,
+      HERO_DOUBLE_CLICK_ITEM: onDoubleClickItem,
+    };
+    const anySocket = socket as any;
+    for (const [name, handler] of Object.entries(socketHandlers)) anySocket.on(name, handler);
+    for (const [name, handler] of Object.entries(windowHandlers)) {
+      window.addEventListener(name, handler);
+    }
 
     return () => {
-      socket.off("connect", onConnect);
-      socket.off("disconnect", onDisconnect);
-      socket.off("heroInit", onHeroInit);
-      socket.off("buffUpdate", onBuffUpdate);
-      socket.off("playerUpdate", onPlayerUpdate);
-      socket.off("lootGrabbed", onLootGrabbed);
-      socket.off("keeperDataUpdate", onKeeperDataUpdate);
-      socket.off("message", addMessage);
-      socket.off("playerJoin", onPlayerJoin);
-      socket.off("partyInvite", onPartyInvite);
-      socket.off("partyUpdate", onPartyUpdate);
-      socket.off("remove", onPlayerLeave);
-      socket.off("updateUserSetting", onUpdateUserSetting);
-      window.removeEventListener("HERO_NEAR_NPC", onNearNpc);
-      window.removeEventListener("HERO_CHAT_NPC", onHeroChatNpc);
-      window.removeEventListener("UPDATE_HUD", onUpdateHud);
-      window.removeEventListener("UPDATE_ROOM_PLAYERS", onUpdateRoomPlayers);
-      window.removeEventListener("HERO_RESPAWN", onUpdateHud);
-      window.removeEventListener("LOAD_ERROR", onLoadError);
-      window.removeEventListener("GAME_LOADED", onGameLoaded);
-      window.removeEventListener("HERO_START_COOLDOWN", onStartCooldown);
-      window.removeEventListener("HERO_DROP_ITEM", onDropItem);
-      window.removeEventListener("HERO_DOUBLE_CLICK_ITEM", onDoubleClickItem);
+      for (const [name, handler] of Object.entries(socketHandlers)) anySocket.off(name, handler);
+      for (const [name, handler] of Object.entries(windowHandlers)) {
+        window.removeEventListener(name, handler);
+      }
     };
   }, []);
 
@@ -692,30 +396,3 @@ export function App({ socket, peer, debug, game }) {
     </ThemeUIProvider>
   );
 }
-
-const MenuGlobalKeys = () => {
-  const { userSettings, socket } = useAppContext();
-  return (
-    <>
-      <Box
-        sx={{
-          position: "fixed",
-          top: MINI_MAP_SIZE + 6,
-          right: MINI_MAP_SIZE - 12,
-          zIndex: "minimap",
-        }}
-      >
-        <KeyboardKey
-          name="M"
-          hidden={!userSettings?.showMinimap || isMobile}
-          onKeyUp={() =>
-            socket.emit("updateUserSetting", {
-              name: "showMinimap",
-              value: !userSettings.showMinimap,
-            })
-          }
-        />
-      </Box>
-    </>
-  );
-};

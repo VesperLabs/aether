@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useAppContext } from "@/client/hud/app/app";
+import { useAppContext } from "@/client/hud/app/context";
 import { BigPortrait } from "@/client/hud/status/big-portrait";
 import { Slot } from "@/client/hud/inventory/slot";
 import { Quest } from "@/client/hud/quests/quest";

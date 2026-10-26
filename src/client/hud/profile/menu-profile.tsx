@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { useAppContext } from "@/client/hud/app/app";
+import { useAppContext } from "@/client/hud/app/context";
 import { MenuButton } from "@/client/hud/menu/menu-button";
 import { BigPortrait } from "@/client/hud/status/big-portrait";
 import { Flex, Text, Input, Box, MENU_MAX_WIDTH, Menu, MenuHeader } from "@/ui";

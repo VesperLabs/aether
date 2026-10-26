@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAppContext } from "@/client/hud/app/app";
+import { useAppContext } from "@/client/hud/app/context";
 import { Slot } from "./slot";
 import { Modal, Flex, Input, Icon, Text, KeyboardButton } from "@/ui";
 

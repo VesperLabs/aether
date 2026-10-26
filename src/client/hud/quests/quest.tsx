@@ -1,6 +1,6 @@
 import { Box, Icon, BASE_SLOT_STYLE, SLOT_SIZE } from "@/ui";
 import { QuestTooltip } from "./quest-tooltip";
-import { useAppContext } from "@/client/hud/app/app";
+import { useAppContext } from "@/client/hud/app/context";
 import { nanoid } from "nanoid";
 import { isMobile } from "@/shared";
 import { useMemo } from "react";

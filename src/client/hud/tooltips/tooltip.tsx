@@ -1,5 +1,5 @@
 import { Tooltip as BaseTooltip, theme } from "@/ui";
-import { useAppContext } from "@/client/hud/app/app";
+import { useAppContext } from "@/client/hud/app/context";
 
 export const Tooltip = ({ style, ...props }: any) => {
   const { zoom = 1.25 } = useAppContext();

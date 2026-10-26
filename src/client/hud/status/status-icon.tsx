@@ -1,5 +1,5 @@
 import { Box, Icon, Flex, Text, Divider } from "@/ui";
-import { useAppContext } from "@/client/hud/app/app";
+import { useAppContext } from "@/client/hud/app/context";
 import { useEffect, useState } from "react";
 import { isMobile, msToHours } from "@/shared";
 import { Tooltip } from "@/client/hud/tooltips/tooltip";

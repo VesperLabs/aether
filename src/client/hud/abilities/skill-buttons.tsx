@@ -1,7 +1,7 @@
 import { Flex } from "@/ui";
 import { CooldownTimer } from "./cooldown-timer";
 import { SkillButton } from "./skill-button";
-import { useAppContext } from "@/client/hud/app/app";
+import { useAppContext } from "@/client/hud/app/context";
 import { memo } from "react";
 import { arePropsEqualWithKeys } from "@/shared";
 

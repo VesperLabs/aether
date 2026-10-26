@@ -1,5 +1,5 @@
 import { Modal, KeyboardButton } from "@/ui";
-import { useAppContext } from "@/client/hud/app/app";
+import { useAppContext } from "@/client/hud/app/context";
 
 export const ModalRespawn: React.FC = () => {
   const { socket, zoom, bottomOffset } = useAppContext();

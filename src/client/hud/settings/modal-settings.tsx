@@ -1,4 +1,4 @@
-import { useAppContext } from "@/client/hud/app/app";
+import { useAppContext } from "@/client/hud/app/context";
 import { Modal, KeyboardButton, Icon } from "@/ui";
 import { UserSettingsForm } from "./user-settings-form";
 

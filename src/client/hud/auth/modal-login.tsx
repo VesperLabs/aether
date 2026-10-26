@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Modal, Flex, Input, KeyboardButton, Icon, Text, Box } from "@/ui";
-import { useAppContext } from "@/client/hud/app/app";
+import { useAppContext } from "@/client/hud/app/context";
 import { CLASS_ICON_MAP } from "@/shared";
 import { Tooltip } from "@/client/hud/tooltips/tooltip";
 

@@ -1,4 +1,4 @@
-import { useAppContext } from "@/client/hud/app/app";
+import { useAppContext } from "@/client/hud/app/context";
 import { Modal, KeyboardButton, Icon, Box, Text } from "@/ui";
 import { startCase, toLower } from "lodash";
 

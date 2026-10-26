@@ -11,7 +11,7 @@ import { MenuQuests } from "@/client/hud/quests/menu-quests";
 import { MenuSocial } from "@/client/hud/social/menu-social";
 import { MenuStats } from "@/client/hud/status/menu-stats";
 import { MessageBox } from "@/client/hud/chat/message-box";
-import { useAppContext } from "@/client/hud/app/app";
+import { useAppContext } from "@/client/hud/app/context";
 import { MenuButton } from "./menu-button";
 import { SkillButtons } from "@/client/hud/abilities/skill-buttons";
 

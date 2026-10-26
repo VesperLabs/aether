@@ -1,5 +1,5 @@
 import { useEffect, useReducer, useRef, useState } from "react";
-import { useAppContext } from "@/client/hud/app/app";
+import { useAppContext } from "@/client/hud/app/context";
 import { MediaConnection } from "peerjs";
 import { streamHasUsableVideo, canUseVideoChat } from "./video-support";
 

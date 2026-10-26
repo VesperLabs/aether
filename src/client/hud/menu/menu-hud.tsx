@@ -1,6 +1,6 @@
 import { memo, useEffect, useRef, useState } from "react";
 import { Box, Flex, Icon, Text, Divider } from "@/ui";
-import { useAppContext } from "@/client/hud/app/app";
+import { useAppContext } from "@/client/hud/app/context";
 import { Portrait } from "@/client/hud/status/portrait";
 import { StatusIcon } from "@/client/hud/status/status-icon";
 import { arePropsEqualWithKeys, formatStats } from "@/shared";
