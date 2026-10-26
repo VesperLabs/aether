@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Flex, Text } from "@/ui";
 import { useAppContext } from "@/client/hud/app/context";
 import { motion } from "framer-motion";
+import type { ChatMessage } from "@/shared/network";
 
 type MessageProps = {
-  data: Message;
+  data: ChatMessage;
 };
 
 const MESSAGE_SHOW_TIME = 3000;
@@ -36,7 +37,6 @@ export const MessageBox = () => {
     >
       <Flex
         as={motion.div}
-        //@ts-ignore
         animate={{
           opacity: show ? 1 : 0,
         }}
@@ -52,7 +52,7 @@ export const MessageBox = () => {
           pointerEvents: tabChat ? "all" : "none",
         }}
       >
-        {messages?.map((message: Message, idx: integer) => {
+        {messages?.map((message, idx) => {
           return <Message key={idx} data={message} />;
         })}
       </Flex>
@@ -60,7 +60,7 @@ export const MessageBox = () => {
   );
 };
 
-const getFrom = (data) => {
+const getFrom = (data: ChatMessage | undefined) => {
   if (data?.type === "party") {
     return "Party:";
   }
@@ -71,7 +71,7 @@ const getFrom = (data) => {
 };
 
 const Message: React.FC<MessageProps> = ({ data }) => {
-  const { message, type } = data ?? {};
+  const { message, type } = data;
   const colorsMap: Record<string, string> = {
     party: "rare",
     chat: "white",
@@ -82,7 +82,7 @@ const Message: React.FC<MessageProps> = ({ data }) => {
   };
 
   const color: string = colorsMap?.[type] || "white";
-  const isOld = Date.now() - data?.timestamp > 5000;
+  const isOld = Date.now() - (data?.timestamp as number) > 5000;
   const from = getFrom(data);
   return (
     <Flex>

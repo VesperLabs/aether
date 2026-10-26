@@ -94,3 +94,10 @@ Found during the migration and left alone so behaviour stayed identical. Fix aft
 - [ ] **Movement:** `Npc.waitAtSpawn` and the NPC attack/cast windups use bare `setTimeout`/`sleep`, so they keep running after the world is stopped and can't be driven by a test tick
 - [ ] **Server:** `shouldPause` logs "Game empty. Pausing." once at boot even though nothing was running
 - [ ] **Types:** `rules/character/character.ts` types `equipment`, `abilities` and `buffs` as `any` because server entities still use the global `Item` and `Buff` interfaces. Narrow them once those are replaced by content types.
+- [ ] **Client:** `views/weapon-sprite.ts` calls `setTintFill(color)`, which Phaser 4 removed (it logs an error and does nothing), so the elemental weapon borders never get a colour. Use `setTint(color).setTintMode(Phaser.TintModes.FILL)`.
+- [ ] **Client:** `views/player-layers.ts` passes `player.bubbleMessage` to `Bubble`; that property doesn't exist (it is `player.state.bubbleMessage`), so the bubble starts empty.
+- [ ] **Client:** `input/hero-events.ts` `HERO_USE_ITEM` calls `updateSpellCooldown(hero, e.detail)` with the whole `{ item, location }` detail instead of an ability slot.
+- [ ] **Client:** `net/scene-socket.ts` handlers called `getPlayer`/`getNpc` results without checking for undefined, so a message for an unknown entity threw. Now guarded in some handlers (skip instead of throw).
+- [ ] **Client:** `scenes/boot-scene.ts` passes `start: ""` to `generateFrameNames` (typed as a number) and `repeat: false` was changed to `0`.
+- [ ] **Client:** the Phaser entities' `destroy(true)` calls pass an argument that the overridden `destroy()` ignores.
+

@@ -11,9 +11,9 @@ export const MenuKeeper = () => {
   const [tab, setTab] = useState("greet");
   const { dialogues, shop, quests, home } = keeper?.keeperData ?? {};
 
-  const hasQuests = quests?.length > 0;
-  const hasShop = shop?.length > 0;
-  const hasGreet = dialogues?.greet?.length > 0;
+  const hasQuests = (quests?.length as number) > 0;
+  const hasShop = (shop?.length as number) > 0;
+  const hasGreet = (dialogues?.greet?.length as number) > 0;
   const hasHome = !!home;
 
   const tabShop = tab === "shop";
@@ -66,7 +66,7 @@ export const MenuKeeper = () => {
             iconName="pen"
             onClick={() => {
               setTab("home");
-              setHomeModal(keeper);
+              setHomeModal(keeper ?? null);
             }}
             isActive={tabHome}
           />
@@ -109,7 +109,7 @@ export const MenuKeeper = () => {
                 <Text
                   as="span"
                   dangerouslySetInnerHTML={{
-                    __html: dialogues?.[tab],
+                    __html: dialogues?.[tab as keyof typeof dialogues] as string,
                   }}
                 />
               </Text>
@@ -131,7 +131,7 @@ export const MenuKeeper = () => {
               <Slot
                 key={idx}
                 location="shop"
-                slotKey={idx}
+                slotKey={`${idx}`}
                 icon="./assets/icons/chest.png"
                 item={item}
                 player={hero}
@@ -148,7 +148,7 @@ export const MenuKeeper = () => {
             justifyContent: "end",
           }}
         >
-          {quests?.map((quest: Quest, idx: string) => {
+          {quests?.map((quest, idx) => {
             return <Quest key={idx} quest={quest} parent="keeper" />;
           })}
         </Flex>

@@ -37,7 +37,7 @@ import { MenuGlobalKeys } from "./menu-global-keys";
 interface AppProps {
   socket: ClientGameSocket;
   peer: Peer;
-  debug: boolean;
+  debug: string | undefined;
   game: Phaser.Game;
 }
 

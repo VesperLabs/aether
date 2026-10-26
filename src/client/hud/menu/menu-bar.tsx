@@ -187,7 +187,7 @@ export const MenuBar = () => {
             hidden={true}
             onKeyUp={() => {
               if (tabChat) return setTabChat(false);
-              if (dropItem) return setDropItem(false);
+              if (dropItem) return setDropItem(null);
               if (homeModal) return setHomeModal(null);
               if (tabKeeper) return setTabKeeper(false);
               if (tabSocial) return setTabSocial(false);

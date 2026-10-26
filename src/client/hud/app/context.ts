@@ -118,7 +118,7 @@ interface AppContextValue {
   party: PartyMessage | null | undefined;
   socket: ClientGameSocket;
   peer: Peer;
-  debug: boolean;
+  debug: string | undefined;
   game: Phaser.Game;
   /** The HUD scale, as a number in a string (see `getHudZoom`). */
   zoom: string;

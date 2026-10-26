@@ -1,15 +1,19 @@
-import { Fragment, memo } from "react";
+import { Fragment, memo, type ComponentProps, type ElementType, type ReactNode } from "react";
+import type { PartyMessage } from "@/shared/network";
+import type { HudCharacter } from "@/client/hud/app/context";
 import { useAppContext } from "@/client/hud/app/context";
 import { Portrait } from "@/client/hud/status/portrait";
-import { ThemeUIStyleObject } from "theme-ui";
+import type { ThemeUIStyleObject } from "theme-ui";
 import { Flex, Text, Grid, Icon, Button, Box, MENU_MAX_WIDTH, Menu, MenuHeader } from "@/ui";
 import { CLASS_ICON_MAP } from "@/shared/content";
 import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
 
-const ActionButton = ({ player }) => {
+type SocialPlayer = Partial<HudCharacter> | undefined;
+
+const ActionButton = ({ player }: { player: SocialPlayer }) => {
   const { partyInvites, socket } = useAppContext();
   const invitation = partyInvites?.find(
-    (invite: PartyInvite) => invite?.inviter?.id === player?.id,
+    (invite) => invite?.inviter?.id === player?.id,
   );
   if (invitation) {
     return (
@@ -31,7 +35,7 @@ const ActionButton = ({ player }) => {
   );
 };
 
-const PartyActionButton = ({ player }) => {
+const PartyActionButton = ({ player }: { player: SocialPlayer }) => {
   const { hero, socket } = useAppContext();
 
   if (hero?.id === player?.id) {
@@ -44,7 +48,7 @@ const PartyActionButton = ({ player }) => {
   return;
 };
 
-const SocialGrid = (props) => {
+const SocialGrid = (props: ComponentProps<typeof Grid>) => {
   return (
     <Grid
       sx={{
@@ -65,9 +69,17 @@ const SocialGrid = (props) => {
   );
 };
 
+interface MenuSocialProps {
+  players: HudCharacter[];
+  hero: HudCharacter;
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
+  party: PartyMessage | null | undefined;
+}
+
 export const MenuSocial = memo(
-  ({ players, hero, isOpen, setIsOpen, party }: any) => {
-    const partyIds = party?.members?.map((p) => p?.id);
+  ({ players, hero, isOpen, setIsOpen, party }: MenuSocialProps) => {
+    const partyIds = party?.members?.map((p: SocialPlayer) => p?.id);
     const otherPlayers = players?.filter((p) => !partyIds?.includes(p?.id) && hero?.id !== p?.id);
     const hasOtherPlayers = otherPlayers?.length > 0;
     const hasParty = partyIds?.length > 0;
@@ -103,7 +115,7 @@ export const MenuSocial = memo(
                   Party
                 </MenuHeader>
                 <SocialGrid>
-                  {party?.members?.map((player) => {
+                  {party?.members?.map((player: SocialPlayer) => {
                     return (
                       <SocialPlayerRow partyPlayer={player} key={player?.id}>
                         <PartyActionButton player={player} />
@@ -123,14 +135,14 @@ export const MenuSocial = memo(
 
 const COLUMN_STYLE: ThemeUIStyleObject = { textTransform: "capitalize", whiteSpace: "nowrap" };
 
-const SocialPlayerRow = (props: { partyPlayer: any; children: any }) => {
+const SocialPlayerRow = (props: { partyPlayer: SocialPlayer; children: ReactNode }) => {
   const { partyPlayer, children } = props;
   const { players, party } = useAppContext();
   const player = players?.find((p) => p?.id === partyPlayer?.id);
-  const partyLeader = party?.members?.find((p) => p?.isLeader);
+  const partyLeader = party?.members?.find((p: { isLeader?: boolean }) => p?.isLeader);
   const isLeader = partyLeader?.id === partyPlayer?.id;
   const classString = player ? `Lv. ${player?.stats?.level} ${player?.charClass}` : null;
-  const playerIcon = player ? CLASS_ICON_MAP?.[player?.charClass?.toUpperCase()] : null;
+  const playerIcon = player ? CLASS_ICON_MAP?.[player?.charClass?.toUpperCase() as keyof typeof CLASS_ICON_MAP] : null;
   return (
     <Fragment key={partyPlayer?.id}>
       <MemoizedColumn player={player} as={Box} sx={{ position: "relative" }}>
@@ -158,11 +170,12 @@ const SocialPlayerRow = (props: { partyPlayer: any; children: any }) => {
 };
 
 const MemoizedColumn = memo(
-  (props: any) => {
+  (props: { as?: ElementType; player?: SocialPlayer } & Record<string, unknown>) => {
     const { as: As = Text } = props;
     return <As sx={COLUMN_STYLE} {...props}></As>;
   },
   (prev, next) => {
     if (prev?.player && !next?.player) return true;
+    return false;
   },
 );

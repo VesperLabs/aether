@@ -7,7 +7,7 @@ export const ModalSettings: React.FC = () => {
 
   return (
     <>
-      <Modal.Overlay sx={{ backgroundColor: "shadow.50" }} onClick={() => setTabSettings(null)} />
+      <Modal.Overlay sx={{ backgroundColor: "shadow.50" }} onClick={() => setTabSettings(false)} />
       <Modal zoom={zoom} bottomOffset={bottomOffset}>
         <Modal.Header>
           <Icon icon={`./assets/icons/pen.png`} size={24} />
@@ -19,7 +19,7 @@ export const ModalSettings: React.FC = () => {
         <Modal.Footer>
           <KeyboardButton
             sx={{ flex: 1 }}
-            onClick={() => setTabSettings(null)}
+            onClick={() => setTabSettings(false)}
             keyboardKey="ESCAPE"
           >
             Close

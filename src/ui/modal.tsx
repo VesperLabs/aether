@@ -2,7 +2,7 @@ import type { ComponentProps } from "react";
 import { Box, Flex } from ".";
 
 type FlexProps = ComponentProps<typeof Flex>;
-type ModalProps = FlexProps & { zoom?: number; bottomOffset?: number };
+type ModalProps = FlexProps & { zoom?: number | string; bottomOffset?: number };
 
 const ModalRoot = ({ sx, zoom = 1, bottomOffset = 0, ...props }: ModalProps) => {
   return (
@@ -18,7 +18,7 @@ const ModalRoot = ({ sx, zoom = 1, bottomOffset = 0, ...props }: ModalProps) => 
         top: `50%`,
         marginTop: -bottomOffset / 2,
         pointerEvents: "all",
-        transform: `scale(${Math.max(1, zoom)}) translate(-50%, -50%)`,
+        transform: `scale(${Math.max(1, Number(zoom))}) translate(-50%, -50%)`,
         transformOrigin: "center center",
         cursor: "default",
         ...sx,

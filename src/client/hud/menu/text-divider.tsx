@@ -1,7 +1,9 @@
+import type { ReactNode } from "react";
+import type { ThemeUIStyleObject } from "theme-ui";
 import { Text, theme } from "@/ui";
 
 // Utility function to convert hex color to RGBA
-const hexToRGBA = (hex, alpha = 1) => {
+const hexToRGBA = (hex: string, alpha = 1) => {
   let r = parseInt(hex.slice(1, 3), 16),
     g = parseInt(hex.slice(3, 5), 16),
     b = parseInt(hex.slice(5, 7), 16);
@@ -22,7 +24,17 @@ const resolveThemeColor = (path: string): string | undefined => {
   return node as string | undefined;
 };
 
-export const TextDivider = ({ children, sx, color = "gray.500", alpha = 0.5 }: any) => {
+export const TextDivider = ({
+  children,
+  sx,
+  color = "gray.500",
+  alpha = 0.5,
+}: {
+  children?: ReactNode;
+  sx?: ThemeUIStyleObject;
+  color?: string;
+  alpha?: number;
+}) => {
   const resolvedColor = resolveThemeColor(color) ?? color;
   const colorWithAlpha = hexToRGBA(resolvedColor, alpha);
 
