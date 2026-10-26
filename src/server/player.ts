@@ -1,5 +1,7 @@
 import { ServerCharacter } from "./character";
-import { calculateExpValue, cloneObject, getRoomState, PLAYER_DEFAULT_SPAWN } from "./utils";
+import { cloneObject, getRoomState, PLAYER_DEFAULT_SPAWN } from "./utils";
+import { expForMobKill } from "@/shared/rules/stats";
+import type { MobKilledEvent } from "@/shared/rules/events";
 import { MAX_INVENTORY_ITEMS } from "../shared";
 
 /* Server level Player object */
@@ -356,7 +358,6 @@ export class Player extends ServerCharacter implements ServerPlayer {
 
     let hitList = [];
     let npcKills = [];
-    let totalExpGain = 0;
     let playerIdsToUpdate = [];
     let playerIdsThatLeveled = [];
 
@@ -371,7 +372,6 @@ export class Player extends ServerCharacter implements ServerPlayer {
 
       if (newHits.find((hit) => hit.type === "death")) {
         npc.dropLoot(this.stats.magicFind);
-        totalExpGain += calculateExpValue(this, npc);
         npcKills.push(npc);
       }
 
@@ -401,27 +401,43 @@ export class Player extends ServerCharacter implements ServerPlayer {
       const partyMembers = scene.partyManager.getPartyById(this?.partyId)?.members || [
         { id: this?.id, roomName: this?.roomName },
       ];
-      // party members in same room will gain exp
-      const partyMembersInRoom = partyMembers?.filter((m) => m?.roomName === this?.roomName);
-      for (const m of partyMembersInRoom) {
-        const member: ServerPlayer = scene?.players?.[m?.id];
-        if (!member) continue;
-        const didLevel = member.assignExp(totalExpGain);
-        /* Add the npc to the players kill list */
-        for (const killedNpc of npcKills) {
-          member.addNpcKill(killedNpc?.name);
+      // party members in same room share the kill
+      const recipients: ServerPlayer[] = partyMembers
+        ?.filter((m) => m?.roomName === this?.roomName)
+        .map((m) => scene?.players?.[m?.id])
+        .filter(Boolean);
+      const levelsBefore = recipients.map((member) => member.baseStats.level);
+      // Read once so a level-up part way through the kills doesn't change what later kills are worth.
+      const killerLevel = this.stats.level;
+      const kills: MobKilledEvent[] = npcKills.map((npc) => ({
+        killerId: this.id,
+        killerLevel,
+        killerMagicFind: this.stats.magicFind,
+        partyId: this.partyId,
+        recipientIds: recipients.map((member) => member.id),
+        mobId: npc.id,
+        mobName: npc.name,
+        mobLevel: npc.stats.level,
+        roomName: this.roomName,
+        x: npc.x,
+        y: npc.y,
+      }));
+      /* Stats (experience) reacts to this and awards exp and kill credit to the recipients. */
+      for (const kill of kills) scene.gameEvents.emit("mobKilled", kill);
+      recipients.forEach((member, i) => {
+        for (const kill of kills) {
           hitList.push({
             type: "exp",
-            amount: calculateExpValue(this, killedNpc),
-            from: killedNpc.id,
+            amount: expForMobKill(kill),
+            from: kill.mobId,
             to: member.id,
           });
         }
-        playerIdsToUpdate.push(member?.id);
-        if (didLevel) {
-          playerIdsThatLeveled.push(member?.id);
+        playerIdsToUpdate.push(member.id);
+        if (member.baseStats.level > levelsBefore[i]) {
+          playerIdsThatLeveled.push(member.id);
         }
-      }
+      });
     }
 
     if (playerIdsToUpdate.length > 0) {

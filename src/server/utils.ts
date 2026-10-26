@@ -1,11 +1,9 @@
 //@ts-nocheck
 import { ItemBuilder } from "@/shared/content";
+import { PLAYER_BASE_EXP, getBaseStats } from "@/shared/rules/stats";
 import { decodeWireDirection, encodeWireDirection, pickTickStateLite } from "@/shared/network/sync";
 
-const PLAYER_BASE_ATTACK_DELAY = 100;
-
 const SHOP_INFLATION = 4;
-const PLAYER_BASE_EXP = 50; // Define the base experience for level 1
 const QUEST_GOLD_MULTIPLIER = Math.floor(PLAYER_BASE_EXP * 0.1);
 const QUEST_EXP_MULTIPLIER = Math.floor(PLAYER_BASE_EXP / 2);
 
@@ -223,77 +221,6 @@ function checkSlotsMatch(s1, s2) {
   return false;
 }
 
-// exp gain from mobs is based on the players
-// level and difference between player and mob level with a
-// cap at 5 level difference.
-function calculateExpValue(player, mob) {
-  const playerLevel = parseInt(player?.stats?.level) || 0;
-  const mobLevel = parseInt(mob?.stats?.level) || 0;
-
-  const playerGreaterBy = Math.max(0, playerLevel - mobLevel);
-
-  // Exp from a mob is capped at the mobs level for players that are lower level
-  // than the mob.
-  const levelMultiplier = mobLevel > playerLevel ? mobLevel : playerLevel;
-
-  if (playerGreaterBy > 5) return 0; // Mob too wimpy. no exp.
-
-  return Math.max(3, Math.floor(levelMultiplier * 0.5));
-}
-
-// how much exp required for next level each time player levels up
-function calculateNextMaxExp(level) {
-  const baseExp = PLAYER_BASE_EXP;
-  let totalExp = baseExp;
-
-  for (let i = 2; i <= level; i++) {
-    totalExp += baseExp + baseExp * 0.1 * (i - 1);
-  }
-
-  return Math.floor(totalExp);
-}
-
-function mergeAndAddValues(obj1 = {}, obj2 = {}) {
-  const result = {};
-
-  for (const key in obj1) {
-    if (obj1.hasOwnProperty(key) && obj2.hasOwnProperty(key)) {
-      result[key] = obj1[key] + obj2[key];
-    } else {
-      result[key] = obj1[key];
-    }
-  }
-
-  for (const key in obj2) {
-    if (!obj1.hasOwnProperty(key)) {
-      result[key] = obj2[key];
-    }
-  }
-
-  return result;
-}
-
-function addValuesToExistingKeys(
-  obj1: Record<string, number>,
-  obj2: Record<string, number>,
-): Record<string, number> {
-  const result: Record<string, number> = {};
-
-  // Copy obj1 into the result object
-  Object.keys(obj1).forEach((key) => {
-    result[key] = obj1[key];
-  });
-
-  // Add the values from obj2 to the result object
-  Object.keys(result).forEach((key) => {
-    if (obj2.hasOwnProperty(key)) {
-      result[key] += obj2[key];
-    }
-  });
-
-  return result;
-}
-
 function useGetBaseCharacterDefaults({ level = 1, charClass }) {
   const isMage = charClass === "mage";
   const isWarrior = charClass === "warrior";
@@ -314,40 +241,10 @@ function useGetBaseCharacterDefaults({ level = 1, charClass }) {
     if (isRogue) return ItemBuilder.buildItem("spell", "common", "stealth");
   };
 
-  const startStat = 2 * level + 3;
-
   return {
     startingWeapon: getStartingWeapon(),
     startingSpell: getStartingSpell(),
-    baseStats: {
-      level,
-      walkSpeed: 100,
-      accuracy: 0,
-      attackDelay: PLAYER_BASE_ATTACK_DELAY,
-      spellPower: 0,
-      castDelay: 1000,
-      armorPierce: 0,
-      dexterity: isRogue ? startStat : level,
-      strength: isWarrior ? startStat : level,
-      vitality: isCleric ? startStat : level,
-      intelligence: isMage ? startStat : level,
-      defense: 0,
-      blockChance: 0,
-      critChance: 0,
-      critMultiplier: 1.5,
-      dodgeChance: 0,
-      maxDamage: 0,
-      minDamage: 0,
-      magicFind: 1,
-      regenHp: 1,
-      regenMp: 1,
-      regenSp: 1,
-      maxHp: 10,
-      maxMp: 10,
-      maxSp: 20,
-      maxExp: PLAYER_BASE_EXP,
-      ...(isWarrior ? { fireResistance: 10 } : {}),
-    },
+    baseStats: getBaseStats({ level, charClass }),
     ...PLAYER_DEFAULT_SPAWN,
   };
 }
@@ -388,208 +285,6 @@ function filterProperties(item) {
   return filteredItem;
 }
 
-function calculateStats(player, shouldHeal = false) {
-  const { equipment = {}, abilities = {}, buffs = [] } = player;
-  // disregard items that are not actively equipped
-  const allSlots = Object.keys({ ...abilities, ...equipment }).filter((slot) =>
-    player.activeItemSlots?.includes(slot),
-  );
-  let totalPercentStats = {};
-  let ns = cloneObject(player.baseStats);
-  let setList = {};
-  let activeSets = [];
-
-  player.state = player.state ?? {};
-  player.stats = Object.keys(player?.stats)?.length
-    ? player.stats
-    : { hp: 0, mp: 0, sp: 0, exp: 0 };
-
-  if (!ns?.triggers) {
-    ns.triggers = [];
-  }
-
-  /* Get stats from equipped abilities and items */
-  allSlots.forEach((eKey) => {
-    let item = abilities[eKey] || equipment[eKey];
-    if (item) {
-      if (item.setName) {
-        if (setList[item.setName]) {
-          let amountThisItem = 0;
-          allSlots.forEach((aKey) => {
-            let aItem = abilities[aKey] || equipment[aKey];
-            if (aItem && aItem.key == item.key) {
-              amountThisItem++;
-            }
-          });
-          if (amountThisItem == 1) {
-            setList[item.setName]++;
-          }
-        } else {
-          setList[item.setName] = 1;
-        }
-      }
-      if (item.percentStats) {
-        Object.keys(item.percentStats).forEach((key) => {
-          if (!totalPercentStats[key]) {
-            totalPercentStats[key] = item.percentStats[key];
-          } else {
-            totalPercentStats[key] += item.percentStats[key];
-          }
-        });
-      }
-      if (item.stats) {
-        Object.keys(item.stats).forEach((key) => {
-          const itemStat = item.stats[key];
-          if (!ns[key]) {
-            ns[key] = 0;
-          }
-          if (itemStat) {
-            ns[key] += itemStat;
-          }
-        });
-      }
-      if (item?.triggers) {
-        item?.triggers?.forEach((trigger) => {
-          ns.triggers.push(trigger);
-        });
-      }
-    }
-  });
-
-  /* if more than one set item is equipped, we might have a set bonus */
-  Object.keys(setList).forEach((key) => {
-    if (ItemBuilder.getSetInfo(key)) {
-      const setInfo = ItemBuilder.getSetInfo(key);
-      if (setList[key] >= setInfo.pieces) {
-        activeSets.push(key);
-        //add percent bonus to totals
-        if (setInfo.percentStats) {
-          Object.keys(setInfo.percentStats).forEach((key) => {
-            if (!totalPercentStats[key]) {
-              totalPercentStats[key] = setInfo.percentStats[key];
-            } else {
-              totalPercentStats[key] += setInfo.percentStats[key];
-            }
-          });
-        }
-        if (setInfo.stats) {
-          Object.keys(setInfo.stats).forEach((key) => {
-            let itemStat = setInfo.stats[key];
-            if (itemStat) {
-              ns[key] += itemStat;
-            }
-          });
-        }
-        if (setInfo.triggers) {
-          setInfo?.triggers?.forEach((trigger: Trigger) => {
-            ns.triggers.push(trigger);
-          });
-        }
-      }
-    }
-  });
-
-  buffs.forEach((buff: Buff) => {
-    if (buff.stats) {
-      Object.keys(buff.stats).forEach((key) => {
-        const amount = buff.stats[key];
-        if (!ns[key]) {
-          ns[key] = 0;
-        }
-        if (amount) {
-          ns[key] += amount;
-        }
-      });
-    }
-    if (buff.percentStats) {
-      Object.keys(buff.percentStats).forEach((key) => {
-        const amount = buff.percentStats[key];
-        if (!totalPercentStats[key]) {
-          totalPercentStats[key] = 0;
-        }
-        if (amount) {
-          totalPercentStats[key] += amount;
-        }
-      });
-    }
-  });
-
-  /* The base values get calculated here for percentStats */
-  Object.keys(totalPercentStats).forEach((key) => {
-    let percentIncrease = Math.floor(ns[key] * (totalPercentStats[key] / 100));
-    if (
-      // do we need these?
-      key == "vitality" ||
-      key == "dexterity" ||
-      key == "strength" ||
-      key == "intelligence"
-    )
-      ns[key] += percentIncrease;
-  });
-
-  ns.maxHp = ns.maxHp + ns.vitality * 3;
-  ns.maxMp = ns.maxMp + ns.intelligence * 3;
-  ns.maxSp = ns.maxSp + Math.floor(ns.vitality * 0.03);
-  ns.magicFind = ns.magicFind || 0;
-  ns.maxExp = ns.maxExp || 0;
-  ns.exp = player.stats.exp || 0;
-  ns.fireResistance = ns.fireResistance || 0;
-  ns.lightResistance = ns.lightResistance || 0;
-  ns.waterResistance = ns.waterResistance || 0;
-  ns.earthResistance = ns.earthResistance || 0;
-  ns.attackDelay = ns.attackDelay + ns.dexterity * 0.03 || 0;
-  ns.spellPower = Math.floor((ns.spellPower || 0) + ns.intelligence * 0.25);
-  ns.attackDelay = 1 - Math.floor(ns.dexterity * 0.5) + ns.attackDelay;
-  ns.castDelay = ns.castDelay || 1000;
-  ns.castDelay = 1 - Math.floor(ns.intelligence * 0.5) + ns.castDelay;
-  ns.regenHp = (ns.regenHp || 1) + Math.floor(ns.vitality / 20);
-  ns.regenMp = (ns.regenMp || 1) + Math.floor(ns.intelligence / 20);
-  ns.regenSp = ns.regenSp || 1;
-  ns.armorPierce = ns.armorPierce + ns.dexterity * 0.75 + ns.strength * 0.5;
-  ns.defense = ns.defense + ns.strength;
-  ns.critChance = ns.critChance + ns.dexterity * 0.05;
-  ns.walkSpeed = ns.walkSpeed + ns.dexterity * 0.03;
-  ns.dodgeChance = ns.dodgeChance + ns.dexterity * 0.05;
-  ns.hpSteal = ns.hpSteal || 0;
-  ns.mpSteal = ns.mpSteal || 0;
-  //ns.blockChance = ns.blockChance + (0 * (ns.dexterity - 15)) / (ns.level * 2);
-
-  // Capped values
-  if (ns.walkSpeed < 15) ns.walkSpeed = 15;
-  if (ns.walkSpeed > 600) ns.walkSpeed = 600;
-  if (ns.critChance > 100) ns.critChance = 100;
-  if (ns.dodgeChance > 75) ns.dodgeChance = 75;
-  if (ns.blockChance > 75) ns.blockChance = 75;
-  if (ns.castDelay < 200) ns.castDelay = 200;
-  if (ns.attackDelay < 200) ns.attackDelay = 200;
-
-  const damageCalc = ((ns.strength * 2 + ns.dexterity / 2) * ns.level) / 100;
-  const damageModifier = Math.floor(1 + damageCalc);
-  ns.minDamage = ns.minDamage + Math.floor(damageCalc);
-  ns.maxDamage = Math.max(ns.maxDamage + damageModifier, ns.minDamage);
-
-  /* Any percentStat value that needs to be pre-calculated goes here  */
-  Object.keys(totalPercentStats).forEach((key) => {
-    let percentIncrease = Math.floor(ns[key] * (totalPercentStats[key] / 100));
-    if (key == "maxHp" || key == "maxMp" || key == "defense" || key == "walkSpeed")
-      ns[key] += percentIncrease;
-  });
-
-  // Moving values
-  if (player.stats.hp <= 0) ns.hp = shouldHeal ? ns.maxHp : 0;
-  else if (player.stats.hp > ns.maxHp) ns.hp = ns.maxHp;
-  else ns.hp = player.stats.hp;
-  if (player.stats.mp <= 0) ns.mp = shouldHeal ? ns.maxMp : 0;
-  else if (player.stats.mp > ns.maxMp) ns.mp = ns.maxMp;
-  else ns.mp = player.stats.mp;
-  if (player.stats.sp <= 0) ns.sp = shouldHeal ? ns.maxSp : 0;
-  else if (player.stats.sp > ns.maxSp) ns.sp = ns.maxSp;
-  else ns.sp = player.stats.sp;
-  player.stats = ns;
-
-  player.state.activeSets = activeSets;
-}
-
 function sleep(delay) {
   return new Promise((resolve) => setTimeout(resolve, delay));
 }
@@ -610,16 +305,10 @@ export {
   getBuffRoomState,
   getBuffCharacterState,
   SHOP_INFLATION,
-  PLAYER_BASE_EXP,
   PLAYER_DEFAULT_SPAWN,
   QUEST_GOLD_MULTIPLIER,
   QUEST_EXP_MULTIPLIER,
-  calculateNextMaxExp,
   useGetBaseCharacterDefaults,
-  mergeAndAddValues,
   filterNullEmpty,
-  addValuesToExistingKeys,
-  calculateStats,
-  calculateExpValue,
   sleep,
 };

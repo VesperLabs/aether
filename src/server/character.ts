@@ -1,13 +1,12 @@
 import { Character } from "@/shared/character";
 import { ItemBuilder, buffList } from "@/shared/content";
+import { randomNumber, cloneObject } from "./utils";
+import { applyCalculatedStats } from "./character-stats";
 import {
-  randomNumber,
   calculateNextMaxExp,
   addValuesToExistingKeys,
-  calculateStats,
   mergeAndAddValues,
-  cloneObject,
-} from "./utils";
+} from "@/shared/rules/stats";
 
 /** Part of spell power applied to elemental spell min/max (full power was melting warriors in PvP). */
 const SPELL_POWER_ELEMENTAL_FACTOR = 0.5;
@@ -236,7 +235,7 @@ export class ServerCharacter extends Character {
   }
   calculateStats(shouldHeal = false) {
     this.calculateActiveItemSlots();
-    calculateStats(this, shouldHeal);
+    applyCalculatedStats(this, shouldHeal);
     //update server data on what hands we have items in
     this.visibleEquipment = this.getVisibleEquipment();
   }
