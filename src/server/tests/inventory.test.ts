@@ -3,7 +3,6 @@ import http from "node:http";
 import type { AddressInfo } from "node:net";
 import { io as connect, type Socket } from "socket.io-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import "../phaser";
 import { ItemBuilder } from "@/shared/content";
 import { initFakeDatabase } from "../persistence";
 import { GameServer } from "../game-server";
@@ -36,9 +35,9 @@ async function login(charClass = "warrior") {
   const heroInit = once(socket, "heroInit");
   socket.emit("demoLogin", { charClass });
   await heroInit;
-  const scene = (gameServer.game.scene as Anything).getScene("ServerScene");
-  const player = scene.players[socket.id as string];
-  return { socket, scene, player };
+  const world = gameServer.world as Anything;
+  const player = world.players[socket.id as string];
+  return { socket, world, player };
 }
 
 const build = (...args: (string | number)[]) => ItemBuilder.buildItem(...(args as string[]))!;
@@ -58,8 +57,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   sockets.forEach((s) => s.disconnect());
-  gameServer?.game?.destroy(true);
-  gameServer?.io?.close();
+  gameServer?.close();
 });
 
 describe("inventory over the socket", () => {
@@ -130,7 +128,7 @@ describe("inventory over the socket", () => {
   });
 
   it("does not put a bag inside a bag", async () => {
-    const { socket, player, scene } = await login("warrior");
+    const { socket, player, world } = await login("warrior");
     const bag = build("bag", "rare", "smallPouch");
     const other = build("bag", "rare", "largePouch");
     bag.items = [null, null];
@@ -145,7 +143,7 @@ describe("inventory over the socket", () => {
       type: "error",
       message: "Cannot put bags in bags.",
     });
-    expect(scene.players[socket.id as string].inventory[1].id).toBe(other.id);
+    expect(world.players[socket.id as string].inventory[1].id).toBe(other.id);
   });
 
   it("answers dropping on a full bag with an error", async () => {
@@ -162,16 +160,16 @@ describe("inventory over the socket", () => {
   });
 
   it("drops part of a stack and spawns it as loot", async () => {
-    const { socket, player, scene } = await login("warrior");
+    const { socket, player, world } = await login("warrior");
     player.inventory = [build("stackable", "common", "smallHpPotion", 5)];
-    const before = Object.keys(scene.loots).length;
+    const before = Object.keys(world.loots).length;
     const update = await emitAndWait(socket, "dropItem", {
       location: "inventory",
       item: { id: "smallHpPotion" },
       amount: 2,
     });
     expect(update.inventory[0].amount).toBe(3);
-    const loots = Object.values(scene.loots) as Anything[];
+    const loots = Object.values(world.loots) as Anything[];
     expect(loots.length).toBe(before + 1);
     expect(loots.some((l) => l.item?.id === "smallHpPotion" && l.item?.amount === 2)).toBe(true);
   });
@@ -231,21 +229,21 @@ describe("inventory over the socket", () => {
 });
 
 describe("shop over the socket", () => {
-  function stockShop(scene: Anything, player: Anything, items: Anything[]) {
+  function stockShop(world: Anything, player: Anything, items: Anything[]) {
     const shop = items.map((item) => ({ item: { ...item, cost: item.cost * 4 }, stock: 10 }));
-    scene.npcs["test-shop"] = { keeperData: { shop } };
+    world.npcs["test-shop"] = { keeperData: { shop } };
     player.state.targetNpcId = "test-shop";
   }
 
   afterAll(() => {
-    const scene = (gameServer.game.scene as Anything).getScene("ServerScene");
-    delete scene.npcs["test-shop"];
+    const world = gameServer.world as Anything;
+    delete world.npcs["test-shop"];
   });
 
   it("buys an item for its price and removes the shop inflation", async () => {
-    const { socket, player, scene } = await login("warrior");
+    const { socket, player, world } = await login("warrior");
     const pants = build("pants", "common", "clothPants");
-    stockShop(scene, player, [pants]);
+    stockShop(world, player, [pants]);
     player.gold = 100;
     const update = await emitAndWait(socket, "moveItem", {
       from: { location: "shop", slot: 0 },
@@ -257,8 +255,8 @@ describe("shop over the socket", () => {
   });
 
   it("cannot buy without enough gold", async () => {
-    const { socket, player, scene } = await login("warrior");
-    stockShop(scene, player, [build("pants", "common", "clothPants")]);
+    const { socket, player, world } = await login("warrior");
+    stockShop(world, player, [build("pants", "common", "clothPants")]);
     player.gold = 0;
     const message = once(socket, "message");
     socket.emit("moveItem", {
@@ -273,9 +271,9 @@ describe("shop over the socket", () => {
   });
 
   it("adds a bought stackable to the stack the player already owns", async () => {
-    const { socket, player, scene } = await login("warrior");
+    const { socket, player, world } = await login("warrior");
     const potion = build("stackable", "common", "smallHpPotion", 1);
-    stockShop(scene, player, [potion]);
+    stockShop(world, player, [potion]);
     player.inventory = [build("stackable", "common", "smallHpPotion", 2)];
     player.gold = 1000;
     const update = await emitAndWait(socket, "moveItem", {
@@ -288,8 +286,8 @@ describe("shop over the socket", () => {
   });
 
   it("sells part of a stack and an equipped item for gold", async () => {
-    const { socket, player, scene } = await login("warrior");
-    stockShop(scene, player, [build("pants", "common", "clothPants")]);
+    const { socket, player, world } = await login("warrior");
+    stockShop(world, player, [build("pants", "common", "clothPants")]);
     const potion = build("stackable", "common", "smallHpPotion", 5);
     player.inventory = [potion];
     player.gold = 0;

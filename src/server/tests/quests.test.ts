@@ -3,7 +3,6 @@ import http from "node:http";
 import type { AddressInfo } from "node:net";
 import { io as connect, type Socket } from "socket.io-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import "../phaser";
 import { initFakeDatabase } from "../persistence";
 import { GameServer } from "../game-server";
 
@@ -38,7 +37,7 @@ async function login(charClass = "warrior") {
   return { socket, state };
 }
 
-const scene = (): Anything => gameServer.game.scene.getScene("ServerScene");
+const world = (): Anything => gameServer.world;
 
 beforeAll(async () => {
   process.env.PUBLIC_DIR = "public";
@@ -50,8 +49,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   sockets.forEach((s) => s.disconnect());
-  gameServer?.game?.destroy(true);
-  gameServer?.io?.close();
+  gameServer?.close();
 });
 
 describe("quests", () => {
@@ -70,7 +68,7 @@ describe("quests", () => {
     /* Accepting again changes nothing (and sends no update). */
     socket.emit("acceptQuest", "crab-catching");
     await new Promise((resolve) => setTimeout(resolve, 100));
-    expect(scene().players[socket.id].quests).toHaveLength(1);
+    expect(world().players[socket.id].quests).toHaveLength(1);
   });
 
   it("completeQuest refuses a quest that is not finished", async () => {
@@ -90,7 +88,7 @@ describe("quests", () => {
     socket.emit("acceptQuest", "crab-catching");
     await once(socket, "playerUpdate");
 
-    const player = scene().players[socket.id];
+    const player = world().players[socket.id];
     player.npcKills.crab = 60;
     const goldBefore = player.gold;
     const expBefore = player.stats.exp;
@@ -118,7 +116,7 @@ describe("quests", () => {
     const { socket } = await login();
     socket.emit("acceptQuest", "crab-catching");
     await once(socket, "playerUpdate");
-    const player = scene().players[socket.id];
+    const player = world().players[socket.id];
     player.npcKills.crab = 60;
     player.inventory = Array.from({ length: 32 }, (_, i) => ({ id: `junk-${i}`, base: "junk" }));
 
@@ -133,7 +131,7 @@ describe("quests", () => {
 
   it("counts mob kills for every recipient of a mobKilled event", async () => {
     const { socket } = await login();
-    const player = scene().players[socket.id];
+    const player = world().players[socket.id];
     const kill = (mobName: string) => ({
       killerId: socket.id as string,
       killerLevel: 1,
@@ -147,9 +145,9 @@ describe("quests", () => {
       y: 0,
     });
     const expBefore = player.stats.exp;
-    scene().gameEvents.emit("mobKilled", kill("crab"));
-    scene().gameEvents.emit("mobKilled", kill("crab"));
-    scene().gameEvents.emit("mobKilled", kill("fish"));
+    world().events.emit("mobKilled", kill("crab"));
+    world().events.emit("mobKilled", kill("crab"));
+    world().events.emit("mobKilled", kill("fish"));
     expect(player.npcKills).toMatchObject({ crab: 2, fish: 1 });
     expect(player.stats.exp).toBeGreaterThan(expBefore);
   });

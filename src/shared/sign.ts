@@ -11,7 +11,7 @@ export class Sign extends Phaser.GameObjects.Container implements Sign {
   public id: string;
   public subject: string;
 
-  constructor(scene: ServerScene | Phaser.Scene, args: Phaser.Types.Tilemaps.TiledObject) {
+  constructor(scene: Phaser.Scene, args: Phaser.Types.Tilemaps.TiledObject) {
     const { x, y, name, properties, id } = args ?? {};
 
     super(scene, x, y);

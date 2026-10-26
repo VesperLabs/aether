@@ -18,11 +18,7 @@ type Rule =
 const LEGACY: Record<Rule, string[]> = {
   "banned-name": ["src/client/utils.ts", "src/shared/utils.ts"],
   "folder-case": [],
-  "manager-class": [
-    "src/server/npc-manager.ts",
-    "src/server/player-manager.ts",
-    "src/server/room-manager.ts",
-  ],
+  "manager-class": [],
   "spec-file": [],
   "tsx-without-jsx": [
     "src/client/ui/index.tsx",

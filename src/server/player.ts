@@ -4,6 +4,7 @@ import { canHitNpc, canHitPlayer } from "@/shared/rules/spells";
 import { createSpell } from "./spell-adapter";
 import { PLAYER_DEFAULT_SPAWN } from "./auth/character-defaults";
 import { getRoomState } from "@/server/net/room-sync";
+import { entitiesInRoom } from "@/shared/rules/world";
 import { expForMobKill } from "@/shared/rules/stats";
 import { isPartyMember, sharedRecipientIds } from "@/shared/rules/party";
 import { markKeeperObjectivesReady, nextNpcKillCount } from "@/shared/rules/quests";
@@ -37,9 +38,9 @@ export class Player extends ServerCharacter implements ServerPlayer {
   public spawn: SpawnPoint;
   public userSettings: UserSettings;
   public partyId: string;
-  constructor(scene: ServerScene, args: Player) {
-    super(scene, args);
-    this.scene = scene;
+  constructor(world: ServerWorld, args: Player) {
+    super(world, args);
+    this.world = world;
     this.email = args?.email;
     this.isDemoAccount = args?.isDemoAccount;
     this.userSettings = args?.userSettings;
@@ -52,12 +53,12 @@ export class Player extends ServerCharacter implements ServerPlayer {
       this.stats.exp = expAfterDeath(this.stats.exp);
     }
     const spawnPoint: SpawnPoint = this?.spawn ?? PLAYER_DEFAULT_SPAWN;
-    this.scene.db.updateUserMapDetails({ email: this.email, ...spawnPoint });
+    this.world.db.updateUserMapDetails({ email: this.email, ...spawnPoint });
     this.expireBuffs(true);
     this.state.isDead = true;
   }
   doAttack({ count, direction, castAngle, abilitySlot }) {
-    const { scene, room, socketId } = this ?? {};
+    const { world, room, socketId } = this ?? {};
 
     if (this?.hasBuff("stun")) return;
     if (this?.state?.isDead) return;
@@ -76,7 +77,7 @@ export class Player extends ServerCharacter implements ServerPlayer {
 
     this.modifyStat("sp", -spCost);
 
-    scene.io.to(this?.roomName).emit("modifyPlayerStat", {
+    world.io.to(this?.roomName).emit("modifyPlayerStat", {
       socketId,
       type: "sp",
       amount: -spCost,
@@ -103,7 +104,7 @@ export class Player extends ServerCharacter implements ServerPlayer {
   modifyStatIfCostExists(statType, cost) {
     if (cost > 0) {
       this.modifyStat(statType, -cost);
-      this.scene.io.to(this?.roomName).emit("modifyPlayerStat", {
+      this.world.io.to(this?.roomName).emit("modifyPlayerStat", {
         socketId: this.socketId,
         type: statType,
         amount: -cost,
@@ -138,11 +139,11 @@ export class Player extends ServerCharacter implements ServerPlayer {
     applyAcceptQuest(this, quest);
   }
   updateChatQuests(npcName: string): Array<PlayerQuest> {
-    this.quests = markKeeperObjectivesReady(this.quests, this.scene.quests, npcName);
+    this.quests = markKeeperObjectivesReady(this.quests, this.world.quests, npcName);
     return this.quests;
   }
   completeQuest(questId: string) {
-    return applyCompleteQuest(this, this.scene.quests?.[questId]);
+    return applyCompleteQuest(this, this.world.quests?.[questId]);
   }
   /* Inventory, equipment, bags and abilities: the rules live in shared/rules/inventory */
   findEquipmentById(id: string): any {
@@ -222,10 +223,9 @@ export class Player extends ServerCharacter implements ServerPlayer {
   }
 
   doHit(ids: Array<string>, abilitySlot: number): void {
-    const { scene } = this ?? {};
+    const { world } = this ?? {};
     if (!this || this?.state?.isDead) return;
 
-    const room = scene?.roomManager.rooms[this.roomName];
     const { allowedTargets } = this.getAbilityDetails(abilitySlot);
 
     let hitList = [];
@@ -233,8 +233,8 @@ export class Player extends ServerCharacter implements ServerPlayer {
     let playerIdsToUpdate = [];
     let playerIdsThatLeveled = [];
 
-    const npcs = room?.npcManager?.getNpcs();
-    const players = room?.playerManager?.getPlayers();
+    const npcs = entitiesInRoom(world.npcs, this.roomName);
+    const players = entitiesInRoom(world.players, this.roomName);
 
     for (const npc of npcs) {
       if (!ids.includes(npc.id)) continue;
@@ -252,7 +252,7 @@ export class Player extends ServerCharacter implements ServerPlayer {
     }
 
     for (const player of players) {
-      const targetIsInParty = isPartyMember(scene.partyState, this?.partyId, player.id);
+      const targetIsInParty = isPartyMember(world.partyState, this?.partyId, player.id);
       if (!ids.includes(player.id)) continue;
       /* `targetIsInParty` is also true for self (you're a member of your own party), so the rule
        * excludes self from the ally check — otherwise self-only spells like stealth get filtered
@@ -277,12 +277,12 @@ export class Player extends ServerCharacter implements ServerPlayer {
     if (hitList?.some((hit) => hit.type === "death")) {
       // either you are in a party, or you are in a fake party object
       // party members in same room share the kill
-      const recipients: ServerPlayer[] = sharedRecipientIds(scene.partyState, {
+      const recipients: ServerPlayer[] = sharedRecipientIds(world.partyState, {
         partyId: this?.partyId,
         id: this?.id,
         roomName: this?.roomName,
       })
-        .map((id) => scene?.players?.[id])
+        .map((id) => world?.players?.[id])
         .filter(Boolean);
       const levelsBefore = recipients.map((member) => member.baseStats.level);
       // Read once so a level-up part way through the kills doesn't change what later kills are worth.
@@ -301,7 +301,7 @@ export class Player extends ServerCharacter implements ServerPlayer {
         y: npc.y,
       }));
       /* Stats (experience) reacts to this and awards exp and kill credit to the recipients. */
-      for (const kill of kills) scene.gameEvents.emit("mobKilled", kill);
+      for (const kill of kills) world.events.emit("mobKilled", kill);
       recipients.forEach((member, i) => {
         for (const kill of kills) {
           hitList.push({
@@ -319,13 +319,13 @@ export class Player extends ServerCharacter implements ServerPlayer {
     }
 
     if (playerIdsToUpdate.length > 0) {
-      const roomState = getRoomState(scene, this.roomName);
-      scene.io.to(this.roomName).emit("buffUpdate", {
+      const roomState = getRoomState(world, this.roomName);
+      world.io.to(this.roomName).emit("buffUpdate", {
         players: roomState.players.filter((player) => playerIdsToUpdate.includes(player.id)),
         playerIdsThatLeveled,
       });
     }
 
-    scene.io.to(this.roomName).emit("assignDamage", hitList);
+    world.io.to(this.roomName).emit("assignDamage", hitList);
   }
 }

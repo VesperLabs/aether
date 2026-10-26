@@ -4,12 +4,12 @@ import type { ParsedCommand } from "@/shared/network";
 import type { CommandContext } from "@/server/net/command-context";
 
 export function updateProfile(ctx: CommandContext, args: ParsedCommand<"updateProfile">) {
-  const { scene, socketId, io } = ctx;
+  const { world, socketId, io } = ctx;
   const hairTextures = ["hair-0", "hair-1", "hair-2", "hair-3", "hair-4", "hair-5"];
   const faceTextures = ["face-1", "face-2", "face-3"];
   const whiskersTextures = ["whiskers-0", "whiskers-1", "whiskers-2", "whiskers-3"];
   const genders = ["male", "female"];
-  const player = scene?.players?.[socketId];
+  const player = world?.players?.[socketId];
   if (!player) return;
 
   const currentHairTextureIndex = hairTextures.indexOf(player?.profile?.hair?.texture);
@@ -83,6 +83,6 @@ export function updateProfile(ctx: CommandContext, args: ParsedCommand<"updatePr
   if (args?.body) player.profile.gender = genders[nextGenderIndex];
 
   /* Save the user's data */
-  scene.db.updateUser(player);
+  world.db.updateUser(player);
   io.to(player?.roomName).emit("playerUpdate", getFullCharacterState(player));
 }

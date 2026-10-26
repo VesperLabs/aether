@@ -2,17 +2,18 @@ import { PLAYER_DEFAULT_SPAWN } from "../../auth/character-defaults";
 import { decodeWireDirection, getFullCharacterState } from "@/shared/network/sync";
 import { getRoomState } from "@/server/net/room-sync";
 import type { ParsedCommand } from "@/shared/network";
+import { addPlayerToRoom, removePlayerFromRoom } from "../../player-room";
 import { legacyUpdateMemberRoom } from "../../party-adapter";
 import type { CommandContext } from "@/server/net/command-context";
 
-const getDoor = (scene: ServerScene, roomName: string, doorName: string) =>
-  scene?.doors?.[roomName]?.[doorName];
+const getDoor = (world: ServerWorld, roomName: string, doorName: string) =>
+  world?.doors?.[roomName]?.[doorName];
 
 export function playerInput(ctx: CommandContext, input: ParsedCommand<"playerInput">) {
-  const { scene, socketId } = ctx;
-  if (!scene.players) return;
+  const { world, socketId } = ctx;
+  if (!world.players) return;
   const { x, y, vx, vy, d, direction, roomName } = input;
-  const player: any = scene.players[socketId];
+  const player: any = world.players[socketId];
   if (!player) return;
   if (player.state.isDead) return;
   if (player?.hasBuff("stun")) {
@@ -36,15 +37,15 @@ export function changeDirection(
   ctx: CommandContext,
   { direction, lastAngle }: ParsedCommand<"changeDirection">,
 ) {
-  const { scene, socketId } = ctx;
-  const player = scene.players[socketId];
+  const { world, socketId } = ctx;
+  const player = world.players[socketId];
   player.direction = direction;
   if (typeof lastAngle !== "undefined") player.state.lastAngle = lastAngle;
 }
 
 export function updateState(ctx: CommandContext, state: ParsedCommand<"updateState">) {
-  const { scene, socketId } = ctx;
-  const player = scene?.players?.[socketId];
+  const { world, socketId } = ctx;
+  const player = world?.players?.[socketId];
   if (!player) return;
   // Loop through each key in the state object
   for (const key in state) {
@@ -56,43 +57,43 @@ export function updateState(ctx: CommandContext, state: ParsedCommand<"updateSta
 }
 
 export function enterDoor(ctx: CommandContext, doorName: ParsedCommand<"enterDoor">) {
-  const { scene, socket, socketId } = ctx;
-  const player = scene.players[socketId];
+  const { world, socket, socketId } = ctx;
+  const player = world.players[socketId];
   const oldRoom = player.room.name;
-  const prev = getDoor(scene, oldRoom, doorName)?.getProps();
-  const next = getDoor(scene, prev.destMap, prev.destDoor)?.getProps();
+  const prev = getDoor(world, oldRoom, doorName);
+  const next = getDoor(world, prev.destMap, prev.destDoor);
 
   if (oldRoom !== prev.destMap) {
     socket.leave(oldRoom);
     socket.join(prev.destMap);
     socket.to(oldRoom).emit("remove", socketId);
-    scene.roomManager.rooms[oldRoom].playerManager.remove(socketId);
-    scene.roomManager.rooms[prev.destMap].playerManager.add(socketId);
+    removePlayerFromRoom(world, socketId);
+    addPlayerToRoom(world, socketId, world.rooms[prev.destMap]);
   }
 
   player.x = next.centerPos.x;
   player.y = next.centerPos.y;
 
   /* Save the new room */
-  scene.db.updateUserMapDetails(player);
+  world.db.updateUserMapDetails(player);
 
   socket.to(prev.destMap).emit("playerJoin", getFullCharacterState(player), {
     lastTeleport: Date.now(),
   });
 
   socket.emit("heroInit", {
-    ...getRoomState(scene, prev.destMap),
+    ...getRoomState(world, prev.destMap),
     socketId,
   });
 
   // announce room has changed to the party
   // TODO: need a better way of sending a persistant party state instead of this
-  legacyUpdateMemberRoom(scene, player);
+  legacyUpdateMemberRoom(world, player);
 }
 
 export function respawn(ctx: CommandContext) {
-  const { scene, socket, socketId } = ctx;
-  const player = scene.players[socketId];
+  const { world, socket, socketId } = ctx;
+  const player = world.players[socketId];
   const oldRoom = player.room.name;
   const { roomName: newRoom, x: newX, y: newY } = player?.spawn ?? PLAYER_DEFAULT_SPAWN;
   player.state.isDead = false;
@@ -104,14 +105,14 @@ export function respawn(ctx: CommandContext) {
     socket.to(oldRoom).emit("remove", socketId);
   }
 
-  scene.roomManager.rooms[oldRoom].playerManager.remove(socketId);
-  scene.roomManager.rooms[newRoom].playerManager.add(socketId);
+  removePlayerFromRoom(world, socketId);
+  addPlayerToRoom(world, socketId, world.rooms[newRoom]);
 
   player.x = newX;
   player.y = newY;
 
   /* Save the new room */
-  scene.db.updateUserMapDetails(player);
+  world.db.updateUserMapDetails(player);
 
   socket.to(newRoom).emit("playerJoin", getFullCharacterState(player), {
     isRespawn: true,
@@ -119,22 +120,22 @@ export function respawn(ctx: CommandContext) {
   });
 
   socket.emit("heroInit", {
-    ...getRoomState(scene, newRoom),
+    ...getRoomState(world, newRoom),
     socketId,
   });
 
   // announce room has changed to the party
   // TODO: need a better way of sending a persistant party state instead of this
-  legacyUpdateMemberRoom(scene, player);
+  legacyUpdateMemberRoom(world, player);
 
-  scene.db.updateUser(scene.players?.[socketId]);
+  world.db.updateUser(world.players?.[socketId]);
 }
 
 export function setSpawn(ctx: CommandContext, spawn: ParsedCommand<"setSpawn">) {
-  const { scene, socket, socketId } = ctx;
-  const player: ServerPlayer = scene.players[socketId];
+  const { world, socket, socketId } = ctx;
+  const player: ServerPlayer = world.players[socketId];
   player.spawn = spawn as SpawnPoint;
-  scene.db.updateUserMapDetails({ email: player.email, spawn });
+  world.db.updateUserMapDetails({ email: player.email, spawn });
   return socket.emit("message", {
     type: "info",
     message: "You have changed your spawn point.",

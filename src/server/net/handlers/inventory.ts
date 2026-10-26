@@ -11,9 +11,9 @@ export function grabLoot(
   ctx: CommandContext,
   { lootId, direction }: ParsedCommand<"grabLoot"> = {},
 ) {
-  const { scene, socket, socketId, io } = ctx;
-  const player = scene.players[socketId];
-  const loot = cloneJson(scene.loots[lootId]);
+  const { world, socket, socketId, io } = ctx;
+  const player = world.players[socketId];
+  const loot = cloneJson(world.loots[lootId]);
   const item = loot?.item;
   /* Stackables join a stack the player already has, wherever it is */
   const stackTarget =
@@ -23,7 +23,7 @@ export function grabLoot(
         player.findInventoryItemById(item.id)
       : null;
   const outcome = resolveGrab({
-    loot: scene.loots[lootId],
+    loot: world.loots[lootId],
     hasGrabber: !!player,
     grabberIsDead: player?.state?.isDead,
     hasStackToJoin: !!stackTarget,
@@ -39,14 +39,14 @@ export function grabLoot(
     });
   }
   /* Delete loot from server */
-  removeLoot(scene, lootId);
+  removeLoot(world, lootId);
   if (outcome === "stack") {
     stackTarget.amount = addStackAmounts(stackTarget.amount, item?.amount);
   } else {
     player.addInventoryItem(item);
   }
   /* Save player */
-  scene.db.updateUser(player);
+  world.db.updateUser(player);
   io.to(player?.roomName).emit("lootGrabbed", {
     socketId,
     loot,
@@ -56,8 +56,8 @@ export function grabLoot(
 }
 
 export function dropItem(ctx: CommandContext, request: ParsedCommand<"dropItem"> = {}) {
-  const { scene, socket, socketId, io } = ctx;
-  const player = scene?.players?.[socketId];
+  const { world, socket, socketId, io } = ctx;
+  const player = world?.players?.[socketId];
   if (!player) return;
   const result = dropItemRule(toInventoryState(player), request ?? {});
   if (result.dropped === false) {
@@ -76,19 +76,19 @@ export function dropItem(ctx: CommandContext, request: ParsedCommand<"dropItem">
   if (player.direction === "down") coords.y += 16;
 
   /* Spawn the loot on the server */
-  spawnLoot(scene, player.roomName, {
+  spawnLoot(world, player.roomName, {
     ...coords,
     item: result.item,
     npcId: null,
   });
   /* Save the users data */
-  scene.db.updateUser(player);
+  world.db.updateUser(player);
   io.to(player.roomName).emit("playerUpdate", getFullCharacterState(player));
 }
 
 export function consumeItem(ctx: CommandContext, request: ParsedCommand<"consumeItem"> = {}) {
-  const { scene, socketId, io } = ctx;
-  const player = scene?.players?.[socketId];
+  const { world, socketId, io } = ctx;
+  const player = world?.players?.[socketId];
   if (!player || player.state?.isDead) return;
   const result = consumeItemRule(toInventoryState(player), request ?? {});
   if (!result.consumed) return;
@@ -111,6 +111,6 @@ export function consumeItem(ctx: CommandContext, request: ParsedCommand<"consume
 
   player.calculateStats();
   /* Save the users data */
-  scene.db.updateUser(player);
+  world.db.updateUser(player);
   io.to(player.roomName).emit("playerUpdate", getFullCharacterState(player));
 }

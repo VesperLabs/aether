@@ -9,12 +9,12 @@ import type { CommandContext } from "@/server/net/command-context";
 type MoveItemPayload = { to?: any; from?: any };
 
 export function moveItem(ctx: CommandContext, { to, from }: MoveItemPayload = {}) {
-  const { scene, socket, socketId, io } = ctx;
-  const player = scene?.players?.[socketId];
+  const { world, socket, socketId, io } = ctx;
+  const player = world?.players?.[socketId];
   if (!player) return;
 
   const npcId = player.state?.targetNpcId;
-  const shopSlot = scene?.npcs?.[npcId]?.keeperData?.shop?.[from?.slot];
+  const shopSlot = world?.npcs?.[npcId]?.keeperData?.shop?.[from?.slot];
   const result = moveItemRule(
     toInventoryState(player),
     { from, to },
@@ -28,6 +28,6 @@ export function moveItem(ctx: CommandContext, { to, from }: MoveItemPayload = {}
 
   /* Save the users data */
   player.calculateStats();
-  scene.db.updateUser(player);
+  world.db.updateUser(player);
   io.to(player.roomName).emit("playerUpdate", getFullCharacterState(player));
 }

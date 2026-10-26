@@ -1,4 +1,4 @@
-import { Character } from "@/shared/character";
+import { CharacterModel } from "@/shared/character-model";
 import { ItemBuilder } from "@/shared/content";
 import { applyCalculatedStats } from "./character-stats";
 import {
@@ -18,16 +18,19 @@ import {
 import { getPlayerQuests } from "@/shared/rules/quests";
 import { calculateNextMaxExp } from "@/shared/rules/stats";
 
-export class ServerCharacter extends Character {
-  declare scene: ServerScene;
-  constructor(scene: ServerScene, args) {
-    super(scene, args);
+export class ServerCharacter extends CharacterModel {
+  world: ServerWorld;
+  constructor(world: ServerWorld, args) {
+    super();
+    this.world = world;
+    this.initCharacter(args);
     this.room = args?.room;
-    scene.events.on("update", this.update, this);
-    scene.events.once("shutdown", this.destroy, this);
   }
+  /** Runs once per tick. Players and NPCs override it. */
+  update(_time: number, _delta: number) {}
+  destroy(_fromScene?: boolean) {}
   getQuests() {
-    return getPlayerQuests(this, this.scene.quests);
+    return getPlayerQuests(this, this.world.quests);
   }
   /* make sure character can wear items */
   calculateActiveItemSlots() {

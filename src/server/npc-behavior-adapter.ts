@@ -1,3 +1,4 @@
+import { entitiesInRoom, nearestTo } from "@/shared/rules/world";
 import type { NpcBehaviorInput, NpcPlayerView } from "@/shared/rules/npc-behavior";
 
 /** What the behavior rules need to know about a player. */
@@ -16,11 +17,11 @@ const toPlayerView = (player: any): NpcPlayerView | null =>
 
 /** Copies what the NPC behavior rules read from a legacy `Npc` into plain data. */
 export function buildNpcBehaviorInput(npc: any, time: number, delta: number): NpcBehaviorInput {
-  const { state, scene, room } = npc;
-  const lockedPlayer = toPlayerView(scene?.players?.[state?.lockedPlayerId]);
+  const { state, world, room } = npc;
+  const lockedPlayer = toPlayerView(world?.players?.[state?.lockedPlayerId]);
   const nearestPlayer =
     state?.isAggro || lockedPlayer
-      ? toPlayerView(room?.playerManager?.getNearestPlayer(npc))
+      ? toPlayerView(nearestTo(entitiesInRoom(world.players, room?.name), npc))
       : null;
   return {
     now: Date.now(),

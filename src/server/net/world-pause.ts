@@ -1,10 +1,10 @@
 /** Pauses the game loop while nobody is connected and resumes it when someone joins. */
-export function shouldPause(scene: ServerScene) {
-  if (Object.keys(scene.players ?? {})?.length === 0) {
-    scene.scene.pause();
+export function shouldPause(world: ServerWorld) {
+  if (Object.keys(world.players ?? {})?.length === 0) {
+    world.loop?.pause();
     console.log("🚦 Game empty. Pausing.");
   } else {
-    scene.scene.resume();
+    world.loop?.resume();
     console.log("🚦 Player joined. Resuming.");
   }
 }

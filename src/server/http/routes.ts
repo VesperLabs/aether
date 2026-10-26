@@ -13,15 +13,15 @@ interface RouteDeps {
 /** The JSON endpoints the wiki and the host platform call. */
 export function registerRoutes(app: Express, { aetherServer, db }: RouteDeps) {
   // app.get("/metrics/players", (req, res) => {
-  //   const scene = aetherServer?.game?.scene?.scenes?.[0] as ServerScene;
-  //   const { players } = scene ?? {};
+  //   const world = aetherServer.world;
+  //   const { players } = world ?? {};
   //   const playerStates = Object.values(players).map(getFullCharacterState);
   //   res.json(playerStates);
   // });
 
   app.get("/keepers/all", async (req, res) => {
-    const scene = aetherServer?.game?.scene?.scenes?.[0] as ServerScene;
-    const { npcs } = scene ?? {};
+    const world = aetherServer.world;
+    const { npcs } = world ?? {};
 
     // Pagination parameters
     const { page = 1, pageSize = 10 } = req.query as Record<string, any>;
@@ -102,9 +102,9 @@ export function registerRoutes(app: Express, { aetherServer, db }: RouteDeps) {
   });
 
   app.get("/metrics", async (req, res) => {
-    const scene = aetherServer?.game?.scene?.scenes?.[0] as ServerScene;
+    const world = aetherServer.world;
     const totalPlayers = await db.countAllUsers();
-    const { players, npcs, loots, doors } = scene ?? {};
+    const { players, npcs, loots, doors } = world ?? {};
 
     const endTime = Date.now();
     const clientTimestamp = req?.query?.timestamp
