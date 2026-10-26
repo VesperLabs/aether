@@ -1,0 +1,60 @@
+name: Deploy
+
+# Ship main once CI is green. Lives in its own workflow so it never shows
+# up as a skipped check on PRs. Fly runs the game server; Render serves the
+# wiki and static assets (saves Fly bandwidth).
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  fly:
+    name: Deploy game (Fly)
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push'
+    runs-on: ubuntu-latest
+    concurrency: deploy-fly
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # Deploy the exact commit CI tested
+          ref: ${{ github.event.workflow_run.head_sha }}
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+  render:
+    name: Deploy wiki + assets (Render)
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push'
+    runs-on: ubuntu-latest
+    concurrency: deploy-render
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+      # Render only serves the wiki and static assets. Diff against the last
+      # successful Deploy run so failed or skipped deploys are caught up.
+      - id: changes
+        run: |
+          LAST=$(gh run list --workflow deploy.yml --branch main --status success --limit 1 --json headSha --jq '.[0].headSha // empty')
+          if [ -z "$LAST" ] || ! git cat-file -e "$LAST" 2>/dev/null; then
+            echo "render=true" >> "$GITHUB_OUTPUT"
+          elif git diff --quiet "$LAST" HEAD -- public web ui shared package-lock.json; then
+            echo "render=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "render=true" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - if: steps.changes.outputs.render == 'true'
+        run: curl -fsS -X POST "${RENDER_DEPLOY_HOOK}&ref=${SHA}"
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
