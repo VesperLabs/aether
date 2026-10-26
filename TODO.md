@@ -43,10 +43,10 @@ Do the pure ones first. Write tests as each one moves.
 - [ ] A `World` object in `rules/world/` replacing `ServerScene`, with a fixed-tick loop
 - [ ] Delete `server/Phaser.ts`, then remove `canvas`, `jsdom`, the `require` swap and the canvas build packages from the Dockerfile
 - [ ] Make game entities plain data. `Character` no longer extends `Phaser.GameObjects.Container`.
-- [ ] Client: sprites to `src/client/views/` as displays of game state, input to `input/`, interpolation and prediction to `net/`, and run the rules on the client for movement prediction
-- [ ] Client: group `client/ui/` into `src/client/hud/<feature>/`
+- [ ] Client: sprites to `src/client/views/` as displays of game state, input to `input/`, interpolation and prediction to `net/`, and run the rules on the client for movement prediction (files are moved and `utils.ts` is gone; sprites are still Phaser-driven state and there is no prediction yet)
+- [x] Client: group `client/ui/` into `src/client/hud/<feature>/`
 - [ ] Remove any leftover loose files from `src/shared/` so it holds only `content/`, `rules/` and `network/`
-- [ ] Convert the remaining `.js` files to TypeScript and turn on strict mode repo-wide
+- [ ] Convert the remaining `.js` files to TypeScript and turn on strict mode repo-wide (client `.js` is done; `src/ui/theme.js` and `src/wiki/api/index.js` remain)
 - [ ] Replace lodash with modern JS where possible
 
 ## Done when
@@ -85,3 +85,8 @@ Found during the migration and left alone so behaviour stayed identical. Fix aft
 - [ ] **Types:** `global.d.ts` still has `TickCharacterState`, `TickRoomState`, `RoomState`, `BuffRoomState` and `BuffCharacterState`, now unused or wrong (`BuffRoomState` claims full character state; `TickRoomState` has a `spells` key that's never sent). Delete them.
 - [ ] **NPC behavior:** `checkTalking` removes entries from `talkingIds` while iterating, so the next entry is skipped that tick
 - [ ] **Combat:** `setLockedPlayerId(attacker.id)` stores the player `id`, but `Npc.update` looks the target up by socket id; this only works if the two are equal
+- [ ] **Client HUD:** `hud/app/app.tsx` registers its socket and window handlers once (`useEffect(..., [])`), so `onPartyInvite`, `onDropItem` and `onDoubleClickItem` read `partyInvites`, `hero` and `bagState` from the first render. Duplicate-invite checks, the dead-hero drop guard and closing an open bag on drop never see current state.
+- [ ] **Client HUD:** `onHeroChatNpc` returns from a `setTabKeeper` updater that emits `chatNpc` as a side effect, which React StrictMode runs twice in dev
+- [ ] **Client:** `wiki/page-players.tsx` imports the player menus from `@/client`, which breaks "wiki never imports client". Move them (and `Slot`/`ItemTooltip`, which need the app context) into `src/ui/` or make them props-only.
+- [ ] **Client audio:** `MainScene.changeMusic` duplicates `audio/music.ts` `changeMusic` (the scene copy adds the `ASSETS_URL` prefix, so the module version loads tracks from the wrong URL on a CDN). Keep one.
+- [ ] **Client:** `views/player.ts` is still `// @ts-nocheck`, and Phaser classes declare their fields as `declare x: any` after the JS→TS conversion. Type them properly once entities are plain data.
