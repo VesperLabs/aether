@@ -16,6 +16,12 @@ import { checkProximities } from "./proximity";
 const ASSETS_BASE = process.env.ASSETS_URL || "";
 const assetUrl = (src: string) => (ASSETS_BASE ? src.replace(/^\.\/assets\//, ASSETS_BASE + "/") : src);
 
+/** A remote player close enough to the hero to video chat with. */
+export interface NearbyPlayer {
+  socketId: string;
+  peerId?: string | null;
+}
+
 export class SceneMain extends Phaser.Scene {
   /** Set by `heroInit`; the entity groups below exist from then on. */
   declare hero: Player;
@@ -29,7 +35,7 @@ export class SceneMain extends Phaser.Scene {
   declare animatedTiles?: { init(map: Phaser.Tilemaps.Tilemap): void };
   declare roomName: string;
   declare minimap?: Phaser.Cameras.Scene2D.Camera;
-  nearbyRemotePlayers: Array<{ socketId: string; peerId?: string | null }>;
+  nearbyRemotePlayers: NearbyPlayer[];
   socket: ClientGameSocket;
   userSettings: UserSettings;
   constructor(socket: ClientGameSocket) {

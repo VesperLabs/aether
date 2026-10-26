@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import type { SceneMain } from "./main-scene";
 
 export function calculateZoomLevel({
   viewportArea = 0,
@@ -15,13 +16,13 @@ export function calculateZoomLevel({
   return zoomLevel;
 }
 
-export function getGameZoomLevel(scene) {
+export function getGameZoomLevel(scene: Phaser.Scene) {
   const viewportArea = scene.cameras.main.width * scene.cameras.main.height;
   return Math.round(parseInt(calculateZoomLevel({ viewportArea })));
 }
 
-export function getHeroCoordsRelativeToWindow(scene) {
-  const mainScene = scene?.scene?.manager?.getScene("SceneMain");
+export function getHeroCoordsRelativeToWindow(scene: Phaser.Scene) {
+  const mainScene = scene?.scene?.manager?.getScene("SceneMain") as SceneMain;
   const zoomLevel = getGameZoomLevel(mainScene);
   const camera = mainScene.cameras.main;
   const hero = mainScene?.hero;

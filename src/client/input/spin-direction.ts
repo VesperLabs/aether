@@ -1,4 +1,6 @@
-export function getSpinDirection(hero, point) {
+import type { Point } from "@/shared/rules/world";
+
+export function getSpinDirection(hero: Point, point: Point) {
   const dx = point.x - hero.x;
   const dy = point.y - hero.y;
 

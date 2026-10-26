@@ -296,7 +296,7 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
         now: Date.now(),
       });
     }
-    canCastSpell(abilitySlot: number | undefined, shouldUpdateState = true) {
+    canCastSpell(abilitySlot: number | string | undefined, shouldUpdateState = true) {
       const { allowed, castTimes } = canCastSpell({
         abilitySlot,
         isStunned: this?.hasBuff("stun"),
@@ -312,7 +312,7 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
       if (castTimes) Object.assign(this.state.lastCast, castTimes);
       return allowed;
     }
-    getAbilityDetails(abilitySlot?: number) {
+    getAbilityDetails(abilitySlot?: number | string) {
       return getAbilityDetails(
         { abilities: this.abilities, hasRangedWeapon: this.hasRangedWeapon() },
         abilitySlot,
@@ -324,7 +324,13 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
     getVisibleEquipment() {
       return filterVisibleEquipment(this);
     }
-    getAttackActionName({ count, abilitySlot }: { count: number; abilitySlot?: number }) {
+    getAttackActionName({
+      count,
+      abilitySlot,
+    }: {
+      count: number;
+      abilitySlot?: number | string;
+    }) {
       const ability = this.getAbilityDetails(abilitySlot);
       return getAttackActionName(this, { action: this.action, ability, count });
     }

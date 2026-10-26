@@ -1,7 +1,12 @@
 // Utility function to load an image and handle the onload event as a Promise
-export const IMAGE_CACHE = {}; // In-memory cache for images
+export const IMAGE_CACHE: Record<string, CanvasImageSource> = {}; // In-memory cache for images
 
-export function loadCacheImage(src) {
+/** A canvas always has a 2d context in the browsers we run in. */
+function context2d(canvas: HTMLCanvasElement) {
+  return canvas.getContext("2d") as CanvasRenderingContext2D;
+}
+
+export function loadCacheImage(src: string): Promise<CanvasImageSource> {
   if (IMAGE_CACHE[src]) {
     return Promise.resolve(IMAGE_CACHE[src]); // Return cached image if available
   }
@@ -18,24 +23,21 @@ export function loadCacheImage(src) {
   });
 }
 
-export function trimCanvas(c) {
-  let ctx = c.getContext("2d"),
-    pixels = ctx.getImageData(0, 0, c.width, c.height),
-    l = pixels.data.length,
-    i,
-    bound = {
-      top: null,
-      left: null,
-      right: null,
-      bottom: null,
-    },
-    x,
-    y;
+export function trimCanvas(c: HTMLCanvasElement) {
+  const ctx = context2d(c);
+  const pixels = ctx.getImageData(0, 0, c.width, c.height);
+  const l = pixels.data.length;
+  const bound = {
+    top: null as number | null,
+    left: null as number | null,
+    right: null as number | null,
+    bottom: null as number | null,
+  };
 
-  for (i = 0; i < l; i += 4) {
+  for (let i = 0; i < l; i += 4) {
     if (pixels.data[i + 3] !== 0) {
-      x = (i / 4) % c.width;
-      y = ~~(i / 4 / c.width);
+      const x = (i / 4) % c.width;
+      const y = ~~(i / 4 / c.width);
 
       if (bound.top === null) {
         bound.top = y;
@@ -61,10 +63,12 @@ export function trimCanvas(c) {
     }
   }
 
-  var trimHeight = bound.bottom + 1 - bound.top,
-    trimWidth = bound.right + 1 - bound.left,
-    trimmed = ctx.getImageData(bound.left, bound.top, trimWidth, trimHeight),
-    copy = document.createElement("canvas").getContext("2d");
+  // A fully transparent image has no bounds; the nulls then count as 0, as before.
+  const { top, left, right, bottom } = bound as { [K in keyof typeof bound]: number };
+  const trimHeight = bottom + 1 - top;
+  const trimWidth = right + 1 - left;
+  const trimmed = ctx.getImageData(left, top, trimWidth, trimHeight);
+  const copy = context2d(document.createElement("canvas"));
 
   copy.canvas.width = trimWidth;
   copy.canvas.height = trimHeight;
@@ -72,7 +76,7 @@ export function trimCanvas(c) {
   return copy.canvas;
 }
 
-export function applyTintToImage(image, tint) {
+export function applyTintToImage(image: HTMLImageElement | ImageBitmap, tint?: string) {
   try {
     const canvas = imageToCanvas(image);
     const tintedCanvas = tintCanvas(canvas, tint);
@@ -83,20 +87,20 @@ export function applyTintToImage(image, tint) {
   }
 }
 
-export const imageToCanvas = (image) => {
+export const imageToCanvas = (image: HTMLImageElement | ImageBitmap) => {
   const canvas = document.createElement("canvas");
   canvas.width = image.width;
   canvas.height = image.height;
-  const context = canvas.getContext("2d");
+  const context = context2d(canvas);
   context.drawImage(image, 0, 0);
   return canvas;
 };
 
-export function tintCanvas(c, tint = "0xFFFFFF") {
-  let ctx = c.getContext("2d"),
-    copy = document.createElement("canvas").getContext("2d"),
-    copy2 = document.createElement("canvas").getContext("2d"),
-    copy3 = document.createElement("canvas").getContext("2d");
+export function tintCanvas(c: HTMLCanvasElement, tint = "0xFFFFFF") {
+  const ctx = context2d(c);
+  const copy = context2d(document.createElement("canvas"));
+  const copy2 = context2d(document.createElement("canvas"));
+  const copy3 = context2d(document.createElement("canvas"));
 
   const trimWidth = c?.width;
   const trimHeight = c?.height;
@@ -124,14 +128,26 @@ export function tintCanvas(c, tint = "0xFFFFFF") {
   return copy.canvas;
 }
 
-export function assetToCanvas({ asset, tint, setImageData, shouldTrim = true }) {
+interface AssetToCanvasArgs {
+  asset: { src: string; previewRect?: readonly number[] };
+  tint?: string;
+  setImageData: (dataUrl: string) => void;
+  shouldTrim?: boolean;
+}
+
+export function assetToCanvas({
+  asset,
+  tint,
+  setImageData,
+  shouldTrim = true,
+}: AssetToCanvasArgs) {
   loadCacheImage(asset.src)
     .then((img) => {
       const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
+      const ctx = context2d(canvas);
       ctx.imageSmoothingEnabled = false;
 
-      const [x, y, w, h] = asset.previewRect;
+      const [x, y, w, h] = asset.previewRect as readonly number[];
       canvas.width = w;
       canvas.height = h;
       ctx.drawImage(img, x, y, w, h, 0, 0, w, h);

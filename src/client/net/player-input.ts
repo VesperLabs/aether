@@ -1,10 +1,18 @@
 import { encodeWireDirection } from "@/shared/network/sync";
+import type { Player } from "@/client/views/player";
+import type { SceneHud } from "@/client/scenes/hud-scene";
 
 /** Max rate for playerInput while moving (server still gets full x,y,vx,vy snapshots). */
 const PLAYER_INPUT_THROTTLE_MS = 50;
 
 /** Sends the hero's movement to the server, throttled while the input is unchanged. */
-export function emitPlayerInput(scene, hero, vx, vy, direction) {
+export function emitPlayerInput(
+  scene: SceneHud,
+  hero: Player,
+  vx: number,
+  vy: number,
+  direction: string,
+) {
   /* If the hero is standing still do not update the server */
   if (hero.state.isIdle || hero.state.isEnteringDoor) return;
   if (!scene._playerInputNet) {

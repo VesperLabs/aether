@@ -1,58 +1,62 @@
+import type Phaser from "phaser";
+import type { SceneHud } from "@/client/scenes/hud-scene";
+import type { SceneMain } from "@/client/scenes/main-scene";
 import { playAudio } from "@/client/audio/play-audio";
 import { getSpinDirection } from "@/client/input/spin-direction";
 import { CONSUMABLES_BASES, POTION_BASES } from "@/shared/rules/inventory";
 import { updateAttackCooldown, updatePotionCooldown, updateSpellCooldown } from "./hero-cooldowns";
+import type { AbilitySlot } from "@/client/window-events";
 import { isTypableFieldActive } from "./typable-field";
 
 /** Wires window and canvas events (attack, aim, abilities, items, dragging) to the hero. */
-export function addGlobalEventListeners(scene) {
+export function addGlobalEventListeners(scene: SceneHud) {
   const isTouch = scene.sys.game.device.input.touch;
-  const mainScene = scene.scene.manager.getScene("SceneMain");
+  const mainScene = scene.scene.manager.getScene("SceneMain") as SceneMain;
   const socket = scene.socket;
+  const gameElement = document.getElementById("game") as HTMLElement;
 
   /* Disable context menu on canvas */
-  document.getElementById("game").addEventListener("contextmenu", (e) => {
+  gameElement.addEventListener("contextmenu", (e) => {
     e.preventDefault();
   });
   /* Desktop left click attack */
-  document.getElementById("game").addEventListener("mousedown", function (event) {
+  gameElement.addEventListener("mousedown", function (event) {
     if (!isTouch && event.button !== 0) {
       window.dispatchEvent(new CustomEvent("HERO_ATTACK_START"));
     }
   });
   /* Desktop left click attack */
-  document.getElementById("game").addEventListener("mouseup", function (event) {
+  gameElement.addEventListener("mouseup", function (event) {
     if (!mainScene?.hero) return;
     const hero = mainScene?.hero;
     if (!isTouch && event.button !== 0) {
       const pointer = scene.input.activePointer;
-      const cursorPoint = pointer.positionToCamera(mainScene.cameras.main);
+      const cursorPoint = pointer.positionToCamera(mainScene.cameras.main) as Phaser.Math.Vector2;
       hero.direction = getSpinDirection(hero, cursorPoint);
       window.dispatchEvent(new CustomEvent("HERO_ATTACK"));
     }
   });
   window.addEventListener(
     "HERO_AIM_START",
-    (e: CustomEvent) => {
+    (e) => {
       if (!mainScene?.hero || isTypableFieldActive()) return;
       const hero = mainScene?.hero;
       const { isAimable } = hero.getAbilityDetails(e?.detail);
 
       if (isAimable) {
         hero.state.isAiming = true;
-        document.getElementById("game").style.cursor = "none";
+        gameElement.style.cursor = "none";
         scene.socket.emit("updateState", { isAiming: hero.state.isAiming });
       }
     },
-    scene,
   );
   window.addEventListener(
     "HERO_ATTACK", // we let go of the attack button
-    (e: CustomEvent) => {
+    (e) => {
       const hero = mainScene?.hero;
       if (!hero) return;
 
-      document.getElementById("game").style.cursor = "default";
+      gameElement.style.cursor = "default";
 
       // shoot arrows etc
       if (hero.hasRangedWeapon()) {
@@ -69,11 +73,10 @@ export function addGlobalEventListeners(scene) {
         isHoldingAttack: hero.state.isHoldingAttack,
       });
     },
-    scene,
   );
   window.addEventListener(
     "HERO_ATTACK_START",
-    (e: CustomEvent) => {
+    (e) => {
       if (!mainScene?.hero) return;
       const hero = mainScene?.hero;
 
@@ -82,18 +85,17 @@ export function addGlobalEventListeners(scene) {
 
       if (hero.hasRangedWeapon()) {
         hero.state.isAiming = true;
-        document.getElementById("game").style.cursor = "none";
+        gameElement.style.cursor = "none";
       }
       scene.socket.emit("updateState", {
         isAiming: hero.state.isAiming,
         isHoldingAttack: hero.state.isHoldingAttack,
       });
     },
-    scene,
   );
   window.addEventListener(
     "HERO_ABILITY",
-    (e: CustomEvent) => {
+    (e) => {
       const hero = mainScene?.hero;
       const abilitySlot = e?.detail;
       const { type } = hero.getAbilityDetails(abilitySlot);
@@ -109,13 +111,12 @@ export function addGlobalEventListeners(scene) {
 
         hero.state.isAiming = false;
         scene.socket.emit("updateState", { isAiming: hero.state.isAiming });
-        document.getElementById("game").style.cursor = "default";
+        gameElement.style.cursor = "default";
       }
     },
-    scene,
   );
   /* TODO: Move to server and create a consumeItemFunction */
-  window.addEventListener("HERO_USE_ITEM", (e: CustomEvent) => {
+  window.addEventListener("HERO_USE_ITEM", (e) => {
     const hero = mainScene?.hero;
     const { item, location } = e?.detail ?? {};
 
@@ -125,7 +126,7 @@ export function addGlobalEventListeners(scene) {
     if (CONSUMABLES_BASES?.includes(item?.base)) {
       /* Tell the UI to update the cooldowns */
       if (item.base === "food") {
-        updateSpellCooldown(hero, e?.detail);
+        updateSpellCooldown(hero, e?.detail as unknown as AbilitySlot); // TODO: passes the event detail, see Known bugs
       }
       if (POTION_BASES.includes(item.base)) {
         if (hero.state.isPotioning) return; /* TODO: Needs to happen serverside */
@@ -133,7 +134,7 @@ export function addGlobalEventListeners(scene) {
       }
     }
 
-    socket.emit("consumeItem", { item, location });
+    socket.emit("consumeItem", { item: { ...item }, location });
 
     window.dispatchEvent(
       new CustomEvent("AUDIO_ITEM_CONSUME", {
@@ -143,11 +144,10 @@ export function addGlobalEventListeners(scene) {
   });
   window.addEventListener(
     "HERO_GRAB",
-    (e) => {
+    () => {
       const hero = mainScene?.hero;
       hero?.doGrab?.();
     },
-    scene,
   );
   window.addEventListener(
     "AUDIO_ITEM_CONSUME",
@@ -155,7 +155,6 @@ export function addGlobalEventListeners(scene) {
       const hero = mainScene?.hero;
       playAudio({ scene: mainScene, audioKey: "item-bubble", caster: hero });
     },
-    scene,
   );
   window.addEventListener(
     "AUDIO_ITEM_SELL",
@@ -163,16 +162,15 @@ export function addGlobalEventListeners(scene) {
       const hero = mainScene?.hero;
       playAudio({ scene: mainScene, audioKey: "item-sell", caster: hero });
     },
-    scene,
   );
   window.addEventListener(
     "ITEM_DRAG",
-    (e: CustomEvent) => {
+    (e) => {
       const hero = mainScene?.hero;
       const pointer = scene.input.activePointer;
       pointer.x = e?.detail.x;
       pointer.y = e?.detail.y;
-      const cursorPoint = pointer.positionToCamera(mainScene.cameras.main);
+      const cursorPoint = pointer.positionToCamera(mainScene.cameras.main) as Phaser.Math.Vector2;
       const direction = getSpinDirection({ x: hero.x, y: hero.y + hero.bodyOffsetY }, cursorPoint);
 
       if (hero?.direction !== direction) {
@@ -180,6 +178,5 @@ export function addGlobalEventListeners(scene) {
         scene.socket.emit("changeDirection", { direction });
       }
     },
-    scene,
   );
 }

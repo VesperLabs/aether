@@ -4,14 +4,16 @@ import { getAngleFromDirection } from "@/shared/rules/world";
 import { emitPlayerInput } from "@/client/net/player-input";
 import { updateAttackCooldown, updateSpellCooldown } from "./hero-cooldowns";
 import { isTypableFieldActive } from "./typable-field";
+import type { SceneHud } from "@/client/scenes/hud-scene";
+import type { SceneMain } from "@/client/scenes/main-scene";
 
 const { Between } = Phaser.Math.Angle;
 
 /** Reads keyboard, joystick and pointer and applies them to the hero for this frame. */
-export function moveDirectHero(scene) {
+export function moveDirectHero(scene: SceneHud) {
   const isTouch = scene.sys.game.device.input.touch;
   const pointer = scene.input.activePointer;
-  const mainScene = scene.scene.manager.getScene("SceneMain");
+  const mainScene = scene.scene.manager.getScene("SceneMain") as SceneMain;
   const hero = mainScene?.hero;
   let lastAngle = hero?.state?.lastAngle;
   let vx = 0;
@@ -27,7 +29,7 @@ export function moveDirectHero(scene) {
   }
 
   const walkSpeed = hero.stats.walkSpeed;
-  const joystick = scene.game.scene.scenes[2].joystick;
+  const joystick = scene.joystick;
 
   const up = scene.cursorKeys.w.isDown || scene.cursorKeys.up.isDown;
   const left = scene.cursorKeys.a.isDown || scene.cursorKeys.left.isDown;
@@ -73,7 +75,7 @@ export function moveDirectHero(scene) {
   /* Spin hero when aiming */
   if (hero?.state.isAiming) {
     if (!isTouch) {
-      const cursorPoint = pointer.positionToCamera(mainScene.cameras.main);
+      const cursorPoint = pointer.positionToCamera(mainScene.cameras.main) as Phaser.Math.Vector2;
       direction = getSpinDirection({ x: hero.x, y: hero.y + hero.bodyOffsetY }, cursorPoint);
       lastAngle = Between(hero.x, hero.y + hero.bodyOffsetY, cursorPoint.x, cursorPoint.y);
     }

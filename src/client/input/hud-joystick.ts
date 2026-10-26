@@ -1,6 +1,7 @@
 import Phaser from "phaser";
+import type { SceneHud } from "@/client/scenes/hud-scene";
 
-export function addJoystick(scene) {
+export function addJoystick(scene: SceneHud) {
   const isTouch = scene.sys.game.device.input.touch;
   scene.joystick = scene.add.joystick({
     sprites: { cap: new RoundButton(scene), base: new RoundButton(scene) },
@@ -17,7 +18,7 @@ export function addJoystick(scene) {
 }
 
 class RoundButton extends Phaser.GameObjects.Sprite {
-  constructor(scene) {
+  constructor(scene: Phaser.Scene) {
     super(scene, 0, 0, "joy-circle");
     this.displayWidth = 50;
     this.displayHeight = 50;

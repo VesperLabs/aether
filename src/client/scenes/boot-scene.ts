@@ -1,5 +1,7 @@
 import Phaser from "phaser";
-import { assetList, soundList, iconList, mapList, mapImageList } from "@/shared/content";
+import type { ClientGameSocket } from "@/shared/network";
+import type { SceneMain } from "./main-scene";
+import { assetList, type AssetDefinition, soundList, iconList, mapList, mapImageList } from "@/shared/content";
 import { IMAGE_CACHE } from "@/ui/image-tint";
 
 /**
@@ -8,9 +10,9 @@ import { IMAGE_CACHE } from "@/ui/image-tint";
  * rewrite (it only processes JS/TS modules), so we do it here at runtime.
  */
 const ASSETS_BASE = process.env.ASSETS_URL || "";
-const assetUrl = (src) => (ASSETS_BASE ? src.replace(/^\.\/assets\//, ASSETS_BASE + "/") : src);
+const assetUrl = (src: string) => (ASSETS_BASE ? src.replace(/^\.\/assets\//, ASSETS_BASE + "/") : src);
 
-const onLoadError = (value) => {
+const onLoadError = (value: unknown) => {
   window.dispatchEvent(
     new CustomEvent("LOAD_ERROR", {
       detail: value,
@@ -19,8 +21,8 @@ const onLoadError = (value) => {
 };
 
 export class SceneBoot extends Phaser.Scene {
-  declare socket: any;
-  constructor(socket) {
+  socket: ClientGameSocket;
+  constructor(socket: ClientGameSocket) {
     super({
       key: "SceneBoot",
     });
@@ -40,7 +42,7 @@ export class SceneBoot extends Phaser.Scene {
       .setScrollFactor(0);
 
     this.load
-      .on("progress", (value) => {
+      .on("progress", (value: number) => {
         dpanel.setText("Loading... " + Math.floor(value * 100) + "%");
       })
       .on("loaderror", onLoadError);
@@ -50,7 +52,7 @@ export class SceneBoot extends Phaser.Scene {
       /* For loot pics */
       assetList.forEach((asset) => {
         let tempText = this.textures.get(asset.texture);
-        const [x, y, width, height] = asset.previewRect;
+        const [x, y, width, height] = asset.previewRect as readonly number[];
         tempText.add("preview", 0, x, y, width, height);
       });
 
@@ -58,9 +60,9 @@ export class SceneBoot extends Phaser.Scene {
       this.textures.each(function (texture) {
         const key = assetList.find((t) => t?.texture === texture.key)?.src;
         if (key && texture.source[0].image) {
-          IMAGE_CACHE[key] = texture.source[0].image;
+          IMAGE_CACHE[key] = texture.source[0].image as HTMLImageElement;
         }
-      }, undefined);
+      }, this);
 
       window.dispatchEvent(new Event("GAME_LOADED"));
       this.scene.start("SceneMain");
@@ -76,7 +78,7 @@ export class SceneBoot extends Phaser.Scene {
       this.load.tilemapTiledJSON(asset.name, assetUrl(asset.json));
     });
     assetList.forEach((asset) => {
-      this.load.atlas(asset.texture, assetUrl(asset.src), assetUrl(asset.atlas));
+      this.load.atlas(asset.texture, assetUrl(asset.src), assetUrl(asset.atlas as string));
     });
     soundList.forEach((asset) => {
       this.load.audio(asset.name, assetUrl(asset.src));
@@ -100,28 +102,28 @@ export class SceneBoot extends Phaser.Scene {
     loadSpritesheets(this);
   }
   create() {
-    createAnims(this.scene.manager.getScene("SceneMain"));
+    createAnims(this.scene.manager.getScene("SceneMain") as SceneMain);
   }
   update() {}
 }
 
-function createAnims(scene) {
+function createAnims(scene: SceneMain) {
   createWalkingAnims(scene);
   createStaticAnims(scene);
   createSpellAnims(scene);
 }
 
 /** Avoid "AnimationManager key already exists" when SceneBoot.create re-runs (HMR / scene restart). */
-function createAnimIfMissing(scene, config) {
-  if (scene.anims.exists(config.key)) return;
+function createAnimIfMissing(scene: SceneMain, config: Phaser.Types.Animations.Animation) {
+  if (config.key && scene.anims.exists(config.key)) return;
   scene.anims.create(config);
 }
 
 /* Skip making animations for these types */
-const checkSkip = (asset) =>
+const checkSkip = (asset: AssetDefinition) =>
   ["weapon.json", "icons.json", "stackable.json"]?.some((a) => asset?.atlas?.includes(a));
 
-function createStaticAnims(scene) {
+function createStaticAnims(scene: SceneMain) {
   const SINGLE_FRAME_ANIM_KEYS = [
     "up-attack_left",
     "down-attack_left",
@@ -136,7 +138,8 @@ function createStaticAnims(scene) {
     "left-stand",
     "right-stand",
   ];
-  const frameProps = { zeroPad: 0, start: "" };
+  // An empty start (not a number) makes Phaser generate the single frame named by the prefix.
+  const frameProps = { zeroPad: 0, start: "" as unknown as number };
   for (const asset of assetList) {
     /* Skip non animated atlases */
     if (checkSkip(asset)) continue;
@@ -152,7 +155,7 @@ function createStaticAnims(scene) {
   }
 }
 
-function createWalkingAnims(scene) {
+function createWalkingAnims(scene: SceneMain) {
   const MULTI_FRAME_ANIM_KEYS = ["up-walk", "down-walk", "left-walk", "right-walk"];
   const frameProps = { zeroPad: 3, start: 0, end: 2 };
   const animProps = { repeat: -1, yoyo: true };
@@ -173,7 +176,7 @@ function createWalkingAnims(scene) {
   }
 }
 
-function createSpellAnims(scene) {
+function createSpellAnims(scene: SceneMain) {
   //spells
   createAnimIfMissing(scene, {
     key: "spell-anim-fireball",
@@ -264,14 +267,14 @@ function createSpellAnims(scene) {
   createAnimIfMissing(scene, {
     key: "spell-anim-slash-physical",
     frames: scene.anims.generateFrameNumbers("spell-anim-slash", { start: 18, end: 26 }),
-    repeat: false,
+    repeat: 0,
     yoyo: false,
     frameRate: 60,
   });
   createAnimIfMissing(scene, {
     key: "spell-anim-slash-fire",
     frames: scene.anims.generateFrameNumbers("spell-anim-slash", { start: 0, end: 8 }),
-    repeat: false,
+    repeat: 0,
     yoyo: false,
     frameRate: 60,
   });
@@ -285,7 +288,7 @@ function createSpellAnims(scene) {
   });
 }
 
-function loadSpritesheets(scene) {
+function loadSpritesheets(scene: Phaser.Scene) {
   scene.load.spritesheet("misc-bubble", assetUrl("./assets/images/bubble.png"), {
     frameWidth: 4,
     frameHeight: 4,

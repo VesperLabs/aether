@@ -3,19 +3,21 @@ import { Door, type DoorObject } from "@/client/views/door";
 import { Sign, type SignObject } from "@/client/views/sign";
 import { MINI_MAP_SIZE } from "@/client/views/minimap-size";
 import { changeMusic } from "@/client/audio/music";
+import type { Player } from "@/client/views/player";
 import { getGameZoomLevel } from "./camera-zoom";
+import type { SceneMain } from "./main-scene";
 
 const { RectangleToRectangle } = Phaser.Geom.Intersects;
 
-export function enableDoors(scene) {
+export function enableDoors(scene: SceneMain) {
   const coords = new Phaser.Geom.Rectangle();
   scene?.hero?.body?.getBounds(coords);
-  for (const door of scene.doors.getChildren()) {
+  for (const door of scene.doors.getChildren() as Door[]) {
     if (!RectangleToRectangle(coords, door.getBounds())) door.isEnabled = true;
   }
 }
 
-function initMiniMap(scene, hero) {
+function initMiniMap(scene: SceneMain, hero: Player) {
   if (!hero || !scene?.map || !scene.minimap) return;
 
   // Only show the minimap if its enabled
@@ -34,7 +36,7 @@ function initMiniMap(scene, hero) {
   scene.minimap.startFollow(hero, true, 0.5, 0.5, 0, 0);
 }
 
-export function initCamera(scene, hero) {
+export function initCamera(scene: SceneMain, hero: Player) {
   if (!hero || !scene?.map) return;
   const zoomLevel = getGameZoomLevel(scene);
 
@@ -45,7 +47,11 @@ export function initCamera(scene, hero) {
   initMiniMap(scene, hero);
 }
 
-export function initPlayerCollision(scene, player, colliders = []) {
+export function initPlayerCollision(
+  scene: SceneMain,
+  player: Player,
+  colliders: Phaser.Tilemaps.TilemapLayer[] = [],
+) {
   scene.physics.world.colliders.destroy();
   scene.physics.world.setBounds(0, 0, scene.map.widthInPixels, scene.map.heightInPixels);
   player.body.setCollideWorldBounds(true);
@@ -56,8 +62,10 @@ export function initPlayerCollision(scene, player, colliders = []) {
   scene.physics.add.overlap(
     scene.hero,
     scene.doors,
-    null,
-    (hero, door) => {
+    undefined,
+    (heroObject, doorObject) => {
+      const hero = heroObject as Player;
+      const door = doorObject as Door;
       /* If they spawned on the door, ignore it for now */
       const { x, y } = hero.startingCoords;
       if (door.getBounds().contains(x, y)) {
@@ -77,7 +85,7 @@ export function initPlayerCollision(scene, player, colliders = []) {
   );
 }
 
-export function changeMap(scene, roomName) {
+export function changeMap(scene: SceneMain, roomName: string) {
   const tileSetKey = roomName?.split("-")?.[0];
 
   scene.roomName = roomName;
@@ -86,30 +94,36 @@ export function changeMap(scene, roomName) {
   });
   changeMusic(scene);
 
-  const tileSet = scene.map.addTilesetImage("tileset-" + tileSetKey);
-  const tilesetShadows = scene.map.addTilesetImage("tileset-" + tileSetKey + "-shadows");
-  const tilesetCollide = scene.map.addTilesetImage("tileset-collide");
-  const tilesetExtras = scene.map.addTilesetImage("tileset-extras");
-  const collideLayer = scene.map.createLayer("Collide", tilesetCollide).setCollisionByProperty({
+  const { map } = scene;
+  // The map assets are bundled, so a missing tileset or layer is a build error, not a runtime case.
+  const addTileset = (key: string) => map.addTilesetImage(key) as Phaser.Tilemaps.Tileset;
+  const createLayer = (name: string, tileset: Phaser.Tilemaps.Tileset) =>
+    map.createLayer(name, tileset) as Phaser.Tilemaps.TilemapLayer;
+
+  const tileSet = addTileset("tileset-" + tileSetKey);
+  const tilesetShadows = addTileset("tileset-" + tileSetKey + "-shadows");
+  const tilesetCollide = addTileset("tileset-collide");
+  const tilesetExtras = addTileset("tileset-extras");
+  const collideLayer = createLayer("Collide", tilesetCollide).setCollisionByProperty({
     collides: true,
   });
 
-  scene.map.createLayer("Ground", tileSet).setDepth(0);
-  scene.map.createLayer("Shadows", tilesetShadows).setDepth(1);
-  scene.map.createLayer("Overlay", tileSet).setDepth(2);
-  scene.map.createLayer("Extras", tilesetExtras).setDepth(3);
-  scene.map.createLayer("Above", tileSet).setDepth(9999);
+  createLayer("Ground", tileSet).setDepth(0);
+  createLayer("Shadows", tilesetShadows).setDepth(1);
+  createLayer("Overlay", tileSet).setDepth(2);
+  createLayer("Extras", tilesetExtras).setDepth(3);
+  createLayer("Above", tileSet).setDepth(9999);
   if (scene.animatedTiles) scene.animatedTiles.init(scene.map);
 
   /* Create Doors */
-  const mapDoors = scene.map.getObjectLayer("Doors").objects;
+  const mapDoors = (scene.map.getObjectLayer("Doors") as Phaser.Tilemaps.ObjectLayer).objects;
   for (const door of mapDoors) {
     const newDoor = new Door(scene, door as DoorObject);
     scene.doors.add(newDoor);
   }
   /* Create Signs */
   if (scene.map.getObjectLayer("Signs")) {
-    const mapSigns = scene.map.getObjectLayer("Signs").objects;
+    const mapSigns = (scene.map.getObjectLayer("Signs") as Phaser.Tilemaps.ObjectLayer).objects;
     for (const sign of mapSigns) {
       const newSign = new Sign(scene, sign as SignObject);
       scene.signs.add(newSign);

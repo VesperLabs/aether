@@ -46,7 +46,7 @@ type BuffUpdate = BuffCharacterWire | FullCharacterWire;
 /** What an attack or a cast needs from the server message that triggered it. */
 interface CastArgs {
   castAngle?: number;
-  abilitySlot?: number;
+  abilitySlot?: number | string;
 }
 
 interface AttackArgs extends CastArgs {
