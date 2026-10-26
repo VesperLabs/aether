@@ -1,13 +1,35 @@
-import { handlePlayerInput, getDoor, PLAYER_DEFAULT_SPAWN } from "../../utils";
-import { getFullCharacterState } from "@/shared/network/sync";
+import { PLAYER_DEFAULT_SPAWN } from "../../auth/character-defaults";
+import { decodeWireDirection, getFullCharacterState } from "@/shared/network/sync";
 import { getRoomState } from "@/server/net/room-sync";
 import type { ParsedCommand } from "@/shared/network";
 import { legacyUpdateMemberRoom } from "../../party-adapter";
 import type { CommandContext } from "@/server/net/command-context";
 
+const getDoor = (scene: ServerScene, roomName: string, doorName: string) =>
+  scene?.doors?.[roomName]?.[doorName];
+
 export function playerInput(ctx: CommandContext, input: ParsedCommand<"playerInput">) {
   const { scene, socketId } = ctx;
-  handlePlayerInput(scene, socketId, input); //defined in utilites.js
+  if (!scene.players) return;
+  const { x, y, vx, vy, d, direction, roomName } = input;
+  const player: any = scene.players[socketId];
+  if (!player) return;
+  if (player.state.isDead) return;
+  if (player?.hasBuff("stun")) {
+    player.vx = 0;
+    player.vy = 0;
+    return;
+  }
+  const effectiveRoom = roomName ?? player.roomName;
+  if (player.roomName !== effectiveRoom) return; // player is changing room
+  player.x = x;
+  player.y = y;
+  player.vx = vx;
+  player.vy = vy;
+  player.direction =
+    typeof d === "number"
+      ? decodeWireDirection(d, player.direction)
+      : (direction ?? player.direction);
 }
 
 export function changeDirection(

@@ -2,7 +2,7 @@ import { ServerCharacter } from "./character";
 import { expAfterDeath } from "@/shared/rules/combat";
 import { canHitNpc, canHitPlayer } from "@/shared/rules/spells";
 import { createSpell } from "./spell-adapter";
-import { PLAYER_DEFAULT_SPAWN } from "./utils";
+import { PLAYER_DEFAULT_SPAWN } from "./auth/character-defaults";
 import { getRoomState } from "@/server/net/room-sync";
 import { expForMobKill } from "@/shared/rules/stats";
 import { isPartyMember, sharedRecipientIds } from "@/shared/rules/party";

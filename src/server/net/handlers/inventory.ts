@@ -1,5 +1,5 @@
 import { getFullCharacterState } from "@/shared/network/sync";
-import { cloneObject } from "../../utils";
+import { cloneJson } from "@/shared/content";
 import { addStackAmounts, resolveGrab } from "@/shared/rules/loot";
 import { removeLoot, spawnLoot } from "../../loot-adapter";
 import { consumeItem as consumeItemRule, dropItem as dropItemRule } from "@/shared/rules/inventory";
@@ -13,7 +13,7 @@ export function grabLoot(
 ) {
   const { scene, socket, socketId, io } = ctx;
   const player = scene.players[socketId];
-  const loot = cloneObject(scene.loots[lootId]);
+  const loot = cloneJson(scene.loots[lootId]);
   const item = loot?.item;
   /* Stackables join a stack the player already has, wherever it is */
   const stackTarget =

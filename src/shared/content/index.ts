@@ -41,3 +41,4 @@ export type {
   StatName,
   StatValue,
 } from "./stats";
+export { cloneJson } from "./random";

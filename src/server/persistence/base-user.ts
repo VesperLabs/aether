@@ -1,9 +1,9 @@
 import { ItemBuilder } from "@/shared/content";
 import { DEFAULT_USER_SETTINGS } from "@/shared/utils";
-import { useGetBaseCharacterDefaults } from "../utils";
+import { getBaseCharacterDefaults } from "../auth/character-defaults";
 
 export const createBaseUser = (charClass) => {
-  const { baseStats, startingWeapon, startingSpell, roomName, x, y } = useGetBaseCharacterDefaults({
+  const { baseStats, startingWeapon, startingSpell, roomName, x, y } = getBaseCharacterDefaults({
     level: 1,
     charClass,
   });
