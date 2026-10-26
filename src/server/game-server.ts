@@ -1,7 +1,9 @@
 import "./phaser";
 import { createGameEventBus, type GameEventBus } from "@/shared/rules/world";
 import { subscribeStats } from "@/shared/rules/stats";
-import { mapList, QuestBuilder } from "@/shared/content";
+import { subscribeLoot, type LootItem } from "@/shared/rules/loot";
+import { updateRoomLoot, spawnLoot } from "./loot-adapter";
+import { ILVL_MULTIPLIER, ItemBuilder, mapList, QuestBuilder } from "@/shared/content";
 import { Server } from "socket.io";
 import path from "path";
 import { getTickRoomState, getBuffRoomState } from "./utils";
@@ -75,6 +77,18 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       member.addNpcKill(kill.mobName);
     });
 
+    subscribeLoot(this.gameEvents, {
+      rng: Math.random,
+      ilvlMultiplier: ILVL_MULTIPLIER,
+      rollWorldDrop: (ilvl, magicFind) => ItemBuilder.rollDrop(ilvl, magicFind),
+      buildItem: (type, rarity, key) => ItemBuilder.buildItem(type, rarity, key) as LootItem | null,
+      getMobDropInfo: (mobId) => {
+        const npc = this.npcs[mobId];
+        return npc && { drops: npc.drops, noWorldDrops: npc.state?.noWorldDrops };
+      },
+      spawnLoot: (roomName, spawn) => spawnLoot(this, roomName, spawn),
+    });
+
     listenForConnections(scene);
   }
   update(time: number, delta: number) {
@@ -83,8 +97,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
     const io = scene.io;
     for (const room of Object.values(scene.roomManager.rooms)) {
       /* Simulate first so snapshots match what clients see on the next frame (loot expiry, spawns). */
-      room.lootManager.spawnMapLoots();
-      room.lootManager.expireLoots();
+      updateRoomLoot(scene, room);
       room.spellManager.expireSpells();
 
       room.snapshotSeq += 1;

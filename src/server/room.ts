@@ -1,7 +1,7 @@
 import { NpcManager } from "./npc-manager";
 import { PlayerManager } from "./player-manager";
 import { Door } from "@/shared/door";
-import { LootManager } from "./loot-manager";
+import { createRoomLootState, type RoomLootState } from "./loot-adapter";
 import { SpellManager } from "./spell-manager";
 import EasyStar from "easystarjs";
 import type { TickStateExpanded } from "@/shared/network/sync";
@@ -13,7 +13,7 @@ export class Room {
   public doors: Phaser.Physics.Arcade.Group;
   public npcManager: NpcManager;
   public playerManager: PlayerManager;
-  public lootManager: LootManager;
+  public lootState: RoomLootState;
   public spellManager: SpellManager;
   public easystar: EasyStar.js;
   public colliders: Array<any>;
@@ -29,7 +29,7 @@ export class Room {
     this.doors = scene.physics.add.group();
     this.npcManager = new NpcManager(this.scene, this);
     this.playerManager = new PlayerManager(this.scene, this);
-    this.lootManager = new LootManager(this.scene, this);
+    this.lootState = createRoomLootState(this);
     this.spellManager = new SpellManager(this.scene, this);
     this.createColliders();
     this.easystar = this.createPathGrid();

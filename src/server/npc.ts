@@ -1,7 +1,7 @@
 import { ServerCharacter as Character } from "./character";
-import { ILVL_MULTIPLIER, ItemBuilder, spellDetails } from "@/shared/content";
+import { ItemBuilder, spellDetails } from "@/shared/content";
 import { BUFF_SPELLS, calculateStealthVisibilityPercent, distanceTo } from "@/shared/utils";
-import { getCharacterDirection, randomNumber, SHOP_INFLATION, sleep } from "./utils";
+import { getCharacterDirection, SHOP_INFLATION, sleep } from "./utils";
 import crypto from "crypto";
 
 const AGGRO_KITE_RANGE = 220;
@@ -554,47 +554,6 @@ export class Npc extends Character implements Npc {
     }
 
     scene.io.to(roomName).emit("assignDamage", hitList);
-  }
-  dropLoot(magicFind: number) {
-    let runners = [];
-    /* I.E: A monster of lvl 8 will drop ilvl 2 items
-            A monster of lvl 16 will drop ilvl 3 items
-    */
-    const ilvl = 1 + Math.floor(this.stats.level / ILVL_MULTIPLIER);
-
-    if (!this.state.noWorldDrops) {
-      const mainDrop = ItemBuilder.rollDrop(ilvl, magicFind);
-      if (mainDrop) runners.push(mainDrop);
-    }
-    /* World drops table */
-    if (this.drops) {
-      for (var i = 0; i < this.drops.length; i++) {
-        let rando = randomNumber(1, this.drops[i].chance);
-        if (rando === 1) {
-          runners.push(this.drops[i]);
-        }
-      }
-    }
-    let item = null;
-    for (var i = 0; i < runners.length; i++) {
-      item = runners[i];
-      /* Preferences */
-      if (runners[i].rarity == "unique") break;
-      if (runners[i].rarity == "set") break;
-      if (runners[i].rarity == "rare") break;
-      if (runners[i].rarity == "magic") break;
-      if (runners[i].type !== "stackable") break;
-    }
-    /* Spawn the loot on the server */
-
-    if (item) {
-      this.room.lootManager.create({
-        x: this?.x,
-        y: this?.y,
-        item: ItemBuilder.buildItem(item.type, item.rarity, item.key),
-        npcId: this?.id,
-      });
-    }
   }
 }
 

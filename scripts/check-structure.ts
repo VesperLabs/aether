@@ -19,7 +19,6 @@ const LEGACY: Record<Rule, string[]> = {
   "banned-name": ["src/client/utils.ts", "src/server/utils.ts", "src/shared/utils.ts"],
   "folder-case": [],
   "manager-class": [
-    "src/server/loot-manager.ts",
     "src/server/npc-manager.ts",
     "src/server/player-manager.ts",
     "src/server/room-manager.ts",

@@ -1,6 +1,7 @@
 import { ItemBuilder, isItemBuildRarity, ITEM_BUILD_RARITIES } from "@/shared/content";
 import type { CommandContext } from "@/server/net/command-context";
 import { getFullCharacterState, getRoomState } from "../utils";
+import { spawnLoot } from "../loot-adapter";
 
 /** Cheat and debug chat commands (`/drop`, `/ding`...) only work when the server runs with DEBUG=true. */
 export function isAdminEnabled(): boolean {
@@ -53,7 +54,7 @@ function execute(ctx: CommandContext, rawMessage: string, command: string[]) {
           "Invalid /drop: no item matches that type, rarity, and key. Usage: /drop <type>-<rarity>-<itemKey>-<amount>",
         );
       }
-      scene.roomManager.rooms[player?.roomName].lootManager.create({
+      spawnLoot(scene, player?.roomName, {
         x: player?.x,
         y: player?.y,
         item: built,
@@ -104,7 +105,7 @@ function execute(ctx: CommandContext, rawMessage: string, command: string[]) {
         gunItem = ItemBuilder.rollDrop(100, 100);
       } while (gunItem?.rarity !== rarity);
       if (gunItem) {
-        scene.roomManager.rooms[player?.roomName].lootManager.create({
+        spawnLoot(scene, player?.roomName, {
           x: player?.x,
           y: player?.y,
           item: ItemBuilder.buildItem(gunItem.type, gunItem.rarity, gunItem.key) as Item,
