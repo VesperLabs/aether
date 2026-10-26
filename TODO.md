@@ -102,7 +102,7 @@ Found during the migration and left alone so behaviour stayed identical. Fix aft
 - [ ] **Client:** the Phaser entities' `destroy(true)` calls pass an argument that the overridden `destroy()` ignores.
 
 - [ ] **Server:** `grabLoot` and `changeDirection` assign `direction` straight from the payload, so a missing direction sets `player.direction` to `undefined`
-- [ ] **Server:** `chatNpc` with an unknown `npcId` and `enterDoor` with an unknown door name throw (the lookups are used without a check)
+- [ ] **Server:** `chatNpc` with an unknown `npcId` throws (the lookup is used without a check). `enterDoor` with an unknown door name is fixed.
 - [ ] **Server:** `/keepers/all` and `/players/all` do arithmetic on the raw query strings (`startIndex + pageSize` concatenates), so pagination breaks when `page` and `pageSize` are passed
 - [ ] **Persistence:** `pruneItemByKey` passes an async callback to the cursor's `forEach`, which doesn't await it, so the updates are fire-and-forget
 - [ ] **Types:** a player that left its room (door, disconnect) holds `room = null` and `roomName = null`, but `CharacterModel` types both as always set; widen the model and fix the callers (see `detachFromRoom` in `server/player-room.ts`)
