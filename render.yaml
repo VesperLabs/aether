@@ -4,7 +4,7 @@
 services:
   - type: web
     runtime: static
-    name: aether-wiki
+    name: aether
     autoDeployTrigger: off
     buildCommand: npm ci && npm run web:build
     staticPublishPath: ./public
