@@ -1,12 +1,13 @@
 import React from "react";
 import { CONSUMABLES_BASES } from "@/shared/rules/inventory";
 import type { ClientGameSocket } from "@/shared/network";
+import type { DropItem, HudCharacter } from "./context";
 
 interface ItemEventDeps {
-  hero: FullCharacterState;
+  hero: HudCharacter | null;
   bagState: Array<string>;
   toggleBagState: (id: string) => void;
-  setDropItem: React.Dispatch<React.SetStateAction<any>>;
+  setDropItem: React.Dispatch<React.SetStateAction<DropItem | null>>;
   socket: ClientGameSocket;
 }
 
@@ -18,8 +19,8 @@ export function createItemEventHandlers({
   setDropItem,
   socket,
 }: ItemEventDeps) {
-  function onDoubleClickItem(e) {
-    const { item, location } = e?.detail ?? {};
+  function onDoubleClickItem(e: WindowEventMap["HERO_DOUBLE_CLICK_ITEM"]) {
+    const { item, location } = e.detail;
     const isConsumable = CONSUMABLES_BASES.includes(item?.base);
 
     if (!["inventory", "abilities", "bag"].includes(location)) return;
@@ -37,9 +38,9 @@ export function createItemEventHandlers({
     }
   }
 
-  function onDropItem(e) {
-    const { target, location, bagId, slotKey, item } = e?.detail ?? {};
-    const { nodeName, dataset } = target ?? {};
+  function onDropItem(e: WindowEventMap["HERO_DROP_ITEM"]) {
+    const { target, location, bagId, slotKey, item } = e.detail;
+    const { nodeName, dataset } = target ?? ({} as Partial<HTMLElement>);
     if (hero?.state?.isDead) return;
     /* Not moving an item anywhere. (Same slot) */
     if (dataset?.location === location && dataset?.slotKey === slotKey && dataset.bagId === bagId) {
@@ -61,7 +62,7 @@ export function createItemEventHandlers({
           }
           return setDropItem({ ...item, location, bagId, action: "DROP_CONFIRM" });
         }
-        return socket.emit("dropItem", { item, bagId, location });
+        return socket.emit("dropItem", { item: { ...item }, bagId, location });
       }
     }
     /* Anywhere -> Shop */

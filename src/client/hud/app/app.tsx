@@ -10,29 +10,49 @@ import { ModalError } from "@/client/hud/menu/modal-error";
 import { MenuBar } from "@/client/hud/menu/menu-bar";
 import { ModalHome } from "@/client/hud/shop/modal-home";
 import { ThemeUIProvider, Box, useViewportSizeEffect, Modal } from "@/ui";
-import { getSpinDirection } from "@/client/input/spin-direction";
 import { getHudZoom } from "./hud-zoom";
 import "react-tooltip/dist/react-tooltip.css";
-import { Theme } from "theme-ui";
+import type { Theme } from "theme-ui";
 import { DEFAULT_USER_SETTINGS } from "@/shared/rules/world";
 import { VideoFrame } from "@/client/hud/video/video-frame";
 import { ModalSettings } from "@/client/hud/settings/modal-settings";
-import { AppContext } from "./context";
+import type Phaser from "phaser";
+import type Peer from "peerjs";
+import type { ChatMessage, ClientGameSocket, PartyMessage } from "@/shared/network";
+import type { Sign } from "@/client/views/sign";
+import {
+  AppContext,
+  type Cooldown,
+  type DropItem,
+  type ErrorModal,
+  type HudCharacter,
+  type KeeperView,
+  type PartyInvite,
+} from "./context";
+import { bindSocketHandlers, bindWindowHandlers, type SocketHandlers } from "./app-events";
+import { createWindowHandlers } from "./window-handlers";
 import { createHeroSyncHandlers } from "./hero-sync";
 import { createItemEventHandlers } from "./item-events";
 import { MenuGlobalKeys } from "./menu-global-keys";
-export function App({ socket, peer, debug, game }) {
-  const [currentTooltipId, setCurrentTooltipId] = useState(null);
+interface AppProps {
+  socket: ClientGameSocket;
+  peer: Peer;
+  debug: boolean;
+  game: Phaser.Game;
+}
+
+export function App({ socket, peer, debug, game }: AppProps) {
+  const [currentTooltipId, setCurrentTooltipId] = useState<string | null>(null);
   const [partyInvites, setPartyInvites] = useState<Array<PartyInvite>>([]);
-  const [party, setParty] = useState<any>();
-  const [players, setPlayers] = useState<Array<FullCharacterState>>([]);
+  const [party, setParty] = useState<PartyMessage | null>();
+  const [players, setPlayers] = useState<Array<HudCharacter>>([]);
   const [isConnected, setIsConnected] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [dropItem, setDropItem] = useState();
-  const [hero, setHero] = useState<FullCharacterState>(null);
-  const [keeper, setKeeper] = useState();
-  const [messages, setMessages] = useState([]);
+  const [dropItem, setDropItem] = useState<DropItem | null>(null);
+  const [hero, setHero] = useState<HudCharacter | null>(null);
+  const [keeper, setKeeper] = useState<KeeperView>();
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [tabKeeper, setTabKeeper] = useState(false);
   const [tabEquipment, setTabEquipment] = useState(false);
   const [tabInventory, setTabInventory] = useState(false);
@@ -46,11 +66,11 @@ export function App({ socket, peer, debug, game }) {
   const [showButtonChat, setShowButtonChat] = useState(false);
   const [bottomOffset, setBottomOffset] = useState(0);
   const [zoom, setZoom] = useState(getHudZoom());
-  const [bagState, setBagState] = useState([]);
-  const [sign, setSign] = useState(null);
-  const [error, setError] = useState(null);
-  const [cooldowns, setCooldowns] = useState({});
-  const [homeModal, setHomeModal] = useState(null);
+  const [bagState, setBagState] = useState<string[]>([]);
+  const [sign, setSign] = useState<Sign | null>(null);
+  const [error, setError] = useState<ErrorModal | null>(null);
+  const [cooldowns, setCooldowns] = useState<Record<string, Cooldown>>({});
+  const [homeModal, setHomeModal] = useState<KeeperView | null>(null);
   const [userSettings, setUserSettings] = useState<UserSettings>(() => DEFAULT_USER_SETTINGS);
   const [localVideoChatStream, setLocalVideoChatStream] = useState<MediaStream | null>(null);
   const [remoteVideoStreams, setRemoteVideoStreams] = useState<Record<string, MediaStream>>({});
@@ -68,7 +88,7 @@ export function App({ socket, peer, debug, game }) {
     });
   };
 
-  const addMessage = (payload: Message) => {
+  const addMessage = (payload: ChatMessage) => {
     setMessages((prev) => [...prev, { ...payload, timestamp: Date.now() }]);
   };
 
@@ -97,79 +117,38 @@ export function App({ socket, peer, debug, game }) {
     setTabKeeper(false);
     setMessages([]);
     setPlayers([]);
-    setParty([]);
+    setParty(null);
     setPartyInvites([]);
     setHero(null);
-    setKeeper(null);
+    setKeeper(undefined);
     setSign(null);
   };
 
-  const onKeeperDataUpdate = (args) => {
-    const scene = game.scene.getScene("SceneMain");
-    const hero = scene.hero;
-    const npc = scene.npcs.getChildren().find((n) => n?.id === args?.npcId);
-    if (hero?.state?.targetNpcId === args?.npcId) {
-      setKeeper({ ...npc, keeperData: args?.keeperData });
-      setHero((prev) => ({ ...prev, quests: args?.playerQuests }));
-      setTabKeeper(true);
-    }
-  };
+  const {
+    onKeeperDataUpdate,
+    onHeroChatNpc,
+    onUpdateHud,
+    onUpdateRoomPlayers,
+    onNearNpc,
+    onStartCooldown,
+    onLoadError,
+    onGameLoaded,
+  } = createWindowHandlers({
+    game,
+    socket,
+    addMessage,
+    setKeeper,
+    setHero,
+    setPlayers,
+    setTabKeeper,
+    setSign,
+    setShowButtonChat,
+    setCooldowns,
+    setError,
+    setIsLoaded,
+  });
 
-  const onHeroChatNpc = () => {
-    const scene = game.scene.getScene("SceneMain");
-    const hero = scene.hero;
-    const npcId = scene?.hero?.state?.targetNpcId;
-    const npcs = scene.npcs.getChildren();
-    const signs = scene.signs.getChildren();
-
-    const target = [...npcs, ...signs].find((n) => n?.id === npcId);
-
-    if (!target) {
-      return addMessage({ type: "error", message: "Who are you talking to?" });
-    }
-
-    if (target.kind === "keeper") {
-      return setTabKeeper((prev) => {
-        if (prev) return false; //already talking
-        socket.emit("chatNpc", { npcId: hero?.state?.targetNpcId });
-      });
-    }
-
-    if (target.kind === "sign") {
-      setSign(target);
-    }
-
-    const direction = getSpinDirection(hero, target);
-    if (hero?.direction !== direction) socket.emit("changeDirection", { direction });
-  };
-
-  const onUpdateHud = () => {
-    const hero: FullCharacterState = game.scene.getScene("SceneMain").hero;
-    setHero((prev) => ({ ...prev, state: hero?.state, stats: hero?.stats }));
-  };
-
-  /* Splice in some updates for keeping the party UI in sync */
-  const onUpdateRoomPlayers = (e) => {
-    const otherPlayers = e?.detail?.players?.filter((p) => !p.isHero);
-
-    setPlayers((players) => {
-      return players.map((player) => {
-        if (otherPlayers.some((p) => p.id === player.id)) {
-          const foundPlayer = otherPlayers?.find((p) => p.id === player.id);
-          return {
-            ...player,
-            stats: foundPlayer?.stats,
-            equipment: foundPlayer?.equipment,
-            profile: foundPlayer?.profile,
-          };
-        } else {
-          return player;
-        }
-      });
-    });
-  };
-
-  const onPartyInvite = (inviteData: PartyInvite) => {
+  const onPartyInvite: SocketHandlers["partyInvite"] = (inviteData) => {
     // Check if the party invite already exists
     const existingInvite = partyInvites.find((invite) => invite.partyId === inviteData.partyId);
     // Party invite already exists, do not add it again
@@ -179,10 +158,10 @@ export function App({ socket, peer, debug, game }) {
       message: `${inviteData?.inviter?.profile?.userName} has invited you to their party.`,
     });
     // Party invite doesn't exist, add it to the list
-    setPartyInvites((prevInvites) => [...prevInvites, inviteData]);
+    setPartyInvites((prevInvites) => [...prevInvites, inviteData as PartyInvite]);
   };
 
-  const onPartyUpdate = ({ message, party, partyId }) => {
+  const onPartyUpdate: SocketHandlers["partyUpdate"] = ({ message, party }) => {
     // remove the invite
     setPartyInvites([]);
     setParty(party);
@@ -191,51 +170,20 @@ export function App({ socket, peer, debug, game }) {
     }
   };
 
-  const onNearNpc = (e) => {
-    setShowButtonChat(!!e?.detail);
-    if (!e?.detail) {
-      setTabKeeper(false);
-      setSign(false);
-    }
-  };
-
-  const onStartCooldown = (e) => {
-    const { spellName, duration, startTime, sharedDuration } = e?.detail ?? {};
-    setCooldowns((prev) => {
-      // spellName !== 'attack', 'potion' update the shared base cooldown
-      if (sharedDuration) {
-        prev["global"] = { duration: sharedDuration, startTime };
-      }
-      return { ...prev, [spellName]: { duration, startTime } };
-    });
-  };
-
-  const onLoadError = () => {
-    setError({
-      title: "Error",
-      description:
-        "There was a problem loading some assets.  This is probably because I'm in the process of deploying a new version.  Refresh and come back later if stuff isn't loading.",
-    });
-  };
-
-  const onGameLoaded = () => {
-    setIsLoaded(true);
-  };
-
-  function onUpdateUserSetting({ name, value }) {
+  const onUpdateUserSetting: SocketHandlers["updateUserSetting"] = ({ name, value }) => {
     setUserSettings((prev) => ({
       ...DEFAULT_USER_SETTINGS,
       ...prev,
       [name]: value,
     }));
-  }
+  };
 
   useEffect(() => {
     // tell the server which peer we are
     peer.on("open", (peerId) => {
       socket.emit("peerInit", peerId);
     });
-    const socketHandlers = {
+    const unbindSocket = bindSocketHandlers(socket, {
       connect: onConnect,
       disconnect: onDisconnect,
       heroInit: onHeroInit,
@@ -243,14 +191,14 @@ export function App({ socket, peer, debug, game }) {
       playerUpdate: onPlayerUpdate,
       lootGrabbed: onLootGrabbed,
       keeperDataUpdate: onKeeperDataUpdate,
-      message: addMessage,
+      message: (message) => addMessage(message as ChatMessage), // called without one when there is nothing to say
       playerJoin: onPlayerJoin,
       remove: onPlayerLeave,
       partyInvite: onPartyInvite,
       partyUpdate: onPartyUpdate,
       updateUserSetting: onUpdateUserSetting,
-    };
-    const windowHandlers = {
+    });
+    const unbindWindow = bindWindowHandlers({
       HERO_NEAR_NPC: onNearNpc,
       HERO_CHAT_NPC: onHeroChatNpc,
       UPDATE_HUD: onUpdateHud,
@@ -261,24 +209,17 @@ export function App({ socket, peer, debug, game }) {
       HERO_START_COOLDOWN: onStartCooldown,
       HERO_DROP_ITEM: onDropItem,
       HERO_DOUBLE_CLICK_ITEM: onDoubleClickItem,
-    };
-    const anySocket = socket as any;
-    for (const [name, handler] of Object.entries(socketHandlers)) anySocket.on(name, handler);
-    for (const [name, handler] of Object.entries(windowHandlers)) {
-      window.addEventListener(name, handler);
-    }
+    });
 
     return () => {
-      for (const [name, handler] of Object.entries(socketHandlers)) anySocket.off(name, handler);
-      for (const [name, handler] of Object.entries(windowHandlers)) {
-        window.removeEventListener(name, handler);
-      }
+      unbindSocket();
+      unbindWindow();
     };
   }, []);
 
   useViewportSizeEffect(() => {
     const windowHeight = window.innerHeight;
-    const bodyHeight = window.visualViewport.height;
+    const bodyHeight = (window.visualViewport as VisualViewport).height;
     let offset = windowHeight - bodyHeight;
     setBottomOffset(offset > 0 ? offset : 0);
     setZoom(getHudZoom());
@@ -336,7 +277,7 @@ export function App({ socket, peer, debug, game }) {
           tabChat,
           keeper,
           tabKeeper,
-          hero,
+          hero: hero as HudCharacter,
           partyInvites,
           setPartyInvites,
           party,
