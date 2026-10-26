@@ -35,7 +35,6 @@ const LEGACY: Record<Rule, string[]> = {
   ],
   "index-logic": [
     "src/client/ui/index.tsx",
-    "src/shared/index.ts",
     "src/ui/index.tsx",
     "src/wiki/api/index.js",
     "src/wiki/index.tsx",
