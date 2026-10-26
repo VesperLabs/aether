@@ -42,12 +42,12 @@ Do the pure ones first. Write tests as each one moves.
 - [x] `movement`: tilemap collision, box collision and movement math, easystar pathfinding (from `Room.ts`)
 - [x] A `World` object in `rules/world/` replacing `ServerScene`, with a fixed-tick loop
 - [x] Delete `server/Phaser.ts`, then remove `canvas`, `jsdom`, the `require` swap and the canvas build packages from the Dockerfile
-- [x] Make game entities plain data. The server's `Character` no longer extends Phaser (shared `character-model.ts` mixin; the client class in `shared/character.ts` still mixes it into a Container). Remaining: server entities are still classes with methods that call the rules, and `character-model.ts` is loose-typed and lives outside `rules/` until it is strict-clean.
+- [x] Make game entities plain data. The server's `Character` no longer extends Phaser (shared `character-model.ts` mixin; the client class in `shared/character.ts` still mixes it into a Container). `rules/character/` is strict-clean. Remaining: server entities are still classes with methods that call the rules.
 - [ ] Client: sprites to `src/client/views/` as displays of game state, input to `input/`, interpolation and prediction to `net/`, and run the rules on the client for movement prediction (files are moved and `utils.ts` is gone; sprites are still Phaser-driven state and there is no prediction yet)
 - [x] Client: group `client/ui/` into `src/client/hud/<feature>/`
-- [ ] Remove any leftover loose files from `src/shared/` so it holds only `content/`, `rules/` and `network/`
+- [x] Remove any leftover loose files from `src/shared/` so it holds only `content/`, `rules/` and `network/`
 - [ ] Convert the remaining `.js` files to TypeScript (done, `allowJs` is off) and turn on strict mode repo-wide (not yet)
-- [ ] Replace lodash with modern JS where possible (all of `src/` except `src/shared/utils.ts`; then remove `lodash` from package.json)
+- [x] Replace lodash with modern JS where possible
 
 ## Done when
 
@@ -82,7 +82,7 @@ Found during the migration and left alone so behaviour stayed identical. Fix aft
 - [ ] **Combat:** `Player.doAttack` computes `spCost + stats?.spCost || 0`, which is NaN when `stats.spCost` is missing, so the SP cost is skipped
 - [ ] **Combat:** `calculateActiveItemSlots` throws for a buff with `percentStats` but no `stats`
 - [x] **NPC behavior:** `Npc.isTargetSuitableForSpell` uses bare `Math.random()`, so it can't be seeded
-- [ ] **Types:** `global.d.ts` still has `TickCharacterState`, `TickRoomState`, `RoomState`, `BuffRoomState` and `BuffCharacterState`, now unused or wrong (`BuffRoomState` claims full character state; `TickRoomState` has a `spells` key that's never sent). Delete them.
+- [x] **Types:** `global.d.ts` still has `TickCharacterState`, `TickRoomState`, `RoomState`, `BuffRoomState` and `BuffCharacterState`, now unused or wrong (`BuffRoomState` claims full character state; `TickRoomState` has a `spells` key that's never sent). Delete them.
 - [ ] **NPC behavior:** `checkTalking` removes entries from `talkingIds` while iterating, so the next entry is skipped that tick
 - [ ] **Combat:** `setLockedPlayerId(attacker.id)` stores the player `id`, but `Npc.update` looks the target up by socket id; this only works if the two are equal
 - [ ] **Client HUD:** `hud/app/app.tsx` registers its socket and window handlers once (`useEffect(..., [])`), so `onPartyInvite`, `onDropItem` and `onDoubleClickItem` read `partyInvites`, `hero` and `bagState` from the first render. Duplicate-invite checks, the dead-hero drop guard and closing an open bag on drop never see current state.
@@ -93,3 +93,4 @@ Found during the migration and left alone so behaviour stayed identical. Fix aft
 - [ ] **Movement:** NPC wall collision uses the profile-scaled `bodySize` as the box; Phaser used a fixed radius of 8
 - [ ] **Movement:** `Npc.waitAtSpawn` and the NPC attack/cast windups use bare `setTimeout`/`sleep`, so they keep running after the world is stopped and can't be driven by a test tick
 - [ ] **Server:** `shouldPause` logs "Game empty. Pausing." once at boot even though nothing was running
+- [ ] **Types:** `rules/character/character.ts` types `equipment`, `abilities` and `buffs` as `any` because server entities still use the global `Item` and `Buff` interfaces. Narrow them once those are replaced by content types.

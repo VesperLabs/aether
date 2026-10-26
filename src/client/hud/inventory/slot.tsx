@@ -17,7 +17,7 @@ import { assetToCanvas } from "@/ui/image-tint";
 import { isMobile } from "@/ui/is-mobile";
 import { itemHasRequiredStats } from "@/shared/rules/inventory";
 import { useDoubleTap } from "use-double-tap";
-import { isEqual, get } from "./props-equal";
+import { isEqual, get } from "@/ui/are-props-equal";
 
 const SpaceDonut = ({ percent = 0 }) => {
   const getColor = () => {
