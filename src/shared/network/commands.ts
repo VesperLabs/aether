@@ -65,7 +65,9 @@ export const commands = {
     direction: z.string().optional(),
     lastAngle: z.number().nullish(),
   }),
-  updateState: z.record(z.string(), z.unknown()),
+  updateState: z
+    .object({ isAiming: z.boolean().optional(), isHoldingAttack: z.boolean().optional() })
+    .strict(),
   enterDoor: z.string(),
   respawn: z.unknown(),
   /* The payload is ignored: the server uses the home of the keeper being talked to. */

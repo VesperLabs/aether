@@ -107,6 +107,16 @@ export function bindSceneSocket(scene: SceneMain) {
     }
   });
 
+  /* The server rejected our position (too fast, or inside a wall): snap back to its position. */
+  socket.on("positionCorrection", ({ x, y }) => {
+    const hero = scene.hero;
+    if (!hero?.body) return;
+    hero.body.reset(x, y);
+    hero.setPosition(x, y);
+    hero.vx = 0;
+    hero.vy = 0;
+  });
+
   socket.on("playerUpdate", (userData) => {
     const player = getPlayer(scene, userData.socketId);
     if (!player) return;
