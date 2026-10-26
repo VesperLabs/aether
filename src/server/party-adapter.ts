@@ -9,7 +9,7 @@ import {
   type PartyPlayer,
   type PartyResult,
 } from "@/shared/rules/party";
-import { getFullCharacterState } from "./utils";
+import { getFullCharacterState } from "@/shared/network/sync";
 
 /**
  * Legacy adapter between the party rules and the server scene: copies players into the rules'

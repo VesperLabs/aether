@@ -1,6 +1,7 @@
 import { ItemBuilder, isItemBuildRarity, ITEM_BUILD_RARITIES } from "@/shared/content";
 import type { CommandContext } from "@/server/net/command-context";
-import { getFullCharacterState, getRoomState } from "../utils";
+import { getFullCharacterState } from "@/shared/network/sync";
+import { getRoomState } from "@/server/net/room-sync";
 import { spawnLoot } from "../loot-adapter";
 
 /** Cheat and debug chat commands (`/drop`, `/ding`...) only work when the server runs with DEBUG=true. */

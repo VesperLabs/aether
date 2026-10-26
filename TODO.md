@@ -34,7 +34,7 @@ Do the pure ones first. Write tests as each one moves.
 - [x] `loot` (`LootManager`), `party` (`PartyManager`), `quests` (quest methods on `Character`, `Quest.ts`)
 - [x] `combat`, `spells`, `buffs` (methods on `shared/Character.ts`, `server/Character.ts`, `SpellManager`, `Spell.ts`)
 - [ ] `ai` (`server/Npc.ts`)
-- [ ] Move state packing (`get*RoomState`, `get*CharacterState`) into `network/sync/`
+- [x] Move state packing (`get*RoomState`, `get*CharacterState`) into `network/sync/`
 - [x] Route mob kills to loot, stats and quests through `mobKilled`
 
 ## Phase 4: Game core without Phaser on the server
@@ -82,3 +82,4 @@ Found during the migration and left alone so behaviour stayed identical. Fix aft
 - [ ] **Combat:** `Player.doAttack` computes `spCost + stats?.spCost || 0`, which is NaN when `stats.spCost` is missing, so the SP cost is skipped
 - [ ] **Combat:** `calculateActiveItemSlots` throws for a buff with `percentStats` but no `stats`
 - [ ] **AI:** `Npc.isTargetSuitableForSpell` uses bare `Math.random()`, so it can't be seeded
+- [ ] **Types:** `global.d.ts` still has `TickCharacterState`, `TickRoomState`, `RoomState`, `BuffRoomState` and `BuffCharacterState`, now unused or wrong (`BuffRoomState` claims full character state; `TickRoomState` has a `spells` key that's never sent). Delete them.
