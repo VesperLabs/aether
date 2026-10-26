@@ -87,6 +87,8 @@ export interface ServerToClientEvents {
   ) => void;
   /** A character left the room or the game. */
   remove: (socketId: string) => void;
+  /** The server rejected the hero's reported position: snap back to this one. */
+  positionCorrection: (position: { x: number; y: number }) => void;
   playerUpdate: (player: FullCharacterWire, meta?: { didLevel?: boolean }) => void;
   buffUpdate: (payload: {
     /** Buff changes from the tick, or whole characters when a party member levels. */

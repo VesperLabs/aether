@@ -7,6 +7,15 @@ import type { ParsedCommand } from "@/shared/network";
 import { addPlayerToRoom, removePlayerFromRoom } from "../../player-room";
 import { legacyUpdateMemberRoom } from "../../party-adapter";
 import type { CommandContext } from "@/server/net/command-context";
+import {
+  checkMove,
+  isWithinDoorRange,
+  startMoveTrack,
+  type MoveTrack,
+} from "@/shared/rules/movement";
+
+/** The last accepted position of each player. Server moves (doors, respawn) restart it. */
+const moveTracks = new WeakMap<Player, MoveTrack>();
 
 const getDoor = (world: ServerWorld, roomName: string, doorName: string) =>
   world?.doors?.[roomName]?.[doorName];
@@ -25,6 +34,35 @@ export function playerInput(ctx: CommandContext, input: ParsedCommand<"playerInp
   }
   const effectiveRoom = roomName ?? player.roomName;
   if (player.roomName !== effectiveRoom) return; // player is changing room
+  const room = player.room;
+  if (room) {
+    const now = Date.now();
+    const walkSpeed = player.stats?.walkSpeed ?? 100;
+    let track = moveTracks.get(player);
+    /* The server moved the player itself (door, respawn, spawn): trust that spot and start over. */
+    if (
+      !track ||
+      track.roomName !== player.roomName ||
+      track.x !== player.x ||
+      track.y !== player.y
+    ) {
+      track = startMoveTrack(player.roomName, player.x, player.y, now, walkSpeed);
+    }
+    const result = checkMove(track, { x, y }, now, {
+      grid: room.map.grid,
+      bounds: { width: room.map.widthInPixels, height: room.map.heightInPixels },
+      walkSpeed,
+      bodySize: player.bodySize,
+      bodyOffsetY: player.bodyOffsetY,
+    });
+    moveTracks.set(player, result.track);
+    if (!result.ok) {
+      player.vx = 0;
+      player.vy = 0;
+      ctx.socket.emit("positionCorrection", { x: player.x, y: player.y });
+      return;
+    }
+  }
   player.x = x;
   player.y = y;
   player.vx = vx;
@@ -49,23 +87,24 @@ export function updateState(ctx: CommandContext, state: ParsedCommand<"updateSta
   const { world, socketId } = ctx;
   const player = world?.players?.[socketId];
   if (!player) return;
-  // Loop through each key in the state object
-  for (const key in state) {
-    if (state.hasOwnProperty(key)) {
-      // Update the corresponding key in player's state
-      player.state[key] = state[key];
-    }
+  /* Only the two flags the client owns. The schema already drops anything else. */
+  if (typeof state.isAiming === "boolean") player.state.isAiming = state.isAiming;
+  if (typeof state.isHoldingAttack === "boolean") {
+    player.state.isHoldingAttack = state.isHoldingAttack;
   }
 }
 
 export function enterDoor(ctx: CommandContext, doorName: ParsedCommand<"enterDoor">) {
   const { world, socket, socketId } = ctx;
   const player = world.players[socketId];
+  if (!player?.room || player.state.isDead) return;
   const oldRoom = player.room.name;
   const prev = getDoor(world, oldRoom, doorName);
-  /* Doors in the maps always have a destination. */
-  const destMap = prev.destMap as string;
-  const next = getDoor(world, destMap, prev.destDoor as string);
+  if (!prev?.destMap || !prev.destDoor) return;
+  if (!isWithinDoorRange(player, prev)) return;
+  const destMap = prev.destMap;
+  const next = getDoor(world, destMap, prev.destDoor);
+  if (!next || !world.rooms[destMap]) return;
 
   if (oldRoom !== destMap) {
     socket.leave(oldRoom);
@@ -98,6 +137,7 @@ export function enterDoor(ctx: CommandContext, doorName: ParsedCommand<"enterDoo
 export function respawn(ctx: CommandContext) {
   const { world, socket, socketId } = ctx;
   const player = world.players[socketId];
+  if (!player?.room || !player.state.isDead) return;
   const oldRoom = player.room.name;
   const { roomName: newRoom, x: newX, y: newY } = player?.spawn ?? PLAYER_DEFAULT_SPAWN;
   player.state.isDead = false;
