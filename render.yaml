@@ -1,0 +1,22 @@
+# Render Blueprint for the wiki and static assets.
+# Deploys are triggered by .github/workflows/deploy.yml after CI passes on main,
+# so Render's own auto-deploy is off.
+services:
+  - type: web
+    runtime: static
+    name: aether
+    autoDeployTrigger: off
+    buildCommand: npm ci && npm run web:build
+    staticPublishPath: ./public
+    envVars:
+      - key: SERVER_URL
+        value: https://vesperlabs.fly.dev
+    routes:
+      # The wiki is a single-page app; let it handle its own routes
+      # (one or two path segments, e.g. /items or /players/abc).
+      - type: rewrite
+        source: /:a
+        destination: /index.html
+      - type: rewrite
+        source: /:a/:b
+        destination: /index.html
