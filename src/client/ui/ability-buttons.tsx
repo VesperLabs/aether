@@ -1,3 +1,4 @@
+import { spellDetails } from "@/shared/content";
 import {
   CONSUMABLES_BASES,
   POTION_BASES,
@@ -5,7 +6,6 @@ import {
   arePropsEqualWithKeys,
   isMobile,
   loadCacheImage,
-  spellDetails,
 } from "@/shared";
 import { CooldownTimer, ItemTooltip, SkillButton } from ".";
 import { Box, Flex, Text } from "@/ui";

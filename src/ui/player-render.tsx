@@ -1,8 +1,8 @@
+import { resolveAsset } from "@/shared/content";
 import {
   ACCESSORY_HIDING_HELMETS,
   HAIR_HIDING_HELMETS,
   filterVisibleEquipment,
-  resolveAsset,
   tintCanvas,
   loadCacheImage,
   HAIR_HIDING_ACCESSORIES,

@@ -1,5 +1,13 @@
 import "./phaser";
-import { mapList } from "@/shared/maps";
+import {
+  mapList,
+  ItemBuilder,
+  isItemBuildRarity,
+  ITEM_BUILD_RARITIES,
+  QuestBuilder,
+  skinTints,
+  hairTints,
+} from "@/shared/content";
 import { Socket, Server } from "socket.io";
 import path from "path";
 import crypto from "crypto";
@@ -19,16 +27,8 @@ import {
 import { RoomManager } from "./room-manager";
 import { PartyManager } from "./party-manager";
 import Phaser from "phaser";
-import { QuestBuilder } from "./quest-builder";
-import { ItemBuilder, isItemBuildRarity, ITEM_BUILD_RARITIES } from "@/shared/item-builder";
 import { isNil } from "lodash";
-import {
-  CONSUMABLES_BASES,
-  POTION_BASES,
-  skinTints,
-  hairTints,
-  DEFAULT_SERVER_FPS,
-} from "../shared";
+import { CONSUMABLES_BASES, POTION_BASES, DEFAULT_SERVER_FPS } from "../shared";
 import { createBaseUser } from "./db";
 import { cloneDeep } from "lodash";
 import { createSnapshot, createDeltaSnapshot } from "@/shared/net-snapshot";

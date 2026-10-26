@@ -1,5 +1,5 @@
 //@ts-nocheck
-import { ItemBuilder } from "@/shared/item-builder";
+import { ItemBuilder } from "@/shared/content";
 import { decodeWireDirection, encodeWireDirection } from "@/shared/net-wire";
 import { pickTickStateLite } from "@/shared/tick-state";
 

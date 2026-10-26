@@ -367,13 +367,13 @@ interface Quest {
 }
 
 interface QuestObjective {
-  id: string;
+  id: number;
   questId: string;
   type: string;
   item?: Array<string>;
   monster?: string;
   keeper?: string;
-  amount: integer;
+  amount?: integer;
 }
 interface PlayerQuest {
   questId: string;

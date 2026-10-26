@@ -1,5 +1,5 @@
 import { Room } from "./room";
-import { mapList } from "@/shared/maps";
+import { mapList } from "@/shared/content";
 
 export class RoomManager {
   public scene: ServerScene;

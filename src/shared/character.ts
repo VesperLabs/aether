@@ -9,7 +9,7 @@ import {
   RACES_WITH_ATTACK_ANIMS,
   RANGE_MULTIPLIER,
 } from "./utils";
-import { spellDetails } from ".";
+import { spellDetails } from "@/shared/content";
 
 export class Character extends Phaser.GameObjects.Container {
   startingCoords: Coordinate;

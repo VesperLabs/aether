@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import { Player } from "./game/player";
 import { LootItem } from "./game/loot-item";
 import { distanceTo } from "@/shared/utils";
-import { getMapByName } from "@/shared/maps";
+import { getMapByName } from "@/shared/content";
 
 function addPlayer(scene, user) {
   const player = new Player(scene, user);

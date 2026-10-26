@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import { playAudio, getSpinDirection } from "../utils";
+import { spellDetails } from "@/shared/content";
 import {
-  spellDetails,
   POTION_COOLDOWN,
   getAngleFromDirection,
   CONSUMABLES_BASES,

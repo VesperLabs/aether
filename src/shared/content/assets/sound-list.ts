@@ -1,0 +1,15 @@
+import type { NamedFileDefinition } from "./asset-types";
+
+export const soundList = [
+  { name: "spell-buff-1", src: "./assets/audio/spell-buff-1.mp3" },
+  { name: "melee-swing-1", src: "./assets/audio/melee-swing-1.mp3" },
+  { name: "melee-hit-1", src: "./assets/audio/melee-hit-1.mp3" },
+  { name: "item-leather", src: "./assets/audio/item-leather.mp3" },
+  { name: "item-sell", src: "./assets/audio/item-sell.mp3" },
+  { name: "item-bubble", src: "./assets/audio/item-bubble.mp3" },
+  { name: "spell-fireball", src: "./assets/audio/spell-fireball.mp3" },
+  { name: "spell-earth", src: "./assets/audio/spell-earth.mp3" },
+  { name: "spell-water", src: "./assets/audio/spell-water.mp3" },
+  { name: "spell-light", src: "./assets/audio/spell-light.mp3" },
+  { name: "spell-holy", src: "./assets/audio/spell-holy.wav" },
+] as const satisfies readonly NamedFileDefinition[];

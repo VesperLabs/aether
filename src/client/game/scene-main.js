@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import { Door } from "@/shared/door";
 import { Sign } from "@/shared/sign";
-import { getMapByName } from "@/shared/maps";
+import { getMapByName } from "@/shared/content";
 import { DEFAULT_USER_SETTINGS, distanceTo, isMobile, MINI_MAP_SIZE } from "@/shared/utils";
 import {
   DEFAULT_SERVER_FPS,

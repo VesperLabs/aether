@@ -1,13 +1,7 @@
 import { ServerCharacter as Character } from "./character";
-import { ItemBuilder } from "@/shared/item-builder";
-import {
-  BUFF_SPELLS,
-  ILVL_MULTIPLIER,
-  calculateStealthVisibilityPercent,
-  distanceTo,
-} from "@/shared/utils";
+import { ILVL_MULTIPLIER, ItemBuilder, spellDetails } from "@/shared/content";
+import { BUFF_SPELLS, calculateStealthVisibilityPercent, distanceTo } from "@/shared/utils";
 import { getCharacterDirection, randomNumber, SHOP_INFLATION, sleep } from "./utils";
-import spellDetails from "@/shared/data/spell-details.json";
 import crypto from "crypto";
 
 const AGGRO_KITE_RANGE = 220;

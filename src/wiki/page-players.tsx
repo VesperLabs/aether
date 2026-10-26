@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { PlayerRender } from "./player-render";
 import { TOOLTIP_STYLE, Label } from ".";
 import { Tooltip } from "react-tooltip";
-import { questList } from "@/shared";
+import { questList } from "@/shared/content";
 import { MenuAbilities, MenuBag, MenuEquipment, MenuInventory, MenuStats } from "@/client";
 import { useLocation } from "wouter";
 import { useInfiniteQuery } from "@tanstack/react-query";

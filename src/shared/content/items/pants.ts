@@ -1,0 +1,96 @@
+import type { ItemRarityTable } from "./item-types";
+
+export const pantsItems = {
+  common: {
+    clothPants: {
+      ilvl: 1,
+      name: "Cloth Pants",
+      base: "pants",
+      texture: "pants-cloth",
+      tint: "0xFFDDCC",
+      slot: "pants",
+      stats: { defense: [1, 2] },
+    },
+    leatherPants: {
+      ilvl: 2,
+      name: "Leather Pants",
+      base: "pants",
+      texture: "pants-cloth",
+      tint: "0xAA7744",
+      slot: "pants",
+      stats: {},
+    },
+    ghoulhidePants: {
+      ilvl: 3,
+      name: "Ghoulhide Pants",
+      base: "pants",
+      texture: "pants-cloth",
+      tint: "0x889988",
+      slot: "pants",
+      stats: {},
+    },
+  },
+  set: {
+    chetsChampions: {
+      ilvl: 1,
+      setName: "chets",
+      name: "Chet's Champions",
+      base: "pants",
+      texture: "pants-cloth",
+      tint: "0x6666DD",
+      slot: "pants",
+      stats: { vitality: [5, 10] },
+    },
+  },
+  unique: {
+    hauntedTrousers: {
+      ilvl: 1,
+      name: "Haunted Trousers",
+      base: "pants",
+      texture: "pants-cloth",
+      tint: "0x22AACC",
+      slot: "pants",
+      stats: {
+        critChance: [5, 6],
+        castDelay: [-25, -35],
+        dodgeChance: [5, 6],
+        dexterity: [5, 6],
+      },
+    },
+    greenTeaThreads: {
+      ilvl: 2,
+      name: "Green Tea's Threads",
+      base: "pants",
+      texture: "pants-cloth",
+      tint: "0x44AA66",
+      slot: "pants",
+      stats: { castDelay: [-25, -35], walkSpeed: 30, spellPower: [5, 6] },
+      triggers: [
+        {
+          event: "onHurt",
+          type: "buff",
+          name: "regeneration",
+          level: 2,
+          chance: 30,
+        },
+      ],
+    },
+    ferrousLeggings: {
+      ilvl: 3,
+      name: "Ferrous Leggings",
+      base: "pants",
+      texture: "pants-cloth",
+      tint: "0xFF6644",
+      slot: "pants",
+      stats: {
+        maxHp: [15, 20],
+        walkSpeed: 15,
+        defense: [10, 15],
+        attackDelay: [-15, -20],
+        fireResistance: [10, 15],
+        regenHp: [5, 6],
+      },
+      triggers: [{ event: "onHurt", type: "buff", name: "brute", level: 2, chance: 30 }],
+    },
+  },
+} as const satisfies ItemRarityTable;
