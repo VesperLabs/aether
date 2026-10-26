@@ -329,11 +329,7 @@
       }
     },
     {
-      "files": [
-        "src/client/views/player.ts",
-        "src/client/scenes/hud-scene.ts",
-        "src/client/hud/menu/menu-hud.tsx"
-      ],
+      "files": ["src/client/views/player.ts", "src/client/scenes/hud-scene.ts"],
       "rules": {
         "max-lines": "off"
       }
