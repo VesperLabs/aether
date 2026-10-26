@@ -13,6 +13,7 @@ import { markKeeperObjectivesReady, nextNpcKillCount } from "@/shared/rules/ques
 import { applyAcceptQuest, applyCompleteQuest } from "./player-quests";
 import type { MobKilledEvent } from "@/shared/rules/events";
 import {
+  type FoundSlot,
   addInventoryItem,
   deleteAbilityAtId,
   deleteBagItemAtId,
@@ -170,7 +171,7 @@ export class Player extends ServerCharacter {
     return applyCompleteQuest(this, this.world.quests?.[questId]);
   }
   /* Inventory, equipment, bags and abilities: the rules live in shared/rules/inventory */
-  findEquipmentById(id: string): any {
+  findEquipmentById(id: string): FoundSlot {
     return findEquipmentById(this.equipment, id);
   }
   clearEquipmentSlot(slotName: string) {
@@ -219,7 +220,7 @@ export class Player extends ServerCharacter {
   addInventoryItem(item: Item) {
     this.inventory = addInventoryItem(this.inventory, item);
   }
-  findAbilityById(id: string): any {
+  findAbilityById(id: string): FoundSlot {
     return findAbilityById(this.abilities, id);
   }
   subtractAbilityAtId(id: string, amount: number) {

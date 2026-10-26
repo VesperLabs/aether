@@ -1,12 +1,17 @@
 import { MAX_INVENTORY_ITEMS } from "@/shared/rules/inventory";
-import { acceptQuest, completeQuest, getPlayerQuestStatus } from "@/shared/rules/quests";
+import {
+  acceptQuest,
+  completeQuest,
+  getPlayerQuestStatus,
+  type QuestProgressInput,
+} from "@/shared/rules/quests";
 
 /** The parts of a live player that quest turn-in reads and changes. */
 interface QuestPlayer {
   quests: PlayerQuest[];
   npcKills: Record<string, number>;
-  inventory: any;
-  abilities: any;
+  inventory: QuestProgressInput["inventory"];
+  abilities: QuestProgressInput["abilities"];
   gold: number;
   isInventoryFull(): boolean;
   addInventoryItem(item: Item): void;

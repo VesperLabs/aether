@@ -42,7 +42,7 @@ export function grabLoot(
   }
   /* Delete loot from server */
   removeLoot(world, key);
-  if (outcome === "stack") {
+  if (outcome === "stack" && stackTarget) {
     stackTarget.amount = addStackAmounts(stackTarget.amount, item?.amount);
   } else {
     player.addInventoryItem(item);
