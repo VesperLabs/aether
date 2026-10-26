@@ -125,7 +125,7 @@ interface Room {
   collideLayer: Phaser.Tilemaps.TilemapLayer;
   doors: Phaser.Physics.Arcade.Group;
   colliders: Array<any>;
-  spellManager: any;
+  spellState: any;
   playerManager: any;
   npcManager: any;
   lootState: any;

@@ -335,9 +335,7 @@
         "src/client/game/scene-main.js",
         "src/client/ui/app.tsx",
         "src/client/ui/menu-hud.tsx",
-        "src/server/character.ts",
-        "src/server/npc.ts",
-        "src/shared/character.ts"
+        "src/server/npc.ts"
       ],
       "rules": {
         "max-lines": "off"

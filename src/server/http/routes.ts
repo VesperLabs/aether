@@ -2,7 +2,7 @@ import type { Express } from "express";
 
 import type { GameServer } from "../game-server";
 import { applyCalculatedStats } from "../character-stats";
-import { getFullCharacterState } from "../utils";
+import { getFullCharacterState } from "@/shared/network/sync";
 
 interface RouteDeps {
   aetherServer: GameServer;

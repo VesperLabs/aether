@@ -1,16 +1,36 @@
 import Phaser from "phaser";
+import { getAngleFromDirection, filterVisibleEquipment, BLANK_TEXTURE, BODY_SIZE } from "./utils";
+import { getBuff, hasBuff } from "@/shared/rules/buffs";
 import {
-  capitalize,
-  getAngleFromDirection,
-  filterVisibleEquipment,
-  BLANK_TEXTURE,
   POTION_COOLDOWN,
-  BODY_SIZE,
-  RACES_WITH_ATTACK_ANIMS,
-  RANGE_MULTIPLIER,
-} from "./utils";
-import { spellDetails } from "@/shared/content";
+  checkAttackReady,
+  getAttackActionName,
+  getAttackSpCost,
+  getCooldown,
+  getFullAttackDelay,
+  getWeaponRange,
+  hasAttackableWeapons,
+  hasMeleeWeapon,
+  hasMeleeWeaponLeft,
+  hasMeleeWeaponRight,
+  hasRangedWeapon,
+  hasRangedWeaponLeft,
+  hasRangedWeaponRight,
+  hasShield,
+  hasShieldLeft,
+  hasShieldRight,
+  hasVisibleWeaponType,
+  hasWeapon,
+  hasWeaponLeft,
+  hasWeaponRight,
+  isDualWielding,
+  isOutOfCombat,
+  modifyStat,
+  type EquipmentKey,
+  type Hand,
+} from "@/shared/rules/combat";
 import { getPlayerQuestStatus } from "@/shared/rules/quests";
+import { canCastSpell, checkCastReady, getAbilityDetails } from "@/shared/rules/spells";
 
 export class Character extends Phaser.GameObjects.Container {
   startingCoords: Coordinate;
@@ -161,10 +181,10 @@ export class Character extends Phaser.GameObjects.Container {
     this.add(this.hitBox);
   }
   hasBuff(name: string): boolean {
-    return this.buffs?.some((b) => b?.name === name);
+    return hasBuff(this.buffs, name);
   }
   getBuff(name: string): Buff {
-    return this.buffs?.find((b) => b?.name === name);
+    return getBuff(this.buffs, name) as Buff;
   }
   doAttack(props: any) {
     //placeholder
@@ -173,219 +193,111 @@ export class Character extends Phaser.GameObjects.Container {
     //placeholder
   }
   modifyStat(key: string, amount: any) {
-    const stat: integer = parseInt(this?.stats?.[key]);
-    const intAmount: integer = parseInt(amount);
-
-    const maxStat = this?.stats?.["max" + capitalize(key)];
-    if (typeof stat === "undefined") return;
-    if (typeof maxStat === "undefined") return;
-    if (stat + intAmount > maxStat) {
-      this.stats[key] = maxStat;
-      return;
-    }
-    if (stat + intAmount < 0) {
-      this.stats[key] = 0;
-      return;
-    }
-    this.stats[key] += intAmount;
+    const value = modifyStat(this.stats, key, amount);
+    if (value !== undefined) this.stats[key] = value;
   }
   getFullAttackDelay() {
-    let attackDelay = this.stats.attackDelay;
-    if (this.isDualWielding()) {
-      attackDelay = (attackDelay + 60) / 2;
-    }
-    return attackDelay;
+    return getFullAttackDelay(this.stats.attackDelay, this.isDualWielding());
   }
   checkAttackReady() {
-    const attackDelay = this.getFullAttackDelay();
-    const cooldown = attackDelay;
-    const timeElapsed = Date.now() - this.state.lastAttack;
-    const timeRemaining = Math.max(cooldown - timeElapsed, 0);
-    const percentageRemaining = (timeRemaining / cooldown) * 100;
-    const isReady = percentageRemaining === 0;
-    this.state.isAttacking = !isReady;
-    return { cooldown, timeRemaining, timeElapsed, percentageRemaining, isReady };
+    const result = checkAttackReady({
+      attackDelay: this.stats.attackDelay,
+      isDualWielding: this.isDualWielding(),
+      lastAttack: this.state.lastAttack,
+      now: Date.now(),
+    });
+    this.state.isAttacking = !result.isReady;
+    return result;
   }
   checkPotionCooldown() {
-    const cooldown = POTION_COOLDOWN; // Cooldown time in milliseconds
-    const timeElapsed = Date.now() - this.state.lastPotion;
-    const timeRemaining = Math.max(cooldown - timeElapsed, 0);
-    const percentageRemaining = (timeRemaining / cooldown) * 100;
-    const isReady = percentageRemaining === 0;
+    const { percentageRemaining, timeRemaining, isReady } = getCooldown(
+      POTION_COOLDOWN,
+      this.state.lastPotion,
+      Date.now(),
+    );
     this.state.isPotioning = !isReady;
     return { percentageRemaining, timeRemaining, isReady };
   }
-  getWeaponRange(hand = "handLeft") {
-    const weaponRange = this?.visibleEquipment?.[hand]?.stats?.range;
-    if (weaponRange) {
-      return (this?.visibleEquipment?.[hand]?.stats?.range || 1) * RANGE_MULTIPLIER;
-      /* NPCs attack at this range  */
-    } else return 8 + this.bodySize;
+  getWeaponRange(hand: Hand = "handLeft") {
+    return getWeaponRange(this, hand);
   }
   checkOutOfCombat() {
-    const isOutOfCombat = Date.now() - this.state.lastCombat > 5000;
-    return isOutOfCombat;
+    return isOutOfCombat(this.state.lastCombat, Date.now());
   }
-  static hasWeapon(character, key = "visibleEquipment") {
-    return Character.hasWeaponLeft(character, key) || Character.hasWeaponRight(character, key);
+  isDualWielding(key: EquipmentKey = "visibleEquipment") {
+    return isDualWielding(this, key);
   }
-  static hasWeaponLeft(character, key = "visibleEquipment") {
-    return ["weapon", "ranged"].includes(character?.[key]?.handLeft?.type);
+  hasWeaponLeft(key: EquipmentKey = "visibleEquipment") {
+    return hasWeaponLeft(this, key);
   }
-  static hasWeaponRight(character, key = "visibleEquipment") {
-    return (
-      ["weapon", "ranged"].includes(character?.[key]?.handRight?.type) ||
-      character.profile.race !== "human"
-    );
+  hasWeaponRight(key: EquipmentKey = "visibleEquipment") {
+    return hasWeaponRight(this, key);
   }
-  static hasShieldLeft(character, key = "visibleEquipment") {
-    return ["shield"].includes(character?.[key]?.handLeft?.type);
+  hasShieldLeft(key: EquipmentKey = "visibleEquipment") {
+    return hasShieldLeft(this, key);
   }
-  static hasShieldRight(character, key = "visibleEquipment") {
-    return ["shield"].includes(character?.[key]?.handRight?.type);
+  hasShieldRight(key: EquipmentKey = "visibleEquipment") {
+    return hasShieldRight(this, key);
   }
-  static hasShield(character, key = "visibleEquipment") {
-    return Character.hasShieldLeft(character, key) || Character.hasShieldRight(character, key);
+  hasRangedWeaponLeft(key: EquipmentKey = "visibleEquipment") {
+    return hasRangedWeaponLeft(this, key);
   }
-  static hasRangedWeaponLeft(character, key = "visibleEquipment") {
-    return ["ranged"].includes(character?.[key]?.handLeft?.type);
+  hasRangedWeaponRight(key: EquipmentKey = "visibleEquipment") {
+    return hasRangedWeaponRight(this, key);
   }
-  static hasRangedWeaponRight(character, key = "visibleEquipment") {
-    return ["ranged"].includes(character?.[key]?.handRight?.type);
+  hasMeleeWeaponLeft(key: EquipmentKey = "visibleEquipment") {
+    return hasMeleeWeaponLeft(this, key);
   }
-  static hasRangedWeapon(character, key = "visibleEquipment") {
-    return (
-      Character.hasRangedWeaponLeft(character, key) ||
-      Character.hasRangedWeaponRight(character, key)
-    );
+  hasMeleeWeaponRight(key: EquipmentKey = "visibleEquipment") {
+    return hasMeleeWeaponRight(this, key);
   }
-  static hasMeleeWeaponLeft(character, key = "visibleEquipment") {
-    return ["weapon"].includes(character?.[key]?.handLeft?.type);
+  hasWeapon(key: EquipmentKey = "visibleEquipment") {
+    return hasWeapon(this, key);
   }
-  static hasMeleeWeaponRight(character, key = "visibleEquipment") {
-    return ["weapon"].includes(character?.[key]?.handRight?.type);
+  hasShield(key: EquipmentKey = "visibleEquipment") {
+    return hasShield(this, key);
   }
-  static hasMeleeWeapon(character, key = "visibleEquipment") {
-    return (
-      Character.hasMeleeWeaponLeft(character, key) || Character.hasMeleeWeaponRight(character, key)
-    );
+  hasRangedWeapon(key: EquipmentKey = "visibleEquipment") {
+    return hasRangedWeapon(this, key);
   }
-  static hasAttackableWeapons(character, key = "visibleEquipment") {
-    // Double shields or Bow+Other is a nono
-    const hasRangedAndOther =
-      Character.hasRangedWeapon(character, key) &&
-      (Character.isDualWielding(character, key) || Character.hasShield(character, key));
-    const hasDoubleShields =
-      Character.hasShieldLeft(character, key) && Character.hasShieldRight(character, key);
-    if (hasRangedAndOther || hasDoubleShields) return false;
-    return true;
+  hasMeleeWeapon(key: EquipmentKey = "visibleEquipment") {
+    return hasMeleeWeapon(this, key);
   }
-  static hasVisibleWeaponType(character, weaponType: "melee" | "ranged", key = "visibleEquipment") {
-    if (
-      weaponType === "melee" &&
-      Character.hasAttackableWeapons(character, key) &&
-      Character.hasMeleeWeapon(character, key)
-    ) {
-      return true;
-    }
-    return false;
+  hasAttackableWeapons(key: EquipmentKey = "visibleEquipment") {
+    return hasAttackableWeapons(this, key);
   }
-  static isDualWielding(character, key = "visibleEquipment") {
-    return Character.hasWeaponLeft(character, key) && Character.hasWeaponRight(character, key);
-  }
-  isDualWielding(key = "visibleEquipment") {
-    return Character.isDualWielding(this, key);
-  }
-  hasWeaponLeft(key = "visibleEquipment") {
-    return Character.hasWeaponLeft(this, key);
-  }
-  hasWeaponRight(key = "visibleEquipment") {
-    return Character.hasWeaponRight(this, key);
-  }
-  hasShieldLeft(key = "visibleEquipment") {
-    return Character.hasShieldLeft(this, key);
-  }
-  hasShieldRight(key = "visibleEquipment") {
-    return Character.hasShieldRight(this, key);
-  }
-  hasRangedWeaponLeft(key = "visibleEquipment") {
-    return Character.hasRangedWeaponLeft(this, key);
-  }
-  hasRangedWeaponRight(key = "visibleEquipment") {
-    return Character.hasRangedWeaponRight(this, key);
-  }
-  hasMeleeWeaponLeft(key = "visibleEquipment") {
-    return Character.hasMeleeWeaponLeft(this, key);
-  }
-  hasMeleeWeaponRight(key = "visibleEquipment") {
-    return Character.hasMeleeWeaponRight(this, key);
-  }
-  hasWeapon(key = "visibleEquipment") {
-    return Character.hasWeapon(this, key);
-  }
-  hasShield(key = "visibleEquipment") {
-    return Character.hasShield(this, key);
-  }
-  hasRangedWeapon(key = "visibleEquipment") {
-    return Character.hasRangedWeapon(this, key);
-  }
-  hasMeleeWeapon(key = "visibleEquipment") {
-    return Character.hasMeleeWeapon(this, key);
-  }
-  hasAttackableWeapons(key = "visibleEquipment") {
-    return Character.hasAttackableWeapons(this, key);
-  }
-  hasVisibleWeaponType(weaponType, key = "visibleEquipment") {
-    return Character.hasVisibleWeaponType(this, weaponType, key);
+  hasVisibleWeaponType(weaponType: "melee" | "ranged", key: EquipmentKey = "visibleEquipment") {
+    return hasVisibleWeaponType(this, weaponType, key);
   }
   checkCastReady(spellName?: string) {
-    const now = Date.now();
-    let isThisSpellReady = true;
-    if (spellName) {
-      const baseCooldown = spellDetails?.[spellName]?.baseCooldown ?? 0;
-      const lastCast = this.state.lastCast?.[spellName] ?? 0;
-      isThisSpellReady = now - lastCast > this?.stats?.castDelay + baseCooldown;
-    }
-    const isGlobalReady = now - this.state.lastCast.global > this?.stats?.castDelay;
-    return isThisSpellReady && isGlobalReady;
+    return checkCastReady({
+      spellName,
+      lastCast: this.state.lastCast,
+      castDelay: this?.stats?.castDelay,
+      now: Date.now(),
+    });
   }
   canCastSpell(abilitySlot, shouldUpdateState = true) {
-    //if the ability slotId is not in the activeItemSlots return
-    if (this?.hasBuff("stun")) return;
-    if (this.state.isDead) return false;
-    if (!abilitySlot) return true; //ignore attacks
-    if (this.kind === "player") {
-      if (!this?.activeItemSlots?.includes?.(`${abilitySlot}`)) return;
-    }
-
-    const ability: Item = this?.abilities?.[abilitySlot];
-    const spellName = ability?.base;
-    if (!this.checkCastReady(spellName)) return false;
-    const mpCost = ability?.stats?.mpCost || 0;
-    const hpCost = ability?.stats?.hpCost || 0;
-    const spCost = ability?.stats?.spCost || 0;
-
-    if (shouldUpdateState) {
-      this.state.lastCast.global = Date.now();
-      if (spellName) {
-        this.state.lastCast[spellName] = Date.now();
-      }
-    }
-
-    return this?.stats?.mp >= mpCost && this?.stats?.hp > hpCost && this?.stats?.sp >= spCost;
+    const { allowed, castTimes } = canCastSpell({
+      abilitySlot,
+      isStunned: this?.hasBuff("stun"),
+      isDead: this.state.isDead,
+      kind: this.kind,
+      activeItemSlots: this.activeItemSlots,
+      abilities: this.abilities,
+      stats: this.stats,
+      lastCast: this.state.lastCast,
+      now: Date.now(),
+      shouldUpdateState,
+    });
+    if (castTimes) Object.assign(this.state.lastCast, castTimes);
+    return allowed;
   }
   getAbilityDetails(abilitySlot: number) {
-    let ability: Item;
-    let spellName: string;
-
-    if (!abilitySlot) {
-      spellName = this.hasRangedWeapon() ? "attack-ranged" : "attack-melee";
-    } else {
-      ability = this?.abilities?.[abilitySlot];
-      spellName = ability?.base;
-    }
-
-    return { ...ability, ...spellDetails?.[spellName], spellName };
+    return getAbilityDetails(
+      { abilities: this.abilities, hasRangedWeapon: this.hasRangedWeapon() },
+      abilitySlot,
+    );
   }
   updateVisibleEquipment() {
     this.visibleEquipment = this.getVisibleEquipment();
@@ -395,50 +307,13 @@ export class Character extends Phaser.GameObjects.Container {
   }
   getAttackActionName({ count, abilitySlot }: { count: number; abilitySlot?: number }) {
     const ability = this.getAbilityDetails(abilitySlot);
-
-    let spellName = "attack-melee";
-    let action = this.action;
-
-    // Check if the race of the profile has attack animations
-    if (!RACES_WITH_ATTACK_ANIMS.includes(this.profile.race)) {
-      return { action, spellName };
-    }
-
-    // Determine the action and spell name based on the count and weapon availability
-    if (count === 1) {
-      if (this.hasWeaponRight()) {
-        action = "attack_right";
-        spellName =
-          ability?.base ?? (this.hasRangedWeaponRight() ? "attack-ranged" : "attack-melee");
-      } else if (this.hasWeaponLeft()) {
-        action = "attack_left";
-        spellName =
-          ability?.base ?? (this.hasRangedWeaponLeft() ? "attack-ranged" : "attack-melee");
-      }
-    } else if (count === 2 && this.hasWeaponLeft()) {
-      action = "attack_left";
-      spellName = ability?.base ?? (this.hasRangedWeaponRight() ? "attack-ranged" : "attack-melee");
-    }
-
-    return { ...ability, action, spellName };
+    return getAttackActionName(this, { action: this.action, ability, count });
   }
   getPlayerQuestStatus(quest: Quest) {
     return getPlayerQuestStatus(this, quest);
   }
   getAttackSpCost(count: number) {
-    const visibleEquipment = this.getVisibleEquipment();
-
-    if (count === 1) {
-      return (
-        visibleEquipment?.handRight?.stats?.spCost || visibleEquipment?.handLeft?.stats?.spCost || 0
-      );
-    }
-
-    if (count === 2) {
-      return visibleEquipment?.handLeft?.stats?.spCost || 0;
-    }
-
-    return 1;
+    return getAttackSpCost(this.getVisibleEquipment(), count);
   }
   destroy() {
     if (this.scene) this.scene.events.off("update", this.update, this);

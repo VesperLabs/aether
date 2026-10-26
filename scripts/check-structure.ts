@@ -22,7 +22,6 @@ const LEGACY: Record<Rule, string[]> = {
     "src/server/npc-manager.ts",
     "src/server/player-manager.ts",
     "src/server/room-manager.ts",
-    "src/server/spell-manager.ts",
   ],
   "spec-file": [],
   "tsx-without-jsx": [

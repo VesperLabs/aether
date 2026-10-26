@@ -1,4 +1,7 @@
 import { ServerCharacter as Character } from "./character";
+import { createSpell } from "./spell-adapter";
+import { isRespawnDue } from "@/shared/rules/combat";
+import { canHitPlayer } from "@/shared/rules/spells";
 import { ItemBuilder, spellDetails } from "@/shared/content";
 import { BUFF_SPELLS, calculateStealthVisibilityPercent, distanceTo } from "@/shared/utils";
 import { getCharacterDirection, sleep } from "./utils";
@@ -77,7 +80,13 @@ export class Npc extends Character implements Npc {
   }
   tryRespawn() {
     if (!this.state.isDead) return;
-    if (Date.now() - this.state.deadTime >= this.respawnTime) {
+    if (
+      isRespawnDue({
+        deadTime: this.state.deadTime,
+        respawnTime: this.respawnTime,
+        now: Date.now(),
+      })
+    ) {
       this.x = this.startingCoords.x;
       this.y = this.startingCoords.y;
       this.calculateStats(true);
@@ -241,14 +250,15 @@ export class Npc extends Character implements Npc {
 
     this.dispelBuffsByProperty("dispelBeforeAttack");
 
-    room?.spellManager.create({
-      caster: this,
-      target: targetPlayer,
-      spellName,
-      castAngle,
-      ilvl: ability?.ilvl,
-      abilitySlot,
-    });
+    if (room)
+      createSpell(room, {
+        caster: this,
+        target: targetPlayer,
+        spellName,
+        castAngle,
+        ilvl: ability?.ilvl,
+        abilitySlot,
+      });
 
     scene.io.to(room?.name).emit("npcCastSpell", { id, castAngle, abilitySlot });
   }
@@ -323,15 +333,16 @@ export class Npc extends Character implements Npc {
 
     this.dispelBuffsByProperty("dispelBeforeAttack");
 
-    room?.spellManager.create({
-      caster: this,
-      target,
-      spellName,
-      direction,
-      action,
-      castAngle,
-      ilvl: 1,
-    });
+    if (room)
+      createSpell(room, {
+        caster: this,
+        target,
+        spellName,
+        direction,
+        action,
+        castAngle,
+        ilvl: 1,
+      });
 
     scene.io.to(room?.name).emit("npcAttack", { id, count, direction, castAngle });
   }
@@ -525,7 +536,6 @@ export class Npc extends Character implements Npc {
     const roomName: string = room?.name;
     const players: Array<ServerPlayer> = room?.playerManager?.getPlayers();
     const { allowedTargets } = this.getAbilityDetails(abilitySlot);
-    const targetIsInParty = false;
 
     let hitList: Array<Hit> = [];
 
@@ -533,15 +543,9 @@ export class Npc extends Character implements Npc {
 
     for (const player of players) {
       if (!ids?.includes(player.id)) continue;
-      // only allow spells to hit intended targets
-      if (!allowedTargets?.includes("self")) {
-        if (player.id === this.id) continue;
-      }
-      if (!allowedTargets?.includes("enemy")) {
-        if (player.id !== this.id && !targetIsInParty) continue;
-      }
-      if (!allowedTargets.includes("ally")) {
-        if (targetIsInParty) continue;
+      // only allow spells to hit intended targets (npcs have no party)
+      if (!canHitPlayer({ allowedTargets, isSelf: player.id === this.id, isPartyMember: false })) {
+        continue;
       }
       const newHits = this.calculateDamage(player, abilitySlot);
 

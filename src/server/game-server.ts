@@ -4,10 +4,11 @@ import { subscribeQuests } from "@/shared/rules/quests";
 import { subscribeStats } from "@/shared/rules/stats";
 import { subscribeLoot, type LootItem } from "@/shared/rules/loot";
 import { updateRoomLoot, spawnLoot } from "./loot-adapter";
+import { expireSpells } from "./spell-adapter";
 import { ILVL_MULTIPLIER, ItemBuilder, mapList, QuestBuilder } from "@/shared/content";
 import { Server } from "socket.io";
 import path from "path";
-import { getTickRoomState, getBuffRoomState } from "./utils";
+import { getTickRoomState, getBuffRoomState } from "@/server/net/room-sync";
 import { RoomManager } from "./room-manager";
 import { createPartyState, type PartyState } from "@/shared/rules/party";
 import Phaser from "phaser";
@@ -101,7 +102,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
     for (const room of Object.values(scene.roomManager.rooms)) {
       /* Simulate first so snapshots match what clients see on the next frame (loot expiry, spawns). */
       updateRoomLoot(scene, room);
-      room.spellManager.expireSpells();
+      expireSpells(room);
 
       room.snapshotSeq += 1;
 

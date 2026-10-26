@@ -1,7 +1,17 @@
 import Phaser from "phaser";
 const Sprite = Phaser.GameObjects.Sprite;
-import { spellDetails } from "@/shared/content";
-import { BUFF_SPELLS, distanceTo } from "../shared";
+import { distanceTo } from "../shared";
+import {
+  BUFF_SPELLS,
+  getSpellShape,
+  getSpellVelocity,
+  isBehindCaster,
+  isSpellExpired,
+  isSpellVictimCandidate,
+  resolveSpellDetails,
+  usesLeftHand,
+  usesRightHand,
+} from "@/shared/rules/spells";
 import { ServerCharacter } from "./character";
 
 export class Spell extends Phaser.GameObjects.Container {
@@ -18,8 +28,6 @@ export class Spell extends Phaser.GameObjects.Container {
   private maxActiveTime: integer;
   private maxDistance: integer;
   private bodySize: integer;
-  private scaleBase: number;
-  private scaleMultiplier: number;
   private spellSpeed: integer;
   private hitIds: Array<string>;
   private direction: string;
@@ -70,28 +78,24 @@ export class Spell extends Phaser.GameObjects.Container {
     this.abilitySlot = abilitySlot;
     this.action = action ?? "attack_right";
 
-    let details = spellDetails?.[spellName];
-    if (!details) {
-      console.log("❌ Shit, the spell does not exist in spellDetails!");
-      details = spellDetails?.["attack-melee"];
-    }
+    const { details, found } = resolveSpellDetails(spellName);
+    if (!found) console.log("❌ Shit, the spell does not exist in spellDetails!");
+    const shape = getSpellShape(details, ilvl);
 
-    this.isMeleeAttack = details?.isMeleeAttack;
-    this.isRangedAttack = details?.isRangedAttack;
-    this.allowedTargets = details?.allowedTargets;
-    this.maxActiveTime = details?.maxActiveTime;
-    this.bodySize = details?.bodySize;
-    this.spellSpeed = details?.spellSpeed;
-    this.scaleBase = details?.scaleBase ?? 1;
-    this.scaleMultiplier = details?.scaleMultiplier ?? 0;
-    this.maxDistance = details?.maxDistance ?? -1; //for ranged attacks
-    this.isMissile = details?.isMissile ?? false;
+    this.isMeleeAttack = shape.isMeleeAttack;
+    this.isRangedAttack = shape.isRangedAttack;
+    this.allowedTargets = shape.allowedTargets as string[];
+    this.maxActiveTime = shape.maxActiveTime;
+    this.bodySize = shape.bodySize;
+    this.spellSpeed = shape.spellSpeed;
+    this.maxDistance = shape.maxDistance; //for ranged attacks
+    this.isMissile = shape.isMissile;
 
     scene.physics.add.existing(this);
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
 
-    this.setScale(this.scaleBase + ilvl * this.scaleMultiplier);
+    this.setScale(shape.scale);
     this.body.setCircle(this?.bodySize, -this?.bodySize, -this?.bodySize);
 
     if (this.isMeleeAttack) {
@@ -103,7 +107,7 @@ export class Spell extends Phaser.GameObjects.Container {
         this.y = this.caster.y;
       }
 
-      if (this.action.includes("attack_left")) {
+      if (usesLeftHand(this.action)) {
         const rangeLeft = caster?.getWeaponRange("handLeft");
         this.body.setCircle(rangeLeft, -rangeLeft, -rangeLeft);
         this.spell.displayWidth = viewSize * rangeLeft;
@@ -111,7 +115,7 @@ export class Spell extends Phaser.GameObjects.Container {
       }
 
       // npcs without attack animations will stand here
-      if (this.action.includes("attack_right") || this.action === "stand") {
+      if (usesRightHand(this.action)) {
         const rangeRight = caster?.getWeaponRange("handRight");
         this.body.setCircle(rangeRight, -rangeRight, -rangeRight);
         this.spell.displayWidth = viewSize * rangeRight;
@@ -120,17 +124,15 @@ export class Spell extends Phaser.GameObjects.Container {
     }
 
     if (this.isRangedAttack) {
-      this.velocityX = Math.cos(castAngle) * this?.spellSpeed;
-      this.velocityY = Math.sin(castAngle) * this?.spellSpeed;
+      ({ x: this.velocityX, y: this.velocityY } = getSpellVelocity(castAngle, this.spellSpeed));
       this.spell.setRotation(castAngle);
-      this.maxDistance = this.action.includes("attack_left")
+      this.maxDistance = usesLeftHand(this.action)
         ? caster?.getWeaponRange("handLeft")
         : caster?.getWeaponRange("handRight");
     }
     if (this.isMissile) {
       // for the ball attacks
-      this.velocityX = Math.cos(castAngle) * this?.spellSpeed;
-      this.velocityY = Math.sin(castAngle) * this?.spellSpeed;
+      ({ x: this.velocityX, y: this.velocityY } = getSpellVelocity(castAngle, this.spellSpeed));
       this.spell.setRotation(castAngle);
     }
     if (spellName == "quake") {
@@ -147,10 +149,13 @@ export class Spell extends Phaser.GameObjects.Container {
     /* TODO: When we add buffs, make sure they do the same as adjustSpellPosition on clientside */
   }
   update() {
-    const isRanged = this?.maxDistance > -1;
-    this.state.isExpired = isRanged
-      ? distanceTo(this, this.spawnPoint) >= this.maxDistance
-      : Date.now() - this.state.spawnTime > this.maxActiveTime;
+    this.state.isExpired = isSpellExpired({
+      maxDistance: this.maxDistance,
+      distanceFromSpawn: distanceTo(this, this.spawnPoint),
+      spawnTime: this.state.spawnTime,
+      lifetime: this.maxActiveTime,
+      now: Date.now(),
+    });
 
     if (this.state.isExpired) {
       // Casting stealth won't dispel anything.
@@ -171,23 +176,24 @@ export class Spell extends Phaser.GameObjects.Container {
     const isNpcSingleTargetMelee = target?.id && caster?.kind !== "player" && this.isMeleeAttack;
 
     [...npcs, ...players]?.every((victim) => {
-      if (!victim || this.hitIds.includes(victim?.id) || victim?.state?.isDead) return true;
-
-      /* If its not a self-hitting spell */
-      if (!allowedTargets?.includes("self") && victim?.id === caster?.id) return true;
-
-      /* If its a single target skip all other targets */
-      if (target?.id && victim?.id !== target?.id) return true;
+      if (!victim) return true;
+      if (
+        !isSpellVictimCandidate({
+          victimId: victim.id,
+          victimIsDead: victim.state?.isDead,
+          hitIds: this.hitIds,
+          allowedTargets,
+          casterId: caster?.id,
+          targetId: target?.id,
+        })
+      ) {
+        return true;
+      }
       /* Make hitbox smaller for npc melee hits. */
       const body = isNpcSingleTargetMelee ? victim : victim?.hitBox;
       if (scene.physics.overlap(body, this)) {
         /* For attacks, prevent collision behind the player */
-        if (this.isMeleeAttack) {
-          if (direction === "up" && victim.y > caster.y) return true;
-          if (direction === "down" && victim.y < caster.y) return true;
-          if (direction === "left" && victim.x > caster.x) return true;
-          if (direction === "right" && victim.x < caster.x) return true;
-        }
+        if (this.isMeleeAttack && isBehindCaster(direction, victim, caster)) return true;
 
         // keep track of all the characters this spell hit
         this.hitIds.push(victim.id);

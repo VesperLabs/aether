@@ -1,10 +1,6 @@
-import {
-  handlePlayerInput,
-  getFullCharacterState,
-  getRoomState,
-  getDoor,
-  PLAYER_DEFAULT_SPAWN,
-} from "../../utils";
+import { handlePlayerInput, getDoor, PLAYER_DEFAULT_SPAWN } from "../../utils";
+import { getFullCharacterState } from "@/shared/network/sync";
+import { getRoomState } from "@/server/net/room-sync";
 import type { ParsedCommand } from "@/shared/network";
 import { legacyUpdateMemberRoom } from "../../party-adapter";
 import type { CommandContext } from "@/server/net/command-context";

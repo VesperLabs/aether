@@ -1,3 +1,4 @@
+import type { BuffCharacterWire, FullCharacterWire } from "./sync/character-state";
 import type { NetSnapshot } from "./sync/net-snapshot";
 
 /*
@@ -31,8 +32,8 @@ export interface LootMessage {
 }
 
 export interface RoomStateMessage {
-  players: CharacterMessage[];
-  npcs: CharacterMessage[];
+  players: FullCharacterWire[];
+  npcs: FullCharacterWire[];
   loots: LootMessage[];
 }
 
@@ -81,15 +82,16 @@ export interface ServerToClientEvents {
   /** Room tick: a keyframe or a delta, see `network/sync`. */
   update: (snapshot: NetSnapshot) => void;
   playerJoin: (
-    player: CharacterMessage,
+    player: FullCharacterWire,
     meta?: { isLogin?: boolean; isRespawn?: boolean; lastTeleport?: number },
   ) => void;
   /** A character left the room or the game. */
   remove: (socketId: string) => void;
-  playerUpdate: (player: CharacterMessage, meta?: { didLevel?: boolean }) => void;
+  playerUpdate: (player: FullCharacterWire, meta?: { didLevel?: boolean }) => void;
   buffUpdate: (payload: {
-    players?: CharacterMessage[];
-    npcs?: CharacterMessage[];
+    /** Buff changes from the tick, or whole characters when a party member levels. */
+    players?: Array<BuffCharacterWire | FullCharacterWire>;
+    npcs?: BuffCharacterWire[];
     playerIdsThatLeveled?: string[];
   }) => void;
   lootSpawned: (payload: { loot: LootMessage; npcId: string | null }) => void;

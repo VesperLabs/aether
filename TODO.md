@@ -32,9 +32,9 @@ Do the pure ones first. Write tests as each one moves.
       (Remaining legacy hooks: `assignExp` level-up on `server/character.ts`, `useGetBaseCharacterDefaults` in `server/utils.ts` for starting items and spawn.)
 - [x] `inventory`: `moveItem`, `dropItem`, `consumeItem` from `GameServer.ts` and the inventory methods on `shared/Character.ts`
 - [x] `loot` (`LootManager`), `party` (`PartyManager`), `quests` (quest methods on `Character`, `Quest.ts`)
-- [ ] `combat`, `spells`, `buffs` (methods on `shared/Character.ts`, `server/Character.ts`, `SpellManager`, `Spell.ts`)
+- [x] `combat`, `spells`, `buffs` (methods on `shared/Character.ts`, `server/Character.ts`, `SpellManager`, `Spell.ts`)
 - [ ] `ai` (`server/Npc.ts`)
-- [ ] Move state packing (`get*RoomState`, `get*CharacterState`) into `network/sync/`
+- [x] Move state packing (`get*RoomState`, `get*CharacterState`) into `network/sync/`
 - [x] Route mob kills to loot, stats and quests through `mobKilled`
 
 ## Phase 4: Game core without Phaser on the server
@@ -77,3 +77,9 @@ Found during the migration and left alone so behaviour stayed identical. Fix aft
 - [ ] **Inventory:** `deleteAbilityAtId` with an unknown id writes `abilities["null"] = null`
 - [ ] **Inventory:** a move between unsupported slots (equipment ↔ abilities) still saves and emits `playerUpdate`
 - [ ] **Inventory:** buying a stackable that merges into an existing stack ignores a non-blank destination slot
+- [ ] **Buffs:** `expireBuffs` splices while iterating, so when two neighbouring buffs expire in the same tick only the first is removed
+- [ ] **Combat:** `modifyStat`'s undefined check can never be true (`parseInt` gives NaN), so a NaN stat stays NaN
+- [ ] **Combat:** `Player.doAttack` computes `spCost + stats?.spCost || 0`, which is NaN when `stats.spCost` is missing, so the SP cost is skipped
+- [ ] **Combat:** `calculateActiveItemSlots` throws for a buff with `percentStats` but no `stats`
+- [ ] **AI:** `Npc.isTargetSuitableForSpell` uses bare `Math.random()`, so it can't be seeded
+- [ ] **Types:** `global.d.ts` still has `TickCharacterState`, `TickRoomState`, `RoomState`, `BuffRoomState` and `BuffCharacterState`, now unused or wrong (`BuffRoomState` claims full character state; `TickRoomState` has a `spells` key that's never sent). Delete them.
