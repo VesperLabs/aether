@@ -34,7 +34,7 @@ Do the pure ones first. Write tests as each one moves.
 - [x] `loot` (`LootManager`), `party` (`PartyManager`), `quests` (quest methods on `Character`, `Quest.ts`)
 - [ ] `combat`, `spells`, `buffs` (methods on `shared/Character.ts`, `server/Character.ts`, `SpellManager`, `Spell.ts`)
 - [ ] `ai` (`server/Npc.ts`)
-- [ ] Move state packing (`get*RoomState`, `get*CharacterState`) into `network/sync/`
+- [x] Move state packing (`get*RoomState`, `get*CharacterState`) into `network/sync/`
 - [x] Route mob kills to loot, stats and quests through `mobKilled`
 
 ## Phase 4: Game core without Phaser on the server
@@ -77,3 +77,4 @@ Found during the migration and left alone so behaviour stayed identical. Fix aft
 - [ ] **Inventory:** `deleteAbilityAtId` with an unknown id writes `abilities["null"] = null`
 - [ ] **Inventory:** a move between unsupported slots (equipment ↔ abilities) still saves and emits `playerUpdate`
 - [ ] **Inventory:** buying a stackable that merges into an existing stack ignores a non-blank destination slot
+- [ ] **Types:** `global.d.ts` still has `TickCharacterState`, `TickRoomState`, `RoomState`, `BuffRoomState` and `BuffCharacterState`, now unused or wrong (`BuffRoomState` claims full character state; `TickRoomState` has a `spells` key that's never sent). Delete them.
