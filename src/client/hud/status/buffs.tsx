@@ -3,15 +3,25 @@ import { Divider, Flex, Icon, Text } from "@/ui";
 import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
 import { formatStats } from "@/ui/format-stats";
 import { buffList } from "@/shared/content";
+import type { ThemeUIStyleObject } from "theme-ui";
+import type { ActiveBuff } from "@/shared/rules/buffs";
+import type { HudCharacter } from "@/client/hud/app/context";
 import { Tooltip } from "@/client/hud/tooltips/tooltip";
 import { TooltipLabel } from "@/client/hud/tooltips/tooltip-label";
 import { TextDivider } from "@/client/hud/menu/text-divider";
 
-const BuffTooltip = ({ buff, tooltipId, timeLeft, player }) => {
+interface BuffProps {
+  buff: ActiveBuff;
+  tooltipId: string;
+  player?: Partial<HudCharacter> | null;
+}
+
+const BuffTooltip = ({ buff, tooltipId, timeLeft, player }: BuffProps & { timeLeft: number | undefined }) => {
   const stats = buff?.name === "rest" ? { regenHp: player?.stats?.regenHp } : buff?.stats;
   const combinedStats = formatStats(stats);
-  const description = buffList?.[buff?.name]?.description;
-  const displayTime = timeLeft < 0 ? "∞" : (timeLeft / 1000)?.toFixed(0);
+  const description = (buffList as Record<string, { description?: string }>)?.[buff?.name as string]
+    ?.description;
+  const displayTime = (timeLeft as number) < 0 ? "∞" : ((timeLeft as number) / 1000)?.toFixed(0);
   return (
     <Tooltip id={tooltipId}>
       <Flex
@@ -25,7 +35,7 @@ const BuffTooltip = ({ buff, tooltipId, timeLeft, player }) => {
         }}
       >
         <Text>
-          {"Lv." + buff?.level + " " + buff?.name.charAt(0).toUpperCase() + buff?.name.slice(1)}
+          {"Lv." + buff?.level + " " + buff?.name?.charAt(0).toUpperCase() + buff?.name?.slice(1)}
         </Text>
         <TextDivider>Time: {displayTime}</TextDivider>
         {Object.keys(combinedStats).map((key) => (
@@ -35,7 +45,7 @@ const BuffTooltip = ({ buff, tooltipId, timeLeft, player }) => {
         ))}
         {Object.keys(buff?.percentStats || {}).map((key) => (
           <Text key={key}>
-            <TooltipLabel>{key}:</TooltipLabel> {buff?.percentStats[key]}%
+            <TooltipLabel>{key}:</TooltipLabel> {buff?.percentStats?.[key]}%
           </Text>
         ))}
         {!!description && <Divider />}
@@ -49,12 +59,12 @@ const BuffTooltip = ({ buff, tooltipId, timeLeft, player }) => {
   );
 };
 
-const Buff = ({ buff, tooltipId, player }) => {
-  const [timeLeft, setTimeLeft] = useState<any>();
+const Buff = ({ buff, tooltipId, player }: BuffProps) => {
+  const [timeLeft, setTimeLeft] = useState<number>();
 
   useEffect(() => {
     const updateTimeLeft = () => {
-      const timeDiff = buff?.spawnTime + buff?.duration - Date.now();
+      const timeDiff = (buff?.spawnTime as number) + (buff?.duration as number) - Date.now();
       setTimeLeft(timeDiff);
     };
 
@@ -65,7 +75,8 @@ const Buff = ({ buff, tooltipId, player }) => {
   }, [buff]);
 
   // Determine if the blinking animation should be applied
-  const isBlinking = timeLeft >= 0 && timeLeft <= buff?.duration * 0.25;
+  const isBlinking =
+    (timeLeft as number) >= 0 && (timeLeft as number) <= (buff?.duration as number) * 0.25;
 
   // Define the blinking style
   const blinkingStyle = isBlinking
@@ -80,7 +91,6 @@ const Buff = ({ buff, tooltipId, player }) => {
 
   return (
     <>
-      {/*@ts-ignore-next-line*/}
       <BuffTooltip
         key={buff?.name}
         buff={buff}
@@ -100,7 +110,7 @@ const Buff = ({ buff, tooltipId, player }) => {
 };
 
 export const Buffs = memo(
-  ({ player, sx }: any) => {
+  ({ player, sx }: { player?: Partial<HudCharacter> | null; sx?: ThemeUIStyleObject }) => {
     const buffs = player?.buffs;
     return (
       <Flex
@@ -112,7 +122,7 @@ export const Buffs = memo(
         }}
       >
         <Flex sx={{ flexDirection: "row-reverse", gap: 1, height: 24 }}>
-          {buffs?.map((buff: Buff) => {
+          {buffs?.map((buff: ActiveBuff) => {
             const tooltipId = `buffs-${buff?.name}-${player?.id}`;
             return <Buff key={tooltipId} tooltipId={tooltipId} buff={buff} player={player} />;
           })}

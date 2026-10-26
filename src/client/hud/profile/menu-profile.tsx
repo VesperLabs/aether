@@ -1,11 +1,20 @@
-import { memo } from "react";
+import { memo, type ReactNode } from "react";
+import type { CharacterMenuProps } from "@/client/hud/menu/menu-props";
 import { useAppContext } from "@/client/hud/app/context";
 import { MenuButton } from "@/client/hud/menu/menu-button";
 import { BigPortrait } from "@/client/hud/status/big-portrait";
 import { Flex, Text, Input, Box, MENU_MAX_WIDTH, Menu, MenuHeader } from "@/ui";
 import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
 
-const MenuPicker = ({ children, onPlus = () => {}, onMinus = () => {} }) => {
+const MenuPicker = ({
+  children,
+  onPlus = () => {},
+  onMinus = () => {},
+}: {
+  children?: ReactNode;
+  onPlus?: () => void;
+  onMinus?: () => void;
+}) => {
   return (
     <Flex
       sx={{
@@ -34,7 +43,7 @@ const MenuPicker = ({ children, onPlus = () => {}, onMinus = () => {} }) => {
 };
 
 export const MenuProfile = memo(
-  ({ player, isOpen, setIsOpen }: any) => {
+  ({ player, isOpen, setIsOpen }: CharacterMenuProps) => {
     const { socket } = useAppContext();
 
     return (

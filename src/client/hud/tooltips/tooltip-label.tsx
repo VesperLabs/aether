@@ -1,3 +1,4 @@
+import type { ComponentProps } from "react";
 import { Text } from "@/ui";
 
-export const TooltipLabel = (props) => <Text sx={{ fontWeight: "normal" }} {...props} />;
+export const TooltipLabel = (props: ComponentProps<typeof Text>) => <Text sx={{ fontWeight: "normal" }} {...props} />;

@@ -1,17 +1,34 @@
 import { Fragment } from "react";
 import { Flex, Text, Divider, Icon } from "@/ui";
-import { buffList, itemSetList, ItemBuilder, spellDetails } from "@/shared/content";
+import {
+  buffList,
+  itemSetList,
+  ItemBuilder,
+  spellDetails,
+  type BuffName,
+  type BuiltItem,
+  type ItemSetName,
+  type TriggerDefinition,
+} from "@/shared/content";
+import type { HudCharacter } from "@/client/hud/app/context";
 import { formatStats } from "@/ui/format-stats";
 import { CONSUMABLES_BASES, itemHasRequiredStats } from "@/shared/rules/inventory";
 import { TooltipLabel } from "./tooltip-label";
 import { TextDivider } from "@/client/hud/menu/text-divider";
 import { Tooltip } from "./tooltip";
 
-export const ItemTooltip = ({ player, item, tooltipId, show }) => {
+interface ItemTooltipProps {
+  player?: Partial<HudCharacter> | null;
+  item?: BuiltItem | null;
+  tooltipId: string;
+  show: boolean;
+}
+
+export const ItemTooltip = ({ player, item, tooltipId, show }: ItemTooltipProps) => {
   const isSetActive = player?.state?.activeSets?.includes?.(item?.setName);
   if (!item) return;
 
-  const setBonus = ItemBuilder.getSetInfo(item?.setName);
+  const setBonus = ItemBuilder.getSetInfo(item?.setName as string);
   const combinedStats = formatStats(item?.stats);
   const combinedSetStats = formatStats(setBonus?.stats);
   const combinedEffects = formatStats(item?.effects);
@@ -22,7 +39,7 @@ export const ItemTooltip = ({ player, item, tooltipId, show }) => {
   const hasEffects = Object.keys(combinedEffects)?.length > 0;
   const isDoubleClickable = [...CONSUMABLES_BASES, "bag"].includes(item.base);
   const isSpell = item?.type === "spell";
-  const numSetPieces = itemSetList?.[item?.setName]?.pieces;
+  const numSetPieces = itemSetList?.[item?.setName as ItemSetName]?.pieces;
 
   return (
     <Tooltip id={tooltipId} isOpen={show}>
@@ -54,7 +71,7 @@ export const ItemTooltip = ({ player, item, tooltipId, show }) => {
         ))}
         {Object.keys(item?.percentStats || {}).map((key) => (
           <Text key={key}>
-            <TooltipLabel>{key}:</TooltipLabel> {item?.percentStats[key]}%
+            <TooltipLabel>{key}:</TooltipLabel> {item?.percentStats?.[key]}%
           </Text>
         ))}
         {hasEffects && <TextDivider>Effects</TextDivider>}
@@ -67,12 +84,18 @@ export const ItemTooltip = ({ player, item, tooltipId, show }) => {
         })}
         {Object.keys(buffs).map((buffName) => {
           const buffLevel = buffs[buffName];
+          const buff = buffList?.[buffName as BuffName] as
+            | { duration?: number; stats?: Record<string, number> }
+            | undefined;
           const buffStats = formatStats({
-            duration: Number(buffList?.[buffName]?.duration) * Number(buffLevel),
-            ...Object.entries(buffList?.[buffName]?.stats || {}).reduce((acc, [key, value]) => {
-              acc[key] = Number(value) * Number(buffLevel);
-              return acc;
-            }, {}),
+            duration: Number(buff?.duration) * Number(buffLevel),
+            ...Object.entries(buff?.stats || {}).reduce<Record<string, number>>(
+              (acc, [key, value]) => {
+                acc[key] = Number(value) * Number(buffLevel);
+                return acc;
+              },
+              {},
+            ),
           });
 
           return (
@@ -90,7 +113,7 @@ export const ItemTooltip = ({ player, item, tooltipId, show }) => {
             </Fragment>
           );
         })}
-        {triggers?.map((trigger: Trigger, idx) => {
+        {triggers?.map((trigger: TriggerDefinition, idx: number) => {
           return (
             <Text key={idx}>
               <TooltipLabel>
@@ -107,7 +130,7 @@ export const ItemTooltip = ({ player, item, tooltipId, show }) => {
           return (
             <Text
               key={key}
-              color={itemHasRequiredStats({ requirements, player, key }) ? "text" : "danger"}
+              color={itemHasRequiredStats({ requirements, player: player ?? undefined, key }) ? "text" : "danger"}
             >
               <TooltipLabel>{key}:</TooltipLabel> {requirements[key]}
             </Text>
@@ -133,7 +156,7 @@ export const ItemTooltip = ({ player, item, tooltipId, show }) => {
                 <TooltipLabel>{key}:</TooltipLabel> {combinedSetStats[key]}
               </Text>
             ))}
-            {setBonus?.triggers?.map((trigger: Trigger, idx) => {
+            {setBonus?.triggers?.map((trigger: TriggerDefinition, idx: number) => {
               return (
                 <Text key={idx} color={isSetActive ? "set" : "gray.500"}>
                   <TooltipLabel>
@@ -150,7 +173,7 @@ export const ItemTooltip = ({ player, item, tooltipId, show }) => {
         {item?.space && (
           <>
             <TextDivider>Space</TextDivider>
-            {`${item?.items?.filter((i: Item) => i)?.length || 0} / ${item?.space}`}
+            {`${item?.items?.filter((i) => i)?.length || 0} / ${item?.space}`}
           </>
         )}
         <Divider />
@@ -171,7 +194,7 @@ export const ItemTooltip = ({ player, item, tooltipId, show }) => {
           </>
         )}
 
-        {isSpell && spellDetails?.[item?.base]?.description && (
+        {isSpell && (spellDetails as Record<string, { description?: string }>)?.[item?.base]?.description && (
           <>
             <Text
               sx={{
@@ -184,7 +207,7 @@ export const ItemTooltip = ({ player, item, tooltipId, show }) => {
                 whiteSpace: "normal",
               }}
             >
-              {spellDetails?.[item?.base]?.description}
+              {(spellDetails as Record<string, { description?: string }>)?.[item?.base]?.description}
             </Text>
             <Divider />
           </>
@@ -192,7 +215,7 @@ export const ItemTooltip = ({ player, item, tooltipId, show }) => {
         <Flex sx={{ alignItems: "center", gap: 2 }}>
           <Flex sx={{ alignItems: "center", gap: "2px" }}>
             <Icon icon="./assets/icons/gold.png" size={16} />
-            {item?.cost * (item?.amount || 1)}
+            {(item?.cost as number) * (item?.amount || 1)}
           </Flex>
           {item?.stats?.mpCost && (
             <Flex sx={{ alignItems: "center", gap: "2px" }}>
