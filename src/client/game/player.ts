@@ -1,7 +1,7 @@
 // @ts-nocheck
 import Phaser from "phaser";
+import { Character } from "@/shared/character";
 import {
-  Character,
   HAIR_HIDING_HELMETS,
   FACE_HIDING_HELMETS,
   ACCESSORY_HIDING_HELMETS,
