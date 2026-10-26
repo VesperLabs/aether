@@ -96,7 +96,7 @@ const TintedIconLoader = ({ cooldowns, slotKey, item, applyTintAndSetIcon, hero 
   );
 };
 
-const AbilityButtons = memo(
+export const AbilityButtons = memo(
   ({ hero, cooldowns }: any) => {
     const abilities = Object.entries(hero?.abilities || {}).filter(([slotKey, _]) =>
       hero.activeItemSlots.includes(slotKey),
@@ -155,5 +155,3 @@ const AbilityButtons = memo(
     "hero.state",
   ]),
 );
-
-export default AbilityButtons;

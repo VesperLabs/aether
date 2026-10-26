@@ -3,7 +3,7 @@ import { resolveAsset } from "@/shared/assets";
 const Sprite = Phaser.GameObjects.Sprite;
 const BLANK_TEXTURE = "human-blank";
 
-class LootItem extends Phaser.GameObjects.Container {
+export class LootItem extends Phaser.GameObjects.Container {
   constructor(scene, loot) {
     super(scene, loot.x, loot.y);
     this.scene = scene;
@@ -41,5 +41,3 @@ class LootItem extends Phaser.GameObjects.Container {
     super.destroy();
   }
 }
-
-export default LootItem;

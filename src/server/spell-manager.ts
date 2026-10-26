@@ -1,7 +1,7 @@
 import crypto from "crypto";
-import Spell from "./spell";
+import { Spell } from "./spell";
 
-class SpellManager {
+export class SpellManager {
   public scene: ServerScene;
   public room: Room;
   public spells: any;
@@ -37,5 +37,3 @@ class SpellManager {
     delete scene.spells?.[id];
   }
 }
-
-export default SpellManager;

@@ -1,6 +1,6 @@
 import Phaser from "phaser";
-import Player from "./game/player";
-import LootItem from "./game/loot-item";
+import { Player } from "./game/player";
+import { LootItem } from "./game/loot-item";
 import { distanceTo } from "@/shared/utils";
 import { getMapByName } from "@/shared/maps";
 

@@ -14,7 +14,7 @@ interface KeyboardButtonProps {
   type?: "button" | "submit" | "reset";
 }
 
-const KeeperButton: FC<KeyboardButtonProps> = ({
+export const KeyboardButton: FC<KeyboardButtonProps> = ({
   keyboardKey,
   onClick,
   children,
@@ -52,5 +52,3 @@ const KeeperButton: FC<KeyboardButtonProps> = ({
     </Button>
   );
 };
-
-export default KeeperButton;

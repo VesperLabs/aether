@@ -63,7 +63,7 @@ const SocialGrid = (props) => {
   );
 };
 
-const MenuSocial = memo(
+export const MenuSocial = memo(
   ({ players, hero, isOpen, setIsOpen, party }: any) => {
     const partyIds = party?.members?.map((p) => p?.id);
     const otherPlayers = players?.filter((p) => !partyIds?.includes(p?.id) && hero?.id !== p?.id);
@@ -164,5 +164,3 @@ const MemoizedColumn = memo(
     if (prev?.player && !next?.player) return true;
   },
 );
-
-export default MenuSocial;

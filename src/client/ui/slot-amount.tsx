@@ -1,6 +1,6 @@
 import { Box } from "@/ui";
 
-const SlotAmount = (props) => (
+export const SlotAmount = (props) => (
   <Box
     sx={{
       position: "absolute",
@@ -12,5 +12,3 @@ const SlotAmount = (props) => (
     {...props}
   />
 );
-
-export default SlotAmount;

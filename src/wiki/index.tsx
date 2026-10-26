@@ -42,6 +42,6 @@ export const STATIC_ROW_STYLES = {
   left: 0,
 };
 
-export { default as RowTitle } from "./row-title";
-export { default as Footer } from "./footer";
-export { default as Metrics } from "./metrics";
+export { RowTitle } from "./row-title";
+export { Footer } from "./footer";
+export { Metrics } from "./metrics";

@@ -2,7 +2,7 @@ import { Box, Icon, Flex, Text, Divider } from "@/ui";
 import { useAppContext } from ".";
 import { useEffect, useState } from "react";
 import { isMobile, msToHours } from "@/shared";
-import Tooltip from "./tooltip";
+import { Tooltip } from "./tooltip";
 
 const STATUS_TOOLTIP_ID = "STATUS_TOOLTIP_ID";
 
@@ -88,7 +88,7 @@ const StatusToolTip = ({ show }) => {
   );
 };
 
-const StatusIcon = (props) => {
+export const StatusIcon = (props) => {
   const [hovering, setHovering] = useState(false);
 
   const handleMouseEnter = (e) => {
@@ -134,5 +134,3 @@ const StatusIcon = (props) => {
     </Box>
   );
 };
-
-export default StatusIcon;

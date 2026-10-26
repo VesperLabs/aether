@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Modal, Flex, Input, KeyboardButton, Icon, Text, Box } from "@/ui";
 import { useAppContext } from ".";
 import { CLASS_ICON_MAP } from "@/shared";
-import Tooltip from "./tooltip";
+import { Tooltip } from "./tooltip";
 
 const accordionEase = "cubic-bezier(0.33, 1, 0.68, 1)";
 const accordionDuration = "0.3s";
@@ -51,7 +51,7 @@ const IconPen = ({ sx }: { sx?: any }) => (
   />
 );
 
-const ModalLogin = (props: any) => {
+export const ModalLogin = (props: any) => {
   const storedEmail = localStorage.getItem("email") ?? "";
   const { zoom, bottomOffset } = useAppContext();
   const [defaultEmail, setDefaultEmail] = useState(storedEmail);
@@ -352,5 +352,3 @@ const CharClassSelect = ({ charClass, setCharClass }) => {
     </Flex>
   );
 };
-
-export default ModalLogin;

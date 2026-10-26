@@ -19,7 +19,7 @@ import jsdom from "jsdom";
 import path from "path";
 import fs from "fs";
 
-class FakeXMLHttpRequest {
+export class FakeXMLHttpRequest {
   public url: string;
   public status = 200;
   public response: any;
@@ -45,8 +45,6 @@ class FakeXMLHttpRequest {
   public onerror(err: NodeJS.ErrnoException | null) {}
   public onprogress() {}
 }
-
-export default FakeXMLHttpRequest;
 
 const { JSDOM } = jsdom;
 const dom = new JSDOM(`<!DOCTYPE html><body></body>`);

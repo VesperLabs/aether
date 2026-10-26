@@ -68,7 +68,7 @@ class EnergyBall extends Phaser.GameObjects.Sprite {
   }
 }
 
-class Charge extends Phaser.GameObjects.Container {
+export class Charge extends Phaser.GameObjects.Container {
   private distance: number;
   private chargePercent: number;
   constructor(scene, x, y, distance = 24) {
@@ -117,5 +117,3 @@ class Charge extends Phaser.GameObjects.Container {
     super.destroy();
   }
 }
-
-export default Charge;

@@ -2,7 +2,7 @@ import "./phaser";
 import path from "path";
 import cors from "cors";
 import express from "express";
-import GameServer from "./game-server";
+import { GameServer } from "./game-server";
 import { initDatabase } from "./db";
 import { initFakeDatabase } from "./db/fake";
 import { calculateStats, getFullCharacterState } from "./utils";

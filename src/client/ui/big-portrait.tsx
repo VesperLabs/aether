@@ -1,6 +1,6 @@
 import { Box, PlayerRender } from "@/ui";
 
-export default function BigPortrait({
+export function BigPortrait({
   player,
   filteredSlots,
   width = 160,

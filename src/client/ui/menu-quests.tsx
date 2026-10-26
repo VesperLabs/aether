@@ -3,7 +3,7 @@ import { Flex, Text } from "@/ui";
 import { arePropsEqualWithKeys, questList } from "@/shared";
 import { memo } from "react";
 
-const MenuQuests = memo(
+export const MenuQuests = memo(
   ({ player, isOpen, setIsOpen }: any) => {
     const playerQuests = player?.quests || [];
     const quests = playerQuests
@@ -43,5 +43,3 @@ const MenuQuests = memo(
   },
   arePropsEqualWithKeys(["isOpen", "player.quests", "currentTooltipId"]),
 );
-
-export default MenuQuests;

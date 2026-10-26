@@ -2,14 +2,14 @@ import { useEffect } from "react";
 import { Switch, Flex, Text } from "@/ui";
 import { DEFAULT_USER_SETTINGS, isMobile } from "@/shared";
 import { useAppContext } from ".";
-import TextDivider from "./text-divider";
+import { TextDivider } from "./text-divider";
 import { canUseVideoChat } from "./video-chat-utils";
 
 /**
  * Shown from the in-game settings modal only. `heroInit` loads values from the server;
  * toggles emit `updateUserSetting` for persistence (`users.userSettings.*`).
  */
-const UserSettingsForm = () => {
+export const UserSettingsForm = () => {
   const { userSettings, setUserSettings, socket, isLoggedIn } = useAppContext();
   const { showMinimap, playMusic, videoChat, charLevels } = userSettings ?? {};
   const videoChatAllowed = canUseVideoChat();
@@ -96,5 +96,3 @@ const UserSettingsForm = () => {
     </Flex>
   );
 };
-
-export default UserSettingsForm;

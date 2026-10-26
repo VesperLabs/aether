@@ -1,7 +1,7 @@
 import { Box, Flex, KeyboardKey, Text } from "@/ui";
-import RowTitle from "./row-title";
+import { RowTitle } from "./row-title";
 import { useEffect, useState } from "react";
-import PlayerRender from "./player-render";
+import { PlayerRender } from "./player-render";
 import { TOOLTIP_STYLE, Label } from ".";
 import { Tooltip } from "react-tooltip";
 import { questList } from "@/shared";
@@ -16,7 +16,7 @@ const PLAYER_BOX_STYLES = {
   pb: 2,
 };
 
-export default function () {
+export function PagePlayers() {
   const [location] = useLocation();
   const [currentPlayer, setCurrentPlayer] = useState(null);
   const { bagState, toggleBagState } = useToggleBagState();

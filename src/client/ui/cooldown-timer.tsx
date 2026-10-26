@@ -2,7 +2,7 @@ import { memo, useEffect, useState } from "react";
 import { Box, Donut } from "@/ui";
 import { arePropsEqualWithKeys } from "@/shared";
 
-const CooldownTimer = memo(
+export const CooldownTimer = memo(
   ({ cooldown, color = "#FFF" }: any) => {
     const [percentage, setPercentage] = useState(0);
     let duration = cooldown?.duration ?? 0;
@@ -59,5 +59,3 @@ const CooldownTimer = memo(
   },
   arePropsEqualWithKeys(["cooldown"]),
 );
-
-export default CooldownTimer;

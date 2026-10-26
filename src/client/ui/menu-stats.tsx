@@ -27,7 +27,7 @@ const COLUMN_STYLES: ThemeUIStyleObject = {
   },
 };
 
-const MenuStats = memo(
+export const MenuStats = memo(
   ({ player, isOpen, setIsOpen }: any) => {
     const { stats } = player ?? {};
     if (!stats) return null;
@@ -119,5 +119,3 @@ const MenuStats = memo(
   },
   arePropsEqualWithKeys(["isOpen", "player.stats"]),
 );
-
-export default MenuStats;

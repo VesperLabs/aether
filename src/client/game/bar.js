@@ -3,7 +3,7 @@ const Sprite = Phaser.GameObjects.Sprite;
 
 const FRAME_SIZE = 4;
 
-class Bar extends Phaser.GameObjects.Container {
+export class Bar extends Phaser.GameObjects.Container {
   constructor(scene, x, y, width, height, percent = 0, color = "0xFF0000") {
     super(scene, x, y);
     this.width = width;
@@ -70,5 +70,3 @@ class Bar extends Phaser.GameObjects.Container {
     this.bar.setDisplaySize(newWidth, this.bar.height);
   }
 }
-
-export default Bar;

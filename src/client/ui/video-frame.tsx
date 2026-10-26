@@ -25,7 +25,7 @@ function shouldInitiateCall(myPeerId: string | null, remotePeerId: string): bool
 /** Match MenuHud proximity row fade-out so video doesn’t cut to black before the plate fades. */
 const REMOTE_PEER_REMOVE_DELAY_MS = 380;
 
-export default function VideoFrame() {
+export function VideoFrame() {
   const { peer, userSettings, setLocalVideoChatStream, setRemoteVideoStreams } = useAppContext();
   const peersRef = useRef<Record<string, MediaConnection>>({});
   const myPeerIdRef = useRef<string | null>(null);

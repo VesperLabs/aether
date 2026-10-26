@@ -10,7 +10,7 @@ const SPELL_NAME_ANIM_MAP = {
   "flame-slash": "spell-anim-slash-fire",
 };
 
-class Spell extends Phaser.GameObjects.Container {
+export class Spell extends Phaser.GameObjects.Container {
   constructor(scene, { id, caster, spellName, action, castAngle = 0, ilvl = 1 }) {
     const spawnPoint = { x: caster.x, y: caster.y + caster.bodyCenterY };
     super(scene, spawnPoint.x, spawnPoint.y);
@@ -199,5 +199,3 @@ const playSpellAudio = ({ scene, spellName, caster, isMeleeAttack }) => {
   }
   return playAudio({ scene, audioKey, caster });
 };
-
-export default Spell;

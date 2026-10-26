@@ -22,7 +22,7 @@ const resolveTypeIcon = (type) => {
 
 export { resolveTypeIcon };
 
-const RowTitle = ({ icon, sx, children, ...props }: any) => (
+export const RowTitle = ({ icon, sx, children, ...props }: any) => (
   <Flex
     sx={{
       gap: 1,
@@ -42,5 +42,3 @@ const RowTitle = ({ icon, sx, children, ...props }: any) => (
     {children}
   </Flex>
 );
-
-export default RowTitle;

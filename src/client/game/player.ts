@@ -11,20 +11,20 @@ import {
   MIN_STEALTH_ALPHA,
   calculateStealthVisibilityPercent,
 } from "@/shared";
-import Bubble from "./bubble";
-import Spell from "./spell";
-import Bar from "./bar";
-import Crosshair from "./crosshair";
-import Damage from "./damage";
-import WeaponSprite from "./weapon-sprite";
+import { Bubble } from "./bubble";
+import { Spell } from "./spell";
+import { Bar } from "./bar";
+import { Crosshair } from "./crosshair";
+import { Damage } from "./damage";
+import { WeaponSprite } from "./weapon-sprite";
 import { getSpinDirection, PLAYER_GRAB_RANGE, deriveElements } from "../utils";
-import Buff from "./buff";
-import Hit from "./hit";
-import BuffRack from "./buff-rack";
+import { Buff } from "./buff";
+import { Hit } from "./hit";
+import { BuffRack } from "./buff-rack";
 const { Sprite, BitmapText } = Phaser.GameObjects;
 const BLANK_TEXTURE = "human-blank";
 
-class Player extends Character {
+export class Player extends Character {
   constructor(scene, args) {
     super(scene, args);
 
@@ -754,5 +754,3 @@ function playWeapons(player) {
     }
   }
 }
-
-export default Player;

@@ -1,7 +1,7 @@
 import { Button as Flex } from "theme-ui";
 import { forwardRef, useState } from "react";
 
-const Button = forwardRef<HTMLDivElement, any>(
+export const Button = forwardRef<HTMLDivElement, any>(
   ({ icon: _icon, onTouchEnd, onTouchStart, onClick, ...props }, ref) => {
     const [className, setClassName] = useState("");
 
@@ -60,5 +60,3 @@ const Button = forwardRef<HTMLDivElement, any>(
     );
   },
 );
-
-export default Button;

@@ -52,7 +52,7 @@ function PortraitVideo({ stream, muted = false }: { stream: MediaStream; muted?:
   );
 }
 
-const Portrait = memo(
+export const Portrait = memo(
   ({
     player,
     size = 54,
@@ -149,5 +149,3 @@ const Portrait = memo(
     );
   },
 );
-
-export default Portrait;

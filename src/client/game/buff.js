@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 const Sprite = Phaser.GameObjects.Sprite;
 
-class Buff extends Phaser.GameObjects.Container {
+export class Buff extends Phaser.GameObjects.Container {
   constructor(scene, victim, buffName) {
     super(scene, victim.x, victim.y);
 
@@ -47,5 +47,3 @@ class Buff extends Phaser.GameObjects.Container {
     super.destroy();
   }
 }
-
-export default Buff;

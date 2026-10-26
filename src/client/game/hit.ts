@@ -4,7 +4,7 @@ const Sprite = Phaser.GameObjects.Sprite;
 const BLANK_TEXTURE = "human-blank";
 const ANIMATION_COMPLETE_EVENT = Phaser.Animations.Events.ANIMATION_COMPLETE;
 
-class Hit extends Phaser.GameObjects.Container {
+export class Hit extends Phaser.GameObjects.Container {
   hits: any;
   victim: Character;
   elements: Array<Elements>;
@@ -62,5 +62,3 @@ class Hit extends Phaser.GameObjects.Container {
     super.destroy(true);
   }
 }
-
-export default Hit;

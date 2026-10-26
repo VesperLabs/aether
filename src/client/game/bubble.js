@@ -3,7 +3,7 @@ const Sprite = Phaser.GameObjects.Sprite;
 
 const FRAME_SIZE = 4;
 
-class Bubble extends Phaser.GameObjects.Container {
+export class Bubble extends Phaser.GameObjects.Container {
   /**
    * @param {Phaser.Scene} scene
    * @param {number} headY negative number of the position from center a sprites head is
@@ -148,5 +148,3 @@ class Bubble extends Phaser.GameObjects.Container {
     super.destroy();
   }
 }
-
-export default Bubble;

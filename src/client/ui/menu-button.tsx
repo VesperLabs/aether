@@ -13,7 +13,7 @@ interface MenuButtonProps {
   disabled?: boolean;
 }
 
-const MenuButton = ({
+export const MenuButton = ({
   keyboardKey,
   onClick = () => {},
   iconName,
@@ -44,5 +44,3 @@ const MenuButton = ({
     </Button>
   );
 };
-
-export default MenuButton;

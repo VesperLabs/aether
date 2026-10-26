@@ -4,10 +4,10 @@ import { useAppContext, Portrait, StatusIcon } from ".";
 import { arePropsEqualWithKeys, formatStats } from "@/shared";
 import { streamHasUsableVideo } from "./video-chat-utils";
 import { cloneDeep } from "lodash";
-import TextDivider from "./text-divider";
-import TooltipLabel from "./tooltip-label";
+import { TextDivider } from "./text-divider";
+import { TooltipLabel } from "./tooltip-label";
 import { buffList } from "@/shared";
-import Tooltip from "./tooltip";
+import { Tooltip } from "./tooltip";
 
 const UserName = ({ sx, player }: { player: any; sx?: object }) => {
   return <Box sx={{ ...sx }}>{player?.profile?.userName}</Box>;
@@ -326,7 +326,7 @@ function remotePortraitStream(
   return s && streamHasUsableVideo(s) ? s : null;
 }
 
-const MenuHud = () => {
+export const MenuHud = () => {
   const {
     hero,
     party,
@@ -480,5 +480,3 @@ const Memoized = memo(
     return false;
   },
 );
-
-export default MenuHud;

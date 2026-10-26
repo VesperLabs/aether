@@ -1,10 +1,10 @@
 import { Box, Flex } from "@/ui";
-import Slot from "./slot";
+import { Slot } from "./slot";
 import { itemList } from "@/shared";
-import RowTitle from "./row-title";
+import { RowTitle } from "./row-title";
 import { Fragment } from "react";
 
-export default function () {
+export function PageItems() {
   const types = Object.keys(itemList);
   //const rarities = ["common", "set", "unique"];
   return types?.map((type) => {

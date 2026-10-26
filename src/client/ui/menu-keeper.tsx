@@ -12,7 +12,7 @@ import {
 import { Flex, Text } from "@/ui";
 import { capitalize } from "@/shared";
 
-const MenuKeeper = () => {
+export const MenuKeeper = () => {
   const { hero, keeper, tabKeeper, setTabKeeper, setHomeModal } = useAppContext();
   const [tab, setTab] = useState("greet");
   const { dialogues, shop, quests, home } = keeper?.keeperData ?? {};
@@ -162,5 +162,3 @@ const MenuKeeper = () => {
     </Menu>
   );
 };
-
-export default MenuKeeper;

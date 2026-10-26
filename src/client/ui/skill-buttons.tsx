@@ -3,7 +3,7 @@ import { CooldownTimer, SkillButton, useAppContext } from ".";
 import { memo } from "react";
 import { arePropsEqualWithKeys } from "@/shared";
 
-const SkillButtons = memo(
+export const SkillButtons = memo(
   ({ cooldowns }: any) => {
     const { showButtonChat } = useAppContext();
 
@@ -44,5 +44,3 @@ const SkillButtons = memo(
   },
   arePropsEqualWithKeys(["cooldowns"]),
 );
-
-export default SkillButtons;

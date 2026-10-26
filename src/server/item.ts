@@ -1,4 +1,4 @@
-class Item implements Item {
+export class Item implements Item {
   id: string;
   key: string;
   ilvl: number;
@@ -51,5 +51,3 @@ class Item implements Item {
     this.items = item?.items || [];
   }
 }
-
-export default Item;

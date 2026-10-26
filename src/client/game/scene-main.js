@@ -1,6 +1,6 @@
 import Phaser from "phaser";
-import Door from "@/shared/door";
-import Sign from "@/shared/sign";
+import { Door } from "@/shared/door";
+import { Sign } from "@/shared/sign";
 import { getMapByName } from "@/shared/maps";
 import { DEFAULT_USER_SETTINGS, distanceTo, isMobile, MINI_MAP_SIZE } from "@/shared/utils";
 import {
@@ -40,7 +40,7 @@ const netInterp = createNetInterpolator({
 });
 const { RectangleToRectangle } = Phaser.Geom.Intersects;
 
-class SceneMain extends Phaser.Scene {
+export class SceneMain extends Phaser.Scene {
   constructor(socket) {
     super({ key: "SceneMain" });
     this.socket = socket;
@@ -565,5 +565,3 @@ function changeMap(scene, roomName) {
 
   return { collideLayer };
 }
-
-export default SceneMain;

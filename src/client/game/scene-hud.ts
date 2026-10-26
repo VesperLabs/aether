@@ -15,7 +15,7 @@ const { Between } = Phaser.Math.Angle;
 /** Max rate for playerInput while moving (server still gets full x,y,vx,vy snapshots). */
 const PLAYER_INPUT_THROTTLE_MS = 50;
 
-class SceneHud extends Phaser.Scene {
+export class SceneHud extends Phaser.Scene {
   socket: Socket;
   cursorKeys: any;
   rectangleContainer: any;
@@ -468,5 +468,3 @@ class RoundButton extends Phaser.GameObjects.Sprite {
     this.setScrollFactor(0);
   }
 }
-
-export default SceneHud;

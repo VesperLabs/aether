@@ -21,7 +21,7 @@ const onLoadError = (value) => {
   );
 };
 
-class SceneBoot extends Phaser.Scene {
+export class SceneBoot extends Phaser.Scene {
   constructor(socket) {
     super({
       key: "SceneBoot",
@@ -328,5 +328,3 @@ function loadSpritesheets(scene) {
     frameHeight: 96,
   });
 }
-
-export default SceneBoot;

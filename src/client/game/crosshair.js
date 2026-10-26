@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-class Crosshair extends Phaser.GameObjects.Container {
+export class Crosshair extends Phaser.GameObjects.Container {
   constructor(scene, x, y, textureKey, frame, player, distance) {
     super(scene, x, y);
 
@@ -35,5 +35,3 @@ class Crosshair extends Phaser.GameObjects.Container {
     super.destroy();
   }
 }
-
-export default Crosshair;

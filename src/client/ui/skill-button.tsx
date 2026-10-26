@@ -2,7 +2,7 @@ import { Icon, KeyboardKey, Button } from "@/ui";
 import { isMobile } from "@/shared";
 import { ReactNode } from "react";
 
-const SkillButton = ({
+export const SkillButton = ({
   onTouchStart = () => {},
   onTouchEnd = () => {},
   icon,
@@ -46,5 +46,3 @@ const SkillButton = ({
     </Button>
   );
 };
-
-export default SkillButton;

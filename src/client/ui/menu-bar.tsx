@@ -18,7 +18,7 @@ import {
   SkillButtons,
 } from ".";
 
-const MenuBar = () => {
+export const MenuBar = () => {
   const {
     homeModal,
     setHomeModal,
@@ -209,5 +209,3 @@ const MenuBar = () => {
     </Box>
   );
 };
-
-export default MenuBar;

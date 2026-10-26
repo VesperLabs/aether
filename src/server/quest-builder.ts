@@ -1,9 +1,9 @@
 import { QUEST_EXP_MULTIPLIER, QUEST_GOLD_MULTIPLIER, cloneObject } from "./utils";
 import questList from "@/shared/data/quest-list.json";
-import Quest from "./quest";
-import ItemBuilder from "@/shared/item-builder";
+import { Quest } from "./quest";
+import { ItemBuilder } from "@/shared/item-builder";
 
-const QuestBuilder = {
+export const QuestBuilder = {
   buildQuest: function (key: string) {
     const quest = questList[key];
     const questData: Quest = {
@@ -28,5 +28,3 @@ const QuestBuilder = {
     return quests;
   },
 };
-
-export default QuestBuilder;

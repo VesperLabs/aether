@@ -1,7 +1,7 @@
 import { Text, Button, Flex, Link, Box } from "@/ui";
-import RowTitle from "./row-title";
+import { RowTitle } from "./row-title";
 
-export default function () {
+export function PageHome() {
   return (
     <Flex sx={{ gap: 2, flexDirection: "column", mb: 4 }}>
       <RowTitle icon={"pen"}>Welcome</RowTitle>

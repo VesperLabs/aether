@@ -10,7 +10,7 @@ import {
 import { Box, Icon, STYLE_NON_EMPTY, SLOT_SIZE, Tooltip, Text, Flex, Divider } from "@/ui";
 import { Label, TextDivider, TOOLTIP_STYLE } from ".";
 
-export default function ({ item }) {
+export function Slot({ item }) {
   const [imageData, setImageData] = useState<any>();
   /* Loads the item canvas data out of the texture */
   useLayoutEffect(() => {

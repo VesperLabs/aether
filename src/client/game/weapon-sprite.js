@@ -9,7 +9,7 @@ const WEAPON_COLOR_MAP = {
 const ALPHA_STEP = 0.1;
 const ALPHA_MAX = 1;
 
-class WeaponSprite extends Phaser.GameObjects.Container {
+export class WeaponSprite extends Phaser.GameObjects.Container {
   constructor(scene, x, y, key, frame) {
     super(scene, x, y);
 
@@ -123,5 +123,3 @@ class WeaponSprite extends Phaser.GameObjects.Container {
     super.destroy();
   }
 }
-
-export default WeaponSprite;

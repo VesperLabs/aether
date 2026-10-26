@@ -2,13 +2,13 @@ import { ThemeUIProvider, theme, Box, Flex, Text } from "@/ui";
 import { Theme } from "theme-ui";
 import { Route } from "wouter";
 import { Footer, Metrics, RouterLink } from ".";
-import PageItems from "./page-items";
-import PageNasties from "./page-nasties";
-import PagePlayers from "./page-players";
-import PageHome from "./page-home";
+import { PageItems } from "./page-items";
+import { PageNasties } from "./page-nasties";
+import { PagePlayers } from "./page-players";
+import { PageHome } from "./page-home";
 import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { fetchMetrics } from "./api";
-import ModalConnecting from "./modal-connecting";
+import { ModalConnecting } from "./modal-connecting";
 import { useEffect, useState } from "react";
 
 const queryClient = new QueryClient();
@@ -21,7 +21,7 @@ function shouldSkipWarmupModal(): boolean {
   return h === "localhost" || h === "127.0.0.1" || h === "[::1]";
 }
 
-const App = () => {
+export const App = () => {
   return (
     <ThemeUIProvider theme={theme as Theme}>
       <QueryClientProvider client={queryClient}>
@@ -79,5 +79,3 @@ const LoadingProvider = ({ children }) => {
 
   return !polling ? children : <ModalConnecting />;
 };
-
-export default App;

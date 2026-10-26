@@ -13,21 +13,17 @@ export {
   Donut,
   Link,
 } from "theme-ui";
-export { default as theme } from "./theme";
-export { default as Button } from "./button/button";
-export { default as Icon } from "./icon";
-export { default as KeyboardKey } from "./keyboard-key";
-export { default as Modal } from "./modal";
-export { default as Input } from "./input";
-export { default as KeyboardButton } from "./keyboard-button";
-export { default as Tooltip } from "./tooltip";
-export { default as Portal } from "./portal";
-export { default as Switch } from "./switch";
-export {
-  default as PlayerRender,
-  PLAYER_RENDER_CANVAS_STYLE,
-  FULL_CANVAS_SIZE,
-} from "./player-render";
+export { theme } from "./theme";
+export { Button } from "./button/button";
+export { Icon } from "./icon";
+export { KeyboardKey } from "./keyboard-key";
+export { Modal } from "./modal";
+export { Input } from "./input";
+export { KeyboardButton } from "./keyboard-button";
+export { Tooltip } from "./tooltip";
+export { Portal } from "./portal";
+export { Switch } from "./switch";
+export { PlayerRender, PLAYER_RENDER_CANVAS_STYLE, FULL_CANVAS_SIZE } from "./player-render";
 export * from "./hooks";
 
 export const SLOT_SIZE = 56;

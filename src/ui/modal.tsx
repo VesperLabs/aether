@@ -15,7 +15,7 @@ interface ModalOverlayProps {
   children: React.ReactNode;
 }
 
-const Modal: any & {
+export const Modal: any & {
   Header: any;
   Body: React.FC<ModalBodyProps>;
   Footer: React.FC<ModalFooterProps>;
@@ -92,5 +92,3 @@ Modal.Body = ({ sx, ...props }) => {
 Modal.Footer = ({ sx, ...props }) => {
   return <Flex sx={{ gap: 1, flex: 1, ...sx }} {...props} />;
 };
-
-export default Modal;

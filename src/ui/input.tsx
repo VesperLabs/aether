@@ -10,7 +10,7 @@ interface InputProps extends BaseInputProps {
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
 }
 
-const Input: FC<InputProps> = ({
+export const Input: FC<InputProps> = ({
   sx,
   autoFocus,
   onTouchEnd,
@@ -62,5 +62,3 @@ const Input: FC<InputProps> = ({
     />
   );
 };
-
-export default Input;

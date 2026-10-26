@@ -20,5 +20,3 @@ export const ModalConnecting: React.FC = () => {
     </>
   );
 };
-
-export default ModalConnecting;

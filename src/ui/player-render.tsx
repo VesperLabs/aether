@@ -111,7 +111,7 @@ const mergeImages = async ({ shouldBuffer, buffCanvasRef, canvasRef, assets }) =
   }
 };
 
-const PlayerRender = memo(
+export const PlayerRender = memo(
   ({
     player,
     sx,
@@ -258,5 +258,3 @@ const getPlayerEquipmentAssets = ({
   const obscuredKeys = getObscuredKeys({ filteredSlots, visibleParts });
   return playerAssets?.filter((asset) => !obscuredKeys.includes(asset?.slot));
 };
-
-export default PlayerRender;

@@ -3,7 +3,7 @@ import { MenuButton, useAppContext } from ".";
 import { Input } from "@/ui";
 import { isMobile } from "@/shared";
 
-const ChatButton = () => {
+export const ChatButton = () => {
   const { tabChat, setTabChat, socket, messages, hero } = useAppContext();
   const [chatValue, setChatValue] = useState<string>("");
   const [messageIndex, setMessageIndex] = useState<number>(-1);
@@ -86,5 +86,3 @@ const ChatButton = () => {
     </MenuButton>
   );
 };
-
-export default ChatButton;

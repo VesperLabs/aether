@@ -1,6 +1,6 @@
 import tColors from "./colors-tailwind.json";
 
-export default {
+export const theme = {
   colors: {
     ...tColors,
     text: tColors.white,

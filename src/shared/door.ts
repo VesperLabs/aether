@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 
-class Door extends Phaser.GameObjects.Sprite implements Door {
+export class Door extends Phaser.GameObjects.Sprite implements Door {
   private destDoor: string;
   private destMap: string;
   private centerPos: Coordinate;
@@ -37,5 +37,3 @@ class Door extends Phaser.GameObjects.Sprite implements Door {
     super.destroy();
   }
 }
-
-export default Door;

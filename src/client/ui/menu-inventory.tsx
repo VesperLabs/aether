@@ -10,7 +10,7 @@ const GoldDisplay = ({ gold, sx }) => (
   </Flex>
 );
 
-const MenuInventory = memo(
+export const MenuInventory = memo(
   ({ player, isOpen, setIsOpen, slotsEnabled = true }: any) => {
     const inventory = player?.inventory || [];
     const maxInventory = new Array(MAX_INVENTORY_ITEMS).fill(null);
@@ -42,5 +42,3 @@ const MenuInventory = memo(
   },
   arePropsEqualWithKeys(["isOpen", "player.inventory", "player.gold"]),
 );
-
-export default MenuInventory;

@@ -1,9 +1,9 @@
 import { Slot, SlotAmount, useAppContext } from ".";
 import { Box, Text, Flex, Divider, Icon, Button, STYLE_NON_EMPTY } from "@/ui";
-import ItemBuilder from "@/shared/item-builder";
+import { ItemBuilder } from "@/shared/item-builder";
 import nasties from "@/shared/data/nasties.json";
 import keepers from "@/shared/data/keepers.json";
-import Tooltip from "./tooltip";
+import { Tooltip } from "./tooltip";
 
 function getKeeperByQuestName(quest) {
   for (const key in keepers) {
@@ -55,7 +55,7 @@ const useQuestDialogue = (quest, playerQuest: PlayerQuest) => {
   return dialogues?.description?.replace("{objective}", objText);
 };
 
-const QuestTooltip = ({
+export const QuestTooltip = ({
   quest,
   playerQuest,
   show,
@@ -189,5 +189,3 @@ const QuestStatusButton = ({ playerQuest, quest, socket, parent, giverName }) =>
     </Button>
   );
 };
-
-export default QuestTooltip;

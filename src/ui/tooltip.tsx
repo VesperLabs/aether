@@ -1,6 +1,6 @@
 import { Tooltip as BaseTooltip } from "react-tooltip";
-import Portal from "./portal";
-import theme from "./theme";
+import { Portal } from "./portal";
+import { theme } from "./theme";
 
 const TOOLTIP_STYLE = {
   transition: "none",
@@ -19,7 +19,7 @@ interface TooltipProps {
   isOpen?: boolean;
 }
 
-const Tooltip = ({ children, style, ...props }: TooltipProps) => {
+export const Tooltip = ({ children, style, ...props }: TooltipProps) => {
   return (
     <Portal container={document.body}>
       <BaseTooltip opacity={1} style={{ ...TOOLTIP_STYLE, ...style }} {...props}>
@@ -28,5 +28,3 @@ const Tooltip = ({ children, style, ...props }: TooltipProps) => {
     </Portal>
   );
 };
-
-export default Tooltip;

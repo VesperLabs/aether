@@ -1,7 +1,7 @@
 import { forwardRef } from "react";
 import { Box } from "theme-ui";
 
-const Icon = forwardRef<HTMLDivElement, any>(({ sx, size = 32, icon, ...props }, ref) => {
+export const Icon = forwardRef<HTMLDivElement, any>(({ sx, size = 32, icon, ...props }, ref) => {
   return (
     <Box
       className="icon"
@@ -19,5 +19,3 @@ const Icon = forwardRef<HTMLDivElement, any>(({ sx, size = 32, icon, ...props },
     />
   );
 });
-
-export default Icon;

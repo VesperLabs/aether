@@ -1,7 +1,7 @@
 import { useAppContext } from ".";
 import { Modal, KeyboardButton, Icon, Box } from "@/ui";
 
-const ModalError: React.FC = () => {
+export const ModalError: React.FC = () => {
   const { error, setError, zoom, bottomOffset } = useAppContext();
 
   return (
@@ -30,5 +30,3 @@ const ModalError: React.FC = () => {
     </>
   );
 };
-
-export default ModalError;

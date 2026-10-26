@@ -10,7 +10,7 @@ interface MenuHeaderProps {
   sx?: any;
 }
 
-const MenuHeader = ({ icon, children, onClick = () => {}, sx }: MenuHeaderProps) => {
+export const MenuHeader = ({ icon, children, onClick = () => {}, sx }: MenuHeaderProps) => {
   return (
     <Flex
       sx={{
@@ -47,5 +47,3 @@ const MenuHeader = ({ icon, children, onClick = () => {}, sx }: MenuHeaderProps)
     </Flex>
   );
 };
-
-export default MenuHeader;

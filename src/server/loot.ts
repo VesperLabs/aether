@@ -1,6 +1,6 @@
 import crypto from "crypto";
 
-class Loot implements Loot {
+export class Loot implements Loot {
   id: string;
   roomName: string;
   x: number;
@@ -33,5 +33,3 @@ class Loot implements Loot {
     this.isPermanent = loot?.isPermanent;
   }
 }
-
-export default Loot;

@@ -4,7 +4,7 @@ import { STATIC_ROW_STYLES, RowTitle } from ".";
 import { useQuery } from "@tanstack/react-query";
 import { fetchMetrics } from "./api";
 
-const Metrics = () => {
+export const Metrics = () => {
   const { data: metrics } = useQuery({
     queryKey: ["metrics"],
     queryFn: fetchMetrics,
@@ -38,5 +38,3 @@ const Metrics = () => {
     </RowTitle>
   );
 };
-
-export default Metrics;

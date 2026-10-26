@@ -4,7 +4,7 @@ import { nanoid } from "nanoid";
 import { isMobile } from "@/shared";
 import { useMemo } from "react";
 
-const Quest = ({ quest, parent = "keeper" }: { quest: Quest; parent: string }) => {
+export const Quest = ({ quest, parent = "keeper" }: { quest: Quest; parent: string }) => {
   const { objectives } = quest ?? {};
   const { hero, currentTooltipId, setCurrentTooltipId } = useAppContext();
   const isBounty = objectives?.some((objective) => objective?.type === "bounty");
@@ -77,5 +77,3 @@ const Quest = ({ quest, parent = "keeper" }: { quest: Quest; parent: string }) =
     </Box>
   );
 };
-
-export default Quest;

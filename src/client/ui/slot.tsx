@@ -57,7 +57,7 @@ type SlotProps = {
   player: FullCharacterState;
 };
 
-const Slot = memo(
+export const Slot = memo(
   ({
     sx,
     size = SLOT_SIZE,
@@ -373,5 +373,3 @@ function useItemEvents({ location, bagId, slotKey, item, player }) {
     },
   };
 }
-
-export default Slot;

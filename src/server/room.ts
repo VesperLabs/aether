@@ -1,11 +1,11 @@
-import NpcManager from "./npc-manager";
-import PlayerManager from "./player-manager";
-import Door from "@/shared/door";
-import LootManager from "./loot-manager";
-import SpellManager from "./spell-manager";
+import { NpcManager } from "./npc-manager";
+import { PlayerManager } from "./player-manager";
+import { Door } from "@/shared/door";
+import { LootManager } from "./loot-manager";
+import { SpellManager } from "./spell-manager";
 import EasyStar from "easystarjs";
 import type { TickStateExpanded } from "@/shared/wire-tick";
-class Room {
+export class Room {
   public scene: ServerScene;
   public tileMap: Phaser.Tilemaps.Tilemap;
   public collideLayer: Phaser.Tilemaps.TilemapLayer;
@@ -124,5 +124,3 @@ class Room {
     return { top, left, bottom, right };
   }
 }
-
-export default Room;

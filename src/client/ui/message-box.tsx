@@ -8,7 +8,7 @@ type MessageProps = {
 };
 
 const MESSAGE_SHOW_TIME = 3000;
-const MessageBox = () => {
+export const MessageBox = () => {
   const { messages, tabChat } = useAppContext();
   const [show, setShow] = useState<boolean>(true);
 
@@ -99,5 +99,3 @@ const Message: React.FC<MessageProps> = ({ data }) => {
     </Flex>
   );
 };
-
-export default MessageBox;

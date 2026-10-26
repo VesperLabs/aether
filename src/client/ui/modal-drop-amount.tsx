@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useAppContext, Slot } from ".";
 import { Modal, Flex, Input, Icon, Text, KeyboardButton } from "@/ui";
 
-const ModalDropAmount = () => {
+export const ModalDropAmount = () => {
   const { socket, dropItem, setDropItem, zoom, bottomOffset, hero } = useAppContext();
   const {
     amount: defaultAmount,
@@ -115,5 +115,3 @@ const ModalDropAmount = () => {
     </Modal>
   );
 };
-
-export default ModalDropAmount;

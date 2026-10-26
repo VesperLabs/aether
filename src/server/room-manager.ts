@@ -1,7 +1,7 @@
-import Room from "./room";
+import { Room } from "./room";
 import { mapList } from "@/shared/maps";
 
-class RoomManager {
+export class RoomManager {
   public scene: ServerScene;
   public rooms: Record<string, Room>;
 
@@ -19,5 +19,3 @@ class RoomManager {
     }
   }
 }
-
-export default RoomManager;

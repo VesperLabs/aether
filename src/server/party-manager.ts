@@ -64,7 +64,7 @@ class Party {
   }
 }
 
-class PartyManager {
+export class PartyManager {
   public scene: ServerScene;
   public parties: Array<Party>;
 
@@ -156,5 +156,3 @@ class PartyManager {
     return this.parties.find((p) => p?.id === id);
   }
 }
-
-export default PartyManager;

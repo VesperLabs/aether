@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 const { Container, BitmapText } = Phaser.GameObjects;
 
-class Damage extends Container {
+export class Damage extends Container {
   constructor(scene, victim, hit) {
     super(scene, victim.x, victim.y);
     let text = Math.abs(hit.amount);
@@ -122,5 +122,3 @@ class Damage extends Container {
     super.destroy();
   }
 }
-
-export default Damage;

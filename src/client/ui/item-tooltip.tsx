@@ -9,11 +9,11 @@ import {
   itemHasRequiredStats,
   spellDetails,
 } from "@/shared";
-import TooltipLabel from "./tooltip-label";
-import TextDivider from "./text-divider";
-import Tooltip from "./tooltip";
+import { TooltipLabel } from "./tooltip-label";
+import { TextDivider } from "./text-divider";
+import { Tooltip } from "./tooltip";
 
-const ItemTooltip = ({ player, item, tooltipId, show }) => {
+export const ItemTooltip = ({ player, item, tooltipId, show }) => {
   const isSetActive = player?.state?.activeSets?.includes?.(item?.setName);
   if (!item) return;
 
@@ -223,5 +223,3 @@ const ItemTooltip = ({ player, item, tooltipId, show }) => {
     </Tooltip>
   );
 };
-
-export default ItemTooltip;

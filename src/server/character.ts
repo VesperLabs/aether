@@ -1,5 +1,5 @@
-import Character from "@/shared/character";
-import ItemBuilder from "@/shared/item-builder";
+import { Character } from "@/shared/character";
+import { ItemBuilder } from "@/shared/item-builder";
 import {
   randomNumber,
   calculateNextMaxExp,
@@ -13,7 +13,7 @@ import buffList from "@/shared/data/buff-list.json";
 /** Part of spell power applied to elemental spell min/max (full power was melting warriors in PvP). */
 const SPELL_POWER_ELEMENTAL_FACTOR = 0.5;
 
-class ServerCharacter extends Character {
+export class ServerCharacter extends Character {
   declare scene: ServerScene;
   constructor(scene: ServerScene, args) {
     super(scene, args);
@@ -687,5 +687,3 @@ class ServerCharacter extends Character {
     //placeholder
   }
 }
-
-export default ServerCharacter;

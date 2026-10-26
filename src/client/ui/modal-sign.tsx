@@ -1,7 +1,7 @@
 import { useAppContext } from ".";
 import { Modal, KeyboardButton, Icon, Box } from "@/ui";
 
-const ModalSign: React.FC = () => {
+export const ModalSign: React.FC = () => {
   const { sign, setSign, zoom, bottomOffset } = useAppContext();
   const hasIcon = sign?.icon !== "sign-blank";
   const icon = hasIcon ? `./assets/images/${sign?.icon}.png` : `./assets/icons/chat.png`;
@@ -26,5 +26,3 @@ const ModalSign: React.FC = () => {
     </Modal>
   );
 };
-
-export default ModalSign;

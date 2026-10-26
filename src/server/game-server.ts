@@ -16,11 +16,11 @@ import {
   getBuffRoomState,
   PLAYER_DEFAULT_SPAWN,
 } from "./utils";
-import RoomManager from "./room-manager";
-import PartyManager from "./party-manager";
+import { RoomManager } from "./room-manager";
+import { PartyManager } from "./party-manager";
 import Phaser from "phaser";
-import QuestBuilder from "./quest-builder";
-import ItemBuilder, { isItemBuildRarity, ITEM_BUILD_RARITIES } from "@/shared/item-builder";
+import { QuestBuilder } from "./quest-builder";
+import { ItemBuilder, isItemBuildRarity, ITEM_BUILD_RARITIES } from "@/shared/item-builder";
 import { isNil } from "lodash";
 import {
   CONSUMABLES_BASES,
@@ -1249,7 +1249,7 @@ class ServerScene extends Phaser.Scene implements ServerScene {
   }
 }
 
-export default class Game {
+export class GameServer {
   io: Server;
   game: Phaser.Game;
   spawnTime: number;

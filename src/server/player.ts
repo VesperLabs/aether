@@ -1,9 +1,9 @@
-import ServerCharacter from "./character";
+import { ServerCharacter } from "./character";
 import { calculateExpValue, cloneObject, getRoomState, PLAYER_DEFAULT_SPAWN } from "./utils";
 import { MAX_INVENTORY_ITEMS } from "../shared";
 
 /* Server level Player object */
-class Player extends ServerCharacter implements ServerPlayer {
+export class Player extends ServerCharacter implements ServerPlayer {
   public email: string;
   public isDemoAccount?: boolean;
   public spawn: SpawnPoint;
@@ -435,5 +435,3 @@ class Player extends ServerCharacter implements ServerPlayer {
     scene.io.to(this.roomName).emit("assignDamage", hitList);
   }
 }
-
-export default Player;

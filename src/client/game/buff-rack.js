@@ -2,7 +2,7 @@ import Phaser from "phaser";
 
 const Sprite = Phaser.GameObjects.Sprite;
 
-class BuffRack extends Phaser.GameObjects.Container {
+export class BuffRack extends Phaser.GameObjects.Container {
   constructor(scene, x, y, buffs = []) {
     super(scene, x, y);
     this.buffs = [];
@@ -63,5 +63,3 @@ class BuffRack extends Phaser.GameObjects.Container {
     });
   }
 }
-
-export default BuffRack;

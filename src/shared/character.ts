@@ -11,7 +11,7 @@ import {
 } from "./utils";
 import { spellDetails } from ".";
 
-class Character extends Phaser.GameObjects.Container {
+export class Character extends Phaser.GameObjects.Container {
   startingCoords: Coordinate;
   socketId: string;
   peerId: string;
@@ -510,5 +510,3 @@ class Character extends Phaser.GameObjects.Container {
     super.destroy(true);
   }
 }
-
-export default Character;

@@ -54,7 +54,7 @@ export const useViewportSizeEffect = (effect: () => void) => {
   }, [effect]);
 };
 
-const useViewportSize = () => {
+export const useViewportSize = () => {
   const [size, setSize] = useState(getViewportSize);
 
   const onViewportSizeChange = useCallback(() => {
@@ -65,8 +65,6 @@ const useViewportSize = () => {
 
   return size;
 };
-
-export default useViewportSize;
 
 export function useOnClickOutside(ref, handler) {
   useEffect(

@@ -1,6 +1,6 @@
 /* This file and Diablo II are the main reason this game exists */
 import crypto from "crypto";
-import Item from "@/server/item";
+import { Item } from "@/server/item";
 import { cloneObject, randomNumber } from "@/server/utils";
 import iList from "./data/item-list.json";
 import itemSetList from "./data/item-set-list.json";
@@ -398,7 +398,7 @@ function multiplyValues(obj, multiplier) {
   return multipliedObj;
 }
 
-const ItemBuilder = {
+export const ItemBuilder = {
   getSetInfo,
   rollDrop,
   buildItem,
@@ -407,5 +407,3 @@ const ItemBuilder = {
   scaleBaseStats,
   multiplyValues,
 };
-
-export default ItemBuilder;

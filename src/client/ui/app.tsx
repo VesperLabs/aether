@@ -19,8 +19,8 @@ import { Theme } from "theme-ui";
 import { Socket } from "socket.io-client";
 import { CONSUMABLES_BASES, DEFAULT_USER_SETTINGS, MINI_MAP_SIZE, isMobile } from "@/shared";
 import Peer from "peerjs";
-import VideoFrame from "./video-frame";
-import ModalSettings from "./modal-settings";
+import { VideoFrame } from "./video-frame";
+import { ModalSettings } from "./modal-settings";
 interface AppContextValue {
   isLoggedIn: boolean;
   isConnected: boolean;
@@ -105,7 +105,7 @@ const getHudZoom = () => {
   });
 };
 
-function App({ socket, peer, debug, game }) {
+export function App({ socket, peer, debug, game }) {
   const [currentTooltipId, setCurrentTooltipId] = useState(null);
   const [partyInvites, setPartyInvites] = useState<Array<PartyInvite>>([]);
   const [party, setParty] = useState<any>();
@@ -720,5 +720,3 @@ const MenuGlobalKeys = () => {
     </>
   );
 };
-
-export default App;

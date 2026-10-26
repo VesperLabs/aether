@@ -1,4 +1,4 @@
-import Loot from "./loot";
+import { Loot } from "./loot";
 import crypto from "crypto";
 import { randomNumber } from "./utils";
 import { ItemBuilder } from "../shared";
@@ -27,7 +27,7 @@ function initiateMapLootList(tileMap) {
   }, []);
 }
 
-class LootManager {
+export class LootManager {
   public scene: ServerScene;
   public room: Room;
   public mapLootList: Array<any>;
@@ -128,5 +128,3 @@ class LootManager {
     }
   }
 }
-
-export default LootManager;

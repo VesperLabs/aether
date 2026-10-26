@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import Npc from "./npc";
+import { Npc } from "./npc";
 import nasties from "@/shared/data/nasties.json";
 import keepers from "@/shared/data/keepers.json";
 import { useGetBaseCharacterDefaults, mergeAndAddValues } from "./utils";
@@ -16,7 +16,7 @@ function getNpcFromLists(name) {
   }
 }
 
-class NpcManager {
+export class NpcManager {
   public scene: ServerScene;
   public room: Room;
   public npcs: any;
@@ -94,5 +94,3 @@ class NpcManager {
     return this?.npcs?.getChildren();
   }
 }
-
-export default NpcManager;

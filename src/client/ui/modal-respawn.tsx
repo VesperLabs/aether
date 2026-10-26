@@ -1,7 +1,7 @@
 import { Modal, KeyboardButton } from "@/ui";
 import { useAppContext } from ".";
 
-const ModalRespawn: React.FC = () => {
+export const ModalRespawn: React.FC = () => {
   const { socket, zoom, bottomOffset } = useAppContext();
   return (
     <Modal zoom={zoom} bottomOffset={bottomOffset}>
@@ -14,5 +14,3 @@ const ModalRespawn: React.FC = () => {
     </Modal>
   );
 };
-
-export default ModalRespawn;

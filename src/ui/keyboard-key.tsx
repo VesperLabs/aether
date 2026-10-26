@@ -52,7 +52,7 @@ const getKeyDisplayLabel = (name: string) => {
   return getKeyName(name);
 };
 
-const KeyboardKey: React.FC<KeyboardKeyProps> = ({
+export const KeyboardKey: React.FC<KeyboardKeyProps> = ({
   name,
   onKeyUp,
   hidden,
@@ -152,5 +152,3 @@ const KeyboardKey: React.FC<KeyboardKeyProps> = ({
     </Flex>
   );
 };
-
-export default KeyboardKey;

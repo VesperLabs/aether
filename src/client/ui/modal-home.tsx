@@ -2,7 +2,7 @@ import { useAppContext } from ".";
 import { Modal, KeyboardButton, Icon, Box, Text } from "@/ui";
 import { startCase, toLower } from "lodash";
 
-const ModalHome = () => {
+export const ModalHome = () => {
   const { zoom, bottomOffset, homeModal: keeper, setHomeModal, socket } = useAppContext();
   const icon = `./assets/icons/pen.png`;
   return keeper ? (
@@ -45,5 +45,3 @@ const ModalHome = () => {
     </>
   ) : null;
 };
-
-export default ModalHome;

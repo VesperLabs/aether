@@ -1,6 +1,6 @@
-import { Switch } from "theme-ui";
+import { Switch as ThemeUiSwitch } from "theme-ui";
 
-export default function ({
+export function Switch({
   sx,
   ...props
 }: {
@@ -11,7 +11,7 @@ export default function ({
   disabled?: boolean;
 }) {
   return (
-    <Switch
+    <ThemeUiSwitch
       sx={{
         backgroundColor: "shadow.20",
         "input:checked ~ &": {

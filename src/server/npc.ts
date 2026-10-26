@@ -1,5 +1,5 @@
-import Character from "./character";
-import ItemBuilder from "@/shared/item-builder";
+import { ServerCharacter as Character } from "./character";
+import { ItemBuilder } from "@/shared/item-builder";
 import {
   BUFF_SPELLS,
   ILVL_MULTIPLIER,
@@ -32,7 +32,7 @@ const buildShop = (shop: Array<any>) => {
   }, []);
 };
 
-class Npc extends Character implements Npc {
+export class Npc extends Character implements Npc {
   public respawnTime: number;
   public drops: Array<Drop>;
   public talkingIds: Array<string>;
@@ -630,5 +630,3 @@ function calculateStealthAggroRange({
     });
   return newNpcAggroRange;
 }
-
-export default Npc;

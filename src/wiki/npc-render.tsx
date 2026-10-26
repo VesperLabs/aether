@@ -5,7 +5,7 @@ import { TOOLTIP_STYLE } from ".";
 
 const SLOT_SIZE = 100;
 
-export default function ({ model }) {
+export function NpcRender({ model }) {
   const [imageData, setImageData] = useState<any>();
   /* Loads the model canvas data out of the textures */
   useLayoutEffect(() => {

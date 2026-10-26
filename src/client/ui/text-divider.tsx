@@ -13,7 +13,7 @@ const hexToRGBA = (hex, alpha = 1) => {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 };
 
-const TextDivider = ({ children, sx, color = "gray.500", alpha = 0.5 }: any) => {
+export const TextDivider = ({ children, sx, color = "gray.500", alpha = 0.5 }: any) => {
   const resolvedColor = get(theme, `colors.${color}`) ?? color;
   const colorWithAlpha = hexToRGBA(resolvedColor, alpha);
 
@@ -35,5 +35,3 @@ const TextDivider = ({ children, sx, color = "gray.500", alpha = 0.5 }: any) => 
     </Text>
   );
 };
-
-export default TextDivider;

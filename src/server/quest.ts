@@ -1,4 +1,4 @@
-class Quest {
+export class Quest {
   id: string;
   name: string;
   dialogues: string;
@@ -16,5 +16,3 @@ class Quest {
     this.objectives = args?.objectives;
   }
 }
-
-export default Quest;

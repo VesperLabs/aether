@@ -1,7 +1,7 @@
 import { Box } from "@/ui";
 import { STATIC_ROW_STYLES, RowTitle } from ".";
 
-const Footer = () => {
+export const Footer = () => {
   return (
     <RowTitle
       sx={{
@@ -23,5 +23,3 @@ const Footer = () => {
     </RowTitle>
   );
 };
-
-export default Footer;

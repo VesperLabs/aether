@@ -1,9 +1,9 @@
 import { Box, Flex } from "@/ui";
-import NpcRender from "./npc-render";
+import { NpcRender } from "./npc-render";
 import { nasties } from "@/shared";
-import RowTitle from "./row-title";
+import { RowTitle } from "./row-title";
 
-export default function () {
+export function PageNasties() {
   return (
     <Flex sx={{ gap: 2, flexDirection: "column", mb: 4 }}>
       <RowTitle icon={"bounty"}>Monsters</RowTitle>

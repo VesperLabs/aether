@@ -3,7 +3,7 @@ import { Menu, MenuHeader, Slot, MENU_MAX_WIDTH } from ".";
 import { memo } from "react";
 import { arePropsEqualWithKeys } from "@/shared";
 
-const MenuAbilities = memo(
+export const MenuAbilities = memo(
   ({ player, isOpen, setIsOpen, slotsEnabled = true }: any) => {
     const abilities = Object.entries(player?.abilities || {});
 
@@ -36,5 +36,3 @@ const MenuAbilities = memo(
   },
   arePropsEqualWithKeys(["isOpen", "player.abilities", "player.activeItemSlots", "player.stats"]),
 );
-
-export default MenuAbilities;

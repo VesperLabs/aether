@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 const Sprite = Phaser.GameObjects.Sprite;
 
-class Sign extends Phaser.GameObjects.Container implements Sign {
+export class Sign extends Phaser.GameObjects.Container implements Sign {
   public text: string;
   public icon: string;
   declare body: Phaser.Physics.Arcade.Body;
@@ -55,5 +55,3 @@ class Sign extends Phaser.GameObjects.Container implements Sign {
     super.destroy();
   }
 }
-
-export default Sign;

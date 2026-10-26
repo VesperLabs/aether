@@ -1,6 +1,6 @@
-import Player from "./player";
+import { Player } from "./player";
 import { distanceTo } from "../shared";
-class PlayerManager {
+export class PlayerManager {
   public scene: ServerScene;
   public room: Room;
   public players: any;
@@ -60,5 +60,3 @@ class PlayerManager {
     return this?.players?.getChildren?.()?.length > 0;
   }
 }
-
-export default PlayerManager;

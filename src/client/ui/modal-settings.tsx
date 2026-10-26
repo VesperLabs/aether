@@ -1,8 +1,8 @@
 import { useAppContext } from ".";
 import { Modal, KeyboardButton, Icon } from "@/ui";
-import UserSettingsForm from "./user-settings-form";
+import { UserSettingsForm } from "./user-settings-form";
 
-const ModalSettings: React.FC = () => {
+export const ModalSettings: React.FC = () => {
   const { setTabSettings, zoom, bottomOffset } = useAppContext();
 
   return (
@@ -29,5 +29,3 @@ const ModalSettings: React.FC = () => {
     </>
   );
 };
-
-export default ModalSettings;

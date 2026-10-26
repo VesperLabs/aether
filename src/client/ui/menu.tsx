@@ -1,6 +1,6 @@
 import { Flex } from "@/ui";
 
-const Menu = (p: any) => {
+export const Menu = (p: any) => {
   const { sx = {}, ...props } = p;
   return (
     <Flex
@@ -24,5 +24,3 @@ const Menu = (p: any) => {
     />
   );
 };
-
-export default Menu;

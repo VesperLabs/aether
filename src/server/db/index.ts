@@ -1,6 +1,6 @@
 import { MongoClient, Db } from "mongodb";
 import { userSchema } from "./schema";
-import ItemBuilder from "@/shared/item-builder";
+import { ItemBuilder } from "@/shared/item-builder";
 import { useGetBaseCharacterDefaults, filterNullEmpty, calculateNextMaxExp } from "../utils";
 import { omitBy, isNil } from "lodash";
 import { DEFAULT_USER_SETTINGS } from "@/shared/utils";

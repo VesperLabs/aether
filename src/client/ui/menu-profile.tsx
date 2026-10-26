@@ -31,7 +31,7 @@ const MenuPicker = ({ children, onPlus = () => {}, onMinus = () => {} }) => {
   );
 };
 
-const MenuProfile = memo(
+export const MenuProfile = memo(
   ({ player, isOpen, setIsOpen }: any) => {
     const { socket } = useAppContext();
 
@@ -121,5 +121,3 @@ const MenuProfile = memo(
   },
   arePropsEqualWithKeys(["player.profile", "player.equipment", "player.activeItemSlots", "isOpen"]),
 );
-
-export default MenuProfile;
