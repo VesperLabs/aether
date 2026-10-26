@@ -13,7 +13,8 @@ export const VersionTag = () =>
         opacity: 0.5,
         pointerEvents: "none",
         userSelect: "none",
-        zIndex: 1000,
+        /* Above the login overlay, which sits at the modal layer. */
+        zIndex: "tooltip",
       }}
     >
       {__APP_VERSION__}
