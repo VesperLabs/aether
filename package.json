@@ -22,7 +22,7 @@
     "format": "oxfmt",
     "dev": "concurrently -k -n server,client,web -c blue,green,magenta \"npm:server:watch\" \"npm:client:dev\" \"npm:web:dev\"",
     "prepare": "husky",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.strict.json",
     "test:watch": "vitest",
     "check:format": "oxfmt --check",
     "check": "npm run check:format && npm run lint && npm run typecheck && npm run test"
