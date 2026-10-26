@@ -21,7 +21,6 @@ const LEGACY: Record<Rule, string[]> = {
   "manager-class": [
     "src/server/loot-manager.ts",
     "src/server/npc-manager.ts",
-    "src/server/party-manager.ts",
     "src/server/player-manager.ts",
     "src/server/room-manager.ts",
     "src/server/spell-manager.ts",

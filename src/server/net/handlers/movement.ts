@@ -38,7 +38,7 @@ export function updateState(ctx: CommandContext, state: ParsedCommand<"updateSta
 }
 
 export function enterDoor(ctx: CommandContext, doorName: ParsedCommand<"enterDoor">) {
-  const { scene, socket, socketId, io } = ctx;
+  const { scene, socket, socketId } = ctx;
   const player = scene.players[socketId];
   const oldRoom = player.room.name;
   const prev = getDoor(scene, oldRoom, doorName)?.getProps();
@@ -73,7 +73,7 @@ export function enterDoor(ctx: CommandContext, doorName: ParsedCommand<"enterDoo
 }
 
 export function respawn(ctx: CommandContext) {
-  const { scene, socket, socketId, io } = ctx;
+  const { scene, socket, socketId } = ctx;
   const player = scene.players[socketId];
   const oldRoom = player.room.name;
   const { roomName: newRoom, x: newX, y: newY } = player?.spawn ?? PLAYER_DEFAULT_SPAWN;
