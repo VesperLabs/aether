@@ -1,6 +1,7 @@
+import type { ComponentProps } from "react";
 import { Box } from "@/ui";
 
-export const SlotAmount = (props) => (
+export const SlotAmount = (props: ComponentProps<typeof Box>) => (
   <Box
     sx={{
       position: "absolute",

@@ -36,7 +36,7 @@ export { keepers, type KeeperId } from "./mobs/keepers";
 export { nasties, type NastyId } from "./mobs/nasties";
 export type { MobProfile, MobRace, NastyDefinition } from "./mobs/mob-types";
 export type { KeeperDefinition } from "./mobs/keeper-types";
-export { Quest } from "./quests/quest";
+export { Quest, type QuestObjective, type QuestRewards } from "./quests/quest";
 export { QuestBuilder, QUEST_EXP_MULTIPLIER, QUEST_GOLD_MULTIPLIER } from "./quests/quest-builder";
 export { questList, type QuestId } from "./quests/quest-list";
 export { spellDetails, type SpellName } from "./spells/spell-details";

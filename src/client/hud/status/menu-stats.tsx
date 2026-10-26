@@ -3,6 +3,7 @@ import { Flex, Text, Grid, MENU_MAX_WIDTH, Menu, MenuHeader } from "@/ui";
 import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
 import { convertMsToS } from "@/ui/format-stats";
 import { memo } from "react";
+import type { CharacterMenuProps } from "@/client/hud/menu/menu-props";
 
 const COLUMN_STYLES: ThemeUIStyleObject = {
   gap: 1,
@@ -28,7 +29,7 @@ const COLUMN_STYLES: ThemeUIStyleObject = {
 };
 
 export const MenuStats = memo(
-  ({ player, isOpen, setIsOpen }: any) => {
+  ({ player, isOpen, setIsOpen }: CharacterMenuProps) => {
     const { stats } = player ?? {};
     if (!stats) return null;
     return (

@@ -1,19 +1,22 @@
-import { Quest } from "./quest";
+import { Quest as QuestSlot } from "./quest";
 import { Flex, Text, MENU_MAX_WIDTH, Menu, MenuHeader } from "@/ui";
-import { questList } from "@/shared/content";
+import { questList, type Quest, type QuestId } from "@/shared/content";
+import type { PlayerQuestStatus } from "@/shared/rules/quests";
 import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
 import { memo } from "react";
+import type { CharacterMenuProps } from "@/client/hud/menu/menu-props";
 
 export const MenuQuests = memo(
-  ({ player, isOpen, setIsOpen }: any) => {
+  ({ player, isOpen, setIsOpen }: CharacterMenuProps) => {
     const playerQuests = player?.quests || [];
     const quests = playerQuests
       ?.filter((q) => !q?.isCompleted)
-      .map((q: PlayerQuest) => ({
+      .map((q: PlayerQuestStatus & { rewards?: Quest["rewards"] }) => ({
         id: q?.questId,
-        ...questList?.[q?.questId],
+        ...questList?.[q?.questId as QuestId],
         rewards: q?.rewards,
-      })) as Quest[];
+        // The definition's objectives and rewards are the unbuilt form of a `Quest`'s.
+      })) as unknown as Quest[];
 
     return (
       <Menu
@@ -36,7 +39,7 @@ export const MenuQuests = memo(
         >
           {quests?.length === 0 && <Text>You are not on any quests.</Text>}
           {quests?.map((quest, idx) => {
-            return <Quest key={idx} quest={quest} parent="player" />;
+            return <QuestSlot key={idx} quest={quest} parent="player" />;
           })}
         </Flex>
       </Menu>

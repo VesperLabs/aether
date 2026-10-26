@@ -39,7 +39,8 @@ export function createItemEventHandlers({
   }
 
   function onDropItem(e: WindowEventMap["HERO_DROP_ITEM"]) {
-    const { target, location, bagId, slotKey, item } = e.detail;
+    const { location, bagId, slotKey, item } = e.detail;
+    const target = e.detail.target as HTMLElement | null;
     const { nodeName, dataset } = target ?? ({} as Partial<HTMLElement>);
     if (hero?.state?.isDead) return;
     /* Not moving an item anywhere. (Same slot) */

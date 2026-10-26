@@ -2,51 +2,63 @@ import { Slot } from "@/client/hud/inventory/slot";
 import { SlotAmount } from "@/client/hud/inventory/slot-amount";
 import { useAppContext } from "@/client/hud/app/context";
 import { Box, Text, Flex, Divider, Icon, Button, STYLE_NON_EMPTY } from "@/ui";
-import { ItemBuilder, nasties, keepers } from "@/shared/content";
+import {
+  ItemBuilder,
+  nasties,
+  keepers,
+  type KeeperId,
+  type NastyId,
+  type Quest as QuestData,
+  type QuestObjective,
+} from "@/shared/content";
+import type { PlayerQuestStatus } from "@/shared/rules/quests";
+import type { ClientGameSocket } from "@/shared/network";
+import type { HudCharacter } from "@/client/hud/app/context";
 import { Tooltip } from "@/client/hud/tooltips/tooltip";
 
-function getKeeperByQuestName(quest) {
-  for (const key in keepers) {
-    if (keepers?.[key]?.keeperData?.quests?.includes(quest)) {
-      return keepers?.[key];
+function getKeeperByQuestName(quest: string) {
+  for (const key of Object.keys(keepers) as KeeperId[]) {
+    const questIds = (keepers[key]?.keeperData as { quests?: readonly string[] }).quests;
+    if (questIds?.includes(quest)) {
+      return keepers[key];
     }
   }
   return null; // Return null if the quest is not found
 }
 
 /* Formats and parses the quest information from dialoge templates */
-const useQuestDialogue = (quest, playerQuest: PlayerQuest) => {
+const useQuestDialogue = (quest: QuestData, playerQuest: PlayerQuestStatus | undefined) => {
   const { dialogues, objectives } = quest ?? {};
-  const objectiveTexts = objectives?.map((objective: QuestObjective, idx) => {
+  const objectiveTexts = objectives?.map((objective: QuestObjective, idx: number) => {
     let verb = "";
-    let noun = null;
+    let noun: string | undefined;
     let current = 0;
     let amount: string = "";
 
     if (objective?.type === "chat") {
       verb = "Talk to";
-      const keeperName = keepers?.[objective?.keeper]?.profile?.userName;
+      const keeperName = keepers?.[objective?.keeper as KeeperId]?.profile?.userName;
       return `<strong>${verb} ${keeperName}</strong>`;
     }
     if (objective?.type === "item") {
       verb = "Collect";
-      noun = ItemBuilder.buildItem(...objective.item)?.name;
+      noun = ItemBuilder.buildItem(...(objective.item as [string, string, string]))?.name;
       current = playerQuest?.objectives?.[idx]?.numCollected || 0;
     }
     if (objective?.type === "bounty") {
       verb = "Slay";
-      noun = nasties?.[objective?.monster]?.profile?.userName;
+      noun = nasties?.[objective?.monster as NastyId]?.profile?.userName;
       current = playerQuest?.objectives?.[idx]?.numKilled || 0;
     }
 
     if (playerQuest?.isCompleted || !playerQuest) {
       amount = `${objective?.amount}`;
     } else {
-      amount = `(${Math.min(current, objective?.amount)}/${objective?.amount})`;
+      amount = `(${Math.min(current, objective?.amount as number)}/${objective?.amount})`;
     }
 
     return `<strong>${verb} ${amount} ${noun}${
-      objective?.amount > 1 && !noun.endsWith("s") ? "s" : ""
+      (objective?.amount as number) > 1 && !(noun as string).endsWith("s") ? "s" : ""
     }</strong>`;
   });
 
@@ -64,13 +76,13 @@ export const QuestTooltip = ({
   parent,
   player,
 }: {
-  quest: Quest;
+  quest: QuestData;
   tooltipId: string;
   show: boolean;
-  onClose;
-  playerQuest: PlayerQuest;
+  onClose: () => void;
+  playerQuest: PlayerQuestStatus | undefined;
   parent: string;
-  player: FullCharacterState;
+  player: HudCharacter;
 }) => {
   const { socket } = useAppContext();
   const { rewards } = quest ?? {};
@@ -109,10 +121,10 @@ export const QuestTooltip = ({
         <Text sx={{ fontWeight: "bold" }}>Quest Rewards</Text>
         <Divider />
         <Flex sx={{ gap: 2 }}>
-          {rewards?.items?.map((reward: Item, idx: string) => {
+          {rewards?.items?.map((reward, idx) => {
             return <Slot player={player} item={reward} key={idx} disabled={true} />;
           })}
-          {rewards?.gold > 0 && (
+          {(rewards?.gold as number) > 0 && (
             <Box sx={{ ...STYLE_NON_EMPTY({ rarity: "unique" }) }}>
               <SlotAmount>{rewards?.gold}</SlotAmount>
               <Icon
@@ -121,7 +133,7 @@ export const QuestTooltip = ({
               />
             </Box>
           )}
-          {rewards?.exp > 0 && (
+          {(rewards?.exp as number) > 0 && (
             <Box sx={{ ...STYLE_NON_EMPTY({ rarity: "legendary" }) }}>
               <SlotAmount>{rewards?.exp}</SlotAmount>
               <Icon
@@ -135,8 +147,8 @@ export const QuestTooltip = ({
         <Flex sx={{ gap: 1 }}>
           <Button
             variant="wood"
-            onClick={(e) => {
-              onClose(e);
+            onClick={() => {
+              onClose();
             }}
           >
             Close
@@ -154,7 +166,19 @@ export const QuestTooltip = ({
   );
 };
 
-const QuestStatusButton = ({ playerQuest, quest, socket, parent, giverName }) => {
+const QuestStatusButton = ({
+  playerQuest,
+  quest,
+  socket,
+  parent,
+  giverName,
+}: {
+  playerQuest: PlayerQuestStatus | undefined;
+  quest: QuestData;
+  socket: ClientGameSocket;
+  parent: string;
+  giverName: string | undefined;
+}) => {
   if (playerQuest?.isCompleted) {
     return (
       <Button variant="wood" disabled>

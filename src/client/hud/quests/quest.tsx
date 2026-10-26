@@ -4,14 +4,24 @@ import { useAppContext } from "@/client/hud/app/context";
 import { nanoid } from "nanoid";
 import { isMobile } from "@/ui/is-mobile";
 import { useMemo } from "react";
+import type { Quest as QuestData } from "@/shared/content";
+import type { PlayerQuestStatus } from "@/shared/rules/quests";
 
-export const Quest = ({ quest, parent = "keeper" }: { quest: Quest; parent: string }) => {
+export const Quest = ({
+  quest,
+  parent = "keeper",
+}: {
+  quest: QuestData;
+  parent?: string;
+}) => {
   const { objectives } = quest ?? {};
   const { hero, currentTooltipId, setCurrentTooltipId } = useAppContext();
   const isBounty = objectives?.some((objective) => objective?.type === "bounty");
   const isItem = objectives?.some((objective) => objective?.type === "item");
   const isChat = objectives?.some((objective) => objective?.type === "chat");
-  const playerQuest: PlayerQuest = hero?.quests?.find((q) => q?.questId === quest?.id);
+  const playerQuest: PlayerQuestStatus | undefined = hero?.quests?.find(
+    (q: PlayerQuestStatus) => q?.questId === quest?.id,
+  );
   const TOOLTIP_ID = useMemo(() => nanoid(), []);
 
   let icon = "./assets/icons/chest.png";
@@ -23,11 +33,11 @@ export const Quest = ({ quest, parent = "keeper" }: { quest: Quest; parent: stri
     icon = "./assets/icons/letter.png";
   }
 
-  const handleMouseEnter = (e) => {
+  const handleMouseEnter = () => {
     setCurrentTooltipId(TOOLTIP_ID);
   };
 
-  const handleMouseLeave = (e) => {
+  const handleMouseLeave = () => {
     setCurrentTooltipId(null);
   };
 
@@ -52,7 +62,7 @@ export const Quest = ({ quest, parent = "keeper" }: { quest: Quest; parent: stri
   const show = currentTooltipId === TOOLTIP_ID;
 
   return (
-    <Box sx={BASE_SLOT_STYLE} {...outerMouseBinds} onTouchStart={(e) => handleMouseEnter(e)}>
+    <Box sx={BASE_SLOT_STYLE} {...outerMouseBinds} onTouchStart={() => handleMouseEnter()}>
       <Box
         data-tooltip-id={TOOLTIP_ID}
         sx={{

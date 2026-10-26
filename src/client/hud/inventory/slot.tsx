@@ -1,4 +1,6 @@
 import { useState, useRef, useLayoutEffect, memo } from "react";
+import type { BuiltItem } from "@/shared/content";
+import type { HudCharacter } from "@/client/hud/app/context";
 import {
   Box,
   Icon,
@@ -17,9 +19,10 @@ import { assetToCanvas } from "@/ui/image-tint";
 import { isMobile } from "@/ui/is-mobile";
 import { itemHasRequiredStats } from "@/shared/rules/inventory";
 import { useDoubleTap } from "use-double-tap";
+import type { ThemeUIStyleObject } from "theme-ui";
 import { isEqual, get } from "@/ui/are-props-equal";
 
-const SpaceDonut = ({ percent = 0 }) => {
+const SpaceDonut = ({ percent = 0 }: { percent?: number }) => {
   const getColor = () => {
     if (percent > 0.75) {
       return "danger";
@@ -50,16 +53,16 @@ const SpaceDonut = ({ percent = 0 }) => {
 };
 
 type SlotProps = {
-  sx?: object;
-  size?: integer;
-  item?: Item;
+  sx?: ThemeUIStyleObject;
+  size?: number;
+  item?: BuiltItem | null;
   slotKey?: string;
   location?: string;
   icon?: string;
-  stock?: integer;
+  stock?: number;
   disabled?: boolean;
   bagId?: string;
-  player: FullCharacterState;
+  player?: Partial<HudCharacter> | null;
 };
 
 export const Slot = memo(
@@ -80,8 +83,8 @@ export const Slot = memo(
     const [dragging, setDragging] = useState(false);
     const [hovering, setHovering] = useState(false);
     const [position, setPosition] = useState({ x: 0, y: 0 });
-    const [target, setTarget] = useState(null);
-    const imageRef = useRef(null);
+    const [target, setTarget] = useState<Element | null>(null);
+    const imageRef = useRef<HTMLDivElement>(null);
     const { dropItem, doubleClickItem } = useItemEvents({
       player,
       bagId,
@@ -90,21 +93,23 @@ export const Slot = memo(
       slotKey,
     });
     const shouldBindEvents = item && !disabled;
-    const handleMouseDown = (e) => {
+    const handleMouseDown = (e: React.MouseEvent) => {
+      const image = imageRef.current as HTMLDivElement;
       setPosition({
-        x: e.clientX - imageRef.current.offsetWidth / 2,
-        y: e.clientY - imageRef.current.offsetHeight / 2,
+        x: e.clientX - image.offsetWidth / 2,
+        y: e.clientY - image.offsetHeight / 2,
       });
       setDragging(true);
       setTarget(document.elementFromPoint(e.clientX, e.clientY));
     };
 
-    const handleTouchStart = (e) => {
+    const handleTouchStart = (e: React.TouchEvent) => {
       if (dragging) e.preventDefault();
       e.stopPropagation();
+      const image = imageRef.current as HTMLDivElement;
       setPosition({
-        x: e.touches[0].clientX - imageRef.current.offsetWidth / 2,
-        y: e.touches[0].clientY - imageRef.current.offsetHeight / 2,
+        x: e.touches[0].clientX - image.offsetWidth / 2,
+        y: e.touches[0].clientY - image.offsetHeight / 2,
       });
       setDragging(true);
       setTimeout(
@@ -113,10 +118,11 @@ export const Slot = memo(
       );
     };
 
-    const handleMouseMove = (e) => {
+    const handleMouseMove = (e: MouseEvent) => {
       if (!dragging) return;
-      const x = e.clientX - imageRef.current.offsetWidth / 2;
-      const y = e.clientY - imageRef.current.offsetHeight / 2;
+      const image = imageRef.current as HTMLDivElement;
+      const x = e.clientX - image.offsetWidth / 2;
+      const y = e.clientY - image.offsetHeight / 2;
       const t = document.elementFromPoint(e.clientX, e.clientY);
       setPosition({ x, y });
       if (t?.nodeName == "CANVAS") {
@@ -132,10 +138,11 @@ export const Slot = memo(
       setTarget(t);
     };
 
-    const handleTouchMove = (e) => {
+    const handleTouchMove = (e: TouchEvent) => {
       if (!dragging) return;
-      const x = e.touches[0].clientX - imageRef.current.offsetWidth / 2;
-      const y = e.touches[0].clientY - imageRef.current.offsetHeight / 2;
+      const image = imageRef.current as HTMLDivElement;
+      const x = e.touches[0].clientX - image.offsetWidth / 2;
+      const y = e.touches[0].clientY - image.offsetHeight / 2;
       const t = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY);
       setPosition({ x, y });
       if (t?.nodeName == "CANVAS") {
@@ -151,7 +158,7 @@ export const Slot = memo(
       setTarget(t);
     };
 
-    const handleMouseUp = (e) => {
+    const handleMouseUp = (e: MouseEvent) => {
       if (!dragging) return;
       const t = document.elementFromPoint(e.clientX, e.clientY);
       setTarget(t);
@@ -159,7 +166,7 @@ export const Slot = memo(
       setDragging(false);
     };
 
-    const handleTouchEnd = (e) => {
+    const handleTouchEnd = (e: TouchEvent) => {
       if (!dragging) return;
       e.stopPropagation();
       const t = document.elementFromPoint(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
@@ -168,10 +175,10 @@ export const Slot = memo(
       setDragging(false);
     };
 
-    const handleMouseEnter = (e) => {
+    const handleMouseEnter = () => {
       setHovering(true);
     };
-    const handleMouseLeave = (e) => {
+    const handleMouseLeave = () => {
       setHovering(false);
     };
 
@@ -220,7 +227,7 @@ export const Slot = memo(
 
     const isActive = getIsItemActive({ item, player, location, slotKey });
     const tooltipId = `${location}-${item?.id}`;
-    const targetMoved = target?.dataset?.tooltipId !== tooltipId;
+    const targetMoved = (target as HTMLElement | null)?.dataset?.tooltipId !== tooltipId;
     const aboutToSell = dragging && target?.closest(".menu-keeper") && location !== "shop";
 
     /* When to show the tooltip */
@@ -261,7 +268,11 @@ export const Slot = memo(
         {item && (
           <>
             {item?.base === "bag" && (
-              <SpaceDonut percent={item?.items?.filter((i) => i)?.length / item?.space || 0} />
+              <SpaceDonut
+                percent={
+                  (item?.items?.filter((i) => i)?.length as number) / (item?.space as number) || 0
+                }
+              />
             )}
             {item?.amount > 1 && <SlotAmount>{item?.amount}</SlotAmount>}
             {item?.slot === "spell" && <SlotAmount>Lvl. {item?.ilvl}</SlotAmount>}
@@ -348,31 +359,46 @@ function shouldReRenderSlot(prevProps: SlotProps, nextProps: SlotProps) {
   });
 }
 
-function getIsItemActive({ item, slotKey, player, location }) {
-  if (["abilities", "equipment"]?.includes(location)) {
-    return player?.activeItemSlots?.includes(slotKey);
+function getIsItemActive({
+  item,
+  slotKey,
+  player,
+  location,
+}: Pick<SlotProps, "item" | "slotKey" | "player" | "location">) {
+  if (["abilities", "equipment"]?.includes(location as string)) {
+    return player?.activeItemSlots?.includes(slotKey as string);
   }
-  if (["shop", "inventory", "bag"]?.includes(location)) {
+  if (["shop", "inventory", "bag"]?.includes(location as string)) {
     return Object.keys(item?.requirements || {}).every((key) => {
-      return itemHasRequiredStats({ requirements: item?.requirements, player, key });
+      return itemHasRequiredStats({
+        requirements: item?.requirements as Record<string, number | string>,
+        player: player ?? undefined,
+        key,
+      });
     });
   }
   return true;
 }
 
-function useItemEvents({ location, bagId, slotKey, item, player }) {
+function useItemEvents({
+  location,
+  bagId,
+  slotKey,
+  item,
+  player,
+}: Pick<SlotProps, "location" | "bagId" | "slotKey" | "item" | "player">) {
   return {
     doubleClickItem: () => {
       window.dispatchEvent(
         new CustomEvent("HERO_DOUBLE_CLICK_ITEM", {
-          detail: { item, location },
+          detail: { item: item as BuiltItem, location: location as string },
         }),
       );
     },
-    dropItem: (target) => {
+    dropItem: (target: Element | null) => {
       window.dispatchEvent(
         new CustomEvent("HERO_DROP_ITEM", {
-          detail: { item, location, bagId, slotKey, player, target },
+          detail: { item: item as BuiltItem, location: location as string, bagId, slotKey, player, target },
         }),
       );
     },

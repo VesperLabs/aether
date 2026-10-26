@@ -1,11 +1,13 @@
 import { Flex, MENU_MAX_WIDTH, Menu, MenuHeader } from "@/ui";
 import { Slot } from "@/client/hud/inventory/slot";
 import { memo } from "react";
+import type { BuiltItem } from "@/shared/content";
+import type { CharacterMenuProps } from "@/client/hud/menu/menu-props";
 import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
 
 export const MenuAbilities = memo(
-  ({ player, isOpen, setIsOpen, slotsEnabled = true }: any) => {
-    const abilities = Object.entries(player?.abilities || {});
+  ({ player, isOpen, setIsOpen, slotsEnabled = true }: CharacterMenuProps) => {
+    const abilities = Object.entries<BuiltItem>(player?.abilities || {});
 
     return (
       <Menu
@@ -19,7 +21,7 @@ export const MenuAbilities = memo(
           Abilities
         </MenuHeader>
         <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", maxWidth: MENU_MAX_WIDTH }}>
-          {abilities?.map(([slotKey, item]: [string, Item]) => (
+          {abilities?.map(([slotKey, item]: [string, BuiltItem]) => (
             <Slot
               player={player}
               key={slotKey}

@@ -15,7 +15,7 @@ export interface DropItemDetail extends ItemEventDetail {
   bagId?: string;
   slotKey?: string;
   player?: unknown;
-  target: HTMLElement | null;
+  target: Element | null;
 }
 
 export interface CooldownDetail {

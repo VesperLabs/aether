@@ -3,8 +3,10 @@ import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
 import { Slot } from "./slot";
 import { Flex, Text, Icon, MENU_MAX_WIDTH, Menu, MenuHeader } from "@/ui";
 import { memo } from "react";
+import type { ThemeUIStyleObject } from "theme-ui";
+import type { CharacterMenuProps } from "@/client/hud/menu/menu-props";
 
-const GoldDisplay = ({ gold, sx }) => (
+const GoldDisplay = ({ gold, sx }: { gold?: number; sx?: ThemeUIStyleObject }) => (
   <Flex sx={{ flex: 1, gap: 1, justifyContent: "end", alignItems: "center", ...sx }}>
     <Icon icon="./assets/icons/gold.png" size={16} />
     <Text>{gold || 0}</Text>
@@ -12,7 +14,7 @@ const GoldDisplay = ({ gold, sx }) => (
 );
 
 export const MenuInventory = memo(
-  ({ player, isOpen, setIsOpen, slotsEnabled = true }: any) => {
+  ({ player, isOpen, setIsOpen, slotsEnabled = true }: CharacterMenuProps) => {
     const inventory = player?.inventory || [];
     const maxInventory = new Array(MAX_INVENTORY_ITEMS).fill(null);
     return (

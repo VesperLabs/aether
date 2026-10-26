@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useAppContext } from "@/client/hud/app/context";
 import { Slot } from "./slot";
+import type { BuiltItem } from "@/shared/content";
+import type { DropItem } from "@/client/hud/app/context";
 import { Modal, Flex, Input, Icon, Text, KeyboardButton } from "@/ui";
 
 export const ModalDropAmount = () => {
@@ -13,8 +15,8 @@ export const ModalDropAmount = () => {
     action,
     dataset,
     ...item
-  } = dropItem ?? {};
-  const [amount, setAmount] = useState(defaultAmount);
+  } = dropItem as DropItem;
+  const [amount, setAmount] = useState<number | string>(defaultAmount);
   const isShop = action?.includes("SHOP");
   const isConfirm = action?.includes("CONFIRM");
   const isBuying = action?.includes("BUY");
@@ -75,7 +77,7 @@ export const ModalDropAmount = () => {
           width: "300px",
         }}
       >
-        <Slot player={hero} item={{ ...item, id: item?.id + "modal" }} disabled={true} />
+        <Slot player={hero} item={{ ...item, id: item?.id + "modal" } as BuiltItem} disabled={true} />
         {!isConfirm && (
           <Flex sx={{ flex: 1, alignItems: "center", gap: 2, minWidth: 100 }}>
             <Text>x</Text>
@@ -101,12 +103,12 @@ export const ModalDropAmount = () => {
           sx={{ flex: 1 }}
           keyboardKey="ENTER"
           onClick={handleAction}
-          disabled={amount < 1}
+          disabled={Number(amount) < 1}
         >
           {isShop ? (
             <>
               <Icon icon="./assets/icons/gold.png" size={16} sx={{ flexShrink: 0 }} />
-              <Text>{amount * item?.cost}</Text>
+              <Text>{Number(amount) * (item?.cost as number)}</Text>
             </>
           ) : (
             <Text>Drop</Text>
