@@ -1,7 +1,7 @@
 //@ts-nocheck
 import { ItemBuilder } from "@/shared/content";
 import { PLAYER_BASE_EXP, getBaseStats } from "@/shared/rules/stats";
-import { decodeWireDirection, encodeWireDirection, pickTickStateLite } from "@/shared/network/sync";
+import { decodeWireDirection } from "@/shared/network/sync";
 
 const QUEST_GOLD_MULTIPLIER = Math.floor(PLAYER_BASE_EXP * 0.1);
 const QUEST_EXP_MULTIPLIER = Math.floor(PLAYER_BASE_EXP / 2);
@@ -49,130 +49,6 @@ function getPlayer(scene, socketId) {
 
 function getDoor(scene, roomName, doorName) {
   return scene?.doors?.[roomName]?.[doorName];
-}
-
-function getRoomState(scene: ServerScene, roomName: string): RoomState {
-  return {
-    players: Object.values(scene.players)
-      ?.filter((p) => p?.room?.name === roomName)
-      .map((p) => getFullCharacterState(p)),
-    npcs: Object.values(scene.npcs)
-      ?.filter((n) => n?.room?.name === roomName)
-      .map((p) => getFullCharacterState(p)),
-    // spells: Object.values(scene.spells)
-    //   ?.filter((s) => s?.room?.name === roomName)
-    //   .map((s) => s?.getTrimmed()),
-    loots: Object.values(scene.loots)?.filter((l) => l?.roomName === roomName),
-  };
-}
-
-function getFullCharacterState(p: Character): FullCharacterState {
-  const uid = p?.socketId || p?.id;
-  return {
-    id: uid, //required for SI
-    socketId: uid,
-    peerId: p?.peerId,
-    roomName: p?.room?.name,
-    x: p?.x,
-    y: p?.y,
-    vx: p?.vx,
-    vy: p?.vy,
-    direction: p?.direction,
-    stats: p?.stats,
-    state: p?.state,
-    equipment: p?.equipment,
-    inventory: p?.inventory,
-    profile: p?.profile,
-    kind: p?.kind,
-    charClass: p?.charClass,
-    npcKills: p?.npcKills,
-    buffs: p?.buffs,
-    quests: p?.getQuests(),
-    abilities: p?.abilities,
-    activeItemSlots: p?.activeItemSlots,
-    gold: p?.gold,
-    hitBoxSize: p?.hitBoxSize,
-  };
-}
-
-/**
- * Tick sync for ground loot: no `item` blob — clients already have full item from lootSpawned / heroInit.
- * Cuts most of the JSON on busy maps (item trees were repeated every 20Hz).
- */
-/** Tick loot: client only needs id + expiredSince (destroy when both match). Full props from spawn / heroInit. */
-function getLootTickWire(l: Loot) {
-  const o: { id: string; expiredSince?: number } = { id: l.id };
-  if (l.expiredSince != null) o.expiredSince = l.expiredSince;
-  return o;
-}
-
-function getTickRoomState(scene: ServerScene, roomName: string): TickRoomState {
-  return {
-    players: Object.values(scene.players)
-      ?.filter((p) => p?.room?.name === roomName)
-      .map(getTickCharacterState),
-    npcs: Object.values(scene.npcs)
-      ?.filter((p) => p?.room?.name === roomName)
-      .map(getTickCharacterState),
-    // spells: Object.values(scene.spells)
-    //   ?.filter((s) => s?.room?.name === roomName)
-    //   .map((s) => s?.getTrimmed()),
-    loots: Object.values(scene.loots)
-      ?.filter((l) => l?.roomName === roomName)
-      .map(getLootTickWire),
-  };
-}
-
-/**
- * Only fields used by client `Player.updateState` — not the full state blob (huge JSON every tick).
- */
-function getTickStateLite(p: Character) {
-  return pickTickStateLite(p?.state);
-}
-
-function getTickCharacterState(p: Character): TickCharacterState {
-  const uid = p?.socketId || p?.id;
-  const vx = p?.vx ?? 0;
-  const vy = p?.vy ?? 0;
-  return {
-    id: uid, //required for SI (same as socketId for players; omit duplicate key on wire)
-    /* room omitted: snapshot is already scoped to one room; saves bytes per entity per tick */
-    d: encodeWireDirection(p?.direction),
-    state: getTickStateLite(p),
-    /* Floats: rounding broke small velocities (→0) and stepped positions for snapshot interpolation */
-    x: p?.x ?? 0,
-    y: p?.y ?? 0,
-    vx,
-    vy,
-  };
-}
-
-// gets server and player npcs that have expired buffs (each tick)
-function getBuffRoomState(scene: ServerScene, roomName: string): BuffRoomState {
-  return {
-    players: Object.values(scene.players)
-      ?.filter((p) => p?.room?.name === roomName && p?.state?.hasBuffChanges)
-      .map(getBuffCharacterState),
-    npcs: Object.values(scene.npcs)
-      ?.filter((p) => p?.room?.name === roomName && p?.state?.hasBuffChanges)
-      .map(getBuffCharacterState),
-  };
-}
-
-function getBuffCharacterState(p: Character): BuffCharacterState {
-  const uid = p?.socketId || p?.id;
-  if (p?.state) {
-    // no longer need to send this to client
-    p.state.hasBuffChanges = false;
-  }
-  return {
-    id: uid,
-    socketId: uid,
-    state: p?.state,
-    stats: p?.stats,
-    buffs: p?.buffs,
-    activeItemSlots: p?.activeItemSlots,
-  };
 }
 
 function randomNumber(min, max) {
@@ -280,17 +156,11 @@ function sleep(delay) {
 export {
   removePlayer,
   getPlayer,
-  getTickRoomState,
-  getTickCharacterState,
-  getRoomState,
-  getFullCharacterState,
   handlePlayerInput,
   getDoor,
   randomNumber,
   getCharacterDirection,
   cloneObject,
-  getBuffRoomState,
-  getBuffCharacterState,
   PLAYER_DEFAULT_SPAWN,
   QUEST_GOLD_MULTIPLIER,
   QUEST_EXP_MULTIPLIER,

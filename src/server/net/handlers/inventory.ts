@@ -1,4 +1,5 @@
-import { getFullCharacterState, cloneObject } from "../../utils";
+import { getFullCharacterState } from "@/shared/network/sync";
+import { cloneObject } from "../../utils";
 import { addStackAmounts, resolveGrab } from "@/shared/rules/loot";
 import { removeLoot, spawnLoot } from "../../loot-adapter";
 import { consumeItem as consumeItemRule, dropItem as dropItemRule } from "@/shared/rules/inventory";

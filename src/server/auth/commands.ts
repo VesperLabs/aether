@@ -1,4 +1,6 @@
-import { getFullCharacterState, getRoomState, removePlayer } from "../utils";
+import { getFullCharacterState } from "@/shared/network/sync";
+import { getRoomState } from "@/server/net/room-sync";
+import { removePlayer } from "../utils";
 import { legacyLeaveParty } from "../party-adapter";
 import { createBaseUser } from "../persistence";
 import { shouldPause } from "../net/scene-pause";

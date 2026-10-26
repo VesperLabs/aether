@@ -1,5 +1,6 @@
 import { ServerCharacter } from "./character";
-import { getRoomState, PLAYER_DEFAULT_SPAWN } from "./utils";
+import { PLAYER_DEFAULT_SPAWN } from "./utils";
+import { getRoomState } from "@/server/net/room-sync";
 import { expForMobKill } from "@/shared/rules/stats";
 import { isPartyMember, sharedRecipientIds } from "@/shared/rules/party";
 import { markKeeperObjectivesReady, nextNpcKillCount } from "@/shared/rules/quests";

@@ -1,5 +1,5 @@
 /**
- * Subset of Character.state sent on every tick — must match server getTickStateLite / client merge.
+ * Subset of Character.state sent on every tick — must match getTickStateLite / client merge.
  */
 export function pickTickStateLite(
   s: Record<string, unknown> | null | undefined,

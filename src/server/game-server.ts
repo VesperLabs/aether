@@ -7,7 +7,7 @@ import { updateRoomLoot, spawnLoot } from "./loot-adapter";
 import { ILVL_MULTIPLIER, ItemBuilder, mapList, QuestBuilder } from "@/shared/content";
 import { Server } from "socket.io";
 import path from "path";
-import { getTickRoomState, getBuffRoomState } from "./utils";
+import { getTickRoomState, getBuffRoomState } from "@/server/net/room-sync";
 import { RoomManager } from "./room-manager";
 import { createPartyState, type PartyState } from "@/shared/rules/party";
 import Phaser from "phaser";

@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { getFullCharacterState } from "../../utils";
+import { getFullCharacterState } from "@/shared/network/sync";
 import { moveItem as moveItemRule } from "@/shared/rules/inventory";
 import { applyInventoryState, toInventoryState } from "../../player-inventory";
 import type { CommandContext } from "@/server/net/command-context";

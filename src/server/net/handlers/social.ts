@@ -1,5 +1,5 @@
 import { runAdminCommand } from "../../admin/commands";
-import { getFullCharacterState } from "../../utils";
+import { getFullCharacterState } from "@/shared/network/sync";
 import {
   legacyAcceptPartyInvite,
   legacyInviteToParty,

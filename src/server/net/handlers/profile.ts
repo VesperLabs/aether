@@ -1,4 +1,4 @@
-import { getFullCharacterState } from "../../utils";
+import { getFullCharacterState } from "@/shared/network/sync";
 import { skinTints, hairTints } from "@/shared/content";
 import type { ParsedCommand } from "@/shared/network";
 import type { CommandContext } from "@/server/net/command-context";
