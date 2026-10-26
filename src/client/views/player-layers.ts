@@ -1,0 +1,138 @@
+import Phaser from "phaser";
+import {
+  HAIR_HIDING_HELMETS,
+  FACE_HIDING_HELMETS,
+  ACCESSORY_HIDING_HELMETS,
+  FACE_HIDING_ACCESSORIES,
+  HAIR_HIDING_ACCESSORIES,
+} from "@/shared";
+import { Crosshair } from "@/client/input/crosshair";
+import { Bubble } from "./bubble";
+import { Bar } from "./bar";
+import { WeaponSprite } from "./weapon-sprite";
+import { BuffRack } from "./buff-rack";
+import { deriveElements } from "./weapon-elements";
+
+const { Sprite, BitmapText } = Phaser.GameObjects;
+const BLANK_TEXTURE = "human-blank";
+
+/** Creates every sprite layer of a character (skin, gear, bars, bubble) and adds it to the container. */
+export function createSpriteLayers(player) {
+  const scene = player.scene;
+  const defaults: [Phaser.Scene, number, number, string] = [
+    scene,
+    0,
+    player.bodyOffsetY,
+    BLANK_TEXTURE,
+  ];
+  player.setDepth(100);
+
+  const HandSprite = player?.profile?.race === "human" ? WeaponSprite : Sprite;
+
+  player.skin = scene.add.existing(new Sprite(...defaults));
+  player.chest = scene.add.existing(new Sprite(...defaults));
+  player.face = scene.add.existing(new Sprite(...defaults));
+  player.whiskers = scene.add.existing(new Sprite(...defaults));
+  player.hair = scene.add.existing(new Sprite(...defaults));
+  player.armor = scene.add.existing(new Sprite(...defaults));
+  player.helmet = scene.add.existing(new Sprite(...defaults));
+  player.boots = scene.add.existing(new Sprite(...defaults));
+  player.gloves = scene.add.existing(new Sprite(...defaults));
+  player.pants = scene.add.existing(new Sprite(...defaults));
+  player.accessory = scene.add.existing(new Sprite(...defaults));
+  player.handLeft = scene.add.existing(new HandSprite(scene, 13, -9, BLANK_TEXTURE));
+  player.handRight = scene.add.existing(new HandSprite(scene, -13, -9, BLANK_TEXTURE));
+  player.shadow = scene.add.existing(new Sprite(...defaults));
+  player.bubble = scene.add.existing(new Bubble(scene, player?.headY, player.bubbleMessage));
+  player.crosshair = scene.add.existing(
+    new Crosshair(scene, 0, player.bodyOffsetY, "icons", "crosshair", player, 40),
+  );
+  player.hpBar = scene.add.existing(new Bar(scene, 0, player?.headY, 32, 12)).setVisible(false);
+  player.userName = scene.add.existing(
+    new BitmapText(player.scene, 0, 8, "nin-light").setScale(0.5),
+  );
+  player.buffRack = scene.add.existing(new BuffRack(scene, 0, 19, player.buffs)).setVisible(false);
+  player.corpse = scene.add
+    .existing(new Sprite(scene, 0, player.bodyOffsetY, "icons", "grave"))
+    .setVisible(false);
+  player.talkMenu = scene.add
+    .existing(new Sprite(scene, 6, player?.headY - 6, "icons", "chat"))
+    .setVisible(false);
+  player.add(player.shadow);
+  player.add(player.chest);
+  player.add(player.skin);
+  player.add(player.face);
+  player.add(player.whiskers);
+  player.add(player.hair);
+  player.add(player.accessory);
+  player.add(player.armor);
+  player.add(player.boots);
+  player.add(player.gloves);
+  player.add(player.pants);
+  player.add(player.helmet);
+  player.add(player.handLeft);
+  player.add(player.handRight);
+  player.add(player.bubble);
+  player.add(player.userName);
+  player.add(player.hpBar);
+  player.add(player.corpse);
+  player.add(player.talkMenu);
+  player.add(player.buffRack);
+
+  if (player.isHero) {
+    player.add(player.crosshair);
+  }
+}
+
+/** Tints and shows or hides the layers to match the character profile and visible equipment. */
+export function applyAppearance(player) {
+  const { profile, visibleEquipment } = player || {};
+  const isBoss = profile?.scale > 1;
+  if (profile?.userName) {
+    player.updateUserName();
+  }
+  player.skin.setScale(profile?.scale || 1);
+  player.shadow.setScale(profile?.scale || 1);
+  player.corpse.setScale(isBoss ? profile?.scale / 2 : 1);
+  player.corpse.setTint(isBoss ? "0xAA88AA" : "0xCC9966");
+  player.skin.setTint(profile?.tint || "0xFFFFFF");
+  player.chest.setTint(profile?.tint || "0xFFFFFF");
+  player.hair.setTint(profile?.hair?.tint || "0xFFFFFF");
+  player.face.setTint(profile?.face?.tint || "0xFFFFFF");
+  player.whiskers.setTint(profile?.whiskers?.tint || "0xFFFFFF");
+
+  if (player.profile.race === "human") {
+    player.handLeft.setElements(
+      player.hasWeaponLeft() ? deriveElements(visibleEquipment?.handLeft?.stats) : [],
+    );
+    player.handRight.setElements(
+      player.hasWeaponRight() ? deriveElements(visibleEquipment?.handRight?.stats) : [],
+    );
+  }
+
+  for (const [key, slot] of Object.entries<any>(visibleEquipment)) {
+    player?.[key]?.setTint(slot?.tint || "0xFFFFFF");
+  }
+
+  /* Helmet types that hide face and hair need to get hidden */
+  player.hair.setVisible(true);
+  if (HAIR_HIDING_HELMETS.includes(visibleEquipment?.helmet?.texture)) {
+    player.hair.setVisible(false);
+  }
+  if (HAIR_HIDING_ACCESSORIES.includes(visibleEquipment?.accessory?.texture)) {
+    player.hair.setVisible(false);
+  }
+  player.whiskers.setVisible(true);
+  if (FACE_HIDING_HELMETS.includes(visibleEquipment?.helmet?.texture)) {
+    player.face.setVisible(false);
+    player.whiskers.setVisible(false);
+  }
+  player.accessory.setVisible(true);
+  if (ACCESSORY_HIDING_HELMETS.includes(visibleEquipment?.helmet?.texture)) {
+    player.accessory.setVisible(false);
+  }
+  player.face.setVisible(true);
+  if (FACE_HIDING_ACCESSORIES.includes(visibleEquipment?.accessory?.texture)) {
+    player.face.setVisible(false);
+  }
+}

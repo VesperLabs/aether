@@ -1,28 +1,21 @@
 // @ts-nocheck
-import Phaser from "phaser";
 import {
   Character,
-  HAIR_HIDING_HELMETS,
-  FACE_HIDING_HELMETS,
-  ACCESSORY_HIDING_HELMETS,
   distanceTo,
-  FACE_HIDING_ACCESSORIES,
-  HAIR_HIDING_ACCESSORIES,
   MIN_STEALTH_ALPHA,
   calculateStealthVisibilityPercent,
 } from "@/shared";
-import { Bubble } from "./bubble";
 import { Spell } from "./spell";
-import { Bar } from "./bar";
-import { Crosshair } from "@/client/input/crosshair";
-import { Damage } from "./damage";
-import { WeaponSprite } from "./weapon-sprite";
 import { getSpinDirection } from "@/client/input/spin-direction";
-import { Buff } from "./buff";
-import { Hit } from "./hit";
-import { BuffRack } from "./buff-rack";
-import { deriveElements } from "./weapon-elements";
-const { Sprite, BitmapText } = Phaser.GameObjects;
+import { applyAppearance, createSpriteLayers } from "./player-layers";
+import { applyHit } from "./player-hit";
+import {
+  approachAlpha,
+  checkIsFlash,
+  drawFrame,
+  hackFrameRates,
+  updateCurrentSpeed,
+} from "./player-animation";
 const BLANK_TEXTURE = "human-blank";
 const PLAYER_GRAB_RANGE = 32;
 
@@ -118,63 +111,7 @@ export class Player extends Character {
     }
   }
   initSpriteLayers() {
-    const scene = this.scene;
-    const defaults = [scene, 0, this.bodyOffsetY, BLANK_TEXTURE];
-    this.setDepth(100);
-
-    const HandSprite = this?.profile?.race === "human" ? WeaponSprite : Sprite;
-
-    this.skin = scene.add.existing(new Sprite(...defaults));
-    this.chest = scene.add.existing(new Sprite(...defaults));
-    this.face = scene.add.existing(new Sprite(...defaults));
-    this.whiskers = scene.add.existing(new Sprite(...defaults));
-    this.hair = scene.add.existing(new Sprite(...defaults));
-    this.armor = scene.add.existing(new Sprite(...defaults));
-    this.helmet = scene.add.existing(new Sprite(...defaults));
-    this.boots = scene.add.existing(new Sprite(...defaults));
-    this.gloves = scene.add.existing(new Sprite(...defaults));
-    this.pants = scene.add.existing(new Sprite(...defaults));
-    this.accessory = scene.add.existing(new Sprite(...defaults));
-    this.handLeft = scene.add.existing(new HandSprite(scene, 13, -9, BLANK_TEXTURE));
-    this.handRight = scene.add.existing(new HandSprite(scene, -13, -9, BLANK_TEXTURE));
-    this.shadow = scene.add.existing(new Sprite(...defaults));
-    this.bubble = scene.add.existing(new Bubble(scene, this?.headY, this.bubbleMessage));
-    this.crosshair = scene.add.existing(
-      new Crosshair(scene, 0, this.bodyOffsetY, "icons", "crosshair", this, 40),
-    );
-    this.hpBar = scene.add.existing(new Bar(scene, 0, this?.headY, 32, 12)).setVisible(false);
-    this.userName = scene.add.existing(new BitmapText(this.scene, 0, 8, "nin-light").setScale(0.5));
-    this.buffRack = scene.add.existing(new BuffRack(scene, 0, 19, this.buffs)).setVisible(false);
-    this.corpse = scene.add
-      .existing(new Sprite(scene, 0, this.bodyOffsetY, "icons", "grave"))
-      .setVisible(false);
-    this.talkMenu = scene.add
-      .existing(new Sprite(scene, 6, this?.headY - 6, "icons", "chat"))
-      .setVisible(false);
-    this.add(this.shadow);
-    this.add(this.chest);
-    this.add(this.skin);
-    this.add(this.face);
-    this.add(this.whiskers);
-    this.add(this.hair);
-    this.add(this.accessory);
-    this.add(this.armor);
-    this.add(this.boots);
-    this.add(this.gloves);
-    this.add(this.pants);
-    this.add(this.helmet);
-    this.add(this.handLeft);
-    this.add(this.handRight);
-    this.add(this.bubble);
-    this.add(this.userName);
-    this.add(this.hpBar);
-    this.add(this.corpse);
-    this.add(this.talkMenu);
-    this.add(this.buffRack);
-
-    if (this.isHero) {
-      this.add(this.crosshair);
-    }
+    createSpriteLayers(this);
   }
   updateUserName() {
     const { profile, scene, stats } = this || {};
@@ -185,55 +122,7 @@ export class Player extends Character {
     this.userName.setTint(profile?.userNameTint);
   }
   drawCharacterFromUserData() {
-    const { profile, visibleEquipment } = this || {};
-    const isBoss = profile?.scale > 1;
-    if (profile?.userName) {
-      this.updateUserName();
-    }
-    this.skin.setScale(profile?.scale || 1);
-    this.shadow.setScale(profile?.scale || 1);
-    this.corpse.setScale(isBoss ? profile?.scale / 2 : 1);
-    this.corpse.setTint(isBoss ? "0xAA88AA" : "0xCC9966");
-    this.skin.setTint(profile?.tint || "0xFFFFFF");
-    this.chest.setTint(profile?.tint || "0xFFFFFF");
-    this.hair.setTint(profile?.hair?.tint || "0xFFFFFF");
-    this.face.setTint(profile?.face?.tint || "0xFFFFFF");
-    this.whiskers.setTint(profile?.whiskers?.tint || "0xFFFFFF");
-
-    if (this.profile.race === "human") {
-      this.handLeft.setElements(
-        this.hasWeaponLeft() ? deriveElements(visibleEquipment?.handLeft?.stats) : [],
-      );
-      this.handRight.setElements(
-        this.hasWeaponRight() ? deriveElements(visibleEquipment?.handRight?.stats) : [],
-      );
-    }
-
-    for (const [key, slot] of Object.entries(visibleEquipment)) {
-      this?.[key]?.setTint(slot?.tint || "0xFFFFFF");
-    }
-
-    /* Helmet types that hide face and hair need to get hidden */
-    this.hair.setVisible(true);
-    if (HAIR_HIDING_HELMETS.includes(visibleEquipment?.helmet?.texture)) {
-      this.hair.setVisible(false);
-    }
-    if (HAIR_HIDING_ACCESSORIES.includes(visibleEquipment?.accessory?.texture)) {
-      this.hair.setVisible(false);
-    }
-    this.whiskers.setVisible(true);
-    if (FACE_HIDING_HELMETS.includes(visibleEquipment?.helmet?.texture)) {
-      this.face.setVisible(false);
-      this.whiskers.setVisible(false);
-    }
-    this.accessory.setVisible(true);
-    if (ACCESSORY_HIDING_HELMETS.includes(visibleEquipment?.helmet?.texture)) {
-      this.accessory.setVisible(false);
-    }
-    this.face.setVisible(true);
-    if (FACE_HIDING_ACCESSORIES.includes(visibleEquipment?.accessory?.texture)) {
-      this.face.setVisible(false);
-    }
+    applyAppearance(this);
   }
   doAttack({ count, castAngle, direction, abilitySlot }) {
     const { state, isHero } = this;
@@ -399,55 +288,7 @@ export class Player extends Character {
     }
   }
   takeHit(hit, showDamage = true) {
-    if (this?.state?.isDead) return;
-
-    const { stats, scene } = this || {};
-    const { type, elements } = hit || {};
-    const isDamage = hit?.amount < 0;
-
-    if (showDamage) {
-      scene.add.existing(new Damage(this.scene, this, hit));
-    }
-
-    switch (type) {
-      case "buff":
-        scene.add.existing(new Buff(this.scene, this, hit?.buffName));
-        break;
-      case "death":
-        stats.hp = 0;
-        scene.add.existing(new Hit(this.scene, this, elements));
-        this.doDeath();
-        break;
-      case "hp":
-        this.modifyStat("hp", hit?.amount);
-        if (isDamage) {
-          scene.add.existing(new Hit(this.scene, this, elements));
-          this.doFlashAnimation("0xFF0000");
-          this.state.lastFlash = Date.now();
-          this.state.isFlash = true;
-        } else {
-          if (elements?.includes("holy")) {
-            scene.add.existing(new Hit(this.scene, this, elements));
-          }
-        }
-        break;
-      case "mp":
-        this.modifyStat("mp", hit?.amount);
-        break;
-      case "sp":
-        this.modifyStat("sp", hit?.amount);
-        break;
-      case "exp":
-        // we don't update EXP the same way
-        break;
-    }
-
-    /* Not sure events like this is the best approach */
-    if (this?.isHero) {
-      window.dispatchEvent(new Event("UPDATE_HUD"));
-    }
-
-    this.updateHpBar();
+    applyHit(this, hit, showDamage);
   }
   checkStealth({ distance }) {
     const stealthBuff = this.getBuff("stealth");
@@ -501,258 +342,5 @@ export class Player extends Character {
   setTalkMenu() {
     const show = !this.state.lockedPlayerId && this.scene.hero.state.targetNpcId === this.id;
     return this.talkMenu.setVisible(show);
-  }
-}
-
-function checkIsFlash(p, delta) {
-  /* Let us attack again when it is ready */
-  if (Date.now() - p.state.lastFlash > delta + 50 && p.state.isFlash) {
-    p.state.isFlash = false;
-    p.drawCharacterFromUserData();
-  }
-}
-
-function drawFrame(p) {
-  const {
-    skin,
-    chest,
-    armor,
-    accessory,
-    helmet,
-    handLeft,
-    handRight,
-    pants,
-    gloves,
-    boots,
-    shadow,
-    direction,
-    action,
-    visibleEquipment,
-    profile,
-    face,
-    whiskers,
-    hair,
-    bubble,
-    hpBar,
-    userName,
-    talkMenu,
-  } = p;
-
-  /* Depth sort based on direction */
-
-  p.bringToTop(skin);
-  p.bringToTop(hair);
-  p.bringToTop(helmet);
-  p.bringToTop(chest);
-  p.bringToTop(pants);
-  p.bringToTop(boots);
-  p.bringToTop(gloves);
-  p.bringToTop(armor);
-
-  if (direction === "up") {
-    p.bringToTop(accessory);
-    p.bringToTop(hair);
-    p.bringToTop(face);
-    p.bringToTop(whiskers);
-    p.bringToTop(helmet);
-    p.sendToBack(handLeft);
-    p.sendToBack(handRight);
-  } else if (direction === "down") {
-    p.bringToTop(chest);
-    p.bringToTop(armor);
-    p.bringToTop(gloves);
-    p.bringToTop(face);
-    p.bringToTop(whiskers);
-    p.bringToTop(accessory);
-    p.bringToTop(helmet);
-    p.bringToTop(handRight);
-    p.bringToTop(handLeft);
-  } else if (direction === "left") {
-    p.bringToTop(chest);
-    p.bringToTop(armor);
-    p.bringToTop(hair);
-    p.bringToTop(face);
-    p.bringToTop(whiskers);
-    p.bringToTop(accessory);
-    p.bringToTop(helmet);
-    p.bringToTop(gloves);
-    p.bringToTop(handLeft);
-    p.sendToBack(handRight);
-  } else if (direction === "right") {
-    p.bringToTop(chest);
-    p.bringToTop(armor);
-    p.bringToTop(hair);
-    p.bringToTop(face);
-    p.bringToTop(whiskers);
-    p.bringToTop(accessory);
-    p.bringToTop(helmet);
-    p.bringToTop(gloves);
-    p.sendToBack(handLeft);
-    p.bringToTop(handRight);
-  }
-
-  p.bringToTop(userName);
-  p.bringToTop(bubble);
-  p.bringToTop(hpBar);
-  p.bringToTop(talkMenu);
-
-  p?.playAnim(skin, [profile?.race, direction, action]);
-  if (profile?.race === "human") {
-    p?.playAnim(chest, [profile?.race, profile?.gender, "chest-bare", direction, action]);
-  } else {
-    p?.playAnim(chest, [BLANK_TEXTURE, direction, action]);
-  }
-  p?.playAnim(shadow, ["shadow", direction, action]);
-  p?.playAnim(face, [profile?.race, profile?.face?.texture, direction, action]);
-  p?.playAnim(whiskers, [profile?.race, profile?.whiskers?.texture, direction, action]);
-  p?.playAnim(hair, [profile?.race, profile?.hair?.texture, direction, action]);
-  p?.playAnim(
-    armor,
-    [profile?.race, profile?.gender, visibleEquipment?.armor?.texture, direction, action],
-    p.isHero,
-  );
-  p?.playAnim(helmet, [profile?.race, visibleEquipment?.helmet?.texture, direction, action]);
-  p?.playAnim(boots, [profile?.race, visibleEquipment?.boots?.texture, direction, action]);
-  p?.playAnim(gloves, [profile?.race, visibleEquipment?.gloves?.texture, direction, action]);
-  p?.playAnim(pants, [profile?.race, visibleEquipment?.pants?.texture, direction, action]);
-  p?.playAnim(accessory, [profile?.race, visibleEquipment?.accessory?.texture, direction, action]);
-  playWeapons(p);
-  handRight.setTexture(visibleEquipment?.handRight?.texture);
-  handLeft.setTexture(visibleEquipment?.handLeft?.texture);
-}
-
-function updateCurrentSpeed(player) {
-  const vx = player.vx;
-  const vy = player.vy;
-  player.currentSpeed = Math.max(Math.abs(vx), Math.abs(vy));
-
-  const canMoveRanged = player.isHero && player.hasRangedWeapon();
-
-  if (player.state.isAttacking && !canMoveRanged) {
-    return;
-  }
-
-  // for bows
-  if (player.state.isHoldingAttack) {
-    if (player.hasRangedWeaponLeft()) player.action = "attack_left";
-    if (player.hasRangedWeaponRight()) player.action = "attack_right";
-    if (player.hasRangedWeapon()) return;
-  }
-
-  if (player.state.isAiming) {
-    player.action = "stand";
-    return;
-  }
-
-  player.action = player.currentSpeed === 0 ? "stand" : "walk";
-}
-
-function approachAlpha(currentAlpha, targetAlpha, step) {
-  const difference = Math.abs(targetAlpha - currentAlpha);
-
-  if (difference <= step) {
-    return targetAlpha;
-  } else if (currentAlpha < targetAlpha) {
-    return currentAlpha + step;
-  } else {
-    return currentAlpha - step;
-  }
-}
-
-function hackFrameRates(player, rate) {
-  const spriteKeys = [
-    "shadow",
-    "chest",
-    "skin",
-    "face",
-    "whiskers",
-    "hair",
-    "accessory",
-    "armor",
-    "boots",
-    "gloves",
-    "pants",
-    "helmet",
-  ];
-  for (const spriteKey of spriteKeys) {
-    player[spriteKey].anims.msPerFrame = player?.state?.isAttacking ? 100 : rate;
-  }
-}
-
-function playWeapons(player) {
-  const {
-    profile,
-    handLeft,
-    handRight,
-    weaponAtlas: w,
-    action,
-    visibleEquipment,
-    direction,
-  } = player;
-  const currentFrame = player?.skin?.anims?.currentFrame;
-  const { left, right } = w?.offsets?.[profile?.race]?.[currentFrame.textureFrame] || {};
-  handLeft.setPosition(left?.x, left?.y);
-  handLeft.setFlipX(left?.flipX);
-  handLeft.setFlipY(left?.flipY);
-  handLeft.setAngle(left?.rotation);
-  handRight.setPosition(right?.x, right?.y);
-  handRight.setFlipX(right?.flipX);
-  handRight.setFlipY(right?.flipY);
-  handRight.setAngle(right?.rotation);
-
-  const bowAngleOffset = Phaser.Math.DegToRad(-135);
-  const isRightRanged = player.hasRangedWeaponRight();
-  const isLeftRanged = player.hasRangedWeaponLeft();
-  const isRightFist = visibleEquipment?.handRight?.base?.includes("fist");
-  const isLeftFist = visibleEquipment?.handLeft?.base?.includes("fist");
-  const isRightShield = visibleEquipment?.handRight?.type === "shield";
-  const isLeftShield = visibleEquipment?.handLeft?.type === "shield";
-
-  if (direction === "down") {
-    if (isRightShield) {
-      player.bringToTop(handLeft);
-    }
-    if (isLeftShield) {
-      player.bringToTop(handRight);
-    }
-  }
-
-  if (action === "attack_right") {
-    if (isRightFist) {
-      if (direction === "left") {
-        handRight.setAngle(-90);
-        handRight.setFlipY(true);
-      }
-      if (direction === "right") {
-        handRight.setAngle(-90);
-      }
-    }
-  }
-
-  if (isRightRanged) {
-    if (action === "attack_right") {
-      handRight.setFlipY(false);
-      handRight.setFlipX(false);
-      handRight.setRotation(player.state.lastAngle + bowAngleOffset);
-    }
-  }
-
-  if (isLeftRanged) {
-    if (action === "attack_left") {
-      handLeft.setFlipY(false);
-      handLeft.setFlipX(false);
-      handLeft.setRotation(player.state.lastAngle + bowAngleOffset);
-    }
-  }
-
-  if (action === "attack_left") {
-    if (isLeftFist) {
-      if (direction === "left") {
-        handLeft.setAngle(90);
-      }
-      if (direction === "right") {
-        handLeft.setAngle(0);
-      }
-    }
   }
 }

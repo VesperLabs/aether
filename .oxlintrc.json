@@ -329,12 +329,6 @@
       }
     },
     {
-      "files": ["src/client/views/player.ts", "src/client/scenes/hud-scene.ts"],
-      "rules": {
-        "max-lines": "off"
-      }
-    },
-    {
       "files": ["src/wiki/page-players.tsx"],
       "rules": {
         "no-restricted-imports": "off"

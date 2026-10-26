@@ -17,7 +17,7 @@ export class WeaponSprite extends Phaser.GameObjects.Container {
   declare currentIndex: any;
   declare mainSprite: any;
   declare updateEvent: any;
-  constructor(scene, x, y, key, frame) {
+  constructor(scene, x, y, key, frame?) {
     super(scene, x, y);
 
     this.borderSprites = [];

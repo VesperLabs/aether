@@ -2,8 +2,7 @@ import Phaser from "phaser";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { App } from "@/client/hud/app/app";
-import socketIOClient from "socket.io-client";
-import type { ClientGameSocket } from "@/shared/network";
+import { createGameSocket, keepSocketConnected } from "@/client/net/socket";
 import { AnimatedTiles } from "@/client/views/animated-tiles";
 import { SceneMain } from "@/client/scenes/main-scene";
 import { SceneBoot } from "@/client/scenes/boot-scene";
@@ -14,15 +13,11 @@ import Peer from "peerjs";
 import { getPeerRtcConfiguration } from "@/client/hud/video/webrtc-peer-config";
 
 const debug = process.env.DEBUG;
-const SERVER_URL = process.env.SERVER_URL as string;
 const REDIRECT_URL = process.env.REDIRECT_URL as string;
 const PEER_CLIENT_PORT = parseInt(process.env.PEER_CLIENT_PORT);
 const PEER_CLIENT_PATH = process.env.PEER_CLIENT_PATH as string;
 
-/* WebSocket only — no polling (no long-poll fallback). */
-const socket: ClientGameSocket = socketIOClient(SERVER_URL, {
-  transports: ["websocket"],
-});
+const socket = createGameSocket();
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 const devicePixelRatio = window.devicePixelRatio || 1;
@@ -101,11 +96,7 @@ async function startApp() {
     }
   });
 
-  /* Keep socket connection connected */
-  setInterval(() => {
-    if (socket.connected) return;
-    socket.connect();
-  }, 3000);
+  keepSocketConnected(socket);
 }
 
 if (REDIRECT_URL) {
