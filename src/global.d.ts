@@ -105,6 +105,7 @@ interface ServerScene extends Phaser.Scene {
   spells: any;
   db: any;
   io: any;
+  gameEvents: import("@/shared/rules/world").GameEventBus;
 }
 
 interface Coordinate {

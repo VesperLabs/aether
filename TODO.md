@@ -27,8 +27,9 @@ Migration to the structure in `ARCHITECTURE.md`. Work through the phases in orde
 
 Do the pure ones first. Write tests as each one moves.
 
-- [ ] `rules/events.ts` and an event bus in `rules/world/`
-- [ ] `stats`: `calculateStats`, `calculateExpValue`, `calculateNextMaxExp` from `server/utils.ts`
+- [x] `rules/events.ts` and an event bus in `rules/world/`
+- [x] `stats`: `calculateStats`, `calculateExpValue`, `calculateNextMaxExp` from `server/utils.ts`
+      (Remaining legacy hooks: `assignExp` level-up on `server/character.ts`, `useGetBaseCharacterDefaults` in `server/utils.ts` for starting items and spawn.)
 - [ ] `inventory`: `moveItem`, `dropItem`, `consumeItem` from `GameServer.ts` and the inventory methods on `shared/Character.ts`
 - [ ] `loot` (`LootManager`), `party` (`PartyManager`), `quests` (quest methods on `Character`, `Quest.ts`)
 - [ ] `combat`, `spells`, `buffs` (methods on `shared/Character.ts`, `server/Character.ts`, `SpellManager`, `Spell.ts`)

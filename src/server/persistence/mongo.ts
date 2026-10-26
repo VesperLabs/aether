@@ -1,6 +1,7 @@
 import { MongoClient, Db } from "mongodb";
 import { userSchema } from "./schema";
-import { filterNullEmpty, calculateNextMaxExp } from "../utils";
+import { filterNullEmpty } from "../utils";
+import { calculateNextMaxExp } from "@/shared/rules/stats";
 import { createBaseUser } from "./base-user";
 import { omitBy, isNil } from "lodash";
 

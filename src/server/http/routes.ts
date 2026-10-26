@@ -1,7 +1,8 @@
 import type { Express } from "express";
 
 import type { GameServer } from "../game-server";
-import { calculateStats, getFullCharacterState } from "../utils";
+import { applyCalculatedStats } from "../character-stats";
+import { getFullCharacterState } from "../utils";
 
 interface RouteDeps {
   aetherServer: GameServer;
@@ -64,7 +65,7 @@ export function registerRoutes(app: Express, { aetherServer, db }: RouteDeps) {
     });
 
     const ret = players.map((player) => {
-      calculateStats(player, false);
+      applyCalculatedStats(player, false);
       return {
         id: player?._id,
         charClass: player?.charClass,

@@ -338,7 +338,6 @@
         "src/server/character.ts",
         "src/server/npc.ts",
         "src/server/player.ts",
-        "src/server/utils.ts",
         "src/shared/character.ts"
       ],
       "rules": {

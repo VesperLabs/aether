@@ -1,4 +1,6 @@
 import "./phaser";
+import { createGameEventBus, type GameEventBus } from "@/shared/rules/world";
+import { subscribeStats } from "@/shared/rules/stats";
 import { mapList, QuestBuilder } from "@/shared/content";
 import { Server } from "socket.io";
 import path from "path";
@@ -37,6 +39,8 @@ class ServerScene extends Phaser.Scene implements ServerScene {
   public spells: any;
   public db: any;
   public io: any;
+  /** Game event bus. Lives here while world state is the ServerScene; Phase 4 moves it into `World`. */
+  public gameEvents: GameEventBus = createGameEventBus();
 
   constructor({ io, db }) {
     super({ key: "ServerScene" });
@@ -65,6 +69,12 @@ class ServerScene extends Phaser.Scene implements ServerScene {
     this.quests = QuestBuilder.buildAllQuests();
     this.roomManager = new RoomManager(scene);
     this.partyManager = new PartyManager(scene);
+    subscribeStats(this.gameEvents, (characterId, amount, kill) => {
+      const member = this.players[characterId];
+      if (!member) return;
+      member.assignExp(amount);
+      member.addNpcKill(kill.mobName);
+    });
 
     listenForConnections(scene);
   }
