@@ -15,6 +15,8 @@ export default defineConfig(({ mode, command }) => {
 
   return {
     root: __dirname,
+    /* Separate dep caches: the client and wiki dev servers run side by side and would invalidate a shared one. */
+    cacheDir: path.join(repoRoot, "node_modules/.vite/wiki"),
     resolve: { tsconfigPaths: true },
     plugins: [react()],
     envDir: repoRoot,

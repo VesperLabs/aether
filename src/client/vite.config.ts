@@ -19,6 +19,8 @@ export default ({ mode, command }: ConfigEnv) => {
 
   return defineConfig({
     root: __dirname,
+    /* Separate dep caches: the client and wiki dev servers run side by side and would invalidate a shared one. */
+    cacheDir: path.join(repoRoot, "node_modules/.vite/client"),
     resolve: { tsconfigPaths: true },
     envDir: repoRoot,
     // Dev serves static assets from public; build writes into public — avoid copying public onto itself
