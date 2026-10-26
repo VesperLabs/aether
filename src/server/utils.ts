@@ -3,7 +3,6 @@ import { ItemBuilder } from "@/shared/content";
 import { PLAYER_BASE_EXP, getBaseStats } from "@/shared/rules/stats";
 import { decodeWireDirection, encodeWireDirection, pickTickStateLite } from "@/shared/network/sync";
 
-const SHOP_INFLATION = 4;
 const QUEST_GOLD_MULTIPLIER = Math.floor(PLAYER_BASE_EXP * 0.1);
 const QUEST_EXP_MULTIPLIER = Math.floor(PLAYER_BASE_EXP / 2);
 
@@ -210,17 +209,6 @@ function cloneObject(obj) {
   return obj ? JSON.parse(JSON.stringify(obj)) : null;
 }
 
-function checkSlotsMatch(s1, s2) {
-  const handNames = ["handLeft", "handRight"];
-  const ringNames = ["ring1", "ring2"];
-  if (s1 === s2) return true;
-  if (s1 === "hands" && handNames?.includes(s2)) return true;
-  if (s2 === "hands" && handNames?.includes(s1)) return true;
-  if (s1 === "ring" && ringNames?.includes(s2)) return true;
-  if (s2 === "ring" && ringNames?.includes(s1)) return true;
-  return false;
-}
-
 function useGetBaseCharacterDefaults({ level = 1, charClass }) {
   const isMage = charClass === "mage";
   const isWarrior = charClass === "warrior";
@@ -301,10 +289,8 @@ export {
   randomNumber,
   getCharacterDirection,
   cloneObject,
-  checkSlotsMatch,
   getBuffRoomState,
   getBuffCharacterState,
-  SHOP_INFLATION,
   PLAYER_DEFAULT_SPAWN,
   QUEST_GOLD_MULTIPLIER,
   QUEST_EXP_MULTIPLIER,

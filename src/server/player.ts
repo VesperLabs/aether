@@ -1,8 +1,27 @@
 import { ServerCharacter } from "./character";
-import { cloneObject, getRoomState, PLAYER_DEFAULT_SPAWN } from "./utils";
+import { getRoomState, PLAYER_DEFAULT_SPAWN } from "./utils";
 import { expForMobKill } from "@/shared/rules/stats";
 import type { MobKilledEvent } from "@/shared/rules/events";
-import { MAX_INVENTORY_ITEMS } from "../shared";
+import {
+  addInventoryItem,
+  deleteAbilityAtId,
+  deleteBagItemAtId,
+  deleteInventoryItemAtId,
+  findAbilityById,
+  findBagItemById,
+  findBagItemBySlot,
+  findEquipmentById,
+  findInventoryItemById,
+  findOpenBagSlot,
+  isInventoryFull,
+  setBagItem,
+  subtractAbilityAtId,
+  subtractBagItemAtId,
+  subtractInventoryItemAtId,
+  updateBagItemAtId,
+  updateInventoryItemAtId,
+  withoutSlot,
+} from "@/shared/rules/inventory";
 
 /* Server level Player object */
 export class Player extends ServerCharacter implements ServerPlayer {
@@ -167,173 +186,69 @@ export class Player extends ServerCharacter implements ServerPlayer {
 
     return { didLevel };
   }
-  /* Equipment */
+  /* Inventory, equipment, bags and abilities: the rules live in shared/rules/inventory */
   findEquipmentById(id: string): any {
-    const [slotName, foundItem] = Object.entries(this?.equipment).find(
-      ([_, slotItem]: [string, Item]) => slotItem?.id === id,
-    ) || [null, null];
-    return { item: foundItem, slotName };
+    return findEquipmentById(this.equipment, id);
   }
   clearEquipmentSlot(slotName: string) {
-    if (!this?.equipment?.[slotName]) return;
-    this.equipment[slotName] = null;
+    this.equipment = withoutSlot(this.equipment, slotName) as Record<string, Item>;
   }
-  /* Bag */
   findBagItemById(id: string) {
-    let item = null;
-    let slotName = null;
-    const bags = this?.inventory?.filter((item: Item) => item?.base === "bag");
-    for (const bag of bags) {
-      for (var i = 0; i < bag?.items?.length; i++) {
-        if (bag?.items?.[i]?.id === id) {
-          item = bag?.items?.[i];
-          slotName = i;
-          break;
-        }
-      }
-    }
-    return { slotName, item };
+    return findBagItemById(this.inventory, id);
   }
   findBagItemBySlot(bagId: string, slot: string) {
-    const bag = this?.inventory?.find((item: Item) => item?.id === bagId);
-    return bag?.items?.[slot];
+    return findBagItemBySlot(this.inventory, bagId, slot);
   }
   subtractBagItemAtId(id: string, amount: integer) {
-    const found = cloneObject(this.findBagItemById(id)?.["item"]);
-    if (found?.amount > amount && amount > 0) {
-      const newAmount = found?.amount - amount;
-      this.updateBagItemAtId(id, { ...found, amount: newAmount });
-      return amount;
-    }
-    return null;
+    const { result, subtracted } = subtractBagItemAtId(this.inventory, id, amount);
+    this.inventory = result;
+    return subtracted;
   }
   updateBagItemAtId(id: string, item: Item) {
-    const bags = this?.inventory?.filter((item: Item) => item?.base === "bag");
-    for (const bag of bags) {
-      for (var i = 0; i < bag?.items?.length; i++) {
-        if (bag?.items?.[i]?.id === id) {
-          bag.items[i] = item;
-          break;
-        }
-      }
-    }
+    this.inventory = updateBagItemAtId(this.inventory, id, item);
   }
   deleteBagItemAtId(id: string) {
-    const bags = this?.inventory?.filter((item: Item) => item?.base === "bag");
-    for (const bag of bags) {
-      for (var i = 0; i < bag?.items?.length; i++) {
-        if (bag?.items?.[i]?.id === id) {
-          bag.items[i] = null;
-          break;
-        }
-      }
-    }
+    this.inventory = deleteBagItemAtId(this.inventory, id);
   }
   setBagItem(bagId: string, slot: string, item: Item) {
-    const bag = this?.inventory?.find((item) => item?.id === bagId);
-    if (!bag?.items) {
-      bag.items = [];
-    }
-    bag.items[slot] = item;
+    this.inventory = setBagItem(this.inventory, bagId, slot, item) ?? this.inventory;
   }
   findOpenBagSlot(bagId: string, item: Item) {
-    const bag = this?.inventory?.find((item: Item) => item?.id === bagId);
-    const bagItems = bag?.items ?? [null];
-    let openSlot: integer;
-    /* Find a stackable slot */
-    for (var i = 0; i < bagItems?.length; i++) {
-      // Item found (Stackable)
-      if (bagItems?.[i]?.id === item?.id) {
-        openSlot = i;
-        break;
-      }
-      // New item
-      if (!bagItems?.[i]?.id) {
-        openSlot = i;
-        break;
-      }
-    }
-    return openSlot;
+    return findOpenBagSlot(this.inventory, bagId, item);
   }
-  /* Inventory */
   findInventoryItemById(id: string) {
-    let returnItem = null;
-    for (var i = 0; i < this.inventory.length; i++) {
-      if (this.inventory[i]?.id === id) {
-        returnItem = this.inventory[i];
-        break;
-      }
-    }
-    return returnItem;
+    return findInventoryItemById(this.inventory, id);
   }
   subtractInventoryItemAtId(id: string, amount: integer) {
-    const found = cloneObject(this.findInventoryItemById(id));
-    if (found?.amount >= amount && amount > 0) {
-      const newAmount = found?.amount - amount;
-      if (newAmount < 1) {
-        this?.deleteInventoryItemAtId(id);
-      } else {
-        this.updateInventoryItemAtId(id, { ...found, amount: newAmount });
-      }
-      return amount;
-    }
-    return null;
+    const { result, subtracted } = subtractInventoryItemAtId(this.inventory, id, amount);
+    this.inventory = result;
+    return subtracted;
   }
   deleteInventoryItemAtId(id: string) {
-    for (var i = 0; i < this.inventory.length; i++) {
-      if (this.inventory[i]?.id === id) {
-        this.inventory[i] = null;
-        break;
-      }
-    }
+    this.inventory = deleteInventoryItemAtId(this.inventory, id);
   }
   isInventoryFull() {
-    return this?.inventory?.every(Boolean) && this?.inventory?.length >= MAX_INVENTORY_ITEMS;
+    return isInventoryFull(this.inventory);
   }
   updateInventoryItemAtId(id: string, item: Item) {
-    for (var i = 0; i < this.inventory.length; i++) {
-      if (this.inventory[i]?.id === id) {
-        this.inventory[i] = item;
-        break;
-      }
-    }
+    this.inventory = updateInventoryItemAtId(this.inventory, id, item);
   }
   addInventoryItem(item: Item) {
-    let itemAdded = false;
-    for (var i = 0; i < this.inventory.length; i++) {
-      if (!this.inventory[i]?.id) {
-        itemAdded = true;
-        this.inventory[i] = item;
-        break;
-      }
-    }
-    if (!itemAdded) {
-      this.inventory.push(item);
-    }
+    this.inventory = addInventoryItem(this.inventory, item);
   }
-  /* Abilities */
   findAbilityById(id: string): any {
-    const [slotName, foundItem] = Object.entries(this?.abilities).find(
-      ([_, slotItem]: [string, Item]) => slotItem?.id === id,
-    ) || [null, null];
-    return { item: foundItem, slotName };
+    return findAbilityById(this.abilities, id);
   }
   subtractAbilityAtId(id: string, amount: integer) {
-    const { item: found, slotName } = this.findAbilityById(id);
-    if (found?.amount > amount && amount > 0) {
-      const newAmount = found?.amount - amount;
-      this.abilities[slotName] = { ...found, amount: newAmount };
-      return amount;
-    }
-    return null;
+    const { result, subtracted } = subtractAbilityAtId(this.abilities, id, amount);
+    this.abilities = result as Record<string, Item>;
+    return subtracted;
   }
   deleteAbilityAtId(id: string) {
-    const { slotName } = this.findAbilityById(id);
-    this.abilities[slotName] = null;
+    this.abilities = deleteAbilityAtId(this.abilities, id) as Record<string, Item>;
   }
   clearAbilitySlot(slotName: string) {
-    if (!this?.abilities?.[slotName]) return;
-    this.abilities[slotName] = null;
+    this.abilities = withoutSlot(this.abilities, slotName) as Record<string, Item>;
   }
   checkBubbleMessage() {
     const now = Date.now();
