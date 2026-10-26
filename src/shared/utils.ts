@@ -1,6 +1,14 @@
 import { isEqual, get } from "lodash";
-import { Character } from ".";
+import { hasVisibleWeaponType } from "./rules/combat";
 export { CONSUMABLES_BASES, MAX_INVENTORY_ITEMS, POTION_BASES } from "./rules/inventory";
+export {
+  MIN_STEALTH_ALPHA,
+  POTION_COOLDOWN,
+  RACES_WITH_ATTACK_ANIMS,
+  RANGE_MULTIPLIER,
+  calculateStealthVisibilityPercent,
+} from "./rules/combat";
+export { BUFF_SPELLS } from "./rules/spells";
 export const isMobile =
   /Android|Mobile|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 export const HAIR_HIDING_HELMETS = ["helmet-armet", "helmet-hood", "helmet-horned", "helmet-jake"];
@@ -8,25 +16,9 @@ export const FACE_HIDING_HELMETS = ["helmet-armet", "helmet-horned", "helmet-jak
 export const ACCESSORY_HIDING_HELMETS = ["helmet-armet", "helmet-horned"];
 export const FACE_HIDING_ACCESSORIES = ["accessory-jake"];
 export const HAIR_HIDING_ACCESSORIES = ["accessory-jake"];
-export const RANGE_MULTIPLIER = 28; //weapon range multiplier
-export const BUFF_SPELLS = [
-  "evasion",
-  "brute",
-  "endurance",
-  "genius",
-  "haste",
-  "stun",
-  "slow",
-  "regeneration",
-  "stealth",
-  "guard",
-];
 export const BLANK_TEXTURE = "human-blank";
-export const POTION_COOLDOWN = 10000;
 export const BODY_SIZE = 8;
-export const RACES_WITH_ATTACK_ANIMS = ["crab", "human", "bear", "wolf", "slime"];
 export const MINI_MAP_SIZE = 160;
-export const MIN_STEALTH_ALPHA = 0.4;
 export const DEFAULT_USER_SETTINGS: UserSettings = {
   showMinimap: true,
   playMusic: true,
@@ -294,45 +286,11 @@ export function itemHasRequiredStats({ requirements, player, key }) {
   }
 
   if (key === "weaponType") {
-    return Character.hasVisibleWeaponType(
+    return hasVisibleWeaponType(
       { ...player, visibleEquipment: filterVisibleEquipment(player) },
       "melee",
     );
   }
 
   return playerStat >= requiredStat;
-}
-
-export function calculateStealthVisibilityPercent({
-  distance,
-  observer,
-  player,
-  stealthBuff,
-  maxVisibilityRange = 160,
-}) {
-  const BASE_VISIBILITY_RANGE = 50; // Base visibility range when levels are equal
-  const LEVEL_ADVANTAGE_FACTOR = 0.5; // Factor for extending visibility per level difference
-
-  const observerLevel = observer?.stats?.level ?? 1;
-  const playerLevel = player?.stats?.level ?? 1;
-  const stealthBuffLevel = stealthBuff?.level ?? 1;
-
-  // Calculate level difference
-  // Factor in stealthBuff's level
-  const levelDifference = Math.max(
-    0,
-    observerLevel - (Math.floor(playerLevel / 2) + stealthBuffLevel * 4),
-  );
-
-  // Extend visibility range based on level difference, capped at maxVisibilityRange
-  const visibilityRange = Math.min(
-    BASE_VISIBILITY_RANGE + levelDifference * LEVEL_ADVANTAGE_FACTOR * BASE_VISIBILITY_RANGE,
-    maxVisibilityRange,
-  );
-
-  // Calculate visibility percentage
-  let percent = 1 - Math.min(distance / visibilityRange, 1);
-  percent = Math.max(0, Math.min(percent, MIN_STEALTH_ALPHA)); // Ensure percent is between 0 and 1
-
-  return percent;
 }

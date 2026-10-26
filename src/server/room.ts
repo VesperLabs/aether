@@ -2,7 +2,7 @@ import { NpcManager } from "./npc-manager";
 import { PlayerManager } from "./player-manager";
 import { Door } from "@/shared/door";
 import { createRoomLootState, type RoomLootState } from "./loot-adapter";
-import { SpellManager } from "./spell-manager";
+import { createRoomSpellState, type RoomSpellState } from "./spell-adapter";
 import EasyStar from "easystarjs";
 import type { TickStateExpanded } from "@/shared/network/sync";
 export class Room {
@@ -14,7 +14,7 @@ export class Room {
   public npcManager: NpcManager;
   public playerManager: PlayerManager;
   public lootState: RoomLootState;
-  public spellManager: SpellManager;
+  public spellState: RoomSpellState;
   public easystar: EasyStar.js;
   public colliders: Array<any>;
   /** Monotonic per-room tick id for snapshots (ordering, future deltas). */
@@ -30,7 +30,7 @@ export class Room {
     this.npcManager = new NpcManager(this.scene, this);
     this.playerManager = new PlayerManager(this.scene, this);
     this.lootState = createRoomLootState(this);
-    this.spellManager = new SpellManager(this.scene, this);
+    this.spellState = createRoomSpellState(this.scene);
     this.createColliders();
     this.easystar = this.createPathGrid();
     this.createDoors();

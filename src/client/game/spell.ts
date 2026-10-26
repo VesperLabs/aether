@@ -1,8 +1,16 @@
 // @ts-nocheck
 import Phaser from "phaser";
 import { playAudio } from "../utils";
-import { spellDetails } from "@/shared/content";
-import { getAngleFromDirection, BUFF_SPELLS, distanceTo } from "@/shared";
+import { getAngleFromDirection, distanceTo } from "@/shared";
+import {
+  BUFF_SPELLS,
+  getSpellShape,
+  getSpellVelocity,
+  isSpellExpired,
+  resolveSpellDetails,
+  usesLeftHand,
+  usesRightHand,
+} from "@/shared/rules/spells";
 const Sprite = Phaser.GameObjects.Sprite;
 const BLANK_TEXTURE = "human-blank";
 
@@ -29,27 +37,22 @@ export class Spell extends Phaser.GameObjects.Container {
     this.velocityY = 0;
     this.spell = scene.add.existing(new Sprite(scene, 0, 0, BLANK_TEXTURE, 0));
 
-    let details = spellDetails?.[spellName];
+    const { details, found } = resolveSpellDetails(spellName);
+    if (!found) console.log("❌ Shit, the spell does not exist in spellDetails!");
+    const shape = getSpellShape(details, ilvl);
 
-    if (!details) {
-      console.log("❌ Shit, the spell does not exist in spellDetails!");
-      details = spellDetails?.["attack-melee"];
-    }
-
-    this.isMeleeAttack = details?.isMeleeAttack;
-    this.isRangedAttack = details?.isRangedAttack;
+    this.isMeleeAttack = shape.isMeleeAttack;
+    this.isRangedAttack = shape.isRangedAttack;
     this.layerDepth = details?.layerDepth;
-    this.allowedTargets = details?.allowedTargets;
-    this.maxVisibleTime = details?.maxVisibleTime;
-    this.spellSpeed = details?.spellSpeed;
-    this.bodySize = details?.bodySize;
-    this.scaleBase = details?.scaleBase ?? 1;
-    this.scaleMultiplier = details?.scaleMultiplier ?? 0;
+    this.allowedTargets = shape.allowedTargets;
+    this.maxVisibleTime = shape.maxVisibleTime;
+    this.spellSpeed = shape.spellSpeed;
+    this.bodySize = shape.bodySize;
     this.spell.setTint(details?.tint || "0xFFFFFF");
     this.shouldFade = details?.shouldFade || false;
-    this.maxDistance = details?.maxDistance ?? -1; //for ranged attacks
+    this.maxDistance = shape.maxDistance; //for ranged attacks
     this.action = action ?? "attack_right";
-    this.isMissile = details?.isMissile ?? false;
+    this.isMissile = shape.isMissile;
 
     scene.physics.add.existing(this);
     scene.events.on("update", this.update, this);
@@ -79,7 +82,7 @@ export class Spell extends Phaser.GameObjects.Container {
         this.y = this.caster.y - difference;
       }
 
-      if (this.action.includes("attack_left")) {
+      if (usesLeftHand(this.action)) {
         this.setAngle(tiltAngle);
         const rangeLeft = caster?.equipment?.handLeft?.stats?.range * 2 || caster?.body?.radius / 8;
 
@@ -89,7 +92,7 @@ export class Spell extends Phaser.GameObjects.Container {
       }
 
       // npcs without attack animations will stand here
-      if (this.action.includes("attack_right") || this.action === "stand") {
+      if (usesRightHand(this.action)) {
         this.setAngle(-tiltAngle);
         const rangeRight =
           caster?.equipment?.handRight?.stats?.range * 2 || caster?.body?.radius / 8;
@@ -100,13 +103,12 @@ export class Spell extends Phaser.GameObjects.Container {
       }
       this.setScale(this?.caster?.proScale);
     } else {
-      this.setScale(this.scaleBase + ilvl * this.scaleMultiplier);
+      this.setScale(shape.scale);
     }
 
     if (this.isRangedAttack) {
       this.spell.setTexture("icons", "arrow");
-      this.velocityX = Math.cos(castAngle) * this?.spellSpeed;
-      this.velocityY = Math.sin(castAngle) * this?.spellSpeed;
+      ({ x: this.velocityX, y: this.velocityY } = getSpellVelocity(castAngle, this.spellSpeed));
       this.spell.setRotation(castAngle + 0.785398163);
       this.maxDistance = action.includes("attack_left")
         ? caster?.getWeaponRange("handLeft")
@@ -114,8 +116,7 @@ export class Spell extends Phaser.GameObjects.Container {
     }
     if (this.isMissile) {
       this.spell.play(`spell-anim-${spellName}`);
-      this.velocityX = Math.cos(castAngle) * this?.spellSpeed;
-      this.velocityY = Math.sin(castAngle) * this?.spellSpeed;
+      ({ x: this.velocityX, y: this.velocityY } = getSpellVelocity(castAngle, this.spellSpeed));
       this.spell.setRotation(castAngle);
     }
     if (spellName === "quake") {
@@ -150,10 +151,13 @@ export class Spell extends Phaser.GameObjects.Container {
   }
   create() {}
   update() {
-    this.state.isExpired =
-      this?.maxDistance > -1
-        ? distanceTo(this, this.spawnPoint) >= this.maxDistance
-        : Date.now() - this.state.spawnTime > this.maxVisibleTime;
+    this.state.isExpired = isSpellExpired({
+      maxDistance: this.maxDistance,
+      distanceFromSpawn: distanceTo(this, this.spawnPoint),
+      spawnTime: this.state.spawnTime,
+      lifetime: this.maxVisibleTime,
+      now: Date.now(),
+    });
     if (!this.scene || this.state.isExpired) return this.destroy(true);
     this.adjustSpellPosition();
   }

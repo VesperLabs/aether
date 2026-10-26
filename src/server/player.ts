@@ -1,4 +1,7 @@
 import { ServerCharacter } from "./character";
+import { expAfterDeath } from "@/shared/rules/combat";
+import { canHitNpc, canHitPlayer } from "@/shared/rules/spells";
+import { createSpell } from "./spell-adapter";
 import { getRoomState, PLAYER_DEFAULT_SPAWN } from "./utils";
 import { expForMobKill } from "@/shared/rules/stats";
 import { isPartyMember, sharedRecipientIds } from "@/shared/rules/party";
@@ -45,7 +48,7 @@ export class Player extends ServerCharacter implements ServerPlayer {
   }
   setDead() {
     if (this.stats.exp > 0) {
-      this.stats.exp = Math.floor(this.stats.exp * 0.9);
+      this.stats.exp = expAfterDeath(this.stats.exp);
     }
     const spawnPoint: SpawnPoint = this?.spawn ?? PLAYER_DEFAULT_SPAWN;
     this.scene.db.updateUserMapDetails({ email: this.email, ...spawnPoint });
@@ -87,13 +90,14 @@ export class Player extends ServerCharacter implements ServerPlayer {
 
     this.dispelBuffsByProperty("dispelBeforeAttack");
 
-    room?.spellManager.create({
-      caster: this,
-      //target: targetPlayer,
-      castAngle,
-      abilitySlot,
-      ...spellDetails,
-    });
+    if (room)
+      createSpell(room, {
+        caster: this,
+        //target: targetPlayer,
+        castAngle,
+        abilitySlot,
+        ...spellDetails,
+      });
   }
   modifyStatIfCostExists(statType, cost) {
     if (cost > 0) {
@@ -116,14 +120,15 @@ export class Player extends ServerCharacter implements ServerPlayer {
 
     this.dispelBuffsByProperty("dispelBeforeAttack");
 
-    this.room?.spellManager.create({
-      caster: this,
-      //target: targetPlayer,
-      spellName,
-      castAngle,
-      ilvl,
-      abilitySlot,
-    });
+    if (this.room)
+      createSpell(this.room, {
+        caster: this,
+        //target: targetPlayer,
+        spellName,
+        castAngle,
+        ilvl,
+        abilitySlot,
+      });
   }
   addNpcKill(npcName: string) {
     this.npcKills[npcName] = nextNpcKillCount(this.npcKills, npcName);
@@ -232,7 +237,7 @@ export class Player extends ServerCharacter implements ServerPlayer {
 
     for (const npc of npcs) {
       if (!ids.includes(npc.id)) continue;
-      if (!allowedTargets.includes("enemy")) continue;
+      if (!canHitNpc(allowedTargets)) continue;
 
       const newHits = this.calculateDamage(npc, abilitySlot);
 
@@ -248,11 +253,18 @@ export class Player extends ServerCharacter implements ServerPlayer {
     for (const player of players) {
       const targetIsInParty = isPartyMember(scene.partyState, this?.partyId, player.id);
       if (!ids.includes(player.id)) continue;
-      if (!allowedTargets.includes("self") && player.id === this.id) continue;
-      if (!allowedTargets.includes("enemy") && player.id !== this.id && !targetIsInParty) continue;
-      /* `targetIsInParty` is also true for self (you're a member of your own party), so exclude
-       * self here — otherwise self-only spells like stealth get filtered out when partied. */
-      if (!allowedTargets.includes("ally") && targetIsInParty && player.id !== this.id) continue;
+      /* `targetIsInParty` is also true for self (you're a member of your own party), so the rule
+       * excludes self from the ally check — otherwise self-only spells like stealth get filtered
+       * out when partied. */
+      if (
+        !canHitPlayer({
+          allowedTargets,
+          isSelf: player.id === this.id,
+          isPartyMember: targetIsInParty,
+        })
+      ) {
+        continue;
+      }
 
       const newHits = this.calculateDamage(player, abilitySlot);
       if (newHits.length > 0) {

@@ -1,16 +1,22 @@
 import { Character } from "@/shared/character";
-import { ItemBuilder, buffList } from "@/shared/content";
-import { randomNumber, cloneObject } from "./utils";
+import { ItemBuilder } from "@/shared/content";
 import { applyCalculatedStats } from "./character-stats";
-import { getPlayerQuests } from "@/shared/rules/quests";
 import {
-  calculateNextMaxExp,
-  addValuesToExistingKeys,
-  mergeAndAddValues,
-} from "@/shared/rules/stats";
-
-/** Part of spell power applied to elemental spell min/max (full power was melting warriors in PvP). */
-const SPELL_POWER_ELEMENTAL_FACTOR = 0.5;
+  applyAttackDamage,
+  applyDamage,
+  applyElementalDamage,
+  applySpellDamage,
+} from "./character-combat";
+import {
+  applyAddBuff,
+  applyCheckIsResting,
+  applyDispel,
+  applyExpireBuff,
+  applyExpireBuffs,
+  applyRegen,
+} from "./character-buffs";
+import { getPlayerQuests } from "@/shared/rules/quests";
+import { calculateNextMaxExp } from "@/shared/rules/stats";
 
 export class ServerCharacter extends Character {
   declare scene: ServerScene;
@@ -163,68 +169,7 @@ export class ServerCharacter extends Character {
     this.activeItemSlots = activeItemSlots;
   }
   calculateElementalDamage(eleDamages, victim) {
-    const {
-      minFireDamage = 0,
-      maxFireDamage = 0,
-      minLightDamage = 0,
-      maxLightDamage = 0,
-      minWaterDamage = 0,
-      maxWaterDamage = 0,
-      minEarthDamage = 0,
-      maxEarthDamage = 0,
-      minHolyDamage = 0,
-      maxHolyDamage = 0,
-    } = eleDamages;
-
-    // Get the damage of the spell
-    const fireDamageRoll = randomNumber(minFireDamage, maxFireDamage);
-    const lightDamageRoll = randomNumber(minLightDamage, maxLightDamage);
-    const waterDamageRoll = randomNumber(minWaterDamage, maxWaterDamage);
-    const earthDamageRoll = randomNumber(minEarthDamage, maxEarthDamage);
-    const holyDamageRoll = randomNumber(minHolyDamage, maxHolyDamage);
-
-    // 2.) Calculate damage reduction based on victim's resistances
-    const fireResistance = (victim.stats.fireResistance || 0) / 100; // Assuming default value of 0 if not provided
-    const lightResistance = (victim.stats.lightResistance || 0) / 100;
-    const waterResistance = (victim.stats.waterResistance || 0) / 100;
-    const earthResistance = (victim.stats.earthResistance || 0) / 100;
-
-    const fireDamageAfterReduction = fireDamageRoll * (1 - fireResistance);
-    const lightDamageAfterReduction = lightDamageRoll * (1 - lightResistance);
-    const waterDamageAfterReduction = waterDamageRoll * (1 - waterResistance);
-    const earthDamageAfterReduction = earthDamageRoll * (1 - earthResistance);
-
-    // Holy damage isn't reduced
-    const holyDamage = Math.floor(holyDamageRoll);
-
-    // Calculate total damage after reduction
-    let eleDamage = Math.floor(
-      fireDamageAfterReduction +
-        lightDamageAfterReduction +
-        waterDamageAfterReduction +
-        earthDamageAfterReduction,
-    );
-
-    // Create an array called elements that includes fire, light, water, and earth,
-    // but only damage of each element after reduction is greater than 0.
-    const elements = [];
-    if (fireDamageAfterReduction > 0) {
-      elements.push({ type: "fire", damage: fireDamageAfterReduction });
-    }
-    if (lightDamageAfterReduction > 0) {
-      elements.push({ type: "light", damage: lightDamageAfterReduction });
-    }
-    if (waterDamageAfterReduction > 0) {
-      elements.push({ type: "water", damage: waterDamageAfterReduction });
-    }
-    if (earthDamageAfterReduction > 0) {
-      elements.push({ type: "earth", damage: earthDamageAfterReduction });
-    }
-
-    // Sort elements array in descending order based on damage amount
-    elements.sort((a, b) => b.damage - a.damage);
-
-    return { eleDamage, holyDamage, elements: elements?.map((d) => d?.type) };
+    return applyElementalDamage(eleDamages, victim);
   }
   calculateStats(shouldHeal = false) {
     this.calculateActiveItemSlots();
@@ -233,322 +178,16 @@ export class ServerCharacter extends Character {
     this.visibleEquipment = this.getVisibleEquipment();
   }
   calculateSpellDamage(victim: any, abilityDetails: any): Array<Hit> {
-    if (victim?.state?.isDead) return [];
-    const hits: Array<Hit> = [];
-    const { effects = {}, buffs } = abilityDetails ?? {};
-    // add elemental damage from stats to the spell's damages
-    const baseElementalDamages = addValuesToExistingKeys(effects, this?.stats);
-
-    /* Spell power was added at full value to min/max — mages could 2-shot warriors in PvP.
-     * Only part of spell power should scale elemental rolls (rest still helps heals / other uses). */
-    const spellPowerBonus = Math.floor(
-      Number(this?.stats?.spellPower || 0) * SPELL_POWER_ELEMENTAL_FACTOR,
-    );
-    const dmgWithSpellPower = Object.entries(baseElementalDamages).reduce((acc, [key, value]) => {
-      acc[key] = Number(value) + spellPowerBonus;
-      return acc;
-    }, {});
-
-    // calculate elemental damages
-    let { eleDamage, holyDamage, elements } = this.calculateElementalDamage(
-      dmgWithSpellPower,
-      victim,
-    );
-
-    // add buffs if the spell has any
-    if (buffs) {
-      Object.entries(buffs).forEach(([name, level]) => {
-        hits.push({
-          type: "buff",
-          from: this.id,
-          buffName: name,
-          elements,
-          to: victim.id,
-        });
-
-        victim.addBuff({ name, level, caster: this });
-      });
-    }
-
-    // the spell doesnt do damage,
-    if (!Object.entries(effects)?.length) return hits;
-
-    // Spell Crits
-    const critRoll = randomNumber(1, 100);
-    let isCritical = false;
-    if (this.stats.critChance && critRoll <= this.stats.critChance) {
-      isCritical = true;
-      eleDamage = Math.floor(Math.max(1, eleDamage * (this?.stats?.critMultiplier || 1))); // Minimum physicalDamage value of 1
-      holyDamage = Math.floor(Math.max(1, holyDamage * (this?.stats?.critMultiplier || 1))); // Minimum physicalDamage value of 1
-    }
-
-    if (Math.abs(holyDamage) > 0) {
-      victim.modifyStat("hp", holyDamage);
-      hits.push({
-        type: "hp",
-        amount: holyDamage,
-        elements: ["holy"],
-        from: this.id,
-        to: victim.id,
-        isCritical,
-      });
-    }
-    if (Math.abs(eleDamage) > 0) {
-      victim.modifyStat("hp", -eleDamage);
-      victim.state.lastCombat = Date.now();
-      victim.dispelBuffsByProperty("dispelInCombat");
-      /* Npc aggro when they are hit or hit a player */
-      victim.setLockedPlayerId(this?.id);
-      /* Victim killed */
-      if (victim.stats.hp <= 0) {
-        victim.setDead();
-        victim.stats.hp = 0;
-        hits.push({
-          type: "death",
-          amount: -eleDamage,
-          elements,
-          from: this.id,
-          to: victim.id,
-          isCritical,
-        });
-        return hits;
-      }
-      hits.push({
-        type: "hp",
-        amount: -eleDamage,
-        elements,
-        from: this.id,
-        to: victim.id,
-        isCritical,
-      });
-    }
-
-    return hits;
+    return applySpellDamage(this, victim, abilityDetails);
   }
   calculateAttackDamage(victim: any, abilityDetails: any): Array<Hit> {
-    if (victim?.state?.isDead) return [];
-
-    const mergedStats = mergeAndAddValues(this.stats, abilityDetails?.effects); //if this is an attack-spell like flameslash, add its extra values.
-
-    const dodgeRoll = randomNumber(1, 100);
-    const blockRoll = randomNumber(1, 100);
-    const critRoll = randomNumber(1, 100);
-
-    // damage will be min - max as a factor of the spPercent but capped at 70
-    const percentage = (this.stats.sp / this.stats.maxSp) * 100;
-    const cappedPercentage = percentage > 70 ? 100 : percentage;
-    const range = this.stats.maxDamage - this.stats.minDamage;
-    const damageRange = this.stats.minDamage + (range * cappedPercentage) / 100;
-    const damage = Math.round(damageRange);
-
-    const defense = Math.max(1, victim.stats.defense || 1); // Minimum defense value of 1
-    const armorPierce = Math.max(1, this.stats.armorPierce || 1); // Minimum armorPierce value of 1
-    const reduction = Math.min(1, armorPierce / defense); // Reduction capped at 1 (100%)
-    const dodgeChance = Math.max(0, victim.stats.dodgeChance - this.stats.accuracy);
-
-    let isCritical = false;
-    let hits = [];
-    let physicalDamage = Math.max(1, damage * reduction); // Minimum physicalDamage value of 1
-    if (dodgeRoll < dodgeChance) {
-      return [{ type: "miss", amount: 0, from: this.id, to: victim.id }];
-    }
-    if (blockRoll < victim.stats.blockChance) {
-      return [{ type: "block", amount: 0, from: this.id, to: victim.id }];
-    }
-    if (this.stats.critChance && critRoll <= this.stats.critChance) {
-      isCritical = true;
-      physicalDamage = Math.max(1, physicalDamage * (this?.stats?.critMultiplier || 1)); // Minimum physicalDamage value of 1
-    }
-
-    /* Calculate elemental damage on the weapon */
-    const { eleDamage, elements } = this.calculateElementalDamage(mergedStats, victim);
-
-    physicalDamage = Math.floor(physicalDamage);
-    /* Update our elements array so the client can animate element hits */
-    if (physicalDamage > 0) {
-      elements.unshift("physical");
-    }
-    const totalDamage = physicalDamage + eleDamage;
-    victim.modifyStat("hp", -totalDamage);
-
-    if (totalDamage > 0) {
-      victim.state.lastCombat = Date.now();
-      victim.dispelBuffsByProperty("dispelInCombat");
-      /* Npc aggro when they are hit or hit a player */
-      victim.setLockedPlayerId(this?.id);
-    }
-
-    // onAttackHit if we have some
-    const onHitTriggers = this?.stats?.triggers?.filter((t: Trigger) => t?.event === "onAttackHit");
-    if (onHitTriggers?.length) {
-      onHitTriggers?.forEach((trigger: Trigger) => {
-        const { name, level, type, chance } = trigger ?? {};
-        const roll = randomNumber(1, chance);
-        if (roll === 1) {
-          if (type === "buff") {
-            hits.push({
-              type: "buff",
-              from: this.id,
-              buffName: name,
-              elements,
-              to: this.id,
-            });
-            this.addBuff({ name, level, caster: this });
-          }
-          if (type === "debuff") {
-            hits.push({
-              type: "buff",
-              from: this.id,
-              buffName: name,
-              elements,
-              to: victim.id,
-            });
-            victim.addBuff({ name, level, caster: this });
-          }
-        }
-      });
-    }
-    // onHurt triggers if we have them
-    const onHurtTriggers = victim?.stats?.triggers?.filter((t: Trigger) => t?.event === "onHurt");
-    if (onHurtTriggers?.length) {
-      onHurtTriggers?.forEach((trigger: Trigger) => {
-        const { name, level, type, chance } = trigger ?? {};
-        const roll = randomNumber(1, chance);
-        if (roll === 1) {
-          if (type === "buff") {
-            hits.push({
-              type: "buff",
-              from: this.id,
-              buffName: name,
-              elements,
-              to: victim.id,
-            });
-            victim.addBuff({ name, level, caster: this });
-          }
-        }
-      });
-    }
-
-    /* Add stolen hp */
-    if (this?.stats?.hpSteal > 0) {
-      const hpSteal = Math.max(Math.round((physicalDamage * this.stats.hpSteal) / 100), 1);
-      this.modifyStat("hp", hpSteal);
-      hits.push({
-        type: "hp",
-        amount: hpSteal,
-        from: victim.id,
-        to: this.id,
-      });
-    }
-    /* Add stolen mp */
-    if (this?.stats?.mpSteal > 0) {
-      const mpSteal = Math.max(Math.floor((physicalDamage * this.stats.mpSteal) / 100), 1);
-      this.modifyStat("mp", mpSteal);
-      hits.push({
-        type: "mp",
-        amount: mpSteal,
-        from: victim.id,
-        to: this.id,
-      });
-    }
-
-    /* Victim killed */
-    if (victim.stats.hp <= 0) {
-      victim.setDead();
-      victim.stats.hp = 0;
-      hits.push({
-        type: "death",
-        isCritical,
-        amount: -totalDamage,
-        elements,
-        from: this.id,
-        to: victim.id,
-      });
-      return hits;
-    }
-    hits.push({
-      type: "hp",
-      isCritical,
-      amount: -totalDamage,
-      elements,
-      from: this.id,
-      to: victim.id,
-    });
-    return hits;
+    return applyAttackDamage(this, victim, abilityDetails);
   }
   calculateDamage(victim: any, abilitySlot: number): Array<Hit> {
-    if (victim?.state?.isDead) return [];
-    let hitList = [];
-    const abilityDetails = this?.getAbilityDetails(abilitySlot);
-    if (!abilitySlot || abilityDetails?.isMeleeAttack) {
-      hitList = this.calculateAttackDamage(victim, abilityDetails);
-    } else {
-      hitList = this.calculateSpellDamage(victim, abilityDetails);
-    }
-    // Casting stealth won't dispel anything.
-    if (abilityDetails?.spellName !== "stealth") {
-      this.dispelBuffsByProperty("dispelOnHit");
-    }
-    return hitList;
+    return applyDamage(this, victim, abilitySlot);
   }
   doRegen() {
-    const now = Date.now();
-    // we only regen HP if we have are out of combat (have rest buff) or have another regen buff
-    const isResting = this.buffs?.some((b) => ["rest"]?.includes(b?.name));
-    const regenBuff = this.buffs?.find((b) => ["regeneration"]?.includes(b?.name));
-    const poisonBuff = this.buffs?.find((b) => ["poison"]?.includes(b?.name));
-    const isHpBuffRegenReady = now - this.state.lastHpBuffRegen > 5000;
-    const isHpRegenReady = now - this.state.lastHpRegen > 5000;
-    const isMpRegenReady = now - this.state.lastMpRegen > 1000;
-    const isSpRegenReady = now - this.state.lastSpRegen > 600;
-    const isBuffPoisonReady = now - this.state.lastBuffPoison > 1000;
-
-    this.state.doHpRegen = false;
-    this.state.doHpBuffRegen = false;
-    this.state.doMpRegen = false;
-    this.state.doSpRegen = false;
-    this.state.doBuffPoison = false;
-
-    if (this.state.isDead) return;
-
-    if (isMpRegenReady && this.stats.mp < this.stats.maxMp) {
-      this.state.doMpRegen = true;
-      this.state.lastMpRegen = now;
-      this.modifyStat("mp", this.stats.regenMp);
-    }
-
-    if (isSpRegenReady && this.stats.sp < this.stats.maxSp) {
-      this.state.doSpRegen = true;
-      this.state.lastSpRegen = now;
-      this.modifyStat("sp", this.stats.regenSp);
-    }
-
-    if (regenBuff) {
-      if (isHpBuffRegenReady && this.stats.hp < this.stats.maxHp) {
-        this.state.doHpBuffRegen = true;
-        this.state.lastHpBuffRegen = now;
-        this.modifyStat("hp", regenBuff?.stats?.regenHp || 0);
-      }
-    }
-
-    if (isResting) {
-      if (isHpRegenReady && this.stats.hp < this.stats.maxHp) {
-        this.state.doHpRegen = true;
-        this.state.lastHpRegen = now;
-        this.modifyStat("hp", this.stats.regenHp);
-      }
-    }
-
-    if (poisonBuff) {
-      if (isBuffPoisonReady) {
-        const amount = -(poisonBuff?.stats?.poisonDamage || 0);
-        this.state.doBuffPoison = true;
-        this.state.lastBuffPoison = now;
-        this.state.lastCombat = Date.now();
-        this.dispelBuffsByProperty("dispelInCombat");
-        this.modifyStat("hp", amount);
-      }
-    }
+    applyRegen(this);
   }
   setDead() {
     //placeholder
@@ -581,95 +220,23 @@ export class ServerCharacter extends Character {
     if (didLevel) this.fillHpMp();
     return didLevel;
   }
-  addBuff({ name, level, caster, shouldCalculateStats = true }: AddBuffArgs) {
-    const buff = cloneObject(buffList?.[name]);
-    if (!buff) return false;
-
-    // Simplify scaling logic
-    const scaleStats = (stats) => {
-      return Object.fromEntries(
-        Object.entries(stats).map(([stat, value]: [string, number]) => [stat, value * level]),
-      );
-    };
-
-    const finalStats = buff?.scaleStats ? scaleStats(buff.stats || {}) : buff.stats || {};
-    const scaledPercentStats = buff?.scaleStats
-      ? scaleStats(buff.percentStats || {})
-      : buff.percentStats || {};
-
-    // Remove existing buff more efficiently
-    this.buffs = this.buffs.filter((b) => b?.name !== name);
-
-    // factor in caster's spellpower
-    if (name === "regeneration") {
-      finalStats.regenHp =
-        Number(buff?.stats?.regenHp || 0) + Math.floor(Number(caster?.stats?.spellPower || 1) / 5);
-    }
-
-    // Add the new buff
-    this.buffs.push({
-      ...buff,
-      name,
-      duration: buff.scaleDuration ? buff.duration * level : buff.duration,
-      level,
-      stats: finalStats,
-      percentStats: scaledPercentStats,
-      spawnTime: Date.now(),
-    });
-
-    if (shouldCalculateStats) this.calculateStats();
-
-    this.state.hasBuffChanges = true;
+  addBuff(args: AddBuffArgs) {
+    return applyAddBuff(this, args);
   }
   //checks if out of combat, adds rest buff it should be resting
   checkIsResting() {
-    const isOutOfCombat = this.checkOutOfCombat();
-    const isResting = this.hasBuff("rest");
-    const isPoisoned = this.hasBuff("poison");
-    if (isOutOfCombat && !isResting && !isPoisoned) {
-      this.addBuff({ name: "rest", level: 1, caster: this, shouldCalculateStats: false });
-      return true;
-    }
-    return isResting;
+    return applyCheckIsResting(this);
   }
   dispelBuffsByProperty(prop: keyof Buff, value = true) {
-    for (const buff of this.buffs) {
-      if (buff?.[prop] === value) {
-        buff.isExpired = true;
-      }
-    }
+    applyDispel(this, prop, value);
   }
   expireBuff(name) {
-    for (const buff of this.buffs) {
-      if (buff?.name === name) {
-        buff.isExpired = true;
-      }
-    }
+    applyExpireBuff(this, name);
   }
   /* Runs in update loop and removed buffs from player that are expired.
   Will also flag the player to hasBuffChanges so their state gets sent to client */
   expireBuffs(forceExpire = false) {
-    let hasBuffUpdates = false;
-    if (forceExpire && this.buffs?.length > 0) {
-      hasBuffUpdates = true;
-      this.buffs = [];
-    } else {
-      for (const buff of this.buffs) {
-        /* Buff timed out */
-        const limitedBuff = buff.duration > 0; // -1 is an unlimited buff
-        const isTimedOut = Date.now() - buff.spawnTime > buff.duration;
-        /* Buff got expired some other way */
-        const isExpired = buff?.isExpired;
-        if (isExpired || (isTimedOut && limitedBuff)) {
-          hasBuffUpdates = true;
-          this.buffs.splice(this.buffs.indexOf(buff), 1);
-        }
-      }
-    }
-    if (hasBuffUpdates) {
-      this.calculateStats();
-      this.state.hasBuffChanges = true;
-    }
+    applyExpireBuffs(this, forceExpire);
   }
   doHit(ids: Array<string>, abilitySlot: number): void {
     //placeholder
