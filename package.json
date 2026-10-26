@@ -25,7 +25,8 @@
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.strict.json",
     "test:watch": "vitest",
     "check:format": "oxfmt --check",
-    "check": "npm run check:format && npm run lint && npm run typecheck && npm run test"
+    "check:structure": "tsx scripts/check-structure.ts",
+    "check": "npm run check:format && npm run lint && npm run typecheck && npm run check:structure && npm run test"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.105.0",

@@ -15,7 +15,7 @@ jobs:
       matrix:
         include:
           - name: Format, lint, types
-            run: npm run check:format && npm run lint && npm run typecheck
+            run: npm run check:format && npm run lint && npm run typecheck && npm run check:structure
           - name: Tests
             run: npm run test
           - name: Build
