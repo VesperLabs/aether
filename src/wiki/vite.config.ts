@@ -1,6 +1,7 @@
 import path from "node:path";
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
+import { getAppVersion } from "../../scripts/app-version";
 
 /** Repo root. Vite is run from the root with `--config` (see npm scripts). */
 const repoRoot = path.resolve(__dirname, "../..");
@@ -25,6 +26,7 @@ export default defineConfig(({ mode, command }) => {
     },
     define: {
       "process.env.SERVER_URL": JSON.stringify(serverUrl),
+      __APP_VERSION__: JSON.stringify(getAppVersion(repoRoot)),
       "process.env.GAME_URL": JSON.stringify(gameUrl),
     },
     publicDir: command === "serve" ? path.join(repoRoot, "public") : false,

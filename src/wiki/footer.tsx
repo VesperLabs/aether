@@ -19,6 +19,9 @@ export const Footer = () => {
         <a target="_blank" rel="noopener noreferrer" href="https://trevordesign.com">
           TrevorDesign
         </a>
+        <Box as="span" sx={{ opacity: 0.5, ml: 2 }}>
+          {__APP_VERSION__}
+        </Box>
       </Box>
     </RowTitle>
   );

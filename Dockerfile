@@ -19,6 +19,8 @@ ARG PEER_CLIENT_PATH
 ARG METERED_APP_NAME
 ARG METERED_API_KEY
 ARG METERED_REGION
+# Commit shown in the game's version tag (.git isn't in the build context).
+ARG GIT_SHA
 
 ENV DEBUG=$DEBUG \
     MONGO_URL=$MONGO_URL \
@@ -32,7 +34,8 @@ ENV DEBUG=$DEBUG \
     PEER_CLIENT_PATH=$PEER_CLIENT_PATH \
     METERED_APP_NAME=$METERED_APP_NAME \
     METERED_API_KEY=$METERED_API_KEY \
-    METERED_REGION=$METERED_REGION
+    METERED_REGION=$METERED_REGION \
+    GIT_SHA=$GIT_SHA
 
 # Copy manifests first so the install layer caches on unchanged deps.
 COPY package.json package-lock.json ./

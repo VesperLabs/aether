@@ -163,3 +163,6 @@ interface KeeperData {
   shop?: any;
   home?: Coordinate;
 }
+
+/** Injected by Vite at build time: `package.json` version plus the short commit, e.g. "v1.2.0 (abc1234)". */
+declare const __APP_VERSION__: string;

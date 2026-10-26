@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
-import { Modal, Flex, Input, KeyboardButton, Icon, Text, Box } from "@/ui";
+import { Modal, Flex, Input, KeyboardButton, Icon, Text, Box, VersionTag } from "@/ui";
 import { useAppContext } from "@/client/hud/app/context";
 import { CLASS_ICON_MAP, type CharClass } from "@/shared/content";
 import { Tooltip } from "@/client/hud/tooltips/tooltip";
@@ -80,6 +80,7 @@ export const ModalLogin = () => {
       sx={{ width: 220 }}
     >
       <Tooltip id="login" />
+      <VersionTag />
       <Modal.Header
         sx={{ cursor: "pointer", opacity: isLogin ? 1 : 0.25 }}
         onClick={() => setActiveTab("login")}

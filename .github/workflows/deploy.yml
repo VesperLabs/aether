@@ -25,7 +25,7 @@ jobs:
           # Deploy the exact commit CI tested
           ref: ${{ github.event.workflow_run.head_sha }}
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy --remote-only
+      - run: flyctl deploy --remote-only --build-arg GIT_SHA=${{ github.event.workflow_run.head_sha }}
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
