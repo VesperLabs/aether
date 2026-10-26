@@ -26,3 +26,6 @@ public/assets/index-*
 *.sln
 *.sw?
 .playwright-mcp/
+
+# Claude Code agent worktrees
+.claude/worktrees/
