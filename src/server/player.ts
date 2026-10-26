@@ -371,7 +371,6 @@ export class Player extends ServerCharacter implements ServerPlayer {
       const newHits = this.calculateDamage(npc, abilitySlot);
 
       if (newHits.find((hit) => hit.type === "death")) {
-        npc.dropLoot(this.stats.magicFind);
         npcKills.push(npc);
       }
 

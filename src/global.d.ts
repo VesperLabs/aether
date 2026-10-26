@@ -128,7 +128,7 @@ interface Room {
   spellManager: any;
   playerManager: any;
   npcManager: any;
-  lootManager: any;
+  lootState: any;
   findPath(startCoords: Coordinate, targetCoords: Coordinate);
 }
 
@@ -229,7 +229,6 @@ interface Npc extends Character {
   talkingIds: Array<string>;
   keeperData: KeeperData;
   setDead(): void;
-  dropLoot(magicFind: number): void;
 }
 
 interface ServerPlayer extends Character {

@@ -1,5 +1,7 @@
 import { getFullCharacterState, cloneObject } from "../../utils";
 import { CONSUMABLES_BASES, POTION_BASES } from "@/shared";
+import { addStackAmounts, resolveGrab } from "@/shared/rules/loot";
+import { removeLoot, spawnLoot } from "../../loot-adapter";
 import type { ParsedCommand } from "@/shared/network";
 import type { CommandContext } from "@/server/net/command-context";
 
@@ -8,49 +10,37 @@ export function grabLoot(
   { lootId, direction }: ParsedCommand<"grabLoot"> = {},
 ) {
   const { scene, socket, socketId, io } = ctx;
-  if (scene.loots[lootId]?.expiredSince) return; //loot expired, do not let them pick it
   const player = scene.players[socketId];
   const loot = cloneObject(scene.loots[lootId]);
   const item = loot?.item;
-  if (!loot || !player || !item) return;
-  if (player?.state?.isDead) return;
+  /* Stackables join a stack the player already has, wherever it is */
+  const stackTarget =
+    item?.type === "stackable" && player
+      ? player.findBagItemById(item.id)?.["item"] ||
+        player.findAbilityById(item.id)?.["item"] ||
+        player.findInventoryItemById(item.id)
+      : null;
+  const outcome = resolveGrab({
+    loot: scene.loots[lootId],
+    hasGrabber: !!player,
+    grabberIsDead: player?.state?.isDead,
+    hasStackToJoin: !!stackTarget,
+    inventoryFull: !!player?.isInventoryFull(),
+  });
+  if (outcome === "ignore") return;
   /* Face the loot */
   player.direction = direction;
-  /* Check where to put loot */
-  if (item.type === "stackable") {
-    let foundItem =
-      player?.findBagItemById(item?.id)?.["item"] ||
-      player.findAbilityById(item.id)?.["item"] ||
-      player.findInventoryItemById(item.id);
-    if (foundItem) {
-      /* Delete loot from server */
-      scene.roomManager.rooms[player?.roomName].lootManager.remove(lootId);
-      /* TODO: a function that handles setting an items amount
-      - Needs to handle strings and nullish values
-       */
-      foundItem.amount = parseInt(foundItem.amount || 0) + parseInt(item?.amount || 0);
-    } else {
-      /* If our inventory is full we do not pick it up */
-      if (player.isInventoryFull()) {
-        return socket.emit("message", {
-          type: "error",
-          message: "Inventory is full.",
-        });
-      }
-      /* Delete loot from server */
-      scene.roomManager.rooms[player?.roomName].lootManager.remove(lootId);
-      player.addInventoryItem(item);
-    }
+  if (outcome === "inventoryFull") {
+    return socket.emit("message", {
+      type: "error",
+      message: "Inventory is full.",
+    });
+  }
+  /* Delete loot from server */
+  removeLoot(scene, lootId);
+  if (outcome === "stack") {
+    stackTarget.amount = addStackAmounts(stackTarget.amount, item?.amount);
   } else {
-    /* If our inventory is full we do not pick it up */
-    if (player.isInventoryFull()) {
-      return socket.emit("message", {
-        type: "error",
-        message: "Inventory is full.",
-      });
-    }
-    /* Delete loot from server */
-    scene.roomManager.rooms[player?.roomName].lootManager.remove(lootId);
     player.addInventoryItem(item);
   }
   /* Save player */
@@ -134,7 +124,7 @@ export function dropItem(
   if (player?.direction === "down") coords.y += 16;
 
   /* Spawn the loot on the server */
-  scene.roomManager.rooms[player?.roomName].lootManager.create({
+  spawnLoot(scene, player?.roomName, {
     ...coords,
     item: { ...found, ...(dropAmount ? { amount: dropAmount } : {}) },
     npcId: null,
