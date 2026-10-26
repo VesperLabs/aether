@@ -27,3 +27,10 @@
 **/*.sln
 **/*.sw?
 fly.toml
+
+# Not needed in the image
+.git
+.github
+.husky
+.playwright-mcp
+coverage
