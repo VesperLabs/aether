@@ -14,49 +14,49 @@ kill_timeout = '5s'
 # Runtime-only [env] values are NOT visible during `docker build`.
 #
 # Metered TURN — credential API key is client-safe (baked into JS bundle, visible to end users anyway).
-  [build.args]
-    ASSETS_URL = 'https://aether.onrender.com/assets'
-    SERVER_URL = 'https://vesperlabs.fly.dev'
-    SERVER_FPS = '20'
-    PEER_CLIENT_PORT = '443'
-    DEBUG = 'false'
-    METERED_APP_NAME = 'asyndesis'
-    METERED_API_KEY = 'e0761f10792087e26f63d5097966e9710fbc'
-    METERED_REGION = 'global'
+[build.args]
+ASSETS_URL = 'https://aether.onrender.com/assets'
+SERVER_URL = 'https://vesperlabs.fly.dev'
+SERVER_FPS = '20'
+PEER_CLIENT_PORT = '443'
+DEBUG = 'false'
+METERED_APP_NAME = 'asyndesis'
+METERED_API_KEY = 'e0761f10792087e26f63d5097966e9710fbc'
+METERED_REGION = 'global'
 
 [env]
-  ASSETS_URL = 'https://aether.onrender.com/assets'
-  DEBUG = 'false'
-  GIT_BRANCH = 'main'
-  GIT_REPO = 'git@github.com:VesperLabs/aether.git'
-  NODE_ENV = 'production'
-  PEER_CLIENT_PORT = '443'
-  PEER_SERVER_PORT = '9000'
-  PORT = '8080'
-  PUBLIC_DIR = '../public'
-  SERVER_FPS = '20'
-  SERVER_URL = 'https://vesperlabs.fly.dev'
+ASSETS_URL = 'https://aether.onrender.com/assets'
+DEBUG = 'false'
+GIT_BRANCH = 'main'
+GIT_REPO = 'git@github.com:VesperLabs/aether.git'
+NODE_ENV = 'production'
+PEER_CLIENT_PORT = '443'
+PEER_SERVER_PORT = '9000'
+PORT = '8080'
+PUBLIC_DIR = '../public'
+SERVER_FPS = '20'
+SERVER_URL = 'https://vesperlabs.fly.dev'
 
 [http_service]
-  internal_port = 8080
-  force_https = true
-  processes = ['app']
-  auto_stop_machines = true
-  auto_start_machines = true
-  min_machines_running = 0
+internal_port = 8080
+force_https = true
+processes = ['app']
+auto_stop_machines = true
+auto_start_machines = true
+min_machines_running = 0
 
-  [http_service.http_options]
-    idle_timeout = 900
+[http_service.http_options]
+idle_timeout = 900
 
-  [[http_service.checks]]
-    interval = '5s'
-    timeout = '2s'
-    grace_period = '30s'
-    method = 'get'
-    path = '/health'
-    protocol = 'http' 
+[[http_service.checks]]
+interval = '5s'
+timeout = '2s'
+grace_period = '30s'
+method = 'get'
+path = '/health'
+protocol = 'http'
 
 [[vm]]
-  memory = '512mb'
-  cpu_kind = 'shared'
-  cpus = 2
+memory = '512mb'
+cpu_kind = 'shared'
+cpus = 2

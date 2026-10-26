@@ -26,7 +26,7 @@ const ModalDropAmount = () => {
       window.dispatchEvent(
         new CustomEvent("AUDIO_ITEM_SELL", {
           detail: item,
-        })
+        }),
       );
     }
     /* If we are selling to the shop, send the amount */

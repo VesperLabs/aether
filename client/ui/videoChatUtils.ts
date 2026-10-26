@@ -21,7 +21,8 @@ export function isIOSNonSafariBrowser(): boolean {
   if (typeof navigator === "undefined") return false;
   const ua = navigator.userAgent || "";
   const iOS =
-    /iPad|iPhone|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    /iPad|iPhone|iPod/.test(ua) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
   if (!iOS) return false;
   return /CriOS|FxiOS|EdgiOS|OPiOS/.test(ua);
 }

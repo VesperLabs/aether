@@ -104,7 +104,7 @@ const Slot = memo(
       setDragging(true);
       setTimeout(
         () => setTarget(document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY)),
-        1
+        1,
       );
     };
 
@@ -121,7 +121,7 @@ const Slot = memo(
               x: e.clientX,
               y: e.clientY,
             },
-          })
+          }),
         );
       }
       setTarget(t);
@@ -140,7 +140,7 @@ const Slot = memo(
               x: e.touches[0].clientX,
               y: e.touches[0].clientY,
             },
-          })
+          }),
         );
       }
       setTarget(t);
@@ -203,7 +203,7 @@ const Slot = memo(
         ? () => {
             doubleClickItem();
           }
-        : null
+        : null,
     );
 
     const innerMouseBinds = shouldBindEvents
@@ -309,18 +309,18 @@ const Slot = memo(
       </Box>
     );
   },
-  shouldReRenderSlot
+  shouldReRenderSlot,
 );
 
 function shouldReRenderSlot(prevProps: SlotProps, nextProps: SlotProps) {
   if (prevProps.location === "equipment") {
     const itemSlotsChanged = !isEqual(
       get(prevProps, "player.activeItemSlots"),
-      get(nextProps, "player.activeItemSlots")
+      get(nextProps, "player.activeItemSlots"),
     );
     const activeSetsChanged = !isEqual(
       get(prevProps, "player.state.activeSets"),
-      get(nextProps, "player.state.activeSets")
+      get(nextProps, "player.state.activeSets"),
     );
     const isSetRarityChanged =
       (get(prevProps, "item.rarity") === "set" || get(nextProps, "item.rarity") === "set") &&
@@ -333,7 +333,7 @@ function shouldReRenderSlot(prevProps: SlotProps, nextProps: SlotProps) {
   if (prevProps?.item?.requirements) {
     const playerStatsChanged = !isEqual(
       get(prevProps, "player.stats"),
-      get(nextProps, "player.stats")
+      get(nextProps, "player.stats"),
     );
     if (playerStatsChanged) return false;
   }
@@ -361,14 +361,14 @@ function useItemEvents({ location, bagId, slotKey, item, player }) {
       window.dispatchEvent(
         new CustomEvent("HERO_DOUBLE_CLICK_ITEM", {
           detail: { item, location },
-        })
+        }),
       );
     },
     dropItem: (target) => {
       window.dispatchEvent(
         new CustomEvent("HERO_DROP_ITEM", {
           detail: { item, location, bagId, slotKey, player, target },
-        })
+        }),
       );
     },
   };

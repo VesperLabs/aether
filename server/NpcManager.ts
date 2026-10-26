@@ -2,7 +2,7 @@ import crypto from "crypto";
 import Npc from "./Npc";
 import nasties from "../shared/data/nasties.json";
 import keepers from "../shared/data/keepers.json";
-import { useGetBaseCharacterDefaults, mergeAndAddValues, PLAYER_BASE_EXP } from "./utils";
+import { useGetBaseCharacterDefaults, mergeAndAddValues } from "./utils";
 
 /* Find NPCs in data lists, and add `kind` to them */
 function getNpcFromLists(name) {
@@ -43,7 +43,7 @@ class NpcManager {
       });
 
       // remove level so it does not get added twice
-      const { level, ...npcBaseStats } = {
+      const { level: _level, ...npcBaseStats } = {
         ...baseStats,
         maxHp: 0,
         maxMp: 0,

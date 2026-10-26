@@ -143,12 +143,11 @@ const Portrait = memo(
   },
   (prev, next) => {
     if (prev.videoStream !== next.videoStream) return false;
-    return arePropsEqualWithKeys([
-      "player.activeItemSlots",
-      "player.equipment",
-      "player.profile",
-    ])(prev, next);
-  }
+    return arePropsEqualWithKeys(["player.activeItemSlots", "player.equipment", "player.profile"])(
+      prev,
+      next,
+    );
+  },
 );
 
 export default Portrait;

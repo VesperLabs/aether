@@ -1,10 +1,7 @@
 import path from "node:path";
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
-import dotenv from "dotenv";
 import { DEFAULT_SERVER_FPS } from "../shared/constants";
-
-dotenv.config();
 
 /** Repo root when Vite is run from `client/` (see npm scripts). */
 const parentDir = path.resolve(process.cwd(), "..");
@@ -38,7 +35,7 @@ export default ({ mode, command }) => {
       /* Values must be JSON-serialized literals; undefined breaks esbuild in CI/Docker with no .env */
       "process.env.DEBUG": process.env.DEBUG === "true",
       "process.env.SERVER_FPS": JSON.stringify(
-        process.env.SERVER_FPS ?? String(DEFAULT_SERVER_FPS)
+        process.env.SERVER_FPS ?? String(DEFAULT_SERVER_FPS),
       ),
       "process.env.SERVER_URL": JSON.stringify(process.env.SERVER_URL ?? ""),
       "process.env.ASSETS_URL": JSON.stringify(process.env.ASSETS_URL ?? ""),
@@ -50,6 +47,8 @@ export default ({ mode, command }) => {
     },
     server: {
       host: true,
+      port: 5174,
+      strictPort: true,
     },
     build: {
       assetsDir: "./", //puts our js files 1 directory up from the /assets folder

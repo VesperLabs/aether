@@ -22,7 +22,7 @@ const Button = forwardRef<HTMLDivElement, any>(
           if (onTouchEnd) return onTouchEnd?.(e);
           if (onClick) return onClick(e);
         },
-        { once: true }
+        { once: true },
       );
     };
 
@@ -41,7 +41,7 @@ const Button = forwardRef<HTMLDivElement, any>(
           if (onTouchEnd) return onTouchEnd(e);
           if (onClick) return onClick(e);
         },
-        { once: true }
+        { once: true },
       );
     };
 
@@ -58,7 +58,7 @@ const Button = forwardRef<HTMLDivElement, any>(
         {...props}
       />
     );
-  }
+  },
 );
 
 export default Button;

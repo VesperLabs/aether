@@ -1,0 +1,39 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "import", "react"],
+  "env": {
+    "browser": true,
+    "node": true,
+    "es2024": true
+  },
+  "categories": {
+    "correctness": "error"
+  },
+  "rules": {
+    "import/named": "error",
+    "import/no-cycle": "warn",
+    "react-hooks/exhaustive-deps": "warn",
+    "react/set-state-in-effect": "warn",
+    "react/purity": "warn",
+    "react/static-components": "warn",
+    "react/no-this-in-sfc": "off",
+    "no-unused-vars": [
+      "error",
+      {
+        "args": "none",
+        "varsIgnorePattern": "^_",
+        "caughtErrors": "none"
+      }
+    ],
+    "no-unused-expressions": [
+      "error",
+      {
+        "allowShortCircuit": true,
+        "allowTernary": true,
+        "allowTaggedTemplates": true
+      }
+    ],
+    "typescript/no-this-alias": "off"
+  },
+  "ignorePatterns": ["dist/**", "public/**"]
+}

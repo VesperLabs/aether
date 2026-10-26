@@ -50,7 +50,9 @@ class Room {
       });
   }
   createColliders() {
-    this.collideLayer = this.tileMap.createLayer("Collide", null).setCollisionByProperty({
+    this.collideLayer = (
+      this.tileMap.createLayer("Collide", null) as Phaser.Tilemaps.TilemapLayer
+    ).setCollisionByProperty({
       collides: true,
     });
     const { top, left, bottom, right } = this.createMapBounds();

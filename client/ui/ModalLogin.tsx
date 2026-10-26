@@ -52,7 +52,7 @@ const IconPen = ({ sx }: { sx?: any }) => (
 );
 
 const ModalLogin = (props: any) => {
-  const storedEmail = localStorage.getItem("email");
+  const storedEmail = localStorage.getItem("email") ?? "";
   const { zoom, bottomOffset } = useAppContext();
   const [defaultEmail, setDefaultEmail] = useState(storedEmail);
   const [activeTab, setActiveTab] = useState(storedEmail ? "login" : "demo");

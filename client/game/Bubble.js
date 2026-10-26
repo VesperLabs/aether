@@ -23,37 +23,37 @@ class Bubble extends Phaser.GameObjects.Container {
 
     // The corners
     this.tl = scene.add.existing(
-      new Sprite(scene, 0, 0, "misc-bubble", 0).setFrame(0).setOrigin(0, 0)
+      new Sprite(scene, 0, 0, "misc-bubble", 0).setFrame(0).setOrigin(0, 0),
     );
     this.bl = scene.add.existing(
-      new Sprite(scene, 0, this.height, "misc-bubble", 0).setFrame(6).setOrigin(0, 1)
+      new Sprite(scene, 0, this.height, "misc-bubble", 0).setFrame(6).setOrigin(0, 1),
     );
     this.tr = scene.add.existing(
-      new Sprite(scene, this.width, 0, "misc-bubble", 0).setFrame(2).setOrigin(1, 0)
+      new Sprite(scene, this.width, 0, "misc-bubble", 0).setFrame(2).setOrigin(1, 0),
     );
     this.br = scene.add.existing(
-      new Sprite(scene, this.width, this.height, "misc-bubble", 0).setFrame(8).setOrigin(1, 1)
+      new Sprite(scene, this.width, this.height, "misc-bubble", 0).setFrame(8).setOrigin(1, 1),
     );
 
     // The top and bottom slices
     this.top = scene.add.existing(
-      new Sprite(scene, FRAME_SIZE, 0, "misc-bubble", 0).setFrame(1).setOrigin(0, 0)
+      new Sprite(scene, FRAME_SIZE, 0, "misc-bubble", 0).setFrame(1).setOrigin(0, 0),
     );
     this.bot = scene.add.existing(
-      new Sprite(scene, FRAME_SIZE, this.height, "misc-bubble", 0).setFrame(7).setOrigin(0, 1)
+      new Sprite(scene, FRAME_SIZE, this.height, "misc-bubble", 0).setFrame(7).setOrigin(0, 1),
     );
     // The left and right slices
     this.left = scene.add.existing(
-      new Sprite(scene, 0, FRAME_SIZE, "misc-bubble", 0).setFrame(3).setOrigin(0, 0)
+      new Sprite(scene, 0, FRAME_SIZE, "misc-bubble", 0).setFrame(3).setOrigin(0, 0),
     );
     this.right = scene.add.existing(
-      new Sprite(scene, this.width, FRAME_SIZE, "misc-bubble", 0).setFrame(5).setOrigin(1, 0)
+      new Sprite(scene, this.width, FRAME_SIZE, "misc-bubble", 0).setFrame(5).setOrigin(1, 0),
     );
     this.bg = scene.add.existing(
-      new Sprite(scene, FRAME_SIZE, FRAME_SIZE, "misc-bubble", 0).setFrame(4).setOrigin(0, 0)
+      new Sprite(scene, FRAME_SIZE, FRAME_SIZE, "misc-bubble", 0).setFrame(4).setOrigin(0, 0),
     );
     this.tail = scene.add.existing(
-      new Sprite(scene, FRAME_SIZE, this.height, "misc-bubble-tail", 0).setOrigin(0, 1)
+      new Sprite(scene, FRAME_SIZE, this.height, "misc-bubble-tail", 0).setOrigin(0, 1),
     );
 
     // Add everything to the container
@@ -113,7 +113,6 @@ class Bubble extends Phaser.GameObjects.Container {
   wrapBitmapText = function (bitmapText, maxWidth) {
     var words = bitmapText.text.split(" ");
     let output = "";
-    3;
     let test = "";
 
     for (var w = 0, len = words.length; w < len; w++) {

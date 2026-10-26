@@ -1,3 +1,4 @@
+import Phaser from "phaser";
 class Crosshair extends Phaser.GameObjects.Container {
   constructor(scene, x, y, textureKey, frame, player, distance) {
     super(scene, x, y);

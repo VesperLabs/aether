@@ -1,4 +1,4 @@
-import { Box, Divider, Text, theme } from "@aether/ui";
+import { Text, theme } from "@aether/ui";
 import { get } from "lodash";
 
 // Utility function to convert hex color to RGBA

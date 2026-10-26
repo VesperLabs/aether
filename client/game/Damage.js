@@ -21,7 +21,6 @@ class Damage extends Container {
           text = "+" + text;
           this.dt.setTint("0x99FF99");
         } else {
-          text = text;
           if (this.victim.isHero) {
             this.dt.setTint("0xFFFFFF");
           } else {
@@ -58,7 +57,6 @@ class Damage extends Container {
         this.setVisible(false);
         break;
       case "death":
-        text = text;
         this.dt.setTint("0xFF6666");
         break;
     }

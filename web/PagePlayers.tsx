@@ -5,13 +5,7 @@ import PlayerRender from "./PlayerRender";
 import { TOOLTIP_STYLE, Label } from "./";
 import { Tooltip } from "react-tooltip";
 import { questList } from "@aether/shared";
-import {
-  MenuAbilities,
-  MenuBag,
-  MenuEquipment,
-  MenuInventory,
-  MenuStats,
-} from "@aether/client";
+import { MenuAbilities, MenuBag, MenuEquipment, MenuInventory, MenuStats } from "@aether/client";
 import { useLocation } from "wouter";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { fetchPlayers } from "./api";

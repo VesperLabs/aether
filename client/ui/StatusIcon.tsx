@@ -16,7 +16,7 @@ const TextDivider = ({ children, sx }: any) => (
 const StatusToolTip = ({ show }) => {
   const [metrics, setMetrics] = useState<ServerMetrics>();
   const [socketPing, setSocketPing] = useState<number>();
-  const [isLoading, setLoading] = useState<Boolean>(true);
+  const [isLoading, setLoading] = useState<boolean>(true);
   const { isConnected, socket } = useAppContext();
 
   useEffect(() => {

@@ -1,7 +1,9 @@
 /**
  * Subset of Character.state sent on every tick — must match server getTickStateLite / client merge.
  */
-export function pickTickStateLite(s: Record<string, unknown> | null | undefined): Record<string, unknown> {
+export function pickTickStateLite(
+  s: Record<string, unknown> | null | undefined,
+): Record<string, unknown> {
   if (!s) return {};
   return {
     lockedPlayerId: s.lockedPlayerId,

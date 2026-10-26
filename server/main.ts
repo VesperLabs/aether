@@ -1,6 +1,5 @@
 import "./Phaser";
 import path from "path";
-import { config } from "dotenv";
 import cors from "cors";
 import express from "express";
 import GameServer from "./GameServer";
@@ -11,8 +10,6 @@ import { PeerServer, PeerServerEvents } from "peer";
 import { default as http, IncomingMessage, Server } from "http";
 import type { Socket as NetSocket } from "net";
 import { createProxyMiddleware } from "http-proxy-middleware";
-
-config({ path: path.join(__dirname, "/../.env") });
 
 const PEER_SERVER_PORT = parseInt(process.env.PEER_SERVER_PORT);
 const PORT = process.env.PORT;
@@ -46,7 +43,7 @@ class AppServer {
     app.use(
       cors({
         origin: "*", // Replace with your allowed origin
-      })
+      }),
     );
 
     app.use(express.static(path.join(__dirname, process.env.PUBLIC_DIR)));
@@ -195,9 +192,11 @@ class AppServer {
     });
     app.use("/peerjs", peerProxy);
 
-    const peerUpgrade = (peerProxy as unknown as {
-      upgrade?: (req: IncomingMessage, socket: NetSocket, head: Buffer) => void;
-    }).upgrade;
+    const peerUpgrade = (
+      peerProxy as unknown as {
+        upgrade?: (req: IncomingMessage, socket: NetSocket, head: Buffer) => void;
+      }
+    ).upgrade;
 
     httpServer.on("upgrade", (req, socket, head) => {
       const path = req.url?.split("?")[0] ?? "";
@@ -207,7 +206,7 @@ class AppServer {
 
     httpServer.listen(PORT, () => {
       console.log(
-        `💻 Running ${MONGO_URL ? "[online]" : "[offline]"} on ${SERVER_URL} @ ${SERVER_FPS}fps`
+        `💻 Running ${MONGO_URL ? "[online]" : "[offline]"} on ${SERVER_URL} @ ${SERVER_FPS}fps`,
       );
     });
   }

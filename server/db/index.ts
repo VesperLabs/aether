@@ -45,7 +45,7 @@ const getDatabaseApi = (db) => ({
         // Update user's maxExp
         await users.updateOne(
           { _id: user._id },
-          { $set: { "baseStats.maxExp": newMaxExp, "stats.exp": 0 } }
+          { $set: { "baseStats.maxExp": newMaxExp, "stats.exp": 0 } },
         );
       }
     });
@@ -53,7 +53,7 @@ const getDatabaseApi = (db) => ({
   pruneNoobs: async () => {
     return execute("pruneNoobs", async () => {
       // Delete documents with baseStats.level equal to 1
-      const deleteResult = await db.collection("users").deleteMany({ "baseStats.level": 1 });
+      await db.collection("users").deleteMany({ "baseStats.level": 1 });
       //const deleteResult = await db.collection("users").deleteMany({ email: /@arf.arf/ });
       // const updateResult = await db
       //   .collection("users")
@@ -175,9 +175,9 @@ const getDatabaseApi = (db) => ({
               spawn: args?.spawn,
               updatedAt,
             },
-            isNil
+            isNil,
           ),
-        }
+        },
       );
     });
   },
@@ -197,7 +197,7 @@ const getDatabaseApi = (db) => ({
             [`userSettings.${name}`]: value,
             updatedAt,
           },
-        }
+        },
       );
     });
   },
@@ -234,7 +234,7 @@ const getDatabaseApi = (db) => ({
             activeItemSlots: player?.activeItemSlots,
             updatedAt,
           },
-        }
+        },
       );
     });
   },
@@ -273,7 +273,7 @@ export async function initDatabase(uri: string) {
     },
     () => {
       process.exit();
-    }
+    },
   );
 
   await execute("Create users collection", async () => {

@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, test } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import Button from "./Button";
-import "@testing-library/jest-dom";
+import "@testing-library/jest-dom/vitest";
 
 describe("Button", () => {
   beforeEach(() => {

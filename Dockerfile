@@ -2,7 +2,7 @@
 
 # ---- Build Stage ----
 # Has dev headers + tooling so `npm ci` can compile `canvas` once.
-FROM node:22-bookworm AS build
+FROM node:26-bookworm AS build
 
 # Cache apt layers between builds; use -dev packages for canvas's native build.
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
@@ -65,7 +65,7 @@ RUN --mount=type=cache,target=/root/.npm \
 
 # ---- Production Stage ----
 # Only the runtime shared libs that `canvas`'s compiled binding links against.
-FROM node:22-bookworm-slim AS production
+FROM node:26-bookworm-slim AS production
 
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \

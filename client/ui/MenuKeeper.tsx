@@ -8,7 +8,6 @@ import {
   Quest,
   MENU_MAX_WIDTH,
   MenuButton,
-  ModalHome,
 } from "./";
 import { Flex, Text } from "@aether/ui";
 import { capitalize } from "@aether/shared";

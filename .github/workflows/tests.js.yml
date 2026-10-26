@@ -1,27 +1,30 @@
-name: Tests
+name: CI
 
 on:
-  push:
-    branches: ["main"]
   pull_request:
-    branches: ["main"]
+  push:
+    branches: [main]
 
 jobs:
-  build:
+  # One job per gate, run in parallel, so a single run reports every failure.
+  gate:
+    name: ${{ matrix.name }}
     runs-on: ubuntu-latest
-
     strategy:
+      fail-fast: false
       matrix:
-        node-version: [22.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
+        include:
+          - name: Format, lint, types
+            run: npm run check:format && npm run lint && npm run typecheck
+          - name: Tests
+            run: npm run test
+          - name: Build
+            run: npm run client:build && npm run web:build && npm run server:build
     steps:
-      - uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: "npm"
+          node-version: 26 # matches the Dockerfile
+          cache: npm
       - run: npm ci
-      - run: npm run lint
-      - run: npm test
+      - run: ${{ matrix.run }}

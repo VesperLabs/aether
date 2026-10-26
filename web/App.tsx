@@ -1,4 +1,4 @@
-import { ThemeProvider, theme, Box, Flex, Text } from "@aether/ui";
+import { ThemeUIProvider, theme, Box, Flex, Text } from "@aether/ui";
 import { Theme } from "theme-ui";
 import { Route } from "wouter";
 import { Footer, Metrics, RouterLink } from "./";
@@ -23,7 +23,7 @@ function shouldSkipWarmupModal(): boolean {
 
 const App = () => {
   return (
-    <ThemeProvider theme={theme as Theme}>
+    <ThemeUIProvider theme={theme as Theme}>
       <QueryClientProvider client={queryClient}>
         <LoadingProvider>
           <Flex
@@ -53,7 +53,7 @@ const App = () => {
           <Footer />
         </LoadingProvider>
       </QueryClientProvider>
-    </ThemeProvider>
+    </ThemeUIProvider>
   );
 };
 

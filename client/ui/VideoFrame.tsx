@@ -110,7 +110,7 @@ export default function VideoFrame() {
         console.warn(`${tag} ICE candidate error`, ev.errorCode, ev.errorText, ev.url);
       });
       call.peerConnection?.addEventListener("connectionstatechange", () =>
-        console.log(`${tag} connection state:`, call.peerConnection?.connectionState)
+        console.log(`${tag} connection state:`, call.peerConnection?.connectionState),
       );
     }
 
@@ -125,7 +125,9 @@ export default function VideoFrame() {
 
       /* Prefer live peer.id — ref can lag; without id neither side initiates across NAT. */
       const myId = peer.open && peer.id ? peer.id : myPeerIdRef.current;
-      console.log(`[WebRTC] connectToNewUser remote=${remotePeerId.slice(0, 8)} me=${myId?.slice(0, 8)} initiate=${shouldInitiateCall(myId, remotePeerId)}`);
+      console.log(
+        `[WebRTC] connectToNewUser remote=${remotePeerId.slice(0, 8)} me=${myId?.slice(0, 8)} initiate=${shouldInitiateCall(myId, remotePeerId)}`,
+      );
       if (!shouldInitiateCall(myId, remotePeerId)) return;
 
       const call = peer.call(remotePeerId, stream);
@@ -135,14 +137,22 @@ export default function VideoFrame() {
         console.log(`[WebRTC] outgoing stream received from ${remotePeerId.slice(0, 8)}`);
         registerRemoteStream(remotePeerId, userVideoStream);
       });
-      call.on("close", () => { console.log(`[WebRTC] outgoing call closed ${remotePeerId.slice(0, 8)}`); removeRemote(remotePeerId); });
-      call.on("error", (err) => { console.error(`[WebRTC] outgoing call error ${remotePeerId.slice(0, 8)}`, err); removeRemote(remotePeerId); });
+      call.on("close", () => {
+        console.log(`[WebRTC] outgoing call closed ${remotePeerId.slice(0, 8)}`);
+        removeRemote(remotePeerId);
+      });
+      call.on("error", (err) => {
+        console.error(`[WebRTC] outgoing call error ${remotePeerId.slice(0, 8)}`, err);
+        removeRemote(remotePeerId);
+      });
 
       peers[remotePeerId] = call;
     }
 
     const handleCall = (call: MediaConnection) => {
-      console.log(`[WebRTC] incoming call from ${call.peer.slice(0, 8)} myStreamOk=${streamHasUsableVideo(myStream)}`);
+      console.log(
+        `[WebRTC] incoming call from ${call.peer.slice(0, 8)} myStreamOk=${streamHasUsableVideo(myStream)}`,
+      );
       if (!streamHasUsableVideo(myStream)) {
         call.close();
         return;
@@ -159,8 +169,14 @@ export default function VideoFrame() {
         console.log(`[WebRTC] incoming stream received from ${remoteId.slice(0, 8)}`);
         registerRemoteStream(remoteId, userVideoStream);
       });
-      call.on("close", () => { console.log(`[WebRTC] incoming call closed ${remoteId.slice(0, 8)}`); removeRemote(remoteId); });
-      call.on("error", (err) => { console.error(`[WebRTC] incoming call error ${remoteId.slice(0, 8)}`, err); removeRemote(remoteId); });
+      call.on("close", () => {
+        console.log(`[WebRTC] incoming call closed ${remoteId.slice(0, 8)}`);
+        removeRemote(remoteId);
+      });
+      call.on("error", (err) => {
+        console.error(`[WebRTC] incoming call error ${remoteId.slice(0, 8)}`, err);
+        removeRemote(remoteId);
+      });
       peers[remoteId] = call;
     };
 

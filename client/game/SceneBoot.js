@@ -11,14 +11,13 @@ import { IMAGE_CACHE } from "../../shared/utils";
  * rewrite (it only processes JS/TS modules), so we do it here at runtime.
  */
 const ASSETS_BASE = process.env.ASSETS_URL || "";
-const assetUrl = (src) =>
-  ASSETS_BASE ? src.replace(/^\.\/assets\//, ASSETS_BASE + "/") : src;
+const assetUrl = (src) => (ASSETS_BASE ? src.replace(/^\.\/assets\//, ASSETS_BASE + "/") : src);
 
 const onLoadError = (value) => {
   window.dispatchEvent(
     new CustomEvent("LOAD_ERROR", {
       detail: value,
-    })
+    }),
   );
 };
 
@@ -83,8 +82,16 @@ class SceneBoot extends Phaser.Scene {
     soundList.forEach((asset) => {
       this.load.audio(asset.name, assetUrl(asset.src));
     });
-    this.load.bitmapFont("nin-dark", assetUrl("./assets/fonts/dark.png"), assetUrl("./assets/fonts/font.xml"));
-    this.load.bitmapFont("nin-light", assetUrl("./assets/fonts/light.png"), assetUrl("./assets/fonts/font.xml"));
+    this.load.bitmapFont(
+      "nin-dark",
+      assetUrl("./assets/fonts/dark.png"),
+      assetUrl("./assets/fonts/font.xml"),
+    );
+    this.load.bitmapFont(
+      "nin-light",
+      assetUrl("./assets/fonts/light.png"),
+      assetUrl("./assets/fonts/font.xml"),
+    );
     this.load.image("joy-circle", assetUrl("./assets/images/joy-circle.png"));
     this.load.image("misc-bubble-tail", assetUrl("./assets/images/bubble-tail.png"));
     this.load.image("misc-slash", assetUrl("./assets/images/slash.png"));
@@ -292,10 +299,14 @@ function loadSpritesheets(scene) {
     frameWidth: 4,
     frameHeight: 4,
   });
-  scene.load.spritesheet("spell-anim-fireball", assetUrl("./assets/images/spell-anim-fireball.png"), {
-    frameWidth: 150,
-    frameHeight: 150,
-  });
+  scene.load.spritesheet(
+    "spell-anim-fireball",
+    assetUrl("./assets/images/spell-anim-fireball.png"),
+    {
+      frameWidth: 150,
+      frameHeight: 150,
+    },
+  );
   scene.load.spritesheet("spell-anim-balls", assetUrl("./assets/images/spell-anim-balls.png"), {
     frameWidth: 96,
     frameHeight: 96,

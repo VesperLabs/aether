@@ -1,3 +1,4 @@
+import Phaser from "phaser";
 const WEAPON_COLOR_MAP = {
   fire: "0xff0000",
   light: "0xffff00",
