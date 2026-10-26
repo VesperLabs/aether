@@ -30,6 +30,28 @@ function once<T = Anything>(socket: Socket, event: string, timeoutMs = 5000): Pr
   });
 }
 
+/** Like `once`, but skips events that don't match, e.g. map loot spawning in the same room. */
+function onceMatching<T = Anything>(
+  socket: Socket,
+  event: string,
+  matches: (...args: T[]) => boolean,
+  timeoutMs = 5000,
+): Promise<T[]> {
+  return new Promise((resolve, reject) => {
+    const listener = (...args: T[]) => {
+      if (!matches(...args)) return;
+      clearTimeout(timer);
+      socket.off(event, listener);
+      resolve(args);
+    };
+    const timer = setTimeout(() => {
+      socket.off(event, listener);
+      reject(new Error(`timed out waiting for "${event}"`));
+    }, timeoutMs);
+    socket.on(event, listener);
+  });
+}
+
 async function connectSocket() {
   const socket = connect(url, { transports: ["websocket"], forceNew: true });
   sockets.push(socket);
@@ -161,7 +183,11 @@ describe("game server", () => {
     const { socket, state } = await login("warrior");
     const hero = state.players.find((p: Anything) => p.socketId === socket.id);
     const armorId = hero.equipment.armor.id;
-    const spawned = once(socket, "lootSpawned");
+    const spawned = onceMatching(
+      socket,
+      "lootSpawned",
+      ({ loot }: Anything) => loot.item.id === armorId,
+    );
     socket.emit("dropItem", { location: "equipment", item: { id: armorId } });
     const [{ loot, npcId }] = await spawned;
     expect(npcId).toBeFalsy();
@@ -180,8 +206,13 @@ describe("game server", () => {
   it("grabLoot ignores loot that is gone or expired", async () => {
     const { socket, state } = await login("warrior");
     const hero = state.players.find((p: Anything) => p.socketId === socket.id);
-    const spawned = once(socket, "lootSpawned");
-    socket.emit("dropItem", { location: "equipment", item: { id: hero.equipment.armor.id } });
+    const armorId = hero.equipment.armor.id;
+    const spawned = onceMatching(
+      socket,
+      "lootSpawned",
+      ({ loot }: Anything) => loot.item.id === armorId,
+    );
+    socket.emit("dropItem", { location: "equipment", item: { id: armorId } });
     const [{ loot }] = await spawned;
     serverLoots()[loot.id].expiredSince = Date.now();
 
