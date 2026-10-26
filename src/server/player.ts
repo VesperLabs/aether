@@ -2,6 +2,8 @@ import { ServerCharacter } from "./character";
 import { cloneObject, getRoomState, PLAYER_DEFAULT_SPAWN } from "./utils";
 import { expForMobKill } from "@/shared/rules/stats";
 import { isPartyMember, sharedRecipientIds } from "@/shared/rules/party";
+import { markKeeperObjectivesReady, nextNpcKillCount } from "@/shared/rules/quests";
+import { applyAcceptQuest, applyCompleteQuest } from "./player-quests";
 import type { MobKilledEvent } from "@/shared/rules/events";
 import { MAX_INVENTORY_ITEMS } from "../shared";
 
@@ -105,68 +107,17 @@ export class Player extends ServerCharacter implements ServerPlayer {
     });
   }
   addNpcKill(npcName: string) {
-    this.npcKills[npcName] = this?.npcKills?.[npcName] + 1 || 1;
+    this.npcKills[npcName] = nextNpcKillCount(this.npcKills, npcName);
   }
   addQuest(quest: Quest) {
-    if (this.quests.find((q) => q?.questId === quest?.id)) return;
-    this.quests.push({ questId: quest?.id, isCompleted: false });
+    applyAcceptQuest(this, quest);
   }
   updateChatQuests(npcName: string): Array<PlayerQuest> {
-    const quests = this.scene.quests;
-    const playerQuests = this?.quests.map((playerQuest) => {
-      const quest = quests[playerQuest?.questId];
-      if (quest?.objectives?.some((q) => q?.keeper === npcName && !playerQuest.isCompleted)) {
-        return { ...playerQuest, isReady: true };
-      }
-      return playerQuest;
-    });
-    this.quests = playerQuests;
-    return playerQuests;
+    this.quests = markKeeperObjectivesReady(this.quests, this.scene.quests, npcName);
+    return this.quests;
   }
   completeQuest(questId: string) {
-    const quest = this.scene.quests?.[questId];
-    const questItems = quest?.rewards?.items || [];
-    const objectives = quest?.objectives || [];
-    const foundQuest: PlayerQuest = this.getPlayerQuestStatus(quest);
-
-    if (foundQuest?.isCompleted) return { error: "Quest has already been completed." };
-    if (!foundQuest?.isReady) return { error: "Quest objectives are not complete." };
-
-    let inventoryFull = false;
-
-    for (const item of questItems) {
-      if (!item) continue;
-      // Check if the inventory is already full before creating a new item
-      // TODO: If we ever give out stackables, we need to modify how this checks
-      if (this.isInventoryFull()) {
-        inventoryFull = true;
-      } else {
-        this.addInventoryItem(item);
-      }
-    }
-
-    if (inventoryFull && questItems.length > 0) {
-      return { error: "Cannot turn in quest. Inventory is full" }; // If the inventory is full, exit the loop and return false
-    }
-
-    /* Remove objective items from inventory */
-    for (const objective of objectives) {
-      if (!objective) continue;
-      /* Only works for stackable items */
-      if (objective?.type === "item") {
-        const itemId = objective?.item?.[2];
-        this.subtractInventoryItemAtId(itemId, objective?.amount) ||
-          this.subtractBagItemAtId(itemId, objective?.amount) ||
-          this.subtractAbilityAtId(itemId, objective?.amount);
-      }
-    }
-
-    const didLevel = this.assignExp(quest?.rewards?.exp);
-
-    this.gold += quest?.rewards?.gold ?? 0;
-    this.quests.find((q) => q?.questId === quest?.id).isCompleted = true;
-
-    return { didLevel };
+    return applyCompleteQuest(this, this.scene.quests?.[questId]);
   }
   /* Equipment */
   findEquipmentById(id: string): any {

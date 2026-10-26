@@ -384,7 +384,7 @@ interface PlayerQuest {
 }
 
 interface PlayerQuestObjective {
-  objectiveId: string;
+  objectiveId: number;
   questId: string;
   isReady?: boolean;
   numCollected?: number;

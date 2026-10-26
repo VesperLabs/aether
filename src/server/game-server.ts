@@ -1,5 +1,6 @@
 import "./phaser";
 import { createGameEventBus, type GameEventBus } from "@/shared/rules/world";
+import { subscribeQuests } from "@/shared/rules/quests";
 import { subscribeStats } from "@/shared/rules/stats";
 import { subscribeLoot, type LootItem } from "@/shared/rules/loot";
 import { updateRoomLoot, spawnLoot } from "./loot-adapter";
@@ -74,7 +75,9 @@ class ServerScene extends Phaser.Scene implements ServerScene {
       const member = this.players[characterId];
       if (!member) return;
       member.assignExp(amount);
-      member.addNpcKill(kill.mobName);
+    });
+    subscribeQuests(this.gameEvents, (characterId, mobName) => {
+      this.players[characterId]?.addNpcKill(mobName);
     });
 
     subscribeLoot(this.gameEvents, {
