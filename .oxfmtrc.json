@@ -4,5 +4,5 @@
   "useTabs": false,
   "printWidth": 100,
   "sortPackageJson": false,
-  "ignorePatterns": ["package-lock.json", "public/**", "dist/**"]
+  "ignorePatterns": ["package-lock.json", "public/**", "dist/**", ".claude/**"]
 }
