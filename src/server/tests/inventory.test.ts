@@ -156,7 +156,10 @@ describe("inventory over the socket", () => {
       from: { location: "inventory", slot: 1 },
       to: { location: "bag", bagId: bag.id },
     });
-    expect((await message)[0]).toMatchObject({ type: "error", message: "Bag is full." });
+    expect((await message)[0]).toMatchObject({
+      type: "error",
+      message: "Bag is full.",
+    });
   });
 
   it("drops part of a stack and spawns it as loot", async () => {
@@ -230,7 +233,10 @@ describe("inventory over the socket", () => {
 
 describe("shop over the socket", () => {
   function stockShop(world: Anything, player: Anything, items: Anything[]) {
-    const shop = items.map((item) => ({ item: { ...item, cost: item.cost * 4 }, stock: 10 }));
+    const shop = items.map((item) => ({
+      item: { ...item, cost: item.cost * 4 },
+      stock: 10,
+    }));
     world.npcs["test-shop"] = { keeperData: { shop } };
     player.state.targetNpcId = "test-shop";
   }
@@ -305,5 +311,57 @@ describe("shop over the socket", () => {
     });
     expect(soldWeapon.equipment.handLeft).toBeFalsy();
     expect(soldWeapon.gold).toBe(2 * (potion.cost as number) + weaponCost);
+  });
+
+  it("credits gold only for what was actually removed", async () => {
+    const { socket, player, world } = await login("warrior");
+    stockShop(world, player, [build("pants", "common", "clothPants")]);
+    const potion = build("stackable", "common", "smallHpPotion", 5);
+    const cost = potion.cost as number;
+    const bag = build("bag", "rare", "smallPouch");
+    bag.items = [build("stackable", "common", "smallHpPotion", 3)];
+    player.inventory = [potion, bag];
+    player.abilities = {
+      ...player.abilities,
+      a1: build("stackable", "common", "smallHpPotion", 3),
+    };
+    player.gold = 0;
+    const sell = (from: Anything) =>
+      emitAndWait(socket, "moveItem", {
+        from,
+        to: { location: "shop", slot: 0 },
+      });
+    const invFrom = { location: "inventory", slot: 0 };
+    const bagFrom = { location: "bag", bagId: bag.id, slot: 0 };
+    const abFrom = { location: "abilities", slot: "a1" };
+
+    // Refused sells change nothing; the sentinel sell afterwards proves no gold was credited.
+    for (const from of [
+      { ...invFrom, amount: 6 },
+      { ...invFrom, amount: 0 },
+      { ...bagFrom, amount: 4 },
+      { ...abFrom, amount: 4 },
+    ]) {
+      socket.emit("moveItem", { from, to: { location: "shop", slot: 0 } });
+    }
+    const partial = await sell({ ...invFrom, amount: 2 });
+    expect(partial.gold).toBe(2 * cost);
+    expect(partial.inventory[0].amount).toBe(3);
+
+    const exact = await sell({ ...invFrom, amount: 3 });
+    expect(exact.gold).toBe(5 * cost);
+    expect(exact.inventory[0]).toBeFalsy();
+
+    const bagPart = await sell({ ...bagFrom, amount: 2 });
+    expect(bagPart.gold).toBe(7 * cost);
+    const bagAll = await sell({ ...bagFrom, amount: 1 });
+    expect(bagAll.gold).toBe(8 * cost);
+
+    const abPart = await sell({ ...abFrom, amount: 2 });
+    expect(abPart.gold).toBe(10 * cost);
+    expect(abPart.abilities.a1.amount).toBe(1);
+    const abAll = await sell({ ...abFrom, amount: 1 });
+    expect(abAll.gold).toBe(11 * cost);
+    expect(abAll.abilities.a1).toBeFalsy();
   });
 });
