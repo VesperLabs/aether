@@ -59,7 +59,7 @@ Do the pure ones first. Write tests as each one moves.
 
 Found during the migration and left alone so behaviour stayed identical. Fix after the migration, each with a test.
 
-- [ ] **Loot:** `grabLoot` has no range or ownership check, so any player can grab any loot by id from anywhere
+- [x] **Loot:** `grabLoot` has no range or ownership check, so any player can grab any loot by id from anywhere
 - [ ] **Quests:** if the inventory fills partway through the rewards, earlier reward items are kept but the quest isn't completed, so rewards can be farmed by retrying
 - [ ] **Quests:** turn-in subtracts quest items by key using functions that match by id, so items may not be consumed. Bags and abilities also need `amount > n`, so an exact amount isn't consumed.
 - [ ] **Quests:** accepting an unknown quest id pushes `{ questId: undefined }` onto the player's quests
