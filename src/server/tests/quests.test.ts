@@ -68,7 +68,7 @@ describe("quests", () => {
     /* Accepting again changes nothing (and sends no update). */
     socket.emit("acceptQuest", "crab-catching");
     await new Promise((resolve) => setTimeout(resolve, 100));
-    expect(world().players[socket.id].quests).toHaveLength(1);
+    expect(world().players[socket.id as string].quests).toHaveLength(1);
   });
 
   it("completeQuest refuses a quest that is not finished", async () => {
@@ -88,7 +88,7 @@ describe("quests", () => {
     socket.emit("acceptQuest", "crab-catching");
     await once(socket, "playerUpdate");
 
-    const player = world().players[socket.id];
+    const player = world().players[socket.id as string];
     player.npcKills.crab = 60;
     const goldBefore = player.gold;
     const expBefore = player.stats.exp;
@@ -116,7 +116,7 @@ describe("quests", () => {
     const { socket } = await login();
     socket.emit("acceptQuest", "crab-catching");
     await once(socket, "playerUpdate");
-    const player = world().players[socket.id];
+    const player = world().players[socket.id as string];
     player.npcKills.crab = 60;
     player.inventory = Array.from({ length: 32 }, (_, i) => ({ id: `junk-${i}`, base: "junk" }));
 
@@ -131,7 +131,7 @@ describe("quests", () => {
 
   it("counts mob kills for every recipient of a mobKilled event", async () => {
     const { socket } = await login();
-    const player = world().players[socket.id];
+    const player = world().players[socket.id as string];
     const kill = (mobName: string) => ({
       killerId: socket.id as string,
       killerLevel: 1,

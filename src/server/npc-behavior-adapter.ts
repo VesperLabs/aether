@@ -1,8 +1,10 @@
+import type { Npc } from "./npc";
+import type { Player } from "./player";
 import { entitiesInRoom, nearestTo } from "@/shared/rules/world";
 import type { NpcBehaviorInput, NpcPlayerView } from "@/shared/rules/npc-behavior";
 
 /** What the behavior rules need to know about a player. */
-const toPlayerView = (player: any): NpcPlayerView | null =>
+const toPlayerView = (player: Player | undefined): NpcPlayerView | null =>
   player
     ? {
         socketId: player.socketId,
@@ -16,9 +18,9 @@ const toPlayerView = (player: any): NpcPlayerView | null =>
     : null;
 
 /** Copies what the NPC behavior rules read from a legacy `Npc` into plain data. */
-export function buildNpcBehaviorInput(npc: any, time: number, delta: number): NpcBehaviorInput {
+export function buildNpcBehaviorInput(npc: Npc, time: number, delta: number): NpcBehaviorInput {
   const { state, world, room } = npc;
-  const lockedPlayer = toPlayerView(world?.players?.[state?.lockedPlayerId]);
+  const lockedPlayer = toPlayerView(world?.players?.[state?.lockedPlayerId as string]);
   const nearestPlayer =
     state?.isAggro || lockedPlayer
       ? toPlayerView(nearestTo(entitiesInRoom(world.players, room?.name), npc))

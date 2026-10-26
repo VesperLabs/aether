@@ -13,7 +13,9 @@ export function grabLoot(
 ) {
   const { world, socket, socketId, io } = ctx;
   const player = world.players[socketId];
-  const loot = cloneJson(world.loots[lootId]);
+  /* A missing id looks up nothing, as before. */
+  const key = `${lootId}`;
+  const loot = cloneJson(world.loots[key]);
   const item = loot?.item;
   /* Stackables join a stack the player already has, wherever it is */
   const stackTarget =
@@ -23,7 +25,7 @@ export function grabLoot(
         player.findInventoryItemById(item.id)
       : null;
   const outcome = resolveGrab({
-    loot: world.loots[lootId],
+    loot: world.loots[key],
     hasGrabber: !!player,
     grabberIsDead: player?.state?.isDead,
     hasStackToJoin: !!stackTarget,
@@ -31,7 +33,7 @@ export function grabLoot(
   });
   if (outcome === "ignore") return;
   /* Face the loot */
-  player.direction = direction;
+  player.direction = direction as string;
   if (outcome === "inventoryFull") {
     return socket.emit("message", {
       type: "error",
@@ -39,7 +41,7 @@ export function grabLoot(
     });
   }
   /* Delete loot from server */
-  removeLoot(world, lootId);
+  removeLoot(world, key);
   if (outcome === "stack") {
     stackTarget.amount = addStackAmounts(stackTarget.amount, item?.amount);
   } else {
@@ -104,7 +106,7 @@ export function consumeItem(ctx: CommandContext, request: ParsedCommand<"consume
 
   /* If the item has buffs */
   if (result.isFood) {
-    for (const [buffName, level] of Object.entries(result.buffs)) {
+    for (const [buffName, level] of Object.entries(result.buffs as Record<string, number>)) {
       player.addBuff({ name: buffName, level, caster: player, shouldCalculateStats: false });
     }
   }

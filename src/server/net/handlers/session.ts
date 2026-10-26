@@ -1,3 +1,4 @@
+import type { Player } from "../../player";
 import { getFullCharacterState } from "@/shared/network/sync";
 import type { ParsedCommand } from "@/shared/network";
 import type { CommandContext } from "@/server/net/command-context";
@@ -32,7 +33,7 @@ export async function updateUserSetting(
   { name, value }: ParsedCommand<"updateUserSetting">,
 ) {
   const { world, socket, socketId } = ctx;
-  const player: ServerPlayer = world.players[socketId];
+  const player: Player = world.players[socketId];
   await world.db.updateUserSetting(player, {
     name,
     value,

@@ -1,13 +1,13 @@
 import type { Express } from "express";
 
+import type { Database } from "../persistence/database";
 import type { GameServer } from "../game-server";
 import { applyCalculatedStats } from "../character-stats";
 import { getFullCharacterState } from "@/shared/network/sync";
 
 interface RouteDeps {
   aetherServer: GameServer;
-  // oxlint-disable-next-line typescript/no-explicit-any
-  db: any;
+  db: Database;
 }
 
 /** The JSON endpoints the wiki and the host platform call. */

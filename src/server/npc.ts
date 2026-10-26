@@ -1,26 +1,60 @@
-import { ServerCharacter as Character } from "./character";
+import { ServerCharacter as Character, type CharacterArgs } from "./character";
+import type { ServerWorld } from "./server-world";
+import type { Player } from "./player";
+import type { Point } from "@/shared/rules/world";
 import { createSpell } from "./spell-adapter";
 import { buildNpcBehaviorInput } from "./npc-behavior-adapter";
-import { buildEquipment, buildShop } from "./npc-build";
+import { buildEquipment, buildShop, type ItemRecipe } from "./npc-build";
 import {
   checkInRange,
   decideNpcAction,
   decideTalkingEnded,
   shouldRespawn,
   type NpcAction,
+  type NpcAbility,
   type NpcDecision,
 } from "@/shared/rules/npc-behavior";
 import { canHitPlayer } from "@/shared/rules/spells";
 import { entitiesInRoom, getCharacterDirection } from "@/shared/rules/world";
 import { findNextWaypoint, isSolidTile, worldToTileX, worldToTileY } from "@/shared/rules/movement";
 
+/** An NPC as the content tables define it, before it is placed in a world. */
+// Legacy: the keeper and nasty tables have different shapes; type them once they share a base.
+// oxlint-disable-next-line typescript/no-explicit-any
+export type NpcDefinition = Record<string, any>;
+
 const sleep = (delay: number) => new Promise((resolve) => setTimeout(resolve, delay));
+
+/** What an NPC is created from: a content definition placed in a room. */
+type NpcArgs = CharacterArgs & {
+  name: string;
+  equipment?: Record<string, ItemRecipe>;
+  abilities?: Record<string, ItemRecipe>;
+  keeperData?: KeeperData;
+  drops?: Array<Drop>;
+  hitBoxSize?: { width: number; height: number };
+};
+
+/** What an NPC needs to cast a spell. */
+interface NpcCastRequest {
+  ability: NpcAbility & { ilvl?: number };
+  abilitySlot: number | string;
+  targetPlayer?: Player;
+  castAngle: number;
+}
+
+/** What an NPC needs to attack. */
+interface NpcAttackRequest {
+  target: { id: string; x: number; y: number };
+  direction: string;
+  castAngle: number;
+}
 
 /**
  * An NPC. What it does each tick is decided by `rules/npc-behavior`; this class builds the input
  * for it and carries out the answer with the movement and socket code.
  */
-export class Npc extends Character implements Npc {
+export class Npc extends Character {
   public respawnTime: number;
   public drops: Array<Drop>;
   public talkingIds: Array<string>;
@@ -28,26 +62,15 @@ export class Npc extends Character implements Npc {
   declare name: string;
   constructor(
     world: ServerWorld,
-    {
-      equipment = {},
-      abilities = {},
-      keeperData = {},
-      ...args
-    }: {
-      name: string;
-      equipment: Record<string, Array<string>>;
-      abilities: Record<string, Array<string>>;
-      keeperData: KeeperData;
-      drops: Array<Drop>;
-      hitBoxSize: any;
-    },
+    { equipment = {}, abilities = {}, keeperData = {}, ...args }: NpcArgs,
   ) {
     super(world, args);
 
     this.name = args?.name;
     this.world = world;
     this.respawnTime = 10000;
-    this.drops = args?.drops;
+    /* Keepers have no drops in their content. */
+    this.drops = args?.drops as Array<Drop>;
     this.equipment = buildEquipment(equipment);
     this.abilities = buildEquipment(abilities);
     this.talkingIds = [];
@@ -88,7 +111,7 @@ export class Npc extends Character implements Npc {
       });
     }
   }
-  checkInRange(target: any, range: number) {
+  checkInRange(target: Point, range: number) {
     return checkInRange(this, target, range);
   }
   // is the NPC adjacent to a collision tile?
@@ -158,15 +181,15 @@ export class Npc extends Character implements Npc {
     }
     if (decision.bubbleMessage !== undefined) state.bubbleMessage = decision.bubbleMessage;
 
-    const targetPlayer = world?.players?.[decision.targetPlayerId];
+    const targetPlayer = world?.players?.[decision.targetPlayerId ?? ""];
     if (decision.expireStealthOfPlayerId) {
-      (world?.players?.[decision.expireStealthOfPlayerId] as any)?.expireBuff("stealth");
+      world?.players?.[decision.expireStealthOfPlayerId]?.expireBuff("stealth");
     }
 
     this.performMovement(decision.movement, targetPlayer, delta);
     this.performAction(decision.action, targetPlayer);
   }
-  performMovement(movement: NpcDecision["movement"], targetPlayer: ServerPlayer, delta: number) {
+  performMovement(movement: NpcDecision["movement"], targetPlayer: Player, delta: number) {
     switch (movement.type) {
       case "standStill":
         return this.standStill();
@@ -192,11 +215,11 @@ export class Npc extends Character implements Npc {
       }
     }
   }
-  performAction(action: NpcAction, targetPlayer: ServerPlayer) {
+  performAction(action: NpcAction, targetPlayer: Player) {
     if (action.type === "attack") this.intendAttack(action, targetPlayer);
     if (action.type === "cast") this.intendCastSpell(action, targetPlayer);
   }
-  setLockedPlayerId(id: string) {
+  setLockedPlayerId(id: string | null | undefined) {
     // If they are switching targets
     if (this.state.lockedPlayerId !== id && id) {
       this.state.lastAttack = Date.now();
@@ -204,11 +227,13 @@ export class Npc extends Character implements Npc {
     }
     this.state.lockedPlayerId = id;
   }
-  doCast({ ability, abilitySlot, targetPlayer, castAngle }) {
-    if (!this.canCastSpell(abilitySlot)) return;
+  doCast({ ability, abilitySlot, targetPlayer, castAngle }: NpcCastRequest) {
+    /* Slot keys are numeric strings at runtime; the model types them as numbers. */
+    if (!this.canCastSpell(abilitySlot as number)) return;
 
     const { world, room, id } = this ?? {};
-    const spellName = ability?.base;
+    const spellName = ability?.base as string;
+    const slot = abilitySlot as number;
 
     this.dispelBuffsByProperty("dispelBeforeAttack");
 
@@ -219,12 +244,12 @@ export class Npc extends Character implements Npc {
         spellName,
         castAngle,
         ilvl: ability?.ilvl,
-        abilitySlot,
+        abilitySlot: slot,
       });
 
     world.io.to(room?.name).emit("npcCastSpell", { id, castAngle, abilitySlot });
   }
-  async intendCastSpell(action: Extract<NpcAction, { type: "cast" }>, targetPlayer: ServerPlayer) {
+  async intendCastSpell(action: Extract<NpcAction, { type: "cast" }>, targetPlayer: Player) {
     const { ability, abilitySlot } = action;
     this.state.isAiming = true;
     await sleep(action.windupMs);
@@ -234,7 +259,7 @@ export class Npc extends Character implements Npc {
     this.doCast({ targetPlayer, abilitySlot, ability, castAngle });
     this.state.isAiming = false;
   }
-  doAttack({ target, direction, castAngle }) {
+  doAttack({ target, direction, castAngle }: NpcAttackRequest) {
     const { world, room, id, state } = this ?? {};
     const targetPlayer = world?.players?.[state?.lockedPlayerId] ?? null;
     if (state.isAttacking || state?.isDead) return;
@@ -268,7 +293,7 @@ export class Npc extends Character implements Npc {
 
     world.io.to(room?.name).emit("npcAttack", { id, count, direction, castAngle });
   }
-  async intendAttack(action: Extract<NpcAction, { type: "attack" }>, targetPlayer: ServerPlayer) {
+  async intendAttack(action: Extract<NpcAction, { type: "attack" }>, targetPlayer: Player) {
     this.direction = action.direction;
     this.state.isAiming = true;
 
@@ -302,14 +327,15 @@ export class Npc extends Character implements Npc {
     if (nextPath) {
       this.moveTowardPoint(nextPath);
       if (this.checkInRange(nextPath, 1)) {
-        this.nextPath = null;
+        /* Cleared with null; the shared model types it as always set. */
+        this.nextPath = null as unknown as Point;
       }
     }
   }
   /** Looks up the next tile on the way to the target. Walked towards on the following tick. */
   findPath(targetCoords: Coordinate) {
     const next = findNextWaypoint(this.room.pathfinder, this, targetCoords);
-    if (JSON.stringify(next) !== JSON.stringify(this.nextPath)) this.nextPath = next;
+    if (JSON.stringify(next) !== JSON.stringify(this.nextPath)) this.nextPath = next as Point;
   }
   standStill() {
     this.vy = 0;
@@ -326,9 +352,9 @@ export class Npc extends Character implements Npc {
       if (index !== -1) this.talkingIds.splice(index, 1);
     }
   }
-  doHit(ids: Array<string>, abilitySlot: number): void {
+  doHit(ids: Array<string>, abilitySlot?: number): void {
     const { world, room } = this ?? {};
-    const roomName: string = room?.name;
+    const roomName = room.name;
     const players = entitiesInRoom(this.world.players, roomName);
     const { allowedTargets } = this.getAbilityDetails(abilitySlot);
 

@@ -1,3 +1,5 @@
+import type { ServerWorld } from "../../server-world";
+import type { Player } from "../../player";
 import { PLAYER_DEFAULT_SPAWN } from "../../auth/character-defaults";
 import { decodeWireDirection, getFullCharacterState } from "@/shared/network/sync";
 import { getRoomState } from "@/server/net/room-sync";
@@ -13,7 +15,7 @@ export function playerInput(ctx: CommandContext, input: ParsedCommand<"playerInp
   const { world, socketId } = ctx;
   if (!world.players) return;
   const { x, y, vx, vy, d, direction, roomName } = input;
-  const player: any = world.players[socketId];
+  const player = world.players[socketId];
   if (!player) return;
   if (player.state.isDead) return;
   if (player?.hasBuff("stun")) {
@@ -39,7 +41,7 @@ export function changeDirection(
 ) {
   const { world, socketId } = ctx;
   const player = world.players[socketId];
-  player.direction = direction;
+  player.direction = direction as string;
   if (typeof lastAngle !== "undefined") player.state.lastAngle = lastAngle;
 }
 
@@ -61,14 +63,16 @@ export function enterDoor(ctx: CommandContext, doorName: ParsedCommand<"enterDoo
   const player = world.players[socketId];
   const oldRoom = player.room.name;
   const prev = getDoor(world, oldRoom, doorName);
-  const next = getDoor(world, prev.destMap, prev.destDoor);
+  /* Doors in the maps always have a destination. */
+  const destMap = prev.destMap as string;
+  const next = getDoor(world, destMap, prev.destDoor as string);
 
-  if (oldRoom !== prev.destMap) {
+  if (oldRoom !== destMap) {
     socket.leave(oldRoom);
-    socket.join(prev.destMap);
+    socket.join(destMap);
     socket.to(oldRoom).emit("remove", socketId);
     removePlayerFromRoom(world, socketId);
-    addPlayerToRoom(world, socketId, world.rooms[prev.destMap]);
+    addPlayerToRoom(world, socketId, world.rooms[destMap]);
   }
 
   player.x = next.centerPos.x;
@@ -77,12 +81,12 @@ export function enterDoor(ctx: CommandContext, doorName: ParsedCommand<"enterDoo
   /* Save the new room */
   world.db.updateUserMapDetails(player);
 
-  socket.to(prev.destMap).emit("playerJoin", getFullCharacterState(player), {
+  socket.to(destMap).emit("playerJoin", getFullCharacterState(player), {
     lastTeleport: Date.now(),
   });
 
   socket.emit("heroInit", {
-    ...getRoomState(world, prev.destMap),
+    ...getRoomState(world, destMap),
     socketId,
   });
 
@@ -133,9 +137,9 @@ export function respawn(ctx: CommandContext) {
 
 export function setSpawn(ctx: CommandContext, spawn: ParsedCommand<"setSpawn">) {
   const { world, socket, socketId } = ctx;
-  const player: ServerPlayer = world.players[socketId];
+  const player: Player = world.players[socketId];
   player.spawn = spawn as SpawnPoint;
-  world.db.updateUserMapDetails({ email: player.email, spawn });
+  world.db.updateUserMapDetails({ email: player.email, spawn: spawn as SpawnPoint });
   return socket.emit("message", {
     type: "info",
     message: "You have changed your spawn point.",

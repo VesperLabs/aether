@@ -250,8 +250,8 @@ describe("shop over the socket", () => {
       to: { location: "inventory", slot: 0 },
     });
     expect(update.inventory[0].base).toBe("pants");
-    expect(update.inventory[0].cost).toBe(pants.cost);
-    expect(update.gold).toBe(100 - pants.cost * 4);
+    expect(update.inventory[0].cost).toBe(pants.cost as number);
+    expect(update.gold).toBe(100 - (pants.cost as number) * 4);
   });
 
   it("cannot buy without enough gold", async () => {
@@ -282,7 +282,7 @@ describe("shop over the socket", () => {
     });
     expect(update.inventory[0].amount).toBe(5);
     expect(update.inventory[4]).toBeFalsy();
-    expect(update.gold).toBe(1000 - potion.cost * 4 * 3);
+    expect(update.gold).toBe(1000 - (potion.cost as number) * 4 * 3);
   });
 
   it("sells part of a stack and an equipped item for gold", async () => {
@@ -296,7 +296,7 @@ describe("shop over the socket", () => {
       to: { location: "shop", slot: 0 },
     });
     expect(sold.inventory[0].amount).toBe(3);
-    expect(sold.gold).toBe(2 * potion.cost);
+    expect(sold.gold).toBe(2 * (potion.cost as number));
 
     const weaponCost = player.equipment.handLeft.cost;
     const soldWeapon = await emitAndWait(socket, "moveItem", {
@@ -304,6 +304,6 @@ describe("shop over the socket", () => {
       to: { location: "shop", slot: 0 },
     });
     expect(soldWeapon.equipment.handLeft).toBeFalsy();
-    expect(soldWeapon.gold).toBe(2 * potion.cost + weaponCost);
+    expect(soldWeapon.gold).toBe(2 * (potion.cost as number) + weaponCost);
   });
 });

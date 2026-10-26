@@ -1,15 +1,16 @@
-import { MongoClient, Db } from "mongodb";
+import { MongoClient, type Db, type Document } from "mongodb";
 import { userSchema } from "./schema";
 import { filterNullEmpty } from "./filter-empty";
 import { calculateNextMaxExp } from "@/shared/rules/stats";
 import { createBaseUser } from "./base-user";
+import type { Database, UserDocument } from "./database";
 
-const getDatabaseApi = (db) => ({
+const getDatabaseApi = (db: Db): Database => ({
   getUserByEmail: async ({ email }) => {
     return execute("getUserByEmail", async () => {
       if (!email) return console.log("❌ Email not provided");
       const user = await db.collection("users").findOne({ email });
-      return user;
+      return user as UserDocument | null;
     });
   },
   getAllUsers: async ({ page = 1, pageSize = 10, sortBy = "updatedAt" }) => {
@@ -22,7 +23,7 @@ const getDatabaseApi = (db) => ({
       .limit(pageSize)
       .toArray();
 
-    return users;
+    return users as unknown as UserDocument[];
   },
   countAllUsers: async () => {
     return execute("countAllUsers", async () => {
@@ -38,6 +39,7 @@ const getDatabaseApi = (db) => ({
       const cursor = users.find();
       while (await cursor.hasNext()) {
         const user = await cursor.next();
+        if (!user) continue;
         const level = user.baseStats.level;
         const newMaxExp = calculateNextMaxExp(level);
 
@@ -60,11 +62,14 @@ const getDatabaseApi = (db) => ({
       // Print the number of documents deleted
     });
   },
-  pruneItemByKey: async (keyToRemove) => {
+  pruneItemByKey: async (keyToRemove: string) => {
     return execute("pruneItemByKey", async () => {
       const cursor = db.collection("users").find({});
 
-      await cursor.forEach(async (doc) => {
+      /* The callback is async but forEach does not await it (see Known bugs in TODO.md). */
+      await cursor.forEach((async (doc: Document) => {
+        /* Stored documents are untyped; this prune only touches the item lists. */
+        type StoredItem = { key?: string; items?: Array<StoredItem | null> } | null;
         let updateNeeded = false;
 
         // Update equipment
@@ -84,14 +89,14 @@ const getDatabaseApi = (db) => ({
         }
 
         // Update inventory and nested items
-        doc.inventory = doc.inventory.map((item) => {
+        doc.inventory = doc.inventory.map((item: StoredItem) => {
           let itemUpdated = false;
           if (item?.key === keyToRemove) {
             itemUpdated = true;
             return null;
           }
           if (item?.items) {
-            item.items = item.items.map((nestedItem) => {
+            item.items = item.items.map((nestedItem: StoredItem) => {
               if (nestedItem?.key === keyToRemove) {
                 itemUpdated = true;
                 return null;
@@ -107,7 +112,7 @@ const getDatabaseApi = (db) => ({
         if (updateNeeded) {
           await db.collection("users").updateOne({ _id: doc._id }, { $set: doc });
         }
-      });
+      }) as unknown as (doc: Document) => void);
     });
   },
   getUserByLogin: async ({ email, password = "" }) => {
@@ -116,7 +121,7 @@ const getDatabaseApi = (db) => ({
       const user = await db
         .collection("users")
         .findOne({ email: `${email}`.toLowerCase(), password });
-      return user;
+      return user as UserDocument | null;
     });
   },
   createUser: async ({ email, charClass, password }) => {
@@ -238,7 +243,11 @@ const getDatabaseApi = (db) => ({
   },
 });
 
-async function execute(operationName, operation, onError = () => {}) {
+async function execute<T>(
+  operationName: string,
+  operation: () => Promise<T>,
+  onError: () => void = () => {},
+): Promise<T> {
   try {
     const res = await operation();
     //console.log(`🔧 ${operationName} succeeded`);
@@ -260,7 +269,7 @@ function getAuditFields() {
 
 export async function initDatabase(uri: string) {
   let mongoClient: MongoClient;
-  let db: Db;
+  let db!: Db;
 
   await execute(
     "Connect to DB",

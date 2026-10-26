@@ -11,7 +11,7 @@ export interface MobKilledEvent {
   killerLevel: number;
   killerMagicFind: number;
   /** The killer's party, if any. */
-  partyId?: string;
+  partyId?: string | null;
   /** Characters that share the kill: the killer's party members in the same room, or just the killer. */
   recipientIds: string[];
   mobId: string;

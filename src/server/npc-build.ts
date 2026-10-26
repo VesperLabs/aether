@@ -1,19 +1,31 @@
 import crypto from "crypto";
-import { ItemBuilder } from "@/shared/content";
+import { ItemBuilder, type Item } from "@/shared/content";
 import { SHOP_INFLATION } from "@/shared/rules/inventory";
 
-export const buildEquipment = (equipment: Record<string, Array<string>>) =>
-  Object?.entries(equipment).reduce((acc, [slot, itemArray]: [string, BuildItem]) => {
+/** An item as the content tables list it: type, rarity, key and an optional amount. */
+export type ItemRecipe = Parameters<typeof ItemBuilder.buildItem>;
+
+/** One line of a shopkeeper's stock, as defined in the keeper content. */
+export interface ShopEntry {
+  item: ItemRecipe;
+  [property: string]: unknown;
+}
+
+export const buildEquipment = (equipment: Record<string, ItemRecipe | undefined>) =>
+  Object.entries(equipment).reduce<Record<string, Item | null>>((acc, [slot, itemArray]) => {
     acc[slot] = itemArray?.length ? ItemBuilder.buildItem(...itemArray) : null;
     return acc;
   }, {});
 
-export const buildShop = (shop: Array<any>) => {
-  return shop?.reduce((acc, entry) => {
-    const id = crypto.randomUUID();
-    const item: Item | void = ItemBuilder.buildItem(...entry.item);
-    if (item) item.cost = Math.round(item.cost * SHOP_INFLATION);
-    acc.push({ id, ...entry, item });
-    return acc;
-  }, []);
+export const buildShop = (shop: Array<ShopEntry> | undefined) => {
+  return shop?.reduce<Array<Omit<ShopEntry, "item"> & { id: string; item: Item | null }>>(
+    (acc, entry) => {
+      const id = crypto.randomUUID();
+      const item = ItemBuilder.buildItem(...entry.item);
+      if (item) item.cost = Math.round((item.cost ?? 0) * SHOP_INFLATION);
+      acc.push({ id, ...entry, item });
+      return acc;
+    },
+    [],
+  );
 };

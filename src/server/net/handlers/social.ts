@@ -1,3 +1,4 @@
+import type { Player } from "../../player";
 import { runAdminCommand } from "../../admin/commands";
 import { getFullCharacterState } from "@/shared/network/sync";
 import {
@@ -10,8 +11,8 @@ import type { CommandContext } from "@/server/net/command-context";
 
 export function chatNpc(ctx: CommandContext, { npcId }: ParsedCommand<"chatNpc"> = {}) {
   const { world, socket, socketId } = ctx;
-  const player: ServerPlayer = world?.players?.[socketId];
-  const npc = world?.npcs?.[npcId];
+  const player: Player = world?.players?.[socketId];
+  const npc = world?.npcs?.[`${npcId}`];
   npc.talkingIds.push(socketId);
   player.state.targetNpcId = npcId;
   /* Quests that are of type: chat need to be updated */
@@ -25,7 +26,7 @@ export function chatNpc(ctx: CommandContext, { npcId }: ParsedCommand<"chatNpc">
 
 export function acceptQuest(ctx: CommandContext, questId: ParsedCommand<"acceptQuest">) {
   const { world, socketId, io } = ctx;
-  const player: ServerPlayer = world?.players?.[socketId];
+  const player: Player = world?.players?.[socketId];
   const currentQuest = world.quests?.[questId];
   const foundQuest = player?.getPlayerQuestStatus(currentQuest);
   /* If the quest wasnt there, we can accept it */
@@ -39,7 +40,7 @@ export function acceptQuest(ctx: CommandContext, questId: ParsedCommand<"acceptQ
 
 export function completeQuest(ctx: CommandContext, questId: ParsedCommand<"completeQuest">) {
   const { world, socket, socketId, io } = ctx;
-  const player: ServerPlayer = world?.players?.[socketId];
+  const player: Player = world?.players?.[socketId];
   /* If the quest is ready, we turn it in */
   const questResults = player?.completeQuest(questId);
   /* Quest failed */

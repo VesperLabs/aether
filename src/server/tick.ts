@@ -1,3 +1,4 @@
+import type { ServerWorld } from "./server-world";
 import { moveBodyFreely, moveBodyThroughMap } from "@/shared/rules/movement";
 import type { Frame, System } from "@/shared/rules/world";
 import {

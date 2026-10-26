@@ -1,3 +1,5 @@
+import type { ServerWorld } from "./server-world";
+import type { Player } from "./player";
 import crypto from "crypto";
 import type { Socket } from "socket.io";
 import {
@@ -17,7 +19,7 @@ import { getFullCharacterState } from "@/shared/network/sync";
  * Goes away in Phase 4 when entities become plain data.
  */
 
-export function toPartyPlayer(player?: ServerPlayer): PartyPlayer | undefined {
+export function toPartyPlayer(player?: Player): PartyPlayer | undefined {
   if (!player) return undefined;
   return {
     id: player.id,
@@ -106,7 +108,7 @@ export function legacyLeaveParty(world: ServerWorld, socket: Socket) {
   );
 }
 
-export function legacyUpdateMemberRoom(world: ServerWorld, player: ServerPlayer) {
+export function legacyUpdateMemberRoom(world: ServerWorld, player: Player) {
   if (!player.partyId) return;
   run(
     world,

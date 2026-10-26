@@ -1,6 +1,8 @@
-import { ServerCharacter } from "./character";
+import type { ServerWorld } from "./server-world";
+import { ServerCharacter, type CharacterArgs } from "./character";
 import { expAfterDeath } from "@/shared/rules/combat";
 import { canHitNpc, canHitPlayer } from "@/shared/rules/spells";
+import type { Npc } from "./npc";
 import { createSpell } from "./spell-adapter";
 import { PLAYER_DEFAULT_SPAWN } from "./auth/character-defaults";
 import { getRoomState } from "@/server/net/room-sync";
@@ -31,14 +33,36 @@ import {
   withoutSlot,
 } from "@/shared/rules/inventory";
 
+/** What a player is created from: the stored user plus the connection it logged in on. */
+export type PlayerArgs = CharacterArgs & {
+  email?: string;
+  isDemoAccount?: boolean;
+  userSettings?: UserSettings;
+  spawn?: SpawnPoint;
+};
+
+/** A client's attack request, after the transport has validated it. */
+export interface PlayerAttackRequest {
+  count: number;
+  direction: string;
+  castAngle?: number;
+  abilitySlot?: number;
+}
+
+/** A client's spell request, after the transport has validated it. */
+export interface PlayerCastRequest {
+  abilitySlot: number;
+  castAngle?: number;
+}
+
 /* Server level Player object */
-export class Player extends ServerCharacter implements ServerPlayer {
-  public email: string;
+export class Player extends ServerCharacter {
+  public email?: string;
   public isDemoAccount?: boolean;
-  public spawn: SpawnPoint;
-  public userSettings: UserSettings;
-  public partyId: string;
-  constructor(world: ServerWorld, args: Player) {
+  public spawn?: SpawnPoint;
+  public userSettings?: UserSettings;
+  public partyId?: string | null;
+  constructor(world: ServerWorld, args: PlayerArgs) {
     super(world, args);
     this.world = world;
     this.email = args?.email;
@@ -57,7 +81,7 @@ export class Player extends ServerCharacter implements ServerPlayer {
     this.expireBuffs(true);
     this.state.isDead = true;
   }
-  doAttack({ count, direction, castAngle, abilitySlot }) {
+  doAttack({ count, direction, castAngle, abilitySlot }: PlayerAttackRequest) {
     const { world, room, socketId } = this ?? {};
 
     if (this?.hasBuff("stun")) return;
@@ -101,7 +125,7 @@ export class Player extends ServerCharacter implements ServerPlayer {
         ...spellDetails,
       });
   }
-  modifyStatIfCostExists(statType, cost) {
+  modifyStatIfCostExists(statType: string, cost: number) {
     if (cost > 0) {
       this.modifyStat(statType, -cost);
       this.world.io.to(this?.roomName).emit("modifyPlayerStat", {
@@ -111,7 +135,7 @@ export class Player extends ServerCharacter implements ServerPlayer {
       });
     }
   }
-  doCast({ abilitySlot, castAngle }): void {
+  doCast({ abilitySlot, castAngle }: PlayerCastRequest): void {
     const { spellName, ilvl, stats } = this.getAbilityDetails(abilitySlot);
     if (!ilvl || !spellName) return;
     if (!this.canCastSpell(abilitySlot)) return;
@@ -158,7 +182,7 @@ export class Player extends ServerCharacter implements ServerPlayer {
   findBagItemBySlot(bagId: string, slot: string) {
     return findBagItemBySlot(this.inventory, bagId, slot);
   }
-  subtractBagItemAtId(id: string, amount: integer) {
+  subtractBagItemAtId(id: string, amount: number) {
     const { result, subtracted } = subtractBagItemAtId(this.inventory, id, amount);
     this.inventory = result;
     return subtracted;
@@ -178,7 +202,7 @@ export class Player extends ServerCharacter implements ServerPlayer {
   findInventoryItemById(id: string) {
     return findInventoryItemById(this.inventory, id);
   }
-  subtractInventoryItemAtId(id: string, amount: integer) {
+  subtractInventoryItemAtId(id: string, amount: number) {
     const { result, subtracted } = subtractInventoryItemAtId(this.inventory, id, amount);
     this.inventory = result;
     return subtracted;
@@ -198,7 +222,7 @@ export class Player extends ServerCharacter implements ServerPlayer {
   findAbilityById(id: string): any {
     return findAbilityById(this.abilities, id);
   }
-  subtractAbilityAtId(id: string, amount: integer) {
+  subtractAbilityAtId(id: string, amount: number) {
     const { result, subtracted } = subtractAbilityAtId(this.abilities, id, amount);
     this.abilities = result as Record<string, Item>;
     return subtracted;
@@ -222,16 +246,16 @@ export class Player extends ServerCharacter implements ServerPlayer {
     this.checkBubbleMessage();
   }
 
-  doHit(ids: Array<string>, abilitySlot: number): void {
+  doHit(ids: Array<string>, abilitySlot?: number): void {
     const { world } = this ?? {};
     if (!this || this?.state?.isDead) return;
 
     const { allowedTargets } = this.getAbilityDetails(abilitySlot);
 
-    let hitList = [];
-    let npcKills = [];
-    let playerIdsToUpdate = [];
-    let playerIdsThatLeveled = [];
+    const hitList: Hit[] = [];
+    const npcKills: Npc[] = [];
+    const playerIdsToUpdate: string[] = [];
+    const playerIdsThatLeveled: string[] = [];
 
     const npcs = entitiesInRoom(world.npcs, this.roomName);
     const players = entitiesInRoom(world.players, this.roomName);
@@ -277,7 +301,7 @@ export class Player extends ServerCharacter implements ServerPlayer {
     if (hitList?.some((hit) => hit.type === "death")) {
       // either you are in a party, or you are in a fake party object
       // party members in same room share the kill
-      const recipients: ServerPlayer[] = sharedRecipientIds(world.partyState, {
+      const recipients: Player[] = sharedRecipientIds(world.partyState, {
         partyId: this?.partyId,
         id: this?.id,
         roomName: this?.roomName,

@@ -1,3 +1,4 @@
+import type { ServerWorld } from "./server-world";
 import crypto from "crypto";
 import fs from "fs";
 import path from "path";
@@ -15,12 +16,18 @@ import { subscribeQuests } from "@/shared/rules/quests";
 import { getBaseStats, mergeAndAddValues, subscribeStats } from "@/shared/rules/stats";
 import { addRoom, createRoom, createWorld } from "@/shared/rules/world";
 import { spawnLoot } from "./loot-adapter";
-import { Npc } from "./npc";
+import { Npc, type NpcDefinition } from "./npc";
+import type { GameIo } from "@/shared/network";
+import type { Database } from "./persistence/database";
 
 /* Find NPCs in data lists, and add `kind` to them */
-function getNpcFromLists(name: string) {
-  if (Object.keys(keepers).includes(name)) return { ...keepers[name], kind: "keeper" };
-  if (Object.keys(nasties).includes(name)) return { ...nasties[name], kind: "nasty" };
+function getNpcFromLists(name: string): NpcDefinition | undefined {
+  if (Object.keys(keepers).includes(name)) {
+    return { ...(keepers as Record<string, NpcDefinition>)[name], kind: "keeper" };
+  }
+  if (Object.keys(nasties).includes(name)) {
+    return { ...(nasties as Record<string, NpcDefinition>)[name], kind: "nasty" };
+  }
 }
 
 /** Puts every NPC the map places into the world. */
@@ -72,12 +79,12 @@ const readMap = (file: string): TiledMapJson =>
   JSON.parse(fs.readFileSync(path.resolve(process.env.PUBLIC_DIR || "public", file), "utf8"));
 
 /** The game world with every map loaded, its NPCs spawned and the event subscribers wired up. */
-export function createServerWorld({ io, db }: { io: any; db: any }): ServerWorld {
+export function createServerWorld({ io, db }: { io: GameIo; db: Database }): ServerWorld {
   const world = createWorld(QuestBuilder.buildAllQuests()) as ServerWorld;
   world.io = io;
   world.db = db;
 
-  for (const asset of mapList as readonly MapAsset[]) {
+  for (const asset of mapList) {
     addRoom(world, createRoom(asset.name, readMap(asset.json), Date.now()));
   }
   for (const room of Object.values(world.rooms)) spawnNpcs(world, room);

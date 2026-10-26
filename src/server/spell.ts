@@ -1,3 +1,4 @@
+import type { ServerWorld } from "./server-world";
 import { distanceTo } from "@/shared/rules/world";
 import { entitiesInRoom } from "@/shared/rules/world";
 import { shapesOverlap, type Shape } from "@/shared/rules/movement";
@@ -16,6 +17,27 @@ import {
 } from "@/shared/rules/spells";
 import { ServerCharacter } from "./character";
 
+/** Who an NPC spell or attack is aimed at. */
+export interface SpellTarget {
+  id?: string;
+  x: number;
+  y: number;
+}
+
+/** What it takes to start a spell or attack. */
+export interface SpellArgs {
+  id: string;
+  room: Room;
+  caster: ServerCharacter;
+  direction?: string;
+  target?: SpellTarget;
+  abilitySlot?: number;
+  spellName: string;
+  action?: string;
+  castAngle?: number;
+  ilvl?: number;
+}
+
 /** A spell or attack in flight. Plain data: where it is, how it moves and what it can hit. */
 export class Spell {
   public id: string;
@@ -23,17 +45,17 @@ export class Spell {
   public y: number;
   public room: Room;
   public caster: ServerCharacter;
-  public target: any;
+  public target?: SpellTarget;
   public spellName: string;
   public spawnPoint: Coordinate;
-  public state: any;
+  public state: { spawnTime: number; isExpired: boolean };
   public world: ServerWorld;
   public stickToCaster = false;
   /** Velocity in pixels per second. */
   public velocityX = 0;
   public velocityY = 0;
   private allowedTargets: Array<string>;
-  private maxActiveTime: number;
+  private maxActiveTime: number | undefined;
   private maxDistance: number;
   private bodySize: number;
   private scale: number;
@@ -43,7 +65,7 @@ export class Spell {
   private direction: string;
   private isMeleeAttack: boolean;
   private isRangedAttack: boolean;
-  private abilitySlot: number;
+  private abilitySlot?: number;
   private action: string;
   private isMissile: boolean;
 
@@ -60,7 +82,7 @@ export class Spell {
       action,
       castAngle = 0,
       ilvl = 1,
-    },
+    }: SpellArgs,
   ) {
     this.spawnPoint = { x: caster.x, y: caster.y + caster.bodyCenterY };
     this.x = this.spawnPoint.x;
@@ -80,8 +102,8 @@ export class Spell {
     if (!found) console.log("❌ Shit, the spell does not exist in spellDetails!");
     const shape = getSpellShape(details, ilvl);
 
-    this.isMeleeAttack = shape.isMeleeAttack;
-    this.isRangedAttack = shape.isRangedAttack;
+    this.isMeleeAttack = !!shape.isMeleeAttack;
+    this.isRangedAttack = !!shape.isRangedAttack;
     this.allowedTargets = shape.allowedTargets as string[];
     this.maxActiveTime = shape.maxActiveTime;
     this.bodySize = shape.bodySize ?? 0;
@@ -140,7 +162,8 @@ export class Spell {
       maxDistance: this.maxDistance,
       distanceFromSpawn: distanceTo(this, this.spawnPoint),
       spawnTime: this.state.spawnTime,
-      lifetime: this.maxActiveTime,
+      /* Spells without a lifetime never time out (undefined compares false). */
+      lifetime: this.maxActiveTime as number,
       now: Date.now(),
     });
 
