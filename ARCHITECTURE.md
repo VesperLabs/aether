@@ -48,6 +48,7 @@ tsx and esbuild read the alias from tsconfig on their own. Vite and Vitest read 
 Every folder in `rules/` is one gameplay feature: `movement`, `combat`, `spells`, `buffs`, `stats`, `inventory`, `loot`, `ai`, `quests`, `party`, `chat`.
 
 Two things in `rules/` are not features:
+
 - `world/`: world state, entity registry, rooms, tick loop and event bus
 - `events.ts`: every game event and its payload in one typed map, so the full list of what can happen in the game is in one place
 
@@ -134,18 +135,19 @@ shared/content  ←  shared/rules  ←  shared/network
 
 ## Naming
 
-| Rule | Example |
-|---|---|
-| All files and folders are kebab-case, components and classes included | `item-tooltip.tsx`, `game-server.ts`, `rules/inventory/` |
-| Named exports only, no default exports (except tool config files) | `export function moveItem` |
-| Tests end in `.test.ts` / `.test.tsx`, never `.spec` | `rules.test.ts` |
-| `.tsx` only for files that contain JSX | |
-| `index.ts` only as a feature's or folder's public API: re-exports, no logic | |
-| Feature files use the standard names (`index`, `rules`, `system`, `commands`). Larger features may add subfolders or other kebab-case files. | |
+| Rule                                                                                                                                         | Example                                                  |
+| -------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| All files and folders are kebab-case, components and classes included                                                                        | `item-tooltip.tsx`, `game-server.ts`, `rules/inventory/` |
+| Named exports only, no default exports (except tool config files)                                                                            | `export function moveItem`                               |
+| Tests end in `.test.ts` / `.test.tsx`, never `.spec`                                                                                         | `rules.test.ts`                                          |
+| `.tsx` only for files that contain JSX                                                                                                       |                                                          |
+| `index.ts` only as a feature's or folder's public API: re-exports, no logic                                                                  |                                                          |
+| Feature files use the standard names (`index`, `rules`, `system`, `commands`). Larger features may add subfolders or other kebab-case files. |                                                          |
 
 Kebab-case avoids a whole class of bugs: macOS ignores case in file names and Linux doesn't, so a case-only rename can work locally and break CI. Named exports keep one name per thing across every import.
 
 Inside code:
+
 - `PascalCase` for types, classes and components
 - `camelCase` for functions, variables, event names and command names (`mobKilled`, `moveItem`)
 - `SCREAMING_CASE` only for real constants at the top of a file
@@ -154,12 +156,12 @@ Exceptions: uppercase Markdown at the repo root (`README.md`, `CLAUDE.md`, `ARCH
 
 ## Tests
 
-| Kind | Location |
-|---|---|
-| Unit tests | Next to the code, `foo.ts` → `foo.test.ts` |
-| Game scenarios (build a world, run ticks, check the result) | `src/shared/rules/tests/` |
-| Socket and database integration | `src/server/tests/` |
-| UI components | Next to the component, `Foo.tsx` → `Foo.test.tsx` |
+| Kind                                                        | Location                                          |
+| ----------------------------------------------------------- | ------------------------------------------------- |
+| Unit tests                                                  | Next to the code, `foo.ts` → `foo.test.ts`        |
+| Game scenarios (build a world, run ticks, check the result) | `src/shared/rules/tests/`                         |
+| Socket and database integration                             | `src/server/tests/`                               |
+| UI components                                               | Next to the component, `Foo.tsx` → `Foo.test.tsx` |
 
 ## Enforcement
 
