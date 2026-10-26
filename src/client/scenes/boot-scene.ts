@@ -1,7 +1,14 @@
 import Phaser from "phaser";
 import type { ClientGameSocket } from "@/shared/network";
 import type { SceneMain } from "./main-scene";
-import { assetList, type AssetDefinition, soundList, iconList, mapList, mapImageList } from "@/shared/content";
+import {
+  assetList,
+  type AssetDefinition,
+  soundList,
+  iconList,
+  mapList,
+  mapImageList,
+} from "@/shared/content";
 import { IMAGE_CACHE } from "@/ui/image-tint";
 
 /**
@@ -10,7 +17,8 @@ import { IMAGE_CACHE } from "@/ui/image-tint";
  * rewrite (it only processes JS/TS modules), so we do it here at runtime.
  */
 const ASSETS_BASE = process.env.ASSETS_URL || "";
-const assetUrl = (src: string) => (ASSETS_BASE ? src.replace(/^\.\/assets\//, ASSETS_BASE + "/") : src);
+const assetUrl = (src: string) =>
+  ASSETS_BASE ? src.replace(/^\.\/assets\//, ASSETS_BASE + "/") : src;
 
 const onLoadError = (value: unknown) => {
   window.dispatchEvent(

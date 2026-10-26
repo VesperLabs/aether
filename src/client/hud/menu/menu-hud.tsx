@@ -10,7 +10,13 @@ import { Bar } from "@/client/hud/status/stat-bar";
 import { Buffs } from "@/client/hud/status/buffs";
 import { Tooltip } from "@/client/hud/tooltips/tooltip";
 
-const UserName = ({ sx, player }: { player?: Partial<HudCharacter> | null; sx?: ThemeUIStyleObject }) => {
+const UserName = ({
+  sx,
+  player,
+}: {
+  player?: Partial<HudCharacter> | null;
+  sx?: ThemeUIStyleObject;
+}) => {
   return <Box sx={{ ...sx }}>{player?.profile?.userName}</Box>;
 };
 
@@ -322,7 +328,9 @@ export const MenuHud = () => {
 };
 
 const Memoized = memo(
-  (props: { as?: ElementType; player?: unknown; memoProps?: unknown } & Record<string, unknown>) => {
+  (
+    props: { as?: ElementType; player?: unknown; memoProps?: unknown } & Record<string, unknown>,
+  ) => {
     const { as: As = Text } = props;
     return <As {...props}></As>;
   },

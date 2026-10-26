@@ -18,7 +18,8 @@ import { Tooltip } from "@/client/hud/tooltips/tooltip";
 
 function getKeeperByQuestName(quest: string) {
   for (const key of Object.keys(keepers) as KeeperId[]) {
-    const questIds = (keepers[key]?.keeperData as { quests?: readonly string[] }).quests;
+    const questIds = (keepers[key]?.keeperData as { quests?: readonly string[] } | undefined)
+      ?.quests;
     if (questIds?.includes(quest)) {
       return keepers[key];
     }

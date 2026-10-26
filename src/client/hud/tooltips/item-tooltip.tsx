@@ -130,7 +130,11 @@ export const ItemTooltip = ({ player, item, tooltipId, show }: ItemTooltipProps)
           return (
             <Text
               key={key}
-              color={itemHasRequiredStats({ requirements, player: player ?? undefined, key }) ? "text" : "danger"}
+              color={
+                itemHasRequiredStats({ requirements, player: player ?? undefined, key })
+                  ? "text"
+                  : "danger"
+              }
             >
               <TooltipLabel>{key}:</TooltipLabel> {requirements[key]}
             </Text>
@@ -194,24 +198,28 @@ export const ItemTooltip = ({ player, item, tooltipId, show }: ItemTooltipProps)
           </>
         )}
 
-        {isSpell && (spellDetails as Record<string, { description?: string }>)?.[item?.base]?.description && (
-          <>
-            <Text
-              sx={{
-                textAlign: "center",
-                maxWidth: 200,
-                fontStyle: "italic",
-                fontWeight: "normal",
-                color: "gray.400",
-                textTransform: "none",
-                whiteSpace: "normal",
-              }}
-            >
-              {(spellDetails as Record<string, { description?: string }>)?.[item?.base]?.description}
-            </Text>
-            <Divider />
-          </>
-        )}
+        {isSpell &&
+          (spellDetails as Record<string, { description?: string }>)?.[item?.base]?.description && (
+            <>
+              <Text
+                sx={{
+                  textAlign: "center",
+                  maxWidth: 200,
+                  fontStyle: "italic",
+                  fontWeight: "normal",
+                  color: "gray.400",
+                  textTransform: "none",
+                  whiteSpace: "normal",
+                }}
+              >
+                {
+                  (spellDetails as Record<string, { description?: string }>)?.[item?.base]
+                    ?.description
+                }
+              </Text>
+              <Divider />
+            </>
+          )}
         <Flex sx={{ alignItems: "center", gap: 2 }}>
           <Flex sx={{ alignItems: "center", gap: "2px" }}>
             <Icon icon="./assets/icons/gold.png" size={16} />

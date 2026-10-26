@@ -22,7 +22,7 @@
     "format": "oxfmt",
     "dev": "concurrently -k -n server,client,web -c blue,green,magenta \"npm:server:watch\" \"npm:client:dev\" \"npm:web:dev\"",
     "prepare": "husky",
-    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.strict.json",
+    "typecheck": "tsc --noEmit",
     "test:watch": "vitest",
     "check:format": "oxfmt --check",
     "check:structure": "tsx scripts/check-structure.ts",

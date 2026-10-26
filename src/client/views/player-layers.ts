@@ -42,8 +42,16 @@ export function createSpriteLayers(player: Player) {
   player.gloves = scene.add.existing(new Sprite(...defaults));
   player.pants = scene.add.existing(new Sprite(...defaults));
   player.accessory = scene.add.existing(new Sprite(...defaults));
-  player.handLeft = scene.add.existing(isHuman ? new WeaponSprite(scene, 13, -9, BLANK_TEXTURE) : new Sprite(scene, 13, -9, BLANK_TEXTURE));
-  player.handRight = scene.add.existing(isHuman ? new WeaponSprite(scene, -13, -9, BLANK_TEXTURE) : new Sprite(scene, -13, -9, BLANK_TEXTURE));
+  player.handLeft = scene.add.existing(
+    isHuman
+      ? new WeaponSprite(scene, 13, -9, BLANK_TEXTURE)
+      : new Sprite(scene, 13, -9, BLANK_TEXTURE),
+  );
+  player.handRight = scene.add.existing(
+    isHuman
+      ? new WeaponSprite(scene, -13, -9, BLANK_TEXTURE)
+      : new Sprite(scene, -13, -9, BLANK_TEXTURE),
+  );
   player.shadow = scene.add.existing(new Sprite(...defaults));
   player.bubble = scene.add.existing(new Bubble(scene, player?.headY, undefined));
   player.crosshair = scene.add.existing(

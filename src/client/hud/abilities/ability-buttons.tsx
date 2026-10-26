@@ -32,7 +32,9 @@ const TintedIconLoader = ({
   const isSpell = item.type === "spell";
   const isPotion = POTION_BASES.includes(item?.base);
   const isConsumable = CONSUMABLES_BASES.includes(item?.base);
-  const details = spellDetails[item.base as keyof typeof spellDetails] as SpellDefinition | undefined;
+  const details = spellDetails[item.base as keyof typeof spellDetails] as
+    | SpellDefinition
+    | undefined;
   const cooldown = isPotion ? "potion" : item?.base;
   const [tintedIcon, setTintedIcon] = useState("./assets/icons/blank.png");
   const [hovering, setHovering] = useState(false);
@@ -115,9 +117,9 @@ const TintedIconLoader = ({
 
 export const AbilityButtons = memo(
   ({ hero, cooldowns }: { hero: HudCharacter; cooldowns: Cooldowns }) => {
-    const abilities = Object.entries((hero?.abilities || {}) as Record<string, AbilityItem | null>).filter(([slotKey, _]) =>
-      hero.activeItemSlots.includes(slotKey),
-    );
+    const abilities = Object.entries(
+      (hero?.abilities || {}) as Record<string, AbilityItem | null>,
+    ).filter(([slotKey, _]) => hero.activeItemSlots.includes(slotKey));
 
     const applyTintAndSetIcon = async (item: AbilityItem) => {
       const isSpell = item.type === "spell";

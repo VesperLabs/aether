@@ -7,7 +7,6 @@ import type { NearbyPlayer, SceneMain } from "./main-scene";
 /** What the hero can walk up to: a keeper (or other character) or a sign. */
 type Entity = Player | Sign;
 
-
 function triggerPlayerProximity(scene: SceneMain, nearbyPlayers: Player[]) {
   const next: NearbyPlayer[] = nearbyPlayers
     .map((player) => ({

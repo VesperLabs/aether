@@ -149,9 +149,12 @@ export class Bubble extends Phaser.GameObjects.Container {
     bitmapText.update();
   }
   wbr(str: string, num: number) {
-    return str.replace(RegExp("(\\w{" + num + "})(\\w)", "g"), function (_all: string, text: string, char: string) {
-      return text + "\n" + char;
-    });
+    return str.replace(
+      RegExp("(\\w{" + num + "})(\\w)", "g"),
+      function (_all: string, text: string, char: string) {
+        return text + "\n" + char;
+      },
+    );
   }
   center() {
     this.x = -Math.floor((this.width + FRAME_SIZE * 2) / 4);

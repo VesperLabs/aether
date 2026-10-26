@@ -3,9 +3,17 @@ import type { ComponentProps, ReactNode } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
 import { useLocation, Link } from "wouter";
 
-export const Label = (props: ComponentProps<typeof Text>) => <Text sx={{ fontWeight: "normal" }} {...props} />;
+export const Label = (props: ComponentProps<typeof Text>) => (
+  <Text sx={{ fontWeight: "normal" }} {...props} />
+);
 
-export const TextDivider = ({ children, sx }: { children?: ReactNode; sx?: ThemeUIStyleObject }) => (
+export const TextDivider = ({
+  children,
+  sx,
+}: {
+  children?: ReactNode;
+  sx?: ThemeUIStyleObject;
+}) => (
   <>
     <Divider sx={{ pt: 2, zIndex: -1 }} />
     <Text sx={{ mt: "-17px", pb: 2, mb: -1, color: "gray.500", ...sx }}>{children}</Text>

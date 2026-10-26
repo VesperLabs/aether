@@ -68,7 +68,9 @@ export function bindSocketHandlers(socket: ClientGameSocket, handlers: SocketHan
 /** Listens to every window event the HUD uses. Returns the function that stops listening. */
 export function bindWindowHandlers(handlers: WindowHandlers) {
   const names = Object.keys(handlers) as Array<keyof WindowHandlers>;
-  const listeners = names.map((name) => [name, handlers[name] as unknown as EventListener] as const);
+  const listeners = names.map(
+    (name) => [name, handlers[name] as unknown as EventListener] as const,
+  );
   for (const [name, listener] of listeners) window.addEventListener(name, listener);
   return () => {
     for (const [name, listener] of listeners) window.removeEventListener(name, listener);

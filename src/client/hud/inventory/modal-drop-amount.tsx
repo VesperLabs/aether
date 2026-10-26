@@ -77,7 +77,11 @@ export const ModalDropAmount = () => {
           width: "300px",
         }}
       >
-        <Slot player={hero} item={{ ...item, id: item?.id + "modal" } as BuiltItem} disabled={true} />
+        <Slot
+          player={hero}
+          item={{ ...item, id: item?.id + "modal" } as BuiltItem}
+          disabled={true}
+        />
         {!isConfirm && (
           <Flex sx={{ flex: 1, alignItems: "center", gap: 2, minWidth: 100 }}>
             <Text>x</Text>

@@ -3,7 +3,7 @@
     "target": "ESNext",
     "moduleResolution": "bundler",
     "noEmit": true,
-    "strict": false,
+    "strict": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext", "scripthost"],

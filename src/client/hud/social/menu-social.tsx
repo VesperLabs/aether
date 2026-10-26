@@ -12,9 +12,7 @@ type SocialPlayer = Partial<HudCharacter> | undefined;
 
 const ActionButton = ({ player }: { player: SocialPlayer }) => {
   const { partyInvites, socket } = useAppContext();
-  const invitation = partyInvites?.find(
-    (invite) => invite?.inviter?.id === player?.id,
-  );
+  const invitation = partyInvites?.find((invite) => invite?.inviter?.id === player?.id);
   if (invitation) {
     return (
       <Button
@@ -29,7 +27,10 @@ const ActionButton = ({ player }: { player: SocialPlayer }) => {
     );
   }
   return (
-    <Button variant="wood" onClick={() => player?.socketId && socket.emit("inviteToParty", player.socketId)}>
+    <Button
+      variant="wood"
+      onClick={() => player?.socketId && socket.emit("inviteToParty", player.socketId)}
+    >
       Invite
     </Button>
   );
@@ -142,7 +143,9 @@ const SocialPlayerRow = (props: { partyPlayer: SocialPlayer; children: ReactNode
   const partyLeader = party?.members?.find((p: { isLeader?: boolean }) => p?.isLeader);
   const isLeader = partyLeader?.id === partyPlayer?.id;
   const classString = player ? `Lv. ${player?.stats?.level} ${player?.charClass}` : null;
-  const playerIcon = player ? CLASS_ICON_MAP?.[player?.charClass?.toUpperCase() as keyof typeof CLASS_ICON_MAP] : null;
+  const playerIcon = player
+    ? CLASS_ICON_MAP?.[player?.charClass?.toUpperCase() as keyof typeof CLASS_ICON_MAP]
+    : null;
   return (
     <Fragment key={partyPlayer?.id}>
       <MemoizedColumn player={player} as={Box} sx={{ position: "relative" }}>

@@ -25,7 +25,14 @@ export const MenuBag = memo(
           >
             {bag?.name}
           </MenuHeader>
-          <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", maxWidth: MENU_MAX_WIDTH }}>
+          <Flex
+            sx={{
+              gap: 2,
+              flexWrap: "wrap",
+              justifyContent: "end",
+              maxWidth: MENU_MAX_WIDTH,
+            }}
+          >
             {maxInventory?.map((_, idx) => (
               <Slot
                 player={player}

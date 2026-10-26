@@ -169,6 +169,6 @@ Everything runs in `npm run check`, which husky runs before each commit and CI r
 
 - **oxlint** enforces the import rules (`no-restricted-imports` with per-folder overrides), the 400-line limit (`max-lines`), kebab-case file names (`unicorn/filename-case`) and named exports (`import/no-default-export`).
 - **`scripts/check-structure.ts`** rejects banned and non-kebab-case folder names, `*Manager` classes, `.spec` files, `.tsx` files without JSX and `index.ts` files containing logic.
-- **`tsconfig.strict.json`** typechecks `src/shared/` in strict mode.
+- **`tsconfig.json`** typechecks the whole repo in strict mode.
 - **Legacy exceptions** are listed in one place in each config (the oxlint `overrides` block and the script's allowlist). They may only shrink.
 - **`CLAUDE.md`** at the root, plus one in each of `src/shared/rules/`, `src/shared/network/` and `src/shared/content/`, gives agents the rules for the folder they're working in.

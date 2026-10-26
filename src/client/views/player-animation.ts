@@ -105,10 +105,13 @@ export function drawFrame(p: Player) {
   p?.playAnim(face, [profile?.race, profile?.face?.texture, direction, action]);
   p?.playAnim(whiskers, [profile?.race, profile?.whiskers?.texture, direction, action]);
   p?.playAnim(hair, [profile?.race, profile?.hair?.texture, direction, action]);
-  p?.playAnim(
-    armor,
-    [profile?.race, profile?.gender, visibleEquipment?.armor?.texture, direction, action],
-  );
+  p?.playAnim(armor, [
+    profile?.race,
+    profile?.gender,
+    visibleEquipment?.armor?.texture,
+    direction,
+    action,
+  ]);
   p?.playAnim(helmet, [profile?.race, visibleEquipment?.helmet?.texture, direction, action]);
   p?.playAnim(boots, [profile?.race, visibleEquipment?.boots?.texture, direction, action]);
   p?.playAnim(gloves, [profile?.race, visibleEquipment?.gloves?.texture, direction, action]);

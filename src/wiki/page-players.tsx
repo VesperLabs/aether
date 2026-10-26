@@ -282,7 +282,9 @@ const BlankPlayer = ({ userName, sx }: { userName: string; sx?: ThemeUIStyleObje
 );
 
 const PlayerTooltip = ({ player }: { player: WikiPlayer }) => {
-  const completedQuests = player?.quests?.filter((q: { isCompleted?: boolean }) => q?.isCompleted)?.length;
+  const completedQuests = player?.quests?.filter(
+    (q: { isCompleted?: boolean }) => q?.isCompleted,
+  )?.length;
   const totalQuests = Object.keys(questList)?.length;
   const isKeeper = player?.kind === "keeper";
   return (
@@ -291,7 +293,8 @@ const PlayerTooltip = ({ player }: { player: WikiPlayer }) => {
         {!isKeeper ? (
           <>
             <Text>
-              <Label>Last Login:</Label> {new Date(player?.updatedAt ?? NaN)?.toLocaleDateString("en-US")}
+              <Label>Last Login:</Label>{" "}
+              {new Date(player?.updatedAt ?? NaN)?.toLocaleDateString("en-US")}
             </Text>
             <Text>
               <Label>Completed Quests:</Label> {`${completedQuests} / ${totalQuests}`}

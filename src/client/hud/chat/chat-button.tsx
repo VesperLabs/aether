@@ -70,7 +70,7 @@ export const ChatButton = () => {
               setMessageIndex(newIndex);
             }
           }}
-          onChange={(e: any) => setChatValue(e.target.value)}
+          onChange={(e) => setChatValue(e.target.value)}
           onClickOutside={() => {
             setTabChat(false);
           }}

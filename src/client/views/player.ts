@@ -264,27 +264,34 @@ export class Player extends Character {
     const percent = stats?.maxHp > 0 ? stats?.hp / stats?.maxHp : 0;
     this.hpBar.setPercent(percent);
   }
+  /** Shows or hides the body layers (not the bars, bubble or corpse). */
+  private setBodyVisible(visible: boolean) {
+    const layers = [
+      this.shadow,
+      this.chest,
+      this.face,
+      this.whiskers,
+      this.hair,
+      this.accessory,
+      this.armor,
+      this.helmet,
+      this.boots,
+      this.gloves,
+      this.pants,
+      this.handLeft,
+      this.handRight,
+      this.skin,
+    ];
+    for (const layer of layers) layer.setVisible(visible);
+  }
   doDeath() {
     this.setAlpha(1);
     this.body.setVelocity(0, 0);
     this.state.isDead = true;
     this.state.isAttacking = false;
-    this.shadow.setVisible(false);
-    this.chest.setVisible(false);
-    this.face.setVisible(false);
-    this.whiskers.setVisible(false);
-    this.hair.setVisible(false);
-    this.accessory.setVisible(false);
-    this.armor.setVisible(false);
-    this.helmet.setVisible(false);
-    this.boots.setVisible(false);
-    this.gloves.setVisible(false);
-    this.pants.setVisible(false);
-    this.handLeft.setVisible(false);
-    this.handRight.setVisible(false);
+    this.setBodyVisible(false);
     this.hpBar.setVisible(false);
     this.bubble.setVisible(false);
-    this.skin.setVisible(false);
     this.corpse.setVisible(true);
     this.buffRack.setVisible(false);
     if (this.kind === "nasty") this.userName.setVisible(false);
@@ -294,20 +301,7 @@ export class Player extends Character {
     this.state.isDead = false;
     this.stats.hp = this.stats.maxHp;
     this.updateHpBar();
-    this.shadow.setVisible(true);
-    this.chest.setVisible(true);
-    this.skin.setVisible(true);
-    this.face.setVisible(true);
-    this.whiskers.setVisible(true);
-    this.hair.setVisible(true);
-    this.accessory.setVisible(true);
-    this.armor.setVisible(true);
-    this.helmet.setVisible(true);
-    this.boots.setVisible(true);
-    this.gloves.setVisible(true);
-    this.pants.setVisible(true);
-    this.handLeft.setVisible(true);
-    this.handRight.setVisible(true);
+    this.setBodyVisible(true);
     this.hpBar.setVisible(false);
     this.corpse.setVisible(false);
     this.drawCharacterFromUserData();

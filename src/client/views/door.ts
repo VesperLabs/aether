@@ -20,8 +20,12 @@ export class Door extends Phaser.GameObjects.Sprite {
     super(scene, x, y, "icons");
     this.setOrigin(0, 0);
     this.name = name;
-    this.destDoor = properties?.find((p: { name: string; value: string }) => p.name === "destDoor")?.value;
-    this.destMap = properties?.find((p: { name: string; value: string }) => p.name === "destMap")?.value;
+    this.destDoor = properties?.find(
+      (p: { name: string; value: string }) => p.name === "destDoor",
+    )?.value;
+    this.destMap = properties?.find(
+      (p: { name: string; value: string }) => p.name === "destMap",
+    )?.value;
     this.displayWidth = width;
     this.displayHeight = height;
     this.centerPos = {

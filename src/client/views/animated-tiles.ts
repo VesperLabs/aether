@@ -8,39 +8,14 @@ import Phaser from "phaser";
 // This plugin is based on Photonstorms Phaser 3 plugin template with added support for ES6.
 //
 
-type Tilemap = Phaser.Tilemaps.Tilemap;
-type Tile = Phaser.Tilemaps.Tile;
-
-interface AnimationFrameData {
-  duration: number;
-  tileid: number;
-}
-
-/** One animated tile of a tileset, and the tiles on each layer that follow it. */
-interface AnimatedTileData {
-  index: number;
-  frames: AnimationFrameData[];
-  currentFrame: number;
-  tiles: Tile[][];
-  rate: number;
-  next: number;
-}
-
-/** The animations of one map. */
-interface MapAnimData {
-  map: Tilemap;
-  animatedTiles: AnimatedTileData[];
-  active: boolean;
-  rate: number;
-  activeLayer: boolean[];
-}
-
-/** What `resume` and `pause` switch on or off: the plugin or one of its maps. */
-interface PlaybackScope {
-  active: boolean;
-  activeLayer: boolean[];
-  animatedTiles: AnimatedTileData[];
-}
+import type {
+  AnimatedTileData,
+  AnimationFrameData,
+  MapAnimData,
+  PlaybackScope,
+  Tile,
+  Tilemap,
+} from "./animated-tiles-types";
 
 export class AnimatedTiles extends Phaser.Plugins.ScenePlugin {
   declare active: boolean;
@@ -167,9 +142,9 @@ export class AnimatedTiles extends Phaser.Plugins.ScenePlugin {
 
   //  Start (or resume) animations
   resume(layerIndex: number | null = null, mapIndex: number | null = null) {
-    let scope = (
-      mapIndex === null ? this : this.animatedTiles[mapIndex]
-    ) as unknown as PlaybackScope;
+    let scope = (mapIndex === null
+      ? this
+      : this.animatedTiles[mapIndex]) as unknown as PlaybackScope;
     if (layerIndex === null) {
       scope.active = true;
     } else {
@@ -182,9 +157,9 @@ export class AnimatedTiles extends Phaser.Plugins.ScenePlugin {
 
   // Stop (or pause) animations
   pause(layerIndex: number | null = null, mapIndex: number | null = null) {
-    let scope = (
-      mapIndex === null ? this : this.animatedTiles[mapIndex]
-    ) as unknown as PlaybackScope;
+    let scope = (mapIndex === null
+      ? this
+      : this.animatedTiles[mapIndex]) as unknown as PlaybackScope;
     if (layerIndex === null) {
       scope.active = false;
     } else {

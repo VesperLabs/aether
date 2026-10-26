@@ -4,5 +4,7 @@ import { useAppContext } from "@/client/hud/app/context";
 
 export const Tooltip = ({ style, ...props }: ComponentProps<typeof BaseTooltip>) => {
   const { zoom = 1.25 } = useAppContext();
-  return <BaseTooltip {...props} style={{ ...style, fontSize: theme.fontSizes[1] * Number(zoom) }} />;
+  return (
+    <BaseTooltip {...props} style={{ ...style, fontSize: theme.fontSizes[1] * Number(zoom) }} />
+  );
 };

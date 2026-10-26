@@ -16,7 +16,12 @@ interface BuffProps {
   player?: Partial<HudCharacter> | null;
 }
 
-const BuffTooltip = ({ buff, tooltipId, timeLeft, player }: BuffProps & { timeLeft: number | undefined }) => {
+const BuffTooltip = ({
+  buff,
+  tooltipId,
+  timeLeft,
+  player,
+}: BuffProps & { timeLeft: number | undefined }) => {
   const stats = buff?.name === "rest" ? { regenHp: player?.stats?.regenHp } : buff?.stats;
   const combinedStats = formatStats(stats);
   const description = (buffList as Record<string, { description?: string }>)?.[buff?.name as string]

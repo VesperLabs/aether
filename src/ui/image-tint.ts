@@ -135,12 +135,7 @@ interface AssetToCanvasArgs {
   shouldTrim?: boolean;
 }
 
-export function assetToCanvas({
-  asset,
-  tint,
-  setImageData,
-  shouldTrim = true,
-}: AssetToCanvasArgs) {
+export function assetToCanvas({ asset, tint, setImageData, shouldTrim = true }: AssetToCanvasArgs) {
   loadCacheImage(asset.src)
     .then((img) => {
       const canvas = document.createElement("canvas");

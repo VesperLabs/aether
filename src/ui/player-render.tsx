@@ -74,7 +74,9 @@ const mergeImages = async ({
 }) => {
   if (!buffCanvasRef.current || !canvasRef?.current) return;
   const atlas = weaponAtlas.offsets.human["down-stand"];
-  const buffCanvas = (shouldBuffer ? buffCanvasRef.current : canvasRef?.current) as HTMLCanvasElement;
+  const buffCanvas = (
+    shouldBuffer ? buffCanvasRef.current : canvasRef?.current
+  ) as HTMLCanvasElement;
   const btx = buffCanvas.getContext("2d") as CanvasRenderingContext2D;
   btx.imageSmoothingEnabled = false;
   // Clear the buffer canvas before drawing

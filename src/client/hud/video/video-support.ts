@@ -1,5 +1,7 @@
 /** Prefer over stream.active — tracks are authoritative for whether we can show / send video. */
-export function streamHasUsableVideo(stream: MediaStream | null | undefined): stream is MediaStream {
+export function streamHasUsableVideo(
+  stream: MediaStream | null | undefined,
+): stream is MediaStream {
   if (!stream) return false;
   const tracks = stream.getVideoTracks();
   if (tracks.length === 0) return false;

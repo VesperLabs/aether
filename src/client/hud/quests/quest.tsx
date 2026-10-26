@@ -7,13 +7,7 @@ import { useMemo } from "react";
 import type { Quest as QuestData } from "@/shared/content";
 import type { PlayerQuestStatus } from "@/shared/rules/quests";
 
-export const Quest = ({
-  quest,
-  parent = "keeper",
-}: {
-  quest: QuestData;
-  parent?: string;
-}) => {
+export const Quest = ({ quest, parent = "keeper" }: { quest: QuestData; parent?: string }) => {
   const { objectives } = quest ?? {};
   const { hero, currentTooltipId, setCurrentTooltipId } = useAppContext();
   const isBounty = objectives?.some((objective) => objective?.type === "bounty");

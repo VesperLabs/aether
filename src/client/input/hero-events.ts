@@ -36,20 +36,17 @@ export function addGlobalEventListeners(scene: SceneHud) {
       window.dispatchEvent(new CustomEvent("HERO_ATTACK"));
     }
   });
-  window.addEventListener(
-    "HERO_AIM_START",
-    (e) => {
-      if (!mainScene?.hero || isTypableFieldActive()) return;
-      const hero = mainScene?.hero;
-      const { isAimable } = hero.getAbilityDetails(e?.detail);
+  window.addEventListener("HERO_AIM_START", (e) => {
+    if (!mainScene?.hero || isTypableFieldActive()) return;
+    const hero = mainScene?.hero;
+    const { isAimable } = hero.getAbilityDetails(e?.detail);
 
-      if (isAimable) {
-        hero.state.isAiming = true;
-        gameElement.style.cursor = "none";
-        scene.socket.emit("updateState", { isAiming: hero.state.isAiming });
-      }
-    },
-  );
+    if (isAimable) {
+      hero.state.isAiming = true;
+      gameElement.style.cursor = "none";
+      scene.socket.emit("updateState", { isAiming: hero.state.isAiming });
+    }
+  });
   window.addEventListener(
     "HERO_ATTACK", // we let go of the attack button
     (e) => {
@@ -74,47 +71,41 @@ export function addGlobalEventListeners(scene: SceneHud) {
       });
     },
   );
-  window.addEventListener(
-    "HERO_ATTACK_START",
-    (e) => {
-      if (!mainScene?.hero) return;
-      const hero = mainScene?.hero;
+  window.addEventListener("HERO_ATTACK_START", (e) => {
+    if (!mainScene?.hero) return;
+    const hero = mainScene?.hero;
 
-      hero.state.isHoldingAttack = true;
-      hero.state.lastAbilitySlot = e?.detail;
+    hero.state.isHoldingAttack = true;
+    hero.state.lastAbilitySlot = e?.detail;
 
-      if (hero.hasRangedWeapon()) {
-        hero.state.isAiming = true;
-        gameElement.style.cursor = "none";
-      }
-      scene.socket.emit("updateState", {
-        isAiming: hero.state.isAiming,
-        isHoldingAttack: hero.state.isHoldingAttack,
+    if (hero.hasRangedWeapon()) {
+      hero.state.isAiming = true;
+      gameElement.style.cursor = "none";
+    }
+    scene.socket.emit("updateState", {
+      isAiming: hero.state.isAiming,
+      isHoldingAttack: hero.state.isHoldingAttack,
+    });
+  });
+  window.addEventListener("HERO_ABILITY", (e) => {
+    const hero = mainScene?.hero;
+    const abilitySlot = e?.detail;
+    const { type } = hero.getAbilityDetails(abilitySlot);
+
+    if (type === "spell") {
+      /* Tell the UI to update the cooldown */
+      updateSpellCooldown(hero, abilitySlot);
+
+      hero?.doCast?.({
+        abilitySlot,
+        castAngle: hero?.state?.lastAngle,
       });
-    },
-  );
-  window.addEventListener(
-    "HERO_ABILITY",
-    (e) => {
-      const hero = mainScene?.hero;
-      const abilitySlot = e?.detail;
-      const { type } = hero.getAbilityDetails(abilitySlot);
 
-      if (type === "spell") {
-        /* Tell the UI to update the cooldown */
-        updateSpellCooldown(hero, abilitySlot);
-
-        hero?.doCast?.({
-          abilitySlot,
-          castAngle: hero?.state?.lastAngle,
-        });
-
-        hero.state.isAiming = false;
-        scene.socket.emit("updateState", { isAiming: hero.state.isAiming });
-        gameElement.style.cursor = "default";
-      }
-    },
-  );
+      hero.state.isAiming = false;
+      scene.socket.emit("updateState", { isAiming: hero.state.isAiming });
+      gameElement.style.cursor = "default";
+    }
+  });
   /* TODO: Move to server and create a consumeItemFunction */
   window.addEventListener("HERO_USE_ITEM", (e) => {
     const hero = mainScene?.hero;
@@ -142,41 +133,29 @@ export function addGlobalEventListeners(scene: SceneHud) {
       }),
     );
   });
-  window.addEventListener(
-    "HERO_GRAB",
-    () => {
-      const hero = mainScene?.hero;
-      hero?.doGrab?.();
-    },
-  );
-  window.addEventListener(
-    "AUDIO_ITEM_CONSUME",
-    (e) => {
-      const hero = mainScene?.hero;
-      playAudio({ scene: mainScene, audioKey: "item-bubble", caster: hero });
-    },
-  );
-  window.addEventListener(
-    "AUDIO_ITEM_SELL",
-    (e) => {
-      const hero = mainScene?.hero;
-      playAudio({ scene: mainScene, audioKey: "item-sell", caster: hero });
-    },
-  );
-  window.addEventListener(
-    "ITEM_DRAG",
-    (e) => {
-      const hero = mainScene?.hero;
-      const pointer = scene.input.activePointer;
-      pointer.x = e?.detail.x;
-      pointer.y = e?.detail.y;
-      const cursorPoint = pointer.positionToCamera(mainScene.cameras.main) as Phaser.Math.Vector2;
-      const direction = getSpinDirection({ x: hero.x, y: hero.y + hero.bodyOffsetY }, cursorPoint);
+  window.addEventListener("HERO_GRAB", () => {
+    const hero = mainScene?.hero;
+    hero?.doGrab?.();
+  });
+  window.addEventListener("AUDIO_ITEM_CONSUME", (e) => {
+    const hero = mainScene?.hero;
+    playAudio({ scene: mainScene, audioKey: "item-bubble", caster: hero });
+  });
+  window.addEventListener("AUDIO_ITEM_SELL", (e) => {
+    const hero = mainScene?.hero;
+    playAudio({ scene: mainScene, audioKey: "item-sell", caster: hero });
+  });
+  window.addEventListener("ITEM_DRAG", (e) => {
+    const hero = mainScene?.hero;
+    const pointer = scene.input.activePointer;
+    pointer.x = e?.detail.x;
+    pointer.y = e?.detail.y;
+    const cursorPoint = pointer.positionToCamera(mainScene.cameras.main) as Phaser.Math.Vector2;
+    const direction = getSpinDirection({ x: hero.x, y: hero.y + hero.bodyOffsetY }, cursorPoint);
 
-      if (hero?.direction !== direction) {
-        hero.direction = direction;
-        scene.socket.emit("changeDirection", { direction });
-      }
-    },
-  );
+    if (hero?.direction !== direction) {
+      hero.direction = direction;
+      scene.socket.emit("changeDirection", { direction });
+    }
+  });
 }

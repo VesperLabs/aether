@@ -7,7 +7,7 @@ Migration to the structure in `ARCHITECTURE.md`. Work through the phases in orde
 - [x] Remove npm workspaces: one root `package.json` (move `wouter` from `web/`), delete the `client/`, `web/`, `ui/` and `shared/` package.json files, run the client and wiki Vite builds from root scripts with `--config`, and update the Dockerfile's manifest copies
 - [x] Move the code folders under `src/`: `server/` → `src/server/`, `client/` → `src/client/`, `web/` → `src/wiki/`, `ui/` → `src/ui/`, `shared/` → `src/shared/` (contents get sorted in Phase 2). Update scripts, Vite configs, `build.server.js`, the Dockerfile, `PUBLIC_DIR` and the GitHub workflows.
 - [x] Replace the `@aether/*` tsconfig paths with a single `"@/*": ["./src/*"]`. Enable it in the Vite configs (`resolve.tsconfigPaths`, or the `vite-tsconfig-paths` plugin if that setting isn't available) and confirm tsx, esbuild and Vitest resolve it.
-- [x] Add `tsconfig.strict.json` (strict mode, no `allowJs`) covering `src/shared/content/`, `src/shared/rules/` and `src/shared/network/`, and add it to `npm run typecheck`
+- [x] Typecheck in strict mode (no `allowJs`); `tsconfig.json` is strict and covers the whole repo
 - [x] Rename every file and folder to kebab-case as part of the move (use `git mv`, going through a temporary name for case-only renames so macOS picks them up)
 - [x] Convert default exports to named exports and update the imports
 - [x] oxlint: import rules from `ARCHITECTURE.md` via `no-restricted-imports` overrides, `max-lines` at 400, `unicorn/filename-case` (kebab-case) and `import/no-default-export` (off for tool config files), with existing violations listed in an overrides block. Confirm each rule exists in the installed oxlint version.
@@ -46,7 +46,7 @@ Do the pure ones first. Write tests as each one moves.
 - [ ] Client: sprites to `src/client/views/` as displays of game state, input to `input/`, interpolation and prediction to `net/`, and run the rules on the client for movement prediction (files are moved and `utils.ts` is gone; sprites are still Phaser-driven state and there is no prediction yet)
 - [x] Client: group `client/ui/` into `src/client/hud/<feature>/`
 - [x] Remove any leftover loose files from `src/shared/` so it holds only `content/`, `rules/` and `network/`
-- [ ] Convert the remaining `.js` files to TypeScript (done, `allowJs` is off) and turn on strict mode repo-wide (`src/server/` is strict now, along with `shared/content`, `shared/rules`, `shared/network`; the client, ui and wiki are not yet)
+- [x] Convert the remaining `.js` files to TypeScript (`allowJs` is off) and turn on strict mode repo-wide
 - [x] Replace lodash with modern JS where possible
 
 ## Done when
@@ -108,3 +108,6 @@ Found during the migration and left alone so behaviour stayed identical. Fix aft
 - [ ] **Types:** a player that left its room (door, disconnect) holds `room = null` and `roomName = null`, but `CharacterModel` types both as always set; widen the model and fix the callers (see `detachFromRoom` in `server/player-room.ts`)
 - [ ] **Types:** plain attacks have no ability slot, so `Spell` calls `doHit(ids, undefined)`; `abilitySlot` is `number` in most signatures but a numeric string at runtime (`NpcAction`, object keys)
 - [ ] **Types:** `CharacterState`, `CharacterArgs` and `NpcDefinition` in `src/server/` are `Record<string, any>` aliases for the untyped state bag, constructor args and content definitions. Replace them with real types, and the global `Item`, `Buff`, `Character`, `Quest` and `Loot` in `src/global.d.ts` with the content and rules types, once the client no longer uses them.
+- [ ] **Wiki:** `fetchPlayers` builds the URL from `limit`, which `PagePlayers` never sets, so the request is `...&limit=undefined`
+- [ ] **Client:** `StatusIcon` spread an undefined `props` onto its box (never passed any); removed. `menu-social` `Invite` emitted `inviteToParty` with an undefined `socketId` for a player without one; it now skips the emit.
+- [ ] **Types:** `client/input/joystick.ts` still casts `Phaser` to `any` for `Phaser.Class` (untyped in Phaser 4)

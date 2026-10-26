@@ -26,7 +26,14 @@ export const MenuInventory = memo(
         <MenuHeader icon={`./assets/icons/bag.png`} onClick={() => setIsOpen(false)}>
           Inventory
         </MenuHeader>
-        <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", maxWidth: MENU_MAX_WIDTH }}>
+        <Flex
+          sx={{
+            gap: 2,
+            flexWrap: "wrap",
+            justifyContent: "end",
+            maxWidth: MENU_MAX_WIDTH,
+          }}
+        >
           {maxInventory?.map((_, idx) => (
             <Slot
               player={player}

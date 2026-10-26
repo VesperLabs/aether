@@ -115,7 +115,10 @@ export class Spell extends Phaser.GameObjects.Container {
 
       /* Hack: fixes placement for non-human units .*/
       if (caster.profile.race !== "human") {
-        const difference = ((this.caster.hitBox.body as Phaser.Physics.Arcade.Body).height - this.caster.body.height) / 2;
+        const difference =
+          ((this.caster.hitBox.body as Phaser.Physics.Arcade.Body).height -
+            this.caster.body.height) /
+          2;
         this.y = this.caster.y - difference;
       }
 

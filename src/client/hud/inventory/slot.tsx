@@ -17,10 +17,9 @@ import { SlotAmount } from "./slot-amount";
 import { resolveAsset } from "@/shared/content";
 import { assetToCanvas } from "@/ui/image-tint";
 import { isMobile } from "@/ui/is-mobile";
-import { itemHasRequiredStats } from "@/shared/rules/inventory";
 import { useDoubleTap } from "use-double-tap";
 import type { ThemeUIStyleObject } from "theme-ui";
-import { isEqual, get } from "@/ui/are-props-equal";
+import { shouldReRenderSlot, getIsItemActive, useItemEvents } from "./slot-state";
 
 const SpaceDonut = ({ percent = 0 }: { percent?: number }) => {
   const getColor = () => {
@@ -52,7 +51,7 @@ const SpaceDonut = ({ percent = 0 }: { percent?: number }) => {
   );
 };
 
-type SlotProps = {
+export type SlotProps = {
   sx?: ThemeUIStyleObject;
   size?: number;
   item?: BuiltItem | null;
@@ -195,8 +194,12 @@ export const Slot = memo(
       if (!shouldBindEvents) return;
       document.addEventListener("touchend", handleTouchEnd, { passive: true });
       document.addEventListener("mouseup", handleMouseUp, { passive: true });
-      document.addEventListener("mousemove", handleMouseMove, { passive: true });
-      document.addEventListener("touchmove", handleTouchMove, { passive: true });
+      document.addEventListener("mousemove", handleMouseMove, {
+        passive: true,
+      });
+      document.addEventListener("touchmove", handleTouchMove, {
+        passive: true,
+      });
       return () => {
         document.removeEventListener("touchend", handleTouchEnd);
         document.removeEventListener("mouseup", handleMouseUp);
@@ -327,80 +330,3 @@ export const Slot = memo(
   },
   shouldReRenderSlot,
 );
-
-function shouldReRenderSlot(prevProps: SlotProps, nextProps: SlotProps) {
-  if (prevProps.location === "equipment") {
-    const itemSlotsChanged = !isEqual(
-      get(prevProps, "player.activeItemSlots"),
-      get(nextProps, "player.activeItemSlots"),
-    );
-    const activeSetsChanged = !isEqual(
-      get(prevProps, "player.state.activeSets"),
-      get(nextProps, "player.state.activeSets"),
-    );
-    const isSetRarityChanged =
-      (get(prevProps, "item.rarity") === "set" || get(nextProps, "item.rarity") === "set") &&
-      activeSetsChanged;
-    if (isSetRarityChanged || itemSlotsChanged) {
-      return false;
-    }
-  }
-  /* Update the items that have requirements when the users stats change */
-  if (prevProps?.item?.requirements) {
-    const playerStatsChanged = !isEqual(
-      get(prevProps, "player.stats"),
-      get(nextProps, "player.stats"),
-    );
-    if (playerStatsChanged) return false;
-  }
-
-  return ["id", "item.amount", "item.items", "item.stock", "item.id"].every((key) => {
-    return isEqual(get(prevProps, key), get(nextProps, key));
-  });
-}
-
-function getIsItemActive({
-  item,
-  slotKey,
-  player,
-  location,
-}: Pick<SlotProps, "item" | "slotKey" | "player" | "location">) {
-  if (["abilities", "equipment"]?.includes(location as string)) {
-    return player?.activeItemSlots?.includes(slotKey as string);
-  }
-  if (["shop", "inventory", "bag"]?.includes(location as string)) {
-    return Object.keys(item?.requirements || {}).every((key) => {
-      return itemHasRequiredStats({
-        requirements: item?.requirements as Record<string, number | string>,
-        player: player ?? undefined,
-        key,
-      });
-    });
-  }
-  return true;
-}
-
-function useItemEvents({
-  location,
-  bagId,
-  slotKey,
-  item,
-  player,
-}: Pick<SlotProps, "location" | "bagId" | "slotKey" | "item" | "player">) {
-  return {
-    doubleClickItem: () => {
-      window.dispatchEvent(
-        new CustomEvent("HERO_DOUBLE_CLICK_ITEM", {
-          detail: { item: item as BuiltItem, location: location as string },
-        }),
-      );
-    },
-    dropItem: (target: Element | null) => {
-      window.dispatchEvent(
-        new CustomEvent("HERO_DROP_ITEM", {
-          detail: { item: item as BuiltItem, location: location as string, bagId, slotKey, player, target },
-        }),
-      );
-    },
-  };
-}

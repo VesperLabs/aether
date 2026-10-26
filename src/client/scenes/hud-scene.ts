@@ -9,12 +9,20 @@ const { W, S, A, D } = Phaser.Input.Keyboard.KeyCodes;
 
 export class SceneHud extends Phaser.Scene {
   socket: ClientGameSocket;
-  cursorKeys!: Phaser.Types.Input.Keyboard.CursorKeys & Record<"w" | "s" | "a" | "d", Phaser.Input.Keyboard.Key>;
+  cursorKeys!: Phaser.Types.Input.Keyboard.CursorKeys &
+    Record<"w" | "s" | "a" | "d", Phaser.Input.Keyboard.Key>;
   rectangleContainer: unknown;
   /** Throttle state for `emitPlayerInput`. */
   _playerInputNet?: {
     lastEmitAt: number;
-    lastEmitted: { vx: number; vy: number; x: number; y: number; d: number; roomName: string } | null;
+    lastEmitted: {
+      vx: number;
+      vy: number;
+      x: number;
+      y: number;
+      d: number;
+      roomName: string;
+    } | null;
   };
   joystick!: Joystick;
   joystick2!: Joystick;

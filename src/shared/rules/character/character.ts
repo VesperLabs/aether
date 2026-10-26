@@ -324,13 +324,7 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
     getVisibleEquipment() {
       return filterVisibleEquipment(this);
     }
-    getAttackActionName({
-      count,
-      abilitySlot,
-    }: {
-      count: number;
-      abilitySlot?: number | string;
-    }) {
+    getAttackActionName({ count, abilitySlot }: { count: number; abilitySlot?: number | string }) {
       const ability = this.getAbilityDetails(abilitySlot);
       return getAttackActionName(this, { action: this.action, ability, count });
     }
