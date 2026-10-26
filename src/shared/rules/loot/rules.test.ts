@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   LOOT_BUFFER_DELETE_TIME,
   LOOT_EXPIRE_TIME,
+  LOOT_GRAB_RANGE,
   LOOT_SPAWN_CYCLE_TIME,
   addStackAmounts,
   createLoot,
@@ -95,7 +96,12 @@ describe("rollMobDrop", () => {
     expect(result).toBe(hit);
   });
   it("prefers a non-stackable world drop over later stackables", () => {
-    const gold = { type: "stackable", rarity: "common", key: "gold", chance: 1 };
+    const gold = {
+      type: "stackable",
+      rarity: "common",
+      key: "gold",
+      chance: 1,
+    };
     expect(
       rollMobDrop(
         { ...base, drops: [gold] },
@@ -141,7 +147,10 @@ describe("expireLoots", () => {
   });
 
   it("leaves fresh loot alone", () => {
-    expect(expireLoots([loot()], LOOT_EXPIRE_TIME)).toEqual({ markExpired: [], remove: [] });
+    expect(expireLoots([loot()], LOOT_EXPIRE_TIME)).toEqual({
+      markExpired: [],
+      remove: [],
+    });
   });
   it("marks loot past its time, without removing it yet", () => {
     expect(expireLoots([loot()], LOOT_EXPIRE_TIME + 1)).toEqual({
@@ -191,7 +200,15 @@ describe("map loot", () => {
 
   it("spawns permanent sparkly loot where the roll hits", () => {
     const list = [
-      spot(1, [{ type: "stackable", rarity: "common", key: "gold", chance: 1, amount: [2, 4] }]),
+      spot(1, [
+        {
+          type: "stackable",
+          rarity: "common",
+          key: "gold",
+          chance: 1,
+          amount: [2, 4],
+        },
+      ]),
     ];
     const spawns = planMapLootSpawns(list, [], () => 0, build);
     expect(spawns).toEqual([
@@ -220,7 +237,11 @@ describe("map loot", () => {
 });
 
 describe("resolveGrab", () => {
-  const free = { hasGrabber: true, hasStackToJoin: false, inventoryFull: false };
+  const free = {
+    hasGrabber: true,
+    hasStackToJoin: false,
+    inventoryFull: false,
+  };
   const loot = { item: { type: "weapon" } };
 
   it("picks up into a free slot", () => {
@@ -235,13 +256,46 @@ describe("resolveGrab", () => {
     expect(resolveGrab({ ...free, loot, hasGrabber: false })).toBe("ignore");
     expect(resolveGrab({ ...free, loot, grabberIsDead: true })).toBe("ignore");
   });
+  describe("range and room", () => {
+    const placed = { item: { type: "weapon" }, roomName: "a", x: 100, y: 100 };
+    const at = (x: number, y: number, roomName = "a") => ({
+      ...free,
+      loot: placed,
+      grabberPosition: { roomName, x, y },
+    });
+    it("allows a grab within range, including exactly at the limit", () => {
+      expect(resolveGrab(at(100, 100))).toBe("pickup");
+      expect(resolveGrab(at(100 + LOOT_GRAB_RANGE, 100))).toBe("pickup");
+    });
+    it("ignores a grab from beyond the range", () => {
+      expect(resolveGrab(at(100 + LOOT_GRAB_RANGE + 1, 100))).toBe("ignore");
+      expect(resolveGrab(at(100 + 50, 100 + 50))).toBe("ignore");
+    });
+    it("ignores a grab from another room", () => {
+      expect(resolveGrab(at(100, 100, "b"))).toBe("ignore");
+    });
+    it("ignores loot with no position", () => {
+      expect(
+        resolveGrab({
+          ...free,
+          loot,
+          grabberPosition: { roomName: "a", x: 0, y: 0 },
+        }),
+      ).toBe("ignore");
+    });
+  });
   it("reports a full inventory", () => {
     expect(resolveGrab({ ...free, loot, inventoryFull: true })).toBe("inventoryFull");
   });
   it("stacks onto an existing stack even when the inventory is full", () => {
     const stackable = { item: { type: "stackable" } };
     expect(
-      resolveGrab({ ...free, loot: stackable, hasStackToJoin: true, inventoryFull: true }),
+      resolveGrab({
+        ...free,
+        loot: stackable,
+        hasStackToJoin: true,
+        inventoryFull: true,
+      }),
     ).toBe("stack");
     expect(resolveGrab({ ...free, loot: stackable, inventoryFull: true })).toBe("inventoryFull");
     expect(resolveGrab({ ...free, loot, hasStackToJoin: true })).toBe("pickup");

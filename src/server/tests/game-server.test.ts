@@ -138,7 +138,10 @@ describe("game server", () => {
     const { socket, state } = await login("warrior");
     const hero = state.players.find((p: Anything) => p.socketId === socket.id);
     const update = once(socket, "playerUpdate");
-    socket.emit("dropItem", { location: "equipment", item: { id: hero.equipment.armor.id } });
+    socket.emit("dropItem", {
+      location: "equipment",
+      item: { id: hero.equipment.armor.id },
+    });
     const [player] = await update;
     expect(player.equipment.armor).toBeFalsy();
   });
@@ -223,5 +226,50 @@ describe("game server", () => {
     expect(await ping(socket)).toBe(true);
     expect(grabbed).toBe(false);
     expect(serverLoots()[loot.id]).toBeTruthy();
+  });
+
+  describe("grabLoot range and room", () => {
+    async function dropArmor() {
+      const { socket, state } = await login("warrior");
+      const hero = state.players.find((p: Anything) => p.socketId === socket.id);
+      const armorId = hero.equipment.armor.id;
+      const spawned = onceMatching(
+        socket,
+        "lootSpawned",
+        ({ loot }: Anything) => loot.item.id === armorId,
+      );
+      socket.emit("dropItem", { location: "equipment", item: { id: armorId } });
+      const [{ loot }] = await spawned;
+      const player = (gameServer as Anything).world.players[socket.id as string];
+      return { socket, loot, player };
+    }
+    async function grabIsIgnored(socket: Socket, lootId: string) {
+      let grabbed = false;
+      socket.on("lootGrabbed", () => (grabbed = true));
+      socket.emit("grabLoot", { lootId, direction: "left" });
+      expect(await ping(socket)).toBe(true);
+      expect(grabbed).toBe(false);
+      expect(serverLoots()[lootId]).toBeTruthy();
+    }
+
+    it("fails from too far away", async () => {
+      const { socket, loot, player } = await dropArmor();
+      player.x = loot.x + 500;
+      await grabIsIgnored(socket, loot.id);
+    });
+    it("fails from another room", async () => {
+      const { socket, loot, player } = await dropArmor();
+      player.roomName = "some-other-room";
+      await grabIsIgnored(socket, loot.id);
+    });
+    it("succeeds from close by", async () => {
+      const { socket, loot, player } = await dropArmor();
+      player.x = loot.x + 30;
+      const grabbed = once(socket, "lootGrabbed");
+      socket.emit("grabLoot", { lootId: loot.id, direction: "left" });
+      const [result] = await grabbed;
+      expect(result.loot.id).toBe(loot.id);
+      expect(serverLoots()[loot.id]).toBeUndefined();
+    });
   });
 });

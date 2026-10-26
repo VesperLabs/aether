@@ -190,7 +190,12 @@ export interface MapLootItem {
 /** Reads the map's "Loots" object layer. Each object's first property holds the item list as JSON. */
 export function parseMapLootList(
   objects:
-    | readonly { id?: number; x?: number; y?: number; properties?: { value?: unknown }[] }[]
+    | readonly {
+        id?: number;
+        x?: number;
+        y?: number;
+        properties?: { value?: unknown }[];
+      }[]
     | undefined,
 ): MapLoot[] {
   if (!objects) return [];
@@ -258,9 +263,20 @@ export type GrabOutcome =
   /** There is no room; the loot stays on the ground. */
   | "inventoryFull";
 
+/** The client only sends a grab within 32px of the loot; the extra 32px forgives latency and movement. */
+export const LOOT_GRAB_RANGE = 64;
+
 export interface GrabInput {
   /** The loot being grabbed, if it still exists. */
-  loot?: { item?: LootItem | null; expiredSince?: number } | null;
+  loot?: {
+    item?: LootItem | null;
+    expiredSince?: number;
+    roomName?: string;
+    x?: number;
+    y?: number;
+  } | null;
+  /** Where the grabber stands. When given, the grab must be in the loot's room and in range. */
+  grabberPosition?: { roomName?: string; x: number; y: number };
   /** Whether the grabber exists. */
   hasGrabber: boolean;
   grabberIsDead?: boolean;
@@ -274,8 +290,18 @@ export function resolveGrab(input: GrabInput): GrabOutcome {
   const item = input.loot?.item;
   if (!input.loot || !input.hasGrabber || !item) return "ignore";
   if (input.grabberIsDead) return "ignore";
+  if (input.grabberPosition && !isInGrabRange(input.grabberPosition, input.loot)) return "ignore";
   if (item.type === "stackable" && input.hasStackToJoin) return "stack";
   return input.inventoryFull ? "inventoryFull" : "pickup";
+}
+
+function isInGrabRange(
+  grabber: { roomName?: string; x: number; y: number },
+  loot: { roomName?: string; x?: number; y?: number },
+): boolean {
+  if (grabber.roomName !== loot.roomName) return false;
+  if (typeof loot.x !== "number" || typeof loot.y !== "number") return false;
+  return Math.hypot(loot.x - grabber.x, loot.y - grabber.y) <= LOOT_GRAB_RANGE;
 }
 
 /** Total of two stack amounts. Either may be a string or missing. */

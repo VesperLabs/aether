@@ -28,6 +28,11 @@ export function grabLoot(
     loot: world.loots[key],
     hasGrabber: !!player,
     grabberIsDead: player?.state?.isDead,
+    grabberPosition: player && {
+      roomName: player.roomName,
+      x: player.x,
+      y: player.y,
+    },
     hasStackToJoin: !!stackTarget,
     inventoryFull: !!player?.isInventoryFull(),
   });
@@ -107,7 +112,12 @@ export function consumeItem(ctx: CommandContext, request: ParsedCommand<"consume
   /* If the item has buffs */
   if (result.isFood) {
     for (const [buffName, level] of Object.entries(result.buffs as Record<string, number>)) {
-      player.addBuff({ name: buffName, level, caster: player, shouldCalculateStats: false });
+      player.addBuff({
+        name: buffName,
+        level,
+        caster: player,
+        shouldCalculateStats: false,
+      });
     }
   }
 
