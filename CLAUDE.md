@@ -32,3 +32,4 @@ Server-authoritative online game: Phaser + React client, Node + socket.io server
 - `npm run dev`: server, client and wiki together
 - `npm run check`: format, lint, typecheck, tests and structure checks. Must pass before committing.
 - `npm test`: tests only
+- `npm run format` (or `npx oxfmt <files>`): format code. This repo uses **oxfmt**, not Prettier. Never run `prettier`; its output differs and fails `check:format`.
