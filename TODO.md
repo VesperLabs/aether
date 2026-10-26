@@ -31,11 +31,11 @@ Do the pure ones first. Write tests as each one moves.
 - [x] `stats`: `calculateStats`, `calculateExpValue`, `calculateNextMaxExp` from `server/utils.ts`
       (Remaining legacy hooks: `assignExp` level-up on `server/character.ts`, `useGetBaseCharacterDefaults` in `server/utils.ts` for starting items and spawn.)
 - [ ] `inventory`: `moveItem`, `dropItem`, `consumeItem` from `GameServer.ts` and the inventory methods on `shared/Character.ts`
-- [ ] `loot` (`LootManager`), `party` (`PartyManager`), `quests` (quest methods on `Character`, `Quest.ts`)
+- [x] `loot` (`LootManager`), `party` (`PartyManager`), `quests` (quest methods on `Character`, `Quest.ts`)
 - [ ] `combat`, `spells`, `buffs` (methods on `shared/Character.ts`, `server/Character.ts`, `SpellManager`, `Spell.ts`)
 - [ ] `ai` (`server/Npc.ts`)
 - [ ] Move state packing (`get*RoomState`, `get*CharacterState`) into `network/sync/`
-- [ ] Route mob kills to loot, stats and quests through `mobKilled`
+- [x] Route mob kills to loot, stats and quests through `mobKilled`
 
 ## Phase 4: Game core without Phaser on the server
 
