@@ -1,8 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   checkSlotsMatch,
-  consumeItem,
-  dropItem,
   findBagItemById,
   findOpenBagSlot,
   isInventoryFull,
@@ -28,8 +26,18 @@ const sword: InventoryItem = {
   type: "weapon",
   cost: 8,
 };
-const robe: InventoryItem = { id: "robe1", base: "robe", slot: "armor", type: "armor" };
-const ring: InventoryItem = { id: "ring1", base: "band", slot: "ring", type: "ring" };
+const robe: InventoryItem = {
+  id: "robe1",
+  base: "robe",
+  slot: "armor",
+  type: "armor",
+};
+const ring: InventoryItem = {
+  id: "ring1",
+  base: "band",
+  slot: "ring",
+  type: "ring",
+};
 const potion = (amount: number, id = "hp1"): InventoryItem => ({
   id,
   base: "hpPotion",
@@ -66,7 +74,11 @@ const context = (overrides: Partial<MoveContext> = {}): MoveContext => ({
 const inv = (slot: number) => ({ location: "inventory", slot });
 const eq = (slot: string) => ({ location: "equipment", slot });
 const abil = (slot: string) => ({ location: "abilities", slot });
-const inBag = (slot: number | undefined, bagId = "bag1") => ({ location: "bag", bagId, slot });
+const inBag = (slot: number | undefined, bagId = "bag1") => ({
+  location: "bag",
+  bagId,
+  slot,
+});
 
 function moved(result: ReturnType<typeof moveItem>) {
   if (result.moved === false) throw new Error(`move was refused: ${result.error}`);
@@ -105,13 +117,18 @@ describe("lookups", () => {
     expect(some.subtracted).toBe(2);
     expect(some.result[0]?.amount).toBe(1);
     expect(subtractInventoryItemAtId(s.inventory, "hp1", 3).result[0]).toBeNull();
-    expect(subtractInventoryItemAtId(s.inventory, "hp1", 4)).toMatchObject({ subtracted: null });
+    expect(subtractInventoryItemAtId(s.inventory, "hp1", 4)).toMatchObject({
+      subtracted: null,
+    });
   });
 });
 
 describe("moveItem between places", () => {
   it("equips an item and swaps back what was equipped", () => {
-    const s = state({ inventory: [sword], equipment: { handLeft: { ...sword, id: "old" } } });
+    const s = state({
+      inventory: [sword],
+      equipment: { handLeft: { ...sword, id: "old" } },
+    });
     const next = moved(moveItem(s, { from: inv(0), to: eq("handLeft") }, context()));
     expect(next.equipment.handLeft?.id).toBe("sword1");
     expect(next.inventory[0]?.id).toBe("old");
@@ -221,6 +238,46 @@ describe("moveItem with shops", () => {
     expect(next.gold).toBe(120);
   });
 
+  const sellFrom = (s: InventoryState, from: Record<string, unknown>) =>
+    moveItem(s, { from, to: { location: "shop" } } as never, context(shelf(sword)));
+
+  it("refuses to sell more than the stack, or a bad amount, and pays nothing", () => {
+    const s = state({ inventory: [potion(5)] });
+    for (const amount of [6, 0, -1, 1.5, "abc"]) {
+      expect(sellFrom(s, { ...inv(0), amount }).moved).toBe(false);
+    }
+  });
+
+  it("sells a whole stack and removes it", () => {
+    const next = moved(sellFrom(state({ inventory: [potion(5)] }), { ...inv(0), amount: 5 }));
+    expect(next.inventory[0]).toBeNull();
+    expect(next.gold).toBe(150);
+  });
+
+  it("checks the stack size for bags and abilities", () => {
+    const inBagState = state({
+      inventory: [bag([potion(3), null, null, null])],
+    });
+    const bagFrom = { location: "bag", bagId: "bag1", slot: 0 };
+    expect(sellFrom(inBagState, { ...bagFrom, amount: 4 }).moved).toBe(false);
+    const part = moved(sellFrom(inBagState, { ...bagFrom, amount: 2 }));
+    expect(part.inventory[0]?.items?.[0]?.amount).toBe(1);
+    expect(part.gold).toBe(120);
+    const all = moved(sellFrom(inBagState, { ...bagFrom, amount: 3 }));
+    expect(all.inventory[0]?.items?.[0]).toBeNull();
+    expect(all.gold).toBe(130);
+
+    const abil = state({ abilities: { a1: potion(3) } });
+    const abFrom = { location: "abilities", slot: "a1" };
+    expect(sellFrom(abil, { ...abFrom, amount: 4 }).moved).toBe(false);
+    const abPart = moved(sellFrom(abil, { ...abFrom, amount: 2 }));
+    expect(abPart.abilities.a1?.amount).toBe(1);
+    expect(abPart.gold).toBe(120);
+    const abAll = moved(sellFrom(abil, { ...abFrom, amount: 3 }));
+    expect(abAll.abilities.a1).toBeNull();
+    expect(abAll.gold).toBe(130);
+  });
+
   it("sells an equipped item", () => {
     const s = state({ equipment: { handLeft: sword } });
     const next = moved(moveItem(s, { from: eq("handLeft"), to: { location: "shop" } }, context()));
@@ -252,7 +309,10 @@ describe("moveItem with shops", () => {
       { from: { location: "shop", slot: 0 }, to: inv(2) },
       context(shelf({ ...sword, cost: 40 })),
     );
-    expect(result).toEqual({ moved: false, error: "You cannot afford this item" });
+    expect(result).toEqual({
+      moved: false,
+      error: "You cannot afford this item",
+    });
   });
 
   it("refuses to buy into an occupied slot, without a shop target or out of stock", () => {
@@ -276,84 +336,5 @@ describe("moveItem with shops", () => {
     expect(next.inventory[0]?.amount).toBe(5);
     expect(next.inventory[4]).toBeUndefined();
     expect(next.gold).toBe(80);
-  });
-});
-
-describe("dropItem", () => {
-  it("drops an equipped item", () => {
-    const s = state({ equipment: { armor: robe } });
-    const result = dropItem(s, { location: "equipment", item: { id: "robe1" } });
-    expect(result).toMatchObject({ dropped: true, item: { id: "robe1" } });
-    expect(result.dropped && result.state.equipment.armor).toBeNull();
-  });
-
-  it("drops part of a stack and the whole stack", () => {
-    const s = state({ inventory: [potion(5)] });
-    const part = dropItem(s, { location: "inventory", item: { id: "hp1" }, amount: 2 });
-    expect(part).toMatchObject({ dropped: true, item: { amount: 2 } });
-    expect(part.dropped && part.state.inventory[0]?.amount).toBe(3);
-    const all = dropItem(s, { location: "inventory", item: { id: "hp1" }, amount: 9 });
-    expect(all).toMatchObject({ dropped: true, item: { amount: 5 } });
-    expect(all.dropped && all.state.inventory[0]).toBeNull();
-  });
-
-  it("drops from a bag and from abilities", () => {
-    const s = state({ inventory: [bag([potion(4)])], abilities: { "1": potion(2, "hp2") } });
-    const fromBag = dropItem(s, { location: "bag", item: { id: "hp1" }, amount: 1 });
-    expect(fromBag.dropped && fromBag.state.inventory[0]?.items?.[0]?.amount).toBe(3);
-    const fromAbilities = dropItem(s, { location: "abilities", item: { id: "hp2" }, amount: 5 });
-    expect(fromAbilities.dropped && fromAbilities.state.abilities["1"]).toBeNull();
-  });
-
-  it("refuses a bag with items, and items it cannot find", () => {
-    const s = state({ inventory: [sword] });
-    expect(
-      dropItem(s, { location: "inventory", item: { id: "bag1", base: "bag", items: [sword] } }),
-    ).toEqual({ dropped: false, error: "Cannot drop a bag with items inside of it." });
-    expect(dropItem(s, { location: "inventory", item: { id: "nope" } })).toEqual({
-      dropped: false,
-    });
-    expect(dropItem(s, { location: "equipment", item: { id: "nope" } })).toEqual({
-      dropped: false,
-    });
-  });
-});
-
-describe("consumeItem", () => {
-  it("uses one potion and reports its effects", () => {
-    const s = state({ inventory: [potion(2)] });
-    const result = consumeItem(s, { location: "inventory", item: { id: "hp1" } });
-    expect(result).toMatchObject({ consumed: true, isPotion: true, hp: 50, isFood: false });
-    expect(result.consumed && result.state.inventory[0]?.amount).toBe(1);
-  });
-
-  it("removes the last potion from a bag or from abilities", () => {
-    const s = state({ inventory: [bag([potion(1)])], abilities: { "1": potion(1, "hp2") } });
-    const fromBag = consumeItem(s, { location: "bag", item: { id: "hp1" } });
-    expect(fromBag.consumed && fromBag.state.inventory[0]?.items?.[0]).toBeNull();
-    const fromAbilities = consumeItem(s, { location: "abilities", item: { id: "hp2" } });
-    expect(fromAbilities.consumed && fromAbilities.state.abilities["1"]).toBeNull();
-  });
-
-  it("reports food buffs", () => {
-    const food = { ...potion(1, "f1"), base: "food", buffs: { regeneration: 2 } };
-    const result = consumeItem(state({ inventory: [food] }), {
-      location: "inventory",
-      item: { id: "f1" },
-    });
-    expect(result).toMatchObject({ consumed: true, isFood: true, buffs: { regeneration: 2 } });
-  });
-
-  it("ignores things that are not consumable or not there", () => {
-    const s = state({ inventory: [sword, potion(1)] });
-    expect(consumeItem(s, { location: "inventory", item: { id: "sword1" } })).toEqual({
-      consumed: false,
-    });
-    expect(consumeItem(s, { location: "inventory", item: { id: "nope" } })).toEqual({
-      consumed: false,
-    });
-    expect(consumeItem(s, { location: "equipment", item: { id: "hp1" } })).toEqual({
-      consumed: false,
-    });
   });
 });

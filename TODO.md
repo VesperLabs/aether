@@ -69,8 +69,8 @@ Found during the migration and left alone so behaviour stayed identical. Fix aft
 - [ ] **Party:** pending invites aren't cleaned up when the inviter leaves or the party disbands
 - [ ] **Party:** the leave message can read "undefined has left the party"
 - [ ] **Loot:** map-loot spawning throws if `buildItem` returns null for an unknown item
-- [ ] **Inventory:** selling credits gold even when no item was removed (quantity larger than the stack); bag and ability sells don't check the stack size at all
-- [ ] **Inventory:** the shop checks `item.slot === "stackable"` where it likely means `type`, so some bought stackables get a new id and never merge
+- [x] **Inventory:** selling credits gold even when no item was removed (quantity larger than the stack); bag and ability sells don't check the stack size at all
+- [x] **Inventory:** the shop checks `item.slot === "stackable"` where it likely means `type`, so some bought stackables get a new id and never merge
 - [ ] **Inventory:** dropping on bag slot 0 counts as "dropped on the bag", and bags with an empty `items` array always answer "Bag is full"
 - [ ] **Inventory:** `findBagItemById` returns the last matching bag, but update and delete touch the first match in every bag
 - [ ] **Inventory:** consuming food with no `buffs` throws after the item was already removed

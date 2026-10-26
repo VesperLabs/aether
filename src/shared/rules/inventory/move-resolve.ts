@@ -51,7 +51,7 @@ function resolveFrom(
     case "shop": {
       const { npcId, slot: shopSlot } = context.shop ?? {};
       // Only stackable items keep their shelf id; everything else gets a unique id when bought.
-      const isStackable = shopSlot?.item?.slot === "stackable";
+      const isStackable = shopSlot?.item?.type === "stackable";
       if (!npcId) return reject();
       if (!shopSlot?.stock) return reject();
       if (to.location === "shop") return reject();
@@ -126,7 +126,7 @@ export function resolveMove(
 
   // Same non-stackable item, nothing to do.
   if (from.itemId === to.itemId) {
-    if (fromItem?.slot !== "stackable" && toItem?.slot !== "stackable") return reject();
+    if (fromItem?.type !== "stackable" && toItem?.type !== "stackable") return reject();
   }
   return { from, to, fromItem, toItem };
 }
