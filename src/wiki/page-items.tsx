@@ -1,49 +1,25 @@
 import { Box, Flex } from "@/ui";
-import { Slot } from "./slot";
+import { Slot, type WikiItem } from "./slot";
 import { itemList } from "@/shared/content";
 import { RowTitle } from "./row-title";
 import { Fragment } from "react";
+
+/** The item list as the wiki reads it: type, then rarity, then key. */
+const listedItems = itemList as unknown as Record<string, Record<string, Record<string, WikiItem>>>;
+
+const RARITIES = ["common", "magic", "rare", "unique", "set"];
 
 export function PageItems() {
   const types = Object.keys(itemList);
   //const rarities = ["common", "set", "unique"];
   return types?.map((type) => {
-    const commonItems = Object.entries(itemList?.[type]?.["common"] || {})?.map(
-      ([key, v]: [string, Item]) => ({
+    const allItems = RARITIES.flatMap((rarity) =>
+      Object.entries(listedItems[type]?.[rarity] || {}).map(([key, v]) => ({
         key,
-        rarity: "common",
+        rarity,
         ...v,
-      }),
+      })),
     );
-    const magicItems = Object.entries(itemList?.[type]?.["magic"] || {})?.map(
-      ([key, v]: [string, Item]) => ({
-        key,
-        rarity: "magic",
-        ...v,
-      }),
-    );
-    const rareItems = Object.entries(itemList?.[type]?.["rare"] || {})?.map(
-      ([key, v]: [string, Item]) => ({
-        key,
-        rarity: "rare",
-        ...v,
-      }),
-    );
-    const uniqueItems = Object.entries(itemList?.[type]?.["unique"] || {})?.map(
-      ([key, v]: [string, Item]) => ({
-        key,
-        rarity: "unique",
-        ...v,
-      }),
-    );
-    const setItems = Object.entries(itemList?.[type]?.["set"] || {})?.map(
-      ([key, v]: [string, Item]) => ({
-        key,
-        rarity: "set",
-        ...v,
-      }),
-    );
-    const allItems = [...commonItems, ...magicItems, ...rareItems, ...uniqueItems, ...setItems];
 
     return (
       <Flex key={type} sx={{ gap: 2, flexDirection: "column", mb: 4 }}>
@@ -51,7 +27,7 @@ export function PageItems() {
         {[...Array(99)]
           .map((_, index) => index + 1)
           .map((ilvl, idx) => {
-            const items = allItems?.filter((i: any) => i?.ilvl === ilvl);
+            const items = allItems?.filter((i) => i?.ilvl === ilvl);
             const hasItems = items?.length > 0;
             return hasItems ? (
               <Fragment key={`${ilvl}-${idx}`}>

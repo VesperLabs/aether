@@ -1,6 +1,7 @@
+import type { ComponentProps } from "react";
 import { Flex, Icon } from "@/ui";
 
-const resolveTypeIcon = (type) => {
+const resolveTypeIcon = (type: string) => {
   if (type === "shield") {
     type = "handLeft";
   }
@@ -22,7 +23,12 @@ const resolveTypeIcon = (type) => {
 
 export { resolveTypeIcon };
 
-export const RowTitle = ({ icon, sx, children, ...props }: any) => (
+export const RowTitle = ({
+  icon,
+  sx,
+  children,
+  ...props
+}: ComponentProps<typeof Flex> & { icon?: string }) => (
   <Flex
     sx={{
       gap: 1,

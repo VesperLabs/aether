@@ -1,12 +1,24 @@
 import { useLayoutEffect, useState, Fragment } from "react";
-import { resolveAsset, buffList, ItemBuilder, itemSetList } from "@/shared/content";
+import {
+  resolveAsset,
+  buffList,
+  ItemBuilder,
+  itemSetList,
+  type BuiltItem,
+  type BuffName,
+  type TriggerDefinition,
+  type ItemSetName,
+} from "@/shared/content";
 import { formatStats } from "@/ui/format-stats";
 import { assetToCanvas } from "@/ui/image-tint";
 import { Box, Icon, STYLE_NON_EMPTY, SLOT_SIZE, Tooltip, Text, Flex, Divider } from "@/ui";
 import { Label, TextDivider, TOOLTIP_STYLE } from ".";
 
-export function Slot({ item }) {
-  const [imageData, setImageData] = useState<any>();
+/** An item as the wiki lists it: the definition with its tier, not an item a player owns. */
+export type WikiItem = Partial<BuiltItem>;
+
+export function Slot({ item }: { item: WikiItem }) {
+  const [imageData, setImageData] = useState<string>();
   /* Loads the item canvas data out of the texture */
   useLayoutEffect(() => {
     if (!item) return;
@@ -18,7 +30,7 @@ export function Slot({ item }) {
   return (
     <Box
       sx={{
-        ...STYLE_NON_EMPTY({ rarity: item?.rarity }),
+        ...STYLE_NON_EMPTY({ rarity: item?.rarity as string }),
         width: SLOT_SIZE,
         height: SLOT_SIZE,
         "&:hover > .icon": {
@@ -43,7 +55,7 @@ export function Slot({ item }) {
   );
 }
 
-const ItemTooltip = ({ item }) => {
+const ItemTooltip = ({ item }: { item: WikiItem }) => {
   const stats = formatStats(item?.stats || {});
   const effects = formatStats(item?.effects || {});
   const percentStats = formatStats(item?.percentStats || {});
@@ -51,8 +63,8 @@ const ItemTooltip = ({ item }) => {
   const buffs = item?.buffs || {};
   const triggers = item?.triggers || [];
 
-  const setBonus = ItemBuilder.getSetInfo(item?.setName);
-  const numSetPieces = itemSetList?.[item?.setName]?.pieces;
+  const setBonus = ItemBuilder.getSetInfo(item?.setName as string);
+  const numSetPieces = itemSetList?.[item?.setName as ItemSetName]?.pieces;
 
   const setStats = formatStats(setBonus?.stats || {});
 
@@ -91,12 +103,18 @@ const ItemTooltip = ({ item }) => {
         })}
         {Object.keys(buffs).map((buffName) => {
           const buffLevel = buffs[buffName];
+          const buff = buffList?.[buffName as BuffName] as
+            | { duration?: number; stats?: Record<string, number> }
+            | undefined;
           const buffStats = formatStats({
-            duration: Number(buffList?.[buffName]?.duration) * Number(buffLevel),
-            ...Object.entries(buffList?.[buffName]?.stats || {}).reduce((acc, [key, value]) => {
-              acc[key] = Number(value) * Number(buffLevel);
-              return acc;
-            }, {}),
+            duration: Number(buff?.duration) * Number(buffLevel),
+            ...Object.entries(buff?.stats || {}).reduce<Record<string, number>>(
+              (acc, [key, value]) => {
+                acc[key] = Number(value) * Number(buffLevel);
+                return acc;
+              },
+              {},
+            ),
           });
           return (
             <Fragment key={buffName}>
@@ -113,7 +131,7 @@ const ItemTooltip = ({ item }) => {
             </Fragment>
           );
         })}
-        {triggers?.map((trigger: Trigger, idx) => {
+        {triggers?.map((trigger: TriggerDefinition, idx: number) => {
           return (
             <Text key={idx}>
               <Label>
@@ -154,7 +172,7 @@ const ItemTooltip = ({ item }) => {
                 <Label>{key}:</Label> {setStats[key]}
               </Text>
             ))}
-            {setBonus?.triggers?.map((trigger: Trigger, idx) => {
+            {setBonus?.triggers?.map((trigger: TriggerDefinition, idx: number) => {
               return (
                 <Text key={idx} color={"set"}>
                   <Label>
@@ -171,7 +189,7 @@ const ItemTooltip = ({ item }) => {
         {item?.space && (
           <>
             <TextDivider>Space</TextDivider>
-            {`${item?.items?.filter((i: Item) => i)?.length || 0} / ${item?.space}`}
+            {`${item?.items?.filter((i) => i)?.length || 0} / ${item?.space}`}
           </>
         )}
         <Divider />

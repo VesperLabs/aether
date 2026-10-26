@@ -14,6 +14,7 @@ export type ButtonProps = Omit<
 > & {
   icon?: string;
   href?: string;
+  target?: string;
   disabled?: boolean;
   onClick?: PressHandler;
   onTouchStart?: PressHandler;

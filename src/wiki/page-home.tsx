@@ -33,8 +33,7 @@ export function PageHome() {
       <Link href={process.env.GAME_URL}>
         <Box
           as="img"
-          //@ts-ignore
-          src="./assets/screenshots/1.png"
+          {...{ src: "./assets/screenshots/1.png" }}
           sx={{
             display: "block",
             maxWidth: "1440px",

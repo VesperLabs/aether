@@ -1,13 +1,16 @@
 import { useLayoutEffect, useState } from "react";
-import { assetList } from "@/shared/content";
+import { assetList, type NastyDefinition } from "@/shared/content";
 import { assetToCanvas } from "@/ui/image-tint";
 import { Box, Icon, STYLE_NON_EMPTY, Tooltip, Text, Flex } from "@/ui";
 import { TOOLTIP_STYLE } from ".";
 
 const SLOT_SIZE = 100;
 
-export function NpcRender({ model }) {
-  const [imageData, setImageData] = useState<any>();
+/** A mob from the content data, with the key the wiki lists it under. */
+export type WikiNpc = Partial<NastyDefinition> & { key?: string };
+
+export function NpcRender({ model }: { model: WikiNpc }) {
+  const [imageData, setImageData] = useState<string>();
   /* Loads the model canvas data out of the textures */
   useLayoutEffect(() => {
     if (!model) return;
@@ -53,7 +56,7 @@ export function NpcRender({ model }) {
   );
 }
 
-const ModelTooltip = ({ model }) => {
+const ModelTooltip = ({ model }: { model: WikiNpc }) => {
   return (
     <Tooltip id={model?.key}>
       <Flex sx={TOOLTIP_STYLE}>

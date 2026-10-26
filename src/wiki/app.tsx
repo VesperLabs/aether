@@ -9,7 +9,7 @@ import { PageHome } from "./page-home";
 import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { fetchMetrics } from "./api";
 import { ModalConnecting } from "./modal-connecting";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 const queryClient = new QueryClient();
 
@@ -43,9 +43,9 @@ export const App = () => {
               <RouterLink href="/monsters">Monsters</RouterLink>
             </Flex>
             <Box>
-              <Route path="/" component={PageHome as any} />
-              <Route path="/items" component={PageItems as any} />
-              <Route path="/monsters" component={PageNasties as any} />
+              <Route path="/" component={PageHome} />
+              <Route path="/items" component={PageItems} />
+              <Route path="/monsters" component={PageNasties} />
               <Route path="/players" component={PagePlayers} />
               <Route path="/keepers" component={PagePlayers} />
             </Box>
@@ -57,7 +57,7 @@ export const App = () => {
   );
 };
 
-const LoadingProvider = ({ children }) => {
+const LoadingProvider = ({ children }: { children: ReactNode }) => {
   const [polling, setPolling] = useState(() => !shouldSkipWarmupModal());
 
   const { isSuccess, isError } = useQuery({

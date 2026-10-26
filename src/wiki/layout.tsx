@@ -1,22 +1,22 @@
 import { Text, Divider, Flex } from "@/ui";
-import { ThemeUIStyleObject } from "theme-ui";
+import type { ComponentProps, ReactNode } from "react";
+import type { ThemeUIStyleObject } from "theme-ui";
 import { useLocation, Link } from "wouter";
 
-export const Label = (props) => <Text sx={{ fontWeight: "normal" }} {...props} />;
+export const Label = (props: ComponentProps<typeof Text>) => <Text sx={{ fontWeight: "normal" }} {...props} />;
 
-export const TextDivider = ({ children, sx }: any) => (
+export const TextDivider = ({ children, sx }: { children?: ReactNode; sx?: ThemeUIStyleObject }) => (
   <>
     <Divider sx={{ pt: 2, zIndex: -1 }} />
     <Text sx={{ mt: "-17px", pb: 2, mb: -1, color: "gray.500", ...sx }}>{children}</Text>
   </>
 );
 
-export const RouterLink = ({ href, children }) => {
+export const RouterLink = ({ href, children }: { href: string; children?: ReactNode }) => {
   const [page] = useLocation();
   const isActive = href === page;
   return (
-    //@ts-ignore
-    <Flex as={Link} href={href} sx={{ color: isActive ? "set" : "magic" }}>
+    <Flex as={Link} {...{ href }} sx={{ color: isActive ? "set" : "magic" }}>
       {children}
     </Flex>
   );
@@ -31,7 +31,7 @@ export const TOOLTIP_STYLE: ThemeUIStyleObject = {
   textTransform: "capitalize",
 };
 
-export const STATIC_ROW_STYLES = {
+export const STATIC_ROW_STYLES: ThemeUIStyleObject = {
   gap: 3,
   position: "absolute",
   borderRadius: 0,
