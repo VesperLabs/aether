@@ -45,7 +45,7 @@ tsx and esbuild read the alias from tsconfig on their own. Vite and Vitest read 
 
 ### `shared/rules/`
 
-Every folder in `rules/` is one gameplay feature: `movement`, `combat`, `spells`, `buffs`, `stats`, `inventory`, `loot`, `ai`, `quests`, `party`, `chat`.
+Every folder in `rules/` is one gameplay feature: `movement`, `combat`, `spells`, `buffs`, `stats`, `inventory`, `loot`, `npc-behavior`, `quests`, `party`, `chat`.
 
 Two things in `rules/` are not features:
 

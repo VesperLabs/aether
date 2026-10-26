@@ -1,35 +1,25 @@
 import { ServerCharacter as Character } from "./character";
 import { createSpell } from "./spell-adapter";
-import { isRespawnDue } from "@/shared/rules/combat";
+import { buildNpcBehaviorInput } from "./npc-behavior-adapter";
+import { buildEquipment, buildShop } from "./npc-build";
+import {
+  checkInRange,
+  decideNpcAction,
+  decideTalkingEnded,
+  shouldRespawn,
+  type NpcAction,
+  type NpcDecision,
+} from "@/shared/rules/npc-behavior";
 import { canHitPlayer } from "@/shared/rules/spells";
-import { ItemBuilder, spellDetails } from "@/shared/content";
-import { BUFF_SPELLS, calculateStealthVisibilityPercent, distanceTo } from "@/shared/utils";
-import { getCharacterDirection, sleep } from "./utils";
-import { SHOP_INFLATION } from "@/shared/rules/inventory";
-import crypto from "crypto";
+import { getCharacterDirection } from "@/shared/rules/world";
 
-const AGGRO_KITE_RANGE = 220;
-const NPC_SHOULD_ATTACK_RANGE = 8;
-// both combined is time between attacks. game designed to have ~ 700 total. (500 here + stats.attackDelay below)
-const NPC_ATTACK_ADDED_DELAY = 400;
-const NPC_WARNING_DELAY = 100;
+const sleep = (delay: number) => new Promise((resolve) => setTimeout(resolve, delay));
 
-const buildEquipment = (equipment: Record<string, Array<string>>) =>
-  Object?.entries(equipment).reduce((acc, [slot, itemArray]: [string, BuildItem]) => {
-    acc[slot] = itemArray?.length ? ItemBuilder.buildItem(...itemArray) : null;
-    return acc;
-  }, {});
-
-const buildShop = (shop: Array<any>) => {
-  return shop?.reduce((acc, entry) => {
-    const id = crypto.randomUUID();
-    const item: Item | void = ItemBuilder.buildItem(...entry.item);
-    if (item) item.cost = Math.round(item.cost * SHOP_INFLATION);
-    acc.push({ id, ...entry, item });
-    return acc;
-  }, []);
-};
-
+/**
+ * An NPC. What it does each tick is decided by `rules/npc-behavior`; this class builds the input
+ * for it and carries out the answer with the movement, physics and socket code (Phase 4 removes
+ * Phaser from the server).
+ */
 export class Npc extends Character implements Npc {
   public respawnTime: number;
   public drops: Array<Drop>;
@@ -81,7 +71,7 @@ export class Npc extends Character implements Npc {
   tryRespawn() {
     if (!this.state.isDead) return;
     if (
-      isRespawnDue({
+      shouldRespawn({
         deadTime: this.state.deadTime,
         respawnTime: this.respawnTime,
         now: Date.now(),
@@ -100,55 +90,35 @@ export class Npc extends Character implements Npc {
     }
   }
   checkInRange(target: any, range: number) {
-    if (!target) return;
-    const thisRadius = this?.bodySize || 8;
-    const targetRadius = target?.bodySize || 8;
-    const distance = distanceTo(this, target) - (thisRadius + targetRadius);
-    return distance <= range;
+    return checkInRange(this, target, range);
   }
-  checkAttackReady(): any {
-    const fullAttackDelay = this?.stats?.attackDelay + NPC_ATTACK_ADDED_DELAY;
-    if (Date.now() - this.state.lastAttack > fullAttackDelay) {
-      this.state.npcAttackReady = true;
-      this.state.isAttacking = false;
-    }
-  }
-  // help me write this function.  need to check if the NPC is adjacent to a collision tile.
+  // is the NPC adjacent to a collision tile?
   isNearCollideTile() {
-    let npcTileX = this.room.tileMap.worldToTileX(this.x); // Convert NPC's world x-coordinate to tile x-coordinate
-    let npcTileY = this.room.tileMap.worldToTileY(this.y); // Convert NPC's world y-coordinate to tile y-coordinate
+    const { tileMap, collideLayer } = this.room;
+    const npcTileX = tileMap.worldToTileX(this.x);
+    const npcTileY = tileMap.worldToTileY(this.y);
 
-    // Define all neighboring tile coordinates (including diagonals)
-    const neighboringTiles = [
-      { x: npcTileX - 1, y: npcTileY }, // Left
-      { x: npcTileX + 1, y: npcTileY }, // Right
-      { x: npcTileX, y: npcTileY - 1 }, // Up
-      { x: npcTileX, y: npcTileY + 1 }, // Down
-      { x: npcTileX - 1, y: npcTileY - 1 }, // Diagonal Up-Left
-      { x: npcTileX + 1, y: npcTileY - 1 }, // Diagonal Up-Right
-      { x: npcTileX - 1, y: npcTileY + 1 }, // Diagonal Down-Left
-      { x: npcTileX + 1, y: npcTileY + 1 }, // Diagonal Down-Right
-    ];
-
-    // Check if any neighboring tile has a collision property
-    for (const tileCoords of neighboringTiles) {
-      const tile = this.room.collideLayer?.getTileAt(tileCoords.x, tileCoords.y);
-      if (tile?.properties?.collides) {
-        return true; // Found a neighboring collision tile
+    // All neighboring tiles, including diagonals
+    for (let dx = -1; dx <= 1; dx++) {
+      for (let dy = -1; dy <= 1; dy++) {
+        if (dx === 0 && dy === 0) continue;
+        if (collideLayer?.getTileAt(npcTileX + dx, npcTileY + dy)?.properties?.collides) {
+          return true;
+        }
       }
     }
-
-    return false; // No neighboring collision tile found
+    return false;
   }
   isOutOfBounds() {
-    let npcTileX = this.room.tileMap.worldToTileX(this.x); // Convert NPC's world x-coordinate to tile x-coordinate
-    let npcTileY = this.room.tileMap.worldToTileY(this.y); // Convert NPC's world y-coordinate to tile y-coordinate
+    const { tileMap, collideLayer } = this.room;
+    const npcTileX = tileMap.worldToTileX(this.x);
+    const npcTileY = tileMap.worldToTileY(this.y);
     if (
-      this.x >= 0 && // Check if this is within left boundary of tilemap
-      this.y >= 0 && // Check if this is within top boundary of tilemap
-      this.x < this.room.tileMap?.widthInPixels && // Check if this is within right boundary of tilemap
-      this.y < this.room.tileMap?.heightInPixels && // Check if this is within bottom boundary of tilemap
-      !this.room.collideLayer?.getTileAt(npcTileX, npcTileY)?.properties?.collides // Check for collision with tile properties
+      this.x >= 0 &&
+      this.y >= 0 &&
+      this.x < tileMap?.widthInPixels &&
+      this.y < tileMap?.heightInPixels &&
+      !collideLayer?.getTileAt(npcTileX, npcTileY)?.properties?.collides
     ) {
       return false;
     }
@@ -156,7 +126,7 @@ export class Npc extends Character implements Npc {
   }
   update(time: number, delta: number) {
     // Destructure relevant properties from 'this'
-    const { scene, state, room } = this ?? {};
+    const { state, room } = this ?? {};
 
     // skip updates if no one is in the room
     if (!room?.playerManager?.hasPlayers()) {
@@ -177,62 +147,58 @@ export class Npc extends Character implements Npc {
     // Regenerate health points
     this.doRegen();
 
-    // Check if attack is ready
-    this.checkAttackReady();
-
-    if (state?.isAggro) {
-      this.handleAggroState();
-    }
-
-    // Get target player based on locked player ID
-    const targetPlayer = scene?.players?.[state?.lockedPlayerId] ?? null;
-
-    // If we killed the player already, do not target them anymore
-    if (targetPlayer?.state?.isDead) {
-      this.setLockedPlayerId(null);
-    }
-
-    if (this.hasBuff("stun")) {
-      return this.standStill();
-    }
-
-    this.chaseOrMove({ targetPlayer, delta, time });
-    this.intendAttack({ targetPlayer });
-    this.intendCastSpell({ targetPlayer });
+    const decision = decideNpcAction(buildNpcBehaviorInput(this, time, delta), Math.random);
+    this.applyDecision(decision, delta);
   }
-  // targetPlayer is only supplied when we already have a lockedtar
-  handleAggroState() {
-    const { room, state, scene } = this ?? {};
+  applyDecision(decision: NpcDecision, delta: number) {
+    const { state, scene } = this;
+    if (state.npcAttackReady !== decision.npcAttackReady) {
+      state.npcAttackReady = decision.npcAttackReady;
+    }
+    if (state.isAttacking !== decision.isAttacking) state.isAttacking = decision.isAttacking;
+    if (decision.resetAttackTimer) state.lastAttack = Date.now();
+    if (state.lockedPlayerId !== decision.lockedPlayerId) {
+      state.lockedPlayerId = decision.lockedPlayerId;
+    }
+    if (decision.bubbleMessage !== undefined) state.bubbleMessage = decision.bubbleMessage;
 
-    const nearestPlayer =
-      scene?.players?.[state?.lockedPlayerId] || room?.playerManager?.getNearestPlayer(this);
-
-    if (!nearestPlayer) {
-      return false; // Early return if no nearest player found
+    const targetPlayer = scene?.players?.[decision.targetPlayerId];
+    if (decision.expireStealthOfPlayerId) {
+      (scene?.players?.[decision.expireStealthOfPlayerId] as any)?.expireBuff("stealth");
     }
 
-    const npcAggroRange = state?.lockedPlayerId
-      ? AGGRO_KITE_RANGE // running away from the NPC
-      : calculateNpcAggroRange(this, AGGRO_KITE_RANGE); // NPC has not aggroed us yet
-    if (!this.checkInRange(nearestPlayer, npcAggroRange)) {
-      return false; // Early return if player is out of range
-    }
-
-    const stealthBuff = nearestPlayer.getBuff("stealth");
-    if (stealthBuff) {
-      const newNpcAggroRange = calculateStealthAggroRange({
-        nearestPlayer,
-        npc: this,
-        npcAggroRange,
-        stealthBuff,
-      });
-      if (!this.checkInRange(nearestPlayer, newNpcAggroRange)) {
-        return false; // Early return if stealth player is out of adjusted range
+    this.performMovement(decision.movement, targetPlayer, delta);
+    this.performAction(decision.action, targetPlayer);
+  }
+  performMovement(movement: NpcDecision["movement"], targetPlayer: ServerPlayer, delta: number) {
+    switch (movement.type) {
+      case "standStill":
+        return this.standStill();
+      case "chase":
+        return movement.pathed
+          ? this.moveTowardPointPathed(targetPlayer)
+          : this.moveTowardPoint(targetPlayer);
+      case "returnToSpawn":
+        return movement.pathed
+          ? this.moveTowardPointPathed(this.startingCoords)
+          : this.moveTowardPoint(this.startingCoords);
+      case "waitAtSpawn":
+        setTimeout(() => {
+          this.direction = "down";
+        }, movement.faceDownAfterMs);
+        return this.standStill();
+      case "talk":
+        return this.checkTalking();
+      case "wander": {
+        const { type: _type, ...change } = movement;
+        Object.assign(this, change);
+        return this.body.setVelocity(this.vx, this.vy);
       }
     }
-
-    this.setLockedPlayerId(nearestPlayer?.socketId);
-    return true;
+  }
+  performAction(action: NpcAction, targetPlayer: ServerPlayer) {
+    if (action.type === "attack") this.intendAttack(action, targetPlayer);
+    if (action.type === "cast") this.intendCastSpell(action, targetPlayer);
   }
   setLockedPlayerId(id: string) {
     // If they are switching targets
@@ -262,55 +228,15 @@ export class Npc extends Character implements Npc {
 
     scene.io.to(room?.name).emit("npcCastSpell", { id, castAngle, abilitySlot });
   }
-  async intendCastSpell({ targetPlayer }) {
-    if (!this.checkCastReady() || this?.state?.isDead || this?.state?.isAiming) return;
-
-    const { ability, abilitySlot } = this.findSuitableAbility(targetPlayer);
-
-    if (ability) {
-      this.state.isAiming = true;
-      await sleep(NPC_WARNING_DELAY + this?.stats?.castDelay);
-      const castAngle = targetPlayer
-        ? Math.atan2(targetPlayer.y - this.y, targetPlayer.x - this.x)
-        : 0;
-      this.doCast({ targetPlayer, abilitySlot, ability, castAngle });
-      this.state.isAiming = false;
-    }
-  }
-  findSuitableAbility(targetPlayer) {
-    for (const [slot, spell] of Object.entries(this.abilities)) {
-      if (this.isSpellCastable(spell) && this.isTargetSuitableForSpell(targetPlayer, spell)) {
-        return {
-          ability: spell,
-          abilitySlot: slot,
-        };
-      }
-    }
-    return {};
-  }
-  isSpellCastable(spell) {
-    const spellName = spell?.base;
-    const details = spellDetails?.[spellName];
-    return details && this.checkCastReady(spellName);
-  }
-  isTargetSuitableForSpell(targetPlayer, spell) {
-    const spellName = spell?.base;
-    const details = spellDetails?.[spellName];
-
-    // attack spells
-    if (targetPlayer && details?.allowedTargets?.includes("enemy") && details?.npcCastRange) {
-      const [min, max] = details.npcCastRange;
-      return this.checkInRange(targetPlayer, max) && !this.checkInRange(targetPlayer, min);
-    }
-    // auras
-    if (!targetPlayer && details?.allowedTargets?.includes("self")) {
-      if (BUFF_SPELLS.includes(spellName)) {
-        const targetProbability = 0.01; // 1% chance to consider the target suitable
-        const randomCheck = Math.random() < targetProbability; // Random check
-        // if we already have the buff, don't recast
-        return !this.hasBuff(spellName) && randomCheck;
-      }
-    }
+  async intendCastSpell(action: Extract<NpcAction, { type: "cast" }>, targetPlayer: ServerPlayer) {
+    const { ability, abilitySlot } = action;
+    this.state.isAiming = true;
+    await sleep(action.windupMs);
+    const castAngle = targetPlayer
+      ? Math.atan2(targetPlayer.y - this.y, targetPlayer.x - this.x)
+      : 0;
+    this.doCast({ targetPlayer, abilitySlot, ability, castAngle });
+    this.state.isAiming = false;
   }
   doAttack({ target, direction, castAngle }) {
     const { scene, room, id, state } = this ?? {};
@@ -346,108 +272,26 @@ export class Npc extends Character implements Npc {
 
     scene.io.to(room?.name).emit("npcAttack", { id, count, direction, castAngle });
   }
-  async intendAttack({ targetPlayer }) {
-    const { isAttacking, npcAttackReady, isAiming } = this?.state ?? {};
+  async intendAttack(action: Extract<NpcAction, { type: "attack" }>, targetPlayer: ServerPlayer) {
+    this.direction = action.direction;
+    this.state.isAiming = true;
 
-    if (!targetPlayer) return;
+    let castAngle = (this.state.lastAngle = action.castAngle);
+    const direction = `${this.direction}`;
+    const target = {
+      id: targetPlayer.id,
+      x: targetPlayer.x,
+      y: targetPlayer.y,
+    };
 
-    // Determine if player should attack target player
-    const shouldAttackPlayer =
-      !isAttacking && !isAiming && this.checkInRange(targetPlayer, this.getShouldAttackRange());
+    await sleep(action.windupMs);
 
-    if (shouldAttackPlayer && npcAttackReady) {
-      this.direction = getCharacterDirection(this, targetPlayer);
-      this.state.isAiming = true;
-
-      let castAngle = (this.state.lastAngle = Math.atan2(
-        targetPlayer.y - this.y,
-        targetPlayer.x - this.x,
-      ));
-
-      const direction = `${this.direction}`;
-
-      const target = {
-        id: targetPlayer.id,
-        x: targetPlayer.x,
-        y: targetPlayer.y,
-      };
-
-      await sleep(NPC_WARNING_DELAY + this?.stats?.attackDelay);
-
-      if (this.hasRangedWeapon()) {
-        castAngle = Math.atan2(targetPlayer.y - this.y, targetPlayer.x - this.x);
-      }
-
-      this.doAttack({ target, direction, castAngle });
-      this.state.isAiming = false;
-    }
-  }
-  stillAggro() {
-    return this.state.lockedPlayerId && Date.now() - this.state.lastCombat > 5000;
-  }
-  chaseOrMove({ targetPlayer, delta, time }) {
-    // Check if player is in range for aggro
-
-    if (targetPlayer) {
-      const isInRange = this.handleAggroState();
-      const shouldStop =
-        this.checkInRange(targetPlayer, this.getShouldAttackRange()) ||
-        this.state.isAiming ||
-        this.state.isAttacking;
-
-      // Determine if player should chase target
-      const shouldChasePlayer = isInRange && !targetPlayer?.state?.isDead;
-
-      // Aggroed
-      if (shouldChasePlayer) {
-        targetPlayer.expireBuff("stealth");
-        this.state.bubbleMessage = this.state.isAiming ? "0xFFAAAA!" : "?";
-        if (shouldStop) {
-          return this.standStill();
-        }
-        if (this.isNearCollideTile()) {
-          return this.moveTowardPointPathed(targetPlayer);
-        } else {
-          return this.moveTowardPoint(targetPlayer);
-        }
-      }
+    if (this.hasRangedWeapon()) {
+      castAngle = Math.atan2(targetPlayer.y - this.y, targetPlayer.x - this.x);
     }
 
-    // Otherwise just make them move
-    this.setLockedPlayerId(null);
-    this.state.bubbleMessage = null;
-
-    /* If the NPC is out of bounds, make it try to get back in bounds */
-    if (this.isOutOfBounds()) {
-      /* TODO: Improve this so that it moves toward the nearest open tile instead */
-      return this.moveTowardPointPathed(this.startingCoords);
-    }
-
-    if (this.state.isStatic) {
-      return this.moveToSpawnAndWait(delta);
-    }
-
-    if (this.talkingIds?.length > 0) {
-      return this.checkTalking();
-    }
-
-    if (this.state.walkRange) {
-      if (distanceTo(this, this.startingCoords) >= this.state.walkRange) {
-        return this.moveTowardPoint(this.startingCoords);
-      }
-    }
-
-    return this.moveRandomly(time);
-  }
-  getShouldAttackRange() {
-    if (this?.hasRangedWeaponLeft()) {
-      return this?.getWeaponRange("handLeft");
-    }
-    if (this?.hasRangedWeaponRight()) {
-      return this?.getWeaponRange("handRight");
-    }
-    /* TODO: melee attack range too? */
-    return NPC_SHOULD_ATTACK_RANGE;
+    this.doAttack({ target, direction, castAngle });
+    this.state.isAiming = false;
   }
   moveTowardPoint(coords: Coordinate) {
     const walkSpeed = this.stats.walkSpeed;
@@ -467,53 +311,10 @@ export class Npc extends Character implements Npc {
       }
     }
   }
-  moveRandomly(time: number) {
-    const changeDirectionDelay = 9; // Number of iterations before changing direction
-    const walkSpeed = this.stats.walkSpeed / 2.5;
-
-    if (time % changeDirectionDelay > 1) {
-      // Keep moving in the current direction
-      this.body.setVelocity(this.vx, this.vy);
-      return;
-    }
-
-    const randNumber = Math.floor(Math.random() * 7 + 1); // Adjusted the range to 1-4
-    switch (randNumber) {
-      case 1:
-        this.vx = -walkSpeed;
-        this.direction = "left";
-        break;
-      case 2:
-        this.vx = walkSpeed;
-        this.direction = "right";
-        break;
-      case 3:
-        this.vy = -walkSpeed;
-        this.direction = "up";
-        break;
-      case 4:
-        this.vy = walkSpeed;
-        this.direction = "down";
-        break;
-      default:
-        this.vy = 0;
-        this.vx = 0;
-    }
-    this.body.setVelocity(this.vx, this.vy);
-  }
   standStill() {
     this.vy = 0;
     this.vx = 0;
     return this.body.setVelocity(this.vx, this.vy);
-  }
-  moveToSpawnAndWait(delta: number) {
-    if (this.checkInRange(this.startingCoords, 1)) {
-      setTimeout(() => {
-        this.direction = "down";
-      }, delta * 4);
-      return this.standStill();
-    }
-    this.moveTowardPointPathed(this.startingCoords);
   }
   checkTalking() {
     const scene = this.scene;
@@ -521,14 +322,10 @@ export class Npc extends Character implements Npc {
     this.vx = 0;
     this.body.setVelocity(this.vx, this.vy);
 
-    for (const playerId of this.talkingIds) {
-      const player = scene?.players?.[playerId];
-      if (!this.checkInRange(player, 80)) {
-        const index = this.talkingIds.indexOf(playerId);
-        if (index !== -1) {
-          this.talkingIds.splice(index, 1);
-        }
-      }
+    const ended = decideTalkingEnded(this, this.talkingIds, (id) => scene?.players?.[id]);
+    for (const playerId of ended) {
+      const index = this.talkingIds.indexOf(playerId);
+      if (index !== -1) this.talkingIds.splice(index, 1);
     }
   }
   doHit(ids: Array<string>, abilitySlot: number): void {
@@ -560,31 +357,4 @@ export class Npc extends Character implements Npc {
 
     scene.io.to(roomName).emit("assignDamage", hitList);
   }
-}
-
-function calculateNpcAggroRange(npc, AGGRO_KITE_RANGE) {
-  return Math.min(10 + npc?.baseStats?.level * 8, AGGRO_KITE_RANGE);
-}
-
-function calculateStealthAggroRange({
-  nearestPlayer,
-  npc,
-  npcAggroRange,
-  stealthBuff,
-}: {
-  nearestPlayer: ServerPlayer;
-  npc: Npc;
-  npcAggroRange: integer;
-  stealthBuff: Buff;
-}) {
-  const newNpcAggroRange =
-    npcAggroRange *
-    calculateStealthVisibilityPercent({
-      distance: distanceTo(nearestPlayer, npc),
-      observer: npc,
-      player: nearestPlayer,
-      stealthBuff,
-      maxVisibilityRange: npcAggroRange,
-    });
-  return newNpcAggroRange;
 }
