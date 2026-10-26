@@ -13,7 +13,7 @@ export function applyHit(player: Player, hit: HitEffect, showDamage = true) {
 
   const { stats, scene } = player || {};
   const { type, elements } = hit || {};
-  const isDamage = hit?.amount < 0;
+  const isDamage = (hit?.amount ?? 0) < 0;
 
   if (showDamage) {
     scene.add.existing(new Damage(player.scene, player, hit));
@@ -21,7 +21,7 @@ export function applyHit(player: Player, hit: HitEffect, showDamage = true) {
 
   switch (type) {
     case "buff":
-      scene.add.existing(new Buff(player.scene, player, hit?.buffName));
+      scene.add.existing(new Buff(player.scene, player, hit?.buffName as string));
       break;
     case "death":
       stats.hp = 0;
@@ -32,7 +32,7 @@ export function applyHit(player: Player, hit: HitEffect, showDamage = true) {
       player.modifyStat("hp", hit?.amount);
       if (isDamage) {
         scene.add.existing(new Hit(player.scene, player, elements));
-        player.doFlashAnimation("0xFF0000");
+        player.doFlashAnimation(0xff0000);
         player.state.lastFlash = Date.now();
         player.state.isFlash = true;
       } else {

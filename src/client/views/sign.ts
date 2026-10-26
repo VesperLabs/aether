@@ -1,26 +1,36 @@
 import Phaser from "phaser";
+import type { SceneMain } from "@/client/scenes/main-scene";
 const Sprite = Phaser.GameObjects.Sprite;
 
-export class Sign extends Phaser.GameObjects.Container implements Sign {
+interface SignProperty {
+  name: string;
+  value: string;
+}
+
+/** A sign object from the map's "Signs" layer, which always has a position. */
+export type SignObject = Phaser.Types.Tilemaps.TiledObject & { x: number; y: number };
+
+export class Sign extends Phaser.GameObjects.Container {
   public text: string;
   public icon: string;
   declare body: Phaser.Physics.Arcade.Body;
   private sign: Phaser.GameObjects.Sprite;
   private talkMenu: Phaser.GameObjects.Sprite;
+  declare scene: SceneMain;
   public kind: string;
   public id: string;
   public subject: string;
 
-  constructor(scene: Phaser.Scene, args: Phaser.Types.Tilemaps.TiledObject) {
-    const { x, y, name, properties, id } = args ?? {};
+  constructor(scene: SceneMain, args: SignObject) {
+    const { x, y, name, properties, id } = args;
 
     super(scene, x, y);
     this.id = `${id}-${name}`;
     this.kind = "sign";
     this.name = name;
-    this.text = properties?.find((p) => p?.name === "text")?.value;
-    this.icon = properties?.find((p) => p?.name === "icon")?.value ?? "sign-blank";
-    this.subject = properties?.find((p) => p?.name === "subject")?.value ?? "Sign";
+    this.text = properties?.find((p: SignProperty) => p?.name === "text")?.value;
+    this.icon = properties?.find((p: SignProperty) => p?.name === "icon")?.value ?? "sign-blank";
+    this.subject = properties?.find((p: SignProperty) => p?.name === "subject")?.value ?? "Sign";
     this.scene = scene;
 
     // Enable arcade physics on the sign object
@@ -45,7 +55,6 @@ export class Sign extends Phaser.GameObjects.Container implements Sign {
     this.setTalkMenu();
   }
   setTalkMenu() {
-    /* @ts-ignore */
     const show = this.scene.hero.state.targetNpcId === this.id;
     return this.talkMenu.setVisible(show);
   }

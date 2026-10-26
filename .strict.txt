@@ -602,8 +602,6 @@ src/client/views/player.ts(383,34): error TS2554: Expected 1-2 arguments, but go
 src/client/views/sign.ts(21,35): error TS7006: Parameter 'p' implicitly has an 'any' type.
 src/client/views/sign.ts(22,35): error TS7006: Parameter 'p' implicitly has an 'any' type.
 src/client/views/sign.ts(23,38): error TS7006: Parameter 'p' implicitly has an 'any' type.
-src/client/views/spell.ts(87,24): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
-src/client/views/spell.ts(197,71): error TS2554: Expected 0 arguments, but got 1.
 src/client/views/weapon-sprite.ts(20,15): error TS7006: Parameter 'scene' implicitly has an 'any' type.
 src/client/views/weapon-sprite.ts(20,22): error TS7006: Parameter 'x' implicitly has an 'any' type.
 src/client/views/weapon-sprite.ts(20,25): error TS7006: Parameter 'y' implicitly has an 'any' type.

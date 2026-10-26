@@ -9,6 +9,8 @@ import { Spell } from "./spell";
 import { getSpinDirection } from "@/client/input/spin-direction";
 import { applyAppearance, createSpriteLayers } from "./player-layers";
 import { applyHit, type HitEffect } from "./player-hit";
+import type { LootItem } from "./loot-item";
+import { toTint } from "./tint";
 import type { Bubble } from "./bubble";
 import type { Bar } from "./bar";
 import type { BuffRack } from "./buff-rack";
@@ -26,22 +28,37 @@ const PLAYER_GRAB_RANGE = 32;
 
 type Sprite = Phaser.GameObjects.Sprite;
 
+/** Where each hand goes on each animation frame, per race (the `weaponAtlas` json). */
+interface HandOffset {
+  x: number;
+  y: number;
+  flipX: boolean;
+  flipY: boolean;
+  rotation: number;
+}
+interface WeaponAtlas {
+  offsets?: Record<string, Record<string, { left?: HandOffset; right?: HandOffset }>>;
+}
+
 /** The part of a character that changes with its buffs. */
 type BuffUpdate = BuffCharacterWire | FullCharacterWire;
 
 /** What an attack or a cast needs from the server message that triggered it. */
-interface AttackArgs {
-  count?: number | null;
-  castAngle?: number | null;
-  direction?: string | null;
-  abilitySlot?: number | string | null;
+interface CastArgs {
+  castAngle?: number;
+  abilitySlot?: number;
+}
+
+interface AttackArgs extends CastArgs {
+  count: number;
+  direction?: string;
 }
 
 export class Player extends Character {
   declare scene: SceneMain;
   /** Only the hero has a party. */
   party?: PartyMessage | null;
-  declare weaponAtlas: unknown;
+  declare weaponAtlas: WeaponAtlas;
   declare skin: Sprite;
   declare chest: Sprite;
   declare face: Sprite;
@@ -159,11 +176,11 @@ export class Player extends Character {
   }
   updateUserName() {
     const { profile, scene, stats } = this || {};
-    const mainScene = scene.scene.manager.getScene("SceneMain");
+    const mainScene = scene.scene.manager.getScene("SceneMain") as SceneMain;
     const level = mainScene?.userSettings?.charLevels ? ` lv. ${stats.level}` : "";
     this.userName.setText(`${profile?.userName}${level}`);
     this.userName.setX(-this.userName.width / 2);
-    this.userName.setTint(profile?.userNameTint);
+    this.userName.setTint(toTint(profile?.userNameTint));
   }
   drawCharacterFromUserData() {
     applyAppearance(this);
@@ -201,7 +218,7 @@ export class Player extends Character {
       new Spell(this.scene, { id: null, caster: this, spellName, castAngle, action }),
     );
   }
-  doCast({ abilitySlot, castAngle }: AttackArgs) {
+  doCast({ abilitySlot, castAngle }: CastArgs) {
     const { isHero } = this || {};
     const ability = this.getAbilityDetails(abilitySlot);
 
@@ -215,9 +232,9 @@ export class Player extends Character {
   }
   doGrab() {
     const { scene } = this;
-    const loots = scene.loots?.getChildren?.();
+    const loots = (scene.loots?.getChildren?.() ?? []) as LootItem[];
 
-    let closestLoot;
+    let closestLoot: LootItem | undefined;
     let closestDistance = Infinity;
     /* Look for the nearest loots */
     loots.forEach((loot) => {
@@ -228,7 +245,7 @@ export class Player extends Character {
       }
     });
 
-    if (closestDistance <= PLAYER_GRAB_RANGE) {
+    if (closestLoot && closestDistance <= PLAYER_GRAB_RANGE) {
       /* Spin hero toward the loot, send it all the API */
       this.direction = getSpinDirection(this, closestLoot);
       this.scene.socket.emit("grabLoot", { lootId: closestLoot?.id, direction: this.direction });
@@ -239,7 +256,7 @@ export class Player extends Character {
     const regex = /^0x[0-9A-Fa-f]+/; // Match the color hex at the beginning
     const colorHex = inputString.match(regex)?.[0];
     const remainingString = inputString.replace(regex, "");
-    this.bubble.setTint(colorHex ?? "0xFFFFFF");
+    this.bubble.setTint(toTint(colorHex ?? "0xFFFFFF"));
     this.bubble.setMessage(remainingString);
   }
   updateHpBar() {
@@ -298,7 +315,7 @@ export class Player extends Character {
       window.dispatchEvent(new Event("HERO_RESPAWN"));
     }
   }
-  doFlashAnimation(color = "0xFFFFFF") {
+  doFlashAnimation(color = 0xffffff) {
     this.hair.setTint(color);
     this.skin.setTint(color);
     this.chest.setTint(color);
@@ -368,7 +385,7 @@ export class Player extends Character {
     this.setDepth(100 + this.y + this?.body?.height);
     this.checkAttackReady();
     if (this.isHero) {
-      this.checkPotionCooldown(delta);
+      this.checkPotionCooldown();
     }
   }
   //
@@ -377,10 +394,9 @@ export class Player extends Character {
     /* If a part is missing, clear the texture */
     if (parts?.some((p) => !p)) animKey = `${BLANK_TEXTURE}-${this?.direction}-${this?.action}`;
     /* Otherwise try to play the texture animation */
-    const currentFrame = sprite?.anims?.currentFrame?.index || 0;
     const currentKey = sprite?.anims?.currentAnim?.key;
     if (animKey !== currentKey) {
-      sprite.play(animKey, true, currentFrame);
+      sprite.play(animKey, true);
     }
   }
   setTalkMenu() {

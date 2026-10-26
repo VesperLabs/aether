@@ -296,7 +296,7 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
         now: Date.now(),
       });
     }
-    canCastSpell(abilitySlot: number, shouldUpdateState = true) {
+    canCastSpell(abilitySlot: number | undefined, shouldUpdateState = true) {
       const { allowed, castTimes } = canCastSpell({
         abilitySlot,
         isStunned: this?.hasBuff("stun"),

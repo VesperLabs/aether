@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-const WEAPON_COLOR_MAP = {
+const WEAPON_COLOR_MAP: Record<string, string> = {
   fire: "0xff0000",
   light: "0xffff00",
   earth: "0x00ff00",
@@ -10,14 +10,14 @@ const ALPHA_STEP = 0.1;
 const ALPHA_MAX = 1;
 
 export class WeaponSprite extends Phaser.GameObjects.Container {
-  declare alphaDirection: any;
-  declare alphaValue: any;
-  declare borderSprites: any;
-  declare colors: any;
-  declare currentIndex: any;
-  declare mainSprite: any;
-  declare updateEvent: any;
-  constructor(scene, x, y, key, frame?) {
+  declare alphaDirection: number;
+  declare alphaValue: number;
+  declare borderSprites: Phaser.GameObjects.Sprite[];
+  declare colors: string[];
+  declare currentIndex: number;
+  declare mainSprite: Phaser.GameObjects.Sprite;
+  declare updateEvent: Phaser.Time.TimerEvent;
+  constructor(scene: Phaser.Scene, x: number, y: number, key: string, frame?: string | number) {
     super(scene, x, y);
 
     this.borderSprites = [];
@@ -48,28 +48,28 @@ export class WeaponSprite extends Phaser.GameObjects.Container {
     });
     scene.events.once("shutdown", this.destroy, this);
   }
-  setElements(elements = []) {
+  setElements(elements: string[] = []) {
     this.colors = [];
     elements.forEach((element) => {
       this.colors.push(WEAPON_COLOR_MAP?.[element]);
     });
   }
-  setTint(tint) {
+  setTint(tint: number) {
     this.mainSprite.setTint(tint);
   }
-  setFlipX(flip) {
+  setFlipX(flip: boolean) {
     this.mainSprite.setFlipX(flip);
     this.borderSprites.forEach((borderSprite) => {
       borderSprite.setFlipX(flip);
     });
   }
-  setTexture(texture) {
+  setTexture(texture: string) {
     this.mainSprite.setTexture(texture);
     this.borderSprites.forEach((borderSprite) => {
       borderSprite.setTexture(texture);
     });
   }
-  setFlipY(flip) {
+  setFlipY(flip: boolean) {
     this.mainSprite.setFlipY(flip);
     this.borderSprites.forEach((borderSprite) => {
       borderSprite.setFlipY(flip);
@@ -82,13 +82,13 @@ export class WeaponSprite extends Phaser.GameObjects.Container {
     this.borderSprites[2].setPosition(-borderOffset, 0);
     this.borderSprites[3].setPosition(borderOffset, 0);
   }
-  updateBorderSpriteColors(color) {
+  updateBorderSpriteColors(color: string | undefined) {
     if (!color) return;
     this.borderSprites.forEach((borderSprite) => {
-      borderSprite.setTintFill(color);
+      borderSprite.setTintFill(); // removed in Phaser 4: logs an error and does nothing, see TODO
     });
   }
-  updateBorderSpriteAlpha(alpha) {
+  updateBorderSpriteAlpha(alpha: number) {
     this.borderSprites.forEach((borderSprite) => {
       borderSprite.setAlpha(alpha);
     });
@@ -119,7 +119,7 @@ export class WeaponSprite extends Phaser.GameObjects.Container {
     this.updateBorderSpriteAlpha(this.alphaValue);
     this.updateBorderSpriteColors(nextColor);
   }
-  numberToHexColor(color) {
+  numberToHexColor(color: number) {
     return color.toString(16).padStart(6, "0");
   }
   destroy() {

@@ -1,8 +1,9 @@
 import Phaser from "phaser";
+import type { Player } from "./player";
 
 const BLANK_TEXTURE = "human-blank";
 
-export function checkIsFlash(p, delta) {
+export function checkIsFlash(p: Player, delta: number) {
   /* Let us attack again when it is ready */
   if (Date.now() - p.state.lastFlash > delta + 50 && p.state.isFlash) {
     p.state.isFlash = false;
@@ -10,7 +11,7 @@ export function checkIsFlash(p, delta) {
   }
 }
 
-export function drawFrame(p) {
+export function drawFrame(p: Player) {
   const {
     skin,
     chest,
@@ -107,7 +108,6 @@ export function drawFrame(p) {
   p?.playAnim(
     armor,
     [profile?.race, profile?.gender, visibleEquipment?.armor?.texture, direction, action],
-    p.isHero,
   );
   p?.playAnim(helmet, [profile?.race, visibleEquipment?.helmet?.texture, direction, action]);
   p?.playAnim(boots, [profile?.race, visibleEquipment?.boots?.texture, direction, action]);
@@ -119,7 +119,7 @@ export function drawFrame(p) {
   handLeft.setTexture(visibleEquipment?.handLeft?.texture);
 }
 
-export function updateCurrentSpeed(player) {
+export function updateCurrentSpeed(player: Player) {
   const vx = player.vx;
   const vy = player.vy;
   player.currentSpeed = Math.max(Math.abs(vx), Math.abs(vy));
@@ -145,7 +145,7 @@ export function updateCurrentSpeed(player) {
   player.action = player.currentSpeed === 0 ? "stand" : "walk";
 }
 
-export function approachAlpha(currentAlpha, targetAlpha, step) {
+export function approachAlpha(currentAlpha: number, targetAlpha: number, step: number) {
   const difference = Math.abs(targetAlpha - currentAlpha);
 
   if (difference <= step) {
@@ -157,7 +157,7 @@ export function approachAlpha(currentAlpha, targetAlpha, step) {
   }
 }
 
-export function hackFrameRates(player, rate) {
+export function hackFrameRates(player: Player, rate: number) {
   const spriteKeys = [
     "shadow",
     "chest",
@@ -171,13 +171,13 @@ export function hackFrameRates(player, rate) {
     "gloves",
     "pants",
     "helmet",
-  ];
+  ] as const;
   for (const spriteKey of spriteKeys) {
     player[spriteKey].anims.msPerFrame = player?.state?.isAttacking ? 100 : rate;
   }
 }
 
-function playWeapons(player) {
+function playWeapons(player: Player) {
   const {
     profile,
     handLeft,
@@ -188,14 +188,19 @@ function playWeapons(player) {
     direction,
   } = player;
   const currentFrame = player?.skin?.anims?.currentFrame;
-  const { left, right } = w?.offsets?.[profile?.race]?.[currentFrame.textureFrame] || {};
+  const { left, right } = w?.offsets?.[profile?.race]?.[
+    (currentFrame as Phaser.Animations.AnimationFrame).textureFrame
+  ] || {
+    left: undefined,
+    right: undefined,
+  };
   handLeft.setPosition(left?.x, left?.y);
-  handLeft.setFlipX(left?.flipX);
-  handLeft.setFlipY(left?.flipY);
+  handLeft.setFlipX(!!left?.flipX);
+  handLeft.setFlipY(!!left?.flipY);
   handLeft.setAngle(left?.rotation);
   handRight.setPosition(right?.x, right?.y);
-  handRight.setFlipX(right?.flipX);
-  handRight.setFlipY(right?.flipY);
+  handRight.setFlipX(!!right?.flipX);
+  handRight.setFlipY(!!right?.flipY);
   handRight.setAngle(right?.rotation);
 
   const bowAngleOffset = Phaser.Math.DegToRad(-135);

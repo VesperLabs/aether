@@ -6,7 +6,9 @@ import {
   FACE_HIDING_ACCESSORIES,
   HAIR_HIDING_ACCESSORIES,
 } from "@/shared/content";
+import type { Player } from "./player";
 import { Crosshair } from "@/client/input/crosshair";
+import { toTint } from "./tint";
 import { Bubble } from "./bubble";
 import { Bar } from "./bar";
 import { WeaponSprite } from "./weapon-sprite";
@@ -17,7 +19,7 @@ const { Sprite, BitmapText } = Phaser.GameObjects;
 const BLANK_TEXTURE = "human-blank";
 
 /** Creates every sprite layer of a character (skin, gear, bars, bubble) and adds it to the container. */
-export function createSpriteLayers(player) {
+export function createSpriteLayers(player: Player) {
   const scene = player.scene;
   const defaults: [Phaser.Scene, number, number, string] = [
     scene,
@@ -27,7 +29,7 @@ export function createSpriteLayers(player) {
   ];
   player.setDepth(100);
 
-  const HandSprite = player?.profile?.race === "human" ? WeaponSprite : Sprite;
+  const isHuman = player?.profile?.race === "human";
 
   player.skin = scene.add.existing(new Sprite(...defaults));
   player.chest = scene.add.existing(new Sprite(...defaults));
@@ -40,10 +42,10 @@ export function createSpriteLayers(player) {
   player.gloves = scene.add.existing(new Sprite(...defaults));
   player.pants = scene.add.existing(new Sprite(...defaults));
   player.accessory = scene.add.existing(new Sprite(...defaults));
-  player.handLeft = scene.add.existing(new HandSprite(scene, 13, -9, BLANK_TEXTURE));
-  player.handRight = scene.add.existing(new HandSprite(scene, -13, -9, BLANK_TEXTURE));
+  player.handLeft = scene.add.existing(isHuman ? new WeaponSprite(scene, 13, -9, BLANK_TEXTURE) : new Sprite(scene, 13, -9, BLANK_TEXTURE));
+  player.handRight = scene.add.existing(isHuman ? new WeaponSprite(scene, -13, -9, BLANK_TEXTURE) : new Sprite(scene, -13, -9, BLANK_TEXTURE));
   player.shadow = scene.add.existing(new Sprite(...defaults));
-  player.bubble = scene.add.existing(new Bubble(scene, player?.headY, player.bubbleMessage));
+  player.bubble = scene.add.existing(new Bubble(scene, player?.headY, undefined));
   player.crosshair = scene.add.existing(
     new Crosshair(scene, 0, player.bodyOffsetY, "icons", "crosshair", player, 40),
   );
@@ -85,7 +87,7 @@ export function createSpriteLayers(player) {
 }
 
 /** Tints and shows or hides the layers to match the character profile and visible equipment. */
-export function applyAppearance(player) {
+export function applyAppearance(player: Player) {
   const { profile, visibleEquipment } = player || {};
   const isBoss = profile?.scale > 1;
   if (profile?.userName) {
@@ -94,24 +96,26 @@ export function applyAppearance(player) {
   player.skin.setScale(profile?.scale || 1);
   player.shadow.setScale(profile?.scale || 1);
   player.corpse.setScale(isBoss ? profile?.scale / 2 : 1);
-  player.corpse.setTint(isBoss ? "0xAA88AA" : "0xCC9966");
-  player.skin.setTint(profile?.tint || "0xFFFFFF");
-  player.chest.setTint(profile?.tint || "0xFFFFFF");
-  player.hair.setTint(profile?.hair?.tint || "0xFFFFFF");
-  player.face.setTint(profile?.face?.tint || "0xFFFFFF");
-  player.whiskers.setTint(profile?.whiskers?.tint || "0xFFFFFF");
+  player.corpse.setTint(isBoss ? 0xaa88aa : 0xcc9966);
+  player.skin.setTint(toTint(profile?.tint || "0xFFFFFF"));
+  player.chest.setTint(toTint(profile?.tint || "0xFFFFFF"));
+  player.hair.setTint(toTint(profile?.hair?.tint || "0xFFFFFF"));
+  player.face.setTint(toTint(profile?.face?.tint || "0xFFFFFF"));
+  player.whiskers.setTint(toTint(profile?.whiskers?.tint || "0xFFFFFF"));
 
   if (player.profile.race === "human") {
-    player.handLeft.setElements(
+    (player.handLeft as WeaponSprite).setElements(
       player.hasWeaponLeft() ? deriveElements(visibleEquipment?.handLeft?.stats) : [],
     );
-    player.handRight.setElements(
+    (player.handRight as WeaponSprite).setElements(
       player.hasWeaponRight() ? deriveElements(visibleEquipment?.handRight?.stats) : [],
     );
   }
 
-  for (const [key, slot] of Object.entries<any>(visibleEquipment)) {
-    player?.[key]?.setTint(slot?.tint || "0xFFFFFF");
+  for (const [key, slot] of Object.entries<{ tint?: string }>(visibleEquipment)) {
+    (player as unknown as Record<string, Phaser.GameObjects.Sprite | undefined>)[key]?.setTint(
+      toTint(slot?.tint || "0xFFFFFF"),
+    );
   }
 
   /* Helmet types that hide face and hair need to get hidden */

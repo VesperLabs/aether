@@ -1,5 +1,5 @@
-export function deriveElements(stats = {}) {
-  const elements = [];
+export function deriveElements(stats: Record<string, unknown> = {}) {
+  const elements: string[] = [];
   for (const [statKey, v] of Object.entries(stats)) {
     const statValue = Number(v);
     if (statKey === "maxFireDamage" && statValue > 0) {

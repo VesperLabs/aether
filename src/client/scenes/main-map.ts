@@ -1,6 +1,6 @@
 import Phaser from "phaser";
-import { Door } from "@/client/views/door";
-import { Sign } from "@/client/views/sign";
+import { Door, type DoorObject } from "@/client/views/door";
+import { Sign, type SignObject } from "@/client/views/sign";
 import { MINI_MAP_SIZE } from "@/client/views/minimap-size";
 import { changeMusic } from "@/client/audio/music";
 import { getGameZoomLevel } from "./camera-zoom";
@@ -104,14 +104,14 @@ export function changeMap(scene, roomName) {
   /* Create Doors */
   const mapDoors = scene.map.getObjectLayer("Doors").objects;
   for (const door of mapDoors) {
-    const newDoor = new Door(scene, door);
+    const newDoor = new Door(scene, door as DoorObject);
     scene.doors.add(newDoor);
   }
   /* Create Signs */
   if (scene.map.getObjectLayer("Signs")) {
     const mapSigns = scene.map.getObjectLayer("Signs").objects;
     for (const sign of mapSigns) {
-      const newSign = new Sign(scene, sign);
+      const newSign = new Sign(scene, sign as SignObject);
       scene.signs.add(newSign);
     }
   }

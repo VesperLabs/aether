@@ -1,10 +1,19 @@
 import Phaser from "phaser";
+import type { Player } from "@/client/views/player";
 export class Crosshair extends Phaser.GameObjects.Container {
-  declare center: any;
-  declare distance: any;
-  declare player: any;
-  declare sprite: any;
-  constructor(scene, x, y, textureKey, frame, player, distance) {
+  declare center: Phaser.Math.Vector2;
+  declare distance: number;
+  declare player: Player;
+  declare sprite: Phaser.GameObjects.Sprite;
+  constructor(
+    scene: Phaser.Scene,
+    x: number,
+    y: number,
+    textureKey: string,
+    frame: string,
+    player: Player,
+    distance: number,
+  ) {
     super(scene, x, y);
 
     this.scene = scene;

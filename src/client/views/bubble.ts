@@ -1,30 +1,31 @@
 import Phaser from "phaser";
 const Sprite = Phaser.GameObjects.Sprite;
+type Sprite = Phaser.GameObjects.Sprite;
 
 const FRAME_SIZE = 4;
 
 export class Bubble extends Phaser.GameObjects.Container {
-  declare bg: any;
-  declare bl: any;
-  declare bot: any;
-  declare br: any;
-  declare bubbleText: any;
-  declare headY: any;
-  declare left: any;
-  declare maxWidth: any;
-  declare message: any;
-  declare right: any;
-  declare tail: any;
-  declare tl: any;
-  declare top: any;
-  declare tr: any;
+  declare bg: Sprite;
+  declare bl: Sprite;
+  declare bot: Sprite;
+  declare br: Sprite;
+  declare bubbleText: Phaser.GameObjects.BitmapText;
+  declare headY: number;
+  declare left: Sprite;
+  declare maxWidth: number;
+  declare message: string | undefined;
+  declare right: Sprite;
+  declare tail: Sprite;
+  declare tl: Sprite;
+  declare top: Sprite;
+  declare tr: Sprite;
   /**
    * @param {Phaser.Scene} scene
    * @param {number} headY negative number of the position from center a sprites head is
    * @param {object} text
    * @memberof Bubble
    */
-  constructor(scene, headY, message) {
+  constructor(scene: Phaser.Scene, headY: number, message: string | undefined) {
     super(scene, 0, 0);
 
     this.headY = headY;
@@ -85,7 +86,7 @@ export class Bubble extends Phaser.GameObjects.Container {
     this.add(this.bubbleText);
     this.setMessage(this.message);
   }
-  setTint(tintColor) {
+  setTint(tintColor: number) {
     // Set tint for all the sprites in the Bubble
     this.tl.setTint(tintColor);
     this.bl.setTint(tintColor);
@@ -98,7 +99,7 @@ export class Bubble extends Phaser.GameObjects.Container {
     this.bg.setTint(tintColor);
     this.tail.setTint(tintColor);
   }
-  setMessage(message) {
+  setMessage(message: string | undefined) {
     if (!message) {
       return this.setVisible(false);
     }
@@ -124,7 +125,7 @@ export class Bubble extends Phaser.GameObjects.Container {
     this.setScale(0.5);
     this.center();
   }
-  wrapBitmapText = function (bitmapText, maxWidth) {
+  wrapBitmapText(bitmapText: Phaser.GameObjects.BitmapText, maxWidth: number) {
     var words = bitmapText.text.split(" ");
     let output = "";
     let test = "";
@@ -146,9 +147,9 @@ export class Bubble extends Phaser.GameObjects.Container {
     output = this.wbr(output, 20);
     bitmapText.setText(output);
     bitmapText.update();
-  };
-  wbr(str, num) {
-    return str.replace(RegExp("(\\w{" + num + "})(\\w)", "g"), function (all, text, char) {
+  }
+  wbr(str: string, num: number) {
+    return str.replace(RegExp("(\\w{" + num + "})(\\w)", "g"), function (_all: string, text: string, char: string) {
       return text + "\n" + char;
     });
   }

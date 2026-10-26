@@ -3,14 +3,14 @@ const STARTING_ALPHA = 1;
 const TARGET_SCALE = 1;
 
 class EnergyBall extends Phaser.GameObjects.Sprite {
-  private targetScale: number;
-  private targetAlpha: number;
-  private targetX: number;
-  private targetY: number;
+  private targetScale!: number;
+  private targetAlpha!: number;
+  private targetX!: number;
+  private targetY!: number;
   private distance: number;
   private initialX: number;
   private initialY: number;
-  public isExpired: boolean;
+  public isExpired = false;
 
   constructor(scene: Phaser.Scene, x: number, y: number, distance: number) {
     super(scene, x, y, "icons", "energy");
@@ -71,7 +71,7 @@ class EnergyBall extends Phaser.GameObjects.Sprite {
 export class Charge extends Phaser.GameObjects.Container {
   private distance: number;
   private chargePercent: number;
-  constructor(scene, x, y, distance = 24) {
+  constructor(scene: Phaser.Scene, x: number, y: number, distance = 24) {
     super(scene, x, y);
     this.distance = distance;
     this.scene = scene;

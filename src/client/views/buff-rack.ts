@@ -4,7 +4,7 @@ import type { ActiveBuff } from "@/shared/rules/buffs";
 const Sprite = Phaser.GameObjects.Sprite;
 
 export class BuffRack extends Phaser.GameObjects.Container {
-  declare buffs: Array<{ name: string; sprite: Phaser.GameObjects.Sprite }>;
+  declare buffs: Array<{ name: string | undefined; sprite: Phaser.GameObjects.Sprite }>;
   constructor(scene: Phaser.Scene, x: number, y: number, buffs: ActiveBuff[] = []) {
     super(scene, x, y);
     this.buffs = [];
