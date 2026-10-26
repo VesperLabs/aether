@@ -3,7 +3,6 @@ import { userSchema } from "./schema";
 import { filterNullEmpty } from "./filter-empty";
 import { calculateNextMaxExp } from "@/shared/rules/stats";
 import { createBaseUser } from "./base-user";
-import { omitBy, isNil } from "lodash";
 
 const getDatabaseApi = (db) => ({
   getUserByEmail: async ({ email }) => {
@@ -167,15 +166,14 @@ const getDatabaseApi = (db) => ({
       await db.collection("users").findOneAndUpdate(
         { email: args?.email },
         {
-          $set: omitBy(
-            {
+          $set: Object.fromEntries(
+            Object.entries({
               roomName: args?.room?.name ?? args?.roomName,
               x: args?.x,
               y: args?.y,
               spawn: args?.spawn,
               updatedAt,
-            },
-            isNil,
+            }).filter(([, value]) => value != null),
           ),
         },
       );

@@ -15,7 +15,7 @@ import { SlotAmount } from "./slot-amount";
 import { resolveAsset } from "@/shared/content";
 import { assetToCanvas, isMobile, itemHasRequiredStats } from "@/shared";
 import { useDoubleTap } from "use-double-tap";
-import { isEqual, get } from "lodash";
+import { isEqual, get } from "./props-equal";
 
 const SpaceDonut = ({ percent = 0 }) => {
   const getColor = () => {
