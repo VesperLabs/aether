@@ -8,19 +8,21 @@ import {
 } from "../../party-adapter";
 import type { ParsedCommand } from "@/shared/network";
 import type { CommandContext } from "@/server/net/command-context";
+import { findNearbyNpc } from "@/server/net/nearby-keeper";
 
 export function chatNpc(ctx: CommandContext, { npcId }: ParsedCommand<"chatNpc"> = {}) {
   const { world, socket, socketId } = ctx;
   const player: Player = world?.players?.[socketId];
-  const npc = world?.npcs?.[`${npcId}`];
-  npc.talkingIds.push(socketId);
+  const npc = findNearbyNpc(world, socketId, npcId);
+  if (!player || !npc) return;
+  if (!npc.talkingIds.includes(socketId)) npc.talkingIds.push(socketId);
   player.state.targetNpcId = npcId;
   /* Quests that are of type: chat need to be updated */
   player.updateChatQuests(npc.name);
   socket.emit("keeperDataUpdate", {
-    npcId: npc?.id,
-    keeperData: npc?.keeperData,
-    playerQuests: world?.players?.[socketId].getQuests(),
+    npcId: npc.id,
+    keeperData: npc.keeperData,
+    playerQuests: player.getQuests(),
   });
 }
 

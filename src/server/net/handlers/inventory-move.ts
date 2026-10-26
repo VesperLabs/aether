@@ -4,14 +4,19 @@ import { getFullCharacterState } from "@/shared/network/sync";
 import { moveItem as moveItemRule } from "@/shared/rules/inventory";
 import { applyInventoryState, toInventoryState } from "../../player-inventory";
 import type { CommandContext } from "@/server/net/command-context";
+import { findNearbyNpc } from "@/server/net/nearby-keeper";
 
 export function moveItem(ctx: CommandContext, { to, from }: MoveItemCommand = {}) {
   const { world, socket, socketId, io } = ctx;
   const player = world?.players?.[socketId];
   if (!player) return;
 
-  const npcId = player.state?.targetNpcId;
-  const shopSlot = world?.npcs?.[npcId]?.keeperData?.shop?.[from?.slot as number];
+  /* Shop moves need the keeper to still be next to the player. */
+  const isShopMove = from?.location === "shop" || to?.location === "shop";
+  const keeper = findNearbyNpc(world, socketId, player.state?.targetNpcId);
+  if (isShopMove && !keeper?.keeperData?.shop) return;
+  const npcId = keeper ? player.state.targetNpcId : undefined;
+  const shopSlot = keeper?.keeperData?.shop?.[from?.slot as number];
   const result = moveItemRule(
     toInventoryState(player),
     { from, to },

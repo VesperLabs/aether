@@ -25,11 +25,7 @@ export const ModalHome = () => {
           <KeyboardButton
             sx={{ flex: 1 }}
             onClick={() => {
-              socket.emit("setSpawn", {
-                x: keeper?.keeperData?.home?.x,
-                y: keeper?.keeperData?.home?.y,
-                roomName: keeper?.roomName,
-              } as SpawnPoint);
+              socket.emit("setSpawn", {});
               setHomeModal(null);
             }}
             keyboardKey="ENTER"

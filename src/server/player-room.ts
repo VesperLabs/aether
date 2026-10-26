@@ -19,6 +19,7 @@ export function createPlayer(
 export function addPlayerToRoom(world: ServerWorld, socketId: string, room: RoomData) {
   world.players[socketId].room = room;
   world.players[socketId].roomName = room?.name;
+  world.players[socketId].state.targetNpcId = null;
 }
 
 /**
@@ -28,6 +29,7 @@ export function addPlayerToRoom(world: ServerWorld, socketId: string, room: Room
 export function detachFromRoom(player: Player) {
   player.room = null as unknown as RoomData;
   player.roomName = null as unknown as string;
+  player.state.targetNpcId = null;
 }
 
 /** Takes a player out of their room, e.g. while they walk through a door. */

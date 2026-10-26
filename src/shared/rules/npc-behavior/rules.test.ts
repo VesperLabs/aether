@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
   calculateNpcAggroRange,
+  canTalkToNpc,
+  NPC_TALK_LATENCY_TOLERANCE,
+  NPC_TALK_RANGE,
   checkInRange,
   decideAggro,
   decideNpcAction,
@@ -320,5 +323,27 @@ describe("deciding what an npc does", () => {
       never,
     );
     expect(decision.movement).toEqual({ type: "talk" });
+  });
+});
+
+describe("canTalkToNpc", () => {
+  const npc = { x: 100, y: 100, roomName: "a" };
+  it("allows a player within range in the same room", () => {
+    expect(canTalkToNpc({ x: 100, y: 100, roomName: "a" }, npc)).toBe(true);
+    expect(canTalkToNpc({ x: 100 + NPC_TALK_RANGE, y: 100, roomName: "a" }, npc)).toBe(true);
+  });
+  it("allows the latency tolerance but not beyond it", () => {
+    const edge = NPC_TALK_RANGE + NPC_TALK_LATENCY_TOLERANCE;
+    expect(canTalkToNpc({ x: 100 + edge, y: 100, roomName: "a" }, npc)).toBe(true);
+    expect(canTalkToNpc({ x: 100 + edge + 1, y: 100, roomName: "a" }, npc)).toBe(false);
+  });
+  it("refuses another room, missing entities and bad positions", () => {
+    expect(canTalkToNpc({ x: 100, y: 100, roomName: "b" }, npc)).toBe(false);
+    expect(canTalkToNpc({ x: 100, y: 100, roomName: null }, { ...npc, roomName: null })).toBe(
+      false,
+    );
+    expect(canTalkToNpc(undefined, npc)).toBe(false);
+    expect(canTalkToNpc({ x: 100, y: 100, roomName: "a" }, null)).toBe(false);
+    expect(canTalkToNpc({ x: NaN, y: 100, roomName: "a" }, npc)).toBe(false);
   });
 });

@@ -68,11 +68,8 @@ export const commands = {
   updateState: z.record(z.string(), z.unknown()),
   enterDoor: z.string(),
   respawn: z.unknown(),
-  setSpawn: z.object({
-    x: z.number().nullish(),
-    y: z.number().nullish(),
-    roomName: z.string().nullish(),
-  }),
+  /* The payload is ignored: the server uses the home of the keeper being talked to. */
+  setSpawn: z.unknown(),
 
   /* Items */
   grabLoot: z

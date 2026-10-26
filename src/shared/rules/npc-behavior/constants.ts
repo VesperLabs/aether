@@ -8,6 +8,8 @@ export const NPC_ATTACK_ADDED_DELAY = 400;
 export const NPC_WARNING_DELAY = 100;
 /** How far a player can walk from an NPC they are talking to before the conversation ends. */
 export const NPC_TALK_RANGE = 80;
+/** Extra distance allowed on top of the talk range, for latency and for the NPC wandering. */
+export const NPC_TALK_LATENCY_TOLERANCE = 40;
 /** Frames between random wander direction changes. */
 export const NPC_WANDER_CHANGE_DELAY = 9;
 /** Wandering is slower than walking. */

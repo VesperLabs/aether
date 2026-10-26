@@ -237,7 +237,14 @@ describe("shop over the socket", () => {
       item: { ...item, cost: item.cost * 4 },
       stock: 10,
     }));
-    world.npcs["test-shop"] = { keeperData: { shop } };
+    world.npcs["test-shop"] = {
+      id: "test-shop",
+      getQuests: () => [],
+      x: player.x,
+      y: player.y,
+      room: { name: player.roomName },
+      keeperData: { shop },
+    };
     player.state.targetNpcId = "test-shop";
   }
 

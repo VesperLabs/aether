@@ -7,6 +7,7 @@ import type { ParsedCommand } from "@/shared/network";
 import { addPlayerToRoom, removePlayerFromRoom } from "../../player-room";
 import { legacyUpdateMemberRoom } from "../../party-adapter";
 import type { CommandContext } from "@/server/net/command-context";
+import { findNearbyNpc } from "@/server/net/nearby-keeper";
 
 const getDoor = (world: ServerWorld, roomName: string, doorName: string) =>
   world?.doors?.[roomName]?.[doorName];
@@ -135,11 +136,16 @@ export function respawn(ctx: CommandContext) {
   world.db.updateUser(world.players?.[socketId]);
 }
 
-export function setSpawn(ctx: CommandContext, spawn: ParsedCommand<"setSpawn">) {
+export function setSpawn(ctx: CommandContext, _spawn: ParsedCommand<"setSpawn">) {
   const { world, socket, socketId } = ctx;
   const player: Player = world.players[socketId];
-  player.spawn = spawn as SpawnPoint;
-  world.db.updateUserMapDetails({ email: player.email, spawn: spawn as SpawnPoint });
+  /* The client's coordinates are ignored: the spawn is the home of the keeper being talked to. */
+  const keeper = findNearbyNpc(world, socketId, player?.state?.targetNpcId);
+  const home = keeper?.keeperData?.home;
+  if (!keeper || typeof home?.x !== "number" || typeof home?.y !== "number") return;
+  const spawn = { x: home.x, y: home.y, roomName: player.roomName } as SpawnPoint;
+  player.spawn = spawn;
+  world.db.updateUserMapDetails({ email: player.email, spawn });
   return socket.emit("message", {
     type: "info",
     message: "You have changed your spawn point.",
