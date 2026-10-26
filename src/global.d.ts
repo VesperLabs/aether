@@ -100,7 +100,7 @@ interface ServerScene extends Phaser.Scene {
   npcs: Record<string, Npc>;
   quests: Record<string, Quest>;
   players: Record<string, ServerPlayer>;
-  partyManager: any;
+  partyState: import("@/shared/rules/party").PartyState;
   roomManager: RoomManager;
   spells: any;
   db: any;
@@ -128,7 +128,7 @@ interface Room {
   spellManager: any;
   playerManager: any;
   npcManager: any;
-  lootManager: any;
+  lootState: any;
   findPath(startCoords: Coordinate, targetCoords: Coordinate);
 }
 
@@ -229,7 +229,6 @@ interface Npc extends Character {
   talkingIds: Array<string>;
   keeperData: KeeperData;
   setDead(): void;
-  dropLoot(magicFind: number): void;
 }
 
 interface ServerPlayer extends Character {
@@ -385,7 +384,7 @@ interface PlayerQuest {
 }
 
 interface PlayerQuestObjective {
-  objectiveId: string;
+  objectiveId: number;
   questId: string;
   isReady?: boolean;
   numCollected?: number;

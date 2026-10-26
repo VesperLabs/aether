@@ -30,12 +30,12 @@ Do the pure ones first. Write tests as each one moves.
 - [x] `rules/events.ts` and an event bus in `rules/world/`
 - [x] `stats`: `calculateStats`, `calculateExpValue`, `calculateNextMaxExp` from `server/utils.ts`
       (Remaining legacy hooks: `assignExp` level-up on `server/character.ts`, `useGetBaseCharacterDefaults` in `server/utils.ts` for starting items and spawn.)
-- [ ] `inventory`: `moveItem`, `dropItem`, `consumeItem` from `GameServer.ts` and the inventory methods on `shared/Character.ts`
-- [ ] `loot` (`LootManager`), `party` (`PartyManager`), `quests` (quest methods on `Character`, `Quest.ts`)
+- [x] `inventory`: `moveItem`, `dropItem`, `consumeItem` from `GameServer.ts` and the inventory methods on `shared/Character.ts`
+- [x] `loot` (`LootManager`), `party` (`PartyManager`), `quests` (quest methods on `Character`, `Quest.ts`)
 - [ ] `combat`, `spells`, `buffs` (methods on `shared/Character.ts`, `server/Character.ts`, `SpellManager`, `Spell.ts`)
 - [ ] `ai` (`server/Npc.ts`)
 - [ ] Move state packing (`get*RoomState`, `get*CharacterState`) into `network/sync/`
-- [ ] Route mob kills to loot, stats and quests through `mobKilled`
+- [x] Route mob kills to loot, stats and quests through `mobKilled`
 
 ## Phase 4: Game core without Phaser on the server
 
@@ -54,3 +54,26 @@ Do the pure ones first. Write tests as each one moves.
 - Every legacy exception list is empty
 - Strict mode is on for the whole repo
 - `src/shared/rules/tests/` has scenario tests covering combat, loot, inventory and quests
+
+## Known bugs
+
+Found during the migration and left alone so behaviour stayed identical. Fix after the migration, each with a test.
+
+- [ ] **Loot:** `grabLoot` has no range or ownership check, so any player can grab any loot by id from anywhere
+- [ ] **Quests:** if the inventory fills partway through the rewards, earlier reward items are kept but the quest isn't completed, so rewards can be farmed by retrying
+- [ ] **Quests:** turn-in subtracts quest items by key using functions that match by id, so items may not be consumed. Bags and abilities also need `amount > n`, so an exact amount isn't consumed.
+- [ ] **Quests:** accepting an unknown quest id pushes `{ questId: undefined }` onto the player's quests
+- [ ] **Quests:** `isReady` is `undefined` instead of `false` for unfinished quests
+- [ ] **Party:** inviting creates the inviter's party before validating the invitee, leaving a one-member party on a bad invite
+- [ ] **Party:** the duplicate-login kick passes the new socket, so the kicked player's party membership goes stale
+- [ ] **Party:** pending invites aren't cleaned up when the inviter leaves or the party disbands
+- [ ] **Party:** the leave message can read "undefined has left the party"
+- [ ] **Loot:** map-loot spawning throws if `buildItem` returns null for an unknown item
+- [ ] **Inventory:** selling credits gold even when no item was removed (quantity larger than the stack); bag and ability sells don't check the stack size at all
+- [ ] **Inventory:** the shop checks `item.slot === "stackable"` where it likely means `type`, so some bought stackables get a new id and never merge
+- [ ] **Inventory:** dropping on bag slot 0 counts as "dropped on the bag", and bags with an empty `items` array always answer "Bag is full"
+- [ ] **Inventory:** `findBagItemById` returns the last matching bag, but update and delete touch the first match in every bag
+- [ ] **Inventory:** consuming food with no `buffs` throws after the item was already removed
+- [ ] **Inventory:** `deleteAbilityAtId` with an unknown id writes `abilities["null"] = null`
+- [ ] **Inventory:** a move between unsupported slots (equipment ↔ abilities) still saves and emits `playerUpdate`
+- [ ] **Inventory:** buying a stackable that merges into an existing stack ignores a non-blank destination slot

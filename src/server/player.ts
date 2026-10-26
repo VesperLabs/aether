@@ -1,8 +1,30 @@
 import { ServerCharacter } from "./character";
-import { cloneObject, getRoomState, PLAYER_DEFAULT_SPAWN } from "./utils";
+import { getRoomState, PLAYER_DEFAULT_SPAWN } from "./utils";
 import { expForMobKill } from "@/shared/rules/stats";
+import { isPartyMember, sharedRecipientIds } from "@/shared/rules/party";
+import { markKeeperObjectivesReady, nextNpcKillCount } from "@/shared/rules/quests";
+import { applyAcceptQuest, applyCompleteQuest } from "./player-quests";
 import type { MobKilledEvent } from "@/shared/rules/events";
-import { MAX_INVENTORY_ITEMS } from "../shared";
+import {
+  addInventoryItem,
+  deleteAbilityAtId,
+  deleteBagItemAtId,
+  deleteInventoryItemAtId,
+  findAbilityById,
+  findBagItemById,
+  findBagItemBySlot,
+  findEquipmentById,
+  findInventoryItemById,
+  findOpenBagSlot,
+  isInventoryFull,
+  setBagItem,
+  subtractAbilityAtId,
+  subtractBagItemAtId,
+  subtractInventoryItemAtId,
+  updateBagItemAtId,
+  updateInventoryItemAtId,
+  withoutSlot,
+} from "@/shared/rules/inventory";
 
 /* Server level Player object */
 export class Player extends ServerCharacter implements ServerPlayer {
@@ -104,236 +126,81 @@ export class Player extends ServerCharacter implements ServerPlayer {
     });
   }
   addNpcKill(npcName: string) {
-    this.npcKills[npcName] = this?.npcKills?.[npcName] + 1 || 1;
+    this.npcKills[npcName] = nextNpcKillCount(this.npcKills, npcName);
   }
   addQuest(quest: Quest) {
-    if (this.quests.find((q) => q?.questId === quest?.id)) return;
-    this.quests.push({ questId: quest?.id, isCompleted: false });
+    applyAcceptQuest(this, quest);
   }
   updateChatQuests(npcName: string): Array<PlayerQuest> {
-    const quests = this.scene.quests;
-    const playerQuests = this?.quests.map((playerQuest) => {
-      const quest = quests[playerQuest?.questId];
-      if (quest?.objectives?.some((q) => q?.keeper === npcName && !playerQuest.isCompleted)) {
-        return { ...playerQuest, isReady: true };
-      }
-      return playerQuest;
-    });
-    this.quests = playerQuests;
-    return playerQuests;
+    this.quests = markKeeperObjectivesReady(this.quests, this.scene.quests, npcName);
+    return this.quests;
   }
   completeQuest(questId: string) {
-    const quest = this.scene.quests?.[questId];
-    const questItems = quest?.rewards?.items || [];
-    const objectives = quest?.objectives || [];
-    const foundQuest: PlayerQuest = this.getPlayerQuestStatus(quest);
-
-    if (foundQuest?.isCompleted) return { error: "Quest has already been completed." };
-    if (!foundQuest?.isReady) return { error: "Quest objectives are not complete." };
-
-    let inventoryFull = false;
-
-    for (const item of questItems) {
-      if (!item) continue;
-      // Check if the inventory is already full before creating a new item
-      // TODO: If we ever give out stackables, we need to modify how this checks
-      if (this.isInventoryFull()) {
-        inventoryFull = true;
-      } else {
-        this.addInventoryItem(item);
-      }
-    }
-
-    if (inventoryFull && questItems.length > 0) {
-      return { error: "Cannot turn in quest. Inventory is full" }; // If the inventory is full, exit the loop and return false
-    }
-
-    /* Remove objective items from inventory */
-    for (const objective of objectives) {
-      if (!objective) continue;
-      /* Only works for stackable items */
-      if (objective?.type === "item") {
-        const itemId = objective?.item?.[2];
-        this.subtractInventoryItemAtId(itemId, objective?.amount) ||
-          this.subtractBagItemAtId(itemId, objective?.amount) ||
-          this.subtractAbilityAtId(itemId, objective?.amount);
-      }
-    }
-
-    const didLevel = this.assignExp(quest?.rewards?.exp);
-
-    this.gold += quest?.rewards?.gold ?? 0;
-    this.quests.find((q) => q?.questId === quest?.id).isCompleted = true;
-
-    return { didLevel };
+    return applyCompleteQuest(this, this.scene.quests?.[questId]);
   }
-  /* Equipment */
+  /* Inventory, equipment, bags and abilities: the rules live in shared/rules/inventory */
   findEquipmentById(id: string): any {
-    const [slotName, foundItem] = Object.entries(this?.equipment).find(
-      ([_, slotItem]: [string, Item]) => slotItem?.id === id,
-    ) || [null, null];
-    return { item: foundItem, slotName };
+    return findEquipmentById(this.equipment, id);
   }
   clearEquipmentSlot(slotName: string) {
-    if (!this?.equipment?.[slotName]) return;
-    this.equipment[slotName] = null;
+    this.equipment = withoutSlot(this.equipment, slotName) as Record<string, Item>;
   }
-  /* Bag */
   findBagItemById(id: string) {
-    let item = null;
-    let slotName = null;
-    const bags = this?.inventory?.filter((item: Item) => item?.base === "bag");
-    for (const bag of bags) {
-      for (var i = 0; i < bag?.items?.length; i++) {
-        if (bag?.items?.[i]?.id === id) {
-          item = bag?.items?.[i];
-          slotName = i;
-          break;
-        }
-      }
-    }
-    return { slotName, item };
+    return findBagItemById(this.inventory, id);
   }
   findBagItemBySlot(bagId: string, slot: string) {
-    const bag = this?.inventory?.find((item: Item) => item?.id === bagId);
-    return bag?.items?.[slot];
+    return findBagItemBySlot(this.inventory, bagId, slot);
   }
   subtractBagItemAtId(id: string, amount: integer) {
-    const found = cloneObject(this.findBagItemById(id)?.["item"]);
-    if (found?.amount > amount && amount > 0) {
-      const newAmount = found?.amount - amount;
-      this.updateBagItemAtId(id, { ...found, amount: newAmount });
-      return amount;
-    }
-    return null;
+    const { result, subtracted } = subtractBagItemAtId(this.inventory, id, amount);
+    this.inventory = result;
+    return subtracted;
   }
   updateBagItemAtId(id: string, item: Item) {
-    const bags = this?.inventory?.filter((item: Item) => item?.base === "bag");
-    for (const bag of bags) {
-      for (var i = 0; i < bag?.items?.length; i++) {
-        if (bag?.items?.[i]?.id === id) {
-          bag.items[i] = item;
-          break;
-        }
-      }
-    }
+    this.inventory = updateBagItemAtId(this.inventory, id, item);
   }
   deleteBagItemAtId(id: string) {
-    const bags = this?.inventory?.filter((item: Item) => item?.base === "bag");
-    for (const bag of bags) {
-      for (var i = 0; i < bag?.items?.length; i++) {
-        if (bag?.items?.[i]?.id === id) {
-          bag.items[i] = null;
-          break;
-        }
-      }
-    }
+    this.inventory = deleteBagItemAtId(this.inventory, id);
   }
   setBagItem(bagId: string, slot: string, item: Item) {
-    const bag = this?.inventory?.find((item) => item?.id === bagId);
-    if (!bag?.items) {
-      bag.items = [];
-    }
-    bag.items[slot] = item;
+    this.inventory = setBagItem(this.inventory, bagId, slot, item) ?? this.inventory;
   }
   findOpenBagSlot(bagId: string, item: Item) {
-    const bag = this?.inventory?.find((item: Item) => item?.id === bagId);
-    const bagItems = bag?.items ?? [null];
-    let openSlot: integer;
-    /* Find a stackable slot */
-    for (var i = 0; i < bagItems?.length; i++) {
-      // Item found (Stackable)
-      if (bagItems?.[i]?.id === item?.id) {
-        openSlot = i;
-        break;
-      }
-      // New item
-      if (!bagItems?.[i]?.id) {
-        openSlot = i;
-        break;
-      }
-    }
-    return openSlot;
+    return findOpenBagSlot(this.inventory, bagId, item);
   }
-  /* Inventory */
   findInventoryItemById(id: string) {
-    let returnItem = null;
-    for (var i = 0; i < this.inventory.length; i++) {
-      if (this.inventory[i]?.id === id) {
-        returnItem = this.inventory[i];
-        break;
-      }
-    }
-    return returnItem;
+    return findInventoryItemById(this.inventory, id);
   }
   subtractInventoryItemAtId(id: string, amount: integer) {
-    const found = cloneObject(this.findInventoryItemById(id));
-    if (found?.amount >= amount && amount > 0) {
-      const newAmount = found?.amount - amount;
-      if (newAmount < 1) {
-        this?.deleteInventoryItemAtId(id);
-      } else {
-        this.updateInventoryItemAtId(id, { ...found, amount: newAmount });
-      }
-      return amount;
-    }
-    return null;
+    const { result, subtracted } = subtractInventoryItemAtId(this.inventory, id, amount);
+    this.inventory = result;
+    return subtracted;
   }
   deleteInventoryItemAtId(id: string) {
-    for (var i = 0; i < this.inventory.length; i++) {
-      if (this.inventory[i]?.id === id) {
-        this.inventory[i] = null;
-        break;
-      }
-    }
+    this.inventory = deleteInventoryItemAtId(this.inventory, id);
   }
   isInventoryFull() {
-    return this?.inventory?.every(Boolean) && this?.inventory?.length >= MAX_INVENTORY_ITEMS;
+    return isInventoryFull(this.inventory);
   }
   updateInventoryItemAtId(id: string, item: Item) {
-    for (var i = 0; i < this.inventory.length; i++) {
-      if (this.inventory[i]?.id === id) {
-        this.inventory[i] = item;
-        break;
-      }
-    }
+    this.inventory = updateInventoryItemAtId(this.inventory, id, item);
   }
   addInventoryItem(item: Item) {
-    let itemAdded = false;
-    for (var i = 0; i < this.inventory.length; i++) {
-      if (!this.inventory[i]?.id) {
-        itemAdded = true;
-        this.inventory[i] = item;
-        break;
-      }
-    }
-    if (!itemAdded) {
-      this.inventory.push(item);
-    }
+    this.inventory = addInventoryItem(this.inventory, item);
   }
-  /* Abilities */
   findAbilityById(id: string): any {
-    const [slotName, foundItem] = Object.entries(this?.abilities).find(
-      ([_, slotItem]: [string, Item]) => slotItem?.id === id,
-    ) || [null, null];
-    return { item: foundItem, slotName };
+    return findAbilityById(this.abilities, id);
   }
   subtractAbilityAtId(id: string, amount: integer) {
-    const { item: found, slotName } = this.findAbilityById(id);
-    if (found?.amount > amount && amount > 0) {
-      const newAmount = found?.amount - amount;
-      this.abilities[slotName] = { ...found, amount: newAmount };
-      return amount;
-    }
-    return null;
+    const { result, subtracted } = subtractAbilityAtId(this.abilities, id, amount);
+    this.abilities = result as Record<string, Item>;
+    return subtracted;
   }
   deleteAbilityAtId(id: string) {
-    const { slotName } = this.findAbilityById(id);
-    this.abilities[slotName] = null;
+    this.abilities = deleteAbilityAtId(this.abilities, id) as Record<string, Item>;
   }
   clearAbilitySlot(slotName: string) {
-    if (!this?.abilities?.[slotName]) return;
-    this.abilities[slotName] = null;
+    this.abilities = withoutSlot(this.abilities, slotName) as Record<string, Item>;
   }
   checkBubbleMessage() {
     const now = Date.now();
@@ -354,7 +221,6 @@ export class Player extends ServerCharacter implements ServerPlayer {
 
     const room = scene?.roomManager.rooms[this.roomName];
     const { allowedTargets } = this.getAbilityDetails(abilitySlot);
-    const party = scene?.partyManager.getPartyById(this?.partyId);
 
     let hitList = [];
     let npcKills = [];
@@ -371,7 +237,6 @@ export class Player extends ServerCharacter implements ServerPlayer {
       const newHits = this.calculateDamage(npc, abilitySlot);
 
       if (newHits.find((hit) => hit.type === "death")) {
-        npc.dropLoot(this.stats.magicFind);
         npcKills.push(npc);
       }
 
@@ -381,7 +246,7 @@ export class Player extends ServerCharacter implements ServerPlayer {
     }
 
     for (const player of players) {
-      const targetIsInParty = party ? party.members.find((m) => m.id === player.id) : false;
+      const targetIsInParty = isPartyMember(scene.partyState, this?.partyId, player.id);
       if (!ids.includes(player.id)) continue;
       if (!allowedTargets.includes("self") && player.id === this.id) continue;
       if (!allowedTargets.includes("enemy") && player.id !== this.id && !targetIsInParty) continue;
@@ -398,13 +263,13 @@ export class Player extends ServerCharacter implements ServerPlayer {
     /* Send exp update to client */
     if (hitList?.some((hit) => hit.type === "death")) {
       // either you are in a party, or you are in a fake party object
-      const partyMembers = scene.partyManager.getPartyById(this?.partyId)?.members || [
-        { id: this?.id, roomName: this?.roomName },
-      ];
       // party members in same room share the kill
-      const recipients: ServerPlayer[] = partyMembers
-        ?.filter((m) => m?.roomName === this?.roomName)
-        .map((m) => scene?.players?.[m?.id])
+      const recipients: ServerPlayer[] = sharedRecipientIds(scene.partyState, {
+        partyId: this?.partyId,
+        id: this?.id,
+        roomName: this?.roomName,
+      })
+        .map((id) => scene?.players?.[id])
         .filter(Boolean);
       const levelsBefore = recipients.map((member) => member.baseStats.level);
       // Read once so a level-up part way through the kills doesn't change what later kills are worth.

@@ -2,6 +2,7 @@ import { Character } from "@/shared/character";
 import { ItemBuilder, buffList } from "@/shared/content";
 import { randomNumber, cloneObject } from "./utils";
 import { applyCalculatedStats } from "./character-stats";
+import { getPlayerQuests } from "@/shared/rules/quests";
 import {
   calculateNextMaxExp,
   addValuesToExistingKeys,
@@ -20,15 +21,7 @@ export class ServerCharacter extends Character {
     scene.events.once("shutdown", this.destroy, this);
   }
   getQuests() {
-    if (!this.quests?.length) return [];
-    return this?.quests?.map((q) => {
-      const serverQuest = this.scene.quests[q?.questId];
-      return {
-        ...this.getPlayerQuestStatus(serverQuest),
-        /* We pass the rewards here so that the items are built with the correct stat */
-        rewards: serverQuest?.rewards,
-      };
-    });
+    return getPlayerQuests(this, this.scene.quests);
   }
   /* make sure character can wear items */
   calculateActiveItemSlots() {

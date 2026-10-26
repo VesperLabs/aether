@@ -6,6 +6,7 @@ import {
   PLAYER_DEFAULT_SPAWN,
 } from "../../utils";
 import type { ParsedCommand } from "@/shared/network";
+import { legacyUpdateMemberRoom } from "../../party-adapter";
 import type { CommandContext } from "@/server/net/command-context";
 
 export function playerInput(ctx: CommandContext, input: ParsedCommand<"playerInput">) {
@@ -37,7 +38,7 @@ export function updateState(ctx: CommandContext, state: ParsedCommand<"updateSta
 }
 
 export function enterDoor(ctx: CommandContext, doorName: ParsedCommand<"enterDoor">) {
-  const { scene, socket, socketId, io } = ctx;
+  const { scene, socket, socketId } = ctx;
   const player = scene.players[socketId];
   const oldRoom = player.room.name;
   const prev = getDoor(scene, oldRoom, doorName)?.getProps();
@@ -68,17 +69,11 @@ export function enterDoor(ctx: CommandContext, doorName: ParsedCommand<"enterDoo
 
   // announce room has changed to the party
   // TODO: need a better way of sending a persistant party state instead of this
-  if (player?.partyId) {
-    const party = scene.partyManager.getPartyById(player?.partyId);
-    party.updateMember(player?.id, { roomName: player?.roomName });
-    io.to(party.socketRoom).emit("partyUpdate", {
-      party,
-    });
-  }
+  legacyUpdateMemberRoom(scene, player);
 }
 
 export function respawn(ctx: CommandContext) {
-  const { scene, socket, socketId, io } = ctx;
+  const { scene, socket, socketId } = ctx;
   const player = scene.players[socketId];
   const oldRoom = player.room.name;
   const { roomName: newRoom, x: newX, y: newY } = player?.spawn ?? PLAYER_DEFAULT_SPAWN;
@@ -112,13 +107,7 @@ export function respawn(ctx: CommandContext) {
 
   // announce room has changed to the party
   // TODO: need a better way of sending a persistant party state instead of this
-  if (player?.partyId) {
-    const party = scene.partyManager.getPartyById(player?.partyId);
-    party.updateMember(player?.id, { roomName: player?.roomName });
-    io.to(party.socketRoom).emit("partyUpdate", {
-      party,
-    });
-  }
+  legacyUpdateMemberRoom(scene, player);
 
   scene.db.updateUser(scene.players?.[socketId]);
 }

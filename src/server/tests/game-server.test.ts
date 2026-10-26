@@ -46,6 +46,10 @@ async function login(charClass = "warrior") {
   return { socket, state, meta };
 }
 
+/** The live loot on the ground, straight from the scene. */
+const serverLoots = (): Record<string, Anything> =>
+  (gameServer.game.scene.getScene("ServerScene") as Anything).loots;
+
 const ping = (socket: Socket) =>
   new Promise<boolean>((resolve) => socket.emit("latency", () => resolve(true)));
 
@@ -154,5 +158,42 @@ describe("game server", () => {
     } finally {
       delete process.env.DEBUG;
     }
+  });
+
+  it("a dropped item lands on the ground and grabLoot picks it back up", async () => {
+    const { socket, state } = await login("warrior");
+    const hero = state.players.find((p: Anything) => p.socketId === socket.id);
+    const armorId = hero.equipment.armor.id;
+    const spawned = once(socket, "lootSpawned");
+    socket.emit("dropItem", { location: "equipment", item: { id: armorId } });
+    const [{ loot, npcId }] = await spawned;
+    expect(npcId).toBeFalsy();
+    expect(loot.item.id).toBe(armorId);
+    expect(serverLoots()[loot.id]).toBeTruthy();
+
+    const grabbed = once(socket, "lootGrabbed");
+    socket.emit("grabLoot", { lootId: loot.id, direction: "left" });
+    const [result] = await grabbed;
+    expect(result.socketId).toBe(socket.id);
+    expect(result.loot.id).toBe(loot.id);
+    expect(result.player.inventory.some((i: Anything) => i?.id === armorId)).toBe(true);
+    expect(serverLoots()[loot.id]).toBeUndefined();
+  });
+
+  it("grabLoot ignores loot that is gone or expired", async () => {
+    const { socket, state } = await login("warrior");
+    const hero = state.players.find((p: Anything) => p.socketId === socket.id);
+    const spawned = once(socket, "lootSpawned");
+    socket.emit("dropItem", { location: "equipment", item: { id: hero.equipment.armor.id } });
+    const [{ loot }] = await spawned;
+    serverLoots()[loot.id].expiredSince = Date.now();
+
+    let grabbed = false;
+    socket.on("lootGrabbed", () => (grabbed = true));
+    socket.emit("grabLoot", { lootId: loot.id, direction: "left" });
+    socket.emit("grabLoot", { lootId: "does-not-exist", direction: "left" });
+    expect(await ping(socket)).toBe(true);
+    expect(grabbed).toBe(false);
+    expect(serverLoots()[loot.id]).toBeTruthy();
   });
 });

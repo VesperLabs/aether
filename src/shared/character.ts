@@ -10,6 +10,7 @@ import {
   RANGE_MULTIPLIER,
 } from "./utils";
 import { spellDetails } from "@/shared/content";
+import { getPlayerQuestStatus } from "@/shared/rules/quests";
 
 export class Character extends Phaser.GameObjects.Container {
   startingCoords: Coordinate;
@@ -422,72 +423,7 @@ export class Character extends Phaser.GameObjects.Container {
     return { ...ability, action, spellName };
   }
   getPlayerQuestStatus(quest: Quest) {
-    const playerQuest = this.quests.find((q) => q?.questId === quest?.id);
-    if (!playerQuest) return null;
-    /* Create PlayerQuestObjectives */
-    const objectives = quest?.objectives?.reduce((acc, objective, idx) => {
-      let isReady = false;
-      let numKilled = 0;
-      let numCollected = 0;
-      /* Check if the player has enough kills of the target NPC */
-      if (objective?.type === "bounty") {
-        numKilled = this.npcKills[objective?.monster as string] || 0;
-        isReady = numKilled >= objective?.amount;
-      }
-      /* Check if the player has enough items of the target item */
-      if (objective?.type === "item") {
-        const item =
-          this.findInventoryQuestItem(objective?.item as string[]) ||
-          this.findBagQuestItem(objective?.item as string[]) ||
-          this.findAbilityQuestItem(objective?.item as string[]);
-        numCollected = item?.amount || 0;
-        isReady = numCollected >= objective?.amount;
-      }
-      /* Add the playerObjective to the list */
-      acc.push({
-        questId: quest?.id,
-        objectiveId: idx,
-        isReady,
-        numKilled,
-        numCollected,
-      });
-      return acc;
-    }, []);
-    return {
-      questId: quest?.id,
-      isReady: objectives?.every((o) => o?.isReady) || playerQuest?.isReady,
-      isCompleted: playerQuest?.isCompleted,
-      objectives,
-    };
-  }
-  findInventoryQuestItem(target: Array<string>) {
-    const item = this.inventory.find(
-      (i: Item) => i?.slot === target?.[0] && i?.rarity === target?.[1] && i?.key === target?.[2],
-    );
-    return item;
-  }
-  findBagQuestItem(target: Array<string>) {
-    let item = null;
-    const bags = this?.inventory?.filter((item: Item) => item?.base === "bag");
-    for (const bag of bags) {
-      const found = bag?.items?.find?.(
-        (i: Item) => i?.slot === target?.[0] && i?.rarity === target?.[1] && i?.key === target?.[2],
-      );
-      if (found) {
-        return found;
-      }
-    }
-
-    return item;
-  }
-  findAbilityQuestItem(target: Array<string>): any {
-    const [_slotName, foundItem] = Object.entries(this?.abilities).find(
-      ([_, slotItem]: [string, Item]) =>
-        slotItem?.slot === target?.[0] &&
-        slotItem?.rarity === target?.[1] &&
-        slotItem?.key === target?.[2],
-    ) || [null, null];
-    return foundItem;
+    return getPlayerQuestStatus(this, quest);
   }
   getAttackSpCost(count: number) {
     const visibleEquipment = this.getVisibleEquipment();
