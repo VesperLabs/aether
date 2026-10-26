@@ -1,4 +1,3 @@
-import { cloneDeep } from "lodash";
 import { moveBodyFreely, moveBodyThroughMap } from "@/shared/rules/movement";
 import type { Frame, System } from "@/shared/rules/world";
 import {
@@ -73,14 +72,14 @@ const updateRooms: System<ServerWorld> = (world: ServerWorld, _frame: Frame) => 
 
     if (isKeyframe) {
       const snapshot = createSnapshot(compactTickState(expanded), room.snapshotSeq);
-      room.lastEmittedSnapshot = cloneDeep(expanded);
+      room.lastEmittedSnapshot = structuredClone(expanded);
       io.to(room.name).emit("update", snapshot);
       continue;
     }
 
     const { delta, rm, isEmpty } = diffTickStates(room.lastEmittedSnapshot as any, expanded);
     if (isEmpty) continue;
-    room.lastEmittedSnapshot = cloneDeep(expanded);
+    room.lastEmittedSnapshot = structuredClone(expanded);
     const snap = createDeltaSnapshot(compactTickDeltaForWire(delta), rm, room.snapshotSeq);
     io.to(room.name).emit("update", snap);
   }

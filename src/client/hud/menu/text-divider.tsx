@@ -1,5 +1,4 @@
 import { Text, theme } from "@/ui";
-import { get } from "lodash";
 
 // Utility function to convert hex color to RGBA
 const hexToRGBA = (hex, alpha = 1) => {
@@ -13,8 +12,18 @@ const hexToRGBA = (hex, alpha = 1) => {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 };
 
+/** Looks up a dotted path such as "gray.500" in the theme colors. */
+const resolveThemeColor = (path: string): string | undefined => {
+  let node: unknown = theme.colors;
+  for (const key of path.split(".")) {
+    if (node == null || typeof node !== "object") return undefined;
+    node = (node as Record<string, unknown>)[key];
+  }
+  return node as string | undefined;
+};
+
 export const TextDivider = ({ children, sx, color = "gray.500", alpha = 0.5 }: any) => {
-  const resolvedColor = get(theme, `colors.${color}`) ?? color;
+  const resolvedColor = resolveThemeColor(color) ?? color;
   const colorWithAlpha = hexToRGBA(resolvedColor, alpha);
 
   return (

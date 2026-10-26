@@ -46,8 +46,8 @@ Do the pure ones first. Write tests as each one moves.
 - [ ] Client: sprites to `src/client/views/` as displays of game state, input to `input/`, interpolation and prediction to `net/`, and run the rules on the client for movement prediction (files are moved and `utils.ts` is gone; sprites are still Phaser-driven state and there is no prediction yet)
 - [x] Client: group `client/ui/` into `src/client/hud/<feature>/`
 - [ ] Remove any leftover loose files from `src/shared/` so it holds only `content/`, `rules/` and `network/`
-- [ ] Convert the remaining `.js` files to TypeScript and turn on strict mode repo-wide (client `.js` is done; `src/ui/theme.js` and `src/wiki/api/index.js` remain)
-- [ ] Replace lodash with modern JS where possible
+- [ ] Convert the remaining `.js` files to TypeScript (done, `allowJs` is off) and turn on strict mode repo-wide (not yet)
+- [ ] Replace lodash with modern JS where possible (all of `src/` except `src/shared/utils.ts`; then remove `lodash` from package.json)
 
 ## Done when
 

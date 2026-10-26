@@ -1,6 +1,5 @@
 import { useAppContext } from "@/client/hud/app/context";
 import { Modal, KeyboardButton, Icon, Box, Text } from "@/ui";
-import { startCase, toLower } from "lodash";
 
 export const ModalHome = () => {
   const { zoom, bottomOffset, homeModal: keeper, setHomeModal, socket } = useAppContext();
@@ -17,7 +16,7 @@ export const ModalHome = () => {
           <Box sx={{ maxWidth: 300, whiteSpace: "normal", lineHeight: 1.5 }}>
             You are about to make{" "}
             <Text color="set" sx={{ fontWeight: "bold" }}>
-              {startCase(toLower(keeper?.roomName))}
+              {startCaseLower(keeper?.roomName)}
             </Text>{" "}
             your new home. When you die, you will respawn here.
           </Box>
@@ -45,3 +44,13 @@ export const ModalHome = () => {
     </>
   ) : null;
 };
+
+/** Lowercases a room name and capitalises each word, splitting on non-alphanumerics and camelCase boundaries. */
+function startCaseLower(value?: string | null): string {
+  return (value ?? "")
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter(Boolean)
+    .map((word) => word[0].toUpperCase() + word.slice(1))
+    .join(" ");
+}

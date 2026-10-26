@@ -5,7 +5,6 @@ import { Portrait } from "@/client/hud/status/portrait";
 import { StatusIcon } from "@/client/hud/status/status-icon";
 import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
 import { streamHasUsableVideo } from "@/client/hud/video/video-support";
-import { cloneDeep } from "lodash";
 import { Bar } from "@/client/hud/status/stat-bar";
 import { Buffs } from "@/client/hud/status/buffs";
 import { Tooltip } from "@/client/hud/tooltips/tooltip";
@@ -248,7 +247,11 @@ export const MenuHud = () => {
       }}
     >
       <Tooltip id="hud" />
-      <PlayerHud player={cloneDeep(hero)} isBig={true} portraitVideoStream={heroPortraitVideo} />
+      <PlayerHud
+        player={structuredClone(hero)}
+        isBig={true}
+        portraitVideoStream={heroPortraitVideo}
+      />
       <StatusIcon />
       <Flex sx={{ flexDirection: "row", alignItems: "flex-start", gap: 3 }}>
         <Flex sx={{ flexDirection: "column" }}>
@@ -258,7 +261,7 @@ export const MenuHud = () => {
               return (
                 <PlayerHud
                   isBig={false}
-                  player={cloneDeep(p)}
+                  player={structuredClone(p)}
                   key={id}
                   portraitVideoStream={remotePortraitStream(videoChatOn, remoteVideoStreams, p)}
                 />
@@ -286,7 +289,7 @@ export const MenuHud = () => {
                   <PlayerHud
                     isBig={false}
                     isNearby={true}
-                    player={cloneDeep(p)}
+                    player={structuredClone(p)}
                     portraitVideoStream={remotePortraitStream(videoChatOn, remoteVideoStreams, p)}
                   />
                 </Flex>

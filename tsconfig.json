@@ -2,7 +2,6 @@
   "compilerOptions": {
     "target": "ESNext",
     "moduleResolution": "bundler",
-    "allowJs": true,
     "noEmit": true,
     "strict": false,
     "skipLibCheck": true,

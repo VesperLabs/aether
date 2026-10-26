@@ -20,12 +20,8 @@ const LEGACY: Record<Rule, string[]> = {
   "folder-case": [],
   "manager-class": [],
   "spec-file": [],
-  "tsx-without-jsx": [
-    "src/client/hud/video/video-frame.tsx",
-    "src/ui/index.tsx",
-    "src/ui/portal.tsx",
-  ],
-  "index-logic": ["src/ui/index.tsx", "src/wiki/api/index.js", "src/wiki/index.tsx"],
+  "tsx-without-jsx": [],
+  "index-logic": [],
 };
 
 const ROOTS = ["src", "scripts"];
