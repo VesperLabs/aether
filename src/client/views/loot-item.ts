@@ -4,6 +4,11 @@ const Sprite = Phaser.GameObjects.Sprite;
 const BLANK_TEXTURE = "human-blank";
 
 export class LootItem extends Phaser.GameObjects.Container {
+  declare id: any;
+  declare item: any;
+  declare lootShadow: any;
+  declare lootSprite: any;
+  declare texture: any;
   constructor(scene, loot) {
     super(scene, loot.x, loot.y);
     this.scene = scene;
@@ -13,9 +18,9 @@ export class LootItem extends Phaser.GameObjects.Container {
     this.lootSprite = scene.add.existing(new Sprite(scene, 0, 0, BLANK_TEXTURE, 0));
     scene.physics.add.existing(this);
     const bodySize = 8 * (this?.scale || 1);
-    this.body.setCircle(bodySize, -bodySize, -bodySize);
+    (this.body as Phaser.Physics.Arcade.Body).setCircle(bodySize, -bodySize, -bodySize);
     this.addLootSprite(loot);
-    this.setDepth(95 + this.y + this?.body?.height);
+    this.setDepth(95 + this.y + (this?.body as Phaser.Physics.Arcade.Body)?.height);
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
   }
@@ -26,7 +31,7 @@ export class LootItem extends Phaser.GameObjects.Container {
       this.lootSprite.play(this.texture);
     } else {
       // otherwise its an actual item
-      let asset = resolveAsset(loot.item, scene.hero);
+      let asset = resolveAsset(loot.item, (scene as any).hero);
       this.lootShadow = new Sprite(scene, 0, 4, asset.texture, "preview");
       this.lootShadow.setTint(0x000000).setAlpha(0.1);
       this.lootSprite.setTexture(asset.texture, "preview");

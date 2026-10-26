@@ -332,7 +332,6 @@
       "files": [
         "src/client/views/player.ts",
         "src/client/scenes/hud-scene.ts",
-        "src/client/scenes/main-scene.js",
         "src/client/hud/app/app.tsx",
         "src/client/hud/menu/menu-hud.tsx"
       ],

@@ -4,6 +4,20 @@ const Sprite = Phaser.GameObjects.Sprite;
 const FRAME_SIZE = 4;
 
 export class Bubble extends Phaser.GameObjects.Container {
+  declare bg: any;
+  declare bl: any;
+  declare bot: any;
+  declare br: any;
+  declare bubbleText: any;
+  declare headY: any;
+  declare left: any;
+  declare maxWidth: any;
+  declare message: any;
+  declare right: any;
+  declare tail: any;
+  declare tl: any;
+  declare top: any;
+  declare tr: any;
   /**
    * @param {Phaser.Scene} scene
    * @param {number} headY negative number of the position from center a sprites head is

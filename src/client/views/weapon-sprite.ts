@@ -10,6 +10,13 @@ const ALPHA_STEP = 0.1;
 const ALPHA_MAX = 1;
 
 export class WeaponSprite extends Phaser.GameObjects.Container {
+  declare alphaDirection: any;
+  declare alphaValue: any;
+  declare borderSprites: any;
+  declare colors: any;
+  declare currentIndex: any;
+  declare mainSprite: any;
+  declare updateEvent: any;
   constructor(scene, x, y, key, frame) {
     super(scene, x, y);
 

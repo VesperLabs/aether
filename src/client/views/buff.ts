@@ -2,6 +2,8 @@ import Phaser from "phaser";
 const Sprite = Phaser.GameObjects.Sprite;
 
 export class Buff extends Phaser.GameObjects.Container {
+  declare buff: any;
+  declare victim: any;
   constructor(scene, victim, buffName) {
     super(scene, victim.x, victim.y);
 

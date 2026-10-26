@@ -16,10 +16,10 @@ import { getHeroCoordsRelativeToWindow } from "@/client/scenes/camera-zoom";
  * @param {Phaser.Scene} scene - [description]
  * @param {object} [settings] - [description]
  */
-var Joystick = new Phaser.Class({
+var Joystick = new (Phaser as any).Class({
   Extends: Phaser.GameObjects.GameObject,
 
-  Mixins: [Phaser.GameObjects.Components.Transform],
+  Mixins: [(Phaser.GameObjects.Components as any).Transform],
 
   initialize: function Joystick(scene, settings) {
     Phaser.GameObjects.GameObject.call(this, scene, "Joystick");
@@ -254,7 +254,7 @@ var Joystick = new Phaser.Class({
  * @param {Phaser.Scene} scene - A reference to the Scene that has installed this plugin.
  * @param {Phaser.Plugins.PluginManager} pluginManager - A reference to the Plugin Manager.
  */
-export var VJoyPlugin = new Phaser.Class({
+export var VJoyPlugin = new (Phaser as any).Class({
   Extends: Phaser.Plugins.ScenePlugin,
 
   initialize: function VJoyPlugin(scene, pluginManager) {

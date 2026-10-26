@@ -4,7 +4,8 @@ const Sprite = Phaser.GameObjects.Sprite;
 const FRAME_SIZE = 4;
 
 export class Bar extends Phaser.GameObjects.Container {
-  constructor(scene, x, y, width, height, percent = 0, color = "0xFF0000") {
+  declare bar: any;
+  constructor(scene, x, y, width, height, percent = 0, color = 0xff0000) {
     super(scene, x, y);
     this.width = width;
     this.height = height;
@@ -37,7 +38,7 @@ export class Bar extends Phaser.GameObjects.Container {
       .setFrame(4)
       .setOrigin(0, 0)
       .setDisplaySize(width - FRAME_SIZE - FRAME_SIZE, FRAME_SIZE)
-      .setTint("0x444444");
+      .setTint(0x444444);
 
     this.bar = scene.add.existing(
       new Sprite(scene, FRAME_SIZE, FRAME_SIZE, "misc-bars", 0)

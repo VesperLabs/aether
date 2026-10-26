@@ -3,6 +3,7 @@ import Phaser from "phaser";
 const Sprite = Phaser.GameObjects.Sprite;
 
 export class BuffRack extends Phaser.GameObjects.Container {
+  declare buffs: any;
   constructor(scene, x, y, buffs = []) {
     super(scene, x, y);
     this.buffs = [];
@@ -26,7 +27,7 @@ export class BuffRack extends Phaser.GameObjects.Container {
     const index = this.buffs.findIndex((b) => b.name === buff.name);
     if (index !== -1) {
       const sprite = this.buffs[index].sprite;
-      this.remove(sprite, true, true);
+      this.remove(sprite, true);
       this.buffs.splice(index, 1);
     }
     this.center();

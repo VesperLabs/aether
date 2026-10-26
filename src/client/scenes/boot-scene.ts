@@ -19,6 +19,7 @@ const onLoadError = (value) => {
 };
 
 export class SceneBoot extends Phaser.Scene {
+  declare socket: any;
   constructor(socket) {
     super({
       key: "SceneBoot",
@@ -32,7 +33,7 @@ export class SceneBoot extends Phaser.Scene {
     const dpanel = this.add
       .text(viewportWidth / 2, viewportHeight / 2, "Loading...", {
         font: "18px monospace",
-        fill: "#ffffff",
+        color: "#ffffff",
         backgroundColor: "#000000",
       })
       .setOrigin(0.5)
@@ -49,7 +50,8 @@ export class SceneBoot extends Phaser.Scene {
       /* For loot pics */
       assetList.forEach((asset) => {
         let tempText = this.textures.get(asset.texture);
-        tempText.add("preview", 0, ...asset.previewRect);
+        const [x, y, width, height] = asset.previewRect;
+        tempText.add("preview", 0, x, y, width, height);
       });
 
       /* Inject textures into game cache */
@@ -58,7 +60,7 @@ export class SceneBoot extends Phaser.Scene {
         if (key && texture.source[0].image) {
           IMAGE_CACHE[key] = texture.source[0].image;
         }
-      });
+      }, undefined);
 
       window.dispatchEvent(new Event("GAME_LOADED"));
       this.scene.start("SceneMain");

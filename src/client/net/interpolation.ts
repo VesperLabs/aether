@@ -19,7 +19,14 @@ function lerp(a, b, t) {
  * @param {number} [options.bufferTicks] — delay = (1000/fps)*ticks
  * @param {number} [options.maxSnapshots]
  */
-export function createNetInterpolator(options = {}) {
+export function createNetInterpolator(
+  options: {
+    serverFps?: number;
+    bufferTicks?: number;
+    maxSnapshots?: number;
+    extraBufferMs?: number;
+  } = {},
+) {
   const serverFps = options.serverFps ?? DEFAULT_SERVER_FPS;
   const bufferTicks = options.bufferTicks ?? 2;
   const maxSnapshots = options.maxSnapshots ?? 120;

@@ -9,6 +9,12 @@ import Phaser from "phaser";
 //
 
 export class AnimatedTiles extends Phaser.Plugins.ScenePlugin {
+  declare active: any;
+  declare activeLayer: any;
+  declare animatedTiles: any;
+  declare followTimeScale: any;
+  declare map: any;
+  declare rate: any;
   /*
 
   TODO: 
@@ -17,6 +23,7 @@ export class AnimatedTiles extends Phaser.Plugins.ScenePlugin {
   
   */
   constructor(scene, pluginManager) {
+    // @ts-expect-error legacy plugin signature, the plugin key is optional at runtime
     super(scene, pluginManager);
 
     // TileMap the plugin belong to.
@@ -239,11 +246,11 @@ export class AnimatedTiles extends Phaser.Plugins.ScenePlugin {
       // Go through the data stored on each tile (not tile on the tilemap but tile in the tileset)
       (tileset) => {
         let tileData = tileset.tileData;
-        Object.keys(tileData).forEach((index) => {
-          index = parseInt(index);
+        Object.keys(tileData).forEach((indexKey) => {
+          const index = parseInt(indexKey);
           // If tile has animation info we'll dive into it
           if (tileData[index].hasOwnProperty("animation")) {
-            let animatedTileData = {
+            let animatedTileData: any = {
               index: index + tileset.firstgid, // gid of the original tile
               frames: [], // array of frames
               currentFrame: 0, // start on first frame
@@ -365,7 +372,7 @@ export class AnimatedTiles extends Phaser.Plugins.ScenePlugin {
 }
 
 //  Static function called by the PluginFile Loader.
-AnimatedTiles.register = function (PluginManager) {
+(AnimatedTiles as any).register = function (PluginManager) {
   //  Register this plugin with the PluginManager, so it can be added to Scenes.
   PluginManager.register("AnimatedTiles", AnimatedTiles, "animatedTiles");
 };

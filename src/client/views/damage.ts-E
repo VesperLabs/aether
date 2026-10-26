@@ -2,6 +2,9 @@ import Phaser from "phaser";
 const { Container, BitmapText } = Phaser.GameObjects;
 
 export class Damage extends Container {
+  declare dt: any;
+  declare duration: any;
+  declare victim: any;
   constructor(scene, victim, hit) {
     super(scene, victim.x, victim.y);
     let text = Math.abs(hit.amount);
