@@ -106,11 +106,9 @@ describe("expireBuffs", () => {
     expect(expireBuffs([buff("a", -1, 0)], NOW, true)).toEqual({ buffs: [], changed: true });
     expect(expireBuffs([], NOW, true).changed).toBe(false);
   });
-  it("quirk: of two neighbouring expired buffs only the first goes this call", () => {
+  it("removes neighbouring expired buffs in the same call", () => {
     const buffs = [buff("a", 10, 100), buff("b", 10, 100), buff("c", 10, 100)];
-    const first = expireBuffs(buffs, NOW);
-    expect(first.buffs.map((b) => b.name)).toEqual(["b"]);
-    expect(expireBuffs(first.buffs, NOW).buffs).toEqual([]);
+    expect(expireBuffs(buffs, NOW)).toEqual({ buffs: [], changed: true });
   });
 });
 

@@ -77,7 +77,7 @@ Found during the migration and left alone so behaviour stayed identical. Fix aft
 - [x] **Inventory:** `deleteAbilityAtId` with an unknown id writes `abilities["null"] = null`
 - [ ] **Inventory:** a move between unsupported slots (equipment ↔ abilities) still saves and emits `playerUpdate`
 - [ ] **Inventory:** buying a stackable that merges into an existing stack ignores a non-blank destination slot
-- [ ] **Buffs:** `expireBuffs` splices while iterating, so when two neighbouring buffs expire in the same tick only the first is removed
+- [x] **Buffs:** `expireBuffs` splices while iterating, so when two neighbouring buffs expire in the same tick only the first is removed
 - [ ] **Combat:** `modifyStat`'s undefined check can never be true (`parseInt` gives NaN), so a NaN stat stays NaN
 - [ ] **Combat:** `Player.doAttack` computes `spCost + stats?.spCost || 0`, which is NaN when `stats.spCost` is missing, so the SP cost is skipped
 - [ ] **Combat:** `calculateActiveItemSlots` throws for a buff with `percentStats` but no `stats`
