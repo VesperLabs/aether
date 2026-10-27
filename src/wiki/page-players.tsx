@@ -1,18 +1,30 @@
-import { Box, Flex, KeyboardKey, Label, Text, Tooltip, TooltipContent } from "@/ui";
+import {
+  Box,
+  Flex,
+  KeyboardKey,
+  Label,
+  MenuAbilities,
+  MenuBag,
+  MenuEquipment,
+  MenuInventory,
+  MenuStats,
+  Text,
+  Tooltip,
+  TooltipContent,
+} from "@/ui";
 import { RowTitle } from "./row-title";
 import { useEffect, useState } from "react";
 import { PlayerRender } from "./player-render";
 import { questList } from "@/content";
-import { MenuAbilities, MenuBag, MenuEquipment, MenuInventory, MenuStats } from "@/client";
 import { useLocation } from "wouter";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { fetchPlayers, type PlayersQueryKey } from "./api";
-import type { HudCharacter } from "@/client/hud/app/context";
+import type { FullCharacterWire } from "@/network";
 import type { ReactNode } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
 
 /** A player or keeper as the wiki lists it: what the server sends, or a loading placeholder. */
-export type WikiPlayer = Partial<HudCharacter> & {
+export type WikiPlayer = Partial<FullCharacterWire> & {
   id: string;
   isGhost?: boolean;
   updatedAt?: string | number;
@@ -130,16 +142,10 @@ export function PagePlayers() {
             key={key}
             player={currentPlayer}
             isOpen={tabs[key as TabKey]}
-            slotsEnabled={false}
             setIsOpen={() => setTabKey(key as TabKey, false)}
           />
         ))}
-        <MenuBag
-          player={currentPlayer}
-          bagState={bagState}
-          slotsEnabled={false}
-          toggleBagState={toggleBagState}
-        />
+        <MenuBag player={currentPlayer} bagState={bagState} toggleBagState={toggleBagState} />
       </MenuHolder>
       <KeyboardKey
         key={escCacheKey}

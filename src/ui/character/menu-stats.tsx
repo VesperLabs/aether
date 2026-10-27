@@ -1,9 +1,16 @@
-import { ThemeUIStyleObject } from "theme-ui";
-import { Flex, Text, Grid, MENU_MAX_WIDTH, Menu, MenuHeader } from "@/ui";
-import { arePropsEqualWithKeys } from "@/ui";
-import { convertMsToS } from "@/rules/stats";
+import type { ThemeUIStyleObject } from "theme-ui";
 import { memo } from "react";
-import type { CharacterMenuProps } from "@/client/hud/menu/menu-props";
+import { convertMsToS } from "@/rules/stats";
+import {
+  arePropsEqualWithKeys,
+  Flex,
+  Grid,
+  Menu,
+  MENU_MAX_WIDTH,
+  MenuHeader,
+  Text,
+} from "@/ui/kit";
+import type { CharacterMenuProps } from "./menu-props";
 
 const COLUMN_STYLES: ThemeUIStyleObject = {
   gap: 1,
