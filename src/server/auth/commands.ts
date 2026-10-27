@@ -1,11 +1,11 @@
-import { getFullCharacterState } from "@/shared/network/sync";
+import { getFullCharacterState } from "@/network/sync";
 import { getRoomState } from "@/server/net/room-sync";
 import { removePlayer } from "../remove-player";
 import { createPlayer } from "../player-room";
 import { legacyLeaveParty } from "../party-adapter";
 import { createBaseUser } from "../persistence";
 import { shouldPause } from "../net/world-pause";
-import type { ParsedCommand } from "@/shared/network";
+import type { ParsedCommand } from "@/network";
 import type { CommandContext } from "@/server/net/command-context";
 
 export async function demoLogin(

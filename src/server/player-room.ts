@@ -1,6 +1,6 @@
 import type { ServerWorld } from "./server-world";
 import { Player, type PlayerArgs } from "./player";
-import type { RoomData } from "@/shared/rules/world";
+import type { RoomData } from "@/rules/world";
 
 /** A player that is in a room, so its room refs are set. */
 export type PlayerInRoom = Player & { room: RoomData; roomName: string };

@@ -1,6 +1,6 @@
-import { ItemBuilder, isItemBuildRarity, ITEM_BUILD_RARITIES } from "@/shared/content";
+import { ItemBuilder, isItemBuildRarity, ITEM_BUILD_RARITIES } from "@/content";
 import type { CommandContext } from "@/server/net/command-context";
-import { getFullCharacterState } from "@/shared/network/sync";
+import { getFullCharacterState } from "@/network/sync";
 import { getRoomState } from "@/server/net/room-sync";
 import { spawnLoot } from "../loot-adapter";
 import { isInRoom } from "@/server/player-room";

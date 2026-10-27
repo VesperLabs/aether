@@ -6,14 +6,14 @@
  * - Real collision is server-side Phaser; the client only displays interpolated poses.
  */
 
-import { DEFAULT_SERVER_FPS } from "@/shared/network";
+import { DEFAULT_SERVER_FPS } from "@/network";
 import {
   expandTickState,
   mergeTickDelta,
   type NetSnapshot,
   type TickCharacterWire,
   type TickStateExpanded,
-} from "@/shared/network/sync";
+} from "@/network/sync";
 
 /** A character pose from a tick. Heroinit seeds also carry the room and a plain direction. */
 export type TickEntity = TickCharacterWire & {

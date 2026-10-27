@@ -1,10 +1,10 @@
 import Phaser from "phaser";
-import type { FullCharacterWire, PartyMessage } from "@/shared/network";
-import type { BuffCharacterWire } from "@/shared/network/sync";
+import type { FullCharacterWire, PartyMessage } from "@/network";
+import type { BuffCharacterWire } from "@/network/sync";
 import type { SceneMain } from "@/client/scenes/main-scene";
 import { Character, type CharacterArgs } from "./character";
-import { distanceTo } from "@/shared/rules/world";
-import { MIN_STEALTH_ALPHA, calculateStealthVisibilityPercent } from "@/shared/rules/combat";
+import { distanceTo } from "@/rules/world";
+import { MIN_STEALTH_ALPHA, calculateStealthVisibilityPercent } from "@/rules/combat";
 import { Spell } from "./spell";
 import { getSpinDirection } from "@/client/input/spin-direction";
 import { applyAppearance, createSpriteLayers } from "./player-layers";

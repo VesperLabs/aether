@@ -1,10 +1,10 @@
 import { Quest as QuestSlot } from "./quest";
 import { Flex, Text, MENU_MAX_WIDTH, Menu, MenuHeader } from "@/ui";
-import { questList, type Quest, type QuestId } from "@/shared/content";
-import type { PlayerQuestStatus } from "@/shared/rules/quests";
-import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
+import { questList, type Quest, type QuestId } from "@/content";
+import type { PlayerQuestStatus } from "@/rules/quests";
+import { arePropsEqualWithKeys } from "@/ui";
 import { memo } from "react";
-import type { CharacterMenuProps } from "@/client/hud/menu/menu-props";
+import type { CharacterMenuProps } from "@/ui";
 
 export const MenuQuests = memo(
   ({ player, isOpen, setIsOpen }: CharacterMenuProps) => {

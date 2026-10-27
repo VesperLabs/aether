@@ -1,6 +1,6 @@
 import { Icon, KeyboardKey, Button } from "@/ui";
-import { isMobile } from "@/ui/is-mobile";
-import type { PressHandler } from "@/ui/button/button";
+import { isMobile } from "@/ui";
+import type { PressHandler } from "@/ui";
 import type { ReactNode } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
 

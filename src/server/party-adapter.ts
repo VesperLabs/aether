@@ -10,8 +10,8 @@ import {
   type PartyEffect,
   type PartyPlayer,
   type PartyResult,
-} from "@/shared/rules/party";
-import { getFullCharacterState } from "@/shared/network/sync";
+} from "@/rules/party";
+import { getFullCharacterState } from "@/network/sync";
 
 /**
  * Legacy adapter between the party rules and the server world: copies players into the rules'

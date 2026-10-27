@@ -12,18 +12,17 @@ Aether is a server-authoritative online game. The design follows the way modern 
 
 ## Layout
 
-The top level of `src/` answers **where does this code run?** The next level answers **what is it?**
+Each folder in `src/` is one layer, named for what it is. Imports only point down.
 
 ```
 src/
-  shared/          # runs on both server and client
-    content/       # items, mobs, spells, quests, maps
-    rules/         # the game itself: no graphics, no network, no database
-    network/       # messages between client and server
-  server/          # the game server
-  client/          # the game in the browser
-  wiki/            # the wiki site
-  ui/              # React components used by client and wiki
+  content/         # core: items, mobs, spells, quests, maps
+  rules/           # core: the game itself, no graphics, no network, no database
+  network/         # core: messages between client and server
+  ui/              # React views of the core, by feature, used by client and wiki
+  server/          # app: the game server
+  client/          # app: the game in the browser
+  wiki/            # app: the wiki site
 public/            # images, audio, maps
 scripts/           # repo tooling
 ```
@@ -35,15 +34,15 @@ One `package.json`, one lockfile, one `tsconfig.json`. No workspaces. The repo r
 Use the `@/` alias (tsconfig `"paths": { "@/*": ["./src/*"] }`) for anything outside the current folder. Use relative imports only inside a feature or folder.
 
 ```ts
-import { items } from "@/shared/content";
-import { moveItem } from "@/shared/rules/inventory";
-import { commands } from "@/shared/network";
+import { items } from "@/content";
+import { moveItem } from "@/rules/inventory";
+import { commands } from "@/network";
 import { Button } from "@/ui";
 ```
 
 tsx and esbuild read the alias from tsconfig on their own. Vite and Vitest read it through `resolve.tsconfigPaths` (or the `vite-tsconfig-paths` plugin). tsconfig is the only place it's defined.
 
-### `shared/rules/`
+### `rules/`
 
 Every folder in `rules/` is one gameplay feature: `movement`, `combat`, `spells`, `buffs`, `stats`, `inventory`, `loot`, `npc-behavior`, `quests`, `party`, `chat`.
 
@@ -63,7 +62,7 @@ inventory/
   rules.test.ts
 ```
 
-### `shared/network/`
+### `network/`
 
 ```
 network/
@@ -110,28 +109,26 @@ client/input → network command → server/net (validate with zod)
 ## Import rules
 
 ```
-shared/content  ←  shared/rules  ←  shared/network
-                        ↑                 ↑
-       server ──────────┴─────────────────┘   (+ socket.io, express, mongodb)
-       client ──────────┴─────────────────┘   (+ phaser, react, ui)
-       wiki   → shared/content, ui
+apps    server    client    wiki       never import each other; server never imports ui
+          │         │   ╲    │
+ui        │         │    ui ─┘         React; imports core, never an app
+          ▼         ▼    ▼
+core    network  →  rules  →  content  plain TypeScript: no engines, IO, React or DOM
 ```
 
-- `shared/` never imports `server/`, `client/`, `wiki/` or `ui/`.
-- `shared/content/` imports nothing else from the repo.
-- `shared/rules/` imports only `shared/content/`. No Phaser, socket.io, mongodb, express or DOM.
-- `shared/network/` may import `shared/rules/` types. `shared/rules/` never imports `shared/network/`.
-- `server/`, `client/` and `wiki/` never import each other.
+- **Core** (`content`, `rules`, `network`) is plain TypeScript and imports only further down the chain: `content` imports nothing from the repo, `rules` imports only `content`, `network` imports `rules` and `content`. `network` may import socket.io types; nothing in core imports Phaser, React, the DOM or IO.
+- **`ui/`** imports core, never an app. Group it by feature (`ui/item/`, `ui/character/`), mirroring `rules/`; generic widgets go in `ui/kit/`.
+- **Apps** (`server/`, `client/`, `wiki/`) import core and `ui/` (except `server/`), never each other.
 - Code outside a feature imports it only through its `index.ts`.
 
 ## Conventions
 
-- **No grab-bag files.** No `utils`, `helpers`, `common`, `misc` or `lib` files or folders, and no `shared` folder other than `src/shared/`. Code lives where it's used. Truly generic code goes in a narrowly named module, such as `rules/world/geometry.ts`.
+- **No grab-bag files.** No `utils`, `helpers`, `common`, `misc` or `lib` files or folders, and no `shared` folders. Code lives where it's used. Truly generic code goes in a narrowly named module, such as `rules/world/geometry.ts`.
 - **No `*Manager` classes.** That kind of logic becomes a feature's rules and systems.
 - **Rules are pure.** `rules.ts` takes state and returns results or new state. Systems, command handlers, socket code and React components stay thin and call the rules.
 - **One source of truth for types.** Network types are inferred from zod schemas. Content types come from the content definitions. Don't write the same shape twice.
 - **Files stay under 400 lines.** Past that, split by responsibility.
-- **TypeScript only, strict mode** for everything in `shared/` and for all new files.
+- **TypeScript only, strict mode** for everything in core and for all new files.
 
 ## Naming
 
@@ -159,7 +156,7 @@ Exceptions: uppercase Markdown at the repo root (`README.md`, `CLAUDE.md`, `ARCH
 | Kind                                                        | Location                                          |
 | ----------------------------------------------------------- | ------------------------------------------------- |
 | Unit tests                                                  | Next to the code, `foo.ts` → `foo.test.ts`        |
-| Game scenarios (build a world, run ticks, check the result) | `src/shared/rules/tests/`                         |
+| Game scenarios (build a world, run ticks, check the result) | `src/rules/tests/`                                |
 | Socket and database integration                             | `src/server/tests/`                               |
 | UI components                                               | Next to the component, `Foo.tsx` → `Foo.test.tsx` |
 
@@ -171,4 +168,4 @@ Everything runs in `npm run check`, which husky runs before each commit and CI r
 - **`scripts/check-structure.ts`** rejects banned and non-kebab-case folder names, `*Manager` classes, `.spec` files, `.tsx` files without JSX and `index.ts` files containing logic.
 - **`tsconfig.json`** typechecks the whole repo in strict mode.
 - **Legacy exceptions** are listed in one place in each config (the oxlint `overrides` block and the script's allowlist). They may only shrink.
-- **`CLAUDE.md`** at the root, plus one in each of `src/shared/rules/`, `src/shared/network/` and `src/shared/content/`, gives agents the rules for the folder they're working in.
+- **`CLAUDE.md`** at the root, plus one in each of `src/rules/`, `src/network/` and `src/content/`, gives agents the rules for the folder they're working in.

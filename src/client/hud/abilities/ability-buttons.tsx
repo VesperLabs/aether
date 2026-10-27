@@ -1,11 +1,11 @@
-import { spellDetails, type BuiltItem, type SpellDefinition } from "@/shared/content";
+import { spellDetails, type BuiltItem, type SpellDefinition } from "@/content";
 import type { Cooldown, HudCharacter } from "@/client/hud/app/context";
-import { CONSUMABLES_BASES, POTION_BASES } from "@/shared/rules/inventory";
-import { applyTintToImage, loadCacheImage } from "@/ui/image-tint";
-import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
-import { isMobile } from "@/ui/is-mobile";
+import { CONSUMABLES_BASES, POTION_BASES } from "@/rules/inventory";
+import { applyTintToImage, loadCacheImage } from "@/ui";
+import { arePropsEqualWithKeys } from "@/ui";
+import { isMobile } from "@/ui";
 import { CooldownTimer } from "./cooldown-timer";
-import { ItemTooltip } from "@/client/hud/tooltips/item-tooltip";
+import { ItemTooltip } from "@/ui";
 import { SkillButton } from "./skill-button";
 import { Box, Flex, Text } from "@/ui";
 import React, { memo, useEffect, useState } from "react";

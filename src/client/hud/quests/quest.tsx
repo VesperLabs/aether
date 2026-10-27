@@ -2,10 +2,10 @@ import { Box, Icon, BASE_SLOT_STYLE, SLOT_SIZE } from "@/ui";
 import { QuestTooltip } from "./quest-tooltip";
 import { useAppContext } from "@/client/hud/app/context";
 import { nanoid } from "nanoid";
-import { isMobile } from "@/ui/is-mobile";
+import { isMobile } from "@/ui";
 import { useMemo } from "react";
-import type { Quest as QuestData } from "@/shared/content";
-import type { PlayerQuestStatus } from "@/shared/rules/quests";
+import type { Quest as QuestData } from "@/content";
+import type { PlayerQuestStatus } from "@/rules/quests";
 
 export const Quest = ({ quest, parent = "keeper" }: { quest: QuestData; parent?: string }) => {
   const { objectives } = quest ?? {};
