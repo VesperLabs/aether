@@ -3,14 +3,23 @@ export type PlayersQueryKey = readonly [string, { kind?: string; sortBy: string;
 
 import type { QueryFunctionContext } from "@tanstack/react-query";
 
+/** The URL of one page of a players list. `limit` is sent as the server's `pageSize`, when set. */
+export function playersUrl(
+  serverUrl: string | undefined,
+  { kind, sortBy, limit }: PlayersQueryKey[1],
+  page: number,
+) {
+  const params = new URLSearchParams({ sortBy, page: String(page) });
+  if (limit !== undefined) params.set("pageSize", String(limit));
+  return `${serverUrl}/${kind}/all?${params}`;
+}
+
 export async function fetchPlayers({
   queryKey,
   pageParam = 1,
 }: QueryFunctionContext<PlayersQueryKey, number>) {
-  const [_key, { kind, sortBy, limit }] = queryKey;
-  const response = await fetch(
-    `${process.env.SERVER_URL}/${kind}/all?sortBy=${sortBy}&page=${pageParam}&limit=${limit}`,
-  );
+  const [_key, query] = queryKey;
+  const response = await fetch(playersUrl(process.env.SERVER_URL, query, pageParam));
   if (!response.ok) {
     throw new Error(`${_key} response was not ok`);
   }
