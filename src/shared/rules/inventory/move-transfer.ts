@@ -14,7 +14,7 @@ const isSpellOrStackable = (item: ItemSlotValue) =>
 
 /**
  * Whether the item may go where it is headed. Every pair of places has its own checks;
- * pairs that are missing here (equipment <-> abilities) simply do nothing.
+ * equipment <-> abilities is refused before this.
  */
 function isAllowed(from: Endpoint, to: Endpoint, fromItem: ItemSlotValue, toItem: ItemSlotValue) {
   const pair = `${from.location}>${to.location}`;
@@ -89,7 +89,7 @@ export function transferItem(
 ): InventoryState | null {
   const known =
     CONTAINERS.includes(from.location as string) && CONTAINERS.includes(to.location as string);
-  if (!known || UNSUPPORTED_PAIRS.includes(`${from.location}>${to.location}`)) return state;
+  if (!known || UNSUPPORTED_PAIRS.includes(`${from.location}>${to.location}`)) return null;
   if (!isAllowed(from, to, fromItem, toItem)) return null;
   const placed = put(take(state, from), to, fromItem);
   return placed && put(placed, from, toItem);

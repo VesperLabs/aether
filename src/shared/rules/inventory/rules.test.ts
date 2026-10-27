@@ -172,9 +172,11 @@ describe("moveItem between places", () => {
     expect(next.abilities["1"]?.id).toBe("hp1");
   });
 
-  it("does nothing for equipment to abilities", () => {
+  it("refuses equipment to abilities so nothing is saved", () => {
     const s = state({ equipment: { armor: robe } });
-    expect(moved(moveItem(s, { from: eq("armor"), to: abil("1") }, context()))).toEqual(s);
+    expect(moveItem(s, { from: eq("armor"), to: abil("1") }, context())).toEqual({
+      moved: false,
+    });
   });
 });
 
