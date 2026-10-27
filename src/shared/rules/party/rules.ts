@@ -12,6 +12,8 @@ export interface PartyMember {
 
 export interface PartyInvitee {
   id: string;
+  /** Who sent the invite. It is withdrawn when they leave. */
+  inviterId: string;
 }
 
 export interface Party {
@@ -169,7 +171,7 @@ export function inviteToParty(
     effects.push(...created.effects);
   }
   if (!party.invitees.some((i) => i.id === invitee.id)) {
-    party = { ...party, invitees: [...party.invitees, { id: invitee.id }] };
+    party = { ...party, invitees: [...party.invitees, { id: invitee.id, inviterId }] };
     next = replaceParty(next, party);
   }
   effects.push({ type: "partyInvite", socketId: invitee.id, inviterId, partyId: party.id });
@@ -223,7 +225,7 @@ export function acceptPartyInvite(
 
 /**
  * `player` leaves their party (also used when they disconnect). The next member becomes leader if
- * the leader left, and an empty party is disbanded.
+ * the leader left, an empty party is disbanded, and the invites they sent are withdrawn.
  */
 export function leaveParty(
   state: PartyState,
@@ -238,7 +240,8 @@ export function leaveParty(
     if (wasLeader && members.length > 0) {
       members = members.map((m, i) => (i === 0 ? { ...m, isLeader: true } : m));
     }
-    const remaining: Party = { ...party, members };
+    const invitees = party.invitees.filter((i) => i.inviterId !== playerId);
+    const remaining: Party = { ...party, members, invitees };
     next = members.length === 0 ? withoutParty(state, party.id) : replaceParty(state, remaining);
     effects.push(
       { type: "leaveRoom", socketId: playerId, room: party.socketRoom },
