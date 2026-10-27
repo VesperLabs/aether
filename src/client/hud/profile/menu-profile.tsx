@@ -1,5 +1,5 @@
 import { memo, type ReactNode } from "react";
-import type { CharacterMenuProps } from "@/client/hud/menu/menu-props";
+import type { CharacterMenuProps } from "@/ui";
 import { useAppContext } from "@/client/hud/app/context";
 import { MenuButton } from "@/client/hud/menu/menu-button";
 import { BigPortrait } from "@/client/hud/status/big-portrait";

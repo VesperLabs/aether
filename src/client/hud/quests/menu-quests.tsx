@@ -4,7 +4,7 @@ import { questList, type Quest, type QuestId } from "@/content";
 import type { PlayerQuestStatus } from "@/rules/quests";
 import { arePropsEqualWithKeys } from "@/ui";
 import { memo } from "react";
-import type { CharacterMenuProps } from "@/client/hud/menu/menu-props";
+import type { CharacterMenuProps } from "@/ui";
 
 export const MenuQuests = memo(
   ({ player, isOpen, setIsOpen }: CharacterMenuProps) => {

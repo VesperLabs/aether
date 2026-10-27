@@ -372,12 +372,6 @@
       "rules": {
         "import/no-default-export": "off"
       }
-    },
-    {
-      "files": ["src/wiki/page-players.tsx"],
-      "rules": {
-        "no-restricted-imports": "off"
-      }
     }
   ]
 }
