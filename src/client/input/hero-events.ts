@@ -5,7 +5,6 @@ import { playAudio } from "@/client/audio/play-audio";
 import { getSpinDirection } from "@/client/input/spin-direction";
 import { CONSUMABLES_BASES, POTION_BASES } from "@/shared/rules/inventory";
 import { updateAttackCooldown, updatePotionCooldown, updateSpellCooldown } from "./hero-cooldowns";
-import type { AbilitySlot } from "@/client/window-events";
 import { isTypableFieldActive } from "./typable-field";
 
 /** Wires window and canvas events (attack, aim, abilities, items, dragging) to the hero. */
@@ -117,7 +116,12 @@ export function addGlobalEventListeners(scene: SceneHud) {
     if (CONSUMABLES_BASES?.includes(item?.base)) {
       /* Tell the UI to update the cooldowns */
       if (item.base === "food") {
-        updateSpellCooldown(hero, e?.detail as unknown as AbilitySlot); // TODO: passes the event detail, see Known bugs
+        const abilitySlot = Object.keys(hero.abilities ?? {}).find(
+          (slot) => hero.abilities?.[slot]?.id === item?.id,
+        );
+        if (location === "abilities" && abilitySlot) {
+          updateSpellCooldown(hero, abilitySlot);
+        }
       }
       if (POTION_BASES.includes(item.base)) {
         if (hero.state.isPotioning) return; /* TODO: Needs to happen serverside */
