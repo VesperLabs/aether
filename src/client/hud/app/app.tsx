@@ -146,6 +146,7 @@ export function App({ socket, peer, debug, game }: AppProps) {
     setKeeper,
     setHero,
     setPlayers,
+    tabKeeper,
     setTabKeeper,
     setSign,
     setShowButtonChat,
