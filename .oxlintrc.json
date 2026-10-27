@@ -54,7 +54,7 @@
   "ignorePatterns": ["dist/**", "public/**", ".claude/**"],
   "overrides": [
     {
-      "files": ["src/shared/**"],
+      "files": ["src/content/**"],
       "rules": {
         "no-restricted-imports": [
           "error",
@@ -62,130 +62,66 @@
             "patterns": [
               {
                 "group": [
-                  "@/server",
-                  "@/server/**",
-                  "@/client",
-                  "@/client/**",
-                  "@/wiki",
-                  "@/wiki/**",
-                  "@/ui",
-                  "@/ui/**"
-                ],
-                "message": "shared/ never imports server/, client/, wiki/ or ui/."
-              },
-              {
-                "regex": "^\\.{1,2}/(.*/)?(server|client|wiki|ui)(/|$)",
-                "message": "shared/ never imports server/, client/, wiki/ or ui/."
-              },
-              {
-                "group": ["@/shared/rules/*/**"],
-                "message": "Import a rules feature only through its index.ts (ARCHITECTURE.md, Import rules)."
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "files": ["src/shared/content/**"],
-      "rules": {
-        "no-restricted-imports": [
-          "error",
-          {
-            "patterns": [
-              {
-                "group": [
-                  "@/server",
-                  "@/server/**",
-                  "@/client",
-                  "@/client/**",
-                  "@/wiki",
-                  "@/wiki/**",
+                  "@/rules",
+                  "@/rules/**",
+                  "@/network",
+                  "@/network/**",
                   "@/ui",
                   "@/ui/**",
-                  "@/shared/rules",
-                  "@/shared/rules/**",
-                  "@/shared/network",
-                  "@/shared/network/**"
-                ],
-                "message": "shared/content imports nothing else from the repo."
-              },
-              {
-                "regex": "^\\.{1,2}/(.*/)?(server|client|wiki|ui|rules|network)(/|$)",
-                "message": "shared/content imports nothing else from the repo."
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "files": ["src/shared/rules/**"],
-      "rules": {
-        "no-restricted-imports": [
-          "error",
-          {
-            "patterns": [
-              {
-                "group": [
                   "@/server",
                   "@/server/**",
                   "@/client",
                   "@/client/**",
                   "@/wiki",
-                  "@/wiki/**",
-                  "@/ui",
-                  "@/ui/**",
-                  "@/shared/network",
-                  "@/shared/network/**"
+                  "@/wiki/**"
                 ],
-                "message": "shared/rules imports only shared/content, never network, apps or ui."
+                "message": "content imports nothing else from the repo."
               },
               {
-                "regex": "^\\.{1,2}/(.*/)?(server|client|wiki|ui|network)(/|$)",
-                "message": "shared/rules imports only shared/content, never network, apps or ui."
+                "regex": "^\\.{1,2}/(.*/)?(rules|network|ui|server|client|wiki)(/|$)",
+                "message": "content imports nothing else from the repo."
               },
               {
-                "group": ["@/shared/rules/*/**"],
+                "group": ["@/rules/*/**"],
                 "message": "Import a rules feature only through its index.ts (ARCHITECTURE.md, Import rules)."
               }
             ],
             "paths": [
               {
                 "name": "phaser",
-                "message": "shared/rules must not depend on engines, IO or the DOM (ARCHITECTURE.md)."
+                "message": "core (content, rules, network) is plain TypeScript: no engines, IO, React or the DOM (ARCHITECTURE.md)."
               },
               {
                 "name": "socket.io",
-                "message": "shared/rules must not depend on engines, IO or the DOM (ARCHITECTURE.md)."
+                "message": "core (content, rules, network) is plain TypeScript: no engines, IO, React or the DOM (ARCHITECTURE.md)."
               },
               {
                 "name": "socket.io-client",
-                "message": "shared/rules must not depend on engines, IO or the DOM (ARCHITECTURE.md)."
+                "message": "core (content, rules, network) is plain TypeScript: no engines, IO, React or the DOM (ARCHITECTURE.md)."
               },
               {
                 "name": "mongodb",
-                "message": "shared/rules must not depend on engines, IO or the DOM (ARCHITECTURE.md)."
+                "message": "core (content, rules, network) is plain TypeScript: no engines, IO, React or the DOM (ARCHITECTURE.md)."
               },
               {
                 "name": "express",
-                "message": "shared/rules must not depend on engines, IO or the DOM (ARCHITECTURE.md)."
+                "message": "core (content, rules, network) is plain TypeScript: no engines, IO, React or the DOM (ARCHITECTURE.md)."
               },
               {
                 "name": "react",
-                "message": "shared/rules must not depend on engines, IO or the DOM (ARCHITECTURE.md)."
+                "message": "core (content, rules, network) is plain TypeScript: no engines, IO, React or the DOM (ARCHITECTURE.md)."
               },
               {
                 "name": "react-dom",
-                "message": "shared/rules must not depend on engines, IO or the DOM (ARCHITECTURE.md)."
+                "message": "core (content, rules, network) is plain TypeScript: no engines, IO, React or the DOM (ARCHITECTURE.md)."
               },
               {
                 "name": "canvas",
-                "message": "shared/rules must not depend on engines, IO or the DOM (ARCHITECTURE.md)."
+                "message": "core (content, rules, network) is plain TypeScript: no engines, IO, React or the DOM (ARCHITECTURE.md)."
               },
               {
                 "name": "jsdom",
-                "message": "shared/rules must not depend on engines, IO or the DOM (ARCHITECTURE.md)."
+                "message": "core (content, rules, network) is plain TypeScript: no engines, IO, React or the DOM (ARCHITECTURE.md)."
               }
             ]
           }
@@ -193,7 +129,143 @@
       }
     },
     {
-      "files": ["src/shared/network/**"],
+      "files": ["src/rules/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@/network",
+                  "@/network/**",
+                  "@/ui",
+                  "@/ui/**",
+                  "@/server",
+                  "@/server/**",
+                  "@/client",
+                  "@/client/**",
+                  "@/wiki",
+                  "@/wiki/**"
+                ],
+                "message": "rules imports only content."
+              },
+              {
+                "regex": "^\\.{1,2}/(.*/)?(network|ui|server|client|wiki)(/|$)",
+                "message": "rules imports only content."
+              },
+              {
+                "group": ["@/rules/*/**"],
+                "message": "Import a rules feature only through its index.ts (ARCHITECTURE.md, Import rules)."
+              }
+            ],
+            "paths": [
+              {
+                "name": "phaser",
+                "message": "core (content, rules, network) is plain TypeScript: no engines, IO, React or the DOM (ARCHITECTURE.md)."
+              },
+              {
+                "name": "socket.io",
+                "message": "core (content, rules, network) is plain TypeScript: no engines, IO, React or the DOM (ARCHITECTURE.md)."
+              },
+              {
+                "name": "socket.io-client",
+                "message": "core (content, rules, network) is plain TypeScript: no engines, IO, React or the DOM (ARCHITECTURE.md)."
+              },
+              {
+                "name": "mongodb",
+                "message": "core (content, rules, network) is plain TypeScript: no engines, IO, React or the DOM (ARCHITECTURE.md)."
+              },
+              {
+                "name": "express",
+                "message": "core (content, rules, network) is plain TypeScript: no engines, IO, React or the DOM (ARCHITECTURE.md)."
+              },
+              {
+                "name": "react",
+                "message": "core (content, rules, network) is plain TypeScript: no engines, IO, React or the DOM (ARCHITECTURE.md)."
+              },
+              {
+                "name": "react-dom",
+                "message": "core (content, rules, network) is plain TypeScript: no engines, IO, React or the DOM (ARCHITECTURE.md)."
+              },
+              {
+                "name": "canvas",
+                "message": "core (content, rules, network) is plain TypeScript: no engines, IO, React or the DOM (ARCHITECTURE.md)."
+              },
+              {
+                "name": "jsdom",
+                "message": "core (content, rules, network) is plain TypeScript: no engines, IO, React or the DOM (ARCHITECTURE.md)."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/network/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@/ui",
+                  "@/ui/**",
+                  "@/server",
+                  "@/server/**",
+                  "@/client",
+                  "@/client/**",
+                  "@/wiki",
+                  "@/wiki/**"
+                ],
+                "message": "network imports only content and rules."
+              },
+              {
+                "regex": "^\\.{1,2}/(.*/)?(ui|server|client|wiki)(/|$)",
+                "message": "network imports only content and rules."
+              },
+              {
+                "group": ["@/rules/*/**"],
+                "message": "Import a rules feature only through its index.ts (ARCHITECTURE.md, Import rules)."
+              }
+            ],
+            "paths": [
+              {
+                "name": "phaser",
+                "message": "core (content, rules, network) is plain TypeScript: no engines, IO, React or the DOM (ARCHITECTURE.md)."
+              },
+              {
+                "name": "mongodb",
+                "message": "core (content, rules, network) is plain TypeScript: no engines, IO, React or the DOM (ARCHITECTURE.md)."
+              },
+              {
+                "name": "express",
+                "message": "core (content, rules, network) is plain TypeScript: no engines, IO, React or the DOM (ARCHITECTURE.md)."
+              },
+              {
+                "name": "react",
+                "message": "core (content, rules, network) is plain TypeScript: no engines, IO, React or the DOM (ARCHITECTURE.md)."
+              },
+              {
+                "name": "react-dom",
+                "message": "core (content, rules, network) is plain TypeScript: no engines, IO, React or the DOM (ARCHITECTURE.md)."
+              },
+              {
+                "name": "canvas",
+                "message": "core (content, rules, network) is plain TypeScript: no engines, IO, React or the DOM (ARCHITECTURE.md)."
+              },
+              {
+                "name": "jsdom",
+                "message": "core (content, rules, network) is plain TypeScript: no engines, IO, React or the DOM (ARCHITECTURE.md)."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/ui/**"],
       "rules": {
         "no-restricted-imports": [
           "error",
@@ -206,18 +278,16 @@
                   "@/client",
                   "@/client/**",
                   "@/wiki",
-                  "@/wiki/**",
-                  "@/ui",
-                  "@/ui/**"
+                  "@/wiki/**"
                 ],
-                "message": "shared/ never imports server/, client/, wiki/ or ui/."
+                "message": "ui imports only core (content, rules, network), never an app."
               },
               {
-                "regex": "^\\.{1,2}/(.*/)?(server|client|wiki|ui)(/|$)",
-                "message": "shared/ never imports server/, client/, wiki/ or ui/."
+                "regex": "^\\.{1,2}/(.*/)?(server|client|wiki)(/|$)",
+                "message": "ui imports only core (content, rules, network), never an app."
               },
               {
-                "group": ["@/shared/rules/*/**"],
+                "group": ["@/rules/*/**"],
                 "message": "Import a rules feature only through its index.ts (ARCHITECTURE.md, Import rules)."
               }
             ]
@@ -233,15 +303,15 @@
           {
             "patterns": [
               {
-                "group": ["@/client", "@/client/**", "@/wiki", "@/wiki/**"],
-                "message": "server/, client/ and wiki/ never import each other."
+                "group": ["@/client", "@/client/**", "@/wiki", "@/wiki/**", "@/ui", "@/ui/**"],
+                "message": "Apps never import each other, and server never imports ui."
               },
               {
-                "regex": "^\\.{1,2}/(.*/)?(client|wiki)(/|$)",
-                "message": "server/, client/ and wiki/ never import each other."
+                "regex": "^\\.{1,2}/(.*/)?(client|wiki|ui)(/|$)",
+                "message": "Apps never import each other, and server never imports ui."
               },
               {
-                "group": ["@/shared/rules/*/**"],
+                "group": ["@/rules/*/**"],
                 "message": "Import a rules feature only through its index.ts (ARCHITECTURE.md, Import rules)."
               }
             ]
@@ -258,14 +328,14 @@
             "patterns": [
               {
                 "group": ["@/server", "@/server/**", "@/wiki", "@/wiki/**"],
-                "message": "server/, client/ and wiki/ never import each other."
+                "message": "Apps never import each other."
               },
               {
                 "regex": "^\\.{1,2}/(.*/)?(server|wiki)(/|$)",
-                "message": "server/, client/ and wiki/ never import each other."
+                "message": "Apps never import each other."
               },
               {
-                "group": ["@/shared/rules/*/**"],
+                "group": ["@/rules/*/**"],
                 "message": "Import a rules feature only through its index.ts (ARCHITECTURE.md, Import rules)."
               }
             ]
@@ -281,40 +351,15 @@
           {
             "patterns": [
               {
-                "group": [
-                  "@/server",
-                  "@/server/**",
-                  "@/client",
-                  "@/client/**",
-                  "@/shared/rules",
-                  "@/shared/rules/**",
-                  "@/shared/network",
-                  "@/shared/network/**"
-                ],
-                "message": "wiki imports only shared/content and ui, and never server/ or client/."
+                "group": ["@/server", "@/server/**", "@/client", "@/client/**"],
+                "message": "Apps never import each other."
               },
               {
                 "regex": "^\\.{1,2}/(.*/)?(server|client)(/|$)",
-                "message": "wiki imports only shared/content and ui, and never server/ or client/."
+                "message": "Apps never import each other."
               },
               {
-                "group": ["@/shared/rules/*/**"],
-                "message": "Import a rules feature only through its index.ts (ARCHITECTURE.md, Import rules)."
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "files": ["src/ui/**"],
-      "rules": {
-        "no-restricted-imports": [
-          "error",
-          {
-            "patterns": [
-              {
-                "group": ["@/shared/rules/*/**"],
+                "group": ["@/rules/*/**"],
                 "message": "Import a rules feature only through its index.ts (ARCHITECTURE.md, Import rules)."
               }
             ]
@@ -326,12 +371,6 @@
       "files": ["**/*.config.ts", "**/*.config.js"],
       "rules": {
         "import/no-default-export": "off"
-      }
-    },
-    {
-      "files": ["src/wiki/page-players.tsx"],
-      "rules": {
-        "no-restricted-imports": "off"
       }
     }
   ]

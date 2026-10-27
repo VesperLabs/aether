@@ -1,7 +1,7 @@
-import type { AbilitySlot } from "@/shared/rules/spells";
+import type { AbilitySlot } from "@/rules/spells";
 import type { ServerWorld } from "./server-world";
-import { CharacterModel } from "@/shared/rules/character";
-import { ItemBuilder } from "@/shared/content";
+import { CharacterModel } from "@/rules/character";
+import { ItemBuilder } from "@/content";
 import { applyCalculatedStats } from "./character-stats";
 import {
   applyAttackDamage,
@@ -17,10 +17,10 @@ import {
   applyExpireBuffs,
   applyRegen,
 } from "./character-buffs";
-import { addBuffBonuses } from "@/shared/rules/buffs";
-import { getPlayerQuests } from "@/shared/rules/quests";
-import { calculateNextMaxExp } from "@/shared/rules/stats";
-import type { ElementalDamages } from "@/shared/rules/combat";
+import { addBuffBonuses } from "@/rules/buffs";
+import { getPlayerQuests } from "@/rules/quests";
+import { calculateNextMaxExp } from "@/rules/stats";
+import type { ElementalDamages } from "@/rules/combat";
 import type { AbilityDetails } from "./character-combat";
 import type { BuffRequest } from "./character-buffs";
 

@@ -2,22 +2,15 @@ import type { ServerWorld } from "./server-world";
 import crypto from "crypto";
 import fs from "fs";
 import path from "path";
-import {
-  ILVL_MULTIPLIER,
-  ItemBuilder,
-  QuestBuilder,
-  keepers,
-  mapList,
-  nasties,
-} from "@/shared/content";
-import type { TiledMapJson } from "@/shared/rules/movement";
-import { subscribeLoot, type LootItem } from "@/shared/rules/loot";
-import { subscribeQuests } from "@/shared/rules/quests";
-import { getBaseStats, mergeAndAddValues, subscribeStats } from "@/shared/rules/stats";
-import { addRoom, createRoom, createWorld } from "@/shared/rules/world";
+import { ILVL_MULTIPLIER, ItemBuilder, QuestBuilder, keepers, mapList, nasties } from "@/content";
+import type { TiledMapJson } from "@/rules/movement";
+import { subscribeLoot, type LootItem } from "@/rules/loot";
+import { subscribeQuests } from "@/rules/quests";
+import { getBaseStats, mergeAndAddValues, subscribeStats } from "@/rules/stats";
+import { addRoom, createRoom, createWorld } from "@/rules/world";
 import { spawnLoot } from "./loot-adapter";
 import { Npc, type NpcDefinition } from "./npc";
-import type { GameIo } from "@/shared/network";
+import type { GameIo } from "@/network";
 import type { Database } from "./persistence/database";
 
 /* Find NPCs in data lists, and add `kind` to them */

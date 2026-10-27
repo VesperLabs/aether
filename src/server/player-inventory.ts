@@ -1,4 +1,4 @@
-import type { InventoryState } from "@/shared/rules/inventory";
+import type { InventoryState } from "@/rules/inventory";
 
 /** The fields of a player that the inventory rules read and write. */
 type InventoryHolder = InventoryState;

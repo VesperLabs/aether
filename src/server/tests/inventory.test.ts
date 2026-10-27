@@ -3,7 +3,7 @@ import http from "node:http";
 import type { AddressInfo } from "node:net";
 import { io as connect, type Socket } from "socket.io-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { ItemBuilder } from "@/shared/content";
+import { ItemBuilder } from "@/content";
 import { initFakeDatabase } from "../persistence";
 import { GameServer } from "../game-server";
 

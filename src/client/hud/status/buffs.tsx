@@ -1,14 +1,14 @@
 import { memo, useEffect, useState } from "react";
 import { Divider, Flex, Icon, Text } from "@/ui";
-import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
-import { formatStats } from "@/ui/format-stats";
-import { buffList } from "@/shared/content";
+import { arePropsEqualWithKeys } from "@/ui";
+import { formatStats } from "@/rules/stats";
+import { buffList } from "@/content";
 import type { ThemeUIStyleObject } from "theme-ui";
-import type { ActiveBuff } from "@/shared/rules/buffs";
+import type { ActiveBuff } from "@/rules/buffs";
 import type { HudCharacter } from "@/client/hud/app/context";
-import { Tooltip } from "@/client/hud/tooltips/tooltip";
-import { TooltipLabel } from "@/client/hud/tooltips/tooltip-label";
-import { TextDivider } from "@/client/hud/menu/text-divider";
+import { Tooltip } from "@/ui";
+import { Label } from "@/ui";
+import { TextDivider } from "@/ui";
 
 interface BuffProps {
   buff: ActiveBuff;
@@ -45,20 +45,20 @@ const BuffTooltip = ({
         <TextDivider>Time: {displayTime}</TextDivider>
         {Object.keys(combinedStats).map((key) => (
           <Text key={key}>
-            <TooltipLabel>{key}:</TooltipLabel> {combinedStats[key]}
+            <Label>{key}:</Label> {combinedStats[key]}
           </Text>
         ))}
         {Object.keys(buff?.percentStats || {}).map((key) => (
           <Text key={key}>
-            <TooltipLabel>{key}:</TooltipLabel> {buff?.percentStats?.[key]}%
+            <Label>{key}:</Label> {buff?.percentStats?.[key]}%
           </Text>
         ))}
         {!!description && <Divider />}
-        <TooltipLabel
+        <Label
           sx={{ textTransform: "none", fontWeight: "normal", fontStyle: "italic", maxWidth: 200 }}
         >
           {description}
-        </TooltipLabel>
+        </Label>
       </Flex>
     </Tooltip>
   );

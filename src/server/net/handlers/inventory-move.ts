@@ -1,7 +1,7 @@
 import crypto from "crypto";
-import type { MoveItemCommand } from "@/shared/network";
-import { getFullCharacterState } from "@/shared/network/sync";
-import { moveItem as moveItemRule } from "@/shared/rules/inventory";
+import type { MoveItemCommand } from "@/network";
+import { getFullCharacterState } from "@/network/sync";
+import { moveItem as moveItemRule } from "@/rules/inventory";
 import { applyInventoryState, toInventoryState } from "../../player-inventory";
 import type { CommandContext } from "@/server/net/command-context";
 import { findNearbyNpc } from "@/server/net/nearby-keeper";

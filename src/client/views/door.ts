@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import type { Point } from "@/shared/rules/world";
+import type { Point } from "@/rules/world";
 
 /** A door object from the map's "Doors" layer, which always has a position and size. */
 export type DoorObject = Phaser.Types.Tilemaps.TiledObject & {

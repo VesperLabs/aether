@@ -1,4 +1,4 @@
-import type { ParsedCommand } from "@/shared/network";
+import type { ParsedCommand } from "@/network";
 import type { PlayerAttackRequest, PlayerCastRequest } from "@/server/player";
 import type { CommandContext } from "@/server/net/command-context";
 import { isInRoom } from "@/server/player-room";

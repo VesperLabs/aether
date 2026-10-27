@@ -12,18 +12,18 @@ Migration to the structure in `ARCHITECTURE.md`. Work through the phases in orde
 - [x] Convert default exports to named exports and update the imports
 - [x] oxlint: import rules from `ARCHITECTURE.md` via `no-restricted-imports` overrides, `max-lines` at 400, `unicorn/filename-case` (kebab-case) and `import/no-default-export` (off for tool config files), with existing violations listed in an overrides block. Confirm each rule exists in the installed oxlint version.
 - [x] Add `scripts/check-structure.ts` and add it to `npm run check`. It rejects banned and non-kebab-case folder names, `*Manager` classes, `.spec` files, `.tsx` files without JSX and `index.ts` files containing logic, with an allowlist of existing violations.
-- [x] Add `CLAUDE.md` files in `src/shared/rules/`, `src/shared/network/` and `src/shared/content/` as those folders are created
+- [x] Add `CLAUDE.md` files in `src/rules/`, `src/network/` and `src/content/` as those folders are created
 
 ## Phase 2: Content and network
 
-- [x] Create `src/shared/content/`: convert `shared/data/*.json` to typed TS definitions, and move `ItemBuilder`, `QuestBuilder` and maps there. Let the compiler check cross-references (quest → item, mob → loot).
-- [x] Create `src/shared/network/`: move `netSnapshot`, `tickDelta`, `wireTick`, `netWire` and `tickState` into `network/sync/`
+- [x] Create `src/content/`: convert `shared/data/*.json` to typed TS definitions, and move `ItemBuilder`, `QuestBuilder` and maps there. Let the compiler check cross-references (quest → item, mob → loot).
+- [x] Create `src/network/`: move `netSnapshot`, `tickDelta`, `wireTick`, `netWire` and `tickState` into `network/sync/`
 - [x] Write a zod schema in `network/commands.ts` for every client→server event in `GameServer.ts`, and types for every server→client message in `network/messages.ts`. Wire them into Socket.IO's typed server and client.
 - [x] Replace the `socket.on` handlers with one generic dispatcher in `src/server/net/`
 - [x] Split the rest of `GameServer.ts` into `src/server/auth/`, `admin/` (cheat commands, admin-only), `http/` (routes from `main.ts`) and `persistence/` (`server/db/`)
-- [ ] Replace the wiki's duplicate `PlayerRender` and `Slot` with `src/ui/` (skipped: the wiki `PlayerRender` already wraps `ui`'s; the wiki `Slot` and tooltip differ visually from the client ones, see PR notes)
+- [x] Replace the wiki's duplicate `PlayerRender` and `Slot` with `src/ui/` (`ui/item/` holds one `ItemSlot` and `ItemTooltip`, rendered from `describeItem` in `rules/inventory`)
 
-## Phase 3: Move rules into `src/shared/rules/`, one feature at a time
+## Phase 3: Move rules into `src/rules/`, one feature at a time
 
 Do the pure ones first. Write tests as each one moves.
 
@@ -53,7 +53,7 @@ Do the pure ones first. Write tests as each one moves.
 
 - Every legacy exception list is empty
 - Strict mode is on for the whole repo
-- `src/shared/rules/tests/` has scenario tests covering combat, loot, inventory and quests
+- `src/rules/tests/` has scenario tests covering combat, loot, inventory and quests
 
 ## Known bugs
 
@@ -87,7 +87,7 @@ Found during the migration and left alone so behaviour stayed identical. Fix aft
 - [x] **Combat:** `setLockedPlayerId(attacker.id)` stores the player `id`, but `Npc.update` looks the target up by socket id; this only works if the two are equal
 - [x] **Client HUD:** `hud/app/app.tsx` registers its socket and window handlers once (`useEffect(..., [])`), so `onPartyInvite`, `onDropItem` and `onDoubleClickItem` read `partyInvites`, `hero` and `bagState` from the first render. Duplicate-invite checks, the dead-hero drop guard and closing an open bag on drop never see current state.
 - [x] **Client HUD:** `onHeroChatNpc` returns from a `setTabKeeper` updater that emits `chatNpc` as a side effect, which React StrictMode runs twice in dev
-- [ ] **Client:** `wiki/page-players.tsx` imports the player menus from `@/client`, which breaks "wiki never imports client". Move them (and `Slot`/`ItemTooltip`, which need the app context) into `src/ui/` or make them props-only. (Open: needs a decision between a context in `src/ui/` or props-only `Slot`/`ItemTooltip`/`Tooltip`.)
+- [x] **Client:** `wiki/page-players.tsx` imports the player menus from `@/client`, which breaks "wiki never imports client". The menus, `ItemSlot` and `ItemTooltip` now live in `ui/character/` and `ui/item/`; HUD slots get their drag and double-click behaviour as `SlotEvents`, and tooltips read the zoom from `ZoomProvider`.
 - [x] **Client audio:** `MainScene.changeMusic` duplicates `audio/music.ts` `changeMusic` (the scene copy adds the `ASSETS_URL` prefix, so the module version loads tracks from the wrong URL on a CDN). Keep one.
 - [x] **Client:** `views/player.ts` is still `// @ts-nocheck`, and Phaser classes declare their fields as `declare x: any` after the JS→TS conversion. Type them properly once entities are plain data.
 - [x] **Movement:** NPC wall collision uses the profile-scaled `bodySize` as the box; Phaser used a fixed radius of 8

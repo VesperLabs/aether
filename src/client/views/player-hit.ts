@@ -1,4 +1,4 @@
-import type { HitMessage } from "@/shared/network";
+import type { HitMessage } from "@/network";
 import type { Player } from "./player";
 import { Damage } from "./damage";
 import { Buff } from "./buff";

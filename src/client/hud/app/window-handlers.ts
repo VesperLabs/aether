@@ -1,6 +1,6 @@
 import type React from "react";
 import type Phaser from "phaser";
-import type { ChatMessage, ClientGameSocket } from "@/shared/network";
+import type { ChatMessage, ClientGameSocket } from "@/network";
 import type { SceneMain } from "@/client/scenes/main-scene";
 import type { Sign } from "@/client/views/sign";
 import { getSpinDirection } from "@/client/input/spin-direction";

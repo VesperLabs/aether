@@ -1,7 +1,7 @@
 import path from "node:path";
 import { defineConfig, loadEnv, type ConfigEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
-import { DEFAULT_SERVER_FPS } from "../shared/network/sync/timing";
+import { DEFAULT_SERVER_FPS } from "../network/sync/timing";
 import { getAppVersion } from "../../scripts/app-version";
 import { rewriteAssetUrls } from "../../scripts/assets-url";
 

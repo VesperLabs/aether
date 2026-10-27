@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import type { ActiveBuff } from "@/shared/rules/buffs";
+import type { ActiveBuff } from "@/rules/buffs";
 
 const Sprite = Phaser.GameObjects.Sprite;
 

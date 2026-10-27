@@ -1,11 +1,11 @@
-import { MAX_INVENTORY_ITEMS } from "@/shared/rules/inventory";
+import { MAX_INVENTORY_ITEMS } from "@/rules/inventory";
 import {
   acceptQuest,
   completeQuest,
   getPlayerQuestStatus,
   takeQuestItems,
   type QuestProgressInput,
-} from "@/shared/rules/quests";
+} from "@/rules/quests";
 
 /** The parts of a live player that quest turn-in reads and changes. */
 interface QuestPlayer {

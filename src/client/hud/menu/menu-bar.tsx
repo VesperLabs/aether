@@ -1,15 +1,21 @@
-import { Box, Flex, KeyboardKey, Menu } from "@/ui";
+import {
+  Box,
+  Flex,
+  KeyboardKey,
+  Menu,
+  MenuAbilities,
+  MenuBag,
+  MenuEquipment,
+  MenuInventory,
+  MenuStats,
+} from "@/ui";
+import { HUD_SLOT_EVENTS } from "@/client/hud/inventory/slot";
 import { AbilityButtons } from "@/client/hud/abilities/ability-buttons";
 import { ChatButton } from "@/client/hud/chat/chat-button";
-import { MenuAbilities } from "@/client/hud/abilities/menu-abilities";
-import { MenuBag } from "@/client/hud/inventory/menu-bag";
-import { MenuEquipment } from "@/client/hud/equipment/menu-equipment";
-import { MenuInventory } from "@/client/hud/inventory/menu-inventory";
 import { MenuKeeper } from "@/client/hud/shop/menu-keeper";
 import { MenuProfile } from "@/client/hud/profile/menu-profile";
 import { MenuQuests } from "@/client/hud/quests/menu-quests";
 import { MenuSocial } from "@/client/hud/social/menu-social";
-import { MenuStats } from "@/client/hud/status/menu-stats";
 import { MessageBox } from "@/client/hud/chat/message-box";
 import { useAppContext } from "@/client/hud/app/context";
 import { MenuButton } from "./menu-button";
@@ -99,10 +105,30 @@ export const MenuBar = () => {
         }}
       >
         {tabKeeper && <MenuKeeper />}
-        <MenuAbilities player={hero} isOpen={tabAbilities} setIsOpen={setTabAbilities} />
-        <MenuEquipment player={hero} isOpen={tabEquipment} setIsOpen={setTabEquipment} />
-        <MenuBag player={hero} bagState={bagState} toggleBagState={toggleBagState} />
-        <MenuInventory player={hero} isOpen={tabInventory} setIsOpen={setTabInventory} />
+        <MenuAbilities
+          player={hero}
+          events={HUD_SLOT_EVENTS}
+          isOpen={tabAbilities}
+          setIsOpen={setTabAbilities}
+        />
+        <MenuEquipment
+          player={hero}
+          events={HUD_SLOT_EVENTS}
+          isOpen={tabEquipment}
+          setIsOpen={setTabEquipment}
+        />
+        <MenuBag
+          player={hero}
+          events={HUD_SLOT_EVENTS}
+          bagState={bagState}
+          toggleBagState={toggleBagState}
+        />
+        <MenuInventory
+          player={hero}
+          events={HUD_SLOT_EVENTS}
+          isOpen={tabInventory}
+          setIsOpen={setTabInventory}
+        />
         <MenuProfile player={hero} isOpen={tabProfile} setIsOpen={setTabProfile} />
         <MenuQuests player={hero} isOpen={tabQuests} setIsOpen={setTabQuests} />
         <MenuStats player={hero} isOpen={tabStats} setIsOpen={setTabStats} />

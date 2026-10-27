@@ -7,7 +7,7 @@ import {
   Text,
   Box,
 } from "@/ui";
-import { CLASS_ICON_MAP } from "@/shared/content";
+import { CLASS_ICON_MAP } from "@/content";
 import { useState } from "react";
 import type { WikiPlayer } from "./page-players";
 

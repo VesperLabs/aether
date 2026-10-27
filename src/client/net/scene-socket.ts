@@ -1,10 +1,10 @@
-import { DEFAULT_USER_SETTINGS, type UserSettings } from "@/shared/rules/world";
+import { DEFAULT_USER_SETTINGS, type UserSettings } from "@/rules/world";
 import {
   heroInitToTickExpanded,
   expandTickState,
   type FullCharacterWire,
   type LootTickWire,
-} from "@/shared/network/sync";
+} from "@/network/sync";
 import type { LootItem } from "@/client/views/loot-item";
 import { netInterp } from "@/client/net/scene-interpolation";
 import type { TickEntity } from "@/client/net/interpolation";

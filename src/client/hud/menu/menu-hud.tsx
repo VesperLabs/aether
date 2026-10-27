@@ -4,11 +4,11 @@ import { Box, Flex, Text } from "@/ui";
 import { useAppContext, type HudCharacter } from "@/client/hud/app/context";
 import { Portrait } from "@/client/hud/status/portrait";
 import { StatusIcon } from "@/client/hud/status/status-icon";
-import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
+import { arePropsEqualWithKeys } from "@/ui";
 import { streamHasUsableVideo } from "@/client/hud/video/video-support";
 import { Bar } from "@/client/hud/status/stat-bar";
 import { Buffs } from "@/client/hud/status/buffs";
-import { Tooltip } from "@/client/hud/tooltips/tooltip";
+import { Tooltip } from "@/ui";
 
 const UserName = ({
   sx,

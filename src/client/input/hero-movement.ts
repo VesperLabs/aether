@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import { getSpinDirection } from "./spin-direction";
-import { getAngleFromDirection } from "@/shared/rules/world";
+import { getAngleFromDirection } from "@/rules/world";
 import { emitPlayerInput } from "@/client/net/player-input";
 import { updateAttackCooldown, updateSpellCooldown } from "./hero-cooldowns";
 import { isTypableFieldActive } from "./typable-field";

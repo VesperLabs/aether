@@ -1,5 +1,5 @@
 import { Slot } from "@/client/hud/inventory/slot";
-import { SlotAmount } from "@/client/hud/inventory/slot-amount";
+import { SlotAmount } from "@/ui";
 import { useAppContext } from "@/client/hud/app/context";
 import { Box, Text, Flex, Divider, Icon, Button, STYLE_NON_EMPTY } from "@/ui";
 import {
@@ -10,11 +10,11 @@ import {
   type NastyId,
   type Quest as QuestData,
   type QuestObjective,
-} from "@/shared/content";
-import type { PlayerQuestStatus } from "@/shared/rules/quests";
-import type { ClientGameSocket } from "@/shared/network";
+} from "@/content";
+import type { PlayerQuestStatus } from "@/rules/quests";
+import type { ClientGameSocket } from "@/network";
 import type { HudCharacter } from "@/client/hud/app/context";
-import { Tooltip } from "@/client/hud/tooltips/tooltip";
+import { Tooltip } from "@/ui";
 
 function getKeeperByQuestName(quest: string) {
   for (const key of Object.keys(keepers) as KeeperId[]) {
