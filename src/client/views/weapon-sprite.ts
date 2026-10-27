@@ -85,7 +85,7 @@ export class WeaponSprite extends Phaser.GameObjects.Container {
   updateBorderSpriteColors(color: string | undefined) {
     if (!color) return;
     this.borderSprites.forEach((borderSprite) => {
-      borderSprite.setTintFill(); // removed in Phaser 4: logs an error and does nothing, see TODO
+      borderSprite.setTint(Number(color)).setTintMode(Phaser.TintModes.FILL);
     });
   }
   updateBorderSpriteAlpha(alpha: number) {
