@@ -45,24 +45,14 @@ export function findInventoryItemById(
   return returnItem;
 }
 
-/** The item with this id inside any bag in the inventory, and its slot in that bag. */
+/** The item with this id inside the first bag in the inventory that has it, and its slot in that bag. */
 export function findBagItemById(
   inventory: ItemSlotValue[] | undefined,
   id: string | undefined,
 ): FoundBagItem {
-  let item: ItemSlotValue = null;
-  let slotName: number | null = null;
-  const bags = inventory?.filter((entry) => entry?.base === "bag") ?? [];
-  for (const bag of bags) {
-    for (let i = 0; i < (bag?.items?.length ?? 0); i++) {
-      if (bag?.items?.[i]?.id === id) {
-        item = bag?.items?.[i];
-        slotName = i;
-        break;
-      }
-    }
-  }
-  return { slotName, item };
+  const { bagIndex, slotIndex } = locateBagItem(inventory, id);
+  if (bagIndex === -1) return { slotName: null, item: null };
+  return { slotName: slotIndex, item: inventory?.[bagIndex]?.items?.[slotIndex] ?? null };
 }
 
 /** The item at a slot of the bag with this id. */
@@ -108,14 +98,16 @@ export function findOpenBagSlot(
 export function locateBagItem(inventory: ItemSlotValue[] | undefined, id: string | undefined) {
   let bagIndex = -1;
   let slotIndex = -1;
-  inventory?.forEach((entry, b) => {
-    if (entry?.base !== "bag") return;
+  for (let b = 0; b < (inventory?.length ?? 0); b++) {
+    const entry = inventory?.[b];
+    if (entry?.base !== "bag") continue;
     const i = entry.items?.findIndex((x) => x?.id === id) ?? -1;
     if (i !== -1) {
       bagIndex = b;
       slotIndex = i;
+      break;
     }
-  });
+  }
   return { bagIndex, slotIndex };
 }
 

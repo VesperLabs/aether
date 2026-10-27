@@ -72,7 +72,7 @@ Found during the migration and left alone so behaviour stayed identical. Fix aft
 - [x] **Inventory:** selling credits gold even when no item was removed (quantity larger than the stack); bag and ability sells don't check the stack size at all
 - [x] **Inventory:** the shop checks `item.slot === "stackable"` where it likely means `type`, so some bought stackables get a new id and never merge
 - [ ] **Inventory:** dropping on bag slot 0 counts as "dropped on the bag", and bags with an empty `items` array always answer "Bag is full"
-- [ ] **Inventory:** `findBagItemById` returns the last matching bag, but update and delete touch the first match in every bag
+- [x] **Inventory:** `findBagItemById` returns the last matching bag, but update and delete touch the first match in every bag
 - [ ] **Inventory:** consuming food with no `buffs` throws after the item was already removed
 - [ ] **Inventory:** `deleteAbilityAtId` with an unknown id writes `abilities["null"] = null`
 - [ ] **Inventory:** a move between unsupported slots (equipment ↔ abilities) still saves and emits `playerUpdate`

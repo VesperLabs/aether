@@ -1,4 +1,4 @@
-import { findAbilityById, findBagItemById, findInventoryItemById } from "./lookup";
+import { findAbilityById, findBagItemById, findInventoryItemById, locateBagItem } from "./lookup";
 import { cloneItem, withSlot } from "./slots";
 import type { InventoryItem, ItemSlotValue } from "./types";
 
@@ -61,20 +61,16 @@ export function addInventoryItem(inventory: ItemSlotValue[], item: InventoryItem
   return [...inventory, item];
 }
 
-/** Applies `change` to the bag slot holding this id (the first match in each bag). */
+/** Applies `change` to the bag slot holding this id (the same one `findBagItemById` finds). */
 function changeBagItem(
   inventory: ItemSlotValue[],
   id: string | undefined,
   change: (bagItems: ItemSlotValue[], index: number) => ItemSlotValue[],
 ) {
-  return inventory.map((entry) => {
-    if (entry?.base !== "bag") return entry;
-    const items = entry.items ?? [];
-    for (let i = 0; i < items.length; i++) {
-      if (items[i]?.id === id) return { ...entry, items: change(items, i) };
-    }
-    return entry;
-  });
+  const { bagIndex, slotIndex } = locateBagItem(inventory, id);
+  const bag = inventory[bagIndex];
+  if (!bag) return inventory;
+  return withSlot(inventory, bagIndex, { ...bag, items: change(bag.items ?? [], slotIndex) });
 }
 
 export function updateBagItemAtId(
