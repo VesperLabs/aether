@@ -52,7 +52,7 @@ export function bindSceneSocket(scene: SceneMain) {
   });
 
   socket.on("partyUpdate", ({ party }) => {
-    scene.hero.party = party;
+    if (scene.hero) scene.hero.party = party;
   });
 
   socket.on("heroInit", (args) => {
