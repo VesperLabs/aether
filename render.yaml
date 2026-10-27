@@ -1,5 +1,5 @@
 # Render Blueprint for the wiki and static assets.
-# Deploys are triggered by .github/workflows/deploy.yml after CI passes on main,
+# Deploys are triggered manually by .github/workflows/release-deploy.yml,
 # so Render's own auto-deploy is off.
 services:
   - type: web
