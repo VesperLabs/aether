@@ -4,6 +4,10 @@ import type { SceneMain } from "@/client/scenes/main-scene";
 /* TODO: Move to DB */
 export const MUSIC_VOLUME = 0.05;
 
+const ASSETS_BASE = process.env.ASSETS_URL || "";
+const assetUrl = (src: string) =>
+  ASSETS_BASE ? src.replace(/^\.\/assets\//, ASSETS_BASE + "/") : src;
+
 export function changeMusic(scene: SceneMain) {
   if (!scene.userSettings.playMusic) return; // user does not want music
   const track = getMapByName(scene?.roomName)?.music;
@@ -14,7 +18,7 @@ export function changeMusic(scene: SceneMain) {
     return;
   }
   scene.sound.stopAll();
-  scene.load.audio(track, [track]);
+  scene.load.audio(track, [assetUrl(track)]);
   scene.load.once("complete", () => {
     sound = scene.sound.get(track);
     if (!sound) {

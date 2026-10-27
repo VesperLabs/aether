@@ -1,5 +1,4 @@
 import Phaser from "phaser";
-import { getMapByName } from "@/shared/content";
 import { DEFAULT_USER_SETTINGS, type UserSettings } from "@/shared/rules/world";
 import type { ClientGameSocket } from "@/shared/network";
 import type { Player } from "@/client/views/player";
@@ -8,14 +7,10 @@ import { MINI_MAP_SIZE } from "@/client/views/minimap-size";
 import { decodeWireDirection } from "@/shared/network/sync";
 import { netInterp } from "@/client/net/scene-interpolation";
 import { bindSceneSocket } from "@/client/net/scene-socket";
-import { MUSIC_VOLUME } from "@/client/audio/music";
+import { changeMusic } from "@/client/audio/music";
 import { getPlayer, getNpc, getNpcs, getPlayers } from "./scene-entities";
 import { enableDoors, initCamera } from "./main-map";
 import { checkProximities } from "./proximity";
-
-const ASSETS_BASE = process.env.ASSETS_URL || "";
-const assetUrl = (src: string) =>
-  ASSETS_BASE ? src.replace(/^\.\/assets\//, ASSETS_BASE + "/") : src;
 
 /** A remote player close enough to the hero to video chat with. */
 export interface NearbyPlayer {
@@ -82,7 +77,7 @@ export class SceneMain extends Phaser.Scene {
   }
   // user setting functions
   toggleMusic(value: boolean) {
-    return value ? this.changeMusic() : this.sound.stopAll();
+    return value ? changeMusic(this) : this.sound.stopAll();
   }
   toggleMinimap(value: boolean) {
     return this.minimap?.setVisible(value);
@@ -90,27 +85,6 @@ export class SceneMain extends Phaser.Scene {
   toggleCharLevels() {
     const scene = this;
     [...getPlayers(scene), ...getNpcs(scene)].forEach((a) => a.updateUserName());
-  }
-  changeMusic() {
-    const scene = this;
-    if (!scene.userSettings.playMusic) return; // user does not want music
-    const track = getMapByName(scene?.roomName)?.music;
-    if (!track) return;
-    let sound = scene.sound.get(track);
-    if (sound && sound.isPlaying) {
-      // Sound is already playing, do nothing
-      return;
-    }
-    scene.sound.stopAll();
-    scene.load.audio(track, [assetUrl(track)]);
-    scene.load.once("complete", () => {
-      sound = scene.sound.get(track);
-      if (!sound) {
-        sound = scene.sound.add(track, { volume: MUSIC_VOLUME, loop: true });
-      }
-      sound.play();
-    });
-    scene.load.start();
   }
   update(time: number) {
     const elapsedTime = time - this.lastUpdateTime;
