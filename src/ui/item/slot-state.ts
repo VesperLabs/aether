@@ -1,7 +1,6 @@
-import type { BuiltItem } from "@/content";
 import { itemHasRequiredStats } from "@/rules/inventory";
-import { isEqual, get } from "@/ui";
-import type { SlotProps } from "./slot";
+import { isEqual, get } from "@/ui/kit";
+import type { SlotProps } from "./item-slot";
 
 export function shouldReRenderSlot(prevProps: SlotProps, nextProps: SlotProps) {
   if (prevProps.location === "equipment") {
@@ -53,36 +52,4 @@ export function getIsItemActive({
     });
   }
   return true;
-}
-
-export function useItemEvents({
-  location,
-  bagId,
-  slotKey,
-  item,
-  player,
-}: Pick<SlotProps, "location" | "bagId" | "slotKey" | "item" | "player">) {
-  return {
-    doubleClickItem: () => {
-      window.dispatchEvent(
-        new CustomEvent("HERO_DOUBLE_CLICK_ITEM", {
-          detail: { item: item as BuiltItem, location: location as string },
-        }),
-      );
-    },
-    dropItem: (target: Element | null) => {
-      window.dispatchEvent(
-        new CustomEvent("HERO_DROP_ITEM", {
-          detail: {
-            item: item as BuiltItem,
-            location: location as string,
-            bagId,
-            slotKey,
-            player,
-            target,
-          },
-        }),
-      );
-    },
-  };
 }
