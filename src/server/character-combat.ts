@@ -1,3 +1,4 @@
+import type { AbilitySlot } from "@/shared/rules/spells";
 import {
   calculateElementalDamage,
   calculateHpSteal,
@@ -191,7 +192,7 @@ export function applyAttackDamage(
 export function applyDamage(
   attacker: ServerCharacter,
   victim: ServerCharacter,
-  abilitySlot?: number,
+  abilitySlot?: AbilitySlot,
 ): Array<Hit> {
   if (victim?.state?.isDead) return [];
   let hitList: Array<Hit>;

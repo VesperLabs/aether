@@ -38,6 +38,12 @@ export function checkCastReady({ spellName, lastCast, castDelay, now }: CastRead
   return isThisSpellReady && isGlobalReady;
 }
 
+/**
+ * A key of a character's abilities record. Numbers and numeric strings name the same slot
+ * (`abilities[1]` is `abilities["1"]`); clients send either.
+ */
+export type AbilitySlot = number | string;
+
 /** The part of an ability item the cast rules read. */
 export interface CastAbility {
   base?: string;
@@ -45,7 +51,7 @@ export interface CastAbility {
 }
 
 export interface CanCastInput {
-  abilitySlot: number | string | undefined;
+  abilitySlot: AbilitySlot | undefined;
   isStunned: boolean;
   isDead: boolean;
   /** "player" characters must have the slot unlocked. */
@@ -110,7 +116,7 @@ export interface AbilityDetailsInput {
 /** An ability's item data merged with its spell definition, plus `spellName`. */
 export function getAbilityDetails(
   { abilities, hasRangedWeapon }: AbilityDetailsInput,
-  abilitySlot: number | string | undefined,
+  abilitySlot: AbilitySlot | undefined,
 ): Record<string, any> & { spellName: string } {
   let ability: Record<string, any> | null | undefined;
   let spellName: string;

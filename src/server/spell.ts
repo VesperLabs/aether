@@ -1,3 +1,4 @@
+import type { AbilitySlot } from "@/shared/rules/spells";
 import type { ServerWorld } from "./server-world";
 import { distanceTo } from "@/shared/rules/world";
 import { entitiesInRoom } from "@/shared/rules/world";
@@ -31,7 +32,7 @@ export interface SpellArgs {
   caster: ServerCharacter;
   direction?: string;
   target?: SpellTarget;
-  abilitySlot?: number;
+  abilitySlot?: AbilitySlot;
   spellName: string;
   action?: string;
   castAngle?: number;
@@ -65,7 +66,7 @@ export class Spell {
   private direction: string;
   private isMeleeAttack: boolean;
   private isRangedAttack: boolean;
-  private abilitySlot?: number;
+  private abilitySlot?: AbilitySlot;
   private action: string;
   private isMissile: boolean;
 

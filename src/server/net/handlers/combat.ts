@@ -12,7 +12,7 @@ export function attack(
   if (!isInRoom(player)) return;
 
   // attack-spells like flame-slash also respect the spell-cooldown...
-  if (abilitySlot && !player.canCastSpell(abilitySlot as number)) return;
+  if (abilitySlot && !player.canCastSpell(abilitySlot)) return;
 
   /* The schema lets these be missing; the player treats a missing value as undefined. */
   player.doAttack({ count, direction, castAngle, abilitySlot } as PlayerAttackRequest);

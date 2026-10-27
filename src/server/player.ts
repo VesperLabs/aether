@@ -1,3 +1,4 @@
+import type { AbilitySlot } from "@/shared/rules/spells";
 import type { ServerWorld } from "./server-world";
 import { ServerCharacter, type CharacterArgs } from "./character";
 import { expAfterDeath } from "@/shared/rules/combat";
@@ -47,12 +48,12 @@ export interface PlayerAttackRequest {
   count: number;
   direction: string;
   castAngle?: number;
-  abilitySlot?: number;
+  abilitySlot?: AbilitySlot;
 }
 
 /** A client's spell request, after the transport has validated it. */
 export interface PlayerCastRequest {
-  abilitySlot: number;
+  abilitySlot: AbilitySlot;
   castAngle?: number;
 }
 
@@ -250,7 +251,7 @@ export class Player extends ServerCharacter {
     this.checkBubbleMessage();
   }
 
-  doHit(ids: Array<string>, abilitySlot?: number): void {
+  doHit(ids: Array<string>, abilitySlot?: AbilitySlot): void {
     const { world } = this ?? {};
     if (!this || this?.state?.isDead) return;
     const { roomName } = this;

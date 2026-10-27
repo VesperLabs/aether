@@ -1,3 +1,4 @@
+import type { AbilitySlot } from "@/shared/rules/spells";
 import { ServerCharacter as Character, type CharacterArgs } from "./character";
 import type { ServerWorld } from "./server-world";
 import type { Player } from "./player";
@@ -38,7 +39,7 @@ type NpcArgs = CharacterArgs & {
 /** What an NPC needs to cast a spell. */
 interface NpcCastRequest {
   ability: NpcAbility & { ilvl?: number };
-  abilitySlot: number | string;
+  abilitySlot: AbilitySlot;
   targetPlayer?: Player;
   castAngle: number;
 }
@@ -232,11 +233,11 @@ export class Npc extends Character {
   }
   doCast({ ability, abilitySlot, targetPlayer, castAngle }: NpcCastRequest) {
     /* Slot keys are numeric strings at runtime; the model types them as numbers. */
-    if (!this.canCastSpell(abilitySlot as number)) return;
+    if (!this.canCastSpell(abilitySlot)) return;
 
     const { world, room, id } = this ?? {};
     const spellName = ability?.base as string;
-    const slot = abilitySlot as number;
+    const slot = abilitySlot;
 
     this.dispelBuffsByProperty("dispelBeforeAttack");
 
@@ -355,7 +356,7 @@ export class Npc extends Character {
       if (index !== -1) this.talkingIds.splice(index, 1);
     }
   }
-  doHit(ids: Array<string>, abilitySlot?: number): void {
+  doHit(ids: Array<string>, abilitySlot?: AbilitySlot): void {
     const { world, room } = this ?? {};
     const roomName = room.name;
     const players = entitiesInRoom(this.world.players, roomName);
