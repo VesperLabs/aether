@@ -87,6 +87,18 @@ describe("updateState", () => {
   });
 });
 
+describe("changeDirection", () => {
+  it("keeps the current direction when none is sent", async () => {
+    const { socket, player } = await login();
+    socket.emit("changeDirection", { direction: "left" });
+    await ping(socket);
+    expect(player.direction).toBe("left");
+    socket.emit("changeDirection", { lastAngle: 1 });
+    await ping(socket);
+    expect(player.direction).toBe("left");
+  });
+});
+
 describe("respawn", () => {
   it("does nothing while the player is alive", async () => {
     const { socket, player } = await login();
