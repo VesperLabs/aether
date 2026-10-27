@@ -73,7 +73,7 @@ Found during the migration and left alone so behaviour stayed identical. Fix aft
 - [x] **Inventory:** the shop checks `item.slot === "stackable"` where it likely means `type`, so some bought stackables get a new id and never merge
 - [ ] **Inventory:** dropping on bag slot 0 counts as "dropped on the bag", and bags with an empty `items` array always answer "Bag is full"
 - [x] **Inventory:** `findBagItemById` returns the last matching bag, but update and delete touch the first match in every bag
-- [ ] **Inventory:** consuming food with no `buffs` throws after the item was already removed
+- [x] **Inventory:** consuming food with no `buffs` throws after the item was already removed
 - [x] **Inventory:** `deleteAbilityAtId` with an unknown id writes `abilities["null"] = null`
 - [ ] **Inventory:** a move between unsupported slots (equipment ↔ abilities) still saves and emits `playerUpdate`
 - [ ] **Inventory:** buying a stackable that merges into an existing stack ignores a non-blank destination slot

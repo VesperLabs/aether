@@ -111,7 +111,7 @@ export function consumeItem(ctx: CommandContext, request: ParsedCommand<"consume
 
   /* If the item has buffs */
   if (result.isFood) {
-    for (const [buffName, level] of Object.entries(result.buffs as Record<string, number>)) {
+    for (const [buffName, level] of Object.entries(result.buffs)) {
       player.addBuff({
         name: buffName,
         level,

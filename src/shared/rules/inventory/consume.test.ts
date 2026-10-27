@@ -34,6 +34,15 @@ const state = (overrides: Partial<InventoryState> = {}): InventoryState => ({
 });
 
 describe("consumeItem", () => {
+  it("gives no buffs for food without any", () => {
+    const food: InventoryItem = { id: "bread1", base: "food", type: "stackable", amount: 1 };
+    const result = consumeItem(state({ inventory: [food] }), {
+      location: "inventory",
+      item: { id: "bread1" },
+    });
+    expect(result).toMatchObject({ consumed: true, isFood: true, buffs: {} });
+  });
+
   it("uses one potion and reports its effects", () => {
     const s = state({ inventory: [potion(2)] });
     const result = consumeItem(s, {
