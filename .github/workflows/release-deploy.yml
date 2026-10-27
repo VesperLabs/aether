@@ -1,9 +1,9 @@
 name: Release & deploy
 
 # Manual only: Actions → "Release & deploy" → Run workflow.
-# 1. release-please: if the release PR was merged, tags and creates the GitHub
-#    release; otherwise opens/updates the release PR (fix: → patch, feat: →
-#    minor, feat!: / BREAKING CHANGE → major).
+# 1. release-please opens the release PR (fix: → patch, feat: → minor,
+#    feat!: / BREAKING CHANGE → major), the workflow merges it, then
+#    release-please runs again to tag and create the GitHub release.
 # 2. Deploys main: Fly runs the game server; Render serves the wiki and static
 #    assets (saves Fly bandwidth).
 on:
@@ -26,7 +26,20 @@ jobs:
     outputs:
       sha: ${{ steps.sha.outputs.sha }}
     steps:
-      - uses: googleapis/release-please-action@v4
+      - id: pr
+        uses: googleapis/release-please-action@v4
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+      # Merge the release PR ourselves (GITHUB_TOKEN pushes don't trigger
+      # other workflows), then tag it.
+      - if: steps.pr.outputs.pr
+        run: gh pr merge "$PR" --squash --repo ${{ github.repository }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ fromJSON(steps.pr.outputs.pr).number }}
+      - if: steps.pr.outputs.pr
+        uses: googleapis/release-please-action@v4
         with:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
