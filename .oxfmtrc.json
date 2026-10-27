@@ -4,5 +4,12 @@
   "useTabs": false,
   "printWidth": 100,
   "sortPackageJson": false,
-  "ignorePatterns": ["package-lock.json", "public/**", "dist/**", ".claude/**"]
+  "ignorePatterns": [
+    "package-lock.json",
+    "public/**",
+    "dist/**",
+    ".claude/**",
+    "CHANGELOG.md",
+    ".release-please-manifest.json"
+  ]
 }
