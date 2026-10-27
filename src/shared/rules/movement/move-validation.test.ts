@@ -24,7 +24,6 @@ const ctx: MoveContext = {
   bounds: { width: 320, height: 320 },
   walkSpeed: 100,
   bodySize: 8,
-  bodyOffsetY: 0,
 };
 const start = () => startMoveTrack("town", 50, 50, 0, 100);
 
@@ -51,6 +50,18 @@ describe("checkMove", () => {
       expect(result.ok).toBe(true);
       track = result.track;
     }
+  });
+
+  it("accepts sliding round a wall corner, where the straight line cuts the corner", () => {
+    // the client slid down the wall's left side, then right through the gap under it
+    const track = startMoveTrack("town", 150, 280, 0, 100);
+    expect(checkMove(track, { x: 170, y: 296 }, 250, ctx).ok).toBe(true);
+  });
+
+  it("accepts standing flush against a wall above", () => {
+    // body top touches the bottom of a solid tile: tile (5,8) spans y 256-288
+    const track = startMoveTrack("town", 176, 300, 0, 100);
+    expect(checkMove(track, { x: 176, y: 296 }, 50, ctx).ok).toBe(true);
   });
 
   it("accepts a burst of updates after a lag spike", () => {

@@ -54,7 +54,6 @@ export function playerInput(ctx: CommandContext, input: ParsedCommand<"playerInp
       bounds: { width: room.map.widthInPixels, height: room.map.heightInPixels },
       walkSpeed,
       bodySize: player.bodySize,
-      bodyOffsetY: player.bodyOffsetY,
     });
     moveTracks.set(player, result.track);
     if (!result.ok) {
