@@ -62,10 +62,11 @@ export class ServerCharacter extends CharacterModel {
     const activeSets: string[] = [];
     const setItems: Item[] = [];
 
-    buffs.forEach((buff: Buff) => {
-      if (buff.stats) {
-        Object.keys(buff.stats).forEach((key) => {
-          const amount = buff.stats[key];
+    buffs.forEach((buff) => {
+      const { stats } = buff;
+      if (stats) {
+        Object.keys(stats).forEach((key) => {
+          const amount = stats[key];
           if (baseStats[key]) {
             baseStats[key] += amount;
           }
@@ -73,7 +74,8 @@ export class ServerCharacter extends CharacterModel {
       }
       if (buff.percentStats) {
         Object.keys(buff.percentStats).forEach((key) => {
-          const amount = buff.stats[key];
+          // Known bug (TODO.md): reads `stats`, and throws when a buff has no `stats`.
+          const amount = (buff.stats as Record<string, number>)[key];
           if (percentStats[key]) {
             percentStats[key] += amount;
           }

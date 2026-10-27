@@ -93,7 +93,7 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
     baseStats!: any;
     stats!: any;
     npcKills!: Record<string, number>;
-    buffs!: any[];
+    buffs!: ActiveBuff[];
     quests!: Array<PlayerQuestRecord>;
     abilities!: Record<string, CharacterItem>;
     activeItemSlots!: Array<string>;
