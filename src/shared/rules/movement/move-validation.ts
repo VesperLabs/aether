@@ -35,8 +35,6 @@ export interface MoveContext {
   walkSpeed: number;
   /** Radius of the player's body. */
   bodySize: number;
-  /** Where the body sits relative to the player's position (negative is up). */
-  bodyOffsetY: number;
 }
 
 export type MoveRejection = "invalid" | "out-of-bounds" | "too-far" | "in-wall";
@@ -61,11 +59,12 @@ export function startMoveTrack(
 
 function bodyBox(ctx: MoveContext, x: number, y: number) {
   const half = Math.max(ctx.bodySize - MOVE_WALL_INSET, 1);
-  return { x, y: y + ctx.bodyOffsetY, halfWidth: half, halfHeight: half };
+  /* Centred on the position, like the client's Arcade body and the server's own movement. */
+  return { x, y, halfWidth: half, halfHeight: half };
 }
 
-/** True when the body, or anything along the straight path between the two points, is in a wall. */
-function pathHitsWall(ctx: MoveContext, from: { x: number; y: number }, to: typeof from) {
+/** True when the body is in a wall anywhere along the straight line between the two points. */
+function lineHitsWall(ctx: MoveContext, from: { x: number; y: number }, to: typeof from) {
   const step = Math.max(Math.min(ctx.grid.tileWidth, ctx.grid.tileHeight) / 2, 1);
   const distance = Math.hypot(to.x - from.x, to.y - from.y);
   const samples = Math.ceil(distance / step);
@@ -76,6 +75,18 @@ function pathHitsWall(ctx: MoveContext, from: { x: number; y: number }, to: type
     if (boxHitsTiles(ctx.grid, bodyBox(ctx, x, y))) return true;
   }
   return false;
+}
+
+/**
+ * True when every way the client could have got between the points hits a wall. The client slides
+ * along walls one axis at a time, so around a corner it takes an L-shaped path, not a straight one.
+ */
+function pathHitsWall(ctx: MoveContext, from: { x: number; y: number }, to: typeof from) {
+  if (!lineHitsWall(ctx, from, to)) return false;
+  const xFirst = { x: to.x, y: from.y };
+  if (!lineHitsWall(ctx, from, xFirst) && !lineHitsWall(ctx, xFirst, to)) return false;
+  const yFirst = { x: from.x, y: to.y };
+  return lineHitsWall(ctx, from, yFirst) || lineHitsWall(ctx, yFirst, to);
 }
 
 /**
