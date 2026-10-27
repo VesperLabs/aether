@@ -5,7 +5,7 @@ import { applyTintToImage, loadCacheImage } from "@/ui";
 import { arePropsEqualWithKeys } from "@/ui";
 import { isMobile } from "@/ui";
 import { CooldownTimer } from "./cooldown-timer";
-import { ItemTooltip } from "@/client/hud/tooltips/item-tooltip";
+import { ItemTooltip } from "@/ui";
 import { SkillButton } from "./skill-button";
 import { Box, Flex, Text } from "@/ui";
 import React, { memo, useEffect, useState } from "react";
