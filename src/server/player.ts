@@ -240,7 +240,7 @@ export class Player extends ServerCharacter {
   }
   checkBubbleMessage() {
     const now = Date.now();
-    if (now - this.state.lastBubbleMessage > 5000) {
+    if (now - (this.state.lastBubbleMessage ?? Number.NaN) > 5000) {
       this.state.bubbleMessage = null;
     }
   }

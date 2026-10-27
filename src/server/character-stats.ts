@@ -1,5 +1,5 @@
 import { calculateStats, type StatsInput } from "@/shared/rules/stats";
-import type { CharacterState } from "./character-state";
+import type { CharacterState } from "@/shared/rules/character";
 
 /** The fields of a character (live or loaded from the database) that stats are calculated from. */
 type StatsHolder = StatsInput & { state?: CharacterState };
@@ -20,7 +20,7 @@ export function applyCalculatedStats(character: StatsHolder, shouldHeal = false)
     },
     shouldHeal,
   );
-  character.state = character.state ?? {};
+  character.state = character.state ?? ({} as CharacterState);
   character.stats = stats;
   character.state.activeSets = activeSets;
 }

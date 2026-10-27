@@ -95,7 +95,7 @@ export function bindSceneSocket(scene: SceneMain) {
     const player = getPlayer(scene, user.socketId);
     if (player) {
       /* TODO: Maybe update the entire player here too */
-      player.state.lastTeleport = lastTeleport;
+      player.state.lastTeleport = lastTeleport as number;
       // manually update coords so the player won't flicker in place before respawning
       player.x = user.x;
       player.y = user.y;
@@ -170,7 +170,7 @@ export function bindSceneSocket(scene: SceneMain) {
   socket.on("npcAttack", ({ id, count, direction, castAngle }) => {
     const n = getNpc(scene, id);
     if (!n) return;
-    n.state.lastAngle = castAngle;
+    n.state.lastAngle = castAngle as number;
     n.doAttack({ count: count as number, direction, castAngle });
   });
 

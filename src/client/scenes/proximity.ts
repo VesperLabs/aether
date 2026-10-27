@@ -1,3 +1,4 @@
+import type { CharacterState } from "@/shared/rules/character";
 import { distanceTo } from "@/shared/rules/world";
 import { isMobile } from "@/ui/is-mobile";
 import type { Player } from "@/client/views/player";
@@ -40,7 +41,8 @@ function triggerEntityProximity(scene: SceneMain, closestEntity: Entity | undefi
   if (
     closestEntity &&
     hero.state.targetNpcId !== closestEntity?.id &&
-    !closestEntity?.state?.lockedPlayerId
+    // A Sign's `state` is Phaser's plain value, which has no lockedPlayerId.
+    !(closestEntity?.state as CharacterState | undefined)?.lockedPlayerId
   ) {
     hero.state.targetNpcId = closestEntity?.id;
     window.dispatchEvent(new CustomEvent("HERO_NEAR_NPC", { detail: closestEntity?.id }));

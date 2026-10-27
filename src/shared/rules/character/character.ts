@@ -3,6 +3,7 @@ import { getBuff, hasBuff, type ActiveBuff } from "@/shared/rules/buffs";
 import type { CharClass } from "@/shared/content";
 import type { RoomData } from "@/shared/rules/world";
 import type { PlayerQuestRecord } from "@/shared/rules/quests";
+import type { CharacterState } from "./state";
 import {
   POTION_COOLDOWN,
   checkAttackReady,
@@ -102,7 +103,7 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
     headY!: number;
     bodySize!: number;
     proScale!: number;
-    declare state: any;
+    declare state: CharacterState;
 
     /** Copies the constructor args onto the character and fills in the defaults. */
     initCharacter(args: any) {
