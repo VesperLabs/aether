@@ -1,4 +1,4 @@
-import type { ClientGameSocket, ServerToClientEvents } from "@/shared/network";
+import type { ClientGameSocket, ServerToClientEvents } from "@/network";
 
 type WindowEventHandler<K extends keyof WindowEventMap> = (event: WindowEventMap[K]) => void;
 

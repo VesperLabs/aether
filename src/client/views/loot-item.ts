@@ -1,6 +1,6 @@
 import Phaser from "phaser";
-import { resolveAsset } from "@/shared/content";
-import type { LootMessage } from "@/shared/network";
+import { resolveAsset } from "@/content";
+import type { LootMessage } from "@/network";
 import type { SceneMain } from "@/client/scenes/main-scene";
 import { toTint } from "./tint";
 const Sprite = Phaser.GameObjects.Sprite;

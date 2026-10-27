@@ -1,5 +1,5 @@
-import { ItemBuilder } from "@/shared/content";
-import { getBaseStats } from "@/shared/rules/stats";
+import { ItemBuilder } from "@/content";
+import { getBaseStats } from "@/rules/stats";
 
 export const PLAYER_DEFAULT_SPAWN = { roomName: "grassland-3", x: 1496, y: 2028 };
 

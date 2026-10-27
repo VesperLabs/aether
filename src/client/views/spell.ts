@@ -1,9 +1,9 @@
 import Phaser from "phaser";
 import { playAudio } from "@/client/audio/play-audio";
-import type { Point } from "@/shared/rules/world";
+import type { Point } from "@/rules/world";
 import type { Player } from "./player";
 import { toTint } from "./tint";
-import { getAngleFromDirection, distanceTo } from "@/shared/rules/world";
+import { getAngleFromDirection, distanceTo } from "@/rules/world";
 import {
   BUFF_SPELLS,
   getSpellShape,
@@ -12,7 +12,7 @@ import {
   resolveSpellDetails,
   usesLeftHand,
   usesRightHand,
-} from "@/shared/rules/spells";
+} from "@/rules/spells";
 const Sprite = Phaser.GameObjects.Sprite;
 const BLANK_TEXTURE = "human-blank";
 

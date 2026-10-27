@@ -3,7 +3,7 @@ import type { Express } from "express";
 import type { Database } from "../persistence/database";
 import type { GameServer } from "../game-server";
 import { applyCalculatedStats } from "../character-stats";
-import { getFullCharacterState } from "@/shared/network/sync";
+import { getFullCharacterState } from "@/network/sync";
 import { paginate, parsePageQuery } from "./pagination";
 
 /** Query string values as the client sent them; `pagination.ts` turns them into numbers. */

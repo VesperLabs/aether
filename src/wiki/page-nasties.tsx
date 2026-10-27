@@ -1,6 +1,6 @@
 import { Box, Flex } from "@/ui";
 import { NpcRender } from "./npc-render";
-import { nasties } from "@/shared/content";
+import { nasties } from "@/content";
 import { RowTitle } from "./row-title";
 
 export function PageNasties() {

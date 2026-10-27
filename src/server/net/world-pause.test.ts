@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { createTickLoop } from "@/shared/rules/world";
+import { createTickLoop } from "@/rules/world";
 import type { ServerWorld } from "../server-world";
 import { shouldPause } from "./world-pause";
 

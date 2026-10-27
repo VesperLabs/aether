@@ -1,4 +1,4 @@
-import type { AbilitySlot } from "@/shared/rules/spells";
+import type { AbilitySlot } from "@/rules/spells";
 import {
   calculateElementalDamage,
   calculateHpSteal,
@@ -6,8 +6,8 @@ import {
   type ElementalDamages,
   rollAttack,
   rollTriggers,
-} from "@/shared/rules/combat";
-import { rollSpellCrit, rollSpellDamage, type getAbilityDetails } from "@/shared/rules/spells";
+} from "@/rules/combat";
+import { rollSpellCrit, rollSpellDamage, type getAbilityDetails } from "@/rules/spells";
 import type { ServerCharacter } from "./character";
 
 /** An ability's item data merged with its spell definition. */

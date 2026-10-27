@@ -1,9 +1,9 @@
-import type { BuiltItem } from "@/shared/content";
+import type { BuiltItem } from "@/content";
 import type { NearbyPlayer } from "@/client/scenes/main-scene";
 import type { Player } from "@/client/views/player";
-import type { AbilitySlot } from "@/shared/rules/spells";
+import type { AbilitySlot } from "@/rules/spells";
 
-export type { AbilitySlot } from "@/shared/rules/spells";
+export type { AbilitySlot } from "@/rules/spells";
 
 /** Where an item was when it was clicked or dragged: "inventory", "abilities", "bag", "shop"... */
 export interface ItemEventDetail {

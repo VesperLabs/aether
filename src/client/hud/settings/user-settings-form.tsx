@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Switch, Flex, Text } from "@/ui";
-import { DEFAULT_USER_SETTINGS } from "@/shared/rules/world";
+import { DEFAULT_USER_SETTINGS } from "@/rules/world";
 import { isMobile } from "@/ui/is-mobile";
 import { useAppContext } from "@/client/hud/app/context";
 import { TextDivider } from "@/client/hud/menu/text-divider";

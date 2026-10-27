@@ -1,6 +1,6 @@
 import crypto from "crypto";
-import { ItemBuilder, type Item } from "@/shared/content";
-import { SHOP_INFLATION } from "@/shared/rules/inventory";
+import { ItemBuilder, type Item } from "@/content";
+import { SHOP_INFLATION } from "@/rules/inventory";
 
 /** An item as the content tables list it: type, rarity, key and an optional amount. */
 export type ItemRecipe = Parameters<typeof ItemBuilder.buildItem>;

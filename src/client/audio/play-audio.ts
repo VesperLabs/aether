@@ -1,4 +1,4 @@
-import { distanceTo, type Point } from "@/shared/rules/world";
+import { distanceTo, type Point } from "@/rules/world";
 import type { SceneMain } from "@/client/scenes/main-scene";
 
 /* TODO: Move to DB */

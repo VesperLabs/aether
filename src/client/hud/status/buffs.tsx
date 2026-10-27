@@ -1,10 +1,10 @@
 import { memo, useEffect, useState } from "react";
 import { Divider, Flex, Icon, Text } from "@/ui";
 import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
-import { formatStats } from "@/shared/rules/stats";
-import { buffList } from "@/shared/content";
+import { formatStats } from "@/rules/stats";
+import { buffList } from "@/content";
 import type { ThemeUIStyleObject } from "theme-ui";
-import type { ActiveBuff } from "@/shared/rules/buffs";
+import type { ActiveBuff } from "@/rules/buffs";
 import type { HudCharacter } from "@/client/hud/app/context";
 import { Tooltip } from "@/client/hud/tooltips/tooltip";
 import { TooltipLabel } from "@/client/hud/tooltips/tooltip-label";

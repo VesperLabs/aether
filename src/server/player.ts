@@ -1,18 +1,18 @@
-import type { AbilitySlot } from "@/shared/rules/spells";
+import type { AbilitySlot } from "@/rules/spells";
 import type { ServerWorld } from "./server-world";
 import { ServerCharacter, type CharacterArgs } from "./character";
-import { expAfterDeath, getAbilityCosts } from "@/shared/rules/combat";
-import { canHitNpc, canHitPlayer } from "@/shared/rules/spells";
+import { expAfterDeath, getAbilityCosts } from "@/rules/combat";
+import { canHitNpc, canHitPlayer } from "@/rules/spells";
 import type { Npc } from "./npc";
 import { createSpell } from "./spell-adapter";
 import { PLAYER_DEFAULT_SPAWN } from "./auth/character-defaults";
 import { getRoomState } from "@/server/net/room-sync";
-import { entitiesInRoom } from "@/shared/rules/world";
-import { expForMobKill } from "@/shared/rules/stats";
-import { isPartyMember, sharedRecipientIds } from "@/shared/rules/party";
-import { markKeeperObjectivesReady, nextNpcKillCount } from "@/shared/rules/quests";
+import { entitiesInRoom } from "@/rules/world";
+import { expForMobKill } from "@/rules/stats";
+import { isPartyMember, sharedRecipientIds } from "@/rules/party";
+import { markKeeperObjectivesReady, nextNpcKillCount } from "@/rules/quests";
 import { applyAcceptQuest, applyCompleteQuest } from "./player-quests";
-import type { MobKilledEvent } from "@/shared/rules/events";
+import type { MobKilledEvent } from "@/rules/events";
 import {
   type FoundSlot,
   addInventoryItem,
@@ -33,7 +33,7 @@ import {
   updateBagItemAtId,
   updateInventoryItemAtId,
   withoutSlot,
-} from "@/shared/rules/inventory";
+} from "@/rules/inventory";
 
 /** What a player is created from: the stored user plus the connection it logged in on. */
 export type PlayerArgs = CharacterArgs & {
@@ -175,7 +175,7 @@ export class Player extends ServerCharacter {
   completeQuest(questId: string) {
     return applyCompleteQuest(this, this.world.quests?.[questId]);
   }
-  /* Inventory, equipment, bags and abilities: the rules live in shared/rules/inventory */
+  /* Inventory, equipment, bags and abilities: the rules live in rules/inventory */
   findEquipmentById(id: string): FoundSlot {
     return findEquipmentById(this.equipment, id);
   }

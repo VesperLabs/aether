@@ -1,10 +1,10 @@
 import Phaser from "phaser";
-import { DEFAULT_USER_SETTINGS, type UserSettings } from "@/shared/rules/world";
-import type { ClientGameSocket } from "@/shared/network";
+import { DEFAULT_USER_SETTINGS, type UserSettings } from "@/rules/world";
+import type { ClientGameSocket } from "@/network";
 import type { Player } from "@/client/views/player";
 import { isMobile } from "@/ui/is-mobile";
 import { MINI_MAP_SIZE } from "@/client/views/minimap-size";
-import { decodeWireDirection } from "@/shared/network/sync";
+import { decodeWireDirection } from "@/network/sync";
 import { netInterp } from "@/client/net/scene-interpolation";
 import { bindSceneSocket } from "@/client/net/scene-socket";
 import { changeMusic } from "@/client/audio/music";

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Flex, Text } from "@/ui";
 import { useAppContext } from "@/client/hud/app/context";
 import { motion } from "framer-motion";
-import type { ChatMessage } from "@/shared/network";
+import type { ChatMessage } from "@/network";
 
 type MessageProps = {
   data: ChatMessage;

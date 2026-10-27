@@ -1,8 +1,8 @@
 import type { ServerWorld } from "./server-world";
 import crypto from "crypto";
-import { ItemBuilder } from "@/shared/content";
-import { createLoot, expireLoots, isMapLootDue, planMapLootSpawns } from "@/shared/rules/loot";
-import type { LootItem, LootSpawn } from "@/shared/rules/loot";
+import { ItemBuilder } from "@/content";
+import { createLoot, expireLoots, isMapLootDue, planMapLootSpawns } from "@/rules/loot";
+import type { LootItem, LootSpawn } from "@/rules/loot";
 
 /**
  * Legacy adapter for the loot rules: keeps the loot on the ServerWorld (`world.loots`) and applies

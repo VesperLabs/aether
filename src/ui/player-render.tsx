@@ -1,11 +1,11 @@
-import { resolveAsset, type BuiltItem, type MobProfile } from "@/shared/content";
+import { resolveAsset, type BuiltItem, type MobProfile } from "@/content";
 import {
   ACCESSORY_HIDING_HELMETS,
   HAIR_HIDING_HELMETS,
   HAIR_HIDING_ACCESSORIES,
   FACE_HIDING_ACCESSORIES,
-} from "@/shared/content";
-import { filterVisibleEquipment } from "@/shared/rules/character";
+} from "@/content";
+import { filterVisibleEquipment } from "@/rules/character";
 import { tintCanvas, loadCacheImage } from "@/ui/image-tint";
 import { memo, useEffect, useRef, type ComponentProps, type RefObject } from "react";
 import type { CSSProperties } from "react";

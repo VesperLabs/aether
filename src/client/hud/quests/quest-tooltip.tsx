@@ -10,9 +10,9 @@ import {
   type NastyId,
   type Quest as QuestData,
   type QuestObjective,
-} from "@/shared/content";
-import type { PlayerQuestStatus } from "@/shared/rules/quests";
-import type { ClientGameSocket } from "@/shared/network";
+} from "@/content";
+import type { PlayerQuestStatus } from "@/rules/quests";
+import type { ClientGameSocket } from "@/network";
 import type { HudCharacter } from "@/client/hud/app/context";
 import { Tooltip } from "@/client/hud/tooltips/tooltip";
 

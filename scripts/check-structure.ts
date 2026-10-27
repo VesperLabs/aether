@@ -25,7 +25,7 @@ const LEGACY: Record<Rule, string[]> = {
 };
 
 const ROOTS = ["src", "scripts"];
-const BANNED = new Set(["utils", "helpers", "common", "misc", "lib"]);
+const BANNED = new Set(["utils", "helpers", "common", "misc", "lib", "shared"]);
 const KEBAB = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const REEXPORT = /export\s+(type\s+)?(\*(\s+as\s+\w+)?|\{[^}]*\})\s*from\s*["'][^"']+["'];?/g;
 const IMPORT = /import\s+(type\s+)?([^;"']*?\sfrom\s*)?["'][^"']+["'];?/g;
@@ -53,7 +53,7 @@ function check(dir: string) {
 }
 
 function checkFolder(full: string, name: string) {
-  if (BANNED.has(name) || (name === "shared" && full !== path.join("src", "shared"))) {
+  if (BANNED.has(name)) {
     report("banned-name", full);
   }
   if (!KEBAB.test(name)) report("folder-case", full);

@@ -1,8 +1,8 @@
-import type { AbilitySlot } from "@/shared/rules/spells";
+import type { AbilitySlot } from "@/rules/spells";
 import type { ServerWorld } from "./server-world";
-import { distanceTo } from "@/shared/rules/world";
-import { entitiesInRoom } from "@/shared/rules/world";
-import { shapesOverlap, type Shape } from "@/shared/rules/movement";
+import { distanceTo } from "@/rules/world";
+import { entitiesInRoom } from "@/rules/world";
+import { shapesOverlap, type Shape } from "@/rules/movement";
 import {
   BUFF_SPELLS,
   characterBodyCircle,
@@ -15,7 +15,7 @@ import {
   resolveSpellDetails,
   usesLeftHand,
   usesRightHand,
-} from "@/shared/rules/spells";
+} from "@/rules/spells";
 import { ServerCharacter } from "./character";
 
 /** Who an NPC spell or attack is aimed at. */

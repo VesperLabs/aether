@@ -1,5 +1,5 @@
 import socketIOClient from "socket.io-client";
-import type { ClientGameSocket } from "@/shared/network";
+import type { ClientGameSocket } from "@/network";
 
 const SERVER_URL = process.env.SERVER_URL as string;
 

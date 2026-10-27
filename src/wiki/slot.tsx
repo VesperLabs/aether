@@ -8,8 +8,8 @@ import {
   type BuffName,
   type TriggerDefinition,
   type ItemSetName,
-} from "@/shared/content";
-import { formatStats } from "@/shared/rules/stats";
+} from "@/content";
+import { formatStats } from "@/rules/stats";
 import { assetToCanvas } from "@/ui/image-tint";
 import { Box, Icon, STYLE_NON_EMPTY, SLOT_SIZE, Tooltip, Text, Flex, Divider } from "@/ui";
 import { Label, TextDivider, TOOLTIP_STYLE } from ".";

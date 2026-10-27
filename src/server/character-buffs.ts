@@ -8,8 +8,8 @@ import {
   runRegen,
   type ActiveBuff,
   type RegenTimers,
-} from "@/shared/rules/buffs";
-import type { CharacterState } from "@/shared/rules/character";
+} from "@/rules/buffs";
+import type { CharacterState } from "@/rules/character";
 
 /** What a buff needs to know about the character that cast it. */
 export interface BuffRequest {
@@ -30,7 +30,7 @@ interface BuffHolder {
 }
 
 /**
- * Legacy adapters for the pure buff rules (`@/shared/rules/buffs`): pass the character's plain
+ * Legacy adapters for the pure buff rules (`@/rules/buffs`): pass the character's plain
  * data in, store the result back. Delete in Phase 4 when entities become plain data.
  */
 

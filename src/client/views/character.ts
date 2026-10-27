@@ -1,7 +1,7 @@
 import Phaser from "phaser";
-import type { FullCharacterWire } from "@/shared/network";
-import { BODY_SIZE, withCharacterModel } from "@/shared/rules/character";
-import type { RoomData } from "@/shared/rules/world";
+import type { FullCharacterWire } from "@/network";
+import { BODY_SIZE, withCharacterModel } from "@/rules/character";
+import type { RoomData } from "@/rules/world";
 
 const BLANK_TEXTURE = "human-blank";
 
