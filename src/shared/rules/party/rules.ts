@@ -86,6 +86,11 @@ export function sharedRecipientIds(
   return members.filter((member) => member.roomName === roomName).map((member) => member.id);
 }
 
+/** How party messages name a player, even one without a profile name. */
+function displayName(player: PartyPlayer | undefined) {
+  return player?.userName || "A player";
+}
+
 function replaceParty(state: PartyState, party: Party): PartyState {
   return { parties: state.parties.map((p) => (p.id === party.id ? party : p)) };
 }
@@ -119,7 +124,7 @@ function createParty(
       {
         type: "partyUpdate",
         to: { room: party.socketRoom },
-        payload: { message: `${leader.userName} has joined the party.`, party },
+        payload: { message: `${displayName(leader)} has joined the party.`, party },
       },
     );
   }
@@ -217,7 +222,7 @@ export function acceptPartyInvite(
       {
         type: "partyUpdate",
         to: { room: joined.socketRoom },
-        payload: { message: `${player.userName} has joined the party.`, party: joined },
+        payload: { message: `${displayName(player)} has joined the party.`, party: joined },
       },
     ],
   };
@@ -248,7 +253,7 @@ export function leaveParty(
       {
         type: "partyUpdate",
         to: { room: party.socketRoom },
-        payload: { message: `${player?.userName} has left the party.`, party: remaining },
+        payload: { message: `${displayName(player)} has left the party.`, party: remaining },
       },
       {
         type: "partyUpdate",

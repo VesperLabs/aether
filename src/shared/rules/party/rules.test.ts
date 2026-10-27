@@ -246,6 +246,14 @@ describe("leaveParty", () => {
     expect(accept.effects[0]).toMatchObject({ payload: { message: "Could not find party." } });
   });
 
+  it("names a leaver without a user name", () => {
+    const { effects } = leaveParty(twoMemberParty(), {
+      player: player("b", { partyId: "p1", userName: undefined }),
+      playerId: "b",
+    });
+    expect(effects[1]).toMatchObject({ payload: { message: "A player has left the party." } });
+  });
+
   it("keeps the leader when a regular member leaves", () => {
     const { state } = leaveParty(twoMemberParty(), {
       player: player("b", { partyId: "p1" }),
