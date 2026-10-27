@@ -2,6 +2,7 @@ import path from "node:path";
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import { getAppVersion } from "../../scripts/app-version";
+import { removeStaleBuilds } from "../../scripts/stale-builds";
 
 /** Repo root. Vite is run from the root with `--config` (see npm scripts). */
 const repoRoot = path.resolve(__dirname, "../..");
@@ -18,7 +19,7 @@ export default defineConfig(({ mode, command }) => {
     /* Separate dep caches: the client and wiki dev servers run side by side and would invalidate a shared one. */
     cacheDir: path.join(repoRoot, "node_modules/.vite/wiki"),
     resolve: { tsconfigPaths: true },
-    plugins: [react()],
+    plugins: [react(), removeStaleBuilds(path.join(repoRoot, "public"))],
     envDir: repoRoot,
     server: {
       host: true,

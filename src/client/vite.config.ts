@@ -4,6 +4,7 @@ import react from "@vitejs/plugin-react-swc";
 import { DEFAULT_SERVER_FPS } from "../network/sync/timing";
 import { getAppVersion } from "../../scripts/app-version";
 import { rewriteAssetUrls } from "../../scripts/assets-url";
+import { removeStaleBuilds } from "../../scripts/stale-builds";
 
 /** Repo root. Vite is run from the root with `--config` (see npm scripts). */
 const repoRoot = path.resolve(__dirname, "../..");
@@ -34,6 +35,7 @@ export default ({ mode, command }: ConfigEnv) => {
         },
       },
       react(),
+      removeStaleBuilds(path.join(repoRoot, "public")),
     ],
     define: {
       /* Values must be JSON-serialized literals; undefined breaks esbuild in CI/Docker with no .env */
