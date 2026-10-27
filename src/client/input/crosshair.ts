@@ -32,7 +32,7 @@ export class Crosshair extends Phaser.GameObjects.Container {
 
   update() {
     if (!this?.player?.state) return;
-    this.setVisible(this?.player?.state?.isAiming);
+    this.setVisible(!!this?.player?.state?.isAiming);
     this.angle = this?.player?.state?.lastAngle;
 
     // Set the rotation of the sprite around its own axis

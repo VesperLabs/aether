@@ -2,6 +2,14 @@ import type { ServerWorld } from "./server-world";
 import { Player, type PlayerArgs } from "./player";
 import type { RoomData } from "@/shared/rules/world";
 
+/** A player that is in a room, so its room refs are set. */
+export type PlayerInRoom = Player & { room: RoomData; roomName: string };
+
+/** Whether this player exists and is in a room (not walking through a door or disconnected). */
+export function isInRoom(player: Player | null | undefined): player is PlayerInRoom {
+  return !!player?.room && !!player.roomName;
+}
+
 /** Creates a player and puts them in a room. */
 export function createPlayer(
   world: ServerWorld,
@@ -24,11 +32,10 @@ export function addPlayerToRoom(world: ServerWorld, socketId: string, room: Room
 
 /**
  * Clears a player's room refs, e.g. while they walk through a door or after they disconnect.
- * The shared character model types both as always set, hence the casts.
  */
 export function detachFromRoom(player: Player) {
-  player.room = null as unknown as RoomData;
-  player.roomName = null as unknown as string;
+  player.room = null;
+  player.roomName = null;
   player.state.targetNpcId = null;
 }
 

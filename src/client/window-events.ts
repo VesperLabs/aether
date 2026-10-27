@@ -1,9 +1,9 @@
 import type { BuiltItem } from "@/shared/content";
 import type { NearbyPlayer } from "@/client/scenes/main-scene";
 import type { Player } from "@/client/views/player";
+import type { AbilitySlot } from "@/shared/rules/spells";
 
-/** An ability slot, as the HUD (a record key) and the server (a number) name it. */
-export type AbilitySlot = number | string;
+export type { AbilitySlot } from "@/shared/rules/spells";
 
 /** Where an item was when it was clicked or dragged: "inventory", "abilities", "bag", "shop"... */
 export interface ItemEventDetail {

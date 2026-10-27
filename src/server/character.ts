@@ -1,3 +1,4 @@
+import type { AbilitySlot } from "@/shared/rules/spells";
 import type { ServerWorld } from "./server-world";
 import { CharacterModel } from "@/shared/rules/character";
 import { ItemBuilder } from "@/shared/content";
@@ -182,7 +183,7 @@ export class ServerCharacter extends CharacterModel {
   ): Array<Hit> {
     return applyAttackDamage(this, victim, abilityDetails);
   }
-  calculateDamage(victim: ServerCharacter, abilitySlot?: number): Array<Hit> {
+  calculateDamage(victim: ServerCharacter, abilitySlot?: AbilitySlot): Array<Hit> {
     return applyDamage(this, victim, abilitySlot);
   }
   doRegen() {
@@ -237,7 +238,7 @@ export class ServerCharacter extends CharacterModel {
   expireBuffs(forceExpire = false) {
     applyExpireBuffs(this, forceExpire);
   }
-  doHit(ids: Array<string>, abilitySlot?: number): void {
+  doHit(ids: Array<string>, abilitySlot?: AbilitySlot): void {
     //placeholder
   }
   setLockedPlayerId(id: string | null | undefined) {

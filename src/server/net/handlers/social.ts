@@ -9,6 +9,7 @@ import {
 import type { ParsedCommand } from "@/shared/network";
 import type { CommandContext } from "@/server/net/command-context";
 import { findNearbyNpc } from "@/server/net/nearby-keeper";
+import { isInRoom } from "@/server/player-room";
 
 export function chatNpc(ctx: CommandContext, { npcId }: ParsedCommand<"chatNpc"> = {}) {
   const { world, socket, socketId } = ctx;
@@ -30,7 +31,7 @@ export function acceptQuest(ctx: CommandContext, questId: ParsedCommand<"acceptQ
   const { world, socketId, io } = ctx;
   const player: Player = world?.players?.[socketId];
   const currentQuest = world.quests?.[questId];
-  if (!currentQuest) return;
+  if (!currentQuest || !isInRoom(player)) return;
   const foundQuest = player?.getPlayerQuestStatus(currentQuest);
   /* If the quest wasnt there, we can accept it */
   if (!foundQuest) {
@@ -44,6 +45,7 @@ export function acceptQuest(ctx: CommandContext, questId: ParsedCommand<"acceptQ
 export function completeQuest(ctx: CommandContext, questId: ParsedCommand<"completeQuest">) {
   const { world, socket, socketId, io } = ctx;
   const player: Player = world?.players?.[socketId];
+  if (!isInRoom(player)) return;
   /* If the quest is ready, we turn it in */
   const questResults = player?.completeQuest(questId);
   /* Quest failed */
@@ -80,6 +82,7 @@ export function message(ctx: CommandContext, args: ParsedCommand<"message">) {
   const { world, io } = ctx;
   if (!args?.message) return;
   const player = world?.players?.[ctx.socketId];
+  if (!isInRoom(player)) return;
   // chat bubble
   if (args.message.charAt(0) === "!" && args.message.length > 1) {
     player.state.lastBubbleMessage = Date.now();

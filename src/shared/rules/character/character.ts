@@ -3,6 +3,7 @@ import { getBuff, hasBuff, type ActiveBuff } from "@/shared/rules/buffs";
 import type { CharClass } from "@/shared/content";
 import type { RoomData } from "@/shared/rules/world";
 import type { PlayerQuestRecord } from "@/shared/rules/quests";
+import type { CharacterState } from "./state";
 import {
   POTION_COOLDOWN,
   checkAttackReady,
@@ -32,7 +33,12 @@ import {
   type Hand,
 } from "@/shared/rules/combat";
 import { getPlayerQuestStatus } from "@/shared/rules/quests";
-import { canCastSpell, checkCastReady, getAbilityDetails } from "@/shared/rules/spells";
+import {
+  canCastSpell,
+  checkCastReady,
+  getAbilityDetails,
+  type AbilitySlot,
+} from "@/shared/rules/spells";
 
 /** An item as the character reads it. */
 // TODO: narrow once server entities stop relying on the global Item interface.
@@ -69,9 +75,9 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
     peerId!: string;
     id!: string;
     isHero!: boolean;
-    roomName!: string;
+    roomName!: string | null;
     charClass?: CharClass;
-    room!: RoomData;
+    room!: RoomData | null;
     action!: string;
     direction!: string;
     currentSpeed!: number;
@@ -87,7 +93,7 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
     baseStats!: any;
     stats!: any;
     npcKills!: Record<string, number>;
-    buffs!: any[];
+    buffs!: ActiveBuff[];
     quests!: Array<PlayerQuestRecord>;
     abilities!: Record<string, CharacterItem>;
     activeItemSlots!: Array<string>;
@@ -97,7 +103,7 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
     headY!: number;
     bodySize!: number;
     proScale!: number;
-    declare state: any;
+    declare state: CharacterState;
 
     /** Copies the constructor args onto the character and fills in the defaults. */
     initCharacter(args: any) {
@@ -296,7 +302,7 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
         now: Date.now(),
       });
     }
-    canCastSpell(abilitySlot: number | string | undefined, shouldUpdateState = true) {
+    canCastSpell(abilitySlot: AbilitySlot | undefined, shouldUpdateState = true) {
       const { allowed, castTimes } = canCastSpell({
         abilitySlot,
         isStunned: this?.hasBuff("stun"),
@@ -312,7 +318,7 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
       if (castTimes) Object.assign(this.state.lastCast, castTimes);
       return allowed;
     }
-    getAbilityDetails(abilitySlot?: number | string) {
+    getAbilityDetails(abilitySlot?: AbilitySlot) {
       return getAbilityDetails(
         { abilities: this.abilities, hasRangedWeapon: this.hasRangedWeapon() },
         abilitySlot,
@@ -324,7 +330,7 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
     getVisibleEquipment() {
       return filterVisibleEquipment(this);
     }
-    getAttackActionName({ count, abilitySlot }: { count: number; abilitySlot?: number | string }) {
+    getAttackActionName({ count, abilitySlot }: { count: number; abilitySlot?: AbilitySlot }) {
       const ability = this.getAbilityDetails(abilitySlot);
       return getAttackActionName(this, { action: this.action, ability, count });
     }

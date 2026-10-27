@@ -1,6 +1,7 @@
 export { BUFF_SPELLS, canCastSpell, checkCastReady, getAbilityDetails } from "./cast";
 export type {
   AbilityDetailsInput,
+  AbilitySlot,
   CanCastInput,
   CanCastResult,
   CastAbility,
