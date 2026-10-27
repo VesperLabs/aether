@@ -1,8 +1,7 @@
 import { useLayoutEffect, useState } from "react";
 import { assetList, type NastyDefinition } from "@/content";
-import { assetToCanvas } from "@/ui/image-tint";
-import { Box, Icon, STYLE_NON_EMPTY, Tooltip, Text, Flex } from "@/ui";
-import { TOOLTIP_STYLE } from ".";
+import { assetToCanvas } from "@/ui";
+import { Box, Icon, STYLE_NON_EMPTY, Tooltip, TooltipContent, Text } from "@/ui";
 
 const SLOT_SIZE = 100;
 
@@ -59,9 +58,9 @@ export function NpcRender({ model }: { model: WikiNpc }) {
 const ModelTooltip = ({ model }: { model: WikiNpc }) => {
   return (
     <Tooltip id={model?.key}>
-      <Flex sx={TOOLTIP_STYLE}>
+      <TooltipContent>
         <Text>{model?.profile?.userName}</Text>
-      </Flex>
+      </TooltipContent>
     </Tooltip>
   );
 };

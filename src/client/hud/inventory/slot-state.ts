@@ -1,6 +1,6 @@
 import type { BuiltItem } from "@/content";
 import { itemHasRequiredStats } from "@/rules/inventory";
-import { isEqual, get } from "@/ui/are-props-equal";
+import { isEqual, get } from "@/ui";
 import type { SlotProps } from "./slot";
 
 export function shouldReRenderSlot(prevProps: SlotProps, nextProps: SlotProps) {

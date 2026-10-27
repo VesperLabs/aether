@@ -10,9 +10,20 @@ import {
   type ItemSetName,
 } from "@/content";
 import { formatStats } from "@/rules/stats";
-import { assetToCanvas } from "@/ui/image-tint";
-import { Box, Icon, STYLE_NON_EMPTY, SLOT_SIZE, Tooltip, Text, Flex, Divider } from "@/ui";
-import { Label, TextDivider, TOOLTIP_STYLE } from ".";
+import { assetToCanvas } from "@/ui";
+import {
+  Box,
+  Icon,
+  STYLE_NON_EMPTY,
+  SLOT_SIZE,
+  Tooltip,
+  TooltipContent,
+  Text,
+  Flex,
+  Divider,
+  Label,
+  TextDivider,
+} from "@/ui";
 
 /** An item as the wiki lists it: the definition with its tier, not an item a player owns. */
 export type WikiItem = Partial<BuiltItem>;
@@ -70,7 +81,7 @@ const ItemTooltip = ({ item }: { item: WikiItem }) => {
 
   return (
     <Tooltip id={item?.key}>
-      <Flex sx={TOOLTIP_STYLE}>
+      <TooltipContent>
         <Text>
           {item?.name}
           {item?.slot == "spell" && <span> (Lv. {item?.ilvl})</span>}
@@ -211,7 +222,7 @@ const ItemTooltip = ({ item }: { item: WikiItem }) => {
             </Flex>
           )}
         </Flex>
-      </Flex>
+      </TooltipContent>
     </Tooltip>
   );
 };

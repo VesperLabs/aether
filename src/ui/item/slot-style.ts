@@ -1,5 +1,5 @@
 import type { ThemeUIStyleObject } from "theme-ui";
-import type { theme } from "./theme";
+import type { theme } from "@/ui/kit";
 
 type AppTheme = typeof theme;
 

@@ -3,7 +3,7 @@ import { Slot } from "./slot";
 import { memo } from "react";
 import type { BuiltItem } from "@/content";
 import type { HudCharacter } from "@/client/hud/app/context";
-import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
+import { arePropsEqualWithKeys } from "@/ui";
 
 interface MenuBagProps {
   bagState: string[];

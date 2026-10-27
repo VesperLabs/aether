@@ -2,7 +2,7 @@ import React, { type ComponentProps } from "react";
 import { Flex, Box, Text, type ThemeUIStyleObject } from "theme-ui";
 import { KeyboardKey } from "./keyboard-key";
 import { Icon } from "./icon";
-import { isMobile } from "@/ui/is-mobile";
+import { isMobile } from "./is-mobile";
 
 export const MENU_MAX_WIDTH = 1024;
 

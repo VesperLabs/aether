@@ -6,11 +6,11 @@ import {
   FACE_HIDING_ACCESSORIES,
 } from "@/content";
 import { filterVisibleEquipment } from "@/rules/character";
-import { tintCanvas, loadCacheImage } from "@/ui/image-tint";
+import { tintCanvas, loadCacheImage } from "@/ui/kit";
 import { memo, useEffect, useRef, type ComponentProps, type RefObject } from "react";
 import type { CSSProperties } from "react";
-import { Box } from "@/ui";
-import weaponAtlas from "../../public/assets/atlas/weapon.json";
+import { Box } from "@/ui/kit";
+import weaponAtlas from "../../../public/assets/atlas/weapon.json";
 
 export const FULL_CANVAS_SIZE = 160;
 const MIN_CANVAS_SIZE = 100;

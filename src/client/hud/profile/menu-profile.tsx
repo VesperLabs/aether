@@ -4,7 +4,7 @@ import { useAppContext } from "@/client/hud/app/context";
 import { MenuButton } from "@/client/hud/menu/menu-button";
 import { BigPortrait } from "@/client/hud/status/big-portrait";
 import { Flex, Text, Input, Box, MENU_MAX_WIDTH, Menu, MenuHeader } from "@/ui";
-import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
+import { arePropsEqualWithKeys } from "@/ui";
 
 const MenuPicker = ({
   children,

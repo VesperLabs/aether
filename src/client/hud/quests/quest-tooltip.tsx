@@ -14,7 +14,7 @@ import {
 import type { PlayerQuestStatus } from "@/rules/quests";
 import type { ClientGameSocket } from "@/network";
 import type { HudCharacter } from "@/client/hud/app/context";
-import { Tooltip } from "@/client/hud/tooltips/tooltip";
+import { Tooltip } from "@/ui";
 
 function getKeeperByQuestName(quest: string) {
   for (const key of Object.keys(keepers) as KeeperId[]) {

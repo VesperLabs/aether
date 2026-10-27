@@ -1,6 +1,6 @@
 import React from "react";
 import { Icon, KeyboardKey, Button } from "@/ui";
-import { isMobile } from "@/ui/is-mobile";
+import { isMobile } from "@/ui";
 
 interface MenuButtonProps {
   keyboardKey?: string;
