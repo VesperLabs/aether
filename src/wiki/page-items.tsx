@@ -1,8 +1,10 @@
-import { Box, Flex } from "@/ui";
-import { Slot, type WikiItem } from "./slot";
-import { itemList } from "@/content";
+import { Box, Flex, ItemSlot } from "@/ui";
+import { itemList, type BuiltItem } from "@/content";
 import { RowTitle } from "./row-title";
 import { Fragment } from "react";
+
+/** An item as the wiki lists it: the definition with its tier; stats may be `[min, max]` ranges. */
+type WikiItem = Partial<BuiltItem>;
 
 /** The item list as the wiki reads it: type, then rarity, then key. */
 const listedItems = itemList as unknown as Record<string, Record<string, Record<string, WikiItem>>>;
@@ -38,7 +40,7 @@ export function PageItems() {
                   {items?.map((item) => {
                     return (
                       <Box key={item?.key + item?.name}>
-                        <Slot item={{ ...item }} />
+                        <ItemSlot item={item as BuiltItem} location="wiki" />
                       </Box>
                     );
                   })}

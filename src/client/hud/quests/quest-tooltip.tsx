@@ -1,5 +1,5 @@
 import { Slot } from "@/client/hud/inventory/slot";
-import { SlotAmount } from "@/client/hud/inventory/slot-amount";
+import { SlotAmount } from "@/ui";
 import { useAppContext } from "@/client/hud/app/context";
 import { Box, Text, Flex, Divider, Icon, Button, STYLE_NON_EMPTY } from "@/ui";
 import {

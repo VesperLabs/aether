@@ -1,5 +1,5 @@
 import type { ComponentProps } from "react";
-import { Box } from "@/ui";
+import { Box } from "@/ui/kit";
 
 export const SlotAmount = (props: ComponentProps<typeof Box>) => (
   <Box
