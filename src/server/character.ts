@@ -16,6 +16,7 @@ import {
   applyExpireBuffs,
   applyRegen,
 } from "./character-buffs";
+import { addBuffBonuses } from "@/shared/rules/buffs";
 import { getPlayerQuests } from "@/shared/rules/quests";
 import { calculateNextMaxExp } from "@/shared/rules/stats";
 import type { ElementalDamages } from "@/shared/rules/combat";
@@ -52,33 +53,14 @@ export class ServerCharacter extends CharacterModel {
       "charClass",
     ];
     const allItems = Object.entries({ ...equipment, ...abilities });
-    const percentStats = Object.fromEntries(baseStatKeys.map((stat) => [stat, 0]));
-    const baseStats = {
-      ...Object.fromEntries(baseStatKeys.map((stat) => [stat, 0])),
-      ...this.baseStats,
-    };
+    const { baseStats, percentStats } = addBuffBonuses(
+      buffs,
+      { ...Object.fromEntries(baseStatKeys.map((stat) => [stat, 0])), ...this.baseStats },
+      Object.fromEntries(baseStatKeys.map((stat) => [stat, 0])),
+    );
     const activeItemSlots = allItems?.map(([slotKey, _]: [string, Item]) => slotKey);
     const activeSets: string[] = [];
     const setItems: Item[] = [];
-
-    buffs.forEach((buff: Buff) => {
-      if (buff.stats) {
-        Object.keys(buff.stats).forEach((key) => {
-          const amount = buff.stats[key];
-          if (baseStats[key]) {
-            baseStats[key] += amount;
-          }
-        });
-      }
-      if (buff.percentStats) {
-        Object.keys(buff.percentStats).forEach((key) => {
-          const amount = buff.stats[key];
-          if (percentStats[key]) {
-            percentStats[key] += amount;
-          }
-        });
-      }
-    });
 
     if (!this.hasAttackableWeapons("equipment")) {
       activeItemSlots.splice(activeItemSlots.indexOf("handLeft"), 1);

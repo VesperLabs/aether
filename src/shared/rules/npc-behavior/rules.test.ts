@@ -191,14 +191,14 @@ describe("wandering", () => {
     expect(at(0.9)).toEqual({ vx: 0, vy: 0 });
   });
 
-  it("ends conversations with players who walked off, skipping the entry after a removal", () => {
+  it("ends conversations with every player who walked off", () => {
     const players: Record<string, { x: number; y: number }> = {
       a: { x: 500, y: 0 },
       b: { x: 500, y: 0 },
       c: { x: 10, y: 0 },
     };
     const ended = decideTalkingEnded({ x: 0, y: 0 }, ["a", "b", "c"], (id) => players[id]);
-    expect(ended).toEqual(["a"]);
+    expect(ended).toEqual(["a", "b"]);
     expect(decideTalkingEnded({ x: 0, y: 0 }, ["gone"], () => undefined)).toEqual(["gone"]);
   });
 });

@@ -29,8 +29,8 @@ export function applyElementalDamage(eleDamages: ElementalDamages, victim: Serve
 function markHurt(attacker: ServerCharacter, victim: ServerCharacter) {
   victim.state.lastCombat = Date.now();
   victim.dispelBuffsByProperty("dispelInCombat");
-  /* Npc aggro when they are hit or hit a player */
-  victim.setLockedPlayerId(attacker?.id);
+  /* Npc aggro when they are hit or hit a player. NPCs look players up by socket id. */
+  victim.setLockedPlayerId(attacker?.socketId);
 }
 
 export function applySpellDamage(

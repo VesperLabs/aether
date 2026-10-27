@@ -35,25 +35,11 @@ export function decideWander({ time, walkSpeed }: WanderInput, rng: () => number
   }
 }
 
-/**
- * Which players the NPC stops talking to because they walked off. Mirrors the legacy loop, which
- * removed entries while iterating, so the entry after a removed one is skipped that tick.
- */
+/** Which players the NPC stops talking to because they walked off. */
 export function decideTalkingEnded(
   self: Body,
   talkingIds: string[],
   getPlayer: (id: string) => Body | null | undefined,
 ): string[] {
-  const remaining = [...talkingIds];
-  const ended: string[] = [];
-  for (const playerId of remaining) {
-    if (!checkInRange(self, getPlayer(playerId), NPC_TALK_RANGE)) {
-      const index = remaining.indexOf(playerId);
-      if (index !== -1) {
-        remaining.splice(index, 1);
-        ended.push(playerId);
-      }
-    }
-  }
-  return ended;
+  return talkingIds.filter((id) => !checkInRange(self, getPlayer(id), NPC_TALK_RANGE));
 }

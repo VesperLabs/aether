@@ -65,6 +65,16 @@ export function getAttackSpCost(visibleEquipment: HandEquipment | null | undefin
   return 1;
 }
 
+/**
+ * What an attack's ability costs on top of the weapon's SP cost (`getAttackSpCost`, charged
+ * separately). Missing costs are 0.
+ */
+export function getAbilityCosts(
+  stats: { mpCost?: number; hpCost?: number; spCost?: number } | null | undefined,
+) {
+  return { mp: stats?.mpCost || 0, hp: stats?.hpCost || 0, sp: stats?.spCost || 0 };
+}
+
 export interface AttackActionInput {
   /** What the character is doing now (kept when it can't animate an attack). */
   action: string;

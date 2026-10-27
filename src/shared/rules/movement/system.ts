@@ -8,17 +8,26 @@ export interface MovingBody {
   /** Velocity in pixels per second. */
   vx: number;
   vy: number;
-  /** Radius of the body. Walls treat it as a square of the same size, like Phaser Arcade did. */
-  bodySize: number;
 }
 
+/**
+ * Half the size of the square walls stop an NPC with. Fixed, whatever the NPC's profile scale,
+ * like the radius Phaser Arcade used.
+ */
+export const NPC_WALL_RADIUS = 8;
+
 /** Moves an entity along its velocity, stopped by walls and the map edge. */
-export function moveBodyThroughMap(map: TileMap, body: MovingBody, seconds: number) {
+export function moveBodyThroughMap(
+  map: TileMap,
+  body: MovingBody,
+  seconds: number,
+  radius = NPC_WALL_RADIUS,
+) {
   if (!body.vx && !body.vy) return;
   const result = moveBox(
     map.grid,
     { width: map.widthInPixels, height: map.heightInPixels },
-    { x: body.x, y: body.y, halfWidth: body.bodySize, halfHeight: body.bodySize },
+    { x: body.x, y: body.y, halfWidth: radius, halfHeight: radius },
     { x: body.vx, y: body.vy },
     seconds,
   );
