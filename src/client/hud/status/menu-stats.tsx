@@ -1,7 +1,7 @@
 import { ThemeUIStyleObject } from "theme-ui";
 import { Flex, Text, Grid, MENU_MAX_WIDTH, Menu, MenuHeader } from "@/ui";
 import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
-import { convertMsToS } from "@/ui/format-stats";
+import { convertMsToS } from "@/shared/rules/stats";
 import { memo } from "react";
 import type { CharacterMenuProps } from "@/client/hud/menu/menu-props";
 

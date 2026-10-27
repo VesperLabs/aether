@@ -114,7 +114,8 @@ shared/content  ←  shared/rules  ←  shared/network
                         ↑                 ↑
        server ──────────┴─────────────────┘   (+ socket.io, express, mongodb)
        client ──────────┴─────────────────┘   (+ phaser, react, ui)
-       wiki   → shared/content, ui
+       wiki   → shared/content, shared/rules, ui
+       ui     → shared/content, shared/rules   (used by client and wiki)
 ```
 
 - `shared/` never imports `server/`, `client/`, `wiki/` or `ui/`.

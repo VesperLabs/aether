@@ -1,7 +1,7 @@
 import { memo, useEffect, useState } from "react";
 import { Divider, Flex, Icon, Text } from "@/ui";
 import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
-import { formatStats } from "@/ui/format-stats";
+import { formatStats } from "@/shared/rules/stats";
 import { buffList } from "@/shared/content";
 import type { ThemeUIStyleObject } from "theme-ui";
 import type { ActiveBuff } from "@/shared/rules/buffs";
