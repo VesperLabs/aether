@@ -4,11 +4,9 @@ import type { Database } from "../persistence/database";
 import type { GameServer } from "../game-server";
 import { applyCalculatedStats } from "../character-stats";
 import { getFullCharacterState } from "@/shared/network/sync";
+import { paginate, parsePageQuery } from "./pagination";
 
-/**
- * Query string values as the client sent them. The pagination below relies on JavaScript's
- * coercion of these strings, so they stay loosely typed until the endpoints are fixed.
- */
+/** Query string values as the client sent them; `pagination.ts` turns them into numbers. */
 // oxlint-disable-next-line typescript/no-explicit-any
 type UnparsedQuery = Record<string, any>;
 
@@ -30,46 +28,20 @@ export function registerRoutes(app: Express, { aetherServer, db }: RouteDeps) {
     const world = aetherServer.world;
     const { npcs } = world ?? {};
 
-    // Pagination parameters
-    const { page = 1, pageSize = 10 } = req.query as UnparsedQuery;
-
-    // Filter and map keeper states as before
+    const { page, pageSize } = req.query as UnparsedQuery;
     const keeperStates = Object.values(npcs)
       ?.filter((n) => n?.kind === "keeper" && n?.profile?.race === "human")
       .map(getFullCharacterState);
-
-    // Calculate the start and end indices for the current page
-    const startIndex = (page - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-
-    // Get the current page of data
-    const currentPageData = keeperStates.slice(startIndex, endIndex);
-
-    // Calculate hasNextPage based on whether there is more data
-    const hasNextPage = endIndex < keeperStates.length;
-
-    // Create the pageInfo object
-    const pageInfo = {
-      nextPage: hasNextPage ? parseInt(page) + 1 : null,
-      hasNextPage,
-      pageSize: Number(pageSize),
-      currentPage: Number(page),
-      totalCount: keeperStates.length,
-    };
-
-    // Return the current page data along with pageInfo
-    res.json({ data: currentPageData, pageInfo });
+    res.json(paginate(keeperStates, page, pageSize, 10));
   });
 
   // Define an API route that supports pagination
   app.get("/players/all", async (req, res) => {
-    const { page = 1, pageSize = 20, sortBy = "updatedAt" } = req.query as UnparsedQuery;
+    const query = req.query as UnparsedQuery;
+    const { page, pageSize } = parsePageQuery(query.page, query.pageSize, 20);
+    const sortBy = query.sortBy ?? "updatedAt";
 
-    const players = await db.getAllUsers({
-      page: Number(page),
-      pageSize: Number(pageSize),
-      sortBy,
-    });
+    const players = await db.getAllUsers({ page, pageSize, sortBy });
 
     const ret = players.map((player) => {
       applyCalculatedStats(player, false);
@@ -93,14 +65,14 @@ export function registerRoutes(app: Express, { aetherServer, db }: RouteDeps) {
 
     // Calculate pagination information
     const hasNextPage = page * pageSize < totalCount;
-    const nextPage = hasNextPage ? parseInt(page) + 1 : null;
+    const nextPage = hasNextPage ? page + 1 : null;
 
     // Create the pageInfo object
     const pageInfo = {
       nextPage,
       hasNextPage,
-      pageSize: Number(pageSize),
-      currentPage: Number(page),
+      pageSize,
+      currentPage: page,
       totalCount,
     };
 

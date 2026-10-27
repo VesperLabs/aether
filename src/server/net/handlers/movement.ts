@@ -79,7 +79,7 @@ export function changeDirection(
 ) {
   const { world, socketId } = ctx;
   const player = world.players[socketId];
-  player.direction = direction as string;
+  if (direction) player.direction = direction;
   if (typeof lastAngle !== "undefined") player.state.lastAngle = lastAngle;
 }
 

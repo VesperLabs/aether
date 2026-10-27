@@ -38,7 +38,7 @@ export function grabLoot(
   });
   if (outcome === "ignore") return;
   /* Face the loot */
-  player.direction = direction as string;
+  if (direction) player.direction = direction;
   if (outcome === "inventoryFull") {
     return socket.emit("message", {
       type: "error",
