@@ -286,16 +286,14 @@
                   "@/server/**",
                   "@/client",
                   "@/client/**",
-                  "@/shared/rules",
-                  "@/shared/rules/**",
                   "@/shared/network",
                   "@/shared/network/**"
                 ],
-                "message": "wiki imports only shared/content and ui, and never server/ or client/."
+                "message": "wiki imports only shared/content, shared/rules and ui, never server/, client/ or network."
               },
               {
                 "regex": "^\\.{1,2}/(.*/)?(server|client)(/|$)",
-                "message": "wiki imports only shared/content and ui, and never server/ or client/."
+                "message": "wiki imports only shared/content, shared/rules and ui, never server/, client/ or network."
               },
               {
                 "group": ["@/shared/rules/*/**"],
@@ -313,6 +311,23 @@
           "error",
           {
             "patterns": [
+              {
+                "group": [
+                  "@/server",
+                  "@/server/**",
+                  "@/client",
+                  "@/client/**",
+                  "@/wiki",
+                  "@/wiki/**",
+                  "@/shared/network",
+                  "@/shared/network/**"
+                ],
+                "message": "ui is shared by client and wiki: it imports only shared/content, shared/rules and react."
+              },
+              {
+                "regex": "^\\.{1,2}/(.*/)?(server|client|wiki)(/|$)",
+                "message": "ui is shared by client and wiki: it imports only shared/content, shared/rules and react."
+              },
               {
                 "group": ["@/shared/rules/*/**"],
                 "message": "Import a rules feature only through its index.ts (ARCHITECTURE.md, Import rules)."

@@ -41,3 +41,11 @@ export type {
   MoveResult,
   ShopSlot,
 } from "./types";
+export { describeItem } from "./describe";
+export type {
+  DescribableItem,
+  DescribePlayer,
+  ItemDescription,
+  StatLine,
+  TriggerLine,
+} from "./describe";

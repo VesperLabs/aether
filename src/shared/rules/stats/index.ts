@@ -16,3 +16,5 @@ export type {
   StatsResult,
 } from "./rules";
 export { expForMobKill, subscribeStats } from "./system";
+export { convertMsToS, formatStats, msToHours } from "./format";
+export type { FormattedStat } from "./format";

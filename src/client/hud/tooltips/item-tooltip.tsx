@@ -11,7 +11,7 @@ import {
   type TriggerDefinition,
 } from "@/shared/content";
 import type { HudCharacter } from "@/client/hud/app/context";
-import { formatStats } from "@/ui/format-stats";
+import { formatStats } from "@/shared/rules/stats";
 import { CONSUMABLES_BASES, itemHasRequiredStats } from "@/shared/rules/inventory";
 import { TooltipLabel } from "./tooltip-label";
 import { TextDivider } from "@/client/hud/menu/text-divider";

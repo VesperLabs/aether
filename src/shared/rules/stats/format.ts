@@ -3,7 +3,7 @@ export function convertMsToS(s: number) {
 }
 
 type StatValue = number | string;
-type FormattedStat = StatValue | StatValue[];
+export type FormattedStat = StatValue | StatValue[];
 
 export const formatStats = (stats: Record<string, StatValue> = {}) =>
   Object.entries(stats).reduce<Record<string, FormattedStat>>((acc, [key, value]) => {
