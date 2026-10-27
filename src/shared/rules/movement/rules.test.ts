@@ -4,7 +4,10 @@ import {
   circleOverlapsBox,
   createPathfinder,
   findNextWaypoint,
+  moveBodyThroughMap,
   moveBox,
+  NPC_WALL_RADIUS,
+  readTileMap,
   shapesOverlap,
   type TiledMapJson,
 } from ".";
@@ -51,6 +54,14 @@ describe("moveBox", () => {
     const r = moveBox(grid, bounds, box(10, 10), { x: -500, y: -500 }, 1);
     expect(r.x).toBe(8);
     expect(r.y).toBe(8);
+  });
+});
+
+describe("moveBodyThroughMap", () => {
+  it("stops an NPC at the fixed wall radius, whatever its body size", () => {
+    const npc = { x: 40, y: 48, vx: 100, vy: 0, bodySize: 20 };
+    moveBodyThroughMap(readTileMap(map), npc, 1);
+    expect(npc.x).toBeCloseTo(64 - NPC_WALL_RADIUS);
   });
 });
 

@@ -22,7 +22,7 @@ export {
 export type { Bounds, Box, Circle, MoveResult, Shape } from "./collision";
 export { createPathfinder, findNextWaypoint } from "./pathfinding";
 export type { Pathfinder } from "./pathfinding";
-export { moveBodyFreely, moveBodyThroughMap } from "./system";
+export { NPC_WALL_RADIUS, moveBodyFreely, moveBodyThroughMap } from "./system";
 export type { MovingBody } from "./system";
 export {
   DOOR_USE_RANGE,
