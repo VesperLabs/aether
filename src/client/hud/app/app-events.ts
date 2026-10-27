@@ -76,3 +76,16 @@ export function bindWindowHandlers(handlers: WindowHandlers) {
     for (const [name, listener] of listeners) window.removeEventListener(name, listener);
   };
 }
+
+/**
+ * Wrappers that call whatever handler `ref` holds at call time, so handlers bound once
+ * still see the latest render's state.
+ */
+export function latestHandlers<T extends object>(ref: { current: T }): T {
+  const wrappers: Record<string, (...args: unknown[]) => unknown> = {};
+  for (const name of Object.keys(ref.current)) {
+    wrappers[name] = (...args) =>
+      (ref.current as Record<string, (...a: unknown[]) => unknown>)[name]?.(...args);
+  }
+  return wrappers as T;
+}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { theme } from "@/ui";
 import { MenuHud } from "@/client/hud/menu/menu-hud";
 import { ModalRespawn } from "@/client/hud/status/modal-respawn";
@@ -29,7 +29,13 @@ import {
   type KeeperView,
   type PartyInvite,
 } from "./context";
-import { bindSocketHandlers, bindWindowHandlers, type SocketHandlers } from "./app-events";
+import {
+  bindSocketHandlers,
+  bindWindowHandlers,
+  latestHandlers,
+  type SocketHandlers,
+  type WindowHandlers,
+} from "./app-events";
 import { createWindowHandlers } from "./window-handlers";
 import { createHeroSyncHandlers } from "./hero-sync";
 import { createItemEventHandlers } from "./item-events";
@@ -178,44 +184,54 @@ export function App({ socket, peer, debug, game }: AppProps) {
     }));
   };
 
+  const socketHandlers: SocketHandlers = {
+    connect: onConnect,
+    disconnect: onDisconnect,
+    heroInit: onHeroInit,
+    buffUpdate: onBuffUpdate,
+    playerUpdate: onPlayerUpdate,
+    lootGrabbed: onLootGrabbed,
+    keeperDataUpdate: onKeeperDataUpdate,
+    message: (message) => addMessage(message as ChatMessage), // called without one when there is nothing to say
+    playerJoin: onPlayerJoin,
+    remove: onPlayerLeave,
+    partyInvite: onPartyInvite,
+    partyUpdate: onPartyUpdate,
+    updateUserSetting: onUpdateUserSetting,
+  };
+  const windowHandlers: WindowHandlers = {
+    HERO_NEAR_NPC: onNearNpc,
+    HERO_CHAT_NPC: onHeroChatNpc,
+    UPDATE_HUD: onUpdateHud,
+    UPDATE_ROOM_PLAYERS: onUpdateRoomPlayers,
+    HERO_RESPAWN: onUpdateHud,
+    LOAD_ERROR: onLoadError,
+    GAME_LOADED: onGameLoaded,
+    HERO_START_COOLDOWN: onStartCooldown,
+    HERO_DROP_ITEM: onDropItem,
+    HERO_DOUBLE_CLICK_ITEM: onDoubleClickItem,
+  };
+  /* Handlers are bound once but read state, so the bound wrappers call this render's copies. */
+  const socketHandlersRef = useRef(socketHandlers);
+  const windowHandlersRef = useRef(windowHandlers);
+  useEffect(() => {
+    socketHandlersRef.current = socketHandlers;
+    windowHandlersRef.current = windowHandlers;
+  });
+
   useEffect(() => {
     // tell the server which peer we are
     peer.on("open", (peerId) => {
       socket.emit("peerInit", peerId);
     });
-    const unbindSocket = bindSocketHandlers(socket, {
-      connect: onConnect,
-      disconnect: onDisconnect,
-      heroInit: onHeroInit,
-      buffUpdate: onBuffUpdate,
-      playerUpdate: onPlayerUpdate,
-      lootGrabbed: onLootGrabbed,
-      keeperDataUpdate: onKeeperDataUpdate,
-      message: (message) => addMessage(message as ChatMessage), // called without one when there is nothing to say
-      playerJoin: onPlayerJoin,
-      remove: onPlayerLeave,
-      partyInvite: onPartyInvite,
-      partyUpdate: onPartyUpdate,
-      updateUserSetting: onUpdateUserSetting,
-    });
-    const unbindWindow = bindWindowHandlers({
-      HERO_NEAR_NPC: onNearNpc,
-      HERO_CHAT_NPC: onHeroChatNpc,
-      UPDATE_HUD: onUpdateHud,
-      UPDATE_ROOM_PLAYERS: onUpdateRoomPlayers,
-      HERO_RESPAWN: onUpdateHud,
-      LOAD_ERROR: onLoadError,
-      GAME_LOADED: onGameLoaded,
-      HERO_START_COOLDOWN: onStartCooldown,
-      HERO_DROP_ITEM: onDropItem,
-      HERO_DOUBLE_CLICK_ITEM: onDoubleClickItem,
-    });
+    const unbindSocket = bindSocketHandlers(socket, latestHandlers(socketHandlersRef));
+    const unbindWindow = bindWindowHandlers(latestHandlers(windowHandlersRef));
 
     return () => {
       unbindSocket();
       unbindWindow();
     };
-  }, []);
+  }, [peer, socket]);
 
   useViewportSizeEffect(() => {
     const windowHeight = window.innerHeight;
