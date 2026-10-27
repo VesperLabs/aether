@@ -93,7 +93,7 @@ export class ServerCharacter extends CharacterModel {
         }
 
         // if the item has a requirement and the character doesn't meet it, remove the item from the list
-        const percentStatMultiplier = percentStats[key] / 100 || 1;
+        const percentStatMultiplier = (percentStats[key] ?? 0) / 100;
         if (itemRequirement > baseStats[key] + Math.floor(baseStats[key] * percentStatMultiplier)) {
           activeItemSlots.splice(activeItemSlots.indexOf(item.slotKey), 1);
           continue;
