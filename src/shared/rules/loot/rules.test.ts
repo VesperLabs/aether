@@ -230,6 +230,19 @@ describe("map loot", () => {
     const spawns = planMapLootSpawns(list, [{ x: 2, y: 5, isPermanent: true }], () => 0, build);
     expect(spawns.map((s) => (s.item as { key: string }).key)).toEqual(["a"]);
   });
+  it("skips items that fail to build", () => {
+    const list = [
+      spot(1, [
+        { type: "weapon", rarity: "common", key: "missing", chance: 1 },
+        { type: "weapon", rarity: "common", key: "a", chance: 1 },
+      ]),
+      spot(2, [{ type: "weapon", rarity: "common", key: "missing", chance: 1 }]),
+    ];
+    const buildKnown = (type: string, rarity: string, key: string, amount?: number) =>
+      key === "missing" ? null : build(type, rarity, key, amount);
+    const spawns = planMapLootSpawns(list, [], () => 0, buildKnown);
+    expect(spawns.map((s) => [s.x, (s.item as { key: string }).key])).toEqual([[1, "a"]]);
+  });
   it("spawns nothing when no roll hits", () => {
     const list = [spot(1, [{ type: "weapon", rarity: "common", key: "a", chance: 10 }])];
     expect(planMapLootSpawns(list, [], () => 0.5, build)).toEqual([]);
