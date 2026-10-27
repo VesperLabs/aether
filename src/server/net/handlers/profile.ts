@@ -2,6 +2,7 @@ import { getFullCharacterState } from "@/shared/network/sync";
 import { skinTints, hairTints } from "@/shared/content";
 import type { ParsedCommand } from "@/shared/network";
 import type { CommandContext } from "@/server/net/command-context";
+import { isInRoom } from "@/server/player-room";
 
 export function updateProfile(ctx: CommandContext, args: ParsedCommand<"updateProfile">) {
   const { world, socketId, io } = ctx;
@@ -10,7 +11,7 @@ export function updateProfile(ctx: CommandContext, args: ParsedCommand<"updatePr
   const whiskersTextures = ["whiskers-0", "whiskers-1", "whiskers-2", "whiskers-3"];
   const genders = ["male", "female"];
   const player = world?.players?.[socketId];
-  if (!player) return;
+  if (!isInRoom(player)) return;
 
   const currentHairTextureIndex = hairTextures.indexOf(player?.profile?.hair?.texture);
   const currentFaceTextureIndex = faceTextures.indexOf(player?.profile?.face?.texture);

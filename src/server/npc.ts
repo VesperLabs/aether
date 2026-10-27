@@ -1,7 +1,8 @@
+import type { AbilitySlot } from "@/shared/rules/spells";
 import { ServerCharacter as Character, type CharacterArgs } from "./character";
 import type { ServerWorld } from "./server-world";
 import type { Player } from "./player";
-import type { Point } from "@/shared/rules/world";
+import type { Point, RoomData } from "@/shared/rules/world";
 import { createSpell } from "./spell-adapter";
 import { buildNpcBehaviorInput } from "./npc-behavior-adapter";
 import { buildEquipment, buildShop, type ItemRecipe } from "./npc-build";
@@ -15,15 +16,13 @@ import {
   type NpcDecision,
 } from "@/shared/rules/npc-behavior";
 import { canHitPlayer } from "@/shared/rules/spells";
-import { entitiesInRoom, getCharacterDirection } from "@/shared/rules/world";
+import { createTimers, entitiesInRoom, getCharacterDirection } from "@/shared/rules/world";
 import { findNextWaypoint, isSolidTile, worldToTileX, worldToTileY } from "@/shared/rules/movement";
 
 /** An NPC as the content tables define it, before it is placed in a world. */
 // Legacy: the keeper and nasty tables have different shapes; type them once they share a base.
 // oxlint-disable-next-line typescript/no-explicit-any
 export type NpcDefinition = Record<string, any>;
-
-const sleep = (delay: number) => new Promise((resolve) => setTimeout(resolve, delay));
 
 /** What an NPC is created from: a content definition placed in a room. */
 type NpcArgs = CharacterArgs & {
@@ -38,7 +37,7 @@ type NpcArgs = CharacterArgs & {
 /** What an NPC needs to cast a spell. */
 interface NpcCastRequest {
   ability: NpcAbility & { ilvl?: number };
-  abilitySlot: number | string;
+  abilitySlot: AbilitySlot;
   targetPlayer?: Player;
   castAngle: number;
 }
@@ -59,7 +58,12 @@ export class Npc extends Character {
   public drops: Array<Drop>;
   public talkingIds: Array<string>;
   public keeperData: KeeperData;
+  /** Windups and waits, run from `update` so they stop with the world. */
+  public timers = createTimers();
   declare name: string;
+  /** NPCs never leave their room, so unlike players these are always set. */
+  declare room: RoomData;
+  declare roomName: string;
   constructor(
     world: ServerWorld,
     { equipment = {}, abilities = {}, keeperData = {}, ...args }: NpcArgs,
@@ -147,6 +151,7 @@ export class Npc extends Character {
   update(time: number, delta: number) {
     // Destructure relevant properties from 'this'
     const { state, room } = this ?? {};
+    this.timers.advance(delta);
 
     // skip updates if no one is in the room
     if (!room || entitiesInRoom(this.world.players, room.name).length === 0) {
@@ -202,9 +207,9 @@ export class Npc extends Character {
           ? this.moveTowardPointPathed(this.startingCoords)
           : this.moveTowardPoint(this.startingCoords);
       case "waitAtSpawn":
-        setTimeout(() => {
+        this.timers.after(movement.faceDownAfterMs, () => {
           this.direction = "down";
-        }, movement.faceDownAfterMs);
+        });
         return this.standStill();
       case "talk":
         return this.checkTalking();
@@ -229,11 +234,11 @@ export class Npc extends Character {
   }
   doCast({ ability, abilitySlot, targetPlayer, castAngle }: NpcCastRequest) {
     /* Slot keys are numeric strings at runtime; the model types them as numbers. */
-    if (!this.canCastSpell(abilitySlot as number)) return;
+    if (!this.canCastSpell(abilitySlot)) return;
 
     const { world, room, id } = this ?? {};
     const spellName = ability?.base as string;
-    const slot = abilitySlot as number;
+    const slot = abilitySlot;
 
     this.dispelBuffsByProperty("dispelBeforeAttack");
 
@@ -249,15 +254,16 @@ export class Npc extends Character {
 
     world.io.to(room?.name).emit("npcCastSpell", { id, castAngle, abilitySlot });
   }
-  async intendCastSpell(action: Extract<NpcAction, { type: "cast" }>, targetPlayer: Player) {
+  intendCastSpell(action: Extract<NpcAction, { type: "cast" }>, targetPlayer: Player) {
     const { ability, abilitySlot } = action;
     this.state.isAiming = true;
-    await sleep(action.windupMs);
-    const castAngle = targetPlayer
-      ? Math.atan2(targetPlayer.y - this.y, targetPlayer.x - this.x)
-      : 0;
-    this.doCast({ targetPlayer, abilitySlot, ability, castAngle });
-    this.state.isAiming = false;
+    this.timers.after(action.windupMs, () => {
+      const castAngle = targetPlayer
+        ? Math.atan2(targetPlayer.y - this.y, targetPlayer.x - this.x)
+        : 0;
+      this.doCast({ targetPlayer, abilitySlot, ability, castAngle });
+      this.state.isAiming = false;
+    });
   }
   doAttack({ target, direction, castAngle }: NpcAttackRequest) {
     const { world, room, id, state } = this ?? {};
@@ -293,7 +299,7 @@ export class Npc extends Character {
 
     world.io.to(room?.name).emit("npcAttack", { id, count, direction, castAngle });
   }
-  async intendAttack(action: Extract<NpcAction, { type: "attack" }>, targetPlayer: Player) {
+  intendAttack(action: Extract<NpcAction, { type: "attack" }>, targetPlayer: Player) {
     this.direction = action.direction;
     this.state.isAiming = true;
 
@@ -305,14 +311,13 @@ export class Npc extends Character {
       y: targetPlayer.y,
     };
 
-    await sleep(action.windupMs);
-
-    if (this.hasRangedWeapon()) {
-      castAngle = Math.atan2(targetPlayer.y - this.y, targetPlayer.x - this.x);
-    }
-
-    this.doAttack({ target, direction, castAngle });
-    this.state.isAiming = false;
+    this.timers.after(action.windupMs, () => {
+      if (this.hasRangedWeapon()) {
+        castAngle = Math.atan2(targetPlayer.y - this.y, targetPlayer.x - this.x);
+      }
+      this.doAttack({ target, direction, castAngle });
+      this.state.isAiming = false;
+    });
   }
   moveTowardPoint(coords: Coordinate) {
     const walkSpeed = this.stats.walkSpeed;
@@ -352,7 +357,7 @@ export class Npc extends Character {
       if (index !== -1) this.talkingIds.splice(index, 1);
     }
   }
-  doHit(ids: Array<string>, abilitySlot?: number): void {
+  doHit(ids: Array<string>, abilitySlot?: AbilitySlot): void {
     const { world, room } = this ?? {};
     const roomName = room.name;
     const players = entitiesInRoom(this.world.players, roomName);

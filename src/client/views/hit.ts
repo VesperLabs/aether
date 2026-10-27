@@ -60,6 +60,6 @@ export class Hit extends Phaser.GameObjects.Container {
   }
   destroy() {
     if (this.scene) this.scene.events.off("update", this.update, this);
-    super.destroy(true);
+    super.destroy();
   }
 }

@@ -5,6 +5,8 @@ export type { CardinalDirection, Point } from "./geometry";
 export { entitiesInRoom, nearestTo } from "./rooms";
 export { createTickLoop } from "./tick-loop";
 export type { Frame, System, TickLoop } from "./tick-loop";
+export { createTimers } from "./timers";
+export type { Timers } from "./timers";
 export { addRoom, createRoom, createWorld } from "./world";
 export type { DoorData, RoomData, World } from "./world";
 export { DEFAULT_USER_SETTINGS } from "./user-settings";

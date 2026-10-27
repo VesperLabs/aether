@@ -14,6 +14,7 @@ import {
   startMoveTrack,
   type MoveTrack,
 } from "@/shared/rules/movement";
+import { isInRoom } from "@/server/player-room";
 
 /** The last accepted position of each player. Server moves (doors, respawn) restart it. */
 const moveTracks = new WeakMap<Player, MoveTrack>();
@@ -26,7 +27,7 @@ export function playerInput(ctx: CommandContext, input: ParsedCommand<"playerInp
   if (!world.players) return;
   const { x, y, vx, vy, d, direction, roomName } = input;
   const player = world.players[socketId];
-  if (!player) return;
+  if (!isInRoom(player)) return;
   if (player.state.isDead) return;
   if (player?.hasBuff("stun")) {
     player.vx = 0;
@@ -79,8 +80,8 @@ export function changeDirection(
 ) {
   const { world, socketId } = ctx;
   const player = world.players[socketId];
-  player.direction = direction as string;
-  if (typeof lastAngle !== "undefined") player.state.lastAngle = lastAngle;
+  if (direction) player.direction = direction;
+  if (typeof lastAngle === "number") player.state.lastAngle = lastAngle;
 }
 
 export function updateState(ctx: CommandContext, state: ParsedCommand<"updateState">) {

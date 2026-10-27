@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import type { FullCharacterWire } from "@/shared/network";
 import { BODY_SIZE, withCharacterModel } from "@/shared/rules/character";
+import type { RoomData } from "@/shared/rules/world";
 
 const BLANK_TEXTURE = "human-blank";
 
@@ -14,6 +15,9 @@ export type CharacterArgs = FullCharacterWire & { isHero?: boolean };
 export class Character extends withCharacterModel(Phaser.GameObjects.Container) {
   declare hitBox: Phaser.GameObjects.Sprite;
   declare body: Phaser.Physics.Arcade.Body;
+  /** The client only builds characters that are in the room it shows. */
+  declare roomName: string;
+  declare room: RoomData;
   constructor(scene: Phaser.Scene, args: CharacterArgs) {
     super(scene, args.x, args.y, []);
     this.initCharacter(args);
@@ -35,6 +39,6 @@ export class Character extends withCharacterModel(Phaser.GameObjects.Container) 
   destroy() {
     if (this.scene) this.scene.events.off("update", this.update, this);
     if (this.scene) this.scene.physics.world.disable(this);
-    super.destroy(true);
+    super.destroy();
   }
 }

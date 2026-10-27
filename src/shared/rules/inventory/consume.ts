@@ -27,7 +27,7 @@ export type ConsumeResult =
       mp?: number;
       /** Food gives these buffs (name -> level). */
       isFood: boolean;
-      buffs?: Record<string, any>;
+      buffs: Record<string, any>;
     }
   | { consumed: false };
 
@@ -84,6 +84,6 @@ export function consumeItem(
     hp: used.effects?.hp,
     mp: used.effects?.mp,
     isFood: used.base === "food",
-    buffs: used.buffs,
+    buffs: used.buffs ?? {},
   };
 }

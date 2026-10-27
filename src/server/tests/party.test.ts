@@ -27,12 +27,13 @@ function once<T = Anything>(socket: Socket, event: string, timeoutMs = 5000): Pr
   });
 }
 
-async function login(charClass = "warrior") {
+async function login(charClass = "warrior", email?: string) {
   const socket = connect(url, { transports: ["websocket"], forceNew: true });
   sockets.push(socket);
   await once(socket, "connect");
   const heroInit = once(socket, "heroInit");
-  socket.emit("demoLogin", { charClass });
+  if (email) socket.emit("login", { email, password: "x" });
+  else socket.emit("demoLogin", { charClass });
   await heroInit;
   return socket;
 }
@@ -135,5 +136,23 @@ describe("party", () => {
     expect(update.message).toContain("has left the party");
     expect(update.party.members).toEqual([expect.objectContaining({ id: b.id, isLeader: true })]);
     expect(await ping(b)).toBe(true);
+  });
+
+  it("logging in again elsewhere removes the old login from its party", async () => {
+    const a = await login("warrior", "kick@test.com");
+    const b = await login("mage");
+    const aJoined = once(a, "partyUpdate");
+    const invite = once(b, "partyInvite");
+    a.emit("inviteToParty", b.id);
+    await aJoined;
+    const { partyId } = await invite;
+    const joined = once(b, "partyUpdate");
+    b.emit("partyAccept", partyId);
+    await joined;
+    const bUpdate = once(b, "partyUpdate");
+    await login("warrior", "kick@test.com");
+    const update = await bUpdate;
+    expect(update.message).toContain("has left the party");
+    expect(update.party.members).toEqual([expect.objectContaining({ id: b.id, isLeader: true })]);
   });
 });

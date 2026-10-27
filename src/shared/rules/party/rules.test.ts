@@ -49,7 +49,7 @@ describe("inviteToParty", () => {
         id: "p1",
         socketRoom: "party:p1",
         members: [{ id: "a", isLeader: true, roomName: "town" }],
-        invitees: [{ id: "b" }],
+        invitees: [{ id: "b", inviterId: "a" }],
       },
     ]);
     expect(effects.map((e) => e.type)).toEqual([
@@ -81,10 +81,10 @@ describe("inviteToParty", () => {
       newPartyId: "other",
     });
     expect(twice.state.parties).toHaveLength(1);
-    expect(getParty(twice.state, "p1")?.invitees).toEqual([{ id: "c" }]);
+    expect(getParty(twice.state, "p1")?.invitees).toEqual([{ id: "c", inviterId: "a" }]);
   });
 
-  it("rejects an unknown or already partied invitee (after creating the party, as before)", () => {
+  it("rejects an unknown or already partied invitee without creating a party", () => {
     const missing = inviteToParty(createPartyState(), {
       inviter: player("a"),
       inviterId: "a",
@@ -94,7 +94,7 @@ describe("inviteToParty", () => {
       type: "error",
       message: "Invalid player to invite.",
     });
-    expect(missing.state.parties).toHaveLength(1);
+    expect(missing.state.parties).toHaveLength(0);
 
     const busy = inviteToParty(createPartyState(), {
       inviter: player("a"),
@@ -106,6 +106,7 @@ describe("inviteToParty", () => {
       type: "error",
       message: "Player is already in a party.",
     });
+    expect(busy.state.parties).toHaveLength(0);
   });
 
   it("treats inviting yourself as already in a party", () => {
@@ -115,7 +116,9 @@ describe("inviteToParty", () => {
       invitee: player("a"),
       newPartyId: "p1",
     });
-    expect(effects.at(-1)).toMatchObject({ type: "error" });
+    expect(effects).toEqual([
+      { type: "error", socketId: "a", message: "Player is already in a party." },
+    ]);
   });
 
   it("does not mutate its input", () => {
@@ -213,6 +216,42 @@ describe("leaveParty", () => {
       },
       { type: "setPartyId", playerId: "a", partyId: null },
     ]);
+  });
+
+  it("withdraws the invites the leaver sent", () => {
+    let state = inviteToParty(twoMemberParty(), {
+      inviter: player("a", { partyId: "p1" }),
+      inviterId: "a",
+      invitee: player("c"),
+      newPartyId: "unused",
+    }).state;
+    state = leaveParty(state, { player: player("a", { partyId: "p1" }), playerId: "a" }).state;
+    expect(getParty(state, "p1")?.invitees).toEqual([]);
+    const accept = acceptPartyInvite(state, { player: player("c"), playerId: "c", partyId: "p1" });
+    expect(accept.effects).toEqual([
+      { type: "error", socketId: "c", message: "You were not invited to this party." },
+    ]);
+  });
+
+  it("refuses an invite to a party that has since disbanded", () => {
+    let state = inviteToParty(createPartyState(), {
+      inviter: player("a"),
+      inviterId: "a",
+      invitee: player("b"),
+      newPartyId: "p1",
+    }).state;
+    state = leaveParty(state, { player: player("a", { partyId: "p1" }), playerId: "a" }).state;
+    expect(state.parties).toEqual([]);
+    const accept = acceptPartyInvite(state, { player: player("b"), playerId: "b", partyId: "p1" });
+    expect(accept.effects[0]).toMatchObject({ payload: { message: "Could not find party." } });
+  });
+
+  it("names a leaver without a user name", () => {
+    const { effects } = leaveParty(twoMemberParty(), {
+      player: player("b", { partyId: "p1", userName: undefined }),
+      playerId: "b",
+    });
+    expect(effects[1]).toMatchObject({ payload: { message: "A player has left the party." } });
   });
 
   it("keeps the leader when a regular member leaves", () => {

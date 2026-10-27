@@ -25,7 +25,8 @@ export function toPartyPlayer(player?: Player): PartyPlayer | undefined {
     id: player.id,
     userName: player.profile?.userName,
     partyId: player.partyId,
-    roomName: player.roomName,
+    // Between rooms the member matches no room, as null did before.
+    roomName: player.roomName ?? "",
   };
 }
 
@@ -97,19 +98,20 @@ export function legacyAcceptPartyInvite(world: ServerWorld, socket: Socket, part
   );
 }
 
-export function legacyLeaveParty(world: ServerWorld, socket: Socket) {
+/** The player on `socketId` leaves their party. `socket` is theirs when it is the acting one. */
+export function legacyLeaveParty(world: ServerWorld, socketId: string, socket?: Socket) {
   run(
     world,
     leaveParty(world.partyState, {
-      player: toPartyPlayer(world.players?.[socket.id]),
-      playerId: socket.id,
+      player: toPartyPlayer(world.players?.[socketId]),
+      playerId: socketId,
     }),
-    socket,
+    socket?.id === socketId ? socket : undefined,
   );
 }
 
 export function legacyUpdateMemberRoom(world: ServerWorld, player: Player) {
-  if (!player.partyId) return;
+  if (!player.partyId || !player.roomName) return;
   run(
     world,
     updateMemberRoom(world.partyState, {

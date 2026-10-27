@@ -1,3 +1,4 @@
+import type { AbilitySlot } from "@/shared/rules/spells";
 import type { ServerWorld } from "./server-world";
 import { CharacterModel } from "@/shared/rules/character";
 import { ItemBuilder } from "@/shared/content";
@@ -16,6 +17,7 @@ import {
   applyExpireBuffs,
   applyRegen,
 } from "./character-buffs";
+import { addBuffBonuses } from "@/shared/rules/buffs";
 import { getPlayerQuests } from "@/shared/rules/quests";
 import { calculateNextMaxExp } from "@/shared/rules/stats";
 import type { ElementalDamages } from "@/shared/rules/combat";
@@ -52,33 +54,14 @@ export class ServerCharacter extends CharacterModel {
       "charClass",
     ];
     const allItems = Object.entries({ ...equipment, ...abilities });
-    const percentStats = Object.fromEntries(baseStatKeys.map((stat) => [stat, 0]));
-    const baseStats = {
-      ...Object.fromEntries(baseStatKeys.map((stat) => [stat, 0])),
-      ...this.baseStats,
-    };
+    const { baseStats, percentStats } = addBuffBonuses(
+      buffs,
+      { ...Object.fromEntries(baseStatKeys.map((stat) => [stat, 0])), ...this.baseStats },
+      Object.fromEntries(baseStatKeys.map((stat) => [stat, 0])),
+    );
     const activeItemSlots = allItems?.map(([slotKey, _]: [string, Item]) => slotKey);
     const activeSets: string[] = [];
     const setItems: Item[] = [];
-
-    buffs.forEach((buff: Buff) => {
-      if (buff.stats) {
-        Object.keys(buff.stats).forEach((key) => {
-          const amount = buff.stats[key];
-          if (baseStats[key]) {
-            baseStats[key] += amount;
-          }
-        });
-      }
-      if (buff.percentStats) {
-        Object.keys(buff.percentStats).forEach((key) => {
-          const amount = buff.stats[key];
-          if (percentStats[key]) {
-            percentStats[key] += amount;
-          }
-        });
-      }
-    });
 
     if (!this.hasAttackableWeapons("equipment")) {
       activeItemSlots.splice(activeItemSlots.indexOf("handLeft"), 1);
@@ -111,7 +94,7 @@ export class ServerCharacter extends CharacterModel {
         }
 
         // if the item has a requirement and the character doesn't meet it, remove the item from the list
-        const percentStatMultiplier = percentStats[key] / 100 || 1;
+        const percentStatMultiplier = (percentStats[key] ?? 0) / 100;
         if (itemRequirement > baseStats[key] + Math.floor(baseStats[key] * percentStatMultiplier)) {
           activeItemSlots.splice(activeItemSlots.indexOf(item.slotKey), 1);
           continue;
@@ -200,7 +183,7 @@ export class ServerCharacter extends CharacterModel {
   ): Array<Hit> {
     return applyAttackDamage(this, victim, abilityDetails);
   }
-  calculateDamage(victim: ServerCharacter, abilitySlot?: number): Array<Hit> {
+  calculateDamage(victim: ServerCharacter, abilitySlot?: AbilitySlot): Array<Hit> {
     return applyDamage(this, victim, abilitySlot);
   }
   doRegen() {
@@ -255,7 +238,7 @@ export class ServerCharacter extends CharacterModel {
   expireBuffs(forceExpire = false) {
     applyExpireBuffs(this, forceExpire);
   }
-  doHit(ids: Array<string>, abilitySlot?: number): void {
+  doHit(ids: Array<string>, abilitySlot?: AbilitySlot): void {
     //placeholder
   }
   setLockedPlayerId(id: string | null | undefined) {

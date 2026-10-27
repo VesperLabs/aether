@@ -7,7 +7,6 @@ import { DEFAULT_SERVER_FPS } from "@/shared/network";
 import type { ClientToServerEvents, GameIo, ServerToClientEvents } from "@/shared/network";
 import { createServerWorld } from "./game-world";
 import { listenForConnections } from "./net/connection";
-import { shouldPause } from "./net/world-pause";
 import { serverSystems } from "./tick";
 
 const serverFps =
@@ -38,9 +37,7 @@ export class GameServer {
     this.world = createServerWorld({ io: this.io, db });
     this.world.loop = createTickLoop(this.world, serverSystems, { fps: serverFps });
     listenForConnections(this.world);
-    /* Nobody is connected yet, so start paused. */
-    this.world.loop.start();
-    shouldPause(this.world);
+    /* Nobody is connected yet, so the loop stays paused until the first player joins. */
   }
   /** Stops the tick loop and closes the socket server. */
   close() {

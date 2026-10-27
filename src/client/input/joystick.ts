@@ -13,6 +13,11 @@ import type {
 } from "./joystick-types";
 export type { Joystick, JoystickSettings } from "./joystick-types";
 
+/** Phaser's legacy class builder, which Phaser 4's types leave out. */
+type LegacyClass = new <T extends new (...args: never[]) => unknown>(definition: object) => T;
+const PhaserClass = (Phaser as unknown as { Class: LegacyClass }).Class;
+const { Transform } = Phaser.GameObjects.Components as unknown as { Transform: object };
+
 /**
  * @classdesc
  * [description]
@@ -24,12 +29,12 @@ export type { Joystick, JoystickSettings } from "./joystick-types";
  * @param {Phaser.Scene} scene - [description]
  * @param {object} [settings] - [description]
  */
-// Phaser.Class is the legacy class builder and has no types.
-// oxlint-disable-next-line typescript/no-explicit-any
-const JoystickClass = new (Phaser as any).Class({
+const JoystickClass = new PhaserClass<
+  new (scene: Phaser.Scene, settings: JoystickSettings) => Joystick
+>({
   Extends: Phaser.GameObjects.GameObject,
 
-  Mixins: [(Phaser.GameObjects.Components as any).Transform],
+  Mixins: [Transform],
 
   initialize: function Joystick(this: Joystick, scene: Phaser.Scene, settings: JoystickSettings) {
     Phaser.GameObjects.GameObject.call(this, scene, "Joystick");
@@ -266,7 +271,9 @@ const JoystickClass = new (Phaser as any).Class({
  * @param {Phaser.Scene} scene - A reference to the Scene that has installed this plugin.
  * @param {Phaser.Plugins.PluginManager} pluginManager - A reference to the Plugin Manager.
  */
-export const VJoyPlugin = new (Phaser as any).Class({
+export const VJoyPlugin = new PhaserClass<
+  new (scene: Phaser.Scene, pluginManager: JoystickPluginManager) => VJoyPluginInstance
+>({
   Extends: Phaser.Plugins.ScenePlugin,
 
   initialize: function VJoyPlugin(

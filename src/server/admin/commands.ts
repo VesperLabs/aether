@@ -3,6 +3,7 @@ import type { CommandContext } from "@/server/net/command-context";
 import { getFullCharacterState } from "@/shared/network/sync";
 import { getRoomState } from "@/server/net/room-sync";
 import { spawnLoot } from "../loot-adapter";
+import { isInRoom } from "@/server/player-room";
 
 /** Cheat and debug chat commands (`/drop`, `/ding`...) only work when the server runs with DEBUG=true. */
 export function isAdminEnabled(): boolean {
@@ -26,6 +27,7 @@ export function runAdminCommand(ctx: CommandContext, rawMessage: string): boolea
 function execute(ctx: CommandContext, rawMessage: string, command: string[]) {
   const { world, socket, io } = ctx;
   const player = world?.players?.[ctx.socketId];
+  if (!isInRoom(player)) return;
   const args = { message: rawMessage };
   const cmdErr = (message: string) => socket.emit("message", { type: "error", message });
 

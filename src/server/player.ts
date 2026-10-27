@@ -1,6 +1,7 @@
+import type { AbilitySlot } from "@/shared/rules/spells";
 import type { ServerWorld } from "./server-world";
 import { ServerCharacter, type CharacterArgs } from "./character";
-import { expAfterDeath } from "@/shared/rules/combat";
+import { expAfterDeath, getAbilityCosts } from "@/shared/rules/combat";
 import { canHitNpc, canHitPlayer } from "@/shared/rules/spells";
 import type { Npc } from "./npc";
 import { createSpell } from "./spell-adapter";
@@ -47,12 +48,12 @@ export interface PlayerAttackRequest {
   count: number;
   direction: string;
   castAngle?: number;
-  abilitySlot?: number;
+  abilitySlot?: AbilitySlot;
 }
 
 /** A client's spell request, after the transport has validated it. */
 export interface PlayerCastRequest {
-  abilitySlot: number;
+  abilitySlot: AbilitySlot;
   castAngle?: number;
 }
 
@@ -87,6 +88,8 @@ export class Player extends ServerCharacter {
 
     if (this?.hasBuff("stun")) return;
     if (this?.state?.isDead) return;
+    const { roomName } = this;
+    if (!roomName) return;
 
     /* Serverside attack may not actually be ready. */
     const { percentageRemaining } = this.checkAttackReady();
@@ -94,15 +97,16 @@ export class Player extends ServerCharacter {
 
     const { stats, ...spellDetails } = this.getAttackActionName({ count, abilitySlot });
     const spCost = this.getAttackSpCost(count);
-    this.modifyStatIfCostExists("mp", stats?.mpCost || 0);
-    this.modifyStatIfCostExists("hp", stats?.hpCost || 0);
-    this.modifyStatIfCostExists("sp", spCost + stats?.spCost || 0);
+    const costs = getAbilityCosts(stats);
+    this.modifyStatIfCostExists("mp", costs.mp);
+    this.modifyStatIfCostExists("hp", costs.hp);
+    this.modifyStatIfCostExists("sp", costs.sp);
 
     this.direction = direction;
 
     this.modifyStat("sp", -spCost);
 
-    world.io.to(this?.roomName).emit("modifyPlayerStat", {
+    world.io.to(roomName).emit("modifyPlayerStat", {
       socketId,
       type: "sp",
       amount: -spCost,
@@ -129,7 +133,8 @@ export class Player extends ServerCharacter {
   modifyStatIfCostExists(statType: string, cost: number) {
     if (cost > 0) {
       this.modifyStat(statType, -cost);
-      this.world.io.to(this?.roomName).emit("modifyPlayerStat", {
+      if (!this.roomName) return;
+      this.world.io.to(this.roomName).emit("modifyPlayerStat", {
         socketId: this.socketId,
         type: statType,
         amount: -cost,
@@ -236,7 +241,7 @@ export class Player extends ServerCharacter {
   }
   checkBubbleMessage() {
     const now = Date.now();
-    if (now - this.state.lastBubbleMessage > 5000) {
+    if (now - (this.state.lastBubbleMessage ?? Number.NaN) > 5000) {
       this.state.bubbleMessage = null;
     }
   }
@@ -247,9 +252,11 @@ export class Player extends ServerCharacter {
     this.checkBubbleMessage();
   }
 
-  doHit(ids: Array<string>, abilitySlot?: number): void {
+  doHit(ids: Array<string>, abilitySlot?: AbilitySlot): void {
     const { world } = this ?? {};
     if (!this || this?.state?.isDead) return;
+    const { roomName } = this;
+    if (!roomName) return;
 
     const { allowedTargets } = this.getAbilityDetails(abilitySlot);
 
@@ -258,8 +265,8 @@ export class Player extends ServerCharacter {
     const playerIdsToUpdate: string[] = [];
     const playerIdsThatLeveled: string[] = [];
 
-    const npcs = entitiesInRoom(world.npcs, this.roomName);
-    const players = entitiesInRoom(world.players, this.roomName);
+    const npcs = entitiesInRoom(world.npcs, roomName);
+    const players = entitiesInRoom(world.players, roomName);
 
     for (const npc of npcs) {
       if (!ids.includes(npc.id)) continue;
@@ -305,7 +312,7 @@ export class Player extends ServerCharacter {
       const recipients: Player[] = sharedRecipientIds(world.partyState, {
         partyId: this?.partyId,
         id: this?.id,
-        roomName: this?.roomName,
+        roomName: roomName,
       })
         .map((id) => world?.players?.[id])
         .filter(Boolean);
@@ -321,7 +328,7 @@ export class Player extends ServerCharacter {
         mobId: npc.id,
         mobName: npc.name,
         mobLevel: npc.stats.level,
-        roomName: this.roomName,
+        roomName: roomName,
         x: npc.x,
         y: npc.y,
       }));
@@ -344,13 +351,13 @@ export class Player extends ServerCharacter {
     }
 
     if (playerIdsToUpdate.length > 0) {
-      const roomState = getRoomState(world, this.roomName);
-      world.io.to(this.roomName).emit("buffUpdate", {
+      const roomState = getRoomState(world, roomName);
+      world.io.to(roomName).emit("buffUpdate", {
         players: roomState.players.filter((player) => playerIdsToUpdate.includes(player.id)),
         playerIdsThatLeveled,
       });
     }
 
-    world.io.to(this.roomName).emit("assignDamage", hitList);
+    world.io.to(roomName).emit("assignDamage", hitList);
   }
 }

@@ -53,7 +53,9 @@ export function createSpriteLayers(player: Player) {
       : new Sprite(scene, -13, -9, BLANK_TEXTURE),
   );
   player.shadow = scene.add.existing(new Sprite(...defaults));
-  player.bubble = scene.add.existing(new Bubble(scene, player?.headY, undefined));
+  player.bubble = scene.add.existing(
+    new Bubble(scene, player?.headY, player.state?.bubbleMessage ?? undefined),
+  );
   player.crosshair = scene.add.existing(
     new Crosshair(scene, 0, player.bodyOffsetY, "icons", "crosshair", player, 40),
   );

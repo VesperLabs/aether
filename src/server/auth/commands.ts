@@ -69,7 +69,7 @@ export async function login(ctx: CommandContext, { email, password }: ParsedComm
     if (player?.email === user?.email) {
       const player = world.players?.[sId];
       console.log(`🔌 ${player?.profile?.userName} disconnected`);
-      legacyLeaveParty(world, socket);
+      legacyLeaveParty(world, sId);
       removePlayer(world, sId);
 
       io?.sockets?.sockets?.get?.(sId)?.disconnect?.(true);

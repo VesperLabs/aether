@@ -146,18 +146,13 @@ function createStaticAnims(scene: SceneMain) {
     "left-stand",
     "right-stand",
   ];
-  // An empty start (not a number) makes Phaser generate the single frame named by the prefix.
-  const frameProps = { zeroPad: 0, start: "" as unknown as number };
   for (const asset of assetList) {
     /* Skip non animated atlases */
     if (checkSkip(asset)) continue;
     for (const animKey of SINGLE_FRAME_ANIM_KEYS) {
       createAnimIfMissing(scene, {
         key: asset.texture + "-" + animKey,
-        frames: scene.anims.generateFrameNames(asset.texture, {
-          prefix: animKey,
-          ...frameProps,
-        }),
+        frames: [{ key: asset.texture, frame: animKey }],
       });
     }
   }

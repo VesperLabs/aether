@@ -172,9 +172,11 @@ describe("moveItem between places", () => {
     expect(next.abilities["1"]?.id).toBe("hp1");
   });
 
-  it("does nothing for equipment to abilities", () => {
+  it("refuses equipment to abilities so nothing is saved", () => {
     const s = state({ equipment: { armor: robe } });
-    expect(moved(moveItem(s, { from: eq("armor"), to: abil("1") }, context()))).toEqual(s);
+    expect(moveItem(s, { from: eq("armor"), to: abil("1") }, context())).toEqual({
+      moved: false,
+    });
   });
 });
 
@@ -192,6 +194,19 @@ describe("moveItem and bags", () => {
       moved: false,
       error: "Bag is full.",
     });
+  });
+
+  it("swaps with bag slot 0 instead of picking an open slot", () => {
+    const s = state({ inventory: [bag([sword, null]), robe] });
+    const next = moved(moveItem(s, { from: inv(1), to: inBag(0) }, context()));
+    expect(next.inventory[0]?.items?.[0]?.id).toBe("robe1");
+    expect(next.inventory[1]?.id).toBe("sword1");
+  });
+
+  it("fills an empty bag up to its space", () => {
+    const s = state({ inventory: [{ ...bag([]), space: 4 }, robe] });
+    const next = moved(moveItem(s, { from: inv(1), to: inBag(undefined) }, context()));
+    expect(next.inventory[0]?.items?.[0]?.id).toBe("robe1");
   });
 
   it("does not put bags in bags", () => {

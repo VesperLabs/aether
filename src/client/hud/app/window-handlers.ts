@@ -15,6 +15,8 @@ interface WindowHandlerDeps {
   setKeeper: SetState<KeeperView | undefined>;
   setHero: SetState<HudCharacter | null>;
   setPlayers: SetState<HudCharacter[]>;
+  /** Whether the keeper tab is open (from the current render). */
+  tabKeeper: boolean;
   setTabKeeper: SetState<boolean>;
   setSign: SetState<Sign | null>;
   setShowButtonChat: SetState<boolean>;
@@ -31,6 +33,7 @@ export function createWindowHandlers({
   setKeeper,
   setHero,
   setPlayers,
+  tabKeeper,
   setTabKeeper,
   setSign,
   setShowButtonChat,
@@ -71,11 +74,9 @@ export function createWindowHandlers({
     }
 
     if (target.kind === "keeper") {
-      return setTabKeeper((prev) => {
-        if (prev) return false; //already talking
-        socket.emit("chatNpc", { npcId: hero?.state?.targetNpcId });
-        return false;
-      });
+      // Talking again closes the tab; otherwise the server opens it when it answers.
+      if (!tabKeeper) socket.emit("chatNpc", { npcId: hero?.state?.targetNpcId });
+      return setTabKeeper(false);
     }
 
     if (target.kind === "sign") {

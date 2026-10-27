@@ -9,7 +9,7 @@ import {
   type ActiveBuff,
   type RegenTimers,
 } from "@/shared/rules/buffs";
-import type { CharacterState } from "./character-state";
+import type { CharacterState } from "@/shared/rules/character";
 
 /** What a buff needs to know about the character that cast it. */
 export interface BuffRequest {

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   checkAttackReady,
   expAfterDeath,
+  getAbilityCosts,
   getAttackActionName,
   getAttackSpCost,
   getCooldown,
@@ -143,5 +144,13 @@ describe("death", () => {
   it("respawns once the respawn time has passed", () => {
     expect(isRespawnDue({ deadTime: 0, respawnTime: 10000, now: 9999 })).toBe(false);
     expect(isRespawnDue({ deadTime: 0, respawnTime: 10000, now: 10000 })).toBe(true);
+  });
+});
+
+describe("getAbilityCosts", () => {
+  it("treats missing costs as 0 instead of NaN", () => {
+    expect(getAbilityCosts(undefined)).toEqual({ mp: 0, hp: 0, sp: 0 });
+    expect(getAbilityCosts({ mpCost: 3 })).toEqual({ mp: 3, hp: 0, sp: 0 });
+    expect(getAbilityCosts({ spCost: 2 }).sp).toBe(2);
   });
 });

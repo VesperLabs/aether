@@ -234,8 +234,9 @@ export function planMapLootSpawns(
       if (randomInt(rng, 1, mapItem.chance) === 1) {
         // decide how many to spawn randomly.
         const amount = randomInt(rng, mapItem.amount?.[0] as number, mapItem.amount?.[1] as number);
-        // A null here (unknown item) is not guarded, like before.
-        runners.push(buildItem(mapItem.type, mapItem.rarity, mapItem.key, amount) as LootItem);
+        const built = buildItem(mapItem.type, mapItem.rarity, mapItem.key, amount);
+        // An unknown item builds to null and is skipped.
+        if (built) runners.push(built);
       }
     }
     const item = pickPreferredDrop(runners);

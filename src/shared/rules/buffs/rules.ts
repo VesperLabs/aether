@@ -97,24 +97,15 @@ export interface ExpireBuffsResult {
 /**
  * Removes buffs that timed out (a duration of -1 or less never times out) or were flagged expired.
  * `force` removes them all.
- *
- * Known quirk, kept on purpose: when two neighbouring buffs both expire in the same call only
- * the first is removed; the second goes on the next call.
  */
 export function expireBuffs(buffs: ActiveBuff[], now: number, force = false): ExpireBuffsResult {
   if (force && buffs?.length > 0) return { buffs: [], changed: true };
-  const remaining = [...buffs];
-  let changed = false;
-  for (let i = 0; i < remaining.length; i++) {
-    const buff = remaining[i];
+  const remaining = buffs.filter((buff) => {
     const limitedBuff = (buff.duration as number) > 0;
     const isTimedOut = now - (buff.spawnTime as number) > (buff.duration as number);
-    if (buff?.isExpired || (isTimedOut && limitedBuff)) {
-      changed = true;
-      remaining.splice(remaining.indexOf(buff), 1);
-    }
-  }
-  return { buffs: remaining, changed };
+    return !(buff?.isExpired || (isTimedOut && limitedBuff));
+  });
+  return { buffs: remaining, changed: remaining.length !== buffs.length };
 }
 
 export interface RestingResult {
@@ -133,4 +124,26 @@ export function checkResting(
   const isPoisoned = hasBuff(buffs, "poison");
   const shouldAddRest = isOutOfCombat(lastCombat, now) && !isResting && !isPoisoned;
   return { shouldAddRest, isResting: shouldAddRest ? true : isResting };
+}
+
+/**
+ * Adds the buffs' flat and percent bonuses to the totals used for item requirements. Flat bonuses
+ * only apply to stats that are already non-zero, like before.
+ */
+export function addBuffBonuses(
+  buffs: ActiveBuff[],
+  baseStats: Record<string, any>,
+  percentStats: Record<string, number>,
+) {
+  const base = { ...baseStats };
+  const percent = { ...percentStats };
+  for (const buff of buffs) {
+    for (const [key, amount] of Object.entries(buff.stats ?? {})) {
+      if (base[key]) base[key] += amount;
+    }
+    for (const [key, amount] of Object.entries(buff.percentStats ?? {})) {
+      if (key in percent && amount) percent[key] += amount;
+    }
+  }
+  return { baseStats: base, percentStats: percent };
 }
