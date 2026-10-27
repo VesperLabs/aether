@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  addBuffBonuses,
   applyBuff,
   checkResting,
   createBuff,
@@ -186,5 +187,15 @@ describe("runRegen", () => {
   it("doesn't change its input", () => {
     run({ buffs: [{ name: "rest" }] });
     expect(stats.hp).toBe(5);
+  });
+});
+
+describe("addBuffBonuses", () => {
+  it("adds flat and percent bonuses, including a buff with only percentStats", () => {
+    const buffs: ActiveBuff[] = [{ stats: { strength: 2 } }, { percentStats: { strength: 10 } }];
+    expect(addBuffBonuses(buffs, { strength: 5 }, { strength: 0 })).toEqual({
+      baseStats: { strength: 7 },
+      percentStats: { strength: 10 },
+    });
   });
 });

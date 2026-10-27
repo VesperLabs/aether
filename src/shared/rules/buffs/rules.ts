@@ -125,3 +125,25 @@ export function checkResting(
   const shouldAddRest = isOutOfCombat(lastCombat, now) && !isResting && !isPoisoned;
   return { shouldAddRest, isResting: shouldAddRest ? true : isResting };
 }
+
+/**
+ * Adds the buffs' flat and percent bonuses to the totals used for item requirements. Flat bonuses
+ * only apply to stats that are already non-zero, like before.
+ */
+export function addBuffBonuses(
+  buffs: ActiveBuff[],
+  baseStats: Record<string, any>,
+  percentStats: Record<string, number>,
+) {
+  const base = { ...baseStats };
+  const percent = { ...percentStats };
+  for (const buff of buffs) {
+    for (const [key, amount] of Object.entries(buff.stats ?? {})) {
+      if (base[key]) base[key] += amount;
+    }
+    for (const [key, amount] of Object.entries(buff.percentStats ?? {})) {
+      if (key in percent && amount) percent[key] += amount;
+    }
+  }
+  return { baseStats: base, percentStats: percent };
+}

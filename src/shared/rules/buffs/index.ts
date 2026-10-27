@@ -8,6 +8,7 @@ export {
 } from "./regen";
 export type { RegenFlags, RegenInput, RegenResult, RegenTimers } from "./regen";
 export {
+  addBuffBonuses,
   applyBuff,
   checkResting,
   createBuff,
