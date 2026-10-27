@@ -5,11 +5,12 @@ import { moveItem as moveItemRule } from "@/shared/rules/inventory";
 import { applyInventoryState, toInventoryState } from "../../player-inventory";
 import type { CommandContext } from "@/server/net/command-context";
 import { findNearbyNpc } from "@/server/net/nearby-keeper";
+import { isInRoom } from "@/server/player-room";
 
 export function moveItem(ctx: CommandContext, { to, from }: MoveItemCommand = {}) {
   const { world, socket, socketId, io } = ctx;
   const player = world?.players?.[socketId];
-  if (!player) return;
+  if (!isInRoom(player)) return;
 
   /* Shop moves need the keeper to still be next to the player. */
   const isShopMove = from?.location === "shop" || to?.location === "shop";

@@ -69,9 +69,9 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
     peerId!: string;
     id!: string;
     isHero!: boolean;
-    roomName!: string;
+    roomName!: string | null;
     charClass?: CharClass;
-    room!: RoomData;
+    room!: RoomData | null;
     action!: string;
     direction!: string;
     currentSpeed!: number;

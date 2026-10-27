@@ -55,7 +55,7 @@ const updateRooms: System<ServerWorld> = (world: ServerWorld, _frame: Frame) => 
     const roomClients = io.sockets.adapter.rooms.get(room.name)?.size ?? 0;
 
     const hasBuffChanges = [...Object.values(world.players), ...Object.values(world.npcs)].some(
-      (n: { room?: { name?: string }; state?: { hasBuffChanges?: boolean } }) =>
+      (n: { room?: { name?: string } | null; state?: { hasBuffChanges?: boolean } }) =>
         n?.room?.name === room.name && n?.state?.hasBuffChanges,
     );
     if (hasBuffChanges && roomClients > 0) {

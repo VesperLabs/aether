@@ -25,7 +25,8 @@ export function toPartyPlayer(player?: Player): PartyPlayer | undefined {
     id: player.id,
     userName: player.profile?.userName,
     partyId: player.partyId,
-    roomName: player.roomName,
+    // Between rooms the member matches no room, as null did before.
+    roomName: player.roomName ?? "",
   };
 }
 
@@ -109,7 +110,7 @@ export function legacyLeaveParty(world: ServerWorld, socket: Socket) {
 }
 
 export function legacyUpdateMemberRoom(world: ServerWorld, player: Player) {
-  if (!player.partyId) return;
+  if (!player.partyId || !player.roomName) return;
   run(
     world,
     updateMemberRoom(world.partyState, {

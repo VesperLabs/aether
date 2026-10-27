@@ -17,7 +17,8 @@ export interface CharacterSyncInput {
   /** Players only; npcs use `id` on the wire. */
   socketId?: string;
   peerId?: string;
-  room: { name: string };
+  /** Null while a player is between rooms (door, disconnect). */
+  room: { name: string } | null;
   x: number;
   y: number;
   vx: number;
@@ -100,7 +101,8 @@ export function getFullCharacterState(p: CharacterSyncInput): FullCharacterWire 
     id: uid, //required for SI
     socketId: uid,
     peerId: p?.peerId,
-    roomName: p?.room?.name,
+    // Undefined for a player between rooms; the client types still expect it set.
+    roomName: p?.room?.name as string,
     x: p?.x,
     y: p?.y,
     vx: p?.vx,

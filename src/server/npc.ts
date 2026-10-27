@@ -1,7 +1,7 @@
 import { ServerCharacter as Character, type CharacterArgs } from "./character";
 import type { ServerWorld } from "./server-world";
 import type { Player } from "./player";
-import type { Point } from "@/shared/rules/world";
+import type { Point, RoomData } from "@/shared/rules/world";
 import { createSpell } from "./spell-adapter";
 import { buildNpcBehaviorInput } from "./npc-behavior-adapter";
 import { buildEquipment, buildShop, type ItemRecipe } from "./npc-build";
@@ -60,6 +60,9 @@ export class Npc extends Character {
   public talkingIds: Array<string>;
   public keeperData: KeeperData;
   declare name: string;
+  /** NPCs never leave their room, so unlike players these are always set. */
+  declare room: RoomData;
+  declare roomName: string;
   constructor(
     world: ServerWorld,
     { equipment = {}, abilities = {}, keeperData = {}, ...args }: NpcArgs,

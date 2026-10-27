@@ -6,6 +6,7 @@ import { consumeItem as consumeItemRule, dropItem as dropItemRule } from "@/shar
 import { applyInventoryState, toInventoryState } from "../../player-inventory";
 import type { ParsedCommand } from "@/shared/network";
 import type { CommandContext } from "@/server/net/command-context";
+import { isInRoom } from "@/server/player-room";
 
 export function grabLoot(
   ctx: CommandContext,
@@ -29,14 +30,14 @@ export function grabLoot(
     hasGrabber: !!player,
     grabberIsDead: player?.state?.isDead,
     grabberPosition: player && {
-      roomName: player.roomName,
+      roomName: player.roomName ?? undefined,
       x: player.x,
       y: player.y,
     },
     hasStackToJoin: !!stackTarget,
     inventoryFull: !!player?.isInventoryFull(),
   });
-  if (outcome === "ignore") return;
+  if (outcome === "ignore" || !isInRoom(player)) return;
   /* Face the loot */
   player.direction = direction as string;
   if (outcome === "inventoryFull") {
@@ -65,7 +66,7 @@ export function grabLoot(
 export function dropItem(ctx: CommandContext, request: ParsedCommand<"dropItem"> = {}) {
   const { world, socket, socketId, io } = ctx;
   const player = world?.players?.[socketId];
-  if (!player) return;
+  if (!isInRoom(player)) return;
   const result = dropItemRule(toInventoryState(player), request ?? {});
   if (result.dropped === false) {
     if (result.error) socket.emit("message", { type: "error", message: result.error });
@@ -96,7 +97,7 @@ export function dropItem(ctx: CommandContext, request: ParsedCommand<"dropItem">
 export function consumeItem(ctx: CommandContext, request: ParsedCommand<"consumeItem"> = {}) {
   const { world, socketId, io } = ctx;
   const player = world?.players?.[socketId];
-  if (!player || player.state?.isDead) return;
+  if (!isInRoom(player) || player.state?.isDead) return;
   const result = consumeItemRule(toInventoryState(player), request ?? {});
   if (!result.consumed) return;
   applyInventoryState(player, result.state);

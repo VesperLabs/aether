@@ -87,6 +87,8 @@ export class Player extends ServerCharacter {
 
     if (this?.hasBuff("stun")) return;
     if (this?.state?.isDead) return;
+    const { roomName } = this;
+    if (!roomName) return;
 
     /* Serverside attack may not actually be ready. */
     const { percentageRemaining } = this.checkAttackReady();
@@ -102,7 +104,7 @@ export class Player extends ServerCharacter {
 
     this.modifyStat("sp", -spCost);
 
-    world.io.to(this?.roomName).emit("modifyPlayerStat", {
+    world.io.to(roomName).emit("modifyPlayerStat", {
       socketId,
       type: "sp",
       amount: -spCost,
@@ -129,7 +131,8 @@ export class Player extends ServerCharacter {
   modifyStatIfCostExists(statType: string, cost: number) {
     if (cost > 0) {
       this.modifyStat(statType, -cost);
-      this.world.io.to(this?.roomName).emit("modifyPlayerStat", {
+      if (!this.roomName) return;
+      this.world.io.to(this.roomName).emit("modifyPlayerStat", {
         socketId: this.socketId,
         type: statType,
         amount: -cost,
@@ -250,6 +253,8 @@ export class Player extends ServerCharacter {
   doHit(ids: Array<string>, abilitySlot?: number): void {
     const { world } = this ?? {};
     if (!this || this?.state?.isDead) return;
+    const { roomName } = this;
+    if (!roomName) return;
 
     const { allowedTargets } = this.getAbilityDetails(abilitySlot);
 
@@ -258,8 +263,8 @@ export class Player extends ServerCharacter {
     const playerIdsToUpdate: string[] = [];
     const playerIdsThatLeveled: string[] = [];
 
-    const npcs = entitiesInRoom(world.npcs, this.roomName);
-    const players = entitiesInRoom(world.players, this.roomName);
+    const npcs = entitiesInRoom(world.npcs, roomName);
+    const players = entitiesInRoom(world.players, roomName);
 
     for (const npc of npcs) {
       if (!ids.includes(npc.id)) continue;
@@ -305,7 +310,7 @@ export class Player extends ServerCharacter {
       const recipients: Player[] = sharedRecipientIds(world.partyState, {
         partyId: this?.partyId,
         id: this?.id,
-        roomName: this?.roomName,
+        roomName: roomName,
       })
         .map((id) => world?.players?.[id])
         .filter(Boolean);
@@ -321,7 +326,7 @@ export class Player extends ServerCharacter {
         mobId: npc.id,
         mobName: npc.name,
         mobLevel: npc.stats.level,
-        roomName: this.roomName,
+        roomName: roomName,
         x: npc.x,
         y: npc.y,
       }));
@@ -344,13 +349,13 @@ export class Player extends ServerCharacter {
     }
 
     if (playerIdsToUpdate.length > 0) {
-      const roomState = getRoomState(world, this.roomName);
-      world.io.to(this.roomName).emit("buffUpdate", {
+      const roomState = getRoomState(world, roomName);
+      world.io.to(roomName).emit("buffUpdate", {
         players: roomState.players.filter((player) => playerIdsToUpdate.includes(player.id)),
         playerIdsThatLeveled,
       });
     }
 
-    world.io.to(this.roomName).emit("assignDamage", hitList);
+    world.io.to(roomName).emit("assignDamage", hitList);
   }
 }
