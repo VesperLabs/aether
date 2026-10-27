@@ -73,7 +73,7 @@ export function partyAccept(ctx: CommandContext, partyId: ParsedCommand<"partyAc
 }
 
 export function partyLeave(ctx: CommandContext) {
-  legacyLeaveParty(ctx.world, ctx.socket);
+  legacyLeaveParty(ctx.world, ctx.socketId, ctx.socket);
 }
 
 export function message(ctx: CommandContext, args: ParsedCommand<"message">) {

@@ -97,14 +97,15 @@ export function legacyAcceptPartyInvite(world: ServerWorld, socket: Socket, part
   );
 }
 
-export function legacyLeaveParty(world: ServerWorld, socket: Socket) {
+/** The player on `socketId` leaves their party. `socket` is theirs when it is the acting one. */
+export function legacyLeaveParty(world: ServerWorld, socketId: string, socket?: Socket) {
   run(
     world,
     leaveParty(world.partyState, {
-      player: toPartyPlayer(world.players?.[socket.id]),
-      playerId: socket.id,
+      player: toPartyPlayer(world.players?.[socketId]),
+      playerId: socketId,
     }),
-    socket,
+    socket?.id === socketId ? socket : undefined,
   );
 }
 

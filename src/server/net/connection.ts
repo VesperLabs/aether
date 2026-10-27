@@ -25,7 +25,7 @@ export function listenForConnections(world: ServerWorld) {
       const player = world.players?.[socketId];
       world.db.updateUser(world.players?.[socketId]);
       console.log(`🔌 ${player?.profile?.userName ?? "Anonymous"} disconnected`);
-      legacyLeaveParty(world, socket);
+      legacyLeaveParty(world, socketId, socket);
       removePlayer(world, socketId);
       world.io.emit("remove", socketId);
       /* Should we pause or resume? */
