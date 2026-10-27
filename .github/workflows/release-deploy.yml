@@ -1,0 +1,95 @@
+name: Release & deploy
+
+# Manual only: Actions → "Release & deploy" → Run workflow.
+# 1. release-please opens the release PR (fix: → patch, feat: → minor,
+#    feat!: / BREAKING CHANGE → major), the workflow merges it, then
+#    release-please runs again to tag and create the GitHub release.
+# 2. Deploys main: Fly runs the game server; Render serves the wiki and static
+#    assets (saves Fly bandwidth).
+on:
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: Deploy after releasing
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+jobs:
+  release:
+    name: Release (release-please)
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.sha.outputs.sha }}
+    steps:
+      - id: pr
+        uses: googleapis/release-please-action@v4
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+      # Merge the release PR ourselves (GITHUB_TOKEN pushes don't trigger
+      # other workflows), then tag it.
+      - if: steps.pr.outputs.pr
+        run: gh pr merge "$PR" --squash --repo ${{ github.repository }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ fromJSON(steps.pr.outputs.pr).number }}
+      - if: steps.pr.outputs.pr
+        uses: googleapis/release-please-action@v4
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+      - id: sha
+        run: echo "sha=$(gh api repos/${{ github.repository }}/commits/main --jq .sha)" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  fly:
+    name: Deploy game (Fly)
+    needs: release
+    if: inputs.deploy
+    runs-on: ubuntu-latest
+    concurrency: deploy-fly
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.release.outputs.sha }}
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: flyctl deploy --remote-only --build-arg GIT_SHA=${{ needs.release.outputs.sha }}
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+  render:
+    name: Deploy wiki + assets (Render)
+    needs: release
+    if: inputs.deploy
+    runs-on: ubuntu-latest
+    concurrency: deploy-render
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.release.outputs.sha }}
+          fetch-depth: 0
+      # Render only serves the wiki and static assets. Diff against the last
+      # successful run so failed or skipped deploys are caught up.
+      - id: changes
+        run: |
+          LAST=$(gh run list --workflow release-deploy.yml --branch main --status success --limit 1 --json headSha --jq '.[0].headSha // empty')
+          if [ -z "$LAST" ] || ! git cat-file -e "$LAST" 2>/dev/null; then
+            echo "render=true" >> "$GITHUB_OUTPUT"
+          elif git diff --quiet "$LAST" HEAD -- public src package.json package-lock.json render.yaml scripts; then
+            echo "render=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "render=true" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - if: steps.changes.outputs.render == 'true'
+        run: curl -fsS -X POST "${RENDER_DEPLOY_HOOK}&ref=${SHA}"
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+          SHA: ${{ needs.release.outputs.sha }}
