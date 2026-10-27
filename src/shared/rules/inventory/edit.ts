@@ -139,5 +139,6 @@ export function deleteAbilityAtId(
   id: string | undefined,
 ) {
   const { slotName } = findAbilityById(abilities, id);
+  if (slotName === null) return abilities;
   return withSlot(abilities, slotName, null);
 }

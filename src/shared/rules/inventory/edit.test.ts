@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { deleteBagItemAtId, findBagItemById, updateBagItemAtId } from ".";
+import { deleteAbilityAtId, deleteBagItemAtId, findBagItemById, updateBagItemAtId } from ".";
 import type { InventoryItem } from ".";
 
 const apple: InventoryItem = { id: "apple1", base: "food", type: "stackable", amount: 2 };
@@ -23,5 +23,12 @@ describe("bag edits with an id in two bags", () => {
     const next = deleteBagItemAtId(inventory, "apple1");
     expect(next[0]?.items?.[1]).toBeNull();
     expect(next[1]?.items?.[0]?.amount).toBe(5);
+  });
+});
+
+describe("deleteAbilityAtId", () => {
+  it("leaves the abilities alone for an unknown id", () => {
+    const abilities = { 1: { ...apple } };
+    expect(deleteAbilityAtId(abilities, "nope")).toBe(abilities);
   });
 });
