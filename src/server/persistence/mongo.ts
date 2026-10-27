@@ -1,8 +1,9 @@
-import { MongoClient, type Db, type Document } from "mongodb";
+import { MongoClient, type Db } from "mongodb";
 import { userSchema } from "./schema";
 import { filterNullEmpty } from "./filter-empty";
 import { calculateNextMaxExp } from "@/shared/rules/stats";
 import { createBaseUser } from "./base-user";
+import { pruneItemFromUser, type StoredItemLists } from "./prune-item";
 import type { Database, UserDocument } from "./database";
 
 const getDatabaseApi = (db: Db): Database => ({
@@ -64,55 +65,12 @@ const getDatabaseApi = (db: Db): Database => ({
   },
   pruneItemByKey: async (keyToRemove: string) => {
     return execute("pruneItemByKey", async () => {
-      const cursor = db.collection("users").find({});
-
-      /* The callback is async but forEach does not await it (see Known bugs in TODO.md). */
-      await cursor.forEach((async (doc: Document) => {
-        /* Stored documents are untyped; this prune only touches the item lists. */
-        type StoredItem = { key?: string; items?: Array<StoredItem | null> } | null;
-        let updateNeeded = false;
-
-        // Update equipment
-        for (let slot in doc.equipment) {
-          if (doc.equipment[slot]?.key === keyToRemove) {
-            doc.equipment[slot] = null;
-            updateNeeded = true;
-          }
+      const users = db.collection<StoredItemLists>("users");
+      for await (const doc of users.find({})) {
+        if (pruneItemFromUser(doc, keyToRemove)) {
+          await users.updateOne({ _id: doc._id }, { $set: doc });
         }
-
-        // Update abilities
-        for (let slot in doc.abilities) {
-          if (doc.abilities[slot]?.key === keyToRemove) {
-            doc.abilities[slot] = null;
-            updateNeeded = true;
-          }
-        }
-
-        // Update inventory and nested items
-        doc.inventory = doc.inventory.map((item: StoredItem) => {
-          let itemUpdated = false;
-          if (item?.key === keyToRemove) {
-            itemUpdated = true;
-            return null;
-          }
-          if (item?.items) {
-            item.items = item.items.map((nestedItem: StoredItem) => {
-              if (nestedItem?.key === keyToRemove) {
-                itemUpdated = true;
-                return null;
-              }
-              return nestedItem;
-            });
-          }
-          updateNeeded = updateNeeded || itemUpdated;
-          return item;
-        });
-
-        // Save the updated document only if necessary
-        if (updateNeeded) {
-          await db.collection("users").updateOne({ _id: doc._id }, { $set: doc });
-        }
-      }) as unknown as (doc: Document) => void);
+      }
     });
   },
   getUserByLogin: async ({ email, password = "" }) => {
