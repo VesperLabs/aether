@@ -84,7 +84,7 @@ describe("inviteToParty", () => {
     expect(getParty(twice.state, "p1")?.invitees).toEqual([{ id: "c" }]);
   });
 
-  it("rejects an unknown or already partied invitee (after creating the party, as before)", () => {
+  it("rejects an unknown or already partied invitee without creating a party", () => {
     const missing = inviteToParty(createPartyState(), {
       inviter: player("a"),
       inviterId: "a",
@@ -94,7 +94,7 @@ describe("inviteToParty", () => {
       type: "error",
       message: "Invalid player to invite.",
     });
-    expect(missing.state.parties).toHaveLength(1);
+    expect(missing.state.parties).toHaveLength(0);
 
     const busy = inviteToParty(createPartyState(), {
       inviter: player("a"),
@@ -106,6 +106,7 @@ describe("inviteToParty", () => {
       type: "error",
       message: "Player is already in a party.",
     });
+    expect(busy.state.parties).toHaveLength(0);
   });
 
   it("treats inviting yourself as already in a party", () => {
@@ -115,7 +116,9 @@ describe("inviteToParty", () => {
       invitee: player("a"),
       newPartyId: "p1",
     });
-    expect(effects.at(-1)).toMatchObject({ type: "error" });
+    expect(effects).toEqual([
+      { type: "error", socketId: "a", message: "Player is already in a party." },
+    ]);
   });
 
   it("does not mutate its input", () => {

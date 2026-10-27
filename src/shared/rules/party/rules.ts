@@ -124,7 +124,10 @@ function createParty(
   return { state: next, effects, party };
 }
 
-/** `inviter` invites `invitee` (undefined when no such player). Creates the inviter's party if needed. */
+/**
+ * `inviter` invites `invitee` (undefined when no such player). Creates the inviter's party if
+ * needed, once the invitee is known to be invitable.
+ */
 export function inviteToParty(
   state: PartyState,
   {
@@ -139,24 +142,31 @@ export function inviteToParty(
     newPartyId: string;
   },
 ): PartyResult {
+  const existing = getParty(state, inviter?.partyId);
+  if (!invitee) {
+    return {
+      state,
+      effects: [{ type: "error", socketId: inviterId, message: "Invalid player to invite." }],
+    };
+  }
+  const inviteeInParty =
+    invitee.partyId ||
+    invitee.id === inviterId ||
+    existing?.members.some((m) => m.id === invitee.id);
+  if (inviteeInParty) {
+    return {
+      state,
+      effects: [{ type: "error", socketId: inviterId, message: "Player is already in a party." }],
+    };
+  }
   let next = state;
   const effects: PartyEffect[] = [];
-  let party = getParty(state, inviter?.partyId);
+  let party = existing;
   if (!party) {
     const created = createParty(state, inviter, newPartyId);
     next = created.state;
     party = created.party;
     effects.push(...created.effects);
-  }
-  if (!invitee) {
-    effects.push({ type: "error", socketId: inviterId, message: "Invalid player to invite." });
-    return { state: next, effects };
-  }
-  /* Inviting yourself: you were just put in the party you created, so you are "already in" it. */
-  const inviteeInParty = invitee.partyId || party.members.some((m) => m.id === invitee.id);
-  if (inviteeInParty) {
-    effects.push({ type: "error", socketId: inviterId, message: "Player is already in a party." });
-    return { state: next, effects };
   }
   if (!party.invitees.some((i) => i.id === invitee.id)) {
     party = { ...party, invitees: [...party.invitees, { id: invitee.id }] };
