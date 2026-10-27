@@ -41,19 +41,18 @@ export function buyItem(
   const buyQty = toQuantity(fromItem.amount);
   const buyCost = toQuantity(fromItem.cost) * buyQty;
 
-  // Always needs a free slot, or a slot holding the same stack.
-  // TODO: Fix it so we can buy a stackable no matter what if it exists.
-  const stackableToStackable = fromItem.id === toItem?.id;
-  const itemToBlank = !toItem?.id;
-  if (!stackableToStackable && !itemToBlank) return reject();
-
-  if (state.gold < buyCost) return reject("You cannot afford this item");
-
   const hasStack = !!(
     findBagItemById(state.inventory, fromItem.id).item ||
     findAbilityById(state.abilities, fromItem.id).item ||
     findInventoryItemById(state.inventory, fromItem.id)
   );
+  // A stackable the player already owns merges into that stack wherever it was dropped.
+  // Anything else needs a free slot.
+  const mergesIntoStack = hasStack && fromItem.type === "stackable";
+  if (!mergesIntoStack && toItem?.id && fromItem.id !== toItem.id) return reject();
+
+  if (state.gold < buyCost) return reject("You cannot afford this item");
+
   if (hasStack) {
     // Only real stackables merge; anything else that matches is simply not bought.
     if (fromItem.type !== "stackable") return state;
