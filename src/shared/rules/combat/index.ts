@@ -8,6 +8,7 @@ export {
 } from "./constants";
 export {
   checkAttackReady,
+  getAbilityCosts,
   getAttackActionName,
   getAttackSpCost,
   getCooldown,

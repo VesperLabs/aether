@@ -1,6 +1,6 @@
 import type { ServerWorld } from "./server-world";
 import { ServerCharacter, type CharacterArgs } from "./character";
-import { expAfterDeath } from "@/shared/rules/combat";
+import { expAfterDeath, getAbilityCosts } from "@/shared/rules/combat";
 import { canHitNpc, canHitPlayer } from "@/shared/rules/spells";
 import type { Npc } from "./npc";
 import { createSpell } from "./spell-adapter";
@@ -94,9 +94,10 @@ export class Player extends ServerCharacter {
 
     const { stats, ...spellDetails } = this.getAttackActionName({ count, abilitySlot });
     const spCost = this.getAttackSpCost(count);
-    this.modifyStatIfCostExists("mp", stats?.mpCost || 0);
-    this.modifyStatIfCostExists("hp", stats?.hpCost || 0);
-    this.modifyStatIfCostExists("sp", spCost + stats?.spCost || 0);
+    const costs = getAbilityCosts(stats);
+    this.modifyStatIfCostExists("mp", costs.mp);
+    this.modifyStatIfCostExists("hp", costs.hp);
+    this.modifyStatIfCostExists("sp", costs.sp);
 
     this.direction = direction;
 
