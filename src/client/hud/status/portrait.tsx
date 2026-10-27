@@ -1,6 +1,6 @@
 import type { ThemeUIStyleObject } from "theme-ui";
 import type { HudCharacter } from "@/client/hud/app/context";
-import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
+import { arePropsEqualWithKeys } from "@/ui";
 import { Box, PlayerRender } from "@/ui";
 import { memo, useEffect, useLayoutEffect, useRef, useState, type AnimationEvent } from "react";
 import { streamHasUsableVideo } from "@/client/hud/video/video-support";

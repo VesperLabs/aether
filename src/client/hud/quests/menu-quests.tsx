@@ -2,7 +2,7 @@ import { Quest as QuestSlot } from "./quest";
 import { Flex, Text, MENU_MAX_WIDTH, Menu, MenuHeader } from "@/ui";
 import { questList, type Quest, type QuestId } from "@/content";
 import type { PlayerQuestStatus } from "@/rules/quests";
-import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
+import { arePropsEqualWithKeys } from "@/ui";
 import { memo } from "react";
 import type { CharacterMenuProps } from "@/client/hud/menu/menu-props";
 

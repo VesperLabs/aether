@@ -3,7 +3,7 @@ import type { ThemeUIStyleObject } from "theme-ui";
 import { Modal, Flex, Input, KeyboardButton, Icon, Text, Box, VersionTag } from "@/ui";
 import { useAppContext } from "@/client/hud/app/context";
 import { CLASS_ICON_MAP, type CharClass } from "@/content";
-import { Tooltip } from "@/client/hud/tooltips/tooltip";
+import { Tooltip } from "@/ui";
 
 /** The `formSuccess` message from the server. */
 type FormSuccess = { success: string; email?: string };

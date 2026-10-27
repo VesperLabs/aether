@@ -1,19 +1,11 @@
-import { Box, Icon, Flex, Text, Divider } from "@/ui";
+import { Box, Icon, Flex, Text, TextDivider } from "@/ui";
 import { useAppContext } from "@/client/hud/app/context";
-import { useEffect, useState, type ReactNode } from "react";
-import type { ThemeUIStyleObject } from "theme-ui";
-import { isMobile } from "@/ui/is-mobile";
+import { useEffect, useState } from "react";
+import { isMobile } from "@/ui";
 import { msToHours } from "@/rules/stats";
-import { Tooltip } from "@/client/hud/tooltips/tooltip";
+import { Tooltip } from "@/ui";
 
 const STATUS_TOOLTIP_ID = "STATUS_TOOLTIP_ID";
-
-const TextDivider = ({ children, sx }: { children?: ReactNode; sx?: ThemeUIStyleObject }) => (
-  <>
-    <Divider sx={{ pt: 0, zIndex: -1 }} />
-    <Text sx={{ mt: -3, pb: 2, mb: -1, color: "gray.500", ...sx }}>{children}</Text>
-  </>
-);
 
 const StatusToolTip = ({ show }: { show: boolean }) => {
   const [metrics, setMetrics] = useState<ServerMetrics>();

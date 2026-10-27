@@ -9,7 +9,7 @@ import { ModalSign } from "@/client/hud/menu/modal-sign";
 import { ModalError } from "@/client/hud/menu/modal-error";
 import { MenuBar } from "@/client/hud/menu/menu-bar";
 import { ModalHome } from "@/client/hud/shop/modal-home";
-import { ThemeUIProvider, Box, useViewportSizeEffect, Modal } from "@/ui";
+import { ThemeUIProvider, Box, useViewportSizeEffect, Modal, ZoomProvider } from "@/ui";
 import { getHudZoom } from "./hud-zoom";
 import "react-tooltip/dist/react-tooltip.css";
 import type { Theme } from "theme-ui";
@@ -313,43 +313,45 @@ export function App({ socket, peer, debug, game }: AppProps) {
           setRemoteVideoStreams,
         }}
       >
-        <Box
-          sx={{
-            inset: 0,
-            position: "fixed",
-            backgroundColor: "black",
-            opacity: showLogin ? 1 : 0,
-            transition: "opacity 1s ease-out",
-            pointerEvents: "none",
-            zIndex: "modal",
-            transitionDelay: "0.5s",
-          }}
-        >
-          <Modal.Overlay
-            sx={{ backgroundImage: "url(./assets/images/bg.jpg)", pointerEvents: "none" }}
-          />
-          {!isLoggedIn && <ModalLogin />}
-          {error && <ModalError />}
-        </Box>
-        <VideoFrame />
-        {isLoggedIn && tabSettings && <ModalSettings />}
-        {isLoggedIn && (
+        <ZoomProvider value={Number(zoom) || 1.25}>
           <Box
-            id={HUD_CONTAINER_ID}
             sx={{
-              height: "100%",
+              inset: 0,
+              position: "fixed",
+              backgroundColor: "black",
+              opacity: showLogin ? 1 : 0,
+              transition: "opacity 1s ease-out",
               pointerEvents: "none",
+              zIndex: "modal",
+              transitionDelay: "0.5s",
             }}
           >
-            {hero?.state?.isDead && <ModalRespawn />}
-            {dropItem && <ModalDropAmount />}
-            {sign && <ModalSign />}
-            {homeModal?.profile && <ModalHome />}
-            <MenuGlobalKeys />
-            <MenuHud />
-            <MenuBar />
+            <Modal.Overlay
+              sx={{ backgroundImage: "url(./assets/images/bg.jpg)", pointerEvents: "none" }}
+            />
+            {!isLoggedIn && <ModalLogin />}
+            {error && <ModalError />}
           </Box>
-        )}
+          <VideoFrame />
+          {isLoggedIn && tabSettings && <ModalSettings />}
+          {isLoggedIn && (
+            <Box
+              id={HUD_CONTAINER_ID}
+              sx={{
+                height: "100%",
+                pointerEvents: "none",
+              }}
+            >
+              {hero?.state?.isDead && <ModalRespawn />}
+              {dropItem && <ModalDropAmount />}
+              {sign && <ModalSign />}
+              {homeModal?.profile && <ModalHome />}
+              <MenuGlobalKeys />
+              <MenuHud />
+              <MenuBar />
+            </Box>
+          )}
+        </ZoomProvider>
       </AppContext.Provider>
     </ThemeUIProvider>
   );

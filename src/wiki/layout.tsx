@@ -1,24 +1,7 @@
-import { Text, Divider, Flex } from "@/ui";
-import type { ComponentProps, ReactNode } from "react";
+import { Flex } from "@/ui";
+import type { ReactNode } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
 import { useLocation, Link } from "wouter";
-
-export const Label = (props: ComponentProps<typeof Text>) => (
-  <Text sx={{ fontWeight: "normal" }} {...props} />
-);
-
-export const TextDivider = ({
-  children,
-  sx,
-}: {
-  children?: ReactNode;
-  sx?: ThemeUIStyleObject;
-}) => (
-  <>
-    <Divider sx={{ pt: 2, zIndex: -1 }} />
-    <Text sx={{ mt: "-17px", pb: 2, mb: -1, color: "gray.500", ...sx }}>{children}</Text>
-  </>
-);
 
 export const RouterLink = ({ href, children }: { href: string; children?: ReactNode }) => {
   const [page] = useLocation();
@@ -28,15 +11,6 @@ export const RouterLink = ({ href, children }: { href: string; children?: ReactN
       {children}
     </Flex>
   );
-};
-
-export const TOOLTIP_STYLE: ThemeUIStyleObject = {
-  fontWeight: "bold",
-  whiteSpace: "nowrap",
-  alignItems: "center",
-  justifyContent: "center",
-  flexDirection: "column",
-  textTransform: "capitalize",
 };
 
 export const STATIC_ROW_STYLES: ThemeUIStyleObject = {

@@ -9,7 +9,7 @@ import {
   mapList,
   mapImageList,
 } from "@/content";
-import { IMAGE_CACHE } from "@/ui/image-tint";
+import { IMAGE_CACHE } from "@/ui";
 
 /**
  * Rewrite a `./assets/…` path to the CDN base URL when ASSETS_URL is set.

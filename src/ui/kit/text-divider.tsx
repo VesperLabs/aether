@@ -1,8 +1,9 @@
 import type { ReactNode } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
-import { Text, theme } from "@/ui";
+import { Text } from "theme-ui";
+import { theme } from "./theme";
 
-// Utility function to convert hex color to RGBA
+/** Converts a hex colour to rgba. */
 const hexToRGBA = (hex: string, alpha = 1) => {
   let r = parseInt(hex.slice(1, 3), 16),
     g = parseInt(hex.slice(3, 5), 16),

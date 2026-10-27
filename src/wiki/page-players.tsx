@@ -1,9 +1,7 @@
-import { Box, Flex, KeyboardKey, Text } from "@/ui";
+import { Box, Flex, KeyboardKey, Label, Text, Tooltip, TooltipContent } from "@/ui";
 import { RowTitle } from "./row-title";
 import { useEffect, useState } from "react";
 import { PlayerRender } from "./player-render";
-import { TOOLTIP_STYLE, Label } from ".";
-import { Tooltip } from "react-tooltip";
 import { questList } from "@/content";
 import { MenuAbilities, MenuBag, MenuEquipment, MenuInventory, MenuStats } from "@/client";
 import { useLocation } from "wouter";
@@ -289,7 +287,7 @@ const PlayerTooltip = ({ player }: { player: WikiPlayer }) => {
   const isKeeper = player?.kind === "keeper";
   return (
     <Tooltip id={player?.id} style={{ zIndex: 99999 }}>
-      <Flex sx={TOOLTIP_STYLE}>
+      <TooltipContent>
         {!isKeeper ? (
           <>
             <Text>
@@ -307,7 +305,7 @@ const PlayerTooltip = ({ player }: { player: WikiPlayer }) => {
             </Text>
           </>
         )}
-      </Flex>
+      </TooltipContent>
     </Tooltip>
   );
 };

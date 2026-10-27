@@ -1,6 +1,6 @@
 import { Flex, MENU_MAX_WIDTH, Menu, MenuHeader } from "@/ui";
 import { Slot } from "@/client/hud/inventory/slot";
-import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
+import { arePropsEqualWithKeys } from "@/ui";
 import { memo } from "react";
 import type { BuiltItem } from "@/content";
 import type { CharacterMenuProps } from "@/client/hud/menu/menu-props";

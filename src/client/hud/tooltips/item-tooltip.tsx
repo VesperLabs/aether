@@ -13,9 +13,9 @@ import {
 import type { HudCharacter } from "@/client/hud/app/context";
 import { formatStats } from "@/rules/stats";
 import { CONSUMABLES_BASES, itemHasRequiredStats } from "@/rules/inventory";
-import { TooltipLabel } from "./tooltip-label";
-import { TextDivider } from "@/client/hud/menu/text-divider";
-import { Tooltip } from "./tooltip";
+import { Label } from "@/ui";
+import { TextDivider } from "@/ui";
+import { Tooltip } from "@/ui";
 
 interface ItemTooltipProps {
   player?: Partial<HudCharacter> | null;
@@ -66,19 +66,19 @@ export const ItemTooltip = ({ player, item, tooltipId, show }: ItemTooltipProps)
         {Object.keys(combinedStats)?.length > 0 && <TextDivider>Stats</TextDivider>}
         {Object.keys(combinedStats).map((key) => (
           <Text key={key}>
-            <TooltipLabel>{key}:</TooltipLabel> {combinedStats[key]}
+            <Label>{key}:</Label> {combinedStats[key]}
           </Text>
         ))}
         {Object.keys(item?.percentStats || {}).map((key) => (
           <Text key={key}>
-            <TooltipLabel>{key}:</TooltipLabel> {item?.percentStats?.[key]}%
+            <Label>{key}:</Label> {item?.percentStats?.[key]}%
           </Text>
         ))}
         {hasEffects && <TextDivider>Effects</TextDivider>}
         {Object.keys(combinedEffects).map((key) => {
           return (
             <Text key={key}>
-              <TooltipLabel>{key}:</TooltipLabel> {combinedEffects[key]}
+              <Label>{key}:</Label> {combinedEffects[key]}
             </Text>
           );
         })}
@@ -106,7 +106,7 @@ export const ItemTooltip = ({ player, item, tooltipId, show }: ItemTooltipProps)
               {Object.keys(buffStats).map((stat) => {
                 return (
                   <Text key={stat}>
-                    <TooltipLabel>{stat}:</TooltipLabel> {buffStats?.[stat]}
+                    <Label>{stat}:</Label> {buffStats?.[stat]}
                   </Text>
                 );
               })}
@@ -116,10 +116,10 @@ export const ItemTooltip = ({ player, item, tooltipId, show }: ItemTooltipProps)
         {triggers?.map((trigger: TriggerDefinition, idx: number) => {
           return (
             <Text key={idx}>
-              <TooltipLabel>
+              <Label>
                 {Math.floor(100 / trigger?.chance)}% chance{" "}
                 {trigger?.event === "onAttackHit" ? "on hit" : "on hurt"}:{" "}
-              </TooltipLabel>
+              </Label>
               {trigger?.name}{" "}
               <Text sx={{ fontSize: 0, color: "gray.400" }}>(Lv. {trigger?.level})</Text>
             </Text>
@@ -136,7 +136,7 @@ export const ItemTooltip = ({ player, item, tooltipId, show }: ItemTooltipProps)
                   : "danger"
               }
             >
-              <TooltipLabel>{key}:</TooltipLabel> {requirements[key]}
+              <Label>{key}:</Label> {requirements[key]}
             </Text>
           );
         })}
@@ -151,22 +151,22 @@ export const ItemTooltip = ({ player, item, tooltipId, show }: ItemTooltipProps)
             {Object.keys(setBonus?.percentStats || {}).map((key) => {
               return (
                 <Text key={key} color={isSetActive ? "set" : "gray.500"}>
-                  <TooltipLabel>{key}:</TooltipLabel> {setBonus.percentStats[key]}%
+                  <Label>{key}:</Label> {setBonus.percentStats[key]}%
                 </Text>
               );
             })}
             {Object.keys(combinedSetStats).map((key) => (
               <Text key={key} color={isSetActive ? "set" : "gray.500"}>
-                <TooltipLabel>{key}:</TooltipLabel> {combinedSetStats[key]}
+                <Label>{key}:</Label> {combinedSetStats[key]}
               </Text>
             ))}
             {setBonus?.triggers?.map((trigger: TriggerDefinition, idx: number) => {
               return (
                 <Text key={idx} color={isSetActive ? "set" : "gray.500"}>
-                  <TooltipLabel>
+                  <Label>
                     {Math.floor(100 / trigger?.chance)}% chance{" "}
                     {trigger?.event === "onAttackHit" ? "on hit" : "on hurt"}:{" "}
-                  </TooltipLabel>
+                  </Label>
                   {trigger?.name}{" "}
                   <Text sx={{ fontSize: 0, color: "gray.400" }}>(Lv. {trigger?.level})</Text>
                 </Text>
