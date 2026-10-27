@@ -11,7 +11,7 @@ import {
   STYLE_NON_EMPTY,
   theme,
 } from "@/ui";
-import { ItemTooltip } from "@/client/hud/tooltips/item-tooltip";
+import { ItemTooltip } from "@/ui";
 import { BLANK_IMAGE } from "@/client/hud/app/constants";
 import { SlotAmount } from "./slot-amount";
 import { resolveAsset } from "@/content";
