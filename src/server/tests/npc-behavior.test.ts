@@ -89,4 +89,23 @@ describe("npc behavior", () => {
 
     expect(mob.state.lockedPlayerId).toBe(socket.id);
   }, 30000);
+
+  it("an attack windup waits for world ticks, not wall-clock time", async () => {
+    const { world, player } = await login("warrior");
+    const mob = Object.values<Anything>(world.npcs).find(
+      (npc) => npc.room?.name === player.roomName && !npc.state.isDead,
+    );
+    world.loop.pause();
+    try {
+      const target = { id: player.id, x: mob.x, y: mob.y };
+      mob.intendAttack({ direction: "down", castAngle: 0, windupMs: 10 }, target);
+      expect(mob.state.isAiming).toBe(true);
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      expect(mob.state.isAiming).toBe(true);
+      mob.update(0, 16);
+      expect(mob.state.isAiming).toBe(false);
+    } finally {
+      world.loop.resume();
+    }
+  });
 });
