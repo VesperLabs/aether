@@ -218,7 +218,7 @@ export class Spell extends Phaser.GameObjects.Container {
   destroy() {
     if (this.scene) this.scene.events.off("update", this.update, this);
     if (this.scene) this.scene.physics.world.disable(this);
-    super.destroy(true);
+    super.destroy();
   }
 }
 
