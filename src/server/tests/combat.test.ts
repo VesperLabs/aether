@@ -110,6 +110,24 @@ describe("attacking", () => {
     expect(events.modifyPlayerStat.some((e) => e.type === "sp" && e.amount < 0)).toBe(true);
   });
 
+  it("a mob that is hit locks onto the attacker's socket id", async () => {
+    const { socket, world, player } = await login("warrior");
+    const { mob, place } = weakMobNear(world, player, { x: 0, y: 0 });
+    mob.stats.hp = mob.stats.maxHp = 100000;
+    player.id = "not-the-socket-id";
+
+    await until(
+      () => mob.stats.hp < 100000,
+      () => {
+        place();
+        socket.emit("attack", { count: 1, direction: "down", castAngle: 0 });
+      },
+      150,
+    );
+
+    expect(mob.state.lockedPlayerId).toBe(socket.id);
+  });
+
   it("does not attack again before the attack delay has passed", async () => {
     const { socket, player, events } = await login("warrior");
     socket.emit("attack", { count: 1, direction: "down", castAngle: 0 });
