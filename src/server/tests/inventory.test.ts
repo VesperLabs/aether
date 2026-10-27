@@ -149,7 +149,9 @@ describe("inventory over the socket", () => {
   it("answers dropping on a full bag with an error", async () => {
     const { socket, player } = await login("warrior");
     const bag = build("bag", "rare", "smallPouch");
-    bag.items = [build("pants", "common", "clothPants")];
+    bag.items = Array.from({ length: bag.space as number }, () =>
+      build("pants", "common", "clothPants"),
+    );
     player.inventory = [bag, build("armor", "common", "clothRobe")];
     const message = once(socket, "message");
     socket.emit("moveItem", {

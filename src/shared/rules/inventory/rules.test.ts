@@ -194,6 +194,19 @@ describe("moveItem and bags", () => {
     });
   });
 
+  it("swaps with bag slot 0 instead of picking an open slot", () => {
+    const s = state({ inventory: [bag([sword, null]), robe] });
+    const next = moved(moveItem(s, { from: inv(1), to: inBag(0) }, context()));
+    expect(next.inventory[0]?.items?.[0]?.id).toBe("robe1");
+    expect(next.inventory[1]?.id).toBe("sword1");
+  });
+
+  it("fills an empty bag up to its space", () => {
+    const s = state({ inventory: [{ ...bag([]), space: 4 }, robe] });
+    const next = moved(moveItem(s, { from: inv(1), to: inBag(undefined) }, context()));
+    expect(next.inventory[0]?.items?.[0]?.id).toBe("robe1");
+  });
+
   it("does not put bags in bags", () => {
     const other = { ...bag(), id: "bag2" };
     const s = state({ inventory: [bag(), other] });
