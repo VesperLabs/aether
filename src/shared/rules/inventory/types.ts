@@ -15,6 +15,8 @@ export interface InventoryItem {
   buffs?: Record<string, any>;
   /** Contents of a bag. */
   items?: (InventoryItem | null | undefined)[];
+  /** How many slots a bag has. */
+  space?: number;
   [key: string]: any;
 }
 

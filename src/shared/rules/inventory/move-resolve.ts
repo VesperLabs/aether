@@ -90,8 +90,8 @@ function resolveTo(
       to.itemId = state.abilities[to.slot as string]?.id;
       return itemOf(findAbilityById(state.abilities, to.itemId));
     case "bag": {
-      // A slot of 0 counts as "dropped on the bag itself", like any falsy slot.
-      if (!to.slot) {
+      // No slot means "dropped on the bag itself".
+      if (to.slot === null || to.slot === undefined || to.slot === "") {
         to.slot = findOpenBagSlot(state.inventory, to.bagId, fromItem);
       }
       const item = cloneItem(findBagItemBySlot(state.inventory, to.bagId, to.slot));

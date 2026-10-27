@@ -77,9 +77,10 @@ export function findOpenBagSlot(
   item: InventoryItem | null | undefined,
 ): number | undefined {
   const bag = inventory?.find((entry) => entry?.id === bagId);
-  const bagItems = bag?.items ?? [null];
+  const bagItems = bag?.items ?? [];
+  const size = Math.max(bagItems.length, bag?.space ?? 0, bag?.items ? 0 : 1);
   let openSlot: number | undefined;
-  for (let i = 0; i < bagItems.length; i++) {
+  for (let i = 0; i < size; i++) {
     // Item found (stackable)
     if (bagItems[i]?.id === item?.id) {
       openSlot = i;
