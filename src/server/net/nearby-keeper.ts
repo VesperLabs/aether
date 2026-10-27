@@ -1,4 +1,4 @@
-import { canTalkToNpc } from "@/shared/rules/npc-behavior";
+import { canTalkToNpc } from "@/rules/npc-behavior";
 import type { ServerWorld } from "../server-world";
 
 /**

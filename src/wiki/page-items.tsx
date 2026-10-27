@@ -1,6 +1,6 @@
 import { Box, Flex } from "@/ui";
 import { Slot, type WikiItem } from "./slot";
-import { itemList } from "@/shared/content";
+import { itemList } from "@/content";
 import { RowTitle } from "./row-title";
 import { Fragment } from "react";
 

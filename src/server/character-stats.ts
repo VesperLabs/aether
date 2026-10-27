@@ -1,5 +1,5 @@
-import { calculateStats, type StatsInput } from "@/shared/rules/stats";
-import type { CharacterState } from "@/shared/rules/character";
+import { calculateStats, type StatsInput } from "@/rules/stats";
+import type { CharacterState } from "@/rules/character";
 
 /** The fields of a character (live or loaded from the database) that stats are calculated from. */
 type StatsHolder = StatsInput & { state?: CharacterState };

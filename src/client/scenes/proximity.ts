@@ -1,5 +1,5 @@
-import type { CharacterState } from "@/shared/rules/character";
-import { distanceTo } from "@/shared/rules/world";
+import type { CharacterState } from "@/rules/character";
+import { distanceTo } from "@/rules/world";
 import { isMobile } from "@/ui/is-mobile";
 import type { Player } from "@/client/views/player";
 import type { Sign } from "@/client/views/sign";

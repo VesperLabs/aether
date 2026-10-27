@@ -1,4 +1,4 @@
-import type { CharacterState } from "@/shared/rules/character";
+import type { CharacterState } from "@/rules/character";
 import type { createBaseUser } from "./base-user";
 
 /** A user as stored in the `users` collection. */

@@ -1,7 +1,7 @@
 import { Player } from "@/client/views/player";
 import type { CharacterArgs } from "@/client/views/character";
 import { LootItem } from "@/client/views/loot-item";
-import type { FullCharacterWire, LootMessage } from "@/shared/network";
+import type { FullCharacterWire, LootMessage } from "@/network";
 import type { SceneMain } from "./main-scene";
 
 export function addPlayer(scene: SceneMain, user: CharacterArgs) {

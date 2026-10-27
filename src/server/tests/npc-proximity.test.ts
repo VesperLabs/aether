@@ -3,8 +3,8 @@ import http from "node:http";
 import type { AddressInfo } from "node:net";
 import { io as connect, type Socket } from "socket.io-client";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
-import { ItemBuilder } from "@/shared/content";
-import { NPC_TALK_LATENCY_TOLERANCE, NPC_TALK_RANGE } from "@/shared/rules/npc-behavior";
+import { ItemBuilder } from "@/content";
+import { NPC_TALK_LATENCY_TOLERANCE, NPC_TALK_RANGE } from "@/rules/npc-behavior";
 import { initFakeDatabase } from "../persistence";
 import { GameServer } from "../game-server";
 

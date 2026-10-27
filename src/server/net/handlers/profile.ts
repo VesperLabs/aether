@@ -1,6 +1,6 @@
-import { getFullCharacterState } from "@/shared/network/sync";
-import { skinTints, hairTints } from "@/shared/content";
-import type { ParsedCommand } from "@/shared/network";
+import { getFullCharacterState } from "@/network/sync";
+import { skinTints, hairTints } from "@/content";
+import type { ParsedCommand } from "@/network";
 import type { CommandContext } from "@/server/net/command-context";
 import { isInRoom } from "@/server/player-room";
 

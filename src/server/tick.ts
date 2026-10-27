@@ -1,6 +1,6 @@
 import type { ServerWorld } from "./server-world";
-import { moveBodyFreely, moveBodyThroughMap } from "@/shared/rules/movement";
-import type { Frame, System } from "@/shared/rules/world";
+import { moveBodyFreely, moveBodyThroughMap } from "@/rules/movement";
+import type { Frame, System } from "@/rules/world";
 import {
   createDeltaSnapshot,
   createSnapshot,
@@ -8,8 +8,8 @@ import {
   compactTickState,
   diffTickStates,
   type TickStateExpanded,
-} from "@/shared/network";
-import { SNAPSHOT_KEYFRAME_INTERVAL } from "@/shared/network";
+} from "@/network";
+import { SNAPSHOT_KEYFRAME_INTERVAL } from "@/network";
 import { getBuffRoomState, getTickRoomState } from "@/server/net/room-sync";
 import { updateRoomLoot } from "./loot-adapter";
 import { expireSpells } from "./spell-adapter";

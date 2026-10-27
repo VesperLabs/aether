@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import type { ClientGameSocket } from "@/shared/network";
+import type { ClientGameSocket } from "@/network";
 import type { SceneMain } from "./main-scene";
 import {
   assetList,
@@ -8,7 +8,7 @@ import {
   iconList,
   mapList,
   mapImageList,
-} from "@/shared/content";
+} from "@/content";
 import { IMAGE_CACHE } from "@/ui/image-tint";
 
 /**

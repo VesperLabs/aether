@@ -1,10 +1,10 @@
-import { getFullCharacterState } from "@/shared/network/sync";
-import { cloneJson } from "@/shared/content";
-import { addStackAmounts, resolveGrab } from "@/shared/rules/loot";
+import { getFullCharacterState } from "@/network/sync";
+import { cloneJson } from "@/content";
+import { addStackAmounts, resolveGrab } from "@/rules/loot";
 import { removeLoot, spawnLoot } from "../../loot-adapter";
-import { consumeItem as consumeItemRule, dropItem as dropItemRule } from "@/shared/rules/inventory";
+import { consumeItem as consumeItemRule, dropItem as dropItemRule } from "@/rules/inventory";
 import { applyInventoryState, toInventoryState } from "../../player-inventory";
-import type { ParsedCommand } from "@/shared/network";
+import type { ParsedCommand } from "@/network";
 import type { CommandContext } from "@/server/net/command-context";
 import { isInRoom } from "@/server/player-room";
 

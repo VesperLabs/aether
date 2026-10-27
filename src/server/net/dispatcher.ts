@@ -1,4 +1,4 @@
-import { commands, type CommandName, type ParsedCommand } from "@/shared/network";
+import { commands, type CommandName, type ParsedCommand } from "@/network";
 import type { CommandContext } from "./command-context";
 
 export type CommandHandler<K extends CommandName> = (
@@ -6,7 +6,7 @@ export type CommandHandler<K extends CommandName> = (
   payload: ParsedCommand<K>,
 ) => unknown;
 
-/** One handler for every command in `shared/network/commands.ts`. Adding a command adds a key here. */
+/** One handler for every command in `network/commands.ts`. Adding a command adds a key here. */
 export type CommandHandlers = { [K in CommandName]: CommandHandler<K> };
 
 function debugLog(...args: unknown[]) {

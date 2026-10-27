@@ -1,12 +1,12 @@
 import type { Player } from "../../player";
 import { runAdminCommand } from "../../admin/commands";
-import { getFullCharacterState } from "@/shared/network/sync";
+import { getFullCharacterState } from "@/network/sync";
 import {
   legacyAcceptPartyInvite,
   legacyInviteToParty,
   legacyLeaveParty,
 } from "../../party-adapter";
-import type { ParsedCommand } from "@/shared/network";
+import type { ParsedCommand } from "@/network";
 import type { CommandContext } from "@/server/net/command-context";
 import { findNearbyNpc } from "@/server/net/nearby-keeper";
 import { isInRoom } from "@/server/player-room";

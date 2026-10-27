@@ -1,5 +1,5 @@
-import type { BuiltItem } from "@/shared/content";
-import { itemHasRequiredStats } from "@/shared/rules/inventory";
+import type { BuiltItem } from "@/content";
+import { itemHasRequiredStats } from "@/rules/inventory";
 import { isEqual, get } from "@/ui/are-props-equal";
 import type { SlotProps } from "./slot";
 

@@ -1,5 +1,5 @@
 import { useState, useRef, useLayoutEffect, memo } from "react";
-import type { BuiltItem } from "@/shared/content";
+import type { BuiltItem } from "@/content";
 import type { HudCharacter } from "@/client/hud/app/context";
 import {
   Box,
@@ -14,7 +14,7 @@ import {
 import { ItemTooltip } from "@/client/hud/tooltips/item-tooltip";
 import { BLANK_IMAGE } from "@/client/hud/app/constants";
 import { SlotAmount } from "./slot-amount";
-import { resolveAsset } from "@/shared/content";
+import { resolveAsset } from "@/content";
 import { assetToCanvas } from "@/ui/image-tint";
 import { isMobile } from "@/ui/is-mobile";
 import { useDoubleTap } from "use-double-tap";

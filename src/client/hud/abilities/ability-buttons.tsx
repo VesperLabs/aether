@@ -1,6 +1,6 @@
-import { spellDetails, type BuiltItem, type SpellDefinition } from "@/shared/content";
+import { spellDetails, type BuiltItem, type SpellDefinition } from "@/content";
 import type { Cooldown, HudCharacter } from "@/client/hud/app/context";
-import { CONSUMABLES_BASES, POTION_BASES } from "@/shared/rules/inventory";
+import { CONSUMABLES_BASES, POTION_BASES } from "@/rules/inventory";
 import { applyTintToImage, loadCacheImage } from "@/ui/image-tint";
 import { arePropsEqualWithKeys } from "@/ui/are-props-equal";
 import { isMobile } from "@/ui/is-mobile";

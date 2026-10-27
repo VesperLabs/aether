@@ -1,4 +1,4 @@
-import { encodeWireDirection } from "@/shared/network/sync";
+import { encodeWireDirection } from "@/network/sync";
 import type { Player } from "@/client/views/player";
 import type { SceneHud } from "@/client/scenes/hud-scene";
 

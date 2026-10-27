@@ -1,8 +1,8 @@
-import type { AbilitySlot } from "@/shared/rules/spells";
+import type { AbilitySlot } from "@/rules/spells";
 import { ServerCharacter as Character, type CharacterArgs } from "./character";
 import type { ServerWorld } from "./server-world";
 import type { Player } from "./player";
-import type { Point, RoomData } from "@/shared/rules/world";
+import type { Point, RoomData } from "@/rules/world";
 import { createSpell } from "./spell-adapter";
 import { buildNpcBehaviorInput } from "./npc-behavior-adapter";
 import { buildEquipment, buildShop, type ItemRecipe } from "./npc-build";
@@ -14,10 +14,10 @@ import {
   type NpcAction,
   type NpcAbility,
   type NpcDecision,
-} from "@/shared/rules/npc-behavior";
-import { canHitPlayer } from "@/shared/rules/spells";
-import { createTimers, entitiesInRoom, getCharacterDirection } from "@/shared/rules/world";
-import { findNextWaypoint, isSolidTile, worldToTileX, worldToTileY } from "@/shared/rules/movement";
+} from "@/rules/npc-behavior";
+import { canHitPlayer } from "@/rules/spells";
+import { createTimers, entitiesInRoom, getCharacterDirection } from "@/rules/world";
+import { findNextWaypoint, isSolidTile, worldToTileX, worldToTileY } from "@/rules/movement";
 
 /** An NPC as the content tables define it, before it is placed in a world. */
 // Legacy: the keeper and nasty tables have different shapes; type them once they share a base.

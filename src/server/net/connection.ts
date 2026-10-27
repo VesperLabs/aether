@@ -1,5 +1,5 @@
 import type { ServerWorld } from "../server-world";
-import type { GameSocket } from "@/shared/network";
+import type { GameSocket } from "@/network";
 import { removePlayer } from "../remove-player";
 import { legacyLeaveParty } from "../party-adapter";
 import type { CommandContext } from "./command-context";

@@ -3,7 +3,7 @@ import type { SceneHud } from "@/client/scenes/hud-scene";
 import type { SceneMain } from "@/client/scenes/main-scene";
 import { playAudio } from "@/client/audio/play-audio";
 import { getSpinDirection } from "@/client/input/spin-direction";
-import { CONSUMABLES_BASES, POTION_BASES } from "@/shared/rules/inventory";
+import { CONSUMABLES_BASES, POTION_BASES } from "@/rules/inventory";
 import { updateAttackCooldown, updatePotionCooldown, updateSpellCooldown } from "./hero-cooldowns";
 import { isTypableFieldActive } from "./typable-field";
 

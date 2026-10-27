@@ -1,5 +1,5 @@
 import { useLayoutEffect, useState } from "react";
-import { assetList, type NastyDefinition } from "@/shared/content";
+import { assetList, type NastyDefinition } from "@/content";
 import { assetToCanvas } from "@/ui/image-tint";
 import { Box, Icon, STYLE_NON_EMPTY, Tooltip, Text, Flex } from "@/ui";
 import { TOOLTIP_STYLE } from ".";

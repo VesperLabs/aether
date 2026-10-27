@@ -1,7 +1,7 @@
 import { MongoClient, type Db } from "mongodb";
 import { userSchema } from "./schema";
 import { filterNullEmpty } from "./filter-empty";
-import { calculateNextMaxExp } from "@/shared/rules/stats";
+import { calculateNextMaxExp } from "@/rules/stats";
 import { createBaseUser } from "./base-user";
 import { pruneItemFromUser, type StoredItemLists } from "./prune-item";
 import type { Database, UserDocument } from "./database";

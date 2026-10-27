@@ -71,7 +71,7 @@ interface Coordinate {
   y: number;
 }
 
-type Room = import("@/shared/rules/world").RoomData;
+type Room = import("@/rules/world").RoomData;
 
 type Elements = "earth" | "fire" | "water" | "light" | "physical" | "holy";
 

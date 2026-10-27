@@ -2,7 +2,7 @@ import {
   DEFAULT_SERVER_FPS,
   EXTRA_INTERPOLATION_BUFFER_MS,
   INTERPOLATION_BUFFER_TICKS,
-} from "@/shared/network";
+} from "@/network";
 import { createNetInterpolator } from "./interpolation";
 
 const serverTickHz = (() => {

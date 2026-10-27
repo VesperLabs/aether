@@ -1,7 +1,7 @@
 import type { Npc } from "./npc";
 import type { Player } from "./player";
-import { entitiesInRoom, nearestTo } from "@/shared/rules/world";
-import type { NpcBehaviorInput, NpcPlayerView } from "@/shared/rules/npc-behavior";
+import { entitiesInRoom, nearestTo } from "@/rules/world";
+import type { NpcBehaviorInput, NpcPlayerView } from "@/rules/npc-behavior";
 
 /** What the behavior rules need to know about a player. */
 const toPlayerView = (player: Player | undefined): NpcPlayerView | null =>

@@ -1,5 +1,5 @@
-import { spellDetails } from "@/shared/content";
-import { POTION_COOLDOWN } from "@/shared/rules/combat";
+import { spellDetails } from "@/content";
+import { POTION_COOLDOWN } from "@/rules/combat";
 import type { Player } from "@/client/views/player";
 import type { AbilitySlot } from "@/client/window-events";
 

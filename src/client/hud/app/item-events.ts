@@ -1,6 +1,6 @@
 import React from "react";
-import { CONSUMABLES_BASES } from "@/shared/rules/inventory";
-import type { ClientGameSocket } from "@/shared/network";
+import { CONSUMABLES_BASES } from "@/rules/inventory";
+import type { ClientGameSocket } from "@/network";
 import type { DropItem, HudCharacter } from "./context";
 
 interface ItemEventDeps {

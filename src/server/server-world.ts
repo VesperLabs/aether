@@ -1,5 +1,5 @@
-import type { GameIo } from "@/shared/network";
-import type { TickLoop, World } from "@/shared/rules/world";
+import type { GameIo } from "@/network";
+import type { TickLoop, World } from "@/rules/world";
 import type { Npc } from "./npc";
 import type { Database } from "./persistence/database";
 import type { Player } from "./player";

@@ -13,12 +13,12 @@ import { ThemeUIProvider, Box, useViewportSizeEffect, Modal } from "@/ui";
 import { getHudZoom } from "./hud-zoom";
 import "react-tooltip/dist/react-tooltip.css";
 import type { Theme } from "theme-ui";
-import { DEFAULT_USER_SETTINGS } from "@/shared/rules/world";
+import { DEFAULT_USER_SETTINGS } from "@/rules/world";
 import { VideoFrame } from "@/client/hud/video/video-frame";
 import { ModalSettings } from "@/client/hud/settings/modal-settings";
 import type Phaser from "phaser";
 import type Peer from "peerjs";
-import type { ChatMessage, ClientGameSocket, PartyMessage } from "@/shared/network";
+import type { ChatMessage, ClientGameSocket, PartyMessage } from "@/network";
 import type { Sign } from "@/client/views/sign";
 import {
   AppContext,

@@ -9,10 +9,10 @@ import {
   type BuiltItem,
   type ItemSetName,
   type TriggerDefinition,
-} from "@/shared/content";
+} from "@/content";
 import type { HudCharacter } from "@/client/hud/app/context";
-import { formatStats } from "@/shared/rules/stats";
-import { CONSUMABLES_BASES, itemHasRequiredStats } from "@/shared/rules/inventory";
+import { formatStats } from "@/rules/stats";
+import { CONSUMABLES_BASES, itemHasRequiredStats } from "@/rules/inventory";
 import { TooltipLabel } from "./tooltip-label";
 import { TextDivider } from "@/client/hud/menu/text-divider";
 import { Tooltip } from "./tooltip";

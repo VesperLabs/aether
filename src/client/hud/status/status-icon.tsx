@@ -3,7 +3,7 @@ import { useAppContext } from "@/client/hud/app/context";
 import { useEffect, useState, type ReactNode } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
 import { isMobile } from "@/ui/is-mobile";
-import { msToHours } from "@/shared/rules/stats";
+import { msToHours } from "@/rules/stats";
 import { Tooltip } from "@/client/hud/tooltips/tooltip";
 
 const STATUS_TOOLTIP_ID = "STATUS_TOOLTIP_ID";

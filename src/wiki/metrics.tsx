@@ -1,4 +1,4 @@
-import { msToHours } from "@/shared/rules/stats";
+import { msToHours } from "@/rules/stats";
 import { Box, Text } from "@/ui";
 import { STATIC_ROW_STYLES, RowTitle } from ".";
 import { useQuery } from "@tanstack/react-query";
