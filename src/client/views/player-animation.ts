@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import type { Player } from "./player";
+import { getSwingWeaponAngle } from "./swing-arc";
 
 const BLANK_TEXTURE = "human-blank";
 
@@ -9,6 +10,104 @@ export function checkIsFlash(p: Player, delta: number) {
     p.state.isFlash = false;
     p.drawCharacterFromUserData();
   }
+}
+
+type Layer =
+  | "shadow"
+  | "skin"
+  | "chest"
+  | "pants"
+  | "boots"
+  | "gloves"
+  | "armor"
+  | "accessory"
+  | "hair"
+  | "face"
+  | "whiskers"
+  | "helmet"
+  | "handLeft"
+  | "handRight";
+
+/** Back to front, per facing direction. Hands on the far side go behind the body. */
+const LAYER_ORDER: Record<string, Layer[]> = {
+  up: [
+    "shadow",
+    "handRight",
+    "handLeft",
+    "skin",
+    "chest",
+    "pants",
+    "boots",
+    "gloves",
+    "armor",
+    "accessory",
+    "hair",
+    "face",
+    "whiskers",
+    "helmet",
+  ],
+  down: [
+    "shadow",
+    "skin",
+    "hair",
+    "pants",
+    "boots",
+    "chest",
+    "armor",
+    "gloves",
+    "face",
+    "whiskers",
+    "accessory",
+    "helmet",
+    "handRight",
+    "handLeft",
+  ],
+  left: [
+    "shadow",
+    "handRight",
+    "skin",
+    "pants",
+    "boots",
+    "chest",
+    "armor",
+    "hair",
+    "face",
+    "whiskers",
+    "accessory",
+    "helmet",
+    "gloves",
+    "handLeft",
+  ],
+  right: [
+    "shadow",
+    "handLeft",
+    "skin",
+    "pants",
+    "boots",
+    "chest",
+    "armor",
+    "hair",
+    "face",
+    "whiskers",
+    "accessory",
+    "helmet",
+    "gloves",
+    "handRight",
+  ],
+};
+/** Drawn over the body in every direction. */
+const OVERLAYS = ["buffRack", "userName", "bubble", "hpBar"] as const;
+
+/** Stacks the rig's layers for the facing direction. Only reorders when the direction changes. */
+function orderLayers(p: Player) {
+  /* Facing down, a shield is held in front of the weapon */
+  const isLeftShield = p.visibleEquipment?.handLeft?.type === "shield";
+  const key = `${p.direction}:${isLeftShield}`;
+  if (p.layerOrderKey === key) return;
+  p.layerOrderKey = key;
+  const order = [...(LAYER_ORDER[p.direction] ?? LAYER_ORDER.down)];
+  if (p.direction === "down" && isLeftShield) order.push("handRight");
+  for (const layer of [...order, ...OVERLAYS]) p.rig.bringToTop(p[layer]);
 }
 
 export function drawFrame(p: Player) {
@@ -31,69 +130,9 @@ export function drawFrame(p: Player) {
     face,
     whiskers,
     hair,
-    bubble,
-    hpBar,
-    userName,
-    talkMenu,
   } = p;
 
-  /* Depth sort based on direction */
-
-  p.bringToTop(skin);
-  p.bringToTop(hair);
-  p.bringToTop(helmet);
-  p.bringToTop(chest);
-  p.bringToTop(pants);
-  p.bringToTop(boots);
-  p.bringToTop(gloves);
-  p.bringToTop(armor);
-
-  if (direction === "up") {
-    p.bringToTop(accessory);
-    p.bringToTop(hair);
-    p.bringToTop(face);
-    p.bringToTop(whiskers);
-    p.bringToTop(helmet);
-    p.sendToBack(handLeft);
-    p.sendToBack(handRight);
-  } else if (direction === "down") {
-    p.bringToTop(chest);
-    p.bringToTop(armor);
-    p.bringToTop(gloves);
-    p.bringToTop(face);
-    p.bringToTop(whiskers);
-    p.bringToTop(accessory);
-    p.bringToTop(helmet);
-    p.bringToTop(handRight);
-    p.bringToTop(handLeft);
-  } else if (direction === "left") {
-    p.bringToTop(chest);
-    p.bringToTop(armor);
-    p.bringToTop(hair);
-    p.bringToTop(face);
-    p.bringToTop(whiskers);
-    p.bringToTop(accessory);
-    p.bringToTop(helmet);
-    p.bringToTop(gloves);
-    p.bringToTop(handLeft);
-    p.sendToBack(handRight);
-  } else if (direction === "right") {
-    p.bringToTop(chest);
-    p.bringToTop(armor);
-    p.bringToTop(hair);
-    p.bringToTop(face);
-    p.bringToTop(whiskers);
-    p.bringToTop(accessory);
-    p.bringToTop(helmet);
-    p.bringToTop(gloves);
-    p.sendToBack(handLeft);
-    p.bringToTop(handRight);
-  }
-
-  p.bringToTop(userName);
-  p.bringToTop(bubble);
-  p.bringToTop(hpBar);
-  p.bringToTop(talkMenu);
+  orderLayers(p);
 
   p?.playAnim(skin, [profile?.race, direction, action]);
   if (profile?.race === "human") {
@@ -211,16 +250,17 @@ function playWeapons(player: Player) {
   const isLeftRanged = player.hasRangedWeaponLeft();
   const isRightFist = visibleEquipment?.handRight?.base?.includes("fist");
   const isLeftFist = visibleEquipment?.handLeft?.base?.includes("fist");
-  const isRightShield = visibleEquipment?.handRight?.type === "shield";
-  const isLeftShield = visibleEquipment?.handLeft?.type === "shield";
 
-  if (direction === "down") {
-    if (isRightShield) {
-      player.bringToTop(handLeft);
-    }
-    if (isLeftShield) {
-      player.bringToTop(handRight);
-    }
+  /* A melee swing turns the weapon with its blade, in the hand and flips the attack frame gave it */
+  for (const hand of ["handLeft", "handRight"] as const) {
+    const isFist = hand === "handLeft" ? isLeftFist : isRightFist;
+    const pose = hand === "handLeft" ? left : right;
+    const angle =
+      isFist || !pose
+        ? undefined
+        : getSwingWeaponAngle(player, hand, pose, action.startsWith("attack"));
+    if (angle === undefined) continue;
+    player[hand].setAngle(angle);
   }
 
   if (action === "attack_right") {

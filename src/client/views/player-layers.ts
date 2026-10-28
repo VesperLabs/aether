@@ -15,7 +15,7 @@ import { WeaponSprite } from "./weapon-sprite";
 import { BuffRack } from "./buff-rack";
 import { deriveElements } from "./weapon-elements";
 
-const { Sprite, BitmapText } = Phaser.GameObjects;
+const { Sprite, BitmapText, Container } = Phaser.GameObjects;
 const BLANK_TEXTURE = "human-blank";
 
 /** Creates every sprite layer of a character (skin, gear, bars, bubble) and adds it to the container. */
@@ -70,26 +70,31 @@ export function createSpriteLayers(player: Player) {
   player.talkMenu = scene.add
     .existing(new Sprite(scene, 6, player?.headY - 6, "icons", "chat"))
     .setVisible(false);
-  player.add(player.shadow);
-  player.add(player.chest);
-  player.add(player.skin);
-  player.add(player.face);
-  player.add(player.whiskers);
-  player.add(player.hair);
-  player.add(player.accessory);
-  player.add(player.armor);
-  player.add(player.boots);
-  player.add(player.gloves);
-  player.add(player.pants);
-  player.add(player.helmet);
-  player.add(player.handLeft);
-  player.add(player.handRight);
-  player.add(player.bubble);
-  player.add(player.userName);
-  player.add(player.hpBar);
+  /* Everything that moves with the body goes in the rig, so lunges and flinches move it as one */
+  player.rig = scene.add.existing(new Container(scene, 0, 0));
+  player.rig.add([
+    player.shadow,
+    player.chest,
+    player.skin,
+    player.face,
+    player.whiskers,
+    player.hair,
+    player.accessory,
+    player.armor,
+    player.boots,
+    player.gloves,
+    player.pants,
+    player.helmet,
+    player.handLeft,
+    player.handRight,
+    player.buffRack,
+    player.userName,
+    player.bubble,
+    player.hpBar,
+  ]);
   player.add(player.corpse);
+  player.add(player.rig);
   player.add(player.talkMenu);
-  player.add(player.buffRack);
 
   if (player.isHero) {
     player.add(player.crosshair);
@@ -100,6 +105,8 @@ export function createSpriteLayers(player: Player) {
 export function applyAppearance(player: Player) {
   const { profile, visibleEquipment } = player || {};
   const isBoss = profile?.scale > 1;
+  /* Clears a hit flash, including the solid white fill mode */
+  player.doFlashAnimation(0xffffff);
   if (profile?.userName) {
     player.updateUserName();
   }

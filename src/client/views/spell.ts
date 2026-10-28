@@ -3,6 +3,7 @@ import { playAudio } from "@/client/audio/play-audio";
 import type { Point } from "@/rules/world";
 import type { Player } from "./player";
 import { toTint } from "./tint";
+import { SwingArc } from "./swing-arc";
 import { getAngleFromDirection, distanceTo } from "@/rules/world";
 import {
   BUFF_SPELLS,
@@ -13,12 +14,22 @@ import {
   usesLeftHand,
   usesRightHand,
 } from "@/rules/spells";
+import { WEAPON_GRIP, getWeaponTip } from "@/content";
 const Sprite = Phaser.GameObjects.Sprite;
 const BLANK_TEXTURE = "human-blank";
 
-const SPELL_NAME_ANIM_MAP: Record<string, string> = {
-  "attack-melee": "spell-anim-slash-physical",
-  "flame-slash": "spell-anim-slash-fire",
+/** Which way a weapon's art points (degrees on screen) and how long it is, from its tip. */
+function getBladeGeometry(texture: string | undefined) {
+  const tip = getWeaponTip(texture);
+  const dx = tip.x - WEAPON_GRIP.x;
+  const dy = tip.y - WEAPON_GRIP.y;
+  return { degrees: Phaser.Math.RadToDeg(Math.atan2(dy, dx)), length: Math.hypot(dx, dy) };
+}
+
+/** The colour of each melee swing's arc. */
+const SWING_COLORS: Record<string, number> = {
+  "attack-melee": 0xdfe8ff,
+  "flame-slash": 0xff7a2a,
 };
 
 /** What a spell is cast from: an ability's details, or the plain attack of a swing. */
@@ -98,50 +109,29 @@ export class Spell extends Phaser.GameObjects.Container {
     this.body.setCircle(this?.bodySize, -this?.bodySize, -this?.bodySize);
 
     if (this.isMeleeAttack) {
-      let viewSize = 44;
-      let tiltAngle = 48;
-      const attackSpellAnim = SPELL_NAME_ANIM_MAP[this.spellName];
-      const numFrames = this.scene.anims.get(attackSpellAnim)?.frames?.length;
-
-      this.spell.play(attackSpellAnim);
-      this.spell.anims.msPerFrame = Math.floor(this.maxVisibleTime / (numFrames as number));
-      this.spell.setAngle(getAngleFromDirection(caster?.direction) - 90);
-
+      const isLeft = usesLeftHand(this.action);
+      const isRight = usesRightHand(this.action);
       this.stickToCaster = true;
-      /* Hack: Up range is too long. This hack makes the top-down view more realistic */
-      if (caster?.direction === "up") {
-        this.y = this.caster.y;
-      }
-
-      /* Hack: fixes placement for non-human units .*/
-      if (caster.profile.race !== "human") {
-        const difference =
-          ((this.caster.hitBox.body as Phaser.Physics.Arcade.Body).height -
-            this.caster.body.height) /
-          2;
-        this.y = this.caster.y - difference;
-      }
-
-      if (usesLeftHand(this.action)) {
-        this.setAngle(tiltAngle);
-        const rangeLeft = caster?.equipment?.handLeft?.stats?.range * 2 || caster?.body?.radius / 8;
-
-        this.spell.displayWidth = viewSize * rangeLeft;
-        this.spell.displayHeight = viewSize * rangeLeft;
-        this.spell.setFlipX(false);
-      }
-
-      // npcs without attack animations will stand here
-      if (usesRightHand(this.action)) {
-        this.setAngle(-tiltAngle);
-        const rangeRight =
-          caster?.equipment?.handRight?.stats?.range * 2 || caster?.body?.radius / 8;
-
-        this.spell.displayWidth = viewSize * rangeRight;
-        this.spell.displayHeight = viewSize * rangeRight;
-        this.spell.setFlipX(true);
-      }
-      this.setScale(this?.caster?.proScale);
+      /* npcs without attack animations use neither hand: they still swing, at body reach */
+      const hand = isLeft && !isRight ? "handLeft" : "handRight";
+      /* Characters without attack animations swing no weapon: their arc is their body's reach */
+      const isWielded = isLeft || isRight;
+      const blade = getBladeGeometry(caster.visibleEquipment?.[hand]?.texture);
+      this.add(
+        new SwingArc(scene, {
+          reach: isWielded ? blade.length : caster.getWeaponRange(hand),
+          /* Turns around the hand holding the weapon, which this spell follows from body centre */
+          pivot: isWielded
+            ? () => ({ x: caster[hand].x, y: caster[hand].y - caster.bodyCenterY })
+            : undefined,
+          facing: getAngleFromDirection(caster?.direction),
+          /* Matches the sword animations: right-hand swings sweep counter-clockwise */
+          clockwise: isLeft && !isRight,
+          wielder: isWielded ? { character: caster, hand, artDegrees: blade.degrees } : undefined,
+          color: SWING_COLORS[this.spellName] ?? SWING_COLORS["attack-melee"],
+          duration: this.maxVisibleTime,
+        }),
+      );
     } else {
       this.setScale(shape.scale);
     }
@@ -209,8 +199,8 @@ export class Spell extends Phaser.GameObjects.Container {
       this.setDepth(100 + this.y + this.bodySize);
     }
     if (this.stickToCaster) {
-      this.x = this.caster.x;
-      this.y = this.caster.y + this.caster.bodyCenterY;
+      this.x = this.caster.x + this.caster.rig.x;
+      this.y = this.caster.y + this.caster.bodyCenterY + this.caster.rig.y;
       return;
     }
     this.body.setVelocity(this.velocityX, this.velocityY);

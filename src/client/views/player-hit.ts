@@ -4,6 +4,9 @@ import { Damage } from "./damage";
 import { Buff } from "./buff";
 import { Hit } from "./hit";
 
+/** How long a hit paints the body solid white before the red tint, in ms. */
+const WHITE_FLASH_MS = 50;
+
 /** A hit as the client plays it. Regen and stat changes have no attacker or target. */
 export type HitEffect = Pick<HitMessage, "type"> & Partial<Omit<HitMessage, "type">>;
 
@@ -32,9 +35,7 @@ export function applyHit(player: Player, hit: HitEffect, showDamage = true) {
       player.modifyStat("hp", hit?.amount);
       if (isDamage) {
         scene.add.existing(new Hit(player.scene, player, elements));
-        player.doFlashAnimation(0xff0000);
-        player.state.lastFlash = Date.now();
-        player.state.isFlash = true;
+        flashHit(player);
       } else {
         if (elements?.includes("holy")) {
           scene.add.existing(new Hit(player.scene, player, elements));
@@ -58,4 +59,15 @@ export function applyHit(player: Player, hit: HitEffect, showDamage = true) {
   }
 
   player.updateHpBar();
+}
+
+/** A solid white impact frame, then the red damage tint (cleared by `checkIsFlash`). */
+function flashHit(player: Player) {
+  player.doFlashAnimation(0xffffff, true);
+  player.state.lastFlash = Date.now() + WHITE_FLASH_MS;
+  player.state.isFlash = true;
+  player.scene.time.delayedCall(WHITE_FLASH_MS, () => {
+    if (!player.active || player.state.isDead) return;
+    player.doFlashAnimation(0xff0000);
+  });
 }
