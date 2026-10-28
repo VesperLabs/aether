@@ -3,6 +3,8 @@ import type { SceneMain } from "@/client/scenes/main-scene";
 
 /* TODO: Move to DB */
 const SFX_VOLUME = 0.25;
+/** Each play is pitched up or down by up to this many cents, so repeats don't sound robotic. */
+const SFX_DETUNE_CENTS = 120;
 
 export const playAudio = ({
   scene,
@@ -27,6 +29,7 @@ export const playAudio = ({
   const maxDistance = 500; // adjust this as needed
   const volume = SFX_VOLUME * (1 - distance / maxDistance);
   audio.setVolume(volume);
+  audio.setDetune((Math.random() * 2 - 1) * SFX_DETUNE_CENTS);
 
   audio.play();
 };

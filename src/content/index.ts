@@ -1,6 +1,7 @@
 export { assetList } from "./assets/asset-list";
 export type { AssetDefinition, NamedFileDefinition } from "./assets/asset-types";
 export { CLASS_ICON_MAP } from "./assets/class-icons";
+export { WEAPON_GRIP, WEAPON_TIPS, getWeaponTip } from "./assets/weapon-tips";
 export { iconList } from "./assets/icon-list";
 export { resolveAsset } from "./assets/resolve-asset";
 export { soundList } from "./assets/sound-list";

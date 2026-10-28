@@ -20,6 +20,8 @@ export class Damage extends Container {
 
     switch (hit.type) {
       case "buff":
+        /* Buff hits carry no amount; the buff shows itself (see `Buff`) */
+        this.setVisible(false);
         break;
       case "hp":
         if (isPositive) {
@@ -78,7 +80,8 @@ export class Damage extends Container {
     this.dt.setText(String(text));
     this.setDepth(99999);
     this.dt.setOrigin(0.5, 0.5);
-    this.dt.setPosition(this.width / 2, -10);
+    /* Scattered so numbers from fast hits do not stack on top of each other */
+    this.dt.setPosition(this.width / 2 + this.randomRange(10), -10 + this.randomRange(4));
 
     // exp follows the hero, other damage goes above everything
     if (hit.type === "exp") {
@@ -87,12 +90,18 @@ export class Damage extends Container {
       this.add(this.dt);
     }
 
+    /* Crits punch in big and settle */
+    if (hit.isCritical) {
+      this.dt.setScale(1.8);
+      scene.tweens.add({ targets: this.dt, scale: 1, duration: 180, ease: "Back.easeOut" });
+    }
+
     scene.tweens.add({
       targets: this.dt,
       props: {
         y: {
-          value: () => endY,
-          ease: "Power1",
+          value: () => this.dt.y + endY,
+          ease: "Back.easeOut",
         },
         fontSize: {
           value: () => 10,

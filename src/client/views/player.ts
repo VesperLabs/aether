@@ -9,6 +9,7 @@ import { Spell } from "./spell";
 import { getSpinDirection } from "@/client/input/spin-direction";
 import { applyAppearance, createSpriteLayers } from "./player-layers";
 import { applyHit, type HitEffect } from "./player-hit";
+import { playAttackLunge } from "./hit-impact";
 import type { LootItem } from "./loot-item";
 import { toTint } from "./tint";
 import type { Bubble } from "./bubble";
@@ -80,6 +81,9 @@ export class Player extends Character {
   declare userName: Phaser.GameObjects.BitmapText;
   declare buffRack: BuffRack;
   declare corpse: Sprite;
+  /** The body, gear, hands, name and bars: everything that moves together when the body is nudged. */
+  declare rig: Phaser.GameObjects.Container;
+  declare layerOrderKey?: string; // the direction and shield the rig was last stacked for
   declare talkMenu: Sprite;
   constructor(scene: SceneMain, args: CharacterArgs) {
     super(scene, args);
@@ -213,6 +217,7 @@ export class Player extends Character {
       });
     }
 
+    playAttackLunge(this, this.direction);
     // draw our physical animation.
     this.scene.add.existing(
       new Spell(this.scene, { id: null, caster: this, spellName, castAngle, action }),
@@ -309,17 +314,12 @@ export class Player extends Character {
       window.dispatchEvent(new Event("HERO_RESPAWN"));
     }
   }
-  doFlashAnimation(color = 0xffffff) {
-    this.hair.setTint(color);
-    this.skin.setTint(color);
-    this.chest.setTint(color);
-    this.armor.setTint(color);
-    this.helmet.setTint(color);
-    this.boots.setTint(color);
-    this.gloves.setTint(color);
-    this.accessory.setTint(color);
-    this.face.setTint(color);
-    this.whiskers.setTint(color);
+  /** Tints the body. `fill` paints it solid (a white hit frame); otherwise the tint multiplies. */
+  doFlashAnimation(color = 0xffffff, fill = false) {
+    const mode = fill ? Phaser.TintModes.FILL : Phaser.TintModes.MULTIPLY;
+    const layers = [this.hair, this.skin, this.chest, this.armor, this.helmet, this.boots];
+    layers.push(this.gloves, this.accessory, this.face, this.whiskers);
+    for (const layer of layers) layer.setTint(color).setTintMode(mode);
   }
   showHideNameAndBars() {
     const { state } = this ?? {};

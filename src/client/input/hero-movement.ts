@@ -135,8 +135,9 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
   hero.vx = vx;
   hero.vy = vy;
   hero.body.setVelocity(vx, vy);
-  hero.direction = direction;
+  /* A melee swing commits to the way it started; bows keep turning to aim */
+  if (!(hero.state.isAttacking && !hero.hasRangedWeapon())) hero.direction = direction;
 
-  emitPlayerInput(scene, hero, vx, vy, direction);
+  emitPlayerInput(scene, hero, vx, vy, hero.direction);
   hero.state.isIdle = hero.vx === vx && hero.vy === vy && vx === 0 && vy === 0;
 }

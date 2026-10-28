@@ -2,9 +2,16 @@ import Phaser from "phaser";
 const Sprite = Phaser.GameObjects.Sprite;
 
 const FRAME_SIZE = 4;
+/** After a drop, the ghost strip waits this long and then drains to the new value, in ms. */
+const GHOST_DELAY_MS = 250;
+const GHOST_DRAIN_MS = 300;
 
 export class Bar extends Phaser.GameObjects.Container {
   declare bar: Phaser.GameObjects.Sprite;
+  /** A pale strip behind the bar that drains slowly, showing how much was just lost. */
+  declare ghost: Phaser.GameObjects.Sprite;
+  declare ghostTween?: Phaser.Tweens.Tween;
+  declare percent: number;
   constructor(
     scene: Phaser.Scene,
     x: number,
@@ -48,6 +55,12 @@ export class Bar extends Phaser.GameObjects.Container {
       .setDisplaySize(width - FRAME_SIZE - FRAME_SIZE, FRAME_SIZE)
       .setTint(0x444444);
 
+    this.ghost = new Sprite(scene, FRAME_SIZE, FRAME_SIZE, "misc-bars", 0)
+      .setFrame(4)
+      .setOrigin(0, 0)
+      .setDisplaySize(width - FRAME_SIZE - FRAME_SIZE, FRAME_SIZE)
+      .setTint(0xffeeaa);
+
     this.bar = scene.add.existing(
       new Sprite(scene, FRAME_SIZE, FRAME_SIZE, "misc-bars", 0)
         .setFrame(4)
@@ -66,6 +79,7 @@ export class Bar extends Phaser.GameObjects.Container {
     this.add(left);
     this.add(right);
     this.add(bg);
+    this.add(this.ghost);
     this.add(this.bar);
     this.setScale(0.5);
     this.center();
@@ -75,7 +89,23 @@ export class Bar extends Phaser.GameObjects.Container {
     this.x = -Math.floor(this.width / 4);
   }
   setPercent(percent: number) {
-    const newWidth = (this.width - FRAME_SIZE - FRAME_SIZE) * percent;
-    this.bar.setDisplaySize(newWidth, this.bar.height);
+    if (percent === this.percent) return;
+    const isDrop = this.percent !== undefined && percent < this.percent;
+    const width = (this.width - FRAME_SIZE - FRAME_SIZE) * percent;
+    this.percent = percent;
+    this.bar.setDisplaySize(width, FRAME_SIZE);
+    this.ghostTween?.stop();
+    /* Healing (or the first fill) moves the ghost with the bar; a drop drains it after a beat */
+    if (!isDrop) {
+      this.ghost.setDisplaySize(width, FRAME_SIZE);
+      return;
+    }
+    this.ghostTween = this.scene.tweens.add({
+      targets: this.ghost,
+      displayWidth: width,
+      delay: GHOST_DELAY_MS,
+      duration: GHOST_DRAIN_MS,
+      ease: "Quad.easeIn",
+    });
   }
 }

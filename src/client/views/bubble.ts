@@ -14,6 +14,8 @@ export class Bubble extends Phaser.GameObjects.Container {
   declare left: Sprite;
   declare maxWidth: number;
   declare message: string | undefined;
+  /** The message the bubble was last sized for. */
+  declare laidOutMessage: string | undefined;
   declare right: Sprite;
   declare tail: Sprite;
   declare tl: Sprite;
@@ -103,8 +105,11 @@ export class Bubble extends Phaser.GameObjects.Container {
     if (!message) {
       return this.setVisible(false);
     }
+    /* Called every frame: only lay out again when the text changes, so offsets like recoil stick */
+    if (message === this.laidOutMessage && this.visible) return;
     this.setVisible(true);
     this.message = message;
+    this.laidOutMessage = message;
     this.bubbleText.setText(this.message);
     this.wrapBitmapText(this.bubbleText, this.maxWidth);
     this.width = this.bubbleText.width + 10;
