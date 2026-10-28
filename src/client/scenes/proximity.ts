@@ -1,6 +1,6 @@
 import type { CharacterState } from "@/rules/character";
 import { distanceTo } from "@/rules/world";
-import { isMobile } from "@/ui";
+import { isMobile } from "@/ui/kit/is-mobile";
 import type { Player } from "@/client/views/player";
 import type { Sign } from "@/client/views/sign";
 import type { NearbyPlayer, SceneMain } from "./main-scene";

@@ -120,6 +120,7 @@ core    network  →  rules  →  content  plain TypeScript: no engines, IO, Rea
 - **`ui/`** imports core, never an app. Group it by feature (`ui/item/`, `ui/character/`), mirroring `rules/`; generic widgets go in `ui/kit/`.
 - **Apps** (`server/`, `client/`, `wiki/`) import core and `ui/` (except `server/`), never each other.
 - Code outside a feature imports it only through its `index.ts`.
+  - Exception: Phaser code in `client/` (`scenes/`, `views/`, `net/`, `input/`) imports `ui/` modules directly (`@/ui/kit/is-mobile`), never the `@/ui` barrel. Phaser modules can't hot-reload, so a barrel import makes every `ui/` edit reload the whole game.
 
 ## Conventions
 
