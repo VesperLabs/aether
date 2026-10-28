@@ -1,4 +1,4 @@
-import { useState, useRef, useLayoutEffect, memo } from "react";
+import { useState, useRef, useLayoutEffect, useEffectEvent, memo } from "react";
 import { useDoubleTap } from "use-double-tap";
 import type { ThemeUIStyleObject } from "theme-ui";
 import { resolveAsset, type BuiltItem } from "@/content";
@@ -124,7 +124,7 @@ export const ItemSlot = memo(
       );
     };
 
-    const handleMouseMove = (e: MouseEvent) => {
+    const handleMouseMove = useEffectEvent((e: MouseEvent) => {
       if (!dragging) return;
       const image = imageRef.current as HTMLDivElement;
       const x = e.clientX - image.offsetWidth / 2;
@@ -142,9 +142,9 @@ export const ItemSlot = memo(
         );
       }
       setTarget(t);
-    };
+    });
 
-    const handleTouchMove = (e: TouchEvent) => {
+    const handleTouchMove = useEffectEvent((e: TouchEvent) => {
       if (!dragging) return;
       const image = imageRef.current as HTMLDivElement;
       const x = e.touches[0].clientX - image.offsetWidth / 2;
@@ -162,24 +162,24 @@ export const ItemSlot = memo(
         );
       }
       setTarget(t);
-    };
+    });
 
-    const handleMouseUp = (e: MouseEvent) => {
+    const handleMouseUp = useEffectEvent((e: MouseEvent) => {
       if (!dragging) return;
       const t = document.elementFromPoint(e.clientX, e.clientY);
       setTarget(t);
       dropItem(t);
       setDragging(false);
-    };
+    });
 
-    const handleTouchEnd = (e: TouchEvent) => {
+    const handleTouchEnd = useEffectEvent((e: TouchEvent) => {
       if (!dragging) return;
       e.stopPropagation();
       const t = document.elementFromPoint(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
       setTarget(t);
       dropItem(t);
       setDragging(false);
-    };
+    });
 
     const handleMouseEnter = () => {
       setHovering(true);
@@ -188,32 +188,34 @@ export const ItemSlot = memo(
       setHovering(false);
     };
 
+    const profile = player?.profile;
+
     /* Loads the item canvas data out of the texture */
     useLayoutEffect(() => {
       if (!item) return;
-      const asset = resolveAsset(item, player ?? DEFAULT_ASSET_USER);
+      const asset = resolveAsset(item, profile ? { profile } : DEFAULT_ASSET_USER);
       if (!asset) return;
       assetToCanvas({ asset, tint: item?.tint, setImageData });
-    }, [item]);
+    }, [item, profile]);
 
     /* Bind our global movement events */
     useLayoutEffect(() => {
       if (!shouldBindEvents) return;
-      document.addEventListener("touchend", handleTouchEnd, { passive: true });
-      document.addEventListener("mouseup", handleMouseUp, { passive: true });
-      document.addEventListener("mousemove", handleMouseMove, {
-        passive: true,
-      });
-      document.addEventListener("touchmove", handleTouchMove, {
-        passive: true,
-      });
+      const onTouchEnd = (e: TouchEvent) => handleTouchEnd(e);
+      const onMouseUp = (e: MouseEvent) => handleMouseUp(e);
+      const onMouseMove = (e: MouseEvent) => handleMouseMove(e);
+      const onTouchMove = (e: TouchEvent) => handleTouchMove(e);
+      document.addEventListener("touchend", onTouchEnd, { passive: true });
+      document.addEventListener("mouseup", onMouseUp, { passive: true });
+      document.addEventListener("mousemove", onMouseMove, { passive: true });
+      document.addEventListener("touchmove", onTouchMove, { passive: true });
       return () => {
-        document.removeEventListener("touchend", handleTouchEnd);
-        document.removeEventListener("mouseup", handleMouseUp);
-        document.removeEventListener("mousemove", handleMouseMove);
-        document.removeEventListener("touchmove", handleTouchMove);
+        document.removeEventListener("touchend", onTouchEnd);
+        document.removeEventListener("mouseup", onMouseUp);
+        document.removeEventListener("mousemove", onMouseMove);
+        document.removeEventListener("touchmove", onTouchMove);
       };
-    }, [dragging, item]);
+    }, [shouldBindEvents]);
 
     const outerMouseBinds = {
       onMouseEnter: handleMouseEnter,

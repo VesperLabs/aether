@@ -7,7 +7,14 @@ import {
 } from "@/content";
 import { filterVisibleEquipment } from "@/rules/character";
 import { tintCanvas, loadCacheImage } from "@/ui/kit";
-import { memo, useEffect, useRef, type ComponentProps, type RefObject } from "react";
+import {
+  memo,
+  useEffect,
+  useEffectEvent,
+  useRef,
+  type ComponentProps,
+  type RefObject,
+} from "react";
 import type { CSSProperties } from "react";
 import { Box } from "@/ui/kit";
 import weaponAtlas from "../../../public/assets/atlas/weapon.json";
@@ -153,13 +160,17 @@ export const PlayerRender = memo(
     const buffCanvasRef = useRef<HTMLCanvasElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
+    /* Redraw only when the look changes, not on every new player object. */
+    const equipmentKey = JSON.stringify(player?.equipment);
+    const profileKey = JSON.stringify(player?.profile);
+    const drawPlayer = useEffectEvent(async () => {
+      await mergeImages({ shouldBuffer, buffCanvasRef, canvasRef, assets });
+      onLoadComplete(true);
+    });
+
     useEffect(() => {
-      const mergeImagesAsync = async () => {
-        await mergeImages({ shouldBuffer, buffCanvasRef, canvasRef, assets });
-        onLoadComplete(true);
-      };
-      mergeImagesAsync(); // Call the async function here
-    }, [JSON.stringify(player?.equipment), JSON.stringify(player?.profile)]);
+      drawPlayer();
+    }, [equipmentKey, profileKey]);
 
     return (
       <Box

@@ -13,7 +13,7 @@ import {
   TooltipContent,
 } from "@/ui";
 import { RowTitle } from "./row-title";
-import { useEffect, useState } from "react";
+import { useEffect, useEffectEvent, useState } from "react";
 import { PlayerRender } from "./player-render";
 import { questList } from "@/content";
 import { useLocation } from "wouter";
@@ -72,24 +72,24 @@ export function PagePlayers() {
     hasNextPage && fetchNextPage();
   };
 
-  const handleClickItem = (e: MouseEvent) => {
+  const handleClickItem = useEffectEvent((e: MouseEvent) => {
     const { id, base } = (e.target as HTMLElement).dataset ?? {};
     if (base === "bag") {
       toggleBagState(id as string);
     }
-  };
+  });
 
   /* If no tabs are open, clear player selection */
-  useEffect(() => {
-    if (Object.values(tabs)?.every((v) => !v) && bagState?.length === 0)
-      return setCurrentPlayer(null);
-  }, [tabs, bagState]);
+  if (currentPlayer && Object.values(tabs).every((v) => !v) && bagState.length === 0) {
+    setCurrentPlayer(null);
+  }
 
   /* Detect clicks */
   useEffect(() => {
-    document.addEventListener("click", handleClickItem);
+    const onClick = (e: MouseEvent) => handleClickItem(e);
+    document.addEventListener("click", onClick);
     return () => {
-      document.removeEventListener("click", handleClickItem);
+      document.removeEventListener("click", onClick);
     };
   }, []);
 

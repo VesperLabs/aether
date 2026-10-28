@@ -1,6 +1,7 @@
 import { msToHours } from "@/rules/stats";
 import { Box, Text } from "@/ui";
-import { STATIC_ROW_STYLES, RowTitle } from ".";
+import { STATIC_ROW_STYLES } from "./layout";
+import { RowTitle } from "./row-title";
 import { useQuery } from "@tanstack/react-query";
 import { fetchMetrics } from "./api";
 

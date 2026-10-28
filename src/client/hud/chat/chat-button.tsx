@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { MenuButton } from "@/client/hud/menu/menu-button";
 import { useAppContext } from "@/client/hud/app/context";
 import { Input, KeyboardKey } from "@/ui";
@@ -11,12 +11,11 @@ export const ChatButton = () => {
   /* Button fires its click on the mouseup after any press inside it, including presses in the input */
   const isPressInInput = useRef(false);
 
-  useEffect(() => {
-    if (!tabChat) {
-      setChatValue("");
-      setMessageIndex(-1);
-    }
-  }, [tabChat]);
+  /* Closing chat clears the draft and history position */
+  if (!tabChat && (chatValue || messageIndex !== -1)) {
+    setChatValue("");
+    setMessageIndex(-1);
+  }
 
   const myMessages = messages?.filter?.((m) => m?.from === hero?.profile?.userName);
 

@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useEffectEvent, useState, useRef } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
-import { Box, Flex } from ".";
+import { Box, Flex } from "theme-ui";
 
 interface KeyboardKeyProps {
   name: string;
@@ -72,7 +72,7 @@ export const KeyboardKey: React.FC<KeyboardKeyProps> = ({
 
   const keyDisplayName = getKeyDisplayLabel(name);
 
-  const handleKeyUp = (e: KeyboardEvent) => {
+  const handleKeyUp = useEffectEvent((e: KeyboardEvent) => {
     const keyName = getKeyName(e?.key || "");
     /* Enter: chat submit unmounts input before keyup; don't treat that keyup as HUD Enter.
      * Every KeyboardKey sees this keyup, so the flag isn't cleared here (the first one to see it
@@ -95,9 +95,9 @@ export const KeyboardKey: React.FC<KeyboardKeyProps> = ({
       if (!showOnly && !disabled) ref?.current?.click();
       setIsPressed(false);
     }
-  };
+  });
 
-  const handleKeyDown = (e: KeyboardEvent) => {
+  const handleKeyDown = useEffectEvent((e: KeyboardEvent) => {
     if (e.repeat) return;
     const keyName = getKeyName(e?.key || "");
     if (inputType(document.activeElement) === "text" || inputType(e.target) === "text") {
@@ -108,14 +108,16 @@ export const KeyboardKey: React.FC<KeyboardKeyProps> = ({
       if (!showOnly) onKeyDown?.(e);
       setIsPressed(true);
     }
-  };
+  });
 
   useEffect(() => {
-    window.addEventListener("keyup", handleKeyUp);
-    window.addEventListener("keydown", handleKeyDown);
+    const onKeyUp = (e: KeyboardEvent) => handleKeyUp(e);
+    const onKeyDown = (e: KeyboardEvent) => handleKeyDown(e);
+    window.addEventListener("keyup", onKeyUp);
+    window.addEventListener("keydown", onKeyDown);
     return () => {
-      window.removeEventListener("keyup", handleKeyUp);
-      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", onKeyUp);
+      window.removeEventListener("keydown", onKeyDown);
     };
   }, []);
 

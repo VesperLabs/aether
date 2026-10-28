@@ -6,13 +6,14 @@ import { arePropsEqualWithKeys } from "@/ui";
 export const CooldownTimer = memo(
   ({ cooldown, color = "#FFF" }: { cooldown?: Cooldown; color?: string }) => {
     const [percentage, setPercentage] = useState(0);
-    let duration = cooldown?.duration ?? 0;
-    let startTime = cooldown?.startTime ?? Date.now();
+    const duration = cooldown?.duration ?? 0;
+    const startTime = cooldown?.startTime;
 
     useEffect(() => {
+      const start = startTime ?? Date.now();
       const triggerTimer = () => {
         const currentTime = Date.now();
-        const elapsedTime = currentTime - startTime;
+        const elapsedTime = currentTime - start;
 
         const percentageElapsed = elapsedTime / duration;
 

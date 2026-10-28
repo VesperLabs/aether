@@ -82,6 +82,7 @@ export function VideoFrame() {
   }, [showVideo, myStream, setLocalVideoChatStream]);
 
   useEffect(() => {
+    const awayRemoveTimers = awayRemoveTimersRef.current;
     if (!showVideo || !streamOk) return;
 
     const peers = peersRef.current;
@@ -183,10 +184,10 @@ export function VideoFrame() {
     const handleHeroNearPlayer = (e: Event) => {
       const peerId = (e as CustomEvent<{ peerId?: string }>)?.detail?.peerId;
       if (!peerId) return;
-      const pending = awayRemoveTimersRef.current.get(peerId);
+      const pending = awayRemoveTimers.get(peerId);
       if (pending) {
         clearTimeout(pending);
-        awayRemoveTimersRef.current.delete(peerId);
+        awayRemoveTimers.delete(peerId);
       }
       connectToNewUser(peerId, myStream ?? undefined);
     };
@@ -194,13 +195,13 @@ export function VideoFrame() {
     const handleHeroAwayPlayer = (e: Event) => {
       const peerId = (e as CustomEvent<{ peerId?: string }>)?.detail?.peerId;
       if (!peerId) return;
-      const pending = awayRemoveTimersRef.current.get(peerId);
+      const pending = awayRemoveTimers.get(peerId);
       if (pending) clearTimeout(pending);
       const t = setTimeout(() => {
-        awayRemoveTimersRef.current.delete(peerId);
+        awayRemoveTimers.delete(peerId);
         removeRemote(peerId);
       }, REMOTE_PEER_REMOVE_DELAY_MS);
-      awayRemoveTimersRef.current.set(peerId, t);
+      awayRemoveTimers.set(peerId, t);
     };
 
     /* Resync for players who were already nearby when video chat was enabled.
@@ -221,8 +222,8 @@ export function VideoFrame() {
     if (peer.open) handleStreamReady();
 
     return () => {
-      awayRemoveTimersRef.current.forEach((timer) => clearTimeout(timer));
-      awayRemoveTimersRef.current.clear();
+      awayRemoveTimers.forEach((timer) => clearTimeout(timer));
+      awayRemoveTimers.clear();
       peer.off("call", handleCall);
       peer.off("open", handleStreamReady);
       window.removeEventListener("HERO_NEAR_PLAYER", handleHeroNearPlayer);
@@ -237,14 +238,11 @@ export function VideoFrame() {
 export function useUserMedia(enabled: boolean, requestedMedia: MediaStreamConstraints) {
   const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
 
+  /* Turning the camera off drops the stream; the effect cleanup below stops its tracks. */
+  if (!enabled && mediaStream) setMediaStream(null);
+
   useEffect(() => {
-    if (!enabled) {
-      setMediaStream((prev) => {
-        prev?.getTracks().forEach((t) => t.stop());
-        return null;
-      });
-      return;
-    }
+    if (!enabled) return;
 
     let cancelled = false;
     let stream: MediaStream | null = null;

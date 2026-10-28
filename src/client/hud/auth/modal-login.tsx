@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useEffectEvent } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
 import { Modal, Flex, Input, KeyboardButton, Icon, Text, Box, VersionTag } from "@/ui";
 import { useAppContext } from "@/client/hud/app/context";
@@ -146,11 +146,11 @@ const LoginForm = ({ defaultEmail, isActive }: { defaultEmail: string; isActive:
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const onFormError = (payload: { error: string }) => {
+  const onFormError = useEffectEvent((payload: { error: string }) => {
     if (!isActive) return;
     setError(payload?.error);
     setIsLoading(false);
-  };
+  });
 
   const handleLogin = () => {
     socket.emit("login", { email, password });
@@ -160,9 +160,10 @@ const LoginForm = ({ defaultEmail, isActive }: { defaultEmail: string; isActive:
 
   useEffect(() => {
     if (!isActive) return;
-    socket.on("formError", onFormError);
+    const handleFormError = (payload: { error: string }) => onFormError(payload);
+    socket.on("formError", handleFormError);
     return () => {
-      socket.off("formError", onFormError);
+      socket.off("formError", handleFormError);
     };
   }, [socket, isActive]);
 
@@ -214,29 +215,31 @@ const RegisterForm = ({
   const [error, setError] = useState("");
   const [charClass, setCharClass] = useState<CharClass>("warrior");
 
-  const onFormError = (payload: { error: string }) => {
+  const onFormError = useEffectEvent((payload: { error: string }) => {
     if (!isActive) return;
     setError(payload?.error);
-  };
+  });
 
-  const onFormSuccess = (payload: FormSuccess) => {
+  const onFormSuccess = useEffectEvent((payload: FormSuccess) => {
     if (!isActive) return;
     onRegisterSuccess(payload);
-  };
+  });
 
   useEffect(() => {
     if (!isActive) return;
-    socket.on("formError", onFormError);
+    const handleFormError = (payload: { error: string }) => onFormError(payload);
+    socket.on("formError", handleFormError);
     return () => {
-      socket.off("formError", onFormError);
+      socket.off("formError", handleFormError);
     };
   }, [socket, isActive]);
 
   useEffect(() => {
     if (!isActive) return;
-    socket.on("formSuccess", onFormSuccess);
+    const handleFormSuccess = (payload: FormSuccess) => onFormSuccess(payload);
+    socket.on("formSuccess", handleFormSuccess);
     return () => {
-      socket.off("formSuccess", onFormSuccess);
+      socket.off("formSuccess", handleFormSuccess);
     };
   }, [socket, isActive]);
 

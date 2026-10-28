@@ -1,6 +1,8 @@
 import React, { FC } from "react";
 import { isMobile } from "./is-mobile";
-import { Button, KeyboardKey, Box } from ".";
+import { Box } from "theme-ui";
+import { Button } from "./button/button";
+import { KeyboardKey } from "./keyboard-key";
 
 interface KeyboardButtonProps {
   keyboardKey: string;

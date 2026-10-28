@@ -1,5 +1,6 @@
 import { Box } from "@/ui";
-import { STATIC_ROW_STYLES, RowTitle } from ".";
+import { STATIC_ROW_STYLES } from "./layout";
+import { RowTitle } from "./row-title";
 
 export const Footer = () => {
   return (

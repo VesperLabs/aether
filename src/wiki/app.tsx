@@ -1,7 +1,9 @@
 import { ThemeUIProvider, theme, Box, Flex, Text } from "@/ui";
 import { Theme } from "theme-ui";
 import { Route } from "wouter";
-import { Footer, Metrics, RouterLink } from ".";
+import { Footer } from "./footer";
+import { Metrics } from "./metrics";
+import { RouterLink } from "./layout";
 import { PageItems } from "./page-items";
 import { PageNasties } from "./page-nasties";
 import { PagePlayers } from "./page-players";
@@ -9,7 +11,7 @@ import { PageHome } from "./page-home";
 import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { fetchMetrics } from "./api";
 import { ModalConnecting } from "./modal-connecting";
-import { useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 
 const queryClient = new QueryClient();
 
@@ -58,24 +60,19 @@ export const App = () => {
 };
 
 const LoadingProvider = ({ children }: { children: ReactNode }) => {
-  const [polling, setPolling] = useState(() => !shouldSkipWarmupModal());
+  const [warmup] = useState(() => !shouldSkipWarmupModal());
 
+  /* Don't gate on metrics.ping: it's serverTime - client query timestamp and can be huge with
+   * clock skew or slow links, which left the modal up forever. Cold-start: keep polling until
+   * the first successful response; if the server is down, show the wiki with "Offline" metrics. */
   const { isSuccess, isError } = useQuery({
     queryKey: ["metrics"],
     queryFn: fetchMetrics,
-    refetchInterval: polling ? 1000 : false,
+    refetchInterval: (query) => (query.state.status === "pending" ? 1000 : false),
     refetchIntervalInBackground: true,
-    enabled: polling,
+    enabled: warmup,
   });
-
-  useEffect(() => {
-    /* Don't gate on metrics.ping: it's serverTime - client query timestamp and can be huge with
-     * clock skew or slow links, which left the modal up forever. Cold-start: keep polling until
-     * the first successful response; if the server is down, show the wiki with "Offline" metrics. */
-    if (isSuccess || isError) {
-      setPolling(false);
-    }
-  }, [isSuccess, isError]);
+  const polling = warmup && !isSuccess && !isError;
 
   return !polling ? children : <ModalConnecting />;
 };
