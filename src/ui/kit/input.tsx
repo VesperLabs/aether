@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, FC } from "react";
+import React, { useRef, useEffect, useEffectEvent, FC } from "react";
 import { Input as BaseInput, InputProps as BaseInputProps } from "theme-ui";
 import { useOnClickOutside } from "./hooks";
 
@@ -26,13 +26,15 @@ export const Input: FC<InputProps> = ({
   }, [autoFocus]);
 
   useOnClickOutside(inputRef, onClickOutside);
+  const handleBlur = useEffectEvent((e: Event) => {
+    onBlur?.(e as unknown as React.FocusEvent<HTMLInputElement>);
+  });
   useEffect(() => {
-    const listener = (e: Event) => {
-      onBlur?.(e as unknown as React.FocusEvent<HTMLInputElement>);
-    };
-    inputRef?.current?.addEventListener("blur", listener);
+    const input = inputRef.current;
+    const listener = (e: Event) => handleBlur(e);
+    input?.addEventListener("blur", listener);
     return () => {
-      inputRef?.current?.removeEventListener("blur", listener);
+      input?.removeEventListener("blur", listener);
     };
   }, []);
 

@@ -12,18 +12,18 @@ const MESSAGE_SHOW_TIME = 3000;
 export const MessageBox = () => {
   const { messages, tabChat } = useAppContext();
   const [show, setShow] = useState<boolean>(true);
+  const [shownFor, setShownFor] = useState({ tabChat, messages });
 
-  /* Trigger and debounce showing when we get a new message or when they open the box */
-  useEffect(() => {
-    let timeout: NodeJS.Timeout;
-
-    if (!tabChat) {
-      timeout = setTimeout(() => {
-        setShow(false);
-      }, MESSAGE_SHOW_TIME); // adjust the delay time as needed
-    }
+  /* Show again when we get a new message or when they open the box */
+  if (shownFor.tabChat !== tabChat || shownFor.messages !== messages) {
+    setShownFor({ tabChat, messages });
     setShow(true);
+  }
 
+  /* Then fade out after a while unless the box is open */
+  useEffect(() => {
+    if (tabChat) return;
+    const timeout = setTimeout(() => setShow(false), MESSAGE_SHOW_TIME);
     return () => clearTimeout(timeout);
   }, [tabChat, messages]);
 
@@ -80,7 +80,7 @@ const Message: React.FC<MessageProps> = ({ data }) => {
   };
 
   const color: string = colorsMap?.[type] || "white";
-  const isOld = Date.now() - (data?.timestamp as number) > 5000;
+  const isOld = useIsOld(data?.timestamp);
   const from = getFrom(data);
   return (
     <Flex>
@@ -96,4 +96,22 @@ const Message: React.FC<MessageProps> = ({ data }) => {
       </Flex>
     </Flex>
   );
+};
+
+/* A message dims once it's older than MESSAGE_OLD_TIME */
+const MESSAGE_OLD_TIME = 5000;
+const useIsOld = (timestamp?: number) => {
+  const [agedTimestamp, setAgedTimestamp] = useState<number>();
+
+  useEffect(() => {
+    if (timestamp === undefined) return;
+    const age = Date.now() - timestamp;
+    const timeout = setTimeout(
+      () => setAgedTimestamp(timestamp),
+      Math.max(0, MESSAGE_OLD_TIME - age),
+    );
+    return () => clearTimeout(timeout);
+  }, [timestamp]);
+
+  return timestamp !== undefined && agedTimestamp === timestamp;
 };

@@ -2,7 +2,7 @@ import type { ThemeUIStyleObject } from "theme-ui";
 import type { HudCharacter } from "@/client/hud/app/context";
 import { arePropsEqualWithKeys } from "@/ui";
 import { Box, PlayerRender } from "@/ui";
-import { memo, useEffect, useLayoutEffect, useRef, useState, type AnimationEvent } from "react";
+import { memo, useEffect, useRef, useState, type AnimationEvent } from "react";
 import { streamHasUsableVideo } from "@/client/hud/video/video-support";
 
 const applyRoundedStyle = ({ size }: { size: number }): ThemeUIStyleObject => {
@@ -77,17 +77,14 @@ export const Portrait = memo(
     muteVideo?: boolean;
   }) => {
     const streamOk = !!(videoStream && streamHasUsableVideo(videoStream));
-    const prevStreamOk = useRef(streamOk);
+    const [prevStreamOk, setPrevStreamOk] = useState(streamOk);
     const [videoExiting, setVideoExiting] = useState(false);
 
-    useLayoutEffect(() => {
-      if (streamOk) {
-        setVideoExiting(false);
-      } else if (prevStreamOk.current && !streamOk) {
-        setVideoExiting(true);
-      }
-      prevStreamOk.current = streamOk;
-    }, [streamOk]);
+    /* Play the exit animation when the stream goes away, cancel it when it comes back. */
+    if (prevStreamOk !== streamOk) {
+      setPrevStreamOk(streamOk);
+      setVideoExiting(!streamOk);
+    }
 
     /* Fallback if animationend does not fire (e.g. reduced motion quirks). */
     useEffect(() => {

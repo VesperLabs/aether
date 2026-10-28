@@ -368,7 +368,7 @@
       }
     },
     {
-      "files": ["**/*.config.ts", "**/*.config.js"],
+      "files": ["**/*.config.ts", "**/*.config.mts", "**/*.config.js"],
       "rules": {
         "import/no-default-export": "off"
       }

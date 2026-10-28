@@ -1,5 +1,5 @@
 import type { ComponentProps } from "react";
-import { Box, Flex } from ".";
+import { Box, Flex } from "theme-ui";
 
 type FlexProps = ComponentProps<typeof Flex>;
 type ModalProps = FlexProps & { zoom?: number | string; bottomOffset?: number };

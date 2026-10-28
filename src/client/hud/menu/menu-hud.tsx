@@ -202,13 +202,16 @@ export const MenuHud = () => {
   const heroPortraitVideo =
     videoChatOn && streamHasUsableVideo(localVideoChatStream) ? localVideoChatStream : null;
 
+  /* Disconnecting clears the nearby list */
+  if (!isConnected && (nearbySocketIds.length > 0 || exitingNearbyIds.size > 0)) {
+    setNearbySocketIds([]);
+    setExitingNearbyIds(new Set());
+  }
+
   useEffect(() => {
-    if (!isConnected) {
-      nearbyExitTimersRef.current.forEach((t) => clearTimeout(t));
-      nearbyExitTimersRef.current.clear();
-      setNearbySocketIds([]);
-      setExitingNearbyIds(new Set());
-    }
+    if (isConnected) return;
+    nearbyExitTimersRef.current.forEach((t) => clearTimeout(t));
+    nearbyExitTimersRef.current.clear();
   }, [isConnected]);
 
   useEffect(() => {

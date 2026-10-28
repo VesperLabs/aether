@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAppContext } from "@/client/hud/app/context";
 import { BigPortrait } from "@/client/hud/status/big-portrait";
 import { Slot } from "@/client/hud/inventory/slot";
@@ -21,59 +21,55 @@ export const MenuKeeper = () => {
   const tabGreet = tab === "greet";
   const tabHome = tab === "home";
 
-  useEffect(() => {
-    if (!tabKeeper) setTab("greet");
-  }, [tabKeeper]);
+  /* Closing the keeper resets it to the greeting */
+  if (!tabKeeper && tab !== "greet") setTab("greet");
 
-  const KeeperButtons = () => {
-    if (!hasQuests && !hasShop) return;
-    return (
-      <Flex
-        sx={{
-          gap: 2,
-          mt: 2,
-          flexWrap: "wrap",
-          justifyContent: "end",
-        }}
-      >
-        {hasGreet && (hasShop || hasQuests) && (
-          <MenuButton
-            keyboardKey="G"
-            iconName="chat"
-            isActive={tabGreet}
-            onClick={() => setTab("greet")}
-          />
-        )}
-        {hasShop && (
-          <MenuButton
-            keyboardKey="B"
-            iconName="gold"
-            isActive={tabShop}
-            onClick={() => setTab("shop")}
-          />
-        )}
-        {hasQuests && (
-          <MenuButton
-            keyboardKey="U"
-            iconName="quests"
-            onClick={() => setTab("quests")}
-            isActive={tabQuests}
-          />
-        )}
-        {hasHome && (
-          <MenuButton
-            keyboardKey="H"
-            iconName="pen"
-            onClick={() => {
-              setTab("home");
-              setHomeModal(keeper ?? null);
-            }}
-            isActive={tabHome}
-          />
-        )}
-      </Flex>
-    );
-  };
+  const keeperButtons = (hasQuests || hasShop) && (
+    <Flex
+      sx={{
+        gap: 2,
+        mt: 2,
+        flexWrap: "wrap",
+        justifyContent: "end",
+      }}
+    >
+      {hasGreet && (hasShop || hasQuests) && (
+        <MenuButton
+          keyboardKey="G"
+          iconName="chat"
+          isActive={tabGreet}
+          onClick={() => setTab("greet")}
+        />
+      )}
+      {hasShop && (
+        <MenuButton
+          keyboardKey="B"
+          iconName="gold"
+          isActive={tabShop}
+          onClick={() => setTab("shop")}
+        />
+      )}
+      {hasQuests && (
+        <MenuButton
+          keyboardKey="U"
+          iconName="quests"
+          onClick={() => setTab("quests")}
+          isActive={tabQuests}
+        />
+      )}
+      {hasHome && (
+        <MenuButton
+          keyboardKey="H"
+          iconName="pen"
+          onClick={() => {
+            setTab("home");
+            setHomeModal(keeper ?? null);
+          }}
+          isActive={tabHome}
+        />
+      )}
+    </Flex>
+  );
 
   return (
     <Menu className="menu-keeper">
@@ -113,7 +109,7 @@ export const MenuKeeper = () => {
                   }}
                 />
               </Text>
-              {tabKeeper && <KeeperButtons />}
+              {tabKeeper && keeperButtons}
             </Flex>
           </Flex>
         </Flex>
