@@ -11,6 +11,7 @@ interface MenuButtonProps {
   sx?: Record<string, unknown>;
   size?: number;
   disabled?: boolean;
+  id?: string;
 }
 
 export const MenuButton = ({
@@ -22,9 +23,11 @@ export const MenuButton = ({
   sx,
   size = 38,
   disabled = false,
+  id,
 }: MenuButtonProps) => {
   return (
     <Button
+      id={id}
       disabled={disabled}
       variant="menu"
       className={isActive ? "active" : ""}

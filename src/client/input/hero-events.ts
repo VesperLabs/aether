@@ -18,22 +18,29 @@ export function addGlobalEventListeners(scene: SceneHud) {
   gameElement.addEventListener("contextmenu", (e) => {
     e.preventDefault();
   });
-  /* Desktop left click attack */
+  /* Desktop click attack: pressed on the canvas, released anywhere (a HUD modal can open over the
+   * canvas mid-press, or the window can lose focus) so the hero never stays stuck attacking. */
+  let isCanvasAttackHeld = false;
   gameElement.addEventListener("mousedown", function (event) {
     if (!isTouch && event.button !== 0) {
+      isCanvasAttackHeld = true;
       window.dispatchEvent(new CustomEvent("HERO_ATTACK_START"));
     }
   });
-  /* Desktop left click attack */
-  gameElement.addEventListener("mouseup", function (event) {
-    if (!mainScene?.hero) return;
+  window.addEventListener("mouseup", function (event) {
+    if (!isCanvasAttackHeld || event.button === 0) return;
+    isCanvasAttackHeld = false;
     const hero = mainScene?.hero;
-    if (!isTouch && event.button !== 0) {
-      const pointer = scene.input.activePointer;
-      const cursorPoint = pointer.positionToCamera(mainScene.cameras.main) as Phaser.Math.Vector2;
-      hero.direction = getSpinDirection(hero, cursorPoint);
-      window.dispatchEvent(new CustomEvent("HERO_ATTACK"));
-    }
+    if (!hero) return;
+    const pointer = scene.input.activePointer;
+    const cursorPoint = pointer.positionToCamera(mainScene.cameras.main) as Phaser.Math.Vector2;
+    hero.direction = getSpinDirection(hero, cursorPoint);
+    window.dispatchEvent(new CustomEvent("HERO_ATTACK"));
+  });
+  window.addEventListener("blur", () => {
+    if (!isCanvasAttackHeld) return;
+    isCanvasAttackHeld = false;
+    window.dispatchEvent(new CustomEvent("HERO_ATTACK"));
   });
   window.addEventListener("HERO_AIM_START", (e) => {
     if (!mainScene?.hero || isTypableFieldActive()) return;

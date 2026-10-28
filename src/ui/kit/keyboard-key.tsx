@@ -74,13 +74,12 @@ export const KeyboardKey: React.FC<KeyboardKeyProps> = ({
 
   const handleKeyUp = (e: KeyboardEvent) => {
     const keyName = getKeyName(e?.key || "");
-    /* Enter: chat submit unmounts input before keyup; don't treat that keyup as HUD Enter. */
+    /* Enter: chat submit unmounts input before keyup; don't treat that keyup as HUD Enter.
+     * Every KeyboardKey sees this keyup, so the flag isn't cleared here (the first one to see it
+     * would clear it for the rest and the Enter key would reopen chat). The next Enter keydown resets it. */
     if (keyName === "ENTER" && enterKeydownFromEditableField) {
-      enterKeydownFromEditableField = false;
-      if (name === "ENTER") {
-        setIsPressed(false);
-        return;
-      }
+      if (name === "ENTER") setIsPressed(false);
+      return;
     }
     /* Don't fire HUD shortcuts while typing in inputs; ESC still works (e.g. close modals). */
     if (

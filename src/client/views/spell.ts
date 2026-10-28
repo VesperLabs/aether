@@ -14,16 +14,14 @@ import {
   usesLeftHand,
   usesRightHand,
 } from "@/rules/spells";
-import { WEAPON_GRIP, getWeaponTip } from "@/content";
+import { HAND_REACH, WEAPON_GRIP, getWeaponTip } from "@/content";
 const Sprite = Phaser.GameObjects.Sprite;
 const BLANK_TEXTURE = "human-blank";
 
-/** Which way a weapon's art points (degrees on screen) and how long it is, from its tip. */
-function getBladeGeometry(texture: string | undefined) {
+/** Which way a weapon's art points, in degrees on screen, from its tip. */
+function getBladeDegrees(texture: string | undefined) {
   const tip = getWeaponTip(texture);
-  const dx = tip.x - WEAPON_GRIP.x;
-  const dy = tip.y - WEAPON_GRIP.y;
-  return { degrees: Phaser.Math.RadToDeg(Math.atan2(dy, dx)), length: Math.hypot(dx, dy) };
+  return Phaser.Math.RadToDeg(Math.atan2(tip.y - WEAPON_GRIP.y, tip.x - WEAPON_GRIP.x));
 }
 
 /** The colour of each melee swing's arc. */
@@ -116,10 +114,13 @@ export class Spell extends Phaser.GameObjects.Container {
       const hand = isLeft && !isRight ? "handLeft" : "handRight";
       /* Characters without attack animations swing no weapon: their arc is their body's reach */
       const isWielded = isLeft || isRight;
-      const blade = getBladeGeometry(caster.visibleEquipment?.[hand]?.texture);
+      const bladeDegrees = getBladeDegrees(caster.visibleEquipment?.[hand]?.texture);
+      /* The weapon's range stat is the hit radius from body centre; the arc turns around the hand */
+      const reach = caster.getWeaponRange(hand);
       this.add(
         new SwingArc(scene, {
-          reach: isWielded ? blade.length : caster.getWeaponRange(hand),
+          reach:
+            isWielded && caster.visibleEquipment?.[hand]?.stats?.range ? reach - HAND_REACH : reach,
           /* Turns around the hand holding the weapon, which this spell follows from body centre */
           pivot: isWielded
             ? () => ({ x: caster[hand].x, y: caster[hand].y - caster.bodyCenterY })
@@ -127,7 +128,7 @@ export class Spell extends Phaser.GameObjects.Container {
           facing: getAngleFromDirection(caster?.direction),
           /* Matches the sword animations: right-hand swings sweep counter-clockwise */
           clockwise: isLeft && !isRight,
-          wielder: isWielded ? { character: caster, hand, artDegrees: blade.degrees } : undefined,
+          wielder: isWielded ? { character: caster, hand, artDegrees: bladeDegrees } : undefined,
           color: SWING_COLORS[this.spellName] ?? SWING_COLORS["attack-melee"],
           duration: this.maxVisibleTime,
         }),

@@ -143,7 +143,10 @@ export function bindSceneSocket(scene: SceneMain) {
   socket.on("lootGrabbed", ({ socketId, loot, player: userData }) => {
     const lootId = loot?.id;
     const player = getPlayer(scene, socketId);
-    getLoot(scene, lootId)?.destroy();
+    const lootItem = getLoot(scene, lootId);
+    const snapshot = player?.isHero ? lootItem?.screenSnapshot() : undefined;
+    if (snapshot) window.dispatchEvent(new CustomEvent("LOOT_FLY", { detail: snapshot }));
+    lootItem?.destroy();
     if (player?.isHero) {
       playAudio({ scene, audioKey: "item-leather", caster: player });
     }

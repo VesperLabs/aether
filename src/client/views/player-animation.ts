@@ -220,15 +220,7 @@ export function hackFrameRates(player: Player, rate: number) {
 }
 
 function playWeapons(player: Player) {
-  const {
-    profile,
-    handLeft,
-    handRight,
-    weaponAtlas: w,
-    action,
-    visibleEquipment,
-    direction,
-  } = player;
+  const { profile, handLeft, handRight, weaponAtlas: w, action } = player;
   const currentFrame = player?.skin?.anims?.currentFrame;
   const { left, right } = w?.offsets?.[profile?.race]?.[
     (currentFrame as Phaser.Animations.AnimationFrame).textureFrame
@@ -248,31 +240,15 @@ function playWeapons(player: Player) {
   const bowAngleOffset = Phaser.Math.DegToRad(-135);
   const isRightRanged = player.hasRangedWeaponRight();
   const isLeftRanged = player.hasRangedWeaponLeft();
-  const isRightFist = visibleEquipment?.handRight?.base?.includes("fist");
-  const isLeftFist = visibleEquipment?.handLeft?.base?.includes("fist");
 
   /* A melee swing turns the weapon with its blade, in the hand and flips the attack frame gave it */
   for (const hand of ["handLeft", "handRight"] as const) {
-    const isFist = hand === "handLeft" ? isLeftFist : isRightFist;
     const pose = hand === "handLeft" ? left : right;
-    const angle =
-      isFist || !pose
-        ? undefined
-        : getSwingWeaponAngle(player, hand, pose, action.startsWith("attack"));
+    const angle = pose
+      ? getSwingWeaponAngle(player, hand, pose, action.startsWith("attack"))
+      : undefined;
     if (angle === undefined) continue;
     player[hand].setAngle(angle);
-  }
-
-  if (action === "attack_right") {
-    if (isRightFist) {
-      if (direction === "left") {
-        handRight.setAngle(-90);
-        handRight.setFlipY(true);
-      }
-      if (direction === "right") {
-        handRight.setAngle(-90);
-      }
-    }
   }
 
   if (isRightRanged) {
@@ -288,17 +264,6 @@ function playWeapons(player: Player) {
       handLeft.setFlipY(false);
       handLeft.setFlipX(false);
       handLeft.setRotation(player.state.lastAngle + bowAngleOffset);
-    }
-  }
-
-  if (action === "attack_left") {
-    if (isLeftFist) {
-      if (direction === "left") {
-        handLeft.setAngle(90);
-      }
-      if (direction === "right") {
-        handLeft.setAngle(0);
-      }
     }
   }
 }

@@ -3,6 +3,7 @@ import { theme } from "@/ui";
 import { MenuHud } from "@/client/hud/menu/menu-hud";
 import { ModalRespawn } from "@/client/hud/status/modal-respawn";
 import { ModalDropAmount } from "@/client/hud/inventory/modal-drop-amount";
+import { FlyingLoot } from "@/client/hud/inventory/flying-loot";
 import { HUD_CONTAINER_ID } from "@/client/hud/app/constants";
 import { ModalLogin } from "@/client/hud/auth/modal-login";
 import { ModalSign } from "@/client/hud/menu/modal-sign";
@@ -349,6 +350,7 @@ export function App({ socket, peer, debug, game }: AppProps) {
               <MenuGlobalKeys />
               <MenuHud />
               <MenuBar />
+              <FlyingLoot />
             </Box>
           )}
         </ZoomProvider>
