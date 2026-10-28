@@ -40,3 +40,11 @@ export type {
   MoveResult as MoveValidation,
   MoveTrack,
 } from "./move-validation";
+export {
+  ATTACK_WALK_SPEED_SCALE,
+  WALK_ACCELERATION_SECONDS,
+  WALK_DECELERATION_SECONDS,
+  approachVelocity,
+  getWalkVelocity,
+} from "./walking";
+export type { Vector } from "./walking";

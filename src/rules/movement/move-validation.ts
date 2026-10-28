@@ -9,7 +9,7 @@ import type { TileGrid } from "./tilemap";
  * updates (and throttled updates) are fine, but speed hacks and teleports are not.
  */
 
-/** Diagonal keys are not normalised on the client (about 1.41x) and speed buffs lag a tick behind. */
+/** Speed buffs lag a tick behind, and old clients do not normalise diagonals (about 1.41x). */
 export const MOVE_SPEED_TOLERANCE = 1.5;
 /** The most movement that may be saved up, in seconds of walking: covers lag spikes and bursts. */
 export const MOVE_BURST_SECONDS = 1;

@@ -46,7 +46,7 @@ export class SceneHud extends Phaser.Scene {
     addJoystick(this);
     addGlobalEventListeners(this);
   }
-  update() {
-    moveDirectHero(this);
+  update(_time: number, delta: number) {
+    moveDirectHero(this, delta);
   }
 }
