@@ -47,10 +47,13 @@ export class LootItem extends Phaser.GameObjects.Container {
 
     this.add(this.lootSprite);
   }
-  /** The sprite's current frame and where it is drawn on the page, so the HUD can replace it exactly. */
+  /** The item's art and where the loot is drawn on the page, so the HUD can replace it exactly.
+   * Sparkling loot flies its hidden item, not a frame of the sparkle. */
   screenSnapshot(): LootFlyDetail | undefined {
     const { scene, lootSprite } = this;
-    const frame = lootSprite?.frame;
+    const frame = this.texture
+      ? scene?.textures.getFrame(resolveAsset(this.item, scene.hero).texture, "preview")
+      : lootSprite?.frame;
     if (!scene?.game || !frame) return;
     const canvas = document.createElement("canvas");
     canvas.width = frame.cutWidth;
@@ -68,22 +71,23 @@ export class LootItem extends Phaser.GameObjects.Container {
       frame.cutWidth,
       frame.cutHeight,
     );
-    const src = (
-      this.item?.tint && !this.texture ? tintCanvas(canvas, this.item.tint) : canvas
-    ).toDataURL();
+    const src = (this.item?.tint ? tintCanvas(canvas, this.item.tint) : canvas).toDataURL();
 
     const cam = scene.cameras.main;
     const page = scene.game.canvas.getBoundingClientRect();
     const scale = (page.width / scene.scale.width) * cam.zoom;
     const bounds = lootSprite.getBounds();
+    /* Centred on the sprite but sized to the art, since a sparkle is smaller than its item */
+    const width = frame.cutWidth * scale;
+    const height = frame.cutHeight * scale;
     return {
       src,
-      rarity: this.texture ? undefined : this.item?.rarity,
+      rarity: this.item?.rarity,
       rect: {
-        x: page.left + (bounds.x - cam.worldView.x) * scale,
-        y: page.top + (bounds.y - cam.worldView.y) * scale,
-        width: bounds.width * scale,
-        height: bounds.height * scale,
+        x: page.left + (bounds.centerX - cam.worldView.x) * scale - width / 2,
+        y: page.top + (bounds.centerY - cam.worldView.y) * scale - height / 2,
+        width,
+        height,
       },
     };
   }
