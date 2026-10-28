@@ -82,7 +82,6 @@ export const weaponSpecial = {
         maxFireDamage: 2,
         minWaterDamage: 0,
         maxWaterDamage: 2,
-        range: 1.4,
       },
     },
     foxBlade: {
@@ -91,7 +90,7 @@ export const weaponSpecial = {
       name: "Fox Blade",
       texture: "weapon-scimitar-fox",
       slot: "hands",
-      stats: { critChance: [10, 15], minFireDamage: 2, maxFireDamage: 3, range: 1.25 },
+      stats: { critChance: [10, 15], minFireDamage: 2, maxFireDamage: 3 },
     },
     carnageDrinker: {
       ilvl: 2,
@@ -131,7 +130,6 @@ export const weaponSpecial = {
         hpSteal: [10, 15],
         mpSteal: [10, 15],
         critChance: 20,
-        range: 2,
       },
     },
     melonBasher: {
@@ -162,7 +160,6 @@ export const weaponSpecial = {
       stats: {
         minDamage: 0,
         maxDamage: 0,
-        range: 1.25,
         critChance: 25,
         attackDelay: 140,
       },
@@ -176,7 +173,7 @@ export const weaponSpecial = {
       name: "Tizona",
       texture: "weapon-sword-tizona",
       slot: "hands",
-      stats: { range: 1.25, blockChance: 5, critChance: 5 },
+      stats: { blockChance: 5, critChance: 5 },
     },
     colada: {
       setName: "cids",
@@ -185,7 +182,7 @@ export const weaponSpecial = {
       name: "Colada",
       texture: "weapon-sword-colada",
       slot: "hands",
-      stats: { range: 1.25, blockChance: 5, critChance: 5 },
+      stats: { blockChance: 5, critChance: 5 },
     },
     hawkwingsPincher: {
       ilvl: 1,

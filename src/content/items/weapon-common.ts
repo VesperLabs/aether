@@ -7,7 +7,7 @@ export const weaponCommon = {
     name: "Katar",
     texture: "weapon-katar",
     slot: "hands",
-    stats: { attackDelay: 140, minDamage: 0, maxDamage: 1, range: 1, spCost: 1 },
+    stats: { attackDelay: 140, minDamage: 0, maxDamage: 1, spCost: 1 },
     requirements: { dexterity: 5 },
   },
   dagger: {
@@ -16,7 +16,7 @@ export const weaponCommon = {
     name: "Dagger",
     texture: "weapon-dagger",
     slot: "hands",
-    stats: { attackDelay: 180, minDamage: 0, maxDamage: 1, range: 1, spCost: 1 },
+    stats: { attackDelay: 180, minDamage: 0, maxDamage: 1, spCost: 1 },
     requirements: { dexterity: 2 },
   },
   sword: {
@@ -25,7 +25,7 @@ export const weaponCommon = {
     name: "Short Sword",
     texture: "weapon-sword-short",
     slot: "hands",
-    stats: { attackDelay: 220, minDamage: 1, maxDamage: 1, range: 1, spCost: 2 },
+    stats: { attackDelay: 220, minDamage: 1, maxDamage: 1, spCost: 2 },
     requirements: { strength: 2, dexterity: 2 },
   },
   scimitar: {
@@ -34,7 +34,7 @@ export const weaponCommon = {
     name: "Scimitar",
     texture: "weapon-scimitar",
     slot: "hands",
-    stats: { attackDelay: 200, minDamage: 0, maxDamage: 2, range: 1, spCost: 2 },
+    stats: { attackDelay: 200, minDamage: 0, maxDamage: 2, spCost: 2 },
     requirements: { dexterity: 3 },
   },
   wand: {
@@ -43,7 +43,7 @@ export const weaponCommon = {
     name: "Wand",
     texture: "weapon-wand-stick",
     slot: "hands",
-    stats: { attackDelay: 180, spellPower: 3, range: 1, spCost: 1 },
+    stats: { attackDelay: 180, spellPower: 3, spCost: 1 },
     requirements: { intelligence: 3 },
   },
   staff: {
@@ -57,7 +57,6 @@ export const weaponCommon = {
       maxDamage: 2,
       attackDelay: 350,
       spellPower: 2,
-      range: 1.15,
       spCost: 2,
     },
     requirements: { vitality: 3 },
@@ -68,7 +67,7 @@ export const weaponCommon = {
     name: "Club",
     texture: "weapon-club",
     slot: "hands",
-    stats: { attackDelay: 420, minDamage: 2, maxDamage: 2, range: 1, spCost: 2 },
+    stats: { attackDelay: 420, minDamage: 2, maxDamage: 2, spCost: 2 },
     requirements: { strength: 5 },
   },
   hatchet: {
@@ -77,7 +76,7 @@ export const weaponCommon = {
     name: "Hatchet",
     texture: "weapon-hatchet",
     slot: "hands",
-    stats: { attackDelay: 320, minDamage: 1, maxDamage: 2, range: 1, spCost: 2 },
+    stats: { attackDelay: 320, minDamage: 1, maxDamage: 2, spCost: 2 },
     requirements: { strength: 5 },
   },
   scythe: {
@@ -86,7 +85,7 @@ export const weaponCommon = {
     name: "Scythe",
     texture: "weapon-scythe",
     slot: "hands",
-    stats: { attackDelay: 320, minDamage: 1, maxDamage: 2, range: 1, spCost: 2 },
+    stats: { attackDelay: 320, minDamage: 1, maxDamage: 2, spCost: 2 },
     requirements: { dexterity: 5 },
   },
   spear: {
@@ -95,7 +94,7 @@ export const weaponCommon = {
     name: "Spear",
     texture: "weapon-spear",
     slot: "hands",
-    stats: { attackDelay: 500, minDamage: 2, maxDamage: 3, range: 2, spCost: 3 },
+    stats: { attackDelay: 500, minDamage: 2, maxDamage: 3, spCost: 3 },
     requirements: { strength: 6 },
   },
   spikes: {
@@ -118,7 +117,7 @@ export const weaponCommon = {
     name: "Gladius",
     texture: "weapon-gladius",
     slot: "hands",
-    stats: { range: 1.25 },
+    stats: {},
   },
   talwar: {
     ilvl: 2,
@@ -184,7 +183,7 @@ export const weaponCommon = {
     name: "Claymore",
     texture: "weapon-claymore",
     slot: "hands",
-    stats: { range: 1.15 },
+    stats: {},
   },
   shamshir: {
     ilvl: 3,

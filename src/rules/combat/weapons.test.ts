@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
+  getMeleeRange,
+  getWeaponLength,
+  HAND_REACH,
+  ItemBuilder,
+  itemData,
+  WEAPON_TIPS,
+} from "@/content";
+import {
   getWeaponRange,
   hasAttackableWeapons,
   hasMeleeWeapon,
@@ -70,6 +78,34 @@ describe("weapon queries", () => {
 
   it("throws for the right hand of a character with no profile, as before", () => {
     expect(() => hasWeaponRight({})).toThrow();
+  });
+});
+
+/** Every weapon definition, as `[rarity, key, definition]`. */
+const weaponDefinitions = Object.entries(itemData.weapon).flatMap(([rarity, items]) =>
+  Object.entries(items as Record<string, { texture?: string }>).map(
+    ([key, item]) => [rarity, key, item] as const,
+  ),
+);
+
+describe("melee reach comes from the weapon art", () => {
+  it("measures every weapon's art, so none falls back to a guessed tip", () => {
+    for (const [rarity, key, item] of weaponDefinitions) {
+      expect(WEAPON_TIPS[item.texture ?? ""], `${rarity} ${key} (${item.texture})`).toBeDefined();
+    }
+  });
+
+  it("gives every built weapon its art's reach as its range stat", () => {
+    for (const [rarity, key, item] of weaponDefinitions) {
+      const built = ItemBuilder.buildItem("weapon", rarity, key);
+      expect(built?.stats?.range, `${rarity} ${key}`).toBe(getMeleeRange(item.texture));
+    }
+  });
+
+  it("is the hand's reach plus the blade, so longer art reaches further", () => {
+    const dagger = getMeleeRange("weapon-dagger");
+    expect(dagger * RANGE_MULTIPLIER).toBeCloseTo(HAND_REACH + getWeaponLength("weapon-dagger"), 0);
+    expect(getMeleeRange("weapon-spear")).toBeGreaterThan(dagger * 2);
   });
 });
 

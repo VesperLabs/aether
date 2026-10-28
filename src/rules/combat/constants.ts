@@ -1,5 +1,5 @@
 /** Weapon range multiplier: a weapon's `range` stat times this is its reach in pixels. */
-export const RANGE_MULTIPLIER = 28;
+export { RANGE_MULTIPLIER } from "@/content";
 /** Cooldown between potions, in ms. Also how far back a fresh character's last attack is set. */
 export const POTION_COOLDOWN = 10000;
 /** Races that have attack animations. Others just "stand" while attacking. */

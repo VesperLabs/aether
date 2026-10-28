@@ -5,6 +5,7 @@ import { itemModsList } from "./item-mods";
 import { itemList, multiplyValues, scaleBaseStats } from "./item-scaling";
 import { itemSetList } from "./item-sets";
 import { Item } from "./item";
+import { getMeleeRange } from "../assets/weapon-tips";
 
 type Loose = Record<string, any>;
 
@@ -102,6 +103,8 @@ function buildItem(...args: BuildItemArgs): Item | null {
   item.amount = amount || 1;
   item.type = type;
   item.stats = newStats;
+  /* A melee weapon reaches as far as its art: never hand-written, so it can't drift from the swing */
+  if (type === "weapon") item.stats.range = getMeleeRange(item.texture);
   item.effects = newEffects;
   item.percentStats = percentStats;
 
