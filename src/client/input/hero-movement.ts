@@ -116,7 +116,7 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
     });
   }
 
-  /* Attacking and aiming slow the hero down instead of rooting them */
+  /* Attacking and aiming root the hero */
   if (
     (!hero.hasRangedWeapon() && hero.state.isAttacking) ||
     hero?.state.isAiming ||
