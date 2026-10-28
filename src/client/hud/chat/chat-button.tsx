@@ -22,8 +22,8 @@ export const ChatButton = () => {
 
   return (
     <MenuButton
-      /* Enter opens chat; hide shortcut while open so Enter in the input only sends.
-       * Chat stays open until Escape (menu-bar) or this button is clicked again. */
+      /* Enter opens chat; hide shortcut while open so Enter in the input only sends and closes.
+       * Escape (menu-bar) or clicking this button again also closes it. */
       keyboardKey={tabChat ? undefined : "ENTER"}
       iconName="chat"
       sx={{
@@ -50,11 +50,8 @@ export const ChatButton = () => {
 
             if (e.code === "Enter" && !e.nativeEvent.isComposing) {
               e.preventDefault();
-              if (message?.trim() !== "") {
-                socket.emit("message", { message });
-                setChatValue("");
-                setMessageIndex(-1);
-              }
+              if (message?.trim() !== "") socket.emit("message", { message });
+              setTabChat(false);
             }
 
             if (e.code === "ArrowUp" || e.code === "ArrowDown") {
@@ -92,8 +89,8 @@ export const ChatButton = () => {
         />
       )}
       {tabChat && !isMobile && (
-        /* Just a hint: Escape itself is handled by menu-bar */
-        <KeyboardKey sx={{ bottom: "-3px", right: "-3px" }} name="ESCAPE" showOnly />
+        /* Just a hint that Enter sends: the input handles it */
+        <KeyboardKey sx={{ bottom: "-3px", right: "-3px" }} name="ENTER" showOnly />
       )}
     </MenuButton>
   );
