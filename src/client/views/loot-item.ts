@@ -2,6 +2,8 @@ import Phaser from "phaser";
 import { resolveAsset } from "@/content";
 import type { LootMessage } from "@/network";
 import type { SceneMain } from "@/client/scenes/main-scene";
+import { tintCanvas } from "@/ui/kit/image-tint";
+import type { LootFlyDetail } from "@/client/window-events";
 import { toTint } from "./tint";
 const Sprite = Phaser.GameObjects.Sprite;
 const BLANK_TEXTURE = "human-blank";
@@ -44,6 +46,46 @@ export class LootItem extends Phaser.GameObjects.Container {
     }
 
     this.add(this.lootSprite);
+  }
+  /** The sprite's current frame and where it is drawn on the page, so the HUD can replace it exactly. */
+  screenSnapshot(): LootFlyDetail | undefined {
+    const { scene, lootSprite } = this;
+    const frame = lootSprite?.frame;
+    if (!scene?.game || !frame) return;
+    const canvas = document.createElement("canvas");
+    canvas.width = frame.cutWidth;
+    canvas.height = frame.cutHeight;
+    const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(
+      frame.source.image as CanvasImageSource,
+      frame.cutX,
+      frame.cutY,
+      frame.cutWidth,
+      frame.cutHeight,
+      0,
+      0,
+      frame.cutWidth,
+      frame.cutHeight,
+    );
+    const src = (
+      this.item?.tint && !this.texture ? tintCanvas(canvas, this.item.tint) : canvas
+    ).toDataURL();
+
+    const cam = scene.cameras.main;
+    const page = scene.game.canvas.getBoundingClientRect();
+    const scale = (page.width / scene.scale.width) * cam.zoom;
+    const bounds = lootSprite.getBounds();
+    return {
+      src,
+      rarity: this.texture ? undefined : this.item?.rarity,
+      rect: {
+        x: page.left + (bounds.x - cam.worldView.x) * scale,
+        y: page.top + (bounds.y - cam.worldView.y) * scale,
+        width: bounds.width * scale,
+        height: bounds.height * scale,
+      },
+    };
   }
   destroy() {
     if (this.scene) this.scene.events.off("update", this.update, this);

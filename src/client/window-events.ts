@@ -18,6 +18,13 @@ export interface DropItemDetail extends ItemEventDetail {
   target: Element | null;
 }
 
+/** A picked-up loot sprite as drawn on screen, for the HUD to fly into the bag. */
+export interface LootFlyDetail {
+  src: string;
+  rect: { x: number; y: number; width: number; height: number };
+  rarity?: string;
+}
+
 export interface CooldownDetail {
   spellName: string;
   duration: number;
@@ -53,6 +60,7 @@ declare global {
     HERO_DROP_ITEM: CustomEvent<DropItemDetail>;
     AUDIO_ITEM_CONSUME: CustomEvent<BuiltItem>;
     AUDIO_ITEM_SELL: CustomEvent<BuiltItem>;
+    LOOT_FLY: CustomEvent<LootFlyDetail>;
     ITEM_DRAG: CustomEvent<{ x: number; y: number }>;
   }
 }

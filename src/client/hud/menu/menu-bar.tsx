@@ -10,6 +10,7 @@ import {
   MenuStats,
 } from "@/ui";
 import { HUD_SLOT_EVENTS } from "@/client/hud/inventory/slot";
+import { LOOT_TARGET_ID } from "@/client/hud/inventory/flying-loot";
 import { AbilityButtons } from "@/client/hud/abilities/ability-buttons";
 import { ChatButton } from "@/client/hud/chat/chat-button";
 import { MenuKeeper } from "@/client/hud/shop/menu-keeper";
@@ -200,6 +201,7 @@ export const MenuBar = () => {
                 }}
               />
               <MenuButton
+                id={LOOT_TARGET_ID}
                 keyboardKey="C"
                 iconName="bag"
                 isActive={tabInventory}
