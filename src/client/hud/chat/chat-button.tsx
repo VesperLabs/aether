@@ -1,13 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MenuButton } from "@/client/hud/menu/menu-button";
 import { useAppContext } from "@/client/hud/app/context";
-import { Input } from "@/ui";
+import { Input, KeyboardKey } from "@/ui";
 import { isMobile } from "@/ui";
 
 export const ChatButton = () => {
   const { tabChat, setTabChat, socket, messages, hero } = useAppContext();
   const [chatValue, setChatValue] = useState<string>("");
   const [messageIndex, setMessageIndex] = useState<number>(-1);
+  /* Button fires its click on the mouseup after any press inside it, including presses in the input */
+  const isPressInInput = useRef(false);
 
   useEffect(() => {
     if (!tabChat) {
@@ -20,7 +22,8 @@ export const ChatButton = () => {
 
   return (
     <MenuButton
-      /* Enter opens chat; hide shortcut while open so Enter in the input only sends/closes */
+      /* Enter opens chat; hide shortcut while open so Enter in the input only sends.
+       * Chat stays open until Escape (menu-bar) or this button is clicked again. */
       keyboardKey={tabChat ? undefined : "ENTER"}
       iconName="chat"
       sx={{
@@ -28,8 +31,13 @@ export const ChatButton = () => {
         "&.active::before, &:has(.pressed)::before": { boxShadow: "none" },
       }}
       isActive={tabChat}
-      disabled={tabChat} //hack to prevent double clicks
-      onClick={() => setTabChat((prev) => !prev)}
+      onClick={() => {
+        if (isPressInInput.current) {
+          isPressInInput.current = false;
+          return;
+        }
+        setTabChat((prev) => !prev);
+      }}
     >
       {tabChat && (
         <Input
@@ -44,8 +52,9 @@ export const ChatButton = () => {
               e.preventDefault();
               if (message?.trim() !== "") {
                 socket.emit("message", { message });
+                setChatValue("");
+                setMessageIndex(-1);
               }
-              setTabChat(false);
             }
 
             if (e.code === "ArrowUp" || e.code === "ArrowDown") {
@@ -70,19 +79,21 @@ export const ChatButton = () => {
               setMessageIndex(newIndex);
             }
           }}
+          onMouseDown={() => (isPressInInput.current = true)}
           onChange={(e) => setChatValue(e.target.value)}
-          onClickOutside={() => {
-            setTabChat(false);
-          }}
           onBlur={(e) => {
             /* Hack to send if `Done` button is pushed */
             const message = e?.target?.value;
             if (message && isMobile) {
               if (message?.trim() !== "") socket.emit("message", { message });
+              setChatValue("");
             }
-            setTabChat(false);
           }}
         />
+      )}
+      {tabChat && !isMobile && (
+        /* Just a hint: Escape itself is handled by menu-bar */
+        <KeyboardKey sx={{ bottom: "-3px", right: "-3px" }} name="ESCAPE" showOnly />
       )}
     </MenuButton>
   );
