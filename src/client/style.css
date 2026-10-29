@@ -75,3 +75,13 @@ body {
     transform: none;
   }
 }
+
+/* Proximity player plates in the HUD fade in, matching their fade out */
+@keyframes nearby-plate-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

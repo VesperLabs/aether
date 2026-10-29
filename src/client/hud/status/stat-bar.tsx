@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { Box } from "@/ui";
 
+/** A rise (regen, heals) glides over about one SP regen tick, so ticks blend into a steady fill. */
+const RISE_TRANSITION = "width .6s linear";
+const DROP_TRANSITION = "width .12s ease-out";
+/** After a drop the ghost waits a beat, then drains to the new value. */
+const GHOST_DRAIN_TRANSITION = "width .3s ease-in .25s";
+
 type BarProps = {
   width?: number;
   height?: number;
@@ -23,7 +29,7 @@ export const Bar = ({
 }: BarProps) => {
   const value = Math.round((min / max) * 100);
   const percent = value + "%";
-  /* The ghost drains after a beat when the value drops, and keeps up with it when it rises */
+  /* The ghost drains after a beat when the value drops, and rises together with the bar */
   const [lastValue, setLastValue] = useState(value);
   const [isDraining, setIsDraining] = useState(false);
   if (value !== lastValue) {
@@ -66,7 +72,7 @@ export const Bar = ({
           bg: "rgba(255,240,180,.75)",
           height: "100%",
           width: percent,
-          transition: isDraining ? "width .3s ease-in .25s" : "none",
+          transition: isDraining ? GHOST_DRAIN_TRANSITION : RISE_TRANSITION,
         }}
       />
       <Box
@@ -75,7 +81,7 @@ export const Bar = ({
           bg: color,
           height: "100%",
           width: percent,
-          transition: ".12s ease-out width",
+          transition: isDraining ? DROP_TRANSITION : RISE_TRANSITION,
         }}
       />
     </Box>
