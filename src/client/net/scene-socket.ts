@@ -57,7 +57,7 @@ export function bindSceneSocket(scene: SceneMain) {
     if (scene.hero) scene.hero.party = party;
   });
 
-  socket.on("heroInit", (args) => {
+  socket.on("heroInit", (args, { isRespawn } = {}) => {
     const { socketId, players = [], npcs = [], loots = [] } = args ?? {};
     if (args && Object.prototype.hasOwnProperty.call(args, "userSettings")) {
       scene.userSettings = { ...DEFAULT_USER_SETTINGS, ...args.userSettings };
@@ -91,6 +91,7 @@ export function bindSceneSocket(scene: SceneMain) {
     const { collideLayer } = changeMap(scene, scene.hero.roomName);
     initPlayerCollision(scene, scene.hero, [collideLayer]);
     initCamera(scene, scene.hero);
+    if (isRespawn) playSpawnDissolve(scene.hero);
   });
 
   socket.on("playerJoin", (user, { lastTeleport, isRespawn } = {}) => {

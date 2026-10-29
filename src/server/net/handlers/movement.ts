@@ -159,10 +159,14 @@ export function respawn(ctx: CommandContext) {
     lastTeleport: Date.now(),
   });
 
-  socket.emit("heroInit", {
-    ...getRoomState(world, newRoom),
-    socketId,
-  });
+  socket.emit(
+    "heroInit",
+    {
+      ...getRoomState(world, newRoom),
+      socketId,
+    },
+    { isRespawn: true },
+  );
 
   // announce room has changed to the party
   // TODO: need a better way of sending a persistant party state instead of this
