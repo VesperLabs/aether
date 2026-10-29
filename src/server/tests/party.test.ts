@@ -42,10 +42,27 @@ const ping = (socket: Socket) =>
   new Promise<boolean>((resolve) => socket.emit("latency", () => resolve(true)));
 
 /** Two logged-in players, `a` leading a party with `b` as a member. */
+/** Resolves with the next `count` payloads of `event`, in order. */
+function collect<T = Anything>(socket: Socket, event: string, count: number): Promise<T[]> {
+  return new Promise((resolve, reject) => {
+    const payloads: T[] = [];
+    const timer = setTimeout(() => reject(new Error(`timed out waiting for "${event}"`)), 5000);
+    const onEvent = (arg: T) => {
+      payloads.push(arg);
+      if (payloads.length < count) return;
+      clearTimeout(timer);
+      socket.off(event, onEvent);
+      resolve(payloads);
+    };
+    socket.on(event, onEvent);
+  });
+}
+
 async function partyOfTwo() {
   const a = await login("warrior");
   const b = await login("mage");
-  const aJoined = once(a, "partyUpdate");
+  /* Inviting sends the inviter two updates: they joined, then who is invited */
+  const aJoined = collect(a, "partyUpdate", 2);
   const invite = once(b, "partyInvite");
   a.emit("inviteToParty", b.id);
   await aJoined;
@@ -73,11 +90,13 @@ describe("party", () => {
   it("inviting creates a party led by the inviter and sends the invite", async () => {
     const a = await login("warrior");
     const b = await login("mage");
-    const created = once(a, "partyUpdate");
+    const created = collect(a, "partyUpdate", 2);
     const invite = once(b, "partyInvite");
     a.emit("inviteToParty", b.id);
-    const update = await created;
+    const [update, invited] = await created;
     expect(update.message).toContain("has joined the party");
+    /* The inviter learns who is invited, for their pending invite button */
+    expect(invited.party.invitees).toEqual([{ id: b.id, inviterId: a.id }]);
     expect(update.party.members).toEqual([expect.objectContaining({ id: a.id, isLeader: true })]);
     const received = await invite;
     expect(received.partyId).toBe(update.party.id);
