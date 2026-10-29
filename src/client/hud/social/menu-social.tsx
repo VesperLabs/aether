@@ -1,4 +1,4 @@
-import { Fragment, memo, type ComponentProps, type ElementType, type ReactNode } from "react";
+import { memo, type ComponentProps, type ElementType, type ReactNode } from "react";
 import type { PartyMessage } from "@/network";
 import type { HudCharacter } from "@/client/hud/app/context";
 import { useAppContext } from "@/client/hud/app/context";
@@ -10,13 +10,21 @@ import { arePropsEqualWithKeys } from "@/ui";
 
 type SocialPlayer = Partial<HudCharacter> | undefined;
 
+/** Action buttons fill their column, so Invite, Pending and Accept are all the same width. */
+const ACTION_BUTTON_STYLE: ThemeUIStyleObject = { width: "100%", justifyContent: "center" };
+
 const ActionButton = ({ player }: { player: SocialPlayer }) => {
-  const { partyInvites, socket } = useAppContext();
+  const { partyInvites, party, hero, socket } = useAppContext();
+  const isPending = party?.invitees?.some(
+    (invitee: { id?: string; inviterId?: string }) =>
+      invitee?.id === player?.id && invitee?.inviterId === hero?.id,
+  );
   const invitation = partyInvites?.find((invite) => invite?.inviter?.id === player?.id);
   if (invitation) {
     return (
       <Button
         variant="wood"
+        sx={ACTION_BUTTON_STYLE}
         onClick={() => {
           // join the party
           socket.emit("partyAccept", invitation.partyId);
@@ -26,9 +34,17 @@ const ActionButton = ({ player }: { player: SocialPlayer }) => {
       </Button>
     );
   }
+  if (isPending) {
+    return (
+      <Button variant="wood" sx={ACTION_BUTTON_STYLE} disabled>
+        Pending
+      </Button>
+    );
+  }
   return (
     <Button
       variant="wood"
+      sx={ACTION_BUTTON_STYLE}
       onClick={() => player?.socketId && socket.emit("inviteToParty", player.socketId)}
     >
       Invite
@@ -41,7 +57,11 @@ const PartyActionButton = ({ player }: { player: SocialPlayer }) => {
 
   if (hero?.id === player?.id) {
     return (
-      <Button variant="wood" onClick={() => socket.emit("partyLeave", player?.id)}>
+      <Button
+        variant="wood"
+        sx={ACTION_BUTTON_STYLE}
+        onClick={() => socket.emit("partyLeave", player?.id)}
+      >
         Leave
       </Button>
     );
@@ -56,10 +76,7 @@ const SocialGrid = (props: ComponentProps<typeof Grid>) => {
         maxWidth: MENU_MAX_WIDTH,
         width: "100%",
         flex: 1,
-        borderRadius: 5,
-        bg: "shadow.10",
-        p: 1,
-        gridTemplateColumns: "min-content 1fr min-content min-content min-content 1fr",
+        gridTemplateColumns: SOCIAL_COLUMNS,
         alignItems: "center",
         gap: 1,
         justifyContent: "end",
@@ -134,7 +151,29 @@ export const MenuSocial = memo(
   arePropsEqualWithKeys(["isOpen", "party", "hero.id", "players"]),
 );
 
-const COLUMN_STYLE: ThemeUIStyleObject = { textTransform: "capitalize", whiteSpace: "nowrap" };
+const COLUMN_STYLE: ThemeUIStyleObject = {
+  textTransform: "capitalize",
+  whiteSpace: "nowrap",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+};
+/** One player's tile: spans their six columns and lines its cells up with them. */
+const TILE_STYLE: ThemeUIStyleObject = {
+  gridColumn: "span 6",
+  display: "grid",
+  gridTemplateColumns: "subgrid",
+  alignItems: "center",
+  bg: "shadow.20",
+  borderRadius: 4,
+  p: 1,
+};
+
+/**
+ * Two player tiles per row, six cells each. Fixed widths so the players list and the party list
+ * line up; each tile is a subgrid, so its cells follow these columns too.
+ */
+const PLAYER_COLUMNS = "28px minmax(0, 1fr) 24px 84px minmax(0, 1fr) 80px";
+const SOCIAL_COLUMNS = `${PLAYER_COLUMNS} ${PLAYER_COLUMNS}`;
 
 const SocialPlayerRow = (props: { partyPlayer: SocialPlayer; children: ReactNode }) => {
   const { partyPlayer, children } = props;
@@ -147,8 +186,8 @@ const SocialPlayerRow = (props: { partyPlayer: SocialPlayer; children: ReactNode
     ? CLASS_ICON_MAP?.[player?.charClass?.toUpperCase() as keyof typeof CLASS_ICON_MAP]
     : null;
   return (
-    <Fragment key={partyPlayer?.id}>
-      <MemoizedColumn player={player} as={Box} sx={{ position: "relative" }}>
+    <Box sx={TILE_STYLE}>
+      <MemoizedColumn player={player} as={Box} sx={{ position: "relative", overflow: "visible" }}>
         <Portrait
           player={player}
           scale={0.5}
@@ -168,7 +207,7 @@ const SocialPlayerRow = (props: { partyPlayer: SocialPlayer; children: ReactNode
       <MemoizedColumn player={player}>{classString}</MemoizedColumn>
       <Text sx={COLUMN_STYLE}>{partyPlayer?.roomName}</Text>
       <Flex sx={{ justifyContent: "end" }}>{children}</Flex>
-    </Fragment>
+    </Box>
   );
 };
 
