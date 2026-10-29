@@ -3,6 +3,7 @@ import type { Player } from "./player";
 import { Damage } from "./damage";
 import { Buff } from "./buff";
 import { Hit } from "./hit";
+import { playDeathDissolve } from "./death-dissolve";
 
 /** How long a hit paints the body solid white before the red tint, in ms. */
 const WHITE_FLASH_MS = 50;
@@ -29,6 +30,7 @@ export function applyHit(player: Player, hit: HitEffect, showDamage = true) {
     case "death":
       stats.hp = 0;
       scene.add.existing(new Hit(player.scene, player, elements));
+      playDeathDissolve(player);
       player.doDeath();
       break;
     case "hp":

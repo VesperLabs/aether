@@ -297,7 +297,7 @@ export class Player extends Character {
     this.setBodyVisible(false);
     this.hpBar.setVisible(false);
     this.bubble.setVisible(false);
-    this.corpse.setVisible(true);
+    this.corpse.setVisible(this.kind !== "nasty");
     this.buffRack.setVisible(false);
     if (this.kind === "nasty") this.userName.setVisible(false);
     if (this.isHero) window.dispatchEvent(new Event("HERO_DEAD"));
