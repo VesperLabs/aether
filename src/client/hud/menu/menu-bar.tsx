@@ -47,6 +47,7 @@ export const MenuBar = () => {
     tabSettings,
     setTabSettings,
     tabSocial,
+    partyInvites,
     hero,
     tabAbilities,
     setTabAbilities,
@@ -166,6 +167,7 @@ export const MenuBar = () => {
                 keyboardKey="P"
                 iconName="social"
                 isActive={tabSocial}
+                badge={partyInvites.length}
                 onClick={() => setTabSocial((prev) => !prev)}
               />
               <MenuButton

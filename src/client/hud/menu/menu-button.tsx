@@ -1,5 +1,5 @@
 import React from "react";
-import { Icon, KeyboardKey, Button } from "@/ui";
+import { Icon, KeyboardKey, Button, NotificationBadge } from "@/ui";
 import { isMobile } from "@/ui";
 
 interface MenuButtonProps {
@@ -12,6 +12,8 @@ interface MenuButtonProps {
   size?: number;
   disabled?: boolean;
   id?: string;
+  /** Shows a small counter in the top-right corner when above 0. */
+  badge?: number;
 }
 
 export const MenuButton = ({
@@ -24,6 +26,7 @@ export const MenuButton = ({
   size = 38,
   disabled = false,
   id,
+  badge,
 }: MenuButtonProps) => {
   return (
     <Button
@@ -36,6 +39,7 @@ export const MenuButton = ({
     >
       {iconName && <Icon size={size} icon={`./assets/icons/${iconName}.png`} />}
       {children}
+      <NotificationBadge count={badge} />
       {!isMobile && keyboardKey && (
         <KeyboardKey
           sx={{ bottom: "-3px", right: "-3px" }}
