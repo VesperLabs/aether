@@ -7,7 +7,8 @@ import type { ComponentProps } from "react";
 
 const TOOLTIP_STYLE = {
   transition: "none",
-  padding: 12,
+  /* react-tooltip pads its inner content element itself */
+  padding: 0,
   borderRadius: 5,
   zIndex: theme.zIndices.tooltip,
   backgroundColor: "rgba(0,0,0,.95)",

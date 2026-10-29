@@ -36,6 +36,18 @@ function twoMemberParty(): PartyState {
   return state;
 }
 
+/** A party "p1" led by a, with b and c as members. */
+function threeMemberParty(): PartyState {
+  let state = inviteToParty(twoMemberParty(), {
+    inviter: player("a", { partyId: "p1" }),
+    inviterId: "a",
+    invitee: player("c"),
+    newPartyId: "unused",
+  }).state;
+  state = acceptPartyInvite(state, { player: player("c"), playerId: "c", partyId: "p1" }).state;
+  return state;
+}
+
 describe("inviteToParty", () => {
   it("creates a party led by the inviter and invites the target", () => {
     const { state, effects } = inviteToParty(createPartyState(), {
@@ -56,8 +68,13 @@ describe("inviteToParty", () => {
       "setPartyId",
       "joinRoom",
       "partyUpdate",
+      "partyUpdate",
       "partyInvite",
     ]);
+    /* The second update tells the party who is invited */
+    expect(effects[3]).toMatchObject({
+      payload: { party: { invitees: [{ id: "b", inviterId: "a" }] } },
+    });
     expect(effects.at(-1)).toEqual({
       type: "partyInvite",
       socketId: "b",
@@ -198,11 +215,14 @@ describe("acceptPartyInvite", () => {
 
 describe("leaveParty", () => {
   it("hands leadership to the next member when the leader leaves", () => {
-    const { state, effects } = leaveParty(twoMemberParty(), {
+    const { state, effects } = leaveParty(threeMemberParty(), {
       player: player("a", { partyId: "p1" }),
       playerId: "a",
     });
-    expect(getParty(state, "p1")?.members).toEqual([{ id: "b", isLeader: true, roomName: "town" }]);
+    expect(getParty(state, "p1")?.members).toEqual([
+      { id: "b", isLeader: true, roomName: "town" },
+      { id: "c", isLeader: false, roomName: "town" },
+    ]);
     expect(effects).toEqual([
       { type: "leaveRoom", socketId: "a", room: "party:p1" },
       expect.objectContaining({
@@ -219,17 +239,17 @@ describe("leaveParty", () => {
   });
 
   it("withdraws the invites the leaver sent", () => {
-    let state = inviteToParty(twoMemberParty(), {
+    let state = inviteToParty(threeMemberParty(), {
       inviter: player("a", { partyId: "p1" }),
       inviterId: "a",
-      invitee: player("c"),
+      invitee: player("d"),
       newPartyId: "unused",
     }).state;
     state = leaveParty(state, { player: player("a", { partyId: "p1" }), playerId: "a" }).state;
     expect(getParty(state, "p1")?.invitees).toEqual([]);
-    const accept = acceptPartyInvite(state, { player: player("c"), playerId: "c", partyId: "p1" });
+    const accept = acceptPartyInvite(state, { player: player("d"), playerId: "d", partyId: "p1" });
     expect(accept.effects).toEqual([
-      { type: "error", socketId: "c", message: "You were not invited to this party." },
+      { type: "error", socketId: "d", message: "You were not invited to this party." },
     ]);
   });
 
@@ -255,20 +275,44 @@ describe("leaveParty", () => {
   });
 
   it("keeps the leader when a regular member leaves", () => {
-    const { state } = leaveParty(twoMemberParty(), {
+    const { state } = leaveParty(threeMemberParty(), {
       player: player("b", { partyId: "p1" }),
       playerId: "b",
     });
-    expect(getParty(state, "p1")?.members).toEqual([{ id: "a", isLeader: true, roomName: "town" }]);
+    expect(getParty(state, "p1")?.members).toEqual([
+      { id: "a", isLeader: true, roomName: "town" },
+      { id: "c", isLeader: false, roomName: "town" },
+    ]);
   });
 
-  it("disbands the party when the last member leaves", () => {
-    let state = leaveParty(twoMemberParty(), {
+  it("disbands the party when one member is left with no invites out", () => {
+    const { state, effects } = leaveParty(twoMemberParty(), {
       player: player("b", { partyId: "p1" }),
       playerId: "b",
-    }).state;
-    state = leaveParty(state, { player: player("a", { partyId: "p1" }), playerId: "a" }).state;
+    });
     expect(state.parties).toEqual([]);
+    expect(effects).toEqual(
+      expect.arrayContaining([
+        { type: "leaveRoom", socketId: "a", room: "party:p1" },
+        { type: "setPartyId", playerId: "a", partyId: null },
+        {
+          type: "partyUpdate",
+          to: { socketId: "a" },
+          payload: { message: "The party has disbanded.", party: null },
+        },
+      ]),
+    );
+  });
+
+  it("keeps a lone member's party while their invite is out", () => {
+    let state = inviteToParty(twoMemberParty(), {
+      inviter: player("a", { partyId: "p1" }),
+      inviterId: "a",
+      invitee: player("c"),
+      newPartyId: "unused",
+    }).state;
+    state = leaveParty(state, { player: player("b", { partyId: "p1" }), playerId: "b" }).state;
+    expect(getParty(state, "p1")?.members).toEqual([{ id: "a", isLeader: true, roomName: "town" }]);
   });
 
   it("only clears the party id for a player with no party", () => {

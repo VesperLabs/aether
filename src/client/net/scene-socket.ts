@@ -10,6 +10,7 @@ import { netInterp } from "@/client/net/scene-interpolation";
 import type { TickEntity } from "@/client/net/interpolation";
 import { playAudio } from "@/client/audio/play-audio";
 import { playHitImpact } from "@/client/views/hit-impact";
+import { playSpawnDissolve } from "@/client/views/dissolve";
 import {
   addPlayer,
   getPlayer,
@@ -56,7 +57,7 @@ export function bindSceneSocket(scene: SceneMain) {
     if (scene.hero) scene.hero.party = party;
   });
 
-  socket.on("heroInit", (args) => {
+  socket.on("heroInit", (args, { isRespawn } = {}) => {
     const { socketId, players = [], npcs = [], loots = [] } = args ?? {};
     if (args && Object.prototype.hasOwnProperty.call(args, "userSettings")) {
       scene.userSettings = { ...DEFAULT_USER_SETTINGS, ...args.userSettings };
@@ -90,6 +91,7 @@ export function bindSceneSocket(scene: SceneMain) {
     const { collideLayer } = changeMap(scene, scene.hero.roomName);
     initPlayerCollision(scene, scene.hero, [collideLayer]);
     initCamera(scene, scene.hero);
+    if (isRespawn) playSpawnDissolve(scene.hero);
   });
 
   socket.on("playerJoin", (user, { lastTeleport, isRespawn } = {}) => {
@@ -102,6 +104,7 @@ export function bindSceneSocket(scene: SceneMain) {
       player.y = user.y;
       if (isRespawn) {
         player?.respawn();
+        playSpawnDissolve(player);
       }
     } else {
       addPlayer(scene, user);
@@ -207,6 +210,7 @@ export function bindSceneSocket(scene: SceneMain) {
     npc.state.lastTeleport = respawnTime;
     npc.setPosition(x, y);
     npc?.respawn();
+    playSpawnDissolve(npc);
   });
 
   socket.on("lootSpawned", ({ loot, npcId }) => {

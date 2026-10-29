@@ -58,8 +58,10 @@ const IconPen = ({ sx }: { sx?: ThemeUIStyleObject }) => (
 export const ModalLogin = () => {
   const storedEmail = localStorage.getItem("email") ?? "";
   const { zoom, bottomOffset } = useAppContext();
+  /* Demo logins are for development only; the server refuses them in production */
+  const canDemo = import.meta.env.DEV;
   const [defaultEmail, setDefaultEmail] = useState(storedEmail);
-  const [activeTab, setActiveTab] = useState(storedEmail ? "login" : "demo");
+  const [activeTab, setActiveTab] = useState(storedEmail || !canDemo ? "login" : "demo");
 
   const isLogin = activeTab === "login";
   const isRegister = activeTab === "register";
@@ -103,17 +105,21 @@ export const ModalLogin = () => {
       <TabPanel open={isRegister}>
         <RegisterForm onRegisterSuccess={onRegisterSuccess} isActive={isRegister} />
       </TabPanel>
-      <Modal.Header
-        sx={{ cursor: "pointer", opacity: isDemo ? 1 : 0.25 }}
-        onClick={() => setActiveTab("demo")}
-      >
-        <IconPen sx={{ transform: isDemo ? "scale(1)" : "scale(0)" }} />
-        <Icon size={22} icon={`./assets/icons/book.png`} />
-        Try Demo
-      </Modal.Header>
-      <TabPanel open={isDemo}>
-        <DemoForm />
-      </TabPanel>
+      {canDemo && (
+        <>
+          <Modal.Header
+            sx={{ cursor: "pointer", opacity: isDemo ? 1 : 0.25 }}
+            onClick={() => setActiveTab("demo")}
+          >
+            <IconPen sx={{ transform: isDemo ? "scale(1)" : "scale(0)" }} />
+            <Icon size={22} icon={`./assets/icons/book.png`} />
+            Try Demo
+          </Modal.Header>
+          <TabPanel open={isDemo}>
+            <DemoForm />
+          </TabPanel>
+        </>
+      )}
     </Modal>
   );
 };

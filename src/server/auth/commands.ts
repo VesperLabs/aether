@@ -8,11 +8,17 @@ import { shouldPause } from "../net/world-pause";
 import type { ParsedCommand } from "@/network";
 import type { CommandContext } from "@/server/net/command-context";
 
+/** Demo logins (throwaway, unsaved characters) are for development only, never production. */
+function isDemoAllowed() {
+  return process.env.NODE_ENV !== "production";
+}
+
 export async function demoLogin(
   ctx: CommandContext,
   { charClass }: ParsedCommand<"demoLogin"> = {},
 ) {
   const { world, socket, socketId, session } = ctx;
+  if (!isDemoAllowed()) return socket.emit("formError", { error: "Demo mode is off" });
   if (!charClass) return socket.emit("formError", { error: "No class" });
 
   /* Only let one connection at a time */

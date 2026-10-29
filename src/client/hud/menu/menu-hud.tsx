@@ -167,6 +167,8 @@ const LevelIcon = ({
 
 /** Fade-out duration for proximity plates; WebRTC teardown is delayed to match (see VideoFrame). */
 const NEARBY_EXIT_MS = 380;
+/** Fade-in duration for a proximity plate when a player comes into range. */
+const NEARBY_FADE_IN_MS = 380;
 
 function remotePortraitStream(
   videoChatOn: boolean,
@@ -310,7 +312,8 @@ export const MenuHud = () => {
                   key={`nearby-${socketId}`}
                   sx={{
                     opacity: isExiting ? 0 : 1,
-                    transition: "opacity 0.35s ease-out",
+                    transition: `opacity ${NEARBY_EXIT_MS}ms ease-out`,
+                    animation: `nearby-plate-in ${NEARBY_FADE_IN_MS}ms ease-out`,
                     pointerEvents: isExiting ? "none" : "auto",
                   }}
                 >

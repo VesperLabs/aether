@@ -75,7 +75,7 @@ export interface ServerToClientEvents {
   /** First message after login, respawn and door travel: the whole room. */
   heroInit: (
     state: RoomStateMessage & { socketId: string; userSettings?: UserSettingsMessage },
-    meta?: { isLogin?: boolean },
+    meta?: { isLogin?: boolean; isRespawn?: boolean },
   ) => void;
 
   /* World */

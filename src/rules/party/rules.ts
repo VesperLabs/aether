@@ -179,6 +179,8 @@ export function inviteToParty(
     party = { ...party, invitees: [...party.invitees, { id: invitee.id, inviterId }] };
     next = replaceParty(next, party);
   }
+  /* Members learn who is invited, so the inviter's button can show the invite as pending */
+  effects.push({ type: "partyUpdate", to: { room: party.socketRoom }, payload: { party } });
   effects.push({ type: "partyInvite", socketId: invitee.id, inviterId, partyId: party.id });
   return { state: next, effects };
 }
@@ -230,7 +232,8 @@ export function acceptPartyInvite(
 
 /**
  * `player` leaves their party (also used when they disconnect). The next member becomes leader if
- * the leader left, an empty party is disbanded, and the invites they sent are withdrawn.
+ * the leader left, the invites they sent are withdrawn, and a party left with one member and no
+ * invites out is disbanded.
  */
 export function leaveParty(
   state: PartyState,
@@ -247,7 +250,9 @@ export function leaveParty(
     }
     const invitees = party.invitees.filter((i) => i.inviterId !== playerId);
     const remaining: Party = { ...party, members, invitees };
-    next = members.length === 0 ? withoutParty(state, party.id) : replaceParty(state, remaining);
+    /* A lone member with no invites out has nobody to party with, so the party ends */
+    const isDisbanded = members.length === 0 || (members.length === 1 && invitees.length === 0);
+    next = isDisbanded ? withoutParty(state, party.id) : replaceParty(state, remaining);
     effects.push(
       { type: "leaveRoom", socketId: playerId, room: party.socketRoom },
       {
@@ -261,6 +266,19 @@ export function leaveParty(
         payload: { message: "You have left the party", party: null },
       },
     );
+    if (isDisbanded) {
+      for (const member of members) {
+        effects.push(
+          { type: "leaveRoom", socketId: member.id, room: party.socketRoom },
+          { type: "setPartyId", playerId: member.id, partyId: null },
+          {
+            type: "partyUpdate",
+            to: { socketId: member.id },
+            payload: { message: "The party has disbanded.", party: null },
+          },
+        );
+      }
+    }
   }
   if (player) effects.push({ type: "setPartyId", playerId, partyId: null });
   return { state: next, effects };

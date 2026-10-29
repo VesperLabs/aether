@@ -38,3 +38,4 @@ export {
 } from "./image-tint";
 export { isMobile } from "./is-mobile";
 export * from "./hooks";
+export { NotificationBadge } from "./notification-badge";

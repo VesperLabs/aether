@@ -4,9 +4,11 @@ import { getSwingWeaponAngle } from "./swing-arc";
 
 const BLANK_TEXTURE = "human-blank";
 
-export function checkIsFlash(p: Player, delta: number) {
-  /* Let us attack again when it is ready */
-  if (Date.now() - p.state.lastFlash > delta + 50 && p.state.isFlash) {
+/** How long the red damage tint shows, in ms. A fixed time, so a long frame (a tab coming back) can't stretch it. */
+const FLASH_MS = 70;
+
+export function checkIsFlash(p: Player) {
+  if (p.state.isFlash && Date.now() - p.state.lastFlash > FLASH_MS) {
     p.state.isFlash = false;
     p.drawCharacterFromUserData();
   }

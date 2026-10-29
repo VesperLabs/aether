@@ -1,5 +1,10 @@
 import Phaser from "phaser";
 import type { Player } from "@/client/views/player";
+
+/** Crosshair opacity right after a shot; it climbs back as the attack readies, then snaps to full. */
+const RELOADING_ALPHA = 0.2;
+const READYING_ALPHA = 0.5;
+
 export class Crosshair extends Phaser.GameObjects.Container {
   declare center: Phaser.Math.Vector2;
   declare distance: number;
@@ -37,10 +42,20 @@ export class Crosshair extends Phaser.GameObjects.Container {
 
     // Set the rotation of the sprite around its own axis
     this.sprite.setRotation(this.angle);
+    this.sprite.setAlpha(this.getReadiness());
 
     // Calculate the position based on the rotated angle
     this.x = this.center.x + Math.cos(this.angle) * this.distance;
     this.y = this.center.y + Math.sin(this.angle) * this.distance;
+  }
+
+  /** Full opacity when the next attack is ready, faded while it is still on cooldown. */
+  private getReadiness() {
+    const { player } = this;
+    const delay = player.getFullAttackDelay();
+    const elapsed = Date.now() - (player.state.lastAttack ?? 0);
+    if (!delay || elapsed >= delay) return 1;
+    return RELOADING_ALPHA + (READYING_ALPHA - RELOADING_ALPHA) * (elapsed / delay);
   }
 
   destroy() {

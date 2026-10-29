@@ -3,6 +3,7 @@ import type { Player } from "./player";
 import { Damage } from "./damage";
 import { Buff } from "./buff";
 import { Hit } from "./hit";
+import { playDeathDissolve } from "./dissolve";
 
 /** How long a hit paints the body solid white before the red tint, in ms. */
 const WHITE_FLASH_MS = 50;
@@ -29,6 +30,7 @@ export function applyHit(player: Player, hit: HitEffect, showDamage = true) {
     case "death":
       stats.hp = 0;
       scene.add.existing(new Hit(player.scene, player, elements));
+      playDeathDissolve(player);
       player.doDeath();
       break;
     case "hp":
@@ -67,7 +69,8 @@ function flashHit(player: Player) {
   player.state.lastFlash = Date.now() + WHITE_FLASH_MS;
   player.state.isFlash = true;
   player.scene.time.delayedCall(WHITE_FLASH_MS, () => {
-    if (!player.active || player.state.isDead) return;
+    /* Skip it if the flash already ended, or the red would stick until the next hit */
+    if (!player.active || player.state.isDead || !player.state.isFlash) return;
     player.doFlashAnimation(0xff0000);
   });
 }
