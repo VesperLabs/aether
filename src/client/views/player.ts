@@ -367,12 +367,12 @@ export class Player extends Character {
     }
     return this.setAlpha(alpha);
   }
-  update(_time: number, delta: number) {
+  update() {
     if (this.checkDeath()) return;
     hackFrameRates(this, Math.round(80 + 2500 / (this.currentSpeed + 10)));
     updateCurrentSpeed(this);
     drawFrame(this);
-    checkIsFlash(this, delta);
+    checkIsFlash(this);
     this.showHideNameAndBars();
     this.setBubbleMessage();
     this.setTalkMenu();
