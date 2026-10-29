@@ -7,7 +7,9 @@ const FLASH_MS = 70;
 const DISSOLVE_MS = 750;
 /** How much the top of the body leads the dissolve (0 = pure dither, 1 = a straight wipe). */
 const HEIGHT_BIAS = 0.35;
-const MOTE_COUNT = 14;
+/** Share of the body's pixels that float away as they vanish; the rest just disappear. */
+const FLOAT_CHANCE = 0.25;
+const SPAWN_MS = 650;
 
 /** A 4x4 ordered-dither matrix: pixels vanish in a checkered, retro pattern instead of fading. */
 const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
@@ -36,12 +38,13 @@ function getBodyLayers(player: Player) {
 export function playDeathDissolve(player: Player) {
   const { scene } = player;
   if (!scene) return;
-  const half = SNAPSHOT_SIZE / 2;
   const snapshot = scene.add.renderTexture(player.x, player.y, SNAPSHOT_SIZE, SNAPSHOT_SIZE);
   snapshot.setDepth(player.depth + 1);
-  /* WebGL adds the offset to each layer's own position, so this places them as in the rig */
-  snapshot.draw(getBodyLayers(player), half + player.rig.x, half + player.rig.y);
-  snapshot.render();
+  drawBody(snapshot, player);
+  let pixels: Uint8ClampedArray | undefined;
+  snapshot.snapshot((image) => {
+    if (image instanceof HTMLImageElement) pixels = readPixels(image);
+  });
   snapshot.setTint(0xffffff).setTintMode(Phaser.TintModes.FILL);
 
   const order = getDissolveOrder();
@@ -50,7 +53,6 @@ export function playDeathDissolve(player: Player) {
 
   scene.time.delayedCall(FLASH_MS, () => {
     snapshot.setTint(0xffffff).setTintMode(Phaser.TintModes.MULTIPLY);
-    spawnMotes(scene, player.x, player.y + player.bodyOffsetY, snapshot.depth + 1);
     scene.tweens.add({
       targets: { t: 0 },
       t: 1,
@@ -61,7 +63,12 @@ export function playDeathDissolve(player: Player) {
         eraser.clear().fillStyle(0xffffff);
         for (; erased < target; erased++) {
           const index = order[erased];
-          eraser.fillRect(index % SNAPSHOT_SIZE, Math.floor(index / SNAPSHOT_SIZE), 1, 1);
+          const x = index % SNAPSHOT_SIZE;
+          const y = Math.floor(index / SNAPSHOT_SIZE);
+          eraser.fillRect(x, y, 1, 1);
+          if (pixels && pixels[index * 4 + 3] > 0 && Math.random() < FLOAT_CHANCE) {
+            floatPixel(snapshot, x, y, pixels, index);
+          }
         }
         snapshot.erase(eraser).render();
       },
@@ -91,25 +98,117 @@ function getDissolveOrder() {
   return dissolveOrder;
 }
 
-/** Single pixels that float up out of the body as it dissolves. */
-function spawnMotes(scene: Phaser.Scene, x: number, y: number, depth: number) {
-  for (let i = 0; i < MOTE_COUNT; i++) {
-    const mote = scene.add.rectangle(
-      x + Phaser.Math.Between(-8, 8),
-      y + Phaser.Math.Between(-10, 8),
-      1,
-      1,
-      0xffffff,
+/** The snapshot's RGBA bytes, row by row, so dissolving pixels keep their colour. */
+function readPixels(image: HTMLImageElement) {
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = SNAPSHOT_SIZE;
+  const context = canvas.getContext("2d");
+  if (!context) return undefined;
+  context.drawImage(image, 0, 0);
+  return context.getImageData(0, 0, SNAPSHOT_SIZE, SNAPSHOT_SIZE).data;
+}
+
+/** Lifts one of the body's own pixels off the snapshot and floats it up as it fades. */
+function floatPixel(
+  snapshot: Phaser.GameObjects.RenderTexture,
+  x: number,
+  y: number,
+  pixels: Uint8ClampedArray,
+  index: number,
+) {
+  const { scene } = snapshot;
+  const [r, g, b] = pixels.subarray(index * 4, index * 4 + 3);
+  const half = SNAPSHOT_SIZE / 2;
+  const color = Phaser.Display.Color.GetColor(r, g, b);
+  const mote = scene.add.rectangle(
+    snapshot.x - half + x + 0.5,
+    snapshot.y - half + y + 0.5,
+    1,
+    1,
+    color,
+  );
+  mote.setDepth(snapshot.depth + 1);
+  scene.tweens.add({
+    targets: mote,
+    y: mote.y - Phaser.Math.Between(6, 18),
+    x: mote.x + Phaser.Math.Between(-2, 2),
+    alpha: 0,
+    duration: Phaser.Math.Between(350, 700),
+    ease: "Sine.easeOut",
+    onComplete: () => mote.destroy(),
+  });
+}
+
+/** Draws the character's visible body layers, centred, into a snapshot. */
+function drawBody(
+  target: Phaser.GameObjects.RenderTexture | Phaser.Textures.DynamicTexture,
+  player: Player,
+) {
+  const half = SNAPSHOT_SIZE / 2;
+  /* WebGL adds the offset to each layer's own position, so this places them as in the rig */
+  target.draw(getBodyLayers(player), half + player.rig.x, half + player.rig.y);
+  target.render();
+}
+
+/**
+ * The death dissolve in reverse: a (re)spawning character's body fills in pixel by pixel, from the
+ * feet up. Visual only.
+ */
+export function playSpawnDissolve(player: Player) {
+  const { scene } = player;
+  if (!scene) return;
+  /* Hidden straight away, so the body never shows whole before the reveal */
+  player.rig.setAlpha(0);
+  /* Wait a frame so the body has its textures and pose before the snapshot */
+  scene.events.once("postupdate", () => {
+    if (!player.active) return void player.rig.setAlpha(1);
+    const half = SNAPSHOT_SIZE / 2;
+    const id = Phaser.Utils.String.UUID();
+    /* The finished body, and a cover over the pixels not revealed yet */
+    const body = scene.textures.addDynamicTexture(`spawn-body-${id}`, SNAPSHOT_SIZE, SNAPSHOT_SIZE);
+    const cover = scene.textures.addDynamicTexture(
+      `spawn-cover-${id}`,
+      SNAPSHOT_SIZE,
+      SNAPSHOT_SIZE,
     );
-    mote.setDepth(depth);
+    if (!body || !cover) return void player.rig.setAlpha(1);
+    drawBody(body, player);
+    cover.fill(0xffffff).render();
+
+    const shown = scene.add.renderTexture(player.x, player.y, SNAPSHOT_SIZE, SNAPSHOT_SIZE);
+    shown.setDepth(player.depth + 1);
+
+    const order = getDissolveOrder();
+    const eraser = scene.make.graphics({}, false);
+    let revealed = 0;
+    const finish = () => {
+      player.rig.setAlpha(1);
+      eraser.destroy();
+      shown.destroy();
+      body.destroy();
+      cover.destroy();
+    };
+
     scene.tweens.add({
-      targets: mote,
-      y: mote.y - Phaser.Math.Between(10, 22),
-      x: mote.x + Phaser.Math.Between(-3, 3),
-      alpha: 0,
-      delay: Phaser.Math.Between(0, DISSOLVE_MS / 2),
-      duration: Phaser.Math.Between(400, 800),
-      onComplete: () => mote.destroy(),
+      targets: { t: 0 },
+      t: 1,
+      duration: SPAWN_MS,
+      onUpdate: (tween) => {
+        if (!player.active || player.state.isDead) return tween.complete();
+        const target = Math.floor(tween.progress * order.length);
+        if (target > revealed) {
+          eraser.clear().fillStyle(0xffffff);
+          /* Reveal in reverse of the death order, so the feet come in first */
+          for (; revealed < target; revealed++) {
+            const index = order[order.length - 1 - revealed];
+            eraser.fillRect(index % SNAPSHOT_SIZE, Math.floor(index / SNAPSHOT_SIZE), 1, 1);
+          }
+          cover.erase(eraser).render();
+        }
+        shown.setPosition(player.x, player.y).setDepth(player.depth + 1);
+        shown.clear().stamp(body.key, undefined, half, half).erase(cover.key, half, half).render();
+      },
+      onComplete: finish,
     });
-  }
+  });
 }

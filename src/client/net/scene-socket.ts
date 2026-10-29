@@ -10,6 +10,7 @@ import { netInterp } from "@/client/net/scene-interpolation";
 import type { TickEntity } from "@/client/net/interpolation";
 import { playAudio } from "@/client/audio/play-audio";
 import { playHitImpact } from "@/client/views/hit-impact";
+import { playSpawnDissolve } from "@/client/views/dissolve";
 import {
   addPlayer,
   getPlayer,
@@ -102,6 +103,7 @@ export function bindSceneSocket(scene: SceneMain) {
       player.y = user.y;
       if (isRespawn) {
         player?.respawn();
+        playSpawnDissolve(player);
       }
     } else {
       addPlayer(scene, user);
@@ -207,6 +209,7 @@ export function bindSceneSocket(scene: SceneMain) {
     npc.state.lastTeleport = respawnTime;
     npc.setPosition(x, y);
     npc?.respawn();
+    playSpawnDissolve(npc);
   });
 
   socket.on("lootSpawned", ({ loot, npcId }) => {
