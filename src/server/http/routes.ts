@@ -105,7 +105,9 @@ export function registerRoutes(app: Express, { aetherServer, db }: RouteDeps) {
     res.json(metrics);
   });
 
+  /* Deletes every level-1 account, so it only exists outside production */
   app.get("/players/prune", async (_, res) => {
+    if (process.env.NODE_ENV === "production") return res.status(404).end();
     await db.pruneNoobs();
     res.json({ string: "ok" });
   });
