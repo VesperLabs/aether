@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/VesperLabs/aether/compare/v0.2.0...v0.2.1) (2026-10-30)
+
+
+### Bug Fixes
+
+* lots of qol changes ([#54](https://github.com/VesperLabs/aether/issues/54)) ([044948c](https://github.com/VesperLabs/aether/commit/044948c0e63cb59def70a501a4256de143383ebc))
+
 ## [0.2.0](https://github.com/VesperLabs/aether/compare/v0.1.1...v0.2.0) (2026-10-29)
 
 

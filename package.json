@@ -1,7 +1,7 @@
 {
   "name": "aether",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.2.1",
   "engines": {
     "node": ">=26.0.0"
   },
