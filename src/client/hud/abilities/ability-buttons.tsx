@@ -4,9 +4,12 @@ import { CONSUMABLES_BASES, POTION_BASES } from "@/rules/inventory";
 import { applyTintToImage, loadCacheImage } from "@/ui";
 import { arePropsEqualWithKeys } from "@/ui";
 import { isMobile } from "@/ui";
-import { CooldownTimer } from "./cooldown-timer";
+import { COOLING_DOWN_OPACITY, CooldownTimer, useIsCoolingDown } from "./cooldown-timer";
 import { ItemTooltip } from "@/ui";
 import { SkillButton } from "./skill-button";
+import type { ResourceCosts } from "./cost-badge";
+import { getAbilityCosts, getAttackSpCost } from "@/rules/combat";
+import { filterVisibleEquipment } from "@/rules/character";
 import { Box, Flex, Text } from "@/ui";
 import React, { memo, useEffect, useState } from "react";
 
@@ -69,6 +72,18 @@ const TintedIconLoader = ({
     return window.dispatchEvent(new CustomEvent("HERO_AIM_START", { detail: slotKey }));
   };
 
+  /* Attack-spells (flame slash) also pay the weapon's swing cost */
+  const costs: ResourceCosts = isSpell ? getAbilityCosts(item.stats) : {};
+  if (isSpell && details?.isMeleeAttack) {
+    costs.sp = (costs.sp ?? 0) + getAttackSpCost(filterVisibleEquipment(hero), 1);
+  }
+
+  const isCoolingDown = useIsCoolingDown(
+    cooldowns["global"],
+    cooldowns[cooldown],
+    details?.isMeleeAttack ? cooldowns["attack"] : undefined,
+  );
+
   return (
     <Box
       data-tooltip-id={tooltipId}
@@ -87,7 +102,9 @@ const TintedIconLoader = ({
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         keyboardKey={slotKey}
+        costs={costs}
         sx={{
+          opacity: isCoolingDown ? COOLING_DOWN_OPACITY : 1,
           "& > .icon": {
             mt: "-6px",
             mb: "6px",

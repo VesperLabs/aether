@@ -1,5 +1,6 @@
 import { DEFAULT_USER_SETTINGS, type UserSettings } from "@/rules/world";
 import {
+  decodeTickVitals,
   heroInitToTickExpanded,
   expandTickState,
   type FullCharacterWire,
@@ -24,6 +25,28 @@ import {
 import type { SceneMain } from "@/client/scenes/main-scene";
 import { changeMap, initCamera, initPlayerCollision } from "@/client/scenes/main-map";
 
+/** What a tick's vitals update on a player or npc sprite. */
+interface VitalsHolder {
+  stats?: Record<string, unknown> | null;
+  isHero?: boolean;
+  updateHpBar(): void;
+}
+
+/**
+ * Takes the server's hp, mp and sp from a tick. Regen and hit effects still play from their own
+ * messages; this keeps the numbers right however many of those were missed or merged.
+ */
+function applyTickVitals(character: VitalsHolder, v: unknown) {
+  const vitals = decodeTickVitals(v);
+  const stats = character.stats;
+  if (!vitals || !stats) return;
+  const keys = Object.keys(vitals) as (keyof typeof vitals)[];
+  if (keys.every((key) => stats[key] === vitals[key])) return;
+  Object.assign(stats, vitals);
+  character.updateHpBar();
+  if (character.isHero) window.dispatchEvent(new Event("UPDATE_HUD"));
+}
+
 /** Registers every server message the main scene reacts to. */
 export function bindSceneSocket(scene: SceneMain) {
   const socket = scene.socket;
@@ -44,12 +67,14 @@ export function bindSceneSocket(scene: SceneMain) {
       if (!npc) continue;
       npc.updateState(s?.state);
       npc.doRegen();
+      applyTickVitals(npc, s?.v);
     }
     for (const s of expanded.state.players as TickEntity[]) {
       const player = getPlayer(scene, s.id);
       if (!player) continue;
       player.updateState(s?.state);
       player.doRegen();
+      applyTickVitals(player, s?.v);
     }
   });
 
@@ -164,6 +189,13 @@ export function bindSceneSocket(scene: SceneMain) {
       direction: direction ?? undefined,
       abilitySlot: abilitySlot ?? undefined,
     });
+  });
+
+  socket.on("playerDodge", ({ socketId, angle }) => {
+    const p = getPlayer(scene, socketId);
+    if (!p || p.isHero) return;
+    p.state.lastDodge = Date.now();
+    p.state.dodgeAngle = angle;
   });
 
   socket.on("playerCastSpell", ({ socketId, abilitySlot, castAngle }) => {

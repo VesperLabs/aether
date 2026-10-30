@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import type { Player } from "./player";
 import { getSwingWeaponAngle } from "./swing-arc";
+import { isDodging } from "@/rules/movement";
 
 const BLANK_TEXTURE = "human-blank";
 
@@ -169,6 +170,12 @@ export function updateCurrentSpeed(player: Player) {
   player.currentSpeed = Math.max(Math.abs(vx), Math.abs(vy));
 
   const canMoveRanged = player.isHero && player.hasRangedWeapon();
+
+  /* A roll holds a walk frame (see player-dodge.ts), unless an attack is swinging out of it */
+  if (isDodging(player.state, Date.now()) && !player.state.isAttacking) {
+    player.action = "walk";
+    return;
+  }
 
   if (player.state.isAttacking && !canMoveRanged) {
     return;

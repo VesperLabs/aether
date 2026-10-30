@@ -3,6 +3,7 @@ import {
   DOOR_USE_RANGE,
   buildTileGrid,
   checkMove,
+  grantMoveBudget,
   isWithinDoorRange,
   startMoveTrack,
   type MoveContext,
@@ -91,6 +92,12 @@ describe("checkMove", () => {
     expect(rejected).toBeGreaterThan(20);
   });
 
+  it("accepts a granted burst past the walk budget, once", () => {
+    const track = grantMoveBudget(startMoveTrack("town", 50, 300, 0, 100), 200);
+    const rolled = checkMove(track, { x: 250, y: 300 }, 0, ctx);
+    expect(rolled.ok).toBe(true);
+    expect(checkMove(rolled.track, { x: 50, y: 300 }, 0, ctx).ok).toBe(false);
+  });
   it("does not let a long idle bank unlimited distance", () => {
     const result = checkMove(start(), { x: 50, y: 300 }, 3_600_000, ctx);
     expect(result).toMatchObject({ ok: false, reason: "too-far" });

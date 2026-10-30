@@ -5,6 +5,12 @@ import { io as connect, type Socket } from "socket.io-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { initFakeDatabase } from "../persistence";
 import { GameServer } from "../game-server";
+import {
+  decodeTickVitals,
+  expandTickState,
+  mergeTickDelta,
+  type TickStateExpanded,
+} from "@/network/sync";
 
 /** Combat, spells and buffs over real sockets against the in-process game server. */
 let httpServer: http.Server;
@@ -137,6 +143,15 @@ describe("attacking", () => {
     const spCosts = events.modifyPlayerStat.filter((e) => e.type === "sp");
     expect(spCosts).toHaveLength(1);
   });
+
+  it("can't attack without the stamina to pay for it", async () => {
+    const { socket, player, events } = await login("warrior");
+    player.stats.sp = 0;
+    socket.emit("attack", { count: 1, direction: "down", castAngle: 0 });
+    await sleep(150);
+    expect(player.state.isAttacking).toBeFalsy();
+    expect(events.modifyPlayerStat.filter((e) => e.type === "sp")).toHaveLength(0);
+  });
 });
 
 describe("casting spells", () => {
@@ -152,6 +167,72 @@ describe("casting spells", () => {
     expect(mpPayments).toEqual([expect.objectContaining({ amount: -mpCost })]);
     expect(player.state.lastCast.fireball).toBeGreaterThan(0);
   });
+
+  it("a rogue casting stealth becomes stealthed", async () => {
+    const { socket, player } = await login("rogue");
+    socket.emit("castSpell", { abilitySlot: 1, castAngle: 0 });
+    await until(
+      () => player.hasBuff("stealth"),
+      () => {},
+      50,
+      3000,
+    );
+  });
+
+  it("a cast refused for its cost does not start the spell's cooldown", async () => {
+    const { socket, player } = await login("rogue");
+    player.stats.sp = 0;
+    socket.emit("castSpell", { abilitySlot: 1, castAngle: 0 });
+    await sleep(100);
+    expect(player.state.lastCast.stealth).toBeFalsy();
+    player.stats.sp = player.stats.maxSp;
+    socket.emit("castSpell", { abilitySlot: 1, castAngle: 0 });
+    await until(
+      () => player.hasBuff("stealth"),
+      () => {},
+      50,
+      3000,
+    );
+  });
+
+  it("ticks carry the server's hp, mp and sp, so the client's copy matches through costs and regen", async () => {
+    const { socket, player } = await login("rogue");
+    /* Rebuild the room the way the client does: keyframes, then deltas merged in */
+    let room: TickStateExpanded | null = null;
+    socket.on("update", (snap: Anything) => {
+      if (snap.delta) room = room && mergeTickDelta(room, snap.state, snap.rm);
+      else room = expandTickState(snap.state);
+    });
+    const seenSp = () => {
+      const me = (room?.players as Anything[] | undefined)?.find((p) => p.id === socket.id);
+      return decodeTickVitals(me?.v)?.sp;
+    };
+
+    await until(
+      () => player.stats.sp < 5,
+      () => socket.emit("dodge", { angle: 0 }),
+      1300,
+      15000,
+    );
+    await until(
+      () => seenSp() === player.stats.sp,
+      () => {},
+      50,
+      2000,
+    );
+    await until(
+      () => player.stats.sp >= 8,
+      () => {},
+      100,
+      15000,
+    );
+    await until(
+      () => seenSp() === player.stats.sp,
+      () => {},
+      50,
+      2000,
+    );
+  }, 40000);
 
   it("does not cast a spell the player cannot afford", async () => {
     const { socket, player, events } = await login("mage");

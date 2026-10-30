@@ -52,6 +52,9 @@ declare global {
     HERO_AIM_START: CustomEvent<AbilitySlot | undefined>;
     HERO_ATTACK: Event;
     HERO_ATTACK_START: CustomEvent<AbilitySlot | undefined>;
+    /** Dodge button pressed (shows the aimer) and released (rolls). */
+    HERO_DODGE_START: Event;
+    HERO_DODGE: Event;
     HERO_ABILITY: CustomEvent<AbilitySlot>;
     HERO_USE_ITEM: CustomEvent<ItemEventDetail>;
     HERO_GRAB: Event;

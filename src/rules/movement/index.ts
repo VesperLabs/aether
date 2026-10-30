@@ -31,9 +31,21 @@ export {
   MOVE_SPEED_TOLERANCE,
   checkMove,
   distanceToRect,
+  grantMoveBudget,
   isWithinDoorRange,
   startMoveTrack,
 } from "./move-validation";
+export {
+  DODGE_COOLDOWN,
+  DODGE_DISTANCE,
+  DODGE_DURATION,
+  DODGE_SP_COST,
+  canDodge,
+  getDodgeReadiness,
+  getDodgeVelocity,
+  isDodging,
+} from "./dodge";
+export type { DodgeInput, DodgeState } from "./dodge";
 export type {
   MoveContext,
   MoveRejection,

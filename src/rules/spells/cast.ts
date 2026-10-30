@@ -38,6 +38,18 @@ export function checkCastReady({ spellName, lastCast, castDelay, now }: CastRead
   return isThisSpellReady && isGlobalReady;
 }
 
+/** How far through its cooldown (global cast delay and its own) a spell is, 0 to 1. */
+export function getCastReadiness({ spellName, lastCast, castDelay, now }: CastReadyInput): number {
+  const delay = castDelay ?? 0;
+  const progress = (elapsed: number, total: number) =>
+    total > 0 ? Math.min(1, Math.max(0, elapsed / total)) : 1;
+  const global = progress(now - (lastCast?.global ?? 0), delay);
+  if (!spellName) return global;
+  const baseCooldown =
+    (spellDetails as Record<string, { baseCooldown?: number }>)?.[spellName]?.baseCooldown ?? 0;
+  return Math.min(global, progress(now - (lastCast?.[spellName] ?? 0), delay + baseCooldown));
+}
+
 /**
  * A key of a character's abilities record. Numbers and numeric strings name the same slot
  * (`abilities[1]` is `abilities["1"]`); clients send either.
@@ -95,16 +107,16 @@ export function canCastSpell(input: CanCastInput): CanCastResult {
   const hpCost = ability?.stats?.hpCost || 0;
   const spCost = ability?.stats?.spCost || 0;
 
+  const allowed = stats?.mp >= mpCost && stats?.hp > hpCost && stats?.sp >= spCost;
+
+  /* Only a cast that goes ahead starts the cooldowns; one refused for its cost must not */
   let castTimes: LastCast | undefined;
-  if (input.shouldUpdateState) {
+  if (input.shouldUpdateState && allowed) {
     castTimes = { global: input.now };
     if (spellName) castTimes[spellName] = input.now;
   }
 
-  return {
-    allowed: stats?.mp >= mpCost && stats?.hp > hpCost && stats?.sp >= spCost,
-    castTimes,
-  };
+  return { allowed, castTimes };
 }
 
 export interface AbilityDetailsInput {

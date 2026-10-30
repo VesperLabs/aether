@@ -85,7 +85,7 @@ describe("getFullCharacterState", () => {
 describe("getTickCharacterState", () => {
   it("sends the compact tick shape without a room", () => {
     const out = getTickCharacterState(makeCharacter());
-    expect(Object.keys(out)).toEqual(["id", "d", "state", "x", "y", "vx", "vy"]);
+    expect(Object.keys(out)).toEqual(["id", "d", "state", "x", "y", "vx", "vy", "v"]);
     expect(out).toMatchObject({ id: "sock-1", d: 2, x: 10.5, y: 20.25, vx: 0.5, vy: -1 });
   });
 

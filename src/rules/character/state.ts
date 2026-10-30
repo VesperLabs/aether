@@ -31,6 +31,20 @@ export interface CharacterState {
   lastCombat: number;
   lastPotion: number;
   lastAttack: number;
+  /** When the last dodge roll started. */
+  lastDodge?: number;
+  /** Client only: holding the dodge button, aiming the roll. */
+  isAimingDodge?: boolean;
+  /** Client only: when the dodge button went down, to tell a tap from a hold. */
+  dodgePressedAt?: number;
+  /** Client only: the angle the current roll is heading. */
+  dodgeAngle?: number;
+  /** Client only: the way the hero faced when the roll started; it keeps facing that way. */
+  dodgeFacing?: string;
+  /** Client only: the rig is frozen in the roll pose. */
+  isDodgePosed?: boolean;
+  /** Client only: the hero was rolling last frame. */
+  wasRolling?: boolean;
   lastFlash: number;
   lastCast: LastCast;
   /** Radians. */
@@ -39,6 +53,8 @@ export interface CharacterState {
   hasBuffChanges?: boolean;
   isAiming?: boolean;
   isHoldingAttack?: boolean;
+  /** The spell being aimed, so the crosshair fades with its cooldown instead of the attack's. */
+  aimingSpellName?: string | null;
   bubbleMessage?: string | null;
   lastBubbleMessage?: number;
   npcAttackReady?: boolean;

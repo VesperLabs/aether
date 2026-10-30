@@ -87,10 +87,6 @@ export function checkProximities(scene: SceneMain, time: number) {
       }
     }
 
-    if (entity.kind !== "sign") {
-      (entity as Player).checkStealth({ distance });
-    }
-
     if (["nasty", "keeper"]?.includes(entity?.kind)) {
       const cursorDistance = distanceTo(entity, cursorPoint);
       const npc = entity as Player;

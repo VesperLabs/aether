@@ -7,6 +7,7 @@ import {
   rollAttack,
   rollTriggers,
 } from "@/rules/combat";
+import { isDodging } from "@/rules/movement";
 import { rollSpellCrit, rollSpellDamage, type getAbilityDetails } from "@/rules/spells";
 import type { ServerCharacter } from "./character";
 
@@ -40,6 +41,9 @@ export function applySpellDamage(
   abilityDetails: AbilityDetails | undefined,
 ): Array<Hit> {
   if (victim?.state?.isDead) return [];
+  if (attacker !== victim && isDodging(victim.state, Date.now())) {
+    return [{ type: "miss", amount: 0, from: attacker.id, to: victim.id }];
+  }
   const hits: Array<Hit> = [];
   const { effects = {}, buffs } = abilityDetails ?? ({} as Partial<AbilityDetails>);
 
@@ -118,6 +122,9 @@ export function applyAttackDamage(
   abilityDetails: AbilityDetails | undefined,
 ): Array<Hit> {
   if (victim?.state?.isDead) return [];
+  if (isDodging(victim.state, Date.now())) {
+    return [{ type: "miss", amount: 0, from: attacker.id, to: victim.id }];
+  }
 
   const roll = rollAttack(attacker.stats, victim.stats, abilityDetails?.effects, rng);
   if (roll.outcome === "miss") {

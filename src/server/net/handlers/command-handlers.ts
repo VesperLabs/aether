@@ -5,6 +5,7 @@ import { consumeItem, dropItem, grabLoot } from "./inventory";
 import { moveItem } from "./inventory-move";
 import {
   changeDirection,
+  dodge,
   enterDoor,
   playerInput,
   respawn,
@@ -33,6 +34,7 @@ export const commandHandlers: CommandHandlers = {
   castSpell,
   playerInput,
   changeDirection,
+  dodge,
   updateState,
   enterDoor,
   respawn,

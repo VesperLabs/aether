@@ -49,6 +49,8 @@ export const commands = {
     })
     .optional(),
   castSpell: z.object({ abilitySlot: spellSlot, castAngle: z.number().nullish() }).optional(),
+  /** Roll along `angle` (radians). */
+  dodge: z.object({ angle: z.number() }),
 
   /* Movement and state */
   playerInput: z.object({

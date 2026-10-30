@@ -97,9 +97,6 @@ export const theme = {
       backgroundColor: "shadow.30",
       borderRadius: "100%",
       backdropFilter: "blur(2px)",
-      "&.active, &:has(.pressed)": {
-        boxShadow: `inset 0px 0px 0px 2px ${tColors.blue[200]}`,
-      },
     },
     header: {
       variant: "buttons.default",

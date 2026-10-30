@@ -55,11 +55,10 @@ describe("calculateElementalDamage", () => {
 });
 
 describe("calculateWeaponDamage", () => {
-  it("is full damage above 70% sp and scales below", () => {
-    const stats = { sp: 30, maxSp: 30, minDamage: 10, maxDamage: 20 };
-    expect(calculateWeaponDamage(stats)).toBe(20);
-    expect(calculateWeaponDamage({ ...stats, sp: 15 })).toBe(15);
-    expect(calculateWeaponDamage({ ...stats, sp: 0 })).toBe(10);
+  it("rolls between min and max whatever the sp", () => {
+    const stats = { sp: 0, maxSp: 30, minDamage: 10, maxDamage: 20 };
+    expect(calculateWeaponDamage(stats, () => 0)).toBe(10);
+    expect(calculateWeaponDamage(stats, () => 0.99)).toBe(20);
   });
 });
 

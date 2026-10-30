@@ -3,6 +3,7 @@ import { isMobile } from "@/ui";
 import type { PressHandler } from "@/ui";
 import type { ReactNode } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
+import { CostBadge, hasCosts, type ResourceCosts } from "./cost-badge";
 
 export const SkillButton = ({
   onTouchStart = () => {},
@@ -12,6 +13,7 @@ export const SkillButton = ({
   size,
   keyboardKey,
   sx,
+  costs,
   children,
 }: {
   onTouchStart?: PressHandler;
@@ -21,8 +23,11 @@ export const SkillButton = ({
   size: number;
   keyboardKey?: string;
   sx?: ThemeUIStyleObject;
+  /** What pressing it spends, shown on pills fused to its rim. */
+  costs?: ResourceCosts;
   children?: ReactNode;
 }) => {
+  const withCosts = hasCosts(costs);
   return (
     <Button
       variant="skill"
@@ -32,9 +37,18 @@ export const SkillButton = ({
         p: size,
         position: "relative",
         flexShrink: 0,
+        /* Dimming (cooldowns, chat with no one near) fades instead of snapping */
+        transition: "opacity .3s ease",
+        /* With costs, the glass is drawn by CostBadge as one shape with its pills */
+        ...(withCosts && {
+          backgroundColor: "transparent",
+          backdropFilter: "none",
+          isolation: "isolate",
+        }),
         ...sx,
       }}
     >
+      {withCosts && costs && <CostBadge costs={costs} />}
       <Icon icon={icon || `./assets/icons/${iconName}.png`} />
       {keyboardKey && (
         <KeyboardKey

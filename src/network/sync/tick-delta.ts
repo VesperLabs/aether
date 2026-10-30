@@ -1,5 +1,6 @@
 import { encodeWireDirection } from "./net-wire";
 import { pickTickStateLite } from "./tick-state";
+import { encodeTickVitals } from "./vitals";
 import { expandTickState, type TickStateExpanded } from "./wire-tick";
 
 export type { TickStateExpanded } from "./wire-tick";
@@ -109,6 +110,7 @@ export function heroInitToTickExpanded(args: {
     y: raw.y,
     vx: (raw.vx as number) ?? 0,
     vy: (raw.vy as number) ?? 0,
+    v: encodeTickVitals(raw.stats as Record<string, unknown>),
   }));
 
   const npcs = ((args.npcs ?? []) as Record<string, unknown>[]).map((raw) => ({
@@ -119,6 +121,7 @@ export function heroInitToTickExpanded(args: {
     y: raw.y,
     vx: (raw.vx as number) ?? 0,
     vy: (raw.vy as number) ?? 0,
+    v: encodeTickVitals(raw.stats as Record<string, unknown>),
   }));
 
   const loots = ((args.loots ?? []) as Record<string, unknown>[]).map((raw) => {

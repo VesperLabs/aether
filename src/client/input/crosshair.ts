@@ -1,7 +1,10 @@
 import Phaser from "phaser";
+import { getCastReadiness } from "@/rules/spells";
+import { DODGE_SP_COST, getDodgeReadiness } from "@/rules/movement";
 import type { Player } from "@/client/views/player";
+import { isDodgeAimShown } from "./hero-dodge";
 
-/** Crosshair opacity right after a shot; it climbs back as the attack readies, then snaps to full. */
+/** Crosshair opacity right after a shot or cast; it climbs back as it readies, then snaps to full. */
 const RELOADING_ALPHA = 0.2;
 const READYING_ALPHA = 0.5;
 
@@ -37,7 +40,8 @@ export class Crosshair extends Phaser.GameObjects.Container {
 
   update() {
     if (!this?.player?.state) return;
-    this.setVisible(!!this?.player?.state?.isAiming);
+    const state = this.player.state;
+    this.setVisible(!!state.isAiming || isDodgeAimShown(state, Date.now()));
     this.angle = this?.player?.state?.lastAngle;
 
     // Set the rotation of the sprite around its own axis
@@ -49,13 +53,33 @@ export class Crosshair extends Phaser.GameObjects.Container {
     this.y = this.center.y + Math.sin(this.angle) * this.distance;
   }
 
-  /** Full opacity when the next attack is ready, faded while it is still on cooldown. */
+  /** Full opacity when the aimed spell or next attack is ready, faded while it is on cooldown. */
   private getReadiness() {
+    const readiness = this.getProgress();
+    if (readiness >= 1) return 1;
+    return RELOADING_ALPHA + (READYING_ALPHA - RELOADING_ALPHA) * readiness;
+  }
+
+  /** 0 right after the shot or cast, 1 once ready again. */
+  private getProgress() {
     const { player } = this;
+    const { aimingSpellName, lastCast } = player.state;
+    if (player.state.isAimingDodge) {
+      /* Faded while the roll is on cooldown or there isn't the sp to pay for it */
+      if ((player.stats?.sp ?? 0) < DODGE_SP_COST) return 0;
+      return getDodgeReadiness(player.state, Date.now());
+    }
+    if (aimingSpellName) {
+      return getCastReadiness({
+        spellName: aimingSpellName,
+        lastCast,
+        castDelay: player.stats?.castDelay,
+        now: Date.now(),
+      });
+    }
     const delay = player.getFullAttackDelay();
-    const elapsed = Date.now() - (player.state.lastAttack ?? 0);
-    if (!delay || elapsed >= delay) return 1;
-    return RELOADING_ALPHA + (READYING_ALPHA - RELOADING_ALPHA) * (elapsed / delay);
+    if (!delay) return 1;
+    return Math.min(1, (Date.now() - (player.state.lastAttack ?? 0)) / delay);
   }
 
   destroy() {

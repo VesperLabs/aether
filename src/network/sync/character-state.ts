@@ -1,3 +1,4 @@
+import { encodeTickVitals, type TickVitals } from "./vitals";
 import type { CharClass } from "@/content";
 import { pickTickStateLite } from "./tick-state";
 import { encodeWireDirection } from "./net-wire";
@@ -77,6 +78,8 @@ export interface TickCharacterWire {
   y: number;
   vx: number;
   vy: number;
+  /** Current and max hp, mp and sp: see `encodeTickVitals`. */
+  v: TickVitals;
 }
 
 /** The parts of a character that change when buffs do. */
@@ -138,7 +141,7 @@ export function getTickStateLite(p: Pick<CharacterSyncInput, "state">): Record<s
 }
 
 export function getTickCharacterState(
-  p: Pick<CharacterSyncInput, "id" | "socketId" | "direction" | "state" | "x" | "y"> & {
+  p: Pick<CharacterSyncInput, "id" | "socketId" | "direction" | "state" | "stats" | "x" | "y"> & {
     vx?: number;
     vy?: number;
   },
@@ -156,6 +159,7 @@ export function getTickCharacterState(
     y: p?.y ?? 0,
     vx,
     vy,
+    v: encodeTickVitals(p?.stats),
   };
 }
 
