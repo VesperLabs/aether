@@ -62,9 +62,9 @@ describe("canCastSpell", () => {
       castTimes: { global: 1000, fireball: 1000 },
     });
   });
-  it("records the cast even when it turns out unaffordable", () => {
+  it("doesn't start the cooldown for a cast it can't afford", () => {
     const result = canCastSpell({ ...base, stats: { ...base.stats, mp: 9 } });
-    expect(result).toEqual({ allowed: false, castTimes: { global: 1000, fireball: 1000 } });
+    expect(result).toEqual({ allowed: false, castTimes: undefined });
   });
   it("doesn't record when only asking", () => {
     expect(canCastSpell({ ...base, shouldUpdateState: false }).castTimes).toBeUndefined();

@@ -107,11 +107,8 @@ export class Player extends Character {
     };
     patch("lockedPlayerId");
     patch("bubbleMessage");
-    patch("doHpRegen");
     patch("doBuffPoison");
     patch("doHpBuffRegen");
-    patch("doMpRegen");
-    patch("doSpRegen");
     patch("lastCombat");
 
     if (!this.isHero) {
@@ -152,10 +149,8 @@ export class Player extends Character {
     this.updateHpBar();
     this.buffRack.compareBuffs(this.buffs);
   }
+  /** Regen effects from the tick flags. The hp/mp/sp totals themselves come with the tick's vitals. */
   doRegen() {
-    if (this.state.doHpRegen) {
-      this.takeHit({ type: "hp", amount: this?.stats?.regenHp }, false);
-    }
     if (this.state.doBuffPoison) {
       const poisonBuff = this.getBuff("poison");
       if (poisonBuff) this.takeHit({ type: "hp", amount: -(poisonBuff?.stats?.poisonDamage || 0) });
@@ -164,12 +159,6 @@ export class Player extends Character {
       const regenBuff = this.getBuff("regeneration");
       if (regenBuff)
         this.takeHit({ type: "hp", amount: regenBuff?.stats?.regenHp, elements: ["holy"] });
-    }
-    if (this.state.doMpRegen) {
-      this.takeHit({ type: "mp", amount: this?.stats?.regenMp });
-    }
-    if (this.state.doSpRegen) {
-      this.takeHit({ type: "sp", amount: this?.stats?.regenSp });
     }
   }
   initSpriteLayers() {

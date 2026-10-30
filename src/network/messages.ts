@@ -133,6 +133,7 @@ export interface ServerToClientEvents {
     abilitySlot?: number | string;
     castAngle?: number;
   }) => void;
+  /** A player's hp, mp or sp changed by `amount`. The total itself comes with the tick (`v`). */
   modifyPlayerStat: (payload: { socketId: string; type: string; amount: number }) => void;
   assignDamage: (hits: HitMessage[]) => void;
 

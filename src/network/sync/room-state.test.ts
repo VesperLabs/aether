@@ -61,7 +61,16 @@ describe("getTickRoomState", () => {
     expect(out.players.map((p) => p.id)).toEqual(["a", "c"]);
     expect(out.npcs.map((n) => n.id)).toEqual(["n1"]);
     expect(out.loots).toEqual([{ id: "l1", expiredSince: 5 }]);
-    expect(Object.keys(out.players[0] ?? {})).toEqual(["id", "d", "state", "x", "y", "vx", "vy"]);
+    expect(Object.keys(out.players[0] ?? {})).toEqual([
+      "id",
+      "d",
+      "state",
+      "x",
+      "y",
+      "vx",
+      "vy",
+      "v",
+    ]);
   });
 });
 

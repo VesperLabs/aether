@@ -171,8 +171,8 @@ export function updateCurrentSpeed(player: Player) {
 
   const canMoveRanged = player.isHero && player.hasRangedWeapon();
 
-  /* A roll holds a walk frame (see player-dodge.ts) */
-  if (isDodging(player.state, Date.now())) {
+  /* A roll holds a walk frame (see player-dodge.ts), unless an attack is swinging out of it */
+  if (isDodging(player.state, Date.now()) && !player.state.isAttacking) {
     player.action = "walk";
     return;
   }

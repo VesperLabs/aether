@@ -6,3 +6,4 @@ export * from "./wire-tick";
 export * from "./character-state";
 export * from "./room-state";
 export * from "./timing";
+export * from "./vitals";

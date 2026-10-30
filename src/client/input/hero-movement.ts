@@ -159,6 +159,9 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
   /* A melee swing commits to the way it started; bows keep turning to aim */
   if (!(hero.state.isAttacking && !hero.hasRangedWeapon())) hero.direction = direction;
 
-  emitPlayerInput(scene, hero, vx, vy, hero.direction);
+  /* Every frame of a roll and the one after it, so an attack out of a roll swings from where you are */
+  const wasRolling = hero.state.wasRolling;
+  hero.state.wasRolling = isRolling;
+  emitPlayerInput(scene, hero, vx, vy, hero.direction, isRolling || !!wasRolling);
   hero.state.isIdle = hero.vx === vx && hero.vy === vy && vx === 0 && vy === 0;
 }

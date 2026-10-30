@@ -36,16 +36,21 @@ const lastGhost = new WeakMap<Player, number>();
 export function applyDodge(p: Player) {
   const now = Date.now();
   const rolling = isDodging(p.state, now);
+  /* An attack out of a roll plays its swing; the trail keeps going */
+  const posed = rolling && !p.state.isAttacking;
+  if (posed) holdPose(p);
+  else if (p.state.isDodgePosed) releasePose(p);
   if (rolling) {
-    holdPose(p);
     if (now - (lastGhost.get(p) ?? 0) >= GHOST_EVERY_MS) {
       lastGhost.set(p, now);
       leaveGhost(p);
     }
-  } else if (p.state.isDodgePosed) {
-    p.state.isDodgePosed = false;
-    for (const layer of POSED_LAYERS) p[layer]?.anims?.resume();
   }
+}
+
+function releasePose(p: Player) {
+  p.state.isDodgePosed = false;
+  for (const layer of POSED_LAYERS) p[layer]?.anims?.resume();
 }
 
 function holdPose(p: Player) {

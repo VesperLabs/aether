@@ -43,6 +43,8 @@ export interface CharacterState {
   dodgeFacing?: string;
   /** Client only: the rig is frozen in the roll pose. */
   isDodgePosed?: boolean;
+  /** Client only: the hero was rolling last frame. */
+  wasRolling?: boolean;
   lastFlash: number;
   lastCast: LastCast;
   /** Radians. */

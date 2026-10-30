@@ -8,11 +8,8 @@ export function pickTickStateLite(
   return {
     lockedPlayerId: s.lockedPlayerId,
     bubbleMessage: s.bubbleMessage,
-    doHpRegen: s.doHpRegen,
     doBuffPoison: s.doBuffPoison,
     doHpBuffRegen: s.doHpBuffRegen,
-    doMpRegen: s.doMpRegen,
-    doSpRegen: s.doSpRegen,
     lastCombat: s.lastCombat,
     lastAngle: s.lastAngle,
     isAiming: s.isAiming,

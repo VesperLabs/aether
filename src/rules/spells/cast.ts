@@ -107,16 +107,16 @@ export function canCastSpell(input: CanCastInput): CanCastResult {
   const hpCost = ability?.stats?.hpCost || 0;
   const spCost = ability?.stats?.spCost || 0;
 
+  const allowed = stats?.mp >= mpCost && stats?.hp > hpCost && stats?.sp >= spCost;
+
+  /* Only a cast that goes ahead starts the cooldowns; one refused for its cost must not */
   let castTimes: LastCast | undefined;
-  if (input.shouldUpdateState) {
+  if (input.shouldUpdateState && allowed) {
     castTimes = { global: input.now };
     if (spellName) castTimes[spellName] = input.now;
   }
 
-  return {
-    allowed: stats?.mp >= mpCost && stats?.hp > hpCost && stats?.sp >= spCost,
-    castTimes,
-  };
+  return { allowed, castTimes };
 }
 
 export interface AbilityDetailsInput {
