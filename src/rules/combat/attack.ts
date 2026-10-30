@@ -65,6 +65,11 @@ export function getAttackSpCost(visibleEquipment: HandEquipment | null | undefin
   return 1;
 }
 
+/** An attack needs the SP to pay for it: out of stamina, you can't attack until it regenerates. */
+export function hasStaminaFor(sp: number | null | undefined, spCost: number) {
+  return (sp ?? 0) >= spCost;
+}
+
 /**
  * What an attack's ability costs on top of the weapon's SP cost (`getAttackSpCost`, charged
  * separately). Missing costs are 0.

@@ -8,7 +8,16 @@ import { addPlayerToRoom, removePlayerFromRoom } from "../../player-room";
 import { legacyUpdateMemberRoom } from "../../party-adapter";
 import type { CommandContext } from "@/server/net/command-context";
 import { findNearbyNpc } from "@/server/net/nearby-keeper";
-import { checkMove, isWithinDoorRange, startMoveTrack, type MoveTrack } from "@/rules/movement";
+import {
+  DODGE_DISTANCE,
+  DODGE_SP_COST,
+  canDodge,
+  checkMove,
+  grantMoveBudget,
+  isWithinDoorRange,
+  startMoveTrack,
+  type MoveTrack,
+} from "@/rules/movement";
 import { isInRoom } from "@/server/player-room";
 
 /** The last accepted position of each player. Server moves (doors, respawn) restart it. */
@@ -77,6 +86,26 @@ export function changeDirection(
   const player = world.players[socketId];
   if (direction) player.direction = direction;
   if (typeof lastAngle === "number") player.state.lastAngle = lastAngle;
+}
+
+export function dodge(ctx: CommandContext, { angle }: ParsedCommand<"dodge">) {
+  const { world, socketId } = ctx;
+  const player = world.players[socketId];
+  if (!isInRoom(player) || !Number.isFinite(angle)) return;
+  const now = Date.now();
+  const sp = player.stats?.sp ?? 0;
+  if (!canDodge({ state: player.state, sp, isStunned: player.hasBuff("stun"), now })) return;
+  player.modifyStat("sp", -DODGE_SP_COST);
+  world.io.to(player.roomName).emit("modifyPlayerStat", {
+    socketId,
+    type: "sp",
+    amount: -DODGE_SP_COST,
+  });
+  player.state.lastDodge = now;
+  player.state.lastAngle = angle;
+  const track = moveTracks.get(player);
+  if (track) moveTracks.set(player, grantMoveBudget(track, DODGE_DISTANCE));
+  ctx.socket.to(player.roomName).emit("playerDodge", { socketId, angle });
 }
 
 export function updateState(ctx: CommandContext, state: ParsedCommand<"updateState">) {

@@ -5,6 +5,7 @@ import {
   canHitPlayer,
   checkCastReady,
   getAbilityDetails,
+  getCastReadiness,
   getSpellShape,
   getSpellVelocity,
   isBehindCaster,
@@ -211,5 +212,16 @@ describe("spell damage", () => {
       eleDamage: 10,
       holyDamage: 2,
     });
+  });
+});
+
+describe("getCastReadiness", () => {
+  it("climbs from 0 after a cast to 1 once the global delay and own cooldown pass", () => {
+    const lastCast = { global: 1000, fireball: 1000 };
+    expect(getCastReadiness({ lastCast, castDelay: 1000, now: 1500 })).toBe(0.5);
+    expect(getCastReadiness({ lastCast, castDelay: 1000, now: 3000 })).toBe(1);
+    expect(getCastReadiness({ spellName: "fireball", lastCast, castDelay: 1000, now: 1000 })).toBe(
+      0,
+    );
   });
 });

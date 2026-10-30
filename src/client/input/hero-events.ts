@@ -45,10 +45,11 @@ export function addGlobalEventListeners(scene: SceneHud) {
   window.addEventListener("HERO_AIM_START", (e) => {
     if (!mainScene?.hero || isTypableFieldActive()) return;
     const hero = mainScene?.hero;
-    const { isAimable } = hero.getAbilityDetails(e?.detail);
+    const { isAimable, spellName } = hero.getAbilityDetails(e?.detail);
 
     if (isAimable) {
       hero.state.isAiming = true;
+      hero.state.aimingSpellName = spellName;
       gameElement.style.cursor = "none";
       scene.socket.emit("updateState", { isAiming: hero.state.isAiming });
     }
@@ -83,6 +84,7 @@ export function addGlobalEventListeners(scene: SceneHud) {
 
     hero.state.isHoldingAttack = true;
     hero.state.lastAbilitySlot = e?.detail;
+    hero.state.aimingSpellName = null;
 
     if (hero.hasRangedWeapon()) {
       hero.state.isAiming = true;
@@ -108,6 +110,7 @@ export function addGlobalEventListeners(scene: SceneHud) {
       });
 
       hero.state.isAiming = false;
+      hero.state.aimingSpellName = null;
       scene.socket.emit("updateState", { isAiming: hero.state.isAiming });
       gameElement.style.cursor = "default";
     }

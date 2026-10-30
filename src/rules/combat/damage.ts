@@ -74,13 +74,10 @@ export function calculateElementalDamage(
   return { eleDamage, holyDamage, elements: elements.map((d) => d.type) };
 }
 
-/** Weapon damage between min and max, scaled by SP: full above 70% SP, less below. */
-export function calculateWeaponDamage(attacker: StatBag): number {
-  const percentage = (attacker.sp / attacker.maxSp) * 100;
-  const cappedPercentage = percentage > 70 ? 100 : percentage;
-  const range = attacker.maxDamage - attacker.minDamage;
-  const damageRange = attacker.minDamage + (range * cappedPercentage) / 100;
-  return Math.round(damageRange);
+/** Weapon damage, rolled between min and max. Stamina doesn't weaken attacks; it gates them. */
+export function calculateWeaponDamage(attacker: StatBag, rng: Rng): number {
+  const min = attacker.minDamage || 0;
+  return randomInt(rng, min, Math.max(min, attacker.maxDamage || 0));
 }
 
 export type AttackRoll =
@@ -114,7 +111,7 @@ export function rollAttack(
   const blockRoll = randomInt(rng, 1, 100);
   const critRoll = randomInt(rng, 1, 100);
 
-  const damage = calculateWeaponDamage(attacker);
+  const damage = calculateWeaponDamage(attacker, rng);
 
   const defense = Math.max(1, victim.defense || 1);
   const armorPierce = Math.max(1, attacker.armorPierce || 1);

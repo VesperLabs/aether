@@ -27,6 +27,8 @@ export interface MoveTrack {
   at: number;
   /** Pixels the player may still move right now. */
   budget: number;
+  /** Extra pixels granted by the server (a dodge roll), spent before the budget and never capped. */
+  bonus?: number;
 }
 
 export interface MoveContext {
@@ -114,15 +116,27 @@ export function checkMove(
     return reject("out-of-bounds");
   }
   const distance = Math.hypot(to.x - track.x, to.y - track.y);
-  if (distance > budget) return reject("too-far");
+  const bonus = track.bonus ?? 0;
+  if (distance > budget + bonus) return reject("too-far");
   /* A player already inside a wall (bad spawn) must be able to walk out of it. */
   const startedInWall = boxHitsTiles(ctx.grid, bodyBox(ctx, track.x, track.y));
   if (!startedInWall && pathHitsWall(ctx, track, to)) return reject("in-wall");
 
   return {
     ok: true,
-    track: { ...kept, x: to.x, y: to.y, budget: budget - distance },
+    track: {
+      ...kept,
+      x: to.x,
+      y: to.y,
+      bonus: Math.max(bonus - distance, 0),
+      budget: budget - Math.max(distance - bonus, 0),
+    },
   };
+}
+
+/** Lets the player move `pixels` further than walking allows, for a server-approved burst. */
+export function grantMoveBudget(track: MoveTrack, pixels: number): MoveTrack {
+  return { ...track, bonus: (track.bonus ?? 0) + pixels };
 }
 
 /** The closest distance from a point to a rectangle (0 when inside it). */

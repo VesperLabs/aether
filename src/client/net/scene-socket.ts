@@ -166,6 +166,13 @@ export function bindSceneSocket(scene: SceneMain) {
     });
   });
 
+  socket.on("playerDodge", ({ socketId, angle }) => {
+    const p = getPlayer(scene, socketId);
+    if (!p || p.isHero) return;
+    p.state.lastDodge = Date.now();
+    p.state.dodgeAngle = angle;
+  });
+
   socket.on("playerCastSpell", ({ socketId, abilitySlot, castAngle }) => {
     const p = getPlayer(scene, socketId);
     p?.doCast?.({

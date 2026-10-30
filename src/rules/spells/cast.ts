@@ -38,6 +38,18 @@ export function checkCastReady({ spellName, lastCast, castDelay, now }: CastRead
   return isThisSpellReady && isGlobalReady;
 }
 
+/** How far through its cooldown (global cast delay and its own) a spell is, 0 to 1. */
+export function getCastReadiness({ spellName, lastCast, castDelay, now }: CastReadyInput): number {
+  const delay = castDelay ?? 0;
+  const progress = (elapsed: number, total: number) =>
+    total > 0 ? Math.min(1, Math.max(0, elapsed / total)) : 1;
+  const global = progress(now - (lastCast?.global ?? 0), delay);
+  if (!spellName) return global;
+  const baseCooldown =
+    (spellDetails as Record<string, { baseCooldown?: number }>)?.[spellName]?.baseCooldown ?? 0;
+  return Math.min(global, progress(now - (lastCast?.[spellName] ?? 0), delay + baseCooldown));
+}
+
 /**
  * A key of a character's abilities record. Numbers and numeric strings name the same slot
  * (`abilities[1]` is `abilities["1"]`); clients send either.

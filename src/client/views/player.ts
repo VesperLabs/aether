@@ -4,8 +4,11 @@ import type { BuffCharacterWire } from "@/network/sync";
 import type { SceneMain } from "@/client/scenes/main-scene";
 import { Character, type CharacterArgs } from "./character";
 import { distanceTo } from "@/rules/world";
-import { MIN_STEALTH_ALPHA, calculateStealthVisibilityPercent } from "@/rules/combat";
+import { getAbilityCosts, hasStaminaFor } from "@/rules/combat";
+import type { AbilitySlot } from "@/rules/spells";
 import { Spell } from "./spell";
+import { fadeStealth } from "./player-stealth";
+import { applyDodge } from "./player-dodge";
 import { getSpinDirection } from "@/client/input/spin-direction";
 import { applyAppearance, createSpriteLayers } from "./player-layers";
 import { applyHit, type HitEffect } from "./player-hit";
@@ -17,13 +20,7 @@ import type { Bar } from "./bar";
 import type { BuffRack } from "./buff-rack";
 import type { WeaponSprite } from "./weapon-sprite";
 import type { Crosshair } from "@/client/input/crosshair";
-import {
-  approachAlpha,
-  checkIsFlash,
-  drawFrame,
-  hackFrameRates,
-  updateCurrentSpeed,
-} from "./player-animation";
+import { checkIsFlash, drawFrame, hackFrameRates, updateCurrentSpeed } from "./player-animation";
 const BLANK_TEXTURE = "human-blank";
 const PLAYER_GRAB_RANGE = 32;
 
@@ -189,6 +186,11 @@ export class Player extends Character {
   drawCharacterFromUserData() {
     applyAppearance(this);
   }
+  /** Whether the hero has the SP for this attack (weapon plus attack-spell cost). */
+  hasStaminaForAttack(count: number, abilitySlot?: AbilitySlot) {
+    const { stats } = this.getAttackActionName({ count, abilitySlot });
+    return hasStaminaFor(this.stats?.sp, this.getAttackSpCost(count) + getAbilityCosts(stats).sp);
+  }
   doAttack({ count, castAngle, direction, abilitySlot }: AttackArgs) {
     const { state, isHero } = this;
     const { isDead, isAttacking, isHoldingAttack } = state ?? {};
@@ -197,6 +199,7 @@ export class Player extends Character {
     if (isHero) {
       if (!this.hasWeapon() || isDead || isAttacking || !isHoldingAttack) return;
       if (!this.canCastSpell(abilitySlot)) return;
+      if (!this.hasStaminaForAttack(count, abilitySlot)) return;
     }
 
     const { action, spellName } = this.getAttackActionName({ count, abilitySlot });
@@ -345,39 +348,19 @@ export class Player extends Character {
   takeHit(hit: HitEffect, showDamage = true) {
     applyHit(this, hit, showDamage);
   }
-  checkStealth({ distance }: { distance: number }) {
-    const stealthBuff = this.getBuff("stealth");
-    let alpha = this.alpha;
-    if (!stealthBuff) {
-      // if this player is not stealthed
-      if (alpha === 1) return;
-      alpha = approachAlpha(alpha, 1, 0.25);
-    } else if (this.isHero) {
-      // always will see your own player at this alpha
-      alpha = approachAlpha(alpha, MIN_STEALTH_ALPHA, 0.1);
-    } else {
-      // how we see other stealthed players
-      const targetAlpha = calculateStealthVisibilityPercent({
-        distance,
-        observer: this?.scene?.hero,
-        stealthBuff,
-        player: this,
-      });
-      alpha = approachAlpha(alpha, targetAlpha, 0.1);
-    }
-    return this.setAlpha(alpha);
-  }
   update() {
     if (this.checkDeath()) return;
     hackFrameRates(this, Math.round(80 + 2500 / (this.currentSpeed + 10)));
     updateCurrentSpeed(this);
     drawFrame(this);
+    applyDodge(this);
     checkIsFlash(this);
     this.showHideNameAndBars();
     this.setBubbleMessage();
     this.setTalkMenu();
     this.setDepth(100 + this.y + this?.body?.height);
     this.checkAttackReady();
+    fadeStealth(this, this.scene.game.loop.delta);
     if (this.isHero) {
       this.checkPotionCooldown();
     }

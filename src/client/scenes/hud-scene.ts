@@ -1,3 +1,4 @@
+import { addDodgeListeners } from "@/client/input/hero-dodge";
 import Phaser from "phaser";
 import type { ClientGameSocket } from "@/network";
 import { addGlobalEventListeners } from "@/client/input/hero-events";
@@ -45,6 +46,7 @@ export class SceneHud extends Phaser.Scene {
   create() {
     addJoystick(this);
     addGlobalEventListeners(this);
+    addDodgeListeners(this);
   }
   update(_time: number, delta: number) {
     moveDirectHero(this, delta);

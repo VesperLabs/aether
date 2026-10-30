@@ -1,10 +1,13 @@
 import { spellDetails } from "@/content";
 import { POTION_COOLDOWN } from "@/rules/combat";
+import { DODGE_COOLDOWN } from "@/rules/movement";
 import type { Player } from "@/client/views/player";
 import type { AbilitySlot } from "@/client/window-events";
 
 export function updateAttackCooldown(hero: Player) {
   if (hero.state.isAttacking) return;
+  /* Out of stamina the attack won't fire, so don't start its cooldown */
+  if (!hero.hasStaminaForAttack(1, hero.state.lastAbilitySlot)) return;
   const attackDelay = hero?.getFullAttackDelay();
   const duration = attackDelay;
   window.dispatchEvent(
@@ -43,6 +46,14 @@ export function updateSpellCooldown(hero: Player, abilitySlot: AbilitySlot) {
         sharedDuration: castDelay,
         startTime: Date.now(),
       },
+    }),
+  );
+}
+
+export function updateDodgeCooldown() {
+  window.dispatchEvent(
+    new CustomEvent("HERO_START_COOLDOWN", {
+      detail: { spellName: "dodge", duration: DODGE_COOLDOWN, startTime: Date.now() },
     }),
   );
 }

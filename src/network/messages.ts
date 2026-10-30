@@ -115,6 +115,8 @@ export interface ServerToClientEvents {
     castAngle?: number | null;
     abilitySlot?: number | string | null;
   }) => void;
+  /** Another player started a dodge roll along `angle` (radians). */
+  playerDodge: (payload: { socketId: string; angle: number }) => void;
   playerCastSpell: (payload: {
     socketId: string;
     abilitySlot?: number | string | null;

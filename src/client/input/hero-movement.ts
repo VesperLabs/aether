@@ -1,7 +1,13 @@
 import Phaser from "phaser";
 import { getSpinDirection } from "./spin-direction";
 import { getAngleFromDirection } from "@/rules/world";
-import { ATTACK_WALK_SPEED_SCALE, approachVelocity, getWalkVelocity } from "@/rules/movement";
+import {
+  ATTACK_WALK_SPEED_SCALE,
+  approachVelocity,
+  getDodgeVelocity,
+  getWalkVelocity,
+  isDodging,
+} from "@/rules/movement";
 import { emitPlayerInput } from "@/client/net/player-input";
 import { updateAttackCooldown, updateSpellCooldown } from "./hero-cooldowns";
 import { isTypableFieldActive } from "./typable-field";
@@ -77,16 +83,26 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
   }
 
   /* Spin hero when aiming */
-  if (hero?.state.isAiming) {
+  if (hero?.state.isAiming || hero.state.isAimingDodge) {
     if (!isTouch) {
       const cursorPoint = pointer.positionToCamera(mainScene.cameras.main) as Phaser.Math.Vector2;
-      direction = getSpinDirection({ x: hero.x, y: hero.y + hero.bodyOffsetY }, cursorPoint);
+      /* Only a rooted aim turns the body; aiming a dodge keeps facing the way you walk */
+      if (hero.state.isAiming) {
+        direction = getSpinDirection({ x: hero.x, y: hero.y + hero.bodyOffsetY }, cursorPoint);
+      }
       lastAngle = Between(hero.x, hero.y + hero.bodyOffsetY, cursorPoint.x, cursorPoint.y);
     }
     if (hero?.state?.lastAngle !== lastAngle) {
       //TODO only send this if the difference is greater than 10 or something
       scene.socket.emit("changeDirection", { direction, lastAngle });
     }
+  }
+
+  /* A roll commits to the way it was aimed, still facing the way you were */
+  const isRolling = isDodging(hero.state, Date.now());
+  if (isRolling) {
+    lastAngle = hero.state.dodgeAngle ?? 0;
+    direction = hero.state.dodgeFacing ?? direction;
   }
 
   hero.state.lastAngle = lastAngle;
@@ -126,12 +142,17 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
     vy *= ATTACK_WALK_SPEED_SCALE;
   }
 
-  ({ x: vx, y: vy } = approachVelocity(
-    { x: hero.vx ?? 0, y: hero.vy ?? 0 },
-    { x: vx, y: vy },
-    walkSpeed,
-    seconds,
-  ));
+  if (isRolling) {
+    ({ x: vx, y: vy } = getDodgeVelocity(hero.state.dodgeAngle ?? 0));
+  } else {
+    /* Coming out of a roll drops straight to walking pace, so it can't carry past the roll */
+    let current = { x: hero.vx ?? 0, y: hero.vy ?? 0 };
+    const speed = Math.hypot(current.x, current.y);
+    if (speed > walkSpeed) {
+      current = { x: (current.x / speed) * walkSpeed, y: (current.y / speed) * walkSpeed };
+    }
+    ({ x: vx, y: vy } = approachVelocity(current, { x: vx, y: vy }, walkSpeed, seconds));
+  }
   hero.vx = vx;
   hero.vy = vy;
   hero.body.setVelocity(vx, vy);

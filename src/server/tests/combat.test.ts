@@ -137,6 +137,15 @@ describe("attacking", () => {
     const spCosts = events.modifyPlayerStat.filter((e) => e.type === "sp");
     expect(spCosts).toHaveLength(1);
   });
+
+  it("can't attack without the stamina to pay for it", async () => {
+    const { socket, player, events } = await login("warrior");
+    player.stats.sp = 0;
+    socket.emit("attack", { count: 1, direction: "down", castAngle: 0 });
+    await sleep(150);
+    expect(player.state.isAttacking).toBeFalsy();
+    expect(events.modifyPlayerStat.filter((e) => e.type === "sp")).toHaveLength(0);
+  });
 });
 
 describe("casting spells", () => {
@@ -151,6 +160,17 @@ describe("casting spells", () => {
     const mpPayments = events.modifyPlayerStat.filter((e) => e.type === "mp");
     expect(mpPayments).toEqual([expect.objectContaining({ amount: -mpCost })]);
     expect(player.state.lastCast.fireball).toBeGreaterThan(0);
+  });
+
+  it("a rogue casting stealth becomes stealthed", async () => {
+    const { socket, player } = await login("rogue");
+    socket.emit("castSpell", { abilitySlot: 1, castAngle: 0 });
+    await until(
+      () => player.hasBuff("stealth"),
+      () => {},
+      50,
+      3000,
+    );
   });
 
   it("does not cast a spell the player cannot afford", async () => {
