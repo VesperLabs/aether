@@ -12,7 +12,6 @@ const TRAIL = [0.45, 0.25, 0.12];
 const PLAIN_RARITIES = ["common", undefined];
 
 type Point = { x: number; y: number };
-
 const colors = theme.colors as unknown as Record<string, string>;
 
 function center(r: { x: number; y: number; width: number; height: number }): Point {
@@ -57,7 +56,7 @@ function flightPath(from: LootFlyDetail["rect"], to: DOMRect): FlightPath {
  * Pop, then an eased-in toss over the arc. A trail ghost uses the same timeline but sits `lag`
  * behind along the arc, hidden during the pop, so it hugs the item and lands with it.
  */
-function flightKeyframes(path: FlightPath, glow: string, lag = 0, alpha = 1) {
+function flightKeyframes(path: FlightPath, lag = 0, alpha = 1) {
   const { a, b, control, spin, endScale } = path;
   const popOffset = POP_MS / (POP_MS + FLIGHT_MS);
   const shown = lag ? 0 : alpha;
@@ -66,19 +65,16 @@ function flightKeyframes(path: FlightPath, glow: string, lag = 0, alpha = 1) {
     {
       offset: 0,
       transform: "translate(0px, 0px) scale(1)",
-      filter: `brightness(1) ${glow}`,
       opacity: shown,
     },
     {
       offset: popOffset * 0.6,
       transform: "translate(0px, 0px) scale(1.35, 1.15)",
-      filter: `brightness(2.6) ${glow}`,
       opacity: shown,
     },
     {
       offset: popOffset,
       transform: "translate(0px, -4px) scale(1.2, 1.3)",
-      filter: `brightness(1.4) ${glow}`,
       opacity: shown,
     },
   ];
@@ -91,7 +87,6 @@ function flightKeyframes(path: FlightPath, glow: string, lag = 0, alpha = 1) {
     frames.push({
       offset: popOffset + (1 - popOffset) * t,
       transform: `translate(${p.x - a.x}px, ${p.y - a.y}px) rotate(${spin * tt}deg) scale(${scale})`,
-      filter: `brightness(1) ${glow}`,
       opacity: lag && i === ARC_STEPS ? 0 : alpha,
     });
   }
@@ -162,9 +157,8 @@ function flyLoot(detail: LootFlyDetail) {
   const to =
     target?.getBoundingClientRect() ??
     new DOMRect(window.innerWidth - 60, window.innerHeight - 60, 40, 40);
-  const fancy = !PLAIN_RARITIES.includes(detail.rarity);
   const color = (detail.rarity && colors[detail.rarity]) || colors.white;
-  const glow = fancy ? `drop-shadow(0 0 3px ${color})` : "drop-shadow(0 0 0 transparent)";
+  const fancy = !PLAIN_RARITIES.includes(detail.rarity);
   const path = flightPath(detail.rect, to);
   const timing = { duration: POP_MS + FLIGHT_MS, easing: "linear", fill: "forwards" as const };
 
@@ -172,12 +166,12 @@ function flyLoot(detail: LootFlyDetail) {
   ghosts.forEach((opacity, i) => {
     const ghost = spawnImage(detail, 0);
     ghost
-      .animate(flightKeyframes(path, glow, (i + 1) * 0.06, opacity), timing)
+      .animate(flightKeyframes(path, (i + 1) * 0.06, opacity), timing)
       .finished.finally(() => ghost.remove());
   });
 
   const img = spawnImage(detail, 1);
-  img.animate(flightKeyframes(path, glow), timing).finished.finally(() => {
+  img.animate(flightKeyframes(path), timing).finished.finally(() => {
     img.remove();
     if (target) landOn(target, color);
   });
