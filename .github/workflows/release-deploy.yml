@@ -34,10 +34,12 @@ jobs:
       # Merge the release PR ourselves (GITHUB_TOKEN pushes don't trigger
       # other workflows), then tag it.
       - if: steps.pr.outputs.pr
-        run: gh pr merge "$PR" --squash --repo ${{ github.repository }}
+        # Parsed in the shell: GitHub evaluates `env` even when the step is skipped, and
+        # `fromJSON` fails on the empty output of a run with nothing to release.
+        run: gh pr merge "$(jq -r .number <<< "$PR")" --squash --repo ${{ github.repository }}
         env:
           GH_TOKEN: ${{ github.token }}
-          PR: ${{ fromJSON(steps.pr.outputs.pr).number }}
+          PR: ${{ steps.pr.outputs.pr }}
       - if: steps.pr.outputs.pr
         uses: googleapis/release-please-action@v4
         with:
