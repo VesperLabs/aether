@@ -194,6 +194,7 @@ export class Player extends Character {
     const { action, spellName } = this.getAttackActionName({ count, abilitySlot });
 
     state.lastAttackCount = count;
+    if (isHero) window.dispatchEvent(new CustomEvent("HERO_ATTACK_COUNT", { detail: count }));
     state.isAttacking = true;
     state.lastAttack = Date.now();
     this.action = action;

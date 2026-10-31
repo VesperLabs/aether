@@ -4,12 +4,12 @@ import { CONSUMABLES_BASES, POTION_BASES } from "@/rules/inventory";
 import { applyTintToImage, loadCacheImage } from "@/ui";
 import { arePropsEqualWithKeys } from "@/ui";
 import { isMobile } from "@/ui";
-import { COOLING_DOWN_OPACITY, CooldownTimer, useIsCoolingDown } from "./cooldown-timer";
+import { CooldownTimer } from "./cooldown-timer";
 import { ItemTooltip } from "@/ui";
 import { SkillButton } from "./skill-button";
 import type { ResourceCosts } from "./cost-badge";
-import { getAbilityCosts, getAttackSpCost } from "@/rules/combat";
-import { filterVisibleEquipment } from "@/rules/character";
+import { canAffordCosts, getAbilityCosts } from "@/rules/combat";
+import { useNextAttackSpCost } from "./use-next-attack-sp-cost";
 import { Box, Flex, Text } from "@/ui";
 import React, { memo, useEffect, useState } from "react";
 
@@ -41,6 +41,7 @@ const TintedIconLoader = ({
   const cooldown = isPotion ? "potion" : item?.base;
   const [tintedIcon, setTintedIcon] = useState("./assets/icons/blank.png");
   const [hovering, setHovering] = useState(false);
+  const attackSpCost = useNextAttackSpCost(hero);
   const tooltipId = `abilities-${item?.id}`;
   const showTooltip = !isMobile && hovering;
 
@@ -75,14 +76,8 @@ const TintedIconLoader = ({
   /* Attack-spells (flame slash) also pay the weapon's swing cost */
   const costs: ResourceCosts = isSpell ? getAbilityCosts(item.stats) : {};
   if (isSpell && details?.isMeleeAttack) {
-    costs.sp = (costs.sp ?? 0) + getAttackSpCost(filterVisibleEquipment(hero), 1);
+    costs.sp = (costs.sp ?? 0) + attackSpCost;
   }
-
-  const isCoolingDown = useIsCoolingDown(
-    cooldowns["global"],
-    cooldowns[cooldown],
-    details?.isMeleeAttack ? cooldowns["attack"] : undefined,
-  );
 
   return (
     <Box
@@ -103,8 +98,8 @@ const TintedIconLoader = ({
         onTouchEnd={handleTouchEnd}
         keyboardKey={slotKey}
         costs={costs}
+        disabled={!canAffordCosts(hero?.stats, costs)}
         sx={{
-          opacity: isCoolingDown ? COOLING_DOWN_OPACITY : 1,
           "& > .icon": {
             mt: "-6px",
             mb: "6px",

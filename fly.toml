@@ -27,6 +27,7 @@ METERED_REGION = 'global'
 [env]
 ASSETS_URL = 'https://aether.onrender.com/assets'
 DEBUG = 'false'
+ENABLE_CHEATS = 'false'
 GIT_BRANCH = 'main'
 GIT_REPO = 'git@github.com:VesperLabs/aether.git'
 NODE_ENV = 'production'

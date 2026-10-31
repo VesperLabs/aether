@@ -25,8 +25,14 @@ export {
   HAIR_HIDING_HELMETS,
 } from "./items/hiding";
 export { Item } from "./items/item";
-export { ITEM_BUILD_RARITIES, ItemBuilder, isItemBuildRarity } from "./items/item-builder";
+export {
+  ITEM_BUILD_RARITIES,
+  ItemBuilder,
+  canRollRarity,
+  isItemBuildRarity,
+} from "./items/item-builder";
 export { itemData } from "./items/item-data";
+export { ITEM_KEYS, findItemKey, type ItemKeyEntry, type ItemLook } from "./items/item-keys";
 export { itemModsList } from "./items/item-mods";
 export type { ItemDrop, ItemKeyFor, ItemRef, ItemType } from "./items/item-refs";
 export { ILVL_MULTIPLIER, itemList } from "./items/item-scaling";

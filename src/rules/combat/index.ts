@@ -7,10 +7,12 @@ export {
   UNARMED_RANGE,
 } from "./constants";
 export {
+  canAffordCosts,
   checkAttackReady,
   getAbilityCosts,
   getAttackActionName,
   getAttackSpCost,
+  getNextAttackCount,
   hasStaminaFor,
   getCooldown,
   getFullAttackDelay,

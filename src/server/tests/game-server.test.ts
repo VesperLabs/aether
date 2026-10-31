@@ -172,13 +172,13 @@ describe("game server", () => {
     socket.emit("message", { message: "/coords" });
     expect((await chat)[0]).toMatchObject({ type: "chat", message: "/coords" });
 
-    process.env.DEBUG = "true";
+    process.env.ENABLE_CHEATS = "true";
     try {
       const info = once(socket, "message");
       socket.emit("message", { message: "/coords" });
       expect((await info)[0]).toMatchObject({ type: "info" });
     } finally {
-      delete process.env.DEBUG;
+      delete process.env.ENABLE_CHEATS;
     }
   });
 

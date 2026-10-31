@@ -10,6 +10,7 @@ interface HeroSyncDeps {
   setHero: React.Dispatch<React.SetStateAction<HudCharacter | null>>;
   setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
   setUserSettings: React.Dispatch<React.SetStateAction<UserSettings>>;
+  setCheats: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 type Handlers = ServerToClientEvents;
@@ -21,6 +22,7 @@ export function createHeroSyncHandlers({
   setHero,
   setIsLoggedIn,
   setUserSettings,
+  setCheats,
 }: HeroSyncDeps) {
   const onPlayerJoin: Handlers["playerJoin"] = (player, args) => {
     /* Keep room list updated */
@@ -46,6 +48,7 @@ export function createHeroSyncHandlers({
     setHero(player);
     if (args?.isLogin) {
       setIsLoggedIn(true);
+      setCheats(!!payload?.cheats);
       setUserSettings({
         ...DEFAULT_USER_SETTINGS,
         ...payload?.userSettings,

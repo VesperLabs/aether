@@ -1,9 +1,9 @@
 import { Flex } from "@/ui";
 import type { Cooldown } from "@/client/hud/app/context";
-import { COOLING_DOWN_OPACITY, CooldownTimer, useIsCoolingDown } from "./cooldown-timer";
+import { CooldownTimer } from "./cooldown-timer";
+import { canAffordCosts } from "@/rules/combat";
 import { SkillButton } from "./skill-button";
-import { getAttackSpCost } from "@/rules/combat";
-import { filterVisibleEquipment } from "@/rules/character";
+import { useNextAttackSpCost } from "./use-next-attack-sp-cost";
 import { DODGE_SP_COST } from "@/rules/movement";
 import { useAppContext } from "@/client/hud/app/context";
 import { memo } from "react";
@@ -12,9 +12,7 @@ import { arePropsEqualWithKeys } from "@/ui";
 export const SkillButtons = memo(
   ({ cooldowns }: { cooldowns: Record<string, Cooldown> }) => {
     const { showButtonChat, hero } = useAppContext();
-    const attackSpCost = getAttackSpCost(filterVisibleEquipment(hero), 1);
-    const isDodgeCooling = useIsCoolingDown(cooldowns["dodge"]);
-    const isAttackCooling = useIsCoolingDown(cooldowns["attack"]);
+    const attackSpCost = useNextAttackSpCost(hero);
 
     return (
       <Flex
@@ -35,21 +33,21 @@ export const SkillButtons = memo(
         />
         <SkillButton
           size={16}
-          iconName="grab"
-          onTouchEnd={() => window.dispatchEvent(new CustomEvent("HERO_GRAB"))}
-          keyboardKey="F"
-        />
-        <SkillButton
-          size={16}
           iconName="boots"
           onTouchStart={() => window.dispatchEvent(new Event("HERO_DODGE_START"))}
           onTouchEnd={() => window.dispatchEvent(new Event("HERO_DODGE"))}
           keyboardKey="SHIFT"
           costs={{ sp: DODGE_SP_COST }}
-          sx={{ opacity: isDodgeCooling ? COOLING_DOWN_OPACITY : 1 }}
+          disabled={!canAffordCosts(hero?.stats, { sp: DODGE_SP_COST })}
         >
           <CooldownTimer cooldown={cooldowns["dodge"]} />
         </SkillButton>
+        <SkillButton
+          size={16}
+          iconName="grab"
+          onTouchEnd={() => window.dispatchEvent(new CustomEvent("HERO_GRAB"))}
+          keyboardKey="F"
+        />
         <SkillButton
           size={16}
           iconName="handRight"
@@ -57,7 +55,7 @@ export const SkillButtons = memo(
           onTouchEnd={() => window.dispatchEvent(new CustomEvent("HERO_ATTACK"))}
           keyboardKey="SPACE"
           costs={{ sp: attackSpCost }}
-          sx={{ opacity: isAttackCooling ? COOLING_DOWN_OPACITY : 1 }}
+          disabled={!canAffordCosts(hero?.stats, { sp: attackSpCost })}
         >
           <CooldownTimer cooldown={cooldowns["attack"]} />
         </SkillButton>

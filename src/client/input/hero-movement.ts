@@ -1,3 +1,4 @@
+import { getNextAttackCount } from "@/rules/combat";
 import Phaser from "phaser";
 import { getSpinDirection } from "./spin-direction";
 import { getAngleFromDirection } from "@/rules/world";
@@ -125,7 +126,7 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
     }
 
     hero?.doAttack?.({
-      count: hero.state.lastAttackCount === 1 && hero.isDualWielding() ? 2 : 1,
+      count: getNextAttackCount(hero.state.lastAttackCount, hero),
       castAngle: hero.state.lastAngle,
       direction,
       abilitySlot: lastAbilitySlot,

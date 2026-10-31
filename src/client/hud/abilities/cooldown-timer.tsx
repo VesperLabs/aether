@@ -3,22 +3,8 @@ import { Box, Donut } from "@/ui";
 import type { Cooldown } from "@/client/hud/app/context";
 import { arePropsEqualWithKeys } from "@/ui";
 
-/** Opacity of a skill icon whose cooldown isn't ready, like the chat button away from anyone. */
-export const COOLING_DOWN_OPACITY = 0.5;
-
-/** True while any of the cooldowns is still running; re-renders when the last one ends. */
-export function useIsCoolingDown(...cooldowns: Array<Cooldown | undefined>) {
-  const endsAt = Math.max(0, ...cooldowns.map((c) => (c?.startTime ?? 0) + (c?.duration ?? 0)));
-  const [now, setNow] = useState(Date.now);
-  useEffect(() => {
-    const remaining = endsAt - Date.now();
-    setNow(Date.now());
-    if (remaining <= 0) return;
-    const timeout = setTimeout(() => setNow(Date.now()), remaining);
-    return () => clearTimeout(timeout);
-  }, [endsAt]);
-  return now < endsAt;
-}
+/** Opacity of a skill you can't afford to use, like the chat button away from anyone. */
+export const DISABLED_OPACITY = 0.5;
 
 export const CooldownTimer = memo(
   ({ cooldown, color = "#FFF" }: { cooldown?: Cooldown; color?: string }) => {
