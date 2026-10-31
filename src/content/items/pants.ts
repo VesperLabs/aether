@@ -5,6 +5,7 @@ export const pantsItems = {
     clothPants: {
       ilvl: 1,
       name: "Cloth Pants",
+      flavor: "Plain cloth trousers. Better than nothing.",
       base: "pants",
       texture: "pants-cloth",
       tint: "0xFFDDCC",
@@ -14,6 +15,7 @@ export const pantsItems = {
     leatherPants: {
       ilvl: 2,
       name: "Leather Pants",
+      flavor: "Leather trousers, tough at the knee.",
       base: "pants",
       texture: "pants-cloth",
       tint: "0xAA7744",
@@ -23,6 +25,7 @@ export const pantsItems = {
     ghoulhidePants: {
       ilvl: 3,
       name: "Ghoulhide Pants",
+      flavor: "Ghoul-hide trousers. Don't ask where the seams came from.",
       base: "pants",
       texture: "pants-cloth",
       tint: "0x889988",
@@ -35,6 +38,7 @@ export const pantsItems = {
       ilvl: 1,
       setName: "chets",
       name: "Chet's Champions",
+      flavor: "Chet's championship shorts. The stains are trophies.",
       base: "pants",
       texture: "pants-cloth",
       tint: "0x6666DD",
@@ -46,6 +50,7 @@ export const pantsItems = {
     hauntedTrousers: {
       ilvl: 1,
       name: "Haunted Trousers",
+      flavor: "Something still lives in the left leg. It's friendly.",
       base: "pants",
       texture: "pants-cloth",
       tint: "0x22AACC",
@@ -60,6 +65,7 @@ export const pantsItems = {
     greenTeaThreads: {
       ilvl: 2,
       name: "Green Tea's Threads",
+      flavor: "Green Tea wove them to stay calm under any blow.",
       base: "pants",
       texture: "pants-cloth",
       tint: "0x44AA66",
@@ -78,6 +84,7 @@ export const pantsItems = {
     ferrousLeggings: {
       ilvl: 3,
       name: "Ferrous Leggings",
+      flavor: "Iron-thread leggings that hum near the mines.",
       base: "pants",
       texture: "pants-cloth",
       tint: "0xFF6644",

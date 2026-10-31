@@ -5,6 +5,7 @@ export const armorItems = {
     clothRobe: {
       ilvl: 1,
       name: "Cloth Robe",
+      flavor: "A plain cloth robe. Every apprentice owns one.",
       base: "robe",
       texture: "armor-robe",
       tint: "0xFFDDCC",
@@ -14,6 +15,7 @@ export const armorItems = {
     clothCoat: {
       ilvl: 1,
       name: "Cloth Coat",
+      flavor: "A cloth coat, padded at the shoulders.",
       base: "coat",
       texture: "armor-coat",
       tint: "0xFFDDCC",
@@ -24,6 +26,7 @@ export const armorItems = {
     nutshellPlate: {
       ilvl: 1,
       name: "Nutshell Light Plate",
+      flavor: "Plates of hardened nutshell, laced together.",
       base: "light-plate-armor",
       texture: "armor-plate-light",
       tint: "0xCC9966",
@@ -34,6 +37,7 @@ export const armorItems = {
     nutshellHeavyPlate: {
       ilvl: 1,
       name: "Nutshell Heavy Plate",
+      flavor: "Layered nutshell plate. Surprisingly hard to crack.",
       base: "heavy-plate-armor",
       texture: "armor-plate",
       tint: "0xCC9966",
@@ -44,6 +48,7 @@ export const armorItems = {
     silkRobe: {
       ilvl: 2,
       name: "Silk Robe",
+      flavor: "A silk robe that drapes well and moves better.",
       base: "robe",
       texture: "armor-robe",
       tint: "0xFFFFFF",
@@ -52,6 +57,7 @@ export const armorItems = {
     leatherCoat: {
       ilvl: 2,
       name: "Leather Coat",
+      flavor: "Tough leather, worn soft by the road.",
       base: "coat",
       texture: "armor-coat-leather",
       slot: "armor",
@@ -59,6 +65,7 @@ export const armorItems = {
     bronzePlate: {
       ilvl: 2,
       name: "Bronze Light Plate",
+      flavor: "Light bronze plate, fresh from Steve's forge.",
       base: "light-plate-armor",
       texture: "armor-plate-light",
       tint: "0xFFEEAA",
@@ -68,6 +75,7 @@ export const armorItems = {
     bronzeHeavyPlate: {
       ilvl: 2,
       name: "Bronze Heavy Plate",
+      flavor: "Heavy bronze plate. Loud, sturdy and slow.",
       base: "heavy-plate-armor",
       texture: "armor-plate",
       tint: "0xFFEEAA",
@@ -77,6 +85,7 @@ export const armorItems = {
     wizardRobe: {
       ilvl: 3,
       name: "Wizard Robe",
+      flavor: "Embroidered with runes only half its owners can read.",
       base: "robe",
       texture: "armor-robe-wizard",
       slot: "armor",
@@ -85,6 +94,7 @@ export const armorItems = {
     ghoulhideCoat: {
       ilvl: 3,
       name: "Ghoulhide Coat",
+      flavor: "A coat of ghoul hide. Tough, cold and slightly damp.",
       base: "coat",
       texture: "armor-coat",
       tint: "0x889988",
@@ -93,6 +103,7 @@ export const armorItems = {
     ironPlate: {
       ilvl: 3,
       name: "Iron Light Plate",
+      flavor: "Light iron plate for those who'd rather not be stabbed.",
       base: "light-plate-armor",
       texture: "armor-plate-light",
       tint: "0xEEDDDD",
@@ -102,6 +113,7 @@ export const armorItems = {
     ironHeavyPlate: {
       ilvl: 3,
       name: "Iron Heavy Plate",
+      flavor: "Full iron plate. Arrows just give up.",
       base: "heavy-plate-armor",
       texture: "armor-plate",
       tint: "0xEEDDDD",
@@ -113,6 +125,7 @@ export const armorItems = {
     theMossmanProphecy: {
       ilvl: 1,
       name: "The Mossman Prophecy",
+      flavor: "The moss on it grows into words no one has finished reading.",
       base: "robe",
       texture: "armor-robe",
       tint: "0x66AA66",
@@ -128,6 +141,7 @@ export const armorItems = {
     couriersCamouflage: {
       ilvl: 1,
       name: "Courier's Camouflage",
+      flavor: "The Courier was never late, and never seen.",
       base: "coat",
       tint: "0x66CCFF",
       texture: "armor-coat",
@@ -138,6 +152,7 @@ export const armorItems = {
     iceCrabShell: {
       ilvl: 2,
       name: "The Ice Crab Shell",
+      flavor: "Pried off an ice crab. It keeps you cool, and alive.",
       base: "heavy-plate-armor",
       tint: "0x8899CC",
       texture: "armor-plate",
@@ -162,6 +177,7 @@ export const armorItems = {
     fateShroud: {
       ilvl: 3,
       name: "Fate Shroud",
+      flavor: "Those who wear it say they already know how it ends.",
       base: "robe",
       tint: "0xFFDD55",
       texture: "armor-robe-wizard-white",
@@ -175,6 +191,7 @@ export const armorItems = {
       ilvl: 1,
       setName: "chets",
       name: "Chet's Purple Shirt",
+      flavor: "Chet's lucky shirt. He's never lost a game in it.",
       base: "robe",
       texture: "armor-robe",
       tint: "0x8800FF",

@@ -15,6 +15,8 @@ export type {
   StatsItem,
   StatsResult,
 } from "./rules";
+export { npcBaseStats, npcStats } from "./npc";
+export type { NpcStatsInput } from "./npc";
 export { expForMobKill, subscribeStats } from "./system";
 export { convertMsToS, formatStats, msToHours } from "./format";
 export type { FormattedStat } from "./format";

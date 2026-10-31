@@ -44,6 +44,12 @@ export const assetList4 = [
     previewRect: [0, 0, 32, 32],
   },
   {
+    texture: "stackable-steak",
+    src: "./assets/atlas/stackable/stackable-steak.png",
+    atlas: "./assets/atlas/32x32-stackable.json",
+    previewRect: [0, 0, 32, 32],
+  },
+  {
     texture: "stackable-meat",
     src: "./assets/atlas/stackable/stackable-meat.png",
     atlas: "./assets/atlas/32x32-stackable.json",

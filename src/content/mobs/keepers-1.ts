@@ -2,6 +2,8 @@ import type { KeeperDefinition } from "./keeper-types";
 
 export const keepers1 = {
   cat: {
+    flavor:
+      "A town cat who has heard every adventurer's story twice. Nobody remembers who taught it to talk.",
     charClass: "warrior",
     profile: { userName: "Cat", race: "cat" },
     baseStats: { level: 1 },
@@ -13,6 +15,8 @@ export const keepers1 = {
     hitBoxSize: { width: 22, height: 22 },
   },
   dog: {
+    flavor:
+      "A loyal hound who greets every traveler at the gate. Its tail has never once stopped wagging.",
     charClass: "warrior",
     profile: { userName: "Dog", race: "dog" },
     baseStats: { level: 1 },
@@ -20,6 +24,8 @@ export const keepers1 = {
     hitBoxSize: { width: 22, height: 22 },
   },
   trista: {
+    flavor:
+      "The Crab Warden of the shore. She has watched the tides for years and knows every crab by its pinch.",
     charClass: "rogue",
     profile: {
       userName: "Trista",
@@ -60,6 +66,8 @@ export const keepers1 = {
     },
   },
   sergio: {
+    flavor:
+      "Once the keeper of a great river valley, until the killer plants overran it. He still plans its revival.",
     charClass: "cleric",
     profile: {
       userName: "Sergio",
@@ -100,6 +108,8 @@ export const keepers1 = {
     },
   },
   tudwick: {
+    flavor:
+      "A shirtless forest ranger who gave up on conventions long ago. He knows every trail in the eastern woods.",
     charClass: "warrior",
     profile: {
       userName: "Tudwick",
@@ -141,6 +151,8 @@ export const keepers1 = {
     },
   },
   lynne: {
+    flavor:
+      "A filmmaker chasing the perfect nature documentary. The wildlife keeps attacking her crew, and her.",
     charClass: "rogue",
     profile: {
       userName: "Lynne",

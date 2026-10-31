@@ -1,12 +1,14 @@
-import { ThemeUIProvider, theme, Box, Flex, Text } from "@/ui";
+import { ThemeUIProvider, theme, Box, Flex } from "@/ui";
 import { Theme } from "theme-ui";
 import { Route } from "wouter";
 import { Footer } from "./footer";
 import { Metrics } from "./metrics";
-import { RouterLink } from "./layout";
+import { Header } from "./header";
 import { PageItems } from "./page-items";
+import { PageKeepers } from "./page-keepers";
 import { PageNasties } from "./page-nasties";
 import { PagePlayers } from "./page-players";
+import { MapShowcase } from "./map-showcase";
 import { PageHome } from "./page-home";
 import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { fetchMetrics } from "./api";
@@ -28,31 +30,38 @@ export const App = () => {
     <ThemeUIProvider theme={theme as Theme}>
       <QueryClientProvider client={queryClient}>
         <LoadingProvider>
+          {/* The game maps panning behind the home page, fixed to the whole screen. */}
+          <Route path="/">
+            <MapShowcase sx={{ position: "fixed", inset: 0, zIndex: 0 }} />
+          </Route>
+          {/* The page itself, layered above the maps, at least a screen tall so the footer sits at the
+              bottom. */}
           <Flex
-            sx={{
-              p: 4,
-              gap: 2,
-              flexDirection: "column",
-            }}
+            sx={{ position: "relative", zIndex: 1, flexDirection: "column", minHeight: "100vh" }}
           >
-            <Metrics />
-            <Text sx={{ fontSize: 6, mt: 2 }}>Aether Wiki</Text>
-            <Flex sx={{ gap: 3 }}>
-              <RouterLink href="/">Home</RouterLink>
-              <RouterLink href="/players">Players</RouterLink>
-              <RouterLink href="/items">Items</RouterLink>
-              <RouterLink href="/keepers">Keepers</RouterLink>
-              <RouterLink href="/monsters">Monsters</RouterLink>
+            <Flex
+              sx={{
+                p: 4,
+                gap: 2,
+                flexDirection: "column",
+                width: "100%",
+                maxWidth: 1100,
+                mx: "auto",
+                boxSizing: "border-box",
+              }}
+            >
+              <Header />
+              <Metrics />
+              <Box>
+                <Route path="/" component={PageHome} />
+                <Route path="/items" component={PageItems} />
+                <Route path="/monsters" component={PageNasties} />
+                <Route path="/players" component={PagePlayers} />
+                <Route path="/keepers" component={PageKeepers} />
+              </Box>
             </Flex>
-            <Box>
-              <Route path="/" component={PageHome} />
-              <Route path="/items" component={PageItems} />
-              <Route path="/monsters" component={PageNasties} />
-              <Route path="/players" component={PagePlayers} />
-              <Route path="/keepers" component={PagePlayers} />
-            </Box>
+            <Footer />
           </Flex>
-          <Footer />
         </LoadingProvider>
       </QueryClientProvider>
     </ThemeUIProvider>

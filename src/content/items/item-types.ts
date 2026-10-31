@@ -34,6 +34,11 @@ export interface ItemDefinition {
   readonly ilvl: number;
   readonly base: string;
   readonly name?: string;
+  /**
+   * A line or two of flavour text shown in the wiki. Only on the definition: `Item` doesn't copy
+   * it, so it never reaches saved characters or the network.
+   */
+  readonly flavor?: string;
   readonly texture?: string;
   readonly slot?: ItemSlot;
   readonly tint?: string;

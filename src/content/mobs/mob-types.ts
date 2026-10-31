@@ -64,6 +64,8 @@ export interface MobBase {
 }
 
 export interface NastyDefinition extends MobBase {
+  /** A line or two of flavour text shown in the wiki. */
+  readonly flavor: string;
   readonly state?: { readonly isAggro?: boolean; readonly noWorldDrops?: boolean };
   /** Items this mob can drop when it dies. */
   readonly drops?: readonly ItemDrop[];

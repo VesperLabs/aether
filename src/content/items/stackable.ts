@@ -5,6 +5,7 @@ export const stackableItems = {
     smallHpPotion: {
       ilvl: 1,
       name: "Small HP Potion",
+      flavor: "A small red potion that patches you up.",
       base: "hpPotion",
       slot: "stackable",
       texture: "stackable-potion-small-hp",
@@ -13,6 +14,7 @@ export const stackableItems = {
     smallMpPotion: {
       ilvl: 1,
       name: "Small MP Potion",
+      flavor: "A small blue potion that restores your magic.",
       base: "mpPotion",
       slot: "stackable",
       texture: "stackable-potion-small-mp",
@@ -21,6 +23,7 @@ export const stackableItems = {
     mediumHpPotion: {
       ilvl: 2,
       name: "Medium HP Potion",
+      flavor: "Siobhan's stronger red brew. Tastes of berries.",
       base: "hpPotion",
       slot: "stackable",
       texture: "stackable-potion-medium-hp",
@@ -28,6 +31,7 @@ export const stackableItems = {
     mediumMpPotion: {
       ilvl: 2,
       name: "Medium MP Potion",
+      flavor: "Siobhan's stronger blue brew. Fizzes on the tongue.",
       base: "mpPotion",
       slot: "stackable",
       texture: "stackable-potion-medium-mp",
@@ -35,6 +39,7 @@ export const stackableItems = {
     blueSporangium: {
       ilvl: 1,
       name: "Blue Sporangium",
+      flavor: "A glowing blue spore pod from the mines.",
       base: "food",
       slot: "stackable",
       texture: "stackable-bsporangium",
@@ -44,14 +49,25 @@ export const stackableItems = {
     redApple: {
       ilvl: 1,
       name: "Red Apple",
+      flavor: "Crisp and red. Fresh from the grassland orchards.",
       base: "food",
       slot: "stackable",
       texture: "stackable-apple",
       buffs: { vitamins: 1 },
     },
+    bearSteak: {
+      ilvl: 1,
+      name: "Bear Steak",
+      flavor: "A thick cut from a forest bear. Heavy, rich and worth the fight.",
+      base: "food",
+      slot: "stackable",
+      texture: "stackable-steak",
+      buffs: { protein: 1 },
+    },
     batMeat: {
       ilvl: 1,
       name: "Bat Meat",
+      flavor: "Stringy, gamey and best cooked well.",
       base: "food",
       slot: "stackable",
       texture: "stackable-meat",
@@ -60,6 +76,7 @@ export const stackableItems = {
     spiderMeat: {
       ilvl: 1,
       name: "Spider Meat",
+      flavor: "Pale and chewy. An acquired taste.",
       base: "food",
       slot: "stackable",
       texture: "stackable-meat",
@@ -68,6 +85,7 @@ export const stackableItems = {
     cheese: {
       ilvl: 1,
       name: "Cheese",
+      flavor: "A wedge of hard cheese, good for the road.",
       base: "food",
       slot: "stackable",
       texture: "stackable-cheese",
@@ -76,6 +94,7 @@ export const stackableItems = {
     grapes: {
       ilvl: 1,
       name: "Grapes",
+      flavor: "A bunch of sweet grapes.",
       base: "food",
       slot: "stackable",
       texture: "stackable-grapes",
@@ -84,6 +103,7 @@ export const stackableItems = {
     mushroom: {
       ilvl: 1,
       name: "Mushroom",
+      flavor: "A plump field mushroom. Probably safe.",
       base: "food",
       slot: "stackable",
       texture: "stackable-mushroom",
@@ -92,6 +112,7 @@ export const stackableItems = {
     orange: {
       ilvl: 1,
       name: "Orange",
+      flavor: "Bright and juicy, full of sunshine.",
       base: "food",
       slot: "stackable",
       texture: "stackable-orange",
@@ -100,6 +121,7 @@ export const stackableItems = {
     crabClaw: {
       ilvl: 1,
       name: "Red Crab Claw",
+      flavor: "A red crab claw. Trista collects these.",
       base: "food",
       slot: "stackable",
       tint: "0xFF6600",
@@ -109,6 +131,7 @@ export const stackableItems = {
     leaves: {
       ilvl: 1,
       name: "Leaves",
+      flavor: "A handful of leaves. Somebody will want them.",
       base: "material",
       slot: "stackable",
       texture: "stackable-leaves",
@@ -116,6 +139,7 @@ export const stackableItems = {
     stone: {
       ilvl: 1,
       name: "Stone",
+      flavor: "Just a stone. Heavier than it looks.",
       base: "material",
       slot: "stackable",
       texture: "stackable-stone",
@@ -123,6 +147,7 @@ export const stackableItems = {
     egg: {
       ilvl: 2,
       name: "Egg",
+      flavor: "A fresh egg. Handle with care.",
       base: "food",
       slot: "stackable",
       texture: "stackable-egg",
@@ -131,6 +156,7 @@ export const stackableItems = {
     carrot: {
       ilvl: 2,
       name: "Carrot",
+      flavor: "A crunchy carrot from a valley garden.",
       base: "food",
       slot: "stackable",
       texture: "stackable-carrot",
@@ -139,6 +165,7 @@ export const stackableItems = {
     shitake: {
       ilvl: 2,
       name: "Shitake",
+      flavor: "A savoury shiitake mushroom.",
       base: "food",
       slot: "stackable",
       texture: "stackable-shitake",
@@ -147,6 +174,7 @@ export const stackableItems = {
     skull: {
       ilvl: 2,
       name: "Skull",
+      flavor: "A skull from the graveyard. It grins at you.",
       base: "material",
       slot: "stackable",
       texture: "stackable-skull",
@@ -154,6 +182,7 @@ export const stackableItems = {
     shell: {
       ilvl: 2,
       name: "Shell",
+      flavor: "A pretty shell from the shore.",
       base: "material",
       slot: "stackable",
       texture: "stackable-shell",
@@ -161,6 +190,7 @@ export const stackableItems = {
     tooth: {
       ilvl: 2,
       name: "Tooth",
+      flavor: "A sharp tooth pulled from something that bit back.",
       base: "material",
       slot: "stackable",
       texture: "stackable-tooth",
@@ -168,6 +198,7 @@ export const stackableItems = {
     wolfPelt: {
       ilvl: 2,
       name: "Wolf Pelt",
+      flavor: "A thick wolf pelt, warm and grey.",
       base: "material",
       slot: "stackable",
       texture: "stackable-pelt",
@@ -175,6 +206,7 @@ export const stackableItems = {
     daisy: {
       ilvl: 2,
       name: "Daisy",
+      flavor: "A white daisy from the grassland.",
       base: "material",
       slot: "stackable",
       texture: "stackable-flower-daisy",
@@ -182,6 +214,7 @@ export const stackableItems = {
     orchidFlower: {
       ilvl: 2,
       name: "Orchid Flower",
+      flavor: "A rare orchid that only blooms in the peaks.",
       base: "material",
       slot: "stackable",
       texture: "stackable-flower-orchid",
@@ -189,6 +222,7 @@ export const stackableItems = {
     iceCrabClaw: {
       ilvl: 2,
       name: "Ice Crab Claw",
+      flavor: "A claw from an ice crab, cold enough to sting.",
       base: "food",
       slot: "stackable",
       tint: "0x8899CC",
@@ -200,6 +234,7 @@ export const stackableItems = {
     ginseng: {
       ilvl: 1,
       name: "Ginseng",
+      flavor: "A twisted root that restores the weary.",
       tint: "0xFFEE99",
       base: "food",
       slot: "stackable",
@@ -211,6 +246,7 @@ export const stackableItems = {
     clover: {
       ilvl: 1,
       name: "Clover",
+      flavor: "Four leaves. Your luck is turning.",
       base: "material",
       slot: "stackable",
       texture: "stackable-clover",
@@ -218,6 +254,7 @@ export const stackableItems = {
     blueCrystal: {
       ilvl: 1,
       name: "Blue Crystal",
+      flavor: "A cold blue crystal from deep in the mines.",
       tint: "0x66CCFF",
       base: "material",
       slot: "stackable",
@@ -226,6 +263,7 @@ export const stackableItems = {
     redCrystal: {
       ilvl: 1,
       name: "Red Crystal",
+      flavor: "A red crystal, warm with trapped fire.",
       tint: "0xFF6633",
       base: "material",
       slot: "stackable",
@@ -236,6 +274,7 @@ export const stackableItems = {
     wyrmScale: {
       ilvl: 2,
       name: "Wyrm Scale",
+      flavor: "A scale from the great wyrm. Smiths would kill for it.",
       base: "material",
       slot: "stackable",
       texture: "stackable-scale-wyrm",
@@ -243,6 +282,7 @@ export const stackableItems = {
     goldOre: {
       ilvl: 2,
       name: "Gold Ore",
+      flavor: "A nugget of raw gold from the mine.",
       base: "material",
       slot: "stackable",
       texture: "stackable-ore-gold",

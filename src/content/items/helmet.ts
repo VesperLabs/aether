@@ -5,6 +5,7 @@ export const helmetItems = {
     clothCap: {
       ilvl: 1,
       name: "Cloth Cap",
+      flavor: "A simple cloth cap. Keeps the sun off, not much else.",
       base: "cap",
       texture: "helmet-cap",
       tint: "0xFFDDCC",
@@ -14,6 +15,7 @@ export const helmetItems = {
     clothHood: {
       ilvl: 1,
       name: "Cloth hood",
+      flavor: "A cloth hood, good for staying unseen.",
       base: "hood",
       texture: "helmet-hood",
       tint: "0xFFDDCC",
@@ -24,6 +26,7 @@ export const helmetItems = {
     silkCap: {
       ilvl: 2,
       name: "Silk Cap",
+      flavor: "Finely woven silk. More comfortable than protective.",
       base: "cap",
       texture: "helmet-cap",
       tint: "0xFFFFFF",
@@ -32,6 +35,7 @@ export const helmetItems = {
     wizardCap: {
       ilvl: 3,
       name: "Wizard Cap",
+      flavor: "A wizard's cap. Danny insists the point focuses the mind.",
       base: "cap",
       texture: "helmet-cap",
       tint: "0x666699",
@@ -40,6 +44,7 @@ export const helmetItems = {
     leatherHood: {
       ilvl: 2,
       name: "Leather hood",
+      flavor: "Tanned leather, stitched snug around the head.",
       base: "hood",
       texture: "helmet-hood",
       tint: "0xAA7744",
@@ -48,6 +53,7 @@ export const helmetItems = {
     nutshellArmet: {
       ilvl: 1,
       name: "Nutshell Armet",
+      flavor: "A helmet pressed from giant nutshells. Lighter than it looks.",
       base: "armet",
       texture: "helmet-armet",
       tint: "0xCC9966",
@@ -58,6 +64,7 @@ export const helmetItems = {
     bronzeArmet: {
       ilvl: 2,
       name: "Bronze Armet",
+      flavor: "A bronze helmet hammered out at Steve's forge.",
       base: "armet",
       texture: "helmet-armet",
       tint: "0xFFEEAA",
@@ -66,6 +73,7 @@ export const helmetItems = {
     ghoulhideHood: {
       ilvl: 3,
       name: "Ghoulhide Hood",
+      flavor: "Stitched from ghoul hide. It never quite stops smelling.",
       base: "hood",
       texture: "helmet-hood",
       tint: "0x889988",
@@ -74,6 +82,7 @@ export const helmetItems = {
     ironArmet: {
       ilvl: 3,
       name: "Iron Armet",
+      flavor: "A full iron helm. Hot, heavy and very hard to dent.",
       base: "armet",
       texture: "helmet-armet",
       tint: "0xEEDDDD",
@@ -84,6 +93,7 @@ export const helmetItems = {
     tudwicksCap: {
       ilvl: 1,
       name: "Tudwick's Cap",
+      flavor: "Tudwick lost his shirt years ago. He kept the hat.",
       base: "cap",
       texture: "helmet-cap-raccoon",
       slot: "helmet",
@@ -98,6 +108,7 @@ export const helmetItems = {
     bunnyEars: {
       ilvl: 1,
       name: "Bunny Ears",
+      flavor: "Ridiculous, and somehow you hear everything.",
       base: "cap",
       texture: "helmet-bunny",
       slot: "helmet",
@@ -107,6 +118,7 @@ export const helmetItems = {
       exclusive: true,
       ilvl: 2,
       name: "Chef Hat",
+      flavor: "Anthony's spare. It smells faintly of cured meats.",
       base: "cap",
       texture: "helmet-chef",
       slot: "helmet",
@@ -116,6 +128,7 @@ export const helmetItems = {
       exclusive: true,
       ilvl: 2,
       name: "Wolf Mask",
+      flavor: "Wear the pack's face and the pack might leave you be.",
       base: "hood",
       texture: "helmet-wolf",
       slot: "helmet",
@@ -132,6 +145,7 @@ export const helmetItems = {
     luckyStarCoronet: {
       ilvl: 3,
       name: "Lucky Star Coronet",
+      flavor: "Found where a falling star struck the peaks.",
       base: "cap",
       tint: "0xDDCCBB",
       texture: "helmet-crown-gold",
@@ -151,6 +165,7 @@ export const helmetItems = {
     theWyrmWhisker: {
       ilvl: 3,
       name: "The Wyrm Whisker",
+      flavor: "A single whisker from the great wyrm, woven into a band.",
       base: "armet",
       texture: "helmet-horned",
       tint: "0x55FF77",
@@ -171,6 +186,7 @@ export const helmetItems = {
       ilvl: 1,
       setName: "hawkwings",
       name: "Hawkwing's Hood",
+      flavor: "Hawkwing's hood, feathered to break the wind.",
       base: "hood",
       texture: "helmet-hood",
       tint: "0x99CC66",
@@ -181,6 +197,7 @@ export const helmetItems = {
       ilvl: 1,
       setName: "crab",
       name: "Crab Hat",
+      flavor: "The Crab Warden's colours. Trista would approve.",
       base: "cap",
       texture: "helmet-crab",
       slot: "helmet",
