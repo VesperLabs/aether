@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/VesperLabs/aether/compare/v0.5.0...v0.6.0) (2026-10-31)
+
+
+### Features
+
+* item fixes ([#65](https://github.com/VesperLabs/aether/issues/65)) ([e5c65f3](https://github.com/VesperLabs/aether/commit/e5c65f391dfbe5287b2055470bbf87c775db30d0))
+
 ## [0.5.0](https://github.com/VesperLabs/aether/compare/v0.4.0...v0.5.0) (2026-10-31)
 
 
