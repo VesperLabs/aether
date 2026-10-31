@@ -9,6 +9,8 @@ jobs:
   # One job per gate, run in parallel, so a single run reports every failure.
   gate:
     name: ${{ matrix.name }}
+    # Release PRs are opened and merged by the release workflow in seconds; skip them.
+    if: ${{ !startsWith(github.head_ref, 'release-please--') }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
