@@ -18,7 +18,9 @@ const resolveTypeIcon = (type: string) => {
     type = "book";
   }
 
-  return process.env.SERVER_URL + "/" + `./assets/icons/${type}.png`;
+  /* From the wiki itself, like its other icons: the server URL can be localhost, which a phone on
+     the same network can't reach. */
+  return `./assets/icons/${type}.png`;
 };
 
 export { resolveTypeIcon };

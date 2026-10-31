@@ -1,7 +1,8 @@
 import { Box, Flex, Text } from "@/ui";
-import { memo, useEffect, useRef, useState } from "react";
+import { memo, startTransition, useEffect, useRef, useState, type PointerEvent } from "react";
 import { Link } from "wouter";
 import { useCardPool, type FeaturedCard } from "./card-pool";
+import { TAB_BAR_SPACE } from "./menu-bar";
 import { PAPER, PAPER_STYLE, PaperFrame } from "./paper";
 
 const CARD_WIDTH = 260;
@@ -11,47 +12,47 @@ const STEP = CARD_WIDTH + CARD_GAP;
 const SPEED = 40;
 /** Keeps the row above the footer bar. */
 const FOOTER_HEIGHT = 32;
-
-/** A card on screen; `slot` is its position in the endless row, counting from the first card ever shown. */
-type Spawned = { uid: number; slot: number; card: FeaturedCard };
+/** Extra cards rendered off-screen on each side, so new ones mount before they come into view. */
+const OVERSCAN = 2;
 
 /** Enough cards to span the window plus one waiting off-screen on each side. */
 const cardsToFill = () => Math.ceil(window.innerWidth / STEP) + 2;
 
-/** The row with any missing cards added on the right, past the screen edge. */
-function topUp(pool: FeaturedCard[], showing: Spawned[]) {
-  const row = [...showing];
-  while (row.length < cardsToFill()) row.push(spawn(pool, row));
-  return row;
-}
-
-let nextUid = 0;
-/** A random card from the pool that isn't already on screen. */
-function spawn(pool: FeaturedCard[], showing: Spawned[]): Spawned {
-  const slot = showing.length ? showing[showing.length - 1].slot + 1 : 0;
-  const shown = new Set(showing.map((s) => s.card.id));
-  const fresh = pool.filter((card) => !shown.has(card.id));
+/**
+ * The card at each slot of the endless row, picked the first time the slot comes near the screen
+ * and kept, so scrolling back shows the same cards. Each pick avoids its on-screen neighbours.
+ */
+function cardAt(slots: Map<number, FeaturedCard>, pool: FeaturedCard[], slot: number) {
+  const known = slots.get(slot);
+  if (known) return known;
+  const near = new Set<string>();
+  for (let i = slot - cardsToFill(); i <= slot + cardsToFill(); i++) {
+    const card = slots.get(i);
+    if (card) near.add(card.id);
+  }
+  const fresh = pool.filter((card) => !near.has(card.id));
   const from = fresh.length ? fresh : pool;
-  return { uid: nextUid++, slot, card: from[Math.floor(Math.random() * from.length)] };
+  const card = from[Math.floor(Math.random() * from.length)];
+  slots.set(slot, card);
+  return card;
 }
 
 /**
- * A row of cards pinned to the bottom of the screen, scrolling sideways forever. Each card that
- * leaves on the left is replaced by a new random one from the pool on the right.
+ * A row of cards pinned to the bottom of the screen, scrolling sideways forever in both directions.
+ * Only the cards near the screen are rendered.
  */
 export const HomeCards = () => {
   const pool = useCardPool();
-  const poolRef = useRef(pool);
-  useEffect(() => {
-    poolRef.current = pool;
-  }, [pool]);
-  const [cards, setCards] = useState<Spawned[]>(() => topUp(pool, []));
+  const [slots] = useState(() => new Map<number, FeaturedCard>());
+  /** The leftmost rendered slot, one off-screen. */
+  const [first, setFirst] = useState(-OVERSCAN);
+  const [count, setCount] = useState(cardsToFill);
   const trackRef = useRef<HTMLDivElement>(null);
   const paused = useRef(false);
 
   /* A wider window needs more cards, or new ones would appear on screen. */
   useEffect(() => {
-    const onResize = () => setCards((showing) => topUp(poolRef.current, showing));
+    const onResize = () => setCount(cardsToFill());
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
@@ -71,21 +72,60 @@ export const HomeCards = () => {
     return () => row.removeEventListener("wheel", onWheel);
   }, []);
 
+  /* Touch swiping drags the row; a swipe that moved isn't also a tap on the card under it. */
+  const dragX = useRef<number | null>(null);
+  const dragged = useRef(0);
+  /* Finger speed in px/ms, kept after release so a flick coasts to a stop. */
+  const velocity = useRef(0);
+  const lastMove = useRef(0);
+  const onPointerDown = (event: PointerEvent) => {
+    if (event.pointerType === "mouse") return;
+    event.currentTarget.setPointerCapture(event.pointerId);
+    dragX.current = event.clientX;
+    lastMove.current = event.timeStamp;
+    dragged.current = 0;
+    velocity.current = 0;
+  };
+  const onPointerMove = (event: PointerEvent) => {
+    if (dragX.current === null) return;
+    const dx = event.clientX - dragX.current;
+    const dt = Math.max(1, event.timeStamp - lastMove.current);
+    dragX.current = event.clientX;
+    lastMove.current = event.timeStamp;
+    dragged.current += Math.abs(dx);
+    scrolled.current -= dx;
+    /* Smoothed, so one jittery sample doesn't decide the flick. */
+    velocity.current = velocity.current * 0.6 + (dx / dt) * 0.4;
+  };
+  const onPointerUp = (event: PointerEvent) => {
+    if (dragX.current === null) return;
+    dragX.current = null;
+    /* A finger that stopped before lifting shouldn't fling. */
+    if (event.timeStamp - lastMove.current > 80) velocity.current = 0;
+  };
+
   useEffect(() => {
-    const drifts = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    /* Departed cards are swapped for an equal spacer (see the track's padding), so removing
-       them never shifts the cards still on screen. Scrolling back stops at the first card left. */
     let offset = 0;
-    let departed = 0;
+    let shown = -OVERSCAN;
     let last = performance.now();
     let frame = requestAnimationFrame(function move(now) {
-      if (drifts && !paused.current) offset -= (SPEED * (now - last)) / 1000;
-      offset = Math.min(offset - scrolled.current, -departed * STEP);
+      const dt = now - last;
+      const touching = dragX.current !== null;
+      const coasting = !touching && Math.abs(velocity.current) > 0.02;
+      if (coasting) {
+        offset += velocity.current * dt;
+        velocity.current *= Math.pow(0.995, dt);
+      } else if (!touching) velocity.current = 0;
+      if (!paused.current && !touching && !coasting) offset -= (SPEED * dt) / 1000;
+      offset -= scrolled.current;
       scrolled.current = 0;
       last = now;
-      while (offset + (departed + 1) * STEP < 0) {
-        departed++;
-        setCards((showing) => topUp(poolRef.current, showing.slice(1)));
+      /* Only re-render when a card crosses a slot, and at low priority so mounting the next card
+         never holds up a frame of scrolling. */
+      const leftmost = Math.floor(-offset / STEP) - OVERSCAN;
+      if (leftmost !== shown) {
+        shown = leftmost;
+        startTransition(() => setFirst(leftmost));
       }
       if (trackRef.current) trackRef.current.style.transform = `translateX(${offset}px)`;
       frame = requestAnimationFrame(move);
@@ -96,15 +136,27 @@ export const HomeCards = () => {
   return (
     <Box
       ref={rowRef}
-      onMouseEnter={() => (paused.current = true)}
-      onMouseLeave={() => (paused.current = false)}
+      /* Mouse only: taps fire an enter with no leave, which would pause the row for good. */
+      onPointerEnter={(event) => (paused.current = event.pointerType === "mouse")}
+      onPointerLeave={() => (paused.current = false)}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerUp}
+      onClickCapture={(event) => {
+        if (dragged.current > 8) event.preventDefault();
+        dragged.current = 0;
+      }}
       sx={{
         position: "fixed",
         left: 0,
         right: 0,
-        bottom: FOOTER_HEIGHT,
+        /* Above the footer, or on phones the tab bar (which holds the footer's credit). */
+        bottom: [TAB_BAR_SPACE, FOOTER_HEIGHT],
         zIndex: 1,
         overflow: "hidden",
+        /* Sideways swipes drive the row; vertical ones still scroll the page. */
+        touchAction: "pan-y",
         /* Room for the art rising out of the cards. */
         pt: 6,
         pb: 3,
@@ -113,11 +165,12 @@ export const HomeCards = () => {
       <Flex
         ref={trackRef}
         sx={{ gap: `${CARD_GAP}px`, width: "max-content", px: 3, willChange: "transform" }}
-        style={{ paddingLeft: `calc(${(cards[0]?.slot ?? 0) * STEP}px + 16px)` }}
+        /* Shifts the rendered cards to their slots, so cards entering or leaving never move the rest. */
+        style={{ marginLeft: first * STEP }}
       >
-        {cards.map(({ uid, card }) => (
-          <Box key={uid} sx={{ width: CARD_WIDTH, flexShrink: 0 }}>
-            <PaperCard {...card} />
+        {Array.from({ length: count + OVERSCAN * 2 }, (_, i) => first + i).map((slot) => (
+          <Box key={slot} sx={{ width: CARD_WIDTH, flexShrink: 0, contain: "layout style" }}>
+            <PaperCard {...cardAt(slots, pool, slot)} />
           </Box>
         ))}
       </Flex>

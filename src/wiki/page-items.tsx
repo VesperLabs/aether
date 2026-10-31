@@ -2,7 +2,8 @@ import { itemList, type ItemDefinition } from "@/content";
 import { Flex, Icon, Input, Text } from "@/ui";
 import { useMemo, useState } from "react";
 import { CARD_COLORS } from "./card-pool";
-import { ItemCard, type WikiItem } from "./item-card";
+import { type WikiItem } from "./item-card";
+import { ItemList } from "./item-list";
 import { PAPER, PAPER_STYLE, PaperFrame } from "./paper";
 import { RowTitle, resolveTypeIcon } from "./row-title";
 
@@ -106,11 +107,7 @@ export function PageItems() {
           ))}
         </Flex>
       </Flex>
-      <Flex sx={{ flexDirection: "column", gap: 2 }}>
-        {shown.map((item) => (
-          <ItemCard key={`${item.type}-${item.rarity}-${item.key}`} item={item} />
-        ))}
-      </Flex>
+      <ItemList items={shown} />
     </Flex>
   );
 }
