@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/VesperLabs/aether/compare/v0.3.0...v0.4.0) (2026-10-31)
+
+
+### Features
+
+* **wiki:** show item buffs and spell levels on item cards ([#58](https://github.com/VesperLabs/aether/issues/58)) ([6fbba82](https://github.com/VesperLabs/aether/commit/6fbba82edaabc781be6ac6097181a2a8397cc33d))
+
 ## [0.3.0](https://github.com/VesperLabs/aether/compare/v0.2.1...v0.3.0) (2026-10-31)
 
 
