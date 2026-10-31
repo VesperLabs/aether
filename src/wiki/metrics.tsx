@@ -13,9 +13,11 @@ export const Metrics = () => {
   return (
     <RowTitle
       sx={{
-        /* A small translucent box under the menu, on the right. */
+        /* A small translucent tab hanging from the top edge of the screen, on the right, as if
+           peeking in. Up through the page's top padding (32px). */
         width: "auto",
         alignSelf: "flex-end",
+        mt: "-32px",
         gap: 3,
         px: 3,
         py: 1,
@@ -24,7 +26,7 @@ export const Metrics = () => {
         whiteSpace: "nowrap",
         flexWrap: "wrap",
         background: "shadow.30",
-        borderRadius: 6,
+        borderRadius: "0 0 6px 6px",
         position: "relative",
         zIndex: 1,
       }}

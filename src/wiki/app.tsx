@@ -4,6 +4,8 @@ import { Route } from "wouter";
 import { Footer } from "./footer";
 import { Metrics } from "./metrics";
 import { Header } from "./header";
+import { TabBar } from "./tab-bar";
+import { TAB_BAR_SPACE } from "./menu-bar";
 import { PageItems } from "./page-items";
 import { PageKeepers } from "./page-keepers";
 import { PageNasties } from "./page-nasties";
@@ -35,13 +37,24 @@ export const App = () => {
             <MapShowcase sx={{ position: "fixed", inset: 0, zIndex: 0 }} />
           </Route>
           {/* The page itself, layered above the maps, at least a screen tall so the footer sits at the
-              bottom. */}
+              bottom. `dvh` is the screen left after mobile browser toolbars; `vh` would hide the
+              footer behind them. */}
           <Flex
-            sx={{ position: "relative", zIndex: 1, flexDirection: "column", minHeight: "100vh" }}
+            sx={{
+              position: "relative",
+              zIndex: 1,
+              flexDirection: "column",
+              minHeight: "100dvh",
+              /* On phones, room at the bottom for the fixed tab bar. */
+              pb: [TAB_BAR_SPACE, 0],
+              boxSizing: "border-box",
+            }}
           >
             <Flex
               sx={{
-                p: 4,
+                py: 4,
+                /* Narrower sides on phones, so pages get more of the screen. */
+                px: [3, 4],
                 gap: 2,
                 flexDirection: "column",
                 width: "100%",
@@ -50,8 +63,8 @@ export const App = () => {
                 boxSizing: "border-box",
               }}
             >
-              <Header />
               <Metrics />
+              <Header />
               <Box>
                 <Route path="/" component={PageHome} />
                 <Route path="/items" component={PageItems} />
@@ -61,6 +74,7 @@ export const App = () => {
               </Box>
             </Flex>
             <Footer />
+            <TabBar />
           </Flex>
         </LoadingProvider>
       </QueryClientProvider>
