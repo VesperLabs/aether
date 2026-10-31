@@ -7,14 +7,7 @@ import {
 } from "@/content";
 import { filterVisibleEquipment } from "@/rules/character";
 import { tintCanvas, loadCacheImage } from "@/ui/kit";
-import {
-  memo,
-  useEffect,
-  useEffectEvent,
-  useRef,
-  type ComponentProps,
-  type RefObject,
-} from "react";
+import { memo, useEffect, useEffectEvent, useRef, type ComponentProps } from "react";
 import type { CSSProperties } from "react";
 import { Box } from "@/ui/kit";
 import weaponAtlas from "../../../public/assets/atlas/weapon.json";
@@ -51,126 +44,92 @@ export interface RenderablePlayer {
 /** A look layer (hair, face...) built from the profile; it has no item behind it. */
 type LookPart = { slot: string; texture?: string; tint?: string };
 
+/** A layer's whole sprite sheet, tinted, ready to draw from. */
 const drawImageOnNewCanvas = (image: HTMLImageElement, tint: string | undefined) => {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
   canvas.width = image.width;
   canvas.height = image.height;
-
-  // Draw the image on the canvas
   ctx.drawImage(image, 0, 0);
-
-  // Apply tint if needed
-  if (tint) {
-    return tintCanvas(canvas, tint);
-  }
-
-  return canvas;
+  return tint ? tintCanvas(canvas, tint) : canvas;
 };
 
-const mergeImages = async ({
-  shouldBuffer,
-  buffCanvasRef,
-  canvasRef,
-  assets,
-}: {
-  shouldBuffer: boolean;
-  buffCanvasRef: RefObject<HTMLCanvasElement | null>;
-  canvasRef: RefObject<HTMLCanvasElement | null>;
-  assets: PlayerAsset[];
-}) => {
-  if (!buffCanvasRef.current || !canvasRef?.current) return;
-  const atlas = weaponAtlas.offsets.human["down-stand"];
-  const buffCanvas = (
-    shouldBuffer ? buffCanvasRef.current : canvasRef?.current
-  ) as HTMLCanvasElement;
-  const btx = buffCanvas.getContext("2d") as CanvasRenderingContext2D;
-  btx.imageSmoothingEnabled = false;
-  // Clear the buffer canvas before drawing
-  btx.clearRect(0, 0, MIN_CANVAS_SIZE, MIN_CANVAS_SIZE);
-  for (const asset of assets) {
-    const img = await loadCacheImage(asset.src);
-    const isLeftWeapon = asset.slotKey === "handLeft";
-    const isRightWeapon = asset.slotKey === "handRight";
-    const isWeapon = isLeftWeapon || isRightWeapon;
-
-    if (img) {
-      const [x, y, w, h] = asset.previewRect;
-
-      // Apply transformations if it's a weapon
-      if (isWeapon) {
-        const transforms = isLeftWeapon ? atlas.left : atlas.right;
-        const { x: tx, y: ty, flipX } = transforms;
-        btx.save(); // Save the current context state before applying transformations
-        btx.translate(MIN_CANVAS_SIZE / 2 + tx, MIN_CANVAS_SIZE / 2 + ty + 14); // Translate to the center of the buffer canvas
-        if (flipX) btx.scale(-1, 1); // Flip horizontally if required
-        btx.drawImage(drawImageOnNewCanvas(img, asset.tint), -w / 2, -h / 2, w, h); // Draw the image centered at (0, 0)
-        btx.restore(); // Restore the context state to remove applied transformations
-      } else {
-        // Draw the image on the buffer canvas without transformations
-        btx.drawImage(
-          drawImageOnNewCanvas(img, asset.tint),
-          x,
-          y,
-          w,
-          h,
-          (MIN_CANVAS_SIZE - w) / 2,
-          (MIN_CANVAS_SIZE - h) / 2,
-          w,
-          h,
-        );
-      }
-    }
-  }
-  if (canvasRef.current && shouldBuffer) {
-    const mainCanvas = canvasRef.current;
-    const mainCtx = mainCanvas.getContext("2d") as CanvasRenderingContext2D;
-    mainCtx.clearRect(0, 0, mainCanvas.width, mainCanvas.height);
-    mainCtx.drawImage(
-      buffCanvas,
-      0,
-      0,
-      MIN_CANVAS_SIZE,
-      MIN_CANVAS_SIZE,
-      0,
-      0,
-      mainCanvas.width,
-      mainCanvas.height,
+/**
+ * Tinted sheets by source and tint. Tinting reads and rewrites every pixel, and most characters
+ * share skins, hair and gear colours, so each combination is only tinted once. A sheet that fails
+ * to load is left out of the drawing.
+ */
+const LAYER_CACHE = new Map<string, Promise<HTMLCanvasElement | null>>();
+const loadLayer = ({ src, tint }: PlayerAsset) => {
+  const key = `${src}|${tint ?? ""}`;
+  let layer = LAYER_CACHE.get(key);
+  if (!layer) {
+    layer = loadCacheImage(src).then(
+      (image) => drawImageOnNewCanvas(image, tint),
+      () => null,
     );
+    LAYER_CACHE.set(key, layer);
   }
+  return layer;
+};
+
+/** Draws the character's layers, back to front, in one go so it never shows half-drawn. */
+const drawLayers = (
+  canvas: HTMLCanvasElement,
+  assets: PlayerAsset[],
+  layers: (HTMLCanvasElement | null)[],
+) => {
+  const atlas = weaponAtlas.offsets.human["down-stand"];
+  const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+  ctx.imageSmoothingEnabled = false;
+  ctx.clearRect(0, 0, MIN_CANVAS_SIZE, MIN_CANVAS_SIZE);
+  assets.forEach((asset, i) => {
+    const layer = layers[i];
+    if (!layer) return;
+    const [x, y, w, h] = asset.previewRect;
+    const isLeftWeapon = asset.slotKey === "handLeft";
+    if (isLeftWeapon || asset.slotKey === "handRight") {
+      const { x: tx, y: ty, flipX } = isLeftWeapon ? atlas.left : atlas.right;
+      ctx.save();
+      ctx.translate(MIN_CANVAS_SIZE / 2 + tx, MIN_CANVAS_SIZE / 2 + ty + 14);
+      if (flipX) ctx.scale(-1, 1);
+      ctx.drawImage(layer, -w / 2, -h / 2, w, h);
+      ctx.restore();
+    } else {
+      ctx.drawImage(layer, x, y, w, h, (MIN_CANVAS_SIZE - w) / 2, (MIN_CANVAS_SIZE - h) / 2, w, h);
+    }
+  });
 };
 
 type PlayerRenderProps = Omit<ComponentProps<typeof Box>, "ref"> & {
   player?: RenderablePlayer;
-  shouldBuffer?: boolean;
   filteredSlots?: string[];
   onLoadComplete?: (loaded: boolean) => void;
 };
 
 export const PlayerRender = memo(
-  ({
-    player,
-    sx,
-    shouldBuffer = true,
-    filteredSlots,
-    onLoadComplete = () => {},
-    ...props
-  }: PlayerRenderProps) => {
+  ({ player, sx, filteredSlots, onLoadComplete = () => {}, ...props }: PlayerRenderProps) => {
     const assets = getPlayerEquipmentAssets({ player, filteredSlots });
-    const buffCanvasRef = useRef<HTMLCanvasElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
-    /* Redraw only when the look changes, not on every new player object. */
-    const equipmentKey = JSON.stringify(player?.equipment);
-    const profileKey = JSON.stringify(player?.profile);
-    const drawPlayer = useEffectEvent(async () => {
-      await mergeImages({ shouldBuffer, buffCanvasRef, canvasRef, assets });
+    /* Redraw only when the layers change, not on every new player object. */
+    const assetsKey = JSON.stringify(assets.map(({ src, tint, slotKey }) => [src, tint, slotKey]));
+    const drawPlayer = useEffectEvent(async (isCurrent: () => boolean) => {
+      /* Every sheet loads at once; drawing waits for them all. */
+      const layers = await Promise.all(assets.map(loadLayer));
+      if (!isCurrent() || !canvasRef.current) return;
+      drawLayers(canvasRef.current, assets, layers);
       onLoadComplete(true);
     });
 
     useEffect(() => {
-      drawPlayer();
-    }, [equipmentKey, profileKey]);
+      /* A newer look, or unmounting, makes this draw stale. */
+      let current = true;
+      drawPlayer(() => current);
+      return () => {
+        current = false;
+      };
+    }, [assetsKey]);
 
     return (
       <Box
@@ -183,22 +142,7 @@ export const PlayerRender = memo(
           height={MIN_CANVAS_SIZE}
           style={PLAYER_RENDER_CANVAS_STYLE}
         />
-        <canvas
-          ref={buffCanvasRef}
-          width={MIN_CANVAS_SIZE}
-          height={MIN_CANVAS_SIZE}
-          style={{
-            display: "none",
-          }}
-        />
       </Box>
-    );
-  },
-  (prev, next) => {
-    return (
-      prev?.player?.profile === next?.player?.profile &&
-      prev?.player?.activeItemSlots === next?.player?.activeItemSlots &&
-      prev?.player?.equipment === prev?.player?.equipment
     );
   },
 );
@@ -301,6 +245,6 @@ const getPlayerEquipmentAssets = ({
     return acc;
   }, []);
 
-  const obscuredKeys = getObscuredKeys({ filteredSlots, visibleParts });
+  const obscuredKeys = getObscuredKeys({ filteredSlots: [...filteredSlots], visibleParts });
   return playerAssets?.filter((asset) => !obscuredKeys.includes(asset?.slot as string));
 };
