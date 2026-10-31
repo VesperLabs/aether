@@ -100,7 +100,8 @@ function triggerLines(triggers: readonly TriggerDefinition[] = []): TriggerLine[
   }));
 }
 
-function buffStats(name: string, level: number): StatLine[] {
+/** What buff `name` does at `level`: its duration and stats, scaled by level. */
+export function buffLines(name: string, level: number): StatLine[] {
   const buff = buffList[name as BuffName] as
     | { duration?: number; stats?: Record<string, number> }
     | undefined;
@@ -135,7 +136,7 @@ export function describeItem(
     buffs: Object.entries(item.buffs ?? {}).map(([name, level]) => ({
       name,
       level,
-      stats: buffStats(name, level),
+      stats: buffLines(name, level),
     })),
     triggers: triggerLines(item.triggers),
     requirements: Object.entries(requirements).map(([label, value]) => ({
