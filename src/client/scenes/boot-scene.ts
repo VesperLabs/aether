@@ -10,6 +10,7 @@ import {
   mapImageList,
 } from "@/content";
 import { IMAGE_CACHE } from "@/ui/kit/image-tint";
+import { showLoadingBar } from "./loading-bar";
 
 /**
  * Rewrite a `./assets/…` path to the CDN base URL when ASSETS_URL is set.
@@ -37,23 +38,8 @@ export class SceneBoot extends Phaser.Scene {
     this.socket = socket;
   }
   preload() {
-    const viewportWidth = this.cameras.main.width;
-    const viewportHeight = this.cameras.main.height;
-
-    const dpanel = this.add
-      .text(viewportWidth / 2, viewportHeight / 2, "Loading...", {
-        font: "18px monospace",
-        color: "#ffffff",
-        backgroundColor: "#000000",
-      })
-      .setOrigin(0.5)
-      .setScrollFactor(0);
-
-    this.load
-      .on("progress", (value: number) => {
-        dpanel.setText("Loading... " + Math.floor(value * 100) + "%");
-      })
-      .on("loaderror", onLoadError);
+    showLoadingBar(this);
+    this.load.on("loaderror", onLoadError);
 
     // Register a load complete event to launch the title screen when all files are loaded
     this.load.on("complete", () => {
