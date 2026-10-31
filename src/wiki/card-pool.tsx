@@ -103,7 +103,7 @@ export const SpriteFace = ({
 };
 
 export const CharacterFace = ({ character }: { character: Character }) => (
-  <PlayerRender player={character} shouldBuffer={false} sx={{ width: 80, height: 80 }} />
+  <PlayerRender player={character} sx={{ width: 80, height: 80 }} />
 );
 
 /** The sprite sheet for a mob race. */

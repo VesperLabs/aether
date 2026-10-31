@@ -13,10 +13,13 @@ export const Metrics = () => {
   return (
     <RowTitle
       sx={{
-        /* A small translucent tab hanging from the top edge of the screen, on the right, as if
-           peeking in. Up through the page's top padding (32px). */
+        /* Up through the page's top padding (32px) to the top edge of the screen. On phones a
+           square strip across the whole width, through the page's 16px side padding; wider, a
+           small translucent tab on the right, as if peeking in. */
         width: "auto",
-        alignSelf: "flex-end",
+        alignSelf: ["stretch", "flex-end"],
+        mx: ["-16px", 0],
+        justifyContent: ["center", "flex-start"],
         mt: "-32px",
         gap: 3,
         px: 3,
@@ -26,7 +29,8 @@ export const Metrics = () => {
         whiteSpace: "nowrap",
         flexWrap: "wrap",
         background: "shadow.30",
-        borderRadius: "0 0 6px 6px",
+        borderRadius: [0, "0 0 6px 6px"],
+        borderBottom: ["1px solid rgba(255, 255, 200, .25)", "none"],
         position: "relative",
         zIndex: 1,
       }}

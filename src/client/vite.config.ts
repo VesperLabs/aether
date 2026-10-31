@@ -3,6 +3,7 @@ import { defineConfig, loadEnv, type ConfigEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import { DEFAULT_SERVER_FPS } from "../network/sync/timing";
 import { getAppVersion } from "../../scripts/app-version";
+import { pageHostUrl } from "../../scripts/page-host-url";
 import { rewriteAssetUrls } from "../../scripts/assets-url";
 import { removeStaleBuilds } from "../../scripts/stale-builds";
 
@@ -43,9 +44,9 @@ export default ({ mode, command }: ConfigEnv) => {
       "process.env.SERVER_FPS": JSON.stringify(
         process.env.SERVER_FPS ?? String(DEFAULT_SERVER_FPS),
       ),
-      "process.env.SERVER_URL": JSON.stringify(process.env.SERVER_URL ?? ""),
+      "process.env.SERVER_URL": pageHostUrl(process.env.SERVER_URL ?? "", command),
       __APP_VERSION__: JSON.stringify(getAppVersion(repoRoot)),
-      "process.env.ASSETS_URL": JSON.stringify(process.env.ASSETS_URL ?? ""),
+      "process.env.ASSETS_URL": pageHostUrl(process.env.ASSETS_URL ?? "", command),
       "process.env.PEER_CLIENT_PORT": JSON.stringify(process.env.PEER_CLIENT_PORT ?? ""),
       "process.env.PEER_CLIENT_PATH": JSON.stringify(process.env.PEER_CLIENT_PATH ?? ""),
       "process.env.METERED_APP_NAME": JSON.stringify(process.env.METERED_APP_NAME ?? ""),

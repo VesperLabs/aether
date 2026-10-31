@@ -2,6 +2,7 @@ import path from "node:path";
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import { getAppVersion } from "../../scripts/app-version";
+import { pageHostUrl } from "../../scripts/page-host-url";
 import { removeStaleBuilds } from "../../scripts/stale-builds";
 
 /** Repo root. Vite is run from the root with `--config` (see npm scripts). */
@@ -28,9 +29,9 @@ export default defineConfig(({ mode, command }) => {
       origin: "http://localhost:3000",
     },
     define: {
-      "process.env.SERVER_URL": JSON.stringify(serverUrl),
+      "process.env.SERVER_URL": pageHostUrl(serverUrl, command),
       __APP_VERSION__: JSON.stringify(getAppVersion(repoRoot)),
-      "process.env.GAME_URL": JSON.stringify(gameUrl),
+      "process.env.GAME_URL": pageHostUrl(gameUrl, command),
     },
     publicDir: command === "serve" ? path.join(repoRoot, "public") : false,
     build: {

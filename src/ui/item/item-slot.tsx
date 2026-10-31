@@ -220,6 +220,8 @@ export const ItemSlot = memo(
     const outerMouseBinds = {
       onMouseEnter: handleMouseEnter,
       onMouseLeave: handleMouseLeave,
+      /* A tap opens a slot that can't be dragged; tapping elsewhere fires the leave that closes it. */
+      ...(!shouldBindEvents && { onClick: handleMouseEnter }),
     };
 
     const doubleTabBinds = useDoubleTap(
@@ -244,7 +246,8 @@ export const ItemSlot = memo(
 
     /* When to show the tooltip */
     const showTooltipDesktop = (dragging && !targetMoved) || hovering;
-    const showTooltipMobile = disabled ? hovering : dragging && !targetMoved;
+    /* Slots that can't be dragged (disabled, or display-only like the wiki's) open on a tap. */
+    const showTooltipMobile = shouldBindEvents ? dragging && !targetMoved : hovering;
     const showTooltip = isMobile ? showTooltipMobile : showTooltipDesktop;
 
     const dataKeys = {
@@ -259,7 +262,8 @@ export const ItemSlot = memo(
       <Box
         data-tooltip-id={tooltipId}
         sx={{
-          touchAction: "none",
+          /* Only draggable slots hold on to the touch; display-only ones let a swipe scroll. */
+          touchAction: shouldBindEvents ? "none" : "auto",
           userSelect: "none",
           pointerEvents: "all",
           overflow: "hidden",
@@ -292,13 +296,13 @@ export const ItemSlot = memo(
               icon={imageData}
               size={size * 2} // Fixes large images to not get cut off
               style={{
-                touchAction: "none",
+                touchAction: shouldBindEvents ? "none" : "auto",
                 userSelect: "none",
                 pointerEvents: dragging ? "none" : "all",
                 zIndex: 1,
                 opacity: dragging ? 0.5 : 1,
                 filter: dragging ? "grayscale(100%)" : "none",
-                cursor: dragging ? "grabbing" : "grab",
+                cursor: shouldBindEvents ? (dragging ? "grabbing" : "grab") : "default",
                 transform: "scale(2,2)",
                 imageRendering: "pixelated",
                 // Fixes large images to not get cut off
