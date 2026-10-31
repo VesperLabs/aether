@@ -41,7 +41,7 @@ export type {
   MoveResult,
   ShopSlot,
 } from "./types";
-export { describeItem } from "./describe";
+export { buffLines, describeItem } from "./describe";
 export type {
   DescribableItem,
   DescribePlayer,
