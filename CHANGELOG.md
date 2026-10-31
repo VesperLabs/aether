@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/VesperLabs/aether/compare/v0.2.1...v0.3.0) (2026-10-31)
+
+
+### Features
+
+* **wiki:** parchment item cards, keepers page and item filters ([#56](https://github.com/VesperLabs/aether/issues/56)) ([e996fbb](https://github.com/VesperLabs/aether/commit/e996fbbd3125b4d6225d8a5c1cd56145c3b3142c))
+
 ## [0.2.1](https://github.com/VesperLabs/aether/compare/v0.2.0...v0.2.1) (2026-10-30)
 
 
