@@ -5,6 +5,7 @@ export const glovesItems = {
     clothGloves: {
       ilvl: 1,
       name: "Cloth Gloves",
+      flavor: "Plain cloth gloves for blister-free hands.",
       base: "gloves",
       texture: "gloves-cloth",
       tint: "0xFFDDCC",
@@ -14,6 +15,7 @@ export const glovesItems = {
     clothBracers: {
       ilvl: 1,
       name: "Cloth Bracers",
+      flavor: "Cloth wraps for the wrists.",
       base: "bracers",
       texture: "gloves-bracers",
       tint: "0xFFDDCC",
@@ -24,6 +26,7 @@ export const glovesItems = {
     nutshellGauntlets: {
       ilvl: 1,
       name: "Nutshell Gauntlets",
+      flavor: "Nutshell plates riveted over the knuckles.",
       base: "gauntlets",
       texture: "gloves-plate",
       tint: "0xCC9966",
@@ -34,6 +37,7 @@ export const glovesItems = {
     silkGloves: {
       ilvl: 2,
       name: "Silk Gloves",
+      flavor: "Silk gloves for a lighter touch.",
       base: "gloves",
       texture: "gloves-cloth",
       tint: "0xFFFFFF",
@@ -42,6 +46,7 @@ export const glovesItems = {
     leatherBracers: {
       ilvl: 2,
       name: "Leather Bracers",
+      flavor: "Leather bracers to turn a glancing blow.",
       base: "bracers",
       texture: "gloves-bracers",
       tint: "0xAA7744",
@@ -50,6 +55,7 @@ export const glovesItems = {
     bronzeGauntlets: {
       ilvl: 2,
       name: "Bronze Gauntlets",
+      flavor: "Bronze gauntlets. Steve's sturdiest work.",
       base: "gauntlets",
       texture: "gloves-plate",
       tint: "0xFFEEAA",
@@ -58,6 +64,7 @@ export const glovesItems = {
     wizardGloves: {
       ilvl: 3,
       name: "Wizard Gloves",
+      flavor: "Gloves stitched to keep spell-sparks off the fingers.",
       base: "gloves",
       texture: "gloves-cloth",
       tint: "0x666699",
@@ -66,6 +73,7 @@ export const glovesItems = {
     ghoulhideBracers: {
       ilvl: 3,
       name: "Ghoulhide Bracers",
+      flavor: "Ghoul-hide bracers. They grip back.",
       base: "bracers",
       texture: "gloves-bracers",
       tint: "0x889988",
@@ -74,6 +82,7 @@ export const glovesItems = {
     ironGauntlets: {
       ilvl: 3,
       name: "Iron Gauntlets",
+      flavor: "Iron gauntlets that turn a fist into a hammer.",
       base: "gauntlets",
       texture: "gloves-plate",
       tint: "0xEEDDDD",
@@ -84,6 +93,7 @@ export const glovesItems = {
     flamingFinger: {
       ilvl: 1,
       name: "The Flaming Finger",
+      flavor: "One finger is always lit. Handy for campfires.",
       base: "gloves",
       texture: "gloves-cloth",
       tint: "0xFF4400",
@@ -93,6 +103,7 @@ export const glovesItems = {
     aeryMitts: {
       ilvl: 2,
       name: "Aery Mitts",
+      flavor: "Light as air. Your hands feel like they could float off.",
       base: "gloves",
       texture: "gloves-fur",
       tint: "0x66CCFF",

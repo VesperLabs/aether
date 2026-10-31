@@ -11,3 +11,8 @@ html {
 body {
   overflow-x: hidden;
 }
+html {
+  /* When a scrollbar appears, nudge the page by its width so centered content doesn't shift.
+     (A reserved scrollbar gutter would leave a strip the fixed map background can't cover.) */
+  margin-left: calc(100vw - 100%);
+}

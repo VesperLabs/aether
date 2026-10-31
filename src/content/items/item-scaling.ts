@@ -71,6 +71,7 @@ export function scaleBaseStats(items: Loose): Loose {
             item.texture = item?.texture || baseItem?.texture;
             item.slot = item?.slot || baseItem?.slot;
             item.name = item?.name || baseItem?.name;
+            item.flavor = item?.flavor || baseItem?.flavor;
             item.stats = { ...multiplyValues(baseItem.stats, ilvl), ...item.stats };
             item.requirements = {
               ...(hasLevelReq && { level: reqLevel }), // default required level

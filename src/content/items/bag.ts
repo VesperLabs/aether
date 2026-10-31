@@ -5,6 +5,7 @@ export const bagItems = {
     smallPouch: {
       ilvl: 1,
       name: "Small Pouch",
+      flavor: "A small pouch with room for a few more things.",
       base: "bag",
       slot: "bag",
       texture: "bag-small-pouch",
@@ -13,6 +14,7 @@ export const bagItems = {
     largePouch: {
       ilvl: 2,
       name: "Large Pouch",
+      flavor: "A large pouch for the serious collector.",
       base: "bag",
       slot: "bag",
       texture: "bag-large-pouch",
@@ -21,6 +23,7 @@ export const bagItems = {
     mediumPouch: {
       ilvl: 3,
       name: "Large Pouch",
+      flavor: "A sturdy pouch with plenty of room.",
       base: "bag",
       slot: "bag",
       texture: "bag-large-pouch",
@@ -32,6 +35,7 @@ export const bagItems = {
       exclusive: true,
       ilvl: 2,
       name: "Rae's Basket",
+      flavor: "Rae's picnic basket. Somehow it never runs out of room.",
       base: "bag",
       slot: "bag",
       texture: "bag-basket",

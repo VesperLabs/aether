@@ -5,6 +5,7 @@ export const shieldItems = {
     woodenBuckler: {
       ilvl: 1,
       name: "Wooden Buckler",
+      flavor: "A small round buckler of plain wood.",
       base: "roundShield",
       texture: "shield-buckler",
       slot: "hands",
@@ -14,6 +15,7 @@ export const shieldItems = {
     barkShield: {
       ilvl: 1,
       name: "Bark Shield",
+      flavor: "A shield of layered bark, still smelling of the forest.",
       base: "kiteShield",
       texture: "shield-broken",
       tint: "0x996622",
@@ -24,6 +26,7 @@ export const shieldItems = {
     woodenTowerShield: {
       ilvl: 1,
       name: "Wooden Tower Shield",
+      flavor: "A tall wooden shield to hide behind.",
       base: "towerShield",
       texture: "shield-tower",
       slot: "hands",
@@ -34,6 +37,7 @@ export const shieldItems = {
     bronzeRoundShield: {
       ilvl: 2,
       name: "Bronze Round Shield",
+      flavor: "A round bronze shield with a hammered boss.",
       base: "roundShield",
       texture: "shield-oval",
       tint: "0xFFEEAA",
@@ -42,6 +46,7 @@ export const shieldItems = {
     bronzeKiteShield: {
       ilvl: 2,
       name: "Bronze Kite Shield",
+      flavor: "A kite-shaped bronze shield, long enough to guard the legs.",
       base: "kiteShield",
       texture: "shield-kite",
       tint: "0xFFEEAA",
@@ -50,6 +55,7 @@ export const shieldItems = {
     bronzeTowerShield: {
       ilvl: 2,
       name: "Bronze Tower Shield",
+      flavor: "A bronze wall you carry with you.",
       base: "towerShield",
       texture: "shield-tower",
       tint: "0xFFEEAA",
@@ -58,6 +64,7 @@ export const shieldItems = {
     ironRoundShield: {
       ilvl: 3,
       name: "Iron Round Shield",
+      flavor: "A round iron shield, heavy and dependable.",
       base: "roundShield",
       texture: "shield-oval",
       tint: "0xEEDDDD",
@@ -66,6 +73,7 @@ export const shieldItems = {
     ironKiteShield: {
       ilvl: 3,
       name: "Iron Kite Shield",
+      flavor: "An iron kite shield, favoured by the town guard.",
       base: "kiteShield",
       texture: "shield-kite",
       tint: "0xEEDDDD",
@@ -74,6 +82,7 @@ export const shieldItems = {
     ironTowerShield: {
       ilvl: 3,
       name: "Iron Tower Shield",
+      flavor: "A towering iron shield. You'll feel it tomorrow.",
       base: "towerShield",
       texture: "shield-tower",
       tint: "0xEEDDDD",
@@ -84,6 +93,7 @@ export const shieldItems = {
     roundStage: {
       ilvl: 3,
       name: "Round Stage",
+      flavor: "Once a tavern stage. Many a bard performed on it.",
       base: "roundShield",
       texture: "shield-round",
       slot: "hands",
@@ -93,6 +103,7 @@ export const shieldItems = {
       exclusive: true,
       ilvl: 2,
       name: "Osteo Crest",
+      flavor: "Bones from the graveyard, bound into a crest.",
       base: "kiteShield",
       texture: "shield-bone",
       slot: "hands",
@@ -107,6 +118,7 @@ export const shieldItems = {
       exclusive: true,
       ilvl: 2,
       name: "Wyrm Scale Ward",
+      flavor: "A single wyrm scale, large enough to hide behind.",
       base: "kiteShield",
       texture: "shield-wyrm",
       slot: "hands",

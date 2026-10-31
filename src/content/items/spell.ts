@@ -5,6 +5,7 @@ export const spellItems = {
     fireball: {
       ilvl: 1,
       name: "Fireball",
+      flavor: "Hurl a ball of flame. The first spell every mage learns.",
       base: "fireball",
       slot: "spell",
       texture: "scroll-red",
@@ -15,6 +16,7 @@ export const spellItems = {
     quake: {
       ilvl: 1,
       name: "Quake",
+      flavor: "Shake the earth beneath your foes and knock them off their feet.",
       base: "quake",
       slot: "spell",
       texture: "scroll-green",
@@ -26,6 +28,7 @@ export const spellItems = {
     waterball: {
       ilvl: 1,
       name: "Waterball",
+      flavor: "A crashing ball of water that slows what it hits.",
       base: "waterball",
       slot: "spell",
       texture: "scroll-blue",
@@ -37,6 +40,7 @@ export const spellItems = {
     lightball: {
       ilvl: 1,
       name: "Lightball",
+      flavor: "A burst of pure light.",
       base: "lightball",
       slot: "spell",
       texture: "scroll-yellow",
@@ -47,6 +51,7 @@ export const spellItems = {
     holyball: {
       ilvl: 1,
       name: "Holyball",
+      flavor: "A sphere of holy power that burns the unholy.",
       base: "holyball",
       slot: "spell",
       texture: "scroll-gray",
@@ -57,6 +62,7 @@ export const spellItems = {
     evasion: {
       ilvl: 1,
       name: "Evasion",
+      flavor: "Move like the wind and slip past blows.",
       base: "evasion",
       slot: "spell",
       texture: "scroll-green",
@@ -67,6 +73,7 @@ export const spellItems = {
     haste: {
       ilvl: 1,
       name: "Haste",
+      flavor: "Quicken your steps and your strikes.",
       base: "haste",
       slot: "spell",
       texture: "scroll-green",
@@ -77,6 +84,7 @@ export const spellItems = {
     brute: {
       ilvl: 1,
       name: "Brute",
+      flavor: "Swell with raw strength for a while.",
       base: "brute",
       slot: "spell",
       texture: "scroll-red",
@@ -87,6 +95,7 @@ export const spellItems = {
     guard: {
       ilvl: 1,
       name: "Guard",
+      flavor: "Harden your body against incoming blows.",
       base: "guard",
       slot: "spell",
       texture: "scroll-red",
@@ -97,6 +106,7 @@ export const spellItems = {
     genius: {
       ilvl: 1,
       name: "Genius",
+      flavor: "Sharpen your mind for stronger magic.",
       base: "genius",
       slot: "spell",
       texture: "scroll-blue",
@@ -107,6 +117,7 @@ export const spellItems = {
     endurance: {
       ilvl: 1,
       name: "Endurance",
+      flavor: "Push past exhaustion and keep fighting.",
       base: "endurance",
       slot: "spell",
       texture: "scroll-yellow",
@@ -117,6 +128,7 @@ export const spellItems = {
     regeneration: {
       ilvl: 1,
       name: "Regeneration",
+      flavor: "Wounds slowly close on their own.",
       base: "regeneration",
       slot: "spell",
       texture: "scroll-gray",
@@ -127,6 +139,7 @@ export const spellItems = {
     stealth: {
       ilvl: 1,
       name: "Stealth",
+      flavor: "Fade from sight and strike unseen.",
       base: "stealth",
       slot: "spell",
       texture: "scroll-gray",
@@ -137,6 +150,7 @@ export const spellItems = {
     flameSlash: {
       ilvl: 1,
       name: "Flame Slash",
+      flavor: "Set your blade alight and cut with fire.",
       base: "flame-slash",
       slot: "spell",
       texture: "scroll-red",

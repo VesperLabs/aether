@@ -6,7 +6,7 @@ import { ILVL_MULTIPLIER, ItemBuilder, QuestBuilder, keepers, mapList, nasties }
 import type { TiledMapJson } from "@/rules/movement";
 import { subscribeLoot, type LootItem } from "@/rules/loot";
 import { subscribeQuests } from "@/rules/quests";
-import { getBaseStats, mergeAndAddValues, subscribeStats } from "@/rules/stats";
+import { npcBaseStats, subscribeStats } from "@/rules/stats";
 import { addRoom, createRoom, createWorld } from "@/rules/world";
 import { spawnLoot } from "./loot-adapter";
 import { Npc, type NpcDefinition } from "./npc";
@@ -16,10 +16,14 @@ import type { Database } from "./persistence/database";
 /* Find NPCs in data lists, and add `kind` to them */
 function getNpcFromLists(name: string): NpcDefinition | undefined {
   if (Object.keys(keepers).includes(name)) {
-    return { ...(keepers as Record<string, NpcDefinition>)[name], kind: "keeper" };
+    /* Flavour text is for the wiki; spawned keepers don't carry it. */
+    const { flavor: _flavor, ...keeper } = keepers[name as keyof typeof keepers];
+    return { ...(keeper as NpcDefinition), kind: "keeper" };
   }
   if (Object.keys(nasties).includes(name)) {
-    return { ...(nasties as Record<string, NpcDefinition>)[name], kind: "nasty" };
+    /* Flavour text is for the wiki; spawned monsters don't carry it. */
+    const { flavor: _flavor, ...nasty } = nasties[name as keyof typeof nasties];
+    return { ...(nasty as NpcDefinition), kind: "nasty" };
   }
 }
 
@@ -31,22 +35,6 @@ function spawnNpcs(world: ServerWorld, room: Room) {
       console.log(`❌ Map npc "${name}" is broken or not found in ${room.name}`);
       continue;
     }
-    const baseLevel = npc?.baseStats?.level;
-    const baseStats = getBaseStats({ level: baseLevel, charClass: npc?.charClass });
-
-    // remove level so it does not get added twice
-    const { level: _level, ...npcBaseStats } = {
-      ...baseStats,
-      maxHp: 0,
-      maxMp: 0,
-      maxDamage: baseStats.maxDamage + 1,
-      minDamage: baseStats.minDamage + 1,
-      walkSpeed: baseStats.walkSpeed - 30,
-      intelligence: baseStats.intelligence + baseLevel * 2,
-      strength: baseStats.strength + baseLevel * 2,
-      dexterity: baseStats.dexterity + baseLevel * 2,
-      vitality: baseStats.vitality + baseLevel * 5,
-    };
 
     const id = crypto.randomUUID();
     world.npcs[id] = new Npc(world, {
@@ -54,7 +42,7 @@ function spawnNpcs(world: ServerWorld, room: Room) {
       room,
       ...npc,
       //need to merge these keys together, but add their values
-      baseStats: mergeAndAddValues(npcBaseStats, npc?.baseStats),
+      baseStats: npcBaseStats(npc),
       name,
       kind: npc?.kind,
       x,

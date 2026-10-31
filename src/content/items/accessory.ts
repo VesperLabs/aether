@@ -5,6 +5,7 @@ export const accessoryItems = {
     glasses: {
       ilvl: 1,
       name: "Glasses",
+      flavor: "Plain glasses. Everything is suddenly sharper.",
       base: "glasses",
       texture: "accessory-glasses",
       slot: "accessory",
@@ -13,6 +14,7 @@ export const accessoryItems = {
     goggles: {
       ilvl: 2,
       name: "Goggles",
+      flavor: "Goggles for keeping dust and spray out of your eyes.",
       base: "glasses",
       tint: "0xCCCCFF",
       texture: "accessory-glasses",
@@ -23,6 +25,7 @@ export const accessoryItems = {
     compoundLenses: {
       ilvl: 1,
       name: "Compound Lenses",
+      flavor: "Insect lenses. You see in every direction at once.",
       base: "glasses",
       texture: "accessory-glasses",
       tint: "0xFF6666",
@@ -39,6 +42,7 @@ export const accessoryItems = {
       exclusive: true,
       ilvl: 2,
       name: "Merman Fins",
+      flavor: "Fins of the river folk. Sergio says they once swam his valley.",
       base: "fins",
       texture: "accessory-fins",
       slot: "accessory",
@@ -56,6 +60,7 @@ export const accessoryItems = {
       exclusive: true,
       ilvl: 10,
       name: "Action Jake Mask",
+      flavor: "Action Jake never left home without it.",
       base: "cap",
       texture: "accessory-jake",
       slot: "accessory",

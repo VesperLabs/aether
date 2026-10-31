@@ -8,6 +8,8 @@ export interface ShopEntry {
 }
 
 export interface KeeperDefinition extends MobBase {
+  /** A line or two of lore shown in the wiki. */
+  readonly flavor: string;
   readonly state?: { readonly isStatic?: boolean };
   readonly equipment?: MobEquipment;
   readonly keeperData: {

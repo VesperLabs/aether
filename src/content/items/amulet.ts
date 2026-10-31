@@ -5,6 +5,7 @@ export const amuletItems = {
     silverAmulet: {
       ilvl: 1,
       name: "Copper Amulet",
+      flavor: "A copper amulet on a leather cord.",
       base: "amulet",
       tint: "0xDDCCBB",
       texture: "amulet-gold-plain",
@@ -14,6 +15,7 @@ export const amuletItems = {
     bronzeAmulet: {
       ilvl: 2,
       name: "Bronze Amulet",
+      flavor: "A bronze amulet, polished smooth by worry.",
       tint: "0xFFEEAA",
       base: "amulet",
       texture: "amulet-silver-plain",
@@ -23,6 +25,7 @@ export const amuletItems = {
     ironAmulet: {
       ilvl: 3,
       name: "Iron Amulet",
+      flavor: "An iron amulet, cold against the skin.",
       tint: "0xEEDDDD",
       base: "amulet",
       texture: "amulet-silver-plain",
@@ -35,6 +38,7 @@ export const amuletItems = {
       ilvl: 2,
       setName: "timmys",
       name: "Timmy's Chain",
+      flavor: "Timmy's chain, matched to his signet.",
       base: "amulet",
       texture: "amulet-gold-plain",
       slot: "amulet",
@@ -45,6 +49,7 @@ export const amuletItems = {
     forestBeads: {
       ilvl: 1,
       name: "The Forest Beads",
+      flavor: "Seeds from the oldest trees, strung by Tudwick.",
       base: "amulet",
       texture: "amulet-beads-green",
       slot: "amulet",

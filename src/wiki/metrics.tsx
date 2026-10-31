@@ -1,6 +1,5 @@
 import { msToHours } from "@/rules/stats";
-import { Box, Text } from "@/ui";
-import { STATIC_ROW_STYLES } from "./layout";
+import { Text } from "@/ui";
 import { RowTitle } from "./row-title";
 import { useQuery } from "@tanstack/react-query";
 import { fetchMetrics } from "./api";
@@ -14,14 +13,24 @@ export const Metrics = () => {
   return (
     <RowTitle
       sx={{
-        ...STATIC_ROW_STYLES,
-        top: 0,
-        borderWidth: "0 0 1px 0",
+        /* A small translucent box under the menu, on the right. */
+        width: "auto",
+        alignSelf: "flex-end",
+        gap: 3,
+        px: 3,
+        py: 1,
+        fontSize: [0, 1],
+        fontWeight: "normal",
+        whiteSpace: "nowrap",
+        flexWrap: "wrap",
+        background: "shadow.30",
+        borderRadius: 6,
+        position: "relative",
+        zIndex: 1,
       }}
     >
       {metrics ? (
         <>
-          <Box sx={{ flex: 1 }} />
           <Text>
             Online: {metrics?.playersOnline ?? "-"} / {metrics?.totalPlayers ?? "-"}
           </Text>
@@ -32,7 +41,6 @@ export const Metrics = () => {
         </>
       ) : (
         <>
-          <Box sx={{ flex: 1 }} />
           <Text>Server: Offline</Text>
         </>
       )}

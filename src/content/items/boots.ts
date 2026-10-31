@@ -5,6 +5,7 @@ export const bootsItems = {
     clothBoots: {
       ilvl: 1,
       name: "Cloth Boots",
+      flavor: "Soft cloth boots, quiet on the floorboards.",
       base: "boots",
       texture: "boots-cloth",
       tint: "0xFFDDCC",
@@ -14,6 +15,7 @@ export const bootsItems = {
     nutshellGreaves: {
       ilvl: 1,
       name: "Nutshell Greaves",
+      flavor: "Nutshell shin guards for kicking through the brush.",
       base: "greaves",
       texture: "boots-plate",
       tint: "0xCC9966",
@@ -24,6 +26,7 @@ export const bootsItems = {
     leatherBoots: {
       ilvl: 2,
       name: "Leather Boots",
+      flavor: "Good leather boots, broken in on many roads.",
       base: "boots",
       texture: "boots-cloth",
       tint: "0xAA7744",
@@ -33,6 +36,7 @@ export const bootsItems = {
     bronzeGreaves: {
       ilvl: 2,
       name: "Bronze Greaves",
+      flavor: "Bronze greaves that clank with every step.",
       base: "greaves",
       texture: "boots-plate",
       tint: "0xFFEEAA",
@@ -41,6 +45,7 @@ export const bootsItems = {
     ghoulhideBoots: {
       ilvl: 3,
       name: "Ghoulhide Boots",
+      flavor: "Ghoul-hide boots. Nothing follows your tracks.",
       base: "boots",
       texture: "boots-cloth",
       tint: "0x889988",
@@ -49,6 +54,7 @@ export const bootsItems = {
     ironGreaves: {
       ilvl: 3,
       name: "Iron Greaves",
+      flavor: "Iron greaves, heavy enough to anchor you in place.",
       base: "greaves",
       texture: "boots-plate",
       tint: "0xEEDDDD",
@@ -60,6 +66,7 @@ export const bootsItems = {
       ilvl: 1,
       setName: "chets",
       name: "Chet's Neon Kicks",
+      flavor: "So bright the monsters see you coming. Chet doesn't care.",
       base: "boots",
       texture: "boots-cloth",
       tint: "0x00FF00",
@@ -70,6 +77,7 @@ export const bootsItems = {
       ilvl: 1,
       setName: "crab",
       name: "Crab Walkers",
+      flavor: "Walk sideways with pride. Trista wears a pair herself.",
       base: "boots",
       texture: "boots-cloth",
       tint: "0xFF6600",
@@ -83,6 +91,7 @@ export const bootsItems = {
     chickenFeet: {
       ilvl: 2,
       name: "Chicken Feet",
+      flavor: "They really are chicken feet. You will run faster.",
       base: "boots",
       texture: "boots-wings",
       tint: "0xFFFF00",

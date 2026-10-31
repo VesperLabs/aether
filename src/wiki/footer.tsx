@@ -7,9 +7,9 @@ export const Footer = () => {
     <RowTitle
       sx={{
         ...STATIC_ROW_STYLES,
-        position: "absolute",
         display: "flex",
-        bottom: 0,
+        position: "relative",
+        mt: "auto",
         borderWidth: "1px 0 0 0",
         justifyContent: "center",
         textTransform: "none",
