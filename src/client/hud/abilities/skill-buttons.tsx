@@ -35,12 +35,6 @@ export const SkillButtons = memo(
         />
         <SkillButton
           size={16}
-          iconName="grab"
-          onTouchEnd={() => window.dispatchEvent(new CustomEvent("HERO_GRAB"))}
-          keyboardKey="F"
-        />
-        <SkillButton
-          size={16}
           iconName="boots"
           onTouchStart={() => window.dispatchEvent(new Event("HERO_DODGE_START"))}
           onTouchEnd={() => window.dispatchEvent(new Event("HERO_DODGE"))}
@@ -50,6 +44,12 @@ export const SkillButtons = memo(
         >
           <CooldownTimer cooldown={cooldowns["dodge"]} />
         </SkillButton>
+        <SkillButton
+          size={16}
+          iconName="grab"
+          onTouchEnd={() => window.dispatchEvent(new CustomEvent("HERO_GRAB"))}
+          keyboardKey="F"
+        />
         <SkillButton
           size={16}
           iconName="handRight"
