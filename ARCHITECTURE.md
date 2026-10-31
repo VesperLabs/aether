@@ -1,172 +1,92 @@
 # Architecture
 
-Aether is a server-authoritative online game. The design follows the way modern networked games are usually built:
+Aether is a server-authoritative online game.
 
-1. **The rules are separate from what's on screen.** The game world is plain data advanced by a fixed tick, with no graphics, sockets or database. The server runs it as the authority. The client runs the same code to predict movement and draws the world with sprites that only display it.
-2. **Plain data plus systems.** An entity is data: position, stats, inventory, buffs. Systems are functions that run every tick and change that data. There is no ECS library; plain state plus system functions is enough at this scale.
-3. **Commands in, events and snapshots out.** Clients send what they want to do. The server validates each command, applies it to the world, and sends back events plus state snapshots and deltas.
-4. **Content is typed code.** Item, mob, spell, quest and map definitions are TypeScript data, so the compiler catches bad references (a quest pointing at an item that doesn't exist) and editors autocomplete ids.
-5. **Features talk through events.** For example, `mobKilled` is handled by loot, stats (experience) and quests. Features don't call each other's internals.
+- **Rules are separate from rendering.** The world is plain data advanced by a fixed tick. The server runs it as the authority; the client runs the same code to predict movement and draws it with sprites that only display it.
+- **Plain data plus systems.** Entities are data (position, stats, inventory, buffs). Systems are functions that change that data each tick. No ECS library.
+- **Commands in, events and snapshots out.** Clients send intents. The server validates them, applies them, and sends back events plus snapshots and deltas.
+- **Content is typed code.** Items, mobs, spells, quests and maps are TypeScript data, so bad references fail to compile.
+- **Features talk through events.** `mobKilled` is handled by loot, stats and quests; features never call each other's internals.
 
-> Migration in progress: the current code does not match this yet. See `TODO.md`. All new code follows this document.
+> Migration in progress: older code doesn't match this yet. All new code does.
 
-## Layout
-
-Each folder in `src/` is one layer, named for what it is. Imports only point down.
+## Layout and imports
 
 ```
 src/
-  content/         # core: items, mobs, spells, quests, maps
-  rules/           # core: the game itself, no graphics, no network, no database
-  network/         # core: messages between client and server
-  ui/              # React views of the core, by feature, used by client and wiki
-  server/          # app: the game server
-  client/          # app: the game in the browser
-  wiki/            # app: the wiki site
-public/            # images, audio, maps
-scripts/           # repo tooling
+  content/   core: items, mobs, spells, quests, maps      imports nothing
+  rules/     core: the game itself                        imports content
+  network/   core: client↔server messages                 imports rules, content, socket.io types
+  ui/        React views of core, by feature; kit/ for generic widgets
+  server/    app: game server                             core only, never ui
+  client/    app: game in the browser                     core + ui
+  wiki/      app: wiki site                               core + ui
+public/      images, audio, maps
+scripts/     repo tooling
 ```
 
-One `package.json`, one lockfile, one `tsconfig.json`. No workspaces. The repo root holds only config files and the folders above.
-
-### Imports
-
-Use the `@/` alias (tsconfig `"paths": { "@/*": ["./src/*"] }`) for anything outside the current folder. Use relative imports only inside a feature or folder.
-
-```ts
-import { items } from "@/content";
-import { moveItem } from "@/rules/inventory";
-import { commands } from "@/network";
-import { Button } from "@/ui";
-```
-
-tsx and esbuild read the alias from tsconfig on their own. Vite and Vitest read it through `resolve.tsconfigPaths` (or the `vite-tsconfig-paths` plugin). tsconfig is the only place it's defined.
+- Imports only point down. Apps never import each other.
+- Core has no Phaser, React, DOM or IO.
+- Use `@/` for anything outside the current folder (defined only in tsconfig). Relative imports only inside a folder.
+- Code outside a feature imports it only through its `index.ts`.
+- Exception: Phaser code in `client/` imports `ui/` modules directly (`@/ui/kit/is-mobile`), never the `@/ui` barrel, so `ui/` edits don't reload the whole game.
 
 ### `rules/`
 
-Every folder in `rules/` is one gameplay feature: `movement`, `combat`, `spells`, `buffs`, `stats`, `inventory`, `loot`, `npc-behavior`, `quests`, `party`, `chat`.
+One folder per feature (`movement`, `combat`, `inventory`, `quests`, ...), plus:
 
-Two things in `rules/` are not features:
+- `world/`: world state, entity registry, rooms, tick loop, event bus
+- `events.ts`: every game event and its payload in one typed map
 
-- `world/`: world state, entity registry, rooms, tick loop and event bus
-- `events.ts`: every game event and its payload in one typed map, so the full list of what can happen in the game is in one place
-
-A feature starts as a folder with only `index.ts`. Add files as it grows, using these names:
+A feature grows into these files:
 
 ```
 inventory/
-  index.ts      # public API: the only file other code may import
-  rules.ts      # pure functions over state: canEquip, moveItem, stackItems
-  system.ts     # per-tick logic
-  commands.ts   # handles network commands → calls rules → emits events
-  rules.test.ts
+  index.ts      public API, re-exports only
+  rules.ts      pure functions over state
+  system.ts     per-tick logic
+  commands.ts   network command → rules → events
 ```
+
+Rules are **pure and deterministic**: no `Date.now()`, `Math.random()` or globals. Time, tick and RNG are passed in, so the client can predict and tests can replay.
 
 ### `network/`
 
-```
-network/
-  commands.ts   # client→server: one zod schema per command, types inferred from it
-  messages.ts   # server→client messages
-  sync/         # snapshots, deltas, wire packing
-```
+`commands.ts` holds one zod schema per client→server command; `messages.ts` holds server→client messages; `sync/` holds snapshots, deltas and wire packing. The server never trusts a client value it can compute itself (position, damage, cooldowns).
 
-### `server/`
+### Apps
 
-```
-server/
-  net/           # socket transport and command dispatcher
-  auth/          # login, register, demo login
-  persistence/   # mongo, save/load characters
-  admin/         # cheat and debug commands, admin-only
-  http/          # express routes, peer proxy
-  tests/         # socket and database integration tests
-  main.ts
-```
+- `server/`: `net/` (one generic dispatcher: look up schema, validate, call the feature's `commands.ts`), `auth/`, `persistence/`, `admin/`, `http/`, `tests/`, `main.ts`
+- `client/`: `scenes/`, `views/`, `input/`, `net/` (socket, interpolation, prediction), `audio/`, `hud/` (React, by feature)
 
-`server/net/` is one generic dispatcher: it looks up a command's schema, validates the payload and passes it to the rules. Adding a command never means writing a new socket handler.
-
-### `client/`
+A player action flows:
 
 ```
-client/
-  scenes/        # Phaser scenes
-  views/         # sprites that display game state
-  input/         # keyboard, joystick, crosshair → commands
-  net/           # socket client, interpolation, prediction
-  audio/
-  hud/           # React UI grouped by feature: inventory/, quests/, social/, auth/, settings/
+client/input → command → server/net (zod) → rules/<feature>/commands.ts
+  → world state + events → messages + snapshots → client/views
 ```
-
-### How a player action flows
-
-```
-client/input → network command → server/net (validate with zod)
-  → rules/<feature>/commands.ts → rules → world state + events
-  → server/net → network messages + sync snapshots → client/views
-```
-
-## Import rules
-
-```
-apps    server    client    wiki       never import each other; server never imports ui
-          │         │   ╲    │
-ui        │         │    ui ─┘         React; imports core, never an app
-          ▼         ▼    ▼
-core    network  →  rules  →  content  plain TypeScript: no engines, IO, React or DOM
-```
-
-- **Core** (`content`, `rules`, `network`) is plain TypeScript and imports only further down the chain: `content` imports nothing from the repo, `rules` imports only `content`, `network` imports `rules` and `content`. `network` may import socket.io types; nothing in core imports Phaser, React, the DOM or IO.
-- **`ui/`** imports core, never an app. Group it by feature (`ui/item/`, `ui/character/`), mirroring `rules/`; generic widgets go in `ui/kit/`.
-- **Apps** (`server/`, `client/`, `wiki/`) import core and `ui/` (except `server/`), never each other.
-- Code outside a feature imports it only through its `index.ts`.
-  - Exception: Phaser code in `client/` (`scenes/`, `views/`, `net/`, `input/`) imports `ui/` modules directly (`@/ui/kit/is-mobile`), never the `@/ui` barrel. Phaser modules can't hot-reload, so a barrel import makes every `ui/` edit reload the whole game.
 
 ## Conventions
 
-- **No grab-bag files.** No `utils`, `helpers`, `common`, `misc` or `lib` files or folders, and no `shared` folders. Code lives where it's used. Truly generic code goes in a narrowly named module, such as `rules/world/geometry.ts`.
-- **No `*Manager` classes.** That kind of logic becomes a feature's rules and systems.
-- **Rules are pure.** `rules.ts` takes state and returns results or new state. Systems, command handlers, socket code and React components stay thin and call the rules.
-- **One source of truth for types.** Network types are inferred from zod schemas. Content types come from the content definitions. Don't write the same shape twice.
-- **Files stay under 400 lines.** Past that, split by responsibility.
-- **TypeScript only, strict mode** for everything in core and for all new files.
-
-## Naming
-
-| Rule                                                                                                                                         | Example                                                  |
-| -------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| All files and folders are kebab-case, components and classes included                                                                        | `item-tooltip.tsx`, `game-server.ts`, `rules/inventory/` |
-| Named exports only, no default exports (except tool config files)                                                                            | `export function moveItem`                               |
-| Tests end in `.test.ts` / `.test.tsx`, never `.spec`                                                                                         | `rules.test.ts`                                          |
-| `.tsx` only for files that contain JSX                                                                                                       |                                                          |
-| `index.ts` only as a feature's or folder's public API: re-exports, no logic                                                                  |                                                          |
-| Feature files use the standard names (`index`, `rules`, `system`, `commands`). Larger features may add subfolders or other kebab-case files. |                                                          |
-
-Kebab-case avoids a whole class of bugs: macOS ignores case in file names and Linux doesn't, so a case-only rename can work locally and break CI. Named exports keep one name per thing across every import.
-
-Inside code:
-
-- `PascalCase` for types, classes and components
-- `camelCase` for functions, variables, event names and command names (`mobKilled`, `moveItem`)
-- `SCREAMING_CASE` only for real constants at the top of a file
-
-Exceptions: uppercase Markdown at the repo root (`README.md`, `CLAUDE.md`, `ARCHITECTURE.md`, `TODO.md`) and tool config files.
+- No `utils`, `helpers`, `common`, `misc`, `lib` or `shared`. Generic code gets a narrow name (`rules/world/geometry.ts`).
+- No `*Manager` classes; that logic is a feature's rules and systems.
+- One source of truth per type: network types inferred from zod, content types from content definitions.
+- Files under 400 lines. Strict TypeScript.
+- kebab-case files and folders; named exports only; `.tsx` only with JSX; tests are `.test.ts(x)`, never `.spec`.
+- `PascalCase` types and components, `camelCase` functions, events and commands, `SCREAMING_CASE` only for top-level constants. Events are past tense (`mobKilled`), commands are imperative (`moveItem`).
 
 ## Tests
 
-| Kind                                                        | Location                                          |
-| ----------------------------------------------------------- | ------------------------------------------------- |
-| Unit tests                                                  | Next to the code, `foo.ts` → `foo.test.ts`        |
-| Game scenarios (build a world, run ticks, check the result) | `src/rules/tests/`                                |
-| Socket and database integration                             | `src/server/tests/`                               |
-| UI components                                               | Next to the component, `Foo.tsx` → `Foo.test.tsx` |
+- Unit and component tests: next to the code (`foo.ts` → `foo.test.ts`)
+- Game scenarios (build a world, run ticks, assert): `src/rules/tests/`
+- Socket and database integration: `src/server/tests/`
 
 ## Enforcement
 
-Everything runs in `npm run check`, which husky runs before each commit and CI runs on every pull request.
+`npm run check` runs on every commit (husky) and PR (CI):
 
-- **oxlint** enforces the import rules (`no-restricted-imports` with per-folder overrides), the 400-line limit (`max-lines`), kebab-case file names (`unicorn/filename-case`) and named exports (`import/no-default-export`).
-- **`scripts/check-structure.ts`** rejects banned and non-kebab-case folder names, `*Manager` classes, `.spec` files, `.tsx` files without JSX and `index.ts` files containing logic.
-- **`tsconfig.json`** typechecks the whole repo in strict mode.
-- **Legacy exceptions** are listed in one place in each config (the oxlint `overrides` block and the script's allowlist). They may only shrink.
-- **`CLAUDE.md`** at the root, plus one in each of `src/rules/`, `src/network/` and `src/content/`, gives agents the rules for the folder they're working in.
+- **oxlint**: import rules, `max-lines`, kebab-case, no default exports
+- **`scripts/check-structure.ts`**: banned folder names, `*Manager`, `.spec`, `.tsx` without JSX, logic in `index.ts`
+- **tsc**: strict typecheck of the whole repo
+
+Legacy exceptions live in one list per config (oxlint `overrides`, the script's allowlist) and may only shrink.
