@@ -74,7 +74,12 @@ export interface ServerToClientEvents {
   formSuccess: (payload: { success: string; email?: string }) => void;
   /** First message after login, respawn and door travel: the whole room. */
   heroInit: (
-    state: RoomStateMessage & { socketId: string; userSettings?: UserSettingsMessage },
+    state: RoomStateMessage & {
+      socketId: string;
+      userSettings?: UserSettingsMessage;
+      /** Sent on login: whether cheat chat commands are on. */
+      cheats?: boolean;
+    },
     meta?: { isLogin?: boolean; isRespawn?: boolean },
   ) => void;
 

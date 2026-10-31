@@ -1,9 +1,11 @@
 import { OUT_OF_COMBAT_MS, RACES_WITH_ATTACK_ANIMS } from "./constants";
 import {
+  hasRangedWeapon,
   hasRangedWeaponLeft,
   hasRangedWeaponRight,
   hasWeaponLeft,
   hasWeaponRight,
+  isDualWielding,
   type HandEquipment,
   type WeaponHolder,
 } from "./weapons";
@@ -52,6 +54,15 @@ export function isOutOfCombat(lastCombat: number, now: number) {
   return now - lastCombat > OUT_OF_COMBAT_MS;
 }
 
+/**
+ * Which swing comes next: dual-wielders alternate the right hand (1) and the left (2); everyone
+ * else, and bows, always swing 1. Feeds `getAttackSpCost` so costs shown match the next swing.
+ */
+export function getNextAttackCount(lastAttackCount: number | undefined, character: WeaponHolder) {
+  if (hasRangedWeapon(character) || !isDualWielding(character)) return 1;
+  return lastAttackCount === 1 ? 2 : 1;
+}
+
 /** SP an attack costs. Count 1 is the right hand (or the left if it has none), 2 is the left. */
 export function getAttackSpCost(visibleEquipment: HandEquipment | null | undefined, count: number) {
   if (count === 1) {
@@ -63,6 +74,18 @@ export function getAttackSpCost(visibleEquipment: HandEquipment | null | undefin
     return visibleEquipment?.handLeft?.stats?.spCost || 0;
   }
   return 1;
+}
+
+/** Whether a character has the resources for these costs. HP must stay above its cost, so paying can't kill. */
+export function canAffordCosts(
+  stats: { hp?: number; mp?: number; sp?: number } | null | undefined,
+  costs: { hp?: number; mp?: number; sp?: number },
+) {
+  return (
+    (stats?.mp ?? 0) >= (costs.mp ?? 0) &&
+    (stats?.hp ?? 0) > (costs.hp ?? 0) &&
+    hasStaminaFor(stats?.sp, costs.sp ?? 0)
+  );
 }
 
 /** An attack needs the SP to pay for it: out of stamina, you can't attack until it regenerates. */

@@ -3,7 +3,6 @@ import { DEFAULT_USER_SETTINGS, type UserSettings } from "@/rules/world";
 import type { ClientGameSocket } from "@/network";
 import type { Player } from "@/client/views/player";
 import { isMobile } from "@/ui/kit/is-mobile";
-import { MINI_MAP_SIZE } from "@/client/views/minimap-size";
 import { decodeWireDirection } from "@/network/sync";
 import { netInterp } from "@/client/net/scene-interpolation";
 import { bindSceneSocket } from "@/client/net/scene-socket";
@@ -11,6 +10,7 @@ import { changeMusic } from "@/client/audio/music";
 import { getPlayer, getNpc, getNpcs, getPlayers } from "./scene-entities";
 import { enableDoors, initCamera } from "./main-map";
 import { checkProximities } from "./proximity";
+import { createMinimap, updateMinimap } from "./minimap";
 
 /** A remote player close enough to the hero to video chat with. */
 export interface NearbyPlayer {
@@ -47,7 +47,7 @@ export class SceneMain extends Phaser.Scene {
 
     //create minimap
     if (!isMobile) {
-      scene.minimap = scene.cameras.add(0, 0, MINI_MAP_SIZE, MINI_MAP_SIZE);
+      scene.minimap = createMinimap(scene);
     }
 
     bindSceneSocket(scene);
@@ -114,6 +114,7 @@ export class SceneMain extends Phaser.Scene {
     }
 
     enableDoors(this);
+    updateMinimap(this);
     checkProximities(this, time);
 
     if (npcSnapshot) {

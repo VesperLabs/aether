@@ -17,6 +17,14 @@ export function isItemBuildRarity(r: string): boolean {
   return ITEM_BUILD_RARITY_SET.has(r);
 }
 
+/** Bags, spells and stackables never roll magic or rare mods, only their table rarities. */
+const FIXED_RARITY_TYPES = new Set(["bag", "spell", "stackable"]);
+
+/** Whether a common item of this type can be built as magic or rare. */
+export function canRollRarity(type: string): boolean {
+  return !FIXED_RARITY_TYPES.has(type);
+}
+
 function getSetInfo(setName: string) {
   return (itemSetList as Loose)[setName];
 }
@@ -119,8 +127,8 @@ function buildItem(...args: BuildItemArgs): Item | null {
     item.items = new Array(item.space).fill(null);
   }
 
-  /* Bags and Spells cannot be magic or rare unless they were found in item table */
-  if (["bag", "spell"].includes(item.type) && shouldSpawnMods) {
+  /* These cannot be magic or rare unless they were found in item table */
+  if (!canRollRarity(item.type) && shouldSpawnMods) {
     if (["magic", "rare"].includes(item.rarity)) item.rarity = "common";
   }
 

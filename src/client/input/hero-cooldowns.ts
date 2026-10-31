@@ -1,5 +1,5 @@
 import { spellDetails } from "@/content";
-import { POTION_COOLDOWN } from "@/rules/combat";
+import { getNextAttackCount, POTION_COOLDOWN } from "@/rules/combat";
 import { DODGE_COOLDOWN } from "@/rules/movement";
 import type { Player } from "@/client/views/player";
 import type { AbilitySlot } from "@/client/window-events";
@@ -7,7 +7,8 @@ import type { AbilitySlot } from "@/client/window-events";
 export function updateAttackCooldown(hero: Player) {
   if (hero.state.isAttacking) return;
   /* Out of stamina the attack won't fire, so don't start its cooldown */
-  if (!hero.hasStaminaForAttack(1, hero.state.lastAbilitySlot)) return;
+  const count = getNextAttackCount(hero.state.lastAttackCount, hero);
+  if (!hero.hasStaminaForAttack(count, hero.state.lastAbilitySlot)) return;
   const attackDelay = hero?.getFullAttackDelay();
   const duration = attackDelay;
   window.dispatchEvent(

@@ -79,6 +79,7 @@ export function App({ socket, peer, debug, game }: AppProps) {
   const [cooldowns, setCooldowns] = useState<Record<string, Cooldown>>({});
   const [homeModal, setHomeModal] = useState<KeeperView | null>(null);
   const [userSettings, setUserSettings] = useState<UserSettings>(() => DEFAULT_USER_SETTINGS);
+  const [cheats, setCheats] = useState(false);
   const [localVideoChatStream, setLocalVideoChatStream] = useState<MediaStream | null>(null);
   const [remoteVideoStreams, setRemoteVideoStreams] = useState<Record<string, MediaStream>>({});
 
@@ -100,7 +101,14 @@ export function App({ socket, peer, debug, game }: AppProps) {
   };
 
   const { onPlayerJoin, onPlayerLeave, onHeroInit, onBuffUpdate, onPlayerUpdate, onLootGrabbed } =
-    createHeroSyncHandlers({ addMessage, setPlayers, setHero, setIsLoggedIn, setUserSettings });
+    createHeroSyncHandlers({
+      addMessage,
+      setPlayers,
+      setHero,
+      setIsLoggedIn,
+      setUserSettings,
+      setCheats,
+    });
 
   const { onDoubleClickItem, onDropItem } = createItemEventHandlers({
     hero,
@@ -308,6 +316,7 @@ export function App({ socket, peer, debug, game }: AppProps) {
           setCurrentTooltipId,
           userSettings,
           setUserSettings,
+          cheats,
           localVideoChatStream,
           setLocalVideoChatStream,
           remoteVideoStreams,

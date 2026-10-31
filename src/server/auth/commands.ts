@@ -1,5 +1,6 @@
 import { getFullCharacterState } from "@/network/sync";
 import { getRoomState } from "@/server/net/room-sync";
+import { areCheatsEnabled } from "@/server/admin/commands";
 import { removePlayer } from "../remove-player";
 import { createPlayer } from "../player-room";
 import { legacyLeaveParty } from "../party-adapter";
@@ -52,6 +53,7 @@ export async function demoLogin(
     {
       ...getRoomState(world, roomName),
       userSettings: player.userSettings,
+      cheats: areCheatsEnabled(),
       socketId,
     },
     { isLogin: true },
@@ -106,6 +108,7 @@ export async function login(ctx: CommandContext, { email, password }: ParsedComm
     {
       ...getRoomState(world, roomName),
       userSettings: player.userSettings,
+      cheats: areCheatsEnabled(),
       socketId,
     },
     { isLogin: true },

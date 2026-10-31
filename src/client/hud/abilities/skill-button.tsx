@@ -4,6 +4,7 @@ import type { PressHandler } from "@/ui";
 import type { ReactNode } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
 import { CostBadge, hasCosts, type ResourceCosts } from "./cost-badge";
+import { DISABLED_OPACITY } from "./cooldown-timer";
 
 export const SkillButton = ({
   onTouchStart = () => {},
@@ -14,6 +15,7 @@ export const SkillButton = ({
   keyboardKey,
   sx,
   costs,
+  disabled = false,
   children,
 }: {
   onTouchStart?: PressHandler;
@@ -25,6 +27,8 @@ export const SkillButton = ({
   sx?: ThemeUIStyleObject;
   /** What pressing it spends, shown on pills fused to its rim. */
   costs?: ResourceCosts;
+  /** Not enough HP, MP or SP to pay its costs. Cooldowns show on the spinner instead. */
+  disabled?: boolean;
   children?: ReactNode;
 }) => {
   const withCosts = hasCosts(costs);
@@ -37,7 +41,8 @@ export const SkillButton = ({
         p: size,
         position: "relative",
         flexShrink: 0,
-        /* Dimming (cooldowns, chat with no one near) fades instead of snapping */
+        opacity: disabled ? DISABLED_OPACITY : 1,
+        /* Dimming (can't afford, chat with no one near) fades instead of snapping */
         transition: "opacity .3s ease",
         /* With costs, the glass is drawn by CostBadge as one shape with its pills */
         ...(withCosts && {

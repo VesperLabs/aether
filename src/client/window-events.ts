@@ -51,6 +51,8 @@ declare global {
     HERO_START_COOLDOWN: CustomEvent<CooldownDetail>;
     HERO_AIM_START: CustomEvent<AbilitySlot | undefined>;
     HERO_ATTACK: Event;
+    /** The hero swung: 1 is the right hand, 2 the left. The HUD shows the next swing's cost. */
+    HERO_ATTACK_COUNT: CustomEvent<number>;
     HERO_ATTACK_START: CustomEvent<AbilitySlot | undefined>;
     /** Dodge button pressed (shows the aimer) and released (rolls). */
     HERO_DODGE_START: Event;

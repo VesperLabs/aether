@@ -19,6 +19,7 @@ brew install pkg-config cairo pango libpng jpeg giflib librsvg
 ```bash
 # .env file example
 DEBUG=false
+ENABLE_CHEATS=false
 MONGO_URL= # If blank will go into offline mode. (No saving)
 SERVER_FPS=20
 SERVER_URL=http://localhost:3000

@@ -1,10 +1,10 @@
 import Phaser from "phaser";
 import { Door, type DoorObject } from "@/client/views/door";
 import { Sign, type SignObject } from "@/client/views/sign";
-import { MINI_MAP_SIZE } from "@/client/views/minimap-size";
 import { changeMusic } from "@/client/audio/music";
 import type { Player } from "@/client/views/player";
 import { getGameZoomLevel } from "./camera-zoom";
+import { layoutMinimap } from "./minimap";
 import type { SceneMain } from "./main-scene";
 
 const { RectangleToRectangle } = Phaser.Geom.Intersects;
@@ -17,25 +17,6 @@ export function enableDoors(scene: SceneMain) {
   }
 }
 
-function initMiniMap(scene: SceneMain, hero: Player) {
-  if (!hero || !scene?.map || !scene.minimap) return;
-
-  // Only show the minimap if its enabled
-  scene.minimap.setVisible(scene?.userSettings?.showMinimap);
-  // Calculate the x-coordinate to position the minimap on the far right
-  scene.minimap.setPosition(Math.round(scene.scale.width - MINI_MAP_SIZE), 0); // Rounded to the nearest integer
-
-  // Set the bounds of the minimap to match the map's dimensions
-  scene.minimap.setBounds(0, 0, scene.map.widthInPixels, scene.map.heightInPixels);
-
-  // Set the zoom level for the minimap (adjust as needed)
-  const minimapZoomLevel = 0.25;
-  scene.minimap.setZoom(minimapZoomLevel);
-
-  // Follow the hero with the minimap camera
-  scene.minimap.startFollow(hero, true, 0.5, 0.5, 0, 0);
-}
-
 export function initCamera(scene: SceneMain, hero: Player) {
   if (!hero || !scene?.map) return;
   const zoomLevel = getGameZoomLevel(scene);
@@ -44,7 +25,7 @@ export function initCamera(scene: SceneMain, hero: Player) {
   scene.cameras.main.startFollow(hero, true, 1, 1, 0, hero.bodyOffsetY);
   scene.cameras.main.setBounds(0, 0, scene.map.widthInPixels, scene.map.heightInPixels);
 
-  initMiniMap(scene, hero);
+  layoutMinimap(scene, hero);
 }
 
 export function initPlayerCollision(

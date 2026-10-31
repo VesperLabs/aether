@@ -85,6 +85,8 @@ interface AppContextValue {
   addMessage: (message: ChatMessage) => void;
   setUserSettings: SetState<UserSettings>;
   userSettings: UserSettings;
+  /** Whether the server has cheat chat commands on. */
+  cheats: boolean;
   /** Local camera stream when video chat is enabled (for HUD portrait + WebRTC). */
   localVideoChatStream: MediaStream | null;
   setLocalVideoChatStream: SetState<MediaStream | null>;

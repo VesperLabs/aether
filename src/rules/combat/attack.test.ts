@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
+  canAffordCosts,
   checkAttackReady,
   expAfterDeath,
   getAbilityCosts,
   getAttackActionName,
   getAttackSpCost,
+  getNextAttackCount,
   getCooldown,
   getFullAttackDelay,
   isOutOfCombat,
@@ -152,5 +154,39 @@ describe("getAbilityCosts", () => {
     expect(getAbilityCosts(undefined)).toEqual({ mp: 0, hp: 0, sp: 0 });
     expect(getAbilityCosts({ mpCost: 3 })).toEqual({ mp: 3, hp: 0, sp: 0 });
     expect(getAbilityCosts({ spCost: 2 }).sp).toBe(2);
+  });
+});
+
+describe("getNextAttackCount", () => {
+  const sword = { type: "weapon" };
+  const bow = { type: "ranged" };
+
+  it("alternates hands when dual wielding", () => {
+    const human = { race: "human" };
+    const dual = { profile: human, visibleEquipment: { handRight: sword, handLeft: sword } };
+    expect(getNextAttackCount(undefined, dual)).toBe(1);
+    expect(getNextAttackCount(1, dual)).toBe(2);
+    expect(getNextAttackCount(2, dual)).toBe(1);
+  });
+
+  it("always swings 1 with one weapon or a bow", () => {
+    const profile = { race: "human" };
+    expect(getNextAttackCount(1, { profile, visibleEquipment: { handLeft: sword } })).toBe(1);
+    const bowAndSword = { handRight: bow, handLeft: sword };
+    expect(getNextAttackCount(1, { profile, visibleEquipment: bowAndSword })).toBe(1);
+  });
+});
+
+describe("canAffordCosts", () => {
+  const stats = { hp: 10, mp: 5, sp: 3 };
+
+  it("needs enough of every resource", () => {
+    expect(canAffordCosts(stats, { sp: 3, mp: 5 })).toBe(true);
+    expect(canAffordCosts(stats, { sp: 4 })).toBe(false);
+    expect(canAffordCosts(stats, { mp: 6 })).toBe(false);
+  });
+
+  it("won't spend the last of your HP", () => {
+    expect(canAffordCosts(stats, { hp: 10 })).toBe(false);
   });
 });

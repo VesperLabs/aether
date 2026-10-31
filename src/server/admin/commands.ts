@@ -1,61 +1,53 @@
-import { ItemBuilder, isItemBuildRarity, ITEM_BUILD_RARITIES } from "@/content";
+import { ItemBuilder } from "@/content";
 import type { CommandContext } from "@/server/net/command-context";
 import { getFullCharacterState } from "@/network/sync";
+import { CHAT_COMMANDS } from "@/network";
 import { getRoomState } from "@/server/net/room-sync";
 import { spawnLoot } from "../loot-adapter";
+import { DROP_USAGE, parseDropArgs } from "./drop-args";
 import { isInRoom } from "@/server/player-room";
 
-/** Cheat and debug chat commands (`/drop`, `/ding`...) only work when the server runs with DEBUG=true. */
-export function isAdminEnabled(): boolean {
-  return process.env.DEBUG === "true";
+/** Cheat chat commands (`/drop`, `/ding`...) only work when the server runs with ENABLE_CHEATS=true. */
+export function areCheatsEnabled(): boolean {
+  return process.env.ENABLE_CHEATS === "true";
 }
 
-const ADMIN_COMMANDS = new Set(["drop", "coords", "ding", "booty", "guns"]);
+const ADMIN_COMMANDS = new Set<string>(CHAT_COMMANDS.filter((c) => c.cheat).map((c) => c.name));
 
 /**
  * Runs a `/command` typed in chat. Returns true when the message was an admin command and has been
  * answered, false when it is not one (or admin commands are off) and should be sent as plain chat.
  */
 export function runAdminCommand(ctx: CommandContext, rawMessage: string): boolean {
-  if (!isAdminEnabled()) return false;
+  if (!areCheatsEnabled()) return false;
   const command = rawMessage.substr(1).split(" ");
   if (!ADMIN_COMMANDS.has(command[0])) return false;
-  execute(ctx, rawMessage, command);
+  execute(ctx, command);
   return true;
 }
 
-function execute(ctx: CommandContext, rawMessage: string, command: string[]) {
+function execute(ctx: CommandContext, command: string[]) {
   const { world, socket, io } = ctx;
   const player = world?.players?.[ctx.socketId];
   if (!isInRoom(player)) return;
-  const args = { message: rawMessage };
   const cmdErr = (message: string) => socket.emit("message", { type: "error", message });
+  /* Cheats answer only the player who used them, as a status line, never as chat */
+  const cmdInfo = (message: string) => socket.emit("message", { type: "info", message });
+  const itemLabel = (item: Item, amount = 1) =>
+    `${amount > 1 ? `${amount}× ` : ""}${item.rarity} ${item.name ?? item.key}`;
 
   switch (command[0]) {
     case "drop": {
-      const raw = command[1]?.trim();
-      if (!raw) {
-        return cmdErr(
-          "Usage: /drop <type>-<rarity>-<itemKey>-<amount> — four hyphen-separated parts, e.g. /drop weapon-common-sword-1",
-        );
-      }
-      const itemParams = raw.split("-");
-      const [itemType, itemRarity, itemKey, itemAmount] = itemParams;
-      if (!itemType || !itemRarity || !itemKey || itemAmount === undefined || itemAmount === "") {
-        return cmdErr(
-          "Usage: /drop <type>-<rarity>-<itemKey>-<amount> — four hyphen-separated parts, e.g. /drop weapon-common-sword-1",
-        );
-      }
-      if (!isItemBuildRarity(itemRarity)) {
-        return cmdErr(
-          `Invalid rarity "${itemRarity}". Use one of: ${ITEM_BUILD_RARITIES.join(", ")}.`,
-        );
-      }
-      const built = ItemBuilder.buildItem(itemType, itemRarity, itemKey, itemAmount) as Item | null;
+      const drop = parseDropArgs(command.slice(1));
+      if ("error" in drop) return cmdErr(drop.error);
+      const built = ItemBuilder.buildItem(
+        drop.type,
+        drop.rarity,
+        drop.key,
+        drop.amount,
+      ) as Item | null;
       if (!built) {
-        return cmdErr(
-          "Invalid /drop: no item matches that type, rarity, and key. Usage: /drop <type>-<rarity>-<itemKey>-<amount>",
-        );
+        return cmdErr(`There is no ${drop.rarity} ${drop.key}. ${DROP_USAGE}`);
       }
       spawnLoot(world, player?.roomName, {
         x: player?.x,
@@ -63,18 +55,11 @@ function execute(ctx: CommandContext, rawMessage: string, command: string[]) {
         item: built,
         npcId: null,
       });
-      return socket.emit("message", {
-        from: player?.profile?.userName,
-        type: "chat",
-        message: args.message,
-      });
+      return cmdInfo(`Dropped ${itemLabel(built, drop.amount)}.`);
     }
     case "coords":
       world.db.updateUserMapDetails(player);
-      return socket.emit("message", {
-        type: "info",
-        message: `x: ${Math.round(player.x)} y: ${Math.round(player.y)}`,
-      });
+      return cmdInfo(`x: ${Math.round(player.x)} y: ${Math.round(player.y)}`);
     case "ding": {
       const exp = parseInt(command[1], 10);
       if (!Number.isFinite(exp)) {
@@ -82,10 +67,11 @@ function execute(ctx: CommandContext, rawMessage: string, command: string[]) {
       }
       const didLevel = player.assignExp(exp);
       const roomState = getRoomState(world, player?.roomName);
-      return world.io.to(player?.roomName).emit("buffUpdate", {
+      world.io.to(player?.roomName).emit("buffUpdate", {
         players: roomState?.players?.filter((n) => n?.id === player?.id),
         playerIdsThatLeveled: didLevel ? [player?.id] : [],
       });
+      return cmdInfo(`Gained ${exp} experience.`);
     }
     case "booty": {
       const gold = parseInt(command[1], 10);
@@ -93,7 +79,8 @@ function execute(ctx: CommandContext, rawMessage: string, command: string[]) {
         return cmdErr("Usage: /booty <amount> — positive integer gold to add.");
       }
       player.gold += gold;
-      return io.to(player?.roomName).emit("playerUpdate", getFullCharacterState(player));
+      io.to(player?.roomName).emit("playerUpdate", getFullCharacterState(player));
+      return cmdInfo(`Added ${gold} gold.`);
     }
     case "guns": {
       const gunRarities = ["unique", "common", "set", "rare", "magic"] as const;
@@ -107,19 +94,9 @@ function execute(ctx: CommandContext, rawMessage: string, command: string[]) {
       do {
         gunItem = ItemBuilder.rollDrop(100, 100);
       } while (gunItem?.rarity !== rarity);
-      if (gunItem) {
-        spawnLoot(world, player?.roomName, {
-          x: player?.x,
-          y: player?.y,
-          item: ItemBuilder.buildItem(gunItem.type, gunItem.rarity, gunItem.key) as Item,
-          npcId: null,
-        });
-      }
-      return socket.emit("message", {
-        from: player?.profile?.userName,
-        type: "chat",
-        message: args.message,
-      });
+      const gun = ItemBuilder.buildItem(gunItem.type, gunItem.rarity, gunItem.key) as Item;
+      spawnLoot(world, player?.roomName, { x: player?.x, y: player?.y, item: gun, npcId: null });
+      return cmdInfo(`Dropped ${itemLabel(gun)}.`);
     }
   }
 }
