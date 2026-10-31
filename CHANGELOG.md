@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.0](https://github.com/VesperLabs/aether/compare/v0.4.0...v0.5.0) (2026-10-31)
+
+
+### Features
+
+* **wiki:** mobile layout with bottom tab bar and parchment menu ([#62](https://github.com/VesperLabs/aether/issues/62)) ([5bd9f3e](https://github.com/VesperLabs/aether/commit/5bd9f3ed1b2eaf6fa147274c622c8efcbf6738fa))
+* **wiki:** player cards with a menu drawer, and faster player renders ([#63](https://github.com/VesperLabs/aether/issues/63)) ([abc7b4a](https://github.com/VesperLabs/aether/commit/abc7b4a20ef4e7164002ba29983f62f5bfba6c59))
+
 ## [0.4.0](https://github.com/VesperLabs/aether/compare/v0.3.0...v0.4.0) (2026-10-31)
 
 
