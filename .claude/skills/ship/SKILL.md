@@ -1,11 +1,11 @@
 ---
 name: ship
-description: Ship the current work as a PR that auto-merges into main when CI passes. Use when the user says ship, send it, open a PR, or is done with a task.
+description: Ship the current work as a PR for the user to review and merge. Use when the user says ship, send it, open a PR, or is done with a task.
 ---
 
 # Ship
 
-Take the current work from uncommitted changes to an auto-merging PR. Stop and report if any step fails and you can't fix it.
+Take the current work from uncommitted changes to an open PR. Never merge it; the user reviews and merges it themselves. Stop and report if any step fails and you can't fix it.
 
 1. **Branch.** If on `main`, create a branch named `<type>/<short-kebab-topic>` (e.g. `fix/loot-roll`). Worktree sessions are already on their own branch.
 2. **Check.** Run `npm run check`. Fix any failures (run `npm run format` for formatting, never prettier).
@@ -13,8 +13,7 @@ Take the current work from uncommitted changes to an auto-merging PR. Stop and r
 4. **Sync.** Run `git fetch origin && git rebase origin/main`. Resolve conflicts by keeping both sides' intent; read both versions, don't just pick one. Re-run `npm run check` if the rebase changed anything.
 5. **Push.** `git push -u origin HEAD` (use `--force-with-lease` after a rebase of an already-pushed branch).
 6. **PR.** If no PR exists for the branch, run `gh pr create --fill --base main`. The PR title becomes the squash commit on main, so it must be a conventional commit; fix it with `gh pr edit --title` if needed.
-7. **Auto-merge.** `gh pr merge --auto --squash`. GitHub deletes the remote branch on merge.
-8. **Clean up.** If in a worktree, leave it and remove it (the branch is safe on the remote). Delete the local branch with `git branch -D`.
-9. **Report.** Give the PR URL in one line. CI merges it; you don't need to wait.
+7. **Clean up.** If in a worktree, leave it and remove it (the branch is safe on the remote). Delete the local branch with `git branch -D`.
+8. **Report.** Give the PR URL in one line.
 
-If the user says "ship and wait", watch with `gh pr checks --watch` before cleaning up. If checks fail, fix the cause, push again, and repeat. If a PR fails after cleanup, recreate the worktree from the remote branch to fix it.
+If the user says "ship and wait", watch with `gh pr checks --watch` before cleaning up. If checks fail, fix the cause, push again, and repeat. If CI fails or the user asks for changes after cleanup, recreate the worktree from the remote branch to fix it.
