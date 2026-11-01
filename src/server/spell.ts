@@ -214,10 +214,12 @@ export class Spell {
       direction: this.direction,
       isMeleeAttack: this.isMeleeAttack,
     });
+    if (hits.length === 0) return;
+    this.hitIds = [...new Set([...this.hitIds, ...hits])];
+    /* Everyone hit this tick lands together, so their drains add up into one total. Without an
+     * ability slot it is an attack. */
+    this.caster.doHit(hits, this.abilitySlot);
     for (const id of hits) {
-      this.hitIds = [...new Set([...this.hitIds, id])];
-      // One hit at a time; without an ability slot it is an attack.
-      this.caster.doHit([id], this.abilitySlot);
       const victim = victimShapes.find((v) => v.id === id);
       if (DEBUG_HITS && shape && victim) {
         world.events.emit("spellHitShapes", {
