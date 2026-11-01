@@ -106,3 +106,29 @@ export function steerWithSeparation(base: Velocity, push: Velocity, pushSpeed: n
   if (length === 0 || speed === 0) return base;
   return { vx: (vx / length) * speed, vy: (vy / length) * speed };
 }
+
+/**
+ * Sidesteps around `target` at `speed`, drifting back toward `distance` from it, and switches
+ * sides when `isBlocked` says a step that way is blocked. Stops if both sides are blocked.
+ */
+export function strafeAround(
+  self: Point,
+  target: Point,
+  { clockwise, distance, speed }: { clockwise: boolean; distance: number; speed: number },
+  isBlocked: (velocity: Velocity) => boolean,
+): { velocity: Velocity; clockwise: boolean } {
+  const toTarget = Math.atan2(target.y - self.y, target.x - self.x);
+  // Positive when too far: lean in. Negative when too close: lean out. Capped at 45 degrees.
+  const drift = Math.max(
+    -1,
+    Math.min(1, (Math.hypot(target.x - self.x, target.y - self.y) - distance) / (distance / 4)),
+  );
+  const around = (side: boolean) => {
+    const angle = toTarget + (side ? 1 : -1) * (Math.PI / 2 - (drift * Math.PI) / 4);
+    return { vx: speed * Math.cos(angle), vy: speed * Math.sin(angle) };
+  };
+  let side = clockwise;
+  if (isBlocked(around(side))) side = !side;
+  const velocity = isBlocked(around(side)) ? { vx: 0, vy: 0 } : around(side);
+  return { velocity, clockwise: side };
+}
