@@ -210,19 +210,22 @@ const earth: ElementEffect = {
 };
 
 const holy: ElementEffect = {
-  // A slow, calm breath of white-gold
+  // Calm and solid: pure white all the way round, breathing gently brighter and dimmer
   outline: (time, _side, seed) => {
-    const wave = (Math.sin(time / 600 + seed) + 1) / 2;
-    return { color: lerpColor(0xffe07a, 0xfffbe8, wave), alpha: 0.45 + wave * 0.45 };
+    const breath = (Math.sin(time / 900 + seed) + 1) / 2;
+    return { color: 0xffffff, alpha: 0.75 + breath * 0.25 };
   },
-  rate: 6,
+  rate: 10,
+  from: "top",
   particles: {
-    // Twinkles that hang near the blade and rise a little as they fade
-    lifespan: { min: 600, max: 1000 },
-    speedX: { min: -2, max: 2 },
-    speedY: { min: -8, max: -3 },
-    tints: [0xffffff, 0xfff2b0, 0xffe07a],
-    alpha: { start: 1, end: 0 },
+    // Soft motes that float straight up off the blade like dust in a sunbeam, shrinking as they go
+    lifespan: { min: 900, max: 1500 },
+    speedX: { min: -0.6, max: 0.6 },
+    speedY: { min: -7, max: -4 },
+    gravityY: -3,
+    scale: { start: 2, end: 1 },
+    colors: [0xffffff, 0xffffff, 0xf2f5ff],
+    alpha: { start: 0.9, end: 0 },
     additive: true,
   },
 };
@@ -238,7 +241,7 @@ export const ELEMENT_SWING_COLORS: Record<string, number> = {
   water: 0x6ab8ff,
   light: 0xfff07a,
   earth: 0xa8b860,
-  holy: 0xfff2c8,
+  holy: 0xf8faff,
 };
 
 /** Which of a weapon's `count` elements has its turn at `time`: one shows at a time. */

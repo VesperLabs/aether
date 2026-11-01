@@ -89,6 +89,21 @@ export const weaponSpecial = {
         maxWaterDamage: 2,
       },
     },
+    dawnspear: {
+      ilvl: 3,
+      base: "spear",
+      name: "Dawnspear",
+      flavor: "Its point catches the sunrise and never lets it go.",
+      texture: "weapon-spear",
+      tint: "0xFFFBEE",
+      slot: "hands",
+      stats: {
+        critChance: [5, 10],
+        minHolyDamage: 1,
+        maxHolyDamage: 3,
+        lightResistance: [10, 15],
+      },
+    },
     foxBlade: {
       ilvl: 2,
       base: "scimitar",

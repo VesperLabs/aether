@@ -78,6 +78,10 @@ export const MenuStats = memo(
             <Text>
               {stats?.minEarthDamage} - {stats?.maxEarthDamage}
             </Text>
+            <Text>Holy Damage</Text>
+            <Text>
+              {stats?.minHolyDamage} - {stats?.maxHolyDamage}
+            </Text>
           </Grid>
           <Grid sx={COLUMN_STYLES}>
             <Text>Spell Power</Text>

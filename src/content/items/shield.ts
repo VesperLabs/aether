@@ -129,5 +129,21 @@ export const shieldItems = {
         defense: [20, 25],
       },
     },
+    dawnwall: {
+      ilvl: 3,
+      name: "Dawnwall",
+      flavor: "A tower of gilded oak. The first light of morning still burns on its face.",
+      base: "towerShield",
+      texture: "shield-tower",
+      tint: "0xFFFBEE",
+      slot: "hands",
+      stats: {
+        blockChance: 20,
+        lightResistance: [10, 15],
+        vitality: [3, 5],
+        regenHp: [2, 3],
+      },
+      triggers: [{ event: "onHurt", type: "buff", name: "aureole", level: 1, chance: 5 }],
+    },
   },
 } as const satisfies ItemRarityTable;

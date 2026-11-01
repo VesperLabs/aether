@@ -9,6 +9,7 @@ import {
   type Hand,
 } from "@/rules/combat";
 import { isDodgeInvulnerable } from "@/rules/movement";
+import { isPartyMember } from "@/rules/party";
 import { rollSpellCrit, rollSpellDamage, type getAbilityDetails } from "@/rules/spells";
 import type { ServerCharacter } from "./character";
 
@@ -28,6 +29,16 @@ const rng = () => Math.random();
 function cannotBeHit(victim: ServerCharacter) {
   const now = victim.world.now();
   return isDodgeInvulnerable(victim.state, now) || isInStealthGrace(victim.state, now);
+}
+
+/** Self, a party member, or another NPC: the side holy heals instead of hurts. */
+function isAlly(attacker: ServerCharacter, victim: ServerCharacter) {
+  if (attacker === victim) return true;
+  if (attacker.kind !== "player" || victim.kind !== "player") {
+    return attacker.kind === victim.kind;
+  }
+  const { partyId } = attacker as ServerCharacter & { partyId?: string | null };
+  return isPartyMember(attacker.world.partyState, partyId, victim.id);
 }
 
 export function applyElementalDamage(eleDamages: ElementalDamages, victim: ServerCharacter) {
@@ -88,7 +99,8 @@ export function applySpellDamage(
   eleDamage = crit.eleDamage;
   holyDamage = crit.holyDamage;
 
-  if (Math.abs(holyDamage) > 0) {
+  /* Holy heals allies; on enemies it hurts like any other element (ignoring resistances) */
+  if (holyDamage > 0 && isAlly(attacker, victim)) {
     victim.modifyStat("hp", holyDamage);
     hits.push({
       type: "hp",
@@ -98,6 +110,9 @@ export function applySpellDamage(
       to: victim.id,
       isCritical,
     });
+  } else if (holyDamage > 0) {
+    eleDamage += holyDamage;
+    elements.push("holy");
   }
   if (Math.abs(eleDamage) > 0) {
     victim.modifyStat("hp", -eleDamage);

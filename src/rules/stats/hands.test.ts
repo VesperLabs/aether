@@ -49,6 +49,12 @@ describe("calculateStats hands", () => {
     expect(shielded.attackDelay).toBe(bare.attackDelay + 60);
   });
 
+  it("adds a shield's damage to the weapon's swings", () => {
+    const holyShield = { type: "shield", stats: { minHolyDamage: 1, maxHolyDamage: 2 } };
+    const { stats } = calculateStats(rogue({ handRight: axe, handLeft: holyShield }));
+    expect([stats.minHolyDamage, stats.maxHolyDamage]).toEqual([1, 2]);
+  });
+
   it("only blocks with a shield", () => {
     expect(calculateStats(rogue({ handRight: axe, ring1: ring })).stats.blockChance).toBe(0);
     expect(calculateStats(rogue({ handLeft: shield, ring1: ring })).stats.blockChance).toBe(15);
