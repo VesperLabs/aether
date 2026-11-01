@@ -140,6 +140,22 @@ export const weaponSpecial = {
         critChance: 20,
       },
     },
+    secondWind: {
+      ilvl: 3,
+      base: "scimitar",
+      name: "Second Wind",
+      flavor: "Each cut leaves them gasping, and you breathing easy.",
+      texture: "weapon-shamshir",
+      tint: "0xFFEE99",
+      slot: "hands",
+      stats: {
+        minDamage: 2,
+        maxDamage: 3,
+        dexterity: [3, 5],
+        critChance: [8, 12],
+        spSteal: [12, 18],
+      },
+    },
     melonBasher: {
       ilvl: 2,
       base: "club",
