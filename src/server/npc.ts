@@ -32,7 +32,7 @@ import {
   type Rng,
 } from "@/rules/world";
 import { getRoomIndex } from "./room-index";
-import { emitNpcWindup, startNpcLunge } from "./npc-attack";
+import { emitNpcWindup, isLunger, startNpcLunge } from "./npc-attack";
 import { isNextToSolidTile, isOutOfMap } from "@/rules/movement";
 
 /** How far a follower looks for its leader. Spawns are up to ~900px apart on the peaks. */
@@ -335,7 +335,7 @@ export class Npc extends Character {
         action,
         castAngle,
         ilvl: 1,
-        ...startNpcLunge(this, target),
+        ...startNpcLunge(this, targetPlayer),
       });
 
     world.events.emit("npcAttacked", {
@@ -360,7 +360,7 @@ export class Npc extends Character {
 
     emitNpcWindup(this, action, targetPlayer.id);
     this.timers.after(action.windupMs, () => {
-      if (this.hasRangedWeapon()) {
+      if (this.hasRangedWeapon() || isLunger(this)) {
         this.faceTarget(targetPlayer);
         direction = `${this.direction}`;
       }

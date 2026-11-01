@@ -33,12 +33,17 @@ interface LungeSource extends Point {
   hasRangedWeapon(): boolean;
 }
 
+/** Melee NPCs whose content says they lunge. */
+export function isLunger(npc: Pick<LungeSource, "attackStyle" | "hasRangedWeapon">) {
+  return npc.attackStyle === "lunge" && !npc.hasRangedWeapon();
+}
+
 /**
- * Starts a lunge at `mark` (where the target stood when the windup began) for melee NPCs that
- * lunge. Returns the spell options that keep the hit on the NPC for the whole dash.
+ * Starts a lunge at `mark` (where the target is as it strikes, so running past during the windup
+ * still gets lunged at) for melee NPCs that lunge. Returns the spell options that keep the hit on the NPC for the whole dash.
  */
 export function startNpcLunge(npc: LungeSource, mark: Point): { followCasterMs?: number } {
-  if (npc.attackStyle !== "lunge" || npc.hasRangedWeapon()) return {};
+  if (!isLunger(npc)) return {};
   npc.state.lungeAt = npc.world.now();
   npc.state.lungeAngle = Math.atan2(mark.y - npc.y, mark.x - npc.x);
   return { followCasterMs: NPC_LUNGE_MS };

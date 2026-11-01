@@ -13,10 +13,6 @@ const RECOIL_MS = 140;
 /** How far a melee attacker steps into the swing, in pixels. */
 const LUNGE_PIXELS = 4;
 const LUNGE_MS = 160;
-/** How far an NPC draws back from its target while winding up, in pixels. */
-const WINDUP_LEAN_PIXELS = 6;
-/** The lean lets go this long before the attack lands, in ms. */
-const WINDUP_RELEASE_MS = 40;
 /** A killed character's corpse pops in from this scale. */
 const CORPSE_POP_SCALE = 0.4;
 const CORPSE_POP_MS = 220;
@@ -78,32 +74,6 @@ export function playAttackLunge(attacker: Player, direction: string) {
   if (!attacker?.scene || attacker.hasRangedWeapon()) return;
   const angle = Phaser.Math.DegToRad(getAngleFromDirection(direction));
   nudgeBody(attacker, angle, LUNGE_PIXELS, LUNGE_MS);
-}
-
-/**
- * Telegraphs an incoming attack or spell: the body draws back from the target for the whole
- * windup, then snaps back as the attack's own lunge plays.
- */
-export function playWindupLean(attacker: Player, target: { x: number; y: number }, ms: number) {
-  if (!attacker?.scene) return;
-  const { rig } = attacker;
-  const angle = Phaser.Math.Angle.Between(target.x, target.y, attacker.x, attacker.y);
-  const dx = Math.cos(angle) * WINDUP_LEAN_PIXELS;
-  const dy = Math.sin(angle) * WINDUP_LEAN_PIXELS;
-  const offset = { t: 0 };
-  let applied = { x: 0, y: 0 };
-  const moveTo = (x: number, y: number) => {
-    rig.setPosition(rig.x + x - applied.x, rig.y + y - applied.y);
-    applied = { x, y };
-  };
-  attacker.scene.tweens.add({
-    targets: offset,
-    t: 1,
-    duration: Math.max(0, ms - WINDUP_RELEASE_MS),
-    ease: "Quad.easeOut",
-    onUpdate: () => moveTo(dx * offset.t, dy * offset.t),
-    onComplete: () => moveTo(0, 0),
-  });
 }
 
 /** A visual flinch, not a knockback: the victim's body jolts away from the attacker. */

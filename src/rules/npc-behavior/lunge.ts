@@ -4,7 +4,7 @@ import { NPC_LUNGE_DISTANCE, NPC_LUNGE_MS, NPC_LUNGE_RECOVERY_MS } from "./const
 export interface LungeState {
   /** When the last lunge started, in ms. */
   lungeAt?: number;
-  /** Which way it is lunging, in radians: at where the target stood when the windup began. */
+  /** Which way it is lunging, in radians: at where the target stood as it struck. */
   lungeAngle?: number;
 }
 

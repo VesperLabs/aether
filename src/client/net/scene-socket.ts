@@ -10,7 +10,8 @@ import type { LootItem } from "@/client/views/loot-item";
 import { netInterp } from "@/client/net/scene-interpolation";
 import type { TickEntity } from "@/client/net/interpolation";
 import { playAudio } from "@/client/audio/play-audio";
-import { playHitImpact, playWindupLean } from "@/client/views/hit-impact";
+import { playHitImpact } from "@/client/views/hit-impact";
+import { playWindupTell } from "@/client/views/windup-tell";
 import { playSpawnDissolve } from "@/client/views/dissolve";
 import {
   addPlayer,
@@ -213,10 +214,10 @@ export function bindSceneSocket(scene: SceneMain) {
     n.doAttack({ count: count as number, direction, castAngle });
   });
 
-  socket.on("npcWindup", ({ id, targetId, windupMs }) => {
+  socket.on("npcWindup", ({ id, kind, targetId, windupMs }) => {
     const n = getNpc(scene, id);
     const target = targetId ? getPlayer(scene, targetId) : undefined;
-    if (n && target) playWindupLean(n, target, windupMs);
+    if (n && target) playWindupTell(n, target, { kind, windupMs });
   });
 
   socket.on("npcCastSpell", ({ id, abilitySlot, castAngle }) => {

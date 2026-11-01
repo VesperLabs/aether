@@ -15,7 +15,7 @@ import {
   type Velocity,
 } from "@/rules/npc-behavior";
 import { NPC_WALL_RADIUS, findNextWaypoint, hasLineOfSight, isOutOfMap } from "@/rules/movement";
-import { getStickyDirection, type Point } from "@/rules/world";
+import { getCharacterDirection, getStickyDirection, type Point } from "@/rules/world";
 
 /** NPCs closer than this push apart while walking, so packs spread out instead of stacking. */
 const NPC_SEPARATION_RADIUS = 20;
@@ -58,6 +58,7 @@ export function performNpcMovement(
       const { vx, vy } = getLungeVelocity(movement.angle);
       npc.vx = vx;
       npc.vy = vy;
+      npc.direction = getCharacterDirection(npc, { x: npc.x + vx, y: npc.y + vy });
       return;
     }
     case "strafe":
