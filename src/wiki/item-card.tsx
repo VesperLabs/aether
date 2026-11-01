@@ -1,6 +1,6 @@
 import { resolveAsset, type ItemDefinition } from "@/content";
 import { buffLines, describeItem, type DescribableItem, type StatLine } from "@/rules/inventory";
-import { Box, Flex, Grid, Icon, Text } from "@/ui";
+import { Box, deriveElements, Flex, Grid, Icon, Text } from "@/ui";
 import type { ReactNode } from "react";
 import { CARD_COLORS, SpriteFace, raceAsset } from "./card-pool";
 import { itemSources } from "./item-sources";
@@ -63,7 +63,15 @@ export const ItemCard = ({ item }: { item: WikiItem }) => {
           }}
         >
           {/* Every item at the same 2× scale, so their real sizes compare. */}
-          {asset && <SpriteFace asset={asset} tint={item.tint} size={64} pixelScale={2} />}
+          {asset && (
+            <SpriteFace
+              asset={asset}
+              tint={item.tint}
+              size={64}
+              pixelScale={2}
+              elements={item.type === "weapon" ? deriveElements(item.stats) : []}
+            />
+          )}
         </Flex>
         <Box sx={{ minWidth: 0 }}>
           <Flex sx={{ alignItems: "center", gap: 2, flexWrap: "wrap" }}>

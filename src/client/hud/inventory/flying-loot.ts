@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { theme } from "@/ui";
+import { ELEMENT_SWING_COLORS, theme } from "@/ui";
 import type { LootFlyDetail } from "@/client/window-events";
 
 /** The element picked-up loot flies into. */
@@ -93,6 +93,28 @@ function flightKeyframes(path: FlightPath, lag = 0, alpha = 1) {
   return frames;
 }
 
+/** The outline's alpha, as hex: see-through like the glowing outline in the world. */
+const OUTLINE_ALPHA = "70";
+
+/** A 1-art-pixel outline in the weapon's element colors, as it has in the world. */
+function elementOutline({ elements = [], pixelSize = 1 }: LootFlyDetail) {
+  const colors = elements.map((element) => ELEMENT_SWING_COLORS[element]).filter(Boolean);
+  if (colors.length === 0) return "none";
+  const css = (color: number) => `#${color.toString(16).padStart(6, "0")}`;
+  const offsets = [
+    [0, -1],
+    [1, 0],
+    [0, 1],
+    [-1, 0],
+  ];
+  return offsets
+    .map(([x, y], side) => {
+      const color = css(colors[side % colors.length]);
+      return `drop-shadow(${x * pixelSize}px ${y * pixelSize}px 0 ${color}${OUTLINE_ALPHA})`;
+    })
+    .join(" ");
+}
+
 function spawnImage(detail: LootFlyDetail, opacity: number) {
   const img = document.createElement("img");
   img.src = detail.src;
@@ -106,6 +128,7 @@ function spawnImage(detail: LootFlyDetail, opacity: number) {
     pointerEvents: "none",
     zIndex: String(theme.zIndices.draggable),
     opacity: String(opacity),
+    filter: elementOutline(detail),
     willChange: "transform",
   });
   document.body.appendChild(img);

@@ -8,7 +8,14 @@ import {
   type BuiltItem,
   type ItemDefinition,
 } from "@/content";
-import { assetToCanvas, Box, PlayerRender } from "@/ui";
+import {
+  assetToCanvas,
+  Box,
+  deriveElements,
+  ElementalItemArt,
+  PlayerRender,
+  previewSize,
+} from "@/ui";
 import { useQuery } from "@tanstack/react-query";
 import { useLayoutEffect, useMemo, useState, type ReactNode, type SyntheticEvent } from "react";
 import { fetchPlayers, type PlayersQueryKey } from "./api";
@@ -60,25 +67,36 @@ export const SpriteFace = ({
   tint,
   size = 80,
   pixelScale,
+  elements = [],
 }: {
   asset: AssetDefinition;
   tint?: string;
   size?: number;
   /** Draw at this exact scale instead of filling `size`, so sprites in a list share one pixel size. */
   pixelScale?: number;
+  /** A weapon's elements: drawn with the same moving outline and particles as in the game. */
+  elements?: string[];
 }) => {
   const [imageData, setImageData] = useState<string>();
   const [natural, setNatural] = useState<{ width: number; height: number }>();
   useLayoutEffect(() => {
     assetToCanvas({ asset, tint, setImageData });
   }, [asset, tint]);
-  if (!imageData) return null;
 
   /* Pixel art only stays even at whole-number scales: use the largest that fits the box. A sprite
      bigger than the box is shrunk smoothly instead, since crisp pixels would drop rows. */
-  const longest = natural ? Math.max(natural.width, natural.height) : size;
-  const fitted = Math.floor(size / longest);
-  const scale = longest > size ? size / longest : Math.min(pixelScale ?? fitted, fitted);
+  const fit = (art?: { width: number; height: number }) => {
+    const longest = art ? Math.max(art.width, art.height) : size;
+    const fitted = Math.floor(size / longest);
+    return longest > size ? size / longest : Math.min(pixelScale ?? fitted, fitted);
+  };
+  const elementalScale = fit(previewSize(asset));
+  if (elements.length > 0 && elementalScale >= 1)
+    return (
+      <ElementalItemArt asset={asset} tint={tint} elements={elements} scale={elementalScale} />
+    );
+  if (!imageData) return null;
+  const scale = fit(natural);
   return (
     <Box
       as="img"
@@ -152,7 +170,14 @@ const ITEM_CARDS: FeaturedCard[] = Object.entries(listedItems).flatMap(([type, b
               info: item.flavor ?? "",
               href: "/items",
               color: CARD_COLORS[rarity] ?? CARD_COLORS.common,
-              art: () => <SpriteFace asset={asset} tint={item.tint} size={ITEM_SIZE} />,
+              art: () => (
+                <SpriteFace
+                  asset={asset}
+                  tint={item.tint}
+                  size={ITEM_SIZE}
+                  elements={type === "weapon" ? deriveElements(item.stats) : []}
+                />
+              ),
             },
           ];
         }),

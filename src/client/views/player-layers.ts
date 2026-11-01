@@ -14,7 +14,7 @@ import { WindupRing } from "./windup-ring";
 import { Bar } from "./bar";
 import { WeaponSprite } from "./weapon-sprite";
 import { BuffRack } from "./buff-rack";
-import { deriveElements } from "./weapon-elements";
+import { deriveElements } from "@/ui/item/weapon-elements";
 
 const { Sprite, BitmapText, Container } = Phaser.GameObjects;
 const BLANK_TEXTURE = "human-blank";

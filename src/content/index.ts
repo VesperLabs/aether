@@ -8,6 +8,7 @@ export {
   WEAPON_TIPS,
   getMeleeRange,
   getWeaponLength,
+  getPreviewGrip,
   getWeaponTip,
 } from "./assets/weapon-tips";
 export { iconList } from "./assets/icon-list";
