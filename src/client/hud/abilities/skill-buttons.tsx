@@ -3,7 +3,7 @@ import type { Cooldown } from "@/client/hud/app/context";
 import { CooldownTimer } from "./cooldown-timer";
 import { canAffordCosts } from "@/rules/combat";
 import { SkillButton } from "./skill-button";
-import { useNextAttackSpCost } from "./use-next-attack-sp-cost";
+import { useNextAttack } from "./use-next-attack-sp-cost";
 import { DODGE_SP_COST } from "@/rules/movement";
 import { useAppContext } from "@/client/hud/app/context";
 import { memo } from "react";
@@ -12,7 +12,7 @@ import { arePropsEqualWithKeys } from "@/ui";
 export const SkillButtons = memo(
   ({ cooldowns }: { cooldowns: Record<string, Cooldown> }) => {
     const { showButtonChat, hero } = useAppContext();
-    const attackSpCost = useNextAttackSpCost(hero);
+    const { hand: attackHand, spCost: attackSpCost } = useNextAttack(hero);
 
     return (
       <Flex
@@ -56,6 +56,7 @@ export const SkillButtons = memo(
           keyboardKey="SPACE"
           costs={{ sp: attackSpCost }}
           disabled={!canAffordCosts(hero?.stats, { sp: attackSpCost })}
+          sx={{ "& > .icon": { transform: attackHand === "handLeft" ? "scaleX(-1)" : "none" } }}
         >
           <CooldownTimer cooldown={cooldowns["attack"]} />
         </SkillButton>

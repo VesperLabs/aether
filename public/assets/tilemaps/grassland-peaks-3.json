@@ -601,6 +601,12 @@
                  "id":110,
                  "name":"wolf",
                  "point":true,
+                 "properties":[
+                        {
+                         "name":"leader",
+                         "type":"string",
+                         "value":"whiteFang"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -613,6 +619,12 @@
                  "id":111,
                  "name":"wolf",
                  "point":true,
+                 "properties":[
+                        {
+                         "name":"leader",
+                         "type":"string",
+                         "value":"whiteFang"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,

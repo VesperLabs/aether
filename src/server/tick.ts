@@ -13,6 +13,7 @@ import { SNAPSHOT_KEYFRAME_INTERVAL } from "@/network";
 import { getBuffRoomState, getTickRoomState } from "@/server/net/room-sync";
 import { updateRoomLoot } from "./loot-adapter";
 import { expireSpells } from "./spell-adapter";
+import { indexRooms } from "./room-index";
 
 /** A long stall (debugger, GC) must not teleport things across the map. */
 const MAX_STEP_MS = 100;
@@ -36,9 +37,9 @@ const moveSpells: System<ServerWorld> = (world, { delta }) => {
 };
 
 /** Runs the per-tick logic of every player, NPC and spell (AI, regen, buffs, collisions). */
-const updateEntities: System<ServerWorld> = (world, { time, delta }) => {
+const updateEntities: System<ServerWorld> = (world, { time, delta, now }) => {
   for (const player of Object.values(world.players)) player.update?.(time, delta);
-  for (const npc of Object.values(world.npcs)) npc.update?.(time, delta);
+  for (const npc of Object.values(world.npcs)) npc.update?.(time, delta, now);
   for (const spell of Object.values(world.spells)) spell.update();
 };
 
@@ -94,6 +95,7 @@ const updateRooms: System<ServerWorld> = (world: ServerWorld, _frame: Frame) => 
 export const serverSystems: Array<System<ServerWorld>> = [
   moveNpcs,
   moveSpells,
+  indexRooms,
   updateEntities,
   updateRooms,
 ];

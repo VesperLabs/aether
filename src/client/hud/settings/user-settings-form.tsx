@@ -5,6 +5,7 @@ import { isMobile } from "@/ui";
 import { useAppContext } from "@/client/hud/app/context";
 import { TextDivider } from "@/ui";
 import { canUseVideoChat } from "@/client/hud/video/video-support";
+import { usePersistSetting } from "./use-persist-setting";
 
 /**
  * Shown from the in-game settings modal only. `heroInit` loads values from the server;
@@ -15,16 +16,7 @@ export const UserSettingsForm = () => {
   const { showMinimap, playMusic, videoChat, charLevels } = userSettings ?? {};
   const videoChatAllowed = canUseVideoChat();
 
-  const persistSetting = (name: keyof UserSettings, value: boolean) => {
-    setUserSettings((prev) => ({
-      ...DEFAULT_USER_SETTINGS,
-      ...(prev ?? {}),
-      [name]: value,
-    }));
-    if (isLoggedIn) {
-      socket.emit("updateUserSetting", { name, value });
-    }
-  };
+  const persistSetting = usePersistSetting();
 
   useEffect(() => {
     if (!videoChatAllowed && videoChat) {

@@ -9,6 +9,7 @@ import { ModalLogin } from "@/client/hud/auth/modal-login";
 import { ModalSign } from "@/client/hud/menu/modal-sign";
 import { ModalError } from "@/client/hud/menu/modal-error";
 import { MenuBar } from "@/client/hud/menu/menu-bar";
+import { MusicPlayer } from "@/client/hud/music/music-player";
 import { ModalHome } from "@/client/hud/shop/modal-home";
 import { ThemeUIProvider, Box, useViewportSizeEffect, Modal, ZoomProvider } from "@/ui";
 import { getHudZoom } from "./hud-zoom";
@@ -359,6 +360,7 @@ export function App({ socket, peer, debug, game }: AppProps) {
               <MenuGlobalKeys />
               <MenuHud />
               <MenuBar />
+              <MusicPlayer />
               <FlyingLoot />
             </Box>
           )}

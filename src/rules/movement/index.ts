@@ -2,6 +2,8 @@ export {
   COLLIDE_LAYER,
   buildTileGrid,
   getObjectProperty,
+  isNextToSolidTile,
+  isOutOfMap,
   isSolidTile,
   readTileMap,
   worldToTileX,
@@ -20,6 +22,7 @@ export {
   shapesOverlap,
 } from "./collision";
 export type { Bounds, Box, Circle, MoveResult, Shape } from "./collision";
+export { hasLineOfSight } from "./line-of-sight";
 export { createPathfinder, findNextWaypoint } from "./pathfinding";
 export type { Pathfinder } from "./pathfinding";
 export { NPC_WALL_RADIUS, moveBodyFreely, moveBodyThroughMap } from "./system";

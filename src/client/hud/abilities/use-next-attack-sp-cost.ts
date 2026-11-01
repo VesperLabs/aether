@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { getAttackSpCost, getNextAttackCount } from "@/rules/combat";
+import { getAttackSpCost, getNextAttackCount, type Hand } from "@/rules/combat";
 import { filterVisibleEquipment } from "@/rules/character";
 import type { HudCharacter } from "@/client/hud/app/context";
 
-/** SP the hero's next swing costs: dual-wielders alternate hands, each with its own cost. */
-export function useNextAttackSpCost(hero: HudCharacter | null | undefined) {
+/** The hero's next swing: dual-wielders alternate hands, each with its own SP cost. */
+export function useNextAttack(hero: HudCharacter | null | undefined) {
   const [lastAttackCount, setLastAttackCount] = useState<number>();
 
   useEffect(() => {
@@ -18,5 +18,15 @@ export function useNextAttackSpCost(hero: HudCharacter | null | undefined) {
     profile: hero?.profile ?? {},
     visibleEquipment,
   });
-  return getAttackSpCost(visibleEquipment, count);
+  /* Count 1 is the right hand, or the left when only the left holds something */
+  const hand: Hand =
+    count === 2 || (!visibleEquipment?.handRight && visibleEquipment?.handLeft)
+      ? "handLeft"
+      : "handRight";
+  return { hand, spCost: getAttackSpCost(visibleEquipment, count) };
+}
+
+/** SP the hero's next swing costs. */
+export function useNextAttackSpCost(hero: HudCharacter | null | undefined) {
+  return useNextAttack(hero).spCost;
 }

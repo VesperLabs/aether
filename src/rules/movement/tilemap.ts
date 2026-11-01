@@ -122,3 +122,22 @@ export function isSolidTile(grid: TileGrid, tileX: number, tileY: number): boole
 
 export const worldToTileX = (grid: TileGrid, x: number) => Math.floor(x / grid.tileWidth);
 export const worldToTileY = (grid: TileGrid, y: number) => Math.floor(y / grid.tileHeight);
+
+/** Is any of the eight tiles around the one at world point (x, y) solid? */
+export function isNextToSolidTile(grid: TileGrid, x: number, y: number): boolean {
+  const tileX = worldToTileX(grid, x);
+  const tileY = worldToTileY(grid, y);
+  for (let dx = -1; dx <= 1; dx++) {
+    for (let dy = -1; dy <= 1; dy++) {
+      if (dx === 0 && dy === 0) continue;
+      if (isSolidTile(grid, tileX + dx, tileY + dy)) return true;
+    }
+  }
+  return false;
+}
+
+/** Is the world point (x, y) off the map or inside a solid tile? */
+export function isOutOfMap(map: TileMap, x: number, y: number): boolean {
+  if (x < 0 || y < 0 || x >= map.widthInPixels || y >= map.heightInPixels) return true;
+  return isSolidTile(map.grid, worldToTileX(map.grid, x), worldToTileY(map.grid, y));
+}

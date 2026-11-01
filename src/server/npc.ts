@@ -1,3 +1,4 @@
+import type { MobBehavior } from "@/content";
 import type { AbilitySlot } from "@/rules/spells";
 import { ServerCharacter as Character, type CharacterArgs } from "./character";
 import type { ServerWorld } from "./server-world";
@@ -7,17 +8,34 @@ import { createSpell } from "./spell-adapter";
 import { buildNpcBehaviorInput } from "./npc-behavior-adapter";
 import { buildEquipment, buildShop, type ItemRecipe } from "./npc-build";
 import {
+  addThreat,
   checkInRange,
+  decayThreat,
   decideNpcAction,
-  decideTalkingEnded,
+  pickThreatTarget,
+  pruneThreat,
   shouldRespawn,
   type NpcAction,
   type NpcAbility,
   type NpcDecision,
+  type ThreatTable,
 } from "@/rules/npc-behavior";
+import { performNpcMovement } from "./npc-movement";
 import { canHitPlayer } from "@/rules/spells";
-import { createTimers, entitiesInRoom, getCharacterDirection } from "@/rules/world";
-import { findNextWaypoint, isSolidTile, worldToTileX, worldToTileY } from "@/rules/movement";
+import { aimNpcShot } from "./npc-aim";
+import {
+  createRng,
+  createTimers,
+  entitiesInRoom,
+  getCharacterDirection,
+  seedFromString,
+  type Rng,
+} from "@/rules/world";
+import { getRoomIndex } from "./room-index";
+import { isNextToSolidTile, isOutOfMap } from "@/rules/movement";
+
+/** How far a follower looks for its leader. Spawns are up to ~900px apart on the peaks. */
+const LEADER_SEARCH_RADIUS = 1000;
 
 /** An NPC as the content tables define it, before it is placed in a world. */
 // Legacy: the keeper and nasty tables have different shapes; type them once they share a base.
@@ -32,6 +50,7 @@ type NpcArgs = CharacterArgs & {
   keeperData?: KeeperData;
   drops?: Array<Drop>;
   hitBoxSize?: { width: number; height: number };
+  behaviors?: readonly MobBehavior[];
 };
 
 /** What an NPC needs to cast a spell. */
@@ -60,6 +79,16 @@ export class Npc extends Character {
   public keeperData: KeeperData;
   /** Windups and waits, run from `update` so they stop with the world. */
   public timers = createTimers();
+  /** Seeded from the id, so a replayed world rolls the same wanders and buff casts. */
+  public rng: Rng;
+  /** Threat by player socket id; the top player is who it fights. */
+  public threat: ThreatTable = {};
+  /** From content; unset means the default behaviors. */
+  public behaviors?: readonly MobBehavior[];
+  /** Content name of the NPC it follows, from a `leader` map property. */
+  public leaderName?: string;
+  /** The leader's spawn, remembered once found so the pack keeps its home if the leader dies. */
+  public leaderHome?: Point;
   declare name: string;
   /** NPCs never leave their room, so unlike players these are always set. */
   declare room: RoomData;
@@ -83,10 +112,40 @@ export class Npc extends Character {
       shop: buildShop(keeperData?.shop),
       quests: keeperData?.quests?.map((questId: string) => world?.quests?.[questId]),
     };
+    this.rng = createRng(seedFromString(String(this.id ?? this.name)));
+    /* Followers are picked per spawn: a `leader` map property makes this one follow. */
+    this.leaderName = (this.state as { leader?: string }).leader;
+    this.behaviors = this.leaderName ? [...(args.behaviors ?? []), "follow"] : args.behaviors;
     this.calculateStats(true);
+  }
+  addThreat(playerSocketId: string, amount: number) {
+    if (this.state.isDead || this.state.isResetting) return;
+    this.threat = addThreat(this.threat, playerSocketId, amount);
+  }
+  threatTargetId() {
+    return pickThreatTarget(this.threat, this.state.lockedPlayerId);
+  }
+  /** The nearest living NPC named `leaderName` in this room, if any. */
+  findLeader() {
+    if (!this.leaderName) return null;
+    const npcs = getRoomIndex(this.world, this.room.name).npcs.near(this, LEADER_SEARCH_RADIUS);
+    let leader: Npc | null = null;
+    let best = Infinity;
+    for (const npc of npcs) {
+      if (npc === this || npc.name !== this.leaderName) continue;
+      const distance = Math.hypot(npc.x - this.x, npc.y - this.y);
+      if (distance < best) [leader, best] = [npc, distance];
+    }
+    if (leader) this.leaderHome = leader.startingCoords;
+    return leader;
+  }
+  /** Where it leashes to and walks back to. */
+  home(): Point {
+    return this.leaderHome ?? this.startingCoords;
   }
   setDead() {
     this.expireBuffs(true);
+    this.threat = {};
     this.state.isDead = true;
     this.state.deadTime = Date.now();
     this.state.bubbleMessage = null;
@@ -107,55 +166,32 @@ export class Npc extends Character {
       this.y = this.startingCoords.y;
       this.calculateStats(true);
       this.state.isDead = false;
-      this.world.io.to(this.room.name).emit("respawnNpc", {
-        id: this?.id,
+      this.world.events.emit("npcRespawned", {
+        npcId: this.id,
+        roomName: this.room.name,
         x: this.x,
         y: this.y,
-        respawnTime: Date.now(),
+        at: Date.now(),
       });
     }
   }
   checkInRange(target: Point, range: number) {
     return checkInRange(this, target, range);
   }
-  // is the NPC adjacent to a collision tile?
   isNearCollideTile() {
-    const { grid } = this.room.map;
-    const npcTileX = worldToTileX(grid, this.x);
-    const npcTileY = worldToTileY(grid, this.y);
-
-    // All neighboring tiles, including diagonals
-    for (let dx = -1; dx <= 1; dx++) {
-      for (let dy = -1; dy <= 1; dy++) {
-        if (dx === 0 && dy === 0) continue;
-        if (isSolidTile(grid, npcTileX + dx, npcTileY + dy)) return true;
-      }
-    }
-    return false;
+    return isNextToSolidTile(this.room.map.grid, this.x, this.y);
   }
   isOutOfBounds() {
-    const { map } = this.room;
-    const npcTileX = worldToTileX(map.grid, this.x);
-    const npcTileY = worldToTileY(map.grid, this.y);
-    if (
-      this.x >= 0 &&
-      this.y >= 0 &&
-      this.x < map.widthInPixels &&
-      this.y < map.heightInPixels &&
-      !isSolidTile(map.grid, npcTileX, npcTileY)
-    ) {
-      return false;
-    }
-    return true;
+    return isOutOfMap(this.room.map, this.x, this.y);
   }
-  update(time: number, delta: number) {
-    // Destructure relevant properties from 'this'
+  update(time: number, delta: number, now = Date.now()) {
     const { state, room } = this ?? {};
     this.timers.advance(delta);
 
     // skip updates if no one is in the room
-    if (!room || entitiesInRoom(this.world.players, room.name).length === 0) {
+    if (!room || getRoomIndex(this.world, room.name).players.size === 0) {
       this.setLockedPlayerId(null);
+      this.threat = {};
       this.vx = 0;
       this.vy = 0;
       this.stats.hp = this.stats.maxHp; //heal to full
@@ -171,10 +207,18 @@ export class Npc extends Character {
     // Regenerate health points
     this.doRegen();
 
-    const decision = decideNpcAction(buildNpcBehaviorInput(this, time, delta), Math.random);
-    this.applyDecision(decision, delta);
+    this.threat = decayThreat(
+      pruneThreat(this.threat, (id) => {
+        const player = this.world.players[id];
+        return player?.room?.name === room.name && !player.state?.isDead;
+      }),
+      delta,
+    );
+
+    const decision = decideNpcAction(buildNpcBehaviorInput(this, { time, delta, now }), this.rng);
+    this.applyDecision(decision);
   }
-  applyDecision(decision: NpcDecision, delta: number) {
+  applyDecision(decision: NpcDecision) {
     const { state, world } = this;
     if (state.npcAttackReady !== decision.npcAttackReady) {
       state.npcAttackReady = decision.npcAttackReady;
@@ -191,38 +235,27 @@ export class Npc extends Character {
       world?.players?.[decision.expireStealthOfPlayerId]?.expireBuff("stealth");
     }
 
-    this.performMovement(decision.movement, targetPlayer, delta);
-    this.performAction(decision.action, targetPlayer);
-  }
-  performMovement(movement: NpcDecision["movement"], targetPlayer: Player, delta: number) {
-    switch (movement.type) {
-      case "standStill":
-        return this.standStill();
-      case "chase":
-        return movement.pathed
-          ? this.moveTowardPointPathed(targetPlayer)
-          : this.moveTowardPoint(targetPlayer);
-      case "returnToSpawn":
-        return movement.pathed
-          ? this.moveTowardPointPathed(this.startingCoords)
-          : this.moveTowardPoint(this.startingCoords);
-      case "waitAtSpawn":
-        this.timers.after(movement.faceDownAfterMs, () => {
-          this.direction = "down";
-        });
-        return this.standStill();
-      case "talk":
-        return this.checkTalking();
-      case "wander": {
-        const { type: _type, ...change } = movement;
-        Object.assign(this, change);
-        return;
-      }
+    if (decision.behavior !== state.behavior) state.behavior = decision.behavior;
+    if (decision.startReset) {
+      state.isResetting = true;
+      this.threat = {};
     }
+    if (decision.finishReset) {
+      state.isResetting = false;
+      this.stats.hp = this.stats.maxHp;
+    }
+
+    performNpcMovement(this, decision.movement, targetPlayer, this.findLeader());
+    // Winding up a shot or spell: keep facing the target even if movement turned it away
+    if (this.state.isAiming && targetPlayer) this.faceTarget(targetPlayer);
+    this.performAction(decision.action, targetPlayer);
   }
   performAction(action: NpcAction, targetPlayer: Player) {
     if (action.type === "attack") this.intendAttack(action, targetPlayer);
     if (action.type === "cast") this.intendCastSpell(action, targetPlayer);
+  }
+  faceTarget(target: Point) {
+    this.direction = getCharacterDirection(this, target);
   }
   setLockedPlayerId(id: string | null | undefined) {
     // If they are switching targets
@@ -252,20 +285,21 @@ export class Npc extends Character {
         abilitySlot: slot,
       });
 
-    world.io.to(room?.name).emit("npcCastSpell", { id, castAngle, abilitySlot });
+    world.events.emit("npcCast", { npcId: id, roomName: room.name, abilitySlot, castAngle });
   }
   intendCastSpell(action: Extract<NpcAction, { type: "cast" }>, targetPlayer: Player) {
     const { ability, abilitySlot } = action;
     this.state.isAiming = true;
+    if (targetPlayer) this.faceTarget(targetPlayer);
     this.timers.after(action.windupMs, () => {
-      const castAngle = targetPlayer
-        ? Math.atan2(targetPlayer.y - this.y, targetPlayer.x - this.x)
-        : 0;
+      if (targetPlayer) this.faceTarget(targetPlayer);
+      const castAngle = targetPlayer ? aimNpcShot(this, targetPlayer, ability.base as string) : 0;
       this.doCast({ targetPlayer, abilitySlot, ability, castAngle });
       this.state.isAiming = false;
     });
   }
-  doAttack({ target, direction, castAngle }: NpcAttackRequest) {
+  doAttack({ target, direction, castAngle: aimedAngle }: NpcAttackRequest) {
+    let castAngle = aimedAngle;
     const { world, room, id, state } = this ?? {};
     const targetPlayer = world?.players?.[state?.lockedPlayerId] ?? null;
     if (state.isAttacking || state?.isDead) return;
@@ -283,6 +317,8 @@ export class Npc extends Character {
     /* Switch hands if possible */
     const { spellName, action } = this.getAttackActionName({ count });
     this.action = action;
+    // Ranged shots aim from where they spawn, at where the target is now
+    if (this.hasRangedWeapon()) castAngle = aimNpcShot(this, targetPlayer, spellName);
 
     this.dispelBuffsByProperty("dispelBeforeAttack");
 
@@ -297,14 +333,20 @@ export class Npc extends Character {
         ilvl: 1,
       });
 
-    world.io.to(room?.name).emit("npcAttack", { id, count, direction, castAngle });
+    world.events.emit("npcAttacked", {
+      npcId: id,
+      roomName: room.name,
+      count,
+      direction,
+      castAngle,
+    });
   }
   intendAttack(action: Extract<NpcAction, { type: "attack" }>, targetPlayer: Player) {
     this.direction = action.direction;
     this.state.isAiming = true;
 
-    let castAngle = (this.state.lastAngle = action.castAngle);
-    const direction = `${this.direction}`;
+    const castAngle = (this.state.lastAngle = action.castAngle);
+    let direction = `${this.direction}`;
     const target = {
       id: targetPlayer.id,
       x: targetPlayer.x,
@@ -313,49 +355,12 @@ export class Npc extends Character {
 
     this.timers.after(action.windupMs, () => {
       if (this.hasRangedWeapon()) {
-        castAngle = Math.atan2(targetPlayer.y - this.y, targetPlayer.x - this.x);
+        this.faceTarget(targetPlayer);
+        direction = `${this.direction}`;
       }
       this.doAttack({ target, direction, castAngle });
       this.state.isAiming = false;
     });
-  }
-  moveTowardPoint(coords: Coordinate) {
-    const walkSpeed = this.stats.walkSpeed;
-    const angle = Math.atan2(coords.y - this.y, coords.x - this.x);
-    this.vx = walkSpeed * Math.cos(angle);
-    this.vy = walkSpeed * Math.sin(angle);
-    this.direction = getCharacterDirection(this, { x: this?.x + this.vx, y: this.y + this.vy });
-  }
-  moveTowardPointPathed(targetCoords: Coordinate) {
-    const { nextPath } = this ?? {};
-    this.findPath(targetCoords);
-    if (nextPath) {
-      this.moveTowardPoint(nextPath);
-      if (this.checkInRange(nextPath, 1)) {
-        /* Cleared with null; the shared model types it as always set. */
-        this.nextPath = null as unknown as Point;
-      }
-    }
-  }
-  /** Looks up the next tile on the way to the target. Walked towards on the following tick. */
-  findPath(targetCoords: Coordinate) {
-    const next = findNextWaypoint(this.room.pathfinder, this, targetCoords);
-    if (JSON.stringify(next) !== JSON.stringify(this.nextPath)) this.nextPath = next as Point;
-  }
-  standStill() {
-    this.vy = 0;
-    this.vx = 0;
-  }
-  checkTalking() {
-    const world = this.world;
-    this.vy = 0;
-    this.vx = 0;
-
-    const ended = decideTalkingEnded(this, this.talkingIds, (id) => world?.players?.[id]);
-    for (const playerId of ended) {
-      const index = this.talkingIds.indexOf(playerId);
-      if (index !== -1) this.talkingIds.splice(index, 1);
-    }
   }
   doHit(ids: Array<string>, abilitySlot?: AbilitySlot): void {
     const { world, room } = this ?? {};

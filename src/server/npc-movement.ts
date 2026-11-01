@@ -1,0 +1,157 @@
+import type { Npc } from "./npc";
+import type { Player } from "./player";
+import { getRoomIndex } from "./room-index";
+import {
+  checkInRange,
+  decideTalkingEnded,
+  fleeAround,
+  NPC_STRAFE_SPEED_RATIO,
+  seek,
+  separate,
+  steerWithSeparation,
+  type NpcMovement,
+  type Velocity,
+} from "@/rules/npc-behavior";
+import { NPC_WALL_RADIUS, findNextWaypoint, hasLineOfSight, isOutOfMap } from "@/rules/movement";
+import { getStickyDirection, type Point } from "@/rules/world";
+
+/** NPCs closer than this push apart while walking, so packs spread out instead of stacking. */
+const NPC_SEPARATION_RADIUS = 20;
+/** How hard that push steers, as a share of walk speed. */
+const NPC_SEPARATION_STRENGTH = 0.6;
+
+/** Carries out the movement the behavior rules chose, as velocity and facing on the NPC. */
+export function performNpcMovement(
+  npc: Npc,
+  movement: NpcMovement,
+  targetPlayer: Player | undefined,
+  leader: Point | null | undefined,
+) {
+  switch (movement.type) {
+    case "standStill":
+      return standStill(npc);
+    case "chase":
+      if (!targetPlayer) return standStill(npc);
+      return movement.pathed ? walkToPathed(npc, targetPlayer) : walkTo(npc, targetPlayer);
+    case "returnToSpawn":
+      return movement.pathed ? walkToPathed(npc, npc.home()) : walkTo(npc, npc.home());
+    case "follow":
+      if (!leader) return standStill(npc);
+      return movement.pathed ? walkToPathed(npc, leader) : walkTo(npc, leader);
+    case "flee":
+      if (!targetPlayer) return standStill(npc);
+      return steer(
+        npc,
+        fleeAround(
+          npc,
+          targetPlayer,
+          npc.stats.walkSpeed * (movement.speedRatio ?? 1),
+          (point) => isOutOfMap(npc.room.map, point.x, point.y),
+          { vx: npc.vx, vy: npc.vy },
+          NPC_WALL_RADIUS,
+        ),
+      );
+    case "strafe":
+      if (!targetPlayer) return standStill(npc);
+      return strafe(npc, targetPlayer, movement);
+    case "waitAtSpawn":
+      npc.timers.after(movement.faceDownAfterMs, () => {
+        npc.direction = "down";
+      });
+      return standStill(npc);
+    case "talk":
+      return checkTalking(npc);
+    case "wander": {
+      const { type: _type, nextWanderAt, ...change } = movement;
+      if (nextWanderAt !== undefined) npc.state.nextWanderAt = nextWanderAt;
+      Object.assign(npc, change);
+      return;
+    }
+  }
+}
+
+/** Sets `base` as the velocity, pushed apart from nearby NPCs, and faces the way it moves. */
+function steer(npc: Npc, base: Velocity) {
+  const neighbors = getRoomIndex(npc.world, npc.room.name).npcs.near(npc, NPC_SEPARATION_RADIUS);
+  const { vx, vy } = steerWithSeparation(
+    base,
+    separate(npc, neighbors, NPC_SEPARATION_RADIUS),
+    npc.stats.walkSpeed * NPC_SEPARATION_STRENGTH,
+  );
+  npc.vx = vx;
+  npc.vy = vy;
+  npc.direction = getStickyDirection(npc.direction, npc, { x: npc.x + vx, y: npc.y + vy });
+}
+
+/**
+ * Sidesteps around `target`, facing it, drifting back toward `distance` from it so it stays in
+ * range, and switches sides when a wall would block its path or its shot.
+ */
+function strafe(
+  npc: Npc,
+  target: Point,
+  {
+    clockwise,
+    distance,
+    nextStrafeAt,
+  }: { clockwise: boolean; distance: number; nextStrafeAt?: number },
+) {
+  if (nextStrafeAt !== undefined) npc.state.nextStrafeAt = nextStrafeAt;
+  const speed = npc.stats.walkSpeed * NPC_STRAFE_SPEED_RATIO;
+  const toTarget = Math.atan2(target.y - npc.y, target.x - npc.x);
+  // Positive when too far: lean in. Negative when too close: lean out. Capped at 45 degrees.
+  const drift = Math.max(
+    -1,
+    Math.min(1, (Math.hypot(target.x - npc.x, target.y - npc.y) - distance) / (distance / 4)),
+  );
+  const around = (side: boolean) => {
+    const angle = toTarget + (side ? 1 : -1) * (Math.PI / 2 - (drift * Math.PI) / 4);
+    return { vx: speed * Math.cos(angle), vy: speed * Math.sin(angle) };
+  };
+  // A step into a wall, or one that puts a wall between it and the target, counts as blocked
+  const isBlocked = ({ vx, vy }: Velocity) => {
+    const ahead = (NPC_WALL_RADIUS + 16) / speed;
+    const next = { x: npc.x + vx * ahead, y: npc.y + vy * ahead };
+    return (
+      isOutOfMap(npc.room.map, next.x, next.y) || !hasLineOfSight(npc.room.map.grid, next, target)
+    );
+  };
+  let side = clockwise;
+  if (isBlocked(around(side))) side = !side;
+  npc.state.strafeClockwise = side;
+  steer(npc, isBlocked(around(side)) ? { vx: 0, vy: 0 } : around(side));
+  npc.direction = getStickyDirection(npc.direction, npc, target);
+}
+
+export function walkTo(npc: Npc, coords: Point) {
+  steer(npc, seek(npc, coords, npc.stats.walkSpeed));
+}
+
+/** Walks to the next tile on the way to `target`, found on the tick before. */
+function walkToPathed(npc: Npc, target: Point) {
+  const { nextPath } = npc;
+  const next = findNextWaypoint(npc.room.pathfinder, npc, target);
+  if (next?.x !== nextPath?.x || next?.y !== nextPath?.y) npc.nextPath = next as Point;
+  if (nextPath) {
+    walkTo(npc, nextPath);
+    if (checkInRange(npc, nextPath, 1)) {
+      /* Cleared with null; the shared model types it as always set. */
+      npc.nextPath = null as unknown as Point;
+    }
+  }
+}
+
+function standStill(npc: Npc) {
+  npc.vx = 0;
+  npc.vy = 0;
+}
+
+/** Stands still for its talkers, and stops talking to anyone who walked off. */
+function checkTalking(npc: Npc) {
+  standStill(npc);
+  const ended = decideTalkingEnded(npc, npc.talkingIds, (id) => npc.world?.players?.[id]);
+  for (const playerId of ended) {
+    const index = npc.talkingIds.indexOf(playerId);
+    if (index !== -1) npc.talkingIds.splice(index, 1);
+  }
+}

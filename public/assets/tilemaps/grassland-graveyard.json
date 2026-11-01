@@ -402,6 +402,12 @@
                  "id":20,
                  "name":"zombie",
                  "point":true,
+                 "properties":[
+                        {
+                         "name":"leader",
+                         "type":"string",
+                         "value":"chonks"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -438,6 +444,12 @@
                  "id":23,
                  "name":"zombie",
                  "point":true,
+                 "properties":[
+                        {
+                         "name":"leader",
+                         "type":"string",
+                         "value":"chonks"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -474,6 +486,12 @@
                  "id":26,
                  "name":"zombie",
                  "point":true,
+                 "properties":[
+                        {
+                         "name":"leader",
+                         "type":"string",
+                         "value":"chonks"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,

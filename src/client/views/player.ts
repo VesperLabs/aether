@@ -54,6 +54,8 @@ interface AttackArgs extends CastArgs {
 
 export class Player extends Character {
   declare scene: SceneMain;
+  /** NPCs only: their opt-in behaviors (`aggressive` and so on). */
+  behaviors?: readonly string[];
   /** Only the hero has a party. */
   party?: PartyMessage | null;
   declare weaponAtlas: WeaponAtlas;
@@ -84,6 +86,7 @@ export class Player extends Character {
   declare talkMenu: Sprite;
   constructor(scene: SceneMain, args: CharacterArgs) {
     super(scene, args);
+    this.behaviors = (args as { behaviors?: readonly string[] }).behaviors;
 
     if (this.hasBuff("stealth")) {
       this.setAlpha(0);

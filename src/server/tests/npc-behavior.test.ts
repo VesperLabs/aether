@@ -73,7 +73,7 @@ describe("npc behavior", () => {
         npc.room?.name === player.roomName &&
         npc.kind === "nasty" &&
         !npc.state.isDead &&
-        npc.state.isAggro,
+        npc.behaviors?.includes("aggressive"),
     );
     expect(mob).toBeTruthy();
     mob.state.isStatic = false;

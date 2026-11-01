@@ -5,10 +5,12 @@ import path from "path";
 import { ILVL_MULTIPLIER, ItemBuilder, QuestBuilder, keepers, mapList, nasties } from "@/content";
 import type { TiledMapJson } from "@/rules/movement";
 import { subscribeLoot, type LootItem } from "@/rules/loot";
+import { subscribeThreat } from "@/rules/npc-behavior";
 import { subscribeQuests } from "@/rules/quests";
 import { npcBaseStats, subscribeStats } from "@/rules/stats";
 import { addRoom, createRoom, createWorld } from "@/rules/world";
 import { spawnLoot } from "./loot-adapter";
+import { subscribeNpcMessages } from "./npc-messages";
 import { Npc, type NpcDefinition } from "./npc";
 import type { GameIo } from "@/network";
 import type { Database } from "./persistence/database";
@@ -70,6 +72,10 @@ export function createServerWorld({ io, db }: { io: GameIo; db: Database }): Ser
   }
   for (const room of Object.values(world.rooms)) spawnNpcs(world, room);
 
+  subscribeNpcMessages(world.events, io);
+  subscribeThreat(world.events, (victimId, attackerSocketId, amount) => {
+    world.npcs[victimId]?.addThreat(attackerSocketId, amount);
+  });
   subscribeStats(world.events, (characterId, amount) => {
     world.players[characterId]?.assignExp(amount);
   });

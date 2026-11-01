@@ -1,4 +1,4 @@
-import { NPC_TALK_RANGE, NPC_WANDER_CHANGE_DELAY, NPC_WANDER_SPEED_DIVISOR } from "./constants";
+import { NPC_TALK_RANGE, NPC_WANDER_CHANGE_MS, NPC_WANDER_SPEED_DIVISOR } from "./constants";
 import { checkInRange, type Body } from "./range";
 
 /** Velocity and facing to set. A missing field is left as it is. */
@@ -9,17 +9,27 @@ export interface WanderChange {
 }
 
 export interface WanderInput {
-  /** The scene time, which paces direction changes. */
+  /** The loop time (ms), which paces direction changes. */
   time: number;
+  /** When to pick the next direction. Unset means now. */
+  nextWanderAt?: number;
   walkSpeed: number;
 }
 
-/** Most ticks keep going (an empty change); every few frames pick a new direction, or stop. */
-export function decideWander({ time, walkSpeed }: WanderInput, rng: () => number): WanderChange {
-  const wanderSpeed = walkSpeed / NPC_WANDER_SPEED_DIVISOR;
+/** A wander change, plus when to make the next one (unset while it keeps going). */
+export type WanderStep = WanderChange & { nextWanderAt?: number };
 
-  if (time % NPC_WANDER_CHANGE_DELAY > 1) return {};
+/** Most ticks keep going (an empty change); every quarter second or so pick a new direction, or stop. */
+export function decideWander(
+  { time, nextWanderAt, walkSpeed }: WanderInput,
+  rng: () => number,
+): WanderStep {
+  if (nextWanderAt !== undefined && time < nextWanderAt) return {};
+  const change = pickWanderChange(walkSpeed / NPC_WANDER_SPEED_DIVISOR, rng);
+  return { ...change, nextWanderAt: time + NPC_WANDER_CHANGE_MS * (0.5 + rng()) };
+}
 
+function pickWanderChange(wanderSpeed: number, rng: () => number): WanderChange {
   const randNumber = Math.floor(rng() * 7 + 1);
   switch (randNumber) {
     case 1:

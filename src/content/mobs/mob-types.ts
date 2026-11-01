@@ -63,10 +63,34 @@ export interface MobBase {
   readonly abilities?: MobAbilities;
 }
 
+/** Ways a mob can move; the game picks the one that fits best each tick. */
+export type MobMovementBehavior =
+  | "chase"
+  | "unstuck"
+  | "guard"
+  | "talk"
+  | "leash"
+  | "wander"
+  | "reset"
+  | "retreat"
+  | "kite"
+  | "follow";
+
+/**
+ * Opt-in behaviors: `aggressive` attacks players on sight (otherwise it only fights back),
+ * `shootsOverWalls` fires across collision (fish in water) instead of moving for a clear shot, `retreat`
+ * runs when badly hurt, `kite` keeps casters and archers at range, `follow` stays near a leader (set per spawn with a
+ * `leader` property on the map object, which turns `follow` on by itself).
+ * The rest are on for every mob already.
+ */
+export type MobBehavior = MobMovementBehavior | "aggressive" | "shootsOverWalls";
+
 export interface NastyDefinition extends MobBase {
   /** A line or two of flavour text shown in the wiki. */
   readonly flavor: string;
-  readonly state?: { readonly isAggro?: boolean; readonly noWorldDrops?: boolean };
+  readonly state?: { readonly noWorldDrops?: boolean };
+  /** Added to the defaults every mob has (chase, wander, leash and so on). */
+  readonly behaviors?: readonly MobBehavior[];
   /** Items this mob can drop when it dies. */
   readonly drops?: readonly ItemDrop[];
 }

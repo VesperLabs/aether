@@ -1,7 +1,8 @@
 import type { Npc } from "./npc";
 import type { Player } from "./player";
-import { entitiesInRoom, nearestTo } from "@/rules/world";
-import type { NpcBehaviorInput, NpcPlayerView } from "@/rules/npc-behavior";
+import { getRoomIndex } from "./room-index";
+import { hasLineOfSight } from "@/rules/movement";
+import { isNpcAggressive, type NpcBehaviorInput, type NpcPlayerView } from "@/rules/npc-behavior";
 
 /** What the behavior rules need to know about a player. */
 const toPlayerView = (player: Player | undefined): NpcPlayerView | null =>
@@ -18,17 +19,20 @@ const toPlayerView = (player: Player | undefined): NpcPlayerView | null =>
     : null;
 
 /** Copies what the NPC behavior rules read from a legacy `Npc` into plain data. */
-export function buildNpcBehaviorInput(npc: Npc, time: number, delta: number): NpcBehaviorInput {
+export function buildNpcBehaviorInput(
+  npc: Npc,
+  frame: { time: number; delta: number; now: number },
+): NpcBehaviorInput {
   const { state, world, room } = npc;
   const lockedPlayer = toPlayerView(world?.players?.[state?.lockedPlayerId as string]);
   const nearestPlayer =
-    state?.isAggro || lockedPlayer
-      ? toPlayerView(nearestTo(entitiesInRoom(world.players, room?.name), npc))
+    isNpcAggressive(npc.behaviors) || lockedPlayer
+      ? toPlayerView(getRoomIndex(world, room.name).players.nearest(npc))
       : null;
   return {
-    now: Date.now(),
-    time,
-    delta,
+    now: frame.now,
+    time: frame.time,
+    delta: frame.delta,
     npc: {
       x: npc.x,
       y: npc.y,
@@ -36,9 +40,11 @@ export function buildNpcBehaviorInput(npc: Npc, time: number, delta: number): Np
       baseLevel: npc.baseStats?.level,
       stats: npc.stats,
       startingCoords: npc.startingCoords,
+      home: npc.home(),
       hasTalkers: npc.talkingIds?.length > 0,
       abilities: npc.abilities,
       buffs: npc.buffs,
+      behaviors: npc.behaviors,
       weapons: {
         handLeft: npc.hasRangedWeaponLeft() ? { range: npc.getWeaponRange("handLeft") } : null,
         handRight: npc.hasRangedWeaponRight() ? { range: npc.getWeaponRange("handRight") } : null,
@@ -48,6 +54,11 @@ export function buildNpcBehaviorInput(npc: Npc, time: number, delta: number): Np
     isStunned: npc.hasBuff("stun"),
     lockedPlayer,
     nearestPlayer,
+    threatTarget: toPlayerView(world?.players?.[npc.threatTargetId() as string]),
+    leader: npc.findLeader(),
+    hasClearShot: npc.behaviors?.includes("shootsOverWalls")
+      ? undefined
+      : (target) => hasLineOfSight(room.map.grid, npc, target),
     isNearCollideTile: npc.isNearCollideTile(),
     isOutOfBounds: npc.isOutOfBounds(),
   };

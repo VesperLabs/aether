@@ -22,8 +22,48 @@ export interface MobKilledEvent {
   y: number;
 }
 
+/** A character lost hp to another one. NPCs gain threat from it. */
+export interface CharacterDamagedEvent {
+  victimId: string;
+  attackerId: string;
+  /** Players are looked up by socket id; unset for NPC attackers. */
+  attackerSocketId?: string;
+  amount: number;
+}
+
+/** An NPC swung at its target. `count` is which hand (1 or 2). */
+export interface NpcAttackedEvent {
+  npcId: string;
+  roomName: string;
+  count: number;
+  direction: string;
+  castAngle: number;
+}
+
+/** An NPC cast the spell in one of its ability slots. */
+export interface NpcCastEvent {
+  npcId: string;
+  roomName: string;
+  abilitySlot: string | number;
+  castAngle: number;
+}
+
+/** A dead NPC came back at its spawn point. */
+export interface NpcRespawnedEvent {
+  npcId: string;
+  roomName: string;
+  x: number;
+  y: number;
+  /** Wall clock time of the respawn. */
+  at: number;
+}
+
 export interface GameEvents {
   mobKilled: MobKilledEvent;
+  characterDamaged: CharacterDamagedEvent;
+  npcAttacked: NpcAttackedEvent;
+  npcCast: NpcCastEvent;
+  npcRespawned: NpcRespawnedEvent;
 }
 
 export type GameEventName = keyof GameEvents;
