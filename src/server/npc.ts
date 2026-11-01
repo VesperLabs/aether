@@ -22,7 +22,7 @@ import {
 } from "@/rules/npc-behavior";
 import { performNpcMovement } from "./npc-movement";
 import { canHitPlayer } from "@/rules/spells";
-import { aimNpcShot } from "./npc-aim";
+import { aimNpcShot } from "@/rules/npc-behavior";
 import {
   createRng,
   createTimers,
