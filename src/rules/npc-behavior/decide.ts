@@ -4,8 +4,8 @@ import { checkCastReady, type LastCast } from "@/rules/spells";
 import { getCharacterDirection, type CardinalDirection } from "@/rules/world";
 import { findSuitableAbility, type NpcAbility } from "./abilities";
 import { decideAggro, isNpcAttackReady, type NpcPlayerView, type NpcSelfView } from "./aggro";
-import { NPC_WARNING_DELAY } from "./constants";
-import { checkInRange, getShouldAttackRange } from "./range";
+import { NPC_HOME_RANGE, NPC_LEASH_RANGE, NPC_WARNING_DELAY } from "./constants";
+import { checkInRange, distanceBetween, getShouldAttackRange } from "./range";
 import type { Body, NpcWeaponRanges } from "./range";
 import type { Rng } from "@/rules/world";
 import {
@@ -26,7 +26,14 @@ export interface NpcBehaviorInput {
   /** Milliseconds since the last tick. */
   delta: number;
   npc: NpcSelfView & {
-    stats?: { level?: number; walkSpeed?: number; attackDelay?: number; castDelay?: number } | null;
+    stats?: {
+      level?: number;
+      walkSpeed?: number;
+      attackDelay?: number;
+      castDelay?: number;
+      hp?: number;
+      maxHp?: number;
+    } | null;
     startingCoords: Body;
     hasTalkers: boolean;
     abilities: Record<string, NpcAbility | null | undefined>;
@@ -48,12 +55,20 @@ export interface NpcBehaviorInput {
     lastCast: LastCast;
     /** Loop time of the next wander direction change. */
     nextWanderAt?: number;
+    /** Leashed and walking home; players are ignored until it gets there. */
+    isResetting?: boolean;
+    /** What it did last tick, which it slightly prefers to keep doing. */
+    behavior?: NpcBehaviorId;
   };
   isStunned: boolean;
   /** The player `lockedPlayerId` points at, if they are still around. */
   lockedPlayer?: NpcPlayerView | null;
   /** The player in the NPC's room nearest to it. Needed when aggro or locked on. */
   nearestPlayer?: NpcPlayerView | null;
+  /** Whoever tops the NPC's threat table, if they are still around. Overrides the locked target. */
+  threatTarget?: NpcPlayerView | null;
+  /** The NPC this one follows, if it has a leader nearby. */
+  leader?: Body | null;
   /** Is the NPC next to a collision tile (so it should path)? */
   isNearCollideTile: boolean;
   /** Is the NPC outside the map or inside a collision tile? */
@@ -68,6 +83,10 @@ export type NpcMovement =
   /** Stand at spawn, facing down after `faceDownAfterMs`, or walk back there. */
   | { type: "waitAtSpawn"; faceDownAfterMs: number }
   | { type: "talk" }
+  /** Run directly away from the target. */
+  | { type: "flee" }
+  /** Walk to the leader. */
+  | { type: "follow"; pathed: boolean }
   | ({ type: "wander" } & WanderStep);
 
 export type NpcAction =
@@ -96,6 +115,12 @@ export interface NpcDecision {
   targetPlayerId?: string;
   movement: NpcMovement;
   action: NpcAction;
+  /** The behavior that chose the movement. */
+  behavior: NpcBehaviorId;
+  /** Pulled past its leash: forget every player and walk home. */
+  startReset?: boolean;
+  /** Home after a reset: heal up and go back to normal. */
+  finishReset?: boolean;
 }
 
 /** A dead mob comes back once its respawn time has passed. */
@@ -118,6 +143,10 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
   let resetAttackTimer = false;
   let bubbleMessage: string | null | undefined;
   let expireStealthOfPlayerId: string | undefined;
+  let behaviorId: NpcBehaviorId = state.behavior ?? "wander";
+  let startReset = false;
+  let finishReset = false;
+  const isResetting = () => (!!state.isResetting || startReset) && !finishReset;
 
   const idle: NpcAction = { type: "idle" };
   const result = (movement: NpcMovement, action: NpcAction = idle): NpcDecision => ({
@@ -130,6 +159,9 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
     targetPlayerId: targetPlayer?.socketId,
     movement,
     action,
+    behavior: behaviorId,
+    ...(startReset && { startReset }),
+    ...(finishReset && { finishReset }),
   });
 
   const setLockedPlayerId = (id: string | null | undefined) => {
@@ -143,6 +175,7 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
   const resolvePlayer = (id: string | null | undefined) => {
     if (id && id === state.lockedPlayerId) return input.lockedPlayer ?? null;
     if (id && id === input.nearestPlayer?.socketId) return input.nearestPlayer;
+    if (id && id === input.threatTarget?.socketId) return input.threatTarget;
     return null;
   };
   const handleAggroState = () => {
@@ -162,7 +195,22 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
     isAttacking = false;
   }
 
-  if (state.isAggro) handleAggroState();
+  if (isResetting()) {
+    // Walking home: nobody gets noticed until it arrives
+    setLockedPlayerId(null);
+    if (checkInRange(npc, npc.startingCoords, NPC_HOME_RANGE)) finishReset = true;
+  } else {
+    if (state.isAggro) handleAggroState();
+    // Threat outranks proximity: fight whoever angered it most
+    if (input.threatTarget && !input.threatTarget.isDead) {
+      setLockedPlayerId(input.threatTarget.socketId);
+    }
+    // Pulled too far from home: give up the fight
+    if (lockedPlayerId && distanceBetween(npc, npc.startingCoords) > NPC_LEASH_RANGE) {
+      startReset = true;
+      setLockedPlayerId(null);
+    }
+  }
 
   // Get target player based on locked player ID
   const targetPlayer = resolvePlayer(lockedPlayerId);
@@ -226,16 +274,18 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
 
   function decideMovement(): NpcMovement {
     // Check if player is in range for aggro
-    const canChase = !!targetPlayer && handleAggroState() && !targetPlayer.isDead;
+    const canChase = !isResetting() && !!targetPlayer && handleAggroState() && !targetPlayer.isDead;
     const ctx: BehaviorContext = {
       input,
       target: targetPlayer,
       canChase,
       attackRange,
       isAttacking,
+      isResetting: isResetting(),
     };
-    const chosen = chooseBehavior(ctx, npc.behaviors ?? DEFAULT_NPC_BEHAVIORS) ?? "wander";
-    const behavior: NpcBehavior = NPC_BEHAVIORS[chosen];
+    const ids = npc.behaviors ?? DEFAULT_NPC_BEHAVIORS;
+    behaviorId = chooseBehavior(ctx, ids, state.behavior) ?? "wander";
+    const behavior: NpcBehavior = NPC_BEHAVIORS[behaviorId];
 
     if (behavior.engaged && targetPlayer) {
       expireStealthOfPlayerId = targetPlayer.socketId;

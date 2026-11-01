@@ -49,7 +49,7 @@ export { mapImageList } from "./maps/map-image-list";
 export { mapList } from "./maps/map-list";
 export { keepers, type KeeperId } from "./mobs/keepers";
 export { nasties, type NastyId } from "./mobs/nasties";
-export type { MobProfile, MobRace, NastyDefinition } from "./mobs/mob-types";
+export type { MobBehavior, MobProfile, MobRace, NastyDefinition } from "./mobs/mob-types";
 export type { KeeperDefinition } from "./mobs/keeper-types";
 export { Quest, type QuestObjective, type QuestRewards } from "./quests/quest";
 export { QuestBuilder, QUEST_EXP_MULTIPLIER, QUEST_GOLD_MULTIPLIER } from "./quests/quest-builder";

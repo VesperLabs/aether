@@ -18,3 +18,19 @@ export const NPC_WANDER_SPEED_DIVISOR = 2.5;
 export const NPC_BUFF_CAST_PROBABILITY = 0.01;
 /** Time without combat after which a locked NPC is considered to have lost aggro. */
 export const NPC_LOSE_AGGRO_MS = 5000;
+/** Share of its threat an NPC forgets each second. */
+export const NPC_THREAT_DECAY_PER_SEC = 0.05;
+/** Someone needs this many times the current target's threat to pull the NPC off it. */
+export const NPC_THREAT_SWITCH_RATIO = 1.1;
+/** How far an NPC follows a fight from its spawn before it gives up, walks home and heals. */
+export const NPC_LEASH_RANGE = 450;
+/** Below this share of max hp, an NPC with `retreat` runs from its target. */
+export const NPC_RETREAT_HP_RATIO = 0.25;
+/** An NPC with `kite` and a ranged weapon backs off when its target gets this close. */
+export const NPC_KITE_MIN_RANGE = 48;
+/** A follower walks to its leader once it is further than this, and waits when closer. */
+export const NPC_FOLLOW_DISTANCE = 40;
+/** The behavior an NPC is already doing gets this much added to its score, so it doesn't flicker. */
+export const NPC_BEHAVIOR_STICKINESS = 0.04;
+/** Close enough to spawn to count as home after a reset. */
+export const NPC_HOME_RANGE = 4;

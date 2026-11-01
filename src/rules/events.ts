@@ -22,6 +22,15 @@ export interface MobKilledEvent {
   y: number;
 }
 
+/** A character lost hp to another one. NPCs gain threat from it. */
+export interface CharacterDamagedEvent {
+  victimId: string;
+  attackerId: string;
+  /** Players are looked up by socket id; unset for NPC attackers. */
+  attackerSocketId?: string;
+  amount: number;
+}
+
 /** An NPC swung at its target. `count` is which hand (1 or 2). */
 export interface NpcAttackedEvent {
   npcId: string;
@@ -51,6 +60,7 @@ export interface NpcRespawnedEvent {
 
 export interface GameEvents {
   mobKilled: MobKilledEvent;
+  characterDamaged: CharacterDamagedEvent;
   npcAttacked: NpcAttackedEvent;
   npcCast: NpcCastEvent;
   npcRespawned: NpcRespawnedEvent;

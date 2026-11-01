@@ -1,4 +1,11 @@
+import type { MobBehavior } from "@/content";
 import type { Rng } from "@/rules/world";
+import {
+  NPC_FOLLOW_DISTANCE,
+  NPC_HOME_RANGE,
+  NPC_KITE_MIN_RANGE,
+  NPC_RETREAT_HP_RATIO,
+} from "./constants";
 import type { NpcPlayerView } from "./aggro";
 import type { NpcBehaviorInput, NpcMovement } from "./decide";
 import { checkInRange, distanceBetween } from "./range";
@@ -14,6 +21,8 @@ export interface BehaviorContext {
   attackRange: number;
   /** The NPC is attacking this tick (it stays put while it does). */
   isAttacking: boolean | undefined;
+  /** Leashed: walking home to heal, ignoring players. */
+  isResetting: boolean;
 }
 
 /**
@@ -36,6 +45,47 @@ const chase: NpcBehavior = {
     if (inReach || input.state.isAiming || isAttacking) return { type: "standStill" };
     return { type: "chase", pathed: input.isNearCollideTile };
   },
+};
+
+/** Pulled too far from spawn: walk home, ignoring everyone, and heal on arrival. */
+const reset: NpcBehavior = {
+  score: ({ isResetting }) => (isResetting ? 1.2 : 0),
+  move: ({ input }) =>
+    checkInRange(input.npc, input.npc.startingCoords, NPC_HOME_RANGE)
+      ? { type: "standStill" }
+      : { type: "returnToSpawn", pathed: true },
+};
+
+/** Badly hurt: run from the target (still swinging if it catches up). */
+const retreat: NpcBehavior = {
+  engaged: true,
+  score: ({ input, canChase }) => {
+    const { hp, maxHp } = input.npc.stats ?? {};
+    if (!canChase || !maxHp) return 0;
+    return (hp as number) / maxHp < NPC_RETREAT_HP_RATIO ? 1.1 : 0;
+  },
+  move: () => ({ type: "flee" }),
+};
+
+/** Ranged NPCs back away when the target closes in, then shoot again. */
+const kite: NpcBehavior = {
+  engaged: true,
+  score: ({ input, target, canChase, attackRange }) =>
+    canChase &&
+    attackRange > NPC_KITE_MIN_RANGE * 2 &&
+    checkInRange(input.npc, target, NPC_KITE_MIN_RANGE)
+      ? 1.05
+      : 0,
+  move: () => ({ type: "flee" }),
+};
+
+/** Stay close to a leader, waiting at heel when near. */
+const follow: NpcBehavior = {
+  score: ({ input }) => (input.leader ? 0.65 : 0),
+  move: ({ input }) =>
+    distanceBetween(input.npc, input.leader) > NPC_FOLLOW_DISTANCE
+      ? { type: "follow", pathed: input.isNearCollideTile }
+      : { type: "standStill" },
 };
 
 /** Stuck in a wall or off the map: head home. */
@@ -86,15 +136,24 @@ const wander: NpcBehavior = {
   }),
 };
 
-export const NPC_BEHAVIORS = { chase, unstuck, guard, talk, leash, wander } satisfies Record<
-  string,
-  NpcBehavior
->;
+export const NPC_BEHAVIORS: Record<MobBehavior, NpcBehavior> = {
+  chase,
+  unstuck,
+  guard,
+  talk,
+  leash,
+  wander,
+  reset,
+  retreat,
+  kite,
+  follow,
+};
 
-export type NpcBehaviorId = keyof typeof NPC_BEHAVIORS;
+export type NpcBehaviorId = MobBehavior;
 
 /** What every NPC does unless its content says otherwise. */
 export const DEFAULT_NPC_BEHAVIORS: readonly NpcBehaviorId[] = [
+  "reset",
   "chase",
   "unstuck",
   "guard",

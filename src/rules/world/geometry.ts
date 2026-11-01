@@ -41,3 +41,28 @@ export function distanceTo(first: Point, second: Point) {
   const dy = second?.y - first?.y;
   return Math.sqrt(dx * dx + dy * dy);
 }
+
+/** How much the other axis must win by before a moving character turns to face it. */
+const FACING_SWITCH_RATIO = 1.3;
+
+/**
+ * Like `getCharacterDirection`, but keeps the current facing's axis until the other one clearly
+ * wins, so walking near a diagonal doesn't flicker between the left and down sprites.
+ */
+export function getStickyDirection(
+  current: string | undefined,
+  character: Point,
+  point: Point,
+): CardinalDirection {
+  const dx = point.x - character.x;
+  const dy = point.y - character.y;
+  const horizontal: CardinalDirection = dx > 0 ? "right" : "left";
+  const vertical: CardinalDirection = dy > 0 ? "down" : "up";
+  if (current === "left" || current === "right") {
+    return Math.abs(dy) > Math.abs(dx) * FACING_SWITCH_RATIO ? vertical : horizontal;
+  }
+  if (current === "up" || current === "down") {
+    return Math.abs(dx) > Math.abs(dy) * FACING_SWITCH_RATIO ? horizontal : vertical;
+  }
+  return getCharacterDirection(character, point);
+}

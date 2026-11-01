@@ -36,3 +36,6 @@ export type { BehaviorContext, NpcBehavior, NpcBehaviorId } from "./behaviors";
 export { chooseBehavior } from "./brain";
 export { flee, seek, separate, steerWithSeparation } from "./steering";
 export type { Velocity } from "./steering";
+export { addThreat, decayThreat, pickThreatTarget, pruneThreat } from "./threat";
+export type { ThreatTable } from "./threat";
+export { subscribeThreat } from "./system";

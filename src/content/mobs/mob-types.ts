@@ -63,10 +63,27 @@ export interface MobBase {
   readonly abilities?: MobAbilities;
 }
 
+/** Things a mob can do; the game picks the one that fits best each tick. */
+export type MobBehavior =
+  | "chase"
+  | "unstuck"
+  | "guard"
+  | "talk"
+  | "leash"
+  | "wander"
+  | "reset"
+  | "retreat"
+  | "kite"
+  | "follow";
+
 export interface NastyDefinition extends MobBase {
   /** A line or two of flavour text shown in the wiki. */
   readonly flavor: string;
   readonly state?: { readonly isAggro?: boolean; readonly noWorldDrops?: boolean };
+  /** Replaces the default behaviors (chase, wander, leash and so on). */
+  readonly behaviors?: readonly MobBehavior[];
+  /** Name of a mob in the same room this one keeps close to (needs the `follow` behavior). */
+  readonly leader?: string;
   /** Items this mob can drop when it dies. */
   readonly drops?: readonly ItemDrop[];
 }

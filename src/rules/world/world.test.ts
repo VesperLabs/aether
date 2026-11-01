@@ -1,6 +1,14 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { moveBodyThroughMap, type TiledMapJson } from "../movement";
-import { addRoom, createRoom, createTickLoop, createWorld, entitiesInRoom, nearestTo } from ".";
+import {
+  addRoom,
+  createRoom,
+  createTickLoop,
+  createWorld,
+  entitiesInRoom,
+  getStickyDirection,
+  nearestTo,
+} from ".";
 
 const json: TiledMapJson = {
   width: 3,
@@ -100,5 +108,16 @@ describe("world", () => {
     vi.advanceTimersByTime(100);
     expect(ticks).toBeGreaterThan(paused);
     loop.stop();
+  });
+});
+
+describe("sticky facing", () => {
+  it("holds the current axis near a diagonal and turns once the other axis clearly wins", () => {
+    const at = { x: 0, y: 0 };
+    expect(getStickyDirection("left", at, { x: -10, y: 11 })).toBe("left");
+    expect(getStickyDirection("down", at, { x: -11, y: 10 })).toBe("down");
+    expect(getStickyDirection("left", at, { x: -10, y: 20 })).toBe("down");
+    expect(getStickyDirection("left", at, { x: 10, y: 1 })).toBe("right");
+    expect(getStickyDirection(undefined, at, { x: 0, y: -5 })).toBe("up");
   });
 });

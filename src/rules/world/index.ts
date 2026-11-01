@@ -1,6 +1,11 @@
 export { createEventBus, createGameEventBus } from "./event-bus";
 export type { EventBus, EventHandler, GameEventBus } from "./event-bus";
-export { distanceTo, getAngleFromDirection, getCharacterDirection } from "./geometry";
+export {
+  distanceTo,
+  getAngleFromDirection,
+  getCharacterDirection,
+  getStickyDirection,
+} from "./geometry";
 export type { CardinalDirection, Point } from "./geometry";
 export { entitiesInRoom, nearestTo } from "./rooms";
 export { createTickLoop } from "./tick-loop";

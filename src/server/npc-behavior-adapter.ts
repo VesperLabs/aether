@@ -42,6 +42,7 @@ export function buildNpcBehaviorInput(
       hasTalkers: npc.talkingIds?.length > 0,
       abilities: npc.abilities,
       buffs: npc.buffs,
+      behaviors: npc.behaviors,
       weapons: {
         handLeft: npc.hasRangedWeaponLeft() ? { range: npc.getWeaponRange("handLeft") } : null,
         handRight: npc.hasRangedWeaponRight() ? { range: npc.getWeaponRange("handRight") } : null,
@@ -51,6 +52,8 @@ export function buildNpcBehaviorInput(
     isStunned: npc.hasBuff("stun"),
     lockedPlayer,
     nearestPlayer,
+    threatTarget: toPlayerView(world?.players?.[npc.threatTargetId() as string]),
+    leader: npc.findLeader(),
     isNearCollideTile: npc.isNearCollideTile(),
     isOutOfBounds: npc.isOutOfBounds(),
   };

@@ -26,7 +26,14 @@ function ctx(over: {
     isOutOfBounds: false,
     ...over.rest,
   } as NpcBehaviorInput;
-  return { input, target: null, canChase: !!over.canChase, attackRange: 8, isAttacking: false };
+  return {
+    input,
+    target: null,
+    canChase: !!over.canChase,
+    attackRange: 8,
+    isAttacking: false,
+    isResetting: false,
+  };
 }
 
 describe("brain", () => {

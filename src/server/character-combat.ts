@@ -28,11 +28,17 @@ export function applyElementalDamage(eleDamages: ElementalDamages, victim: Serve
 }
 
 /** What happens to a victim that took damage: combat flag, dispels, and the mob targeting its attacker. */
-function markHurt(attacker: ServerCharacter, victim: ServerCharacter) {
+function markHurt(attacker: ServerCharacter, victim: ServerCharacter, amount: number) {
   victim.state.lastCombat = Date.now();
   victim.dispelBuffsByProperty("dispelInCombat");
-  /* Npc aggro when they are hit or hit a player. NPCs look players up by socket id. */
-  victim.setLockedPlayerId(attacker?.socketId);
+  /* The first hit pulls an NPC; after that its threat table decides who it fights. */
+  if (!victim.state.lockedPlayerId) victim.setLockedPlayerId(attacker?.socketId);
+  victim.world?.events?.emit("characterDamaged", {
+    victimId: victim.id,
+    attackerId: attacker.id,
+    attackerSocketId: attacker.socketId,
+    amount,
+  });
 }
 
 export function applySpellDamage(
@@ -88,7 +94,7 @@ export function applySpellDamage(
   }
   if (Math.abs(eleDamage) > 0) {
     victim.modifyStat("hp", -eleDamage);
-    markHurt(attacker, victim);
+    markHurt(attacker, victim, Math.abs(eleDamage));
     /* Victim killed */
     if (victim.stats.hp <= 0) {
       victim.setDead();
@@ -139,7 +145,7 @@ export function applyAttackDamage(
   const hits: Array<Hit> = [];
   victim.modifyStat("hp", -totalDamage);
 
-  if (totalDamage > 0) markHurt(attacker, victim);
+  if (totalDamage > 0) markHurt(attacker, victim, totalDamage);
 
   // onAttackHit if we have some
   for (const { name, level, target } of rollTriggers(
