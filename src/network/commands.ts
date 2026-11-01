@@ -34,8 +34,12 @@ const profileStep = z.number().optional();
 export const commands = {
   /* Auth */
   demoLogin: z.object({ charClass: z.string().nullish() }).optional(),
-  login: z.object({ email: text, password: text }).optional(),
-  register: z.object({ email: text, password: text, charClass: text }).optional(),
+  login: z.object({ email: text, password: text, remember: z.boolean().optional() }).optional(),
+  /** Log back in with the token from `loginToken` ("Remember me"). */
+  tokenLogin: z.object({ token: z.string() }),
+  register: z
+    .object({ email: text, password: text, charClass: text, remember: z.boolean().optional() })
+    .optional(),
   /** The payload is an acknowledgement callback, which the server calls right away. */
   latency: z.custom<() => void>((value) => typeof value === "function"),
 

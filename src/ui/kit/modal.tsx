@@ -18,7 +18,7 @@ const ModalRoot = ({ sx, zoom = 1, bottomOffset = 0, ...props }: ModalProps) => 
         top: `50%`,
         marginTop: -bottomOffset / 2,
         pointerEvents: "all",
-        transform: `scale(${Math.max(1, Number(zoom))}) translate(-50%, -50%)`,
+        transform: `translate(-50%, -50%) scale(${Math.max(1, Number(zoom))})`,
         transformOrigin: "center center",
         cursor: "default",
         ...sx,
