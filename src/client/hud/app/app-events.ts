@@ -17,6 +17,8 @@ export interface SocketHandlers {
   partyInvite: ServerToClientEvents["partyInvite"];
   partyUpdate: ServerToClientEvents["partyUpdate"];
   updateUserSetting: ServerToClientEvents["updateUserSetting"];
+  loginToken: ServerToClientEvents["loginToken"];
+  loginTokenRejected: ServerToClientEvents["loginTokenRejected"];
 }
 
 /** The window events (sent by the Phaser scenes and the HUD itself) the HUD listens to. */
@@ -48,6 +50,8 @@ export function bindSocketHandlers(socket: ClientGameSocket, handlers: SocketHan
   socket.on("partyInvite", handlers.partyInvite);
   socket.on("partyUpdate", handlers.partyUpdate);
   socket.on("updateUserSetting", handlers.updateUserSetting);
+  socket.on("loginToken", handlers.loginToken);
+  socket.on("loginTokenRejected", handlers.loginTokenRejected);
   return () => {
     socket.off("connect", handlers.connect);
     socket.off("disconnect", handlers.disconnect);
@@ -62,6 +66,8 @@ export function bindSocketHandlers(socket: ClientGameSocket, handlers: SocketHan
     socket.off("partyInvite", handlers.partyInvite);
     socket.off("partyUpdate", handlers.partyUpdate);
     socket.off("updateUserSetting", handlers.updateUserSetting);
+    socket.off("loginToken", handlers.loginToken);
+    socket.off("loginTokenRejected", handlers.loginTokenRejected);
   };
 }
 

@@ -29,6 +29,8 @@ export { ZoomProvider, useZoom } from "./zoom";
 export { Portal } from "./portal";
 export { VersionTag } from "./version-tag";
 export { Switch } from "./switch";
+export { Toast } from "./toast";
+export type { ToastKind, ToastMessage } from "./toast";
 export { Menu, MenuHeader, MENU_MAX_WIDTH } from "./menu";
 export { arePropsEqualWithKeys, get, isEqual } from "./are-props-equal";
 export {

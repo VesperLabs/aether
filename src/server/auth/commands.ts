@@ -8,6 +8,8 @@ import { createBaseUser } from "../persistence";
 import { shouldPause } from "../net/world-pause";
 import type { ParsedCommand } from "@/network";
 import type { CommandContext } from "@/server/net/command-context";
+import type { UserDocument } from "../persistence";
+import { createLoginToken, isLoginTokenValid, readLoginTokenEmail } from "./login-token";
 
 /** Demo logins (throwaway, unsaved characters) are for development only, never production. */
 function isDemoAllowed() {
@@ -62,10 +64,33 @@ export async function demoLogin(
   socket.to(roomName).emit("playerJoin", getFullCharacterState(player), { isLogin: true });
 }
 
-export async function login(ctx: CommandContext, { email, password }: ParsedCommand<"login"> = {}) {
-  const { world, socket, socketId, io, session } = ctx;
-  let user = await world.db.getUserByLogin({ email, password });
+export async function login(
+  ctx: CommandContext,
+  { email, password, remember }: ParsedCommand<"login"> = {},
+) {
+  const { world, socket } = ctx;
+  const user = await world.db.getUserByLogin({ email, password });
   if (!user) return socket.emit("formError", { error: "Invalid login" });
+  if (remember) {
+    socket.emit("loginToken", {
+      token: createLoginToken(user.email, user.password ?? "", world.now()),
+    });
+  }
+  enterWorld(ctx, user);
+}
+
+export async function tokenLogin(ctx: CommandContext, { token }: ParsedCommand<"tokenLogin">) {
+  const { world, socket } = ctx;
+  const user = await world.db.getUserByEmail({ email: readLoginTokenEmail(token) });
+  if (!user || !isLoginTokenValid(token, user.password ?? "", world.now())) {
+    socket.emit("loginTokenRejected");
+    return socket.emit("formError", { error: "Login expired, enter your password" });
+  }
+  enterWorld(ctx, user);
+}
+
+function enterWorld(ctx: CommandContext, user: UserDocument) {
+  const { world, socket, socketId, io, session } = ctx;
 
   /* Only let one connection at a time */
   if (Object.keys(world?.players).find((k) => k === socket?.id)) {
@@ -118,7 +143,7 @@ export async function login(ctx: CommandContext, { email, password }: ParsedComm
 
 export async function register(
   ctx: CommandContext,
-  { email, password, charClass }: ParsedCommand<"register"> = {},
+  { email, password, charClass, remember }: ParsedCommand<"register"> = {},
 ) {
   const { world, socket } = ctx;
   // Validate email format
@@ -144,6 +169,12 @@ export async function register(
   const isCreated = await world.db.createUser({ email, password, charClass });
   if (!isCreated) {
     return socket.emit("formError", { error: "Error creating user" });
+  }
+
+  // Remember the new account, so the login form is filled in
+  if (remember && email) {
+    const token = createLoginToken(email.toLowerCase(), password ?? "", world.now());
+    socket.emit("loginToken", { token });
   }
 
   // Send success message

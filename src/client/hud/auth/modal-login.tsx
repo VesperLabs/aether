@@ -1,13 +1,47 @@
-import { useState, useEffect, useEffectEvent } from "react";
+import { useState, useEffect, useEffectEvent, useCallback } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
-import { Modal, Flex, Input, KeyboardButton, Icon, Text, Box, VersionTag } from "@/ui";
+import { Modal, Input, KeyboardButton, Icon, Text, Box, VersionTag, Switch, Toast } from "@/ui";
+import type { ToastKind, ToastMessage } from "@/ui";
 import { useAppContext } from "@/client/hud/app/context";
-import { CLASS_ICON_MAP, type CharClass } from "@/content";
+import type { CharClass } from "@/content";
 import { Tooltip } from "@/ui";
 import { useSavedLogin } from "./saved-login";
+import { CharClassSelect } from "./char-class-select";
+import { getLoginToken, getRememberMe, setRememberMe } from "./remembered-login";
 
 /** The `formSuccess` message from the server. */
 type FormSuccess = { success: string; email?: string };
+
+/** Stands in for the password while a remembered login is kept; never sent anywhere. */
+const REMEMBERED_PASSWORD = "remembered";
+
+const RememberedCheck = () => (
+  <Box
+    data-tooltip-id="login"
+    data-tooltip-content="Password remembered"
+    sx={{
+      position: "absolute",
+      right: 2,
+      top: "50%",
+      transform: "translateY(-50%)",
+      color: "set",
+      lineHeight: 0,
+    }}
+  >
+    <svg width={12} height={12} viewBox="0 0 16 16" aria-label="Password remembered">
+      <path
+        d="M3 8.5l3 3 7-7"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2.5}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  </Box>
+);
+
+type Notify = (kind: ToastKind, message: string) => void;
 
 const accordionEase = "cubic-bezier(0.33, 1, 0.68, 1)";
 const accordionDuration = "0.3s";
@@ -68,7 +102,12 @@ export const ModalLogin = () => {
   const isRegister = activeTab === "register";
   const isDemo = activeTab === "demo";
 
+  const [toast, setToast] = useState<ToastMessage | null>(null);
+  const notify: Notify = (kind, message) => setToast({ id: Date.now(), kind, message });
+  const dismissToast = useCallback(() => setToast(null), []);
+
   const onRegisterSuccess = (payload: FormSuccess) => {
+    notify("success", payload?.success ?? "Account created");
     setDefaultEmail(payload?.email ?? "");
     setTimeout(() => setActiveTab("login"), 100);
   };
@@ -82,6 +121,7 @@ export const ModalLogin = () => {
       sx={{ width: 220 }}
     >
       <Tooltip id="login" />
+      <Toast toast={toast} onDismiss={dismissToast} zoom={zoom} />
       <VersionTag />
       <Modal.Header
         sx={{ cursor: "pointer", opacity: isLogin ? 1 : 0.25 }}
@@ -92,7 +132,13 @@ export const ModalLogin = () => {
         Login
       </Modal.Header>
       <TabPanel open={isLogin}>
-        <LoginForm defaultEmail={defaultEmail} isActive={isLogin} />
+        {/* Keyed by email, so a new account's email and remembered login fill the form */}
+        <LoginForm
+          key={defaultEmail}
+          defaultEmail={defaultEmail}
+          isActive={isLogin}
+          notify={notify}
+        />
       </TabPanel>
       <Modal.Header
         sx={{ cursor: "pointer", opacity: isRegister ? 1 : 0.25 }}
@@ -103,7 +149,7 @@ export const ModalLogin = () => {
         Register
       </Modal.Header>
       <TabPanel open={isRegister}>
-        <RegisterForm onRegisterSuccess={onRegisterSuccess} isActive={isRegister} />
+        <RegisterForm onRegisterSuccess={onRegisterSuccess} isActive={isRegister} notify={notify} />
       </TabPanel>
       {canDemo && (
         <>
@@ -135,9 +181,9 @@ const DemoForm = () => {
   return (
     <Modal.Body sx={{ gap: 2 }}>
       <CharClassSelect charClass={charClass} setCharClass={setCharClass} />
-      <ErrorBox>
+      <Text sx={{ fontSize: 1, opacity: 0.6, whiteSpace: "normal", textAlign: "center" }}>
         Note: your progress will not be saved. For that you will need to click "Register".
-      </ErrorBox>
+      </Text>
       <KeyboardButton sx={{ flex: 1 }} onClick={() => handleDemoLogin()} keyboardKey="ENTER">
         Play
       </KeyboardButton>
@@ -145,13 +191,26 @@ const DemoForm = () => {
   );
 };
 
-const LoginForm = ({ defaultEmail, isActive }: { defaultEmail: string; isActive: boolean }) => {
+const LoginForm = ({
+  defaultEmail,
+  isActive,
+  notify,
+}: {
+  defaultEmail: string;
+  isActive: boolean;
+  notify: Notify;
+}) => {
   const { socket } = useAppContext();
   const [email, setEmail] = useState(defaultEmail);
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [remember, setRemember] = useState(getRememberMe);
+  const [token, setToken] = useState(getLoginToken);
+  /* A remembered login stands in for the password until the user types one or another email */
+  const isRemembered = !!token && remember && !password && email === defaultEmail;
   const savedLogin = useSavedLogin((saved) => {
+    /* Don't swap a just-registered email for an older saved one */
+    if (defaultEmail && saved.email !== defaultEmail) return;
     setEmail(saved.email);
     setPassword(saved.password);
   });
@@ -159,14 +218,19 @@ const LoginForm = ({ defaultEmail, isActive }: { defaultEmail: string; isActive:
   const onFormError = useEffectEvent((payload: { error: string }) => {
     if (!isActive) return;
     savedLogin.fail();
-    setError(payload?.error);
+    setToken(getLoginToken());
+    notify("error", payload?.error);
     setIsLoading(false);
   });
 
   const handleLogin = () => {
-    socket.emit("login", { email, password });
+    if (isRemembered && token) {
+      socket.emit("tokenLogin", { token });
+    } else {
+      socket.emit("login", { email, password, remember });
+      savedLogin.attempt({ email, password });
+    }
     localStorage.setItem("email", email);
-    savedLogin.attempt({ email, password });
     setIsLoading(true);
   };
 
@@ -189,22 +253,37 @@ const LoginForm = ({ defaultEmail, isActive }: { defaultEmail: string; isActive:
         value={email}
         onChange={(e) => {
           setEmail(e.target.value);
-          setError("");
         }}
       />
-      <Input
-        autoFocus={isActive && !!defaultEmail}
-        name="password"
-        autoComplete="current-password"
-        type="password"
-        placeholder="Password"
-        value={password}
+      <Box sx={{ position: "relative" }}>
+        <Input
+          autoFocus={isActive && !!defaultEmail}
+          name="password"
+          autoComplete="current-password"
+          type="password"
+          placeholder="Password"
+          value={isRemembered ? REMEMBERED_PASSWORD : password}
+          sx={{ pr: isRemembered ? 4 : undefined }}
+          onChange={(e) => {
+            const { value } = e.target;
+            if (!isRemembered) return setPassword(value);
+            /* Typing replaces the remembered dots; deleting any of them forgets the login */
+            setToken(null);
+            setPassword(
+              value.startsWith(REMEMBERED_PASSWORD) ? value.slice(REMEMBERED_PASSWORD.length) : "",
+            );
+          }}
+        />
+        {isRemembered && <RememberedCheck />}
+      </Box>
+      <Switch
+        label="Remember me"
+        checked={remember}
         onChange={(e) => {
-          setPassword(e.target.value);
-          setError("");
+          setRemember(e.target.checked);
+          setRememberMe(e.target.checked);
         }}
       />
-      <ErrorBox>{error}</ErrorBox>
       <KeyboardButton
         sx={{ flex: 1 }}
         disabled={isLoading}
@@ -220,19 +299,20 @@ const LoginForm = ({ defaultEmail, isActive }: { defaultEmail: string; isActive:
 const RegisterForm = ({
   onRegisterSuccess,
   isActive,
+  notify,
 }: {
   onRegisterSuccess: (payload: FormSuccess) => void;
   isActive: boolean;
+  notify: Notify;
 }) => {
   const { socket } = useAppContext();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const [charClass, setCharClass] = useState<CharClass>("warrior");
 
   const onFormError = useEffectEvent((payload: { error: string }) => {
     if (!isActive) return;
-    setError(payload?.error);
+    notify("error", payload?.error);
   });
 
   const onFormSuccess = useEffectEvent((payload: FormSuccess) => {
@@ -267,7 +347,6 @@ const RegisterForm = ({
         value={email}
         onChange={(e) => {
           setEmail(e.target.value);
-          setError("");
         }}
       />
       <Input
@@ -277,113 +356,17 @@ const RegisterForm = ({
         value={password}
         onChange={(e) => {
           setPassword(e.target.value);
-          setError("");
         }}
       />
-      <ErrorBox>{error}</ErrorBox>
       <KeyboardButton
         sx={{ flex: 1 }}
-        onClick={() => socket.emit("register", { email, password, charClass })}
+        onClick={() =>
+          socket.emit("register", { email, password, charClass, remember: getRememberMe() })
+        }
         keyboardKey="ENTER"
       >
         Register
       </KeyboardButton>
     </Modal.Body>
-  );
-};
-
-interface ClickableIconProps {
-  icon: string;
-  setCharClass: (charClass: CharClass) => void;
-  charClass: CharClass;
-  isSelected: boolean;
-}
-
-const ClickableIcon = ({ icon, setCharClass, charClass, isSelected }: ClickableIconProps) => {
-  const getDesc = (charClass: CharClass) => {
-    const desc: Record<CharClass, string> = {
-      warrior: "Warriors are strong and can take a lot of damage.",
-      rogue: "Rogues are fast and can dodge attacks.",
-      mage: "Mages are powerful spellcasters and can do heavy damage.",
-      cleric: "Clerics are powerful healers but consume their own life-force in the process.",
-    };
-    return desc[charClass];
-  };
-  return (
-    <Flex
-      data-tooltip-id="login"
-      data-tooltip-content={getDesc(charClass)}
-      sx={{
-        flexDirection: "column",
-        alignItems: "center",
-        cursor: "pointer",
-        opacity: isSelected ? 1 : 0.15,
-        gap: 1,
-        "&:hover": {
-          opacity: isSelected ? 1 : 0.65,
-        },
-      }}
-      onClick={() => setCharClass(charClass)}
-    >
-      <Icon size={22} icon={icon} />
-      <Text sx={{ fontSize: 0, textTransform: "capitalize" }}>{charClass}</Text>
-    </Flex>
-  );
-};
-
-const ErrorBox = ({ children }: { children?: React.ReactNode }) => {
-  return (
-    <Flex
-      sx={{
-        borderRadius: 3,
-        background: "shadow.10",
-        alignItems: "center",
-        justifyContent: "center",
-        color: "danger",
-        minHeight: 30,
-        p: 2,
-        whiteSpace: "normal",
-        fontSize: 1,
-      }}
-    >
-      {children}
-    </Flex>
-  );
-};
-
-const CharClassSelect = ({
-  charClass,
-  setCharClass,
-}: {
-  charClass: CharClass;
-  setCharClass: (charClass: CharClass) => void;
-}) => {
-  return (
-    <Flex sx={{ justifyContent: "space-around", pb: 2 }}>
-      <ClickableIcon
-        icon={CLASS_ICON_MAP.WARRIOR}
-        charClass="warrior"
-        isSelected={charClass === "warrior"}
-        setCharClass={setCharClass}
-      />
-      <ClickableIcon
-        icon={CLASS_ICON_MAP.ROGUE}
-        charClass="rogue"
-        isSelected={charClass === "rogue"}
-        setCharClass={setCharClass}
-      />
-      <ClickableIcon
-        icon={CLASS_ICON_MAP.MAGE}
-        charClass="mage"
-        isSelected={charClass === "mage"}
-        setCharClass={setCharClass}
-      />
-      <ClickableIcon
-        icon={CLASS_ICON_MAP.CLERIC}
-        charClass="cleric"
-        isSelected={charClass === "cleric"}
-        setCharClass={setCharClass}
-      />
-    </Flex>
   );
 };
