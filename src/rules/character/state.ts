@@ -53,6 +53,8 @@ export interface CharacterState {
   lungeAt?: number;
   /** Which way that lunge heads, in radians. */
   lungeAngle?: number;
+  /** How long that lunge lasts, in ms. */
+  lungeMs?: number;
   /** Radians. */
   lastAngle: number;
   activeSets: string[];
