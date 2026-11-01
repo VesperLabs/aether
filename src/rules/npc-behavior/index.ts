@@ -28,6 +28,11 @@ export type { NpcAction, NpcBehaviorInput, NpcDecision, NpcMovement } from "./de
 export { checkInRange, distanceBetween, getShouldAttackRange } from "./range";
 export type { Body, NpcWeaponRanges } from "./range";
 export { decideTalkingEnded, decideWander } from "./wander";
-export type { WanderChange, WanderInput } from "./wander";
+export type { WanderChange, WanderInput, WanderStep } from "./wander";
 export { canTalkToNpc } from "./talk";
 export type { TalkPlacement } from "./talk";
+export { DEFAULT_NPC_BEHAVIORS, NPC_BEHAVIORS } from "./behaviors";
+export type { BehaviorContext, NpcBehavior, NpcBehaviorId } from "./behaviors";
+export { chooseBehavior } from "./brain";
+export { flee, seek, separate, steerWithSeparation } from "./steering";
+export type { Velocity } from "./steering";

@@ -10,8 +10,8 @@ export const NPC_WARNING_DELAY = 100;
 export const NPC_TALK_RANGE = 80;
 /** Extra distance allowed on top of the talk range, for latency and for the NPC wandering. */
 export const NPC_TALK_LATENCY_TOLERANCE = 40;
-/** Frames between random wander direction changes. */
-export const NPC_WANDER_CHANGE_DELAY = 9;
+/** Average milliseconds between random wander direction changes (each wait is 50% to 150% of it). */
+export const NPC_WANDER_CHANGE_MS = 250;
 /** Wandering is slower than walking. */
 export const NPC_WANDER_SPEED_DIVISOR = 2.5;
 /** Chance per tick that an idle NPC decides to cast a buff on itself. */

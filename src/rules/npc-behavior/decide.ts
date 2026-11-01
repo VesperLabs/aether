@@ -5,9 +5,18 @@ import { getCharacterDirection, type CardinalDirection } from "@/rules/world";
 import { findSuitableAbility, type NpcAbility } from "./abilities";
 import { decideAggro, isNpcAttackReady, type NpcPlayerView, type NpcSelfView } from "./aggro";
 import { NPC_WARNING_DELAY } from "./constants";
-import { checkInRange, distanceBetween, getShouldAttackRange } from "./range";
+import { checkInRange, getShouldAttackRange } from "./range";
 import type { Body, NpcWeaponRanges } from "./range";
-import { decideWander, type WanderChange } from "./wander";
+import type { Rng } from "@/rules/world";
+import {
+  DEFAULT_NPC_BEHAVIORS,
+  NPC_BEHAVIORS,
+  type BehaviorContext,
+  type NpcBehavior,
+  type NpcBehaviorId,
+} from "./behaviors";
+import { chooseBehavior } from "./brain";
+import type { WanderStep } from "./wander";
 
 export interface NpcBehaviorInput {
   /** Wall clock (ms). */
@@ -23,6 +32,8 @@ export interface NpcBehaviorInput {
     abilities: Record<string, NpcAbility | null | undefined>;
     buffs: ActiveBuff[];
     weapons: NpcWeaponRanges;
+    /** What this NPC can do, best first on ties. Defaults to `DEFAULT_NPC_BEHAVIORS`. */
+    behaviors?: readonly NpcBehaviorId[];
   };
   state: {
     isAggro?: boolean;
@@ -35,6 +46,8 @@ export interface NpcBehaviorInput {
     lastAttack: number;
     lockedPlayerId?: string | null;
     lastCast: LastCast;
+    /** Loop time of the next wander direction change. */
+    nextWanderAt?: number;
   };
   isStunned: boolean;
   /** The player `lockedPlayerId` points at, if they are still around. */
@@ -55,7 +68,7 @@ export type NpcMovement =
   /** Stand at spawn, facing down after `faceDownAfterMs`, or walk back there. */
   | { type: "waitAtSpawn"; faceDownAfterMs: number }
   | { type: "talk" }
-  | ({ type: "wander" } & WanderChange);
+  | ({ type: "wander" } & WanderStep);
 
 export type NpcAction =
   | { type: "idle" }
@@ -92,10 +105,10 @@ export function shouldRespawn(input: { deadTime: number; respawnTime: number; no
 
 /**
  * One tick of NPC behavior: who it targets, where it moves and whether it attacks or casts.
- * It mirrors the legacy `Npc.update` step for step, tracking the target and attack timer as they
- * would have changed along the way, and returns the final values for the caller to apply.
+ * Movement comes from the highest-scoring behavior (see `behaviors.ts`); targeting and the attack
+ * timer are tracked as they change along the way, and the final values returned for the caller.
  */
-export function decideNpcAction(input: NpcBehaviorInput, rng: () => number): NpcDecision {
+export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision {
   const { npc, state, now } = input;
   const attackDelay = npc.stats?.attackDelay as number;
 
@@ -213,51 +226,25 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: () => number): Npc
 
   function decideMovement(): NpcMovement {
     // Check if player is in range for aggro
-    if (targetPlayer) {
-      const isInRange = handleAggroState();
-      const shouldStop =
-        checkInRange(npc, targetPlayer, attackRange) || state.isAiming || isAttacking;
-
-      // Determine if player should chase target
-      const shouldChasePlayer = isInRange && !targetPlayer.isDead;
-
-      // Aggroed
-      if (shouldChasePlayer) {
-        expireStealthOfPlayerId = targetPlayer.socketId;
-        bubbleMessage = state.isAiming ? "0xFFAAAA!" : "?";
-        if (shouldStop) return { type: "standStill" };
-        return { type: "chase", pathed: input.isNearCollideTile };
-      }
-    }
-
-    // Otherwise just make them move
-    setLockedPlayerId(null);
-    bubbleMessage = null;
-
-    /* If the NPC is out of bounds, make it try to get back in bounds */
-    if (input.isOutOfBounds) {
-      /* TODO: Improve this so that it moves toward the nearest open tile instead */
-      return { type: "returnToSpawn", pathed: true };
-    }
-
-    if (state.isStatic) {
-      if (checkInRange(npc, npc.startingCoords, 1)) {
-        return { type: "waitAtSpawn", faceDownAfterMs: input.delta * 4 };
-      }
-      return { type: "returnToSpawn", pathed: true };
-    }
-
-    if (npc.hasTalkers) return { type: "talk" };
-
-    if (state.walkRange) {
-      if (distanceBetween(npc, npc.startingCoords) >= state.walkRange) {
-        return { type: "returnToSpawn", pathed: false };
-      }
-    }
-
-    return {
-      type: "wander",
-      ...decideWander({ time: input.time, walkSpeed: npc.stats?.walkSpeed as number }, rng),
+    const canChase = !!targetPlayer && handleAggroState() && !targetPlayer.isDead;
+    const ctx: BehaviorContext = {
+      input,
+      target: targetPlayer,
+      canChase,
+      attackRange,
+      isAttacking,
     };
+    const chosen = chooseBehavior(ctx, npc.behaviors ?? DEFAULT_NPC_BEHAVIORS) ?? "wander";
+    const behavior: NpcBehavior = NPC_BEHAVIORS[chosen];
+
+    if (behavior.engaged && targetPlayer) {
+      expireStealthOfPlayerId = targetPlayer.socketId;
+      bubbleMessage = state.isAiming ? "0xFFAAAA!" : "?";
+    } else {
+      // Not fighting: let go of the target
+      setLockedPlayerId(null);
+      bubbleMessage = null;
+    }
+    return behavior.move(ctx, rng);
   }
 }

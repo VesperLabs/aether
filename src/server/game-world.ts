@@ -9,6 +9,7 @@ import { subscribeQuests } from "@/rules/quests";
 import { npcBaseStats, subscribeStats } from "@/rules/stats";
 import { addRoom, createRoom, createWorld } from "@/rules/world";
 import { spawnLoot } from "./loot-adapter";
+import { subscribeNpcMessages } from "./npc-messages";
 import { Npc, type NpcDefinition } from "./npc";
 import type { GameIo } from "@/network";
 import type { Database } from "./persistence/database";
@@ -70,6 +71,7 @@ export function createServerWorld({ io, db }: { io: GameIo; db: Database }): Ser
   }
   for (const room of Object.values(world.rooms)) spawnNpcs(world, room);
 
+  subscribeNpcMessages(world.events, io);
   subscribeStats(world.events, (characterId, amount) => {
     world.players[characterId]?.assignExp(amount);
   });

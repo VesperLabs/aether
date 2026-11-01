@@ -178,17 +178,31 @@ describe("abilities", () => {
 });
 
 describe("wandering", () => {
-  it("keeps going most of the time", () => {
-    expect(decideWander({ time: 5, walkSpeed: 50 }, always)).toEqual({});
+  it("keeps going until the next change is due", () => {
+    expect(decideWander({ time: 100, nextWanderAt: 200, walkSpeed: 50 }, always)).toEqual({});
   });
 
-  it("picks a direction (or stops) every few frames", () => {
-    const at = (roll: number) => decideWander({ time: 9, walkSpeed: 50 }, () => roll);
-    expect(at(0)).toEqual({ vx: -20, direction: "left" });
-    expect(at(1.5 / 7)).toEqual({ vx: 20, direction: "right" });
-    expect(at(2.5 / 7)).toEqual({ vy: -20, direction: "up" });
-    expect(at(3.5 / 7)).toEqual({ vy: 20, direction: "down" });
-    expect(at(0.9)).toEqual({ vx: 0, vy: 0 });
+  it("picks a direction (or stops) once due, and schedules the next change", () => {
+    const at = (roll: number) =>
+      decideWander({ time: 200, nextWanderAt: 200, walkSpeed: 50 }, () => roll);
+    expect(at(0)).toEqual({ vx: -20, direction: "left", nextWanderAt: 325 });
+    expect(at(1.5 / 7)).toMatchObject({ vx: 20, direction: "right" });
+    expect(at(2.5 / 7)).toMatchObject({ vy: -20, direction: "up" });
+    expect(at(3.5 / 7)).toMatchObject({ vy: 20, direction: "down" });
+    expect(at(0.9)).toMatchObject({ vx: 0, vy: 0 });
+  });
+
+  it("does not depend on the frame rate", () => {
+    let nextWanderAt: number | undefined;
+    let changes = 0;
+    for (let time = 0; time < 10_000; time += 16) {
+      const step = decideWander({ time, nextWanderAt, walkSpeed: 50 }, () => 0.5);
+      if (step.nextWanderAt !== undefined) {
+        nextWanderAt = step.nextWanderAt;
+        changes++;
+      }
+    }
+    expect(changes).toBe(40);
   });
 
   it("ends conversations with every player who walked off", () => {

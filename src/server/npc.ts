@@ -10,14 +10,30 @@ import {
   checkInRange,
   decideNpcAction,
   decideTalkingEnded,
+  separate,
   shouldRespawn,
+  seek,
+  steerWithSeparation,
   type NpcAction,
   type NpcAbility,
   type NpcDecision,
 } from "@/rules/npc-behavior";
 import { canHitPlayer } from "@/rules/spells";
-import { createTimers, entitiesInRoom, getCharacterDirection } from "@/rules/world";
-import { findNextWaypoint, isSolidTile, worldToTileX, worldToTileY } from "@/rules/movement";
+import {
+  createRng,
+  createTimers,
+  entitiesInRoom,
+  getCharacterDirection,
+  seedFromString,
+  type Rng,
+} from "@/rules/world";
+import { getRoomIndex } from "./room-index";
+
+/** NPCs closer than this push apart while walking, so packs spread out instead of stacking. */
+const NPC_SEPARATION_RADIUS = 20;
+/** How hard that push steers, as a share of walk speed. */
+const NPC_SEPARATION_STRENGTH = 0.6;
+import { findNextWaypoint, isNextToSolidTile, isOutOfMap } from "@/rules/movement";
 
 /** An NPC as the content tables define it, before it is placed in a world. */
 // Legacy: the keeper and nasty tables have different shapes; type them once they share a base.
@@ -60,6 +76,8 @@ export class Npc extends Character {
   public keeperData: KeeperData;
   /** Windups and waits, run from `update` so they stop with the world. */
   public timers = createTimers();
+  /** Seeded from the id, so a replayed world rolls the same wanders and buff casts. */
+  public rng: Rng;
   declare name: string;
   /** NPCs never leave their room, so unlike players these are always set. */
   declare room: RoomData;
@@ -83,6 +101,7 @@ export class Npc extends Character {
       shop: buildShop(keeperData?.shop),
       quests: keeperData?.quests?.map((questId: string) => world?.quests?.[questId]),
     };
+    this.rng = createRng(seedFromString(String(this.id ?? this.name)));
     this.calculateStats(true);
   }
   setDead() {
@@ -107,54 +126,30 @@ export class Npc extends Character {
       this.y = this.startingCoords.y;
       this.calculateStats(true);
       this.state.isDead = false;
-      this.world.io.to(this.room.name).emit("respawnNpc", {
-        id: this?.id,
+      this.world.events.emit("npcRespawned", {
+        npcId: this.id,
+        roomName: this.room.name,
         x: this.x,
         y: this.y,
-        respawnTime: Date.now(),
+        at: Date.now(),
       });
     }
   }
   checkInRange(target: Point, range: number) {
     return checkInRange(this, target, range);
   }
-  // is the NPC adjacent to a collision tile?
   isNearCollideTile() {
-    const { grid } = this.room.map;
-    const npcTileX = worldToTileX(grid, this.x);
-    const npcTileY = worldToTileY(grid, this.y);
-
-    // All neighboring tiles, including diagonals
-    for (let dx = -1; dx <= 1; dx++) {
-      for (let dy = -1; dy <= 1; dy++) {
-        if (dx === 0 && dy === 0) continue;
-        if (isSolidTile(grid, npcTileX + dx, npcTileY + dy)) return true;
-      }
-    }
-    return false;
+    return isNextToSolidTile(this.room.map.grid, this.x, this.y);
   }
   isOutOfBounds() {
-    const { map } = this.room;
-    const npcTileX = worldToTileX(map.grid, this.x);
-    const npcTileY = worldToTileY(map.grid, this.y);
-    if (
-      this.x >= 0 &&
-      this.y >= 0 &&
-      this.x < map.widthInPixels &&
-      this.y < map.heightInPixels &&
-      !isSolidTile(map.grid, npcTileX, npcTileY)
-    ) {
-      return false;
-    }
-    return true;
+    return isOutOfMap(this.room.map, this.x, this.y);
   }
-  update(time: number, delta: number) {
-    // Destructure relevant properties from 'this'
+  update(time: number, delta: number, now = Date.now()) {
     const { state, room } = this ?? {};
     this.timers.advance(delta);
 
     // skip updates if no one is in the room
-    if (!room || entitiesInRoom(this.world.players, room.name).length === 0) {
+    if (!room || getRoomIndex(this.world, room.name).players.size === 0) {
       this.setLockedPlayerId(null);
       this.vx = 0;
       this.vy = 0;
@@ -171,7 +166,7 @@ export class Npc extends Character {
     // Regenerate health points
     this.doRegen();
 
-    const decision = decideNpcAction(buildNpcBehaviorInput(this, time, delta), Math.random);
+    const decision = decideNpcAction(buildNpcBehaviorInput(this, { time, delta, now }), this.rng);
     this.applyDecision(decision, delta);
   }
   applyDecision(decision: NpcDecision, delta: number) {
@@ -214,7 +209,8 @@ export class Npc extends Character {
       case "talk":
         return this.checkTalking();
       case "wander": {
-        const { type: _type, ...change } = movement;
+        const { type: _type, nextWanderAt, ...change } = movement;
+        if (nextWanderAt !== undefined) this.state.nextWanderAt = nextWanderAt;
         Object.assign(this, change);
         return;
       }
@@ -252,7 +248,7 @@ export class Npc extends Character {
         abilitySlot: slot,
       });
 
-    world.io.to(room?.name).emit("npcCastSpell", { id, castAngle, abilitySlot });
+    world.events.emit("npcCast", { npcId: id, roomName: room.name, abilitySlot, castAngle });
   }
   intendCastSpell(action: Extract<NpcAction, { type: "cast" }>, targetPlayer: Player) {
     const { ability, abilitySlot } = action;
@@ -297,7 +293,13 @@ export class Npc extends Character {
         ilvl: 1,
       });
 
-    world.io.to(room?.name).emit("npcAttack", { id, count, direction, castAngle });
+    world.events.emit("npcAttacked", {
+      npcId: id,
+      roomName: room.name,
+      count,
+      direction,
+      castAngle,
+    });
   }
   intendAttack(action: Extract<NpcAction, { type: "attack" }>, targetPlayer: Player) {
     this.direction = action.direction;
@@ -321,9 +323,17 @@ export class Npc extends Character {
   }
   moveTowardPoint(coords: Coordinate) {
     const walkSpeed = this.stats.walkSpeed;
-    const angle = Math.atan2(coords.y - this.y, coords.x - this.x);
-    this.vx = walkSpeed * Math.cos(angle);
-    this.vy = walkSpeed * Math.sin(angle);
+    const neighbors = getRoomIndex(this.world, this.room.name).npcs.near(
+      this,
+      NPC_SEPARATION_RADIUS,
+    );
+    const { vx, vy } = steerWithSeparation(
+      seek(this, coords, walkSpeed),
+      separate(this, neighbors, NPC_SEPARATION_RADIUS),
+      walkSpeed * NPC_SEPARATION_STRENGTH,
+    );
+    this.vx = vx;
+    this.vy = vy;
     this.direction = getCharacterDirection(this, { x: this?.x + this.vx, y: this.y + this.vy });
   }
   moveTowardPointPathed(targetCoords: Coordinate) {
@@ -340,7 +350,8 @@ export class Npc extends Character {
   /** Looks up the next tile on the way to the target. Walked towards on the following tick. */
   findPath(targetCoords: Coordinate) {
     const next = findNextWaypoint(this.room.pathfinder, this, targetCoords);
-    if (JSON.stringify(next) !== JSON.stringify(this.nextPath)) this.nextPath = next as Point;
+    const current = this.nextPath;
+    if (next?.x !== current?.x || next?.y !== current?.y) this.nextPath = next as Point;
   }
   standStill() {
     this.vy = 0;

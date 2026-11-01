@@ -22,8 +22,38 @@ export interface MobKilledEvent {
   y: number;
 }
 
+/** An NPC swung at its target. `count` is which hand (1 or 2). */
+export interface NpcAttackedEvent {
+  npcId: string;
+  roomName: string;
+  count: number;
+  direction: string;
+  castAngle: number;
+}
+
+/** An NPC cast the spell in one of its ability slots. */
+export interface NpcCastEvent {
+  npcId: string;
+  roomName: string;
+  abilitySlot: string | number;
+  castAngle: number;
+}
+
+/** A dead NPC came back at its spawn point. */
+export interface NpcRespawnedEvent {
+  npcId: string;
+  roomName: string;
+  x: number;
+  y: number;
+  /** Wall clock time of the respawn. */
+  at: number;
+}
+
 export interface GameEvents {
   mobKilled: MobKilledEvent;
+  npcAttacked: NpcAttackedEvent;
+  npcCast: NpcCastEvent;
+  npcRespawned: NpcRespawnedEvent;
 }
 
 export type GameEventName = keyof GameEvents;

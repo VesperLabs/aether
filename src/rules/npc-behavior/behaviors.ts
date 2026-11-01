@@ -1,0 +1,104 @@
+import type { Rng } from "@/rules/world";
+import type { NpcPlayerView } from "./aggro";
+import type { NpcBehaviorInput, NpcMovement } from "./decide";
+import { checkInRange, distanceBetween } from "./range";
+import { decideWander } from "./wander";
+
+/** What a behavior sees when it is scored and run. */
+export interface BehaviorContext {
+  input: NpcBehaviorInput;
+  /** The player the NPC is locked on to, if any. */
+  target: NpcPlayerView | null;
+  /** The target is alive and still within aggro range. */
+  canChase: boolean;
+  attackRange: number;
+  /** The NPC is attacking this tick (it stays put while it does). */
+  isAttacking: boolean | undefined;
+}
+
+/**
+ * One thing an NPC can be doing. Each tick the brain scores every behavior the NPC has and runs the
+ * highest; 0 means "not now". Behaviors are pure and only describe a movement.
+ */
+export interface NpcBehavior {
+  score(ctx: BehaviorContext): number;
+  move(ctx: BehaviorContext, rng: Rng): NpcMovement;
+  /** Fighting a target. Choosing anything else drops the target. */
+  engaged?: boolean;
+}
+
+/** Close in on the target, stopping once it is in attack range or while winding up. */
+const chase: NpcBehavior = {
+  engaged: true,
+  score: (ctx) => (ctx.canChase ? 1 : 0),
+  move: ({ input, target, attackRange, isAttacking }) => {
+    const inReach = checkInRange(input.npc, target, attackRange);
+    if (inReach || input.state.isAiming || isAttacking) return { type: "standStill" };
+    return { type: "chase", pathed: input.isNearCollideTile };
+  },
+};
+
+/** Stuck in a wall or off the map: head home. */
+const unstuck: NpcBehavior = {
+  score: ({ input }) => (input.isOutOfBounds ? 0.95 : 0),
+  /* TODO: Improve this so that it moves toward the nearest open tile instead */
+  move: () => ({ type: "returnToSpawn", pathed: true }),
+};
+
+/** Static NPCs hold their post. */
+const guard: NpcBehavior = {
+  score: ({ input }) => (input.state.isStatic ? 0.8 : 0),
+  move: ({ input }) =>
+    checkInRange(input.npc, input.npc.startingCoords, 1)
+      ? { type: "waitAtSpawn", faceDownAfterMs: input.delta * 4 }
+      : { type: "returnToSpawn", pathed: true },
+};
+
+/** Stand still while someone is talking to it. */
+const talk: NpcBehavior = {
+  score: ({ input }) => (input.npc.hasTalkers ? 0.7 : 0),
+  move: () => ({ type: "talk" }),
+};
+
+/** Wandered too far from spawn: walk back. */
+const leash: NpcBehavior = {
+  score: ({ input }) =>
+    input.state.walkRange &&
+    distanceBetween(input.npc, input.npc.startingCoords) >= input.state.walkRange
+      ? 0.6
+      : 0,
+  move: () => ({ type: "returnToSpawn", pathed: false }),
+};
+
+/** Amble about. The fallback when nothing else applies. */
+const wander: NpcBehavior = {
+  score: () => 0.1,
+  move: ({ input }, rng) => ({
+    type: "wander",
+    ...decideWander(
+      {
+        time: input.time,
+        nextWanderAt: input.state.nextWanderAt,
+        walkSpeed: input.npc.stats?.walkSpeed as number,
+      },
+      rng,
+    ),
+  }),
+};
+
+export const NPC_BEHAVIORS = { chase, unstuck, guard, talk, leash, wander } satisfies Record<
+  string,
+  NpcBehavior
+>;
+
+export type NpcBehaviorId = keyof typeof NPC_BEHAVIORS;
+
+/** What every NPC does unless its content says otherwise. */
+export const DEFAULT_NPC_BEHAVIORS: readonly NpcBehaviorId[] = [
+  "chase",
+  "unstuck",
+  "guard",
+  "talk",
+  "leash",
+  "wander",
+];

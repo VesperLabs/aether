@@ -11,3 +11,7 @@ export { addRoom, createRoom, createWorld } from "./world";
 export type { DoorData, RoomData, World } from "./world";
 export { DEFAULT_USER_SETTINGS } from "./user-settings";
 export type { UserSettings } from "./user-settings";
+export { createRng, seedFromString } from "./rng";
+export type { Rng } from "./rng";
+export { createSpatialHash } from "./spatial-hash";
+export type { SpatialHash } from "./spatial-hash";

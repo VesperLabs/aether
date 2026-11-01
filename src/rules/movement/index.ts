@@ -2,6 +2,8 @@ export {
   COLLIDE_LAYER,
   buildTileGrid,
   getObjectProperty,
+  isNextToSolidTile,
+  isOutOfMap,
   isSolidTile,
   readTileMap,
   worldToTileX,
