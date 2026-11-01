@@ -20,7 +20,7 @@ export class Character extends withCharacterModel(Phaser.GameObjects.Container) 
   declare room: RoomData;
   constructor(scene: Phaser.Scene, args: CharacterArgs) {
     super(scene, args.x, args.y, []);
-    this.initCharacter(args);
+    this.initCharacter(args, Date.now);
     scene.physics.add.existing(this);
     this.body.setCircle(BODY_SIZE, -BODY_SIZE, -BODY_SIZE);
     this.createHitBox(scene, this.hitBoxSize);
