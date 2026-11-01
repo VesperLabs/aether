@@ -15,7 +15,7 @@ export function lootInRoom(world: ServerWorld, roomName: string): Loot[] {
 
 /** Puts a drop on the ground and tells the room. */
 export function spawnLoot(world: ServerWorld, roomName: string, spawn: LootSpawn) {
-  const loot = createLoot(spawn, { id: crypto.randomUUID(), roomName, now: Date.now() });
+  const loot = createLoot(spawn, { id: crypto.randomUUID(), roomName, now: world.now() });
   if (!loot) return;
   world.loots[loot.id] = loot as unknown as Loot;
   world.io.to(roomName).emit("lootSpawned", { loot, npcId: spawn.npcId });
@@ -27,7 +27,7 @@ export function removeLoot(world: ServerWorld, id: string) {
 
 /** Runs once per tick for a room: respawns map loot and expires old loot. */
 export function updateRoomLoot(world: ServerWorld, room: Room) {
-  const now = Date.now();
+  const now = world.now();
   const state = room.lootState;
   if (isMapLootDue(now, state.lastMapLootSpawn)) {
     state.lastMapLootSpawn = now;

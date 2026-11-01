@@ -116,7 +116,7 @@ export class Player extends ServerCharacter {
       this.state.lastAngle = castAngle;
     }
 
-    this.state.lastAttack = Date.now();
+    this.state.lastAttack = this.world.now();
     this.state.isAttacking = true;
 
     this.dispelBuffsByProperty("dispelBeforeAttack");
@@ -240,7 +240,7 @@ export class Player extends ServerCharacter {
     this.abilities = withoutSlot(this.abilities, slotName) as Record<string, Item>;
   }
   checkBubbleMessage() {
-    const now = Date.now();
+    const now = this.world.now();
     if (now - (this.state.lastBubbleMessage ?? Number.NaN) > 5000) {
       this.state.bubbleMessage = null;
     }

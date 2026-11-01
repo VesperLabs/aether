@@ -33,7 +33,7 @@ export class ServerCharacter extends CharacterModel {
   constructor(world: ServerWorld, args: CharacterArgs) {
     super();
     this.world = world;
-    this.initCharacter(args, Date.now);
+    this.initCharacter(args, world.now);
     this.room = args?.room;
   }
   /** Runs once per tick. Players and NPCs override it. */

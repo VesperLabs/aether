@@ -42,7 +42,7 @@ export function playerInput(ctx: CommandContext, input: ParsedCommand<"playerInp
   if (player.roomName !== effectiveRoom) return; // player is changing room
   const room = player.room;
   if (room) {
-    const now = Date.now();
+    const now = world.now();
     const walkSpeed = player.stats?.walkSpeed ?? 100;
     let track = moveTracks.get(player);
     /* The server moved the player itself (door, respawn, spawn): trust that spot and start over. */
@@ -92,7 +92,7 @@ export function dodge(ctx: CommandContext, { angle }: ParsedCommand<"dodge">) {
   const { world, socketId } = ctx;
   const player = world.players[socketId];
   if (!isInRoom(player) || !Number.isFinite(angle)) return;
-  const now = Date.now();
+  const now = world.now();
   const sp = player.stats?.sp ?? 0;
   if (!canDodge({ state: player.state, sp, isStunned: player.hasBuff("stun"), now })) return;
   player.modifyStat("sp", -DODGE_SP_COST);
@@ -146,7 +146,7 @@ export function enterDoor(ctx: CommandContext, doorName: ParsedCommand<"enterDoo
   world.db.updateUserMapDetails(player);
 
   socket.to(destMap).emit("playerJoin", getFullCharacterState(player), {
-    lastTeleport: Date.now(),
+    lastTeleport: world.now(),
   });
 
   socket.emit("heroInit", {
@@ -185,7 +185,7 @@ export function respawn(ctx: CommandContext) {
 
   socket.to(newRoom).emit("playerJoin", getFullCharacterState(player), {
     isRespawn: true,
-    lastTeleport: Date.now(),
+    lastTeleport: world.now(),
   });
 
   socket.emit(

@@ -147,7 +147,7 @@ export class Npc extends Character {
     this.expireBuffs(true);
     this.threat = {};
     this.state.isDead = true;
-    this.state.deadTime = Date.now();
+    this.state.deadTime = this.world.now();
     this.state.bubbleMessage = null;
     this.setLockedPlayerId(null);
     this.vx = 0;
@@ -159,7 +159,7 @@ export class Npc extends Character {
       shouldRespawn({
         deadTime: this.state.deadTime,
         respawnTime: this.respawnTime,
-        now: Date.now(),
+        now: this.world.now(),
       })
     ) {
       this.x = this.startingCoords.x;
@@ -171,7 +171,7 @@ export class Npc extends Character {
         roomName: this.room.name,
         x: this.x,
         y: this.y,
-        at: Date.now(),
+        at: this.world.now(),
       });
     }
   }
@@ -184,7 +184,7 @@ export class Npc extends Character {
   isOutOfBounds() {
     return isOutOfMap(this.room.map, this.x, this.y);
   }
-  update(time: number, delta: number, now = Date.now()) {
+  update(time: number, delta: number, now = this.world.now()) {
     const { state, room } = this ?? {};
     this.timers.advance(delta);
 
@@ -224,7 +224,7 @@ export class Npc extends Character {
       state.npcAttackReady = decision.npcAttackReady;
     }
     if (state.isAttacking !== decision.isAttacking) state.isAttacking = decision.isAttacking;
-    if (decision.resetAttackTimer) state.lastAttack = Date.now();
+    if (decision.resetAttackTimer) state.lastAttack = this.world.now();
     if (state.lockedPlayerId !== decision.lockedPlayerId) {
       state.lockedPlayerId = decision.lockedPlayerId;
     }
@@ -260,7 +260,7 @@ export class Npc extends Character {
   setLockedPlayerId(id: string | null | undefined) {
     // If they are switching targets
     if (this.state.lockedPlayerId !== id && id) {
-      this.state.lastAttack = Date.now();
+      this.state.lastAttack = this.world.now();
       this.state.npcAttackReady = false;
     }
     this.state.lockedPlayerId = id;
@@ -309,7 +309,7 @@ export class Npc extends Character {
     const count = this.action === "attack_right" && this.hasWeaponLeft() ? 2 : 1;
     // Set state to attacking and record attack time
     this.state.isAttacking = true;
-    this.state.lastAttack = Date.now();
+    this.state.lastAttack = this.world.now();
     this.state.npcAttackReady = false;
 
     if (this?.hasBuff("stun")) return;

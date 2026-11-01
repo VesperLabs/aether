@@ -85,7 +85,7 @@ export function message(ctx: CommandContext, args: ParsedCommand<"message">) {
   if (!isInRoom(player)) return;
   // chat bubble
   if (args.message.charAt(0) === "!" && args.message.length > 1) {
-    player.state.lastBubbleMessage = Date.now();
+    player.state.lastBubbleMessage = world.now();
     player.state.bubbleMessage = args.message.substr(1);
     return;
   }

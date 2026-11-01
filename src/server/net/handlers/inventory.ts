@@ -105,7 +105,7 @@ export function consumeItem(ctx: CommandContext, request: ParsedCommand<"consume
   /* If the item has effects */
   if (result.isPotion) {
     /* Set potion cooldown */
-    player.state.lastPotion = Date.now();
+    player.state.lastPotion = world.now();
     if (result.hp) player.modifyStat("hp", result.hp);
     if (result.mp) player.modifyStat("mp", result.mp);
   }
