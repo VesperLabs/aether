@@ -14,6 +14,6 @@ Take the current work from uncommitted changes to an open PR. Never merge it; th
 5. **Push.** `git push -u origin HEAD` (use `--force-with-lease` after a rebase of an already-pushed branch).
 6. **PR.** If no PR exists for the branch, run `gh pr create --fill --base main`. The PR title becomes the squash commit on main, so it must be a conventional commit; fix it with `gh pr edit --title` if needed.
 7. **Clean up.** If in a worktree, leave it and remove it (the branch is safe on the remote). Delete the local branch with `git branch -D`.
-8. **Report.** Give the PR URL in one line.
+8. **Report.** End your reply with the PR as a clickable markdown link, e.g. `[PR #70: fix: loot roll](https://github.com/VesperLabs/aether/pull/70)`, so the user can open it.
 
 If the user says "ship and wait", watch with `gh pr checks --watch` before cleaning up. If checks fail, fix the cause, push again, and repeat. If CI fails or the user asks for changes after cleanup, recreate the worktree from the remote branch to fix it.
