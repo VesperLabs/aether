@@ -2,7 +2,8 @@ import { spellDetails } from "@/content";
 import { hasBuff, type ActiveBuff } from "@/rules/buffs";
 import { BUFF_SPELLS, checkCastReady, type LastCast } from "@/rules/spells";
 import { NPC_BUFF_CAST_PROBABILITY } from "./constants";
-import { checkInRange, type Body } from "./range";
+import type { Body } from "./range";
+import { getSpellBand, isInBand, type ShotBand } from "./reach";
 
 export interface NpcAbility {
   base?: string;
@@ -21,7 +22,6 @@ export interface AbilityChoiceInput {
 
 type Details = {
   allowedTargets?: readonly string[];
-  npcCastRange?: readonly [number, number];
 };
 
 const detailsOf = (spellName?: string) =>
@@ -50,12 +50,8 @@ export function isTargetSuitableForSpell(
   const details = detailsOf(spellName);
 
   // attack spells
-  if (input.target && details?.allowedTargets?.includes("enemy") && details?.npcCastRange) {
-    const [min, max] = details.npcCastRange;
-    return (
-      checkInRange(input.self, input.target, max) && !checkInRange(input.self, input.target, min)
-    );
-  }
+  const band = getSpellBand(spellName);
+  if (input.target && band) return isInBand(input.self, input.target, band);
   // auras
   if (!input.target && details?.allowedTargets?.includes("self")) {
     if (BUFF_SPELLS.includes(spellName as string)) {
@@ -79,14 +75,26 @@ export function findSuitableAbility(
   return {};
 }
 
-/** The furthest any of its attack spells reaches, or 0 without one. */
-export function getMaxSpellRange(abilities: Record<string, NpcAbility | null | undefined>) {
-  let range = 0;
-  for (const spell of Object.values(abilities)) {
-    const details = detailsOf(spell?.base);
-    if (details?.allowedTargets?.includes("enemy") && details.npcCastRange) {
-      range = Math.max(range, details.npcCastRange[1]);
-    }
+/**
+ * Where it can land the attack spell it will cast next: the first one off cooldown, in the same
+ * order `findSuitableAbility` checks them. Undefined when none is ready.
+ */
+export function getNextSpellBand(input: AbilityChoiceInput): ShotBand | undefined {
+  for (const spell of Object.values(input.abilities)) {
+    const band = getSpellBand(spell?.base);
+    if (band && isSpellCastable(input, spell)) return band;
   }
-  return range;
+  return undefined;
+}
+
+/** Where its longest-reaching attack spell can land from, ready or not. */
+export function getLongestSpellBand(
+  abilities: Record<string, NpcAbility | null | undefined>,
+): ShotBand | undefined {
+  let longest: ShotBand | undefined;
+  for (const spell of Object.values(abilities)) {
+    const band = getSpellBand(spell?.base);
+    if (band && (!longest || band.max > longest.max)) longest = band;
+  }
+  return longest;
 }

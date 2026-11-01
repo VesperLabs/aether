@@ -77,12 +77,13 @@ export type MobMovementBehavior =
   | "follow";
 
 /**
- * Opt-in behaviors: `aggressive` attacks players on sight (otherwise it only fights back), `retreat`
+ * Opt-in behaviors: `aggressive` attacks players on sight (otherwise it only fights back),
+ * `shootsOverWalls` fires across collision (fish in water) instead of moving for a clear shot, `retreat`
  * runs when badly hurt, `kite` keeps casters and archers at range, `follow` stays near a leader (set per spawn with a
  * `leader` property on the map object, which turns `follow` on by itself).
  * The rest are on for every mob already.
  */
-export type MobBehavior = MobMovementBehavior | "aggressive";
+export type MobBehavior = MobMovementBehavior | "aggressive" | "shootsOverWalls";
 
 export interface NastyDefinition extends MobBase {
   /** A line or two of flavour text shown in the wiki. */

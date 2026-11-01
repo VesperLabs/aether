@@ -4,11 +4,14 @@ import {
   NPC_FOLLOW_DISTANCE,
   NPC_HOME_RANGE,
   NPC_KITE_MIN_RANGE,
+  NPC_KITE_SPEED_RATIO,
   NPC_RETREAT_HP_RATIO,
+  NPC_STRAFE_SWITCH_MS,
 } from "./constants";
 import type { NpcPlayerView } from "./aggro";
 import type { NpcBehaviorInput, NpcMovement } from "./decide";
 import { checkInRange, distanceBetween } from "./range";
+import { getIdealDistance, type ShotBand } from "./reach";
 import { decideWander } from "./wander";
 
 /** What a behavior sees when it is scored and run. */
@@ -20,7 +23,10 @@ export interface BehaviorContext {
   canChase: boolean;
   attackRange: number;
   /** How close it closes in before stopping: attack range, or spell range for kiters. */
-  holdRange: number;
+  /** Where its next shot lands from, for NPCs that shoot. Unset for pure melee. */
+  standBand: ShotBand | undefined;
+  /** No wall between the NPC and its target. */
+  hasClearShot: boolean;
   /** The NPC is attacking this tick (it stays put while it does). */
   isAttacking: boolean | undefined;
   /** Leashed: walking home to heal, ignoring players. */
@@ -36,18 +42,46 @@ export interface NpcBehavior {
   move(ctx: BehaviorContext, rng: Rng): NpcMovement;
   /** Fighting a target. Choosing anything else drops the target. */
   engaged?: boolean;
+  /** Neither attacks nor casts while chosen, so it doesn't turn on the target mid-run. */
+  holdsFire?: boolean;
 }
 
-/** Close in on the target, stopping once it is in attack range or while winding up. */
+/**
+ * Close in on the target, stopping once it is in attack range or while winding up. Ranged NPCs
+ * keep closing (pathing around walls) until they have a clear shot, then sidestep between shots.
+ */
 const chase: NpcBehavior = {
   engaged: true,
   score: (ctx) => (ctx.canChase ? 1 : 0),
-  move: ({ input, target, holdRange, isAttacking }) => {
-    const inReach = checkInRange(input.npc, target, holdRange);
-    if (inReach || input.state.isAiming || isAttacking) return { type: "standStill" };
-    return { type: "chase", pathed: input.isNearCollideTile };
+  move: ({ input, target, attackRange, standBand, hasClearShot, isAttacking }, rng) => {
+    if (input.state.isAiming || isAttacking) return { type: "standStill" };
+    if (!standBand) {
+      if (checkInRange(input.npc, target, attackRange)) return { type: "standStill" };
+      return { type: "chase", pathed: input.isNearCollideTile };
+    }
+    if (!hasClearShot) return { type: "chase", pathed: true };
+    // Close in until well inside the band, then sidestep there
+    const ideal = getIdealDistance(standBand);
+    if (distanceBetween(input.npc, target) > (ideal + standBand.max) / 2) {
+      return { type: "chase", pathed: input.isNearCollideTile };
+    }
+    return decideStrafe(input, ideal, rng);
   },
 };
+
+/** Keep sidestepping the same way, switching sides every second or so. */
+function decideStrafe(input: BehaviorContext["input"], distance: number, rng: Rng): NpcMovement {
+  const { strafeClockwise, nextStrafeAt } = input.state;
+  if (nextStrafeAt !== undefined && input.time < nextStrafeAt) {
+    return { type: "strafe", clockwise: !!strafeClockwise, distance };
+  }
+  return {
+    type: "strafe",
+    clockwise: rng() < 0.5,
+    distance,
+    nextStrafeAt: input.time + NPC_STRAFE_SWITCH_MS * (0.5 + rng()),
+  };
+}
 
 /** Pulled too far from spawn: walk home, ignoring everyone, and heal on arrival. */
 const reset: NpcBehavior = {
@@ -58,9 +92,10 @@ const reset: NpcBehavior = {
       : { type: "returnToSpawn", pathed: true },
 };
 
-/** Badly hurt: run from the target (still swinging if it catches up). */
+/** Badly hurt: run from the target without turning to fight. */
 const retreat: NpcBehavior = {
   engaged: true,
+  holdsFire: true,
   score: ({ input, canChase }) => {
     const { hp, maxHp } = input.npc.stats ?? {};
     if (!canChase || !maxHp) return 0;
@@ -69,16 +104,17 @@ const retreat: NpcBehavior = {
   move: () => ({ type: "flee" }),
 };
 
-/** Ranged NPCs and casters back away when the target closes in, then shoot again. */
+/** Ranged NPCs and casters back away (slower than they walk) when the target closes in, then shoot again. */
 const kite: NpcBehavior = {
   engaged: true,
-  score: ({ input, target, canChase, holdRange }) =>
+  score: ({ input, target, canChase, standBand }) =>
     canChase &&
-    holdRange > NPC_KITE_MIN_RANGE * 2 &&
+    !!standBand &&
+    standBand.max > NPC_KITE_MIN_RANGE * 2 &&
     checkInRange(input.npc, target, NPC_KITE_MIN_RANGE)
       ? 1.05
       : 0,
-  move: () => ({ type: "flee" }),
+  move: () => ({ type: "flee", speedRatio: NPC_KITE_SPEED_RATIO }),
 };
 
 /** Stay close to a leader, waiting at heel when near. */

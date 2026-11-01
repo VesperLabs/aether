@@ -149,13 +149,13 @@ describe("abilities", () => {
   };
 
   it("casts an attack spell when the target is inside its range band", () => {
-    const near = { x: 100, y: 0 };
+    const near = { x: 80, y: 0 };
     expect(findSuitableAbility({ ...base, target: near }, never).abilitySlot).toBe("1");
-    // too close (min 50) and too far (max 200), allowing for the 16 pixels of bodies
-    expect(findSuitableAbility({ ...base, target: { x: 60, y: 0 } }, never).abilitySlot).toBe(
+    // too close (min 50) and too far: a fireball only flies 120, so not from 110 away
+    expect(findSuitableAbility({ ...base, target: { x: 40, y: 0 } }, never).abilitySlot).toBe(
       undefined,
     );
-    expect(findSuitableAbility({ ...base, target: { x: 300, y: 0 } }, never).abilitySlot).toBe(
+    expect(findSuitableAbility({ ...base, target: { x: 110, y: 0 } }, never).abilitySlot).toBe(
       undefined,
     );
   });

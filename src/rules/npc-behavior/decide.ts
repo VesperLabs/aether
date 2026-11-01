@@ -2,10 +2,21 @@ import type { ActiveBuff } from "@/rules/buffs";
 import { isRespawnDue } from "@/rules/combat";
 import { checkCastReady, type LastCast } from "@/rules/spells";
 import { getCharacterDirection, type CardinalDirection } from "@/rules/world";
-import { findSuitableAbility, getMaxSpellRange, type NpcAbility } from "./abilities";
+import {
+  findSuitableAbility,
+  getLongestSpellBand,
+  getNextSpellBand,
+  type NpcAbility,
+} from "./abilities";
 import { decideAggro, isNpcAttackReady, type NpcPlayerView, type NpcSelfView } from "./aggro";
-import { NPC_HOME_RANGE, NPC_LEASH_RANGE, NPC_WARNING_DELAY } from "./constants";
+import {
+  NPC_HOME_RANGE,
+  NPC_LEASH_RANGE,
+  NPC_SHOULD_ATTACK_RANGE,
+  NPC_WARNING_DELAY,
+} from "./constants";
 import { checkInRange, distanceBetween, getShouldAttackRange } from "./range";
+import { getWeaponBand, isInBand } from "./reach";
 import type { Body, NpcWeaponRanges } from "./range";
 import type { Rng } from "@/rules/world";
 import {
@@ -58,6 +69,10 @@ export interface NpcBehaviorInput {
     lastCast: LastCast;
     /** Loop time of the next wander direction change. */
     nextWanderAt?: number;
+    /** Which way it sidesteps around its target between shots. */
+    strafeClockwise?: boolean;
+    /** Loop time at which it next picks a side to sidestep. */
+    nextStrafeAt?: number;
     /** Leashed and walking home; players are ignored until it gets there. */
     isResetting?: boolean;
     /** What it did last tick, which it slightly prefers to keep doing. */
@@ -72,6 +87,8 @@ export interface NpcBehaviorInput {
   threatTarget?: NpcPlayerView | null;
   /** The NPC this one follows, if it has a leader nearby. */
   leader?: Body | null;
+  /** Is there no wall between the NPC and `target`? Assumed clear when not given. */
+  hasClearShot?: (target: Body) => boolean;
   /** Is the NPC next to a collision tile (so it should path)? */
   isNearCollideTile: boolean;
   /** Is the NPC outside the map or inside a collision tile? */
@@ -86,8 +103,10 @@ export type NpcMovement =
   /** Stand at spawn, facing down after `faceDownAfterMs`, or walk back there. */
   | { type: "waitAtSpawn"; faceDownAfterMs: number }
   | { type: "talk" }
-  /** Run directly away from the target. */
-  | { type: "flee" }
+  /** Run away from the target, around walls, at `speedRatio` of walk speed (default full). */
+  | { type: "flee"; speedRatio?: number }
+  /** Sidestep around the target, drifting back to `distance` from it. Sets the side and when to next pick one. */
+  | { type: "strafe"; clockwise: boolean; distance: number; nextStrafeAt?: number }
   /** Walk to the leader. */
   | { type: "follow"; pathed: boolean }
   | ({ type: "wander" } & WanderStep);
@@ -225,15 +244,23 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
   if (input.isStunned) return result({ type: "standStill" });
 
   const attackRange = getShouldAttackRange(npc.weapons);
+  // Ranged weapons fire from inside the arrow's flight; melee closes to touching
+  const weaponBand =
+    attackRange !== NPC_SHOULD_ATTACK_RANGE ? getWeaponBand(attackRange) : undefined;
+  const hasClearShot = !!targetPlayer && (input.hasClearShot?.(targetPlayer) ?? true);
   const movement = decideMovement();
+  if (NPC_BEHAVIORS[behaviorId].holdsFire) return result(movement);
 
   // intendAttack
   let action: NpcAction = idle;
   if (
     targetPlayer &&
+    hasClearShot &&
     !isAttacking &&
     !state.isAiming &&
-    checkInRange(npc, targetPlayer, attackRange) &&
+    (weaponBand
+      ? isInBand(npc, targetPlayer, weaponBand)
+      : checkInRange(npc, targetPlayer, attackRange)) &&
     npcAttackReady
   ) {
     action = {
@@ -255,7 +282,8 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
     const { ability, abilitySlot } = findSuitableAbility(
       {
         self: npc,
-        target: targetPlayer,
+        // No clear shot: only spells that need no target, like self buffs
+        target: hasClearShot ? targetPlayer : null,
         abilities: npc.abilities,
         buffs: npc.buffs,
         lastCast: state.lastCast,
@@ -280,16 +308,28 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
     // Check if player is in range for aggro
     const canChase = !isResetting() && !!targetPlayer && handleAggroState() && !targetPlayer.isDead;
     const ids = [...DEFAULT_NPC_BEHAVIORS, ...(npc.behaviors ?? []).filter(isMovementBehavior)];
-    // Kiters hold at three quarters of their spell reach instead of closing to melee
-    const holdRange = ids.includes("kite")
-      ? Math.max(attackRange, getMaxSpellRange(npc.abilities) * 0.75)
-      : attackRange;
+    // Stand where the next shot lands: the spell it is about to cast, else its ranged weapon,
+    // else (kiters) its longest spell
+    const nextSpellBand = getNextSpellBand({
+      self: npc,
+      target: targetPlayer,
+      abilities: npc.abilities,
+      buffs: npc.buffs,
+      lastCast: state.lastCast,
+      castDelay: npc.stats?.castDelay,
+      now,
+    });
+    const standBand =
+      nextSpellBand ??
+      weaponBand ??
+      (ids.includes("kite") ? getLongestSpellBand(npc.abilities) : undefined);
     const ctx: BehaviorContext = {
       input,
       target: targetPlayer,
       canChase,
       attackRange,
-      holdRange,
+      standBand,
+      hasClearShot,
       isAttacking,
       isResetting: isResetting(),
     };

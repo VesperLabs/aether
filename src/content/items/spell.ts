@@ -37,6 +37,16 @@ export const spellItems = {
       stats: { mpCost: 4 },
       requirements: { charClass: "mage" },
     },
+    waterSpit: {
+      ilvl: 1,
+      name: "Water Spit",
+      flavor: "A mouthful of river water, spat with surprising aim. Mostly it just gets you wet.",
+      base: "waterball",
+      slot: "spell",
+      texture: "scroll-blue",
+      effects: { minWaterDamage: 0, maxWaterDamage: 1 },
+      exclusive: true,
+    },
     lightball: {
       ilvl: 1,
       name: "Lightball",

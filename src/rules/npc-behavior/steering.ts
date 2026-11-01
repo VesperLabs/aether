@@ -19,6 +19,57 @@ export function flee(self: Point, threat: Point, speed: number): Velocity {
   return { vx: -toward.vx, vy: -toward.vy };
 }
 
+/** How far ahead `fleeAround` checks each heading for walls. */
+const FLEE_LOOK_AHEAD = 40;
+/** Headings `fleeAround` tries, as offsets from straight away, best first. */
+const FLEE_OFFSETS = [0, 30, -30, 60, -60, 90, -90, 120, -120, 150, -150].map(
+  (degrees) => (degrees * Math.PI) / 180,
+);
+
+/** How much `fleeAround` favours the heading it already runs along, against straight away. */
+const FLEE_COMMITMENT = 0.8;
+
+/**
+ * Away from `threat` like `flee`, but swings toward open ground when straight away runs into a
+ * wall, so a fleeing NPC slides along walls and out of corners instead of pinning itself. It
+ * prefers to keep running the way it already is (`current`), so it commits to one side of a wall
+ * instead of flipping between both. `radius` is the body's half-width, so headings that would clip a corner count as blocked.
+ * Falls back to straight away when every heading is blocked.
+ */
+export function fleeAround(
+  self: Point,
+  threat: Point,
+  speed: number,
+  isBlocked: (point: Point) => boolean,
+  current: Velocity = ZERO,
+  radius = 0,
+): Velocity {
+  const away = Math.atan2(self.y - threat.y, self.x - threat.x);
+  const moving = current.vx !== 0 || current.vy !== 0;
+  const heading = Math.atan2(current.vy, current.vx);
+  let best: { angle: number; score: number } | undefined;
+  for (const offset of FLEE_OFFSETS) {
+    const angle = away + offset;
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
+    // Probe the centre line and both edges of the body, so a heading that would clip a corner
+    // with a shoulder counts as blocked.
+    const clear = [0.25, 0.5, 1].every((step) =>
+      [-radius, 0, radius].every(
+        (side) =>
+          !isBlocked({
+            x: self.x + cos * FLEE_LOOK_AHEAD * step - sin * side,
+            y: self.y + sin * FLEE_LOOK_AHEAD * step + cos * side,
+          }),
+      ),
+    );
+    if (!clear) continue;
+    const score = Math.cos(offset) + (moving ? FLEE_COMMITMENT * Math.cos(angle - heading) : 0);
+    if (!best || score > best.score) best = { angle, score };
+  }
+  if (!best) return flee(self, threat, speed);
+  return { vx: speed * Math.cos(best.angle), vy: speed * Math.sin(best.angle) };
+}
 /**
  * A push away from neighbours closer than `radius`, stronger the closer they are, so a pack spreads
  * out around its target instead of stacking on one spot. Zero when nobody is that close.

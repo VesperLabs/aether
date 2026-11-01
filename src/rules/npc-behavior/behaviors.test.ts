@@ -116,7 +116,9 @@ describe("threat, leash and new behaviors", () => {
         never,
       );
     expect(hurt(["aggressive"]).behavior).toBe("chase");
-    expect(hurt(["aggressive", "retreat"]).movement).toEqual({ type: "flee" });
+    const retreating = hurt(["aggressive", "retreat"]);
+    expect(retreating.movement).toEqual({ type: "flee" });
+    expect(retreating.action.type).toBe("idle");
   });
 
   it("kites with a ranged weapon when the target gets close", () => {
@@ -127,7 +129,7 @@ describe("threat, leash and new behaviors", () => {
       }),
       never,
     );
-    expect(decision.movement).toEqual({ type: "flee" });
+    expect(decision.movement).toEqual({ type: "flee", speedRatio: 0.6 });
   });
 
   it("casters that kite hold at spell range instead of closing to melee", () => {
@@ -141,8 +143,40 @@ describe("threat, leash and new behaviors", () => {
         }),
         never,
       ).movement;
-    expect(at(120)).toEqual({ type: "standStill" });
-    expect(at(30)).toEqual({ type: "flee" });
+    expect(at(70)).toMatchObject({ type: "strafe" });
+    expect(at(30)).toEqual({ type: "flee", speedRatio: 0.6 });
+  });
+
+  it("casters move into the range band of the spell they'll cast next", () => {
+    const at = (x: number) =>
+      decideNpcAction(
+        input({
+          npc: { behaviors: ["aggressive"], abilities: { "1": { base: "fireball" } } },
+          state: { lockedPlayerId: "p1" },
+          rest: { lockedPlayer: player({ x }), nearestPlayer: player({ x }) },
+        }),
+        never,
+      ).movement;
+    // Fireball's band is 50 to 102 (it flies 120): it heads for the middle, then sidesteps there
+    expect(at(120)).toMatchObject({ type: "chase" });
+    expect(at(80)).toMatchObject({ type: "strafe", distance: 76 });
+  });
+
+  it("ranged NPCs close in around walls until they have a clear shot", () => {
+    const decision = decideNpcAction(
+      input({
+        npc: { behaviors: ["aggressive", "kite"], abilities: { "1": { base: "fireball" } } },
+        state: { lockedPlayerId: "p1" },
+        rest: {
+          lockedPlayer: player({ x: 120 }),
+          nearestPlayer: player({ x: 120 }),
+          hasClearShot: () => false,
+        },
+      }),
+      never,
+    );
+    expect(decision.movement).toEqual({ type: "chase", pathed: true });
+    expect(decision.action.type).toBe("idle");
   });
 
   it("follows its leader, waiting when close", () => {

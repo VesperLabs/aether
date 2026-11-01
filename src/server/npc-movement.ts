@@ -4,14 +4,15 @@ import { getRoomIndex } from "./room-index";
 import {
   checkInRange,
   decideTalkingEnded,
-  flee,
+  fleeAround,
+  NPC_STRAFE_SPEED_RATIO,
   seek,
   separate,
   steerWithSeparation,
   type NpcMovement,
   type Velocity,
 } from "@/rules/npc-behavior";
-import { findNextWaypoint } from "@/rules/movement";
+import { NPC_WALL_RADIUS, findNextWaypoint, hasLineOfSight, isOutOfMap } from "@/rules/movement";
 import { getStickyDirection, type Point } from "@/rules/world";
 
 /** NPCs closer than this push apart while walking, so packs spread out instead of stacking. */
@@ -39,7 +40,20 @@ export function performNpcMovement(
       return movement.pathed ? walkToPathed(npc, leader) : walkTo(npc, leader);
     case "flee":
       if (!targetPlayer) return standStill(npc);
-      return steer(npc, flee(npc, targetPlayer, npc.stats.walkSpeed));
+      return steer(
+        npc,
+        fleeAround(
+          npc,
+          targetPlayer,
+          npc.stats.walkSpeed * (movement.speedRatio ?? 1),
+          (point) => isOutOfMap(npc.room.map, point.x, point.y),
+          { vx: npc.vx, vy: npc.vy },
+          NPC_WALL_RADIUS,
+        ),
+      );
+    case "strafe":
+      if (!targetPlayer) return standStill(npc);
+      return strafe(npc, targetPlayer, movement);
     case "waitAtSpawn":
       npc.timers.after(movement.faceDownAfterMs, () => {
         npc.direction = "down";
@@ -67,6 +81,46 @@ function steer(npc: Npc, base: Velocity) {
   npc.vx = vx;
   npc.vy = vy;
   npc.direction = getStickyDirection(npc.direction, npc, { x: npc.x + vx, y: npc.y + vy });
+}
+
+/**
+ * Sidesteps around `target`, facing it, drifting back toward `distance` from it so it stays in
+ * range, and switches sides when a wall would block its path or its shot.
+ */
+function strafe(
+  npc: Npc,
+  target: Point,
+  {
+    clockwise,
+    distance,
+    nextStrafeAt,
+  }: { clockwise: boolean; distance: number; nextStrafeAt?: number },
+) {
+  if (nextStrafeAt !== undefined) npc.state.nextStrafeAt = nextStrafeAt;
+  const speed = npc.stats.walkSpeed * NPC_STRAFE_SPEED_RATIO;
+  const toTarget = Math.atan2(target.y - npc.y, target.x - npc.x);
+  // Positive when too far: lean in. Negative when too close: lean out. Capped at 45 degrees.
+  const drift = Math.max(
+    -1,
+    Math.min(1, (Math.hypot(target.x - npc.x, target.y - npc.y) - distance) / (distance / 4)),
+  );
+  const around = (side: boolean) => {
+    const angle = toTarget + (side ? 1 : -1) * (Math.PI / 2 - (drift * Math.PI) / 4);
+    return { vx: speed * Math.cos(angle), vy: speed * Math.sin(angle) };
+  };
+  // A step into a wall, or one that puts a wall between it and the target, counts as blocked
+  const isBlocked = ({ vx, vy }: Velocity) => {
+    const ahead = (NPC_WALL_RADIUS + 16) / speed;
+    const next = { x: npc.x + vx * ahead, y: npc.y + vy * ahead };
+    return (
+      isOutOfMap(npc.room.map, next.x, next.y) || !hasLineOfSight(npc.room.map.grid, next, target)
+    );
+  };
+  let side = clockwise;
+  if (isBlocked(around(side))) side = !side;
+  npc.state.strafeClockwise = side;
+  steer(npc, isBlocked(around(side)) ? { vx: 0, vy: 0 } : around(side));
+  npc.direction = getStickyDirection(npc.direction, npc, target);
 }
 
 export function walkTo(npc: Npc, coords: Point) {

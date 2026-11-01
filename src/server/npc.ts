@@ -22,7 +22,15 @@ import {
 } from "@/rules/npc-behavior";
 import { performNpcMovement } from "./npc-movement";
 import { canHitPlayer } from "@/rules/spells";
-import { createRng, createTimers, entitiesInRoom, seedFromString, type Rng } from "@/rules/world";
+import { aimNpcShot } from "./npc-aim";
+import {
+  createRng,
+  createTimers,
+  entitiesInRoom,
+  getCharacterDirection,
+  seedFromString,
+  type Rng,
+} from "@/rules/world";
 import { getRoomIndex } from "./room-index";
 import { isNextToSolidTile, isOutOfMap } from "@/rules/movement";
 
@@ -238,11 +246,16 @@ export class Npc extends Character {
     }
 
     performNpcMovement(this, decision.movement, targetPlayer, this.findLeader());
+    // Winding up a shot or spell: keep facing the target even if movement turned it away
+    if (this.state.isAiming && targetPlayer) this.faceTarget(targetPlayer);
     this.performAction(decision.action, targetPlayer);
   }
   performAction(action: NpcAction, targetPlayer: Player) {
     if (action.type === "attack") this.intendAttack(action, targetPlayer);
     if (action.type === "cast") this.intendCastSpell(action, targetPlayer);
+  }
+  faceTarget(target: Point) {
+    this.direction = getCharacterDirection(this, target);
   }
   setLockedPlayerId(id: string | null | undefined) {
     // If they are switching targets
@@ -277,15 +290,16 @@ export class Npc extends Character {
   intendCastSpell(action: Extract<NpcAction, { type: "cast" }>, targetPlayer: Player) {
     const { ability, abilitySlot } = action;
     this.state.isAiming = true;
+    if (targetPlayer) this.faceTarget(targetPlayer);
     this.timers.after(action.windupMs, () => {
-      const castAngle = targetPlayer
-        ? Math.atan2(targetPlayer.y - this.y, targetPlayer.x - this.x)
-        : 0;
+      if (targetPlayer) this.faceTarget(targetPlayer);
+      const castAngle = targetPlayer ? aimNpcShot(this, targetPlayer, ability.base as string) : 0;
       this.doCast({ targetPlayer, abilitySlot, ability, castAngle });
       this.state.isAiming = false;
     });
   }
-  doAttack({ target, direction, castAngle }: NpcAttackRequest) {
+  doAttack({ target, direction, castAngle: aimedAngle }: NpcAttackRequest) {
+    let castAngle = aimedAngle;
     const { world, room, id, state } = this ?? {};
     const targetPlayer = world?.players?.[state?.lockedPlayerId] ?? null;
     if (state.isAttacking || state?.isDead) return;
@@ -303,6 +317,8 @@ export class Npc extends Character {
     /* Switch hands if possible */
     const { spellName, action } = this.getAttackActionName({ count });
     this.action = action;
+    // Ranged shots aim from where they spawn, at where the target is now
+    if (this.hasRangedWeapon()) castAngle = aimNpcShot(this, targetPlayer, spellName);
 
     this.dispelBuffsByProperty("dispelBeforeAttack");
 
@@ -329,8 +345,8 @@ export class Npc extends Character {
     this.direction = action.direction;
     this.state.isAiming = true;
 
-    let castAngle = (this.state.lastAngle = action.castAngle);
-    const direction = `${this.direction}`;
+    const castAngle = (this.state.lastAngle = action.castAngle);
+    let direction = `${this.direction}`;
     const target = {
       id: targetPlayer.id,
       x: targetPlayer.x,
@@ -339,7 +355,8 @@ export class Npc extends Character {
 
     this.timers.after(action.windupMs, () => {
       if (this.hasRangedWeapon()) {
-        castAngle = Math.atan2(targetPlayer.y - this.y, targetPlayer.x - this.x);
+        this.faceTarget(targetPlayer);
+        direction = `${this.direction}`;
       }
       this.doAttack({ target, direction, castAngle });
       this.state.isAiming = false;

@@ -51,7 +51,8 @@ export const nasties = {
     flavor:
       "Lynne swears it isn't natural. It flops out of the river on purpose, just to bite the ankles of passers-by.",
     state: { noWorldDrops: true },
-    behaviors: ["retreat"],
+    behaviors: ["shootsOverWalls"],
+    abilities: { "1": ["spell", "common", "waterSpit"] },
     baseStats: { level: 1 },
     hitBoxSize: { width: 26, height: 24 },
     drops: [],

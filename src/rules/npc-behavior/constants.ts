@@ -28,6 +28,16 @@ export const NPC_LEASH_RANGE = 450;
 export const NPC_RETREAT_HP_RATIO = 0.25;
 /** An NPC with `kite` and a ranged weapon backs off when its target gets this close. */
 export const NPC_KITE_MIN_RANGE = 48;
+/** NPCs only shoot from this share of a projectile's flight distance, so a target on the move is still hit. */
+export const NPC_SHOT_MARGIN = 0.85;
+/** How much NPC shots lead a moving target: half way, so standing still or juking still dodges. */
+export const NPC_AIM_LEAD_RATIO = 0.5;
+/** Ranged NPCs sidestep at this share of walk speed between shots. */
+export const NPC_STRAFE_SPEED_RATIO = 0.5;
+/** Average milliseconds before a sidestepping NPC switches sides (each wait is 50% to 150% of it). */
+export const NPC_STRAFE_SWITCH_MS = 1500;
+/** Kiters back off at this share of walk speed, so a player chasing them can catch up. */
+export const NPC_KITE_SPEED_RATIO = 0.6;
 /** A follower walks to its leader once it is further than this, and waits when closer. */
 export const NPC_FOLLOW_DISTANCE = 40;
 /** The behavior an NPC is already doing gets this much added to its score, so it doesn't flicker. */

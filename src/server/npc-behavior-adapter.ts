@@ -1,6 +1,7 @@
 import type { Npc } from "./npc";
 import type { Player } from "./player";
 import { getRoomIndex } from "./room-index";
+import { hasLineOfSight } from "@/rules/movement";
 import { isNpcAggressive, type NpcBehaviorInput, type NpcPlayerView } from "@/rules/npc-behavior";
 
 /** What the behavior rules need to know about a player. */
@@ -55,6 +56,9 @@ export function buildNpcBehaviorInput(
     nearestPlayer,
     threatTarget: toPlayerView(world?.players?.[npc.threatTargetId() as string]),
     leader: npc.findLeader(),
+    hasClearShot: npc.behaviors?.includes("shootsOverWalls")
+      ? undefined
+      : (target) => hasLineOfSight(room.map.grid, npc, target),
     isNearCollideTile: npc.isNearCollideTile(),
     isOutOfBounds: npc.isOutOfBounds(),
   };

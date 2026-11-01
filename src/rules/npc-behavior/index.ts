@@ -1,15 +1,18 @@
 export {
   AGGRO_KITE_RANGE,
+  NPC_AIM_LEAD_RATIO,
   NPC_ATTACK_ADDED_DELAY,
   NPC_LOSE_AGGRO_MS,
   NPC_SHOULD_ATTACK_RANGE,
   NPC_TALK_LATENCY_TOLERANCE,
   NPC_TALK_RANGE,
+  NPC_STRAFE_SPEED_RATIO,
   NPC_WARNING_DELAY,
 } from "./constants";
 export {
   findSuitableAbility,
-  getMaxSpellRange,
+  getLongestSpellBand,
+  getNextSpellBand,
   isSpellCastable,
   isTargetSuitableForSpell,
 } from "./abilities";
@@ -39,8 +42,10 @@ export type { TalkPlacement } from "./talk";
 export { DEFAULT_NPC_BEHAVIORS, NPC_BEHAVIORS, isMovementBehavior } from "./behaviors";
 export type { BehaviorContext, NpcBehavior, NpcBehaviorId } from "./behaviors";
 export { chooseBehavior } from "./brain";
-export { flee, seek, separate, steerWithSeparation } from "./steering";
+export { flee, fleeAround, seek, separate, steerWithSeparation } from "./steering";
 export type { Velocity } from "./steering";
 export { addThreat, decayThreat, pickThreatTarget, pruneThreat } from "./threat";
 export type { ThreatTable } from "./threat";
 export { subscribeThreat } from "./system";
+export { getIdealDistance, getSpellBand, getWeaponBand, isInBand } from "./reach";
+export type { ShotBand } from "./reach";
