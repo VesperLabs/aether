@@ -50,10 +50,10 @@ function input(over: {
       abilities: {},
       buffs: [],
       weapons: {},
+      behaviors: ["aggressive"],
       ...over.npc,
     },
     state: {
-      isAggro: true,
       lastAttack: NOW - 10_000,
       lastCast: { global: NOW - 10_000 },
       npcAttackReady: false,
@@ -219,7 +219,7 @@ describe("wandering", () => {
 
 describe("deciding what an npc does", () => {
   it("wanders when nobody is around", () => {
-    const decision = decideNpcAction(input({ state: { isAggro: false } }), always);
+    const decision = decideNpcAction(input({ npc: { behaviors: [] } }), always);
     expect(decision.movement).toMatchObject({ type: "wander" });
     expect(decision.action).toEqual({ type: "idle" });
     expect(decision.bubbleMessage).toBeNull();
@@ -312,30 +312,34 @@ describe("deciding what an npc does", () => {
   });
 
   it("returns to spawn when out of bounds, static or beyond its walk range", () => {
-    const idle = { isAggro: false };
+    const idle = {};
+    const passive = { behaviors: [] };
     expect(
-      decideNpcAction(input({ state: idle, rest: { isOutOfBounds: true } }), never).movement,
+      decideNpcAction(input({ npc: passive, rest: { isOutOfBounds: true } }), never).movement,
     ).toEqual({ type: "returnToSpawn", pathed: true });
     const away = { x: 100, y: 0 };
     expect(
-      decideNpcAction(input({ npc: { ...away }, state: { ...idle, isStatic: true } }), never)
-        .movement,
+      decideNpcAction(
+        input({ npc: { ...away, ...passive }, state: { ...idle, isStatic: true } }),
+        never,
+      ).movement,
     ).toEqual({ type: "returnToSpawn", pathed: true });
     expect(
-      decideNpcAction(input({ npc: { x: 0, y: 0 }, state: { ...idle, isStatic: true } }), never)
-        .movement,
+      decideNpcAction(
+        input({ npc: { x: 0, y: 0, ...passive }, state: { ...idle, isStatic: true } }),
+        never,
+      ).movement,
     ).toEqual({ type: "waitAtSpawn", faceDownAfterMs: 200 });
     expect(
-      decideNpcAction(input({ npc: { ...away }, state: { ...idle, walkRange: 50 } }), never)
-        .movement,
+      decideNpcAction(
+        input({ npc: { ...away, ...passive }, state: { ...idle, walkRange: 50 } }),
+        never,
+      ).movement,
     ).toEqual({ type: "returnToSpawn", pathed: false });
   });
 
   it("stops to talk when players are talking to it", () => {
-    const decision = decideNpcAction(
-      input({ npc: { hasTalkers: true }, state: { isAggro: false } }),
-      never,
-    );
+    const decision = decideNpcAction(input({ npc: { hasTalkers: true, behaviors: [] } }), never);
     expect(decision.movement).toEqual({ type: "talk" });
   });
 });

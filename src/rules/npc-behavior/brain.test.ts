@@ -31,6 +31,7 @@ function ctx(over: {
     target: null,
     canChase: !!over.canChase,
     attackRange: 8,
+    holdRange: 8,
     isAttacking: false,
     isResetting: false,
   };

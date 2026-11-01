@@ -1,3 +1,4 @@
+import type { MobBehavior } from "@/content";
 import type { AbilitySlot } from "@/rules/spells";
 import { ServerCharacter as Character, type CharacterArgs } from "./character";
 import type { ServerWorld } from "./server-world";
@@ -16,7 +17,6 @@ import {
   shouldRespawn,
   type NpcAction,
   type NpcAbility,
-  type NpcBehaviorId,
   type NpcDecision,
   type ThreatTable,
 } from "@/rules/npc-behavior";
@@ -39,7 +39,7 @@ type NpcArgs = CharacterArgs & {
   keeperData?: KeeperData;
   drops?: Array<Drop>;
   hitBoxSize?: { width: number; height: number };
-  behaviors?: readonly NpcBehaviorId[];
+  behaviors?: readonly MobBehavior[];
   leader?: string;
 };
 
@@ -74,7 +74,7 @@ export class Npc extends Character {
   /** Threat by player socket id; the top player is who it fights. */
   public threat: ThreatTable = {};
   /** From content; unset means the default behaviors. */
-  public behaviors?: readonly NpcBehaviorId[];
+  public behaviors?: readonly MobBehavior[];
   /** Name of the NPC it follows, from content or a `leader` map property. */
   public leaderName?: string;
   declare name: string;

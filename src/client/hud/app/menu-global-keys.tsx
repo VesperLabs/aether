@@ -27,13 +27,16 @@ export const MenuGlobalKeys = () => {
       <Box
         sx={{
           position: "fixed",
-          top: MINI_MAP_SIZE + MINI_MAP_MARGIN,
-          right: MINI_MAP_MARGIN + MINI_MAP_SIZE / 2 - 12,
+          /* Centered on the circle's edge at its bottom-right (45°). */
+          top: MINI_MAP_MARGIN + (MINI_MAP_SIZE / 2) * (1 + Math.SQRT1_2),
+          right: MINI_MAP_MARGIN + (MINI_MAP_SIZE / 2) * (1 - Math.SQRT1_2),
           zIndex: "minimap",
         }}
       >
         <KeyboardKey
           name="M"
+          /* The key hangs up-left of this point by its bottom-right corner; shift it to sit centered. */
+          sx={{ transform: "translate(50%, 50%)" }}
           hidden={!userSettings?.showMinimap || isMobile}
           onKeyUp={() =>
             socket.emit("updateUserSetting", {

@@ -78,3 +78,15 @@ export function findSuitableAbility(
   }
   return {};
 }
+
+/** The furthest any of its attack spells reaches, or 0 without one. */
+export function getMaxSpellRange(abilities: Record<string, NpcAbility | null | undefined>) {
+  let range = 0;
+  for (const spell of Object.values(abilities)) {
+    const details = detailsOf(spell?.base);
+    if (details?.allowedTargets?.includes("enemy") && details.npcCastRange) {
+      range = Math.max(range, details.npcCastRange[1]);
+    }
+  }
+  return range;
+}

@@ -32,10 +32,10 @@ function input(over: {
       abilities: {},
       buffs: [],
       weapons: {},
+      behaviors: ["aggressive"],
       ...over.npc,
     },
     state: {
-      isAggro: true,
       lastAttack: NOW - 10_000,
       lastCast: { global: NOW - 10_000 },
       npcAttackReady: false,
@@ -101,14 +101,14 @@ describe("threat, leash and new behaviors", () => {
         }),
         never,
       );
-    expect(hurt().behavior).toBe("chase");
-    expect(hurt(["retreat", "chase", "wander"]).movement).toEqual({ type: "flee" });
+    expect(hurt(["aggressive"]).behavior).toBe("chase");
+    expect(hurt(["aggressive", "retreat"]).movement).toEqual({ type: "flee" });
   });
 
   it("kites with a ranged weapon when the target gets close", () => {
     const decision = decideNpcAction(
       input({
-        npc: { behaviors: ["kite", "chase", "wander"], weapons: { handLeft: { range: 150 } } },
+        npc: { behaviors: ["aggressive", "kite"], weapons: { handLeft: { range: 150 } } },
         rest: { nearestPlayer: player({ x: 30 }) },
       }),
       never,
@@ -116,12 +116,26 @@ describe("threat, leash and new behaviors", () => {
     expect(decision.movement).toEqual({ type: "flee" });
   });
 
+  it("casters that kite hold at spell range instead of closing to melee", () => {
+    const at = (x: number) =>
+      decideNpcAction(
+        input({
+          npc: { behaviors: ["aggressive", "kite"], abilities: { "1": { base: "fireball" } } },
+          // Already fighting, so the target is tracked out to the kite range
+          state: { lockedPlayerId: "p1" },
+          rest: { lockedPlayer: player({ x }), nearestPlayer: player({ x }) },
+        }),
+        never,
+      ).movement;
+    expect(at(120)).toEqual({ type: "standStill" });
+    expect(at(30)).toEqual({ type: "flee" });
+  });
+
   it("follows its leader, waiting when close", () => {
     const follow = (x: number) =>
       decideNpcAction(
         input({
-          npc: { behaviors: ["chase", "follow", "wander"] },
-          state: { isAggro: false },
+          npc: { behaviors: ["follow"] },
           rest: { leader: { x, y: 0 } },
         }),
         never,

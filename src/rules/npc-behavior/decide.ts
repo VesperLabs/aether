@@ -2,7 +2,7 @@ import type { ActiveBuff } from "@/rules/buffs";
 import { isRespawnDue } from "@/rules/combat";
 import { checkCastReady, type LastCast } from "@/rules/spells";
 import { getCharacterDirection, type CardinalDirection } from "@/rules/world";
-import { findSuitableAbility, type NpcAbility } from "./abilities";
+import { findSuitableAbility, getMaxSpellRange, type NpcAbility } from "./abilities";
 import { decideAggro, isNpcAttackReady, type NpcPlayerView, type NpcSelfView } from "./aggro";
 import { NPC_HOME_RANGE, NPC_LEASH_RANGE, NPC_WARNING_DELAY } from "./constants";
 import { checkInRange, distanceBetween, getShouldAttackRange } from "./range";
@@ -14,8 +14,10 @@ import {
   type BehaviorContext,
   type NpcBehavior,
   type NpcBehaviorId,
+  isMovementBehavior,
 } from "./behaviors";
 import { chooseBehavior } from "./brain";
+import type { MobBehavior } from "@/content";
 import type { WanderStep } from "./wander";
 
 export interface NpcBehaviorInput {
@@ -39,11 +41,10 @@ export interface NpcBehaviorInput {
     abilities: Record<string, NpcAbility | null | undefined>;
     buffs: ActiveBuff[];
     weapons: NpcWeaponRanges;
-    /** What this NPC can do, best first on ties. Defaults to `DEFAULT_NPC_BEHAVIORS`. */
-    behaviors?: readonly NpcBehaviorId[];
+    /** Opt-in behaviors from content, on top of `DEFAULT_NPC_BEHAVIORS`. */
+    behaviors?: readonly MobBehavior[];
   };
   state: {
-    isAggro?: boolean;
     isStatic?: boolean;
     walkRange?: number;
     isDead?: boolean;
@@ -200,7 +201,7 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
     setLockedPlayerId(null);
     if (checkInRange(npc, npc.startingCoords, NPC_HOME_RANGE)) finishReset = true;
   } else {
-    if (state.isAggro) handleAggroState();
+    if (isNpcAggressive(npc.behaviors)) handleAggroState();
     // Threat outranks proximity: fight whoever angered it most
     if (input.threatTarget && !input.threatTarget.isDead) {
       setLockedPlayerId(input.threatTarget.socketId);
@@ -275,15 +276,20 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
   function decideMovement(): NpcMovement {
     // Check if player is in range for aggro
     const canChase = !isResetting() && !!targetPlayer && handleAggroState() && !targetPlayer.isDead;
+    const ids = [...DEFAULT_NPC_BEHAVIORS, ...(npc.behaviors ?? []).filter(isMovementBehavior)];
+    // Kiters hold at three quarters of their spell reach instead of closing to melee
+    const holdRange = ids.includes("kite")
+      ? Math.max(attackRange, getMaxSpellRange(npc.abilities) * 0.75)
+      : attackRange;
     const ctx: BehaviorContext = {
       input,
       target: targetPlayer,
       canChase,
       attackRange,
+      holdRange,
       isAttacking,
       isResetting: isResetting(),
     };
-    const ids = npc.behaviors ?? DEFAULT_NPC_BEHAVIORS;
     behaviorId = chooseBehavior(ctx, ids, state.behavior) ?? "wander";
     const behavior: NpcBehavior = NPC_BEHAVIORS[behaviorId];
 
@@ -297,4 +303,9 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
     }
     return behavior.move(ctx, rng);
   }
+}
+
+/** Does it go after players on sight, rather than only fighting back? */
+export function isNpcAggressive(behaviors: readonly MobBehavior[] | undefined) {
+  return !!behaviors?.includes("aggressive");
 }

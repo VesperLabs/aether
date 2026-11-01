@@ -6,7 +6,7 @@ export const nasties = {
     profile: { race: "crab", userName: "Crab", tint: "0xFF6600" },
     flavor:
       "A shore crab with a mean pinch and a meaner temper. Trista keeps their numbers down, but there are always more.",
-    state: { isAggro: false },
+    behaviors: ["retreat"],
     baseStats: { level: 1 },
     hitBoxSize: { width: 18, height: 16 },
     drops: [
@@ -19,6 +19,7 @@ export const nasties = {
     profile: { race: "raccoon", userName: "Raccoon" },
     flavor:
       "A masked bandit of the grassland. It raids packs and campfires, and it will fight you for your snacks.",
+    behaviors: ["retreat"],
     baseStats: { level: 3 },
     hitBoxSize: { width: 26, height: 24 },
     drops: [
@@ -49,7 +50,8 @@ export const nasties = {
     profile: { race: "fish", userName: "Fish", tint: "0x8899CC" },
     flavor:
       "Lynne swears it isn't natural. It flops out of the river on purpose, just to bite the ankles of passers-by.",
-    state: { isAggro: false, noWorldDrops: true },
+    state: { noWorldDrops: true },
+    behaviors: ["retreat"],
     baseStats: { level: 1 },
     hitBoxSize: { width: 26, height: 24 },
     drops: [],
@@ -59,7 +61,7 @@ export const nasties = {
     profile: { race: "bee", tint: "0x44FFCC", scale: 1.5, userName: "Hawkwing" },
     flavor:
       "A giant hornet that rules the skies over the peaks. Its wings are prized by hunters, if they survive.",
-    state: { isAggro: true },
+    behaviors: ["aggressive"],
     baseStats: { level: 6, walkSpeed: 20 },
     hitBoxSize: { width: 28, height: 48 },
     drops: [],
@@ -69,7 +71,8 @@ export const nasties = {
     profile: { race: "spider", userName: "Spider" },
     flavor:
       "Eight legs, too many eyes and a taste for the unwary. It waits in the dark corners of the mine for prey.",
-    state: { isAggro: true },
+    behaviors: ["aggressive", "follow"],
+    leader: "hogan",
     baseStats: { level: 5 },
     hitBoxSize: { width: 28, height: 22 },
     drops: [
@@ -82,7 +85,7 @@ export const nasties = {
     profile: { race: "bat", userName: "Bat" },
     flavor:
       "It squeaks in the dark, circles once, then comes straight for your neck. Rarely alone in the mine.",
-    state: { isAggro: true },
+    behaviors: ["aggressive"],
     baseStats: { level: 5 },
     hitBoxSize: { width: 18, height: 28 },
     drops: [
@@ -95,7 +98,7 @@ export const nasties = {
     profile: { race: "spider", tint: "0xFF33CC", scale: 2, userName: "Hogan" },
     flavor:
       "A monstrous pink spider. The webs around its lair are thick as rope and full of the last adventurers.",
-    state: { isAggro: true },
+    behaviors: ["aggressive"],
     baseStats: { level: 7 },
     hitBoxSize: { width: 50, height: 40 },
     drops: [
@@ -108,7 +111,8 @@ export const nasties = {
     profile: { race: "zombie", userName: "Zombie" },
     flavor:
       "The graveyard doesn't keep its dead for long. They wander slow and stubborn, and they never sleep.",
-    state: { isAggro: true },
+    behaviors: ["aggressive", "follow"],
+    leader: "chonks",
     baseStats: { level: 6 },
     hitBoxSize: { width: 22, height: 43 },
     drops: [
@@ -121,7 +125,7 @@ export const nasties = {
     profile: { race: "wraith", userName: "Wraith" },
     flavor:
       "A restless spirit that drifts through walls and steals the warmth from anyone foolish enough to linger.",
-    state: { isAggro: true },
+    behaviors: ["aggressive"],
     baseStats: { level: 7 },
     hitBoxSize: { width: 22, height: 43 },
     drops: [
@@ -134,7 +138,7 @@ export const nasties = {
     profile: { race: "abomination", tint: "0x88FF88", userName: "Chonks" },
     flavor:
       "A lumbering abomination stitched from something better left buried. Slow, but it hits like a cart.",
-    state: { isAggro: true },
+    behaviors: ["aggressive"],
     baseStats: { level: 10 },
     hitBoxSize: { width: 58, height: 85 },
     drops: [
@@ -147,7 +151,7 @@ export const nasties = {
     profile: { race: "merman", userName: "Merman" },
     flavor:
       "One of the river folk. They turned hostile when the valley fell, and now they guard what's left of it.",
-    state: { isAggro: true },
+    behaviors: ["aggressive", "kite"],
     baseStats: { level: 8, waterResistance: 50 },
     hitBoxSize: { width: 24, height: 32 },
     abilities: { "1": ["spell", "common", "fireball"] },
@@ -158,7 +162,7 @@ export const nasties = {
     profile: { race: "wyrm", userName: "Wyrm", scale: 2 },
     flavor:
       "The great serpent of the aqueducts. Its scales are worth a fortune, if you can live long enough to take one.",
-    state: { isAggro: true },
+    behaviors: ["aggressive"],
     baseStats: { level: 11, minFireDamage: 1, maxFireDamage: 2, fireResistance: 50 },
     hitBoxSize: { width: 50, height: 78 },
     abilities: { "1": ["spell", "common", "fireball3"] },
@@ -172,7 +176,7 @@ export const nasties = {
     profile: { race: "orchid", userName: "Orchid" },
     flavor:
       "One of the killer plants that overran Sergio's valley. Pretty from a distance, all teeth up close.",
-    state: { isAggro: true },
+    behaviors: ["aggressive"],
     baseStats: { level: 9, earthResistance: 25, fireResistance: -15 },
     hitBoxSize: { width: 26, height: 24 },
     drops: [{ type: "stackable", rarity: "common", key: "orchidFlower", chance: 4 }],
@@ -182,7 +186,6 @@ export const nasties = {
     profile: { race: "earth-elemental", userName: "Earth Elemental" },
     flavor:
       "Living stone, woken deep in the mine. It moves slowly and hits like a falling ceiling.",
-    state: { isAggro: false },
     baseStats: {
       level: 12,
       minEarthDamage: 1,
@@ -204,7 +207,7 @@ export const nasties = {
     charClass: "rogue",
     profile: { race: "orchid", userName: "Big Momma", scale: 3, tint: "0x8888FF" },
     flavor: "The mother of all killer plants. Every orchid in the valley sprouted from her roots.",
-    state: { isAggro: true },
+    behaviors: ["aggressive"],
     baseStats: {
       level: 13,
       walkSpeed: 10,
@@ -220,7 +223,8 @@ export const nasties = {
     profile: { race: "wolf", userName: "Wolf", tint: "0xCCBBAA" },
     flavor:
       "Grey wolves hunt in packs across the peaks. Where you see one, the rest are already circling.",
-    state: { isAggro: true },
+    behaviors: ["aggressive", "follow"],
+    leader: "whiteFang",
     baseStats: { level: 10, walkSpeed: 20 },
     hitBoxSize: { width: 31, height: 28 },
     drops: [{ type: "stackable", rarity: "common", key: "wolfPelt", chance: 2 }],
@@ -230,7 +234,7 @@ export const nasties = {
     profile: { race: "wolf", userName: "White Fang", scale: 1.5 },
     flavor:
       "The leader of the peak wolves. Bigger and faster than the rest, and never alone for long.",
-    state: { isAggro: true },
+    behaviors: ["aggressive"],
     baseStats: { level: 12, maxHp: 300, walkSpeed: 20 },
     hitBoxSize: { width: 41, height: 38 },
     abilities: { "1": ["spell", "common", "stealth"] },
@@ -240,7 +244,7 @@ export const nasties = {
     charClass: "cleric",
     profile: { race: "bear", userName: "Bear", tint: "0xAA7744" },
     flavor: "A huge brown bear that wanders the forest edge. Never get between it and a beehive.",
-    state: { isAggro: true },
+    behaviors: ["aggressive"],
     baseStats: { level: 11, walkSpeed: 10 },
     hitBoxSize: { width: 36, height: 38 },
     drops: [{ type: "stackable", rarity: "common", key: "bearSteak", chance: 3 }],
@@ -250,7 +254,7 @@ export const nasties = {
     profile: { race: "crab", userName: "Ice Crab", tint: "0x8899CC" },
     flavor:
       "A crab from the frozen shore. Its claws are cold enough to burn, and its shell turns most blades.",
-    state: { isAggro: false },
+    behaviors: ["kite"],
     baseStats: { level: 9, waterResistance: 50 },
     hitBoxSize: { width: 18, height: 16 },
     abilities: { "1": ["spell", "common", "waterball"], "2": ["spell", "common", "guard"] },

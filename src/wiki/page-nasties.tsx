@@ -1,4 +1,4 @@
-import { itemList, nasties, resolveAsset, type NastyDefinition } from "@/content";
+import { itemList, nasties, resolveAsset, type MobBehavior, type NastyDefinition } from "@/content";
 import { calculateExpValue, npcStats } from "@/rules/stats";
 import { Box, Flex, Grid, Icon, Text } from "@/ui";
 import { CARD_COLORS, SpriteFace, raceAsset } from "./card-pool";
@@ -29,7 +29,7 @@ export function PageNasties() {
             key={key}
             sx={{ breakInside: "avoid", mb: 3, display: "inline-block", width: "100%" }}
           >
-            <MonsterCard mob={mob} stats={stats} />
+            <MonsterCard mobKey={key} mob={mob} stats={stats} />
           </Box>
         ))}
       </Box>
@@ -37,7 +37,15 @@ export function PageNasties() {
   );
 }
 
-const MonsterCard = ({ mob, stats }: { mob: NastyDefinition; stats: Record<string, number> }) => {
+const MonsterCard = ({
+  mobKey,
+  mob,
+  stats,
+}: {
+  mobKey: string;
+  mob: NastyDefinition;
+  stats: Record<string, number>;
+}) => {
   const asset = raceAsset(mob.profile.race);
   return (
     <Box sx={{ ...PAPER_STYLE, p: 4 }}>
@@ -60,7 +68,7 @@ const MonsterCard = ({ mob, stats }: { mob: NastyDefinition; stats: Record<strin
           </Text>
           <Text as="p" sx={{ color: CARD_COLORS.monster, fontSize: 1, fontWeight: 600, m: 0 }}>
             Level {stats.level} {mob.charClass}
-            {mob.state?.isAggro === false && (
+            {!mob.behaviors?.includes("aggressive") && (
               <Box as="span" sx={{ color: PASSIVE_COLOR }}>
                 {" "}
                 · passive
@@ -107,8 +115,53 @@ const MonsterCard = ({ mob, stats }: { mob: NastyDefinition; stats: Record<strin
           </Flex>
         ))}
       </Flex>
+      <Divider label="Behavior" />
+      <Behavior mob={mob} mobKey={mobKey} />
       <Divider label="Drops" />
       <Drops drops={mob.drops ?? []} />
+    </Box>
+  );
+};
+
+/** What each opt-in behavior looks like to a player. */
+const BEHAVIOR_TEXT: Partial<Record<MobBehavior, string>> = {
+  aggressive: "Attacks on sight",
+  retreat: "Flees when badly hurt",
+  kite: "Keeps its distance",
+};
+
+/** Who follows each leader, by the leader's content key. */
+const FOLLOWERS = Object.values(nasties as Record<string, NastyDefinition>).reduce<
+  Record<string, string[]>
+>((byLeader, mob) => {
+  if (mob.leader && mob.behaviors?.includes("follow")) {
+    (byLeader[mob.leader] ??= []).push(mob.profile.userName);
+  }
+  return byLeader;
+}, {});
+
+const nameOf = (key: string) => (nasties as Record<string, NastyDefinition>)[key]?.profile.userName;
+
+/** How the monster acts in a fight: temper, opt-in behaviors, pack and spells. */
+const Behavior = ({ mob, mobKey }: { mob: NastyDefinition; mobKey: string }) => {
+  const lines = (mob.behaviors ?? []).flatMap((id) => BEHAVIOR_TEXT[id] ?? []);
+  if (!mob.behaviors?.includes("aggressive")) lines.unshift("Only fights back");
+  if (mob.leader && mob.behaviors?.includes("follow")) {
+    lines.push(`Follows ${nameOf(mob.leader) ?? mob.leader}`);
+  }
+  const followers = FOLLOWERS[mobKey];
+  if (followers) lines.push(`Leads the ${[...new Set(followers)].join(" and ")} pack`);
+  const spells = Object.values(mob.abilities ?? {}).map(
+    ([type, rarity, key]) => listedItems[type]?.[rarity]?.[key]?.name ?? key,
+  );
+  return (
+    <Box sx={{ fontSize: 1 }}>
+      {lines.map((line) => (
+        <Text key={line} as="p" sx={{ m: 0, py: "2px" }}>
+          {line}
+        </Text>
+      ))}
+      {spells.length > 0 && <Stat label="Casts" value={spells.join(", ")} />}
     </Box>
   );
 };

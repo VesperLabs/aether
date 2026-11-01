@@ -1,4 +1,4 @@
-import type { MobBehavior } from "@/content";
+import type { MobMovementBehavior } from "@/content";
 import type { Rng } from "@/rules/world";
 import {
   NPC_FOLLOW_DISTANCE,
@@ -19,6 +19,8 @@ export interface BehaviorContext {
   /** The target is alive and still within aggro range. */
   canChase: boolean;
   attackRange: number;
+  /** How close it closes in before stopping: attack range, or spell range for kiters. */
+  holdRange: number;
   /** The NPC is attacking this tick (it stays put while it does). */
   isAttacking: boolean | undefined;
   /** Leashed: walking home to heal, ignoring players. */
@@ -40,8 +42,8 @@ export interface NpcBehavior {
 const chase: NpcBehavior = {
   engaged: true,
   score: (ctx) => (ctx.canChase ? 1 : 0),
-  move: ({ input, target, attackRange, isAttacking }) => {
-    const inReach = checkInRange(input.npc, target, attackRange);
+  move: ({ input, target, holdRange, isAttacking }) => {
+    const inReach = checkInRange(input.npc, target, holdRange);
     if (inReach || input.state.isAiming || isAttacking) return { type: "standStill" };
     return { type: "chase", pathed: input.isNearCollideTile };
   },
@@ -67,12 +69,12 @@ const retreat: NpcBehavior = {
   move: () => ({ type: "flee" }),
 };
 
-/** Ranged NPCs back away when the target closes in, then shoot again. */
+/** Ranged NPCs and casters back away when the target closes in, then shoot again. */
 const kite: NpcBehavior = {
   engaged: true,
-  score: ({ input, target, canChase, attackRange }) =>
+  score: ({ input, target, canChase, holdRange }) =>
     canChase &&
-    attackRange > NPC_KITE_MIN_RANGE * 2 &&
+    holdRange > NPC_KITE_MIN_RANGE * 2 &&
     checkInRange(input.npc, target, NPC_KITE_MIN_RANGE)
       ? 1.05
       : 0,
@@ -136,7 +138,7 @@ const wander: NpcBehavior = {
   }),
 };
 
-export const NPC_BEHAVIORS: Record<MobBehavior, NpcBehavior> = {
+export const NPC_BEHAVIORS: Record<MobMovementBehavior, NpcBehavior> = {
   chase,
   unstuck,
   guard,
@@ -149,9 +151,11 @@ export const NPC_BEHAVIORS: Record<MobBehavior, NpcBehavior> = {
   follow,
 };
 
-export type NpcBehaviorId = MobBehavior;
+export type NpcBehaviorId = MobMovementBehavior;
 
-/** What every NPC does unless its content says otherwise. */
+export const isMovementBehavior = (id: string): id is NpcBehaviorId => id in NPC_BEHAVIORS;
+
+/** What every NPC does; content adds to these. */
 export const DEFAULT_NPC_BEHAVIORS: readonly NpcBehaviorId[] = [
   "reset",
   "chase",

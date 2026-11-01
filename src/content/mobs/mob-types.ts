@@ -63,8 +63,8 @@ export interface MobBase {
   readonly abilities?: MobAbilities;
 }
 
-/** Things a mob can do; the game picks the one that fits best each tick. */
-export type MobBehavior =
+/** Ways a mob can move; the game picks the one that fits best each tick. */
+export type MobMovementBehavior =
   | "chase"
   | "unstuck"
   | "guard"
@@ -76,13 +76,23 @@ export type MobBehavior =
   | "kite"
   | "follow";
 
+/**
+ * Opt-in behaviors: `aggressive` attacks players on sight (otherwise it only fights back), `retreat`
+ * runs when badly hurt, `kite` keeps casters and archers at range, `follow` stays near `leader`.
+ * The rest are on for every mob already.
+ */
+export type MobBehavior = MobMovementBehavior | "aggressive";
+
 export interface NastyDefinition extends MobBase {
   /** A line or two of flavour text shown in the wiki. */
   readonly flavor: string;
-  readonly state?: { readonly isAggro?: boolean; readonly noWorldDrops?: boolean };
-  /** Replaces the default behaviors (chase, wander, leash and so on). */
+  readonly state?: { readonly noWorldDrops?: boolean };
+  /** Added to the defaults every mob has (chase, wander, leash and so on). */
   readonly behaviors?: readonly MobBehavior[];
-  /** Name of a mob in the same room this one keeps close to (needs the `follow` behavior). */
+  /**
+   * Content name of the mob this one keeps close to (needs `follow`). A `leader` property on the
+   * map object overrides it, so each pack can have its own.
+   */
   readonly leader?: string;
   /** Items this mob can drop when it dies. */
   readonly drops?: readonly ItemDrop[];

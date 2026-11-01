@@ -7,7 +7,12 @@ export {
   NPC_TALK_RANGE,
   NPC_WARNING_DELAY,
 } from "./constants";
-export { findSuitableAbility, isSpellCastable, isTargetSuitableForSpell } from "./abilities";
+export {
+  findSuitableAbility,
+  getMaxSpellRange,
+  isSpellCastable,
+  isTargetSuitableForSpell,
+} from "./abilities";
 export type { AbilityChoiceInput, NpcAbility } from "./abilities";
 export {
   calculateNpcAggroRange,
@@ -23,7 +28,7 @@ export type {
   NpcPlayerView,
   NpcSelfView,
 } from "./aggro";
-export { decideNpcAction, shouldRespawn } from "./decide";
+export { decideNpcAction, isNpcAggressive, shouldRespawn } from "./decide";
 export type { NpcAction, NpcBehaviorInput, NpcDecision, NpcMovement } from "./decide";
 export { checkInRange, distanceBetween, getShouldAttackRange } from "./range";
 export type { Body, NpcWeaponRanges } from "./range";
@@ -31,7 +36,7 @@ export { decideTalkingEnded, decideWander } from "./wander";
 export type { WanderChange, WanderInput, WanderStep } from "./wander";
 export { canTalkToNpc } from "./talk";
 export type { TalkPlacement } from "./talk";
-export { DEFAULT_NPC_BEHAVIORS, NPC_BEHAVIORS } from "./behaviors";
+export { DEFAULT_NPC_BEHAVIORS, NPC_BEHAVIORS, isMovementBehavior } from "./behaviors";
 export type { BehaviorContext, NpcBehavior, NpcBehaviorId } from "./behaviors";
 export { chooseBehavior } from "./brain";
 export { flee, seek, separate, steerWithSeparation } from "./steering";
