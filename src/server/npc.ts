@@ -170,6 +170,7 @@ export class Npc extends Character {
       this.y = this.startingCoords.y;
       this.calculateStats(true);
       this.state.isDead = false;
+      this.state.retreatAt = undefined;
       this.world.events.emit("npcRespawned", {
         npcId: this.id,
         roomName: this.room.name,
@@ -208,8 +209,8 @@ export class Npc extends Character {
     // If dead, do not continue update
     if (state?.isDead) return this.tryRespawn();
 
-    // Regenerate health points
-    this.doRegen();
+    // Regenerate health points, except while running away hurt
+    if (state.behavior !== "retreat") this.doRegen();
 
     this.threat = decayThreat(
       pruneThreat(this.threat, (id) => {
@@ -246,6 +247,7 @@ export class Npc extends Character {
     }
     if (decision.finishReset) {
       state.isResetting = false;
+      state.retreatAt = undefined;
       this.stats.hp = this.stats.maxHp;
     }
 

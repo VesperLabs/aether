@@ -6,6 +6,8 @@ import {
   NPC_KITE_MIN_RANGE,
   NPC_KITE_SPEED_RATIO,
   NPC_RETREAT_HP_RATIO,
+  NPC_RETREAT_MS,
+  NPC_RETREAT_SPEED_RATIO,
   NPC_STRAFE_SWITCH_MS,
 } from "./constants";
 import type { NpcPlayerView } from "./aggro";
@@ -92,16 +94,25 @@ const reset: NpcBehavior = {
       : { type: "returnToSpawn", pathed: true },
 };
 
-/** Badly hurt: run from the target without turning to fight. */
+/**
+ * Badly hurt: run from the target without turning to fight, slower than walking. Only once per
+ * fight and only for `NPC_RETREAT_MS`, then it fights to the end.
+ */
 const retreat: NpcBehavior = {
   engaged: true,
   holdsFire: true,
   score: ({ input, canChase }) => {
     const { hp, maxHp } = input.npc.stats ?? {};
     if (!canChase || !maxHp) return 0;
+    const { retreatAt } = input.state;
+    if (retreatAt !== undefined && input.now - retreatAt >= NPC_RETREAT_MS) return 0;
     return (hp as number) / maxHp < NPC_RETREAT_HP_RATIO ? 1.1 : 0;
   },
-  move: () => ({ type: "flee" }),
+  move: ({ input }) => ({
+    type: "flee",
+    speedRatio: NPC_RETREAT_SPEED_RATIO,
+    ...(input.state.retreatAt === undefined && { retreatAt: input.now }),
+  }),
 };
 
 /**
