@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { theme } from "@/ui/kit/theme";
+import { resourceHex } from "@/ui/kit/resource-colors";
 import type { Player } from "./player";
 
 /** Sizes in world pixels: the middle of the band, its width, and the black edge on each side. */
@@ -9,10 +9,10 @@ const OUTLINE_THICKNESS = 0.5;
 /** The ring is drawn this many times sharper than it shows, then scaled down smoothly. */
 const SUPERSAMPLE = 8;
 const TRACK_COLOR = "rgba(0, 0, 0, 0.6)";
-/** Weapon attacks count down in yellow, spells (lunges too) in blue, the colour of magic items. */
+/** Weapon attacks count down in stamina yellow, spells (lunges too) in mana blue. */
 const RING_COLORS = {
-  attack: theme.colors.yellow[400],
-  cast: theme.colors.blue[400],
+  attack: resourceHex("sp"),
+  cast: resourceHex("mp"),
 };
 let nextTextureId = 0;
 /** Drawn over every character, so one standing in front never hides another's ring. */

@@ -8,7 +8,7 @@ import { arePropsEqualWithKeys } from "@/ui";
 import { streamHasUsableVideo } from "@/client/hud/video/video-support";
 import { Bar } from "@/client/hud/status/stat-bar";
 import { Buffs } from "@/client/hud/status/buffs";
-import { Tooltip } from "@/ui";
+import { Tooltip, resourceToken } from "@/ui";
 
 const UserName = ({
   sx,
@@ -82,7 +82,7 @@ const PlayerHud = memo(
             <>
               <Bar
                 data-tooltip-content={`MP: ${stats?.mp} / ${stats?.maxMp}`}
-                color="blue.500"
+                color={resourceToken("mp")}
                 max={stats?.maxMp}
                 min={stats?.mp}
                 showText={isBig}
@@ -91,7 +91,7 @@ const PlayerHud = memo(
               />
               <Bar
                 data-tooltip-content={`SP: ${stats?.sp} / ${stats?.maxSp}`}
-                color="yellow.400"
+                color={resourceToken("sp")}
                 max={stats?.maxSp}
                 min={stats?.sp}
                 width={isBig ? 100 : 50}
