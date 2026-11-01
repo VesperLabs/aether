@@ -48,6 +48,17 @@ export interface NpcCastEvent {
   castAngle: number;
 }
 
+/** An NPC began winding up an attack or spell that lands in `windupMs`. */
+export interface NpcWindupStartedEvent {
+  npcId: string;
+  roomName: string;
+  kind: "attack" | "cast";
+  /** Socket id of the player it is aimed at. */
+  targetId?: string;
+  abilitySlot?: string;
+  windupMs: number;
+}
+
 /** A dead NPC came back at its spawn point. */
 export interface NpcRespawnedEvent {
   npcId: string;
@@ -63,6 +74,7 @@ export interface GameEvents {
   characterDamaged: CharacterDamagedEvent;
   npcAttacked: NpcAttackedEvent;
   npcCast: NpcCastEvent;
+  npcWindupStarted: NpcWindupStartedEvent;
   npcRespawned: NpcRespawnedEvent;
 }
 

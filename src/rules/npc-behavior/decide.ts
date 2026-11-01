@@ -56,6 +56,8 @@ export interface NpcBehaviorInput {
     weapons: NpcWeaponRanges;
     /** Opt-in behaviors from content, on top of `DEFAULT_NPC_BEHAVIORS`. */
     behaviors?: readonly MobBehavior[];
+    /** Warning before an attack or spell lands, from content; unset means `NPC_WARNING_DELAY`. */
+    windupMs?: number;
   };
   state: {
     isStatic?: boolean;
@@ -158,6 +160,7 @@ export function shouldRespawn(input: { deadTime: number; respawnTime: number; no
 export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision {
   const { npc, state, now } = input;
   const attackDelay = npc.stats?.attackDelay as number;
+  const warningMs = npc.windupMs ?? NPC_WARNING_DELAY;
 
   let npcAttackReady = state.npcAttackReady;
   let isAttacking = state.isAttacking;
@@ -267,7 +270,7 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
       type: "attack",
       direction: getCharacterDirection(npc, targetPlayer),
       castAngle: Math.atan2(targetPlayer.y - npc.y, targetPlayer.x - npc.x),
-      windupMs: NPC_WARNING_DELAY + attackDelay,
+      windupMs: warningMs + attackDelay,
     };
   } else if (
     // intendCastSpell (an attack in progress means the NPC is now aiming)
@@ -297,7 +300,7 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
         type: "cast",
         abilitySlot: abilitySlot as string,
         ability,
-        windupMs: NPC_WARNING_DELAY + (npc.stats?.castDelay as number),
+        windupMs: warningMs + (npc.stats?.castDelay as number),
       };
     }
   }

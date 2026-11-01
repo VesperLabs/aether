@@ -133,6 +133,14 @@ export interface ServerToClientEvents {
     direction?: string;
     castAngle?: number;
   }) => void;
+  /** An NPC began winding up; its attack or spell lands in `windupMs`. */
+  npcWindup: (payload: {
+    id: string;
+    kind: "attack" | "cast";
+    targetId?: string;
+    abilitySlot?: string;
+    windupMs: number;
+  }) => void;
   npcCastSpell: (payload: {
     id: string;
     abilitySlot?: number | string;

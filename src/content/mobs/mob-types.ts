@@ -61,6 +61,8 @@ export interface MobBase {
   readonly baseStats: { readonly level: number } & { readonly [K in StatName]?: number };
   readonly hitBoxSize?: { readonly width: number; readonly height: number };
   readonly abilities?: MobAbilities;
+  /** Warning, in ms, before its attacks and spells land. Unset means the default. */
+  readonly windupMs?: number;
 }
 
 /** Ways a mob can move; the game picks the one that fits best each tick. */

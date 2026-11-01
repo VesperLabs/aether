@@ -262,6 +262,19 @@ describe("deciding what an npc does", () => {
     });
   });
 
+  it("warns for the mob's own windup instead of the default", () => {
+    const close = player({ x: 20 });
+    const decision = decideNpcAction(
+      input({
+        npc: { windupMs: 500 },
+        state: { lockedPlayerId: "p1", npcAttackReady: true, lastAttack: NOW - 100 },
+        rest: { lockedPlayer: close, nearestPlayer: close },
+      }),
+      never,
+    );
+    expect(decision.action).toMatchObject({ type: "attack", windupMs: 800 });
+  });
+
   it("does not attack while aiming or already attacking", () => {
     const close = player({ x: 20 });
     const rest = { lockedPlayer: close, nearestPlayer: close };
