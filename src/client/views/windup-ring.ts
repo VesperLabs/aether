@@ -4,10 +4,10 @@ import type { Player } from "./player";
  * Fills the "!" bubble over an NPC's head with a countdown ring as it winds up, full the moment
  * its attack lands, then puts the "!" back.
  */
-export function playWindupRing(attacker: Player, windupMs: number) {
+export function playWindupRing(attacker: Player, windupMs: number, kind: "attack" | "cast") {
   const { scene, bubble } = attacker;
   if (!scene || !bubble) return;
-  bubble.setCountdown(0);
+  bubble.setCountdown(0, kind);
   scene.tweens.addCounter({
     from: 0,
     to: 1,
@@ -15,7 +15,7 @@ export function playWindupRing(attacker: Player, windupMs: number) {
     onUpdate: (tween) => {
       if (!bubble.active) return;
       if (attacker.state?.isDead) return tween.complete();
-      bubble.setCountdown(tween.getValue() ?? 0);
+      bubble.setCountdown(tween.getValue() ?? 0, kind);
     },
     onComplete: () => {
       if (bubble.active) bubble.setCountdown(null);
