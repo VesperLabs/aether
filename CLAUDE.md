@@ -6,7 +6,9 @@ Server-authoritative online game: Phaser + React client, Node + socket.io server
 
 ## Working here
 
-- One worktree per task. Before editing files for a new task, run `git fetch origin`, then enter a worktree named after it (kebab-case) branched from the fresh `origin/main`, never from a local or stale branch. Parallel sessions then never share files and always start from the latest main. Ship it with `/ship`.
+- One branch per task. Before editing files for a new task, run `git fetch origin`, then branch from the fresh `origin/main` (kebab-case, named after the task), never from a local or stale branch. Ship it with `/ship`.
+  - Only one task running: if the main checkout is on `main` with no uncommitted changes, branch there, so the user can preview it in the browser with `npm run dev`.
+  - Another task already running: if the main checkout is on another branch or has uncommitted changes, enter a worktree instead, so the tasks never share files. Parallel agents always use worktrees.
 - Don't add to existing `utils`/`helpers`/`common` files. If you touch a function in one, move it to its proper home.
 - Move code in small steps that keep `npm run check` passing.
 - Commits and PR titles are [conventional commits](https://www.conventionalcommits.org) (`feat:`, `fix:`, `refactor:`, `docs:`, `test:`, `ci:`, `chore:`), enforced by commitlint; release-please bumps versions from them.
