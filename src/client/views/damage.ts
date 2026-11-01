@@ -58,10 +58,15 @@ export class Damage extends Container {
         this.dt.setTint(0xd8b4fe); // purple.300
         break;
       case "mp":
-        this.setVisible(false);
-        break;
       case "sp":
-        this.setVisible(false);
+        /* Only drains show a number; regen and costs stay quiet */
+        if (!hit.isDrain) {
+          this.setVisible(false);
+          break;
+        }
+        text = "+" + text;
+        damageSize = 15;
+        this.dt.setTint(hit.type === "mp" ? 0x93c5fd : 0xfde047);
         break;
       case "death":
         this.dt.setTint(0xff6666);
