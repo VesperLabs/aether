@@ -31,6 +31,8 @@ export interface CharacterSyncInput {
   inventory: Opaque;
   profile: Opaque;
   kind: string;
+  /** NPCs only: their opt-in behaviors, so the client can tell aggressive mobs apart. */
+  behaviors?: readonly string[];
   charClass?: CharClass;
   npcKills?: Opaque;
   buffs: Opaque[];
@@ -58,6 +60,7 @@ export interface FullCharacterWire {
   inventory: Opaque;
   profile: Opaque;
   kind: string;
+  behaviors?: readonly string[];
   charClass: CharClass;
   npcKills: Opaque;
   buffs: Opaque[];
@@ -117,6 +120,7 @@ export function getFullCharacterState(p: CharacterSyncInput): FullCharacterWire 
     inventory: p?.inventory,
     profile: p?.profile,
     kind: p?.kind,
+    behaviors: p?.behaviors,
     charClass: p?.charClass as CharClass,
     npcKills: p?.npcKills,
     buffs: p?.buffs,

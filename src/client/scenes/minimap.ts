@@ -7,10 +7,27 @@ import type { SceneMain } from "./main-scene";
 const MASK_KEY = "minimap-mask";
 const ZOOM = 0.25;
 /** Dot radius in screen pixels; divided by zoom to get world units. */
-const DOT_RADIUS = 2.5;
-const HERO_COLOR = 0xfff3c4;
-const PLAYER_COLOR = 0x60a5fa;
-const NPC_COLOR = 0xef4444;
+const DOT_RADIUS = 2.25;
+/** A dark ring around every dot so it reads on any tile. */
+const OUTLINE_COLOR = 0x0b0704;
+/** Friendly to hostile: you, your party, other players, keepers, mobs that leave you be, mobs that don't. */
+const HERO_COLOR = 0xffffff;
+const PARTY_COLOR = 0x22d3ee;
+const PLAYER_COLOR = 0x3b82f6;
+const KEEPER_COLOR = 0x22c55e;
+const PASSIVE_COLOR = 0xf59e0b;
+const AGGRESSIVE_COLOR = 0xef4444;
+
+/** Keepers green, mobs amber when they only fight back and red when they attack on sight. */
+const npcColor = (npc: Player) => {
+  if (npc.kind === "keeper") return KEEPER_COLOR;
+  return npc.behaviors?.includes("aggressive") ? AGGRESSIVE_COLOR : PASSIVE_COLOR;
+};
+
+function drawDot(x: number, y: number, radius: number, color: number) {
+  dots?.fillStyle(OUTLINE_COLOR).fillCircle(x, y, radius + 1 / ZOOM);
+  dots?.fillStyle(color).fillCircle(x, y, radius);
+}
 
 let dots: Phaser.GameObjects.Graphics | undefined;
 
@@ -58,13 +75,15 @@ export function updateMinimap(scene: SceneMain) {
 
   const r = DOT_RADIUS / ZOOM;
   dots.clear();
-  dots.fillStyle(NPC_COLOR);
   for (const npc of getNpcs(scene)) {
-    if (!npc.state?.isDead) dots.fillCircle(npc.x, npc.y, r);
+    if (!npc.state?.isDead) drawDot(npc.x, npc.y, r, npcColor(npc));
   }
+  // Players last, so they sit on top of the mobs around them
+  const hero = getPlayers(scene).find((player) => player.isHero);
+  const partyIds = new Set(hero?.party?.members?.map((member: { id: string }) => member.id));
   for (const player of getPlayers(scene)) {
     if (player.state?.isDead) continue;
-    dots.fillStyle(player.isHero ? HERO_COLOR : PLAYER_COLOR);
-    dots.fillCircle(player.x, player.y, player.isHero ? r * 1.4 : r);
+    if (player.isHero) drawDot(player.x, player.y, r * 1.4, HERO_COLOR);
+    else drawDot(player.x, player.y, r, partyIds.has(player.id) ? PARTY_COLOR : PLAYER_COLOR);
   }
 }
