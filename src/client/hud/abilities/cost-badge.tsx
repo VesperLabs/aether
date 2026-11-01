@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState } from "react";
-import { Box, Text } from "@/ui";
+import { Box, Text, resourceToken } from "@/ui";
 
 export interface ResourceCosts {
   hp?: number;
@@ -10,8 +10,8 @@ export interface ResourceCosts {
 /** Each cost is coloured like its bar in the hero HUD. */
 const COST_COLORS = [
   ["hp", "red.500"],
-  ["mp", "blue.400"],
-  ["sp", "yellow.400"],
+  ["mp", resourceToken("mp")],
+  ["sp", resourceToken("sp")],
 ] as const;
 
 /** Where the pills sit on the button's rim: centred on its top-right, in degrees up from the right. */

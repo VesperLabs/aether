@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { resourceTint } from "@/ui/kit/resource-colors";
 import type { Player } from "./player";
 import type { HitEffect } from "./player-hit";
 const { Container, BitmapText } = Phaser.GameObjects;
@@ -66,7 +67,7 @@ export class Damage extends Container {
         }
         text = "+" + text;
         damageSize = 15;
-        this.dt.setTint(hit.type === "mp" ? 0x93c5fd : 0xfde047);
+        this.dt.setTint(resourceTint(hit.type));
         break;
       case "death":
         this.dt.setTint(0xff6666);

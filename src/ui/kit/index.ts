@@ -13,6 +13,8 @@ export {
   Link,
 } from "theme-ui";
 export { theme } from "./theme";
+export { resourceHex, resourceTint, resourceToken } from "./resource-colors";
+export type { Resource } from "./resource-colors";
 export { Button } from "./button/button";
 export type { PressHandler } from "./button/button";
 export { Icon } from "./icon";

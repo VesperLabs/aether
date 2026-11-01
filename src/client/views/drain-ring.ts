@@ -1,11 +1,12 @@
 import type { DrainResource } from "@/rules/combat";
+import { resourceTint } from "@/ui/kit/resource-colors";
 import type { Player } from "./player";
 
-/** Ring color for each drained resource: life, mana, stamina. */
+/** Ring color for each drained resource: life green, and mana and stamina like their bars. */
 const RING_COLORS: Record<DrainResource, number> = {
   hp: 0x86efac,
-  mp: 0x93c5fd,
-  sp: 0xfde047,
+  mp: resourceTint("mp"),
+  sp: resourceTint("sp"),
 };
 /** A drainer pulses at most once per this many ms, so fast hits don't spam rings. */
 const RING_COOLDOWN_MS = 500;
