@@ -2,7 +2,7 @@ import type { AbilitySlot } from "@/rules/spells";
 import type { ServerWorld } from "./server-world";
 import { distanceTo } from "@/rules/world";
 import { entitiesInRoom } from "@/rules/world";
-import { getLungeDuration, type Shape } from "@/rules/movement";
+import { LUNGE_HIT_LEAD, getLungeDuration, type Shape } from "@/rules/movement";
 import {
   BUFF_SPELLS,
   characterHitBox,
@@ -69,6 +69,7 @@ export class Spell {
   private abilitySlot?: AbilitySlot;
   private action: string;
   private isMissile: boolean;
+  private isLunge = false;
 
   constructor(
     world: ServerWorld,
@@ -142,6 +143,7 @@ export class Spell {
       this.stickToCaster = true;
     }
     if (details?.isLunge) {
+      this.isLunge = true;
       // The hit rides along with the caster, who dashes along the aim (to just past a target)
       this.stickToCaster = true;
       const lungeMs = getLungeDuration(target ? distanceTo(caster, target) : undefined);
@@ -234,6 +236,11 @@ export class Spell {
     if (this.stickToCaster) {
       this.x = this.caster.x;
       this.y = this.caster.y + this.caster.bodyCenterY;
+    }
+    if (this.isLunge) {
+      const angle = this.caster.state.lungeAngle ?? 0;
+      this.x += Math.cos(angle) * LUNGE_HIT_LEAD;
+      this.y += Math.sin(angle) * LUNGE_HIT_LEAD;
     }
   }
   getTrimmed() {

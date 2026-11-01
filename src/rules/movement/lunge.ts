@@ -15,6 +15,11 @@ export const LUNGE_DISTANCE = (spellDetails.lunge.spellSpeed * LUNGE_DURATION) /
 export const LUNGE_OVERSHOOT = 12;
 /** The furthest an aimed lunge goes, in pixels. */
 export const LUNGE_MAX_DISTANCE = 96;
+/**
+ * The hit area rides this far ahead of the caster, along the lunge: it covers what's in front,
+ * and makes up for the server seeing a dashing player a few pixels behind where they are.
+ */
+export const LUNGE_HIT_LEAD = 16;
 
 export interface LungeState {
   /** When the last lunge started, in ms. */
