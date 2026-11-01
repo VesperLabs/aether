@@ -7,8 +7,8 @@ Server-authoritative online game: Phaser + React client, Node + socket.io server
 ## Working here
 
 - One branch per task. Before editing files for a new task, run `git fetch origin`, then branch from the fresh `origin/main` (kebab-case, named after the task), never from a local or stale branch. Ship it with `/ship`.
-  - Only one task running: if the main checkout is on `main` with no uncommitted changes, branch there, so the user can preview it in the browser with `npm run dev`.
-  - Another task already running: if the main checkout is on another branch or has uncommitted changes, enter a worktree instead, so the tasks never share files. Parallel agents always use worktrees.
+  - Default to the main checkout, so the user can preview the task in the browser with `npm run dev`. If it has no uncommitted changes and no unpushed commits, it is free, even when it sits on an old branch: branch there.
+  - Use a worktree only when the main checkout is busy (uncommitted changes, or commits not yet pushed), so the tasks never share files. Parallel agents always use worktrees.
 - Don't add to existing `utils`/`helpers`/`common` files. If you touch a function in one, move it to its proper home.
 - Move code in small steps that keep `npm run check` passing.
 - Commits and PR titles are [conventional commits](https://www.conventionalcommits.org) (`feat:`, `fix:`, `refactor:`, `docs:`, `test:`, `ci:`, `chore:`), enforced by commitlint; release-please bumps versions from them.
