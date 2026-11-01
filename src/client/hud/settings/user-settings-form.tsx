@@ -13,7 +13,7 @@ import { usePersistSetting } from "./use-persist-setting";
  */
 export const UserSettingsForm = () => {
   const { userSettings, setUserSettings, socket, isLoggedIn } = useAppContext();
-  const { showMinimap, playMusic, videoChat, charLevels } = userSettings ?? {};
+  const { showMinimap, playMusic, videoChat, charLevels, screenShake } = userSettings ?? {};
   const videoChatAllowed = canUseVideoChat();
 
   const persistSetting = usePersistSetting();
@@ -67,6 +67,13 @@ export const UserSettingsForm = () => {
         checked={!!charLevels}
         onChange={(e) => {
           persistSetting("charLevels", e.target.checked);
+        }}
+      />
+      <Switch
+        label={`Screen Shake: ${screenShake ? "ON" : "OFF"}`}
+        checked={!!screenShake}
+        onChange={(e) => {
+          persistSetting("screenShake", e.target.checked);
         }}
       />
       <TextDivider color="#d5c1a7" sx={{ textAlign: "left" }}>

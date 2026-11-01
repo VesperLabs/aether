@@ -69,6 +69,7 @@ export interface UserSettingsMessage {
   showMinimap: boolean;
   videoChat: boolean;
   charLevels: boolean;
+  screenShake: boolean;
 }
 
 export interface ServerToClientEvents {

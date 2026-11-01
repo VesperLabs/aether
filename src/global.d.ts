@@ -108,6 +108,7 @@ interface UserSettings {
   showMinimap: boolean;
   videoChat: boolean;
   charLevels: boolean;
+  screenShake: boolean;
 }
 
 interface SpawnPoint {

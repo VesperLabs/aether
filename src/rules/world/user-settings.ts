@@ -3,6 +3,7 @@ export interface UserSettings {
   showMinimap: boolean;
   videoChat: boolean;
   charLevels: boolean;
+  screenShake: boolean;
 }
 
 export const DEFAULT_USER_SETTINGS: UserSettings = {
@@ -10,4 +11,5 @@ export const DEFAULT_USER_SETTINGS: UserSettings = {
   playMusic: true,
   videoChat: false,
   charLevels: false,
+  screenShake: true,
 };
