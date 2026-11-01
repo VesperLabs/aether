@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.8.0](https://github.com/VesperLabs/aether/compare/v0.7.0...v0.8.0) (2026-11-01)
+
+
+### Features
+
+* lunge kicks up rising dust clouds instead of afterimages ([#107](https://github.com/VesperLabs/aether/issues/107)) ([4fcaea4](https://github.com/VesperLabs/aether/commit/4fcaea418ef66570d23e2eab7616f24960b1df0d))
+* lunge spell icon from the unsorted icon sheet ([#102](https://github.com/VesperLabs/aether/issues/102)) ([c04818e](https://github.com/VesperLabs/aether/commit/c04818e686ea99d70fe56d5ba79a538c141d4fe9))
+* tap lunge to dash the way you're heading, and face the lunge the whole way ([#108](https://github.com/VesperLabs/aether/issues/108)) ([e54f71a](https://github.com/VesperLabs/aether/commit/e54f71aca4d6e249d7e2daa7ffab2f145fe0c8e8))
+
+
+### Bug Fixes
+
+* make lunge an exclusive spell ([#105](https://github.com/VesperLabs/aether/issues/105)) ([69458c7](https://github.com/VesperLabs/aether/commit/69458c78495a84474b7969ed83fc6f30afc0697b))
+* spell buttons show one cooldown ring, the one that ends last ([#109](https://github.com/VesperLabs/aether/issues/109)) ([c0788ab](https://github.com/VesperLabs/aether/commit/c0788abc4ef90cd1371089f352a3d7fc404bf5f1))
+* spiders no longer lunge ([#104](https://github.com/VesperLabs/aether/issues/104)) ([29e2f53](https://github.com/VesperLabs/aether/commit/29e2f53f2bec71493b75bfe7235432e89bccf2f8))
+
 ## [0.7.0](https://github.com/VesperLabs/aether/compare/v0.6.0...v0.7.0) (2026-11-01)
 
 
