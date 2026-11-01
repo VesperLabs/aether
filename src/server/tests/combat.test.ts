@@ -208,10 +208,26 @@ describe("casting spells", () => {
       return decodeTickVitals(me?.v)?.sp;
     };
 
+    /* One dodge pays its cost, then one regen tick refills a little: the client must match both */
+    const full = player.stats.sp;
+    socket.emit("dodge", { angle: 0 });
     await until(
-      () => player.stats.sp < 5,
-      () => socket.emit("dodge", { angle: 0 }),
-      1300,
+      () => player.stats.sp < full,
+      () => {},
+      50,
+      2000,
+    );
+    await until(
+      () => seenSp() === player.stats.sp,
+      () => {},
+      50,
+      2000,
+    );
+    const spent = player.stats.sp;
+    await until(
+      () => player.stats.sp > spent,
+      () => {},
+      50,
       15000,
     );
     await until(
@@ -220,19 +236,7 @@ describe("casting spells", () => {
       50,
       2000,
     );
-    await until(
-      () => player.stats.sp >= 8,
-      () => {},
-      100,
-      15000,
-    );
-    await until(
-      () => seenSp() === player.stats.sp,
-      () => {},
-      50,
-      2000,
-    );
-  }, 40000);
+  }, 20000);
 
   it("does not cast a spell the player cannot afford", async () => {
     const { socket, player, events } = await login("mage");
