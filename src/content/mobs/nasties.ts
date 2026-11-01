@@ -71,7 +71,6 @@ export const nasties = {
   spider: {
     charClass: "warrior",
     profile: { race: "spider", userName: "Spider" },
-    abilities: { "1": ["spell", "common", "lunge"] },
     flavor:
       "Eight legs, too many eyes and a taste for the unwary. It waits in the dark corners of the mine for prey.",
     behaviors: ["aggressive"],
