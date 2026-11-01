@@ -7,10 +7,7 @@ Server-authoritative online game: Phaser + React client, Node + socket.io server
 ## Working here
 
 - One worktree per task. Before editing files for a new task, run `git fetch origin`, then enter a worktree named after it (kebab-case) branched from the fresh `origin/main`, never from a local or stale branch. Parallel sessions then never share files and always start from the latest main. Ship it with `/ship`.
-- The repo is mid-migration. Old code may break the rules above; new code never does.
 - Don't add to existing `utils`/`helpers`/`common` files. If you touch a function in one, move it to its proper home.
-- New client→server messages: a zod schema in `src/network/commands.ts` plus a handler in the feature's `commands.ts`. Never add a raw `socket.on`.
-- New game events go in `src/rules/events.ts`.
 - Move code in small steps that keep `npm run check` passing.
 - Commits and PR titles are [conventional commits](https://www.conventionalcommits.org) (`feat:`, `fix:`, `refactor:`, `docs:`, `test:`, `ci:`, `chore:`), enforced by commitlint; release-please bumps versions from them.
 

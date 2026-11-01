@@ -5,7 +5,7 @@ Aether is a server-authoritative online game.
 - **Rules are separate from rendering.** The world is plain data advanced by a fixed tick. The server runs it as the authority; the client runs the same code to predict movement and draws it with sprites that only display it.
 - **Plain data plus systems.** Entities are data (position, stats, inventory, buffs). Systems are functions that change that data each tick. No ECS library.
 - **Commands in, events and snapshots out.** Clients send intents. The server validates them, applies them, and sends back events plus snapshots and deltas.
-- **Content is typed code.** Items, mobs, spells, quests and maps are TypeScript data, so bad references fail to compile.
+- **Content is typed code.** Items, mobs, spells, quests and maps are TypeScript data, so bad references fail to compile. Ids are typed so a quest pointing at a missing item is a compile error and editors autocomplete them.
 - **Features talk through events.** `mobKilled` is handled by loot, stats and quests; features never call each other's internals.
 
 > Migration in progress: older code doesn't match this yet. All new code does.
@@ -48,7 +48,7 @@ inventory/
   commands.ts   network command → rules → events
 ```
 
-Rules are **pure and deterministic**: no `Date.now()`, `Math.random()` or globals. Time, tick and RNG are passed in, so the client can predict and tests can replay.
+Rules are **pure and deterministic**: no `Date.now()`, `Math.random()` or globals. Time, tick and RNG are passed in, so the client can predict and tests can replay. Systems and command handlers stay thin and call the rules. Scenario tests go in `rules/tests/`.
 
 ### `network/`
 
@@ -68,11 +68,9 @@ client/input → command → server/net (zod) → rules/<feature>/commands.ts
 
 ## Conventions
 
-- No `utils`, `helpers`, `common`, `misc`, `lib` or `shared`. Generic code gets a narrow name (`rules/world/geometry.ts`).
-- No `*Manager` classes; that logic is a feature's rules and systems.
-- One source of truth per type: network types inferred from zod, content types from content definitions.
-- Files under 400 lines. Strict TypeScript.
-- kebab-case files and folders; named exports only; `.tsx` only with JSX; tests are `.test.ts(x)`, never `.spec`.
+- Generic code gets a narrow name in its proper home (`rules/world/geometry.ts`), never a grab-bag folder.
+- `*Manager` logic belongs in a feature's rules and systems.
+- One source of truth per type: network types inferred from zod (never write the same shape twice), content types from content definitions.
 - `PascalCase` types and components, `camelCase` functions, events and commands, `SCREAMING_CASE` only for top-level constants. Events are past tense (`mobKilled`), commands are imperative (`moveItem`).
 
 ## Tests
@@ -85,8 +83,9 @@ client/input → command → server/net (zod) → rules/<feature>/commands.ts
 
 `npm run check` runs on every commit (husky) and PR (CI):
 
-- **oxlint**: import rules, `max-lines`, kebab-case, no default exports
-- **`scripts/check-structure.ts`**: banned folder names, `*Manager`, `.spec`, `.tsx` without JSX, logic in `index.ts`
+- **oxlint**: import direction and cycles, files under 400 lines, kebab-case names, named exports only, no `Date.now()`/`Math.random()` in `rules/`, no `@/ui` barrel from Phaser client code, no raw `socket.on` outside `net/`
+- **`scripts/check-structure.ts`**: banned folder names (`utils`, `helpers`, `common`, `misc`, `lib`, `shared`), `*Manager`, `.spec` (tests are `.test.ts(x)`), `.tsx` without JSX, logic in `index.ts`
 - **tsc**: strict typecheck of the whole repo
+- **oxfmt**: formatting
 
 Legacy exceptions live in one list per config (oxlint `overrides`, the script's allowlist) and may only shrink.

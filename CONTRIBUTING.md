@@ -43,9 +43,7 @@ npm run web:dev # run the wiki locally
 
 ## 🚀 Deploying
 
-```bash
-fly deploy
-```
+Releases and deploys are manual: GitHub Actions → **Release & deploy** → Run workflow ([`.github/workflows/release-deploy.yml`](.github/workflows/release-deploy.yml)). release-please cuts the release from conventional commits (`fix:` → patch, `feat:` → minor, `feat!:` → major), then main deploys: Fly runs the game server, Render serves the wiki and static assets.
 
 ## 🛠️ Tooling
 
