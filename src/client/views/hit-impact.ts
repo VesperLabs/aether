@@ -16,6 +16,9 @@ const LUNGE_MS = 160;
 /** A killed character's corpse pops in from this scale. */
 const CORPSE_POP_SCALE = 0.4;
 const CORPSE_POP_MS = 220;
+/** A light camera shake when the hero lands a crit. */
+const CRIT_SHAKE_MS = 120;
+const CRIT_SHAKE_INTENSITY = 0.004;
 
 /**
  * Makes a damaging hit feel heavy: freezes both characters' animations for a moment, makes the
@@ -39,6 +42,19 @@ export function playHitImpact(
     if (!isKill) recoil(victim, attacker, isCritical ? CRIT_RECOIL_PIXELS : RECOIL_PIXELS);
   }
   if (isKill) popCorpse(victim);
+}
+
+/** Shakes the camera a little when the hero lands a crit on someone else, unless it's turned off. */
+export function playCritShake(
+  victim: Player | undefined,
+  attacker: Player | undefined,
+  hit: Pick<HitMessage, "type" | "amount" | "isCritical">,
+  isEnabled: boolean,
+) {
+  /* Damage only: a critical heal doesn't shake */
+  if (!isEnabled || !hit.isCritical || hit.type !== "hp" || (hit.amount ?? 0) >= 0) return;
+  if (!attacker?.isHero || !victim || victim === attacker) return;
+  attacker.scene.cameras.main.shake(CRIT_SHAKE_MS, CRIT_SHAKE_INTENSITY);
 }
 
 function getAnimatedSprites(player: Player) {
