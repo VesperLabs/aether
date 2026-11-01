@@ -11,7 +11,7 @@
   },
   "rules": {
     "import/named": "error",
-    "import/no-cycle": "warn",
+    "import/no-cycle": "error",
     "react-hooks/exhaustive-deps": "warn",
     "react/set-state-in-effect": "warn",
     "react/purity": "warn",
@@ -202,6 +202,40 @@
       }
     },
     {
+      "files": ["src/rules/**"],
+      "excludeFiles": ["**/*.test.ts", "src/rules/tests/**"],
+      "rules": {
+        "no-restricted-properties": [
+          "error",
+          {
+            "object": "Date",
+            "property": "now",
+            "message": "Rules are deterministic: time and RNG are passed in (ARCHITECTURE.md, rules/)."
+          },
+          {
+            "object": "Math",
+            "property": "random",
+            "message": "Rules are deterministic: time and RNG are passed in (ARCHITECTURE.md, rules/)."
+          },
+          {
+            "object": "performance",
+            "property": "now",
+            "message": "Rules are deterministic: time and RNG are passed in (ARCHITECTURE.md, rules/)."
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "src/rules/character/character.ts",
+        "src/rules/world/tick-loop.ts",
+        "src/rules/tests/**"
+      ],
+      "rules": {
+        "no-restricted-properties": "off"
+      }
+    },
+    {
       "files": ["src/network/**"],
       "rules": {
         "no-restricted-imports": [
@@ -337,6 +371,42 @@
               {
                 "group": ["@/rules/*/**"],
                 "message": "Import a rules feature only through its index.ts (ARCHITECTURE.md, Import rules)."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "src/client/scenes/**",
+        "src/client/views/**",
+        "src/client/input/**",
+        "src/client/net/**",
+        "src/client/audio/**"
+      ],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@/server", "@/server/**", "@/wiki", "@/wiki/**"],
+                "message": "Apps never import each other."
+              },
+              {
+                "regex": "^\\.{1,2}/(.*/)?(server|wiki)(/|$)",
+                "message": "Apps never import each other."
+              },
+              {
+                "group": ["@/rules/*/**"],
+                "message": "Import a rules feature only through its index.ts (ARCHITECTURE.md, Import rules)."
+              }
+            ],
+            "paths": [
+              {
+                "name": "@/ui",
+                "message": "Phaser code imports ui modules directly (@/ui/kit/is-mobile), never the @/ui barrel (ARCHITECTURE.md)."
               }
             ]
           }

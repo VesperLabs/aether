@@ -12,7 +12,8 @@ type Rule =
   | "manager-class"
   | "spec-file"
   | "tsx-without-jsx"
-  | "index-logic";
+  | "index-logic"
+  | "raw-socket-on";
 
 /** Paths (relative to the repo root) that are allowed to break a rule for now. */
 const LEGACY: Record<Rule, string[]> = {
@@ -22,6 +23,7 @@ const LEGACY: Record<Rule, string[]> = {
   "spec-file": [],
   "tsx-without-jsx": [],
   "index-logic": [],
+  "raw-socket-on": ["src/client/hud/app/app-events.ts", "src/client/hud/auth/modal-login.tsx"],
 };
 
 const ROOTS = ["src", "scripts"];
@@ -30,6 +32,9 @@ const KEBAB = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const REEXPORT = /export\s+(type\s+)?(\*(\s+as\s+\w+)?|\{[^}]*\})\s*from\s*["'][^"']+["'];?/g;
 const IMPORT = /import\s+(type\s+)?([^;"']*?\sfrom\s*)?["'][^"']+["'];?/g;
 const EXPORT_LIST = /export\s+(type\s+)?\{[^}]*\};?/g;
+// Only the dispatchers listen on sockets; tests are clients and may listen too
+const SOCKET_DISPATCHERS = ["src/server/net/", "src/client/net/"];
+const SOCKET_ON = /\bsocket\??\.on\(/;
 const COMMENTS = /\/\*[\s\S]*?\*\/|\/\/.*$/gm;
 // `<Tag`, `<tag`, `<>` that follow an operator or whitespace, so generics like `useState<string>` don't match
 const JSX = /(^|[\s(?:&|,{=>])<([A-Za-z][\w.]*(\s|\/?>)|>)/m;
@@ -67,6 +72,13 @@ function checkFile(full: string, name: string) {
 
   const text = readFileSync(full, "utf8");
   if (/\bclass\s+\w*Manager\b/.test(text)) report("manager-class", full);
+  if (
+    SOCKET_ON.test(text.replace(COMMENTS, "")) &&
+    !/\.test\.tsx?$/.test(name) &&
+    !SOCKET_DISPATCHERS.some((dir) => full.startsWith(dir))
+  ) {
+    report("raw-socket-on", full);
+  }
   if (name.endsWith(".tsx") && !JSX.test(text.replace(COMMENTS, ""))) {
     report("tsx-without-jsx", full);
   }
