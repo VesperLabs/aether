@@ -7,6 +7,8 @@ import { playDeathDissolve } from "./dissolve";
 
 /** How long a hit paints the body solid white before the red tint, in ms. */
 const WHITE_FLASH_MS = 50;
+/** The green heal hit. */
+const HEAL_ELEMENTS: string[] = ["holy"];
 
 /** A hit as the client plays it. Regen and stat changes have no attacker or target. */
 export type HitEffect = Pick<HitMessage, "type"> & Partial<Omit<HitMessage, "type">>;
@@ -22,6 +24,9 @@ export function applyHit(player: Player, hit: HitEffect, showDamage = true) {
   if (showDamage) {
     scene.add.existing(new Damage(player.scene, player, hit));
   }
+
+  /* Drained hp, mp or sp lights the drainer up like a heal */
+  if (hit?.isDrain) scene.add.existing(new Hit(player.scene, player, HEAL_ELEMENTS));
 
   switch (type) {
     case "buff":
@@ -39,7 +44,7 @@ export function applyHit(player: Player, hit: HitEffect, showDamage = true) {
         scene.add.existing(new Hit(player.scene, player, elements));
         flashHit(player);
       } else {
-        if (elements?.includes("holy")) {
+        if (elements?.includes("holy") && !hit?.isDrain) {
           scene.add.existing(new Hit(player.scene, player, elements));
         }
       }

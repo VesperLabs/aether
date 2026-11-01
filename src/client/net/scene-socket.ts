@@ -11,8 +11,6 @@ import { netInterp } from "@/client/net/scene-interpolation";
 import type { TickEntity } from "@/client/net/interpolation";
 import { playAudio } from "@/client/audio/play-audio";
 import { playHitImpact } from "@/client/views/hit-impact";
-import { playDrainStream } from "@/client/views/drain-stream";
-import type { DrainResource } from "@/rules/combat";
 import { playWindupRing } from "@/client/views/windup-ring";
 import { drawHitShapes } from "@/client/views/hit-shapes";
 import { playSpawnDissolve } from "@/client/views/dissolve";
@@ -242,8 +240,6 @@ export function bindSceneSocket(scene: SceneMain) {
       const victim = getNpc(scene, hit?.to) ?? getPlayer(scene, hit?.to);
       const attacker = getNpc(scene, hit?.from) ?? getPlayer(scene, hit?.from);
       playHitImpact(victim, attacker, hit);
-      /* A drain's `from` is the one drained and `to` the one who drank */
-      if (hit?.isDrain) playDrainStream(attacker, victim, hit.type as DrainResource, hit.amount);
       victim?.takeHit?.(hit);
     }
   });
