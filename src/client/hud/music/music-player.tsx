@@ -45,7 +45,7 @@ const readNowPlaying = (scene?: SceneMain): NowPlaying | null => {
 
 const BAR_DELAYS = ["0s", "-0.4s", "-0.2s"];
 
-/** Three bouncing bars while music plays, flat bars when stopped. */
+/** Three bouncing bars while music plays. */
 const Equalizer = ({ playing }: { playing: boolean }) => (
   <Flex sx={{ alignItems: "end", gap: "2px", height: 10 }}>
     {BAR_DELAYS.map((delay) => (
@@ -173,7 +173,18 @@ export const MusicPlayer = () => {
           "&:hover": { opacity: 1 },
         }}
       >
-        {expanded ? playMusic ? "■" : "▶" : <Equalizer playing={!!current} />}
+        {expanded ? (
+          playMusic ? (
+            "■"
+          ) : (
+            "▶"
+          )
+        ) : current ? (
+          <Equalizer playing />
+        ) : (
+          /* Flat bars read as "...", so show a note when nothing plays */
+          <Text sx={{ fontSize: "13px", lineHeight: 1 }}>♪</Text>
+        )}
       </Box>
       <Flex
         sx={{
@@ -196,7 +207,7 @@ export const MusicPlayer = () => {
               opacity: playMusic ? 1 : 0.6,
             }}
           >
-            {playMusic ? (nowPlaying?.name ?? "…") : "Music off"}
+            {playMusic ? (nowPlaying?.name ?? "No music here") : "Music off"}
           </Text>
           {current && current.duration > 0 && (
             <Text sx={{ fontSize: "9px", opacity: 0.7, fontVariantNumeric: "tabular-nums" }}>
