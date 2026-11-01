@@ -7,7 +7,9 @@ import {
   approachVelocity,
   getDodgeVelocity,
   getWalkVelocity,
+  getLungeVelocity,
   isDodging,
+  isLunging,
 } from "@/rules/movement";
 import { emitPlayerInput } from "@/client/net/player-input";
 import { updateAttackCooldown, updateSpellCooldown } from "./hero-cooldowns";
@@ -143,7 +145,9 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
     vy *= ATTACK_WALK_SPEED_SCALE;
   }
 
-  if (isRolling) {
+  if (isLunging(hero.state, Date.now())) {
+    ({ x: vx, y: vy } = getLungeVelocity(hero.state.lungeAngle ?? 0));
+  } else if (isRolling) {
     ({ x: vx, y: vy } = getDodgeVelocity(hero.state.dodgeAngle ?? 0));
   } else {
     /* Coming out of a roll drops straight to walking pace, so it can't carry past the roll */

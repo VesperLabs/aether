@@ -10,6 +10,9 @@ export function subscribeNpcMessages(bus: GameEventBus, io: GameIo) {
     bus.on("npcCast", ({ npcId, roomName, abilitySlot, castAngle }) => {
       io.to(roomName).emit("npcCastSpell", { id: npcId, abilitySlot, castAngle });
     }),
+    bus.on("npcWindupStarted", ({ npcId, roomName, ...windup }) => {
+      io.to(roomName).emit("npcWindup", { id: npcId, ...windup });
+    }),
     bus.on("npcRespawned", ({ npcId, roomName, x, y, at }) => {
       io.to(roomName).emit("respawnNpc", { id: npcId, x, y, respawnTime: at });
     }),

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   calculateNpcAggroRange,
   canTalkToNpc,
+  NPC_ENGAGED_BUBBLE,
   NPC_TALK_LATENCY_TOLERANCE,
   NPC_TALK_RANGE,
   checkInRange,
@@ -233,7 +234,7 @@ describe("deciding what an npc does", () => {
     expect(decision.npcAttackReady).toBe(false);
     expect(decision.movement).toEqual({ type: "chase", pathed: false });
     expect(decision.expireStealthOfPlayerId).toBe("p1");
-    expect(decision.bubbleMessage).toBe("?");
+    expect(decision.bubbleMessage).toBe(NPC_ENGAGED_BUBBLE);
   });
 
   it("paths when next to a collision tile", () => {
@@ -258,8 +259,21 @@ describe("deciding what an npc does", () => {
       type: "attack",
       direction: "right",
       castAngle: 0,
-      windupMs: 400,
+      windupMs: 500,
     });
+  });
+
+  it("warns for the mob's own windup instead of the default", () => {
+    const close = player({ x: 20 });
+    const decision = decideNpcAction(
+      input({
+        npc: { windupMs: 500 },
+        state: { lockedPlayerId: "p1", npcAttackReady: true, lastAttack: NOW - 100 },
+        rest: { lockedPlayer: close, nearestPlayer: close },
+      }),
+      never,
+    );
+    expect(decision.action).toMatchObject({ type: "attack", windupMs: 800 });
   });
 
   it("does not attack while aiming or already attacking", () => {
@@ -288,7 +302,7 @@ describe("deciding what an npc does", () => {
       type: "cast",
       abilitySlot: "1",
       ability: { base: "fireball" },
-      windupMs: 400,
+      windupMs: 500,
     });
   });
 

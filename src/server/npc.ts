@@ -32,6 +32,7 @@ import {
   type Rng,
 } from "@/rules/world";
 import { getRoomIndex } from "./room-index";
+import { emitNpcWindup } from "./npc-windup";
 import { isNextToSolidTile, isOutOfMap } from "@/rules/movement";
 
 /** How far a follower looks for its leader. Spawns are up to ~900px apart on the peaks. */
@@ -51,6 +52,7 @@ type NpcArgs = CharacterArgs & {
   drops?: Array<Drop>;
   hitBoxSize?: { width: number; height: number };
   behaviors?: readonly MobBehavior[];
+  windupMs?: number;
 };
 
 /** What an NPC needs to cast a spell. */
@@ -83,8 +85,9 @@ export class Npc extends Character {
   public rng: Rng;
   /** Threat by player socket id; the top player is who it fights. */
   public threat: ThreatTable = {};
-  /** From content; unset means the default behaviors. */
+  /** From content; unset means the default behaviors and warning delay. */
   public behaviors?: readonly MobBehavior[];
+  public windupMs?: number;
   /** Content name of the NPC it follows, from a `leader` map property. */
   public leaderName?: string;
   /** The leader's spawn, remembered once found so the pack keeps its home if the leader dies. */
@@ -116,6 +119,7 @@ export class Npc extends Character {
     /* Followers are picked per spawn: a `leader` map property makes this one follow. */
     this.leaderName = (this.state as { leader?: string }).leader;
     this.behaviors = this.leaderName ? [...(args.behaviors ?? []), "follow"] : args.behaviors;
+    this.windupMs = args.windupMs;
     this.calculateStats(true);
   }
   addThreat(playerSocketId: string, amount: number) {
@@ -291,6 +295,7 @@ export class Npc extends Character {
     const { ability, abilitySlot } = action;
     this.state.isAiming = true;
     if (targetPlayer) this.faceTarget(targetPlayer);
+    emitNpcWindup(this, action, targetPlayer?.id);
     this.timers.after(action.windupMs, () => {
       if (targetPlayer) this.faceTarget(targetPlayer);
       const castAngle = targetPlayer ? aimNpcShot(this, targetPlayer, ability.base as string) : 0;
@@ -345,20 +350,15 @@ export class Npc extends Character {
     this.direction = action.direction;
     this.state.isAiming = true;
 
-    const castAngle = (this.state.lastAngle = action.castAngle);
-    let direction = `${this.direction}`;
-    const target = {
-      id: targetPlayer.id,
-      x: targetPlayer.x,
-      y: targetPlayer.y,
-    };
+    this.state.lastAngle = action.castAngle;
 
+    emitNpcWindup(this, action, targetPlayer.id);
+    // Swings and shots land toward where the target is now, so circling it doesn't leave it facing off
     this.timers.after(action.windupMs, () => {
-      if (this.hasRangedWeapon()) {
-        this.faceTarget(targetPlayer);
-        direction = `${this.direction}`;
-      }
-      this.doAttack({ target, direction, castAngle });
+      this.faceTarget(targetPlayer);
+      const target = { id: targetPlayer.id, x: targetPlayer.x, y: targetPlayer.y };
+      const castAngle = Math.atan2(target.y - this.y, target.x - this.x);
+      this.doAttack({ target, direction: `${this.direction}`, castAngle });
       this.state.isAiming = false;
     });
   }

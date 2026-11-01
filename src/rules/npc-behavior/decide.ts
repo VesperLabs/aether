@@ -13,6 +13,8 @@ import {
   NPC_HOME_RANGE,
   NPC_LEASH_RANGE,
   NPC_SHOULD_ATTACK_RANGE,
+  NPC_ENGAGED_BUBBLE,
+  NPC_LUNGE_EXTRA_WINDUP,
   NPC_WARNING_DELAY,
 } from "./constants";
 import { checkInRange, distanceBetween, getShouldAttackRange } from "./range";
@@ -29,6 +31,8 @@ import {
 } from "./behaviors";
 import { chooseBehavior } from "./brain";
 import type { MobBehavior } from "@/content";
+import type { LungeState } from "@/rules/movement";
+import { decideLungeMovement, isLungeSpell, isRecoveringFromLunge } from "./lunge";
 import type { WanderStep } from "./wander";
 
 export interface NpcBehaviorInput {
@@ -56,8 +60,10 @@ export interface NpcBehaviorInput {
     weapons: NpcWeaponRanges;
     /** Opt-in behaviors from content, on top of `DEFAULT_NPC_BEHAVIORS`. */
     behaviors?: readonly MobBehavior[];
+    /** Warning before an attack or spell lands, from content; unset means `NPC_WARNING_DELAY`. */
+    windupMs?: number;
   };
-  state: {
+  state: LungeState & {
     isStatic?: boolean;
     walkRange?: number;
     isDead?: boolean;
@@ -109,7 +115,9 @@ export type NpcMovement =
   | { type: "strafe"; clockwise: boolean; distance: number; nextStrafeAt?: number }
   /** Walk to the leader. */
   | { type: "follow"; pathed: boolean }
-  | ({ type: "wander" } & WanderStep);
+  | ({ type: "wander" } & WanderStep)
+  /** Dash along `angle` (radians): a lunge spell carries it. */
+  | { type: "lunge"; angle: number };
 
 export type NpcAction =
   | { type: "idle" }
@@ -158,6 +166,7 @@ export function shouldRespawn(input: { deadTime: number; respawnTime: number; no
 export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision {
   const { npc, state, now } = input;
   const attackDelay = npc.stats?.attackDelay as number;
+  const warningMs = npc.windupMs ?? NPC_WARNING_DELAY;
 
   let npcAttackReady = state.npcAttackReady;
   let isAttacking = state.isAttacking;
@@ -248,7 +257,10 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
   const weaponBand =
     attackRange !== NPC_SHOULD_ATTACK_RANGE ? getWeaponBand(attackRange) : undefined;
   const hasClearShot = !!targetPlayer && (input.hasClearShot?.(targetPlayer) ?? true);
-  const movement = decideMovement();
+  // Still decided while lunging, so aggro and bubbles keep up; the lunge just overrides the move
+  const planned = decideMovement();
+  const movement = decideLungeMovement(state, now) ?? planned;
+  const isRecovering = isRecoveringFromLunge(state, now);
   if (NPC_BEHAVIORS[behaviorId].holdsFire) return result(movement);
 
   // intendAttack
@@ -258,6 +270,7 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
     hasClearShot &&
     !isAttacking &&
     !state.isAiming &&
+    !isRecovering &&
     (weaponBand
       ? isInBand(npc, targetPlayer, weaponBand)
       : checkInRange(npc, targetPlayer, attackRange)) &&
@@ -267,12 +280,13 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
       type: "attack",
       direction: getCharacterDirection(npc, targetPlayer),
       castAngle: Math.atan2(targetPlayer.y - npc.y, targetPlayer.x - npc.x),
-      windupMs: NPC_WARNING_DELAY + attackDelay,
+      windupMs: warningMs + attackDelay,
     };
   } else if (
     // intendCastSpell (an attack in progress means the NPC is now aiming)
     !state.isAiming &&
     !state.isDead &&
+    !isRecovering &&
     checkCastReady({
       lastCast: state.lastCast,
       castDelay: npc.stats?.castDelay,
@@ -297,7 +311,11 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
         type: "cast",
         abilitySlot: abilitySlot as string,
         ability,
-        windupMs: NPC_WARNING_DELAY + (npc.stats?.castDelay as number),
+        windupMs:
+          warningMs +
+          (isLungeSpell(ability.base)
+            ? attackDelay + NPC_LUNGE_EXTRA_WINDUP
+            : (npc.stats?.castDelay as number)),
       };
     }
   }
@@ -338,7 +356,7 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
 
     if (behavior.engaged && targetPlayer) {
       expireStealthOfPlayerId = targetPlayer.socketId;
-      bubbleMessage = state.isAiming ? "0xFFAAAA!" : "?";
+      bubbleMessage = NPC_ENGAGED_BUBBLE;
     } else {
       // Not fighting: let go of the target
       setLockedPlayerId(null);

@@ -157,6 +157,16 @@ export const spellItems = {
       requirements: { charClass: "rogue" },
       stats: { spCost: 5 },
     },
+    lunge: {
+      ilvl: 1,
+      name: "Lunge",
+      flavor: "Close the gap in a heartbeat and hit as you arrive.",
+      base: "lunge",
+      slot: "spell",
+      texture: "scroll-red",
+      stats: { spCost: 6 },
+      requirements: { charClass: "warrior", weaponType: "melee" },
+    },
     flameSlash: {
       ilvl: 1,
       name: "Flame Slash",

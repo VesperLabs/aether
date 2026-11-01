@@ -2,7 +2,7 @@ import type { AbilitySlot } from "@/rules/spells";
 import type { ServerWorld } from "./server-world";
 import { distanceTo } from "@/rules/world";
 import { entitiesInRoom } from "@/rules/world";
-import type { Shape } from "@/rules/movement";
+import { getLungeDuration, type Shape } from "@/rules/movement";
 import {
   BUFF_SPELLS,
   findSpellHits,
@@ -137,6 +137,15 @@ export class Spell {
     }
     if (BUFF_SPELLS.includes(spellName)) {
       this.stickToCaster = true;
+    }
+    if (details?.isLunge) {
+      // The hit rides along with the caster, who dashes along the aim (to just past a target)
+      this.stickToCaster = true;
+      const lungeMs = getLungeDuration(target ? distanceTo(caster, target) : undefined);
+      this.maxActiveTime = lungeMs;
+      caster.state.lungeAt = world.now();
+      caster.state.lungeAngle = castAngle;
+      caster.state.lungeMs = lungeMs;
     }
     this.adjustSpellPosition();
     /* TODO: When we add buffs, make sure they do the same as adjustSpellPosition on clientside */

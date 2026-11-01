@@ -11,6 +11,7 @@ import { findNearbyNpc } from "@/server/net/nearby-keeper";
 import {
   DODGE_DISTANCE,
   DODGE_SP_COST,
+  LUNGE_DISTANCE,
   canDodge,
   checkMove,
   grantMoveBudget,
@@ -86,6 +87,12 @@ export function changeDirection(
   const player = world.players[socketId];
   if (direction) player.direction = direction;
   if (typeof lastAngle === "number") player.state.lastAngle = lastAngle;
+}
+
+/** Lets a player who just started a lunge move its length on top of their walking budget. */
+export function grantLungeMove(player: Player) {
+  const track = moveTracks.get(player);
+  if (track) moveTracks.set(player, grantMoveBudget(track, LUNGE_DISTANCE));
 }
 
 export function dodge(ctx: CommandContext, { angle }: ParsedCommand<"dodge">) {

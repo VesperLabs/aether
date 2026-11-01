@@ -4,6 +4,8 @@ export interface SpellDefinition {
   readonly isRangedAttack?: boolean;
   readonly isAimable?: boolean;
   readonly isMissile?: boolean;
+  /** Dashes the caster along the aim at `spellSpeed` for `maxActiveTime`, hitting what it runs through. */
+  readonly isLunge?: boolean;
   readonly maxVisibleTime?: number;
   readonly maxActiveTime?: number;
   readonly maxDistance?: number;

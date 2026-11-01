@@ -45,6 +45,7 @@ export function buildNpcBehaviorInput(
       abilities: npc.abilities,
       buffs: npc.buffs,
       behaviors: npc.behaviors,
+      windupMs: npc.windupMs,
       weapons: {
         handLeft: npc.hasRangedWeaponLeft() ? { range: npc.getWeaponRange("handLeft") } : null,
         handRight: npc.hasRangedWeaponRight() ? { range: npc.getWeaponRange("handRight") } : null,

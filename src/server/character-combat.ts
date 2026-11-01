@@ -201,7 +201,7 @@ export function applyAttackDamage(
   return hits;
 }
 
-/** An attack (no ability slot, or a melee attack-spell) or a spell hitting `victim`. */
+/** An attack (no ability slot, a melee attack-spell or a lunge) or a spell hitting `victim`. */
 export function applyDamage(
   attacker: ServerCharacter,
   victim: ServerCharacter,
@@ -210,7 +210,7 @@ export function applyDamage(
   if (victim?.state?.isDead) return [];
   let hitList: Array<Hit>;
   const abilityDetails = attacker?.getAbilityDetails(abilitySlot);
-  if (!abilitySlot || abilityDetails?.isMeleeAttack) {
+  if (!abilitySlot || abilityDetails?.isMeleeAttack || abilityDetails?.isLunge) {
     hitList = applyAttackDamage(attacker, victim, abilityDetails);
   } else {
     hitList = applySpellDamage(attacker, victim, abilityDetails);

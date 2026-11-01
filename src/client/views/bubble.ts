@@ -1,8 +1,19 @@
 import Phaser from "phaser";
+import { theme } from "@/ui/kit/theme";
 const Sprite = Phaser.GameObjects.Sprite;
 type Sprite = Phaser.GameObjects.Sprite;
 
 const FRAME_SIZE = 4;
+/** The countdown ring drawn in place of the text, in bubble pixels (the bubble is drawn at half size). */
+const RING_RADIUS = 4;
+const RING_THICKNESS = 3;
+const toColor = (hex: string) => Phaser.Display.Color.HexStringToColor(hex).color;
+/** Weapon attacks count down in red, spells (lunges too) in blue, the colour of magic items. */
+const RING_COLORS = {
+  attack: toColor(theme.colors.red[500]),
+  cast: toColor(theme.colors.blue[400]),
+};
+const RING_TRACK_ALPHA = 0.6;
 
 export class Bubble extends Phaser.GameObjects.Container {
   declare bg: Sprite;
@@ -10,6 +21,9 @@ export class Bubble extends Phaser.GameObjects.Container {
   declare bot: Sprite;
   declare br: Sprite;
   declare bubbleText: Phaser.GameObjects.BitmapText;
+  declare countdown: Phaser.GameObjects.Graphics;
+  /** How far the owner's current windup is, which the countdown ring shows. */
+  windup: { progress: number; kind: keyof typeof RING_COLORS } = { progress: 0, kind: "attack" };
   declare headY: number;
   declare left: Sprite;
   declare maxWidth: number;
@@ -86,7 +100,29 @@ export class Bubble extends Phaser.GameObjects.Container {
     this.add(this.tail);
     this.wrapBitmapText(this.bubbleText, this.maxWidth);
     this.add(this.bubbleText);
+    this.countdown = scene.add.graphics();
+    this.add(this.countdown);
     this.setMessage(this.message);
+  }
+  /**
+   * Shows a ring filled to `progress` (0 to 1) instead of the text, coloured for an attack or a
+   * spell; null puts the text back.
+   */
+  setCountdown(progress: number | null, kind: keyof typeof RING_COLORS = "attack") {
+    const ring = this.countdown;
+    ring.clear();
+    this.bubbleText.setVisible(progress === null);
+    if (progress === null) return;
+    const { x, y, width, height } = this.bubbleText;
+    ring.setPosition(x + width / 2, y + height / 2);
+    ring.lineStyle(RING_THICKNESS, 0x000000, RING_TRACK_ALPHA);
+    ring.strokeCircle(0, 0, RING_RADIUS);
+    if (progress <= 0) return;
+    const start = -Math.PI / 2;
+    ring.lineStyle(RING_THICKNESS, RING_COLORS[kind], 1);
+    ring.beginPath();
+    ring.arc(0, 0, RING_RADIUS, start, start + Math.min(1, progress) * Math.PI * 2);
+    ring.strokePath();
   }
   setTint(tintColor: number) {
     // Set tint for all the sprites in the Bubble

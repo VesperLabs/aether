@@ -30,6 +30,7 @@ export const nasties = {
   slime: {
     charClass: "mage",
     profile: { race: "slime", userName: "Slime" },
+    abilities: { "1": ["spell", "common", "lunge"] },
     flavor:
       "A wobbling blob that absorbs anything it touches. Nobody knows what it eats, only that it's always hungry.",
     baseStats: { level: 2 },
@@ -70,6 +71,7 @@ export const nasties = {
   spider: {
     charClass: "warrior",
     profile: { race: "spider", userName: "Spider" },
+    abilities: { "1": ["spell", "common", "lunge"] },
     flavor:
       "Eight legs, too many eyes and a taste for the unwary. It waits in the dark corners of the mine for prey.",
     behaviors: ["aggressive"],
@@ -220,6 +222,7 @@ export const nasties = {
   wolf: {
     charClass: "rogue",
     profile: { race: "wolf", userName: "Wolf", tint: "0xCCBBAA" },
+    abilities: { "1": ["spell", "common", "lunge"] },
     flavor:
       "Grey wolves hunt in packs across the peaks. Where you see one, the rest are already circling.",
     behaviors: ["aggressive"],
@@ -235,7 +238,7 @@ export const nasties = {
     behaviors: ["aggressive"],
     baseStats: { level: 12, maxHp: 300, walkSpeed: 20 },
     hitBoxSize: { width: 41, height: 38 },
-    abilities: { "1": ["spell", "common", "stealth"] },
+    abilities: { "1": ["spell", "common", "stealth"], "2": ["spell", "common", "lunge"] },
     drops: [{ type: "stackable", rarity: "common", key: "wolfPelt", chance: 2 }],
   },
   bear: {
