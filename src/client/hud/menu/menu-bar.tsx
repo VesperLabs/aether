@@ -177,7 +177,7 @@ export const MenuBar = () => {
                 onClick={() => setTabQuests((prev) => !prev)}
               />
               <MenuButton
-                keyboardKey="I"
+                keyboardKey="C"
                 iconName="stats"
                 isActive={tabStats}
                 onClick={() => setTabStats((prev) => !prev)}
@@ -204,7 +204,7 @@ export const MenuBar = () => {
               />
               <MenuButton
                 id={LOOT_TARGET_ID}
-                keyboardKey="C"
+                keyboardKey="I"
                 iconName="bag"
                 isActive={tabInventory}
                 onClick={() => setTabInventory((prev) => !prev)}
