@@ -318,7 +318,6 @@ export class Npc extends Character {
 
     if (this?.hasBuff("stun")) return;
 
-    /* Switch hands if possible */
     const { spellName, action } = this.getAttackActionName({ count });
     this.action = action;
     // Ranged shots aim from where they spawn, at where the target is now
@@ -344,6 +343,7 @@ export class Npc extends Character {
       count,
       direction,
       castAngle,
+      isLunge: isLunger(this),
     });
   }
   intendAttack(action: Extract<NpcAction, { type: "attack" }>, targetPlayer: Player) {

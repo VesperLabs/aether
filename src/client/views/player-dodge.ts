@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { DODGE_DURATION, isDodging } from "@/rules/movement";
+import { NPC_LUNGE_MS } from "@/rules/npc-behavior";
 import type { Player } from "./player";
 
 /** One afterimage this often while rolling: close together, so the trail hugs the player. */
@@ -32,7 +33,10 @@ const POSED_LAYERS = [
 
 const lastGhost = new WeakMap<Player, number>();
 
-/** While a roll lasts: hold the walk pose and leave fading afterimages behind. Run after `drawFrame`. */
+/**
+ * While a roll lasts: hold the walk pose and leave fading afterimages behind. NPC lunges leave the
+ * same afterimages. Run after `drawFrame`.
+ */
 export function applyDodge(p: Player) {
   const now = Date.now();
   const rolling = isDodging(p.state, now);
@@ -40,12 +44,16 @@ export function applyDodge(p: Player) {
   const posed = rolling && !p.state.isAttacking;
   if (posed) holdPose(p);
   else if (p.state.isDodgePosed) releasePose(p);
-  if (rolling) {
-    if (now - (lastGhost.get(p) ?? 0) >= GHOST_EVERY_MS) {
-      lastGhost.set(p, now);
-      leaveGhost(p);
-    }
-  }
+  if (rolling) trail(p, now, (now - (p.state.lastDodge ?? 0)) / DODGE_DURATION);
+  /* NPC lunges leave the same trail; `lungeSeenAt` is when this client saw the lunge start */
+  const lunged = now - (p.state.lungeSeenAt ?? -Infinity);
+  if (lunged >= 0 && lunged < NPC_LUNGE_MS) trail(p, now, lunged / NPC_LUNGE_MS);
+}
+
+function trail(p: Player, now: number, progress: number) {
+  if (now - (lastGhost.get(p) ?? 0) < GHOST_EVERY_MS) return;
+  lastGhost.set(p, now);
+  leaveGhost(p, Math.min(1, progress));
 }
 
 function releasePose(p: Player) {
@@ -68,8 +76,8 @@ function holdPose(p: Player) {
 /** The body's layers and hands, not the shadow or the name, bars and bubbles drawn over it. */
 const GHOST_SKIP = new Set(["shadow", "userName", "hpBar", "bubble", "buffRack", "talkMenu"]);
 
-/** A faint copy of the rig where the player is now, which fades out as they roll on. */
-function leaveGhost(p: Player) {
+/** A faint copy of the rig where the player is now, which fades out as they move on. */
+function leaveGhost(p: Player, progress: number) {
   const { scene } = p;
   const skip = new Set(
     [...GHOST_SKIP].map((key) => (p as unknown as Record<string, unknown>)[key]),
@@ -91,9 +99,8 @@ function leaveGhost(p: Player) {
     ghost.add(copy);
   }
   ghost.setDepth(p.depth - 1);
-  const rollProgress = Math.min(1, (Date.now() - (p.state.lastDodge ?? 0)) / DODGE_DURATION);
   /* Squared, so the tail drops away fast and only the ghosts near the player read clearly */
-  const falloff = GHOST_TAIL_ALPHA_SHARE + (1 - GHOST_TAIL_ALPHA_SHARE) * rollProgress ** 2;
+  const falloff = GHOST_TAIL_ALPHA_SHARE + (1 - GHOST_TAIL_ALPHA_SHARE) * progress ** 2;
   ghost.setAlpha(GHOST_ALPHA * falloff * p.alpha);
   const start = { x: p.x, y: p.y };
   scene.tweens.addCounter({

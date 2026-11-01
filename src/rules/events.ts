@@ -38,6 +38,8 @@ export interface NpcAttackedEvent {
   count: number;
   direction: string;
   castAngle: number;
+  /** The attack is a lunge: the NPC dashes along `castAngle`. */
+  isLunge?: boolean;
 }
 
 /** An NPC cast the spell in one of its ability slots. */

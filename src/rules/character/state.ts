@@ -53,6 +53,8 @@ export interface CharacterState {
   lungeAt?: number;
   /** NPC only: which way that lunge heads, in radians. */
   lungeAngle?: number;
+  /** Client only: when this client saw the NPC's last lunge start, for its trail. */
+  lungeSeenAt?: number;
   /** Radians. */
   lastAngle: number;
   activeSets: string[];

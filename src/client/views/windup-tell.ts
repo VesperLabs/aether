@@ -6,13 +6,8 @@ import type { Player } from "./player";
 const LEAN_PIXELS = 6;
 /** The lean lets go this long before the attack lands, in ms. */
 const LEAN_RELEASE_MS = 40;
-/** The body flashes white for this long right before the attack or spell lands, in ms. */
-const FLASH_MS = 90;
 
-/**
- * Telegraphs an incoming NPC attack or spell. Weapon attacks draw the body back from the target;
- * everything flashes white just before it lands, which reads from any side while circling.
- */
+/** Telegraphs an incoming NPC weapon attack: the body draws back from the target. */
 export function playWindupTell(
   attacker: Player,
   target: Point,
@@ -20,7 +15,6 @@ export function playWindupTell(
 ) {
   if (!attacker?.scene) return;
   if (kind === "attack") lean(attacker, target, windupMs);
-  attacker.scene.time.delayedCall(Math.max(0, windupMs - FLASH_MS), () => flash(attacker));
 }
 
 /** Draws the rig back from `target` for the windup, then lets go as the attack's lunge plays. */
@@ -42,25 +36,5 @@ function lean(attacker: Player, target: Point, ms: number) {
     ease: "Quad.easeOut",
     onUpdate: () => moveTo(dx * offset.t, dy * offset.t),
     onComplete: () => moveTo(0, 0),
-  });
-}
-
-/** Fills the rig's visible sprites with white, then puts their own tints back. */
-function flash(attacker: Player) {
-  if (!attacker.scene || attacker.state?.isDead) return;
-  const sprites = attacker.rig.list.filter(
-    (child): child is Phaser.GameObjects.Sprite =>
-      child instanceof Phaser.GameObjects.Sprite && child.visible,
-  );
-  const saved = sprites.map((sprite) => ({
-    sprite,
-    tint: sprite.tintTopLeft,
-    mode: sprite.tintMode,
-  }));
-  for (const { sprite } of saved) sprite.setTint(0xffffff).setTintMode(Phaser.TintModes.FILL);
-  attacker.scene.time.delayedCall(FLASH_MS, () => {
-    for (const { sprite, tint, mode } of saved) {
-      if (sprite.active) sprite.setTint(tint).setTintMode(mode);
-    }
   });
 }
