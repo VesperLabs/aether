@@ -50,7 +50,6 @@ export { mapList } from "./maps/map-list";
 export { keepers, type KeeperId } from "./mobs/keepers";
 export { nasties, type NastyId } from "./mobs/nasties";
 export type {
-  MobAttackStyle,
   MobBehavior,
   MobMovementBehavior,
   MobProfile,

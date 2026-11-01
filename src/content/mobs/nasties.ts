@@ -30,7 +30,6 @@ export const nasties = {
   slime: {
     charClass: "mage",
     profile: { race: "slime", userName: "Slime" },
-    attackStyle: "lunge",
     flavor:
       "A wobbling blob that absorbs anything it touches. Nobody knows what it eats, only that it's always hungry.",
     baseStats: { level: 2 },
@@ -71,7 +70,6 @@ export const nasties = {
   spider: {
     charClass: "warrior",
     profile: { race: "spider", userName: "Spider" },
-    attackStyle: "lunge",
     flavor:
       "Eight legs, too many eyes and a taste for the unwary. It waits in the dark corners of the mine for prey.",
     behaviors: ["aggressive"],
@@ -222,7 +220,6 @@ export const nasties = {
   wolf: {
     charClass: "rogue",
     profile: { race: "wolf", userName: "Wolf", tint: "0xCCBBAA" },
-    attackStyle: "lunge",
     flavor:
       "Grey wolves hunt in packs across the peaks. Where you see one, the rest are already circling.",
     behaviors: ["aggressive"],
@@ -233,7 +230,6 @@ export const nasties = {
   whiteFang: {
     charClass: "rogue",
     profile: { race: "wolf", userName: "White Fang", scale: 1.5 },
-    attackStyle: "lunge",
     flavor:
       "The leader of the peak wolves. Bigger and faster than the rest, and never alone for long.",
     behaviors: ["aggressive"],

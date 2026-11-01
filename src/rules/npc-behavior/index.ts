@@ -3,7 +3,6 @@ export {
   NPC_AIM_LEAD_RATIO,
   NPC_ATTACK_ADDED_DELAY,
   NPC_LOSE_AGGRO_MS,
-  NPC_LUNGE_MS,
   NPC_SHOULD_ATTACK_RANGE,
   NPC_TALK_LATENCY_TOLERANCE,
   NPC_TALK_RANGE,
@@ -45,8 +44,6 @@ export type { BehaviorContext, NpcBehavior, NpcBehaviorId } from "./behaviors";
 export { chooseBehavior } from "./brain";
 export { flee, fleeAround, seek, separate, steerWithSeparation, strafeAround } from "./steering";
 export { aimNpcShot } from "./aim";
-export { getLungeVelocity, isLunging } from "./lunge";
-export type { LungeState } from "./lunge";
 export type { Velocity } from "./steering";
 export { addThreat, decayThreat, pickThreatTarget, pruneThreat } from "./threat";
 export type { ThreatTable } from "./threat";

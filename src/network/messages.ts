@@ -132,8 +132,6 @@ export interface ServerToClientEvents {
     count?: number;
     direction?: string;
     castAngle?: number;
-    /** The NPC dashes along `castAngle` as it strikes. */
-    isLunge?: boolean;
   }) => void;
   /** An NPC began winding up; its attack or spell lands in `windupMs`. */
   npcWindup: (payload: {

@@ -207,11 +207,10 @@ export function bindSceneSocket(scene: SceneMain) {
     });
   });
 
-  socket.on("npcAttack", ({ id, count, direction, castAngle, isLunge }) => {
+  socket.on("npcAttack", ({ id, count, direction, castAngle }) => {
     const n = getNpc(scene, id);
     if (!n) return;
     n.state.lastAngle = castAngle as number;
-    if (isLunge) n.state.lungeSeenAt = Date.now();
     n.doAttack({ count: count as number, direction, castAngle });
   });
 

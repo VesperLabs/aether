@@ -63,15 +63,7 @@ export interface MobBase {
   readonly abilities?: MobAbilities;
   /** Warning, in ms, before its attacks and spells land. Unset means the default. */
   readonly windupMs?: number;
-  /** How its melee attacks land. Unset means `swipe`. */
-  readonly attackStyle?: MobAttackStyle;
 }
-
-/**
- * `swipe` plants its feet and swings where it stands. `lunge` dashes at where its target stood when
- * the windup began, hits whoever it runs through, then stands still for a moment.
- */
-export type MobAttackStyle = "swipe" | "lunge";
 
 /** Ways a mob can move; the game picks the one that fits best each tick. */
 export type MobMovementBehavior =

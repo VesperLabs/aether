@@ -44,11 +44,3 @@ export const NPC_FOLLOW_DISTANCE = 40;
 export const NPC_BEHAVIOR_STICKINESS = 0.04;
 /** Close enough to spawn to count as home after a reset. */
 export const NPC_HOME_RANGE = 4;
-/** Lunging NPCs start their attack from this far away, in pixels. */
-export const NPC_LUNGE_RANGE = 40;
-/** How far a lunge carries an NPC, so it ends a little past where its target stood. */
-export const NPC_LUNGE_DISTANCE = 56;
-/** How long a lunge lasts, in ms. */
-export const NPC_LUNGE_MS = 160;
-/** How long an NPC stands still after a lunge: the window to hit back. */
-export const NPC_LUNGE_RECOVERY_MS = 450;

@@ -5,7 +5,6 @@ import {
   checkInRange,
   decideTalkingEnded,
   fleeAround,
-  getLungeVelocity,
   NPC_STRAFE_SPEED_RATIO,
   seek,
   separate,
@@ -15,7 +14,7 @@ import {
   type Velocity,
 } from "@/rules/npc-behavior";
 import { NPC_WALL_RADIUS, findNextWaypoint, hasLineOfSight, isOutOfMap } from "@/rules/movement";
-import { getCharacterDirection, getStickyDirection, type Point } from "@/rules/world";
+import { getStickyDirection, type Point } from "@/rules/world";
 
 /** NPCs closer than this push apart while walking, so packs spread out instead of stacking. */
 const NPC_SEPARATION_RADIUS = 20;
@@ -53,14 +52,6 @@ export function performNpcMovement(
           NPC_WALL_RADIUS,
         ),
       );
-    case "lunge": {
-      // Straight at its mark: no separation pushing it off the line the player is dodging
-      const { vx, vy } = getLungeVelocity(movement.angle);
-      npc.vx = vx;
-      npc.vy = vy;
-      npc.direction = getCharacterDirection(npc, { x: npc.x + vx, y: npc.y + vy });
-      return;
-    }
     case "strafe":
       if (!targetPlayer) return standStill(npc);
       return strafe(npc, targetPlayer, movement);

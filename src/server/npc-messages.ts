@@ -4,8 +4,8 @@ import type { GameIo } from "@/network";
 /** Turns NPC game events into the socket messages the clients in that room play back. */
 export function subscribeNpcMessages(bus: GameEventBus, io: GameIo) {
   const offs = [
-    bus.on("npcAttacked", ({ npcId, roomName, ...attack }) => {
-      io.to(roomName).emit("npcAttack", { id: npcId, ...attack });
+    bus.on("npcAttacked", ({ npcId, roomName, count, direction, castAngle }) => {
+      io.to(roomName).emit("npcAttack", { id: npcId, count, direction, castAngle });
     }),
     bus.on("npcCast", ({ npcId, roomName, abilitySlot, castAngle }) => {
       io.to(roomName).emit("npcCastSpell", { id: npcId, abilitySlot, castAngle });
