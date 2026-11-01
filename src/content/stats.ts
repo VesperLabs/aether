@@ -38,6 +38,7 @@ export type StatName =
   | "regenMp"
   | "regenSp"
   | "spCost"
+  | "spSteal"
   | "spellPower"
   | "strength"
   | "vitality"

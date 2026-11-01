@@ -78,6 +78,8 @@ type Elements = "earth" | "fire" | "water" | "light" | "physical" | "holy";
 interface Hit {
   type: string;
   isCritical?: boolean;
+  /** Taken from `from` and given to `to` by an attack's steal stats. */
+  isDrain?: boolean;
   amount?: number;
   buffName?: string;
   elements?: Array<Elements>;

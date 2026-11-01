@@ -303,6 +303,7 @@ export function calculateStats(player: StatsInput, shouldHeal = false): StatsRes
   ns.dodgeChance = ns.dodgeChance + ns.dexterity * 0.05;
   ns.hpSteal = ns.hpSteal || 0;
   ns.mpSteal = ns.mpSteal || 0;
+  ns.spSteal = ns.spSteal || 0;
 
   // Capped values
   if (ns.walkSpeed < 15) ns.walkSpeed = 15;
