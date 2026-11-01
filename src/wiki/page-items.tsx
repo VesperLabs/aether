@@ -1,6 +1,7 @@
 import { itemList, type ItemDefinition } from "@/content";
 import { Flex, Icon, Input, Text } from "@/ui";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
+import { useSearchParams } from "wouter";
 import { CARD_COLORS } from "./card-pool";
 import { type WikiItem } from "./item-card";
 import { ItemList } from "./item-list";
@@ -25,9 +26,24 @@ const ITEMS: WikiItem[] = TYPES.flatMap((type) =>
 );
 
 export function PageItems() {
-  const [type, setType] = useState<string>();
-  const [rarity, setRarity] = useState<string>();
-  const [search, setSearch] = useState("");
+  // Filters live in the URL (?type=&rarity=&q=) so they survive a refresh and can be linked.
+  const [params, setParams] = useSearchParams();
+  const type = params.get("type") ?? undefined;
+  const rarity = params.get("rarity") ?? undefined;
+  const search = params.get("q") ?? "";
+  const setParam = (key: string, value?: string) =>
+    setParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        if (value) next.set(key, value);
+        else next.delete(key);
+        return next;
+      },
+      { replace: true },
+    );
+  const setType = (value?: string) => setParam("type", value);
+  const setRarity = (value?: string) => setParam("rarity", value);
+  const setSearch = (value: string) => setParam("q", value);
 
   const shown = useMemo(() => {
     const query = search.trim().toLowerCase();
