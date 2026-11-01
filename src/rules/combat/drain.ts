@@ -29,3 +29,36 @@ export function calculateDrains(
   }
   return drains;
 }
+
+export interface DrainHitLike {
+  type: string;
+  amount?: number;
+  isDrain?: boolean;
+  from: string;
+  to: string;
+}
+
+/**
+ * Folds one attack's drain hits into one per drainer and resource, summing the amounts, so a
+ * swing through a crowd shows one total. The merged hit keeps the first victim as its `from`.
+ */
+export function mergeDrainHits<T extends DrainHitLike>(hits: T[]): T[] {
+  const merged: T[] = [];
+  const byKey = new Map<string, T>();
+  for (const hit of hits) {
+    if (!hit.isDrain) {
+      merged.push(hit);
+      continue;
+    }
+    const key = `${hit.to}:${hit.type}`;
+    const total = byKey.get(key);
+    if (total) {
+      total.amount = (total.amount ?? 0) + (hit.amount ?? 0);
+      continue;
+    }
+    const copy = { ...hit };
+    byKey.set(key, copy);
+    merged.push(copy);
+  }
+  return merged;
+}

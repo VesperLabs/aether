@@ -7,10 +7,6 @@ import { playDeathDissolve } from "./dissolve";
 
 /** How long a hit paints the body solid white before the red tint, in ms. */
 const WHITE_FLASH_MS = 50;
-/** Drains play a faint, silent heal hit, at most once per this many ms. */
-const DRAIN_GLOW_MS = 500;
-const lastDrainGlow = new WeakMap<Player, number>();
-const DRAIN_GLOW = { scale: 0.35, alpha: 0.55, silent: true };
 
 /** A hit as the client plays it. Regen and stat changes have no attacker or target. */
 export type HitEffect = Pick<HitMessage, "type"> & Partial<Omit<HitMessage, "type">>;
@@ -26,8 +22,6 @@ export function applyHit(player: Player, hit: HitEffect, showDamage = true) {
   if (showDamage) {
     scene.add.existing(new Damage(player.scene, player, hit));
   }
-
-  if (hit?.isDrain) playDrainGlow(player);
 
   switch (type) {
     case "buff":
@@ -79,12 +73,4 @@ function flashHit(player: Player) {
     if (!player.active || player.state.isDead || !player.state.isFlash) return;
     player.doFlashAnimation(0xff0000);
   });
-}
-
-/** Drained hp, mp or sp lights the drainer up softly, like a heal. */
-function playDrainGlow(player: Player) {
-  const now = player.scene.time.now;
-  if (now - (lastDrainGlow.get(player) ?? -Infinity) < DRAIN_GLOW_MS) return;
-  lastDrainGlow.set(player, now);
-  player.scene.add.existing(new Hit(player.scene, player, ["holy"], DRAIN_GLOW));
 }

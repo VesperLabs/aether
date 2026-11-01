@@ -1,7 +1,13 @@
 import type { AbilitySlot } from "@/rules/spells";
 import type { ServerWorld } from "./server-world";
 import { ServerCharacter, type CharacterArgs } from "./character";
-import { expAfterDeath, getAbilityCosts, hasStaminaFor, mobKilledEvents } from "@/rules/combat";
+import {
+  expAfterDeath,
+  getAbilityCosts,
+  hasStaminaFor,
+  mergeDrainHits,
+  mobKilledEvents,
+} from "@/rules/combat";
 import { canHitNpc, canHitPlayer } from "@/rules/spells";
 import type { Npc } from "./npc";
 import { createSpell } from "./spell-adapter";
@@ -353,6 +359,6 @@ export class Player extends ServerCharacter {
       });
     }
 
-    world.io.to(roomName).emit("assignDamage", hitList);
+    world.io.to(roomName).emit("assignDamage", mergeDrainHits(hitList));
   }
 }

@@ -21,8 +21,8 @@ export {
 export type { AttackAction, AttackActionInput, AttackReadyInput, Cooldown } from "./attack";
 export { calculateElementalDamage, calculateWeaponDamage, rollAttack } from "./damage";
 export type { AttackRoll, ElementalDamages, ElementalResult } from "./damage";
-export { calculateDrains } from "./drain";
-export type { Drain, DrainResource } from "./drain";
+export { calculateDrains, mergeDrainHits } from "./drain";
+export type { Drain, DrainHitLike, DrainResource } from "./drain";
 export { DEATH_EXP_KEPT, expAfterDeath, isRespawnDue } from "./death";
 export type { RespawnInput } from "./death";
 export { isLethalHp, modifyStat } from "./resources";
