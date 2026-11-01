@@ -80,7 +80,8 @@ export class SceneMain extends Phaser.Scene {
     return value ? changeMusic(this) : this.sound.stopAll();
   }
   toggleMinimap(value: boolean) {
-    return this.minimap?.setVisible(value);
+    // Before the map and hero load it is still unplaced at the top-left; layoutMinimap shows it then
+    return this.minimap?.setVisible(value && !!this.map && !!this.hero);
   }
   toggleCharLevels() {
     const scene = this;

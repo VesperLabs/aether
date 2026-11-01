@@ -70,7 +70,8 @@ function placeDot(scene: SceneMain, index: number, x: number, y: number, color: 
 }
 
 export function createMinimap(scene: SceneMain) {
-  const minimap = scene.cameras.add(0, 0, MINI_MAP_SIZE, MINI_MAP_SIZE);
+  // Hidden until layoutMinimap places it, or it flashes top-left while loading
+  const minimap = scene.cameras.add(0, 0, MINI_MAP_SIZE, MINI_MAP_SIZE).setVisible(false);
   if (!scene.textures.exists(MASK_KEY)) {
     const g = scene.make.graphics({}, false);
     g.fillStyle(0xffffff).fillCircle(MINI_MAP_SIZE / 2, MINI_MAP_SIZE / 2, MINI_MAP_SIZE / 2);
