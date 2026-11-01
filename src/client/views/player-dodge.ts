@@ -1,5 +1,6 @@
 import Phaser from "phaser";
-import { DODGE_DURATION, LUNGE_DURATION, isDodging, isLunging } from "@/rules/movement";
+import { DODGE_DURATION, isDodging, isLunging } from "@/rules/movement";
+import { trailDust } from "./lunge-dust";
 import type { Player } from "./player";
 
 /** One afterimage this often while rolling: close together, so the trail hugs the player. */
@@ -33,8 +34,8 @@ const POSED_LAYERS = [
 const lastGhost = new WeakMap<Player, number>();
 
 /**
- * While a roll lasts: hold the walk pose and leave fading afterimages behind. Lunges leave the same
- * afterimages. Run after `drawFrame`.
+ * While a roll lasts: hold the walk pose and leave fading afterimages behind. Lunges kick up dust
+ * instead. Run after `drawFrame`.
  */
 export function applyDodge(p: Player) {
   const now = Date.now();
@@ -44,7 +45,7 @@ export function applyDodge(p: Player) {
   if (posed) holdPose(p);
   else if (p.state.isDodgePosed) releasePose(p);
   if (rolling) trail(p, now, (now - (p.state.lastDodge ?? 0)) / DODGE_DURATION);
-  if (isLunging(p.state, now)) trail(p, now, (now - (p.state.lungeAt ?? 0)) / LUNGE_DURATION);
+  if (isLunging(p.state, now)) trailDust(p, now);
 }
 
 function trail(p: Player, now: number, progress: number) {
