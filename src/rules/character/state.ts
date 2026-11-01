@@ -37,8 +37,8 @@ export interface CharacterState {
   lastStealth?: number;
   /** Client only: holding the dodge button, aiming the roll. */
   isAimingDodge?: boolean;
-  /** Client only: when the dodge button went down, to tell a tap from a hold. */
-  dodgePressedAt?: number;
+  /** Client only: when a tap-aimable press (dodge, lunge) went down, to tell a tap from a hold. */
+  aimPressedAt?: number;
   /** Client only: the angle the current roll is heading. */
   dodgeAngle?: number;
   /** Client only: the way the hero faced when the roll started; it keeps facing that way. */

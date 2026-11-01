@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import { getCastReadiness } from "@/rules/spells";
 import { DODGE_SP_COST, getDodgeReadiness } from "@/rules/movement";
 import type { Player } from "@/client/views/player";
-import { isDodgeAimShown } from "./hero-dodge";
+import { isAimShown } from "./tap-aim";
 
 /** Crosshair opacity right after a shot or cast; it climbs back as it readies, then snaps to full. */
 const RELOADING_ALPHA = 0.2;
@@ -41,7 +41,7 @@ export class Crosshair extends Phaser.GameObjects.Container {
   update() {
     if (!this?.player?.state) return;
     const state = this.player.state;
-    this.setVisible(!!state.isAiming || isDodgeAimShown(state, Date.now()));
+    this.setVisible(isAimShown(state, Date.now()));
     this.angle = this?.player?.state?.lastAngle;
 
     // Set the rotation of the sprite around its own axis
