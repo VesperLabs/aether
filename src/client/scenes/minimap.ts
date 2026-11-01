@@ -6,7 +6,7 @@ import type { SceneMain } from "./main-scene";
 
 const MASK_KEY = "minimap-mask";
 const ZOOM = 0.25;
-/** Dot radius in screen pixels; divided by zoom to get world units. */
+/** Dot radius in screen pixels, not counting its 1px outline. */
 const DOT_RADIUS = 2.25;
 /** A dark ring around every dot so it reads on any tile. */
 const OUTLINE_COLOR = 0x0b0704;
@@ -24,12 +24,50 @@ const npcColor = (npc: Player) => {
   return npc.behaviors?.includes("aggressive") ? AGGRESSIVE_COLOR : PASSIVE_COLOR;
 };
 
-function drawDot(x: number, y: number, radius: number, color: number) {
-  dots?.fillStyle(OUTLINE_COLOR).fillCircle(x, y, radius + 1 / ZOOM);
-  dots?.fillStyle(color).fillCircle(x, y, radius);
+/** Dot textures are drawn this many times sharper than they show, then scaled down smoothly. */
+const SUPERSAMPLE = 4;
+
+/**
+ * A smooth, outlined dot of `color` as its own texture. Canvas arcs are antialiased, and the
+ * texture filters linearly, so dots stay round even though the game renders as pixel art.
+ */
+function dotTexture(scene: SceneMain, color: number) {
+  const key = `minimap-dot-${color.toString(16)}`;
+  if (scene.textures.exists(key)) return key;
+  const size = Math.ceil((DOT_RADIUS + 1) * 2 * SUPERSAMPLE);
+  const texture = scene.textures.createCanvas(key, size, size);
+  const ctx = texture?.getContext();
+  if (!texture || !ctx) return key;
+  const centre = size / 2;
+  ctx.fillStyle = `#${OUTLINE_COLOR.toString(16).padStart(6, "0")}`;
+  ctx.beginPath();
+  ctx.arc(centre, centre, centre, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = `#${color.toString(16).padStart(6, "0")}`;
+  ctx.beginPath();
+  ctx.arc(centre, centre, centre - SUPERSAMPLE, 0, Math.PI * 2);
+  ctx.fill();
+  texture.refresh();
+  texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
+  return key;
 }
 
-let dots: Phaser.GameObjects.Graphics | undefined;
+let dots: Phaser.GameObjects.Container | undefined;
+
+/** Shows the `index`th dot, reusing last frame's images. */
+function placeDot(scene: SceneMain, index: number, x: number, y: number, color: number, size = 1) {
+  if (!dots) return;
+  let dot = dots.list[index] as Phaser.GameObjects.Image | undefined;
+  if (!dot) {
+    dot = scene.add.image(0, 0, dotTexture(scene, color));
+    dots.add(dot);
+  }
+  dot.setTexture(dotTexture(scene, color));
+  dot
+    .setPosition(x, y)
+    .setScale(size / (SUPERSAMPLE * ZOOM))
+    .setVisible(true);
+}
 
 export function createMinimap(scene: SceneMain) {
   const minimap = scene.cameras.add(0, 0, MINI_MAP_SIZE, MINI_MAP_SIZE);
@@ -42,7 +80,7 @@ export function createMinimap(scene: SceneMain) {
   minimap.filters.internal.addMask(MASK_KEY);
   minimap.setBackgroundColor(0x1c130c);
 
-  dots = scene.add.graphics().setDepth(100000);
+  dots = scene.add.container(0, 0).setDepth(100000);
   scene.cameras.main.ignore(dots);
   scene.events.once("shutdown", () => {
     dots = undefined;
@@ -73,17 +111,20 @@ export function updateMinimap(scene: SceneMain) {
     if ((obj.cameraFilter & minimap.id) === 0) minimap.ignore(obj);
   }
 
-  const r = DOT_RADIUS / ZOOM;
-  dots.clear();
+  let count = 0;
   for (const npc of getNpcs(scene)) {
-    if (!npc.state?.isDead) drawDot(npc.x, npc.y, r, npcColor(npc));
+    if (!npc.state?.isDead) placeDot(scene, count++, npc.x, npc.y, npcColor(npc));
   }
   // Players last, so they sit on top of the mobs around them
   const hero = getPlayers(scene).find((player) => player.isHero);
   const partyIds = new Set(hero?.party?.members?.map((member: { id: string }) => member.id));
   for (const player of getPlayers(scene)) {
     if (player.state?.isDead) continue;
-    if (player.isHero) drawDot(player.x, player.y, r * 1.4, HERO_COLOR);
-    else drawDot(player.x, player.y, r, partyIds.has(player.id) ? PARTY_COLOR : PLAYER_COLOR);
+    const color = player.isHero ? HERO_COLOR : partyIds.has(player.id) ? PARTY_COLOR : PLAYER_COLOR;
+    placeDot(scene, count++, player.x, player.y, color, player.isHero ? 1.4 : 1);
+  }
+  // Hide the spares left over from a busier frame
+  for (let i = count; i < dots.list.length; i++) {
+    (dots.list[i] as Phaser.GameObjects.Image).setVisible(false);
   }
 }
