@@ -3,6 +3,7 @@ import {
   calculateElementalDamage,
   calculateHpSteal,
   calculateMpSteal,
+  isInStealthGrace,
   type ElementalDamages,
   rollAttack,
   rollTriggers,
@@ -22,6 +23,12 @@ export type AbilityDetails = ReturnType<typeof getAbilityDetails>;
  */
 
 const rng = () => Math.random();
+
+/** Mid-roll, or just after going into stealth: hits miss. */
+function cannotBeHit(victim: ServerCharacter) {
+  const now = victim.world.now();
+  return isDodging(victim.state, now) || isInStealthGrace(victim.state, now);
+}
 
 export function applyElementalDamage(eleDamages: ElementalDamages, victim: ServerCharacter) {
   return calculateElementalDamage(eleDamages, victim.stats, rng);
@@ -47,7 +54,7 @@ export function applySpellDamage(
   abilityDetails: AbilityDetails | undefined,
 ): Array<Hit> {
   if (victim?.state?.isDead) return [];
-  if (attacker !== victim && isDodging(victim.state, victim.world.now())) {
+  if (attacker !== victim && cannotBeHit(victim)) {
     return [{ type: "miss", amount: 0, from: attacker.id, to: victim.id }];
   }
   const hits: Array<Hit> = [];
@@ -128,7 +135,7 @@ export function applyAttackDamage(
   abilityDetails: AbilityDetails | undefined,
 ): Array<Hit> {
   if (victim?.state?.isDead) return [];
-  if (isDodging(victim.state, victim.world.now())) {
+  if (cannotBeHit(victim)) {
     return [{ type: "miss", amount: 0, from: attacker.id, to: victim.id }];
   }
 
