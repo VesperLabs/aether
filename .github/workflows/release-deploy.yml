@@ -26,9 +26,12 @@ jobs:
     outputs:
       sha: ${{ steps.sha.outputs.sha }}
     steps:
+      # Opened with a PAT so the PR has a trusted author: PRs from
+      # github-actions[bot] wait for approval and their CI expires.
       - id: pr
         uses: googleapis/release-please-action@v4
         with:
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
       # Merge the release PR ourselves (GITHUB_TOKEN pushes don't trigger
