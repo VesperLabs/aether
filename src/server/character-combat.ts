@@ -6,6 +6,7 @@ import {
   type ElementalDamages,
   rollAttack,
   rollTriggers,
+  type Hand,
 } from "@/rules/combat";
 import { isDodgeInvulnerable } from "@/rules/movement";
 import { rollSpellCrit, rollSpellDamage, type getAbilityDetails } from "@/rules/spells";
@@ -132,13 +133,16 @@ export function applyAttackDamage(
   attacker: ServerCharacter,
   victim: ServerCharacter,
   abilityDetails: AbilityDetails | undefined,
+  hand?: Hand,
 ): Array<Hit> {
   if (victim?.state?.isDead) return [];
   if (cannotBeHit(victim)) {
     return [{ type: "miss", amount: 0, from: attacker.id, to: victim.id }];
   }
 
-  const roll = rollAttack(attacker.stats, victim.stats, abilityDetails?.effects, rng);
+  /* A dual-wielder's left-hand swing uses that weapon's stats, never both weapons' */
+  const swingStats = (hand === "handLeft" && attacker.offHandStats) || attacker.stats;
+  const roll = rollAttack(swingStats, victim.stats, abilityDetails?.effects, rng);
   if (roll.outcome === "miss") {
     return [{ type: "miss", amount: 0, from: attacker.id, to: victim.id }];
   }
@@ -154,11 +158,7 @@ export function applyAttackDamage(
   if (totalDamage > 0) markHurt(attacker, victim, totalDamage);
 
   // onAttackHit if we have some
-  for (const { name, level, target } of rollTriggers(
-    attacker?.stats?.triggers,
-    "onAttackHit",
-    rng,
-  )) {
+  for (const { name, level, target } of rollTriggers(swingStats?.triggers, "onAttackHit", rng)) {
     const to = target === "self" ? attacker : victim;
     hits.push({ type: "buff", from: attacker.id, buffName: name, elements, to: to.id });
     to.addBuff({ name, level, caster: attacker });
@@ -170,7 +170,7 @@ export function applyAttackDamage(
   }
 
   /* Drained hp, mp and sp flow from the victim to the attacker */
-  for (const { resource, amount } of calculateDrains(physicalDamage, attacker?.stats)) {
+  for (const { resource, amount } of calculateDrains(physicalDamage, swingStats)) {
     attacker.modifyStat(resource, amount);
     hits.push({ type: resource, amount, isDrain: true, from: victim.id, to: attacker.id });
   }
@@ -205,12 +205,13 @@ export function applyDamage(
   attacker: ServerCharacter,
   victim: ServerCharacter,
   abilitySlot?: AbilitySlot,
+  hand?: Hand,
 ): Array<Hit> {
   if (victim?.state?.isDead) return [];
   let hitList: Array<Hit>;
   const abilityDetails = attacker?.getAbilityDetails(abilitySlot);
   if (!abilitySlot || abilityDetails?.isMeleeAttack || abilityDetails?.isLunge) {
-    hitList = applyAttackDamage(attacker, victim, abilityDetails);
+    hitList = applyAttackDamage(attacker, victim, abilityDetails, hand);
   } else {
     hitList = applySpellDamage(attacker, victim, abilityDetails);
   }

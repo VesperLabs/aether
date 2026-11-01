@@ -1,4 +1,6 @@
 import type { AbilitySlot } from "@/rules/spells";
+import type { Hand } from "@/rules/combat";
+import type { StatBag } from "@/rules/stats";
 import type { ServerWorld } from "./server-world";
 import { CharacterModel } from "@/rules/character";
 import { ItemBuilder } from "@/content";
@@ -30,6 +32,8 @@ export type CharacterArgs = Record<string, any>;
 
 export class ServerCharacter extends CharacterModel {
   world: ServerWorld;
+  /** Dual-wielding only: the stats the left hand's swings use (see `calculateStats`). */
+  offHandStats?: StatBag;
   constructor(world: ServerWorld, args: CharacterArgs) {
     super();
     this.world = world;
@@ -183,8 +187,8 @@ export class ServerCharacter extends CharacterModel {
   ): Array<Hit> {
     return applyAttackDamage(this, victim, abilityDetails);
   }
-  calculateDamage(victim: ServerCharacter, abilitySlot?: AbilitySlot): Array<Hit> {
-    return applyDamage(this, victim, abilitySlot);
+  calculateDamage(victim: ServerCharacter, abilitySlot?: AbilitySlot, hand?: Hand): Array<Hit> {
+    return applyDamage(this, victim, abilitySlot, hand);
   }
   doRegen() {
     applyRegen(this);
@@ -238,7 +242,7 @@ export class ServerCharacter extends CharacterModel {
   expireBuffs(forceExpire = false) {
     applyExpireBuffs(this, forceExpire);
   }
-  doHit(ids: Array<string>, abilitySlot?: AbilitySlot): void {
+  doHit(_ids: Array<string>, _abilitySlot?: AbilitySlot, _hand?: Hand): void {
     //placeholder
   }
   setLockedPlayerId(id: string | null | undefined) {

@@ -28,25 +28,26 @@ export function getCooldown(cooldown: number, lastUsed: number, now: number): Co
   return { cooldown, timeRemaining, timeElapsed, percentageRemaining, isReady };
 }
 
-/** Dual wielding averages the weapon delay with a fast 60. */
-export function getFullAttackDelay(attackDelay: number, isDualWielding: boolean) {
-  return isDualWielding ? (attackDelay + 60) / 2 : attackDelay;
+/**
+ * How long swing `count` takes to recover: each weapon has its own delay, so a dual-wielder's
+ * left-hand swing (2) waits on the left weapon (`offHandAttackDelay`, see `calculateStats`).
+ */
+export function getSwingDelay(
+  stats: { attackDelay: number; offHandAttackDelay?: number },
+  count: number | undefined,
+) {
+  return (count === 2 && stats.offHandAttackDelay) || stats.attackDelay;
 }
 
 export interface AttackReadyInput {
+  /** The delay of the last swing, from `getSwingDelay`. */
   attackDelay: number;
-  isDualWielding: boolean;
   lastAttack: number;
   now: number;
 }
 
-export function checkAttackReady({
-  attackDelay,
-  isDualWielding,
-  lastAttack,
-  now,
-}: AttackReadyInput) {
-  return getCooldown(getFullAttackDelay(attackDelay, isDualWielding), lastAttack, now);
+export function checkAttackReady({ attackDelay, lastAttack, now }: AttackReadyInput) {
+  return getCooldown(attackDelay, lastAttack, now);
 }
 
 /** True once `OUT_OF_COMBAT_MS` have passed since the last damage dealt or taken. */

@@ -9,7 +9,7 @@ export function updateAttackCooldown(hero: Player) {
   /* Out of stamina the attack won't fire, so don't start its cooldown */
   const count = getNextAttackCount(hero.state.lastAttackCount, hero);
   if (!hero.hasStaminaForAttack(count, hero.state.lastAbilitySlot)) return;
-  const attackDelay = hero?.getFullAttackDelay();
+  const attackDelay = hero?.getFullAttackDelay(count);
   const duration = attackDelay;
   window.dispatchEvent(
     new CustomEvent("HERO_START_COOLDOWN", {
