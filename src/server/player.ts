@@ -5,6 +5,7 @@ import { expAfterDeath, getAbilityCosts, hasStaminaFor, mobKilledEvents } from "
 import { canHitNpc, canHitPlayer } from "@/rules/spells";
 import type { Npc } from "./npc";
 import { createSpell } from "./spell-adapter";
+import { vanish } from "./stealth";
 import { PLAYER_DEFAULT_SPAWN } from "./auth/character-defaults";
 import { getRoomState } from "@/server/net/room-sync";
 import { entitiesInRoom } from "@/rules/world";
@@ -151,7 +152,7 @@ export class Player extends ServerCharacter {
     this.modifyStatIfCostExists("sp", stats?.spCost || 0);
 
     this.dispelBuffsByProperty("dispelBeforeAttack");
-    if (spellName === "stealth") this.state.lastStealth = this.world.now();
+    if (spellName === "stealth") vanish(this);
 
     if (this.room)
       createSpell(this.room, {
