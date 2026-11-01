@@ -9,8 +9,6 @@ jobs:
   # One job per gate, run in parallel, so a single run reports every failure.
   gate:
     name: ${{ matrix.name }}
-    # Release PRs are opened and merged by the release workflow in seconds; skip them.
-    if: ${{ !startsWith(github.head_ref, 'release-please--') }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -22,11 +20,19 @@ jobs:
             run: npm run test
           - name: Build
             run: npm run client:build && npm run web:build && npm run server:build
+    # Release PRs are opened and merged by the release workflow in seconds. Skip
+    # their steps, not the job, so the required check names still report success.
+    env:
+      SKIP: ${{ startsWith(github.head_ref, 'release-please--') }}
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - if: env.SKIP != 'true'
+        uses: actions/checkout@v5
+      - if: env.SKIP != 'true'
+        uses: actions/setup-node@v5
         with:
           node-version: 26 # matches the Dockerfile
           cache: npm
-      - run: npm ci
-      - run: ${{ matrix.run }}
+      - if: env.SKIP != 'true'
+        run: npm ci
+      - if: env.SKIP != 'true'
+        run: ${{ matrix.run }}
