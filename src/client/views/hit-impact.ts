@@ -17,8 +17,6 @@ const LUNGE_MS = 160;
 const WINDUP_LEAN_PIXELS = 3;
 /** The lean lets go this long before the attack lands, in ms. */
 const WINDUP_RELEASE_MS = 40;
-/** Share of the windup after which the body starts to shiver. */
-const WINDUP_SHIVER_FROM = 0.7;
 /** A killed character's corpse pops in from this scale. */
 const CORPSE_POP_SCALE = 0.4;
 const CORPSE_POP_MS = 220;
@@ -84,7 +82,7 @@ export function playAttackLunge(attacker: Player, direction: string) {
 
 /**
  * Telegraphs an incoming attack or spell: the body draws back from the target for the whole
- * windup, shivers just before it lands, then snaps back as the attack's own lunge plays.
+ * windup, then snaps back as the attack's own lunge plays.
  */
 export function playWindupLean(attacker: Player, target: { x: number; y: number }, ms: number) {
   if (!attacker?.scene) return;
@@ -103,11 +101,7 @@ export function playWindupLean(attacker: Player, target: { x: number; y: number 
     t: 1,
     duration: Math.max(0, ms - WINDUP_RELEASE_MS),
     ease: "Quad.easeOut",
-    onUpdate: (tween) => {
-      /* Shiver through the last part of the windup, so the moment it lands is readable */
-      const shake = tween.progress > WINDUP_SHIVER_FROM ? Math.sin(tween.elapsed * 0.25) : 0;
-      moveTo(dx * offset.t + dy * shake * 0.25, dy * offset.t - dx * shake * 0.25);
-    },
+    onUpdate: () => moveTo(dx * offset.t, dy * offset.t),
     onComplete: () => moveTo(0, 0),
   });
 }

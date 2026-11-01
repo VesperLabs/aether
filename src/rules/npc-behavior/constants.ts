@@ -5,7 +5,7 @@ export const NPC_SHOULD_ATTACK_RANGE = 8;
 /** Both combined is time between attacks. Game designed to have ~700 total (400 here + stats.attackDelay). */
 export const NPC_ATTACK_ADDED_DELAY = 400;
 /** The wind-up before an NPC attack or spell lands, on top of the attack or cast delay. */
-export const NPC_WARNING_DELAY = 300;
+export const NPC_WARNING_DELAY = 200;
 /** How far a player can walk from an NPC they are talking to before the conversation ends. */
 export const NPC_TALK_RANGE = 80;
 /** Extra distance allowed on top of the talk range, for latency and for the NPC wandering. */
@@ -30,8 +30,8 @@ export const NPC_RETREAT_HP_RATIO = 0.25;
 export const NPC_KITE_MIN_RANGE = 48;
 /** NPCs only shoot from this share of a projectile's flight distance, so a target on the move is still hit. */
 export const NPC_SHOT_MARGIN = 0.85;
-/** How much NPC shots lead a moving target: not at all, so moving once the windup tell shows dodges. */
-export const NPC_AIM_LEAD_RATIO = 0;
+/** How much NPC shots lead a moving target: a little, so running in a straight line still gets hit but juking dodges. */
+export const NPC_AIM_LEAD_RATIO = 0.3;
 /** Ranged NPCs sidestep at this share of walk speed between shots. */
 export const NPC_STRAFE_SPEED_RATIO = 0.5;
 /** Average milliseconds before a sidestepping NPC switches sides (each wait is 50% to 150% of it). */

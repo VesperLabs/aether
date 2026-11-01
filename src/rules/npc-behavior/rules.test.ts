@@ -258,7 +258,7 @@ describe("deciding what an npc does", () => {
       type: "attack",
       direction: "right",
       castAngle: 0,
-      windupMs: 600,
+      windupMs: 500,
     });
   });
 
@@ -301,7 +301,7 @@ describe("deciding what an npc does", () => {
       type: "cast",
       abilitySlot: "1",
       ability: { base: "fireball" },
-      windupMs: 600,
+      windupMs: 500,
     });
   });
 
