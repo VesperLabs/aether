@@ -32,12 +32,12 @@ export const ItemTooltip = ({ item, player, tooltipId, show }: ItemTooltipProps)
       <TooltipContent>
         <Text>
           {d.title}
-          {d.amount && (
+          {!!d.amount && (
             <Text color="gray.400" sx={{ ml: "2px" }}>
               ({d.amount})
             </Text>
           )}
-          {d.level && <span> (Lv. {d.level})</span>}
+          {!!d.level && <span> (Lv. {d.level})</span>}
         </Text>
         <Text color={d.rarity}>
           {d.rarity} {d.kind}
