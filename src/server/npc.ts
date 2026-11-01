@@ -32,7 +32,7 @@ import {
   type Rng,
 } from "@/rules/world";
 import { getRoomIndex } from "./room-index";
-import { emitNpcWindup } from "./npc-windup";
+import { afterWindup, emitNpcWindup, type WindupTrack } from "./npc-windup";
 import { isNextToSolidTile, isOutOfMap } from "@/rules/movement";
 
 /** How far a follower looks for its leader. Spawns are up to ~900px apart on the peaks. */
@@ -85,6 +85,7 @@ export class Npc extends Character {
   public rng: Rng;
   /** Threat by player socket id; the top player is who it fights. */
   public threat: ThreatTable = {};
+  public windup: WindupTrack = { seq: 0 };
   /** From content; unset means the default behaviors and warning delay. */
   public behaviors?: readonly MobBehavior[];
   public windupMs?: number;
@@ -298,7 +299,7 @@ export class Npc extends Character {
     this.state.isAiming = true;
     if (targetPlayer) this.faceTarget(targetPlayer);
     emitNpcWindup(this, action, targetPlayer?.id);
-    this.timers.after(action.windupMs, () => {
+    afterWindup(this, action.windupMs, targetPlayer?.socketId, () => {
       if (targetPlayer) this.faceTarget(targetPlayer);
       const castAngle = targetPlayer ? aimNpcShot(this, targetPlayer, ability.base as string) : 0;
       this.doCast({ targetPlayer, abilitySlot, ability, castAngle });
@@ -356,7 +357,7 @@ export class Npc extends Character {
 
     emitNpcWindup(this, action, targetPlayer.id);
     // Swings and shots land toward where the target is now, so circling it doesn't leave it facing off
-    this.timers.after(action.windupMs, () => {
+    afterWindup(this, action.windupMs, targetPlayer.socketId, () => {
       this.faceTarget(targetPlayer);
       const target = { id: targetPlayer.id, x: targetPlayer.x, y: targetPlayer.y };
       const castAngle = Math.atan2(target.y - this.y, target.x - this.x);
