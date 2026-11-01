@@ -138,6 +138,12 @@ export class Spell {
     if (BUFF_SPELLS.includes(spellName)) {
       this.stickToCaster = true;
     }
+    if (details?.isLunge) {
+      // The hit rides along with the caster, who dashes along the aim
+      this.stickToCaster = true;
+      caster.state.lungeAt = world.now();
+      caster.state.lungeAngle = castAngle;
+    }
     this.adjustSpellPosition();
     /* TODO: When we add buffs, make sure they do the same as adjustSpellPosition on clientside */
   }

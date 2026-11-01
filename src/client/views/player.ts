@@ -228,6 +228,11 @@ export class Player extends Character {
       if (this?.hasBuff("stun")) return;
       this.scene.socket.emit("castSpell", { abilitySlot, castAngle });
     }
+    /* Lunges dash the caster: the hero moves itself, others just leave the trail */
+    if (ability?.isLunge) {
+      this.state.lungeAt = Date.now();
+      this.state.lungeAngle = castAngle;
+    }
 
     this.scene.add.existing(new Spell(this.scene, { ...ability, castAngle, caster: this }));
   }

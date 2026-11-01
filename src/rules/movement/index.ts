@@ -49,6 +49,8 @@ export {
   isDodging,
 } from "./dodge";
 export type { DodgeInput, DodgeState } from "./dodge";
+export { LUNGE_DISTANCE, LUNGE_DURATION, getLungeVelocity, isLunging } from "./lunge";
+export type { LungeState } from "./lunge";
 export type {
   MoveContext,
   MoveRejection,

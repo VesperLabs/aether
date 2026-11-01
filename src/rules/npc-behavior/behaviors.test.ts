@@ -204,3 +204,37 @@ describe("threat, leash and new behaviors", () => {
     expect(follow(20)).toEqual({ type: "standStill" });
   });
 });
+
+describe("lunges", () => {
+  const lunger = {
+    abilities: { 1: { base: "lunge" } },
+    stats: { level: 5, walkSpeed: 50, attackDelay: 300, castDelay: 1000 },
+  };
+
+  it("lunge at a target in their band, winding up like a swing rather than a spell", () => {
+    const target = player({ x: 45 });
+    const decision = decideNpcAction(
+      input({
+        npc: lunger,
+        state: { lockedPlayerId: "p1" },
+        rest: { lockedPlayer: target, nearestPlayer: target },
+      }),
+      never,
+    );
+    expect(decision.action).toMatchObject({ type: "cast", abilitySlot: "1", windupMs: 500 });
+  });
+
+  it("stand still to recover after a lunge, without attacking or casting", () => {
+    const close = player({ x: 20 });
+    const decision = decideNpcAction(
+      input({
+        npc: lunger,
+        state: { lockedPlayerId: "p1", npcAttackReady: true, lungeAt: NOW - 300 },
+        rest: { lockedPlayer: close, nearestPlayer: close },
+      }),
+      never,
+    );
+    expect(decision.movement).toEqual({ type: "standStill" });
+    expect(decision.action.type).toBe("idle");
+  });
+});

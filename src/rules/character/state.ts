@@ -49,6 +49,10 @@ export interface CharacterState {
   lastCast: LastCast;
   /** NPC only: loop time of the next wander direction change. */
   nextWanderAt?: number;
+  /** When the last lunge started (see `rules/movement/lunge.ts`). */
+  lungeAt?: number;
+  /** Which way that lunge heads, in radians. */
+  lungeAngle?: number;
   /** Radians. */
   lastAngle: number;
   activeSets: string[];

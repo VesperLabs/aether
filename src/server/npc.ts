@@ -350,21 +350,15 @@ export class Npc extends Character {
     this.direction = action.direction;
     this.state.isAiming = true;
 
-    const castAngle = (this.state.lastAngle = action.castAngle);
-    let direction = `${this.direction}`;
-    const target = {
-      id: targetPlayer.id,
-      x: targetPlayer.x,
-      y: targetPlayer.y,
-    };
+    this.state.lastAngle = action.castAngle;
 
     emitNpcWindup(this, action, targetPlayer.id);
+    // Swings and shots land toward where the target is now, so circling it doesn't leave it facing off
     this.timers.after(action.windupMs, () => {
-      if (this.hasRangedWeapon()) {
-        this.faceTarget(targetPlayer);
-        direction = `${this.direction}`;
-      }
-      this.doAttack({ target, direction, castAngle });
+      this.faceTarget(targetPlayer);
+      const target = { id: targetPlayer.id, x: targetPlayer.x, y: targetPlayer.y };
+      const castAngle = Math.atan2(target.y - this.y, target.x - this.x);
+      this.doAttack({ target, direction: `${this.direction}`, castAngle });
       this.state.isAiming = false;
     });
   }

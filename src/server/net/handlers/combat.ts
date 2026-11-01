@@ -2,6 +2,7 @@ import type { ParsedCommand } from "@/network";
 import type { PlayerAttackRequest, PlayerCastRequest } from "@/server/player";
 import type { CommandContext } from "@/server/net/command-context";
 import { isInRoom } from "@/server/player-room";
+import { grantLungeMove } from "./movement";
 
 export function attack(
   ctx: CommandContext,
@@ -29,6 +30,9 @@ export function castSpell(
   const { world, socket, socketId } = ctx;
   const player = world.players[socketId];
   if (!isInRoom(player)) return;
+  const lungeAt = player.state.lungeAt;
   player.doCast({ abilitySlot, castAngle } as PlayerCastRequest);
+  // A lunge carries the player further than walking; their client moves them through it
+  if (player.state.lungeAt !== lungeAt) grantLungeMove(player);
   socket.to(player?.roomName).emit("playerCastSpell", { socketId, abilitySlot, castAngle });
 }

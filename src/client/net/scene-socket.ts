@@ -214,10 +214,12 @@ export function bindSceneSocket(scene: SceneMain) {
     n.doAttack({ count: count as number, direction, castAngle });
   });
 
-  socket.on("npcWindup", ({ id, kind, targetId, windupMs }) => {
+  socket.on("npcWindup", ({ id, kind, targetId, abilitySlot, windupMs }) => {
     const n = getNpc(scene, id);
     const target = targetId ? getPlayer(scene, targetId) : undefined;
-    if (n && target) playWindupTell(n, target, { kind, windupMs });
+    if (!n || !target) return;
+    const leans = kind === "attack" || !!n.getAbilityDetails(abilitySlot)?.isLunge;
+    playWindupTell(n, target, { leans, windupMs });
   });
 
   socket.on("npcCastSpell", ({ id, abilitySlot, castAngle }) => {
