@@ -12,6 +12,7 @@ import type { TickEntity } from "@/client/net/interpolation";
 import { playAudio } from "@/client/audio/play-audio";
 import { playHitImpact } from "@/client/views/hit-impact";
 import { playWindupTell } from "@/client/views/windup-tell";
+import { playWindupRing } from "@/client/views/windup-ring";
 import { playSpawnDissolve } from "@/client/views/dissolve";
 import {
   addPlayer,
@@ -216,6 +217,7 @@ export function bindSceneSocket(scene: SceneMain) {
 
   socket.on("npcWindup", ({ id, kind, targetId, abilitySlot, windupMs }) => {
     const n = getNpc(scene, id);
+    if (n) playWindupRing(n, windupMs);
     const target = targetId ? getPlayer(scene, targetId) : undefined;
     if (!n || !target) return;
     const leans = kind === "attack" || !!n.getAbilityDetails(abilitySlot)?.isLunge;
