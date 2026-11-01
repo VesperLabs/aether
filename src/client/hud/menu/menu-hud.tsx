@@ -91,7 +91,7 @@ const PlayerHud = memo(
               />
               <Bar
                 data-tooltip-content={`SP: ${stats?.sp} / ${stats?.maxSp}`}
-                color="green.500"
+                color="yellow.400"
                 max={stats?.maxSp}
                 min={stats?.sp}
                 width={isBig ? 100 : 50}

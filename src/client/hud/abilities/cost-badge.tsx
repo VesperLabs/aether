@@ -11,7 +11,7 @@ export interface ResourceCosts {
 const COST_COLORS = [
   ["hp", "red.500"],
   ["mp", "blue.400"],
-  ["sp", "green.400"],
+  ["sp", "yellow.400"],
 ] as const;
 
 /** Where the pills sit on the button's rim: centred on its top-right, in degrees up from the right. */
