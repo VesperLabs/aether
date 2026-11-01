@@ -27,5 +27,7 @@ export {
 export type { ResolvedSpell, SpellLifeInput, SpellShape } from "./shape";
 export { canHitNpc, canHitPlayer, isBehindCaster, isSpellVictimCandidate } from "./targeting";
 export type { PlayerTargetInput, Point, SpellTargets, VictimCheckInput } from "./targeting";
+export { findSpellHits } from "./hits";
+export type { SpellHitInput, SpellVictim } from "./hits";
 export { characterBodyCircle, characterHitBox, getAimAngle } from "./overlap";
 export type { AimLead, CharacterShapeInput } from "./overlap";
