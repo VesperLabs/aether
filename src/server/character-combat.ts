@@ -1,8 +1,7 @@
 import type { AbilitySlot } from "@/rules/spells";
 import {
   calculateElementalDamage,
-  calculateHpSteal,
-  calculateMpSteal,
+  calculateDrains,
   isInStealthGrace,
   type ElementalDamages,
   rollAttack,
@@ -170,17 +169,10 @@ export function applyAttackDamage(
     victim.addBuff({ name, level, caster: attacker });
   }
 
-  /* Add stolen hp */
-  const hpSteal = calculateHpSteal(physicalDamage, attacker?.stats?.hpSteal);
-  if (hpSteal > 0) {
-    attacker.modifyStat("hp", hpSteal);
-    hits.push({ type: "hp", amount: hpSteal, from: victim.id, to: attacker.id });
-  }
-  /* Add stolen mp */
-  const mpSteal = calculateMpSteal(physicalDamage, attacker?.stats?.mpSteal);
-  if (mpSteal > 0) {
-    attacker.modifyStat("mp", mpSteal);
-    hits.push({ type: "mp", amount: mpSteal, from: victim.id, to: attacker.id });
+  /* Drained hp, mp and sp flow from the victim to the attacker */
+  for (const { resource, amount } of calculateDrains(physicalDamage, attacker?.stats)) {
+    attacker.modifyStat(resource, amount);
+    hits.push({ type: resource, amount, isDrain: true, from: victim.id, to: attacker.id });
   }
 
   /* Victim killed */

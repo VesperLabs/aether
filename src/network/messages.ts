@@ -55,6 +55,8 @@ export interface PartyMessage {
 export interface HitMessage {
   type: string;
   isCritical?: boolean;
+  /** Taken from `from` and given to `to` by an attack's steal stats. */
+  isDrain?: boolean;
   amount?: number;
   buffName?: string;
   elements?: string[];

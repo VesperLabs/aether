@@ -1,8 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   calculateElementalDamage,
-  calculateHpSteal,
-  calculateMpSteal,
   calculateStealthVisibilityPercent,
   calculateWeaponDamage,
   rollAttack,
@@ -138,19 +136,6 @@ describe("rollAttack", () => {
       return 0.99;
     });
     expect(calls.length).toBe(3);
-  });
-});
-
-describe("steals", () => {
-  it("steals a percentage of physical damage, at least 1", () => {
-    expect(calculateHpSteal(50, 10)).toBe(5);
-    expect(calculateHpSteal(3, 10)).toBe(1);
-    expect(calculateMpSteal(50, 10)).toBe(5);
-    expect(calculateMpSteal(7, 10)).toBe(1);
-  });
-  it("steals nothing without the stat", () => {
-    expect(calculateHpSteal(50, 0)).toBe(0);
-    expect(calculateMpSteal(50, undefined)).toBe(0);
   });
 });
 

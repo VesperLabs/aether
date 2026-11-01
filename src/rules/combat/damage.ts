@@ -141,15 +141,3 @@ export function rollAttack(
     totalDamage: physicalDamage + eleDamage,
   };
 }
-
-/** HP healed by an attack's life steal (a percentage of physical damage), at least 1; 0 if none. */
-export function calculateHpSteal(physicalDamage: number, hpSteal: number | undefined): number {
-  if (!(Number(hpSteal) > 0)) return 0;
-  return Math.max(Math.round((physicalDamage * (hpSteal as number)) / 100), 1);
-}
-
-/** MP restored by an attack's mana steal, at least 1; 0 if none. */
-export function calculateMpSteal(physicalDamage: number, mpSteal: number | undefined): number {
-  if (!(Number(mpSteal) > 0)) return 0;
-  return Math.max(Math.floor((physicalDamage * (mpSteal as number)) / 100), 1);
-}

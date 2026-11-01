@@ -193,6 +193,12 @@ export const itemModsList = {
     },
     {
       ilvl: 2,
+      name: "of Sp Steal",
+      stats: { spSteal: [1, 2] },
+      types: ["ranged", "weapon"],
+    },
+    {
+      ilvl: 2,
       name: "of Distance",
       stats: { range: [0.25, 0.25] },
       types: ["ranged"],
