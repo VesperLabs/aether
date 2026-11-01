@@ -4,7 +4,7 @@ import { CONSUMABLES_BASES, POTION_BASES } from "@/rules/inventory";
 import { applyTintToImage, loadCacheImage } from "@/ui";
 import { arePropsEqualWithKeys } from "@/ui";
 import { isMobile } from "@/ui";
-import { CooldownTimer } from "./cooldown-timer";
+import { CooldownTimer, getLatestCooldown } from "./cooldown-timer";
 import { ItemTooltip } from "@/ui";
 import { SkillButton } from "./skill-button";
 import type { ResourceCosts } from "./cost-badge";
@@ -106,9 +106,13 @@ const TintedIconLoader = ({
           },
         }}
       >
-        <CooldownTimer cooldown={cooldowns["global"]} />
-        <CooldownTimer cooldown={cooldowns[cooldown]} />
-        {details?.isMeleeAttack && <CooldownTimer cooldown={cooldowns["attack"]} />}
+        <CooldownTimer
+          cooldown={getLatestCooldown(
+            cooldowns["global"],
+            cooldowns[cooldown],
+            details?.isMeleeAttack ? cooldowns["attack"] : undefined,
+          )}
+        />
         <Text
           sx={{
             bottom: "13px",
