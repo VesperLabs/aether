@@ -15,7 +15,7 @@ export const spellDetails = {
     allowedTargets: ["enemy"],
     maxVisibleTime: 2000,
     maxActiveTime: 2000,
-    bodySize: 8,
+    bodySize: 4,
     spellSpeed: 350,
     layerDepth: "top",
   },

@@ -6,13 +6,21 @@ export interface CharacterShapeInput {
   y: number;
   bodySize: number;
   hitBoxSize: { width: number; height: number };
+  /** Trimmed off the top and bottom of the hit box. */
+  hitBoxInset?: number;
 }
 
 /** The box a spell must touch to hit a character: stands on the character's feet, head up. */
 export function characterHitBox(character: CharacterShapeInput): Box {
   const { width, height } = character.hitBoxSize;
+  const inset = character.hitBoxInset ?? 0;
   const bottom = character.y + character.bodySize;
-  return { x: character.x, y: bottom - height / 2, halfWidth: width / 2, halfHeight: height / 2 };
+  return {
+    x: character.x,
+    y: bottom - height / 2,
+    halfWidth: width / 2,
+    halfHeight: Math.max(0, height / 2 - inset),
+  };
 }
 
 /** Leading a moving target: how fast the projectile flies, and how much of the lead to take (0..1). */

@@ -5,15 +5,18 @@ import { entitiesInRoom } from "@/rules/world";
 import { getLungeDuration, type Shape } from "@/rules/movement";
 import {
   BUFF_SPELLS,
+  characterHitBox,
   findSpellHits,
+  getMeleeSwing,
   getSpellShape,
-  getSpellVelocity,
+  getSpellFlight,
   isSpellExpired,
   resolveSpellDetails,
-  usesLeftHand,
-  usesRightHand,
 } from "@/rules/spells";
 import { ServerCharacter } from "./character";
+
+/** Send the shapes behind every hit to the clients, so they can draw what the server saw. */
+const DEBUG_HITS = process.env.DEBUG === "true";
 
 /** Who an NPC spell or attack is aimed at. */
 export interface SpellTarget {
@@ -108,28 +111,28 @@ export class Spell {
     this.maxDistance = shape.maxDistance; //for ranged attacks
     this.isMissile = shape.isMissile;
     this.scale = shape.scale;
-    const spellSpeed = shape.spellSpeed;
 
     if (this.isMeleeAttack) {
-      /* Hack: Up range is too long. This hack makes the top-down view more realistic */
-      if (caster?.direction === "up" || caster.profile.race !== "human") {
-        this.y = this.caster.y;
-      }
-
-      if (usesLeftHand(this.action)) this.bodySize = caster?.getWeaponRange("handLeft");
-      // npcs without attack animations will stand here
-      if (usesRightHand(this.action)) this.bodySize = caster?.getWeaponRange("handRight");
+      const swing = getMeleeSwing(
+        {
+          y: caster.y,
+          bodyCenterY: caster.bodyCenterY,
+          direction: caster.direction,
+          race: caster.profile.race,
+        },
+        this.action,
+        (hand) => caster.getWeaponRange(hand),
+      );
+      this.y = swing.y;
+      this.bodySize = swing.reach ?? this.bodySize;
     }
 
-    if (this.isRangedAttack) {
-      ({ x: this.velocityX, y: this.velocityY } = getSpellVelocity(castAngle, spellSpeed));
-      this.maxDistance = usesLeftHand(this.action)
-        ? caster?.getWeaponRange("handLeft")
-        : caster?.getWeaponRange("handRight");
-    }
-    if (this.isMissile) {
-      // for the ball attacks
-      ({ x: this.velocityX, y: this.velocityY } = getSpellVelocity(castAngle, spellSpeed));
+    const flight = getSpellFlight(shape, castAngle, this.action, (hand) =>
+      caster.getWeaponRange(hand),
+    );
+    if (flight) {
+      ({ x: this.velocityX, y: this.velocityY } = flight.velocity);
+      this.maxDistance = flight.maxDistance ?? this.maxDistance;
     }
     if (spellName == "quake") {
       this.box = { halfWidth: this.bodySize * 2, halfHeight: this.bodySize };
@@ -191,16 +194,19 @@ export class Spell {
       ...entitiesInRoom(world.npcs, this.room?.name),
       ...entitiesInRoom(world.players, this.room?.name),
     ] as unknown as Array<ServerCharacter>;
+    const shape = this.getShape();
+    const victimShapes = victims.filter(Boolean).map((v) => ({
+      id: v.id,
+      isDead: v.state?.isDead,
+      x: v.x,
+      y: v.y,
+      bodySize: v.bodySize,
+      hitBoxSize: v.hitBoxSize,
+      hitBoxInset: v.hitBoxInset,
+    }));
     const hits = findSpellHits({
-      shape: this.getShape(),
-      victims: victims.filter(Boolean).map((v) => ({
-        id: v.id,
-        isDead: v.state?.isDead,
-        x: v.x,
-        y: v.y,
-        bodySize: v.bodySize,
-        hitBoxSize: v.hitBoxSize,
-      })),
+      shape,
+      victims: victimShapes,
       hitIds: this.hitIds,
       allowedTargets: this.allowedTargets,
       caster: { id: caster?.id, x: caster.x, y: caster.y, isPlayer: caster?.kind === "player" },
@@ -212,6 +218,14 @@ export class Spell {
       this.hitIds = [...new Set([...this.hitIds, id])];
       // One hit at a time; without an ability slot it is an attack.
       this.caster.doHit([id], this.abilitySlot);
+      const victim = victimShapes.find((v) => v.id === id);
+      if (DEBUG_HITS && shape && victim) {
+        world.events.emit("spellHitShapes", {
+          roomName: this.room.name,
+          spell: shape,
+          victim: characterHitBox(victim),
+        });
+      }
     }
   }
   adjustSpellPosition() {

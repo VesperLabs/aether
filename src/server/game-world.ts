@@ -11,6 +11,7 @@ import { npcBaseStats, subscribeStats } from "@/rules/stats";
 import { addRoom, createRoom, createWorld } from "@/rules/world";
 import { spawnLoot } from "./loot-adapter";
 import { subscribeNpcMessages } from "./npc-messages";
+import { subscribeDebugMessages } from "./debug-messages";
 import { Npc, type NpcDefinition } from "./npc";
 import type { GameIo } from "@/network";
 import type { Database } from "./persistence/database";
@@ -82,6 +83,7 @@ export function createServerWorld({
   for (const room of Object.values(world.rooms)) spawnNpcs(world, room);
 
   subscribeNpcMessages(world.events, io);
+  subscribeDebugMessages(world.events, io);
   subscribeThreat(world.events, (victimId, attackerSocketId, amount) => {
     world.npcs[victimId]?.addThreat(attackerSocketId, amount);
   });

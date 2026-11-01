@@ -1,5 +1,6 @@
 import type { BuffCharacterWire, FullCharacterWire } from "./sync/character-state";
 import type { NetSnapshot } from "./sync/net-snapshot";
+import type { Box, Shape } from "@/rules/movement";
 
 /*
  * Everything the server sends to clients. Character, loot and quest states are still the loose
@@ -111,6 +112,8 @@ export interface ServerToClientEvents {
     playerQuests: any;
   }) => void;
   respawnNpc: (payload: { id: string; x: number; y: number; respawnTime: number }) => void;
+  /** Debug only: the shapes the server compared when a spell hit. */
+  spellHitShapes: (payload: { spell: Shape; victim: Box }) => void;
 
   /* Combat */
   playerAttack: (payload: {

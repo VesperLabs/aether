@@ -12,6 +12,7 @@ import type { TickEntity } from "@/client/net/interpolation";
 import { playAudio } from "@/client/audio/play-audio";
 import { playHitImpact } from "@/client/views/hit-impact";
 import { playWindupRing } from "@/client/views/windup-ring";
+import { drawHitShapes } from "@/client/views/hit-shapes";
 import { playSpawnDissolve } from "@/client/views/dissolve";
 import {
   addPlayer,
@@ -213,6 +214,8 @@ export function bindSceneSocket(scene: SceneMain) {
     n.state.lastAngle = castAngle as number;
     n.doAttack({ count: count as number, direction, castAngle });
   });
+
+  socket.on("spellHitShapes", ({ spell, victim }) => drawHitShapes(scene, spell, victim));
 
   socket.on("npcWindup", ({ id, kind, windupMs }) => {
     const n = getNpc(scene, id);

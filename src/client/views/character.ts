@@ -1,7 +1,8 @@
 import Phaser from "phaser";
 import type { FullCharacterWire } from "@/network";
-import { BODY_SIZE, withCharacterModel } from "@/rules/character";
+import { withCharacterModel } from "@/rules/character";
 import type { RoomData } from "@/rules/world";
+import { characterHitBox } from "@/rules/spells";
 
 const BLANK_TEXTURE = "human-blank";
 
@@ -22,18 +23,19 @@ export class Character extends withCharacterModel(Phaser.GameObjects.Container) 
     super(scene, args.x, args.y, []);
     this.initCharacter(args, Date.now);
     scene.physics.add.existing(this);
-    this.body.setCircle(BODY_SIZE, -BODY_SIZE, -BODY_SIZE);
-    this.createHitBox(scene, this.hitBoxSize);
+    /* The server collides and hits feet with the scaled body, so match it */
+    this.body.setCircle(this.bodySize, -this.bodySize, -this.bodySize);
+    this.createHitBox(scene);
   }
 
-  createHitBox(scene: Phaser.Scene, hitBoxSize: { width: number; height: number }) {
-    const { width, height } = hitBoxSize ?? {};
-    // scaling works wierd on body, so we need to undo it for the right coords
-    this.hitBox = scene.add.sprite(0, this.bodySize, BLANK_TEXTURE);
+  /** The box spells hit, the same one the server checks (relative to the character). */
+  createHitBox(scene: Phaser.Scene) {
+    const { bodySize, hitBoxSize, hitBoxInset } = this;
+    const box = characterHitBox({ x: 0, y: 0, bodySize, hitBoxSize, hitBoxInset });
+    this.hitBox = scene.add.sprite(box.x, box.y, BLANK_TEXTURE);
     scene.physics.add.existing(this.hitBox);
-    this.hitBox.setOrigin(0.5, 1);
-    this.hitBox.displayWidth = width;
-    this.hitBox.displayHeight = height;
+    this.hitBox.displayWidth = box.halfWidth * 2;
+    this.hitBox.displayHeight = box.halfHeight * 2;
     this.add(this.hitBox);
   }
   destroy() {

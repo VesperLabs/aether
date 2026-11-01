@@ -3,6 +3,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { App } from "@/client/hud/app/app";
 import { createGameSocket, keepSocketConnected } from "@/client/net/socket";
+import { trackLatency } from "@/client/net/latency";
 import { AnimatedTiles } from "@/client/views/animated-tiles";
 import { SceneMain } from "@/client/scenes/main-scene";
 import { SceneBoot } from "@/client/scenes/boot-scene";
@@ -97,6 +98,7 @@ async function startApp() {
   });
 
   keepSocketConnected(socket);
+  trackLatency(socket);
 }
 
 if (REDIRECT_URL) {
