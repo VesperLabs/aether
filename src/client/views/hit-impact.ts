@@ -17,8 +17,8 @@ const LUNGE_MS = 160;
 const CORPSE_POP_SCALE = 0.4;
 const CORPSE_POP_MS = 220;
 /** A light camera shake when the hero lands a crit. */
-const CRIT_SHAKE_MS = 120;
-const CRIT_SHAKE_INTENSITY = 0.004;
+const CRIT_SHAKE_MS = 70;
+const CRIT_SHAKE_INTENSITY = 0.0012;
 
 /**
  * Makes a damaging hit feel heavy: freezes both characters' animations for a moment, makes the

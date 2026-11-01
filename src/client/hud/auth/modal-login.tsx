@@ -4,6 +4,7 @@ import { Modal, Flex, Input, KeyboardButton, Icon, Text, Box, VersionTag } from 
 import { useAppContext } from "@/client/hud/app/context";
 import { CLASS_ICON_MAP, type CharClass } from "@/content";
 import { Tooltip } from "@/ui";
+import { useSavedLogin } from "./saved-login";
 
 /** The `formSuccess` message from the server. */
 type FormSuccess = { success: string; email?: string };
@@ -77,7 +78,6 @@ export const ModalLogin = () => {
       zoom={zoom}
       bottomOffset={bottomOffset}
       as="form"
-      {...{ autoComplete: "off" }}
       onSubmit={(e) => e.preventDefault()}
       sx={{ width: 220 }}
     >
@@ -151,9 +151,14 @@ const LoginForm = ({ defaultEmail, isActive }: { defaultEmail: string; isActive:
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const savedLogin = useSavedLogin((saved) => {
+    setEmail(saved.email);
+    setPassword(saved.password);
+  });
 
   const onFormError = useEffectEvent((payload: { error: string }) => {
     if (!isActive) return;
+    savedLogin.fail();
     setError(payload?.error);
     setIsLoading(false);
   });
@@ -161,6 +166,7 @@ const LoginForm = ({ defaultEmail, isActive }: { defaultEmail: string; isActive:
   const handleLogin = () => {
     socket.emit("login", { email, password });
     localStorage.setItem("email", email);
+    savedLogin.attempt({ email, password });
     setIsLoading(true);
   };
 
@@ -177,6 +183,8 @@ const LoginForm = ({ defaultEmail, isActive }: { defaultEmail: string; isActive:
     <Modal.Body sx={{ gap: 2 }}>
       <Input
         autoFocus={isActive && !defaultEmail}
+        name="email"
+        autoComplete="username"
         placeholder="Email"
         value={email}
         onChange={(e) => {
@@ -186,7 +194,8 @@ const LoginForm = ({ defaultEmail, isActive }: { defaultEmail: string; isActive:
       />
       <Input
         autoFocus={isActive && !!defaultEmail}
-        autoComplete="weak-password"
+        name="password"
+        autoComplete="current-password"
         type="password"
         placeholder="Password"
         value={password}
@@ -263,6 +272,7 @@ const RegisterForm = ({
       />
       <Input
         type="password"
+        autoComplete="new-password"
         placeholder="Password"
         value={password}
         onChange={(e) => {
