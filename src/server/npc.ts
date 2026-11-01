@@ -1,5 +1,6 @@
 import type { MobBehavior } from "@/content";
 import type { AbilitySlot } from "@/rules/spells";
+import type { Hand } from "@/rules/combat";
 import { ServerCharacter as Character, type CharacterArgs } from "./character";
 import type { ServerWorld } from "./server-world";
 import type { Player } from "./player";
@@ -365,7 +366,7 @@ export class Npc extends Character {
       this.state.isAiming = false;
     });
   }
-  doHit(ids: Array<string>, abilitySlot?: AbilitySlot): void {
+  doHit(ids: Array<string>, abilitySlot?: AbilitySlot, hand?: Hand): void {
     const { world, room } = this ?? {};
     const roomName = room.name;
     const players = entitiesInRoom(this.world.players, roomName);
@@ -381,14 +382,14 @@ export class Npc extends Character {
       if (!canHitPlayer({ allowedTargets, isSelf: player.id === this.id, isPartyMember: false })) {
         continue;
       }
-      const newHits = this.calculateDamage(player, abilitySlot);
+      const newHits = this.calculateDamage(player, abilitySlot, hand);
 
       if (newHits?.length > 0) hitList = [...hitList, ...newHits];
     }
 
     // npcs so far can only target themselves with spells.
     if (allowedTargets?.includes("self") && ids?.includes(this.id)) {
-      const newHits = this.calculateDamage(this, abilitySlot);
+      const newHits = this.calculateDamage(this, abilitySlot, hand);
       if (newHits?.length > 0) hitList = [...hitList, ...newHits];
     }
 

@@ -6,6 +6,8 @@ export type StatBag = Record<string, any>;
 /** The part of an item (equipment piece or ability) that affects stats. */
 export interface StatsItem {
   key?: string;
+  /** "weapon", "ranged", "shield", ...: decides how a held item counts (see `calculateStats`). */
+  type?: string;
   setName?: string;
   stats?: Record<string, number>;
   percentStats?: Record<string, number>;
@@ -30,7 +32,10 @@ export interface StatsInput {
 }
 
 export interface StatsResult {
+  /** Stats for the main hand's swings (the right, or the left when only it holds a weapon). */
   stats: StatBag;
+  /** Dual-wielding only: stats for the left hand's swings. */
+  offHandStats?: StatBag;
   activeSets: string[];
 }
 
@@ -161,11 +166,38 @@ function addTo(target: StatBag, key: string, amount: number | undefined) {
   if (amount) target[key] += amount;
 }
 
+const HANDS = ["handLeft", "handRight"];
+const WEAPON_TYPES = ["weapon", "ranged"];
+
+function heldItem(player: StatsInput, hand: string) {
+  return player.activeItemSlots?.includes(hand) ? player.equipment?.[hand] : undefined;
+}
+
 /**
  * Work out a character's full stats from its base stats, gear, abilities, set bonuses and buffs.
- * Does not change its input: the caller stores `stats` and `activeSets`.
+ * Does not change its input: the caller stores `stats`, `offHandStats` and `activeSets`.
+ *
+ * Each weapon is its own: a dual-wielder's swings use one hand's weapon (its damage, delay,
+ * effects, triggers), never both. Block chance only counts with a shield in hand.
  */
 export function calculateStats(player: StatsInput, shouldHeal = false): StatsResult {
+  const isDualWielding = HANDS.every((hand) =>
+    WEAPON_TYPES.includes(heldItem(player, hand)?.type ?? ""),
+  );
+  if (!isDualWielding) return calculateHandStats(player, shouldHeal);
+
+  const main = calculateHandStats(player, shouldHeal, "handLeft");
+  const off = calculateHandStats(player, shouldHeal, "handRight");
+  main.stats.offHandAttackDelay = off.stats.attackDelay;
+  return { ...main, offHandStats: off.stats };
+}
+
+/** `calculateStats` for one hand's swings: the weapon held in `skipHand` counts only for sets. */
+function calculateHandStats(
+  player: StatsInput,
+  shouldHeal: boolean,
+  skipHand?: string,
+): StatsResult {
   const { equipment = {}, abilities = {}, buffs = [] } = player;
   // disregard items that are not actively equipped
   const allSlots = Object.keys({ ...abilities, ...equipment }).filter((slot) =>
@@ -202,6 +234,7 @@ export function calculateStats(player: StatsInput, shouldHeal = false): StatsRes
           setList[item.setName] = 1;
         }
       }
+      if (eKey === skipHand) return;
       if (item.percentStats) {
         Object.keys(item.percentStats).forEach((key) => {
           if (!totalPercentStats[key]) {
@@ -310,6 +343,10 @@ export function calculateStats(player: StatsInput, shouldHeal = false): StatsRes
   if (ns.walkSpeed > 600) ns.walkSpeed = 600;
   if (ns.critChance > 100) ns.critChance = 100;
   if (ns.dodgeChance > 75) ns.dodgeChance = 75;
+  /* Without a shield, block chance from gear doesn't count (a mob's own still does) */
+  if (!HANDS.some((hand) => heldItem(player, hand)?.type === "shield")) {
+    ns.blockChance = player.baseStats.blockChance || 0;
+  }
   if (ns.blockChance > 75) ns.blockChance = 75;
   if (ns.castDelay < 200) ns.castDelay = 200;
   if (ns.attackDelay < 200) ns.attackDelay = 200;

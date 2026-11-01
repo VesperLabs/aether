@@ -219,8 +219,12 @@ export class Spell {
     if (hits.length === 0) return;
     this.hitIds = [...new Set([...this.hitIds, ...hits])];
     /* Everyone hit this tick lands together, so their drains add up into one total. Without an
-     * ability slot it is an attack. */
-    this.caster.doHit(hits, this.abilitySlot);
+     * ability slot it is an attack, made with the hand that swung. */
+    this.caster.doHit(
+      hits,
+      this.abilitySlot,
+      this.action === "attack_left" ? "handLeft" : "handRight",
+    );
     for (const id of hits) {
       const victim = victimShapes.find((v) => v.id === id);
       if (DEBUG_HITS && shape && victim) {

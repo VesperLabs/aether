@@ -15,7 +15,7 @@ export {
   getNextAttackCount,
   hasStaminaFor,
   getCooldown,
-  getFullAttackDelay,
+  getSwingDelay,
   isOutOfCombat,
 } from "./attack";
 export type { AttackAction, AttackActionInput, AttackReadyInput, Cooldown } from "./attack";

@@ -1,4 +1,5 @@
 import type { AbilitySlot } from "@/rules/spells";
+import type { Hand } from "@/rules/combat";
 import type { ServerWorld } from "./server-world";
 import { ServerCharacter, type CharacterArgs } from "./character";
 import {
@@ -124,6 +125,8 @@ export class Player extends ServerCharacter {
     }
 
     this.state.lastAttack = this.world.now();
+    /* Only a dual-wielder has a second hand to swing */
+    this.state.lastAttackCount = count === 2 && this.isDualWielding() ? 2 : 1;
     this.state.isAttacking = true;
 
     this.dispelBuffsByProperty("dispelBeforeAttack");
@@ -260,7 +263,7 @@ export class Player extends ServerCharacter {
     this.checkBubbleMessage();
   }
 
-  doHit(ids: Array<string>, abilitySlot?: AbilitySlot): void {
+  doHit(ids: Array<string>, abilitySlot?: AbilitySlot, hand?: Hand): void {
     const { world } = this ?? {};
     if (!this || this?.state?.isDead) return;
     const { roomName } = this;
@@ -280,7 +283,7 @@ export class Player extends ServerCharacter {
       if (!ids.includes(npc.id)) continue;
       if (!canHitNpc(allowedTargets)) continue;
 
-      const newHits = this.calculateDamage(npc, abilitySlot);
+      const newHits = this.calculateDamage(npc, abilitySlot, hand);
 
       if (newHits.find((hit) => hit.type === "death")) {
         npcKills.push(npc);
@@ -307,7 +310,7 @@ export class Player extends ServerCharacter {
         continue;
       }
 
-      const newHits = this.calculateDamage(player, abilitySlot);
+      const newHits = this.calculateDamage(player, abilitySlot, hand);
       if (newHits.length > 0) {
         hitList.push(...newHits);
       }

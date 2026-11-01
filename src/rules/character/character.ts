@@ -10,7 +10,7 @@ import {
   getAttackActionName,
   getAttackSpCost,
   getCooldown,
-  getFullAttackDelay,
+  getSwingDelay,
   getWeaponRange,
   hasAttackableWeapons,
   hasMeleeWeapon,
@@ -227,13 +227,13 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
       const value = modifyStat(this.stats, key, amount);
       if (value !== undefined) this.stats[key] = value;
     }
-    getFullAttackDelay() {
-      return getFullAttackDelay(this.stats.attackDelay, this.isDualWielding());
+    /** The delay of swing `count`, by default the last one (what the next swing waits on). */
+    getFullAttackDelay(count = this.state.lastAttackCount) {
+      return getSwingDelay(this.stats, count);
     }
     checkAttackReady() {
       const result = checkAttackReady({
-        attackDelay: this.stats.attackDelay,
-        isDualWielding: this.isDualWielding(),
+        attackDelay: this.getFullAttackDelay(),
         lastAttack: this.state.lastAttack,
         now: this.clock(),
       });

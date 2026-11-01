@@ -8,7 +8,7 @@ import {
   getAttackSpCost,
   getNextAttackCount,
   getCooldown,
-  getFullAttackDelay,
+  getSwingDelay,
   isOutOfCombat,
   isRespawnDue,
   modifyStat,
@@ -16,13 +16,15 @@ import {
 } from "./index";
 
 describe("attack timing", () => {
-  it("averages the delay with 60 when dual wielding", () => {
-    expect(getFullAttackDelay(500, false)).toBe(500);
-    expect(getFullAttackDelay(500, true)).toBe(280);
+  it("waits on the weapon that swung", () => {
+    expect(getSwingDelay({ attackDelay: 500 }, 1)).toBe(500);
+    expect(getSwingDelay({ attackDelay: 500 }, 2)).toBe(500);
+    expect(getSwingDelay({ attackDelay: 500, offHandAttackDelay: 300 }, 1)).toBe(500);
+    expect(getSwingDelay({ attackDelay: 500, offHandAttackDelay: 300 }, 2)).toBe(300);
   });
 
   it("is ready once the attack delay has passed", () => {
-    const base = { attackDelay: 500, isDualWielding: false, lastAttack: 1000 };
+    const base = { attackDelay: 500, lastAttack: 1000 };
     expect(checkAttackReady({ ...base, now: 1200 })).toEqual({
       cooldown: 500,
       timeRemaining: 300,
@@ -32,16 +34,6 @@ describe("attack timing", () => {
     });
     expect(checkAttackReady({ ...base, now: 1500 }).isReady).toBe(true);
     expect(checkAttackReady({ ...base, now: 9000 }).timeRemaining).toBe(0);
-  });
-
-  it("uses the dual wield delay for the cooldown", () => {
-    const result = checkAttackReady({
-      attackDelay: 500,
-      isDualWielding: true,
-      lastAttack: 0,
-      now: 100,
-    });
-    expect(result.cooldown).toBe(280);
   });
 
   it("getCooldown works for any cooldown", () => {
