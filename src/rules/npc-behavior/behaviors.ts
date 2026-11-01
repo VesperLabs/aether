@@ -104,7 +104,10 @@ const retreat: NpcBehavior = {
   move: () => ({ type: "flee" }),
 };
 
-/** Ranged NPCs and casters back away (slower than they walk) when the target closes in, then shoot again. */
+/**
+ * Ranged NPCs and casters back away (slower than they walk) when the target closes in, then shoot
+ * again. They plant their feet while winding up, so a chaser gets a moment to catch them.
+ */
 const kite: NpcBehavior = {
   engaged: true,
   score: ({ input, target, canChase, standBand }) =>
@@ -114,7 +117,10 @@ const kite: NpcBehavior = {
     checkInRange(input.npc, target, NPC_KITE_MIN_RANGE)
       ? 1.05
       : 0,
-  move: () => ({ type: "flee", speedRatio: NPC_KITE_SPEED_RATIO }),
+  move: ({ input, isAttacking }) =>
+    input.state.isAiming || isAttacking
+      ? { type: "standStill" }
+      : { type: "flee", speedRatio: NPC_KITE_SPEED_RATIO },
 };
 
 /** Stay close to a leader, waiting at heel when near. */

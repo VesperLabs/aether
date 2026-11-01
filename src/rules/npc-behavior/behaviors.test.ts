@@ -132,6 +132,18 @@ describe("threat, leash and new behaviors", () => {
     expect(decision.movement).toEqual({ type: "flee", speedRatio: 0.6 });
   });
 
+  it("kiters stand still while winding up a shot", () => {
+    const decision = decideNpcAction(
+      input({
+        npc: { behaviors: ["aggressive", "kite"], weapons: { handLeft: { range: 150 } } },
+        state: { isAiming: true },
+        rest: { nearestPlayer: player({ x: 30 }) },
+      }),
+      never,
+    );
+    expect(decision.movement).toEqual({ type: "standStill" });
+  });
+
   it("casters that kite hold at spell range instead of closing to melee", () => {
     const at = (x: number) =>
       decideNpcAction(
