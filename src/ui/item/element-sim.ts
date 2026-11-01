@@ -29,8 +29,14 @@ export type ToLayer = (pixel: Point) => Point;
 interface Particle {
   x: number;
   y: number;
+  /** The art pixel it came off, and where that pixel was last frame: it rides along with it. */
+  anchor: Point;
+  anchorAt: Point;
   vx: number;
   vy: number;
+  /** Speed thrown off the moving blade, on top of its own, fading fast. */
+  flingX: number;
+  flingY: number;
   age: number;
   life: number;
   size: { start: number; end: number };
@@ -44,6 +50,8 @@ interface Particle {
 interface Bolt {
   x: number;
   y: number;
+  /** The art pixel it leaves from: a bolt stays on the blade while it lives. */
+  anchor: Point;
   angle: number;
   length: number;
   color: number;
@@ -58,9 +66,29 @@ const UNDERSIDE_TRIES = 8;
 const TOP_PICKS = 4;
 /** Longest frame step simulated, so a tab coming back from the background doesn't lurch. */
 const MAX_DELTA = 50;
+/** Particles ride with the spot they came off, letting go over this share of their life. */
+const RELEASE_AT = 0.6;
+/** Share of the blade's own speed a new particle is thrown off with. */
+const FLING = 0.35;
+/** How fast that thrown speed bleeds away, per second. */
+const FLING_DRAG = 6;
+/** A grip that moves farther than this in one frame jumped (switched hands), it didn't swing. */
+const JUMP_PX = 10;
+/** A tip that moves more than this share of the blade's length in one frame was flipped (the
+ * character turned), not swung. */
+const FLIP_SHARE = 0.75;
+/** The fastest a particle is ever thrown, in pixels per second, whatever the blade did. */
+const MAX_FLING = 120;
 
 const between = ({ min, max }: { min: number; max: number }) => min + Math.random() * (max - min);
 const pick = <T>(list: T[]) => list[Math.floor(Math.random() * list.length)];
+const key = ({ x, y }: Point) => `${x},${y}`;
+
+function capSpeed(x: number, y: number): Point {
+  const speed = Math.hypot(x, y);
+  if (speed <= MAX_FLING) return { x, y };
+  return { x: (x / speed) * MAX_FLING, y: (y / speed) * MAX_FLING };
+}
 
 function colorAt(colors: number[], t: number) {
   if (colors.length === 1) return colors[0];
@@ -69,7 +97,7 @@ function colorAt(colors: number[], t: number) {
   return lerpColor(colors[i], colors[i + 1], at - i);
 }
 
-function spawnParticle(effect: ElementEffect, at: Point): Particle {
+function spawnParticle(effect: ElementEffect, at: Point, anchor: Point, fling: Point): Particle {
   const style = effect.particles;
   let vx = style.speedX ? between(style.speedX) : 0;
   let vy = style.speedY ? between(style.speedY) : 0;
@@ -83,8 +111,12 @@ function spawnParticle(effect: ElementEffect, at: Point): Particle {
   const picked = "min" in scale ? Math.round(between(scale)) : 0;
   return {
     ...at,
+    anchor,
+    anchorAt: at,
     vx,
     vy,
+    flingX: fling.x,
+    flingY: fling.y,
     age: 0,
     life: between(style.lifespan),
     size: "min" in scale ? { start: picked, end: picked } : scale,
@@ -111,6 +143,11 @@ export class ElementSim {
   tip: Point = { x: 0, y: 0 };
   particles: Particle[] = [];
   bolts: Bolt[] = [];
+  /** Where the grip was last frame, to tell a swing from a jump. */
+  gripAt: Point | null = null;
+  tipAt: Point | null = null;
+  /** Each edge pixel's spot last frame, to know how fast that part of the blade moves. */
+  lastEdgeAt = new Map<string, Point>();
   pending = 0;
   pendingBolts = 0;
   turn = 0;
@@ -132,12 +169,30 @@ export class ElementSim {
       this.effect.outline(this.time, side, this.seed + this.turn * 7),
     );
   }
-  /** Moves every live particle, e.g. part of the way the weapon moved, so they trail behind it. */
-  shift(dx: number, dy: number) {
-    for (const particle of this.particles) {
-      particle.x += dx;
-      particle.y += dy;
+  /**
+   * Carries particles along with the spot on the blade each came off, so a swing or turn takes
+   * them with it: fully while fresh, letting go as they age. When the weapon jumps (switches
+   * hands) everything goes with it, so nothing is left behind where it was.
+   */
+  follow(toLayer: ToLayer) {
+    const grip = toLayer(this.grip);
+    const tip = toLayer(this.tip);
+    const lastGrip = this.gripAt ?? grip;
+    const lastTip = this.tipAt ?? tip;
+    const bladeLength = Math.hypot(tip.x - grip.x, tip.y - grip.y);
+    const jumped =
+      Math.hypot(grip.x - lastGrip.x, grip.y - lastGrip.y) > JUMP_PX ||
+      Math.hypot(tip.x - lastTip.x, tip.y - lastTip.y) > bladeLength * FLIP_SHARE;
+    this.gripAt = grip;
+    this.tipAt = tip;
+    for (const p of this.particles) {
+      const at = toLayer(p.anchor);
+      const hold = jumped ? 1 : Math.max(0, 1 - p.age / p.life / RELEASE_AT);
+      p.x += (at.x - p.anchorAt.x) * hold;
+      p.y += (at.y - p.anchorAt.y) * hold;
+      p.anchorAt = at;
     }
+    return jumped;
   }
   /**
    * Advances to `time`. Particles and bolts spawn only when `emitting` (the weapon is shown) and
@@ -148,15 +203,34 @@ export class ElementSim {
     this.time = time;
     if (this.effects.length === 0) return;
     this.turn = elementTurn(time, this.seed, this.effects.length);
+    const jumped = this.follow(toLayer);
     this.age(ms);
+    const lastEdgeAt = this.lastEdgeAt;
+    this.lastEdgeAt = new Map(this.edges.map((pixel) => [key(pixel), toLayer(pixel)]));
     const emits = this.outline().some((frame) => frame.emits !== false);
-    if (!emitting || !emits || this.edges.length === 0) return;
+    if (!emitting || !emits || this.edges.length === 0) {
+      if (!emitting) this.gripAt = this.tipAt = null;
+      return;
+    }
 
     const { effect } = this;
     this.pending += (effect.rate * ms) / 1000;
     while (this.pending >= 1) {
       this.pending -= 1;
-      this.particles.push(spawnParticle(effect, this.edgePoint(toLayer)));
+      const { pixel, at } = this.edgePoint(toLayer);
+      const was = jumped ? undefined : lastEdgeAt.get(key(pixel));
+      // Fast swings move the blade far in a frame: spawn somewhere along the way, not in clumps
+      const along = was ? Math.random() : 1;
+      const start = was
+        ? { x: was.x + (at.x - was.x) * along, y: was.y + (at.y - was.y) * along }
+        : at;
+      const seconds = ms / 1000;
+      const fling = was
+        ? capSpeed(((at.x - was.x) / seconds) * FLING, ((at.y - was.y) / seconds) * FLING)
+        : { x: 0, y: 0 };
+      const particle = spawnParticle(effect, start, pixel, fling);
+      particle.anchorAt = at;
+      this.particles.push(particle);
     }
 
     const style = effect.bolts;
@@ -165,11 +239,12 @@ export class ElementSim {
     this.pendingBolts += (style.rate * ms) / 1000;
     while (this.pendingBolts >= 1) {
       this.pendingBolts -= 1;
-      const start = this.edgePoint(toLayer);
+      const { pixel, at: start } = this.edgePoint(toLayer);
       if (!hasRoomForBolt(this.bolts, start)) continue;
       this.bolts.push({
         x: Math.floor(start.x),
         y: Math.floor(start.y),
+        anchor: pixel,
         // Leave the blade outward, away from the grip
         angle: Math.atan2(start.y - grip.y, start.x - grip.x) + (Math.random() - 0.5) * 1.4,
         length: Math.round(between(style.length)),
@@ -185,15 +260,22 @@ export class ElementSim {
     this.particles = this.particles.filter((p) => {
       p.age += ms;
       p.vy += p.gravityY * seconds;
-      p.x += p.vx * seconds;
-      p.y += p.vy * seconds;
+      const drag = Math.exp(-FLING_DRAG * seconds);
+      p.flingX *= drag;
+      p.flingY *= drag;
+      p.x += (p.vx + p.flingX) * seconds;
+      p.y += (p.vy + p.flingY) * seconds;
       return p.age < p.life;
     });
     this.bolts = this.bolts.filter((bolt) => (bolt.age += ms) < bolt.life);
   }
-  /** Where the next particle or bolt leaves the blade, in layer space. */
-  edgePoint(toLayer: ToLayer) {
+  /** Where the next particle or bolt leaves the blade: the art pixel, and where it is in layer space. */
+  edgePoint(toLayer: ToLayer): { pixel: Point; at: Point } {
     const { from } = this.effect;
+    const sample = () => {
+      const pixel = pick(this.edges);
+      return { pixel, at: toLayer(pixel) };
+    };
     if (from === "bottom") {
       // The lower of two underside pixels: drips lean toward where water would run down,
       // without all falling from one spot
@@ -201,20 +283,20 @@ export class ElementSim {
       const tip = toLayer(this.tip);
       const underside = () => {
         for (let i = 0; i < UNDERSIDE_TRIES; i++) {
-          const point = toLayer(pick(this.edges));
-          if (isUnderside(point, grip, tip)) return point;
+          const point = sample();
+          if (isUnderside(point.at, grip, tip)) return point;
         }
-        return toLayer(pick(this.edges));
+        return sample();
       };
       const a = underside();
       const b = underside();
-      return a.y > b.y ? a : b;
+      return a.at.y > b.at.y ? a : b;
     }
     // Rising effects keep the highest of a few picks, so flames lick off the top edge
-    let point = toLayer(pick(this.edges));
+    let point = sample();
     for (let i = 1; i < (from === "top" ? TOP_PICKS : 1); i++) {
-      const other = toLayer(pick(this.edges));
-      if (other.y < point.y) point = other;
+      const other = sample();
+      if (other.at.y < point.at.y) point = other;
     }
     return point;
   }
@@ -240,11 +322,12 @@ export class ElementSim {
     }
     for (const bolt of this.bolts) {
       // A fresh zigzag every frame, so a live bolt crackles instead of hanging still
+      const from = toLayer(bolt.anchor);
       boltPixels(bolt.length, bolt.angle, Math.random).forEach(({ x, y }, i) => {
         const color = i === 0 ? bolt.head : bolt.color;
         out.push({
-          x: bolt.x + x,
-          y: bolt.y + y,
+          x: Math.floor(from.x) + x,
+          y: Math.floor(from.y) + y,
           width: 1,
           height: 1,
           color,
