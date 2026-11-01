@@ -9,7 +9,7 @@ export const shieldItems = {
       base: "roundShield",
       texture: "shield-buckler",
       slot: "hands",
-      stats: { attackDelay: 150, defense: 10, blockChance: 10 },
+      stats: { attackDelay: 30, defense: 10, blockChance: 10 },
       requirements: { strength: 3 },
     },
     barkShield: {
@@ -20,7 +20,7 @@ export const shieldItems = {
       texture: "shield-broken",
       tint: "0x996622",
       slot: "hands",
-      stats: { attackDelay: 200, defense: 10, blockChance: 15 },
+      stats: { attackDelay: 40, defense: 10, blockChance: 15 },
       requirements: { strength: 5 },
     },
     woodenTowerShield: {
@@ -31,7 +31,7 @@ export const shieldItems = {
       texture: "shield-tower",
       slot: "hands",
       tint: "0x996622",
-      stats: { attackDelay: 250, defense: 15, blockChance: 20 },
+      stats: { attackDelay: 50, defense: 15, blockChance: 20 },
       requirements: { strength: 8 },
     },
     bronzeRoundShield: {
