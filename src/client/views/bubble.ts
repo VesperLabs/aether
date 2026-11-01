@@ -1,8 +1,14 @@
 import Phaser from "phaser";
+import { theme } from "@/ui/kit/theme";
 const Sprite = Phaser.GameObjects.Sprite;
 type Sprite = Phaser.GameObjects.Sprite;
 
 const FRAME_SIZE = 4;
+/** The countdown ring drawn in place of the text, in bubble pixels (the bubble is drawn at half size). */
+const RING_RADIUS = 4;
+const RING_THICKNESS = 3;
+const RING_COLOR = Phaser.Display.Color.HexStringToColor(theme.colors.red[500]).color;
+const RING_TRACK_ALPHA = 0.6;
 
 export class Bubble extends Phaser.GameObjects.Container {
   declare bg: Sprite;
@@ -10,6 +16,7 @@ export class Bubble extends Phaser.GameObjects.Container {
   declare bot: Sprite;
   declare br: Sprite;
   declare bubbleText: Phaser.GameObjects.BitmapText;
+  declare countdown: Phaser.GameObjects.Graphics;
   declare headY: number;
   declare left: Sprite;
   declare maxWidth: number;
@@ -86,7 +93,26 @@ export class Bubble extends Phaser.GameObjects.Container {
     this.add(this.tail);
     this.wrapBitmapText(this.bubbleText, this.maxWidth);
     this.add(this.bubbleText);
+    this.countdown = scene.add.graphics();
+    this.add(this.countdown);
     this.setMessage(this.message);
+  }
+  /** Shows a ring filled to `progress` (0 to 1) instead of the text; null puts the text back. */
+  setCountdown(progress: number | null) {
+    const ring = this.countdown;
+    ring.clear();
+    this.bubbleText.setVisible(progress === null);
+    if (progress === null) return;
+    const { x, y, width, height } = this.bubbleText;
+    ring.setPosition(x + width / 2, y + height / 2);
+    ring.lineStyle(RING_THICKNESS, 0x000000, RING_TRACK_ALPHA);
+    ring.strokeCircle(0, 0, RING_RADIUS);
+    if (progress <= 0) return;
+    const start = -Math.PI / 2;
+    ring.lineStyle(RING_THICKNESS, RING_COLOR, 1);
+    ring.beginPath();
+    ring.arc(0, 0, RING_RADIUS, start, start + Math.min(1, progress) * Math.PI * 2);
+    ring.strokePath();
   }
   setTint(tintColor: number) {
     // Set tint for all the sprites in the Bubble

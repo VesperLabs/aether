@@ -351,8 +351,8 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
 
     if (behavior.engaged && targetPlayer) {
       expireStealthOfPlayerId = targetPlayer.socketId;
-      // Winding up shows a countdown ring over the head instead (client/views/windup-ring.ts)
-      bubbleMessage = state.isAiming ? null : "?";
+      // Winding up: the client fills this bubble with a countdown ring (client/views/windup-ring.ts)
+      bubbleMessage = state.isAiming ? "0xFFAAAA!" : "?";
     } else {
       // Not fighting: let go of the target
       setLockedPlayerId(null);
