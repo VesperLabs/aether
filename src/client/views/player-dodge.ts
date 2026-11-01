@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { DODGE_DURATION, isDodging, isLunging } from "@/rules/movement";
 import { trailDust } from "./lunge-dust";
+import { updateVortex } from "./lunge-vortex";
 import type { Player } from "./player";
 
 /** One afterimage this often while rolling: close together, so the trail hugs the player. */
@@ -35,7 +36,7 @@ const lastGhost = new WeakMap<Player, number>();
 
 /**
  * While a roll lasts: hold the walk pose and leave fading afterimages behind. Lunges kick up dust
- * instead. Run after `drawFrame`.
+ * instead, behind a vortex in front. Run after `drawFrame`.
  */
 export function applyDodge(p: Player) {
   const now = Date.now();
@@ -45,7 +46,9 @@ export function applyDodge(p: Player) {
   if (posed) holdPose(p);
   else if (p.state.isDodgePosed) releasePose(p);
   if (rolling) trail(p, now, (now - (p.state.lastDodge ?? 0)) / DODGE_DURATION);
-  if (isLunging(p.state, now)) trailDust(p, now);
+  const lunging = isLunging(p.state, now);
+  if (lunging) trailDust(p, now);
+  updateVortex(p, lunging, now);
 }
 
 function trail(p: Player, now: number, progress: number) {
