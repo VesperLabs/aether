@@ -34,6 +34,8 @@ export interface SpellArgs {
   action?: string;
   castAngle?: number;
   ilvl?: number;
+  /** Rides along with the caster for this long (a lunge) instead of hitting where it spawned. */
+  followCasterMs?: number;
 }
 
 /** A spell or attack in flight. Plain data: where it is, how it moves and what it can hit. */
@@ -80,6 +82,7 @@ export class Spell {
       action,
       castAngle = 0,
       ilvl = 1,
+      followCasterMs,
     }: SpellArgs,
   ) {
     this.spawnPoint = { x: caster.x, y: caster.y + caster.bodyCenterY };
@@ -137,6 +140,10 @@ export class Spell {
     }
     if (BUFF_SPELLS.includes(spellName)) {
       this.stickToCaster = true;
+    }
+    if (followCasterMs) {
+      this.stickToCaster = true;
+      this.maxActiveTime = Math.max(this.maxActiveTime ?? 0, followCasterMs);
     }
     this.adjustSpellPosition();
     /* TODO: When we add buffs, make sure they do the same as adjustSpellPosition on clientside */

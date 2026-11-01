@@ -1,4 +1,4 @@
-import type { MobBehavior } from "@/content";
+import type { MobAttackStyle, MobBehavior, NastyDefinition } from "@/content";
 import type { AbilitySlot } from "@/rules/spells";
 import { ServerCharacter as Character, type CharacterArgs } from "./character";
 import type { ServerWorld } from "./server-world";
@@ -32,7 +32,7 @@ import {
   type Rng,
 } from "@/rules/world";
 import { getRoomIndex } from "./room-index";
-import { emitNpcWindup } from "./npc-windup";
+import { emitNpcWindup, startNpcLunge } from "./npc-attack";
 import { isNextToSolidTile, isOutOfMap } from "@/rules/movement";
 
 /** How far a follower looks for its leader. Spawns are up to ~900px apart on the peaks. */
@@ -44,16 +44,16 @@ const LEADER_SEARCH_RADIUS = 1000;
 export type NpcDefinition = Record<string, any>;
 
 /** What an NPC is created from: a content definition placed in a room. */
-type NpcArgs = CharacterArgs & {
-  name: string;
-  equipment?: Record<string, ItemRecipe>;
-  abilities?: Record<string, ItemRecipe>;
-  keeperData?: KeeperData;
-  drops?: Array<Drop>;
-  hitBoxSize?: { width: number; height: number };
-  behaviors?: readonly MobBehavior[];
-  windupMs?: number;
-};
+type NpcArgs = CharacterArgs &
+  Pick<NastyDefinition, "windupMs" | "attackStyle"> & {
+    name: string;
+    equipment?: Record<string, ItemRecipe>;
+    abilities?: Record<string, ItemRecipe>;
+    keeperData?: KeeperData;
+    drops?: Array<Drop>;
+    hitBoxSize?: { width: number; height: number };
+    behaviors?: readonly MobBehavior[];
+  };
 
 /** What an NPC needs to cast a spell. */
 interface NpcCastRequest {
@@ -88,6 +88,7 @@ export class Npc extends Character {
   /** From content; unset means the default behaviors and warning delay. */
   public behaviors?: readonly MobBehavior[];
   public windupMs?: number;
+  public attackStyle?: MobAttackStyle;
   /** Content name of the NPC it follows, from a `leader` map property. */
   public leaderName?: string;
   /** The leader's spawn, remembered once found so the pack keeps its home if the leader dies. */
@@ -119,7 +120,7 @@ export class Npc extends Character {
     /* Followers are picked per spawn: a `leader` map property makes this one follow. */
     this.leaderName = (this.state as { leader?: string }).leader;
     this.behaviors = this.leaderName ? [...(args.behaviors ?? []), "follow"] : args.behaviors;
-    this.windupMs = args.windupMs;
+    ({ windupMs: this.windupMs, attackStyle: this.attackStyle } = args);
     this.calculateStats(true);
   }
   addThreat(playerSocketId: string, amount: number) {
@@ -310,9 +311,7 @@ export class Npc extends Character {
     if (state.isAttacking || state?.isDead) return;
     if (!targetPlayer || targetPlayer?.state?.isDead) return;
 
-    // decides what hand ot hit with
     const count = this.action === "attack_right" && this.hasWeaponLeft() ? 2 : 1;
-    // Set state to attacking and record attack time
     this.state.isAttacking = true;
     this.state.lastAttack = this.world.now();
     this.state.npcAttackReady = false;
@@ -336,6 +335,7 @@ export class Npc extends Character {
         action,
         castAngle,
         ilvl: 1,
+        ...startNpcLunge(this, target),
       });
 
     world.events.emit("npcAttacked", {

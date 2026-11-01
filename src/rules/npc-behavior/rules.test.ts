@@ -275,6 +275,23 @@ describe("deciding what an npc does", () => {
     expect(decision.action).toMatchObject({ type: "attack", windupMs: 800 });
   });
 
+  it("lunging mobs attack from further away, and not again while recovering", () => {
+    const near = player({ x: 35 });
+    const ready = { lockedPlayerId: "p1", npcAttackReady: true, lastAttack: NOW - 100 };
+    const rest = { lockedPlayer: near, nearestPlayer: near };
+    const lunger = { attackStyle: "lunge" as const };
+    expect(decideNpcAction(input({ npc: lunger, state: ready, rest }), never).action.type).toBe(
+      "attack",
+    );
+    expect(decideNpcAction(input({ state: ready, rest }), never).action.type).toBe("idle");
+    const recovering = decideNpcAction(
+      input({ npc: lunger, state: { ...ready, lungeAt: NOW - 200 }, rest }),
+      never,
+    );
+    expect(recovering.action.type).toBe("idle");
+    expect(recovering.movement).toEqual({ type: "standStill" });
+  });
+
   it("does not attack while aiming or already attacking", () => {
     const close = player({ x: 20 });
     const rest = { lockedPlayer: close, nearestPlayer: close };

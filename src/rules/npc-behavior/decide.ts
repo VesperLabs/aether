@@ -13,6 +13,7 @@ import {
   NPC_HOME_RANGE,
   NPC_LEASH_RANGE,
   NPC_SHOULD_ATTACK_RANGE,
+  NPC_LUNGE_RANGE,
   NPC_WARNING_DELAY,
 } from "./constants";
 import { checkInRange, distanceBetween, getShouldAttackRange } from "./range";
@@ -28,7 +29,8 @@ import {
   isMovementBehavior,
 } from "./behaviors";
 import { chooseBehavior } from "./brain";
-import type { MobBehavior } from "@/content";
+import type { MobAttackStyle, MobBehavior } from "@/content";
+import { decideLungeMovement, isRecoveringFromLunge, type LungeState } from "./lunge";
 import type { WanderStep } from "./wander";
 
 export interface NpcBehaviorInput {
@@ -58,8 +60,9 @@ export interface NpcBehaviorInput {
     behaviors?: readonly MobBehavior[];
     /** Warning before an attack or spell lands, from content; unset means `NPC_WARNING_DELAY`. */
     windupMs?: number;
+    attackStyle?: MobAttackStyle;
   };
-  state: {
+  state: LungeState & {
     isStatic?: boolean;
     walkRange?: number;
     isDead?: boolean;
@@ -111,7 +114,9 @@ export type NpcMovement =
   | { type: "strafe"; clockwise: boolean; distance: number; nextStrafeAt?: number }
   /** Walk to the leader. */
   | { type: "follow"; pathed: boolean }
-  | ({ type: "wander" } & WanderStep);
+  | ({ type: "wander" } & WanderStep)
+  /** Dash along `angle` (radians), hitting whoever it runs through. */
+  | { type: "lunge"; angle: number };
 
 export type NpcAction =
   | { type: "idle" }
@@ -246,12 +251,15 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
 
   if (input.isStunned) return result({ type: "standStill" });
 
-  const attackRange = getShouldAttackRange(npc.weapons);
-  // Ranged weapons fire from inside the arrow's flight; melee closes to touching
+  const weaponRange = getShouldAttackRange(npc.weapons);
+  // Ranged weapons fire from inside the arrow's flight; melee closes to touching, or lunges in
   const weaponBand =
-    attackRange !== NPC_SHOULD_ATTACK_RANGE ? getWeaponBand(attackRange) : undefined;
+    weaponRange !== NPC_SHOULD_ATTACK_RANGE ? getWeaponBand(weaponRange) : undefined;
+  const attackRange = !weaponBand && npc.attackStyle === "lunge" ? NPC_LUNGE_RANGE : weaponRange;
   const hasClearShot = !!targetPlayer && (input.hasClearShot?.(targetPlayer) ?? true);
-  const movement = decideMovement();
+  // Still decided while lunging, so aggro and bubbles keep up; the lunge just overrides the move
+  const planned = decideMovement();
+  const movement = decideLungeMovement(state, now) ?? planned;
   if (NPC_BEHAVIORS[behaviorId].holdsFire) return result(movement);
 
   // intendAttack
@@ -261,6 +269,7 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
     hasClearShot &&
     !isAttacking &&
     !state.isAiming &&
+    !isRecoveringFromLunge(state, now) &&
     (weaponBand
       ? isInBand(npc, targetPlayer, weaponBand)
       : checkInRange(npc, targetPlayer, attackRange)) &&

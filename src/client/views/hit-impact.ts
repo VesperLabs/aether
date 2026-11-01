@@ -14,7 +14,7 @@ const RECOIL_MS = 140;
 const LUNGE_PIXELS = 4;
 const LUNGE_MS = 160;
 /** How far an NPC draws back from its target while winding up, in pixels. */
-const WINDUP_LEAN_PIXELS = 3;
+const WINDUP_LEAN_PIXELS = 6;
 /** The lean lets go this long before the attack lands, in ms. */
 const WINDUP_RELEASE_MS = 40;
 /** A killed character's corpse pops in from this scale. */
