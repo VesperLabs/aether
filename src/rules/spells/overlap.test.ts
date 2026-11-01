@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getAimAngle } from "./overlap";
+import { characterHitBox, getAimAngle } from "./overlap";
 
 describe("getAimAngle", () => {
   it("aims from the caster's body centre at the middle of the target's hit box", () => {
@@ -26,5 +26,17 @@ describe("getAimAngle with lead", () => {
       ratio: 0.5,
     });
     expect(angle).toBeCloseTo(Math.atan2(50, 100));
+  });
+});
+
+describe("characterHitBox", () => {
+  const character = { x: 0, y: 0, bodySize: 8, hitBoxSize: { width: 18, height: 46 } };
+
+  it("stands on the character's feet", () => {
+    expect(characterHitBox(character)).toEqual({ x: 0, y: -15, halfWidth: 9, halfHeight: 23 });
+  });
+  it("trims the inset off the top and bottom, keeping the middle", () => {
+    const box = characterHitBox({ ...character, hitBoxInset: 6 });
+    expect(box).toEqual({ x: 0, y: -15, halfWidth: 9, halfHeight: 17 });
   });
 });

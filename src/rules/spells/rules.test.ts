@@ -6,6 +6,7 @@ import {
   checkCastReady,
   getAbilityDetails,
   getCastReadiness,
+  getSpellFlight,
   getSpellShape,
   getSpellVelocity,
   isBehindCaster,
@@ -223,5 +224,26 @@ describe("getCastReadiness", () => {
     expect(getCastReadiness({ spellName: "fireball", lastCast, castDelay: 1000, now: 1000 })).toBe(
       0,
     );
+  });
+});
+
+describe("getSpellFlight", () => {
+  const range = (hand: "handLeft" | "handRight") => (hand === "handLeft" ? 100 : 200);
+
+  it("sends arrows as far as the shooting hand's weapon reaches", () => {
+    const shape = { isRangedAttack: true, isMissile: false, spellSpeed: 350 };
+    expect(getSpellFlight(shape, 0, "attack_left", range)).toEqual({
+      velocity: { x: 350, y: 0 },
+      maxDistance: 100,
+    });
+    expect(getSpellFlight(shape, 0, "attack_right", range)?.maxDistance).toBe(200);
+  });
+  it("leaves a missile's own distance alone", () => {
+    const shape = { isRangedAttack: false, isMissile: true, spellSpeed: 100 };
+    expect(getSpellFlight(shape, 0, "cast", range)).toEqual({ velocity: { x: 100, y: 0 } });
+  });
+  it("is null for spells that don't fly", () => {
+    const shape = { isRangedAttack: false, isMissile: false, spellSpeed: 100 };
+    expect(getSpellFlight(shape, 0, "cast", range)).toBeNull();
   });
 });

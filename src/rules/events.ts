@@ -3,6 +3,7 @@
  * Payloads are plain data (ids, numbers, strings), never entity objects, so any feature can
  * react to an event without reaching into another feature's internals.
  */
+import type { Box, Shape } from "./movement";
 
 /** A mob died. Handled by stats (experience) now; loot and quests will subscribe later. */
 export interface MobKilledEvent {
@@ -69,6 +70,13 @@ export interface NpcRespawnedEvent {
   at: number;
 }
 
+/** A spell hit someone: the shapes the server compared, for drawing while debugging. */
+export interface SpellHitShapesEvent {
+  roomName: string;
+  spell: Shape;
+  victim: Box;
+}
+
 export interface GameEvents {
   mobKilled: MobKilledEvent;
   characterDamaged: CharacterDamagedEvent;
@@ -76,6 +84,7 @@ export interface GameEvents {
   npcCast: NpcCastEvent;
   npcWindupStarted: NpcWindupStartedEvent;
   npcRespawned: NpcRespawnedEvent;
+  spellHitShapes: SpellHitShapesEvent;
 }
 
 export type GameEventName = keyof GameEvents;

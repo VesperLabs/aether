@@ -17,6 +17,8 @@ export type {
 export { SPELL_POWER_ELEMENTAL_FACTOR, rollSpellCrit, rollSpellDamage } from "./damage";
 export type { SpellCrit } from "./damage";
 export {
+  getMeleeSwing,
+  getSpellFlight,
   getSpellShape,
   getSpellVelocity,
   isSpellExpired,
@@ -24,7 +26,7 @@ export {
   usesLeftHand,
   usesRightHand,
 } from "./shape";
-export type { ResolvedSpell, SpellLifeInput, SpellShape } from "./shape";
+export type { ResolvedSpell, MeleeSwing, SpellFlight, SpellLifeInput, SpellShape } from "./shape";
 export { canHitNpc, canHitPlayer, isBehindCaster, isSpellVictimCandidate } from "./targeting";
 export type { PlayerTargetInput, Point, SpellTargets, VictimCheckInput } from "./targeting";
 export { findSpellHits } from "./hits";

@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { getOneWayLatency } from "@/client/net/latency";
 import { playAudio } from "@/client/audio/play-audio";
 import type { Point } from "@/rules/world";
 import type { Player } from "./player";
@@ -7,8 +8,9 @@ import { SwingArc } from "./swing-arc";
 import { getAngleFromDirection, distanceTo } from "@/rules/world";
 import {
   BUFF_SPELLS,
+  getMeleeSwing,
   getSpellShape,
-  getSpellVelocity,
+  getSpellFlight,
   isSpellExpired,
   resolveSpellDetails,
   usesLeftHand,
@@ -56,7 +58,6 @@ export class Spell extends Phaser.GameObjects.Container {
   declare allowedTargets?: readonly string[];
   /** Every spell that is cast defines these, see `getSpellShape`. */
   declare maxVisibleTime: number;
-  declare spellSpeed: number;
   declare bodySize: number;
   declare shouldFade: boolean;
   declare maxDistance: number;
@@ -92,7 +93,6 @@ export class Spell extends Phaser.GameObjects.Container {
     this.layerDepth = details?.layerDepth;
     this.allowedTargets = shape.allowedTargets;
     this.maxVisibleTime = shape.maxVisibleTime as number;
-    this.spellSpeed = shape.spellSpeed as number;
     this.bodySize = shape.bodySize as number;
     this.spell.setTint(toTint(details?.tint || "0xFFFFFF"));
     this.shouldFade = details?.shouldFade || false;
@@ -117,6 +117,7 @@ export class Spell extends Phaser.GameObjects.Container {
       const bladeDegrees = getBladeDegrees(caster.visibleEquipment?.[hand]?.texture);
       /* The weapon's range stat is the hit radius from body centre; the arc turns around the hand */
       const reach = caster.getWeaponRange(hand);
+      this.setMeleeBody(shape.scale);
       this.add(
         new SwingArc(scene, {
           reach:
@@ -137,17 +138,19 @@ export class Spell extends Phaser.GameObjects.Container {
       this.setScale(shape.scale);
     }
 
+    const flight = getSpellFlight(shape, castAngle, this.action, (hand) =>
+      caster.getWeaponRange(hand),
+    );
+    if (flight) {
+      ({ x: this.velocityX, y: this.velocityY } = flight.velocity);
+      this.maxDistance = flight.maxDistance ?? this.maxDistance;
+    }
     if (this.isRangedAttack) {
       this.spell.setTexture("icons", "arrow");
-      ({ x: this.velocityX, y: this.velocityY } = getSpellVelocity(castAngle, this.spellSpeed));
-      this.spell.setRotation(castAngle + 0.785398163);
-      this.maxDistance = this.action.includes("attack_left")
-        ? caster?.getWeaponRange("handLeft")
-        : caster?.getWeaponRange("handRight");
+      this.spell.setRotation(castAngle + Math.PI / 4);
     }
     if (this.isMissile) {
       this.spell.play(`spell-anim-${spellName}`);
-      ({ x: this.velocityX, y: this.velocityY } = getSpellVelocity(castAngle, this.spellSpeed));
       this.spell.setRotation(castAngle);
     }
     if (spellName === "quake") {
@@ -177,8 +180,41 @@ export class Spell extends Phaser.GameObjects.Container {
     }
 
     this.add(this.spell);
+    this.catchUpToServer();
     this.adjustSpellPosition();
     playSpellAudio({ scene, spellName, caster, isMeleeAttack: this.isMeleeAttack });
+  }
+  /**
+   * Shapes the physics body like the swing the server checks, so the debug view shows its real
+   * reach. This spell stays on the caster's body centre for the arc, so the body is offset instead.
+   */
+  setMeleeBody(scale: number) {
+    const { caster } = this;
+    const swing = getMeleeSwing(
+      {
+        y: caster.y,
+        bodyCenterY: caster.bodyCenterY,
+        direction: caster.direction,
+        race: caster.profile?.race,
+      },
+      this.action,
+      (hand) => caster.getWeaponRange(hand),
+    );
+    const radius = Math.floor((swing.reach ?? this.bodySize) * scale);
+    const offsetY = swing.y - (caster.y + caster.bodyCenterY);
+    this.body.setCircle(radius, -radius, -radius + offsetY);
+  }
+  /**
+   * Someone else's projectile left the server about half a ping ago, so start it that far along
+   * its flight. Otherwise it is drawn behind where it really is and seems to hit from afar.
+   */
+  catchUpToServer() {
+    if (this.caster.isHero || this.stickToCaster) return;
+    if (!this.velocityX && !this.velocityY) return;
+    const leadMs = getOneWayLatency();
+    this.x += (this.velocityX * leadMs) / 1000;
+    this.y += (this.velocityY * leadMs) / 1000;
+    this.spellState.spawnTime -= leadMs;
   }
   create() {}
   update() {

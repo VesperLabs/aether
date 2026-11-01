@@ -42,6 +42,9 @@ export type CharacterItem = any;
 /** Radius of a character's body, in pixels (before the profile scale). */
 export const BODY_SIZE = 8;
 
+/** Players' spell hit box sits this far inside their drawn box, top and bottom, in pixels. */
+const PLAYER_HIT_BOX_INSET = 6;
+
 /** The equipment a character can actually use right now (worn in an active slot). */
 export function filterVisibleEquipment(player: {
   equipment?: Record<string, CharacterItem>;
@@ -95,6 +98,10 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
     bodyOffsetY!: number;
     bodyCenterY!: number;
     hitBoxSize!: { width: number; height: number };
+    /** How far spells must reach past the top and bottom of `hitBoxSize` to hit. */
+    get hitBoxInset() {
+      return this.kind === "player" ? PLAYER_HIT_BOX_INSET : 0;
+    }
     headY!: number;
     bodySize!: number;
     proScale!: number;
@@ -130,7 +137,7 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
         buffs = [],
         abilities = {},
         activeItemSlots = [],
-        hitBoxSize = { width: 24, height: 46 }, //human hitbox
+        hitBoxSize = { width: 18, height: 46 }, //human hitbox
       } = args;
       this.x = x;
       this.y = y;
