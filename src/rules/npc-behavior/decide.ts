@@ -13,6 +13,7 @@ import {
   NPC_HOME_RANGE,
   NPC_LEASH_RANGE,
   NPC_SHOULD_ATTACK_RANGE,
+  NPC_ENGAGED_BUBBLE,
   NPC_WARNING_DELAY,
 } from "./constants";
 import { checkInRange, distanceBetween, getShouldAttackRange } from "./range";
@@ -351,8 +352,7 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
 
     if (behavior.engaged && targetPlayer) {
       expireStealthOfPlayerId = targetPlayer.socketId;
-      // Winding up: the client fills this bubble with a countdown ring (client/views/windup-ring.ts)
-      bubbleMessage = state.isAiming ? "!" : "?";
+      bubbleMessage = NPC_ENGAGED_BUBBLE;
     } else {
       // Not fighting: let go of the target
       setLockedPlayerId(null);

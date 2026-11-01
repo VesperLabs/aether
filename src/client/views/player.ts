@@ -4,6 +4,7 @@ import type { BuffCharacterWire } from "@/network/sync";
 import type { SceneMain } from "@/client/scenes/main-scene";
 import { Character, type CharacterArgs } from "./character";
 import { distanceTo } from "@/rules/world";
+import { NPC_ENGAGED_BUBBLE } from "@/rules/npc-behavior";
 import { getAbilityCosts, hasStaminaFor } from "@/rules/combat";
 import type { AbilitySlot } from "@/rules/spells";
 import { Spell } from "./spell";
@@ -264,6 +265,12 @@ export class Player extends Character {
     const remainingString = inputString.replace(regex, "");
     this.bubble.setTint(toTint(colorHex ?? "0xFFFFFF"));
     this.bubble.setMessage(remainingString);
+    /* A fighting NPC's bubble is a ring, filled while it winds up (see windup-ring.ts) */
+    const isEngaged = this.kind !== "player" && remainingString === NPC_ENGAGED_BUBBLE;
+    this.bubble.setCountdown(
+      isEngaged ? this.bubble.windup.progress : null,
+      this.bubble.windup.kind,
+    );
   }
   updateHpBar() {
     const { stats } = this;

@@ -1,24 +1,23 @@
 import type { Player } from "./player";
 
 /**
- * Fills the "!" bubble over an NPC's head with a countdown ring as it winds up, full the moment
- * its attack lands, then puts the "!" back.
+ * Fills the ring in a fighting NPC's bubble as it winds up, full the moment its attack lands,
+ * then empties it again. The bubble draws whatever `windup` holds each frame.
  */
 export function playWindupRing(attacker: Player, windupMs: number, kind: "attack" | "cast") {
   const { scene, bubble } = attacker;
   if (!scene || !bubble) return;
-  bubble.setCountdown(0, kind);
+  bubble.windup = { progress: 0, kind };
   scene.tweens.addCounter({
     from: 0,
     to: 1,
     duration: windupMs,
     onUpdate: (tween) => {
-      if (!bubble.active) return;
       if (attacker.state?.isDead) return tween.complete();
-      bubble.setCountdown(tween.getValue() ?? 0, kind);
+      bubble.windup.progress = tween.getValue() ?? 0;
     },
     onComplete: () => {
-      if (bubble.active) bubble.setCountdown(null);
+      bubble.windup.progress = 0;
     },
   });
 }

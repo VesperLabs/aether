@@ -22,6 +22,8 @@ export class Bubble extends Phaser.GameObjects.Container {
   declare br: Sprite;
   declare bubbleText: Phaser.GameObjects.BitmapText;
   declare countdown: Phaser.GameObjects.Graphics;
+  /** How far the owner's current windup is, which the countdown ring shows. */
+  windup: { progress: number; kind: keyof typeof RING_COLORS } = { progress: 0, kind: "attack" };
   declare headY: number;
   declare left: Sprite;
   declare maxWidth: number;
