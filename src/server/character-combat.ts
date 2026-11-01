@@ -7,7 +7,7 @@ import {
   rollAttack,
   rollTriggers,
 } from "@/rules/combat";
-import { isDodging } from "@/rules/movement";
+import { isDodgeInvulnerable } from "@/rules/movement";
 import { rollSpellCrit, rollSpellDamage, type getAbilityDetails } from "@/rules/spells";
 import type { ServerCharacter } from "./character";
 
@@ -23,10 +23,10 @@ export type AbilityDetails = ReturnType<typeof getAbilityDetails>;
 
 const rng = () => Math.random();
 
-/** Mid-roll, or just after going into stealth: hits miss. */
+/** Rolling (and just after), or just after going into stealth: hits miss. */
 function cannotBeHit(victim: ServerCharacter) {
   const now = victim.world.now();
-  return isDodging(victim.state, now) || isInStealthGrace(victim.state, now);
+  return isDodgeInvulnerable(victim.state, now) || isInStealthGrace(victim.state, now);
 }
 
 export function applyElementalDamage(eleDamages: ElementalDamages, victim: ServerCharacter) {

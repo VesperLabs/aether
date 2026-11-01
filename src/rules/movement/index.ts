@@ -42,16 +42,19 @@ export {
   DODGE_COOLDOWN,
   DODGE_DISTANCE,
   DODGE_DURATION,
+  DODGE_INVULNERABLE_MS,
   DODGE_SP_COST,
   canDodge,
   getDodgeReadiness,
   getDodgeVelocity,
+  isDodgeInvulnerable,
   isDodging,
 } from "./dodge";
 export type { DodgeInput, DodgeState } from "./dodge";
 export {
   LUNGE_DISTANCE,
   LUNGE_DURATION,
+  LUNGE_HIT_LEAD,
   LUNGE_MAX_DISTANCE,
   getLungeDuration,
   getLungeVelocity,

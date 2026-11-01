@@ -1,7 +1,7 @@
 import { MIN_STEALTH_ALPHA } from "./constants";
 
 /** How long, in ms, a fresh stealth can't be hit, so a blow already on its way doesn't break it. */
-export const STEALTH_GRACE_MS = 500;
+export const STEALTH_GRACE_MS = 1500;
 
 /** True just after casting stealth, while hits can't land. */
 export function isInStealthGrace(state: { lastStealth?: number }, now: number) {

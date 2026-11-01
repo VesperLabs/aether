@@ -48,7 +48,7 @@ export function applyDodge(p: Player) {
   if (rolling) trail(p, now, (now - (p.state.lastDodge ?? 0)) / DODGE_DURATION);
   const lunging = isLunging(p.state, now);
   if (lunging) trailDust(p, now);
-  updateVortex(p, lunging, now);
+  updateVortex(p, lunging);
 }
 
 function trail(p: Player, now: number, progress: number) {

@@ -1,68 +1,81 @@
 import Phaser from "phaser";
+import { LUNGE_HIT_LEAD } from "@/rules/movement";
 import type { Player } from "./player";
 
-const VORTEX_COLOR = 0xffffff;
-const VORTEX_ALPHA = 0.35;
-const VORTEX_RADIUS = 10;
-/** How far ahead of the body's center the vortex sits, along the lunge. */
-const VORTEX_AHEAD = 14;
-/** Squashed along the lunge, so the ring reads as a disc the body is driving through. */
-const VORTEX_DEPTH_SCALE = 0.4;
-/** Turns per second of the swirl. */
-const VORTEX_SPIN = 3;
-const VORTEX_ARMS = 3;
-const VORTEX_FADE_MS = 120;
+const DOME_COLOR = 0xffffff;
+/** Alpha at the dome's leading edge; it fades to nothing toward the back. */
+const DOME_ALPHA = 0.3;
+const DOME_RADIUS = 22;
+/** How far ahead of the body's center the dome's flat back sits, along the lunge. */
+const DOME_AHEAD = LUNGE_HIT_LEAD - 8;
+/** Squashed along the lunge, so the half sphere reads as a shallow cap pushed through the air. */
+const DOME_DEPTH_SCALE = 0.85;
+/** Vertical slices the fade is drawn in, back to front. */
+const DOME_SLICES = 32;
+const DOME_FADE_MS = 80;
 
-const vortices = new WeakMap<Player, Phaser.GameObjects.Container>();
+const domes = new WeakMap<Player, Phaser.GameObjects.Graphics>();
+const fading = new WeakSet<Phaser.GameObjects.Graphics>();
 
-/** While a lunge lasts: a translucent spinning vortex in front of the player, faded out after. */
-export function updateVortex(p: Player, isLunging: boolean, now: number) {
-  let vortex = vortices.get(p);
+/** While a lunge lasts: a translucent half sphere in front of the player, faded out after. */
+export function updateVortex(p: Player, isLunging: boolean) {
+  let dome = domes.get(p);
   if (!isLunging) {
-    if (vortex) fadeOut(p, vortex);
-    return;
-  }
-  if (!vortex?.active) {
-    vortex = createVortex(p);
-    vortices.set(p, vortex);
+    if (!dome) return;
+    /* Keeps following the player while it fades, so it never lingers behind as a second dome */
+    if (!fading.has(dome)) fadeOut(p, dome);
+  } else if (!dome?.active || fading.has(dome)) {
+    if (dome) removeDome(p, dome);
+    dome = createDome(p);
+    domes.set(p, dome);
   }
   const angle = p.state.lungeAngle ?? 0;
-  vortex.setPosition(
-    p.x + Math.cos(angle) * VORTEX_AHEAD,
-    p.y + p.bodyOffsetY + Math.sin(angle) * VORTEX_AHEAD,
+  /* A child of the player, offset like the rig, so it moves with the body every frame */
+  dome.setPosition(
+    p.rig.x + Math.cos(angle) * DOME_AHEAD,
+    p.rig.y + p.bodyOffsetY + Math.sin(angle) * DOME_AHEAD,
   );
-  vortex.setRotation(angle);
-  vortex.setDepth(p.depth + 1);
-  const swirl = vortex.list[0] as Phaser.GameObjects.Graphics;
-  swirl.setRotation(((now / 1000) * VORTEX_SPIN * Math.PI * 2) % (Math.PI * 2));
+  dome.setRotation(angle);
+  /* Behind the body when heading up the screen, so it never covers the head */
+  if (Math.sin(angle) < 0) p.sendToBack(dome);
+  else p.bringToTop(dome);
 }
 
-function createVortex(p: Player) {
-  const swirl = p.scene.add.graphics();
-  for (let arm = 0; arm < VORTEX_ARMS; arm++) {
-    const start = (arm / VORTEX_ARMS) * Math.PI * 2;
-    swirl.lineStyle(2, VORTEX_COLOR, VORTEX_ALPHA);
-    swirl.beginPath();
-    swirl.arc(0, 0, VORTEX_RADIUS, start, start + Math.PI / 2);
-    swirl.strokePath();
-    swirl.lineStyle(1, VORTEX_COLOR, VORTEX_ALPHA * 0.6);
-    swirl.beginPath();
-    swirl.arc(0, 0, VORTEX_RADIUS * 0.55, start + Math.PI / 3, start + Math.PI);
-    swirl.strokePath();
+/** Local +x is the lunge direction: the flat back at x = 0, the rounded front at x = radius. */
+function createDome(p: Player) {
+  const dome = p.scene.make.graphics({}, false);
+  p.add(dome);
+  const step = DOME_RADIUS / DOME_SLICES;
+  for (let i = 0; i < DOME_SLICES; i++) {
+    const x = i * step;
+    const mid = x + step / 2;
+    const halfHeight = Math.sqrt(DOME_RADIUS ** 2 - mid ** 2);
+    /* Brightest at the front, where the surface is seen edge-on, clear at the back */
+    const t = (i + 1) / DOME_SLICES;
+    dome.fillStyle(DOME_COLOR, DOME_ALPHA * t ** 1.5);
+    dome.fillRect(x, -halfHeight, step, halfHeight * 2);
   }
-  const vortex = p.scene.add.container(p.x, p.y, [swirl]);
-  /* Spin the swirl inside; squash the container so the disc faces the way the lunge goes */
-  vortex.setScale(VORTEX_DEPTH_SCALE, 1);
-  vortex.setAlpha(p.alpha);
-  return vortex;
+  /* A thin rim along the leading curve */
+  dome.lineStyle(1, DOME_COLOR, DOME_ALPHA);
+  dome.beginPath();
+  dome.arc(0, 0, DOME_RADIUS, -Math.PI / 2, Math.PI / 2);
+  dome.strokePath();
+  dome.setScale(DOME_DEPTH_SCALE, 1);
+  return dome;
 }
 
-function fadeOut(p: Player, vortex: Phaser.GameObjects.Container) {
-  vortices.delete(p);
+function fadeOut(p: Player, dome: Phaser.GameObjects.Graphics) {
+  fading.add(dome);
   p.scene.tweens.add({
-    targets: vortex,
+    targets: dome,
     alpha: 0,
-    duration: VORTEX_FADE_MS,
-    onComplete: () => vortex.destroy(),
+    duration: DOME_FADE_MS,
+    onComplete: () => removeDome(p, dome),
   });
+}
+
+function removeDome(p: Player, dome: Phaser.GameObjects.Graphics) {
+  if (domes.get(p) === dome) domes.delete(p);
+  p.scene.tweens.killTweensOf(dome);
+  dome.destroy();
 }

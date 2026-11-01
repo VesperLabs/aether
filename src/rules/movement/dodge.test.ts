@@ -3,10 +3,12 @@ import {
   DODGE_COOLDOWN,
   DODGE_DISTANCE,
   DODGE_DURATION,
+  DODGE_INVULNERABLE_MS,
   DODGE_SP_COST,
   canDodge,
   getDodgeReadiness,
   getDodgeVelocity,
+  isDodgeInvulnerable,
   isDodging,
 } from "./dodge";
 
@@ -38,6 +40,17 @@ describe("isDodging", () => {
   });
   it("is false before any roll", () => {
     expect(isDodging({}, 1000)).toBe(false);
+  });
+});
+
+describe("isDodgeInvulnerable", () => {
+  it("lasts past the end of the roll", () => {
+    expect(isDodgeInvulnerable({ lastDodge: 1000 }, 1000 + DODGE_DURATION)).toBe(true);
+    expect(isDodgeInvulnerable({ lastDodge: 1000 }, 1000 + DODGE_INVULNERABLE_MS - 1)).toBe(true);
+    expect(isDodgeInvulnerable({ lastDodge: 1000 }, 1000 + DODGE_INVULNERABLE_MS)).toBe(false);
+  });
+  it("is false before any roll", () => {
+    expect(isDodgeInvulnerable({}, 1000)).toBe(false);
   });
 });
 
