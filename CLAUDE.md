@@ -11,6 +11,14 @@ Server-authoritative online game: Phaser + React client, Node + socket.io server
 - Move code in small steps that keep `npm run check` passing.
 - Commits and PR titles are [conventional commits](https://www.conventionalcommits.org) (`feat:`, `fix:`, `refactor:`, `docs:`, `test:`, `ci:`, `chore:`), enforced by commitlint; release-please bumps versions from them.
 
+## Subagents
+
+The main session runs on Opus. When delegating, use the `worker` agent (or `Explore` for read-only searching) and pick its `model` per task:
+
+- `haiku`: searching, reading and summarizing; mechanical edits with an exact spec (renames, moving a file and fixing imports)
+- `sonnet`: the default for scoped code work: refactors following an established pattern, gates, docs, tests, small fixes
+- `opus`: design work, cross-cutting refactors, tricky bugs, security-sensitive code (exploits, auth), or a retry after a Sonnet attempt fell short
+
 ## Commands
 
 - `npm run dev`: server, client and wiki together
