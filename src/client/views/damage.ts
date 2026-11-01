@@ -1,6 +1,8 @@
 import Phaser from "phaser";
 import type { Player } from "./player";
 import type { HitEffect } from "./player-hit";
+import { DRAIN_COLORS } from "./drain-stream";
+import type { DrainResource } from "@/rules/combat";
 const { Container, BitmapText } = Phaser.GameObjects;
 
 export class Damage extends Container {
@@ -18,55 +20,62 @@ export class Damage extends Container {
     const isPositive = (hit?.amount as number) >= 0;
     this.dt = new BitmapText(scene, 0, 0, "nin-light", String(hit.amount), damageSize);
 
-    switch (hit.type) {
-      case "buff":
-        /* Buff hits carry no amount; the buff shows itself (see `Buff`) */
-        this.setVisible(false);
-        break;
-      case "hp":
-        if (isPositive) {
-          text = "+" + text;
-          this.dt.setTint(0x99ff99);
-        } else {
-          if (this.victim.isHero) {
-            this.dt.setTint(0xffffff);
+    /* Drains show what was taken, in the tether's color: "+5 HP" */
+    const drainColor = hit.isDrain ? DRAIN_COLORS[hit.type as DrainResource] : undefined;
+    if (drainColor !== undefined) {
+      text = `+${text} ${hit.type.toUpperCase()}`;
+      damageSize = 15;
+      this.dt.setTint(drainColor);
+    } else
+      switch (hit.type) {
+        case "buff":
+          /* Buff hits carry no amount; the buff shows itself (see `Buff`) */
+          this.setVisible(false);
+          break;
+        case "hp":
+          if (isPositive) {
+            text = "+" + text;
+            this.dt.setTint(0x99ff99);
           } else {
-            this.dt.setTint(0xff6666);
+            if (this.victim.isHero) {
+              this.dt.setTint(0xffffff);
+            } else {
+              this.dt.setTint(0xff6666);
+            }
           }
-        }
-        break;
-      case "miss":
-        text = "miss!";
-        if (this.victim.isHero) {
-          this.dt.setTint(0x9999ff);
-        } else {
-          this.dt.setTint(0xffffff);
-        }
-        break;
-      case "block":
-        text = "block!";
-        if (this.victim.isHero) {
-          this.dt.setTint(0xff99ff);
-        } else {
-          this.dt.setTint(0xffffff);
-        }
-        break;
-      case "exp":
-        endY = -10;
-        damageSize = 15;
-        text = text + " XP";
-        this.dt.setTint(0xd8b4fe); // purple.300
-        break;
-      case "mp":
-        this.setVisible(false);
-        break;
-      case "sp":
-        this.setVisible(false);
-        break;
-      case "death":
-        this.dt.setTint(0xff6666);
-        break;
-    }
+          break;
+        case "miss":
+          text = "miss!";
+          if (this.victim.isHero) {
+            this.dt.setTint(0x9999ff);
+          } else {
+            this.dt.setTint(0xffffff);
+          }
+          break;
+        case "block":
+          text = "block!";
+          if (this.victim.isHero) {
+            this.dt.setTint(0xff99ff);
+          } else {
+            this.dt.setTint(0xffffff);
+          }
+          break;
+        case "exp":
+          endY = -10;
+          damageSize = 15;
+          text = text + " XP";
+          this.dt.setTint(0xd8b4fe); // purple.300
+          break;
+        case "mp":
+          this.setVisible(false);
+          break;
+        case "sp":
+          this.setVisible(false);
+          break;
+        case "death":
+          this.dt.setTint(0xff6666);
+          break;
+      }
     if (hit.isCritical) {
       damageSize = 40;
       text = text + "!";

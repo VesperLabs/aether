@@ -243,7 +243,7 @@ export function bindSceneSocket(scene: SceneMain) {
       const attacker = getNpc(scene, hit?.from) ?? getPlayer(scene, hit?.from);
       playHitImpact(victim, attacker, hit);
       /* A drain's `from` is the one drained and `to` the one who drank */
-      if (hit?.isDrain) playDrainStream(attacker, victim, hit.type as DrainResource, hit.amount);
+      if (hit?.isDrain) playDrainStream(attacker, victim, hit.type as DrainResource);
       victim?.takeHit?.(hit);
     }
   });
