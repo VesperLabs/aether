@@ -99,9 +99,13 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
     bodySize!: number;
     proScale!: number;
     declare state: CharacterState;
+    /** Current time in ms. Injected by the app so rules stay deterministic. */
+    clock!: () => number;
 
     /** Copies the constructor args onto the character and fills in the defaults. */
-    initCharacter(args: any) {
+    initCharacter(args: any, clock: () => number) {
+      this.clock = clock;
+      const now = clock();
       const {
         x,
         y,
@@ -152,20 +156,20 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
         doHpBuffRegen: false,
         doMpRegen: false,
         doSpRegen: false,
-        lastTeleport: Date.now(),
-        deadTime: Date.now(),
-        lastBuffPoison: Date.now(),
-        lastHpRegen: Date.now(),
-        lastHpBuffRegen: Date.now(),
-        lastMpRegen: Date.now(),
-        lastSpRegen: Date.now(),
-        lastCombat: Date.now() - POTION_COOLDOWN,
-        lastPotion: Date.now() - POTION_COOLDOWN,
-        lastAttack: Date.now() - POTION_COOLDOWN,
+        lastTeleport: now,
+        deadTime: now,
+        lastBuffPoison: now,
+        lastHpRegen: now,
+        lastHpBuffRegen: now,
+        lastMpRegen: now,
+        lastSpRegen: now,
+        lastCombat: now - POTION_COOLDOWN,
+        lastPotion: now - POTION_COOLDOWN,
+        lastAttack: now - POTION_COOLDOWN,
         lastCast: {
-          global: Date.now() - POTION_COOLDOWN,
+          global: now - POTION_COOLDOWN,
         },
-        lastFlash: Date.now(),
+        lastFlash: now,
         isEnteringDoor: false,
         setFlash: false,
         isIdle: true,
@@ -224,7 +228,7 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
         attackDelay: this.stats.attackDelay,
         isDualWielding: this.isDualWielding(),
         lastAttack: this.state.lastAttack,
-        now: Date.now(),
+        now: this.clock(),
       });
       this.state.isAttacking = !result.isReady;
       return result;
@@ -233,7 +237,7 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
       const { percentageRemaining, timeRemaining, isReady } = getCooldown(
         POTION_COOLDOWN,
         this.state.lastPotion,
-        Date.now(),
+        this.clock(),
       );
       this.state.isPotioning = !isReady;
       return { percentageRemaining, timeRemaining, isReady };
@@ -242,7 +246,7 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
       return getWeaponRange(this, hand);
     }
     checkOutOfCombat() {
-      return isOutOfCombat(this.state.lastCombat, Date.now());
+      return isOutOfCombat(this.state.lastCombat, this.clock());
     }
     isDualWielding(key: EquipmentKey = "visibleEquipment") {
       return isDualWielding(this, key);
@@ -294,7 +298,7 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
         spellName,
         lastCast: this.state.lastCast,
         castDelay: this?.stats?.castDelay,
-        now: Date.now(),
+        now: this.clock(),
       });
     }
     canCastSpell(abilitySlot: AbilitySlot | undefined, shouldUpdateState = true) {
@@ -307,7 +311,7 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
         abilities: this.abilities,
         stats: this.stats,
         lastCast: this.state.lastCast,
-        now: Date.now(),
+        now: this.clock(),
         shouldUpdateState,
       });
       if (castTimes) Object.assign(this.state.lastCast, castTimes);

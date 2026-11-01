@@ -226,11 +226,7 @@
       }
     },
     {
-      "files": [
-        "src/rules/character/character.ts",
-        "src/rules/world/tick-loop.ts",
-        "src/rules/tests/**"
-      ],
+      "files": ["src/rules/world/tick-loop.ts", "src/rules/tests/**"],
       "rules": {
         "no-restricted-properties": "off"
       }
