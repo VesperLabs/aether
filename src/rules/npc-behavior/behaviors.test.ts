@@ -103,22 +103,43 @@ describe("threat, leash and new behaviors", () => {
     expect(home.finishReset).toBe(true);
   });
 
-  it("retreats when badly hurt, if it can", () => {
-    const hurt = (behaviors?: NpcBehaviorInput["npc"]["behaviors"]) =>
+  it("retreats when badly hurt, if it can, slower than it walks", () => {
+    const hurt = (behaviors?: NpcBehaviorInput["npc"]["behaviors"], retreatAt?: number) =>
       decideNpcAction(
         input({
           npc: {
             behaviors,
             stats: { level: 5, walkSpeed: 50, attackDelay: 300, castDelay: 300, hp: 1, maxHp: 10 },
           },
+          state: { retreatAt },
           rest: { nearestPlayer: player({ x: 50 }) },
         }),
         never,
       );
     expect(hurt(["aggressive"]).behavior).toBe("chase");
     const retreating = hurt(["aggressive", "retreat"]);
-    expect(retreating.movement).toEqual({ type: "flee" });
+    expect(retreating.movement).toEqual({ type: "flee", speedRatio: 0.7, retreatAt: NOW });
     expect(retreating.action.type).toBe("idle");
+    // Still running a moment later, without restarting the clock
+    expect(hurt(["aggressive", "retreat"], NOW - 1000).movement).toEqual({
+      type: "flee",
+      speedRatio: 0.7,
+    });
+  });
+
+  it("retreats only once per fight, then fights to the end", () => {
+    const decision = decideNpcAction(
+      input({
+        npc: {
+          behaviors: ["aggressive", "retreat"],
+          stats: { level: 5, walkSpeed: 50, attackDelay: 300, castDelay: 300, hp: 1, maxHp: 10 },
+        },
+        state: { retreatAt: NOW - 3000 },
+        rest: { nearestPlayer: player({ x: 50 }) },
+      }),
+      never,
+    );
+    expect(decision.behavior).toBe("chase");
   });
 
   it("kites with a ranged weapon when the target gets close", () => {

@@ -79,6 +79,8 @@ export interface NpcBehaviorInput {
     strafeClockwise?: boolean;
     /** Loop time at which it next picks a side to sidestep. */
     nextStrafeAt?: number;
+    /** When it began its one retreat this fight, if it has. */
+    retreatAt?: number;
     /** Leashed and walking home; players are ignored until it gets there. */
     isResetting?: boolean;
     /** What it did last tick, which it slightly prefers to keep doing. */
@@ -109,8 +111,8 @@ export type NpcMovement =
   /** Stand at spawn, facing down after `faceDownAfterMs`, or walk back there. */
   | { type: "waitAtSpawn"; faceDownAfterMs: number }
   | { type: "talk" }
-  /** Run away from the target, around walls, at `speedRatio` of walk speed (default full). */
-  | { type: "flee"; speedRatio?: number }
+  /** Run away from the target, around walls, at `speedRatio` of walk speed (default full). Sets when a retreat began. */
+  | { type: "flee"; speedRatio?: number; retreatAt?: number }
   /** Sidestep around the target, drifting back to `distance` from it. Sets the side and when to next pick one. */
   | { type: "strafe"; clockwise: boolean; distance: number; nextStrafeAt?: number }
   /** Walk to the leader. */

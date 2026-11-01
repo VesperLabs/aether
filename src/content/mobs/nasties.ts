@@ -6,7 +6,6 @@ export const nasties = {
     profile: { race: "crab", userName: "Crab", tint: "0xFF6600" },
     flavor:
       "A shore crab with a mean pinch and a meaner temper. Trista keeps their numbers down, but there are always more.",
-    behaviors: ["retreat"],
     baseStats: { level: 1 },
     hitBoxSize: { width: 18, height: 16 },
     drops: [
@@ -19,7 +18,6 @@ export const nasties = {
     profile: { race: "raccoon", userName: "Raccoon" },
     flavor:
       "A masked bandit of the grassland. It raids packs and campfires, and it will fight you for your snacks.",
-    behaviors: ["retreat"],
     baseStats: { level: 3 },
     hitBoxSize: { width: 26, height: 24 },
     drops: [

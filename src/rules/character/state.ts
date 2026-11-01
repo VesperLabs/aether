@@ -47,6 +47,8 @@ export interface CharacterState {
   wasRolling?: boolean;
   lastFlash: number;
   lastCast: LastCast;
+  /** NPC only: when it began its one retreat this fight. */
+  retreatAt?: number;
   /** NPC only: loop time of the next wander direction change. */
   nextWanderAt?: number;
   /** When the last lunge started (see `rules/movement/lunge.ts`). */

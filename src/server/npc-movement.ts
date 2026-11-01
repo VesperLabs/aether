@@ -46,6 +46,7 @@ export function performNpcMovement(
       if (!leader) return standStill(npc);
       return movement.pathed ? walkToPathed(npc, leader) : walkTo(npc, leader);
     case "flee":
+      if (movement.retreatAt !== undefined) npc.state.retreatAt = movement.retreatAt;
       if (!targetPlayer) return standStill(npc);
       return steer(
         npc,
