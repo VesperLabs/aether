@@ -6,6 +6,7 @@ import { getSpinDirection } from "@/client/input/spin-direction";
 import { CONSUMABLES_BASES, POTION_BASES } from "@/rules/inventory";
 import { updateAttackCooldown, updatePotionCooldown, updateSpellCooldown } from "./hero-cooldowns";
 import { isTypableFieldActive } from "./typable-field";
+import { getHeadingAngle, isTap } from "./tap-aim";
 
 /** Wires window and canvas events (attack, aim, abilities, items, dragging) to the hero. */
 export function addGlobalEventListeners(scene: SceneHud) {
@@ -45,11 +46,13 @@ export function addGlobalEventListeners(scene: SceneHud) {
   window.addEventListener("HERO_AIM_START", (e) => {
     if (!mainScene?.hero || isTypableFieldActive()) return;
     const hero = mainScene?.hero;
-    const { isAimable, spellName } = hero.getAbilityDetails(e?.detail);
+    const { isAimable, isLunge, spellName } = hero.getAbilityDetails(e?.detail);
 
     if (isAimable) {
       hero.state.isAiming = true;
       hero.state.aimingSpellName = spellName;
+      /* A lunge taps like a dodge: a tap goes the way you're heading, a hold aims */
+      hero.state.aimPressedAt = isLunge ? Date.now() : undefined;
       gameElement.style.cursor = "none";
       scene.socket.emit("updateState", { isAiming: hero.state.isAiming });
     }
@@ -98,15 +101,16 @@ export function addGlobalEventListeners(scene: SceneHud) {
   window.addEventListener("HERO_ABILITY", (e) => {
     const hero = mainScene?.hero;
     const abilitySlot = e?.detail;
-    const { type } = hero.getAbilityDetails(abilitySlot);
+    const { type, isLunge } = hero.getAbilityDetails(abilitySlot);
 
     if (type === "spell") {
       /* Tell the UI to update the cooldown */
       updateSpellCooldown(hero, abilitySlot);
 
+      const isTapped = isLunge && isTap(hero.state, Date.now());
       hero?.doCast?.({
         abilitySlot,
-        castAngle: hero?.state?.lastAngle,
+        castAngle: isTapped ? getHeadingAngle(hero) : hero?.state?.lastAngle,
       });
 
       hero.state.isAiming = false;

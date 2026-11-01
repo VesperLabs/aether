@@ -108,6 +108,16 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
     direction = hero.state.dodgeFacing ?? direction;
   }
 
+  /* Unlike a roll, a lunge faces the way it goes for the whole dash */
+  const isLungingNow = isLunging(hero.state, Date.now());
+  if (isLungingNow) {
+    lastAngle = hero.state.lungeAngle ?? 0;
+    direction = getSpinDirection(hero, {
+      x: hero.x + Math.cos(lastAngle),
+      y: hero.y + Math.sin(lastAngle),
+    });
+  }
+
   hero.state.lastAngle = lastAngle;
   const lastAbilitySlot = hero?.state?.lastAbilitySlot;
 
@@ -145,7 +155,7 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
     vy *= ATTACK_WALK_SPEED_SCALE;
   }
 
-  if (isLunging(hero.state, Date.now())) {
+  if (isLungingNow) {
     ({ x: vx, y: vy } = getLungeVelocity(hero.state.lungeAngle ?? 0));
   } else if (isRolling) {
     ({ x: vx, y: vy } = getDodgeVelocity(hero.state.dodgeAngle ?? 0));
@@ -162,7 +172,8 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
   hero.vy = vy;
   hero.body.setVelocity(vx, vy);
   /* A melee swing commits to the way it started; bows keep turning to aim */
-  if (!(hero.state.isAttacking && !hero.hasRangedWeapon())) hero.direction = direction;
+  if (isLungingNow || !(hero.state.isAttacking && !hero.hasRangedWeapon()))
+    hero.direction = direction;
 
   /* Every frame of a roll and the one after it, so an attack out of a roll swings from where you are */
   const wasRolling = hero.state.wasRolling;
