@@ -6,6 +6,18 @@ import { arePropsEqualWithKeys } from "@/ui";
 /** Opacity of a skill you can't afford to use, like the chat button away from anyone. */
 export const DISABLED_OPACITY = 0.5;
 
+/** The cooldown that ends last, so a button blocked by several shows one ring, not one per cooldown. */
+export function getLatestCooldown(...cooldowns: (Cooldown | undefined)[]) {
+  let latest: Cooldown | undefined;
+  for (const cooldown of cooldowns) {
+    if (!cooldown) continue;
+    if (!latest || cooldown.startTime + cooldown.duration > latest.startTime + latest.duration) {
+      latest = cooldown;
+    }
+  }
+  return latest;
+}
+
 export const CooldownTimer = memo(
   ({ cooldown, color = "#FFF" }: { cooldown?: Cooldown; color?: string }) => {
     const [percentage, setPercentage] = useState(0);
