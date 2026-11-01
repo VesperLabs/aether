@@ -2,16 +2,13 @@ import type { AbilitySlot } from "@/rules/spells";
 import type { ServerWorld } from "./server-world";
 import { distanceTo } from "@/rules/world";
 import { entitiesInRoom } from "@/rules/world";
-import { shapesOverlap, type Shape } from "@/rules/movement";
+import type { Shape } from "@/rules/movement";
 import {
   BUFF_SPELLS,
-  characterBodyCircle,
-  characterHitBox,
+  findSpellHits,
   getSpellShape,
   getSpellVelocity,
-  isBehindCaster,
   isSpellExpired,
-  isSpellVictimCandidate,
   resolveSpellDetails,
   usesLeftHand,
   usesRightHand,
@@ -180,43 +177,32 @@ export class Spell {
   }
   checkCollisions() {
     if (this?.state?.isExpired) return;
-    const { target, caster, world, allowedTargets, abilitySlot } = this;
-    const direction = this?.direction;
-    const shape = this.getShape();
-    if (!shape) return;
+    const { target, caster, world } = this;
     const victims = [
       ...entitiesInRoom(world.npcs, this.room?.name),
       ...entitiesInRoom(world.players, this.room?.name),
     ] as unknown as Array<ServerCharacter>;
-    const isNpcSingleTargetMelee = target?.id && caster?.kind !== "player" && this.isMeleeAttack;
-
-    for (const victim of victims) {
-      if (!victim) continue;
-      if (
-        !isSpellVictimCandidate({
-          victimId: victim.id,
-          victimIsDead: victim.state?.isDead,
-          hitIds: this.hitIds,
-          allowedTargets,
-          casterId: caster?.id,
-          targetId: target?.id,
-        })
-      ) {
-        continue;
-      }
-      /* Make hitbox smaller for npc melee hits. */
-      const area = isNpcSingleTargetMelee
-        ? ({ kind: "circle", ...characterBodyCircle(victim) } as Shape)
-        : ({ kind: "box", ...characterHitBox(victim) } as Shape);
-      if (shapesOverlap(area, shape)) {
-        /* For attacks, prevent collision behind the player */
-        if (this.isMeleeAttack && isBehindCaster(direction, victim, caster)) continue;
-
-        // keep track of all the characters this spell hit
-        this.hitIds = [...new Set([...this.hitIds, victim.id])];
-        // send one hit at a time
-        this.caster.doHit([victim.id], abilitySlot); // if we don't have an ability slot, we are doing an attack
-      }
+    const hits = findSpellHits({
+      shape: this.getShape(),
+      victims: victims.filter(Boolean).map((v) => ({
+        id: v.id,
+        isDead: v.state?.isDead,
+        x: v.x,
+        y: v.y,
+        bodySize: v.bodySize,
+        hitBoxSize: v.hitBoxSize,
+      })),
+      hitIds: this.hitIds,
+      allowedTargets: this.allowedTargets,
+      caster: { id: caster?.id, x: caster.x, y: caster.y, isPlayer: caster?.kind === "player" },
+      targetId: target?.id,
+      direction: this.direction,
+      isMeleeAttack: this.isMeleeAttack,
+    });
+    for (const id of hits) {
+      this.hitIds = [...new Set([...this.hitIds, id])];
+      // One hit at a time; without an ability slot it is an attack.
+      this.caster.doHit([id], this.abilitySlot);
     }
   }
   adjustSpellPosition() {
