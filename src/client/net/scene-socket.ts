@@ -218,11 +218,11 @@ export function bindSceneSocket(scene: SceneMain) {
   socket.on("npcWindup", ({ id, kind, targetId, abilitySlot, windupMs }) => {
     const n = getNpc(scene, id);
     if (!n) return;
-    /* Lunges hit with the weapon, so they lean and count down like an attack */
-    const isAttack = kind === "attack" || !!n.getAbilityDetails(abilitySlot)?.isLunge;
-    playWindupRing(n, windupMs, isAttack ? "attack" : "cast");
+    playWindupRing(n, windupMs, kind);
+    /* Lunges are spells, but they lean like a swing so you can see which way they will dash */
+    const leans = kind === "attack" || !!n.getAbilityDetails(abilitySlot)?.isLunge;
     const target = targetId ? getPlayer(scene, targetId) : undefined;
-    if (target) playWindupTell(n, target, { leans: isAttack, windupMs });
+    if (target) playWindupTell(n, target, { leans, windupMs });
   });
 
   socket.on("npcCastSpell", ({ id, abilitySlot, castAngle }) => {

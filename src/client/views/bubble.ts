@@ -8,7 +8,7 @@ const FRAME_SIZE = 4;
 const RING_RADIUS = 4;
 const RING_THICKNESS = 3;
 const toColor = (hex: string) => Phaser.Display.Color.HexStringToColor(hex).color;
-/** Weapon attacks and lunges count down in red, spells in blue (the colour of magic items). */
+/** Weapon attacks count down in red, spells (lunges too) in blue, the colour of magic items. */
 const RING_COLORS = {
   attack: toColor(theme.colors.red[500]),
   cast: toColor(theme.colors.blue[400]),
