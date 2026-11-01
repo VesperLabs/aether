@@ -64,6 +64,7 @@ export function createSpriteLayers(player: Player) {
   player.windupRing = scene.add
     .existing(new WindupRing(scene, player?.headY - 5))
     .setVisible(false);
+  player.once(Phaser.GameObjects.Events.DESTROY, () => player.windupRing.destroy());
   player.userName = scene.add.existing(
     new BitmapText(player.scene, 0, 8, "nin-light").setScale(0.5),
   );
@@ -95,7 +96,6 @@ export function createSpriteLayers(player: Player) {
     player.userName,
     player.bubble,
     player.hpBar,
-    player.windupRing,
   ]);
   player.add(player.corpse);
   player.add(player.rig);

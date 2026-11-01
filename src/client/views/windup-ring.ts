@@ -15,6 +15,8 @@ const RING_COLORS = {
   cast: theme.colors.blue[400],
 };
 let nextTextureId = 0;
+/** Drawn over every character, so one standing in front never hides another's ring. */
+const RING_DEPTH = 1_000_000;
 
 /**
  * The donut centred above a fighting NPC's hp bar, filled while it winds up. Canvas arcs are
@@ -26,18 +28,26 @@ export class WindupRing extends Phaser.GameObjects.Image {
   declare canvas: Phaser.Textures.CanvasTexture;
   /** What the canvas last drew, so it only redraws when that changes. */
   declare drawn: string;
-  constructor(scene: Phaser.Scene, y: number) {
+  /** Height above its owner's position. */
+  declare offsetY: number;
+  constructor(scene: Phaser.Scene, offsetY: number) {
     const size = Math.ceil(
       (RING_RADIUS + RING_THICKNESS / 2 + OUTLINE_THICKNESS) * 2 * SUPERSAMPLE,
     );
     const key = `windup-ring-${nextTextureId++}`;
     const canvas = scene.textures.createCanvas(key, size, size);
-    super(scene, 0, y, key);
+    super(scene, 0, 0, key);
+    this.offsetY = offsetY;
+    this.setDepth(RING_DEPTH);
     if (canvas) {
       canvas.setFilter(Phaser.Textures.FilterMode.LINEAR);
       this.canvas = canvas;
     }
     this.setScale(1 / SUPERSAMPLE);
+  }
+  /** Lives in the scene rather than its owner, so it follows the owner's position itself. */
+  follow(x: number, y: number) {
+    this.setPosition(x, y + this.offsetY);
   }
   /** Draws the ring at the current windup, or hides it when `show` is false. */
   draw(show: boolean) {

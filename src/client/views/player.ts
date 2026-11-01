@@ -269,6 +269,7 @@ export class Player extends Character {
     /* A fighting NPC shows its windup ring beside the hp bar instead of a bubble */
     const isEngaged = this.kind !== "player" && remainingString === NPC_ENGAGED_BUBBLE;
     this.bubble.setMessage(isEngaged ? undefined : remainingString);
+    this.windupRing.follow(this.x + this.rig.x, this.y + this.rig.y);
     this.windupRing.draw(isEngaged && !this.state.isDead);
   }
   updateHpBar() {
