@@ -27,6 +27,7 @@ interface BuffHolder {
   calculateStats(shouldHeal?: boolean): void;
   addBuff(args: BuffRequest): unknown;
   dispelBuffsByProperty(prop: string, value?: unknown): void;
+  world: { now: () => number };
 }
 
 /**
@@ -42,7 +43,7 @@ export function applyAddBuff(
     name,
     level,
     casterSpellPower: caster?.stats?.spellPower,
-    now: Date.now(),
+    now: character.world.now(),
   });
   if (!buff) return false;
 
@@ -64,7 +65,7 @@ export function applyExpireBuff(character: BuffHolder, name: string) {
 
 /** Removes timed out and dispelled buffs, then recalculates stats and flags the change for sync. */
 export function applyExpireBuffs(character: BuffHolder, forceExpire = false) {
-  const { buffs, changed } = expireBuffs(character.buffs, Date.now(), forceExpire);
+  const { buffs, changed } = expireBuffs(character.buffs, character.world.now(), forceExpire);
   if (changed) {
     character.buffs = buffs;
     character.calculateStats();
@@ -74,7 +75,7 @@ export function applyExpireBuffs(character: BuffHolder, forceExpire = false) {
 
 /** One regeneration tick: stores which ticks happened and the resulting hp, mp and sp. */
 export function applyRegen(character: BuffHolder) {
-  const now = Date.now();
+  const now = character.world.now();
   const { flags, stats, timers, enteredCombat } = runRegen({
     isDead: character.state.isDead,
     buffs: character.buffs,
@@ -95,7 +96,7 @@ export function applyCheckIsResting(character: BuffHolder & { stats: { spellPowe
   const { shouldAddRest, isResting } = checkResting(
     character.buffs,
     character.state.lastCombat,
-    Date.now(),
+    character.world.now(),
   );
   if (shouldAddRest) {
     character.addBuff({

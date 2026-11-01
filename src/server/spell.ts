@@ -92,7 +92,7 @@ export class Spell {
     this.target = target;
     this.spellName = spellName;
     this.direction = direction ?? caster?.direction;
-    this.state = { spawnTime: Date.now(), isExpired: false };
+    this.state = { spawnTime: this.world.now(), isExpired: false };
     this.abilitySlot = abilitySlot;
     this.action = action ?? "attack_right";
 
@@ -162,7 +162,7 @@ export class Spell {
       spawnTime: this.state.spawnTime,
       /* Spells without a lifetime never time out (undefined compares false). */
       lifetime: this.maxActiveTime as number,
-      now: Date.now(),
+      now: this.world.now(),
     });
 
     if (this.state.isExpired) {

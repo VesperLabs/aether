@@ -11,6 +11,8 @@ export type ServerWorld = World<Player, Npc, Spell, Loot, Quest> & {
   db: Database;
   io: GameIo;
   loop: TickLoop;
+  /** Game time in milliseconds. Every server timestamp reads it, so tests can drive time. */
+  now: () => number;
   /** Who is where in each room this tick (see `room-index.ts`). */
   roomIndexes?: Record<string, RoomIndex>;
 };

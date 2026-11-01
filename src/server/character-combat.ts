@@ -29,7 +29,7 @@ export function applyElementalDamage(eleDamages: ElementalDamages, victim: Serve
 
 /** What happens to a victim that took damage: combat flag, dispels, and the mob targeting its attacker. */
 function markHurt(attacker: ServerCharacter, victim: ServerCharacter, amount: number) {
-  victim.state.lastCombat = Date.now();
+  victim.state.lastCombat = victim.world.now();
   victim.dispelBuffsByProperty("dispelInCombat");
   /* The first hit pulls an NPC; after that its threat table decides who it fights. */
   if (!victim.state.lockedPlayerId) victim.setLockedPlayerId(attacker?.socketId);
@@ -47,7 +47,7 @@ export function applySpellDamage(
   abilityDetails: AbilityDetails | undefined,
 ): Array<Hit> {
   if (victim?.state?.isDead) return [];
-  if (attacker !== victim && isDodging(victim.state, Date.now())) {
+  if (attacker !== victim && isDodging(victim.state, victim.world.now())) {
     return [{ type: "miss", amount: 0, from: attacker.id, to: victim.id }];
   }
   const hits: Array<Hit> = [];
@@ -128,7 +128,7 @@ export function applyAttackDamage(
   abilityDetails: AbilityDetails | undefined,
 ): Array<Hit> {
   if (victim?.state?.isDead) return [];
-  if (isDodging(victim.state, Date.now())) {
+  if (isDodging(victim.state, victim.world.now())) {
     return [{ type: "miss", amount: 0, from: attacker.id, to: victim.id }];
   }
 

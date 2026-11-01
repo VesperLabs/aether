@@ -226,6 +226,26 @@
       }
     },
     {
+      "files": ["src/server/**"],
+      "excludeFiles": ["**/*.test.ts", "src/server/tests/**"],
+      "rules": {
+        "no-restricted-properties": [
+          "error",
+          {
+            "object": "Date",
+            "property": "now",
+            "message": "Game time comes from world.now(), so tests can drive it (ARCHITECTURE.md, rules/)."
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/server/game-server.ts", "src/server/http/routes.ts"],
+      "rules": {
+        "no-restricted-properties": "off"
+      }
+    },
+    {
       "files": ["src/rules/world/tick-loop.ts", "src/rules/tests/**"],
       "rules": {
         "no-restricted-properties": "off"

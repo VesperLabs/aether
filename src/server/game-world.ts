@@ -62,13 +62,22 @@ const readMap = (file: string): TiledMapJson =>
   JSON.parse(fs.readFileSync(path.resolve(process.env.PUBLIC_DIR || "public", file), "utf8"));
 
 /** The game world with every map loaded, its NPCs spawned and the event subscribers wired up. */
-export function createServerWorld({ io, db }: { io: GameIo; db: Database }): ServerWorld {
+export function createServerWorld({
+  io,
+  db,
+  now,
+}: {
+  io: GameIo;
+  db: Database;
+  now: () => number;
+}): ServerWorld {
   const world = createWorld(QuestBuilder.buildAllQuests()) as ServerWorld;
   world.io = io;
   world.db = db;
+  world.now = now;
 
   for (const asset of mapList) {
-    addRoom(world, createRoom(asset.name, readMap(asset.json), Date.now()));
+    addRoom(world, createRoom(asset.name, readMap(asset.json), now()));
   }
   for (const room of Object.values(world.rooms)) spawnNpcs(world, room);
 

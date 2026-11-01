@@ -17,8 +17,17 @@ export class GameServer {
   world: ServerWorld;
   spawnTime: number;
   db: Database;
-  constructor({ httpServer, db }: { httpServer: HttpServer; db: Database }) {
-    this.spawnTime = Date.now();
+  constructor({
+    httpServer,
+    db,
+    now = () => Date.now(),
+  }: {
+    httpServer: HttpServer;
+    db: Database;
+    /** The game clock. Tests pass their own to drive time. */
+    now?: () => number;
+  }) {
+    this.spawnTime = now();
 
     this.io = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
       /* Bundled client — do not serve the legacy /socket.io/socket.io.js asset. */
@@ -34,8 +43,8 @@ export class GameServer {
     });
 
     this.db = db;
-    this.world = createServerWorld({ io: this.io, db });
-    this.world.loop = createTickLoop(this.world, serverSystems, { fps: serverFps });
+    this.world = createServerWorld({ io: this.io, db, now });
+    this.world.loop = createTickLoop(this.world, serverSystems, { fps: serverFps, clock: now });
     listenForConnections(this.world);
     /* Nobody is connected yet, so the loop stays paused until the first player joins. */
   }
@@ -45,8 +54,6 @@ export class GameServer {
     this.io.close();
   }
   getUptime() {
-    const currentTime = Date.now();
-    const uptimeInMilliseconds = currentTime - this.spawnTime;
-    return uptimeInMilliseconds;
+    return this.world.now() - this.spawnTime;
   }
 }
