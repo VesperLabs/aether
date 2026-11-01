@@ -9,7 +9,12 @@ export class Hit extends Phaser.GameObjects.Container {
   hits: Phaser.GameObjects.Sprite[];
   victim: Player;
   elements: string[];
-  constructor(scene: Phaser.Scene, victim: Player, elements: string[] | undefined) {
+  constructor(
+    scene: Phaser.Scene,
+    victim: Player,
+    elements: string[] | undefined,
+    { scale = 0.5, alpha = 1, silent = false } = {},
+  ) {
     super(scene, victim.x, victim.y);
     this.hits = [];
     this.victim = victim;
@@ -18,11 +23,12 @@ export class Hit extends Phaser.GameObjects.Container {
     for (let i = 0; i <= this.elements.length - 1; i++) {
       this.hits[i] = scene.add.existing(new Sprite(scene, 0, 0, BLANK_TEXTURE, 0));
       this.hits[i].setOrigin(0.5);
-      this.hits[i].setScale(0.5, 0.5);
+      this.hits[i].setScale(scale).setAlpha(alpha);
       this.hits[i].play(`spell-anim-hits-${this.elements[i]}`);
       this.hits[i].y = this.victim.bodyCenterY;
       this.hits[i].on(ANIMATION_COMPLETE_EVENT, this.handleAnimationComplete, this);
       this.victim.add(this.hits[i]);
+      if (silent) continue;
       // choose the correct sound
       if (this.elements[i] === "fire") {
         playAudio({ scene, audioKey: "spell-fireball", caster: victim });
