@@ -17,6 +17,7 @@ import { playAttackLunge } from "./hit-impact";
 import type { LootItem } from "./loot-item";
 import { toTint } from "./tint";
 import type { Bubble } from "./bubble";
+import type { WindupRing } from "./windup-ring";
 import type { Bar } from "./bar";
 import type { BuffRack } from "./buff-rack";
 import type { WeaponSprite } from "./weapon-sprite";
@@ -78,6 +79,7 @@ export class Player extends Character {
   declare bubble: Bubble;
   declare crosshair: Crosshair;
   declare hpBar: Bar;
+  declare windupRing: WindupRing;
   declare userName: Phaser.GameObjects.BitmapText;
   declare buffRack: BuffRack;
   declare corpse: Sprite;
@@ -264,13 +266,10 @@ export class Player extends Character {
     const colorHex = inputString.match(regex)?.[0];
     const remainingString = inputString.replace(regex, "");
     this.bubble.setTint(toTint(colorHex ?? "0xFFFFFF"));
-    this.bubble.setMessage(remainingString);
-    /* A fighting NPC's bubble is a ring, filled while it winds up (see windup-ring.ts) */
+    /* A fighting NPC shows its windup ring beside the hp bar instead of a bubble */
     const isEngaged = this.kind !== "player" && remainingString === NPC_ENGAGED_BUBBLE;
-    this.bubble.setCountdown(
-      isEngaged ? this.bubble.windup.progress : null,
-      this.bubble.windup.kind,
-    );
+    this.bubble.setMessage(isEngaged ? undefined : remainingString);
+    this.windupRing.draw(isEngaged && !this.state.isDead);
   }
   updateHpBar() {
     const { stats } = this;
@@ -305,6 +304,7 @@ export class Player extends Character {
     this.setBodyVisible(false);
     this.hpBar.setVisible(false);
     this.bubble.setVisible(false);
+    this.windupRing.draw(false);
     this.corpse.setVisible(this.kind !== "nasty");
     this.buffRack.setVisible(false);
     if (this.kind === "nasty") this.userName.setVisible(false);

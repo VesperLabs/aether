@@ -10,6 +10,7 @@ import type { Player } from "./player";
 import { Crosshair } from "@/client/input/crosshair";
 import { toTint } from "./tint";
 import { Bubble } from "./bubble";
+import { WindupRing } from "./windup-ring";
 import { Bar } from "./bar";
 import { WeaponSprite } from "./weapon-sprite";
 import { BuffRack } from "./buff-rack";
@@ -60,6 +61,9 @@ export function createSpriteLayers(player: Player) {
     new Crosshair(scene, 0, player.bodyOffsetY, "icons", "crosshair", player, 40),
   );
   player.hpBar = scene.add.existing(new Bar(scene, 0, player?.headY, 32, 12)).setVisible(false);
+  player.windupRing = scene.add
+    .existing(new WindupRing(scene, player?.headY - 5))
+    .setVisible(false);
   player.userName = scene.add.existing(
     new BitmapText(player.scene, 0, 8, "nin-light").setScale(0.5),
   );
@@ -91,6 +95,7 @@ export function createSpriteLayers(player: Player) {
     player.userName,
     player.bubble,
     player.hpBar,
+    player.windupRing,
   ]);
   player.add(player.corpse);
   player.add(player.rig);
