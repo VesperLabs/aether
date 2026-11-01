@@ -245,6 +245,8 @@ export const nasties = {
     behaviors: ["aggressive"],
     baseStats: { level: 11, walkSpeed: 10 },
     hitBoxSize: { width: 36, height: 38 },
+    /* Slow, heavy swings you can see coming */
+    windupMs: 400,
     drops: [{ type: "stackable", rarity: "common", key: "bearSteak", chance: 3 }],
   },
   iceCrab: {
