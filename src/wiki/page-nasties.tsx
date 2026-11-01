@@ -1,13 +1,18 @@
-import { itemList, nasties, resolveAsset, type MobBehavior, type NastyDefinition } from "@/content";
-import { calculateNpcAggroRange } from "@/rules/npc-behavior";
+import { itemList, nasties, resolveAsset, type BuiltItem, type NastyDefinition } from "@/content";
 import { calculateExpValue, npcStats } from "@/rules/stats";
-import { Box, Flex, Grid, Icon, Text } from "@/ui";
+import { Box, Flex, Grid, Icon, ItemTooltip, Text, Tooltip, TooltipContent } from "@/ui";
+import { useId, useState, type ReactNode } from "react";
 import { CARD_COLORS, SpriteFace, raceAsset } from "./card-pool";
 import { Divider, PAPER, PAPER_STYLE, PaperFrame } from "./paper";
-import { useMapSpawns, type MapSpawns } from "./map-spawns";
 import { RowTitle } from "./row-title";
 
-type ListedItem = { name?: string; texture?: string; slot?: string; tint?: string };
+type ListedItem = {
+  name?: string;
+  base?: string;
+  texture?: string;
+  slot?: string;
+  tint?: string;
+};
 const listedItems = itemList as unknown as Record<
   string,
   Record<string, Record<string, ListedItem>>
@@ -21,7 +26,6 @@ const MONSTERS = Object.entries(nasties as Record<string, NastyDefinition>)
   .sort((a, b) => (a.stats.level ?? 0) - (b.stats.level ?? 0));
 
 export function PageNasties() {
-  const spawns = useMapSpawns();
   return (
     <Flex sx={{ gap: 2, flexDirection: "column", mb: 4 }}>
       <RowTitle icon={"bounty"}>Monsters</RowTitle>
@@ -32,7 +36,7 @@ export function PageNasties() {
             key={key}
             sx={{ breakInside: "avoid", mb: 3, display: "inline-block", width: "100%" }}
           >
-            <MonsterCard mobKey={key} mob={mob} stats={stats} spawns={spawns} />
+            <MonsterCard mob={mob} stats={stats} />
           </Box>
         ))}
       </Box>
@@ -40,17 +44,7 @@ export function PageNasties() {
   );
 }
 
-const MonsterCard = ({
-  mobKey,
-  mob,
-  stats,
-  spawns,
-}: {
-  mobKey: string;
-  mob: NastyDefinition;
-  stats: Record<string, number>;
-  spawns: MapSpawns | undefined;
-}) => {
+const MonsterCard = ({ mob, stats }: { mob: NastyDefinition; stats: Record<string, number> }) => {
   const asset = raceAsset(mob.profile.race);
   return (
     <Box sx={{ ...PAPER_STYLE, p: 4 }}>
@@ -106,78 +100,107 @@ const MonsterCard = ({
         />
       </Grid>
       {/* Resistances: the element icons speak for themselves. */}
-      <Flex sx={{ justifyContent: "space-between", mt: 3, fontSize: 1 }}>
+      <Flex
+        sx={{
+          justifyContent: "space-between",
+          gap: 2,
+          mt: 3,
+          fontSize: 1,
+        }}
+      >
         {ELEMENTS.map((element) => (
-          <Flex key={element} title={`${element} resistance`} sx={{ alignItems: "center", gap: 1 }}>
-            <Icon
-              icon={`./assets/icons/elements/${element}.png`}
-              size={24}
-              sx={{ flexShrink: 0 }}
-            />
-            <Text sx={{ fontWeight: 700, whiteSpace: "nowrap" }}>
-              {Math.round(stats[`${element}Resistance`] ?? 0)}%
-            </Text>
-          </Flex>
+          <Resistance
+            key={element}
+            element={element}
+            value={Math.round(stats[`${element}Resistance`] ?? 0)}
+          />
         ))}
       </Flex>
-      <Divider label="Behavior" />
-      <Behavior mob={mob} mobKey={mobKey} spawns={spawns} />
+      <Divider label="Combat" />
+      <Behavior mob={mob} />
       <Divider label="Drops" />
       <Drops drops={mob.drops ?? []} />
     </Box>
   );
 };
 
-/** What each opt-in behavior looks like to a player. */
-const BEHAVIOR_TEXT: Partial<Record<MobBehavior, string>> = {
-  aggressive: "Attacks on sight",
-  retreat: "Flees when badly hurt",
-  kite: "Keeps its distance",
-};
-
-const nameOf = (key: string) => (nasties as Record<string, NastyDefinition>)[key]?.profile.userName;
-
-/** How the monster acts in a fight: temper, opt-in behaviors, pack, spells and where it lives. */
-const Behavior = ({
-  mob,
-  mobKey,
-  spawns,
-}: {
-  mob: NastyDefinition;
-  mobKey: string;
-  spawns: MapSpawns | undefined;
-}) => {
+/** The monster's temper and the spells it casts. */
+const Behavior = ({ mob }: { mob: NastyDefinition }) => {
   const isAggressive = mob.behaviors?.includes("aggressive");
-  const lines = (mob.behaviors ?? []).flatMap((id) => BEHAVIOR_TEXT[id] ?? []);
-  if (!isAggressive) lines.unshift("Only fights back");
-  const pack = spawns?.followers[mobKey];
-  if (pack) {
-    const members = Object.entries(pack).map(([key, count]) => `${count} ${nameOf(key) ?? key}`);
-    lines.push(`Leads a pack of ${members.join(" and ")}`);
-  }
-  for (const [leader, members] of Object.entries(spawns?.followers ?? {})) {
-    if (members[mobKey]) lines.push(`Some follow ${nameOf(leader) ?? leader}`);
-  }
-  const spells = Object.values(mob.abilities ?? {}).map(
-    ([type, rarity, key]) => listedItems[type]?.[rarity]?.[key]?.name ?? key,
-  );
-  const foundIn = spawns?.foundIn[mobKey] ?? [];
+  const spells = Object.values(mob.abilities ?? {});
   return (
     <Box sx={{ fontSize: 1 }}>
-      {lines.map((line) => (
-        <Text key={line} as="p" sx={{ m: 0, py: "2px" }}>
-          {line}
-        </Text>
-      ))}
-      <Box sx={{ mt: 1 }}>
-        {isAggressive && (
-          <Stat label="Notices you" value={`${calculateNpcAggroRange(mob.baseStats.level)}px`} />
-        )}
-        {spells.length > 0 && <Stat label="Casts" value={spells.join(", ")} />}
-        {foundIn.map(({ map, count }) => (
-          <Stat key={map} label={map} value={`× ${count}`} />
-        ))}
-      </Box>
+      <Stat label="Behavior" value={isAggressive ? "Aggressive" : "Passive"} />
+      {spells.length > 0 && (
+        <Stat
+          label="Casts"
+          value={spells.map(([type, rarity, key], i) => (
+            <Box as="span" key={key}>
+              {i > 0 && ", "}
+              <SpellName type={type} rarity={rarity} itemKey={key} />
+            </Box>
+          ))}
+        />
+      )}
+    </Box>
+  );
+};
+
+/** A spell's name with the game's item tooltip on hover, so players can see what it does. */
+const SpellName = ({
+  type,
+  rarity,
+  itemKey,
+}: {
+  type: string;
+  rarity: string;
+  itemKey: string;
+}) => {
+  const item = listedItems[type]?.[rarity]?.[itemKey];
+  if (!item) return <>{itemKey}</>;
+  return (
+    <ItemHover item={item} type={type} rarity={rarity} itemKey={itemKey}>
+      {/* The same icon the action bar shows once the spell is bound */}
+      <Icon
+        icon={`./assets/atlas/spell/spell-${item.base}.png`}
+        size={ROW_ICON_SIZE}
+        sx={{ ...ROW_ICON_STYLE, mr: "-10px" }}
+      />
+      {item.name ?? itemKey}
+    </ItemHover>
+  );
+};
+
+/** Shows the game's item tooltip while its contents are hovered. */
+const ItemHover = ({
+  item,
+  type,
+  rarity,
+  itemKey,
+  children,
+}: {
+  item: ListedItem;
+  type: string;
+  rarity: string;
+  itemKey: string;
+  children: ReactNode;
+}) => {
+  const [hovering, setHovering] = useState(false);
+  const tooltipId = useId();
+  return (
+    <Box
+      as="span"
+      data-tooltip-id={tooltipId}
+      onMouseEnter={() => setHovering(true)}
+      onMouseLeave={() => setHovering(false)}
+      sx={{ cursor: "help", display: "inline-flex", alignItems: "center", gap: 2, minWidth: 0 }}
+    >
+      {children}
+      <ItemTooltip
+        item={{ ...item, key: itemKey, rarity, type } as BuiltItem}
+        show={hovering}
+        tooltipId={tooltipId}
+      />
     </Box>
   );
 };
@@ -185,11 +208,48 @@ const Behavior = ({
 /** The elements a character can resist, each with its icon in `assets/icons/elements/`. */
 const ELEMENTS = ["fire", "water", "earth", "light"];
 
+/** One element's resistance: its icon and percentage, named in a tooltip on hover. */
+const Resistance = ({ element, value }: { element: string; value: number }) => {
+  const tooltipId = useId();
+  const name = element[0].toUpperCase() + element.slice(1);
+  return (
+    <Flex data-tooltip-id={tooltipId} sx={{ alignItems: "center", gap: 1, cursor: "help" }}>
+      <Icon icon={`./assets/icons/elements/${element}.png`} size={24} sx={{ flexShrink: 0 }} />
+      <Text sx={{ fontWeight: 700, whiteSpace: "nowrap" }}>{value}%</Text>
+      <Tooltip id={tooltipId}>
+        <TooltipContent>
+          {name} resistance: takes {value}% less {element} damage
+        </TooltipContent>
+      </Tooltip>
+    </Flex>
+  );
+};
+
+/** Every dotted row is the height of a 24px icon, so rows with and without icons match. */
+const ROW_STYLE = { alignItems: "center", minHeight: 24, minWidth: 0 } as const;
+
+/** Spell icons draw at their native 32px (1×, so pixels stay crisp) and overhang the 24px row. */
+const ROW_ICON_SIZE = 32;
+const ROW_ICON_STYLE = { flexShrink: 0, height: ROW_ICON_SIZE, my: "-4px" } as const;
+
+/** The dotted line joining a row's label to its value, at the text's baseline. */
+const Leader = () => (
+  <Box
+    sx={{
+      flex: 1,
+      minWidth: 8,
+      alignSelf: "center",
+      transform: "translateY(0.4em)",
+      borderBottom: `1px dotted ${PAPER.ornament}`,
+    }}
+  />
+);
+
 /** One stat as a label and value joined by a dotted leader, like the drops list. */
-const Stat = ({ label, value }: { label: string; value: number | string }) => (
-  <Flex sx={{ alignItems: "baseline", gap: 1, minWidth: 0 }}>
+const Stat = ({ label, value }: { label: string; value: ReactNode }) => (
+  <Flex sx={{ ...ROW_STYLE, gap: 1 }}>
     <Text sx={{ color: PAPER.muted, whiteSpace: "nowrap" }}>{label}</Text>
-    <Box sx={{ flex: 1, minWidth: 8, borderBottom: `1px dotted ${PAPER.ornament}` }} />
+    <Leader />
     <Text sx={{ fontWeight: 700, whiteSpace: "nowrap" }}>{value}</Text>
   </Flex>
 );
@@ -202,17 +262,20 @@ const Drops = ({ drops }: { drops: NonNullable<NastyDefinition["drops"]> }) => (
       const item = listedItems[drop.type]?.[drop.rarity]?.[drop.key];
       const asset = item && resolveAsset(item, { profile: { race: "human", gender: "female" } });
       return (
-        <Flex key={`${drop.type}-${drop.key}`} sx={{ alignItems: "center", gap: 2, py: "2px" }}>
-          <Flex sx={{ width: 24, height: 24, flexShrink: 0, justifyContent: "center" }}>
-            {asset && <SpriteFace asset={asset} tint={item.tint} size={24} pixelScale={1} />}
-          </Flex>
-          <Text sx={{ color: CARD_COLORS[drop.rarity] ?? CARD_COLORS.common, fontWeight: 600 }}>
-            {item?.name ?? drop.key}
-          </Text>
+        <Flex key={`${drop.type}-${drop.key}`} sx={{ ...ROW_STYLE, gap: 1 }}>
+          {item && (
+            <ItemHover item={item} type={drop.type} rarity={drop.rarity} itemKey={drop.key}>
+              <Flex sx={{ width: 24, height: 24, flexShrink: 0, justifyContent: "center" }}>
+                {asset && <SpriteFace asset={asset} tint={item.tint} size={24} pixelScale={1} />}
+              </Flex>
+              <Text sx={{ color: CARD_COLORS[drop.rarity] ?? CARD_COLORS.common, fontWeight: 600 }}>
+                {item.name ?? drop.key}
+              </Text>
+            </ItemHover>
+          )}
+          {!item && <Text>{drop.key}</Text>}
           {/* A dotted leader, so each item visibly lines up with its odds. */}
-          <Box
-            sx={{ flex: 1, minWidth: 16, borderBottom: `1px dotted ${PAPER.ornament}`, mb: "4px" }}
-          />
+          <Leader />
           <Text sx={{ color: PAPER.muted, whiteSpace: "nowrap" }}>1 in {drop.chance}</Text>
         </Flex>
       );
