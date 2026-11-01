@@ -7,8 +7,20 @@ import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 
 const TOKEN_LIFETIME_MS = 30 * 24 * 60 * 60 * 1000;
 
-/* Without AUTH_SECRET, tokens only survive until the server restarts. */
-const SECRET = process.env.AUTH_SECRET || randomBytes(32).toString("hex");
+/*
+ * Development falls back to a fixed secret, so remembered logins survive the dev server's
+ * restarts. Production without AUTH_SECRET gets a random one: tokens die on every restart.
+ */
+const DEV_SECRET = "aether-dev-auth-secret";
+
+function getSecret() {
+  if (process.env.AUTH_SECRET) return process.env.AUTH_SECRET;
+  if (process.env.NODE_ENV !== "production") return DEV_SECRET;
+  console.warn("⚠️ AUTH_SECRET is not set: remembered logins end when the server restarts");
+  return randomBytes(32).toString("hex");
+}
+
+const SECRET = getSecret();
 
 function sign(email: string, expiresAt: number, password: string) {
   return createHmac("sha256", SECRET)
