@@ -39,6 +39,7 @@ export function buildNpcBehaviorInput(
       baseLevel: npc.baseStats?.level,
       stats: npc.stats,
       startingCoords: npc.startingCoords,
+      home: npc.home(),
       hasTalkers: npc.talkingIds?.length > 0,
       abilities: npc.abilities,
       buffs: npc.buffs,

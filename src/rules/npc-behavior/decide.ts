@@ -37,6 +37,8 @@ export interface NpcBehaviorInput {
       maxHp?: number;
     } | null;
     startingCoords: Body;
+    /** Where it leashes to and walks back to: its leader's spawn for followers, else its own. */
+    home?: Body;
     hasTalkers: boolean;
     abilities: Record<string, NpcAbility | null | undefined>;
     buffs: ActiveBuff[];
@@ -199,7 +201,7 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
   if (isResetting()) {
     // Walking home: nobody gets noticed until it arrives
     setLockedPlayerId(null);
-    if (checkInRange(npc, npc.startingCoords, NPC_HOME_RANGE)) finishReset = true;
+    if (checkInRange(npc, npc.home ?? npc.startingCoords, NPC_HOME_RANGE)) finishReset = true;
   } else {
     if (isNpcAggressive(npc.behaviors)) handleAggroState();
     // Threat outranks proximity: fight whoever angered it most
@@ -207,7 +209,8 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
       setLockedPlayerId(input.threatTarget.socketId);
     }
     // Pulled too far from home: give up the fight
-    if (lockedPlayerId && distanceBetween(npc, npc.startingCoords) > NPC_LEASH_RANGE) {
+    const home = npc.home ?? npc.startingCoords;
+    if (lockedPlayerId && distanceBetween(npc, home) > NPC_LEASH_RANGE) {
       startReset = true;
       setLockedPlayerId(null);
     }

@@ -71,8 +71,7 @@ export const nasties = {
     profile: { race: "spider", userName: "Spider" },
     flavor:
       "Eight legs, too many eyes and a taste for the unwary. It waits in the dark corners of the mine for prey.",
-    behaviors: ["aggressive", "follow"],
-    leader: "hogan",
+    behaviors: ["aggressive"],
     baseStats: { level: 5 },
     hitBoxSize: { width: 28, height: 22 },
     drops: [
@@ -111,8 +110,7 @@ export const nasties = {
     profile: { race: "zombie", userName: "Zombie" },
     flavor:
       "The graveyard doesn't keep its dead for long. They wander slow and stubborn, and they never sleep.",
-    behaviors: ["aggressive", "follow"],
-    leader: "chonks",
+    behaviors: ["aggressive"],
     baseStats: { level: 6 },
     hitBoxSize: { width: 22, height: 43 },
     drops: [
@@ -223,8 +221,7 @@ export const nasties = {
     profile: { race: "wolf", userName: "Wolf", tint: "0xCCBBAA" },
     flavor:
       "Grey wolves hunt in packs across the peaks. Where you see one, the rest are already circling.",
-    behaviors: ["aggressive", "follow"],
-    leader: "whiteFang",
+    behaviors: ["aggressive"],
     baseStats: { level: 10, walkSpeed: 20 },
     hitBoxSize: { width: 31, height: 28 },
     drops: [{ type: "stackable", rarity: "common", key: "wolfPelt", chance: 2 }],

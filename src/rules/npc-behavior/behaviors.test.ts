@@ -74,6 +74,20 @@ describe("threat, leash and new behaviors", () => {
     expect(decision.movement).toEqual({ type: "returnToSpawn", pathed: true });
   });
 
+  it("followers leash to their leader's spawn, not their own", () => {
+    const close = player({ x: 820 });
+    const decision = decideNpcAction(
+      input({
+        npc: { x: 800, home: { x: 750, y: 0 } },
+        state: { lockedPlayerId: "p1" },
+        rest: { lockedPlayer: close, nearestPlayer: close },
+      }),
+      never,
+    );
+    expect(decision.startReset).toBeUndefined();
+    expect(decision.lockedPlayerId).toBe("p1");
+  });
+
   it("ignores players while resetting, and finishes once home", () => {
     const close = player({ x: 10 });
     const walking = decideNpcAction(

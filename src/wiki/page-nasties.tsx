@@ -1,8 +1,10 @@
 import { itemList, nasties, resolveAsset, type MobBehavior, type NastyDefinition } from "@/content";
+import { calculateNpcAggroRange } from "@/rules/npc-behavior";
 import { calculateExpValue, npcStats } from "@/rules/stats";
 import { Box, Flex, Grid, Icon, Text } from "@/ui";
 import { CARD_COLORS, SpriteFace, raceAsset } from "./card-pool";
 import { Divider, PAPER, PAPER_STYLE, PaperFrame } from "./paper";
+import { useMapSpawns, type MapSpawns } from "./map-spawns";
 import { RowTitle } from "./row-title";
 
 type ListedItem = { name?: string; texture?: string; slot?: string; tint?: string };
@@ -19,6 +21,7 @@ const MONSTERS = Object.entries(nasties as Record<string, NastyDefinition>)
   .sort((a, b) => (a.stats.level ?? 0) - (b.stats.level ?? 0));
 
 export function PageNasties() {
+  const spawns = useMapSpawns();
   return (
     <Flex sx={{ gap: 2, flexDirection: "column", mb: 4 }}>
       <RowTitle icon={"bounty"}>Monsters</RowTitle>
@@ -29,7 +32,7 @@ export function PageNasties() {
             key={key}
             sx={{ breakInside: "avoid", mb: 3, display: "inline-block", width: "100%" }}
           >
-            <MonsterCard mobKey={key} mob={mob} stats={stats} />
+            <MonsterCard mobKey={key} mob={mob} stats={stats} spawns={spawns} />
           </Box>
         ))}
       </Box>
@@ -41,10 +44,12 @@ const MonsterCard = ({
   mobKey,
   mob,
   stats,
+  spawns,
 }: {
   mobKey: string;
   mob: NastyDefinition;
   stats: Record<string, number>;
+  spawns: MapSpawns | undefined;
 }) => {
   const asset = raceAsset(mob.profile.race);
   return (
@@ -116,7 +121,7 @@ const MonsterCard = ({
         ))}
       </Flex>
       <Divider label="Behavior" />
-      <Behavior mob={mob} mobKey={mobKey} />
+      <Behavior mob={mob} mobKey={mobKey} spawns={spawns} />
       <Divider label="Drops" />
       <Drops drops={mob.drops ?? []} />
     </Box>
@@ -130,30 +135,33 @@ const BEHAVIOR_TEXT: Partial<Record<MobBehavior, string>> = {
   kite: "Keeps its distance",
 };
 
-/** Who follows each leader, by the leader's content key. */
-const FOLLOWERS = Object.values(nasties as Record<string, NastyDefinition>).reduce<
-  Record<string, string[]>
->((byLeader, mob) => {
-  if (mob.leader && mob.behaviors?.includes("follow")) {
-    (byLeader[mob.leader] ??= []).push(mob.profile.userName);
-  }
-  return byLeader;
-}, {});
-
 const nameOf = (key: string) => (nasties as Record<string, NastyDefinition>)[key]?.profile.userName;
 
-/** How the monster acts in a fight: temper, opt-in behaviors, pack and spells. */
-const Behavior = ({ mob, mobKey }: { mob: NastyDefinition; mobKey: string }) => {
+/** How the monster acts in a fight: temper, opt-in behaviors, pack, spells and where it lives. */
+const Behavior = ({
+  mob,
+  mobKey,
+  spawns,
+}: {
+  mob: NastyDefinition;
+  mobKey: string;
+  spawns: MapSpawns | undefined;
+}) => {
+  const isAggressive = mob.behaviors?.includes("aggressive");
   const lines = (mob.behaviors ?? []).flatMap((id) => BEHAVIOR_TEXT[id] ?? []);
-  if (!mob.behaviors?.includes("aggressive")) lines.unshift("Only fights back");
-  if (mob.leader && mob.behaviors?.includes("follow")) {
-    lines.push(`Follows ${nameOf(mob.leader) ?? mob.leader}`);
+  if (!isAggressive) lines.unshift("Only fights back");
+  const pack = spawns?.followers[mobKey];
+  if (pack) {
+    const members = Object.entries(pack).map(([key, count]) => `${count} ${nameOf(key) ?? key}`);
+    lines.push(`Leads a pack of ${members.join(" and ")}`);
   }
-  const followers = FOLLOWERS[mobKey];
-  if (followers) lines.push(`Leads the ${[...new Set(followers)].join(" and ")} pack`);
+  for (const [leader, members] of Object.entries(spawns?.followers ?? {})) {
+    if (members[mobKey]) lines.push(`Some follow ${nameOf(leader) ?? leader}`);
+  }
   const spells = Object.values(mob.abilities ?? {}).map(
     ([type, rarity, key]) => listedItems[type]?.[rarity]?.[key]?.name ?? key,
   );
+  const foundIn = spawns?.foundIn[mobKey] ?? [];
   return (
     <Box sx={{ fontSize: 1 }}>
       {lines.map((line) => (
@@ -161,7 +169,15 @@ const Behavior = ({ mob, mobKey }: { mob: NastyDefinition; mobKey: string }) => 
           {line}
         </Text>
       ))}
-      {spells.length > 0 && <Stat label="Casts" value={spells.join(", ")} />}
+      <Box sx={{ mt: 1 }}>
+        {isAggressive && (
+          <Stat label="Notices you" value={`${calculateNpcAggroRange(mob.baseStats.level)}px`} />
+        )}
+        {spells.length > 0 && <Stat label="Casts" value={spells.join(", ")} />}
+        {foundIn.map(({ map, count }) => (
+          <Stat key={map} label={map} value={`× ${count}`} />
+        ))}
+      </Box>
     </Box>
   );
 };

@@ -78,7 +78,8 @@ export type MobMovementBehavior =
 
 /**
  * Opt-in behaviors: `aggressive` attacks players on sight (otherwise it only fights back), `retreat`
- * runs when badly hurt, `kite` keeps casters and archers at range, `follow` stays near `leader`.
+ * runs when badly hurt, `kite` keeps casters and archers at range, `follow` stays near a leader (set per spawn with a
+ * `leader` property on the map object, which turns `follow` on by itself).
  * The rest are on for every mob already.
  */
 export type MobBehavior = MobMovementBehavior | "aggressive";
@@ -89,11 +90,6 @@ export interface NastyDefinition extends MobBase {
   readonly state?: { readonly noWorldDrops?: boolean };
   /** Added to the defaults every mob has (chase, wander, leash and so on). */
   readonly behaviors?: readonly MobBehavior[];
-  /**
-   * Content name of the mob this one keeps close to (needs `follow`). A `leader` property on the
-   * map object overrides it, so each pack can have its own.
-   */
-  readonly leader?: string;
   /** Items this mob can drop when it dies. */
   readonly drops?: readonly ItemDrop[];
 }

@@ -812,6 +812,60 @@
                 }, 
                 {
                  "height":0,
+                 "id":62,
+                 "name":"spider",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"leader",
+                         "type":"string",
+                         "value":"hogan"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1918.541,
+                 "y":981.192
+                }, 
+                {
+                 "height":0,
+                 "id":63,
+                 "name":"spider",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"leader",
+                         "type":"string",
+                         "value":"hogan"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1898.541,
+                 "y":1015.833
+                }, 
+                {
+                 "height":0,
+                 "id":64,
+                 "name":"spider",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"leader",
+                         "type":"string",
+                         "value":"hogan"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1843.9,
+                 "y":1001.192
+                }, 
+                {
+                 "height":0,
                  "id":13,
                  "name":"bat",
                  "point":true,
@@ -1512,7 +1566,7 @@
          "y":0
         }],
  "nextlayerid":49,
- "nextobjectid":62,
+ "nextobjectid":65,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.1",

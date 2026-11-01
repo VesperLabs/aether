@@ -53,7 +53,7 @@ const chase: NpcBehavior = {
 const reset: NpcBehavior = {
   score: ({ isResetting }) => (isResetting ? 1.2 : 0),
   move: ({ input }) =>
-    checkInRange(input.npc, input.npc.startingCoords, NPC_HOME_RANGE)
+    checkInRange(input.npc, input.npc.home ?? input.npc.startingCoords, NPC_HOME_RANGE)
       ? { type: "standStill" }
       : { type: "returnToSpawn", pathed: true },
 };
@@ -116,7 +116,7 @@ const talk: NpcBehavior = {
 const leash: NpcBehavior = {
   score: ({ input }) =>
     input.state.walkRange &&
-    distanceBetween(input.npc, input.npc.startingCoords) >= input.state.walkRange
+    distanceBetween(input.npc, input.npc.home ?? input.npc.startingCoords) >= input.state.walkRange
       ? 0.6
       : 0,
   move: () => ({ type: "returnToSpawn", pathed: false }),

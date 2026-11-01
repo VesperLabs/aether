@@ -26,6 +26,9 @@ import { createRng, createTimers, entitiesInRoom, seedFromString, type Rng } fro
 import { getRoomIndex } from "./room-index";
 import { isNextToSolidTile, isOutOfMap } from "@/rules/movement";
 
+/** How far a follower looks for its leader. Spawns are up to ~900px apart on the peaks. */
+const LEADER_SEARCH_RADIUS = 1000;
+
 /** An NPC as the content tables define it, before it is placed in a world. */
 // Legacy: the keeper and nasty tables have different shapes; type them once they share a base.
 // oxlint-disable-next-line typescript/no-explicit-any
@@ -40,7 +43,6 @@ type NpcArgs = CharacterArgs & {
   drops?: Array<Drop>;
   hitBoxSize?: { width: number; height: number };
   behaviors?: readonly MobBehavior[];
-  leader?: string;
 };
 
 /** What an NPC needs to cast a spell. */
@@ -75,8 +77,10 @@ export class Npc extends Character {
   public threat: ThreatTable = {};
   /** From content; unset means the default behaviors. */
   public behaviors?: readonly MobBehavior[];
-  /** Name of the NPC it follows, from content or a `leader` map property. */
+  /** Content name of the NPC it follows, from a `leader` map property. */
   public leaderName?: string;
+  /** The leader's spawn, remembered once found so the pack keeps its home if the leader dies. */
+  public leaderHome?: Point;
   declare name: string;
   /** NPCs never leave their room, so unlike players these are always set. */
   declare room: RoomData;
@@ -101,8 +105,9 @@ export class Npc extends Character {
       quests: keeperData?.quests?.map((questId: string) => world?.quests?.[questId]),
     };
     this.rng = createRng(seedFromString(String(this.id ?? this.name)));
-    this.behaviors = args.behaviors;
-    this.leaderName = (this.state as { leader?: string }).leader ?? args.leader;
+    /* Followers are picked per spawn: a `leader` map property makes this one follow. */
+    this.leaderName = (this.state as { leader?: string }).leader;
+    this.behaviors = this.leaderName ? [...(args.behaviors ?? []), "follow"] : args.behaviors;
     this.calculateStats(true);
   }
   addThreat(playerSocketId: string, amount: number) {
@@ -115,18 +120,20 @@ export class Npc extends Character {
   /** The nearest living NPC named `leaderName` in this room, if any. */
   findLeader() {
     if (!this.leaderName) return null;
-    const npcs = getRoomIndex(this.world, this.room.name).npcs.near(this, 600);
+    const npcs = getRoomIndex(this.world, this.room.name).npcs.near(this, LEADER_SEARCH_RADIUS);
     let leader: Npc | null = null;
+    let best = Infinity;
     for (const npc of npcs) {
       if (npc === this || npc.name !== this.leaderName) continue;
-      if (
-        !leader ||
-        Math.hypot(npc.x - this.x, npc.y - this.y) <
-          Math.hypot(leader.x - this.x, leader.y - this.y)
-      )
-        leader = npc;
+      const distance = Math.hypot(npc.x - this.x, npc.y - this.y);
+      if (distance < best) [leader, best] = [npc, distance];
     }
+    if (leader) this.leaderHome = leader.startingCoords;
     return leader;
+  }
+  /** Where it leashes to and walks back to. */
+  home(): Point {
+    return this.leaderHome ?? this.startingCoords;
   }
   setDead() {
     this.expireBuffs(true);

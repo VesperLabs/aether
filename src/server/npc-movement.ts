@@ -33,9 +33,7 @@ export function performNpcMovement(
       if (!targetPlayer) return standStill(npc);
       return movement.pathed ? walkToPathed(npc, targetPlayer) : walkTo(npc, targetPlayer);
     case "returnToSpawn":
-      return movement.pathed
-        ? walkToPathed(npc, npc.startingCoords)
-        : walkTo(npc, npc.startingCoords);
+      return movement.pathed ? walkToPathed(npc, npc.home()) : walkTo(npc, npc.home());
     case "follow":
       if (!leader) return standStill(npc);
       return movement.pathed ? walkToPathed(npc, leader) : walkTo(npc, leader);
