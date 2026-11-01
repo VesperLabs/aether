@@ -81,7 +81,7 @@ export type MobMovementBehavior =
 /**
  * Opt-in behaviors: `aggressive` attacks players on sight (otherwise it only fights back),
  * `shootsOverWalls` fires across collision (fish in water) instead of moving for a clear shot, `retreat`
- * runs once for a few seconds when badly hurt (for advanced mobs; early ones fight to the end), `kite` keeps casters and archers at range, `follow` stays near a leader (set per spawn with a
+ * limps away once for a few seconds when badly hurt, `kite` keeps casters and archers at range, `follow` stays near a leader (set per spawn with a
  * `leader` property on the map object, which turns `follow` on by itself).
  * The rest are on for every mob already.
  */

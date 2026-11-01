@@ -118,12 +118,12 @@ describe("threat, leash and new behaviors", () => {
       );
     expect(hurt(["aggressive"]).behavior).toBe("chase");
     const retreating = hurt(["aggressive", "retreat"]);
-    expect(retreating.movement).toEqual({ type: "flee", speedRatio: 0.7, retreatAt: NOW });
+    expect(retreating.movement).toEqual({ type: "flee", speedRatio: 0.5, retreatAt: NOW });
     expect(retreating.action.type).toBe("idle");
     // Still running a moment later, without restarting the clock
     expect(hurt(["aggressive", "retreat"], NOW - 1000).movement).toEqual({
       type: "flee",
-      speedRatio: 0.7,
+      speedRatio: 0.5,
     });
   });
 
