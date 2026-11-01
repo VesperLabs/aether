@@ -24,7 +24,7 @@ export class Item implements BuiltItem {
   setName?: string;
   setBonus?: Record<string, number>;
   space?: number; // amount of slots on bags
-  exclusive?: boolean; // cannot be dropped on world
+  exclusive?: boolean; // left out of random drops; only drops from mobs that list it in their drops
   items?: (BuiltItem | null)[];
 
   constructor(item: Partial<BuiltItem>) {
