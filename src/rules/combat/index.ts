@@ -32,6 +32,8 @@ export type { RespawnInput } from "./death";
 export { isLethalHp, modifyStat } from "./resources";
 export { calculateStealthVisibilityPercent } from "./stealth";
 export type { StealthInput, StealthViewer } from "./stealth";
+export { mobKilledEvents } from "./kills";
+export type { KillerInput, SlainMob } from "./kills";
 export { rollTriggers } from "./triggers";
 export type { FiredTrigger, TriggerEvent, TriggerLike } from "./triggers";
 export {

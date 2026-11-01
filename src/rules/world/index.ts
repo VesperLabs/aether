@@ -7,7 +7,7 @@ export {
   getStickyDirection,
 } from "./geometry";
 export type { CardinalDirection, Point } from "./geometry";
-export { entitiesInRoom, nearestTo } from "./rooms";
+export { entitiesInRoom, groupByRoom, nearestTo } from "./rooms";
 export { createTickLoop } from "./tick-loop";
 export type { Frame, System, TickLoop } from "./tick-loop";
 export { createTimers } from "./timers";

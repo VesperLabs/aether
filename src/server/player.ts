@@ -1,7 +1,7 @@
 import type { AbilitySlot } from "@/rules/spells";
 import type { ServerWorld } from "./server-world";
 import { ServerCharacter, type CharacterArgs } from "./character";
-import { expAfterDeath, getAbilityCosts, hasStaminaFor } from "@/rules/combat";
+import { expAfterDeath, getAbilityCosts, hasStaminaFor, mobKilledEvents } from "@/rules/combat";
 import { canHitNpc, canHitPlayer } from "@/rules/spells";
 import type { Npc } from "./npc";
 import { createSpell } from "./spell-adapter";
@@ -12,7 +12,6 @@ import { expForMobKill } from "@/rules/stats";
 import { isPartyMember, sharedRecipientIds } from "@/rules/party";
 import { markKeeperObjectivesReady, nextNpcKillCount } from "@/rules/quests";
 import { applyAcceptQuest, applyCompleteQuest } from "./player-quests";
-import type { MobKilledEvent } from "@/rules/events";
 import {
   type FoundSlot,
   addInventoryItem,
@@ -320,19 +319,12 @@ export class Player extends ServerCharacter {
       const levelsBefore = recipients.map((member) => member.baseStats.level);
       // Read once so a level-up part way through the kills doesn't change what later kills are worth.
       const killerLevel = this.stats.level;
-      const kills: MobKilledEvent[] = npcKills.map((npc) => ({
-        killerId: this.id,
-        killerLevel,
-        killerMagicFind: this.stats.magicFind,
-        partyId: this.partyId,
-        recipientIds: recipients.map((member) => member.id),
-        mobId: npc.id,
-        mobName: npc.name,
-        mobLevel: npc.stats.level,
-        roomName: roomName,
-        x: npc.x,
-        y: npc.y,
-      }));
+      const kills = mobKilledEvents(
+        { id: this.id, level: killerLevel, magicFind: this.stats.magicFind, partyId: this.partyId },
+        recipients.map((member) => member.id),
+        roomName,
+        npcKills,
+      );
       /* Stats (experience) reacts to this and awards exp and kill credit to the recipients. */
       for (const kill of kills) world.events.emit("mobKilled", kill);
       recipients.forEach((member, i) => {
