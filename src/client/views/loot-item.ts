@@ -1,10 +1,12 @@
 import Phaser from "phaser";
-import { resolveAsset } from "@/content";
+import { getPreviewGrip, resolveAsset } from "@/content";
 import type { LootMessage } from "@/network";
 import type { SceneMain } from "@/client/scenes/main-scene";
 import { tintCanvas } from "@/ui/kit/image-tint";
 import type { LootFlyDetail } from "@/client/window-events";
+import { deriveElements } from "@/ui/item/weapon-elements";
 import { toTint } from "./tint";
+import { WeaponSprite } from "./weapon-sprite";
 const Sprite = Phaser.GameObjects.Sprite;
 const BLANK_TEXTURE = "human-blank";
 
@@ -13,6 +15,8 @@ export class LootItem extends Phaser.GameObjects.Container {
   declare item: Item;
   declare lootShadow: Phaser.GameObjects.Sprite;
   declare lootSprite: Phaser.GameObjects.Sprite;
+  /** Elemental weapons on the ground glow and give off their elements as when held. */
+  declare elementalSprite: WeaponSprite | undefined;
   declare texture: string | undefined;
   declare scene: SceneMain;
   constructor(scene: SceneMain, loot: LootMessage) {
@@ -46,6 +50,23 @@ export class LootItem extends Phaser.GameObjects.Container {
     }
 
     this.add(this.lootSprite);
+    if (!this.texture) this.addElementalSprite();
+  }
+  /** Swaps the plain sprite for a WeaponSprite when the item is a weapon with elements. */
+  addElementalSprite() {
+    const elements = this.item.type === "weapon" ? deriveElements(this.item.stats) : [];
+    if (elements.length === 0) return;
+    const asset = resolveAsset(this.item, this.scene.hero);
+    const rect = asset.previewRect as readonly number[];
+    const grip = getPreviewGrip(rect);
+    this.elementalSprite = new WeaponSprite(this.scene, 0, 0, asset.texture, "preview")
+      // The preview is cropped, so the grip is wherever the crop left it, not at the centre
+      .setGrip(grip.x - rect[2] / 2, grip.y - rect[3] / 2);
+    this.elementalSprite.setElements(elements);
+    if (this.item.tint) this.elementalSprite.setTint(toTint(this.item.tint));
+    // Kept for its bounds and frame, which the HUD reads when the loot flies to a bag
+    this.lootSprite.setVisible(false);
+    this.add(this.elementalSprite);
   }
   /** The item's art and where the loot is drawn on the page, so the HUD can replace it exactly.
    * Sparkling loot flies its hidden item, not a frame of the sparkle. */
@@ -83,6 +104,8 @@ export class LootItem extends Phaser.GameObjects.Container {
     return {
       src,
       rarity: this.item?.rarity,
+      elements: this.elementalSprite?.elements,
+      pixelSize: scale,
       rect: {
         x: page.left + (bounds.centerX - cam.worldView.x) * scale - width / 2,
         y: page.top + (bounds.centerY - cam.worldView.y) * scale - height / 2,

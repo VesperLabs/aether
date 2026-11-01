@@ -23,6 +23,10 @@ export interface LootFlyDetail {
   src: string;
   rect: { x: number; y: number; width: number; height: number };
   rarity?: string;
+  /** A weapon's elements, so it keeps its colored outline on the way to the bag. */
+  elements?: string[];
+  /** Screen pixels per art pixel, so the outline is one art pixel wide. */
+  pixelSize?: number;
 }
 
 export interface CooldownDetail {

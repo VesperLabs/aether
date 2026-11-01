@@ -5,6 +5,8 @@ import type { Point } from "@/rules/world";
 import type { Player } from "./player";
 import { toTint } from "./tint";
 import { SwingArc } from "./swing-arc";
+import { deriveElements } from "@/ui/item/weapon-elements";
+import { ELEMENT_SWING_COLORS } from "@/ui/item/element-effects";
 import { getAngleFromDirection, distanceTo } from "@/rules/world";
 import {
   BUFF_SPELLS,
@@ -130,7 +132,13 @@ export class Spell extends Phaser.GameObjects.Container {
           /* Matches the sword animations: right-hand swings sweep counter-clockwise */
           clockwise: isLeft && !isRight,
           wielder: isWielded ? { character: caster, hand, artDegrees: bladeDegrees } : undefined,
-          color: SWING_COLORS[this.spellName] ?? SWING_COLORS["attack-melee"],
+          /* Plain swings take the color of the weapon's element, like its outline */
+          color:
+            SWING_COLORS[this.spellName] ??
+            ELEMENT_SWING_COLORS[
+              deriveElements(caster.visibleEquipment?.[hand]?.stats)[0] as string
+            ] ??
+            SWING_COLORS["attack-melee"],
           duration: this.maxVisibleTime,
         }),
       );

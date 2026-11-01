@@ -11,6 +11,11 @@ import MEASURED_TIPS from "./weapon-tips.json";
  */
 export const WEAPON_GRIP = { x: 50, y: 50 } as const;
 
+/** Where the grip is inside a weapon's preview (its `previewRect` cut out of the art). */
+export function getPreviewGrip(previewRect: readonly number[]) {
+  return { x: WEAPON_GRIP.x - previewRect[0], y: WEAPON_GRIP.y - previewRect[1] };
+}
+
 const DEFAULT_TIP = { x: 35, y: 35 } as const;
 
 export const WEAPON_TIPS: Record<string, { x: number; y: number }> = MEASURED_TIPS;

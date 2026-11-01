@@ -8,6 +8,8 @@ import { SLOT_SIZE, STYLE_NON_EMPTY, STYLE_SLOT_EMPTY } from "./slot-style";
 import { ItemTooltip } from "./item-tooltip";
 import { SlotAmount } from "./slot-amount";
 import { shouldReRenderSlot, getIsItemActive } from "./slot-state";
+import { ElementalItemArt } from "./elemental-item-art";
+import { deriveElements } from "./weapon-elements";
 
 const BLANK_IMAGE =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
@@ -239,10 +241,20 @@ export const ItemSlot = memo(
         }
       : {};
 
+    const elements = item?.type === "weapon" ? deriveElements(item.stats) : [];
+    const asset =
+      elements.length > 0 && item
+        ? resolveAsset(item, profile ? { profile } : DEFAULT_ASSET_USER)
+        : undefined;
+    /* Elemental weapons animate over the icon, which stays underneath to take drags and taps */
+    const showElemental = !!asset && !dragging;
+
     const isActive = getIsItemActive({ item, player, location, slotKey });
     const tooltipId = `${location}-${item?.id ?? item?.key}`;
     const targetMoved = (target as HTMLElement | null)?.dataset?.tooltipId !== tooltipId;
     const aboutToSell = dragging && target?.closest(".menu-keeper") && location !== "shop";
+    /* ...and while dragged, over the copy that follows the pointer, unless it's about to sell */
+    const dragElemental = !!asset && dragging && !aboutToSell;
 
     /* When to show the tooltip */
     const showTooltipDesktop = (dragging && !targetMoved) || hovering;
@@ -267,6 +279,7 @@ export const ItemSlot = memo(
           userSelect: "none",
           pointerEvents: "all",
           overflow: "hidden",
+          position: "relative",
           top: 0,
           left: 0,
           ...(item?.rarity
@@ -300,7 +313,7 @@ export const ItemSlot = memo(
                 userSelect: "none",
                 pointerEvents: dragging ? "none" : "all",
                 zIndex: 1,
-                opacity: dragging ? 0.5 : 1,
+                opacity: dragging ? 0.5 : showElemental ? 0 : 1,
                 filter: dragging ? "grayscale(100%)" : "none",
                 cursor: shouldBindEvents ? (dragging ? "grabbing" : "grab") : "default",
                 transform: "scale(2,2)",
@@ -312,13 +325,27 @@ export const ItemSlot = memo(
               {...innerMouseBinds}
               {...dataKeys}
             />
+            {showElemental && asset && (
+              <ElementalItemArt
+                asset={asset}
+                tint={item?.tint}
+                elements={elements}
+                scale={2}
+                layerSx={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                }}
+              />
+            )}
             <Portal container={dragging ? document.body : null}>
               <Icon
                 ref={imageRef}
                 icon={aboutToSell ? "./assets/icons/gold.png" : imageData}
                 size={size * 2} // Fixes large images to not get cut off
                 style={{
-                  opacity: dragging ? 1 : 0,
+                  opacity: dragging && !dragElemental ? 1 : 0,
                   touchAction: "none",
                   userSelect: "none",
                   pointerEvents: "none",
@@ -334,6 +361,22 @@ export const ItemSlot = memo(
                   imageRendering: "pixelated",
                 }}
               />
+              {dragElemental && asset && (
+                <ElementalItemArt
+                  asset={asset}
+                  tint={item?.tint}
+                  elements={elements}
+                  scale={4}
+                  layerSx={{
+                    position: "fixed",
+                    // The dragged icon is a box twice the slot's size at the pointer: its centre
+                    left: position.x + size + "px",
+                    top: position.y + size + "px",
+                    transform: "translate(-50%, -50%)",
+                    zIndex: theme.zIndices.draggable,
+                  }}
+                />
+              )}
             </Portal>
             <ItemTooltip player={player} item={item} show={showTooltip} tooltipId={tooltipId} />
           </>
