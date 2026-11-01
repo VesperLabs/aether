@@ -211,7 +211,7 @@ describe("lunges", () => {
     stats: { level: 5, walkSpeed: 50, attackDelay: 300, castDelay: 1000 },
   };
 
-  it("lunge at a target in their band, winding up like a swing rather than a spell", () => {
+  it("lunge at a target in their band, winding up like a long swing rather than a spell", () => {
     const target = player({ x: 45 });
     const decision = decideNpcAction(
       input({
@@ -221,7 +221,7 @@ describe("lunges", () => {
       }),
       never,
     );
-    expect(decision.action).toMatchObject({ type: "cast", abilitySlot: "1", windupMs: 500 });
+    expect(decision.action).toMatchObject({ type: "cast", abilitySlot: "1", windupMs: 750 });
   });
 
   it("stand still to recover after a lunge, without attacking or casting", () => {

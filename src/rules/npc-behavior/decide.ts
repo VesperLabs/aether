@@ -14,6 +14,7 @@ import {
   NPC_LEASH_RANGE,
   NPC_SHOULD_ATTACK_RANGE,
   NPC_ENGAGED_BUBBLE,
+  NPC_LUNGE_EXTRA_WINDUP,
   NPC_WARNING_DELAY,
 } from "./constants";
 import { checkInRange, distanceBetween, getShouldAttackRange } from "./range";
@@ -311,7 +312,10 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
         abilitySlot: abilitySlot as string,
         ability,
         windupMs:
-          warningMs + (isLungeSpell(ability.base) ? attackDelay : (npc.stats?.castDelay as number)),
+          warningMs +
+          (isLungeSpell(ability.base)
+            ? attackDelay + NPC_LUNGE_EXTRA_WINDUP
+            : (npc.stats?.castDelay as number)),
       };
     }
   }
