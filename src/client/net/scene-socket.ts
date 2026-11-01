@@ -11,7 +11,6 @@ import { netInterp } from "@/client/net/scene-interpolation";
 import type { TickEntity } from "@/client/net/interpolation";
 import { playAudio } from "@/client/audio/play-audio";
 import { playHitImpact } from "@/client/views/hit-impact";
-import { playWindupTell } from "@/client/views/windup-tell";
 import { playWindupRing } from "@/client/views/windup-ring";
 import { playSpawnDissolve } from "@/client/views/dissolve";
 import {
@@ -215,14 +214,9 @@ export function bindSceneSocket(scene: SceneMain) {
     n.doAttack({ count: count as number, direction, castAngle });
   });
 
-  socket.on("npcWindup", ({ id, kind, targetId, abilitySlot, windupMs }) => {
+  socket.on("npcWindup", ({ id, kind, windupMs }) => {
     const n = getNpc(scene, id);
-    if (!n) return;
-    playWindupRing(n, windupMs, kind);
-    /* Lunges are spells, but they lean like a swing so you can see which way they will dash */
-    const leans = kind === "attack" || !!n.getAbilityDetails(abilitySlot)?.isLunge;
-    const target = targetId ? getPlayer(scene, targetId) : undefined;
-    if (target) playWindupTell(n, target, { leans, windupMs });
+    if (n) playWindupRing(n, windupMs, kind);
   });
 
   socket.on("npcCastSpell", ({ id, abilitySlot, castAngle }) => {
