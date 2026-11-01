@@ -166,6 +166,7 @@ export const spellItems = {
       texture: "scroll-red",
       stats: { spCost: 6 },
       requirements: { charClass: "warrior", weaponType: "melee" },
+      exclusive: true,
     },
     flameSlash: {
       ilvl: 1,
