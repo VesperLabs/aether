@@ -30,7 +30,7 @@ export type { AttackRoll, ElementalDamages, ElementalResult } from "./damage";
 export { DEATH_EXP_KEPT, expAfterDeath, isRespawnDue } from "./death";
 export type { RespawnInput } from "./death";
 export { isLethalHp, modifyStat } from "./resources";
-export { calculateStealthVisibilityPercent } from "./stealth";
+export { STEALTH_GRACE_MS, calculateStealthVisibilityPercent, isInStealthGrace } from "./stealth";
 export type { StealthInput, StealthViewer } from "./stealth";
 export { mobKilledEvents } from "./kills";
 export type { KillerInput, SlainMob } from "./kills";

@@ -151,6 +151,7 @@ export class Player extends ServerCharacter {
     this.modifyStatIfCostExists("sp", stats?.spCost || 0);
 
     this.dispelBuffsByProperty("dispelBeforeAttack");
+    if (spellName === "stealth") this.state.lastStealth = this.world.now();
 
     if (this.room)
       createSpell(this.room, {

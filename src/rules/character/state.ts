@@ -33,6 +33,8 @@ export interface CharacterState {
   lastAttack: number;
   /** When the last dodge roll started. */
   lastDodge?: number;
+  /** When the character last cast stealth, in ms. */
+  lastStealth?: number;
   /** Client only: holding the dodge button, aiming the roll. */
   isAimingDodge?: boolean;
   /** Client only: when the dodge button went down, to tell a tap from a hold. */
