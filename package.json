@@ -16,7 +16,7 @@
     "server:dev": "tsx --env-file-if-exists=.env src/server/main.ts",
     "server:watch": "tsx watch --inspect --env-file-if-exists=.env src/server/main.ts",
     "clean": "rm -rf node_modules",
-    "server:build": "node --env-file-if-exists=.env build.server.js",
+    "server:build": "tsx --env-file-if-exists=.env scripts/build-server.ts",
     "server:run": "node --env-file-if-exists=.env --optimize-for-size --max-old-space-size=512 dist/server.js",
     "test": "vitest run",
     "format": "oxfmt",
