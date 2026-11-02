@@ -62,6 +62,8 @@ describe("getFullCharacterState", () => {
       "activeItemSlots",
       "gold",
       "hitBoxSize",
+      "bodySize",
+      "bodyCenterY",
     ]);
   });
 
