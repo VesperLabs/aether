@@ -14,7 +14,7 @@ import { subscribeNpcMessages } from "./npc-messages";
 import { subscribeKnockbackMessages } from "./net/handlers/movement";
 import { subscribeDebugMessages } from "./debug-messages";
 import { Npc, type NpcDefinition } from "./npc";
-import type { GameIo } from "@/network";
+import { createNetIds, type GameIo } from "@/network";
 import type { Database } from "./persistence/database";
 
 /* Find NPCs in data lists, and add `kind` to them */
@@ -57,6 +57,7 @@ function spawnNpcs(world: ServerWorld, room: Room) {
       },
       startingCoords: { x: npc?.x, y: npc?.y },
     }) as unknown as Npc;
+    world.npcs[id].nid = world.netIds.take(id);
   }
 }
 
@@ -77,6 +78,7 @@ export function createServerWorld({
   world.io = io;
   world.db = db;
   world.now = now;
+  world.netIds = createNetIds();
 
   for (const asset of mapList) {
     addRoom(world, createRoom(asset.name, readMap(asset.json), now()));

@@ -1,5 +1,4 @@
 import type { BuffCharacterWire, FullCharacterWire } from "./sync/character-state";
-import type { RoomPoses } from "./sync/poses";
 import type { RoomStatuses } from "./sync/statuses";
 import type { Box, Shape } from "@/rules/movement";
 
@@ -94,7 +93,7 @@ export interface ServerToClientEvents {
 
   /* World */
   /** Every character's position in the room, every tick. Each stands alone: see `network/sync/poses`. */
-  poses: (poses: RoomPoses) => void;
+  poses: (poses: ArrayBuffer) => void;
   /** Characters whose state flags or vitals changed this tick. */
   statuses: (statuses: RoomStatuses) => void;
   playerJoin: (

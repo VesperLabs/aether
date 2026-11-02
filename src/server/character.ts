@@ -32,6 +32,8 @@ export type CharacterArgs = Record<string, any>;
 
 export class ServerCharacter extends CharacterModel {
   world: ServerWorld;
+  /** Net id for the binary pose wire, set when the character joins the world. */
+  nid!: number;
   /** Dual-wielding only: the stats the left hand's swings use (see `calculateStats`). */
   offHandStats?: StatBag;
   constructor(world: ServerWorld, args: CharacterArgs) {

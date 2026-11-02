@@ -39,6 +39,7 @@ describe("getFullCharacterState", () => {
     expect(Object.keys(getFullCharacterState(makeCharacter()))).toEqual([
       "id",
       "socketId",
+      "nid",
       "peerId",
       "roomName",
       "x",

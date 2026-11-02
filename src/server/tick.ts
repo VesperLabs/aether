@@ -1,7 +1,7 @@
 import type { ServerWorld } from "./server-world";
 import { moveBodyFreely, moveBodyThroughMap } from "@/rules/movement";
 import type { Frame, System } from "@/rules/world";
-import { getRoomPoses, takeChangedStatuses } from "@/network";
+import { encodeRoomPoses, takeChangedStatuses } from "@/network";
 import { getBuffRoomState } from "@/server/net/room-sync";
 import { updateRoomLoot } from "./loot-adapter";
 import { expireSpells } from "./spell-adapter";
@@ -56,7 +56,7 @@ const updateRooms: System<ServerWorld> = (world: ServerWorld, { now }: Frame) =>
     );
     if (hasBuffChanges) io.to(room.name).emit("buffUpdate", getBuffRoomState(world, room.name));
 
-    io.to(room.name).emit("poses", getRoomPoses(world, room.name, now));
+    io.to(room.name).emit("poses", encodeRoomPoses(world, room.name, now));
     const statuses = takeChangedStatuses(world, room.name, room.sentStatuses);
     if (statuses) io.to(room.name).emit("statuses", statuses);
   }

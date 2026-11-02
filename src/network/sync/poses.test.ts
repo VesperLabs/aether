@@ -1,29 +1,32 @@
 import { describe, expect, it } from "vitest";
-import { encodePose, getRoomPoses } from "./poses";
+import { decodeRoomPoses, encodeRoomPoses } from "./poses";
 
-const at = (id: string, room: string) => ({
-  id,
+const at = (nid: number, room: string, x = 1.5) => ({
+  nid,
   room: { name: room },
-  x: 1.26,
+  x,
   y: 2,
-  direction: "up",
+  direction: "left",
 });
 
-describe("encodePose", () => {
-  it("packs id, position to a tenth, velocity and facing", () => {
-    expect(
-      encodePose({ socketId: "s", x: 10.04, y: 3.06, vx: -2.55, vy: 0, direction: "left" }),
-    ).toEqual(["s", 10, 3.1, -2.5, 0, 2]);
-  });
-});
-
-describe("getRoomPoses", () => {
-  it("has every character in the room, stamped with the server time", () => {
-    const world = { players: { a: at("a", "r1"), b: at("b", "r2") }, npcs: { n: at("n", "r1") } };
-    expect(getRoomPoses(world, "r1", 42)).toEqual({
-      t: 42,
-      p: [["a", 1.3, 2, 0, 0, 0]],
-      n: [["n", 1.3, 2, 0, 0, 0]],
+describe("encodeRoomPoses", () => {
+  it("packs every character in the room and decodes back to ids", () => {
+    const world = {
+      players: { a: at(0, "r1"), b: at(1, "r2") },
+      npcs: { n: { ...at(2, "r1", 300.25), vx: -40, vy: 12.5 } },
+    };
+    const ids = ["a", "b", "n"];
+    const buffer = encodeRoomPoses(world, "r1", 1_700_000_000_123);
+    expect(buffer.byteLength).toBe(12 + 2 * 19);
+    expect(decodeRoomPoses(buffer, (nid) => ids[nid])).toEqual({
+      t: 1_700_000_000_123,
+      p: [["a", 1.5, 2, 0, 0, 2]],
+      n: [["n", 300.25, 2, -40, 12.5, 2]],
     });
+  });
+
+  it("skips net ids the client does not know yet", () => {
+    const buffer = encodeRoomPoses({ players: { a: at(7, "r1") }, npcs: {} }, "r1", 0);
+    expect(decodeRoomPoses(new Uint8Array(buffer), () => undefined).p).toEqual([]);
   });
 });
