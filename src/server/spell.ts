@@ -12,6 +12,7 @@ import {
   getSpellFlight,
   isSpellExpired,
   resolveSpellDetails,
+  toSpellVictims,
 } from "@/rules/spells";
 import { ServerCharacter } from "./character";
 
@@ -197,15 +198,7 @@ export class Spell {
       ...entitiesInRoom(world.players, this.room?.name),
     ] as unknown as Array<ServerCharacter>;
     const shape = this.getShape();
-    const victimShapes = victims.filter(Boolean).map((v) => ({
-      id: v.id,
-      isDead: v.state?.isDead,
-      x: v.x,
-      y: v.y,
-      bodySize: v.bodySize,
-      hitBoxSize: v.hitBoxSize,
-      hitBoxInset: v.hitBoxInset,
-    }));
+    const victimShapes = toSpellVictims(victims);
     const hits = findSpellHits({
       shape,
       victims: victimShapes,

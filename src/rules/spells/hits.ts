@@ -8,6 +8,34 @@ export interface SpellVictim extends CharacterShapeInput {
   isDead: boolean;
 }
 
+/** A character as the world holds it, before it is read as a victim. */
+export interface VictimSource extends CharacterShapeInput {
+  id: string;
+  state?: { isDead?: boolean } | null;
+}
+
+/** Where a character stood at the moment a hit is judged; undefined means where it is now. */
+export type PositionOf = (id: string) => { x: number; y: number } | undefined;
+
+/** Reads characters as hit victims, placed by `positionOf` (e.g. rewound to what the caster saw). */
+export function toSpellVictims(
+  characters: readonly VictimSource[],
+  positionOf: PositionOf = () => undefined,
+): SpellVictim[] {
+  return characters.filter(Boolean).map((c) => {
+    const at = positionOf(c.id);
+    return {
+      id: c.id,
+      isDead: !!c.state?.isDead,
+      x: at?.x ?? c.x,
+      y: at?.y ?? c.y,
+      bodySize: c.bodySize,
+      hitBoxSize: c.hitBoxSize,
+      hitBoxInset: c.hitBoxInset,
+    };
+  });
+}
+
 export interface SpellHitInput {
   /** The area the spell covers now; null hits nothing. */
   shape: Shape | null;
