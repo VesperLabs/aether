@@ -9,7 +9,7 @@ export {
 export type { CardinalDirection, Point } from "./geometry";
 export { entitiesInRoom, groupByRoom, nearestTo } from "./rooms";
 export { createTickLoop } from "./tick-loop";
-export type { Frame, System, TickLoop } from "./tick-loop";
+export type { Frame, SetTimer, System, TickLoop } from "./tick-loop";
 export { createTimers } from "./timers";
 export type { Timers } from "./timers";
 export { addRoom, createRoom, createWorld } from "./world";

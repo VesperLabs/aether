@@ -2,7 +2,7 @@ import type { Scenario } from "./scenario";
 
 export const party: Scenario = {
   name: "party",
-  description: "three bots form a party, the leader changes room, one bot leaves",
+  description: "three agents form a party, the leader changes room, one leaves",
   async run({ spawn, log, check }) {
     const leader = await spawn("Agent Leader");
     const second = await spawn("Agent Two");
