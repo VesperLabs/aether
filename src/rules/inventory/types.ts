@@ -1,6 +1,6 @@
 /**
- * Plain data the inventory rules read and return. Rules never touch a character: the legacy
- * adapter (`server/player-inventory.ts`) copies a player's fields in and stores the result back.
+ * Plain data the inventory rules read and return. Rules never touch a character: `commands.ts`
+ * copies a player's fields in and stores the result back.
  */
 
 /** An item as the inventory rules see it. Only the fields the rules read are named. */

@@ -29,3 +29,5 @@ export { checkSlotsMatch, withoutSlot } from "./slots";
 export type { InventoryItem, InventoryState, MoveContext } from "./types";
 export { buffLines, describeItem } from "./describe";
 export type { DescribableItem, DescribePlayer, StatLine, TriggerLine } from "./describe";
+export { consumeItemCommand, dropItemCommand, dropPosition, moveItemCommand } from "./commands";
+export type { InventoryHolder } from "./commands";

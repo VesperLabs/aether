@@ -1,8 +1,7 @@
 import crypto from "crypto";
 import type { MoveItemCommand } from "@/network";
 import { getFullCharacterState } from "@/network/sync";
-import { moveItem as moveItemRule } from "@/rules/inventory";
-import { applyInventoryState, toInventoryState } from "../../player-inventory";
+import { moveItemCommand } from "@/rules/inventory";
 import type { CommandContext } from "@/server/net/command-context";
 import { findNearbyNpc } from "@/server/net/nearby-keeper";
 import { isInRoom } from "@/server/player-room";
@@ -18,16 +17,15 @@ export function moveItem(ctx: CommandContext, { to, from }: MoveItemCommand = {}
   if (isShopMove && !keeper?.keeperData?.shop) return;
   const npcId = keeper ? player.state.targetNpcId : undefined;
   const shopSlot = keeper?.keeperData?.shop?.[from?.slot as number];
-  const result = moveItemRule(
-    toInventoryState(player),
+  const result = moveItemCommand(
+    player,
     { from, to },
     { shop: { npcId, slot: shopSlot }, newId: () => crypto.randomUUID() },
   );
-  if (result.moved === false) {
+  if (!result.ok) {
     if (result.error) socket.emit("message", { type: "error", message: result.error });
     return;
   }
-  applyInventoryState(player, result.state);
 
   /* Save the users data */
   player.calculateStats();
