@@ -4,7 +4,12 @@ import type { ClientGameSocket } from "@/network";
 
 /** A bot link over a real socket.io connection, exactly like the browser's. */
 export async function connectSocketLink(url: string): Promise<BotLink> {
-  const socket: ClientGameSocket = connect(url, { transports: ["websocket"], forceNew: true });
+  const socket: ClientGameSocket = connect(url, {
+    transports: ["websocket"],
+    forceNew: true,
+    /* A new socket would be a stranger to the server: the bot would need to log in again */
+    reconnection: false,
+  });
   await new Promise<void>((resolve, reject) => {
     socket.once("connect", () => resolve());
     socket.once("connect_error", reject);

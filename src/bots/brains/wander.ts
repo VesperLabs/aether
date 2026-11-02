@@ -10,10 +10,15 @@ const SPOT_TRIES = 50;
 
 /**
  * Roams the whole map: walks around walls to random open spots, idles a moment, and now and
- * then takes a door into the next zone.
+ * then takes a door into the next zone. Killed, it respawns and carries on.
  */
 export const wander: Brain = async (bot, { clock, rng, signal }) => {
   while (!signal.aborted) {
+    /* Like a player at the respawn screen, it gets right back up */
+    if (bot.senses.isDead) {
+      await bot.respawn();
+      continue;
+    }
     const doors = Object.values(bot.room.doors).filter((d) => d.destMap && d.destDoor);
     if (doors.length && rng() < DOOR_CHANCE) {
       const door = doors[Math.floor(rng() * doors.length)];

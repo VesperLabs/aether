@@ -6,6 +6,7 @@ import { potionSpam } from "./potion-spam";
 import { swarmed } from "./swarmed";
 import type { Scenario } from "./scenario";
 import { wander } from "./wander";
+import { wanderRespawn } from "./wander-respawn";
 
 /** Every scenario, in the order `npm run bots` runs them. */
 export const SCENARIOS: Scenario[] = [
@@ -15,5 +16,6 @@ export const SCENARIOS: Scenario[] = [
   swarmed,
   party,
   wander,
+  wanderRespawn,
   potionSpam,
 ];

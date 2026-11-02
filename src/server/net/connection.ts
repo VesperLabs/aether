@@ -23,7 +23,8 @@ export function listenForConnections(world: ServerWorld) {
     socket.on("disconnect", () => {
       const { socketId } = ctx;
       const player = world.players?.[socketId];
-      world.db.updateUser(world.players?.[socketId]);
+      /* A socket that never logged in has nobody to save */
+      if (player) world.db.updateUser(player);
       console.log(`🔌 ${player?.profile?.userName ?? "Anonymous"} disconnected`);
       legacyLeaveParty(world, socketId, socket);
       removePlayer(world, socketId);

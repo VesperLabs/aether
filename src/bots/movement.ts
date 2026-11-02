@@ -34,7 +34,7 @@ async function walkPath(body: BotBody, points: Point[], timeoutMs: number) {
   const step = (speed * SPEED_MARGIN * STEP_MS) / 1000;
   const deadline = clock.now() + timeoutMs;
   let next = 0;
-  while (next < points.length && clock.now() < deadline && !corrected()) {
+  while (next < points.length && clock.now() < deadline && !corrected() && !senses.isDead) {
     const { x, y } = points[next];
     const dx = x - senses.x;
     const dy = y - senses.y;
