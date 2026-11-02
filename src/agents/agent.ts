@@ -1,8 +1,10 @@
 import type { ChatMessage } from "@/network";
+import type { Point } from "@/rules/world";
+import { createAtlas, type Atlas, type KnownRoom, type MapSource } from "./atlas";
 import type { AgentBody } from "./body";
 import { createWeapon, type FightOutcome } from "./combat";
 import type { AgentLink, Clock, MessageName, MessagePayload } from "./link";
-import { sendPosition, walkTo } from "./movement";
+import { sendPosition, travelTo, walkTo } from "./movement";
 import { inviteToParty, type PartyMember } from "./party";
 import { createSenses, type Senses } from "./senses";
 
@@ -12,6 +14,8 @@ export interface AgentOptions {
   name: string;
   charClass?: string;
   clock: Clock;
+  /** Where the agent reads room maps, to find its way around walls and to doors. */
+  maps: MapSource;
   /** Whether this agent may use `/cheats`. Test hosts grant it; agents living in the world don't. */
   cheats?: boolean;
 }
@@ -29,9 +33,11 @@ export class Agent {
   private readonly stopListening: (() => void)[] = [];
   private readonly body: AgentBody;
   private readonly weapon: ReturnType<typeof createWeapon>;
+  private readonly atlas: Atlas;
 
-  private constructor(link: AgentLink, { name, clock, cheats = false }: AgentOptions) {
+  private constructor(link: AgentLink, { name, clock, maps, cheats = false }: AgentOptions) {
     this.name = name;
+    this.atlas = createAtlas(maps);
     this.link = link;
     this.clock = clock;
     this.cheats = cheats;
@@ -65,6 +71,16 @@ export class Agent {
 
   get id() {
     return this.link.id;
+  }
+
+  /** The room the agent stands in, as its map describes it: walls and doors. */
+  get room(): KnownRoom {
+    return this.atlas(this.senses.roomName);
+  }
+
+  /** Listens for a message from the server; returns a function that stops listening. */
+  on<M extends MessageName>(message: M, listener: (payload: MessagePayload<M>) => void) {
+    return this.link.on(message, listener);
   }
 
   /** Resolves with the next `message` whose payload matches. */
@@ -108,6 +124,24 @@ export class Agent {
    */
   walkTo(x: number, y: number, timeoutMs = 15000): Promise<boolean> {
     return walkTo(this.body, x, y, timeoutMs);
+  }
+
+  /** Walks around walls to a spot in this room. Resolves with whether it got there. */
+  travelTo(to: Point, timeoutMs = 30000): Promise<boolean> {
+    return travelTo(this.body, this.room, to, timeoutMs);
+  }
+
+  /**
+   * Steps through a door it stands next to. Resolves with whether it came out in the room beyond;
+   * the server ignores a door that is too far away.
+   */
+  enterDoor(doorName: string): Promise<boolean> {
+    const arrived = this.waitFor("heroInit");
+    this.link.send("enterDoor", doorName);
+    return arrived.then(
+      () => true,
+      () => false,
+    );
   }
 
   /** Stands still. */

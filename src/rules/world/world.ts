@@ -3,27 +3,15 @@ import { createPartyState, type PartyState } from "../party";
 import {
   createPathfinder,
   createPoseHistory,
-  getObjectProperty,
+  readDoors,
   readTileMap,
+  type DoorData,
   type Pathfinder,
   type PoseHistory,
   type TileMap,
   type TiledMapJson,
 } from "../movement";
 import { createGameEventBus, type GameEventBus } from "./event-bus";
-
-/** A door on a map: where it is and where it leads. */
-interface DoorData {
-  name: string;
-  destMap?: string;
-  destDoor?: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  /** Where a player appears when they come out of this door. */
-  centerPos: { x: number; y: number };
-}
 
 /** One map and everything the server keeps per map. Plain data. */
 export interface RoomData {
@@ -78,24 +66,6 @@ export function createWorld<P = unknown, N = unknown, S = unknown, L = unknown, 
     events: createGameEventBus(),
     tick: 0,
   };
-}
-
-function readDoors(map: TileMap): Record<string, DoorData> {
-  const doors: Record<string, DoorData> = {};
-  for (const door of map.objects.Doors ?? []) {
-    const { name, x, y, width = 0, height = 0 } = door;
-    doors[name] = {
-      name,
-      destMap: getObjectProperty<string>(door, "destMap"),
-      destDoor: getObjectProperty<string>(door, "destDoor"),
-      x,
-      y,
-      width,
-      height,
-      centerPos: { x: x + width / 2, y: y + height / 2 },
-    };
-  }
-  return doors;
 }
 
 /** Builds a room from a Tiled map. */

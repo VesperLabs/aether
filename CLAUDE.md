@@ -13,6 +13,8 @@ Server-authoritative online game: Phaser + React client, Node + socket.io server
 - Move code in small steps that keep `npm run check` passing.
 - Commits and PR titles are [conventional commits](https://www.conventionalcommits.org) (`feat:`, `fix:`, `refactor:`, `docs:`, `test:`, `ci:`, `chore:`), enforced by commitlint; release-please bumps versions from them.
 
+- Working on bots (`src/agents/`, `src/server/agents/`, `src/server/sim/`) is also a chance to improve the game: see `src/agents/CLAUDE.md`. If a refactor makes the codebase faster or cleaner, or gives bots a nicer API, just do it.
+
 ## Subagents
 
 The main session runs on Opus. When delegating, use the `worker` agent (or `Explore` for read-only searching) and pick its `model` per task:

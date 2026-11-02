@@ -2,7 +2,7 @@ import path from "path";
 import cors from "cors";
 import express from "express";
 import { GameServer } from "./game-server";
-import { pickPlanner, startResidents } from "./agents";
+import { startWanderers } from "./agents";
 import { initDatabase, initFakeDatabase } from "./persistence";
 import { registerPeerProxy } from "./http/peer-proxy";
 import { registerRoutes } from "./http/routes";
@@ -53,20 +53,19 @@ class AppServer {
       console.log(
         `💻 Running ${MONGO_URL ? "[online]" : "[offline]"} on ${SERVER_URL} @ ${SERVER_FPS}fps`,
       );
-      this.startResidents();
+      this.startBots();
     });
   }
 
-  /* Residents join over a socket to this same process, through the same commands as players */
-  private async startResidents() {
-    const count = Number(process.env.RESIDENTS) || 0;
+  /* Bots join over a socket to this same process, through the same commands as players */
+  private async startBots() {
+    const count = Number(process.env.BOTS) || 0;
     if (!count) return;
-    const { plannerFor, label } = pickPlanner();
     try {
-      const living = await startResidents(`http://127.0.0.1:${PORT}`, count, plannerFor);
-      console.log(`🏡 ${living.names.join(", ")} now live, deciding with ${label}`);
+      const living = await startWanderers(`http://127.0.0.1:${PORT}`, count);
+      console.log(`🏡 ${living.names.join(", ")} now wandering`);
     } catch (error) {
-      console.error("🏡 Residents could not join:", error);
+      console.error("🏡 Bots could not join:", error);
     }
   }
 }

@@ -78,11 +78,12 @@ describe("overlap", () => {
 });
 
 describe("pathfinding", () => {
-  it("steps around a wall", () => {
+  it("steps around a wall without cutting its corner", () => {
     const pf = createPathfinder(grid);
     const next = findNextWaypoint(pf, { x: 48, y: 48 }, { x: 112, y: 48 });
     expect(next).toBeDefined();
-    expect(next!.x).toBe(80);
+    /* Straight up or down first: a diagonal would clip the wall's corner with the body */
+    expect(next!.x).toBe(48);
     expect(next!.y).not.toBe(48);
   });
 });

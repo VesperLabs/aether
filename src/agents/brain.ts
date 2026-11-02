@@ -13,6 +13,6 @@ interface BrainLife {
 /**
  * What one agent decides, as a loop that runs until `signal` aborts. Brains only see the agent's
  * senses and act through its actions, so any brain runs on any host (a test, the game server,
- * a Cloudflare worker). A slow planner (an LLM) can pick goals that a fast brain carries out.
+ * a Cloudflare worker).
  */
 export type Brain = (agent: Agent, life: BrainLife) => Promise<void>;

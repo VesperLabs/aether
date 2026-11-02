@@ -3,9 +3,7 @@ import { collision } from "./collision";
 import { combat } from "./combat";
 import { party } from "./party";
 import { potionSpam } from "./potion-spam";
-import { resident } from "./resident";
 import { swarmed } from "./swarmed";
-import { townLife } from "./town-life";
 import type { Scenario } from "./scenario";
 import { wander } from "./wander";
 
@@ -17,7 +15,5 @@ export const SCENARIOS: Scenario[] = [
   swarmed,
   party,
   wander,
-  resident,
-  townLife,
   potionSpam,
 ];

@@ -1,4 +1,5 @@
 import { Agent, runScenario, type RunOptions, type Scenario } from "@/agents";
+import { readRoomMap } from "../map-files";
 import { createSimulation } from "./simulation";
 
 /** Runs a scenario on its own fresh, seeded simulation, with cheat-enabled agents in-process. */
@@ -12,7 +13,13 @@ export async function simulateScenario(
       runScenario(scenario, {
         ...options,
         join: (name, charClass) =>
-          Agent.join(sim.connect(), { name, charClass, clock: sim.clock, cheats: true }),
+          Agent.join(sim.connect(), {
+            name,
+            charClass,
+            clock: sim.clock,
+            maps: readRoomMap,
+            cheats: true,
+          }),
         clock: sim.clock,
       }),
     );

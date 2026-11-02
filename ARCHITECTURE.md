@@ -17,7 +17,7 @@ src/
   content/   core: items, mobs, spells, quests, maps      imports nothing
   rules/     core: the game itself                        imports content
   network/   core: client↔server messages                 imports rules, content, socket.io types
-  agents/    core: code-driven players (tests, residents) imports network, rules, content
+  agents/    core: code-driven players (tests, bots) imports network, rules, content
   ui/        React views of core, by feature; kit/ for generic widgets
   server/    app: game server                             core only, never ui
   client/    app: game in the browser                     core + ui
@@ -68,7 +68,7 @@ brains/     brains that live in the world (wander, ...)
 scenarios/  scripted tests: agents play out a situation and check what the server did
 ```
 
-A **host** runs agents: it picks the link, passes the clock and RNG, and decides whether they may use cheats (tests yes, residents never). Hosts live in apps: `server/agents/` (socket link, Jev planner, residents), `server/sim/` (the real server on virtual time with agents linked in-process: tests run minutes of play in milliseconds), `scripts/bots.ts` (`npm run bots`). Like rules, agents read no clock and roll no dice of their own, so any host (a test, the game server, a Cloudflare worker) can run them.
+A **host** runs agents: it picks the link, passes the clock and RNG, and decides whether they may use cheats (tests yes, bots in the world never). Hosts live in apps: `server/agents/` (socket link, wanderers), `server/sim/` (the real server on virtual time with agents linked in-process: tests run minutes of play in milliseconds), `scripts/bots.ts` (`npm run bots`). Like rules, agents read no clock and roll no dice of their own, so any host (a test, the game server, a Cloudflare worker) can run them.
 
 ### Apps
 
