@@ -6,6 +6,8 @@ export interface SeenCharacter {
   id: string;
   name: string;
   kind: "player" | "npc";
+  /** A monster: fair game. Keepers and players are not. */
+  isHostile: boolean;
   x: number;
   y: number;
   isDead: boolean;
@@ -54,6 +56,7 @@ export function createSenses() {
       id,
       name: wire.profile?.userName ?? id,
       kind,
+      isHostile: kind === "npc" && wire.kind === "nasty",
       x: wire.x,
       y: wire.y,
       isDead: !!wire.state?.isDead,

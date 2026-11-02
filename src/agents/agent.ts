@@ -12,6 +12,8 @@ const ARRIVE_DISTANCE = 4;
 /** Melee reach a fighting agent keeps from its target. */
 const FIGHT_DISTANCE = 20;
 const DEFAULT_WALK_SPEED = 100;
+/** Swings are held while a player or keeper stands this close to the target: they'd be hit too. */
+const BYSTANDER_DISTANCE = 40;
 /** Swings wait a little past the attack delay, so clock jitter never makes one early. */
 const SWING_MARGIN_MS = 30;
 
@@ -190,7 +192,14 @@ export class Agent {
       if (!target) return "gone";
       if (target.isDead) return "killed";
       const far = Math.hypot(target.x - this.senses.x, target.y - this.senses.y) > FIGHT_DISTANCE;
-      if (far) await this.approach(target.x, target.y - FIGHT_DISTANCE / 2);
+      /* Swings don't hit behind the attacker, so fight from the bystander's side, facing away */
+      const bystander = this.bystanderNear(target);
+      if (bystander) await this.approach(...stepToward(target, bystander, FIGHT_DISTANCE));
+      else if (far) await this.approach(target.x, target.y - FIGHT_DISTANCE / 2);
+      if (bystander && this.isInFront(bystander, target)) {
+        await this.clock.sleep(STEP_MS);
+        continue;
+      }
       await this.attackToward(target.x, target.y);
       await this.sync();
     }
@@ -237,6 +246,24 @@ export class Agent {
     this.link.close();
   }
 
+  /** Someone who isn't fair game, standing where a swing at the target would catch them. */
+  private bystanderNear(target: { id: string; x: number; y: number }) {
+    return [...this.senses.characters.values()].find(
+      (c) =>
+        c.id !== target.id &&
+        c.id !== this.senses.selfId &&
+        !c.isHostile &&
+        !c.isDead &&
+        Math.hypot(c.x - target.x, c.y - target.y) < BYSTANDER_DISTANCE,
+    );
+  }
+
+  /** Whether `other` is on the target's side of the agent, where a swing at the target lands. */
+  private isInFront(other: { x: number; y: number }, target: { x: number; y: number }) {
+    const { x, y } = this.senses;
+    return (other.x - x) * (target.x - x) + (other.y - y) * (target.y - y) > 0;
+  }
+
   private async approach(x: number, y: number) {
     if (this.cheats) await this.cheat(`/tp ${Math.round(x)} ${Math.round(y)}`);
     else await this.walkTo(x, y, 2000);
@@ -247,4 +274,17 @@ export class Agent {
 function facing(dx: number, dy: number) {
   if (Math.abs(dx) > Math.abs(dy)) return dx > 0 ? "right" : "left";
   return dy > 0 ? "down" : "up";
+}
+
+/** The point `distance` from `from` toward `to`. */
+function stepToward(
+  from: { x: number; y: number },
+  to: { x: number; y: number },
+  distance: number,
+): [number, number] {
+  const length = Math.hypot(to.x - from.x, to.y - from.y) || 1;
+  return [
+    from.x + ((to.x - from.x) / length) * distance,
+    from.y + ((to.y - from.y) / length) * distance,
+  ];
 }
