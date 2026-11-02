@@ -10,7 +10,7 @@ import path from "node:path";
 import { PNG } from "pngjs";
 import { WEAPON_GRIP } from "../src/content/assets/weapon-tips";
 
-const repoRoot = path.resolve(__dirname, "..");
+const repoRoot = path.resolve(import.meta.dirname, "..");
 const ART_DIR = path.join(repoRoot, "public/assets/atlas/hands");
 const OUT_FILE = path.join(repoRoot, "src/content/assets/weapon-tips.json");
 
