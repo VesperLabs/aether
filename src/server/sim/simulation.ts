@@ -3,7 +3,7 @@ import { DEFAULT_SERVER_FPS } from "@/network";
 import { createTickLoop } from "@/rules/world";
 import { createServerWorld } from "../game-world";
 import { listenForConnections } from "../net/connection";
-import { initFakeDatabase } from "../persistence";
+import { prepareCheatServer } from "../agents";
 import { serverSystems } from "../tick";
 import { createLocalHub } from "./local-hub";
 import { createSeededDice } from "./seeded-dice";
@@ -14,9 +14,9 @@ const settle = () => new Promise<void>((resolve) => setImmediate(resolve));
 
 /**
  * The real game server on virtual time, with agents connected in-process. The world has the real
- * maps (walls, doors) but no NPCs unless asked, and a seeded RNG, so nothing happens by chance. Time only moves when
- * nothing is left to do right now, and then jumps straight to the next timer (a tick, an agent's
- * sleep), so a minute of play takes milliseconds and every run is the same.
+ * maps (walls, doors) but no NPCs unless asked, and a seeded RNG, so nothing happens by chance.
+ * Time only moves when nothing is left to do right now, and then jumps straight to the next timer
+ * (a tick, an agent's sleep), so a minute of play takes milliseconds and every run is the same.
  *
  *   const sim = await createSimulation();
  *   await sim.run(async () => { const agent = await Agent.join(sim.connect(), {...}); ... });
@@ -32,14 +32,12 @@ export async function createSimulation({
   /** Everything random in the run comes from this, so the same seed plays the same game. */
   seed?: number;
 } = {}) {
-  process.env.PUBLIC_DIR ??= "public";
-  process.env.ENABLE_CHEATS = "true";
   const time = createVirtualTime();
   const dice = createSeededDice(seed);
   const hub = createLocalHub();
   const world = createServerWorld({
     io: hub.io,
-    db: await initFakeDatabase(dice),
+    db: await prepareCheatServer(dice),
     now: time.now,
     dice,
     mapNpcs,

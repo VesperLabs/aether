@@ -1,5 +1,5 @@
 /** The options a planner picks from: id → what the option means, in plain words. */
-export type Options = Record<string, string>;
+type Options = Record<string, string>;
 
 interface Plan {
   /** One of the option ids. */
