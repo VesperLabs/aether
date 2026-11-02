@@ -215,7 +215,7 @@ const holy: ElementEffect = {
     const breath = (Math.sin(time / 900 + seed) + 1) / 2;
     return { color: 0xffffff, alpha: 0.75 + breath * 0.25 };
   },
-  rate: 10,
+  rate: 20,
   from: "top",
   particles: {
     // Soft motes that float straight up off the blade like dust in a sunbeam, shrinking as they go

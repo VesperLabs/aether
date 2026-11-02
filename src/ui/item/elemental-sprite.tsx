@@ -4,19 +4,10 @@ import type { ThemeUIStyleObject } from "theme-ui";
 import { bladePixels, findEdgePixels } from "./edge-pixels";
 import { ELEMENT_EFFECTS } from "./element-effects";
 import { ElementSim, type ToLayer } from "./element-sim";
+import { OUTLINE_OFFSETS, cssColor as css } from "./element-outline";
 
 /** Room around the sprite, in its pixels, for particles to rise and drift into. */
 const PAD = 14;
-/** The outline's four 1px-shifted copies: up, right, down, left, as `ElementSim.outline` gives. */
-const OUTLINE_OFFSETS = [
-  [0, -1],
-  [1, 0],
-  [0, 1],
-  [-1, 0],
-];
-
-const css = (color: number) => `#${color.toString(16).padStart(6, "0")}`;
-
 /**
  * A weapon sprite drawing `ElementSim`, the same simulation the game draws in a player's hand.
  * Drawn at the sprite's own pixel size and scaled up with crisp pixels.
