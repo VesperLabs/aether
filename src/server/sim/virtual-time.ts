@@ -12,7 +12,7 @@ interface Timer {
 
 /**
  * Time that only moves when asked: `fireNext` jumps straight to the earliest timer and runs it.
- * Hand its `setTimer` to the tick loop and its `sleep` to agents, and they share one clock.
+ * Hand its `setTimer` to the tick loop and its `sleep` to bots, and they share one clock.
  */
 export function createVirtualTime(start = EPOCH) {
   let now = start;

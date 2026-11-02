@@ -1,9 +1,9 @@
-import type { AgentLink, MessageName, MessagePayload } from "./link";
+import type { BotLink, MessageName, MessagePayload } from "./link";
 
-/** What `inviteToParty` needs of each agent. */
+/** What `inviteToParty` needs of each bot. */
 export interface PartyMember {
   readonly id: string;
-  readonly link: AgentLink;
+  readonly link: BotLink;
   waitFor<M extends MessageName>(
     message: M,
     matches?: (payload: MessagePayload<M>) => boolean,

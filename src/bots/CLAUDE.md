@@ -7,5 +7,5 @@ Bots are players driven by code, so every rough edge they hit is one a player or
 - **Share rules, never copy them.** Bots import the game's own rules (pathfinding, door range, swing reach, speed) from `@/rules`. If a rule is stuck inside `server/` or `client/`, move it into `rules/` so both can use it.
 - **Lean on the network contract.** If a bot can't learn something from server messages, a player's client probably infers it awkwardly too. Fix the message (`network/messages.ts`, `sync/`) instead of guessing.
 - **A bot bug can be a server bug.** When a bot gets corrected, stuck or desynced, assume the server may be wrong before blaming the bot. Write a scenario that shows it.
-- **Start small, grow by need.** One brain, one behavior at a time. Add an action to `Agent` only when a brain or scenario uses it, and delete what nothing uses.
-- **Pretty API, thin body.** Brains read like plain intent (`agent.travelTo(door)`, `agent.enterDoor(name)`). The mechanics live in small modules under `agents/` or, if the game needs them too, in `rules/`.
+- **Start small, grow by need.** One brain, one behavior at a time. Add an action to `Bot` only when a brain or scenario uses it, and delete what nothing uses.
+- **Pretty API, thin body.** Brains read like plain intent (`bot.travelTo(doorstep)`, `bot.enterDoor(name)`). The mechanics live in small modules under `bots/` or, if the game needs them too, in `rules/`.

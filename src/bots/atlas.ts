@@ -9,12 +9,12 @@ import {
 } from "@/rules/movement";
 
 /**
- * Where an agent reads a room's map, as the browser loads the same map files. Hosts provide it
- * (files on disk, a fetch), so agents do no IO of their own.
+ * Where a bot reads a room's map, as the browser loads the same map files. Hosts provide it
+ * (files on disk, a fetch), so bots do no IO of their own.
  */
 export type MapSource = (roomName: string) => TiledMapJson;
 
-/** What an agent knows about a room from its map: walls, a pathfinder and the doors. */
+/** What a bot knows about a room from its map: walls, a pathfinder and the doors. */
 export interface KnownRoom {
   map: TileMap;
   pathfinder: Pathfinder;

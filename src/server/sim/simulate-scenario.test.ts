@@ -1,17 +1,17 @@
 // @vitest-environment node
 import { describe, expect, it } from "vitest";
-import { SCENARIOS } from "@/agents";
+import { SCENARIOS } from "@/bots";
 import { simulateScenario } from "./simulate-scenario";
 
 /** The full world simulates every map's NPCs each tick, so soak scenarios get more time on CI. */
 const FULL_WORLD_TIMEOUT_MS = 30_000;
 
 /**
- * Every agent scenario on a fresh simulation: the real server on virtual time, agents connected
+ * Every bot scenario on a fresh simulation: the real server on virtual time, bots connected
  * in-process, so minutes of play take milliseconds. Each check is a soft assertion; known issues
  * are expected to fail.
  */
-describe("agent scenarios", () => {
+describe("bot scenarios", () => {
   for (const scenario of SCENARIOS) {
     const test = scenario.knownIssue ? it.fails : it;
     const issue = scenario.knownIssue ? ` (#${scenario.knownIssue})` : "";

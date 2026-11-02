@@ -4,10 +4,10 @@ export type MessageName = keyof ServerToClientEvents;
 export type MessagePayload<M extends MessageName> = Parameters<ServerToClientEvents[M]>[0];
 
 /**
- * How an agent reaches the game server: commands out, messages in, the same ones a browser uses.
+ * How a bot reaches the game server: commands out, messages in, the same ones a browser uses.
  * Hosts provide one (a socket.io client, or the simulation's in-process hub).
  */
-export interface AgentLink {
+export interface BotLink {
   /** The id the server knows this connection by (the player's socket id). */
   readonly id: string;
   send<C extends CommandName>(command: C, ...args: Parameters<ClientToServerEvents[C]>): void;
@@ -16,7 +16,7 @@ export interface AgentLink {
   close(): void;
 }
 
-/** Time for an agent, passed in so tests and hosts control it (agents never read the clock). */
+/** Time for a bot, passed in so tests and hosts control it (bots never read the clock). */
 export interface Clock {
   /** Milliseconds, only ever compared with each other. */
   now(): number;

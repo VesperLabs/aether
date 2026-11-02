@@ -1,22 +1,22 @@
 import type { ChatMessage } from "@/network";
 import type { Point } from "@/rules/world";
 import { createAtlas, type Atlas, type KnownRoom, type MapSource } from "./atlas";
-import type { AgentBody } from "./body";
+import type { BotBody } from "./body";
 import { createWeapon, type FightOutcome } from "./combat";
-import type { AgentLink, Clock, MessageName, MessagePayload } from "./link";
+import type { BotLink, Clock, MessageName, MessagePayload } from "./link";
 import { sendPosition, travelTo, walkTo } from "./movement";
 import { inviteToParty, type PartyMember } from "./party";
 import { createSenses, type Senses } from "./senses";
 
 export type { FightOutcome } from "./combat";
 
-export interface AgentOptions {
+export interface BotOptions {
   name: string;
   charClass?: string;
   clock: Clock;
-  /** Where the agent reads room maps, to find its way around walls and to doors. */
+  /** Where the bot reads room maps, to find its way around walls and to doors. */
   maps: MapSource;
-  /** Whether this agent may use `/cheats`. Test hosts grant it; agents living in the world don't. */
+  /** Whether this bot may use `/cheats`. Test hosts grant it; bots living in the world don't. */
   cheats?: boolean;
 }
 
@@ -24,18 +24,18 @@ export interface AgentOptions {
  * A player driven by code. It logs in and acts through the same commands as the browser and knows
  * only what the server tells it (its `senses`), so the server can't tell it from a person.
  */
-export class Agent {
+export class Bot {
   readonly name: string;
   readonly senses: Senses;
-  private readonly link: AgentLink;
+  private readonly link: BotLink;
   private readonly clock: Clock;
   private readonly cheats: boolean;
   private readonly stopListening: (() => void)[] = [];
-  private readonly body: AgentBody;
+  private readonly body: BotBody;
   private readonly weapon: ReturnType<typeof createWeapon>;
   private readonly atlas: Atlas;
 
-  private constructor(link: AgentLink, { name, clock, maps, cheats = false }: AgentOptions) {
+  private constructor(link: BotLink, { name, clock, maps, cheats = false }: BotOptions) {
     this.name = name;
     this.atlas = createAtlas(maps);
     this.link = link;
@@ -51,29 +51,29 @@ export class Agent {
   }
 
   /** Logs in on a connected link as a demo character named `name`. */
-  static async join(link: AgentLink, options: AgentOptions): Promise<Agent> {
-    const agent = new Agent(link, options);
-    const entered = agent.waitFor("heroInit");
+  static async join(link: BotLink, options: BotOptions): Promise<Bot> {
+    const bot = new Bot(link, options);
+    const entered = bot.waitFor("heroInit");
     link.send("demoLogin", { charClass: options.charClass ?? "warrior" });
     await entered;
-    if (agent.cheats) {
-      const renamed = await agent.cheat(`/name ${options.name}`);
+    if (bot.cheats) {
+      const renamed = await bot.cheat(`/name ${options.name}`);
       if (renamed.type === "error") {
         throw new Error(`${options.name} can't use cheats: is ENABLE_CHEATS=true on the server?`);
       }
     } else {
       /* The same rename a player does from the character screen */
       link.send("updateProfile", { userName: options.name });
-      await agent.sync();
+      await bot.sync();
     }
-    return agent;
+    return bot;
   }
 
   get id() {
     return this.link.id;
   }
 
-  /** The room the agent stands in, as its map describes it: walls and doors. */
+  /** The room the bot stands in, as its map describes it: walls and doors. */
   get room(): KnownRoom {
     return this.atlas(this.senses.roomName);
   }
@@ -101,7 +101,7 @@ export class Agent {
     return Promise.race([arrived, timedOut]).finally(stop);
   }
 
-  /** Resolves once the server has handled everything this agent sent before it. */
+  /** Resolves once the server has handled everything this bot sent before it. */
   sync(): Promise<void> {
     return new Promise((resolve) => this.link.send("latency", () => resolve()));
   }
@@ -149,7 +149,7 @@ export class Agent {
     sendPosition(this.body, this.senses.x, this.senses.y);
   }
 
-  /** How long until the agent's weapon is ready to swing again, like the browser's cooldown. */
+  /** How long until the bot's weapon is ready to swing again, like the browser's cooldown. */
   swingCooldown(): number {
     return this.weapon.cooldown();
   }
@@ -179,8 +179,8 @@ export class Agent {
     await back;
   }
 
-  /** Invites another agent and has it accept. Resolves with the party id. */
-  inviteToParty(other: Agent): Promise<string> {
+  /** Invites another bot and has it accept. Resolves with the party id. */
+  inviteToParty(other: Bot): Promise<string> {
     return inviteToParty(this.member(), other.member());
   }
 

@@ -2,11 +2,11 @@ import { encodeWireDirection } from "@/network";
 import { findPath } from "@/rules/movement";
 import type { Point } from "@/rules/world";
 import type { KnownRoom } from "./atlas";
-import type { AgentBody } from "./body";
+import type { BotBody } from "./body";
 
-/** How often a walking agent reports its position, like a client on a 20 fps network tick. */
+/** How often a walking bot reports its position, like a client on a 20 fps network tick. */
 const STEP_MS = 50;
-/** Agents walk a little under their speed so the server's speed check never trips on timing. */
+/** Bots walk a little under their speed so the server's speed check never trips on timing. */
 const SPEED_MARGIN = 0.85;
 /** How close counts as having arrived, in pixels. */
 const ARRIVE_DISTANCE = 4;
@@ -18,7 +18,7 @@ const MAX_TRIES = 3;
  * Walks in a straight line at walking speed, reporting each step like a client. Stops early when
  * the server corrects it (a wall, the map edge). Resolves with whether it got there.
  */
-export function walkTo(body: AgentBody, x: number, y: number, timeoutMs: number) {
+export function walkTo(body: BotBody, x: number, y: number, timeoutMs: number) {
   return walkPath(body, [{ x, y }], timeoutMs);
 }
 
@@ -26,7 +26,7 @@ export function walkTo(body: AgentBody, x: number, y: number, timeoutMs: number)
  * Walks through each point in turn without stopping in between, like `walkTo`. Resolves with
  * whether it reached the last one.
  */
-async function walkPath(body: AgentBody, points: Point[], timeoutMs: number) {
+async function walkPath(body: BotBody, points: Point[], timeoutMs: number) {
   const { senses, clock, link } = body;
   const correctionsBefore = senses.corrections.length;
   const corrected = () => senses.corrections.length > correctionsBefore;
@@ -66,7 +66,7 @@ async function walkPath(body: AgentBody, points: Point[], timeoutMs: number) {
  * Walks around walls to a spot in the room, finding the way with the game's own pathfinder.
  * Resolves with whether it got there.
  */
-export async function travelTo(body: AgentBody, room: KnownRoom, to: Point, timeoutMs: number) {
+export async function travelTo(body: BotBody, room: KnownRoom, to: Point, timeoutMs: number) {
   const { senses, clock } = body;
   const deadline = clock.now() + timeoutMs;
   for (let tries = 0; tries < MAX_TRIES && clock.now() < deadline; tries++) {
@@ -79,7 +79,7 @@ export async function travelTo(body: AgentBody, room: KnownRoom, to: Point, time
 }
 
 /** Reports standing at a position, legal or not; the server decides. */
-export function sendPosition({ link }: AgentBody, x: number, y: number) {
+export function sendPosition({ link }: BotBody, x: number, y: number) {
   link.send("playerInput", { x, y, vx: 0, vy: 0 });
 }
 

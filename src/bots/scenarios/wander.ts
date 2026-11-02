@@ -6,14 +6,14 @@ const LIVE_MS = 120_000;
 
 export const wander: Scenario = {
   name: "wander",
-  description: "an agent roams for two minutes, finds its way through doors into other zones",
+  description: "a bot roams for two minutes, finds its way through doors into other zones",
   async run({ spawn, live, clock, log, check }) {
-    const agent = await spawn("Agent Wanderer");
-    const { senses } = agent;
+    const bot = await spawn("Bot Wanderer");
+    const { senses } = bot;
     const rooms = [senses.roomName];
-    const stopWatching = agent.on("heroInit", () => rooms.push(senses.roomName));
+    const stopWatching = bot.on("heroInit", () => rooms.push(senses.roomName));
 
-    await live(agent, wanderBrain, LIVE_MS);
+    await live(bot, wanderBrain, LIVE_MS);
     stopWatching();
     await clock.sleep(200); // a few pose ticks after it stopped
     log(`went ${rooms.join(" → ")} with ${senses.corrections.length} corrections`);

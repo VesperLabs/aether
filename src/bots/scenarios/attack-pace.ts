@@ -5,10 +5,10 @@ const SPAM_EVERY_MS = 25;
 
 export const attackPace: Scenario = {
   name: "attack-pace",
-  description: "spamming attack only shows real swings; a paced agent never swings early",
+  description: "spamming attack only shows real swings; a paced bot never swings early",
   async run({ spawn, clock, log, check }) {
-    const attacker = await spawn("Agent Swinger");
-    const watcher = await spawn("Agent Watcher");
+    const attacker = await spawn("Bot Swinger");
+    const watcher = await spawn("Bot Watcher");
     await watcher.cheat(`/tp ${Math.round(attacker.senses.x)} ${Math.round(attacker.senses.y)}`);
     await attacker.cheat("/heal");
 
@@ -30,7 +30,7 @@ export const attackPace: Scenario = {
     log(`${SPAM_MS / SPAM_EVERY_MS} attacks sent, ${seen} shown (attack delay ${delay}ms)`);
     check(seen >= 1 && seen <= allowed, `others only see real swings (at most ${allowed})`);
 
-    /* The agent can't know when its last spammed swing landed, so let that cooldown run out */
+    /* The bot can't know when its last spammed swing landed, so let that cooldown run out */
     await clock.sleep(delay);
     await attacker.cheat("/heal");
     const before = seen;

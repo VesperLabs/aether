@@ -1,4 +1,4 @@
-import type { AgentLink } from "@/agents";
+import type { BotLink } from "@/bots";
 import type { GameIo } from "@/network";
 
 type Listener = (...args: unknown[]) => void;
@@ -39,7 +39,7 @@ function overTheWire(args: unknown[]): unknown[] {
 
 /**
  * socket.io without the network: the server side looks like a socket.io server (`to`, `emit`,
- * rooms, `connection`), each client side is an AgentLink. Nothing is delivered until `deliver`,
+ * rooms, `connection`), each client side is an BotLink. Nothing is delivered until `deliver`,
  * so a simulation decides exactly when messages arrive, in the order they were sent.
  */
 export function createLocalHub() {
@@ -113,7 +113,7 @@ export function createLocalHub() {
     /* Only the parts of a socket.io server the game uses */
     io: io as unknown as GameIo,
     /** Opens a connection, as a browser would, and returns the client end. */
-    connect(): AgentLink {
+    connect(): BotLink {
       const id = `local-${nextId++}`;
       const socket = serverSocket(id);
       const client = createListeners();

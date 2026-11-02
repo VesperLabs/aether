@@ -1,10 +1,10 @@
 import { getSwingDelay, getWeaponRange } from "@/rules/combat";
 import { findSpellHits, getMeleeSwing } from "@/rules/spells";
-import type { AgentBody } from "./body";
+import type { BotBody } from "./body";
 import { facing } from "./movement";
 import type { SeenCharacter, Senses } from "./senses";
 
-/** Melee reach a fighting agent keeps from its target. */
+/** Melee reach a fighting bot keeps from its target. */
 const FIGHT_DISTANCE = 20;
 /** Swings wait a little past the attack delay, so clock jitter never makes one early. */
 const SWING_MARGIN_MS = 30;
@@ -14,13 +14,13 @@ const DIRECTIONS = ["down", "up", "left", "right"] as const;
 type Direction = (typeof DIRECTIONS)[number];
 
 /**
- * How a fight ended: the target died (to anyone's hit), the agent died, the target left, or time
+ * How a fight ended: the target died (to anyone's hit), the bot died, the target left, or time
  * ran out. Swings hit everything in reach, so other mobs can die along the way; that doesn't end it.
  */
 export type FightOutcome = "killed" | "died" | "gone" | "timeout";
 
-/** An agent's weapon: it remembers the last swing, so it can wait out the attack delay. */
-export function createWeapon(body: AgentBody) {
+/** A bot's weapon: it remembers the last swing, so it can wait out the attack delay. */
+export function createWeapon(body: BotBody) {
   const { senses, clock } = body;
   let lastSwingAt = -Infinity;
 

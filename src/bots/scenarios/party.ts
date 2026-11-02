@@ -2,11 +2,11 @@ import type { Scenario } from "./scenario";
 
 export const party: Scenario = {
   name: "party",
-  description: "three agents form a party, the leader changes room, one leaves",
+  description: "three bots form a party, the leader changes room, one leaves",
   async run({ spawn, log, check }) {
-    const leader = await spawn("Agent Leader");
-    const second = await spawn("Agent Two");
-    const third = await spawn("Agent Three");
+    const leader = await spawn("Bot Leader");
+    const second = await spawn("Bot Two");
+    const third = await spawn("Bot Three");
 
     const partyId = await leader.inviteToParty(second);
     check((await leader.inviteToParty(third)) === partyId, "both bots join the leader's party");

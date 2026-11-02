@@ -1,5 +1,5 @@
 /**
- * Runs agent scenarios: code-driven players that log in and play like real clients.
+ * Runs bot scenarios: code-driven players that log in and play like real clients.
  *
  *   npm run bots                    every scenario
  *   npm run bots -- party combat    just these
@@ -7,14 +7,14 @@
  *   npm run bots -- --local         fast-forward on a simulation even when the dev server is up
  *   npm run bots -- --wander 3      leave 3 bots wandering the world until Ctrl-C
  *
- * With `npm run dev` up (and ENABLE_CHEATS=true), agents join that server in real time so you can
+ * With `npm run dev` up (and ENABLE_CHEATS=true), bots join that server in real time so you can
  * watch them; the live world can interfere, so that's watch mode, not a test. Otherwise each
  * scenario runs on a fast-forwarded simulation: real maps, no NPCs but what it summons, seeded.
  */
 import net from "node:net";
-import { SCENARIOS, runScenario } from "@/agents";
+import { SCENARIOS, runScenario } from "@/bots";
 import { simulateScenario } from "@/server/sim";
-import { joinTestAgent, realClock, startLocalServer, startWanderers } from "@/server/agents";
+import { joinTestBot, realClock, startLocalServer, startWanderers } from "@/server/bots";
 
 function parseArgs(argv: string[]) {
   const names: string[] = [];
@@ -74,9 +74,9 @@ async function main() {
 
   console.log(
     useDev
-      ? `👀 Watch mode: agents join the dev server at ${devUrl} in real time. Your live world can\n` +
+      ? `👀 Watch mode: bots join the dev server at ${devUrl} in real time. Your live world can\n` +
           "   interfere (map mobs, players), so failures here aren't test failures. Use --local to test."
-      : "🤖 Agents on a fast-forwarded simulation (start npm run dev to watch them instead)",
+      : "🤖 Bots on a fast-forwarded simulation (start npm run dev to watch them instead)",
   );
   if (useDev && !near) console.log("   (pass --near <your name> to watch them up close)");
 
@@ -85,7 +85,7 @@ async function main() {
   for (const scenario of chosen) {
     const result = useDev
       ? await runScenario(scenario, {
-          join: (name, charClass) => joinTestAgent(devUrl, name, charClass),
+          join: (name, charClass) => joinTestBot(devUrl, name, charClass),
           clock: realClock,
           near,
           print,

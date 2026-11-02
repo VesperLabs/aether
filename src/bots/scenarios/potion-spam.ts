@@ -6,9 +6,9 @@ const POTION = "smallHpPotion";
 
 export const potionSpam: Scenario = {
   name: "potion-spam",
-  description: "an agent drinks two potions back to back; the cooldown should stop the second",
+  description: "a bot drinks two potions back to back; the cooldown should stop the second",
   async run({ spawn, clock, log, check }) {
-    const bot = await spawn("Agent Drinker");
+    const bot = await spawn("Bot Drinker");
     await bot.cheat(`/give ${POTION} 10`);
     await bot.cheat("/hp 1");
 

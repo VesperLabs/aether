@@ -2,7 +2,7 @@ import path from "path";
 import cors from "cors";
 import express from "express";
 import { GameServer } from "./game-server";
-import { startWanderers } from "./agents";
+import { startWanderers } from "./bots";
 import { initDatabase, initFakeDatabase } from "./persistence";
 import { registerPeerProxy } from "./http/peer-proxy";
 import { registerRoutes } from "./http/routes";

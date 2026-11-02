@@ -1,14 +1,14 @@
 import { createRng, seedFromString } from "@/rules/world";
-import type { Agent } from "../agent";
+import type { Bot } from "../bot";
 import type { Brain } from "../brain";
 import type { Clock } from "../link";
 
-/** What a scenario gets to drive agents and record what it saw. */
+/** What a scenario gets to drive bots and record what it saw. */
 interface ScenarioContext {
-  /** Brings a cheat-enabled agent into the game, next to `near` when the run has one. */
-  spawn: (name: string, charClass?: string) => Promise<Agent>;
-  /** Runs a brain on an agent for a while, then stops it. */
-  live: (agent: Agent, brain: Brain, ms: number) => Promise<void>;
+  /** Brings a cheat-enabled bot into the game, next to `near` when the run has one. */
+  spawn: (name: string, charClass?: string) => Promise<Bot>;
+  /** Runs a brain on a bot for a while, then stops it. */
+  live: (bot: Bot, brain: Brain, ms: number) => Promise<void>;
   clock: Clock;
   /** Records a step for the report. */
   log: (message: string) => void;
@@ -16,7 +16,7 @@ interface ScenarioContext {
   check: (passed: boolean, message: string) => void;
 }
 
-/** A scripted test: agents play out a situation and check what the server did. */
+/** A scripted test: bots play out a situation and check what the server did. */
 export interface Scenario {
   name: string;
   description: string;
@@ -31,10 +31,10 @@ export interface Scenario {
 }
 
 export interface RunOptions {
-  /** How the host brings an agent in (its link, server and cheats). */
-  join: (name: string, charClass?: string) => Promise<Agent>;
+  /** How the host brings a bot in (its link, server and cheats). */
+  join: (name: string, charClass?: string) => Promise<Bot>;
   clock: Clock;
-  /** A player's name to bring the agents to, so they can be watched in the game. */
+  /** A player's name to bring the bots to, so they can be watched in the game. */
   near?: string;
   /** Called with each line as it happens. */
   print?: (line: string) => void;
@@ -42,12 +42,12 @@ export interface RunOptions {
   onCheck?: (passed: boolean, message: string) => void;
 }
 
-/** Runs one scenario, always sending its agents home, and reports every step and check. */
+/** Runs one scenario, always sending its bots home, and reports every step and check. */
 export async function runScenario(
   scenario: Scenario,
   { join, clock, near, print = () => {}, onCheck }: RunOptions,
 ) {
-  const agents: Agent[] = [];
+  const bots: Bot[] = [];
   const lines: string[] = [];
   let passed = true;
   const write = (line: string) => {
@@ -58,19 +58,19 @@ export async function runScenario(
   const ctx: ScenarioContext = {
     clock,
     spawn: async (name, charClass) => {
-      const agent = await join(name, charClass);
-      agents.push(agent);
+      const bot = await join(name, charClass);
+      bots.push(bot);
       if (near) {
-        const went = await agent.cheat(`/goto ${near}`);
+        const went = await bot.cheat(`/goto ${near}`);
         if (went.type === "error") throw new Error(went.message);
       }
-      return agent;
+      return bot;
     },
-    live: async (agent, brain, ms) => {
+    live: async (bot, brain, ms) => {
       const life = new AbortController();
-      const living = brain(agent, {
+      const living = brain(bot, {
         clock,
-        rng: createRng(seedFromString(`${scenario.name}:${agent.name}`)),
+        rng: createRng(seedFromString(`${scenario.name}:${bot.name}`)),
         signal: life.signal,
       });
       await clock.sleep(ms);
@@ -92,7 +92,7 @@ export async function runScenario(
     passed = false;
     write(`  ✗ crashed: ${error instanceof Error ? error.message : String(error)}`);
   } finally {
-    agents.forEach((agent) => agent.leave());
+    bots.forEach((bot) => bot.leave());
   }
   return { name: scenario.name, passed, lines };
 }

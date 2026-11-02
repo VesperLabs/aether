@@ -5,10 +5,10 @@ const OFF_MAP = -500;
 
 export const collision: Scenario = {
   name: "collision",
-  description: "agents walk on open ground, onto each other, into a wall, and try to teleport",
+  description: "bots walk on open ground, onto each other, into a wall, and try to teleport",
   async run({ spawn, log, check }) {
-    const walker = await spawn("Agent Walker");
-    const other = await spawn("Agent Other");
+    const walker = await spawn("Bot Walker");
+    const other = await spawn("Bot Other");
 
     const start = { x: walker.senses.x, y: walker.senses.y };
     log(

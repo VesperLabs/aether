@@ -12,16 +12,16 @@ const SPOT_TRIES = 50;
  * Roams the whole map: walks around walls to random open spots, idles a moment, and now and
  * then takes a door into the next zone.
  */
-export const wander: Brain = async (agent, { clock, rng, signal }) => {
+export const wander: Brain = async (bot, { clock, rng, signal }) => {
   while (!signal.aborted) {
-    const doors = Object.values(agent.room.doors).filter((d) => d.destMap && d.destDoor);
+    const doors = Object.values(bot.room.doors).filter((d) => d.destMap && d.destDoor);
     if (doors.length && rng() < DOOR_CHANCE) {
       const door = doors[Math.floor(rng() * doors.length)];
-      const doorstep = findDoorstep(agent.room, door);
-      if (doorstep && (await agent.travelTo(doorstep))) await agent.enterDoor(door.name);
+      const doorstep = findDoorstep(bot.room, door);
+      if (doorstep && (await bot.travelTo(doorstep))) await bot.enterDoor(door.name);
     } else {
-      const spot = randomOpenSpot(agent.room, rng);
-      if (spot) await agent.travelTo(spot);
+      const spot = randomOpenSpot(bot.room, rng);
+      if (spot) await bot.travelTo(spot);
     }
     await clock.sleep(PAUSE_MS.min + rng() * (PAUSE_MS.max - PAUSE_MS.min));
   }

@@ -1,7 +1,7 @@
 import { decodeRoomPoses, type ChatMessage, type FullCharacterWire } from "@/network";
 import type { MessageName, MessagePayload } from "./link";
 
-/** A character as an agent sees it: where it is and whether it is still up. */
+/** A character as a bot sees it: where it is and whether it is still up. */
 export interface SeenCharacter {
   id: string;
   name: string;
@@ -19,7 +19,7 @@ export interface SeenCharacter {
 type Handlers = { [M in MessageName]?: (payload: MessagePayload<M>) => void };
 
 /**
- * What an agent knows, built only from the messages the server sends it, the way the browser
+ * What a bot knows, built only from the messages the server sends it, the way the browser
  * client learns the world. Plain data plus one handler per message; no IO, so it is easy to test.
  */
 export function createSenses() {
@@ -28,11 +28,11 @@ export function createSenses() {
   const senses = {
     /** This connection's id, set at login. */
     selfId: "",
-    /** Everyone in the agent's party, itself included; their swings can't hurt each other. */
+    /** Everyone in the bot's party, itself included; their swings can't hurt each other. */
     partyIds: new Set<string>(),
-    /** The agent's own character, as the server last sent it. */
+    /** The bot's own character, as the server last sent it. */
     hero: undefined as FullCharacterWire | undefined,
-    /** Where the agent is: from the server on teleports and corrections, from its own steps. */
+    /** Where the bot is: from the server on teleports and corrections, from its own steps. */
     x: 0,
     y: 0,
     roomName: "",
@@ -40,7 +40,7 @@ export function createSenses() {
     /** Every `positionCorrection`: a move the server refused. */
     corrections: [] as { x: number; y: number }[],
     messages: [] as ChatMessage[],
-    /** Whether the agent's own character is dead (until it respawns). */
+    /** Whether the bot's own character is dead (until it respawns). */
     isDead: false,
     /** Experience awarded since login. */
     expGained: 0,
@@ -97,7 +97,7 @@ export function createSenses() {
     },
     playerJoin: (player) => see(player, "player"),
     playerUpdate(player) {
-      /* Its position can trail a walking agent, so only the rest is taken */
+      /* Its position can trail a walking bot, so only the rest is taken */
       if (player.socketId === senses.selfId) senses.hero = player;
     },
     remove: (socketId) => characters.delete(socketId),

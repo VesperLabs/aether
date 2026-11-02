@@ -4,8 +4,8 @@ export const combat: Scenario = {
   name: "combat",
   description: "a party of two summons a crab, one kills it, both get experience",
   async run({ spawn, log, check }) {
-    const fighter = await spawn("Agent Fighter");
-    const buddy = await spawn("Agent Buddy");
+    const fighter = await spawn("Bot Fighter");
+    const buddy = await spawn("Bot Buddy");
     await fighter.inviteToParty(buddy);
     await buddy.cheat(`/tp ${Math.round(fighter.senses.x)} ${Math.round(fighter.senses.y)}`);
 

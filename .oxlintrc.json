@@ -74,13 +74,13 @@
                   "@/client/**",
                   "@/wiki",
                   "@/wiki/**",
-                  "@/agents",
-                  "@/agents/**"
+                  "@/bots",
+                  "@/bots/**"
                 ],
                 "message": "content imports nothing else from the repo."
               },
               {
-                "regex": "^\\.{1,2}/(.*/)?(agents|rules|network|ui|server|client|wiki)(/|$)",
+                "regex": "^\\.{1,2}/(.*/)?(bots|rules|network|ui|server|client|wiki)(/|$)",
                 "message": "content imports nothing else from the repo."
               },
               {
@@ -149,13 +149,13 @@
                   "@/client/**",
                   "@/wiki",
                   "@/wiki/**",
-                  "@/agents",
-                  "@/agents/**"
+                  "@/bots",
+                  "@/bots/**"
                 ],
                 "message": "rules imports only content."
               },
               {
-                "regex": "^\\.{1,2}/(.*/)?(agents|network|ui|server|client|wiki)(/|$)",
+                "regex": "^\\.{1,2}/(.*/)?(bots|network|ui|server|client|wiki)(/|$)",
                 "message": "rules imports only content."
               },
               {
@@ -272,13 +272,13 @@
                   "@/client/**",
                   "@/wiki",
                   "@/wiki/**",
-                  "@/agents",
-                  "@/agents/**"
+                  "@/bots",
+                  "@/bots/**"
                 ],
                 "message": "network imports only content and rules."
               },
               {
-                "regex": "^\\.{1,2}/(.*/)?(agents|ui|server|client|wiki)(/|$)",
+                "regex": "^\\.{1,2}/(.*/)?(bots|ui|server|client|wiki)(/|$)",
                 "message": "network imports only content and rules."
               },
               {
@@ -321,7 +321,7 @@
       }
     },
     {
-      "files": ["src/agents/**"],
+      "files": ["src/bots/**"],
       "rules": {
         "no-restricted-imports": [
           "error",
@@ -337,14 +337,14 @@
                   "@/client/**",
                   "@/wiki",
                   "@/wiki/**",
-                  "@/agents",
-                  "@/agents/**"
+                  "@/bots",
+                  "@/bots/**"
                 ],
-                "message": "agents import only content, rules and network (they are core, so any host can run them)."
+                "message": "bots import only content, rules and network (they are core, so any host can run them)."
               },
               {
-                "regex": "^\\.{1,2}/(.*/)?(agents|ui|server|client|wiki)(/|$)",
-                "message": "agents import only content, rules and network (they are core, so any host can run them)."
+                "regex": "^\\.{1,2}/(.*/)?(bots|ui|server|client|wiki)(/|$)",
+                "message": "bots import only content, rules and network (they are core, so any host can run them)."
               },
               {
                 "group": ["@/rules/*/**"],
@@ -382,11 +382,11 @@
               },
               {
                 "name": "socket.io",
-                "message": "agents reach the server through an AgentLink the host passes in (ARCHITECTURE.md, agents/)."
+                "message": "bots reach the server through an BotLink the host passes in (ARCHITECTURE.md, bots/)."
               },
               {
                 "name": "socket.io-client",
-                "message": "agents reach the server through an AgentLink the host passes in (ARCHITECTURE.md, agents/)."
+                "message": "bots reach the server through an BotLink the host passes in (ARCHITECTURE.md, bots/)."
               }
             ]
           }
@@ -394,7 +394,7 @@
       }
     },
     {
-      "files": ["src/agents/**"],
+      "files": ["src/bots/**"],
       "excludeFiles": ["**/*.test.ts"],
       "rules": {
         "no-restricted-properties": [
@@ -402,17 +402,17 @@
           {
             "object": "Date",
             "property": "now",
-            "message": "Agents get time and randomness from their host (Clock, BrainLife), so any host can run them."
+            "message": "Bots get time and randomness from their host (Clock, BrainLife), so any host can run them."
           },
           {
             "object": "Math",
             "property": "random",
-            "message": "Agents get time and randomness from their host (Clock, BrainLife), so any host can run them."
+            "message": "Bots get time and randomness from their host (Clock, BrainLife), so any host can run them."
           },
           {
             "object": "performance",
             "property": "now",
-            "message": "Agents get time and randomness from their host (Clock, BrainLife), so any host can run them."
+            "message": "Bots get time and randomness from their host (Clock, BrainLife), so any host can run them."
           }
         ]
       }

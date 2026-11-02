@@ -1,5 +1,5 @@
 export { prepareCheatServer } from "./cheat-server-setup";
-export { joinTestAgent } from "./join-agent";
+export { joinTestBot } from "./join-bot";
 export { startLocalServer } from "./local-server";
 export { realClock } from "./real-clock";
 export { startWanderers } from "./wanderers";
