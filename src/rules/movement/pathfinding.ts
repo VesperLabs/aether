@@ -1,6 +1,9 @@
 import EasyStar from "easystarjs";
 import type { TileGrid } from "./tilemap";
 
+/** How many tiles one search may visit before giving up, enough to cross the largest map. */
+const MAX_ITERATIONS = 50_000;
+
 export interface Pathfinder {
   easystar: EasyStar.js;
   tileWidth: number;
@@ -18,7 +21,7 @@ export function createPathfinder(grid: TileGrid): Pathfinder {
   easystar.setAcceptableTiles([0]);
   easystar.enableDiagonals();
   easystar.disableCornerCutting();
-  easystar.setIterationsPerCalculation(1000);
+  easystar.setIterationsPerCalculation(MAX_ITERATIONS);
   easystar.setTileCost(1, 1);
   easystar.setTileCost(0, 0);
   return { easystar, tileWidth: grid.tileWidth, tileHeight: grid.tileHeight };
@@ -52,13 +55,15 @@ export function findPath(
     }
   }
   let found: { x: number; y: number }[] | undefined;
-  easystar.findPath(start.x, start.y, end.x, end.y, (path) => {
+  const search = easystar.findPath(start.x, start.y, end.x, end.y, (path) => {
     found = path?.slice(1).map((tile) => ({
       x: tile.x * tileWidth + tileWidth / 2,
       y: tile.y * tileHeight + tileHeight / 2,
     }));
   });
   easystar.calculate();
+  /* A search that ran out of iterations would stay queued and block every later one */
+  easystar.cancelPath(search);
   easystar.stopAvoidingAllAdditionalPoints();
   return found;
 }

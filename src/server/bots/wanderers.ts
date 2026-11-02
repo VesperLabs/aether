@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { Bot, rollLook, wander } from "@/bots";
 import { createRng, seedFromString } from "@/rules/world";
 import { readRoomMap } from "../map-files";
@@ -8,9 +9,10 @@ const NAMES = ["Mira", "Oskar", "Tilde", "Bram", "Juno", "Ezra", "Wren", "Pell"]
 
 /**
  * Brings wandering bots into the world: bots without cheats, named with "(bot)" so players can
- * tell, each roaming the maps. Resolves once they are in; `stop` sends them home.
+ * tell, each roaming the maps. Resolves once they are in; `stop` sends them home. Each start rolls
+ * new looks and temperaments unless given the same `seed`.
  */
-export async function startWanderers(url: string, count: number) {
+export async function startWanderers(url: string, count: number, seed = randomUUID()) {
   const life = new AbortController();
   const living: Promise<void>[] = [];
   const bots: Bot[] = [];
@@ -20,7 +22,7 @@ export async function startWanderers(url: string, count: number) {
     const link = await connectSocketLink(url);
     const bot = await Bot.join(link, { name, clock: realClock, maps: readRoomMap });
     bots.push(bot);
-    const rng = createRng(seedFromString(name));
+    const rng = createRng(seedFromString(`${seed}:${name}`));
     await bot.restyle(rollLook(rng));
     living.push(wander(bot, { clock: realClock, rng, signal: life.signal }));
   }
