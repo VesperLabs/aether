@@ -17,13 +17,11 @@ import type { ServerCharacter } from "./character";
 export type AbilityDetails = ReturnType<typeof getAbilityDetails>;
 
 /**
- * Legacy adapters for the pure combat and spell damage rules: roll the dice with `Math.random`,
+ * Legacy adapters for the pure combat and spell damage rules: roll the dice with the world RNG (`world.rng`),
  * then apply the outcome to the live characters (hp, buffs, aggro, death) in the same order as
  * before. Delete in Phase 4 when entities become plain data.
  *
  */
-
-const rng = () => Math.random();
 
 /** Rolling (and just after), or just after going into stealth: hits miss. */
 function cannotBeHit(victim: ServerCharacter) {
@@ -42,7 +40,7 @@ function isAlly(attacker: ServerCharacter, victim: ServerCharacter) {
 }
 
 export function applyElementalDamage(eleDamages: ElementalDamages, victim: ServerCharacter) {
-  return calculateElementalDamage(eleDamages, victim.stats, rng);
+  return calculateElementalDamage(eleDamages, victim.stats, victim.world.rng);
 }
 
 /** What happens to a victim that took damage: combat flag, dispels, and the mob targeting its attacker. */
@@ -71,7 +69,7 @@ export function applySpellDamage(
   const hits: Array<Hit> = [];
   const { effects = {}, buffs } = abilityDetails ?? ({} as Partial<AbilityDetails>);
 
-  const rolled = rollSpellDamage(effects, attacker?.stats, victim.stats, rng);
+  const rolled = rollSpellDamage(effects, attacker?.stats, victim.stats, victim.world.rng);
   const elements = rolled.elements as Elements[];
   let { eleDamage, holyDamage } = rolled;
 
@@ -94,7 +92,7 @@ export function applySpellDamage(
   if (!Object.entries(effects)?.length) return hits;
 
   // Spell Crits
-  const crit = rollSpellCrit({ eleDamage, holyDamage }, attacker.stats, rng);
+  const crit = rollSpellCrit({ eleDamage, holyDamage }, attacker.stats, victim.world.rng);
   const { isCritical } = crit;
   eleDamage = crit.eleDamage;
   holyDamage = crit.holyDamage;
@@ -157,7 +155,7 @@ export function applyAttackDamage(
 
   /* A dual-wielder's left-hand swing uses that weapon's stats, never both weapons' */
   const swingStats = (hand === "handLeft" && attacker.offHandStats) || attacker.stats;
-  const roll = rollAttack(swingStats, victim.stats, abilityDetails?.effects, rng);
+  const roll = rollAttack(swingStats, victim.stats, abilityDetails?.effects, victim.world.rng);
   if (roll.outcome === "miss") {
     return [{ type: "miss", amount: 0, from: attacker.id, to: victim.id }];
   }
@@ -181,13 +179,17 @@ export function applyAttackDamage(
   }
 
   // onAttackHit if we have some
-  for (const { name, level, target } of rollTriggers(swingStats?.triggers, "onAttackHit", rng)) {
+  for (const { name, level, target } of rollTriggers(
+    swingStats?.triggers,
+    "onAttackHit",
+    victim.world.rng,
+  )) {
     const to = target === "self" ? attacker : victim;
     hits.push({ type: "buff", from: attacker.id, buffName: name, elements, to: to.id });
     to.addBuff({ name, level, caster: attacker });
   }
   // onHurt triggers if we have them
-  for (const { name, level } of rollTriggers(victim?.stats?.triggers, "onHurt", rng)) {
+  for (const { name, level } of rollTriggers(victim?.stats?.triggers, "onHurt", victim.world.rng)) {
     hits.push({ type: "buff", from: attacker.id, buffName: name, elements, to: victim.id });
     victim.addBuff({ name, level, caster: attacker });
   }

@@ -8,7 +8,7 @@ import { subscribeLoot, type LootItem } from "@/rules/loot";
 import { subscribeThreat } from "@/rules/npc-behavior";
 import { subscribeQuests } from "@/rules/quests";
 import { npcBaseStats, subscribeStats } from "@/rules/stats";
-import { addRoom, createRoom, createWorld } from "@/rules/world";
+import { addRoom, createRoom, createRng, createWorld } from "@/rules/world";
 import { spawnLoot } from "./loot-adapter";
 import { subscribeNpcMessages } from "./npc-messages";
 import { subscribeKnockbackMessages, subscribePoseForgetting } from "./net/handlers/movement";
@@ -69,16 +69,20 @@ export function createServerWorld({
   io,
   db,
   now,
+  seed = now(),
 }: {
   io: GameIo;
   db: Database;
   now: () => number;
+  /** Seeds the world RNG; pass a fixed one to replay a run. */
+  seed?: number;
 }): ServerWorld {
   const world = createWorld(QuestBuilder.buildAllQuests()) as ServerWorld;
   world.io = io;
   world.db = db;
   world.now = now;
   world.netIds = createNetIds();
+  world.rng = createRng(seed);
 
   for (const asset of mapList) {
     addRoom(world, createRoom(asset.name, readMap(asset.json), now()));
@@ -99,7 +103,7 @@ export function createServerWorld({
     world.players[characterId]?.addNpcKill(mobName);
   });
   subscribeLoot(world.events, {
-    rng: Math.random,
+    rng: world.rng,
     ilvlMultiplier: ILVL_MULTIPLIER,
     rollWorldDrop: (ilvl, magicFind) => ItemBuilder.rollDrop(ilvl, magicFind),
     buildItem: (type, rarity, key) => ItemBuilder.buildItem(type, rarity, key) as LootItem | null,
