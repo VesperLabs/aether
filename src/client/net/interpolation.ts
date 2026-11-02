@@ -104,5 +104,10 @@ export function createInterpolator(tickMs: number) {
     };
   }
 
-  return { add, reset, sample };
+  /** How far behind the server's newest tick remote characters are drawn, ms. */
+  function getDelay() {
+    return delay;
+  }
+
+  return { add, getDelay, reset, sample };
 }

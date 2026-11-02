@@ -23,6 +23,8 @@ export {
 } from "./collision";
 export type { Bounds, Box, Circle, MoveResult, Shape } from "./collision";
 export { hasLineOfSight } from "./line-of-sight";
+export { MAX_REWIND_MS, clampRewind, createPoseHistory } from "./pose-history";
+export type { PoseHistory } from "./pose-history";
 export { createPathfinder, findNextWaypoint } from "./pathfinding";
 export type { Pathfinder } from "./pathfinding";
 export { NPC_WALL_RADIUS, moveBodyFreely, moveBodyThroughMap } from "./system";

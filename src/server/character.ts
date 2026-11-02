@@ -34,6 +34,8 @@ export class ServerCharacter extends CharacterModel {
   world: ServerWorld;
   /** Net id for the binary pose wire, set when the character joins the world. */
   nid!: number;
+  /** How far behind the server this character sees others: players report it, npcs see live. */
+  viewLagMs = 0;
   /** Dual-wielding only: the stats the left hand's swings use (see `calculateStats`). */
   offHandStats?: StatBag;
   constructor(world: ServerWorld, args: CharacterArgs) {

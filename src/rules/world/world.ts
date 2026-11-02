@@ -2,9 +2,11 @@ import { LOOT_SPAWN_CYCLE_TIME, parseMapLootList, type MapLoot } from "../loot";
 import { createPartyState, type PartyState } from "../party";
 import {
   createPathfinder,
+  createPoseHistory,
   getObjectProperty,
   readTileMap,
   type Pathfinder,
+  type PoseHistory,
   type TileMap,
   type TiledMapJson,
 } from "../movement";
@@ -32,6 +34,8 @@ export interface RoomData {
   lootState: { mapLootList: MapLoot[]; lastMapLootSpawn: number };
   /** Each character's last status sent to the room, see `takeChangedStatuses`. */
   sentStatuses: Map<string, string>;
+  /** Where characters stood over the last ticks, to judge hits by what attackers saw. */
+  poseHistory: PoseHistory;
 }
 
 /**
@@ -107,6 +111,7 @@ export function createRoom(name: string, json: TiledMapJson, now: number): RoomD
       lastMapLootSpawn: now - LOOT_SPAWN_CYCLE_TIME,
     },
     sentStatuses: new Map(),
+    poseHistory: createPoseHistory(),
   };
 }
 

@@ -29,7 +29,7 @@ export {
 export type { ResolvedSpell, MeleeSwing, SpellFlight, SpellLifeInput, SpellShape } from "./shape";
 export { canHitNpc, canHitPlayer, isBehindCaster, isSpellVictimCandidate } from "./targeting";
 export type { PlayerTargetInput, Point, SpellTargets, VictimCheckInput } from "./targeting";
-export { findSpellHits } from "./hits";
-export type { SpellHitInput, SpellVictim } from "./hits";
+export { findSpellHits, toSpellVictims } from "./hits";
+export type { PositionOf, SpellHitInput, SpellVictim, VictimSource } from "./hits";
 export { characterBodyCircle, characterHitBox, getAimAngle } from "./overlap";
 export type { AimLead, CharacterShapeInput } from "./overlap";
