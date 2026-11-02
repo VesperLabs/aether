@@ -1,6 +1,6 @@
 import type { ServerWorld } from "./server-world";
 import { moveBodyFreely, moveBodyThroughMap } from "@/rules/movement";
-import type { Frame, System } from "@/rules/world";
+import { groupByRoom, type Frame, type System } from "@/rules/world";
 import { encodeRoomPoses, takeChangedStatuses } from "@/network";
 import { getBuffRoomState } from "@/server/net/room-sync";
 import { updateRoomLoot } from "./loot-adapter";
@@ -38,6 +38,11 @@ const updateEntities: System<ServerWorld> = (world, { time, delta, now }) => {
 /** Loot, finished spells, and sending each room's poses and changed statuses to the clients in it. */
 const updateRooms: System<ServerWorld> = (world: ServerWorld, { now }: Frame) => {
   const { io } = world;
+  /* One pass over everyone, not one per room */
+  const roomsWithBuffChanges = new Set<string>();
+  for (const c of [...Object.values(world.players), ...Object.values(world.npcs)]) {
+    if (c?.state?.hasBuffChanges && c.room?.name) roomsWithBuffChanges.add(c.room.name);
+  }
   for (const room of Object.values(world.rooms)) {
     /* Simulate first so what is sent matches what clients see on the next frame (loot expiry, spawns). */
     updateRoomLoot(world, room);
@@ -50,11 +55,8 @@ const updateRooms: System<ServerWorld> = (world: ServerWorld, { now }: Frame) =>
       continue;
     }
 
-    const hasBuffChanges = [...Object.values(world.players), ...Object.values(world.npcs)].some(
-      (n: { room?: { name?: string } | null; state?: { hasBuffChanges?: boolean } }) =>
-        n?.room?.name === room.name && n?.state?.hasBuffChanges,
-    );
-    if (hasBuffChanges) io.to(room.name).emit("buffUpdate", getBuffRoomState(world, room.name));
+    if (roomsWithBuffChanges.has(room.name))
+      io.to(room.name).emit("buffUpdate", getBuffRoomState(world, room.name));
 
     io.to(room.name).emit("poses", encodeRoomPoses(world, room.name, now));
     const statuses = takeChangedStatuses(world, room.name, room.sentStatuses);
@@ -65,12 +67,11 @@ const updateRooms: System<ServerWorld> = (world: ServerWorld, { now }: Frame) =>
 /** Remembers where every character stood this tick, for judging later hits by what attackers saw. */
 const recordPoses: System<ServerWorld> = (world) => {
   const now = world.now();
+  const roomNames = Object.keys(world.rooms);
+  const players = groupByRoom(world.players, roomNames);
+  const npcs = groupByRoom(world.npcs, roomNames);
   for (const room of Object.values(world.rooms)) {
-    const here = (c: { room?: { name?: string } | null }) => c.room?.name === room.name;
-    room.poseHistory.record(now, [
-      ...Object.values(world.players).filter(here),
-      ...Object.values(world.npcs).filter(here),
-    ]);
+    room.poseHistory.record(now, [...players[room.name], ...npcs[room.name]]);
   }
 };
 
