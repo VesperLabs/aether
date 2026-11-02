@@ -20,7 +20,7 @@ export const ChatItemPreview = ({ look, size = 24 }: { look: ItemLook; size?: nu
   useLayoutEffect(() => {
     const asset = resolveAsset(look, PREVIEW_USER);
     if (!asset) return;
-    assetToCanvas({
+    return assetToCanvas({
       asset,
       tint: look.tint,
       setImageData: (src: string) => {

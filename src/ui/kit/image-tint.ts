@@ -128,13 +128,6 @@ export function tintCanvas(c: HTMLCanvasElement, tint = "0xFFFFFF") {
   return copy.canvas;
 }
 
-interface AssetToCanvasArgs {
-  asset: { src: string; previewRect?: readonly number[] };
-  tint?: string;
-  setImageData: (dataUrl: string) => void;
-  shouldTrim?: boolean;
-}
-
 const ART_CACHE = new Map<string, Promise<string>>();
 
 /**
@@ -164,12 +157,4 @@ export function assetToDataUrl(
     ART_CACHE.set(key, cached);
   }
   return cached;
-}
-
-export function assetToCanvas({ asset, tint, setImageData, shouldTrim = true }: AssetToCanvasArgs) {
-  assetToDataUrl(asset, tint, shouldTrim)
-    .then(setImageData)
-    .catch((error) => {
-      console.error("Error loading or processing image:", error);
-    });
 }

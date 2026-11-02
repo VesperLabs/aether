@@ -197,7 +197,7 @@ export const ItemSlot = memo(
       if (!item) return;
       const asset = resolveAsset(item, profile ? { profile } : DEFAULT_ASSET_USER);
       if (!asset) return;
-      assetToCanvas({ asset, tint: item?.tint, setImageData });
+      return assetToCanvas({ asset, tint: item?.tint, setImageData });
     }, [item, profile]);
 
     /* Bind our global movement events */

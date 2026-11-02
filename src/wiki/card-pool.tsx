@@ -79,9 +79,11 @@ export const SpriteFace = ({
 }) => {
   const [imageData, setImageData] = useState<string>();
   const [natural, setNatural] = useState<{ width: number; height: number }>();
+  /* Keyed on the art, not the asset object, which callers rebuild every render */
+  const artKey = `${asset.src}|${asset.previewRect?.join(",")}`;
   useLayoutEffect(() => {
-    assetToCanvas({ asset, tint, setImageData });
-  }, [asset, tint]);
+    return assetToCanvas({ asset, tint, setImageData });
+  }, [artKey, tint]);
 
   /* Pixel art only stays even at whole-number scales: use the largest that fits the box. A sprite
      bigger than the box is shrunk smoothly instead, since crisp pixels would drop rows. */

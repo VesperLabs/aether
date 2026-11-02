@@ -36,11 +36,11 @@ export { arePropsEqualWithKeys, get, isEqual } from "./are-props-equal";
 export {
   IMAGE_CACHE,
   applyTintToImage,
-  assetToCanvas,
   assetToDataUrl,
   loadCacheImage,
   tintCanvas,
 } from "./image-tint";
+export { assetToCanvas } from "./asset-to-canvas";
 export { isMobile } from "./is-mobile";
 export * from "./hooks";
 export { NotificationBadge } from "./notification-badge";
