@@ -2,7 +2,7 @@ import type { ServerWorld } from "../server-world";
 import type { GameIo, GameSocket } from "@/network";
 
 /** Things that belong to one connection and outlive a single command. */
-export interface ConnectionSession {
+interface ConnectionSession {
   /** The peerjs id the client announced with `peerInit`, used for video chat. */
   peerId: string | null;
 }

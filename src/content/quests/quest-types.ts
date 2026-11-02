@@ -1,7 +1,7 @@
 import type { ItemRef } from "../items/item-refs";
 import type { NastyId } from "../mobs/nasties";
 
-export type QuestObjectiveDefinition =
+type QuestObjectiveDefinition =
   /** Talk to a keeper. The keeper id is checked against the keepers in `mobs/keepers.ts`. */
   | { readonly type: "chat"; readonly keeper: string }
   | { readonly type: "bounty"; readonly monster: NastyId; readonly amount: number }

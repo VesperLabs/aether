@@ -9,7 +9,7 @@ import type { LootItem, LootSpawn } from "@/rules/loot";
  * what the rules decide. Delete in Phase 4 when the world holds plain data.
  */
 
-export function lootInRoom(world: ServerWorld, roomName: string): Loot[] {
+function lootInRoom(world: ServerWorld, roomName: string): Loot[] {
   return Object.values(world.loots).filter((loot) => loot.roomName === roomName);
 }
 

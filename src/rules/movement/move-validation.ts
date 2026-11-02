@@ -10,13 +10,13 @@ import type { TileGrid } from "./tilemap";
  */
 
 /** Speed buffs lag a tick behind, and old clients do not normalise diagonals (about 1.41x). */
-export const MOVE_SPEED_TOLERANCE = 1.5;
+const MOVE_SPEED_TOLERANCE = 1.5;
 /** The most movement that may be saved up, in seconds of walking: covers lag spikes and bursts. */
-export const MOVE_BURST_SECONDS = 1;
+const MOVE_BURST_SECONDS = 1;
 /** Extra pixels allowed on every move, for rounding (the client sends whole pixels) and jitter. */
-export const MOVE_SLACK_PIXELS = 16;
+const MOVE_SLACK_PIXELS = 16;
 /** The player's wall box is this much smaller than the body on each side. The client rounds. */
-export const MOVE_WALL_INSET = 4;
+const MOVE_WALL_INSET = 4;
 
 /** The last accepted position of a player, and how far they may still move. Plain data. */
 export interface MoveTrack {
@@ -39,7 +39,7 @@ export interface MoveContext {
   bodySize: number;
 }
 
-export type MoveRejection = "invalid" | "out-of-bounds" | "too-far" | "in-wall";
+type MoveRejection = "invalid" | "out-of-bounds" | "too-far" | "in-wall";
 
 export type MoveResult =
   | { ok: true; track: MoveTrack }
@@ -140,7 +140,7 @@ export function grantMoveBudget(track: MoveTrack, pixels: number): MoveTrack {
 }
 
 /** The closest distance from a point to a rectangle (0 when inside it). */
-export function distanceToRect(
+function distanceToRect(
   point: { x: number; y: number },
   rect: { x: number; y: number; width: number; height: number },
 ): number {

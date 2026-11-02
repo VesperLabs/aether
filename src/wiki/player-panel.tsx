@@ -36,7 +36,7 @@ const MENU_BACKING = "rgba(0, 0, 0, .3)";
 const ACTIVE_LINE = "#bfdbfe";
 
 /** Width of the drawer on wider screens. */
-export const PLAYER_PANEL_WIDTH = 410;
+const PLAYER_PANEL_WIDTH = 410;
 
 /**
  * The selected player's game menus, one tab at a time, on the game's dark panel. A drawer over the

@@ -2,7 +2,7 @@ import type { GameEvents } from "../events";
 
 /** A small typed event emitter. No dependencies, so it runs in the browser as well as on the server. */
 
-export type EventHandler<Payload> = (payload: Payload) => void;
+type EventHandler<Payload> = (payload: Payload) => void;
 
 export interface EventBus<Events extends object> {
   /** Subscribe. Returns a function that unsubscribes. */

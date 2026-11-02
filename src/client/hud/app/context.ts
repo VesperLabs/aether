@@ -17,7 +17,7 @@ export interface PartyInvite {
 }
 
 /** What the server says about the keeper the hero is chatting with. */
-export interface KeeperChatData {
+interface KeeperChatData {
   dialogues?: { greet?: string; quests?: string; shop?: string; home?: string };
   quests?: Quest[];
   shop?: Array<{ item: BuiltItem; stock?: number }>;
@@ -28,7 +28,7 @@ export interface KeeperChatData {
 export type KeeperView = Partial<Player> & { keeperData: KeeperChatData; profile?: MobProfile };
 
 /** The item the drop, sell or buy modal is asking about. */
-export type DropAction =
+type DropAction =
   | "DROP"
   | "DROP_CONFIRM"
   | "SHOP_SELL_AMOUNT"

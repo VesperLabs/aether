@@ -9,7 +9,7 @@ export function streamHasUsableVideo(
 }
 
 /** Secure context + `navigator.mediaDevices.getUserMedia` (required for camera/mic). */
-export function isVideoChatEnvironmentSupported(): boolean {
+function isVideoChatEnvironmentSupported(): boolean {
   if (typeof navigator === "undefined") return false;
   return typeof navigator.mediaDevices?.getUserMedia === "function";
 }
@@ -19,7 +19,7 @@ export function isVideoChatEnvironmentSupported(): boolean {
  * and historically had weaker or flaky camera + WebRTC vs Safari; many users still see failures.
  * We disable the feature there and show "supported browsers only" unless we add a dedicated iOS WK fix.
  */
-export function isIOSNonSafariBrowser(): boolean {
+function isIOSNonSafariBrowser(): boolean {
   if (typeof navigator === "undefined") return false;
   const ua = navigator.userAgent || "";
   const iOS =

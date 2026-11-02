@@ -8,7 +8,7 @@ import type { Box, Shape } from "@/rules/movement";
  */
 
 /** A character (player or npc) as the server serializes it. */
-export interface CharacterMessage {
+interface CharacterMessage {
   id: string;
   socketId?: string;
   peerId?: string;
@@ -32,7 +32,7 @@ export interface LootMessage {
   [key: string]: any;
 }
 
-export interface RoomStateMessage {
+interface RoomStateMessage {
   players: FullCharacterWire[];
   npcs: FullCharacterWire[];
   loots: LootMessage[];
@@ -64,7 +64,7 @@ export interface HitMessage {
   to: string;
 }
 
-export interface UserSettingsMessage {
+interface UserSettingsMessage {
   playMusic: boolean;
   showMinimap: boolean;
   videoChat: boolean;

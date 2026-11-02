@@ -6,12 +6,12 @@ import type { AbilitySlot } from "@/rules/spells";
 export type { AbilitySlot } from "@/rules/spells";
 
 /** Where an item was when it was clicked or dragged: "inventory", "abilities", "bag", "shop"... */
-export interface ItemEventDetail {
+interface ItemEventDetail {
   item: BuiltItem;
   location: string;
 }
 
-export interface DropItemDetail extends ItemEventDetail {
+interface DropItemDetail extends ItemEventDetail {
   bagId?: string;
   slotKey?: string;
   player?: unknown;
@@ -29,7 +29,7 @@ export interface LootFlyDetail {
   pixelSize?: number;
 }
 
-export interface CooldownDetail {
+interface CooldownDetail {
   spellName: string;
   duration: number;
   startTime: number;

@@ -126,7 +126,7 @@ export const commands = {
 export type CommandName = keyof typeof commands;
 
 /** The payload of a command, as the client writes it. */
-export type CommandPayload<K extends CommandName> = z.input<(typeof commands)[K]>;
+type CommandPayload<K extends CommandName> = z.input<(typeof commands)[K]>;
 
 /** The payload of a command after the server validated it. */
 export type ParsedCommand<K extends CommandName> = z.output<(typeof commands)[K]>;
@@ -142,5 +142,3 @@ export type ClientToServerEvents = {
 };
 
 export type MoveItemCommand = ParsedCommand<"moveItem">;
-export type DropItemCommand = ParsedCommand<"dropItem">;
-export type MessageCommand = ParsedCommand<"message">;

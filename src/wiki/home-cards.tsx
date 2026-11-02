@@ -2,7 +2,7 @@ import { Box, Flex, Text } from "@/ui";
 import { memo, startTransition, useEffect, useRef, useState, type PointerEvent } from "react";
 import { Link } from "wouter";
 import { useCardPool, type FeaturedCard } from "./card-pool";
-import { TAB_BAR_SPACE } from "./menu-bar";
+import { TAB_HEIGHT } from "./menu-bar";
 import { PAPER, PAPER_STYLE, PaperFrame } from "./paper";
 
 const CARD_WIDTH = 260;
@@ -152,7 +152,7 @@ export const HomeCards = () => {
         left: 0,
         right: 0,
         /* Above the footer, or on phones the tab bar (which holds the footer's credit). */
-        bottom: [TAB_BAR_SPACE, FOOTER_HEIGHT],
+        bottom: [TAB_HEIGHT, FOOTER_HEIGHT],
         zIndex: 1,
         overflow: "hidden",
         /* Sideways swipes drive the row; vertical ones still scroll the page. */

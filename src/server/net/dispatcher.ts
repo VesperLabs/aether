@@ -1,7 +1,7 @@
 import { commands, type CommandName, type ParsedCommand } from "@/network";
 import type { CommandContext } from "./command-context";
 
-export type CommandHandler<K extends CommandName> = (
+type CommandHandler<K extends CommandName> = (
   ctx: CommandContext,
   payload: ParsedCommand<K>,
 ) => unknown;

@@ -235,7 +235,7 @@ export function VideoFrame() {
   return null;
 }
 
-export function useUserMedia(enabled: boolean, requestedMedia: MediaStreamConstraints) {
+function useUserMedia(enabled: boolean, requestedMedia: MediaStreamConstraints) {
   const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
 
   /* Turning the camera off drops the stream; the effect cleanup below stops its tracks. */

@@ -12,10 +12,10 @@ import type { CSSProperties } from "react";
 import { Box } from "@/ui/kit";
 import weaponAtlas from "../../../public/assets/atlas/weapon.json";
 
-export const FULL_CANVAS_SIZE = 160;
+const FULL_CANVAS_SIZE = 160;
 const MIN_CANVAS_SIZE = 100;
 
-export const PLAYER_RENDER_CANVAS_STYLE: CSSProperties = {
+const PLAYER_RENDER_CANVAS_STYLE: CSSProperties = {
   zIndex: 0,
   transform: `translate(-50%, -50%) scale(2)`,
   imageRendering: "pixelated",

@@ -4,7 +4,7 @@ import { rollMobDrop } from "./rules";
 import type { DropCandidate, DropTableEntry, LootItem, LootSpawn, Rng } from "./rules";
 
 /** What loot needs to know about a mob beyond the event: its own drop table. */
-export interface MobDropInfo {
+interface MobDropInfo {
   drops?: DropTableEntry[];
   noWorldDrops?: boolean;
 }
@@ -24,7 +24,7 @@ export interface LootHooks {
 }
 
 /** The drop for one kill, or null if nothing dropped. */
-export function lootForMobKill(
+function lootForMobKill(
   kill: MobKilledEvent,
   mob: MobDropInfo | undefined,
   hooks: Pick<LootHooks, "rng" | "ilvlMultiplier" | "rollWorldDrop" | "buildItem">,

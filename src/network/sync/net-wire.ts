@@ -1,6 +1,6 @@
 /** Cardinal facing used by movement + `getSpinDirection` (top-down). */
-export const WIRE_DIRECTIONS = ["up", "down", "left", "right"] as const;
-export type WireDirection = (typeof WIRE_DIRECTIONS)[number];
+const WIRE_DIRECTIONS = ["up", "down", "left", "right"] as const;
+type WireDirection = (typeof WIRE_DIRECTIONS)[number];
 
 export function encodeWireDirection(dir: string | undefined): number {
   if (!dir) return 1;

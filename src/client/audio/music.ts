@@ -2,7 +2,7 @@ import { getMapByName } from "@/content";
 import type { SceneMain } from "@/client/scenes/main-scene";
 
 /* TODO: Move to DB */
-export const MUSIC_VOLUME = 0.05;
+const MUSIC_VOLUME = 0.05;
 
 const ASSETS_BASE = process.env.ASSETS_URL || "";
 const assetUrl = (src: string) =>

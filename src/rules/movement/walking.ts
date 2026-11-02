@@ -3,7 +3,7 @@
 /** Seconds from standing still to full walk speed. */
 export const WALK_ACCELERATION_SECONDS = 0.08;
 /** Seconds from full walk speed to standing still. */
-export const WALK_DECELERATION_SECONDS = 0.05;
+const WALK_DECELERATION_SECONDS = 0.05;
 /** Fraction of walk speed kept while attacking, aiming or holding attack: rooted, since there are no walking attack animations. */
 export const ATTACK_WALK_SPEED_SCALE = 0;
 

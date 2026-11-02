@@ -5,17 +5,8 @@ export {
   getAbilityDetails,
   getCastReadiness,
 } from "./cast";
-export type {
-  AbilityDetailsInput,
-  AbilitySlot,
-  CanCastInput,
-  CanCastResult,
-  CastAbility,
-  CastReadyInput,
-  LastCast,
-} from "./cast";
-export { SPELL_POWER_ELEMENTAL_FACTOR, rollSpellCrit, rollSpellDamage } from "./damage";
-export type { SpellCrit } from "./damage";
+export type { AbilitySlot, LastCast } from "./cast";
+export { rollSpellCrit, rollSpellDamage } from "./damage";
 export {
   getMeleeSwing,
   getSpellFlight,
@@ -26,10 +17,7 @@ export {
   usesLeftHand,
   usesRightHand,
 } from "./shape";
-export type { ResolvedSpell, MeleeSwing, SpellFlight, SpellLifeInput, SpellShape } from "./shape";
 export { canHitNpc, canHitPlayer, isBehindCaster, isSpellVictimCandidate } from "./targeting";
-export type { PlayerTargetInput, Point, SpellTargets, VictimCheckInput } from "./targeting";
 export { findSpellHits, toSpellVictims } from "./hits";
-export type { PositionOf, SpellHitInput, SpellVictim, VictimSource } from "./hits";
-export { characterBodyCircle, characterHitBox, getAimAngle } from "./overlap";
-export type { AimLead, CharacterShapeInput } from "./overlap";
+export { characterHitBox, getAimAngle } from "./overlap";
+export type { CharacterShapeInput } from "./overlap";

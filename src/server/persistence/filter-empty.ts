@@ -3,7 +3,7 @@ const isEmptyObject = (obj: object) => Object.keys(obj).length === 0 && obj.cons
 const isEmptyArray = (arr: unknown) => Array.isArray(arr) && arr.length === 0;
 
 /** Drops null, undefined and empty object or array properties of an item. */
-export function filterProperties(item: Record<string, unknown> | null | undefined) {
+function filterProperties(item: Record<string, unknown> | null | undefined) {
   if (!item) return null;
   const filteredItem: Record<string, unknown> = {};
 

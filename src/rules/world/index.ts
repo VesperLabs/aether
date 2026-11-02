@@ -1,5 +1,5 @@
-export { createEventBus, createGameEventBus } from "./event-bus";
-export type { EventBus, EventHandler, GameEventBus } from "./event-bus";
+export { createGameEventBus } from "./event-bus";
+export type { GameEventBus } from "./event-bus";
 export {
   distanceTo,
   getAngleFromDirection,
@@ -13,7 +13,7 @@ export type { Frame, System, TickLoop } from "./tick-loop";
 export { createTimers } from "./timers";
 export type { Timers } from "./timers";
 export { addRoom, createRoom, createWorld } from "./world";
-export type { DoorData, RoomData, World } from "./world";
+export type { RoomData, World } from "./world";
 export { DEFAULT_USER_SETTINGS } from "./user-settings";
 export type { UserSettings } from "./user-settings";
 export { createRng, seedFromString } from "./rng";

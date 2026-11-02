@@ -1,11 +1,4 @@
-export {
-  MIN_STEALTH_ALPHA,
-  OUT_OF_COMBAT_MS,
-  POTION_COOLDOWN,
-  RACES_WITH_ATTACK_ANIMS,
-  RANGE_MULTIPLIER,
-  UNARMED_RANGE,
-} from "./constants";
+export { MIN_STEALTH_ALPHA, POTION_COOLDOWN, RANGE_MULTIPLIER } from "./constants";
 export {
   canAffordCosts,
   checkAttackReady,
@@ -18,20 +11,15 @@ export {
   getSwingDelay,
   isOutOfCombat,
 } from "./attack";
-export type { AttackAction, AttackActionInput, AttackReadyInput, Cooldown } from "./attack";
 export { calculateElementalDamage, calculateWeaponDamage, rollAttack } from "./damage";
-export type { AttackRoll, ElementalDamages, ElementalResult } from "./damage";
+export type { ElementalDamages, ElementalResult } from "./damage";
 export { calculateDrains, mergeDrainHits } from "./drain";
-export type { Drain, DrainHitLike, DrainResource } from "./drain";
-export { DEATH_EXP_KEPT, expAfterDeath, isRespawnDue } from "./death";
-export type { RespawnInput } from "./death";
-export { isLethalHp, modifyStat } from "./resources";
-export { STEALTH_GRACE_MS, calculateStealthVisibilityPercent, isInStealthGrace } from "./stealth";
-export type { StealthInput, StealthViewer } from "./stealth";
+export type { DrainResource } from "./drain";
+export { expAfterDeath, isRespawnDue } from "./death";
+export { modifyStat } from "./resources";
+export { calculateStealthVisibilityPercent, isInStealthGrace } from "./stealth";
 export { mobKilledEvents } from "./kills";
-export type { KillerInput, SlainMob } from "./kills";
 export { rollTriggers } from "./triggers";
-export type { FiredTrigger, TriggerEvent, TriggerLike } from "./triggers";
 export {
   getWeaponRange,
   hasAttackableWeapons,
@@ -50,4 +38,4 @@ export {
   hasWeaponRight,
   isDualWielding,
 } from "./weapons";
-export type { EquipmentKey, Hand, HandEquipment, HeldItem, WeaponHolder } from "./weapons";
+export type { EquipmentKey, Hand, WeaponHolder } from "./weapons";

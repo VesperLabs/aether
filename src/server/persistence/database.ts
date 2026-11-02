@@ -14,7 +14,7 @@ export type UserDocument = ReturnType<typeof createBaseUser> & {
 };
 
 /** The parts of a player the database reads when saving. */
-export interface SavedPlayer {
+interface SavedPlayer {
   email?: string;
   isDemoAccount?: boolean;
   charClass?: string;
@@ -32,7 +32,7 @@ export interface SavedPlayer {
 }
 
 /** Where a player is, for saving their position. */
-export interface SavedMapDetails {
+interface SavedMapDetails {
   email?: string;
   isDemoAccount?: boolean;
   room?: { name?: string } | null;

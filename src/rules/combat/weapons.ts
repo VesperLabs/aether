@@ -1,7 +1,7 @@
 import { RANGE_MULTIPLIER, UNARMED_RANGE } from "./constants";
 
 /** What a hand is holding. Only the fields the weapon rules read. */
-export interface HeldItem {
+interface HeldItem {
   type?: string;
   stats?: { range?: number; spCost?: number } | null;
 }

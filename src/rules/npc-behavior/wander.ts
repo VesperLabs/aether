@@ -2,7 +2,7 @@ import { NPC_TALK_RANGE, NPC_WANDER_CHANGE_MS, NPC_WANDER_SPEED_DIVISOR } from "
 import { checkInRange, type Body } from "./range";
 
 /** Velocity and facing to set. A missing field is left as it is. */
-export interface WanderChange {
+interface WanderChange {
   vx?: number;
   vy?: number;
   direction?: "left" | "right" | "up" | "down";

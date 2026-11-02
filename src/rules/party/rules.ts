@@ -4,19 +4,19 @@
  * messages to send, which party a player now belongs to). Nothing here mutates its input.
  */
 
-export interface PartyMember {
+interface PartyMember {
   id: string;
   isLeader: boolean;
   roomName: string;
 }
 
-export interface PartyInvitee {
+interface PartyInvitee {
   id: string;
   /** Who sent the invite. It is withdrawn when they leave. */
   inviterId: string;
 }
 
-export interface Party {
+interface Party {
   id: string;
   members: PartyMember[];
   invitees: PartyInvitee[];
@@ -36,7 +36,7 @@ export interface PartyPlayer {
   roomName: string;
 }
 
-export interface PartyUpdatePayload {
+interface PartyUpdatePayload {
   message?: string;
   party: Party | null;
   partyId?: string;

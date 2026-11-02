@@ -11,7 +11,7 @@ export function createSpell(room: Room, spellData: Omit<SpellArgs, "id" | "room"
 }
 
 /** Takes a spell out of the world. */
-export function removeSpell(world: ServerWorld, id: string) {
+function removeSpell(world: ServerWorld, id: string) {
   if (!world.spells[id]) return console.log("❌ Could not remove spell");
   delete world.spells[id];
 }

@@ -2,7 +2,7 @@ import type { ItemRef } from "../items/item-refs";
 import type { QuestId } from "../quests/quest-list";
 import type { MobBase, MobEquipment } from "./mob-types";
 
-export interface ShopEntry {
+interface ShopEntry {
   readonly item: ItemRef;
   readonly stock: number;
 }

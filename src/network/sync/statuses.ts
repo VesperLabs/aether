@@ -28,9 +28,7 @@ export interface StatusInput {
 }
 
 /** The subset of a character's state clients use, not the whole state blob. */
-export function pickStatusState(
-  s: Record<string, unknown> | null | undefined,
-): Record<string, unknown> {
+function pickStatusState(s: Record<string, unknown> | null | undefined): Record<string, unknown> {
   if (!s) return {};
   return {
     lockedPlayerId: s.lockedPlayerId,
@@ -44,7 +42,7 @@ export function pickStatusState(
   };
 }
 
-export function getCharacterStatus(c: StatusInput): CharacterStatus {
+function getCharacterStatus(c: StatusInput): CharacterStatus {
   return {
     id: (c.socketId || c.id) as string,
     state: pickStatusState(c.state),

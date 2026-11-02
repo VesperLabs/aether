@@ -1,7 +1,7 @@
 import { theme } from "./theme";
 
 /** Theme tokens for mana and stamina, shared by their bars, costs, drains and windup rings. */
-export const RESOURCE_TOKENS = {
+const RESOURCE_TOKENS = {
   mp: { hue: "blue", shade: 500 },
   sp: { hue: "yellow", shade: 300 },
 } as const;

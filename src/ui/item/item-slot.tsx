@@ -18,7 +18,7 @@ const BLANK_IMAGE =
 /** Who armour icons are drawn for when the slot has no player (the wiki item list). */
 
 /** Where a slot sits, passed back to its events. */
-export interface SlotPlace {
+interface SlotPlace {
   item: BuiltItem;
   location?: string;
   slotKey?: string;

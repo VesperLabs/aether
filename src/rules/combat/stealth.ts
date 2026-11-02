@@ -9,7 +9,7 @@ export function isInStealthGrace(state: { lastStealth?: number }, now: number) {
   return elapsed >= 0 && elapsed < STEALTH_GRACE_MS;
 }
 
-export interface StealthViewer {
+interface StealthViewer {
   stats?: { level?: number } | null;
 }
 
