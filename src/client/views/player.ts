@@ -3,19 +3,21 @@ import type { FullCharacterWire, PartyMessage } from "@/network";
 import type { BuffCharacterWire } from "@/network/sync";
 import type { SceneMain } from "@/client/scenes/main-scene";
 import { Character, type CharacterArgs } from "./character";
-import { distanceTo } from "@/rules/world";
 import { NPC_ENGAGED_BUBBLE } from "@/rules/npc-behavior";
-import { getAbilityCosts, hasStaminaFor } from "@/rules/combat";
 import type { AbilitySlot } from "@/rules/spells";
-import { Spell } from "./spell";
+import {
+  doAttack,
+  doCast,
+  doGrab,
+  hasStaminaForAttack,
+  type AttackArgs,
+  type CastArgs,
+} from "./player-actions";
 import { fadeStealth } from "./player-stealth";
 import { CHARACTER_DIED } from "./end-on-death";
 import { applyDodge } from "./player-dodge";
-import { getSpinDirection } from "@/client/input/spin-direction";
 import { applyAppearance, createSpriteLayers } from "./player-layers";
 import { applyHit, type HitEffect } from "./player-hit";
-import { playAttackLunge } from "./hit-impact";
-import type { LootItem } from "./loot-item";
 import { toTint } from "./tint";
 import type { Bubble } from "./bubble";
 import type { WindupRing } from "./windup-ring";
@@ -25,7 +27,6 @@ import type { WeaponSprite } from "./weapon-sprite";
 import type { Crosshair } from "@/client/input/crosshair";
 import { checkIsFlash, drawFrame, hackFrameRates, updateCurrentSpeed } from "./player-animation";
 const BLANK_TEXTURE = "human-blank";
-const PLAYER_GRAB_RANGE = 32;
 
 type Sprite = Phaser.GameObjects.Sprite;
 
@@ -43,17 +44,6 @@ interface WeaponAtlas {
 
 /** The part of a character that changes with its buffs. */
 type BuffUpdate = BuffCharacterWire | FullCharacterWire;
-
-/** What an attack or a cast needs from the server message that triggered it. */
-interface CastArgs {
-  castAngle?: number;
-  abilitySlot?: number | string;
-}
-
-interface AttackArgs extends CastArgs {
-  count: number;
-  direction?: string;
-}
 
 export class Player extends Character {
   declare scene: SceneMain;
@@ -184,82 +174,16 @@ export class Player extends Character {
   }
   /** Whether the hero has the SP for this attack (weapon plus attack-spell cost). */
   hasStaminaForAttack(count: number, abilitySlot?: AbilitySlot) {
-    const { stats } = this.getAttackActionName({ count, abilitySlot });
-    return hasStaminaFor(this.stats?.sp, this.getAttackSpCost(count) + getAbilityCosts(stats).sp);
+    return hasStaminaForAttack(this, count, abilitySlot);
   }
-  doAttack({ count, castAngle, direction, abilitySlot }: AttackArgs) {
-    const { state, isHero } = this;
-    const { isDead, isAttacking, isHoldingAttack } = state ?? {};
-
-    if (this?.hasBuff("stun")) return;
-    if (isHero) {
-      if (!this.hasWeapon() || isDead || isAttacking || !isHoldingAttack) return;
-      if (!this.canCastSpell(abilitySlot)) return;
-      if (!this.hasStaminaForAttack(count, abilitySlot)) return;
-    }
-
-    const { action, spellName } = this.getAttackActionName({ count, abilitySlot });
-
-    state.lastAttackCount = count;
-    if (isHero) window.dispatchEvent(new CustomEvent("HERO_ATTACK_COUNT", { detail: count }));
-    state.isAttacking = true;
-    state.lastAttack = Date.now();
-    this.action = action;
-    this.direction = direction || this.direction;
-
-    // If we are the hero, need to trigger the socket that we attacked
-    if (isHero) {
-      this.scene.socket.emit("attack", {
-        count,
-        direction: this.direction,
-        castAngle,
-        abilitySlot,
-      });
-    }
-
-    playAttackLunge(this, this.direction);
-    // draw our physical animation.
-    this.scene.add.existing(
-      new Spell(this.scene, { id: null, caster: this, spellName, castAngle, action }),
-    );
+  doAttack(args: AttackArgs) {
+    doAttack(this, args);
   }
-  doCast({ abilitySlot, castAngle }: CastArgs) {
-    const { isHero } = this || {};
-    const ability = this.getAbilityDetails(abilitySlot);
-
-    if (isHero) {
-      if (!this.canCastSpell(abilitySlot)) return;
-      if (this?.hasBuff("stun")) return;
-      this.scene.socket.emit("castSpell", { abilitySlot, castAngle });
-    }
-    /* Lunges dash the caster: the hero moves itself, others just leave the trail */
-    if (ability?.isLunge) {
-      this.state.lungeAt = Date.now();
-      this.state.lungeAngle = castAngle;
-    }
-
-    this.scene.add.existing(new Spell(this.scene, { ...ability, castAngle, caster: this }));
+  doCast(args: CastArgs) {
+    doCast(this, args);
   }
   doGrab() {
-    const { scene } = this;
-    const loots = (scene.loots?.getChildren?.() ?? []) as LootItem[];
-
-    let closestLoot: LootItem | undefined;
-    let closestDistance = Infinity;
-    /* Look for the nearest loots */
-    loots.forEach((loot) => {
-      const distance = distanceTo(loot, this);
-      if (distance < closestDistance) {
-        closestLoot = loot;
-        closestDistance = distance;
-      }
-    });
-
-    if (closestLoot && closestDistance <= PLAYER_GRAB_RANGE) {
-      /* Spin hero toward the loot, send it all the API */
-      this.direction = getSpinDirection(this, closestLoot);
-      this.scene.socket.emit("grabLoot", { lootId: closestLoot?.id, direction: this.direction });
-    }
+    doGrab(this);
   }
   setBubbleMessage() {
     const inputString = this.state.bubbleMessage ?? "";

@@ -5,14 +5,12 @@ import { ModalRespawn } from "@/client/hud/status/modal-respawn";
 import { ModalDropAmount } from "@/client/hud/inventory/modal-drop-amount";
 import { FlyingLoot } from "@/client/hud/inventory/flying-loot";
 import { HUD_CONTAINER_ID } from "@/client/hud/app/constants";
-import { ModalLogin } from "@/client/hud/auth/modal-login";
 import { forgetLoginToken, rememberLoginToken } from "@/client/hud/auth/remembered-login";
 import { ModalSign } from "@/client/hud/menu/modal-sign";
-import { ModalError } from "@/client/hud/menu/modal-error";
 import { MenuBar } from "@/client/hud/menu/menu-bar";
 import { MusicPlayer } from "@/client/hud/music/music-player";
 import { ModalHome } from "@/client/hud/shop/modal-home";
-import { ThemeUIProvider, Box, useViewportSizeEffect, Modal, ZoomProvider } from "@/ui";
+import { ThemeUIProvider, Box, useViewportSizeEffect, ZoomProvider } from "@/ui";
 import { getHudZoom } from "./hud-zoom";
 import "react-tooltip/dist/react-tooltip.css";
 import type { Theme } from "theme-ui";
@@ -43,6 +41,8 @@ import { createWindowHandlers } from "./window-handlers";
 import { createHeroSyncHandlers } from "./hero-sync";
 import { createItemEventHandlers } from "./item-events";
 import { MenuGlobalKeys } from "./menu-global-keys";
+import { LoginBackdrop } from "./login-backdrop";
+import { createPartyHandlers } from "./party-events";
 interface AppProps {
   socket: ClientGameSocket;
   peer: Peer;
@@ -166,35 +166,13 @@ export function App({ socket, peer, debug, game }: AppProps) {
     setIsLoaded,
   });
 
-  const onPartyInvite: SocketHandlers["partyInvite"] = (inviteData) => {
-    // Check if the party invite already exists
-    const existingInvite = partyInvites.find((invite) => invite.partyId === inviteData.partyId);
-    // Party invite already exists, do not add it again
-    if (existingInvite) return;
-    addMessage({
-      type: "party",
-      message: `${inviteData?.inviter?.profile?.userName} has invited you to their party.`,
-    });
-    // Party invite doesn't exist, add it to the list
-    setPartyInvites((prevInvites) => [...prevInvites, inviteData as PartyInvite]);
-  };
-
-  const onPartyUpdate: SocketHandlers["partyUpdate"] = ({ message, party }) => {
-    // remove the invite
-    setPartyInvites([]);
-    setParty(party);
-    if (message) {
-      addMessage({ type: "party", message });
-    }
-  };
-
-  const onUpdateUserSetting: SocketHandlers["updateUserSetting"] = ({ name, value }) => {
-    setUserSettings((prev) => ({
-      ...DEFAULT_USER_SETTINGS,
-      ...prev,
-      [name]: value,
-    }));
-  };
+  const { onPartyInvite, onPartyUpdate, onUpdateUserSetting } = createPartyHandlers({
+    partyInvites,
+    addMessage,
+    setPartyInvites,
+    setParty,
+    setUserSettings,
+  });
 
   const socketHandlers: SocketHandlers = {
     connect: onConnect,
@@ -328,24 +306,7 @@ export function App({ socket, peer, debug, game }: AppProps) {
         }}
       >
         <ZoomProvider value={Number(zoom) || 1.25}>
-          <Box
-            sx={{
-              inset: 0,
-              position: "fixed",
-              backgroundColor: "black",
-              opacity: showLogin ? 1 : 0,
-              transition: "opacity 1s ease-out",
-              pointerEvents: "none",
-              zIndex: "modal",
-              transitionDelay: "0.5s",
-            }}
-          >
-            <Modal.Overlay
-              sx={{ backgroundImage: "url(./assets/images/bg.jpg)", pointerEvents: "none" }}
-            />
-            {!isLoggedIn && <ModalLogin />}
-            {error && <ModalError />}
-          </Box>
+          <LoginBackdrop showLogin={showLogin} isLoggedIn={isLoggedIn} hasError={!!error} />
           <VideoFrame />
           {isLoggedIn && tabSettings && <ModalSettings />}
           {isLoggedIn && (
