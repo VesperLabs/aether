@@ -1,4 +1,4 @@
-import { Bot, wander } from "@/bots";
+import { Bot, rollLook, wander } from "@/bots";
 import { createRng, seedFromString } from "@/rules/world";
 import { readRoomMap } from "../map-files";
 import { realClock } from "./real-clock";
@@ -21,6 +21,7 @@ export async function startWanderers(url: string, count: number) {
     const bot = await Bot.join(link, { name, clock: realClock, maps: readRoomMap });
     bots.push(bot);
     const rng = createRng(seedFromString(name));
+    await bot.restyle(rollLook(rng));
     living.push(wander(bot, { clock: realClock, rng, signal: life.signal }));
   }
   return {
