@@ -1,33 +1,29 @@
 // @vitest-environment node
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { SCENARIOS, runScenario } from "@/agents";
-import { joinTestAgent, realClock, startLocalServer } from "../agents";
+import { describe, expect, it } from "vitest";
+import { Agent, SCENARIOS, runScenario } from "@/agents";
+import { createSimulation } from "../sim";
 
-/** Every agent scenario against a fresh in-process server. Known issues are expected to fail. */
-let server: Awaited<ReturnType<typeof startLocalServer>>;
-
-beforeAll(async () => {
-  server = await startLocalServer();
-}, 60000);
-
-afterAll(() => server?.close());
-
+/**
+ * Every agent scenario on a fresh simulation: the real server on virtual time, agents connected
+ * in-process. Minutes of play take milliseconds. Known issues are expected to fail.
+ */
 describe("agent scenarios", () => {
   for (const scenario of SCENARIOS) {
     const test = scenario.knownIssue ? it.fails : it;
     const label = scenario.knownIssue
       ? `${scenario.name} (#${scenario.knownIssue})`
       : scenario.name;
-    test(
-      label,
-      async () => {
-        const result = await runScenario(scenario, {
-          join: (name, charClass) => joinTestAgent(server.url, name, charClass),
-          clock: realClock,
-        });
-        expect(result.passed, result.lines.join("\n")).toBe(true);
-      },
-      60000,
-    );
+    test(label, async () => {
+      const sim = await createSimulation();
+      const result = await sim.run(() =>
+        runScenario(scenario, {
+          join: (name, charClass) =>
+            Agent.join(sim.connect(), { name, charClass, clock: sim.clock, cheats: true }),
+          clock: sim.clock,
+        }),
+      );
+      sim.close();
+      expect(result.passed, result.lines.join("\n")).toBe(true);
+    });
   }
 });

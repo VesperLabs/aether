@@ -4,14 +4,15 @@
  *   npm run bots                    every scenario
  *   npm run bots -- party combat    just these
  *   npm run bots -- --near Trevor   bring the bots to your character so you can watch
- *   npm run bots -- --local         always use a fresh in-process server
+ *   npm run bots -- --local         fast-forward on a simulation even when the dev server is up
  *   npm run bots -- --residents 3   leave 3 residents living in the world until Ctrl-C
  *
- * With `npm run dev` up (and ENABLE_CHEATS=true), the bots join that server, so they show up in
- * your game. Otherwise a server starts in this process just for the run.
+ * With `npm run dev` up (and ENABLE_CHEATS=true), agents join that server in real time, so they
+ * show up in your game. Otherwise each scenario runs on a fast-forwarded simulation in milliseconds.
  */
 import net from "node:net";
-import { SCENARIOS, runScenario, type Scenario } from "@/agents";
+import { Agent, SCENARIOS, runScenario, type Scenario } from "@/agents";
+import { createSimulation } from "@/server/sim";
 import {
   joinTestAgent,
   pickPlanner,
@@ -51,6 +52,23 @@ function isUp(url: string, timeoutMs = 500): Promise<boolean> {
   });
 }
 
+/** Runs a scenario on its own fresh simulation. */
+async function simulate(scenario: Scenario, print: (line: string) => void) {
+  const sim = await createSimulation();
+  try {
+    return await sim.run(() =>
+      runScenario(scenario, {
+        join: (name, charClass) =>
+          Agent.join(sim.connect(), { name, charClass, clock: sim.clock, cheats: true }),
+        clock: sim.clock,
+        print,
+      }),
+    );
+  } finally {
+    sim.close();
+  }
+}
+
 async function main() {
   const { names, near, local, residents } = parseArgs(process.argv.slice(2));
   const unknown = names.filter((n) => !ALL.some((s) => s.name === n));
@@ -62,17 +80,15 @@ async function main() {
 
   const devUrl = process.env.SERVER_URL ?? `http://localhost:${process.env.PORT ?? 3000}`;
   const useDev = !local && (await isUp(devUrl));
-  const server = useDev ? null : await startLocalServer();
-  const url = server?.url ?? devUrl;
-  console.log(useDev ? `🤖 Bots joining the dev server at ${url}` : "🤖 Bots on a local server");
-  if (useDev && !near) console.log("   (pass --near <your name> to watch them up close)");
 
   if (residents) {
+    /* Residents live in real time, on the dev server or a local one */
+    const server = useDev ? null : await startLocalServer();
+    const url = server?.url ?? devUrl;
     const { planner, label } = pickPlanner();
     const living = await startResidents(url, residents, planner);
-    console.log(
-      `🏡 ${living.names.join(", ")} now live here, deciding with ${label}. Ctrl-C to stop.`,
-    );
+    console.log(`🏡 ${living.names.join(", ")} now live at ${url}, deciding with ${label}.`);
+    console.log("   Ctrl-C to stop.");
     process.once("SIGINT", async () => {
       await living.stop();
       server?.close();
@@ -81,14 +97,24 @@ async function main() {
     return;
   }
 
+  console.log(
+    useDev
+      ? `🤖 Agents joining the dev server at ${devUrl}, in real time`
+      : "🤖 Agents on a fast-forwarded simulation (start npm run dev to watch them instead)",
+  );
+  if (useDev && !near) console.log("   (pass --near <your name> to watch them up close)");
+
   let failed = 0;
   for (const scenario of chosen) {
-    const result = await runScenario(scenario, {
-      join: (name, charClass) => joinTestAgent(url, name, charClass),
-      clock: realClock,
-      near,
-      print: (line) => console.log(line),
-    });
+    const print = (line: string) => console.log(line);
+    const result = useDev
+      ? await runScenario(scenario, {
+          join: (name, charClass) => joinTestAgent(devUrl, name, charClass),
+          clock: realClock,
+          near,
+          print,
+        })
+      : await simulate(scenario, print);
     const issue = scenario.knownIssue ? ` (known issue #${scenario.knownIssue})` : "";
     if (result.passed) {
       console.log(issue ? `  ✓ passes now: close #${scenario.knownIssue}?` : "  ✓ passed");
@@ -98,7 +124,6 @@ async function main() {
     }
   }
 
-  server?.close();
   console.log(failed ? `\n${failed} scenario(s) failed` : "\nAll scenarios passed");
   process.exit(failed ? 1 : 0);
 }

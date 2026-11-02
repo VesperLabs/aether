@@ -8,6 +8,14 @@ export interface Frame {
   now: number;
 }
 
+/** Runs `run` after `ms`; returns a function that cancels it. Simulations pass a virtual one. */
+export type SetTimer = (run: () => void, ms: number) => () => void;
+
+const realTimer: SetTimer = (run, ms) => {
+  const timer = setTimeout(run, ms);
+  return () => clearTimeout(timer);
+};
+
 /** A function that runs once per tick and changes the world. */
 export type System<W> = (world: W, frame: Frame) => void;
 
@@ -30,11 +38,12 @@ export interface TickLoop {
 export function createTickLoop<W extends { tick: number }>(
   world: W,
   systems: Array<System<W>>,
-  options: { fps: number; clock?: () => number },
+  options: { fps: number; clock?: () => number; setTimer?: SetTimer },
 ): TickLoop {
   const interval = 1000 / options.fps;
   const clock = options.clock ?? (() => Date.now());
-  let timer: ReturnType<typeof setTimeout> | null = null;
+  const setTimer = options.setTimer ?? realTimer;
+  let cancel: (() => void) | null = null;
   let running = false;
   let startedAt = clock();
   let lastTick = startedAt;
@@ -51,7 +60,7 @@ export function createTickLoop<W extends { tick: number }>(
     if (!running) return;
     nextDue += interval;
     const wait = Math.max(0, nextDue - clock());
-    timer = setTimeout(() => {
+    cancel = setTimer(() => {
       const now = clock();
       const delta = now - lastTick;
       lastTick = now;
@@ -73,8 +82,8 @@ export function createTickLoop<W extends { tick: number }>(
 
   const pause = () => {
     running = false;
-    if (timer) clearTimeout(timer);
-    timer = null;
+    cancel?.();
+    cancel = null;
   };
 
   return {
