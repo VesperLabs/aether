@@ -1,9 +1,9 @@
 import { createResident } from "../brains";
 import { rulePlanner } from "../planner";
+import { agreesWithServer } from "./agreement";
 import type { Scenario } from "./scenario";
 
 const LIVE_MS = 20_000;
-const AGREE_DISTANCE = 2;
 
 export const townLife: Scenario = {
   name: "town-life",
@@ -22,11 +22,9 @@ export const townLife: Scenario = {
 
     for (const r of residents) {
       const { senses } = r;
-      const served = senses.characters.get(senses.selfId);
       log(`${r.name}: ${senses.expGained} exp, ${senses.corrections.length} corrections`);
       check(
-        senses.isDead ||
-          (!!served && Math.hypot(served.x - senses.x, served.y - senses.y) <= AGREE_DISTANCE),
+        senses.isDead || agreesWithServer(senses),
         `${r.name} and the server agree where it is`,
       );
     }
