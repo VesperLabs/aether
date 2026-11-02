@@ -5,6 +5,7 @@ import type { Player } from "@/client/views/player";
 import { isMobile } from "@/ui/kit/is-mobile";
 import { netInterp } from "@/client/net/scene-interpolation";
 import { applyPose } from "@/client/net/apply-pose";
+import { easeHeroCorrection } from "@/client/net/position-correction";
 import { bindSceneSocket } from "@/client/net/scene-socket";
 import { changeMusic } from "@/client/audio/music";
 import { getPlayer, getNpc, getNpcs, getPlayers } from "./scene-entities";
@@ -87,9 +88,11 @@ export class SceneMain extends Phaser.Scene {
     const scene = this;
     [...getPlayers(scene), ...getNpcs(scene)].forEach((a) => a.updateUserName());
   }
-  update(time: number) {
+  update(time: number, delta: number) {
     const elapsedTime = time - this.lastUpdateTime;
     if (!this.socket || !this?.hero?.body) return;
+
+    easeHeroCorrection(this.hero, delta);
 
     /* Remote characters only: the hero is predicted locally. */
     const poses = netInterp.sample(performance.now());

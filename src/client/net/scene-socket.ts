@@ -7,6 +7,7 @@ import {
 } from "@/network/sync";
 import { netInterp } from "@/client/net/scene-interpolation";
 import { idOfNetId } from "@/client/net/net-ids";
+import { correctHeroPosition } from "@/client/net/position-correction";
 import { playAudio } from "@/client/audio/play-audio";
 import { playCritShake, playHitImpact } from "@/client/views/hit-impact";
 import { playDrainRing } from "@/client/views/drain-ring";
@@ -134,14 +135,9 @@ export function bindSceneSocket(scene: SceneMain) {
     }
   });
 
-  /* The server rejected our position (too fast, or inside a wall): snap back to its position. */
+  /* The server rejected our position (too fast, or inside a wall): go back to its position. */
   socket.on("positionCorrection", ({ x, y }) => {
-    const hero = scene.hero;
-    if (!hero?.body) return;
-    hero.body.reset(x, y);
-    hero.setPosition(x, y);
-    hero.vx = 0;
-    hero.vy = 0;
+    if (scene.hero?.body) correctHeroPosition(scene.hero, x, y);
   });
 
   socket.on("playerUpdate", (userData) => {
