@@ -12,5 +12,5 @@ void build({
   minify: true,
   external: [...Object.keys(dependencies), ...Object.keys(peerDependencies)],
   platform: "node",
-  outfile: "dist/server.js",
+  outfile: "dist/server.cjs",
 });

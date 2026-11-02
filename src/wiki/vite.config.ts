@@ -1,22 +1,23 @@
 import path from "node:path";
 import { defineConfig, loadEnv } from "vite";
-import react from "@vitejs/plugin-react-swc";
-import { getAppVersion } from "../../scripts/app-version";
-import { pageHostUrl } from "../../scripts/page-host-url";
-import { removeStaleBuilds } from "../../scripts/stale-builds";
+import react from "@vitejs/plugin-react";
+import { getAppVersion } from "../../scripts/app-version.ts";
+import { pageHostUrl } from "../../scripts/page-host-url.ts";
+import { removeStaleBuilds } from "../../scripts/stale-builds.ts";
 
 /** Repo root. Vite is run from the root with `--config` (see npm scripts). */
-const repoRoot = path.resolve(__dirname, "../..");
+const repoRoot = path.resolve(import.meta.dirname, "../..");
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode, command }) => {
-  process.env = { ...process.env, ...loadEnv(mode, repoRoot, "") };
-  const serverUrl = process.env.SERVER_URL || "http://localhost:3000";
+  /* Local copy, never process.env: see the note in src/client/vite.config.ts. */
+  const env = loadEnv(mode, repoRoot, "");
+  const serverUrl = env.SERVER_URL || "http://localhost:3000";
   /** In dev, launch the live client (Vite) instead of the last build served by the game server. */
   const gameUrl = command === "serve" ? "http://localhost:5174" : serverUrl;
 
   return {
-    root: __dirname,
+    root: import.meta.dirname,
     /* Separate dep caches: the client and wiki dev servers run side by side and would invalidate a shared one. */
     cacheDir: path.join(repoRoot, "node_modules/.vite/wiki"),
     resolve: { tsconfigPaths: true },

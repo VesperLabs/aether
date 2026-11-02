@@ -1,27 +1,33 @@
 import path from "node:path";
 import { defineConfig, loadEnv, type ConfigEnv } from "vite";
-import react from "@vitejs/plugin-react-swc";
-import { DEFAULT_SERVER_FPS } from "../network/sync/timing";
-import { getAppVersion } from "../../scripts/app-version";
-import { pageHostUrl } from "../../scripts/page-host-url";
-import { rewriteAssetUrls } from "../../scripts/assets-url";
-import { removeStaleBuilds } from "../../scripts/stale-builds";
+import react from "@vitejs/plugin-react";
+import { DEFAULT_SERVER_FPS } from "../network/sync/timing.ts";
+import { getAppVersion } from "../../scripts/app-version.ts";
+import { pageHostUrl } from "../../scripts/page-host-url.ts";
+import { rewriteAssetUrls } from "../../scripts/assets-url.ts";
+import { removeStaleBuilds } from "../../scripts/stale-builds.ts";
 
 /** Repo root. Vite is run from the root with `--config` (see npm scripts). */
-const repoRoot = path.resolve(__dirname, "../..");
+const repoRoot = path.resolve(import.meta.dirname, "../..");
 
 export default ({ mode, command }: ConfigEnv) => {
-  process.env = Object.assign(process.env, loadEnv(mode, repoRoot, ""));
-  console.log(`🛠 DEBUG: ${process.env.DEBUG}`);
-  console.log(`🛠 SERVER_FPS: ${process.env.SERVER_FPS}`);
-  console.log(`🛠 SERVER_URL: ${process.env.SERVER_URL}`);
-  console.log(`🛠 ASSETS_URL: ${process.env.ASSETS_URL}`);
-  console.log(`🛠 PEER_CLIENT_PORT: ${process.env.PEER_CLIENT_PORT}`);
-  console.log(`🛠 PEER_CLIENT_PATH: ${process.env.PEER_CLIENT_PATH}`);
-  console.log(`🛠 METERED_APP_NAME: ${process.env.METERED_APP_NAME ? "(set)" : "(empty)"}`);
+  /* Read into a local, never process.env: loadEnv lets process.env win over the file, so writing it back
+   * would pin the first values and ignore later .env edits when Vite restarts. */
+  const env = loadEnv(mode, repoRoot, "");
+  const shown = [
+    "DEBUG",
+    "SERVER_FPS",
+    "SERVER_URL",
+    "ASSETS_URL",
+    "PEER_CLIENT_PORT",
+    "PEER_CLIENT_PATH",
+  ];
+  const settings = shown.filter((key) => env[key]).map((key) => `${key}=${env[key]}`);
+  if (env.METERED_APP_NAME) settings.push("METERED=set");
+  console.log(`🛠 ${settings.join("  ")}`);
 
   return defineConfig({
-    root: __dirname,
+    root: import.meta.dirname,
     /* Separate dep caches: the client and wiki dev servers run side by side and would invalidate a shared one. */
     cacheDir: path.join(repoRoot, "node_modules/.vite/client"),
     resolve: { tsconfigPaths: true },
@@ -32,7 +38,7 @@ export default ({ mode, command }: ConfigEnv) => {
       {
         name: "replace-url",
         transform(code, id) {
-          return process.env.ASSETS_URL ? rewriteAssetUrls(code, process.env.ASSETS_URL) : code;
+          return env.ASSETS_URL ? rewriteAssetUrls(code, env.ASSETS_URL) : code;
         },
       },
       react(),
@@ -40,18 +46,16 @@ export default ({ mode, command }: ConfigEnv) => {
     ],
     define: {
       /* Values must be JSON-serialized literals; undefined breaks esbuild in CI/Docker with no .env */
-      "process.env.DEBUG": process.env.DEBUG === "true",
-      "process.env.SERVER_FPS": JSON.stringify(
-        process.env.SERVER_FPS ?? String(DEFAULT_SERVER_FPS),
-      ),
-      "process.env.SERVER_URL": pageHostUrl(process.env.SERVER_URL ?? "", command),
+      "process.env.DEBUG": env.DEBUG === "true",
+      "process.env.SERVER_FPS": JSON.stringify(env.SERVER_FPS ?? String(DEFAULT_SERVER_FPS)),
+      "process.env.SERVER_URL": pageHostUrl(env.SERVER_URL ?? "", command),
       __APP_VERSION__: JSON.stringify(getAppVersion(repoRoot)),
-      "process.env.ASSETS_URL": pageHostUrl(process.env.ASSETS_URL ?? "", command),
-      "process.env.PEER_CLIENT_PORT": JSON.stringify(process.env.PEER_CLIENT_PORT ?? ""),
-      "process.env.PEER_CLIENT_PATH": JSON.stringify(process.env.PEER_CLIENT_PATH ?? ""),
-      "process.env.METERED_APP_NAME": JSON.stringify(process.env.METERED_APP_NAME ?? ""),
-      "process.env.METERED_API_KEY": JSON.stringify(process.env.METERED_API_KEY ?? ""),
-      "process.env.METERED_REGION": JSON.stringify(process.env.METERED_REGION ?? ""),
+      "process.env.ASSETS_URL": pageHostUrl(env.ASSETS_URL ?? "", command),
+      "process.env.PEER_CLIENT_PORT": JSON.stringify(env.PEER_CLIENT_PORT ?? ""),
+      "process.env.PEER_CLIENT_PATH": JSON.stringify(env.PEER_CLIENT_PATH ?? ""),
+      "process.env.METERED_APP_NAME": JSON.stringify(env.METERED_APP_NAME ?? ""),
+      "process.env.METERED_API_KEY": JSON.stringify(env.METERED_API_KEY ?? ""),
+      "process.env.METERED_REGION": JSON.stringify(env.METERED_REGION ?? ""),
     },
     server: {
       host: true,
