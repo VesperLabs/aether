@@ -34,7 +34,7 @@ export function updateRoomLoot(world: ServerWorld, room: Room) {
     const spawns = planMapLootSpawns(
       state.mapLootList,
       lootInRoom(world, room.name),
-      Math.random,
+      world.rng,
       (type, rarity, key, amount) =>
         ItemBuilder.buildItem(type, rarity, key, amount) as LootItem | null,
     );

@@ -1,5 +1,5 @@
 import type { GameIo, NetIds } from "@/network";
-import type { TickLoop, World } from "@/rules/world";
+import type { Rng, TickLoop, World } from "@/rules/world";
 import type { Npc } from "./npc";
 import type { Database } from "./persistence/database";
 import type { Player } from "./player";
@@ -13,6 +13,8 @@ export type ServerWorld = World<Player, Npc, Spell, Loot, Quest> & {
   loop: TickLoop;
   /** Game time in milliseconds. Every server timestamp reads it, so tests can drive time. */
   now: () => number;
+  /** The one seeded random source for the whole world, so ticks can be replayed. */
+  rng: Rng;
   /** Numbers for characters on the binary pose wire. */
   netIds: NetIds;
   /** Who is where in each room this tick (see `room-index.ts`). */
