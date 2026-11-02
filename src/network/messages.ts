@@ -1,36 +1,14 @@
 import type { BuffCharacterWire, FullCharacterWire } from "./sync/character-state";
 import type { RoomStatuses } from "./sync/statuses";
 import type { Box, Shape } from "@/rules/movement";
+import type { Party, PartyUpdatePayload } from "@/rules/party";
 
 /*
- * Everything the server sends to clients. Character, loot and quest states are still the loose
- * objects the server builds today; they get exact types when their rules move into rules.
+ * Everything the server sends to clients.
  */
 
-/** A character (player or npc) as the server serializes it. */
-interface CharacterMessage {
-  id: string;
-  socketId?: string;
-  peerId?: string;
-  roomName: string;
-  direction: string;
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-  // oxlint-disable-next-line typescript/no-explicit-any
-  [key: string]: any;
-}
-
-export interface LootMessage {
-  id: string;
-  roomName: string;
-  x: number;
-  y: number;
-  expiredSince?: number;
-  // oxlint-disable-next-line typescript/no-explicit-any
-  [key: string]: any;
-}
+/** Ground loot, as the server world keeps it. */
+export type LootMessage = Loot;
 
 interface RoomStateMessage {
   players: FullCharacterWire[];
@@ -45,12 +23,8 @@ export interface ChatMessage {
   timestamp?: number;
 }
 
-export interface PartyMessage {
-  id: string;
-  socketRoom: string;
-  // oxlint-disable-next-line typescript/no-explicit-any
-  [key: string]: any;
-}
+/** A party, as the party rules keep it. */
+export type PartyMessage = Party;
 
 export interface HitMessage {
   type: string;
@@ -116,13 +90,15 @@ export interface ServerToClientEvents {
   lootSpawned: (payload: { loot: LootMessage; npcId?: string | null }) => void;
   /** Ground loot timed out: clients remove it. */
   lootExpired: (id: string) => void;
-  lootGrabbed: (payload: { socketId: string; loot: LootMessage; player: CharacterMessage }) => void;
+  lootGrabbed: (payload: {
+    socketId: string;
+    loot: LootMessage;
+    player: FullCharacterWire;
+  }) => void;
   keeperDataUpdate: (payload: {
     npcId: string;
-    // oxlint-disable-next-line typescript/no-explicit-any
-    keeperData: any;
-    // oxlint-disable-next-line typescript/no-explicit-any
-    playerQuests: any;
+    keeperData: KeeperData;
+    playerQuests: FullCharacterWire["quests"];
   }) => void;
   respawnNpc: (payload: { id: string; x: number; y: number; respawnTime: number }) => void;
   /** Debug only: the shapes the server compared when a spell hit. */
@@ -169,12 +145,8 @@ export interface ServerToClientEvents {
   /* Social */
   /** Chat and system messages. Called without a payload when there is nothing to say. */
   message: (message?: ChatMessage) => void;
-  partyInvite: (payload: { inviter: CharacterMessage; partyId: string }) => void;
-  partyUpdate: (payload: {
-    party: PartyMessage | null;
-    message?: string;
-    partyId?: string;
-  }) => void;
+  partyInvite: (payload: { inviter: FullCharacterWire; partyId: string }) => void;
+  partyUpdate: (payload: PartyUpdatePayload) => void;
 
   /* Settings and video chat */
   updateUserSetting: (payload: { name: string; value: unknown }) => void;

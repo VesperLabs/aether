@@ -26,9 +26,13 @@ export function registerCommands(ctx: CommandContext, handlers: CommandHandlers)
     const schema = commands[name];
     const handler = handlers[name] as CommandHandler<CommandName>;
 
-    // oxlint-disable-next-line typescript/no-explicit-any
-    (socket as any).on(name, (...args: unknown[]) => {
-      const parsed = schema.safeParse(args[0]);
+    // The payload is untrusted until the schema parses it, so the listener takes `unknown`.
+    const listen = socket.on.bind(socket) as (
+      event: CommandName,
+      listener: (payload: unknown) => void,
+    ) => unknown;
+    listen(name, (payload) => {
+      const parsed = schema.safeParse(payload);
       if (!parsed.success) {
         debugLog(`dropped invalid "${name}" from ${ctx.socketId}:`, parsed.error.message);
         return;

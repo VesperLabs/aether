@@ -100,7 +100,7 @@ export const MenuSocial = memo(
     const partyIds = party?.members?.map((p: SocialPlayer) => p?.id);
     const otherPlayers = players?.filter((p) => !partyIds?.includes(p?.id) && hero?.id !== p?.id);
     const hasOtherPlayers = otherPlayers?.length > 0;
-    const hasParty = partyIds?.length > 0;
+    const hasParty = (partyIds?.length ?? 0) > 0;
     const hasPlayers = hasParty || hasOtherPlayers;
     return (
       <Menu

@@ -8,4 +8,11 @@ export {
   sharedRecipientIds,
   updateMemberRoom,
 } from "./rules";
-export type { PartyEffect, PartyPlayer, PartyResult, PartyState } from "./rules";
+export type {
+  Party,
+  PartyUpdatePayload,
+  PartyEffect,
+  PartyPlayer,
+  PartyResult,
+  PartyState,
+} from "./rules";
