@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.9.0](https://github.com/VesperLabs/aether/compare/v0.8.0...v0.9.0) (2026-11-02)
+
+
+### Features
+
+* dual-wielded weapons swing as separate weapons, block needs a shield ([#117](https://github.com/VesperLabs/aether/issues/117)) ([3ad87e5](https://github.com/VesperLabs/aether/commit/3ad87e5f2f43e3caf892e9f0c5c7fd604cc77852))
+* full gilded tooltip borders with corner flourishes by rarity, stronger magic blue ([#124](https://github.com/VesperLabs/aether/issues/124)) ([1d4dcd6](https://github.com/VesperLabs/aether/commit/1d4dcd6a152ff4f350b40816214cc422c0e19857))
+* holy unique spear and shield, holy heals allies and burns enemies ([#121](https://github.com/VesperLabs/aether/issues/121)) ([197532e](https://github.com/VesperLabs/aether/commit/197532e7a9113719392a87143c90b31e19a11667))
+* keep wiki item filters in the URL ([#120](https://github.com/VesperLabs/aether/issues/120)) ([7bbb69e](https://github.com/VesperLabs/aether/commit/7bbb69ed3745b9a91e7fd38a2357b36037b1ffe4))
+* light screen shake on crits, with a setting to turn it off ([#113](https://github.com/VesperLabs/aether/issues/113)) ([c399460](https://github.com/VesperLabs/aether/commit/c39946019932f7a2045e26794a9c173a69cd0e8c))
+* lunge dome and forward hitbox, longer roll and stealth invincibility, snappier roll ([#114](https://github.com/VesperLabs/aether/issues/114)) ([d12100d](https://github.com/VesperLabs/aether/commit/d12100d863b62de0aee54526c2662764bce4c10d))
+* lunge draws a vortex in front and hits a wider area ([#111](https://github.com/VesperLabs/aether/issues/111)) ([49385ec](https://github.com/VesperLabs/aether/commit/49385ec2f06188a3f0561d32b35f0f9045601250))
+* remember login via the browser password manager, subtler crit shake ([#115](https://github.com/VesperLabs/aether/issues/115)) ([a0030db](https://github.com/VesperLabs/aether/commit/a0030dbe13cebff014fe0eb649129b6212a9be34))
+* remember me login, wooden toast for form errors, smaller switches ([#116](https://github.com/VesperLabs/aether/issues/116)) ([f6405f8](https://github.com/VesperLabs/aether/commit/f6405f8b3dd48ee14c61ab96bdfa877a97a46234))
+* rename Second Wind to Sirocco and cut its SP steal to 1% ([#119](https://github.com/VesperLabs/aether/issues/119)) ([7994295](https://github.com/VesperLabs/aether/commit/79942950600e16f77d7a73b0a24688970e7c79d4))
+* tackle knockback and gilded item tooltips ([#123](https://github.com/VesperLabs/aether/issues/123)) ([9412fed](https://github.com/VesperLabs/aether/commit/9412fed2a9a18eed2c14482ea6817b65f5d60f3c))
+* weapon particles follow the blade through swings and turns ([#122](https://github.com/VesperLabs/aether/issues/122)) ([5555ea6](https://github.com/VesperLabs/aether/commit/5555ea615896da717217508eefeed412ac8e2ba4))
+
+
+### Bug Fixes
+
+* keep remembered logins across dev server restarts ([#118](https://github.com/VesperLabs/aether/issues/118)) ([a944319](https://github.com/VesperLabs/aether/commit/a9443191dc9513475324c738cb9575341962bb26))
+
 ## [0.8.0](https://github.com/VesperLabs/aether/compare/v0.7.0...v0.8.0) (2026-11-01)
 
 
