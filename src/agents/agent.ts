@@ -1,4 +1,5 @@
 import { encodeWireDirection, type ChatMessage } from "@/network";
+import { getSwingDelay } from "@/rules/combat";
 import type { AgentLink, Clock, MessageName, MessagePayload } from "./link";
 import { createSenses, type Senses } from "./senses";
 
@@ -11,6 +12,14 @@ const ARRIVE_DISTANCE = 4;
 /** Melee reach a fighting agent keeps from its target. */
 const FIGHT_DISTANCE = 20;
 const DEFAULT_WALK_SPEED = 100;
+/** Swings wait a little past the attack delay, so clock jitter never makes one early. */
+const SWING_MARGIN_MS = 30;
+
+/**
+ * How a fight ended: the target died (to anyone's hit), the agent died, the target left, or time
+ * ran out. Swings hit everything in reach, so other mobs can die along the way; that doesn't end it.
+ */
+export type FightOutcome = "killed" | "died" | "gone" | "timeout";
 
 export interface AgentOptions {
   name: string;
@@ -31,6 +40,8 @@ export class Agent {
   private readonly clock: Clock;
   private readonly cheats: boolean;
   private readonly stopListening: (() => void)[] = [];
+  /** When the agent last swung, by its clock. */
+  private lastSwingAt = -Infinity;
 
   private constructor(link: AgentLink, { name, clock, cheats = false }: AgentOptions) {
     this.name = name;
@@ -141,8 +152,23 @@ export class Agent {
     this.link.send("playerInput", { x: this.senses.x, y: this.senses.y, vx: 0, vy: 0 });
   }
 
-  /** Swings once toward a point. */
-  attackToward(x: number, y: number) {
+  /** How long until the agent's weapon is ready to swing again, like the browser's cooldown. */
+  swingCooldown(): number {
+    const stats = this.senses.hero?.stats;
+    const delay = stats?.attackDelay ? getSwingDelay(stats, 1) : 0;
+    return Math.max(0, this.lastSwingAt + delay + SWING_MARGIN_MS - this.clock.now());
+  }
+
+  /** Swings once toward a point, as soon as the weapon is ready. */
+  async attackToward(x: number, y: number) {
+    const wait = this.swingCooldown();
+    if (wait > 0) await this.clock.sleep(wait);
+    this.lastSwingAt = this.clock.now();
+    this.swingAt(x, y);
+  }
+
+  /** Swings right now, ready or not, to probe the server's attack pacing. */
+  swingAt(x: number, y: number) {
     const dx = x - this.senses.x;
     const dy = y - this.senses.y;
     this.link.send("attack", {
@@ -153,20 +179,29 @@ export class Agent {
   }
 
   /**
-   * Swings at an NPC until it dies, closing in when it moves away. Walks in, or with cheats
-   * teleports, which is faster and keeps tests short. Resolves with whether it died in time.
+   * Fights an NPC, swinging as fast as the weapon allows and closing in when it moves away. Walks
+   * in, or with cheats teleports, which keeps tests short. Resolves with how it ended.
    */
-  async fight(npcId: string, timeoutMs = 20000): Promise<boolean> {
+  async fight(npcId: string, timeoutMs = 20000): Promise<FightOutcome> {
     const deadline = this.clock.now() + timeoutMs;
     while (this.clock.now() < deadline) {
+      if (this.senses.isDead) return "died";
       const target = this.senses.characters.get(npcId);
-      if (!target || target.isDead) return !!target;
+      if (!target) return "gone";
+      if (target.isDead) return "killed";
       const far = Math.hypot(target.x - this.senses.x, target.y - this.senses.y) > FIGHT_DISTANCE;
       if (far) await this.approach(target.x, target.y - FIGHT_DISTANCE / 2);
-      this.attackToward(target.x, target.y);
-      await this.clock.sleep(150);
+      await this.attackToward(target.x, target.y);
+      await this.sync();
     }
-    return false;
+    return "timeout";
+  }
+
+  /** Comes back to life at the spawn point, as the browser's respawn button does. */
+  async respawn() {
+    const back = this.waitFor("heroInit");
+    this.link.send("respawn");
+    await back;
   }
 
   /** Invites another agent and has it accept. Resolves with the party id. */

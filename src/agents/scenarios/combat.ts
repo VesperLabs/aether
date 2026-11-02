@@ -14,8 +14,8 @@ export const combat: Scenario = {
     const crab = await appeared;
     check(!!crab?.id, "a summoned crab appears for the bots");
 
-    const killed = await fighter.fight(crab.id);
-    check(killed, "the fighter kills the crab");
+    const outcome = await fighter.fight(crab.id);
+    check(outcome === "killed", `the fighter kills the crab (${outcome})`);
     check(buddy.senses.characters.get(crab.id)?.isDead === true, "the buddy sees it die");
 
     await buddy.sync();

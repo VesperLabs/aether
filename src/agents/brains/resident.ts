@@ -30,6 +30,12 @@ export function createResident(planner: Planner): Brain {
     let lastAction = "just arrived";
 
     while (!signal.aborted) {
+      /* Like a player at the respawn screen, it gets right back up */
+      if (agent.senses.isDead) {
+        await agent.respawn();
+        lastAction = "died and came back at the spawn point";
+        continue;
+      }
       const { situation, options, targets } = look(agent, lastAction, greetedAt, clock.now());
       const choice = await planner(situation, QUESTION, options).then(
         (plan) =>
@@ -93,7 +99,7 @@ async function act(
   { rng, greetedAt, now }: { rng: Rng; greetedAt: Map<string, number>; now: number },
 ) {
   if (choice === "hunt" && mob) {
-    await agent.fight(mob.id, 10000);
+    await agent.fight(mob.id, 10000); // dying ends the fight; the next beat respawns
   } else if (choice === "greet" && player) {
     greetedAt.set(player.id, now);
     agent.say(GREETINGS[Math.floor(rng() * GREETINGS.length)]);
