@@ -1,4 +1,3 @@
-import crypto from "crypto";
 import type { MoveItemCommand } from "@/network";
 import { getFullCharacterState } from "@/network/sync";
 import { moveItemCommand } from "@/rules/inventory";
@@ -20,7 +19,7 @@ export function moveItem(ctx: CommandContext, { to, from }: MoveItemCommand = {}
   const result = moveItemCommand(
     player,
     { from, to },
-    { shop: { npcId, slot: shopSlot }, newId: () => crypto.randomUUID() },
+    { shop: { npcId, slot: shopSlot }, newId: world.dice.newId },
   );
   if (!result.ok) {
     if (result.error) socket.emit("message", { type: "error", message: result.error });

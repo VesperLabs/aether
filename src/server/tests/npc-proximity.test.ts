@@ -3,7 +3,7 @@ import http from "node:http";
 import type { AddressInfo } from "node:net";
 import { io as connect, type Socket } from "socket.io-client";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
-import { ItemBuilder } from "@/content";
+import { ItemBuilder, PREVIEW_DICE } from "@/content";
 import { NPC_TALK_LATENCY_TOLERANCE, NPC_TALK_RANGE } from "@/rules/npc-behavior";
 import { initFakeDatabase } from "../persistence";
 import { GameServer } from "../game-server";
@@ -53,7 +53,7 @@ function placeKeeper(world: Anything, player: Anything, id: string, dx: number, 
   const shop = [
     {
       item: {
-        ...ItemBuilder.buildItem("pants", "common", "clothPants")!,
+        ...ItemBuilder.buildItem(PREVIEW_DICE, "pants", "common", "clothPants")!,
         cost: 40,
       },
       stock: 10,

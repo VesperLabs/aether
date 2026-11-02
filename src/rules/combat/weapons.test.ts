@@ -6,6 +6,7 @@ import {
   ItemBuilder,
   itemData,
   WEAPON_TIPS,
+  PREVIEW_DICE,
 } from "@/content";
 import {
   getWeaponRange,
@@ -97,7 +98,7 @@ describe("melee reach comes from the weapon art", () => {
 
   it("gives every built weapon its art's reach as its range stat", () => {
     for (const [rarity, key, item] of weaponDefinitions) {
-      const built = ItemBuilder.buildItem("weapon", rarity, key);
+      const built = ItemBuilder.buildItem(PREVIEW_DICE, "weapon", rarity, key);
       expect(built?.stats?.range, `${rarity} ${key}`).toBe(getMeleeRange(item.texture));
     }
   });

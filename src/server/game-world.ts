@@ -1,14 +1,22 @@
 import type { ServerWorld } from "./server-world";
-import crypto from "crypto";
 import fs from "fs";
 import path from "path";
-import { ILVL_MULTIPLIER, ItemBuilder, QuestBuilder, keepers, mapList, nasties } from "@/content";
+import {
+  ILVL_MULTIPLIER,
+  ItemBuilder,
+  QuestBuilder,
+  keepers,
+  mapList,
+  nasties,
+  type Dice,
+} from "@/content";
+import { createServerDice } from "./server-dice";
 import type { TiledMapJson } from "@/rules/movement";
 import { subscribeLoot, type LootItem } from "@/rules/loot";
 import { subscribeThreat } from "@/rules/npc-behavior";
 import { subscribeQuests } from "@/rules/quests";
 import { npcBaseStats, subscribeStats } from "@/rules/stats";
-import { addRoom, createRoom, createRng, createWorld } from "@/rules/world";
+import { addRoom, createRoom, createWorld } from "@/rules/world";
 import { spawnLoot } from "./loot-adapter";
 import { subscribeNpcMessages } from "./npc-messages";
 import { subscribeKnockbackMessages, subscribePoseForgetting } from "./net/handlers/movement";
@@ -53,7 +61,7 @@ export function spawnNpc(
 ): Npc | undefined {
   const npc = getNpcFromLists(name);
   if (!npc) return;
-  const id = crypto.randomUUID();
+  const id = world.dice.newId();
   world.npcs[id] = new Npc(world, {
     id,
     room,
@@ -82,25 +90,29 @@ export function createServerWorld({
   io,
   db,
   now,
-  seed = now(),
+  dice = createServerDice(),
+  mapNpcs = true,
 }: {
   io: GameIo;
   db: Database;
   now: () => number;
-  /** Seeds the world RNG; pass a fixed one to replay a run. */
-  seed?: number;
+  /** Every roll and id in the world; pass seeded dice to replay a run exactly. */
+  dice?: Dice;
+  /** Whether to spawn the NPCs the maps place. Simulations turn this off for a controlled world. */
+  mapNpcs?: boolean;
 }): ServerWorld {
-  const world = createWorld(QuestBuilder.buildAllQuests()) as ServerWorld;
+  const world = createWorld(QuestBuilder.buildAllQuests(dice)) as ServerWorld;
   world.io = io;
   world.db = db;
   world.now = now;
   world.netIds = createNetIds();
-  world.rng = createRng(seed);
+  world.dice = dice;
+  world.rng = dice.random;
 
   for (const asset of mapList) {
     addRoom(world, createRoom(asset.name, readMap(asset.json), now()));
   }
-  for (const room of Object.values(world.rooms)) spawnNpcs(world, room);
+  if (mapNpcs) for (const room of Object.values(world.rooms)) spawnNpcs(world, room);
 
   subscribeNpcMessages(world.events, io);
   subscribeKnockbackMessages(world.events, world);
@@ -118,8 +130,9 @@ export function createServerWorld({
   subscribeLoot(world.events, {
     rng: world.rng,
     ilvlMultiplier: ILVL_MULTIPLIER,
-    rollWorldDrop: (ilvl, magicFind) => ItemBuilder.rollDrop(ilvl, magicFind),
-    buildItem: (type, rarity, key) => ItemBuilder.buildItem(type, rarity, key) as LootItem | null,
+    rollWorldDrop: (ilvl, magicFind) => ItemBuilder.rollDrop(dice, ilvl, magicFind),
+    buildItem: (type, rarity, key) =>
+      ItemBuilder.buildItem(dice, type, rarity, key) as LootItem | null,
     getMobDropInfo: (mobId) => {
       const npc = world.npcs[mobId];
       return npc && { drops: npc.drops, noWorldDrops: npc.state?.noWorldDrops };

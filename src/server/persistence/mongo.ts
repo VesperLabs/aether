@@ -1,3 +1,5 @@
+import type { Dice } from "@/content";
+import { createServerDice } from "../server-dice";
 import { MongoClient, type Db } from "mongodb";
 import { userSchema } from "./schema";
 import { filterNullEmpty } from "./filter-empty";
@@ -6,7 +8,7 @@ import { createBaseUser } from "./base-user";
 import { pruneItemFromUser, type StoredItemLists } from "./prune-item";
 import type { Database, UserDocument } from "./database";
 
-const getDatabaseApi = (db: Db): Database => ({
+const getDatabaseApi = (db: Db, dice: Dice): Database => ({
   getUserByEmail: async ({ email }) => {
     return execute("getUserByEmail", async () => {
       if (!email) return console.log("❌ Email not provided");
@@ -87,7 +89,7 @@ const getDatabaseApi = (db: Db): Database => ({
       if (!email) {
         return console.log("❌ Error while creating player. Email not provided");
       }
-      const player = createBaseUser(charClass);
+      const player = createBaseUser(dice, charClass);
       const { updatedAt, createdAt } = getAuditFields();
       await db.collection("users").insertOne({
         email: `${email}`.toLowerCase(),
@@ -225,7 +227,7 @@ function getAuditFields() {
   };
 }
 
-export async function initDatabase(uri: string) {
+export async function initDatabase(uri: string, dice: Dice = createServerDice()) {
   let mongoClient: MongoClient;
   let db!: Db;
 
@@ -259,5 +261,5 @@ export async function initDatabase(uri: string) {
     });
   });
 
-  return getDatabaseApi(db);
+  return getDatabaseApi(db, dice);
 }

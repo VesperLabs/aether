@@ -23,7 +23,13 @@ const give: Cheat = (ctx, player, args, reply) => {
   const drop = parseDropArgs(args);
   if ("error" in drop) return reply.error(drop.error.replace("/drop", "/give"));
   if (player.isInventoryFull()) return reply.error("Your inventory is full.");
-  const item = ItemBuilder.buildItem(drop.type, drop.rarity, drop.key, drop.amount) as Item | null;
+  const item = ItemBuilder.buildItem(
+    ctx.world.dice,
+    drop.type,
+    drop.rarity,
+    drop.key,
+    drop.amount,
+  ) as Item | null;
   if (!item) return reply.error(`There is no ${drop.rarity} ${drop.key}.`);
   player.addInventoryItem(item);
   ctx.world.db.updateUser(player);

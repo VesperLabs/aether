@@ -6,25 +6,44 @@ import { listenForConnections } from "../net/connection";
 import { initFakeDatabase } from "../persistence";
 import { serverSystems } from "../tick";
 import { createLocalHub } from "./local-hub";
+import { createSeededDice } from "./seeded-dice";
 import { createVirtualTime } from "./virtual-time";
 
 /** Lets pending promises and the fake database finish before time moves on. */
 const settle = () => new Promise<void>((resolve) => setImmediate(resolve));
 
 /**
- * The real game server on virtual time, with agents connected in-process. Time only moves when
+ * The real game server on virtual time, with agents connected in-process. The world has the real
+ * maps (walls, doors) but no NPCs unless asked, and a seeded RNG, so nothing happens by chance. Time only moves when
  * nothing is left to do right now, and then jumps straight to the next timer (a tick, an agent's
  * sleep), so a minute of play takes milliseconds and every run is the same.
  *
  *   const sim = await createSimulation();
  *   await sim.run(async () => { const agent = await Agent.join(sim.connect(), {...}); ... });
  */
-export async function createSimulation({ fps = DEFAULT_SERVER_FPS } = {}) {
+export async function createSimulation({
+  fps = DEFAULT_SERVER_FPS,
+  mapNpcs = false,
+  seed = 1,
+}: {
+  fps?: number;
+  /** Spawn the maps' own NPCs too. Off by default: scenarios summon exactly what they need. */
+  mapNpcs?: boolean;
+  /** Everything random in the run comes from this, so the same seed plays the same game. */
+  seed?: number;
+} = {}) {
   process.env.PUBLIC_DIR ??= "public";
   process.env.ENABLE_CHEATS = "true";
   const time = createVirtualTime();
+  const dice = createSeededDice(seed);
   const hub = createLocalHub();
-  const world = createServerWorld({ io: hub.io, db: await initFakeDatabase(), now: time.now });
+  const world = createServerWorld({
+    io: hub.io,
+    db: await initFakeDatabase(dice),
+    now: time.now,
+    dice,
+    mapNpcs,
+  });
   world.loop = createTickLoop(world, serverSystems, {
     fps,
     clock: time.now,
@@ -51,6 +70,8 @@ export async function createSimulation({ fps = DEFAULT_SERVER_FPS } = {}) {
       }
       return playing;
     },
-    close: () => world.loop.stop(),
+    close: () => {
+      world.loop.stop();
+    },
   };
 }

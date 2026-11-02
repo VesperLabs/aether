@@ -1,4 +1,4 @@
-import { ItemBuilder } from "@/content";
+import { ItemBuilder, type Dice } from "@/content";
 import { getBaseStats } from "@/rules/stats";
 
 export const PLAYER_DEFAULT_SPAWN = { roomName: "grassland-3", x: 1496, y: 2028 };
@@ -19,17 +19,19 @@ const STARTING_SPELLS: Record<string, string> = {
 
 /** What a brand new character of a class starts with, and where it spawns. */
 export function getBaseCharacterDefaults({
+  dice,
   level = 1,
   charClass,
 }: {
+  dice: Dice;
   level?: number;
   charClass?: CharClass;
 }) {
   const weapon = STARTING_WEAPONS[charClass as string];
   const spell = STARTING_SPELLS[charClass as string];
   return {
-    startingWeapon: weapon ? ItemBuilder.buildItem("weapon", "common", weapon) : undefined,
-    startingSpell: spell ? ItemBuilder.buildItem("spell", "common", spell) : undefined,
+    startingWeapon: weapon ? ItemBuilder.buildItem(dice, "weapon", "common", weapon) : undefined,
+    startingSpell: spell ? ItemBuilder.buildItem(dice, "spell", "common", spell) : undefined,
     baseStats: getBaseStats({ level, charClass }),
     ...PLAYER_DEFAULT_SPAWN,
   };

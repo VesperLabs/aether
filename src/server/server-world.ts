@@ -1,3 +1,4 @@
+import type { Dice } from "@/content";
 import type { GameIo, NetIds } from "@/network";
 import type { Rng, TickLoop, World } from "@/rules/world";
 import type { Npc } from "./npc";
@@ -15,6 +16,8 @@ export type ServerWorld = World<Player, Npc, Spell, Loot, Quest> & {
   now: () => number;
   /** The one seeded random source for the whole world, so ticks can be replayed. */
   rng: Rng;
+  /** Rolls and ids for items, NPCs, loot and parties. `rng` is its `random`. */
+  dice: Dice;
   /** Numbers for characters on the binary pose wire. */
   netIds: NetIds;
   /** Who is where in each room this tick (see `room-index.ts`). */

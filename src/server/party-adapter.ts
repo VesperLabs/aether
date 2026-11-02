@@ -1,6 +1,5 @@
 import type { ServerWorld } from "./server-world";
 import type { Player } from "./player";
-import crypto from "crypto";
 import type { Socket } from "socket.io";
 import {
   acceptPartyInvite,
@@ -80,7 +79,7 @@ export function legacyInviteToParty(world: ServerWorld, socket: Socket, inviteeI
       inviter: toPartyPlayer(world.players?.[socket.id]),
       inviterId: socket.id,
       invitee: toPartyPlayer(world.players?.[inviteeId]),
-      newPartyId: crypto.randomUUID(),
+      newPartyId: world.dice.newId(),
     }),
     socket,
   );

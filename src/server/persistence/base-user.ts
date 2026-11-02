@@ -1,9 +1,10 @@
-import { ItemBuilder, type CharClass } from "@/content";
+import { ItemBuilder, type CharClass, type Dice } from "@/content";
 import { DEFAULT_USER_SETTINGS } from "@/rules/world";
 import { getBaseCharacterDefaults } from "../auth/character-defaults";
 
-export const createBaseUser = (charClass?: string | null) => {
+export const createBaseUser = (dice: Dice, charClass?: string | null) => {
   const { baseStats, startingWeapon, startingSpell, roomName, x, y } = getBaseCharacterDefaults({
+    dice,
     level: 1,
     /* Comes straight from the client; unknown classes get no starting gear. */
     charClass: charClass as CharClass | undefined,
@@ -29,8 +30,8 @@ export const createBaseUser = (charClass?: string | null) => {
       handLeft: startingWeapon,
       helmet: null,
       accessory: null,
-      pants: ItemBuilder.buildItem("pants", "common", "clothPants"),
-      armor: ItemBuilder.buildItem("armor", "common", "clothRobe"),
+      pants: ItemBuilder.buildItem(dice, "pants", "common", "clothPants"),
+      armor: ItemBuilder.buildItem(dice, "armor", "common", "clothRobe"),
       gloves: null,
       boots: null,
       ring1: null,

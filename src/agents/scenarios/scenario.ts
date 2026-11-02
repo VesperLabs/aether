@@ -20,6 +20,11 @@ interface ScenarioContext {
 export interface Scenario {
   name: string;
   description: string;
+  /**
+   * "empty" (default): real maps, but only the NPCs the scenario summons, so it tests one thing.
+   * "full": every map NPC too, for soak runs. Either way a seeded simulation plays the same.
+   */
+  world?: "empty" | "full";
   /** An open issue this scenario shows; it is expected to fail until the issue is fixed. */
   knownIssue?: number;
   run: (ctx: ScenarioContext) => Promise<void>;

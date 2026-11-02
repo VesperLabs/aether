@@ -1,4 +1,4 @@
-import { randomNumber } from "../random";
+import { randomNumber, type Dice } from "../random";
 import { itemList } from "./item-scaling";
 
 interface DropCandidate {
@@ -33,7 +33,7 @@ const DROPPABLE_TYPES = [
 ];
 
 /** Rolls a random item of a random type that is allowed to drop at this ilvl. */
-export function rollDrop(ilvl: number, magicFind = 0): DropCandidate | null {
+export function rollDrop(dice: Dice, ilvl: number, magicFind = 0): DropCandidate | null {
   if (magicFind >= MAX_MAGIC_FIND) magicFind = MAX_MAGIC_FIND - 1;
   const magicFindFactor = Math.min(magicFind, MAX_MAGIC_FIND) / MAX_MAGIC_FIND;
 
@@ -45,7 +45,7 @@ export function rollDrop(ilvl: number, magicFind = 0): DropCandidate | null {
   const rolls: Record<string, number> = { set: 0, unique: 0, rare: 0, magic: 0, common: 0 };
 
   for (const { rarity, chance } of dropChances) {
-    const roll = randomNumber(1, Math.floor(chance));
+    const roll = randomNumber(dice, 1, Math.floor(chance));
     if (roll === 1) rolls[rarity] = 1;
   }
 
@@ -53,7 +53,7 @@ export function rollDrop(ilvl: number, magicFind = 0): DropCandidate | null {
   const commonPool: DropCandidate[] = [];
   let item: DropCandidate | null = null;
 
-  const type = DROPPABLE_TYPES[Math.floor(Math.random() * DROPPABLE_TYPES.length)];
+  const type = DROPPABLE_TYPES[Math.floor(dice.random() * DROPPABLE_TYPES.length)];
   const theType = itemList[type];
 
   const addItemToPool = (pool: DropCandidate[], rarity: string, key: string) => {
@@ -78,21 +78,21 @@ export function rollDrop(ilvl: number, magicFind = 0): DropCandidate | null {
   }
 
   if (rolls.unique && item == null && uniquePool.length > 0) {
-    item = uniquePool[Math.floor(Math.random() * uniquePool.length)];
+    item = uniquePool[Math.floor(dice.random() * uniquePool.length)];
   }
 
   if (rolls.rare == 1 && item == null && commonPool.length > 0) {
-    item = commonPool[Math.floor(Math.random() * commonPool.length)];
+    item = commonPool[Math.floor(dice.random() * commonPool.length)];
     item.rarity = "rare";
   }
 
   if (rolls.magic == 1 && item == null && commonPool.length > 0) {
-    item = commonPool[Math.floor(Math.random() * commonPool.length)];
+    item = commonPool[Math.floor(dice.random() * commonPool.length)];
     item.rarity = "magic";
   }
 
   if (rolls.common == 1 && item == null && commonPool.length > 0) {
-    item = commonPool[Math.floor(Math.random() * commonPool.length)];
+    item = commonPool[Math.floor(dice.random() * commonPool.length)];
     item.rarity = "common";
   }
 

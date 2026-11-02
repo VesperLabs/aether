@@ -6,6 +6,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { ItemBuilder } from "@/content";
 import { initFakeDatabase } from "../persistence";
 import { GameServer } from "../game-server";
+import { createServerDice } from "../server-dice";
 
 /** Inventory flows over a real socket: equip, bags, stacking, drop, consume and the shop. */
 let httpServer: http.Server;
@@ -40,7 +41,10 @@ async function login(charClass = "warrior") {
   return { socket, world, player };
 }
 
-const build = (...args: (string | number)[]) => ItemBuilder.buildItem(...(args as string[]))!;
+/** Real dice: items in an inventory need ids of their own. */
+const dice = createServerDice(1);
+const build = (...args: (string | number)[]) =>
+  ItemBuilder.buildItem(dice, ...(args as [string, string, string, number?]))!;
 const emitAndWait = async (socket: Socket, event: string, payload: Anything) => {
   const update = once(socket, "playerUpdate");
   socket.emit(event as never, payload as never);

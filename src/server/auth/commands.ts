@@ -29,7 +29,7 @@ export async function demoLogin(
     return console.log("❌ Socket already logged in");
   }
 
-  const user = createBaseUser(charClass);
+  const user = createBaseUser(world.dice, charClass);
 
   const player = createPlayer(world, user.roomName, {
     socketId,

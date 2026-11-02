@@ -14,7 +14,7 @@ describe("agent scenarios", () => {
       ? `${scenario.name} (#${scenario.knownIssue})`
       : scenario.name;
     test(label, async () => {
-      const sim = await createSimulation();
+      const sim = await createSimulation({ mapNpcs: scenario.world === "full" });
       const result = await sim.run(() =>
         runScenario(scenario, {
           join: (name, charClass) =>
