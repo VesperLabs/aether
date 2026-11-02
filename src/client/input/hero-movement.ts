@@ -9,6 +9,7 @@ import {
   getKnockbackVelocity,
   getWalkVelocity,
   getLungeVelocity,
+  getSeparationVelocity,
   isDodging,
   isKnockedBack,
   isLunging,
@@ -40,6 +41,31 @@ function getLatestKeyDirection(keys: SceneHud["cursorKeys"]) {
     }
   }
   return latest;
+}
+
+/** How far around the hero to look for bodies it overlaps. */
+const CROWD_RANGE = 24;
+
+/** Last frame's crowd drift, taken back out before easing so it stops the moment the hero is clear. */
+let lastCrowdPush = { x: 0, y: 0 };
+
+/** The drift other characters give the hero when it stands in them. Walking always wins. */
+function getCrowdPush(
+  scene: SceneMain,
+  hero: SceneMain["hero"],
+  walkSpeed: number,
+  walk: { x: number; y: number },
+) {
+  const neighbours = [];
+  for (const group of [scene.npcs, scene.players]) {
+    for (const child of group.getChildren() as Array<SceneMain["hero"]>) {
+      if (child === hero || child.state?.isDead) continue;
+      if (Math.abs(child.x - hero.x) > CROWD_RANGE || Math.abs(child.y - hero.y) > CROWD_RANGE)
+        continue;
+      neighbours.push({ id: child.id, x: child.x, y: child.y });
+    }
+  }
+  return getSeparationVelocity(hero, neighbours, walkSpeed, walk);
 }
 
 /** Reads keyboard, joystick and pointer and applies them to the hero for this frame. */
@@ -175,12 +201,15 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
     ({ x: vx, y: vy } = getDodgeVelocity(hero.state.dodgeAngle ?? 0));
   } else {
     /* Coming out of a roll drops straight to walking pace, so it can't carry past the roll */
-    let current = { x: hero.vx ?? 0, y: hero.vy ?? 0 };
+    let current = { x: (hero.vx ?? 0) - lastCrowdPush.x, y: (hero.vy ?? 0) - lastCrowdPush.y };
     const speed = Math.hypot(current.x, current.y);
     if (speed > walkSpeed) {
       current = { x: (current.x / speed) * walkSpeed, y: (current.y / speed) * walkSpeed };
     }
     ({ x: vx, y: vy } = approachVelocity(current, { x: vx, y: vy }, walkSpeed, seconds));
+    lastCrowdPush = getCrowdPush(mainScene, hero, walkSpeed, { x: vx, y: vy });
+    vx += lastCrowdPush.x;
+    vy += lastCrowdPush.y;
   }
   hero.vx = vx;
   hero.vy = vy;
