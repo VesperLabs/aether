@@ -30,11 +30,6 @@ interface Message {
   timestamp?: number;
 }
 
-interface PartyInvite {
-  inviter: FullCharacterState;
-  partyId: string;
-}
-
 interface Loot {
   id: string;
   roomName: string;
@@ -43,6 +38,7 @@ interface Loot {
   item: Item;
   dropTime: number;
   expiredSince?: number;
+  texture?: string;
   grabMessage?: boolean;
   isPermanent?: boolean;
 }

@@ -57,7 +57,7 @@ function applyEffects(world: ServerWorld, effects: PartyEffect[], acting?: Socke
         socketFor(effect.socketId)?.emit("message");
         break;
       case "partyInvite": {
-        const inviteData: PartyInvite = {
+        const inviteData = {
           inviter: getFullCharacterState(world.players?.[effect.inviterId]),
           partyId: effect.partyId,
         };

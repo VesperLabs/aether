@@ -16,7 +16,7 @@ interface PartyInvitee {
   inviterId: string;
 }
 
-interface Party {
+export interface Party {
   id: string;
   members: PartyMember[];
   invitees: PartyInvitee[];
@@ -36,7 +36,7 @@ export interface PartyPlayer {
   roomName: string;
 }
 
-interface PartyUpdatePayload {
+export interface PartyUpdatePayload {
   message?: string;
   party: Party | null;
   partyId?: string;

@@ -197,8 +197,8 @@ export const MenuHud = () => {
 
   const partyIds = party?.members
     ?.map((p: { id?: string }) => p?.id)
-    ?.filter((id: string | undefined) => hero?.id !== id);
-  const hasParty = partyIds?.length > 0;
+    ?.filter((id): id is string => !!id && hero?.id !== id);
+  const hasParty = (partyIds?.length ?? 0) > 0;
   const videoChatOn = !!userSettings?.videoChat;
 
   const heroPortraitVideo =
