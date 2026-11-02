@@ -12,9 +12,13 @@ export interface SpatialHash<T extends Point> {
   nearest(point: Point): T | undefined;
 }
 
+/** Spreads cell x across keys; cell y stays far below it on any map (a million cells). */
+const CELL_KEY_SPAN = 1 << 20;
+
 export function createSpatialHash<T extends Point>(cellSize: number, items: T[]): SpatialHash<T> {
-  const cells = new Map<string, T[]>();
-  const keyOf = (cx: number, cy: number) => `${cx},${cy}`;
+  const cells = new Map<number, T[]>();
+  /* A number, not a "cx,cy" string: lookups run thousands of times a tick */
+  const keyOf = (cx: number, cy: number) => cx * CELL_KEY_SPAN + cy;
   const cellOf = (value: number) => Math.floor(value / cellSize);
   let minX = Infinity;
   let minY = Infinity;
@@ -34,11 +38,23 @@ export function createSpatialHash<T extends Point>(cellSize: number, items: T[])
     maxY = Math.max(maxY, cy);
   }
 
+  const visitCell = (x: number, y: number, visit: (item: T) => void) => {
+    const cell = cells.get(keyOf(x, y));
+    if (cell) for (const item of cell) visit(item);
+  };
+
+  /**
+   * Visits the cells exactly `ring` steps from (cx, cy), column by column, top to bottom. Only the
+   * ring's edge is walked (O(ring), not the whole square), in the same order a full scan would.
+   */
   const inRing = (cx: number, cy: number, ring: number, visit: (item: T) => void) => {
+    if (ring === 0) return visitCell(cx, cy, visit);
     for (let x = cx - ring; x <= cx + ring; x++) {
-      for (let y = cy - ring; y <= cy + ring; y++) {
-        if (Math.max(Math.abs(x - cx), Math.abs(y - cy)) !== ring) continue;
-        for (const item of cells.get(keyOf(x, y)) ?? []) visit(item);
+      if (x === cx - ring || x === cx + ring) {
+        for (let y = cy - ring; y <= cy + ring; y++) visitCell(x, y, visit);
+      } else {
+        visitCell(x, cy - ring, visit);
+        visitCell(x, cy + ring, visit);
       }
     }
   };
