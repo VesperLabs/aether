@@ -17,7 +17,7 @@ describe("ItemTooltip", () => {
     render(<ItemTooltip item={sword} tooltipId="t" show />);
     expect(screen.getByText("Rusty Sword")).toBeInTheDocument();
     expect(screen.getByText("1 ↔ 3")).toBeInTheDocument();
-    expect(screen.getByText("Requirements")).toBeInTheDocument();
+    expect(screen.getByText("Requires")).toBeInTheDocument();
   });
 
   test("shows the set bonus and double-click hint", () => {

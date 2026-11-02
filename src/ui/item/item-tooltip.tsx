@@ -1,16 +1,75 @@
 import { Fragment } from "react";
 import { describeItem, type DescribableItem, type DescribePlayer } from "@/rules/inventory";
-import { Divider, Flex, Icon, Text, TextDivider, Tooltip, TooltipContent } from "@/ui/kit";
-import { StatLines, StatSection, TriggerLines } from "./item-lines";
+import { Flex, Text, theme, Tooltip, TooltipContent } from "@/ui/kit";
+import {
+  BODY_ICON,
+  BuffName,
+  FadedRule,
+  Level,
+  SectionTitle,
+  StatGrid,
+  StatRows,
+  StatSection,
+  TriggerRows,
+  TYPE,
+  spellIcon,
+} from "./item-lines";
+import { GildedCorners } from "./gilded-corners";
+import { ArtIcon, DEFAULT_ASSET_USER } from "./art-icon";
+import { resolveAsset, type BuiltItem } from "@/content";
 
 const RESOURCE_ICONS = { mp: "mana", hp: "health", sp: "stamina" } as const;
 
 const HINT_STYLE = {
+  ...TYPE.meta,
   fontStyle: "italic",
-  fontWeight: "normal",
   color: "gray.400",
   textTransform: "none",
+  textAlign: "center",
+  maxWidth: 200,
+  whiteSpace: "normal",
 } as const;
+
+/** The art shown by an item's name: a spell's own icon, or the item as the bag shows it. */
+function itemArt(item: DescribableItem, player?: DescribePlayer | null) {
+  if (item.type === "spell" || item.slot === "spell") {
+    return item.base ? { src: spellIcon(item.base) } : undefined;
+  }
+  const wearer = (player as { profile?: object } | null)?.profile ? player : DEFAULT_ASSET_USER;
+  const asset = resolveAsset(item as BuiltItem, wearer as Parameters<typeof resolveAsset>[1]);
+  return (
+    asset && { src: asset.src, rect: asset.previewRect, tint: (item as { tint?: string }).tint }
+  );
+}
+
+/** The tooltip's own background: the gilding fades into it, so no page shows through the border. */
+const TOOLTIP_BLACK = "rgba(0, 0, 0, 0.95)";
+
+/** How far down the sides the gilding runs before it's gone into the black. */
+const CAP_FADE = "50%";
+
+/** Rarities whose tooltip gets a gilded cap, in their own colour: all but common. */
+const CAPPED_RARITIES = ["magic", "rare", "unique", "set"];
+
+function gildColor(rarity?: string) {
+  if (!rarity || !CAPPED_RARITIES.includes(rarity)) return undefined;
+  const color = (theme.colors as unknown as Record<string, string>)[rarity];
+  return `color-mix(in srgb, ${color} 75%, transparent)`;
+}
+
+/**
+ * A magic or better item's tooltip gets a gilded cap: its own 1px border, coloured along the top
+ * and round the rounded corners, fading into the black down the sides.
+ */
+function gildedCap(rarity?: string) {
+  const gold = gildColor(rarity);
+  if (!gold) return undefined;
+  return {
+    /* A hard dark line outside the gilding, so it reads on light and busy backgrounds */
+    boxShadow: "0 0 0 1px rgba(0, 0, 0, 0.9)",
+    background: `linear-gradient(${TOOLTIP_BLACK}, ${TOOLTIP_BLACK}) padding-box, linear-gradient(to bottom, ${gold}, ${TOOLTIP_BLACK} ${CAP_FADE}) border-box`,
+  };
+}
 
 interface ItemTooltipProps {
   item?: DescribableItem | null;
@@ -26,78 +85,104 @@ export const ItemTooltip = ({ item, player, tooltipId, show }: ItemTooltipProps)
   if (!item) return null;
   const d = describeItem(item, player);
   const setColor = d.set?.active ? "set" : "gray.500";
+  const art = itemArt(item, player);
 
   return (
-    <Tooltip id={tooltipId} isOpen={show}>
-      <TooltipContent>
-        <Text>
-          {d.title}
-          {!!d.amount && (
-            <Text color="gray.400" sx={{ ml: "2px" }}>
-              ({d.amount})
+    <Tooltip
+      id={tooltipId}
+      isOpen={show}
+      style={gildedCap(d.rarity)}
+      border={gildedCap(d.rarity) && "1px solid transparent"}
+    >
+      {gildColor(d.rarity) && <GildedCorners color={gildColor(d.rarity)!} rarity={d.rarity!} />}
+      <TooltipContent sx={{ px: 2, py: "6px", minWidth: 150 }}>
+        <Flex sx={{ alignItems: "center", gap: 2, width: "100%" }}>
+          {/* Name and rarity together are 32px tall, the same as the art beside them */}
+          {art && <ArtIcon {...art} size={32} />}
+          <Flex sx={{ flexDirection: "column", alignItems: "flex-start" }}>
+            <Text sx={TYPE.name}>
+              {d.title}
+              {!!d.amount && (
+                <Text sx={{ ...TYPE.meta, ml: 1, color: "gray.400" }}>×{d.amount}</Text>
+              )}
+              {!!d.level && <Level level={d.level} />}
             </Text>
-          )}
-          {!!d.level && <span> (Lv. {d.level})</span>}
-        </Text>
-        <Text color={d.rarity}>
-          {d.rarity} {d.kind}
-        </Text>
+            <Text sx={{ ...TYPE.meta, color: d.rarity }}>
+              {d.rarity} {d.kind}
+            </Text>
+          </Flex>
+        </Flex>
         <StatSection title="Stats" lines={d.stats} />
         <StatSection title="Effects" lines={d.effects} />
         {d.buffs.map((buff) => (
           <Fragment key={buff.name}>
-            <TextDivider>
-              {buff.name} Buff (Lv. {buff.level})
-            </TextDivider>
-            <StatLines lines={buff.stats} />
+            <SectionTitle>Casts</SectionTitle>
+            {/* A self-buff spell (Endurance) already shows its icon and name up top */}
+            {buff.name !== item.base && (
+              <BuffName name={buff.name} level={buff.level} sx={{ alignSelf: "flex-start" }} />
+            )}
+            <StatGrid>
+              <StatRows lines={buff.stats} />
+            </StatGrid>
           </Fragment>
         ))}
-        <TriggerLines triggers={d.triggers} />
-        {d.requirements.length > 0 && <TextDivider>Requirements</TextDivider>}
-        {d.requirements.map(({ label, value, met }) => (
-          <StatLines key={label} lines={[{ label, value }]} color={met ? "text" : "danger"} />
-        ))}
+        {d.triggers.length > 0 && (
+          <>
+            <SectionTitle>Procs</SectionTitle>
+            <StatGrid>
+              <TriggerRows triggers={d.triggers} />
+            </StatGrid>
+          </>
+        )}
+        {d.requirements.length > 0 && (
+          <>
+            <SectionTitle>Requires</SectionTitle>
+            <StatGrid>
+              {d.requirements.map(({ label, value, met }) => (
+                <StatRows
+                  key={label}
+                  lines={[{ label, value }]}
+                  color={met ? undefined : "danger"}
+                />
+              ))}
+            </StatGrid>
+          </>
+        )}
         {d.set && (
           <>
-            <TextDivider>
-              {d.set.name}{" "}
-              <Text color={setColor} sx={{ fontSize: 0 }}>
-                ({d.set.pieces} piece)
-              </Text>
-            </TextDivider>
-            <StatLines lines={d.set.stats} color={setColor} />
-            <TriggerLines triggers={d.set.triggers} color={setColor} />
+            <SectionTitle color={setColor}>
+              {d.set.name}
+              {d.set.pieces ? ` (${d.set.pieces})` : ""}
+            </SectionTitle>
+            <StatGrid>
+              <StatRows lines={d.set.stats} color={setColor} />
+              <TriggerRows triggers={d.set.triggers} color={setColor} />
+            </StatGrid>
           </>
         )}
         {d.space && (
           <>
-            <TextDivider>Space</TextDivider>
-            {`${d.space.used} / ${d.space.total}`}
+            <SectionTitle>Space</SectionTitle>
+            <Text sx={TYPE.body}>{`${d.space.used} / ${d.space.total}`}</Text>
           </>
         )}
-        <Divider />
-        {d.action && (
+        {(d.description || d.action) && (
           <>
-            <Text sx={HINT_STYLE}>Double click to {d.action}</Text>
-            <Divider />
+            <FadedRule />
+            {d.description && <Text sx={HINT_STYLE}>{d.description}</Text>}
+            {d.action && <Text sx={HINT_STYLE}>Double click to {d.action}</Text>}
           </>
         )}
-        {d.description && (
-          <>
-            <Text sx={{ ...HINT_STYLE, textAlign: "center", maxWidth: 200, whiteSpace: "normal" }}>
-              {d.description}
-            </Text>
-            <Divider />
-          </>
-        )}
-        <Flex sx={{ alignItems: "center", gap: 2 }}>
-          <Flex sx={{ alignItems: "center", gap: "2px" }}>
-            <Icon icon="./assets/icons/gold.png" size={16} />
+        <FadedRule />
+        <Flex sx={{ ...TYPE.body, alignItems: "center", gap: 3 }}>
+          <Flex sx={{ alignItems: "center", gap: 1 }}>
+            <ArtIcon src="./assets/icons/gold.png" size={BODY_ICON} />
             {d.cost}
           </Flex>
           {d.resourceCosts.map(({ resource, amount }) => (
-            <Flex key={resource} sx={{ alignItems: "center", gap: "2px" }}>
-              <Icon icon={`./assets/icons/${RESOURCE_ICONS[resource]}.png`} size={16} />-{amount}
+            <Flex key={resource} sx={{ alignItems: "center", gap: 1 }}>
+              <ArtIcon src={`./assets/icons/${RESOURCE_ICONS[resource]}.png`} size={BODY_ICON} />-
+              {amount}
             </Flex>
           ))}
         </Flex>

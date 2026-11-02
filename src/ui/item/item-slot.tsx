@@ -9,13 +9,13 @@ import { ItemTooltip } from "./item-tooltip";
 import { SlotAmount } from "./slot-amount";
 import { shouldReRenderSlot, getIsItemActive } from "./slot-state";
 import { ElementalItemArt } from "./elemental-item-art";
+import { DEFAULT_ASSET_USER } from "./art-icon";
 import { deriveElements } from "./weapon-elements";
 
 const BLANK_IMAGE =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 
 /** Who armour icons are drawn for when the slot has no player (the wiki item list). */
-const DEFAULT_ASSET_USER = { profile: { race: "human", gender: "female" } };
 
 /** Where a slot sits, passed back to its events. */
 export interface SlotPlace {

@@ -135,22 +135,40 @@ interface AssetToCanvasArgs {
   shouldTrim?: boolean;
 }
 
-export function assetToCanvas({ asset, tint, setImageData, shouldTrim = true }: AssetToCanvasArgs) {
-  loadCacheImage(asset.src)
-    .then((img) => {
+const ART_CACHE = new Map<string, Promise<string>>();
+
+/**
+ * An asset's art as a PNG data URL: cut to its `previewRect` (the whole image without one),
+ * trimmed of empty border so every piece of art fills the box it's drawn in, and tinted.
+ * Cached, so tooltips and slots showing the same art share the work.
+ */
+export function assetToDataUrl(
+  asset: { src: string; previewRect?: readonly number[] },
+  tint?: string,
+  shouldTrim = true,
+) {
+  const key = `${asset.src}|${asset.previewRect?.join(",") ?? ""}|${tint ?? ""}|${shouldTrim}`;
+  let cached = ART_CACHE.get(key);
+  if (!cached) {
+    cached = loadCacheImage(asset.src).then((img) => {
       const canvas = document.createElement("canvas");
       const ctx = context2d(canvas);
       ctx.imageSmoothingEnabled = false;
-
-      const [x, y, w, h] = asset.previewRect as readonly number[];
+      const [x, y, w, h] = asset.previewRect ?? [0, 0, img.width, img.height];
       canvas.width = w;
       canvas.height = h;
       ctx.drawImage(img, x, y, w, h, 0, 0, w, h);
-
       const trimmedCanvas = shouldTrim ? trimCanvas(canvas) : canvas;
-      const tintedCanvas = tintCanvas(trimmedCanvas, tint);
-      setImageData(tintedCanvas.toDataURL("image/png"));
-    })
+      return tintCanvas(trimmedCanvas, tint).toDataURL("image/png");
+    });
+    ART_CACHE.set(key, cached);
+  }
+  return cached;
+}
+
+export function assetToCanvas({ asset, tint, setImageData, shouldTrim = true }: AssetToCanvasArgs) {
+  assetToDataUrl(asset, tint, shouldTrim)
+    .then(setImageData)
     .catch((error) => {
       console.error("Error loading or processing image:", error);
     });

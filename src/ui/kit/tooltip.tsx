@@ -21,6 +21,8 @@ interface TooltipProps {
   id?: string;
   style?: object;
   isOpen?: boolean;
+  /** A CSS border; react-tooltip draws it (round the arrow too) and ignores one in `style`. */
+  border?: string;
 }
 
 export const Tooltip = ({ children, style, ...props }: TooltipProps) => {

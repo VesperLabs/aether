@@ -37,6 +37,7 @@ export {
   IMAGE_CACHE,
   applyTintToImage,
   assetToCanvas,
+  assetToDataUrl,
   loadCacheImage,
   tintCanvas,
 } from "./image-tint";
