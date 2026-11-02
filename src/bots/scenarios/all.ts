@@ -4,6 +4,7 @@ import { combat } from "./combat";
 import { party } from "./party";
 import { potionSpam } from "./potion-spam";
 import { swarmed } from "./swarmed";
+import { restyle } from "./restyle";
 import type { Scenario } from "./scenario";
 import { wander } from "./wander";
 import { wanderRespawn } from "./wander-respawn";
@@ -17,5 +18,6 @@ export const SCENARIOS: Scenario[] = [
   party,
   wander,
   wanderRespawn,
+  restyle,
   potionSpam,
 ];

@@ -5,6 +5,7 @@ import type { BotBody } from "./body";
 import { createWeapon, type FightOutcome } from "./combat";
 import type { BotLink, Clock, MessageName, MessagePayload } from "./link";
 import { sendPosition, travelTo, walkTo, type TravelOptions } from "./movement";
+import { lookCommands, type Look } from "./look";
 import { inviteToParty, type PartyMember } from "./party";
 import { createSenses, type Senses } from "./senses";
 
@@ -112,6 +113,12 @@ export class Bot {
     const reply = this.waitFor("message", (m) => !!m && m.type !== "chat");
     this.link.send("message", { message: command });
     return (await reply) as ChatMessage;
+  }
+
+  /** Changes its hair, face, skin and body on the character screen, as a player does. */
+  async restyle(look: Look) {
+    for (const command of lookCommands(look)) this.link.send("updateProfile", command);
+    await this.sync();
   }
 
   say(message: string) {
