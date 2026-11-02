@@ -39,6 +39,8 @@ export interface CharacterSyncInput {
   activeItemSlots: Opaque[];
   gold: number;
   hitBoxSize?: Opaque;
+  bodySize?: number;
+  bodyCenterY?: number;
   getQuests(): Opaque[];
 }
 
@@ -70,6 +72,10 @@ export interface FullCharacterWire {
   activeItemSlots: Opaque[];
   gold: number;
   hitBoxSize: Opaque;
+  /** Feet radius: sets unarmed reach and where hit boxes stand. */
+  bodySize: number;
+  /** Where its body's middle sits above its feet; melee swings turn around it. */
+  bodyCenterY: number;
 }
 
 /** The parts of a character that change when buffs do. */
@@ -111,6 +117,8 @@ export function getFullCharacterState(p: CharacterSyncInput): FullCharacterWire 
     activeItemSlots: p?.activeItemSlots,
     gold: p?.gold,
     hitBoxSize: p?.hitBoxSize,
+    bodySize: p?.bodySize as number,
+    bodyCenterY: p?.bodyCenterY as number,
   };
 }
 

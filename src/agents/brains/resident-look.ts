@@ -36,7 +36,7 @@ export function look(
   const nearby = [...senses.characters.values()].filter(
     (c) => c.id !== senses.selfId && !c.isDead && away(c) < NEARBY,
   );
-  const mobs = nearby.filter((c) => c.kind === "npc").sort((a, b) => away(a) - away(b));
+  const mobs = nearby.filter((c) => c.isHostile).sort((a, b) => away(a) - away(b));
   const players = nearby.filter((c) => c.kind === "player");
   const mob = mobs[0];
   const player = players.find((p) => now - (greetedAt.get(p.id) ?? -Infinity) > GREET_AGAIN_MS);

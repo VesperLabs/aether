@@ -6,9 +6,14 @@ export interface SeenCharacter {
   id: string;
   name: string;
   kind: "player" | "npc";
+  /** A monster: fair game. Keepers and players are not. */
+  isHostile: boolean;
   x: number;
   y: number;
   isDead: boolean;
+  /** Its size, for working out who a swing would hit. Missing on old servers. */
+  bodySize?: number;
+  hitBoxSize?: { width: number; height: number };
 }
 
 type Handlers = { [M in MessageName]?: (payload: MessagePayload<M>) => void };
@@ -23,6 +28,8 @@ export function createSenses() {
   const senses = {
     /** This connection's id, set at login. */
     selfId: "",
+    /** Everyone in the agent's party, itself included; their swings can't hurt each other. */
+    partyIds: new Set<string>(),
     /** The agent's own character, as the server last sent it. */
     hero: undefined as FullCharacterWire | undefined,
     /** Where the agent is: from the server on teleports and corrections, from its own steps. */
@@ -54,9 +61,12 @@ export function createSenses() {
       id,
       name: wire.profile?.userName ?? id,
       kind,
+      isHostile: kind === "npc" && wire.kind === "nasty",
       x: wire.x,
       y: wire.y,
       isDead: !!wire.state?.isDead,
+      bodySize: wire.bodySize,
+      hitBoxSize: wire.hitBoxSize,
     });
   }
 
@@ -66,6 +76,9 @@ export function createSenses() {
   }
 
   const handlers: Handlers = {
+    partyUpdate({ party }) {
+      senses.partyIds = new Set(party?.members.map((m) => m.id));
+    },
     heroInit(state) {
       senses.selfId = state.socketId;
       characters.clear();
