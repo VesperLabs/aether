@@ -15,6 +15,7 @@ import {
   LUNGE_DISTANCE,
   canDodge,
   checkMove,
+  clampRewind,
   grantMoveBudget,
   isWithinDoorRange,
   startMoveTrack,
@@ -81,6 +82,12 @@ export function playerInput(ctx: CommandContext, input: ParsedCommand<"playerInp
       : (direction ?? player.direction);
 }
 
+/** Remembers how far behind this player sees others, so their hits can be judged by it. */
+export function reportLag(ctx: CommandContext, { ms }: ParsedCommand<"reportLag">) {
+  const player = ctx.world.players[ctx.socketId];
+  if (player) player.viewLagMs = clampRewind(ms);
+}
+
 export function changeDirection(
   ctx: CommandContext,
   { direction, lastAngle }: ParsedCommand<"changeDirection">,
@@ -100,6 +107,16 @@ export function subscribeKnockbackMessages(bus: GameEventBus, world: ServerWorld
     if (track) moveTracks.set(player, grantMoveBudget(track, KNOCKBACK_DISTANCE));
     world.io.to(socketId).emit("knockedBack", { angle });
   });
+}
+
+/** Teleports (doors, respawns) wipe a character's recent positions, so no hit rewinds across them. */
+function forgetPoses(world: ServerWorld, id: string) {
+  for (const room of Object.values(world.rooms)) room.poseHistory.forget(id);
+}
+
+/** Respawned npcs jump home: forget where they stood before. */
+export function subscribePoseForgetting(bus: GameEventBus, world: ServerWorld) {
+  return bus.on("npcRespawned", ({ npcId }) => forgetPoses(world, npcId));
 }
 
 /** Lets a player who just started a lunge move its length on top of their walking budget. */
@@ -161,6 +178,7 @@ export function enterDoor(ctx: CommandContext, doorName: ParsedCommand<"enterDoo
 
   player.x = next.centerPos.x;
   player.y = next.centerPos.y;
+  forgetPoses(world, socketId);
 
   /* Save the new room */
   world.db.updateUserMapDetails(player);
@@ -199,6 +217,7 @@ export function respawn(ctx: CommandContext) {
 
   player.x = newX;
   player.y = newY;
+  forgetPoses(world, socketId);
 
   /* Save the new room */
   world.db.updateUserMapDetails(player);

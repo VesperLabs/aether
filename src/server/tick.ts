@@ -62,11 +62,24 @@ const updateRooms: System<ServerWorld> = (world: ServerWorld, { now }: Frame) =>
   }
 };
 
+/** Remembers where every character stood this tick, for judging later hits by what attackers saw. */
+const recordPoses: System<ServerWorld> = (world) => {
+  const now = world.now();
+  for (const room of Object.values(world.rooms)) {
+    const here = (c: { room?: { name?: string } | null }) => c.room?.name === room.name;
+    room.poseHistory.record(now, [
+      ...Object.values(world.players).filter(here),
+      ...Object.values(world.npcs).filter(here),
+    ]);
+  }
+};
+
 /** The systems the server runs every tick, in order. */
 export const serverSystems: Array<System<ServerWorld>> = [
   moveNpcs,
   moveSpells,
   indexRooms,
   updateEntities,
+  recordPoses,
   updateRooms,
 ];

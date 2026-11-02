@@ -198,7 +198,16 @@ export class Spell {
       ...entitiesInRoom(world.players, this.room?.name),
     ] as unknown as Array<ServerCharacter>;
     const shape = this.getShape();
-    const victimShapes = toSpellVictims(victims);
+    /* A player aimed at where others looked on their screen, which lags the server: judge by that. */
+    const rewind = caster?.viewLagMs ?? 0;
+    const seenAt = world.now() - rewind;
+    const history = this.room?.poseHistory;
+    const victimShapes = toSpellVictims(
+      victims,
+      rewind && history
+        ? (id) => (id === caster.id ? undefined : history.positionAt(id, seenAt))
+        : undefined,
+    );
     const hits = findSpellHits({
       shape,
       victims: victimShapes,

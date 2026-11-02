@@ -67,6 +67,8 @@ export const commands = {
     direction: z.string().optional(),
     roomName: z.string().optional(),
   }),
+  /** How far behind the server this client sees others (latency plus render delay), ms. */
+  reportLag: z.object({ ms: z.number() }),
   changeDirection: z.object({
     direction: z.string().optional(),
     lastAngle: z.number().nullish(),
