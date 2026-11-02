@@ -18,6 +18,8 @@ jobs:
             run: npm run check:format && npm run lint && npm run typecheck && npm run check:structure
           - name: Tests
             run: npm run test
+          - name: Agent scenarios
+            run: npm run test:agents
           - name: Build
             run: npm run client:build && npm run web:build && npm run server:build
     # Release PRs are opened and merged by the release workflow in seconds. Skip
