@@ -22,7 +22,7 @@ const QUESTION = "You are a player in an online RPG. What do you do next?";
 /**
  * A player who lives in the world. Each beat it describes what it senses, offers the options that
  * make sense right now (most urgent first), lets the planner choose, and carries out the choice.
- * The planner can be a fast model (Jev) or `rulePlanner`; either way it can only pick an option.
+ * The planner can be a fast model (Jev) or a rule-based one; either way it can only pick an option.
  */
 export function createResident(planner: Planner): Brain {
   return async (agent, { clock, rng, signal }) => {
