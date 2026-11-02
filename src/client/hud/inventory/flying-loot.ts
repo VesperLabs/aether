@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { ELEMENT_SWING_COLORS, theme } from "@/ui";
+import { ELEMENT_EFFECTS, ElementSim, outlineFilter, theme } from "@/ui";
 import type { LootFlyDetail } from "@/client/window-events";
 
 /** The element picked-up loot flies into. */
@@ -8,8 +8,6 @@ export const LOOT_TARGET_ID = "loot-target";
 const POP_MS = 90;
 const FLIGHT_MS = 430;
 const ARC_STEPS = 14;
-const TRAIL = [0.45, 0.25, 0.12];
-const PLAIN_RARITIES = ["common", undefined];
 
 type Point = { x: number; y: number };
 const colors = theme.colors as unknown as Record<string, string>;
@@ -35,7 +33,7 @@ interface FlightPath {
   endScale: number;
 }
 
-/** One random arc per pickup, shared by the item and its trail so they never diverge. */
+/** One random arc per pickup. */
 function flightPath(from: LootFlyDetail["rect"], to: DOMRect): FlightPath {
   const a = center(from);
   const b = center(to);
@@ -52,70 +50,47 @@ function flightPath(from: LootFlyDetail["rect"], to: DOMRect): FlightPath {
   };
 }
 
-/**
- * Pop, then an eased-in toss over the arc. A trail ghost uses the same timeline but sits `lag`
- * behind along the arc, hidden during the pop, so it hugs the item and lands with it.
- */
-function flightKeyframes(path: FlightPath, lag = 0, alpha = 1) {
-  const { a, b, control, spin, endScale } = path;
+/** Pop, then an eased-in toss over the arc. */
+function flightKeyframes({ a, b, control, spin, endScale }: FlightPath) {
   const popOffset = POP_MS / (POP_MS + FLIGHT_MS);
-  const shown = lag ? 0 : alpha;
-
   const frames: Keyframe[] = [
-    {
-      offset: 0,
-      transform: "translate(0px, 0px) scale(1)",
-      opacity: shown,
-    },
-    {
-      offset: popOffset * 0.6,
-      transform: "translate(0px, 0px) scale(1.35, 1.15)",
-      opacity: shown,
-    },
-    {
-      offset: popOffset,
-      transform: "translate(0px, -4px) scale(1.2, 1.3)",
-      opacity: shown,
-    },
+    { offset: 0, transform: "translate(0px, 0px) scale(1)" },
+    { offset: popOffset * 0.6, transform: "translate(0px, 0px) scale(1.35, 1.15)" },
+    { offset: popOffset, transform: "translate(0px, -4px) scale(1.2, 1.3)" },
   ];
   for (let i = 1; i <= ARC_STEPS; i++) {
     const t = i / ARC_STEPS;
-    // Ghosts close the gap over the last stretch so the whole trail lands together.
-    const tt = Math.max(0, t - lag * (1 - t * t));
-    const p = bezier(a, control, b, tt * tt);
-    const scale = 1.25 + (endScale - 1.25) * tt;
+    const p = bezier(a, control, b, t * t);
+    const scale = 1.25 + (endScale - 1.25) * t;
     frames.push({
       offset: popOffset + (1 - popOffset) * t,
-      transform: `translate(${p.x - a.x}px, ${p.y - a.y}px) rotate(${spin * tt}deg) scale(${scale})`,
-      opacity: lag && i === ARC_STEPS ? 0 : alpha,
+      transform: `translate(${p.x - a.x}px, ${p.y - a.y}px) rotate(${spin * t}deg) scale(${scale})`,
     });
   }
   return frames;
 }
 
-/** The outline's alpha, as hex: see-through like the glowing outline in the world. */
-const OUTLINE_ALPHA = "70";
-
-/** A 1-art-pixel outline in the weapon's element colors, as it has in the world. */
-function elementOutline({ elements = [], pixelSize = 1 }: LootFlyDetail) {
-  const colors = elements.map((element) => ELEMENT_SWING_COLORS[element]).filter(Boolean);
-  if (colors.length === 0) return "none";
-  const css = (color: number) => `#${color.toString(16).padStart(6, "0")}`;
-  const offsets = [
-    [0, -1],
-    [1, 0],
-    [0, 1],
-    [-1, 0],
-  ];
-  return offsets
-    .map(([x, y], side) => {
-      const color = css(colors[side % colors.length]);
-      return `drop-shadow(${x * pixelSize}px ${y * pixelSize}px 0 ${color}${OUTLINE_ALPHA})`;
-    })
-    .join(" ");
+/**
+ * Keeps a weapon's element outline alive in flight: the same `ElementSim` outline the game and
+ * the bag draw, element turns and all. Returns the function that stops it.
+ */
+function animateOutline(img: HTMLImageElement, { elements = [], pixelSize = 1 }: LootFlyDetail) {
+  const effects = elements.map((element) => ELEMENT_EFFECTS[element]).filter(Boolean);
+  if (effects.length === 0) return () => {};
+  const sim = new ElementSim(effects);
+  let frame = 0;
+  let last = 0;
+  const draw = (time: number) => {
+    sim.step(time, last ? time - last : 16, (pixel) => pixel);
+    last = time;
+    img.style.filter = outlineFilter(sim.outline(), pixelSize);
+    frame = requestAnimationFrame(draw);
+  };
+  draw(performance.now());
+  return () => cancelAnimationFrame(frame);
 }
 
-function spawnImage(detail: LootFlyDetail, opacity: number) {
+function spawnImage(detail: LootFlyDetail) {
   const img = document.createElement("img");
   img.src = detail.src;
   Object.assign(img.style, {
@@ -127,8 +102,6 @@ function spawnImage(detail: LootFlyDetail, opacity: number) {
     imageRendering: "pixelated",
     pointerEvents: "none",
     zIndex: String(theme.zIndices.draggable),
-    opacity: String(opacity),
-    filter: elementOutline(detail),
     willChange: "transform",
   });
   document.body.appendChild(img);
@@ -181,20 +154,13 @@ function flyLoot(detail: LootFlyDetail) {
     target?.getBoundingClientRect() ??
     new DOMRect(window.innerWidth - 60, window.innerHeight - 60, 40, 40);
   const color = (detail.rarity && colors[detail.rarity]) || colors.white;
-  const fancy = !PLAIN_RARITIES.includes(detail.rarity);
   const path = flightPath(detail.rect, to);
   const timing = { duration: POP_MS + FLIGHT_MS, easing: "linear", fill: "forwards" as const };
 
-  const ghosts = fancy ? TRAIL : [];
-  ghosts.forEach((opacity, i) => {
-    const ghost = spawnImage(detail, 0);
-    ghost
-      .animate(flightKeyframes(path, (i + 1) * 0.06, opacity), timing)
-      .finished.finally(() => ghost.remove());
-  });
-
-  const img = spawnImage(detail, 1);
+  const img = spawnImage(detail);
+  const stopOutline = animateOutline(img, detail);
   img.animate(flightKeyframes(path), timing).finished.finally(() => {
+    stopOutline();
     img.remove();
     if (target) landOn(target, color);
   });

@@ -8,7 +8,6 @@ const BORDER_OFFSET = 1;
  * How much of the weapon's movement its particles share: they trail behind a swing a little,
  * like physics, but stay close to the blade instead of scattering across the screen.
  */
-const PARTICLE_FOLLOW = 0.8;
 
 /**
  * Blade edge pixels per frame and grip, relative to the centre of the untrimmed frame the sprite
@@ -56,8 +55,6 @@ export class WeaponSprite extends Phaser.GameObjects.Container {
   declare solidGraphics: Phaser.GameObjects.Graphics;
   /** Where the weapon is held, from the frame's centre: effects come off the blade, away from it. */
   declare grip: { x: number; y: number };
-  /** Where the weapon was last frame, to carry its particles along with it. */
-  declare lastPosition: { x: number; y: number } | null;
   constructor(scene: Phaser.Scene, x: number, y: number, key: string, frame?: string | number) {
     super(scene, x, y);
 
@@ -65,7 +62,6 @@ export class WeaponSprite extends Phaser.GameObjects.Container {
     this.elements = [];
     this.sim = new ElementSim([]);
     this.grip = { x: 0, y: 0 };
-    this.lastPosition = null;
 
     const offsets = [
       [0, -BORDER_OFFSET],
@@ -153,7 +149,6 @@ export class WeaponSprite extends Phaser.GameObjects.Container {
     if (this.elements.length === 0) return;
 
     const shown = this.isShown();
-    if (!shown) this.lastPosition = null;
     const matrix = this.mainSprite.getWorldTransformMatrix();
     const rootMatrix = this.placeEffects()?.getWorldTransformMatrix();
     const flipX = this.mainSprite.flipX ? -1 : 1;
@@ -165,14 +160,7 @@ export class WeaponSprite extends Phaser.GameObjects.Container {
       return { x, y };
     };
 
-    if (shown) {
-      this.sim.setBlade(getEdgePixels(this.mainSprite.frame, this.grip), this.grip);
-      // Live particles share most of the weapon's movement, so they trail but stay close
-      const at = toLayer({ x: 0, y: 0 });
-      const last = this.lastPosition ?? at;
-      this.sim.shift((at.x - last.x) * PARTICLE_FOLLOW, (at.y - last.y) * PARTICLE_FOLLOW);
-      this.lastPosition = at;
-    }
+    if (shown) this.sim.setBlade(getEdgePixels(this.mainSprite.frame, this.grip), this.grip);
     this.sim.step(time, delta, toLayer, shown);
 
     this.sim.outline().forEach((frame, side) => {
