@@ -9,7 +9,7 @@ export type { TileMap, TiledMapJson } from "./tilemap";
 export { circleOverlapsBox, moveBox, shapesOverlap } from "./collision";
 export type { Box, Circle, Shape } from "./collision";
 export { hasLineOfSight } from "./line-of-sight";
-export { clampRewind, createPoseHistory } from "./pose-history";
+export { MAX_REWIND_MS, clampRewind, createPoseHistory } from "./pose-history";
 export type { PoseHistory } from "./pose-history";
 export { createPathfinder, findNextWaypoint } from "./pathfinding";
 export type { Pathfinder } from "./pathfinding";
@@ -41,7 +41,12 @@ export {
   isLunging,
 } from "./lunge";
 export type { LungeState } from "./lunge";
-export { KNOCKBACK_DISTANCE, getKnockbackVelocity, isKnockedBack } from "./knockback";
+export {
+  KNOCKBACK_DISTANCE,
+  KNOCKBACK_DURATION,
+  getKnockbackVelocity,
+  isKnockedBack,
+} from "./knockback";
 export type { KnockbackState } from "./knockback";
 export type { MoveContext, MoveTrack } from "./move-validation";
 export { ATTACK_WALK_SPEED_SCALE, approachVelocity, getWalkVelocity } from "./walking";
