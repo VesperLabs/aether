@@ -1,28 +1,26 @@
-/** Pixel-art flourishes for the top-left corner, one row per string: `#` is a pixel. */
+/**
+ * Pixel-art flourishes for the top-left corner, one row per string (`#` is a pixel), each
+ * mirrored across the diagonal. They get more detailed with rarity.
+ */
 
-/** The simplest flourish, for magic items: a bracket with a dot in the corner. */
-const SIMPLE = ["#######", "#......", "#.#....", "#......", "#......", "#......", "#......"];
+/** Magic: a solid corner. */
+const MAGIC = ["####.#.", "###....", "##.....", "#......", ".......", "#......", "......."];
 
-/** A plainer flourish for rare items: a bracket with a curl tucked inside. */
-const PLAIN = [
-  "###########",
-  "#..........",
-  "#.#####....",
-  "#.#...#....",
-  "#.#.#.#....",
-  "#.#..##....",
-  "#.#........",
-  "#.#........",
-  "#..........",
-  "#..........",
-  "#..........",
+/** Rare: the corner sprouts a curl. */
+const RARE = [
+  "#####.##.",
+  "####.#..#",
+  "###..#.#.",
+  "##.......",
+  "#........",
+  ".##......",
+  "#........",
+  "#.#......",
+  ".#.......",
 ];
 
-/**
- * The ornate flourish for unique and set items, mirrored across the diagonal: a double bracket
- * whose outer arms hook back in, with a hollow diamond in the corner.
- */
-const ORNATE = [
+/** Set: a double bracket whose outer arms hook back in, round a hollow diamond. */
+const SET = [
   "###########..",
   "#..........#.",
   "#.#####.#..#.",
@@ -38,6 +36,26 @@ const ORNATE = [
   ".............",
 ];
 
+/** Unique: twin spirals on each edge, trailing off in dots. */
+const UNIQUE = [
+  "#######.####.#.#",
+  "######.##...#...",
+  "#####..#.##.#...",
+  "####...#..#.#...",
+  "###.##..##..#...",
+  "##..#.#....#....",
+  "#....#..........",
+  ".###............",
+  "##..#...........",
+  "#.#.#...........",
+  "#.##............",
+  "#....#..........",
+  ".####...........",
+  "#...............",
+  "................",
+  "#...............",
+];
+
 /** One art pixel is one CSS pixel, the same weight as the border. */
 const PIXEL = 1;
 
@@ -47,19 +65,22 @@ const INSET = 3;
 interface CornerProps {
   color: string;
   art: string[];
-  flip?: boolean;
+  /** Mirror to the right-hand corner. */
+  flipX?: boolean;
+  /** Mirror to a bottom corner. */
+  flipY?: boolean;
 }
 
-const Corner = ({ color, art, flip }: CornerProps) => (
+const Corner = ({ color, art, flipX, flipY }: CornerProps) => (
   <svg
     width={art.length * PIXEL}
     height={art.length * PIXEL}
     shapeRendering="crispEdges"
     style={{
       position: "absolute",
-      top: INSET,
-      [flip ? "right" : "left"]: INSET,
-      transform: flip ? "scaleX(-1)" : undefined,
+      [flipY ? "bottom" : "top"]: INSET,
+      [flipX ? "right" : "left"]: INSET,
+      transform: `scale(${flipX ? -1 : 1}, ${flipY ? -1 : 1})`,
       pointerEvents: "none",
     }}
   >
@@ -80,22 +101,23 @@ const Corner = ({ color, art, flip }: CornerProps) => (
   </svg>
 );
 
-/** The rarer the item, the prettier its flourish. */
 const ART_BY_RARITY: Record<string, string[]> = {
-  magic: SIMPLE,
-  rare: PLAIN,
-  unique: ORNATE,
-  set: ORNATE,
+  magic: MAGIC,
+  rare: RARE,
+  set: SET,
+  unique: UNIQUE,
 };
 
-/** Pixel flourishes inlaid in a gilded tooltip's top corners, set just inside its border. */
+/** Pixel flourishes inlaid in all four corners of a gilded tooltip, set just inside its border. */
 export const GildedCorners = ({ color, rarity }: { color: string; rarity: string }) => {
   const art = ART_BY_RARITY[rarity];
   if (!art) return null;
   return (
     <>
       <Corner color={color} art={art} />
-      <Corner color={color} art={art} flip />
+      <Corner color={color} art={art} flipX />
+      <Corner color={color} art={art} flipY />
+      <Corner color={color} art={art} flipX flipY />
     </>
   );
 };
