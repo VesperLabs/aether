@@ -16,7 +16,8 @@ export function attack(
   if (abilitySlot && !player.canCastSpell(abilitySlot)) return;
 
   /* The schema lets these be missing; the player treats a missing value as undefined. */
-  player.doAttack({ count, direction, castAngle, abilitySlot } as PlayerAttackRequest);
+  /* Only a swing that happened is shown to others, or spamming attack would spam the animation */
+  if (!player.doAttack({ count, direction, castAngle, abilitySlot } as PlayerAttackRequest)) return;
 
   socket
     .to(player?.roomName)
@@ -31,7 +32,7 @@ export function castSpell(
   const player = world.players[socketId];
   if (!isInRoom(player)) return;
   const lungeAt = player.state.lungeAt;
-  player.doCast({ abilitySlot, castAngle } as PlayerCastRequest);
+  if (!player.doCast({ abilitySlot, castAngle } as PlayerCastRequest)) return;
   // A lunge carries the player further than walking; their client moves them through it
   if (player.state.lungeAt !== lungeAt) grantLungeMove(player);
   socket.to(player?.roomName).emit("playerCastSpell", { socketId, abilitySlot, castAngle });

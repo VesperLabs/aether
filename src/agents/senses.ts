@@ -33,6 +33,8 @@ export function createSenses() {
     /** Every `positionCorrection`: a move the server refused. */
     corrections: [] as { x: number; y: number }[],
     messages: [] as ChatMessage[],
+    /** Whether the agent's own character is dead (until it respawns). */
+    isDead: false,
     /** Experience awarded since login. */
     expGained: 0,
 
@@ -72,7 +74,13 @@ export function createSenses() {
       const hero = state.players.find((p) => p.socketId === state.socketId);
       if (!hero) return;
       /* Login, doors and teleports all land here: take the new spot */
-      Object.assign(senses, { hero, x: hero.x, y: hero.y, roomName: hero.roomName });
+      Object.assign(senses, {
+        hero,
+        x: hero.x,
+        y: hero.y,
+        roomName: hero.roomName,
+        isDead: !!hero.state?.isDead,
+      });
     },
     playerJoin: (player) => see(player, "player"),
     playerUpdate(player) {
@@ -94,6 +102,7 @@ export function createSenses() {
     assignDamage(hits) {
       for (const hit of hits) {
         if (hit.type === "death" && hit.to) update(hit.to, { isDead: true });
+        if (hit.type === "death" && hit.to === senses.selfId) senses.isDead = true;
         if (hit.type === "exp" && hit.to === senses.selfId) senses.expGained += hit.amount ?? 0;
       }
     },

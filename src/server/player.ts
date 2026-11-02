@@ -90,22 +90,23 @@ export class Player extends ServerCharacter {
     this.expireBuffs(true);
     this.state.isDead = true;
   }
-  doAttack({ count, direction, castAngle, abilitySlot }: PlayerAttackRequest) {
+  /** Swings if the attack is ready and affordable. Returns whether it swung. */
+  doAttack({ count, direction, castAngle, abilitySlot }: PlayerAttackRequest): boolean {
     const { world, room, socketId } = this ?? {};
 
-    if (this?.hasBuff("stun")) return;
-    if (this?.state?.isDead) return;
+    if (this?.hasBuff("stun")) return false;
+    if (this?.state?.isDead) return false;
     const { roomName } = this;
-    if (!roomName) return;
+    if (!roomName) return false;
 
     /* Serverside attack may not actually be ready. */
     const { percentageRemaining } = this.checkAttackReady();
-    if (percentageRemaining > 5) return;
+    if (percentageRemaining > 5) return false;
 
     const { stats, ...spellDetails } = this.getAttackActionName({ count, abilitySlot });
     const spCost = this.getAttackSpCost(count);
     const costs = getAbilityCosts(stats);
-    if (!hasStaminaFor(this.stats.sp, spCost + costs.sp)) return;
+    if (!hasStaminaFor(this.stats.sp, spCost + costs.sp)) return false;
     this.modifyStatIfCostExists("mp", costs.mp);
     this.modifyStatIfCostExists("hp", costs.hp);
     this.modifyStatIfCostExists("sp", costs.sp);
@@ -139,6 +140,7 @@ export class Player extends ServerCharacter {
         abilitySlot,
         ...spellDetails,
       });
+    return true;
   }
   modifyStatIfCostExists(statType: string, cost: number) {
     if (cost > 0) {
@@ -151,10 +153,11 @@ export class Player extends ServerCharacter {
       });
     }
   }
-  doCast({ abilitySlot, castAngle }: PlayerCastRequest): void {
+  /** Casts if the spell is ready and affordable. Returns whether it cast. */
+  doCast({ abilitySlot, castAngle }: PlayerCastRequest): boolean {
     const { spellName, ilvl, stats } = this.getAbilityDetails(abilitySlot);
-    if (!ilvl || !spellName) return;
-    if (!this.canCastSpell(abilitySlot)) return;
+    if (!ilvl || !spellName) return false;
+    if (!this.canCastSpell(abilitySlot)) return false;
     // Modify stats if there's a cost
     this.modifyStatIfCostExists("mp", stats?.mpCost || 0);
     this.modifyStatIfCostExists("hp", stats?.hpCost || 0);
@@ -172,6 +175,7 @@ export class Player extends ServerCharacter {
         ilvl,
         abilitySlot,
       });
+    return true;
   }
   addNpcKill(npcName: string) {
     this.npcKills[npcName] = nextNpcKillCount(this.npcKills, npcName);
