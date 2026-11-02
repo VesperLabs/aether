@@ -5,7 +5,7 @@ export type MessagePayload<M extends MessageName> = Parameters<ServerToClientEve
 
 /**
  * How an agent reaches the game server: commands out, messages in, the same ones a browser uses.
- * Hosts provide one (a socket.io client today; an in-process or Cloudflare one later).
+ * Hosts provide one (a socket.io client, or the simulation's in-process hub).
  */
 export interface AgentLink {
   /** The id the server knows this connection by (the player's socket id). */
