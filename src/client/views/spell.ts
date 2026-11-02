@@ -117,6 +117,7 @@ export class Spell extends Phaser.GameObjects.Container {
       const hand = isLeft && !isRight ? "handLeft" : "handRight";
       /* Characters without attack animations swing no weapon: their arc is their body's reach */
       const isWielded = isLeft || isRight;
+      const isUppercut = caster.visibleEquipment?.[hand]?.base === "fist";
       const bladeDegrees = getBladeDegrees(caster.visibleEquipment?.[hand]?.texture);
       /* The weapon's range stat is the hit radius from body centre; the arc turns around the hand */
       const reach = caster.getWeaponRange(hand);
@@ -130,8 +131,15 @@ export class Spell extends Phaser.GameObjects.Container {
             ? () => ({ x: caster[hand].x, y: caster[hand].y - caster.bodyCenterY })
             : undefined,
           facing: getAngleFromDirection(caster?.direction),
-          /* Matches the sword animations: right-hand swings sweep counter-clockwise */
-          clockwise: isLeft && !isRight,
+          /*
+           * Facing sideways, a blade comes down (clockwise to the right) and a fist weapon, a
+           * katar, uppercuts. Facing up or down the hand picks: right-hand swings sweep
+           * counter-clockwise, as the sword animations do.
+           */
+          clockwise:
+            caster?.direction === "right" || caster?.direction === "left"
+              ? (caster.direction === "right") !== isUppercut
+              : isLeft && !isRight,
           wielder: isWielded ? { character: caster, hand, artDegrees: bladeDegrees } : undefined,
           /* Plain swings take the color of the weapon's element, like its outline */
           color:
