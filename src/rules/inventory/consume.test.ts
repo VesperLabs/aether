@@ -58,6 +58,18 @@ describe("consumeItem", () => {
     expect(result.consumed && result.state.inventory[0]?.amount).toBe(1);
   });
 
+  it("refuses an item that isn't ready, without using it up", () => {
+    const s = state({ inventory: [potion(2)] });
+    const asked: string[] = [];
+    const result = consumeItem(s, { location: "inventory", item: { id: "hp1" } }, (item, at) => {
+      asked.push(`${item.id}@${at}`);
+      return false;
+    });
+    expect(result).toEqual({ consumed: false });
+    expect(asked).toEqual(["hp1@inventory"]);
+    expect(s.inventory[0]?.amount).toBe(2);
+  });
+
   it("removes the last potion from a bag or from abilities", () => {
     const s = state({
       inventory: [bag([potion(1)])],
