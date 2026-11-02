@@ -86,7 +86,11 @@ export class Player extends ServerCharacter {
       this.stats.exp = expAfterDeath(this.stats.exp);
     }
     const spawnPoint: SpawnPoint = this?.spawn ?? PLAYER_DEFAULT_SPAWN;
-    this.world.db.updateUserMapDetails({ email: this.email, ...spawnPoint });
+    this.world.db.updateUserMapDetails({
+      email: this.email,
+      isDemoAccount: this.isDemoAccount,
+      ...spawnPoint,
+    });
     this.expireBuffs(true);
     this.state.isDead = true;
   }

@@ -265,7 +265,11 @@ export function setSpawn(ctx: CommandContext, _spawn: ParsedCommand<"setSpawn">)
   if (!keeper || typeof home?.x !== "number" || typeof home?.y !== "number") return;
   const spawn = { x: home.x, y: home.y, roomName: player.roomName } as SpawnPoint;
   player.spawn = spawn;
-  world.db.updateUserMapDetails({ email: player.email, spawn });
+  world.db.updateUserMapDetails({
+    email: player.email,
+    isDemoAccount: player.isDemoAccount,
+    spawn,
+  });
   return socket.emit("message", {
     type: "info",
     message: "You have changed your spawn point.",
