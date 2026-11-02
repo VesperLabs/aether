@@ -31,7 +31,6 @@ export type { StealthInput, StealthViewer } from "./stealth";
 export { mobKilledEvents } from "./kills";
 export type { KillerInput, SlainMob } from "./kills";
 export { rollTriggers } from "./triggers";
-export { rollsKnockback } from "./knockback";
 export type { FiredTrigger, TriggerEvent, TriggerLike } from "./triggers";
 export {
   getWeaponRange,

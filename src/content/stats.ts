@@ -16,7 +16,6 @@ export type StatName =
   | "hpCost"
   | "hpSteal"
   | "intelligence"
-  | "knockbackChance"
   | "lightResistance"
   | "magicFind"
   | "maxDamage"

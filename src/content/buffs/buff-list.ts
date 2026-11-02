@@ -32,7 +32,7 @@ export const buffList = {
     scaleDuration: false,
     description: "Regenerating HP while you are out of combat.",
   },
-  stun: { type: "debuff", duration: 500 },
+  stun: { type: "debuff", duration: 500, knockback: true },
   slow: {
     type: "debuff",
     duration: 3000,

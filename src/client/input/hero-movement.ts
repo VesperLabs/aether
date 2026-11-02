@@ -55,16 +55,8 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
   let vy = 0;
   let direction = hero?.direction;
   if (!hero) return;
-  /* If the user is dead or typing stop them from moving */
-  if (hero?.state?.isDead || isTypableFieldActive() || hero?.hasBuff("stun")) {
-    hero.vx = 0;
-    hero.vy = 0;
-    hero.body.setVelocity(0, 0);
-    return;
-  }
-
-  /* A shove takes over: no walking, turning or swinging until it's done */
-  if (isKnockedBack(hero.state, Date.now())) {
+  /* A shove takes over, even through the stun it comes with: no walking, turning or swinging */
+  if (!hero.state.isDead && isKnockedBack(hero.state, Date.now())) {
     const elapsed = Date.now() - (hero.state.knockbackAt ?? 0);
     ({ x: vx, y: vy } = getKnockbackVelocity(hero.state.knockbackAngle ?? 0, elapsed));
     hero.vx = vx;
@@ -72,6 +64,14 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
     hero.body.setVelocity(vx, vy);
     hero.state.isIdle = false;
     emitPlayerInput(scene, hero, vx, vy, hero.direction, true);
+    return;
+  }
+
+  /* If the user is dead or typing stop them from moving */
+  if (hero?.state?.isDead || isTypableFieldActive() || hero?.hasBuff("stun")) {
+    hero.vx = 0;
+    hero.vy = 0;
+    hero.body.setVelocity(0, 0);
     return;
   }
 

@@ -7,9 +7,9 @@ import { spellDetails } from "@/content";
  */
 
 /** How long the dash lasts, in ms. */
-export const LUNGE_DURATION = spellDetails.lunge.maxActiveTime;
+export const LUNGE_DURATION = spellDetails.tackle.maxActiveTime;
 /** Pixels covered by a full lunge in open ground. */
-export const LUNGE_DISTANCE = (spellDetails.lunge.spellSpeed * LUNGE_DURATION) / 1000;
+export const LUNGE_DISTANCE = (spellDetails.tackle.spellSpeed * LUNGE_DURATION) / 1000;
 
 /** An aimed lunge carries on this far past its target, so one running away is still reached. */
 export const LUNGE_OVERSHOOT = 12;
@@ -47,11 +47,11 @@ export function getLungeDuration(distance?: number) {
     LUNGE_MAX_DISTANCE,
     Math.max(LUNGE_DISTANCE / 2, distance + LUNGE_OVERSHOOT),
   );
-  return (pixels / spellDetails.lunge.spellSpeed) * 1000;
+  return (pixels / spellDetails.tackle.spellSpeed) * 1000;
 }
 
 /** Velocity of a lunge along `angle` (radians), in pixels per second. */
 export function getLungeVelocity(angle: number) {
-  const speed = spellDetails.lunge.spellSpeed;
+  const speed = spellDetails.tackle.spellSpeed;
   return { x: Math.cos(angle) * speed, y: Math.sin(angle) * speed };
 }

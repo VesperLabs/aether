@@ -10,12 +10,13 @@ import {
   type RegenTimers,
 } from "@/rules/buffs";
 import type { CharacterState } from "@/rules/character";
+import { buffList, type BuffDefinition } from "@/content";
 
 /** What a buff needs to know about the character that cast it. */
 export interface BuffRequest {
   name: string;
   level: number;
-  caster?: { stats?: { spellPower?: number } };
+  caster?: { stats?: { spellPower?: number }; x?: number; y?: number };
   shouldCalculateStats?: boolean;
 }
 
@@ -25,6 +26,9 @@ interface BuffHolder {
   stats: Record<string, number>;
   state: CharacterState;
   calculateStats(shouldHeal?: boolean): void;
+  knockBack(angle: number): void;
+  x: number;
+  y: number;
   addBuff(args: BuffRequest): unknown;
   dispelBuffsByProperty(prop: string, value?: unknown): void;
   world: { now: () => number };
@@ -52,6 +56,12 @@ export function applyAddBuff(
   if (shouldCalculateStats) character.calculateStats();
 
   character.state.hasBuffChanges = true;
+
+  /* Some buffs (stun) land with a shove, away from whoever applied them */
+  const isFromOther = caster && caster !== (character as unknown) && caster.x !== undefined;
+  if ((buffList as Record<string, BuffDefinition>)[name]?.knockback && isFromOther) {
+    character.knockBack(Math.atan2(character.y - (caster.y ?? 0), character.x - (caster.x ?? 0)));
+  }
 }
 
 /** Marks every buff whose `prop` is `value` as expired (removed by the next `expireBuffs`). */
