@@ -19,7 +19,7 @@
     "clean": "rm -rf node_modules",
     "server:build": "tsx --env-file-if-exists=.env scripts/build-server.ts",
     "server:run": "node --env-file-if-exists=.env --optimize-for-size --max-old-space-size=512 dist/server.cjs",
-    "test": "vitest run",
+    "test": "vitest run --project node --project dom",
     "format": "oxfmt",
     "dev": "concurrently -k --pad-prefix -n server,client,wiki -c blue,green,magenta \"npm run -s server:watch\" \"npm run -s client:dev\" \"npm run -s web:dev\"",
     "prepare": "husky",
@@ -31,7 +31,8 @@
     "weapon-tips": "tsx scripts/weapon-tips.ts",
     "check": "npm run check:format && npm run lint && npm run typecheck && npm run check:structure && npm run check:weapon-tips && npm run check:dead-code && npm run test",
     "check:dead-code": "knip --no-progress",
-    "bots": "tsx --env-file-if-exists=.env scripts/bots.ts"
+    "bots": "tsx --env-file-if-exists=.env scripts/bots.ts",
+    "test:agents": "vitest run --project agents"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.105.0",

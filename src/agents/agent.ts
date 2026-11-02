@@ -44,7 +44,7 @@ export class Agent {
     }
   }
 
-  /** Logs in on a connected link as a demo character. With cheats, renames itself to `name`. */
+  /** Logs in on a connected link as a demo character named `name`. */
   static async join(link: AgentLink, options: AgentOptions): Promise<Agent> {
     const agent = new Agent(link, options);
     const entered = agent.waitFor("heroInit");
@@ -55,6 +55,10 @@ export class Agent {
       if (renamed.type === "error") {
         throw new Error(`${options.name} can't use cheats: is ENABLE_CHEATS=true on the server?`);
       }
+    } else {
+      /* The same rename a player does from the character screen */
+      link.send("updateProfile", { userName: options.name });
+      await agent.sync();
     }
     return agent;
   }
