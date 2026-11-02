@@ -1,3 +1,4 @@
+import { POTION_COOLDOWN } from "@/rules/combat";
 import type { Scenario } from "./scenario";
 
 const POTION = "smallHpPotion";
@@ -5,8 +6,7 @@ const POTION = "smallHpPotion";
 export const potionSpam: Scenario = {
   name: "potion-spam",
   description: "an agent drinks two potions back to back; the cooldown should stop the second",
-  knownIssue: 140,
-  async run({ spawn, log, check }) {
+  async run({ spawn, clock, log, check }) {
     const bot = await spawn("Agent Drinker");
     await bot.cheat(`/give ${POTION} 10`);
     await bot.cheat("/hp 1");
@@ -25,5 +25,11 @@ export const potionSpam: Scenario = {
     const after = potions()?.amount ?? 0;
     log(`potions ${before} → ${after}`);
     check(before - after === 1, "only one potion is used while the cooldown runs");
+
+    await clock.sleep(POTION_COOLDOWN);
+    bot.consume(potion.id);
+    await bot.sync();
+    const later = potions()?.amount ?? 0;
+    check(after - later === 1, "once the cooldown is over, the next potion works");
   },
 };

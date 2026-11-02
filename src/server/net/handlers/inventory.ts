@@ -2,7 +2,8 @@ import { getFullCharacterState } from "@/network/sync";
 import { cloneJson } from "@/content";
 import { addStackAmounts, resolveGrab } from "@/rules/loot";
 import { removeLoot, spawnLoot } from "../../loot-adapter";
-import { consumeItemCommand, dropItemCommand, dropPosition } from "@/rules/inventory";
+import { POTION_BASES, consumeItemCommand, dropItemCommand, dropPosition } from "@/rules/inventory";
+import type { AbilitySlot } from "@/rules/spells";
 import type { ParsedCommand } from "@/network";
 import type { CommandContext } from "@/server/net/command-context";
 import { isInRoom } from "@/server/player-room";
@@ -89,7 +90,18 @@ export function consumeItem(ctx: CommandContext, request: ParsedCommand<"consume
   const { world, socketId, io } = ctx;
   const player = world?.players?.[socketId];
   if (!isInRoom(player) || player.state?.isDead) return;
-  const result = consumeItemCommand(player, request ?? {});
+  /* The same cooldowns the client shows: potions share one, food in a slot uses that slot's */
+  const isReady = (item: { id?: string; base?: string }, location: string) => {
+    if (POTION_BASES.includes(item.base as string)) return player.checkPotionCooldown().isReady;
+    if (item.base === "food" && location === "abilities") {
+      const slot = Object.keys(player.abilities ?? {}).find(
+        (s) => player.abilities?.[s]?.id === item.id,
+      );
+      return !!slot && !!player.canCastSpell(slot as AbilitySlot);
+    }
+    return true;
+  };
+  const result = consumeItemCommand(player, request ?? {}, isReady);
   if (!result.consumed) return;
 
   /* If the item has effects */

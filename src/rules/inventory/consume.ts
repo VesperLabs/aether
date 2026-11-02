@@ -14,6 +14,12 @@ export interface ConsumeRequest {
   item?: { id?: string | null } | null;
 }
 
+/**
+ * Whether this item may be used now (its cooldown has run out). The caller knows the character's
+ * timers; the rule only asks, so a refused item is never used up.
+ */
+export type IsReadyToConsume = (item: InventoryItem, location: string) => boolean;
+
 export type ConsumeResult =
   | {
       consumed: true;
@@ -40,6 +46,7 @@ const refused: ConsumeResult = { consumed: false };
 export function consumeItem(
   state: InventoryState,
   { location, item }: ConsumeRequest,
+  isReady: IsReadyToConsume = () => true,
 ): ConsumeResult {
   if (!["inventory", "abilities", "bag"].includes(location as string)) return refused;
   const id = item?.id as string | undefined;
@@ -50,6 +57,7 @@ export function consumeItem(
     used = findInventoryItemById(state.inventory, id);
     if (!CONSUMABLES_BASES.includes(used?.base as string)) return refused;
     if (!used?.amount) return refused;
+    if (!isReady(used, location)) return refused;
     next = { ...next, inventory: subtractInventoryItemAtId(state.inventory, id, 1).result };
   }
 
@@ -57,6 +65,7 @@ export function consumeItem(
     used = findAbilityById(state.abilities, id).item;
     if (!CONSUMABLES_BASES.includes(used?.base as string)) return refused;
     if (!used?.amount) return refused;
+    if (!isReady(used, location)) return refused;
     const abilities =
       (used.amount as number) <= 1
         ? deleteAbilityAtId(state.abilities, id)
@@ -68,6 +77,7 @@ export function consumeItem(
     used = findBagItemById(state.inventory, id).item;
     if (!CONSUMABLES_BASES.includes(used?.base as string)) return refused;
     if (!used?.amount) return refused;
+    if (!isReady(used, location)) return refused;
     const inventory =
       (used.amount as number) <= 1
         ? deleteBagItemAtId(state.inventory, id)

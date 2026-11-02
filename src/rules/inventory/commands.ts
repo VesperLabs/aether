@@ -1,4 +1,4 @@
-import { consumeItem } from "./consume";
+import { consumeItem, type IsReadyToConsume } from "./consume";
 import { dropItem } from "./drop";
 import type { DropRequest } from "./drop";
 import type { ConsumeRequest } from "./consume";
@@ -69,8 +69,12 @@ export function dropItemCommand(
   return { ok: true, item: result.item };
 }
 
-export function consumeItemCommand(holder: InventoryHolder, command: ConsumeRequest) {
-  const result = consumeItem(readState(holder), command);
+export function consumeItemCommand(
+  holder: InventoryHolder,
+  command: ConsumeRequest,
+  isReady?: IsReadyToConsume,
+) {
+  const result = consumeItem(readState(holder), command, isReady);
   if (result.consumed) writeState(holder, result.state);
   return result;
 }
