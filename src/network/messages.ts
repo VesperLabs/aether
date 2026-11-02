@@ -101,6 +101,10 @@ export interface ServerToClientEvents {
     playerQuests: FullCharacterWire["quests"];
   }) => void;
   respawnNpc: (payload: { id: string; x: number; y: number; respawnTime: number }) => void;
+  /** An NPC appeared after the room was sent (a cheat summoned it). */
+  npcJoin: (npc: FullCharacterWire) => void;
+  /** An NPC left the world for good. */
+  npcRemove: (id: string) => void;
   /** Debug only: the shapes the server compared when a spell hit. */
   spellHitShapes: (payload: { spell: Shape; victim: Box }) => void;
 

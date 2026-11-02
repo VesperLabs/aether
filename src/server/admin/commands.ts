@@ -6,11 +6,17 @@ import { getRoomState } from "@/server/net/room-sync";
 import { spawnLoot } from "../loot-adapter";
 import { DROP_USAGE, parseDropArgs } from "./drop-args";
 import { isInRoom } from "@/server/player-room";
+import type { Cheat } from "./cheat";
+import { CHARACTER_CHEATS } from "./character-cheats";
+import { NPC_CHEATS } from "./npc-cheats";
+import { TRAVEL_CHEATS } from "./travel-cheats";
 
 /** Cheat chat commands (`/drop`, `/ding`...) only work when the server runs with ENABLE_CHEATS=true. */
 export function areCheatsEnabled(): boolean {
   return process.env.ENABLE_CHEATS === "true";
 }
+
+const CHEATS: Record<string, Cheat> = { ...CHARACTER_CHEATS, ...TRAVEL_CHEATS, ...NPC_CHEATS };
 
 const ADMIN_COMMANDS = new Set<string>(CHAT_COMMANDS.filter((c) => c.cheat).map((c) => c.name));
 
@@ -35,6 +41,9 @@ function execute(ctx: CommandContext, command: string[]) {
   const cmdInfo = (message: string) => socket.emit("message", { type: "info", message });
   const itemLabel = (item: Item, amount = 1) =>
     `${amount > 1 ? `${amount}× ` : ""}${item.rarity} ${item.name ?? item.key}`;
+
+  const cheat = CHEATS[command[0]];
+  if (cheat) return cheat(ctx, player, command.slice(1), { info: cmdInfo, error: cmdErr });
 
   switch (command[0]) {
     case "drop": {

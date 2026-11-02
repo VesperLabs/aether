@@ -157,7 +157,7 @@ export function updateState(ctx: CommandContext, state: ParsedCommand<"updateSta
 }
 
 export function enterDoor(ctx: CommandContext, doorName: ParsedCommand<"enterDoor">) {
-  const { world, socket, socketId } = ctx;
+  const { world, socketId } = ctx;
   const player = world.players[socketId];
   if (!player?.room || player.state.isDead) return;
   const oldRoom = player.room.name;
@@ -167,6 +167,19 @@ export function enterDoor(ctx: CommandContext, doorName: ParsedCommand<"enterDoo
   const destMap = prev.destMap;
   const next = getDoor(world, destMap, prev.destDoor);
   if (!next || !world.rooms[destMap]) return;
+  teleportPlayer(ctx, destMap, next.centerPos);
+}
+
+/** Moves a player to a spot in any room, as a door does, and tells both rooms. */
+export function teleportPlayer(
+  ctx: CommandContext,
+  destMap: string,
+  { x, y }: { x: number; y: number },
+) {
+  const { world, socket, socketId } = ctx;
+  const player = world.players[socketId];
+  if (!player?.room || !world.rooms[destMap]) return;
+  const oldRoom = player.room.name;
 
   if (oldRoom !== destMap) {
     socket.leave(oldRoom);
@@ -176,8 +189,8 @@ export function enterDoor(ctx: CommandContext, doorName: ParsedCommand<"enterDoo
     addPlayerToRoom(world, socketId, world.rooms[destMap]);
   }
 
-  player.x = next.centerPos.x;
-  player.y = next.centerPos.y;
+  player.x = x;
+  player.y = y;
   forgetPoses(world, socketId);
 
   /* Save the new room */

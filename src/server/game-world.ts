@@ -33,32 +33,45 @@ function getNpcFromLists(name: string): NpcDefinition | undefined {
 
 /** Puts every NPC the map places into the world. */
 function spawnNpcs(world: ServerWorld, room: Room) {
-  for (const { name, x, y, properties = [] } of room.map.objects.Npcs ?? []) {
-    const npc = getNpcFromLists(name);
-    if (!npc) {
-      console.log(`❌ Map npc "${name}" is broken or not found in ${room.name}`);
-      continue;
+  for (const placed of room.map.objects.Npcs ?? []) {
+    if (!spawnNpc(world, room, placed)) {
+      console.log(`❌ Map npc "${placed.name}" is broken or not found in ${room.name}`);
     }
-
-    const id = crypto.randomUUID();
-    world.npcs[id] = new Npc(world, {
-      id,
-      room,
-      ...npc,
-      //need to merge these keys together, but add their values
-      baseStats: npcBaseStats(npc),
-      name,
-      kind: npc?.kind,
-      x,
-      y,
-      state: {
-        ...npc.state,
-        ...Object.fromEntries(properties.map((p) => [p.name, p.value])),
-      },
-      startingCoords: { x: npc?.x, y: npc?.y },
-    }) as unknown as Npc;
-    world.npcs[id].nid = world.netIds.take(id);
   }
+}
+
+/** Puts one keeper or nasty into a room. Returns undefined when no NPC has that name. */
+export function spawnNpc(
+  world: ServerWorld,
+  room: Room,
+  {
+    name,
+    x,
+    y,
+    properties = [],
+  }: { name: string; x: number; y: number; properties?: { name: string; value: unknown }[] },
+): Npc | undefined {
+  const npc = getNpcFromLists(name);
+  if (!npc) return;
+  const id = crypto.randomUUID();
+  world.npcs[id] = new Npc(world, {
+    id,
+    room,
+    ...npc,
+    //need to merge these keys together, but add their values
+    baseStats: npcBaseStats(npc),
+    name,
+    kind: npc?.kind,
+    x,
+    y,
+    state: {
+      ...npc.state,
+      ...Object.fromEntries(properties.map((p) => [p.name, p.value])),
+    },
+    startingCoords: { x: npc?.x, y: npc?.y },
+  }) as unknown as Npc;
+  world.npcs[id].nid = world.netIds.take(id);
+  return world.npcs[id];
 }
 
 const readMap = (file: string): TiledMapJson =>
