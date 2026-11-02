@@ -92,9 +92,11 @@ export async function travelTo(
   const { senses, clock } = body;
   const deadline = clock.now() + timeoutMs;
   for (let tries = 0; tries < MAX_TRIES && clock.now() < deadline; tries++) {
-    /* Mobs move, so each try routes around where they are now */
+    /* Mobs move, so each try routes around where they are now; boxed in, it walks past them */
     const avoid = avoidMobs ? mobZones(body) : [];
-    const path = findPath(room.pathfinder, senses, to, avoid);
+    const path =
+      findPath(room.pathfinder, senses, to, avoid) ??
+      (avoid.length ? findPath(room.pathfinder, senses, to) : undefined);
     if (!path) return false;
     /* Tile centres along the way, then the exact spot */
     const points = [...path.slice(0, -1), to];
