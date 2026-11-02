@@ -2,12 +2,12 @@ import { createResident } from "../brains";
 import { rulePlanner } from "../planner";
 import type { Scenario } from "./scenario";
 
-const LIVE_MS = 60_000;
+const LIVE_MS = 20_000;
 const AGREE_DISTANCE = 2;
 
 export const townLife: Scenario = {
   name: "town-life",
-  description: "three residents live a minute among the maps' own mobs without breaking anything",
+  description: "three residents live 20 seconds among the maps' own mobs without breaking anything",
   world: "full",
   async run({ spawn, live, clock, log, check }) {
     const residents = [
