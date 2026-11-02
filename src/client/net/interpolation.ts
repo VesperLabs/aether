@@ -1,190 +1,108 @@
 /**
- * Client snapshot buffer + linear blend between two authoritative server ticks.
- *
- * - Vault is kept sorted by snapshot time (insert on add). Interpolation uses binary search — no
- *   full sort on every frame (that was a major hot path: 2× per frame at 60fps).
- * - Real collision is server-side Phaser; the client only displays interpolated poses.
+ * Draws remote characters slightly in the past, blending between the two server ticks around the
+ * render time. The delay adapts to the connection: one tick plus a margin for how unevenly ticks
+ * arrive, so steady connections see others nearly live and jittery ones still get smooth motion.
  */
 
-import { DEFAULT_SERVER_FPS } from "@/network";
-import {
-  expandTickState,
-  mergeTickDelta,
-  type NetSnapshot,
-  type TickCharacterWire,
-  type TickStateExpanded,
-} from "@/network/sync";
+import type { Pose, RoomPoses } from "@/network/sync";
 
-/** A character pose from a tick. Heroinit seeds also carry the room and a plain direction. */
-export type TickEntity = TickCharacterWire & {
-  socketId?: string;
-  roomName?: string;
-  direction?: string;
-};
+/** A pose blended for the current frame. */
+export interface PoseSample {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  d: number;
+}
 
-/** A snapshot whose state has been expanded and merged, as the vault stores it. */
-type VaultSnapshot = Omit<NetSnapshot, "state"> & { state: TickStateExpanded };
-
-export interface InterpolatedEntities {
-  state: TickEntity[];
-  olderId: string;
-  newerId: string;
+export interface PoseFrame {
+  players: Map<string, PoseSample>;
+  npcs: Map<string, PoseSample>;
+  /** Server times of the two ticks blended, to skip characters that teleported in between. */
   olderTime: number;
   newerTime: number;
 }
 
-function lerp(a: number, b: number, t: number) {
-  return a + (b - a) * t;
+interface Tick {
+  t: number;
+  players: Map<string, Pose>;
+  npcs: Map<string, Pose>;
 }
 
-/**
- * @param {object} options
- * @param {number} [options.serverFps]
- * @param {number} [options.bufferTicks] — delay = (1000/fps)*ticks
- * @param {number} [options.maxSnapshots]
- */
-export function createNetInterpolator(
-  options: {
-    serverFps?: number;
-    bufferTicks?: number;
-    maxSnapshots?: number;
-    extraBufferMs?: number;
-  } = {},
-) {
-  const serverFps = options.serverFps ?? DEFAULT_SERVER_FPS;
-  const bufferTicks = options.bufferTicks ?? 2;
-  const maxSnapshots = options.maxSnapshots ?? 120;
-  const extraBufferMs = options.extraBufferMs ?? 0;
-  const bufferMs = (1000 / serverFps) * bufferTicks + extraBufferMs;
+const MAX_TICKS = 30;
+/** Past this the clock jumped (tab asleep, reconnect): resync instead of easing. */
+const CLOCK_RESYNC_MS = 400;
+/** How fast the clock offset, jitter and delay follow new ticks. */
+const SMOOTHING = 0.1;
+/** Jitter margins on top of one tick: covers most late ticks without adding much delay. */
+const JITTER_MARGIN = 2.5;
+const MAX_DELAY_MS = 300;
 
-  let timeOffset = -1;
-  const vault: VaultSnapshot[] = [];
-  /** Authoritative merged tick state (delta ticks apply on top). */
-  let lastMergedState: TickStateExpanded | null = null;
+const byId = (poses: Pose[]) => new Map(poses.map((pose) => [pose[0], pose]));
+const lerp = (a: number, b: number, u: number) => a + (b - a) * u;
 
-  /** Hard resync only on large drift (tab sleep, reconnect); smooth small jitter from RTT spikes. */
-  const CLOCK_HARD_RESYNC_MS = 400;
-  const CLOCK_SMOOTH = 0.22;
+export function createInterpolator(tickMs: number) {
+  const ticks: Tick[] = [];
+  /** Local time minus server time, smoothed. */
+  let offset: number | null = null;
+  let jitter = 0;
+  let delay = tickMs * 2;
 
-  function insertSnapshotSorted(snapshot: VaultSnapshot) {
-    const t = snapshot.time;
-    let lo = 0;
-    let hi = vault.length;
-    while (lo < hi) {
-      const mid = (lo + hi) >> 1;
-      if (vault[mid].time <= t) lo = mid + 1;
-      else hi = mid;
-    }
-    vault.splice(lo, 0, snapshot);
-    while (vault.length > maxSnapshots) {
-      vault.shift();
-    }
-  }
+  function add(poses: RoomPoses, arrivedAt: number) {
+    const newest = ticks[ticks.length - 1];
+    if (newest && poses.t <= newest.t) return; // late or duplicate: a newer one is already here
+    ticks.push({ t: poses.t, players: byId(poses.p), npcs: byId(poses.n) });
+    if (ticks.length > MAX_TICKS) ticks.shift();
 
-  function addSnapshot(snapshot: NetSnapshot) {
-    if (!snapshot?.time) return;
-    let expanded: TickStateExpanded;
-    if (snapshot.delta) {
-      if (!lastMergedState) return;
-      expanded = mergeTickDelta(lastMergedState, snapshot.state, snapshot.rm);
+    const sample = arrivedAt - poses.t;
+    if (offset === null || Math.abs(sample - offset) > CLOCK_RESYNC_MS) {
+      offset = sample;
+      jitter = 0;
     } else {
-      expanded = expandTickState(snapshot.state);
+      jitter += (Math.abs(sample - offset) - jitter) * SMOOTHING;
+      offset += (sample - offset) * SMOOTHING;
     }
-    lastMergedState = JSON.parse(JSON.stringify(expanded));
-    const normalized = { ...snapshot, state: expanded };
-
-    const timeNow = Date.now();
-    const ts = snapshot.time;
-    if (timeOffset === -1) {
-      timeOffset = timeNow - ts;
-    } else {
-      const o = timeNow - ts;
-      const drift = o - timeOffset;
-      if (Math.abs(drift) > CLOCK_HARD_RESYNC_MS) {
-        timeOffset = o;
-      } else {
-        timeOffset += drift * CLOCK_SMOOTH;
-      }
-    }
-    insertSnapshotSorted(normalized);
+    const target = Math.min(tickMs + jitter * JITTER_MARGIN, MAX_DELAY_MS);
+    delay += (target - delay) * SMOOTHING;
   }
 
-  function seedFromHeroInit(expanded: TickStateExpanded) {
-    vault.length = 0;
-    timeOffset = -1;
-    lastMergedState = JSON.parse(JSON.stringify(expanded));
+  /** Forget everything, e.g. on a room change. */
+  function reset() {
+    ticks.length = 0;
   }
 
-  /**
-   * Largest index i with vault[i].time <= serverTime (vault sorted ascending by time).
-   */
-  function rightmostLeq(serverTime: number) {
-    let lo = -1;
-    let hi = vault.length - 1;
-    while (lo < hi) {
-      const mid = (lo + hi + 1) >> 1;
-      if (vault[mid].time <= serverTime) lo = mid;
-      else hi = mid - 1;
-    }
-    return lo;
-  }
-
-  function interpolateEntityList(key: "players" | "npcs"): InterpolatedEntities | null {
-    if (timeOffset === -1 || vault.length < 2) return null;
-
-    const serverTime = Date.now() - timeOffset - bufferMs;
-    if (serverTime < vault[0].time) return null;
-
-    const i = rightmostLeq(serverTime);
-    if (i < 0 || i >= vault.length - 1) return null;
-
-    const older = vault[i];
-    const newer = vault[i + 1];
-    const t0 = older.time;
-    const t1 = newer.time;
-    const dur = t1 - t0;
-    if (dur <= 0) return null;
-
-    let u = (serverTime - t0) / dur;
-    u = Math.max(0, Math.min(1, u));
-
-    const olderArr = (older.state[key] || []) as TickEntity[];
-    const newerArr = (newer.state[key] || []) as TickEntity[];
-    const out: TickEntity[] = [];
-
-    for (const e1 of newerArr) {
-      const e0 = olderArr.find((e) => e.id === e1.id);
-      if (!e0) {
-        out.push({ ...e1 });
-        continue;
-      }
-
-      const x0 = e0.x ?? 0;
-      const y0 = e0.y ?? 0;
-      const x1 = e1.x ?? 0;
-      const y1 = e1.y ?? 0;
-      const vx0 = e0.vx ?? 0;
-      const vy0 = e0.vy ?? 0;
-      const vx1 = e1.vx ?? 0;
-      const vy1 = e1.vy ?? 0;
-
-      out.push({
-        ...e1,
-        x: lerp(x0, x1, u),
-        y: lerp(y0, y1, u),
-        vx: lerp(vx0, vx1, u),
-        vy: lerp(vy0, vy1, u),
+  function blend(older: Map<string, Pose>, newer: Map<string, Pose>, u: number) {
+    const out = new Map<string, PoseSample>();
+    for (const [id, b] of newer) {
+      const a = older.get(id) ?? b;
+      out.set(id, {
+        x: lerp(a[1], b[1], u),
+        y: lerp(a[2], b[2], u),
+        vx: lerp(a[3], b[3], u),
+        vy: lerp(a[4], b[4], u),
+        d: b[5],
       });
     }
+    return out;
+  }
 
+  /** Remote poses at local time `now`, or null until two ticks are buffered. */
+  function sample(now: number): PoseFrame | null {
+    if (offset === null || ticks.length < 2) return null;
+    const renderTime = now - offset - delay;
+    let i = ticks.length - 2;
+    while (i > 0 && ticks[i].t > renderTime) i--;
+    const older = ticks[i];
+    const newer = ticks[i + 1];
+    /* Past the newest tick (a late one): hold the newest instead of guessing ahead */
+    const u = Math.max(0, Math.min(1, (renderTime - older.t) / (newer.t - older.t)));
     return {
-      state: out,
-      olderId: older.id,
-      newerId: newer.id,
-      olderTime: older.time,
-      newerTime: newer.time,
+      players: blend(older.players, newer.players, u),
+      npcs: blend(older.npcs, newer.npcs, u),
+      olderTime: older.t,
+      newerTime: newer.t,
     };
   }
 
-  return { addSnapshot, interpolateEntityList, seedFromHeroInit };
+  return { add, reset, sample };
 }

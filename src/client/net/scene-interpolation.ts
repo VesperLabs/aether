@@ -1,17 +1,6 @@
-import {
-  DEFAULT_SERVER_FPS,
-  EXTRA_INTERPOLATION_BUFFER_MS,
-  INTERPOLATION_BUFFER_TICKS,
-} from "@/network";
-import { createNetInterpolator } from "./interpolation";
+import { DEFAULT_SERVER_FPS } from "@/network";
+import { createInterpolator } from "./interpolation";
 
-const serverTickHz = (() => {
-  const n = Number(process.env.SERVER_FPS);
-  return Number.isFinite(n) && n > 0 ? n : DEFAULT_SERVER_FPS;
-})();
+const serverFps = Number(process.env.SERVER_FPS) || DEFAULT_SERVER_FPS;
 
-export const netInterp = createNetInterpolator({
-  serverFps: serverTickHz,
-  bufferTicks: INTERPOLATION_BUFFER_TICKS,
-  extraBufferMs: EXTRA_INTERPOLATION_BUFFER_MS,
-});
+export const netInterp = createInterpolator(1000 / serverFps);

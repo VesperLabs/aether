@@ -3,8 +3,8 @@ import { DEFAULT_USER_SETTINGS, type UserSettings } from "@/rules/world";
 import type { ClientGameSocket } from "@/network";
 import type { Player } from "@/client/views/player";
 import { isMobile } from "@/ui/kit/is-mobile";
-import { decodeWireDirection } from "@/network/sync";
 import { netInterp } from "@/client/net/scene-interpolation";
+import { applyPose } from "@/client/net/apply-pose";
 import { bindSceneSocket } from "@/client/net/scene-socket";
 import { changeMusic } from "@/client/audio/music";
 import { getPlayer, getNpc, getNpcs, getPlayers } from "./scene-entities";
@@ -91,26 +91,12 @@ export class SceneMain extends Phaser.Scene {
     const elapsedTime = time - this.lastUpdateTime;
     if (!this.socket || !this?.hero?.body) return;
 
-    const playerSnapshot = netInterp.interpolateEntityList("players");
-    const npcSnapshot = netInterp.interpolateEntityList("npcs");
-
-    /* Remote players only (hero is predicted locally). Hermite + buffered server time. */
-    if (playerSnapshot) {
-      for (const s of playerSnapshot?.state ?? []) {
-        const player = getPlayer(this, s.socketId ?? s.id);
-        if (!player || player?.state?.isDead) continue;
-        if (!player.isHero) {
-          if (s?.roomName != null && s.roomName !== this?.roomName) continue;
-          if (player?.state?.lastTeleport >= playerSnapshot.olderTime) continue;
-          if (player?.state?.lastTeleport >= playerSnapshot.newerTime) continue;
-          player.setPosition(s.x, s.y);
-          player.direction =
-            typeof s.d === "number"
-              ? decodeWireDirection(s.d, player.direction)
-              : (s.direction ?? player.direction);
-          player.vx = s.vx ?? 0;
-          player.vy = s.vy ?? 0;
-        }
+    /* Remote characters only: the hero is predicted locally. */
+    const poses = netInterp.sample(performance.now());
+    if (poses) {
+      for (const [id, pose] of poses.players) {
+        const player = getPlayer(this, id);
+        if (player && !player.isHero) applyPose(player, pose, poses);
       }
     }
 
@@ -118,20 +104,10 @@ export class SceneMain extends Phaser.Scene {
     updateMinimap(this);
     checkProximities(this, time);
 
-    if (npcSnapshot) {
-      for (const s of npcSnapshot?.state ?? []) {
-        const npc = getNpc(this, s.id);
-        if (!npc || npc?.state?.isDead) continue;
-        if (s?.roomName != null && s.roomName !== this?.roomName) continue;
-        if (npc?.state?.lastTeleport >= npcSnapshot.olderTime) continue;
-        if (npc?.state?.lastTeleport >= npcSnapshot.newerTime) continue;
-        npc.setPosition(s.x, s.y);
-        npc.direction =
-          typeof s.d === "number"
-            ? decodeWireDirection(s.d, npc.direction)
-            : (s.direction ?? npc.direction);
-        npc.vx = s.vx ?? 0;
-        npc.vy = s.vy ?? 0;
+    if (poses) {
+      for (const [id, pose] of poses.npcs) {
+        const npc = getNpc(this, id);
+        if (npc) applyPose(npc, pose, poses);
       }
     }
 

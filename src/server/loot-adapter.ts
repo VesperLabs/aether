@@ -41,6 +41,9 @@ export function updateRoomLoot(world: ServerWorld, room: Room) {
     for (const spawn of spawns) spawnLoot(world, room.name, spawn);
   }
   const { markExpired, remove } = expireLoots(lootInRoom(world, room.name), now);
-  for (const id of markExpired) world.loots[id].expiredSince = now;
+  for (const id of markExpired) {
+    world.loots[id].expiredSince = now;
+    world.io.to(room.name).emit("lootExpired", id);
+  }
   for (const id of remove) removeLoot(world, id);
 }

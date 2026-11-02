@@ -1,5 +1,6 @@
 import type { BuffCharacterWire, FullCharacterWire } from "./sync/character-state";
-import type { NetSnapshot } from "./sync/net-snapshot";
+import type { RoomPoses } from "./sync/poses";
+import type { RoomStatuses } from "./sync/statuses";
 import type { Box, Shape } from "@/rules/movement";
 
 /*
@@ -92,8 +93,10 @@ export interface ServerToClientEvents {
   ) => void;
 
   /* World */
-  /** Room tick: a keyframe or a delta, see `network/sync`. */
-  update: (snapshot: NetSnapshot) => void;
+  /** Every character's position in the room, every tick. Each stands alone: see `network/sync/poses`. */
+  poses: (poses: RoomPoses) => void;
+  /** Characters whose state flags or vitals changed this tick. */
+  statuses: (statuses: RoomStatuses) => void;
   playerJoin: (
     player: FullCharacterWire,
     meta?: { isLogin?: boolean; isRespawn?: boolean; lastTeleport?: number },
@@ -112,6 +115,8 @@ export interface ServerToClientEvents {
     playerIdsThatLeveled?: string[];
   }) => void;
   lootSpawned: (payload: { loot: LootMessage; npcId?: string | null }) => void;
+  /** Ground loot timed out: clients remove it. */
+  lootExpired: (id: string) => void;
   lootGrabbed: (payload: { socketId: string; loot: LootMessage; player: CharacterMessage }) => void;
   keeperDataUpdate: (payload: {
     npcId: string;

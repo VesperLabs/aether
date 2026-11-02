@@ -1,16 +1,8 @@
 import type { ServerWorld } from "./server-world";
 import { moveBodyFreely, moveBodyThroughMap } from "@/rules/movement";
 import type { Frame, System } from "@/rules/world";
-import {
-  createDeltaSnapshot,
-  createSnapshot,
-  compactTickDeltaForWire,
-  compactTickState,
-  diffTickStates,
-  type TickStateExpanded,
-} from "@/network";
-import { SNAPSHOT_KEYFRAME_INTERVAL } from "@/network";
-import { getBuffRoomState, getTickRoomState } from "@/server/net/room-sync";
+import { getRoomPoses, takeChangedStatuses } from "@/network";
+import { getBuffRoomState } from "@/server/net/room-sync";
 import { updateRoomLoot } from "./loot-adapter";
 import { expireSpells } from "./spell-adapter";
 import { indexRooms } from "./room-index";
@@ -43,51 +35,30 @@ const updateEntities: System<ServerWorld> = (world, { time, delta, now }) => {
   for (const spell of Object.values(world.spells)) spell.update();
 };
 
-/** Loot, finished spells, and sending each room's state to the clients in it. */
-const updateRooms: System<ServerWorld> = (world: ServerWorld, _frame: Frame) => {
+/** Loot, finished spells, and sending each room's poses and changed statuses to the clients in it. */
+const updateRooms: System<ServerWorld> = (world: ServerWorld, { now }: Frame) => {
   const { io } = world;
   for (const room of Object.values(world.rooms)) {
-    /* Simulate first so snapshots match what clients see on the next frame (loot expiry, spawns). */
+    /* Simulate first so what is sent matches what clients see on the next frame (loot expiry, spawns). */
     updateRoomLoot(world, room);
     expireSpells(world, room);
 
-    room.snapshotSeq += 1;
-
     const roomClients = io.sockets.adapter.rooms.get(room.name)?.size ?? 0;
+    if (roomClients === 0) {
+      /* Whoever joins next gets everything in heroInit, so start the statuses over. */
+      room.sentStatuses.clear();
+      continue;
+    }
 
     const hasBuffChanges = [...Object.values(world.players), ...Object.values(world.npcs)].some(
       (n: { room?: { name?: string } | null; state?: { hasBuffChanges?: boolean } }) =>
         n?.room?.name === room.name && n?.state?.hasBuffChanges,
     );
-    if (hasBuffChanges && roomClients > 0) {
-      io.to(room.name).emit("buffUpdate", getBuffRoomState(world, room.name));
-    }
+    if (hasBuffChanges) io.to(room.name).emit("buffUpdate", getBuffRoomState(world, room.name));
 
-    if (roomClients === 0) {
-      room.lastEmittedSnapshot = null;
-      continue;
-    }
-
-    const expanded = getTickRoomState(world, room.name);
-
-    const isKeyframe =
-      room.snapshotSeq % SNAPSHOT_KEYFRAME_INTERVAL === 0 || room.lastEmittedSnapshot === null;
-
-    if (isKeyframe) {
-      const snapshot = createSnapshot(compactTickState(expanded), room.snapshotSeq);
-      room.lastEmittedSnapshot = structuredClone(expanded);
-      io.to(room.name).emit("update", snapshot);
-      continue;
-    }
-
-    const { delta, rm, isEmpty } = diffTickStates(
-      room.lastEmittedSnapshot as TickStateExpanded,
-      expanded,
-    );
-    if (isEmpty) continue;
-    room.lastEmittedSnapshot = structuredClone(expanded);
-    const snap = createDeltaSnapshot(compactTickDeltaForWire(delta), rm, room.snapshotSeq);
-    io.to(room.name).emit("update", snap);
+    io.to(room.name).emit("poses", getRoomPoses(world, room.name, now));
+    const statuses = takeChangedStatuses(world, room.name, room.sentStatuses);
+    if (statuses) io.to(room.name).emit("statuses", statuses);
   }
 };
 

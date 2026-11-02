@@ -1,13 +1,9 @@
 import {
   getBuffCharacterState,
   getFullCharacterState,
-  getLootTickWire,
-  getTickCharacterState,
   type BuffCharacterWire,
   type CharacterSyncInput,
   type FullCharacterWire,
-  type LootTickWire,
-  type TickCharacterWire,
 } from "./character-state";
 
 /** Everything alive in the game, as plain collections keyed by id. Room functions pick one room out of it. */
@@ -34,27 +30,6 @@ export function getRoomState<L extends LootInRoom>(
       ?.filter((n) => n?.room?.name === roomName)
       .map((p) => getFullCharacterState(p)),
     loots: Object.values(world.loots)?.filter((l) => l?.roomName === roomName),
-  };
-}
-
-/** The room tick before it is compacted and diffed. */
-export function getTickRoomState(
-  world: RoomSyncInput<
-    Parameters<typeof getTickCharacterState>[0] & InRoom,
-    { id: string; expiredSince?: number | null } & LootInRoom
-  >,
-  roomName: string,
-): { players: TickCharacterWire[]; npcs: TickCharacterWire[]; loots: LootTickWire[] } {
-  return {
-    players: Object.values(world.players)
-      ?.filter((p) => p?.room?.name === roomName)
-      .map(getTickCharacterState),
-    npcs: Object.values(world.npcs)
-      ?.filter((p) => p?.room?.name === roomName)
-      .map(getTickCharacterState),
-    loots: Object.values(world.loots)
-      ?.filter((l) => l?.roomName === roomName)
-      .map(getLootTickWire),
   };
 }
 

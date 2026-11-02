@@ -5,12 +5,7 @@ import { io as connect, type Socket } from "socket.io-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { initFakeDatabase } from "../persistence";
 import { GameServer } from "../game-server";
-import {
-  decodeTickVitals,
-  expandTickState,
-  mergeTickDelta,
-  type TickStateExpanded,
-} from "@/network/sync";
+import { decodeTickVitals } from "@/network/sync";
 
 /** Combat, spells and buffs over real sockets against the in-process game server. */
 let httpServer: http.Server;
@@ -195,18 +190,14 @@ describe("casting spells", () => {
     );
   });
 
-  it("ticks carry the server's hp, mp and sp, so the client's copy matches through costs and regen", async () => {
+  it("statuses carry the server's hp, mp and sp, so the client's copy matches through costs and regen", async () => {
     const { socket, player } = await login("rogue");
-    /* Rebuild the room the way the client does: keyframes, then deltas merged in */
-    let room: TickStateExpanded | null = null;
-    socket.on("update", (snap: Anything) => {
-      if (snap.delta) room = room && mergeTickDelta(room, snap.state, snap.rm);
-      else room = expandTickState(snap.state);
+    /* Keep the latest status the way the client does: each one replaces the last */
+    let mine: Anything = null;
+    socket.on("statuses", ({ p = [] }: Anything) => {
+      mine = p.find((s: Anything) => s.id === socket.id) ?? mine;
     });
-    const seenSp = () => {
-      const me = (room?.players as Anything[] | undefined)?.find((p) => p.id === socket.id);
-      return decodeTickVitals(me?.v)?.sp;
-    };
+    const seenSp = () => decodeTickVitals(mine?.v)?.sp;
 
     /* One dodge pays its cost, then one regen tick refills a little: the client must match both */
     const full = player.stats.sp;

@@ -1,7 +1,4 @@
-import { encodeTickVitals, type TickVitals } from "./vitals";
 import type { CharClass } from "@/content";
-import { pickTickStateLite } from "./tick-state";
-import { encodeWireDirection } from "./net-wire";
 
 // oxlint-disable-next-line typescript/no-explicit-any
 type Opaque = any; // equipment, stats, buffs ... get exact types when their rules move into rules
@@ -71,20 +68,6 @@ export interface FullCharacterWire {
   hitBoxSize: Opaque;
 }
 
-/** A character on the room tick: position, facing and the few state flags clients animate from. */
-export interface TickCharacterWire {
-  id: string;
-  /** Facing as a number, see `encodeWireDirection`. */
-  d: number;
-  state: Record<string, unknown>;
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-  /** Current and max hp, mp and sp: see `encodeTickVitals`. */
-  v: TickVitals;
-}
-
 /** The parts of a character that change when buffs do. */
 export interface BuffCharacterWire {
   id: string;
@@ -93,12 +76,6 @@ export interface BuffCharacterWire {
   stats: Opaque;
   buffs: Opaque[];
   activeItemSlots: Opaque[];
-}
-
-/** Ground loot on the tick: just enough for the client to find and expire it. */
-export interface LootTickWire {
-  id: string;
-  expiredSince?: number;
 }
 
 export function getFullCharacterState(p: CharacterSyncInput): FullCharacterWire {
@@ -129,41 +106,6 @@ export function getFullCharacterState(p: CharacterSyncInput): FullCharacterWire 
     activeItemSlots: p?.activeItemSlots,
     gold: p?.gold,
     hitBoxSize: p?.hitBoxSize,
-  };
-}
-
-/** Tick loot: client only needs id + expiredSince (destroy when both match). Full props come from spawn / heroInit. */
-export function getLootTickWire(l: { id: string; expiredSince?: number | null }): LootTickWire {
-  const o: LootTickWire = { id: l.id };
-  if (l.expiredSince != null) o.expiredSince = l.expiredSince;
-  return o;
-}
-
-/** Only the fields the client's `Player.updateState` uses, not the whole state blob (huge JSON every tick). */
-export function getTickStateLite(p: Pick<CharacterSyncInput, "state">): Record<string, unknown> {
-  return pickTickStateLite(p?.state);
-}
-
-export function getTickCharacterState(
-  p: Pick<CharacterSyncInput, "id" | "socketId" | "direction" | "state" | "stats" | "x" | "y"> & {
-    vx?: number;
-    vy?: number;
-  },
-): TickCharacterWire {
-  const uid = (p?.socketId || p?.id) as string;
-  const vx = p?.vx ?? 0;
-  const vy = p?.vy ?? 0;
-  return {
-    id: uid, //required for SI (same as socketId for players; omit duplicate key on wire)
-    /* room omitted: snapshot is already scoped to one room; saves bytes per entity per tick */
-    d: encodeWireDirection(p?.direction),
-    state: getTickStateLite(p),
-    /* Floats: rounding broke small velocities (→0) and stepped positions for snapshot interpolation */
-    x: p?.x ?? 0,
-    y: p?.y ?? 0,
-    vx,
-    vy,
-    v: encodeTickVitals(p?.stats),
   };
 }
 

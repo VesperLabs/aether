@@ -30,10 +30,8 @@ export interface RoomData {
   pathfinder: Pathfinder;
   doors: Record<string, DoorData>;
   lootState: { mapLootList: MapLoot[]; lastMapLootSpawn: number };
-  /** Monotonic per-room tick id for snapshots. */
-  snapshotSeq: number;
-  /** Last tick state sent to clients (for delta encoding). Cleared when the room has no one. */
-  lastEmittedSnapshot: unknown;
+  /** Each character's last status sent to the room, see `takeChangedStatuses`. */
+  sentStatuses: Map<string, string>;
 }
 
 /**
@@ -108,8 +106,7 @@ export function createRoom(name: string, json: TiledMapJson, now: number): RoomD
       mapLootList: parseMapLootList(map.objects.Loots),
       lastMapLootSpawn: now - LOOT_SPAWN_CYCLE_TIME,
     },
-    snapshotSeq: 0,
-    lastEmittedSnapshot: null,
+    sentStatuses: new Map(),
   };
 }
 
