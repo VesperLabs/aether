@@ -86,8 +86,8 @@ async function main() {
     /* Residents live in real time, on the dev server or a local one */
     const server = useDev ? null : await startLocalServer();
     const url = server?.url ?? devUrl;
-    const { planner, label } = pickPlanner();
-    const living = await startResidents(url, residents, planner);
+    const { plannerFor, label } = pickPlanner();
+    const living = await startResidents(url, residents, plannerFor);
     console.log(`🏡 ${living.names.join(", ")} now live at ${url}, deciding with ${label}.`);
     console.log("   Ctrl-C to stop.");
     process.once("SIGINT", async () => {
