@@ -61,7 +61,7 @@ export const spellDetails = {
   waterball: {
     isAimable: true,
     isMissile: true,
-    allowedTargets: ["enemy"],
+    allowedTargets: ["ally", "enemy"],
     maxVisibleTime: 1400,
     maxActiveTime: 1400,
     maxDistance: 120,
@@ -77,7 +77,7 @@ export const spellDetails = {
   lightball: {
     isAimable: true,
     isMissile: true,
-    allowedTargets: ["enemy"],
+    allowedTargets: ["ally", "enemy"],
     maxVisibleTime: 1400,
     maxActiveTime: 1400,
     maxDistance: 120,
@@ -94,7 +94,7 @@ export const spellDetails = {
     isAimable: true,
     isMissile: true,
     tint: "0xCCFFCC",
-    allowedTargets: ["ally"],
+    allowedTargets: ["ally", "enemy"],
     maxVisibleTime: 1400,
     maxActiveTime: 1400,
     maxDistance: 120,
@@ -106,7 +106,7 @@ export const spellDetails = {
     npcCastWait: 5000,
     layerDepth: "top",
     baseCooldown: 5000,
-    description: "Aim to shoot. Holy damage will heal allies.",
+    description: "Aim to shoot. Heals allies and burns enemies.",
   },
   quake: {
     allowedTargets: ["enemy"],

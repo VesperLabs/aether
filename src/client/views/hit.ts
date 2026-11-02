@@ -25,6 +25,13 @@ export class Hit extends Phaser.GameObjects.Container {
       this.hits[i].setOrigin(0.5);
       this.hits[i].setScale(scale).setAlpha(alpha);
       this.hits[i].play(`spell-anim-hits-${this.elements[i]}`);
+      /* Holy (heals included) glows pure white rather than the sheet's green */
+      if (this.elements[i] === "holy") {
+        this.hits[i]
+          .setTint(0xffffff)
+          .setTintMode(Phaser.TintModes.FILL)
+          .setBlendMode(Phaser.BlendModes.ADD);
+      }
       this.hits[i].y = this.victim.bodyCenterY;
       this.hits[i].on(ANIMATION_COMPLETE_EVENT, this.handleAnimationComplete, this);
       this.victim.add(this.hits[i]);

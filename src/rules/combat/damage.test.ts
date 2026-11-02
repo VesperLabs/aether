@@ -128,6 +128,20 @@ describe("rollAttack", () => {
     });
   });
 
+  it("adds holy damage from gear, ignoring resistances", () => {
+    const result = rollAttack(
+      { ...attacker, minHolyDamage: 2, maxHolyDamage: 2 },
+      { ...victim, fireResistance: 100, lightResistance: 100 },
+      undefined,
+      () => 0.5,
+    );
+    expect(result).toMatchObject({
+      eleDamage: 2,
+      elements: ["physical", "holy"],
+      totalDamage: 12,
+    });
+  });
+
   it("rolls dodge, block and crit in that order before anything else", () => {
     const calls: number[] = [];
     let i = 0;

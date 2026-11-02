@@ -88,6 +88,7 @@ export type AttackRoll =
       isCritical: boolean;
       /** Whole points of weapon damage, after defense and crits. */
       physicalDamage: number;
+      /** Elemental damage after resistances, plus holy damage. */
       eleDamage: number;
       /** "physical" first (if any), then the elements that hit, strongest first. */
       elements: string[];
@@ -127,7 +128,11 @@ export function rollAttack(
     physicalDamage = Math.max(1, physicalDamage * (attacker.critMultiplier || 1));
   }
 
-  const { eleDamage, elements } = calculateElementalDamage(mergedStats, victim, rng);
+  /* Holy ignores resistances */
+  const elemental = calculateElementalDamage(mergedStats, victim, rng);
+  const { elements } = elemental;
+  const eleDamage = elemental.eleDamage + elemental.holyDamage;
+  if (elemental.holyDamage > 0) elements.push("holy");
 
   physicalDamage = Math.floor(physicalDamage);
   if (physicalDamage > 0) elements.unshift("physical");

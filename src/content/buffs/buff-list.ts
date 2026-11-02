@@ -2,6 +2,13 @@ import type { BuffDefinition } from "./buff-types";
 
 export const buffList = {
   evasion: { type: "buff", duration: 30000, stats: { dodgeChance: 5 } },
+  /** A halo of dawn light: swings burn with holy damage for a moment. */
+  aureole: {
+    type: "buff",
+    scaleDuration: false,
+    duration: 6000,
+    stats: { minHolyDamage: 1, maxHolyDamage: 2 },
+  },
   haste: {
     type: "buff",
     duration: 30000,
