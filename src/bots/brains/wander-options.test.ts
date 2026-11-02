@@ -3,7 +3,9 @@ import type { TiledMapJson } from "@/rules/movement";
 import { createRng } from "@/rules/world";
 import { createAtlas } from "../atlas";
 import { createSenses, type SeenCharacter } from "../senses";
-import { pickGoal, type Temperament } from "./wander-goals";
+import type { Option } from "../planner";
+import { scriptedPlanner, type Temperament } from "./scripted-planner";
+import { listOptions } from "./wander-options";
 
 const SIZE = 20;
 const TILE = 32;
@@ -65,43 +67,49 @@ function sensesWith(...characters: Partial<SeenCharacter>[]) {
 
 const calm: Temperament = { pace: 1, curiosity: 0, restlessness: 0 };
 
-function pickMany(
+/** Lists options and lets a scripted planner with this temperament choose, 200 times over. */
+async function pickMany(
   senses: ReturnType<typeof sensesWith>,
   temperament: Temperament,
   recentRooms: string[] = [],
 ) {
   const rng = createRng(7);
-  return Array.from({ length: 200 }, () =>
-    pickGoal(senses, room, { temperament, memory: { recentRooms, goalsHere: 0 }, rng }),
-  ).filter((g) => g !== undefined);
+  const planner = scriptedPlanner(rng, temperament);
+  const picks: Option[] = [];
+  for (let i = 0; i < 200; i++) {
+    const options = listOptions(senses, room, rng);
+    if (!options.length) continue;
+    const { choice } = await planner({ roomName: "test", recentRooms, goalsHere: 0, options });
+    picks.push(options[choice]);
+  }
+  return picks;
 }
 
-describe("pickGoal", () => {
-  it("only picks spots it can walk to", () => {
-    const goals = pickMany(sensesWith(), calm);
+describe("wandering", () => {
+  it("only picks spots it can walk to", async () => {
+    const goals = await pickMany(sensesWith(), calm);
     expect(goals.length).toBeGreaterThan(0);
     expect(goals.every((g) => g.spot.x < 10 * TILE)).toBe(true);
   });
 
-  it("keeps away from monsters", () => {
+  it("keeps away from monsters", async () => {
     const mob = { x: 160, y: 320, isHostile: true };
-    const goals = pickMany(sensesWith(mob), calm);
+    const goals = await pickMany(sensesWith(mob), calm);
     expect(goals.length).toBeGreaterThan(0);
     expect(goals.every((g) => Math.hypot(g.spot.x - mob.x, g.spot.y - mob.y) >= 160)).toBe(true);
   });
 
-  it("favours doors to rooms it hasn't been in lately", () => {
-    const doors = pickMany(sensesWith(), { ...calm, restlessness: 1 }, ["old"]).flatMap((g) =>
-      g.kind === "door" ? [g.door.destMap] : [],
-    );
+  it("favours doors to rooms it hasn't been in lately", async () => {
+    const goals = await pickMany(sensesWith(), { ...calm, restlessness: 1 }, ["old"]);
+    const doors = goals.flatMap((g) => (g.kind === "door" ? [g.door.destMap] : []));
     const fresh = doors.filter((d) => d === "new").length;
     expect(fresh).toBeGreaterThan((doors.length - fresh) * 3);
   });
 
-  it("goes over to look at a keeper, stopping beside them", () => {
+  it("goes over to look at a keeper, stopping beside them", async () => {
     const keeper = { x: 200, y: 450, name: "Danny" };
-    const [goal] = pickMany(sensesWith(keeper), { ...calm, curiosity: 1 });
-    expect(goal).toMatchObject({ kind: "visit", what: "Danny" });
+    const [goal] = await pickMany(sensesWith(keeper), { ...calm, curiosity: 1 });
+    expect(goal).toMatchObject({ kind: "visit", label: "go look at Danny" });
     const away = Math.hypot(goal.spot.x - keeper.x, goal.spot.y - keeper.y);
     expect(away).toBeCloseTo(40);
   });
