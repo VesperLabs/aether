@@ -6,6 +6,7 @@ import {
   type ElementalDamages,
   rollAttack,
   rollTriggers,
+  rollsKnockback,
   type Hand,
 } from "@/rules/combat";
 import { isDodgeInvulnerable } from "@/rules/movement";
@@ -39,6 +40,15 @@ function isAlly(attacker: ServerCharacter, victim: ServerCharacter) {
   }
   const { partyId } = attacker as ServerCharacter & { partyId?: string | null };
   return isPartyMember(attacker.world.partyState, partyId, victim.id);
+}
+
+/** Starts a shove: NPCs are moved by the server, players by their own client when told. */
+function knockBack(victim: ServerCharacter, angle: number) {
+  victim.state.knockbackAt = victim.world.now();
+  victim.state.knockbackAngle = angle;
+  if (victim.kind === "player" && victim.socketId) {
+    victim.world.events.emit("playerKnockedBack", { socketId: victim.socketId, angle });
+  }
 }
 
 export function applyElementalDamage(eleDamages: ElementalDamages, victim: ServerCharacter) {
@@ -171,6 +181,14 @@ export function applyAttackDamage(
   victim.modifyStat("hp", -totalDamage);
 
   if (totalDamage > 0) markHurt(attacker, victim, totalDamage);
+
+  /* A lunge always shoves its victim back along the dash; gear can give swings a chance to */
+  if (rollsKnockback(!!abilityDetails?.isLunge, swingStats.knockbackChance, rng)) {
+    const angle = abilityDetails?.isLunge
+      ? (attacker.state.lungeAngle ?? 0)
+      : Math.atan2(victim.y - attacker.y, victim.x - attacker.x);
+    knockBack(victim, angle);
+  }
 
   // onAttackHit if we have some
   for (const { name, level, target } of rollTriggers(swingStats?.triggers, "onAttackHit", rng)) {

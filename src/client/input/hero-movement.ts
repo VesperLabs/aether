@@ -6,9 +6,11 @@ import {
   ATTACK_WALK_SPEED_SCALE,
   approachVelocity,
   getDodgeVelocity,
+  getKnockbackVelocity,
   getWalkVelocity,
   getLungeVelocity,
   isDodging,
+  isKnockedBack,
   isLunging,
 } from "@/rules/movement";
 import { emitPlayerInput } from "@/client/net/player-input";
@@ -58,6 +60,18 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
     hero.vx = 0;
     hero.vy = 0;
     hero.body.setVelocity(0, 0);
+    return;
+  }
+
+  /* A shove takes over: no walking, turning or swinging until it's done */
+  if (isKnockedBack(hero.state, Date.now())) {
+    const elapsed = Date.now() - (hero.state.knockbackAt ?? 0);
+    ({ x: vx, y: vy } = getKnockbackVelocity(hero.state.knockbackAngle ?? 0, elapsed));
+    hero.vx = vx;
+    hero.vy = vy;
+    hero.body.setVelocity(vx, vy);
+    hero.state.isIdle = false;
+    emitPlayerInput(scene, hero, vx, vy, hero.direction, true);
     return;
   }
 

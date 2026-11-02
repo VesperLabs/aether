@@ -30,7 +30,6 @@ export const nasties = {
   slime: {
     charClass: "mage",
     profile: { race: "slime", userName: "Slime" },
-    abilities: { "1": ["spell", "common", "lunge"] },
     flavor:
       "A wobbling blob that absorbs anything it touches. Nobody knows what it eats, only that it's always hungry.",
     baseStats: { level: 2 },

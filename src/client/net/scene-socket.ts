@@ -195,6 +195,13 @@ export function bindSceneSocket(scene: SceneMain) {
     });
   });
 
+  socket.on("knockedBack", ({ angle }) => {
+    const hero = scene.hero;
+    if (!hero || hero.state.isDead) return;
+    hero.state.knockbackAt = Date.now();
+    hero.state.knockbackAngle = angle;
+  });
+
   socket.on("playerDodge", ({ socketId, angle }) => {
     const p = getPlayer(scene, socketId);
     if (!p || p.isHero) return;

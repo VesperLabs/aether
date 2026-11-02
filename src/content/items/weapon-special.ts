@@ -179,7 +179,7 @@ export const weaponSpecial = {
       texture: "weapon-hammer",
       tint: "0xFFCC88",
       slot: "hands",
-      stats: { critChance: [10, 15] },
+      stats: { critChance: [10, 15], knockbackChance: [15, 20] },
       triggers: [
         {
           event: "onAttackHit",

@@ -31,7 +31,7 @@ import {
 } from "./behaviors";
 import { chooseBehavior } from "./brain";
 import type { MobBehavior } from "@/content";
-import type { LungeState } from "@/rules/movement";
+import { isKnockedBack, type KnockbackState, type LungeState } from "@/rules/movement";
 import { decideLungeMovement, isLungeSpell, isRecoveringFromLunge } from "./lunge";
 import type { WanderStep } from "./wander";
 
@@ -63,29 +63,30 @@ export interface NpcBehaviorInput {
     /** Warning before an attack or spell lands, from content; unset means `NPC_WARNING_DELAY`. */
     windupMs?: number;
   };
-  state: LungeState & {
-    isStatic?: boolean;
-    walkRange?: number;
-    isDead?: boolean;
-    isAiming?: boolean;
-    isAttacking?: boolean;
-    npcAttackReady?: boolean;
-    lastAttack: number;
-    lockedPlayerId?: string | null;
-    lastCast: LastCast;
-    /** Loop time of the next wander direction change. */
-    nextWanderAt?: number;
-    /** Which way it sidesteps around its target between shots. */
-    strafeClockwise?: boolean;
-    /** Loop time at which it next picks a side to sidestep. */
-    nextStrafeAt?: number;
-    /** When it began its one retreat this fight, if it has. */
-    retreatAt?: number;
-    /** Leashed and walking home; players are ignored until it gets there. */
-    isResetting?: boolean;
-    /** What it did last tick, which it slightly prefers to keep doing. */
-    behavior?: NpcBehaviorId;
-  };
+  state: LungeState &
+    KnockbackState & {
+      isStatic?: boolean;
+      walkRange?: number;
+      isDead?: boolean;
+      isAiming?: boolean;
+      isAttacking?: boolean;
+      npcAttackReady?: boolean;
+      lastAttack: number;
+      lockedPlayerId?: string | null;
+      lastCast: LastCast;
+      /** Loop time of the next wander direction change. */
+      nextWanderAt?: number;
+      /** Which way it sidesteps around its target between shots. */
+      strafeClockwise?: boolean;
+      /** Loop time at which it next picks a side to sidestep. */
+      nextStrafeAt?: number;
+      /** When it began its one retreat this fight, if it has. */
+      retreatAt?: number;
+      /** Leashed and walking home; players are ignored until it gets there. */
+      isResetting?: boolean;
+      /** What it did last tick, which it slightly prefers to keep doing. */
+      behavior?: NpcBehaviorId;
+    };
   isStunned: boolean;
   /** The player `lockedPlayerId` points at, if they are still around. */
   lockedPlayer?: NpcPlayerView | null;
@@ -119,7 +120,9 @@ export type NpcMovement =
   | { type: "follow"; pathed: boolean }
   | ({ type: "wander" } & WanderStep)
   /** Dash along `angle` (radians): a lunge spell carries it. */
-  | { type: "lunge"; angle: number };
+  | { type: "lunge"; angle: number }
+  /** Shoved along `angle` (radians), `elapsed` ms in: no turning, no acting. */
+  | { type: "knockback"; angle: number; elapsed: number };
 
 export type NpcAction =
   | { type: "idle" }
@@ -252,6 +255,11 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
   // If we killed the player already, do not target them anymore
   if (targetPlayer?.isDead) setLockedPlayerId(null);
 
+  // A shove overrides everything: it can't walk, turn or strike until it's over
+  if (isKnockedBack(state, now)) {
+    const elapsed = now - (state.knockbackAt ?? now);
+    return result({ type: "knockback", angle: state.knockbackAngle ?? 0, elapsed });
+  }
   if (input.isStunned) return result({ type: "standStill" });
 
   const attackRange = getShouldAttackRange(npc.weapons);

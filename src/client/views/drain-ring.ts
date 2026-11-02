@@ -1,6 +1,7 @@
 import type { DrainResource } from "@/rules/combat";
 import { resourceTint } from "@/ui/kit/resource-colors";
 import type { Player } from "./player";
+import { endOnDeath } from "./end-on-death";
 
 /** Ring color for each drained resource: life green, and mana and stamina like their bars. */
 const RING_COLORS: Record<DrainResource, number> = {
@@ -33,6 +34,7 @@ export function playDrainRing(target: Player | undefined, resource: DrainResourc
     .setStrokeStyle(1, RING_COLORS[resource], 0.8)
     .setScale(0.3);
   target.add(ring);
+  endOnDeath(target, ring);
   scene.tweens.add({
     targets: ring,
     scale: 1,

@@ -16,6 +16,7 @@ import {
 import {
   NPC_WALL_RADIUS,
   findNextWaypoint,
+  getKnockbackVelocity,
   getLungeVelocity,
   hasLineOfSight,
   isOutOfMap,
@@ -65,6 +66,13 @@ export function performNpcMovement(
       npc.vx = vx;
       npc.vy = vy;
       npc.direction = getCharacterDirection(npc, { x: npc.x + vx, y: npc.y + vy });
+      return;
+    }
+    case "knockback": {
+      // Shoved straight back, still facing the way it was
+      const { x: vx, y: vy } = getKnockbackVelocity(movement.angle, movement.elapsed);
+      npc.vx = vx;
+      npc.vy = vy;
       return;
     }
     case "strafe":

@@ -77,6 +77,13 @@ export interface SpellHitShapesEvent {
   victim: Box;
 }
 
+/** A player was shoved by a hit: their own client plays the shove (see `rules/movement/knockback.ts`). */
+export interface PlayerKnockedBackEvent {
+  socketId: string;
+  /** Which way it pushes, in radians. */
+  angle: number;
+}
+
 export interface GameEvents {
   mobKilled: MobKilledEvent;
   characterDamaged: CharacterDamagedEvent;
@@ -85,6 +92,7 @@ export interface GameEvents {
   npcWindupStarted: NpcWindupStartedEvent;
   npcRespawned: NpcRespawnedEvent;
   spellHitShapes: SpellHitShapesEvent;
+  playerKnockedBack: PlayerKnockedBackEvent;
 }
 
 export type GameEventName = keyof GameEvents;

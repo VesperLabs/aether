@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import type { Player } from "./player";
+import { endOnDeath } from "./end-on-death";
 const Sprite = Phaser.GameObjects.Sprite;
 
 export class Buff extends Phaser.GameObjects.Container {
@@ -12,6 +13,7 @@ export class Buff extends Phaser.GameObjects.Container {
     this.buff = new Sprite(scene, 0, 0, `spell-${buffName}`);
     this.buff.setOrigin(0.5);
     this.victim.add(this.buff);
+    endOnDeath(victim, this);
 
     this.buff.scale = 2;
     this.buff.alpha = 0;
@@ -41,7 +43,6 @@ export class Buff extends Phaser.GameObjects.Container {
     scene.events.once("shutdown", this.destroy, this);
   }
   update() {
-    if (this?.victim?.state?.isDead) this.destroy();
     this.victim.bringToTop(this.buff);
   }
   destroy() {

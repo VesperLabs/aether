@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { LUNGE_HIT_LEAD } from "@/rules/movement";
 import type { Player } from "./player";
+import { endOnDeath } from "./end-on-death";
 
 const DOME_COLOR = 0xffffff;
 /** Alpha at the dome's leading edge; it fades to nothing toward the back. */
@@ -61,6 +62,7 @@ function createDome(p: Player) {
   dome.arc(0, 0, DOME_RADIUS, -Math.PI / 2, Math.PI / 2);
   dome.strokePath();
   dome.setScale(DOME_DEPTH_SCALE, 1);
+  endOnDeath(p, { destroy: () => removeDome(p, dome), once: (e, fn) => dome.once(e, fn) });
   return dome;
 }
 

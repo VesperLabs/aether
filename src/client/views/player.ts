@@ -9,6 +9,7 @@ import { getAbilityCosts, hasStaminaFor } from "@/rules/combat";
 import type { AbilitySlot } from "@/rules/spells";
 import { Spell } from "./spell";
 import { fadeStealth } from "./player-stealth";
+import { CHARACTER_DIED } from "./end-on-death";
 import { applyDodge } from "./player-dodge";
 import { getSpinDirection } from "@/client/input/spin-direction";
 import { applyAppearance, createSpriteLayers } from "./player-layers";
@@ -306,6 +307,7 @@ export class Player extends Character {
     this.hpBar.setVisible(false);
     this.bubble.setVisible(false);
     this.windupRing.draw(false);
+    this.emit(CHARACTER_DIED);
     this.corpse.setVisible(this.kind !== "nasty");
     this.buffRack.setVisible(false);
     if (this.kind === "nasty") this.userName.setVisible(false);
