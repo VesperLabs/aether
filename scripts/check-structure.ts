@@ -23,7 +23,11 @@ const LEGACY: Record<Rule, string[]> = {
   "spec-file": [],
   "tsx-without-jsx": [],
   "index-logic": [],
-  "raw-socket-on": ["src/client/hud/app/app-events.ts", "src/client/hud/auth/modal-login.tsx"],
+  "raw-socket-on": [
+    "src/client/hud/app/app-events.ts",
+    "src/client/hud/auth/login-form.tsx",
+    "src/client/hud/auth/register-form.tsx",
+  ],
 };
 
 const ROOTS = ["src", "scripts"];
