@@ -61,6 +61,10 @@ export interface CharacterState {
   lungeAngle?: number;
   /** How long that lunge lasts, in ms. */
   lungeMs?: number;
+  /** When the last knockback started (see `rules/movement/knockback.ts`). */
+  knockbackAt?: number;
+  /** Which way that knockback pushes, in radians. */
+  knockbackAngle?: number;
   /** Radians. */
   lastAngle: number;
   activeSets: string[];

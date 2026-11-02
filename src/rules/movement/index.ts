@@ -61,6 +61,13 @@ export {
   isLunging,
 } from "./lunge";
 export type { LungeState } from "./lunge";
+export {
+  KNOCKBACK_DISTANCE,
+  KNOCKBACK_DURATION,
+  getKnockbackVelocity,
+  isKnockedBack,
+} from "./knockback";
+export type { KnockbackState } from "./knockback";
 export type {
   MoveContext,
   MoveRejection,

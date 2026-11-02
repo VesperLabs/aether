@@ -11,4 +11,6 @@ export interface BuffDefinition {
   readonly dispelInCombat?: boolean;
   readonly dispelAfterAttack?: boolean;
   readonly dispelOnHit?: boolean;
+  /** Landing it shoves the target away from whoever applied it (see `rules/movement/knockback.ts`). */
+  readonly knockback?: boolean;
 }

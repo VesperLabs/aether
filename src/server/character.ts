@@ -227,6 +227,14 @@ export class ServerCharacter extends CharacterModel {
   addBuff(args: BuffRequest) {
     return applyAddBuff(this, args);
   }
+  /** Starts a shove: NPCs are moved by the server, players by their own client when told. */
+  knockBack(angle: number) {
+    this.state.knockbackAt = this.world.now();
+    this.state.knockbackAngle = angle;
+    if (this.kind === "player" && this.socketId) {
+      this.world.events.emit("playerKnockedBack", { socketId: this.socketId, angle });
+    }
+  }
   //checks if out of combat, adds rest buff it should be resting
   checkIsResting() {
     return applyCheckIsResting(this);

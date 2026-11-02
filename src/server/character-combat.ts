@@ -172,6 +172,14 @@ export function applyAttackDamage(
 
   if (totalDamage > 0) markHurt(attacker, victim, totalDamage);
 
+  /* Buffs the attack-spell casts (tackle's stun) land with the hit, as a spell's do */
+  for (const [name, level] of Object.entries(
+    (abilityDetails?.buffs ?? {}) as Record<string, number>,
+  )) {
+    hits.push({ type: "buff", from: attacker.id, buffName: name, elements, to: victim.id });
+    victim.addBuff({ name, level, caster: attacker });
+  }
+
   // onAttackHit if we have some
   for (const { name, level, target } of rollTriggers(swingStats?.triggers, "onAttackHit", rng)) {
     const to = target === "self" ? attacker : victim;

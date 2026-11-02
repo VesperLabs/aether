@@ -19,7 +19,7 @@ export const spellDetails = {
     spellSpeed: 350,
     layerDepth: "top",
   },
-  lunge: {
+  tackle: {
     isAimable: true,
     isLunge: true,
     allowedTargets: ["enemy"],
@@ -30,7 +30,7 @@ export const spellDetails = {
     npcCastRange: [16, 48],
     layerDepth: "bottom",
     baseCooldown: 2500,
-    description: "Dash forward and strike whoever you run through with your weapon.",
+    description: "Dash forward and tackle whoever you run through with your weapon.",
   },
   "flame-slash": {
     allowedTargets: ["enemy"],

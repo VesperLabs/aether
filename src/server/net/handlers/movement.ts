@@ -11,6 +11,7 @@ import { findNearbyNpc } from "@/server/net/nearby-keeper";
 import {
   DODGE_DISTANCE,
   DODGE_SP_COST,
+  KNOCKBACK_DISTANCE,
   LUNGE_DISTANCE,
   canDodge,
   checkMove,
@@ -20,6 +21,7 @@ import {
   type MoveTrack,
 } from "@/rules/movement";
 import { isInRoom } from "@/server/player-room";
+import type { GameEventBus } from "@/rules/world";
 
 /** The last accepted position of each player. Server moves (doors, respawn) restart it. */
 const moveTracks = new WeakMap<Player, MoveTrack>();
@@ -87,6 +89,17 @@ export function changeDirection(
   const player = world.players[socketId];
   if (direction) player.direction = direction;
   if (typeof lastAngle === "number") player.state.lastAngle = lastAngle;
+}
+
+/** Tells a shoved player's client to play it, and lets them move its length on top of walking. */
+export function subscribeKnockbackMessages(bus: GameEventBus, world: ServerWorld) {
+  return bus.on("playerKnockedBack", ({ socketId, angle }) => {
+    const player = world.players[socketId];
+    if (!player) return;
+    const track = moveTracks.get(player);
+    if (track) moveTracks.set(player, grantMoveBudget(track, KNOCKBACK_DISTANCE));
+    world.io.to(socketId).emit("knockedBack", { angle });
+  });
 }
 
 /** Lets a player who just started a lunge move its length on top of their walking budget. */

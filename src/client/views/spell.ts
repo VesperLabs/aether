@@ -4,6 +4,7 @@ import { playAudio } from "@/client/audio/play-audio";
 import type { Point } from "@/rules/world";
 import type { Player } from "./player";
 import { toTint } from "./tint";
+import { endOnDeath } from "./end-on-death";
 import { SwingArc } from "./swing-arc";
 import { deriveElements } from "@/ui/item/weapon-elements";
 import { ELEMENT_SWING_COLORS } from "@/ui/item/element-effects";
@@ -188,6 +189,8 @@ export class Spell extends Phaser.GameObjects.Container {
     }
 
     this.add(this.spell);
+    /* Spells riding their caster (a lunge, a buff) end when the caster dies */
+    if (this.stickToCaster) endOnDeath(caster, this);
     this.catchUpToServer();
     this.adjustSpellPosition();
     playSpellAudio({ scene, spellName, caster, isMeleeAttack: this.isMeleeAttack });
@@ -234,6 +237,8 @@ export class Spell extends Phaser.GameObjects.Container {
       now: Date.now(),
     });
     if (!this.scene || this.spellState.isExpired) return this.destroy();
+    /* A spell riding its caster that was removed ends with it, not where it was */
+    if (this.stickToCaster && !this.caster?.active) return this.destroy();
     this.adjustSpellPosition();
   }
   adjustSpellPosition() {

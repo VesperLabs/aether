@@ -102,6 +102,8 @@ export interface ServerToClientEvents {
   remove: (socketId: string) => void;
   /** The server rejected the hero's reported position: snap back to this one. */
   positionCorrection: (position: { x: number; y: number }) => void;
+  /** A hit shoved the hero along `angle` (radians): play the knockback. */
+  knockedBack: (payload: { angle: number }) => void;
   playerUpdate: (player: FullCharacterWire, meta?: { didLevel?: boolean }) => void;
   buffUpdate: (payload: {
     /** Buff changes from the tick, or whole characters when a party member levels. */

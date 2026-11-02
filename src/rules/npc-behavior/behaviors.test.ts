@@ -228,7 +228,7 @@ describe("threat, leash and new behaviors", () => {
 
 describe("lunges", () => {
   const lunger = {
-    abilities: { 1: { base: "lunge" } },
+    abilities: { 1: { base: "tackle" } },
     stats: { level: 5, walkSpeed: 50, attackDelay: 300, castDelay: 1000 },
   };
 
