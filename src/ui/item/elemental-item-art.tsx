@@ -30,9 +30,11 @@ export const ElementalItemArt = ({
   layerSx?: ThemeUIStyleObject;
 }) => {
   const [imageData, setImageData] = useState<string>();
+  /* Keyed on the art, not the asset object, which callers rebuild every render */
+  const artKey = `${asset.src}|${asset.previewRect?.join(",")}`;
   useLayoutEffect(() => {
-    assetToCanvas({ asset, tint, setImageData, shouldTrim: false });
-  }, [asset, tint]);
+    return assetToCanvas({ asset, tint, setImageData, shouldTrim: false });
+  }, [artKey, tint]);
   if (!imageData) return null;
   const grip = getPreviewGrip(asset.previewRect as readonly number[]);
   return (
