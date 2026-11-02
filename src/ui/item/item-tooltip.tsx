@@ -42,32 +42,23 @@ function itemArt(item: DescribableItem, player?: DescribePlayer | null) {
   );
 }
 
-/** The tooltip's own background: the gilding fades into it, so no page shows through the border. */
-const TOOLTIP_BLACK = "rgba(0, 0, 0, 0.95)";
+/** Rarities whose tooltip is gilded: all but common. */
+const GILDED_RARITIES = ["magic", "rare", "unique", "set"];
 
-/** How far down the sides the gilding runs before it's gone into the black. */
-const CAP_FADE = "50%";
-
-/** Rarities whose tooltip gets a gilded cap, in their own colour: all but common. */
-const CAPPED_RARITIES = ["magic", "rare", "unique", "set"];
-
+/** A gilded rarity's own colour, at full strength. */
 function gildColor(rarity?: string) {
-  if (!rarity || !CAPPED_RARITIES.includes(rarity)) return undefined;
-  const color = (theme.colors as unknown as Record<string, string>)[rarity];
-  return `color-mix(in srgb, ${color} 75%, transparent)`;
+  if (!rarity || !GILDED_RARITIES.includes(rarity)) return undefined;
+  return (theme.colors as unknown as Record<string, string>)[rarity];
 }
 
-/**
- * A magic or better item's tooltip gets a gilded cap: its own 1px border, coloured along the top
- * and round the rounded corners, fading into the black down the sides.
- */
-function gildedCap(rarity?: string) {
+/** A magic or better item's tooltip is framed in its rarity's colour, arrow and all. */
+function gilding(rarity?: string) {
   const gold = gildColor(rarity);
   if (!gold) return undefined;
   return {
+    border: `1px solid ${gold}`,
     /* A hard dark line outside the gilding, so it reads on light and busy backgrounds */
-    boxShadow: "0 0 0 1px rgba(0, 0, 0, 0.9)",
-    background: `linear-gradient(${TOOLTIP_BLACK}, ${TOOLTIP_BLACK}) padding-box, linear-gradient(to bottom, ${gold}, ${TOOLTIP_BLACK} ${CAP_FADE}) border-box`,
+    style: { boxShadow: "0 0 0 1px rgba(0, 0, 0, 0.9)" },
   };
 }
 
@@ -88,12 +79,7 @@ export const ItemTooltip = ({ item, player, tooltipId, show }: ItemTooltipProps)
   const art = itemArt(item, player);
 
   return (
-    <Tooltip
-      id={tooltipId}
-      isOpen={show}
-      style={gildedCap(d.rarity)}
-      border={gildedCap(d.rarity) && "1px solid transparent"}
-    >
+    <Tooltip id={tooltipId} isOpen={show} {...gilding(d.rarity)}>
       {gildColor(d.rarity) && <GildedCorners color={gildColor(d.rarity)!} rarity={d.rarity!} />}
       <TooltipContent sx={{ px: 2, py: "6px", minWidth: 150 }}>
         <Flex sx={{ alignItems: "center", gap: 2, width: "100%" }}>

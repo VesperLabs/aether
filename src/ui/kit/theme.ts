@@ -8,7 +8,7 @@ export const theme = {
     rare: tColors.purple[300],
     set: tColors.lime[300],
     legendary: tColors.purple[300],
-    magic: tColors.blue[200],
+    magic: tColors.blue[300],
     common: tColors.white,
     background: tColors.black,
     danger: tColors.red[300],
