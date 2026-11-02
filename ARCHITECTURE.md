@@ -52,7 +52,7 @@ Rules are **pure and deterministic**: no `Date.now()`, `Math.random()` or global
 
 ### `network/`
 
-`commands.ts` holds one zod schema per client→server command; `messages.ts` holds server→client messages; `sync/` holds snapshots, deltas and wire packing. The server never trusts a client value it can compute itself (position, damage, cooldowns).
+`commands.ts` holds one zod schema per client→server command; `messages.ts` holds server→client messages; `sync/` holds poses (every position, whole on every tick, safe to lose) and statuses (flags and vitals, sent only when they change). The server never trusts a client value it can compute itself (position, damage, cooldowns).
 
 ### Apps
 

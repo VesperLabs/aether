@@ -1,14 +1,6 @@
 import { DEFAULT_USER_SETTINGS, type UserSettings } from "@/rules/world";
-import {
-  decodeTickVitals,
-  heroInitToTickExpanded,
-  expandTickState,
-  type FullCharacterWire,
-  type LootTickWire,
-} from "@/network/sync";
-import type { LootItem } from "@/client/views/loot-item";
+import { decodeTickVitals, type CharacterStatus, type FullCharacterWire } from "@/network/sync";
 import { netInterp } from "@/client/net/scene-interpolation";
-import type { TickEntity } from "@/client/net/interpolation";
 import { playAudio } from "@/client/audio/play-audio";
 import { playCritShake, playHitImpact } from "@/client/views/hit-impact";
 import { playDrainRing } from "@/client/views/drain-ring";
@@ -36,6 +28,12 @@ interface VitalsHolder {
   updateHpBar(): void;
 }
 
+/** What a status updates on a player or npc sprite. */
+interface StatusHolder extends VitalsHolder {
+  updateState(state: Record<string, unknown>): void;
+  doRegen(): void;
+}
+
 /**
  * Takes the server's hp, mp and sp from a tick. Regen and hit effects still play from their own
  * messages; this keeps the numbers right however many of those were missed or merged.
@@ -55,32 +53,20 @@ function applyTickVitals(character: VitalsHolder, v: unknown) {
 export function bindSceneSocket(scene: SceneMain) {
   const socket = scene.socket;
 
-  socket.on("update", (snapshot) => {
-    /* Ignore ticks that arrive before heroInit has created the entity groups */
-    if (!snapshot?.state || !scene.loots) return;
-    const expanded = { ...snapshot, state: expandTickState(snapshot.state) };
-    netInterp.addSnapshot(expanded);
-    const expiredLoots = expanded.state.loots as LootTickWire[];
-    for (const loot of (scene?.loots?.getChildren() ?? []) as LootItem[]) {
-      if (expiredLoots.find((l) => l?.id === loot?.id && l?.expiredSince)) {
-        loot.destroy();
-      }
-    }
-    for (const s of expanded.state.npcs as TickEntity[]) {
-      const npc = getNpc(scene, s.id);
-      if (!npc) continue;
-      npc.updateState(s?.state);
-      npc.doRegen();
-      applyTickVitals(npc, s?.v);
-    }
-    for (const s of expanded.state.players as TickEntity[]) {
-      const player = getPlayer(scene, s.id);
-      if (!player) continue;
-      player.updateState(s?.state);
-      player.doRegen();
-      applyTickVitals(player, s?.v);
-    }
+  socket.on("poses", (poses) => netInterp.add(poses, performance.now()));
+
+  socket.on("statuses", ({ p = [], n = [] }) => {
+    const apply = (character: StatusHolder | undefined | null, s: CharacterStatus) => {
+      if (!character) return;
+      character.updateState(s.state);
+      character.doRegen();
+      applyTickVitals(character, s.v);
+    };
+    for (const s of n) apply(getNpc(scene, s.id), s);
+    for (const s of p) apply(getPlayer(scene, s.id), s);
   });
+
+  socket.on("lootExpired", (id) => getLoot(scene, id)?.destroy());
 
   socket.on("partyUpdate", ({ party }) => {
     if (scene.hero) scene.hero.party = party;
@@ -93,7 +79,7 @@ export function bindSceneSocket(scene: SceneMain) {
     }
     /* Delete everything in the scene */
     resetEntities(scene);
-    netInterp.seedFromHeroInit(heroInitToTickExpanded({ players, npcs, loots }));
+    netInterp.reset();
     /* Add players that don't exist */
     for (const player of players) {
       if (getPlayer(scene, player.socketId)) continue;
