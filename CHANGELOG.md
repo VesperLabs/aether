@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.9.1](https://github.com/VesperLabs/aether/compare/v0.9.0...v0.9.1) (2026-11-02)
+
+
+### Bug Fixes
+
+* sideways melee swings come down, katars uppercut ([#126](https://github.com/VesperLabs/aether/issues/126)) ([271bdd7](https://github.com/VesperLabs/aether/commit/271bdd73a2a9ee198341a448a9901f347c64dbd8))
+* stale art loads no longer overwrite inventory icons ([#127](https://github.com/VesperLabs/aether/issues/127)) ([c0f95ea](https://github.com/VesperLabs/aether/commit/c0f95ead97c54a14b8ad7905b4703fd0a99a9e9d))
+
 ## [0.9.0](https://github.com/VesperLabs/aether/compare/v0.8.0...v0.9.0) (2026-11-02)
 
 
