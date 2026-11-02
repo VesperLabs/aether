@@ -4,6 +4,7 @@ import {
   circleOverlapsBox,
   createPathfinder,
   findNextWaypoint,
+  findPath,
   moveBodyThroughMap,
   moveBox,
   NPC_WALL_RADIUS,
@@ -85,5 +86,18 @@ describe("pathfinding", () => {
     /* Straight up or down first: a diagonal would clip the wall's corner with the body */
     expect(next!.x).toBe(48);
     expect(next!.y).not.toBe(48);
+  });
+
+  it("goes around an avoid zone, and forgets it afterwards", () => {
+    const pf = createPathfinder(grid);
+    const [from, to] = [
+      { x: 16, y: 16 },
+      { x: 112, y: 16 },
+    ];
+    const danger = { x: 80, y: 16, radius: 10 };
+    const around = findPath(pf, from, to, [danger]);
+    expect(around).toBeDefined();
+    expect(around!.some((t) => t.x === 80 && t.y === 16)).toBe(false);
+    expect(findPath(pf, from, to)).toContainEqual({ x: 80, y: 16 });
   });
 });
