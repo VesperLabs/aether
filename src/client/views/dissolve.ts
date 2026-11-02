@@ -172,7 +172,6 @@ export function playSpawnDissolve(player: Player) {
       SNAPSHOT_SIZE,
     );
     if (!body || !cover) return void player.rig.setAlpha(1);
-    drawBody(body, player);
     cover.fill(0xffffff).render();
 
     const shown = scene.add.renderTexture(player.x, player.y, SNAPSHOT_SIZE, SNAPSHOT_SIZE);
@@ -205,6 +204,9 @@ export function playSpawnDissolve(player: Player) {
           }
           cover.erase(eraser).render();
         }
+        /* Redrawn each frame, so a character walking out of the reveal walks instead of gliding */
+        body.clear();
+        drawBody(body, player);
         shown.setPosition(player.x, player.y).setDepth(player.depth + 1);
         shown.clear().stamp(body.key, undefined, half, half).erase(cover.key, half, half).render();
       },
