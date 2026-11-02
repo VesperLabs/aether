@@ -1,2 +1,2 @@
 export { SCENARIOS } from "./all";
-export { runScenario, type Scenario } from "./scenario";
+export { runScenario, type RunOptions, type Scenario } from "./scenario";
