@@ -30,7 +30,8 @@
     "check:weapon-tips": "tsx scripts/weapon-tips.ts --check",
     "weapon-tips": "tsx scripts/weapon-tips.ts",
     "check": "npm run check:format && npm run lint && npm run typecheck && npm run check:structure && npm run check:weapon-tips && npm run check:dead-code && npm run test",
-    "check:dead-code": "knip --no-progress"
+    "check:dead-code": "knip --no-progress",
+    "bots": "tsx --env-file-if-exists=.env scripts/bots.ts"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.105.0",
