@@ -1,9 +1,9 @@
-import type { Clock } from "@/agents";
+import type { Clock } from "@/bots";
 import { DEFAULT_SERVER_FPS } from "@/network";
 import { createTickLoop } from "@/rules/world";
 import { createServerWorld } from "../game-world";
 import { listenForConnections } from "../net/connection";
-import { prepareCheatServer } from "../agents";
+import { prepareCheatServer } from "../bots";
 import { serverSystems } from "../tick";
 import { createLocalHub } from "./local-hub";
 import { createSeededDice } from "./seeded-dice";
@@ -13,13 +13,13 @@ import { createVirtualTime } from "./virtual-time";
 const settle = () => new Promise<void>((resolve) => setImmediate(resolve));
 
 /**
- * The real game server on virtual time, with agents connected in-process. The world has the real
+ * The real game server on virtual time, with bots connected in-process. The world has the real
  * maps (walls, doors) but no NPCs unless asked, and a seeded RNG, so nothing happens by chance.
  * Time only moves when nothing is left to do right now, and then jumps straight to the next timer
- * (a tick, an agent's sleep), so a minute of play takes milliseconds and every run is the same.
+ * (a tick, a bot's sleep), so a minute of play takes milliseconds and every run is the same.
  *
  *   const sim = await createSimulation();
- *   await sim.run(async () => { const agent = await Agent.join(sim.connect(), {...}); ... });
+ *   await sim.run(async () => { const bot = await Bot.join(sim.connect(), {...}); ... });
  */
 export async function createSimulation({
   fps = DEFAULT_SERVER_FPS,
@@ -53,7 +53,7 @@ export async function createSimulation({
 
   return {
     world,
-    /** Agents in this simulation must use this clock. */
+    /** Bots in this simulation must use this clock. */
     clock,
     connect: hub.connect,
     /** Plays the simulation until `work` finishes, and resolves with its result. */

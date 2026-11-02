@@ -1,17 +1,13 @@
-export {
-  buildTileGrid,
-  getObjectProperty,
-  isNextToSolidTile,
-  isOutOfMap,
-  readTileMap,
-} from "./tilemap";
+export { buildTileGrid, isNextToSolidTile, isOutOfMap, readTileMap } from "./tilemap";
 export type { TileMap, TiledMapJson } from "./tilemap";
 export { circleOverlapsBox, moveBox, shapesOverlap } from "./collision";
 export type { Box, Circle, Shape } from "./collision";
 export { hasLineOfSight } from "./line-of-sight";
 export { MAX_REWIND_MS, clampRewind, createPoseHistory } from "./pose-history";
 export type { PoseHistory } from "./pose-history";
-export { createPathfinder, findNextWaypoint } from "./pathfinding";
+export { readDoors } from "./doors";
+export type { DoorData } from "./doors";
+export { createPathfinder, findNextWaypoint, findPath } from "./pathfinding";
 export type { Pathfinder } from "./pathfinding";
 export { NPC_WALL_RADIUS, moveBodyFreely, moveBodyThroughMap, nudgeBodyThroughMap } from "./system";
 export { MAX_PUSH_SPEED, getSeparationPush, getSeparationVelocity } from "./separation";

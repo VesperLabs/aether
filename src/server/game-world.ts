@@ -1,6 +1,4 @@
 import type { ServerWorld } from "./server-world";
-import fs from "fs";
-import path from "path";
 import {
   ILVL_MULTIPLIER,
   ItemBuilder,
@@ -11,7 +9,7 @@ import {
   type Dice,
 } from "@/content";
 import { createServerDice } from "./server-dice";
-import type { TiledMapJson } from "@/rules/movement";
+import { readMapFile } from "./map-files";
 import { subscribeLoot, type LootItem } from "@/rules/loot";
 import { subscribeThreat } from "@/rules/npc-behavior";
 import { subscribeQuests } from "@/rules/quests";
@@ -82,9 +80,6 @@ export function spawnNpc(
   return world.npcs[id];
 }
 
-const readMap = (file: string): TiledMapJson =>
-  JSON.parse(fs.readFileSync(path.resolve(process.env.PUBLIC_DIR || "public", file), "utf8"));
-
 /** The game world with every map loaded, its NPCs spawned and the event subscribers wired up. */
 export function createServerWorld({
   io,
@@ -110,7 +105,7 @@ export function createServerWorld({
   world.rng = dice.random;
 
   for (const asset of mapList) {
-    addRoom(world, createRoom(asset.name, readMap(asset.json), now()));
+    addRoom(world, createRoom(asset.name, readMapFile(asset.json), now()));
   }
   if (mapNpcs) for (const room of Object.values(world.rooms)) spawnNpcs(world, room);
 

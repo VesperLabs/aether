@@ -1,7 +1,8 @@
-import { Agent, runScenario, type RunOptions, type Scenario } from "@/agents";
+import { Bot, runScenario, type RunOptions, type Scenario } from "@/bots";
+import { readRoomMap } from "../map-files";
 import { createSimulation } from "./simulation";
 
-/** Runs a scenario on its own fresh, seeded simulation, with cheat-enabled agents in-process. */
+/** Runs a scenario on its own fresh, seeded simulation, with cheat-enabled bots in-process. */
 export async function simulateScenario(
   scenario: Scenario,
   options: Pick<RunOptions, "print" | "onCheck"> = {},
@@ -12,7 +13,13 @@ export async function simulateScenario(
       runScenario(scenario, {
         ...options,
         join: (name, charClass) =>
-          Agent.join(sim.connect(), { name, charClass, clock: sim.clock, cheats: true }),
+          Bot.join(sim.connect(), {
+            name,
+            charClass,
+            clock: sim.clock,
+            maps: readRoomMap,
+            cheats: true,
+          }),
         clock: sim.clock,
       }),
     );
