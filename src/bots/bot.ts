@@ -4,7 +4,7 @@ import { createAtlas, type Atlas, type KnownRoom, type MapSource } from "./atlas
 import type { BotBody } from "./body";
 import { createWeapon, type FightOutcome } from "./combat";
 import type { BotLink, Clock, MessageName, MessagePayload } from "./link";
-import { sendPosition, travelTo, walkTo } from "./movement";
+import { sendPosition, travelTo, walkTo, type TravelOptions } from "./movement";
 import { inviteToParty, type PartyMember } from "./party";
 import { createSenses, type Senses } from "./senses";
 
@@ -123,12 +123,15 @@ export class Bot {
    * the server corrects it (a wall, the map edge). Resolves with whether it got there.
    */
   walkTo(x: number, y: number, timeoutMs = 15000): Promise<boolean> {
-    return walkTo(this.body, x, y, timeoutMs);
+    return walkTo(this.body, x, y, { timeoutMs });
   }
 
-  /** Walks around walls to a spot in this room. Resolves with whether it got there. */
-  travelTo(to: Point, timeoutMs = 30000): Promise<boolean> {
-    return travelTo(this.body, this.room, to, timeoutMs);
+  /**
+   * Walks around walls (and, if asked, mobs) to a spot in this room, at a pace from 0 to 1.
+   * Resolves with whether it got there.
+   */
+  travelTo(to: Point, options: TravelOptions = {}): Promise<boolean> {
+    return travelTo(this.body, this.room, to, options);
   }
 
   /**

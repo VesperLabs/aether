@@ -1,45 +1,37 @@
-import type { Rng } from "@/rules/world";
-import { findDoorstep, type KnownRoom } from "../atlas";
 import type { Brain } from "../brain";
+import { pickGoal, rollTemperament, ROOM_MEMORY, type WanderMemory } from "./wander-goals";
 
-/** How often a wanderer heads for a door instead of a spot in the room. */
-const DOOR_CHANCE = 0.3;
-const PAUSE_MS = { min: 500, max: 2500 };
-/** How many random tiles to try before giving up on finding an open one. */
-const SPOT_TRIES = 50;
+/** How long to wait before looking again when there is nowhere safe to go. */
+const IDLE_MS = 1000;
 
 /**
- * Roams the whole map: walks around walls to random open spots, idles a moment, and now and
- * then takes a door into the next zone. Killed, it respawns and carries on.
+ * Roams the world at its own pace: strolls to open spots, goes over to look at keepers, players
+ * and signs, and grows restless the longer it stays, until it takes a door, preferring rooms it
+ * hasn't seen lately. It gives monsters a wide berth. Killed, it respawns and carries on.
  */
 export const wander: Brain = async (bot, { clock, rng, signal }) => {
+  const temperament = rollTemperament(rng);
+  const memory: WanderMemory = { recentRooms: [], goalsHere: 0 };
   while (!signal.aborted) {
     /* Like a player at the respawn screen, it gets right back up */
     if (bot.senses.isDead) {
       await bot.respawn();
       continue;
     }
-    const doors = Object.values(bot.room.doors).filter((d) => d.destMap && d.destDoor);
-    if (doors.length && rng() < DOOR_CHANCE) {
-      const door = doors[Math.floor(rng() * doors.length)];
-      const doorstep = findDoorstep(bot.room, door);
-      if (doorstep && (await bot.travelTo(doorstep))) await bot.enterDoor(door.name);
-    } else {
-      const spot = randomOpenSpot(bot.room, rng);
-      if (spot) await bot.travelTo(spot);
+    const { roomName } = bot.senses;
+    if (memory.recentRooms.at(-1) !== roomName) {
+      memory.recentRooms = [...memory.recentRooms, roomName].slice(-ROOM_MEMORY);
+      memory.goalsHere = 0;
     }
-    await clock.sleep(PAUSE_MS.min + rng() * (PAUSE_MS.max - PAUSE_MS.min));
+
+    const goal = pickGoal(bot.senses, bot.room, { temperament, memory, rng });
+    if (!goal) {
+      await clock.sleep(IDLE_MS);
+      continue;
+    }
+    const arrived = await bot.travelTo(goal.spot, { pace: temperament.pace, avoidMobs: true });
+    if (arrived && goal.kind === "door") await bot.enterDoor(goal.door.name);
+    memory.goalsHere++;
+    await clock.sleep(goal.lingerMs);
   }
 };
-
-/** The centre of a random tile without a wall, if one turns up. */
-function randomOpenSpot({ map: { grid } }: KnownRoom, rng: Rng) {
-  for (let i = 0; i < SPOT_TRIES; i++) {
-    const x = Math.floor(rng() * grid.width);
-    const y = Math.floor(rng() * grid.height);
-    if (!grid.solid[y][x]) {
-      return { x: (x + 0.5) * grid.tileWidth, y: (y + 0.5) * grid.tileHeight };
-    }
-  }
-  return undefined;
-}
