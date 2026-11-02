@@ -1,5 +1,5 @@
 /**
- * Runs bot scenarios: scripted players that log in and play like real clients.
+ * Runs agent scenarios: code-driven players that log in and play like real clients.
  *
  *   npm run bots                    every scenario
  *   npm run bots -- party combat    just these
@@ -10,7 +10,8 @@
  * your game. Otherwise a server starts in this process just for the run.
  */
 import net from "node:net";
-import { SCENARIOS, runScenario, startLocalServer, type Scenario } from "@/server/bots";
+import { SCENARIOS, runScenario, type Scenario } from "@/agents";
+import { joinTestAgent, realClock, startLocalServer } from "@/server/agents";
 
 const ALL: Scenario[] = SCENARIOS;
 
@@ -59,7 +60,12 @@ async function main() {
 
   let failed = 0;
   for (const scenario of chosen) {
-    const result = await runScenario(scenario, { url, near, print: (l) => console.log(l) });
+    const result = await runScenario(scenario, {
+      join: (name, charClass) => joinTestAgent(url, name, charClass),
+      clock: realClock,
+      near,
+      print: (line) => console.log(line),
+    });
     const issue = scenario.knownIssue ? ` (known issue #${scenario.knownIssue})` : "";
     if (result.passed) {
       console.log(issue ? `  ✓ passes now: close #${scenario.knownIssue}?` : "  ✓ passed");
