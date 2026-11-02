@@ -2,8 +2,7 @@ import { getFullCharacterState } from "@/network/sync";
 import { cloneJson } from "@/content";
 import { addStackAmounts, resolveGrab } from "@/rules/loot";
 import { removeLoot, spawnLoot } from "../../loot-adapter";
-import { consumeItem as consumeItemRule, dropItem as dropItemRule } from "@/rules/inventory";
-import { applyInventoryState, toInventoryState } from "../../player-inventory";
+import { consumeItemCommand, dropItemCommand, dropPosition } from "@/rules/inventory";
 import type { ParsedCommand } from "@/network";
 import type { CommandContext } from "@/server/net/command-context";
 import { isInRoom } from "@/server/player-room";
@@ -67,25 +66,17 @@ export function dropItem(ctx: CommandContext, request: ParsedCommand<"dropItem">
   const { world, socket, socketId, io } = ctx;
   const player = world?.players?.[socketId];
   if (!isInRoom(player)) return;
-  const result = dropItemRule(toInventoryState(player), request ?? {});
-  if (result.dropped === false) {
+  const result = dropItemCommand(player, request ?? {});
+  if (!result.ok) {
     if (result.error) socket.emit("message", { type: "error", message: result.error });
     return;
   }
-  applyInventoryState(player, result.state);
 
   player.calculateStats();
 
   /* Make the item pop up where they dropped it */
-  const coords: Coordinate = { x: player.x, y: player.y };
-  if (player.direction === "left") coords.x -= 16;
-  if (player.direction === "right") coords.x += 16;
-  if (player.direction === "up") coords.y -= 16;
-  if (player.direction === "down") coords.y += 16;
-
-  /* Spawn the loot on the server */
   spawnLoot(world, player.roomName, {
-    ...coords,
+    ...dropPosition(player),
     item: result.item,
     npcId: null,
   });
@@ -98,9 +89,8 @@ export function consumeItem(ctx: CommandContext, request: ParsedCommand<"consume
   const { world, socketId, io } = ctx;
   const player = world?.players?.[socketId];
   if (!isInRoom(player) || player.state?.isDead) return;
-  const result = consumeItemRule(toInventoryState(player), request ?? {});
+  const result = consumeItemCommand(player, request ?? {});
   if (!result.consumed) return;
-  applyInventoryState(player, result.state);
 
   /* If the item has effects */
   if (result.isPotion) {
