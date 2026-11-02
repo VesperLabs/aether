@@ -9,4 +9,5 @@ export function removePlayer(world: ServerWorld, socketId: string) {
     detachFromRoom(player);
   }
   delete world.players?.[socketId];
+  world.netIds.release(socketId);
 }

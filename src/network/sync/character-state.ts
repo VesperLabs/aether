@@ -14,6 +14,8 @@ export interface CharacterSyncInput {
   id?: string;
   /** Players only; npcs use `id` on the wire. */
   socketId?: string;
+  /** Number standing in for the id on the binary pose wire, see `net-ids.ts`. */
+  nid?: number;
   peerId?: string;
   /** Null while a player is between rooms (door, disconnect). */
   room: { name: string } | null;
@@ -44,6 +46,8 @@ export interface CharacterSyncInput {
 export interface FullCharacterWire {
   id: string;
   socketId: string;
+  /** Net id: maps binary poses back to this character. */
+  nid: number;
   peerId?: string;
   roomName: string;
   x: number;
@@ -83,6 +87,7 @@ export function getFullCharacterState(p: CharacterSyncInput): FullCharacterWire 
   return {
     id: uid, //required for SI
     socketId: uid,
+    nid: p?.nid as number,
     peerId: p?.peerId,
     // Undefined for a player between rooms; the client types still expect it set.
     roomName: p?.room?.name as string,

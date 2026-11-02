@@ -1,6 +1,12 @@
 import { DEFAULT_USER_SETTINGS, type UserSettings } from "@/rules/world";
-import { decodeTickVitals, type CharacterStatus, type FullCharacterWire } from "@/network/sync";
+import {
+  decodeRoomPoses,
+  decodeTickVitals,
+  type CharacterStatus,
+  type FullCharacterWire,
+} from "@/network/sync";
 import { netInterp } from "@/client/net/scene-interpolation";
+import { idOfNetId } from "@/client/net/net-ids";
 import { playAudio } from "@/client/audio/play-audio";
 import { playCritShake, playHitImpact } from "@/client/views/hit-impact";
 import { playDrainRing } from "@/client/views/drain-ring";
@@ -53,7 +59,9 @@ function applyTickVitals(character: VitalsHolder, v: unknown) {
 export function bindSceneSocket(scene: SceneMain) {
   const socket = scene.socket;
 
-  socket.on("poses", (poses) => netInterp.add(poses, performance.now()));
+  socket.on("poses", (data) => {
+    netInterp.add(decodeRoomPoses(data, idOfNetId), performance.now());
+  });
 
   socket.on("statuses", ({ p = [], n = [] }) => {
     const apply = (character: StatusHolder | undefined | null, s: CharacterStatus) => {
