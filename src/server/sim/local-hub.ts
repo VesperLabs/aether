@@ -20,6 +20,8 @@ function createListeners() {
   };
 }
 
+type Listeners = ReturnType<typeof createListeners>;
+
 /**
  * Copies a value the way the wire would: the receiver gets its own data, never a live object
  * that the sender changes later. Callbacks (acks) pass through.
@@ -43,13 +45,13 @@ function overTheWire(args: unknown[]): unknown[] {
 export function createLocalHub() {
   const queue: (() => void)[] = [];
   const rooms = new Map<string, Set<string>>();
-  const sockets = new Map<string, ReturnType<typeof serverSocket>>();
-  const clients = new Map<string, ReturnType<typeof createListeners>>();
+  const sockets = new Map<string, ServerSocket>();
+  const clients = new Map<string, Listeners>();
   const ioListeners = createListeners();
   let nextId = 0;
 
   /** Queues a message for the clients in `room` (a socket id is also a room), minus `except`. */
-  function send(room: string | null, event: string, args: unknown[], except?: string) {
+  function queueEmit(room: string | null, event: string, args: unknown[], except?: string) {
     const ids = room === null ? [...sockets.keys()] : [...(rooms.get(room) ?? [])];
     for (const id of ids) {
       if (id === except) continue;
@@ -68,6 +70,8 @@ export function createLocalHub() {
     if (rooms.get(room)?.size === 0) rooms.delete(room);
   }
 
+  type ServerSocket = ReturnType<typeof serverSocket>;
+
   /** The server's view of one connection. */
   function serverSocket(id: string) {
     const listeners = createListeners();
@@ -76,9 +80,9 @@ export function createLocalHub() {
       listeners,
       on: listeners.on,
       off: listeners.off,
-      emit: (event: string, ...args: unknown[]) => send(id, event, args),
+      emit: (event: string, ...args: unknown[]) => queueEmit(id, event, args),
       to: (room: string) => ({
-        emit: (event: string, ...args: unknown[]) => send(room, event, args, id),
+        emit: (event: string, ...args: unknown[]) => queueEmit(room, event, args, id),
       }),
       join: (room: string) => join(id, room),
       leave: (room: string) => leave(id, room),
@@ -98,14 +102,15 @@ export function createLocalHub() {
   const io = {
     on: ioListeners.on,
     to: (room: string) => ({
-      emit: (event: string, ...args: unknown[]) => send(room, event, args),
+      emit: (event: string, ...args: unknown[]) => queueEmit(room, event, args),
     }),
-    emit: (event: string, ...args: unknown[]) => send(null, event, args),
+    emit: (event: string, ...args: unknown[]) => queueEmit(null, event, args),
     sockets: { sockets, adapter: { rooms } },
     close: () => [...sockets.keys()].forEach(drop),
   };
 
   return {
+    /* Only the parts of a socket.io server the game uses */
     io: io as unknown as GameIo,
     /** Opens a connection, as a browser would, and returns the client end. */
     connect(): AgentLink {
