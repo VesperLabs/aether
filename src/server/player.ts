@@ -188,7 +188,7 @@ export class Player extends ServerCharacter {
     return this.quests;
   }
   completeQuest(questId: string) {
-    return applyCompleteQuest(this, this.world.quests?.[questId]);
+    return applyCompleteQuest(this, this.world.quests?.[questId], this.world.dice.newId);
   }
   /* Inventory, equipment, bags and abilities: the rules live in rules/inventory */
   findEquipmentById(id: string): FoundSlot {

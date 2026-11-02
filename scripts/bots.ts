@@ -7,8 +7,9 @@
  *   npm run bots -- --local         fast-forward on a simulation even when the dev server is up
  *   npm run bots -- --residents 3   leave 3 residents living in the world until Ctrl-C
  *
- * With `npm run dev` up (and ENABLE_CHEATS=true), agents join that server in real time, so they
- * show up in your game. Otherwise each scenario runs on a fast-forwarded simulation in milliseconds.
+ * With `npm run dev` up (and ENABLE_CHEATS=true), agents join that server in real time so you can
+ * watch them; the live world can interfere, so that's watch mode, not a test. Otherwise each
+ * scenario runs on a fast-forwarded simulation: real maps, no NPCs but what it summons, seeded.
  */
 import net from "node:net";
 import { Agent, SCENARIOS, runScenario, type Scenario } from "@/agents";
@@ -54,7 +55,7 @@ function isUp(url: string, timeoutMs = 500): Promise<boolean> {
 
 /** Runs a scenario on its own fresh simulation. */
 async function simulate(scenario: Scenario, print: (line: string) => void) {
-  const sim = await createSimulation();
+  const sim = await createSimulation({ mapNpcs: scenario.world === "full" });
   try {
     return await sim.run(() =>
       runScenario(scenario, {
@@ -99,7 +100,8 @@ async function main() {
 
   console.log(
     useDev
-      ? `🤖 Agents joining the dev server at ${devUrl}, in real time`
+      ? `👀 Watch mode: agents join the dev server at ${devUrl} in real time. Your live world can\n` +
+          "   interfere (map mobs, players), so failures here aren't test failures. Use --local to test."
       : "🤖 Agents on a fast-forwarded simulation (start npm run dev to watch them instead)",
   );
   if (useDev && !near) console.log("   (pass --near <your name> to watch them up close)");
@@ -120,7 +122,7 @@ async function main() {
       console.log(issue ? `  ✓ passes now: close #${scenario.knownIssue}?` : "  ✓ passed");
     } else {
       console.log(`  ✗ failed${issue}`);
-      if (!scenario.knownIssue) failed++;
+      if (!scenario.knownIssue && !useDev) failed++;
     }
   }
 

@@ -1,4 +1,5 @@
 import { ItemBuilder } from "../items/item-builder";
+import type { Dice } from "../random";
 import { cloneJson } from "../random";
 import { questList, type QuestId } from "./quest-list";
 import { Quest, type QuestObjective } from "./quest";
@@ -9,7 +10,7 @@ const QUEST_GOLD_MULTIPLIER = 5;
 
 type QuestEntry = (typeof questList)[QuestId];
 
-function buildQuest(key: string): Quest {
+function buildQuest(dice: Dice, key: string): Quest {
   const quest = (questList as Record<string, QuestEntry>)[key];
   const rewardItems = "rewards" in quest ? quest.rewards.items : undefined;
   const questData = {
@@ -21,16 +22,16 @@ function buildQuest(key: string): Quest {
     rewards: {
       exp: quest?.level * QUEST_EXP_MULTIPLIER,
       gold: quest?.level * QUEST_GOLD_MULTIPLIER,
-      items: rewardItems?.map((item) => ItemBuilder.buildItem(item[0], item[1], item[2])),
+      items: rewardItems?.map((item) => ItemBuilder.buildItem(dice, item[0], item[1], item[2])),
     },
   };
   return new Quest(questData as never);
 }
 
-function buildAllQuests(): Record<string, Quest> {
+function buildAllQuests(dice: Dice): Record<string, Quest> {
   const quests: Record<string, Quest> = {};
   for (const key in questList) {
-    quests[key] = buildQuest(key);
+    quests[key] = buildQuest(dice, key);
   }
   return quests;
 }

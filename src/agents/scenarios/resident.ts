@@ -11,7 +11,7 @@ export const resident: Scenario = {
     await visitor.cheat(`/tp ${Math.round(local.senses.x + 40)} ${Math.round(local.senses.y)}`);
     const appeared = local.waitFor("npcJoin");
     await local.cheat("/summon crab 1");
-    await appeared;
+    const crab = await appeared;
     await local.cheat("/heal");
 
     /* Records every question, then decides like the rule planner (most urgent option first) */
@@ -21,17 +21,17 @@ export const resident: Scenario = {
       return rulePlanner(situation, question, options);
     };
     const greeted = visitor.waitFor("message", (m) => m?.type === "chat", 20000);
-    /* It hunts the nearest mob, which needn't be the crab: any kill of its own counts */
+    /* A summoned crab respawns after it dies, so watch for its death rather than check later */
     const killed = local.waitFor(
       "assignDamage",
-      (hits) => hits.some((h) => h.type === "death" && h.from === local.id),
+      (hits) => hits.some((h) => h.type === "death" && h.to === crab.id),
       12000,
     );
 
     await live(local, createResident(recording), 12000);
     log(`menus: ${asked.map((o) => o.join("/")).join(" → ")}`);
     check(asked[0]?.includes("hunt") === true, "it is offered the crab to hunt");
-    check(!!(await killed.catch(() => null)), "it hunts down a mob");
+    check(!!(await killed.catch(() => null)), "it hunts the crab down");
     const hello = await greeted.catch(() => null);
     check(!!hello, `it greets the visitor${hello ? `: "${hello.message}"` : ""}`);
 

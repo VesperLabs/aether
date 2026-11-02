@@ -1,5 +1,5 @@
 /* This file and Diablo II are the main reason this game exists */
-import { cloneJson, randomNumber } from "../random";
+import { cloneJson, randomNumber, type Dice } from "../random";
 import { rollDrop } from "./item-drops";
 import { itemModsList } from "./item-mods";
 import { itemList, multiplyValues, scaleBaseStats } from "./item-scaling";
@@ -30,16 +30,16 @@ function getSetInfo(setName: string) {
 }
 
 /** Rolls the `[min, max]` ranges of a stat block into fixed numbers. */
-function rollRanges(block: Loose | undefined): Record<string, number> {
+function rollRanges(dice: Dice, block: Loose | undefined): Record<string, number> {
   const rolled: Record<string, number> = {};
   for (const key in block) {
     const value = block[key];
-    rolled[key] = Array.isArray(value) ? randomNumber(value[0], value[1]) : value;
+    rolled[key] = Array.isArray(value) ? randomNumber(dice, value[0], value[1]) : value;
   }
   return rolled;
 }
 
-function rollPercentStats(block: Loose | undefined): Record<string, number> {
+function rollPercentStats(dice: Dice, block: Loose | undefined): Record<string, number> {
   const rolled: Record<string, number> = {};
   for (const key in block) {
     const value = block[key];
@@ -47,7 +47,7 @@ function rollPercentStats(block: Loose | undefined): Record<string, number> {
       rolled[key] = value;
     } else if (Array.isArray(value) && typeof value[0] == "number") {
       //we have a percentage value. need to save it.
-      rolled[key] = randomNumber(parseInt(String(value[0])), parseInt(String(value[1])));
+      rolled[key] = randomNumber(dice, parseInt(String(value[0])), parseInt(String(value[1])));
     }
   }
   return rolled;
@@ -83,7 +83,7 @@ function findDefinition(type: string, rarity: string, itemKey: string) {
 /** `[type, rarity, key, amount?]`. Typed loosely so callers can spread stored references. */
 type BuildItemArgs = string[] | [string, string, string, (number | string)?];
 
-function buildItem(...args: BuildItemArgs): Item | null {
+function buildItem(dice: Dice, ...args: BuildItemArgs): Item | null {
   const [type, rarity, itemKey, amount] = args;
   if (typeof rarity !== "string" || !isItemBuildRarity(rarity)) {
     console.log(`🔧 Unknown rarity "${rarity}" for ${type} ${itemKey}`);
@@ -101,9 +101,9 @@ function buildItem(...args: BuildItemArgs): Item | null {
   item = { requirements: {}, ...item };
 
   // build the attributes of the item
-  const newEffects = rollRanges(item.effects);
-  const newStats = rollRanges(item.stats);
-  const percentStats = item.percentStats ? rollPercentStats(item.percentStats) : {};
+  const newEffects = rollRanges(dice, item.effects);
+  const newStats = rollRanges(dice, item.stats);
+  const percentStats = item.percentStats ? rollPercentStats(dice, item.percentStats) : {};
 
   item.key = itemKey;
   item.tint = item?.tint || "0xFFFFFF";
@@ -119,7 +119,7 @@ function buildItem(...args: BuildItemArgs): Item | null {
   if (item.slot === "stackable") {
     item.id = itemKey;
   } else {
-    item.id = globalThis.crypto.randomUUID();
+    item.id = dice.newId();
   }
 
   /* Default slots on bags */
@@ -134,7 +134,7 @@ function buildItem(...args: BuildItemArgs): Item | null {
 
   /* Magic and Rare Item Spawning */
   if (item.rarity == "magic" && shouldSpawnMods) {
-    const randomMod = rollSuffix(item, "magic");
+    const randomMod = rollSuffix(dice, item, "magic");
     if (randomMod) {
       item.name = item.name + " " + randomMod.name;
       item.key = item.key.replace("-common-", "-magic-");
@@ -143,7 +143,7 @@ function buildItem(...args: BuildItemArgs): Item | null {
 
   if (item.rarity == "rare" && shouldSpawnMods) {
     for (let i = 0; i < 4; i++) {
-      rollSuffix(item, "rare");
+      rollSuffix(dice, item, "rare");
     }
     item.key = item.key.replace("-common-", "-rare-");
   }
@@ -153,14 +153,14 @@ function buildItem(...args: BuildItemArgs): Item | null {
   return new Item(item);
 }
 
-function rollSuffix(item: Loose, rarity: string) {
+function rollSuffix(dice: Dice, item: Loose, rarity: string) {
   const ilvl = item.ilvl;
   const modSuffixes = itemModsList.suffix
     //only get suffixes ilvl or lower
     .filter((s) => ilvl >= s.ilvl)
     // suffixes only allowed on certain types
     .filter((s) => (s.types as readonly string[]).some((t) => t === "*" || t === item.type));
-  const randomMod = modSuffixes[randomNumber(0, modSuffixes.length - 1)];
+  const randomMod = modSuffixes[randomNumber(dice, 0, modSuffixes.length - 1)];
 
   if (!randomMod) return null;
   // magic items get a bit more of a buff
@@ -174,7 +174,7 @@ function rollSuffix(item: Loose, rarity: string) {
     if (Array.isArray(modStats[key])) {
       const low = modStats[key][0] * (ilvl + rarityBump);
       const high = modStats[key][1] * (ilvl + rarityBump);
-      item.stats[key] += randomNumber(low, high);
+      item.stats[key] += randomNumber(dice, low, high);
     }
   });
 

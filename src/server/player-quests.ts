@@ -35,6 +35,7 @@ export function applyAcceptQuest(player: QuestPlayer, quest: Quest) {
 export function applyCompleteQuest(
   player: QuestPlayer,
   quest: Quest | undefined,
+  newId: () => string,
 ): { error?: string; didLevel?: boolean } {
   const result = completeQuest({
     status: getPlayerQuestStatus(player, quest),
@@ -52,7 +53,10 @@ export function applyCompleteQuest(
       player.abilities = taken.abilities;
     }
   }
-  for (const item of result.itemsToAdd) player.addInventoryItem(item as Item);
+  /* Rewards are built once per world, so each player gets their own copy with its own id */
+  for (const item of result.itemsToAdd) {
+    player.addInventoryItem({ ...structuredClone(item as Item), id: newId() });
+  }
   const didLevel = player.assignExp(result.exp as number);
   player.gold += result.gold;
   (player.quests.find((q) => q?.questId === quest?.id) as PlayerQuest).isCompleted = true;

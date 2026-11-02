@@ -50,6 +50,7 @@ function execute(ctx: CommandContext, command: string[]) {
       const drop = parseDropArgs(command.slice(1));
       if ("error" in drop) return cmdErr(drop.error);
       const built = ItemBuilder.buildItem(
+        world.dice,
         drop.type,
         drop.rarity,
         drop.key,
@@ -101,9 +102,14 @@ function execute(ctx: CommandContext, command: string[]) {
       }
       let gunItem = null;
       do {
-        gunItem = ItemBuilder.rollDrop(100, 100);
+        gunItem = ItemBuilder.rollDrop(world.dice, 100, 100);
       } while (gunItem?.rarity !== rarity);
-      const gun = ItemBuilder.buildItem(gunItem.type, gunItem.rarity, gunItem.key) as Item;
+      const gun = ItemBuilder.buildItem(
+        world.dice,
+        gunItem.type,
+        gunItem.rarity,
+        gunItem.key,
+      ) as Item;
       spawnLoot(world, player?.roomName, { x: player?.x, y: player?.y, item: gun, npcId: null });
       return cmdInfo(`Dropped ${itemLabel(gun)}.`);
     }

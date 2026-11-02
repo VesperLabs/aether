@@ -1,5 +1,4 @@
 import type { ServerWorld } from "./server-world";
-import crypto from "crypto";
 import { ItemBuilder } from "@/content";
 import { createLoot, expireLoots, isMapLootDue, planMapLootSpawns } from "@/rules/loot";
 import type { LootItem, LootSpawn } from "@/rules/loot";
@@ -15,7 +14,7 @@ function lootInRoom(world: ServerWorld, roomName: string): Loot[] {
 
 /** Puts a drop on the ground and tells the room. */
 export function spawnLoot(world: ServerWorld, roomName: string, spawn: LootSpawn) {
-  const loot = createLoot(spawn, { id: crypto.randomUUID(), roomName, now: world.now() });
+  const loot = createLoot(spawn, { id: world.dice.newId(), roomName, now: world.now() });
   if (!loot) return;
   // The rules type the item loosely; the spawner always hands it a built item.
   const placed = loot as unknown as Loot;
@@ -38,7 +37,7 @@ export function updateRoomLoot(world: ServerWorld, room: Room) {
       lootInRoom(world, room.name),
       world.rng,
       (type, rarity, key, amount) =>
-        ItemBuilder.buildItem(type, rarity, key, amount) as LootItem | null,
+        ItemBuilder.buildItem(world.dice, type, rarity, key, amount) as LootItem | null,
     );
     for (const spawn of spawns) spawnLoot(world, room.name, spawn);
   }

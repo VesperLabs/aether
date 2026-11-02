@@ -561,6 +561,25 @@
       "rules": {
         "import/no-default-export": "off"
       }
+    },
+    {
+      "files": ["src/content/**"],
+      "excludeFiles": ["**/*.test.ts"],
+      "rules": {
+        "no-restricted-properties": [
+          "error",
+          {
+            "object": "Math",
+            "property": "random",
+            "message": "Content rolls with the Dice it is given (ItemBuilder, rollDrop), so a seeded world rolls the same items."
+          },
+          {
+            "object": "crypto",
+            "property": "randomUUID",
+            "message": "Content takes ids from the Dice it is given (dice.newId)."
+          }
+        ]
+      }
     }
   ]
 }

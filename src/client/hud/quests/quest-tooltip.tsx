@@ -4,6 +4,7 @@ import { useAppContext } from "@/client/hud/app/context";
 import { Box, Text, Flex, Divider, Icon, Button, STYLE_NON_EMPTY } from "@/ui";
 import {
   ItemBuilder,
+  PREVIEW_DICE,
   nasties,
   keepers,
   type KeeperId,
@@ -43,7 +44,10 @@ const useQuestDialogue = (quest: QuestData, playerQuest: PlayerQuestStatus | und
     }
     if (objective?.type === "item") {
       verb = "Collect";
-      noun = ItemBuilder.buildItem(...(objective.item as [string, string, string]))?.name;
+      noun = ItemBuilder.buildItem(
+        PREVIEW_DICE,
+        ...(objective.item as [string, string, string]),
+      )?.name;
       current = playerQuest?.objectives?.[idx]?.numCollected || 0;
     }
     if (objective?.type === "bounty") {

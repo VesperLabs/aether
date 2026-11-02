@@ -109,12 +109,12 @@ export class Npc extends Character {
     this.respawnTime = 10000;
     /* Keepers have no drops in their content. */
     this.drops = args?.drops as Array<Drop>;
-    this.equipment = buildEquipment(equipment);
-    this.abilities = buildEquipment(abilities);
+    this.equipment = buildEquipment(world.dice, equipment);
+    this.abilities = buildEquipment(world.dice, abilities);
     this.talkingIds = [];
     this.keeperData = {
       ...keeperData,
-      shop: buildShop(keeperData?.shop),
+      shop: buildShop(world.dice, keeperData?.shop),
       quests: keeperData?.quests?.map((questId: string) => world?.quests?.[questId]),
     };
     this.rng = createRng(seedFromString(String(this.id ?? this.name)));
