@@ -11,4 +11,5 @@ type QuestKeeperRef = Extract<
   (typeof questList)[keyof typeof questList]["objectives"][number],
   { readonly type: "chat" }
 >["keeper"];
+/** @public Compile-time check: fails the build if a quest names a missing keeper. */
 export const QUEST_KEEPERS_EXIST: [QuestKeeperRef] extends [KeeperId] ? true : never = true;

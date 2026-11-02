@@ -4,8 +4,8 @@ import { questList, type QuestId } from "./quest-list";
 import { Quest, type QuestObjective } from "./quest";
 
 /* Rewards scale with the quest level: half and a tenth of the exp needed for level 1 (50). */
-export const QUEST_EXP_MULTIPLIER = 25;
-export const QUEST_GOLD_MULTIPLIER = 5;
+const QUEST_EXP_MULTIPLIER = 25;
+const QUEST_GOLD_MULTIPLIER = 5;
 
 type QuestEntry = (typeof questList)[QuestId];
 

@@ -5,7 +5,7 @@ import type { WikiPlayer } from "./page-players";
 import { CARD_COLORS } from "./card-pool";
 
 /** The character, drawn small: the head and shoulders fill the box. */
-export const PlayerFace = ({ player }: { player: WikiPlayer }) => (
+const PlayerFace = ({ player }: { player: WikiPlayer }) => (
   <Flex
     sx={{ width: 64, height: 64, flexShrink: 0, alignItems: "center", justifyContent: "center" }}
   >

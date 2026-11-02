@@ -1,5 +1,5 @@
 export { assetList } from "./assets/asset-list";
-export type { AssetDefinition, NamedFileDefinition } from "./assets/asset-types";
+export type { AssetDefinition } from "./assets/asset-types";
 export { CLASS_ICON_MAP } from "./assets/class-icons";
 export {
   HAND_REACH,
@@ -33,18 +33,10 @@ export {
   isItemBuildRarity,
 } from "./items/item-builder";
 export { itemData } from "./items/item-data";
-export { ITEM_KEYS, findItemKey, type ItemKeyEntry, type ItemLook } from "./items/item-keys";
-export { itemModsList } from "./items/item-mods";
-export type { ItemDrop, ItemKeyFor, ItemRef, ItemType } from "./items/item-refs";
+export { ITEM_KEYS, findItemKey, type ItemLook } from "./items/item-keys";
 export { ILVL_MULTIPLIER, itemList } from "./items/item-scaling";
 export { itemSetList, type ItemSetName } from "./items/item-sets";
-export type {
-  BuiltItem,
-  ItemDefinition,
-  ItemRarity,
-  ItemSlot,
-  RequirementBlock,
-} from "./items/item-types";
+export type { BuiltItem, ItemDefinition } from "./items/item-types";
 export { getMapByName } from "./maps/get-map";
 export { mapImageList } from "./maps/map-image-list";
 export { mapList } from "./maps/map-list";
@@ -54,21 +46,13 @@ export type {
   MobBehavior,
   MobMovementBehavior,
   MobProfile,
-  MobRace,
   NastyDefinition,
 } from "./mobs/mob-types";
 export type { KeeperDefinition } from "./mobs/keeper-types";
-export { Quest, type QuestObjective, type QuestRewards } from "./quests/quest";
-export { QuestBuilder, QUEST_EXP_MULTIPLIER, QUEST_GOLD_MULTIPLIER } from "./quests/quest-builder";
+export { Quest, type QuestObjective } from "./quests/quest";
+export { QuestBuilder } from "./quests/quest-builder";
 export { questList, type QuestId } from "./quests/quest-list";
-export { spellDetails, type SpellName } from "./spells/spell-details";
+export { spellDetails } from "./spells/spell-details";
 export type { SpellDefinition } from "./spells/spell-types";
-export type {
-  CharClass,
-  EffectBlock,
-  PercentStatBlock,
-  StatBlock,
-  StatName,
-  StatValue,
-} from "./stats";
+export type { CharClass } from "./stats";
 export { cloneJson } from "./random";

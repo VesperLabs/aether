@@ -54,6 +54,3 @@ export const PLAY_BUTTON = {
   boxShadow: "inset 0 1px 0 rgba(255, 255, 255, .45), 0 1px 3px rgba(0, 0, 0, .2)",
   "&:hover": { bg: PAPER.accent, filter: "brightness(1.1)" },
 } as const;
-
-/** The screen height the phone tab bar covers. */
-export const TAB_BAR_SPACE = TAB_HEIGHT;

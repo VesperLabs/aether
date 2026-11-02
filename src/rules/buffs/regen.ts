@@ -2,11 +2,11 @@ import { modifyStat } from "@/rules/combat";
 import type { ActiveBuff } from "./rules";
 
 /** How often, in ms, each kind of regeneration ticks. */
-export const HP_REGEN_INTERVAL = 5000;
-export const HP_BUFF_REGEN_INTERVAL = 5000;
-export const MP_REGEN_INTERVAL = 1000;
-export const SP_REGEN_INTERVAL = 600;
-export const POISON_INTERVAL = 1000;
+const HP_REGEN_INTERVAL = 5000;
+const HP_BUFF_REGEN_INTERVAL = 5000;
+const MP_REGEN_INTERVAL = 1000;
+const SP_REGEN_INTERVAL = 600;
+const POISON_INTERVAL = 1000;
 
 export interface RegenTimers {
   lastHpBuffRegen: number;
@@ -24,7 +24,7 @@ export interface RegenInput {
   now: number;
 }
 
-export interface RegenFlags {
+interface RegenFlags {
   doHpRegen: boolean;
   doHpBuffRegen: boolean;
   doMpRegen: boolean;

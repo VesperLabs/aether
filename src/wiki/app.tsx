@@ -5,7 +5,7 @@ import { Footer } from "./footer";
 import { Metrics } from "./metrics";
 import { Header } from "./header";
 import { TabBar } from "./tab-bar";
-import { TAB_BAR_SPACE } from "./menu-bar";
+import { TAB_HEIGHT } from "./menu-bar";
 import { PageItems } from "./page-items";
 import { PageKeepers } from "./page-keepers";
 import { PageNasties } from "./page-nasties";
@@ -46,7 +46,7 @@ export const App = () => {
               flexDirection: "column",
               minHeight: "100dvh",
               /* On phones, room at the bottom for the fixed tab bar. */
-              pb: [TAB_BAR_SPACE, 0],
+              pb: [TAB_HEIGHT, 0],
               boxSizing: "border-box",
             }}
           >

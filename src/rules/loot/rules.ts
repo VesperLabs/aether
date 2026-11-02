@@ -177,7 +177,7 @@ export interface MapLoot {
   items: MapLootItem[];
 }
 
-export interface MapLootItem {
+interface MapLootItem {
   type: string;
   rarity: string;
   key: string;

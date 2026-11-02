@@ -136,7 +136,7 @@ function strafe(
   npc.direction = getStickyDirection(npc.direction, npc, target);
 }
 
-export function walkTo(npc: Npc, coords: Point) {
+function walkTo(npc: Npc, coords: Point) {
   steer(npc, seek(npc, coords, npc.stats.walkSpeed));
 }
 

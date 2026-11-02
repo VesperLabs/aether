@@ -57,7 +57,7 @@ export function getCastReadiness({ spellName, lastCast, castDelay, now }: CastRe
 export type AbilitySlot = number | string;
 
 /** The part of an ability item the cast rules read. */
-export interface CastAbility {
+interface CastAbility {
   base?: string;
   stats?: { mpCost?: number; hpCost?: number; spCost?: number } | null;
 }

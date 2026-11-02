@@ -20,7 +20,7 @@ function editDistance(a: string, b: string) {
 }
 
 /** Prefix matches first, then ones containing what's typed, then the closest typos. */
-export function rankSuggestions<T extends ChatSuggestion>(typed: string, options: readonly T[]) {
+function rankSuggestions<T extends ChatSuggestion>(typed: string, options: readonly T[]) {
   const needle = typed.toLowerCase();
   const scoreName = (raw: string) => {
     const name = raw.toLowerCase().replace(/^\//, "");

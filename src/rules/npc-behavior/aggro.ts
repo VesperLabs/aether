@@ -39,7 +39,7 @@ export function calculateNpcAggroRange(baseLevel: number | undefined) {
 }
 
 /** Stealthed players are seen from less far, depending on the level gap. */
-export function calculateStealthAggroRange(
+function calculateStealthAggroRange(
   npc: NpcSelfView,
   player: NpcPlayerView,
   npcAggroRange: number,

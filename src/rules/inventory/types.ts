@@ -47,7 +47,7 @@ export interface MoveRequest {
   to?: MoveEndpoint | null;
 }
 
-export interface ShopSlot {
+interface ShopSlot {
   item?: InventoryItem | null;
   stock?: number | null;
 }

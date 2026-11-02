@@ -65,11 +65,6 @@ export function findBagItemBySlot(
   return bag?.items?.[slot as number];
 }
 
-/** Whether the inventory has a bag (or any item) with this id to put things in. */
-export function hasBag(inventory: ItemSlotValue[] | undefined, bagId: string | null | undefined) {
-  return !!inventory?.find((entry) => entry?.id === bagId);
-}
-
 /** The first bag slot that is empty or already holds the same item (for stacking). */
 export function findOpenBagSlot(
   inventory: ItemSlotValue[] | undefined,

@@ -16,7 +16,7 @@ import type {
 } from "./types";
 
 /** A move endpoint with the id of the item found there. */
-export interface ResolvedEndpoint extends MoveEndpoint {
+interface ResolvedEndpoint extends MoveEndpoint {
   itemId?: string;
 }
 

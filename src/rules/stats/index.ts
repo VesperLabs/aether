@@ -1,5 +1,4 @@
 export {
-  PLAYER_BASE_EXP,
   addValuesToExistingKeys,
   calculateExpValue,
   calculateNextMaxExp,
@@ -7,16 +6,8 @@ export {
   getBaseStats,
   mergeAndAddValues,
 } from "./rules";
-export type {
-  ExpValueInput,
-  StatBag,
-  StatsBuff,
-  StatsInput,
-  StatsItem,
-  StatsResult,
-} from "./rules";
+export type { StatBag, StatsInput } from "./rules";
 export { npcBaseStats, npcStats } from "./npc";
-export type { NpcStatsInput } from "./npc";
 export { expForMobKill, subscribeStats } from "./system";
 export { convertMsToS, formatStats, msToHours } from "./format";
 export type { FormattedStat } from "./format";

@@ -4,7 +4,7 @@ import { ItemBuilder } from "@/content";
 export type StatBag = Record<string, any>;
 
 /** The part of an item (equipment piece or ability) that affects stats. */
-export interface StatsItem {
+interface StatsItem {
   key?: string;
   /** "weapon", "ranged", "shield", ...: decides how a held item counts (see `calculateStats`). */
   type?: string;
@@ -14,7 +14,7 @@ export interface StatsItem {
   triggers?: unknown[];
 }
 
-export interface StatsBuff {
+interface StatsBuff {
   stats?: Record<string, number>;
   percentStats?: Record<string, number>;
 }
@@ -45,7 +45,7 @@ export interface ExpValueInput {
   mobLevel: number | string | undefined;
 }
 
-export const PLAYER_BASE_EXP = 50; // base experience needed for level 1
+const PLAYER_BASE_EXP = 50; // base experience needed for level 1
 const PLAYER_BASE_ATTACK_DELAY = 100;
 
 type CharClass = "mage" | "warrior" | "rogue" | "cleric";

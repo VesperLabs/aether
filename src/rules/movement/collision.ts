@@ -29,7 +29,7 @@ export interface MoveResult {
 }
 
 /** Physics runs in steps this long, like Phaser Arcade's default 60 steps a second. */
-export const PHYSICS_STEP = 1 / 60;
+const PHYSICS_STEP = 1 / 60;
 
 const EPSILON = 1e-6;
 
@@ -66,7 +66,7 @@ function moveAxis(grid: TileGrid, box: Box, axis: "x" | "y", delta: number): boo
 }
 
 /** Keeps a box inside the map. The map edge acts as a wall. */
-export function clampToBounds(box: Box, bounds: Bounds): { blockedX: boolean; blockedY: boolean } {
+function clampToBounds(box: Box, bounds: Bounds): { blockedX: boolean; blockedY: boolean } {
   const x = Math.min(Math.max(box.x, box.halfWidth), bounds.width - box.halfWidth);
   const y = Math.min(Math.max(box.y, box.halfHeight), bounds.height - box.halfHeight);
   const result = { blockedX: x !== box.x, blockedY: y !== box.y };
@@ -112,14 +112,14 @@ export function integrate(
   return { x: position.x + velocity.x * seconds, y: position.y + velocity.y * seconds };
 }
 
-export function circlesOverlap(a: Circle, b: Circle): boolean {
+function circlesOverlap(a: Circle, b: Circle): boolean {
   const dx = a.x - b.x;
   const dy = a.y - b.y;
   const reach = a.radius + b.radius;
   return dx * dx + dy * dy <= reach * reach;
 }
 
-export function boxesOverlap(a: Box, b: Box): boolean {
+function boxesOverlap(a: Box, b: Box): boolean {
   return (
     Math.abs(a.x - b.x) < a.halfWidth + b.halfWidth &&
     Math.abs(a.y - b.y) < a.halfHeight + b.halfHeight

@@ -3,7 +3,7 @@ import { randomInt, type Rng } from "@/rules/loot";
 import { addValuesToExistingKeys, type StatBag } from "@/rules/stats";
 
 /** Part of spell power applied to elemental spell min/max (full power was melting warriors in PvP). */
-export const SPELL_POWER_ELEMENTAL_FACTOR = 0.5;
+const SPELL_POWER_ELEMENTAL_FACTOR = 0.5;
 
 /**
  * Rolls a spell's elemental damage: its `effects` plus the caster's matching stats, with part of

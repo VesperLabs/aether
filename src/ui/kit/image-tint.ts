@@ -23,7 +23,7 @@ export function loadCacheImage(src: string): Promise<HTMLImageElement> {
   });
 }
 
-export function trimCanvas(c: HTMLCanvasElement) {
+function trimCanvas(c: HTMLCanvasElement) {
   const ctx = context2d(c);
   const pixels = ctx.getImageData(0, 0, c.width, c.height);
   const l = pixels.data.length;
@@ -87,7 +87,7 @@ export function applyTintToImage(image: HTMLImageElement | ImageBitmap, tint?: s
   }
 }
 
-export const imageToCanvas = (image: HTMLImageElement | ImageBitmap) => {
+const imageToCanvas = (image: HTMLImageElement | ImageBitmap) => {
   const canvas = document.createElement("canvas");
   canvas.width = image.width;
   canvas.height = image.height;

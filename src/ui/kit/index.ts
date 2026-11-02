@@ -1,20 +1,6 @@
-export {
-  ThemeUIProvider,
-  Box,
-  Flex,
-  Badge,
-  Field,
-  Grid,
-  Text,
-  Spinner,
-  Card,
-  Divider,
-  Donut,
-  Link,
-} from "theme-ui";
+export { ThemeUIProvider, Box, Flex, Grid, Text, Divider, Donut, Link } from "theme-ui";
 export { theme } from "./theme";
-export { resourceHex, resourceTint, resourceToken } from "./resource-colors";
-export type { Resource } from "./resource-colors";
+export { resourceToken } from "./resource-colors";
 export { Button } from "./button/button";
 export type { PressHandler } from "./button/button";
 export { Icon } from "./icon";
@@ -25,7 +11,7 @@ export { KeyboardButton } from "./keyboard-button";
 export { Tooltip, TooltipContent } from "./tooltip";
 export { Label } from "./label";
 export { TextDivider } from "./text-divider";
-export { ZoomProvider, useZoom } from "./zoom";
+export { ZoomProvider } from "./zoom";
 export { Portal } from "./portal";
 export { VersionTag } from "./version-tag";
 export { Switch } from "./switch";
@@ -33,13 +19,7 @@ export { Toast } from "./toast";
 export type { ToastKind, ToastMessage } from "./toast";
 export { Menu, MenuHeader, MENU_MAX_WIDTH } from "./menu";
 export { arePropsEqualWithKeys, get, isEqual } from "./are-props-equal";
-export {
-  IMAGE_CACHE,
-  applyTintToImage,
-  assetToDataUrl,
-  loadCacheImage,
-  tintCanvas,
-} from "./image-tint";
+export { applyTintToImage, assetToDataUrl, loadCacheImage, tintCanvas } from "./image-tint";
 export { assetToCanvas } from "./asset-to-canvas";
 export { isMobile } from "./is-mobile";
 export * from "./hooks";

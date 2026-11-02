@@ -1,12 +1,12 @@
 import type { VineStyle } from "./vines";
 
-export interface Range {
+interface Range {
   min: number;
   max: number;
 }
 
 /** How one element's particles look and move, in world pixels and milliseconds. */
-export interface ParticleStyle {
+interface ParticleStyle {
   lifespan: Range;
   speedX?: Range;
   speedY?: Range;
@@ -27,7 +27,7 @@ export interface ParticleStyle {
 }
 
 /** Tiny jagged arcs of electricity that crackle off the blade for a frame or two. */
-export interface BoltStyle {
+interface BoltStyle {
   /** Bolts per second while the element emits. */
   rate: number;
   /** Pixels a bolt runs out from the blade. */

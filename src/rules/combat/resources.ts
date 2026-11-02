@@ -25,8 +25,3 @@ export function modifyStat(
   if (stat + intAmount < 0) return 0;
   return stats?.[key] + intAmount;
 }
-
-/** HP at or below 0 means the hit was lethal. */
-export function isLethalHp(hp: number) {
-  return hp <= 0;
-}

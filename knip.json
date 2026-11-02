@@ -1,0 +1,6 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "entry": ["src/client/game.tsx", "src/wiki/main.tsx", "scripts/*.ts"],
+  "project": ["src/**/*.{ts,tsx}", "scripts/**/*.ts"],
+  "vite": false
+}

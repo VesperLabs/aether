@@ -6,7 +6,7 @@ import type { ItemSetName } from "./item-sets";
 
 export type ItemRarity = "common" | "magic" | "rare" | "unique" | "set";
 
-export type ItemSlot =
+type ItemSlot =
   | "hands"
   | "helmet"
   | "armor"
@@ -20,7 +20,7 @@ export type ItemSlot =
   | "spell"
   | "bag";
 
-export interface RequirementBlock {
+interface RequirementBlock {
   readonly strength?: number;
   readonly dexterity?: number;
   readonly intelligence?: number;

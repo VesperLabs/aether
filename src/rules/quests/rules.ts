@@ -17,7 +17,7 @@ export interface QuestDefinition {
   rewards?: { exp?: number; gold?: number; items?: (unknown | null)[] };
 }
 
-export interface QuestObjectiveDefinition {
+interface QuestObjectiveDefinition {
   type: string;
   /** `[slot, rarity, key]` of the item to collect. */
   item?: string[];
@@ -33,7 +33,7 @@ export interface PlayerQuestRecord {
   isReady?: boolean;
 }
 
-export interface PlayerQuestObjectiveStatus {
+interface PlayerQuestObjectiveStatus {
   questId: string;
   objectiveId: number;
   isReady: boolean;

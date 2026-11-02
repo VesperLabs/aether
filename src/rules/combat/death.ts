@@ -1,5 +1,5 @@
 /** A player who dies keeps this share of their experience. */
-export const DEATH_EXP_KEPT = 0.9;
+const DEATH_EXP_KEPT = 0.9;
 
 /** Experience after dying: 10% is lost (only if there is any). */
 export function expAfterDeath(exp: number) {

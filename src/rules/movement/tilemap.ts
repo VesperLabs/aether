@@ -1,5 +1,5 @@
 /** A Tiled map as it is stored in the map JSON files. Only the fields the game reads. */
-export interface TiledProperty {
+interface TiledProperty {
   name: string;
   value: unknown;
 }
@@ -55,7 +55,7 @@ export interface TileMap {
 }
 
 /** The layer the server uses for walls. */
-export const COLLIDE_LAYER = "Collide";
+const COLLIDE_LAYER = "Collide";
 
 /* The top bits of a Tiled tile id are flip flags. */
 const GID_MASK = 0x1fffffff;

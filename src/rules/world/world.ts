@@ -13,7 +13,7 @@ import {
 import { createGameEventBus, type GameEventBus } from "./event-bus";
 
 /** A door on a map: where it is and where it leads. */
-export interface DoorData {
+interface DoorData {
   name: string;
   destMap?: string;
   destDoor?: string;

@@ -24,7 +24,7 @@ export interface MobKilledEvent {
 }
 
 /** A character lost hp to another one. NPCs gain threat from it. */
-export interface CharacterDamagedEvent {
+interface CharacterDamagedEvent {
   victimId: string;
   attackerId: string;
   /** Players are looked up by socket id; unset for NPC attackers. */
@@ -33,7 +33,7 @@ export interface CharacterDamagedEvent {
 }
 
 /** An NPC swung at its target. `count` is which hand (1 or 2). */
-export interface NpcAttackedEvent {
+interface NpcAttackedEvent {
   npcId: string;
   roomName: string;
   count: number;
@@ -42,7 +42,7 @@ export interface NpcAttackedEvent {
 }
 
 /** An NPC cast the spell in one of its ability slots. */
-export interface NpcCastEvent {
+interface NpcCastEvent {
   npcId: string;
   roomName: string;
   abilitySlot: string | number;
@@ -50,7 +50,7 @@ export interface NpcCastEvent {
 }
 
 /** An NPC began winding up an attack or spell that lands in `windupMs`. */
-export interface NpcWindupStartedEvent {
+interface NpcWindupStartedEvent {
   npcId: string;
   roomName: string;
   kind: "attack" | "cast";
@@ -61,7 +61,7 @@ export interface NpcWindupStartedEvent {
 }
 
 /** A dead NPC came back at its spawn point. */
-export interface NpcRespawnedEvent {
+interface NpcRespawnedEvent {
   npcId: string;
   roomName: string;
   x: number;
@@ -71,14 +71,14 @@ export interface NpcRespawnedEvent {
 }
 
 /** A spell hit someone: the shapes the server compared, for drawing while debugging. */
-export interface SpellHitShapesEvent {
+interface SpellHitShapesEvent {
   roomName: string;
   spell: Shape;
   victim: Box;
 }
 
 /** A player was shoved by a hit: their own client plays the shove (see `rules/movement/knockback.ts`). */
-export interface PlayerKnockedBackEvent {
+interface PlayerKnockedBackEvent {
   socketId: string;
   /** Which way it pushes, in radians. */
   angle: number;
@@ -94,5 +94,3 @@ export interface GameEvents {
   spellHitShapes: SpellHitShapesEvent;
   playerKnockedBack: PlayerKnockedBackEvent;
 }
-
-export type GameEventName = keyof GameEvents;

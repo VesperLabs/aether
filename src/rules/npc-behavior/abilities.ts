@@ -27,7 +27,7 @@ type Details = {
 const detailsOf = (spellName?: string) =>
   (spellDetails as unknown as Record<string, Details>)?.[spellName as string];
 
-export function isSpellCastable(input: AbilityChoiceInput, spell: NpcAbility | null | undefined) {
+function isSpellCastable(input: AbilityChoiceInput, spell: NpcAbility | null | undefined) {
   const spellName = spell?.base;
   return (
     detailsOf(spellName) &&
@@ -41,7 +41,7 @@ export function isSpellCastable(input: AbilityChoiceInput, spell: NpcAbility | n
 }
 
 /** Attack spells need the target within their range band, auras need no target (and a lucky roll). */
-export function isTargetSuitableForSpell(
+function isTargetSuitableForSpell(
   input: AbilityChoiceInput,
   spell: NpcAbility | null | undefined,
   rng: () => number,

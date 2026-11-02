@@ -4,7 +4,7 @@ import type { ItemRarity } from "./item-types";
 type ItemTable = typeof itemData;
 
 /** "weapon", "helmet", "spell"... : every top-level group in the item data. */
-export type ItemType = keyof ItemTable;
+type ItemType = keyof ItemTable;
 
 type CommonKeys<T extends ItemType> = "common" extends keyof ItemTable[T]
   ? keyof ItemTable[T]["common" & keyof ItemTable[T]]
@@ -14,7 +14,7 @@ type CommonKeys<T extends ItemType> = "common" extends keyof ItemTable[T]
  * Keys that exist for a type and rarity. Magic and rare items fall back to the common item
  * with the same key when there is no hand-written magic or rare version.
  */
-export type ItemKeyFor<T extends ItemType, R extends ItemRarity> =
+type ItemKeyFor<T extends ItemType, R extends ItemRarity> =
   | (R extends keyof ItemTable[T] ? keyof ItemTable[T][R] : never)
   | (R extends "magic" | "rare" ? CommonKeys<T> : never);
 

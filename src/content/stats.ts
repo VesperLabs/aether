@@ -47,7 +47,7 @@ export type StatName =
   | "walkSpeed"
   | "waterResistance";
 
-export type PercentStatName =
+type PercentStatName =
   | "defense"
   | "dexterity"
   | "intelligence"
@@ -57,7 +57,7 @@ export type PercentStatName =
   | "vitality"
   | "walkSpeed";
 
-export type EffectName =
+type EffectName =
   | "hp"
   | "mp"
   | "minEarthDamage"
@@ -73,7 +73,7 @@ export type EffectName =
 
 /** A fixed value, or a `[min, max]` range that is rolled when the item is built. */
 export type StatRange = readonly [number, number];
-export type StatValue = number | StatRange;
+type StatValue = number | StatRange;
 
 export type StatBlock = { readonly [K in StatName]?: StatValue };
 export type PercentStatBlock = { readonly [K in PercentStatName]?: StatValue };

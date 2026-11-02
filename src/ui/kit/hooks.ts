@@ -1,26 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
-
-/**
- * Get the current size of the Viewport. Do not call this excessively, as it may
- * cause performance issues in WebKit. Querying innerWidth/height triggers a
- * relayout of the page.
- */
-export const getViewportSize = () => {
-  if (window.visualViewport) {
-    // visualViewport is a new prop intended for this exact behavior, prefer it
-    // over all else when available
-    // https://developer.mozilla.org/en-US/docs/Web/API/Visual_Viewport_API
-    return [window.visualViewport.width, window.visualViewport.height] as const;
-  }
-
-  return [
-    window.innerWidth,
-    // window.innerHeight gets updated when a user open the soft keyboard, so it
-    // should be preferred over documentElement.clientHeight
-    // Want more? https://blog.opendigerati.com/the-eccentric-ways-of-ios-safari-with-the-keyboard-b5aa3f34228d
-    window.innerHeight,
-  ] as const;
-};
+import { useEffect } from "react";
 
 /**
  * Triggers an effect any time the viewport size changes.
@@ -52,18 +30,6 @@ export const useViewportSizeEffect = (effect: () => void) => {
       window.visualViewport?.removeEventListener("resize", effectTwice);
     };
   }, [effect]);
-};
-
-export const useViewportSize = () => {
-  const [size, setSize] = useState(getViewportSize);
-
-  const onViewportSizeChange = useCallback(() => {
-    setSize(getViewportSize());
-  }, []);
-
-  useViewportSizeEffect(onViewportSizeChange);
-
-  return size;
 };
 
 export function useOnClickOutside(

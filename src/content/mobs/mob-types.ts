@@ -1,7 +1,7 @@
 import type { ItemDrop, ItemRef } from "../items/item-refs";
 import type { CharClass, StatName } from "../stats";
 
-export type MobRace =
+type MobRace =
   | "abomination"
   | "bat"
   | "bear"
@@ -53,7 +53,7 @@ export type MobEquipment = {
 };
 
 /** Ability slots "1" to "5" hold a spell item. */
-export type MobAbilities = { readonly [slot in "1" | "2" | "3" | "4" | "5"]?: ItemRef };
+type MobAbilities = { readonly [slot in "1" | "2" | "3" | "4" | "5"]?: ItemRef };
 
 export interface MobBase {
   readonly charClass: CharClass;

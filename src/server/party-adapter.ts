@@ -19,7 +19,7 @@ import { getFullCharacterState } from "@/network/sync";
  * Goes away in Phase 4 when entities become plain data.
  */
 
-export function toPartyPlayer(player?: Player): PartyPlayer | undefined {
+function toPartyPlayer(player?: Player): PartyPlayer | undefined {
   if (!player) return undefined;
   return {
     id: player.id,

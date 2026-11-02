@@ -40,7 +40,7 @@ import { canCastSpell, checkCastReady, getAbilityDetails, type AbilitySlot } fro
 export type CharacterItem = any;
 
 /** Radius of a character's body, in pixels (before the profile scale). */
-export const BODY_SIZE = 8;
+const BODY_SIZE = 8;
 
 /** Players' spell hit box sits this far inside their drawn box, top and bottom, in pixels. */
 const PLAYER_HIT_BOX_INSET = 6;
