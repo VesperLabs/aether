@@ -3,6 +3,8 @@ import {
   ITEM_KEYS,
   canRollRarity,
   findItemKey,
+  mapList,
+  nasties,
   type ItemLook,
 } from "@/content";
 
@@ -37,6 +39,8 @@ const ITEM_OPTIONS = ITEM_KEYS.map(({ key, type, rarity, name, look }) => ({
   rarity,
   look,
 }));
+const ROOM_OPTIONS = mapList.map(({ name }) => ({ value: name }));
+const MOB_OPTIONS = Object.keys(nasties).map((value) => ({ value }));
 const RARITY_OPTIONS = ITEM_BUILD_RARITIES.map((value) => ({ value, rarity: value }));
 /** A common base can roll magic or rare mods (not bags, spells, stackables); anything else is fixed. */
 const ROLLABLE_RARITY_OPTIONS = ["magic", "rare"].map((value) => ({ value, rarity: value }));
@@ -65,6 +69,34 @@ export const CHAT_COMMANDS: readonly ChatCommand[] = [
     cheat: true,
     complete: (index) => (index === 0 ? RARITY_OPTIONS : []),
   },
+  {
+    name: "give",
+    args: "<item> [rarity] [amount]",
+    description: "Put an item in your inventory",
+    cheat: true,
+    complete: (index) => (index === 0 ? ITEM_OPTIONS : []),
+  },
+  { name: "heal", description: "Fill hp, mp and sp", cheat: true },
+  { name: "hp", args: "<amount>", description: "Set your hp", cheat: true },
+  { name: "name", args: "<name>", description: "Rename your character", cheat: true },
+  { name: "tp", args: "<x> <y>", description: "Teleport within this room", cheat: true },
+  {
+    name: "warp",
+    args: "<room> [x] [y]",
+    description: "Teleport to a room",
+    cheat: true,
+    complete: (index) => (index === 0 ? ROOM_OPTIONS : []),
+  },
+  { name: "goto", args: "<player>", description: "Teleport to a player", cheat: true },
+  { name: "where", description: "List who is in this room and where", cheat: true },
+  {
+    name: "summon",
+    args: "<mob> [count]",
+    description: "Summon mobs next to you",
+    cheat: true,
+    complete: (index) => (index === 0 ? MOB_OPTIONS : []),
+  },
+  { name: "despawn", description: "Remove summoned mobs from this room", cheat: true },
 ];
 
 /** The commands a player can use, given whether the server has cheats on. */

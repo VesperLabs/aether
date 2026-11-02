@@ -256,6 +256,12 @@ export function bindSceneSocket(scene: SceneMain) {
     playSpawnDissolve(npc);
   });
 
+  socket.on("npcJoin", (npc) => {
+    if (!getNpc(scene, npc.id)) addNpc(scene, npc);
+  });
+
+  socket.on("npcRemove", (id) => getNpc(scene, id)?.destroy());
+
   socket.on("lootSpawned", ({ loot, npcId }) => {
     /*  We will fake the loot pos when an enemy dies by overriding xy */
     const n = getNpc(scene, npcId);

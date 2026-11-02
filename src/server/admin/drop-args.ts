@@ -8,7 +8,7 @@ export interface DropArgs {
 }
 
 export const DROP_USAGE =
-  "Usage: /drop <item> [rarity] [amount], e.g. /drop sword, /drop sword magic, /drop potion 20";
+  "Usage: /drop <item> [rarity] [amount], e.g. /drop sword, /drop sword magic, /drop smallHpPotion 20";
 
 /**
  * Reads `/drop` args: `<item> [rarity] [amount]` in any order after the item, where the item's

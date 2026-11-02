@@ -13,7 +13,7 @@ describe("getChatSuggestions", () => {
   });
 
   it("puts prefix matches first, then the closest typo", () => {
-    expect(values("/d").slice(0, 2)).toEqual(["/ding", "/drop"]);
+    expect(values("/d").slice(0, 2)).toEqual(["/despawn", "/ding"]);
     expect(values("/gins")[0]).toBe("/guns");
   });
 
