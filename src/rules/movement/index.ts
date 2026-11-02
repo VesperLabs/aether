@@ -13,7 +13,8 @@ export { MAX_REWIND_MS, clampRewind, createPoseHistory } from "./pose-history";
 export type { PoseHistory } from "./pose-history";
 export { createPathfinder, findNextWaypoint } from "./pathfinding";
 export type { Pathfinder } from "./pathfinding";
-export { NPC_WALL_RADIUS, moveBodyFreely, moveBodyThroughMap } from "./system";
+export { NPC_WALL_RADIUS, moveBodyFreely, moveBodyThroughMap, nudgeBodyThroughMap } from "./system";
+export { MAX_PUSH_SPEED, getSeparationPush, getSeparationVelocity } from "./separation";
 export {
   DOOR_USE_RANGE,
   checkMove,

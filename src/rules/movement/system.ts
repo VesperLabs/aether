@@ -45,3 +45,21 @@ export function moveBodyFreely(
   body.x = next.x;
   body.y = next.y;
 }
+
+/** Shifts an entity by `offset` at once, still stopped by walls and the map edge. */
+export function nudgeBodyThroughMap(
+  map: TileMap,
+  body: { x: number; y: number },
+  offset: { x: number; y: number },
+  radius = NPC_WALL_RADIUS,
+) {
+  const result = moveBox(
+    map.grid,
+    { width: map.widthInPixels, height: map.heightInPixels },
+    { x: body.x, y: body.y, halfWidth: radius, halfHeight: radius },
+    offset,
+    1,
+  );
+  body.x = result.x;
+  body.y = result.y;
+}

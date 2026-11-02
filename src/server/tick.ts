@@ -1,11 +1,17 @@
 import type { ServerWorld } from "./server-world";
-import { moveBodyFreely, moveBodyThroughMap } from "@/rules/movement";
+import {
+  MAX_PUSH_SPEED,
+  getSeparationPush,
+  moveBodyFreely,
+  moveBodyThroughMap,
+  nudgeBodyThroughMap,
+} from "@/rules/movement";
 import { groupByRoom, type Frame, type System } from "@/rules/world";
 import { encodeRoomPoses, takeChangedStatuses } from "@/network";
 import { getBuffRoomState } from "@/server/net/room-sync";
 import { updateRoomLoot } from "./loot-adapter";
 import { expireSpells } from "./spell-adapter";
-import { indexRooms } from "./room-index";
+import { getRoomIndex, indexRooms } from "./room-index";
 
 /** A long stall (debugger, GC) must not teleport things across the map. */
 const MAX_STEP_MS = 100;
@@ -16,6 +22,24 @@ const moveNpcs: System<ServerWorld> = (world, { delta }) => {
   for (const npc of Object.values(world.npcs)) {
     if (!npc.room || npc.state?.isDead) continue;
     moveBodyThroughMap(npc.room.map, npc, seconds);
+  }
+};
+
+/** How far around an NPC to look for bodies it overlaps: two body radii, with room to spare. */
+const SEPARATION_RANGE = 24;
+
+/** Eases overlapping NPCs apart, and out from under players. Players are never pushed: the client owns their movement. */
+const separateNpcs: System<ServerWorld> = (world, { delta }) => {
+  const maxPush = (MAX_PUSH_SPEED * Math.min(delta, MAX_STEP_MS)) / 1000;
+  for (const npc of Object.values(world.npcs)) {
+    if (!npc.room || npc.state?.isDead) continue;
+    const index = getRoomIndex(world, npc.room.name);
+    const npcs = index.npcs.near(npc, SEPARATION_RANGE);
+    const players = index.players
+      .near(npc, SEPARATION_RANGE)
+      .map((player) => ({ id: player.id, x: player.x, y: player.y, isFixed: true }));
+    const push = getSeparationPush(npc, [...npcs, ...players], undefined, maxPush);
+    if (push.x || push.y) nudgeBodyThroughMap(npc.room.map, npc, push);
   }
 };
 
@@ -80,6 +104,7 @@ export const serverSystems: Array<System<ServerWorld>> = [
   moveNpcs,
   moveSpells,
   indexRooms,
+  separateNpcs,
   updateEntities,
   recordPoses,
   updateRooms,
