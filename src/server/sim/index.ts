@@ -1,1 +1,1 @@
-export { createSimulation } from "./simulation";
+export { simulateScenario } from "./simulate-scenario";

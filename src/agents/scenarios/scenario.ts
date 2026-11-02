@@ -38,12 +38,14 @@ export interface RunOptions {
   near?: string;
   /** Called with each line as it happens. */
   print?: (line: string) => void;
+  /** Called with each check as it happens, so a test runner can assert on it. */
+  onCheck?: (passed: boolean, message: string) => void;
 }
 
 /** Runs one scenario, always sending its agents home, and reports every step and check. */
 export async function runScenario(
   scenario: Scenario,
-  { join, clock, near, print = () => {} }: RunOptions,
+  { join, clock, near, print = () => {}, onCheck }: RunOptions,
 ) {
   const agents: Agent[] = [];
   const lines: string[] = [];
@@ -78,6 +80,7 @@ export async function runScenario(
     log: (message) => write(`  · ${message}`),
     check: (ok, message) => {
       if (!ok) passed = false;
+      onCheck?.(ok, message);
       write(`  ${ok ? "✓" : "✗"} ${message}`);
     },
   };

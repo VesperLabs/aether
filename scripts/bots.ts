@@ -12,8 +12,8 @@
  * scenario runs on a fast-forwarded simulation: real maps, no NPCs but what it summons, seeded.
  */
 import net from "node:net";
-import { Agent, SCENARIOS, runScenario, type Scenario } from "@/agents";
-import { createSimulation } from "@/server/sim";
+import { SCENARIOS, runScenario } from "@/agents";
+import { simulateScenario } from "@/server/sim";
 import {
   joinTestAgent,
   pickPlanner,
@@ -21,8 +21,6 @@ import {
   startLocalServer,
   startResidents,
 } from "@/server/agents";
-
-const ALL: Scenario[] = SCENARIOS;
 
 function parseArgs(argv: string[]) {
   const names: string[] = [];
@@ -53,31 +51,14 @@ function isUp(url: string, timeoutMs = 500): Promise<boolean> {
   });
 }
 
-/** Runs a scenario on its own fresh simulation. */
-async function simulate(scenario: Scenario, print: (line: string) => void) {
-  const sim = await createSimulation({ mapNpcs: scenario.world === "full" });
-  try {
-    return await sim.run(() =>
-      runScenario(scenario, {
-        join: (name, charClass) =>
-          Agent.join(sim.connect(), { name, charClass, clock: sim.clock, cheats: true }),
-        clock: sim.clock,
-        print,
-      }),
-    );
-  } finally {
-    sim.close();
-  }
-}
-
 async function main() {
   const { names, near, local, residents } = parseArgs(process.argv.slice(2));
-  const unknown = names.filter((n) => !ALL.some((s) => s.name === n));
+  const unknown = names.filter((n) => !SCENARIOS.some((s) => s.name === n));
   if (unknown.length) {
-    console.error(`Unknown scenario: ${unknown.join(", ")}. Have: ${ALL.map((s) => s.name)}`);
+    console.error(`Unknown scenario: ${unknown.join(", ")}. Have: ${SCENARIOS.map((s) => s.name)}`);
     process.exit(2);
   }
-  const chosen = names.length ? ALL.filter((s) => names.includes(s.name)) : ALL;
+  const chosen = names.length ? SCENARIOS.filter((s) => names.includes(s.name)) : SCENARIOS;
 
   const devUrl = process.env.SERVER_URL ?? `http://localhost:${process.env.PORT ?? 3000}`;
   const useDev = !local && (await isUp(devUrl));
@@ -106,9 +87,9 @@ async function main() {
   );
   if (useDev && !near) console.log("   (pass --near <your name> to watch them up close)");
 
+  const print = (line: string) => console.log(line);
   let failed = 0;
   for (const scenario of chosen) {
-    const print = (line: string) => console.log(line);
     const result = useDev
       ? await runScenario(scenario, {
           join: (name, charClass) => joinTestAgent(devUrl, name, charClass),
@@ -116,7 +97,7 @@ async function main() {
           near,
           print,
         })
-      : await simulate(scenario, print);
+      : await simulateScenario(scenario, { print });
     const issue = scenario.knownIssue ? ` (known issue #${scenario.knownIssue})` : "";
     if (result.passed) {
       console.log(issue ? `  ✓ passes now: close #${scenario.knownIssue}?` : "  ✓ passed");
