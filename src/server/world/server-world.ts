@@ -1,7 +1,7 @@
 import type { Dice } from "@/content/items/dice";
 import type { GameIo, NetIds } from "@/network";
 import type { Rng, TickLoop, World } from "@/rules/world";
-import type { Npc } from "@/server/npc";
+import type { Npc } from "@/server/npcs/npc";
 import type { Database } from "@/server/persistence/database";
 import type { Player } from "@/server/players/player";
 import type { RoomIndex } from "./room-index";

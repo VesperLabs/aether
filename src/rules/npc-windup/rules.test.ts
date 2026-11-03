@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { createTimers } from "@/rules/world";
-import { afterWindup, cancelWindupAt } from "./npc-windup";
+import { afterWindup, cancelWindupAt } from "./rules";
 
 describe("afterWindup", () => {
   const makeNpc = () => ({ windup: { seq: 0 }, timers: createTimers() });

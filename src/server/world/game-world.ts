@@ -14,13 +14,13 @@ import { subscribeQuests } from "@/rules/quests";
 import { npcBaseStats, subscribeStats } from "@/rules/stats";
 import { addRoom, createRoom, createWorld } from "@/rules/world";
 import { spawnLoot } from "@/server/loot/loot-adapter";
-import { subscribeNpcMessages } from "@/server/npc-messages";
+import { subscribeNpcMessages } from "@/server/npcs/npc-messages";
 import {
   subscribeKnockbackMessages,
   subscribePoseForgetting,
 } from "@/server/net/handlers/movement";
 import { subscribeDebugMessages } from "./debug-messages";
-import { Npc, type NpcDefinition } from "@/server/npc";
+import { Npc, type NpcDefinition } from "@/server/npcs/npc";
 import { createNetIds, type GameIo } from "@/network";
 import type { Database } from "@/server/persistence/database";
 

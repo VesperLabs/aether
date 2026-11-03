@@ -31,13 +31,6 @@ const LEGACY: Record<Rule, string[]> = {
     "src/network/chat-commands.ts",
     "src/network/index.ts",
     "src/network/sockets.ts",
-    "src/server/npc-behavior-adapter.ts",
-    "src/server/npc-build.ts",
-    "src/server/npc-messages.ts",
-    "src/server/npc-movement.ts",
-    "src/server/npc-windup.test.ts",
-    "src/server/npc-windup.ts",
-    "src/server/npc.ts",
     "src/ui/index.ts",
   ],
   // Folders with more than MAX_FILES source files (tests excluded) that should split by feature
