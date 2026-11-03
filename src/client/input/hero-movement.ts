@@ -13,6 +13,7 @@ import {
   getShoveStep,
   nextPlayerInput,
 } from "@/network/session/hero-control";
+import { stepHeroThroughMap } from "@/network/session/hero-motion";
 import type { Player } from "@/client/views/player";
 import { updateAttackCooldown, updateSpellCooldown } from "./hero-cooldowns";
 import { isTypableFieldActive } from "./typable-field";
@@ -54,6 +55,21 @@ function getCrowd(scene: SceneMain, hero: SceneMain["hero"]) {
     }
   }
   return neighbours;
+}
+
+/**
+ * Moves the hero through the room's walls with the shared session motion, so it lands exactly
+ * where a bot would and the server accepts it. The Phaser body gets no velocity: it only follows.
+ */
+function moveHero(scene: SceneMain, hero: Player, vx: number, vy: number, seconds: number) {
+  hero.body.setVelocity(0, 0);
+  if (!scene.tileMap) return;
+  const moved = stepHeroThroughMap(
+    scene.tileMap,
+    { x: hero.x, y: hero.y, vx, vy, bodySize: hero.bodySize },
+    seconds,
+  );
+  hero.setPosition(moved.x, moved.y);
 }
 
 /** Sends the hero's movement to the server when `nextPlayerInput` says it is due. */
@@ -103,7 +119,7 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
     ({ vx, vy } = getShoveStep(hero.state.knockbackAngle ?? 0, elapsed));
     hero.vx = vx;
     hero.vy = vy;
-    hero.body.setVelocity(vx, vy);
+    moveHero(mainScene, hero, vx, vy, seconds);
     hero.state.isIdle = false;
     emitPlayerInput(scene, hero, vx, vy, hero.direction, true);
     return;
@@ -223,7 +239,7 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
   lastCrowdPush = step.crowdPush;
   hero.vx = vx;
   hero.vy = vy;
-  hero.body.setVelocity(vx, vy);
+  moveHero(mainScene, hero, vx, vy, seconds);
   /* A melee swing commits to the way it started; bows keep turning to aim */
   if (isLungingNow || !(hero.state.isAttacking && !hero.hasRangedWeapon()))
     hero.direction = direction;

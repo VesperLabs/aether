@@ -1,3 +1,4 @@
+import type { TileMap } from "@/rules/movement/tilemap";
 import Phaser from "phaser";
 import { DEFAULT_USER_SETTINGS, type UserSettings } from "@/rules/character";
 import type { ClientGameSocket } from "@/network/socket/game-socket";
@@ -29,6 +30,8 @@ export class SceneMain extends Phaser.Scene {
   declare doors: Phaser.Physics.Arcade.StaticGroup;
   declare signs: Phaser.Physics.Arcade.StaticGroup;
   declare map: Phaser.Tilemaps.Tilemap;
+  /** The room's walls as plain data, for moving the hero. */
+  declare tileMap?: TileMap;
   declare animatedTiles?: { init(map: Phaser.Tilemaps.Tilemap): void };
   declare roomName: string;
   declare minimap?: Phaser.Cameras.Scene2D.Camera;
