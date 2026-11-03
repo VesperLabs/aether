@@ -1,5 +1,6 @@
 import { mapList } from "@/content/maps/map-list";
-import { Box, loadCacheImage } from "@/ui";
+import { Box } from "theme-ui";
+import { loadCacheImage } from "@/ui/kit/image-tint";
 import { useEffect, useRef, useState } from "react";
 
 /** How long each zone pans before fading to the next. */

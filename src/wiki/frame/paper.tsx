@@ -1,4 +1,4 @@
-import { Box, Flex, Text } from "@/ui";
+import { Box, Flex, Text } from "theme-ui";
 
 /** Parchment palette shared by the wiki's paper cards and plaque. */
 export const PAPER = {

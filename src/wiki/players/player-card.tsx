@@ -1,4 +1,5 @@
-import { Box, Flex, PlayerRender, Text } from "@/ui";
+import { Box, Flex, Text } from "theme-ui";
+import { PlayerRender } from "@/ui/character/player-render";
 import { questList } from "@/content/quests/quest-list";
 import { PAPER, PAPER_STYLE, PaperFrame } from "@/wiki/frame/paper";
 import type { WikiPlayer } from "./page-players";

@@ -1,16 +1,19 @@
 import { Slot } from "@/client/hud/inventory/slot";
-import { SlotAmount } from "@/ui";
+import { SlotAmount } from "@/ui/item/slot-amount";
 import { useAppContext } from "@/client/hud/app/context";
-import { Box, Text, Flex, Divider, Icon, Button, STYLE_NON_EMPTY } from "@/ui";
+import { Box, Text, Flex, Divider } from "theme-ui";
+import { Icon } from "@/ui/kit/icon";
+import { Button } from "@/ui/kit/button/button";
+import { STYLE_NON_EMPTY } from "@/ui/item/slot-style";
 import { ItemBuilder } from "@/content/items/item-builder";
 import { PREVIEW_DICE } from "@/content/items/dice";
 import { nasties, NastyId } from "@/content/mobs/nasties";
 import { keepers, KeeperId } from "@/content/mobs/keepers";
 import { type Quest as QuestData, QuestObjective } from "@/content/quests/quest";
 import type { PlayerQuestStatus } from "@/rules/quests";
-import type { ClientGameSocket } from "@/network";
+import type { ClientGameSocket } from "@/network/socket/game-socket";
 import type { HudCharacter } from "@/client/hud/app/context";
-import { Tooltip } from "@/ui";
+import { Tooltip } from "@/ui/kit/tooltip";
 
 function getKeeperByQuestName(quest: string) {
   for (const key of Object.keys(keepers) as KeeperId[]) {

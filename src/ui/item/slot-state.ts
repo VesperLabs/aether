@@ -1,5 +1,5 @@
 import { itemHasRequiredStats } from "@/rules/inventory";
-import { isEqual, get } from "@/ui/kit";
+import { isEqual, get } from "@/ui/kit/are-props-equal";
 import type { SlotProps } from "./item-slot";
 
 export function shouldReRenderSlot(prevProps: SlotProps, nextProps: SlotProps) {

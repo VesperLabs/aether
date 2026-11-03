@@ -1,6 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
 import { DEFAULT_USER_SETTINGS } from "@/rules/character";
-import type { ChatMessage, PartyMessage } from "@/network";
+import type { ChatMessage, PartyMessage } from "@/network/messages";
 import type { SocketHandlers } from "./app-events";
 import type { PartyInvite } from "./context";
 

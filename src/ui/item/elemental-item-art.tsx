@@ -2,7 +2,7 @@ import { useLayoutEffect, useState } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
 import { getPreviewGrip } from "@/content/weapon-tips/weapon-tips";
 import { AssetDefinition } from "@/content/sprites/sprite-types";
-import { assetToCanvas } from "@/ui/kit";
+import { assetToCanvas } from "@/ui/kit/asset-to-canvas";
 import { ElementalSprite } from "./elemental-sprite";
 
 /** The size of a weapon's preview art: the `previewRect` cut out of its texture. */

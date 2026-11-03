@@ -3,7 +3,7 @@ import type { Player } from "@/server/players/player";
 import { PLAYER_DEFAULT_SPAWN } from "../../auth/character-defaults";
 import { decodeWireDirection, getFullCharacterState } from "@/network/sync";
 import { getRoomState } from "@/server/net/room-sync";
-import type { ParsedCommand } from "@/network";
+import type { ParsedCommand } from "@/network/commands";
 import { addPlayerToRoom, removePlayerFromRoom } from "@/server/world/player-room";
 import { legacyUpdateMemberRoom } from "@/server/party/party-adapter";
 import type { CommandContext } from "@/server/net/command-context";

@@ -1,4 +1,4 @@
-import { Box } from "@/ui";
+import { Box } from "theme-ui";
 import { STATIC_ROW_STYLES } from "./layout";
 import { RowTitle } from "./row-title";
 

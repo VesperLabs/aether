@@ -1,7 +1,7 @@
 import { ItemBuilder } from "@/content/items/item-builder";
 import type { CommandContext } from "@/server/net/command-context";
 import { getFullCharacterState } from "@/network/sync";
-import { CHAT_COMMANDS } from "@/network";
+import { CHAT_COMMANDS } from "@/network/chat/chat-commands";
 import { getRoomState } from "@/server/net/room-sync";
 import { spawnLoot } from "@/server/loot/loot-adapter";
 import { DROP_USAGE, parseDropArgs } from "./drop-args";

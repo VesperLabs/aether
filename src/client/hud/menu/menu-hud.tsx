@@ -1,14 +1,15 @@
 import { memo, useEffect, useRef, useState, type ElementType } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
-import { Box, Flex, Text } from "@/ui";
+import { Box, Flex, Text } from "theme-ui";
 import { useAppContext, type HudCharacter } from "@/client/hud/app/context";
 import { Portrait } from "@/client/hud/status/portrait";
 import { StatusIcon } from "@/client/hud/status/status-icon";
-import { arePropsEqualWithKeys } from "@/ui";
+import { arePropsEqualWithKeys } from "@/ui/kit/are-props-equal";
 import { streamHasUsableVideo } from "@/client/hud/video/video-support";
 import { Bar } from "@/client/hud/status/stat-bar";
 import { Buffs } from "@/client/hud/status/buffs";
-import { Tooltip, resourceToken } from "@/ui";
+import { Tooltip } from "@/ui/kit/tooltip";
+import { resourceToken } from "@/ui/kit/resource-colors";
 
 const UserName = ({
   sx,

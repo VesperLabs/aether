@@ -1,16 +1,9 @@
-import {
-  Box,
-  Button,
-  Flex,
-  Icon,
-  MenuAbilities,
-  MenuBag,
-  MenuEquipment,
-  MenuInventory,
-  MenuStats,
-  PlayerRender,
-  Text,
-} from "@/ui";
+import { Box, Flex, Text } from "theme-ui";
+import { Button } from "@/ui/kit/button/button";
+import { Icon } from "@/ui/kit/icon";
+import { MenuAbilities, MenuBag, MenuEquipment, MenuInventory } from "@/ui/character/slot-menus";
+import { MenuStats } from "@/ui/character/menu-stats";
+import { PlayerRender } from "@/ui/character/player-render";
 import { useState, type MouseEvent } from "react";
 import type { WikiPlayer } from "./page-players";
 import { About } from "./player-card";

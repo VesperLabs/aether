@@ -1,5 +1,9 @@
 import { useState, useEffect, useEffectEvent } from "react";
-import { Modal, Input, KeyboardButton, Box, Switch } from "@/ui";
+import { Modal } from "@/ui/kit/modal";
+import { Input } from "@/ui/kit/input";
+import { KeyboardButton } from "@/ui/kit/keyboard-button";
+import { Box } from "theme-ui";
+import { Switch } from "@/ui/kit/switch";
 import { useAppContext } from "@/client/hud/app/context";
 import { useSavedLogin } from "./saved-login";
 import { getLoginToken, getRememberMe, setRememberMe } from "./remembered-login";

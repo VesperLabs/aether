@@ -1,9 +1,11 @@
-import { Box, Icon, Flex, Text, TextDivider } from "@/ui";
+import { Box, Flex, Text } from "theme-ui";
+import { Icon } from "@/ui/kit/icon";
+import { TextDivider } from "@/ui/kit/text-divider";
 import { useAppContext } from "@/client/hud/app/context";
 import { useEffect, useState } from "react";
-import { isMobile } from "@/ui";
+import { isMobile } from "@/ui/kit/is-mobile";
 import { msToHours } from "@/rules/stats";
-import { Tooltip } from "@/ui";
+import { Tooltip } from "@/ui/kit/tooltip";
 
 const STATUS_TOOLTIP_ID = "STATUS_TOOLTIP_ID";
 

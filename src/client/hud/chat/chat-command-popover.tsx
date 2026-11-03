@@ -1,5 +1,6 @@
-import { Box, KeyboardKey, Text } from "@/ui";
-import { isMobile } from "@/ui";
+import { Box, Text } from "theme-ui";
+import { KeyboardKey } from "@/ui/kit/keyboard-key";
+import { isMobile } from "@/ui/kit/is-mobile";
 import type { ChatSuggestion } from "./chat-command-match";
 import { ChatItemPreview } from "./chat-item-preview";
 

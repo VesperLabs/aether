@@ -1,4 +1,4 @@
-import { Flex } from "@/ui";
+import { Flex } from "theme-ui";
 import type { Cooldown } from "@/client/hud/app/context";
 import { CooldownTimer } from "./cooldown-timer";
 import { canAffordCosts } from "@/rules/combat";
@@ -7,7 +7,7 @@ import { useNextAttack } from "./use-next-attack-sp-cost";
 import { DODGE_SP_COST } from "@/rules/movement";
 import { useAppContext } from "@/client/hud/app/context";
 import { memo } from "react";
-import { arePropsEqualWithKeys } from "@/ui";
+import { arePropsEqualWithKeys } from "@/ui/kit/are-props-equal";
 
 export const SkillButtons = memo(
   ({ cooldowns }: { cooldowns: Record<string, Cooldown> }) => {

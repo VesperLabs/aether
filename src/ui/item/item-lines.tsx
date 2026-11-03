@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
 import type { StatLine, TriggerLine } from "@/rules/inventory";
-import { Box, Flex, Text } from "@/ui/kit";
+import { Box, Flex, Text } from "theme-ui";
 import { ArtIcon } from "./art-icon";
 
 /**

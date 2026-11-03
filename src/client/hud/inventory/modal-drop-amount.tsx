@@ -3,7 +3,11 @@ import { useAppContext } from "@/client/hud/app/context";
 import { Slot } from "./slot";
 import type { BuiltItem } from "@/content/items/item-types";
 import type { DropItem } from "@/client/hud/app/context";
-import { Modal, Flex, Input, Icon, Text, KeyboardButton } from "@/ui";
+import { Modal } from "@/ui/kit/modal";
+import { Flex, Text } from "theme-ui";
+import { Input } from "@/ui/kit/input";
+import { Icon } from "@/ui/kit/icon";
+import { KeyboardButton } from "@/ui/kit/keyboard-button";
 
 export const ModalDropAmount = () => {
   const { socket, dropItem, setDropItem, zoom, bottomOffset, hero } = useAppContext();

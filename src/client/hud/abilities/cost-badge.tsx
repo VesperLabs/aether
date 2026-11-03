@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef, useState } from "react";
-import { Box, Text, resourceToken } from "@/ui";
+import { Box, Text } from "theme-ui";
+import { resourceToken } from "@/ui/kit/resource-colors";
 
 export interface ResourceCosts {
   hp?: number;

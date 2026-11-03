@@ -1,5 +1,7 @@
 import { useAppContext } from "@/client/hud/app/context";
-import { Modal, KeyboardButton, Icon } from "@/ui";
+import { Modal } from "@/ui/kit/modal";
+import { KeyboardButton } from "@/ui/kit/keyboard-button";
+import { Icon } from "@/ui/kit/icon";
 import { UserSettingsForm } from "./user-settings-form";
 
 export const ModalSettings: React.FC = () => {

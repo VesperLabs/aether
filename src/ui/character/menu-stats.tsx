@@ -1,15 +1,9 @@
 import type { ThemeUIStyleObject } from "theme-ui";
 import { memo } from "react";
 import { convertMsToS } from "@/rules/stats";
-import {
-  arePropsEqualWithKeys,
-  Flex,
-  Grid,
-  Menu,
-  MENU_MAX_WIDTH,
-  MenuHeader,
-  Text,
-} from "@/ui/kit";
+import { arePropsEqualWithKeys } from "@/ui/kit/are-props-equal";
+import { Flex, Grid, Text } from "theme-ui";
+import { Menu, MENU_MAX_WIDTH, MenuHeader } from "@/ui/kit/menu";
 import type { CharacterMenuProps } from "./menu-props";
 
 const COLUMN_STYLES: ThemeUIStyleObject = {

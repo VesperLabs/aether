@@ -1,5 +1,5 @@
-import type { FullCharacterWire } from "@/network";
-import type { SlotEvents } from "@/ui/item";
+import type { FullCharacterWire } from "@/network/sync/character-state";
+import type { SlotEvents } from "@/ui/item/item-slot";
 
 /** The props of the menus that show a character (the hero in the game, any player in the wiki). */
 export interface CharacterMenuProps {

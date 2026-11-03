@@ -1,5 +1,5 @@
 import type { ServerWorld } from "@/server/world/server-world";
-import type { GameIo, GameSocket } from "@/network";
+import type { GameIo, GameSocket } from "@/network/socket/game-socket";
 
 /** Things that belong to one connection and outlive a single command. */
 interface ConnectionSession {

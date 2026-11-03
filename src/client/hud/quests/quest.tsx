@@ -1,8 +1,10 @@
-import { Box, Icon, BASE_SLOT_STYLE, SLOT_SIZE } from "@/ui";
+import { Box } from "theme-ui";
+import { Icon } from "@/ui/kit/icon";
+import { BASE_SLOT_STYLE, SLOT_SIZE } from "@/ui/item/slot-style";
 import { QuestTooltip } from "./quest-tooltip";
 import { useAppContext } from "@/client/hud/app/context";
 import { nanoid } from "nanoid";
-import { isMobile } from "@/ui";
+import { isMobile } from "@/ui/kit/is-mobile";
 import { useMemo } from "react";
 import type { Quest as QuestData } from "@/content/quests/quest";
 import type { PlayerQuestStatus } from "@/rules/quests";

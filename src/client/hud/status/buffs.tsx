@@ -1,14 +1,15 @@
 import { memo, useEffect, useState } from "react";
-import { Divider, Flex, Icon, Text } from "@/ui";
-import { arePropsEqualWithKeys } from "@/ui";
+import { Divider, Flex, Text } from "theme-ui";
+import { Icon } from "@/ui/kit/icon";
+import { arePropsEqualWithKeys } from "@/ui/kit/are-props-equal";
 import { formatStats } from "@/rules/stats";
 import { buffList } from "@/content/buffs/buff-list";
 import type { ThemeUIStyleObject } from "theme-ui";
 import type { ActiveBuff } from "@/rules/buffs";
 import type { HudCharacter } from "@/client/hud/app/context";
-import { Tooltip } from "@/ui";
-import { Label } from "@/ui";
-import { TextDivider } from "@/ui";
+import { Tooltip } from "@/ui/kit/tooltip";
+import { Label } from "@/ui/kit/label";
+import { TextDivider } from "@/ui/kit/text-divider";
 
 interface BuffProps {
   buff: ActiveBuff;

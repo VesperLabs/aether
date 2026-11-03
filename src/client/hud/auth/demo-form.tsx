@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { Modal, KeyboardButton, Text } from "@/ui";
+import { Modal } from "@/ui/kit/modal";
+import { KeyboardButton } from "@/ui/kit/keyboard-button";
+import { Text } from "theme-ui";
 import { useAppContext } from "@/client/hud/app/context";
 import type { CharClass } from "@/content/stats/stats";
 import { CharClassSelect } from "./char-class-select";

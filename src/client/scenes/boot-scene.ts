@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import type { ClientGameSocket } from "@/network";
+import type { ClientGameSocket } from "@/network/socket/game-socket";
 import type { SceneMain } from "./main-scene";
 import { assetList } from "@/content/sprites/asset-list";
 import { AssetDefinition } from "@/content/sprites/sprite-types";

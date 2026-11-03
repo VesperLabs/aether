@@ -1,5 +1,5 @@
 import { msToHours } from "@/rules/stats";
-import { Text } from "@/ui";
+import { Text } from "theme-ui";
 import { RowTitle } from "./row-title";
 import { useQuery } from "@tanstack/react-query";
 import { fetchMetrics } from "@/wiki/api/fetchers";

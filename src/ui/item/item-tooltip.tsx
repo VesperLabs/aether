@@ -1,6 +1,8 @@
 import { Fragment } from "react";
 import { describeItem, type DescribableItem, type DescribePlayer } from "@/rules/inventory";
-import { Flex, Text, theme, Tooltip, TooltipContent } from "@/ui/kit";
+import { Flex, Text } from "theme-ui";
+import { theme } from "@/ui/kit/theme";
+import { Tooltip, TooltipContent } from "@/ui/kit/tooltip";
 import {
   BODY_ICON,
   BuffName,

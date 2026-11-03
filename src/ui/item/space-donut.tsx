@@ -1,4 +1,4 @@
-import { Donut } from "@/ui/kit";
+import { Donut } from "theme-ui";
 
 export const SpaceDonut = ({ percent = 0 }: { percent?: number }) => {
   const getColor = () => {

@@ -1,5 +1,5 @@
 import type { ComponentProps } from "react";
-import { ItemSlot, type SlotEvents } from "@/ui";
+import { ItemSlot, type SlotEvents } from "@/ui/item/item-slot";
 
 /** HUD slots hand drops and double-clicks to the app as window events. */
 export const HUD_SLOT_EVENTS: SlotEvents = {

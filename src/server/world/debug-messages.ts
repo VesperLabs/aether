@@ -1,5 +1,5 @@
 import type { GameEventBus } from "@/rules/world";
-import type { GameIo } from "@/network";
+import type { GameIo } from "@/network/socket/game-socket";
 
 /** Sends debug-only game events to the clients in that room. */
 export function subscribeDebugMessages(bus: GameEventBus, io: GameIo) {

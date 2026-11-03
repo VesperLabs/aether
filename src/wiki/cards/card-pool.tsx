@@ -5,14 +5,11 @@ import { nasties } from "@/content/mobs/nasties";
 import { resolveAsset } from "@/content/sprites/resolve-asset";
 import { AssetDefinition } from "@/content/sprites/sprite-types";
 import { BuiltItem, ItemDefinition } from "@/content/items/item-types";
-import {
-  assetToCanvas,
-  Box,
-  deriveElements,
-  ElementalItemArt,
-  PlayerRender,
-  previewSize,
-} from "@/ui";
+import { assetToCanvas } from "@/ui/kit/asset-to-canvas";
+import { Box } from "theme-ui";
+import { deriveElements } from "@/ui/item/weapon-elements";
+import { ElementalItemArt, previewSize } from "@/ui/item/elemental-item-art";
+import { PlayerRender } from "@/ui/character/player-render";
 import { useQuery } from "@tanstack/react-query";
 import { useLayoutEffect, useMemo, useState, type ReactNode, type SyntheticEvent } from "react";
 import { fetchPlayers, type PlayersQueryKey } from "@/wiki/api/fetchers";

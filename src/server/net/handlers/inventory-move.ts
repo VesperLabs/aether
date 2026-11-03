@@ -1,4 +1,4 @@
-import type { MoveItemCommand } from "@/network";
+import type { MoveItemCommand } from "@/network/commands";
 import { getFullCharacterState } from "@/network/sync";
 import { moveItemCommand } from "@/rules/inventory";
 import type { CommandContext } from "@/server/net/command-context";

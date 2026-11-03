@@ -1,7 +1,9 @@
 import { resolveAsset } from "@/content/sprites/resolve-asset";
 import { ItemDefinition } from "@/content/items/item-types";
 import { buffLines, describeItem, type DescribableItem, type StatLine } from "@/rules/inventory";
-import { Box, deriveElements, Flex, Grid, Icon, Text } from "@/ui";
+import { Box, Flex, Grid, Text } from "theme-ui";
+import { deriveElements } from "@/ui/item/weapon-elements";
+import { Icon } from "@/ui/kit/icon";
 import type { ReactNode } from "react";
 import { CARD_COLORS, SpriteFace, raceAsset } from "@/wiki/cards/card-pool";
 import { itemSources } from "./item-sources";

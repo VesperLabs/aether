@@ -6,7 +6,7 @@ import {
   legacyInviteToParty,
   legacyLeaveParty,
 } from "@/server/party/party-adapter";
-import type { ParsedCommand } from "@/network";
+import type { ParsedCommand } from "@/network/commands";
 import type { CommandContext } from "@/server/net/command-context";
 import { findNearbyNpc } from "@/server/net/nearby-keeper";
 import { isInRoom } from "@/server/world/player-room";
