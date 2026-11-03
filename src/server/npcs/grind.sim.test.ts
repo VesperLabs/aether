@@ -26,6 +26,17 @@ describe("a grind bot against the real server", () => {
     await init;
     const id = bot.clientState.selfId;
 
+    /* Start beside the nearest npc so the kill takes seconds, not a walk across the map. */
+    const player = sim.world.players[id]!;
+    const npc = Object.values(sim.world.npcs)
+      .filter((n) => n.room.name === player.roomName)
+      .sort(
+        (a, b) =>
+          Math.hypot(a.x - player.x, a.y - player.y) - Math.hypot(b.x - player.x, b.y - player.y),
+      )[0]!;
+    player.x = npc.x - 40;
+    player.y = npc.y;
+
     let damageDealt = 0;
     const kills: string[] = [];
     sim.world.events.on("characterDamaged", ({ attackerSocketId, amount }) => {
@@ -36,11 +47,11 @@ describe("a grind bot against the real server", () => {
     });
 
     const stop = bot.run(sim.clock.interval);
-    await sim.clock.advance(3 * 60 * 1000);
+    await sim.clock.advance(20 * 1000);
     stop();
 
     expect(damageDealt).toBeGreaterThan(0);
     expect(kills.length).toBeGreaterThan(0);
     expect(sim.log.at("error")).toEqual([]);
-  }, 120_000);
+  });
 });
