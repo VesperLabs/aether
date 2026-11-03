@@ -82,8 +82,8 @@
                 "message": "content imports nothing else from the repo."
               },
               {
-                "group": ["@/rules/*/**"],
-                "message": "Import a rules feature only through its index.ts (ARCHITECTURE.md, Import rules)."
+                "group": ["@/rules/*/system", "@/rules/*/tests/**", "@/rules/tests/**"],
+                "message": "A feature's system.ts and tests are internal: react to its events instead (ARCHITECTURE.md)."
               }
             ],
             "paths": [
@@ -155,8 +155,8 @@
                 "message": "rules imports only content."
               },
               {
-                "group": ["@/rules/*/**"],
-                "message": "Import a rules feature only through its index.ts (ARCHITECTURE.md, Import rules)."
+                "group": ["@/rules/*/system", "@/rules/*/tests/**", "@/rules/tests/**"],
+                "message": "A feature's system.ts and tests are internal: react to its events instead (ARCHITECTURE.md)."
               }
             ],
             "paths": [
@@ -276,8 +276,8 @@
                 "message": "network imports only content and rules."
               },
               {
-                "group": ["@/rules/*/**"],
-                "message": "Import a rules feature only through its index.ts (ARCHITECTURE.md, Import rules)."
+                "group": ["@/rules/*/system", "@/rules/*/tests/**", "@/rules/tests/**"],
+                "message": "A feature's system.ts and tests are internal: react to its events instead (ARCHITECTURE.md)."
               }
             ],
             "paths": [
@@ -337,8 +337,8 @@
                 "message": "ui imports only core (content, rules, network), never an app."
               },
               {
-                "group": ["@/rules/*/**"],
-                "message": "Import a rules feature only through its index.ts (ARCHITECTURE.md, Import rules)."
+                "group": ["@/rules/*/system", "@/rules/*/tests/**", "@/rules/tests/**"],
+                "message": "A feature's system.ts and tests are internal: react to its events instead (ARCHITECTURE.md)."
               }
             ]
           }
@@ -361,8 +361,8 @@
                 "message": "Apps never import each other, and server never imports ui."
               },
               {
-                "group": ["@/rules/*/**"],
-                "message": "Import a rules feature only through its index.ts (ARCHITECTURE.md, Import rules)."
+                "group": ["@/rules/*/system", "@/rules/*/tests/**", "@/rules/tests/**"],
+                "message": "A feature's system.ts and tests are internal: react to its events instead (ARCHITECTURE.md)."
               }
             ]
           }
@@ -385,8 +385,8 @@
                 "message": "Apps never import each other."
               },
               {
-                "group": ["@/rules/*/**"],
-                "message": "Import a rules feature only through its index.ts (ARCHITECTURE.md, Import rules)."
+                "group": ["@/rules/*/system", "@/rules/*/tests/**", "@/rules/tests/**"],
+                "message": "A feature's system.ts and tests are internal: react to its events instead (ARCHITECTURE.md)."
               }
             ]
           }
@@ -415,8 +415,8 @@
                 "message": "Apps never import each other."
               },
               {
-                "group": ["@/rules/*/**"],
-                "message": "Import a rules feature only through its index.ts (ARCHITECTURE.md, Import rules)."
+                "group": ["@/rules/*/system", "@/rules/*/tests/**", "@/rules/tests/**"],
+                "message": "A feature's system.ts and tests are internal: react to its events instead (ARCHITECTURE.md)."
               }
             ],
             "paths": [
@@ -445,8 +445,8 @@
                 "message": "Apps never import each other."
               },
               {
-                "group": ["@/rules/*/**"],
-                "message": "Import a rules feature only through its index.ts (ARCHITECTURE.md, Import rules)."
+                "group": ["@/rules/*/system", "@/rules/*/tests/**", "@/rules/tests/**"],
+                "message": "A feature's system.ts and tests are internal: react to its events instead (ARCHITECTURE.md)."
               }
             ]
           }
