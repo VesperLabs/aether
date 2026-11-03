@@ -1,4 +1,4 @@
-import type { Npc } from "@/server/npc";
+import type { Npc } from "@/server/npcs/npc";
 import type { Player } from "@/server/players/player";
 import type { ServerWorld } from "./server-world";
 import { createSpatialHash, groupByRoom, type SpatialHash, type System } from "@/rules/world";

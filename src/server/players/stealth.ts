@@ -1,8 +1,8 @@
 import { entitiesInRoom } from "@/rules/world";
 import { pruneThreat } from "@/rules/npc-behavior";
 import type { Player } from "./player";
-import type { Npc } from "@/server/npc";
-import { cancelWindupAt } from "@/server/npc-windup";
+import type { Npc } from "@/server/npcs/npc";
+import { cancelWindupAt } from "@/rules/npc-windup/rules";
 
 /**
  * Going into stealth gets a player out of danger: a moment where hits miss, and every NPC in the

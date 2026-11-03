@@ -7,7 +7,7 @@ import type { Player } from "@/server/players/player";
 import type { Point, RoomData } from "@/rules/world";
 import { createSpell } from "@/server/spells/spell-adapter";
 import { buildNpcBehaviorInput } from "./npc-behavior-adapter";
-import { buildEquipment, buildShop, type ItemRecipe } from "./npc-build";
+import { buildEquipment, buildShop, type ItemRecipe } from "@/rules/npc-build/rules";
 import {
   addThreat,
   checkInRange,
@@ -33,7 +33,7 @@ import {
   type Rng,
 } from "@/rules/world";
 import { getRoomIndex } from "@/server/world/room-index";
-import { afterWindup, emitNpcWindup, type WindupTrack } from "./npc-windup";
+import { afterWindup, emitNpcWindup, type WindupTrack } from "@/rules/npc-windup/rules";
 import { isNextToSolidTile, isOutOfMap } from "@/rules/movement";
 
 /** How far a follower looks for its leader. Spawns are up to ~900px apart on the peaks. */

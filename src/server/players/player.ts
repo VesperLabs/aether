@@ -10,7 +10,7 @@ import {
   mobKilledEvents,
 } from "@/rules/combat";
 import { canHitNpc, canHitPlayer } from "@/rules/spells";
-import type { Npc } from "@/server/npc";
+import type { Npc } from "@/server/npcs/npc";
 import { createSpell } from "@/server/spells/spell-adapter";
 import { vanish } from "./stealth";
 import { PLAYER_DEFAULT_SPAWN } from "@/server/auth/character-defaults";
