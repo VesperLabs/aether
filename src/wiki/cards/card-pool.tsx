@@ -18,8 +18,8 @@ import {
 } from "@/ui";
 import { useQuery } from "@tanstack/react-query";
 import { useLayoutEffect, useMemo, useState, type ReactNode, type SyntheticEvent } from "react";
-import { fetchPlayers, type PlayersQueryKey } from "./api";
-import type { WikiPlayer } from "./page-players";
+import { fetchPlayers, type PlayersQueryKey } from "@/wiki/api/fetchers";
+import type { WikiPlayer } from "@/wiki/players/page-players";
 
 /** One thing from the game shown on a card: its art, name, category and a line or two about it. */
 export type FeaturedCard = {

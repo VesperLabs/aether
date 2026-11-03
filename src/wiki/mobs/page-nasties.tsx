@@ -2,9 +2,9 @@ import { itemList, nasties, resolveAsset, type BuiltItem, type NastyDefinition }
 import { calculateExpValue, npcStats } from "@/rules/stats";
 import { Box, Flex, Grid, Icon, ItemTooltip, Text, Tooltip, TooltipContent } from "@/ui";
 import { useId, useState, type ReactNode } from "react";
-import { CARD_COLORS, SpriteFace, raceAsset } from "./card-pool";
-import { Divider, PAPER, PAPER_STYLE, PaperFrame } from "./paper";
-import { RowTitle } from "./row-title";
+import { CARD_COLORS, SpriteFace, raceAsset } from "@/wiki/cards/card-pool";
+import { Divider, PAPER, PAPER_STYLE, PaperFrame } from "@/wiki/frame/paper";
+import { RowTitle } from "@/wiki/frame/row-title";
 
 type ListedItem = {
   name?: string;

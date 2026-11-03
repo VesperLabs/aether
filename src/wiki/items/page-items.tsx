@@ -2,11 +2,11 @@ import { itemList, type ItemDefinition } from "@/content";
 import { Flex, Icon, Input, Text } from "@/ui";
 import { useMemo } from "react";
 import { useSearchParams } from "wouter";
-import { CARD_COLORS } from "./card-pool";
+import { CARD_COLORS } from "@/wiki/cards/card-pool";
 import { type WikiItem } from "./item-card";
 import { ItemList } from "./item-list";
-import { PAPER, PAPER_STYLE, PaperFrame } from "./paper";
-import { RowTitle, resolveTypeIcon } from "./row-title";
+import { PAPER, PAPER_STYLE, PaperFrame } from "@/wiki/frame/paper";
+import { RowTitle, resolveTypeIcon } from "@/wiki/frame/row-title";
 
 const listedItems = itemList as unknown as Record<
   string,

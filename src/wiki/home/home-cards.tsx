@@ -1,9 +1,9 @@
 import { Box, Flex, Text } from "@/ui";
 import { memo, startTransition, useEffect, useRef, useState, type PointerEvent } from "react";
 import { Link } from "wouter";
-import { useCardPool, type FeaturedCard } from "./card-pool";
-import { TAB_HEIGHT } from "./menu-bar";
-import { PAPER, PAPER_STYLE, PaperFrame } from "./paper";
+import { useCardPool, type FeaturedCard } from "@/wiki/cards/card-pool";
+import { TAB_HEIGHT } from "@/wiki/frame/menu-bar";
+import { PAPER, PAPER_STYLE, PaperFrame } from "@/wiki/frame/paper";
 
 const CARD_WIDTH = 260;
 const CARD_GAP = 16;
