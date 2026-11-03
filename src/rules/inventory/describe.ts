@@ -1,12 +1,8 @@
-import {
-  buffList,
-  ItemBuilder,
-  itemSetList,
-  spellDetails,
-  type BuffName,
-  type ItemSetName,
-  type TriggerDefinition,
-} from "@/content";
+import { buffList, BuffName } from "@/content/buffs/buff-list";
+import { ItemBuilder } from "@/content/items/item-builder";
+import { itemSetList, ItemSetName } from "@/content/items/item-sets";
+import { spellDetails } from "@/content/spells/spell-details";
+import { TriggerDefinition } from "@/content/buffs/trigger-types";
 import { formatStats, type FormattedStat } from "@/rules/stats";
 import { CONSUMABLES_BASES } from "./constants";
 import { itemHasRequiredStats } from "./requirements";

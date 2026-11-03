@@ -1,4 +1,4 @@
-import { ItemBuilder } from "@/content";
+import { ItemBuilder } from "@/content/items/item-builder";
 import type { CommandContext } from "@/server/net/command-context";
 import { getFullCharacterState } from "@/network/sync";
 import { CHAT_COMMANDS } from "@/network";

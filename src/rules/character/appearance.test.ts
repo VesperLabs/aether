@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { hairTints, hairTextures, skinTints } from "@/content";
+import { hairTints, skinTints } from "@/content/looks/tints";
+import { hairTextures } from "@/content/looks/looks";
 import { stepAppearance } from "./appearance";
 
 const look = {

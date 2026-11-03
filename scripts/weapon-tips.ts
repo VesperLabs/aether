@@ -1,5 +1,5 @@
 /**
- * Measures every weapon's tip from its art and writes `src/content/assets/weapon-tips.json`, the
+ * Measures every weapon's tip from its art and writes `src/content/weapon-tips/weapon-tips.json`, the
  * only source of how far a melee weapon reaches (see `getMeleeRange`).
  *
  *   npx tsx scripts/weapon-tips.ts          write the file
@@ -8,11 +8,11 @@
 import fs from "node:fs";
 import path from "node:path";
 import { PNG } from "pngjs";
-import { WEAPON_GRIP } from "../src/content/assets/weapon-tips";
+import { WEAPON_GRIP } from "../src/content/weapon-tips/weapon-tips";
 
 const repoRoot = path.resolve(import.meta.dirname, "..");
 const ART_DIR = path.join(repoRoot, "public/assets/atlas/hands");
-const OUT_FILE = path.join(repoRoot, "src/content/assets/weapon-tips.json");
+const OUT_FILE = path.join(repoRoot, "src/content/weapon-tips/weapon-tips.json");
 
 /** The opaque pixel farthest from the grip. */
 function measureTip(file: string) {

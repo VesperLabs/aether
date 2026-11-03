@@ -1,7 +1,9 @@
 import Phaser from "phaser";
 import React, { createContext, useContext } from "react";
 import Peer from "peerjs";
-import type { BuiltItem, MobProfile, Quest } from "@/content";
+import type { BuiltItem } from "@/content/items/item-types";
+import type { MobProfile } from "@/content/mobs/mob-types";
+import type { Quest } from "@/content/quests/quest";
 import type { ChatMessage, ClientGameSocket, FullCharacterWire, PartyMessage } from "@/network";
 import type { UserSettings } from "@/rules/character";
 import type { Player } from "@/client/views/player";

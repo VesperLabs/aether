@@ -1,4 +1,6 @@
-import { ItemBuilder, type Dice, type Item } from "@/content";
+import { ItemBuilder } from "@/content/items/item-builder";
+import { Dice } from "@/content/items/dice";
+import { type Item } from "@/content/items/item";
 import { SHOP_INFLATION } from "@/rules/inventory";
 
 /** An item as the content tables list it: type, rarity, key and an optional amount. */

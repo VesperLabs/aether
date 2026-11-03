@@ -1,4 +1,4 @@
-import { mapList } from "@/content";
+import { mapList } from "@/content/maps/map-list";
 import { Box, loadCacheImage } from "@/ui";
 import { useEffect, useRef, useState } from "react";
 

@@ -1,14 +1,12 @@
 import Phaser from "phaser";
 import type { ClientGameSocket } from "@/network";
 import type { SceneMain } from "./main-scene";
-import {
-  assetList,
-  type AssetDefinition,
-  soundList,
-  iconList,
-  mapList,
-  mapImageList,
-} from "@/content";
+import { assetList } from "@/content/sprites/asset-list";
+import { AssetDefinition } from "@/content/sprites/sprite-types";
+import { soundList } from "@/content/sounds/sound-list";
+import { iconList } from "@/content/icons/icon-list";
+import { mapList } from "@/content/maps/map-list";
+import { mapImageList } from "@/content/maps/map-image-list";
 import { IMAGE_CACHE } from "@/ui/kit/image-tint";
 import { showLoadingBar } from "./loading-bar";
 

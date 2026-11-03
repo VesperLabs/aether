@@ -1,4 +1,4 @@
-import { ItemBuilder } from "@/content";
+import { ItemBuilder } from "@/content/items/item-builder";
 import { getFullCharacterState } from "@/network/sync";
 import { parseInteger, type Cheat } from "./cheat";
 import { parseDropArgs } from "./drop-args";

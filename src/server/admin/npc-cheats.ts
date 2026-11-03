@@ -1,4 +1,4 @@
-import { nasties } from "@/content";
+import { nasties } from "@/content/mobs/nasties";
 import { entitiesInRoom } from "@/rules/world";
 import { getFullCharacterState } from "@/network/sync";
 import { spawnNpc } from "@/server/world/game-world";

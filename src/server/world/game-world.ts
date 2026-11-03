@@ -1,13 +1,11 @@
 import type { ServerWorld } from "./server-world";
-import {
-  ILVL_MULTIPLIER,
-  ItemBuilder,
-  QuestBuilder,
-  keepers,
-  mapList,
-  nasties,
-  type Dice,
-} from "@/content";
+import { ILVL_MULTIPLIER } from "@/content/items/item-scaling";
+import { ItemBuilder } from "@/content/items/item-builder";
+import { QuestBuilder } from "@/content/quests/quest-builder";
+import { keepers } from "@/content/mobs/keepers";
+import { mapList } from "@/content/maps/map-list";
+import { nasties } from "@/content/mobs/nasties";
+import { Dice } from "@/content/items/dice";
 import { createServerDice } from "./server-dice";
 import { readMapFile } from "./map-files";
 import { subscribeLoot, type LootItem } from "@/rules/loot";

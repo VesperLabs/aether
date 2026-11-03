@@ -1,7 +1,8 @@
 import { useState, useLayoutEffect, memo } from "react";
 import { useDoubleTap } from "use-double-tap";
 import type { ThemeUIStyleObject } from "theme-ui";
-import { resolveAsset, type BuiltItem } from "@/content";
+import { resolveAsset } from "@/content/sprites/resolve-asset";
+import { BuiltItem } from "@/content/items/item-types";
 import type { FullCharacterWire } from "@/network";
 import { assetToCanvas, Box, Icon, isMobile, Portal, theme } from "@/ui/kit";
 import { SLOT_SIZE, STYLE_NON_EMPTY, STYLE_SLOT_EMPTY } from "./slot-style";

@@ -30,7 +30,7 @@ import {
   isMovementBehavior,
 } from "./behaviors";
 import { chooseBehavior } from "./brain";
-import type { MobBehavior } from "@/content";
+import type { MobBehavior } from "@/content/mobs/mob-types";
 import { isKnockedBack, type KnockbackState, type LungeState } from "@/rules/movement";
 import { decideLungeMovement, isLungeSpell, isRecoveringFromLunge } from "./lunge";
 import type { WanderStep } from "./wander";

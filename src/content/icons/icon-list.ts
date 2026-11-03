@@ -1,5 +1,3 @@
-import type { NamedFileDefinition } from "./asset-types";
-
 export const iconList = [
   { name: "icon-accessory", src: "./assets/icons/accessory.png" },
   { name: "icon-blank", src: "./assets/icons/blank.png" },
@@ -41,4 +39,4 @@ export const iconList = [
   { name: "icon-health", src: "./assets/icons/health.png" },
   { name: "icon-quests", src: "./assets/icons/quests.png" },
   { name: "icon-staff", src: "./assets/icons/staff.png" },
-] as const satisfies readonly NamedFileDefinition[];
+] as const satisfies readonly { readonly name: string; readonly src: string }[];

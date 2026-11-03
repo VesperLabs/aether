@@ -16,7 +16,8 @@ import {
 } from "./item-lines";
 import { GildedCorners } from "./gilded-corners";
 import { ArtIcon, DEFAULT_ASSET_USER } from "./art-icon";
-import { resolveAsset, type BuiltItem } from "@/content";
+import { resolveAsset } from "@/content/sprites/resolve-asset";
+import { BuiltItem } from "@/content/items/item-types";
 
 const RESOURCE_ICONS = { mp: "mana", hp: "health", sp: "stamina" } as const;
 

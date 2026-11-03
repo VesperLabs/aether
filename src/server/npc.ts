@@ -1,4 +1,4 @@
-import type { MobBehavior } from "@/content";
+import type { MobBehavior } from "@/content/mobs/mob-types";
 import type { AbilitySlot } from "@/rules/spells";
 import type { Hand } from "@/rules/combat";
 import { ServerCharacter as Character, type CharacterArgs } from "./character";

@@ -1,4 +1,4 @@
-import { spellDetails } from "@/content";
+import { spellDetails } from "@/content/spells/spell-details";
 
 /**
  * The lunge: a spell that dashes its caster along the aimed angle, hitting whoever it runs

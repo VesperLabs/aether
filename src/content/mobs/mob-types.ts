@@ -1,5 +1,5 @@
 import type { ItemDrop, ItemRef } from "../items/item-refs";
-import type { CharClass, StatName } from "../stats";
+import type { CharClass, StatName } from "@/content/stats/stats";
 
 type MobRace =
   | "abomination"

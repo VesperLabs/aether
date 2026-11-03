@@ -1,4 +1,4 @@
-import type { PercentStatBlock, StatBlock } from "../stats";
+import type { PercentStatBlock, StatBlock } from "@/content/stats/stats";
 
 export interface BuffDefinition {
   readonly type: "buff" | "debuff" | "guard";

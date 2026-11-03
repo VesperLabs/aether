@@ -1,13 +1,10 @@
-import {
-  assetList,
-  itemList,
-  keepers,
-  nasties,
-  resolveAsset,
-  type AssetDefinition,
-  type BuiltItem,
-  type ItemDefinition,
-} from "@/content";
+import { assetList } from "@/content/sprites/asset-list";
+import { itemList } from "@/content/items/item-scaling";
+import { keepers } from "@/content/mobs/keepers";
+import { nasties } from "@/content/mobs/nasties";
+import { resolveAsset } from "@/content/sprites/resolve-asset";
+import { AssetDefinition } from "@/content/sprites/sprite-types";
+import { BuiltItem, ItemDefinition } from "@/content/items/item-types";
 import {
   assetToCanvas,
   Box,

@@ -1,4 +1,4 @@
-import { randomNumber, type Dice } from "../random";
+import { randomNumber, type Dice } from "./dice";
 import { itemList } from "./item-scaling";
 
 interface DropCandidate {

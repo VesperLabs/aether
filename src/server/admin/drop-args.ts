@@ -1,4 +1,5 @@
-import { canRollRarity, findItemKey, isItemBuildRarity } from "@/content";
+import { canRollRarity, isItemBuildRarity } from "@/content/items/item-builder";
+import { findItemKey } from "@/content/items/item-keys";
 
 export interface DropArgs {
   type: string;

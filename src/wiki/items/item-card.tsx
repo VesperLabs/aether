@@ -1,4 +1,5 @@
-import { resolveAsset, type ItemDefinition } from "@/content";
+import { resolveAsset } from "@/content/sprites/resolve-asset";
+import { ItemDefinition } from "@/content/items/item-types";
 import { buffLines, describeItem, type DescribableItem, type StatLine } from "@/rules/inventory";
 import { Box, deriveElements, Flex, Grid, Icon, Text } from "@/ui";
 import type { ReactNode } from "react";

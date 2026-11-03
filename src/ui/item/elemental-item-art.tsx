@@ -1,6 +1,7 @@
 import { useLayoutEffect, useState } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
-import { getPreviewGrip, type AssetDefinition } from "@/content";
+import { getPreviewGrip } from "@/content/weapon-tips/weapon-tips";
+import { AssetDefinition } from "@/content/sprites/sprite-types";
 import { assetToCanvas } from "@/ui/kit";
 import { ElementalSprite } from "./elemental-sprite";
 

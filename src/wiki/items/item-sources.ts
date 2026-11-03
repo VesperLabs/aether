@@ -1,4 +1,6 @@
-import { keepers, nasties, questList } from "@/content";
+import { keepers } from "@/content/mobs/keepers";
+import { nasties } from "@/content/mobs/nasties";
+import { questList } from "@/content/quests/quest-list";
 
 /** Where a player can get an item: monsters that drop it, keepers that sell it, quests that give it. */
 export interface ItemSources {

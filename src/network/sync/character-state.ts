@@ -1,4 +1,4 @@
-import type { CharClass } from "@/content";
+import type { CharClass } from "@/content/stats/stats";
 
 // oxlint-disable-next-line typescript/no-explicit-any
 type Opaque = any; // equipment, stats, buffs ... get exact types when their rules move into rules

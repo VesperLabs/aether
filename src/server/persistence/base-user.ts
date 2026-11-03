@@ -1,4 +1,6 @@
-import { ItemBuilder, type CharClass, type Dice } from "@/content";
+import { ItemBuilder } from "@/content/items/item-builder";
+import { CharClass } from "@/content/stats/stats";
+import { Dice } from "@/content/items/dice";
 import { DEFAULT_USER_SETTINGS } from "@/rules/character";
 import { getBaseCharacterDefaults } from "../auth/character-defaults";
 

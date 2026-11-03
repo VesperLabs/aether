@@ -1,12 +1,9 @@
-import {
-  itemList,
-  keepers,
-  questList,
-  resolveAsset,
-  type BuiltItem,
-  type KeeperDefinition,
-  type QuestId,
-} from "@/content";
+import { itemList } from "@/content/items/item-scaling";
+import { keepers } from "@/content/mobs/keepers";
+import { questList, QuestId } from "@/content/quests/quest-list";
+import { resolveAsset } from "@/content/sprites/resolve-asset";
+import { BuiltItem } from "@/content/items/item-types";
+import { KeeperDefinition } from "@/content/mobs/keeper-types";
 import { Box, Flex, ItemTooltip, Text } from "@/ui";
 import { useId, useState } from "react";
 import {

@@ -1,5 +1,5 @@
 import type { TriggerDefinition } from "../buffs/trigger-types";
-import type { PercentStatBlock, StatBlock, StatName, StatRange } from "../stats";
+import type { PercentStatBlock, StatBlock, StatName, StatRange } from "@/content/stats/stats";
 
 export interface ItemSetDefinition {
   readonly name: string;

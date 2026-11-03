@@ -4,8 +4,3 @@ export interface AssetDefinition {
   readonly atlas?: string;
   readonly previewRect?: readonly number[];
 }
-
-export interface NamedFileDefinition {
-  readonly name: string;
-  readonly src: string;
-}

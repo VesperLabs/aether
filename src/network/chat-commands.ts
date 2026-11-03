@@ -1,12 +1,7 @@
-import {
-  ITEM_BUILD_RARITIES,
-  ITEM_KEYS,
-  canRollRarity,
-  findItemKey,
-  mapList,
-  nasties,
-  type ItemLook,
-} from "@/content";
+import { ITEM_BUILD_RARITIES, canRollRarity } from "@/content/items/item-builder";
+import { ITEM_KEYS, findItemKey, ItemLook } from "@/content/items/item-keys";
+import { mapList } from "@/content/maps/map-list";
+import { nasties } from "@/content/mobs/nasties";
 
 /** One suggestion for a command argument. */
 export interface ChatCommandOption {

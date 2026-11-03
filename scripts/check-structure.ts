@@ -30,7 +30,6 @@ const LEGACY: Record<Rule, string[]> = {
     "src/client/hud/auth/register-form.tsx",
   ],
   barrel: [
-    "src/content/index.ts",
     "src/network/index.ts",
     "src/network/sync/index.ts",
     "src/rules/buffs/index.ts",

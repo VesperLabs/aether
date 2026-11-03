@@ -1,4 +1,4 @@
-import { buffList } from "@/content";
+import { buffList } from "@/content/buffs/buff-list";
 import { isOutOfCombat } from "@/rules/combat";
 
 /** A buff on a character, as stored on it. Only the fields the buff rules read are named. */

@@ -1,4 +1,5 @@
-import { spellDetails, type SpellDefinition } from "@/content";
+import { spellDetails } from "@/content/spells/spell-details";
+import { SpellDefinition } from "@/content/spells/spell-types";
 
 export interface ResolvedSpell {
   details: SpellDefinition;

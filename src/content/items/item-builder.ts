@@ -1,11 +1,11 @@
 /* This file and Diablo II are the main reason this game exists */
-import { cloneJson, randomNumber, type Dice } from "../random";
+import { cloneJson, randomNumber, type Dice } from "./dice";
 import { rollDrop } from "./item-drops";
 import { itemModsList } from "./item-mods";
 import { itemList, multiplyValues, scaleBaseStats } from "./item-scaling";
 import { itemSetList } from "./item-sets";
 import { Item } from "./item";
-import { getMeleeRange } from "../assets/weapon-tips";
+import { getMeleeRange } from "@/content/weapon-tips/weapon-tips";
 
 type Loose = Record<string, any>;
 

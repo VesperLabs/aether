@@ -10,7 +10,8 @@ import {
   type RegenTimers,
 } from "@/rules/buffs";
 import type { CharacterState } from "@/rules/character";
-import { buffList, type BuffDefinition } from "@/content";
+import { buffList } from "@/content/buffs/buff-list";
+import { BuffDefinition } from "@/content/buffs/buff-types";
 
 /** What a buff needs to know about the character that cast it. */
 export interface BuffRequest {

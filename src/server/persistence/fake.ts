@@ -1,4 +1,4 @@
-import type { Dice } from "@/content";
+import type { Dice } from "@/content/items/dice";
 import { createServerDice } from "@/server/world/server-dice";
 import { createBaseUser } from "./base-user";
 import type { Database, UserDocument } from "./database";

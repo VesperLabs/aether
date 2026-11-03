@@ -1,5 +1,6 @@
 import Phaser from "phaser";
-import { getPreviewGrip, resolveAsset } from "@/content";
+import { getPreviewGrip } from "@/content/weapon-tips/weapon-tips";
+import { resolveAsset } from "@/content/sprites/resolve-asset";
 import type { LootMessage } from "@/network";
 import type { SceneMain } from "@/client/scenes/main-scene";
 import { tintCanvas } from "@/ui/kit/image-tint";
