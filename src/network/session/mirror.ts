@@ -13,6 +13,8 @@ import { decodeTickVitals, type Vitals } from "@/network/sync/vitals";
 export interface MirrorCharacter extends FullCharacterWire {
   /** Hp, mp, sp and their maximums from the latest status, once one has arrived. */
   vitals?: Vitals;
+  /** Server time of the last teleport or respawn; poses older than it are not interpolated. */
+  lastTeleport?: number;
 }
 
 export interface Mirror {
@@ -127,8 +129,10 @@ const handlers: { [K in Exclude<keyof ServerToClientEvents, IgnoredMessage>]: Ha
     for (const l of state.loots ?? []) if (!l.expiredSince) mirror.loots.set(l.id, l);
     mirror.roomName = getSelf(mirror)?.roomName ?? "";
   },
-  playerJoin(mirror, player) {
+  playerJoin(mirror, player, { lastTeleport } = {}) {
     remember(mirror, mirror.players, player);
+    const c = mirror.players.get(player.socketId || player.id);
+    if (c && lastTeleport !== undefined) c.lastTeleport = lastTeleport;
   },
   playerUpdate(mirror, player) {
     if (mirror.players.has(player.socketId)) remember(mirror, mirror.players, player);
@@ -150,9 +154,9 @@ const handlers: { [K in Exclude<keyof ServerToClientEvents, IgnoredMessage>]: Ha
   npcRemove(mirror, id) {
     forget(mirror, mirror.npcs, id);
   },
-  respawnNpc(mirror, { id, x, y }) {
+  respawnNpc(mirror, { id, x, y, respawnTime }) {
     const npc = mirror.npcs.get(id);
-    if (npc) Object.assign(npc, { x, y });
+    if (npc) Object.assign(npc, { x, y, lastTeleport: respawnTime });
   },
   lootSpawned(mirror, { loot, npcId }) {
     /* Like the client, loot dropped by an npc appears where the npc stands. */
