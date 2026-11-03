@@ -20,7 +20,7 @@ export async function demoLogin(
 
   /* Only let one connection at a time */
   if (Object.keys(world?.players).find((k) => k === socket?.id)) {
-    return console.log("❌ Socket already logged in");
+    return world.log.warn("❌ Socket already logged in");
   }
 
   const user = createBaseUser(world.dice, charClass);
@@ -38,8 +38,8 @@ export async function demoLogin(
   const roomName = player?.room?.name;
 
   roomName
-    ? console.log(`🔌 ${player?.profile?.userName} connected`)
-    : console.log("❌ Missing player roomName");
+    ? world.log.info(`🔌 ${player?.profile?.userName} connected`)
+    : world.log.warn("❌ Missing player roomName");
 
   if (!roomName) return;
 
@@ -96,14 +96,14 @@ function enterWorld(ctx: CommandContext, user: UserDocument) {
 
   /* Only let one connection at a time */
   if (Object.keys(world?.players).find((k) => k === socket?.id)) {
-    return console.log("❌ Socket already logged in");
+    return world.log.warn("❌ Socket already logged in");
   }
 
   /* Kick the old user if loggin in on same email */
   for (const [sId, player] of Object.entries(world?.players)) {
     if (player?.email === user?.email) {
       const player = world.players?.[sId];
-      console.log(`🔌 ${player?.profile?.userName} disconnected`);
+      world.log.info(`🔌 ${player?.profile?.userName} disconnected`);
       legacyLeaveParty(world, sId);
       removePlayer(world, sId);
 
@@ -124,8 +124,8 @@ function enterWorld(ctx: CommandContext, user: UserDocument) {
   const roomName = player?.room?.name;
 
   roomName
-    ? console.log(`🔌 ${player?.profile?.userName} connected`)
-    : console.log("❌ Missing player roomName");
+    ? world.log.info(`🔌 ${player?.profile?.userName} connected`)
+    : world.log.warn("❌ Missing player roomName");
 
   if (!roomName) return;
 

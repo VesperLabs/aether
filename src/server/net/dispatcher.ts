@@ -16,9 +16,7 @@ export type CommandHandlers = { [K in CommandName]: CommandHandler<K> };
  */
 export function registerCommands(ctx: CommandContext, handlers: CommandHandlers) {
   const { socket } = ctx;
-  const debugLog = (...args: unknown[]) => {
-    if (ctx.world.config.debug) console.debug("[net]", ...args);
-  };
+  const debugLog = (...args: unknown[]) => ctx.world.log.debug("[net]", ...args);
   const names = Object.keys(commands) as CommandName[];
 
   for (const name of names) {
@@ -36,7 +34,7 @@ export function registerCommands(ctx: CommandContext, handlers: CommandHandlers)
         debugLog(`dropped invalid "${name}" from ${ctx.socketId}:`, parsed.error.message);
         return;
       }
-      const onError = (error: unknown) => console.error(`❌ "${name}" handler failed`, error);
+      const onError = (error: unknown) => ctx.world.log.error(`❌ "${name}" handler failed`, error);
       try {
         const result = handler(ctx, parsed.data as ParsedCommand<CommandName>);
         if (result instanceof Promise) result.catch(onError);
