@@ -6,7 +6,8 @@
  *
  * A bot logs in through the normal `login` command with the printed email and password
  * (or `tokenLogin` with the printed token). Nothing on the server treats bots specially.
- * Env: MONGO_URL (required), BOT_PASSWORD (default "botbot"), AUTH_SECRET (signs tokens).
+ * Env: MONGO_URL (required), BOT_PASSWORD (default "botbot", required in production),
+ * AUTH_SECRET (signs tokens). `--quiet` (container boot) skips printing logins and tokens.
  */
 import { readConfig } from "../src/server/config/config";
 import { createLoginToken } from "../src/server/auth/login-token";
@@ -17,10 +18,15 @@ const DEFAULT_COUNT = 5;
 const DEFAULT_CLASS = "warrior";
 
 async function main() {
-  const [countArg, classArg] = process.argv.slice(2);
+  const args = process.argv.slice(2);
+  const quiet = args.includes("--quiet");
+  const [countArg, classArg] = args.filter((arg) => arg !== "--quiet");
   const count = Number(countArg ?? DEFAULT_COUNT);
   if (!Number.isInteger(count) || count < 1) throw new Error(`Bad bot count: ${countArg}`);
   const charClass = classArg ?? DEFAULT_CLASS;
+  if (process.env.NODE_ENV === "production" && !process.env.BOT_PASSWORD) {
+    throw new Error("BOT_PASSWORD must be set in production");
+  }
   const password = process.env.BOT_PASSWORD || "botbot";
 
   const config = readConfig(process.env);
@@ -44,6 +50,7 @@ async function main() {
       if (!created) throw new Error(`Could not create ${email}`);
       console.log(`${email}: created`);
     }
+    if (quiet) continue;
     const stored = existing ?? (await db.getUserByEmail({ email }));
     const token = createLoginToken(email, stored?.password ?? "", Date.now(), config.authSecret);
     console.log(
