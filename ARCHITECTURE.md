@@ -22,12 +22,13 @@ src/
   client/    app: game in the browser                     core + ui
   wiki/      app: wiki site                               core + ui
   bots/      app: headless players over socket.io         core only, never ui
+  sim/       app: real server + bots on a controlled clock  server + bots, never ui
 public/      images, audio, maps
 scripts/     repo tooling
 ```
 
 - Nothing floats. A folder's top level holds only subfolders and entry points (`main.ts`, `game.tsx`, `app.tsx`, `index.html`, `vite.config.ts`, `*.d.ts`, `style.css`, and `rules/events.ts`). Every other file lives in a folder named for its feature, and a folder past about 12 files splits by feature.
-- Imports only point down. Apps never import each other.
+- Imports only point down. Apps never import each other, except `sim/`, the top layer that composes `server/` and `bots/`.
 - Core has no Phaser, React, DOM or IO.
 - Use `@/` for anything outside the current folder (defined only in tsconfig). Relative imports only inside a folder.
 - No barrels: import from the file that defines a thing, never from an `index.ts` that re-exports it. Existing barrels are legacy and shrink as code is touched.
@@ -55,10 +56,14 @@ Rules are **pure and deterministic**: no `Date.now()`, `Math.random()` or global
 
 `commands.ts` holds one zod schema per client→server command; `messages.ts` holds server→client messages; `sync/` holds poses (every position, whole on every tick, safe to lose) and statuses (flags and vitals, sent only when they change). The server never trusts a client value it can compute itself (position, damage, cooldowns).
 
+`session/` is the non-visual half of a client, shared by the browser client and bots: `mirror.ts` (what a player sees, built from messages and sync; every server message is handled or explicitly ignored, checked by the compiler) and hero control and motion (intent → predicted step with tile collision → throttled `playerInput`, time passed in). The client draws the mirror; a bot runs a brain on it. Never reimplement this in an app.
+
 ### Apps
 
-- `server/`: `net/` (one generic dispatcher: look up schema, validate, call the feature's `commands.ts`), `auth/`, `persistence/`, `admin/`, `http/`, `tests/`, `main.ts`
-- `client/`: `scenes/`, `views/`, `input/`, `net/` (socket, interpolation, prediction), `audio/`, `hud/` (React, by feature)
+- `server/`: `net/` (one generic dispatcher: look up schema, validate, call the feature's `commands.ts`), `auth/`, `persistence/`, `admin/`, `http/`, `config/` (the only reader of env, via `main.ts`), `app/` (`createApp(config, { db, clock, seed, logger })`, listens on any port incl. 0), `log/`, `main.ts`. Server code takes its clock, seed and logger as inputs: no `process.env`, `console` or module-level state outside `main.ts`, so many servers can run in one process.
+- `client/`: `scenes/`, `views/`, `input/`, `net/` (socket, interpolation; feeds the session mirror), `audio/`, `hud/` (React, by feature)
+- `bots/`: `brains/` (pure `(view, tick, rng) → intents`, one per file), `bot.ts` (a brain driving a session), `main.ts` (bots against a running server, e.g. ambient players live). Bots log in through the normal login with accounts flagged `isBot`; the server never branches gameplay on it.
+- `sim/`: `sim-clock.ts` (manual: the test advances time; turbo: as fast as the CPU allows), `sim-server.ts` (real server in-process, port 0, fake DB, seeded, memory logger), `soak/` (long many-bot runs, on demand), `main.ts` (a local world full of bots)
 
 A player action flows:
 
@@ -80,8 +85,9 @@ Most tests should be fast, pure and in-process; only the top layer touches socke
 
 - **Unit and component tests**: next to the code (`foo.ts` → `foo.test.ts`). Pure rules need no mocks: pass in tick, time and a seeded RNG.
 - **Game scenarios** (build a world, run ticks, assert): `src/rules/tests/`. The default for gameplay bugs; no server, no network.
-- **Integration** (socket and database): `src/server/tests/`. Start the real server in-process on a random port, connect real socket.io clients, and use a throwaway in-memory MongoDB per file. Never a shared or remote database. Wait on events, never on `sleep`. These run as their own vitest project so they can run serially and be filtered.
-- **Bots** (`src/bots/`): headless players that connect like a real client and send only network commands, so the server stays authoritative and they exercise the real path. They drive smoke and load runs on demand, not in `npm run check`. Mob and NPC brains are not bots: they live in `rules/` and are tested as scenarios.
+- **Sim tests** (real server, real sockets, controlled clock): `*.sim.test.ts` next to the feature they test (`server/party/party.sim.test.ts`), never in a tests folder. Built on `sim/sim-server.ts` with bots or raw clients. Advance ticks, wait on events, never `sleep`. They run as their own vitest project, serially. Persistence tests that need real Mongo use a throwaway in-memory MongoDB per file, never a shared or remote one.
+- **Soak runs** (`sim/soak/*.soak.ts`): many bots for long game-time in turbo mode, asserting no errors in the memory logger. On demand, not in `npm run check`.
+- **Bots** connect like a real client and send only network commands, so the server stays authoritative and they exercise the real path. Mob and NPC brains are not bots: they live in `rules/` and are tested as scenarios.
 - Same seed, same result: a flaky test is a bug, fixed or deleted, never retried.
 
 ## Enforcement
