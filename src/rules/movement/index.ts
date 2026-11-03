@@ -10,7 +10,7 @@ export type { DoorData } from "./doors";
 export { createPathfinder, findNextWaypoint, findPath } from "./pathfinding";
 export type { Pathfinder } from "./pathfinding";
 export { NPC_WALL_RADIUS, moveBodyFreely, moveBodyThroughMap, nudgeBodyThroughMap } from "./system";
-export { MAX_PUSH_SPEED, getSeparationPush, getSeparationVelocity } from "./separation";
+export { MAX_PUSH_SPEED, getSeparationPush } from "./separation";
 export {
   DOOR_USE_RANGE,
   checkMove,
@@ -25,7 +25,6 @@ export {
   DODGE_SP_COST,
   canDodge,
   getDodgeReadiness,
-  getDodgeVelocity,
   isDodgeInvulnerable,
   isDodging,
 } from "./dodge";
@@ -46,4 +45,4 @@ export {
 } from "./knockback";
 export type { KnockbackState } from "./knockback";
 export type { MoveContext, MoveTrack } from "./move-validation";
-export { ATTACK_WALK_SPEED_SCALE, approachVelocity, getWalkVelocity } from "./walking";
+export { approachVelocity, getWalkVelocity } from "./walking";
