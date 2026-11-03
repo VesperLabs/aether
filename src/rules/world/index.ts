@@ -8,6 +8,8 @@ export {
 } from "./geometry";
 export type { CardinalDirection, Point } from "./geometry";
 export { entitiesInRoom, groupByRoom, nearestTo } from "./rooms";
+export { createManualClock } from "./clock";
+export type { Clock, ManualClock } from "./clock";
 export { createTickLoop } from "./tick-loop";
 export type { Frame, System, TickLoop } from "./tick-loop";
 export { createTimers } from "./timers";

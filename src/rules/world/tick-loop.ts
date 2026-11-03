@@ -1,20 +1,14 @@
+import type { Clock } from "./clock";
+
 /** What a system is told about the tick it runs in. */
 export interface Frame {
   /** Milliseconds since the loop started. */
   time: number;
   /** Milliseconds since the previous tick. */
   delta: number;
-  /** Wall clock time of this tick (`Date.now()`). */
+  /** The clock's time at this tick. */
   now: number;
 }
-
-/** Runs `run` after `ms`; returns a function that cancels it. Simulations pass a virtual one. */
-export type SetTimer = (run: () => void, ms: number) => () => void;
-
-const realTimer: SetTimer = (run, ms) => {
-  const timer = setTimeout(run, ms);
-  return () => clearTimeout(timer);
-};
 
 /** A function that runs once per tick and changes the world. */
 export type System<W> = (world: W, frame: Frame) => void;
@@ -38,11 +32,11 @@ export interface TickLoop {
 export function createTickLoop<W extends { tick: number }>(
   world: W,
   systems: Array<System<W>>,
-  options: { fps: number; clock?: () => number; setTimer?: SetTimer },
+  options: { fps: number; clock: Clock },
 ): TickLoop {
   const interval = 1000 / options.fps;
-  const clock = options.clock ?? (() => Date.now());
-  const setTimer = options.setTimer ?? realTimer;
+  const clock = () => options.clock.now();
+  const setTimer = options.clock.setTimer;
   let cancel: (() => void) | null = null;
   let running = false;
   let startedAt = clock();

@@ -1,16 +1,10 @@
 // @vitest-environment node
-import http from "node:http";
-import type { AddressInfo } from "node:net";
-import { io as connect, type Socket } from "socket.io-client";
+import type { Socket } from "socket.io-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { initFakeDatabase } from "../persistence";
-import { GameServer } from "../game-server";
+import { startTestServer, type TestServer } from "./test-server";
 
 /** Cheat chat commands against the real game server, with ENABLE_CHEATS on. */
-let httpServer: http.Server;
-let gameServer: GameServer;
-let url: string;
-const sockets: Socket[] = [];
+let server: TestServer;
 
 type Anything = any;
 
@@ -37,9 +31,7 @@ function waitFor<T = Anything>(
 }
 
 async function login(charClass = "warrior") {
-  const socket = connect(url, { transports: ["websocket"], forceNew: true });
-  sockets.push(socket);
-  await waitFor(socket, "connect");
+  const socket = await server.connect();
   const heroInit = waitFor(socket, "heroInit");
   socket.emit("demoLogin", { charClass });
   await heroInit;
@@ -53,21 +45,14 @@ function cheat(socket: Socket, command: string) {
   return reply;
 }
 
-const serverPlayer = (socket: Socket): Anything => gameServer.world.players[socket.id as string];
+const serverPlayer = (socket: Socket): Anything => server.world.players[socket.id as string];
 
 beforeAll(async () => {
-  process.env.PUBLIC_DIR = "public";
   process.env.ENABLE_CHEATS = "true";
-  httpServer = http.createServer();
-  gameServer = new GameServer({ httpServer, db: await initFakeDatabase() });
-  await new Promise<void>((resolve) => httpServer.listen(0, "127.0.0.1", resolve));
-  url = `http://127.0.0.1:${(httpServer.address() as AddressInfo).port}`;
+  server = await startTestServer();
 }, 60000);
 
-afterAll(async () => {
-  sockets.forEach((s) => s.disconnect());
-  gameServer?.close();
-});
+afterAll(() => server?.close());
 
 describe("cheats", () => {
   it("/hp sets hp and /heal fills it", async () => {
@@ -98,7 +83,7 @@ describe("cheats", () => {
     await cheat(socket, "/tp 100 120");
     expect(serverPlayer(socket)).toMatchObject({ x: 100, y: 120 });
 
-    const rooms = Object.keys(gameServer.world.rooms);
+    const rooms = Object.keys(server.world.rooms);
     const other = rooms.find((r) => r !== serverPlayer(socket).roomName) as string;
     const arrived = waitFor(socket, "heroInit");
     await cheat(socket, `/warp ${other}`);
@@ -130,7 +115,7 @@ describe("cheats", () => {
     const removed = waitFor(watcher, "npcRemove");
     await cheat(socket, "/despawn");
     await removed;
-    const left = Object.values(gameServer.world.npcs).filter((n: Anything) => n.state?.isSummoned);
+    const left = Object.values(server.world.npcs).filter((n: Anything) => n.state?.isSummoned);
     expect(left).toHaveLength(0);
   });
 

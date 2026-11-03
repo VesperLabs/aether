@@ -1,34 +1,15 @@
 // @vitest-environment node
-import http from "node:http";
-import type { AddressInfo } from "node:net";
-import { io as connect, type Socket } from "socket.io-client";
+import type { Socket } from "socket.io-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { initFakeDatabase } from "../persistence";
-import { GameServer } from "../game-server";
+import { once, settle, startTestServer, type TestServer } from "./test-server";
 
 /**
  * Boots the real game server in-process (offline mode, fake database) on a random port
  * and talks to it with a socket.io client, like the browser does.
  */
-let httpServer: http.Server;
-let gameServer: GameServer;
-let url: string;
-const sockets: Socket[] = [];
+let server: TestServer;
 
 type Anything = any;
-
-function once<T = Anything>(socket: Socket, event: string, timeoutMs = 5000): Promise<T[]> {
-  return new Promise((resolve, reject) => {
-    const timer = setTimeout(
-      () => reject(new Error(`timed out waiting for "${event}"`)),
-      timeoutMs,
-    );
-    socket.once(event, (...args: T[]) => {
-      clearTimeout(timer);
-      resolve(args);
-    });
-  });
-}
 
 /** Like `once`, but skips events that don't match, e.g. map loot spawning in the same room. */
 function onceMatching<T = Anything>(
@@ -52,15 +33,8 @@ function onceMatching<T = Anything>(
   });
 }
 
-async function connectSocket() {
-  const socket = connect(url, { transports: ["websocket"], forceNew: true });
-  sockets.push(socket);
-  await once(socket, "connect");
-  return socket;
-}
-
 async function login(charClass = "warrior") {
-  const socket = await connectSocket();
+  const socket = await server.connect();
   const heroInit = once(socket, "heroInit");
   socket.emit("demoLogin", { charClass });
   const [state, meta] = await heroInit;
@@ -68,23 +42,15 @@ async function login(charClass = "warrior") {
 }
 
 /** The live loot on the ground, straight from the world. */
-const serverLoots = (): Record<string, Anything> => (gameServer.world as Anything).loots;
+const serverLoots = (): Record<string, Anything> => server.world.loots;
 
-const ping = (socket: Socket) =>
-  new Promise<boolean>((resolve) => socket.emit("latency", () => resolve(true)));
+const ping = (socket: Socket) => settle(socket).then(() => true);
 
 beforeAll(async () => {
-  process.env.PUBLIC_DIR = "public";
-  httpServer = http.createServer();
-  gameServer = new GameServer({ httpServer, db: await initFakeDatabase() });
-  await new Promise<void>((resolve) => httpServer.listen(0, "127.0.0.1", resolve));
-  url = `http://127.0.0.1:${(httpServer.address() as AddressInfo).port}`;
+  server = await startTestServer();
 }, 60000);
 
-afterAll(async () => {
-  sockets.forEach((s) => s.disconnect());
-  gameServer?.close();
-});
+afterAll(() => server?.close());
 
 describe("game server", () => {
   it("demoLogin sends heroInit with the hero and room state", async () => {
@@ -101,7 +67,7 @@ describe("game server", () => {
   });
 
   it("demoLogin without a class answers with a formError", async () => {
-    const socket = await connectSocket();
+    const socket = await server.connect();
     const error = once(socket, "formError");
     socket.emit("demoLogin", {});
     expect((await error)[0]).toEqual({ error: "No class" });
@@ -161,7 +127,7 @@ describe("game server", () => {
   });
 
   it("survives a command from a socket that never logged in", async () => {
-    const socket = await connectSocket();
+    const socket = await server.connect();
     socket.emit("attack", { count: 1 });
     expect(await ping(socket)).toBe(true);
   });
@@ -217,7 +183,7 @@ describe("game server", () => {
     );
     socket.emit("dropItem", { location: "equipment", item: { id: armorId } });
     const [{ loot }] = await spawned;
-    serverLoots()[loot.id].expiredSince = Date.now();
+    serverLoots()[loot.id].expiredSince = server.clock.now();
 
     let grabbed = false;
     socket.on("lootGrabbed", () => (grabbed = true));
@@ -240,7 +206,7 @@ describe("game server", () => {
       );
       socket.emit("dropItem", { location: "equipment", item: { id: armorId } });
       const [{ loot }] = await spawned;
-      const player = (gameServer as Anything).world.players[socket.id as string];
+      const player = server.world.players[socket.id as string];
       return { socket, loot, player };
     }
     async function grabIsIgnored(socket: Socket, lootId: string) {

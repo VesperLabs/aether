@@ -36,8 +36,8 @@ const KEBAB = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const REEXPORT = /export\s+(type\s+)?(\*(\s+as\s+\w+)?|\{[^}]*\})\s*from\s*["'][^"']+["'];?/g;
 const IMPORT = /import\s+(type\s+)?([^;"']*?\sfrom\s*)?["'][^"']+["'];?/g;
 const EXPORT_LIST = /export\s+(type\s+)?\{[^}]*\};?/g;
-// Only the dispatchers listen on sockets; tests and agent links are clients and may listen too
-const SOCKET_DISPATCHERS = ["src/server/net/", "src/client/net/"];
+// Only the dispatchers listen on sockets; tests (and their harness) are clients and may listen too
+const SOCKET_LISTENERS = ["src/server/net/", "src/client/net/", "src/server/tests/"];
 const SOCKET_ON = /\bsocket\??\.on\(/;
 const COMMENTS = /\/\*[\s\S]*?\*\/|\/\/.*$/gm;
 // `<Tag`, `<tag`, `<>` that follow an operator or whitespace, so generics like `useState<string>` don't match
@@ -79,7 +79,7 @@ function checkFile(full: string, name: string) {
   if (
     SOCKET_ON.test(text.replace(COMMENTS, "")) &&
     !/\.test\.tsx?$/.test(name) &&
-    !SOCKET_DISPATCHERS.some((dir) => full.startsWith(dir))
+    !SOCKET_LISTENERS.some((dir) => full.startsWith(dir))
   ) {
     report("raw-socket-on", full);
   }

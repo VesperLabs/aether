@@ -1,56 +1,27 @@
 // @vitest-environment node
-import http from "node:http";
-import type { AddressInfo } from "node:net";
-import { io as connect, type Socket } from "socket.io-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { initFakeDatabase } from "../persistence";
-import { GameServer } from "../game-server";
+import { once, settle, startTestServer, type TestServer } from "./test-server";
 
 /** Quest flow over real sockets against the in-process game server (offline mode, fake database). */
-let httpServer: http.Server;
-let gameServer: GameServer;
-let url: string;
-const sockets: Socket[] = [];
+let server: TestServer;
 
 type Anything = any;
 
-function once<T = Anything>(socket: Socket, event: string, timeoutMs = 5000): Promise<T[]> {
-  return new Promise((resolve, reject) => {
-    const timer = setTimeout(
-      () => reject(new Error(`timed out waiting for "${event}"`)),
-      timeoutMs,
-    );
-    socket.once(event, (...args: T[]) => {
-      clearTimeout(timer);
-      resolve(args);
-    });
-  });
-}
-
 async function login(charClass = "warrior") {
-  const socket = connect(url, { transports: ["websocket"], forceNew: true });
-  sockets.push(socket);
-  await once(socket, "connect");
+  const socket = await server.connect();
   const heroInit = once(socket, "heroInit");
   socket.emit("demoLogin", { charClass });
   const [state] = await heroInit;
   return { socket, state };
 }
 
-const world = (): Anything => gameServer.world;
+const world = (): Anything => server.world;
 
 beforeAll(async () => {
-  process.env.PUBLIC_DIR = "public";
-  httpServer = http.createServer();
-  gameServer = new GameServer({ httpServer, db: await initFakeDatabase() });
-  await new Promise<void>((resolve) => httpServer.listen(0, "127.0.0.1", resolve));
-  url = `http://127.0.0.1:${(httpServer.address() as AddressInfo).port}`;
+  server = await startTestServer();
 }, 60000);
 
-afterAll(async () => {
-  sockets.forEach((s) => s.disconnect());
-  gameServer?.close();
-});
+afterAll(() => server?.close());
 
 describe("quests", () => {
   it("acceptQuest adds the quest to the hero once", async () => {
@@ -67,7 +38,7 @@ describe("quests", () => {
 
     /* Accepting again changes nothing (and sends no update). */
     socket.emit("acceptQuest", "crab-catching");
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await settle(socket);
     expect(world().players[socket.id as string].quests).toHaveLength(1);
   });
 
@@ -159,7 +130,7 @@ describe("quests", () => {
   it("accepting an unknown quest adds nothing", async () => {
     const { socket } = await login();
     socket.emit("acceptQuest", "no-such-quest");
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await settle(socket);
     expect(world().players[socket.id as string].quests).toHaveLength(0);
   });
 

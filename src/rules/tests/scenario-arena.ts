@@ -2,6 +2,7 @@ import type { TiledMapJson } from "../movement";
 import {
   addRoom,
   createRoom,
+  createManualClock,
   createTickLoop,
   createWorld,
   type RoomData,
@@ -86,7 +87,7 @@ export function createArena(options: { walls?: ReadonlyArray<readonly [number, n
   const world: ArenaWorld = createWorld();
   const room = createRoom("arena", arenaMap(options.walls ?? []), START_NOW);
   addRoom(world, room);
-  let clock = START_NOW;
+  const clock = createManualClock(START_NOW);
 
   const arena: Arena = {
     world,
@@ -104,13 +105,13 @@ export function createArena(options: { walls?: ReadonlyArray<readonly [number, n
         room.poseHistory.record(frame.now, [...Object.values(w.players), ...Object.values(w.npcs)]);
       const loop = createTickLoop(world, [...systems, recordPoses], {
         fps: 1000 / TICK_MS,
-        clock: () => clock,
+        clock,
       });
       for (let i = 0; i < ticks; i++) {
-        clock += TICK_MS;
+        clock.advance(TICK_MS);
         loop.step(TICK_MS);
       }
-      return clock;
+      return clock.now();
     },
   };
   return arena;

@@ -1,11 +1,11 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { createTickLoop } from "@/rules/world";
+import { createManualClock, createTickLoop } from "@/rules/world";
 import type { ServerWorld } from "../server-world";
 import { shouldPause } from "./world-pause";
 
 function worldWith(players: Record<string, unknown>) {
   const world = { tick: 0, players } as unknown as ServerWorld;
-  world.loop = createTickLoop(world, [], { fps: 1 });
+  world.loop = createTickLoop(world, [], { fps: 1, clock: createManualClock() });
   return world;
 }
 

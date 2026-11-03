@@ -240,13 +240,13 @@
       }
     },
     {
-      "files": ["src/server/game-server.ts", "src/server/http/routes.ts"],
+      "files": ["src/server/real-clock.ts", "src/server/http/routes.ts"],
       "rules": {
         "no-restricted-properties": "off"
       }
     },
     {
-      "files": ["src/rules/world/tick-loop.ts", "src/rules/tests/**"],
+      "files": ["src/rules/tests/**"],
       "rules": {
         "no-restricted-properties": "off"
       }

@@ -2,12 +2,14 @@ import type { ServerWorld } from "./server-world";
 import type { Server as HttpServer } from "http";
 import { Server } from "socket.io";
 import type { Database } from "./persistence/database";
-import { createTickLoop } from "@/rules/world";
+import { createTickLoop, type Clock } from "@/rules/world";
+import type { Dice } from "@/content";
 import { DEFAULT_SERVER_FPS } from "@/network";
 import type { ClientToServerEvents, GameIo, ServerToClientEvents } from "@/network";
 import { createServerWorld } from "./game-world";
 import { listenForConnections } from "./net/connection";
 import { serverSystems } from "./tick";
+import { realClock } from "./real-clock";
 
 const serverFps =
   parseInt(process.env.SERVER_FPS || String(DEFAULT_SERVER_FPS), 10) || DEFAULT_SERVER_FPS;
@@ -20,13 +22,17 @@ export class GameServer {
   constructor({
     httpServer,
     db,
-    now = () => Date.now(),
+    clock = realClock,
+    dice,
   }: {
     httpServer: HttpServer;
     db: Database;
-    /** The game clock. Tests pass their own to drive time. */
-    now?: () => number;
+    /** All game time comes from here. Tests pass a manual clock to fast-forward the world. */
+    clock?: Clock;
+    /** Every roll and id. Pass seeded dice (`createServerDice(seed)`) to replay a run exactly. */
+    dice?: Dice;
   }) {
+    const now = () => clock.now();
     this.spawnTime = now();
 
     this.io = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
@@ -43,8 +49,8 @@ export class GameServer {
     });
 
     this.db = db;
-    this.world = createServerWorld({ io: this.io, db, now });
-    this.world.loop = createTickLoop(this.world, serverSystems, { fps: serverFps, clock: now });
+    this.world = createServerWorld({ io: this.io, db, now, dice });
+    this.world.loop = createTickLoop(this.world, serverSystems, { fps: serverFps, clock });
     listenForConnections(this.world);
     /* Nobody is connected yet, so the loop stays paused until the first player joins. */
   }

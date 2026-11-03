@@ -1,70 +1,28 @@
 // @vitest-environment node
-import http from "node:http";
-import type { AddressInfo } from "node:net";
-import { io as connect, type Socket } from "socket.io-client";
+import type { Socket } from "socket.io-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { initFakeDatabase } from "../persistence";
-import { GameServer } from "../game-server";
+import { once, replies, settle, startTestServer, type TestServer } from "./test-server";
 
 /** Socket tests for the movement commands: cheats fail, normal play works. */
-let httpServer: http.Server;
-let gameServer: GameServer;
-let url: string;
-const sockets: Socket[] = [];
+let server: TestServer;
 
 type Anything = any;
 
-const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+const login = () => server.login();
 
-function once<T = Anything>(socket: Socket, event: string, timeoutMs = 5000): Promise<T[]> {
-  return new Promise((resolve, reject) => {
-    const timer = setTimeout(
-      () => reject(new Error(`timed out waiting for "${event}"`)),
-      timeoutMs,
-    );
-    socket.once(event, (...args: T[]) => {
-      clearTimeout(timer);
-      resolve(args);
-    });
-  });
-}
-
-async function login() {
-  const socket = connect(url, { transports: ["websocket"], forceNew: true });
-  sockets.push(socket);
-  await once(socket, "connect");
-  const heroInit = once(socket, "heroInit");
-  socket.emit("demoLogin", { charClass: "warrior" });
-  await heroInit;
-  const player = (gameServer.world as Anything).players[socket.id as string];
-  return { socket, player };
-}
-
-const ping = (socket: Socket) =>
-  new Promise<boolean>((resolve) => socket.emit("latency", () => resolve(true)));
-
-/** Resolves true when the event arrives within the window, false otherwise. */
-const arrives = (socket: Socket, event: string, ms = 300) =>
-  Promise.race([once(socket, event).then(() => true), wait(ms).then(() => false)]);
+const ping = (socket: Socket) => settle(socket).then(() => true);
 
 /** A door in the player's room that leads somewhere. */
 function findDoor(player: Anything) {
-  const doors = (gameServer.world as Anything).doors[player.room.name] as Record<string, Anything>;
+  const doors = server.world.doors[player.room.name] as Record<string, Anything>;
   return Object.values(doors).find((d) => d.destMap && d.destDoor) as Anything;
 }
 
 beforeAll(async () => {
-  process.env.PUBLIC_DIR = "public";
-  httpServer = http.createServer();
-  gameServer = new GameServer({ httpServer, db: await initFakeDatabase() });
-  await new Promise<void>((resolve) => httpServer.listen(0, "127.0.0.1", resolve));
-  url = `http://127.0.0.1:${(httpServer.address() as AddressInfo).port}`;
+  server = await startTestServer();
 }, 60000);
 
-afterAll(async () => {
-  sockets.forEach((s) => s.disconnect());
-  gameServer?.close();
-});
+afterAll(() => server?.close());
 
 describe("updateState", () => {
   it("accepts the two flags the client sends", async () => {
@@ -129,9 +87,9 @@ describe("enterDoor", () => {
     const door = findDoor(player);
     player.x = door.x + 2000;
     player.y = door.y + 2000;
-    const init = arrives(socket, "heroInit");
-    socket.emit("enterDoor", door.name);
-    expect(await init).toBe(false);
+    expect(await replies(socket, "heroInit", () => socket.emit("enterDoor", door.name))).toBe(
+      false,
+    );
     expect(player.x).toBe(door.x + 2000);
   });
 
@@ -157,14 +115,14 @@ describe("enterDoor", () => {
 describe("playerInput", () => {
   it("accepts normal walking and does not send corrections", async () => {
     const { socket, player } = await login();
-    const correction = arrives(socket, "positionCorrection", 400);
     const { x, y } = player;
     // find a direction without a wall by trying small steps along the line
-    for (let i = 1; i <= 3; i++) {
-      socket.emit("playerInput", { x: x + i * 3, y, vx: 100, vy: 0, d: 3 });
-    }
-    await ping(socket);
-    expect(await correction).toBe(false);
+    const corrected = await replies(socket, "positionCorrection", () => {
+      for (let i = 1; i <= 3; i++) {
+        socket.emit("playerInput", { x: x + i * 3, y, vx: 100, vy: 0, d: 3 });
+      }
+    });
+    expect(corrected).toBe(false);
     expect(player.x).toBe(x + 9);
   });
 
@@ -224,9 +182,9 @@ describe("playerInput", () => {
     socket.emit("enterDoor", door.name);
     await init;
     const { x, y } = player;
-    const correction = arrives(socket, "positionCorrection", 300);
-    socket.emit("playerInput", { x, y, vx: 0, vy: 0, d: 3 });
-    await ping(socket);
-    expect(await correction).toBe(false);
+    const corrected = await replies(socket, "positionCorrection", () =>
+      socket.emit("playerInput", { x, y, vx: 0, vy: 0, d: 3 }),
+    );
+    expect(corrected).toBe(false);
   });
 });

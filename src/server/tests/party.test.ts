@@ -1,16 +1,10 @@
 // @vitest-environment node
-import http from "node:http";
-import type { AddressInfo } from "node:net";
-import { io as connect, type Socket } from "socket.io-client";
+import type { Socket } from "socket.io-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { initFakeDatabase } from "../persistence";
-import { GameServer } from "../game-server";
+import { settle, startTestServer, type TestServer } from "./test-server";
 
 /** Party flows against the real game server with two connected clients. */
-let httpServer: http.Server;
-let gameServer: GameServer;
-let url: string;
-const sockets: Socket[] = [];
+let server: TestServer;
 
 type Anything = any;
 
@@ -28,9 +22,7 @@ function once<T = Anything>(socket: Socket, event: string, timeoutMs = 5000): Pr
 }
 
 async function login(charClass = "warrior", email?: string) {
-  const socket = connect(url, { transports: ["websocket"], forceNew: true });
-  sockets.push(socket);
-  await once(socket, "connect");
+  const socket = await server.connect();
   const heroInit = once(socket, "heroInit");
   if (email) socket.emit("login", { email, password: "x" });
   else socket.emit("demoLogin", { charClass });
@@ -38,8 +30,7 @@ async function login(charClass = "warrior", email?: string) {
   return socket;
 }
 
-const ping = (socket: Socket) =>
-  new Promise<boolean>((resolve) => socket.emit("latency", () => resolve(true)));
+const ping = (socket: Socket) => settle(socket).then(() => true);
 
 /** Two logged-in players, `a` leading a party with `b` as a member. */
 /** Resolves with the next `count` payloads of `event`, in order. */
@@ -74,17 +65,10 @@ async function partyOfTwo() {
 }
 
 beforeAll(async () => {
-  process.env.PUBLIC_DIR = "public";
-  httpServer = http.createServer();
-  gameServer = new GameServer({ httpServer, db: await initFakeDatabase() });
-  await new Promise<void>((resolve) => httpServer.listen(0, "127.0.0.1", resolve));
-  url = `http://127.0.0.1:${(httpServer.address() as AddressInfo).port}`;
+  server = await startTestServer();
 }, 60000);
 
-afterAll(async () => {
-  sockets.forEach((s) => s.disconnect());
-  gameServer?.close();
-});
+afterAll(() => server?.close());
 
 describe("party", () => {
   it("inviting creates a party led by the inviter and sends the invite", async () => {
