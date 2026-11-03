@@ -1,4 +1,4 @@
-import { spellDetails } from "@/content";
+import { spellDetails } from "@/content/spells/spell-details";
 import { getNextAttackCount, POTION_COOLDOWN } from "@/rules/combat";
 import { DODGE_COOLDOWN } from "@/rules/movement";
 import type { Player } from "@/client/views/player";

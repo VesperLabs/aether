@@ -5,7 +5,7 @@ import {
   ACCESSORY_HIDING_HELMETS,
   FACE_HIDING_ACCESSORIES,
   HAIR_HIDING_ACCESSORIES,
-} from "@/content";
+} from "@/content/items/hiding";
 import type { Player } from "./player";
 import { Crosshair } from "@/client/input/crosshair";
 import { toTint } from "./tint";

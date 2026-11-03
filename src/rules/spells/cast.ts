@@ -1,4 +1,4 @@
-import { spellDetails } from "@/content";
+import { spellDetails } from "@/content/spells/spell-details";
 import type { StatBag } from "@/rules/stats";
 
 /** Spells that put a buff on the caster or target and show as an aura. */

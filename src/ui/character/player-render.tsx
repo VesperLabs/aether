@@ -1,10 +1,12 @@
-import { resolveAsset, type BuiltItem, type MobProfile } from "@/content";
+import { resolveAsset } from "@/content/sprites/resolve-asset";
+import { BuiltItem } from "@/content/items/item-types";
+import { MobProfile } from "@/content/mobs/mob-types";
 import {
   ACCESSORY_HIDING_HELMETS,
   HAIR_HIDING_HELMETS,
   HAIR_HIDING_ACCESSORIES,
   FACE_HIDING_ACCESSORIES,
-} from "@/content";
+} from "@/content/items/hiding";
 import { filterVisibleEquipment } from "@/rules/character";
 import { tintCanvas, loadCacheImage } from "@/ui/kit";
 import { memo, useEffect, useEffectEvent, useRef, type ComponentProps } from "react";

@@ -1,4 +1,5 @@
-import { itemList, type ItemDefinition } from "@/content";
+import { itemList } from "@/content/items/item-scaling";
+import { ItemDefinition } from "@/content/items/item-types";
 import { Flex, Icon, Input, Text } from "@/ui";
 import { useMemo } from "react";
 import { useSearchParams } from "wouter";

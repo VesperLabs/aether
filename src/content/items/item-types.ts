@@ -1,7 +1,7 @@
 import type { BuffName } from "../buffs/buff-list";
 import type { TriggerDefinition } from "../buffs/trigger-types";
 import type { SpellName } from "../spells/spell-details";
-import type { CharClass, EffectBlock, PercentStatBlock, StatBlock } from "../stats";
+import type { CharClass, EffectBlock, PercentStatBlock, StatBlock } from "@/content/stats/stats";
 import type { ItemSetName } from "./item-sets";
 
 export type ItemRarity = "common" | "magic" | "rare" | "unique" | "set";

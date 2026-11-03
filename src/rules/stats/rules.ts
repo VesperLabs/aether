@@ -1,4 +1,4 @@
-import { ItemBuilder } from "@/content";
+import { ItemBuilder } from "@/content/items/item-builder";
 
 /** An open-ended bag of stat name -> value. Also carries `triggers` once calculated. */
 export type StatBag = Record<string, any>;

@@ -1,4 +1,4 @@
-import { getMapByName } from "@/content";
+import { getMapByName } from "@/content/maps/get-map";
 import type { SceneMain } from "@/client/scenes/main-scene";
 
 /* TODO: Move to DB */

@@ -1,6 +1,7 @@
 import { Quest as QuestSlot } from "./quest";
 import { Flex, Text, MENU_MAX_WIDTH, Menu, MenuHeader } from "@/ui";
-import { questList, type Quest, type QuestId } from "@/content";
+import { questList, QuestId } from "@/content/quests/quest-list";
+import { type Quest } from "@/content/quests/quest";
 import type { PlayerQuestStatus } from "@/rules/quests";
 import { arePropsEqualWithKeys } from "@/ui";
 import { memo } from "react";

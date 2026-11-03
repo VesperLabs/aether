@@ -1,4 +1,4 @@
-import { spellDetails } from "@/content";
+import { spellDetails } from "@/content/spells/spell-details";
 import { distanceBetween, type Body } from "./range";
 import { NPC_SHOT_MARGIN } from "./constants";
 

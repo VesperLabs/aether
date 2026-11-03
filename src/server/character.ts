@@ -3,7 +3,7 @@ import type { Hand } from "@/rules/combat";
 import type { StatBag } from "@/rules/stats";
 import type { ServerWorld } from "@/server/world/server-world";
 import { CharacterModel } from "@/rules/character";
-import { ItemBuilder } from "@/content";
+import { ItemBuilder } from "@/content/items/item-builder";
 import { applyCalculatedStats } from "./character-stats";
 import {
   applyAttackDamage,

@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import type { Dice } from "@/content";
+import type { Dice } from "@/content/items/dice";
 import { createRng } from "@/rules/world";
 
 /**

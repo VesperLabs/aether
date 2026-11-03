@@ -1,5 +1,5 @@
 import { Box, Flex, PlayerRender, Text } from "@/ui";
-import { questList } from "@/content";
+import { questList } from "@/content/quests/quest-list";
 import { PAPER, PAPER_STYLE, PaperFrame } from "@/wiki/frame/paper";
 import type { WikiPlayer } from "./page-players";
 import { CARD_COLORS } from "@/wiki/cards/card-pool";

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAppContext } from "@/client/hud/app/context";
 import { Slot } from "./slot";
-import type { BuiltItem } from "@/content";
+import type { BuiltItem } from "@/content/items/item-types";
 import type { DropItem } from "@/client/hud/app/context";
 import { Modal, Flex, Input, Icon, Text, KeyboardButton } from "@/ui";
 

@@ -1,7 +1,7 @@
 import { useState, useEffect, useEffectEvent } from "react";
 import { Modal, Input, KeyboardButton } from "@/ui";
 import { useAppContext } from "@/client/hud/app/context";
-import type { CharClass } from "@/content";
+import type { CharClass } from "@/content/stats/stats";
 import { CharClassSelect } from "./char-class-select";
 import { getRememberMe } from "./remembered-login";
 import type { FormSuccess, Notify } from "./login-types";

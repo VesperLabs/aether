@@ -1,4 +1,4 @@
-import type { BuiltItem } from "@/content";
+import type { BuiltItem } from "@/content/items/item-types";
 import type { NearbyPlayer } from "@/client/scenes/main-scene";
 import type { Player } from "@/client/views/player";
 import type { AbilitySlot } from "@/rules/spells";

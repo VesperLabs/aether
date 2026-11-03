@@ -1,4 +1,5 @@
-import { spellDetails, type SpellDefinition } from "@/content";
+import { spellDetails } from "@/content/spells/spell-details";
+import { SpellDefinition } from "@/content/spells/spell-types";
 import { LUNGE_DURATION, isLunging, type LungeState } from "@/rules/movement";
 import type { NpcMovement } from "./decide";
 import { NPC_LUNGE_RECOVERY_MS } from "./constants";

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { nasties, questList } from "@/content";
+import { nasties } from "@/content/mobs/nasties";
+import { questList } from "@/content/quests/quest-list";
 import { mobKilledEvents } from "../combat";
 import { createLoot, subscribeLoot, type LootSpawn } from "../loot";
 import { getPlayerQuestStatus, nextNpcKillCount, subscribeQuests } from "../quests";

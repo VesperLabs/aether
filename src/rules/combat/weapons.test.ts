@@ -3,11 +3,11 @@ import {
   getMeleeRange,
   getWeaponLength,
   HAND_REACH,
-  ItemBuilder,
-  itemData,
   WEAPON_TIPS,
-  PREVIEW_DICE,
-} from "@/content";
+} from "@/content/weapon-tips/weapon-tips";
+import { ItemBuilder } from "@/content/items/item-builder";
+import { itemData } from "@/content/items/item-data";
+import { PREVIEW_DICE } from "@/content/items/dice";
 import {
   getWeaponRange,
   hasAttackableWeapons,

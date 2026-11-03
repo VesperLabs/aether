@@ -1,4 +1,4 @@
-import type { Dice } from "@/content";
+import type { Dice } from "@/content/items/dice";
 import type { GameIo, NetIds } from "@/network";
 import type { Rng, TickLoop, World } from "@/rules/world";
 import type { Npc } from "@/server/npc";

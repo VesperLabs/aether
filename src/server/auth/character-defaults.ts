@@ -1,4 +1,5 @@
-import { ItemBuilder, type Dice } from "@/content";
+import { ItemBuilder } from "@/content/items/item-builder";
+import { Dice } from "@/content/items/dice";
 import { getBaseStats } from "@/rules/stats";
 
 export const PLAYER_DEFAULT_SPAWN = { roomName: "grassland-3", x: 1496, y: 2028 };

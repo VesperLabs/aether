@@ -1,6 +1,6 @@
 import { memo } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
-import type { BuiltItem } from "@/content";
+import type { BuiltItem } from "@/content/items/item-types";
 import { MAX_INVENTORY_ITEMS } from "@/rules/inventory";
 import { arePropsEqualWithKeys, Flex, Icon, Text } from "@/ui/kit";
 import type { CharacterMenuProps } from "./menu-props";

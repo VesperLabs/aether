@@ -1,6 +1,6 @@
 import { getAngleFromDirection, type Point } from "@/rules/world";
 import { getBuff, hasBuff, type ActiveBuff } from "@/rules/buffs";
-import type { CharClass } from "@/content";
+import type { CharClass } from "@/content/stats/stats";
 import type { RoomData } from "@/rules/world";
 import type { PlayerQuestRecord } from "@/rules/quests";
 import type { CharacterState } from "./state";

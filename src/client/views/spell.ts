@@ -19,7 +19,7 @@ import {
   usesLeftHand,
   usesRightHand,
 } from "@/rules/spells";
-import { HAND_REACH, WEAPON_GRIP, getWeaponTip } from "@/content";
+import { HAND_REACH, WEAPON_GRIP, getWeaponTip } from "@/content/weapon-tips/weapon-tips";
 const Sprite = Phaser.GameObjects.Sprite;
 const BLANK_TEXTURE = "human-blank";
 

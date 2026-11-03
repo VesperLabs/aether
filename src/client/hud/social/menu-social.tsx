@@ -5,7 +5,7 @@ import { useAppContext } from "@/client/hud/app/context";
 import { Portrait } from "@/client/hud/status/portrait";
 import type { ThemeUIStyleObject } from "theme-ui";
 import { Flex, Text, Grid, Icon, Button, Box, MENU_MAX_WIDTH, Menu, MenuHeader } from "@/ui";
-import { CLASS_ICON_MAP } from "@/content";
+import { CLASS_ICON_MAP } from "@/content/icons/class-icons";
 import { arePropsEqualWithKeys } from "@/ui";
 
 type SocialPlayer = Partial<HudCharacter> | undefined;

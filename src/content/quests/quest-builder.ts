@@ -1,6 +1,6 @@
 import { ItemBuilder } from "../items/item-builder";
-import type { Dice } from "../random";
-import { cloneJson } from "../random";
+import type { Dice } from "@/content/items/dice";
+import { cloneJson } from "@/content/items/dice";
 import { questList, type QuestId } from "./quest-list";
 import { Quest, type QuestObjective } from "./quest";
 

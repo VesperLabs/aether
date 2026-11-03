@@ -1,4 +1,4 @@
-import type { MobMovementBehavior } from "@/content";
+import type { MobMovementBehavior } from "@/content/mobs/mob-types";
 import type { Rng } from "@/rules/world";
 import {
   NPC_FOLLOW_DISTANCE,

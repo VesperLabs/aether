@@ -4,7 +4,7 @@ import { useAppContext } from "@/client/hud/app/context";
 import { nanoid } from "nanoid";
 import { isMobile } from "@/ui";
 import { useMemo } from "react";
-import type { Quest as QuestData } from "@/content";
+import type { Quest as QuestData } from "@/content/quests/quest";
 import type { PlayerQuestStatus } from "@/rules/quests";
 
 export const Quest = ({ quest, parent = "keeper" }: { quest: QuestData; parent?: string }) => {

@@ -2,16 +2,11 @@ import { Slot } from "@/client/hud/inventory/slot";
 import { SlotAmount } from "@/ui";
 import { useAppContext } from "@/client/hud/app/context";
 import { Box, Text, Flex, Divider, Icon, Button, STYLE_NON_EMPTY } from "@/ui";
-import {
-  ItemBuilder,
-  PREVIEW_DICE,
-  nasties,
-  keepers,
-  type KeeperId,
-  type NastyId,
-  type Quest as QuestData,
-  type QuestObjective,
-} from "@/content";
+import { ItemBuilder } from "@/content/items/item-builder";
+import { PREVIEW_DICE } from "@/content/items/dice";
+import { nasties, NastyId } from "@/content/mobs/nasties";
+import { keepers, KeeperId } from "@/content/mobs/keepers";
+import { type Quest as QuestData, QuestObjective } from "@/content/quests/quest";
 import type { PlayerQuestStatus } from "@/rules/quests";
 import type { ClientGameSocket } from "@/network";
 import type { HudCharacter } from "@/client/hud/app/context";

@@ -2,7 +2,7 @@ import { memo, useEffect, useState } from "react";
 import { Divider, Flex, Icon, Text } from "@/ui";
 import { arePropsEqualWithKeys } from "@/ui";
 import { formatStats } from "@/rules/stats";
-import { buffList } from "@/content";
+import { buffList } from "@/content/buffs/buff-list";
 import type { ThemeUIStyleObject } from "theme-ui";
 import type { ActiveBuff } from "@/rules/buffs";
 import type { HudCharacter } from "@/client/hud/app/context";

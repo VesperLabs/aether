@@ -1,5 +1,6 @@
 import { Flex, Icon, Text } from "@/ui";
-import { CLASS_ICON_MAP, type CharClass } from "@/content";
+import { CLASS_ICON_MAP } from "@/content/icons/class-icons";
+import { CharClass } from "@/content/stats/stats";
 
 interface ClickableIconProps {
   icon: string;

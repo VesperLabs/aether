@@ -1,4 +1,8 @@
-import { itemList, nasties, resolveAsset, type BuiltItem, type NastyDefinition } from "@/content";
+import { itemList } from "@/content/items/item-scaling";
+import { nasties } from "@/content/mobs/nasties";
+import { resolveAsset } from "@/content/sprites/resolve-asset";
+import { BuiltItem } from "@/content/items/item-types";
+import { NastyDefinition } from "@/content/mobs/mob-types";
 import { calculateExpValue, npcStats } from "@/rules/stats";
 import { Box, Flex, Grid, Icon, ItemTooltip, Text, Tooltip, TooltipContent } from "@/ui";
 import { useId, useState, type ReactNode } from "react";

@@ -1,11 +1,5 @@
-import {
-  faceTextures,
-  genders,
-  hairTextures,
-  hairTints,
-  skinTints,
-  whiskersTextures,
-} from "@/content";
+import { faceTextures, genders, hairTextures, whiskersTextures } from "@/content/looks/looks";
+import { hairTints, skinTints } from "@/content/looks/tints";
 
 /** The parts of a profile the character screen changes. */
 export interface Appearance {

@@ -1,4 +1,4 @@
-import { spellDetails } from "@/content";
+import { spellDetails } from "@/content/spells/spell-details";
 import { hasBuff, type ActiveBuff } from "@/rules/buffs";
 import { BUFF_SPELLS, checkCastReady, type LastCast } from "@/rules/spells";
 import { NPC_BUFF_CAST_PROBABILITY } from "./constants";

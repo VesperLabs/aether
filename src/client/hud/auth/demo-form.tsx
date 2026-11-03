@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Modal, KeyboardButton, Text } from "@/ui";
 import { useAppContext } from "@/client/hud/app/context";
-import type { CharClass } from "@/content";
+import type { CharClass } from "@/content/stats/stats";
 import { CharClassSelect } from "./char-class-select";
 
 export const DemoForm = () => {
