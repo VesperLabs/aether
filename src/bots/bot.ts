@@ -1,11 +1,5 @@
 import type { ClientGameSocket } from "@/network/socket/game-socket";
-import {
-  crowdAround,
-  createPlayerInputThrottle,
-  getHeroStep,
-  nextPlayerInput,
-} from "@/network/session/hero-control";
-import { stepHeroThroughMap } from "@/network/session/hero-motion";
+import { createHeroDrive, driveHero } from "@/network/session/hero-driver";
 import {
   applyMessage,
   createClientState,
@@ -22,7 +16,6 @@ import { STAND_STILL, type Brain, type BotIntent } from "./brains/brain";
  * sending the same commands the browser client sends, so the server treats it like anyone else.
  */
 
-/** Bodies this close drift the hero apart, as in the client. */
 /** Fewest ms between attack commands; the server refuses swings that are not ready anyway. */
 const ATTACK_EVERY_MS = 250;
 const DEFAULT_WALK_SPEED = 100;
@@ -62,19 +55,16 @@ const walkSpeedOf = (stats: unknown) => {
 export function createBot({ socket, clock, loadMap, brain, rng }: BotOptions): Bot {
   const clientState = createClientState();
   const maps = new Map<string, TileMap | undefined>();
-  const throttle = createPlayerInputThrottle();
+  let drive = createHeroDrive();
   /* The bot's own idea of where it stands: the server's poses of the hero lag behind it. */
   let hero: { x: number; y: number; roomName: string } | undefined;
-  let velocity = { x: 0, y: 0 };
-  let crowdPush = { x: 0, y: 0 };
   let last: BotIntent = STAND_STILL;
   let lastAttackAt = -Infinity;
 
   const resync = () => {
     const self = getSelf(clientState);
     hero = self ? { x: self.x, y: self.y, roomName: clientState.roomName } : undefined;
-    velocity = { x: 0, y: 0 };
-    crowdPush = { x: 0, y: 0 };
+    drive = createHeroDrive();
   };
 
   const mapOf = (roomName: string) => {
@@ -102,51 +92,28 @@ export function createBot({ socket, clock, loadMap, brain, rng }: BotOptions): B
       const intent = brain({ clientState, self, last }, bot.steps, rng);
       last = intent;
 
-      const neighbours = crowdAround(
-        { id: self.id, x: hero.x, y: hero.y },
-        { npcs: clientState.npcs.values(), players: clientState.players.values() },
-      );
-      const walkSpeed = walkSpeedOf(self.stats);
-      const {
-        vx,
-        vy,
-        crowdPush: push,
-      } = getHeroStep({
-        keys: { x: 0, y: 0 },
-        stick: intent.move,
-        walkSpeed,
-        isRooted: !!self.state?.isAttacking,
-        current: velocity,
-        lastCrowdPush: crowdPush,
-        seconds,
-        self: { id: self.id, x: hero.x, y: hero.y },
-        neighbours,
-      });
-      crowdPush = push;
-      const moved = stepHeroThroughMap(
-        map,
-        { x: hero.x, y: hero.y, vx, vy, bodySize: self.bodySize },
-        seconds,
-      );
-      velocity = { x: moved.blockedX ? 0 : vx, y: moved.blockedY ? 0 : vy };
-      hero.x = moved.x;
-      hero.y = moved.y;
-      const direction = facing(velocity.x, velocity.y, self.direction ?? "down");
-      Object.assign(self, { x: hero.x, y: hero.y, vx: velocity.x, vy: velocity.y, direction });
-
-      const lastSent = throttle.lastEmitted;
-      const payload = nextPlayerInput(
-        throttle,
-        {
-          ...hero,
-          isIdle: !velocity.x && !velocity.y && !!lastSent && !lastSent.vx && !lastSent.vy,
+      const direction = facing(intent.move.x, intent.move.y, self.direction ?? "down");
+      const result = driveHero(drive, {
+        hero: {
+          id: self.id,
+          x: hero.x,
+          y: hero.y,
+          bodySize: self.bodySize,
+          roomName: hero.roomName,
+          walkSpeed: walkSpeedOf(self.stats),
         },
-        velocity.x,
-        velocity.y,
+        map,
+        crowd: { npcs: clientState.npcs.values(), players: clientState.players.values() },
+        stick: intent.move,
+        isRooted: !!self.state?.isAttacking,
         direction,
-        clock.now(),
-      );
-      if (payload) socket.emit("playerInput", payload);
+        seconds,
+        now: clock.now(),
+      });
+      hero.x = result.x;
+      hero.y = result.y;
+      Object.assign(self, { x: hero.x, y: hero.y, vx: result.vx, vy: result.vy, direction });
+      if (result.input) socket.emit("playerInput", result.input);
 
       const now = clock.now();
       if (intent.attack && now - lastAttackAt >= ATTACK_EVERY_MS) {

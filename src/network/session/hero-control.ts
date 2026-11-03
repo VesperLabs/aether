@@ -102,10 +102,7 @@ export interface HeroStepInput {
   neighbours: Iterable<Neighbour>;
 }
 
-/**
- * The hero's velocity for this frame, the crowd drift to feed back in next frame, and `walk`: the
- * part the player is driving, without drift, which is what the walk animation follows.
- */
+/** The hero's velocity for this frame, and the crowd drift to feed back in next frame. */
 export function getHeroStep(input: HeroStepInput) {
   const { walkSpeed } = input;
   let { x: vx, y: vy } = getWalkVelocity(input.keys, walkSpeed);
@@ -139,9 +136,8 @@ export function getHeroStep(input: HeroStepInput) {
       x: vx + crowdPush.x,
       y: vy + crowdPush.y,
     }));
-    return { vx, vy, crowdPush, walk };
   }
-  return { vx, vy, crowdPush, walk: { x: vx, y: vy } };
+  return { vx, vy, crowdPush };
 }
 
 /** The playerInput command, as the server's zod schema takes it. */

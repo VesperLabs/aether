@@ -6,15 +6,11 @@ import { isDodging } from "@/rules/movement/dodge";
 import { isKnockedBack } from "@/rules/movement/knockback";
 import { isLunging } from "@/rules/movement/lunge";
 import {
-  createPlayerInputThrottle,
   getFrameSeconds,
-  getHeroStep,
   getLatestHeldDirection,
-  crowdAround,
   getShoveStep,
-  nextPlayerInput,
 } from "@/network/session/hero-control";
-import { stepHeroThroughMap } from "@/network/session/hero-motion";
+import { createHeroDrive, driveHero, type HeroFrame } from "@/network/session/hero-driver";
 import type { Player } from "@/client/views/player";
 import { updateAttackCooldown, updateSpellCooldown } from "./hero-cooldowns";
 import { isTypableFieldActive } from "./typable-field";
@@ -38,50 +34,40 @@ function getLatestKeyDirection(keys: SceneHud["cursorKeys"]) {
   );
 }
 
-/** Last frame's crowd drift, taken back out before easing so it stops the moment the hero is clear. */
-let lastCrowdPush = { x: 0, y: 0 };
-
 /**
- * Moves the hero through the room's walls with the shared session motion, so it lands exactly
- * where a bot would and the server accepts it. The Phaser body gets no velocity: it only follows.
+ * Moves the hero one frame through the shared `driveHero`, the same code bots use, then shows it:
+ * the Phaser body gets no velocity and only follows the container.
  */
-function moveHero(scene: SceneMain, hero: Player, vx: number, vy: number, seconds: number) {
-  hero.body.setVelocity(0, 0);
-  if (!scene.tileMap) return;
-  const moved = stepHeroThroughMap(
-    scene.tileMap,
-    { x: hero.x, y: hero.y, vx, vy, bodySize: hero.bodySize },
-    seconds,
-  );
-  hero.setPosition(moved.x, moved.y);
-}
-
-/** Sends the hero's movement to the server when `nextPlayerInput` says it is due. */
-function emitPlayerInput(
+function driveDirectHero(
   scene: SceneHud,
+  mainScene: SceneMain,
   hero: Player,
-  vx: number,
-  vy: number,
-  direction: string,
-  unthrottled = false,
+  frame: Omit<HeroFrame, "hero" | "map" | "crowd" | "isEnteringDoor" | "now">,
 ) {
-  scene._playerInputNet ??= createPlayerInputThrottle();
-  const payload = nextPlayerInput(
-    scene._playerInputNet,
-    {
+  scene.heroDrive ??= createHeroDrive();
+  const result = driveHero(scene.heroDrive, {
+    ...frame,
+    hero: {
+      id: hero.id,
       x: hero.x,
       y: hero.y,
+      bodySize: hero.bodySize,
       roomName: hero.roomName,
-      isIdle: hero.state.isIdle,
-      isEnteringDoor: hero.state.isEnteringDoor,
+      walkSpeed: hero.stats.walkSpeed,
     },
-    vx,
-    vy,
-    direction,
-    Date.now(),
-    unthrottled,
-  );
-  if (payload) scene.socket.emit("playerInput", payload);
+    map: mainScene.tileMap,
+    crowd: {
+      npcs: mainScene.npcs.getChildren() as Player[],
+      players: mainScene.players.getChildren() as Player[],
+    },
+    isEnteringDoor: hero.state.isEnteringDoor,
+    now: Date.now(),
+  });
+  hero.vx = result.vx;
+  hero.vy = result.vy;
+  hero.body.setVelocity(0, 0);
+  hero.setPosition(result.x, result.y);
+  if (result.input) scene.socket.emit("playerInput", result.input);
 }
 
 /** Reads keyboard, joystick and pointer and applies them to the hero for this frame. */
@@ -93,19 +79,17 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
   const mainScene = scene.scene.manager.getScene("SceneMain") as SceneMain;
   const hero = mainScene?.hero;
   let lastAngle = hero?.state?.lastAngle;
-  let vx = 0;
-  let vy = 0;
   let direction = hero?.direction;
   if (!hero) return;
   /* A shove takes over, even through the stun it comes with: no walking, turning or swinging */
   if (!hero.state.isDead && isKnockedBack(hero.state, Date.now())) {
     const elapsed = Date.now() - (hero.state.knockbackAt ?? 0);
-    ({ vx, vy } = getShoveStep(hero.state.knockbackAngle ?? 0, elapsed));
-    hero.vx = vx;
-    hero.vy = vy;
-    moveHero(mainScene, hero, vx, vy, seconds);
-    hero.state.isIdle = false;
-    emitPlayerInput(scene, hero, vx, vy, hero.direction, true);
+    const { vx, vy } = getShoveStep(hero.state.knockbackAngle ?? 0, elapsed);
+    driveDirectHero(scene, mainScene, hero, {
+      shove: { x: vx, y: vy },
+      direction: hero.direction,
+      seconds,
+    });
     return;
   }
 
@@ -117,7 +101,6 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
     return;
   }
 
-  const walkSpeed = hero.stats.walkSpeed;
   const joystick = scene.joystick;
 
   const keys = scene.cursorKeys;
@@ -206,31 +189,6 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
     !!hero?.state.isAiming ||
     !!hero.state.isHoldingAttack;
 
-  const step = getHeroStep({
-    keys: input,
-    stick,
-    walkSpeed,
-    isRooted,
-    rollAngle: isRolling ? (hero.state.dodgeAngle ?? 0) : undefined,
-    lungeAngle: isLungingNow ? (hero.state.lungeAngle ?? 0) : undefined,
-    current: { x: hero.vx ?? 0, y: hero.vy ?? 0 },
-    lastCrowdPush,
-    seconds,
-    self: hero,
-    neighbours:
-      isLungingNow || isRolling
-        ? []
-        : crowdAround(hero, {
-            npcs: mainScene.npcs.getChildren() as Player[],
-            players: mainScene.players.getChildren() as Player[],
-          }),
-  });
-  ({ vx, vy } = step);
-  lastCrowdPush = step.crowdPush;
-  hero.vx = vx;
-  hero.vy = vy;
-  hero.walkVelocity = step.walk;
-  moveHero(mainScene, hero, vx, vy, seconds);
   /* A melee swing commits to the way it started; bows keep turning to aim */
   if (isLungingNow || !(hero.state.isAttacking && !hero.hasRangedWeapon()))
     hero.direction = direction;
@@ -238,6 +196,15 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
   /* Every frame of a roll and the one after it, so an attack out of a roll swings from where you are */
   const wasRolling = hero.state.wasRolling;
   hero.state.wasRolling = isRolling;
-  emitPlayerInput(scene, hero, vx, vy, hero.direction, isRolling || !!wasRolling);
-  hero.state.isIdle = hero.vx === vx && hero.vy === vy && vx === 0 && vy === 0;
+  driveDirectHero(scene, mainScene, hero, {
+    keys: input,
+    stick,
+    isRooted,
+    rollAngle: isRolling ? (hero.state.dodgeAngle ?? 0) : undefined,
+    lungeAngle: isLungingNow ? (hero.state.lungeAngle ?? 0) : undefined,
+    direction: hero.direction,
+    unthrottled: isRolling || !!wasRolling,
+    seconds,
+  });
+  hero.state.isIdle = hero.vx === 0 && hero.vy === 0;
 }

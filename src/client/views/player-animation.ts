@@ -165,8 +165,8 @@ export function drawFrame(p: Player) {
 }
 
 export function updateCurrentSpeed(player: Player) {
-  /* The hero animates what the player drives, so a crowd's nudge doesn't start the walk cycle */
-  const { x: vx, y: vy } = player.walkVelocity ?? { x: player.vx, y: player.vy };
+  const vx = player.vx;
+  const vy = player.vy;
   player.currentSpeed = Math.max(Math.abs(vx), Math.abs(vy));
 
   const canMoveRanged = player.isHero && player.hasRangedWeapon();

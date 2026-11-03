@@ -94,12 +94,6 @@ describe("getHeroStep", () => {
     expect([standing.vx, standing.vy]).toEqual([0, 0]);
   });
 
-  it("reports the walk without crowd drift, so a nudge doesn't animate walking", () => {
-    const nudged = step({ neighbours: [{ id: "friend", x: 5, y: 0 }] });
-    expect(nudged.vx).not.toBe(0);
-    expect(nudged.walk).toEqual({ x: 0, y: 0 });
-  });
-
   it("uses roll and lunge velocity, lunge first, keeping the crowd push", () => {
     const push = { x: 3, y: 0 };
     const roll = step({ rollAngle: 0, lastCrowdPush: push });
