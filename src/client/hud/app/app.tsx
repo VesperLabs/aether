@@ -21,7 +21,8 @@ import { VideoFrame } from "@/client/hud/video/video-frame";
 import { ModalSettings } from "@/client/hud/settings/modal-settings";
 import type Phaser from "phaser";
 import type Peer from "peerjs";
-import type { ChatMessage, PartyMessage } from "@/network/messages";
+import type { PartyMessage } from "@/network/messages";
+import type { ClientStore } from "@/network/session/client-store";
 import type { ClientGameSocket } from "@/network/socket/game-socket";
 import type { Sign } from "@/client/views/sign";
 import {
@@ -46,14 +47,17 @@ import { createItemEventHandlers } from "./item-events";
 import { MenuGlobalKeys } from "./menu-global-keys";
 import { LoginBackdrop } from "./login-backdrop";
 import { createPartyHandlers } from "./party-events";
+import { useClientState } from "./use-client-state";
 interface AppProps {
   socket: ClientGameSocket;
+  /** The client state the game is fed; the HUD reads chat from it. */
+  clientStore: ClientStore;
   peer: Peer;
   debug: string | undefined;
   game: Phaser.Game;
 }
 
-export function App({ socket, peer, debug, game }: AppProps) {
+export function App({ socket, clientStore, peer, debug, game }: AppProps) {
   const [currentTooltipId, setCurrentTooltipId] = useState<string | null>(null);
   const [partyInvites, setPartyInvites] = useState<Array<PartyInvite>>([]);
   const [party, setParty] = useState<PartyMessage | null>();
@@ -64,7 +68,7 @@ export function App({ socket, peer, debug, game }: AppProps) {
   const [dropItem, setDropItem] = useState<DropItem | null>(null);
   const [hero, setHero] = useState<HudCharacter | null>(null);
   const [keeper, setKeeper] = useState<KeeperView>();
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const messages = useClientState(clientStore, (state) => state.chat);
   const [tabKeeper, setTabKeeper] = useState(false);
   const [tabEquipment, setTabEquipment] = useState(false);
   const [tabInventory, setTabInventory] = useState(false);
@@ -101,9 +105,7 @@ export function App({ socket, peer, debug, game }: AppProps) {
     });
   };
 
-  const addMessage = (payload: ChatMessage) => {
-    setMessages((prev) => [...prev, { ...payload, timestamp: Date.now() }]);
-  };
+  const addMessage = clientStore.addLocalChat;
 
   const { onPlayerJoin, onPlayerLeave, onHeroInit, onBuffUpdate, onPlayerUpdate, onLootGrabbed } =
     createHeroSyncHandlers({
@@ -135,7 +137,7 @@ export function App({ socket, peer, debug, game }: AppProps) {
     setRemoteVideoStreams({});
     setTabSettings(false);
     setTabKeeper(false);
-    setMessages([]);
+    clientStore.clearChat();
     setPlayers([]);
     setParty(null);
     setPartyInvites([]);
@@ -185,7 +187,6 @@ export function App({ socket, peer, debug, game }: AppProps) {
     playerUpdate: onPlayerUpdate,
     lootGrabbed: onLootGrabbed,
     keeperDataUpdate: onKeeperDataUpdate,
-    message: (message) => addMessage(message as ChatMessage), // called without one when there is nothing to say
     playerJoin: onPlayerJoin,
     remove: onPlayerLeave,
     partyInvite: onPartyInvite,

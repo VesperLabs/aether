@@ -1,4 +1,4 @@
-export { CharacterModel, filterVisibleEquipment, withCharacterModel } from "./character";
+export { CharacterModel, filterVisibleEquipment } from "./character";
 export type { CharacterState } from "./state";
 export { stepAppearance } from "./appearance";
 export { DEFAULT_USER_SETTINGS } from "./user-settings";

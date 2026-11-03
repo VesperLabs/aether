@@ -25,7 +25,10 @@ export interface ClientState {
   players: Map<string, ClientCharacter>;
   npcs: Map<string, ClientCharacter>;
   loots: Map<string, LootMessage>;
-  /** Most recent chat and system messages, oldest first, at most `CHAT_LIMIT`. */
+  /**
+   * Most recent chat and system messages, oldest first, at most `CHAT_LIMIT`. Replaced, never
+   * mutated, when a message arrives, so views can tell it changed.
+   */
   chat: ChatMessage[];
   /** Server time of the latest poses applied, ms. */
   poseTime: number;
@@ -46,6 +49,11 @@ export function createClientState(): ClientState {
     poseTime: 0,
     idsByNetId: new Map(),
   };
+}
+
+/** Adds a chat entry: one from the server, or a client-only one (level up, loot found). */
+export function addChat(clientState: ClientState, message: ChatMessage): void {
+  clientState.chat = [...clientState.chat, message].slice(-CHAT_LIMIT);
 }
 
 /** The hero, once `heroInit` has arrived. */
@@ -176,10 +184,7 @@ const handlers: { [K in Exclude<keyof ServerToClientEvents, IgnoredMessage>]: Ha
     merge(clientState.players, player);
   },
   message(clientState, message) {
-    if (!message) return;
-    clientState.chat.push(message);
-    if (clientState.chat.length > CHAT_LIMIT)
-      clientState.chat.splice(0, clientState.chat.length - CHAT_LIMIT);
+    if (message) addChat(clientState, message);
   },
 };
 

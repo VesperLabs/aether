@@ -13,6 +13,7 @@ import "./style.css";
 import "./bridge/window-events";
 import Peer from "peerjs";
 import { getPeerRtcConfiguration } from "@/client/hud/video/webrtc-peer-config";
+import { createClientStore } from "@/network/session/client-store";
 
 const debug = process.env.DEBUG;
 const REDIRECT_URL = process.env.REDIRECT_URL as string;
@@ -20,6 +21,9 @@ const PEER_CLIENT_PORT = parseInt(process.env.PEER_CLIENT_PORT as string);
 const PEER_CLIENT_PATH = process.env.PEER_CLIENT_PATH as string;
 
 const socket = createGameSocket();
+/* What the player sees, fed every server message before any named listener runs. */
+const clientStore = createClientStore(Date.now);
+socket.onAny((name, ...args) => clientStore.apply(name, ...args));
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 const devicePixelRatio = window.devicePixelRatio || 1;
@@ -81,12 +85,12 @@ async function startApp() {
       imageLoadType: "HTMLImageElement",
       crossOrigin: "anonymous",
     },
-    scene: [new SceneBoot(socket), new SceneMain(socket), new SceneHud(socket)],
+    scene: [new SceneBoot(socket), new SceneMain(socket, clientStore.state), new SceneHud(socket)],
   });
 
   root.render(
     <React.StrictMode>
-      <App socket={socket} peer={peer} game={game} debug={debug} />
+      <App socket={socket} clientStore={clientStore} peer={peer} game={game} debug={debug} />
     </React.StrictMode>,
   );
 

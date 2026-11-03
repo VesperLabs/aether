@@ -1,9 +1,7 @@
 import Phaser from "phaser";
-import type { FullCharacterWire } from "@/network/sync/character-state";
 import type { PartyMessage } from "@/network/messages";
-import type { BuffCharacterWire } from "@/network/sync";
 import type { SceneMain } from "@/client/scenes/main-scene";
-import { Character, type CharacterArgs } from "./character";
+import { Character, type CharacterArgs, type CharacterSource } from "./character";
 import { NPC_ENGAGED_BUBBLE } from "@/rules/npc-behavior";
 import type { AbilitySlot } from "@/rules/spells";
 import {
@@ -43,9 +41,6 @@ interface WeaponAtlas {
   offsets?: Record<string, Record<string, { left?: HandOffset; right?: HandOffset }>>;
 }
 
-/** The part of a character that changes with its buffs. */
-type BuffUpdate = BuffCharacterWire | FullCharacterWire;
-
 export class Player extends Character {
   declare scene: SceneMain;
   /** NPCs only: their opt-in behaviors (`aggressive` and so on). */
@@ -79,8 +74,8 @@ export class Player extends Character {
   declare rig: Phaser.GameObjects.Container;
   declare layerOrderKey?: string; // the direction and shield the rig was last stacked for
   declare talkMenu: Sprite;
-  constructor(scene: SceneMain, args: CharacterArgs) {
-    super(scene, args);
+  constructor(scene: SceneMain, args: CharacterArgs, source: CharacterSource) {
+    super(scene, args, source);
     this.behaviors = (args as { behaviors?: readonly string[] }).behaviors;
 
     if (this.hasBuff("stealth")) {
@@ -88,7 +83,7 @@ export class Player extends Character {
     }
 
     this.weaponAtlas = scene.cache.json.get("weaponAtlas");
-    this.updateData(args);
+    this.syncActiveSets();
     this.initSpriteLayers();
     this.drawCharacterFromUserData();
     this.updateHpBar();
@@ -115,34 +110,12 @@ export class Player extends Character {
       patch("isHoldingAttack");
     }
   }
-  updateData(data: FullCharacterWire) {
-    if (data?.peerId !== undefined) this.peerId = data.peerId;
-    this.activeItemSlots = data?.activeItemSlots;
-    // filter out equipment slotNames that are not in activeItemsSlots array
-    this.equipment = data.equipment;
-    this.abilities = data?.abilities;
-    this.inventory = data?.inventory;
-    this.profile = data?.profile;
-    this.stats = data?.stats;
-    this.gold = data?.gold;
-    this.npcKills = data?.npcKills;
-    this.quests = data?.quests;
-    this.buffs = data?.buffs;
-    // update states individually
-    this.state.activeSets = data?.state?.activeSets;
-    this.updateVisibleEquipment();
-  }
-  updateBuffData(data: BuffUpdate) {
-    this.activeItemSlots = data?.activeItemSlots;
-    // Update properties within stats object, excluding hp, mp, and sp
-    this.buffs = data?.buffs;
-    this.stats = data?.stats;
-    this.state.activeSets = data?.state?.activeSets;
-    // filter out equipment slotNames that are not in activeItemsSlots array
-    this.updateVisibleEquipment();
-    this.updateExtas();
+  /** Takes the item sets from the client state; the rest of the entity data is read from it live. */
+  syncActiveSets() {
+    this.state.activeSets = this.record?.state?.activeSets;
   }
   updateExtas() {
+    this.syncActiveSets();
     this.drawCharacterFromUserData();
     this.updateHpBar();
     this.buffRack.compareBuffs(this.buffs);

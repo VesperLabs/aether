@@ -12,7 +12,6 @@ export interface SocketHandlers {
   playerUpdate: ServerToClientEvents["playerUpdate"];
   lootGrabbed: ServerToClientEvents["lootGrabbed"];
   keeperDataUpdate: ServerToClientEvents["keeperDataUpdate"];
-  message: ServerToClientEvents["message"];
   playerJoin: ServerToClientEvents["playerJoin"];
   remove: ServerToClientEvents["remove"];
   partyInvite: ServerToClientEvents["partyInvite"];
@@ -45,7 +44,6 @@ export function bindSocketHandlers(socket: ClientGameSocket, handlers: SocketHan
   socket.on("playerUpdate", handlers.playerUpdate);
   socket.on("lootGrabbed", handlers.lootGrabbed);
   socket.on("keeperDataUpdate", handlers.keeperDataUpdate);
-  socket.on("message", handlers.message);
   socket.on("playerJoin", handlers.playerJoin);
   socket.on("remove", handlers.remove);
   socket.on("partyInvite", handlers.partyInvite);
@@ -61,7 +59,6 @@ export function bindSocketHandlers(socket: ClientGameSocket, handlers: SocketHan
     socket.off("playerUpdate", handlers.playerUpdate);
     socket.off("lootGrabbed", handlers.lootGrabbed);
     socket.off("keeperDataUpdate", handlers.keeperDataUpdate);
-    socket.off("message", handlers.message);
     socket.off("playerJoin", handlers.playerJoin);
     socket.off("remove", handlers.remove);
     socket.off("partyInvite", handlers.partyInvite);
