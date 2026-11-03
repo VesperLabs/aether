@@ -2,7 +2,7 @@ import { encodeWireDirection } from "@/network/sync/net-wire";
 import { getDodgeVelocity } from "@/rules/movement/dodge";
 import { getKnockbackVelocity } from "@/rules/movement/knockback";
 import { getLungeVelocity } from "@/rules/movement/lunge";
-import { getSeparationVelocity, type Neighbour } from "@/rules/movement/separation";
+import { blockBySolid, getSeparationVelocity, type Neighbour } from "@/rules/movement/separation";
 import {
   ATTACK_WALK_SPEED_SCALE,
   approachVelocity,
@@ -59,19 +59,23 @@ interface CrowdMember {
 }
 
 /**
- * The other players around the hero, who drift it gently. Mobs are left out: they never push the
- * hero, the server eases them out of its way instead. The browser passes its sprites and a bot its
- * client state, so both crowd the same way.
+ * The bodies around the hero that drift or block it: other players push gently, mobs are solid.
+ * The browser passes its sprites and a bot its client state, so both crowd the same way.
  */
 export function crowdAround(
   hero: { id: string; x: number; y: number },
-  players: Iterable<CrowdMember>,
+  { npcs, players }: { npcs: Iterable<CrowdMember>; players: Iterable<CrowdMember> },
 ): Neighbour[] {
   const crowd: Neighbour[] = [];
-  for (const c of players) {
-    if (c.id === hero.id || c.state?.isDead) continue;
-    if (Math.abs(c.x - hero.x) > CROWD_RANGE || Math.abs(c.y - hero.y) > CROWD_RANGE) continue;
-    crowd.push({ id: c.id, x: c.x, y: c.y });
+  for (const [members, isSolid] of [
+    [npcs, true],
+    [players, false],
+  ] as const) {
+    for (const c of members) {
+      if (c.id === hero.id || c.state?.isDead) continue;
+      if (Math.abs(c.x - hero.x) > CROWD_RANGE || Math.abs(c.y - hero.y) > CROWD_RANGE) continue;
+      crowd.push({ id: c.id, x: c.x, y: c.y, isSolid });
+    }
   }
   return crowd;
 }
@@ -125,9 +129,13 @@ export function getHeroStep(input: HeroStepInput) {
       current = { x: (current.x / speed) * walkSpeed, y: (current.y / speed) * walkSpeed };
     }
     ({ x: vx, y: vy } = approachVelocity(current, { x: vx, y: vy }, walkSpeed, input.seconds));
-    crowdPush = getSeparationVelocity(input.self, input.neighbours, walkSpeed, { x: vx, y: vy });
-    vx += crowdPush.x;
-    vy += crowdPush.y;
+    const walk = { x: vx, y: vy };
+    const neighbours = [...input.neighbours];
+    crowdPush = getSeparationVelocity(input.self, neighbours, walkSpeed, walk);
+    ({ x: vx, y: vy } = blockBySolid(input.self, neighbours, {
+      x: vx + crowdPush.x,
+      y: vy + crowdPush.y,
+    }));
   }
   return { vx, vy, crowdPush };
 }

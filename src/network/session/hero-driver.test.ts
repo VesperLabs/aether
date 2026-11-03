@@ -17,9 +17,10 @@ const map: TileMap = {
 };
 
 const hero = { id: "me", x: 40, y: 40, bodySize: 4, roomName: "town", walkSpeed: 100 };
+const nobody = { npcs: [], players: [] };
 
 function frame(overrides: Partial<HeroFrame> = {}): HeroFrame {
-  return { hero, map, players: [], direction: "right", seconds: 0.1, now: 0, ...overrides };
+  return { hero, map, crowd: nobody, direction: "right", seconds: 0.1, now: 0, ...overrides };
 }
 
 describe("driveHero", () => {
@@ -47,10 +48,11 @@ describe("driveHero", () => {
     expect(shoved.input).toBeDefined();
   });
 
-  it("is drifted gently by another player it overlaps", () => {
-    const players = [{ id: "friend", x: hero.x + 5, y: hero.y }];
-    const result = driveHero(createHeroDrive(), frame({ players }));
-    expect(result.x).toBeLessThan(hero.x);
+  it("stops at a mob instead of walking into it", () => {
+    const drive = createHeroDrive();
+    const crowd = { npcs: [{ id: "mob", x: hero.x + 15, y: hero.y }], players: [] };
+    const result = driveHero(drive, frame({ keys: { x: 1, y: 0 }, crowd }));
+    expect(result.x).toBeCloseTo(hero.x);
   });
 
   it("stays put without a map", () => {

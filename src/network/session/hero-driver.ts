@@ -36,8 +36,8 @@ export interface HeroFrame {
   hero: { id: string; x: number; y: number; bodySize: number; roomName: string; walkSpeed: number };
   /** The room's walls; without them the hero stays put. */
   map: TileMap | undefined;
-  /** The players in the room, who push the hero gently. Mobs get out of its way on the server. */
-  players: Parameters<typeof crowdAround>[1];
+  /** Who is nearby: mobs block the hero, other players push it gently. */
+  crowd: Parameters<typeof crowdAround>[1];
   /** Velocity of a knockback in progress. It takes over and is sent unthrottled. */
   shove?: Vector;
   keys?: Vector;
@@ -65,7 +65,7 @@ export interface HeroFrameResult {
 }
 
 /**
- * Drives the hero one frame: velocity from intent (or a shove), crowd drift, the walls,
+ * Drives the hero one frame: velocity from intent (or a shove), crowd drift and mobs, the walls,
  * and the throttled `playerInput`. The browser and bots both move their hero only through this,
  * so they move the same way and the server accepts both.
  */
@@ -89,7 +89,7 @@ export function driveHero(drive: HeroDrive, frame: HeroFrame): HeroFrameResult {
       lastCrowdPush: drive.crowdPush,
       seconds,
       self: hero,
-      neighbours: isDashing ? [] : crowdAround(hero, frame.players),
+      neighbours: isDashing ? [] : crowdAround(hero, frame.crowd),
     });
     ({ vx, vy } = step);
     drive.crowdPush = step.crowdPush;

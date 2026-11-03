@@ -103,7 +103,7 @@ export function createBot({ socket, clock, loadMap, brain, rng }: BotOptions): B
           walkSpeed: walkSpeedOf(self.stats),
         },
         map,
-        players: clientState.players.values(),
+        crowd: { npcs: clientState.npcs.values(), players: clientState.players.values() },
         stick: intent.move,
         isRooted: !!self.state?.isAttacking,
         direction,
