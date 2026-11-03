@@ -21,10 +21,12 @@ src/
   server/    app: game server                             core only, never ui
   client/    app: game in the browser                     core + ui
   wiki/      app: wiki site                               core + ui
+  bots/      app: headless players over socket.io         core only, never ui
 public/      images, audio, maps
 scripts/     repo tooling
 ```
 
+- Nothing floats. A folder's top level holds only subfolders and entry points (`main.ts`, `game.tsx`, `app.tsx`, `index.html`, `vite.config.ts`, `*.d.ts`, `style.css`, and `rules/events.ts`). Every other file lives in a folder named for its feature, and a folder past about 12 files splits by feature.
 - Imports only point down. Apps never import each other.
 - Core has no Phaser, React, DOM or IO.
 - Use `@/` for anything outside the current folder (defined only in tsconfig). Relative imports only inside a folder.
@@ -74,9 +76,13 @@ client/input → command → server/net (zod) → rules/<feature>/commands.ts
 
 ## Tests
 
-- Unit and component tests: next to the code (`foo.ts` → `foo.test.ts`)
-- Game scenarios (build a world, run ticks, assert): `src/rules/tests/`
-- Socket and database integration: `src/server/tests/`
+Most tests should be fast, pure and in-process; only the top layer touches sockets or a database.
+
+- **Unit and component tests**: next to the code (`foo.ts` → `foo.test.ts`). Pure rules need no mocks: pass in tick, time and a seeded RNG.
+- **Game scenarios** (build a world, run ticks, assert): `src/rules/tests/`. The default for gameplay bugs; no server, no network.
+- **Integration** (socket and database): `src/server/tests/`. Start the real server in-process on a random port, connect real socket.io clients, and use a throwaway in-memory MongoDB per file. Never a shared or remote database. Wait on events, never on `sleep`. These run as their own vitest project so they can run serially and be filtered.
+- **Bots** (`src/bots/`): headless players that connect like a real client and send only network commands, so the server stays authoritative and they exercise the real path. They drive smoke and load runs on demand, not in `npm run check`. Mob and NPC brains are not bots: they live in `rules/` and are tested as scenarios.
+- Same seed, same result: a flaky test is a bug, fixed or deleted, never retried.
 
 ## Enforcement
 
