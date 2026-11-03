@@ -66,7 +66,7 @@ describe("cheats", () => {
   it("/give puts an item in the inventory", async () => {
     const socket = await login();
     const reply = await cheat(socket, "/give smallHpPotion 5");
-    expect(reply.type).toBe("info");
+    expect(reply.type).toBe("system");
     expect(serverPlayer(socket).inventory.some((i: Anything) => i?.key === "smallHpPotion")).toBe(
       true,
     );
@@ -104,24 +104,24 @@ describe("cheats", () => {
     });
   });
 
-  it("/summon adds mobs the room sees, and /despawn removes them", async () => {
+  it("/spawn adds mobs the room sees, and /despawn removes them", async () => {
     const socket = await login();
     const watcher = await login();
     const joined = waitFor(watcher, "npcJoin");
-    const reply = await cheat(socket, "/summon crab 3");
-    expect(reply.type).toBe("info");
-    expect((await joined).state.isSummoned).toBe(true);
+    const reply = await cheat(socket, "/spawn crab 3");
+    expect(reply.type).toBe("system");
+    expect((await joined).state.isCheatSpawned).toBe(true);
 
     const removed = waitFor(watcher, "npcRemove");
     await cheat(socket, "/despawn");
     await removed;
-    const left = Object.values(server.world.npcs).filter((n: Anything) => n.state?.isSummoned);
+    const left = Object.values(server.world.npcs).filter((n: Anything) => n.state?.isCheatSpawned);
     expect(left).toHaveLength(0);
   });
 
   it("rejects bad arguments with an error", async () => {
     const socket = await login();
-    expect((await cheat(socket, "/summon nothing")).type).toBe("error");
+    expect((await cheat(socket, "/spawn nothing")).type).toBe("error");
     expect((await cheat(socket, "/tp x")).type).toBe("error");
     expect((await cheat(socket, "/warp nowhere")).type).toBe("error");
   });

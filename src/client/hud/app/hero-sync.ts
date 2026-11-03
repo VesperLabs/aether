@@ -1,5 +1,4 @@
 import React from "react";
-import { theme } from "@/ui";
 import { DEFAULT_USER_SETTINGS, type UserSettings } from "@/rules/world";
 import type { ChatMessage, ServerToClientEvents } from "@/network";
 import type { HudCharacter } from "./context";
@@ -32,7 +31,7 @@ export function createHeroSyncHandlers({
     });
 
     /* Only show player join message if the user logged in, not if entered door */
-    if (args?.isLogin) addMessage({ type: "info", message: "A player has joined the game." });
+    if (args?.isLogin) addMessage({ type: "system", message: "A player has joined the game." });
   };
 
   const onPlayerLeave: Handlers["remove"] = (socketId) => {
@@ -64,7 +63,7 @@ export function createHeroSyncHandlers({
     setHero((prev) => ({ ...prev, ...player }) as HudCharacter);
     /* Show a message if the hero leveled */
     if (playerIdsThatLeveled?.includes(player?.id as string)) {
-      addMessage({ type: "success", message: `You are now level ${player?.stats?.level}!` });
+      addMessage({ type: "reward", message: `You are now level ${player?.stats?.level}!` });
     }
     /* Merge updates into player */
     setPlayers((prev) => {
@@ -86,7 +85,7 @@ export function createHeroSyncHandlers({
     if (isCurrentPlayer) {
       setHero(player);
       if (args?.didLevel) {
-        addMessage({ type: "success", message: `You are now level ${player.stats?.level}!` });
+        addMessage({ type: "reward", message: `You are now level ${player.stats?.level}!` });
       }
     }
   };
@@ -98,10 +97,9 @@ export function createHeroSyncHandlers({
       if (loot?.grabMessage) {
         const item = loot?.item;
         addMessage({
-          type: "muted",
-          message: `Found <span style="font-weight: bold; color: ${theme.colors[item?.rarity as keyof typeof theme.colors]}">${
-            item?.name
-          }</span> x${item?.amount || 1}`,
+          type: "reward",
+          message: "Found",
+          item: { name: item?.name, rarity: item?.rarity, amount: item?.amount || 1 },
         });
       }
       /* Both quests and inventory only need to be updated when we pick an item */

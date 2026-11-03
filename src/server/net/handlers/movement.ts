@@ -271,7 +271,7 @@ export function setSpawn(ctx: CommandContext, _spawn: ParsedCommand<"setSpawn">)
     spawn,
   });
   return socket.emit("message", {
-    type: "info",
+    type: "system",
     message: "You have changed your spawn point.",
-  } as Message);
+  });
 }

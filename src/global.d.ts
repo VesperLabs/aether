@@ -23,13 +23,6 @@ interface Item {
   items?: Array<Item>;
 }
 
-interface Message {
-  from?: string;
-  type: "chat" | "warning" | "error" | "party" | "success" | "info" | "muted";
-  message: string;
-  timestamp?: number;
-}
-
 interface Loot {
   id: string;
   roomName: string;

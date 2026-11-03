@@ -116,7 +116,7 @@ describe("setSpawn", () => {
     player.state.targetNpcId = "home-keeper";
     const info = once(socket, "message");
     socket.emit("setSpawn", { x: 9999, y: 9999, roomName: "anywhere" });
-    expect((await info)[0].type).toBe("info");
+    expect((await info)[0].type).toBe("system");
     expect(player.spawn).toMatchObject({
       x: 11,
       y: 22,

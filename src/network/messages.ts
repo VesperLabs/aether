@@ -16,10 +16,23 @@ interface RoomStateMessage {
   loots: LootMessage[];
 }
 
+/**
+ * What a chat line is, which sets its color. Pick by what it means to the player:
+ * - `chat`: a player talking (has `from`)
+ * - `party`: party chat, invites and joins
+ * - `system`: the game telling you something (spawn point set, a command's answer)
+ * - `reward`: something good happened to you (level up, loot)
+ * - `error`: what you tried didn't work
+ */
+export type ChatMessageType = "chat" | "party" | "system" | "reward" | "error";
+
+/** One chat line. `message` is plain text, never HTML: anything rich gets its own field. */
 export interface ChatMessage {
   from?: string;
-  type: "chat" | "warning" | "error" | "party" | "success" | "info" | "muted";
+  type: ChatMessageType;
   message: string;
+  /** An item shown after the text, in its rarity's color ("Found [Crab Claw] x3"). */
+  item?: { name: string; rarity: string; amount?: number };
   timestamp?: number;
 }
 
@@ -101,7 +114,7 @@ export interface ServerToClientEvents {
     playerQuests: FullCharacterWire["quests"];
   }) => void;
   respawnNpc: (payload: { id: string; x: number; y: number; respawnTime: number }) => void;
-  /** An NPC appeared after the room was sent (a cheat summoned it). */
+  /** An NPC appeared after the room was sent (a cheat spawned it). */
   npcJoin: (npc: FullCharacterWire) => void;
   /** An NPC left the world for good. */
   npcRemove: (id: string) => void;

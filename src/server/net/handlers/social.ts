@@ -53,7 +53,7 @@ export function completeQuest(ctx: CommandContext, questId: ParsedCommand<"compl
     return socket.emit("message", {
       type: "error",
       message: questResults.error,
-    } as Message);
+    });
   }
   /* Save the users data */
   player.calculateStats();
