@@ -26,7 +26,7 @@ export interface AppearanceSteps {
 }
 
 /** Every option list, by the step that moves through it, so callers can see how long each is. */
-export const APPEARANCE_OPTIONS = {
+const APPEARANCE_OPTIONS = {
   hairTexture: hairTextures,
   hairTint: hairTints,
   faceTexture: faceTextures,

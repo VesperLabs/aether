@@ -2,7 +2,6 @@ import path from "path";
 import cors from "cors";
 import express from "express";
 import { GameServer } from "./game-server";
-import { startWanderers } from "./bots";
 import { initDatabase, initFakeDatabase } from "./persistence";
 import { registerPeerProxy } from "./http/peer-proxy";
 import { registerRoutes } from "./http/routes";
@@ -53,20 +52,7 @@ class AppServer {
       console.log(
         `💻 Running ${MONGO_URL ? "[online]" : "[offline]"} on ${SERVER_URL} @ ${SERVER_FPS}fps`,
       );
-      this.startBots();
     });
-  }
-
-  /* Bots join over a socket to this same process, through the same commands as players */
-  private async startBots() {
-    const count = Number(process.env.BOTS) || 0;
-    if (!count) return;
-    try {
-      const living = await startWanderers(`http://127.0.0.1:${PORT}`, count);
-      console.log(`🏡 ${living.names.join(", ")} now wandering`);
-    } catch (error) {
-      console.error("🏡 Bots could not join:", error);
-    }
   }
 }
 
