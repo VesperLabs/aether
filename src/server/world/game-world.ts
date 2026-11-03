@@ -21,7 +21,8 @@ import {
 } from "@/server/net/handlers/movement";
 import { subscribeDebugMessages } from "./debug-messages";
 import { Npc, type NpcDefinition } from "@/server/npcs/npc";
-import { createNetIds, type GameIo } from "@/network";
+import { createNetIds } from "@/network/sync/net-ids";
+import type { GameIo } from "@/network/socket/game-socket";
 import type { Database } from "@/server/persistence/database";
 
 /* Find NPCs in data lists, and add `kind` to them */
