@@ -2,19 +2,18 @@ import { getNextAttackCount } from "@/rules/combat";
 import Phaser from "phaser";
 import { getSpinDirection } from "./spin-direction";
 import { getAngleFromDirection } from "@/rules/world";
+import { isDodging } from "@/rules/movement/dodge";
+import { isKnockedBack } from "@/rules/movement/knockback";
+import { isLunging } from "@/rules/movement/lunge";
 import {
-  ATTACK_WALK_SPEED_SCALE,
-  approachVelocity,
-  getDodgeVelocity,
-  getKnockbackVelocity,
-  getWalkVelocity,
-  getLungeVelocity,
-  getSeparationVelocity,
-  isDodging,
-  isKnockedBack,
-  isLunging,
-} from "@/rules/movement";
-import { emitPlayerInput } from "@/client/net/player-input";
+  createPlayerInputThrottle,
+  getFrameSeconds,
+  getHeroStep,
+  getLatestHeldDirection,
+  getShoveStep,
+  nextPlayerInput,
+} from "@/network/session/hero-control";
+import type { Player } from "@/client/views/player";
 import { updateAttackCooldown, updateSpellCooldown } from "./hero-cooldowns";
 import { isTypableFieldActive } from "./typable-field";
 import type { SceneHud } from "@/client/scenes/hud-scene";
@@ -30,17 +29,11 @@ function getLatestKeyDirection(keys: SceneHud["cursorKeys"]) {
     [[keys.a, keys.left], "left"],
     [[keys.d, keys.right], "right"],
   ];
-  let latest: string | undefined;
-  let latestTime = -Infinity;
-  for (const [pair, direction] of held) {
-    for (const key of pair) {
-      if (key.isDown && key.timeDown > latestTime) {
-        latestTime = key.timeDown;
-        latest = direction;
-      }
-    }
-  }
-  return latest;
+  return getLatestHeldDirection(
+    held.flatMap(([pair, direction]) =>
+      pair.map((key) => ({ direction, isDown: key.isDown, timeDown: key.timeDown })),
+    ),
+  );
 }
 
 /** How far around the hero to look for bodies it overlaps. */
@@ -49,13 +42,8 @@ const CROWD_RANGE = 24;
 /** Last frame's crowd drift, taken back out before easing so it stops the moment the hero is clear. */
 let lastCrowdPush = { x: 0, y: 0 };
 
-/** The drift other characters give the hero when it stands in them. Walking always wins. */
-function getCrowdPush(
-  scene: SceneMain,
-  hero: SceneMain["hero"],
-  walkSpeed: number,
-  walk: { x: number; y: number },
-) {
+/** The bodies near the hero that drift it when it stands in them. */
+function getCrowd(scene: SceneMain, hero: SceneMain["hero"]) {
   const neighbours = [];
   for (const group of [scene.npcs, scene.players]) {
     for (const child of group.getChildren() as Array<SceneMain["hero"]>) {
@@ -65,13 +53,41 @@ function getCrowdPush(
       neighbours.push({ id: child.id, x: child.x, y: child.y });
     }
   }
-  return getSeparationVelocity(hero, neighbours, walkSpeed, walk);
+  return neighbours;
+}
+
+/** Sends the hero's movement to the server when `nextPlayerInput` says it is due. */
+function emitPlayerInput(
+  scene: SceneHud,
+  hero: Player,
+  vx: number,
+  vy: number,
+  direction: string,
+  unthrottled = false,
+) {
+  scene._playerInputNet ??= createPlayerInputThrottle();
+  const payload = nextPlayerInput(
+    scene._playerInputNet,
+    {
+      x: hero.x,
+      y: hero.y,
+      roomName: hero.roomName,
+      isIdle: hero.state.isIdle,
+      isEnteringDoor: hero.state.isEnteringDoor,
+    },
+    vx,
+    vy,
+    direction,
+    Date.now(),
+    unthrottled,
+  );
+  if (payload) scene.socket.emit("playerInput", payload);
 }
 
 /** Reads keyboard, joystick and pointer and applies them to the hero for this frame. */
 export function moveDirectHero(scene: SceneHud, deltaMs: number) {
   /* Capped so a tab coming back from sleep does not jump to full speed in one frame */
-  const seconds = Math.min(deltaMs, 100) / 1000;
+  const seconds = getFrameSeconds(deltaMs);
   const isTouch = scene.sys.game.device.input.touch;
   const pointer = scene.input.activePointer;
   const mainScene = scene.scene.manager.getScene("SceneMain") as SceneMain;
@@ -84,7 +100,7 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
   /* A shove takes over, even through the stun it comes with: no walking, turning or swinging */
   if (!hero.state.isDead && isKnockedBack(hero.state, Date.now())) {
     const elapsed = Date.now() - (hero.state.knockbackAt ?? 0);
-    ({ x: vx, y: vy } = getKnockbackVelocity(hero.state.knockbackAngle ?? 0, elapsed));
+    ({ vx, vy } = getShoveStep(hero.state.knockbackAngle ?? 0, elapsed));
     hero.vx = vx;
     hero.vy = vy;
     hero.body.setVelocity(vx, vy);
@@ -111,16 +127,15 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
   const right = keys.d.isDown || keys.right.isDown;
   const input = { x: (right ? 1 : 0) - (left ? 1 : 0), y: (down ? 1 : 0) - (up ? 1 : 0) };
   direction = getLatestKeyDirection(keys) ?? direction;
-  ({ x: vx, y: vy } = getWalkVelocity(input, walkSpeed));
+  const stick = { x: joystick.deltaX, y: joystick.deltaY };
 
   /* Keeps bows facing the right direction if you try to spin out of an attack */
-  if (hero.state.isAttacking && (vx || vy)) {
+  if (hero.state.isAttacking && (input.x || input.y)) {
     lastAngle = Phaser.Math.DegToRad(getAngleFromDirection(direction));
   }
 
   if (joystick.deltaX || joystick.deltaY) {
-    ({ x: vx, y: vy } = getWalkVelocity({ x: joystick.deltaX, y: joystick.deltaY }, walkSpeed));
-    direction = getSpinDirection(hero, { x: hero.x + vx, y: hero.y + vy });
+    direction = getSpinDirection(hero, { x: hero.x + stick.x, y: hero.y + stick.y });
     /* Latest idle check, we set the lastAngle so it's fresh */
     lastAngle = Math.atan2(joystick.deltaY, joystick.deltaX);
   }
@@ -186,31 +201,26 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
   }
 
   /* Attacking and aiming root the hero */
-  if (
+  const isRooted =
     (!hero.hasRangedWeapon() && hero.state.isAttacking) ||
-    hero?.state.isAiming ||
-    hero.state.isHoldingAttack
-  ) {
-    vx *= ATTACK_WALK_SPEED_SCALE;
-    vy *= ATTACK_WALK_SPEED_SCALE;
-  }
+    !!hero?.state.isAiming ||
+    !!hero.state.isHoldingAttack;
 
-  if (isLungingNow) {
-    ({ x: vx, y: vy } = getLungeVelocity(hero.state.lungeAngle ?? 0));
-  } else if (isRolling) {
-    ({ x: vx, y: vy } = getDodgeVelocity(hero.state.dodgeAngle ?? 0));
-  } else {
-    /* Coming out of a roll drops straight to walking pace, so it can't carry past the roll */
-    let current = { x: (hero.vx ?? 0) - lastCrowdPush.x, y: (hero.vy ?? 0) - lastCrowdPush.y };
-    const speed = Math.hypot(current.x, current.y);
-    if (speed > walkSpeed) {
-      current = { x: (current.x / speed) * walkSpeed, y: (current.y / speed) * walkSpeed };
-    }
-    ({ x: vx, y: vy } = approachVelocity(current, { x: vx, y: vy }, walkSpeed, seconds));
-    lastCrowdPush = getCrowdPush(mainScene, hero, walkSpeed, { x: vx, y: vy });
-    vx += lastCrowdPush.x;
-    vy += lastCrowdPush.y;
-  }
+  const step = getHeroStep({
+    keys: input,
+    stick,
+    walkSpeed,
+    isRooted,
+    rollAngle: isRolling ? (hero.state.dodgeAngle ?? 0) : undefined,
+    lungeAngle: isLungingNow ? (hero.state.lungeAngle ?? 0) : undefined,
+    current: { x: hero.vx ?? 0, y: hero.vy ?? 0 },
+    lastCrowdPush,
+    seconds,
+    self: hero,
+    neighbours: isLungingNow || isRolling ? [] : getCrowd(mainScene, hero),
+  });
+  ({ vx, vy } = step);
+  lastCrowdPush = step.crowdPush;
   hero.vx = vx;
   hero.vy = vy;
   hero.body.setVelocity(vx, vy);

@@ -5,6 +5,7 @@ import { addGlobalEventListeners } from "@/client/input/hero-events";
 import { moveDirectHero } from "@/client/input/hero-movement";
 import { addJoystick } from "@/client/input/hud-joystick";
 import type { Joystick } from "@/client/input/joystick";
+import type { PlayerInputThrottle } from "@/network/session/hero-control";
 
 const { W, S, A, D } = Phaser.Input.Keyboard.KeyCodes;
 
@@ -13,18 +14,8 @@ export class SceneHud extends Phaser.Scene {
   cursorKeys!: Phaser.Types.Input.Keyboard.CursorKeys &
     Record<"w" | "s" | "a" | "d", Phaser.Input.Keyboard.Key>;
   rectangleContainer: unknown;
-  /** Throttle state for `emitPlayerInput`. */
-  _playerInputNet?: {
-    lastEmitAt: number;
-    lastEmitted: {
-      vx: number;
-      vy: number;
-      x: number;
-      y: number;
-      d: number;
-      roomName: string;
-    } | null;
-  };
+  /** Throttle state for playerInput. */
+  _playerInputNet?: PlayerInputThrottle;
   joystick!: Joystick;
   joystick2!: Joystick;
   constructor(socket: ClientGameSocket) {
