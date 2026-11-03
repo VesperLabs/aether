@@ -1,5 +1,6 @@
 import type { ClientGameSocket } from "@/network/socket/game-socket";
 import {
+  crowdAround,
   createPlayerInputThrottle,
   getHeroStep,
   nextPlayerInput,
@@ -22,7 +23,6 @@ import { STAND_STILL, type Brain, type BotIntent } from "./brains/brain";
  */
 
 /** Bodies this close drift the hero apart, as in the client. */
-const CROWD_RANGE = 24;
 /** Fewest ms between attack commands; the server refuses swings that are not ready anyway. */
 const ATTACK_EVERY_MS = 250;
 const DEFAULT_WALK_SPEED = 100;
@@ -102,15 +102,10 @@ export function createBot({ socket, clock, loadMap, brain, rng }: BotOptions): B
       const intent = brain({ clientState, self, last }, bot.steps, rng);
       last = intent;
 
-      const neighbours = [];
-      for (const list of [clientState.npcs, clientState.players]) {
-        for (const c of list.values()) {
-          if (c === self || c.state?.isDead) continue;
-          if (Math.abs(c.x - hero.x) > CROWD_RANGE || Math.abs(c.y - hero.y) > CROWD_RANGE)
-            continue;
-          neighbours.push({ id: c.id, x: c.x, y: c.y });
-        }
-      }
+      const neighbours = crowdAround(
+        { id: self.id, x: hero.x, y: hero.y },
+        { npcs: clientState.npcs.values(), players: clientState.players.values() },
+      );
       const walkSpeed = walkSpeedOf(self.stats);
       const {
         vx,

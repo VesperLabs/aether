@@ -10,6 +10,7 @@ import {
   getFrameSeconds,
   getHeroStep,
   getLatestHeldDirection,
+  crowdAround,
   getShoveStep,
   nextPlayerInput,
 } from "@/network/session/hero-control";
@@ -37,25 +38,8 @@ function getLatestKeyDirection(keys: SceneHud["cursorKeys"]) {
   );
 }
 
-/** How far around the hero to look for bodies it overlaps. */
-const CROWD_RANGE = 24;
-
 /** Last frame's crowd drift, taken back out before easing so it stops the moment the hero is clear. */
 let lastCrowdPush = { x: 0, y: 0 };
-
-/** The bodies near the hero that drift it when it stands in them. */
-function getCrowd(scene: SceneMain, hero: SceneMain["hero"]) {
-  const neighbours = [];
-  for (const group of [scene.npcs, scene.players]) {
-    for (const child of group.getChildren() as Array<SceneMain["hero"]>) {
-      if (child === hero || child.state?.isDead) continue;
-      if (Math.abs(child.x - hero.x) > CROWD_RANGE || Math.abs(child.y - hero.y) > CROWD_RANGE)
-        continue;
-      neighbours.push({ id: child.id, x: child.x, y: child.y });
-    }
-  }
-  return neighbours;
-}
 
 /**
  * Moves the hero through the room's walls with the shared session motion, so it lands exactly
@@ -233,12 +217,19 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
     lastCrowdPush,
     seconds,
     self: hero,
-    neighbours: isLungingNow || isRolling ? [] : getCrowd(mainScene, hero),
+    neighbours:
+      isLungingNow || isRolling
+        ? []
+        : crowdAround(hero, {
+            npcs: mainScene.npcs.getChildren() as Player[],
+            players: mainScene.players.getChildren() as Player[],
+          }),
   });
   ({ vx, vy } = step);
   lastCrowdPush = step.crowdPush;
   hero.vx = vx;
   hero.vy = vy;
+  hero.walkVelocity = step.walk;
   moveHero(mainScene, hero, vx, vy, seconds);
   /* A melee swing commits to the way it started; bows keep turning to aim */
   if (isLungingNow || !(hero.state.isAttacking && !hero.hasRangedWeapon()))

@@ -3,6 +3,7 @@ import { getDodgeVelocity } from "@/rules/movement/dodge";
 import { getLungeVelocity } from "@/rules/movement/lunge";
 import { ATTACK_WALK_SPEED_SCALE } from "@/rules/movement/walking";
 import {
+  crowdAround,
   PLAYER_INPUT_THROTTLE_MS,
   createPlayerInputThrottle,
   getFrameSeconds,
@@ -85,6 +86,20 @@ describe("getHeroStep", () => {
     expect(vy).toBeCloseTo(-100);
   });
 
+  it("stops at a mob's edge without being shoved back", () => {
+    const mob = { id: "mob", x: 15, y: 0, isSolid: true };
+    const walking = step({ keys: { x: 1, y: 0 }, neighbours: [mob] });
+    expect(walking.vx).toBeCloseTo(0);
+    const standing = step({ neighbours: [{ ...mob, x: 5 }] });
+    expect([standing.vx, standing.vy]).toEqual([0, 0]);
+  });
+
+  it("reports the walk without crowd drift, so a nudge doesn't animate walking", () => {
+    const nudged = step({ neighbours: [{ id: "friend", x: 5, y: 0 }] });
+    expect(nudged.vx).not.toBe(0);
+    expect(nudged.walk).toEqual({ x: 0, y: 0 });
+  });
+
   it("uses roll and lunge velocity, lunge first, keeping the crowd push", () => {
     const push = { x: 3, y: 0 };
     const roll = step({ rollAngle: 0, lastCrowdPush: push });
@@ -110,5 +125,23 @@ describe("helpers", () => {
         { direction: "down", isDown: false, timeDown: 20 },
       ]),
     ).toBe("left");
+  });
+});
+
+describe("crowdAround", () => {
+  it("marks nearby mobs solid and players soft, skipping self, the dead and the far", () => {
+    const hero = { id: "me", x: 0, y: 0 };
+    const crowd = crowdAround(hero, {
+      npcs: [
+        { id: "mob", x: 10, y: 0 },
+        { id: "dead", x: 5, y: 0, state: { isDead: true } },
+        { id: "far", x: 100, y: 0 },
+      ],
+      players: [hero, { id: "friend", x: 0, y: 10 }],
+    });
+    expect(crowd).toEqual([
+      { id: "mob", x: 10, y: 0, isSolid: true },
+      { id: "friend", x: 0, y: 10, isSolid: false },
+    ]);
   });
 });

@@ -2,7 +2,7 @@ import { encodeWireDirection } from "@/network/sync/net-wire";
 import { getDodgeVelocity } from "@/rules/movement/dodge";
 import { getKnockbackVelocity } from "@/rules/movement/knockback";
 import { getLungeVelocity } from "@/rules/movement/lunge";
-import { getSeparationVelocity, type Neighbour } from "@/rules/movement/separation";
+import { blockBySolid, getSeparationVelocity, type Neighbour } from "@/rules/movement/separation";
 import {
   ATTACK_WALK_SPEED_SCALE,
   approachVelocity,
@@ -48,6 +48,38 @@ export function getShoveStep(angle: number, elapsed: number) {
   return { vx, vy };
 }
 
+/** How near a character must be, per axis, to count for crowd drift and blocking. */
+const CROWD_RANGE = 24;
+
+interface CrowdMember {
+  id: string;
+  x: number;
+  y: number;
+  state?: { isDead?: boolean };
+}
+
+/**
+ * The bodies around the hero that drift or block it: other players push gently, mobs are solid.
+ * The browser passes its sprites and a bot its client state, so both crowd the same way.
+ */
+export function crowdAround(
+  hero: { id: string; x: number; y: number },
+  { npcs, players }: { npcs: Iterable<CrowdMember>; players: Iterable<CrowdMember> },
+): Neighbour[] {
+  const crowd: Neighbour[] = [];
+  for (const [members, isSolid] of [
+    [npcs, true],
+    [players, false],
+  ] as const) {
+    for (const c of members) {
+      if (c.id === hero.id || c.state?.isDead) continue;
+      if (Math.abs(c.x - hero.x) > CROWD_RANGE || Math.abs(c.y - hero.y) > CROWD_RANGE) continue;
+      crowd.push({ id: c.id, x: c.x, y: c.y, isSolid });
+    }
+  }
+  return crowd;
+}
+
 export interface HeroStepInput {
   /** Walk intent from keys, each axis -1, 0 or 1. */
   keys: Vector;
@@ -70,7 +102,10 @@ export interface HeroStepInput {
   neighbours: Iterable<Neighbour>;
 }
 
-/** The hero's velocity for this frame, and the crowd drift to feed back in next frame. */
+/**
+ * The hero's velocity for this frame, the crowd drift to feed back in next frame, and `walk`: the
+ * part the player is driving, without drift, which is what the walk animation follows.
+ */
 export function getHeroStep(input: HeroStepInput) {
   const { walkSpeed } = input;
   let { x: vx, y: vy } = getWalkVelocity(input.keys, walkSpeed);
@@ -97,11 +132,16 @@ export function getHeroStep(input: HeroStepInput) {
       current = { x: (current.x / speed) * walkSpeed, y: (current.y / speed) * walkSpeed };
     }
     ({ x: vx, y: vy } = approachVelocity(current, { x: vx, y: vy }, walkSpeed, input.seconds));
-    crowdPush = getSeparationVelocity(input.self, input.neighbours, walkSpeed, { x: vx, y: vy });
-    vx += crowdPush.x;
-    vy += crowdPush.y;
+    const walk = { x: vx, y: vy };
+    const neighbours = [...input.neighbours];
+    crowdPush = getSeparationVelocity(input.self, neighbours, walkSpeed, walk);
+    ({ x: vx, y: vy } = blockBySolid(input.self, neighbours, {
+      x: vx + crowdPush.x,
+      y: vy + crowdPush.y,
+    }));
+    return { vx, vy, crowdPush, walk };
   }
-  return { vx, vy, crowdPush };
+  return { vx, vy, crowdPush, walk: { x: vx, y: vy } };
 }
 
 /** The playerInput command, as the server's zod schema takes it. */

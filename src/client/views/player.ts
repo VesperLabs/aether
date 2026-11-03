@@ -44,6 +44,8 @@ export class Player extends Character {
   declare scene: SceneMain;
   /** NPCs only: their opt-in behaviors (`aggressive` and so on). */
   behaviors?: readonly string[];
+  /** Hero only: the velocity the player drives, without crowd drift. The walk animation follows it. */
+  walkVelocity?: { x: number; y: number };
   declare weaponAtlas: WeaponAtlas;
   declare skin: Sprite;
   declare chest: Sprite;
