@@ -4,10 +4,8 @@ import { LootItem } from "@/client/views/loot-item";
 import type { FullCharacterWire } from "@/network/sync/character-state";
 import type { LootMessage } from "@/network/messages";
 import type { SceneMain } from "./main-scene";
-import { rememberNetId } from "@/client/net/net-ids";
 
 export function addPlayer(scene: SceneMain, user: CharacterArgs) {
-  rememberNetId(user);
   const player = new Player(scene, user, scene.clientState.players);
   scene.add.existing(player);
   scene.players.add(player);
@@ -59,7 +57,6 @@ export function addLoot(scene: SceneMain, lootData: LootMessage) {
 }
 
 export function addNpc(scene: SceneMain, npcData: FullCharacterWire) {
-  rememberNetId(npcData);
   const npc = new Player(scene, npcData, scene.clientState.npcs);
   scene.add.existing(npc);
   scene.npcs.add(npc);

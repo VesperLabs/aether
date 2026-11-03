@@ -1,6 +1,11 @@
-import type { ChatMessage, LootMessage, ServerToClientEvents } from "@/network/messages";
+import type {
+  ChatMessage,
+  LootMessage,
+  PartyMessage,
+  ServerToClientEvents,
+} from "@/network/messages";
 import type { FullCharacterWire } from "@/network/sync/character-state";
-import { decodeRoomPoses, type Pose } from "@/network/sync/poses";
+import { decodeRoomPoses, type Pose, type RoomPoses } from "@/network/sync/poses";
 import type { CharacterStatus, RoomStatuses } from "@/network/sync/statuses";
 import { decodeTickVitals, type Vitals } from "@/network/sync/vitals";
 
@@ -11,7 +16,10 @@ import { decodeTickVitals, type Vitals } from "@/network/sync/vitals";
 
 /** A character as the client state holds it: its last whole data, moved by poses and statuses. */
 export interface ClientCharacter extends FullCharacterWire {
-  /** Hp, mp, sp and their maximums from the latest status, once one has arrived. */
+  /**
+   * Hp, mp, sp and their maximums from the latest status, once one has arrived. Newer than
+   * `stats` until the next whole character arrives; read both through `statsOf`.
+   */
   vitals?: Vitals;
   /** Server time of the last teleport or respawn; poses older than it are not interpolated. */
   lastTeleport?: number;
@@ -32,6 +40,15 @@ export interface ClientState {
   chat: ChatMessage[];
   /** Server time of the latest poses applied, ms. */
   poseTime: number;
+  /** The latest poses applied, decoded, for interpolation to buffer. */
+  poses?: RoomPoses;
+  /** The hero's party, from `partyUpdate`; null when not in one. */
+  party: PartyMessage | null;
+  /**
+   * Bumped by every message but poses. Characters are replaced, never mutated, when anything but
+   * their pose changes, so views can cache what they derive per revision.
+   */
+  revision: number;
   /** Character ids by net id, to read binary poses. */
   idsByNetId: Map<number, string>;
 }
@@ -47,6 +64,8 @@ export function createClientState(): ClientState {
     loots: new Map(),
     chat: [],
     poseTime: 0,
+    party: null,
+    revision: 0,
     idsByNetId: new Map(),
   };
 }
@@ -68,7 +87,8 @@ function remember(
 ) {
   const id = c.socketId || c.id;
   const old = list.get(id);
-  list.set(id, { ...old, ...c });
+  /* Whole data is newer than the last status's vitals; the next status brings them back. */
+  list.set(id, { ...old, ...c, ...(c.stats ? { vitals: undefined } : {}) });
   if (typeof c.nid === "number") clientState.idsByNetId.set(c.nid, id);
 }
 
@@ -83,7 +103,8 @@ function forget(clientState: ClientState, list: Map<string, ClientCharacter>, id
 function merge(list: Map<string, ClientCharacter>, c: { id?: string; socketId?: string }) {
   const id = c.socketId || c.id;
   const old = id ? list.get(id) : undefined;
-  if (id && old) list.set(id, { ...old, ...c } as ClientCharacter);
+  const fresh = "stats" in c && c.stats ? { vitals: undefined } : {};
+  if (id && old) list.set(id, { ...old, ...c, ...fresh } as ClientCharacter);
 }
 
 type Handler<K extends keyof ServerToClientEvents> = (
@@ -102,7 +123,6 @@ const IGNORED_MESSAGES = [
   "loginToken",
   "loginTokenRejected",
   "knockedBack",
-  "keeperDataUpdate",
   "spellHitShapes",
   "playerAttack",
   "playerDodge",
@@ -113,7 +133,6 @@ const IGNORED_MESSAGES = [
   "modifyPlayerStat",
   "assignDamage",
   "partyInvite",
-  "partyUpdate",
   "updateUserSetting",
   "connectPeer",
 ] as const satisfies readonly (keyof ServerToClientEvents)[];
@@ -183,6 +202,13 @@ const handlers: { [K in Exclude<keyof ServerToClientEvents, IgnoredMessage>]: Ha
     clientState.loots.delete(loot?.id);
     merge(clientState.players, player);
   },
+  partyUpdate(clientState, { party }) {
+    clientState.party = party ?? null;
+  },
+  keeperDataUpdate(clientState, { playerQuests }) {
+    const self = getSelf(clientState);
+    if (self) clientState.players.set(clientState.selfId, { ...self, quests: playerQuests });
+  },
   message(clientState, message) {
     if (message) addChat(clientState, message);
   },
@@ -197,7 +223,9 @@ export function applyMessage<K extends keyof ServerToClientEvents>(
   const handle = (handlers as { [P in keyof ServerToClientEvents]?: Handler<P> })[name] as
     | Handler<K>
     | undefined;
-  handle?.(clientState, ...args);
+  if (!handle) return;
+  handle(clientState, ...args);
+  if (name !== "poses") clientState.revision++;
 }
 
 function applyPose(list: Map<string, ClientCharacter>, [id, x, y, vx, vy]: Pose) {
@@ -210,6 +238,7 @@ export function applyPoses(clientState: ClientState, data: ArrayBuffer | ArrayBu
   const poses = decodeRoomPoses(data, (nid) => clientState.idsByNetId.get(nid));
   if (poses.t < clientState.poseTime) return;
   clientState.poseTime = poses.t;
+  clientState.poses = poses;
   for (const pose of poses.p) applyPose(clientState.players, pose);
   for (const pose of poses.n) applyPose(clientState.npcs, pose);
 }
@@ -217,8 +246,11 @@ export function applyPoses(clientState: ClientState, data: ArrayBuffer | ArrayBu
 function applyStatus(list: Map<string, ClientCharacter>, status: CharacterStatus) {
   const c = list.get(status.id);
   if (!c) return;
-  c.state = { ...c.state, ...status.state };
-  c.vitals = decodeTickVitals(status.v) ?? c.vitals;
+  list.set(status.id, {
+    ...c,
+    state: { ...c.state, ...status.state },
+    vitals: decodeTickVitals(status.v) ?? c.vitals,
+  });
 }
 
 /** Applies a `statuses` message: state flags and vitals of characters that changed. */

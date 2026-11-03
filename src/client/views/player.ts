@@ -1,5 +1,4 @@
 import Phaser from "phaser";
-import type { PartyMessage } from "@/network/messages";
 import type { SceneMain } from "@/client/scenes/main-scene";
 import { Character, type CharacterArgs, type CharacterSource } from "./character";
 import { NPC_ENGAGED_BUBBLE } from "@/rules/npc-behavior";
@@ -45,8 +44,6 @@ export class Player extends Character {
   declare scene: SceneMain;
   /** NPCs only: their opt-in behaviors (`aggressive` and so on). */
   behaviors?: readonly string[];
-  /** Only the hero has a party. */
-  party?: PartyMessage | null;
   declare weaponAtlas: WeaponAtlas;
   declare skin: Sprite;
   declare chest: Sprite;
@@ -213,7 +210,6 @@ export class Player extends Character {
   }
   respawn() {
     this.state.isDead = false;
-    this.stats.hp = this.stats.maxHp;
     this.updateHpBar();
     this.setBodyVisible(true);
     this.hpBar.setVisible(false);

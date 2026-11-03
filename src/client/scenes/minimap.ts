@@ -117,8 +117,7 @@ export function updateMinimap(scene: SceneMain) {
     if (!npc.state?.isDead) placeDot(scene, count++, npc.x, npc.y, npcColor(npc));
   }
   // Players last, so they sit on top of the mobs around them
-  const hero = getPlayers(scene).find((player) => player.isHero);
-  const partyIds = new Set(hero?.party?.members?.map((member: { id: string }) => member.id));
+  const partyIds = new Set(scene.clientState.party?.members?.map((member) => member.id));
   for (const player of getPlayers(scene)) {
     if (player.state?.isDead) continue;
     const color = player.isHero ? HERO_COLOR : partyIds.has(player.id) ? PARTY_COLOR : PLAYER_COLOR;

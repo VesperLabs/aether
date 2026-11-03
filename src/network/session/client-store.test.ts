@@ -15,9 +15,19 @@ describe("client store", () => {
     ]);
     expect(listener).toHaveBeenCalledTimes(2);
     stop();
-    store.clearChat();
+    store.reset();
     expect(store.state.chat).toEqual([]);
     expect(listener).toHaveBeenCalledTimes(2);
+  });
+
+  it("forgets the party and characters on reset, with a new revision", () => {
+    const store = createClientStore(() => 0);
+    store.apply("partyUpdate", { party: { id: "p" } });
+    const revision = store.state.revision;
+    store.reset();
+    expect(store.state.party).toBeNull();
+    expect(store.state.players.size).toBe(0);
+    expect(store.state.revision).toBeGreaterThan(revision);
   });
 
   it("replaces the chat array on change and keeps it bounded", () => {
