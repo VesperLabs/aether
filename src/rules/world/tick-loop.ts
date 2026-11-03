@@ -9,7 +9,7 @@ export interface Frame {
 }
 
 /** Runs `run` after `ms`; returns a function that cancels it. Simulations pass a virtual one. */
-export type SetTimer = (run: () => void, ms: number) => () => void;
+type SetTimer = (run: () => void, ms: number) => () => void;
 
 const realTimer: SetTimer = (run, ms) => {
   const timer = setTimeout(run, ms);

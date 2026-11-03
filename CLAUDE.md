@@ -10,9 +10,9 @@ Server-authoritative online game: Phaser + React client, Node + socket.io server
   - Default to the main checkout, so the user can preview the task in the browser with `npm run dev`. If it has no uncommitted changes and no unpushed commits, it is free, even when it sits on an old branch: branch there.
   - Use a worktree only when the main checkout is busy (uncommitted changes, or commits not yet pushed), so the tasks never share files. Parallel agents always use worktrees.
 - Don't add to existing `utils`/`helpers`/`common` files. If you touch a function in one, move it to its proper home.
+- No barrel imports. Import from the file that defines a thing, never through an `index.ts` that only re-exports. Don't add new barrels, and when you touch code that imports through one, point it at the real files; delete a barrel once nothing uses it (and drop it from the `barrel` legacy list in `scripts/check-structure.ts`).
 - Move code in small steps that keep `npm run check` passing.
 - Commits and PR titles are [conventional commits](https://www.conventionalcommits.org) (`feat:`, `fix:`, `refactor:`, `docs:`, `test:`, `ci:`, `chore:`), enforced by commitlint; release-please bumps versions from them.
-- Working on bots (`src/bots/`, `src/server/bots/`, `src/server/sim/`) is also a chance to improve the game: see `src/bots/CLAUDE.md`. If a refactor makes the codebase faster or cleaner, or gives bots a nicer API, just do it.
 
 ## Subagents
 

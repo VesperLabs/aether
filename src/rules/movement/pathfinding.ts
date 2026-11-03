@@ -28,7 +28,7 @@ export function createPathfinder(grid: TileGrid): Pathfinder {
 }
 
 /** A circle a path should stay out of, such as the space around a monster. */
-export interface AvoidZone {
+interface AvoidZone {
   x: number;
   y: number;
   radius: number;

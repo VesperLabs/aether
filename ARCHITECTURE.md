@@ -17,7 +17,6 @@ src/
   content/   core: items, mobs, spells, quests, maps      imports nothing
   rules/     core: the game itself                        imports content
   network/   core: client↔server messages                 imports rules, content, socket.io types
-  bots/    core: code-driven players (tests, bots) imports network, rules, content
   ui/        React views of core, by feature; kit/ for generic widgets
   server/    app: game server                             core only, never ui
   client/    app: game in the browser                     core + ui
@@ -29,7 +28,7 @@ scripts/     repo tooling
 - Imports only point down. Apps never import each other.
 - Core has no Phaser, React, DOM or IO.
 - Use `@/` for anything outside the current folder (defined only in tsconfig). Relative imports only inside a folder.
-- Code outside a feature imports it only through its `index.ts`.
+- No barrels: import from the file that defines a thing, never from an `index.ts` that re-exports it. Existing barrels are legacy and shrink as code is touched.
 - Exception: Phaser code in `client/` imports `ui/` modules directly (`@/ui/kit/is-mobile`), never the `@/ui` barrel, so `ui/` edits don't reload the whole game.
 
 ### `rules/`
@@ -43,7 +42,6 @@ A feature grows into these files:
 
 ```
 inventory/
-  index.ts      public API, re-exports only
   rules.ts      pure functions over state
   system.ts     per-tick logic
   commands.ts   network command → rules → events
@@ -54,22 +52,6 @@ Rules are **pure and deterministic**: no `Date.now()`, `Math.random()` or global
 ### `network/`
 
 `commands.ts` holds one zod schema per client→server command; `messages.ts` holds server→client messages; `sync/` holds poses (every position, whole on every tick, safe to lose) and statuses (flags and vitals, sent only when they change). The server never trusts a client value it can compute itself (position, damage, cooldowns).
-
-### `bots/`
-
-Bots are players driven by code. They log in and act through the same commands as the browser, and know only what the server sends them, so they test the real game and can later live in it.
-
-```
-link.ts     BotLink: commands out, messages in. Hosts provide it (socket.io today)
-senses.ts   what a bot knows, built only from server messages (pure)
-bot.ts      the body: senses plus actions (travelTo, enterDoor, fight, inviteToParty, consume, cheat)
-atlas.ts    room maps from a host-given MapSource: walls, pathfinder, doors
-brain.ts    Brain: (bot, { clock, rng, signal }) => a loop deciding what to do
-brains/     brains that live in the world (wander, ...)
-scenarios/  scripted tests: bots play out a situation and check what the server did
-```
-
-A **host** runs bots: it picks the link, passes the clock and RNG, and decides whether they may use cheats (tests yes, bots in the world never). Hosts live in apps: `server/bots/` (socket link, wanderers), `server/sim/` (the real server on virtual time with bots linked in-process: tests run minutes of play in milliseconds), `scripts/bots.ts` (`npm run bots`). Like rules, bots read no clock and roll no dice of their own, so any host (a test, the game server, a Cloudflare worker) can run them.
 
 ### Apps
 
@@ -101,7 +83,7 @@ client/input → command → server/net (zod) → rules/<feature>/commands.ts
 `npm run check` runs on every commit (husky) and PR (CI):
 
 - **oxlint**: import direction and cycles, files under 400 lines, kebab-case names, named exports only, no `Date.now()`/`Math.random()` in `rules/`, no `@/ui` barrel from Phaser client code, no raw `socket.on` outside `net/`
-- **`scripts/check-structure.ts`**: banned folder names (`utils`, `helpers`, `common`, `misc`, `lib`, `shared`), `*Manager`, `.spec` (tests are `.test.ts(x)`), `.tsx` without JSX, logic in `index.ts`
+- **`scripts/check-structure.ts`**: banned folder names (`utils`, `helpers`, `common`, `misc`, `lib`, `shared`), `*Manager`, `.spec` (tests are `.test.ts(x)`), `.tsx` without JSX, `index.ts` barrels
 - **tsc**: strict typecheck of the whole repo
 - **oxfmt**: formatting
 

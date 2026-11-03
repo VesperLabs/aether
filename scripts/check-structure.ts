@@ -13,7 +13,8 @@ type Rule =
   | "spec-file"
   | "tsx-without-jsx"
   | "index-logic"
-  | "raw-socket-on";
+  | "raw-socket-on"
+  | "barrel";
 
 /** Paths (relative to the repo root) that are allowed to break a rule for now. */
 const LEGACY: Record<Rule, string[]> = {
@@ -28,6 +29,29 @@ const LEGACY: Record<Rule, string[]> = {
     "src/client/hud/auth/login-form.tsx",
     "src/client/hud/auth/register-form.tsx",
   ],
+  barrel: [
+    "src/content/index.ts",
+    "src/network/index.ts",
+    "src/network/sync/index.ts",
+    "src/rules/buffs/index.ts",
+    "src/rules/character/index.ts",
+    "src/rules/combat/index.ts",
+    "src/rules/inventory/index.ts",
+    "src/rules/loot/index.ts",
+    "src/rules/movement/index.ts",
+    "src/rules/npc-behavior/index.ts",
+    "src/rules/party/index.ts",
+    "src/rules/quests/index.ts",
+    "src/rules/spells/index.ts",
+    "src/rules/stats/index.ts",
+    "src/rules/world/index.ts",
+    "src/server/persistence/index.ts",
+    "src/ui/character/index.ts",
+    "src/ui/index.ts",
+    "src/ui/item/index.ts",
+    "src/ui/kit/index.ts",
+    "src/wiki/api/index.ts",
+  ],
 };
 
 const ROOTS = ["src", "scripts"];
@@ -36,8 +60,8 @@ const KEBAB = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const REEXPORT = /export\s+(type\s+)?(\*(\s+as\s+\w+)?|\{[^}]*\})\s*from\s*["'][^"']+["'];?/g;
 const IMPORT = /import\s+(type\s+)?([^;"']*?\sfrom\s*)?["'][^"']+["'];?/g;
 const EXPORT_LIST = /export\s+(type\s+)?\{[^}]*\};?/g;
-// Only the dispatchers listen on sockets; tests and agent links are clients and may listen too
-const SOCKET_DISPATCHERS = ["src/server/net/", "src/client/net/", "src/server/bots/"];
+// Only the dispatchers listen on sockets; tests are clients and may listen too
+const SOCKET_DISPATCHERS = ["src/server/net/", "src/client/net/"];
 const SOCKET_ON = /\bsocket\??\.on\(/;
 const COMMENTS = /\/\*[\s\S]*?\*\/|\/\/.*$/gm;
 // `<Tag`, `<tag`, `<>` that follow an operator or whitespace, so generics like `useState<string>` don't match
@@ -93,6 +117,7 @@ function checkFile(full: string, name: string) {
       .replace(EXPORT_LIST, "")
       .replace(IMPORT, "");
     if (rest.trim()) report("index-logic", full);
+    else report("barrel", full);
   }
 }
 
