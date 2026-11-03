@@ -111,7 +111,6 @@ export function createBot({ socket, clock, loadMap, brain, rng }: BotOptions): B
         vx,
         vy,
         crowdPush: push,
-        walk,
       } = getHeroStep({
         keys: { x: 0, y: 0 },
         stick: intent.move,
@@ -132,9 +131,7 @@ export function createBot({ socket, clock, loadMap, brain, rng }: BotOptions): B
       velocity = { x: moved.blockedX ? 0 : vx, y: moved.blockedY ? 0 : vy };
       hero.x = moved.x;
       hero.y = moved.y;
-      /* Others see what the bot drives, not crowd drift: it faces and animates its walk only */
-      const walking = { x: moved.blockedX ? 0 : walk.x, y: moved.blockedY ? 0 : walk.y };
-      const direction = facing(walking.x, walking.y, self.direction ?? "down");
+      const direction = facing(velocity.x, velocity.y, self.direction ?? "down");
       Object.assign(self, { x: hero.x, y: hero.y, vx: velocity.x, vy: velocity.y, direction });
 
       const lastSent = throttle.lastEmitted;
@@ -144,8 +141,8 @@ export function createBot({ socket, clock, loadMap, brain, rng }: BotOptions): B
           ...hero,
           isIdle: !velocity.x && !velocity.y && !!lastSent && !lastSent.vx && !lastSent.vy,
         },
-        walking.x,
-        walking.y,
+        velocity.x,
+        velocity.y,
         direction,
         clock.now(),
       );
