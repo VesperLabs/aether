@@ -17,7 +17,6 @@ src/
   content/   core: items, mobs, spells, quests, maps      imports nothing
   rules/     core: the game itself                        imports content
   network/   core: client↔server messages                 imports rules, content, socket.io types
-  bots/    core: code-driven players (tests, bots) imports network, rules, content
   ui/        React views of core, by feature; kit/ for generic widgets
   server/    app: game server                             core only, never ui
   client/    app: game in the browser                     core + ui
@@ -54,22 +53,6 @@ Rules are **pure and deterministic**: no `Date.now()`, `Math.random()` or global
 ### `network/`
 
 `commands.ts` holds one zod schema per client→server command; `messages.ts` holds server→client messages; `sync/` holds poses (every position, whole on every tick, safe to lose) and statuses (flags and vitals, sent only when they change). The server never trusts a client value it can compute itself (position, damage, cooldowns).
-
-### `bots/`
-
-Bots are players driven by code. They log in and act through the same commands as the browser, and know only what the server sends them, so they test the real game and can later live in it.
-
-```
-link.ts     BotLink: commands out, messages in. Hosts provide it (socket.io today)
-senses.ts   what a bot knows, built only from server messages (pure)
-bot.ts      the body: senses plus actions (travelTo, enterDoor, fight, inviteToParty, consume, cheat)
-atlas.ts    room maps from a host-given MapSource: walls, pathfinder, doors
-brain.ts    Brain: (bot, { clock, rng, signal }) => a loop deciding what to do
-brains/     brains that live in the world (wander, ...)
-scenarios/  scripted tests: bots play out a situation and check what the server did
-```
-
-A **host** runs bots: it picks the link, passes the clock and RNG, and decides whether they may use cheats (tests yes, bots in the world never). Hosts live in apps: `server/bots/` (socket link, wanderers), `server/sim/` (the real server on virtual time with bots linked in-process: tests run minutes of play in milliseconds), `scripts/bots.ts` (`npm run bots`). Like rules, bots read no clock and roll no dice of their own, so any host (a test, the game server, a Cloudflare worker) can run them.
 
 ### Apps
 

@@ -73,14 +73,12 @@
                   "@/client",
                   "@/client/**",
                   "@/wiki",
-                  "@/wiki/**",
-                  "@/bots",
-                  "@/bots/**"
+                  "@/wiki/**"
                 ],
                 "message": "content imports nothing else from the repo."
               },
               {
-                "regex": "^\\.{1,2}/(.*/)?(bots|rules|network|ui|server|client|wiki)(/|$)",
+                "regex": "^\\.{1,2}/(.*/)?(rules|network|ui|server|client|wiki)(/|$)",
                 "message": "content imports nothing else from the repo."
               },
               {
@@ -148,14 +146,12 @@
                   "@/client",
                   "@/client/**",
                   "@/wiki",
-                  "@/wiki/**",
-                  "@/bots",
-                  "@/bots/**"
+                  "@/wiki/**"
                 ],
                 "message": "rules imports only content."
               },
               {
-                "regex": "^\\.{1,2}/(.*/)?(bots|network|ui|server|client|wiki)(/|$)",
+                "regex": "^\\.{1,2}/(.*/)?(network|ui|server|client|wiki)(/|$)",
                 "message": "rules imports only content."
               },
               {
@@ -271,14 +267,12 @@
                   "@/client",
                   "@/client/**",
                   "@/wiki",
-                  "@/wiki/**",
-                  "@/bots",
-                  "@/bots/**"
+                  "@/wiki/**"
                 ],
                 "message": "network imports only content and rules."
               },
               {
-                "regex": "^\\.{1,2}/(.*/)?(bots|ui|server|client|wiki)(/|$)",
+                "regex": "^\\.{1,2}/(.*/)?(ui|server|client|wiki)(/|$)",
                 "message": "network imports only content and rules."
               },
               {
@@ -316,103 +310,6 @@
                 "message": "core (content, rules, network) is plain TypeScript: no engines, IO, React or the DOM (ARCHITECTURE.md)."
               }
             ]
-          }
-        ]
-      }
-    },
-    {
-      "files": ["src/bots/**"],
-      "rules": {
-        "no-restricted-imports": [
-          "error",
-          {
-            "patterns": [
-              {
-                "group": [
-                  "@/ui",
-                  "@/ui/**",
-                  "@/server",
-                  "@/server/**",
-                  "@/client",
-                  "@/client/**",
-                  "@/wiki",
-                  "@/wiki/**",
-                  "@/bots",
-                  "@/bots/**"
-                ],
-                "message": "bots import only content, rules and network (they are core, so any host can run them)."
-              },
-              {
-                "regex": "^\\.{1,2}/(.*/)?(bots|ui|server|client|wiki)(/|$)",
-                "message": "bots import only content, rules and network (they are core, so any host can run them)."
-              },
-              {
-                "group": ["@/rules/*/**"],
-                "message": "Import a rules feature only through its index.ts (ARCHITECTURE.md, Import rules)."
-              }
-            ],
-            "paths": [
-              {
-                "name": "phaser",
-                "message": "core (content, rules, network) is plain TypeScript: no engines, IO, React or the DOM (ARCHITECTURE.md)."
-              },
-              {
-                "name": "mongodb",
-                "message": "core (content, rules, network) is plain TypeScript: no engines, IO, React or the DOM (ARCHITECTURE.md)."
-              },
-              {
-                "name": "express",
-                "message": "core (content, rules, network) is plain TypeScript: no engines, IO, React or the DOM (ARCHITECTURE.md)."
-              },
-              {
-                "name": "react",
-                "message": "core (content, rules, network) is plain TypeScript: no engines, IO, React or the DOM (ARCHITECTURE.md)."
-              },
-              {
-                "name": "react-dom",
-                "message": "core (content, rules, network) is plain TypeScript: no engines, IO, React or the DOM (ARCHITECTURE.md)."
-              },
-              {
-                "name": "canvas",
-                "message": "core (content, rules, network) is plain TypeScript: no engines, IO, React or the DOM (ARCHITECTURE.md)."
-              },
-              {
-                "name": "jsdom",
-                "message": "core (content, rules, network) is plain TypeScript: no engines, IO, React or the DOM (ARCHITECTURE.md)."
-              },
-              {
-                "name": "socket.io",
-                "message": "bots reach the server through an BotLink the host passes in (ARCHITECTURE.md, bots/)."
-              },
-              {
-                "name": "socket.io-client",
-                "message": "bots reach the server through an BotLink the host passes in (ARCHITECTURE.md, bots/)."
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "files": ["src/bots/**"],
-      "excludeFiles": ["**/*.test.ts"],
-      "rules": {
-        "no-restricted-properties": [
-          "error",
-          {
-            "object": "Date",
-            "property": "now",
-            "message": "Bots get time and randomness from their host (Clock, BrainLife), so any host can run them."
-          },
-          {
-            "object": "Math",
-            "property": "random",
-            "message": "Bots get time and randomness from their host (Clock, BrainLife), so any host can run them."
-          },
-          {
-            "object": "performance",
-            "property": "now",
-            "message": "Bots get time and randomness from their host (Clock, BrainLife), so any host can run them."
           }
         ]
       }
