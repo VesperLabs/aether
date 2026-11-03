@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { BODY_RADIUS, blockBySolid, getSeparationPush, getSeparationVelocity } from "./separation";
+import { BODY_RADIUS, getSeparationPush, getSeparationVelocity } from "./separation";
 
 describe("getSeparationPush", () => {
   it("leaves bodies that do not overlap alone", () => {
@@ -92,41 +92,5 @@ describe("getSeparationPush cap", () => {
       1.5,
     );
     expect(Math.hypot(push.x, push.y)).toBeCloseTo(1.5);
-  });
-});
-
-describe("blockBySolid", () => {
-  const mob = { id: "mob", x: 15, y: 0, isSolid: true };
-
-  it("stops walking into a solid neighbour and keeps the sideways part", () => {
-    expect(blockBySolid({ id: "me", x: 0, y: 0 }, [mob], { x: 100, y: 50 })).toEqual({
-      x: 0,
-      y: 50,
-    });
-  });
-
-  it("lets the player walk away from it", () => {
-    expect(blockBySolid({ id: "me", x: 0, y: 0 }, [mob], { x: -100, y: 0 })).toEqual({
-      x: -100,
-      y: 0,
-    });
-  });
-
-  it("ignores soft and out-of-reach neighbours", () => {
-    const body = { id: "me", x: 0, y: 0 };
-    const walk = { x: 100, y: 0 };
-    expect(blockBySolid(body, [{ ...mob, isSolid: false }], walk)).toEqual(walk);
-    expect(blockBySolid(body, [{ ...mob, x: BODY_RADIUS * 2 + 1 }], walk)).toEqual(walk);
-  });
-});
-
-describe("getSeparationVelocity with solid neighbours", () => {
-  it("never pushes a player off a solid neighbour", () => {
-    const push = getSeparationVelocity(
-      { id: "me", x: 0, y: 0 },
-      [{ id: "mob", x: 5, y: 0, isSolid: true }],
-      100,
-    );
-    expect(push).toEqual({ x: 0, y: 0 });
   });
 });

@@ -42,7 +42,7 @@ function driveDirectHero(
   scene: SceneHud,
   mainScene: SceneMain,
   hero: Player,
-  frame: Omit<HeroFrame, "hero" | "map" | "crowd" | "isEnteringDoor" | "now">,
+  frame: Omit<HeroFrame, "hero" | "map" | "players" | "isEnteringDoor" | "now">,
 ) {
   scene.heroDrive ??= createHeroDrive();
   const result = driveHero(scene.heroDrive, {
@@ -56,10 +56,7 @@ function driveDirectHero(
       walkSpeed: hero.stats.walkSpeed,
     },
     map: mainScene.tileMap,
-    crowd: {
-      npcs: mainScene.npcs.getChildren() as Player[],
-      players: mainScene.players.getChildren() as Player[],
-    },
+    players: mainScene.players.getChildren() as Player[],
     isEnteringDoor: hero.state.isEnteringDoor,
     now: Date.now(),
   });

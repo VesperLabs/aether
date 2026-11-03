@@ -27,11 +27,6 @@ export interface SeparatingBody {
 export interface Neighbour extends SeparatingBody {
   /** True when the neighbour never moves aside (a player), so this body takes the whole overlap. */
   isFixed?: boolean;
-  /**
-   * True when the neighbour blocks a player instead of pushing them (a mob): the player is never
-   * shoved off it and can't walk into it, and the server eases the mob aside instead.
-   */
-  isSolid?: boolean;
 }
 
 /**
@@ -87,8 +82,7 @@ export function getSeparationVelocity(
   walk: { x: number; y: number } = { x: 0, y: 0 },
   radius = BODY_RADIUS,
 ): { x: number; y: number } {
-  const soft = [...neighbours].filter((n) => !n.isSolid);
-  const push = getSeparationPush(body, soft, radius);
+  const push = getSeparationPush(body, neighbours, radius);
   const scale = (walkSpeed * PLAYER_PUSH_SPEED_SCALE) / MAX_PUSH_PER_TICK;
   let x = push.x * scale;
   let y = push.y * scale;
@@ -99,32 +93,6 @@ export function getSeparationVelocity(
       x -= (along * walk.x) / walkLength;
       y -= (along * walk.y) / walkLength;
     }
-  }
-  return { x, y };
-}
-
-/**
- * `velocity` with the part heading into any solid neighbour within reach removed, so a player
- * stops at a mob's edge and slides around it, the way they do along a wall.
- */
-export function blockBySolid(
-  body: SeparatingBody,
-  neighbours: Iterable<Neighbour>,
-  velocity: { x: number; y: number },
-  radius = BODY_RADIUS,
-): { x: number; y: number } {
-  const reach = radius * 2;
-  let { x, y } = velocity;
-  for (const other of neighbours) {
-    if (!other.isSolid || other.id === body.id) continue;
-    const dx = other.x - body.x;
-    const dy = other.y - body.y;
-    const distanceSquared = dx * dx + dy * dy;
-    if (distanceSquared >= reach * reach || distanceSquared < 1e-12) continue;
-    const toward = (x * dx + y * dy) / distanceSquared;
-    if (toward <= 0) continue;
-    x -= toward * dx;
-    y -= toward * dy;
   }
   return { x, y };
 }
