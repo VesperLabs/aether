@@ -43,6 +43,13 @@ export function afterWindup(
   });
 }
 
+/** Calls off whatever windup is in progress, so it stops aiming. */
+export function cancelWindup(npc: { windup: WindupTrack; state: { isAiming?: boolean } }) {
+  npc.windup.seq++;
+  npc.windup.targetId = undefined;
+  npc.state.isAiming = false;
+}
+
 /** Calls off a windup aimed at `targetId`. True if there was one. */
 export function cancelWindupAt(npc: { windup: WindupTrack }, targetId: string) {
   if (npc.windup.targetId !== targetId) return false;

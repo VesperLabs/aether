@@ -33,7 +33,7 @@ import {
   type Rng,
 } from "@/rules/world";
 import { getRoomIndex } from "./room-index";
-import { afterWindup, emitNpcWindup, type WindupTrack } from "./npc-windup";
+import { afterWindup, cancelWindup, emitNpcWindup, type WindupTrack } from "./npc-windup";
 import { isNextToSolidTile, isOutOfMap } from "@/rules/movement";
 
 /** How far a follower looks for its leader. Spawns are up to ~900px apart on the peaks. */
@@ -253,6 +253,7 @@ export class Npc extends Character {
       this.stats.hp = this.stats.maxHp;
     }
 
+    if (decision.cancelWindup) cancelWindup(this);
     performNpcMovement(this, decision.movement, targetPlayer, this.findLeader());
     // Winding up a shot or spell: keep facing the target even if movement turned it away
     if (this.state.isAiming && targetPlayer) this.faceTarget(targetPlayer);

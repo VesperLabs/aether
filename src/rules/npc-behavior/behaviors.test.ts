@@ -165,6 +165,46 @@ describe("threat, leash and new behaviors", () => {
     expect(decision.movement).toEqual({ type: "standStill" });
   });
 
+  it("plants its feet while winding up, even if the target steps out of reach", () => {
+    const decision = decideNpcAction(
+      input({
+        state: { lockedPlayerId: "p1", isAiming: true },
+        rest: { lockedPlayer: player({ x: 60 }), nearestPlayer: player({ x: 60 }) },
+      }),
+      never,
+    );
+    expect(decision.movement).toEqual({ type: "standStill" });
+    expect(decision.cancelWindup).toBeUndefined();
+  });
+
+  it("calls off its windup when it gives up the fight", () => {
+    const far = player({ x: 900 });
+    const leashed = decideNpcAction(
+      input({
+        npc: { x: 800 },
+        state: { lockedPlayerId: "p1", isAiming: true },
+        rest: { lockedPlayer: far, nearestPlayer: far },
+      }),
+      never,
+    );
+    expect(leashed.cancelWindup).toBe(true);
+    expect(leashed.movement).toEqual({ type: "returnToSpawn", pathed: true });
+
+    const retreating = decideNpcAction(
+      input({
+        npc: {
+          behaviors: ["aggressive", "retreat"],
+          stats: { level: 5, walkSpeed: 50, attackDelay: 300, castDelay: 300, hp: 1, maxHp: 10 },
+        },
+        state: { isAiming: true },
+        rest: { nearestPlayer: player({ x: 50 }) },
+      }),
+      never,
+    );
+    expect(retreating.cancelWindup).toBe(true);
+    expect(retreating.movement).toMatchObject({ type: "flee" });
+  });
+
   it("casters that kite hold at spell range instead of closing to melee", () => {
     const at = (x: number) =>
       decideNpcAction(

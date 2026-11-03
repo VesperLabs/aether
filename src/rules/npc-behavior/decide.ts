@@ -156,6 +156,8 @@ export interface NpcDecision {
   startReset?: boolean;
   /** Home after a reset: heal up and go back to normal. */
   finishReset?: boolean;
+  /** It gave up the fight mid-windup: the swing or spell never lands. */
+  cancelWindup?: boolean;
 }
 
 /** A dead mob comes back once its respawn time has passed. */
@@ -182,6 +184,7 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
   let behaviorId: NpcBehaviorId = state.behavior ?? "wander";
   let startReset = false;
   let finishReset = false;
+  let cancelWindup = false;
   const isResetting = () => (!!state.isResetting || startReset) && !finishReset;
 
   const idle: NpcAction = { type: "idle" };
@@ -198,6 +201,7 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
     behavior: behaviorId,
     ...(startReset && { startReset }),
     ...(finishReset && { finishReset }),
+    ...(cancelWindup && { cancelWindup }),
   });
 
   const setLockedPlayerId = (id: string | null | undefined) => {
@@ -269,9 +273,14 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
   const hasClearShot = !!targetPlayer && (input.hasClearShot?.(targetPlayer) ?? true);
   // Still decided while lunging, so aggro and bubbles keep up; the lunge just overrides the move
   const planned = decideMovement();
-  const movement = decideLungeMovement(state, now) ?? planned;
+  // Winding up plants its feet, whatever it would rather do; giving up the fight calls the windup off
+  const chosen = NPC_BEHAVIORS[behaviorId];
+  cancelWindup = !!state.isAiming && (!chosen.engaged || !!chosen.holdsFire);
+  const holdsWindup = !!state.isAiming && !cancelWindup;
+  const movement =
+    decideLungeMovement(state, now) ?? (holdsWindup ? { type: "standStill" } : planned);
   const isRecovering = isRecoveringFromLunge(state, now);
-  if (NPC_BEHAVIORS[behaviorId].holdsFire) return result(movement);
+  if (chosen.holdsFire) return result(movement);
 
   // intendAttack
   let action: NpcAction = idle;
