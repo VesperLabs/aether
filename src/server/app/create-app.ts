@@ -4,7 +4,7 @@ import express from "express";
 import http from "http";
 import type { AddressInfo } from "net";
 import { PeerServer } from "peer";
-import type { Clock } from "@/rules/world";
+import type { Clock } from "@/rules/world/clock";
 import type { Logger } from "@/server/log/logger";
 import type { ServerConfig } from "@/server/config/config";
 import { registerPeerProxy } from "@/server/http/peer-proxy";

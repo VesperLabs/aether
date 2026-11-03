@@ -24,6 +24,7 @@
     "dev": "concurrently -k --pad-prefix -n server,client,wiki -c blue,green,magenta \"npm run -s server:watch\" \"npm run -s client:dev\" \"npm run -s web:dev\"",
     "prepare": "husky",
     "typecheck": "tsc --noEmit",
+    "test:sim": "vitest run --project sim",
     "test:watch": "vitest",
     "check:format": "oxfmt --check",
     "check:structure": "tsx scripts/check-structure.ts",

@@ -3,12 +3,12 @@ import {
   addRoom,
   createRoom,
   createTickLoop,
-  realClock,
   createWorld,
   type RoomData,
   type System,
   type World,
 } from "../world";
+import { realClock } from "../world/clock";
 
 /** Milliseconds per tick in scenarios (20 ticks a second). */
 export const TICK_MS = 50;
