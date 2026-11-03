@@ -13,6 +13,9 @@ export function subscribeNpcMessages(bus: GameEventBus, io: GameIo) {
     bus.on("npcWindupStarted", ({ npcId, roomName, ...windup }) => {
       io.to(roomName).emit("npcWindup", { id: npcId, ...windup });
     }),
+    bus.on("npcWindupCancelled", ({ npcId, roomName }) => {
+      io.to(roomName).emit("npcWindupCancelled", { id: npcId });
+    }),
     bus.on("npcRespawned", ({ npcId, roomName, x, y, at }) => {
       io.to(roomName).emit("respawnNpc", { id: npcId, x, y, respawnTime: at });
     }),

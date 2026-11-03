@@ -43,11 +43,14 @@ export function afterWindup(
   });
 }
 
-/** Calls off whatever windup is in progress, so it stops aiming. */
-export function cancelWindup(npc: { windup: WindupTrack; state: { isAiming?: boolean } }) {
+/** Calls off whatever windup is in progress, so it stops aiming and the room stops its ring. */
+export function cancelWindup(
+  npc: WindupSource & { windup: WindupTrack; state: { isAiming?: boolean } },
+) {
   npc.windup.seq++;
   npc.windup.targetId = undefined;
   npc.state.isAiming = false;
+  npc.world.events.emit("npcWindupCancelled", { npcId: npc.id, roomName: npc.room.name });
 }
 
 /** Calls off a windup aimed at `targetId`. True if there was one. */

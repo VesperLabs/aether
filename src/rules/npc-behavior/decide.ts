@@ -276,7 +276,8 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
   // Winding up plants its feet, whatever it would rather do; giving up the fight calls the windup off
   const chosen = NPC_BEHAVIORS[behaviorId];
   cancelWindup = !!state.isAiming && (!chosen.engaged || !!chosen.holdsFire);
-  const holdsWindup = !!state.isAiming && !cancelWindup;
+  // ...and through the swing that follows, even once the target is dead
+  const holdsWindup = (!!state.isAiming && !cancelWindup) || !!isAttacking;
   const movement =
     decideLungeMovement(state, now) ?? (holdsWindup ? { type: "standStill" } : planned);
   const isRecovering = isRecoveringFromLunge(state, now);

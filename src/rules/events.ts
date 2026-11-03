@@ -60,6 +60,12 @@ interface NpcWindupStartedEvent {
   windupMs: number;
 }
 
+/** An NPC gave up the fight mid-windup, so it never lands. */
+interface NpcWindupCancelledEvent {
+  npcId: string;
+  roomName: string;
+}
+
 /** A dead NPC came back at its spawn point. */
 interface NpcRespawnedEvent {
   npcId: string;
@@ -90,6 +96,7 @@ export interface GameEvents {
   npcAttacked: NpcAttackedEvent;
   npcCast: NpcCastEvent;
   npcWindupStarted: NpcWindupStartedEvent;
+  npcWindupCancelled: NpcWindupCancelledEvent;
   npcRespawned: NpcRespawnedEvent;
   spellHitShapes: SpellHitShapesEvent;
   playerKnockedBack: PlayerKnockedBackEvent;

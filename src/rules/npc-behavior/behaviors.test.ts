@@ -177,6 +177,19 @@ describe("threat, leash and new behaviors", () => {
     expect(decision.cancelWindup).toBeUndefined();
   });
 
+  it("finishes its swing before walking off, even once the target is dead", () => {
+    const dead = player({ x: 20, isDead: true });
+    const decision = decideNpcAction(
+      input({
+        state: { lockedPlayerId: "p1", isAttacking: true, lastAttack: NOW - 100 },
+        rest: { lockedPlayer: dead, nearestPlayer: dead },
+      }),
+      never,
+    );
+    expect(decision.lockedPlayerId).toBeNull();
+    expect(decision.movement).toEqual({ type: "standStill" });
+  });
+
   it("calls off its windup when it gives up the fight", () => {
     const far = player({ x: 900 });
     const leashed = decideNpcAction(
