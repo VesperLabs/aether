@@ -85,7 +85,7 @@ const REEXPORT = /export\s+(type\s+)?(\*(\s+as\s+\w+)?|\{[^}]*\})\s*from\s*["'][
 const IMPORT = /import\s+(type\s+)?([^;"']*?\sfrom\s*)?["'][^"']+["'];?/g;
 const EXPORT_LIST = /export\s+(type\s+)?\{[^}]*\};?/g;
 // Only the dispatchers listen on sockets; tests are clients and may listen too
-const SOCKET_DISPATCHERS = ["src/server/net/", "src/client/net/"];
+const SOCKET_DISPATCHERS = ["src/server/net/", "src/client/net/", "src/bots/net/"];
 const SOCKET_ON = /\bsocket\??\.on\(/;
 const PROCESS_ENV = /\bprocess\.env\b/;
 const SERVER_ENV_READERS = ["src/server/main.ts"];
