@@ -1,12 +1,12 @@
 import fs from "fs";
 import path from "path";
 import { mapList } from "@/content/maps/map-list";
-import type { TiledMapJson } from "@/rules/movement/tilemap";
+import type { RoomMapJson } from "@/network/session/hero/room-maps";
 
 /** A map loader for bots that reads the room's Tiled JSON from the public folder. */
 export function createMapLoader(publicDir: string) {
-  const cache = new Map<string, TiledMapJson | undefined>();
-  return (roomName: string): TiledMapJson | undefined => {
+  const cache = new Map<string, RoomMapJson | undefined>();
+  return (roomName: string): RoomMapJson | undefined => {
     if (!cache.has(roomName)) {
       const asset = mapList.find((m) => m.name === roomName);
       cache.set(

@@ -1,6 +1,5 @@
 import { DEFAULT_USER_SETTINGS, type UserSettings } from "@/rules/character";
 import { netInterp } from "@/client/net/scene-interpolation";
-import { correctHeroPosition } from "@/client/net/position-correction";
 import { playAudio } from "@/client/audio/play-audio";
 import { playCritShake, playHitImpact } from "@/client/views/hit-impact";
 import { playDrainRing } from "@/client/views/drain-ring";
@@ -115,11 +114,6 @@ export function bindSceneSocket(scene: SceneMain) {
     }
   });
 
-  /* The server rejected our position (too fast, or inside a wall): go back to its position. */
-  socket.on("positionCorrection", ({ x, y }) => {
-    if (scene.hero?.body) correctHeroPosition(scene.hero, x, y);
-  });
-
   socket.on("playerUpdate", (userData) => {
     const player = getPlayer(scene, userData.socketId);
     const data = clientState.players.get(userData.socketId);
@@ -163,13 +157,6 @@ export function bindSceneSocket(scene: SceneMain) {
       direction: direction ?? undefined,
       abilitySlot: abilitySlot ?? undefined,
     });
-  });
-
-  socket.on("knockedBack", ({ angle }) => {
-    const hero = scene.hero;
-    if (!hero || hero.state.isDead) return;
-    hero.state.knockbackAt = Date.now();
-    hero.state.knockbackAngle = angle;
   });
 
   socket.on("playerDodge", ({ socketId, angle }) => {

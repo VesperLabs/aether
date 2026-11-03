@@ -14,6 +14,8 @@ import "./bridge/window-events";
 import Peer from "peerjs";
 import { getPeerRtcConfiguration } from "@/client/hud/video/webrtc-peer-config";
 import { createClientStore } from "@/network/session/client-store";
+import { createHeroSession } from "@/network/session/hero/hero-session";
+import { netInterp } from "@/client/net/scene-interpolation";
 
 const debug = process.env.DEBUG;
 const REDIRECT_URL = process.env.REDIRECT_URL as string;
@@ -23,7 +25,15 @@ const PEER_CLIENT_PATH = process.env.PEER_CLIENT_PATH as string;
 const socket = createGameSocket();
 /* What the player sees, fed every server message before any named listener runs. */
 const clientStore = createClientStore(Date.now);
-socket.onAny((name, ...args) => clientStore.apply(name, ...args));
+/* The hero's own client: moves it and decides what it may do, over the same client state. */
+const heroSession = createHeroSession({
+  send: socket.emit.bind(socket),
+  now: Date.now,
+  clientState: clientStore.state,
+  apply: clientStore.apply,
+  viewDelay: () => netInterp.getDelay(),
+});
+socket.onAny((name, ...args) => heroSession.receive(name, ...args));
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 const devicePixelRatio = window.devicePixelRatio || 1;
@@ -85,7 +95,11 @@ async function startApp() {
       imageLoadType: "HTMLImageElement",
       crossOrigin: "anonymous",
     },
-    scene: [new SceneBoot(socket), new SceneMain(socket, clientStore.state), new SceneHud(socket)],
+    scene: [
+      new SceneBoot(socket),
+      new SceneMain(socket, clientStore.state, heroSession),
+      new SceneHud(socket),
+    ],
   });
 
   root.render(
@@ -102,7 +116,7 @@ async function startApp() {
   });
 
   keepSocketConnected(socket);
-  trackLatency(socket);
+  trackLatency(socket, heroSession);
 }
 
 if (REDIRECT_URL) {

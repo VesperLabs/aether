@@ -1,38 +1,35 @@
 import type { ClientGameSocket } from "@/network/socket/game-socket";
-import { createHeroDrive, driveHero } from "@/network/session/hero-driver";
-import {
-  applyMessage,
-  createClientState,
-  getSelf,
-  type ClientState,
-} from "@/network/session/client-state";
-import { readTileMap, type TiledMapJson, type TileMap } from "@/rules/movement/tilemap";
+import type { ClientState } from "@/network/session/client-state";
+import { createHeroSession, type HeroSession } from "@/network/session/hero/hero-session";
+import { PING_INTERVAL_MS } from "@/network/session/hero/latency";
+import { createRoomMaps, type RoomMapJson } from "@/network/session/hero/room-maps";
+import { getSpinDirection } from "@/network/session/hero/spin-direction";
 import type { Clock } from "@/rules/world/clock";
 import type { Rng } from "@/rules/world/rng";
 import { STAND_STILL, type Brain, type BotIntent } from "./brains/brain";
 
 /*
- * A headless player. It sees the world only through server messages (its client state) and acts only by
- * sending the same commands the browser client sends, so the server treats it like anyone else.
+ * A headless player: a hero session plus a brain. It sees the world only through server messages
+ * and acts only through the session, which sends the same commands the browser client sends.
  */
 
-/** Fewest ms between attack commands; the server refuses swings that are not ready anyway. */
-const ATTACK_EVERY_MS = 250;
-const DEFAULT_WALK_SPEED = 100;
+/** How long a dead bot lies there before it respawns, ms. */
+export const RESPAWN_DELAY_MS = 3000;
 
 export interface BotOptions {
   socket: ClientGameSocket;
   clock: Clock;
   /** The Tiled JSON of a room's map, by room name; undefined if unknown (the bot then stands still). */
-  loadMap: (roomName: string) => TiledMapJson | undefined;
+  loadMap: (roomName: string) => RoomMapJson | undefined;
   brain: Brain;
   rng: Rng;
 }
 
 export interface Bot {
+  session: HeroSession;
   clientState: ClientState;
   /** Times the server rejected a move with `positionCorrection`. */
-  corrections: number;
+  readonly corrections: number;
   /** Steps since the bot was created. */
   steps: number;
   /** Thinks and acts once, moving the hero `seconds` of walking. */
@@ -41,85 +38,56 @@ export interface Bot {
   run(ms: number): () => void;
 }
 
-const facing = (vx: number, vy: number, fallback: string) => {
-  if (!vx && !vy) return fallback;
-  if (Math.abs(vx) >= Math.abs(vy)) return vx < 0 ? "left" : "right";
-  return vy < 0 ? "up" : "down";
-};
-
-const walkSpeedOf = (stats: unknown) => {
-  const speed = (stats as { walkSpeed?: unknown } | undefined)?.walkSpeed;
-  return typeof speed === "number" ? speed : DEFAULT_WALK_SPEED;
-};
+const ORIGIN = { x: 0, y: 0 };
 
 export function createBot({ socket, clock, loadMap, brain, rng }: BotOptions): Bot {
-  const clientState = createClientState();
-  const maps = new Map<string, TileMap | undefined>();
-  let drive = createHeroDrive();
-  /* The bot's own idea of where it stands: the server's poses of the hero lag behind it. */
-  let hero: { x: number; y: number; roomName: string } | undefined;
+  const session = createHeroSession({ send: socket.emit.bind(socket), now: () => clock.now() });
+  const mapOf = createRoomMaps(loadMap);
   let last: BotIntent = STAND_STILL;
-  let lastAttackAt = -Infinity;
-
-  const resync = () => {
-    const self = getSelf(clientState);
-    hero = self ? { x: self.x, y: self.y, roomName: clientState.roomName } : undefined;
-    drive = createHeroDrive();
-  };
-
-  const mapOf = (roomName: string) => {
-    if (!maps.has(roomName)) {
-      const json = loadMap(roomName);
-      maps.set(roomName, json ? readTileMap(json) : undefined);
-    }
-    return maps.get(roomName);
-  };
+  let lastPing = -Infinity;
 
   const bot: Bot = {
-    clientState,
-    corrections: 0,
+    session,
+    clientState: session.clientState,
+    get corrections() {
+      return session.corrections;
+    },
     steps: 0,
     step(seconds) {
       bot.steps++;
-      const self = getSelf(clientState);
-      if (!self || !hero || hero.roomName !== clientState.roomName) resync();
-      if (!self || !hero) return;
-      const map = mapOf(hero.roomName);
-      if (!map || self.state?.isDead) return;
-      /* Brains see the hero where the bot has it, not at its lagging pose. */
-      Object.assign(self, { x: hero.x, y: hero.y });
-
-      const intent = brain({ clientState, self, last }, bot.steps, rng);
-      last = intent;
-
-      const direction = facing(intent.move.x, intent.move.y, self.direction ?? "down");
-      const result = driveHero(drive, {
-        hero: {
-          id: self.id,
-          x: hero.x,
-          y: hero.y,
-          bodySize: self.bodySize,
-          roomName: hero.roomName,
-          walkSpeed: walkSpeedOf(self.stats),
-        },
-        map,
-        crowd: { npcs: clientState.npcs.values(), players: clientState.players.values() },
-        stick: intent.move,
-        isRooted: !!self.state?.isAttacking,
-        direction,
-        seconds,
-        now: clock.now(),
-      });
-      hero.x = result.x;
-      hero.y = result.y;
-      Object.assign(self, { x: hero.x, y: hero.y, vx: result.vx, vy: result.vy, direction });
-      if (result.input) socket.emit("playerInput", result.input);
-
       const now = clock.now();
-      if (intent.attack && now - lastAttackAt >= ATTACK_EVERY_MS) {
-        lastAttackAt = now;
-        socket.emit("attack", { count: 1, direction, castAngle: intent.attack.angle });
+      if (now - lastPing >= PING_INTERVAL_MS) {
+        lastPing = now;
+        session.ping();
       }
+      const self = session.self();
+      if (!self) return;
+      const deadFor = session.deadFor();
+      if (deadFor !== undefined) {
+        if (deadFor >= RESPAWN_DELAY_MS) session.respawn();
+        return;
+      }
+
+      const intent = brain({ clientState: session.clientState, self, last }, bot.steps, rng);
+      last = intent;
+      const isMoving = intent.move.x || intent.move.y;
+      const view = session.frame(
+        {
+          stick: intent.move,
+          direction: isMoving ? getSpinDirection(ORIGIN, intent.move) : undefined,
+          angle: intent.attack?.angle,
+          isHoldingAttack: !!intent.attack,
+        },
+        {
+          seconds,
+          map: mapOf(session.clientState.roomName),
+          crowd: {
+            npcs: session.clientState.npcs.values(),
+            players: session.clientState.players.values(),
+          },
+        },
+      );
+      if (view) Object.assign(self, { vx: view.vx, vy: view.vy });
       if (intent.chat) socket.emit("message", { message: intent.chat });
     },
     run(ms) {
@@ -138,19 +106,6 @@ export function createBot({ socket, clock, loadMap, brain, rng }: BotOptions): B
     },
   };
 
-  socket.onAny((name: string, ...args: unknown[]) => {
-    (applyMessage as (m: ClientState, name: string, ...rest: unknown[]) => void)(
-      clientState,
-      name,
-      ...args,
-    );
-    if (name === "positionCorrection") {
-      bot.corrections++;
-      resync();
-    } else if (name === "heroInit") {
-      resync();
-    }
-  });
-
+  socket.onAny((name: string, ...args: unknown[]) => session.receive(name, ...args));
   return bot;
 }

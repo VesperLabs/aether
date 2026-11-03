@@ -6,7 +6,7 @@ import type { Player } from "@/client/views/player";
 import { isMobile } from "@/ui/kit/is-mobile";
 import { netInterp } from "@/client/net/scene-interpolation";
 import { applyPose } from "@/client/net/apply-pose";
-import { easeHeroCorrection } from "@/client/net/position-correction";
+import type { HeroSession } from "@/network/session/hero/hero-session";
 import { bindSceneSocket } from "@/client/net/scene-socket";
 import type { ClientState } from "@/network/session/client-state";
 import { changeMusic } from "@/client/audio/music";
@@ -40,8 +40,11 @@ export class SceneMain extends Phaser.Scene {
   /** What the hero sees, built from every server message: views render entity data from it. */
   clientState: ClientState;
   userSettings: UserSettings;
-  constructor(socket: ClientGameSocket, clientState: ClientState) {
+  /** The hero's session: moves the hero and sends what it does. */
+  heroSession: HeroSession;
+  constructor(socket: ClientGameSocket, clientState: ClientState, heroSession: HeroSession) {
     super({ key: "SceneMain" });
+    this.heroSession = heroSession;
     this.socket = socket;
     this.clientState = clientState;
     this.userSettings = DEFAULT_USER_SETTINGS;
@@ -95,8 +98,6 @@ export class SceneMain extends Phaser.Scene {
   }
   update(time: number, delta: number) {
     if (!this.socket || !this?.hero?.body) return;
-
-    easeHeroCorrection(this.hero, delta);
 
     /* Remote characters only: the hero is predicted locally. */
     const poses = netInterp.sample(performance.now());

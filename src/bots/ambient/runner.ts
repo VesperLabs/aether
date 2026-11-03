@@ -1,5 +1,5 @@
 import type { ClientGameSocket } from "@/network/socket/game-socket";
-import type { TiledMapJson } from "@/rules/movement/tilemap";
+import type { RoomMapJson } from "@/network/session/hero/room-maps";
 import type { Clock } from "@/rules/world/clock";
 import { createRng } from "@/rules/world/rng";
 import { createBot, type Bot } from "../bot";
@@ -24,7 +24,7 @@ export interface AmbientOptions extends AmbientPolicy {
   fetchHumans: () => Promise<number | undefined>;
   /** Opens a logged-in socket for bot `n` (1-based); it should log in again on reconnect. */
   connect: (n: number) => ClientGameSocket;
-  loadMap: (roomName: string) => TiledMapJson | undefined;
+  loadMap: (roomName: string) => RoomMapJson | undefined;
   log: (message: string) => void;
 }
 

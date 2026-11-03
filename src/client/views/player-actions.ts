@@ -1,7 +1,5 @@
 import { distanceTo } from "@/rules/world";
-import { getAbilityCosts, hasStaminaFor } from "@/rules/combat";
-import type { AbilitySlot } from "@/rules/spells";
-import { getSpinDirection } from "@/client/input/spin-direction";
+import { getSpinDirection } from "@/network/session/hero/spin-direction";
 import type { Player } from "./player";
 import { Spell } from "./spell";
 import { playAttackLunge } from "./hit-impact";
@@ -20,41 +18,22 @@ export interface AttackArgs extends CastArgs {
   direction?: string;
 }
 
-/** Whether the hero has the SP for this attack (weapon plus attack-spell cost). */
-export function hasStaminaForAttack(player: Player, count: number, abilitySlot?: AbilitySlot) {
-  const { stats } = player.getAttackActionName({ count, abilitySlot });
-  return hasStaminaFor(player.stats?.sp, player.getAttackSpCost(count) + getAbilityCosts(stats).sp);
-}
-
+/**
+ * Plays a swing. The hero's swings come from its session, which decided they may go ahead and
+ * sent them; everyone else's come from the server.
+ */
 export function doAttack(player: Player, { count, castAngle, direction, abilitySlot }: AttackArgs) {
   const { state, isHero } = player;
-  const { isDead, isAttacking, isHoldingAttack } = state ?? {};
-
-  if (player?.hasBuff("stun")) return;
-  if (isHero) {
-    if (!player.hasWeapon() || isDead || isAttacking || !isHoldingAttack) return;
-    if (!player.canCastSpell(abilitySlot)) return;
-    if (!hasStaminaForAttack(player, count, abilitySlot)) return;
-  }
+  if (!isHero && player?.hasBuff("stun")) return;
 
   const { action, spellName } = player.getAttackActionName({ count, abilitySlot });
 
   state.lastAttackCount = count;
   if (isHero) window.dispatchEvent(new CustomEvent("HERO_ATTACK_COUNT", { detail: count }));
   state.isAttacking = true;
-  state.lastAttack = Date.now();
+  if (!isHero) state.lastAttack = Date.now();
   player.action = action;
   player.direction = direction || player.direction;
-
-  // If we are the hero, need to trigger the socket that we attacked
-  if (isHero) {
-    player.scene.socket.emit("attack", {
-      count,
-      direction: player.direction,
-      castAngle,
-      abilitySlot,
-    });
-  }
 
   playAttackLunge(player, player.direction);
   // draw our physical animation.
@@ -67,13 +46,12 @@ export function doCast(player: Player, { abilitySlot, castAngle }: CastArgs) {
   const { isHero } = player || {};
   const ability = player.getAbilityDetails(abilitySlot);
 
+  /* The hero's session checks the cast, sends it and starts the hero's own lunge */
   if (isHero) {
-    if (!player.canCastSpell(abilitySlot)) return;
-    if (player?.hasBuff("stun")) return;
-    player.scene.socket.emit("castSpell", { abilitySlot, castAngle });
-  }
-  /* Lunges dash the caster: the hero moves itself, others just leave the trail */
-  if (ability?.isLunge) {
+    if (abilitySlot === undefined || !player.scene.heroSession.cast(abilitySlot, castAngle)) return;
+    Object.assign(player.state, player.scene.heroSession.combat);
+  } else if (ability?.isLunge) {
+    /* Others' lunges just leave the trail */
     player.state.lungeAt = Date.now();
     player.state.lungeAngle = castAngle;
   }

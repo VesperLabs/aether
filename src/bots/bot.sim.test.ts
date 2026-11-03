@@ -2,7 +2,8 @@ import { afterEach, describe, expect, it } from "vitest";
 import { getSelf } from "@/network/session/client-state";
 import { createRng } from "@/rules/world/rng";
 import { createSimServer, nextMessage, type SimServer } from "@/sim/sim-server";
-import { createBot, type Bot } from "./bot";
+import { createBot, RESPAWN_DELAY_MS, type Bot } from "./bot";
+import { idle } from "./brains/idle";
 import type { Brain } from "./brains/brain";
 import { wander } from "./brains/wander";
 import { createMapLoader, DEFAULT_PUBLIC_DIR } from "./maps/load-map";
@@ -61,6 +62,43 @@ describe("bots on a sim server", () => {
       20,
     );
     expect(getSelf(alice.clientState)?.socketId).toBe(alice.clientState.selfId);
+  });
+
+  it("a dead bot respawns after a short delay", async () => {
+    sim = await createSimServer({ seed: 6 });
+    const bot = await joinBot(sim, idle, 6);
+    const player = sim.world.players[bot.clientState.selfId]!;
+    player.setDead();
+    await run(sim, [bot], 5);
+    expect(bot.session.deadFor()).toBeDefined();
+    await run(sim, [bot], Math.ceil((RESPAWN_DELAY_MS + 500) / sim.clock.interval));
+    expect(sim.world.players[bot.clientState.selfId]!.state.isDead).toBe(false);
+  });
+
+  it("a shoved bot is carried by the knockback without a correction", async () => {
+    sim = await createSimServer({ seed: 7 });
+    const bot = await joinBot(sim, idle, 7);
+    const id = bot.clientState.selfId;
+    const startX = sim.world.players[id]!.x;
+    sim.world.events.emit("playerKnockedBack", { socketId: id, angle: 0 });
+    await run(sim, [bot], 20);
+    expect(sim.world.players[id]!.x - startX).toBeGreaterThan(15);
+    expect(bot.corrections).toBe(0);
+  });
+
+  it("a stunned bot stops walking", async () => {
+    sim = await createSimServer({ seed: 8 });
+    const bot = await joinBot(sim, wander, 8);
+    const id = bot.clientState.selfId;
+    await run(sim, [bot], 30);
+    const player = sim.world.players[id]!;
+    player.addBuff({ name: "stun", level: 1, caster: player });
+    await run(sim, [bot], 3);
+    const x = player.x;
+    const y = player.y;
+    await run(sim, [bot], 5);
+    expect([player.x, player.y]).toEqual([x, y]);
+    expect(bot.corrections).toBe(0);
   });
 
   it("runs 20 game-seconds of 3 wander bots in turbo without errors", async () => {

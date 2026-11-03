@@ -453,6 +453,19 @@
                 "message": "Bots are core only: they reach the server over sockets, never through its code."
               },
               {
+                "group": [
+                  "@/rules",
+                  "@/rules/**",
+                  "!@/rules/world/rng",
+                  "!@/rules/world/clock",
+                  "@/scripts",
+                  "@/scripts/**",
+                  "@/bots",
+                  "@/bots/**"
+                ],
+                "message": "A bot is a hero session plus a brain: if it needs game rules, the session grows (ARCHITECTURE.md)."
+              },
+              {
                 "regex": "^\\.{1,2}/(.*/)?(server|client|wiki|ui|sim)(/|$)",
                 "message": "Bots are core only: they reach the server over sockets, never through its code."
               }

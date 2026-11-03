@@ -2,9 +2,10 @@ import type Phaser from "phaser";
 import type { SceneHud } from "@/client/scenes/hud-scene";
 import type { SceneMain } from "@/client/scenes/main-scene";
 import { playAudio } from "@/client/audio/play-audio";
-import { getSpinDirection } from "@/client/input/spin-direction";
+import { getSpinDirection } from "@/network/session/hero/spin-direction";
 import { CONSUMABLES_BASES, POTION_BASES } from "@/rules/inventory";
-import { updateAttackCooldown, updatePotionCooldown, updateSpellCooldown } from "./hero-cooldowns";
+import { updatePotionCooldown, updateSpellCooldown } from "./hero-cooldowns";
+import { playHeroSwing } from "./hero-movement";
 import { isTypableFieldActive } from "./typable-field";
 import { getHeadingAngle, isTap } from "./tap-aim";
 
@@ -66,9 +67,12 @@ export function addGlobalEventListeners(scene: SceneHud) {
       gameElement.style.cursor = "default";
 
       // shoot arrows etc
-      if (hero.hasRangedWeapon()) {
-        updateAttackCooldown(hero);
-        hero?.doAttack?.({ count: 1, castAngle: hero.state.lastAngle, direction: hero.direction });
+      if (hero.state.isHoldingAttack) {
+        const swing = mainScene.heroSession.releaseAttack({
+          castAngle: hero.state.lastAngle,
+          direction: hero.direction,
+        });
+        if (swing) playHeroSwing(hero, swing);
       }
 
       // release these states

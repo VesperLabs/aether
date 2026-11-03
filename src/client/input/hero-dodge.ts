@@ -1,6 +1,5 @@
 import type { SceneHud } from "@/client/scenes/hud-scene";
 import type { SceneMain } from "@/client/scenes/main-scene";
-import { canDodge } from "@/rules/movement";
 import { isTypableFieldActive } from "./typable-field";
 import { updateDodgeCooldown } from "./hero-cooldowns";
 import { getHeadingAngle, isTap } from "./tap-aim";
@@ -33,16 +32,13 @@ export function addDodgeListeners(scene: SceneHud) {
   window.addEventListener("HERO_DODGE", () => {
     const hero = mainScene?.hero;
     if (!hero || !stopAiming()) return;
-    const now = Date.now();
-    const sp = hero.stats?.sp ?? 0;
-    if (!canDodge({ state: hero.state, sp, isStunned: hero.hasBuff("stun"), now })) return;
-    const angle = isTap(hero.state, now) ? getHeadingAngle(hero) : (hero.state.lastAngle ?? 0);
-    hero.state.lastDodge = now;
-    hero.state.dodgeAngle = angle;
-    /* Keep facing the way you were, so rolling backwards reads as a step back */
-    hero.state.dodgeFacing = hero.direction;
+    const angle = isTap(hero.state, Date.now())
+      ? getHeadingAngle(hero)
+      : (hero.state.lastAngle ?? 0);
+    /* The session checks the roll's cost and cooldown, starts it and sends it */
+    if (!mainScene.heroSession.dodge(angle)) return;
+    Object.assign(hero.state, mainScene.heroSession.combat);
     updateDodgeCooldown();
-    scene.socket.emit("dodge", { angle });
   });
 
   window.addEventListener("blur", stopAiming);

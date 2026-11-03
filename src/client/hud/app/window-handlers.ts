@@ -4,7 +4,7 @@ import type { ChatMessage } from "@/network/messages";
 import type { ClientGameSocket } from "@/network/socket/game-socket";
 import type { SceneMain } from "@/client/scenes/main-scene";
 import type { Sign } from "@/client/views/sign";
-import { getSpinDirection } from "@/client/input/spin-direction";
+import { getSpinDirection } from "@/network/session/hero/spin-direction";
 import type { Cooldown, ErrorModal, HudCharacter, KeeperView } from "./context";
 
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;

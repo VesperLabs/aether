@@ -2,15 +2,7 @@ import Phaser from "phaser";
 import type { SceneMain } from "@/client/scenes/main-scene";
 import { Character, type CharacterArgs, type CharacterSource } from "./character";
 import { NPC_ENGAGED_BUBBLE } from "@/rules/npc-behavior";
-import type { AbilitySlot } from "@/rules/spells";
-import {
-  doAttack,
-  doCast,
-  doGrab,
-  hasStaminaForAttack,
-  type AttackArgs,
-  type CastArgs,
-} from "./player-actions";
+import { doAttack, doCast, doGrab, type AttackArgs, type CastArgs } from "./player-actions";
 import { fadeStealth } from "./player-stealth";
 import { CHARACTER_DIED } from "./end-on-death";
 import { applyDodge } from "./player-dodge";
@@ -142,10 +134,6 @@ export class Player extends Character {
   }
   drawCharacterFromUserData() {
     applyAppearance(this);
-  }
-  /** Whether the hero has the SP for this attack (weapon plus attack-spell cost). */
-  hasStaminaForAttack(count: number, abilitySlot?: AbilitySlot) {
-    return hasStaminaForAttack(this, count, abilitySlot);
   }
   doAttack(args: AttackArgs) {
     doAttack(this, args);
