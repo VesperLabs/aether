@@ -1,9 +1,9 @@
 import type { MobBehavior } from "@/content/mobs/mob-types";
 import type { AbilitySlot } from "@/rules/spells";
 import type { Hand } from "@/rules/combat";
-import { ServerCharacter as Character, type CharacterArgs } from "./character";
+import { ServerCharacter as Character, type CharacterArgs } from "@/server/characters/character";
 import type { ServerWorld } from "@/server/world/server-world";
-import type { Player } from "./player";
+import type { Player } from "@/server/players/player";
 import type { Point, RoomData } from "@/rules/world";
 import { createSpell } from "./spell-adapter";
 import { buildNpcBehaviorInput } from "./npc-behavior-adapter";

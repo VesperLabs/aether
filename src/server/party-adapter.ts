@@ -1,5 +1,5 @@
 import type { ServerWorld } from "@/server/world/server-world";
-import type { Player } from "./player";
+import type { Player } from "@/server/players/player";
 import type { Socket } from "socket.io";
 import {
   acceptPartyInvite,

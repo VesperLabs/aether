@@ -1,4 +1,4 @@
-import type { Player } from "../../player";
+import type { Player } from "@/server/players/player";
 import { getFullCharacterState } from "@/network/sync";
 import type { ParsedCommand } from "@/network";
 import type { CommandContext } from "@/server/net/command-context";

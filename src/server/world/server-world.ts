@@ -3,7 +3,7 @@ import type { GameIo, NetIds } from "@/network";
 import type { Rng, TickLoop, World } from "@/rules/world";
 import type { Npc } from "@/server/npc";
 import type { Database } from "@/server/persistence/database";
-import type { Player } from "@/server/player";
+import type { Player } from "@/server/players/player";
 import type { RoomIndex } from "./room-index";
 import type { Spell } from "@/server/spell";
 
