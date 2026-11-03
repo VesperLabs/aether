@@ -11,11 +11,6 @@ import { CHARACTER_CHEATS } from "./character-cheats";
 import { NPC_CHEATS } from "./npc-cheats";
 import { TRAVEL_CHEATS } from "./travel-cheats";
 
-/** Cheat chat commands (`/drop`, `/ding`...) only work when the server runs with ENABLE_CHEATS=true. */
-export function areCheatsEnabled(): boolean {
-  return process.env.ENABLE_CHEATS === "true";
-}
-
 const CHEATS: Record<string, Cheat> = { ...CHARACTER_CHEATS, ...TRAVEL_CHEATS, ...NPC_CHEATS };
 
 const ADMIN_COMMANDS = new Set<string>(CHAT_COMMANDS.filter((c) => c.cheat).map((c) => c.name));
@@ -25,7 +20,8 @@ const ADMIN_COMMANDS = new Set<string>(CHAT_COMMANDS.filter((c) => c.cheat).map(
  * answered, false when it is not one (or admin commands are off) and should be sent as plain chat.
  */
 export function runAdminCommand(ctx: CommandContext, rawMessage: string): boolean {
-  if (!areCheatsEnabled()) return false;
+  /* Cheat chat commands (`/drop`, `/ding`...) only work when the server runs with ENABLE_CHEATS=true. */
+  if (!ctx.world.config.cheats) return false;
   const command = rawMessage.substr(1).split(" ");
   if (!ADMIN_COMMANDS.has(command[0])) return false;
   execute(ctx, command);

@@ -1,5 +1,6 @@
 import type { Express } from "express";
 
+import type { ServerConfig } from "@/server/config/config";
 import type { Database } from "../persistence/database";
 import type { GameServer } from "@/server/world/game-server";
 import { applyCalculatedStats } from "@/server/characters/character-stats";
@@ -13,10 +14,11 @@ type UnparsedQuery = Record<string, any>;
 interface RouteDeps {
   aetherServer: GameServer;
   db: Database;
+  config: ServerConfig;
 }
 
 /** The JSON endpoints the wiki and the host platform call. */
-export function registerRoutes(app: Express, { aetherServer, db }: RouteDeps) {
+export function registerRoutes(app: Express, { aetherServer, db, config }: RouteDeps) {
   // app.get("/metrics/players", (req, res) => {
   //   const world = aetherServer.world;
   //   const { players } = world ?? {};
@@ -107,7 +109,7 @@ export function registerRoutes(app: Express, { aetherServer, db }: RouteDeps) {
 
   /* Deletes every level-1 account, so it only exists outside production */
   app.get("/players/prune", async (_, res) => {
-    if (process.env.NODE_ENV === "production") return res.status(404).end();
+    if (config.isProduction) return res.status(404).end();
     await db.pruneNoobs();
     res.json({ string: "ok" });
   });

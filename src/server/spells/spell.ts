@@ -16,9 +16,6 @@ import {
 } from "@/rules/spells";
 import { ServerCharacter } from "@/server/characters/character";
 
-/** Send the shapes behind every hit to the clients, so they can draw what the server saw. */
-const DEBUG_HITS = process.env.DEBUG === "true";
-
 /** Who an NPC spell or attack is aimed at. */
 export interface SpellTarget {
   id?: string;
@@ -229,7 +226,8 @@ export class Spell {
     );
     for (const id of hits) {
       const victim = victimShapes.find((v) => v.id === id);
-      if (DEBUG_HITS && shape && victim) {
+      /* With `config.debug`, send the shapes behind every hit so clients can draw what the server saw. */
+      if (world.config.debug && shape && victim) {
         world.events.emit("spellHitShapes", {
           roomName: this.room.name,
           spell: shape,

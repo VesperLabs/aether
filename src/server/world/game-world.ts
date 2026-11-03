@@ -7,6 +7,7 @@ import { mapList } from "@/content/maps/map-list";
 import { nasties } from "@/content/mobs/nasties";
 import { Dice } from "@/content/items/dice";
 import { createServerDice } from "./server-dice";
+import type { ServerConfig } from "@/server/config/config";
 import { readMapFile } from "./map-files";
 import { subscribeLoot, type LootItem } from "@/rules/loot";
 import { subscribeThreat } from "@/rules/npc-behavior";
@@ -86,12 +87,14 @@ export function spawnNpc(
 export function createServerWorld({
   io,
   db,
+  config,
   now,
   dice = createServerDice(),
   mapNpcs = true,
 }: {
   io: GameIo;
   db: Database;
+  config: ServerConfig;
   now: () => number;
   /** Every roll and id in the world; pass seeded dice to replay a run exactly. */
   dice?: Dice;
@@ -101,13 +104,14 @@ export function createServerWorld({
   const world = createWorld(QuestBuilder.buildAllQuests(dice)) as ServerWorld;
   world.io = io;
   world.db = db;
+  world.config = config;
   world.now = now;
   world.netIds = createNetIds();
   world.dice = dice;
   world.rng = dice.random;
 
   for (const asset of mapList) {
-    addRoom(world, createRoom(asset.name, readMapFile(asset.json), now()));
+    addRoom(world, createRoom(asset.name, readMapFile(config.publicDir, asset.json), now()));
   }
   if (mapNpcs) for (const room of Object.values(world.rooms)) spawnNpcs(world, room);
 

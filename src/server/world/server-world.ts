@@ -5,11 +5,13 @@ import type { Rng, TickLoop, World } from "@/rules/world";
 import type { Npc } from "@/server/npcs/npc";
 import type { Database } from "@/server/persistence/database";
 import type { Player } from "@/server/players/player";
+import type { ServerConfig } from "@/server/config/config";
 import type { RoomIndex } from "./room-index";
 import type { Spell } from "@/server/spells/spell";
 
 /** The world the server runs: the shared world state plus the socket server, database and loop. */
 export type ServerWorld = World<Player, Npc, Spell, Loot, Quest> & {
+  config: ServerConfig;
   db: Database;
   io: GameIo;
   loop: TickLoop;
