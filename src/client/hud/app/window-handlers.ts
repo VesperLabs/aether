@@ -14,8 +14,8 @@ interface WindowHandlerDeps {
   socket: ClientGameSocket;
   addMessage: (message: ChatMessage) => void;
   setKeeper: SetState<KeeperView | undefined>;
-  setHero: SetState<HudCharacter | null>;
-  setPlayers: SetState<HudCharacter[]>;
+  /** The hero sprite's client-only state (dead, target, entering a door). */
+  setHeroState: SetState<HudCharacter["state"] | undefined>;
   /** Whether the keeper tab is open (from the current render). */
   tabKeeper: boolean;
   setTabKeeper: SetState<boolean>;
@@ -32,8 +32,7 @@ export function createWindowHandlers({
   socket,
   addMessage,
   setKeeper,
-  setHero,
-  setPlayers,
+  setHeroState,
   tabKeeper,
   setTabKeeper,
   setSign,
@@ -55,8 +54,8 @@ export function createWindowHandlers({
       (n) => n?.id === args?.npcId,
     );
     if (hero?.state?.targetNpcId === args?.npcId) {
+      /* The hero's quests from it are already in the client state. */
       setKeeper({ ...npc, keeperData: args?.keeperData });
-      setHero((prev) => ({ ...prev, quests: args?.playerQuests }) as HudCharacter);
       setTabKeeper(true);
     }
   };
@@ -88,30 +87,10 @@ export function createWindowHandlers({
     if (hero?.direction !== direction) socket.emit("changeDirection", { direction });
   };
 
+  /* Copy the sprite's client-only state; the hero's server data comes from the client state. */
   const onUpdateHud = () => {
-    const hero = getScene().hero;
-    setHero((prev) => ({ ...prev, state: hero?.state, stats: hero?.stats }) as HudCharacter);
-  };
-
-  /* Splice in some updates for keeping the party UI in sync */
-  const onUpdateRoomPlayers = (e: WindowEventMap["UPDATE_ROOM_PLAYERS"]) => {
-    const otherPlayers = e?.detail?.players?.filter((p) => !p.isHero);
-
-    setPlayers((players) => {
-      return players.map((player) => {
-        if (otherPlayers.some((p) => p.id === player.id)) {
-          const foundPlayer = otherPlayers?.find((p) => p.id === player.id);
-          return {
-            ...player,
-            stats: foundPlayer?.stats,
-            equipment: foundPlayer?.equipment,
-            profile: foundPlayer?.profile,
-          };
-        } else {
-          return player;
-        }
-      });
-    });
+    const state = getScene().hero?.state;
+    setHeroState(state ? { ...(state as object) } : undefined);
   };
 
   const onNearNpc = (e: WindowEventMap["HERO_NEAR_NPC"]) => {
@@ -149,7 +128,6 @@ export function createWindowHandlers({
     onKeeperDataUpdate,
     onHeroChatNpc,
     onUpdateHud,
-    onUpdateRoomPlayers,
     onNearNpc,
     onStartCooldown,
     onLoadError,

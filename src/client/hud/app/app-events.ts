@@ -13,7 +13,6 @@ export interface SocketHandlers {
   lootGrabbed: ServerToClientEvents["lootGrabbed"];
   keeperDataUpdate: ServerToClientEvents["keeperDataUpdate"];
   playerJoin: ServerToClientEvents["playerJoin"];
-  remove: ServerToClientEvents["remove"];
   partyInvite: ServerToClientEvents["partyInvite"];
   partyUpdate: ServerToClientEvents["partyUpdate"];
   updateUserSetting: ServerToClientEvents["updateUserSetting"];
@@ -26,7 +25,7 @@ export interface WindowHandlers {
   HERO_NEAR_NPC: WindowEventHandler<"HERO_NEAR_NPC">;
   HERO_CHAT_NPC: WindowEventHandler<"HERO_CHAT_NPC">;
   UPDATE_HUD: WindowEventHandler<"UPDATE_HUD">;
-  UPDATE_ROOM_PLAYERS: WindowEventHandler<"UPDATE_ROOM_PLAYERS">;
+  HERO_DEAD: WindowEventHandler<"HERO_DEAD">;
   HERO_RESPAWN: WindowEventHandler<"HERO_RESPAWN">;
   LOAD_ERROR: WindowEventHandler<"LOAD_ERROR">;
   GAME_LOADED: WindowEventHandler<"GAME_LOADED">;
@@ -45,7 +44,6 @@ export function bindSocketHandlers(socket: ClientGameSocket, handlers: SocketHan
   socket.on("lootGrabbed", handlers.lootGrabbed);
   socket.on("keeperDataUpdate", handlers.keeperDataUpdate);
   socket.on("playerJoin", handlers.playerJoin);
-  socket.on("remove", handlers.remove);
   socket.on("partyInvite", handlers.partyInvite);
   socket.on("partyUpdate", handlers.partyUpdate);
   socket.on("updateUserSetting", handlers.updateUserSetting);
@@ -60,7 +58,6 @@ export function bindSocketHandlers(socket: ClientGameSocket, handlers: SocketHan
     socket.off("lootGrabbed", handlers.lootGrabbed);
     socket.off("keeperDataUpdate", handlers.keeperDataUpdate);
     socket.off("playerJoin", handlers.playerJoin);
-    socket.off("remove", handlers.remove);
     socket.off("partyInvite", handlers.partyInvite);
     socket.off("partyUpdate", handlers.partyUpdate);
     socket.off("updateUserSetting", handlers.updateUserSetting);

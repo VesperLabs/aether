@@ -14,8 +14,8 @@ export interface ClientStore {
   apply(name: keyof ServerToClientEvents, ...args: unknown[]): void;
   /** Adds a client-only chat entry (level up, loot found, errors), then tells every listener. */
   addLocalChat(message: ChatMessage): void;
-  /** Empties the chat (on disconnect), then tells every listener. */
-  clearChat(): void;
+  /** Forgets everything (on disconnect): chat, party, characters. Then tells every listener. */
+  reset(): void;
   /** Calls `listener` after each change. Returns the function that stops it. */
   subscribe(listener: Listener): () => void;
 }
@@ -39,8 +39,8 @@ export function createClientStore(clock: () => number): ClientStore {
       addChat(state, stamp(message));
       notify();
     },
-    clearChat() {
-      state.chat = [];
+    reset() {
+      Object.assign(state, createClientState(), { revision: state.revision + 1 });
       notify();
     },
     subscribe(listener) {

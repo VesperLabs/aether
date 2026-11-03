@@ -1,6 +1,5 @@
 import type { BuiltItem } from "@/content/items/item-types";
 import type { NearbyPlayer } from "@/client/scenes/main-scene";
-import type { Player } from "@/client/views/player";
 import type { AbilitySlot } from "@/rules/spells";
 
 export type { AbilitySlot } from "@/rules/spells";
@@ -45,7 +44,6 @@ declare global {
     GAME_LOADED: Event;
     LOAD_ERROR: CustomEvent<unknown>;
     UPDATE_HUD: Event;
-    UPDATE_ROOM_PLAYERS: CustomEvent<{ players: Player[] }>;
     VIDEO_CHAT_STREAM_READY: Event;
     HERO_NEAR_PLAYER: CustomEvent<NearbyPlayer>;
     HERO_AWAY_PLAYER: CustomEvent<NearbyPlayer>;

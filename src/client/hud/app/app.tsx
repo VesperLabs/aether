@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { theme } from "@/ui/kit/theme";
 import { MenuHud } from "@/client/hud/menu/menu-hud";
 import { ModalRespawn } from "@/client/hud/status/modal-respawn";
@@ -21,7 +21,6 @@ import { VideoFrame } from "@/client/hud/video/video-frame";
 import { ModalSettings } from "@/client/hud/settings/modal-settings";
 import type Phaser from "phaser";
 import type Peer from "peerjs";
-import type { PartyMessage } from "@/network/messages";
 import type { ClientStore } from "@/network/session/client-store";
 import type { ClientGameSocket } from "@/network/socket/game-socket";
 import type { Sign } from "@/client/views/sign";
@@ -47,10 +46,11 @@ import { createItemEventHandlers } from "./item-events";
 import { MenuGlobalKeys } from "./menu-global-keys";
 import { LoginBackdrop } from "./login-backdrop";
 import { createPartyHandlers } from "./party-events";
-import { useClientState } from "./use-client-state";
+import { useClientDerived, useClientState } from "./use-client-state";
+import { playersWithVitals, selfWithVitals } from "@/network/session/character-stats";
 interface AppProps {
   socket: ClientGameSocket;
-  /** The client state the game is fed; the HUD reads chat from it. */
+  /** The client state the game is fed; the HUD reads the hero, players, party and chat from it. */
   clientStore: ClientStore;
   peer: Peer;
   debug: string | undefined;
@@ -60,13 +60,19 @@ interface AppProps {
 export function App({ socket, clientStore, peer, debug, game }: AppProps) {
   const [currentTooltipId, setCurrentTooltipId] = useState<string | null>(null);
   const [partyInvites, setPartyInvites] = useState<Array<PartyInvite>>([]);
-  const [party, setParty] = useState<PartyMessage | null>();
-  const [players, setPlayers] = useState<Array<HudCharacter>>([]);
+  const party = useClientState(clientStore, (state) => state.party);
+  const players = useClientDerived(clientStore, playersWithVitals);
+  const self = useClientDerived(clientStore, selfWithVitals);
+  /* Client-only: the hero sprite's state (dead, target, door), kept apart from server data. */
+  const [heroState, setHeroState] = useState<HudCharacter["state"]>();
+  const hero = useMemo(
+    () => (self ? { ...self, state: { ...self.state, ...heroState } } : null),
+    [self, heroState],
+  );
   const [isConnected, setIsConnected] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [dropItem, setDropItem] = useState<DropItem | null>(null);
-  const [hero, setHero] = useState<HudCharacter | null>(null);
   const [keeper, setKeeper] = useState<KeeperView>();
   const messages = useClientState(clientStore, (state) => state.chat);
   const [tabKeeper, setTabKeeper] = useState(false);
@@ -107,11 +113,10 @@ export function App({ socket, clientStore, peer, debug, game }: AppProps) {
 
   const addMessage = clientStore.addLocalChat;
 
-  const { onPlayerJoin, onPlayerLeave, onHeroInit, onBuffUpdate, onPlayerUpdate, onLootGrabbed } =
+  const { onPlayerJoin, onHeroInit, onBuffUpdate, onPlayerUpdate, onLootGrabbed } =
     createHeroSyncHandlers({
+      clientState: clientStore.state,
       addMessage,
-      setPlayers,
-      setHero,
       setIsLoggedIn,
       setUserSettings,
       setCheats,
@@ -137,11 +142,9 @@ export function App({ socket, clientStore, peer, debug, game }: AppProps) {
     setRemoteVideoStreams({});
     setTabSettings(false);
     setTabKeeper(false);
-    clientStore.clearChat();
-    setPlayers([]);
-    setParty(null);
+    clientStore.reset();
     setPartyInvites([]);
-    setHero(null);
+    setHeroState(undefined);
     setKeeper(undefined);
     setSign(null);
   };
@@ -150,7 +153,6 @@ export function App({ socket, clientStore, peer, debug, game }: AppProps) {
     onKeeperDataUpdate,
     onHeroChatNpc,
     onUpdateHud,
-    onUpdateRoomPlayers,
     onNearNpc,
     onStartCooldown,
     onLoadError,
@@ -160,8 +162,7 @@ export function App({ socket, clientStore, peer, debug, game }: AppProps) {
     socket,
     addMessage,
     setKeeper,
-    setHero,
-    setPlayers,
+    setHeroState,
     tabKeeper,
     setTabKeeper,
     setSign,
@@ -175,7 +176,6 @@ export function App({ socket, clientStore, peer, debug, game }: AppProps) {
     partyInvites,
     addMessage,
     setPartyInvites,
-    setParty,
     setUserSettings,
   });
 
@@ -188,7 +188,6 @@ export function App({ socket, clientStore, peer, debug, game }: AppProps) {
     lootGrabbed: onLootGrabbed,
     keeperDataUpdate: onKeeperDataUpdate,
     playerJoin: onPlayerJoin,
-    remove: onPlayerLeave,
     partyInvite: onPartyInvite,
     partyUpdate: onPartyUpdate,
     updateUserSetting: onUpdateUserSetting,
@@ -199,7 +198,7 @@ export function App({ socket, clientStore, peer, debug, game }: AppProps) {
     HERO_NEAR_NPC: onNearNpc,
     HERO_CHAT_NPC: onHeroChatNpc,
     UPDATE_HUD: onUpdateHud,
-    UPDATE_ROOM_PLAYERS: onUpdateRoomPlayers,
+    HERO_DEAD: onUpdateHud,
     HERO_RESPAWN: onUpdateHud,
     LOAD_ERROR: onLoadError,
     GAME_LOADED: onGameLoaded,

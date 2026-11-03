@@ -23,7 +23,6 @@ export interface NearbyPlayer {
 export class SceneMain extends Phaser.Scene {
   /** Set by `heroInit`; the entity groups below exist from then on. */
   declare hero: Player;
-  lastUpdateTime: number;
   declare loots: Phaser.Physics.Arcade.Group;
   declare npcs: Phaser.Physics.Arcade.Group;
   declare players: Phaser.Physics.Arcade.Group;
@@ -42,7 +41,6 @@ export class SceneMain extends Phaser.Scene {
     super({ key: "SceneMain" });
     this.socket = socket;
     this.clientState = clientState;
-    this.lastUpdateTime = 0;
     this.userSettings = DEFAULT_USER_SETTINGS;
     this.nearbyRemotePlayers = [];
   }
@@ -93,7 +91,6 @@ export class SceneMain extends Phaser.Scene {
     [...getPlayers(scene), ...getNpcs(scene)].forEach((a) => a.updateUserName());
   }
   update(time: number, delta: number) {
-    const elapsedTime = time - this.lastUpdateTime;
     if (!this.socket || !this?.hero?.body) return;
 
     easeHeroCorrection(this.hero, delta);
@@ -116,19 +113,6 @@ export class SceneMain extends Phaser.Scene {
         const npc = getNpc(this, id);
         if (npc) applyPose(npc, pose, poses);
       }
-    }
-
-    /* Send an update to the UI every 2 seconds.
-    This is really only for the PARTY UI hud.
-    Probably can check if the hero is in a party before we do this
-    to save some resources */
-    if (elapsedTime >= 1000 && this?.hero?.party) {
-      window.dispatchEvent(
-        new CustomEvent("UPDATE_ROOM_PLAYERS", {
-          detail: { players: this?.players?.getChildren?.() },
-        }),
-      );
-      this.lastUpdateTime = time;
     }
   }
 }
