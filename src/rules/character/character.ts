@@ -60,17 +60,36 @@ export function filterVisibleEquipment(player: {
 type Constructor<T = object> = new (...args: any[]) => T;
 
 /**
- * Everything a character is, as plain data plus methods that call the rules. Mixed into a base
- * class so the server uses it plain and the client mixes it into a Phaser Container. Call
- * `initCharacter(args)` from the constructor.
+ * A character's entity data: what the server owns and sends. The server stores it on its
+ * characters; the client reads it from the client state, so its sprites cannot hold it.
  */
-export function withCharacterModel<TBase extends Constructor<{ x: number; y: number }>>(
-  Base: TBase,
-) {
+export interface CharacterData {
+  readonly peerId: string;
+  readonly gold: any;
+  readonly profile: any;
+  readonly equipment: Record<string, CharacterItem>;
+  readonly visibleEquipment: Record<string, CharacterItem>;
+  readonly inventory: any;
+  readonly baseStats: any;
+  readonly stats: any;
+  readonly npcKills: Record<string, number>;
+  readonly buffs: ActiveBuff[];
+  readonly quests: Array<PlayerQuestRecord>;
+  readonly abilities: Record<string, CharacterItem>;
+  readonly activeItemSlots: Array<string>;
+}
+
+/**
+ * A character's rules and per-character state, mixed into a base that supplies its
+ * `CharacterData`: plain fields on the server, getters over the client state on the client.
+ * Call `initCharacter(args)` from the constructor.
+ */
+export function withCharacterModel<
+  TBase extends Constructor<{ x: number; y: number } & CharacterData>,
+>(Base: TBase) {
   return class CharacterModel extends Base {
     startingCoords!: Point;
     socketId!: string;
-    peerId!: string;
     id!: string;
     isHero!: boolean;
     roomName!: string | null;
@@ -83,18 +102,6 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
     vx!: any;
     vy!: any;
     kind!: any;
-    gold!: any;
-    profile!: any;
-    equipment!: Record<string, CharacterItem>;
-    visibleEquipment!: Record<string, CharacterItem>;
-    inventory!: any;
-    baseStats!: any;
-    stats!: any;
-    npcKills!: Record<string, number>;
-    buffs!: ActiveBuff[];
-    quests!: Array<PlayerQuestRecord>;
-    abilities!: Record<string, CharacterItem>;
-    activeItemSlots!: Array<string>;
     bodyOffsetY!: number;
     bodyCenterY!: number;
     hitBoxSize!: { width: number; height: number };
@@ -109,7 +116,7 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
     /** Current time in ms. Injected by the app so rules stay deterministic. */
     clock!: () => number;
 
-    /** Copies the constructor args onto the character and fills in the defaults. */
+    /** Copies the constructor args (not the `CharacterData`) onto the character. */
     initCharacter(args: any, clock: () => number) {
       this.clock = clock;
       const now = clock();
@@ -117,26 +124,14 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
         x,
         y,
         socketId,
-        peerId,
         id,
         isHero = false,
         room,
-        equipment = {},
-        inventory = [],
-        profile,
-        stats = {},
         kind,
         roomName,
-        baseStats = {},
         direction,
         state = {},
-        gold = 0,
         charClass,
-        npcKills = {},
-        quests = {},
-        buffs = [],
-        abilities = {},
-        activeItemSlots = [],
         hitBoxSize = { width: 18, height: 46 }, //human hitbox
       } = args;
       this.x = x;
@@ -144,7 +139,6 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
       this.charClass = charClass;
       this.startingCoords = { x, y };
       this.socketId = socketId;
-      this.peerId = peerId;
       this.id = id;
       this.isHero = isHero;
       this.roomName = roomName;
@@ -190,17 +184,6 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
         isHovering: false,
         ...state,
       };
-      this.buffs = buffs;
-      this.activeItemSlots = activeItemSlots;
-      this.gold = gold;
-      this.profile = profile;
-      this.equipment = equipment;
-      this.abilities = abilities;
-      this.inventory = inventory;
-      this.baseStats = baseStats;
-      this.stats = stats;
-      this.npcKills = npcKills;
-      this.quests = quests;
       this.proScale = this?.profile?.scale || 1;
       this.bodySize = BODY_SIZE * this.proScale;
       this.bodyOffsetY = -14 * this.proScale;
@@ -208,7 +191,6 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
       this.headY = -hitBoxSize.height + this.bodySize - 6;
       // hits will go here
       this.bodyCenterY = this.headY / 2 + this.bodySize;
-      this.updateVisibleEquipment();
     }
 
     hasBuff(name: string): boolean {
@@ -330,9 +312,6 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
         abilitySlot,
       );
     }
-    updateVisibleEquipment() {
-      this.visibleEquipment = this.getVisibleEquipment();
-    }
     getVisibleEquipment() {
       return filterVisibleEquipment(this);
     }
@@ -357,10 +336,49 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
   };
 }
 
+/** `CharacterData` as plain fields: what the server's characters keep. */
+class CharacterDataFields implements CharacterData {
+  x = 0;
+  y = 0;
+  peerId!: string;
+  gold!: any;
+  profile!: any;
+  equipment!: Record<string, CharacterItem>;
+  visibleEquipment!: Record<string, CharacterItem>;
+  inventory!: any;
+  baseStats!: any;
+  stats!: any;
+  npcKills!: Record<string, number>;
+  buffs!: ActiveBuff[];
+  quests!: Array<PlayerQuestRecord>;
+  abilities!: Record<string, CharacterItem>;
+  activeItemSlots!: Array<string>;
+}
+
 /** A character with no engine behind it: what the server's players and NPCs are built on. */
-export class CharacterModel extends withCharacterModel(
-  class {
-    x = 0;
-    y = 0;
-  },
-) {}
+export class CharacterModel extends withCharacterModel(CharacterDataFields) {
+  /** Copies the constructor args, entity data included, onto the character. */
+  initCharacter(args: any, clock: () => number) {
+    const {
+      peerId,
+      equipment = {},
+      inventory = [],
+      profile,
+      stats = {},
+      baseStats = {},
+      gold = 0,
+      npcKills = {},
+      quests = {},
+      buffs = [],
+      abilities = {},
+      activeItemSlots = [],
+    } = args;
+    Object.assign(this, { peerId, gold, profile, equipment, abilities, inventory, baseStats });
+    Object.assign(this, { stats, npcKills, quests, buffs, activeItemSlots });
+    super.initCharacter(args, clock);
+    this.updateVisibleEquipment();
+  }
+  updateVisibleEquipment() {
+    this.visibleEquipment = this.getVisibleEquipment();
+  }
+}

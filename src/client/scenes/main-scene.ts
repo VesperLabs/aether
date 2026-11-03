@@ -7,7 +7,7 @@ import { netInterp } from "@/client/net/scene-interpolation";
 import { applyPose } from "@/client/net/apply-pose";
 import { easeHeroCorrection } from "@/client/net/position-correction";
 import { bindSceneSocket } from "@/client/net/scene-socket";
-import { createClientState, type ClientState } from "@/network/session/client-state";
+import type { ClientState } from "@/network/session/client-state";
 import { changeMusic } from "@/client/audio/music";
 import { getPlayer, getNpc, getNpcs, getPlayers } from "./scene-entities";
 import { enableDoors, initCamera } from "./main-map";
@@ -38,10 +38,10 @@ export class SceneMain extends Phaser.Scene {
   /** What the hero sees, built from every server message: views render entity data from it. */
   clientState: ClientState;
   userSettings: UserSettings;
-  constructor(socket: ClientGameSocket) {
+  constructor(socket: ClientGameSocket, clientState: ClientState) {
     super({ key: "SceneMain" });
     this.socket = socket;
-    this.clientState = createClientState();
+    this.clientState = clientState;
     this.lastUpdateTime = 0;
     this.userSettings = DEFAULT_USER_SETTINGS;
     this.nearbyRemotePlayers = [];

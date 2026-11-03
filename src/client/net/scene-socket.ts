@@ -22,7 +22,7 @@ import {
   getNpcs,
 } from "@/client/scenes/scene-entities";
 import type { SceneMain } from "@/client/scenes/main-scene";
-import { applyMessage, type ClientCharacter } from "@/network/session/client-state";
+import type { ClientCharacter } from "@/network/session/client-state";
 import { changeMap, initCamera, initPlayerCollision } from "@/client/scenes/main-map";
 
 /** What a tick's vitals update on a player or npc sprite. */
@@ -59,16 +59,10 @@ export function bindSceneSocket(scene: SceneMain) {
   const clientState = scene.clientState;
 
   /*
-   * Every message reaches the client state first (socket.io runs `onAny` listeners before named ones),
-   * so the handlers below read entity data from the client state and only drive sprites.
+   * Every message reaches the client state first (game.tsx feeds it from an `onAny` listener,
+   * which socket.io runs before named ones), so these handlers read entity data from it and only
+   * drive sprites.
    */
-  socket.onAny((name, ...args) => {
-    (applyMessage as (m: typeof clientState, n: string, ...a: unknown[]) => void)(
-      clientState,
-      name,
-      ...args,
-    );
-  });
 
   socket.on("poses", (data) => {
     netInterp.add(decodeRoomPoses(data, idOfNetId), performance.now());
@@ -155,7 +149,6 @@ export function bindSceneSocket(scene: SceneMain) {
     const player = getPlayer(scene, userData.socketId);
     const data = clientState.players.get(userData.socketId);
     if (!player || !data) return;
-    player.updateData(data);
     player.updateExtas();
   });
 
@@ -164,14 +157,12 @@ export function bindSceneSocket(scene: SceneMain) {
       const player = getPlayer(scene, p.id);
       const data = clientState.players.get(p.socketId || p.id);
       if (!player || !data) continue;
-      player.updateBuffData(data);
       player.updateExtas();
     }
     for (const n of npcs) {
       const npc = getNpc(scene, n.id);
       const data = clientState.npcs.get(n.id);
       if (!npc || !data) continue;
-      npc.updateBuffData(data);
       npc.updateExtas();
     }
   });
@@ -186,8 +177,7 @@ export function bindSceneSocket(scene: SceneMain) {
     if (player?.isHero) {
       playAudio({ scene, audioKey: "item-leather", caster: player });
     }
-    const data = clientState.players.get(userData.socketId || userData.id);
-    if (data) player?.updateData(data);
+    if (clientState.players.has(userData.socketId || userData.id)) player?.syncActiveSets();
   });
 
   socket.on("playerAttack", ({ socketId, count, castAngle, direction, abilitySlot }) => {
