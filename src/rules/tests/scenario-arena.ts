@@ -3,6 +3,7 @@ import {
   addRoom,
   createRoom,
   createTickLoop,
+  realClock,
   createWorld,
   type RoomData,
   type System,
@@ -104,7 +105,7 @@ export function createArena(options: { walls?: ReadonlyArray<readonly [number, n
         room.poseHistory.record(frame.now, [...Object.values(w.players), ...Object.values(w.npcs)]);
       const loop = createTickLoop(world, [...systems, recordPoses], {
         fps: 1000 / TICK_MS,
-        clock: () => clock,
+        clock: { ...realClock, now: () => clock },
       });
       for (let i = 0; i < ticks; i++) {
         clock += TICK_MS;

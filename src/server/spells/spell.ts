@@ -99,7 +99,7 @@ export class Spell {
     this.action = action ?? "attack_right";
 
     const { details, found } = resolveSpellDetails(spellName);
-    if (!found) console.log("❌ Shit, the spell does not exist in spellDetails!");
+    if (!found) this.world.log.warn("❌ Shit, the spell does not exist in spellDetails!");
     const shape = getSpellShape(details, ilvl);
 
     this.isMeleeAttack = !!shape.isMeleeAttack;

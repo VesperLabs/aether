@@ -42,6 +42,6 @@ export function detachFromRoom(player: Player) {
 
 /** Takes a player out of their room, e.g. while they walk through a door. */
 export function removePlayerFromRoom(world: ServerWorld, socketId: string) {
-  if (!world.players?.[socketId]) return console.log("❌ Could not remove player");
+  if (!world.players?.[socketId]) return world.log.warn("❌ Could not remove player");
   detachFromRoom(world.players[socketId]);
 }

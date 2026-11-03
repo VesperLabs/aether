@@ -4,6 +4,8 @@ import express from "express";
 import http from "http";
 import type { AddressInfo } from "net";
 import { PeerServer } from "peer";
+import type { Clock } from "@/rules/world";
+import type { Logger } from "@/server/log/logger";
 import type { ServerConfig } from "@/server/config/config";
 import { registerPeerProxy } from "@/server/http/peer-proxy";
 import { registerRoutes } from "@/server/http/routes";
@@ -30,7 +32,7 @@ const closeHttp = (server: http.Server) =>
  */
 export async function createApp(
   config: ServerConfig,
-  { db, now }: { db: Database; now?: () => number },
+  { db, clock, seed, logger }: { db: Database; clock?: Clock; seed?: number; logger?: Logger },
 ): Promise<App> {
   const app = express();
   const httpServer = http.createServer(app);
@@ -42,7 +44,7 @@ export async function createApp(
     });
   }
 
-  const server = new GameServer({ httpServer, db, config, now });
+  const server = new GameServer({ httpServer, db, config, clock, seed, logger });
 
   app.use(cors({ origin: "*" }));
   app.use(express.static(path.resolve(config.publicDir)));

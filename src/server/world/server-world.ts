@@ -1,3 +1,4 @@
+import type { Logger } from "@/server/log/logger";
 import type { Dice } from "@/content/items/dice";
 import type { GameIo } from "@/network/socket/game-socket";
 import type { NetIds } from "@/network/sync/net-ids";
@@ -17,6 +18,8 @@ export type ServerWorld = World<Player, Npc, Spell, Loot, Quest> & {
   loop: TickLoop;
   /** Game time in milliseconds. Every server timestamp reads it, so tests can drive time. */
   now: () => number;
+  /** Where the server writes what it did and what went wrong. */
+  log: Logger;
   /** The one seeded random source for the whole world, so ticks can be replayed. */
   rng: Rng;
   /** Rolls and ids for items, NPCs, loot and parties. `rng` is its `random`. */

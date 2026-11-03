@@ -1,3 +1,4 @@
+import type { Logger } from "@/server/log/logger";
 import type { Dice } from "@/content/items/dice";
 import { createServerDice } from "@/server/world/server-dice";
 import { MongoClient, type Db } from "mongodb";
@@ -8,10 +9,10 @@ import { createBaseUser } from "./base-user";
 import { pruneItemFromUser, type StoredItemLists } from "./prune-item";
 import type { Database, UserDocument } from "./database";
 
-const getDatabaseApi = (db: Db, dice: Dice): Database => ({
+const getDatabaseApi = (db: Db, dice: Dice, log: Logger): Database => ({
   getUserByEmail: async ({ email }) => {
-    return execute("getUserByEmail", async () => {
-      if (!email) return console.log("❌ Email not provided");
+    return execute(log, "getUserByEmail", async () => {
+      if (!email) return log.warn("❌ Email not provided");
       const user = await db.collection("users").findOne({ email });
       return user as UserDocument | null;
     });
@@ -29,13 +30,13 @@ const getDatabaseApi = (db: Db, dice: Dice): Database => ({
     return users as unknown as UserDocument[];
   },
   countAllUsers: async () => {
-    return execute("countAllUsers", async () => {
+    return execute(log, "countAllUsers", async () => {
       const count = await db.collection("users").countDocuments();
       return count;
     });
   },
   updateUsersMaxExp: async () => {
-    return execute("updateUsersMaxExp", async () => {
+    return execute(log, "updateUsersMaxExp", async () => {
       const users = db.collection("users");
 
       // Find users and iterate through each user
@@ -55,7 +56,7 @@ const getDatabaseApi = (db: Db, dice: Dice): Database => ({
     });
   },
   pruneNoobs: async () => {
-    return execute("pruneNoobs", async () => {
+    return execute(log, "pruneNoobs", async () => {
       // Delete documents with baseStats.level equal to 1
       await db.collection("users").deleteMany({ "baseStats.level": 1 });
       //const deleteResult = await db.collection("users").deleteMany({ email: /@arf.arf/ });
@@ -66,7 +67,7 @@ const getDatabaseApi = (db: Db, dice: Dice): Database => ({
     });
   },
   pruneItemByKey: async (keyToRemove: string) => {
-    return execute("pruneItemByKey", async () => {
+    return execute(log, "pruneItemByKey", async () => {
       const users = db.collection<StoredItemLists>("users");
       for await (const doc of users.find({})) {
         if (pruneItemFromUser(doc, keyToRemove)) {
@@ -76,8 +77,8 @@ const getDatabaseApi = (db: Db, dice: Dice): Database => ({
     });
   },
   getUserByLogin: async ({ email, password = "" }) => {
-    return execute("getUserByLogin", async () => {
-      if (!email) return console.log("❌ Email not provided");
+    return execute(log, "getUserByLogin", async () => {
+      if (!email) return log.warn("❌ Email not provided");
       const user = await db
         .collection("users")
         .findOne({ email: `${email}`.toLowerCase(), password });
@@ -85,9 +86,9 @@ const getDatabaseApi = (db: Db, dice: Dice): Database => ({
     });
   },
   createUser: async ({ email, charClass, password }) => {
-    return execute("createUser", async () => {
+    return execute(log, "createUser", async () => {
       if (!email) {
-        return console.log("❌ Error while creating player. Email not provided");
+        return log.warn("❌ Error while creating player. Email not provided");
       }
       const player = createBaseUser(dice, charClass);
       const { updatedAt, createdAt } = getAuditFields();
@@ -120,13 +121,13 @@ const getDatabaseApi = (db: Db, dice: Dice): Database => ({
     });
   },
   updateUserMapDetails: async (args) => {
-    return execute("updateUserMapDetails", async () => {
+    return execute(log, "updateUserMapDetails", async () => {
       const { updatedAt } = getAuditFields();
       if (args?.isDemoAccount) {
         return; // console.log("🍔 Demo account. no need to save.");
       }
       if (!args?.email) {
-        return console.log("❌ Error while saving player. Player not found");
+        return log.warn("❌ Error while saving player. Player not found");
       }
       await db.collection("users").findOneAndUpdate(
         { email: args?.email },
@@ -145,13 +146,13 @@ const getDatabaseApi = (db: Db, dice: Dice): Database => ({
     });
   },
   updateUserSetting: async (player, { name, value }) => {
-    return execute("updateUserSetting", async () => {
+    return execute(log, "updateUserSetting", async () => {
       const { updatedAt } = getAuditFields();
       if (player?.isDemoAccount) {
         return; // console.log("🍔 Demo account. no need to save.");
       }
       if (!player?.email) {
-        return console.log("❌ Error while saving player. Player not found");
+        return log.warn("❌ Error while saving player. Player not found");
       }
       await db.collection("users").findOneAndUpdate(
         { email: player?.email },
@@ -165,12 +166,12 @@ const getDatabaseApi = (db: Db, dice: Dice): Database => ({
     });
   },
   updateUser: async (player) => {
-    return execute("updateUser", async () => {
+    return execute(log, "updateUser", async () => {
       if (player?.isDemoAccount) {
         return; // console.log("🍔 Demo account. no need to save.");
       }
       if (!player?.email) {
-        return console.log("❌ Error while saving player. Player not found");
+        return log.warn("❌ Error while saving player. Player not found");
       }
       const { updatedAt } = getAuditFields();
       await db.collection("users").findOneAndUpdate(
@@ -204,6 +205,7 @@ const getDatabaseApi = (db: Db, dice: Dice): Database => ({
 });
 
 async function execute<T>(
+  log: Logger,
   operationName: string,
   operation: () => Promise<T>,
   onError: () => void = () => {},
@@ -213,7 +215,7 @@ async function execute<T>(
     //console.log(`🔧 ${operationName} succeeded`);
     return res;
   } catch (error) {
-    console.error(`❌ ${operationName} failed`, error);
+    log.error(`❌ ${operationName} failed`, error);
     onError();
     throw error;
   }
@@ -227,11 +229,12 @@ function getAuditFields() {
   };
 }
 
-export async function initDatabase(uri: string, dice: Dice = createServerDice()) {
+export async function initDatabase(uri: string, log: Logger, dice: Dice = createServerDice()) {
   let mongoClient: MongoClient;
   let db!: Db;
 
   await execute(
+    log,
     "Connect to DB",
     async () => {
       mongoClient = new MongoClient(uri);
@@ -243,16 +246,16 @@ export async function initDatabase(uri: string, dice: Dice = createServerDice())
     },
   );
 
-  await execute("Create users collection", async () => {
+  await execute(log, "Create users collection", async () => {
     const usersCollectionExists = await db.listCollections({ name: "users" }).hasNext();
     if (!usersCollectionExists) await db.createCollection("users");
   });
 
-  await execute("Create user indexes", async () => {
+  await execute(log, "Create user indexes", async () => {
     await db.collection("users").createIndex({ email: 1 }, { unique: true });
   });
 
-  await execute("Add user schema", async () => {
+  await execute(log, "Add user schema", async () => {
     await db.command({
       collMod: "users",
       validator: { $jsonSchema: userSchema },
@@ -261,5 +264,5 @@ export async function initDatabase(uri: string, dice: Dice = createServerDice())
     });
   });
 
-  return getDatabaseApi(db, dice);
+  return getDatabaseApi(db, dice, log);
 }

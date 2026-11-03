@@ -6,9 +6,9 @@ export function shouldPause(world: ServerWorld) {
   const isEmpty = Object.keys(world.players ?? {}).length === 0;
   if (isEmpty && loop.isRunning()) {
     loop.pause();
-    console.log("🚦 Game empty. Pausing.");
+    world.log.info("🚦 Game empty. Pausing.");
   } else if (!isEmpty && !loop.isRunning()) {
     loop.resume();
-    console.log("🚦 Player joined. Resuming.");
+    world.log.info("🚦 Player joined. Resuming.");
   }
 }

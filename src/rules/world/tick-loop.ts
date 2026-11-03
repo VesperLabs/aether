@@ -1,3 +1,5 @@
+import { realClock, type Clock } from "./clock";
+
 /** What a system is told about the tick it runs in. */
 export interface Frame {
   /** Milliseconds since the loop started. */
@@ -7,14 +9,6 @@ export interface Frame {
   /** Wall clock time of this tick (`Date.now()`). */
   now: number;
 }
-
-/** Runs `run` after `ms`; returns a function that cancels it. Simulations pass a virtual one. */
-type SetTimer = (run: () => void, ms: number) => () => void;
-
-const realTimer: SetTimer = (run, ms) => {
-  const timer = setTimeout(run, ms);
-  return () => clearTimeout(timer);
-};
 
 /** A function that runs once per tick and changes the world. */
 export type System<W> = (world: W, frame: Frame) => void;
@@ -38,20 +32,25 @@ export interface TickLoop {
 export function createTickLoop<W extends { tick: number }>(
   world: W,
   systems: Array<System<W>>,
-  options: { fps: number; clock?: () => number; setTimer?: SetTimer },
+  options: {
+    fps: number;
+    clock?: Clock;
+    /** Called when a tick throws; the loop keeps going. Defaults to `console.error`. */
+    onError?: (error: unknown) => void;
+  },
 ): TickLoop {
   const interval = 1000 / options.fps;
-  const clock = options.clock ?? (() => Date.now());
-  const setTimer = options.setTimer ?? realTimer;
+  const { clock = realClock, onError = (error) => console.error("Tick failed", error) } = options;
+  const now = () => clock.now();
   let cancel: (() => void) | null = null;
   let running = false;
-  let startedAt = clock();
+  let startedAt = now();
   let lastTick = startedAt;
   let nextDue = startedAt;
 
   const step = (delta = interval) => {
-    const now = clock();
-    const frame: Frame = { time: now - startedAt, delta, now };
+    const at = now();
+    const frame: Frame = { time: at - startedAt, delta, now: at };
     world.tick += 1;
     for (const system of systems) system(world, frame);
   };
@@ -59,15 +58,15 @@ export function createTickLoop<W extends { tick: number }>(
   const schedule = () => {
     if (!running) return;
     nextDue += interval;
-    const wait = Math.max(0, nextDue - clock());
-    cancel = setTimer(() => {
-      const now = clock();
-      const delta = now - lastTick;
-      lastTick = now;
+    const wait = Math.max(0, nextDue - now());
+    cancel = clock.setTimer(() => {
+      const at = now();
+      const delta = at - lastTick;
+      lastTick = at;
       try {
         step(delta);
       } catch (error) {
-        console.error("Tick failed", error);
+        onError(error);
       }
       schedule();
     }, wait);
@@ -76,7 +75,7 @@ export function createTickLoop<W extends { tick: number }>(
   const resume = () => {
     if (running) return;
     running = true;
-    lastTick = nextDue = clock();
+    lastTick = nextDue = now();
     schedule();
   };
 
@@ -88,7 +87,7 @@ export function createTickLoop<W extends { tick: number }>(
 
   return {
     start: () => {
-      startedAt = clock();
+      startedAt = now();
       resume();
     },
     pause,

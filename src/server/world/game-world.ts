@@ -13,7 +13,8 @@ import { subscribeLoot, type LootItem } from "@/rules/loot";
 import { subscribeThreat } from "@/rules/npc-behavior";
 import { subscribeQuests } from "@/rules/quests";
 import { npcBaseStats, subscribeStats } from "@/rules/stats";
-import { addRoom, createRoom, createWorld } from "@/rules/world";
+import { addRoom, createRoom, createWorld, realClock, type Clock } from "@/rules/world";
+import { createConsoleLogger, type Logger } from "@/server/log/logger";
 import { spawnLoot } from "@/server/loot/loot-adapter";
 import { subscribeNpcMessages } from "@/server/npcs/npc-messages";
 import {
@@ -44,7 +45,7 @@ function getNpcFromLists(name: string): NpcDefinition | undefined {
 function spawnNpcs(world: ServerWorld, room: Room) {
   for (const placed of room.map.objects.Npcs ?? []) {
     if (!spawnNpc(world, room, placed)) {
-      console.log(`❌ Map npc "${placed.name}" is broken or not found in ${room.name}`);
+      world.log.warn(`❌ Map npc "${placed.name}" is broken or not found in ${room.name}`);
     }
   }
 }
@@ -88,14 +89,20 @@ export function createServerWorld({
   io,
   db,
   config,
-  now,
-  dice = createServerDice(),
+  clock = realClock,
+  seed,
+  logger = createConsoleLogger({ debug: config.debug }),
+  dice = createServerDice(seed),
   mapNpcs = true,
 }: {
   io: GameIo;
   db: Database;
   config: ServerConfig;
-  now: () => number;
+  /** Time and timers. Simulations pass a virtual one. */
+  clock?: Clock;
+  /** Seeds the world's dice, so rolls repeat. Unset picks a random seed. */
+  seed?: number;
+  logger?: Logger;
   /** Every roll and id in the world; pass seeded dice to replay a run exactly. */
   dice?: Dice;
   /** Whether to spawn the NPCs the maps place. Simulations turn this off for a controlled world. */
@@ -105,13 +112,14 @@ export function createServerWorld({
   world.io = io;
   world.db = db;
   world.config = config;
-  world.now = now;
+  world.now = () => clock.now();
+  world.log = logger;
   world.netIds = createNetIds();
   world.dice = dice;
   world.rng = dice.random;
 
   for (const asset of mapList) {
-    addRoom(world, createRoom(asset.name, readMapFile(config.publicDir, asset.json), now()));
+    addRoom(world, createRoom(asset.name, readMapFile(config.publicDir, asset.json), clock.now()));
   }
   if (mapNpcs) for (const room of Object.values(world.rooms)) spawnNpcs(world, room);
 

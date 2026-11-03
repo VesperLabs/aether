@@ -2,7 +2,8 @@ import type { ServerWorld } from "./server-world";
 import type { Server as HttpServer } from "http";
 import { Server } from "socket.io";
 import type { Database } from "@/server/persistence/database";
-import { createTickLoop } from "@/rules/world";
+import { createTickLoop, realClock, type Clock } from "@/rules/world";
+import type { Logger } from "@/server/log/logger";
 import type { ServerConfig } from "@/server/config/config";
 import type { ClientToServerEvents } from "@/network/commands";
 import type { GameIo } from "@/network/socket/game-socket";
@@ -20,15 +21,20 @@ export class GameServer {
     httpServer,
     db,
     config,
-    now = () => Date.now(),
+    clock = realClock,
+    seed,
+    logger,
   }: {
     httpServer: HttpServer;
     db: Database;
     config: ServerConfig;
-    /** The game clock. Tests pass their own to drive time. */
-    now?: () => number;
+    /** The game clock. Simulations pass a virtual one to drive time. */
+    clock?: Clock;
+    /** Seeds the world's dice so a run repeats. */
+    seed?: number;
+    logger?: Logger;
   }) {
-    this.spawnTime = now();
+    this.spawnTime = clock.now();
 
     this.io = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
       /* Bundled client — do not serve the legacy /socket.io/socket.io.js asset. */
@@ -44,8 +50,12 @@ export class GameServer {
     });
 
     this.db = db;
-    this.world = createServerWorld({ io: this.io, db, config, now });
-    this.world.loop = createTickLoop(this.world, serverSystems, { fps: config.fps, clock: now });
+    this.world = createServerWorld({ io: this.io, db, config, clock, seed, logger });
+    this.world.loop = createTickLoop(this.world, serverSystems, {
+      fps: config.fps,
+      clock,
+      onError: (error) => this.world.log.error("Tick failed", error),
+    });
     listenForConnections(this.world);
     /* Nobody is connected yet, so the loop stays paused until the first player joins. */
   }
