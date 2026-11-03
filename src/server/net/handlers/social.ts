@@ -10,6 +10,7 @@ import type { ParsedCommand } from "@/network/commands";
 import type { CommandContext } from "@/server/net/command-context";
 import { findNearbyNpc } from "@/server/net/nearby-keeper";
 import { isInRoom } from "@/server/world/player-room";
+import { savePlayer } from "@/server/persistence/save-player";
 
 export function chatNpc(ctx: CommandContext, { npcId }: ParsedCommand<"chatNpc"> = {}) {
   const { world, socket, socketId } = ctx;
@@ -37,7 +38,7 @@ export function acceptQuest(ctx: CommandContext, questId: ParsedCommand<"acceptQ
   if (!foundQuest) {
     player?.addQuest(currentQuest);
     /* Save the users data */
-    world.db.updateUser(player);
+    savePlayer(world, player);
     io.to(player?.roomName).emit("playerUpdate", getFullCharacterState(player));
   }
 }
@@ -57,7 +58,7 @@ export function completeQuest(ctx: CommandContext, questId: ParsedCommand<"compl
   }
   /* Save the users data */
   player.calculateStats();
-  world.db.updateUser(player);
+  savePlayer(world, player);
   io.to(player?.roomName).emit("playerUpdate", getFullCharacterState(player), {
     didLevel: questResults?.didLevel,
   });

@@ -7,6 +7,7 @@ import type { AbilitySlot } from "@/rules/spells";
 import type { ParsedCommand } from "@/network/commands";
 import type { CommandContext } from "@/server/net/command-context";
 import { isInRoom } from "@/server/world/player-room";
+import { savePlayer } from "@/server/persistence/save-player";
 
 export function grabLoot(
   ctx: CommandContext,
@@ -54,7 +55,7 @@ export function grabLoot(
     player.addInventoryItem(item);
   }
   /* Save player */
-  world.db.updateUser(player);
+  savePlayer(world, player);
   io.to(player?.roomName).emit("lootGrabbed", {
     socketId,
     loot,
@@ -82,7 +83,7 @@ export function dropItem(ctx: CommandContext, request: ParsedCommand<"dropItem">
     npcId: null,
   });
   /* Save the users data */
-  world.db.updateUser(player);
+  savePlayer(world, player);
   io.to(player.roomName).emit("playerUpdate", getFullCharacterState(player));
 }
 
@@ -126,6 +127,6 @@ export function consumeItem(ctx: CommandContext, request: ParsedCommand<"consume
 
   player.calculateStats();
   /* Save the users data */
-  world.db.updateUser(player);
+  savePlayer(world, player);
   io.to(player.roomName).emit("playerUpdate", getFullCharacterState(player));
 }

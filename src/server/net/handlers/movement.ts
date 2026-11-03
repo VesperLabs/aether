@@ -23,6 +23,7 @@ import {
 } from "@/rules/movement";
 import { isInRoom } from "@/server/world/player-room";
 import type { GameEventBus } from "@/rules/world";
+import { saveMapDetails, savePlayer } from "@/server/persistence/save-player";
 
 /** The last accepted position of each player. Server moves (doors, respawn) restart it. */
 const moveTracks = new WeakMap<Player, MoveTrack>();
@@ -194,7 +195,7 @@ export function teleportPlayer(
   forgetPoses(world, socketId);
 
   /* Save the new room */
-  world.db.updateUserMapDetails(player);
+  saveMapDetails(world, player);
 
   socket.to(destMap).emit("playerJoin", getFullCharacterState(player), {
     lastTeleport: world.now(),
@@ -233,7 +234,7 @@ export function respawn(ctx: CommandContext) {
   forgetPoses(world, socketId);
 
   /* Save the new room */
-  world.db.updateUserMapDetails(player);
+  saveMapDetails(world, player);
 
   socket.to(newRoom).emit("playerJoin", getFullCharacterState(player), {
     isRespawn: true,
@@ -253,7 +254,7 @@ export function respawn(ctx: CommandContext) {
   // TODO: need a better way of sending a persistant party state instead of this
   legacyUpdateMemberRoom(world, player);
 
-  world.db.updateUser(world.players?.[socketId]);
+  savePlayer(world, world.players?.[socketId]);
 }
 
 export function setSpawn(ctx: CommandContext, _spawn: ParsedCommand<"setSpawn">) {
@@ -265,7 +266,7 @@ export function setSpawn(ctx: CommandContext, _spawn: ParsedCommand<"setSpawn">)
   if (!keeper || typeof home?.x !== "number" || typeof home?.y !== "number") return;
   const spawn = { x: home.x, y: home.y, roomName: player.roomName } as SpawnPoint;
   player.spawn = spawn;
-  world.db.updateUserMapDetails({
+  saveMapDetails(world, {
     email: player.email,
     isDemoAccount: player.isDemoAccount,
     spawn,

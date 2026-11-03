@@ -1,3 +1,4 @@
+import { savePlayer } from "@/server/persistence/save-player";
 import type { ServerWorld } from "./server-world";
 import type { Server as HttpServer } from "http";
 import { Server } from "socket.io";
@@ -68,8 +69,10 @@ export class GameServer {
    */
   async close() {
     this.world.loop.stop();
+    /* Players are saved here, so the disconnects that follow must not save them again. */
+    this.world.closing = true;
     const saves = Object.values(this.world.players ?? {}).map((player) =>
-      this.db.updateUser(player),
+      savePlayer(this.world, player),
     );
     await Promise.allSettled(saves);
     await this.io.close();

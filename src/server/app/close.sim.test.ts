@@ -13,7 +13,7 @@ describe("closing the server", () => {
     player.gold = 4321;
 
     const finished: unknown[] = [];
-    vi.spyOn(sim.world.db, "updateUser").mockImplementation(async (saved) => {
+    const write = vi.spyOn(sim.world.db, "updateUser").mockImplementation(async (saved) => {
       /* A slow write: close must not resolve before it lands. */
       await new Promise((resolve) => setTimeout(resolve, 50));
       finished.push((saved as { gold?: unknown }).gold);
@@ -22,6 +22,8 @@ describe("closing the server", () => {
     await sim.close();
 
     expect(finished).toContain(4321);
+    /* Closing saves each player once; the disconnects it causes do not save again. */
+    expect(write).toHaveBeenCalledTimes(1);
     expect(sim.world.loop.isRunning()).toBe(false);
     expect(sim.log.at("error")).toEqual([]);
   });

@@ -10,6 +10,7 @@ import type { Cheat } from "./cheat";
 import { CHARACTER_CHEATS } from "./character-cheats";
 import { NPC_CHEATS } from "./npc-cheats";
 import { TRAVEL_CHEATS } from "./travel-cheats";
+import { saveMapDetails } from "@/server/persistence/save-player";
 
 const CHEATS: Record<string, Cheat> = { ...CHARACTER_CHEATS, ...TRAVEL_CHEATS, ...NPC_CHEATS };
 
@@ -64,7 +65,7 @@ function execute(ctx: CommandContext, command: string[]) {
       return cmdInfo(`Dropped ${itemLabel(built, drop.amount)}.`);
     }
     case "coords":
-      world.db.updateUserMapDetails(player);
+      saveMapDetails(world, player);
       return cmdInfo(`x: ${Math.round(player.x)} y: ${Math.round(player.y)}`);
     case "ding": {
       const exp = parseInt(command[1], 10);
