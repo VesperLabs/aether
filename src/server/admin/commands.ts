@@ -38,7 +38,7 @@ function execute(ctx: CommandContext, command: string[]) {
   if (!isInRoom(player)) return;
   const cmdErr = (message: string) => socket.emit("message", { type: "error", message });
   /* Cheats answer only the player who used them, as a status line, never as chat */
-  const cmdInfo = (message: string) => socket.emit("message", { type: "info", message });
+  const cmdInfo = (message: string) => socket.emit("message", { type: "system", message });
   const itemLabel = (item: Item, amount = 1) =>
     `${amount > 1 ? `${amount}× ` : ""}${item.rarity} ${item.name ?? item.key}`;
 

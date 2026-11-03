@@ -66,9 +66,13 @@ const Equalizer = ({ playing }: { playing: boolean }) => (
 );
 
 const COLLAPSE_DELAY = 2500;
+/** The collapsed disc's size. */
+const DISC_SIZE = 30;
+/** Gap between the disc and the minimap's left edge. */
+const MINIMAP_GAP = 6;
 
 /**
- * Glass disc under the minimap with a bouncing equalizer. Hover or tap expands it to show
+ * Glass disc beside the minimap's top left with a bouncing equalizer. Hover or tap expands it to show
  * the track, time and progress; the disc toggles `playMusic`.
  */
 export const MusicPlayer = () => {
@@ -81,8 +85,8 @@ export const MusicPlayer = () => {
   const current = playMusic ? nowPlaying : null;
   const progress = current?.duration ? current.seek / current.duration : 0;
   const scale = isMobile ? 1 : Number(zoom) || 1;
-  const top =
-    !isMobile && userSettings?.showMinimap ? MINI_MAP_MARGIN + MINI_MAP_SIZE + 6 : MINI_MAP_MARGIN;
+  const right =
+    MINI_MAP_MARGIN + (!isMobile && userSettings?.showMinimap ? MINI_MAP_SIZE + MINIMAP_GAP : 0);
 
   useEffect(() => {
     const getScene = () => game?.scene?.getScene("SceneMain") as SceneMain | undefined;
@@ -127,11 +131,12 @@ export const MusicPlayer = () => {
       onMouseLeave={collapseSoon}
       sx={{
         position: "fixed",
-        top,
-        right: MINI_MAP_MARGIN,
+        top: MINI_MAP_MARGIN,
+        right,
         transform: `scale(${scale})`,
         transformOrigin: "top right",
-        zIndex: "menus",
+        /* Under the menus, which open over it */
+        zIndex: "minimap",
         alignItems: "center",
         flexDirection: "row-reverse",
         gap: 2,
@@ -142,7 +147,7 @@ export const MusicPlayer = () => {
         backdropFilter: "blur(10px)",
         pointerEvents: "all",
         fontSize: 0,
-        maxWidth: expanded ? 200 : 30,
+        maxWidth: expanded ? 200 : DISC_SIZE,
         overflow: "hidden",
         transition: "max-width 0.25s ease, padding 0.25s ease",
         "@keyframes music-eq": {

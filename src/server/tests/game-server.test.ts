@@ -142,7 +142,7 @@ describe("game server", () => {
     try {
       const info = once(socket, "message");
       socket.emit("message", { message: "/coords" });
-      expect((await info)[0]).toMatchObject({ type: "info" });
+      expect((await info)[0]).toMatchObject({ type: "system" });
     } finally {
       delete process.env.ENABLE_CHEATS;
     }

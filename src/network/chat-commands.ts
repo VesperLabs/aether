@@ -17,17 +17,27 @@ export interface ChatCommandOption {
   hint?: string;
   /** Colors the value like an item of this rarity. */
   rarity?: string;
-  /** Draws an item icon next to the value. */
+  /** Draws an icon next to the value: an item's, or a mob's body when there's no slot. */
   look?: ItemLook;
+}
+
+/** What an argument takes, so the client can check it and pick a keyboard before sending. */
+type ChatArgKind = "number" | "item" | "room" | "mob" | "rarity" | "text";
+
+export interface ChatArg {
+  name: string;
+  kind: ChatArgKind;
+  optional?: boolean;
 }
 
 /** A `/command` typed into chat. `cheat` commands only exist when the server runs with ENABLE_CHEATS=true. */
 export interface ChatCommand {
   name: string;
-  /** Argument hint shown after the name, e.g. `<amount>`. */
-  args?: string;
+  args?: readonly ChatArg[];
   description: string;
   cheat: boolean;
+  /** The arguments, when they depend on what's typed (an item's rarity and amount). */
+  argsFor?: (args: string[]) => readonly ChatArg[];
   /** Suggestions for the argument at `index`, given the args typed before it. */
   complete?: (index: number, args: string[]) => readonly ChatCommandOption[];
 }
@@ -40,66 +50,167 @@ const ITEM_OPTIONS = ITEM_KEYS.map(({ key, type, rarity, name, look }) => ({
   look,
 }));
 const ROOM_OPTIONS = mapList.map(({ name }) => ({ value: name }));
-const MOB_OPTIONS = Object.keys(nasties).map((value) => ({ value }));
+const MOB_OPTIONS = Object.entries(nasties).map(([value, { profile, baseStats }]) => ({
+  value,
+  hint: `level ${baseStats.level}`,
+  look: { texture: profile.race, tint: "tint" in profile ? profile.tint : undefined },
+}));
 const RARITY_OPTIONS = ITEM_BUILD_RARITIES.map((value) => ({ value, rarity: value }));
 /** A common base can roll magic or rare mods (not bags, spells, stackables); anything else is fixed. */
 const ROLLABLE_RARITY_OPTIONS = ["magic", "rare"].map((value) => ({ value, rarity: value }));
 
+const numArg = (name: string): ChatArg => ({ name, kind: "number" });
+const itemArg = (name: string): ChatArg => ({ name, kind: "item" });
+const optional = (arg: ChatArg): ChatArg => ({ ...arg, optional: true });
+
+/** Only a common base that can roll mods takes a rarity, and only stackables take an amount. */
+function itemArgs([key]: string[]): readonly ChatArg[] {
+  const item = findItemKey(key ?? "");
+  const rollable = item?.rarity === "common" && canRollRarity(item.type);
+  return [
+    itemArg("item"),
+    ...(rollable ? [optional({ name: "rarity", kind: "rarity" })] : []),
+    ...(item?.type === "stackable" ? [optional(numArg("amount"))] : []),
+  ];
+}
+
+function completeItem(index: number, args: string[]) {
+  if (index === 0) return ITEM_OPTIONS;
+  return itemArgs(args)[index]?.kind === "rarity" ? ROLLABLE_RARITY_OPTIONS : [];
+}
+
 export const CHAT_COMMANDS: readonly ChatCommand[] = [
   {
     name: "drop",
-    args: "<item> [rarity] [amount]",
+    args: [itemArg("item")],
+    argsFor: itemArgs,
+
     description: "Drop an item at your feet",
     cheat: true,
-    complete: (index, args) => {
-      if (index === 0) return ITEM_OPTIONS;
-      const item = findItemKey(args[0]);
-      return index === 1 && item?.rarity === "common" && canRollRarity(item.type)
-        ? ROLLABLE_RARITY_OPTIONS
-        : [];
-    },
+    complete: completeItem,
   },
   { name: "coords", description: "Show your position", cheat: true },
-  { name: "ding", args: "<experience>", description: "Grant experience", cheat: true },
-  { name: "booty", args: "<gold>", description: "Add gold", cheat: true },
+  {
+    name: "ding",
+    args: [numArg("experience")],
+
+    description: "Grant experience",
+    cheat: true,
+  },
+  {
+    name: "booty",
+    args: [numArg("gold")],
+
+    description: "Add gold",
+    cheat: true,
+  },
   {
     name: "guns",
-    args: "<rarity>",
+    args: [{ name: "rarity", kind: "rarity" }],
+
     description: "Drop a random weapon",
     cheat: true,
     complete: (index) => (index === 0 ? RARITY_OPTIONS : []),
   },
   {
     name: "give",
-    args: "<item> [rarity] [amount]",
+    args: [itemArg("item")],
+    argsFor: itemArgs,
+
     description: "Put an item in your inventory",
     cheat: true,
-    complete: (index) => (index === 0 ? ITEM_OPTIONS : []),
+    complete: completeItem,
   },
   { name: "heal", description: "Fill hp, mp and sp", cheat: true },
-  { name: "hp", args: "<amount>", description: "Set your hp", cheat: true },
-  { name: "name", args: "<name>", description: "Rename your character", cheat: true },
-  { name: "tp", args: "<x> <y>", description: "Teleport within this room", cheat: true },
+  {
+    name: "hp",
+    args: [numArg("amount")],
+
+    description: "Set your hp",
+    cheat: true,
+  },
+  {
+    name: "name",
+    args: [{ name: "name", kind: "text" }],
+
+    description: "Rename your character",
+    cheat: true,
+  },
+  {
+    name: "tp",
+    args: [numArg("x"), numArg("y")],
+
+    description: "Teleport within this room",
+    cheat: true,
+  },
   {
     name: "warp",
-    args: "<room> [x] [y]",
+    args: [{ name: "room", kind: "room" }, optional(numArg("x")), optional(numArg("y"))],
+
     description: "Teleport to a room",
     cheat: true,
     complete: (index) => (index === 0 ? ROOM_OPTIONS : []),
   },
-  { name: "goto", args: "<player>", description: "Teleport to a player", cheat: true },
-  { name: "where", description: "List who is in this room and where", cheat: true },
   {
-    name: "summon",
-    args: "<mob> [count]",
-    description: "Summon mobs next to you",
+    name: "goto",
+    args: [{ name: "player", kind: "text" }],
+
+    description: "Teleport to a player",
+    cheat: true,
+  },
+  {
+    name: "where",
+
+    description: "List who is in this room and where",
+    cheat: true,
+  },
+  {
+    name: "spawn",
+    args: [{ name: "mob", kind: "mob" }, optional(numArg("count"))],
+
+    description: "Spawn mobs next to you",
     cheat: true,
     complete: (index) => (index === 0 ? MOB_OPTIONS : []),
   },
-  { name: "despawn", description: "Remove summoned mobs from this room", cheat: true },
+  {
+    name: "despawn",
+
+    description: "Remove spawned mobs from this room",
+    cheat: true,
+  },
 ];
 
 /** The commands a player can use, given whether the server has cheats on. */
+/** A command's arguments, given the ones typed so far. */
+export function getChatArgs(command: ChatCommand, args: string[]): readonly ChatArg[] {
+  return command.argsFor?.(args) ?? command.args ?? [];
+}
+
+/** `<required> [optional]`, as shown after a command's name. */
+export function formatChatArg(arg: ChatArg) {
+  return arg.optional ? `[${arg.name}]` : `<${arg.name}>`;
+}
+
 export function getChatCommands(cheats: boolean): readonly ChatCommand[] {
   return CHAT_COMMANDS.filter((c) => cheats || !c.cheat);
+}
+
+const KIND_OPTIONS: Partial<Record<ChatArgKind, readonly ChatCommandOption[]>> = {
+  room: ROOM_OPTIONS,
+  mob: MOB_OPTIONS,
+  rarity: RARITY_OPTIONS,
+};
+
+/** Why `value` won't do for `arg`, or undefined when it will. The server still checks it again. */
+export function checkChatArg(arg: ChatArg, value: string): string | undefined {
+  if (arg.kind === "number") return /^-?\d+$/.test(value) ? undefined : `${arg.name} is a number`;
+  if (arg.kind === "item") return findItemKey(value) ? undefined : `No item called "${value}"`;
+  const options = KIND_OPTIONS[arg.kind];
+  /* Rooms and mobs are looked up by exact name; rarities ignore case */
+  const same = (o: ChatCommandOption) =>
+    arg.kind === "rarity" ? o.value === value.toLowerCase() : o.value === value;
+  if (options && !options.some(same)) {
+    return `No ${arg.name} called "${value}"`;
+  }
+  return undefined;
 }

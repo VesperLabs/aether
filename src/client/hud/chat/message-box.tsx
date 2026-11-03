@@ -1,31 +1,39 @@
-import React, { useState, useEffect } from "react";
-import { Flex, Text } from "@/ui";
+import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
+import { Box, Flex, Text } from "@/ui";
 import { useAppContext } from "@/client/hud/app/context";
-import { motion } from "framer-motion";
-import type { ChatMessage } from "@/network";
+import type { ChatMessage, ChatMessageType } from "@/network";
 
 type MessageProps = {
   data: ChatMessage;
+  isOpen: boolean;
 };
 
-const MESSAGE_SHOW_TIME = 3000;
+/** How close to the bottom, in pixels, still counts as reading the newest messages. */
+const AT_BOTTOM_SLACK = 8;
+
+/**
+ * The chat log. Closed, each message shows for a moment and fades on its own, and the mouse passes
+ * through to the game. Open, the whole history shows and scrolls, and only the lines themselves
+ * catch the mouse: Phaser only sees the mouse over the canvas, so any wider box would block aiming.
+ */
 export const MessageBox = () => {
   const { messages, tabChat } = useAppContext();
-  const [show, setShow] = useState<boolean>(true);
-  const [shownFor, setShownFor] = useState({ tabChat, messages });
+  const scroller = useRef<HTMLDivElement>(null);
+  const isAtBottom = useRef(true);
+  const [hasNew, setHasNew] = useState(false);
 
-  /* Show again when we get a new message or when they open the box */
-  if (shownFor.tabChat !== tabChat || shownFor.messages !== messages) {
-    setShownFor({ tabChat, messages });
-    setShow(true);
-  }
+  const scrollToBottom = () => {
+    const box = scroller.current;
+    if (box) box.scrollTop = box.scrollHeight;
+    isAtBottom.current = true;
+    setHasNew(false);
+  };
 
-  /* Then fade out after a while unless the box is open */
-  useEffect(() => {
-    if (tabChat) return;
-    const timeout = setTimeout(() => setShow(false), MESSAGE_SHOW_TIME);
-    return () => clearTimeout(timeout);
-  }, [tabChat, messages]);
+  /* Follow new messages, unless you scrolled up to read old ones while chat is open */
+  useLayoutEffect(() => {
+    if (!tabChat || isAtBottom.current) return scrollToBottom();
+    setHasNew(true);
+  }, [messages, tabChat]);
 
   return (
     <Flex
@@ -33,27 +41,58 @@ export const MessageBox = () => {
         flex: 1,
         flexDirection: "column",
         justifyContent: "flex-start",
+        position: "relative",
+        pointerEvents: "none",
       }}
     >
       <Flex
-        as={motion.div}
-        {...{ animate: { opacity: show ? 1 : 0 } }}
+        ref={scroller}
+        onScroll={(e) => {
+          const box = e.currentTarget;
+          isAtBottom.current =
+            box.scrollHeight - box.scrollTop - box.clientHeight <= AT_BOTTOM_SLACK;
+          if (isAtBottom.current) setHasNew(false);
+        }}
         sx={{
-          flex: 1,
           m: 2,
-          minHeight: "300px",
-          maxHeight: "300px",
+          height: "300px",
           flexDirection: "column",
-          justifyContent: "end",
-          maskImage: `linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1))`,
-          borderRadius: 3,
-          pointerEvents: tabChat ? "all" : "none",
+          overflowY: tabChat ? "auto" : "hidden",
+          scrollbarWidth: "none",
+          maskImage: `linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1) 25%)`,
         }}
       >
+        {/* Pushes a short log to the bottom while still letting a long one scroll */}
+        <Box sx={{ flex: 1 }} />
         {messages?.map((message, idx) => {
-          return <Message key={idx} data={message} />;
+          return <Message key={idx} data={message} isOpen={tabChat} />;
         })}
       </Flex>
+      {tabChat && hasNew && (
+        <Box
+          onMouseDown={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            scrollToBottom();
+          }}
+          sx={{
+            position: "absolute",
+            bottom: 3,
+            left: "50%",
+            transform: "translateX(-50%)",
+            px: 2,
+            py: 1,
+            borderRadius: 3,
+            bg: "rgba(0,0,0,.6)",
+            color: "white",
+            fontSize: 0,
+            cursor: "pointer",
+            pointerEvents: "all",
+          }}
+        >
+          ↓ New messages
+        </Box>
+      )}
     </Flex>
   );
 };
@@ -68,38 +107,58 @@ const getFrom = (data: ChatMessage | undefined) => {
   return "";
 };
 
-const Message: React.FC<MessageProps> = ({ data }) => {
-  const { message, type } = data;
-  const colorsMap: Record<string, string> = {
-    party: "rare",
-    chat: "white",
-    success: "set",
-    error: "danger",
-    info: "magic",
-    muted: "gray.200",
-  };
+/* Kept clear of the rarity colors, so an item in a line still stands out */
+const MESSAGE_COLORS: Record<ChatMessageType, string> = {
+  chat: "white",
+  party: "teal.300",
+  system: "gray.200",
+  reward: "gray.200",
+  error: "danger",
+};
 
-  const color: string = colorsMap?.[type] || "white";
+const Message: React.FC<MessageProps> = ({ data, isOpen }) => {
+  const { message, type, item } = data;
+  const color = MESSAGE_COLORS[type] ?? "white";
   const isOld = useIsOld(data?.timestamp);
   const from = getFrom(data);
   return (
-    <Flex>
+    <Flex sx={{ flexShrink: 0 }}>
       <Flex
+        /* Keep focus in the chat input */
         onMouseDown={(e) => {
           e.preventDefault();
           e.stopPropagation();
         }}
-        sx={{ color, gap: 1, flexGrow: 0, opacity: isOld ? 0.5 : 1, "&:hover": { opacity: 1 } }}
+        sx={{
+          color,
+          gap: 1,
+          flexGrow: 0,
+          pointerEvents: isOpen ? "all" : "none",
+          opacity: isOpen || !isOld ? 1 : 0,
+          transition: `opacity ${isOpen ? 0.15 : 1}s ease`,
+        }}
       >
         {from ? <Text sx={{ flexShrink: 0, fontWeight: "bold" }}>{from}</Text> : null}
-        <Text sx={{ flex: 1 }} dangerouslySetInnerHTML={{ __html: message }} />
+        {/* Plain text: players type these, so never render them as HTML */}
+        <Text sx={{ flex: 1 }}>
+          {message}
+          {item && (
+            <>
+              {" "}
+              <Text as="span" sx={{ fontWeight: "bold", color: item.rarity }}>
+                {item.name}
+              </Text>
+              {item.amount && item.amount > 1 ? ` x${item.amount}` : ""}
+            </>
+          )}
+        </Text>
       </Flex>
     </Flex>
   );
 };
 
-/* A message dims once it's older than MESSAGE_OLD_TIME */
-const MESSAGE_OLD_TIME = 5000;
+/* A message fades once it's older than MESSAGE_SHOW_TIME, unless chat is open */
+const MESSAGE_SHOW_TIME = 6000;
 const useIsOld = (timestamp?: number) => {
   const [agedTimestamp, setAgedTimestamp] = useState<number>();
 
@@ -108,7 +167,7 @@ const useIsOld = (timestamp?: number) => {
     const age = Date.now() - timestamp;
     const timeout = setTimeout(
       () => setAgedTimestamp(timestamp),
-      Math.max(0, MESSAGE_OLD_TIME - age),
+      Math.max(0, MESSAGE_SHOW_TIME - age),
     );
     return () => clearTimeout(timeout);
   }, [timestamp]);

@@ -1,5 +1,5 @@
 import { useLayoutEffect, useState } from "react";
-import { resolveAsset, type ItemLook } from "@/content";
+import { assetList, resolveAsset, type ItemLook } from "@/content";
 import { assetToCanvas, Icon } from "@/ui";
 
 const PREVIEW_USER = { profile: { race: "human", gender: "female" } };
@@ -11,14 +11,17 @@ interface Preview {
 }
 
 /**
- * A small icon of an item, drawn from its texture the same way inventory slots draw it. Small art
+ * A small icon of an item or mob, drawn from its texture the same way inventory slots draw it. Small art
  * scales up by whole pixels so it stays crisp; art bigger than the box shrinks smoothly instead.
  */
 export const ChatItemPreview = ({ look, size = 24 }: { look: ItemLook; size?: number }) => {
   const [preview, setPreview] = useState<Preview>();
 
   useLayoutEffect(() => {
-    const asset = resolveAsset(look, PREVIEW_USER);
+    /* A look without a slot is a mob, whose texture is its race's body */
+    const asset = look.slot
+      ? resolveAsset(look, PREVIEW_USER)
+      : assetList.find((a) => a?.texture === look.texture);
     if (!asset) return;
     return assetToCanvas({
       asset,
