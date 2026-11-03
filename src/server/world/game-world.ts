@@ -21,6 +21,7 @@ import {
   subscribeKnockbackMessages,
   subscribePoseForgetting,
 } from "@/server/net/handlers/movement";
+import { subscribeWorldPause } from "@/server/net/world-pause";
 import { subscribeDebugMessages } from "./debug-messages";
 import { Npc, type NpcDefinition } from "@/server/npcs/npc";
 import { createNetIds } from "@/network/sync/net-ids";
@@ -123,6 +124,7 @@ export function createServerWorld({
   }
   if (mapNpcs) for (const room of Object.values(world.rooms)) spawnNpcs(world, room);
 
+  subscribeWorldPause(world.events, world);
   subscribeNpcMessages(world.events, io);
   subscribeKnockbackMessages(world.events, world);
   subscribePoseForgetting(world.events, world);

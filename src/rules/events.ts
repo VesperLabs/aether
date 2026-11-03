@@ -84,7 +84,19 @@ interface PlayerKnockedBackEvent {
   angle: number;
 }
 
+/** A player entered the world (their character exists and is in a room). */
+interface PlayerJoinedEvent {
+  socketId: string;
+}
+
+/** A player left the world (disconnected or was kicked by a newer login). */
+interface PlayerLeftEvent {
+  socketId: string;
+}
+
 export interface GameEvents {
+  playerJoined: PlayerJoinedEvent;
+  playerLeft: PlayerLeftEvent;
   mobKilled: MobKilledEvent;
   characterDamaged: CharacterDamagedEvent;
   npcAttacked: NpcAttackedEvent;

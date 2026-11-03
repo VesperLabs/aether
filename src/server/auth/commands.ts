@@ -1,61 +1,18 @@
-import { getFullCharacterState } from "@/network/sync";
-import { getRoomState } from "@/server/net/room-sync";
-import { removePlayer } from "@/server/world/remove-player";
-import { createPlayer } from "@/server/world/player-room";
-import { legacyLeaveParty } from "@/server/party/party-adapter";
-import { createBaseUser } from "../persistence";
-import { shouldPause } from "../net/world-pause";
+import { createBaseUser } from "@/server/persistence/base-user";
 import type { ParsedCommand } from "@/network/commands";
 import type { CommandContext } from "@/server/net/command-context";
-import type { UserDocument } from "../persistence";
+import { enterWorld } from "./enter-world";
 import { createLoginToken, isLoginTokenValid, readLoginTokenEmail } from "./login-token";
 
 export async function demoLogin(
   ctx: CommandContext,
   { charClass }: ParsedCommand<"demoLogin"> = {},
 ) {
-  const { world, socket, socketId, session } = ctx;
+  const { world, socket } = ctx;
   if (!world.config.allowDemo) return socket.emit("formError", { error: "Demo mode is off" });
   if (!charClass) return socket.emit("formError", { error: "No class" });
 
-  /* Only let one connection at a time */
-  if (Object.keys(world?.players).find((k) => k === socket?.id)) {
-    return world.log.warn("❌ Socket already logged in");
-  }
-
-  const user = createBaseUser(world.dice, charClass);
-
-  const player = createPlayer(world, user.roomName, {
-    socketId,
-    peerId: session.peerId,
-    isDemoAccount: true,
-    ...user,
-  });
-
-  /* Should we pause or resume? */
-  shouldPause(world);
-
-  const roomName = player?.room?.name;
-
-  roomName
-    ? world.log.info(`🔌 ${player?.profile?.userName} connected`)
-    : world.log.warn("❌ Missing player roomName");
-
-  if (!roomName) return;
-
-  socket.join(roomName);
-  socket.emit(
-    "heroInit",
-    {
-      ...getRoomState(world, roomName),
-      userSettings: player.userSettings,
-      cheats: world.config.cheats,
-      socketId,
-    },
-    { isLogin: true },
-  );
-
-  socket.to(roomName).emit("playerJoin", getFullCharacterState(player), { isLogin: true });
+  enterWorld(ctx, createBaseUser(world.dice, charClass), { isDemo: true });
 }
 
 export async function login(
@@ -89,58 +46,6 @@ export async function tokenLogin(ctx: CommandContext, { token }: ParsedCommand<"
     return socket.emit("formError", { error: "Login expired, enter your password" });
   }
   enterWorld(ctx, user);
-}
-
-function enterWorld(ctx: CommandContext, user: UserDocument) {
-  const { world, socket, socketId, io, session } = ctx;
-
-  /* Only let one connection at a time */
-  if (Object.keys(world?.players).find((k) => k === socket?.id)) {
-    return world.log.warn("❌ Socket already logged in");
-  }
-
-  /* Kick the old user if loggin in on same email */
-  for (const [sId, player] of Object.entries(world?.players)) {
-    if (player?.email === user?.email) {
-      const player = world.players?.[sId];
-      world.log.info(`🔌 ${player?.profile?.userName} disconnected`);
-      legacyLeaveParty(world, sId);
-      removePlayer(world, sId);
-
-      io?.sockets?.sockets?.get?.(sId)?.disconnect?.(true);
-      io.emit("remove", sId);
-    }
-  }
-
-  const player = createPlayer(world, user.roomName, {
-    socketId,
-    peerId: session.peerId,
-    ...user,
-  });
-
-  /* Should we pause or resume? */
-  shouldPause(world);
-
-  const roomName = player?.room?.name;
-
-  roomName
-    ? world.log.info(`🔌 ${player?.profile?.userName} connected`)
-    : world.log.warn("❌ Missing player roomName");
-
-  if (!roomName) return;
-
-  socket.join(roomName);
-  socket.emit(
-    "heroInit",
-    {
-      ...getRoomState(world, roomName),
-      userSettings: player.userSettings,
-      cheats: world.config.cheats,
-      socketId,
-    },
-    { isLogin: true },
-  );
-  socket.to(roomName).emit("playerJoin", getFullCharacterState(player), { isLogin: true });
 }
 
 export async function register(

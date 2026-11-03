@@ -60,7 +60,6 @@ const LEGACY: Record<Rule, string[]> = {
     "src/rules/spells/index.ts",
     "src/rules/stats/index.ts",
     "src/rules/world/index.ts",
-    "src/server/persistence/index.ts",
   ],
 };
 
