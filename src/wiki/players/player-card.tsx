@@ -1,8 +1,8 @@
 import { Box, Flex, PlayerRender, Text } from "@/ui";
 import { questList } from "@/content";
-import { PAPER, PAPER_STYLE, PaperFrame } from "./paper";
+import { PAPER, PAPER_STYLE, PaperFrame } from "@/wiki/frame/paper";
 import type { WikiPlayer } from "./page-players";
-import { CARD_COLORS } from "./card-pool";
+import { CARD_COLORS } from "@/wiki/cards/card-pool";
 
 /** The character, drawn small: the head and shoulders fill the box. */
 const PlayerFace = ({ player }: { player: WikiPlayer }) => (

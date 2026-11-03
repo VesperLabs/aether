@@ -2,7 +2,7 @@ import { msToHours } from "@/rules/stats";
 import { Text } from "@/ui";
 import { RowTitle } from "./row-title";
 import { useQuery } from "@tanstack/react-query";
-import { fetchMetrics } from "./api";
+import { fetchMetrics } from "@/wiki/api/fetchers";
 
 export const Metrics = () => {
   const { data: metrics } = useQuery({

@@ -2,9 +2,9 @@ import { resolveAsset, type ItemDefinition } from "@/content";
 import { buffLines, describeItem, type DescribableItem, type StatLine } from "@/rules/inventory";
 import { Box, deriveElements, Flex, Grid, Icon, Text } from "@/ui";
 import type { ReactNode } from "react";
-import { CARD_COLORS, SpriteFace, raceAsset } from "./card-pool";
+import { CARD_COLORS, SpriteFace, raceAsset } from "@/wiki/cards/card-pool";
 import { itemSources } from "./item-sources";
-import { PAPER, PAPER_STYLE, PaperFrame } from "./paper";
+import { PAPER, PAPER_STYLE, PaperFrame } from "@/wiki/frame/paper";
 
 /** An item as the wiki lists it: its definition, plus where it sits in the item list. */
 export type WikiItem = ItemDefinition & { key: string; type: string; rarity: string };

@@ -9,9 +9,15 @@ import {
 } from "@/content";
 import { Box, Flex, ItemTooltip, Text } from "@/ui";
 import { useId, useState } from "react";
-import { CARD_COLORS, CharacterFace, SpriteFace, keeperCharacter, raceAsset } from "./card-pool";
-import { Divider, PAPER, PAPER_STYLE, PaperFrame } from "./paper";
-import { RowTitle } from "./row-title";
+import {
+  CARD_COLORS,
+  CharacterFace,
+  SpriteFace,
+  keeperCharacter,
+  raceAsset,
+} from "@/wiki/cards/card-pool";
+import { Divider, PAPER, PAPER_STYLE, PaperFrame } from "@/wiki/frame/paper";
+import { RowTitle } from "@/wiki/frame/row-title";
 
 type ListedItem = { name?: string; texture?: string; slot?: string; tint?: string; cost?: number };
 const listedItems = itemList as unknown as Record<

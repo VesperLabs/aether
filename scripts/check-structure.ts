@@ -50,7 +50,6 @@ const LEGACY: Record<Rule, string[]> = {
     "src/ui/index.ts",
     "src/ui/item/index.ts",
     "src/ui/kit/index.ts",
-    "src/wiki/api/index.ts",
   ],
 };
 
