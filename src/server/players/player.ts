@@ -41,6 +41,7 @@ import {
   updateInventoryItemAtId,
   withoutSlot,
 } from "@/rules/inventory";
+import { saveMapDetails } from "@/server/persistence/save-player";
 
 /** What a player is created from: the stored user plus the connection it logged in on. */
 export type PlayerArgs = CharacterArgs & {
@@ -86,7 +87,7 @@ export class Player extends ServerCharacter {
       this.stats.exp = expAfterDeath(this.stats.exp);
     }
     const spawnPoint: SpawnPoint = this?.spawn ?? PLAYER_DEFAULT_SPAWN;
-    this.world.db.updateUserMapDetails({
+    saveMapDetails(this.world, {
       email: this.email,
       isDemoAccount: this.isDemoAccount,
       ...spawnPoint,

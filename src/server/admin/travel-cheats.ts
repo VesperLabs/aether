@@ -1,11 +1,11 @@
 import { entitiesInRoom } from "@/rules/world";
-import { teleportPlayer } from "@/server/net/handlers/movement";
+import { teleportPlayer } from "@/server/players/teleport";
 import { parseInteger, type Cheat } from "./cheat";
 
 const tp: Cheat = (ctx, player, [x, y], reply) => {
   const to = { x: parseInteger(x), y: parseInteger(y) };
   if (to.x === undefined || to.y === undefined) return reply.error("Usage: /tp <x> <y>");
-  teleportPlayer(ctx, player.roomName, { x: to.x, y: to.y });
+  teleportPlayer(ctx.world, ctx.socketId, player.roomName, { x: to.x, y: to.y });
   reply.info(`Teleported to ${to.x}, ${to.y}.`);
 };
 
@@ -20,7 +20,7 @@ const warp: Cheat = (ctx, player, [roomName, x, y], reply) => {
     x: parseInteger(x) ?? door?.x ?? player.x,
     y: parseInteger(y) ?? door?.y ?? player.y,
   };
-  teleportPlayer(ctx, room.name, to);
+  teleportPlayer(ctx.world, ctx.socketId, room.name, to);
   reply.info(`Warped to ${room.name} at ${Math.round(to.x)}, ${Math.round(to.y)}.`);
 };
 
@@ -31,7 +31,7 @@ const goto: Cheat = (ctx, player, args, reply) => {
     (p) => p.id !== player.id && p.profile?.userName?.toLowerCase() === name && p.room,
   );
   if (!target?.room) return reply.error(`No player called "${args.join(" ")}" is online.`);
-  teleportPlayer(ctx, target.room.name, { x: target.x, y: target.y });
+  teleportPlayer(ctx.world, ctx.socketId, target.room.name, { x: target.x, y: target.y });
   reply.info(`Went to ${target.profile.userName}.`);
 };
 

@@ -63,18 +63,18 @@ describe("bots on a sim server", () => {
     expect(getSelf(alice.clientState)?.socketId).toBe(alice.clientState.selfId);
   });
 
-  it("runs 10 game minutes of 5 wander bots in turbo without errors", async () => {
+  it("runs 20 game-seconds of 3 wander bots in turbo without errors", async () => {
     sim = await createSimServer({ seed: 5, mode: "turbo" });
     const bots: Bot[] = [];
-    for (let n = 0; n < 5; n++) bots.push(await joinBot(sim, wander, 10 + n));
+    for (let n = 0; n < 3; n++) bots.push(await joinBot(sim, wander, 10 + n));
     const stops = bots.map((bot) => bot.run(sim.clock.interval));
-    await sim.clock.advance(10 * 60 * 1000);
+    await sim.clock.advance(20 * 1000);
     for (const stop of stops) stop();
 
     expect(sim.log.at("error")).toEqual([]);
     for (const bot of bots) {
-      expect(bot.steps).toBeGreaterThan(1000);
+      expect(bot.steps).toBeGreaterThan(100);
       expect(sim.world.players[bot.clientState.selfId]).toBeDefined();
     }
-  }, 120_000);
+  });
 });

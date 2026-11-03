@@ -1,5 +1,6 @@
 import type { ServerWorld } from "@/server/world/server-world";
 import type { GameSocket } from "@/network/socket/game-socket";
+import { savePlayer } from "@/server/persistence/save-player";
 import { removePlayer } from "@/server/world/remove-player";
 import { legacyLeaveParty } from "@/server/party/party-adapter";
 import type { CommandContext } from "./command-context";
@@ -22,14 +23,14 @@ export function listenForConnections(world: ServerWorld) {
     socket.on("disconnect", async () => {
       const { socketId } = ctx;
       const player = world.players?.[socketId];
-      /* A socket that never logged in has nobody to save */
-      const saved = player ? world.db.updateUser(player) : undefined;
+      /* A socket that never logged in has nobody to save, and `close` already saved everyone. */
+      const saved = player && !world.closing ? savePlayer(world, player) : undefined;
       world.log.info(`🔌 ${player?.profile?.userName ?? "Anonymous"} disconnected`);
       legacyLeaveParty(world, socketId, socket);
       removePlayer(world, socketId);
       world.io.emit("remove", socketId);
-      /* The save is tracked, so shutdown waits for it; a failed one is logged, not thrown. */
-      await saved?.catch((error) => world.log.error("Saving a leaving player failed", error));
+      /* The save is tracked, so shutdown waits for it. */
+      await saved;
     });
   });
 }

@@ -1,7 +1,5 @@
 import { DEFAULT_USER_SETTINGS, type UserSettings } from "@/rules/character";
-import { decodeRoomPoses } from "@/network/sync/poses";
 import { netInterp } from "@/client/net/scene-interpolation";
-import { idOfNetId } from "@/client/net/net-ids";
 import { correctHeroPosition } from "@/client/net/position-correction";
 import { playAudio } from "@/client/audio/play-audio";
 import { playCritShake, playHitImpact } from "@/client/views/hit-impact";
@@ -25,32 +23,11 @@ import type { SceneMain } from "@/client/scenes/main-scene";
 import type { ClientCharacter } from "@/network/session/client-state";
 import { changeMap, initCamera, initPlayerCollision } from "@/client/scenes/main-map";
 
-/** What a tick's vitals update on a player or npc sprite. */
-interface VitalsHolder {
-  stats?: Record<string, unknown> | null;
-  isHero?: boolean;
-  updateHpBar(): void;
-}
-
 /** What a status updates on a player or npc sprite. */
-interface StatusHolder extends VitalsHolder {
+interface StatusHolder {
   updateState(state: Record<string, unknown>): void;
   doRegen(): void;
-}
-
-/**
- * Takes the server's hp, mp and sp from the client state. Regen and hit effects still play from their
- * own messages; this keeps the numbers right however many of those were missed or merged.
- */
-function syncVitals(character: VitalsHolder, data: ClientCharacter) {
-  const vitals = data.vitals;
-  const stats = character.stats;
-  if (!vitals || !stats) return;
-  const keys = Object.keys(vitals) as (keyof typeof vitals)[];
-  if (keys.every((key) => stats[key] === vitals[key])) return;
-  Object.assign(stats, vitals);
-  character.updateHpBar();
-  if (character.isHero) window.dispatchEvent(new Event("UPDATE_HUD"));
+  updateHpBar(): void;
 }
 
 /** Registers every server message the main scene reacts to. */
@@ -64,8 +41,9 @@ export function bindSceneSocket(scene: SceneMain) {
    * drive sprites.
    */
 
-  socket.on("poses", (data) => {
-    netInterp.add(decodeRoomPoses(data, idOfNetId), performance.now());
+  /* The client state decoded them; interpolation buffers what it applied. */
+  socket.on("poses", () => {
+    if (clientState.poses) netInterp.add(clientState.poses, performance.now());
   });
 
   socket.on("statuses", ({ p = [], n = [] }) => {
@@ -73,17 +51,14 @@ export function bindSceneSocket(scene: SceneMain) {
       if (!character || !data) return;
       character.updateState(data.state);
       character.doRegen();
-      syncVitals(character, data);
+      /* The sprite reads hp from the client state's vitals; redraw the bar from them. */
+      character.updateHpBar();
     };
     for (const s of n) apply(getNpc(scene, s.id), clientState.npcs.get(s.id));
     for (const s of p) apply(getPlayer(scene, s.id), clientState.players.get(s.id));
   });
 
   socket.on("lootExpired", (id) => getLoot(scene, id)?.destroy());
-
-  socket.on("partyUpdate", ({ party }) => {
-    if (scene.hero) scene.hero.party = party;
-  });
 
   socket.on("heroInit", (args, { isRespawn } = {}) => {
     const socketId = clientState.selfId;

@@ -1,6 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
 import { DEFAULT_USER_SETTINGS } from "@/rules/character";
-import type { ChatMessage, PartyMessage } from "@/network/messages";
+import type { ChatMessage } from "@/network/messages";
 import type { SocketHandlers } from "./app-events";
 import type { PartyInvite } from "./context";
 
@@ -8,7 +8,6 @@ interface PartyDeps {
   partyInvites: PartyInvite[];
   addMessage: (payload: ChatMessage) => void;
   setPartyInvites: Dispatch<SetStateAction<PartyInvite[]>>;
-  setParty: Dispatch<SetStateAction<PartyMessage | null | undefined>>;
   setUserSettings: Dispatch<SetStateAction<UserSettings>>;
 }
 
@@ -17,7 +16,6 @@ export function createPartyHandlers({
   partyInvites,
   addMessage,
   setPartyInvites,
-  setParty,
   setUserSettings,
 }: PartyDeps) {
   const onPartyInvite: SocketHandlers["partyInvite"] = (inviteData) => {
@@ -33,10 +31,10 @@ export function createPartyHandlers({
     setPartyInvites((prevInvites) => [...prevInvites, inviteData as PartyInvite]);
   };
 
-  const onPartyUpdate: SocketHandlers["partyUpdate"] = ({ message, party }) => {
+  /* The party itself is in the client state. */
+  const onPartyUpdate: SocketHandlers["partyUpdate"] = ({ message }) => {
     // remove the invite
     setPartyInvites([]);
-    setParty(party);
     if (message) {
       addMessage({ type: "party", message });
     }

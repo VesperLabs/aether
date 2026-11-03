@@ -23,6 +23,8 @@ import {
 } from "@/rules/movement";
 import { isInRoom } from "@/server/world/player-room";
 import type { GameEventBus } from "@/rules/world";
+import { saveMapDetails, savePlayer } from "@/server/persistence/save-player";
+import { forgetPoses, teleportPlayer } from "@/server/players/teleport";
 
 /** The last accepted position of each player. Server moves (doors, respawn) restart it. */
 const moveTracks = new WeakMap<Player, MoveTrack>();
@@ -109,11 +111,6 @@ export function subscribeKnockbackMessages(bus: GameEventBus, world: ServerWorld
   });
 }
 
-/** Teleports (doors, respawns) wipe a character's recent positions, so no hit rewinds across them. */
-function forgetPoses(world: ServerWorld, id: string) {
-  for (const room of Object.values(world.rooms)) room.poseHistory.forget(id);
-}
-
 /** Respawned npcs jump home: forget where they stood before. */
 export function subscribePoseForgetting(bus: GameEventBus, world: ServerWorld) {
   return bus.on("npcRespawned", ({ npcId }) => forgetPoses(world, npcId));
@@ -167,47 +164,7 @@ export function enterDoor(ctx: CommandContext, doorName: ParsedCommand<"enterDoo
   const destMap = prev.destMap;
   const next = getDoor(world, destMap, prev.destDoor);
   if (!next || !world.rooms[destMap]) return;
-  teleportPlayer(ctx, destMap, next.centerPos);
-}
-
-/** Moves a player to a spot in any room, as a door does, and tells both rooms. */
-export function teleportPlayer(
-  ctx: CommandContext,
-  destMap: string,
-  { x, y }: { x: number; y: number },
-) {
-  const { world, socket, socketId } = ctx;
-  const player = world.players[socketId];
-  if (!player?.room || !world.rooms[destMap]) return;
-  const oldRoom = player.room.name;
-
-  if (oldRoom !== destMap) {
-    socket.leave(oldRoom);
-    socket.join(destMap);
-    socket.to(oldRoom).emit("remove", socketId);
-    removePlayerFromRoom(world, socketId);
-    addPlayerToRoom(world, socketId, world.rooms[destMap]);
-  }
-
-  player.x = x;
-  player.y = y;
-  forgetPoses(world, socketId);
-
-  /* Save the new room */
-  world.db.updateUserMapDetails(player);
-
-  socket.to(destMap).emit("playerJoin", getFullCharacterState(player), {
-    lastTeleport: world.now(),
-  });
-
-  socket.emit("heroInit", {
-    ...getRoomState(world, destMap),
-    socketId,
-  });
-
-  // announce room has changed to the party
-  // TODO: need a better way of sending a persistant party state instead of this
-  legacyUpdateMemberRoom(world, player);
+  teleportPlayer(world, socketId, destMap, next.centerPos);
 }
 
 export function respawn(ctx: CommandContext) {
@@ -233,7 +190,7 @@ export function respawn(ctx: CommandContext) {
   forgetPoses(world, socketId);
 
   /* Save the new room */
-  world.db.updateUserMapDetails(player);
+  saveMapDetails(world, player);
 
   socket.to(newRoom).emit("playerJoin", getFullCharacterState(player), {
     isRespawn: true,
@@ -253,7 +210,7 @@ export function respawn(ctx: CommandContext) {
   // TODO: need a better way of sending a persistant party state instead of this
   legacyUpdateMemberRoom(world, player);
 
-  world.db.updateUser(world.players?.[socketId]);
+  savePlayer(world, world.players?.[socketId]);
 }
 
 export function setSpawn(ctx: CommandContext, _spawn: ParsedCommand<"setSpawn">) {
@@ -265,7 +222,7 @@ export function setSpawn(ctx: CommandContext, _spawn: ParsedCommand<"setSpawn">)
   if (!keeper || typeof home?.x !== "number" || typeof home?.y !== "number") return;
   const spawn = { x: home.x, y: home.y, roomName: player.roomName } as SpawnPoint;
   player.spawn = spawn;
-  world.db.updateUserMapDetails({
+  saveMapDetails(world, {
     email: player.email,
     isDemoAccount: player.isDemoAccount,
     spawn,

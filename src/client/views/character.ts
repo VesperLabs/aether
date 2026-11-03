@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import type { FullCharacterWire } from "@/network/sync/character-state";
 import type { ClientCharacter } from "@/network/session/client-state";
+import { statsOf } from "@/network/session/character-stats";
 import { filterVisibleEquipment, withCharacterModel } from "@/rules/character/character";
 import type { RoomData } from "@/rules/world";
 import { characterHitBox } from "@/rules/spells";
@@ -21,14 +22,14 @@ class ClientCharacterData extends Phaser.GameObjects.Container {
   declare source: CharacterSource;
   declare sourceKey: string;
   /** The last record seen, for a sprite that outlives its record by a frame. */
-  declare lastRecord: FullCharacterWire;
+  declare lastRecord: ClientCharacter;
   declare visibleCache?: {
     equipment: unknown;
     slots: unknown;
     value: ReturnType<typeof filterVisibleEquipment>;
   };
   /** This character's record in the client state. */
-  get record(): FullCharacterWire {
+  get record(): ClientCharacter {
     const record = this.source?.get(this.sourceKey);
     if (record) this.lastRecord = record;
     return this.lastRecord;
@@ -62,8 +63,9 @@ class ClientCharacterData extends Phaser.GameObjects.Container {
   get baseStats() {
     return (this.record as { baseStats?: any }).baseStats;
   }
+  /** Read-only: stats with the latest vitals. Hp bars and the HUD read these; nothing writes them. */
   get stats() {
-    return this.record.stats as any;
+    return statsOf(this.record) as any;
   }
   get npcKills() {
     return (this.record.npcKills ?? {}) as Record<string, number>;

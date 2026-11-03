@@ -2,6 +2,7 @@ import { ItemBuilder } from "@/content/items/item-builder";
 import { getFullCharacterState } from "@/network/sync";
 import { parseInteger, type Cheat } from "./cheat";
 import { parseDropArgs } from "./drop-args";
+import { savePlayer } from "@/server/persistence/save-player";
 
 const MAX_NAME_LENGTH = 16;
 
@@ -32,7 +33,7 @@ const give: Cheat = (ctx, player, args, reply) => {
   ) as Item | null;
   if (!item) return reply.error(`There is no ${drop.rarity} ${drop.key}.`);
   player.addInventoryItem(item);
-  ctx.world.db.updateUser(player);
+  savePlayer(ctx.world, player);
   ctx.io.to(player.roomName).emit("playerUpdate", getFullCharacterState(player));
   reply.info(`Gave you ${item.rarity} ${item.name ?? item.key}.`);
 };

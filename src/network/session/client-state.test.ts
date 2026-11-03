@@ -151,6 +151,21 @@ describe("client state", () => {
     expect(clientState.poseTime).toBe(1000);
   });
 
+  it("keeps the latest poses for interpolation, without bumping the revision", () => {
+    const clientState = loggedIn();
+    const revision = clientState.revision;
+    const room = { name: "grassland" };
+    const data = encodeRoomPoses(
+      { players: { hero: { nid: 0, room, x: 7, y: 8, vx: 0, vy: 0 } }, npcs: {} },
+      "grassland",
+      2000,
+    );
+    applyMessage(clientState, "poses", data);
+    expect(clientState.poses?.t).toBe(2000);
+    expect(clientState.poses?.p[0]?.[0]).toBe("hero");
+    expect(clientState.revision).toBe(revision);
+  });
+
   it("applies statuses", () => {
     const clientState = loggedIn();
     applyStatuses(clientState, {
@@ -167,9 +182,47 @@ describe("client state", () => {
     });
     expect(getSelf(clientState)?.state.isAiming).toBe(true);
   });
+
+  it("replaces a character on a status and drops its vitals when whole data arrives", () => {
+    const clientState = loggedIn();
+    const before = getSelf(clientState);
+    applyStatuses(clientState, { p: [{ id: "hero", state: {}, v: [4, 10, 2, 5, 1, 3] }] });
+    expect(getSelf(clientState)).not.toBe(before);
+    expect(before?.vitals).toBeUndefined();
+    applyMessage(clientState, "playerUpdate", character("hero", 0, { stats: { hp: 10 } }));
+    expect(getSelf(clientState)?.vitals).toBeUndefined();
+    expect(getSelf(clientState)?.stats.hp).toBe(10);
+  });
 });
 
 describe("applyMessage routing", () => {
+  it("tracks the party and clears it when the hero leaves", () => {
+    const clientState = loggedIn();
+    const party = { id: "p", leaderId: "hero", members: [] } as never;
+    applyMessage(clientState, "partyUpdate", { party });
+    expect(clientState.party).toBe(party);
+    applyMessage(clientState, "partyUpdate", { party: null });
+    expect(clientState.party).toBeNull();
+  });
+
+  it("takes the hero's quests from keeper data", () => {
+    const clientState = loggedIn();
+    const quests = [{ questId: "q1" }];
+    applyMessage(clientState, "keeperDataUpdate", {
+      npcId: "rat",
+      keeperData: {} as never,
+      playerQuests: quests,
+    });
+    expect(getSelf(clientState)?.quests).toBe(quests);
+  });
+
+  it("bumps the revision for every handled message", () => {
+    const clientState = loggedIn();
+    const revision = clientState.revision;
+    applyMessage(clientState, "lootExpired", "a");
+    expect(clientState.revision).toBe(revision + 1);
+  });
+
   it("routes statuses through applyMessage", () => {
     const clientState = loggedIn();
     applyMessage(clientState, "statuses", {
