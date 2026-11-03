@@ -72,14 +72,50 @@ function merge(list: Map<string, MirrorCharacter>, c: { id?: string; socketId?: 
   if (id && old) list.set(id, { ...old, ...c } as MirrorCharacter);
 }
 
-type Handlers = {
-  [K in keyof ServerToClientEvents]?: (
-    mirror: Mirror,
-    ...args: Parameters<ServerToClientEvents[K]>
-  ) => void;
-};
+type Handler<K extends keyof ServerToClientEvents> = (
+  mirror: Mirror,
+  ...args: Parameters<ServerToClientEvents[K]>
+) => void;
 
-const handlers: Handlers = {
+/*
+ * Messages that carry no lasting state a player sees: auth forms, settings, video chat, and
+ * one-shot effects (attacks, casts, windups, hits, knockback) that views play straight from the
+ * socket. Listing one here is a decision: a new message must be handled or ignored, or tsc fails.
+ */
+const IGNORED_MESSAGES = [
+  "formError",
+  "formSuccess",
+  "loginToken",
+  "loginTokenRejected",
+  "knockedBack",
+  "keeperDataUpdate",
+  "spellHitShapes",
+  "playerAttack",
+  "playerDodge",
+  "playerCastSpell",
+  "npcAttack",
+  "npcWindup",
+  "npcCastSpell",
+  "modifyPlayerStat",
+  "assignDamage",
+  "partyInvite",
+  "partyUpdate",
+  "updateUserSetting",
+  "connectPeer",
+] as const satisfies readonly (keyof ServerToClientEvents)[];
+
+type IgnoredMessage = (typeof IGNORED_MESSAGES)[number];
+
+/** Every message is either handled here or in `IGNORED_MESSAGES`, never both. */
+const handlers: { [K in Exclude<keyof ServerToClientEvents, IgnoredMessage>]: Handler<K> } & {
+  [K in IgnoredMessage]?: never;
+} = {
+  poses(mirror, data) {
+    applyPoses(mirror, data);
+  },
+  statuses(mirror, statuses) {
+    applyStatuses(mirror, statuses);
+  },
   heroInit(mirror, state) {
     mirror.selfId = state.socketId;
     mirror.players.clear();
@@ -143,8 +179,8 @@ export function applyMessage<K extends keyof ServerToClientEvents>(
   name: K,
   ...args: Parameters<ServerToClientEvents[K]>
 ): void {
-  const handle = handlers[name] as
-    | ((mirror: Mirror, ...a: Parameters<ServerToClientEvents[K]>) => void)
+  const handle = (handlers as { [P in keyof ServerToClientEvents]?: Handler<P> })[name] as
+    | Handler<K>
     | undefined;
   handle?.(mirror, ...args);
 }

@@ -154,3 +154,19 @@ describe("mirror", () => {
     expect(getSelf(mirror)?.state.isAiming).toBe(true);
   });
 });
+
+describe("applyMessage routing", () => {
+  it("routes statuses through applyMessage", () => {
+    const mirror = loggedIn();
+    applyMessage(mirror, "statuses", {
+      p: [{ id: "hero", state: { isDead: true }, v: [4, 10, 2, 5, 1, 3] }],
+    });
+    expect(getSelf(mirror)?.state?.isDead).toBe(true);
+  });
+
+  it("leaves state alone for ignored messages", () => {
+    const mirror = createMirror();
+    applyMessage(mirror, "knockedBack", { angle: 1 });
+    expect(mirror).toEqual(createMirror());
+  });
+});

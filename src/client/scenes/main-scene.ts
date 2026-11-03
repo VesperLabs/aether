@@ -7,6 +7,7 @@ import { netInterp } from "@/client/net/scene-interpolation";
 import { applyPose } from "@/client/net/apply-pose";
 import { easeHeroCorrection } from "@/client/net/position-correction";
 import { bindSceneSocket } from "@/client/net/scene-socket";
+import { createMirror, type Mirror } from "@/network/session/mirror";
 import { changeMusic } from "@/client/audio/music";
 import { getPlayer, getNpc, getNpcs, getPlayers } from "./scene-entities";
 import { enableDoors, initCamera } from "./main-map";
@@ -34,10 +35,13 @@ export class SceneMain extends Phaser.Scene {
   declare minimap?: Phaser.Cameras.Scene2D.Camera;
   nearbyRemotePlayers: NearbyPlayer[];
   socket: ClientGameSocket;
+  /** What the hero sees, built from every server message: views render entity data from it. */
+  mirror: Mirror;
   userSettings: UserSettings;
   constructor(socket: ClientGameSocket) {
     super({ key: "SceneMain" });
     this.socket = socket;
+    this.mirror = createMirror();
     this.lastUpdateTime = 0;
     this.userSettings = DEFAULT_USER_SETTINGS;
     this.nearbyRemotePlayers = [];
