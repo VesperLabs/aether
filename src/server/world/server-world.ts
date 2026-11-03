@@ -27,5 +27,7 @@ export type ServerWorld = World<Player, Npc, Spell, Loot, Quest> & {
   /** Numbers for characters on the binary pose wire. */
   netIds: NetIds;
   /** Who is where in each room this tick (see `room-index.ts`). */
+  /** Set once shutdown starts: `close` saves the players, so disconnects skip their save. */
+  closing?: boolean;
   roomIndexes?: Record<string, RoomIndex>;
 };

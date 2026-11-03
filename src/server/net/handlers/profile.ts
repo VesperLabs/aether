@@ -3,6 +3,7 @@ import { stepAppearance } from "@/rules/character";
 import type { ParsedCommand } from "@/network/commands";
 import type { CommandContext } from "@/server/net/command-context";
 import { isInRoom } from "@/server/world/player-room";
+import { savePlayer } from "@/server/persistence/save-player";
 
 export function updateProfile(ctx: CommandContext, args: ParsedCommand<"updateProfile">) {
   const { world, socketId, io } = ctx;
@@ -13,6 +14,6 @@ export function updateProfile(ctx: CommandContext, args: ParsedCommand<"updatePr
   Object.assign(player.profile, stepAppearance(player.profile, args ?? {}));
 
   /* Save the user's data */
-  world.db.updateUser(player);
+  savePlayer(world, player);
   io.to(player?.roomName).emit("playerUpdate", getFullCharacterState(player));
 }

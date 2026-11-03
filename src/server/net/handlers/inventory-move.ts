@@ -4,6 +4,7 @@ import { moveItemCommand } from "@/rules/inventory";
 import type { CommandContext } from "@/server/net/command-context";
 import { findNearbyNpc } from "@/server/net/nearby-keeper";
 import { isInRoom } from "@/server/world/player-room";
+import { savePlayer } from "@/server/persistence/save-player";
 
 export function moveItem(ctx: CommandContext, { to, from }: MoveItemCommand = {}) {
   const { world, socket, socketId, io } = ctx;
@@ -28,6 +29,6 @@ export function moveItem(ctx: CommandContext, { to, from }: MoveItemCommand = {}
 
   /* Save the users data */
   player.calculateStats();
-  world.db.updateUser(player);
+  savePlayer(world, player);
   io.to(player.roomName).emit("playerUpdate", getFullCharacterState(player));
 }
