@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { stepHeroPosition } from "./hero-motion";
+import { stepHeroPosition, stepHeroThroughMap } from "./hero-motion";
 import { checkMove, startMoveTrack } from "@/rules/movement/move-validation";
-import type { TileGrid } from "@/rules/movement/tilemap";
+import type { TileGrid, TileMap } from "@/rules/movement/tilemap";
 
 /* 10x10 tiles of 16px, with a wall column at tile x = 5. */
 const grid: TileGrid = {
@@ -43,5 +43,28 @@ describe("stepHeroPosition", () => {
       expect(result.ok).toBe(true);
       track = result.track;
     }
+  });
+});
+
+describe("stepHeroThroughMap", () => {
+  const map: TileMap = { grid, widthInPixels: 160, heightInPixels: 160, objects: {} };
+
+  it("matches stepHeroPosition with the map's size as bounds", () => {
+    const hero = { x: 40, y: 40, vx: 100, vy: 50, bodySize: 6 };
+    expect(stepHeroThroughMap(map, hero, 0.5)).toEqual(stepHeroPosition(grid, bounds, hero, 0.5));
+  });
+
+  it("slides along a wall on the free axis", () => {
+    const r = stepHeroThroughMap(map, { x: 70, y: 40, vx: 100, vy: 60, bodySize: 6 }, 0.5);
+    expect(r.x).toBeCloseTo(80 - 6);
+    expect(r.blockedX).toBe(true);
+    expect(r.y).toBeCloseTo(70);
+    expect(r.blockedY).toBe(false);
+  });
+
+  it("stops at the bottom edge of the map", () => {
+    const r = stepHeroThroughMap(map, { x: 20, y: 150, vx: 0, vy: 100, bodySize: 6 }, 1);
+    expect(r.y).toBe(160 - 6);
+    expect(r.blockedY).toBe(true);
   });
 });

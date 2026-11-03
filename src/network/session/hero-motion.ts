@@ -1,8 +1,8 @@
 import { moveBox, type Bounds, type MoveResult } from "@/rules/movement/collision";
-import type { TileGrid } from "@/rules/movement/tilemap";
+import type { TileGrid, TileMap } from "@/rules/movement/tilemap";
 
 /*
- * Moves a hero without Phaser, for headless players (bots). Uses the same stepped, x-then-y tile
+ * Moves a hero without Phaser, for headless players (bots) and the browser hero. Uses the same stepped, x-then-y tile
  * collision as the server's own movement, with the full body radius as the wall box: the server
  * checks reports with a smaller box (`checkMove`), so every position this returns passes it.
  */
@@ -31,4 +31,14 @@ export function stepHeroPosition(
     { x: hero.vx, y: hero.vy },
     seconds,
   );
+}
+
+/** `stepHeroPosition` through a whole room map, with the map's size as its edges. */
+export function stepHeroThroughMap(
+  map: TileMap,
+  hero: HeroMotionInput,
+  seconds: number,
+): MoveResult {
+  const bounds = { width: map.widthInPixels, height: map.heightInPixels };
+  return stepHeroPosition(map.grid, bounds, hero, seconds);
 }

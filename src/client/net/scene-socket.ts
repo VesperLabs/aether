@@ -90,8 +90,8 @@ export function bindSceneSocket(scene: SceneMain) {
       if (getLoot(scene, loot.id)) continue;
       addLoot(scene, loot);
     }
-    const { collideLayer } = changeMap(scene, scene.hero.roomName);
-    initPlayerCollision(scene, scene.hero, [collideLayer]);
+    changeMap(scene, scene.hero.roomName);
+    initPlayerCollision(scene, scene.hero);
     initCamera(scene, scene.hero);
     if (isRespawn) playSpawnDissolve(scene.hero);
   });

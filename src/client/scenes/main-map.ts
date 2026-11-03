@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { Door, type DoorObject } from "@/client/views/door";
 import { Sign, type SignObject } from "@/client/views/sign";
+import { readTileMap, type TiledMapJson } from "@/rules/movement/tilemap";
 import { changeMusic } from "@/client/audio/music";
 import type { Player } from "@/client/views/player";
 import { getGameZoomLevel } from "./camera-zoom";
@@ -28,17 +29,13 @@ export function initCamera(scene: SceneMain, hero: Player) {
   layoutMinimap(scene, hero);
 }
 
-export function initPlayerCollision(
-  scene: SceneMain,
-  player: Player,
-  colliders: Phaser.Tilemaps.TilemapLayer[] = [],
-) {
+/**
+ * Doors for the hero. Walls are not a Phaser collider: the hero moves through `scene.tileMap` with
+ * the shared session motion (`stepHeroThroughMap`), the same code bots use and the server accepts.
+ */
+export function initPlayerCollision(scene: SceneMain, player: Player) {
   scene.physics.world.colliders.destroy();
   scene.physics.world.setBounds(0, 0, scene.map.widthInPixels, scene.map.heightInPixels);
-  player.body.setCollideWorldBounds(true);
-  colliders.forEach((c) => {
-    scene.physics.add.collider(player, c);
-  });
 
   scene.physics.add.overlap(
     scene.hero,
@@ -73,6 +70,8 @@ export function changeMap(scene: SceneMain, roomName: string) {
   scene.map = scene.make.tilemap({
     key: roomName,
   });
+  /* The same Tiled JSON Phaser loaded, read the way bots and the server read it */
+  scene.tileMap = readTileMap(scene.cache.tilemap.get(roomName).data as TiledMapJson);
   changeMusic(scene);
 
   const { map } = scene;
@@ -85,9 +84,7 @@ export function changeMap(scene: SceneMain, roomName: string) {
   const tilesetShadows = addTileset("tileset-" + tileSetKey + "-shadows");
   const tilesetCollide = addTileset("tileset-collide");
   const tilesetExtras = addTileset("tileset-extras");
-  const collideLayer = createLayer("Collide", tilesetCollide).setCollisionByProperty({
-    collides: true,
-  });
+  createLayer("Collide", tilesetCollide);
 
   createLayer("Ground", tileSet).setDepth(0);
   createLayer("Shadows", tilesetShadows).setDepth(1);
@@ -110,6 +107,4 @@ export function changeMap(scene: SceneMain, roomName: string) {
       scene.signs.add(newSign);
     }
   }
-
-  return { collideLayer };
 }

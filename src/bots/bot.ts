@@ -4,7 +4,7 @@ import {
   getHeroStep,
   nextPlayerInput,
 } from "@/network/session/hero-control";
-import { stepHeroPosition } from "@/network/session/hero-motion";
+import { stepHeroThroughMap } from "@/network/session/hero-motion";
 import {
   applyMessage,
   createClientState,
@@ -128,9 +128,8 @@ export function createBot({ socket, clock, loadMap, brain, rng }: BotOptions): B
         neighbours,
       });
       crowdPush = push;
-      const moved = stepHeroPosition(
-        map.grid,
-        { width: map.widthInPixels, height: map.heightInPixels },
+      const moved = stepHeroThroughMap(
+        map,
         { x: hero.x, y: hero.y, vx, vy, bodySize: self.bodySize },
         seconds,
       );
