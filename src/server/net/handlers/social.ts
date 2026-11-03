@@ -1,4 +1,4 @@
-import type { Player } from "../../player";
+import type { Player } from "@/server/players/player";
 import { runAdminCommand } from "../../admin/commands";
 import { getFullCharacterState } from "@/network/sync";
 import {

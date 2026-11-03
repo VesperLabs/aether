@@ -1,5 +1,5 @@
 import type { ServerWorld } from "./server-world";
-import { Player, type PlayerArgs } from "@/server/player";
+import { Player, type PlayerArgs } from "@/server/players/player";
 import type { RoomData } from "@/rules/world";
 
 /** A player that is in a room, so its room refs are set. */
