@@ -1,5 +1,5 @@
 import { DEFAULT_USER_SETTINGS, type UserSettings } from "@/rules/character";
-import { decodeRoomPoses, decodeTickVitals, type CharacterStatus } from "@/network/sync";
+import { decodeRoomPoses } from "@/network/sync/poses";
 import { netInterp } from "@/client/net/scene-interpolation";
 import { idOfNetId } from "@/client/net/net-ids";
 import { correctHeroPosition } from "@/client/net/position-correction";
@@ -14,14 +14,15 @@ import {
   addPlayer,
   getPlayer,
   resetEntities,
-  removePlayer,
   getNpc,
   addNpc,
   addLoot,
   getLoot,
+  getPlayers,
+  getNpcs,
 } from "@/client/scenes/scene-entities";
 import type { SceneMain } from "@/client/scenes/main-scene";
-import { applyMessage } from "@/network/session/mirror";
+import { applyMessage, type MirrorCharacter } from "@/network/session/mirror";
 import { changeMap, initCamera, initPlayerCollision } from "@/client/scenes/main-map";
 
 /** What a tick's vitals update on a player or npc sprite. */
@@ -38,11 +39,11 @@ interface StatusHolder extends VitalsHolder {
 }
 
 /**
- * Takes the server's hp, mp and sp from a tick. Regen and hit effects still play from their own
- * messages; this keeps the numbers right however many of those were missed or merged.
+ * Takes the server's hp, mp and sp from the mirror. Regen and hit effects still play from their
+ * own messages; this keeps the numbers right however many of those were missed or merged.
  */
-function applyTickVitals(character: VitalsHolder, v: unknown) {
-  const vitals = decodeTickVitals(v);
+function syncVitals(character: VitalsHolder, data: MirrorCharacter) {
+  const vitals = data.vitals;
   const stats = character.stats;
   if (!vitals || !stats) return;
   const keys = Object.keys(vitals) as (keyof typeof vitals)[];
@@ -70,14 +71,14 @@ export function bindSceneSocket(scene: SceneMain) {
   });
 
   socket.on("statuses", ({ p = [], n = [] }) => {
-    const apply = (character: StatusHolder | undefined | null, s: CharacterStatus) => {
-      if (!character) return;
-      character.updateState(s.state);
+    const apply = (character: StatusHolder | undefined, data: MirrorCharacter | undefined) => {
+      if (!character || !data) return;
+      character.updateState(data.state);
       character.doRegen();
-      applyTickVitals(character, s.v);
+      syncVitals(character, data);
     };
-    for (const s of n) apply(getNpc(scene, s.id), s);
-    for (const s of p) apply(getPlayer(scene, s.id), s);
+    for (const s of n) apply(getNpc(scene, s.id), mirror.npcs.get(s.id));
+    for (const s of p) apply(getPlayer(scene, s.id), mirror.players.get(s.id));
   });
 
   socket.on("lootExpired", (id) => getLoot(scene, id)?.destroy());
@@ -122,20 +123,22 @@ export function bindSceneSocket(scene: SceneMain) {
     if (isRespawn) playSpawnDissolve(scene.hero);
   });
 
-  socket.on("playerJoin", (user, { lastTeleport, isRespawn } = {}) => {
-    const player = getPlayer(scene, user.socketId);
+  socket.on("playerJoin", (user, { isRespawn } = {}) => {
+    const data = mirror.players.get(user.socketId);
+    if (!data) return;
+    const player = getPlayer(scene, data.socketId);
     if (player) {
       /* TODO: Maybe update the entire player here too */
-      player.state.lastTeleport = lastTeleport as number;
+      player.state.lastTeleport = data.lastTeleport as number;
       // manually update coords so the player won't flicker in place before respawning
-      player.x = user.x;
-      player.y = user.y;
+      player.x = data.x;
+      player.y = data.y;
       if (isRespawn) {
         player?.respawn();
         playSpawnDissolve(player);
       }
     } else {
-      addPlayer(scene, mirror.players.get(user.socketId) ?? user);
+      addPlayer(scene, data);
     }
   });
 
@@ -254,12 +257,13 @@ export function bindSceneSocket(scene: SceneMain) {
     }
   });
 
-  socket.on("respawnNpc", ({ id, x, y, respawnTime }) => {
+  socket.on("respawnNpc", ({ id }) => {
     const npc = getNpc(scene, id);
-    if (!npc) return;
+    const data = mirror.npcs.get(id);
+    if (!npc || !data) return;
     //interpolation will ignore snapshots prior. (Won't fly across screen)
-    npc.state.lastTeleport = respawnTime;
-    npc.setPosition(x, y);
+    npc.state.lastTeleport = data.lastTeleport ?? 0;
+    npc.setPosition(data.x, data.y);
     npc?.respawn();
     playSpawnDissolve(npc);
   });
@@ -269,7 +273,10 @@ export function bindSceneSocket(scene: SceneMain) {
     if (data && !getNpc(scene, npc.id)) addNpc(scene, data);
   });
 
-  socket.on("npcRemove", (id) => getNpc(scene, id)?.destroy());
+  /* The mirror has already forgotten them: drop every sprite it no longer knows. */
+  socket.on("npcRemove", () => {
+    for (const npc of [...getNpcs(scene)]) if (!mirror.npcs.has(npc.id)) npc.destroy();
+  });
 
   socket.on("lootSpawned", ({ loot, npcId }) => {
     /*  We will fake the loot pos when an enemy dies by overriding xy */
@@ -280,7 +287,9 @@ export function bindSceneSocket(scene: SceneMain) {
     addLoot(scene, n ? { ...data, x: n.x, y: n.y } : data);
   });
 
-  socket.on("remove", (socketId) => removePlayer(scene, socketId));
+  socket.on("remove", () => {
+    for (const p of [...getPlayers(scene)]) if (!mirror.players.has(p.socketId)) p.destroy();
+  });
 
   socket.on("updateUserSetting", (setting) => {
     // Every user setting is an on/off switch.

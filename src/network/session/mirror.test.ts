@@ -78,11 +78,18 @@ describe("mirror", () => {
     expect(mirror.idsByNetId.has(3)).toBe(false);
   });
 
+  it("remembers when a player last teleported", () => {
+    const mirror = loggedIn();
+    applyMessage(mirror, "playerJoin", character("new", 3), { lastTeleport: 42 });
+    applyMessage(mirror, "playerUpdate", character("new", 3, { gold: 1 }));
+    expect(mirror.players.get("new")?.lastTeleport).toBe(42);
+  });
+
   it("tracks npcs and loot", () => {
     const mirror = loggedIn();
     applyMessage(mirror, "npcJoin", character("bat", 4));
     applyMessage(mirror, "respawnNpc", { id: "rat", x: 50, y: 60, respawnTime: 1 });
-    expect(mirror.npcs.get("rat")).toMatchObject({ x: 50, y: 60 });
+    expect(mirror.npcs.get("rat")).toMatchObject({ x: 50, y: 60, lastTeleport: 1 });
     applyMessage(mirror, "lootSpawned", { loot: loot("b"), npcId: "rat" });
     expect(mirror.loots.get("b")).toMatchObject({ x: 50, y: 60 });
     applyMessage(mirror, "npcRemove", "bat");

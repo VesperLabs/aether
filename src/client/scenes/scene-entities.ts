@@ -14,12 +14,6 @@ export function addPlayer(scene: SceneMain, user: CharacterArgs) {
   return player;
 }
 
-export function removePlayer(scene: SceneMain, socketId: string) {
-  if (!scene.players) return;
-  const player = getPlayer(scene, socketId);
-  player?.destroy();
-}
-
 export function resetEntities(scene: SceneMain) {
   scene?.map?.destroy?.();
   scene?.players?.destroy?.(true);
