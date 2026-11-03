@@ -1,48 +1,19 @@
 // @vitest-environment node
-import http from "node:http";
-import type { AddressInfo } from "node:net";
-import { io as connect, type Socket } from "socket.io-client";
+import type { Socket } from "socket.io-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { ItemBuilder } from "@/content";
-import { initFakeDatabase } from "../persistence";
-import { GameServer } from "../game-server";
 import { createServerDice } from "../server-dice";
+import { once, settle, startTestServer, TEST_SEED, type TestServer } from "./test-server";
 
 /** Inventory flows over a real socket: equip, bags, stacking, drop, consume and the shop. */
-let httpServer: http.Server;
-let gameServer: GameServer;
-let url: string;
-const sockets: Socket[] = [];
+let server: TestServer;
 
 type Anything = any;
 
-function once<T = Anything>(socket: Socket, event: string, timeoutMs = 5000): Promise<T[]> {
-  return new Promise((resolve, reject) => {
-    const timer = setTimeout(
-      () => reject(new Error(`timed out waiting for "${event}"`)),
-      timeoutMs,
-    );
-    socket.once(event, (...args: T[]) => {
-      clearTimeout(timer);
-      resolve(args);
-    });
-  });
-}
+const login = (charClass?: string) => server.login(charClass);
 
-async function login(charClass = "warrior") {
-  const socket = connect(url, { transports: ["websocket"], forceNew: true });
-  sockets.push(socket);
-  await once(socket, "connect");
-  const heroInit = once(socket, "heroInit");
-  socket.emit("demoLogin", { charClass });
-  await heroInit;
-  const world = gameServer.world as Anything;
-  const player = world.players[socket.id as string];
-  return { socket, world, player };
-}
-
-/** Real dice: items in an inventory need ids of their own. */
-const dice = createServerDice(1);
+/** Real dice: items in an inventory need ids of their own, apart from the server's. */
+const dice = createServerDice(TEST_SEED + 1);
 const build = (...args: (string | number)[]) =>
   ItemBuilder.buildItem(dice, ...(args as [string, string, string, number?]))!;
 const emitAndWait = async (socket: Socket, event: string, payload: Anything) => {
@@ -52,17 +23,10 @@ const emitAndWait = async (socket: Socket, event: string, payload: Anything) => 
 };
 
 beforeAll(async () => {
-  process.env.PUBLIC_DIR = "public";
-  httpServer = http.createServer();
-  gameServer = new GameServer({ httpServer, db: await initFakeDatabase() });
-  await new Promise<void>((resolve) => httpServer.listen(0, "127.0.0.1", resolve));
-  url = `http://127.0.0.1:${(httpServer.address() as AddressInfo).port}`;
+  server = await startTestServer();
 }, 60000);
 
-afterAll(async () => {
-  sockets.forEach((s) => s.disconnect());
-  gameServer?.close();
-});
+afterAll(() => server?.close());
 
 describe("inventory over the socket", () => {
   it("equips an item from the inventory and unequips it again", async () => {
@@ -91,7 +55,7 @@ describe("inventory over the socket", () => {
       from: { location: "inventory", slot: 0 },
       to: { location: "equipment", slot: "handLeft" },
     });
-    await new Promise((r) => setTimeout(r, 100));
+    await settle(socket);
     expect(player.inventory[0].base).toBe("robe");
     expect(player.equipment.handLeft.base).toBe("axe");
   });
@@ -221,7 +185,7 @@ describe("inventory over the socket", () => {
     });
     expect(update.inventory[0].amount).toBe(2);
     expect(player.stats.hp).toBeGreaterThan(1);
-    expect(Date.now() - player.state.lastPotion).toBeLessThan(2000);
+    expect(server.clock.now() - player.state.lastPotion).toBeLessThan(2000);
   });
 
   it("uses up the last potion in a bag", async () => {
@@ -255,7 +219,7 @@ describe("shop over the socket", () => {
   }
 
   afterAll(() => {
-    const world = gameServer.world as Anything;
+    const world = server.world;
     delete world.npcs["test-shop"];
   });
 

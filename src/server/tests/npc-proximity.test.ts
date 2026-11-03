@@ -1,51 +1,15 @@
 // @vitest-environment node
-import http from "node:http";
-import type { AddressInfo } from "node:net";
-import { io as connect, type Socket } from "socket.io-client";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { ItemBuilder, PREVIEW_DICE } from "@/content";
 import { NPC_TALK_LATENCY_TOLERANCE, NPC_TALK_RANGE } from "@/rules/npc-behavior";
-import { initFakeDatabase } from "../persistence";
-import { GameServer } from "../game-server";
+import { once, replies, startTestServer, type TestServer } from "./test-server";
 
 /** Chat, shop and home commands only work next to the keeper. */
-let httpServer: http.Server;
-let gameServer: GameServer;
-let url: string;
-const sockets: Socket[] = [];
+let server: TestServer;
 
 type Anything = any;
 
-function once<T = Anything>(socket: Socket, event: string, timeoutMs = 5000): Promise<T[]> {
-  return new Promise((resolve, reject) => {
-    const timer = setTimeout(
-      () => reject(new Error(`timed out waiting for "${event}"`)),
-      timeoutMs,
-    );
-    socket.once(event, (...args: T[]) => {
-      clearTimeout(timer);
-      resolve(args);
-    });
-  });
-}
-
-/** Resolves true if the event arrives within `ms`, false otherwise. */
-const arrives = (socket: Socket, event: string, ms = 300) =>
-  once(socket, event, ms).then(
-    () => true,
-    () => false,
-  );
-
-async function login() {
-  const socket = connect(url, { transports: ["websocket"], forceNew: true });
-  sockets.push(socket);
-  await once(socket, "connect");
-  const heroInit = once(socket, "heroInit");
-  socket.emit("demoLogin", { charClass: "warrior" });
-  await heroInit;
-  const world = gameServer.world as Anything;
-  return { socket, world, player: world.players[socket.id as string] };
-}
+const login = () => server.login();
 
 const FAR = NPC_TALK_RANGE + NPC_TALK_LATENCY_TOLERANCE + 200;
 
@@ -74,22 +38,15 @@ function placeKeeper(world: Anything, player: Anything, id: string, dx: number, 
 }
 
 beforeAll(async () => {
-  process.env.PUBLIC_DIR = "public";
-  httpServer = http.createServer();
-  gameServer = new GameServer({ httpServer, db: await initFakeDatabase() });
-  await new Promise<void>((resolve) => httpServer.listen(0, "127.0.0.1", resolve));
-  url = `http://127.0.0.1:${(httpServer.address() as AddressInfo).port}`;
+  server = await startTestServer();
 }, 60000);
 
 afterEach(() => {
-  const world = gameServer.world as Anything;
+  const world = server.world;
   for (const id of Object.keys(world.npcs)) if (world.npcs[id].fake) delete world.npcs[id];
 });
 
-afterAll(async () => {
-  sockets.forEach((s) => s.disconnect());
-  gameServer?.close();
-});
+afterAll(() => server?.close());
 
 describe("chatNpc", () => {
   it("opens the keeper when close, and refuses far away, unknown or other-room npcs", async () => {
@@ -100,9 +57,10 @@ describe("chatNpc", () => {
     other.room = { name: "somewhere-else" };
 
     for (const npcId of ["far-keeper", "other-room-keeper", "missing", undefined]) {
-      const reply = arrives(socket, "keeperDataUpdate");
-      socket.emit("chatNpc", { npcId });
-      expect(await reply).toBe(false);
+      const opened = await replies(socket, "keeperDataUpdate", () =>
+        socket.emit("chatNpc", { npcId }),
+      );
+      expect(opened).toBe(false);
     }
     expect(player.state.targetNpcId).not.toBe("far-keeper");
 
@@ -134,9 +92,7 @@ describe("shop range", () => {
     world.npcs["shop-a"].x = player.x + FAR;
     player.gold = 1000;
     player.inventory = [];
-    const refused = arrives(socket, "playerUpdate");
-    socket.emit("moveItem", buy);
-    expect(await refused).toBe(false);
+    expect(await replies(socket, "playerUpdate", () => socket.emit("moveItem", buy))).toBe(false);
     expect(player.inventory[0]).toBeFalsy();
     expect(player.gold).toBe(1000);
   });
@@ -146,13 +102,9 @@ describe("shop range", () => {
     placeKeeper(world, player, "shop-b", 20).room = { name: "elsewhere" };
     player.state.targetNpcId = "shop-b";
     player.gold = 1000;
-    const refused = arrives(socket, "playerUpdate");
-    socket.emit("moveItem", buy);
-    expect(await refused).toBe(false);
+    expect(await replies(socket, "playerUpdate", () => socket.emit("moveItem", buy))).toBe(false);
     delete world.npcs["shop-b"];
-    const refusedGone = arrives(socket, "playerUpdate");
-    socket.emit("moveItem", buy);
-    expect(await refusedGone).toBe(false);
+    expect(await replies(socket, "playerUpdate", () => socket.emit("moveItem", buy))).toBe(false);
     expect(player.inventory[0]).toBeFalsy();
   });
 });
@@ -175,19 +127,17 @@ describe("setSpawn", () => {
   it("refuses from far away, without a home, or without a target", async () => {
     const { socket, world, player } = await login();
     const before = player.spawn;
+    const setSpawn = () => socket.emit("setSpawn", { x: 1, y: 2, roomName: "x" });
     const keeper = placeKeeper(world, player, "home-far", FAR);
     player.state.targetNpcId = "home-far";
-    socket.emit("setSpawn", { x: 1, y: 2, roomName: "x" });
-    expect(await arrives(socket, "message")).toBe(false);
+    expect(await replies(socket, "message", setSpawn)).toBe(false);
 
     keeper.x = player.x;
     keeper.keeperData.home = undefined;
-    socket.emit("setSpawn", { x: 1, y: 2, roomName: "x" });
-    expect(await arrives(socket, "message")).toBe(false);
+    expect(await replies(socket, "message", setSpawn)).toBe(false);
 
     player.state.targetNpcId = null;
-    socket.emit("setSpawn", { x: 1, y: 2, roomName: "x" });
-    expect(await arrives(socket, "message")).toBe(false);
+    expect(await replies(socket, "message", setSpawn)).toBe(false);
     expect(player.spawn).toEqual(before);
   });
 });

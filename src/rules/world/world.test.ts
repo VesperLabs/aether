@@ -1,8 +1,9 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { moveBodyThroughMap, type TiledMapJson } from "../movement";
 import {
   addRoom,
   createRoom,
+  createManualClock,
   createTickLoop,
   createWorld,
   entitiesInRoom,
@@ -37,8 +38,6 @@ const json: TiledMapJson = {
     },
   ],
 };
-
-afterEach(() => vi.useRealTimers());
 
 describe("world", () => {
   it("builds rooms with doors and registers them", () => {
@@ -82,7 +81,7 @@ describe("world", () => {
           moveBodyThroughMap(w.rooms.test.map, w.npcs.n, frame.delta / 1000);
         },
       ],
-      { fps: 20 },
+      { fps: 20, clock: createManualClock() },
     );
     loop.step(50);
     loop.step(50);
@@ -92,20 +91,19 @@ describe("world", () => {
   });
 
   it("ticks on a timer at the given rate and can pause", () => {
-    vi.useFakeTimers();
+    const clock = createManualClock();
     const world = createWorld();
     let ticks = 0;
-    const loop = createTickLoop(world, [() => ticks++], { fps: 20 });
+    const loop = createTickLoop(world, [() => ticks++], { fps: 20, clock });
     loop.start();
-    vi.advanceTimersByTime(1000);
-    expect(ticks).toBeGreaterThanOrEqual(19);
-    expect(ticks).toBeLessThanOrEqual(21);
+    clock.advance(1000);
+    expect(ticks).toBe(20);
     loop.pause();
     const paused = ticks;
-    vi.advanceTimersByTime(1000);
+    clock.advance(1000);
     expect(ticks).toBe(paused);
     loop.resume();
-    vi.advanceTimersByTime(100);
+    clock.advance(100);
     expect(ticks).toBeGreaterThan(paused);
     loop.stop();
   });

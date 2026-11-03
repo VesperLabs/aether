@@ -77,7 +77,7 @@ client/input → command → server/net (zod) → rules/<feature>/commands.ts
 
 - Unit and component tests: next to the code (`foo.ts` → `foo.test.ts`)
 - Game scenarios (build a world, run ticks, assert): `src/rules/tests/`
-- Socket and database integration: `src/server/tests/`
+- Socket and database integration: `src/server/tests/`, through `startTestServer()`: a manual clock the test fast-forwards (`run`, `until`) and seeded dice, so nothing waits on real time or rolls differently twice. Check that nothing was sent with `replies()`, not a timeout.
 
 ## Enforcement
 

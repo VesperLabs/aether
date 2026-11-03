@@ -2,6 +2,7 @@ import path from "path";
 import cors from "cors";
 import express from "express";
 import { GameServer } from "./game-server";
+import { createServerDice } from "./server-dice";
 import { initDatabase, initFakeDatabase } from "./persistence";
 import { registerPeerProxy } from "./http/peer-proxy";
 import { registerRoutes } from "./http/routes";
@@ -29,13 +30,18 @@ class AppServer {
 
   async initialize() {
     // can run in offline mode. we don't connect to any DB or save anything.
+    /* SERVER_SEED replays an offline run exactly. Seeded ids repeat, so never with a database. */
+    const seed = process.env.SERVER_SEED ? Number(process.env.SERVER_SEED) : undefined;
+    if (seed !== undefined && process.env.MONGO_URL)
+      throw new Error("SERVER_SEED needs offline mode");
+    const dice = createServerDice(seed);
     const db = process.env.MONGO_URL
-      ? await initDatabase(process.env.MONGO_URL)
-      : await initFakeDatabase();
+      ? await initDatabase(process.env.MONGO_URL, dice)
+      : await initFakeDatabase(dice);
 
     const app = this.app;
     const httpServer = this.httpServer;
-    const aetherServer = new GameServer({ httpServer, db });
+    const aetherServer = new GameServer({ httpServer, db, dice });
 
     app.use(
       cors({
