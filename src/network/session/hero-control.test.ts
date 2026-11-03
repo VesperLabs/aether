@@ -62,6 +62,15 @@ describe("nextPlayerInput", () => {
     expect(nextPlayerInput(throttle, hero, 0, 0, "left", 1005, true)).toBeDefined();
   });
 
+  it("flushes the spot an idle hero drifted to, once", () => {
+    const throttle = createPlayerInputThrottle();
+    const walking = { x: 10, y: 10, roomName: "town", isIdle: false, isEnteringDoor: false };
+    nextPlayerInput(throttle, walking, 0, 0, "down", 0);
+    const drifted = { ...walking, x: 11, isIdle: true };
+    expect(nextPlayerInput(throttle, drifted, 0, 0, "down", 10)?.x).toBe(11);
+    expect(nextPlayerInput(throttle, drifted, 0, 0, "down", 20)).toBeUndefined();
+  });
+
   it("sends nothing while idle or entering a door", () => {
     const throttle = createPlayerInputThrottle();
     expect(nextPlayerInput(throttle, { ...hero, isIdle: true }, 1, 0, "up", 0)).toBeUndefined();

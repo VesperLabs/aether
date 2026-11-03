@@ -186,9 +186,12 @@ export function nextPlayerInput(
   now: number,
   unthrottled = false,
 ): PlayerInputPayload | undefined {
-  /* If the hero is standing still do not update the server */
-  if (hero.isIdle || hero.isEnteringDoor) return;
+  if (hero.isEnteringDoor) return;
   const last = throttle.lastEmitted;
+  /* Standing still sends nothing, once the server has the spot it came to rest on (crowd drift
+     can move an idle hero after its last walking send) */
+  const isAtLastSent = !last || (last.x === Math.round(hero.x) && last.y === Math.round(hero.y));
+  if (hero.isIdle && isAtLastSent) return;
   const d = encodeWireDirection(direction);
   const payload: PlayerInputPayload = {
     vx: Math.round(vx),
@@ -202,6 +205,7 @@ export function nextPlayerInput(
   const wasMoving = last && (last.vx !== 0 || last.vy !== 0);
   const flushNow =
     unthrottled ||
+    hero.isIdle ||
     !last ||
     (stopped && wasMoving) ||
     last.d !== d ||

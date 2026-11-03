@@ -238,6 +238,7 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
   /* Every frame of a roll and the one after it, so an attack out of a roll swings from where you are */
   const wasRolling = hero.state.wasRolling;
   hero.state.wasRolling = isRolling;
-  emitPlayerInput(scene, hero, vx, vy, hero.direction, isRolling || !!wasRolling);
+  /* Others animate the velocity we send, so send what the player drives, not crowd drift */
+  emitPlayerInput(scene, hero, step.walk.x, step.walk.y, hero.direction, isRolling || !!wasRolling);
   hero.state.isIdle = hero.vx === vx && hero.vy === vy && vx === 0 && vy === 0;
 }
