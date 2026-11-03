@@ -1,7 +1,7 @@
 import type { ServerWorld } from "@/server/world/server-world";
 import type { GameSocket } from "@/network";
 import { removePlayer } from "@/server/world/remove-player";
-import { legacyLeaveParty } from "../party-adapter";
+import { legacyLeaveParty } from "@/server/party/party-adapter";
 import type { CommandContext } from "./command-context";
 import { registerCommands } from "./dispatcher";
 import { commandHandlers } from "./handlers/command-handlers";

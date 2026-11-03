@@ -1,5 +1,5 @@
 import type { ServerWorld } from "@/server/world/server-world";
-import { Spell, type SpellArgs } from "./spell";
+import { Spell, type SpellArgs } from "@/server/spells/spell";
 
 /** Casts a spell in the room. */
 export function createSpell(room: Room, spellData: Omit<SpellArgs, "id" | "room">): Spell {

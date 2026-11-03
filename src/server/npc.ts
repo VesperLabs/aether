@@ -5,7 +5,7 @@ import { ServerCharacter as Character, type CharacterArgs } from "./character";
 import type { ServerWorld } from "@/server/world/server-world";
 import type { Player } from "./player";
 import type { Point, RoomData } from "@/rules/world";
-import { createSpell } from "./spell-adapter";
+import { createSpell } from "@/server/spells/spell-adapter";
 import { buildNpcBehaviorInput } from "./npc-behavior-adapter";
 import { buildEquipment, buildShop, type ItemRecipe } from "./npc-build";
 import {

@@ -11,7 +11,7 @@ import {
 } from "@/rules/combat";
 import { canHitNpc, canHitPlayer } from "@/rules/spells";
 import type { Npc } from "./npc";
-import { createSpell } from "./spell-adapter";
+import { createSpell } from "@/server/spells/spell-adapter";
 import { vanish } from "./stealth";
 import { PLAYER_DEFAULT_SPAWN } from "./auth/character-defaults";
 import { getRoomState } from "@/server/net/room-sync";

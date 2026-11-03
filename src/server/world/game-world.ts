@@ -13,7 +13,7 @@ import { subscribeThreat } from "@/rules/npc-behavior";
 import { subscribeQuests } from "@/rules/quests";
 import { npcBaseStats, subscribeStats } from "@/rules/stats";
 import { addRoom, createRoom, createWorld } from "@/rules/world";
-import { spawnLoot } from "@/server/loot-adapter";
+import { spawnLoot } from "@/server/loot/loot-adapter";
 import { subscribeNpcMessages } from "@/server/npc-messages";
 import {
   subscribeKnockbackMessages,

@@ -5,7 +5,7 @@ import {
   legacyAcceptPartyInvite,
   legacyInviteToParty,
   legacyLeaveParty,
-} from "../../party-adapter";
+} from "@/server/party/party-adapter";
 import type { ParsedCommand } from "@/network";
 import type { CommandContext } from "@/server/net/command-context";
 import { findNearbyNpc } from "@/server/net/nearby-keeper";

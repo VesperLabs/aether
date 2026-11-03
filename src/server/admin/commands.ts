@@ -3,7 +3,7 @@ import type { CommandContext } from "@/server/net/command-context";
 import { getFullCharacterState } from "@/network/sync";
 import { CHAT_COMMANDS } from "@/network";
 import { getRoomState } from "@/server/net/room-sync";
-import { spawnLoot } from "../loot-adapter";
+import { spawnLoot } from "@/server/loot/loot-adapter";
 import { DROP_USAGE, parseDropArgs } from "./drop-args";
 import { isInRoom } from "@/server/world/player-room";
 import type { Cheat } from "./cheat";
