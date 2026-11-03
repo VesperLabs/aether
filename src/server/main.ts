@@ -1,59 +1,21 @@
-import path from "path";
-import cors from "cors";
-import express from "express";
-import { GameServer } from "@/server/world/game-server";
+import { createApp } from "./app/create-app";
+import { readConfig } from "./config/config";
 import { initDatabase, initFakeDatabase } from "./persistence";
-import { registerPeerProxy } from "./http/peer-proxy";
-import { registerRoutes } from "./http/routes";
-import { PeerServer, PeerServerEvents } from "peer";
-import { default as http, Server } from "http";
 
-const PEER_SERVER_PORT = parseInt(process.env.PEER_SERVER_PORT ?? "");
-const PORT = process.env.PORT;
-const MONGO_URL = process.env.MONGO_URL;
-const SERVER_URL = process.env.SERVER_URL;
-const SERVER_FPS = process.env.SERVER_FPS;
+const config = readConfig(process.env);
 
-class AppServer {
-  private app;
-  private httpServer: Server;
-  private peerServer: PeerServerEvents;
+if (config.authSecretGenerated) {
+  console.warn("⚠️ AUTH_SECRET is not set: remembered logins end when the server restarts");
+}
 
-  constructor() {
-    this.app = express();
-    this.httpServer = http.createServer(this.app);
-    this.peerServer = PeerServer({ port: PEER_SERVER_PORT }, (_e) => {
-      console.log(`💻 Peerserver @ /peerjs:${PEER_SERVER_PORT}`);
-    });
-  }
-
-  async initialize() {
-    // can run in offline mode. we don't connect to any DB or save anything.
-    const db = process.env.MONGO_URL
-      ? await initDatabase(process.env.MONGO_URL)
-      : await initFakeDatabase();
-
-    const app = this.app;
-    const httpServer = this.httpServer;
-    const aetherServer = new GameServer({ httpServer, db });
-
-    app.use(
-      cors({
-        origin: "*", // Replace with your allowed origin
-      }),
-    );
-
-    app.use(express.static(path.resolve(process.env.PUBLIC_DIR || "public")));
-
-    registerRoutes(app, { aetherServer, db });
-    registerPeerProxy(app, httpServer, PEER_SERVER_PORT);
-
-    httpServer.listen(PORT, () => {
-      console.log(
-        `💻 Running ${MONGO_URL ? "[online]" : "[offline]"} on ${SERVER_URL} @ ${SERVER_FPS}fps`,
-      );
-    });
-  }
+async function main() {
+  // can run in offline mode. we don't connect to any DB or save anything.
+  const db = config.mongoUrl ? await initDatabase(config.mongoUrl) : await initFakeDatabase();
+  await createApp(config, { db });
+  if (config.peerPort !== null) console.log(`💻 Peerserver @ /peerjs:${config.peerPort}`);
+  console.log(
+    `💻 Running ${config.mongoUrl ? "[online]" : "[offline]"} on ${config.serverUrl} @ ${config.fps}fps`,
+  );
 }
 
 process.on("SIGINT", function () {
@@ -64,6 +26,4 @@ process.once("SIGUSR2", function () {
   process.exit();
 });
 
-const server = new AppServer();
-
-server.initialize();
+main();

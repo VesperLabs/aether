@@ -1,6 +1,5 @@
 import { getFullCharacterState } from "@/network/sync";
 import { getRoomState } from "@/server/net/room-sync";
-import { areCheatsEnabled } from "@/server/admin/commands";
 import { removePlayer } from "@/server/world/remove-player";
 import { createPlayer } from "@/server/world/player-room";
 import { legacyLeaveParty } from "@/server/party/party-adapter";
@@ -11,17 +10,12 @@ import type { CommandContext } from "@/server/net/command-context";
 import type { UserDocument } from "../persistence";
 import { createLoginToken, isLoginTokenValid, readLoginTokenEmail } from "./login-token";
 
-/** Demo logins (throwaway, unsaved characters) are for development only, never production. */
-function isDemoAllowed() {
-  return process.env.NODE_ENV !== "production";
-}
-
 export async function demoLogin(
   ctx: CommandContext,
   { charClass }: ParsedCommand<"demoLogin"> = {},
 ) {
   const { world, socket, socketId, session } = ctx;
-  if (!isDemoAllowed()) return socket.emit("formError", { error: "Demo mode is off" });
+  if (!world.config.allowDemo) return socket.emit("formError", { error: "Demo mode is off" });
   if (!charClass) return socket.emit("formError", { error: "No class" });
 
   /* Only let one connection at a time */
@@ -55,7 +49,7 @@ export async function demoLogin(
     {
       ...getRoomState(world, roomName),
       userSettings: player.userSettings,
-      cheats: areCheatsEnabled(),
+      cheats: world.config.cheats,
       socketId,
     },
     { isLogin: true },
@@ -73,7 +67,12 @@ export async function login(
   if (!user) return socket.emit("formError", { error: "Invalid login" });
   if (remember) {
     socket.emit("loginToken", {
-      token: createLoginToken(user.email, user.password ?? "", world.now()),
+      token: createLoginToken(
+        user.email,
+        user.password ?? "",
+        world.now(),
+        world.config.authSecret,
+      ),
     });
   }
   enterWorld(ctx, user);
@@ -82,7 +81,10 @@ export async function login(
 export async function tokenLogin(ctx: CommandContext, { token }: ParsedCommand<"tokenLogin">) {
   const { world, socket } = ctx;
   const user = await world.db.getUserByEmail({ email: readLoginTokenEmail(token) });
-  if (!user || !isLoginTokenValid(token, user.password ?? "", world.now())) {
+  if (
+    !user ||
+    !isLoginTokenValid(token, user.password ?? "", world.now(), world.config.authSecret)
+  ) {
     socket.emit("loginTokenRejected");
     return socket.emit("formError", { error: "Login expired, enter your password" });
   }
@@ -133,7 +135,7 @@ function enterWorld(ctx: CommandContext, user: UserDocument) {
     {
       ...getRoomState(world, roomName),
       userSettings: player.userSettings,
-      cheats: areCheatsEnabled(),
+      cheats: world.config.cheats,
       socketId,
     },
     { isLogin: true },
@@ -173,7 +175,12 @@ export async function register(
 
   // Remember the new account, so the login form is filled in
   if (remember && email) {
-    const token = createLoginToken(email.toLowerCase(), password ?? "", world.now());
+    const token = createLoginToken(
+      email.toLowerCase(),
+      password ?? "",
+      world.now(),
+      world.config.authSecret,
+    );
     socket.emit("loginToken", { token });
   }
 

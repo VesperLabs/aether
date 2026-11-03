@@ -9,10 +9,6 @@ type CommandHandler<K extends CommandName> = (
 /** One handler for every command in `network/commands.ts`. Adding a command adds a key here. */
 export type CommandHandlers = { [K in CommandName]: CommandHandler<K> };
 
-function debugLog(...args: unknown[]) {
-  if (process.env.DEBUG === "true") console.debug("[net]", ...args);
-}
-
 /**
  * Listens for every command on a socket. A payload is checked against the command's zod schema
  * and handed to the handler; a payload that does not match is dropped. A handler that throws
@@ -20,6 +16,9 @@ function debugLog(...args: unknown[]) {
  */
 export function registerCommands(ctx: CommandContext, handlers: CommandHandlers) {
   const { socket } = ctx;
+  const debugLog = (...args: unknown[]) => {
+    if (ctx.world.config.debug) console.debug("[net]", ...args);
+  };
   const names = Object.keys(commands) as CommandName[];
 
   for (const name of names) {

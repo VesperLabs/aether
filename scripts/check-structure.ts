@@ -14,6 +14,7 @@ type Rule =
   | "tsx-without-jsx"
   | "index-logic"
   | "raw-socket-on"
+  | "server-env"
   | "barrel"
   | "loose-file"
   | "big-folder";
@@ -38,6 +39,8 @@ const LEGACY: Record<Rule, string[]> = {
     "src/ui/item",
     "src/ui/kit",
   ],
+  // Only src/server/main.ts reads process.env; everything else gets `world.config`
+  "server-env": [],
   "raw-socket-on": [
     "src/client/hud/app/app-events.ts",
     "src/client/hud/auth/login-form.tsx",
@@ -85,6 +88,8 @@ const EXPORT_LIST = /export\s+(type\s+)?\{[^}]*\};?/g;
 // Only the dispatchers listen on sockets; tests are clients and may listen too
 const SOCKET_DISPATCHERS = ["src/server/net/", "src/client/net/"];
 const SOCKET_ON = /\bsocket\??\.on\(/;
+const PROCESS_ENV = /\bprocess\.env\b/;
+const SERVER_ENV_READERS = ["src/server/main.ts"];
 const COMMENTS = /\/\*[\s\S]*?\*\/|\/\/.*$/gm;
 // `<Tag`, `<tag`, `<>` that follow an operator or whitespace, so generics like `useState<string>` don't match
 const JSX = /(^|[\s(?:&|,{=>])<([A-Za-z][\w.]*(\s|\/?>)|>)/m;
@@ -138,6 +143,13 @@ function checkFile(full: string, name: string) {
     !SOCKET_DISPATCHERS.some((dir) => full.startsWith(dir))
   ) {
     report("raw-socket-on", full);
+  }
+  if (
+    full.startsWith("src/server/") &&
+    !SERVER_ENV_READERS.includes(full) &&
+    PROCESS_ENV.test(text.replace(COMMENTS, ""))
+  ) {
+    report("server-env", full);
   }
   if (name.endsWith(".tsx") && !JSX.test(text.replace(COMMENTS, ""))) {
     report("tsx-without-jsx", full);
