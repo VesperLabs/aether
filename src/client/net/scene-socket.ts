@@ -1,10 +1,5 @@
 import { DEFAULT_USER_SETTINGS, type UserSettings } from "@/rules/character";
-import {
-  decodeRoomPoses,
-  decodeTickVitals,
-  type CharacterStatus,
-  type FullCharacterWire,
-} from "@/network/sync";
+import { decodeRoomPoses, decodeTickVitals, type CharacterStatus } from "@/network/sync";
 import { netInterp } from "@/client/net/scene-interpolation";
 import { idOfNetId } from "@/client/net/net-ids";
 import { correctHeroPosition } from "@/client/net/position-correction";
@@ -26,6 +21,7 @@ import {
   getLoot,
 } from "@/client/scenes/scene-entities";
 import type { SceneMain } from "@/client/scenes/main-scene";
+import { applyMessage } from "@/network/session/mirror";
 import { changeMap, initCamera, initPlayerCollision } from "@/client/scenes/main-map";
 
 /** What a tick's vitals update on a player or npc sprite. */
@@ -59,6 +55,15 @@ function applyTickVitals(character: VitalsHolder, v: unknown) {
 /** Registers every server message the main scene reacts to. */
 export function bindSceneSocket(scene: SceneMain) {
   const socket = scene.socket;
+  const mirror = scene.mirror;
+
+  /*
+   * Every message reaches the mirror first (socket.io runs `onAny` listeners before named ones),
+   * so the handlers below read entity data from the mirror and only drive sprites.
+   */
+  socket.onAny((name, ...args) => {
+    (applyMessage as (m: typeof mirror, n: string, ...a: unknown[]) => void)(mirror, name, ...args);
+  });
 
   socket.on("poses", (data) => {
     netInterp.add(decodeRoomPoses(data, idOfNetId), performance.now());
@@ -82,7 +87,7 @@ export function bindSceneSocket(scene: SceneMain) {
   });
 
   socket.on("heroInit", (args, { isRespawn } = {}) => {
-    const { socketId, players = [], npcs = [], loots = [] } = args ?? {};
+    const socketId = mirror.selfId;
     if (args && Object.prototype.hasOwnProperty.call(args, "userSettings")) {
       scene.userSettings = { ...DEFAULT_USER_SETTINGS, ...args.userSettings };
     }
@@ -90,7 +95,7 @@ export function bindSceneSocket(scene: SceneMain) {
     resetEntities(scene);
     netInterp.reset();
     /* Add players that don't exist */
-    for (const player of players) {
+    for (const player of mirror.players.values()) {
       if (getPlayer(scene, player.socketId)) continue;
       if (socketId === player.socketId) {
         scene.hero = addPlayer(scene, { ...player, isHero: true });
@@ -102,13 +107,12 @@ export function bindSceneSocket(scene: SceneMain) {
     // this tells the hud not to send x/y events
     scene.hero.state.isEnteringDoor = false;
     /* Add map npcs */
-    for (const npc of npcs) {
+    for (const npc of mirror.npcs.values()) {
       if (getNpc(scene, npc.id)) continue;
       addNpc(scene, npc);
     }
     /* Add map loot */
-    for (const loot of loots) {
-      if (loot?.expiredSince) continue;
+    for (const loot of mirror.loots.values()) {
       if (getLoot(scene, loot.id)) continue;
       addLoot(scene, loot);
     }
@@ -131,7 +135,7 @@ export function bindSceneSocket(scene: SceneMain) {
         playSpawnDissolve(player);
       }
     } else {
-      addPlayer(scene, user);
+      addPlayer(scene, mirror.players.get(user.socketId) ?? user);
     }
   });
 
@@ -142,22 +146,25 @@ export function bindSceneSocket(scene: SceneMain) {
 
   socket.on("playerUpdate", (userData) => {
     const player = getPlayer(scene, userData.socketId);
-    if (!player) return;
-    player.updateData(userData);
+    const data = mirror.players.get(userData.socketId);
+    if (!player || !data) return;
+    player.updateData(data);
     player.updateExtas();
   });
 
   socket.on("buffUpdate", ({ npcs = [], players = [] } = {}) => {
     for (const p of players) {
       const player = getPlayer(scene, p.id);
-      if (!player) continue;
-      player.updateBuffData(p);
+      const data = mirror.players.get(p.socketId || p.id);
+      if (!player || !data) continue;
+      player.updateBuffData(data);
       player.updateExtas();
     }
     for (const n of npcs) {
       const npc = getNpc(scene, n.id);
-      if (!npc) continue;
-      npc.updateBuffData(n);
+      const data = mirror.npcs.get(n.id);
+      if (!npc || !data) continue;
+      npc.updateBuffData(data);
       npc.updateExtas();
     }
   });
@@ -172,7 +179,8 @@ export function bindSceneSocket(scene: SceneMain) {
     if (player?.isHero) {
       playAudio({ scene, audioKey: "item-leather", caster: player });
     }
-    player?.updateData(userData as FullCharacterWire);
+    const data = mirror.players.get(userData.socketId || userData.id);
+    if (data) player?.updateData(data);
   });
 
   socket.on("playerAttack", ({ socketId, count, castAngle, direction, abilitySlot }) => {
@@ -257,19 +265,19 @@ export function bindSceneSocket(scene: SceneMain) {
   });
 
   socket.on("npcJoin", (npc) => {
-    if (!getNpc(scene, npc.id)) addNpc(scene, npc);
+    const data = mirror.npcs.get(npc.id);
+    if (data && !getNpc(scene, npc.id)) addNpc(scene, data);
   });
 
   socket.on("npcRemove", (id) => getNpc(scene, id)?.destroy());
 
   socket.on("lootSpawned", ({ loot, npcId }) => {
     /*  We will fake the loot pos when an enemy dies by overriding xy */
+    const data = mirror.loots.get(loot.id);
+    if (!data) return;
+    /* The dying npc's sprite is where the player saw it fall; the mirror only has its last pose. */
     const n = getNpc(scene, npcId);
-    if (n) {
-      loot.x = n.x;
-      loot.y = n.y;
-    }
-    addLoot(scene, loot);
+    addLoot(scene, n ? { ...data, x: n.x, y: n.y } : data);
   });
 
   socket.on("remove", (socketId) => removePlayer(scene, socketId));
