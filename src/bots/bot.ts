@@ -5,14 +5,19 @@ import {
   nextPlayerInput,
 } from "@/network/session/hero-control";
 import { stepHeroPosition } from "@/network/session/hero-motion";
-import { applyMessage, createMirror, getSelf, type Mirror } from "@/network/session/mirror";
+import {
+  applyMessage,
+  createClientState,
+  getSelf,
+  type ClientState,
+} from "@/network/session/client-state";
 import { readTileMap, type TiledMapJson, type TileMap } from "@/rules/movement/tilemap";
 import type { Clock } from "@/rules/world/clock";
 import type { Rng } from "@/rules/world/rng";
 import { STAND_STILL, type Brain, type BotIntent } from "./brains/brain";
 
 /*
- * A headless player. It sees the world only through server messages (its mirror) and acts only by
+ * A headless player. It sees the world only through server messages (its client state) and acts only by
  * sending the same commands the browser client sends, so the server treats it like anyone else.
  */
 
@@ -32,7 +37,7 @@ export interface BotOptions {
 }
 
 export interface Bot {
-  mirror: Mirror;
+  clientState: ClientState;
   /** Times the server rejected a move with `positionCorrection`. */
   corrections: number;
   /** Steps since the bot was created. */
@@ -55,7 +60,7 @@ const walkSpeedOf = (stats: unknown) => {
 };
 
 export function createBot({ socket, clock, loadMap, brain, rng }: BotOptions): Bot {
-  const mirror = createMirror();
+  const clientState = createClientState();
   const maps = new Map<string, TileMap | undefined>();
   const throttle = createPlayerInputThrottle();
   /* The bot's own idea of where it stands: the server's poses of the hero lag behind it. */
@@ -66,8 +71,8 @@ export function createBot({ socket, clock, loadMap, brain, rng }: BotOptions): B
   let lastAttackAt = -Infinity;
 
   const resync = () => {
-    const self = getSelf(mirror);
-    hero = self ? { x: self.x, y: self.y, roomName: mirror.roomName } : undefined;
+    const self = getSelf(clientState);
+    hero = self ? { x: self.x, y: self.y, roomName: clientState.roomName } : undefined;
     velocity = { x: 0, y: 0 };
     crowdPush = { x: 0, y: 0 };
   };
@@ -81,24 +86,24 @@ export function createBot({ socket, clock, loadMap, brain, rng }: BotOptions): B
   };
 
   const bot: Bot = {
-    mirror,
+    clientState,
     corrections: 0,
     steps: 0,
     step(seconds) {
       bot.steps++;
-      const self = getSelf(mirror);
-      if (!self || !hero || hero.roomName !== mirror.roomName) resync();
+      const self = getSelf(clientState);
+      if (!self || !hero || hero.roomName !== clientState.roomName) resync();
       if (!self || !hero) return;
       const map = mapOf(hero.roomName);
       if (!map || self.state?.isDead) return;
       /* Brains see the hero where the bot has it, not at its lagging pose. */
       Object.assign(self, { x: hero.x, y: hero.y });
 
-      const intent = brain({ mirror, self, last }, bot.steps, rng);
+      const intent = brain({ clientState, self, last }, bot.steps, rng);
       last = intent;
 
       const neighbours = [];
-      for (const list of [mirror.npcs, mirror.players]) {
+      for (const list of [clientState.npcs, clientState.players]) {
         for (const c of list.values()) {
           if (c === self || c.state?.isDead) continue;
           if (Math.abs(c.x - hero.x) > CROWD_RANGE || Math.abs(c.y - hero.y) > CROWD_RANGE)
@@ -173,7 +178,11 @@ export function createBot({ socket, clock, loadMap, brain, rng }: BotOptions): B
   };
 
   socket.onAny((name: string, ...args: unknown[]) => {
-    (applyMessage as (m: Mirror, name: string, ...rest: unknown[]) => void)(mirror, name, ...args);
+    (applyMessage as (m: ClientState, name: string, ...rest: unknown[]) => void)(
+      clientState,
+      name,
+      ...args,
+    );
     if (name === "positionCorrection") {
       bot.corrections++;
       resync();

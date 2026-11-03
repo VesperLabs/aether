@@ -1,17 +1,17 @@
-import type { MirrorCharacter } from "@/network/session/mirror";
+import type { ClientCharacter } from "@/network/session/client-state";
 import { STAND_STILL, type Brain } from "./brain";
 
 /** How close, beyond both bodies, the bot walks before swinging. */
 const SWING_RANGE = 12;
 
-const isAlive = (c: MirrorCharacter) => !c.state?.isDead && (c.vitals?.hp ?? 1) > 0;
+const isAlive = (c: ClientCharacter) => !c.state?.isDead && (c.vitals?.hp ?? 1) > 0;
 
 /** Walks to the nearest living npc in its room and attacks it. */
-export const grind: Brain = ({ mirror, self }) => {
-  let target: MirrorCharacter | undefined;
+export const grind: Brain = ({ clientState, self }) => {
+  let target: ClientCharacter | undefined;
   let best = Infinity;
-  for (const npc of mirror.npcs.values()) {
-    if (!isAlive(npc) || (npc.roomName && npc.roomName !== mirror.roomName)) continue;
+  for (const npc of clientState.npcs.values()) {
+    if (!isAlive(npc) || (npc.roomName && npc.roomName !== clientState.roomName)) continue;
     const d = Math.hypot(npc.x - self.x, npc.y - self.y);
     if (d < best) {
       best = d;

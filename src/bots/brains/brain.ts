@@ -1,4 +1,4 @@
-import type { Mirror, MirrorCharacter } from "@/network/session/mirror";
+import type { ClientState, ClientCharacter } from "@/network/session/client-state";
 import type { Rng } from "@/rules/world/rng";
 
 /** What a bot wants to do this step. The bot turns it into real commands. */
@@ -11,10 +11,10 @@ export interface BotIntent {
   chat?: string;
 }
 
-/** What a brain sees: the mirror, the hero in it, and the brain's own last intent. */
+/** What a brain sees: the client state, the hero in it, and the brain's own last intent. */
 export interface BotView {
-  mirror: Mirror;
-  self: MirrorCharacter;
+  clientState: ClientState;
+  self: ClientCharacter;
   last: BotIntent;
 }
 

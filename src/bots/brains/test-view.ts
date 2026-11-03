@@ -1,8 +1,8 @@
-import { createMirror, type MirrorCharacter } from "@/network/session/mirror";
+import { createClientState, type ClientCharacter } from "@/network/session/client-state";
 import { STAND_STILL, type BotIntent, type BotView } from "./brain";
 
 /** A character with just the fields brains read. */
-export const character = (id: string, x: number, y: number, extra: Partial<MirrorCharacter> = {}) =>
+export const character = (id: string, x: number, y: number, extra: Partial<ClientCharacter> = {}) =>
   ({
     id,
     socketId: id,
@@ -12,15 +12,15 @@ export const character = (id: string, x: number, y: number, extra: Partial<Mirro
     state: {},
     roomName: "grassland",
     ...extra,
-  }) as MirrorCharacter;
+  }) as ClientCharacter;
 
 /** A view of a hero alone in grassland, plus `npcs`. */
-export function testView(npcs: MirrorCharacter[] = [], last: BotIntent = STAND_STILL): BotView {
-  const mirror = createMirror();
+export function testView(npcs: ClientCharacter[] = [], last: BotIntent = STAND_STILL): BotView {
+  const clientState = createClientState();
   const self = character("me", 100, 100);
-  mirror.selfId = "me";
-  mirror.roomName = "grassland";
-  mirror.players.set("me", self);
-  for (const npc of npcs) mirror.npcs.set(npc.id, npc);
-  return { mirror, self, last };
+  clientState.selfId = "me";
+  clientState.roomName = "grassland";
+  clientState.players.set("me", self);
+  for (const npc of npcs) clientState.npcs.set(npc.id, npc);
+  return { clientState, self, last };
 }
