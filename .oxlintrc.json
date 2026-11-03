@@ -430,6 +430,38 @@
       }
     },
     {
+      "files": ["src/bots/**"],
+      "excludeFiles": ["**/*.sim.test.ts"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@/server",
+                  "@/server/**",
+                  "@/client",
+                  "@/client/**",
+                  "@/wiki",
+                  "@/wiki/**",
+                  "@/ui",
+                  "@/ui/**",
+                  "@/sim",
+                  "@/sim/**"
+                ],
+                "message": "Bots are core only: they reach the server over sockets, never through its code."
+              },
+              {
+                "regex": "^\\.{1,2}/(.*/)?(server|client|wiki|ui|sim)(/|$)",
+                "message": "Bots are core only: they reach the server over sockets, never through its code."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
       "files": ["src/wiki/**"],
       "rules": {
         "no-restricted-imports": [
