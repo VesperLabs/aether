@@ -1,5 +1,5 @@
 import type { Npc } from "./npc";
-import type { Player } from "./player";
+import type { Player } from "@/server/player";
 import { getRoomIndex } from "@/server/world/room-index";
 import {
   checkInRange,

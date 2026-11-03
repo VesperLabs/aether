@@ -1,13 +1,13 @@
 import type { MobBehavior } from "@/content/mobs/mob-types";
 import type { AbilitySlot } from "@/rules/spells";
 import type { Hand } from "@/rules/combat";
-import { ServerCharacter as Character, type CharacterArgs } from "./character";
+import { ServerCharacter as Character, type CharacterArgs } from "@/server/character";
 import type { ServerWorld } from "@/server/world/server-world";
-import type { Player } from "./player";
+import type { Player } from "@/server/player";
 import type { Point, RoomData } from "@/rules/world";
-import { createSpell } from "./spell-adapter";
+import { createSpell } from "@/server/spell-adapter";
 import { buildNpcBehaviorInput } from "./npc-behavior-adapter";
-import { buildEquipment, buildShop, type ItemRecipe } from "./npc-build";
+import { buildEquipment, buildShop, type ItemRecipe } from "@/rules/npc-build/rules";
 import {
   addThreat,
   checkInRange,
@@ -33,7 +33,7 @@ import {
   type Rng,
 } from "@/rules/world";
 import { getRoomIndex } from "@/server/world/room-index";
-import { afterWindup, emitNpcWindup, type WindupTrack } from "./npc-windup";
+import { afterWindup, emitNpcWindup, type WindupTrack } from "@/rules/npc-windup/rules";
 import { isNextToSolidTile, isOutOfMap } from "@/rules/movement";
 
 /** How far a follower looks for its leader. Spawns are up to ~900px apart on the peaks. */
