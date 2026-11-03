@@ -63,9 +63,11 @@ COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/package.json ./
 COPY --from=build /app/public ./public
 COPY --from=build /app/dist ./dist
+COPY --from=build /app/scripts/start.sh ./scripts/start.sh
 
 ENV NODE_ENV=production
 
 EXPOSE 8080
 
-CMD ["npm", "run", "server:run"]
+# Seeds bot accounts, then runs the server and the ambient bots (see scripts/start.sh).
+CMD ["sh", "scripts/start.sh"]

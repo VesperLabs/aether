@@ -31,6 +31,7 @@
     "check:weapon-tips": "tsx scripts/weapon-tips.ts --check",
     "weapon-tips": "tsx scripts/weapon-tips.ts",
     "bots": "tsx src/bots/main.ts",
+    "bots:ambient": "tsx --env-file-if-exists=.env src/bots/ambient/main.ts",
     "sim": "tsx --env-file-if-exists=.env src/sim/main.ts",
     "soak": "vitest run --config vitest.soak.config.mts",
     "seed:bots": "tsx --env-file-if-exists=.env scripts/seed-bots.ts",

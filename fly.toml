@@ -25,6 +25,8 @@ METERED_API_KEY = 'e0761f10792087e26f63d5097966e9710fbc'
 METERED_REGION = 'global'
 
 [env]
+# Ambient bots log in while humans are online (0 disables). Needs the BOT_PASSWORD Fly secret.
+AMBIENT_BOTS = '3'
 ASSETS_URL = 'https://aether.onrender.com/assets'
 DEBUG = 'false'
 ENABLE_CHEATS = 'false'

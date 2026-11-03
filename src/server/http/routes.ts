@@ -114,6 +114,12 @@ export function registerRoutes(app: Express, { aetherServer, db, config }: Route
     res.json({ string: "ok" });
   });
 
+  /* Humans online (bot accounts excluded). Public like /metrics; the ambient bot runner polls it. */
+  app.get("/players/online", (_, res) => {
+    const players = Object.values(aetherServer.world?.players ?? {});
+    res.json({ humans: players.filter((p) => !p?.profile?.isBot).length });
+  });
+
   app.get("/health", (_, res) => {
     res.status(200).json({ status: "ok" });
   });
