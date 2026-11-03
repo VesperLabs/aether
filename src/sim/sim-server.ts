@@ -9,6 +9,7 @@ import { createServerDice } from "@/server/world/server-dice";
 import type { ServerWorld } from "@/server/world/server-world";
 import { teleportPlayer } from "@/server/players/teleport";
 import { createSimClock, type SimClock, type SimClockMode } from "./sim-clock";
+import { createSocketQuiescence } from "./socket-quiescence";
 
 /** A real game server running in-process on a free port, with a fake database and a virtual clock. */
 export interface SimServer {
@@ -41,12 +42,16 @@ export async function createSimServer({
   config?: Record<string, string | undefined>;
 } = {}): Promise<SimServer> {
   const config = readConfig({ PORT: "0", NODE_ENV: "test", ...overrides });
-  const clock = createSimClock({ fps: config.fps, mode });
+  /* The clock settles on the sockets, which exist only once the app does. */
+  let settleIo: () => Promise<void> = async () => {};
+  const clock = createSimClock({ fps: config.fps, mode, settle: () => settleIo() });
   const log = createMemoryLogger();
   const db = await initFakeDatabase(log, createServerDice(seed));
   const app = await createApp(config, { db, clock, seed, logger: log });
   const url = `http://localhost:${app.port}`;
   const world = app.server.world;
+  const quiescence = createSocketQuiescence(world.io);
+  settleIo = quiescence.settle;
   const clients: ClientGameSocket[] = [];
 
   return {
@@ -75,6 +80,7 @@ export async function createSimServer({
         forceNew: true,
         reconnection: false,
       });
+      quiescence.track(socket);
       clients.push(socket);
       await new Promise<void>((resolve, reject) => {
         socket.once("connect", () => resolve());
