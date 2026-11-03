@@ -1,6 +1,6 @@
 import type { AbilitySlot } from "@/rules/spells";
 import type { Hand } from "@/rules/combat";
-import type { ServerWorld } from "./server-world";
+import type { ServerWorld } from "@/server/world/server-world";
 import { ServerCharacter, type CharacterArgs } from "./character";
 import {
   expAfterDeath,

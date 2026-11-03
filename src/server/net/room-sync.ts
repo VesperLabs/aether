@@ -1,4 +1,4 @@
-import type { ServerWorld } from "../server-world";
+import type { ServerWorld } from "@/server/world/server-world";
 import {
   getBuffRoomState as packBuffRoomState,
   getRoomState as packRoomState,

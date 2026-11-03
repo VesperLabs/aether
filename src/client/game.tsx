@@ -10,7 +10,7 @@ import { SceneBoot } from "@/client/scenes/boot-scene";
 import { VJoyPlugin } from "@/client/input/joystick";
 import { SceneHud } from "@/client/scenes/hud-scene";
 import "./style.css";
-import "./window-events";
+import "./bridge/window-events";
 import Peer from "peerjs";
 import { getPeerRtcConfiguration } from "@/client/hud/video/webrtc-peer-config";
 

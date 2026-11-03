@@ -1,7 +1,7 @@
 import { nasties } from "@/content";
 import { entitiesInRoom } from "@/rules/world";
 import { getFullCharacterState } from "@/network/sync";
-import { spawnNpc } from "@/server/game-world";
+import { spawnNpc } from "@/server/world/game-world";
 import { parseInteger, type Cheat } from "./cheat";
 
 const MAX_SUMMONS = 20;

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { ELEMENT_EFFECTS, ElementSim, outlineFilter, theme } from "@/ui";
-import type { LootFlyDetail } from "@/client/window-events";
+import type { LootFlyDetail } from "@/client/bridge/window-events";
 
 /** The element picked-up loot flies into. */
 export const LOOT_TARGET_ID = "loot-target";

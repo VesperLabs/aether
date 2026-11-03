@@ -1,4 +1,4 @@
-import { DEFAULT_USER_SETTINGS, type UserSettings } from "@/rules/world";
+import { DEFAULT_USER_SETTINGS, type UserSettings } from "@/rules/character";
 import {
   decodeRoomPoses,
   decodeTickVitals,

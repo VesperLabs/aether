@@ -2,7 +2,7 @@ import { getFullCharacterState } from "@/network/sync";
 import { stepAppearance } from "@/rules/character";
 import type { ParsedCommand } from "@/network";
 import type { CommandContext } from "@/server/net/command-context";
-import { isInRoom } from "@/server/player-room";
+import { isInRoom } from "@/server/world/player-room";
 
 export function updateProfile(ctx: CommandContext, args: ParsedCommand<"updateProfile">) {
   const { world, socketId, io } = ctx;

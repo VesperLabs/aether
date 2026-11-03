@@ -15,13 +15,16 @@ import { subscribeThreat } from "@/rules/npc-behavior";
 import { subscribeQuests } from "@/rules/quests";
 import { npcBaseStats, subscribeStats } from "@/rules/stats";
 import { addRoom, createRoom, createWorld } from "@/rules/world";
-import { spawnLoot } from "./loot-adapter";
-import { subscribeNpcMessages } from "./npc-messages";
-import { subscribeKnockbackMessages, subscribePoseForgetting } from "./net/handlers/movement";
+import { spawnLoot } from "@/server/loot-adapter";
+import { subscribeNpcMessages } from "@/server/npc-messages";
+import {
+  subscribeKnockbackMessages,
+  subscribePoseForgetting,
+} from "@/server/net/handlers/movement";
 import { subscribeDebugMessages } from "./debug-messages";
-import { Npc, type NpcDefinition } from "./npc";
+import { Npc, type NpcDefinition } from "@/server/npc";
 import { createNetIds, type GameIo } from "@/network";
-import type { Database } from "./persistence/database";
+import type { Database } from "@/server/persistence/database";
 
 /* Find NPCs in data lists, and add `kind` to them */
 function getNpcFromLists(name: string): NpcDefinition | undefined {

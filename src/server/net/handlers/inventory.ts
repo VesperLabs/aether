@@ -6,7 +6,7 @@ import { POTION_BASES, consumeItemCommand, dropItemCommand, dropPosition } from 
 import type { AbilitySlot } from "@/rules/spells";
 import type { ParsedCommand } from "@/network";
 import type { CommandContext } from "@/server/net/command-context";
-import { isInRoom } from "@/server/player-room";
+import { isInRoom } from "@/server/world/player-room";
 
 export function grabLoot(
   ctx: CommandContext,

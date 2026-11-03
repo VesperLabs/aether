@@ -1,5 +1,5 @@
 import type { Dice } from "@/content";
-import { createServerDice } from "../server-dice";
+import { createServerDice } from "@/server/world/server-dice";
 import { MongoClient, type Db } from "mongodb";
 import { userSchema } from "./schema";
 import { filterNullEmpty } from "./filter-empty";

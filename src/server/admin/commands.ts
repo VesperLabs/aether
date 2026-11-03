@@ -5,7 +5,7 @@ import { CHAT_COMMANDS } from "@/network";
 import { getRoomState } from "@/server/net/room-sync";
 import { spawnLoot } from "../loot-adapter";
 import { DROP_USAGE, parseDropArgs } from "./drop-args";
-import { isInRoom } from "@/server/player-room";
+import { isInRoom } from "@/server/world/player-room";
 import type { Cheat } from "./cheat";
 import { CHARACTER_CHEATS } from "./character-cheats";
 import { NPC_CHEATS } from "./npc-cheats";

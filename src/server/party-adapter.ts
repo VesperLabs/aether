@@ -1,4 +1,4 @@
-import type { ServerWorld } from "./server-world";
+import type { ServerWorld } from "@/server/world/server-world";
 import type { Player } from "./player";
 import type { Socket } from "socket.io";
 import {

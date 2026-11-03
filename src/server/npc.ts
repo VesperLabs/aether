@@ -2,7 +2,7 @@ import type { MobBehavior } from "@/content";
 import type { AbilitySlot } from "@/rules/spells";
 import type { Hand } from "@/rules/combat";
 import { ServerCharacter as Character, type CharacterArgs } from "./character";
-import type { ServerWorld } from "./server-world";
+import type { ServerWorld } from "@/server/world/server-world";
 import type { Player } from "./player";
 import type { Point, RoomData } from "@/rules/world";
 import { createSpell } from "./spell-adapter";
@@ -32,7 +32,7 @@ import {
   seedFromString,
   type Rng,
 } from "@/rules/world";
-import { getRoomIndex } from "./room-index";
+import { getRoomIndex } from "@/server/world/room-index";
 import { afterWindup, emitNpcWindup, type WindupTrack } from "./npc-windup";
 import { isNextToSolidTile, isOutOfMap } from "@/rules/movement";
 

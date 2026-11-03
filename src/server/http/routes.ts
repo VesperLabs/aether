@@ -1,7 +1,7 @@
 import type { Express } from "express";
 
 import type { Database } from "../persistence/database";
-import type { GameServer } from "../game-server";
+import type { GameServer } from "@/server/world/game-server";
 import { applyCalculatedStats } from "../character-stats";
 import { getFullCharacterState } from "@/network/sync";
 import { paginate, parsePageQuery } from "./pagination";

@@ -1,4 +1,4 @@
-import type { ServerWorld } from "./server-world";
+import type { ServerWorld } from "@/server/world/server-world";
 import { ItemBuilder } from "@/content";
 import { createLoot, expireLoots, isMapLootDue, planMapLootSpawns } from "@/rules/loot";
 import type { LootItem, LootSpawn } from "@/rules/loot";
