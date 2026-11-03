@@ -1,5 +1,5 @@
 import type { ServerWorld } from "@/server/world/server-world";
-import type { Player } from "../../player";
+import type { Player } from "@/server/players/player";
 import { PLAYER_DEFAULT_SPAWN } from "../../auth/character-defaults";
 import { decodeWireDirection, getFullCharacterState } from "@/network/sync";
 import { getRoomState } from "@/server/net/room-sync";

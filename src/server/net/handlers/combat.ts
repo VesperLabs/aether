@@ -1,5 +1,5 @@
 import type { ParsedCommand } from "@/network";
-import type { PlayerAttackRequest, PlayerCastRequest } from "@/server/player";
+import type { PlayerAttackRequest, PlayerCastRequest } from "@/server/players/player";
 import type { CommandContext } from "@/server/net/command-context";
 import { isInRoom } from "@/server/world/player-room";
 import { grantLungeMove } from "./movement";

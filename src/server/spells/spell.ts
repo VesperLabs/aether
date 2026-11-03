@@ -14,7 +14,7 @@ import {
   resolveSpellDetails,
   toSpellVictims,
 } from "@/rules/spells";
-import { ServerCharacter } from "@/server/character";
+import { ServerCharacter } from "@/server/characters/character";
 
 /** Send the shapes behind every hit to the clients, so they can draw what the server saw. */
 const DEBUG_HITS = process.env.DEBUG === "true";

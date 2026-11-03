@@ -1,7 +1,7 @@
 import type { AbilitySlot } from "@/rules/spells";
 import type { Hand } from "@/rules/combat";
 import type { ServerWorld } from "@/server/world/server-world";
-import { ServerCharacter, type CharacterArgs } from "./character";
+import { ServerCharacter, type CharacterArgs } from "@/server/characters/character";
 import {
   expAfterDeath,
   getAbilityCosts,
@@ -10,10 +10,10 @@ import {
   mobKilledEvents,
 } from "@/rules/combat";
 import { canHitNpc, canHitPlayer } from "@/rules/spells";
-import type { Npc } from "./npc";
+import type { Npc } from "@/server/npc";
 import { createSpell } from "@/server/spells/spell-adapter";
 import { vanish } from "./stealth";
-import { PLAYER_DEFAULT_SPAWN } from "./auth/character-defaults";
+import { PLAYER_DEFAULT_SPAWN } from "@/server/auth/character-defaults";
 import { getRoomState } from "@/server/net/room-sync";
 import { entitiesInRoom } from "@/rules/world";
 import { expForMobKill } from "@/rules/stats";
