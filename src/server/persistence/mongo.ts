@@ -85,7 +85,7 @@ const getDatabaseApi = (db: Db, dice: Dice, log: Logger): Database => ({
       return user as UserDocument | null;
     });
   },
-  createUser: async ({ email, charClass, password }) => {
+  createUser: async ({ email, charClass, password, userName, isBot }) => {
     return execute(log, "createUser", async () => {
       if (!email) {
         return log.warn("❌ Error while creating player. Email not provided");
@@ -99,7 +99,8 @@ const getDatabaseApi = (db: Db, dice: Dice, log: Logger): Database => ({
         x: player?.x,
         y: player?.y,
         quests: player?.quests,
-        profile: player?.profile,
+        profile: userName ? { ...player?.profile, userName } : player?.profile,
+        ...(isBot ? { isBot: true } : {}),
         direction: player?.direction,
         gold: player.gold,
         stats: {

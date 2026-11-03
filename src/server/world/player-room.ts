@@ -21,6 +21,7 @@ export function createPlayer(
   const player = new Player(world, { ...user, id: socketId, room, roomName: room?.name });
   player.nid = world.netIds.take(socketId);
   world.players[socketId] = player;
+  world.events.emit("playerJoined", { socketId });
   return world.players[socketId];
 }
 

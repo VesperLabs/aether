@@ -5,7 +5,6 @@ import { legacyLeaveParty } from "@/server/party/party-adapter";
 import type { CommandContext } from "./command-context";
 import { registerCommands } from "./dispatcher";
 import { commandHandlers } from "./handlers/command-handlers";
-import { shouldPause } from "./world-pause";
 
 /** Wires every new socket to the command dispatcher and cleans up when it goes away. */
 export function listenForConnections(world: ServerWorld) {
@@ -29,8 +28,6 @@ export function listenForConnections(world: ServerWorld) {
       legacyLeaveParty(world, socketId, socket);
       removePlayer(world, socketId);
       world.io.emit("remove", socketId);
-      /* Should we pause or resume? */
-      shouldPause(world);
     });
   });
 }

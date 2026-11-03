@@ -5,6 +5,8 @@ import type { createBaseUser } from "./base-user";
 export type UserDocument = ReturnType<typeof createBaseUser> & {
   email: string;
   password?: string;
+  /** A headless bot account (see scripts/seed-bots.ts). Stored only; gameplay never reads it. */
+  isBot?: boolean;
   npcKills?: Record<string, number>;
   spawn?: { x: number; y: number; roomName: string };
   _id?: unknown;
@@ -57,6 +59,9 @@ export interface Database {
     email?: string | null;
     charClass?: string | null;
     password?: string | null;
+    /** Display name; defaults to the base character name. */
+    userName?: string;
+    isBot?: boolean;
   }): Promise<boolean | void>;
   updateUserMapDetails(args: SavedMapDetails): Promise<void>;
   updateUserSetting(

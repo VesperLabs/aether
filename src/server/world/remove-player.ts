@@ -10,4 +10,5 @@ export function removePlayer(world: ServerWorld, socketId: string) {
   }
   delete world.players?.[socketId];
   world.netIds.release(socketId);
+  world.events.emit("playerLeft", { socketId });
 }

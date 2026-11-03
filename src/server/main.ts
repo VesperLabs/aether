@@ -1,7 +1,8 @@
 import { createApp } from "./app/create-app";
 import { readConfig } from "./config/config";
 import { createConsoleLogger } from "./log/logger";
-import { initDatabase, initFakeDatabase } from "./persistence";
+import { initDatabase } from "./persistence/mongo";
+import { initFakeDatabase } from "./persistence/fake";
 
 const config = readConfig(process.env);
 const logger = createConsoleLogger({ debug: config.debug });

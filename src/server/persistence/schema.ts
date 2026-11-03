@@ -61,6 +61,10 @@ const profileSchema = {
   bsonType: "object",
   required: ["race", "userName"],
   properties: {
+    isBot: {
+      bsonType: "bool",
+      description: "must be a boolean",
+    },
     userNameTint: {
       bsonType: "string",
       description: "must be a string",
@@ -113,6 +117,10 @@ const userSchema = {
     },
     profile: profileSchema,
     spawn: spawnSchema,
+    isBot: {
+      bsonType: "bool",
+      description: "must be a boolean",
+    },
     charClass: {
       bsonType: "string",
       description: "must be a string",
