@@ -27,8 +27,7 @@ const LEGACY: Record<Rule, string[]> = {
   "tsx-without-jsx": [],
   "index-logic": [],
   // Files at a folder's top level that belong in a feature folder
-  "loose-file": [
-  ],
+  "loose-file": [],
   // Folders with more than MAX_FILES source files (tests excluded) that should split by feature
   "big-folder": [
     "src/client/views",
