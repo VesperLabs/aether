@@ -7,6 +7,7 @@ import { createMemoryLogger, type MemoryLogger } from "@/server/log/logger";
 import { initFakeDatabase } from "@/server/persistence/fake";
 import { createServerDice } from "@/server/world/server-dice";
 import type { ServerWorld } from "@/server/world/server-world";
+import { teleportPlayer } from "@/server/players/teleport";
 import { createSimClock, type SimClock, type SimClockMode } from "./sim-clock";
 
 /** A real game server running in-process on a free port, with a fake database and a virtual clock. */
@@ -20,6 +21,11 @@ export interface SimServer {
   ticks(n: number): Promise<void>;
   /** Opens a new client connection and waits until it is connected. */
   connect(): Promise<ClientGameSocket>;
+  /**
+   * Moves a logged-in player the way doors and travel cheats do, and resolves once their client
+   * has resynced from `heroInit`. `room` defaults to the room they are in.
+   */
+  teleport(socket: ClientGameSocket, to: { x: number; y: number; room?: string }): Promise<void>;
   /** Disconnects every client and shuts the server down. */
   close(): Promise<void>;
 }
@@ -54,6 +60,14 @@ export async function createSimServer({
         throw new Error("The world loop is paused: log a player in before stepping ticks");
       }
       await clock.ticks(n);
+    },
+    async teleport(socket, { x, y, room }) {
+      const player = world.players[socket.id!];
+      const dest = room ?? player?.roomName;
+      if (!dest) throw new Error("Only a logged-in player in a room can be teleported");
+      const resynced = nextMessage(socket, "heroInit");
+      teleportPlayer(world, socket.id!, dest, { x, y });
+      await resynced;
     },
     async connect() {
       const socket: ClientGameSocket = connectSocket(url, {

@@ -12,7 +12,7 @@ describe("a grind bot against the real server", () => {
   });
 
   it("walks up to npcs, damages them and is credited with a kill", async () => {
-    sim = await createSimServer({ seed: 2, mode: "turbo" });
+    sim = await createSimServer({ seed: 2, mode: "manual" });
     const socket = await sim.connect();
     const bot = createBot({
       socket,
@@ -34,8 +34,7 @@ describe("a grind bot against the real server", () => {
         (a, b) =>
           Math.hypot(a.x - player.x, a.y - player.y) - Math.hypot(b.x - player.x, b.y - player.y),
       )[0]!;
-    player.x = npc.x - 40;
-    player.y = npc.y;
+    await sim.teleport(socket, { x: npc.x - 40, y: npc.y });
 
     let damageDealt = 0;
     const kills: string[] = [];
