@@ -9,8 +9,8 @@ import {
 import { groupByRoom, type Frame, type System } from "@/rules/world";
 import { encodeRoomPoses, takeChangedStatuses } from "@/network";
 import { getBuffRoomState } from "@/server/net/room-sync";
-import { updateRoomLoot } from "@/server/loot-adapter";
-import { expireSpells } from "@/server/spell-adapter";
+import { updateRoomLoot } from "@/server/loot/loot-adapter";
+import { expireSpells } from "@/server/spells/spell-adapter";
 import { getRoomIndex, indexRooms } from "./room-index";
 
 /** A long stall (debugger, GC) must not teleport things across the map. */

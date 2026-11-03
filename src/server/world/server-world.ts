@@ -5,7 +5,7 @@ import type { Npc } from "@/server/npc";
 import type { Database } from "@/server/persistence/database";
 import type { Player } from "@/server/player";
 import type { RoomIndex } from "./room-index";
-import type { Spell } from "@/server/spell";
+import type { Spell } from "@/server/spells/spell";
 
 /** The world the server runs: the shared world state plus the socket server, database and loop. */
 export type ServerWorld = World<Player, Npc, Spell, Loot, Quest> & {

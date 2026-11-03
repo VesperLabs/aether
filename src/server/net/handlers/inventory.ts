@@ -1,7 +1,7 @@
 import { getFullCharacterState } from "@/network/sync";
 import { cloneJson } from "@/content/items/dice";
 import { addStackAmounts, resolveGrab } from "@/rules/loot";
-import { removeLoot, spawnLoot } from "../../loot-adapter";
+import { removeLoot, spawnLoot } from "@/server/loot/loot-adapter";
 import { POTION_BASES, consumeItemCommand, dropItemCommand, dropPosition } from "@/rules/inventory";
 import type { AbilitySlot } from "@/rules/spells";
 import type { ParsedCommand } from "@/network";
