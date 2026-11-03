@@ -19,15 +19,17 @@ export function listenForConnections(world: ServerWorld) {
 
     registerCommands(ctx, commandHandlers);
 
-    socket.on("disconnect", () => {
+    socket.on("disconnect", async () => {
       const { socketId } = ctx;
       const player = world.players?.[socketId];
       /* A socket that never logged in has nobody to save */
-      if (player) world.db.updateUser(player);
+      const saved = player ? world.db.updateUser(player) : undefined;
       world.log.info(`🔌 ${player?.profile?.userName ?? "Anonymous"} disconnected`);
       legacyLeaveParty(world, socketId, socket);
       removePlayer(world, socketId);
       world.io.emit("remove", socketId);
+      /* The save is tracked, so shutdown waits for it; a failed one is logged, not thrown. */
+      await saved?.catch((error) => world.log.error("Saving a leaving player failed", error));
     });
   });
 }

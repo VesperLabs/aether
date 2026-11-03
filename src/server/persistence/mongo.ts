@@ -9,7 +9,13 @@ import { createBaseUser } from "./base-user";
 import { pruneItemFromUser, type StoredItemLists } from "./prune-item";
 import type { Database, UserDocument } from "./database";
 
-const getDatabaseApi = (db: Db, dice: Dice, log: Logger): Database => ({
+const getDatabaseApi = (
+  db: Db,
+  dice: Dice,
+  log: Logger,
+  closeClient: () => Promise<void>,
+): Database => ({
+  close: closeClient,
   getUserByEmail: async ({ email }) => {
     return execute(log, "getUserByEmail", async () => {
       if (!email) return log.warn("❌ Email not provided");
@@ -265,5 +271,5 @@ export async function initDatabase(uri: string, log: Logger, dice: Dice = create
     });
   });
 
-  return getDatabaseApi(db, dice, log);
+  return getDatabaseApi(db, dice, log, () => mongoClient.close());
 }

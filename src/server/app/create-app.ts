@@ -61,9 +61,10 @@ export async function createApp(
     port,
     server,
     async close() {
-      server.close();
+      await server.close();
       if (peerHttpServer) await closeHttp(peerHttpServer);
       await closeHttp(httpServer);
+      await db.close();
     },
   };
 }

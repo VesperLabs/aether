@@ -2,6 +2,7 @@ import type { ServerWorld } from "./server-world";
 import type { Server as HttpServer } from "http";
 import { Server } from "socket.io";
 import type { Database } from "@/server/persistence/database";
+import { trackSaves, type TrackedDatabase } from "@/server/persistence/track-saves";
 import { createTickLoop } from "@/rules/world/tick-loop";
 import { realClock, type Clock } from "@/rules/world/clock";
 import type { Logger } from "@/server/log/logger";
@@ -17,7 +18,7 @@ export class GameServer {
   io: GameIo;
   world: ServerWorld;
   spawnTime: number;
-  db: Database;
+  db: TrackedDatabase;
   constructor({
     httpServer,
     db,
@@ -50,8 +51,8 @@ export class GameServer {
       perMessageDeflate: false,
     });
 
-    this.db = db;
-    this.world = createServerWorld({ io: this.io, db, config, clock, seed, logger });
+    this.db = trackSaves(db);
+    this.world = createServerWorld({ io: this.io, db: this.db, config, clock, seed, logger });
     this.world.loop = createTickLoop(this.world, serverSystems, {
       fps: config.fps,
       clock,
@@ -60,10 +61,19 @@ export class GameServer {
     listenForConnections(this.world);
     /* Nobody is connected yet, so the loop stays paused until the first player joins. */
   }
-  /** Stops the tick loop and closes the socket server. */
-  close() {
+  /**
+   * Shuts the game down and waits for all of it: stops the tick loop, saves every connected
+   * player, disconnects the sockets, and waits for every database write still in flight. It does
+   * not close the database; the caller owns that.
+   */
+  async close() {
     this.world.loop.stop();
-    this.io.close();
+    const saves = Object.values(this.world.players ?? {}).map((player) =>
+      this.db.updateUser(player),
+    );
+    await Promise.allSettled(saves);
+    await this.io.close();
+    await this.db.settled();
   }
   getUptime() {
     return this.world.now() - this.spawnTime;

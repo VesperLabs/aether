@@ -69,4 +69,6 @@ export interface Database {
     setting: { name: string; value: unknown },
   ): Promise<void>;
   updateUser(player: SavedPlayer): Promise<void>;
+  /** Releases the connection. Nothing may be saved after this. */
+  close(): Promise<void>;
 }

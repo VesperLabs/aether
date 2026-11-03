@@ -31,6 +31,8 @@
     "check:weapon-tips": "tsx scripts/weapon-tips.ts --check",
     "weapon-tips": "tsx scripts/weapon-tips.ts",
     "bots": "tsx src/bots/main.ts",
+    "sim": "tsx --env-file-if-exists=.env src/sim/main.ts",
+    "soak": "vitest run --config vitest.soak.config.mts",
     "seed:bots": "tsx --env-file-if-exists=.env scripts/seed-bots.ts",
     "check": "npm run check:format && npm run lint && npm run typecheck && npm run check:structure && npm run check:weapon-tips && npm run check:dead-code && npm run test",
     "check:dead-code": "knip --no-progress"

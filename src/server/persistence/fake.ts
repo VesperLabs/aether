@@ -17,6 +17,7 @@ const getDatabaseApi = (dice: Dice, log: Logger): Database => ({
   pruneNoobs: async () => {},
   createUser: async () => true,
   updateUser: async () => {},
+  close: async () => {},
   updateUserMapDetails: async () => {},
   updateUserSetting: async () => {},
   pruneItemByKey: async () => {},
