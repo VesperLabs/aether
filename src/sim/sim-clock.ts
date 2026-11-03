@@ -18,7 +18,7 @@ export interface SimClock extends Clock {
   ticks(n: number): Promise<void>;
   /** Timers waiting to fire. */
   pending(): number;
-  /** Lets pending socket I/O settle: a few turns of the event loop. */
+  /** Lets pending socket I/O settle: the `settle` option, or a few turns of the event loop. */
   settle(): Promise<void>;
   /** Drops every timer and stops the turbo pump. */
   dispose(): void;
@@ -39,10 +39,13 @@ export function createSimClock({
   fps,
   mode,
   start = 0,
+  settle: settleIo,
 }: {
   fps: number;
   mode: SimClockMode;
   start?: number;
+  /** Waits until socket I/O has landed. The sim server passes one that knows for sure. */
+  settle?: () => Promise<void>;
 }): SimClock {
   const interval = 1000 / fps;
   let time = start;
@@ -93,9 +96,11 @@ export function createSimClock({
     });
   };
 
-  const settle = async () => {
-    for (let i = 0; i < SETTLE_TURNS; i++) await nextTurn();
-  };
+  const settle =
+    settleIo ??
+    (async () => {
+      for (let i = 0; i < SETTLE_TURNS; i++) await nextTurn();
+    });
 
   const advance = async (ms: number) => {
     const target = time + ms;
