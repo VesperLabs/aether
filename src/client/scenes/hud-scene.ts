@@ -1,6 +1,6 @@
 import { addDodgeListeners } from "@/client/input/hero-dodge";
 import Phaser from "phaser";
-import type { ClientGameSocket } from "@/network";
+import type { ClientGameSocket } from "@/network/socket/game-socket";
 import { addGlobalEventListeners } from "@/client/input/hero-events";
 import { moveDirectHero } from "@/client/input/hero-movement";
 import { addJoystick } from "@/client/input/hud-joystick";

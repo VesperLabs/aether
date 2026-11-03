@@ -1,10 +1,12 @@
 import { memo, type ReactNode } from "react";
-import type { CharacterMenuProps } from "@/ui";
+import type { CharacterMenuProps } from "@/ui/character/menu-props";
 import { useAppContext } from "@/client/hud/app/context";
 import { MenuButton } from "@/client/hud/menu/menu-button";
 import { BigPortrait } from "@/client/hud/status/big-portrait";
-import { Flex, Text, Input, Box, MENU_MAX_WIDTH, Menu, MenuHeader } from "@/ui";
-import { arePropsEqualWithKeys } from "@/ui";
+import { Flex, Text, Box } from "theme-ui";
+import { Input } from "@/ui/kit/input";
+import { MENU_MAX_WIDTH, Menu, MenuHeader } from "@/ui/kit/menu";
+import { arePropsEqualWithKeys } from "@/ui/kit/are-props-equal";
 
 const MenuPicker = ({
   children,

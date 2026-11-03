@@ -1,4 +1,4 @@
-import { Box, Flex, Text } from "@/ui";
+import { Box, Flex, Text } from "theme-ui";
 import { memo, startTransition, useEffect, useRef, useState, type PointerEvent } from "react";
 import { Link } from "wouter";
 import { useCardPool, type FeaturedCard } from "@/wiki/cards/card-pool";

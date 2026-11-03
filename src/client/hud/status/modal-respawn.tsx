@@ -1,4 +1,5 @@
-import { Modal, KeyboardButton } from "@/ui";
+import { Modal } from "@/ui/kit/modal";
+import { KeyboardButton } from "@/ui/kit/keyboard-button";
 import { useAppContext } from "@/client/hud/app/context";
 
 export const ModalRespawn: React.FC = () => {

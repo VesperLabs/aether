@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import type { FullCharacterWire } from "@/network";
+import type { FullCharacterWire } from "@/network/sync/character-state";
 import { withCharacterModel } from "@/rules/character";
 import type { RoomData } from "@/rules/world";
 import { characterHitBox } from "@/rules/spells";

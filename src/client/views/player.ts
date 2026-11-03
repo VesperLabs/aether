@@ -1,5 +1,6 @@
 import Phaser from "phaser";
-import type { FullCharacterWire, PartyMessage } from "@/network";
+import type { FullCharacterWire } from "@/network/sync/character-state";
+import type { PartyMessage } from "@/network/messages";
 import type { BuffCharacterWire } from "@/network/sync";
 import type { SceneMain } from "@/client/scenes/main-scene";
 import { Character, type CharacterArgs } from "./character";

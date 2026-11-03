@@ -1,5 +1,8 @@
 import { useAppContext } from "@/client/hud/app/context";
-import { Modal, KeyboardButton, Icon, Box, Text } from "@/ui";
+import { Modal } from "@/ui/kit/modal";
+import { KeyboardButton } from "@/ui/kit/keyboard-button";
+import { Icon } from "@/ui/kit/icon";
+import { Box, Text } from "theme-ui";
 
 export const ModalHome = () => {
   const { zoom, bottomOffset, homeModal: keeper, setHomeModal, socket } = useAppContext();

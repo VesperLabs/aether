@@ -4,7 +4,7 @@ import { addStackAmounts, resolveGrab } from "@/rules/loot";
 import { removeLoot, spawnLoot } from "@/server/loot/loot-adapter";
 import { POTION_BASES, consumeItemCommand, dropItemCommand, dropPosition } from "@/rules/inventory";
 import type { AbilitySlot } from "@/rules/spells";
-import type { ParsedCommand } from "@/network";
+import type { ParsedCommand } from "@/network/commands";
 import type { CommandContext } from "@/server/net/command-context";
 import { isInRoom } from "@/server/world/player-room";
 

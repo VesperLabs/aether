@@ -1,9 +1,10 @@
 import { useEffect } from "react";
-import { Switch, Flex, Text } from "@/ui";
+import { Switch } from "@/ui/kit/switch";
+import { Flex, Text } from "theme-ui";
 import { DEFAULT_USER_SETTINGS } from "@/rules/character";
-import { isMobile } from "@/ui";
+import { isMobile } from "@/ui/kit/is-mobile";
 import { useAppContext } from "@/client/hud/app/context";
-import { TextDivider } from "@/ui";
+import { TextDivider } from "@/ui/kit/text-divider";
 import { canUseVideoChat } from "@/client/hud/video/video-support";
 import { usePersistSetting } from "./use-persist-setting";
 

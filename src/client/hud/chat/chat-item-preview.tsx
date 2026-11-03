@@ -1,7 +1,8 @@
 import { useLayoutEffect, useState } from "react";
 import { resolveAsset } from "@/content/sprites/resolve-asset";
 import { ItemLook } from "@/content/items/item-keys";
-import { assetToCanvas, Icon } from "@/ui";
+import { assetToCanvas } from "@/ui/kit/asset-to-canvas";
+import { Icon } from "@/ui/kit/icon";
 
 const PREVIEW_USER = { profile: { race: "human", gender: "female" } };
 

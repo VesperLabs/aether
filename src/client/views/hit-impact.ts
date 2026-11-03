@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import type { HitMessage } from "@/network";
+import type { HitMessage } from "@/network/messages";
 import { getAngleFromDirection } from "@/rules/world";
 import type { Player } from "./player";
 

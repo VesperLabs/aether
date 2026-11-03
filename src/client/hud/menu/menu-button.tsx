@@ -1,6 +1,9 @@
 import React from "react";
-import { Icon, KeyboardKey, Button, NotificationBadge } from "@/ui";
-import { isMobile } from "@/ui";
+import { Icon } from "@/ui/kit/icon";
+import { KeyboardKey } from "@/ui/kit/keyboard-key";
+import { Button } from "@/ui/kit/button/button";
+import { NotificationBadge } from "@/ui/kit/notification-badge";
+import { isMobile } from "@/ui/kit/is-mobile";
 
 interface MenuButtonProps {
   keyboardKey?: string;

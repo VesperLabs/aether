@@ -4,7 +4,8 @@ import { questList, QuestId } from "@/content/quests/quest-list";
 import { resolveAsset } from "@/content/sprites/resolve-asset";
 import { BuiltItem } from "@/content/items/item-types";
 import { KeeperDefinition } from "@/content/mobs/keeper-types";
-import { Box, Flex, ItemTooltip, Text } from "@/ui";
+import { Box, Flex, Text } from "theme-ui";
+import { ItemTooltip } from "@/ui/item/item-tooltip";
 import { useId, useState } from "react";
 import {
   CARD_COLORS,

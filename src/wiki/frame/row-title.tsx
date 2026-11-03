@@ -1,5 +1,6 @@
 import type { ComponentProps } from "react";
-import { Flex, Icon } from "@/ui";
+import { Flex } from "theme-ui";
+import { Icon } from "@/ui/kit/icon";
 
 const resolveTypeIcon = (type: string) => {
   if (type === "shield") {

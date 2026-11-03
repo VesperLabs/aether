@@ -1,6 +1,8 @@
-import { Icon, KeyboardKey, Button } from "@/ui";
-import { isMobile } from "@/ui";
-import type { PressHandler } from "@/ui";
+import { Icon } from "@/ui/kit/icon";
+import { KeyboardKey } from "@/ui/kit/keyboard-key";
+import { Button } from "@/ui/kit/button/button";
+import { isMobile } from "@/ui/kit/is-mobile";
+import type { PressHandler } from "@/ui/kit/button/button";
 import type { ReactNode } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
 import { CostBadge, hasCosts, type ResourceCosts } from "./cost-badge";

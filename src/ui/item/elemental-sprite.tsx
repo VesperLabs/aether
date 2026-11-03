@@ -1,4 +1,4 @@
-import { Box } from "@/ui/kit";
+import { Box } from "theme-ui";
 import { useEffect, useRef } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
 import { bladePixels, findEdgePixels } from "./edge-pixels";

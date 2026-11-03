@@ -1,11 +1,12 @@
 import { Quest as QuestSlot } from "./quest";
-import { Flex, Text, MENU_MAX_WIDTH, Menu, MenuHeader } from "@/ui";
+import { Flex, Text } from "theme-ui";
+import { MENU_MAX_WIDTH, Menu, MenuHeader } from "@/ui/kit/menu";
 import { questList, QuestId } from "@/content/quests/quest-list";
 import { type Quest } from "@/content/quests/quest";
 import type { PlayerQuestStatus } from "@/rules/quests";
-import { arePropsEqualWithKeys } from "@/ui";
+import { arePropsEqualWithKeys } from "@/ui/kit/are-props-equal";
 import { memo } from "react";
-import type { CharacterMenuProps } from "@/ui";
+import type { CharacterMenuProps } from "@/ui/character/menu-props";
 
 export const MenuQuests = memo(
   ({ player, isOpen, setIsOpen }: CharacterMenuProps) => {

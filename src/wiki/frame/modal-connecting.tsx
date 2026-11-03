@@ -1,4 +1,5 @@
-import { Modal, Icon } from "@/ui";
+import { Modal } from "@/ui/kit/modal";
+import { Icon } from "@/ui/kit/icon";
 
 export const ModalConnecting: React.FC = () => {
   return (

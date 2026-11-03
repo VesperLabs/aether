@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
-import { assetToDataUrl, Icon } from "@/ui/kit";
+import { assetToDataUrl } from "@/ui/kit/image-tint";
+import { Icon } from "@/ui/kit/icon";
 
 /** Who wears an item when its art depends on the wearer and nobody is given (armor is drawn per race). */
 export const DEFAULT_ASSET_USER = { profile: { race: "human", gender: "female" } };

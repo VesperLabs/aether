@@ -1,12 +1,15 @@
 import { memo, type ComponentProps, type ElementType, type ReactNode } from "react";
-import type { PartyMessage } from "@/network";
+import type { PartyMessage } from "@/network/messages";
 import type { HudCharacter } from "@/client/hud/app/context";
 import { useAppContext } from "@/client/hud/app/context";
 import { Portrait } from "@/client/hud/status/portrait";
 import type { ThemeUIStyleObject } from "theme-ui";
-import { Flex, Text, Grid, Icon, Button, Box, MENU_MAX_WIDTH, Menu, MenuHeader } from "@/ui";
+import { Flex, Text, Grid, Box } from "theme-ui";
+import { Icon } from "@/ui/kit/icon";
+import { Button } from "@/ui/kit/button/button";
+import { MENU_MAX_WIDTH, Menu, MenuHeader } from "@/ui/kit/menu";
 import { CLASS_ICON_MAP } from "@/content/icons/class-icons";
-import { arePropsEqualWithKeys } from "@/ui";
+import { arePropsEqualWithKeys } from "@/ui/kit/are-props-equal";
 
 type SocialPlayer = Partial<HudCharacter> | undefined;
 

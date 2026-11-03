@@ -1,8 +1,9 @@
 import type { ReactNode } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
 import type { BuiltItem } from "@/content/items/item-types";
-import { Flex, Menu, MENU_MAX_WIDTH, MenuHeader } from "@/ui/kit";
-import { ItemSlot } from "@/ui/item";
+import { Flex } from "theme-ui";
+import { Menu, MENU_MAX_WIDTH, MenuHeader } from "@/ui/kit/menu";
+import { ItemSlot } from "@/ui/item/item-slot";
 import type { CharacterMenuProps } from "./menu-props";
 
 export interface MenuSlot {

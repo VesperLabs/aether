@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { Box, Flex, Text, isMobile } from "@/ui";
+import { Box, Flex, Text } from "theme-ui";
+import { isMobile } from "@/ui/kit/is-mobile";
 import { MINI_MAP_MARGIN, MINI_MAP_SIZE } from "@/client/views/minimap-size";
 import { useAppContext } from "@/client/hud/app/context";
 import { usePersistSetting } from "@/client/hud/settings/use-persist-setting";

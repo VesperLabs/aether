@@ -1,7 +1,7 @@
 import type { Server, Socket } from "socket.io";
 import type { Socket as ClientSocket } from "socket.io-client";
-import type { ClientToServerEvents } from "./commands";
-import type { ServerToClientEvents } from "./messages";
+import type { ClientToServerEvents } from "@/network/commands";
+import type { ServerToClientEvents } from "@/network/messages";
 
 /** The Socket.IO server, typed with the commands it accepts and the messages it sends. */
 export type GameIo = Server<ClientToServerEvents, ServerToClientEvents>;

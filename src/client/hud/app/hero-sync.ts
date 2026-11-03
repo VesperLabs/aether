@@ -1,7 +1,7 @@
 import React from "react";
-import { theme } from "@/ui";
+import { theme } from "@/ui/kit/theme";
 import { DEFAULT_USER_SETTINGS, type UserSettings } from "@/rules/character";
-import type { ChatMessage, ServerToClientEvents } from "@/network";
+import type { ChatMessage, ServerToClientEvents } from "@/network/messages";
 import type { HudCharacter } from "./context";
 
 interface HeroSyncDeps {

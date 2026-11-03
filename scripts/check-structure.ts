@@ -28,10 +28,6 @@ const LEGACY: Record<Rule, string[]> = {
   "index-logic": [],
   // Files at a folder's top level that belong in a feature folder
   "loose-file": [
-    "src/network/chat-commands.ts",
-    "src/network/index.ts",
-    "src/network/sockets.ts",
-    "src/ui/index.ts",
   ],
   // Folders with more than MAX_FILES source files (tests excluded) that should split by feature
   "big-folder": [
@@ -49,7 +45,6 @@ const LEGACY: Record<Rule, string[]> = {
     "src/client/hud/auth/register-form.tsx",
   ],
   barrel: [
-    "src/network/index.ts",
     "src/network/sync/index.ts",
     "src/rules/buffs/index.ts",
     "src/rules/character/index.ts",
@@ -64,10 +59,6 @@ const LEGACY: Record<Rule, string[]> = {
     "src/rules/stats/index.ts",
     "src/rules/world/index.ts",
     "src/server/persistence/index.ts",
-    "src/ui/character/index.ts",
-    "src/ui/index.ts",
-    "src/ui/item/index.ts",
-    "src/ui/kit/index.ts",
   ],
 };
 

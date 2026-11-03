@@ -1,4 +1,4 @@
-import { DEFAULT_SERVER_FPS } from "@/network";
+import { DEFAULT_SERVER_FPS } from "@/network/sync/timing";
 import { createInterpolator } from "./interpolation";
 
 const serverFps = Number(process.env.SERVER_FPS) || DEFAULT_SERVER_FPS;

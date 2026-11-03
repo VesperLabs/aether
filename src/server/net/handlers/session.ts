@@ -1,6 +1,6 @@
 import type { Player } from "@/server/players/player";
 import { getFullCharacterState } from "@/network/sync";
-import type { ParsedCommand } from "@/network";
+import type { ParsedCommand } from "@/network/commands";
 import type { CommandContext } from "@/server/net/command-context";
 
 export function latency(ctx: CommandContext, ack: ParsedCommand<"latency">) {

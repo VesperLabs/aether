@@ -1,4 +1,6 @@
-import { Button, Flex, Icon, Link as ExternalLink, Text } from "@/ui";
+import { Button } from "@/ui/kit/button/button";
+import { Flex, Link as ExternalLink, Text } from "theme-ui";
+import { Icon } from "@/ui/kit/icon";
 import { MENU_BUTTON, PLAY_BUTTON } from "./menu-bar";
 
 /** Links out of the wiki: into the game and to the Discord. */

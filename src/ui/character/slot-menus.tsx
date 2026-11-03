@@ -2,7 +2,9 @@ import { memo } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
 import type { BuiltItem } from "@/content/items/item-types";
 import { MAX_INVENTORY_ITEMS } from "@/rules/inventory";
-import { arePropsEqualWithKeys, Flex, Icon, Text } from "@/ui/kit";
+import { arePropsEqualWithKeys } from "@/ui/kit/are-props-equal";
+import { Flex, Text } from "theme-ui";
+import { Icon } from "@/ui/kit/icon";
 import type { CharacterMenuProps } from "./menu-props";
 import { SlotMenu, type MenuSlot } from "./slot-menu";
 

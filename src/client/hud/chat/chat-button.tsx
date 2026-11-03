@@ -1,9 +1,11 @@
 import { useRef, useState } from "react";
 import { MenuButton } from "@/client/hud/menu/menu-button";
 import { useAppContext } from "@/client/hud/app/context";
-import { Input, KeyboardKey } from "@/ui";
-import { isMobile, Box } from "@/ui";
-import { getChatCommands } from "@/network";
+import { Input } from "@/ui/kit/input";
+import { KeyboardKey } from "@/ui/kit/keyboard-key";
+import { isMobile } from "@/ui/kit/is-mobile";
+import { Box } from "theme-ui";
+import { getChatCommands } from "@/network/chat/chat-commands";
 import { ChatCommandPopover } from "./chat-command-popover";
 import { getChatSuggestions, type ChatSuggestion } from "./chat-command-match";
 

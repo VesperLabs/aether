@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box } from "@/ui";
+import { Box } from "theme-ui";
 
 /** A rise (regen, heals) glides over about one SP regen tick, so ticks blend into a steady fill. */
 const RISE_TRANSITION = "width .6s linear";

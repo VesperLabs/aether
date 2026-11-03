@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { theme } from "@/ui";
+import { theme } from "@/ui/kit/theme";
 import { MenuHud } from "@/client/hud/menu/menu-hud";
 import { ModalRespawn } from "@/client/hud/status/modal-respawn";
 import { ModalDropAmount } from "@/client/hud/inventory/modal-drop-amount";
@@ -10,7 +10,9 @@ import { ModalSign } from "@/client/hud/menu/modal-sign";
 import { MenuBar } from "@/client/hud/menu/menu-bar";
 import { MusicPlayer } from "@/client/hud/music/music-player";
 import { ModalHome } from "@/client/hud/shop/modal-home";
-import { ThemeUIProvider, Box, useViewportSizeEffect, ZoomProvider } from "@/ui";
+import { ThemeUIProvider, Box } from "theme-ui";
+import { useViewportSizeEffect } from "@/ui/kit/hooks";
+import { ZoomProvider } from "@/ui/kit/zoom";
 import { getHudZoom } from "./hud-zoom";
 import "react-tooltip/dist/react-tooltip.css";
 import type { Theme } from "theme-ui";
@@ -19,7 +21,8 @@ import { VideoFrame } from "@/client/hud/video/video-frame";
 import { ModalSettings } from "@/client/hud/settings/modal-settings";
 import type Phaser from "phaser";
 import type Peer from "peerjs";
-import type { ChatMessage, ClientGameSocket, PartyMessage } from "@/network";
+import type { ChatMessage, PartyMessage } from "@/network/messages";
+import type { ClientGameSocket } from "@/network/socket/game-socket";
 import type { Sign } from "@/client/views/sign";
 import {
   AppContext,

@@ -1,4 +1,4 @@
-import { commands, type CommandName, type ParsedCommand } from "@/network";
+import { commands, type CommandName, type ParsedCommand } from "@/network/commands";
 import type { CommandContext } from "./command-context";
 
 type CommandHandler<K extends CommandName> = (
