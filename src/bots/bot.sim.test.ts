@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { getSelf } from "@/network/session/mirror";
+import { getSelf } from "@/network/session/client-state";
 import { createRng } from "@/rules/world/rng";
 import { createSimServer, nextMessage, type SimServer } from "@/sim/sim-server";
 import { createBot, type Bot } from "./bot";
@@ -36,7 +36,7 @@ describe("bots on a sim server", () => {
   it("a wander bot walks and the server accepts every move", async () => {
     sim = await createSimServer({ seed: 3 });
     const bot = await joinBot(sim, wander, 3);
-    const id = bot.mirror.selfId;
+    const id = bot.clientState.selfId;
     const start = { ...sim.world.players[id]! };
     await run(sim, [bot], 300);
 
@@ -45,22 +45,22 @@ describe("bots on a sim server", () => {
     expect(bot.corrections).toBe(0);
   });
 
-  it("two bots see each other in their mirrors", async () => {
+  it("two bots see each other in their client states", async () => {
     sim = await createSimServer({ seed: 4 });
     const alice = await joinBot(sim, wander, 1);
     const bob = await joinBot(sim, wander, 2);
     await run(sim, [alice, bob], 60);
 
-    const bobOnServer = sim.world.players[bob.mirror.selfId]!;
-    const bobInAlice = alice.mirror.players.get(bob.mirror.selfId);
+    const bobOnServer = sim.world.players[bob.clientState.selfId]!;
+    const bobInAlice = alice.clientState.players.get(bob.clientState.selfId);
     expect(bobInAlice).toBeDefined();
-    expect(alice.mirror.players.has(alice.mirror.selfId)).toBe(true);
-    expect(bob.mirror.players.has(alice.mirror.selfId)).toBe(true);
+    expect(alice.clientState.players.has(alice.clientState.selfId)).toBe(true);
+    expect(bob.clientState.players.has(alice.clientState.selfId)).toBe(true);
     /* Poses lag a tick or two behind the server. */
     expect(Math.hypot(bobInAlice!.x - bobOnServer.x, bobInAlice!.y - bobOnServer.y)).toBeLessThan(
       20,
     );
-    expect(getSelf(alice.mirror)?.socketId).toBe(alice.mirror.selfId);
+    expect(getSelf(alice.clientState)?.socketId).toBe(alice.clientState.selfId);
   });
 
   it("runs 10 game minutes of 5 wander bots in turbo without errors", async () => {
@@ -74,7 +74,7 @@ describe("bots on a sim server", () => {
     expect(sim.log.at("error")).toEqual([]);
     for (const bot of bots) {
       expect(bot.steps).toBeGreaterThan(1000);
-      expect(sim.world.players[bot.mirror.selfId]).toBeDefined();
+      expect(sim.world.players[bot.clientState.selfId]).toBeDefined();
     }
   }, 120_000);
 });

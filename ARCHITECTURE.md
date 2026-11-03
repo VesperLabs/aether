@@ -56,12 +56,12 @@ Rules are **pure and deterministic**: no `Date.now()`, `Math.random()` or global
 
 `commands.ts` holds one zod schema per client→server command; `messages.ts` holds server→client messages; `sync/` holds poses (every position, whole on every tick, safe to lose) and statuses (flags and vitals, sent only when they change). The server never trusts a client value it can compute itself (position, damage, cooldowns).
 
-`session/` is the non-visual half of a client, shared by the browser client and bots: `mirror.ts` (what a player sees, built from messages and sync; every server message is handled or explicitly ignored, checked by the compiler) and hero control and motion (intent → predicted step with tile collision → throttled `playerInput`, time passed in). The client draws the mirror; a bot runs a brain on it. Never reimplement this in an app.
+`session/` is the non-visual half of a client, shared by the browser client and bots: `client-state.ts` (what a player sees, built from messages and sync; every server message is handled or explicitly ignored, checked by the compiler) and hero control and motion (intent → predicted step with tile collision → throttled `playerInput`, time passed in). The client draws the client state; a bot runs a brain on it. Never reimplement this in an app.
 
 ### Apps
 
 - `server/`: `net/` (one generic dispatcher: look up schema, validate, call the feature's `commands.ts`), `auth/`, `persistence/`, `admin/`, `http/`, `config/` (the only reader of env, via `main.ts`), `app/` (`createApp(config, { db, clock, seed, logger })`, listens on any port incl. 0), `log/`, `main.ts`. Server code takes its clock, seed and logger as inputs: no `process.env`, `console` or module-level state outside `main.ts`, so many servers can run in one process.
-- `client/`: `scenes/`, `views/`, `input/`, `net/` (socket, interpolation; feeds the session mirror), `audio/`, `hud/` (React, by feature)
+- `client/`: `scenes/`, `views/`, `input/`, `net/` (socket, interpolation; feeds the session client state), `audio/`, `hud/` (React, by feature)
 - `bots/`: `brains/` (pure `(view, tick, rng) → intents`, one per file), `bot.ts` (a brain driving a session), `main.ts` (bots against a running server, e.g. ambient players live). Bots log in through the normal login with accounts flagged `isBot`; the server never branches gameplay on it.
 - `sim/`: `sim-clock.ts` (manual: the test advances time; turbo: as fast as the CPU allows), `sim-server.ts` (real server in-process, port 0, fake DB, seeded, memory logger), `soak/` (long many-bot runs, on demand), `main.ts` (a local world full of bots)
 

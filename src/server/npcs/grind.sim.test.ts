@@ -24,7 +24,7 @@ describe("a grind bot against the real server", () => {
     const init = nextMessage(socket, "heroInit");
     socket.emit("demoLogin", { charClass: "warrior" });
     await init;
-    const id = bot.mirror.selfId;
+    const id = bot.clientState.selfId;
 
     let damageDealt = 0;
     const kills: string[] = [];
