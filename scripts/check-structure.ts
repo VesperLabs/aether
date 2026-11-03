@@ -14,7 +14,9 @@ type Rule =
   | "tsx-without-jsx"
   | "index-logic"
   | "raw-socket-on"
-  | "barrel";
+  | "barrel"
+  | "loose-file"
+  | "big-folder";
 
 /** Paths (relative to the repo root) that are allowed to break a rule for now. */
 const LEGACY: Record<Rule, string[]> = {
@@ -24,6 +26,42 @@ const LEGACY: Record<Rule, string[]> = {
   "spec-file": [],
   "tsx-without-jsx": [],
   "index-logic": [],
+  // Files at a folder's top level that belong in a feature folder
+  "loose-file": [
+    "src/network/chat-commands.ts",
+    "src/network/index.ts",
+    "src/network/sockets.ts",
+    "src/server/character-buffs.ts",
+    "src/server/character-combat.ts",
+    "src/server/character-stats.ts",
+    "src/server/character.ts",
+    "src/server/loot-adapter.ts",
+    "src/server/npc-behavior-adapter.ts",
+    "src/server/npc-build.ts",
+    "src/server/npc-messages.ts",
+    "src/server/npc-movement.ts",
+    "src/server/npc-windup.test.ts",
+    "src/server/npc-windup.ts",
+    "src/server/npc.ts",
+    "src/server/party-adapter.ts",
+    "src/server/player-quests.ts",
+    "src/server/player.ts",
+    "src/server/spell-adapter.ts",
+    "src/server/spell.ts",
+    "src/server/stealth.ts",
+    "src/ui/index.ts",
+  ],
+  // Folders with more than MAX_FILES source files (tests excluded) that should split by feature
+  "big-folder": [
+    "src/client/views",
+    "src/content/items",
+    "src/rules/inventory",
+    "src/rules/movement",
+    "src/rules/npc-behavior",
+    "src/server",
+    "src/ui/item",
+    "src/ui/kit",
+  ],
   "raw-socket-on": [
     "src/client/hud/app/app-events.ts",
     "src/client/hud/auth/login-form.tsx",
@@ -54,6 +92,21 @@ const LEGACY: Record<Rule, string[]> = {
 
 const ROOTS = ["src", "scripts"];
 const BANNED = new Set(["utils", "helpers", "common", "misc", "lib", "shared"]);
+const MAX_FILES = 12;
+// Top level of src/ and of each app/layer holds only subfolders and these entry points
+const TOP_LEVELS = new Set(
+  ["", "server", "client", "wiki", "content", "network", "rules", "ui"].map((d) =>
+    path.join("src", d),
+  ),
+);
+const ENTRY_POINTS =
+  /^(main\.tsx?|game\.tsx|app\.tsx|index\.html|vite\.config\.ts|style\.css|.*\.d\.ts|CLAUDE\.md)$/;
+// Documented entry points of a single layer
+const LAYER_ENTRY_POINTS = new Set([
+  "src/rules/events.ts",
+  "src/network/commands.ts",
+  "src/network/messages.ts",
+]);
 const KEBAB = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const REEXPORT = /export\s+(type\s+)?(\*(\s+as\s+\w+)?|\{[^}]*\})\s*from\s*["'][^"']+["'];?/g;
 const IMPORT = /import\s+(type\s+)?([^;"']*?\sfrom\s*)?["'][^"']+["'];?/g;
@@ -72,6 +125,9 @@ const report = (rule: Rule, file: string) => {
 };
 
 function check(dir: string) {
+  const files = readdirSync(dir, { withFileTypes: true }).filter((e) => e.isFile());
+  const sources = files.filter((e) => /\.tsx?$/.test(e.name) && !/\.test\./.test(e.name));
+  if (dir.startsWith("src") && sources.length > MAX_FILES) report("big-folder", dir);
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) {
@@ -91,6 +147,13 @@ function checkFolder(full: string, name: string) {
 }
 
 function checkFile(full: string, name: string) {
+  if (
+    TOP_LEVELS.has(path.dirname(full)) &&
+    !ENTRY_POINTS.test(name) &&
+    !LAYER_ENTRY_POINTS.has(full)
+  ) {
+    report("loose-file", full);
+  }
   const [stem, ...ext] = name.split(".");
   if (BANNED.has(stem)) report("banned-name", full);
   if (ext.includes("spec")) report("spec-file", full);
