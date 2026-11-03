@@ -3,7 +3,7 @@ import { getPreviewGrip, resolveAsset } from "@/content";
 import type { LootMessage } from "@/network";
 import type { SceneMain } from "@/client/scenes/main-scene";
 import { tintCanvas } from "@/ui/kit/image-tint";
-import type { LootFlyDetail } from "@/client/window-events";
+import type { LootFlyDetail } from "@/client/bridge/window-events";
 import { deriveElements } from "@/ui/item/weapon-elements";
 import { toTint } from "./tint";
 import { WeaponSprite } from "./weapon-sprite";

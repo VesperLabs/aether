@@ -3,7 +3,7 @@ import { getFullCharacterState } from "@/network/sync";
 import { moveItemCommand } from "@/rules/inventory";
 import type { CommandContext } from "@/server/net/command-context";
 import { findNearbyNpc } from "@/server/net/nearby-keeper";
-import { isInRoom } from "@/server/player-room";
+import { isInRoom } from "@/server/world/player-room";
 
 export function moveItem(ctx: CommandContext, { to, from }: MoveItemCommand = {}) {
   const { world, socket, socketId, io } = ctx;

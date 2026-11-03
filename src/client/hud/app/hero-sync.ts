@@ -1,6 +1,6 @@
 import React from "react";
 import { theme } from "@/ui";
-import { DEFAULT_USER_SETTINGS, type UserSettings } from "@/rules/world";
+import { DEFAULT_USER_SETTINGS, type UserSettings } from "@/rules/character";
 import type { ChatMessage, ServerToClientEvents } from "@/network";
 import type { HudCharacter } from "./context";
 

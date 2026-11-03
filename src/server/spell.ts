@@ -1,5 +1,5 @@
 import type { AbilitySlot } from "@/rules/spells";
-import type { ServerWorld } from "./server-world";
+import type { ServerWorld } from "@/server/world/server-world";
 import { distanceTo } from "@/rules/world";
 import { entitiesInRoom } from "@/rules/world";
 import { LUNGE_HIT_LEAD, getLungeDuration, type Shape } from "@/rules/movement";

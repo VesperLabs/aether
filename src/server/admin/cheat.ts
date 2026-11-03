@@ -1,5 +1,5 @@
 import type { CommandContext } from "@/server/net/command-context";
-import type { PlayerInRoom } from "@/server/player-room";
+import type { PlayerInRoom } from "@/server/world/player-room";
 
 /** Answers only the player who used the cheat, as a status line, never as chat. */
 interface CheatReply {

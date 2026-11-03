@@ -1,6 +1,6 @@
 import type { Npc } from "./npc";
 import type { Player } from "./player";
-import { getRoomIndex } from "./room-index";
+import { getRoomIndex } from "@/server/world/room-index";
 import { hasLineOfSight } from "@/rules/movement";
 import { isNpcAggressive, type NpcBehaviorInput, type NpcPlayerView } from "@/rules/npc-behavior";
 

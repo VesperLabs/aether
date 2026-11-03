@@ -240,7 +240,7 @@
       }
     },
     {
-      "files": ["src/server/game-server.ts", "src/server/http/routes.ts"],
+      "files": ["src/server/world/game-server.ts", "src/server/http/routes.ts"],
       "rules": {
         "no-restricted-properties": "off"
       }

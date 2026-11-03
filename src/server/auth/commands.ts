@@ -1,8 +1,8 @@
 import { getFullCharacterState } from "@/network/sync";
 import { getRoomState } from "@/server/net/room-sync";
 import { areCheatsEnabled } from "@/server/admin/commands";
-import { removePlayer } from "../remove-player";
-import { createPlayer } from "../player-room";
+import { removePlayer } from "@/server/world/remove-player";
+import { createPlayer } from "@/server/world/player-room";
 import { legacyLeaveParty } from "../party-adapter";
 import { createBaseUser } from "../persistence";
 import { shouldPause } from "../net/world-pause";

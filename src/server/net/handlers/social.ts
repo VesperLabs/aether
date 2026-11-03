@@ -9,7 +9,7 @@ import {
 import type { ParsedCommand } from "@/network";
 import type { CommandContext } from "@/server/net/command-context";
 import { findNearbyNpc } from "@/server/net/nearby-keeper";
-import { isInRoom } from "@/server/player-room";
+import { isInRoom } from "@/server/world/player-room";
 
 export function chatNpc(ctx: CommandContext, { npcId }: ParsedCommand<"chatNpc"> = {}) {
   const { world, socket, socketId } = ctx;

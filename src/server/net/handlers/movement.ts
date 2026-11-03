@@ -1,10 +1,10 @@
-import type { ServerWorld } from "../../server-world";
+import type { ServerWorld } from "@/server/world/server-world";
 import type { Player } from "../../player";
 import { PLAYER_DEFAULT_SPAWN } from "../../auth/character-defaults";
 import { decodeWireDirection, getFullCharacterState } from "@/network/sync";
 import { getRoomState } from "@/server/net/room-sync";
 import type { ParsedCommand } from "@/network";
-import { addPlayerToRoom, removePlayerFromRoom } from "../../player-room";
+import { addPlayerToRoom, removePlayerFromRoom } from "@/server/world/player-room";
 import { legacyUpdateMemberRoom } from "../../party-adapter";
 import type { CommandContext } from "@/server/net/command-context";
 import { findNearbyNpc } from "@/server/net/nearby-keeper";
@@ -21,7 +21,7 @@ import {
   startMoveTrack,
   type MoveTrack,
 } from "@/rules/movement";
-import { isInRoom } from "@/server/player-room";
+import { isInRoom } from "@/server/world/player-room";
 import type { GameEventBus } from "@/rules/world";
 
 /** The last accepted position of each player. Server moves (doors, respawn) restart it. */

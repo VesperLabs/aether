@@ -1,12 +1,12 @@
 import type { ServerWorld } from "./server-world";
 import type { Server as HttpServer } from "http";
 import { Server } from "socket.io";
-import type { Database } from "./persistence/database";
+import type { Database } from "@/server/persistence/database";
 import { createTickLoop } from "@/rules/world";
 import { DEFAULT_SERVER_FPS } from "@/network";
 import type { ClientToServerEvents, GameIo, ServerToClientEvents } from "@/network";
 import { createServerWorld } from "./game-world";
-import { listenForConnections } from "./net/connection";
+import { listenForConnections } from "@/server/net/connection";
 import { serverSystems } from "./tick";
 
 const serverFps =

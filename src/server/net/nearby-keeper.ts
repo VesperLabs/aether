@@ -1,5 +1,5 @@
 import { canTalkToNpc } from "@/rules/npc-behavior";
-import type { ServerWorld } from "../server-world";
+import type { ServerWorld } from "@/server/world/server-world";
 
 /**
  * The NPC with this id, if it exists and the player can talk to it right now (same room, in range).

@@ -1,4 +1,4 @@
-import type { ServerWorld } from "./server-world";
+import type { ServerWorld } from "@/server/world/server-world";
 import { Spell, type SpellArgs } from "./spell";
 
 /** Casts a spell in the room. */

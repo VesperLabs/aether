@@ -1,11 +1,11 @@
 import type { Dice } from "@/content";
 import type { GameIo, NetIds } from "@/network";
 import type { Rng, TickLoop, World } from "@/rules/world";
-import type { Npc } from "./npc";
-import type { Database } from "./persistence/database";
-import type { Player } from "./player";
+import type { Npc } from "@/server/npc";
+import type { Database } from "@/server/persistence/database";
+import type { Player } from "@/server/player";
 import type { RoomIndex } from "./room-index";
-import type { Spell } from "./spell";
+import type { Spell } from "@/server/spell";
 
 /** The world the server runs: the shared world state plus the socket server, database and loop. */
 export type ServerWorld = World<Player, Npc, Spell, Loot, Quest> & {

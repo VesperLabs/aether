@@ -1,5 +1,5 @@
 import { ItemBuilder, type CharClass, type Dice } from "@/content";
-import { DEFAULT_USER_SETTINGS } from "@/rules/world";
+import { DEFAULT_USER_SETTINGS } from "@/rules/character";
 import { getBaseCharacterDefaults } from "../auth/character-defaults";
 
 export const createBaseUser = (dice: Dice, charClass?: string | null) => {
