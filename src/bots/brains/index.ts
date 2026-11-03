@@ -1,1 +1,0 @@
-export { wander } from "./wander";
