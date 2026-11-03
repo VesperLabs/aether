@@ -1,4 +1,4 @@
-import { Box } from "@/ui";
+import { Box } from "theme-ui";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { useLayoutEffect, useRef, useState } from "react";
 import { ItemCard, type WikiItem } from "./item-card";

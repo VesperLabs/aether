@@ -1,5 +1,5 @@
 import type { GameEventBus } from "@/rules/world";
-import type { GameIo } from "@/network";
+import type { GameIo } from "@/network/socket/game-socket";
 
 /** Turns NPC game events into the socket messages the clients in that room play back. */
 export function subscribeNpcMessages(bus: GameEventBus, io: GameIo) {

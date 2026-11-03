@@ -1,4 +1,5 @@
-import { ThemeUIProvider, theme, Box, Flex } from "@/ui";
+import { ThemeUIProvider, Box, Flex } from "theme-ui";
+import { theme } from "@/ui/kit/theme";
 import { Theme } from "theme-ui";
 import { Route } from "wouter";
 import { Footer } from "@/wiki/frame/footer";

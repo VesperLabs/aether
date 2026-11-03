@@ -1,7 +1,7 @@
 import { memo, useEffect, useState } from "react";
-import { Box, Donut } from "@/ui";
+import { Box, Donut } from "theme-ui";
 import type { Cooldown } from "@/client/hud/app/context";
-import { arePropsEqualWithKeys } from "@/ui";
+import { arePropsEqualWithKeys } from "@/ui/kit/are-props-equal";
 
 /** Opacity of a skill you can't afford to use, like the chat button away from anyone. */
 export const DISABLED_OPACITY = 0.5;

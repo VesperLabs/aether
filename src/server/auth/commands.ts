@@ -6,7 +6,7 @@ import { createPlayer } from "@/server/world/player-room";
 import { legacyLeaveParty } from "@/server/party/party-adapter";
 import { createBaseUser } from "../persistence";
 import { shouldPause } from "../net/world-pause";
-import type { ParsedCommand } from "@/network";
+import type { ParsedCommand } from "@/network/commands";
 import type { CommandContext } from "@/server/net/command-context";
 import type { UserDocument } from "../persistence";
 import { createLoginToken, isLoginTokenValid, readLoginTokenEmail } from "./login-token";

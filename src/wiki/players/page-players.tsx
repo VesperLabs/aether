@@ -1,4 +1,5 @@
-import { Button, Flex, Grid, Text } from "@/ui";
+import { Button } from "@/ui/kit/button/button";
+import { Flex, Grid, Text } from "theme-ui";
 import { RowTitle } from "@/wiki/frame/row-title";
 import { PlayerCard } from "./player-card";
 import { PlayerPanel } from "./player-panel";
@@ -7,7 +8,7 @@ import { MENU_BUTTON } from "@/wiki/frame/menu-bar";
 import { useLocation } from "wouter";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { fetchPlayers, type PlayersQueryKey } from "@/wiki/api/fetchers";
-import type { FullCharacterWire } from "@/network";
+import type { FullCharacterWire } from "@/network/sync/character-state";
 
 /** A player or keeper as the wiki lists it: what the server sends, or a loading placeholder. */
 export type WikiPlayer = Partial<FullCharacterWire> & {

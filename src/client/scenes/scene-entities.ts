@@ -1,7 +1,8 @@
 import { Player } from "@/client/views/player";
 import type { CharacterArgs } from "@/client/views/character";
 import { LootItem } from "@/client/views/loot-item";
-import type { FullCharacterWire, LootMessage } from "@/network";
+import type { FullCharacterWire } from "@/network/sync/character-state";
+import type { LootMessage } from "@/network/messages";
 import type { SceneMain } from "./main-scene";
 import { rememberNetId } from "@/client/net/net-ids";
 

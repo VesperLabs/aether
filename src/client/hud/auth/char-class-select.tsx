@@ -1,4 +1,5 @@
-import { Flex, Icon, Text } from "@/ui";
+import { Flex, Text } from "theme-ui";
+import { Icon } from "@/ui/kit/icon";
 import { CLASS_ICON_MAP } from "@/content/icons/class-icons";
 import { CharClass } from "@/content/stats/stats";
 

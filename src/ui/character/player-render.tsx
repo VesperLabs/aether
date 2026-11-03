@@ -8,10 +8,10 @@ import {
   FACE_HIDING_ACCESSORIES,
 } from "@/content/items/hiding";
 import { filterVisibleEquipment } from "@/rules/character";
-import { tintCanvas, loadCacheImage } from "@/ui/kit";
+import { tintCanvas, loadCacheImage } from "@/ui/kit/image-tint";
 import { memo, useEffect, useEffectEvent, useRef, type ComponentProps } from "react";
 import type { CSSProperties } from "react";
-import { Box } from "@/ui/kit";
+import { Box } from "theme-ui";
 import weaponAtlas from "../../../public/assets/atlas/weapon.json";
 
 const FULL_CANVAS_SIZE = 160;

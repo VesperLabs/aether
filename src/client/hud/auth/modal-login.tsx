@@ -1,7 +1,12 @@
 import { useState, useCallback } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
-import { Modal, Icon, Box, VersionTag, Toast, Tooltip } from "@/ui";
-import type { ToastMessage } from "@/ui";
+import { Modal } from "@/ui/kit/modal";
+import { Icon } from "@/ui/kit/icon";
+import { Box } from "theme-ui";
+import { VersionTag } from "@/ui/kit/version-tag";
+import { Toast } from "@/ui/kit/toast";
+import { Tooltip } from "@/ui/kit/tooltip";
+import type { ToastMessage } from "@/ui/kit/toast";
 import { useAppContext } from "@/client/hud/app/context";
 import { LoginForm } from "./login-form";
 import { RegisterForm } from "./register-form";

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getChatCommands } from "@/network";
+import { getChatCommands } from "@/network/chat/chat-commands";
 import { getChatSuggestions } from "./chat-command-match";
 
 const commands = getChatCommands(true);

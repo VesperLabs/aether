@@ -7,7 +7,8 @@ import {
   nudgeBodyThroughMap,
 } from "@/rules/movement";
 import { groupByRoom, type Frame, type System } from "@/rules/world";
-import { encodeRoomPoses, takeChangedStatuses } from "@/network";
+import { encodeRoomPoses } from "@/network/sync/poses";
+import { takeChangedStatuses } from "@/network/sync/statuses";
 import { getBuffRoomState } from "@/server/net/room-sync";
 import { updateRoomLoot } from "@/server/loot/loot-adapter";
 import { expireSpells } from "@/server/spells/spell-adapter";

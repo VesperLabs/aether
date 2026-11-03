@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import { DEFAULT_USER_SETTINGS, type UserSettings } from "@/rules/character";
-import type { ClientGameSocket } from "@/network";
+import type { ClientGameSocket } from "@/network/socket/game-socket";
 import type { Player } from "@/client/views/player";
 import { isMobile } from "@/ui/kit/is-mobile";
 import { netInterp } from "@/client/net/scene-interpolation";

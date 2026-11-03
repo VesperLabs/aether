@@ -4,7 +4,8 @@ import { BigPortrait } from "@/client/hud/status/big-portrait";
 import { Slot } from "@/client/hud/inventory/slot";
 import { Quest } from "@/client/hud/quests/quest";
 import { MenuButton } from "@/client/hud/menu/menu-button";
-import { Flex, Text, MENU_MAX_WIDTH, Menu, MenuHeader } from "@/ui";
+import { Flex, Text } from "theme-ui";
+import { MENU_MAX_WIDTH, Menu, MenuHeader } from "@/ui/kit/menu";
 
 export const MenuKeeper = () => {
   const { hero, keeper, tabKeeper, setTabKeeper, setHomeModal } = useAppContext();

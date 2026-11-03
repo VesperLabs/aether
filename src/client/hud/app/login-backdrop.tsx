@@ -1,4 +1,5 @@
-import { Box, Modal } from "@/ui";
+import { Box } from "theme-ui";
+import { Modal } from "@/ui/kit/modal";
 import { ModalLogin } from "@/client/hud/auth/modal-login";
 import { ModalError } from "@/client/hud/menu/modal-error";
 

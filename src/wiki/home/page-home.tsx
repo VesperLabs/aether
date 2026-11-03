@@ -1,4 +1,4 @@
-import { Flex } from "@/ui";
+import { Flex } from "theme-ui";
 import { HomeCards } from "./home-cards";
 
 export function PageHome() {

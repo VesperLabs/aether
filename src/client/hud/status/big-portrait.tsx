@@ -1,5 +1,7 @@
 import type { ThemeUIStyleObject } from "theme-ui";
-import { Box, PlayerRender, theme } from "@/ui";
+import { Box } from "theme-ui";
+import { PlayerRender } from "@/ui/character/player-render";
+import { theme } from "@/ui/kit/theme";
 import type { HudCharacter } from "@/client/hud/app/context";
 
 export function BigPortrait({

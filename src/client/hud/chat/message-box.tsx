@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Flex, Text } from "@/ui";
+import { Flex, Text } from "theme-ui";
 import { useAppContext } from "@/client/hud/app/context";
 import { motion } from "framer-motion";
-import type { ChatMessage } from "@/network";
+import type { ChatMessage } from "@/network/messages";
 
 type MessageProps = {
   data: ChatMessage;

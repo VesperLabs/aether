@@ -1,5 +1,6 @@
 import type { Dice } from "@/content/items/dice";
-import type { GameIo, NetIds } from "@/network";
+import type { GameIo } from "@/network/socket/game-socket";
+import type { NetIds } from "@/network/sync/net-ids";
 import type { Rng, TickLoop, World } from "@/rules/world";
 import type { Npc } from "@/server/npcs/npc";
 import type { Database } from "@/server/persistence/database";

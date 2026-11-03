@@ -1,6 +1,8 @@
 import { itemList } from "@/content/items/item-scaling";
 import { ItemDefinition } from "@/content/items/item-types";
-import { Flex, Icon, Input, Text } from "@/ui";
+import { Flex, Text } from "theme-ui";
+import { Icon } from "@/ui/kit/icon";
+import { Input } from "@/ui/kit/input";
 import { useMemo } from "react";
 import { useSearchParams } from "wouter";
 import { CARD_COLORS } from "@/wiki/cards/card-pool";

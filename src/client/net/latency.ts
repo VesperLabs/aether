@@ -1,4 +1,4 @@
-import type { ClientGameSocket } from "@/network";
+import type { ClientGameSocket } from "@/network/socket/game-socket";
 import { netInterp } from "./scene-interpolation";
 
 const PING_INTERVAL_MS = 2000;

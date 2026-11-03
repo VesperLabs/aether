@@ -1,4 +1,5 @@
-import { Flex, Icon, Text } from "@/ui";
+import { Flex, Text } from "theme-ui";
+import { Icon } from "@/ui/kit/icon";
 import { Link, useLocation } from "wouter";
 import { NAV, TAB_HEIGHT } from "./menu-bar";
 import { PAPER } from "./paper";

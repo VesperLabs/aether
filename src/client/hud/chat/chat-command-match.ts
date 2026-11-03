@@ -1,4 +1,4 @@
-import type { ChatCommand, ChatCommandOption } from "@/network";
+import type { ChatCommand, ChatCommandOption } from "@/network/chat/chat-commands";
 
 /** One row in the chat popover. Picking it replaces the word being typed with `value`. */
 export interface ChatSuggestion extends ChatCommandOption {

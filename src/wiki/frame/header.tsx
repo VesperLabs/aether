@@ -1,4 +1,6 @@
-import { Box, Button, Flex, Icon, Text } from "@/ui";
+import { Box, Flex, Text } from "theme-ui";
+import { Button } from "@/ui/kit/button/button";
+import { Icon } from "@/ui/kit/icon";
 import { Link, useLocation } from "wouter";
 import { MENU_BAR, MENU_BUTTON, NAV } from "./menu-bar";
 import { PlayLinks } from "./play-links";

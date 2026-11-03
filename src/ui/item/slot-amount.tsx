@@ -1,5 +1,5 @@
 import type { ComponentProps } from "react";
-import { Box } from "@/ui/kit";
+import { Box } from "theme-ui";
 
 export const SlotAmount = (props: ComponentProps<typeof Box>) => (
   <Box

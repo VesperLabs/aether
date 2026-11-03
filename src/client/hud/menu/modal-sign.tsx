@@ -1,5 +1,8 @@
 import { useAppContext } from "@/client/hud/app/context";
-import { Modal, KeyboardButton, Icon, Box } from "@/ui";
+import { Modal } from "@/ui/kit/modal";
+import { KeyboardButton } from "@/ui/kit/keyboard-button";
+import { Icon } from "@/ui/kit/icon";
+import { Box } from "theme-ui";
 
 export const ModalSign: React.FC = () => {
   const { sign, setSign, zoom, bottomOffset } = useAppContext();

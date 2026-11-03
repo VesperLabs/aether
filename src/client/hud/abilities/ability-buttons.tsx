@@ -3,16 +3,16 @@ import { BuiltItem } from "@/content/items/item-types";
 import { SpellDefinition } from "@/content/spells/spell-types";
 import type { Cooldown, HudCharacter } from "@/client/hud/app/context";
 import { CONSUMABLES_BASES, POTION_BASES } from "@/rules/inventory";
-import { applyTintToImage, loadCacheImage } from "@/ui";
-import { arePropsEqualWithKeys } from "@/ui";
-import { isMobile } from "@/ui";
+import { applyTintToImage, loadCacheImage } from "@/ui/kit/image-tint";
+import { arePropsEqualWithKeys } from "@/ui/kit/are-props-equal";
+import { isMobile } from "@/ui/kit/is-mobile";
 import { CooldownTimer, getLatestCooldown } from "./cooldown-timer";
-import { ItemTooltip } from "@/ui";
+import { ItemTooltip } from "@/ui/item/item-tooltip";
 import { SkillButton } from "./skill-button";
 import type { ResourceCosts } from "./cost-badge";
 import { canAffordCosts, getAbilityCosts } from "@/rules/combat";
 import { useNextAttackSpCost } from "./use-next-attack-sp-cost";
-import { Box, Flex, Text } from "@/ui";
+import { Box, Flex, Text } from "theme-ui";
 import React, { memo, useEffect, useState } from "react";
 
 /** An entry of the hero's `abilities`: a spell or an item on the action bar. */

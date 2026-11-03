@@ -1,14 +1,8 @@
-import {
-  Box,
-  Flex,
-  KeyboardKey,
-  Menu,
-  MenuAbilities,
-  MenuBag,
-  MenuEquipment,
-  MenuInventory,
-  MenuStats,
-} from "@/ui";
+import { Box, Flex } from "theme-ui";
+import { KeyboardKey } from "@/ui/kit/keyboard-key";
+import { Menu } from "@/ui/kit/menu";
+import { MenuAbilities, MenuBag, MenuEquipment, MenuInventory } from "@/ui/character/slot-menus";
+import { MenuStats } from "@/ui/character/menu-stats";
 import { HUD_SLOT_EVENTS } from "@/client/hud/inventory/slot";
 import { LOOT_TARGET_ID } from "@/client/hud/inventory/flying-loot";
 import { AbilityButtons } from "@/client/hud/abilities/ability-buttons";

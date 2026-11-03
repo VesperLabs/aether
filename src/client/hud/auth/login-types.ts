@@ -1,4 +1,4 @@
-import type { ToastKind } from "@/ui";
+import type { ToastKind } from "@/ui/kit/toast";
 
 /** The `formSuccess` message from the server. */
 export type FormSuccess = { success: string; email?: string };
