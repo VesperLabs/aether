@@ -38,7 +38,18 @@ export const TextDivider = ({
   sx?: ThemeUIStyleObject;
   color?: string;
 }) => (
-  <Flex sx={{ alignItems: "center", gap: 2, py: 2, width: "100%", color, ...sx }}>
+  <Flex
+    sx={{
+      alignItems: "center",
+      gap: 2,
+      py: 2,
+      width: "100%",
+      color,
+      /* Leading a panel, the panel's own padding is space enough. */
+      "&:first-child": { pt: 0 },
+      ...sx,
+    }}
+  >
     <Box aria-hidden sx={LINE_STYLE} />
     <Diamond />
     {children != null && (

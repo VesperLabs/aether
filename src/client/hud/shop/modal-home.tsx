@@ -9,7 +9,7 @@ export const ModalHome = () => {
       <Modal.Overlay sx={{ backgroundColor: "shadow.50" }} />
       <Modal zoom={zoom} bottomOffset={bottomOffset}>
         <Modal.Header sx={{ paddingLeft: 34 }}>
-          <Icon icon={icon} size={42} sx={{ position: "absolute", left: 0 }} />
+          <Icon icon={icon} size={42} sx={{ position: "absolute", left: -8 }} />
           Please confirm
         </Modal.Header>
         <Modal.Body>

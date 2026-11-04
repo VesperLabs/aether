@@ -1,6 +1,5 @@
 import { useState, useCallback } from "react";
-import type { ThemeUIStyleObject } from "theme-ui";
-import { Modal, Icon, Box, VersionTag, Toast, Tooltip } from "@/ui";
+import { Modal, Icon, Box, Flex, Grid, VersionTag, Toast, Tooltip } from "@/ui";
 import type { ToastMessage } from "@/ui";
 import { useAppContext } from "@/client/hud/app/context";
 import { LoginForm } from "./login-form";
@@ -8,51 +7,71 @@ import { RegisterForm } from "./register-form";
 import { DemoForm } from "./demo-form";
 import type { FormSuccess, Notify } from "./login-types";
 
-const accordionEase = "cubic-bezier(0.33, 1, 0.68, 1)";
-const accordionDuration = "0.3s";
+type LoginTab = "login" | "register" | "demo";
 
-/** Single open panel; collapsed rows use 0fr height (see TabPanel). */
-const TabPanel = ({ open, children }: { open: boolean; children: React.ReactNode }) => (
+/* All stacked in one cell, so the modal takes the tallest form's size whichever is showing, and
+   stay mounted, so switching tabs keeps what was typed. The button sits flush with the bottom. Forms
+   with a class selector keep it at the top; `centered` is for one without. */
+const TabPanel = ({
+  open,
+  flush,
+  centered = false,
+  children,
+}: {
+  open: boolean;
+  flush: boolean;
+  centered?: boolean;
+  children: React.ReactNode;
+}) => (
   <Box
+    aria-hidden={!open}
     sx={{
-      display: "grid",
-      gridTemplateRows: open ? "1fr" : "0fr",
-      transition: `grid-template-rows ${accordionDuration} ${accordionEase}`,
-      "@media (prefers-reduced-motion: reduce)": {
-        transition: "none",
+      gridArea: "1 / 1",
+      display: "flex",
+      visibility: open ? "visible" : "hidden",
+      "& > .modal-body": {
+        flex: 1,
+        borderRadius: Modal.tabPanelRadius(flush),
       },
+      "& > .modal-body > *": { flex: "none" },
+      "& > .modal-body > :last-child": { mt: "auto" },
+      ...(centered && { "& > .modal-body > :first-child": { mt: "auto" } }),
     }}
   >
-    <Box
-      sx={{
-        minHeight: 0,
-        overflow: "hidden",
-        pointerEvents: open ? "auto" : "none",
-        opacity: open ? 1 : 0,
-        transition: `opacity ${accordionDuration} ${accordionEase}`,
-        "@media (prefers-reduced-motion: reduce)": {
-          transition: "none",
-        },
-      }}
-      aria-hidden={!open}
-    >
-      {children}
-    </Box>
+    {children}
   </Box>
 );
 
-const IconPen = ({ sx }: { sx?: ThemeUIStyleObject }) => (
-  <Icon
-    size={22}
-    icon={`./assets/icons/pen.png`}
+const ICON_SIZE = 22;
+const ICON_MOTION = ".2s ease all";
+
+/* The book opens up on the active tab, and the feather pops onto it. */
+const TabIcon = ({ active }: { active: boolean }) => (
+  <Box
     sx={{
-      position: "absolute",
-      mt: "-27px",
-      ml: "-12px",
-      transition: ".2s ease all",
-      ...sx,
+      position: "relative",
+      width: active ? ICON_SIZE : 0,
+      height: ICON_SIZE,
+      transition: ICON_MOTION,
     }}
-  />
+  >
+    <Icon
+      size={ICON_SIZE}
+      icon={`./assets/icons/book.png`}
+      sx={{ transform: active ? "scale(1)" : "scale(0)", transition: ICON_MOTION }}
+    />
+    <Icon
+      size={ICON_SIZE}
+      icon={`./assets/icons/pen.png`}
+      sx={{
+        position: "absolute",
+        top: "-13.5px",
+        left: "-12px",
+        transform: active ? "scale(1)" : "scale(0)",
+        transition: ICON_MOTION,
+      }}
+    />
+  </Box>
 );
 
 export const ModalLogin = () => {
@@ -61,7 +80,7 @@ export const ModalLogin = () => {
   /* Demo logins are for development only; the server refuses them in production */
   const canDemo = import.meta.env.DEV;
   const [defaultEmail, setDefaultEmail] = useState(storedEmail);
-  const [activeTab, setActiveTab] = useState(storedEmail || !canDemo ? "login" : "demo");
+  const [activeTab, setActiveTab] = useState<LoginTab>(storedEmail || !canDemo ? "login" : "demo");
 
   const isLogin = activeTab === "login";
   const isRegister = activeTab === "register";
@@ -83,54 +102,52 @@ export const ModalLogin = () => {
       bottomOffset={bottomOffset}
       as="form"
       onSubmit={(e) => e.preventDefault()}
-      sx={{ width: 220 }}
+      sx={{ width: 244 }}
     >
       <Tooltip id="login" />
       <Toast toast={toast} onDismiss={dismissToast} zoom={zoom} />
       <VersionTag />
-      <Modal.Header
-        sx={{ cursor: "pointer", opacity: isLogin ? 1 : 0.25 }}
-        onClick={() => setActiveTab("login")}
-      >
-        <IconPen sx={{ transform: isLogin ? "scale(1)" : "scale(0)" }} />
-        <Icon size={22} icon={`./assets/icons/book.png`} />
-        Login
-      </Modal.Header>
-      <TabPanel open={isLogin}>
-        {/* Keyed by email, so a new account's email and remembered login fill the form */}
-        <LoginForm
-          key={defaultEmail}
-          defaultEmail={defaultEmail}
-          isActive={isLogin}
-          notify={notify}
-        />
-      </TabPanel>
-      <Modal.Header
-        sx={{ cursor: "pointer", opacity: isRegister ? 1 : 0.25 }}
-        onClick={() => setActiveTab("register")}
-      >
-        <IconPen sx={{ transform: isRegister ? "scale(1)" : "scale(0)" }} />
-        <Icon size={22} icon={`./assets/icons/book.png`} />
-        Register
-      </Modal.Header>
-      <TabPanel open={isRegister}>
-        <RegisterForm onRegisterSuccess={onRegisterSuccess} isActive={isRegister} notify={notify} />
-      </TabPanel>
-      {canDemo && (
-        <>
-          <Modal.Header
-            sx={{ cursor: "pointer", opacity: isDemo ? 1 : 0.25 }}
-            onClick={() => setActiveTab("demo")}
-          >
-            <IconPen sx={{ transform: isDemo ? "scale(1)" : "scale(0)" }} />
-            <Icon size={22} icon={`./assets/icons/book.png`} />
-            Try Demo
-          </Modal.Header>
-          <TabPanel open={isDemo}>
-            <DemoForm />
+      <Flex sx={{ flexDirection: "column" }}>
+        <Flex role="tablist">
+          <Modal.Tab active={isLogin} onClick={() => setActiveTab("login")}>
+            <TabIcon active={isLogin} />
+            Login
+          </Modal.Tab>
+          <Modal.Tab active={isRegister} onClick={() => setActiveTab("register")}>
+            <TabIcon active={isRegister} />
+            Register
+          </Modal.Tab>
+          {canDemo && (
+            <Modal.Tab active={isDemo} onClick={() => setActiveTab("demo")}>
+              <TabIcon active={isDemo} />
+              Demo
+            </Modal.Tab>
+          )}
+        </Flex>
+        <Grid sx={{ gap: 0 }}>
+          <TabPanel open={isLogin} flush={isLogin} centered>
+            {/* Keyed by email, so a new account's email and remembered login fill the form */}
+            <LoginForm
+              key={defaultEmail}
+              defaultEmail={defaultEmail}
+              isActive={isLogin}
+              notify={notify}
+            />
           </TabPanel>
-        </>
-      )}
+          <TabPanel open={isRegister} flush={isLogin}>
+            <RegisterForm
+              onRegisterSuccess={onRegisterSuccess}
+              isActive={isRegister}
+              notify={notify}
+            />
+          </TabPanel>
+          {canDemo && (
+            <TabPanel open={isDemo} flush={isLogin}>
+              <DemoForm />
+            </TabPanel>
+          )}
+        </Grid>
+      </Flex>
     </Modal>
   );
 };

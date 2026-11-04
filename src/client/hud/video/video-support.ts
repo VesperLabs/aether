@@ -17,7 +17,7 @@ function isVideoChatEnvironmentSupported(): boolean {
 /**
  * iOS forces all browsers to use WebKit. Chrome/Firefox/Edge on iOS are shells (CriOS, FxiOS, …)
  * and historically had weaker or flaky camera + WebRTC vs Safari; many users still see failures.
- * We disable the feature there and show "supported browsers only" unless we add a dedicated iOS WK fix.
+ * We disable the feature there and show an "Unsupported" pill on the setting unless we add a dedicated iOS WK fix.
  */
 function isIOSNonSafariBrowser(): boolean {
   if (typeof navigator === "undefined") return false;
