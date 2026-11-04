@@ -144,7 +144,7 @@ export const ModalLogin = () => {
           </TabPanel>
           {canDemo && (
             <TabPanel open={isDemo} flush={isLogin}>
-              <DemoForm />
+              <DemoForm isActive={isDemo} />
             </TabPanel>
           )}
         </Grid>
