@@ -6,6 +6,7 @@ import { useAppContext } from "@/client/hud/app/context";
 import { usePersistSetting } from "@/client/hud/settings/use-persist-setting";
 import type { SceneMain } from "@/client/scenes/main-scene";
 import { DISC_SIZE, DiscButton, GLASS_PILL } from "@/client/hud/app/glass-disc";
+import { MarqueeText } from "./marquee-text";
 
 interface NowPlaying {
   name: string;
@@ -158,7 +159,7 @@ export const MusicPlayer = () => {
         gap: 2,
         ...GLASS_PILL,
         fontSize: 0,
-        maxWidth: expanded ? 220 : DISC_SIZE,
+        maxWidth: expanded ? 190 : DISC_SIZE,
         overflow: "hidden",
         transition: "max-width 0.25s ease, padding 0.25s ease",
         "@keyframes music-eq": {
@@ -182,30 +183,28 @@ export const MusicPlayer = () => {
         sx={{
           flexDirection: "column",
           gap: "4px",
-          width: 150,
+          width: 120,
           flexShrink: 0,
           opacity: expanded ? 1 : 0,
           transition: "opacity 0.2s ease",
         }}
       >
         <Flex sx={{ alignItems: "baseline", gap: 2, lineHeight: 1, color: "white" }}>
-          <Text
+          <MarqueeText
+            text={playMusic ? (nowPlaying?.name ?? "No music here") : "Music off"}
+            trailing={
+              current && current.duration > 0
+                ? `${formatTime(current.seek)} / ${formatTime(current.duration)}`
+                : undefined
+            }
+            running={expanded}
             sx={{
               flex: 1,
               minWidth: 0,
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
+              fontSize: "9px",
               opacity: playMusic ? 1 : 0.6,
             }}
-          >
-            {playMusic ? (nowPlaying?.name ?? "No music here") : "Music off"}
-          </Text>
-          {current && current.duration > 0 && (
-            <Text sx={{ fontSize: "9px", opacity: 0.7, fontVariantNumeric: "tabular-nums" }}>
-              {formatTime(current.seek)} / {formatTime(current.duration)}
-            </Text>
-          )}
+          />
         </Flex>
         <Flex sx={{ alignItems: "center", gap: "6px", opacity: playMusic ? 1 : 0.5 }}>
           <VolumeIcon muted={musicVolume === 0} />

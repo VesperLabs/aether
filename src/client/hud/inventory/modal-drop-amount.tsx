@@ -64,9 +64,9 @@ export const ModalDropAmount = () => {
   return (
     <Modal zoom={zoom} bottomOffset={bottomOffset}>
       <Modal.Header>
-        {isConfirm && <Text>Confirm</Text>}
-        {isBuying && <Text>Buy</Text>}
-        {isSelling && <Text>Sell</Text>}
+        {isConfirm && "Confirm"}
+        {isBuying && "Buy"}
+        {isSelling && "Sell"}
       </Modal.Header>
       <Modal.Body
         sx={{

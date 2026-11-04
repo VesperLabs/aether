@@ -24,7 +24,10 @@ const fadeTo = (
   onComplete?: () => void,
 ) => {
   scene.tweens.killTweensOf(sound);
-  scene.tweens.add({ targets: sound, volume, duration, onComplete });
+  /* Not sound.volume: it reads the gain node, which stays at 1 until the audio thread catches up. */
+  const { currentConfig } = sound as unknown as { currentConfig: Phaser.Types.Sound.SoundConfig };
+  const from = currentConfig.volume ?? 0;
+  scene.tweens.add({ targets: sound, volume: { from, to: volume }, duration, onComplete });
 };
 
 export function setMusicVolume(scene: SceneMain, sliderValue: number) {

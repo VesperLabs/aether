@@ -85,6 +85,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           onMouseDown: handleMouseDown,
         })}
         {...props}
+        /* Not in the theme's wood variant: panels use that too, and their text varies. */
+        sx={props.variant === "wood" ? { fontSize: 1, ...props.sx } : props.sx}
       />
     );
   },

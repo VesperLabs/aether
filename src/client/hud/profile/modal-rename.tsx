@@ -42,7 +42,7 @@ export const ModalRename = ({ userName, onClose }: { userName: string; onClose: 
           >
             <Input
               autoFocus
-              sx={{ width: 200, fontSize: 4 }}
+              sx={{ width: 200 }}
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
