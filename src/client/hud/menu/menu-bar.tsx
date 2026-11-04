@@ -124,6 +124,8 @@ export const MenuBar = () => {
         sx={{
           /* iOS only scrolls a box that takes touches itself, so this can't be "none" */
           pointerEvents: "all",
+          /* Swipes scroll the stack; no pinch or double-tap zooming the page */
+          touchAction: "pan-y",
           flex: "0 1 auto",
           minHeight: 0,
           display: "flex",
