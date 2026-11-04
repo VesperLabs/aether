@@ -27,7 +27,9 @@ export const Bar = ({
   sx,
   ...props
 }: BarProps) => {
-  const value = Math.round((min / max) * 100);
+  /* A party member on another map has no stats; NaN would never equal itself and loop the render */
+  const ratio = max > 0 ? min / max : 0;
+  const value = Number.isFinite(ratio) ? Math.round(ratio * 100) : 0;
   const percent = value + "%";
   /* The ghost drains after a beat when the value drops, and rises together with the bar */
   const [lastValue, setLastValue] = useState(value);
