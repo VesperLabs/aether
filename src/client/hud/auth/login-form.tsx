@@ -133,7 +133,8 @@ export const LoginForm = ({
       />
       <KeyboardButton
         sx={{ flex: 1 }}
-        disabled={isLoading}
+        /* Hidden tabs stay mounted, and ENTER presses every enabled button on the page */
+        disabled={isLoading || !isActive}
         onClick={() => handleLogin()}
         keyboardKey="ENTER"
       >

@@ -77,6 +77,8 @@ export const RegisterForm = ({
       <RememberRow reserveOnly />
       <KeyboardButton
         sx={{ flex: 1 }}
+        /* Hidden tabs stay mounted, and ENTER presses every enabled button on the page */
+        disabled={!isActive}
         onClick={() =>
           socket.emit("register", { email, password, charClass, gender, remember: getRememberMe() })
         }
