@@ -5,6 +5,7 @@ import {
   type CharacterStatus,
   type FullCharacterWire,
 } from "@/network/sync";
+import { hideWorld, revealWorldWhenSettled } from "@/client/scenes/world-reveal";
 import { netInterp } from "@/client/net/scene-interpolation";
 import { recordPoseArrival, resetPoseArrivals } from "@/client/net/net-stats";
 import { idOfNetId } from "@/client/net/net-ids";
@@ -84,11 +85,12 @@ export function bindSceneSocket(scene: SceneMain) {
     if (scene.hero) scene.hero.party = party;
   });
 
-  socket.on("heroInit", (args, { isRespawn } = {}) => {
+  socket.on("heroInit", (args, { isRespawn, isLogin } = {}) => {
     const { socketId, players = [], npcs = [], loots = [] } = args ?? {};
     if (args && Object.prototype.hasOwnProperty.call(args, "userSettings")) {
       scene.userSettings = { ...DEFAULT_USER_SETTINGS, ...args.userSettings };
     }
+    if (isLogin) hideWorld(scene);
     /* Delete everything in the scene */
     resetEntities(scene);
     netInterp.reset();
@@ -120,6 +122,7 @@ export function bindSceneSocket(scene: SceneMain) {
     initPlayerCollision(scene, scene.hero, [collideLayer]);
     initCamera(scene, scene.hero);
     if (isRespawn) playSpawnDissolve(scene.hero);
+    if (isLogin) revealWorldWhenSettled(scene);
   });
 
   socket.on("playerJoin", (user, { lastTeleport, isRespawn } = {}) => {

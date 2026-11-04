@@ -70,6 +70,7 @@ export const PlayerSearch = ({ players }: { players: HudCharacter[] }) => {
             gap: "2px",
             maxHeight: isMobile ? "40vh" : 280,
             overflowY: "auto",
+            overflowX: "hidden",
             p: 1,
             cursor: "default",
           }}
