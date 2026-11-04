@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.1](https://github.com/VesperLabs/aether/compare/v0.10.0...v0.10.1) (2026-11-04)
+
+
+### Bug Fixes
+
+* peerjs websocket connects again behind the proxy ([#218](https://github.com/VesperLabs/aether/issues/218)) ([967ded9](https://github.com/VesperLabs/aether/commit/967ded9a07f7bae10308c3c7c5d354d1efe97421))
+
 ## [0.10.0](https://github.com/VesperLabs/aether/compare/v0.9.1...v0.10.0) (2026-11-04)
 
 
