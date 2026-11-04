@@ -1,9 +1,7 @@
 import { useState } from "react";
-import { Modal, KeyboardButton, Text } from "@/ui";
+import { CharClassSelect, Modal, KeyboardButton, RememberRow, Text } from "@/ui";
 import { useAppContext } from "@/client/hud/app/context";
 import type { CharClass } from "@/content";
-import { CharClassSelect } from "./char-class-select";
-import { RememberRow } from "./remember-row";
 
 export const DemoForm = ({ isActive }: { isActive: boolean }) => {
   const { socket } = useAppContext();

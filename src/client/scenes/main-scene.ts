@@ -7,6 +7,7 @@ import { netInterp } from "@/client/net/scene-interpolation";
 import { applyPose } from "@/client/net/apply-pose";
 import { easeHeroCorrection } from "@/client/net/position-correction";
 import { bindSceneSocket } from "@/client/net/scene-socket";
+import { takePlayTicket } from "@/client/net/play-ticket";
 import { changeMusic, setMusicVolume } from "@/client/audio/music";
 import { getPlayer, getNpc, getNpcs, getPlayers } from "./scene-entities";
 import { enableDoors, initCamera } from "./main-map";
@@ -55,6 +56,9 @@ export class SceneMain extends Phaser.Scene {
     }
 
     bindSceneSocket(scene);
+    /* Logged in on the wiki. Only now: `heroInit` before the scene listens would never draw it */
+    const ticket = takePlayTicket();
+    if (ticket) scene.socket.emit("ticketLogin", { ticket });
 
     const onVideoChatStreamReady = () => {
       for (const { peerId, socketId } of scene.nearbyRemotePlayers ?? []) {

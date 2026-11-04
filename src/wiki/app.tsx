@@ -45,6 +45,8 @@ export const App = () => {
               zIndex: 1,
               flexDirection: "column",
               minHeight: "100dvh",
+              /* The full-width card row counts the scrollbar in 100vw; don't scroll sideways for it. */
+              overflowX: "clip",
               /* On phones, room at the bottom for the fixed tab bar. */
               pb: [TAB_HEIGHT, 0],
               boxSizing: "border-box",
@@ -61,11 +63,13 @@ export const App = () => {
                 maxWidth: 1100,
                 mx: "auto",
                 boxSizing: "border-box",
+                /* Fills the screen, so the home page can spread out over its height. */
+                flex: 1,
               }}
             >
               <Metrics />
               <Header />
-              <Box>
+              <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
                 <Route path="/" component={PageHome} />
                 <Route path="/items" component={PageItems} />
                 <Route path="/monsters" component={PageNasties} />

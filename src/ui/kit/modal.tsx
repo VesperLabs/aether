@@ -1,6 +1,7 @@
 import type { ComponentProps } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
 import { Box, Flex } from "theme-ui";
+import { getModalScale } from "./hud-scale";
 import { GILDED_CORNERS } from "./modal-gilding";
 import { MODAL_ATTR } from "./shake-modal";
 
@@ -22,7 +23,7 @@ const ModalRoot = ({ sx, zoom = 1, bottomOffset = 0, ...props }: ModalProps) => 
         top: `50%`,
         marginTop: -bottomOffset / 2,
         pointerEvents: "all",
-        transform: `translate(-50%, -50%) scale(${Math.max(1, Number(zoom))})`,
+        transform: `translate(-50%, -50%) scale(${getModalScale(zoom)})`,
         transformOrigin: "center center",
         cursor: "default",
         ...GILDED_CORNERS,

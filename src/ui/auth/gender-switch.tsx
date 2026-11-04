@@ -1,4 +1,4 @@
-import { Box, Flex } from "@/ui";
+import { Box, Flex } from "@/ui/kit";
 
 export type Gender = "male" | "female";
 

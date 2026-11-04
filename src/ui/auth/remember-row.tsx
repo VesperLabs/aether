@@ -1,4 +1,4 @@
-import { Box, Switch } from "@/ui";
+import { Box, Switch } from "@/ui/kit";
 
 /** The "Remember me" row. `reserveOnly` keeps its space, so the tabs without it line up. */
 export const RememberRow = ({

@@ -1,9 +1,11 @@
 import { Flex } from "@/ui";
 import { HomeCards } from "./home-cards";
+import { WikiLogin } from "./wiki-login";
 
 export function PageHome() {
   return (
-    <Flex sx={{ gap: 3, flexDirection: "column", mb: 5 }}>
+    <Flex sx={{ flex: 1, flexDirection: "column" }}>
+      <WikiLogin />
       <HomeCards />
     </Flex>
   );

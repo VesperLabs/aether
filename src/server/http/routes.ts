@@ -5,6 +5,7 @@ import type { GameServer } from "../game-server";
 import { applyCalculatedStats } from "../character-stats";
 import { getFullCharacterState } from "@/network/sync";
 import { registerCharacterLookup } from "./character-lookup";
+import { registerAuthRoutes } from "./auth-routes";
 import { paginate, parsePageQuery } from "./pagination";
 
 /** Query string values as the client sent them; `pagination.ts` turns them into numbers. */
@@ -26,6 +27,7 @@ export function registerRoutes(app: Express, { aetherServer, db }: RouteDeps) {
   // });
 
   registerCharacterLookup(app, db, () => aetherServer.world.now());
+  registerAuthRoutes(app, db, () => aetherServer.world.now());
 
   app.get("/keepers/all", async (req, res) => {
     const world = aetherServer.world;

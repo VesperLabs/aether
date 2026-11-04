@@ -35,18 +35,9 @@ const profileStep = z.number().optional();
 export const commands = {
   /* Auth */
   demoLogin: z.object({ charClass: z.string().nullish() }).optional(),
-  login: z.object({ email: text, password: text, remember: z.boolean().optional() }).optional(),
-  /** Log back in with the token from `loginToken` ("Remember me"). */
-  tokenLogin: z.object({ token: z.string() }),
-  register: z
-    .object({
-      email: text,
-      password: text,
-      charClass: text,
-      gender: z.enum(["male", "female"]).optional(),
-      remember: z.boolean().optional(),
-    })
-    .optional(),
+  login: z.object({ email: text, password: text }).optional(),
+  /** Log in with the one-time ticket from logging in on the wiki. */
+  ticketLogin: z.object({ ticket: z.string() }),
   /** Watch a room without a character, from behind the login screen. */
   observe: z.object({ roomName: z.string() }),
   /** The payload is an acknowledgement callback, which the server calls right away. */

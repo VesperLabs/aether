@@ -69,6 +69,13 @@ describe("player chat commands", () => {
     expect((await send(socket, "/roll 6")).message).toMatch(/^Actor rolls [1-6] \(1-6\)$/);
   });
 
+  it("/logout tells the client to forget its login", async () => {
+    const { socket } = await joinAs("Leaver");
+    const loggedOut = once(socket, "loggedOut");
+    socket.emit("message", { message: "/logout" });
+    await loggedOut;
+  });
+
   it("links only the sender's own items, sent through whispers too", async () => {
     const ann = await joinAs("Linker");
     const bob = await joinAs("Friend");

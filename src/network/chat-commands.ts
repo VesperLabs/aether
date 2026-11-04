@@ -133,6 +133,7 @@ const PLAYER_COMMANDS: readonly ChatCommand[] = [
     description: "Leave your party",
     cheat: false,
   },
+  { name: "logout", description: "Leave the game and forget this login", cheat: false },
   {
     name: "roll",
     args: [optional(numArg("max"))],

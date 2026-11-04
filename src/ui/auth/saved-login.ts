@@ -3,7 +3,7 @@
  * Management API). The password never touches localStorage. Browsers without
  * the API (Safari, Firefox) still offer to save via the form's autocomplete.
  */
-import { useEffect, useEffectEvent, useRef } from "react";
+import { useEffect, useEffectEvent } from "react";
 
 type SavedLogin = { email: string; password: string };
 
@@ -33,13 +33,8 @@ const storeSavedLogin = ({ email, password }: SavedLogin) => {
   navigator.credentials.store(new PasswordCredential({ id: email, password })).catch(() => {});
 };
 
-/**
- * Fills the form from a saved login on mount. The form reports the login in
- * flight with `attempt` and clears it with `fail`; the login modal unmounts
- * only after a successful login, so whatever is pending then gets saved.
- */
+/** Fills the form from a saved login on mount. Returns what saves a login that worked. */
 export const useSavedLogin = (onLoad: (saved: SavedLogin) => void) => {
-  const pendingLogin = useRef<SavedLogin | null>(null);
   const onLoadEvent = useEffectEvent(onLoad);
 
   useEffect(() => {
@@ -49,16 +44,8 @@ export const useSavedLogin = (onLoad: (saved: SavedLogin) => void) => {
     });
     return () => {
       cancelled = true;
-      if (pendingLogin.current) storeSavedLogin(pendingLogin.current);
     };
   }, []);
 
-  return {
-    attempt: (login: SavedLogin) => {
-      pendingLogin.current = login;
-    },
-    fail: () => {
-      pendingLogin.current = null;
-    },
-  };
+  return storeSavedLogin;
 };

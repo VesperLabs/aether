@@ -26,6 +26,10 @@ export default ({ mode, command }: ConfigEnv) => {
   if (env.METERED_APP_NAME) settings.push("METERED=set");
   console.log(`🛠 ${settings.join("  ")}`);
 
+  /** The wiki is its own site: the live dev server, or wherever it is hosted. */
+  const wikiUrl =
+    command === "serve" ? "http://localhost:5173" : env.WIKI_URL || "https://aether.onrender.com";
+
   return defineConfig({
     root: import.meta.dirname,
     /* Separate dep caches: the client and wiki dev servers run side by side and would invalidate a shared one. */
@@ -50,6 +54,7 @@ export default ({ mode, command }: ConfigEnv) => {
       "process.env.SERVER_FPS": JSON.stringify(env.SERVER_FPS ?? String(DEFAULT_SERVER_FPS)),
       "process.env.SERVER_URL": pageHostUrl(env.SERVER_URL ?? "", command),
       __APP_VERSION__: JSON.stringify(getAppVersion(repoRoot)),
+      "process.env.WIKI_URL": pageHostUrl(wikiUrl, command),
       "process.env.ASSETS_URL": pageHostUrl(env.ASSETS_URL ?? "", command),
       "process.env.PEER_CLIENT_PORT": JSON.stringify(env.PEER_CLIENT_PORT ?? ""),
       "process.env.PEER_CLIENT_PATH": JSON.stringify(env.PEER_CLIENT_PATH ?? ""),

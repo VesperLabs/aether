@@ -12,6 +12,7 @@ export { Tooltip, TooltipContent } from "./tooltip";
 export { Label } from "./label";
 export { TextDivider } from "./text-divider";
 export { ZoomProvider } from "./zoom";
+export { getHudZoomFor, getLoginScale } from "./hud-scale";
 export { Portal } from "./portal";
 export { VersionTag } from "./version-tag";
 export { shakeModal } from "./shake-modal";

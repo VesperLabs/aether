@@ -1,4 +1,4 @@
-import { Flex, Icon, Text } from "@/ui";
+import { Flex, Icon, Text } from "@/ui/kit";
 import { CLASS_ICON_MAP, type CharClass } from "@/content";
 
 /** Lets the login panels find the selector and keep it at the top. */

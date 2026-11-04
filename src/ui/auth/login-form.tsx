@@ -1,12 +1,18 @@
-import { useState, useEffect, useEffectEvent } from "react";
-import { Modal, Input, KeyboardButton, Box } from "@/ui";
-import { useAppContext } from "@/client/hud/app/context";
+import { useState } from "react";
+import { Modal, Input, KeyboardButton, Box } from "@/ui/kit";
 import { CharacterPreview } from "./character-preview";
 import { RememberRow } from "./remember-row";
 import { useCharacterLookup } from "./use-character-lookup";
 import { useSavedLogin } from "./saved-login";
-import { getLoginToken, getRememberMe, setRememberMe } from "./remembered-login";
-import type { Notify } from "./login-types";
+import {
+  forgetLoginToken,
+  getLoginToken,
+  getRememberMe,
+  rememberLoginToken,
+  setRememberMe,
+} from "./remembered-login";
+import { loginWithPassword, loginWithToken } from "./auth-api";
+import type { Notify, OnTicket } from "./login-types";
 
 /** Stands in for the password while a remembered login is kept; never sent anywhere. */
 const REMEMBERED_PASSWORD = "remembered";
@@ -41,12 +47,13 @@ export const LoginForm = ({
   defaultEmail,
   isActive,
   notify,
+  onTicket,
 }: {
   defaultEmail: string;
   isActive: boolean;
   notify: Notify;
+  onTicket: OnTicket;
 }) => {
-  const { socket } = useAppContext();
   const [email, setEmail] = useState(defaultEmail);
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -55,40 +62,35 @@ export const LoginForm = ({
   /* A remembered login stands in for the password until the user types one or another email */
   const isRemembered = !!token && remember && !password && email === defaultEmail;
   const character = useCharacterLookup(email, isActive);
-  const savedLogin = useSavedLogin((saved) => {
+  const saveLogin = useSavedLogin((saved) => {
     /* Don't swap a just-registered email for an older saved one */
     if (defaultEmail && saved.email !== defaultEmail) return;
     setEmail(saved.email);
     setPassword(saved.password);
   });
 
-  const onFormError = useEffectEvent((payload: { error: string }) => {
-    if (!isActive) return;
-    savedLogin.fail();
-    setToken(getLoginToken());
-    notify("error", payload?.error);
-    setIsLoading(false);
-  });
-
-  const handleLogin = () => {
-    if (isRemembered && token) {
-      socket.emit("tokenLogin", { token });
-    } else {
-      socket.emit("login", { email, password, remember });
-      savedLogin.attempt({ email, password });
-    }
-    localStorage.setItem("email", email);
+  const handleLogin = async () => {
+    if (!isRemembered && (!email || !password)) return;
     setIsLoading(true);
+    try {
+      const result =
+        isRemembered && token
+          ? await loginWithToken(token)
+          : await loginWithPassword({ email, password, remember });
+      if ("expired" in result && result.expired) {
+        forgetLoginToken();
+        setToken(null);
+      }
+      if ("error" in result) throw new Error(result.error);
+      if (result.token) rememberLoginToken(result.token);
+      if (!isRemembered) saveLogin({ email, password });
+      localStorage.setItem("email", email);
+      await onTicket(result.ticket);
+    } catch (error) {
+      notify("error", (error as Error).message);
+      setIsLoading(false);
+    }
   };
-
-  useEffect(() => {
-    if (!isActive) return;
-    const handleFormError = (payload: { error: string }) => onFormError(payload);
-    socket.on("formError", handleFormError);
-    return () => {
-      socket.off("formError", handleFormError);
-    };
-  }, [socket, isActive]);
 
   return (
     <Modal.Body sx={{ gap: 2 }}>

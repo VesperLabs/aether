@@ -168,7 +168,7 @@ const MONSTER_CARDS: FeaturedCard[] = Object.entries(nasties as Record<string, M
         category: `Level ${mob.baseStats.level} monster`,
         color: CARD_COLORS.monster,
         info: mob.flavor,
-        href: "/monsters",
+        href: `/monsters#${key}`,
         art: () => <MobFace asset={asset} tint={mob.profile.tint} />,
       },
     ];
@@ -192,7 +192,7 @@ const ITEM_CARDS: FeaturedCard[] = Object.entries(listedItems).flatMap(([type, b
                   ? `${capitalize(charClass)} spell`
                   : `${capitalize(rarity)} ${type}`,
               info: item.flavor ?? "",
-              href: "/items",
+              href: `/items#${type}-${rarity}-${key}`,
               color: CARD_COLORS[rarity] ?? CARD_COLORS.common,
               art: () => (
                 <SpriteFace
@@ -236,7 +236,7 @@ const KEEPER_CARDS: FeaturedCard[] = Object.entries(keepers).map(([key, keeper])
     category: "Keeper",
     color: CARD_COLORS.keeper,
     info: (greet ?? "").replace(/<[^>]+>/g, ""),
-    href: "/keepers",
+    href: `/keepers#${key}`,
     art: () => (asset ? <MobFace asset={asset} shadow /> : <CharacterFace character={character} />),
   };
 });
@@ -251,7 +251,7 @@ const playerCard = (player: WikiPlayer): FeaturedCard => {
     category: `Level ${player.stats?.level ?? 1} ${player.charClass ?? "player"}`,
     color: CARD_COLORS.player,
     info: worn.length ? `Wearing ${worn.join(", ")}` : "",
-    href: "/players",
+    href: `/players#${player.id}`,
     art: () => <CharacterFace character={player as Character} />,
   };
 };

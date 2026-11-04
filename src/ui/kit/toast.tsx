@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { createPortal } from "react-dom";
 import { Box, Flex, Text } from "theme-ui";
 
 export type ToastKind = "success" | "error";
@@ -44,15 +43,13 @@ const ToastBadge = ({ kind }: { kind: ToastKind }) => (
   </Flex>
 );
 
-/** A wooden notice at the top of the screen that dismisses itself. */
+/** A wooden notice that dismisses itself, right under the positioned box it is placed in. */
 export const Toast = ({
   toast,
   onDismiss,
-  zoom = 1,
 }: {
   toast: ToastMessage | null;
   onDismiss: () => void;
-  zoom?: number | string;
 }) => {
   useEffect(() => {
     if (!toast) return;
@@ -62,15 +59,16 @@ export const Toast = ({
 
   if (!toast) return null;
 
-  return createPortal(
+  return (
     <Box
       sx={{
-        position: "fixed",
-        top: 3,
+        position: "absolute",
+        top: "100%",
         left: "50%",
+        mt: 2,
+        width: "max-content",
+        transform: "translateX(-50%)",
         zIndex: "modal",
-        transform: `translateX(-50%) scale(${Math.max(1, Number(zoom))})`,
-        transformOrigin: "top center",
         pointerEvents: "all",
       }}
     >
@@ -99,7 +97,6 @@ export const Toast = ({
         <ToastBadge kind={toast.kind} />
         <Text sx={{ fontSize: 1, whiteSpace: "normal" }}>{toast.message}</Text>
       </Flex>
-    </Box>,
-    document.body,
+    </Box>
   );
 };

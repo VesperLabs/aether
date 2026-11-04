@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
-import { Box, Flex, Icon, PlayerRender, Text } from "@/ui";
-import type { RenderablePlayer } from "@/ui";
+import { Box, Flex, Icon, Text } from "@/ui/kit";
+import { PlayerRender, type RenderablePlayer } from "@/ui/character";
 import { CLASS_ICON_MAP } from "@/content";
 import type { LoginCharacter } from "@/network";
 import { CHAR_CLASS_SELECT, TOP_SLOT_SX } from "./char-class-select";
