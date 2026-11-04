@@ -1,10 +1,11 @@
-import { memo, type ReactNode } from "react";
+import { memo, useState, type ReactNode } from "react";
 import type { CharacterMenuProps } from "@/ui";
 import { useAppContext } from "@/client/hud/app/context";
 import { MenuButton } from "@/client/hud/menu/menu-button";
 import { BigPortrait } from "@/client/hud/status/big-portrait";
-import { Flex, Text, Input, Box, MENU_MAX_WIDTH, Menu, MenuHeader } from "@/ui";
+import { Flex, Text, Box, MENU_MAX_WIDTH, Menu, MenuHeader } from "@/ui";
 import { arePropsEqualWithKeys } from "@/ui";
+import { ModalRename } from "./modal-rename";
 
 const MenuPicker = ({
   children,
@@ -45,6 +46,8 @@ const MenuPicker = ({
 export const MenuProfile = memo(
   ({ player, isOpen, setIsOpen }: CharacterMenuProps) => {
     const { socket } = useAppContext();
+    const [renaming, setRenaming] = useState(false);
+    const userName = player?.profile?.userName ?? "";
 
     return (
       <Menu
@@ -72,15 +75,11 @@ export const MenuProfile = memo(
               player={player}
               filteredSlots={["accessory", "helmet", "hands"]}
             />
-            <Input
-              sx={{ width: 150, fontSize: 4 }}
-              defaultValue={player?.profile?.userName}
-              onBlur={(e) => {
-                /* Hack to send if `Done` button is pushed */
-                const userName = e?.target?.value;
-                if (userName?.trim() !== "") socket.emit("updateProfile", { userName });
-              }}
-            />
+            <Flex sx={{ alignItems: "center", gap: 1 }}>
+              <Text sx={{ fontSize: 4 }}>{userName}</Text>
+              <MenuButton iconName="pen" size={16} onClick={() => setRenaming(true)} />
+            </Flex>
+            {renaming && <ModalRename userName={userName} onClose={() => setRenaming(false)} />}
           </Flex>
           <Flex sx={{ flexDirection: "column", gap: 1 }}>
             <MenuPicker
