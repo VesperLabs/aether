@@ -8,12 +8,14 @@ import { createProxyMiddleware } from "http-proxy-middleware";
  * Socket.IO attaches first (GameServer); we only forward /peerjs upgrades manually. */
 export function registerPeerProxy(app: Express, httpServer: Server, peerServerPort: number) {
   const peerProxy = createProxyMiddleware({
-    target: `http://localhost:${peerServerPort}/peerjs`,
+    /* Forward paths untouched: a target path plus pathRewrite turns `/peerjs?key=` into
+     * `/peerjs/?key=`, which the peer WebSocket server rejects with 400. */
+    target: `http://localhost:${peerServerPort}`,
     changeOrigin: true,
     ws: false,
-    pathRewrite: { "^/peerjs": "" },
+    pathFilter: "/peerjs",
   });
-  app.use("/peerjs", peerProxy);
+  app.use(peerProxy);
 
   const peerUpgrade = (
     peerProxy as unknown as {
