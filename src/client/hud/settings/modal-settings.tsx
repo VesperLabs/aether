@@ -46,10 +46,11 @@ export const ModalSettings: React.FC = () => {
             sx={{
               maxHeight: MAX_BODY_HEIGHT,
               overflowY: "auto",
+              overflowX: "hidden",
               borderRadius: Modal.tabPanelRadius(tab === TABS[0].name),
             }}
           >
-            <Grid sx={{ gap: 0 }}>
+            <Grid sx={{ gap: 0, gridTemplateColumns: "minmax(0, 1fr)" }}>
               <Box sx={panel("settings")}>
                 <UserSettingsForm />
               </Box>

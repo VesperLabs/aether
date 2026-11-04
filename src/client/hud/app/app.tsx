@@ -43,6 +43,7 @@ import { createHeroSyncHandlers } from "./hero-sync";
 import { createItemEventHandlers } from "./item-events";
 import { MenuGlobalKeys } from "./menu-global-keys";
 import { LoginBackdrop } from "./login-backdrop";
+import { useWorldReady, WORLD_REVEAL_MS } from "./use-world-ready";
 import { createPartyHandlers } from "./party-events";
 interface AppProps {
   socket: ClientGameSocket;
@@ -235,6 +236,7 @@ export function App({ socket, peer, debug, game }: AppProps) {
   });
 
   const showLogin = !isLoggedIn && isLoaded;
+  const isWorldReady = useWorldReady(isLoggedIn);
 
   return (
     <ThemeUIProvider theme={theme as Theme}>
@@ -317,6 +319,8 @@ export function App({ socket, peer, debug, game }: AppProps) {
               sx={{
                 height: "100%",
                 pointerEvents: "none",
+                opacity: isWorldReady ? 1 : 0,
+                transition: `opacity ${WORLD_REVEAL_MS}ms ease-in-out`,
               }}
             >
               {hero?.state?.isDead && <ModalRespawn />}
