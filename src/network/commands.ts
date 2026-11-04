@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { ServerHealthMessage } from "./messages";
 
 /*
  * Everything a client may send to the server. One zod schema per command; the types come from the
@@ -41,7 +42,7 @@ export const commands = {
     .object({ email: text, password: text, charClass: text, remember: z.boolean().optional() })
     .optional(),
   /** The payload is an acknowledgement callback, which the server calls right away. */
-  latency: z.custom<() => void>((value) => typeof value === "function"),
+  latency: z.custom<(health: ServerHealthMessage) => void>((value) => typeof value === "function"),
 
   /* Combat */
   attack: z

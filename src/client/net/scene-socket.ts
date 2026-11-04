@@ -6,6 +6,7 @@ import {
   type FullCharacterWire,
 } from "@/network/sync";
 import { netInterp } from "@/client/net/scene-interpolation";
+import { recordPoseArrival, resetPoseArrivals } from "@/client/net/net-stats";
 import { idOfNetId } from "@/client/net/net-ids";
 import { correctHeroPosition } from "@/client/net/position-correction";
 import { playAudio } from "@/client/audio/play-audio";
@@ -61,7 +62,9 @@ export function bindSceneSocket(scene: SceneMain) {
   const socket = scene.socket;
 
   socket.on("poses", (data) => {
-    netInterp.add(decodeRoomPoses(data, idOfNetId), performance.now());
+    const now = performance.now();
+    recordPoseArrival(now);
+    netInterp.add(decodeRoomPoses(data, idOfNetId), now);
   });
 
   socket.on("statuses", ({ p = [], n = [] }) => {
@@ -89,6 +92,7 @@ export function bindSceneSocket(scene: SceneMain) {
     /* Delete everything in the scene */
     resetEntities(scene);
     netInterp.reset();
+    resetPoseArrivals();
     /* Add players that don't exist */
     for (const player of players) {
       if (getPlayer(scene, player.socketId)) continue;

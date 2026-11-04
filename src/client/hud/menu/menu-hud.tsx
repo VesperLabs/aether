@@ -3,7 +3,6 @@ import type { ThemeUIStyleObject } from "theme-ui";
 import { Box, Flex, Text } from "@/ui";
 import { useAppContext, type HudCharacter } from "@/client/hud/app/context";
 import { Portrait } from "@/client/hud/status/portrait";
-import { StatusIcon } from "@/client/hud/status/status-icon";
 import { arePropsEqualWithKeys } from "@/ui";
 import { streamHasUsableVideo } from "@/client/hud/video/video-support";
 import { Bar } from "@/client/hud/status/stat-bar";
@@ -282,7 +281,6 @@ export const MenuHud = () => {
         isBig={true}
         portraitVideoStream={heroPortraitVideo}
       />
-      <StatusIcon />
       <Flex sx={{ flexDirection: "row", alignItems: "flex-start", gap: 3 }}>
         <Flex sx={{ flexDirection: "column" }}>
           {hasParty &&

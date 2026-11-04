@@ -12,6 +12,7 @@ import { getBuffRoomState } from "@/server/net/room-sync";
 import { updateRoomLoot } from "./loot-adapter";
 import { expireSpells } from "./spell-adapter";
 import { getRoomIndex, indexRooms } from "./room-index";
+import { endTickTimer, startTickTimer } from "./tick-health";
 
 /** A long stall (debugger, GC) must not teleport things across the map. */
 const MAX_STEP_MS = 100;
@@ -101,6 +102,7 @@ const recordPoses: System<ServerWorld> = (world) => {
 
 /** The systems the server runs every tick, in order. */
 export const serverSystems: Array<System<ServerWorld>> = [
+  startTickTimer,
   moveNpcs,
   moveSpells,
   indexRooms,
@@ -108,4 +110,5 @@ export const serverSystems: Array<System<ServerWorld>> = [
   updateEntities,
   recordPoses,
   updateRooms,
+  endTickTimer,
 ];

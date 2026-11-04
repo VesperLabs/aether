@@ -6,6 +6,7 @@ import type { Database } from "./persistence/database";
 import type { Player } from "./player";
 import type { RoomIndex } from "./room-index";
 import type { Spell } from "./spell";
+import type { TickHealth } from "./tick-health";
 
 /** The world the server runs: the shared world state plus the socket server, database and loop. */
 export type ServerWorld = World<Player, Npc, Spell, Loot, Quest> & {
@@ -22,4 +23,6 @@ export type ServerWorld = World<Player, Npc, Spell, Loot, Quest> & {
   netIds: NetIds;
   /** Who is where in each room this tick (see `room-index.ts`). */
   roomIndexes?: Record<string, RoomIndex>;
+  /** Wall-clock tick and event loop timings, for the net stats panel. */
+  tickHealth: TickHealth;
 };

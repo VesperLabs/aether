@@ -8,7 +8,7 @@ import { HUD_CONTAINER_ID } from "@/client/hud/app/constants";
 import { forgetLoginToken, rememberLoginToken } from "@/client/hud/auth/remembered-login";
 import { ModalSign } from "@/client/hud/menu/modal-sign";
 import { MenuBar } from "@/client/hud/menu/menu-bar";
-import { MusicPlayer } from "@/client/hud/music/music-player";
+import { TopRightBar } from "@/client/hud/app/top-right-bar";
 import { ModalHome } from "@/client/hud/shop/modal-home";
 import { ThemeUIProvider, Box, useViewportSizeEffect, ZoomProvider } from "@/ui";
 import { getHudZoom } from "./hud-zoom";
@@ -326,7 +326,7 @@ export function App({ socket, peer, debug, game }: AppProps) {
               <MenuGlobalKeys />
               <MenuHud />
               <MenuBar />
-              <MusicPlayer />
+              <TopRightBar />
               <FlyingLoot />
             </Box>
           )}
