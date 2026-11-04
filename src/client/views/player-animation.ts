@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import type { Player } from "./player";
 import { getSwingWeaponAngle } from "./swing-arc";
 import { isDodging } from "@/rules/movement";
+import { getLayerOrder } from "@/content";
 
 const BLANK_TEXTURE = "human-blank";
 
@@ -15,102 +16,17 @@ export function checkIsFlash(p: Player) {
   }
 }
 
-type Layer =
-  | "shadow"
-  | "skin"
-  | "chest"
-  | "pants"
-  | "boots"
-  | "gloves"
-  | "armor"
-  | "accessory"
-  | "hair"
-  | "face"
-  | "whiskers"
-  | "helmet"
-  | "handLeft"
-  | "handRight";
-
-/** Back to front, per facing direction. Hands on the far side go behind the body. */
-const LAYER_ORDER: Record<string, Layer[]> = {
-  up: [
-    "shadow",
-    "handRight",
-    "handLeft",
-    "skin",
-    "chest",
-    "pants",
-    "boots",
-    "gloves",
-    "armor",
-    "accessory",
-    "hair",
-    "face",
-    "whiskers",
-    "helmet",
-  ],
-  down: [
-    "shadow",
-    "skin",
-    "hair",
-    "pants",
-    "boots",
-    "chest",
-    "armor",
-    "gloves",
-    "face",
-    "whiskers",
-    "accessory",
-    "helmet",
-    "handRight",
-    "handLeft",
-  ],
-  left: [
-    "shadow",
-    "handRight",
-    "skin",
-    "pants",
-    "boots",
-    "chest",
-    "armor",
-    "hair",
-    "face",
-    "whiskers",
-    "accessory",
-    "helmet",
-    "gloves",
-    "handLeft",
-  ],
-  right: [
-    "shadow",
-    "handLeft",
-    "skin",
-    "pants",
-    "boots",
-    "chest",
-    "armor",
-    "hair",
-    "face",
-    "whiskers",
-    "accessory",
-    "helmet",
-    "gloves",
-    "handRight",
-  ],
-};
 /** Drawn over the body in every direction. */
 const OVERLAYS = ["buffRack", "userName", "bubble", "hpBar"] as const;
 
 /** Stacks the rig's layers for the facing direction. Only reorders when the direction changes. */
 function orderLayers(p: Player) {
-  /* Facing down, a shield is held in front of the weapon */
   const isLeftShield = p.visibleEquipment?.handLeft?.type === "shield";
   const key = `${p.direction}:${isLeftShield}`;
   if (p.layerOrderKey === key) return;
   p.layerOrderKey = key;
-  const order = [...(LAYER_ORDER[p.direction] ?? LAYER_ORDER.down)];
-  if (p.direction === "down" && isLeftShield) order.push("handRight");
-  for (const layer of [...order, ...OVERLAYS]) p.rig.bringToTop(p[layer]);
+  for (const layer of [...getLayerOrder(p.direction, isLeftShield), ...OVERLAYS])
+    p.rig.bringToTop(p[layer]);
 }
 
 export function drawFrame(p: Player) {

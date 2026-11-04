@@ -1,3 +1,4 @@
+import { inspect } from "util";
 import type { Dice } from "@/content";
 import { createServerDice } from "../server-dice";
 import { MongoClient, type Db } from "mongodb";
@@ -120,7 +121,7 @@ const getDatabaseApi = (db: Db, dice: Dice): Database => ({
     });
   },
   updateUserMapDetails: async (args) => {
-    return execute("updateUserMapDetails", async () => {
+    return attemptSave("updateUserMapDetails", async () => {
       const { updatedAt } = getAuditFields();
       if (args?.isDemoAccount) {
         return; // console.log("🍔 Demo account. no need to save.");
@@ -145,7 +146,7 @@ const getDatabaseApi = (db: Db, dice: Dice): Database => ({
     });
   },
   updateUserSetting: async (player, { name, value }) => {
-    return execute("updateUserSetting", async () => {
+    return attemptSave("updateUserSetting", async () => {
       const { updatedAt } = getAuditFields();
       if (player?.isDemoAccount) {
         return; // console.log("🍔 Demo account. no need to save.");
@@ -165,7 +166,7 @@ const getDatabaseApi = (db: Db, dice: Dice): Database => ({
     });
   },
   updateUser: async (player) => {
-    return execute("updateUser", async () => {
+    return attemptSave("updateUser", async () => {
       if (player?.isDemoAccount) {
         return; // console.log("🍔 Demo account. no need to save.");
       }
@@ -213,10 +214,19 @@ async function execute<T>(
     //console.log(`🔧 ${operationName} succeeded`);
     return res;
   } catch (error) {
-    console.error(`❌ ${operationName} failed`, error);
+    /* Full depth: a schema failure names the bad field several levels down */
+    console.error(`❌ ${operationName} failed`, inspect(error, { depth: null }));
     onError();
     throw error;
   }
+}
+
+/**
+ * For saves, which callers fire without awaiting: a failure is logged and the player stays in
+ * memory for the next save, where a rejection nobody handles would stop the whole server.
+ */
+async function attemptSave(operationName: string, operation: () => Promise<void>) {
+  await execute(operationName, operation).catch(() => {});
 }
 
 function getAuditFields() {

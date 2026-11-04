@@ -4,6 +4,7 @@ import { Link } from "wouter";
 import { useCardPool, type FeaturedCard } from "./card-pool";
 import { TAB_HEIGHT } from "./menu-bar";
 import { PAPER, PAPER_STYLE, PaperFrame } from "./paper";
+import { WalkOnHover } from "./walk-on-hover";
 
 const CARD_WIDTH = 260;
 const CARD_GAP = 16;
@@ -241,5 +242,9 @@ const PaperCard = memo(({ title, category, info, href, color, art }: FeaturedCar
       </Text>
     </Box>
   );
-  return <Link href={href}>{card}</Link>;
+  return (
+    <WalkOnHover sx={{ display: "contents" }}>
+      <Link href={href}>{card}</Link>
+    </WalkOnHover>
+  );
 });

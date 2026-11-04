@@ -62,6 +62,11 @@ class AppServer {
   }
 }
 
+/* Node exits on these by default; one failed promise shouldn't drop every player */
+process.on("unhandledRejection", (reason) => {
+  console.error("❌ Unhandled rejection", reason);
+});
+
 process.on("SIGINT", function () {
   process.exit();
 });

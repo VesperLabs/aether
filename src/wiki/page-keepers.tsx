@@ -9,7 +9,15 @@ import {
 } from "@/content";
 import { Box, Flex, ItemTooltip, Text } from "@/ui";
 import { useId, useState } from "react";
-import { CARD_COLORS, CharacterFace, SpriteFace, keeperCharacter, raceAsset } from "./card-pool";
+import {
+  CARD_COLORS,
+  CharacterFace,
+  MobFace,
+  SpriteFace,
+  keeperCharacter,
+  raceAsset,
+} from "./card-pool";
+import { WalkOnHover } from "./walk-on-hover";
 import { Divider, PAPER, PAPER_STYLE, PaperFrame } from "./paper";
 import { RowTitle } from "./row-title";
 
@@ -57,7 +65,7 @@ const KeeperCard = ({
   const { quests = [], shop = [], home } = keeper.keeperData;
   const asset = character ? undefined : raceAsset(keeper.profile.race);
   return (
-    <Box sx={{ ...PAPER_STYLE, p: 4 }}>
+    <WalkOnHover sx={{ ...PAPER_STYLE, p: 4 }}>
       <PaperFrame />
       {/* A wide gap, so weapons held out to the side don't run into the name. */}
       <Flex sx={{ gap: 4, alignItems: "center" }}>
@@ -71,7 +79,7 @@ const KeeperCard = ({
           }}
         >
           {character && <CharacterFace character={character} />}
-          {asset && <SpriteFace asset={asset} tint={keeper.profile.tint} size={64} />}
+          {asset && <MobFace asset={asset} tint={keeper.profile.tint} size={64} shadow />}
         </Flex>
         <Box sx={{ minWidth: 0 }}>
           <Text as="h3" sx={{ fontSize: 4, fontWeight: 700, m: 0 }}>
@@ -127,7 +135,7 @@ const KeeperCard = ({
           </Text>
         </>
       )}
-    </Box>
+    </WalkOnHover>
   );
 };
 

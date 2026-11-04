@@ -10,6 +10,25 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <title>Aether</title>
+    <style>
+      /* A soft wash of the world's colours, inline so it paints before anything has loaded.
+         LoginBackdrop takes over from body::before and fades it out once the world has drawn. */
+      :root {
+        --login-wash:
+          radial-gradient(ellipse at 22% 30%, #2f6b3f 0%, transparent 60%),
+          radial-gradient(ellipse at 80% 72%, #1f4f7a 0%, transparent 60%),
+          radial-gradient(ellipse at 60% 15%, #5c6b34 0%, transparent 50%), #12241f;
+      }
+      body {
+        background: black;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background: var(--login-wash);
+      }
+    </style>
   </head>
   <body>
     <div id="game"></div>

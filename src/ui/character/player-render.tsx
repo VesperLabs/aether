@@ -1,4 +1,4 @@
-import { resolveAsset, type BuiltItem, type MobProfile } from "@/content";
+import { assetList, getLayerOrder, resolveAsset, type BuiltItem, type MobProfile } from "@/content";
 import {
   ACCESSORY_HIDING_HELMETS,
   HAIR_HIDING_HELMETS,
@@ -6,11 +6,12 @@ import {
   FACE_HIDING_ACCESSORIES,
 } from "@/content";
 import { filterVisibleEquipment } from "@/rules/character";
-import { tintCanvas, loadCacheImage } from "@/ui/kit";
 import { memo, useEffect, useEffectEvent, useRef, type ComponentProps } from "react";
 import type { CSSProperties } from "react";
 import { Box } from "@/ui/kit";
 import weaponAtlas from "../../../public/assets/atlas/weapon.json";
+import { loadSheet } from "./sprite-sheet";
+import { getWalkFrameName, getWalkFrameRect, useWalkCycle, type WalkPose } from "./walk-cycle";
 
 const FULL_CANVAS_SIZE = 160;
 const MIN_CANVAS_SIZE = 100;
@@ -32,7 +33,12 @@ type PlayerAsset = {
   slot?: string;
   atlas?: string;
   slotKey?: string;
+  atlasFile?: string;
+  isShield?: boolean;
 };
+
+type WeaponPose = { x: number; y: number; flipX?: boolean; flipY?: boolean; rotation?: number };
+type WeaponOffsets = { left: WeaponPose; right: WeaponPose };
 
 /** The parts of a character the renderer reads: how it looks and what it wears. */
 export interface RenderablePlayer {
@@ -44,55 +50,38 @@ export interface RenderablePlayer {
 /** A look layer (hair, face...) built from the profile; it has no item behind it. */
 type LookPart = { slot: string; texture?: string; tint?: string };
 
-/** A layer's whole sprite sheet, tinted, ready to draw from. */
-const drawImageOnNewCanvas = (image: HTMLImageElement, tint: string | undefined) => {
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
-  canvas.width = image.width;
-  canvas.height = image.height;
-  ctx.drawImage(image, 0, 0);
-  return tint ? tintCanvas(canvas, tint) : canvas;
-};
-
-/**
- * Tinted sheets by source and tint. Tinting reads and rewrites every pixel, and most characters
- * share skins, hair and gear colours, so each combination is only tinted once. A sheet that fails
- * to load is left out of the drawing.
- */
-const LAYER_CACHE = new Map<string, Promise<HTMLCanvasElement | null>>();
-const loadLayer = ({ src, tint }: PlayerAsset) => {
-  const key = `${src}|${tint ?? ""}`;
-  let layer = LAYER_CACHE.get(key);
-  if (!layer) {
-    layer = loadCacheImage(src).then(
-      (image) => drawImageOnNewCanvas(image, tint),
-      () => null,
-    );
-    LAYER_CACHE.set(key, layer);
-  }
-  return layer;
-};
-
 /** Draws the character's layers, back to front, in one go so it never shows half-drawn. */
 const drawLayers = (
   canvas: HTMLCanvasElement,
   assets: PlayerAsset[],
   layers: (HTMLCanvasElement | null)[],
+  pose?: WalkPose,
 ) => {
-  const atlas = weaponAtlas.offsets.human["down-stand"];
+  const frame = pose ? getWalkFrameName(pose) : "down-stand";
+  const atlas = (weaponAtlas.offsets.human as Record<string, WeaponOffsets>)[frame];
+  const isLeftShield = assets.some((asset) => asset.slotKey === "handLeft" && asset.isShield);
+  const order = pose ? getLayerOrder(pose.direction, isLeftShield) : undefined;
+  /* A layer listed twice is drawn at its last place, the same way Phaser's bringToTop stacks it. */
+  const drawOrder = assets
+    .map((asset, i) => ({ asset, layer: layers[i] }))
+    .sort((a, b) =>
+      order
+        ? order.lastIndexOf(a.asset.slotKey as never) - order.lastIndexOf(b.asset.slotKey as never)
+        : 0,
+    );
   const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
   ctx.imageSmoothingEnabled = false;
   ctx.clearRect(0, 0, MIN_CANVAS_SIZE, MIN_CANVAS_SIZE);
-  assets.forEach((asset, i) => {
-    const layer = layers[i];
+  drawOrder.forEach(({ asset, layer }) => {
     if (!layer) return;
-    const [x, y, w, h] = asset.previewRect;
+    const [x, y, w, h] = (pose && getWalkFrameRect(asset.atlasFile, pose)) || asset.previewRect;
     const isLeftWeapon = asset.slotKey === "handLeft";
     if (isLeftWeapon || asset.slotKey === "handRight") {
-      const { x: tx, y: ty, flipX } = isLeftWeapon ? atlas.left : atlas.right;
+      const { x: tx, y: ty, flipX, flipY, rotation = 0 } = isLeftWeapon ? atlas.left : atlas.right;
       ctx.save();
       ctx.translate(MIN_CANVAS_SIZE / 2 + tx, MIN_CANVAS_SIZE / 2 + ty + 14);
-      if (flipX) ctx.scale(-1, 1);
+      ctx.rotate((rotation * Math.PI) / 180);
+      ctx.scale(flipX ? -1 : 1, flipY ? -1 : 1);
       ctx.drawImage(layer, -w / 2, -h / 2, w, h);
       ctx.restore();
     } else {
@@ -105,20 +94,33 @@ type PlayerRenderProps = Omit<ComponentProps<typeof Box>, "ref"> & {
   player?: RenderablePlayer;
   filteredSlots?: string[];
   onLoadComplete?: (loaded: boolean) => void;
+  /** Walks in place, turning as it goes, instead of standing facing the viewer. */
+  walking?: boolean;
+  /** Draws the shadow the character casts in the game. */
+  shadow?: boolean;
 };
 
 export const PlayerRender = memo(
-  ({ player, sx, filteredSlots, onLoadComplete = () => {}, ...props }: PlayerRenderProps) => {
-    const assets = getPlayerEquipmentAssets({ player, filteredSlots });
+  ({
+    player,
+    sx,
+    filteredSlots,
+    onLoadComplete = () => {},
+    walking = false,
+    shadow = false,
+    ...props
+  }: PlayerRenderProps) => {
+    const assets = getPlayerEquipmentAssets({ player, filteredSlots, shadow });
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const pose = useWalkCycle(walking);
 
     /* Redraw only when the layers change, not on every new player object. */
     const assetsKey = JSON.stringify(assets.map(({ src, tint, slotKey }) => [src, tint, slotKey]));
     const drawPlayer = useEffectEvent(async (isCurrent: () => boolean) => {
       /* Every sheet loads at once; drawing waits for them all. */
-      const layers = await Promise.all(assets.map(loadLayer));
+      const layers = await Promise.all(assets.map(loadSheet));
       if (!isCurrent() || !canvasRef.current) return;
-      drawLayers(canvasRef.current, assets, layers);
+      drawLayers(canvasRef.current, assets, layers, pose);
       onLoadComplete(true);
     });
 
@@ -129,7 +131,7 @@ export const PlayerRender = memo(
       return () => {
         current = false;
       };
-    }, [assetsKey]);
+    }, [assetsKey, pose]);
 
     return (
       <Box
@@ -174,9 +176,11 @@ const getObscuredKeys = ({
 const getPlayerEquipmentAssets = ({
   player,
   filteredSlots = [],
+  shadow = false,
 }: {
   player?: RenderablePlayer;
   filteredSlots?: Array<string>;
+  shadow?: boolean;
 }) => {
   const keyOrder = [
     "skin",
@@ -237,7 +241,9 @@ const getPlayerEquipmentAssets = ({
         slotKey: key,
         tint: item?.tint,
         slot: item?.slot,
+        isShield: (item as BuiltItem)?.type === "shield",
         ...assetRes,
+        atlasFile: assetRes.atlas,
         previewRect: resolvePreviewRect({ key }),
       };
       acc.push(playerAsset);
@@ -246,5 +252,18 @@ const getPlayerEquipmentAssets = ({
   }, []);
 
   const obscuredKeys = getObscuredKeys({ filteredSlots: [...filteredSlots], visibleParts });
-  return playerAssets?.filter((asset) => !obscuredKeys.includes(asset?.slot as string));
+  const visibleAssets = playerAssets?.filter(
+    (asset) => !obscuredKeys.includes(asset?.slot as string),
+  );
+  const shadowAsset = assetList.find(({ texture }) => texture === "shadow");
+  if (!shadow || !shadowAsset) return visibleAssets;
+  return [
+    {
+      ...shadowAsset,
+      slotKey: "shadow",
+      atlasFile: shadowAsset.atlas,
+      previewRect: [...shadowAsset.previewRect],
+    },
+    ...visibleAssets,
+  ];
 };

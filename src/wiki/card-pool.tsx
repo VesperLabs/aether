@@ -14,12 +14,21 @@ import {
   deriveElements,
   ElementalItemArt,
   PlayerRender,
+  WalkingSprite,
   previewSize,
 } from "@/ui";
 import { useQuery } from "@tanstack/react-query";
-import { useLayoutEffect, useMemo, useState, type ReactNode, type SyntheticEvent } from "react";
+import {
+  useLayoutEffect,
+  useMemo,
+  useState,
+  type ComponentProps,
+  type ReactNode,
+  type SyntheticEvent,
+} from "react";
 import { fetchPlayers, type PlayersQueryKey } from "./api";
 import type { WikiPlayer } from "./page-players";
+import { useWalkOnHover } from "./walk-on-hover";
 
 /** One thing from the game shown on a card: its art, name, category and a line or two about it. */
 export type FeaturedCard = {
@@ -122,9 +131,22 @@ export const SpriteFace = ({
   );
 };
 
-export const CharacterFace = ({ character }: { character: Character }) => (
-  <PlayerRender player={character} sx={{ width: 80, height: 80 }} />
-);
+/** A character that walks while its surrounding `WalkOnHover` is hovered. */
+export const CharacterFace = ({
+  character,
+  sx = { width: 80, height: 80 },
+}: {
+  character: Character;
+  sx?: ComponentProps<typeof PlayerRender>["sx"];
+}) => <PlayerRender player={character} sx={sx} walking={useWalkOnHover()} shadow />;
+
+/** A mob's whole sheet, walking while its surrounding `WalkOnHover` is hovered. */
+export const MobFace = (props: {
+  asset: AssetDefinition;
+  tint?: string;
+  size?: number;
+  shadow?: boolean;
+}) => <WalkingSprite {...props} walking={useWalkOnHover()} />;
 
 /** The sprite sheet for a mob race. */
 export const raceAsset = (race?: string) => assetList.find((a) => a?.texture === race);
@@ -147,7 +169,7 @@ const MONSTER_CARDS: FeaturedCard[] = Object.entries(nasties as Record<string, M
         color: CARD_COLORS.monster,
         info: mob.flavor,
         href: "/monsters",
-        art: () => <SpriteFace asset={asset} tint={mob.profile.tint} />,
+        art: () => <MobFace asset={asset} tint={mob.profile.tint} />,
       },
     ];
   },
@@ -215,7 +237,7 @@ const KEEPER_CARDS: FeaturedCard[] = Object.entries(keepers).map(([key, keeper])
     color: CARD_COLORS.keeper,
     info: (greet ?? "").replace(/<[^>]+>/g, ""),
     href: "/keepers",
-    art: () => (asset ? <SpriteFace asset={asset} /> : <CharacterFace character={character} />),
+    art: () => (asset ? <MobFace asset={asset} shadow /> : <CharacterFace character={character} />),
   };
 });
 

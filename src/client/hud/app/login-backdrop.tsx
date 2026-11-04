@@ -8,7 +8,10 @@ import { useWorldReady, WORLD_REVEAL_MS } from "./use-world-ready";
 /** Quick enough to finish before the observed world fades in behind it. */
 const FORM_RISE_MS = 300;
 
-/** The black cover: clear over the observed world, closing at login and lifting once the hero's world has drawn. */
+/** How long the colour wash takes to clear from over the observed world. */
+const WASH_FADE_MS = 1200;
+
+/** The black cover: clear behind the login screen, closing at login and lifting once the hero's world has drawn. */
 export function LoginBackdrop({
   isLoggedIn,
   hasError,
@@ -26,7 +29,7 @@ export function LoginBackdrop({
 
   /* From the very first frame, so the login form is simply there */
   const isCovering = !isLoggedIn || !isWorldReady;
-  const isObserving = isWorldReady && !isLoggedIn;
+  const isWashShown = !isLoggedIn && !isWorldReady;
 
   return (
     <Box
@@ -36,7 +39,7 @@ export function LoginBackdrop({
       sx={{
         inset: 0,
         position: "fixed",
-        backgroundColor: isObserving ? "transparent" : "black",
+        backgroundColor: isLoggedIn ? "black" : "transparent",
         opacity: isCovering ? 1 : 0,
         transition: isCovering
           ? `opacity 1s ease-out, background-color ${LOGIN_FADE_MS}ms ease-in-out`
@@ -45,6 +48,16 @@ export function LoginBackdrop({
         zIndex: "modal",
       }}
     >
+      {/* Painted first by client/index.html, so the page never opens on black */}
+      <Box
+        sx={{
+          position: "fixed",
+          inset: 0,
+          background: "var(--login-wash)",
+          opacity: isWashShown ? 1 : 0,
+          transition: `opacity ${WASH_FADE_MS}ms ease-in`,
+        }}
+      />
       {/* Stays through the fade, so nothing changes mid-animation */}
       {!isLifted && (
         <Box

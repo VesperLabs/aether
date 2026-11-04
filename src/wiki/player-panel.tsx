@@ -8,12 +8,13 @@ import {
   MenuEquipment,
   MenuInventory,
   MenuStats,
-  PlayerRender,
   Text,
 } from "@/ui";
 import { useState, type MouseEvent } from "react";
 import type { WikiPlayer } from "./page-players";
 import { About } from "./player-card";
+import { CharacterFace } from "./card-pool";
+import { WalkOnHover } from "./walk-on-hover";
 
 /** The game menus the panel shows, one at a time. */
 const SECTIONS = [
@@ -204,7 +205,7 @@ const RING = 56;
  * head about 20px above it, so the drawing is moved down to bring the head to the ring's centre.
  */
 const FaceRing = ({ player }: { player: WikiPlayer }) => (
-  <Box
+  <WalkOnHover
     sx={{
       position: "relative",
       width: RING,
@@ -216,6 +217,6 @@ const FaceRing = ({ player }: { player: WikiPlayer }) => (
       border: "1px solid rgba(255, 255, 200, .4)",
     }}
   >
-    <PlayerRender player={player} sx={{ width: RING, height: RING, top: "20px" }} />
-  </Box>
+    <CharacterFace character={player} sx={{ width: RING, height: RING, top: "20px" }} />
+  </WalkOnHover>
 );

@@ -2,7 +2,8 @@ import { itemList, nasties, resolveAsset, type BuiltItem, type NastyDefinition }
 import { calculateExpValue, npcStats } from "@/rules/stats";
 import { Box, Flex, Grid, Icon, ItemTooltip, Text, Tooltip, TooltipContent } from "@/ui";
 import { useId, useState, type ReactNode } from "react";
-import { CARD_COLORS, SpriteFace, raceAsset } from "./card-pool";
+import { CARD_COLORS, MobFace, SpriteFace, raceAsset } from "./card-pool";
+import { WalkOnHover } from "./walk-on-hover";
 import { Divider, PAPER, PAPER_STYLE, PaperFrame } from "./paper";
 import { RowTitle } from "./row-title";
 
@@ -47,7 +48,7 @@ export function PageNasties() {
 const MonsterCard = ({ mob, stats }: { mob: NastyDefinition; stats: Record<string, number> }) => {
   const asset = raceAsset(mob.profile.race);
   return (
-    <Box sx={{ ...PAPER_STYLE, p: 4 }}>
+    <WalkOnHover sx={{ ...PAPER_STYLE, p: 4 }}>
       <PaperFrame />
       <Flex sx={{ gap: 3, alignItems: "center" }}>
         <Flex
@@ -59,7 +60,7 @@ const MonsterCard = ({ mob, stats }: { mob: NastyDefinition; stats: Record<strin
             justifyContent: "center",
           }}
         >
-          {asset && <SpriteFace asset={asset} tint={mob.profile.tint} size={64} />}
+          {asset && <MobFace asset={asset} tint={mob.profile.tint} size={64} />}
         </Flex>
         <Box sx={{ minWidth: 0 }}>
           <Text as="h3" sx={{ fontSize: 4, fontWeight: 700, m: 0 }}>
@@ -120,7 +121,7 @@ const MonsterCard = ({ mob, stats }: { mob: NastyDefinition; stats: Record<strin
       <Behavior mob={mob} />
       <Divider label="Drops" />
       <Drops drops={mob.drops ?? []} />
-    </Box>
+    </WalkOnHover>
   );
 };
 
