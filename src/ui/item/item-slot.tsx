@@ -142,7 +142,8 @@ export const ItemSlot = memo(
         data-tooltip-id={tooltipId}
         sx={{
           /* Only draggable slots hold on to the touch; display-only ones let a swipe scroll. */
-          touchAction: shouldBindEvents ? "none" : "auto",
+          /* Swipes scroll the menus; a held item is dragged instead (use-slot-drag) */
+          touchAction: shouldBindEvents ? "pan-y" : "auto",
           userSelect: "none",
           pointerEvents: "all",
           overflow: "hidden",
@@ -176,7 +177,7 @@ export const ItemSlot = memo(
               icon={imageData}
               size={size * 2} // Fixes large images to not get cut off
               style={{
-                touchAction: shouldBindEvents ? "none" : "auto",
+                touchAction: shouldBindEvents ? "pan-y" : "auto",
                 userSelect: "none",
                 pointerEvents: dragging ? "none" : "all",
                 zIndex: 1,
