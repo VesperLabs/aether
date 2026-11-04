@@ -127,6 +127,9 @@ const roll: PlayerCommand = (ctx, player, text) => {
   });
 };
 
+/* Only the client can forget its login; reloading then disconnects, which saves the player */
+const logout: PlayerCommand = (ctx) => ctx.socket.emit("loggedOut");
+
 const PLAYER_COMMANDS: Record<string, PlayerCommand> = {
   yell,
   whisper,
@@ -136,6 +139,7 @@ const PLAYER_COMMANDS: Record<string, PlayerCommand> = {
   who,
   invite,
   leave,
+  logout,
   roll,
 };
 

@@ -20,6 +20,7 @@ import {
 import { WalkOnHover } from "./walk-on-hover";
 import { Divider, PAPER, PAPER_STYLE, PaperFrame } from "./paper";
 import { RowTitle } from "./row-title";
+import { useHashScroll } from "./use-hash-scroll";
 
 type ListedItem = { name?: string; texture?: string; slot?: string; tint?: string; cost?: number };
 const listedItems = itemList as unknown as Record<
@@ -37,6 +38,7 @@ const KEEPERS = Object.entries(keepers as Record<string, KeeperDefinition>)
   .sort((a, b) => (a.keeper.baseStats?.level ?? 0) - (b.keeper.baseStats?.level ?? 0));
 
 export function PageKeepers() {
+  useHashScroll();
   return (
     <Flex sx={{ gap: 2, flexDirection: "column", mb: 4 }}>
       <RowTitle icon={"pouch"}>Keepers</RowTitle>
@@ -45,6 +47,7 @@ export function PageKeepers() {
         {KEEPERS.map(({ key, keeper, character }) => (
           <Box
             key={key}
+            id={key}
             sx={{ breakInside: "avoid", mb: 3, display: "inline-block", width: "100%" }}
           >
             <KeeperCard keeper={keeper} character={character} />

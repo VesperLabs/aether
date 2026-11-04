@@ -16,8 +16,8 @@ export const PlayLinks = () => (
         /* A plain link: wouter's Link would route these inside the wiki instead of leaving it. */
         as={ExternalLink}
         href={href}
-        target="_blank"
-        rel="noopener noreferrer"
+        /* Play goes from the wiki to the game in the same window; Discord is another site. */
+        {...(label === "Play" ? {} : { target: "_blank", rel: "noopener noreferrer" })}
         variant="menu"
         /* Just an icon on phones, so no room kept for a label on its right. */
         sx={label === "Play" ? PLAY_BUTTON : { ...MENU_BUTTON, pr: [1, 2] }}

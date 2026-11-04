@@ -43,6 +43,9 @@ class AppServer {
     const httpServer = this.httpServer;
     const aetherServer = new GameServer({ httpServer, db, dice });
 
+    /* One proxy (Fly's) sits in front: `req.ip` is the player, so rate limits count per player */
+    app.set("trust proxy", 1);
+
     app.use(
       cors({
         origin: "*", // Replace with your allowed origin

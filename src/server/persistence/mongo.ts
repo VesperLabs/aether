@@ -1,6 +1,7 @@
 import { inspect } from "util";
 import type { Dice } from "@/content";
 import { createServerDice } from "../server-dice";
+import { hashPassword, verifyPassword } from "../auth/password";
 import { MongoClient, type Db } from "mongodb";
 import { userSchema } from "./schema";
 import { filterNullEmpty } from "./filter-empty";
@@ -79,10 +80,10 @@ const getDatabaseApi = (db: Db, dice: Dice): Database => ({
   getUserByLogin: async ({ email, password = "" }) => {
     return execute("getUserByLogin", async () => {
       if (!email) return console.log("❌ Email not provided");
-      const user = await db
+      const user = (await db
         .collection("users")
-        .findOne({ email: `${email}`.toLowerCase(), password });
-      return user as UserDocument | null;
+        .findOne({ email: `${email}`.toLowerCase() })) as UserDocument | null;
+      return user && (await verifyPassword(password ?? "", user.password)) ? user : null;
     });
   },
   createUser: async ({ email, charClass, gender, password }) => {
@@ -94,7 +95,7 @@ const getDatabaseApi = (db: Db, dice: Dice): Database => ({
       const { updatedAt, createdAt } = getAuditFields();
       await db.collection("users").insertOne({
         email: `${email}`.toLowerCase(),
-        password,
+        password: await hashPassword(password ?? ""),
         charClass: player?.charClass,
         x: player?.x,
         y: player?.y,

@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
-import { Box } from "@/ui";
-import { ModalLogin } from "@/client/hud/auth/modal-login";
+import { Box, LOGIN_RISE_SX } from "@/ui";
+import { GameLogin } from "@/client/hud/auth/game-login";
+import { WikiLink } from "@/client/hud/auth/wiki-link";
 import { ModalError } from "@/client/hud/menu/modal-error";
 import { LOGIN_FADE_MS } from "@/client/scenes/login-fade";
 import { useWorldReady, WORLD_REVEAL_MS } from "./use-world-ready";
-
-/** Quick enough to finish before the observed world fades in behind it. */
-const FORM_RISE_MS = 300;
 
 /** How long the colour wash takes to clear from over the observed world. */
 const WASH_FADE_MS = 1200;
@@ -68,16 +66,14 @@ export function LoginBackdrop({
             pointerEvents: "none",
             opacity: isLoggedIn ? 0 : 1,
             transition: `opacity ${LOGIN_FADE_MS}ms ease-in-out`,
-            animation: `loginFormRise ${FORM_RISE_MS}ms ease-out backwards`,
-            "@keyframes loginFormRise": {
-              from: { opacity: 0, transform: "translateY(24px)" },
-              to: { opacity: 1, transform: "none" },
-            },
+            ...LOGIN_RISE_SX,
           }}
         >
-          <ModalLogin />
+          <GameLogin />
         </Box>
       )}
+      {/* Outside the form's box, so it stays put while the form slides in */}
+      {!isLoggedIn && <WikiLink />}
       {hasError && <ModalError />}
     </Box>
   );

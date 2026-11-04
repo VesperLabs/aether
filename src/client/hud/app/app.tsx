@@ -1,3 +1,4 @@
+import { forgetLoginToken } from "@/ui/auth/remembered-login";
 import React, { useEffect, useRef, useState } from "react";
 import { theme } from "@/ui";
 import { MenuHud } from "@/client/hud/menu/menu-hud";
@@ -5,7 +6,6 @@ import { ModalRespawn } from "@/client/hud/status/modal-respawn";
 import { ModalDropAmount } from "@/client/hud/inventory/modal-drop-amount";
 import { FlyingLoot } from "@/client/hud/inventory/flying-loot";
 import { HUD_CONTAINER_ID } from "@/client/hud/app/constants";
-import { forgetLoginToken, rememberLoginToken } from "@/client/hud/auth/remembered-login";
 import { ModalSign } from "@/client/hud/menu/modal-sign";
 import { MenuBar } from "@/client/hud/menu/menu-bar";
 import { TopRightBar } from "@/client/hud/app/top-right-bar";
@@ -181,6 +181,10 @@ export function App({ socket, peer, debug, game }: AppProps) {
     connect: onConnect,
     disconnect: onDisconnect,
     heroInit: onHeroInit,
+    loggedOut: () => {
+      forgetLoginToken();
+      window.location.reload();
+    },
     buffUpdate: onBuffUpdate,
     playerUpdate: onPlayerUpdate,
     lootGrabbed: onLootGrabbed,
@@ -191,8 +195,6 @@ export function App({ socket, peer, debug, game }: AppProps) {
     partyInvite: onPartyInvite,
     partyUpdate: onPartyUpdate,
     updateUserSetting: onUpdateUserSetting,
-    loginToken: ({ token }) => rememberLoginToken(token),
-    loginTokenRejected: forgetLoginToken,
   };
   const windowHandlers: WindowHandlers = {
     HERO_NEAR_NPC: onNearNpc,

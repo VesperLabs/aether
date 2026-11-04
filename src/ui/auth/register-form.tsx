@@ -1,55 +1,44 @@
-import { useState, useEffect, useEffectEvent } from "react";
-import { Flex, Modal, Input, KeyboardButton } from "@/ui";
-import { useAppContext } from "@/client/hud/app/context";
+import { useState } from "react";
+import { Flex, Modal, Input, KeyboardButton } from "@/ui/kit";
 import type { CharClass } from "@/content";
 import { CharClassSelect } from "./char-class-select";
 import { GenderSwitch, type Gender } from "./gender-switch";
 import { RememberRow } from "./remember-row";
-import { getRememberMe } from "./remembered-login";
-import type { FormSuccess, Notify } from "./login-types";
+import { getRememberMe, rememberLoginToken } from "./remembered-login";
+import { registerAccount } from "./auth-api";
+import type { Notify } from "./login-types";
 
 export const RegisterForm = ({
   onRegisterSuccess,
   isActive,
   notify,
 }: {
-  onRegisterSuccess: (payload: FormSuccess) => void;
+  onRegisterSuccess: (email: string) => void;
   isActive: boolean;
   notify: Notify;
 }) => {
-  const { socket } = useAppContext();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [charClass, setCharClass] = useState<CharClass>("warrior");
   const [gender, setGender] = useState<Gender>("female");
 
-  const onFormError = useEffectEvent((payload: { error: string }) => {
-    if (!isActive) return;
-    notify("error", payload?.error);
-  });
-
-  const onFormSuccess = useEffectEvent((payload: FormSuccess) => {
-    if (!isActive) return;
-    onRegisterSuccess(payload);
-  });
-
-  useEffect(() => {
-    if (!isActive) return;
-    const handleFormError = (payload: { error: string }) => onFormError(payload);
-    socket.on("formError", handleFormError);
-    return () => {
-      socket.off("formError", handleFormError);
-    };
-  }, [socket, isActive]);
-
-  useEffect(() => {
-    if (!isActive) return;
-    const handleFormSuccess = (payload: FormSuccess) => onFormSuccess(payload);
-    socket.on("formSuccess", handleFormSuccess);
-    return () => {
-      socket.off("formSuccess", handleFormSuccess);
-    };
-  }, [socket, isActive]);
+  const handleRegister = async () => {
+    if (!email) return;
+    try {
+      const result = await registerAccount({
+        email,
+        password,
+        charClass,
+        gender,
+        remember: getRememberMe(),
+      });
+      if ("error" in result) throw new Error(result.error);
+      if (result.token) rememberLoginToken(result.token);
+      onRegisterSuccess(result.email);
+    } catch (error) {
+      notify("error", (error as Error).message);
+    }
+  };
 
   return (
     <Modal.Body sx={{ gap: 2 }}>
@@ -79,9 +68,7 @@ export const RegisterForm = ({
         sx={{ flex: 1 }}
         /* Hidden tabs stay mounted, and ENTER presses every enabled button on the page */
         disabled={!isActive}
-        onClick={() =>
-          socket.emit("register", { email, password, charClass, gender, remember: getRememberMe() })
-        }
+        onClick={handleRegister}
         keyboardKey="ENTER"
       >
         Register

@@ -6,6 +6,7 @@ import { CARD_COLORS, MobFace, SpriteFace, raceAsset } from "./card-pool";
 import { WalkOnHover } from "./walk-on-hover";
 import { Divider, PAPER, PAPER_STYLE, PaperFrame } from "./paper";
 import { RowTitle } from "./row-title";
+import { useHashScroll } from "./use-hash-scroll";
 
 type ListedItem = {
   name?: string;
@@ -27,6 +28,7 @@ const MONSTERS = Object.entries(nasties as Record<string, NastyDefinition>)
   .sort((a, b) => (a.stats.level ?? 0) - (b.stats.level ?? 0));
 
 export function PageNasties() {
+  useHashScroll();
   return (
     <Flex sx={{ gap: 2, flexDirection: "column", mb: 4 }}>
       <RowTitle icon={"bounty"}>Monsters</RowTitle>
@@ -35,6 +37,7 @@ export function PageNasties() {
         {MONSTERS.map(({ key, mob, stats }) => (
           <Box
             key={key}
+            id={key}
             sx={{ breakInside: "avoid", mb: 3, display: "inline-block", width: "100%" }}
           >
             <MonsterCard mob={mob} stats={stats} />

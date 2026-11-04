@@ -7,6 +7,7 @@ export interface SocketHandlers {
   connect: () => void;
   disconnect: () => void;
   heroInit: ServerToClientEvents["heroInit"];
+  loggedOut: ServerToClientEvents["loggedOut"];
   buffUpdate: ServerToClientEvents["buffUpdate"];
   playerUpdate: ServerToClientEvents["playerUpdate"];
   lootGrabbed: ServerToClientEvents["lootGrabbed"];
@@ -17,8 +18,6 @@ export interface SocketHandlers {
   partyInvite: ServerToClientEvents["partyInvite"];
   partyUpdate: ServerToClientEvents["partyUpdate"];
   updateUserSetting: ServerToClientEvents["updateUserSetting"];
-  loginToken: ServerToClientEvents["loginToken"];
-  loginTokenRejected: ServerToClientEvents["loginTokenRejected"];
 }
 
 /** The window events (sent by the Phaser scenes and the HUD itself) the HUD listens to. */
@@ -40,6 +39,7 @@ export function bindSocketHandlers(socket: ClientGameSocket, handlers: SocketHan
   socket.on("connect", handlers.connect);
   socket.on("disconnect", handlers.disconnect);
   socket.on("heroInit", handlers.heroInit);
+  socket.on("loggedOut", handlers.loggedOut);
   socket.on("buffUpdate", handlers.buffUpdate);
   socket.on("playerUpdate", handlers.playerUpdate);
   socket.on("lootGrabbed", handlers.lootGrabbed);
@@ -50,12 +50,11 @@ export function bindSocketHandlers(socket: ClientGameSocket, handlers: SocketHan
   socket.on("partyInvite", handlers.partyInvite);
   socket.on("partyUpdate", handlers.partyUpdate);
   socket.on("updateUserSetting", handlers.updateUserSetting);
-  socket.on("loginToken", handlers.loginToken);
-  socket.on("loginTokenRejected", handlers.loginTokenRejected);
   return () => {
     socket.off("connect", handlers.connect);
     socket.off("disconnect", handlers.disconnect);
     socket.off("heroInit", handlers.heroInit);
+    socket.off("loggedOut", handlers.loggedOut);
     socket.off("buffUpdate", handlers.buffUpdate);
     socket.off("playerUpdate", handlers.playerUpdate);
     socket.off("lootGrabbed", handlers.lootGrabbed);
@@ -66,8 +65,6 @@ export function bindSocketHandlers(socket: ClientGameSocket, handlers: SocketHan
     socket.off("partyInvite", handlers.partyInvite);
     socket.off("partyUpdate", handlers.partyUpdate);
     socket.off("updateUserSetting", handlers.updateUserSetting);
-    socket.off("loginToken", handlers.loginToken);
-    socket.off("loginTokenRejected", handlers.loginTokenRejected);
   };
 }
 

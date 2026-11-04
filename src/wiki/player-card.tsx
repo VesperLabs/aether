@@ -29,6 +29,7 @@ export const PlayerCard = ({
 }) => (
   <WalkOnHover
     as="button"
+    id={player.id}
     onClick={player.isGhost ? undefined : onSelect}
     sx={{
       ...PAPER_STYLE,

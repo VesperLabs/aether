@@ -11,7 +11,9 @@ import type { Player } from "../player";
 import type { ParsedCommand } from "@/network";
 import type { CommandContext } from "@/server/net/command-context";
 import type { UserDocument } from "../persistence";
-import { createLoginToken, isLoginTokenValid, readLoginTokenEmail } from "./login-token";
+import { TOO_MANY_TRIES } from "./accounts";
+import { isLoginAllowed } from "./login-limit";
+import { redeemPlayTicket } from "./play-tickets";
 
 /** Demo logins (throwaway, unsaved characters) are for development only, never production. */
 function isDemoAllowed() {
@@ -43,28 +45,24 @@ export async function demoLogin(
   joinWorld(ctx, player);
 }
 
-export async function login(
-  ctx: CommandContext,
-  { email, password, remember }: ParsedCommand<"login"> = {},
-) {
+export async function login(ctx: CommandContext, args: ParsedCommand<"login"> = {}) {
   const { world, socket } = ctx;
+  const { email, password } = args;
+  const address = socket.handshake.address;
+  if (!isLoginAllowed(world.db, address, email ?? "", world.now())) {
+    return socket.emit("formError", { error: TOO_MANY_TRIES });
+  }
   const user = await world.db.getUserByLogin({ email, password });
   if (!user) return socket.emit("formError", { error: "Invalid login" });
-  if (remember) {
-    socket.emit("loginToken", {
-      token: createLoginToken(user.email, user.password ?? "", world.now()),
-    });
-  }
   enterWorld(ctx, user);
 }
 
-export async function tokenLogin(ctx: CommandContext, { token }: ParsedCommand<"tokenLogin">) {
+/** Logs in with the one-time ticket the wiki sent this client here with. */
+export async function ticketLogin(ctx: CommandContext, { ticket }: ParsedCommand<"ticketLogin">) {
   const { world, socket } = ctx;
-  const user = await world.db.getUserByEmail({ email: readLoginTokenEmail(token) });
-  if (!user || !isLoginTokenValid(token, user.password ?? "", world.now())) {
-    socket.emit("loginTokenRejected");
-    return socket.emit("formError", { error: "Login expired, enter your password" });
-  }
+  const email = redeemPlayTicket(ticket, world.now());
+  const user = email && (await world.db.getUserByEmail({ email }));
+  if (!user) return socket.emit("formError", { error: "Login expired, enter your password" });
   enterWorld(ctx, user);
 }
 
@@ -126,44 +124,4 @@ function joinWorld(ctx: CommandContext, player: Player) {
     { isLogin: true },
   );
   broadcastPlayerJoin(world, roomName, player, { isLogin: true });
-}
-
-export async function register(
-  ctx: CommandContext,
-  { email, password, charClass, gender, remember }: ParsedCommand<"register"> = {},
-) {
-  const { world, socket } = ctx;
-  // Validate email format
-  const emailRegex = /^\S+@\S+\.\S+$/;
-  if (!emailRegex.test(`${email}`)) {
-    return socket.emit("formError", { error: "Invalid email format" });
-  }
-
-  // Check if email is already in use
-  const user = await world.db.getUserByEmail({ email });
-  if (user) {
-    return socket.emit("formError", { error: "Email already in use" });
-  }
-
-  //Validate password strength
-  if (password != null && password.length < 4) {
-    return socket.emit("formError", {
-      error: "Weak password",
-    });
-  }
-
-  // Create user if email and password are valid
-  const isCreated = await world.db.createUser({ email, password, charClass, gender });
-  if (!isCreated) {
-    return socket.emit("formError", { error: "Error creating user" });
-  }
-
-  // Remember the new account, so the login form is filled in
-  if (remember && email) {
-    const token = createLoginToken(email.toLowerCase(), password ?? "", world.now());
-    socket.emit("loginToken", { token });
-  }
-
-  // Send success message
-  socket.emit("formSuccess", { success: "Account created", email: email ?? undefined });
 }

@@ -2,7 +2,6 @@ import { Box, Flex, Text } from "@/ui";
 import { memo, startTransition, useEffect, useRef, useState, type PointerEvent } from "react";
 import { Link } from "wouter";
 import { useCardPool, type FeaturedCard } from "./card-pool";
-import { TAB_HEIGHT } from "./menu-bar";
 import { PAPER, PAPER_STYLE, PaperFrame } from "./paper";
 import { WalkOnHover } from "./walk-on-hover";
 
@@ -11,8 +10,6 @@ const CARD_GAP = 16;
 const STEP = CARD_WIDTH + CARD_GAP;
 /** Scroll speed, in pixels per second. */
 const SPEED = 40;
-/** Keeps the row above the footer bar. */
-const FOOTER_HEIGHT = 32;
 /** Extra cards rendered off-screen on each side, so new ones mount before they come into view. */
 const OVERSCAN = 2;
 
@@ -65,6 +62,10 @@ export const HomeCards = () => {
     const row = rowRef.current;
     if (!row) return;
     const onWheel = (event: WheelEvent) => {
+      /* On a screen too short for the page, scrolling down over the cards scrolls the page. */
+      const isVertical = Math.abs(event.deltaY) > Math.abs(event.deltaX);
+      const root = document.documentElement;
+      if (isVertical && root.scrollHeight > root.clientHeight) return;
       event.preventDefault();
       scrolled.current +=
         Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
@@ -136,8 +137,8 @@ export const HomeCards = () => {
 
   return (
     <Box
-      ref={rowRef}
       /* Mouse only: taps fire an enter with no leave, which would pause the row for good. */
+      ref={rowRef}
       onPointerEnter={(event) => (paused.current = event.pointerType === "mouse")}
       onPointerLeave={() => (paused.current = false)}
       onPointerDown={onPointerDown}
@@ -149,11 +150,12 @@ export const HomeCards = () => {
         dragged.current = 0;
       }}
       sx={{
-        position: "fixed",
-        left: 0,
-        right: 0,
-        /* Above the footer, or on phones the tab bar (which holds the footer's credit). */
-        bottom: [TAB_HEIGHT, FOOTER_HEIGHT],
+        position: "relative",
+        flexShrink: 0,
+        /* Edge to edge, out of the page's centred column; down to the footer, past its padding. */
+        width: "100vw",
+        ml: "calc(50% - 50vw)",
+        mb: "-32px",
         zIndex: 1,
         overflow: "hidden",
         /* Sideways swipes drive the row; vertical ones still scroll the page. */

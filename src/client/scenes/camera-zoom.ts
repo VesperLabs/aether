@@ -5,7 +5,7 @@ import { isMobile } from "@/ui/kit/is-mobile";
 
 let lastGameZoom: number | undefined;
 
-export function calculateZoomLevel({
+function calculateZoomLevel({
   viewportArea = 0,
   baseZoom = 2,
   maxZoom = 4,

@@ -1,12 +1,10 @@
-import { useState, useCallback } from "react";
-import { Modal, Icon, Box, Flex, Grid, VersionTag, Toast, Tooltip } from "@/ui";
-import type { ToastMessage } from "@/ui";
-import { useAppContext } from "@/client/hud/app/context";
+import { useState, useCallback, type ComponentProps, type ReactNode } from "react";
+import { Modal, Icon, Box, Flex, Grid, VersionTag, Toast, Tooltip } from "@/ui/kit";
+import type { ToastMessage } from "@/ui/kit";
 import { LoginForm } from "./login-form";
 import { RegisterForm } from "./register-form";
 import { CHAR_CLASS_SELECT } from "./char-class-select";
-import { DemoForm } from "./demo-form";
-import type { FormSuccess, Notify } from "./login-types";
+import type { Notify, OnTicket } from "./login-types";
 
 type LoginTab = "login" | "register" | "demo";
 
@@ -75,11 +73,18 @@ const TabIcon = ({ active }: { active: boolean }) => (
   </Box>
 );
 
-export const ModalLogin = () => {
+/** The login, register and (where given) demo tabs. The app decides what a login leads to. */
+export const ModalLogin = ({
+  onTicket,
+  renderDemo,
+  sx,
+  ...props
+}: Pick<ComponentProps<typeof Modal>, "zoom" | "bottomOffset" | "sx"> & {
+  onTicket: OnTicket;
+  renderDemo?: (isActive: boolean) => ReactNode;
+}) => {
   const storedEmail = localStorage.getItem("email") ?? "";
-  const { zoom, bottomOffset } = useAppContext();
-  /* Demo logins are for development only; the server refuses them in production */
-  const canDemo = import.meta.env.DEV;
+  const canDemo = !!renderDemo;
   const [defaultEmail, setDefaultEmail] = useState(storedEmail);
   const [activeTab, setActiveTab] = useState<LoginTab>(storedEmail || !canDemo ? "login" : "demo");
 
@@ -91,22 +96,16 @@ export const ModalLogin = () => {
   const notify: Notify = (kind, message) => setToast({ id: Date.now(), kind, message });
   const dismissToast = useCallback(() => setToast(null), []);
 
-  const onRegisterSuccess = (payload: FormSuccess) => {
-    notify("success", payload?.success ?? "Account created");
-    setDefaultEmail(payload?.email ?? "");
+  const onRegisterSuccess = (email: string) => {
+    notify("success", "Account created");
+    setDefaultEmail(email);
     setTimeout(() => setActiveTab("login"), 100);
   };
 
   return (
-    <Modal
-      zoom={zoom}
-      bottomOffset={bottomOffset}
-      as="form"
-      onSubmit={(e) => e.preventDefault()}
-      sx={{ width: 244 }}
-    >
+    <Modal {...props} as="form" onSubmit={(e) => e.preventDefault()} sx={{ width: 244, ...sx }}>
       <Tooltip id="login" />
-      <Toast toast={toast} onDismiss={dismissToast} zoom={zoom} />
+      <Toast toast={toast} onDismiss={dismissToast} />
       <VersionTag />
       <Flex sx={{ flexDirection: "column" }}>
         <Flex role="tablist">
@@ -133,6 +132,7 @@ export const ModalLogin = () => {
               defaultEmail={defaultEmail}
               isActive={isLogin}
               notify={notify}
+              onTicket={onTicket}
             />
           </TabPanel>
           <TabPanel open={isRegister} flush={isLogin}>
@@ -144,7 +144,7 @@ export const ModalLogin = () => {
           </TabPanel>
           {canDemo && (
             <TabPanel open={isDemo} flush={isLogin}>
-              <DemoForm isActive={isDemo} />
+              {renderDemo(isDemo)}
             </TabPanel>
           )}
         </Grid>

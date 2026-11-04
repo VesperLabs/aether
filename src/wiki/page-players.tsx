@@ -1,5 +1,6 @@
 import { Button, Flex, Grid, Text } from "@/ui";
 import { RowTitle } from "./row-title";
+import { useHashScroll } from "./use-hash-scroll";
 import { PlayerCard } from "./player-card";
 import { PlayerPanel } from "./player-panel";
 import { useState } from "react";
@@ -28,6 +29,8 @@ export function PagePlayers() {
       return lastPage?.pageInfo?.nextPage;
     },
   });
+
+  useHashScroll(!!data);
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
 

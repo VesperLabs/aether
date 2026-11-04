@@ -1,5 +1,5 @@
-import { calculateZoomLevel } from "@/client/scenes/camera-zoom";
 import { isTypableFieldActive } from "@/client/input/typable-field";
+import { getHudZoomFor } from "@/ui/kit/hud-scale";
 import { isMobile } from "@/ui/kit/is-mobile";
 
 let lastZoom: string | undefined;
@@ -7,12 +7,6 @@ let lastZoom: string | undefined;
 export const getHudZoom = () => {
   /* A phone keyboard shrinks the window while typing; keep the HUD's size until it closes */
   if (lastZoom && isMobile && isTypableFieldActive()) return lastZoom;
-  const viewportArea = window.innerWidth * window.innerHeight;
-  lastZoom = calculateZoomLevel({
-    viewportArea,
-    baseZoom: 0.75,
-    maxZoom: 2,
-    divisor: 3000000,
-  });
+  lastZoom = getHudZoomFor(window.innerWidth, window.innerHeight);
   return lastZoom;
 };

@@ -86,11 +86,6 @@ export type LoginCharacter = Partial<
 export interface ServerToClientEvents {
   /* Auth */
   formError: (payload: { error: string }) => void;
-  formSuccess: (payload: { success: string; email?: string }) => void;
-  /** Sent after a login with "Remember me": the client keeps it for `tokenLogin`. */
-  loginToken: (payload: { token: string }) => void;
-  /** The remembered login was refused (expired, password changed): forget it. */
-  loginTokenRejected: () => void;
   /** First message after login, respawn and door travel: the whole room. */
   heroInit: (
     state: RoomStateMessage & {
@@ -102,6 +97,8 @@ export interface ServerToClientEvents {
     meta?: { isLogin?: boolean; isRespawn?: boolean },
   ) => void;
 
+  /** Answers `/logout`: the client forgets its login and goes back to the login screen. */
+  loggedOut: () => void;
   /** The room an observer asked to watch, whole. */
   roomObserved: (state: RoomStateMessage & { roomName: string }) => void;
 

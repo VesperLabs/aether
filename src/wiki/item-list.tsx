@@ -1,7 +1,8 @@
 import { Box } from "@/ui";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ItemCard, type WikiItem } from "./item-card";
+import { getHashId } from "./use-hash-scroll";
 
 /** Space between cards, in pixels. */
 const GAP = 8;
@@ -37,6 +38,14 @@ export const ItemList = ({ items }: { items: WikiItem[] }) => {
     scrollMargin: top,
     getItemKey: (index) => key(items[index]),
   });
+
+  /* Only cards near the screen exist, so the list has to go to the one the URL names. */
+  useEffect(() => {
+    const index = items.findIndex((item) => key(item) === getHashId());
+    if (top && index >= 0) virtualizer.scrollToIndex(index, { align: "center" });
+    // Once the list knows where it starts; filtering afterwards shouldn't jump back.
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
+  }, [top]);
 
   return (
     <Box ref={listRef} sx={{ position: "relative" }} style={{ height: virtualizer.getTotalSize() }}>
