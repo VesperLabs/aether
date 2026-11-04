@@ -33,6 +33,7 @@ function ctx(over: {
     attackRange: 8,
     standBand: undefined,
     hasClearShot: true,
+    inMeleeReach: false,
     isAttacking: false,
     isResetting: false,
   };

@@ -165,6 +165,86 @@ describe("threat, leash and new behaviors", () => {
     expect(decision.movement).toEqual({ type: "standStill" });
   });
 
+  it("plants its feet while winding up, even if the target steps out of reach", () => {
+    const decision = decideNpcAction(
+      input({
+        state: { lockedPlayerId: "p1", isAiming: true },
+        rest: { lockedPlayer: player({ x: 60 }), nearestPlayer: player({ x: 60 }) },
+      }),
+      never,
+    );
+    expect(decision.movement).toEqual({ type: "standStill" });
+    expect(decision.cancelWindup).toBeUndefined();
+  });
+
+  it("finishes its swing before walking off, even once the target is dead", () => {
+    const dead = player({ x: 20, isDead: true });
+    const decision = decideNpcAction(
+      input({
+        state: { lockedPlayerId: "p1", isAttacking: true, lastAttack: NOW - 100 },
+        rest: { lockedPlayer: dead, nearestPlayer: dead },
+      }),
+      never,
+    );
+    expect(decision.lockedPlayerId).toBeNull();
+    expect(decision.movement).toEqual({ type: "standStill" });
+  });
+
+  it("calls off its windup when it gives up the fight", () => {
+    const far = player({ x: 900 });
+    const leashed = decideNpcAction(
+      input({
+        npc: { x: 800 },
+        state: { lockedPlayerId: "p1", isAiming: true },
+        rest: { lockedPlayer: far, nearestPlayer: far },
+      }),
+      never,
+    );
+    expect(leashed.cancelWindup).toBe(true);
+    expect(leashed.movement).toEqual({ type: "returnToSpawn", pathed: true });
+
+    const retreating = decideNpcAction(
+      input({
+        npc: {
+          behaviors: ["aggressive", "retreat"],
+          stats: { level: 5, walkSpeed: 50, attackDelay: 300, castDelay: 300, hp: 1, maxHp: 10 },
+        },
+        state: { isAiming: true },
+        rest: { nearestPlayer: player({ x: 50 }) },
+      }),
+      never,
+    );
+    expect(retreating.cancelWindup).toBe(true);
+    expect(retreating.movement).toMatchObject({ type: "flee" });
+  });
+
+  it("swings from as far as its weapon reaches", () => {
+    const atArmsLength = player({ x: 50 });
+    const decision = decideNpcAction(
+      input({
+        npc: { bodySize: 8, weapons: { meleeReach: 60 } },
+        state: { lockedPlayerId: "p1", npcAttackReady: true, lastAttack: NOW - 100 },
+        rest: { lockedPlayer: atArmsLength, nearestPlayer: atArmsLength },
+      }),
+      never,
+    );
+    expect(decision.action.type).toBe("attack");
+  });
+
+  it("melee casters swing at a target in reach instead of casting or backing off", () => {
+    const close = player({ x: 20 });
+    const decision = decideNpcAction(
+      input({
+        npc: { abilities: { "1": { base: "waterball" } } },
+        state: { lockedPlayerId: "p1", lastAttack: NOW - 100 },
+        rest: { lockedPlayer: close, nearestPlayer: close },
+      }),
+      never,
+    );
+    expect(decision.movement).toEqual({ type: "standStill" });
+    expect(decision.action.type).toBe("idle");
+  });
+
   it("casters that kite hold at spell range instead of closing to melee", () => {
     const at = (x: number) =>
       decideNpcAction(

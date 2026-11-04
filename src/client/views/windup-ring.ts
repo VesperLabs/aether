@@ -25,6 +25,8 @@ const RING_DEPTH = 1_000_000;
 export class WindupRing extends Phaser.GameObjects.Image {
   /** How far the owner's current windup is. */
   windup: { progress: number; kind: keyof typeof RING_COLORS } = { progress: 0, kind: "attack" };
+  /** Fills the ring over the windup. */
+  tween?: Phaser.Tweens.Tween;
   declare canvas: Phaser.Textures.CanvasTexture;
   /** What the canvas last drew, so it only redraws when that changes. */
   declare drawn: string;
@@ -96,7 +98,8 @@ export function playWindupRing(attacker: Player, windupMs: number, kind: "attack
   const { scene, windupRing } = attacker;
   if (!scene || !windupRing) return;
   windupRing.windup = { progress: 0, kind };
-  scene.tweens.addCounter({
+  windupRing.tween?.stop();
+  windupRing.tween = scene.tweens.addCounter({
     from: 0,
     to: 1,
     duration: windupMs,
@@ -108,4 +111,12 @@ export function playWindupRing(attacker: Player, windupMs: number, kind: "attack
       windupRing.windup.progress = 0;
     },
   });
+}
+
+/** Empties an NPC's windup ring when it calls the windup off. */
+export function stopWindupRing(attacker: Player) {
+  const { windupRing } = attacker;
+  if (!windupRing) return;
+  windupRing.tween?.stop();
+  windupRing.windup.progress = 0;
 }

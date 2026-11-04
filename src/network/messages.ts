@@ -150,6 +150,7 @@ export interface ServerToClientEvents {
     abilitySlot?: string;
     windupMs: number;
   }) => void;
+  npcWindupCancelled: (payload: { id: string }) => void;
   npcCastSpell: (payload: {
     id: string;
     abilitySlot?: number | string;

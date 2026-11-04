@@ -12,7 +12,6 @@ import { decideAggro, isNpcAttackReady, type NpcPlayerView, type NpcSelfView } f
 import {
   NPC_HOME_RANGE,
   NPC_LEASH_RANGE,
-  NPC_SHOULD_ATTACK_RANGE,
   NPC_ENGAGED_BUBBLE,
   NPC_LUNGE_EXTRA_WINDUP,
   NPC_WARNING_DELAY,
@@ -156,6 +155,8 @@ export interface NpcDecision {
   startReset?: boolean;
   /** Home after a reset: heal up and go back to normal. */
   finishReset?: boolean;
+  /** It gave up the fight mid-windup: the swing or spell never lands. */
+  cancelWindup?: boolean;
 }
 
 /** A dead mob comes back once its respawn time has passed. */
@@ -182,6 +183,7 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
   let behaviorId: NpcBehaviorId = state.behavior ?? "wander";
   let startReset = false;
   let finishReset = false;
+  let cancelWindup = false;
   const isResetting = () => (!!state.isResetting || startReset) && !finishReset;
 
   const idle: NpcAction = { type: "idle" };
@@ -198,6 +200,7 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
     behavior: behaviorId,
     ...(startReset && { startReset }),
     ...(finishReset && { finishReset }),
+    ...(cancelWindup && { cancelWindup }),
   });
 
   const setLockedPlayerId = (id: string | null | undefined) => {
@@ -262,16 +265,24 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
   }
   if (input.isStunned) return result({ type: "standStill" });
 
-  const attackRange = getShouldAttackRange(npc.weapons);
-  // Ranged weapons fire from inside the arrow's flight; melee closes to touching
-  const weaponBand =
-    attackRange !== NPC_SHOULD_ATTACK_RANGE ? getWeaponBand(attackRange) : undefined;
+  const attackRange = getShouldAttackRange(npc.weapons, npc.bodySize);
+  // Ranged weapons fire from inside the arrow's flight; melee closes to its swing's reach
+  const isRanged = !!(npc.weapons?.handLeft || npc.weapons?.handRight);
+  const weaponBand = isRanged ? getWeaponBand(attackRange) : undefined;
   const hasClearShot = !!targetPlayer && (input.hasClearShot?.(targetPlayer) ?? true);
+  // Close enough to swing: the weapon beats its spells
+  const inMeleeReach = !weaponBand && !!checkInRange(npc, targetPlayer, attackRange);
   // Still decided while lunging, so aggro and bubbles keep up; the lunge just overrides the move
   const planned = decideMovement();
-  const movement = decideLungeMovement(state, now) ?? planned;
+  // Winding up plants its feet, whatever it would rather do; giving up the fight calls the windup off
+  const chosen = NPC_BEHAVIORS[behaviorId];
+  cancelWindup = !!state.isAiming && (!chosen.engaged || !!chosen.holdsFire);
+  // ...and through the swing that follows, even once the target is dead
+  const holdsWindup = (!!state.isAiming && !cancelWindup) || !!isAttacking;
+  const movement =
+    decideLungeMovement(state, now) ?? (holdsWindup ? { type: "standStill" } : planned);
   const isRecovering = isRecoveringFromLunge(state, now);
-  if (NPC_BEHAVIORS[behaviorId].holdsFire) return result(movement);
+  if (chosen.holdsFire) return result(movement);
 
   // intendAttack
   let action: NpcAction = idle;
@@ -306,8 +317,8 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
     const { ability, abilitySlot } = findSuitableAbility(
       {
         self: npc,
-        // No clear shot: only spells that need no target, like self buffs
-        target: hasClearShot ? targetPlayer : null,
+        // No clear shot, or close enough to swing: only spells that need no target, like self buffs
+        target: hasClearShot && !inMeleeReach ? targetPlayer : null,
         abilities: npc.abilities,
         buffs: npc.buffs,
         lastCast: state.lastCast,
@@ -358,6 +369,7 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
       attackRange,
       standBand,
       hasClearShot,
+      inMeleeReach,
       isAttacking,
       isResetting: isResetting(),
     };
