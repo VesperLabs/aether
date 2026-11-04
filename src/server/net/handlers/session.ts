@@ -2,9 +2,11 @@ import type { Player } from "../../player";
 import { getFullCharacterState } from "@/network/sync";
 import type { ParsedCommand } from "@/network";
 import type { CommandContext } from "@/server/net/command-context";
+import { readTickHealth } from "@/server/tick-health";
 
+/** Answers a ping with how the tick loop has been keeping up, so the client can tell network lag from server stalls. */
 export function latency(ctx: CommandContext, ack: ParsedCommand<"latency">) {
-  if (typeof ack === "function") (ack as () => void)();
+  if (typeof ack === "function") ack(readTickHealth(ctx.world));
 }
 
 export function peerInit(ctx: CommandContext, pId: ParsedCommand<"peerInit">) {

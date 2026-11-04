@@ -170,3 +170,18 @@ export interface ServerToClientEvents {
   updateUserSetting: (payload: { name: string; value: unknown }) => void;
   connectPeer: (payload: { peerId: string; socketId: string }) => void;
 }
+
+/** How the server's tick loop kept up over the last few seconds. Answers the client's `latency` ping. */
+export interface ServerHealthMessage {
+  /** The tick interval it aims for, ms. */
+  targetTickMs: number;
+  /** Longest wait between two ticks, ms. Well over `targetTickMs` means the server stalled. */
+  maxTickGapMs: number;
+  /** Longest time one tick took to run, ms. */
+  maxTickWorkMs: number;
+  /** Event loop delay (GC, CPU throttling), ms. */
+  loopDelayP99Ms: number;
+  loopDelayMaxMs: number;
+  playersOnline: number;
+  upTimeMs: number;
+}

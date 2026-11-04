@@ -15,12 +15,13 @@ import { subscribeThreat } from "@/rules/npc-behavior";
 import { subscribeQuests } from "@/rules/quests";
 import { npcBaseStats, subscribeStats } from "@/rules/stats";
 import { addRoom, createRoom, createWorld } from "@/rules/world";
+import { createTickHealth } from "./tick-health";
 import { spawnLoot } from "./loot-adapter";
 import { subscribeNpcMessages } from "./npc-messages";
 import { subscribeKnockbackMessages, subscribePoseForgetting } from "./net/handlers/movement";
 import { subscribeDebugMessages } from "./debug-messages";
 import { Npc, type NpcDefinition } from "./npc";
-import { createNetIds, type GameIo } from "@/network";
+import { DEFAULT_SERVER_FPS, createNetIds, type GameIo } from "@/network";
 import type { Database } from "./persistence/database";
 
 /* Find NPCs in data lists, and add `kind` to them */
@@ -103,6 +104,7 @@ export function createServerWorld({
   world.netIds = createNetIds();
   world.dice = dice;
   world.rng = dice.random;
+  world.tickHealth = createTickHealth(1000 / DEFAULT_SERVER_FPS);
 
   for (const asset of mapList) {
     addRoom(world, createRoom(asset.name, readMapFile(asset.json), now()));

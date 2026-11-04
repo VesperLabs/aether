@@ -50,6 +50,7 @@ export class GameServer {
 
     this.db = db;
     this.world = createServerWorld({ io: this.io, db, now, dice });
+    this.world.tickHealth.targetTickMs = 1000 / serverFps;
     this.world.loop = createTickLoop(this.world, serverSystems, { fps: serverFps, clock });
     listenForConnections(this.world);
     /* Nobody is connected yet, so the loop stays paused until the first player joins. */

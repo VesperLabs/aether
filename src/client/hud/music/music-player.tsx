@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Box, Flex, Text, isMobile } from "@/ui";
-import { MINI_MAP_MARGIN, MINI_MAP_SIZE } from "@/client/views/minimap-size";
 import { useAppContext } from "@/client/hud/app/context";
 import { usePersistSetting } from "@/client/hud/settings/use-persist-setting";
 import type { SceneMain } from "@/client/scenes/main-scene";
+import { DISC_SIZE, DiscButton, GLASS_PILL } from "@/client/hud/app/glass-disc";
 
 interface NowPlaying {
   name: string;
@@ -66,17 +66,13 @@ const Equalizer = ({ playing }: { playing: boolean }) => (
 );
 
 const COLLAPSE_DELAY = 2500;
-/** The collapsed disc's size. */
-const DISC_SIZE = 30;
-/** Gap between the disc and the minimap's left edge. */
-const MINIMAP_GAP = 6;
 
 /**
- * Glass disc beside the minimap's top left with a bouncing equalizer. Hover or tap expands it to show
+ * Glass disc with a bouncing equalizer, in the top right bar. Hover or tap expands it to show
  * the track, time and progress; the disc toggles `playMusic`.
  */
 export const MusicPlayer = () => {
-  const { game, userSettings, zoom } = useAppContext();
+  const { game, userSettings } = useAppContext();
   const persistSetting = usePersistSetting();
   const [nowPlaying, setNowPlaying] = useState<NowPlaying | null>(null);
   const [expanded, setExpanded] = useState(false);
@@ -84,9 +80,6 @@ export const MusicPlayer = () => {
   const playMusic = !!userSettings?.playMusic;
   const current = playMusic ? nowPlaying : null;
   const progress = current?.duration ? current.seek / current.duration : 0;
-  const scale = isMobile ? 1 : Number(zoom) || 1;
-  const right =
-    MINI_MAP_MARGIN + (!isMobile && userSettings?.showMinimap ? MINI_MAP_SIZE + MINIMAP_GAP : 0);
 
   useEffect(() => {
     const getScene = () => game?.scene?.getScene("SceneMain") as SceneMain | undefined;
@@ -130,22 +123,11 @@ export const MusicPlayer = () => {
       onMouseEnter={expand}
       onMouseLeave={collapseSoon}
       sx={{
-        position: "fixed",
-        top: MINI_MAP_MARGIN,
-        right,
-        transform: `scale(${scale})`,
-        transformOrigin: "top right",
-        /* Under the menus, which open over it */
-        zIndex: "minimap",
         alignItems: "center",
         flexDirection: "row-reverse",
         gap: 2,
-        p: "4px",
+        ...GLASS_PILL,
         pl: expanded ? 3 : "4px",
-        borderRadius: 999,
-        bg: "shadow.30",
-        backdropFilter: "blur(10px)",
-        pointerEvents: "all",
         fontSize: 0,
         maxWidth: expanded ? 200 : DISC_SIZE,
         overflow: "hidden",
@@ -156,28 +138,7 @@ export const MusicPlayer = () => {
         },
       }}
     >
-      <Box
-        as="button"
-        aria-label={playMusic ? "Stop music" : "Play music"}
-        title={playMusic ? "Stop music" : "Play music"}
-        onClick={toggle}
-        sx={{
-          all: "unset",
-          cursor: "pointer",
-          flexShrink: 0,
-          width: 22,
-          height: 22,
-          borderRadius: "50%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: "9px",
-          color: "white",
-          bg: "shadow.30",
-          opacity: playMusic ? 1 : 0.6,
-          "&:hover": { opacity: 1 },
-        }}
-      >
+      <DiscButton label={playMusic ? "Stop music" : "Play music"} onClick={toggle} dim={!playMusic}>
         {expanded ? (
           playMusic ? (
             "■"
@@ -190,7 +151,7 @@ export const MusicPlayer = () => {
           /* Flat bars read as "...", so show a note when nothing plays */
           <Text sx={{ fontSize: "13px", lineHeight: 1 }}>♪</Text>
         )}
-      </Box>
+      </DiscButton>
       <Flex
         sx={{
           flexDirection: "column",
