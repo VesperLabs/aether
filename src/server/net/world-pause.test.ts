@@ -4,7 +4,7 @@ import type { ServerWorld } from "../server-world";
 import { shouldPause } from "./world-pause";
 
 function worldWith(players: Record<string, unknown>) {
-  const world = { tick: 0, players } as unknown as ServerWorld;
+  const world = { tick: 0, players, observers: new Set() } as unknown as ServerWorld;
   world.loop = createTickLoop(world, [], { fps: 1, clock: createManualClock() });
   return world;
 }

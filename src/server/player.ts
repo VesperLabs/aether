@@ -1,3 +1,4 @@
+import { broadcastLeveled } from "@/server/net/room-broadcast";
 import type { AbilitySlot } from "@/rules/spells";
 import type { Hand } from "@/rules/combat";
 import type { ServerWorld } from "./server-world";
@@ -14,7 +15,6 @@ import type { Npc } from "./npc";
 import { createSpell } from "./spell-adapter";
 import { vanish } from "./stealth";
 import { PLAYER_DEFAULT_SPAWN } from "./auth/character-defaults";
-import { getRoomState } from "@/server/net/room-sync";
 import { entitiesInRoom } from "@/rules/world";
 import { expForMobKill } from "@/rules/stats";
 import { isPartyMember, sharedRecipientIds } from "@/rules/party";
@@ -369,11 +369,8 @@ export class Player extends ServerCharacter {
     }
 
     if (playerIdsToUpdate.length > 0) {
-      const roomState = getRoomState(world, roomName);
-      world.io.to(roomName).emit("buffUpdate", {
-        players: roomState.players.filter((player) => playerIdsToUpdate.includes(player.id)),
-        playerIdsThatLeveled,
-      });
+      const updated = playerIdsToUpdate.map((id) => world.players[id]).filter(Boolean);
+      broadcastLeveled(world, roomName, updated, playerIdsThatLeveled);
     }
 
     world.io.to(roomName).emit("assignDamage", mergeDrainHits(hitList));

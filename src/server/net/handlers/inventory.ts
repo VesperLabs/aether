@@ -1,4 +1,4 @@
-import { getFullCharacterState } from "@/network/sync";
+import { broadcastPlayerUpdate, broadcastLootGrabbed } from "@/server/net/room-broadcast";
 import { cloneJson } from "@/content";
 import { addStackAmounts, resolveGrab } from "@/rules/loot";
 import { removeLoot, spawnLoot } from "../../loot-adapter";
@@ -12,7 +12,7 @@ export function grabLoot(
   ctx: CommandContext,
   { lootId, direction }: ParsedCommand<"grabLoot"> = {},
 ) {
-  const { world, socket, socketId, io } = ctx;
+  const { world, socket, socketId } = ctx;
   const player = world.players[socketId];
   /* A missing id looks up nothing, as before. */
   const key = `${lootId}`;
@@ -60,16 +60,12 @@ export function grabLoot(
   }
   /* Save player */
   world.db.updateUser(player);
-  io.to(player?.roomName).emit("lootGrabbed", {
-    socketId,
-    loot,
-    /* TODO: This is a big state update. Probably only need to update inventory and quests */
-    player: getFullCharacterState(player),
-  });
+  /* TODO: This is a big state update. Probably only need to update inventory and quests */
+  broadcastLootGrabbed(world, player.roomName, player, loot);
 }
 
 export function dropItem(ctx: CommandContext, request: ParsedCommand<"dropItem"> = {}) {
-  const { world, socket, socketId, io } = ctx;
+  const { world, socket, socketId } = ctx;
   const player = world?.players?.[socketId];
   if (!isInRoom(player)) return;
   const result = dropItemCommand(player, request ?? {});
@@ -88,11 +84,11 @@ export function dropItem(ctx: CommandContext, request: ParsedCommand<"dropItem">
   });
   /* Save the users data */
   world.db.updateUser(player);
-  io.to(player.roomName).emit("playerUpdate", getFullCharacterState(player));
+  broadcastPlayerUpdate(ctx.world, player);
 }
 
 export function consumeItem(ctx: CommandContext, request: ParsedCommand<"consumeItem"> = {}) {
-  const { world, socketId, io } = ctx;
+  const { world, socketId } = ctx;
   const player = world?.players?.[socketId];
   if (!isInRoom(player) || player.state?.isDead) return;
   /* The same cooldowns the client shows: potions share one, food in a slot uses that slot's */
@@ -132,5 +128,5 @@ export function consumeItem(ctx: CommandContext, request: ParsedCommand<"consume
   player.calculateStats();
   /* Save the users data */
   world.db.updateUser(player);
-  io.to(player.roomName).emit("playerUpdate", getFullCharacterState(player));
+  broadcastPlayerUpdate(ctx.world, player);
 }

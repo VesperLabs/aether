@@ -1,3 +1,4 @@
+import { toAllPlayers, toRoomPlayers } from "@/server/net/room-broadcast";
 import { randomNumber, type BuiltItem } from "@/content";
 import { CHAT_COMMANDS, findChatCommand, type ChatMessage } from "@/network";
 import { getParty } from "@/rules/party";
@@ -52,7 +53,12 @@ function sendWhisper(
 
 const yell: PlayerCommand = (ctx, player, text, links) => {
   if (!text) return reply(ctx, "error", "Usage: /yell <message>");
-  ctx.io.emit("message", { type: "yell", from: nameOf(player), message: text, links });
+  toAllPlayers(ctx.world).emit("message", {
+    type: "yell",
+    from: nameOf(player),
+    message: text,
+    links,
+  });
 };
 
 const whisper: PlayerCommand = (ctx, player, text, links) => {
@@ -82,9 +88,11 @@ const party: PlayerCommand = (ctx, player, text, links) => {
 
 const me: PlayerCommand = (ctx, player, text, links) => {
   if (!text) return reply(ctx, "error", "Usage: /me <action>");
-  ctx.io
-    .to(player.roomName)
-    .emit("message", { type: "emote", message: `${nameOf(player)} ${text}`, links });
+  toRoomPlayers(ctx.world, player.roomName).emit("message", {
+    type: "emote",
+    message: `${nameOf(player)} ${text}`,
+    links,
+  });
 };
 
 const who: PlayerCommand = (ctx) => {
@@ -113,7 +121,7 @@ const roll: PlayerCommand = (ctx, player, text) => {
   const max = text ? Number(text) : DEFAULT_ROLL_MAX;
   if (!Number.isInteger(max) || max < 1) return reply(ctx, "error", "Usage: /roll [max]");
   const rolled = randomNumber(ctx.world.dice, 1, max);
-  ctx.io.to(player.roomName).emit("message", {
+  toRoomPlayers(ctx.world, player.roomName).emit("message", {
     type: "system",
     message: `${nameOf(player)} rolls ${rolled} (1-${max})`,
   });

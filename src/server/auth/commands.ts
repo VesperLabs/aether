@@ -1,4 +1,4 @@
-import { getFullCharacterState } from "@/network/sync";
+import { broadcastPlayerJoin } from "@/server/net/room-broadcast";
 import { getRoomState } from "@/server/net/room-sync";
 import { areCheatsEnabled } from "@/server/admin/commands";
 import { removePlayer } from "../remove-player";
@@ -6,6 +6,8 @@ import { createPlayer } from "../player-room";
 import { legacyLeaveParty } from "../party-adapter";
 import { createBaseUser } from "../persistence";
 import { shouldPause } from "../net/world-pause";
+import { stopObserving } from "../net/handlers/observe";
+import type { Player } from "../player";
 import type { ParsedCommand } from "@/network";
 import type { CommandContext } from "@/server/net/command-context";
 import type { UserDocument } from "../persistence";
@@ -38,30 +40,7 @@ export async function demoLogin(
     ...user,
   });
 
-  /* Should we pause or resume? */
-  shouldPause(world);
-
-  const roomName = player?.room?.name;
-
-  roomName
-    ? console.log(`🔌 ${player?.profile?.userName} connected`)
-    : console.log("❌ Missing player roomName");
-
-  if (!roomName) return;
-
-  socket.join(roomName);
-  socket.emit(
-    "heroInit",
-    {
-      ...getRoomState(world, roomName),
-      userSettings: player.userSettings,
-      cheats: areCheatsEnabled(),
-      socketId,
-    },
-    { isLogin: true },
-  );
-
-  socket.to(roomName).emit("playerJoin", getFullCharacterState(player), { isLogin: true });
+  joinWorld(ctx, player);
 }
 
 export async function login(
@@ -116,6 +95,14 @@ function enterWorld(ctx: CommandContext, user: UserDocument) {
     ...user,
   });
 
+  joinWorld(ctx, player);
+}
+
+/** Puts a freshly created player's connection in their room and tells both sides. */
+function joinWorld(ctx: CommandContext, player: Player) {
+  const { world, socket, socketId } = ctx;
+  stopObserving(ctx);
+
   /* Should we pause or resume? */
   shouldPause(world);
 
@@ -138,7 +125,7 @@ function enterWorld(ctx: CommandContext, user: UserDocument) {
     },
     { isLogin: true },
   );
-  socket.to(roomName).emit("playerJoin", getFullCharacterState(player), { isLogin: true });
+  broadcastPlayerJoin(world, roomName, player, { isLogin: true });
 }
 
 export async function register(

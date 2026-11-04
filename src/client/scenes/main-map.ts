@@ -17,7 +17,7 @@ export function enableDoors(scene: SceneMain) {
   }
 }
 
-export function initCamera(scene: SceneMain, hero: Player) {
+export function initCamera(scene: SceneMain, hero: Player | undefined) {
   if (!hero || !scene?.map) return;
   const zoomLevel = getGameZoomLevel(scene);
 
@@ -33,7 +33,6 @@ export function initPlayerCollision(
   player: Player,
   colliders: Phaser.Tilemaps.TilemapLayer[] = [],
 ) {
-  scene.physics.world.colliders.destroy();
   scene.physics.world.setBounds(0, 0, scene.map.widthInPixels, scene.map.heightInPixels);
   player.body.setCollideWorldBounds(true);
   colliders.forEach((c) => {
@@ -73,7 +72,8 @@ export function changeMap(scene: SceneMain, roomName: string) {
   scene.map = scene.make.tilemap({
     key: roomName,
   });
-  changeMusic(scene);
+  /* The login screen stays quiet while it tours the rooms */
+  if (scene.hero) changeMusic(scene);
 
   const { map } = scene;
   // The map assets are bundled, so a missing tileset or layer is a build error, not a runtime case.

@@ -1,12 +1,12 @@
+import { broadcastPlayerUpdate } from "@/server/net/room-broadcast";
 import type { MoveItemCommand } from "@/network";
-import { getFullCharacterState } from "@/network/sync";
 import { moveItemCommand } from "@/rules/inventory";
 import type { CommandContext } from "@/server/net/command-context";
 import { findNearbyNpc } from "@/server/net/nearby-keeper";
 import { isInRoom } from "@/server/player-room";
 
 export function moveItem(ctx: CommandContext, { to, from }: MoveItemCommand = {}) {
-  const { world, socket, socketId, io } = ctx;
+  const { world, socket, socketId } = ctx;
   const player = world?.players?.[socketId];
   if (!isInRoom(player)) return;
 
@@ -29,5 +29,5 @@ export function moveItem(ctx: CommandContext, { to, from }: MoveItemCommand = {}
   /* Save the users data */
   player.calculateStats();
   world.db.updateUser(player);
-  io.to(player.roomName).emit("playerUpdate", getFullCharacterState(player));
+  broadcastPlayerUpdate(ctx.world, player);
 }

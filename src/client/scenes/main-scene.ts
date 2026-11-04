@@ -10,6 +10,7 @@ import { bindSceneSocket } from "@/client/net/scene-socket";
 import { changeMusic, setMusicVolume } from "@/client/audio/music";
 import { getPlayer, getNpc, getNpcs, getPlayers } from "./scene-entities";
 import { enableDoors, initCamera } from "./main-map";
+import { fitTourCamera } from "./observer-tour";
 import { checkProximities } from "./proximity";
 import { animateMinimap, createMinimap, updateMinimap } from "./minimap";
 
@@ -20,7 +21,7 @@ export interface NearbyPlayer {
 }
 
 export class SceneMain extends Phaser.Scene {
-  /** Set by `heroInit`; the entity groups below exist from then on. */
+  /** Set by `heroInit`; absent while observing from the login screen. */
   declare hero: Player;
   lastUpdateTime: number;
   declare loots: Phaser.Physics.Arcade.Group;
@@ -33,6 +34,8 @@ export class SceneMain extends Phaser.Scene {
   declare roomName: string;
   declare minimap?: Phaser.Cameras.Scene2D.Camera;
   nearbyRemotePlayers: NearbyPlayer[];
+  /** The next observed room is revealed over the login cover rather than faded in. */
+  isTourHidden = true;
   socket: ClientGameSocket;
   userSettings: UserSettings;
   constructor(socket: ClientGameSocket) {
@@ -71,7 +74,8 @@ export class SceneMain extends Phaser.Scene {
     this.scale.on(
       "resize",
       () => {
-        initCamera(scene, scene.hero);
+        if (scene.hero) initCamera(scene, scene.hero);
+        else fitTourCamera(scene);
       },
       this,
     );
@@ -94,9 +98,10 @@ export class SceneMain extends Phaser.Scene {
   }
   update(time: number, delta: number) {
     const elapsedTime = time - this.lastUpdateTime;
-    if (!this.socket || !this?.hero?.body) return;
+    if (!this.socket) return;
+    const hero = this.hero?.body ? this.hero : undefined;
 
-    easeHeroCorrection(this.hero, delta);
+    if (hero) easeHeroCorrection(hero, delta);
 
     /* Remote characters only: the hero is predicted locally. */
     const poses = netInterp.sample(performance.now());
@@ -107,9 +112,11 @@ export class SceneMain extends Phaser.Scene {
       }
     }
 
-    enableDoors(this);
-    updateMinimap(this);
-    checkProximities(this, time);
+    if (hero) {
+      enableDoors(this);
+      updateMinimap(this);
+      checkProximities(this, time);
+    }
 
     if (poses) {
       for (const [id, pose] of poses.npcs) {

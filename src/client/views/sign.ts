@@ -55,7 +55,7 @@ export class Sign extends Phaser.GameObjects.Container {
     this.setTalkMenu();
   }
   setTalkMenu() {
-    const show = this.scene.hero.state.targetNpcId === this.id;
+    const show = this.scene.hero?.state.targetNpcId === this.id;
     return this.talkMenu.setVisible(show);
   }
   destroy() {

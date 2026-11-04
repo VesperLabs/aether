@@ -11,7 +11,7 @@ import type { Party, PartyUpdatePayload } from "@/rules/party";
 /** Ground loot, as the server world keeps it. */
 export type LootMessage = Loot;
 
-interface RoomStateMessage {
+export interface RoomStateMessage {
   players: FullCharacterWire[];
   npcs: FullCharacterWire[];
   loots: LootMessage[];
@@ -101,6 +101,9 @@ export interface ServerToClientEvents {
     },
     meta?: { isLogin?: boolean; isRespawn?: boolean },
   ) => void;
+
+  /** The room an observer asked to watch, whole. */
+  roomObserved: (state: RoomStateMessage & { roomName: string }) => void;
 
   /* World */
   /** Every character's position in the room, every tick. Each stands alone: see `network/sync/poses`. */

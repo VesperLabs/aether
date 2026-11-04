@@ -122,6 +122,18 @@ export function getFullCharacterState(p: CharacterSyncInput): FullCharacterWire 
   };
 }
 
+/** A character as anonymous observers see it: how it looks and acts, nothing it owns or knows. */
+export function getPublicCharacterState(p: CharacterSyncInput): FullCharacterWire {
+  return {
+    ...getFullCharacterState(p),
+    peerId: undefined,
+    inventory: [],
+    gold: 0,
+    quests: [],
+    npcKills: {},
+  };
+}
+
 /**
  * Buff changes for one character. Clears the character's `state.hasBuffChanges` flag as a side effect:
  * the change is being sent now, so it is not sent again next tick.

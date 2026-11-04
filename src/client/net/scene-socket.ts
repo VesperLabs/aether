@@ -6,8 +6,12 @@ import {
   type FullCharacterWire,
 } from "@/network/sync";
 import { hideWorld, revealWorldWhenSettled } from "@/client/scenes/world-reveal";
+import { enterRoom } from "@/client/scenes/enter-room";
+import { LOGIN_FADE_MS } from "@/client/scenes/login-fade";
+import type { ServerToClientEvents } from "@/network";
+import { onRoomObserved, startObserverTour, stopObserverTour } from "@/client/scenes/observer-tour";
 import { netInterp } from "@/client/net/scene-interpolation";
-import { recordPoseArrival, resetPoseArrivals } from "@/client/net/net-stats";
+import { recordPoseArrival } from "@/client/net/net-stats";
 import { idOfNetId } from "@/client/net/net-ids";
 import { correctHeroPosition } from "@/client/net/position-correction";
 import { playAudio } from "@/client/audio/play-audio";
@@ -20,7 +24,6 @@ import { playSpawnDissolve } from "@/client/views/dissolve";
 import {
   addPlayer,
   getPlayer,
-  resetEntities,
   removePlayer,
   getNpc,
   addNpc,
@@ -28,7 +31,7 @@ import {
   getLoot,
 } from "@/client/scenes/scene-entities";
 import type { SceneMain } from "@/client/scenes/main-scene";
-import { changeMap, initCamera, initPlayerCollision } from "@/client/scenes/main-map";
+import { initCamera, initPlayerCollision } from "@/client/scenes/main-map";
 
 /** What a tick's vitals update on a player or npc sprite. */
 interface VitalsHolder {
@@ -62,6 +65,10 @@ function applyTickVitals(character: VitalsHolder, v: unknown) {
 export function bindSceneSocket(scene: SceneMain) {
   const socket = scene.socket;
 
+  socket.on("connect", () => startObserverTour(scene));
+  if (socket.connected) startObserverTour(scene);
+  socket.on("roomObserved", (state) => onRoomObserved(scene, state));
+
   socket.on("poses", (data) => {
     const now = performance.now();
     recordPoseArrival(now);
@@ -85,44 +92,55 @@ export function bindSceneSocket(scene: SceneMain) {
     if (scene.hero) scene.hero.party = party;
   });
 
-  socket.on("heroInit", (args, { isRespawn, isLogin } = {}) => {
+  const initHero: ServerToClientEvents["heroInit"] = (args, { isRespawn, isLogin } = {}) => {
     const { socketId, players = [], npcs = [], loots = [] } = args ?? {};
     if (args && Object.prototype.hasOwnProperty.call(args, "userSettings")) {
       scene.userSettings = { ...DEFAULT_USER_SETTINGS, ...args.userSettings };
     }
-    if (isLogin) hideWorld(scene);
-    /* Delete everything in the scene */
-    resetEntities(scene);
-    netInterp.reset();
-    resetPoseArrivals();
-    /* Add players that don't exist */
-    for (const player of players) {
-      if (getPlayer(scene, player.socketId)) continue;
-      if (socketId === player.socketId) {
-        scene.hero = addPlayer(scene, { ...player, isHero: true });
-      } else {
-        addPlayer(scene, player);
-      }
+    if (isLogin) {
+      stopObserverTour(scene);
+      hideWorld(scene);
     }
+    const roomName = players.find((p) => p.socketId === socketId)?.roomName as string;
+    const { collideLayer } = enterRoom(scene, roomName, { players, npcs, loots }, socketId);
+    const { hero } = scene;
+    if (!hero) return;
     // tell the client we are not currently entering a door.
     // this tells the hud not to send x/y events
-    scene.hero.state.isEnteringDoor = false;
-    /* Add map npcs */
-    for (const npc of npcs) {
-      if (getNpc(scene, npc.id)) continue;
-      addNpc(scene, npc);
-    }
-    /* Add map loot */
-    for (const loot of loots) {
-      if (loot?.expiredSince) continue;
-      if (getLoot(scene, loot.id)) continue;
-      addLoot(scene, loot);
-    }
-    const { collideLayer } = changeMap(scene, scene.hero.roomName);
-    initPlayerCollision(scene, scene.hero, [collideLayer]);
-    initCamera(scene, scene.hero);
-    if (isRespawn) playSpawnDissolve(scene.hero);
+    hero.state.isEnteringDoor = false;
+    initPlayerCollision(scene, hero, [collideLayer]);
+    initCamera(scene, hero);
+    if (isRespawn) playSpawnDissolve(hero);
     if (isLogin) revealWorldWhenSettled(scene);
+  };
+
+  /* Who came and went since the login snapshot, while the cover closed */
+  interface LoginFade {
+    left: string[];
+    joined: FullCharacterWire[];
+  }
+  let loginFade: LoginFade | null = null;
+  socket.on("remove", (id) => loginFade?.left.push(id));
+  socket.on("playerJoin", (user) => loginFade?.joined.push(user));
+
+  /* The login cover closes over the observed world first, so the swap is never seen.
+  Not scene.time: that fires mid-step, and the swap destroys sprites still due their update. */
+  const initHeroAfterFade: ServerToClientEvents["heroInit"] = (args, meta) => {
+    const fade: LoginFade = { left: [], joined: [] };
+    loginFade = fade;
+    setTimeout(() => {
+      loginFade = null;
+      initHero(args, meta);
+      for (const user of fade.joined) {
+        if (!getPlayer(scene, user.socketId)) addPlayer(scene, user);
+      }
+      for (const id of fade.left) removePlayer(scene, id);
+    }, LOGIN_FADE_MS);
+  };
+
+  socket.on("heroInit", (args, meta) => {
+    if (meta?.isLogin) initHeroAfterFade(args, meta);
+    else initHero(args, meta);
   });
 
   socket.on("playerJoin", (user, { lastTeleport, isRespawn } = {}) => {
