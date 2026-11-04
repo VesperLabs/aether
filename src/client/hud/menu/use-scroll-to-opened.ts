@@ -2,7 +2,7 @@ import { useLayoutEffect, useRef } from "react";
 
 const isShown = (el: Element) => el instanceof HTMLElement && el.offsetHeight > 0;
 
-/** Scrolls a menu stack to a menu as it opens, whether it mounts or turns visible. */
+/** Jumps a menu stack to a menu as it opens, whether it mounts or turns visible. */
 export function useScrollToOpened<T extends HTMLElement>() {
   const ref = useRef<T>(null);
 
@@ -14,7 +14,7 @@ export function useScrollToOpened<T extends HTMLElement>() {
       const now = new Set([...box.children].filter(isShown));
       const opened = [...now].find((el) => !shown.has(el));
       shown = now;
-      opened?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      opened?.scrollIntoView({ block: "nearest" });
     });
     observer.observe(box, {
       childList: true,
