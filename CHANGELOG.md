@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.1](https://github.com/VesperLabs/aether/compare/v0.11.0...v0.11.1) (2026-11-04)
+
+
+### Bug Fixes
+
+* enter no longer reopens the net stats panel or toggles music ([#222](https://github.com/VesperLabs/aether/issues/222)) ([93fb0b5](https://github.com/VesperLabs/aether/commit/93fb0b5e1a5d4cfacc0210f953c5f3f028ed7b24))
+
 ## [0.11.0](https://github.com/VesperLabs/aether/compare/v0.10.1...v0.11.0) (2026-11-04)
 
 
