@@ -6,11 +6,20 @@ const commands = getChatCommands(true);
 const values = (draft: string) => readChatDraft(draft, commands).suggestions.map((s) => s.value);
 
 describe("readChatDraft suggestions", () => {
-  it("suggests nothing for plain chat or when cheats are off", () => {
+  it("suggests nothing for plain chat", () => {
     expect(values("hello")).toEqual([]);
-    expect(readChatDraft("/", getChatCommands(false))).toMatchObject({
-      suggestions: [],
-    });
+  });
+
+  it("lists only player commands when cheats are off", () => {
+    const { suggestions } = readChatDraft("/", getChatCommands(false));
+    expect(suggestions.map((s) => s.value)).toContain("/whisper");
+    expect(suggestions.map((s) => s.value)).not.toContain("/heal");
+  });
+
+  it("puts a command first when its shortcut is typed", () => {
+    expect(values("/w")[0]).toBe("/whisper");
+    expect(values("/r")[0]).toBe("/reply");
+    expect(readChatDraft("/w bob hi", commands).command?.name).toBe("whisper");
   });
 
   it("puts prefix matches first, then the closest typo", () => {
@@ -96,8 +105,9 @@ describe("getGhostText", () => {
   };
 
   it("finishes the command name and lists its arguments", () => {
-    expect(ghost("/t")).toBe("p <x> <y>");
     expect(ghost("/tp")).toBe(" <x> <y>");
+    expect(ghost("/t")).toBe("p <x> <y>");
+    expect(ghost("/w")).toBe("hisper <player> <message>");
     expect(ghost("/")).toBe("");
   });
 

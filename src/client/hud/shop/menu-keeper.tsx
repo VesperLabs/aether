@@ -36,6 +36,7 @@ export const MenuKeeper = () => {
       {hasGreet && (hasShop || hasQuests) && (
         <MenuButton
           keyboardKey="G"
+          springOpen
           iconName="chat"
           isActive={tabGreet}
           onClick={() => setTab("greet")}
@@ -44,6 +45,7 @@ export const MenuKeeper = () => {
       {hasShop && (
         <MenuButton
           keyboardKey="B"
+          springOpen
           iconName="gold"
           isActive={tabShop}
           onClick={() => setTab("shop")}
@@ -52,6 +54,7 @@ export const MenuKeeper = () => {
       {hasQuests && (
         <MenuButton
           keyboardKey="U"
+          springOpen
           iconName="quests"
           onClick={() => setTab("quests")}
           isActive={tabQuests}

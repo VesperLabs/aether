@@ -98,7 +98,13 @@ export const commands = {
   consumeItem: z.object({ location: z.string().nullish(), item: itemRef.nullish() }).optional(),
 
   /* Social */
-  message: z.object({ message: z.string().nullish() }).optional(),
+  message: z
+    .object({
+      message: z.string().nullish(),
+      /** Ids of the sender's items that the text links as `[Item Name]`. */
+      items: z.array(z.string()).max(5).optional(),
+    })
+    .optional(),
   chatNpc: z.object({ npcId: z.string().optional() }).optional(),
   acceptQuest: z.string(),
   completeQuest: z.string(),

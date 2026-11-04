@@ -67,6 +67,10 @@ declare global {
     HERO_CHAT_NPC: Event;
     HERO_DOUBLE_CLICK_ITEM: CustomEvent<ItemEventDetail>;
     HERO_DROP_ITEM: CustomEvent<DropItemDetail>;
+    /** Cmd/Ctrl-clicked an item: open chat puts a link to it in the draft. */
+    HERO_LINK_ITEM: CustomEvent<{ id: string; name: string; rarity: string }>;
+    /** A dragged item is over the chat box (null once it isn't): chat previews its link. */
+    HERO_CHAT_DROP_PREVIEW: CustomEvent<{ name: string; rarity: string } | null>;
     AUDIO_ITEM_CONSUME: CustomEvent<BuiltItem>;
     AUDIO_ITEM_SELL: CustomEvent<BuiltItem>;
     LOOT_FLY: CustomEvent<LootFlyDetail>;
