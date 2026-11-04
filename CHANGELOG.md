@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.0](https://github.com/VesperLabs/aether/compare/v0.10.1...v0.11.0) (2026-11-04)
+
+
+### Features
+
+* net stats button shows snapshot gaps, round trips and server tick health ([#220](https://github.com/VesperLabs/aether/issues/220)) ([6422ec8](https://github.com/VesperLabs/aether/commit/6422ec873912ff8a6d9e677fdf41af92ab9090bd))
+
 ## [0.10.1](https://github.com/VesperLabs/aether/compare/v0.10.0...v0.10.1) (2026-11-04)
 
 
