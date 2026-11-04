@@ -16,7 +16,8 @@ export const playAudio = ({
   caster: Point;
 }) => {
   const { hero, userSettings } = scene as SceneMain;
-  if (!userSettings.playSfx) return;
+  /* Observers watch in silence: there is no hero to hear it */
+  if (!hero || !userSettings.playSfx) return;
   const heroPosition = hero?.body?.position;
   const casterPosition = { x: caster?.x, y: caster?.y };
 

@@ -11,7 +11,7 @@ import { encodeRoomPoses, takeChangedStatuses } from "@/network";
 import { getBuffRoomState } from "@/server/net/room-sync";
 import { updateRoomLoot } from "./loot-adapter";
 import { expireSpells } from "./spell-adapter";
-import { getRoomIndex, indexRooms } from "./room-index";
+import { countRoomClients, getRoomIndex, indexRooms } from "./room-index";
 import { endTickTimer, startTickTimer } from "./tick-health";
 
 /** A long stall (debugger, GC) must not teleport things across the map. */
@@ -73,8 +73,7 @@ const updateRooms: System<ServerWorld> = (world: ServerWorld, { now }: Frame) =>
     updateRoomLoot(world, room);
     expireSpells(world, room);
 
-    const roomClients = io.sockets.adapter.rooms.get(room.name)?.size ?? 0;
-    if (roomClients === 0) {
+    if (countRoomClients(world, room.name) === 0) {
       /* Whoever joins next gets everything in heroInit, so start the statuses over. */
       room.sentStatuses.clear();
       continue;

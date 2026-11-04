@@ -5,6 +5,7 @@ import { legacyLeaveParty } from "../party-adapter";
 import type { CommandContext } from "./command-context";
 import { registerCommands } from "./dispatcher";
 import { commandHandlers } from "./handlers/command-handlers";
+import { stopObserving } from "./handlers/observe";
 import { shouldPause } from "./world-pause";
 
 /** Wires every new socket to the command dispatcher and cleans up when it goes away. */
@@ -26,6 +27,7 @@ export function listenForConnections(world: ServerWorld) {
       /* A socket that never logged in has nobody to save */
       if (player) world.db.updateUser(player);
       console.log(`🔌 ${player?.profile?.userName ?? "Anonymous"} disconnected`);
+      stopObserving(ctx);
       legacyLeaveParty(world, socketId, socket);
       removePlayer(world, socketId);
       world.io.emit("remove", socketId);

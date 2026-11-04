@@ -13,6 +13,7 @@ import {
   setSpawn,
   updateState,
 } from "./movement";
+import { observe } from "./observe";
 import { updateProfile } from "./profile";
 import { latency, peerConnect, peerInit, updateUserSetting } from "./session";
 import {
@@ -31,6 +32,7 @@ export const commandHandlers: CommandHandlers = {
   tokenLogin,
   login,
   register,
+  observe,
   latency,
   attack,
   castSpell,

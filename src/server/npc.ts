@@ -32,7 +32,7 @@ import {
   seedFromString,
   type Rng,
 } from "@/rules/world";
-import { getRoomIndex } from "./room-index";
+import { getRoomIndex, isRoomWatched } from "./room-index";
 import { afterWindup, cancelWindup, emitNpcWindup, type WindupTrack } from "./npc-windup";
 import { isNextToSolidTile, isOutOfMap } from "@/rules/movement";
 
@@ -195,8 +195,8 @@ export class Npc extends Character {
     const { state, room } = this ?? {};
     this.timers.advance(delta);
 
-    // skip updates if no one is in the room
-    if (!room || getRoomIndex(this.world, room.name).players.size === 0) {
+    // skip updates if no one is in the room, playing or observing
+    if (!room || !isRoomWatched(this.world, room.name)) {
       this.setLockedPlayerId(null);
       this.threat = {};
       this.vx = 0;

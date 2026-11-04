@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 /** How long the login title takes to cross into the world, HUD included. */
 export const WORLD_REVEAL_MS = 800;
 
-/** True once the world has settled after login: see client/scenes/world-reveal.ts. */
+/** True once the world has settled, behind the login screen or after login: see client/scenes/world-reveal.ts. */
 export function useWorldReady(isLoggedIn: boolean) {
   const [isWorldReady, setIsWorldReady] = useState(false);
 
@@ -14,7 +14,7 @@ export function useWorldReady(isLoggedIn: boolean) {
   }, []);
 
   useEffect(() => {
-    if (!isLoggedIn) setIsWorldReady(false);
+    setIsWorldReady(false);
   }, [isLoggedIn]);
 
   return isWorldReady;

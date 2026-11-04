@@ -1,5 +1,5 @@
+import { broadcastPlayerUpdate } from "@/server/net/room-broadcast";
 import type { Player } from "../../player";
-import { getFullCharacterState } from "@/network/sync";
 import type { ParsedCommand } from "@/network";
 import type { CommandContext } from "@/server/net/command-context";
 import { readTickHealth } from "@/server/tick-health";
@@ -10,14 +10,14 @@ export function latency(ctx: CommandContext, ack: ParsedCommand<"latency">) {
 }
 
 export function peerInit(ctx: CommandContext, pId: ParsedCommand<"peerInit">) {
-  const { world, socketId, io, session } = ctx;
+  const { world, socketId, session } = ctx;
   session.peerId = pId;
   const player = world.players[socketId];
   if (player) {
     player.peerId = pId;
     const roomName = player.room?.name;
     if (roomName) {
-      io.to(roomName).emit("playerUpdate", getFullCharacterState(player));
+      broadcastPlayerUpdate(ctx.world, player);
     }
   }
 }

@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import type { SceneMain } from "./main-scene";
 import { isTypableFieldActive } from "@/client/input/typable-field";
+import { isMobile } from "@/ui/kit/is-mobile";
 
 let lastGameZoom: number | undefined;
 
@@ -21,7 +22,7 @@ export function calculateZoomLevel({
 
 export function getGameZoomLevel(scene: Phaser.Scene) {
   /* A phone keyboard shrinks the window while typing; keep the world's zoom until it closes */
-  if (lastGameZoom !== undefined && isTypableFieldActive()) return lastGameZoom;
+  if (lastGameZoom !== undefined && isMobile && isTypableFieldActive()) return lastGameZoom;
   const viewportArea = scene.cameras.main.width * scene.cameras.main.height;
   lastGameZoom = Math.round(parseInt(calculateZoomLevel({ viewportArea })));
   return lastGameZoom;

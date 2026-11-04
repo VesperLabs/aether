@@ -35,3 +35,13 @@ export const indexRooms: System<ServerWorld> = (world) => {
 export function getRoomIndex(world: ServerWorld, roomName: string): RoomIndex {
   return (world.roomIndexes?.[roomName] ?? buildRoomIndexes(world)[roomName]) as RoomIndex;
 }
+
+/** How many connections hear a room: its players and anyone observing it. */
+export function countRoomClients(world: ServerWorld, roomName: string) {
+  return world.io.sockets.adapter.rooms.get(roomName)?.size ?? 0;
+}
+
+/** Whether anyone would see this room's NPCs act. */
+export function isRoomWatched(world: ServerWorld, roomName: string) {
+  return getRoomIndex(world, roomName).players.size > 0 || countRoomClients(world, roomName) > 0;
+}

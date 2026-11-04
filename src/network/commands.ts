@@ -47,6 +47,8 @@ export const commands = {
       remember: z.boolean().optional(),
     })
     .optional(),
+  /** Watch a room without a character, from behind the login screen. */
+  observe: z.object({ roomName: z.string() }),
   /** The payload is an acknowledgement callback, which the server calls right away. */
   latency: z.custom<(health: ServerHealthMessage) => void>((value) => typeof value === "function"),
 

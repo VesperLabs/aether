@@ -45,10 +45,6 @@ async function startApp() {
       height: gameHeight,
       autoCenter: Phaser.Scale.CENTER_HORIZONTALLY,
       autoRound: true,
-      max: {
-        width: Math.floor(screen.width * devicePixelRatio),
-        height: Math.floor(screen.height * devicePixelRatio),
-      },
     },
     antialias: false,
     pixelArt: true,

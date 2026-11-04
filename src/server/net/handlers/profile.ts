@@ -1,11 +1,11 @@
-import { getFullCharacterState } from "@/network/sync";
+import { broadcastPlayerUpdate } from "@/server/net/room-broadcast";
 import { cleanUserName, stepAppearance } from "@/rules/character";
 import type { ParsedCommand } from "@/network";
 import type { CommandContext } from "@/server/net/command-context";
 import { isInRoom } from "@/server/player-room";
 
 export function updateProfile(ctx: CommandContext, args: ParsedCommand<"updateProfile">) {
-  const { world, socketId, io } = ctx;
+  const { world, socketId } = ctx;
   const player = world?.players?.[socketId];
   if (!isInRoom(player)) return;
 
@@ -15,5 +15,5 @@ export function updateProfile(ctx: CommandContext, args: ParsedCommand<"updatePr
 
   /* Save the user's data */
   world.db.updateUser(player);
-  io.to(player?.roomName).emit("playerUpdate", getFullCharacterState(player));
+  broadcastPlayerUpdate(ctx.world, player);
 }

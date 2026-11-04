@@ -21,6 +21,8 @@ export type ServerWorld = World<Player, Npc, Spell, Loot, Quest> & {
   dice: Dice;
   /** Numbers for characters on the binary pose wire. */
   netIds: NetIds;
+  /** Sockets watching a room without a character. They keep the world running. */
+  observers: Set<string>;
   /** Who is where in each room this tick (see `room-index.ts`). */
   roomIndexes?: Record<string, RoomIndex>;
   /** Wall-clock tick and event loop timings, for the net stats panel. */

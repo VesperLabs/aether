@@ -20,6 +20,7 @@ export function removePlayer(scene: SceneMain, socketId: string) {
 }
 
 export function resetEntities(scene: SceneMain) {
+  scene.physics.world.colliders.destroy();
   scene?.map?.destroy?.();
   scene?.players?.destroy?.(true);
   scene?.npcs?.destroy?.(true);

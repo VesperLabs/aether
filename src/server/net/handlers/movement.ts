@@ -1,7 +1,8 @@
+import { broadcastPlayerJoin } from "@/server/net/room-broadcast";
 import type { ServerWorld } from "../../server-world";
 import type { Player } from "../../player";
 import { PLAYER_DEFAULT_SPAWN } from "../../auth/character-defaults";
-import { decodeWireDirection, getFullCharacterState } from "@/network/sync";
+import { decodeWireDirection } from "@/network/sync";
 import { getRoomState } from "@/server/net/room-sync";
 import type { ParsedCommand } from "@/network";
 import { addPlayerToRoom, removePlayerFromRoom } from "../../player-room";
@@ -196,7 +197,7 @@ export function teleportPlayer(
   /* Save the new room */
   world.db.updateUserMapDetails(player);
 
-  socket.to(destMap).emit("playerJoin", getFullCharacterState(player), {
+  broadcastPlayerJoin(world, destMap, player, {
     lastTeleport: world.now(),
   });
 
@@ -235,7 +236,7 @@ export function respawn(ctx: CommandContext) {
   /* Save the new room */
   world.db.updateUserMapDetails(player);
 
-  socket.to(newRoom).emit("playerJoin", getFullCharacterState(player), {
+  broadcastPlayerJoin(world, newRoom, player, {
     isRespawn: true,
     lastTeleport: world.now(),
   });

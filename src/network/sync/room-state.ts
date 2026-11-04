@@ -1,6 +1,7 @@
 import {
   getBuffCharacterState,
   getFullCharacterState,
+  getPublicCharacterState,
   type BuffCharacterWire,
   type CharacterSyncInput,
   type FullCharacterWire,
@@ -30,6 +31,18 @@ export function getRoomState<L extends LootInRoom>(
       ?.filter((n) => n?.room?.name === roomName)
       .map((p) => getFullCharacterState(p)),
     loots: Object.values(world.loots)?.filter((l) => l?.roomName === roomName),
+  };
+}
+
+/** A room as anonymous observers see it. */
+export function getPublicRoomState<L extends LootInRoom>(
+  world: RoomSyncInput<CharacterSyncInput, L>,
+  roomName: string,
+): ReturnType<typeof getRoomState<L>> {
+  const inRoom = (c: CharacterSyncInput) => c?.room?.name === roomName;
+  return {
+    ...getRoomState(world, roomName),
+    players: Object.values(world.players).filter(inRoom).map(getPublicCharacterState),
   };
 }
 

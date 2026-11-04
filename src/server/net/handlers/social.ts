@@ -1,8 +1,8 @@
+import { broadcastPlayerUpdate, toRoomPlayers } from "@/server/net/room-broadcast";
 import type { Player } from "../../player";
 import { runAdminCommand } from "../../admin/commands";
 import { runPlayerCommand } from "./chat-commands";
 import { resolveChatLinks } from "./chat-links";
-import { getFullCharacterState } from "@/network/sync";
 import {
   legacyAcceptPartyInvite,
   legacyInviteToParty,
@@ -30,7 +30,7 @@ export function chatNpc(ctx: CommandContext, { npcId }: ParsedCommand<"chatNpc">
 }
 
 export function acceptQuest(ctx: CommandContext, questId: ParsedCommand<"acceptQuest">) {
-  const { world, socketId, io } = ctx;
+  const { world, socketId } = ctx;
   const player: Player = world?.players?.[socketId];
   const currentQuest = world.quests?.[questId];
   if (!currentQuest || !isInRoom(player)) return;
@@ -40,12 +40,12 @@ export function acceptQuest(ctx: CommandContext, questId: ParsedCommand<"acceptQ
     player?.addQuest(currentQuest);
     /* Save the users data */
     world.db.updateUser(player);
-    io.to(player?.roomName).emit("playerUpdate", getFullCharacterState(player));
+    broadcastPlayerUpdate(ctx.world, player);
   }
 }
 
 export function completeQuest(ctx: CommandContext, questId: ParsedCommand<"completeQuest">) {
-  const { world, socket, socketId, io } = ctx;
+  const { world, socket, socketId } = ctx;
   const player: Player = world?.players?.[socketId];
   if (!isInRoom(player)) return;
   /* If the quest is ready, we turn it in */
@@ -60,7 +60,7 @@ export function completeQuest(ctx: CommandContext, questId: ParsedCommand<"compl
   /* Save the users data */
   player.calculateStats();
   world.db.updateUser(player);
-  io.to(player?.roomName).emit("playerUpdate", getFullCharacterState(player), {
+  broadcastPlayerUpdate(ctx.world, player, {
     didLevel: questResults?.didLevel,
   });
 }
@@ -81,7 +81,7 @@ export function partyLeave(ctx: CommandContext) {
 }
 
 export function message(ctx: CommandContext, args: ParsedCommand<"message">) {
-  const { world, io } = ctx;
+  const { world } = ctx;
   if (!args?.message) return;
   const player = world?.players?.[ctx.socketId];
   if (!isInRoom(player)) return;
@@ -96,7 +96,7 @@ export function message(ctx: CommandContext, args: ParsedCommand<"message">) {
     if (runPlayerCommand(ctx, player, args.message, links) || runAdminCommand(ctx, args.message))
       return;
   }
-  io.to(player?.roomName).emit("message", {
+  toRoomPlayers(world, player.roomName).emit("message", {
     from: player?.profile?.userName,
     type: "chat",
     message: args.message,

@@ -1,5 +1,5 @@
+import { broadcastPlayerUpdate } from "@/server/net/room-broadcast";
 import { ItemBuilder } from "@/content";
-import { getFullCharacterState } from "@/network/sync";
 import { parseInteger, type Cheat } from "./cheat";
 import { parseDropArgs } from "./drop-args";
 
@@ -7,7 +7,7 @@ const MAX_NAME_LENGTH = 16;
 
 const heal: Cheat = (ctx, player, _args, reply) => {
   player.fillHpMp();
-  ctx.io.to(player.roomName).emit("playerUpdate", getFullCharacterState(player));
+  broadcastPlayerUpdate(ctx.world, player);
   reply.info("Healed.");
 };
 
@@ -15,7 +15,7 @@ const hp: Cheat = (ctx, player, [value], reply) => {
   const amount = parseInteger(value);
   if (amount === undefined || amount < 1) return reply.error("Usage: /hp <amount>, at least 1.");
   player.stats.hp = Math.min(amount, player.stats.maxHp);
-  ctx.io.to(player.roomName).emit("playerUpdate", getFullCharacterState(player));
+  broadcastPlayerUpdate(ctx.world, player);
   reply.info(`Hp set to ${player.stats.hp}.`);
 };
 
@@ -33,7 +33,7 @@ const give: Cheat = (ctx, player, args, reply) => {
   if (!item) return reply.error(`There is no ${drop.rarity} ${drop.key}.`);
   player.addInventoryItem(item);
   ctx.world.db.updateUser(player);
-  ctx.io.to(player.roomName).emit("playerUpdate", getFullCharacterState(player));
+  broadcastPlayerUpdate(ctx.world, player);
   reply.info(`Gave you ${item.rarity} ${item.name ?? item.key}.`);
 };
 
@@ -43,7 +43,7 @@ const name: Cheat = (ctx, player, args, reply) => {
     return reply.error(`Usage: /name <name>, up to ${MAX_NAME_LENGTH} characters.`);
   }
   player.profile.userName = userName;
-  ctx.io.to(player.roomName).emit("playerUpdate", getFullCharacterState(player));
+  broadcastPlayerUpdate(ctx.world, player);
   reply.info(`You are now ${userName}.`);
 };
 

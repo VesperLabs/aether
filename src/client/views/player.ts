@@ -309,7 +309,7 @@ export class Player extends Character {
     }
   }
   setTalkMenu() {
-    const show = !this.state.lockedPlayerId && this.scene.hero.state.targetNpcId === this.id;
+    const show = !this.state.lockedPlayerId && this.scene.hero?.state.targetNpcId === this.id;
     return this.talkMenu.setVisible(show);
   }
 }

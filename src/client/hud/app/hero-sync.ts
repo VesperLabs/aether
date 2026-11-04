@@ -7,6 +7,7 @@ import type { HudCharacter } from "./context";
 
 interface HeroSyncDeps {
   addMessage: (payload: ChatMessage) => void;
+  setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
   setPlayers: React.Dispatch<React.SetStateAction<Array<HudCharacter>>>;
   setHero: React.Dispatch<React.SetStateAction<HudCharacter | null>>;
   setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
@@ -19,6 +20,7 @@ type Handlers = ServerToClientEvents;
 /** Handlers that keep the HUD's copy of the hero and the room's players in sync with the server. */
 export function createHeroSyncHandlers({
   addMessage,
+  setMessages,
   setPlayers,
   setHero,
   setIsLoggedIn,
@@ -48,6 +50,8 @@ export function createHeroSyncHandlers({
     setPlayers(players);
     setHero(player);
     if (args?.isLogin) {
+      /* Whatever the room said while we watched from the login screen */
+      setMessages([]);
       setIsLoggedIn(true);
       setCheats(!!payload?.cheats);
       setUserSettings({
@@ -62,7 +66,7 @@ export function createHeroSyncHandlers({
     const socketId = sessionStorage.getItem("socketId");
     const player = players?.find((p) => p?.socketId === socketId);
     /* Keep the hero updated */
-    setHero((prev) => ({ ...prev, ...player }) as HudCharacter);
+    if (player) setHero((prev) => ({ ...prev, ...player }) as HudCharacter);
     /* Show a message if the hero leveled */
     if (playerIdsThatLeveled?.includes(player?.id as string)) {
       addMessage({ type: "reward", message: `You are now level ${player?.stats?.level}!` });

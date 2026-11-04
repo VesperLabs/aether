@@ -1,8 +1,7 @@
+import { broadcastPlayerUpdate, broadcastLeveled } from "@/server/net/room-broadcast";
 import { ItemBuilder } from "@/content";
 import type { CommandContext } from "@/server/net/command-context";
-import { getFullCharacterState } from "@/network/sync";
 import { CHAT_COMMANDS } from "@/network";
-import { getRoomState } from "@/server/net/room-sync";
 import { spawnLoot } from "../loot-adapter";
 import { DROP_USAGE, parseDropArgs } from "./drop-args";
 import { isInRoom } from "@/server/player-room";
@@ -33,7 +32,7 @@ export function runAdminCommand(ctx: CommandContext, rawMessage: string): boolea
 }
 
 function execute(ctx: CommandContext, command: string[]) {
-  const { world, socket, io } = ctx;
+  const { world, socket } = ctx;
   const player = world?.players?.[ctx.socketId];
   if (!isInRoom(player)) return;
   const cmdErr = (message: string) => socket.emit("message", { type: "error", message });
@@ -76,11 +75,7 @@ function execute(ctx: CommandContext, command: string[]) {
         return cmdErr("Usage: /ding <experience> — positive integer XP to grant.");
       }
       const didLevel = player.assignExp(exp);
-      const roomState = getRoomState(world, player?.roomName);
-      world.io.to(player?.roomName).emit("buffUpdate", {
-        players: roomState?.players?.filter((n) => n?.id === player?.id),
-        playerIdsThatLeveled: didLevel ? [player?.id] : [],
-      });
+      broadcastLeveled(world, player.roomName, [player], didLevel ? [player.id] : []);
       return cmdInfo(`Gained ${exp} experience.`);
     }
     case "booty": {
@@ -89,7 +84,7 @@ function execute(ctx: CommandContext, command: string[]) {
         return cmdErr("Usage: /booty <amount> — positive integer gold to add.");
       }
       player.gold += gold;
-      io.to(player?.roomName).emit("playerUpdate", getFullCharacterState(player));
+      broadcastPlayerUpdate(ctx.world, player);
       return cmdInfo(`Added ${gold} gold.`);
     }
     case "guns": {

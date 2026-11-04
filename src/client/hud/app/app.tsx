@@ -107,6 +107,7 @@ export function App({ socket, peer, debug, game }: AppProps) {
   const { onPlayerJoin, onPlayerLeave, onHeroInit, onBuffUpdate, onPlayerUpdate, onLootGrabbed } =
     createHeroSyncHandlers({
       addMessage,
+      setMessages,
       setPlayers,
       setHero,
       setIsLoggedIn,
@@ -235,7 +236,6 @@ export function App({ socket, peer, debug, game }: AppProps) {
     setZoom(getHudZoom());
   });
 
-  const showLogin = !isLoggedIn && isLoaded;
   const isWorldReady = useWorldReady(isLoggedIn);
 
   return (
@@ -309,7 +309,7 @@ export function App({ socket, peer, debug, game }: AppProps) {
         }}
       >
         <ZoomProvider value={Number(zoom) || 1.25}>
-          <LoginBackdrop showLogin={showLogin} isLoggedIn={isLoggedIn} hasError={!!error} />
+          <LoginBackdrop isLoggedIn={isLoggedIn} hasError={!!error} />
           <VideoFrame />
           {isLoggedIn && tabSettings && <ModalSettings />}
           {isLoggedIn && tabSocial && <ModalSocial />}
