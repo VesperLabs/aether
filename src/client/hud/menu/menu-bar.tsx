@@ -112,6 +112,8 @@ export const MenuBar = () => {
         maxHeight: `calc((100dvh - ${keyboardOffset}px) / ${zoom})`,
       }}
     >
+      {/* One blur behind the menus and the buttons, so their edges don't each blur on their own */}
+      <Box sx={{ position: "absolute", inset: 0, zIndex: -1, backdropFilter: "blur(10px)" }} />
       {/* Sits above the menus without taking their height, so menus can fill the screen */}
       <Flex sx={{ alignItems: "end", position: "absolute", bottom: "100%", left: 0, right: 0 }}>
         <MessageBox />
@@ -142,12 +144,10 @@ export const MenuBar = () => {
           "&::-webkit-scrollbar": { display: "none" },
         }}
       >
-        <Box sx={{ pointerEvents: "all", backdropFilter: "blur(10px)", order: orderOf("keeper") }}>
+        <Box sx={{ pointerEvents: "all", order: orderOf("keeper") }}>
           {tabKeeper && <MenuKeeper />}
         </Box>
-        <Box
-          sx={{ pointerEvents: "all", backdropFilter: "blur(10px)", order: orderOf("abilities") }}
-        >
+        <Box sx={{ pointerEvents: "all", order: orderOf("abilities") }}>
           <MenuAbilities
             player={hero}
             events={HUD_SLOT_EVENTS}
@@ -155,9 +155,7 @@ export const MenuBar = () => {
             setIsOpen={setTabAbilities}
           />
         </Box>
-        <Box
-          sx={{ pointerEvents: "all", backdropFilter: "blur(10px)", order: orderOf("equipment") }}
-        >
+        <Box sx={{ pointerEvents: "all", order: orderOf("equipment") }}>
           <MenuEquipment
             player={hero}
             events={HUD_SLOT_EVENTS}
@@ -165,7 +163,7 @@ export const MenuBar = () => {
             setIsOpen={setTabEquipment}
           />
         </Box>
-        <Box sx={{ pointerEvents: "all", backdropFilter: "blur(10px)", order: orderOf("bag") }}>
+        <Box sx={{ pointerEvents: "all", order: orderOf("bag") }}>
           <MenuBag
             player={hero}
             events={HUD_SLOT_EVENTS}
@@ -173,9 +171,7 @@ export const MenuBar = () => {
             toggleBagState={toggleBagState}
           />
         </Box>
-        <Box
-          sx={{ pointerEvents: "all", backdropFilter: "blur(10px)", order: orderOf("inventory") }}
-        >
+        <Box sx={{ pointerEvents: "all", order: orderOf("inventory") }}>
           <MenuInventory
             player={hero}
             events={HUD_SLOT_EVENTS}
@@ -183,16 +179,16 @@ export const MenuBar = () => {
             setIsOpen={setTabInventory}
           />
         </Box>
-        <Box sx={{ pointerEvents: "all", backdropFilter: "blur(10px)", order: orderOf("profile") }}>
+        <Box sx={{ pointerEvents: "all", order: orderOf("profile") }}>
           <MenuProfile player={hero} isOpen={tabProfile} setIsOpen={setTabProfile} />
         </Box>
-        <Box sx={{ pointerEvents: "all", backdropFilter: "blur(10px)", order: orderOf("quests") }}>
+        <Box sx={{ pointerEvents: "all", order: orderOf("quests") }}>
           <MenuQuests player={hero} isOpen={tabQuests} setIsOpen={setTabQuests} />
         </Box>
-        <Box sx={{ pointerEvents: "all", backdropFilter: "blur(10px)", order: orderOf("stats") }}>
+        <Box sx={{ pointerEvents: "all", order: orderOf("stats") }}>
           <MenuStats player={hero} isOpen={tabStats} setIsOpen={setTabStats} />
         </Box>
-        <Box sx={{ pointerEvents: "all", backdropFilter: "blur(10px)", order: orderOf("social") }}>
+        <Box sx={{ pointerEvents: "all", order: orderOf("social") }}>
           <MenuSocial
             hero={hero}
             players={players}
@@ -202,7 +198,7 @@ export const MenuBar = () => {
           />
         </Box>
       </Box>
-      <Box sx={{ backdropFilter: "blur(10px)", pointerEvents: "all", flexShrink: 0 }}>
+      <Box sx={{ pointerEvents: "all", flexShrink: 0 }}>
         <Menu
           sx={{
             gap: 1,
