@@ -1,5 +1,50 @@
 # Changelog
 
+## [0.10.0](https://github.com/VesperLabs/aether/compare/v0.9.1...v0.10.0) (2026-11-04)
+
+
+### Features
+
+* add resident agents that choose what to do with a planner ([#153](https://github.com/VesperLabs/aether/issues/153)) ([1e96f03](https://github.com/VesperLabs/aether/commit/1e96f031040f2e34091709437d74ec301e3b068c))
+* add scripted test bots that play like real clients ([#151](https://github.com/VesperLabs/aether/issues/151)) ([fde7d02](https://github.com/VesperLabs/aether/commit/fde7d02f27da4bdd09f4db4d0485349d50a0359e))
+* add travel, character and summon cheats for testing ([#150](https://github.com/VesperLabs/aether/issues/150)) ([f95e523](https://github.com/VesperLabs/aether/commit/f95e5231fcf077e4bff44045e3d224391dca250b))
+* better chat commands, chat log and HUD polish ([#210](https://github.com/VesperLabs/aether/issues/210)) ([75c82e8](https://github.com/VesperLabs/aether/commit/75c82e8ab64a8cda5095249e3dacb3b764f2ab75))
+* ease small hero position corrections instead of snapping ([#131](https://github.com/VesperLabs/aether/issues/131)) ([f3a3e5d](https://github.com/VesperLabs/aether/commit/f3a3e5da0af44745df4dcb59b3be6c25605e8048))
+* fast-forward agent scenarios on a simulated server ([#154](https://github.com/VesperLabs/aether/issues/154)) ([4f4c0be](https://github.com/VesperLabs/aether/commit/4f4c0be2df8bb36885b0163595a706463cb5109b))
+* give each wandering bot its own hair, face, skin and body ([#170](https://github.com/VesperLabs/aether/issues/170)) ([bbfc62e](https://github.com/VesperLabs/aether/commit/bbfc62ed2cfa46f9c3eb8ccbd95bf69092c4af66))
+* give wanderers interests, temperaments and a fear of monsters ([#169](https://github.com/VesperLabs/aether/issues/169)) ([7ec1a22](https://github.com/VesperLabs/aether/commit/7ec1a221a4492928147c3f0395b5bd1ca5812d5f))
+* lag-compensated hits ([#132](https://github.com/VesperLabs/aether/issues/132)) ([375701f](https://github.com/VesperLabs/aether/commit/375701f51ba876259b1b03268006968a0a75d050))
+* let tests fast-forward the server clock and seed every roll ([#209](https://github.com/VesperLabs/aether/issues/209)) ([b52ca49](https://github.com/VesperLabs/aether/commit/b52ca4912a229d0e7f72df07abdb2511f2d9f7fc))
+* scrollable menu stack with spring-loaded menu buttons ([#212](https://github.com/VesperLabs/aether/issues/212)) ([eb900b3](https://github.com/VesperLabs/aether/commit/eb900b3d758a8ac858bf780200f1a18169265bae))
+* social menu becomes a modal with player search, and dividers match the wiki ([#215](https://github.com/VesperLabs/aether/issues/215)) ([dfcea05](https://github.com/VesperLabs/aether/commit/dfcea05c98172044b81745e280e79e0b12598413))
+* soft collision between characters ([#167](https://github.com/VesperLabs/aether/issues/167)) ([9c1878c](https://github.com/VesperLabs/aether/commit/9c1878cc88e0e4e81a9af2eec1d912905d816909))
+* spawn free resident bots with personalities on server start ([#160](https://github.com/VesperLabs/aether/issues/160)) ([8da6730](https://github.com/VesperLabs/aether/commit/8da6730b53cfd41c4a21d5f1a227a2a8816a3eed))
+* wandering bots that roam between zones ([#168](https://github.com/VesperLabs/aether/issues/168)) ([e899ad9](https://github.com/VesperLabs/aether/commit/e899ad93fb470994e2a6d7eb6f5d273264d2597e))
+
+
+### Bug Fixes
+
+* enforce potion and food cooldowns on the server ([#157](https://github.com/VesperLabs/aether/issues/157)) ([1f8be3a](https://github.com/VesperLabs/aether/commit/1f8be3ac24bc1074059da88cff4085365496db89)), closes [#140](https://github.com/VesperLabs/aether/issues/140)
+* hold npcs still while winding up, and call it off when they give up ([#211](https://github.com/VesperLabs/aether/issues/211)) ([e0e734b](https://github.com/VesperLabs/aether/commit/e0e734b043ff744b7566f0c39afe32c5c97de48b))
+* hud no longer crashes when a party member changes maps ([#216](https://github.com/VesperLabs/aether/issues/216)) ([2fd24a8](https://github.com/VesperLabs/aether/commit/2fd24a82ae7e7c8c0bdf678cdad32518a5ff1741))
+* keep the town-life soak within CI's time budget ([#158](https://github.com/VesperLabs/aether/issues/158)) ([50abd2a](https://github.com/VesperLabs/aether/commit/50abd2a12b9975d1994036ba809416fcd4f12ed9))
+* let fighting agents pick a swing that spares keepers and players ([#166](https://github.com/VesperLabs/aether/issues/166)) ([b7aa783](https://github.com/VesperLabs/aether/commit/b7aa783d1a352608b0606e134359627fd0ed1be7))
+* let respawning characters walk out of the spawn reveal ([#163](https://github.com/VesperLabs/aether/issues/163)) ([034ffa8](https://github.com/VesperLabs/aether/commit/034ffa8f23ec92a8a62eaa7a6b6e91f157a44554))
+* make simulations deterministic by passing dice and ids everywhere ([#156](https://github.com/VesperLabs/aether/issues/156)) ([310442b](https://github.com/VesperLabs/aether/commit/310442be3bbf6f4f9aae9177c4336d6349e429c2))
+* menus jump to the one you open and share one backdrop blur ([#214](https://github.com/VesperLabs/aether/issues/214)) ([034ffaf](https://github.com/VesperLabs/aether/commit/034ffaf27dac0f295e2dfb70c99fb2aee6797efb))
+* name modal closes on Esc and matches the settings modal ([#213](https://github.com/VesperLabs/aether/issues/213)) ([9bfcd10](https://github.com/VesperLabs/aether/commit/9bfcd107ade46c50068e884c77a5a4075333599c))
+* only broadcast attacks and casts that happen, and pace agent swings ([#155](https://github.com/VesperLabs/aether/issues/155)) ([07ebbac](https://github.com/VesperLabs/aether/commit/07ebbac2a3dd4c04276c59f754fa689b62f8315e))
+* reload dev servers on .env changes and tidy dev output ([#139](https://github.com/VesperLabs/aether/issues/139)) ([9a79e9a](https://github.com/VesperLabs/aether/commit/9a79e9a71e4181552d7ac1c757129fb0b01bb9d8))
+* skip saving demo accounts' spawn and death position ([#162](https://github.com/VesperLabs/aether/issues/162)) ([e4ed8f0](https://github.com/VesperLabs/aether/commit/e4ed8f07806c1eacafd6d1b0dfa8b81a56dea024))
+* wanderers stuck at spawn among monsters, and same looks every start ([#171](https://github.com/VesperLabs/aether/issues/171)) ([8129a61](https://github.com/VesperLabs/aether/commit/8129a613fbf3ca89acd92c246777fb3e17485546))
+
+
+### Performance Improvements
+
+* pack room poses as binary with small net ids ([#130](https://github.com/VesperLabs/aether/issues/130)) ([80316b3](https://github.com/VesperLabs/aether/commit/80316b33512ccb82852c2a642b33650d24f50835))
+* send whole poses every tick and statuses on change, adaptive interpolation delay ([#129](https://github.com/VesperLabs/aether/issues/129)) ([dff3515](https://github.com/VesperLabs/aether/commit/dff3515af165c89355dc7c860c4ecbd4e1bd5b5d))
+* stop the server's per-tick lookups from scaling with the whole world ([#159](https://github.com/VesperLabs/aether/issues/159)) ([218ce36](https://github.com/VesperLabs/aether/commit/218ce36bf38a810718b98bbdc63a488748ca0598))
+
 ## [0.9.1](https://github.com/VesperLabs/aether/compare/v0.9.0...v0.9.1) (2026-11-02)
 
 
