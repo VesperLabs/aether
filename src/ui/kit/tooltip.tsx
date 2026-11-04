@@ -1,3 +1,4 @@
+import { flip, offset, shift } from "@floating-ui/dom";
 import { Tooltip as BaseTooltip } from "react-tooltip";
 import { Portal } from "./portal";
 import { theme } from "./theme";
@@ -16,6 +17,14 @@ const TOOLTIP_STYLE = {
   zoom: 1,
 };
 
+/* Above or below only, as a tooltip beside its target blocks the way to the slot next to it. One
+   that fits neither way is pushed back on screen rather than flipped sideways. */
+const PLACEMENT = [
+  offset(6),
+  flip({ fallbackPlacements: ["top", "bottom"] }),
+  shift({ padding: 5, crossAxis: true }),
+];
+
 interface TooltipProps {
   children?: React.ReactNode;
   id?: string;
@@ -30,7 +39,12 @@ export const Tooltip = ({ children, style, ...props }: TooltipProps) => {
   const zoomed = zoom ? { fontSize: theme.fontSizes[1] * zoom } : {};
   return (
     <Portal container={document.body}>
-      <BaseTooltip opacity={1} style={{ ...TOOLTIP_STYLE, ...zoomed, ...style }} {...props}>
+      <BaseTooltip
+        opacity={1}
+        middlewares={PLACEMENT}
+        style={{ ...TOOLTIP_STYLE, ...zoomed, ...style }}
+        {...props}
+      >
         {children}
       </BaseTooltip>
     </Portal>
