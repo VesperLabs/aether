@@ -1,6 +1,7 @@
 import type { ComponentProps } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
 import { Box, Switch as ThemeUiSwitch } from "theme-ui";
+import { CONTROL_GOLD } from "./modal-gilding";
 
 /* Thumb size; the track is two thumbs wide plus a 2px gutter (theme-ui's default thumb is 18) */
 const THUMB = 12;
@@ -62,13 +63,18 @@ export function Switch({ sx, spread, hint, ...props }: SwitchProps) {
           height: THUMB + 4,
           width: THUMB * 2 + 4,
           backgroundColor: "shadow.20",
+          /* A soft outline, so the track has an edge without weight */
+          boxShadow: "0 0 0 1px rgba(0,0,0,.25)",
           ...(spread && { mr: 0, ml: 2 }),
           "& > div": {
             width: THUMB,
             height: THUMB,
+            backgroundColor: "#fff",
+            /* A thin rim keeps the thumb crisp against the track */
+            boxShadow: "0 0 0 1px rgba(0,0,0,.3)",
           },
           "input:checked ~ &": {
-            backgroundColor: "set",
+            backgroundColor: CONTROL_GOLD,
             transition: "background-color .5s ease",
           },
           "& > span": {

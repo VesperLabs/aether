@@ -4,23 +4,24 @@ import type { ToastMessage } from "@/ui";
 import { useAppContext } from "@/client/hud/app/context";
 import { LoginForm } from "./login-form";
 import { RegisterForm } from "./register-form";
+import { CHAR_CLASS_SELECT } from "./char-class-select";
 import { DemoForm } from "./demo-form";
 import type { FormSuccess, Notify } from "./login-types";
 
 type LoginTab = "login" | "register" | "demo";
 
+const FIRST_AFTER_SELECTOR = `& > .modal-body > :first-child:not(.${CHAR_CLASS_SELECT}), & > .modal-body > .${CHAR_CLASS_SELECT} + *`;
+
 /* All stacked in one cell, so the modal takes the tallest form's size whichever is showing, and
-   stay mounted, so switching tabs keeps what was typed. The button sits flush with the bottom. Forms
-   with a class selector keep it at the top; `centered` is for one without. */
+   stay mounted, so switching tabs keeps what was typed. The button sits flush with the bottom, the
+   top slot above the rest, and whatever is between them centered in the space left. */
 const TabPanel = ({
   open,
   flush,
-  centered = false,
   children,
 }: {
   open: boolean;
   flush: boolean;
-  centered?: boolean;
   children: React.ReactNode;
 }) => (
   <Box
@@ -34,8 +35,8 @@ const TabPanel = ({
         borderRadius: Modal.tabPanelRadius(flush),
       },
       "& > .modal-body > *": { flex: "none" },
-      "& > .modal-body > :last-child": { mt: "auto" },
-      ...(centered && { "& > .modal-body > :first-child": { mt: "auto" } }),
+      "& > .modal-body > button": { mt: "auto" },
+      [FIRST_AFTER_SELECTOR]: { mt: "auto" },
     }}
   >
     {children}
@@ -125,7 +126,7 @@ export const ModalLogin = () => {
           )}
         </Flex>
         <Grid sx={{ gap: 0 }}>
-          <TabPanel open={isLogin} flush={isLogin} centered>
+          <TabPanel open={isLogin} flush={isLogin}>
             {/* Keyed by email, so a new account's email and remembered login fill the form */}
             <LoginForm
               key={defaultEmail}

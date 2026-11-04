@@ -2,6 +2,7 @@ import type { ComponentProps } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
 import { Box, Flex } from "theme-ui";
 import { GILDED_CORNERS } from "./modal-gilding";
+import { MODAL_ATTR } from "./shake-modal";
 
 type FlexProps = ComponentProps<typeof Flex>;
 type ModalProps = FlexProps & { zoom?: number | string; bottomOffset?: number };
@@ -28,6 +29,7 @@ const ModalRoot = ({ sx, zoom = 1, bottomOffset = 0, ...props }: ModalProps) => 
         ...sx,
       }}
       variant="buttons.wood"
+      {...{ [MODAL_ATTR]: true }}
       {...props}
     />
   );

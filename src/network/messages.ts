@@ -71,11 +71,19 @@ interface UserSettingsMessage {
   playMusic: boolean;
   /** 0 to 1 slider position, see `musicGain` */
   musicVolume: number;
+  playSfx: boolean;
+  /** 0 to 1 slider position */
+  sfxVolume: number;
   showMinimap: boolean;
   videoChat: boolean;
   charLevels: boolean;
   screenShake: boolean;
 }
+
+/** What `GET /players/lookup` tells the login form: a character's look, never account data. */
+export type LoginCharacter = Partial<
+  Pick<FullCharacterWire, "charClass" | "profile" | "equipment" | "activeItemSlots">
+> & { level?: number };
 
 export interface ServerToClientEvents {
   /* Auth */

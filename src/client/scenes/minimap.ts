@@ -1,5 +1,11 @@
 import Phaser from "phaser";
-import { MINI_MAP_MARGIN, MINI_MAP_SIZE } from "@/client/views/minimap-size";
+import {
+  MINI_MAP_CLOSE_MS,
+  MINI_MAP_MARGIN,
+  MINI_MAP_OPEN_MS,
+  MINI_MAP_OPEN_VAR,
+  MINI_MAP_SIZE,
+} from "@/client/views/minimap-size";
 import type { Player } from "@/client/views/player";
 import { getNpcs, getPlayers } from "./scene-entities";
 import type { SceneMain } from "./main-scene";
@@ -73,10 +79,8 @@ export function createMinimap(scene: SceneMain) {
   // Hidden until layoutMinimap places it, or it flashes top-left while loading
   const minimap = scene.cameras.add(0, 0, MINI_MAP_SIZE, MINI_MAP_SIZE).setVisible(false);
   if (!scene.textures.exists(MASK_KEY)) {
-    const g = scene.make.graphics({}, false);
-    g.fillStyle(0xffffff).fillCircle(MINI_MAP_SIZE / 2, MINI_MAP_SIZE / 2, MINI_MAP_SIZE / 2);
-    g.generateTexture(MASK_KEY, MINI_MAP_SIZE, MINI_MAP_SIZE);
-    g.destroy();
+    scene.textures.createCanvas(MASK_KEY, MINI_MAP_SIZE, MINI_MAP_SIZE);
+    drawMask(scene, 1);
   }
   minimap.filters.internal.addMask(MASK_KEY);
   minimap.setBackgroundColor(0x1c130c);
@@ -93,6 +97,7 @@ export function layoutMinimap(scene: SceneMain, hero: Player) {
   const { minimap } = scene;
   if (!minimap || !scene.map) return;
   minimap.setVisible(scene.userSettings?.showMinimap);
+  publishOpenness(scene.userSettings?.showMinimap ? 1 : 0);
   minimap.setPosition(
     Math.round(scene.scale.width - MINI_MAP_SIZE - MINI_MAP_MARGIN),
     MINI_MAP_MARGIN,
@@ -100,6 +105,61 @@ export function layoutMinimap(scene: SceneMain, hero: Player) {
   minimap.setBounds(0, 0, scene.map.widthInPixels, scene.map.heightInPixels);
   minimap.setZoom(ZOOM);
   minimap.startFollow(hero, true, 0.5, 0.5, 0, 0);
+}
+
+/** How open the minimap is, 0 to 1. Kept across tweens, so a quick re-toggle turns back smoothly. */
+const openness = { value: 1 };
+
+/* The camera itself stays put: resizing a following, masked camera every frame makes it jump.
+   Only its circular mask changes, redrawn at this radius. */
+function drawMask(scene: SceneMain, openFraction: number) {
+  const mask = scene.textures.get(MASK_KEY) as Phaser.Textures.CanvasTexture;
+  const ctx = mask.getContext();
+  const centre = MINI_MAP_SIZE / 2;
+  ctx.clearRect(0, 0, MINI_MAP_SIZE, MINI_MAP_SIZE);
+  ctx.fillStyle = "#fff";
+  ctx.beginPath();
+  ctx.arc(centre, centre, centre * openFraction, 0, Math.PI * 2);
+  ctx.fill();
+  mask.refresh();
+}
+
+const publishOpenness = (value: number) =>
+  document.documentElement.style.setProperty(MINI_MAP_OPEN_VAR, String(value));
+
+function applyOpenness(scene: SceneMain, minimap: Phaser.Cameras.Scene2D.Camera) {
+  drawMask(scene, openness.value);
+  publishOpenness(openness.value);
+  minimap.setAlpha(openness.value);
+}
+
+/** Grows the minimap out of its centre, or shrinks it away. */
+export function animateMinimap(scene: SceneMain, show: boolean) {
+  const { minimap } = scene;
+  if (!minimap) return;
+  scene.tweens.killTweensOf(openness);
+  if (show) {
+    /* Closed before it shows, or the first frame is the whole minimap */
+    if (!minimap.visible) {
+      openness.value = 0;
+      applyOpenness(scene, minimap);
+    }
+    minimap.setVisible(true);
+  }
+  scene.tweens.add({
+    targets: openness,
+    value: show ? 1 : 0,
+    duration: show ? MINI_MAP_OPEN_MS : MINI_MAP_CLOSE_MS,
+    ease: "Sine.easeInOut",
+    onUpdate: () => applyOpenness(scene, minimap),
+    onComplete: () => {
+      if (!show) minimap.setVisible(false);
+      /* Back to full size, so a later layout or reveal starts from a whole minimap */
+      openness.value = 1;
+      applyOpenness(scene, minimap);
+      publishOpenness(show ? 1 : 0);
+    },
+  });
 }
 
 /** Keep the minimap to tiles plus dots: hide every other object from it, then redraw the dots. */

@@ -1,6 +1,12 @@
 import { Flex, Icon, Text } from "@/ui";
 import { CLASS_ICON_MAP, type CharClass } from "@/content";
 
+/** Lets the login panels find the selector and keep it at the top. */
+export const CHAR_CLASS_SELECT = "char-class-select";
+
+/** The top row of every login tab, one height so the rows under it line up across tabs. */
+export const TOP_SLOT_SX = { height: 46, pb: 2 };
+
 interface ClickableIconProps {
   icon: string;
   setCharClass: (charClass: CharClass) => void;
@@ -48,7 +54,7 @@ export const CharClassSelect = ({
   setCharClass: (charClass: CharClass) => void;
 }) => {
   return (
-    <Flex sx={{ justifyContent: "space-around", pb: 2 }}>
+    <Flex className={CHAR_CLASS_SELECT} sx={{ ...TOP_SLOT_SX, justifyContent: "space-around" }}>
       <ClickableIcon
         icon={CLASS_ICON_MAP.WARRIOR}
         charClass="warrior"

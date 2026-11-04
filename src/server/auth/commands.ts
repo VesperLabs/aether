@@ -143,7 +143,7 @@ function enterWorld(ctx: CommandContext, user: UserDocument) {
 
 export async function register(
   ctx: CommandContext,
-  { email, password, charClass, remember }: ParsedCommand<"register"> = {},
+  { email, password, charClass, gender, remember }: ParsedCommand<"register"> = {},
 ) {
   const { world, socket } = ctx;
   // Validate email format
@@ -166,7 +166,7 @@ export async function register(
   }
 
   // Create user if email and password are valid
-  const isCreated = await world.db.createUser({ email, password, charClass });
+  const isCreated = await world.db.createUser({ email, password, charClass, gender });
   if (!isCreated) {
     return socket.emit("formError", { error: "Error creating user" });
   }

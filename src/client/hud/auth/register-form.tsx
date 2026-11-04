@@ -1,8 +1,10 @@
 import { useState, useEffect, useEffectEvent } from "react";
-import { Modal, Input, KeyboardButton } from "@/ui";
+import { Flex, Modal, Input, KeyboardButton } from "@/ui";
 import { useAppContext } from "@/client/hud/app/context";
 import type { CharClass } from "@/content";
 import { CharClassSelect } from "./char-class-select";
+import { GenderSwitch, type Gender } from "./gender-switch";
+import { RememberRow } from "./remember-row";
 import { getRememberMe } from "./remembered-login";
 import type { FormSuccess, Notify } from "./login-types";
 
@@ -19,6 +21,7 @@ export const RegisterForm = ({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [charClass, setCharClass] = useState<CharClass>("warrior");
+  const [gender, setGender] = useState<Gender>("female");
 
   const onFormError = useEffectEvent((payload: { error: string }) => {
     if (!isActive) return;
@@ -51,14 +54,17 @@ export const RegisterForm = ({
   return (
     <Modal.Body sx={{ gap: 2 }}>
       <CharClassSelect charClass={charClass} setCharClass={setCharClass} />
-      <Input
-        autoFocus={isActive}
-        placeholder="Email"
-        value={email}
-        onChange={(e) => {
-          setEmail(e.target.value);
-        }}
-      />
+      <Flex sx={{ gap: 1, alignItems: "stretch" }}>
+        <Input
+          autoFocus={isActive}
+          placeholder="Email"
+          value={email}
+          onChange={(e) => {
+            setEmail(e.target.value);
+          }}
+        />
+        <GenderSwitch gender={gender} setGender={setGender} />
+      </Flex>
       <Input
         type="password"
         autoComplete="new-password"
@@ -68,10 +74,11 @@ export const RegisterForm = ({
           setPassword(e.target.value);
         }}
       />
+      <RememberRow reserveOnly />
       <KeyboardButton
         sx={{ flex: 1 }}
         onClick={() =>
-          socket.emit("register", { email, password, charClass, remember: getRememberMe() })
+          socket.emit("register", { email, password, charClass, gender, remember: getRememberMe() })
         }
         keyboardKey="ENTER"
       >

@@ -1,5 +1,6 @@
 import { useEffect, useEffectEvent, useState } from "react";
 import { useAppContext } from "@/client/hud/app/context";
+import { cleanUserName } from "@/rules/character";
 import { Modal, KeyboardButton, Icon, Input, Portal } from "@/ui";
 
 /** Renames your character in its own modal, out of the scrolling menu stack. */
@@ -20,7 +21,7 @@ export const ModalRename = ({ userName, onClose }: { userName: string; onClose: 
   }, []);
 
   const save = () => {
-    const next = name.trim();
+    const next = cleanUserName(name);
     if (next && next !== userName) socket.emit("updateProfile", { userName: next });
     onClose();
   };
@@ -44,7 +45,7 @@ export const ModalRename = ({ userName, onClose }: { userName: string; onClose: 
               autoFocus
               sx={{ width: 200 }}
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => setName(cleanUserName(e.target.value))}
             />
           </form>
         </Modal.Body>

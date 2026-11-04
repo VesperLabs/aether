@@ -3,7 +3,7 @@ import { DEFAULT_USER_SETTINGS } from "@/rules/world";
 import type { SceneMain } from "@/client/scenes/main-scene";
 
 /** Loudest the music gets (slider at 100%); the tracks are mastered hot. */
-const MAX_MUSIC_GAIN = 0.15;
+const MAX_MUSIC_GAIN = 0.1;
 
 /** Slider position (0 to 1) → Phaser volume. Squared so the low end has fine control. */
 const musicGain = (sliderValue = DEFAULT_USER_SETTINGS.musicVolume) =>
