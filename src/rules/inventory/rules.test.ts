@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   checkSlotsMatch,
   findBagItemById,
+  findFirstOpenBag,
   findOpenBagSlot,
   isInventoryFull,
   moveItem,
@@ -103,6 +104,14 @@ describe("lookups", () => {
     expect(findOpenBagSlot(s.inventory, "bag1", sword)).toBe(0);
     const stacked = state({ inventory: [bag([sword, potion(3)])] });
     expect(findOpenBagSlot(stacked.inventory, "bag1", potion(1))).toBe(1);
+  });
+
+  it("finds the first bag with room, skipping full bags, and never for a bag", () => {
+    const second = { ...bag([robe, null]), id: "bag2" };
+    const inventory = [ring, bag([sword]), second];
+    expect(findFirstOpenBag(inventory, potion(1))).toEqual({ bagId: "bag2", slot: 1 });
+    expect(findFirstOpenBag([ring, bag([sword])], potion(1))).toBeNull();
+    expect(findFirstOpenBag(inventory, bag())).toBeNull();
   });
 
   it("is full only when every slot is taken and the inventory is at its limit", () => {

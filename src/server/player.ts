@@ -29,6 +29,7 @@ import {
   findAbilityById,
   findBagItemById,
   findBagItemBySlot,
+  findFirstOpenBag,
   findEquipmentById,
   findInventoryItemById,
   findOpenBagSlot,
@@ -220,11 +221,14 @@ export class Player extends ServerCharacter {
   deleteBagItemAtId(id: string) {
     this.inventory = deleteBagItemAtId(this.inventory, id);
   }
-  setBagItem(bagId: string, slot: string, item: Item) {
+  setBagItem(bagId: string, slot: string | number, item: Item) {
     this.inventory = setBagItem(this.inventory, bagId, slot, item) ?? this.inventory;
   }
   findOpenBagSlot(bagId: string, item: Item) {
     return findOpenBagSlot(this.inventory, bagId, item);
+  }
+  findFirstOpenBag(item: Item) {
+    return findFirstOpenBag(this.inventory, item);
   }
   findInventoryItemById(id: string) {
     return findInventoryItemById(this.inventory, id);

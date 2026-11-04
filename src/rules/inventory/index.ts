@@ -19,6 +19,7 @@ export {
   findBagItemById,
   findBagItemBySlot,
   findEquipmentById,
+  findFirstOpenBag,
   findInventoryItemById,
   findOpenBagSlot,
   isInventoryFull,
