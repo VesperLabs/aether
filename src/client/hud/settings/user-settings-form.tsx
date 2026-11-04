@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Switch, Flex, Text } from "@/ui";
+import { Switch, Flex } from "@/ui";
 import { DEFAULT_USER_SETTINGS } from "@/rules/world";
 import { isMobile } from "@/ui";
 import { useAppContext } from "@/client/hud/app/context";
@@ -46,9 +46,11 @@ export const UserSettingsForm = () => {
         },
       }}
     >
+      <TextDivider>Interface</TextDivider>
       {!isMobile && (
         <Switch
-          label={`Minimap: ${showMinimap ? "ON" : "OFF"}`}
+          spread
+          label="Minimap"
           checked={!!showMinimap}
           onChange={(e) => {
             persistSetting("showMinimap", e.target.checked);
@@ -56,29 +58,35 @@ export const UserSettingsForm = () => {
         />
       )}
       <Switch
-        label={`Music: ${playMusic ? "ON" : "OFF"}`}
-        checked={!!playMusic}
-        onChange={(e) => {
-          persistSetting("playMusic", e.target.checked);
-        }}
-      />
-      <Switch
-        label={`Show Character Levels: ${charLevels ? "ON" : "OFF"}`}
+        spread
+        label="Character Levels"
         checked={!!charLevels}
         onChange={(e) => {
           persistSetting("charLevels", e.target.checked);
         }}
       />
       <Switch
-        label={`Screen Shake: ${screenShake ? "ON" : "OFF"}`}
+        spread
+        label="Screen Shake"
         checked={!!screenShake}
         onChange={(e) => {
           persistSetting("screenShake", e.target.checked);
         }}
       />
+      <TextDivider>Audio</TextDivider>
+      <Switch
+        spread
+        label="Music"
+        checked={!!playMusic}
+        onChange={(e) => {
+          persistSetting("playMusic", e.target.checked);
+        }}
+      />
       <TextDivider>Experimental</TextDivider>
       <Switch
-        label={`Video Chat: ${videoChat && videoChatAllowed ? "ON" : "OFF"}`}
+        spread
+        label="Video Chat"
+        hint={videoChatAllowed ? undefined : "Unsupported"}
         checked={!!videoChat && videoChatAllowed}
         disabled={!videoChatAllowed}
         onChange={(e) => {
@@ -86,11 +94,6 @@ export const UserSettingsForm = () => {
           persistSetting("videoChat", e.target.checked);
         }}
       />
-      {!videoChatAllowed && (
-        <Text sx={{ fontSize: 0, color: "gray.500", lineHeight: 1.35, mt: -1 }}>
-          (supported browsers only)
-        </Text>
-      )}
     </Flex>
   );
 };

@@ -41,6 +41,7 @@ export type { BuiltItem, ItemDefinition } from "./items/item-types";
 export { getMapByName } from "./maps/get-map";
 export { mapImageList } from "./maps/map-image-list";
 export { mapList } from "./maps/map-list";
+export { musicCredits } from "./maps/music-credits";
 export { keepers, type KeeperId } from "./mobs/keepers";
 export { nasties, type NastyId } from "./mobs/nasties";
 export type {

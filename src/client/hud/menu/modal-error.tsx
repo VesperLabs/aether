@@ -12,7 +12,7 @@ export const ModalError: React.FC = () => {
           <Icon
             icon={"./assets/icons/danger.png"}
             size={42}
-            sx={{ position: "absolute", left: 0 }}
+            sx={{ position: "absolute", left: -8 }}
           />
           {error?.title}
         </Modal.Header>

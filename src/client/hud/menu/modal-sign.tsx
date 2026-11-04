@@ -11,7 +11,7 @@ export const ModalSign: React.FC = () => {
         <Icon
           icon={icon}
           size={42}
-          sx={{ transform: hasIcon ? "scale(0.5)" : "scale(1)", position: "absolute", left: 0 }}
+          sx={{ transform: hasIcon ? "scale(0.5)" : "scale(1)", position: "absolute", left: -8 }}
         />
         {sign?.subject}
       </Modal.Header>
