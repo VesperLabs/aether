@@ -1,4 +1,6 @@
 import { useState, useRef, useLayoutEffect, useEffectEvent } from "react";
+import { createDragAutoscroll } from "./drag-autoscroll";
+import { createDragSpringOpen } from "./drag-spring-open";
 
 /** Drag an item slot's icon with the mouse or a finger, and report where it was dropped. */
 export function useSlotDrag({
@@ -12,6 +14,8 @@ export function useSlotDrag({
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [target, setTarget] = useState<Element | null>(null);
   const imageRef = useRef<HTMLDivElement>(null);
+  const [autoscroll] = useState(createDragAutoscroll);
+  const [springOpen] = useState(createDragSpringOpen);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     const image = imageRef.current as HTMLDivElement;
@@ -45,6 +49,8 @@ export function useSlotDrag({
     const y = e.clientY - image.offsetHeight / 2;
     const t = document.elementFromPoint(e.clientX, e.clientY);
     setPosition({ x, y });
+    autoscroll.update(t, e.clientY);
+    springOpen.update(t);
     if (t?.nodeName == "CANVAS") {
       window.dispatchEvent(
         new CustomEvent("ITEM_DRAG", {
@@ -65,6 +71,8 @@ export function useSlotDrag({
     const y = e.touches[0].clientY - image.offsetHeight / 2;
     const t = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY);
     setPosition({ x, y });
+    autoscroll.update(t, e.touches[0].clientY);
+    springOpen.update(t);
     if (t?.nodeName == "CANVAS") {
       window.dispatchEvent(
         new CustomEvent("ITEM_DRAG", {
@@ -82,6 +90,8 @@ export function useSlotDrag({
     if (!dragging) return;
     const t = document.elementFromPoint(e.clientX, e.clientY);
     setTarget(t);
+    autoscroll.stop();
+    springOpen.stop();
     onDrop(t);
     setDragging(false);
   });
@@ -91,6 +101,8 @@ export function useSlotDrag({
     e.stopPropagation();
     const t = document.elementFromPoint(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
     setTarget(t);
+    autoscroll.stop();
+    springOpen.stop();
     onDrop(t);
     setDragging(false);
   });
@@ -111,6 +123,8 @@ export function useSlotDrag({
       document.removeEventListener("mouseup", onMouseUp);
       document.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("touchmove", onTouchMove);
+      autoscroll.stop();
+      springOpen.stop();
     };
   }, [enabled]);
 

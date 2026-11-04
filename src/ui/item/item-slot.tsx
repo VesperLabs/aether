@@ -12,6 +12,8 @@ import { SlotAmount } from "./slot-amount";
 import { shouldReRenderSlot, getIsItemActive } from "./slot-state";
 import { ElementalItemArt } from "./elemental-item-art";
 import { DEFAULT_ASSET_USER } from "./art-icon";
+import { SPRING_OPEN_ATTR } from "./drag-spring-open";
+import { springWiggle } from "./spring-wiggle";
 import { deriveElements } from "./weapon-elements";
 
 const BLANK_IMAGE =
@@ -117,6 +119,7 @@ export const ItemSlot = memo(
     const tooltipId = `${location}-${item?.id ?? item?.key}`;
     const targetMoved = (target as HTMLElement | null)?.dataset?.tooltipId !== tooltipId;
     const aboutToSell = dragging && target?.closest(".menu-keeper") && location !== "shop";
+    const aboutToOpen = dragging && !!target?.closest(`[${SPRING_OPEN_ATTR}]`);
     /* ...and while dragged, over the copy that follows the pointer, unless it's about to sell */
     const dragElemental = !!asset && dragging && !aboutToSell;
 
@@ -208,15 +211,18 @@ export const ItemSlot = memo(
                 ref={imageRef}
                 icon={aboutToSell ? "./assets/icons/gold.png" : imageData}
                 size={size * 2} // Fixes large images to not get cut off
+                sx={aboutToOpen ? springWiggle("spring-wiggle-icon", "scale(4,4)") : undefined}
                 style={{
                   opacity: dragging && !dragElemental ? 1 : 0,
                   touchAction: "none",
                   userSelect: "none",
                   pointerEvents: "none",
                   zIndex: theme.zIndices.draggable,
-                  position: "fixed",
-                  left: position.x + "px",
-                  top: position.y + "px",
+                  /* Back in the slot after a drag, it must not linger where it was dropped:
+                   * there it would stretch the menu stack's scroll area */
+                  position: dragging ? "fixed" : "absolute",
+                  left: dragging ? position.x + "px" : 0,
+                  top: dragging ? position.y + "px" : 0,
                   // Fixes large images to not get cut off
                   marginLeft: (dragging ? 0 : -size / 2) + "px",
                   marginTop: (dragging ? 0 : -size / 2) + "px",
@@ -238,6 +244,7 @@ export const ItemSlot = memo(
                     top: position.y + size + "px",
                     transform: "translate(-50%, -50%)",
                     zIndex: theme.zIndices.draggable,
+                    ...(aboutToOpen && springWiggle("spring-wiggle-art", "translate(-50%, -50%)")),
                   }}
                 />
               )}
