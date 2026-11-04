@@ -49,6 +49,9 @@ export function buildNpcBehaviorInput(
       weapons: {
         handLeft: npc.hasRangedWeaponLeft() ? { range: npc.getWeaponRange("handLeft") } : null,
         handRight: npc.hasRangedWeaponRight() ? { range: npc.getWeaponRange("handRight") } : null,
+        meleeReach: npc.getWeaponRange(
+          npc.hasMeleeWeaponRight() && !npc.hasMeleeWeaponLeft() ? "handRight" : "handLeft",
+        ),
       },
     },
     state,

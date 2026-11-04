@@ -218,6 +218,33 @@ describe("threat, leash and new behaviors", () => {
     expect(retreating.movement).toMatchObject({ type: "flee" });
   });
 
+  it("swings from as far as its weapon reaches", () => {
+    const atArmsLength = player({ x: 50 });
+    const decision = decideNpcAction(
+      input({
+        npc: { bodySize: 8, weapons: { meleeReach: 60 } },
+        state: { lockedPlayerId: "p1", npcAttackReady: true, lastAttack: NOW - 100 },
+        rest: { lockedPlayer: atArmsLength, nearestPlayer: atArmsLength },
+      }),
+      never,
+    );
+    expect(decision.action.type).toBe("attack");
+  });
+
+  it("melee casters swing at a target in reach instead of casting or backing off", () => {
+    const close = player({ x: 20 });
+    const decision = decideNpcAction(
+      input({
+        npc: { abilities: { "1": { base: "waterball" } } },
+        state: { lockedPlayerId: "p1", lastAttack: NOW - 100 },
+        rest: { lockedPlayer: close, nearestPlayer: close },
+      }),
+      never,
+    );
+    expect(decision.movement).toEqual({ type: "standStill" });
+    expect(decision.action.type).toBe("idle");
+  });
+
   it("casters that kite hold at spell range instead of closing to melee", () => {
     const at = (x: number) =>
       decideNpcAction(

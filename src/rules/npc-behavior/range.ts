@@ -1,4 +1,4 @@
-import { NPC_SHOULD_ATTACK_RANGE } from "./constants";
+import { NPC_SHOT_MARGIN, NPC_SHOULD_ATTACK_RANGE } from "./constants";
 
 /** Anything with a position and, optionally, a body radius. */
 export interface Body {
@@ -26,12 +26,17 @@ export function checkInRange(self: Body, target: Body | null | undefined, range:
 export interface NpcWeaponRanges {
   handLeft?: { range: number } | null;
   handRight?: { range: number } | null;
+  /** How far its melee swing reaches from its body centre, in pixels. */
+  meleeReach?: number;
 }
 
-/** How close an NPC must be to attack: its ranged weapon's range, else melee. */
-export function getShouldAttackRange(weapons: NpcWeaponRanges | null | undefined) {
+/**
+ * How close an NPC must be to attack: its ranged weapon's range, else its melee swing's reach,
+ * edge to edge (see `checkInRange`), with a margin so a target on the move is still hit.
+ */
+export function getShouldAttackRange(weapons: NpcWeaponRanges | null | undefined, bodySize = 8) {
   if (weapons?.handLeft) return weapons.handLeft.range;
   if (weapons?.handRight) return weapons.handRight.range;
-  /* TODO: melee attack range too? */
-  return NPC_SHOULD_ATTACK_RANGE;
+  const swing = (weapons?.meleeReach ?? 0) * NPC_SHOT_MARGIN - bodySize;
+  return Math.max(NPC_SHOULD_ATTACK_RANGE, swing);
 }

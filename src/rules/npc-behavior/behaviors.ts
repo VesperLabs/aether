@@ -29,6 +29,8 @@ export interface BehaviorContext {
   standBand: ShotBand | undefined;
   /** No wall between the NPC and its target. */
   hasClearShot: boolean;
+  /** A melee NPC close enough to swing at its target. */
+  inMeleeReach: boolean;
   /** The NPC is attacking this tick (it stays put while it does). */
   isAttacking: boolean | undefined;
   /** Leashed: walking home to heal, ignoring players. */
@@ -55,12 +57,9 @@ export interface NpcBehavior {
 const chase: NpcBehavior = {
   engaged: true,
   score: (ctx) => (ctx.canChase ? 1 : 0),
-  move: ({ input, target, attackRange, standBand, hasClearShot, isAttacking }, rng) => {
-    if (input.state.isAiming || isAttacking) return { type: "standStill" };
-    if (!standBand) {
-      if (checkInRange(input.npc, target, attackRange)) return { type: "standStill" };
-      return { type: "chase", pathed: input.isNearCollideTile };
-    }
+  move: ({ input, target, standBand, hasClearShot, inMeleeReach, isAttacking }, rng) => {
+    if (input.state.isAiming || isAttacking || inMeleeReach) return { type: "standStill" };
+    if (!standBand) return { type: "chase", pathed: input.isNearCollideTile };
     if (!hasClearShot) return { type: "chase", pathed: true };
     // Close in until well inside the band, then sidestep there
     const ideal = getIdealDistance(standBand);
