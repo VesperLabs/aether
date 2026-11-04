@@ -1,6 +1,8 @@
 import React from "react";
 import { DEFAULT_USER_SETTINGS, type UserSettings } from "@/rules/world";
 import type { ChatMessage, ServerToClientEvents } from "@/network";
+import type { BuiltItem } from "@/content";
+import { chatLinkText } from "@/client/hud/chat/chat-links";
 import type { HudCharacter } from "./context";
 
 interface HeroSyncDeps {
@@ -96,10 +98,11 @@ export function createHeroSyncHandlers({
     if (socketId === player?.socketId) {
       if (loot?.grabMessage) {
         const item = loot?.item;
+        const amount = Number(item?.amount) > 1 ? ` x${item?.amount}` : "";
         addMessage({
           type: "reward",
-          message: "Found",
-          item: { name: item?.name, rarity: item?.rarity, amount: item?.amount || 1 },
+          message: `Found ${chatLinkText(item)}${amount}`,
+          links: [item as unknown as BuiltItem],
         });
       }
       /* Both quests and inventory only need to be updated when we pick an item */
