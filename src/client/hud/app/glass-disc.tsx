@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { MouseEvent, ReactNode } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
 import { Box } from "@/ui";
 
@@ -31,6 +31,8 @@ export const DiscButton = ({
     aria-label={label}
     title={label}
     onClick={onClick}
+    /* Never keep focus from a click, or Enter (open chat) presses it again */
+    onMouseDown={(e: MouseEvent) => e.preventDefault()}
     sx={{
       all: "unset",
       cursor: "pointer",
