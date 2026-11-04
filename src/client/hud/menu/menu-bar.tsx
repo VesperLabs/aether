@@ -132,7 +132,8 @@ export const MenuBar = () => {
           flexDirection: "column",
           overflowY: "auto",
           overflowX: "hidden",
-          overscrollBehavior: "contain",
+          /* No rubber-band bounce at the ends, and no scrolling the page behind */
+          overscrollBehavior: "none",
           scrollbarWidth: "none",
           "&::-webkit-scrollbar": { display: "none" },
         }}
