@@ -126,6 +126,8 @@ export const MenuBar = () => {
           pointerEvents: "all",
           /* Swipes scroll the stack; no pinch or double-tap zooming the page */
           touchAction: "pan-y",
+          /* Buttons in menus must let a swipe through too; they ignore a slid finger (Button) */
+          "& button": { touchAction: "pan-y" },
           flex: "0 1 auto",
           minHeight: 0,
           display: "flex",
