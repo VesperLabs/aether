@@ -7,6 +7,8 @@ export type PressHandler = (event: any) => unknown;
 
 /** theme-ui reads `__themeKey` to pick the theme section, but its prop types leave it out. */
 const THEME_KEY = { __themeKey: "buttons" };
+/** How far a finger can slide and still press the button; further is a scroll. */
+const TAP_SLOP_PX = 10;
 
 export type ButtonProps = Omit<
   ComponentProps<typeof Flex>,
@@ -51,6 +53,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       if (props?.disabled) return false;
       setClassName("active");
       if (onTouchStart) onTouchStart?.(e);
+      const start = e.touches[0];
       document.addEventListener(
         "touchend",
         (e) => {
@@ -59,6 +62,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           if (props?.disabled) return false;
           setClassName("");
           if (onTouchEnd) return onTouchEnd(e);
+          /* A finger that slid off was scrolling a menu, not pressing */
+          const end = e.changedTouches[0];
+          const slid = Math.hypot(end.clientX - start.clientX, end.clientY - start.clientY);
+          if (slid > TAP_SLOP_PX) return false;
           if (onClick) return onClick(e);
         },
         { once: true },

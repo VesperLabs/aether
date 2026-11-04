@@ -20,6 +20,9 @@ import { MenuSocial } from "@/client/hud/social/menu-social";
 import { MessageBox } from "@/client/hud/chat/message-box";
 import { useAppContext } from "@/client/hud/app/context";
 import { MenuButton } from "./menu-button";
+import { useScrollToOpened } from "./use-scroll-to-opened";
+import { useOpenOrder } from "./use-open-order";
+import { useOverhangPadding } from "./use-overhang-padding";
 import { SkillButtons } from "@/client/hud/abilities/skill-buttons";
 
 export const MenuBar = () => {
@@ -57,7 +60,24 @@ export const MenuBar = () => {
     party,
     cooldowns,
     toggleBagState,
+    sign,
+    error,
   } = useAppContext();
+  /* Only chat types into the bar, so only chat lifts it above the keyboard; other inputs (renaming) sit in modals */
+  const keyboardOffset = tabChat ? bottomOffset : 0;
+  const stackRef = useScrollToOpened<HTMLDivElement>();
+  useOverhangPadding(stackRef);
+  const orderOf = useOpenOrder({
+    keeper: !!tabKeeper,
+    abilities: tabAbilities,
+    equipment: tabEquipment,
+    bag: bagState.length > 0,
+    inventory: tabInventory,
+    profile: tabProfile,
+    quests: tabQuests,
+    stats: tabStats,
+    social: tabSocial,
+  });
 
   const escCacheKey = JSON.stringify([
     tabChat,
@@ -69,6 +89,9 @@ export const MenuBar = () => {
     tabStats,
     tabQuests,
     tabAbilities,
+    tabSettings,
+    sign,
+    error,
     ...bagState,
   ]);
 
@@ -78,69 +101,108 @@ export const MenuBar = () => {
         pointerEvents: "none",
         boxSizing: "border-box",
         position: "fixed",
-        bottom: bottomOffset,
+        bottom: keyboardOffset,
         left: 0,
         zIndex: "menus",
         width: `calc(100% / ${zoom})`,
         transform: `scale(${zoom})`,
         transformOrigin: "bottom left",
+        display: "flex",
+        flexDirection: "column",
+        maxHeight: `calc((100dvh - ${keyboardOffset}px) / ${zoom})`,
       }}
     >
-      <Flex sx={{ alignItems: "end" }}>
+      {/* Sits above the menus without taking their height, so menus can fill the screen */}
+      <Flex sx={{ alignItems: "end", position: "absolute", bottom: "100%", left: 0, right: 0 }}>
         <MessageBox />
         <Flex sx={{ flexDirection: "column" }}>
           <AbilityButtons hero={hero} cooldowns={cooldowns} />
           <SkillButtons cooldowns={cooldowns} />
         </Flex>
       </Flex>
+      {/* Open menus scroll on their own when they outgrow the screen; the buttons stay put */}
       <Box
+        ref={stackRef}
         sx={{
-          backdropFilter: "blur(10px)",
+          /* iOS only scrolls a box that takes touches itself, so this can't be "none" */
           pointerEvents: "all",
-          // overflowY: "scroll",
-          // maxHeight: `calc((100vh - ${61 * zoom}px) / ${zoom})`,
-          // scrollbarWidth: "none",
-          // msOverflowStyle: "none",
-          // "&::-webkit-scrollbar": {
-          //   display: "none",
-          // },
+          /* Swipes scroll the stack; no pinch or double-tap zooming the page */
+          touchAction: "pan-y",
+          /* Buttons in menus must let a swipe through too; they ignore a slid finger (Button) */
+          "& button": { touchAction: "pan-y" },
+          flex: "0 1 auto",
+          minHeight: 0,
+          display: "flex",
+          flexDirection: "column",
+          overflowY: "auto",
+          overflowX: "hidden",
+          /* No rubber-band bounce at the ends, and no scrolling the page behind */
+          overscrollBehavior: "none",
+          scrollbarWidth: "none",
+          "&::-webkit-scrollbar": { display: "none" },
         }}
       >
-        {tabKeeper && <MenuKeeper />}
-        <MenuAbilities
-          player={hero}
-          events={HUD_SLOT_EVENTS}
-          isOpen={tabAbilities}
-          setIsOpen={setTabAbilities}
-        />
-        <MenuEquipment
-          player={hero}
-          events={HUD_SLOT_EVENTS}
-          isOpen={tabEquipment}
-          setIsOpen={setTabEquipment}
-        />
-        <MenuBag
-          player={hero}
-          events={HUD_SLOT_EVENTS}
-          bagState={bagState}
-          toggleBagState={toggleBagState}
-        />
-        <MenuInventory
-          player={hero}
-          events={HUD_SLOT_EVENTS}
-          isOpen={tabInventory}
-          setIsOpen={setTabInventory}
-        />
-        <MenuProfile player={hero} isOpen={tabProfile} setIsOpen={setTabProfile} />
-        <MenuQuests player={hero} isOpen={tabQuests} setIsOpen={setTabQuests} />
-        <MenuStats player={hero} isOpen={tabStats} setIsOpen={setTabStats} />
-        <MenuSocial
-          hero={hero}
-          players={players}
-          party={party}
-          isOpen={tabSocial}
-          setIsOpen={setTabSocial}
-        />
+        <Box sx={{ pointerEvents: "all", backdropFilter: "blur(10px)", order: orderOf("keeper") }}>
+          {tabKeeper && <MenuKeeper />}
+        </Box>
+        <Box
+          sx={{ pointerEvents: "all", backdropFilter: "blur(10px)", order: orderOf("abilities") }}
+        >
+          <MenuAbilities
+            player={hero}
+            events={HUD_SLOT_EVENTS}
+            isOpen={tabAbilities}
+            setIsOpen={setTabAbilities}
+          />
+        </Box>
+        <Box
+          sx={{ pointerEvents: "all", backdropFilter: "blur(10px)", order: orderOf("equipment") }}
+        >
+          <MenuEquipment
+            player={hero}
+            events={HUD_SLOT_EVENTS}
+            isOpen={tabEquipment}
+            setIsOpen={setTabEquipment}
+          />
+        </Box>
+        <Box sx={{ pointerEvents: "all", backdropFilter: "blur(10px)", order: orderOf("bag") }}>
+          <MenuBag
+            player={hero}
+            events={HUD_SLOT_EVENTS}
+            bagState={bagState}
+            toggleBagState={toggleBagState}
+          />
+        </Box>
+        <Box
+          sx={{ pointerEvents: "all", backdropFilter: "blur(10px)", order: orderOf("inventory") }}
+        >
+          <MenuInventory
+            player={hero}
+            events={HUD_SLOT_EVENTS}
+            isOpen={tabInventory}
+            setIsOpen={setTabInventory}
+          />
+        </Box>
+        <Box sx={{ pointerEvents: "all", backdropFilter: "blur(10px)", order: orderOf("profile") }}>
+          <MenuProfile player={hero} isOpen={tabProfile} setIsOpen={setTabProfile} />
+        </Box>
+        <Box sx={{ pointerEvents: "all", backdropFilter: "blur(10px)", order: orderOf("quests") }}>
+          <MenuQuests player={hero} isOpen={tabQuests} setIsOpen={setTabQuests} />
+        </Box>
+        <Box sx={{ pointerEvents: "all", backdropFilter: "blur(10px)", order: orderOf("stats") }}>
+          <MenuStats player={hero} isOpen={tabStats} setIsOpen={setTabStats} />
+        </Box>
+        <Box sx={{ pointerEvents: "all", backdropFilter: "blur(10px)", order: orderOf("social") }}>
+          <MenuSocial
+            hero={hero}
+            players={players}
+            party={party}
+            isOpen={tabSocial}
+            setIsOpen={setTabSocial}
+          />
+        </Box>
+      </Box>
+      <Box sx={{ backdropFilter: "blur(10px)", pointerEvents: "all", flexShrink: 0 }}>
         <Menu
           sx={{
             gap: 1,
@@ -190,12 +252,14 @@ export const MenuBar = () => {
               />
               <MenuButton
                 keyboardKey="V"
+                springOpen
                 iconName="book"
                 isActive={tabAbilities}
                 onClick={() => setTabAbilities((prev) => !prev)}
               />
               <MenuButton
                 keyboardKey="E"
+                springOpen
                 iconName="helmet"
                 isActive={tabEquipment}
                 onClick={() => {
@@ -205,6 +269,7 @@ export const MenuBar = () => {
               <MenuButton
                 id={LOOT_TARGET_ID}
                 keyboardKey="I"
+                springOpen
                 iconName="bag"
                 isActive={tabInventory}
                 onClick={() => setTabInventory((prev) => !prev)}
@@ -216,6 +281,8 @@ export const MenuBar = () => {
             name={"ESCAPE"}
             hidden={true}
             onKeyUp={() => {
+              /* These modals close themselves on Escape; leave the menus under them alone */
+              if (tabSettings || sign || error) return;
               if (tabChat) return setTabChat(false);
               if (dropItem) return setDropItem(null);
               if (homeModal) return setHomeModal(null);
@@ -228,7 +295,6 @@ export const MenuBar = () => {
               if (tabEquipment) return setTabEquipment(false);
               if (bagState?.length > 0) return toggleBagState(bagState?.[bagState?.length - 1]);
               if (tabInventory) return setTabInventory(false);
-              if (tabSettings) return setTabSettings(false);
             }}
           />
         </Menu>

@@ -1,6 +1,7 @@
 import type { ThemeUIStyleObject } from "theme-ui";
 import { Box, PlayerRender, theme } from "@/ui";
 import type { HudCharacter } from "@/client/hud/app/context";
+import { OVERHANG_ATTR } from "@/client/hud/menu/use-overhang-padding";
 
 export function BigPortrait({
   player,
@@ -29,6 +30,7 @@ export function BigPortrait({
       }}
     >
       <Box
+        {...{ [OVERHANG_ATTR]: true }}
         sx={{
           bottom: `3px`,
           height: height ?? width * 1.5,

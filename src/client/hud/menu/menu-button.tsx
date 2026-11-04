@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect, useEffectEvent, useRef } from "react";
 import { Icon, KeyboardKey, Button, NotificationBadge } from "@/ui";
-import { isMobile } from "@/ui";
+import { isMobile, SPRING_OPEN_ATTR, SPRING_OPEN_EVENT } from "@/ui";
 
 interface MenuButtonProps {
   keyboardKey?: string;
@@ -14,6 +14,8 @@ interface MenuButtonProps {
   id?: string;
   /** Shows a small counter in the top-right corner when above 0. */
   badge?: number;
+  /** Opens when a dragged item rests on it for a moment. */
+  springOpen?: boolean;
 }
 
 export const MenuButton = ({
@@ -27,10 +29,23 @@ export const MenuButton = ({
   disabled = false,
   id,
   badge,
+  springOpen = false,
 }: MenuButtonProps) => {
+  const ref = useRef<HTMLButtonElement>(null);
+  const onSpringOpen = useEffectEvent(() => onClick());
+  useEffect(() => {
+    const button = ref.current;
+    if (!springOpen || !button) return;
+    const handle = () => onSpringOpen();
+    button.addEventListener(SPRING_OPEN_EVENT, handle);
+    return () => button.removeEventListener(SPRING_OPEN_EVENT, handle);
+  }, [springOpen]);
+
   return (
     <Button
+      ref={ref}
       id={id}
+      {...(springOpen && !isActive && { [SPRING_OPEN_ATTR]: true })}
       disabled={disabled}
       variant="menu"
       className={isActive ? "active" : ""}

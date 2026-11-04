@@ -1,5 +1,8 @@
 import Phaser from "phaser";
 import type { SceneMain } from "./main-scene";
+import { isTypableFieldActive } from "@/client/input/typable-field";
+
+let lastGameZoom: number | undefined;
 
 export function calculateZoomLevel({
   viewportArea = 0,
@@ -17,8 +20,11 @@ export function calculateZoomLevel({
 }
 
 export function getGameZoomLevel(scene: Phaser.Scene) {
+  /* A phone keyboard shrinks the window while typing; keep the world's zoom until it closes */
+  if (lastGameZoom !== undefined && isTypableFieldActive()) return lastGameZoom;
   const viewportArea = scene.cameras.main.width * scene.cameras.main.height;
-  return Math.round(parseInt(calculateZoomLevel({ viewportArea })));
+  lastGameZoom = Math.round(parseInt(calculateZoomLevel({ viewportArea })));
+  return lastGameZoom;
 }
 
 export function getHeroCoordsRelativeToWindow(scene: Phaser.Scene) {
