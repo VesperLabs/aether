@@ -3,7 +3,7 @@ import { createDragAutoscroll } from "./drag-autoscroll";
 import { createDragSpringOpen } from "./drag-spring-open";
 
 /** How long a finger must rest on an item before it picks up; a quicker swipe scrolls instead. */
-const TOUCH_HOLD_MS = 180;
+const TOUCH_HOLD_MS = 120;
 /** How far a finger can drift while holding before it counts as a swipe. */
 const TOUCH_SLOP_PX = 10;
 
