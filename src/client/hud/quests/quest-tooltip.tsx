@@ -1,7 +1,7 @@
 import { Slot } from "@/client/hud/inventory/slot";
 import { SlotAmount } from "@/ui";
 import { useAppContext } from "@/client/hud/app/context";
-import { Box, Text, Flex, Divider, Icon, Button, STYLE_NON_EMPTY } from "@/ui";
+import { Box, Text, Flex, TextDivider, Icon, Button, STYLE_NON_EMPTY } from "@/ui";
 import {
   ItemBuilder,
   PREVIEW_DICE,
@@ -120,11 +120,9 @@ export const QuestTooltip = ({
           {quest?.name}
           <Text sx={{ color: "gray.500" }}> ({giverName})</Text>
         </Text>
-        <Divider />
+        <TextDivider />
         <Text dangerouslySetInnerHTML={{ __html: questDialogue }} />
-        <Divider />
-        <Text sx={{ fontWeight: "bold" }}>Quest Rewards</Text>
-        <Divider />
+        <TextDivider>Quest Rewards</TextDivider>
         <Flex sx={{ gap: 2 }}>
           {rewards?.items?.map((reward, idx) => {
             return <Slot player={player} item={reward} key={idx} disabled={true} />;
@@ -148,7 +146,7 @@ export const QuestTooltip = ({
             </Box>
           )}
         </Flex>
-        <Divider />
+        <TextDivider />
         <Flex sx={{ gap: 1 }}>
           <Button
             variant="wood"

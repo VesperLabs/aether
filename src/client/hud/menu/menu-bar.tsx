@@ -16,7 +16,6 @@ import { ChatButton } from "@/client/hud/chat/chat-button";
 import { MenuKeeper } from "@/client/hud/shop/menu-keeper";
 import { MenuProfile } from "@/client/hud/profile/menu-profile";
 import { MenuQuests } from "@/client/hud/quests/menu-quests";
-import { MenuSocial } from "@/client/hud/social/menu-social";
 import { MessageBox } from "@/client/hud/chat/message-box";
 import { useAppContext } from "@/client/hud/app/context";
 import { MenuButton } from "./menu-button";
@@ -56,8 +55,6 @@ export const MenuBar = () => {
     setTabAbilities,
     zoom,
     bagState,
-    players,
-    party,
     cooldowns,
     toggleBagState,
     sign,
@@ -76,7 +73,6 @@ export const MenuBar = () => {
     profile: tabProfile,
     quests: tabQuests,
     stats: tabStats,
-    social: tabSocial,
   });
 
   const escCacheKey = JSON.stringify([
@@ -90,6 +86,7 @@ export const MenuBar = () => {
     tabQuests,
     tabAbilities,
     tabSettings,
+    tabSocial,
     sign,
     error,
     ...bagState,
@@ -188,15 +185,6 @@ export const MenuBar = () => {
         <Box sx={{ pointerEvents: "all", order: orderOf("stats") }}>
           <MenuStats player={hero} isOpen={tabStats} setIsOpen={setTabStats} />
         </Box>
-        <Box sx={{ pointerEvents: "all", order: orderOf("social") }}>
-          <MenuSocial
-            hero={hero}
-            players={players}
-            party={party}
-            isOpen={tabSocial}
-            setIsOpen={setTabSocial}
-          />
-        </Box>
       </Box>
       <Box sx={{ pointerEvents: "all", flexShrink: 0 }}>
         <Menu
@@ -278,12 +266,11 @@ export const MenuBar = () => {
             hidden={true}
             onKeyUp={() => {
               /* These modals close themselves on Escape; leave the menus under them alone */
-              if (tabSettings || sign || error) return;
+              if (tabSettings || tabSocial || sign || error) return;
               if (tabChat) return setTabChat(false);
               if (dropItem) return setDropItem(null);
               if (homeModal) return setHomeModal(null);
               if (tabKeeper) return setTabKeeper(false);
-              if (tabSocial) return setTabSocial(false);
               if (tabQuests) return setTabQuests(false);
               if (tabStats) return setTabStats(false);
               if (tabProfile) return setTabProfile(false);

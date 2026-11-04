@@ -1,59 +1,63 @@
 import type { ReactNode } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
-import { Text } from "theme-ui";
-import { theme } from "./theme";
+import { Box, Flex, Text } from "theme-ui";
 
-/** Converts a hex colour to rgba. */
-const hexToRGBA = (hex: string, alpha = 1) => {
-  let r = parseInt(hex.slice(1, 3), 16),
-    g = parseInt(hex.slice(3, 5), 16),
-    b = parseInt(hex.slice(5, 7), 16);
-
-  if (alpha > 1) alpha = 1;
-  if (alpha < 0) alpha = 0;
-
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+/** Lines take the label's colour, faded, so the divider reads on any panel and follows coloured labels. */
+const LINE_STYLE: ThemeUIStyleObject = {
+  flex: 1,
+  height: 0,
+  borderTop: "1px dotted currentColor",
+  opacity: 0.2,
 };
 
-/** Looks up a dotted path such as "gray.500" in the theme colors. */
-const resolveThemeColor = (path: string): string | undefined => {
-  let node: unknown = theme.colors;
-  for (const key of path.split(".")) {
-    if (node == null || typeof node !== "object") return undefined;
-    node = (node as Record<string, unknown>)[key];
-  }
-  return node as string | undefined;
-};
+/** A small open diamond, the wiki's rule ornament. */
+const Diamond = () => (
+  <Box
+    aria-hidden
+    sx={{
+      width: 4,
+      height: 4,
+      flexShrink: 0,
+      border: "1px solid currentColor",
+      transform: "rotate(45deg)",
+      opacity: 0.3,
+    }}
+  />
+);
 
+/**
+ * Dotted rules either side of a small spaced-out caps label, each ending in a diamond, like the
+ * wiki's section rules. Without a label it is a rule with one diamond in the middle.
+ */
 export const TextDivider = ({
   children,
   sx,
-  color = "gray.500",
-  alpha = 0.5,
+  color = "text",
 }: {
   children?: ReactNode;
   sx?: ThemeUIStyleObject;
   color?: string;
-  alpha?: number;
-}) => {
-  const resolvedColor = resolveThemeColor(color) ?? color;
-  const colorWithAlpha = hexToRGBA(resolvedColor, alpha);
-
-  return (
-    <Text
-      sx={{
-        py: 2,
-        color,
-        position: "relative",
-        display: "block",
-        width: "100%",
-        textAlign: "center",
-        backgroundImage: `linear-gradient(to bottom, transparent 50%, ${colorWithAlpha} 50%, ${colorWithAlpha} 52%, transparent 52%)`,
-        backgroundPosition: "center",
-        ...sx,
-      }}
-    >
-      {children}
-    </Text>
-  );
-};
+}) => (
+  <Flex sx={{ alignItems: "center", gap: 2, py: 2, width: "100%", color, ...sx }}>
+    <Box aria-hidden sx={LINE_STYLE} />
+    <Diamond />
+    {children != null && (
+      <>
+        <Text
+          sx={{
+            fontSize: 0,
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+            lineHeight: 1,
+            whiteSpace: "nowrap",
+            opacity: 0.55,
+          }}
+        >
+          {children}
+        </Text>
+        <Diamond />
+      </>
+    )}
+    <Box aria-hidden sx={LINE_STYLE} />
+  </Flex>
+);

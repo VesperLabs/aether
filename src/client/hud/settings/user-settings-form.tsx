@@ -76,9 +76,7 @@ export const UserSettingsForm = () => {
           persistSetting("screenShake", e.target.checked);
         }}
       />
-      <TextDivider color="#d5c1a7" sx={{ textAlign: "left" }}>
-        🧪 Experimental
-      </TextDivider>
+      <TextDivider>Experimental</TextDivider>
       <Switch
         label={`Video Chat: ${videoChat && videoChatAllowed ? "ON" : "OFF"}`}
         checked={!!videoChat && videoChatAllowed}

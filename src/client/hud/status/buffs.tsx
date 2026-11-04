@@ -1,5 +1,5 @@
 import { memo, useEffect, useState } from "react";
-import { Divider, Flex, Icon, Text } from "@/ui";
+import { Flex, Icon, Text } from "@/ui";
 import { arePropsEqualWithKeys } from "@/ui";
 import { formatStats } from "@/rules/stats";
 import { buffList } from "@/content";
@@ -53,7 +53,7 @@ const BuffTooltip = ({
             <Label>{key}:</Label> {buff?.percentStats?.[key]}%
           </Text>
         ))}
-        {!!description && <Divider />}
+        {!!description && <TextDivider />}
         <Label
           sx={{ textTransform: "none", fontWeight: "normal", fontStyle: "italic", maxWidth: 200 }}
         >

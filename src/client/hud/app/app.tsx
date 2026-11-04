@@ -17,6 +17,7 @@ import type { Theme } from "theme-ui";
 import { DEFAULT_USER_SETTINGS } from "@/rules/world";
 import { VideoFrame } from "@/client/hud/video/video-frame";
 import { ModalSettings } from "@/client/hud/settings/modal-settings";
+import { ModalSocial } from "@/client/hud/social/modal-social";
 import type Phaser from "phaser";
 import type Peer from "peerjs";
 import type { ChatMessage, ClientGameSocket, PartyMessage } from "@/network";
@@ -309,6 +310,7 @@ export function App({ socket, peer, debug, game }: AppProps) {
           <LoginBackdrop showLogin={showLogin} isLoggedIn={isLoggedIn} hasError={!!error} />
           <VideoFrame />
           {isLoggedIn && tabSettings && <ModalSettings />}
+          {isLoggedIn && tabSocial && <ModalSocial />}
           {isLoggedIn && (
             <Box
               id={HUD_CONTAINER_ID}

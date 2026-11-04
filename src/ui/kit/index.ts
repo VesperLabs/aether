@@ -1,4 +1,4 @@
-export { ThemeUIProvider, Box, Flex, Grid, Text, Divider, Donut, Link } from "theme-ui";
+export { ThemeUIProvider, Box, Flex, Grid, Text, Donut, Link } from "theme-ui";
 export { theme } from "./theme";
 export { resourceToken } from "./resource-colors";
 export { Button } from "./button/button";
