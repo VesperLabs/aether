@@ -122,8 +122,8 @@ export const MenuBar = () => {
       <Box
         ref={stackRef}
         sx={{
-          /* Only the menus catch the pointer, not the padding left for overhangs */
-          pointerEvents: "none",
+          /* iOS only scrolls a box that takes touches itself, so this can't be "none" */
+          pointerEvents: "all",
           flex: "0 1 auto",
           minHeight: 0,
           display: "flex",
