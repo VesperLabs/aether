@@ -7,6 +7,8 @@ const CENTER = SIZE / 2;
 
 const BORDER = "#000";
 const GOLD = "#c8962e";
+/** The gilding's gold, lifted so it stays bright on small controls. */
+export const CONTROL_GOLD = "#d4b26a";
 const LIGHT = "#f4d774";
 
 /* Twice the panel's border, centred on the shape's edge: 1px shows outside it. */

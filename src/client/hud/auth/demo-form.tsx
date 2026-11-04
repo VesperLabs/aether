@@ -3,6 +3,7 @@ import { Modal, KeyboardButton, Text } from "@/ui";
 import { useAppContext } from "@/client/hud/app/context";
 import type { CharClass } from "@/content";
 import { CharClassSelect } from "./char-class-select";
+import { RememberRow } from "./remember-row";
 
 export const DemoForm = () => {
   const { socket } = useAppContext();
@@ -15,9 +16,10 @@ export const DemoForm = () => {
   return (
     <Modal.Body sx={{ gap: 2 }}>
       <CharClassSelect charClass={charClass} setCharClass={setCharClass} />
-      <Text sx={{ fontSize: 1, opacity: 0.6, whiteSpace: "normal", textAlign: "center" }}>
+      <Text sx={{ fontSize: 0, opacity: 0.6, whiteSpace: "normal", textAlign: "center" }}>
         Note: your progress will not be saved. For that you will need to click "Register".
       </Text>
+      <RememberRow reserveOnly />
       <KeyboardButton sx={{ flex: 1 }} onClick={() => handleDemoLogin()} keyboardKey="ENTER">
         Play
       </KeyboardButton>

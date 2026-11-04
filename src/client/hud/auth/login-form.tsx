@@ -1,6 +1,9 @@
 import { useState, useEffect, useEffectEvent } from "react";
-import { Modal, Input, KeyboardButton, Box, Switch } from "@/ui";
+import { Modal, Input, KeyboardButton, Box } from "@/ui";
 import { useAppContext } from "@/client/hud/app/context";
+import { CharacterPreview } from "./character-preview";
+import { RememberRow } from "./remember-row";
+import { useCharacterLookup } from "./use-character-lookup";
 import { useSavedLogin } from "./saved-login";
 import { getLoginToken, getRememberMe, setRememberMe } from "./remembered-login";
 import type { Notify } from "./login-types";
@@ -51,6 +54,7 @@ export const LoginForm = ({
   const [token, setToken] = useState(getLoginToken);
   /* A remembered login stands in for the password until the user types one or another email */
   const isRemembered = !!token && remember && !password && email === defaultEmail;
+  const character = useCharacterLookup(email, isActive);
   const savedLogin = useSavedLogin((saved) => {
     /* Don't swap a just-registered email for an older saved one */
     if (defaultEmail && saved.email !== defaultEmail) return;
@@ -88,6 +92,7 @@ export const LoginForm = ({
 
   return (
     <Modal.Body sx={{ gap: 2 }}>
+      <CharacterPreview character={character} isActive={isActive} />
       <Input
         autoFocus={isActive && !defaultEmail}
         name="email"
@@ -119,12 +124,11 @@ export const LoginForm = ({
         />
         {isRemembered && <RememberedCheck />}
       </Box>
-      <Switch
-        label="Remember me"
+      <RememberRow
         checked={remember}
-        onChange={(e) => {
-          setRemember(e.target.checked);
-          setRememberMe(e.target.checked);
+        onChange={(checked) => {
+          setRemember(checked);
+          setRememberMe(checked);
         }}
       />
       <KeyboardButton

@@ -39,7 +39,13 @@ export const commands = {
   /** Log back in with the token from `loginToken` ("Remember me"). */
   tokenLogin: z.object({ token: z.string() }),
   register: z
-    .object({ email: text, password: text, charClass: text, remember: z.boolean().optional() })
+    .object({
+      email: text,
+      password: text,
+      charClass: text,
+      gender: z.enum(["male", "female"]).optional(),
+      remember: z.boolean().optional(),
+    })
     .optional(),
   /** The payload is an acknowledgement callback, which the server calls right away. */
   latency: z.custom<(health: ServerHealthMessage) => void>((value) => typeof value === "function"),

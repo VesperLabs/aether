@@ -58,17 +58,23 @@ export const theme = {
   },
   forms: {
     input: {
+      fontSize: 1,
       p: 1,
       px: 2,
       lineHeight: 1,
-      bg: "shadow.30",
-      border: `1px solid #000`,
-      borderColor: `shadow.30`,
+      bg: "rgba(0, 0, 0, 0.38)",
+      /* Recessed into the panel: dark edge, shaded from above, the light catching its lower lip. */
+      border: `1px solid rgba(0, 0, 0, 0.35)`,
+      boxShadow: `inset 0 1px 1px rgba(0, 0, 0, 0.2), 0 1px 0 rgba(255, 255, 255, 0.1)`,
       outline: "none",
       textShadow: "none",
+      transition: "background-color 0.15s ease",
+      "&:focus": {
+        bg: "rgba(0, 0, 0, 0.46)",
+      },
       "&::placeholder": {
         color: "text",
-        opacity: 0.15,
+        opacity: 0.4,
       },
     },
   },

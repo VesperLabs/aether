@@ -56,6 +56,7 @@ export interface Database {
   createUser(args: {
     email?: string | null;
     charClass?: string | null;
+    gender?: "male" | "female";
     password?: string | null;
   }): Promise<boolean | void>;
   updateUserMapDetails(args: SavedMapDetails): Promise<void>;

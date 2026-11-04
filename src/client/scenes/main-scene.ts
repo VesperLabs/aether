@@ -11,7 +11,7 @@ import { changeMusic, setMusicVolume } from "@/client/audio/music";
 import { getPlayer, getNpc, getNpcs, getPlayers } from "./scene-entities";
 import { enableDoors, initCamera } from "./main-map";
 import { checkProximities } from "./proximity";
-import { createMinimap, updateMinimap } from "./minimap";
+import { animateMinimap, createMinimap, updateMinimap } from "./minimap";
 
 /** A remote player close enough to the hero to video chat with. */
 export interface NearbyPlayer {
@@ -85,7 +85,8 @@ export class SceneMain extends Phaser.Scene {
   }
   toggleMinimap(value: boolean) {
     // Before the map and hero load it is still unplaced at the top-left; layoutMinimap shows it then
-    return this.minimap?.setVisible(value && !!this.map && !!this.hero);
+    if (this.map && this.hero) animateMinimap(this, value);
+    else this.minimap?.setVisible(false);
   }
   toggleCharLevels() {
     const scene = this;

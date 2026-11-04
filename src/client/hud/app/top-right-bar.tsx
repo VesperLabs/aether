@@ -1,5 +1,10 @@
 import { Flex, isMobile } from "@/ui";
-import { MINI_MAP_MARGIN, MINI_MAP_SIZE } from "@/client/views/minimap-size";
+import {
+  MINI_MAP_EASE,
+  MINI_MAP_MARGIN,
+  MINI_MAP_OPEN_MS,
+  MINI_MAP_SIZE,
+} from "@/client/views/minimap-size";
 import { useAppContext } from "@/client/hud/app/context";
 import { MusicPlayer } from "@/client/hud/music/music-player";
 import { NetStatsButton } from "@/client/hud/net-stats/net-stats-button";
@@ -19,6 +24,7 @@ export const TopRightBar = () => {
         position: "fixed",
         top: MINI_MAP_MARGIN,
         right,
+        transition: `right ${MINI_MAP_OPEN_MS}ms ${MINI_MAP_EASE}`,
         transform: `scale(${scale})`,
         transformOrigin: "top right",
         /* Under the menus, which open over it */

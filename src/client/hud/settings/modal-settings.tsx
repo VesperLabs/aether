@@ -4,7 +4,9 @@ import { Box, Flex, Grid, Modal, KeyboardButton, Icon, isMobile } from "@/ui";
 import { MusicCredits } from "./music-credits";
 import { UserSettingsForm } from "./user-settings-form";
 
-const MOBILE_WIDTH = "min(300px, calc(100vw - 32px))";
+/* Divided by the zoom the Modal scales by, so a zoomed modal still fits the screen. */
+const modalWidth = (zoom: number | string) =>
+  `min(300px, calc((100vw - 32px) / ${Math.max(1, Number(zoom))}))`;
 /* Leaves room for the tabs, the footer and the gilding. */
 const MAX_BODY_HEIGHT = "calc(100dvh - 130px)";
 
@@ -30,12 +32,18 @@ export const ModalSettings: React.FC = () => {
       <Modal
         zoom={isMobile ? 1 : zoom}
         bottomOffset={bottomOffset}
-        sx={isMobile ? { width: MOBILE_WIDTH } : undefined}
+        /* A fixed box from left: 50% only gets half the screen, so it needs a floor. */
+        sx={isMobile ? { width: modalWidth(1) } : { minWidth: modalWidth(zoom) }}
       >
         <Flex sx={{ flexDirection: "column" }}>
           <Flex role="tablist">
             {TABS.map(({ name, label, ...rest }) => (
-              <Modal.Tab key={name} active={tab === name} onClick={() => setTab(name)}>
+              <Modal.Tab
+                key={name}
+                active={tab === name}
+                onClick={() => setTab(name)}
+                sx={{ px: 3 }}
+              >
                 {"icon" in rest && <Icon icon={rest.icon} size={22} />}
                 {label}
               </Modal.Tab>

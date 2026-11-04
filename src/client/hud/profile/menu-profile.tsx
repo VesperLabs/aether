@@ -7,6 +7,14 @@ import { Flex, Text, Box, MENU_MAX_WIDTH, Menu, MenuHeader } from "@/ui";
 import { arePropsEqualWithKeys } from "@/ui";
 import { ModalRename } from "./modal-rename";
 
+const PICKER_ROW = {
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: 2,
+  bg: "shadow.10",
+  p: 1,
+};
+
 const MenuPicker = ({
   children,
   onPlus = () => {},
@@ -17,15 +25,7 @@ const MenuPicker = ({
   onMinus?: () => void;
 }) => {
   return (
-    <Flex
-      sx={{
-        alignItems: "center",
-        justifyContent: "space-between",
-        gap: 2,
-        bg: "shadow.10",
-        p: 1,
-      }}
-    >
+    <Flex sx={PICKER_ROW}>
       <MenuButton
         size={16}
         sx={{ "& .icon": { transform: "rotate(90deg) scaleY(-1)" } }}
@@ -75,9 +75,16 @@ export const MenuProfile = memo(
               player={player}
               filteredSlots={["accessory", "helmet", "hands"]}
             />
-            <Flex sx={{ alignItems: "center", gap: 1 }}>
-              <Text sx={{ fontSize: 4 }}>{userName}</Text>
-              <MenuButton iconName="pen" size={16} onClick={() => setRenaming(true)} />
+            {/* The whole row renames; the pen just shows that it can. */}
+            <Flex
+              role="button"
+              title="Change name"
+              sx={{ ...PICKER_ROW, minWidth: 180, cursor: "pointer" }}
+              onClick={() => setRenaming(true)}
+            >
+              <Box sx={{ width: 19 }} />
+              <Text>{userName}</Text>
+              <MenuButton iconName="pen" size={19} onClick={() => setRenaming(true)} />
             </Flex>
             {renaming && <ModalRename userName={userName} onClose={() => setRenaming(false)} />}
           </Flex>

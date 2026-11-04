@@ -96,6 +96,9 @@ interface UserSettings {
   playMusic: boolean;
   /** 0 to 1 slider position, see `musicGain` */
   musicVolume: number;
+  playSfx: boolean;
+  /** 0 to 1 slider position */
+  sfxVolume: number;
   showMinimap: boolean;
   videoChat: boolean;
   charLevels: boolean;

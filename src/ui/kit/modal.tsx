@@ -2,6 +2,7 @@ import type { ComponentProps } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
 import { Box, Flex } from "theme-ui";
 import { GILDED_CORNERS } from "./modal-gilding";
+import { MODAL_ATTR } from "./shake-modal";
 
 type FlexProps = ComponentProps<typeof Flex>;
 type ModalProps = FlexProps & { zoom?: number | string; bottomOffset?: number };
@@ -28,6 +29,7 @@ const ModalRoot = ({ sx, zoom = 1, bottomOffset = 0, ...props }: ModalProps) => 
         ...sx,
       }}
       variant="buttons.wood"
+      {...{ [MODAL_ATTR]: true }}
       {...props}
     />
   );
@@ -52,14 +54,50 @@ const ModalOverlay = ({ sx, ...props }: ComponentProps<typeof Box>) => {
   );
 };
 
-const ModalHeader = ({ sx, ...props }: FlexProps) => {
+/* A short cap rather than a border on the tab: it follows the corners, then stops partway down. */
+const CAP_HEIGHT = 26;
+const edgeCap = (edge: "top" | "bottom"): ThemeUIStyleObject => {
+  const isTop = edge === "top";
+  return {
+    position: "absolute",
+    inset: isTop ? "0 0 auto 0" : "auto 0 0 0",
+    /* Light falls from above, so the bottom edge stays quieter. */
+    opacity: isTop ? 1 : 0.65,
+    height: isTop ? CAP_HEIGHT : CAP_HEIGHT * 2,
+    maskImage: `linear-gradient(to ${isTop ? "bottom" : "top"}, #000 10%, transparent 90%)`,
+    border: "1px solid rgba(0, 0, 0, 0.35)",
+    [isTop ? "borderBottom" : "borderTop"]: 0,
+    borderRadius: "inherit",
+    /* The full ring, as on the modal: it hugs the corners, and the mask hides its far edge. */
+    boxShadow: "inset 0 0 0 1px rgba(255, 255, 255, 0.15)",
+    pointerEvents: "none",
+  };
+};
+
+type HeaderProps = FlexProps & { cap?: boolean; titleRule?: boolean };
+
+/* A groove under the title: a dark line over a light one, fading out at both ends. */
+const TITLE_RULE: ThemeUIStyleObject = {
+  position: "absolute",
+  insetInline: "8%",
+  bottom: 0,
+  opacity: 0.6,
+  height: 2,
+  background: "linear-gradient(to bottom, rgba(0, 0, 0, 0.35) 50%, rgba(255, 255, 255, 0.12) 50%)",
+  maskImage: "linear-gradient(to right, transparent, #000 30%, #000 70%, transparent)",
+  pointerEvents: "none",
+};
+
+const ModalHeader = ({ sx, cap = true, titleRule = true, children, ...props }: HeaderProps) => {
   return (
     <Flex
       className="modal-header"
       sx={{
+        position: "relative",
         alignItems: "center",
         px: 2,
-        py: 1,
+        pt: 2,
+        pb: 1,
         minHeight: 32,
         fontSize: 1,
         gap: 1,
@@ -67,25 +105,19 @@ const ModalHeader = ({ sx, ...props }: FlexProps) => {
         flex: "none",
         bg: "shadow.25",
         "& .icon": { filter: "drop-shadow(0 1px 1px rgba(0, 0, 0, 0.6))" },
-        /* Joined to a body: same container, the heading set inside it as a rounded inset. */
+        /* Joined to a body: one panel, with nothing between them. */
         "&:has(+ .modal-body)": {
-          position: "relative",
-          isolation: "isolate",
           borderBottomLeftRadius: 0,
           borderBottomRightRadius: 0,
-          "&::before": {
-            content: '""',
-            position: "absolute",
-            inset: "3px",
-            zIndex: -1,
-            borderRadius: 3,
-            bg: "shadow.25",
-          },
         },
         ...sx,
       }}
       {...props}
-    />
+    >
+      {cap && <Box sx={edgeCap("top")} />}
+      {titleRule && <Box sx={TITLE_RULE} />}
+      {children}
+    </Flex>
   );
 };
 
@@ -118,8 +150,11 @@ const ModalTab = ({ active, sx, ...props }: FlexProps & { active: boolean }) => 
       /* Not the default "submit": a tab may sit inside a form, like the login modal. */
       {...({ type: "button" } as object)}
       role="tab"
+      cap={active}
+      titleRule={false}
       aria-selected={active}
       sx={{
+        pt: 1,
         borderRadius: `${TAB_RADIUS}px ${TAB_RADIUS}px 0 0`,
         border: 0,
         color: "inherit",
@@ -135,11 +170,12 @@ const ModalTab = ({ active, sx, ...props }: FlexProps & { active: boolean }) => 
   );
 };
 
-const ModalBody = ({ sx, ...props }: FlexProps) => {
+const ModalBody = ({ sx, children, ...props }: FlexProps) => {
   return (
     <Flex
       className="modal-body"
       sx={{
+        position: "relative",
         p: 3,
         borderRadius: 3,
         bg: "shadow.25",
@@ -154,7 +190,10 @@ const ModalBody = ({ sx, ...props }: FlexProps) => {
         ...sx,
       }}
       {...props}
-    />
+    >
+      {children}
+      <Box sx={edgeCap("bottom")} />
+    </Flex>
   );
 };
 

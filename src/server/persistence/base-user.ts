@@ -2,7 +2,11 @@ import { ItemBuilder, type CharClass, type Dice } from "@/content";
 import { DEFAULT_USER_SETTINGS } from "@/rules/world";
 import { getBaseCharacterDefaults } from "../auth/character-defaults";
 
-export const createBaseUser = (dice: Dice, charClass?: string | null) => {
+export const createBaseUser = (
+  dice: Dice,
+  charClass?: string | null,
+  gender: "male" | "female" = "female",
+) => {
   const { baseStats, startingWeapon, startingSpell, roomName, x, y } = getBaseCharacterDefaults({
     dice,
     level: 1,
@@ -49,7 +53,7 @@ export const createBaseUser = (dice: Dice, charClass?: string | null) => {
     },
     profile: {
       userName: "Noob",
-      gender: "female",
+      gender,
       race: "human",
       hair: { tint: "0x88FFFF", texture: "hair-3" },
       face: { texture: "face-1" },

@@ -2,13 +2,18 @@ import type { ReactNode } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
 import { Box, Flex, Text } from "theme-ui";
 
-/** Lines take the label's colour, faded, so the divider reads on any panel and follows coloured labels. */
-const LINE_STYLE: ThemeUIStyleObject = {
+/**
+ * Lines take the label's colour, so the divider reads on any panel and follows coloured labels.
+ * Each fades out towards the panel's edge.
+ */
+const lineStyle = (towards: "left" | "right"): ThemeUIStyleObject => ({
   flex: 1,
-  height: 0,
-  borderTop: "1px dotted currentColor",
-  opacity: 0.2,
-};
+  height: "1px",
+  /* A hairline: half a pixel on sharp screens, a fainter line on the rest. */
+  transform: "scaleY(0.5)",
+  background: `linear-gradient(to ${towards}, currentColor, transparent)`,
+  opacity: 0.25,
+});
 
 /** A small open diamond, the wiki's rule ornament. */
 const Diamond = () => (
@@ -26,7 +31,7 @@ const Diamond = () => (
 );
 
 /**
- * Dotted rules either side of a small spaced-out caps label, each ending in a diamond, like the
+ * Fading rules either side of a small spaced-out caps label, each ending in a diamond, like the
  * wiki's section rules. Without a label it is a rule with one diamond in the middle.
  */
 export const TextDivider = ({
@@ -50,7 +55,7 @@ export const TextDivider = ({
       ...sx,
     }}
   >
-    <Box aria-hidden sx={LINE_STYLE} />
+    <Box aria-hidden sx={lineStyle("left")} />
     <Diamond />
     {children != null && (
       <>
@@ -69,6 +74,6 @@ export const TextDivider = ({
         <Diamond />
       </>
     )}
-    <Box aria-hidden sx={LINE_STYLE} />
+    <Box aria-hidden sx={lineStyle("right")} />
   </Flex>
 );

@@ -84,12 +84,12 @@ const getDatabaseApi = (db: Db, dice: Dice): Database => ({
       return user as UserDocument | null;
     });
   },
-  createUser: async ({ email, charClass, password }) => {
+  createUser: async ({ email, charClass, gender, password }) => {
     return execute("createUser", async () => {
       if (!email) {
         return console.log("❌ Error while creating player. Email not provided");
       }
-      const player = createBaseUser(dice, charClass);
+      const player = createBaseUser(dice, charClass, gender);
       const { updatedAt, createdAt } = getAuditFields();
       await db.collection("users").insertOne({
         email: `${email}`.toLowerCase(),

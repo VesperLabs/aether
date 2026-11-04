@@ -14,6 +14,8 @@ export { TextDivider } from "./text-divider";
 export { ZoomProvider } from "./zoom";
 export { Portal } from "./portal";
 export { VersionTag } from "./version-tag";
+export { shakeModal } from "./shake-modal";
+export { Slider } from "./slider";
 export { Switch } from "./switch";
 export { Toast } from "./toast";
 export type { ToastKind, ToastMessage } from "./toast";
