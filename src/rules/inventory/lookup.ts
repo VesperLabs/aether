@@ -90,6 +90,20 @@ export function findOpenBagSlot(
   return openSlot;
 }
 
+/** The first bag in the inventory with room for this item, and the slot it would go in. Bags don't go in bags. */
+export function findFirstOpenBag(
+  inventory: ItemSlotValue[] | undefined,
+  item: InventoryItem | null | undefined,
+): { bagId: string; slot: number } | null {
+  if (item?.base === "bag") return null;
+  for (const entry of inventory ?? []) {
+    if (entry?.base !== "bag" || !entry.id) continue;
+    const slot = findOpenBagSlot(inventory, entry.id, item);
+    if (slot !== undefined) return { bagId: entry.id, slot };
+  }
+  return null;
+}
+
 /** Where `findBagItemById` found its item: which inventory slot holds the bag, and the slot in it. */
 export function locateBagItem(inventory: ItemSlotValue[] | undefined, id: string | undefined) {
   let bagIndex = -1;

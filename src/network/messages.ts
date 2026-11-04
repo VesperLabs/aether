@@ -45,8 +45,6 @@ export interface ChatMessage {
   to?: string;
   type: ChatMessageType;
   message: string;
-  /** An item shown after the text, in its rarity's color ("Found [Crab Claw] x3"). */
-  item?: { name: string; rarity: string; amount?: number };
   /** Items the text names as `[Item Name]`, shown with their tooltip. */
   links?: BuiltItem[];
   timestamp?: number;

@@ -25,6 +25,9 @@ export function grabLoot(
         player.findAbilityById(item.id)?.["item"] ||
         player.findInventoryItemById(item.id)
       : null;
+  /* A full inventory overflows into the first bag with room */
+  const inventoryFull = !!player?.isInventoryFull();
+  const overflowBag = inventoryFull && item ? player?.findFirstOpenBag(item) : null;
   const outcome = resolveGrab({
     loot: world.loots[key],
     hasGrabber: !!player,
@@ -35,7 +38,7 @@ export function grabLoot(
       y: player.y,
     },
     hasStackToJoin: !!stackTarget,
-    inventoryFull: !!player?.isInventoryFull(),
+    inventoryFull: inventoryFull && !overflowBag,
   });
   if (outcome === "ignore" || !isInRoom(player)) return;
   /* Face the loot */
@@ -50,6 +53,8 @@ export function grabLoot(
   removeLoot(world, key);
   if (outcome === "stack" && stackTarget) {
     stackTarget.amount = addStackAmounts(stackTarget.amount, item?.amount);
+  } else if (overflowBag) {
+    player.setBagItem(overflowBag.bagId, overflowBag.slot, item);
   } else {
     player.addInventoryItem(item);
   }

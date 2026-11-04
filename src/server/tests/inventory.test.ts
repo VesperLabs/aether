@@ -2,6 +2,7 @@
 import type { Socket } from "socket.io-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { ItemBuilder } from "@/content";
+import { MAX_INVENTORY_ITEMS } from "@/rules/inventory";
 import { createServerDice } from "../server-dice";
 import { once, settle, startTestServer, TEST_SEED, type TestServer } from "./test-server";
 
@@ -45,6 +46,34 @@ describe("inventory over the socket", () => {
     });
     expect(equipped.equipment.armor.id).toBe(armorId);
     expect(equipped.inventory[2]).toBeFalsy();
+  });
+
+  it("a grab with a full inventory goes into the first bag with room", async () => {
+    const { socket } = await login("warrior");
+    const hero = server.world.players[socket.id as string];
+    const filler = () => build("armor", "common", "clothRobe");
+    const fullBag = { ...build("bag", "rare", "smallPouch"), items: [filler()] };
+    (fullBag as Anything).space = 1;
+    const openBag = { ...build("bag", "rare", "smallPouch"), items: [filler(), null] };
+    (openBag as Anything).space = 2;
+    hero.inventory = [fullBag, openBag, ...Array.from({ length: MAX_INVENTORY_ITEMS - 2 }, filler)];
+    const item = filler();
+    const loot = {
+      id: "overflow-loot",
+      roomName: hero.roomName,
+      x: hero.x,
+      y: hero.y,
+      item,
+      dropTime: server.world.now(),
+    };
+    server.world.loots[loot.id] = loot as Anything;
+
+    const grabbed = once(socket, "lootGrabbed");
+    socket.emit("grabLoot", { lootId: loot.id, direction: "left" });
+    const [result] = await grabbed;
+
+    expect(result.player.inventory[1].items[1].id).toBe(item.id);
+    expect(server.world.loots[loot.id]).toBeUndefined();
   });
 
   it("refuses an item in the wrong equipment slot", async () => {

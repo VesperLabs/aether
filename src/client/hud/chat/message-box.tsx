@@ -128,7 +128,7 @@ const MESSAGE_COLORS: Record<ChatMessageType, string> = {
 };
 
 const Message: React.FC<MessageProps> = ({ data, isOpen }) => {
-  const { message, type, item, links, timestamp } = data;
+  const { message, type, links, timestamp } = data;
   const color = MESSAGE_COLORS[type] ?? "white";
   const isOld = useIsOld(data?.timestamp);
   const from = getFrom(data);
@@ -168,15 +168,6 @@ const Message: React.FC<MessageProps> = ({ data, isOpen }) => {
               </React.Fragment>
             );
           })}
-          {item && (
-            <>
-              {" "}
-              <Text as="span" sx={{ color: item.rarity }}>
-                {item.name}
-              </Text>
-              {item.amount && item.amount > 1 ? ` x${item.amount}` : ""}
-            </>
-          )}
         </Text>
       </Flex>
     </Flex>
