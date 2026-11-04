@@ -258,6 +258,12 @@ export const ChatButton = () => {
                   setMessageIndex(newIndex);
                 }
               }}
+              onKeyUp={(e) => {
+                /* Esc drops the half-typed command first; chat only closes on the next one */
+                if (e.key !== "Escape" || !showCommands) return;
+                e.stopPropagation();
+                editDraft("");
+              }}
               onMouseDown={() => (isPressInInput.current = true)}
               onChange={(e) => editDraft(e.target.value)}
             />
