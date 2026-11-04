@@ -1,5 +1,6 @@
 import {
   checkChatArg,
+  findChatCommand,
   formatChatArg,
   getChatArgs,
   type ChatArg,
@@ -10,6 +11,8 @@ import {
 /** One row in the chat popover. Picking it replaces the word being typed with `value`. */
 export interface ChatSuggestion extends ChatCommandOption {
   args?: string;
+  /** Other ways to type a command, slash included. */
+  aliases?: readonly string[];
 }
 
 const MAX_SUGGESTIONS = 8;
@@ -53,6 +56,7 @@ function rankSuggestions<T extends ChatSuggestion>(
       scoreName(option.value),
       option.label ? scoreName(option.label) : Infinity,
       option.label ? scoreName(option.label.replace(/\s+/g, "")) : Infinity,
+      ...(option.aliases?.map(scoreName) ?? []),
       needle && option.hint?.toLowerCase().includes(needle) ? HINT_MATCH_SCORE : Infinity,
     );
   return (
@@ -91,13 +95,14 @@ export interface ChatDraft {
 }
 
 function listCommands(commands: readonly ChatCommand[]): ChatSuggestion[] {
-  return [...commands]
-    .sort((a, b) => a.name.localeCompare(b.name))
-    .map((c) => ({
-      value: `/${c.name}`,
-      args: c.args?.map(formatChatArg).join(" "),
-      hint: c.description,
-    }));
+  /* Player commands keep their written order, most used first; cheats are a long list, so A to Z */
+  const cheats = commands.filter((c) => c.cheat).sort((a, b) => a.name.localeCompare(b.name));
+  return [...commands.filter((c) => !c.cheat), ...cheats].map((c) => ({
+    value: `/${c.name}`,
+    args: c.args?.map(formatChatArg).join(" "),
+    hint: c.description,
+    aliases: c.aliases?.map((alias) => `/${alias}`),
+  }));
 }
 
 /**
@@ -122,7 +127,7 @@ export function readChatDraft(draft: string, commands: readonly ChatCommand[]): 
   const prefix = draft.slice(0, draft.length - typed.length);
 
   if (words.length === 1) {
-    const command = commands.find((c) => c.name === typed.toLowerCase());
+    const command = findChatCommand(typed, commands);
     const suggestions =
       typed === "" ? listCommands(commands) : rankSuggestions(typed, listCommands(commands));
     const error = command || typed === "" ? undefined : `Unknown command /${typed}`;
@@ -131,7 +136,7 @@ export function readChatDraft(draft: string, commands: readonly ChatCommand[]): 
     return { ...none, suggestions, prefix: "", typed, command, error, invalid, needsMore };
   }
 
-  const command = commands.find((c) => c.name === words[0].toLowerCase());
+  const command = findChatCommand(words[0], commands);
   const args = words.slice(1);
   const argIndex = args.length - 1;
   if (!command) {

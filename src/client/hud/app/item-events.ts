@@ -1,4 +1,5 @@
 import React from "react";
+import { CHAT_DROP_ATTR, linkItemToChat } from "@/client/hud/chat/chat-links";
 import { CONSUMABLES_BASES } from "@/rules/inventory";
 import type { ClientGameSocket } from "@/network";
 import type { DropItem, HudCharacter } from "./context";
@@ -42,6 +43,11 @@ export function createItemEventHandlers({
     const { location, bagId, slotKey, item } = e.detail;
     const target = e.detail.target as HTMLElement | null;
     const { nodeName, dataset } = target ?? ({} as Partial<HTMLElement>);
+    /* Anywhere -> Chat box: links it, the same as cmd/ctrl-clicking */
+    if (target?.closest(`[${CHAT_DROP_ATTR}]`)) {
+      if (location !== "shop") linkItemToChat(item);
+      return;
+    }
     if (hero?.state?.isDead) return;
     /* Not moving an item anywhere. (Same slot) */
     if (dataset?.location === location && dataset?.slotKey === slotKey && dataset.bagId === bagId) {

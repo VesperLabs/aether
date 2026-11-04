@@ -36,6 +36,8 @@ export interface ChatCommand {
   args?: readonly ChatArg[];
   description: string;
   cheat: boolean;
+  /** Other ways to type it, without the slash (`w` for `whisper`). */
+  aliases?: readonly string[];
   /** The arguments, when they depend on what's typed (an item's rarity and amount). */
   argsFor?: (args: string[]) => readonly ChatArg[];
   /** Suggestions for the argument at `index`, given the args typed before it. */
@@ -79,7 +81,68 @@ function completeItem(index: number, args: string[]) {
   return itemArgs(args)[index]?.kind === "rarity" ? ROLLABLE_RARITY_OPTIONS : [];
 }
 
+const textArg = (name: string): ChatArg => ({ name, kind: "text" });
+
+/** Commands every player has, with WoW's names. Message arguments run to the line's end. */
+const PLAYER_COMMANDS: readonly ChatCommand[] = [
+  {
+    name: "yell",
+    args: [textArg("message")],
+    description: "Shout to everyone online",
+    cheat: false,
+  },
+  {
+    name: "whisper",
+    aliases: ["w"],
+    args: [textArg("player"), textArg("message")],
+    description: "Message one player privately",
+    cheat: false,
+  },
+  {
+    name: "reply",
+    aliases: ["r"],
+    args: [textArg("message")],
+    description: "Answer your last whisper",
+    cheat: false,
+  },
+  {
+    name: "party",
+    args: [textArg("message")],
+    description: "Talk to your party",
+    cheat: false,
+  },
+  {
+    name: "me",
+    args: [textArg("action")],
+    description: "Act something out",
+    cheat: false,
+  },
+  {
+    name: "who",
+    description: "List who is online",
+    cheat: false,
+  },
+  {
+    name: "invite",
+    args: [textArg("player")],
+    description: "Invite a player to your party",
+    cheat: false,
+  },
+  {
+    name: "leave",
+    description: "Leave your party",
+    cheat: false,
+  },
+  {
+    name: "roll",
+    args: [optional(numArg("max"))],
+    description: "Roll a number, 1 to 100 unless you pick a max",
+    cheat: false,
+  },
+];
+
 export const CHAT_COMMANDS: readonly ChatCommand[] = [
+  ...PLAYER_COMMANDS,
   {
     name: "drop",
     args: [itemArg("item")],
@@ -180,7 +243,15 @@ export const CHAT_COMMANDS: readonly ChatCommand[] = [
   },
 ];
 
-/** The commands a player can use, given whether the server has cheats on. */
+/** The command called `name`, by its full name or a shortcut. */
+export function findChatCommand(
+  name: string,
+  commands: readonly ChatCommand[] = CHAT_COMMANDS,
+): ChatCommand | undefined {
+  const wanted = name.toLowerCase();
+  return commands.find((c) => c.name === wanted || c.aliases?.includes(wanted));
+}
+
 /** A command's arguments, given the ones typed so far. */
 export function getChatArgs(command: ChatCommand, args: string[]): readonly ChatArg[] {
   return command.argsFor?.(args) ?? command.args ?? [];
@@ -191,6 +262,7 @@ export function formatChatArg(arg: ChatArg) {
   return arg.optional ? `[${arg.name}]` : `<${arg.name}>`;
 }
 
+/** The commands a player can use, given whether the server has cheats on. */
 export function getChatCommands(cheats: boolean): readonly ChatCommand[] {
   return CHAT_COMMANDS.filter((c) => cheats || !c.cheat);
 }

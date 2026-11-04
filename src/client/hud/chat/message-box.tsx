@@ -2,6 +2,8 @@ import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { Box, Flex, Text } from "@/ui";
 import { useAppContext } from "@/client/hud/app/context";
 import type { ChatMessage, ChatMessageType } from "@/network";
+import { ItemTooltip } from "@/ui";
+import { chatLinkText, splitChatLinks } from "./chat-links";
 
 type MessageProps = {
   data: ChatMessage;
@@ -99,7 +101,13 @@ export const MessageBox = () => {
 
 const getFrom = (data: ChatMessage | undefined) => {
   if (data?.type === "party") {
-    return "Party:";
+    return data.from ? `[Party] ${data.from}:` : "Party:";
+  }
+  if (data?.type === "whisper") {
+    return data.to ? `To ${data.to}:` : `${data.from} whispers:`;
+  }
+  if (data?.type === "yell") {
+    return `${data.from} yells:`;
   }
   if (data?.from) {
     return `${data?.from}:`;
@@ -111,13 +119,16 @@ const getFrom = (data: ChatMessage | undefined) => {
 const MESSAGE_COLORS: Record<ChatMessageType, string> = {
   chat: "white",
   party: "teal.300",
+  whisper: "#f58cf5",
+  yell: "#ff6b4a",
+  emote: "#ff9f5a",
   system: "gray.200",
   reward: "gray.200",
   error: "danger",
 };
 
 const Message: React.FC<MessageProps> = ({ data, isOpen }) => {
-  const { message, type, item } = data;
+  const { message, type, item, links, timestamp } = data;
   const color = MESSAGE_COLORS[type] ?? "white";
   const isOld = useIsOld(data?.timestamp);
   const from = getFrom(data);
@@ -138,14 +149,29 @@ const Message: React.FC<MessageProps> = ({ data, isOpen }) => {
           transition: `opacity ${isOpen ? 0.15 : 1}s ease`,
         }}
       >
-        {from ? <Text sx={{ flexShrink: 0, fontWeight: "bold" }}>{from}</Text> : null}
+        {from ? <Text sx={{ flexShrink: 0 }}>{from}</Text> : null}
         {/* Plain text: players type these, so never render them as HTML */}
         <Text sx={{ flex: 1 }}>
-          {message}
+          {splitChatLinks(message, links).map((part, i) => {
+            if (typeof part === "string") return part;
+            const tooltipId = `chat-link-${timestamp}-${i}`;
+            return (
+              <React.Fragment key={tooltipId}>
+                <Text
+                  as="span"
+                  data-tooltip-id={tooltipId}
+                  sx={{ color: part.rarity, cursor: "help" }}
+                >
+                  {chatLinkText(part)}
+                </Text>
+                <ItemTooltip item={part} tooltipId={tooltipId} />
+              </React.Fragment>
+            );
+          })}
           {item && (
             <>
               {" "}
-              <Text as="span" sx={{ fontWeight: "bold", color: item.rarity }}>
+              <Text as="span" sx={{ color: item.rarity }}>
                 {item.name}
               </Text>
               {item.amount && item.amount > 1 ? ` x${item.amount}` : ""}

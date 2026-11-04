@@ -1,3 +1,4 @@
+import type { BuiltItem } from "@/content";
 import type { BuffCharacterWire, FullCharacterWire } from "./sync/character-state";
 import type { RoomStatuses } from "./sync/statuses";
 import type { Box, Shape } from "@/rules/movement";
@@ -21,18 +22,33 @@ interface RoomStateMessage {
  * - `chat`: a player talking (has `from`)
  * - `party`: party chat, invites and joins
  * - `system`: the game telling you something (spawn point set, a command's answer)
+ * - `whisper`: private, between two players
+ * - `yell`: reaches every room
+ * - `emote`: a player acting something out; `message` already starts with their name
  * - `reward`: something good happened to you (level up, loot)
  * - `error`: what you tried didn't work
  */
-export type ChatMessageType = "chat" | "party" | "system" | "reward" | "error";
+export type ChatMessageType =
+  | "chat"
+  | "party"
+  | "whisper"
+  | "yell"
+  | "emote"
+  | "system"
+  | "reward"
+  | "error";
 
 /** One chat line. `message` is plain text, never HTML: anything rich gets its own field. */
 export interface ChatMessage {
   from?: string;
+  /** Who a whisper you sent went to. */
+  to?: string;
   type: ChatMessageType;
   message: string;
   /** An item shown after the text, in its rarity's color ("Found [Crab Claw] x3"). */
   item?: { name: string; rarity: string; amount?: number };
+  /** Items the text names as `[Item Name]`, shown with their tooltip. */
+  links?: BuiltItem[];
   timestamp?: number;
 }
 

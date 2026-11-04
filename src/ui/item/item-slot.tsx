@@ -1,4 +1,4 @@
-import { useState, useLayoutEffect, memo } from "react";
+import { useState, useLayoutEffect, useEffect, useEffectEvent, memo } from "react";
 import { useDoubleTap } from "use-double-tap";
 import type { ThemeUIStyleObject } from "theme-ui";
 import { resolveAsset, type BuiltItem } from "@/content";
@@ -34,6 +34,10 @@ interface SlotPlace {
 export interface SlotEvents {
   onDrop: (place: SlotPlace, target: Element | null) => void;
   onDoubleClick: (place: SlotPlace) => void;
+  /** Cmd/Ctrl-clicked. */
+  onLink?: (place: SlotPlace) => void;
+  /** The drag moved over `target`, or ended (null). */
+  onDragOver?: (place: SlotPlace, target: Element | null) => void;
 }
 
 export type SlotProps = {
@@ -75,6 +79,14 @@ export const ItemSlot = memo(
       enabled: shouldBindEvents,
       onDrop: dropItem,
     });
+    const dragOver = useEffectEvent((t: Element | null) => {
+      if (place) events?.onDragOver?.(place, t);
+    });
+    useEffect(() => {
+      if (!dragging) return;
+      dragOver(target);
+      return () => dragOver(null);
+    }, [dragging, target]);
     const handleMouseEnter = () => {
       setHovering(true);
     };
@@ -95,6 +107,16 @@ export const ItemSlot = memo(
     const outerMouseBinds = {
       onMouseEnter: handleMouseEnter,
       onMouseLeave: handleMouseLeave,
+      /* On press, not click: a Mac's ctrl-click only opens the context menu. Stops a drag too. */
+      onMouseDownCapture: (e: React.MouseEvent) => {
+        if (!place || !events?.onLink || !(e.metaKey || e.ctrlKey)) return;
+        e.preventDefault();
+        e.stopPropagation();
+        events.onLink(place);
+      },
+      onContextMenu: (e: React.MouseEvent) => {
+        if (place && events?.onLink && e.ctrlKey) e.preventDefault();
+      },
       /* A tap opens a slot that can't be dragged; tapping elsewhere fires the leave that closes it. */
       ...(!shouldBindEvents && { onClick: handleMouseEnter }),
     };

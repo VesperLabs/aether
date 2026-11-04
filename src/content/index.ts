@@ -56,4 +56,4 @@ export { questList, type QuestId } from "./quests/quest-list";
 export { spellDetails } from "./spells/spell-details";
 export type { SpellDefinition } from "./spells/spell-types";
 export type { CharClass } from "./stats";
-export { PREVIEW_DICE, cloneJson, type Dice } from "./random";
+export { PREVIEW_DICE, cloneJson, randomNumber, type Dice } from "./random";

@@ -71,6 +71,8 @@ export class Player extends ServerCharacter {
   public spawn?: SpawnPoint;
   public userSettings?: UserSettings;
   public partyId?: string | null;
+  /** Who last whispered this player, for `/reply`. */
+  public lastWhisperFrom?: string;
   constructor(world: ServerWorld, args: PlayerArgs) {
     super(world, args);
     this.world = world;

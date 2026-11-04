@@ -5,7 +5,17 @@ import { Input, KeyboardKey } from "@/ui";
 import { isMobile, Box } from "@/ui";
 import { getChatCommands } from "@/network";
 import { ChatCommandPopover } from "./chat-command-popover";
+import {
+  appendChatLink,
+  CHAT_DROP_ATTR,
+  editChatDraft,
+  snapChatCaret,
+  splitChatLinks,
+} from "./chat-links";
 import { getGhostText, readChatDraft, type ChatSuggestion } from "./chat-command-match";
+
+/** The most items one line can link; the server refuses more. */
+const MAX_LINKS = 5;
 
 export const ChatButton = () => {
   const { tabChat, setTabChat, socket, messages, hero, cheats } = useAppContext();
@@ -13,6 +23,14 @@ export const ChatButton = () => {
   const [highlighted, setHighlighted] = useState(0);
   /* Set by a refused Enter, so errors don't flash red while still typing */
   const [showError, setShowError] = useState(false);
+  /* Items linked into the draft; the server rebuilds them from their ids */
+  const [links, setLinks] = useState<{ id: string; name: string; rarity: string }[]>([]);
+  /* The item being dragged over the box, shown as ghost text */
+  const [dropPreview, setDropPreview] = useState<{ name: string; rarity: string } | null>(null);
+  /* Where the caret goes once a link's removal has rendered */
+  const pendingCaret = useRef<number | null>(null);
+  const lastCaret = useRef(0);
+  const overlay = useRef<HTMLDivElement>(null);
   const [messageIndex, setMessageIndex] = useState<number>(-1);
   /* Button fires its click on the mouseup after any press inside it, including presses in the input */
   const isPressInInput = useRef(false);
@@ -42,9 +60,29 @@ export const ChatButton = () => {
     };
   }, [tabChat]);
 
+  /* Cmd/Ctrl-clicking an item links it while chat is open */
+  useEffect(() => {
+    if (!tabChat) return;
+    const onLinkItem = ({ detail }: WindowEventMap["HERO_LINK_ITEM"]) => {
+      setChatValue((value) => `${appendChatLink(value, detail.name)} `);
+      setLinks((current) => [...current, detail]);
+      inputBox.current?.querySelector("input")?.focus();
+    };
+    const onDropPreview = ({ detail }: WindowEventMap["HERO_CHAT_DROP_PREVIEW"]) =>
+      setDropPreview(detail);
+    window.addEventListener("HERO_LINK_ITEM", onLinkItem);
+    window.addEventListener("HERO_CHAT_DROP_PREVIEW", onDropPreview);
+    return () => {
+      window.removeEventListener("HERO_LINK_ITEM", onLinkItem);
+      window.removeEventListener("HERO_CHAT_DROP_PREVIEW", onDropPreview);
+      setDropPreview(null);
+    };
+  }, [tabChat]);
+
   /* Closing chat clears the draft and history position */
   if (!tabChat && (chatValue || messageIndex !== -1)) {
     setChatValue("");
+    setLinks([]);
     setMessageIndex(-1);
   }
 
@@ -53,8 +91,15 @@ export const ChatButton = () => {
   const { suggestions: commandOptions, prefix } = draft;
   const showCommands = commandOptions.length > 0;
   const highlightedOption = commandOptions[Math.min(highlighted, commandOptions.length - 1)];
-  const ghost =
+  const linkNames = links.map((link) => link.name);
+  /* An input can't color part of its text, so with links in it the overlay draws the draft */
+  const draftParts = splitChatLinks(chatValue, links);
+  const hasDraftLinks = draftParts.some((part) => typeof part !== "string");
+  const typedGhost =
     showError && draft.invalid ? `  ${draft.invalid}` : getGhostText(draft, highlightedOption);
+  const ghost = dropPreview
+    ? appendChatLink(chatValue, dropPreview.name).slice(chatValue.length)
+    : typedGhost;
   const argSpec = draft.specs[draft.argIndex];
   const hasSlashButton = commands.length > 0 && !chatValue.startsWith("/");
   useLayoutEffect(() => {
@@ -68,6 +113,18 @@ export const ChatButton = () => {
       borderWidth: style.borderWidth,
     });
   }, [tabChat]);
+  useLayoutEffect(() => {
+    if (pendingCaret.current === null) return;
+    const caret = pendingCaret.current;
+    pendingCaret.current = null;
+    inputBox.current?.querySelector("input")?.setSelectionRange(caret, caret);
+  }, [chatValue]);
+  /* Keep the overlay lined up with a draft too long for the box */
+  const syncOverlay = () => {
+    const input = inputBox.current?.querySelector("input");
+    if (input && overlay.current) overlay.current.scrollLeft = input.scrollLeft;
+  };
+  useLayoutEffect(syncOverlay);
   const editDraft = (value: string) => {
     setChatValue(value);
     setHighlighted(0);
@@ -81,6 +138,7 @@ export const ChatButton = () => {
     const typed = draft.typed.toLowerCase();
     const isExact = (s: ChatSuggestion) =>
       s.value.replace(/^\//, "").toLowerCase() === typed ||
+      s.aliases?.includes(`/${typed}`) ||
       s.label?.replace(/\s+/g, "").toLowerCase() === typed;
     /* An empty optional argument sends; an empty required one takes the highlighted pick */
     const pickEmpty = !typed && (draft.argIndex === -1 || (argSpec && !argSpec.optional));
@@ -92,7 +150,11 @@ export const ChatButton = () => {
 
     const message = chatValue.trim();
     if (message === "/") return;
-    if (message !== "") socket.emit("message", { message });
+    const items = links
+      .filter((link) => message.includes(`[${link.name}]`))
+      .map((link) => link.id)
+      .slice(0, MAX_LINKS);
+    if (message !== "") socket.emit("message", { message, items });
     setTabChat(false);
   };
 
@@ -104,6 +166,7 @@ export const ChatButton = () => {
        * Escape (menu-bar) or clicking this button again also closes it. */
       keyboardKey={tabChat ? undefined : "ENTER"}
       iconName="chat"
+      springOpen
       sx={{
         flex: tabChat ? 1 : "unset",
         "&.active::before, &:has(.pressed)::before": { boxShadow: "none" },
@@ -120,6 +183,7 @@ export const ChatButton = () => {
       {tabChat && (
         <Box
           as="form"
+          {...{ [CHAT_DROP_ATTR]: true }}
           /* A real form, so a phone keyboard's Go key submits even when it sends no key code */
           onSubmit={(e) => {
             e.preventDefault();
@@ -169,10 +233,11 @@ export const ChatButton = () => {
             </Box>
           )}
           <Box ref={inputBox} sx={{ flex: 1, position: "relative", display: "flex" }}>
-            {ghost && (
+            {(ghost || hasDraftLinks) && (
               /* Same box as the input, with the draft invisible, so the ghost lines up after it */
               <Box
                 aria-hidden
+                ref={overlay}
                 style={ghostFont}
                 sx={{
                   variant: "forms.input",
@@ -187,13 +252,27 @@ export const ChatButton = () => {
                   pointerEvents: "none",
                 }}
               >
-                <span style={{ visibility: "hidden" }}>{chatValue}</span>
+                {hasDraftLinks ? (
+                  draftParts.map((part, i) =>
+                    typeof part === "string" ? (
+                      <span key={i}>{part}</span>
+                    ) : (
+                      <Box as="span" key={i} sx={{ color: part.rarity }}>
+                        [{part.name}]
+                      </Box>
+                    ),
+                  )
+                ) : (
+                  <span style={{ visibility: "hidden" }}>{chatValue}</span>
+                )}
                 <Box
                   as="span"
                   sx={
-                    showError && draft.invalid
-                      ? { color: "danger" }
-                      : { color: "text", opacity: 0.4 }
+                    dropPreview
+                      ? { color: dropPreview.rarity, opacity: 0.6 }
+                      : showError && draft.invalid
+                        ? { color: "danger" }
+                        : { color: "text", opacity: 0.4 }
                   }
                 >
                   {ghost}
@@ -206,6 +285,11 @@ export const ChatButton = () => {
                 flex: 1,
                 textShadow: "inherit",
                 ...(hasSlashButton && { borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }),
+                ...(hasDraftLinks && {
+                  color: "transparent",
+                  caretColor: "white",
+                  textShadow: "none",
+                }),
               }}
               autoFocus={true}
               value={chatValue}
@@ -265,7 +349,21 @@ export const ChatButton = () => {
                 editDraft("");
               }}
               onMouseDown={() => (isPressInInput.current = true)}
-              onChange={(e) => editDraft(e.target.value)}
+              onScroll={syncOverlay}
+              onSelect={(e) => {
+                const input = e.currentTarget;
+                const { selectionStart: at, selectionEnd } = input;
+                if (at === null || at !== selectionEnd) return;
+                const snapped = snapChatCaret(input.value, linkNames, at, lastCaret.current);
+                if (snapped !== at) input.setSelectionRange(snapped, snapped);
+                lastCaret.current = snapped;
+              }}
+              onChange={(e) => {
+                const typed = e.target.value;
+                const { value, caret } = editChatDraft(chatValue, typed, linkNames);
+                if (value !== typed) pendingCaret.current = caret;
+                editDraft(value);
+              }}
             />
           </Box>
           {isMobile && draft.command && (

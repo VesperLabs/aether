@@ -1,5 +1,7 @@
 import type { Player } from "../../player";
 import { runAdminCommand } from "../../admin/commands";
+import { runPlayerCommand } from "./chat-commands";
+import { resolveChatLinks } from "./chat-links";
 import { getFullCharacterState } from "@/network/sync";
 import {
   legacyAcceptPartyInvite,
@@ -89,10 +91,15 @@ export function message(ctx: CommandContext, args: ParsedCommand<"message">) {
     player.state.bubbleMessage = args.message.substr(1);
     return;
   }
-  if (args.message.charAt(0) === "/" && runAdminCommand(ctx, args.message)) return;
+  const links = resolveChatLinks(player, args.items, args.message);
+  if (args.message.charAt(0) === "/") {
+    if (runPlayerCommand(ctx, player, args.message, links) || runAdminCommand(ctx, args.message))
+      return;
+  }
   io.to(player?.roomName).emit("message", {
     from: player?.profile?.userName,
     type: "chat",
     message: args.message,
+    links,
   });
 }

@@ -205,12 +205,14 @@ export const MenuBar = () => {
             <>
               <MenuButton
                 keyboardKey="Z"
+                springOpen
                 iconName="pen"
                 isActive={tabSettings}
                 onClick={() => setTabSettings((prev) => !prev)}
               />
               <MenuButton
                 keyboardKey="P"
+                springOpen
                 iconName="social"
                 isActive={tabSocial}
                 badge={partyInvites.length}
@@ -218,18 +220,21 @@ export const MenuBar = () => {
               />
               <MenuButton
                 keyboardKey="Q"
+                springOpen
                 iconName="quests"
                 isActive={tabQuests}
                 onClick={() => setTabQuests((prev) => !prev)}
               />
               <MenuButton
                 keyboardKey="C"
+                springOpen
                 iconName="stats"
                 isActive={tabStats}
                 onClick={() => setTabStats((prev) => !prev)}
               />
               <MenuButton
                 keyboardKey="G"
+                springOpen
                 iconName="mirror"
                 isActive={tabProfile}
                 onClick={() => setTabProfile((prev) => !prev)}
