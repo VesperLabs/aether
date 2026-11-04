@@ -63,6 +63,8 @@ export const MenuBar = () => {
     sign,
     error,
   } = useAppContext();
+  /* Only chat types into the bar, so only chat lifts it above the keyboard; other inputs (renaming) sit in modals */
+  const keyboardOffset = tabChat ? bottomOffset : 0;
   const stackRef = useScrollToOpened<HTMLDivElement>();
   useOverhangPadding(stackRef);
   const orderOf = useOpenOrder({
@@ -99,7 +101,7 @@ export const MenuBar = () => {
         pointerEvents: "none",
         boxSizing: "border-box",
         position: "fixed",
-        bottom: bottomOffset,
+        bottom: keyboardOffset,
         left: 0,
         zIndex: "menus",
         width: `calc(100% / ${zoom})`,
@@ -107,7 +109,7 @@ export const MenuBar = () => {
         transformOrigin: "bottom left",
         display: "flex",
         flexDirection: "column",
-        maxHeight: `calc((100dvh - ${bottomOffset}px) / ${zoom})`,
+        maxHeight: `calc((100dvh - ${keyboardOffset}px) / ${zoom})`,
       }}
     >
       {/* Sits above the menus without taking their height, so menus can fill the screen */}
