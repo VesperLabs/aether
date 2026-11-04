@@ -12,6 +12,7 @@ export {
   getWeaponTip,
 } from "./assets/weapon-tips";
 export { iconList } from "./assets/icon-list";
+export { getLayerOrder } from "./assets/layer-order";
 export { resolveAsset } from "./assets/resolve-asset";
 export { soundList } from "./assets/sound-list";
 export { hairTints, skinTints } from "./assets/tints";

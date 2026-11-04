@@ -43,23 +43,37 @@ function cycle(options: readonly string[], current: string | undefined, step = 0
   return options[(((index + step) % options.length) + options.length) % options.length];
 }
 
+/** Drops unset keys: saving one writes a null, which the database schema refuses. */
+function withoutUnset<T extends object>(value: T) {
+  return Object.fromEntries(Object.entries(value).filter(([, v]) => v !== undefined)) as T;
+}
+
+/** A part made of a texture and a tint. Stored with both or not at all, so a new one gets both. */
+function stepPart(
+  part: { texture?: string; tint?: string } | undefined,
+  options: { textures: readonly string[]; tints: readonly string[] },
+  steps: { texture?: number; tint?: number } = {},
+) {
+  const texture = cycle(options.textures, part?.texture, steps.texture);
+  const tint = cycle(options.tints, part?.tint, steps.tint);
+  if (!texture && !tint) return undefined;
+  return { ...part, texture: texture ?? options.textures[0], tint: tint ?? options.tints[0] };
+}
+
 /** The appearance after taking `steps` through each option list. Pure: returns a new one. */
 export function stepAppearance(look: Appearance, steps: AppearanceSteps): Appearance {
   const o = APPEARANCE_OPTIONS;
-  return {
+  const faceTexture = cycle(o.faceTexture, look.face?.texture, steps.face?.texture);
+  return withoutUnset({
     ...look,
     gender: cycle(o.body, look.gender, steps.body),
     tint: cycle(o.skinTint, look.tint, steps.skin?.tint),
-    hair: {
-      ...look.hair,
-      texture: cycle(o.hairTexture, look.hair?.texture, steps.hair?.texture),
-      tint: cycle(o.hairTint, look.hair?.tint, steps.hair?.tint),
-    },
-    face: { ...look.face, texture: cycle(o.faceTexture, look.face?.texture, steps.face?.texture) },
-    whiskers: {
-      ...look.whiskers,
-      texture: cycle(o.whiskersTexture, look.whiskers?.texture, steps.whiskers?.texture),
-      tint: cycle(o.whiskersTint, look.whiskers?.tint, steps.whiskers?.tint),
-    },
-  };
+    hair: stepPart(look.hair, { textures: o.hairTexture, tints: o.hairTint }, steps.hair),
+    face: faceTexture ? { ...look.face, texture: faceTexture } : undefined,
+    whiskers: stepPart(
+      look.whiskers,
+      { textures: o.whiskersTexture, tints: o.whiskersTint },
+      steps.whiskers,
+    ),
+  });
 }

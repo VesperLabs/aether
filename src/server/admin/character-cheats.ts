@@ -1,9 +1,8 @@
 import { broadcastPlayerUpdate } from "@/server/net/room-broadcast";
 import { ItemBuilder } from "@/content";
+import { cleanUserName } from "@/rules/character";
 import { parseInteger, type Cheat } from "./cheat";
 import { parseDropArgs } from "./drop-args";
-
-const MAX_NAME_LENGTH = 16;
 
 const heal: Cheat = (ctx, player, _args, reply) => {
   player.fillHpMp();
@@ -38,10 +37,8 @@ const give: Cheat = (ctx, player, args, reply) => {
 };
 
 const name: Cheat = (ctx, player, args, reply) => {
-  const userName = args.join(" ").trim();
-  if (!userName || userName.length > MAX_NAME_LENGTH) {
-    return reply.error(`Usage: /name <name>, up to ${MAX_NAME_LENGTH} characters.`);
-  }
+  const userName = cleanUserName(args.join(""));
+  if (!userName) return reply.error("Usage: /name <name>");
   player.profile.userName = userName;
   broadcastPlayerUpdate(ctx.world, player);
   reply.info(`You are now ${userName}.`);

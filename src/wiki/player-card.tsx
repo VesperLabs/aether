@@ -1,15 +1,16 @@
-import { Box, Flex, PlayerRender, Text } from "@/ui";
+import { Box, Flex, Text } from "@/ui";
 import { questList } from "@/content";
 import { PAPER, PAPER_STYLE, PaperFrame } from "./paper";
 import type { WikiPlayer } from "./page-players";
-import { CARD_COLORS } from "./card-pool";
+import { CARD_COLORS, CharacterFace } from "./card-pool";
+import { WalkOnHover } from "./walk-on-hover";
 
 /** The character, drawn small: the head and shoulders fill the box. */
 const PlayerFace = ({ player }: { player: WikiPlayer }) => (
   <Flex
     sx={{ width: 64, height: 64, flexShrink: 0, alignItems: "center", justifyContent: "center" }}
   >
-    <PlayerRender player={player} sx={{ width: 80, height: 80 }} />
+    <CharacterFace character={player} />
   </Flex>
 );
 
@@ -26,7 +27,7 @@ export const PlayerCard = ({
   selected: boolean;
   onSelect: () => void;
 }) => (
-  <Box
+  <WalkOnHover
     as="button"
     onClick={player.isGhost ? undefined : onSelect}
     sx={{
@@ -64,7 +65,7 @@ export const PlayerCard = ({
         </Text>
       </Box>
     </Flex>
-  </Box>
+  </WalkOnHover>
 );
 
 const ONE_LINE = { whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" };

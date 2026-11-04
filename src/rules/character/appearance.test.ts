@@ -25,6 +25,18 @@ describe("stepAppearance", () => {
     expect(stepAppearance(look, { hair: { tint: 1 } }).hair?.tint).toBe(hairTints[6]);
   });
 
+  it("adds no unset keys, which would be saved as nulls the database refuses", () => {
+    const { tint: _tint, whiskers: _whiskers, ...noTintNoWhiskers } = look;
+    expect(stepAppearance(noTintNoWhiskers, {})).toStrictEqual(noTintNoWhiskers);
+  });
+
+  it("gives a part a full texture and tint when stepping one onto a character without it", () => {
+    expect(stepAppearance({}, { whiskers: { tint: 1 } }).whiskers).toStrictEqual({
+      texture: "whiskers-0",
+      tint: hairTints[1],
+    });
+  });
+
   it("leaves what it isn't asked to change", () => {
     expect(stepAppearance(look, {})).toEqual(look);
   });

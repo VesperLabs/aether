@@ -74,8 +74,8 @@ describe("cheats", () => {
 
   it("/name renames the character", async () => {
     const socket = await login();
-    await cheat(socket, "/name Bot One");
-    expect(serverPlayer(socket).profile.userName).toBe("Bot One");
+    await cheat(socket, "/name BotOne");
+    expect(serverPlayer(socket).profile.userName).toBe("BotOne");
   });
 
   it("/tp moves within the room and /warp changes room", async () => {
