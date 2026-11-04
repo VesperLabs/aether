@@ -284,10 +284,12 @@ export function bindSceneSocket(scene: SceneMain) {
   socket.on("remove", (socketId) => removePlayer(scene, socketId));
 
   socket.on("updateUserSetting", (setting) => {
-    // Every user setting is an on/off switch.
     const name = setting.name as keyof UserSettings;
-    const value = setting.value as boolean;
+    const value = setting.value as never;
     scene.userSettings[name] = value;
+    if (name === "musicVolume") {
+      scene.setMusicVolume(value);
+    }
     if (name === "showMinimap") {
       scene.toggleMinimap(value);
     }

@@ -1,5 +1,7 @@
-import { useEffect, useRef, useState } from "react";
-import { Box, Flex, Text, isMobile } from "@/ui";
+import { type ChangeEvent, type PointerEvent, useEffect, useRef, useState } from "react";
+import type { ThemeUICSSObject } from "theme-ui";
+import { Box, Flex, Text } from "@/ui";
+import { DEFAULT_USER_SETTINGS } from "@/rules/world";
 import { useAppContext } from "@/client/hud/app/context";
 import { usePersistSetting } from "@/client/hud/settings/use-persist-setting";
 import type { SceneMain } from "@/client/scenes/main-scene";
@@ -65,21 +67,53 @@ const Equalizer = ({ playing }: { playing: boolean }) => (
   </Flex>
 );
 
-const COLLAPSE_DELAY = 2500;
+const SAVE_DELAY = 400;
+
+/** Speaker with a wave, or without one when muted. */
+const VolumeIcon = ({ muted }: { muted: boolean }) => (
+  <svg
+    width="10"
+    height="10"
+    viewBox="0 0 10 10"
+    fill="white"
+    aria-hidden
+    style={{ flexShrink: 0 }}
+  >
+    <path d="M0.5 3.5h2L5.5 1v8L2.5 6.5h-2z" />
+    {!muted && (
+      <path
+        d="M7 3a3 3 0 0 1 0 4"
+        fill="none"
+        stroke="white"
+        strokeWidth="1"
+        strokeLinecap="round"
+      />
+    )}
+  </svg>
+);
+
+const SLIDER_THUMB: ThemeUICSSObject = {
+  appearance: "none",
+  width: 8,
+  height: 8,
+  border: "none",
+  borderRadius: "50%",
+  bg: "white",
+};
 
 /**
- * Glass disc with a bouncing equalizer, in the top right bar. Hover or tap expands it to show
- * the track, time and progress; the disc toggles `playMusic`.
+ * Glass disc with a bouncing equalizer, in the top right bar. Clicking it opens the track, time,
+ * volume and a play/stop button.
  */
 export const MusicPlayer = () => {
   const { game, userSettings } = useAppContext();
   const persistSetting = usePersistSetting();
   const [nowPlaying, setNowPlaying] = useState<NowPlaying | null>(null);
   const [expanded, setExpanded] = useState(false);
-  const collapseTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const [draftVolume, setDraftVolume] = useState<number | null>(null);
+  const saveTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const playMusic = !!userSettings?.playMusic;
   const current = playMusic ? nowPlaying : null;
-  const progress = current?.duration ? current.seek / current.duration : 0;
 
   useEffect(() => {
     const getScene = () => game?.scene?.getScene("SceneMain") as SceneMain | undefined;
@@ -89,24 +123,23 @@ export const MusicPlayer = () => {
     return () => clearInterval(id);
   }, [game]);
 
-  useEffect(() => () => clearTimeout(collapseTimer.current), []);
-
-  const expand = () => {
-    clearTimeout(collapseTimer.current);
-    setExpanded(true);
-  };
-  const collapseSoon = () => {
-    clearTimeout(collapseTimer.current);
-    collapseTimer.current = setTimeout(() => setExpanded(false), COLLAPSE_DELAY);
+  const musicVolume = draftVolume ?? userSettings?.musicVolume ?? DEFAULT_USER_SETTINGS.musicVolume;
+  /* Heard at once, saved once the slider settles: a drag fires dozens of changes. */
+  const changeVolume = (value: number) => {
+    setDraftVolume(value);
+    const scene = game?.scene?.getScene("SceneMain") as SceneMain | undefined;
+    if (scene) {
+      scene.userSettings = { ...scene.userSettings, musicVolume: value };
+      scene.setMusicVolume(value);
+    }
+    clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => {
+      persistSetting("musicVolume", value);
+      setDraftVolume(null);
+    }, SAVE_DELAY);
   };
 
   const toggle = () => {
-    /* On touch the first tap only opens the player. */
-    if (isMobile && !expanded) {
-      expand();
-      collapseSoon();
-      return;
-    }
     const next = !playMusic;
     persistSetting("playMusic", next);
     /* Apply right away so guests (no server echo) hear the change too. */
@@ -115,21 +148,17 @@ export const MusicPlayer = () => {
       scene.userSettings = { ...scene.userSettings, playMusic: next };
       scene.toggleMusic(next);
     }
-    if (isMobile) collapseSoon();
   };
 
   return (
     <Flex
-      onMouseEnter={expand}
-      onMouseLeave={collapseSoon}
       sx={{
         alignItems: "center",
         flexDirection: "row-reverse",
         gap: 2,
         ...GLASS_PILL,
-        pl: expanded ? 3 : "4px",
         fontSize: 0,
-        maxWidth: expanded ? 200 : DISC_SIZE,
+        maxWidth: expanded ? 220 : DISC_SIZE,
         overflow: "hidden",
         transition: "max-width 0.25s ease, padding 0.25s ease",
         "@keyframes music-eq": {
@@ -138,14 +167,11 @@ export const MusicPlayer = () => {
         },
       }}
     >
-      <DiscButton label={playMusic ? "Stop music" : "Play music"} onClick={toggle} dim={!playMusic}>
-        {expanded ? (
-          playMusic ? (
-            "■"
-          ) : (
-            "▶"
-          )
-        ) : current ? (
+      <DiscButton
+        label={expanded ? "Close music player" : "Open music player"}
+        onClick={() => setExpanded(!expanded)}
+      >
+        {current ? (
           <Equalizer playing />
         ) : (
           /* Flat bars read as "...", so show a note when nothing plays */
@@ -181,19 +207,47 @@ export const MusicPlayer = () => {
             </Text>
           )}
         </Flex>
-        <Box sx={{ height: 3, borderRadius: 999, overflow: "hidden", bg: "shadow.30" }}>
+        <Flex sx={{ alignItems: "center", gap: "6px", opacity: playMusic ? 1 : 0.5 }}>
+          <VolumeIcon muted={musicVolume === 0} />
           <Box
+            as="input"
+            {...{
+              type: "range",
+              min: 0,
+              max: 100,
+              value: Math.round(musicVolume * 100),
+              disabled: !playMusic,
+              tabIndex: expanded ? 0 : -1,
+              title: "Music volume",
+              "aria-label": "Music volume",
+              onChange: (e: ChangeEvent<HTMLInputElement>) =>
+                changeVolume(Number(e.target.value) / 100),
+              /* Never keep focus, or the slider eats the game's movement keys */
+              onPointerUp: (e: PointerEvent<HTMLInputElement>) => {
+                e.currentTarget.blur();
+              },
+            }}
             sx={{
-              height: "100%",
-              bg: "white",
-              opacity: 0.7,
+              appearance: "none",
+              flex: 1,
+              minWidth: 0,
+              height: 3,
+              m: 0,
               borderRadius: 999,
-              width: `${progress * 100}%`,
-              transition: "width 0.5s linear",
+              outline: "none",
+              cursor: playMusic ? "pointer" : "default",
+              background: `linear-gradient(to right, white ${musicVolume * 100}%, rgba(255, 255, 255, 0.25) ${musicVolume * 100}%)`,
+              "&::-webkit-slider-thumb": SLIDER_THUMB,
+              "&::-moz-range-thumb": SLIDER_THUMB,
             }}
           />
-        </Box>
+        </Flex>
       </Flex>
+      {expanded && (
+        <DiscButton label={playMusic ? "Stop music" : "Play music"} onClick={toggle}>
+          {playMusic ? "■" : "▶"}
+        </DiscButton>
+      )}
     </Flex>
   );
 };

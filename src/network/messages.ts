@@ -69,6 +69,8 @@ export interface HitMessage {
 
 interface UserSettingsMessage {
   playMusic: boolean;
+  /** 0 to 1 slider position, see `musicGain` */
+  musicVolume: number;
   showMinimap: boolean;
   videoChat: boolean;
   charLevels: boolean;

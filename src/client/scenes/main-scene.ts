@@ -7,7 +7,7 @@ import { netInterp } from "@/client/net/scene-interpolation";
 import { applyPose } from "@/client/net/apply-pose";
 import { easeHeroCorrection } from "@/client/net/position-correction";
 import { bindSceneSocket } from "@/client/net/scene-socket";
-import { changeMusic } from "@/client/audio/music";
+import { changeMusic, setMusicVolume } from "@/client/audio/music";
 import { getPlayer, getNpc, getNpcs, getPlayers } from "./scene-entities";
 import { enableDoors, initCamera } from "./main-map";
 import { checkProximities } from "./proximity";
@@ -79,6 +79,9 @@ export class SceneMain extends Phaser.Scene {
   // user setting functions
   toggleMusic(value: boolean) {
     return value ? changeMusic(this) : this.sound.stopAll();
+  }
+  setMusicVolume(value: number) {
+    setMusicVolume(this, value);
   }
   toggleMinimap(value: boolean) {
     // Before the map and hero load it is still unplaced at the top-left; layoutMinimap shows it then
