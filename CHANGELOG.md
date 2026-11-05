@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.12.0](https://github.com/VesperLabs/aether/compare/v0.11.1...v0.12.0) (2026-11-05)
+
+
+### Features
+
+* bag overflow on pickup and item links for found items ([#231](https://github.com/VesperLabs/aether/issues/231)) ([3214ded](https://github.com/VesperLabs/aether/commit/3214dede67375f2748d6136ffa90a7f669950f39))
+* login character preview, audio settings and modal polish ([#230](https://github.com/VesperLabs/aether/issues/230)) ([6a75ac2](https://github.com/VesperLabs/aether/commit/6a75ac2f07234a2a07721f0bc327b2179b046191))
+* music volume control ([#225](https://github.com/VesperLabs/aether/issues/225)) ([a3df7b3](https://github.com/VesperLabs/aether/commit/a3df7b303b9a3f47a9d82a16fa41498a81b4ccaa))
+* new map music, modal gilding and tabbed settings and login ([#226](https://github.com/VesperLabs/aether/issues/226)) ([cfabeca](https://github.com/VesperLabs/aether/commit/cfabecae898b538c97966a7fc0ee8456bba16dc2))
+* player chat commands, item links and spring-open menus ([#224](https://github.com/VesperLabs/aether/issues/224)) ([9c28300](https://github.com/VesperLabs/aether/commit/9c283000a72316c4ca01c10c856881114943e3c8))
+* share the login form between the game and the wiki ([#235](https://github.com/VesperLabs/aether/issues/235)) ([4e614cc](https://github.com/VesperLabs/aether/commit/4e614cc08f1c99fe11e2d93685096595aafd189c))
+* tour the live world behind the login screen ([#232](https://github.com/VesperLabs/aether/issues/232)) ([7f3f7e7](https://github.com/VesperLabs/aether/commit/7f3f7e7095f3c5e8038919c70d53b0e58e39f55a))
+* walk wiki characters on hover and validate character names ([#234](https://github.com/VesperLabs/aether/issues/234)) ([065bdac](https://github.com/VesperLabs/aether/commit/065bdac8e548a88f1957be9563ce49ec97854cd1))
+
+
+### Bug Fixes
+
+* keep tooltips above or below their target ([#229](https://github.com/VesperLabs/aether/issues/229)) ([d2d23fc](https://github.com/VesperLabs/aether/commit/d2d23fcf97acbac515ceb1d5f27439a6d13d593b))
+* smoother entry into the world after login ([#228](https://github.com/VesperLabs/aether/issues/228)) ([a6d3977](https://github.com/VesperLabs/aether/commit/a6d397725dc3acf602c437c5846c13df1d622d8a))
+* stop enter from pressing buttons on hidden login tabs ([#233](https://github.com/VesperLabs/aether/issues/233)) ([828d50e](https://github.com/VesperLabs/aether/commit/828d50e4450b05e5d2d05e4b9dc93cb61385cedc))
+
 ## [0.11.1](https://github.com/VesperLabs/aether/compare/v0.11.0...v0.11.1) (2026-11-04)
 
 
