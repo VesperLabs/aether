@@ -2,8 +2,8 @@ import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { Box, Flex, Text } from "@/ui";
 import { useAppContext } from "@/client/hud/app/context";
 import type { ChatMessage, ChatMessageType } from "@/network";
-import { ItemTooltip } from "@/ui";
-import { chatLinkText, splitChatLinks } from "./chat-links";
+import { ChatItemLink } from "./chat-item-link";
+import { splitChatLinks } from "./chat-links";
 
 type MessageProps = {
   data: ChatMessage;
@@ -155,18 +155,7 @@ const Message: React.FC<MessageProps> = ({ data, isOpen }) => {
           {splitChatLinks(message, links).map((part, i) => {
             if (typeof part === "string") return part;
             const tooltipId = `chat-link-${timestamp}-${i}`;
-            return (
-              <React.Fragment key={tooltipId}>
-                <Text
-                  as="span"
-                  data-tooltip-id={tooltipId}
-                  sx={{ color: part.rarity, cursor: "help" }}
-                >
-                  {chatLinkText(part)}
-                </Text>
-                <ItemTooltip item={part} tooltipId={tooltipId} />
-              </React.Fragment>
-            );
+            return <ChatItemLink key={tooltipId} link={part} tooltipId={tooltipId} />;
           })}
         </Text>
       </Flex>

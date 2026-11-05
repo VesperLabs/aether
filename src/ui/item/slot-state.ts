@@ -33,6 +33,11 @@ export function shouldReRenderSlot(prevProps: SlotProps, nextProps: SlotProps) {
   });
 }
 
+/** Whether `target` is the slot or anything in it, such as the icon a held finger first lands on. */
+export function isOverSlot(target: Element | null, tooltipId: string) {
+  return target?.closest("[data-tooltip-id]")?.getAttribute("data-tooltip-id") === tooltipId;
+}
+
 export function getIsItemActive({
   item,
   slotKey,
