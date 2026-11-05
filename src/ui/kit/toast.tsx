@@ -43,7 +43,7 @@ const ToastBadge = ({ kind }: { kind: ToastKind }) => (
   </Flex>
 );
 
-/** A wooden notice that dismisses itself, right under the positioned box it is placed in. */
+/** A wooden notice that dismisses itself, right above the positioned box it is placed in. */
 export const Toast = ({
   toast,
   onDismiss,
@@ -63,9 +63,9 @@ export const Toast = ({
     <Box
       sx={{
         position: "absolute",
-        top: "100%",
+        bottom: "100%",
         left: "50%",
-        mt: 2,
+        mb: 2,
         width: "max-content",
         transform: "translateX(-50%)",
         zIndex: "modal",
@@ -88,7 +88,7 @@ export const Toast = ({
           maxWidth: 280,
           animation: "toast-in .25s cubic-bezier(0.33, 1, 0.68, 1)",
           "@keyframes toast-in": {
-            from: { opacity: 0, transform: "translateY(-8px)" },
+            from: { opacity: 0, transform: "translateY(8px)" },
             to: { opacity: 1, transform: "translateY(0)" },
           },
           "@media (prefers-reduced-motion: reduce)": { animation: "none" },
