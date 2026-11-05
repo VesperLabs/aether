@@ -9,7 +9,7 @@ import { ItemTooltip } from "./item-tooltip";
 import { SpaceDonut } from "./space-donut";
 import { useSlotDrag } from "./use-slot-drag";
 import { SlotAmount } from "./slot-amount";
-import { shouldReRenderSlot, getIsItemActive } from "./slot-state";
+import { shouldReRenderSlot, getIsItemActive, isOverSlot } from "./slot-state";
 import { ElementalItemArt } from "./elemental-item-art";
 import { DEFAULT_ASSET_USER } from "./art-icon";
 import { SPRING_OPEN_ATTR } from "./drag-spring-open";
@@ -139,7 +139,7 @@ export const ItemSlot = memo(
 
     const isActive = getIsItemActive({ item, player, location, slotKey });
     const tooltipId = `${location}-${item?.id ?? item?.key}`;
-    const targetMoved = (target as HTMLElement | null)?.dataset?.tooltipId !== tooltipId;
+    const targetMoved = !isOverSlot(target, tooltipId);
     const aboutToSell = dragging && target?.closest(".menu-keeper") && location !== "shop";
     const aboutToOpen = dragging && !!target?.closest(`[${SPRING_OPEN_ATTR}]`);
     /* ...and while dragged, over the copy that follows the pointer, unless it's about to sell */
