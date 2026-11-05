@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   Flex,
   ModalLogin,
@@ -7,6 +7,7 @@ import {
   LOGIN_RISE_SX,
   useViewportSizeEffect,
 } from "@/ui";
+import { revealFocusedField } from "./keyboard-scroll";
 
 /* Modals float over the page; this one sits in it, centred between the menu and the cards. */
 const IN_PAGE = {
@@ -14,7 +15,7 @@ const IN_PAGE = {
   left: "auto",
   top: "auto",
   transform: "none",
-  /* Over the card row, which its toast can reach */
+  /* Over the menu, which its toast can reach */
   zIndex: 2,
 };
 
@@ -24,9 +25,25 @@ const getWindowScale = () => getLoginScale(getHudZoomFor(window.innerWidth, wind
 /** The game's login form, always on the page: a login carries you straight into the game. */
 export const WikiLogin = () => {
   const [scale, setScale] = useState(getWindowScale);
-  useViewportSizeEffect(() => setScale(getWindowScale()));
+  const form = useRef<HTMLDivElement>(null);
+  useViewportSizeEffect(() => {
+    setScale(getWindowScale());
+    /* The shared input focuses without scrolling, for the game, but this page has to move */
+    revealFocusedField(form.current);
+  });
   return (
-    <Flex sx={{ flex: 1, alignItems: "center", justifyContent: "center", mt: 5, ...LOGIN_RISE_SX }}>
+    <Flex
+      ref={form}
+      onFocus={() => revealFocusedField(form.current)}
+      sx={{
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+        mt: 5,
+        pb: 4,
+        ...LOGIN_RISE_SX,
+      }}
+    >
       <ModalLogin
         /* `zoom`, not a transform: it takes up its real size, so it never runs into the menu or
            cards. */

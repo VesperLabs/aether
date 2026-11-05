@@ -6,7 +6,7 @@ import { ModalError } from "@/client/hud/menu/modal-error";
 import { LOGIN_FADE_MS } from "@/client/scenes/login-fade";
 import { useWorldReady, WORLD_REVEAL_MS } from "./use-world-ready";
 
-/** How long the colour wash takes to clear from over the observed world. */
+/** How long the black takes to clear from over the observed world. */
 const WASH_FADE_MS = 1200;
 
 /** The black cover: clear behind the login screen, closing at login and lifting once the hero's world has drawn. */
@@ -46,12 +46,12 @@ export function LoginBackdrop({
         zIndex: "modal",
       }}
     >
-      {/* Painted first by client/index.html, so the page never opens on black */}
+      {/* Matches the page's own black, so the world fades in from it */}
       <Box
         sx={{
           position: "fixed",
           inset: 0,
-          background: "var(--login-wash)",
+          backgroundColor: "black",
           opacity: isWashShown ? 1 : 0,
           transition: `opacity ${WASH_FADE_MS}ms ease-in`,
         }}
