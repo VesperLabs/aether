@@ -39,7 +39,14 @@ jobs:
       - if: steps.pr.outputs.pr
         # Parsed in the shell: GitHub evaluates `env` even when the step is skipped, and
         # `fromJSON` fails on the empty output of a run with nothing to release.
-        run: gh pr merge "$(jq -r .number <<< "$PR")" --squash --repo ${{ github.repository }}
+        # Retried: GitHub can briefly report a new PR as blocked while it works out mergeability.
+        run: |
+          number="$(jq -r .number <<< "$PR")"
+          for attempt in 1 2 3 4 5 6; do
+            gh pr merge "$number" --squash --repo ${{ github.repository }} && exit 0
+            sleep 5
+          done
+          exit 1
         env:
           GH_TOKEN: ${{ github.token }}
           PR: ${{ steps.pr.outputs.pr }}
