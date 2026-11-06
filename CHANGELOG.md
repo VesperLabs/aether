@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.13.0](https://github.com/VesperLabs/aether/compare/v0.12.0...v0.13.0) (2026-11-06)
+
+
+### Features
+
+* add cast times to spells ([#241](https://github.com/VesperLabs/aether/issues/241)) ([6c7b79b](https://github.com/VesperLabs/aether/commit/6c7b79b0b645ecf9acc58c6f3930bc41df249c8d))
+* add unarmed punches and the sprite lab ([#240](https://github.com/VesperLabs/aether/issues/240)) ([9cecc91](https://github.com/VesperLabs/aether/commit/9cecc914f638e1ea850fc9959cef83965aaffc40))
+
+
+### Bug Fixes
+
+* show item tooltips on long press and unstick chat links on mobile ([#238](https://github.com/VesperLabs/aether/issues/238)) ([d7d9b4a](https://github.com/VesperLabs/aether/commit/d7d9b4ac9059b08c5e418bf49d0bfb7d902048ca))
+* tidy the login screen on the wiki and game ([#239](https://github.com/VesperLabs/aether/issues/239)) ([06dc391](https://github.com/VesperLabs/aether/commit/06dc391f7a71982f5a3835ba547856846df92824))
+
 ## [0.12.0](https://github.com/VesperLabs/aether/compare/v0.11.1...v0.12.0) (2026-11-05)
 
 
