@@ -18,6 +18,8 @@ export { VersionTag } from "./version-tag";
 export { shakeModal } from "./shake-modal";
 export { Slider } from "./slider";
 export { Switch } from "./switch";
+export { Select, type SelectOption } from "./select";
+export { Panel } from "./panel";
 export { Toast } from "./toast";
 export type { ToastKind, ToastMessage } from "./toast";
 export { Menu, MenuHeader, MENU_MAX_WIDTH } from "./menu";

@@ -1,10 +1,12 @@
 import { OUT_OF_COMBAT_MS, RACES_WITH_ATTACK_ANIMS } from "./constants";
 import {
+  getFreeHand,
   hasRangedWeapon,
   hasRangedWeaponLeft,
   hasRangedWeaponRight,
   hasWeaponLeft,
   hasWeaponRight,
+  isBareHanded,
   isDualWielding,
   type HandEquipment,
   type WeaponHolder,
@@ -56,11 +58,12 @@ export function isOutOfCombat(lastCombat: number, now: number) {
 }
 
 /**
- * Which swing comes next: dual-wielders alternate the right hand (1) and the left (2); everyone
- * else, and bows, always swing 1. Feeds `getAttackSpCost` so costs shown match the next swing.
+ * Which swing comes next: dual-wielders and bare fists alternate the right hand (1) and the left
+ * (2); everyone else, and bows, always swing 1. Feeds `getAttackSpCost` so costs shown match the next swing.
  */
 export function getNextAttackCount(lastAttackCount: number | undefined, character: WeaponHolder) {
-  if (hasRangedWeapon(character) || !isDualWielding(character)) return 1;
+  if (hasRangedWeapon(character)) return 1;
+  if (!isDualWielding(character) && !isBareHanded(character)) return 1;
   return lastAttackCount === 1 ? 2 : 1;
 }
 
@@ -126,7 +129,12 @@ export function getAttackActionName(
     return { action, spellName };
   }
 
-  if (count === 1) {
+  const freeHand = getFreeHand(character);
+  if (freeHand) {
+    const hand = count === 2 && isBareHanded(character) ? "handLeft" : freeHand;
+    action = hand === "handRight" ? "attack_right" : "attack_left";
+    spellName = ability?.base ?? "attack-melee";
+  } else if (count === 1) {
     if (hasWeaponRight(character)) {
       action = "attack_right";
       spellName =

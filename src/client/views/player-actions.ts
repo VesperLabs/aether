@@ -32,7 +32,7 @@ export function doAttack(player: Player, { count, castAngle, direction, abilityS
 
   if (player?.hasBuff("stun")) return;
   if (isHero) {
-    if (!player.hasWeapon() || isDead || isAttacking || !isHoldingAttack) return;
+    if (!player.canAttack() || isDead || isAttacking || !isHoldingAttack) return;
     if (!player.canCastSpell(abilitySlot)) return;
     if (!hasStaminaForAttack(player, count, abilitySlot)) return;
   }

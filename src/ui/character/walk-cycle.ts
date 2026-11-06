@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
-const DIRECTIONS = ["up", "right", "down", "left"] as const;
+/** The sheet's rows, top to bottom. */
+export const DIRECTIONS = ["up", "right", "down", "left"] as const;
 export type WalkDirection = (typeof DIRECTIONS)[number];
 
 /** Which walk frame to show, and facing which way. */

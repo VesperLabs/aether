@@ -21,6 +21,8 @@ export { calculateStealthVisibilityPercent, isInStealthGrace } from "./stealth";
 export { mobKilledEvents } from "./kills";
 export { rollTriggers } from "./triggers";
 export {
+  canAttack,
+  getFreeHand,
   getWeaponRange,
   hasAttackableWeapons,
   hasMeleeWeapon,
@@ -36,6 +38,7 @@ export {
   hasWeapon,
   hasWeaponLeft,
   hasWeaponRight,
+  isBareHanded,
   isDualWielding,
 } from "./weapons";
 export type { EquipmentKey, Hand, WeaponHolder } from "./weapons";

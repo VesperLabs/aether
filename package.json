@@ -16,6 +16,7 @@
     "web:preview": "vite preview --config src/wiki/vite.config.ts",
     "server:dev": "tsx --env-file-if-exists=.env src/server/main.ts",
     "server:watch": "tsx watch --include .env --inspect --env-file-if-exists=.env src/server/main.ts",
+    "lab:dev": "vite --config src/sprite-lab/vite.config.ts",
     "clean": "rm -rf node_modules",
     "server:build": "tsx --env-file-if-exists=.env scripts/build-server.ts",
     "server:run": "node --env-file-if-exists=.env --optimize-for-size --max-old-space-size=512 dist/server.cjs",

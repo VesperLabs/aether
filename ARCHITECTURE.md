@@ -21,6 +21,7 @@ src/
   server/    app: game server                             core only, never ui
   client/    app: game in the browser                     core + ui
   wiki/      app: wiki site                               core + ui
+  sprite-lab/  app: local dev tool for sprite sheets      core + ui
 public/      images, audio, maps
 scripts/     repo tooling
 ```
