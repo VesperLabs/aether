@@ -109,6 +109,7 @@ export const theme = {
     },
     menu: {
       variant: "buttons.default",
+      position: "relative",
       borderRadius: 6,
       padding: 1,
       "&[disabled]": {
@@ -117,12 +118,15 @@ export const theme = {
       "&.active::before, &:has(.pressed)::before": {
         content: '" "',
         display: "block",
+        /* Pinned to the button's edges, so it fits whatever the padding or alignment inside. */
         position: "absolute",
-        width: "100%",
+        top: 0,
+        left: 0,
+        right: 0,
         height: 4,
-        ml: -1,
-        mt: -1,
-        borderRadius: "6px 6px 0 0",
+        borderRadius: "inherit",
+        borderBottomLeftRadius: 0,
+        borderBottomRightRadius: 0,
         boxShadow: `inset 0px 2px 0px 0px ${tColors.blue[200]}`,
       },
       backgroundColor: "shadow.10",

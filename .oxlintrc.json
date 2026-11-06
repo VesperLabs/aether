@@ -73,12 +73,14 @@
                   "@/client",
                   "@/client/**",
                   "@/wiki",
-                  "@/wiki/**"
+                  "@/wiki/**",
+                  "@/sprite-lab",
+                  "@/sprite-lab/**"
                 ],
                 "message": "content imports nothing else from the repo."
               },
               {
-                "regex": "^\\.{1,2}/(.*/)?(rules|network|ui|server|client|wiki)(/|$)",
+                "regex": "^\\.{1,2}/(.*/)?(rules|network|ui|server|client|wiki|sprite-lab)(/|$)",
                 "message": "content imports nothing else from the repo."
               },
               {
@@ -146,12 +148,14 @@
                   "@/client",
                   "@/client/**",
                   "@/wiki",
-                  "@/wiki/**"
+                  "@/wiki/**",
+                  "@/sprite-lab",
+                  "@/sprite-lab/**"
                 ],
                 "message": "rules imports only content."
               },
               {
-                "regex": "^\\.{1,2}/(.*/)?(network|ui|server|client|wiki)(/|$)",
+                "regex": "^\\.{1,2}/(.*/)?(network|ui|server|client|wiki|sprite-lab)(/|$)",
                 "message": "rules imports only content."
               },
               {
@@ -267,12 +271,14 @@
                   "@/client",
                   "@/client/**",
                   "@/wiki",
-                  "@/wiki/**"
+                  "@/wiki/**",
+                  "@/sprite-lab",
+                  "@/sprite-lab/**"
                 ],
                 "message": "network imports only content and rules."
               },
               {
-                "regex": "^\\.{1,2}/(.*/)?(ui|server|client|wiki)(/|$)",
+                "regex": "^\\.{1,2}/(.*/)?(ui|server|client|wiki|sprite-lab)(/|$)",
                 "message": "network imports only content and rules."
               },
               {
@@ -328,12 +334,14 @@
                   "@/client",
                   "@/client/**",
                   "@/wiki",
-                  "@/wiki/**"
+                  "@/wiki/**",
+                  "@/sprite-lab",
+                  "@/sprite-lab/**"
                 ],
                 "message": "ui imports only core (content, rules, network), never an app."
               },
               {
-                "regex": "^\\.{1,2}/(.*/)?(server|client|wiki)(/|$)",
+                "regex": "^\\.{1,2}/(.*/)?(server|client|wiki|sprite-lab)(/|$)",
                 "message": "ui imports only core (content, rules, network), never an app."
               },
               {
@@ -353,11 +361,20 @@
           {
             "patterns": [
               {
-                "group": ["@/client", "@/client/**", "@/wiki", "@/wiki/**", "@/ui", "@/ui/**"],
+                "group": [
+                  "@/client",
+                  "@/client/**",
+                  "@/wiki",
+                  "@/wiki/**",
+                  "@/sprite-lab",
+                  "@/sprite-lab/**",
+                  "@/ui",
+                  "@/ui/**"
+                ],
                 "message": "Apps never import each other, and server never imports ui."
               },
               {
-                "regex": "^\\.{1,2}/(.*/)?(client|wiki|ui)(/|$)",
+                "regex": "^\\.{1,2}/(.*/)?(client|wiki|sprite-lab|ui)(/|$)",
                 "message": "Apps never import each other, and server never imports ui."
               },
               {
@@ -377,11 +394,18 @@
           {
             "patterns": [
               {
-                "group": ["@/server", "@/server/**", "@/wiki", "@/wiki/**"],
+                "group": [
+                  "@/server",
+                  "@/server/**",
+                  "@/wiki",
+                  "@/wiki/**",
+                  "@/sprite-lab",
+                  "@/sprite-lab/**"
+                ],
                 "message": "Apps never import each other."
               },
               {
-                "regex": "^\\.{1,2}/(.*/)?(server|wiki)(/|$)",
+                "regex": "^\\.{1,2}/(.*/)?(server|wiki|sprite-lab)(/|$)",
                 "message": "Apps never import each other."
               },
               {
@@ -407,11 +431,18 @@
           {
             "patterns": [
               {
-                "group": ["@/server", "@/server/**", "@/wiki", "@/wiki/**"],
+                "group": [
+                  "@/server",
+                  "@/server/**",
+                  "@/wiki",
+                  "@/wiki/**",
+                  "@/sprite-lab",
+                  "@/sprite-lab/**"
+                ],
                 "message": "Apps never import each other."
               },
               {
-                "regex": "^\\.{1,2}/(.*/)?(server|wiki)(/|$)",
+                "regex": "^\\.{1,2}/(.*/)?(server|wiki|sprite-lab)(/|$)",
                 "message": "Apps never import each other."
               },
               {
@@ -430,7 +461,7 @@
       }
     },
     {
-      "files": ["src/wiki/**"],
+      "files": ["src/wiki/**", "src/sprite-lab/**"],
       "rules": {
         "no-restricted-imports": [
           "error",

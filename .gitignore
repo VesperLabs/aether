@@ -29,3 +29,4 @@ public/assets/index-*
 
 # Claude Code agent worktrees
 .claude/worktrees/
+.sprite-lab/
