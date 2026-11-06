@@ -4,6 +4,7 @@ export {
   checkAttackReady,
   getAbilityCosts,
   getAttackActionName,
+  getCastAction,
   getAttackSpCost,
   getNextAttackCount,
   hasStaminaFor,

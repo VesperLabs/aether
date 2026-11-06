@@ -53,6 +53,10 @@ export const commands = {
     })
     .optional(),
   castSpell: z.object({ abilitySlot: spellSlot, castAngle: z.number().nullish() }).optional(),
+  /** Begins a spell with a cast time; the server fires it at the player's aim when it lands. */
+  startCast: z.object({ abilitySlot: z.union([z.number(), z.string()]) }),
+  /* The payload is ignored: it calls off whatever the player is casting. */
+  cancelCast: z.unknown(),
   /** Roll along `angle` (radians). */
   dodge: z.object({ angle: z.number() }),
 

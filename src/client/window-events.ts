@@ -54,6 +54,8 @@ declare global {
     HERO_RESPAWN: Event;
     HERO_START_COOLDOWN: CustomEvent<CooldownDetail>;
     HERO_AIM_START: CustomEvent<AbilitySlot | undefined>;
+    /** The hero's timed spell stopped; `detail` is its slot if it landed. */
+    HERO_CAST_ENDED: CustomEvent<AbilitySlot | null>;
     HERO_ATTACK: Event;
     /** The hero swung: 1 is the right hand, 2 the left. The HUD shows the next swing's cost. */
     HERO_ATTACK_COUNT: CustomEvent<number>;

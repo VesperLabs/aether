@@ -10,6 +10,7 @@ import {
 } from "./abilities";
 import { decideAggro, isNpcAttackReady, type NpcPlayerView, type NpcSelfView } from "./aggro";
 import {
+  NPC_EXTRA_CAST_TIME,
   NPC_HOME_RANGE,
   NPC_LEASH_RANGE,
   NPC_ENGAGED_BUBBLE,
@@ -332,11 +333,13 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
         type: "cast",
         abilitySlot: abilitySlot as string,
         ability,
+        /* A spell's cast time plus a beat to dodge; spells without one wind up on the NPC's stats */
         windupMs:
+          (ability.stats?.castTime && ability.stats.castTime + NPC_EXTRA_CAST_TIME) ||
           warningMs +
-          (isLungeSpell(ability.base)
-            ? attackDelay + NPC_LUNGE_EXTRA_WINDUP
-            : (npc.stats?.castDelay as number)),
+            (isLungeSpell(ability.base)
+              ? attackDelay + NPC_LUNGE_EXTRA_WINDUP
+              : (npc.stats?.castDelay as number)),
       };
     }
   }

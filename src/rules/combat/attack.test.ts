@@ -5,6 +5,7 @@ import {
   expAfterDeath,
   getAbilityCosts,
   getAttackActionName,
+  getCastAction,
   getAttackSpCost,
   getNextAttackCount,
   getCooldown,
@@ -62,15 +63,42 @@ describe("getAttackSpCost", () => {
   });
 });
 
-describe("getAttackActionName", () => {
-  const human = (left?: string, right?: string): WeaponHolder => ({
-    visibleEquipment: {
-      handLeft: left ? { type: left } : null,
-      handRight: right ? { type: right } : null,
-    },
-    profile: { race: "human" },
+const human = (left?: string, right?: string): WeaponHolder => ({
+  visibleEquipment: {
+    handLeft: left ? { type: left } : null,
+    handRight: right ? { type: right } : null,
+  },
+  profile: { race: "human" },
+});
+
+describe("getCastAction", () => {
+  it("poses the hand holding a weapon, whichever is beside a shield", () => {
+    expect(getCastAction(human("shield", "weapon"))).toBe("attack_right");
+    expect(getCastAction(human("weapon", "shield"))).toBe("attack_left");
+    expect(getCastAction(human("ranged"))).toBe("attack_left");
   });
 
+  it("poses the right hand when both hold weapons", () => {
+    expect(getCastAction(human("weapon", "weapon"))).toBe("attack_right");
+  });
+
+  it("poses the weapon hand over an empty one", () => {
+    expect(getCastAction(human("weapon"))).toBe("attack_left");
+    expect(getCastAction(human(undefined, "weapon"))).toBe("attack_right");
+  });
+
+  it("poses an empty hand when there is no weapon, never the shield", () => {
+    expect(getCastAction(human())).toBe("attack_right");
+    expect(getCastAction(human("shield"))).toBe("attack_right");
+    expect(getCastAction(human(undefined, "shield"))).toBe("attack_left");
+  });
+
+  it("has no pose for races without attack animations", () => {
+    expect(getCastAction({ ...human(), profile: { race: "ghost" } })).toBeUndefined();
+  });
+});
+
+describe("getAttackActionName", () => {
   it("keeps the action for races without attack animations", () => {
     const ghost = { ...human("weapon"), profile: { race: "ghost" } };
     expect(getAttackActionName(ghost, { action: "stand", count: 1 })).toEqual({

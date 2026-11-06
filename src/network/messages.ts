@@ -160,6 +160,15 @@ export interface ServerToClientEvents {
     abilitySlot?: number | string | null;
     castAngle?: number | null;
   }) => void;
+  /** A player began a timed spell; it lands in `castMs` unless cancelled. */
+  playerCastStarted: (payload: { socketId: string; castMs: number }) => void;
+  playerCastCancelled: (payload: { socketId: string }) => void;
+  /** A timed spell finished casting and fired. */
+  playerCastLanded: (payload: {
+    socketId: string;
+    abilitySlot: number | string;
+    castAngle: number;
+  }) => void;
   npcAttack: (payload: {
     id: string;
     count?: number;

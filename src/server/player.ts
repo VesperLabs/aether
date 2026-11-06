@@ -14,6 +14,7 @@ import { canHitNpc, canHitPlayer } from "@/rules/spells";
 import type { Npc } from "./npc";
 import { createSpell } from "./spell-adapter";
 import { vanish } from "./stealth";
+import { updateCast, type PendingCast } from "./player-cast";
 import { PLAYER_DEFAULT_SPAWN } from "./auth/character-defaults";
 import { entitiesInRoom } from "@/rules/world";
 import { expForMobKill } from "@/rules/stats";
@@ -97,6 +98,8 @@ export class Player extends ServerCharacter {
     this.expireBuffs(true);
     this.state.isDead = true;
   }
+  /** The timed spell being cast, if any. */
+  pendingCast?: PendingCast;
   /** Swings if the attack is ready and affordable. Returns whether it swung. */
   doAttack({ count, direction, castAngle, abilitySlot }: PlayerAttackRequest): boolean {
     const { world, room, socketId } = this ?? {};
@@ -272,6 +275,7 @@ export class Player extends ServerCharacter {
     }
   }
   update(time: number, delta: number) {
+    updateCast(this);
     this.checkIsResting();
     this.expireBuffs();
     this.doRegen();

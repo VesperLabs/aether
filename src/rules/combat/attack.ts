@@ -4,6 +4,8 @@ import {
   hasRangedWeapon,
   hasRangedWeaponLeft,
   hasRangedWeaponRight,
+  hasShieldLeft,
+  hasShieldRight,
   hasWeaponLeft,
   hasWeaponRight,
   isBareHanded,
@@ -116,6 +118,18 @@ export interface AttackActionInput {
 }
 
 export type AttackAction = { action: string; spellName: string } & Record<string, any>;
+
+/**
+ * The attack pose a cast shows: the hand holding a weapon, else an empty one, the right if both
+ * qualify. Never a shield hand. Undefined for races without attack animations.
+ */
+export function getCastAction(character: WeaponHolder) {
+  if (!RACES_WITH_ATTACK_ANIMS.includes((character.profile as { race: string }).race)) return;
+  if (hasWeaponRight(character)) return "attack_right";
+  if (hasWeaponLeft(character)) return "attack_left";
+  if (!hasShieldRight(character)) return "attack_right";
+  if (!hasShieldLeft(character)) return "attack_left";
+}
 
 /** Which hand swings, and which spell the swing is, for attack number `count` (1 or 2). */
 export function getAttackActionName(

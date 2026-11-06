@@ -1,6 +1,6 @@
 import { demoLogin, login, ticketLogin } from "../../auth/commands";
 import type { CommandHandlers } from "../dispatcher";
-import { attack, castSpell } from "./combat";
+import { attack, cancelCastCommand, castSpell, startCast } from "./combat";
 import { consumeItem, dropItem, grabLoot } from "./inventory";
 import { moveItem } from "./inventory-move";
 import {
@@ -35,6 +35,8 @@ export const commandHandlers: CommandHandlers = {
   latency,
   attack,
   castSpell,
+  startCast,
+  cancelCast: cancelCastCommand,
   playerInput,
   changeDirection,
   dodge,

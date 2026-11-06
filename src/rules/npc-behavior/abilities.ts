@@ -7,6 +7,7 @@ import { getSpellBand, isInBand, type ShotBand } from "./reach";
 
 export interface NpcAbility {
   base?: string;
+  stats?: { castTime?: number } | null;
 }
 
 export interface AbilityChoiceInput {

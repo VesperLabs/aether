@@ -54,3 +54,6 @@ export const NPC_LUNGE_RECOVERY_MS = 450;
 export const NPC_ENGAGED_BUBBLE = "!";
 /** Extra windup on an NPC lunge, on top of the warning and its attack delay: the dash is fast, so the tell is long. */
 export const NPC_LUNGE_EXTRA_WINDUP = 250;
+
+/** NPCs take this much longer than players to cast a spell, so there is time to dodge it, in ms. */
+export const NPC_EXTRA_CAST_TIME = 1000;
