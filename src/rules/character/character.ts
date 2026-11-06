@@ -7,6 +7,8 @@ import type { CharacterState } from "./state";
 import {
   POTION_COOLDOWN,
   checkAttackReady,
+  canAttack,
+  isBareHanded,
   getAttackActionName,
   getAttackSpCost,
   getCooldown,
@@ -284,6 +286,12 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
     }
     hasWeapon(key: EquipmentKey = "visibleEquipment") {
       return hasWeapon(this, key);
+    }
+    isBareHanded() {
+      return isBareHanded(this);
+    }
+    canAttack() {
+      return canAttack(this);
     }
     hasShield(key: EquipmentKey = "visibleEquipment") {
       return hasShield(this, key);

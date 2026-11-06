@@ -133,8 +133,9 @@ export class Player extends ServerCharacter {
     }
 
     this.state.lastAttack = this.world.now();
-    /* Only a dual-wielder has a second hand to swing */
-    this.state.lastAttackCount = count === 2 && this.isDualWielding() ? 2 : 1;
+    /* Only a dual-wielder or bare fists have a second hand to swing */
+    this.state.lastAttackCount =
+      count === 2 && (this.isDualWielding() || this.isBareHanded()) ? 2 : 1;
     this.state.isAttacking = true;
 
     this.dispelBuffsByProperty("dispelBeforeAttack");

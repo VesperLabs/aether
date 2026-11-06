@@ -98,6 +98,33 @@ describe("getAttackActionName", () => {
     });
   });
 
+  it("punches with the right hand when unarmed", () => {
+    expect(getAttackActionName(human(), { action: "stand", count: 1 })).toEqual({
+      action: "attack_right",
+      spellName: "attack-melee",
+    });
+  });
+
+  it("alternates fists when both hands are empty", () => {
+    expect(getNextAttackCount(1, human())).toBe(2);
+    expect(getNextAttackCount(2, human())).toBe(1);
+    expect(getAttackActionName(human(), { action: "stand", count: 2 }).action).toBe("attack_left");
+  });
+
+  it("keeps punching with the one free hand beside a shield", () => {
+    expect(getNextAttackCount(1, human(undefined, "shield"))).toBe(1);
+    expect(getAttackActionName(human("shield"), { action: "stand", count: 2 }).action).toBe(
+      "attack_right",
+    );
+  });
+
+  it("punches with the free hand beside a shield", () => {
+    expect(getAttackActionName(human(undefined, "shield"), { action: "stand", count: 1 })).toEqual({
+      action: "attack_left",
+      spellName: "attack-melee",
+    });
+  });
+
   it("lets an attack-spell's base replace the spell and keeps its details", () => {
     const result = getAttackActionName(human(undefined, "weapon"), {
       action: "stand",

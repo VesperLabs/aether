@@ -9,6 +9,8 @@ import {
   PREVIEW_DICE,
 } from "@/content";
 import {
+  canAttack,
+  getFreeHand,
   getWeaponRange,
   hasAttackableWeapons,
   hasMeleeWeapon,
@@ -123,5 +125,20 @@ describe("getWeaponRange", () => {
     const character = { visibleEquipment: { handLeft: { type: "weapon" } }, bodySize: 8 };
     expect(getWeaponRange(character, "handLeft")).toBe(16);
     expect(getWeaponRange({ bodySize: 10 })).toBe(18);
+  });
+});
+
+describe("getFreeHand", () => {
+  it("picks the right hand, or the left beside a shield", () => {
+    expect(getFreeHand(holding(undefined, undefined))).toBe("handRight");
+    expect(getFreeHand(holding(undefined, "shield"))).toBe("handLeft");
+    expect(getFreeHand(holding("shield", undefined))).toBe("handRight");
+  });
+
+  it("finds no fist to punch with when armed or holding two shields", () => {
+    expect(getFreeHand(holding("weapon", undefined))).toBeUndefined();
+    expect(canAttack(holding("weapon", undefined))).toBe(true);
+    expect(getFreeHand(holding("shield", "shield"))).toBeUndefined();
+    expect(canAttack(holding("shield", "shield"))).toBe(false);
   });
 });

@@ -185,7 +185,7 @@
       },
       "right-attack_right": {
         "left": {
-          "x": 1,
+          "x": -1,
           "y": -12,
           "flipX": true,
           "flipY": false,
@@ -193,7 +193,7 @@
         },
         "right": {
           "x": 13,
-          "y": -7,
+          "y": -14,
           "flipX": true,
           "flipY": false,
           "rotation": 0
@@ -202,14 +202,14 @@
       "right-attack_left": {
         "left": {
           "x": 13,
-          "y": -7,
+          "y": -13,
           "flipX": true,
           "flipY": false,
           "rotation": 90
         },
         "right": {
-          "x": -4,
-          "y": -7,
+          "x": -2,
+          "y": -9,
           "flipX": true,
           "flipY": false,
           "rotation": 0
@@ -288,8 +288,8 @@
           "rotation": 0
         },
         "right": {
-          "x": -6,
-          "y": -3,
+          "x": -5,
+          "y": -5,
           "flipX": true,
           "flipY": true,
           "rotation": 0
@@ -297,8 +297,8 @@
       },
       "down-attack_left": {
         "left": {
-          "x": 6,
-          "y": -3,
+          "x": 5,
+          "y": -5,
           "flipX": false,
           "flipY": true,
           "rotation": 0
@@ -377,15 +377,15 @@
       },
       "left-attack_right": {
         "left": {
-          "x": 5,
-          "y": -1,
+          "x": 2,
+          "y": -9,
           "flipX": false,
           "flipY": false,
           "rotation": 0
         },
         "right": {
-          "x": -11,
-          "y": -8,
+          "x": -13,
+          "y": -13,
           "flipX": false,
           "flipY": false,
           "rotation": -90
@@ -393,8 +393,8 @@
       },
       "left-attack_left": {
         "left": {
-          "x": -11,
-          "y": -8,
+          "x": -13,
+          "y": -14,
           "flipX": false,
           "flipY": false,
           "rotation": 0

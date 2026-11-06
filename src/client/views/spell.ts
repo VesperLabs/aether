@@ -5,6 +5,7 @@ import type { Point } from "@/rules/world";
 import type { Player } from "./player";
 import { toTint } from "./tint";
 import { endOnDeath } from "./end-on-death";
+import { PunchBurst } from "./punch-burst";
 import { SwingArc } from "./swing-arc";
 import { deriveElements } from "@/ui/item/weapon-elements";
 import { ELEMENT_SWING_COLORS } from "@/ui/item/element-effects";
@@ -117,40 +118,47 @@ export class Spell extends Phaser.GameObjects.Container {
       const hand = isLeft && !isRight ? "handLeft" : "handRight";
       /* Characters without attack animations swing no weapon: their arc is their body's reach */
       const isWielded = isLeft || isRight;
+      /* Non-humans count as armed, so this is a human's empty hand */
+      const isPunching = isWielded && !caster.hasWeapon();
       const isUppercut = caster.visibleEquipment?.[hand]?.base === "fist";
       const bladeDegrees = getBladeDegrees(caster.visibleEquipment?.[hand]?.texture);
       /* The weapon's range stat is the hit radius from body centre; the arc turns around the hand */
       const reach = caster.getWeaponRange(hand);
       this.setMeleeBody(shape.scale);
-      this.add(
-        new SwingArc(scene, {
-          reach:
-            isWielded && caster.visibleEquipment?.[hand]?.stats?.range ? reach - HAND_REACH : reach,
-          /* Turns around the hand holding the weapon, which this spell follows from body centre */
-          pivot: isWielded
-            ? () => ({ x: caster[hand].x, y: caster[hand].y - caster.bodyCenterY })
-            : undefined,
-          facing: getAngleFromDirection(caster?.direction),
-          /*
-           * Facing sideways, a blade comes down (clockwise to the right) and a fist weapon, a
-           * katar, uppercuts. Facing up or down the hand picks: right-hand swings sweep
-           * counter-clockwise, as the sword animations do.
-           */
-          clockwise:
-            caster?.direction === "right" || caster?.direction === "left"
-              ? (caster.direction === "right") !== isUppercut
-              : isLeft && !isRight,
-          wielder: isWielded ? { character: caster, hand, artDegrees: bladeDegrees } : undefined,
-          /* Plain swings take the color of the weapon's element, like its outline */
-          color:
-            SWING_COLORS[this.spellName] ??
-            ELEMENT_SWING_COLORS[
-              deriveElements(caster.visibleEquipment?.[hand]?.stats)[0] as string
-            ] ??
-            SWING_COLORS["attack-melee"],
-          duration: this.maxVisibleTime,
-        }),
-      );
+      /* A fist is in front of the body, unlike a blade's arc, which sweeps behind it */
+      if (isPunching) this.layerDepth = "aboveCaster";
+      /* The hand, relative to this spell, which follows the caster's body centre */
+      const getHand = () => ({ x: caster[hand].x, y: caster[hand].y - caster.bodyCenterY });
+      const facing = getAngleFromDirection(caster?.direction);
+      /* Plain swings take the color of the weapon's element, like its outline */
+      const color =
+        SWING_COLORS[this.spellName] ??
+        ELEMENT_SWING_COLORS[deriveElements(caster.visibleEquipment?.[hand]?.stats)[0] as string] ??
+        SWING_COLORS["attack-melee"];
+      const swing = isPunching
+        ? new PunchBurst(scene, { fist: getHand, facing, color, duration: this.maxVisibleTime })
+        : new SwingArc(scene, {
+            reach:
+              isWielded && caster.visibleEquipment?.[hand]?.stats?.range
+                ? reach - HAND_REACH
+                : reach,
+            /* Turns around the hand holding the weapon */
+            pivot: isWielded ? getHand : undefined,
+            facing,
+            /*
+             * Facing sideways, a blade comes down (clockwise to the right) and a fist weapon, a
+             * katar, uppercuts. Facing up or down the hand picks: right-hand swings sweep
+             * counter-clockwise, as the sword animations do.
+             */
+            clockwise:
+              caster?.direction === "right" || caster?.direction === "left"
+                ? (caster.direction === "right") !== isUppercut
+                : isLeft && !isRight,
+            wielder: isWielded ? { character: caster, hand, artDegrees: bladeDegrees } : undefined,
+            color,
+            duration: this.maxVisibleTime,
+          });
+      this.add(swing);
     } else {
       this.setScale(shape.scale);
     }
@@ -252,6 +260,9 @@ export class Spell extends Phaser.GameObjects.Container {
   adjustSpellPosition() {
     if (this.layerDepth === "bottom") {
       this.setDepth(this?.caster?.depth - 20);
+    }
+    if (this.layerDepth === "aboveCaster") {
+      this.setDepth(this?.caster?.depth + 1);
     }
     if (this.layerDepth === "top") {
       this.setDepth(100 + this.y + this.bodySize);

@@ -163,7 +163,7 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
 
   if (
     hero.state.isHoldingAttack &&
-    hero?.hasWeapon() &&
+    hero?.canAttack() &&
     !hero.hasRangedWeapon() &&
     !hero.state.isAttacking &&
     hero.state.lastAttack < Date.now() - hero.getFullAttackDelay() - 60

@@ -117,6 +117,23 @@ export function hasVisibleWeaponType(
   );
 }
 
+/** Nothing in either hand: both fists are free, so punches alternate like dual-wielded swings. */
+export function isBareHanded(character: WeaponHolder) {
+  return !hasWeapon(character) && !hasShield(character);
+}
+
+/** The hand an unarmed character punches with, the right if it can. None with a weapon or two shields. */
+export function getFreeHand(character: WeaponHolder): Hand | undefined {
+  if (hasWeapon(character)) return undefined;
+  if (!hasShieldRight(character)) return "handRight";
+  return hasShieldLeft(character) ? undefined : "handLeft";
+}
+
+/** Anyone can attack with a weapon or a free fist. */
+export function canAttack(character: WeaponHolder) {
+  return hasWeapon(character) || !!getFreeHand(character);
+}
+
 /** Reach of the weapon in a hand, in pixels. Without a weapon range it's the body plus a little. */
 export function getWeaponRange(
   character: Pick<WeaponHolder, "visibleEquipment"> & { bodySize: number },
