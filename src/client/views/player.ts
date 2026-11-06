@@ -78,6 +78,14 @@ export class Player extends Character {
   declare rig: Phaser.GameObjects.Container;
   declare layerOrderKey?: string; // the direction and shield the rig was last stacked for
   declare talkMenu: Sprite;
+  /** The attack frame a cast holds, and until when. A pose only: it locks nothing, unlike a swing. */
+  declare castPose?: { action: string; until: number };
+  /** The hero let go of a timed spell, which starts as soon as it has stopped moving. */
+  declare queuedCastSlot?: AbilitySlot;
+  /** An attack called off this aim, so letting go of the spell must not cast it. */
+  declare isAimCancelled?: boolean;
+  /** A timed spell is counting down. */
+  declare isCasting?: boolean;
   constructor(scene: SceneMain, args: CharacterArgs) {
     super(scene, args);
     this.behaviors = (args as { behaviors?: readonly string[] }).behaviors;
@@ -195,7 +203,13 @@ export class Player extends Character {
     const isEngaged = this.kind !== "player" && remainingString === NPC_ENGAGED_BUBBLE;
     this.bubble.setMessage(isEngaged ? undefined : remainingString);
     this.windupRing.follow(this.x + this.rig.x, this.y + this.rig.y);
-    this.windupRing.draw(isEngaged && !this.state.isDead);
+    /* Everyone sees a player aiming a spell (an empty ring) and its cast (the ring filling) */
+    const isSpellAiming = this.state.isAiming && !this.state.isHoldingAttack;
+    const showsCast =
+      this.kind === "player" &&
+      (isSpellAiming || this.isCasting) &&
+      (this.isHero || !this.hasBuff("stealth"));
+    this.windupRing.draw((isEngaged || !!showsCast) && !this.state.isDead);
   }
   updateHpBar() {
     const { stats } = this;

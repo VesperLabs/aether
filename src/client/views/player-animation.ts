@@ -97,6 +97,11 @@ export function updateCurrentSpeed(player: Player) {
     return;
   }
 
+  if (player.castPose && Date.now() < player.castPose.until) {
+    player.action = player.castPose.action;
+    return;
+  }
+
   // for bows
   if (player.state.isHoldingAttack) {
     if (player.hasRangedWeaponLeft()) player.action = "attack_left";

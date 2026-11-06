@@ -18,6 +18,7 @@ import { emitPlayerInput } from "@/client/net/player-input";
 import { updateAttackCooldown, updateSpellCooldown } from "./hero-cooldowns";
 import { isTypableFieldActive } from "./typable-field";
 import type { SceneHud } from "@/client/scenes/hud-scene";
+import type { Player } from "@/client/views/player";
 import type { SceneMain } from "@/client/scenes/main-scene";
 
 const { Between } = Phaser.Math.Angle;
@@ -98,6 +99,7 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
     hero.vx = 0;
     hero.vy = 0;
     hero.body.setVelocity(0, 0);
+    hero.queuedCastSlot = undefined;
     return;
   }
 
@@ -185,6 +187,12 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
     });
   }
 
+  /* A released spell roots the hero until it lands; only attacking calls it off */
+  if (hero.isCasting || hero.queuedCastSlot !== undefined) {
+    vx = 0;
+    vy = 0;
+  }
+
   /* Attacking and aiming root the hero */
   if (
     (!hero.hasRangedWeapon() && hero.state.isAttacking) ||
@@ -222,5 +230,16 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
   const wasRolling = hero.state.wasRolling;
   hero.state.wasRolling = isRolling;
   emitPlayerInput(scene, hero, vx, vy, hero.direction, isRolling || !!wasRolling);
+  startQueuedCast(scene, hero);
   hero.state.isIdle = hero.vx === vx && hero.vy === vy && vx === 0 && vy === 0;
+}
+
+/** Sent after the stopped position, so the server never sees the cast start on a moving hero. */
+function startQueuedCast(scene: SceneHud, hero: Player) {
+  const abilitySlot = hero.queuedCastSlot;
+  if (abilitySlot === undefined || hero.vx || hero.vy) return;
+  hero.queuedCastSlot = undefined;
+  /* Rooted from here: the server's reply ends this if it refuses the cast */
+  hero.isCasting = true;
+  scene.socket.emit("startCast", { abilitySlot });
 }

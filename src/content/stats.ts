@@ -6,6 +6,7 @@ export type StatName =
   | "attackDelay"
   | "blockChance"
   | "castDelay"
+  | "castTime"
   | "critChance"
   | "critMultiplier"
   | "defense"

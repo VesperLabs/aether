@@ -23,7 +23,8 @@ export function addDodgeListeners(scene: SceneHud) {
 
   window.addEventListener("HERO_DODGE_START", () => {
     const hero = mainScene?.hero;
-    if (!hero || isTypableFieldActive() || hero.state.isAiming || hero.state.isDead) return;
+    const isBusy = hero?.state.isAiming || hero?.isCasting || hero?.state.isDead;
+    if (!hero || isTypableFieldActive() || isBusy) return;
     /* Not `isAiming`: that roots the hero and plays the standing pose. */
     hero.state.isAimingDodge = true;
     hero.state.aimPressedAt = Date.now();

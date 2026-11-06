@@ -44,11 +44,13 @@ export function addGlobalEventListeners(scene: SceneHud) {
     window.dispatchEvent(new CustomEvent("HERO_ATTACK"));
   });
   window.addEventListener("HERO_AIM_START", (e) => {
-    if (!mainScene?.hero || isTypableFieldActive()) return;
+    if (!mainScene?.hero || isTypableFieldActive() || mainScene.hero.isCasting) return;
     const hero = mainScene?.hero;
     const { isAimable, isLunge, spellName } = hero.getAbilityDetails(e?.detail);
+    hero.isAimCancelled = false;
 
-    if (isAimable) {
+    /* A spell on cooldown, or too dear, can't be aimed: there is nothing to cast yet */
+    if (isAimable && hero.canCastSpell(e?.detail, false)) {
       hero.state.isAiming = true;
       hero.state.aimingSpellName = spellName;
       /* A lunge taps like a dodge: a tap goes the way you're heading, a hold aims */
@@ -66,7 +68,7 @@ export function addGlobalEventListeners(scene: SceneHud) {
       gameElement.style.cursor = "default";
 
       // shoot arrows etc
-      if (hero.hasRangedWeapon()) {
+      if (hero.hasRangedWeapon() && hero.state.isHoldingAttack) {
         updateAttackCooldown(hero);
         hero?.doAttack?.({ count: 1, castAngle: hero.state.lastAngle, direction: hero.direction });
       }
@@ -85,6 +87,17 @@ export function addGlobalEventListeners(scene: SceneHud) {
     if (!mainScene?.hero) return;
     const hero = mainScene?.hero;
 
+    /* Attacking while aiming or casting only calls the spell off: it doesn't swing too */
+    if (hero.isCasting) return scene.socket.emit("cancelCast");
+    if (hero.queuedCastSlot !== undefined) {
+      hero.queuedCastSlot = undefined;
+      return stopAiming(hero);
+    }
+    if (hero.state.aimingSpellName) {
+      hero.isAimCancelled = true;
+      return stopAiming(hero);
+    }
+
     hero.state.isHoldingAttack = true;
     hero.state.lastAbilitySlot = e?.detail;
     hero.state.aimingSpellName = null;
@@ -98,12 +111,29 @@ export function addGlobalEventListeners(scene: SceneHud) {
       isHoldingAttack: hero.state.isHoldingAttack,
     });
   });
+  const stopAiming = (hero: NonNullable<SceneMain["hero"]>) => {
+    hero.state.isAiming = false;
+    hero.state.aimingSpellName = null;
+    scene.socket.emit("updateState", { isAiming: hero.state.isAiming });
+    gameElement.style.cursor = "default";
+  };
   window.addEventListener("HERO_ABILITY", (e) => {
     const hero = mainScene?.hero;
     const abilitySlot = e?.detail;
-    const { type, isLunge } = hero.getAbilityDetails(abilitySlot);
+    const { type, isLunge, stats } = hero.getAbilityDetails(abilitySlot);
+    if (hero.isAimCancelled) {
+      hero.isAimCancelled = false;
+      return;
+    }
+    if (hero.isCasting) return;
 
-    if (type === "spell") {
+    if (type === "spell" && stats?.castTime) {
+      /*
+       * Letting go starts the cast, once the hero has stopped (see hero-movement.ts), so a tap
+       * still works while slowing down. Aiming stays on: the spell fires where you aim at the end.
+       */
+      if (hero.canCastSpell(abilitySlot, false)) hero.queuedCastSlot = abilitySlot;
+    } else if (type === "spell") {
       /* Tell the UI to update the cooldown */
       updateSpellCooldown(hero, abilitySlot);
 
@@ -113,11 +143,17 @@ export function addGlobalEventListeners(scene: SceneHud) {
         castAngle: isTapped ? getHeadingAngle(hero) : hero?.state?.lastAngle,
       });
 
-      hero.state.isAiming = false;
-      hero.state.aimingSpellName = null;
-      scene.socket.emit("updateState", { isAiming: hero.state.isAiming });
-      gameElement.style.cursor = "default";
+      stopAiming(hero);
     }
+  });
+  window.addEventListener("HERO_CAST_ENDED", (e) => {
+    const hero = mainScene?.hero;
+    if (!hero) return;
+    if (e.detail != null) {
+      updateSpellCooldown(hero, e.detail);
+      hero.canCastSpell(e.detail);
+    }
+    stopAiming(hero);
   });
   /* TODO: Move to server and create a consumeItemFunction */
   window.addEventListener("HERO_USE_ITEM", (e) => {

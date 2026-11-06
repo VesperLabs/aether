@@ -2,6 +2,7 @@ import type { ParsedCommand } from "@/network";
 import type { PlayerAttackRequest, PlayerCastRequest } from "@/server/player";
 import type { CommandContext } from "@/server/net/command-context";
 import { isInRoom } from "@/server/player-room";
+import { cancelCast, hasCastTime, startCast as beginCast } from "@/server/player-cast";
 import { grantLungeMove } from "./movement";
 
 export function attack(
@@ -11,6 +12,8 @@ export function attack(
   const { world, socket, socketId } = ctx;
   const player = world.players[socketId];
   if (!isInRoom(player)) return;
+
+  cancelCast(player);
 
   // attack-spells like flame-slash also respect the spell-cooldown...
   if (abilitySlot && !player.canCastSpell(abilitySlot)) return;
@@ -31,9 +34,21 @@ export function castSpell(
   const { world, socket, socketId } = ctx;
   const player = world.players[socketId];
   if (!isInRoom(player)) return;
+  /* Timed spells only fire through startCast, and nothing else fires during one */
+  if (player.pendingCast || hasCastTime(player, abilitySlot ?? undefined)) return;
   const lungeAt = player.state.lungeAt;
   if (!player.doCast({ abilitySlot, castAngle } as PlayerCastRequest)) return;
   // A lunge carries the player further than walking; their client moves them through it
   if (player.state.lungeAt !== lungeAt) grantLungeMove(player);
   socket.to(player?.roomName).emit("playerCastSpell", { socketId, abilitySlot, castAngle });
+}
+
+export function startCast(ctx: CommandContext, { abilitySlot }: ParsedCommand<"startCast">) {
+  const player = ctx.world.players[ctx.socketId];
+  if (isInRoom(player)) beginCast(player, abilitySlot);
+}
+
+export function cancelCastCommand(ctx: CommandContext) {
+  const player = ctx.world.players[ctx.socketId];
+  if (isInRoom(player)) cancelCast(player);
 }

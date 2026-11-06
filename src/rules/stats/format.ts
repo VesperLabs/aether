@@ -39,7 +39,7 @@ const formatStat = (key: string, value: FormattedStat): FormattedStat => {
       return formattedValue;
     }
     return "+" + value;
-  } else if (key.includes("Delay") || key.includes("duration")) {
+  } else if (key.includes("Delay") || key.includes("duration") || key === "castTime") {
     if (Array.isArray(value)) {
       const formattedValue = value
         .map((item) => convertMsToS(Number(item))?.replace(".00", ""))

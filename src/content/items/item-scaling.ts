@@ -4,7 +4,7 @@ import { itemData } from "./item-data";
 export const ILVL_MULTIPLIER = 8;
 
 /** These stats do not scale with ilvl. */
-const STATIC_STATS = ["attackDelay", "castDelay", "range", "spCost"];
+const STATIC_STATS = ["attackDelay", "castDelay", "castTime", "range", "spCost"];
 
 type Loose = Record<string, any>;
 

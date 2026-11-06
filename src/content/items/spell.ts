@@ -9,8 +9,8 @@ export const spellItems = {
       base: "fireball",
       slot: "spell",
       texture: "scroll-red",
-      effects: { minFireDamage: 1, maxFireDamage: 3 },
-      stats: { mpCost: 4 },
+      effects: { minFireDamage: 2, maxFireDamage: 4 },
+      stats: { mpCost: 4, castTime: 500 },
       requirements: { charClass: "mage" },
     },
     quake: {
@@ -22,7 +22,7 @@ export const spellItems = {
       texture: "scroll-green",
       effects: { minEarthDamage: 4, maxEarthDamage: 5 },
       buffs: { stun: 1 },
-      stats: { mpCost: 5 },
+      stats: { mpCost: 5, castTime: 500 },
       requirements: { charClass: "mage" },
     },
     waterball: {
@@ -32,9 +32,9 @@ export const spellItems = {
       base: "waterball",
       slot: "spell",
       texture: "scroll-blue",
-      effects: { minWaterDamage: 2, maxWaterDamage: 3 },
+      effects: { minWaterDamage: 3, maxWaterDamage: 4 },
       buffs: { slow: 1 },
-      stats: { mpCost: 4 },
+      stats: { mpCost: 4, castTime: 500 },
       requirements: { charClass: "mage" },
     },
     waterSpit: {
@@ -54,8 +54,8 @@ export const spellItems = {
       base: "lightball",
       slot: "spell",
       texture: "scroll-yellow",
-      effects: { minLightDamage: 0, maxLightDamage: 4 },
-      stats: { hpCost: 1 },
+      effects: { minLightDamage: 1, maxLightDamage: 5 },
+      stats: { hpCost: 1, castTime: 500 },
       requirements: { charClass: "cleric" },
     },
     holyball: {
@@ -66,7 +66,7 @@ export const spellItems = {
       slot: "spell",
       texture: "scroll-gray",
       effects: { minHolyDamage: 3, maxHolyDamage: 4 },
-      stats: { hpCost: 4 },
+      stats: { hpCost: 4, castTime: 500 },
       requirements: { charClass: "cleric" },
     },
     evasion: {

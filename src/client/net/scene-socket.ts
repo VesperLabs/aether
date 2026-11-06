@@ -18,6 +18,7 @@ import { playAudio } from "@/client/audio/play-audio";
 import { playCritShake, playHitImpact } from "@/client/views/hit-impact";
 import { playDrainRing } from "@/client/views/drain-ring";
 import type { DrainResource } from "@/rules/combat";
+import { beginCast, endCast, landCast } from "@/client/views/player-actions";
 import { playWindupRing, stopWindupRing } from "@/client/views/windup-ring";
 import { drawHitShapes } from "@/client/views/hit-shapes";
 import { playSpawnDissolve } from "@/client/views/dissolve";
@@ -230,6 +231,25 @@ export function bindSceneSocket(scene: SceneMain) {
       abilitySlot: abilitySlot ?? undefined,
       castAngle: castAngle ?? undefined,
     });
+  });
+
+  socket.on("playerCastStarted", ({ socketId, castMs }) => {
+    const p = getPlayer(scene, socketId);
+    if (p) beginCast(p, castMs);
+  });
+
+  socket.on("playerCastCancelled", ({ socketId }) => {
+    const p = getPlayer(scene, socketId);
+    if (!p) return;
+    endCast(p);
+    if (p.isHero) window.dispatchEvent(new CustomEvent("HERO_CAST_ENDED"));
+  });
+
+  socket.on("playerCastLanded", ({ socketId, abilitySlot, castAngle }) => {
+    const p = getPlayer(scene, socketId);
+    if (!p) return;
+    landCast(p, { abilitySlot, castAngle });
+    if (p.isHero) window.dispatchEvent(new CustomEvent("HERO_CAST_ENDED", { detail: abilitySlot }));
   });
 
   socket.on("npcAttack", ({ id, count, direction, castAngle }) => {

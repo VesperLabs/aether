@@ -106,13 +106,51 @@ describe("casting spells", () => {
     const { socket, player, events } = await login("mage");
     const mpCost = player.abilities[1].stats.mpCost;
 
-    socket.emit("castSpell", { abilitySlot: 1, castAngle: 0 });
-    socket.emit("castSpell", { abilitySlot: 1, castAngle: 0 });
-    await server.run(socket, 200);
+    socket.emit("startCast", { abilitySlot: 1 });
+    socket.emit("startCast", { abilitySlot: 1 });
+    await server.run(socket, 600);
 
     const mpPayments = events.modifyPlayerStat.filter((e) => e.type === "mp");
     expect(mpPayments).toEqual([expect.objectContaining({ amount: -mpCost })]);
     expect(player.state.lastCast.fireball).toBeGreaterThan(0);
+  });
+
+  it("a timed spell pays nothing until it lands, and only fires through startCast", async () => {
+    const { socket, player, events } = await login("mage");
+    socket.emit("castSpell", { abilitySlot: 1, castAngle: 0 });
+    socket.emit("startCast", { abilitySlot: 1 });
+    await server.run(socket, 300);
+    expect(events.modifyPlayerStat.filter((e) => e.type === "mp")).toHaveLength(0);
+    await server.run(socket, 300);
+    expect(events.modifyPlayerStat.filter((e) => e.type === "mp")).toHaveLength(1);
+    expect(player.pendingCast).toBeUndefined();
+  });
+
+  it("moving does not cancel a cast, but a moving player cannot start one", async () => {
+    const { socket, player, events } = await login("mage");
+    player.vx = 50;
+    socket.emit("startCast", { abilitySlot: 1 });
+    await server.run(socket, 100);
+    expect(player.pendingCast).toBeUndefined();
+
+    player.vx = 0;
+    socket.emit("startCast", { abilitySlot: 1 });
+    await server.run(socket, 100);
+    player.vx = 50;
+    await server.run(socket, 500);
+    expect(events.modifyPlayerStat.filter((e) => e.type === "mp")).toHaveLength(1);
+  });
+
+  it("cancelling a cast costs nothing and starts no cooldown", async () => {
+    const { socket, player, events } = await login("mage");
+    socket.emit("startCast", { abilitySlot: 1 });
+    await server.run(socket, 200);
+    expect(player.pendingCast).toBeDefined();
+    socket.emit("cancelCast");
+    await server.run(socket, 600);
+    expect(player.pendingCast).toBeUndefined();
+    expect(events.modifyPlayerStat.filter((e) => e.type === "mp")).toHaveLength(0);
+    expect(player.state.lastCast.fireball).toBeFalsy();
   });
 
   it("a rogue casting stealth becomes stealthed", async () => {
@@ -154,8 +192,8 @@ describe("casting spells", () => {
   it("does not cast a spell the player cannot afford", async () => {
     const { socket, player, events } = await login("mage");
     player.stats.mp = 0;
-    socket.emit("castSpell", { abilitySlot: 1, castAngle: 0 });
-    await server.run(socket, 200);
+    socket.emit("startCast", { abilitySlot: 1 });
+    await server.run(socket, 600);
     expect(events.modifyPlayerStat.filter((e) => e.type === "mp")).toHaveLength(0);
   });
 
@@ -168,7 +206,7 @@ describe("casting spells", () => {
       step: () => {
         place();
         player.stats.mp = player.stats.maxMp;
-        socket.emit("castSpell", { abilitySlot: 1, castAngle: 0 });
+        socket.emit("startCast", { abilitySlot: 1 });
       },
       everyMs: 150,
     });

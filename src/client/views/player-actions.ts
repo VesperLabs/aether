@@ -1,13 +1,16 @@
 import { distanceTo } from "@/rules/world";
-import { getAbilityCosts, hasStaminaFor } from "@/rules/combat";
+import { getAbilityCosts, getCastAction, hasStaminaFor } from "@/rules/combat";
 import type { AbilitySlot } from "@/rules/spells";
 import { getSpinDirection } from "@/client/input/spin-direction";
 import type { Player } from "./player";
 import { Spell } from "./spell";
 import { playAttackLunge } from "./hit-impact";
+import { playWindupRing, stopWindupRing } from "./windup-ring";
 import type { LootItem } from "./loot-item";
 
 const PLAYER_GRAB_RANGE = 32;
+/** How long an instant cast holds the attack frame, in ms. */
+const CAST_POSE_MS = 300;
 
 /** What an attack or a cast needs from the server message that triggered it. */
 export interface CastArgs {
@@ -63,6 +66,33 @@ export function doAttack(player: Player, { count, castAngle, direction, abilityS
   );
 }
 
+function holdCastPose(player: Player, ms: number) {
+  const action = getCastAction(player);
+  if (action) player.castPose = { action, until: Date.now() + ms };
+}
+
+/** A timed spell began: the attack frame holds and the ring fills until it lands. */
+export function beginCast(player: Player, castMs: number) {
+  player.isCasting = true;
+  holdCastPose(player, castMs);
+  playWindupRing(player, castMs, "cast");
+}
+
+/** The timed spell stopped, by landing or being cancelled. */
+export function endCast(player: Player) {
+  player.isCasting = false;
+  player.castPose = undefined;
+  stopWindupRing(player);
+}
+
+/** A timed spell fired. The server has charged for it, so this only draws it. */
+export function landCast(player: Player, { abilitySlot, castAngle }: CastArgs) {
+  endCast(player);
+  holdCastPose(player, CAST_POSE_MS);
+  const ability = player.getAbilityDetails(abilitySlot);
+  player.scene.add.existing(new Spell(player.scene, { ...ability, castAngle, caster: player }));
+}
+
 export function doCast(player: Player, { abilitySlot, castAngle }: CastArgs) {
   const { isHero } = player || {};
   const ability = player.getAbilityDetails(abilitySlot);
@@ -72,6 +102,7 @@ export function doCast(player: Player, { abilitySlot, castAngle }: CastArgs) {
     if (player?.hasBuff("stun")) return;
     player.scene.socket.emit("castSpell", { abilitySlot, castAngle });
   }
+  holdCastPose(player, CAST_POSE_MS);
   /* Lunges dash the caster: the hero moves itself, others just leave the trail */
   if (ability?.isLunge) {
     player.state.lungeAt = Date.now();
