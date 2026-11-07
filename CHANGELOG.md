@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.14.0](https://github.com/VesperLabs/aether/compare/v0.13.0...v0.14.0) (2026-11-07)
+
+
+### Features
+
+* rework the sprite lab panel layout ([#245](https://github.com/VesperLabs/aether/issues/245)) ([6b75ccd](https://github.com/VesperLabs/aether/commit/6b75ccd69de7a50f36a6bb05a5a47b38a740d233))
+
+
+### Bug Fixes
+
+* release ability keys let go while Shift is held ([0f91047](https://github.com/VesperLabs/aether/commit/0f910475a552259e91e87f1c8777348057383d16))
+
 ## [0.13.0](https://github.com/VesperLabs/aether/compare/v0.12.0...v0.13.0) (2026-11-06)
 
 
