@@ -2,6 +2,7 @@ import type { ComponentProps } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
 import { Box, Flex } from "theme-ui";
 import { getModalScale } from "./hud-scale";
+import { Icon } from "./icon";
 import { GILDED_CORNERS } from "./modal-gilding";
 import { MODAL_ATTR } from "./shake-modal";
 
@@ -75,7 +76,11 @@ const edgeCap = (edge: "top" | "bottom"): ThemeUIStyleObject => {
   };
 };
 
-type HeaderProps = FlexProps & { cap?: boolean; titleRule?: boolean };
+type HeaderProps = FlexProps & { cap?: boolean; titleRule?: boolean; icon?: string };
+
+/* The login's tabs at its 1.2x boost, so every modal's title reads like them on screen. */
+const HEADER_FONT_SIZE = 2;
+const HEADER_ICON_SIZE = 26;
 
 /* A groove under the title: a dark line over a light one, fading out at both ends. */
 const TITLE_RULE: ThemeUIStyleObject = {
@@ -89,7 +94,14 @@ const TITLE_RULE: ThemeUIStyleObject = {
   pointerEvents: "none",
 };
 
-const ModalHeader = ({ sx, cap = true, titleRule = true, children, ...props }: HeaderProps) => {
+const ModalHeader = ({
+  sx,
+  cap = true,
+  titleRule = true,
+  icon,
+  children,
+  ...props
+}: HeaderProps) => {
   return (
     <Flex
       className="modal-header"
@@ -100,7 +112,7 @@ const ModalHeader = ({ sx, cap = true, titleRule = true, children, ...props }: H
         pt: 2,
         pb: 1,
         minHeight: 32,
-        fontSize: 1,
+        fontSize: HEADER_FONT_SIZE,
         gap: 1,
         borderRadius: 3,
         flex: "none",
@@ -117,6 +129,7 @@ const ModalHeader = ({ sx, cap = true, titleRule = true, children, ...props }: H
     >
       {cap && <Box sx={edgeCap("top")} />}
       {titleRule && <Box sx={TITLE_RULE} />}
+      {icon && <Icon icon={icon} size={HEADER_ICON_SIZE} />}
       {children}
     </Flex>
   );
@@ -144,7 +157,7 @@ const ACTIVE_TAB: ThemeUIStyleObject = {
   "&:first-of-type::before": { display: "none" },
 };
 
-const ModalTab = ({ active, sx, ...props }: FlexProps & { active: boolean }) => {
+const ModalTab = ({ active, sx, ...props }: HeaderProps & { active: boolean }) => {
   return (
     <ModalHeader
       as="button"

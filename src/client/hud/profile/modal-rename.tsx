@@ -1,7 +1,7 @@
 import { useEffect, useEffectEvent, useState } from "react";
 import { useAppContext } from "@/client/hud/app/context";
 import { cleanUserName } from "@/rules/character";
-import { Modal, KeyboardButton, Icon, Input, Portal } from "@/ui";
+import { Modal, KeyboardButton, Input, Portal } from "@/ui";
 
 /** Renames your character in its own modal, out of the scrolling menu stack. */
 export const ModalRename = ({ userName, onClose }: { userName: string; onClose: () => void }) => {
@@ -30,10 +30,7 @@ export const ModalRename = ({ userName, onClose }: { userName: string; onClose: 
     <Portal container={document.body}>
       <Modal.Overlay sx={{ backgroundColor: "shadow.50" }} onClick={onClose} />
       <Modal zoom={zoom} bottomOffset={bottomOffset}>
-        <Modal.Header>
-          <Icon icon="./assets/icons/pen.png" size={24} />
-          Your Name
-        </Modal.Header>
+        <Modal.Header icon="./assets/icons/pen.png">Your Name</Modal.Header>
         <Modal.Body>
           <form
             onSubmit={(e) => {

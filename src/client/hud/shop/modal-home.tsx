@@ -1,5 +1,5 @@
 import { useAppContext } from "@/client/hud/app/context";
-import { Modal, KeyboardButton, Icon, Box, Text } from "@/ui";
+import { Modal, KeyboardButton, Box, Text } from "@/ui";
 
 export const ModalHome = () => {
   const { zoom, bottomOffset, homeModal: keeper, setHomeModal, socket } = useAppContext();
@@ -8,10 +8,7 @@ export const ModalHome = () => {
     <>
       <Modal.Overlay sx={{ backgroundColor: "shadow.50" }} />
       <Modal zoom={zoom} bottomOffset={bottomOffset}>
-        <Modal.Header sx={{ paddingLeft: 34 }}>
-          <Icon icon={icon} size={42} sx={{ position: "absolute", left: -8 }} />
-          Please confirm
-        </Modal.Header>
+        <Modal.Header icon={icon}>Please confirm</Modal.Header>
         <Modal.Body>
           <Box sx={{ maxWidth: 300, whiteSpace: "normal", lineHeight: 1.5 }}>
             You are about to make{" "}

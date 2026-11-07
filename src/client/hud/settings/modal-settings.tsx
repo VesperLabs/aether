@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAppContext } from "@/client/hud/app/context";
-import { Box, Flex, Grid, Modal, KeyboardButton, Icon, isMobile } from "@/ui";
+import { Box, Flex, Grid, Modal, KeyboardButton, isMobile } from "@/ui";
 import { MusicCredits } from "./music-credits";
 import { UserSettingsForm } from "./user-settings-form";
 
@@ -42,9 +42,9 @@ export const ModalSettings: React.FC = () => {
                 key={name}
                 active={tab === name}
                 onClick={() => setTab(name)}
+                icon={"icon" in rest ? rest.icon : undefined}
                 sx={{ px: 3 }}
               >
-                {"icon" in rest && <Icon icon={rest.icon} size={22} />}
                 {label}
               </Modal.Tab>
             ))}

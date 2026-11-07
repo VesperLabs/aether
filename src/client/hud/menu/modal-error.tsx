@@ -1,5 +1,5 @@
 import { useAppContext } from "@/client/hud/app/context";
-import { Modal, KeyboardButton, Icon, Box } from "@/ui";
+import { Modal, KeyboardButton, Box } from "@/ui";
 
 export const ModalError: React.FC = () => {
   const { error, setError, zoom, bottomOffset } = useAppContext();
@@ -8,14 +8,7 @@ export const ModalError: React.FC = () => {
     <>
       <Modal.Overlay />
       <Modal zoom={zoom} bottomOffset={bottomOffset}>
-        <Modal.Header sx={{ paddingLeft: 34 }}>
-          <Icon
-            icon={"./assets/icons/danger.png"}
-            size={42}
-            sx={{ position: "absolute", left: -8 }}
-          />
-          {error?.title}
-        </Modal.Header>
+        <Modal.Header icon="./assets/icons/danger.png">{error?.title}</Modal.Header>
         <Modal.Body>
           <Box sx={{ maxWidth: 300, whiteSpace: "normal", lineHeight: 1.5 }}>
             {error?.description}
