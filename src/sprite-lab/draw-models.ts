@@ -1,10 +1,13 @@
-/** Image models the lab offers; the dev server refuses anything else. */
+/**
+ * Image models the lab offers; the dev server refuses anything else. Costs are Google's list price
+ * for one 1K image, the size the lab asks for, and leave out the input and any thinking tokens.
+ */
 export const DRAW_MODELS = [
-  { value: "gemini-3.1-flash-lite-image", label: "Nano Banana 2 Lite" },
-  { value: "gemini-2.5-flash-image", label: "Nano Banana" },
-  { value: "gemini-3.1-flash-image", label: "Nano Banana 2" },
+  { value: "gemini-3.1-flash-lite-image", label: "Nano Banana 2 Lite (~$0.03)" },
+  { value: "gemini-2.5-flash-image", label: "Nano Banana (~$0.04)" },
+  { value: "gemini-3.1-flash-image", label: "Nano Banana 2 (~$0.07)" },
   { value: "gemini-nano-banana-2.1", label: "Nano Banana 2.1" },
-  { value: "gemini-3-pro-image", label: "Nano Banana Pro" },
+  { value: "gemini-3-pro-image", label: "Nano Banana Pro (~$0.13)" },
 ];
 
 export const START_MODEL = "gemini-3.1-flash-image";

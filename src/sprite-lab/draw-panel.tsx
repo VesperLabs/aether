@@ -7,7 +7,7 @@ import { getCorePrompt } from "./core-prompts";
 import type { DrawPanelProps } from "./draw-panel-props";
 import { FramePreview } from "./frame-preview";
 import { FrameEditor } from "./frame-editor";
-import { blankCanvas, cropFrame, paintFrameStack, useFrameStack } from "./frame-stack";
+import { blankCanvas, cropFrame, paintFrameStack, useFrameStack, keepRedrawn } from "./frame-stack";
 import { GenerationList } from "./generation-list";
 import {
   copyGeneration,
@@ -49,12 +49,10 @@ export const DrawPanel = ({
   frame,
   model,
   prompt,
-  core,
   promptTab,
   wearableSheet,
   onModel,
   onPrompt,
-  onCore,
   onPromptTab,
   onWearableSheet,
   layers,
@@ -68,8 +66,7 @@ export const DrawPanel = ({
   onClose,
 }: DrawPanelProps) => {
   const isLayer = target.src !== base.src;
-  const defaultCore = getCorePrompt(promptTab).prompt;
-  const shownCore = core || defaultCore;
+  const core = getCorePrompt(promptTab).prompt;
   const [error, setError] = useState("");
   const [targetImage, setTargetImage] = useState<HTMLCanvasElement | null>(null);
   const [result, setResult] = useState<Result>();
@@ -142,7 +139,9 @@ export const DrawPanel = ({
     ctx: CanvasRenderingContext2D,
     drawTarget: (ctx: CanvasRenderingContext2D) => void,
   ) => {
-    if (stack.length) paintFrameStack(ctx, stack, frame, cell, target.src, drawTarget);
+    const shownStack =
+      promptTab === "quarterTurn" ? keepRedrawn(stack, frame, target.src, pending) : stack;
+    if (shownStack.length) paintFrameStack(ctx, shownStack, frame, cell, target.src, drawTarget);
     else drawTarget(ctx);
   };
 
@@ -233,7 +232,7 @@ export const DrawPanel = ({
     try {
       const fullPrompt = wearable
         ? fillWearablePrompt(frame, prompt, wearable.layer)
-        : fillPrompt(shownCore, frame, prompt);
+        : fillPrompt(core, frame, prompt);
       const drawn = await drawFrame({
         target: targetImage,
         frame,
@@ -283,12 +282,9 @@ export const DrawPanel = ({
           <Select label="Model" value={model} options={DRAW_MODELS} onChange={onModel} />
           <PromptFields
             core={core}
-            shownCore={shownCore}
-            defaultCore={defaultCore}
             tab={promptTab}
             onTab={onPromptTab}
             prompt={prompt}
-            onCore={onCore}
             onPrompt={onPrompt}
           />
           <Button

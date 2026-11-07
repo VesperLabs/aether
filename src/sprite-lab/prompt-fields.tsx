@@ -2,21 +2,21 @@ import type { ReactNode } from "react";
 import { Textarea } from "theme-ui";
 import { Box, Button, Flex, Text } from "@/ui";
 import { CORE_PROMPTS, type CorePromptId } from "./core-prompts";
-import { IconButton } from "./icon-button";
+import { SheetThumb } from "./sheet-thumb";
 
-const HEAD_SIZE = 20;
 const TAB_SIZE = 34;
 const TAB_RADIUS = 8;
-/** The human atlas's first downward frame, moved so only the head fits in the tab. */
-const HEAD_SX = {
-  width: HEAD_SIZE,
-  height: HEAD_SIZE,
-  background: "url(./assets/atlas/human.png) -30px -175px",
-  imageRendering: "pixelated",
-} as const;
-
 const TAB_ICONS: Record<CorePromptId, ReactNode> = {
-  human: <Box sx={HEAD_SX} />,
+  human: <SheetThumb texture="human" />,
+  /* No sheet shows a diagonal, so the arrow says what the tab does to the sprite. */
+  quarterTurn: (
+    <Box sx={{ position: "relative" }}>
+      <SheetThumb texture="human" />
+      <Text sx={{ position: "absolute", right: -1, bottom: -1, fontSize: 0, lineHeight: 1 }}>
+        ↗️
+      </Text>
+    </Box>
+  ),
 };
 
 const TEXTAREA_SX = {
@@ -99,41 +99,31 @@ const PromptTabs = ({ tab, onTab }: { tab: CorePromptId; onTab: (tab: CorePrompt
   </Flex>
 );
 
-/** The two prompt boxes: the core prompt, then what's added for this draw. */
+/** The two prompt boxes: the locked core prompt, then what's added for this draw. */
 export const PromptFields = ({
   core,
-  shownCore,
-  defaultCore,
   prompt,
   tab,
   onTab,
-  onCore,
   onPrompt,
 }: {
-  /** The edited core prompt; empty when it's the default. */
   core: string;
-  shownCore: string;
-  defaultCore: string;
   prompt: string;
   tab: CorePromptId;
   onTab: (tab: CorePromptId) => void;
-  onCore: (core: string) => void;
   onPrompt: (prompt: string) => void;
 }) => (
   <>
-    <Flex sx={{ alignItems: "center", justifyContent: "space-between", minHeight: 26 }}>
-      <Text sx={{ fontSize: 1, opacity: 0.5 }}>Core prompt</Text>
-      {core && <IconButton label="Reset core prompt" icon="↩️" onClick={() => onCore("")} />}
-    </Flex>
+    <Text sx={{ fontSize: 1, opacity: 0.5 }}>Core prompt</Text>
     <Box sx={{ position: "relative", flexShrink: 0 }}>
       <PromptTabs tab={tab} onTab={onTab} />
       <Textarea
         aria-label="Core prompt"
         rows={6}
-        value={shownCore}
-        onChange={(e) => onCore(e.target.value === defaultCore ? "" : e.target.value)}
+        value={core}
+        readOnly
         variant="forms.input"
-        sx={TEXTAREA_SX}
+        sx={{ ...TEXTAREA_SX, opacity: 0.7 }}
       />
     </Box>
     <AdditionsField value={prompt} onChange={onPrompt} />

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Box, Button, Flex, Select, Text, ThemeUIProvider, theme } from "@/ui";
+import { Box, Button, Flex, Select, Text, TextDivider, ThemeUIProvider, theme } from "@/ui";
 import type { Theme } from "theme-ui";
 import { CHECKER_SX } from "./checker";
 import { DrawPanel } from "./draw-panel";
@@ -11,6 +11,7 @@ import { usePendingCandidates } from "./use-pending-candidates";
 import { parseLabState, serializeLabState, ZOOMS, type ActiveDraw, type Frame } from "./lab-state";
 import { LayerRow, SheetRow } from "./layer-row";
 import { getFrameAtPoint, SheetCanvas, type DrawnSheet } from "./sheet-canvas";
+import { getSheetOption } from "./sheet-thumb";
 import {
   ANIMATED_SHEETS,
   BASE_SHEETS,
@@ -21,11 +22,11 @@ import {
 } from "./sheets";
 import { WeaponPanel } from "./weapon-panel";
 
-const ATLAS_OPTIONS = BASE_SHEETS.map(({ texture }) => ({ value: texture, label: texture }));
+const ATLAS_OPTIONS = BASE_SHEETS.map((sheet) => getSheetOption(sheet));
 
 const WEAPON_OPTIONS = [
   { value: "", label: "No weapon" },
-  ...WEAPON_SHEETS.map(({ texture }) => ({ value: texture, label: texture })),
+  ...WEAPON_SHEETS.map((sheet) => getSheetOption(sheet)),
 ];
 
 const PANEL_WIDTH = 340;
@@ -98,6 +99,7 @@ export const App = () => {
           title={<Text sx={{ fontWeight: "bold" }}>Sprite Lab</Text>}
           width={PANEL_WIDTH}
           start={{ x: 16, y: 16 }}
+          overflowing
         >
           <Flex sx={{ gap: 1 }}>
             {ZOOMS.map((level) => (
@@ -152,12 +154,15 @@ export const App = () => {
               />
             ))}
           {isHuman && (
-            <Select
-              label="Weapon"
-              value={state.weapon}
-              options={WEAPON_OPTIONS}
-              onChange={(texture) => setState({ ...state, weapon: texture })}
-            />
+            <>
+              <TextDivider />
+              <Select
+                label="Weapon"
+                value={state.weapon}
+                options={WEAPON_OPTIONS}
+                onChange={(texture) => setState({ ...state, weapon: texture })}
+              />
+            </>
           )}
         </FloatingPanel>
         <Box sx={{ flex: 1, minWidth: 0, overflow: "auto", ml: PANEL_WIDTH + 16 }}>
@@ -187,15 +192,11 @@ export const App = () => {
             model={state.model}
             prompt={state.prompt}
             onModel={(model) => setState({ ...state, model })}
-            core={state.cores[state.promptTab] ?? ""}
             promptTab={state.promptTab}
             onPromptTab={(promptTab) => setState({ ...state, promptTab })}
             wearableSheet={state.wearableSheet}
             onWearableSheet={(wearableSheet) => setState({ ...state, wearableSheet })}
             onPrompt={(prompt) => setState({ ...state, prompt })}
-            onCore={(core) =>
-              setState({ ...state, cores: { ...state.cores, [state.promptTab]: core } })
-            }
             drawingKeys={draws.map(({ src, frame }) => getFrameKey(src, frame))}
             onDrawStart={addDraw}
             onDrawEnd={removeDraw}

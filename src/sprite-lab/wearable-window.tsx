@@ -9,6 +9,7 @@ import { cropFrame, paintFrameStack, withPending, type StackedSheet } from "./fr
 import { getThumbSx } from "./generation-list";
 import { AdditionsField } from "./prompt-fields";
 import type { Frame } from "./lab-state";
+import { getSheetOption } from "./sheet-thumb";
 import { fitsGender, getLayerSheets, HUMAN_LAYERS, type HumanLayer, type Sheet } from "./sheets";
 import type { PendingCandidate } from "./use-pending-candidates";
 import { WINDOW_WIDTH } from "./window-layout";
@@ -201,7 +202,7 @@ export const WearableWindow = ({
           <Select
             label="Clothing to copy"
             value={sheet.texture}
-            options={options.map(({ texture }) => ({ value: texture, label: texture }))}
+            options={options.map((option) => getSheetOption(option))}
             onChange={onSheet}
           />
           <Select label="Model" value={model} options={DRAW_MODELS} onChange={onModel} />

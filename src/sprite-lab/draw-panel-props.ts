@@ -15,12 +15,9 @@ export interface DrawPanelProps {
   model: string;
   prompt: string;
   onModel: (model: string) => void;
-  /** The open tab's core prompt, when edited. */
-  core: string;
   promptTab: CorePromptId;
   onPrompt: (prompt: string) => void;
   wearableSheet: string;
-  onCore: (core: string) => void;
   onPromptTab: (tab: CorePromptId) => void;
   onWearableSheet: (texture: string) => void;
   /** The character's worn sheets, shown around the edited one. */

@@ -29,8 +29,6 @@ export interface LabState {
   prompt: string;
   /** Which core prompt tab is open. */
   promptTab: CorePromptId;
-  /** Each tab's core prompt, when edited; missing or empty uses its default. */
-  cores: Partial<Record<CorePromptId, string>>;
   /** The sheet a wearable copies; empty uses the one being edited. */
   wearableSheet: string;
   /** The weapon being placed; empty with the weapon panel closed. */
@@ -49,9 +47,6 @@ const startTexture = (layer: HumanLayer) => START_TEXTURES[layer] ?? "";
 
 const START_ATLAS = "human";
 const START_ZOOM = 2;
-
-/** The first tab keeps the plain `core` param, so older links still open with their edits. */
-const getCoreParam = (id: CorePromptId) => (id === START_CORE_PROMPT ? "core" : `core-${id}`);
 
 const parseFrame = (value: string | null): Frame | undefined => {
   const match = /^(\d+),(\d+)$/.exec(value ?? "");
@@ -74,12 +69,6 @@ export const parseLabState = (search: string): LabState => {
     model: DRAW_MODELS.some(({ value }) => value === model) ? (model as string) : START_MODEL,
     prompt: params.get("prompt") ?? "",
     promptTab: CORE_PROMPTS.find(({ id }) => id === params.get("tab"))?.id ?? START_CORE_PROMPT,
-    cores: Object.fromEntries(
-      CORE_PROMPTS.flatMap(({ id }) => {
-        const edited = params.get(getCoreParam(id));
-        return edited ? [[id, edited]] : [];
-      }),
-    ),
     wearableSheet: params.get("wearable") ?? "",
     weapon: WEAPON_SHEETS.find(({ texture }) => texture === params.get("weapon"))?.texture ?? "",
     layers: Object.fromEntries(
@@ -104,7 +93,6 @@ export const serializeLabState = ({
   model,
   prompt,
   promptTab,
-  cores,
   wearableSheet,
   weapon,
   layers,
@@ -118,10 +106,6 @@ export const serializeLabState = ({
   if (model !== START_MODEL) params.set("model", model);
   if (prompt) params.set("prompt", prompt);
   if (promptTab !== START_CORE_PROMPT) params.set("tab", promptTab);
-  CORE_PROMPTS.forEach(({ id }) => {
-    const edited = cores[id];
-    if (edited) params.set(getCoreParam(id), edited);
-  });
   if (wearableSheet) params.set("wearable", wearableSheet);
   if (weapon) params.set("weapon", weapon);
   HUMAN_LAYERS.forEach((layer) => {

@@ -1,4 +1,11 @@
-import { useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent } from "react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type ReactNode,
+} from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
 import { Box, Flex, Text } from "theme-ui";
 import { CONTROL_GOLD } from "./modal-gilding";
@@ -22,6 +29,8 @@ const LIST_SX: ThemeUIStyleObject = {
 export interface SelectOption {
   value: string;
   label: string;
+  /** Shown before the label in the open list. */
+  icon?: ReactNode;
 }
 
 /** A dropdown in the game's look. Arrow keys step through the options without opening it. */
@@ -118,7 +127,7 @@ export const Select = ({
           {options.map((option) => {
             const selected = option.value === value;
             return (
-              <Box
+              <Flex
                 key={option.value}
                 ref={selected ? selectedRef : undefined}
                 role="option"
@@ -128,6 +137,8 @@ export const Select = ({
                   setOpen(false);
                 }}
                 sx={{
+                  alignItems: "center",
+                  gap: 2,
                   px: 2,
                   py: 1,
                   fontSize: 1,
@@ -138,8 +149,9 @@ export const Select = ({
                   "&:hover": { bg: "shadow.25" },
                 }}
               >
+                {option.icon}
                 {option.label}
-              </Box>
+              </Flex>
             );
           })}
         </Box>

@@ -1,6 +1,7 @@
 import { Box, Flex, Select, Text, type SelectOption } from "@/ui";
 import { IconButton } from "./icon-button";
 import { PENDING_COLOR } from "./sheet-canvas";
+import { getSheetOption } from "./sheet-thumb";
 import { fitsGender, getLayerSheets, type HumanLayer } from "./sheets";
 
 const PENDING_DOT = 6;
@@ -79,6 +80,6 @@ export const LayerRow = ({
     value={texture}
     options={getLayerSheets(layer)
       .filter(({ texture: option }) => fitsGender(option, gender))
-      .map((sheet) => ({ value: sheet.texture, label: sheet.texture.replace(/^human-/, "") }))}
+      .map((sheet) => getSheetOption(sheet, sheet.texture.replace(/^human-/, "")))}
   />
 );
