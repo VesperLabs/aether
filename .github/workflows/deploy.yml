@@ -1,0 +1,67 @@
+name: Deploy
+
+# Deploys main: Fly runs the game server; Render serves the wiki and static
+# assets (saves Fly bandwidth). Called by release.yml after each release, or
+# run by hand (Actions → Deploy) to redeploy without releasing.
+on:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sha:
+    name: Resolve main
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.sha.outputs.sha }}
+    steps:
+      - id: sha
+        run: echo "sha=$(gh api repos/${{ github.repository }}/commits/main --jq .sha)" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  fly:
+    name: Deploy game (Fly)
+    needs: sha
+    runs-on: ubuntu-latest
+    concurrency: deploy-fly
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.sha.outputs.sha }}
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: flyctl deploy --remote-only --build-arg GIT_SHA=${{ needs.sha.outputs.sha }}
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+  render:
+    name: Deploy wiki + assets (Render)
+    needs: sha
+    runs-on: ubuntu-latest
+    concurrency: deploy-render
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.sha.outputs.sha }}
+          fetch-depth: 0
+      # Render only serves the wiki and static assets. When deploying a release,
+      # skip it if nothing it serves changed since the previous release. A
+      # manual redeploy of an untagged commit always deploys.
+      - id: changes
+        run: |
+          PREV=""
+          if git describe --exact-match --tags HEAD >/dev/null 2>&1; then
+            PREV=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || true)
+          fi
+          if [ -n "$PREV" ] && git diff --quiet "$PREV" HEAD -- public src package.json package-lock.json render.yaml scripts; then
+            echo "render=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "render=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.changes.outputs.render == 'true'
+        run: curl -fsS -X POST "${RENDER_DEPLOY_HOOK}&ref=${SHA}"
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+          SHA: ${{ needs.sha.outputs.sha }}
