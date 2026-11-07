@@ -14,7 +14,6 @@ import { LOOT_TARGET_ID } from "@/client/hud/inventory/flying-loot";
 import { AbilityButtons } from "@/client/hud/abilities/ability-buttons";
 import { ChatButton } from "@/client/hud/chat/chat-button";
 import { MenuKeeper } from "@/client/hud/shop/menu-keeper";
-import { MenuProfile } from "@/client/hud/profile/menu-profile";
 import { MenuQuests } from "@/client/hud/quests/menu-quests";
 import { MessageBox } from "@/client/hud/chat/message-box";
 import { useAppContext } from "@/client/hud/app/context";
@@ -70,7 +69,6 @@ export const MenuBar = () => {
     equipment: tabEquipment,
     bag: bagState.length > 0,
     inventory: tabInventory,
-    profile: tabProfile,
     quests: tabQuests,
     stats: tabStats,
   });
@@ -175,9 +173,6 @@ export const MenuBar = () => {
             isOpen={tabInventory}
             setIsOpen={setTabInventory}
           />
-        </Box>
-        <Box sx={{ pointerEvents: "all", order: orderOf("profile") }}>
-          <MenuProfile player={hero} isOpen={tabProfile} setIsOpen={setTabProfile} />
         </Box>
         <Box sx={{ pointerEvents: "all", order: orderOf("quests") }}>
           <MenuQuests player={hero} isOpen={tabQuests} setIsOpen={setTabQuests} />

@@ -14,7 +14,7 @@ import { loadSheet } from "./sprite-sheet";
 import { getWalkFrameName, getWalkFrameRect, useWalkCycle, type WalkPose } from "./walk-cycle";
 
 const FULL_CANVAS_SIZE = 160;
-const MIN_CANVAS_SIZE = 100;
+export const MIN_CANVAS_SIZE = 100;
 
 const PLAYER_RENDER_CANVAS_STYLE: CSSProperties = {
   zIndex: 0,
@@ -51,7 +51,7 @@ export interface RenderablePlayer {
 type LookPart = { slot: string; texture?: string; tint?: string };
 
 /** Draws the character's layers, back to front, in one go so it never shows half-drawn. */
-const drawLayers = (
+export const drawLayers = (
   canvas: HTMLCanvasElement,
   assets: PlayerAsset[],
   layers: (HTMLCanvasElement | null)[],
@@ -173,7 +173,7 @@ const getObscuredKeys = ({
   return filteredSlots;
 };
 
-const getPlayerEquipmentAssets = ({
+export const getPlayerEquipmentAssets = ({
   player,
   filteredSlots = [],
   shadow = false,
