@@ -10,7 +10,13 @@ import { ModalSign } from "@/client/hud/menu/modal-sign";
 import { MenuBar } from "@/client/hud/menu/menu-bar";
 import { TopRightBar } from "@/client/hud/app/top-right-bar";
 import { ModalHome } from "@/client/hud/shop/modal-home";
-import { ThemeUIProvider, Box, useViewportSizeEffect, ZoomProvider } from "@/ui";
+import {
+  ThemeUIProvider,
+  Box,
+  useViewportSizeEffect,
+  ZoomProvider,
+  KeepPageStillContext,
+} from "@/ui";
 import { getHudZoom } from "./hud-zoom";
 import "react-tooltip/dist/react-tooltip.css";
 import type { Theme } from "theme-ui";
@@ -311,31 +317,34 @@ export function App({ socket, peer, debug, game }: AppProps) {
         }}
       >
         <ZoomProvider value={Number(zoom) || 1.25}>
-          <LoginBackdrop isLoggedIn={isLoggedIn} hasError={!!error} />
-          <VideoFrame />
-          {isLoggedIn && tabSettings && <ModalSettings />}
-          {isLoggedIn && tabSocial && <ModalSocial />}
-          {isLoggedIn && (
-            <Box
-              id={HUD_CONTAINER_ID}
-              sx={{
-                height: "100%",
-                pointerEvents: "none",
-                opacity: isWorldReady ? 1 : 0,
-                transition: `opacity ${WORLD_REVEAL_MS}ms ease-in-out`,
-              }}
-            >
-              {hero?.state?.isDead && <ModalRespawn />}
-              {dropItem && <ModalDropAmount />}
-              {sign && <ModalSign />}
-              {homeModal?.profile && <ModalHome />}
-              <MenuGlobalKeys />
-              <MenuHud />
-              <MenuBar />
-              <TopRightBar />
-              <FlyingLoot />
-            </Box>
-          )}
+          {/* The game's screen never scrolls, so focusing a field must not move it */}
+          <KeepPageStillContext value>
+            <LoginBackdrop isLoggedIn={isLoggedIn} hasError={!!error} />
+            <VideoFrame />
+            {isLoggedIn && tabSettings && <ModalSettings />}
+            {isLoggedIn && tabSocial && <ModalSocial />}
+            {isLoggedIn && (
+              <Box
+                id={HUD_CONTAINER_ID}
+                sx={{
+                  height: "100%",
+                  pointerEvents: "none",
+                  opacity: isWorldReady ? 1 : 0,
+                  transition: `opacity ${WORLD_REVEAL_MS}ms ease-in-out`,
+                }}
+              >
+                {hero?.state?.isDead && <ModalRespawn />}
+                {dropItem && <ModalDropAmount />}
+                {sign && <ModalSign />}
+                {homeModal?.profile && <ModalHome />}
+                <MenuGlobalKeys />
+                <MenuHud />
+                <MenuBar />
+                <TopRightBar />
+                <FlyingLoot />
+              </Box>
+            )}
+          </KeepPageStillContext>
         </ZoomProvider>
       </AppContext.Provider>
     </ThemeUIProvider>
