@@ -1,0 +1,26 @@
+name: Release now
+
+# Manual: Actions → "Release now" → Run workflow. Asks GitHub to merge the open
+# release PR as soon as it can; release.yml then tags, releases and deploys.
+# Uses the PAT because merges made with GITHUB_TOKEN don't trigger release.yml.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  merge:
+    name: Merge the release PR
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          PR=$(gh pr list --repo "$REPO" --state open --label "autorelease: pending" --json number --jq '.[0].number // empty')
+          if [ -z "$PR" ]; then
+            echo "::notice::No release PR open: nothing to release. Use Deploy to redeploy main."
+            exit 0
+          fi
+          gh pr merge "$PR" --repo "$REPO" --squash --auto
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+          REPO: ${{ github.repository }}
