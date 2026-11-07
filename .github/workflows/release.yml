@@ -32,12 +32,13 @@ jobs:
           manifest-file: .release-please-manifest.json
 
       - name: Merge the release PR
-        if: steps.release.outputs.pr
-        run: gh pr merge "$PR" --repo "$REPO" --squash
+        if: steps.release.outputs.release_created != 'true'
+        run: |
+          PR=$(gh pr list --repo "$REPO" --state open --label "autorelease: pending" --json number --jq '.[0].number // empty')
+          if [ -n "$PR" ]; then gh pr merge "$PR" --repo "$REPO" --squash; fi
         env:
           GH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           REPO: ${{ github.repository }}
-          PR: ${{ fromJSON(steps.release.outputs.pr).number }}
 
   deploy:
     needs: release
