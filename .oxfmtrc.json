@@ -7,6 +7,7 @@
   "ignorePatterns": [
     "package-lock.json",
     "public/**",
+    "src/sprite-lab/map-stamps.json",
     "dist/**",
     ".claude/**",
     "CHANGELOG.md",
