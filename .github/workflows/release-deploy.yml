@@ -1,9 +1,10 @@
 name: Release & deploy
 
 # Manual only: Actions → "Release & deploy" → Run workflow.
-# 1. release-please opens the release PR (fix: → patch, feat: → minor,
-#    feat!: / BREAKING CHANGE → major), the workflow merges it, then
-#    release-please runs again to tag and create the GitHub release.
+# 1. Merges the release PR that release-pr.yml keeps open (fix: → patch,
+#    feat: → minor, feat!: / BREAKING CHANGE → major), then release-please
+#    tags it and creates the GitHub release. With no release PR open, it skips
+#    straight to deploying.
 # 2. Deploys main: Fly runs the game server; Render serves the wiki and static
 #    assets (saves Fly bandwidth).
 on:
@@ -26,28 +27,37 @@ jobs:
     outputs:
       sha: ${{ steps.sha.outputs.sha }}
     steps:
-      # Opened with a PAT so the PR has a trusted author: PRs from
-      # github-actions[bot] wait for approval and their CI expires.
-      - id: pr
-        uses: googleapis/release-please-action@v4
-        with:
-          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
-          config-file: release-please-config.json
-          manifest-file: .release-please-manifest.json
-      # Merge the release PR ourselves (GITHUB_TOKEN pushes don't trigger
-      # other workflows), then tag it.
-      - if: steps.pr.outputs.pr
-        # Parsed in the shell: GitHub evaluates `env` even when the step is skipped, and
-        # `fromJSON` fails on the empty output of a run with nothing to release.
-        run: gh pr merge "$(jq -r .number <<< "$PR")" --squash --repo ${{ github.repository }}
+      # The PR has usually been open for a while, so GitHub has settled whether
+      # it is mergeable. If main was just pushed, wait for release-pr.yml to
+      # finish updating it and for GitHub to report it mergeable.
+      - id: merge
+        run: |
+          PR=$(gh pr list --repo "$REPO" --state open --label "autorelease: pending" --json number --jq '.[0].number // empty')
+          if [ -z "$PR" ]; then
+            echo "No release PR open: nothing to release."
+            exit 0
+          fi
+          for _ in $(seq 1 24); do
+            BUSY=$(gh run list --repo "$REPO" --workflow release-pr.yml --limit 5 --json status --jq '[.[] | select(.status != "completed")] | length')
+            STATE=$(gh pr view "$PR" --repo "$REPO" --json mergeStateStatus --jq .mergeStateStatus)
+            echo "release-pr runs in progress: $BUSY, PR #$PR merge state: $STATE"
+            if [ "$BUSY" = 0 ] && { [ "$STATE" = CLEAN ] || [ "$STATE" = UNSTABLE ] || [ "$STATE" = HAS_HOOKS ]; }; then
+              break
+            fi
+            sleep 5
+          done
+          gh pr merge "$PR" --squash --repo "$REPO"
+          echo "merged=true" >> "$GITHUB_OUTPUT"
         env:
           GH_TOKEN: ${{ github.token }}
-          PR: ${{ steps.pr.outputs.pr }}
-      - if: steps.pr.outputs.pr
+          REPO: ${{ github.repository }}
+      # Tag the merged PR and create the GitHub release.
+      - if: steps.merge.outputs.merged
         uses: googleapis/release-please-action@v4
         with:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
+          skip-github-pull-request: true
       - id: sha
         run: echo "sha=$(gh api repos/${{ github.repository }}/commits/main --jq .sha)" >> "$GITHUB_OUTPUT"
         env:
