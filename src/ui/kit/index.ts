@@ -19,6 +19,8 @@ export { shakeModal } from "./shake-modal";
 export { Slider } from "./slider";
 export { Switch } from "./switch";
 export { Select, type SelectOption } from "./select";
+export { ButtonGroup } from "./button-group";
+export { Field, FieldHint } from "./field";
 export { Panel } from "./panel";
 export { Toast } from "./toast";
 export type { ToastKind, ToastMessage } from "./toast";

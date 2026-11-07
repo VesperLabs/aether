@@ -9,7 +9,7 @@ export const PromptWindow = ({ children }: { children: ReactNode }) => {
   return (
     <>
       <Button
-        variant="wood"
+        variant="control"
         aria-expanded={open}
         onClick={() => setOpen(!open)}
         sx={{ flex: 1, justifyContent: "center" }}

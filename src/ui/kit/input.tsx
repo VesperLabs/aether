@@ -68,7 +68,6 @@ export const Input: FC<InputProps> = ({
         e.stopPropagation();
       }}
       sx={{
-        lineHeight: 1,
         pointerEvents: "all",
         ...sx,
       }}

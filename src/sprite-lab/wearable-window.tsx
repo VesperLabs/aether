@@ -163,7 +163,7 @@ export const WearableWindow = ({
   return (
     <>
       <Button
-        variant="wood"
+        variant="control"
         aria-expanded={open}
         onClick={() => setOpen(!open)}
         sx={{ flex: 1, justifyContent: "center" }}
@@ -208,7 +208,7 @@ export const WearableWindow = ({
           <Select label="Model" value={model} options={DRAW_MODELS} onChange={onModel} />
           <AdditionsField value={prompt} onChange={onPrompt} />
           <Button
-            variant="wood"
+            variant="control"
             disabled={drawing || !worn || !hands}
             onClick={() =>
               views && worn && hands && onDraw({ body, views, wornViews: worn, hands, layer })

@@ -288,7 +288,7 @@ export const DrawPanel = ({
             onPrompt={onPrompt}
           />
           <Button
-            variant="wood"
+            variant="control"
             disabled={drawing || !targetImage}
             onClick={() => handleDraw()}
             sx={{ justifyContent: "center", flexShrink: 0 }}

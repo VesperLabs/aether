@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Button, Flex, loadSheet, Text } from "@/ui";
+import { ButtonGroup, Field, FieldHint, Flex, loadSheet, Text } from "@/ui";
 import { FloatingPanel } from "./floating-panel";
 import { FramePreview } from "./frame-preview";
 import { useFrameStack } from "./frame-stack";
@@ -96,7 +96,7 @@ export const WeaponPanel = ({
       start={START_POSITION}
       onClose={onClose}
     >
-      <Text sx={{ fontSize: 0, opacity: 0.5 }}>{name ?? "This frame has no weapon"}</Text>
+      <FieldHint>{name ?? "This frame has no weapon"}</FieldHint>
       {pose && (
         <>
           <FramePreview
@@ -114,18 +114,14 @@ export const WeaponPanel = ({
               })
             }
           />
-          <Flex sx={{ gap: 1 }}>
-            {HANDS.map((option) => (
-              <Button
-                key={option}
-                variant="menu"
-                className={option === hand ? "active" : ""}
-                onClick={() => setPicked({ name, hand: option })}
-              >
-                {option} hand
-              </Button>
-            ))}
-          </Flex>
+          <Field label="Hand" layout="row">
+            <ButtonGroup
+              label="Hand"
+              value={hand}
+              onChange={(option) => setPicked({ name, hand: option })}
+              options={HANDS.map((option) => ({ value: option, label: option }))}
+            />
+          </Field>
           <Flex sx={{ gap: 1, justifyContent: "center" }}>
             {ARROWS.map(({ label, icon, dx, dy }) => (
               <IconButton key={label} label={label} icon={icon} onClick={() => move(dx, dy)} />

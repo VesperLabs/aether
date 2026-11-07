@@ -1,0 +1,16 @@
+[
+  {
+    "id": "bush",
+    "description": "bush",
+    "width": 1,
+    "height": 1,
+    "layers": {
+      "Shadows": [
+        3090
+      ],
+      "Overlay": [
+        676
+      ]
+    }
+  }
+]

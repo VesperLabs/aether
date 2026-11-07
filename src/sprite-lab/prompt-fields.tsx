@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Textarea } from "theme-ui";
-import { Box, Button, Flex, Text } from "@/ui";
+import { Box, Button, Field, Flex, Text } from "@/ui";
 import { CORE_PROMPTS, type CorePromptId } from "./core-prompts";
 import { SheetThumb } from "./sheet-thumb";
 
@@ -25,7 +25,6 @@ const TEXTAREA_SX = {
   resize: "vertical",
   /* Theme UI grows textareas to fit their text, which would ignore `rows`. */
   fieldSizing: "fixed",
-  lineHeight: 1.25,
   flexShrink: 0,
 } as const;
 
@@ -38,16 +37,17 @@ export const AdditionsField = ({
   onChange: (value: string) => void;
 }) => (
   <>
-    <Text sx={{ fontSize: 1, opacity: 0.5 }}>Your additions</Text>
-    <Textarea
-      aria-label="Your additions"
-      placeholder="Add a red scarf"
-      rows={4}
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      variant="forms.input"
-      sx={TEXTAREA_SX}
-    />
+    <Field label="Your additions">
+      <Textarea
+        aria-label="Your additions"
+        placeholder="Add a red scarf"
+        rows={4}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        variant="forms.input"
+        sx={TEXTAREA_SX}
+      />
+    </Field>
   </>
 );
 
@@ -66,7 +66,7 @@ const PromptTabs = ({ tab, onTab }: { tab: CorePromptId; onTab: (tab: CorePrompt
     {CORE_PROMPTS.map(({ id, label }) => (
       <Button
         key={id}
-        variant="wood"
+        variant="control"
         className={id === tab ? "active" : ""}
         aria-label={label}
         aria-pressed={id === tab}
@@ -114,18 +114,19 @@ export const PromptFields = ({
   onPrompt: (prompt: string) => void;
 }) => (
   <>
-    <Text sx={{ fontSize: 1, opacity: 0.5 }}>Core prompt</Text>
-    <Box sx={{ position: "relative", flexShrink: 0 }}>
-      <PromptTabs tab={tab} onTab={onTab} />
-      <Textarea
-        aria-label="Core prompt"
-        rows={6}
-        value={core}
-        readOnly
-        variant="forms.input"
-        sx={{ ...TEXTAREA_SX, opacity: 0.7 }}
-      />
-    </Box>
+    <Field label="Core prompt">
+      <Box sx={{ position: "relative", flexShrink: 0 }}>
+        <PromptTabs tab={tab} onTab={onTab} />
+        <Textarea
+          aria-label="Core prompt"
+          rows={6}
+          value={core}
+          readOnly
+          variant="forms.input"
+          sx={{ ...TEXTAREA_SX, opacity: 0.7 }}
+        />
+      </Box>
+    </Field>
     <AdditionsField value={prompt} onChange={onPrompt} />
   </>
 );

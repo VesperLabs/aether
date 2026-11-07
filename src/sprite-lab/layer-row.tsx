@@ -1,4 +1,4 @@
-import { Box, Flex, Select, Text, type SelectOption } from "@/ui";
+import { Box, Field, Select, type SelectOption } from "@/ui";
 import { IconButton } from "./icon-button";
 import { PENDING_COLOR } from "./sheet-canvas";
 import { getSheetOption } from "./sheet-thumb";
@@ -41,11 +41,7 @@ export const SheetRow = ({
   onEdit: () => void;
   onChange: (value: string) => void;
 }) => (
-  <Flex sx={{ alignItems: "center", gap: 2 }}>
-    <Flex sx={{ width: 64, flexShrink: 0, alignItems: "center", gap: 1 }}>
-      <Text sx={{ fontSize: 1, opacity: 0.5, textTransform: "capitalize" }}>{label}</Text>
-      {hasPending && <PendingDot />}
-    </Flex>
+  <Field layout="row" label={label} badge={hasPending && <PendingDot />}>
     <Select
       label={`${label} sheet`}
       value={value}
@@ -55,7 +51,7 @@ export const SheetRow = ({
     />
     {value && <IconButton label={`Edit ${label}`} icon="✏️" active={editing} onClick={onEdit} />}
     <IconButton label={`Clear ${label}`} icon="❌" disabled={!value} onClick={() => onChange("")} />
-  </Flex>
+  </Field>
 );
 
 /** One worn layer, offering the sheets that fit the chest. */

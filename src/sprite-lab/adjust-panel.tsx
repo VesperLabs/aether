@@ -60,11 +60,11 @@ export const AdjustPanel = ({
         </Flex>
       ))}
       <Flex sx={{ gap: 2 }}>
-        <Button variant="wood" onClick={onCancel} sx={{ flex: 1, justifyContent: "center" }}>
+        <Button variant="control" onClick={onCancel} sx={{ flex: 1, justifyContent: "center" }}>
           Cancel
         </Button>
         <Button
-          variant="wood"
+          variant="control"
           disabled={!changed}
           onClick={handleApply}
           sx={{ flex: 1, justifyContent: "center" }}
