@@ -41,6 +41,30 @@ Keep the same square canvas, blocky pixels, limited palette and hard edges, with
 
 Change: {request}`;
 
+/** The default for drawing a diagonal: the same sprite, turned an eighth of the way round. */
+export const QUARTER_TURN_PROMPT = `This is a pixel-art game character on a solid magenta background. Redraw this exact frame turned on the spot to face {diagonal}, a three-quarter view halfway between its current facing and the next one. It is the same sprite seen from a slightly different angle, not a new drawing.
+
+Nothing about the character changes except the angle: the same character, clothing, colours, art style, palette, level of detail and pose. Any walking or attacking stays at the same moment of the motion.
+
+Turning never changes the stride. Work out which of the character's own arms and legs is forward and which is back in the original, then keep exactly that: the same leg stepping forward, the same arm swinging forward, at the same reach. Do not swap them, do not mirror or flip the image, and do not move on to the next step of the walk. The character's own left limbs stay its left limbs and its right limbs stay its right limbs, even where the turn moves them to a different side of the image.
+
+Everything must line up with the original, row for row. The top of the head, eyes, chin, shoulders, waist, hands and soles of the feet stay at exactly the same heights. The same head size, the same chibi proportions with short stubby limbs, and the same total height. The feet stay on the same spot on the canvas and the body stays centred on it. Only what the turn itself moves shifts sideways: the far side of the body narrows and the near side widens.
+
+Keep solid magenta (#FF00FF) behind it. Keep the same square canvas, blocky pixels, limited palette and hard edges, with no anti-aliasing, shadows or text.
+
+The original frame: {frame}
+
+Anything else to change, if any is listed; if nothing follows, only turn the character, and if it names another diagonal, face that one instead: {request}`;
+
+/** Each row turns clockwise, so the four rows between them cover all four diagonals. */
+const DIAGONALS = {
+  up: "north-east (away from the viewer and toward the right edge of the image; its right arm and leg are the nearer ones)",
+  right:
+    "south-east (toward the viewer and toward the right edge of the image; its right arm and leg are the nearer ones)",
+  down: "south-west (toward the viewer and toward the left edge of the image; its left arm and leg are the nearer ones)",
+  left: "north-west (away from the viewer and toward the left edge of the image; its left arm and leg are the nearer ones)",
+};
+
 /** Which limbs are which on screen, since "left" and "right" alone get muddled. */
 const describeLimbs = (direction: string) => {
   if (direction === "down" || direction === "up") {
@@ -87,4 +111,7 @@ export const fillWearablePrompt = (frame: Frame, request: string, layer?: string
   );
 
 export const fillPrompt = (core: string, frame: Frame, request: string) =>
-  core.replaceAll("{frame}", describeFrame(frame)).replaceAll("{request}", request);
+  core
+    .replaceAll("{diagonal}", DIAGONALS[DIRECTIONS[frame.row]])
+    .replaceAll("{frame}", describeFrame(frame))
+    .replaceAll("{request}", request);

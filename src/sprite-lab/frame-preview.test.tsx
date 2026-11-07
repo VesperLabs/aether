@@ -37,4 +37,10 @@ describe("FramePreview", () => {
     expect(screen.getByText("toolbar")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "count 1" })).toBeInTheDocument();
   });
+
+  test("keeps showing the frame in the panel while the big window is open", () => {
+    const { container } = renderPreview();
+    press("Open big");
+    expect(container.querySelector("canvas")).toBeInTheDocument();
+  });
 });

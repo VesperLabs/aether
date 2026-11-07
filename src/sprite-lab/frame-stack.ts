@@ -72,6 +72,27 @@ export const paintFrameStack = (
   });
 };
 
+/**
+ * The stack without sheets still showing their own art on this frame. A turned sheet can't line up
+ * with those, so only the target and sheets redrawn here are shown together.
+ */
+export const keepRedrawn = (
+  stack: StackedSheet[],
+  frame: Frame,
+  targetSrc: string,
+  pending: PendingCandidate[],
+) =>
+  stack.filter(
+    ({ src }) =>
+      src === targetSrc ||
+      pending.some(
+        ({ generation }) =>
+          generation.src === src &&
+          generation.frame.column === frame.column &&
+          generation.frame.row === frame.row,
+      ),
+  );
+
 /** Every sheet in the character, ready to paint. */
 export const useFrameStack = (
   base: Sheet,
