@@ -50,6 +50,15 @@ const getKeyName = (name: string) => {
   return keyName.toUpperCase();
 };
 
+/**
+ * The key an event names, as `KeyboardKey` names it. Digits go by the physical key, since Shift
+ * turns "1" into "!": a digit let go while Shift is held would otherwise never release its ability.
+ */
+export function getEventKeyName(e: Pick<KeyboardEvent, "key" | "code">) {
+  const digit = /^Digit(\d)$/.exec(e.code ?? "")?.[1];
+  return digit ?? getKeyName(e.key || "");
+}
+
 /** Short label for the key badge (logical name still matches via getKeyName). */
 const getKeyDisplayLabel = (name: string) => {
   if (getKeyName(name) === "ENTER") {
@@ -73,7 +82,7 @@ export const KeyboardKey: React.FC<KeyboardKeyProps> = ({
   const keyDisplayName = getKeyDisplayLabel(name);
 
   const handleKeyUp = useEffectEvent((e: KeyboardEvent) => {
-    const keyName = getKeyName(e?.key || "");
+    const keyName = getEventKeyName(e);
     /* Enter: chat submit unmounts input before keyup; don't treat that keyup as HUD Enter.
      * Every KeyboardKey sees this keyup, so the flag isn't cleared here (the first one to see it
      * would clear it for the rest and the Enter key would reopen chat). The next Enter keydown resets it. */
@@ -99,7 +108,7 @@ export const KeyboardKey: React.FC<KeyboardKeyProps> = ({
 
   const handleKeyDown = useEffectEvent((e: KeyboardEvent) => {
     if (e.repeat) return;
-    const keyName = getKeyName(e?.key || "");
+    const keyName = getEventKeyName(e);
     if (inputType(document.activeElement) === "text" || inputType(e.target) === "text") {
       return;
     }
