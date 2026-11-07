@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.15.0](https://github.com/VesperLabs/aether/compare/v0.14.1...v0.15.0) (2026-11-07)
+
+
+### Features
+
+* map lab with Claude-built maps and stamps ([#255](https://github.com/VesperLabs/aether/issues/255)) ([85021af](https://github.com/VesperLabs/aether/commit/85021af3e300f89527b01ec7690d2157f0a7bd18))
+* move the profile into a modal with previewing dropdowns ([#257](https://github.com/VesperLabs/aether/issues/257)) ([276254d](https://github.com/VesperLabs/aether/commit/276254dd9a2232de06c09676d747b6d66f932a24))
+
 ## [0.14.1](https://github.com/VesperLabs/aether/compare/v0.14.0...v0.14.1) (2026-11-07)
 
 
