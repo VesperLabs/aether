@@ -1,10 +1,12 @@
 name: Release
 
-# Runs on every push to main. release-please keeps one release PR open and up
-# to date (fix: → patch, feat: → minor, feat!: / BREAKING CHANGE → major).
-# Merging that PR (by hand or with Actions → "Release now") is the release:
-# the merge pushes to main, this runs again, tags it, creates the GitHub
-# release and deploys.
+# Every push to main releases itself, no clicks:
+# 1. A feature merge: release-please opens/updates the release PR (fix: → patch,
+#    feat: → minor, feat!: / BREAKING CHANGE → major) and this job merges it.
+# 2. That merge pushes to main, this runs again, tags it, creates the GitHub
+#    release and deploys.
+# The PAT matters: pushes made with GITHUB_TOKEN don't trigger workflows, so
+# step 2 would never run.
 on:
   push:
     branches: [main]
@@ -22,14 +24,20 @@ jobs:
     outputs:
       created: ${{ steps.release.outputs.release_created }}
     steps:
-      # A PAT so the PR has a trusted author: PRs from github-actions[bot]
-      # wait for approval and their CI expires.
       - id: release
         uses: googleapis/release-please-action@v4
         with:
           token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
+
+      - name: Merge the release PR
+        if: steps.release.outputs.pr
+        run: gh pr merge "$PR" --repo "$REPO" --squash
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ fromJSON(steps.release.outputs.pr).number }}
 
   deploy:
     needs: release
