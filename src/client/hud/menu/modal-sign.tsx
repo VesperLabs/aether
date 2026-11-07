@@ -1,5 +1,5 @@
 import { useAppContext } from "@/client/hud/app/context";
-import { Modal, KeyboardButton, Icon, Box } from "@/ui";
+import { Modal, KeyboardButton, Box } from "@/ui";
 
 export const ModalSign: React.FC = () => {
   const { sign, setSign, zoom, bottomOffset } = useAppContext();
@@ -7,14 +7,7 @@ export const ModalSign: React.FC = () => {
   const icon = hasIcon ? `./assets/images/${sign?.icon}.png` : `./assets/icons/chat.png`;
   return (
     <Modal zoom={zoom} bottomOffset={bottomOffset}>
-      <Modal.Header sx={{ paddingLeft: 34 }}>
-        <Icon
-          icon={icon}
-          size={42}
-          sx={{ transform: hasIcon ? "scale(0.5)" : "scale(1)", position: "absolute", left: -8 }}
-        />
-        {sign?.subject}
-      </Modal.Header>
+      <Modal.Header icon={icon}>{sign?.subject}</Modal.Header>
       <Modal.Body>
         <Box sx={{ maxWidth: 300, whiteSpace: "normal", lineHeight: 1.5 }}>{sign?.text}</Box>
       </Modal.Body>

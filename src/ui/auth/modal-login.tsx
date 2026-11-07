@@ -42,6 +42,9 @@ const TabPanel = ({
 );
 
 const ICON_SIZE = 22;
+
+/* The login is boosted 1.2x, so its tabs come out the size of every other modal header. */
+const LOGIN_TAB_SX = { fontSize: 1 };
 const ICON_MOTION = ".2s ease all";
 
 /* The book opens up on the active tab, and the feather pops onto it. */
@@ -109,16 +112,16 @@ export const ModalLogin = ({
       <VersionTag />
       <Flex sx={{ flexDirection: "column" }}>
         <Flex role="tablist">
-          <Modal.Tab active={isLogin} onClick={() => setActiveTab("login")}>
+          <Modal.Tab sx={LOGIN_TAB_SX} active={isLogin} onClick={() => setActiveTab("login")}>
             <TabIcon active={isLogin} />
             Login
           </Modal.Tab>
-          <Modal.Tab active={isRegister} onClick={() => setActiveTab("register")}>
+          <Modal.Tab sx={LOGIN_TAB_SX} active={isRegister} onClick={() => setActiveTab("register")}>
             <TabIcon active={isRegister} />
             Register
           </Modal.Tab>
           {canDemo && (
-            <Modal.Tab active={isDemo} onClick={() => setActiveTab("demo")}>
+            <Modal.Tab sx={LOGIN_TAB_SX} active={isDemo} onClick={() => setActiveTab("demo")}>
               <TabIcon active={isDemo} />
               Demo
             </Modal.Tab>

@@ -1,5 +1,5 @@
 import { useAppContext } from "@/client/hud/app/context";
-import { Icon, Modal, KeyboardButton, TextDivider } from "@/ui";
+import { Modal, KeyboardButton, TextDivider } from "@/ui";
 import { ActionButton, LeaveButton, PlayerRow, type SocialPlayer } from "./player-row";
 import { PlayerSearch } from "./player-search";
 
@@ -23,8 +23,7 @@ export const ModalSocial = () => {
         bottomOffset={bottomOffset}
         sx={{ width: `min(420px, calc(100vw / ${scale} - 16px))` }}
       >
-        <Modal.Header sx={{ flex: "none" }}>
-          <Icon icon="./assets/icons/social.png" size={24} />
+        <Modal.Header icon="./assets/icons/social.png" sx={{ flex: "none" }}>
           Social
         </Modal.Header>
         <Modal.Body sx={{ p: 2, gap: 1 }}>
