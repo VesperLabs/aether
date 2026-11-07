@@ -23,7 +23,8 @@ export function loadCacheImage(src: string): Promise<HTMLImageElement> {
   });
 }
 
-function trimCanvas(c: HTMLCanvasElement) {
+/** Cuts a canvas down to its visible pixels. */
+export function trimCanvas(c: HTMLCanvasElement) {
   const ctx = context2d(c);
   const pixels = ctx.getImageData(0, 0, c.width, c.height);
   const l = pixels.data.length;

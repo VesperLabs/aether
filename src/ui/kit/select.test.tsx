@@ -30,6 +30,11 @@ describe("Select", () => {
     vi.restoreAllMocks();
   });
 
+  test("shows the placeholder when the value is none of the options", () => {
+    render(<Select label="Fruit" value="" options={OPTIONS} onChange={() => {}} />);
+    expect(screen.getByRole("button", { name: "Fruit" })).toHaveTextContent("None");
+  });
+
   test("closes on a press outside", () => {
     render(<Select label="Fruit" value="a" options={OPTIONS} onChange={() => {}} />);
     fireEvent.click(screen.getByRole("button", { name: "Fruit" }));

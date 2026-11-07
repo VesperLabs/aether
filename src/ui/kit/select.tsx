@@ -20,6 +20,8 @@ const LIST_SX: ThemeUIStyleObject = {
   right: 0,
   p: 1,
   maxHeight: LIST_MAX_HEIGHT,
+  /* At least as wide as the button, and wider when its options need it */
+  minWidth: "max-content",
   overflowY: "auto",
   bg: "yellow.900",
   border: "1px solid #000",
@@ -40,12 +42,15 @@ export const Select = ({
   value,
   options,
   onChange,
+  placeholder = "None",
   sx,
 }: {
   label: string;
   value: string;
   options: SelectOption[];
   onChange: (value: string) => void;
+  /** Shown dimmed when the value is none of the options, so the box keeps its size. */
+  placeholder?: string;
   sx?: ThemeUIStyleObject;
 }) => {
   const [open, setOpen] = useState(false);
@@ -103,8 +108,15 @@ export const Select = ({
           textAlign: "left",
         }}
       >
-        <Text sx={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-          {options[selectedIndex]?.label}
+        <Text
+          sx={{
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            opacity: selectedIndex < 0 ? 0.5 : 1,
+          }}
+        >
+          {options[selectedIndex]?.label ?? placeholder}
         </Text>
         <Box
           aria-hidden

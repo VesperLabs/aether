@@ -1,4 +1,12 @@
 import { z } from "zod";
+import {
+  faceTextures,
+  genders,
+  hairTextures,
+  hairTints,
+  skinTints,
+  whiskersTextures,
+} from "@/content";
 import type { ServerHealthMessage } from "./messages";
 
 /*
@@ -30,7 +38,8 @@ const itemSlot = z.looseObject({
 
 const spellSlot = z.union([z.number(), z.string()]).nullish();
 
-const profileStep = z.number().optional();
+/** A choice from one of the profile screen's option lists; anything else is refused. */
+const lookOption = (options: readonly [string, ...string[]]) => z.enum(options).optional();
 
 export const commands = {
   /* Auth */
@@ -119,11 +128,13 @@ export const commands = {
   updateProfile: z
     .object({
       userName: z.string().optional(),
-      hair: z.object({ texture: profileStep, tint: profileStep }).optional(),
-      face: z.object({ texture: profileStep }).optional(),
-      whiskers: z.object({ texture: profileStep, tint: profileStep }).optional(),
-      skin: z.object({ tint: profileStep }).optional(),
-      body: profileStep,
+      gender: lookOption(genders),
+      tint: lookOption(skinTints),
+      hair: z.object({ texture: lookOption(hairTextures), tint: lookOption(hairTints) }).optional(),
+      face: z.object({ texture: lookOption(faceTextures) }).optional(),
+      whiskers: z
+        .object({ texture: lookOption(whiskersTextures), tint: lookOption(hairTints) })
+        .optional(),
     })
     .optional(),
   updateUserSetting: z.object({ name: z.string(), value: z.unknown() }),
