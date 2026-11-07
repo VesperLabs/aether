@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.14.1](https://github.com/VesperLabs/aether/compare/v0.14.0...v0.14.1) (2026-11-07)
+
+
+### Bug Fixes
+
+* give every modal header the same title size and inline icon ([#253](https://github.com/VesperLabs/aether/issues/253)) ([765f9fe](https://github.com/VesperLabs/aether/commit/765f9fe1104ef46ca924eb0fca8fd26b092a4774))
+* let the browser scroll wiki fields into view on mobile ([#252](https://github.com/VesperLabs/aether/issues/252)) ([980dbdd](https://github.com/VesperLabs/aether/commit/980dbdd66fc830ff1fe6a7f8f7ecd1b1408768d7))
+
 ## [0.14.0](https://github.com/VesperLabs/aether/compare/v0.13.0...v0.14.0) (2026-11-07)
 
 
