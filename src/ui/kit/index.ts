@@ -6,7 +6,7 @@ export type { PressHandler } from "./button/button";
 export { Icon } from "./icon";
 export { KeyboardKey } from "./keyboard-key";
 export { Modal } from "./modal";
-export { Input } from "./input";
+export { Input, KeepPageStillContext } from "./input";
 export { KeyboardButton } from "./keyboard-button";
 export { Tooltip, TooltipContent } from "./tooltip";
 export { Label } from "./label";
