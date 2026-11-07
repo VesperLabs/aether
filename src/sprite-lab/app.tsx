@@ -1,9 +1,20 @@
 import { useEffect, useMemo, useState } from "react";
-import { Box, Button, Flex, Select, Text, TextDivider, ThemeUIProvider, theme } from "@/ui";
+import {
+  Box,
+  ButtonGroup,
+  Field,
+  Flex,
+  Select,
+  Text,
+  TextDivider,
+  ThemeUIProvider,
+  theme,
+} from "@/ui";
 import type { Theme } from "theme-ui";
 import { CHECKER_SX } from "./checker";
 import { DrawPanel } from "./draw-panel";
 import { FloatingPanel } from "./floating-panel";
+import { LabNav } from "./lab-nav";
 import { getFrameKey, setOpenCandidate } from "./open-candidates";
 import { ORIGINAL_TILE_ATTR } from "./generation-list";
 import { useCandidateDrag, type DragItem } from "./use-candidate-drag";
@@ -96,23 +107,24 @@ export const App = () => {
       <Flex sx={{ gap: 3, p: 3, alignItems: "flex-start", boxSizing: "border-box" }}>
         <FloatingPanel
           id="lab"
-          title={<Text sx={{ fontWeight: "bold" }}>Sprite Lab</Text>}
+          title={
+            <>
+              <Text sx={{ fontWeight: "bold" }}>Sprite Lab</Text>
+              <LabNav />
+            </>
+          }
           width={PANEL_WIDTH}
           start={{ x: 16, y: 16 }}
           overflowing
         >
-          <Flex sx={{ gap: 1 }}>
-            {ZOOMS.map((level) => (
-              <Button
-                key={level}
-                variant="menu"
-                className={level === zoom ? "active" : ""}
-                onClick={() => setState({ ...state, zoom: level })}
-              >
-                <Box sx={{ px: 1 }}>{level}x</Box>
-              </Button>
-            ))}
-          </Flex>
+          <Field label="Zoom" layout="row">
+            <ButtonGroup
+              label="Zoom"
+              value={zoom}
+              onChange={(level) => setState({ ...state, zoom: level })}
+              options={ZOOMS.map((level) => ({ value: level, label: `${level}x` }))}
+            />
+          </Field>
           <SheetRow
             label="Body"
             value={state.atlasHidden ? "" : baseTexture}

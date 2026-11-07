@@ -1,5 +1,11 @@
 import tColors from "./colors-tailwind.json";
 
+/**
+ * The one text size for every control: inputs, dropdowns, buttons and button groups. With the
+ * same padding and 1px edge on each, they all stand the same height side by side.
+ */
+export const CONTROL_TEXT = { fontSize: 1, lineHeight: 1.25 } as const;
+
 export const theme = {
   colors: {
     ...tColors,
@@ -58,10 +64,9 @@ export const theme = {
   },
   forms: {
     input: {
-      fontSize: 1,
+      ...CONTROL_TEXT,
       p: 1,
       px: 2,
-      lineHeight: 1,
       bg: "rgba(0, 0, 0, 0.38)",
       /* Recessed into the panel: dark edge, shaded from above, the light catching its lower lip. */
       border: `1px solid rgba(0, 0, 0, 0.35)`,
@@ -141,6 +146,16 @@ export const theme = {
       boxShadow: `inset 0px 0px 0px 1px rgba(255,255,255,.25)`,
       bg: "yellow.900",
       position: "relative",
+    },
+    /* A clickable wood button. Plain `wood` also dresses panels and inherits their text size; a
+       control's text is pinned to the same size as inputs and selects, so every control in a row
+       matches. */
+    control: {
+      variant: "buttons.wood",
+      ...CONTROL_TEXT,
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 1,
     },
   },
   styles: {

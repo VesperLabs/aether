@@ -9,6 +9,7 @@ import {
 import type { ThemeUIStyleObject } from "theme-ui";
 import { Box, Flex, Text } from "theme-ui";
 import { CONTROL_GOLD } from "./modal-gilding";
+import { CONTROL_TEXT } from "./theme";
 
 const LIST_MAX_HEIGHT = 260;
 
@@ -99,7 +100,6 @@ export const Select = ({
           color: "text",
           cursor: "pointer",
           borderRadius: 4,
-          lineHeight: 1.25,
           textAlign: "left",
         }}
       >
@@ -141,7 +141,7 @@ export const Select = ({
                   gap: 2,
                   px: 2,
                   py: 1,
-                  fontSize: 1,
+                  ...CONTROL_TEXT,
                   borderRadius: 3,
                   cursor: "pointer",
                   color: selected ? CONTROL_GOLD : "text",
