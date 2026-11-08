@@ -158,7 +158,7 @@ export function App({ socket, peer, debug, game }: AppProps) {
   };
 
   const {
-    onKeeperDataUpdate,
+    onNpcServices,
     onHeroChatNpc,
     onUpdateHud,
     onUpdateRoomPlayers,
@@ -201,7 +201,7 @@ export function App({ socket, peer, debug, game }: AppProps) {
     buffUpdate: onBuffUpdate,
     playerUpdate: onPlayerUpdate,
     lootGrabbed: onLootGrabbed,
-    keeperDataUpdate: onKeeperDataUpdate,
+    npcServices: onNpcServices,
     message: (message) => addMessage(message as ChatMessage), // called without one when there is nothing to say
     playerJoin: onPlayerJoin,
     remove: onPlayerLeave,

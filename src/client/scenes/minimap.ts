@@ -24,9 +24,10 @@ const KEEPER_COLOR = 0x22c55e;
 const PASSIVE_COLOR = 0xf59e0b;
 const AGGRESSIVE_COLOR = 0xef4444;
 
-/** Keepers green, mobs amber when they only fight back and red when they attack on sight. */
+/** Companions party blue, talkers green, others amber when they only fight back and red when they attack on sight. */
 const npcColor = (npc: Player) => {
-  if (npc.kind === "keeper") return KEEPER_COLOR;
+  if (npc.state?.ownerId) return PARTY_COLOR;
+  if (npc.talks) return KEEPER_COLOR;
   return npc.behaviors?.includes("aggressive") ? AGGRESSIVE_COLOR : PASSIVE_COLOR;
 };
 

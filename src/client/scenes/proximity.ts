@@ -80,14 +80,14 @@ export function checkProximities(scene: SceneMain, time: number) {
       }
     }
 
-    if (["sign", "keeper"]?.includes(entity?.kind)) {
+    if (entity?.kind === "sign" || (entity as Player)?.talks) {
       if (distance < closestDistance) {
         closestEntity = entity;
         closestDistance = distance;
       }
     }
 
-    if (["nasty", "keeper"]?.includes(entity?.kind)) {
+    if (entity?.kind === "npc") {
       const cursorDistance = distanceTo(entity, cursorPoint);
       const npc = entity as Player;
       if (npc.state && !isMobile) {

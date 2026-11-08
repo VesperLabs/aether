@@ -42,7 +42,7 @@ const where: Cheat = (ctx, player, _args, reply) => {
     (p) => `${p.profile?.userName} (${at(p)})`,
   );
   const mobs = entitiesInRoom(npcs, player.roomName)
-    .filter((n) => n.kind === "nasty" && !n.state?.isDead)
+    .filter((n) => !n.talks && !n.state?.isDead)
     .map((n) => `${n.name} (${at(n)})`);
   reply.info(
     `${player.roomName}. Players: ${people.join(", ")}. Mobs: ${mobs.join(", ") || "none"}.`,

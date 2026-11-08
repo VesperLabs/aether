@@ -5,10 +5,9 @@ import { Box, Text, Flex, TextDivider, Icon, Button, STYLE_NON_EMPTY } from "@/u
 import {
   ItemBuilder,
   PREVIEW_DICE,
-  nasties,
-  keepers,
-  type KeeperId,
-  type NastyId,
+  actors,
+  type ActorDefinition,
+  type ActorId,
   type Quest as QuestData,
   type QuestObjective,
 } from "@/content";
@@ -20,15 +19,10 @@ import { PAD_POPOVER_ATTR } from "@/client/input/pad-nav";
 import { getLastDevice, subscribeLastDevice } from "@/client/input/last-device";
 import { useSyncExternalStore } from "react";
 
-function getKeeperByQuestName(quest: string) {
-  for (const key of Object.keys(keepers) as KeeperId[]) {
-    const questIds = (keepers[key]?.keeperData as { quests?: readonly string[] } | undefined)
-      ?.quests;
-    if (questIds?.includes(quest)) {
-      return keepers[key];
-    }
-  }
-  return null; // Return null if the quest is not found
+/** The actor who hands out `quest`, if any. */
+function getQuestGiver(quest: string) {
+  const all = Object.values(actors) as ActorDefinition[];
+  return all.find((actor) => (actor.quests as readonly string[] | undefined)?.includes(quest));
 }
 
 /* Formats and parses the quest information from dialoge templates */
@@ -42,7 +36,7 @@ const useQuestDialogue = (quest: QuestData, playerQuest: PlayerQuestStatus | und
 
     if (objective?.type === "chat") {
       verb = "Talk to";
-      const keeperName = keepers?.[objective?.keeper as KeeperId]?.profile?.userName;
+      const keeperName = actors[objective?.keeper as ActorId]?.profile?.userName;
       return `<strong>${verb} ${keeperName}</strong>`;
     }
     if (objective?.type === "item") {
@@ -55,7 +49,7 @@ const useQuestDialogue = (quest: QuestData, playerQuest: PlayerQuestStatus | und
     }
     if (objective?.type === "bounty") {
       verb = "Slay";
-      noun = nasties?.[objective?.monster as NastyId]?.profile?.userName;
+      noun = actors[objective?.monster as ActorId]?.profile?.userName;
       current = playerQuest?.objectives?.[idx]?.numKilled || 0;
     }
 
@@ -96,7 +90,7 @@ export const QuestTooltip = ({
   /* A controller closes it by moving off the quest: Close would only be in the way */
   const onPad = useSyncExternalStore(subscribeLastDevice, getLastDevice) === "gamepad";
   const { rewards } = quest ?? {};
-  const keeper = getKeeperByQuestName(quest?.id);
+  const keeper = getQuestGiver(quest?.id);
   const questDialogue = useQuestDialogue(quest, playerQuest);
   const giverName = keeper?.profile?.userName;
 

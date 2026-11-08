@@ -49,6 +49,8 @@ export class Player extends Character {
   declare scene: SceneMain;
   /** NPCs only: their opt-in behaviors (`aggressive` and so on). */
   behaviors?: readonly string[];
+  /** NPCs only: players can talk to it. */
+  talks?: boolean;
   /** Only the hero has a party. */
   party?: PartyMessage | null;
   declare weaponAtlas: WeaponAtlas;
@@ -89,6 +91,7 @@ export class Player extends Character {
   constructor(scene: SceneMain, args: CharacterArgs) {
     super(scene, args);
     this.behaviors = (args as { behaviors?: readonly string[] }).behaviors;
+    this.talks = (args as { talks?: boolean }).talks;
 
     if (this.hasBuff("stealth")) {
       this.setAlpha(0);
@@ -101,9 +104,17 @@ export class Player extends Character {
     this.updateHpBar();
 
     if (this.state.isDead) this.doDeath();
-    if (this.kind === "nasty") this.userName.setVisible(false);
+    if (this.hidesName()) this.userName.setVisible(false);
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
+  }
+  /** An NPC that neither talks nor has a human body: it leaves no corpse. */
+  isMob() {
+    return this.kind === "npc" && !this.talks && this.profile?.race !== "human";
+  }
+  /** Mobs show their name only in combat or on hover; companions always do. */
+  hidesName() {
+    return this.isMob() && !this.state?.ownerId;
   }
   updateState(state: Record<string, unknown> | undefined) {
     if (!state) return;
@@ -111,6 +122,7 @@ export class Player extends Character {
       if (state[key] !== undefined) this.state[key] = state[key];
     };
     patch("lockedPlayerId");
+    patch("ownerId");
     patch("bubbleMessage");
     patch("doBuffPoison");
     patch("doHpBuffRegen");
@@ -246,9 +258,9 @@ export class Player extends Character {
     this.bubble.setVisible(false);
     this.windupRing.draw(false);
     this.emit(CHARACTER_DIED);
-    this.corpse.setVisible(this.kind !== "nasty");
+    this.corpse.setVisible(!this.isMob());
     this.buffRack.setVisible(false);
-    if (this.kind === "nasty") this.userName.setVisible(false);
+    if (this.hidesName()) this.userName.setVisible(false);
     if (this.isHero) window.dispatchEvent(new Event("HERO_DEAD"));
   }
   respawn() {
@@ -277,7 +289,7 @@ export class Player extends Character {
     this.hpBar.setVisible(shouldShow);
     this.buffRack.setVisible(shouldShow && state?.isHovering);
 
-    if (this.kind === "nasty") {
+    if (this.hidesName()) {
       this.userName.setVisible(shouldShow);
     }
   }

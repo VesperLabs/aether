@@ -1,22 +1,43 @@
+import type { ServerCharacter } from "./character";
+import { findCharacter } from "./find-character";
 import type { Npc } from "./npc";
-import type { Player } from "./player";
 import { getRoomIndex } from "./room-index";
 import { hasLineOfSight } from "@/rules/movement";
-import { isNpcAggressive, type NpcBehaviorInput, type NpcPlayerView } from "@/rules/npc-behavior";
+import {
+  AGGRO_KITE_RANGE,
+  isNpcAggressive,
+  type NpcBehaviorInput,
+  type NpcPlayerView,
+} from "@/rules/npc-behavior";
 
-/** What the behavior rules need to know about a player. */
-const toPlayerView = (player: Player | undefined): NpcPlayerView | null =>
-  player
+/** What the behavior rules need to know about a target, a player or an NPC. */
+const toPlayerView = (target: ServerCharacter | undefined): NpcPlayerView | null =>
+  target
     ? {
-        socketId: player.socketId,
-        x: player.x,
-        y: player.y,
-        bodySize: player.bodySize,
-        isDead: player.state?.isDead,
-        stats: player.stats,
-        stealthBuff: player.getBuff("stealth"),
+        socketId: target.socketId || target.id,
+        x: target.x,
+        y: target.y,
+        bodySize: target.bodySize,
+        isDead: target.state?.isDead,
+        stats: target.stats,
+        stealthBuff: target.getBuff("stealth"),
       }
     : null;
+
+/**
+ * The foe nearest an NPC that it would attack on sight. Wild NPCs go for players and companions;
+ * companions never pick fights, they only answer them (through threat).
+ */
+function nearestFoe(npc: Npc): ServerCharacter | undefined {
+  if (npc.state.ownerId) return;
+  const index = getRoomIndex(npc.world, npc.room.name);
+  const player = index.players.nearest(npc);
+  const pet = index.npcs.near(npc, AGGRO_KITE_RANGE).find((other) => other.state.ownerId);
+  if (!pet) return player;
+  if (!player) return pet;
+  const distance = (c: ServerCharacter) => Math.hypot(c.x - npc.x, c.y - npc.y);
+  return distance(pet) < distance(player) ? pet : player;
+}
 
 /** Copies what the NPC behavior rules read from a legacy `Npc` into plain data. */
 export function buildNpcBehaviorInput(
@@ -24,11 +45,9 @@ export function buildNpcBehaviorInput(
   frame: { time: number; delta: number; now: number },
 ): NpcBehaviorInput {
   const { state, world, room } = npc;
-  const lockedPlayer = toPlayerView(world?.players?.[state?.lockedPlayerId as string]);
+  const lockedPlayer = toPlayerView(findCharacter(world, state?.lockedPlayerId));
   const nearestPlayer =
-    isNpcAggressive(npc.behaviors) || lockedPlayer
-      ? toPlayerView(getRoomIndex(world, room.name).players.nearest(npc))
-      : null;
+    isNpcAggressive(npc.behaviors) || lockedPlayer ? toPlayerView(nearestFoe(npc)) : null;
   return {
     now: frame.now,
     time: frame.time,
@@ -58,7 +77,7 @@ export function buildNpcBehaviorInput(
     isStunned: npc.hasBuff("stun"),
     lockedPlayer,
     nearestPlayer,
-    threatTarget: toPlayerView(world?.players?.[npc.threatTargetId() as string]),
+    threatTarget: toPlayerView(findCharacter(world, npc.threatTargetId())),
     leader: npc.findLeader(),
     hasClearShot: npc.behaviors?.includes("shootsOverWalls")
       ? undefined

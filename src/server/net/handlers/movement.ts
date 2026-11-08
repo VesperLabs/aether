@@ -262,7 +262,7 @@ export function setSpawn(ctx: CommandContext, _spawn: ParsedCommand<"setSpawn">)
   const player: Player = world.players[socketId];
   /* The client's coordinates are ignored: the spawn is the home of the keeper being talked to. */
   const keeper = findNearbyNpc(world, socketId, player?.state?.targetNpcId);
-  const home = keeper?.keeperData?.home;
+  const home = keeper?.services?.home;
   if (!keeper || typeof home?.x !== "number" || typeof home?.y !== "number") return;
   const spawn = { x: home.x, y: home.y, roomName: player.roomName } as SpawnPoint;
   player.spawn = spawn;

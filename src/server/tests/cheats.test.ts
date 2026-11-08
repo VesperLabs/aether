@@ -104,7 +104,7 @@ describe("cheats", () => {
     });
   });
 
-  it("/npc spawn adds mobs the room sees, and /npc despawn removes them", async () => {
+  it("/npc spawn adds NPCs the room sees, /npc list shows them, and /npc clear removes them", async () => {
     const socket = await login();
     const watcher = await login();
     const joined = waitFor(watcher, "npcJoin");
@@ -113,7 +113,8 @@ describe("cheats", () => {
     expect((await joined).state.isCheatSpawned).toBe(true);
 
     const removed = waitFor(watcher, "npcRemove");
-    await cheat(socket, "/npc despawn");
+    expect((await cheat(socket, "/npc list")).message).toMatch(/Crab \(wild/);
+    await cheat(socket, "/npc clear");
     await removed;
     const left = Object.values(server.world.npcs).filter((n: Anything) => n.state?.isCheatSpawned);
     expect(left).toHaveLength(0);

@@ -54,6 +54,7 @@ describe("getFullCharacterState", () => {
       "profile",
       "kind",
       "behaviors",
+      "talks",
       "charClass",
       "npcKills",
       "buffs",

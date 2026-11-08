@@ -7,7 +7,6 @@ import { DROP_USAGE, parseDropArgs } from "./drop-args";
 import { isInRoom } from "@/server/player-room";
 import type { Cheat } from "./cheat";
 import { CHARACTER_CHEATS } from "./character-cheats";
-import { BOT_CHEATS } from "./bot-cheats";
 import { NPC_CHEATS } from "./npc-cheats";
 import { TRAVEL_CHEATS } from "./travel-cheats";
 
@@ -20,7 +19,6 @@ const CHEATS: Record<string, Cheat> = {
   ...CHARACTER_CHEATS,
   ...TRAVEL_CHEATS,
   ...NPC_CHEATS,
-  ...BOT_CHEATS,
 };
 
 const ADMIN_COMMANDS = new Set<string>(CHAT_COMMANDS.filter((c) => c.cheat).map((c) => c.name));

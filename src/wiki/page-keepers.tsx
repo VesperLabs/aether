@@ -1,10 +1,9 @@
 import {
   itemList,
-  keepers,
   questList,
   resolveAsset,
+  type ActorDefinition,
   type BuiltItem,
-  type KeeperDefinition,
   type QuestId,
 } from "@/content";
 import { Box, Flex, ItemTooltip, Text } from "@/ui";
@@ -17,6 +16,7 @@ import {
   keeperCharacter,
   raceAsset,
 } from "./card-pool";
+import { TALKING_ACTORS } from "./actor-groups";
 import { WalkOnHover } from "./walk-on-hover";
 import { Divider, PAPER, PAPER_STYLE, PaperFrame } from "./paper";
 import { RowTitle } from "./row-title";
@@ -29,13 +29,11 @@ const listedItems = itemList as unknown as Record<
 >;
 
 /** Built once per keeper, so the character renderer doesn't redraw on every render. */
-const KEEPERS = Object.entries(keepers as Record<string, KeeperDefinition>)
-  .map(([key, keeper]) => ({
-    key,
-    keeper,
-    character: keeper.profile.race === "human" ? keeperCharacter(keeper) : undefined,
-  }))
-  .sort((a, b) => (a.keeper.baseStats?.level ?? 0) - (b.keeper.baseStats?.level ?? 0));
+const KEEPERS = TALKING_ACTORS.map(([key, keeper]) => ({
+  key,
+  keeper,
+  character: keeper.profile.race === "human" ? keeperCharacter(keeper) : undefined,
+})).sort((a, b) => (a.keeper.baseStats?.level ?? 0) - (b.keeper.baseStats?.level ?? 0));
 
 export function PageKeepers() {
   useHashScroll();
@@ -62,10 +60,10 @@ const KeeperCard = ({
   keeper,
   character,
 }: {
-  keeper: KeeperDefinition;
+  keeper: ActorDefinition;
   character: ReturnType<typeof keeperCharacter> | undefined;
 }) => {
-  const { quests = [], shop = [], home } = keeper.keeperData;
+  const { quests = [], shop = [], home } = keeper;
   const asset = character ? undefined : raceAsset(keeper.profile.race);
   return (
     <WalkOnHover sx={{ ...PAPER_STYLE, p: 4 }}>

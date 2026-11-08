@@ -28,9 +28,3 @@ export const botPersonalities = {
 } as const satisfies Record<string, BotPersonality>;
 
 export type BotPersonalityId = keyof typeof botPersonalities;
-
-export const BOT_PERSONALITY_IDS = Object.keys(botPersonalities) as BotPersonalityId[];
-
-export function isBotPersonalityId(id: string): id is BotPersonalityId {
-  return id in botPersonalities;
-}

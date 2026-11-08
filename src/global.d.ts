@@ -135,7 +135,7 @@ interface FullCharacterState {
   activeItemSlots: Array<string>;
   gold: integer;
   hitBoxSize: any;
-  keeperData?: KeeperData;
+  services?: NpcServices;
 }
 
 interface Quest {
@@ -154,7 +154,7 @@ interface PlayerQuest {
   objectives?: Array<PlayerQuestObjective>;
 }
 
-interface KeeperData {
+interface NpcServices {
   dialogues?: any;
   quests?: any;
   shop?: any;

@@ -12,9 +12,8 @@ import { getBuffRoomState } from "@/server/net/room-sync";
 import { updateRoomLoot } from "./loot-adapter";
 import { expireSpells } from "./spell-adapter";
 import { countRoomClients, getRoomIndex, indexRooms } from "./room-index";
+import { keepCompanionsNear } from "./companions";
 import { endTickTimer, startTickTimer } from "./tick-health";
-import { moveBots, thinkBots } from "./bots";
-import { commandHandlers } from "./net/handlers/command-handlers";
 
 /** A long stall (debugger, GC) must not teleport things across the map. */
 const MAX_STEP_MS = 100;
@@ -105,12 +104,11 @@ const recordPoses: System<ServerWorld> = (world) => {
 export const serverSystems: Array<System<ServerWorld>> = [
   startTickTimer,
   moveNpcs,
-  moveBots,
   moveSpells,
+  keepCompanionsNear,
   indexRooms,
   separateNpcs,
   updateEntities,
-  thinkBots(commandHandlers),
   recordPoses,
   updateRooms,
   endTickTimer,

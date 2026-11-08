@@ -32,6 +32,7 @@ function pickStatusState(s: Record<string, unknown> | null | undefined): Record<
   if (!s) return {};
   return {
     lockedPlayerId: s.lockedPlayerId,
+    ownerId: s.ownerId,
     bubbleMessage: s.bubbleMessage,
     doBuffPoison: s.doBuffPoison,
     doHpBuffRegen: s.doHpBuffRegen,

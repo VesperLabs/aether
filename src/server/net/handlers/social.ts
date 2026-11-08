@@ -22,9 +22,9 @@ export function chatNpc(ctx: CommandContext, { npcId }: ParsedCommand<"chatNpc">
   player.state.targetNpcId = npcId;
   /* Quests that are of type: chat need to be updated */
   player.updateChatQuests(npc.name);
-  actor.emit("keeperDataUpdate", {
+  actor.emit("npcServices", {
     npcId: npc.id,
-    keeperData: npc.keeperData,
+    services: npc.services,
     playerQuests: player.getQuests(),
   });
 }

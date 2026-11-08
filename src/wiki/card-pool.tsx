@@ -1,8 +1,6 @@
 import {
   assetList,
   itemList,
-  keepers,
-  nasties,
   resolveAsset,
   type AssetDefinition,
   type BuiltItem,
@@ -17,6 +15,7 @@ import {
   WalkingSprite,
   previewSize,
 } from "@/ui";
+import { SILENT_ACTORS, TALKING_ACTORS } from "./actor-groups";
 import { useQuery } from "@tanstack/react-query";
 import {
   useLayoutEffect,
@@ -151,29 +150,21 @@ export const MobFace = (props: {
 /** The sprite sheet for a mob race. */
 export const raceAsset = (race?: string) => assetList.find((a) => a?.texture === race);
 
-type Mob = {
-  profile: { race?: string; userName: string; tint?: string };
-  baseStats: { level: number };
-  flavor: string;
-};
-
-const MONSTER_CARDS: FeaturedCard[] = Object.entries(nasties as Record<string, Mob>).flatMap(
-  ([key, mob]) => {
-    const asset = raceAsset(mob.profile.race);
-    if (!asset) return [];
-    return [
-      {
-        id: `monster-${key}`,
-        title: mob.profile.userName,
-        category: `Level ${mob.baseStats.level} monster`,
-        color: CARD_COLORS.monster,
-        info: mob.flavor,
-        href: `/monsters#${key}`,
-        art: () => <MobFace asset={asset} tint={mob.profile.tint} />,
-      },
-    ];
-  },
-);
+const MONSTER_CARDS: FeaturedCard[] = SILENT_ACTORS.flatMap(([key, mob]) => {
+  const asset = raceAsset(mob.profile.race);
+  if (!asset) return [];
+  return [
+    {
+      id: `monster-${key}`,
+      title: mob.profile.userName,
+      category: `Level ${mob.baseStats.level} monster`,
+      color: CARD_COLORS.monster,
+      info: mob.flavor,
+      href: `/monsters#${key}`,
+      art: () => <MobFace asset={asset} tint={mob.profile.tint} />,
+    },
+  ];
+});
 
 const ITEM_CARDS: FeaturedCard[] = Object.entries(listedItems).flatMap(([type, byRarity]) =>
   type === "stackable"
@@ -224,10 +215,9 @@ export const keeperCharacter = (keeper: { profile: object; equipment?: object })
   };
 };
 
-const KEEPER_CARDS: FeaturedCard[] = Object.entries(keepers).map(([key, keeper]) => {
+const KEEPER_CARDS: FeaturedCard[] = TALKING_ACTORS.map(([key, keeper]) => {
   const asset = keeper.profile.race !== "human" ? raceAsset(keeper.profile.race) : undefined;
-  const greet = (keeper as { keeperData?: { dialogues?: { greet?: string } } }).keeperData
-    ?.dialogues?.greet;
+  const greet = keeper.dialogues?.greet;
   /* Built once: a new object each render would make the renderer redraw (and flicker). */
   const character = asset ? undefined : keeperCharacter(keeper);
   return {

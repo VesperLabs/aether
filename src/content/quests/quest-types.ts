@@ -1,10 +1,11 @@
 import type { ItemRef } from "../items/item-refs";
-import type { NastyId } from "../mobs/nasties";
 
 type QuestObjectiveDefinition =
-  /** Talk to a keeper. The keeper id is checked against the keepers in `mobs/keepers.ts`. */
+  /* Actor ids are strings here to avoid an import cycle; `actors/actors.ts` checks them at compile time. */
+  /** Talk to an actor. */
   | { readonly type: "chat"; readonly keeper: string }
-  | { readonly type: "bounty"; readonly monster: NastyId; readonly amount: number }
+  /** Kill `amount` of an actor. */
+  | { readonly type: "bounty"; readonly monster: string; readonly amount: number }
   | { readonly type: "item"; readonly item: ItemRef; readonly amount: number };
 
 export interface QuestDefinition {

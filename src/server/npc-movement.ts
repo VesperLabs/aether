@@ -1,5 +1,5 @@
 import type { Npc } from "./npc";
-import type { Player } from "./player";
+import type { ServerCharacter } from "./character";
 import { getRoomIndex } from "./room-index";
 import {
   checkInRange,
@@ -32,7 +32,7 @@ const NPC_SEPARATION_STRENGTH = 0.6;
 export function performNpcMovement(
   npc: Npc,
   movement: NpcMovement,
-  targetPlayer: Player | undefined,
+  targetPlayer: ServerCharacter | undefined,
   leader: Point | null | undefined,
 ) {
   switch (movement.type) {

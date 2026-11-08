@@ -76,6 +76,8 @@ export interface CharacterState {
   bubbleMessage?: string | null;
   lastBubbleMessage?: number;
   npcAttackReady?: boolean;
+  /** NPC only: the player it belongs to, if it is a companion (see `rules/allegiance`). */
+  ownerId?: string | null;
   // Also `targetNpcId` and NPCs' `lockedPlayerId`, which callers read as several types.
   // oxlint-disable-next-line typescript/no-explicit-any
   [key: string]: any;

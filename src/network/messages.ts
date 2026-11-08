@@ -132,9 +132,9 @@ export interface ServerToClientEvents {
     loot: LootMessage;
     player: FullCharacterWire;
   }) => void;
-  keeperDataUpdate: (payload: {
+  npcServices: (payload: {
     npcId: string;
-    keeperData: KeeperData;
+    services: NpcServices;
     playerQuests: FullCharacterWire["quests"];
   }) => void;
   respawnNpc: (payload: { id: string; x: number; y: number; respawnTime: number }) => void;
