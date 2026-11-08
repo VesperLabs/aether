@@ -4,6 +4,7 @@ export {
   createLoot,
   expireLoots,
   isMapLootDue,
+  minMobLevelForItem,
   parseMapLootList,
   planMapLootSpawns,
   randomInt,

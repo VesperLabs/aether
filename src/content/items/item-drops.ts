@@ -32,6 +32,21 @@ const DROPPABLE_TYPES = [
   "bag",
 ];
 
+/* Uniques and sets drop as themselves; magic and rare drops are rolled from a common base */
+const POOLED_RARITIES = ["unique", "set", "common"];
+
+/**
+ * The item level a monster's drops must reach to give `type/rarity/key` at random, or undefined when
+ * it never drops at random: not a droppable type, magic or rare (rolled from a common base), or
+ * kept to one monster (`exclusive`).
+ */
+export function randomDropLevel(type: string, rarity: string, key: string): number | undefined {
+  if (!DROPPABLE_TYPES.includes(type) || !POOLED_RARITIES.includes(rarity)) return undefined;
+  const item = itemList[type]?.[rarity]?.[key];
+  if (!item || item.exclusive) return undefined;
+  return item.ilvl;
+}
+
 /** Rolls a random item of a random type that is allowed to drop at this ilvl. */
 export function rollDrop(dice: Dice, ilvl: number, magicFind = 0): DropCandidate | null {
   if (magicFind >= MAX_MAGIC_FIND) magicFind = MAX_MAGIC_FIND - 1;
@@ -57,10 +72,8 @@ export function rollDrop(dice: Dice, ilvl: number, magicFind = 0): DropCandidate
   const theType = itemList[type];
 
   const addItemToPool = (pool: DropCandidate[], rarity: string, key: string) => {
-    const candidate = theType[rarity][key];
-    // only add items with low enough iLvl and ones
-    // that aren't exclusive to a single mob to the pool
-    if (candidate.ilvl <= ilvl && !candidate?.exclusive) {
+    const level = randomDropLevel(type, rarity, key);
+    if (level !== undefined && level <= ilvl) {
       pool.push({ type, rarity, key });
     }
   };

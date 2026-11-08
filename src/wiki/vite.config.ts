@@ -4,6 +4,7 @@ import react from "@vitejs/plugin-react";
 import { getAppVersion } from "../../scripts/app-version.ts";
 import { pageHostUrl } from "../../scripts/page-host-url.ts";
 import { removeStaleBuilds } from "../../scripts/stale-builds.ts";
+import { mapLootsPlugin } from "../../scripts/map-loots-plugin.ts";
 
 /** Repo root. Vite is run from the root with `--config` (see npm scripts). */
 const repoRoot = path.resolve(import.meta.dirname, "../..");
@@ -21,7 +22,7 @@ export default defineConfig(({ mode, command }) => {
     /* Separate dep caches: the client and wiki dev servers run side by side and would invalidate a shared one. */
     cacheDir: path.join(repoRoot, "node_modules/.vite/wiki"),
     resolve: { tsconfigPaths: true },
-    plugins: [react(), removeStaleBuilds(path.join(repoRoot, "public"))],
+    plugins: [react(), removeStaleBuilds(path.join(repoRoot, "public")), mapLootsPlugin(repoRoot)],
     envDir: repoRoot,
     server: {
       host: true,
