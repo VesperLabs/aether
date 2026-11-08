@@ -2,7 +2,12 @@ import type { ParsedCommand } from "@/network";
 import type { PlayerAttackRequest, PlayerCastRequest } from "@/server/player";
 import type { CommandContext } from "@/server/net/command-context";
 import { isInRoom } from "@/server/player-room";
-import { cancelCast, hasCastTime, startCast as beginCast } from "@/server/player-cast";
+import {
+  cancelCast,
+  emitCastRefused,
+  hasCastTime,
+  startCast as beginCast,
+} from "@/server/player-cast";
 import { grantLungeMove } from "./movement";
 
 export function attack(
@@ -45,10 +50,15 @@ export function castSpell(
 
 export function startCast(ctx: CommandContext, { abilitySlot }: ParsedCommand<"startCast">) {
   const player = ctx.world.players[ctx.socketId];
+  if (!player) return;
   if (isInRoom(player)) beginCast(player, abilitySlot);
+  else emitCastRefused(player);
 }
 
 export function cancelCastCommand(ctx: CommandContext) {
   const player = ctx.world.players[ctx.socketId];
-  if (isInRoom(player)) cancelCast(player);
+  if (!player) return;
+  /* A client that thinks it is casting when the server has nothing pending still needs freeing */
+  if (isInRoom(player) && player.pendingCast) cancelCast(player);
+  else emitCastRefused(player);
 }

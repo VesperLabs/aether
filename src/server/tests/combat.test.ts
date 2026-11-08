@@ -153,6 +153,26 @@ describe("casting spells", () => {
     expect(player.state.lastCast.fireball).toBeFalsy();
   });
 
+  it("a start sent mid-cast is answered, so the client never waits on a cast it won't get", async () => {
+    const { socket, player } = await login("mage");
+    const cancels: Anything[] = [];
+    socket.on("playerCastCancelled", (payload: Anything) => cancels.push(payload));
+    socket.emit("startCast", { abilitySlot: 1 });
+    await server.run(socket, 100);
+    socket.emit("startCast", { abilitySlot: 1 });
+    await server.run(socket, 100);
+    expect(cancels).toEqual([{ socketId: player.socketId }]);
+  });
+
+  it("calling off a cast the server has no record of still frees the client", async () => {
+    const { socket, player } = await login("mage");
+    const cancels: Anything[] = [];
+    socket.on("playerCastCancelled", (payload: Anything) => cancels.push(payload));
+    socket.emit("cancelCast");
+    await server.run(socket, 100);
+    expect(cancels).toEqual([{ socketId: player.socketId }]);
+  });
+
   it("a rogue casting stealth becomes stealthed", async () => {
     const { socket, player } = await login("rogue");
     socket.emit("castSpell", { abilitySlot: 1, castAngle: 0 });

@@ -150,21 +150,25 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
     lastAngle = Math.atan2(stick.y, stick.x);
   }
 
+  /* Just after a throw or cast, keep facing the aim: walking off backs away, like after a bow shot */
+  const isKeepingAim = Date.now() < (hero.keepAimingUntil ?? 0);
+  const isFacingAim = hero.state.isAiming || isKeepingAim;
+
   /* Spin hero when aiming */
-  if (hero?.state.isAiming || hero.state.isAimingDodge) {
+  if (isFacingAim || hero.state.isAimingDodge) {
     /* With a controller, the right stick aims; let go of it and the aim stays where it was */
     if (getLastDevice() === "gamepad") {
       const angle = getGamepadAimAngle();
       if (angle !== null) {
         const from = { x: hero.x, y: hero.y + hero.bodyOffsetY };
         const target = { x: from.x + Math.cos(angle), y: from.y + Math.sin(angle) };
-        if (hero.state.isAiming) direction = getSpinDirection(from, target);
+        if (isFacingAim) direction = getSpinDirection(from, target);
         lastAngle = angle;
       }
     } else if (!isTouch) {
       const cursorPoint = pointer.positionToCamera(mainScene.cameras.main) as Phaser.Math.Vector2;
       /* Only a rooted aim turns the body; aiming a dodge keeps facing the way you walk */
-      if (hero.state.isAiming) {
+      if (isFacingAim) {
         direction = getSpinDirection({ x: hero.x, y: hero.y + hero.bodyOffsetY }, cursorPoint);
       }
       lastAngle = Between(hero.x, hero.y + hero.bodyOffsetY, cursorPoint.x, cursorPoint.y);

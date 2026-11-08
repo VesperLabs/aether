@@ -11,6 +11,13 @@ import type { LootItem } from "./loot-item";
 const PLAYER_GRAB_RANGE = 32;
 /** How long an instant cast holds the attack frame, in ms. */
 const CAST_POSE_MS = 300;
+/** How long the hero keeps facing its aim after a throw or cast, like a bow after its shot. */
+const KEEP_AIMING_MS = 500;
+
+/** Keeps the hero turned to its aim for a moment, so walking off reads as backing away. */
+export function keepAiming(player: Player) {
+  if (player.isHero) player.keepAimingUntil = Date.now() + KEEP_AIMING_MS;
+}
 
 /** What an attack or a cast needs from the server message that triggered it. */
 export interface CastArgs {
@@ -89,6 +96,7 @@ export function endCast(player: Player) {
 export function landCast(player: Player, { abilitySlot, castAngle }: CastArgs) {
   endCast(player);
   holdCastPose(player, CAST_POSE_MS);
+  keepAiming(player);
   const ability = player.getAbilityDetails(abilitySlot);
   player.scene.add.existing(new Spell(player.scene, { ...ability, castAngle, caster: player }));
 }
@@ -103,6 +111,7 @@ export function doCast(player: Player, { abilitySlot, castAngle }: CastArgs) {
     player.scene.socket.emit("castSpell", { abilitySlot, castAngle });
   }
   holdCastPose(player, CAST_POSE_MS);
+  if (!ability?.isLunge) keepAiming(player);
   /* Lunges dash the caster: the hero moves itself, others just leave the trail */
   if (ability?.isLunge) {
     player.state.lungeAt = Date.now();
