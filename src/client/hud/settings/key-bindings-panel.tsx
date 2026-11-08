@@ -258,9 +258,7 @@ export const KeyBindingsPanel = () => {
           {gamepadName
             ? `Connected: ${gamepadName.replace(/\s*\(.*\)$/, "")}`
             : "No controller found. Press a button on it to connect."}
-          {
-            " Left stick moves, right aims. A talks, or grabs with no one near. Select or Start opens menus."
-          }
+          {" Left stick moves, right aims. A grabs, d-pad up talks. Select or Start opens menus."}
         </Text>
       )}
       {device === "gamepad" && (

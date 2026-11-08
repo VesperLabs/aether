@@ -108,12 +108,6 @@ const tap = (key: string, modalOnly = false) => {
   window.dispatchEvent(keyEvent("keyup", key, modalOnly));
 };
 
-/* Whether an NPC is in reach, so the talk button grabs instead when no one is */
-let nearNpc = false;
-export const setNearNpc = (near: boolean) => {
-  nearNpc = near;
-};
-
 function readBindings() {
   const plain = new Map<number, BindAction>();
   const combos = new Map<string, BindAction>();
@@ -136,15 +130,9 @@ function releaseKeys() {
   usedModifiers.clear();
 }
 
-/** The key for an action; talk with no one in reach is a grab. */
-function keyForAction(action: BindAction) {
-  if (action === "talk" && !nearNpc) return keyFor("grab") ?? keyFor(action);
-  return keyFor(action);
-}
-
 /** Presses an action's key, held until the button that pressed it is let go. */
 function pressAction(index: number, action: BindAction | undefined) {
-  const key = action && keyForAction(action);
+  const key = action && keyFor(action);
   if (!key) return;
   send("keydown", key);
   fired.set(index, key);
@@ -178,7 +166,7 @@ function playRelease(index: number, bindings: ReturnType<typeof readBindings>) {
   /* A modifier tapped on its own */
   if (bindings.modifiers.has(index) && !usedModifiers.delete(index)) {
     const action = bindings.plain.get(index);
-    const tapKey = action && keyForAction(action);
+    const tapKey = action && keyFor(action);
     if (tapKey) tap(tapKey);
   }
 }
