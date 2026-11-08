@@ -18,7 +18,7 @@ import { emitPlayerInput } from "@/client/net/player-input";
 import { updateAttackCooldown, updateSpellCooldown } from "./hero-cooldowns";
 import { isTypableFieldActive } from "./typable-field";
 import type { SceneHud } from "@/client/scenes/hud-scene";
-import { getGamepadAim, getGamepadStick } from "./gamepad";
+import { getGamepadAim, getGamepadAimAngle, getGamepadStick } from "./gamepad";
 import { getLastDevice, isModalOpen } from "./last-device";
 import { isMenuMode } from "./pad-nav";
 import { heldSince } from "./held-keys";
@@ -154,13 +154,12 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
   if (hero?.state.isAiming || hero.state.isAimingDodge) {
     /* With a controller, the right stick aims; let go of it and the aim stays where it was */
     if (getLastDevice() === "gamepad") {
-      const aim = getGamepadAim();
-      if (aim.x || aim.y) {
-        const target = { x: hero.x + aim.x, y: hero.y + hero.bodyOffsetY + aim.y };
-        if (hero.state.isAiming) {
-          direction = getSpinDirection({ x: hero.x, y: hero.y + hero.bodyOffsetY }, target);
-        }
-        lastAngle = Math.atan2(aim.y, aim.x);
+      const angle = getGamepadAimAngle();
+      if (angle !== null) {
+        const from = { x: hero.x, y: hero.y + hero.bodyOffsetY };
+        const target = { x: from.x + Math.cos(angle), y: from.y + Math.sin(angle) };
+        if (hero.state.isAiming) direction = getSpinDirection(from, target);
+        lastAngle = angle;
       }
     } else if (!isTouch) {
       const cursorPoint = pointer.positionToCamera(mainScene.cameras.main) as Phaser.Math.Vector2;
@@ -181,12 +180,13 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
   const isAttacking = hero.state.isAttacking || hero.state.isHoldingAttack;
   if (isAttacking && !hero.state.isAiming && getLastDevice() === "gamepad") {
     const aim = getGamepadAim();
-    if (aim.x || aim.y) {
+    const angle = getGamepadAimAngle();
+    if ((aim.x || aim.y) && angle !== null) {
       direction = getSpinDirection(
         { x: hero.x, y: hero.y + hero.bodyOffsetY },
-        { x: hero.x + aim.x, y: hero.y + hero.bodyOffsetY + aim.y },
+        { x: hero.x + Math.cos(angle), y: hero.y + hero.bodyOffsetY + Math.sin(angle) },
       );
-      lastAngle = Math.atan2(aim.y, aim.x);
+      lastAngle = angle;
       if (hero.state.lastAngle !== lastAngle) {
         scene.socket.emit("changeDirection", { direction, lastAngle });
       }

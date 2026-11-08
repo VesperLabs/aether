@@ -7,7 +7,8 @@ import {
   openPadItemMenu,
   type PadItemMenuEvent,
 } from "@/client/input/pad-item-menu-events";
-import { holdNavItem } from "@/client/input/pad-nav";
+import { focusNavOn, holdNavItem } from "@/client/input/pad-nav";
+import { useAppContext } from "@/client/hud/app/context";
 import { CONSUMABLES_BASES, checkSlotsMatch } from "@/rules/inventory";
 
 /* As the chat's command list highlights its rows */
@@ -16,10 +17,27 @@ const HIGHLIGHT = "rgba(255,255,255,.12)";
 const SPACE = 8;
 
 /** What can be done with an item from its menu; the first is highlighted when it opens. */
-type Option = "Use" | "Unequip" | "Move" | "Drop";
+type Option =
+  | "Use"
+  | "Unequip"
+  | "Buy"
+  | "Sell"
+  | "Move"
+  | "To inventory"
+  | "To equipment"
+  | "Drop";
 
 /** What can be done with the item in `slot`; the first is highlighted when the menu opens. */
 function optionsFor(slot: Element) {
+  /* A shop's item: bought into the first free slot, or one picked with Move */
+  if (slot.getAttribute("data-location") === "shop") {
+    return [
+      ...(freeInventorySlot() ? [{ label: "Buy" as const, hint: "Into your inventory" }] : []),
+      /* Their menus may be shut: these open one, the item in hand to place */
+      { label: "To inventory" as const, hint: "Pick a slot to buy into" },
+      ...(equipLocation(slot) ? [{ label: "To equipment" as const, hint: "Buy and wear" }] : []),
+    ];
+  }
   const worn = isWorn(slot);
   return [
     /* Worn (equipment, abilities): take it off. Else use or put it on */
@@ -28,6 +46,8 @@ function optionsFor(slot: Element) {
         ? [{ label: "Unequip" as const, hint: "Into your inventory" }]
         : []
       : [{ label: "Use" as const, hint: "Use or equip" }]),
+    /* With a shop open, sold as dropping it on the NPC's menu does */
+    ...(openShop() ? [{ label: "Sell" as const, hint: "To the shop" }] : []),
     { label: "Move" as const, hint: "Pick up to place" },
     /* Last, so it's never what A lands on by habit. B closes the menu */
     { label: "Drop" as const, hint: "On the ground" },
@@ -37,20 +57,33 @@ function optionsFor(slot: Element) {
 const isWorn = (slot: Element) =>
   ["equipment", "abilities"].includes(slot.getAttribute("data-location") ?? "");
 
+/** The NPC's menu, while their shop is showing: dropping an item on it sells it. */
+const openShop = () => {
+  const shopSlot = document.querySelector(`.menu-keeper [data-location="shop"][data-slot-key]`);
+  return shopSlot?.getBoundingClientRect().width ? shopSlot.closest(".menu-keeper") : null;
+};
+
 /** The first empty slot in the inventory. */
 const freeInventorySlot = () =>
   [...document.querySelectorAll(`[data-location="inventory"][data-slot-key]`)].find(
     (s) => !s.getAttribute("data-base"),
   ) ?? null;
 
-/** Where `slot`'s item would be equipped: a free matching slot first, else one to swap with. */
-function equipSlotFor(slot: Element) {
+/** Which menu `slot`'s item is worn from, if it's worn at all. Needs no menu open. */
+function equipLocation(slot: Element) {
   const type = slot.getAttribute("data-slot-type");
   if (!type || isWorn(slot)) return null;
   /* Food and potions are eaten, bags opened, wherever they could also sit */
   const base = slot.getAttribute("data-base") ?? "";
   if (CONSUMABLES_BASES.includes(base) || base === "bag") return null;
-  const location = type === "spell" ? "abilities" : "equipment";
+  return type === "spell" ? "abilities" : "equipment";
+}
+
+/** Where `slot`'s item would be equipped: a free matching slot first, else one to swap with. */
+function equipSlotFor(slot: Element) {
+  const location = equipLocation(slot);
+  const type = slot.getAttribute("data-slot-type") ?? "";
+  if (!location) return null;
   const slots = [...document.querySelectorAll(`[data-location="${location}"][data-slot-key]`)];
   const fits = slots.filter(
     (s) => location === "abilities" || checkSlotsMatch(type, s.getAttribute("data-slot-key")),
@@ -58,8 +91,40 @@ function equipSlotFor(slot: Element) {
   return fits.find((s) => !s.getAttribute("data-base")) ?? fits[0] ?? null;
 }
 
-function act(option: Option, slot: Element) {
+type CarryMenu = "inventory" | "equipment" | "abilities";
+
+/** Opens that menu, if shut. */
+type OpenMenu = (menu: CarryMenu) => void;
+
+/** How many frames to wait for a menu to open before giving up. */
+const OPEN_FRAMES = 30;
+
+/**
+ * Picks up `slot`'s item, opens `menu`, and puts the highlight on the slot `find` picks there.
+ * A shut menu's slots may not be on the page yet, so it's found once the menu shows.
+ */
+function carryTo(slot: Element, menu: CarryMenu, find: () => Element | null, openMenu: OpenMenu) {
+  openMenu(menu);
+  holdNavItem(slot);
+  let frames = 0;
+  const land = () => {
+    const target = find();
+    if (target?.getBoundingClientRect().width) return focusNavOn(target);
+    if (++frames < OPEN_FRAMES) requestAnimationFrame(land);
+  };
+  requestAnimationFrame(land);
+}
+
+const firstInventorySlot = () =>
+  freeInventorySlot() ?? document.querySelector(`[data-location="inventory"][data-slot-key]`);
+
+function act(option: Option, slot: Element, openMenu: OpenMenu) {
   openPadItemMenu(null);
+  if (option === "To inventory") return carryTo(slot, "inventory", firstInventorySlot, openMenu);
+  const wornIn = equipLocation(slot);
+  if (option === "To equipment" && wornIn) {
+    return carryTo(slot, wornIn, () => equipSlotFor(slot), openMenu);
+  }
   if (option === "Drop") {
     const ground = document.querySelector("#game canvas");
     if (ground) slot.dispatchEvent(new CustomEvent(PAD_DROP_EVENT, { detail: ground }));
@@ -69,7 +134,10 @@ function act(option: Option, slot: Element) {
     slot.dispatchEvent(
       target ? new CustomEvent(PAD_DROP_EVENT, { detail: target }) : new CustomEvent(PAD_USE_EVENT),
     );
-  } else if (option === "Unequip") {
+  } else if (option === "Sell") {
+    const shop = openShop();
+    if (shop) slot.dispatchEvent(new CustomEvent(PAD_DROP_EVENT, { detail: shop }));
+  } else if (option === "Unequip" || option === "Buy") {
     const target = freeInventorySlot();
     if (target) slot.dispatchEvent(new CustomEvent(PAD_DROP_EVENT, { detail: target }));
   } else if (option === "Move") {
@@ -83,6 +151,11 @@ function act(option: Option, slot: Element) {
  */
 export const PadItemMenu = () => {
   const [slot, setSlot] = useState<Element | null>(null);
+  const { setTabInventory, setTabEquipment, setTabAbilities } = useAppContext();
+  const openMenu: OpenMenu = (menu) =>
+    ({ inventory: setTabInventory, abilities: setTabAbilities, equipment: setTabEquipment })[menu](
+      true,
+    );
 
   useEffect(() => {
     const onMenu = (e: Event) => setSlot((e as PadItemMenuEvent).detail);
@@ -119,7 +192,7 @@ export const PadItemMenu = () => {
           <Box
             key={label}
             as="button"
-            onClick={() => act(label, slot)}
+            onClick={() => act(label, slot, openMenu)}
             sx={{
               gridColumn: "1 / -1",
               display: "grid",

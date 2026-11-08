@@ -126,11 +126,12 @@ export const theme = {
       "&.active::before, &:has(.pressed)::before": {
         content: '" "',
         display: "block",
-        /* Pinned to the button's edges, so it fits whatever the padding or alignment inside. */
+        /* Pinned 1px inside the button's edges, so it fits whatever the padding or alignment
+           inside, with a gap between it and the button's border */
         position: "absolute",
-        top: 0,
-        left: 0,
-        right: 0,
+        top: 1,
+        left: 1,
+        right: 1,
         height: 4,
         borderRadius: "inherit",
         borderBottomLeftRadius: 0,

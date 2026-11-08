@@ -64,3 +64,36 @@ export function inView(el: Element, root: Element) {
 
 /** How far apart two spans are, or 0 when they overlap. */
 const gap = (a0: number, a1: number, b0: number, b1: number) => Math.max(0, b0 - a1, a0 - b1);
+
+/**
+ * Scrolls `el` into view inside the pane it's in, and nothing else. `scrollIntoView` also
+ * scrolls clipped boxes that aren't meant to scroll, and the page itself, knocking the HUD
+ * out of line (a quest at the menu's edge, with its tooltip open).
+ */
+function scrollIntoPane(el: Element) {
+  const pane = scroller(el, document.body);
+  if (!pane) return;
+  const r = el.getBoundingClientRect();
+  const p = pane.getBoundingClientRect();
+  if (r.top < p.top) pane.scrollTop -= p.top - r.top;
+  else if (r.bottom > p.bottom) pane.scrollTop += r.bottom - p.bottom;
+  if (r.left < p.left) pane.scrollLeft -= p.left - r.left;
+  else if (r.right > p.right) pane.scrollLeft += r.right - p.right;
+}
+
+/**
+ * Scrolls `el`'s pane to show it, when it's cut off: to the pane's end for its first or last
+ * stop, as scrolling it into view stops at its edge, leaving the pane's padding (and the
+ * highlight's line) cut off. One already in full view leaves the pane where it is.
+ */
+export function scrollToFocus(el: Element, stops: (root: Element) => Element[]) {
+  const pane = scroller(el, document.body);
+  if (!pane) return;
+  const r = el.getBoundingClientRect();
+  const p = pane.getBoundingClientRect();
+  if (r.top >= p.top && r.bottom <= p.bottom) return;
+  scrollIntoPane(el);
+  const inPane = stops(pane).filter((c) => scroller(c, document.body) === pane);
+  if (inPane[0] === el) pane.scrollTop = 0;
+  else if (inPane[inPane.length - 1] === el) pane.scrollTop = pane.scrollHeight;
+}

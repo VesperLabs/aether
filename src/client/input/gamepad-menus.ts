@@ -1,6 +1,7 @@
 import {
   activateNavFocus,
   cancelNavHold,
+  leaveNavPopover,
   dropNavFocus,
   focusSelectedTab,
   itemUnderNav,
@@ -10,6 +11,7 @@ import {
   useNavFocus,
   type NavDirection,
 } from "./pad-nav";
+import { closeNavList } from "./pad-list";
 import { areMenusOpen, isModalOpen } from "./last-device";
 import { isPadItemMenuOpen, openPadItemMenu } from "./pad-item-menu-events";
 import {
@@ -93,6 +95,8 @@ export function navPress(
     }
     case B:
       if (cancelNavHold()) return;
+      if (closeNavList()) return;
+      if (leaveNavPopover()) return;
       if (isModalOpen() || areMenusOpen()) return tap("ESCAPE");
       return setMenuMode(false);
     case X:

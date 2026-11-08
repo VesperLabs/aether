@@ -1,5 +1,6 @@
 import { Box, Icon, BASE_SLOT_STYLE, SLOT_SIZE } from "@/ui";
 import { QuestTooltip } from "./quest-tooltip";
+import { PAD_STOP_ATTR } from "@/client/input/pad-nav";
 import { useAppContext } from "@/client/hud/app/context";
 import { nanoid } from "nanoid";
 import { isMobile } from "@/ui";
@@ -56,7 +57,14 @@ export const Quest = ({ quest, parent = "keeper" }: { quest: QuestData; parent?:
   const show = currentTooltipId === TOOLTIP_ID;
 
   return (
-    <Box sx={BASE_SLOT_STYLE} {...outerMouseBinds} onTouchStart={() => handleMouseEnter()}>
+    <Box
+      sx={BASE_SLOT_STYLE}
+      {...outerMouseBinds}
+      onTouchStart={() => handleMouseEnter()}
+      /* A on it (after its tooltip's Close) opens the tooltip again */
+      onClick={handleMouseEnter}
+      {...{ [PAD_STOP_ATTR]: true }}
+    >
       <Box
         data-tooltip-id={TOOLTIP_ID}
         sx={{
@@ -68,7 +76,8 @@ export const Quest = ({ quest, parent = "keeper" }: { quest: QuestData; parent?:
         }}
       >
         <Icon icon={icon} sx={{ width: "100%", height: "100%", transform: "scale(2)" }} />
-        <Box sx={{ position: "absolute", bottom: 1, right: 1 }}>{getQuestEmoji()}</Box>
+        {/* Top-right: the controller's A badge sits on the bottom-right corner */}
+        <Box sx={{ position: "absolute", top: 1, right: 1 }}>{getQuestEmoji()}</Box>
       </Box>
       <QuestTooltip
         player={hero}

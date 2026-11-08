@@ -11,7 +11,14 @@ import {
   leaveTyping,
   type PadKeyboardAction,
 } from "@/client/input/pad-keyboard-events";
-import { backspace, isTextField, pressEnter, typeInto, type TextField } from "./text-entry";
+import {
+  backspace,
+  isTextField,
+  pressEnter,
+  pressEscape,
+  typeInto,
+  type TextField,
+} from "./text-entry";
 
 const ROWS = [
   ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
@@ -141,7 +148,14 @@ export const PadKeyboard = () => {
     if (key === "shift") return setShift((on) => !on);
     if (key === "hide") return field.blur();
     /* Backing out of an empty field puts the keyboard away, as on a console */
-    if (key === "back") return field.value ? backspace(field) : field.blur();
+    if (key === "back") {
+      if (field.value) return backspace(field);
+      field.blur();
+      /* Out of the menus' box (chat) it closes too, as Escape does, not just the keyboard. A
+       * modal's field only puts the keyboard away, so B doesn't close the modal with it */
+      if (!field.closest(`[${MODAL_ATTR}]`)) pressEscape();
+      return;
+    }
     if (key === "done") {
       /* In a modal Done only puts the keyboard away, and Start confirms the modal (login,
        * rename). Chat has no confirm button, so there Done sends, as Enter does */

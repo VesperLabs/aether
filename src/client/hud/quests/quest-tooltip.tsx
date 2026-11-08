@@ -16,6 +16,9 @@ import type { PlayerQuestStatus } from "@/rules/quests";
 import type { ClientGameSocket } from "@/network";
 import type { HudCharacter } from "@/client/hud/app/context";
 import { Tooltip } from "@/ui";
+import { PAD_POPOVER_ATTR } from "@/client/input/pad-nav";
+import { getLastDevice, subscribeLastDevice } from "@/client/input/last-device";
+import { useSyncExternalStore } from "react";
 
 function getKeeperByQuestName(quest: string) {
   for (const key of Object.keys(keepers) as KeeperId[]) {
@@ -90,6 +93,8 @@ export const QuestTooltip = ({
   player: HudCharacter;
 }) => {
   const { socket } = useAppContext();
+  /* A controller closes it by moving off the quest: Close would only be in the way */
+  const onPad = useSyncExternalStore(subscribeLastDevice, getLastDevice) === "gamepad";
   const { rewards } = quest ?? {};
   const keeper = getKeeperByQuestName(quest?.id);
   const questDialogue = useQuestDialogue(quest, playerQuest);
@@ -104,6 +109,8 @@ export const QuestTooltip = ({
   return (
     <Tooltip id={tooltipId} style={{ pointerEvents: "all" }} isOpen={show}>
       <Flex
+        /* Its buttons are reached with the controller from the quest */
+        {...{ [PAD_POPOVER_ATTR]: true }}
         sx={{
           maxWidth: 200,
           alignItems: "center",
@@ -148,14 +155,16 @@ export const QuestTooltip = ({
         </Flex>
         <TextDivider />
         <Flex sx={{ gap: 1 }}>
-          <Button
-            variant="wood"
-            onClick={() => {
-              onClose();
-            }}
-          >
-            Close
-          </Button>
+          {!onPad && (
+            <Button
+              variant="wood"
+              onClick={() => {
+                onClose();
+              }}
+            >
+              Close
+            </Button>
+          )}
           <QuestStatusButton
             parent={parent}
             playerQuest={playerQuest}

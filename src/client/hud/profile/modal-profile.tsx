@@ -139,24 +139,6 @@ export const ModalProfile = () => {
         <Modal.Header icon="./assets/icons/mirror.png">Profile</Modal.Header>
         <Modal.Body>
           <Flex sx={{ flexDirection: "column", gap: 3 }}>
-            {/* The whole row renames; the pen just shows that it can. */}
-            <Flex
-              role="button"
-              title="Change name"
-              sx={{
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: 2,
-                bg: "shadow.10",
-                p: 1,
-                cursor: "pointer",
-              }}
-              onClick={() => setRenaming(true)}
-            >
-              <Box sx={{ width: 19 }} />
-              <Text>{userName}</Text>
-              <MenuButton iconName="pen" size={19} onClick={() => setRenaming(true)} />
-            </Flex>
             {/* Small enough side by side for a phone held upright, so it needs no second layout */}
             <Flex sx={{ gap: 3, alignItems: "flex-end" }}>
               <Flex
@@ -203,6 +185,24 @@ export const ModalProfile = () => {
                   ...(pickers.length < 2 ? [<Box key={`${part}-gap`} />] : []),
                 ])}
               </Grid>
+            </Flex>
+            {/* The whole row renames; the pen just shows that it can. */}
+            <Flex
+              role="button"
+              title="Change name"
+              sx={{
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 2,
+                bg: "shadow.10",
+                p: 1,
+                cursor: "pointer",
+              }}
+              onClick={() => setRenaming(true)}
+            >
+              <Box sx={{ width: 19 }} />
+              <Text>{userName}</Text>
+              <MenuButton iconName="pen" size={19} onClick={() => setRenaming(true)} />
             </Flex>
           </Flex>
         </Modal.Body>

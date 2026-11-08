@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState, type ReactNode } from "react";
-import { Box, Button, PadCombo, Flex, Select, Text, TextDivider } from "@/ui";
+import { useCallback, useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
+import { Box, Button, PadCombo, Flex, Select, Slider, Text, TextDivider } from "@/ui";
 import { CONTROL_GOLD } from "@/ui/kit/modal-gilding";
 import { CONTROL_TEXT } from "@/ui/kit/theme";
 import { getEventKeyName, getKeyDisplayLabel } from "@/ui/kit/keyboard-key";
@@ -14,7 +14,42 @@ import {
   type BindDevice,
 } from "@/client/input/key-bindings";
 import { getGamepad, pauseGamepadButtons, readPressed } from "@/client/input/gamepad";
+import {
+  MAX_DEAD_ZONE,
+  getDeadZones,
+  resetDeadZones,
+  setDeadZone,
+  subscribeDeadZones,
+  type DeadZones,
+} from "@/client/input/dead-zones";
 import { useBindings } from "./use-key-bindings";
+
+const DEAD_ZONE_ROWS: { stick: keyof DeadZones; label: string }[] = [
+  { stick: "move", label: "Move dead zone" },
+  { stick: "aim", label: "Aim dead zone" },
+];
+
+/** How far each stick leans before it counts, as sliders from none to `MAX_DEAD_ZONE`. */
+const DeadZoneSliders = () => {
+  const zones = useSyncExternalStore(subscribeDeadZones, getDeadZones);
+  return DEAD_ZONE_ROWS.map(({ stick, label }) => (
+    <Flex key={stick} sx={{ alignItems: "center", gap: 2, px: 2 }}>
+      <Text sx={{ flex: 1, lineHeight: 1 }}>{label}</Text>
+      <Flex sx={{ flex: 1, alignItems: "center", gap: 2 }}>
+        <Slider
+          label={label}
+          value={zones[stick] / MAX_DEAD_ZONE}
+          color={CONTROL_GOLD}
+          thumbSize={12}
+          onChange={(value) => setDeadZone(stick, value * MAX_DEAD_ZONE)}
+        />
+        <Text sx={{ width: 28, textAlign: "right", fontSize: 0 }}>
+          {Math.round(zones[stick] * 100)}%
+        </Text>
+      </Flex>
+    </Flex>
+  ));
+};
 
 const DEVICES = [
   { value: "keyboard", label: "Keyboard" },
@@ -196,15 +231,28 @@ export const KeyBindingsPanel = () => {
 
   return (
     <Flex sx={{ flexDirection: "column", gap: 2, fontSize: 1 }}>
-      <Select
-        label="Device"
-        value={device}
-        options={DEVICES}
-        onChange={(value) => {
-          setCapture(null);
-          setDevice(value as BindDevice);
-        }}
-      />
+      <Flex sx={{ gap: 2, alignItems: "center" }}>
+        <Select
+          label="Device"
+          value={device}
+          options={DEVICES}
+          onChange={(value) => {
+            setCapture(null);
+            setDevice(value as BindDevice);
+          }}
+          sx={{ flex: 1 }}
+        />
+        <Button
+          variant="wood"
+          onClick={() => {
+            setCapture(null);
+            resetBindings(device);
+            if (device === "gamepad") resetDeadZones();
+          }}
+        >
+          Reset
+        </Button>
+      </Flex>
       {device === "gamepad" && (
         <Text sx={{ fontSize: 0, opacity: 0.8, lineHeight: 1.3 }}>
           {gamepadName
@@ -214,6 +262,12 @@ export const KeyBindingsPanel = () => {
             " Left stick moves, right aims. A talks, or grabs with no one near. Select or Start opens menus."
           }
         </Text>
+      )}
+      {device === "gamepad" && (
+        <Flex sx={{ flexDirection: "column", gap: 1 }}>
+          <TextDivider>Sticks</TextDivider>
+          <DeadZoneSliders />
+        </Flex>
       )}
       {ACTION_GROUPS.map((group) => (
         <Flex key={group.label} sx={{ flexDirection: "column", gap: 1 }}>
@@ -249,15 +303,6 @@ export const KeyBindingsPanel = () => {
           ? "Click, then press a key. Esc cancels, ⌫ clears."
           : "Click, then press a button or hold one + press another."}
       </Text>
-      <Button
-        variant="wood"
-        onClick={() => {
-          setCapture(null);
-          resetBindings(device);
-        }}
-      >
-        Reset {device === "keyboard" ? "keys" : "buttons"}
-      </Button>
     </Flex>
   );
 };

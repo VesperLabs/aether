@@ -34,9 +34,11 @@ const shownPanels = (root: Element, isShown: (el: Element) => boolean) =>
 /* A menu button just pressed, waiting for the panel it opens to show */
 let opening: { from: Element; before: Set<Element>; until: number } | null = null;
 
-/** A menu button (anything outside a panel) was pressed: watch for the panel it opens. */
+/**
+ * A button was pressed: watch for a panel it opens. A menu button opens one, as does a tab
+ * button inside a panel (an NPC's shop and quests, inside theirs).
+ */
 export function watchForPanel(from: Element, root: Element, isShown: (el: Element) => boolean) {
-  if (from.closest(PANEL)) return;
   opening = { from, before: shownPanels(root, isShown), until: performance.now() + OPEN_WAIT_MS };
 }
 

@@ -7,6 +7,8 @@ import type { UserSettings } from "@/rules/world";
 import type { Player } from "@/client/views/player";
 import type { Sign } from "@/client/views/sign";
 
+export type KeeperTab = "greet" | "shop" | "quests" | "home";
+
 /** A character in the HUD's lists: the party, the room's players. */
 export type HudCharacter = FullCharacterWire;
 
@@ -68,6 +70,7 @@ interface AppContextValue {
   setTabEquipment: SetState<boolean>;
   setTabInventory: SetState<boolean>;
   setTabKeeper: SetState<boolean>;
+  setKeeperTab: SetState<KeeperTab>;
   setKeeper: SetState<KeeperView | undefined>;
   setTabChat: SetState<boolean>;
   setTabProfile: SetState<boolean>;
@@ -112,6 +115,8 @@ interface AppContextValue {
   tabSettings: boolean;
   keeper: KeeperView | undefined; // data related to NPC you are chatting with
   tabKeeper: boolean;
+  /** Which of the NPC's tabs is showing, while talking to one. */
+  keeperTab: KeeperTab;
   /** The HUD only renders once the hero exists (after login), so this is never null in it. */
   hero: HudCharacter;
   players: Array<HudCharacter>;
