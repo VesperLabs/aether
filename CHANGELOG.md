@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.22.0](https://github.com/VesperLabs/aether/compare/v0.21.0...v0.22.0) (2026-11-08)
+
+
+### Features
+
+* wiki says where each item really comes from ([#281](https://github.com/VesperLabs/aether/issues/281)) ([85e980e](https://github.com/VesperLabs/aether/commit/85e980eabb70569c9255d728629b77c86b730c6f))
+
 ## [0.21.0](https://github.com/VesperLabs/aether/compare/v0.20.0...v0.21.0) (2026-11-08)
 
 
