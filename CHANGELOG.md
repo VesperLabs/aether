@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.18.0](https://github.com/VesperLabs/aether/compare/v0.17.0...v0.18.0) (2026-11-08)
+
+
+### Features
+
+* actors built from parts, companions, and bots as NPCs with a mind ([#263](https://github.com/VesperLabs/aether/issues/263)) ([ee4a489](https://github.com/VesperLabs/aether/commit/ee4a4897df6e585c36a0899b67ba91668075e252))
+
+
+### Bug Fixes
+
+* companions follow through every door, warp to their owner and dissolve in ([#265](https://github.com/VesperLabs/aether/issues/265)) ([de268ac](https://github.com/VesperLabs/aether/commit/de268ac1d837f6bbc999250338a0f3ccd61e9bec))
+
 ## [0.17.0](https://github.com/VesperLabs/aether/compare/v0.16.0...v0.17.0) (2026-11-08)
 
 
