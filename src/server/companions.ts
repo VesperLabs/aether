@@ -1,4 +1,3 @@
-import type { MobBehavior } from "@/content";
 import { getFullCharacterState } from "@/network/sync";
 import type { GameEventBus, Point, RoomData, System } from "@/rules/world";
 import { isAlly } from "./allegiance-adapter";
@@ -17,34 +16,16 @@ const CATCH_UP_DISTANCE = 480;
 /** How far from its owner a companion appears when it catches up. */
 const SIDE_OFFSET = 24;
 
-/** What a tamed NPC was before, so releasing it puts it back. Summoned ones have none: they vanish. */
-interface WildSelf {
-  room: RoomData;
-  startingCoords: Point;
-  behaviors?: readonly MobBehavior[];
-  isStatic?: boolean;
-}
-const wildSelves = new WeakMap<Npc, WildSelf | "summoned">();
-
 /** Every NPC `ownerId` owns. */
 export function companionsOf(world: ServerWorld, ownerId: string): Npc[] {
   return Object.values(world.npcs).filter((npc) => npc.state.ownerId === ownerId);
 }
 
-/**
- * Makes `npc` belong to `owner`: it stops picking fights, follows them and fights for them. A
- * `summoned` one was made to be theirs, so it vanishes when released instead of going wild.
- */
-export function tameNpc(npc: Npc, owner: Player, { summoned = false } = {}) {
-  if (summoned) wildSelves.set(npc, "summoned");
-  if (!wildSelves.has(npc)) {
-    wildSelves.set(npc, {
-      room: npc.room,
-      startingCoords: npc.startingCoords,
-      behaviors: npc.behaviors,
-      isStatic: npc.state.isStatic,
-    });
-  }
+/** Actors players talk to (shopkeepers, quest givers) are never anyone's companion. */
+export const canTame = (npc: Npc) => !npc.talks && !npc.state.ownerId && !npc.state.isDead;
+
+/** Makes a fresh NPC belong to `owner`: it stops picking fights, follows them and fights for them. */
+export function makeCompanion(npc: Npc, owner: Player) {
   npc.state.ownerId = owner.socketId;
   npc.state.isStatic = false;
   npc.state.isResetting = false;
@@ -53,18 +34,21 @@ export function tameNpc(npc: Npc, owner: Player, { summoned = false } = {}) {
   npc.setLockedPlayerId(null);
 }
 
-/** Lets a companion go: a tamed one goes back to being what it was, where it was; a summoned one vanishes. */
+/**
+ * Takes a wild NPC out of the fight as if caught: it drops (no exp, no loot) and respawns at its
+ * spot as usual, so taming never empties the map. The caller gives the owner a copy.
+ */
+export function catchNpc(npc: Npc) {
+  npc.setDead();
+  npc.stats.hp = 0;
+  npc.world.io
+    .to(npc.room.name)
+    .emit("assignDamage", [{ type: "death", amount: 0, from: npc.id, to: npc.id }] as Hit[]);
+}
+
+/** Lets a companion go. It was only ever a copy, so it leaves the world. */
 export function releaseNpc(npc: Npc) {
-  const wild = wildSelves.get(npc);
-  wildSelves.delete(npc);
-  if (wild === "summoned") return removeNpc(npc);
-  npc.state.ownerId = null;
-  npc.threat = {};
-  npc.setLockedPlayerId(null);
-  if (!wild) return;
-  npc.behaviors = wild.behaviors;
-  npc.state.isStatic = wild.isStatic;
-  moveNpc(npc, wild.room, wild.startingCoords);
+  removeNpc(npc);
 }
 
 /** Takes an NPC out of the world and off its room's screens. */

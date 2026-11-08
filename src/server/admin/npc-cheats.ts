@@ -1,7 +1,14 @@
 import { isActorId } from "@/content";
-import { entitiesInRoom } from "@/rules/world";
+import { entitiesInRoom, type Point } from "@/rules/world";
 import { getFullCharacterState } from "@/network/sync";
-import { companionsOf, releaseNpc, removeNpc, tameNpc } from "@/server/companions";
+import {
+  canTame,
+  catchNpc,
+  companionsOf,
+  makeCompanion,
+  releaseNpc,
+  removeNpc,
+} from "@/server/companions";
 import { spawnNpc } from "@/server/game-world";
 import type { Npc } from "@/server/npc";
 import type { PlayerInRoom } from "@/server/player-room";
@@ -53,32 +60,48 @@ const despawn: Cheat = (ctx, player, _args, reply) => {
   reply.info(`Removed ${spawned.length} spawned NPCs.`);
 };
 
-/** `/npc tame [actor]`: the nearest unowned NPC (of that actor, if named) becomes yours. */
+/** Spawns `actor` at `at` as the player's companion. Undefined if it can't be tamed (it talks). */
+function spawnCompanion(world: ServerWorld, player: PlayerInRoom, actor: string, at: Point) {
+  const npc = spawnNpc(world, player.room, { name: actor, ...at });
+  if (!npc) return;
+  if (!canTame(npc)) {
+    delete world.npcs[npc.id];
+    world.netIds.release(npc.id);
+    return;
+  }
+  makeCompanion(npc, player);
+  world.io.to(player.roomName).emit("npcJoin", getFullCharacterState(npc));
+  return npc;
+}
+
+/**
+ * `/npc tame [actor]`: catches the nearest wild NPC (of that actor, if named). You get a copy; the
+ * wild one drops and respawns at its spot, so the map never runs out.
+ */
 const tame: Cheat = (ctx, player, [actor], reply) => {
-  const candidates = entitiesInRoom(ctx.world.npcs, player.roomName).filter(
-    (n) =>
-      !n.state.ownerId &&
-      !n.state.isDead &&
-      (!actor || n.name === actor) &&
-      Math.hypot(n.x - player.x, n.y - player.y) <= TAME_RANGE,
-  );
   const distance = (n: Npc) => Math.hypot(n.x - player.x, n.y - player.y);
-  const nearest = candidates.sort((a, b) => distance(a) - distance(b))[0];
-  if (!nearest) return reply.error(`No ${actor ?? "NPC"} close enough to tame.`);
-  tameNpc(nearest, player);
-  reply.info(`${nearest.profile?.userName ?? nearest.name} is now your companion.`);
+  const nearest = entitiesInRoom(ctx.world.npcs, player.roomName)
+    .filter((n) => canTame(n) && (!actor || n.name === actor) && distance(n) <= TAME_RANGE)
+    .sort((a, b) => distance(a) - distance(b))[0];
+  if (!nearest) return reply.error(`No tameable ${actor ?? "NPC"} close enough.`);
+  const pet = spawnCompanion(ctx.world, player, nearest.name, { x: nearest.x, y: nearest.y });
+  if (!pet) return reply.error(`Could not tame ${nearest.name}.`);
+  catchNpc(nearest);
+  reply.info(`${pet.profile?.userName ?? pet.name} is now your companion.`);
 };
 
-/** `/npc summon <actor>`: spawns an actor already tamed. */
+/** `/npc summon <actor>`: a new companion at your side. */
 const summon: Cheat = (ctx, player, [actor], reply) => {
   if (!actor || !isActorId(actor)) return reply.error("Usage: /npc summon <actor>");
-  const [npc] = spawnAround(ctx.world, player, actor, 1);
-  if (!npc) return reply.error(`Could not summon ${actor}.`);
-  tameNpc(npc, player, { summoned: true });
-  reply.info(`Summoned ${npc.profile?.userName ?? actor}.`);
+  const pet = spawnCompanion(ctx.world, player, actor, {
+    x: player.x + SPAWN_DISTANCE,
+    y: player.y,
+  });
+  if (!pet) return reply.error(`${actor} can't be a companion.`);
+  reply.info(`Summoned ${pet.profile?.userName ?? actor}.`);
 };
 
-/** `/npc dismiss`: lets every companion go: tamed ones back to what they were, summoned ones vanish. */
+/** `/npc dismiss`: sends every companion away. */
 const dismiss: Cheat = (ctx, player, _args, reply) => {
   const pets = companionsOf(ctx.world, player.socketId);
   for (const npc of pets) releaseNpc(npc);

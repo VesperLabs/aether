@@ -68,9 +68,9 @@ const RARITY_OPTIONS = ITEM_BUILD_RARITIES.map((value) => ({ value, rarity: valu
 const NPC_ACTION_OPTIONS = [
   { value: "spawn", hint: "add NPCs next to you" },
   { value: "despawn", hint: "remove the NPCs you spawned in this room" },
-  { value: "tame", hint: "make the nearest NPC your companion" },
+  { value: "tame", hint: "catch the nearest NPC as your companion" },
   { value: "summon", hint: "spawn an NPC as your companion" },
-  { value: "dismiss", hint: "let your companions go" },
+  { value: "dismiss", hint: "send your companions away" },
   { value: "list", hint: "your companions" },
 ];
 const NPC_ACTION: ChatArg = { name: "action", kind: "text" };
