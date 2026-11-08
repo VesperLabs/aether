@@ -18,6 +18,8 @@ import type { Player } from "./player";
 const BALL_DEPTH_AHEAD = 2;
 /** How fast the ball spins in flight, in degrees per second. */
 const SPIN_SPEED = 900;
+/** How much faster or slower than `SPIN_SPEED` a throw may spin, as a share of it. */
+const SPIN_SPREAD = 0.4;
 /** How long a ball that missed or broke open takes to pixelate away, in ms. */
 const PIXELATE_MS = 300;
 /** How long a missed ball lies on the ground before it goes, in ms. */
@@ -113,14 +115,25 @@ export function playThrownBall(scene: Phaser.Scene, effect: BallEffectWire, targ
     target?.off(Phaser.GameObjects.Events.DESTROY, onTargetGone);
   });
 
+  /* Each throw spins a little differently, from a start angle at its own speed. Seeded by the
+   * effect's id, so everyone watching sees it land at the same angle */
+  const seed = hashId(effect.id);
+  const startAngle = (seed % 360) - 180;
+  const spinSpeed =
+    SPIN_SPEED * (1 - SPIN_SPREAD + (2 * SPIN_SPREAD * ((seed >>> 9) % 1000)) / 1000);
+  /* Its spin `t` of the way through the flight */
+  const flightAngle = (t: number) => startAngle + (spin * spinSpeed * t * flightMs) / 1000;
+
   const land = () => {
-    ball.setAngle(0);
     const sinceLanding = Math.max(0, ageMs - flightMs);
     if (!effect.targetId) {
+      /* A miss lies on the ground the way it came down */
+      ball.setAngle(flightAngle(1));
       place(to);
       return void pixelateAway(Math.max(0, LIE_MS - sinceLanding));
     }
-    /* Rides on its creature while it struggles, until the server ends it */
+    /* Rides upright on its creature while it struggles, until the server ends it */
+    ball.setAngle(0);
     follow();
     scene.events.on("update", follow);
     stopStruggle = playCaptureStruggle(ball, struggleMs, sinceLanding);
@@ -140,7 +153,7 @@ export function playThrownBall(scene: Phaser.Scene, effect: BallEffectWire, targ
       const t = tween.getValue() ?? 0;
       const at = track();
       place({ x: from.x + (at.x - from.x) * t, y: from.y + (at.y - from.y) * t });
-      ball.setAngle((spin * SPIN_SPEED * t * flightMs) / 1000);
+      ball.setAngle(flightAngle(t));
     },
     onComplete: land,
   });
@@ -157,4 +170,14 @@ function dissolveWithFlash(ball: Phaser.GameObjects.Image, follow: () => Point) 
 function hitCenter(player: Player): Point {
   const box = characterHitBox(player);
   return { x: box.x, y: box.y };
+}
+
+/** A steady number from an effect id (FNV-1a). */
+function hashId(id: string) {
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < id.length; i++) {
+    hash ^= id.charCodeAt(i);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return hash >>> 0;
 }
