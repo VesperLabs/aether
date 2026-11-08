@@ -17,6 +17,15 @@ export { resolveAsset } from "./assets/resolve-asset";
 export { soundList } from "./assets/sound-list";
 export { hairTints, skinTints } from "./assets/tints";
 export { faceTextures, genders, hairTextures, whiskersTextures } from "./assets/looks";
+export {
+  BOT_NAMES,
+  BOT_PERSONALITY_IDS,
+  botPersonalities,
+  isBotPersonalityId,
+  type BotPersonality,
+  type BotPersonalityId,
+  type BotStrategyId,
+} from "./bots";
 export { buffList, type BuffName } from "./buffs/buff-list";
 export type { BuffDefinition } from "./buffs/buff-types";
 export type { TriggerDefinition } from "./buffs/trigger-types";
@@ -57,5 +66,5 @@ export { QuestBuilder } from "./quests/quest-builder";
 export { questList, type QuestId } from "./quests/quest-list";
 export { spellDetails } from "./spells/spell-details";
 export type { SpellDefinition } from "./spells/spell-types";
-export type { CharClass } from "./stats";
+export { CHAR_CLASSES, type CharClass } from "./stats";
 export { PREVIEW_DICE, cloneJson, randomNumber, type Dice } from "./random";

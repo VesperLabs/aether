@@ -26,19 +26,19 @@ export function peerConnect(
   ctx: CommandContext,
   { peerId, socketId }: ParsedCommand<"peerConnect">,
 ) {
-  const { socket } = ctx;
-  socket.to(socketId).emit("connectPeer", { peerId, socketId });
+  const { actor } = ctx;
+  actor.toOthers(socketId).emit("connectPeer", { peerId, socketId });
 }
 
 export async function updateUserSetting(
   ctx: CommandContext,
   { name, value }: ParsedCommand<"updateUserSetting">,
 ) {
-  const { world, socket, socketId } = ctx;
+  const { world, actor, socketId } = ctx;
   const player: Player = world.players[socketId];
   await world.db.updateUserSetting(player, {
     name,
     value,
   });
-  socket.emit("updateUserSetting", { name, value });
+  actor.emit("updateUserSetting", { name, value });
 }

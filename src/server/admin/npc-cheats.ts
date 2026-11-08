@@ -2,7 +2,7 @@ import { nasties } from "@/content";
 import { entitiesInRoom } from "@/rules/world";
 import { getFullCharacterState } from "@/network/sync";
 import { spawnNpc } from "@/server/game-world";
-import { parseInteger, type Cheat } from "./cheat";
+import { parseInteger, subcommands, type Cheat } from "./cheat";
 
 const MAX_SPAWNS = 20;
 /** How far from the player, in pixels, spawned mobs appear. */
@@ -10,7 +10,7 @@ const SPAWN_DISTANCE = 48;
 
 const spawn: Cheat = (ctx, player, [mob, countArg], reply) => {
   if (!mob || !(mob in nasties)) {
-    return reply.error(`Usage: /spawn <mob> [count]. Mobs: ${Object.keys(nasties)}`);
+    return reply.error(`Usage: /npc spawn <mob> [count]. Mobs: ${Object.keys(nasties)}`);
   }
   const count = parseInteger(countArg) ?? 1;
   if (count < 1 || count > MAX_SPAWNS) {
@@ -43,5 +43,5 @@ const despawn: Cheat = (ctx, player, _args, reply) => {
   reply.info(`Removed ${spawned.length} spawned mobs.`);
 };
 
-/** Cheats that add or remove NPCs. */
-export const NPC_CHEATS = { spawn, despawn };
+/** `/npc spawn` and `/npc despawn`: add or remove mobs. */
+export const NPC_CHEATS: Record<string, Cheat> = { npc: subcommands("npc", { spawn, despawn }) };

@@ -24,12 +24,12 @@ export async function demoLogin(
   ctx: CommandContext,
   { charClass }: ParsedCommand<"demoLogin"> = {},
 ) {
-  const { world, socket, socketId, session } = ctx;
-  if (!isDemoAllowed()) return socket.emit("formError", { error: "Demo mode is off" });
-  if (!charClass) return socket.emit("formError", { error: "No class" });
+  const { world, actor, socketId, session } = ctx;
+  if (!isDemoAllowed()) return actor.emit("formError", { error: "Demo mode is off" });
+  if (!charClass) return actor.emit("formError", { error: "No class" });
 
   /* Only let one connection at a time */
-  if (Object.keys(world?.players).find((k) => k === socket?.id)) {
+  if (Object.keys(world?.players).find((k) => k === socketId)) {
     return console.log("❌ Socket already logged in");
   }
 
@@ -46,31 +46,31 @@ export async function demoLogin(
 }
 
 export async function login(ctx: CommandContext, args: ParsedCommand<"login"> = {}) {
-  const { world, socket } = ctx;
+  const { world, actor, session } = ctx;
   const { email, password } = args;
-  const address = socket.handshake.address;
+  const address = session.address;
   if (!isLoginAllowed(world.db, address, email ?? "", world.now())) {
-    return socket.emit("formError", { error: TOO_MANY_TRIES });
+    return actor.emit("formError", { error: TOO_MANY_TRIES });
   }
   const user = await world.db.getUserByLogin({ email, password });
-  if (!user) return socket.emit("formError", { error: "Invalid login" });
+  if (!user) return actor.emit("formError", { error: "Invalid login" });
   enterWorld(ctx, user);
 }
 
 /** Logs in with the one-time ticket the wiki sent this client here with. */
 export async function ticketLogin(ctx: CommandContext, { ticket }: ParsedCommand<"ticketLogin">) {
-  const { world, socket } = ctx;
+  const { world, actor } = ctx;
   const email = redeemPlayTicket(ticket, world.now());
   const user = email && (await world.db.getUserByEmail({ email }));
-  if (!user) return socket.emit("formError", { error: "Login expired, enter your password" });
+  if (!user) return actor.emit("formError", { error: "Login expired, enter your password" });
   enterWorld(ctx, user);
 }
 
 function enterWorld(ctx: CommandContext, user: UserDocument) {
-  const { world, socket, socketId, io, session } = ctx;
+  const { world, socketId, io, session } = ctx;
 
   /* Only let one connection at a time */
-  if (Object.keys(world?.players).find((k) => k === socket?.id)) {
+  if (Object.keys(world?.players).find((k) => k === socketId)) {
     return console.log("❌ Socket already logged in");
   }
 
@@ -98,7 +98,7 @@ function enterWorld(ctx: CommandContext, user: UserDocument) {
 
 /** Puts a freshly created player's connection in their room and tells both sides. */
 function joinWorld(ctx: CommandContext, player: Player) {
-  const { world, socket, socketId } = ctx;
+  const { world, actor, socketId } = ctx;
   stopObserving(ctx);
 
   /* Should we pause or resume? */
@@ -112,8 +112,8 @@ function joinWorld(ctx: CommandContext, player: Player) {
 
   if (!roomName) return;
 
-  socket.join(roomName);
-  socket.emit(
+  actor.join(roomName);
+  actor.emit(
     "heroInit",
     {
       ...getRoomState(world, roomName),

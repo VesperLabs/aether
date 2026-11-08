@@ -9,7 +9,7 @@ export function attack(
   ctx: CommandContext,
   { count, direction, castAngle, abilitySlot }: ParsedCommand<"attack"> = {},
 ) {
-  const { world, socket, socketId } = ctx;
+  const { world, actor, socketId } = ctx;
   const player = world.players[socketId];
   if (!isInRoom(player)) return;
 
@@ -22,8 +22,8 @@ export function attack(
   /* Only a swing that happened is shown to others, or spamming attack would spam the animation */
   if (!player.doAttack({ count, direction, castAngle, abilitySlot } as PlayerAttackRequest)) return;
 
-  socket
-    .to(player?.roomName)
+  actor
+    .toOthers(player?.roomName)
     .emit("playerAttack", { socketId, count, direction, castAngle, abilitySlot });
 }
 
@@ -31,7 +31,7 @@ export function castSpell(
   ctx: CommandContext,
   { abilitySlot, castAngle }: ParsedCommand<"castSpell"> = {},
 ) {
-  const { world, socket, socketId } = ctx;
+  const { world, actor, socketId } = ctx;
   const player = world.players[socketId];
   if (!isInRoom(player)) return;
   /* Timed spells only fire through startCast, and nothing else fires during one */
@@ -40,7 +40,7 @@ export function castSpell(
   if (!player.doCast({ abilitySlot, castAngle } as PlayerCastRequest)) return;
   // A lunge carries the player further than walking; their client moves them through it
   if (player.state.lungeAt !== lungeAt) grantLungeMove(player);
-  socket.to(player?.roomName).emit("playerCastSpell", { socketId, abilitySlot, castAngle });
+  actor.toOthers(player?.roomName).emit("playerCastSpell", { socketId, abilitySlot, castAngle });
 }
 
 export function startCast(ctx: CommandContext, { abilitySlot }: ParsedCommand<"startCast">) {

@@ -6,7 +6,7 @@ import { findNearbyNpc } from "@/server/net/nearby-keeper";
 import { isInRoom } from "@/server/player-room";
 
 export function moveItem(ctx: CommandContext, { to, from }: MoveItemCommand = {}) {
-  const { world, socket, socketId } = ctx;
+  const { world, actor, socketId } = ctx;
   const player = world?.players?.[socketId];
   if (!isInRoom(player)) return;
 
@@ -22,7 +22,7 @@ export function moveItem(ctx: CommandContext, { to, from }: MoveItemCommand = {}
     { shop: { npcId, slot: shopSlot }, newId: world.dice.newId },
   );
   if (!result.ok) {
-    if (result.error) socket.emit("message", { type: "error", message: result.error });
+    if (result.error) actor.emit("message", { type: "error", message: result.error });
     return;
   }
 

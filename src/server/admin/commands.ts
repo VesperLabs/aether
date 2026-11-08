@@ -7,6 +7,7 @@ import { DROP_USAGE, parseDropArgs } from "./drop-args";
 import { isInRoom } from "@/server/player-room";
 import type { Cheat } from "./cheat";
 import { CHARACTER_CHEATS } from "./character-cheats";
+import { BOT_CHEATS } from "./bot-cheats";
 import { NPC_CHEATS } from "./npc-cheats";
 import { TRAVEL_CHEATS } from "./travel-cheats";
 
@@ -15,7 +16,12 @@ export function areCheatsEnabled(): boolean {
   return process.env.ENABLE_CHEATS === "true";
 }
 
-const CHEATS: Record<string, Cheat> = { ...CHARACTER_CHEATS, ...TRAVEL_CHEATS, ...NPC_CHEATS };
+const CHEATS: Record<string, Cheat> = {
+  ...CHARACTER_CHEATS,
+  ...TRAVEL_CHEATS,
+  ...NPC_CHEATS,
+  ...BOT_CHEATS,
+};
 
 const ADMIN_COMMANDS = new Set<string>(CHAT_COMMANDS.filter((c) => c.cheat).map((c) => c.name));
 
@@ -32,12 +38,12 @@ export function runAdminCommand(ctx: CommandContext, rawMessage: string): boolea
 }
 
 function execute(ctx: CommandContext, command: string[]) {
-  const { world, socket } = ctx;
+  const { world, actor } = ctx;
   const player = world?.players?.[ctx.socketId];
   if (!isInRoom(player)) return;
-  const cmdErr = (message: string) => socket.emit("message", { type: "error", message });
+  const cmdErr = (message: string) => actor.emit("message", { type: "error", message });
   /* Cheats answer only the player who used them, as a status line, never as chat */
-  const cmdInfo = (message: string) => socket.emit("message", { type: "system", message });
+  const cmdInfo = (message: string) => actor.emit("message", { type: "system", message });
   const itemLabel = (item: Item, amount = 1) =>
     `${amount > 1 ? `${amount}× ` : ""}${item.rarity} ${item.name ?? item.key}`;
 

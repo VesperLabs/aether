@@ -69,7 +69,7 @@ export function playerInput(ctx: CommandContext, input: ParsedCommand<"playerInp
     if (!result.ok) {
       player.vx = 0;
       player.vy = 0;
-      ctx.socket.emit("positionCorrection", { x: player.x, y: player.y });
+      ctx.actor.emit("positionCorrection", { x: player.x, y: player.y });
       return;
     }
   }
@@ -143,7 +143,7 @@ export function dodge(ctx: CommandContext, { angle }: ParsedCommand<"dodge">) {
   player.state.lastAngle = angle;
   const track = moveTracks.get(player);
   if (track) moveTracks.set(player, grantMoveBudget(track, DODGE_DISTANCE));
-  ctx.socket.to(player.roomName).emit("playerDodge", { socketId, angle });
+  ctx.actor.toOthers(player.roomName).emit("playerDodge", { socketId, angle });
 }
 
 export function updateState(ctx: CommandContext, state: ParsedCommand<"updateState">) {
@@ -177,15 +177,15 @@ export function teleportPlayer(
   destMap: string,
   { x, y }: { x: number; y: number },
 ) {
-  const { world, socket, socketId } = ctx;
+  const { world, actor, socketId } = ctx;
   const player = world.players[socketId];
   if (!player?.room || !world.rooms[destMap]) return;
   const oldRoom = player.room.name;
 
   if (oldRoom !== destMap) {
-    socket.leave(oldRoom);
-    socket.join(destMap);
-    socket.to(oldRoom).emit("remove", socketId);
+    actor.leave(oldRoom);
+    actor.join(destMap);
+    actor.toOthers(oldRoom).emit("remove", socketId);
     removePlayerFromRoom(world, socketId);
     addPlayerToRoom(world, socketId, world.rooms[destMap]);
   }
@@ -201,7 +201,7 @@ export function teleportPlayer(
     lastTeleport: world.now(),
   });
 
-  socket.emit("heroInit", {
+  actor.emit("heroInit", {
     ...getRoomState(world, destMap),
     socketId,
   });
@@ -212,7 +212,7 @@ export function teleportPlayer(
 }
 
 export function respawn(ctx: CommandContext) {
-  const { world, socket, socketId } = ctx;
+  const { world, actor, socketId } = ctx;
   const player = world.players[socketId];
   if (!player?.room || !player.state.isDead) return;
   const oldRoom = player.room.name;
@@ -221,9 +221,9 @@ export function respawn(ctx: CommandContext) {
   player.fillHpMp();
 
   if (oldRoom !== newRoom) {
-    socket.leave(oldRoom);
-    socket.join(newRoom);
-    socket.to(oldRoom).emit("remove", socketId);
+    actor.leave(oldRoom);
+    actor.join(newRoom);
+    actor.toOthers(oldRoom).emit("remove", socketId);
   }
 
   removePlayerFromRoom(world, socketId);
@@ -241,7 +241,7 @@ export function respawn(ctx: CommandContext) {
     lastTeleport: world.now(),
   });
 
-  socket.emit(
+  actor.emit(
     "heroInit",
     {
       ...getRoomState(world, newRoom),
@@ -258,7 +258,7 @@ export function respawn(ctx: CommandContext) {
 }
 
 export function setSpawn(ctx: CommandContext, _spawn: ParsedCommand<"setSpawn">) {
-  const { world, socket, socketId } = ctx;
+  const { world, actor, socketId } = ctx;
   const player: Player = world.players[socketId];
   /* The client's coordinates are ignored: the spawn is the home of the keeper being talked to. */
   const keeper = findNearbyNpc(world, socketId, player?.state?.targetNpcId);
@@ -271,7 +271,7 @@ export function setSpawn(ctx: CommandContext, _spawn: ParsedCommand<"setSpawn">)
     isDemoAccount: player.isDemoAccount,
     spawn,
   });
-  return socket.emit("message", {
+  return actor.emit("message", {
     type: "system",
     message: "You have changed your spawn point.",
   });

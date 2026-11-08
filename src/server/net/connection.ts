@@ -2,6 +2,7 @@ import type { ServerWorld } from "../server-world";
 import type { GameSocket } from "@/network";
 import { removePlayer } from "../remove-player";
 import { legacyLeaveParty } from "../party-adapter";
+import { socketActor } from "./actor";
 import type { CommandContext } from "./command-context";
 import { registerCommands } from "./dispatcher";
 import { commandHandlers } from "./handlers/command-handlers";
@@ -14,12 +15,12 @@ export function listenForConnections(world: ServerWorld) {
     const ctx: CommandContext = {
       world,
       io: world.io,
-      socket,
+      actor: socketActor(socket),
       socketId: socket.id,
-      session: { peerId: null },
+      session: { peerId: null, address: socket.handshake.address },
     };
 
-    registerCommands(ctx, commandHandlers);
+    registerCommands(socket, ctx, commandHandlers);
 
     socket.on("disconnect", () => {
       const { socketId } = ctx;
@@ -28,7 +29,7 @@ export function listenForConnections(world: ServerWorld) {
       if (player) world.db.updateUser(player);
       console.log(`🔌 ${player?.profile?.userName ?? "Anonymous"} disconnected`);
       stopObserving(ctx);
-      legacyLeaveParty(world, socketId, socket);
+      legacyLeaveParty(world, socketId, ctx.actor);
       removePlayer(world, socketId);
       world.io.emit("remove", socketId);
       /* Should we pause or resume? */

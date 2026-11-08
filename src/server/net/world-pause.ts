@@ -3,7 +3,9 @@ import type { ServerWorld } from "../server-world";
 export function shouldPause(world: ServerWorld) {
   const loop = world.loop;
   if (!loop) return;
-  const isEmpty = Object.keys(world.players ?? {}).length === 0 && !world.observers?.size;
+  /* Bots alone don't keep it running: nobody would see them. */
+  const humans = Object.keys(world.players ?? {}).filter((id) => !world.bots?.[id]);
+  const isEmpty = humans.length === 0 && !world.observers?.size;
   if (isEmpty && loop.isRunning()) {
     loop.pause();
     console.log("🚦 Game empty. Pausing.");

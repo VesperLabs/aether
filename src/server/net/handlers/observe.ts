@@ -7,15 +7,15 @@ import { shouldPause } from "../world-pause";
 /** Well under the client's tour stop. Each visit sends a whole room, to anyone, unauthenticated. */
 const MIN_OBSERVE_GAP_MS = 5000;
 
-function leaveObservedRoom({ socket, session }: CommandContext) {
+function leaveObservedRoom({ actor, session }: CommandContext) {
   if (!session.observedRoom) return;
-  socket.leave(session.observedRoom);
-  socket.leave(observersOf(session.observedRoom));
+  actor.leave(session.observedRoom);
+  actor.leave(observersOf(session.observedRoom));
 }
 
 /** Puts a connection with no character in a room, so it sees the world but is nobody in it. */
 export function observe(ctx: CommandContext, { roomName }: ParsedCommand<"observe">) {
-  const { world, socket, socketId, session } = ctx;
+  const { world, actor, socketId, session } = ctx;
   if (world.players[socketId] || !world.rooms[roomName]) return;
   const now = world.now();
   if (session.lastObservedAt !== undefined && now - session.lastObservedAt < MIN_OBSERVE_GAP_MS) {
@@ -25,9 +25,9 @@ export function observe(ctx: CommandContext, { roomName }: ParsedCommand<"observ
   leaveObservedRoom(ctx);
   session.observedRoom = roomName;
   world.observers.add(socketId);
-  socket.join([roomName, observersOf(roomName)]);
+  actor.join([roomName, observersOf(roomName)]);
   shouldPause(world);
-  socket.emit("roomObserved", { ...getPublicRoomState(world, roomName), roomName });
+  actor.emit("roomObserved", { ...getPublicRoomState(world, roomName), roomName });
 }
 
 /** Ends watching, on login or disconnect. The caller decides whether the world should pause. */
