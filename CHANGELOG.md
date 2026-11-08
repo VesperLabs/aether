@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.19.0](https://github.com/VesperLabs/aether/compare/v0.18.0...v0.19.0) (2026-11-08)
+
+
+### Features
+
+* pokeballs to catch NPCs, and effects that outlive their caster ([#266](https://github.com/VesperLabs/aether/issues/266)) ([06e14a2](https://github.com/VesperLabs/aether/commit/06e14a23250517d67b4847a81bfe3b9708ae6f67))
+
 ## [0.18.0](https://github.com/VesperLabs/aether/compare/v0.17.0...v0.18.0) (2026-11-08)
 
 
