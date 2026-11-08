@@ -1,4 +1,4 @@
-import { consumeItem, type IsReadyToConsume } from "./consume";
+import { consumeItem, takeOneItem, type IsReadyToConsume } from "./consume";
 import { dropItem } from "./drop";
 import type { DropRequest } from "./drop";
 import type { ConsumeRequest } from "./consume";
@@ -77,4 +77,15 @@ export function consumeItemCommand(
   const result = consumeItem(readState(holder), command, isReady);
   if (result.consumed) writeState(holder, result.state);
   return result;
+}
+
+/** Takes one of a stack the player has, if `accepts` it; returns the item, or undefined. */
+export function takeOneItemCommand(
+  holder: InventoryHolder,
+  command: ConsumeRequest,
+  accepts: (item: InventoryItem) => boolean,
+) {
+  const taken = takeOneItem(readState(holder), command, accepts);
+  if (taken) writeState(holder, taken.state);
+  return taken?.item;
 }

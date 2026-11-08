@@ -2,6 +2,7 @@ import React from "react";
 import { CHAT_DROP_ATTR, linkItemToChat } from "@/client/hud/chat/chat-links";
 import { CONSUMABLES_BASES } from "@/rules/inventory";
 import type { ClientGameSocket } from "@/network";
+import { isThrowable } from "@/rules/capture";
 import type { DropItem, HudCharacter } from "./context";
 
 interface ItemEventDeps {
@@ -22,7 +23,7 @@ export function createItemEventHandlers({
 }: ItemEventDeps) {
   function onDoubleClickItem(e: WindowEventMap["HERO_DOUBLE_CLICK_ITEM"]) {
     const { item, location } = e.detail;
-    const isConsumable = CONSUMABLES_BASES.includes(item?.base);
+    const isConsumable = CONSUMABLES_BASES.includes(item?.base) || isThrowable(item?.base);
 
     if (!["inventory", "abilities", "bag"].includes(location)) return;
     /* If it is food we are trying to consume it */
@@ -42,7 +43,10 @@ export function createItemEventHandlers({
   function onDropItem(e: WindowEventMap["HERO_DROP_ITEM"]) {
     const { location, bagId, slotKey, item } = e.detail;
     const target = e.detail.target as HTMLElement | null;
-    const { nodeName, dataset } = target ?? ({} as Partial<HTMLElement>);
+    const { nodeName } = target ?? ({} as Partial<HTMLElement>);
+    /* The slot under the pointer, even when it lands on the slot's icon or a hotbar button's */
+    const slot = target?.closest<HTMLElement>("[data-location][data-slot-key]");
+    const dataset = slot?.dataset ?? target?.dataset;
     /* Anywhere -> Chat box: links it, the same as cmd/ctrl-clicking */
     if (target?.closest(`[${CHAT_DROP_ATTR}]`)) {
       if (location !== "shop") linkItemToChat(item);

@@ -108,6 +108,7 @@ export const commands = {
     .optional(),
   moveItem: z.object({ to: itemSlot.nullish(), from: itemSlot.nullish() }).optional(),
   consumeItem: z.object({ location: z.string().nullish(), item: itemRef.nullish() }).optional(),
+  throwItem: z.object({ location: z.string(), item: itemRef, angle: z.number() }),
 
   /* Social */
   message: z

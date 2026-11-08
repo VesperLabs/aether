@@ -4,6 +4,8 @@ import { Damage } from "./damage";
 import { Buff } from "./buff";
 import { Hit } from "./hit";
 import { playDeathDissolve } from "./dissolve";
+import { playCaptureBeam } from "./capture-beam";
+import { takeCaughtByBall } from "./thrown-ball";
 
 /** How long a hit paints the body solid white before the red tint, in ms. */
 const WHITE_FLASH_MS = 50;
@@ -29,8 +31,13 @@ export function applyHit(player: Player, hit: HitEffect, showDamage = true) {
       break;
     case "death":
       stats.hp = 0;
-      scene.add.existing(new Hit(player.scene, player, elements));
-      playDeathDissolve(player);
+      if (hit?.isCaught) {
+        /* Its ball plays the catch; a tame with no ball just beams */
+        if (!takeCaughtByBall(player.id)) playCaptureBeam(player);
+      } else {
+        scene.add.existing(new Hit(player.scene, player, elements));
+        playDeathDissolve(player);
+      }
       player.doDeath();
       break;
     case "hp":

@@ -31,32 +31,79 @@ function getBodyLayers(player: Player) {
   );
 }
 
+/** A snapshot of a character's body, drawn where it stands, above it. Visual only. */
+export function snapshotBody(player: Player) {
+  const snapshot = player.scene.add.renderTexture(player.x, player.y, SNAPSHOT_SIZE, SNAPSHOT_SIZE);
+  snapshot.setDepth(player.depth + 1);
+  drawBody(snapshot, player);
+  return snapshot;
+}
+
 /**
  * Snapshots a dying character's body and dissolves it pixel by pixel in an ordered dither,
  * flashing first. Call before the body is hidden. Visual only.
  */
 export function playDeathDissolve(player: Player) {
-  const { scene } = player;
+  if (!player.scene) return;
+  dissolveSnapshot(snapshotBody(player));
+}
+
+/**
+ * The same dissolve for any one image (a ball, an effect), without the hit flash: it is swapped for
+ * a snapshot of itself that pixelates away, in `durationMs`. With `follow`, it keeps moving to where that says, e.g. on
+ * the creature a ball rides. Visual only.
+ */
+export function playObjectDissolve(
+  object: Phaser.GameObjects.Image,
+  durationMs = DISSOLVE_MS,
+  follow?: () => { x: number; y: number },
+) {
+  const { scene } = object;
   if (!scene) return;
-  const snapshot = scene.add.renderTexture(player.x, player.y, SNAPSHOT_SIZE, SNAPSHOT_SIZE);
-  snapshot.setDepth(player.depth + 1);
-  drawBody(snapshot, player);
+  const half = SNAPSHOT_SIZE / 2;
+  const snapshot = scene.add.renderTexture(object.x, object.y, SNAPSHOT_SIZE, SNAPSHOT_SIZE);
+  snapshot.setDepth(object.depth);
+  /* WebGL adds the offset to the object's own position, so this centres it */
+  snapshot.draw(object, half - object.x, half - object.y);
+  snapshot.render();
+  object.destroy();
+  if (follow) {
+    const move = () => {
+      const at = follow();
+      snapshot.setPosition(at.x, at.y);
+    };
+    scene.events.on("update", move);
+    snapshot.once(Phaser.GameObjects.Events.DESTROY, () => scene.events.off("update", move));
+  }
+  dissolveSnapshot(snapshot, durationMs, false);
+}
+
+/**
+ * Erases a snapshot pixel by pixel, some pixels floating off as they go. A body flashes white
+ * first, as it is hit; an object just goes.
+ */
+function dissolveSnapshot(
+  snapshot: Phaser.GameObjects.RenderTexture,
+  durationMs = DISSOLVE_MS,
+  shouldFlash = true,
+) {
+  const { scene } = snapshot;
   let pixels: Uint8ClampedArray | undefined;
   snapshot.snapshot((image) => {
     if (image instanceof HTMLImageElement) pixels = readPixels(image);
   });
-  snapshot.setTint(0xffffff).setTintMode(Phaser.TintModes.FILL);
+  if (shouldFlash) snapshot.setTint(0xffffff).setTintMode(Phaser.TintModes.FILL);
 
   const order = getDissolveOrder();
   const eraser = scene.make.graphics({}, false).fillStyle(0xffffff);
   let erased = 0;
 
-  scene.time.delayedCall(FLASH_MS, () => {
+  scene.time.delayedCall(shouldFlash ? FLASH_MS : 0, () => {
     snapshot.setTint(0xffffff).setTintMode(Phaser.TintModes.MULTIPLY);
     scene.tweens.add({
       targets: { t: 0 },
       t: 1,
-      duration: DISSOLVE_MS,
+      duration: durationMs,
       onUpdate: (tween) => {
         const target = Math.floor(tween.progress * order.length);
         if (target <= erased) return;

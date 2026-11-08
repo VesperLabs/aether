@@ -2,6 +2,17 @@ import type { ItemRarityTable } from "./item-types";
 
 export const stackableItems = {
   common: {
+    pokeball: {
+      ilvl: 1,
+      name: "Pokeball",
+      flavor: "Aim and throw it at a wild creature to try to catch it.",
+      base: "pokeball",
+      slot: "stackable",
+      texture: "stackable-pokeball",
+      stats: { spCost: 4 },
+      /* Never a random drop: only given out on purpose */
+      exclusive: true,
+    },
     smallHpPotion: {
       ilvl: 1,
       name: "Small HP Potion",

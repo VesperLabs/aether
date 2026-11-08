@@ -32,6 +32,7 @@ import {
   getLoot,
 } from "@/client/scenes/scene-entities";
 import type { SceneMain } from "@/client/scenes/main-scene";
+import { endEffect, startEffect } from "./effects";
 import { initCamera, initPlayerCollision } from "@/client/scenes/main-map";
 
 /** What a tick's vitals update on a player or npc sprite. */
@@ -94,7 +95,7 @@ export function bindSceneSocket(scene: SceneMain) {
   });
 
   const initHero: ServerToClientEvents["heroInit"] = (args, { isRespawn, isLogin } = {}) => {
-    const { socketId, players = [], npcs = [], loots = [] } = args ?? {};
+    const { socketId, players = [], npcs = [], loots = [], effects = [] } = args ?? {};
     if (args && Object.prototype.hasOwnProperty.call(args, "userSettings")) {
       scene.userSettings = { ...DEFAULT_USER_SETTINGS, ...args.userSettings };
     }
@@ -103,7 +104,12 @@ export function bindSceneSocket(scene: SceneMain) {
       hideWorld(scene);
     }
     const roomName = players.find((p) => p.socketId === socketId)?.roomName as string;
-    const { collideLayer } = enterRoom(scene, roomName, { players, npcs, loots }, socketId);
+    const { collideLayer } = enterRoom(
+      scene,
+      roomName,
+      { players, npcs, loots, effects },
+      socketId,
+    );
     const { hero } = scene;
     if (!hero) return;
     // tell the client we are not currently entering a door.
@@ -251,6 +257,9 @@ export function bindSceneSocket(scene: SceneMain) {
     landCast(p, { abilitySlot, castAngle });
     if (p.isHero) window.dispatchEvent(new CustomEvent("HERO_CAST_ENDED", { detail: abilitySlot }));
   });
+
+  socket.on("effectStarted", (effect) => startEffect(scene, effect));
+  socket.on("effectEnded", endEffect);
 
   socket.on("npcAttack", ({ id, count, direction, castAngle }) => {
     const n = getNpc(scene, id);

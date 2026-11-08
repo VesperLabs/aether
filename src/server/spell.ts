@@ -15,6 +15,7 @@ import {
   toSpellVictims,
 } from "@/rules/spells";
 import { ServerCharacter } from "./character";
+import type { EffectSource, SpellEffectWire } from "@/network";
 
 /** Send the shapes behind every hit to the clients, so they can draw what the server saw. */
 const DEBUG_HITS = process.env.DEBUG === "true";
@@ -41,7 +42,7 @@ export interface SpellArgs {
 }
 
 /** A spell or attack in flight. Plain data: where it is, how it moves and what it can hit. */
-export class Spell {
+export class Spell implements EffectSource {
   public id: string;
   public x: number;
   public y: number;
@@ -71,6 +72,8 @@ export class Spell {
   private action: string;
   private isMissile: boolean;
   private isLunge = false;
+  private castAngle: number;
+  private ilvl: number;
 
   constructor(
     world: ServerWorld,
@@ -100,6 +103,8 @@ export class Spell {
     this.state = { spawnTime: this.world.now(), isExpired: false };
     this.abilitySlot = abilitySlot;
     this.action = action ?? "attack_right";
+    this.castAngle = castAngle;
+    this.ilvl = ilvl;
 
     const { details, found } = resolveSpellDetails(spellName);
     if (!found) console.log("❌ Shit, the spell does not exist in spellDetails!");
@@ -155,6 +160,24 @@ export class Spell {
     }
     this.adjustSpellPosition();
     /* TODO: When we add buffs, make sure they do the same as adjustSpellPosition on clientside */
+  }
+  /**
+   * This spell as an effect, for a client walking into the room mid-flight. Only spells flying on
+   * their own: swings, buffs and lunges ride their caster and are over in a moment.
+   */
+  toEffect(now: number): SpellEffectWire | undefined {
+    if (this.stickToCaster || this.isMeleeAttack || this.state.isExpired) return undefined;
+    return {
+      kind: "spell",
+      id: this.id,
+      ageMs: now - this.state.spawnTime,
+      casterId: this.caster.socketId || this.caster.id,
+      spellName: this.spellName,
+      castAngle: this.castAngle,
+      action: this.action,
+      ilvl: this.ilvl,
+      spawnPoint: this.spawnPoint,
+    };
   }
   /** The area this spell hits right now. */
   getShape(): Shape | null {

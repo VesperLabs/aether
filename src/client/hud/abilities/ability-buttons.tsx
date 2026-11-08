@@ -3,6 +3,7 @@ import { keyFor, type BindAction } from "@/client/input/key-bindings";
 import { spellDetails, type BuiltItem, type SpellDefinition } from "@/content";
 import type { Cooldown, HudCharacter } from "@/client/hud/app/context";
 import { CONSUMABLES_BASES, POTION_BASES } from "@/rules/inventory";
+import { isThrowable } from "@/rules/capture";
 import { applyTintToImage, loadCacheImage } from "@/ui";
 import { arePropsEqualWithKeys } from "@/ui";
 import { isMobile } from "@/ui";
@@ -81,7 +82,9 @@ const TintedIconLoader = ({
   };
 
   /* Attack-spells (flame slash) also pay the weapon's swing cost */
-  const costs: ResourceCosts = isSpell ? getAbilityCosts(item.stats) : {};
+  /* Spells and balls carry their costs on them */
+  const costs: ResourceCosts =
+    isSpell || isThrowable(item?.base) ? getAbilityCosts(item.stats) : {};
   if (isSpell && details?.isMeleeAttack) {
     costs.sp = (costs.sp ?? 0) + attackSpCost;
   }
@@ -89,6 +92,9 @@ const TintedIconLoader = ({
   return (
     <Box
       data-tooltip-id={tooltipId}
+      /* A drop target: an item dragged on to it takes this ability slot */
+      data-location="abilities"
+      data-slot-key={slotKey}
       onMouseEnter={() => setHovering(true)}
       onMouseLeave={() => setHovering(false)}
       sx={{

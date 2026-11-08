@@ -20,6 +20,8 @@ export interface ChatCommandOption {
   rarity?: string;
   /** Draws an icon next to the value: an item's, or a mob's body when there's no slot. */
   look?: ItemLook;
+  /** Draws this actor dressed in its gear instead of `look`: set for humans, whose bare body is plain. */
+  actor?: string;
 }
 
 /** What an argument takes, so the client can check it and pick a keyboard before sending. */
@@ -58,6 +60,7 @@ const MOB_OPTIONS = Object.entries(actors as Record<string, ActorDefinition>).ma
     value,
     hint: `level ${baseStats.level}`,
     look: { texture: profile.race, tint: profile.tint },
+    ...(profile.race === "human" && { actor: value }),
   }),
 );
 const RARITY_OPTIONS = ITEM_BUILD_RARITIES.map((value) => ({ value, rarity: value }));

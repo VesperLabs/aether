@@ -4,7 +4,14 @@ import type { SceneMain } from "@/client/scenes/main-scene";
 import { playAudio } from "@/client/audio/play-audio";
 import { getSpinDirection } from "@/client/input/spin-direction";
 import { CONSUMABLES_BASES, POTION_BASES } from "@/rules/inventory";
-import { updateAttackCooldown, updatePotionCooldown, updateSpellCooldown } from "./hero-cooldowns";
+import { canThrow, isThrowable } from "@/rules/capture";
+import { getAbilityCosts, hasStaminaFor } from "@/rules/combat";
+import {
+  updateAttackCooldown,
+  updatePotionCooldown,
+  updateSpellCooldown,
+  updateThrowCooldown,
+} from "./hero-cooldowns";
 import { isTypableFieldActive } from "./typable-field";
 import { getHeadingAngle, isTap } from "./tap-aim";
 
@@ -50,7 +57,15 @@ export function addGlobalEventListeners(scene: SceneHud) {
     hero.pressedAbilitySlot = undefined;
     /* A press during a cast, or while one waits to start, is dropped */
     if (isTypableFieldActive() || hero.isCasting || hero.queuedCastSlot !== undefined) return;
-    const { isAimable, isLunge, spellName } = hero.getAbilityDetails(e?.detail);
+    const { isAimable, isLunge, spellName, base } = hero.getAbilityDetails(e?.detail);
+    /* A ball aims like a ranged shot: hold to aim, let go to throw */
+    if (isThrowable(base)) {
+      hero.pressedAbilitySlot = e?.detail;
+      hero.state.isAiming = true;
+      gameElement.style.cursor = "none";
+      scene.socket.emit("updateState", { isAiming: hero.state.isAiming });
+      return;
+    }
     if (!isAimable) {
       hero.pressedAbilitySlot = e?.detail;
       return;
@@ -125,14 +140,33 @@ export function addGlobalEventListeners(scene: SceneHud) {
     scene.socket.emit("updateState", { isAiming: hero.state.isAiming });
     gameElement.style.cursor = "default";
   };
+  /* The server picks what it hits and whether it catches; the flying ball is drawn when it says so */
+  let lastThrowAt: number | undefined;
+  const throwBall = (
+    hero: NonNullable<SceneMain["hero"]>,
+    item: { id?: string; base?: string; stats?: { spCost?: number } | null },
+    location: string,
+  ) => {
+    /* Too soon or too tired: the server would refuse it anyway */
+    if (!item?.id || !canThrow(lastThrowAt, Date.now())) return;
+    if (!hasStaminaFor(hero.stats?.sp, getAbilityCosts(item.stats).sp)) return;
+    lastThrowAt = Date.now();
+    updateThrowCooldown(item.base as string);
+    socket.emit("throwItem", { location, item: { id: item.id }, angle: hero.state.lastAngle ?? 0 });
+  };
   window.addEventListener("HERO_ABILITY", (e) => {
     const hero = mainScene?.hero;
     const abilitySlot = e?.detail;
     /* Only the release of a press that was taken: not one made mid-cast, nor one an attack called off */
     if (!hero || hero.pressedAbilitySlot !== abilitySlot) return;
     hero.pressedAbilitySlot = undefined;
-    const { type, isLunge, stats } = hero.getAbilityDetails(abilitySlot);
+    const { type, isLunge, stats, base, id } = hero.getAbilityDetails(abilitySlot);
     if (hero.isCasting) return;
+
+    if (isThrowable(base)) {
+      throwBall(hero, { id, base, stats }, "abilities");
+      return stopAiming(hero);
+    }
 
     if (type === "spell" && stats?.castTime) {
       /*
@@ -167,6 +201,7 @@ export function addGlobalEventListeners(scene: SceneHud) {
     const hero = mainScene?.hero;
     const { item, location } = e?.detail ?? {};
 
+    if (isThrowable(item?.base)) return throwBall(hero, item, location);
     if (!hero.checkCastReady()) return;
 
     /* If it is food we are trying to consume it */
