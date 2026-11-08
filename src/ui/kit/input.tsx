@@ -1,6 +1,7 @@
 import React, { createContext, use, useRef, useEffect, useEffectEvent, FC } from "react";
 import { Input as BaseInput, InputProps as BaseInputProps } from "theme-ui";
 import { useOnClickOutside } from "./hooks";
+import { usePadHint } from "./pad-glyph";
 import { isMobile } from "./is-mobile";
 
 /**
@@ -28,12 +29,16 @@ export const Input: FC<InputProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const keepPageStill = use(KeepPageStillContext);
 
+  /* Set while a controller is in use */
+  const onController = !!usePadHint();
   useEffect(() => {
     /* Not on phones: it can't open the keyboard there, but leaves a field focused for the page
-       to keep scrolling back to */
-    if (autoFocus && !isMobile) {
+       to keep scrolling back to. Nor with a controller, where a focused field opens the
+       on-screen keyboard: the player moves to the field and presses A instead */
+    if (autoFocus && !isMobile && !onController) {
       inputRef?.current?.focus({ preventScroll: keepPageStill });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- on mount, not when the controller is picked up mid-form
   }, [autoFocus, keepPageStill]);
 
   useOnClickOutside(inputRef, onClickOutside);

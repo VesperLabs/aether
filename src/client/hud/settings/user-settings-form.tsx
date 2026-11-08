@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Switch, Flex, Slider, Text, shakeModal } from "@/ui";
+import { CONTROL_ROW, Switch, Flex, Slider, Text, shakeModal } from "@/ui";
 import { CONTROL_GOLD } from "@/ui/kit/modal-gilding";
 import { DEFAULT_USER_SETTINGS } from "@/rules/world";
 import { isMobile } from "@/ui";
@@ -24,7 +24,7 @@ const VolumeRow = ({
   const [value, changeVolume] = useVolumeSetting(volume);
   const setIsOn = useAudioToggle(toggle);
   return (
-    <Flex sx={{ alignItems: "center", gap: 3, px: 2, py: 1, borderRadius: 2, bg: "shadow.10" }}>
+    <Flex sx={{ alignItems: "center", gap: 3, ...CONTROL_ROW }}>
       <Text sx={{ flex: 1, lineHeight: 1 }}>{label}</Text>
       <Flex sx={{ flex: 1, alignItems: "center" }}>
         <Slider

@@ -1,6 +1,7 @@
 import { Box, KeyboardKey } from "@/ui";
 import { MINI_MAP_MARGIN, MINI_MAP_OPEN_VAR, MINI_MAP_SIZE } from "@/client/views/minimap-size";
 import { isMobile } from "@/ui";
+import { useKeyFor } from "@/client/hud/settings/use-key-bindings";
 import { useAppContext } from "./context";
 
 /* Read from the minimap's own tween, so the frame's edge stays on the map's edge every frame. */
@@ -8,6 +9,7 @@ const open = `var(${MINI_MAP_OPEN_VAR}, 0)`;
 
 export const MenuGlobalKeys = () => {
   const { userSettings, socket, zoom } = useAppContext();
+  const minimapKey = useKeyFor("minimap");
   /* From the middle of the circle, whose edge moves in by this much as it closes */
   const closedInset = `calc(${MINI_MAP_SIZE / 2}px * (1 - ${open}))`;
   /* Match the player portrait frame, whose 1px lines are drawn inside the HUD's scale. */
@@ -42,10 +44,10 @@ export const MenuGlobalKeys = () => {
         }}
       >
         <KeyboardKey
-          name="M"
+          name={minimapKey ?? ""}
           /* The key hangs up-left of this point by its bottom-right corner; shift it to sit centered. */
           sx={{ transform: "translate(50%, 50%)" }}
-          hidden={isMobile}
+          hidden={isMobile || !minimapKey}
           onKeyUp={() =>
             socket.emit("updateUserSetting", {
               name: "showMinimap",

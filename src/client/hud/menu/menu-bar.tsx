@@ -22,8 +22,15 @@ import { useScrollToOpened } from "./use-scroll-to-opened";
 import { useOpenOrder } from "./use-open-order";
 import { useOverhangPadding } from "./use-overhang-padding";
 import { SkillButtons } from "@/client/hud/abilities/skill-buttons";
+import { useBindings } from "@/client/hud/settings/use-key-bindings";
+import { keyFor } from "@/client/input/key-bindings";
+import { setMenusOpen } from "@/client/input/last-device";
+import { PAD_SCOPE_ATTR, PAD_SKIP_ATTR } from "@/client/input/pad-nav";
+import { useEffect } from "react";
 
 export const MenuBar = () => {
+  /* Re-renders the keys when they are rebound */
+  useBindings();
   const {
     homeModal,
     setHomeModal,
@@ -73,6 +80,20 @@ export const MenuBar = () => {
     stats: tabStats,
   });
 
+  /* A controller's B closes these, as Esc does, instead of dodging */
+  const anyMenuOpen =
+    tabChat ||
+    !!tabKeeper ||
+    tabAbilities ||
+    tabEquipment ||
+    bagState.length > 0 ||
+    tabInventory ||
+    tabQuests ||
+    tabStats ||
+    !!dropItem ||
+    !!homeModal;
+  useEffect(() => setMenusOpen(anyMenuOpen), [anyMenuOpen]);
+
   const escCacheKey = JSON.stringify([
     tabChat,
     dropItem,
@@ -92,6 +113,8 @@ export const MenuBar = () => {
 
   return (
     <Box
+      /* Menu mode keeps the controller's highlight in here */
+      {...{ [PAD_SCOPE_ATTR]: true }}
       sx={{
         pointerEvents: "none",
         boxSizing: "border-box",
@@ -110,7 +133,11 @@ export const MenuBar = () => {
       {/* One blur behind the menus and the buttons, so their edges don't each blur on their own */}
       <Box sx={{ position: "absolute", inset: 0, zIndex: -1, backdropFilter: "blur(10px)" }} />
       {/* Sits above the menus without taking their height, so menus can fill the screen */}
-      <Flex sx={{ alignItems: "end", position: "absolute", bottom: "100%", left: 0, right: 0 }}>
+      {/* Chat and the action buttons: the controller has its own buttons for these */}
+      <Flex
+        {...{ [PAD_SKIP_ATTR]: true }}
+        sx={{ alignItems: "end", position: "absolute", bottom: "100%", left: 0, right: 0 }}
+      >
         <MessageBox />
         <Flex sx={{ flexDirection: "column" }}>
           <AbilityButtons hero={hero} cooldowns={cooldowns} />
@@ -183,6 +210,8 @@ export const MenuBar = () => {
       </Box>
       <Box sx={{ pointerEvents: "all", flexShrink: 0 }}>
         <Menu
+          /* The buttons that open the panels, not a panel itself (`pad-panels`) */
+          data-pad-panel={undefined}
           sx={{
             gap: 1,
             alignItems: "center",
@@ -199,14 +228,14 @@ export const MenuBar = () => {
           {!tabChat && (
             <>
               <MenuButton
-                keyboardKey="Z"
+                keyboardKey={keyFor("settings")}
                 springOpen
                 iconName="pen"
                 isActive={tabSettings}
                 onClick={() => setTabSettings((prev) => !prev)}
               />
               <MenuButton
-                keyboardKey="P"
+                keyboardKey={keyFor("social")}
                 springOpen
                 iconName="social"
                 isActive={tabSocial}
@@ -214,35 +243,35 @@ export const MenuBar = () => {
                 onClick={() => setTabSocial((prev) => !prev)}
               />
               <MenuButton
-                keyboardKey="Q"
+                keyboardKey={keyFor("quests")}
                 springOpen
                 iconName="quests"
                 isActive={tabQuests}
                 onClick={() => setTabQuests((prev) => !prev)}
               />
               <MenuButton
-                keyboardKey="C"
+                keyboardKey={keyFor("stats")}
                 springOpen
                 iconName="stats"
                 isActive={tabStats}
                 onClick={() => setTabStats((prev) => !prev)}
               />
               <MenuButton
-                keyboardKey="G"
+                keyboardKey={keyFor("profile")}
                 springOpen
                 iconName="mirror"
                 isActive={tabProfile}
                 onClick={() => setTabProfile((prev) => !prev)}
               />
               <MenuButton
-                keyboardKey="V"
+                keyboardKey={keyFor("abilities")}
                 springOpen
                 iconName="book"
                 isActive={tabAbilities}
                 onClick={() => setTabAbilities((prev) => !prev)}
               />
               <MenuButton
-                keyboardKey="E"
+                keyboardKey={keyFor("equipment")}
                 springOpen
                 iconName="helmet"
                 isActive={tabEquipment}
@@ -252,7 +281,7 @@ export const MenuBar = () => {
               />
               <MenuButton
                 id={LOOT_TARGET_ID}
-                keyboardKey="I"
+                keyboardKey={keyFor("inventory")}
                 springOpen
                 iconName="bag"
                 isActive={tabInventory}

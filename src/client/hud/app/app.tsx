@@ -18,6 +18,10 @@ import {
   KeepPageStillContext,
 } from "@/ui";
 import { getHudZoom } from "./hud-zoom";
+import { PadHints } from "./pad-hints";
+import { PadNavBadge } from "./pad-nav-badge";
+import { PadItemMenu } from "@/client/hud/inventory/pad-item-menu";
+import { PadKeyboard } from "@/client/hud/pad-keyboard/pad-keyboard";
 import "react-tooltip/dist/react-tooltip.css";
 import type { Theme } from "theme-ui";
 import { DEFAULT_USER_SETTINGS } from "@/rules/world";
@@ -320,32 +324,37 @@ export function App({ socket, peer, debug, game }: AppProps) {
         <ZoomProvider value={Number(zoom) || 1.25}>
           {/* The game's screen never scrolls, so focusing a field must not move it */}
           <KeepPageStillContext value>
-            <LoginBackdrop isLoggedIn={isLoggedIn} hasError={!!error} />
-            <VideoFrame />
-            {isLoggedIn && tabSettings && <ModalSettings />}
-            {isLoggedIn && tabSocial && <ModalSocial />}
-            {isLoggedIn && tabProfile && <ModalProfile />}
-            {isLoggedIn && (
-              <Box
-                id={HUD_CONTAINER_ID}
-                sx={{
-                  height: "100%",
-                  pointerEvents: "none",
-                  opacity: isWorldReady ? 1 : 0,
-                  transition: `opacity ${WORLD_REVEAL_MS}ms ease-in-out`,
-                }}
-              >
-                {hero?.state?.isDead && <ModalRespawn />}
-                {dropItem && <ModalDropAmount />}
-                {sign && <ModalSign />}
-                {homeModal?.profile && <ModalHome />}
-                <MenuGlobalKeys />
-                <MenuHud />
-                <MenuBar />
-                <TopRightBar />
-                <FlyingLoot />
-              </Box>
-            )}
+            <PadHints>
+              <LoginBackdrop isLoggedIn={isLoggedIn} hasError={!!error} />
+              <VideoFrame />
+              {isLoggedIn && tabSettings && <ModalSettings />}
+              {isLoggedIn && tabSocial && <ModalSocial />}
+              {isLoggedIn && tabProfile && <ModalProfile />}
+              {isLoggedIn && (
+                <Box
+                  id={HUD_CONTAINER_ID}
+                  sx={{
+                    height: "100%",
+                    pointerEvents: "none",
+                    opacity: isWorldReady ? 1 : 0,
+                    transition: `opacity ${WORLD_REVEAL_MS}ms ease-in-out`,
+                  }}
+                >
+                  {hero?.state?.isDead && <ModalRespawn />}
+                  {dropItem && <ModalDropAmount />}
+                  {sign && <ModalSign />}
+                  {homeModal?.profile && <ModalHome />}
+                  <MenuGlobalKeys />
+                  <MenuHud />
+                  <MenuBar />
+                  <TopRightBar />
+                  <FlyingLoot />
+                </Box>
+              )}
+              <PadKeyboard />
+              <PadNavBadge />
+              <PadItemMenu />
+            </PadHints>
           </KeepPageStillContext>
         </ZoomProvider>
       </AppContext.Provider>

@@ -1,3 +1,5 @@
+import { useBindings } from "@/client/hud/settings/use-key-bindings";
+import { keyFor, type BindAction } from "@/client/input/key-bindings";
 import { spellDetails, type BuiltItem, type SpellDefinition } from "@/content";
 import type { Cooldown, HudCharacter } from "@/client/hud/app/context";
 import { CONSUMABLES_BASES, POTION_BASES } from "@/rules/inventory";
@@ -32,6 +34,9 @@ const TintedIconLoader = ({
   applyTintAndSetIcon,
   hero,
 }: TintedIconLoaderProps) => {
+  const bindings = useBindings();
+  const boundKey =
+    `ability${slotKey}` in bindings.keyboard ? keyFor(`ability${slotKey}` as BindAction) : slotKey;
   const isSpell = item.type === "spell";
   const isPotion = POTION_BASES.includes(item?.base);
   const isConsumable = CONSUMABLES_BASES.includes(item?.base);
@@ -96,7 +101,7 @@ const TintedIconLoader = ({
         icon={tintedIcon}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
-        keyboardKey={slotKey}
+        keyboardKey={boundKey}
         costs={costs}
         disabled={!canAffordCosts(hero?.stats, costs)}
         sx={{

@@ -1,6 +1,8 @@
-import React, { useEffect, useEffectEvent, useState, useRef } from "react";
+import React, { useEffect, useEffectEvent, useLayoutEffect, useState, useRef } from "react";
+import { MODAL_ATTR } from "./shake-modal";
 import type { ThemeUIStyleObject } from "theme-ui";
 import { Box, Flex } from "theme-ui";
+import { PAD_KEY_ATTR, PAD_KEY_SWAP, PadCombo, usePadHint } from "./pad-glyph";
 
 interface KeyboardKeyProps {
   name: string;
@@ -11,6 +13,14 @@ interface KeyboardKeyProps {
   disabled?: boolean;
   sx?: ThemeUIStyleObject;
 }
+
+/**
+ * Set on a key event meant only for the open modal's buttons, such as a controller confirming it:
+ * shortcuts elsewhere on the page (chat's Enter) ignore it.
+ */
+export const MODAL_ONLY_KEY = "modalOnly";
+
+const isModalOnly = (e: KeyboardEvent) => MODAL_ONLY_KEY in e;
 
 const IGNORE_PRESS_ELEMENT_TYPES = ["text", "number", "textarea"];
 
@@ -59,12 +69,20 @@ export function getEventKeyName(e: Pick<KeyboardEvent, "key" | "code">) {
   return digit ?? getKeyName(e.key || "");
 }
 
+const KEY_LABELS: Record<string, string> = {
+  ENTER: "↵",
+  ARROWUP: "↑",
+  ARROWDOWN: "↓",
+  ARROWLEFT: "←",
+  ARROWRIGHT: "→",
+  CONTROL: "CTRL",
+  BACKSPACE: "⌫",
+};
+
 /** Short label for the key badge (logical name still matches via getKeyName). */
-const getKeyDisplayLabel = (name: string) => {
-  if (getKeyName(name) === "ENTER") {
-    return "↵";
-  }
-  return getKeyName(name);
+export const getKeyDisplayLabel = (name: string) => {
+  const keyName = getKeyName(name);
+  return KEY_LABELS[keyName] ?? keyName;
 };
 
 export const KeyboardKey: React.FC<KeyboardKeyProps> = ({
@@ -80,8 +98,15 @@ export const KeyboardKey: React.FC<KeyboardKeyProps> = ({
   const [isPressed, setIsPressed] = useState(false);
 
   const keyDisplayName = getKeyDisplayLabel(name);
+  /* With a controller in hand, its button instead, or nothing when the key has none */
+  const padHint = usePadHint();
+  /* A modal's confirm and back buttons are only its own: chat's Enter outside it stays Enter */
+  const [inModal, setInModal] = useState(false);
+  useLayoutEffect(() => setInModal(!!ref.current?.closest(`[${MODAL_ATTR}]`)), []);
+  const pad = padHint?.(name, inModal);
 
   const handleKeyUp = useEffectEvent((e: KeyboardEvent) => {
+    if (isModalOnly(e) && !inModal) return;
     const keyName = getEventKeyName(e);
     /* Enter: chat submit unmounts input before keyup; don't treat that keyup as HUD Enter.
      * Every KeyboardKey sees this keyup, so the flag isn't cleared here (the first one to see it
@@ -107,7 +132,7 @@ export const KeyboardKey: React.FC<KeyboardKeyProps> = ({
   });
 
   const handleKeyDown = useEffectEvent((e: KeyboardEvent) => {
-    if (e.repeat) return;
+    if (e.repeat || (isModalOnly(e) && !inModal)) return;
     const keyName = getEventKeyName(e);
     if (inputType(document.activeElement) === "text" || inputType(e.target) === "text") {
       return;
@@ -134,13 +159,14 @@ export const KeyboardKey: React.FC<KeyboardKeyProps> = ({
     <Flex
       ref={ref}
       className={isPressed ? "pressed" : ""}
+      {...(pad && !hidden && { [PAD_KEY_ATTR]: true })}
       onClick={(e) => {
         e.stopPropagation();
         onKeyUp?.();
       }}
       sx={{
         cursor: "pointer",
-        display: hidden ? "none" : "block",
+        display: hidden || (padHint && !pad) ? "none" : "block",
         position: "absolute",
         bottom: 0,
         right: 0,
@@ -157,11 +183,20 @@ export const KeyboardKey: React.FC<KeyboardKeyProps> = ({
                      #000000 0px 0px 0px 1px,
                      #ffffff 0px -1px 0px ${isPressed ? 1 : 2}px inset`,
         ...sx,
+        /* The glyphs draw their own shape */
+        ...(pad && { bg: "transparent", boxShadow: "none", p: 0, minWidth: 0, ...PAD_KEY_SWAP }),
       }}
     >
-      <Box sx={{ lineHeight: 1, fontSize: "10px", fontWeight: "bold", textShadow: "none" }}>
-        {keyDisplayName}
-      </Box>
+      {pad ? (
+        <>
+          <PadCombo className="pad-own" pad={pad} sx={{ opacity: isPressed ? 0.7 : 1 }} />
+          <PadCombo className="pad-a" pad={{ button: 0 }} />
+        </>
+      ) : (
+        <Box sx={{ lineHeight: 1, fontSize: "10px", fontWeight: "bold", textShadow: "none" }}>
+          {keyDisplayName}
+        </Box>
+      )}
     </Flex>
   );
 };

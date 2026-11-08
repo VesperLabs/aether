@@ -1,4 +1,4 @@
-import { useState, useLayoutEffect, useEffect, useEffectEvent, memo } from "react";
+import { useState, useLayoutEffect, useEffect, useEffectEvent, useRef, memo } from "react";
 import { useDoubleTap } from "use-double-tap";
 import type { ThemeUIStyleObject } from "theme-ui";
 import { resolveAsset, type BuiltItem } from "@/content";
@@ -15,6 +15,7 @@ import { DEFAULT_ASSET_USER } from "./art-icon";
 import { SPRING_OPEN_ATTR } from "./drag-spring-open";
 import { springWiggle } from "./spring-wiggle";
 import { deriveElements } from "./weapon-elements";
+import { PAD_DROP_EVENT, PAD_USE_EVENT, type PadDropEvent } from "./pad-slot-events";
 
 const BLANK_IMAGE =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
@@ -87,6 +88,26 @@ export const ItemSlot = memo(
       dragOver(target);
       return () => dragOver(null);
     }, [dragging, target]);
+    /* A controller picks up and places, or uses, through events on the slot */
+    const slotRef = useRef<HTMLDivElement>(null);
+    const onPadDrop = useEffectEvent((e: Event) => {
+      if (shouldBindEvents) dropItem((e as PadDropEvent).detail);
+    });
+    const onPadUse = useEffectEvent(() => {
+      if (shouldBindEvents) doubleClickItem();
+    });
+    useEffect(() => {
+      const el = slotRef.current;
+      if (!el) return;
+      const drop = (e: Event) => onPadDrop(e);
+      const use = () => onPadUse();
+      el.addEventListener(PAD_DROP_EVENT, drop);
+      el.addEventListener(PAD_USE_EVENT, use);
+      return () => {
+        el.removeEventListener(PAD_DROP_EVENT, drop);
+        el.removeEventListener(PAD_USE_EVENT, use);
+      };
+    }, []);
     const handleMouseEnter = () => {
       setHovering(true);
     };
@@ -157,10 +178,13 @@ export const ItemSlot = memo(
       "data-bag-id": bagId,
       "data-id": item?.id,
       "data-base": item?.base,
+      /* The kind of slot it goes in, so a controller's "Use" can equip it (`pad-item-menu`) */
+      "data-slot-type": item?.slot ?? undefined,
     };
 
     return (
       <Box
+        ref={slotRef}
         data-tooltip-id={tooltipId}
         sx={{
           /* Only draggable slots hold on to the touch; display-only ones let a swipe scroll. */

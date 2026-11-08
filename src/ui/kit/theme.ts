@@ -29,6 +29,8 @@ export const theme = {
     },
   },
   zIndices: {
+    /* The controller's button badge, over everything it can sit on (the on-screen keyboard) */
+    padBadge: 99999999,
     tooltip: 9999999,
     draggable: 999999,
     modal: 99999,
@@ -68,9 +70,10 @@ export const theme = {
       p: 1,
       px: 2,
       bg: "rgba(0, 0, 0, 0.38)",
-      /* Recessed into the panel: dark edge, shaded from above, the light catching its lower lip. */
-      border: `1px solid rgba(0, 0, 0, 0.35)`,
-      boxShadow: `inset 0 1px 1px rgba(0, 0, 0, 0.2), 0 1px 0 rgba(255, 255, 255, 0.1)`,
+      /* Recessed into the panel, shaded from above. Its edge is the same crisp black line as a
+         wood button's, inside its box, so fields and buttons line up and frame alike. */
+      border: `1px solid #000`,
+      boxShadow: `inset 0 1px 1px rgba(0, 0, 0, 0.2)`,
       outline: "none",
       textShadow: "none",
       transition: "background-color 0.15s ease",

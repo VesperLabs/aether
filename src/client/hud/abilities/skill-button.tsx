@@ -1,3 +1,4 @@
+import { PAD_SKIP_ATTR } from "@/client/input/pad-nav";
 import { Icon, KeyboardKey, Button } from "@/ui";
 import { isMobile } from "@/ui";
 import type { PressHandler } from "@/ui";
@@ -34,6 +35,8 @@ export const SkillButton = ({
   const withCosts = hasCosts(costs);
   return (
     <Button
+      /* Fired by their own controller buttons, so the menu highlight passes them over */
+      {...{ [PAD_SKIP_ATTR]: true }}
       variant="skill"
       onTouchStart={(e) => onTouchStart(e)}
       onTouchEnd={(e) => onTouchEnd(e)}

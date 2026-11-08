@@ -1,3 +1,4 @@
+import { setNearNpc } from "@/client/input/gamepad";
 import type React from "react";
 import type Phaser from "phaser";
 import type { ChatMessage, ClientGameSocket } from "@/network";
@@ -115,6 +116,7 @@ export function createWindowHandlers({
 
   const onNearNpc = (e: WindowEventMap["HERO_NEAR_NPC"]) => {
     setShowButtonChat(!!e?.detail);
+    setNearNpc(!!e?.detail);
     if (!e?.detail) {
       setTabKeeper(false);
       setSign(null);

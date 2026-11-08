@@ -1,3 +1,4 @@
+import { CONTROL_ROW } from "./control-row";
 import type { ComponentProps } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
 import { Box, Switch as ThemeUiSwitch } from "theme-ui";
@@ -15,11 +16,6 @@ type SwitchProps = ComponentProps<typeof ThemeUiSwitch> & {
 
 const SPREAD_LABEL: ThemeUIStyleObject = {
   flexDirection: "row-reverse",
-  /* The bar ties the label to its far-off switch. */
-  px: 2,
-  py: 1,
-  borderRadius: 2,
-  bg: "shadow.10",
   "& > span": { flex: 1 },
 };
 
@@ -47,6 +43,12 @@ export function Switch({ sx, spread, hint, ...props }: SwitchProps) {
       sx={{
         "& > label": {
           alignItems: "center",
+          /* A dark band like every labelled control row; across a settings row it ties the
+           * label to its far-off switch */
+          ...CONTROL_ROW,
+          /* Only as wide as its text and switch, unless spread across a settings row, so a
+           * highlight round it fits what's there */
+          ...(!spread && { width: "fit-content" }),
           ...(spread && SPREAD_LABEL),
           ...(hint && hintPill(hint)),
           /* Fades the text's own colour, which stays readable on any panel. */

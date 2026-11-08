@@ -3,6 +3,7 @@ import { Box, Flex, KeyboardKey, Text } from "@/ui";
 import { isMobile } from "@/ui";
 import type { ChatSuggestion } from "./chat-command-match";
 import { ChatItemPreview } from "./chat-item-preview";
+import { PAD_POPUP_ATTR } from "@/client/input/pad-keyboard-events";
 
 const HIGHLIGHT = "rgba(255,255,255,.12)";
 
@@ -40,11 +41,16 @@ export const ChatCommandPopover = ({
 }) => {
   const hasPreviews = suggestions.some((s) => s.look);
   const highlightedRow = useRef<HTMLDivElement>(null);
+  /* By what's listed, not the list itself, which is new each render: scrolling back on every
+   * render would undo a controller scrolling the list */
+  const listed = suggestions.map((s) => s.value).join("\n");
   useEffect(() => {
     highlightedRow.current?.scrollIntoView({ block: "nearest" });
-  }, [highlighted, suggestions]);
+  }, [highlighted, listed]);
   return (
     <Box
+      /* On a controller it takes over from the on-screen keyboard (`PAD_POPUP_ATTR`) */
+      {...{ [PAD_POPUP_ATTR]: true }}
       variant="buttons.wood"
       sx={{
         position: "absolute",
@@ -68,6 +74,8 @@ export const ChatCommandPopover = ({
         return (
           <Box
             key={suggestion.value}
+            /* A stop for the controller's highlight; A picks it */
+            role="option"
             ref={isHighlighted ? highlightedRow : undefined}
             /* Keep focus in the input so mobile doesn't blur-send the draft */
             onPointerDown={(e) => e.preventDefault()}
