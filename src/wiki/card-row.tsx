@@ -1,6 +1,7 @@
-import { Box, Flex, Text } from "@/ui";
+import { Flex, Text } from "@/ui";
 import type { ReactNode } from "react";
 import { PAPER } from "./paper";
+import { DottedLine } from "./leader";
 
 /** The size of every icon on the card, and of the slot that holds it. */
 export const ICON = 32;
@@ -37,24 +38,29 @@ export const Row = ({
         {icon}
       </Flex>
     )}
-    <Text
-      sx={{
-        color: labelColor ?? PAPER.muted,
-        fontWeight: labelColor ? 600 : 400,
-        whiteSpace: "nowrap",
-      }}
-    >
-      {label}
-    </Text>
-    <Box sx={{ flex: 1, minWidth: 8, borderBottom: `1px dotted ${PAPER.ornament}` }} />
-    <Text
-      sx={{
-        color: valueColor ?? (labelColor ? PAPER.muted : PAPER.ink),
-        fontWeight: labelColor ? 400 : 700,
-        whiteSpace: "nowrap",
-      }}
-    >
-      {value}
-    </Text>
+    <DottedLine
+      label={
+        <Text
+          sx={{
+            color: labelColor ?? PAPER.muted,
+            fontWeight: labelColor ? 600 : 400,
+            whiteSpace: "nowrap",
+          }}
+        >
+          {label}
+        </Text>
+      }
+      value={
+        <Text
+          sx={{
+            color: valueColor ?? (labelColor ? PAPER.muted : PAPER.ink),
+            fontWeight: labelColor ? 400 : 700,
+            whiteSpace: "nowrap",
+          }}
+        >
+          {value}
+        </Text>
+      }
+    />
   </Flex>
 );

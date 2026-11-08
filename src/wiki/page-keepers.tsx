@@ -19,6 +19,7 @@ import {
 import { TALKING_ACTORS } from "./actor-groups";
 import { WalkOnHover } from "./walk-on-hover";
 import { Divider, PAPER, PAPER_STYLE, PaperFrame } from "./paper";
+import { DottedLine } from "./leader";
 import { RowTitle } from "./row-title";
 import { useHashScroll } from "./use-hash-scroll";
 
@@ -144,10 +145,11 @@ const KeeperCard = ({
 const QuestRow = ({ id }: { id: QuestId }) => {
   const quest = questList[id];
   return (
-    <Flex sx={{ alignItems: "baseline", gap: 1, fontSize: 1, py: "2px" }}>
-      <Text sx={{ fontWeight: 600 }}>{quest.name}</Text>
-      <Box sx={{ flex: 1, minWidth: 8, borderBottom: `1px dotted ${PAPER.ornament}` }} />
-      <Text sx={{ color: PAPER.muted, whiteSpace: "nowrap" }}>Lv {quest.level}</Text>
+    <Flex sx={{ fontSize: 1, py: "2px" }}>
+      <DottedLine
+        label={<Text sx={{ fontWeight: 600 }}>{quest.name}</Text>}
+        value={<Text sx={{ color: PAPER.muted, whiteSpace: "nowrap" }}>Lv {quest.level}</Text>}
+      />
     </Flex>
   );
 };
