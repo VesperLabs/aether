@@ -15,7 +15,10 @@ permissions:
   contents: write
   pull-requests: write
 
-concurrency: release
+# Queued, never run side by side: two runs at once raced on the same release PR
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
   release:
@@ -31,14 +34,18 @@ jobs:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
 
+      # Found by its branch, not its label: a label just added isn't searchable yet, so a label
+      # lookup came back empty and left the PR stuck. --auto merges it once its checks pass,
+      # instead of failing while they still run.
       - name: Merge the release PR
         if: steps.release.outputs.release_created != 'true'
         run: |
-          PR=$(gh pr list --repo "$REPO" --state open --label "autorelease: pending" --json number --jq '.[0].number // empty')
-          if [ -n "$PR" ]; then gh pr merge "$PR" --repo "$REPO" --squash; fi
+          PR=$(gh pr list --repo "$REPO" --state open --head "$BRANCH" --json number --jq '.[0].number // empty')
+          if [ -n "$PR" ]; then gh pr merge "$PR" --repo "$REPO" --squash --auto; fi
         env:
           GH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           REPO: ${{ github.repository }}
+          BRANCH: release-please--branches--main--components--aether
 
   deploy:
     needs: release
