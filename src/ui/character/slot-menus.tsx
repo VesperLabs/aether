@@ -4,6 +4,7 @@ import type { ThemeUIStyleObject } from "theme-ui";
 import type { BuiltItem } from "@/content";
 import { MAX_INVENTORY_ITEMS } from "@/rules/inventory";
 import { arePropsEqualWithKeys, Flex, Icon, Text } from "@/ui/kit";
+import { sameRequirementInputs } from "@/ui/item";
 import type { CharacterMenuProps } from "./menu-props";
 import { SlotMenu, type MenuSlot } from "./slot-menu";
 
@@ -81,7 +82,10 @@ export const MenuInventory = memo(
       <GoldDisplay gold={player?.gold} sx={{ mt: 2 }} />
     </SlotMenu>
   ),
-  arePropsEqualWithKeys(["isOpen", "player.inventory", "player.gold"]),
+  /* Also when a level up or buff turns items red or usable; not on every tick's hp */
+  (prev, next) =>
+    arePropsEqualWithKeys(["isOpen", "player.inventory", "player.gold"])(prev, next) &&
+    sameRequirementInputs(prev.player, next.player),
 );
 
 interface MenuBagProps extends Pick<CharacterMenuProps, "player" | "events"> {
@@ -109,5 +113,7 @@ export const MenuBag = memo(
         />
       );
     }),
-  arePropsEqualWithKeys(["bagState", "player.inventory"]),
+  (prev, next) =>
+    arePropsEqualWithKeys(["bagState", "player.inventory"])(prev, next) &&
+    sameRequirementInputs(prev.player, next.player),
 );

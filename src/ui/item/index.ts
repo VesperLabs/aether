@@ -1,4 +1,5 @@
 export { ItemSlot } from "./item-slot";
+export { sameRequirementInputs } from "./slot-state";
 export type { SlotEvents } from "./item-slot";
 export { ItemTooltip } from "./item-tooltip";
 export { SlotAmount } from "./slot-amount";
