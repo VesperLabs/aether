@@ -1,22 +1,27 @@
 import { Box, Switch } from "@/ui/kit";
 
-/** The "Remember me" row. `reserveOnly` keeps its space, so the tabs without it line up. */
+/**
+ * Height of the row above the login button: Remember me on Login, the genders on the others. The
+ * switch's 16px track inside its control row's 6px padding above and below.
+ */
+export const FORM_ROW_HEIGHT = 28;
+
+/** The "Remember me" row, on Login only: the other tabs have nothing to remember. */
 export const RememberRow = ({
   checked = false,
   onChange,
-  reserveOnly = false,
 }: {
   checked?: boolean;
   onChange?: (checked: boolean) => void;
-  reserveOnly?: boolean;
 }) => (
   <Box
-    aria-hidden={reserveOnly}
     sx={{
-      visibility: reserveOnly ? "hidden" : "visible",
+      /* The same height as the gender row in its place on the other tabs, so they line up */
+      height: FORM_ROW_HEIGHT,
       /* To the right of the form, as wide as it needs */
       display: "flex",
       justifyContent: "flex-end",
+      alignItems: "center",
       "& label": {
         alignItems: "center",
         fontSize: 0,

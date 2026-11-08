@@ -43,7 +43,9 @@ const lookOption = (options: readonly [string, ...string[]]) => z.enum(options).
 
 export const commands = {
   /* Auth */
-  demoLogin: z.object({ charClass: z.string().nullish() }).optional(),
+  demoLogin: z
+    .object({ charClass: z.string().nullish(), gender: z.enum(genders).optional() })
+    .optional(),
   login: z.object({ email: text, password: text }).optional(),
   /** Log in with the one-time ticket from logging in on the wiki. */
   ticketLogin: z.object({ ticket: z.string() }),

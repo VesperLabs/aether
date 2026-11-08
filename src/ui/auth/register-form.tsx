@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { Flex, Modal, Input, KeyboardButton } from "@/ui/kit";
+import { Modal, Input, KeyboardButton } from "@/ui/kit";
 import type { CharClass } from "@/content";
 import { CharClassSelect } from "./char-class-select";
-import { GenderSwitch, type Gender } from "./gender-switch";
-import { RememberRow } from "./remember-row";
+import { GenderRow, type Gender } from "./gender-switch";
 import { getRememberMe, rememberLoginToken } from "./remembered-login";
 import { registerAccount } from "./auth-api";
 import type { Notify } from "./login-types";
@@ -43,17 +42,14 @@ export const RegisterForm = ({
   return (
     <Modal.Body sx={{ gap: 2 }}>
       <CharClassSelect charClass={charClass} setCharClass={setCharClass} />
-      <Flex sx={{ gap: 1, alignItems: "stretch" }}>
-        <Input
-          autoFocus={isActive}
-          placeholder="Email"
-          value={email}
-          onChange={(e) => {
-            setEmail(e.target.value);
-          }}
-        />
-        <GenderSwitch gender={gender} setGender={setGender} />
-      </Flex>
+      <Input
+        autoFocus={isActive}
+        placeholder="Email"
+        value={email}
+        onChange={(e) => {
+          setEmail(e.target.value);
+        }}
+      />
       <Input
         type="password"
         autoComplete="new-password"
@@ -63,7 +59,7 @@ export const RegisterForm = ({
           setPassword(e.target.value);
         }}
       />
-      <RememberRow reserveOnly />
+      <GenderRow gender={gender} setGender={setGender} />
       <KeyboardButton
         sx={{ flex: 1 }}
         /* Hidden tabs stay mounted, and ENTER presses every enabled button on the page */

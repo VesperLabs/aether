@@ -22,7 +22,7 @@ function isDemoAllowed() {
 
 export async function demoLogin(
   ctx: CommandContext,
-  { charClass }: ParsedCommand<"demoLogin"> = {},
+  { charClass, gender }: ParsedCommand<"demoLogin"> = {},
 ) {
   const { world, actor, socketId, session } = ctx;
   if (!isDemoAllowed()) return actor.emit("formError", { error: "Demo mode is off" });
@@ -33,7 +33,7 @@ export async function demoLogin(
     return console.log("❌ Socket already logged in");
   }
 
-  const user = createBaseUser(world.dice, charClass);
+  const user = createBaseUser(world.dice, charClass, gender);
 
   const player = createPlayer(world, user.roomName, {
     socketId,

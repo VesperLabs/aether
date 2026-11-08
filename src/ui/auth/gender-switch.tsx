@@ -1,4 +1,5 @@
 import { Box, Flex } from "@/ui/kit";
+import { FORM_ROW_HEIGHT } from "./remember-row";
 
 export type Gender = "male" | "female";
 
@@ -8,7 +9,7 @@ const OPTIONS: { gender: Gender; symbol: string }[] = [
 ];
 
 /** A small two-way pick, compact enough to sit beside an input. */
-export const GenderSwitch = ({
+const GenderSwitch = ({
   gender,
   setGender,
 }: {
@@ -46,5 +47,15 @@ export const GenderSwitch = ({
         </Box>
       );
     })}
+  </Flex>
+);
+
+/**
+ * The gender pick where Login has "Remember me", for the tabs that don't remember you: the same
+ * height, so every tab lines up, and on the right, where that switch is.
+ */
+export const GenderRow = (props: { gender: Gender; setGender: (gender: Gender) => void }) => (
+  <Flex sx={{ height: FORM_ROW_HEIGHT, justifyContent: "flex-end" }}>
+    <GenderSwitch {...props} />
   </Flex>
 );
