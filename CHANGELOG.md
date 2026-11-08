@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.22.1](https://github.com/VesperLabs/aether/compare/v0.22.0...v0.22.1) (2026-11-08)
+
+
+### Bug Fixes
+
+* inventory items stop showing red as soon as you level up ([#284](https://github.com/VesperLabs/aether/issues/284)) ([bb290d9](https://github.com/VesperLabs/aether/commit/bb290d926c19fb12933c2d27b39778a1935bcc16))
+* wiki dotted leaders all sit on the text's baseline ([#283](https://github.com/VesperLabs/aether/issues/283)) ([46ca595](https://github.com/VesperLabs/aether/commit/46ca5954870d9713c0504e06db986041e2ded09c))
+
 ## [0.22.0](https://github.com/VesperLabs/aether/compare/v0.21.0...v0.22.0) (2026-11-08)
 
 
