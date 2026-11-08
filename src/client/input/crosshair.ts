@@ -8,11 +8,18 @@ import { isAimShown } from "./tap-aim";
 const RELOADING_ALPHA = 0.2;
 const READYING_ALPHA = 0.5;
 
+/* The frame is a dotted trail leading to a reticle at its right edge (x 23-31 of 32, centered on 27) */
+const RETICLE_LEFT = 23;
+const RETICLE_CENTER_X = 27.5 / 32;
+/** How far the reticle's center sits past the frame's, along the aim. */
+const RETICLE_OFFSET = 27.5 - 16;
+
 export class Crosshair extends Phaser.GameObjects.Container {
   declare center: Phaser.Math.Vector2;
   declare distance: number;
   declare player: Player;
   declare sprite: Phaser.GameObjects.Sprite;
+  declare reticle: Phaser.GameObjects.Sprite;
   constructor(
     scene: Phaser.Scene,
     x: number,
@@ -30,9 +37,17 @@ export class Crosshair extends Phaser.GameObjects.Container {
 
     this.player = player;
 
-    // Create the sprite and add it as a child of the container
-    this.sprite = new Phaser.GameObjects.Sprite(scene, 0, 0, textureKey, frame);
-    this.add(this.sprite);
+    /* Two pieces of one frame: the trail turns with the aim, the reticle at its end stays upright */
+    this.sprite = new Phaser.GameObjects.Sprite(scene, 0, 0, textureKey, frame).setCrop(
+      0,
+      0,
+      RETICLE_LEFT,
+      32,
+    );
+    this.reticle = new Phaser.GameObjects.Sprite(scene, 0, 0, textureKey, frame)
+      .setOrigin(RETICLE_CENTER_X, 0.5)
+      .setCrop(RETICLE_LEFT, 0, 32 - RETICLE_LEFT, 32);
+    this.add([this.sprite, this.reticle]);
 
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
@@ -42,15 +57,16 @@ export class Crosshair extends Phaser.GameObjects.Container {
     if (!this?.player?.state) return;
     const state = this.player.state;
     this.setVisible(isAimShown(state, Date.now()));
-    this.angle = this?.player?.state?.lastAngle;
+    const angle = state.lastAngle ?? 0;
+    const alpha = this.getReadiness();
 
-    // Set the rotation of the sprite around its own axis
-    this.sprite.setRotation(this.angle);
-    this.sprite.setAlpha(this.getReadiness());
-
-    // Calculate the position based on the rotated angle
-    this.x = this.center.x + Math.cos(this.angle) * this.distance;
-    this.y = this.center.y + Math.sin(this.angle) * this.distance;
+    /* The trail turns with the aim from the body's center, where shots leave; the reticle stays upright */
+    this.sprite.setRotation(angle).setAlpha(alpha);
+    this.reticle
+      .setPosition(Math.cos(angle) * RETICLE_OFFSET, Math.sin(angle) * RETICLE_OFFSET)
+      .setAlpha(alpha);
+    this.x = this.center.x + Math.cos(angle) * this.distance;
+    this.y = this.center.y + Math.sin(angle) * this.distance;
   }
 
   /** Full opacity when the aimed spell or next attack is ready, faded while it is on cooldown. */

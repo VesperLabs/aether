@@ -9,6 +9,9 @@ const BLANK_TEXTURE = "human-blank";
 /** How long the red damage tint shows, in ms. A fixed time, so a long frame (a tab coming back) can't stretch it. */
 const FLASH_MS = 70;
 
+/** Where a drawn bow points along the aim: the crosshair's reticle, about 51px out (see crosshair.ts). */
+const BOW_TARGET_DISTANCE = 51;
+
 export function checkIsFlash(p: Player) {
   if (p.state.isFlash && Date.now() - p.state.lastFlash > FLASH_MS) {
     p.state.isFlash = false;
@@ -97,7 +100,8 @@ export function updateCurrentSpeed(player: Player) {
     return;
   }
 
-  if (player.castPose && Date.now() < player.castPose.until) {
+  /* A cast pose holds while standing; walking off right after shows the legs, like a bow */
+  if (player.castPose && Date.now() < player.castPose.until && player.currentSpeed === 0) {
     player.action = player.castPose.action;
     return;
   }
@@ -168,6 +172,21 @@ function playWeapons(player: Player) {
   handRight.setAngle(right?.rotation);
 
   const bowAngleOffset = Phaser.Math.DegToRad(-135);
+  /* A drawn bow stays in the hand and turns there to point at the reticle, where the arrow goes */
+  const aimBow = (hand: Player["handLeft"]) => {
+    const angle = player.state.lastAngle ?? 0;
+    const target = {
+      x: Math.cos(angle) * BOW_TARGET_DISTANCE,
+      y: player.bodyOffsetY + Math.sin(angle) * BOW_TARGET_DISTANCE,
+    };
+    const fromHand = Math.atan2(
+      target.y - (player.rig.y + hand.y),
+      target.x - (player.rig.x + hand.x),
+    );
+    hand.setFlipY(false);
+    hand.setFlipX(false);
+    hand.setRotation(fromHand + bowAngleOffset);
+  };
   const isRightRanged = player.hasRangedWeaponRight();
   const isLeftRanged = player.hasRangedWeaponLeft();
 
@@ -182,18 +201,10 @@ function playWeapons(player: Player) {
   }
 
   if (isRightRanged) {
-    if (action === "attack_right") {
-      handRight.setFlipY(false);
-      handRight.setFlipX(false);
-      handRight.setRotation(player.state.lastAngle + bowAngleOffset);
-    }
+    if (action === "attack_right") aimBow(handRight);
   }
 
   if (isLeftRanged) {
-    if (action === "attack_left") {
-      handLeft.setFlipY(false);
-      handLeft.setFlipX(false);
-      handLeft.setRotation(player.state.lastAngle + bowAngleOffset);
-    }
+    if (action === "attack_left") aimBow(handLeft);
   }
 }

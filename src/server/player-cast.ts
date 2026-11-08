@@ -13,6 +13,11 @@ export function hasCastTime(player: Player, abilitySlot: AbilitySlot | undefined
   return !!player.getAbilityDetails(abilitySlot).stats?.castTime;
 }
 
+/** Only the sender hears it, so a client waiting on a cast it won't get is freed without telling the room. */
+export function emitCastRefused(player: Player) {
+  player.world.io.to(player.socketId).emit("playerCastCancelled", { socketId: player.socketId });
+}
+
 function emitCancelled(player: Player) {
   if (!player.roomName) return;
   player.world.io.to(player.roomName).emit("playerCastCancelled", { socketId: player.socketId });
@@ -20,22 +25,14 @@ function emitCancelled(player: Player) {
 
 /** Starts a timed spell. Nothing is paid until it lands, so a cancelled cast costs nothing. */
 export function startCast(player: Player, abilitySlot: AbilitySlot) {
-  if (player.pendingCast || !player.roomName) return;
+  const { roomName } = player;
   const castMs = player.getAbilityDetails(abilitySlot).stats?.castTime;
-  const isReady = castMs && !player.vx && !player.vy && player.canCastSpell(abilitySlot, false);
-  /* Only the sender hears a refusal, so spamming a key on cooldown never reaches the room */
-  if (!isReady) {
-    player.world.io.to(player.socketId).emit("playerCastCancelled", { socketId: player.socketId });
-    return;
-  }
-  player.pendingCast = {
-    abilitySlot,
-    landsAt: player.world.now() + castMs,
-    roomName: player.roomName,
-  };
-  player.world.io
-    .to(player.roomName)
-    .emit("playerCastStarted", { socketId: player.socketId, castMs });
+  const isReady =
+    !player.pendingCast && !player.vx && !player.vy && player.canCastSpell(abilitySlot, false);
+  /* The client rooted itself when it asked, so every refusal answers it or it stays stuck */
+  if (!roomName || !castMs || !isReady) return emitCastRefused(player);
+  player.pendingCast = { abilitySlot, landsAt: player.world.now() + castMs, roomName };
+  player.world.io.to(roomName).emit("playerCastStarted", { socketId: player.socketId, castMs });
 }
 
 /** Calls off the cast in progress, if there is one. */

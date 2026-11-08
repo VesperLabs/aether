@@ -1,5 +1,5 @@
 import { memo, useEffect, useState } from "react";
-import { Box, Donut, Text } from "@/ui";
+import { Box, Donut } from "@/ui";
 import type { Cooldown } from "@/client/hud/app/context";
 import { arePropsEqualWithKeys } from "@/ui";
 
@@ -48,30 +48,8 @@ export const CooldownTimer = memo(
       };
     }, [startTime, duration]);
 
-    const remaining = Math.max(0, duration * (1 - percentage));
-
     return (
       <Box>
-        {percentage < 1 && remaining > 0 && (
-          <Text
-            sx={{
-              position: "absolute",
-              top: "50%",
-              left: 0,
-              width: "100%",
-              transform: "translateY(-50%)",
-              textAlign: "center",
-              fontSize: 1,
-              color,
-              textShadow: "1px 1px 0 #000",
-              pointerEvents: "none",
-              zIndex: 1,
-            }}
-          >
-            {/* Tenths under 10s, so a short throw cooldown still counts down */}
-            {remaining < 10000 ? (remaining / 1000).toFixed(1) : Math.ceil(remaining / 1000)}
-          </Text>
-        )}
         <Donut
           value={Math.abs(percentage) || 0}
           size="16"

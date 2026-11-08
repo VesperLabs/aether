@@ -82,6 +82,8 @@ export class Player extends Character {
   declare talkMenu: Sprite;
   /** The attack frame a cast holds, and until when. A pose only: it locks nothing, unlike a swing. */
   declare castPose?: { action: string; until: number };
+  /** After a throw or cast, the hero keeps facing where it aims until then, walking backwards if need be. */
+  declare keepAimingUntil?: number;
   /** The hero let go of a timed spell, which starts as soon as it has stopped moving. */
   declare queuedCastSlot?: AbilitySlot;
   /** The ability key whose press was taken; only letting go of that key uses it. */
