@@ -15,6 +15,16 @@ import type { ServerWorld } from "./server-world";
 const CATCH_UP_DISTANCE = 480;
 /** Least threat a companion takes from its owner's fight, so even weak hits pull it in. */
 const MIN_ASSIST_THREAT = 10;
+/**
+ * Companions draw this much more threat per point of damage than players, so they pull foes off
+ * their owner the way a tank does, even pets that hit far softer than they do.
+ */
+const COMPANION_THREAT_MULTIPLIER = 4;
+
+/** The threat a hit of `amount` from `attackerId` is worth: more from a companion. */
+export function threatOfHit(world: ServerWorld, attackerId: string, amount: number) {
+  return world.npcs[attackerId]?.state.ownerId ? amount * COMPANION_THREAT_MULTIPLIER : amount;
+}
 
 /** Every NPC `ownerId` owns. */
 function companionsOf(world: ServerWorld, ownerId: string): Npc[] {
