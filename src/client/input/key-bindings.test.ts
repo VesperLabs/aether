@@ -20,14 +20,14 @@ describe("key bindings", () => {
   });
 
   it("moves a button off the action that had it", () => {
-    bindButton("grab", { button: 0 });
-    expect(getBindings().gamepad.grab).toEqual({ button: 0 });
-    expect(getBindings().gamepad.talk).toBeNull();
+    bindButton("talk", { button: 0 });
+    expect(getBindings().gamepad.talk).toEqual({ button: 0 });
+    expect(getBindings().gamepad.grab).toBeNull();
   });
 
   it("keeps a combo apart from its buttons pressed alone", () => {
-    bindButton("grab", { hold: 6, button: 0 });
-    expect(getBindings().gamepad.talk).toEqual({ button: 0 });
+    bindButton("talk", { hold: 6, button: 0 });
+    expect(getBindings().gamepad.grab).toEqual({ button: 0 });
   });
 
   it("resets one device without touching the other", () => {

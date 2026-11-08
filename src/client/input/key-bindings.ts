@@ -94,6 +94,8 @@ const LB = 4;
 const RB = 5;
 const LT = 6;
 const RT = 7;
+const DPAD_UP = 12;
+const DPAD_DOWN = 13;
 const DEFAULT_GAMEPAD: GamepadBindings = {
   /* The left stick moves; the d-pad opens menus instead */
   moveUp: null,
@@ -103,17 +105,18 @@ const DEFAULT_GAMEPAD: GamepadBindings = {
   /* The right thumb stays on the aim stick, so fighting sits on the shoulders beside it */
   attack: { button: RT },
   dodge: { button: RB },
-  /* A talks to whoever is in reach, and grabs when no one is */
-  talk: { button: 0 },
-  grab: null,
+  /* A picks up whatever is at your feet, NPC in reach or not */
+  grab: { button: 0 },
+  /* Talking happens standing still, so it can take the thumb off the move stick */
+  talk: { button: DPAD_UP },
   /* The first two on the left shoulders, pressed alone and aimed with the right stick; the rest
-   * on the face buttons, for quick casts (potions). No combos: one finger, one press */
+   * on the face buttons and d-pad, for quick casts (potions). No combos: one finger, one press */
   ability1: { button: LT },
   ability2: { button: LB },
   ability3: { button: 2 },
   ability4: { button: 3 },
   ability5: { button: 1 },
-  ability6: null,
+  ability6: { button: DPAD_DOWN },
   /* Menus open from menu mode (Select or Start), so the d-pad is left free */
   inventory: null,
   equipment: null,
@@ -156,7 +159,7 @@ const readGamepad = (saved: Record<string, unknown> | undefined) =>
  * Bump when the controller defaults change: saved controller bindings from before are dropped,
  * so players get the new layout rather than a mix of old saves and new defaults.
  */
-const GAMEPAD_VERSION = 5;
+const GAMEPAD_VERSION = 6;
 
 type Saved = Bindings & { gamepadVersion: number };
 
