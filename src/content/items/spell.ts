@@ -44,7 +44,7 @@ export const spellItems = {
       base: "waterball",
       slot: "spell",
       texture: "scroll-blue",
-      effects: { minWaterDamage: 0, maxWaterDamage: 1 },
+      effects: { minWaterDamage: 1, maxWaterDamage: 1 },
       exclusive: true,
     },
     lightball: {

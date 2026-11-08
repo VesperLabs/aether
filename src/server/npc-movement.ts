@@ -45,7 +45,11 @@ export function performNpcMovement(
       return movement.pathed ? walkToPathed(npc, npc.home()) : walkTo(npc, npc.home());
     case "follow":
       if (!leader) return standStill(npc);
-      return movement.pathed ? walkToPathed(npc, leader) : walkTo(npc, leader);
+      // Around any wall in the way: walking straight at it and only pathing once pressed against
+      // it flips between the two every few ticks, which is the wiggle
+      return movement.pathed || !hasLineOfSight(npc.room.map.grid, npc, leader)
+        ? walkToPathed(npc, leader)
+        : walkTo(npc, leader);
     case "flee":
       if (movement.retreatAt !== undefined) npc.state.retreatAt = movement.retreatAt;
       if (!targetPlayer) return standStill(npc);
@@ -150,6 +154,8 @@ function walkToPathed(npc: Npc, target: Point) {
   const { nextPath } = npc;
   const next = findNextWaypoint(npc.room.pathfinder, npc, target);
   if (next?.x !== nextPath?.x || next?.y !== nextPath?.y) npc.nextPath = next as Point;
+  // No way around (the target stands in a wall, or past the search limit): head straight for it
+  if (!next) return walkTo(npc, target);
   if (nextPath) {
     walkTo(npc, nextPath);
     if (checkInRange(npc, nextPath, 1)) {

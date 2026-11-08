@@ -108,6 +108,8 @@ export function applySpellDamage(
     eleDamage += holyDamage;
     elements.push("holy");
   }
+  /* A damaging spell that lands always hurts a little: a 0 would show nothing, like a miss */
+  if (!(holyDamage > 0 && isAllyOf(attacker, victim))) eleDamage = Math.max(eleDamage, 1);
   if (Math.abs(eleDamage) > 0) {
     victim.modifyStat("hp", -eleDamage);
     markHurt(attacker, victim, Math.abs(eleDamage));

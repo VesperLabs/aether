@@ -10,7 +10,7 @@ import type { ServerWorld } from "./server-world";
 import type { Player } from "./player";
 import { findCharacter } from "./find-character";
 import { applyNpcHits } from "./npc-hits";
-import { findPackLeader } from "./npc-leader";
+import { findLeader, homeOf } from "./npc-leader";
 import { createMind, runMind, type NpcMind } from "./npc-mind";
 import { isAlly } from "./allegiance-adapter";
 import type { Point, RoomData } from "@/rules/world";
@@ -104,8 +104,6 @@ export class Npc extends Character {
   public mind?: NpcMind;
   /** Content name of the NPC it follows, from a `leader` map property. */
   public leaderName?: string;
-  /** The leader's spawn, remembered once found so the pack keeps its home if the leader dies. */
-  public leaderHome?: Point;
   declare name: string;
   /** NPCs never leave their room, so unlike players these are always set. */
   declare room: RoomData;
@@ -152,18 +150,13 @@ export class Npc extends Character {
     const { ownerId } = this.state;
     return ownerId ? this.world.players[ownerId] : undefined;
   }
-  /** Who it follows: its owner, else the nearest living NPC named `leaderName` in this room. */
+  /** Who it follows: its owner, or its pack leader. */
   findLeader(): Point | null {
-    if (this.state.ownerId) return this.owner() ?? null;
-    const leader = findPackLeader(this);
-    if (leader) this.leaderHome = leader.startingCoords;
-    return leader;
+    return findLeader(this);
   }
-  /** Where it leashes to and walks back to: its owner for a companion. */
+  /** Where it leashes to and walks back to. */
   home(): Point {
-    const owner = this.owner();
-    if (owner) return { x: owner.x, y: owner.y };
-    return this.leaderHome ?? this.startingCoords;
+    return homeOf(this);
   }
   setDead() {
     this.expireBuffs(true);

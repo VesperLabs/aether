@@ -21,7 +21,7 @@ import { subscribeNpcMessages } from "./npc-messages";
 import { subscribeKnockbackMessages, subscribePoseForgetting } from "./net/handlers/movement";
 import { subscribeDebugMessages } from "./debug-messages";
 import { Npc, type NpcDefinition } from "./npc";
-import { subscribeCompanions } from "./companions";
+import { subscribeCompanions, threatOfHit } from "./companions";
 import { DEFAULT_SERVER_FPS, createNetIds, type GameIo } from "@/network";
 import type { Database } from "./persistence/database";
 
@@ -112,7 +112,7 @@ export function createServerWorld({
   subscribePoseForgetting(world.events, world);
   subscribeDebugMessages(world.events, io);
   subscribeThreat(world.events, (victimId, attackerId, amount) => {
-    world.npcs[victimId]?.addThreat(attackerId, amount);
+    world.npcs[victimId]?.addThreat(attackerId, threatOfHit(world, attackerId, amount));
   });
   subscribeCompanions(world.events, world);
   subscribeStats(world.events, (characterId, amount) => {

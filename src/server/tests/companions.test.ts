@@ -1,6 +1,7 @@
 // @vitest-environment node
 import type { Socket } from "socket.io-client";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
+import { threatOfHit } from "../companions";
 import { once, startTestServer, type TestServer } from "./test-server";
 
 /** Companions from `/npc spawn ... pet` and `/npc tame`, against the real game server. */
@@ -178,5 +179,13 @@ describe("companions", () => {
     });
 
     expect(player.npcKills.crab).toBe(killsBefore + 1);
+  });
+
+  it("draws more threat than its owner for the same hit, so it pulls foes off them", async () => {
+    const { socket, player } = await server.login();
+    const pet = await summon(socket, "crab");
+    expect(threatOfHit(server.world, pet.id, 10)).toBeGreaterThan(
+      threatOfHit(server.world, player.socketId, 10) * 2,
+    );
   });
 });
