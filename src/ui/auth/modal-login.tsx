@@ -12,8 +12,9 @@ type LoginTab = "login" | "register" | "demo";
 const FIRST_AFTER_SELECTOR = `& > .modal-body > :first-child:not(.${CHAR_CLASS_SELECT}), & > .modal-body > .${CHAR_CLASS_SELECT} + *`;
 
 /* All stacked in one cell, so the modal takes the tallest form's size whichever is showing, and
-   stay mounted, so switching tabs keeps what was typed. The button sits flush with the bottom, the
-   top slot above the rest, and whatever is between them centered in the space left. */
+   stay mounted, so switching tabs keeps what was typed. The class pick stays at the top and the rest
+   stacks at the bottom, so the row above the button (Remember me, or the genders) sits in the same
+   place on every tab. */
 const TabPanel = ({
   open,
   flush,
@@ -34,7 +35,6 @@ const TabPanel = ({
         borderRadius: Modal.tabPanelRadius(flush),
       },
       "& > .modal-body > *": { flex: "none" },
-      "& > .modal-body > button": { mt: "auto" },
       [FIRST_AFTER_SELECTOR]: { mt: "auto" },
     }}
   >

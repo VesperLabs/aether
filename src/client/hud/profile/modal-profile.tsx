@@ -165,22 +165,33 @@ export const ModalProfile = () => {
                 }}
               >
                 {ROWS.flatMap(({ label: part, pickers }) => [
-                  ...pickers.map(({ label, options, optionLabel, current, choose, preview }) => (
-                    /* Each dropdown carries its own label, so style and colour never get mixed up */
-                    <Field key={label} label={label}>
-                      <Select
-                        label={label}
-                        value={current(profile) ?? ""}
-                        onChange={(option) => socket.emit("updateProfile", choose(option))}
-                        options={options.map((option, index) => ({
-                          value: option,
-                          label: optionLabel(option, index),
-                          icon: preview(option, profile),
-                        }))}
-                        sx={{ width: "100%" }}
-                      />
-                    </Field>
-                  )),
+                  ...pickers.map(({ label, options, optionLabel, current, choose, preview }) => {
+                    const value = current(profile);
+                    /* A look saved before its colour left the list still shows, as "Custom" */
+                    const custom =
+                      value && !options.includes(value)
+                        ? [{ value, label: "Custom", icon: preview(value, profile) }]
+                        : [];
+                    return (
+                      /* Each dropdown carries its own label, so style and colour never get mixed up */
+                      <Field key={label} label={label}>
+                        <Select
+                          label={label}
+                          value={value ?? ""}
+                          onChange={(option) => socket.emit("updateProfile", choose(option))}
+                          options={[
+                            ...custom,
+                            ...options.map((option, index) => ({
+                              value: option,
+                              label: optionLabel(option, index),
+                              icon: preview(option, profile),
+                            })),
+                          ]}
+                          sx={{ width: "100%" }}
+                        />
+                      </Field>
+                    );
+                  }),
                   /* A part with no colour leaves its second cell empty, so each part keeps a row */
                   ...(pickers.length < 2 ? [<Box key={`${part}-gap`} />] : []),
                 ])}
