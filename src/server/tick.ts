@@ -13,6 +13,7 @@ import { updateRoomLoot } from "./loot-adapter";
 import { expireSpells } from "./spell-adapter";
 import { countRoomClients, getRoomIndex, indexRooms } from "./room-index";
 import { keepCompanionsNear } from "./companions";
+import { resolveBalls } from "./balls";
 import { endTickTimer, startTickTimer } from "./tick-health";
 
 /** A long stall (debugger, GC) must not teleport things across the map. */
@@ -109,6 +110,7 @@ export const serverSystems: Array<System<ServerWorld>> = [
   indexRooms,
   separateNpcs,
   updateEntities,
+  resolveBalls,
   recordPoses,
   updateRooms,
   endTickTimer,

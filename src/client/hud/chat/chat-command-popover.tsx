@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { Box, Flex, KeyboardKey, Text } from "@/ui";
 import { isMobile } from "@/ui";
 import type { ChatSuggestion } from "./chat-command-match";
+import { ChatActorPreview } from "./chat-actor-preview";
 import { ChatItemPreview } from "./chat-item-preview";
 import { PAD_POPUP_ATTR } from "@/client/input/pad-keyboard-events";
 
@@ -98,7 +99,13 @@ export const ChatCommandPopover = ({
             }}
           >
             {hasPreviews &&
-              (suggestion.look ? <ChatItemPreview look={suggestion.look} /> : <Box />)}
+              (suggestion.actor ? (
+                <ChatActorPreview actorId={suggestion.actor} />
+              ) : suggestion.look ? (
+                <ChatItemPreview look={suggestion.look} />
+              ) : (
+                <Box />
+              ))}
             <Flex sx={{ alignItems: "center", gap: 1 }}>
               <Text
                 sx={{

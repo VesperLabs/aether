@@ -101,6 +101,8 @@ export class Player extends ServerCharacter {
   }
   /** The timed spell being cast, if any. */
   pendingCast?: PendingCast;
+  /** When this player last threw a ball, for the throw cooldown. */
+  lastThrowAt?: number;
   /** Swings if the attack is ready and affordable. Returns whether it swung. */
   doAttack({ count, direction, castAngle, abilitySlot }: PlayerAttackRequest): boolean {
     const { world, room, socketId } = this ?? {};

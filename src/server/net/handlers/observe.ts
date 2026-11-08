@@ -1,5 +1,5 @@
 import type { ParsedCommand } from "@/network";
-import { getPublicRoomState } from "@/network/sync";
+import { getPublicRoomState } from "@/server/net/room-sync";
 import type { CommandContext } from "@/server/net/command-context";
 import { observersOf } from "@/server/net/room-broadcast";
 import { shouldPause } from "../world-pause";

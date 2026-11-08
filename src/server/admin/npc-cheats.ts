@@ -1,7 +1,8 @@
 import { isActorId } from "@/content";
 import { entitiesInRoom } from "@/rules/world";
 import { getFullCharacterState } from "@/network/sync";
-import { canTame, catchNpc, makeCompanion, removeNpc } from "@/server/companions";
+import { catchAsCompanion } from "@/server/catching";
+import { canTame, makeCompanion, removeNpc } from "@/server/companions";
 import { findCharacter } from "@/server/find-character";
 import { spawnNpc } from "@/server/game-world";
 import type { Npc } from "@/server/npc";
@@ -74,10 +75,11 @@ const tame: Cheat = (ctx, player, [actor], reply) => {
     .filter((n) => canTame(n) && (!actor || n.name === actor) && distance(n) <= TAME_RANGE)
     .sort((a, b) => distance(a) - distance(b))[0];
   if (!nearest) return reply.error(`No tameable ${actor ?? "NPC"} close enough.`);
-  const pet = place(ctx.world, player, nearest.name, player.x, player.y);
+  const pet = catchAsCompanion(ctx.world, player, nearest, [
+    { name: "isCheatSpawned", value: true },
+    { name: "spawnedBy", value: player.socketId },
+  ]);
   if (!pet) return reply.error(`Could not tame ${nearest.name}.`);
-  makeCompanion(pet, player);
-  catchNpc(nearest);
   reply.info(`${pet.profile?.userName ?? pet.name} is now your companion.`);
 };
 

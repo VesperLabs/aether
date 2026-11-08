@@ -44,6 +44,10 @@ export interface SpellArgs {
   action?: string;
   castAngle?: number;
   ilvl?: number;
+  /** Where it left its caster, when the server says (they may have moved since). */
+  spawnPoint?: Point;
+  /** How long ago it was cast, in ms: it starts that far along (see `sync/effects`). */
+  ageMs?: number;
 }
 
 export class Spell extends Phaser.GameObjects.Container {
@@ -68,14 +72,16 @@ export class Spell extends Phaser.GameObjects.Container {
   declare action: string;
   declare isMissile: boolean;
   declare stickToCaster?: boolean;
+  declare ageMs: number;
   constructor(
     scene: Phaser.Scene,
-    { id, caster, spellName, action, castAngle = 0, ilvl = 1 }: SpellArgs,
+    { id, caster, spellName, action, castAngle = 0, ilvl = 1, ...rest }: SpellArgs,
   ) {
-    const spawnPoint = { x: caster.x, y: caster.y + caster.bodyCenterY };
+    const spawnPoint = rest.spawnPoint ?? { x: caster.x, y: caster.y + caster.bodyCenterY };
     super(scene, spawnPoint.x, spawnPoint.y);
 
     this.spawnPoint = spawnPoint;
+    this.ageMs = rest.ageMs ?? 0;
     this.id = id;
     this.scene = scene;
     this.caster = caster;
@@ -232,13 +238,14 @@ export class Spell extends Phaser.GameObjects.Container {
     this.body.setCircle(radius, -radius, -radius + offsetY);
   }
   /**
-   * Someone else's projectile left the server about half a ping ago, so start it that far along
-   * its flight. Otherwise it is drawn behind where it really is and seems to hit from afar.
+   * Someone else's projectile left the server about half a ping ago (plus its age, for one already
+   * flying when we walked in), so start it that far along its flight. Otherwise it is drawn behind
+   * where it really is and seems to hit from afar.
    */
   catchUpToServer() {
-    if (this.caster.isHero || this.stickToCaster) return;
+    if ((this.caster.isHero && !this.ageMs) || this.stickToCaster) return;
     if (!this.velocityX && !this.velocityY) return;
-    const leadMs = getOneWayLatency();
+    const leadMs = getOneWayLatency() + this.ageMs;
     this.x += (this.velocityX * leadMs) / 1000;
     this.y += (this.velocityY * leadMs) / 1000;
     this.spellState.spawnTime -= leadMs;

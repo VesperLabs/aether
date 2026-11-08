@@ -69,6 +69,8 @@ interface Hit {
   isCritical?: boolean;
   /** Taken from `from` and given to `to` by an attack's steal stats. */
   isDrain?: boolean;
+  /** A death that was a catch: the body goes into a ball instead of dissolving. */
+  isCaught?: boolean;
   amount?: number;
   buffName?: string;
   elements?: Array<Elements>;

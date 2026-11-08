@@ -4,6 +4,8 @@ import { netInterp } from "@/client/net/scene-interpolation";
 import { resetPoseArrivals } from "@/client/net/net-stats";
 import { changeMap } from "./main-map";
 import type { SceneMain } from "./main-scene";
+import { clearThrownBalls } from "@/client/views/thrown-ball";
+import { startEffect } from "@/client/net/effects";
 import {
   addLoot,
   addNpc,
@@ -18,9 +20,10 @@ import {
 export function enterRoom(
   scene: SceneMain,
   roomName: string,
-  { players = [], npcs = [], loots = [] }: Partial<RoomStateMessage>,
+  { players = [], npcs = [], loots = [], effects = [] }: Partial<RoomStateMessage>,
   heroSocketId?: string,
 ) {
+  clearThrownBalls();
   resetEntities(scene);
   scene.hero = undefined as unknown as Player;
   netInterp.reset();
@@ -37,5 +40,7 @@ export function enterRoom(
   for (const loot of loots) {
     if (!loot?.expiredSince && !getLoot(scene, loot.id)) addLoot(scene, loot);
   }
+  /* What is already in flight, from where it has got to */
+  for (const effect of effects) startEffect(scene, effect);
   return changeMap(scene, roomName);
 }

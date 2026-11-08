@@ -53,7 +53,9 @@ export function catchNpc(npc: Npc) {
   npc.stats.hp = 0;
   npc.world.io
     .to(npc.room.name)
-    .emit("assignDamage", [{ type: "death", amount: 0, from: npc.id, to: npc.id }] as Hit[]);
+    .emit("assignDamage", [
+      { type: "death", isCaught: true, amount: 0, from: npc.id, to: npc.id },
+    ] as Hit[]);
 }
 
 /** Takes an NPC out of the world and off its room's screens. */

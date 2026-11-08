@@ -1,6 +1,7 @@
 import { spellDetails } from "@/content";
 import { getNextAttackCount, POTION_COOLDOWN } from "@/rules/combat";
 import { DODGE_COOLDOWN } from "@/rules/movement";
+import { THROW_COOLDOWN } from "@/rules/capture";
 import type { Player } from "@/client/views/player";
 import type { AbilitySlot } from "@/client/window-events";
 
@@ -55,6 +56,15 @@ export function updateDodgeCooldown() {
   window.dispatchEvent(
     new CustomEvent("HERO_START_COOLDOWN", {
       detail: { spellName: "dodge", duration: DODGE_COOLDOWN, startTime: Date.now() },
+    }),
+  );
+}
+
+/** A ball was thrown: its button shows the throw cooldown, under the ball's base. */
+export function updateThrowCooldown(base: string) {
+  window.dispatchEvent(
+    new CustomEvent("HERO_START_COOLDOWN", {
+      detail: { spellName: base, duration: THROW_COOLDOWN, startTime: Date.now() },
     }),
   );
 }

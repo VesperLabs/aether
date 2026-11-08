@@ -1,6 +1,7 @@
 import type { BuiltItem } from "@/content";
 import type { BuffCharacterWire, FullCharacterWire } from "./sync/character-state";
 import type { RoomStatuses } from "./sync/statuses";
+import type { EffectEndedMessage, EffectWire } from "./sync/effects";
 import type { Box, Shape } from "@/rules/movement";
 import type { Party, PartyUpdatePayload } from "@/rules/party";
 
@@ -15,6 +16,8 @@ export interface RoomStateMessage {
   players: FullCharacterWire[];
   npcs: FullCharacterWire[];
   loots: LootMessage[];
+  /** What is in flight right now: see `sync/effects`. */
+  effects?: EffectWire[];
 }
 
 /**
@@ -58,6 +61,8 @@ export interface HitMessage {
   isCritical?: boolean;
   /** Taken from `from` and given to `to` by an attack's steal stats. */
   isDrain?: boolean;
+  /** A death that was a catch: the body goes into a ball instead of dissolving. */
+  isCaught?: boolean;
   amount?: number;
   buffName?: string;
   elements?: string[];
@@ -169,6 +174,10 @@ export interface ServerToClientEvents {
     abilitySlot: number | string;
     castAngle: number;
   }) => void;
+  /** Something started in flight in the room: a spell on its own, or a thrown ball. */
+  effectStarted: (effect: EffectWire) => void;
+  /** It ended, and how. */
+  effectEnded: (payload: EffectEndedMessage) => void;
   npcAttack: (payload: {
     id: string;
     count?: number;
