@@ -5,7 +5,10 @@ import { PAD_KEYBOARD_ATTR, PAD_POPUP_ATTR, choosePadField } from "./pad-keyboar
 import { PAD_ITEM_MENU_ATTR } from "./pad-item-menu-events";
 import { GOLD, drawHighlight } from "./pad-highlight";
 import { openedPanel, rememberPanelSpot, watchForPanel } from "./pad-panels";
-import { inView, nearest, scroller, type NavDirection } from "./pad-nav-geometry";
+import { inView, nearest, scrollToFocus, scroller, type NavDirection } from "./pad-nav-geometry";
+import { isRange, stepRange } from "./pad-range";
+import { hoverIn, hoverOut } from "./pad-hover";
+import { LIST } from "./pad-list";
 
 export type { NavDirection } from "./pad-nav-geometry";
 
@@ -22,6 +25,11 @@ const FOCUS_ATTR = "data-pad-focus";
 export const PAD_SKIP_ATTR = "data-pad-skip";
 /** Where menu mode keeps the highlight: the menu bar and its panels, not the whole HUD. */
 export const PAD_SCOPE_ATTR = "data-pad-scope";
+/** Marks something that isn't a control (a quest's slot) as a stop for the highlight. */
+export const PAD_STOP_ATTR = "data-pad-stop";
+/** Marks content shown outside the menus (a tooltip, in its portal) whose controls the highlight
+ * reaches while it's open, as if they were beside what opened it. */
+export const PAD_POPOVER_ATTR = "data-pad-popover";
 const HELD_ATTR = "data-pad-held";
 /** Where menu mode starts: the inventory's menu button. */
 const HOME_SELECTOR = "#loot-target";
@@ -34,6 +42,7 @@ const CANDIDATES = [
   "label:has(input:not(:disabled))",
   "input:not(:disabled)",
   "a[href]",
+  `[${PAD_STOP_ATTR}]`,
 ].join(",");
 
 let menuMode = false;
@@ -84,11 +93,11 @@ function addStyle() {
   document.head.appendChild(style);
 }
 
+const POPUPS = `[${PAD_KEYBOARD_ATTR}], [${PAD_ITEM_MENU_ATTR}], [${PAD_POPUP_ATTR}], ${LIST}`;
+
 /** The on-screen keyboard, else the modal on top, else the menus while in menu mode. */
 function scope(): Element | null {
-  const popup = document.querySelector(
-    `[${PAD_KEYBOARD_ATTR}], [${PAD_ITEM_MENU_ATTR}], [${PAD_POPUP_ATTR}]`,
-  );
+  const popup = document.querySelector(POPUPS);
   if (popup) return popup;
   const modals = document.querySelectorAll(`[${MODAL_ATTR}]`);
   if (modals.length) return modals[modals.length - 1];
@@ -113,25 +122,36 @@ function candidates(root: Element) {
   });
 }
 
-/* Hover in and out, so tooltips show for the highlighted thing as they do for the mouse */
-const hover = (el: Element, type: "mouseover" | "mouseout", related: Element | null) =>
-  el.dispatchEvent(new MouseEvent(type, { bubbles: true, relatedTarget: related }));
+const inPopover = (el: Element) => !!el.closest(`[${PAD_POPOVER_ATTR}]`);
 
-function setFocus(el: Element | null) {
+/** What the highlight can reach in `root`: its own things, and those in any open popover. */
+function reachable(root: Element) {
+  const popovers = [...document.querySelectorAll(`[${PAD_POPOVER_ATTR}]`)].filter(
+    (popover) => !root.contains(popover) && isShown(popover),
+  );
+  return [...candidates(root), ...popovers.flatMap(candidates)];
+}
+
+const openPopoverControls = () =>
+  [...document.querySelectorAll(`[${PAD_POPOVER_ATTR}]`)].filter(isShown).flatMap(candidates);
+
+/* What was highlighted before the highlight went into a popover, to come back to when it closes */
+let popoverFrom: Element | null = null;
+
+/** Moves the highlight to `el`. `quiet` leaves out the hover, so its tooltip stays shut. */
+function setFocus(el: Element | null, quiet = false) {
   if (el === focused) return;
   addStyle();
-  if (focused) {
-    focused.removeAttribute(FOCUS_ATTR);
-    hover(focused, "mouseout", el);
-  }
+  if (el && inPopover(el) && focused && !inPopover(focused)) popoverFrom = focused;
+  focused?.removeAttribute(FOCUS_ATTR);
+  hoverOut(focused, el);
   focused = el;
   if (el) {
     rememberPanelSpot(el, candidates);
     rememberKey(el);
     el.setAttribute(FOCUS_ATTR, "");
-    hover(el, "mouseover", null);
-    el.scrollIntoView?.({ block: "nearest", inline: "nearest" });
-    scrollToEnds(el);
+    if (!quiet) hoverIn(el);
+    scrollToFocus(el, candidates);
   }
   drawHighlight(focused);
   notify();
@@ -173,13 +193,24 @@ export function syncNavFocus(active = true) {
     returnTo.push(opened.from);
     return setFocus(opened.spot);
   }
-  if (focused?.isConnected && root.contains(focused) && isShown(focused)) return;
+  if (focused?.isConnected && isShown(focused)) {
+    if (root.contains(focused) || (inPopover(focused) && reachable(root).includes(focused))) return;
+  }
+  /* Its popover closed (its Close was pressed): back on what opened it, leaving it shut */
+  if (focused && inPopover(focused) && popoverFrom?.isConnected && root.contains(popoverFrom)) {
+    const from = popoverFrom;
+    popoverFrom = null;
+    if (isShown(from)) return setFocus(from, true);
+  }
   /* Into a new area (a modal opened from the menus, the on-screen keyboard): remember where it
    * came from, to go back to when that closes. Into the keyboard, that's the field being typed in */
   const typing = root.matches(`[${PAD_KEYBOARD_ATTR}]`)
     ? document.activeElement?.closest("input, textarea")
     : null;
-  const from = typing ?? (focused?.isConnected && !root.contains(focused) ? focused : null);
+  /* Typing in a field inside another stop (chat's box, in its button): that stop, which outlasts
+   * the field when sending closes the box */
+  const typedIn = typing && (outermostStop(typing, document.body) ?? typing);
+  const from = typedIn || (focused?.isConnected && !root.contains(focused) ? focused : null);
   if (from && returnTo.at(-1) !== from) returnTo.push(from);
   /* Back out of one: the last place remembered in this area, dropping any closed since */
   while (returnTo.length) {
@@ -224,6 +255,9 @@ function startFocus(root: Element) {
   const all = candidates(root);
   /* The keyboard opens new each time: back on the key last used, by its place */
   if (root.matches(`[${PAD_KEYBOARD_ATTR}]`)) return setFocus(all[lastKey] ?? all[0] ?? null);
+  /* A dropdown opens on the option it's set to */
+  if (root.matches(LIST))
+    return setFocus(all.find((el) => el.matches("[aria-selected='true']")) ?? all[0] ?? null);
   const inModal = !!document.querySelector(`[${MODAL_ATTR}]`);
   if (!inModal && lastMenuFocus && all.includes(lastMenuFocus)) return setFocus(lastMenuFocus);
   const home = !inModal && root.querySelector(HOME_SELECTOR);
@@ -238,7 +272,7 @@ export function moveNavFocus(direction: NavDirection) {
   const horizontal = direction === "left" || direction === "right";
   if (horizontal && isRange(focused)) return stepRange(focused, direction === "right" ? 1 : -1);
   const fromRect = focused.getBoundingClientRect();
-  const all = candidates(root).filter((el) => el !== focused);
+  const all = reachable(root).filter((el) => el !== focused);
   /* In a scrolling pane, stay in it until its end: its next item, even scrolled out of view,
    * scrolls in. Leaving it, or anywhere else, only things you can see */
   const pane = scroller(focused, root);
@@ -251,34 +285,6 @@ export function moveNavFocus(direction: NavDirection) {
       direction,
     );
   if (best) setFocus(best);
-}
-
-/**
- * On the first or last thing in a scrolling pane, scrolls the pane all the way to that end:
- * scrolling it into view stops at its edge, leaving the pane's padding (and the highlight's
- * line) cut off.
- */
-function scrollToEnds(el: Element) {
-  const pane = scroller(el, document.body);
-  if (!pane) return;
-  const inPane = candidates(pane).filter((c) => scroller(c, document.body) === pane);
-  if (inPane[0] === el) pane.scrollTop = 0;
-  else if (inPane[inPane.length - 1] === el) pane.scrollTop = pane.scrollHeight;
-}
-
-const isRange = (el: Element): el is HTMLInputElement =>
-  el.matches("input[type='range']:not(:disabled)");
-
-/** How much one press moves a slider, as a share of its range. */
-const RANGE_STEP = 0.05;
-
-/** Moves a slider a step, telling React as a drag would (it only hears the native setter). */
-function stepRange(el: HTMLInputElement, step: 1 | -1) {
-  const min = Number(el.min || 0);
-  const max = Number(el.max || 100);
-  const next = Math.min(max, Math.max(min, Number(el.value) + step * (max - min) * RANGE_STEP));
-  Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set?.call(el, String(next));
-  el.dispatchEvent(new Event("input", { bubbles: true }));
 }
 
 const isSlot = (el: Element | null) => !!el?.matches("[data-slot-key]");
@@ -315,9 +321,13 @@ export function activateNavFocus() {
     }
     return;
   }
+  /* A stop with its popover open: into the popover's first button */
+  const into = focused.matches(`[${PAD_STOP_ATTR}]`) && openPopoverControls()[0];
+  if (into) return setFocus(into);
   /* Before pressing: the press may open its panel at once */
   const root = scope();
-  if (root && menuMode) watchForPanel(focused, root, isShown);
+  /* Not from a popup (an item's menu): its options carry the highlight on themselves */
+  if (root && menuMode && !root.matches(POPUPS)) watchForPanel(focused, root, isShown);
   press(focused);
   if (focused.matches("input, textarea")) {
     choosePadField(focused);
@@ -340,6 +350,13 @@ export function useNavFocus() {
   if (isSlot(focused) && hasItem(focused)) focused?.dispatchEvent(new CustomEvent(PAD_USE_EVENT));
 }
 
+/** B in a popover: back to what opened it. False when not in one. */
+export function leaveNavPopover() {
+  if (!focused || !inPopover(focused) || !popoverFrom?.isConnected) return false;
+  setFocus(popoverFrom);
+  return true;
+}
+
 /** B: lets go of a held item. False when there was none, so B goes on to close something. */
 export function cancelNavHold() {
   if (!held) return false;
@@ -360,4 +377,10 @@ export function dropNavFocus() {
 export function focusSelectedTab() {
   const tab = scope()?.querySelector("[role='tab'][aria-selected='true']");
   if (tab) setFocus(tab);
+}
+
+/** Puts the highlight on `el` in menu mode, as if the controller had moved it there. */
+export function focusNavOn(el: Element) {
+  setMenuMode(true);
+  setFocus(el);
 }

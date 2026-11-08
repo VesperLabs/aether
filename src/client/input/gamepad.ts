@@ -9,8 +9,10 @@ import {
 import { getBindings, keyFor, type BindAction } from "./key-bindings";
 import { isNavActive, navHold, navPress, navRelease, navSteer } from "./gamepad-menus";
 import { setMenuMode, syncNavFocus } from "./pad-nav";
+import { newStickAim, stepStickAim } from "./stick-aim";
+import { getDeadZones } from "./dead-zones";
 
-/** Stick travel ignored, as resting sticks rarely read exactly zero. */
+/** Stick travel too small to mean the controller is in use; play reads the player's `dead-zones`. */
 const DEAD_ZONE = 0.2;
 
 const pressed = new Set<number>();
@@ -253,11 +255,20 @@ export function getGamepadAim() {
   return { x, y };
 }
 
+const stickAim = newStickAim();
+
+/** Where the right stick aims, steadied (see `stepStickAim`), or null before it has aimed. */
+export function getGamepadAimAngle() {
+  const pad = getGamepad();
+  const { aim } = getDeadZones();
+  return stepStickAim(stickAim, pad?.axes[2] ?? 0, pad?.axes[3] ?? 0, performance.now(), aim);
+}
+
 /** The left stick, from -1 to 1 on each axis, or zero inside the dead zone. */
 export function getGamepadStick() {
   const pad = getGamepad();
   const x = pad?.axes[0] ?? 0;
   const y = pad?.axes[1] ?? 0;
-  if (Math.hypot(x, y) < DEAD_ZONE) return { x: 0, y: 0 };
+  if (Math.hypot(x, y) < getDeadZones().move) return { x: 0, y: 0 };
   return { x, y };
 }

@@ -44,13 +44,21 @@ export function addGlobalEventListeners(scene: SceneHud) {
     window.dispatchEvent(new CustomEvent("HERO_ATTACK"));
   });
   window.addEventListener("HERO_AIM_START", (e) => {
-    if (!mainScene?.hero || isTypableFieldActive() || mainScene.hero.isCasting) return;
     const hero = mainScene?.hero;
+    if (!hero) return;
+    /* A dropped press drops its release too, so nothing casts without the aimer having shown */
+    hero.pressedAbilitySlot = undefined;
+    /* A press during a cast, or while one waits to start, is dropped */
+    if (isTypableFieldActive() || hero.isCasting || hero.queuedCastSlot !== undefined) return;
     const { isAimable, isLunge, spellName } = hero.getAbilityDetails(e?.detail);
-    hero.isAimCancelled = false;
+    if (!isAimable) {
+      hero.pressedAbilitySlot = e?.detail;
+      return;
+    }
 
-    /* A spell on cooldown, or too dear, can't be aimed: there is nothing to cast yet */
-    if (isAimable && hero.canCastSpell(e?.detail, false)) {
+    /* A spell on cooldown, or too dear, can't be aimed, and letting go of it won't cast it */
+    if (hero.canCastSpell(e?.detail, false)) {
+      hero.pressedAbilitySlot = e?.detail;
       hero.state.isAiming = true;
       hero.state.aimingSpellName = spellName;
       /* A lunge taps like a dodge: a tap goes the way you're heading, a hold aims */
@@ -94,7 +102,7 @@ export function addGlobalEventListeners(scene: SceneHud) {
       return stopAiming(hero);
     }
     if (hero.state.aimingSpellName) {
-      hero.isAimCancelled = true;
+      hero.pressedAbilitySlot = undefined;
       return stopAiming(hero);
     }
 
@@ -120,11 +128,10 @@ export function addGlobalEventListeners(scene: SceneHud) {
   window.addEventListener("HERO_ABILITY", (e) => {
     const hero = mainScene?.hero;
     const abilitySlot = e?.detail;
+    /* Only the release of a press that was taken: not one made mid-cast, nor one an attack called off */
+    if (!hero || hero.pressedAbilitySlot !== abilitySlot) return;
+    hero.pressedAbilitySlot = undefined;
     const { type, isLunge, stats } = hero.getAbilityDetails(abilitySlot);
-    if (hero.isAimCancelled) {
-      hero.isAimCancelled = false;
-      return;
-    }
     if (hero.isCasting) return;
 
     if (type === "spell" && stats?.castTime) {

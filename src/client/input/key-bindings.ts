@@ -102,13 +102,13 @@ const DEFAULT_GAMEPAD: GamepadBindings = {
   moveRight: null,
   /* The right thumb stays on the aim stick, so fighting sits on the shoulders beside it */
   attack: { button: RT },
-  dodge: { button: LT },
+  dodge: { button: RB },
   /* A talks to whoever is in reach, and grabs when no one is */
   talk: { button: 0 },
   grab: null,
-  /* The first two on the bumpers, pressed alone and aimed with the right stick; the rest on
-   * the face buttons, for quick casts (potions). No combos: one finger, one press */
-  ability1: { button: RB },
+  /* The first two on the left shoulders, pressed alone and aimed with the right stick; the rest
+   * on the face buttons, for quick casts (potions). No combos: one finger, one press */
+  ability1: { button: LT },
   ability2: { button: LB },
   ability3: { button: 2 },
   ability4: { button: 3 },
@@ -156,7 +156,7 @@ const readGamepad = (saved: Record<string, unknown> | undefined) =>
  * Bump when the controller defaults change: saved controller bindings from before are dropped,
  * so players get the new layout rather than a mix of old saves and new defaults.
  */
-const GAMEPAD_VERSION = 4;
+const GAMEPAD_VERSION = 5;
 
 type Saved = Bindings & { gamepadVersion: number };
 

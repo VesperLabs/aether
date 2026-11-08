@@ -35,9 +35,9 @@ describe("gamepad buttons", () => {
     setMenusOpen(false);
   });
 
-  it("attacks with RT and dashes with LT in play", () => {
+  it("attacks with RT and dashes with RB in play", () => {
     expect(press([7])).toEqual(["keydown: ", "keyup: "]);
-    expect(press([6])).toEqual(["keydown:Shift", "keyup:Shift"]);
+    expect(press([5])).toEqual(["keydown:Shift", "keyup:Shift"]);
   });
 
   it("closes a modal with B, and A sends no key there", () => {

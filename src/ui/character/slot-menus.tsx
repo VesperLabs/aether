@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { memo } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
 import type { BuiltItem } from "@/content";
@@ -31,7 +32,13 @@ export const MenuEquipment = memo(
 );
 
 export const MenuAbilities = memo(
-  ({ player, isOpen, setIsOpen, events }: CharacterMenuProps) => (
+  ({
+    player,
+    isOpen,
+    setIsOpen,
+    events,
+    slotBadge,
+  }: CharacterMenuProps & { slotBadge?: (slotKey: string) => ReactNode }) => (
     <SlotMenu
       title="Abilities"
       icon="./assets/icons/book.png"
@@ -40,6 +47,7 @@ export const MenuAbilities = memo(
       location="abilities"
       player={player}
       events={events}
+      slotBadge={slotBadge}
       sx={{ alignItems: "end", flexDirection: "column" }}
       slots={Object.entries<BuiltItem>(player?.abilities || {}).map(([slotKey, item]) => ({
         slotKey,

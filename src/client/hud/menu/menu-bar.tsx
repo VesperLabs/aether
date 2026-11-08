@@ -12,6 +12,7 @@ import {
 import { HUD_SLOT_EVENTS } from "@/client/hud/inventory/slot";
 import { LOOT_TARGET_ID } from "@/client/hud/inventory/flying-loot";
 import { AbilityButtons } from "@/client/hud/abilities/ability-buttons";
+import { AbilityKeyBadge } from "@/client/hud/abilities/ability-key-badge";
 import { ChatButton } from "@/client/hud/chat/chat-button";
 import { MenuKeeper } from "@/client/hud/shop/menu-keeper";
 import { MenuQuests } from "@/client/hud/quests/menu-quests";
@@ -25,8 +26,22 @@ import { SkillButtons } from "@/client/hud/abilities/skill-buttons";
 import { useBindings } from "@/client/hud/settings/use-key-bindings";
 import { keyFor } from "@/client/input/key-bindings";
 import { setMenusOpen } from "@/client/input/last-device";
-import { PAD_SCOPE_ATTR, PAD_SKIP_ATTR } from "@/client/input/pad-nav";
+import { PAD_SCOPE_ATTR, PAD_SKIP_ATTR, setMenuMode } from "@/client/input/pad-nav";
 import { useEffect } from "react";
+
+/* Stable, so the memoized abilities menu doesn't re-render for it */
+const abilityBadge = (slotKey: string) => <AbilityKeyBadge slotKey={slotKey} />;
+
+/** The side menus, in the order `useOpenOrder` tracks them. */
+const MENU_KEYS = [
+  "keeper",
+  "abilities",
+  "equipment",
+  "bag",
+  "inventory",
+  "quests",
+  "stats",
+] as const;
 
 export const MenuBar = () => {
   /* Re-renders the keys when they are rebound */
@@ -42,6 +57,8 @@ export const MenuBar = () => {
     setTabKeeper,
     setTabChat,
     tabKeeper,
+    keeperTab,
+    setKeeperTab,
     dropItem,
     setDropItem,
     tabProfile,
@@ -80,10 +97,26 @@ export const MenuBar = () => {
     stats: tabStats,
   });
 
+  /* What Escape does to each menu, the newest open one first */
+  const closeMenu: Record<(typeof MENU_KEYS)[number], () => void> = {
+    keeper: () => {
+      /* Out of an NPC's shop or quests, back to talking, before leaving them */
+      if (keeperTab !== "greet") return setKeeperTab("greet");
+      setTabKeeper(false);
+      /* Nothing open under it: back to play, not to the menu bar */
+      if (!menuBarOpen) setMenuMode(false);
+    },
+    abilities: () => setTabAbilities(false),
+    equipment: () => setTabEquipment(false),
+    bag: () => toggleBagState(bagState[bagState.length - 1]),
+    inventory: () => setTabInventory(false),
+    quests: () => setTabQuests(false),
+    stats: () => setTabStats(false),
+  };
+
   /* A controller's B closes these, as Esc does, instead of dodging */
-  const anyMenuOpen =
-    tabChat ||
-    !!tabKeeper ||
+  /* Menus other than the NPC's, which talking opens rather than the menu bar */
+  const menuBarOpen =
     tabAbilities ||
     tabEquipment ||
     bagState.length > 0 ||
@@ -92,6 +125,7 @@ export const MenuBar = () => {
     tabStats ||
     !!dropItem ||
     !!homeModal;
+  const anyMenuOpen = tabChat || !!tabKeeper || menuBarOpen;
   useEffect(() => setMenusOpen(anyMenuOpen), [anyMenuOpen]);
 
   const escCacheKey = JSON.stringify([
@@ -100,6 +134,7 @@ export const MenuBar = () => {
     tabEquipment,
     tabInventory,
     tabKeeper,
+    keeperTab,
     tabProfile,
     tabStats,
     tabQuests,
@@ -171,6 +206,7 @@ export const MenuBar = () => {
         </Box>
         <Box sx={{ pointerEvents: "all", order: orderOf("abilities") }}>
           <MenuAbilities
+            slotBadge={abilityBadge}
             player={hero}
             events={HUD_SLOT_EVENTS}
             isOpen={tabAbilities}
@@ -299,14 +335,12 @@ export const MenuBar = () => {
               if (tabChat) return setTabChat(false);
               if (dropItem) return setDropItem(null);
               if (homeModal) return setHomeModal(null);
-              if (tabKeeper) return setTabKeeper(false);
-              if (tabQuests) return setTabQuests(false);
-              if (tabStats) return setTabStats(false);
               if (tabProfile) return setTabProfile(false);
-              if (tabAbilities) return setTabAbilities(false);
-              if (tabEquipment) return setTabEquipment(false);
-              if (bagState?.length > 0) return toggleBagState(bagState?.[bagState?.length - 1]);
-              if (tabInventory) return setTabInventory(false);
+              /* The rest close newest first */
+              const newest = MENU_KEYS.filter((key) => orderOf(key) > 0).sort(
+                (a, b) => orderOf(b) - orderOf(a),
+              )[0];
+              if (newest) closeMenu[newest]();
             }}
           />
         </Menu>

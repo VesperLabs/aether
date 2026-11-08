@@ -39,6 +39,7 @@ import {
   type DropItem,
   type ErrorModal,
   type HudCharacter,
+  type KeeperTab,
   type KeeperView,
   type PartyInvite,
 } from "./context";
@@ -76,6 +77,7 @@ export function App({ socket, peer, debug, game }: AppProps) {
   const [keeper, setKeeper] = useState<KeeperView>();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [tabKeeper, setTabKeeper] = useState(false);
+  const [keeperTab, setKeeperTab] = useState<KeeperTab>("greet");
   const [tabEquipment, setTabEquipment] = useState(false);
   const [tabInventory, setTabInventory] = useState(false);
   const [tabChat, setTabChat] = useState(false);
@@ -267,6 +269,7 @@ export function App({ socket, peer, debug, game }: AppProps) {
           setTabEquipment,
           setTabInventory,
           setTabKeeper,
+          setKeeperTab,
           setKeeper,
           setTabChat,
           setDropItem,
@@ -301,6 +304,7 @@ export function App({ socket, peer, debug, game }: AppProps) {
           tabChat,
           keeper,
           tabKeeper,
+          keeperTab,
           hero: hero as HudCharacter,
           partyInvites,
           setPartyInvites,

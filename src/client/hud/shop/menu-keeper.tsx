@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useEffect } from "react";
+import { focusNavOn } from "@/client/input/pad-nav";
+import { getLastDevice } from "@/client/input/last-device";
 import { useAppContext } from "@/client/hud/app/context";
 import { BigPortrait } from "@/client/hud/status/big-portrait";
 import { Slot } from "@/client/hud/inventory/slot";
@@ -6,9 +8,11 @@ import { Quest } from "@/client/hud/quests/quest";
 import { MenuButton } from "@/client/hud/menu/menu-button";
 import { Flex, Text, MENU_MAX_WIDTH, Menu, MenuHeader } from "@/ui";
 
+const KEEPER_CHAT_ID = "keeper-chat";
+
 export const MenuKeeper = () => {
-  const { hero, keeper, tabKeeper, setTabKeeper, setHomeModal } = useAppContext();
-  const [tab, setTab] = useState("greet");
+  const { hero, keeper, tabKeeper, setTabKeeper, setHomeModal, keeperTab: tab } = useAppContext();
+  const { setKeeperTab: setTab } = useAppContext();
   const { dialogues, shop, quests, home } = keeper?.keeperData ?? {};
 
   const hasQuests = (quests?.length as number) > 0;
@@ -24,6 +28,14 @@ export const MenuKeeper = () => {
   /* Closing the keeper resets it to the greeting */
   if (!tabKeeper && tab !== "greet") setTab("greet");
 
+  /* Talking to them with a controller: the highlight starts on the chat button. Backing out of
+   * a tab doesn't come here: it goes back to that tab's button */
+  useEffect(() => {
+    if (!tabKeeper || getLastDevice() !== "gamepad") return;
+    const chat = document.getElementById(KEEPER_CHAT_ID);
+    if (chat) focusNavOn(chat);
+  }, [tabKeeper, keeper]);
+
   const keeperButtons = (hasQuests || hasShop) && (
     <Flex
       sx={{
@@ -38,6 +50,7 @@ export const MenuKeeper = () => {
           keyboardKey="G"
           springOpen
           iconName="chat"
+          id={KEEPER_CHAT_ID}
           isActive={tabGreet}
           onClick={() => setTab("greet")}
         />
@@ -117,6 +130,8 @@ export const MenuKeeper = () => {
           </Flex>
         </Flex>
         <Flex
+          /* A panel of its own: its tab button takes the highlight into it */
+          data-pad-panel=""
           sx={{
             gap: 2,
             display: tabShop ? "flex" : "none",
@@ -139,6 +154,8 @@ export const MenuKeeper = () => {
           })}
         </Flex>
         <Flex
+          /* A panel of its own: its tab button takes the highlight into it */
+          data-pad-panel=""
           sx={{
             gap: 2,
             flexWrap: "wrap",

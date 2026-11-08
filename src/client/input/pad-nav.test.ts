@@ -3,7 +3,14 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { PAD_DROP_EVENT, PAD_USE_EVENT } from "@/ui/item/pad-slot-events";
 import { navHold, navPress, navRelease } from "./gamepad-menus";
 import { PAD_ITEM_MENU_EVENT } from "./pad-item-menu-events";
-import { activateNavFocus, moveNavFocus, setMenuMode, syncNavFocus, useNavFocus } from "./pad-nav";
+import {
+  activateNavFocus,
+  leaveNavPopover,
+  moveNavFocus,
+  setMenuMode,
+  syncNavFocus,
+  useNavFocus,
+} from "./pad-nav";
 
 /* jsdom lays nothing out, so each element says where it is */
 function place(el: Element, x: number, y: number) {
@@ -186,6 +193,36 @@ describe("pad nav", () => {
     expect(focusedEl()).toBe(email);
   });
 
+  it("comes back to chat's button when sending closes its box", () => {
+    document.body.innerHTML = `
+      <div data-pad-scope>
+        <button id="bag">Bag</button>
+        <button id="chat"><input id="say" /></button>
+      </div>`;
+    const bag = document.getElementById("bag") as Element;
+    const chat = document.getElementById("chat") as Element;
+    const say = document.getElementById("say") as HTMLInputElement;
+    place(bag, 0, 0);
+    place(chat, 40, 0);
+    place(say, 40, 0);
+    setMenuMode(true);
+    syncNavFocus();
+    moveNavFocus("right");
+    expect(focusedEl()).toBe(chat);
+    say.focus();
+    const keyboard = document.createElement("div");
+    keyboard.setAttribute("data-pad-keyboard", "");
+    keyboard.innerHTML = "<button>q</button>";
+    document.body.appendChild(keyboard);
+    place(keyboard.firstElementChild as Element, 0, 100);
+    syncNavFocus();
+    say.remove();
+    keyboard.remove();
+    syncNavFocus();
+    expect(focusedEl()).toBe(chat);
+    setMenuMode(false);
+  });
+
   it("comes back to the menu item a modal was opened from when it closes", () => {
     const { empty } = hud();
     setMenuMode(true);
@@ -288,5 +325,37 @@ describe("pad nav", () => {
     place(cmd, 0, 0);
     syncNavFocus();
     expect(focusedEl()).toBe(cmd);
+  });
+
+  it("goes from a quest into its tooltip's buttons and back, and onto the quest when it closes", () => {
+    const { bag } = hud();
+    const quest = document.createElement("div");
+    quest.setAttribute("data-pad-stop", "");
+    place(quest, 40, 20);
+    bag.parentElement?.append(quest);
+    /* A tooltip, portaled outside the HUD, opened by the highlight on its quest */
+    const tooltip = document.createElement("div");
+    tooltip.setAttribute("data-pad-popover", "");
+    tooltip.innerHTML = `<button>Close</button><button>Accept</button>`;
+    const [close, accept] = tooltip.querySelectorAll("button");
+    place(tooltip, 30, 40);
+    place(close, 30, 40);
+    place(accept, 45, 40);
+    quest.addEventListener("mouseover", () => document.body.append(tooltip));
+    setMenuMode(true);
+    syncNavFocus();
+    moveNavFocus("down");
+    expect(focusedEl()).toBe(quest);
+    moveNavFocus("down");
+    expect(focusedEl()).toBe(close);
+    moveNavFocus("right");
+    expect(focusedEl()).toBe(accept);
+    expect(leaveNavPopover()).toBe(true);
+    expect(focusedEl()).toBe(quest);
+    activateNavFocus();
+    expect(focusedEl()).toBe(close);
+    tooltip.remove();
+    syncNavFocus();
+    expect(focusedEl()).toBe(quest);
   });
 });

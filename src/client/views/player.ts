@@ -82,8 +82,8 @@ export class Player extends Character {
   declare castPose?: { action: string; until: number };
   /** The hero let go of a timed spell, which starts as soon as it has stopped moving. */
   declare queuedCastSlot?: AbilitySlot;
-  /** An attack called off this aim, so letting go of the spell must not cast it. */
-  declare isAimCancelled?: boolean;
+  /** The ability key whose press was taken; only letting go of that key uses it. */
+  declare pressedAbilitySlot?: AbilitySlot;
   /** A timed spell is counting down. */
   declare isCasting?: boolean;
   constructor(scene: SceneMain, args: CharacterArgs) {

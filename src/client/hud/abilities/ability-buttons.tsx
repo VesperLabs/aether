@@ -47,7 +47,9 @@ const TintedIconLoader = ({
   const [tintedIcon, setTintedIcon] = useState("./assets/icons/blank.png");
   const [hovering, setHovering] = useState(false);
   const attackSpCost = useNextAttackSpCost(hero);
-  const tooltipId = `abilities-${item?.id}`;
+  /* Not `abilities-…`: the abilities panel's slot for the same item uses that, and a tooltip
+   * anchors to the first element with its id */
+  const tooltipId = `ability-button-${item?.id}`;
   const showTooltip = !isMobile && hovering;
 
   useEffect(() => {

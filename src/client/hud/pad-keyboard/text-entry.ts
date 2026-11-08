@@ -56,3 +56,10 @@ function pressKey(el: TextField, key: string) {
 }
 
 export const pressEnter = (el: TextField) => pressKey(el, "Enter");
+
+/** Presses Escape for the whole page, as the keyboard's would once the field lets go. */
+export function pressEscape() {
+  for (const type of ["keydown", "keyup"] as const) {
+    window.dispatchEvent(new KeyboardEvent(type, { key: "Escape", code: "Escape" }));
+  }
+}
