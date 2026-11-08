@@ -65,8 +65,8 @@ const spawn: Cheat = (ctx, player, [actor, ...args], reply) => {
 };
 
 /**
- * `/npc tame [actor]`: catches the nearest wild NPC (of that actor, if named). You get a copy; the
- * wild one drops and respawns at its spot, so the map never runs out.
+ * `/npc tame [actor]`: catches the nearest wild NPC (of that actor, if named). You get a copy, which
+ * dissolves in at your feet; the wild one drops and respawns at its spot, so the map never runs out.
  */
 const tame: Cheat = (ctx, player, [actor], reply) => {
   const distance = (n: Npc) => Math.hypot(n.x - player.x, n.y - player.y);
@@ -74,7 +74,7 @@ const tame: Cheat = (ctx, player, [actor], reply) => {
     .filter((n) => canTame(n) && (!actor || n.name === actor) && distance(n) <= TAME_RANGE)
     .sort((a, b) => distance(a) - distance(b))[0];
   if (!nearest) return reply.error(`No tameable ${actor ?? "NPC"} close enough.`);
-  const pet = place(ctx.world, player, nearest.name, nearest.x, nearest.y);
+  const pet = place(ctx.world, player, nearest.name, player.x, player.y);
   if (!pet) return reply.error(`Could not tame ${nearest.name}.`);
   makeCompanion(pet, player);
   catchNpc(nearest);

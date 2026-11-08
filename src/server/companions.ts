@@ -11,10 +11,10 @@ import type { ServerWorld } from "./server-world";
  * it on its owner's side (`rules/allegiance`), makes it follow them, and has it join their fights.
  */
 
-/** A companion further than this from its owner (or in another room) appears at their side. */
+/** A companion further than this from its owner (or in another room) appears on them. */
 const CATCH_UP_DISTANCE = 480;
-/** How far from its owner a companion appears when it catches up. */
-const SIDE_OFFSET = 24;
+/** Least threat a companion takes from its owner's fight, so even weak hits pull it in. */
+const MIN_ASSIST_THREAT = 10;
 
 /** Every NPC `ownerId` owns. */
 function companionsOf(world: ServerWorld, ownerId: string): Npc[] {
@@ -27,7 +27,10 @@ function companionsOf(world: ServerWorld, ownerId: string): Npc[] {
  */
 export const canTame = (npc: Npc) => !npc.state.ownerId && !npc.state.isDead;
 
-/** Makes a fresh NPC belong to `owner`: it stops picking fights, follows them and fights for them. */
+/**
+ * Makes a fresh NPC belong to `owner`: it appears on them, stops picking fights, follows them and
+ * fights for them.
+ */
 export function makeCompanion(npc: Npc, owner: Player) {
   npc.state.ownerId = owner.socketId;
   /* Companions think with their follow-and-fight behaviors, not a planning mind. */
@@ -37,6 +40,8 @@ export function makeCompanion(npc: Npc, owner: Player) {
   npc.behaviors = [...(npc.behaviors ?? []).filter((b) => b !== "aggressive"), "follow"];
   npc.threat = {};
   npc.setLockedPlayerId(null);
+  /* Appears on its owner, out of whatever wall or water it was caught in */
+  if (owner.room) moveNpc(npc, owner.room, { x: owner.x, y: owner.y });
 }
 
 /**
@@ -75,8 +80,20 @@ function moveNpc(npc: Npc, room: RoomData, to: Point) {
 }
 
 /**
- * Keeps companions with their owners: one left behind (another room, or far away) appears at its
- * owner's side, and one whose owner left the game leaves with them. Runs before rooms are indexed.
+ * Brings a player's companions to them right away, e.g. as they go through a door, so they are
+ * in the room state the player loads instead of joining a scene that isn't ready yet.
+ */
+export function bringCompanions(world: ServerWorld, owner: Player) {
+  const room = owner.roomName ? world.rooms[owner.roomName] : undefined;
+  if (!room) return;
+  for (const npc of companionsOf(world, owner.socketId)) {
+    if (!npc.state.isDead) moveNpc(npc, room, { x: owner.x, y: owner.y });
+  }
+}
+
+/**
+ * Keeps companions with their owners: one left behind (another room, or far away) appears on
+ * its owner, and one whose owner left the game leaves with them. Runs before rooms are indexed.
  */
 export const keepCompanionsNear: System<ServerWorld> = (world) => {
   for (const npc of Object.values(world.npcs)) {
@@ -90,7 +107,7 @@ export const keepCompanionsNear: System<ServerWorld> = (world) => {
     if (!room || npc.state.isDead) continue;
     const isAway = npc.room.name !== room.name;
     if (isAway || Math.hypot(npc.x - owner.x, npc.y - owner.y) > CATCH_UP_DISTANCE) {
-      moveNpc(npc, room, { x: owner.x + SIDE_OFFSET, y: owner.y });
+      moveNpc(npc, room, { x: owner.x, y: owner.y });
     }
   }
 };
@@ -106,7 +123,9 @@ export function subscribeCompanions(bus: GameEventBus, world: ServerWorld) {
     if (!attacker || !victim || isAlly(world, attacker, victim)) return;
     const assist = (ownerId: string, foeId: string) => {
       for (const pet of companionsOf(world, ownerId)) {
-        if (pet.room.name === victim.room?.name) pet.addThreat(foeId, amount);
+        if (pet.room.name !== victim.room?.name) continue;
+        /* At least enough to act on: a 1-damage hit's threat would fade before the next tick */
+        pet.addThreat(foeId, Math.max(amount, MIN_ASSIST_THREAT));
       }
     };
     if (attacker.kind === "player") assist(attackerId, victimId);

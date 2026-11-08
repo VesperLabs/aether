@@ -137,7 +137,12 @@ function strafe(
 }
 
 function walkTo(npc: Npc, coords: Point) {
-  steer(npc, seek(npc, coords, npc.stats.walkSpeed));
+  steer(npc, seek(npc, coords, walkSpeedOf(npc)));
+}
+
+/** How fast it walks: a companion keeps pace with its owner, so it never falls behind. */
+function walkSpeedOf(npc: Npc) {
+  return npc.owner()?.stats.walkSpeed ?? npc.stats.walkSpeed;
 }
 
 /** Walks to the next tile on the way to `target`, found on the tick before. */

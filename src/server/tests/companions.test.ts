@@ -1,7 +1,7 @@
 // @vitest-environment node
 import type { Socket } from "socket.io-client";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
-import { startTestServer, type TestServer } from "./test-server";
+import { once, startTestServer, type TestServer } from "./test-server";
 
 /** Companions from `/npc spawn ... pet` and `/npc tame`, against the real game server. */
 let server: TestServer;
@@ -122,6 +122,23 @@ describe("companions", () => {
     await cheat(socket, "/npc clear");
   });
 
+  it("comes through a door with its owner, in the room the owner loads", async () => {
+    const { socket, player } = await server.login();
+    const pet = await summon(socket, "crab");
+    const doors = server.world.doors[player.room.name] as Record<string, Anything>;
+    const door = Object.values(doors).find((d) => d.destMap && d.destDoor);
+    player.x = door.centerPos.x;
+    player.y = door.centerPos.y - player.bodyOffsetY;
+    const init = once(socket, "heroInit");
+    socket.emit("enterDoor", door.name);
+    const [state] = (await init) as Anything[];
+    expect(state.npcs.map((n: Anything) => n.id)).toContain(pet.id);
+    await server.run(socket, 2000);
+    expect(pet.room.name).toBe(door.destMap);
+    expect(Math.hypot(pet.x - player.x, pet.y - player.y)).toBeLessThan(200);
+    await cheat(socket, "/npc clear");
+  });
+
   it("is never hurt by its owner's attacks", async () => {
     const { socket, player } = await server.login("warrior");
     const pet = await summon(socket, "bear");
@@ -153,6 +170,8 @@ describe("companions", () => {
       step: () => {
         crab.x = player.x + 20;
         crab.y = player.y;
+        /* Players from earlier tests stand on this spawn too: make sure it goes for this one */
+        crab.setLockedPlayerId(player.socketId);
         pet.state.isDead = false;
       },
       maxMs: 30000,
