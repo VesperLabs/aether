@@ -1,6 +1,5 @@
 import React, { FC } from "react";
 import { isMobile } from "./is-mobile";
-import { Box } from "theme-ui";
 import { Button } from "./button/button";
 import { KeyboardKey } from "./keyboard-key";
 
@@ -30,6 +29,7 @@ export const KeyboardButton: FC<KeyboardButtonProps> = ({
   return (
     <Button
       sx={{
+        position: "relative",
         gap: 1,
         justifyContent: "center",
         alignItems: "center",
@@ -41,15 +41,14 @@ export const KeyboardButton: FC<KeyboardButtonProps> = ({
       {...props}
     >
       {children}
+      {/* On the bottom-right corner, as on every button with a key */}
       {!isMobile && (
-        <Box sx={{ alignSelf: "end" }}>
-          <KeyboardKey
-            showOnly={showOnly}
-            sx={{ position: "static", mr: "-2px", pointerEvents: "none" }}
-            name={keyboardKey}
-            onKeyUp={!disabled ? onClick : () => {}}
-          />
-        </Box>
+        <KeyboardKey
+          showOnly={showOnly}
+          sx={{ bottom: "-3px", right: "-3px", pointerEvents: "none" }}
+          name={keyboardKey}
+          onKeyUp={!disabled ? onClick : () => {}}
+        />
       )}
     </Button>
   );

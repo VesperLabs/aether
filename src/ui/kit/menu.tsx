@@ -13,6 +13,8 @@ export const Menu = ({ sx = {}, ...props }: ComponentProps<typeof Flex>) => {
   return (
     <Flex
       {...THEME_KEY}
+      /* A panel the controller's highlight remembers its place in */
+      data-pad-panel=""
       sx={{
         p: 2,
         gap: 2,

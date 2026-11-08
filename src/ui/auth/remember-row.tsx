@@ -14,8 +14,10 @@ export const RememberRow = ({
     aria-hidden={reserveOnly}
     sx={{
       visibility: reserveOnly ? "hidden" : "visible",
+      /* To the right of the form, as wide as it needs */
+      display: "flex",
+      justifyContent: "flex-end",
       "& label": {
-        justifyContent: "flex-end",
         alignItems: "center",
         fontSize: 0,
       },

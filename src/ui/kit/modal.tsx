@@ -5,6 +5,7 @@ import { getModalScale } from "./hud-scale";
 import { Icon } from "./icon";
 import { GILDED_CORNERS } from "./modal-gilding";
 import { MODAL_ATTR } from "./shake-modal";
+import { TabIcon } from "./tab-icon";
 
 type FlexProps = ComponentProps<typeof Flex>;
 type ModalProps = FlexProps & { zoom?: number | string; bottomOffset?: number };
@@ -225,5 +226,6 @@ export const Modal = Object.assign(ModalRoot, {
   Tab: ModalTab,
   tabPanelRadius,
   Body: ModalBody,
+  TabIcon,
   Footer: ModalFooter,
 });

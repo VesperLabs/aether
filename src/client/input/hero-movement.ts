@@ -18,27 +18,40 @@ import { emitPlayerInput } from "@/client/net/player-input";
 import { updateAttackCooldown, updateSpellCooldown } from "./hero-cooldowns";
 import { isTypableFieldActive } from "./typable-field";
 import type { SceneHud } from "@/client/scenes/hud-scene";
+import { getGamepadAim, getGamepadStick } from "./gamepad";
+import { getLastDevice, isModalOpen } from "./last-device";
+import { isMenuMode } from "./pad-nav";
+import { heldSince } from "./held-keys";
+import { getBindings, type BindAction } from "./key-bindings";
 import type { Player } from "@/client/views/player";
 import type { SceneMain } from "@/client/scenes/main-scene";
 
 const { Between } = Phaser.Math.Angle;
 
+const MOVES = [
+  ["moveUp", "up"],
+  ["moveDown", "down"],
+  ["moveLeft", "left"],
+  ["moveRight", "right"],
+] as const;
+
+/** When the action's earliest-held bound key went down, or undefined when none is held. */
+function heldAction(action: BindAction) {
+  const times = getBindings()
+    .keyboard[action].map(heldSince)
+    .filter((t) => t !== undefined);
+  return times.length ? Math.max(...times) : undefined;
+}
+
 /** The direction of the most recently pressed movement key that is still held. */
-function getLatestKeyDirection(keys: SceneHud["cursorKeys"]) {
-  const held: [Phaser.Input.Keyboard.Key[], string][] = [
-    [[keys.w, keys.up], "up"],
-    [[keys.s, keys.down], "down"],
-    [[keys.a, keys.left], "left"],
-    [[keys.d, keys.right], "right"],
-  ];
+function getLatestKeyDirection() {
   let latest: string | undefined;
   let latestTime = -Infinity;
-  for (const [pair, direction] of held) {
-    for (const key of pair) {
-      if (key.isDown && key.timeDown > latestTime) {
-        latestTime = key.timeDown;
-        latest = direction;
-      }
+  for (const [action, direction] of MOVES) {
+    const time = heldAction(action);
+    if (time !== undefined && time > latestTime) {
+      latestTime = time;
+      latest = direction;
     }
   }
   return latest;
@@ -94,8 +107,14 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
     return;
   }
 
-  /* If the user is dead or typing stop them from moving */
-  if (hero?.state?.isDead || isTypableFieldActive() || hero?.hasBuff("stun")) {
+  /* Dead, typing or in a modal (whose arrows and triggers step its tabs): stand still */
+  if (
+    hero?.state?.isDead ||
+    isTypableFieldActive() ||
+    isModalOpen() ||
+    isMenuMode() ||
+    hero?.hasBuff("stun")
+  ) {
     hero.vx = 0;
     hero.vy = 0;
     hero.body.setVelocity(0, 0);
@@ -106,13 +125,12 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
   const walkSpeed = hero.stats.walkSpeed;
   const joystick = scene.joystick;
 
-  const keys = scene.cursorKeys;
-  const up = keys.w.isDown || keys.up.isDown;
-  const left = keys.a.isDown || keys.left.isDown;
-  const down = keys.s.isDown || keys.down.isDown;
-  const right = keys.d.isDown || keys.right.isDown;
-  const input = { x: (right ? 1 : 0) - (left ? 1 : 0), y: (down ? 1 : 0) - (up ? 1 : 0) };
-  direction = getLatestKeyDirection(keys) ?? direction;
+  const isHeld = (action: BindAction) => (heldAction(action) === undefined ? 0 : 1);
+  const input = {
+    x: isHeld("moveRight") - isHeld("moveLeft"),
+    y: isHeld("moveDown") - isHeld("moveUp"),
+  };
+  direction = getLatestKeyDirection() ?? direction;
   ({ x: vx, y: vy } = getWalkVelocity(input, walkSpeed));
 
   /* Keeps bows facing the right direction if you try to spin out of an attack */
@@ -120,16 +138,31 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
     lastAngle = Phaser.Math.DegToRad(getAngleFromDirection(direction));
   }
 
-  if (joystick.deltaX || joystick.deltaY) {
-    ({ x: vx, y: vy } = getWalkVelocity({ x: joystick.deltaX, y: joystick.deltaY }, walkSpeed));
+  /* The touch joystick, else a controller's left stick */
+  const stick =
+    joystick.deltaX || joystick.deltaY
+      ? { x: joystick.deltaX, y: joystick.deltaY }
+      : getGamepadStick();
+  if (stick.x || stick.y) {
+    ({ x: vx, y: vy } = getWalkVelocity(stick, walkSpeed));
     direction = getSpinDirection(hero, { x: hero.x + vx, y: hero.y + vy });
     /* Latest idle check, we set the lastAngle so it's fresh */
-    lastAngle = Math.atan2(joystick.deltaY, joystick.deltaX);
+    lastAngle = Math.atan2(stick.y, stick.x);
   }
 
   /* Spin hero when aiming */
   if (hero?.state.isAiming || hero.state.isAimingDodge) {
-    if (!isTouch) {
+    /* With a controller, the right stick aims; let go of it and the aim stays where it was */
+    if (getLastDevice() === "gamepad") {
+      const aim = getGamepadAim();
+      if (aim.x || aim.y) {
+        const target = { x: hero.x + aim.x, y: hero.y + hero.bodyOffsetY + aim.y };
+        if (hero.state.isAiming) {
+          direction = getSpinDirection({ x: hero.x, y: hero.y + hero.bodyOffsetY }, target);
+        }
+        lastAngle = Math.atan2(aim.y, aim.x);
+      }
+    } else if (!isTouch) {
       const cursorPoint = pointer.positionToCamera(mainScene.cameras.main) as Phaser.Math.Vector2;
       /* Only a rooted aim turns the body; aiming a dodge keeps facing the way you walk */
       if (hero.state.isAiming) {
@@ -140,6 +173,23 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
     if (hero?.state?.lastAngle !== lastAngle) {
       //TODO only send this if the difference is greater than 10 or something
       scene.socket.emit("changeDirection", { direction, lastAngle });
+    }
+  }
+
+  /* With a controller, the right stick turns the hero while it attacks (no aimer shown), so
+   * swings go where it points while the left stick walks. Walking alone faces the way you go */
+  const isAttacking = hero.state.isAttacking || hero.state.isHoldingAttack;
+  if (isAttacking && !hero.state.isAiming && getLastDevice() === "gamepad") {
+    const aim = getGamepadAim();
+    if (aim.x || aim.y) {
+      direction = getSpinDirection(
+        { x: hero.x, y: hero.y + hero.bodyOffsetY },
+        { x: hero.x + aim.x, y: hero.y + hero.bodyOffsetY + aim.y },
+      );
+      lastAngle = Math.atan2(aim.y, aim.x);
+      if (hero.state.lastAngle !== lastAngle) {
+        scene.socket.emit("changeDirection", { direction, lastAngle });
+      }
     }
   }
 

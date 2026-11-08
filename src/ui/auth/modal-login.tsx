@@ -1,5 +1,6 @@
 import { useState, useCallback, type ComponentProps, type ReactNode } from "react";
-import { Modal, Icon, Box, Flex, Grid, VersionTag, Toast, Tooltip } from "@/ui/kit";
+import { useArrowTabs } from "@/ui/kit/use-arrow-tabs";
+import { Modal, Box, Flex, Grid, VersionTag, Toast, Tooltip } from "@/ui/kit";
 import type { ToastMessage } from "@/ui/kit";
 import { LoginForm } from "./login-form";
 import { RegisterForm } from "./register-form";
@@ -41,40 +42,8 @@ const TabPanel = ({
   </Box>
 );
 
-const ICON_SIZE = 22;
-
 /* The login is boosted 1.2x, so its tabs come out the size of every other modal header. */
 const LOGIN_TAB_SX = { fontSize: 1 };
-const ICON_MOTION = ".2s ease all";
-
-/* The book opens up on the active tab, and the feather pops onto it. */
-const TabIcon = ({ active }: { active: boolean }) => (
-  <Box
-    sx={{
-      position: "relative",
-      width: active ? ICON_SIZE : 0,
-      height: ICON_SIZE,
-      transition: ICON_MOTION,
-    }}
-  >
-    <Icon
-      size={ICON_SIZE}
-      icon={`./assets/icons/book.png`}
-      sx={{ transform: active ? "scale(1)" : "scale(0)", transition: ICON_MOTION }}
-    />
-    <Icon
-      size={ICON_SIZE}
-      icon={`./assets/icons/pen.png`}
-      sx={{
-        position: "absolute",
-        top: "-13.5px",
-        left: "-12px",
-        transform: active ? "scale(1)" : "scale(0)",
-        transition: ICON_MOTION,
-      }}
-    />
-  </Box>
-);
 
 /** The login, register and (where given) demo tabs. The app decides what a login leads to. */
 export const ModalLogin = ({
@@ -91,6 +60,11 @@ export const ModalLogin = ({
   const [defaultEmail, setDefaultEmail] = useState(storedEmail);
   const [activeTab, setActiveTab] = useState<LoginTab>(storedEmail || !canDemo ? "login" : "demo");
 
+  useArrowTabs<LoginTab>(
+    canDemo ? ["login", "register", "demo"] : ["login", "register"],
+    activeTab,
+    setActiveTab,
+  );
   const isLogin = activeTab === "login";
   const isRegister = activeTab === "register";
   const isDemo = activeTab === "demo";
@@ -113,16 +87,16 @@ export const ModalLogin = ({
       <Flex sx={{ flexDirection: "column" }}>
         <Flex role="tablist">
           <Modal.Tab sx={LOGIN_TAB_SX} active={isLogin} onClick={() => setActiveTab("login")}>
-            <TabIcon active={isLogin} />
+            <Modal.TabIcon active={isLogin} />
             Login
           </Modal.Tab>
           <Modal.Tab sx={LOGIN_TAB_SX} active={isRegister} onClick={() => setActiveTab("register")}>
-            <TabIcon active={isRegister} />
+            <Modal.TabIcon active={isRegister} />
             Register
           </Modal.Tab>
           {canDemo && (
             <Modal.Tab sx={LOGIN_TAB_SX} active={isDemo} onClick={() => setActiveTab("demo")}>
-              <TabIcon active={isDemo} />
+              <Modal.TabIcon active={isDemo} />
               Demo
             </Modal.Tab>
           )}

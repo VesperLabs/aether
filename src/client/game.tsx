@@ -9,6 +9,7 @@ import { SceneMain } from "@/client/scenes/main-scene";
 import { SceneBoot } from "@/client/scenes/boot-scene";
 import { VJoyPlugin } from "@/client/input/joystick";
 import { SceneHud } from "@/client/scenes/hud-scene";
+import { startGamepadLoop } from "@/client/input/gamepad";
 import "./style.css";
 import "./window-events";
 import Peer from "peerjs";
@@ -20,6 +21,7 @@ const PEER_CLIENT_PORT = parseInt(process.env.PEER_CLIENT_PORT as string);
 const PEER_CLIENT_PATH = process.env.PEER_CLIENT_PATH as string;
 
 const socket = createGameSocket();
+startGamepadLoop();
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 const devicePixelRatio = window.devicePixelRatio || 1;

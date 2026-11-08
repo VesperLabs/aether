@@ -8,11 +8,18 @@ import { DODGE_SP_COST } from "@/rules/movement";
 import { useAppContext } from "@/client/hud/app/context";
 import { memo } from "react";
 import { arePropsEqualWithKeys } from "@/ui";
+import { useKeyFor } from "@/client/hud/settings/use-key-bindings";
 
 export const SkillButtons = memo(
   ({ cooldowns }: { cooldowns: Record<string, Cooldown> }) => {
     const { showButtonChat, hero } = useAppContext();
     const { hand: attackHand, spCost: attackSpCost } = useNextAttack(hero);
+    const keys = {
+      talk: useKeyFor("talk"),
+      dodge: useKeyFor("dodge"),
+      grab: useKeyFor("grab"),
+      attack: useKeyFor("attack"),
+    };
 
     return (
       <Flex
@@ -28,7 +35,7 @@ export const SkillButtons = memo(
           size={16}
           iconName="chat"
           onTouchEnd={() => window.dispatchEvent(new CustomEvent("HERO_CHAT_NPC"))}
-          keyboardKey="X"
+          keyboardKey={keys.talk}
           sx={{ opacity: showButtonChat ? 1 : 0.5 }}
         />
         <SkillButton
@@ -36,7 +43,7 @@ export const SkillButtons = memo(
           iconName="boots"
           onTouchStart={() => window.dispatchEvent(new Event("HERO_DODGE_START"))}
           onTouchEnd={() => window.dispatchEvent(new Event("HERO_DODGE"))}
-          keyboardKey="SHIFT"
+          keyboardKey={keys.dodge}
           costs={{ sp: DODGE_SP_COST }}
           disabled={!canAffordCosts(hero?.stats, { sp: DODGE_SP_COST })}
         >
@@ -46,14 +53,14 @@ export const SkillButtons = memo(
           size={16}
           iconName="grab"
           onTouchEnd={() => window.dispatchEvent(new CustomEvent("HERO_GRAB"))}
-          keyboardKey="F"
+          keyboardKey={keys.grab}
         />
         <SkillButton
           size={16}
           iconName="handRight"
           onTouchStart={() => window.dispatchEvent(new CustomEvent("HERO_ATTACK_START"))}
           onTouchEnd={() => window.dispatchEvent(new CustomEvent("HERO_ATTACK"))}
-          keyboardKey="SPACE"
+          keyboardKey={keys.attack}
           costs={{ sp: attackSpCost }}
           disabled={!canAffordCosts(hero?.stats, { sp: attackSpCost })}
           sx={{ "& > .icon": { transform: attackHand === "handLeft" ? "scaleX(-1)" : "none" } }}

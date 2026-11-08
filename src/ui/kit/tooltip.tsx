@@ -1,4 +1,4 @@
-import { flip, offset, shift } from "@floating-ui/dom";
+import { flip, offset, shift, type Middleware } from "@floating-ui/dom";
 import { Tooltip as BaseTooltip } from "react-tooltip";
 import { Portal } from "./portal";
 import { theme } from "./theme";
@@ -17,12 +17,29 @@ const TOOLTIP_STYLE = {
   zoom: 1,
 };
 
+/**
+ * Hides the tooltip while its anchor has no size. react-tooltip re-places a tooltip whenever its
+ * anchor resizes (floating-ui's `autoUpdate`), and one hidden by its menu closing measures as a
+ * zero box at the page's corner: the tooltip would flash there before it closes.
+ */
+function hideWithoutAnchor(): Middleware {
+  return {
+    name: "hideWithoutAnchor",
+    fn({ rects, elements }) {
+      const gone = rects.reference.width === 0 && rects.reference.height === 0;
+      elements.floating.style.visibility = gone ? "hidden" : "";
+      return {};
+    },
+  };
+}
+
 /* Above or below only, as a tooltip beside its target blocks the way to the slot next to it. One
    that fits neither way is pushed back on screen rather than flipped sideways. */
 const PLACEMENT = [
   offset(6),
   flip({ fallbackPlacements: ["top", "bottom"] }),
   shift({ padding: 5, crossAxis: true }),
+  hideWithoutAnchor(),
 ];
 
 interface TooltipProps {

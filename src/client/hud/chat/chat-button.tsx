@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import { MenuButton } from "@/client/hud/menu/menu-button";
+import { chatButtonTypes, useChatFocus } from "./use-chat-focus";
 import { useAppContext } from "@/client/hud/app/context";
 import { Input, KeyboardKey } from "@/ui";
 import { isMobile, Box } from "@/ui";
@@ -38,27 +39,7 @@ export const ChatButton = () => {
   /* The input's real font and padding, so the ghost text lines up with what's typed */
   const [ghostFont, setGhostFont] = useState<CSSProperties>();
 
-  /* Phaser cancels presses on the canvas, so clicking the game never blurs the input and the
-   * hero ignores keys. Blur it by hand; Enter puts you back in the box while chat stays open. */
-  useEffect(() => {
-    if (!tabChat) return;
-    const input = () => inputBox.current?.querySelector("input");
-    const onPointerDown = (e: PointerEvent) => {
-      if (e.target instanceof HTMLCanvasElement) input()?.blur();
-    };
-    const onKeyDown = (e: KeyboardEvent) => {
-      const box = input();
-      if (e.key !== "Enter" || !box || document.activeElement === box) return;
-      e.preventDefault();
-      box.focus();
-    };
-    window.addEventListener("pointerdown", onPointerDown, true);
-    window.addEventListener("keydown", onKeyDown);
-    return () => {
-      window.removeEventListener("pointerdown", onPointerDown, true);
-      window.removeEventListener("keydown", onKeyDown);
-    };
-  }, [tabChat]);
+  useChatFocus(tabChat, inputBox);
 
   /* Cmd/Ctrl-clicking an item links it while chat is open */
   useEffect(() => {
@@ -177,6 +158,7 @@ export const ChatButton = () => {
           isPressInInput.current = false;
           return;
         }
+        if (chatButtonTypes(tabChat, inputBox)) return;
         setTabChat((prev) => !prev);
       }}
     >

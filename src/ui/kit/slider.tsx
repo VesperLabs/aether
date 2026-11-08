@@ -44,6 +44,9 @@ export const Slider = ({
         tabIndex,
         title: label,
         "aria-label": label,
+        /* The handle is a pseudo-element, so its size is read from here (a controller's
+           highlight rings it) */
+        "data-thumb-size": thumbSize,
         onChange: (e: ChangeEvent<HTMLInputElement>) => onChange(Number(e.target.value) / 100),
         /* Never keep focus, or the slider eats the game's movement keys */
         onPointerUp: (e: PointerEvent<HTMLInputElement>) => {
