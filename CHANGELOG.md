@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.20.0](https://github.com/VesperLabs/aether/compare/v0.19.2...v0.20.0) (2026-11-08)
+
+
+### Features
+
+* a missed ball rolls on a little after it lands ([#276](https://github.com/VesperLabs/aether/issues/276)) ([883c52c](https://github.com/VesperLabs/aether/commit/883c52ced19ab122247f37d7bbf5f7860446cb43))
+
+
+### Bug Fixes
+
+* drop cooldown numbers, keep facing the aim after a cast, always answer refused casts ([#275](https://github.com/VesperLabs/aether/issues/275)) ([71c945c](https://github.com/VesperLabs/aether/commit/71c945cabe6276f518c7040fe128ef42e2948746))
+
 ## [0.19.2](https://github.com/VesperLabs/aether/compare/v0.19.1...v0.19.2) (2026-11-08)
 
 
