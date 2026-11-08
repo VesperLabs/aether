@@ -75,6 +75,7 @@ export function buildNpcBehaviorInput(
     },
     state,
     isStunned: npc.hasBuff("stun"),
+    isWindupTargeted: !!npc.windup.targetId,
     lockedPlayer,
     nearestPlayer,
     threatTarget: toPlayerView(findCharacter(world, npc.threatTargetId())),

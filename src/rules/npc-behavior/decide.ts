@@ -88,6 +88,8 @@ export interface NpcBehaviorInput {
       behavior?: NpcBehaviorId;
     };
   isStunned: boolean;
+  /** Its windup (while `isAiming`) is aimed at someone, not a self buff cast out of a fight. */
+  isWindupTargeted?: boolean;
   /** The player `lockedPlayerId` points at, if they are still around. */
   lockedPlayer?: NpcPlayerView | null;
   /** The player in the NPC's room nearest to it. Needed when aggro or locked on. */
@@ -275,9 +277,10 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
   const inMeleeReach = !weaponBand && !!checkInRange(npc, targetPlayer, attackRange);
   // Still decided while lunging, so aggro and bubbles keep up; the lunge just overrides the move
   const planned = decideMovement();
-  // Winding up plants its feet, whatever it would rather do; giving up the fight calls the windup off
+  // Winding up plants its feet; giving up the fight calls it off (an untargeted buff has no fight)
   const chosen = NPC_BEHAVIORS[behaviorId];
-  cancelWindup = !!state.isAiming && (!chosen.engaged || !!chosen.holdsFire);
+  const leftFight = !chosen.engaged && input.isWindupTargeted !== false;
+  cancelWindup = !!state.isAiming && (leftFight || !!chosen.holdsFire);
   // ...and through the swing that follows, even once the target is dead
   const holdsWindup = (!!state.isAiming && !cancelWindup) || !!isAttacking;
   const movement =

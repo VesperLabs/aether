@@ -188,4 +188,11 @@ describe("companions", () => {
       threatOfHit(server.world, player.socketId, 10) * 2,
     );
   });
+
+  it("casts its self buffs while following, out of a fight", async () => {
+    const { socket } = await server.login();
+    const pet = await summon(socket, "whiteFang");
+    expect(pet.abilities["1"]?.base).toBe("stealth");
+    await server.until(socket, () => pet.hasBuff("stealth"), { maxMs: 30000 });
+  });
 });
