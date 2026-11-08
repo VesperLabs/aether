@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.0](https://github.com/VesperLabs/aether/compare/v0.15.0...v0.16.0) (2026-11-08)
+
+
+### Features
+
+* gamepad support and rebindable key bindings ([#258](https://github.com/VesperLabs/aether/issues/258)) ([8c07b38](https://github.com/VesperLabs/aether/commit/8c07b387c00b43856dc1c13e2d053cfb1940c93e))
+
 ## [0.15.0](https://github.com/VesperLabs/aether/compare/v0.14.1...v0.15.0) (2026-11-07)
 
 
