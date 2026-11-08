@@ -255,7 +255,8 @@ const GoldBadge = ({ cost }: { cost: number }) => {
               gridTemplateColumns: "max-content minmax(20px, 1fr) max-content",
               columnGap: 2,
               rowGap: 2,
-              alignItems: "center",
+              /* The dots sit on the text's baseline, as on every wiki row */
+              alignItems: "baseline",
             }}
           >
             {[
@@ -264,10 +265,10 @@ const GoldBadge = ({ cost }: { cost: number }) => {
             ].map(([label, gold]) => (
               <Fragment key={label}>
                 <Text sx={{ opacity: 0.6, fontWeight: 400 }}>{label}</Text>
-                <Box sx={{ borderBottom: "1px dotted rgba(255,255,255,.25)", mt: "6px" }} />
+                <Box sx={{ borderBottom: "1px dotted rgba(255,255,255,.25)" }} />
                 <Flex sx={{ alignItems: "center", justifyContent: "flex-end", gap: 1 }}>
                   <Icon icon="./assets/icons/gold.png" size={32} sx={{ my: "-8px", mx: "-6px" }} />
-                  {gold}
+                  <Text sx={{ alignSelf: "baseline" }}>{gold}</Text>
                 </Flex>
               </Fragment>
             ))}

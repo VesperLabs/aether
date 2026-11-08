@@ -6,6 +6,7 @@ import { useId, useState, type ReactNode } from "react";
 import { CARD_COLORS, MobFace, SpriteFace, raceAsset } from "./card-pool";
 import { WalkOnHover } from "./walk-on-hover";
 import { Divider, PAPER, PAPER_STYLE, PaperFrame } from "./paper";
+import { DottedLine } from "./leader";
 import { RowTitle } from "./row-title";
 import { useHashScroll } from "./use-hash-scroll";
 
@@ -237,25 +238,13 @@ const ROW_STYLE = { alignItems: "center", minHeight: 24, minWidth: 0 } as const;
 const ROW_ICON_SIZE = 32;
 const ROW_ICON_STYLE = { flexShrink: 0, height: ROW_ICON_SIZE, my: "-4px" } as const;
 
-/** The dotted line joining a row's label to its value, at the text's baseline. */
-const Leader = () => (
-  <Box
-    sx={{
-      flex: 1,
-      minWidth: 8,
-      alignSelf: "center",
-      transform: "translateY(0.4em)",
-      borderBottom: `1px dotted ${PAPER.ornament}`,
-    }}
-  />
-);
-
 /** One stat as a label and value joined by a dotted leader, like the drops list. */
 const Stat = ({ label, value }: { label: string; value: ReactNode }) => (
   <Flex sx={{ ...ROW_STYLE, gap: 1 }}>
-    <Text sx={{ color: PAPER.muted, whiteSpace: "nowrap" }}>{label}</Text>
-    <Leader />
-    <Text sx={{ fontWeight: 700, whiteSpace: "nowrap" }}>{value}</Text>
+    <DottedLine
+      label={<Text sx={{ color: PAPER.muted, whiteSpace: "nowrap" }}>{label}</Text>}
+      value={<Text sx={{ fontWeight: 700, whiteSpace: "nowrap" }}>{value}</Text>}
+    />
   </Flex>
 );
 
@@ -268,20 +257,34 @@ const Drops = ({ drops }: { drops: NonNullable<ActorDefinition["drops"]> }) => (
       const asset = item && resolveAsset(item, { profile: { race: "human", gender: "female" } });
       return (
         <Flex key={`${drop.type}-${drop.key}`} sx={{ ...ROW_STYLE, gap: 1 }}>
-          {item && (
-            <ItemHover item={item} type={drop.type} rarity={drop.rarity} itemKey={drop.key}>
-              <Flex sx={{ width: 24, height: 24, flexShrink: 0, justifyContent: "center" }}>
-                {asset && <SpriteFace asset={asset} tint={item.tint} size={24} pixelScale={1} />}
-              </Flex>
-              <Text sx={{ color: CARD_COLORS[drop.rarity] ?? CARD_COLORS.common, fontWeight: 600 }}>
-                {item.name ?? drop.key}
-              </Text>
-            </ItemHover>
-          )}
-          {!item && <Text>{drop.key}</Text>}
-          {/* A dotted leader, so each item visibly lines up with its odds. */}
-          <Leader />
-          <Text sx={{ color: PAPER.muted, whiteSpace: "nowrap" }}>1 in {drop.chance}</Text>
+          <DottedLine
+            label={
+              item ? (
+                <ItemHover item={item} type={drop.type} rarity={drop.rarity} itemKey={drop.key}>
+                  <Flex sx={{ width: 24, height: 24, flexShrink: 0, justifyContent: "center" }}>
+                    {asset && (
+                      <SpriteFace asset={asset} tint={item.tint} size={24} pixelScale={1} />
+                    )}
+                  </Flex>
+                  {/* The name, not the sprite, is what the dots line up with */}
+                  <Text
+                    sx={{
+                      alignSelf: "baseline",
+                      color: CARD_COLORS[drop.rarity] ?? CARD_COLORS.common,
+                      fontWeight: 600,
+                    }}
+                  >
+                    {item.name ?? drop.key}
+                  </Text>
+                </ItemHover>
+              ) : (
+                <Text>{drop.key}</Text>
+              )
+            }
+            value={
+              <Text sx={{ color: PAPER.muted, whiteSpace: "nowrap" }}>1 in {drop.chance}</Text>
+            }
+          />
         </Flex>
       );
     })}
