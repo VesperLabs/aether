@@ -306,8 +306,9 @@ export function bindSceneSocket(scene: SceneMain) {
     playSpawnDissolve(npc);
   });
 
+  /* Spawned, tamed, or a companion following its owner in: it dissolves in */
   socket.on("npcJoin", (npc) => {
-    if (!getNpc(scene, npc.id)) addNpc(scene, npc);
+    if (!getNpc(scene, npc.id)) playSpawnDissolve(addNpc(scene, npc));
   });
 
   socket.on("npcRemove", (id) => getNpc(scene, id)?.destroy());

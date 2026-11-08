@@ -70,6 +70,8 @@ export class Damage extends Container {
         this.dt.setTint(resourceTint(hit.type));
         break;
       case "death":
+        /* A catch (taming) kills without damage: no "0" over the body */
+        if (!hit.amount) this.setVisible(false);
         this.dt.setTint(0xff6666);
         break;
     }
