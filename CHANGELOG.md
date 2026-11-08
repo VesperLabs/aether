@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.21.0](https://github.com/VesperLabs/aether/compare/v0.20.0...v0.21.0) (2026-11-08)
+
+
+### Features
+
+* controller A always grabs, talk moves to the d-pad ([#278](https://github.com/VesperLabs/aether/issues/278)) ([e715553](https://github.com/VesperLabs/aether/commit/e7155537da58352b4b922ef12716d39bea6ca88d))
+* pick a gender on demo, starting looks the profile can show ([#279](https://github.com/VesperLabs/aether/issues/279)) ([03f2cfc](https://github.com/VesperLabs/aether/commit/03f2cfcab0418615a663722aba214291b69c7645))
+
 ## [0.20.0](https://github.com/VesperLabs/aether/compare/v0.19.2...v0.20.0) (2026-11-08)
 
 
