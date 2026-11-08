@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.19.2](https://github.com/VesperLabs/aether/compare/v0.19.1...v0.19.2) (2026-11-08)
+
+
+### Bug Fixes
+
+* tamed npcs cast their self buffs while following ([#273](https://github.com/VesperLabs/aether/issues/273)) ([924ddcb](https://github.com/VesperLabs/aether/commit/924ddcb1ccc0f518e6a72c95e51e519a25f386a2))
+
 ## [0.19.1](https://github.com/VesperLabs/aether/compare/v0.19.0...v0.19.1) (2026-11-08)
 
 
