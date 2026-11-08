@@ -22,7 +22,7 @@ export function parseInteger(value: string | undefined): number | undefined {
 }
 
 /**
- * One cheat with actions under it (`/bot spawn`, `/npc despawn`): the first word picks the action,
+ * One cheat with actions under it (`/npc spawn`, `/npc tame`): the first word picks the action,
  * the rest are its args.
  */
 export function subcommands(command: string, actions: Record<string, Cheat>): Cheat {

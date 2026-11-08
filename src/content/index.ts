@@ -18,10 +18,7 @@ export { soundList } from "./assets/sound-list";
 export { hairTints, skinTints } from "./assets/tints";
 export { faceTextures, genders, hairTextures, whiskersTextures } from "./assets/looks";
 export {
-  BOT_NAMES,
-  BOT_PERSONALITY_IDS,
   botPersonalities,
-  isBotPersonalityId,
   type BotPersonality,
   type BotPersonalityId,
   type BotStrategyId,
@@ -64,5 +61,5 @@ export { QuestBuilder } from "./quests/quest-builder";
 export { questList, type QuestId } from "./quests/quest-list";
 export { spellDetails } from "./spells/spell-details";
 export type { SpellDefinition } from "./spells/spell-types";
-export { CHAR_CLASSES, type CharClass } from "./stats";
+export type { CharClass } from "./stats";
 export { PREVIEW_DICE, cloneJson, randomNumber, type Dice } from "./random";

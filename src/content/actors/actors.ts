@@ -2,9 +2,10 @@ import type { questList } from "../quests/quest-list";
 import { actors1 } from "./actors-1";
 import { actors2 } from "./actors-2";
 import { actors3 } from "./actors-3";
+import { actors4 } from "./actors-4";
 
 /** Every actor the maps and cheats can place, by id. */
-export const actors = { ...actors1, ...actors2, ...actors3 } as const;
+export const actors = { ...actors1, ...actors2, ...actors3, ...actors4 } as const;
 
 export type ActorId = keyof typeof actors;
 

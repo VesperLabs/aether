@@ -1,7 +1,4 @@
 import {
-  BOT_PERSONALITY_IDS,
-  CHAR_CLASSES,
-  botPersonalities,
   ITEM_BUILD_RARITIES,
   ITEM_KEYS,
   canRollRarity,
@@ -66,43 +63,12 @@ const MOB_OPTIONS = Object.entries(actors as Record<string, ActorDefinition>).ma
 const RARITY_OPTIONS = ITEM_BUILD_RARITIES.map((value) => ({ value, rarity: value }));
 
 const NPC_ACTION_OPTIONS = [
-  { value: "spawn", hint: "add NPCs next to you" },
-  { value: "despawn", hint: "remove the NPCs you spawned in this room" },
-  { value: "tame", hint: "catch the nearest NPC as your companion" },
-  { value: "summon", hint: "spawn an NPC as your companion" },
-  { value: "dismiss", hint: "send your companions away" },
-  { value: "list", hint: "your companions" },
+  { value: "spawn", hint: "add any actor next to you; add pet to make them yours" },
+  { value: "tame", hint: "catch the nearest wild NPC as your companion" },
+  { value: "list", hint: "what you spawned and your companions, and what they are doing" },
+  { value: "clear", hint: "remove what you spawned and your companions" },
 ];
 const NPC_ACTION: ChatArg = { name: "action", kind: "text" };
-const BOT_ACTION_OPTIONS = [
-  { value: "spawn", hint: "add bots next to you" },
-  { value: "list", hint: "every bot and what it is doing" },
-  { value: "despawn", hint: "remove one by name, or all" },
-  { value: "pause", hint: "freeze one by name, or all" },
-  { value: "resume", hint: "unfreeze one by name, or all" },
-];
-const BOT_PERSONALITY_OPTIONS = BOT_PERSONALITY_IDS.map((value) => ({
-  value,
-  hint: botPersonalities[value].description,
-}));
-const CHAR_CLASS_OPTIONS = CHAR_CLASSES.map((value) => ({ value }));
-const BOT_ACTION: ChatArg = { name: "action", kind: "text" };
-
-/** `/bot` takes different arguments after each action. */
-function getBotArgs([action]: string[]): readonly ChatArg[] {
-  if (action === "spawn") {
-    return [
-      BOT_ACTION,
-      optional({ name: "personality", kind: "text" }),
-      optional({ name: "class", kind: "text" }),
-      optional(numArg("count")),
-    ];
-  }
-  if (action === "despawn" || action === "pause" || action === "resume") {
-    return [BOT_ACTION, optional({ name: "name", kind: "text" })];
-  }
-  return [BOT_ACTION];
-}
 /** A common base can roll magic or rare mods (not bags, spells, stackables); anything else is fixed. */
 const ROLLABLE_RARITY_OPTIONS = ["magic", "rare"].map((value) => ({ value, rarity: value }));
 
@@ -110,10 +76,10 @@ const numArg = (name: string): ChatArg => ({ name, kind: "number" });
 const itemArg = (name: string): ChatArg => ({ name, kind: "item" });
 const optional = (arg: ChatArg): ChatArg => ({ ...arg, optional: true });
 
+const NPC_PET_OPTIONS = [{ value: "pet", hint: "spawn them as your companions" }];
 /** `/npc` actions that take an actor id, and whether it is required. */
 const NPC_ACTOR_ARG: Record<string, ChatArg> = {
   spawn: { name: "actor", kind: "mob" },
-  summon: { name: "actor", kind: "mob" },
   tame: optional({ name: "actor", kind: "mob" }),
 };
 
@@ -287,27 +253,15 @@ export const CHAT_COMMANDS: readonly ChatCommand[] = [
       const actor = NPC_ACTOR_ARG[action ?? ""];
       if (!actor) return [NPC_ACTION];
       return action === "spawn"
-        ? [NPC_ACTION, actor, optional(numArg("count"))]
+        ? [NPC_ACTION, actor, optional({ name: "pet", kind: "text" }), optional(numArg("count"))]
         : [NPC_ACTION, actor];
     },
-    description: "Spawn NPCs, or tame and summon companions",
+    description: "Spawn, tame, list and clear NPCs",
     cheat: true,
     complete: (index, args) => {
       if (index === 0) return NPC_ACTION_OPTIONS;
-      return index === 1 && NPC_ACTOR_ARG[args[0] ?? ""] ? MOB_OPTIONS : [];
-    },
-  },
-  {
-    name: "bot",
-    args: [BOT_ACTION],
-    argsFor: getBotArgs,
-    description: "Spawn and manage server-run players",
-    cheat: true,
-    complete: (index, args) => {
-      if (index === 0) return BOT_ACTION_OPTIONS;
-      if (args[0] !== "spawn") return [];
-      if (index === 1) return BOT_PERSONALITY_OPTIONS;
-      return index === 2 ? CHAR_CLASS_OPTIONS : [];
+      if (index === 1 && NPC_ACTOR_ARG[args[0] ?? ""]) return MOB_OPTIONS;
+      return index === 2 && args[0] === "spawn" ? NPC_PET_OPTIONS : [];
     },
   },
 ];

@@ -3,7 +3,7 @@ import type { Socket } from "socket.io-client";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { startTestServer, type TestServer } from "./test-server";
 
-/** Taming and summoning companions with the `/npc` cheats, against the real game server. */
+/** Companions from `/npc spawn ... pet` and `/npc tame`, against the real game server. */
 let server: TestServer;
 
 type Anything = any;
@@ -26,7 +26,7 @@ const companionsOf = (ownerId: string): Anything[] =>
 
 /** Summons one companion and returns it. */
 async function summon(socket: Socket, actor: string) {
-  const reply = await cheat(socket, `/npc summon ${actor}`);
+  const reply = await cheat(socket, `/npc spawn ${actor} pet`);
   expect(reply.type).toBe("system");
   const pet = companionsOf(socket.id as string).find((npc) => npc.name === actor);
   expect(pet).toBeTruthy();
@@ -50,27 +50,37 @@ afterEach(async () => {
 afterAll(() => server?.close());
 
 describe("companions", () => {
-  it("/npc summon gives you a companion, and /npc dismiss sends it away", async () => {
+  it("/npc spawn ... pet gives you a companion, and /npc clear sends it away", async () => {
     const { socket } = await server.login();
     const pet = await summon(socket, "bear");
     expect((await cheat(socket, "/npc list")).message).toContain("Bear");
 
-    await cheat(socket, "/npc dismiss");
+    await cheat(socket, "/npc clear");
     expect(server.world.npcs[pet.id]).toBeUndefined();
     expect(companionsOf(socket.id as string)).toHaveLength(0);
   });
 
-  it("never makes a companion of an actor players talk to", async () => {
+  it("admin cheats can make anyone a companion, keepers included", async () => {
     const { socket, player } = await server.login();
-    expect((await cheat(socket, "/npc summon trista")).type).toBe("error");
-    await cheat(socket, "/npc spawn trista");
-    const trista = Object.values<Anything>(server.world.npcs).find(
-      (npc) => npc.name === "trista" && npc.state.isCheatSpawned,
+    const trista = await summon(socket, "trista");
+    expect(trista.talks).toBe(true);
+    await cheat(socket, "/npc clear");
+
+    await cheat(socket, "/npc spawn dog");
+    const dog = Object.values<Anything>(server.world.npcs).find(
+      (npc) => npc.name === "dog" && npc.state.spawnedBy === socket.id,
     );
-    trista.x = player.x;
-    trista.y = player.y;
-    expect((await cheat(socket, "/npc tame trista")).type).toBe("error");
-    expect(companionsOf(socket.id as string)).toHaveLength(0);
+    dog.x = player.x;
+    dog.y = player.y;
+    expect((await cheat(socket, "/npc tame dog")).type).toBe("system");
+    expect(companionsOf(socket.id as string).map((npc) => npc.name)).toEqual(["dog"]);
+  });
+
+  it("/npc spawn takes the count last, and pet before it", async () => {
+    const { socket } = await server.login();
+    await cheat(socket, "/npc spawn crab pet 2");
+    expect(companionsOf(socket.id as string)).toHaveLength(2);
+    expect((await cheat(socket, "/npc spawn crab 2 pet")).type).toBe("error");
   });
 
   it("/npc tame catches a copy: the wild one drops and respawns at its spot", async () => {
@@ -92,7 +102,7 @@ describe("companions", () => {
 
     await server.until(socket, () => !wild.state.isDead, { maxMs: 20000 });
     expect({ x: wild.x, y: wild.y }).toEqual(wild.startingCoords);
-    await cheat(socket, "/npc dismiss");
+    await cheat(socket, "/npc clear");
   });
 
   it("follows its owner, even into another room", async () => {
@@ -109,7 +119,7 @@ describe("companions", () => {
     await cheat(socket, "/warp mine");
     await server.run(socket, 100);
     expect(pet.room.name).toBe("mine");
-    await cheat(socket, "/npc dismiss");
+    await cheat(socket, "/npc clear");
   });
 
   it("is never hurt by its owner's attacks", async () => {
@@ -123,7 +133,7 @@ describe("companions", () => {
       await server.run(socket, 400);
     }
     expect(pet.stats.hp).toBe(hp);
-    await cheat(socket, "/npc dismiss");
+    await cheat(socket, "/npc clear");
   });
 
   it("fights whatever attacks its owner, and the owner gets the kill", async () => {
@@ -132,7 +142,7 @@ describe("companions", () => {
     const pet = await summon(socket, "bear");
     await cheat(socket, "/npc spawn crab");
     const crab = Object.values<Anything>(server.world.npcs).find(
-      (npc) => npc.name === "crab" && npc.room.name === player.roomName && !npc.state.ownerId,
+      (npc) => npc.name === "crab" && npc.state.spawnedBy === socket.id && !npc.state.ownerId,
     );
     crab.behaviors = ["aggressive"];
     crab.state.isStatic = false;

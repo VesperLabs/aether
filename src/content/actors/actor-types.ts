@@ -1,4 +1,5 @@
 import type { ItemDrop, ItemRef } from "../items/item-refs";
+import type { BotPersonalityId } from "../bots/personalities";
 import type { QuestId } from "../quests/quest-list";
 import type { CharClass, StatName } from "../stats";
 
@@ -95,6 +96,7 @@ interface ActorDialogues {
  * Anything in the world that isn't a player: a crab, a shopkeeper, a tamed pet. There are no kinds of
  * actor; what one does comes from the parts it has. `dialogues` lets players talk to it, `shop`
  * sells, `quests` hands them out, `drops` is its loot, and `behaviors` shape how it moves and fights.
+ * A `mind` swaps those behaviors for a planning brain (`rules/bots`) that acts like a player would.
  */
 export interface ActorDefinition {
   /** A line or two of lore shown in the wiki. */
@@ -109,6 +111,8 @@ export interface ActorDefinition {
   readonly windupMs?: number;
   /** `isStatic` never moves; `noWorldDrops` drops only its own `drops`, never random loot. */
   readonly state?: { readonly isStatic?: boolean; readonly noWorldDrops?: boolean };
+  /** Thinks with this planning brain instead of `behaviors`. */
+  readonly mind?: BotPersonalityId;
   /** Added to the defaults every actor has (chase, wander, leash and so on). */
   readonly behaviors?: readonly MobBehavior[];
   /** Items it can drop when it dies. */

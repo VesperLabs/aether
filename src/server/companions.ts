@@ -17,16 +17,21 @@ const CATCH_UP_DISTANCE = 480;
 const SIDE_OFFSET = 24;
 
 /** Every NPC `ownerId` owns. */
-export function companionsOf(world: ServerWorld, ownerId: string): Npc[] {
+function companionsOf(world: ServerWorld, ownerId: string): Npc[] {
   return Object.values(world.npcs).filter((npc) => npc.state.ownerId === ownerId);
 }
 
-/** Actors players talk to (shopkeepers, quest givers) are never anyone's companion. */
-export const canTame = (npc: Npc) => !npc.talks && !npc.state.ownerId && !npc.state.isDead;
+/**
+ * Any living NPC nobody owns yet can be tamed, keepers included. What a player may catch in play (a
+ * pokeball won't take a keeper) is that item's own rule, on top of this.
+ */
+export const canTame = (npc: Npc) => !npc.state.ownerId && !npc.state.isDead;
 
 /** Makes a fresh NPC belong to `owner`: it stops picking fights, follows them and fights for them. */
 export function makeCompanion(npc: Npc, owner: Player) {
   npc.state.ownerId = owner.socketId;
+  /* Companions think with their follow-and-fight behaviors, not a planning mind. */
+  npc.mind = undefined;
   npc.state.isStatic = false;
   npc.state.isResetting = false;
   npc.behaviors = [...(npc.behaviors ?? []).filter((b) => b !== "aggressive"), "follow"];
@@ -44,11 +49,6 @@ export function catchNpc(npc: Npc) {
   npc.world.io
     .to(npc.room.name)
     .emit("assignDamage", [{ type: "death", amount: 0, from: npc.id, to: npc.id }] as Hit[]);
-}
-
-/** Lets a companion go. It was only ever a copy, so it leaves the world. */
-export function releaseNpc(npc: Npc) {
-  removeNpc(npc);
 }
 
 /** Takes an NPC out of the world and off its room's screens. */
@@ -76,14 +76,14 @@ function moveNpc(npc: Npc, room: RoomData, to: Point) {
 
 /**
  * Keeps companions with their owners: one left behind (another room, or far away) appears at its
- * owner's side, and one whose owner left the game is released. Runs before rooms are indexed.
+ * owner's side, and one whose owner left the game leaves with them. Runs before rooms are indexed.
  */
 export const keepCompanionsNear: System<ServerWorld> = (world) => {
   for (const npc of Object.values(world.npcs)) {
     if (!npc.state.ownerId) continue;
     const owner = world.players[npc.state.ownerId];
     if (!owner) {
-      releaseNpc(npc);
+      removeNpc(npc);
       continue;
     }
     const room = owner.roomName ? world.rooms[owner.roomName] : undefined;

@@ -108,9 +108,9 @@ export class Player extends Character {
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
   }
-  /** An NPC nobody talks to: it leaves no corpse. */
+  /** An NPC that neither talks nor has a human body: it leaves no corpse. */
   isMob() {
-    return this.kind === "npc" && !this.talks;
+    return this.kind === "npc" && !this.talks && this.profile?.race !== "human";
   }
   /** Mobs show their name only in combat or on hover; companions always do. */
   hidesName() {

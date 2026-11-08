@@ -1,7 +1,6 @@
 import type { Dice } from "@/content";
 import type { GameIo, NetIds } from "@/network";
 import type { Rng, TickLoop, World } from "@/rules/world";
-import type { Bot } from "./bots";
 import type { Npc } from "./npc";
 import type { Database } from "./persistence/database";
 import type { Player } from "./player";
@@ -23,7 +22,6 @@ export type ServerWorld = World<Player, Npc, Spell, Loot, Quest> & {
   /** Numbers for characters on the binary pose wire. */
   netIds: NetIds;
   /** Server-run players, by id. Each one also has a character in `players`. */
-  bots: Record<string, Bot>;
   /** Sockets watching a room without a character. They keep the world running. */
   observers: Set<string>;
   /** Who is where in each room this tick (see `room-index.ts`). */
