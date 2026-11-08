@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.17.0](https://github.com/VesperLabs/aether/compare/v0.16.0...v0.17.0) (2026-11-08)
+
+
+### Features
+
+* gamepad menus, quest lists, stick aim and dead zones ([#260](https://github.com/VesperLabs/aether/issues/260)) ([d7c25c7](https://github.com/VesperLabs/aether/commit/d7c25c7e091c5a209968b8f750b9b8ee06a4ac12))
+
 ## [0.16.0](https://github.com/VesperLabs/aether/compare/v0.15.0...v0.16.0) (2026-11-08)
 
 
