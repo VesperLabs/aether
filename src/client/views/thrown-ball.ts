@@ -24,6 +24,12 @@ const SPIN_SPREAD = 0.4;
 const PIXELATE_MS = 300;
 /** How long a missed ball lies on the ground before it goes, in ms. */
 const LIE_MS = 450;
+/** How far a missed ball rolls on after it lands, in pixels, before `ROLL_SPREAD`. */
+const ROLL_DISTANCE = 7;
+/** How much farther or shorter than `ROLL_DISTANCE` a miss may roll, as a share of it. */
+const ROLL_SPREAD = 0.4;
+/** How long a missed ball rolls before it stops, in ms; it lies still for the rest of `LIE_MS`. */
+const ROLL_MS = 300;
 /** A ball whose ending never arrives (a lost message) pops this long after it was due, in ms. */
 const END_WAIT_MS = 1500;
 
@@ -124,12 +130,36 @@ export function playThrownBall(scene: Phaser.Scene, effect: BallEffectWire, targ
   /* Its spin `t` of the way through the flight */
   const flightAngle = (t: number) => startAngle + (spin * spinSpeed * t * flightMs) / 1000;
 
+  /* Along the throw, as far as this throw's seed says, turning as a ball does when it rolls */
+  const throwLength = Math.hypot(to.x - from.x, to.y - from.y) || 1;
+  const rollDistance =
+    ROLL_DISTANCE * (1 - ROLL_SPREAD + (2 * ROLL_SPREAD * ((seed >>> 19) % 1000)) / 1000);
+  const rollTo = {
+    x: to.x + ((to.x - from.x) / throwLength) * rollDistance,
+    y: to.y + ((to.y - from.y) / throwLength) * rollDistance,
+  };
+  const rollDegrees = Phaser.Math.RadToDeg(rollDistance / Math.max(1, ball.displayWidth / 2));
+  const rollAt = (t: number) => {
+    place({ x: to.x + (rollTo.x - to.x) * t, y: to.y + (rollTo.y - to.y) * t });
+    ball.setAngle(flightAngle(1) + spin * rollDegrees * t);
+  };
+  const rollOn = (sinceLanding: number) => {
+    const startShare = Math.min(1, sinceLanding / ROLL_MS);
+    rollAt(Phaser.Math.Easing.Quadratic.Out(startShare));
+    if (startShare >= 1) return;
+    flight = scene.tweens.addCounter({
+      from: startShare,
+      to: 1,
+      duration: ROLL_MS - sinceLanding,
+      onUpdate: (tween) => rollAt(Phaser.Math.Easing.Quadratic.Out(tween.getValue() ?? 0)),
+    });
+  };
+
   const land = () => {
     const sinceLanding = Math.max(0, ageMs - flightMs);
     if (!effect.targetId) {
-      /* A miss lies on the ground the way it came down */
-      ball.setAngle(flightAngle(1));
-      place(to);
+      /* A miss rolls on a little along the throw, slowing to a stop, then lies there */
+      rollOn(sinceLanding);
       return void pixelateAway(Math.max(0, LIE_MS - sinceLanding));
     }
     /* Rides upright on its creature while it struggles, until the server ends it */
