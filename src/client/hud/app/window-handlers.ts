@@ -90,7 +90,16 @@ export function createWindowHandlers({
 
   const onUpdateHud = () => {
     const hero = getScene().hero;
-    setHero((prev) => ({ ...prev, state: hero?.state, stats: hero?.stats }) as HudCharacter);
+    /* Copies: tick vitals mutate the sprite's stats in place, and memoized HUD parts compare by
+     * value against the previous props, which would be the same object and never differ */
+    setHero(
+      (prev) =>
+        ({
+          ...prev,
+          state: hero?.state && { ...(hero.state as object) },
+          stats: hero?.stats && { ...hero.stats },
+        }) as HudCharacter,
+    );
   };
 
   /* Splice in some updates for keeping the party UI in sync */
