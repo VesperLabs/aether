@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.19.1](https://github.com/VesperLabs/aether/compare/v0.19.0...v0.19.1) (2026-11-08)
+
+
+### Bug Fixes
+
+* a missed ball lies at the angle it landed, varied per throw ([#271](https://github.com/VesperLabs/aether/issues/271)) ([c9ab8b3](https://github.com/VesperLabs/aether/commit/c9ab8b3914d1d53fbeb7e1e60006a46bde61a743))
+
 ## [0.19.0](https://github.com/VesperLabs/aether/compare/v0.18.0...v0.19.0) (2026-11-08)
 
 
