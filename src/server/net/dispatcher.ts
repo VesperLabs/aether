@@ -1,4 +1,4 @@
-import { commands, type CommandName, type ParsedCommand } from "@/network";
+import { commands, type CommandName, type GameSocket, type ParsedCommand } from "@/network";
 import type { CommandContext } from "./command-context";
 
 type CommandHandler<K extends CommandName> = (
@@ -18,8 +18,11 @@ function debugLog(...args: unknown[]) {
  * and handed to the handler; a payload that does not match is dropped. A handler that throws
  * only costs the sender that one command, not the whole server.
  */
-export function registerCommands(ctx: CommandContext, handlers: CommandHandlers) {
-  const { socket } = ctx;
+export function registerCommands(
+  socket: GameSocket,
+  ctx: CommandContext,
+  handlers: CommandHandlers,
+) {
   const names = Object.keys(commands) as CommandName[];
 
   for (const name of names) {

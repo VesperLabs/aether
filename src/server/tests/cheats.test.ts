@@ -104,16 +104,16 @@ describe("cheats", () => {
     });
   });
 
-  it("/spawn adds mobs the room sees, and /despawn removes them", async () => {
+  it("/npc spawn adds mobs the room sees, and /npc despawn removes them", async () => {
     const socket = await login();
     const watcher = await login();
     const joined = waitFor(watcher, "npcJoin");
-    const reply = await cheat(socket, "/spawn crab 3");
+    const reply = await cheat(socket, "/npc spawn crab 3");
     expect(reply.type).toBe("system");
     expect((await joined).state.isCheatSpawned).toBe(true);
 
     const removed = waitFor(watcher, "npcRemove");
-    await cheat(socket, "/despawn");
+    await cheat(socket, "/npc despawn");
     await removed;
     const left = Object.values(server.world.npcs).filter((n: Anything) => n.state?.isCheatSpawned);
     expect(left).toHaveLength(0);
@@ -121,7 +121,7 @@ describe("cheats", () => {
 
   it("rejects bad arguments with an error", async () => {
     const socket = await login();
-    expect((await cheat(socket, "/spawn nothing")).type).toBe("error");
+    expect((await cheat(socket, "/npc spawn nothing")).type).toBe("error");
     expect((await cheat(socket, "/tp x")).type).toBe("error");
     expect((await cheat(socket, "/warp nowhere")).type).toBe("error");
   });

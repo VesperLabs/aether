@@ -14,7 +14,7 @@ import { findNearbyNpc } from "@/server/net/nearby-keeper";
 import { isInRoom } from "@/server/player-room";
 
 export function chatNpc(ctx: CommandContext, { npcId }: ParsedCommand<"chatNpc"> = {}) {
-  const { world, socket, socketId } = ctx;
+  const { world, actor, socketId } = ctx;
   const player: Player = world?.players?.[socketId];
   const npc = findNearbyNpc(world, socketId, npcId);
   if (!player || !npc) return;
@@ -22,7 +22,7 @@ export function chatNpc(ctx: CommandContext, { npcId }: ParsedCommand<"chatNpc">
   player.state.targetNpcId = npcId;
   /* Quests that are of type: chat need to be updated */
   player.updateChatQuests(npc.name);
-  socket.emit("keeperDataUpdate", {
+  actor.emit("keeperDataUpdate", {
     npcId: npc.id,
     keeperData: npc.keeperData,
     playerQuests: player.getQuests(),
@@ -45,14 +45,14 @@ export function acceptQuest(ctx: CommandContext, questId: ParsedCommand<"acceptQ
 }
 
 export function completeQuest(ctx: CommandContext, questId: ParsedCommand<"completeQuest">) {
-  const { world, socket, socketId } = ctx;
+  const { world, actor, socketId } = ctx;
   const player: Player = world?.players?.[socketId];
   if (!isInRoom(player)) return;
   /* If the quest is ready, we turn it in */
   const questResults = player?.completeQuest(questId);
   /* Quest failed */
   if (questResults?.error) {
-    return socket.emit("message", {
+    return actor.emit("message", {
       type: "error",
       message: questResults.error,
     });
@@ -69,15 +69,15 @@ export function inviteToParty(
   ctx: CommandContext,
   inviteeSocketId: ParsedCommand<"inviteToParty">,
 ) {
-  legacyInviteToParty(ctx.world, ctx.socket, inviteeSocketId);
+  legacyInviteToParty(ctx.world, ctx.socketId, ctx.actor, inviteeSocketId);
 }
 
 export function partyAccept(ctx: CommandContext, partyId: ParsedCommand<"partyAccept">) {
-  legacyAcceptPartyInvite(ctx.world, ctx.socket, partyId);
+  legacyAcceptPartyInvite(ctx.world, ctx.socketId, ctx.actor, partyId);
 }
 
 export function partyLeave(ctx: CommandContext) {
-  legacyLeaveParty(ctx.world, ctx.socketId, ctx.socket);
+  legacyLeaveParty(ctx.world, ctx.socketId, ctx.actor);
 }
 
 export function message(ctx: CommandContext, args: ParsedCommand<"message">) {

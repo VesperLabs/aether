@@ -1,6 +1,6 @@
 import type { ServerWorld } from "./server-world";
 import type { Player } from "./player";
-import type { Socket } from "socket.io";
+import { socketActor, type Actor } from "./net/actor";
 import {
   acceptPartyInvite,
   inviteToParty,
@@ -29,9 +29,16 @@ function toPartyPlayer(player?: Player): PartyPlayer | undefined {
   };
 }
 
-function applyEffects(world: ServerWorld, effects: PartyEffect[], acting?: Socket) {
-  const socketFor = (id: string): Socket | undefined =>
-    acting?.id === id ? acting : world.io?.sockets?.sockets?.get?.(id);
+function applyEffects(
+  world: ServerWorld,
+  effects: PartyEffect[],
+  acting?: { id: string; actor: Actor },
+) {
+  const socketFor = (id: string): Actor | undefined => {
+    if (acting?.id === id) return acting.actor;
+    const socket = world.io?.sockets?.sockets?.get?.(id);
+    return socket && socketActor(socket);
+  };
   for (const effect of effects) {
     switch (effect.type) {
       case "joinRoom":
@@ -67,45 +74,55 @@ function applyEffects(world: ServerWorld, effects: PartyEffect[], acting?: Socke
   }
 }
 
-function run(world: ServerWorld, result: PartyResult, acting?: Socket) {
+function run(world: ServerWorld, result: PartyResult, acting?: { id: string; actor: Actor }) {
   world.partyState = result.state;
   applyEffects(world, result.effects, acting);
 }
 
-export function legacyInviteToParty(world: ServerWorld, socket: Socket, inviteeId: string) {
+export function legacyInviteToParty(
+  world: ServerWorld,
+  inviterId: string,
+  actor: Actor,
+  inviteeId: string,
+) {
   run(
     world,
     inviteToParty(world.partyState, {
-      inviter: toPartyPlayer(world.players?.[socket.id]),
-      inviterId: socket.id,
+      inviter: toPartyPlayer(world.players?.[inviterId]),
+      inviterId,
       invitee: toPartyPlayer(world.players?.[inviteeId]),
       newPartyId: world.dice.newId(),
     }),
-    socket,
+    { id: inviterId, actor },
   );
 }
 
-export function legacyAcceptPartyInvite(world: ServerWorld, socket: Socket, partyId: string) {
+export function legacyAcceptPartyInvite(
+  world: ServerWorld,
+  playerId: string,
+  actor: Actor,
+  partyId: string,
+) {
   run(
     world,
     acceptPartyInvite(world.partyState, {
-      player: toPartyPlayer(world.players?.[socket.id]),
-      playerId: socket.id,
+      player: toPartyPlayer(world.players?.[playerId]),
+      playerId,
       partyId,
     }),
-    socket,
+    { id: playerId, actor },
   );
 }
 
-/** The player on `socketId` leaves their party. `socket` is theirs when it is the acting one. */
-export function legacyLeaveParty(world: ServerWorld, socketId: string, socket?: Socket) {
+/** The player on `socketId` leaves their party. `actor` is theirs when they are the one acting. */
+export function legacyLeaveParty(world: ServerWorld, socketId: string, actor?: Actor) {
   run(
     world,
     leaveParty(world.partyState, {
       player: toPartyPlayer(world.players?.[socketId]),
       playerId: socketId,
     }),
-    socket?.id === socketId ? socket : undefined,
+    actor && { id: socketId, actor },
   );
 }
 

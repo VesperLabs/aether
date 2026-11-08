@@ -18,7 +18,7 @@ type PlayerCommand = (
 const DEFAULT_ROLL_MAX = 100;
 
 const reply = (ctx: CommandContext, type: "system" | "error", message: string) =>
-  ctx.socket.emit("message", { type, message });
+  ctx.actor.emit("message", { type, message });
 
 const nameOf = (player: Player) => player.profile?.userName;
 
@@ -48,7 +48,7 @@ function sendWhisper(
   to.lastWhisperFrom = nameOf(from);
   const line: ChatMessage = { type: "whisper", from: nameOf(from), message: text, links };
   ctx.io.to(to.id).emit("message", line);
-  ctx.socket.emit("message", { type: "whisper", to: nameOf(to), message: text, links });
+  ctx.actor.emit("message", { type: "whisper", to: nameOf(to), message: text, links });
 }
 
 const yell: PlayerCommand = (ctx, player, text, links) => {
@@ -106,7 +106,7 @@ const invite: PlayerCommand = (ctx, player, text) => {
   const { target } = splitPlayerName(ctx, text);
   if (!target) return reply(ctx, "error", "No player by that name is online.");
   if (target.id === player.id) return reply(ctx, "error", "You can't invite yourself.");
-  legacyInviteToParty(ctx.world, ctx.socket, target.id);
+  legacyInviteToParty(ctx.world, ctx.socketId, ctx.actor, target.id);
   reply(ctx, "system", `Invited ${nameOf(target)} to your party.`);
 };
 
@@ -114,7 +114,7 @@ const leave: PlayerCommand = (ctx, player) => {
   if (!getParty(ctx.world.partyState, player.partyId)) {
     return reply(ctx, "error", "You aren't in a party.");
   }
-  legacyLeaveParty(ctx.world, ctx.socketId, ctx.socket);
+  legacyLeaveParty(ctx.world, ctx.socketId, ctx.actor);
 };
 
 const roll: PlayerCommand = (ctx, player, text) => {
@@ -128,7 +128,7 @@ const roll: PlayerCommand = (ctx, player, text) => {
 };
 
 /* Only the client can forget its login; reloading then disconnects, which saves the player */
-const logout: PlayerCommand = (ctx) => ctx.socket.emit("loggedOut");
+const logout: PlayerCommand = (ctx) => ctx.actor.emit("loggedOut");
 
 const PLAYER_COMMANDS: Record<string, PlayerCommand> = {
   yell,

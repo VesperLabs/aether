@@ -103,6 +103,7 @@ export function createServerWorld({
   world.now = now;
   world.netIds = createNetIds();
   world.observers = new Set();
+  world.bots = {};
   world.dice = dice;
   world.rng = dice.random;
   world.tickHealth = createTickHealth(1000 / DEFAULT_SERVER_FPS);

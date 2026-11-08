@@ -1,0 +1,23 @@
+/** Names bots are given when spawned without one. */
+export const BOT_NAMES = [
+  "Ash",
+  "Bramble",
+  "Cinder",
+  "Dusk",
+  "Ember",
+  "Fern",
+  "Gale",
+  "Haze",
+  "Ivy",
+  "Juniper",
+  "Kestrel",
+  "Lark",
+  "Moss",
+  "Nettle",
+  "Onyx",
+  "Pike",
+  "Quill",
+  "Rook",
+  "Sage",
+  "Thorn",
+] as const;

@@ -1,4 +1,5 @@
-export type CharClass = "mage" | "warrior" | "rogue" | "cleric";
+export const CHAR_CLASSES = ["mage", "warrior", "rogue", "cleric"] as const;
+export type CharClass = (typeof CHAR_CLASSES)[number];
 
 export type StatName =
   | "accuracy"

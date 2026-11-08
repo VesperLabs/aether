@@ -20,3 +20,16 @@ export function parseInteger(value: string | undefined): number | undefined {
   if (!value || !/^-?\d+$/.test(value)) return;
   return Number(value);
 }
+
+/**
+ * One cheat with actions under it (`/bot spawn`, `/npc despawn`): the first word picks the action,
+ * the rest are its args.
+ */
+export function subcommands(command: string, actions: Record<string, Cheat>): Cheat {
+  const usage = `Usage: /${command} <${Object.keys(actions).join("|")}>`;
+  return (ctx, player, [action, ...args], reply) => {
+    const run = action && actions[action.toLowerCase()];
+    if (!run) return reply.error(usage);
+    run(ctx, player, args, reply);
+  };
+}

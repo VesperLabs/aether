@@ -1,4 +1,7 @@
 import {
+  BOT_PERSONALITY_IDS,
+  CHAR_CLASSES,
+  botPersonalities,
   ITEM_BUILD_RARITIES,
   ITEM_KEYS,
   canRollRarity,
@@ -58,6 +61,41 @@ const MOB_OPTIONS = Object.entries(nasties).map(([value, { profile, baseStats }]
   look: { texture: profile.race, tint: "tint" in profile ? profile.tint : undefined },
 }));
 const RARITY_OPTIONS = ITEM_BUILD_RARITIES.map((value) => ({ value, rarity: value }));
+
+const NPC_ACTION_OPTIONS = [
+  { value: "spawn", hint: "add mobs next to you" },
+  { value: "despawn", hint: "remove the mobs you spawned in this room" },
+];
+const NPC_ACTION: ChatArg = { name: "action", kind: "text" };
+const BOT_ACTION_OPTIONS = [
+  { value: "spawn", hint: "add bots next to you" },
+  { value: "list", hint: "every bot and what it is doing" },
+  { value: "despawn", hint: "remove one by name, or all" },
+  { value: "pause", hint: "freeze one by name, or all" },
+  { value: "resume", hint: "unfreeze one by name, or all" },
+];
+const BOT_PERSONALITY_OPTIONS = BOT_PERSONALITY_IDS.map((value) => ({
+  value,
+  hint: botPersonalities[value].description,
+}));
+const CHAR_CLASS_OPTIONS = CHAR_CLASSES.map((value) => ({ value }));
+const BOT_ACTION: ChatArg = { name: "action", kind: "text" };
+
+/** `/bot` takes different arguments after each action. */
+function getBotArgs([action]: string[]): readonly ChatArg[] {
+  if (action === "spawn") {
+    return [
+      BOT_ACTION,
+      optional({ name: "personality", kind: "text" }),
+      optional({ name: "class", kind: "text" }),
+      optional(numArg("count")),
+    ];
+  }
+  if (action === "despawn" || action === "pause" || action === "resume") {
+    return [BOT_ACTION, optional({ name: "name", kind: "text" })];
+  }
+  return [BOT_ACTION];
+}
 /** A common base can roll magic or rare mods (not bags, spells, stackables); anything else is fixed. */
 const ROLLABLE_RARITY_OPTIONS = ["magic", "rare"].map((value) => ({ value, rarity: value }));
 
@@ -229,18 +267,31 @@ export const CHAT_COMMANDS: readonly ChatCommand[] = [
     cheat: true,
   },
   {
-    name: "spawn",
-    args: [{ name: "mob", kind: "mob" }, optional(numArg("count"))],
-
-    description: "Spawn mobs next to you",
+    name: "npc",
+    args: [NPC_ACTION],
+    argsFor: ([action]) =>
+      action === "spawn"
+        ? [NPC_ACTION, { name: "mob", kind: "mob" }, optional(numArg("count"))]
+        : [NPC_ACTION],
+    description: "Spawn or remove mobs",
     cheat: true,
-    complete: (index) => (index === 0 ? MOB_OPTIONS : []),
+    complete: (index, args) => {
+      if (index === 0) return NPC_ACTION_OPTIONS;
+      return index === 1 && args[0] === "spawn" ? MOB_OPTIONS : [];
+    },
   },
   {
-    name: "despawn",
-
-    description: "Remove spawned mobs from this room",
+    name: "bot",
+    args: [BOT_ACTION],
+    argsFor: getBotArgs,
+    description: "Spawn and manage server-run players",
     cheat: true,
+    complete: (index, args) => {
+      if (index === 0) return BOT_ACTION_OPTIONS;
+      if (args[0] !== "spawn") return [];
+      if (index === 1) return BOT_PERSONALITY_OPTIONS;
+      return index === 2 ? CHAR_CLASS_OPTIONS : [];
+    },
   },
 ];
 

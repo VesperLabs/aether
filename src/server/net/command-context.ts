@@ -1,8 +1,11 @@
 import type { ServerWorld } from "../server-world";
-import type { GameIo, GameSocket } from "@/network";
+import type { GameIo } from "@/network";
+import type { Actor } from "./actor";
 
 /** Things that belong to one connection and outlive a single command. */
 interface ConnectionSession {
+  /** The address it connected from, for rate-limiting logins. */
+  address: string;
   /** The peerjs id the client announced with `peerInit`, used for video chat. */
   peerId: string | null;
   /** The room this connection watches without a character, if any. */
@@ -15,7 +18,8 @@ interface ConnectionSession {
 export interface CommandContext {
   world: ServerWorld;
   io: GameIo;
-  socket: GameSocket;
+  /** Who sent the command. */
+  actor: Actor;
   socketId: string;
   session: ConnectionSession;
 }

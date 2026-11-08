@@ -12,7 +12,7 @@ export function grabLoot(
   ctx: CommandContext,
   { lootId, direction }: ParsedCommand<"grabLoot"> = {},
 ) {
-  const { world, socket, socketId } = ctx;
+  const { world, actor, socketId } = ctx;
   const player = world.players[socketId];
   /* A missing id looks up nothing, as before. */
   const key = `${lootId}`;
@@ -44,7 +44,7 @@ export function grabLoot(
   /* Face the loot */
   if (direction) player.direction = direction;
   if (outcome === "inventoryFull") {
-    return socket.emit("message", {
+    return actor.emit("message", {
       type: "error",
       message: "Inventory is full.",
     });
@@ -65,12 +65,12 @@ export function grabLoot(
 }
 
 export function dropItem(ctx: CommandContext, request: ParsedCommand<"dropItem"> = {}) {
-  const { world, socket, socketId } = ctx;
+  const { world, actor, socketId } = ctx;
   const player = world?.players?.[socketId];
   if (!isInRoom(player)) return;
   const result = dropItemCommand(player, request ?? {});
   if (!result.ok) {
-    if (result.error) socket.emit("message", { type: "error", message: result.error });
+    if (result.error) actor.emit("message", { type: "error", message: result.error });
     return;
   }
 
