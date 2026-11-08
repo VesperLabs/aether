@@ -40,6 +40,7 @@ export {
   canRollRarity,
   isItemBuildRarity,
 } from "./items/item-builder";
+export { randomDropLevel } from "./items/item-drops";
 export { itemData } from "./items/item-data";
 export { ITEM_KEYS, findItemKey, type ItemLook } from "./items/item-keys";
 export { ILVL_MULTIPLIER, itemList } from "./items/item-scaling";

@@ -87,6 +87,14 @@ export function dropItemLevel(mobLevel: number, ilvlMultiplier: number): number 
   return 1 + Math.floor(mobLevel / ilvlMultiplier);
 }
 
+/**
+ * The lowest mob level whose drops reach item level `ilvl`: the inverse of `dropItemLevel`. I.e.
+ * ilvl 1 drops from any mob, ilvl 2 from lvl 8, ilvl 3 from lvl 16.
+ */
+export function minMobLevelForItem(ilvl: number, ilvlMultiplier: number): number {
+  return Math.max(1, (ilvl - 1) * ilvlMultiplier);
+}
+
 /** Everything a mob kill needs to roll a drop. */
 export interface MobDropInput {
   mobLevel: number;

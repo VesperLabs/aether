@@ -9,6 +9,7 @@ import {
   dropItemLevel,
   expireLoots,
   isMapLootDue,
+  minMobLevelForItem,
   parseMapLootList,
   pickPreferredDrop,
   planMapLootSpawns,
@@ -57,6 +58,22 @@ describe("dropItemLevel", () => {
     expect(dropItemLevel(1, 8)).toBe(1);
     expect(dropItemLevel(8, 8)).toBe(2);
     expect(dropItemLevel(16, 8)).toBe(3);
+  });
+});
+
+describe("minMobLevelForItem", () => {
+  it("is the lowest mob level that drops the item level", () => {
+    expect(minMobLevelForItem(1, 8)).toBe(1);
+    expect(minMobLevelForItem(2, 8)).toBe(8);
+    expect(minMobLevelForItem(12, 8)).toBe(88);
+  });
+
+  it("undoes dropItemLevel at every level", () => {
+    for (let ilvl = 1; ilvl <= 30; ilvl++) {
+      const mobLevel = minMobLevelForItem(ilvl, 8);
+      expect(dropItemLevel(mobLevel, 8)).toBeGreaterThanOrEqual(ilvl);
+      if (mobLevel > 1) expect(dropItemLevel(mobLevel - 1, 8)).toBeLessThan(ilvl);
+    }
   });
 });
 

@@ -1,10 +1,15 @@
+import mapLoots from "virtual:map-loots";
 import { actors, questList, type ActorDefinition } from "@/content";
 
-/** Where a player can get an item: monsters that drop it, keepers that sell it, quests that give it. */
+/**
+ * Where a player can get an item: monsters that drop it, keepers that sell it, quests that give
+ * it, and maps that spawn it on the ground.
+ */
 export interface ItemSources {
   drops: { name: string; chance: number; race?: string; tint?: string }[];
   sellers: string[];
   quests: string[];
+  spawns: { map: string; chance: number }[];
 }
 
 type Ref = readonly [string, string, string] | readonly string[];
@@ -17,7 +22,7 @@ const SOURCES = new Map<string, ItemSources>();
 const sourcesOf = (key: string) => {
   let sources = SOURCES.get(key);
   if (!sources) {
-    sources = { drops: [], sellers: [], quests: [] };
+    sources = { drops: [], sellers: [], quests: [], spawns: [] };
     SOURCES.set(key, sources);
   }
   return sources;
@@ -41,6 +46,24 @@ for (const quest of Object.values(questList)) {
   for (const item of (quest as { rewards?: { items: readonly Ref[] } }).rewards?.items ?? []) {
     sourcesOf(refKey(item)).quests.push(quest.name);
   }
+}
+
+for (const [map, items] of Object.entries(mapLoots)) {
+  for (const item of items) {
+    sourcesOf(refKey([item.type, item.rarity, item.key])).spawns.push({
+      map: mapTitle(map),
+      chance: item.chance,
+    });
+  }
+}
+
+/** A map's name as a title: "grassland-peaks-2" is "Grassland Peaks 2". */
+function mapTitle(name: string) {
+  return name
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .split("-")
+    .map((word) => word[0].toUpperCase() + word.slice(1))
+    .join(" ");
 }
 
 /** Where to get the item `type/rarity/key`, or `undefined` when nothing in the game gives it. */

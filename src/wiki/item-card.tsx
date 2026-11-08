@@ -1,10 +1,18 @@
-import { resolveAsset, type ItemDefinition } from "@/content";
-import { buffLines, describeItem, type DescribableItem, type StatLine } from "@/rules/inventory";
-import { Box, deriveElements, Flex, Grid, Icon, Text } from "@/ui";
-import type { ReactNode } from "react";
-import { CARD_COLORS, SpriteFace, raceAsset } from "./card-pool";
+import { randomDropLevel, resolveAsset, type ItemDefinition } from "@/content";
+import {
+  buffLines,
+  describeItem,
+  SHOP_INFLATION,
+  type DescribableItem,
+  type StatLine,
+} from "@/rules/inventory";
+import { Box, deriveElements, Flex, Grid, Icon, Text, Tooltip, TooltipContent } from "@/ui";
+import { Fragment, useId, type ReactNode } from "react";
+import { CARD_COLORS, SpriteFace } from "./card-pool";
 import { itemSources } from "./item-sources";
 import { PAPER, PAPER_STYLE, PaperFrame } from "./paper";
+import { ICON, Row } from "./card-row";
+import { Sources } from "./item-source-rows";
 
 /** An item as the wiki lists it: its definition, plus where it sits in the item list. */
 export type WikiItem = ItemDefinition & { key: string; type: string; rarity: string };
@@ -53,25 +61,29 @@ export const ItemCard = ({ item }: { item: WikiItem }) => {
     >
       <PaperFrame />
       <Flex sx={{ gap: 3, alignItems: "flex-start", minWidth: 0 }}>
-        <Flex
-          sx={{
-            width: 64,
-            height: 64,
-            flexShrink: 0,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          {/* Every item at the same 2× scale, so their real sizes compare. */}
-          {asset && (
-            <SpriteFace
-              asset={asset}
-              tint={item.tint}
-              size={64}
-              pixelScale={2}
-              elements={item.type === "weapon" ? deriveElements(item.stats) : []}
-            />
-          )}
+        {/* The picture, with what it sells for just under it */}
+        <Flex sx={{ flexDirection: "column", alignItems: "center", gap: 1, flexShrink: 0 }}>
+          <Flex
+            sx={{
+              width: 64,
+              height: 64,
+              flexShrink: 0,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {/* Every item at the same 2× scale, so their real sizes compare. */}
+            {asset && (
+              <SpriteFace
+                asset={asset}
+                tint={item.tint}
+                size={64}
+                pixelScale={2}
+                elements={item.type === "weapon" ? deriveElements(item.stats) : []}
+              />
+            )}
+          </Flex>
+          {described.cost > 0 && <GoldBadge cost={described.cost} />}
         </Flex>
         <Box sx={{ minWidth: 0 }}>
           <Flex sx={{ alignItems: "center", gap: 2, flexWrap: "wrap" }}>
@@ -137,7 +149,10 @@ export const ItemCard = ({ item }: { item: WikiItem }) => {
         {described.requirements.length ? <Lines lines={described.requirements} /> : <None />}
       </Column>
       <Column label="Where to find">
-        <Sources sources={sources} cost={described.cost} />
+        <Sources
+          sources={sources}
+          randomLevel={randomDropLevel(item.type, item.rarity, item.key)}
+        />
       </Column>
     </Grid>
   );
@@ -200,63 +215,6 @@ const Group = ({
 
 const None = () => <Text sx={{ fontSize: 1, color: PAPER.muted }}>—</Text>;
 
-/** The size of every icon on the card, and of the slot that holds it. */
-const ICON = 32;
-
-/**
- * Every line on the card: an optional icon, a label and a value joined by a dotted leader.
- * A `labelColor` names something (a monster, a buff), so it's bold; plain stat labels are muted
- * and their value is bold instead.
- */
-const Row = ({
-  icon,
-  label,
-  value,
-  labelColor,
-  valueColor,
-}: {
-  icon?: ReactNode;
-  label: string;
-  value: string;
-  labelColor?: string;
-  valueColor?: string;
-}) => (
-  <Flex sx={{ alignItems: "center", gap: 1, fontSize: 1, minHeight: icon ? ICON : undefined }}>
-    {icon && (
-      <Flex
-        sx={{
-          width: ICON,
-          height: ICON,
-          flexShrink: 0,
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        {icon}
-      </Flex>
-    )}
-    <Text
-      sx={{
-        color: labelColor ?? PAPER.muted,
-        fontWeight: labelColor ? 600 : 400,
-        whiteSpace: "nowrap",
-      }}
-    >
-      {label}
-    </Text>
-    <Box sx={{ flex: 1, minWidth: 8, borderBottom: `1px dotted ${PAPER.ornament}` }} />
-    <Text
-      sx={{
-        color: valueColor ?? (labelColor ? PAPER.muted : PAPER.ink),
-        fontWeight: labelColor ? 400 : 700,
-        whiteSpace: "nowrap",
-      }}
-    >
-      {value}
-    </Text>
-  </Flex>
-);
-
 /** Stat lines, as rows. */
 const Lines = ({ lines }: { lines: StatLine[] }) => (
   <>
@@ -266,50 +224,56 @@ const Lines = ({ lines }: { lines: StatLine[] }) => (
   </>
 );
 
-/** Monsters that drop the item, keepers that sell it and quests that give it, each with an icon. */
-const Sources = ({ sources, cost }: { sources: ReturnType<typeof itemSources>; cost: number }) => {
-  const icon = (name: string) => <Icon icon={`./assets/icons/${name}.png`} size={ICON} />;
-  const rows: { label: string; value: string; color: string; icon: ReactNode }[] = [
-    ...(sources?.drops ?? []).map((drop) => {
-      const asset = raceAsset(drop.race);
-      return {
-        label: drop.name,
-        value: `1 in ${drop.chance}`,
-        color: CARD_COLORS.monster,
-        icon: asset && <SpriteFace asset={asset} tint={drop.tint} size={ICON} />,
-      };
-    }),
-    ...(sources?.sellers ?? []).map((name) => ({
-      label: name,
-      value: "Shop",
-      color: CARD_COLORS.keeper,
-      icon: icon("pouch"),
-    })),
-    ...(sources?.quests ?? []).map((name) => ({
-      label: name,
-      value: "Quest",
-      color: CARD_COLORS.unique,
-      icon: icon("quests"),
-    })),
-  ];
-  if (!rows.length) {
-    rows.push({ label: "World drop", value: "Random", color: PAPER.muted, icon: icon("chest") });
-  }
-  /* What it sells for, lined up with the sources as the last row. */
-  if (cost > 0) {
-    rows.push({ label: "Value", value: `${cost} gold`, color: PAPER.ink, icon: icon("gold") });
-  }
+/** What the item is worth, as a faint badge under its picture; hover shows what shops buy and sell it for. */
+const GoldBadge = ({ cost }: { cost: number }) => {
+  const tooltipId = useId();
   return (
-    <>
-      {rows.map((row, i) => (
-        <Row
-          key={`${row.label}-${i}`}
-          icon={row.icon ?? <span />}
-          label={row.label}
-          value={row.value}
-          labelColor={row.color}
-        />
-      ))}
-    </>
+    <Flex
+      data-tooltip-id={tooltipId}
+      sx={{
+        alignItems: "center",
+        gap: 1,
+        pl: 1,
+        pr: 2,
+        bg: "rgba(0,0,0,.05)",
+        borderRadius: 2,
+        fontSize: 0,
+        fontWeight: 700,
+        color: PAPER.ink,
+        whiteSpace: "nowrap",
+        cursor: "help",
+      }}
+    >
+      {/* At its native 32px, as halving pixel art drops every other pixel; it overhangs the badge */}
+      <Icon icon="./assets/icons/gold.png" size={32} sx={{ my: "-8px", mx: "-6px" }} />
+      {cost}
+      <Tooltip id={tooltipId}>
+        <TooltipContent sx={{ alignItems: "stretch", textTransform: "none", fontSize: 1 }}>
+          {/* Shops charge the inflated price, as the game does, and pay the plain value back */}
+          <Grid
+            sx={{
+              gridTemplateColumns: "max-content minmax(20px, 1fr) max-content",
+              columnGap: 2,
+              rowGap: 2,
+              alignItems: "center",
+            }}
+          >
+            {[
+              ["Buy", Math.round(cost * SHOP_INFLATION)],
+              ["Sell", cost],
+            ].map(([label, gold]) => (
+              <Fragment key={label}>
+                <Text sx={{ opacity: 0.6, fontWeight: 400 }}>{label}</Text>
+                <Box sx={{ borderBottom: "1px dotted rgba(255,255,255,.25)", mt: "6px" }} />
+                <Flex sx={{ alignItems: "center", justifyContent: "flex-end", gap: 1 }}>
+                  <Icon icon="./assets/icons/gold.png" size={32} sx={{ my: "-8px", mx: "-6px" }} />
+                  {gold}
+                </Flex>
+              </Fragment>
+            ))}
+          </Grid>
+        </TooltipContent>
+      </Tooltip>
+    </Flex>
   );
 };
