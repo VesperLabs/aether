@@ -12,6 +12,7 @@ import { getBuffRoomState } from "@/server/net/room-sync";
 import { updateRoomLoot } from "./loot-adapter";
 import { expireSpells } from "./spell-adapter";
 import { countRoomClients, getRoomIndex, indexRooms } from "./room-index";
+import { keepCompanionsNear } from "./companions";
 import { endTickTimer, startTickTimer } from "./tick-health";
 import { moveBots, thinkBots } from "./bots";
 import { commandHandlers } from "./net/handlers/command-handlers";
@@ -107,6 +108,7 @@ export const serverSystems: Array<System<ServerWorld>> = [
   moveNpcs,
   moveBots,
   moveSpells,
+  keepCompanionsNear,
   indexRooms,
   separateNpcs,
   updateEntities,

@@ -26,9 +26,8 @@ export interface MobKilledEvent {
 /** A character lost hp to another one. NPCs gain threat from it. */
 interface CharacterDamagedEvent {
   victimId: string;
+  /** A player's id is their socket id, so this finds players and NPCs alike. */
   attackerId: string;
-  /** Players are looked up by socket id; unset for NPC attackers. */
-  attackerSocketId?: string;
   amount: number;
 }
 

@@ -26,7 +26,7 @@ describe("npc behavior", () => {
     const mob = Object.values<Anything>(world.npcs).find(
       (npc) =>
         npc.room?.name === player.roomName &&
-        npc.kind === "nasty" &&
+        !npc.talks &&
         !npc.state.isDead &&
         npc.behaviors?.includes("aggressive"),
     );

@@ -12,6 +12,7 @@ import {
 } from "@/rules/combat";
 import { canHitNpc, canHitPlayer } from "@/rules/spells";
 import type { Npc } from "./npc";
+import { isAlly } from "./allegiance-adapter";
 import { createSpell } from "./spell-adapter";
 import { vanish } from "./stealth";
 import { updateCast, type PendingCast } from "./player-cast";
@@ -292,15 +293,21 @@ export class Player extends ServerCharacter {
 
     const hitList: Hit[] = [];
     const npcKills: Npc[] = [];
-    const playerIdsToUpdate: string[] = [];
-    const playerIdsThatLeveled: string[] = [];
 
     const npcs = entitiesInRoom(world.npcs, roomName);
     const players = entitiesInRoom(world.players, roomName);
 
     for (const npc of npcs) {
       if (!ids.includes(npc.id)) continue;
-      if (!canHitNpc(allowedTargets)) continue;
+      /* Companions are on their owner's side, so they take what a party member would. */
+      const isOnSide = isAlly(world, this, npc);
+      if (
+        isOnSide
+          ? !canHitPlayer({ allowedTargets, isSelf: false, isPartyMember: true })
+          : !canHitNpc(allowedTargets)
+      ) {
+        continue;
+      }
 
       const newHits = this.calculateDamage(npc, abilitySlot, hand);
 
@@ -335,49 +342,57 @@ export class Player extends ServerCharacter {
       }
     }
 
-    /* Send exp update to client */
-    if (hitList?.some((hit) => hit.type === "death")) {
-      // either you are in a party, or you are in a fake party object
-      // party members in same room share the kill
-      const recipients: Player[] = sharedRecipientIds(world.partyState, {
-        partyId: this?.partyId,
-        id: this?.id,
-        roomName: roomName,
-      })
-        .map((id) => world?.players?.[id])
-        .filter(Boolean);
-      const levelsBefore = recipients.map((member) => member.baseStats.level);
-      // Read once so a level-up part way through the kills doesn't change what later kills are worth.
-      const killerLevel = this.stats.level;
-      const kills = mobKilledEvents(
-        { id: this.id, level: killerLevel, magicFind: this.stats.magicFind, partyId: this.partyId },
-        recipients.map((member) => member.id),
-        roomName,
-        npcKills,
-      );
-      /* Stats (experience) reacts to this and awards exp and kill credit to the recipients. */
-      for (const kill of kills) world.events.emit("mobKilled", kill);
-      recipients.forEach((member, i) => {
-        for (const kill of kills) {
-          hitList.push({
-            type: "exp",
-            amount: expForMobKill(kill),
-            from: kill.mobId,
-            to: member.id,
-          });
-        }
-        playerIdsToUpdate.push(member.id);
-        if (member.baseStats.level > levelsBefore[i]) {
-          playerIdsThatLeveled.push(member.id);
-        }
-      });
-    }
+    if (npcKills.length > 0) this.creditKills(npcKills, hitList);
+
+    world.io.to(roomName).emit("assignDamage", mergeDrainHits(hitList));
+  }
+  /**
+   * Awards the kills to this player and the party members in the room with them: exp, loot and quest
+   * progress (through `mobKilled`). Adds the exp hits to `hitList`. Companions' kills come here too.
+   */
+  creditKills(npcKills: Npc[], hitList: Hit[]) {
+    const { world, roomName } = this;
+    if (!roomName) return;
+    const playerIdsToUpdate: string[] = [];
+    const playerIdsThatLeveled: string[] = [];
+    // either you are in a party, or you are in a fake party object
+    // party members in same room share the kill
+    const recipients: Player[] = sharedRecipientIds(world.partyState, {
+      partyId: this?.partyId,
+      id: this?.id,
+      roomName: roomName,
+    })
+      .map((id) => world?.players?.[id])
+      .filter(Boolean);
+    const levelsBefore = recipients.map((member) => member.baseStats.level);
+    // Read once so a level-up part way through the kills doesn't change what later kills are worth.
+    const killerLevel = this.stats.level;
+    const kills = mobKilledEvents(
+      { id: this.id, level: killerLevel, magicFind: this.stats.magicFind, partyId: this.partyId },
+      recipients.map((member) => member.id),
+      roomName,
+      npcKills,
+    );
+    /* Stats (experience) reacts to this and awards exp and kill credit to the recipients. */
+    for (const kill of kills) world.events.emit("mobKilled", kill);
+    recipients.forEach((member, i) => {
+      for (const kill of kills) {
+        hitList.push({
+          type: "exp",
+          amount: expForMobKill(kill),
+          from: kill.mobId,
+          to: member.id,
+        });
+      }
+      playerIdsToUpdate.push(member.id);
+      if (member.baseStats.level > levelsBefore[i]) {
+        playerIdsThatLeveled.push(member.id);
+      }
+    });
 
     if (playerIdsToUpdate.length > 0) {
       const updated = playerIdsToUpdate.map((id) => world.players[id]).filter(Boolean);
       broadcastLeveled(world, roomName, updated, playerIdsThatLeveled);
     }
-
-    world.io.to(roomName).emit("assignDamage", mergeDrainHits(hitList));
   }
 }

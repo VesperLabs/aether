@@ -29,9 +29,12 @@ export interface CharacterSyncInput {
   equipment: Opaque;
   inventory: Opaque;
   profile: Opaque;
+  /** "player" or "npc". What an NPC does comes from its parts, like `talks`, never its kind. */
   kind: string;
   /** NPCs only: their opt-in behaviors, so the client can tell aggressive mobs apart. */
   behaviors?: readonly string[];
+  /** NPCs only: players can talk to it (it has `dialogues`). */
+  talks?: boolean;
   charClass?: CharClass;
   npcKills?: Opaque;
   buffs: Opaque[];
@@ -64,6 +67,7 @@ export interface FullCharacterWire {
   profile: Opaque;
   kind: string;
   behaviors?: readonly string[];
+  talks?: boolean;
   charClass: CharClass;
   npcKills: Opaque;
   buffs: Opaque[];
@@ -109,6 +113,7 @@ export function getFullCharacterState(p: CharacterSyncInput): FullCharacterWire 
     profile: p?.profile,
     kind: p?.kind,
     behaviors: p?.behaviors,
+    talks: p?.talks,
     charClass: p?.charClass as CharClass,
     npcKills: p?.npcKills,
     buffs: p?.buffs,

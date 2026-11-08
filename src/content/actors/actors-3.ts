@@ -1,6 +1,6 @@
-import type { NastyDefinition } from "./mob-types";
+import type { ActorDefinition } from "./actor-types";
 
-export const nasties = {
+export const actors3 = {
   crab: {
     charClass: "mage",
     profile: { race: "crab", userName: "Crab", tint: "0xFF6600" },
@@ -262,6 +262,4 @@ export const nasties = {
       { type: "stackable", rarity: "common", key: "iceCrabClaw", chance: 3 },
     ],
   },
-} as const satisfies Readonly<Record<string, NastyDefinition>>;
-
-export type NastyId = keyof typeof nasties;
+} as const satisfies Readonly<Record<string, ActorDefinition>>;

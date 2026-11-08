@@ -3,9 +3,9 @@ import {
   ILVL_MULTIPLIER,
   ItemBuilder,
   QuestBuilder,
-  keepers,
+  actors,
+  isActorId,
   mapList,
-  nasties,
   type Dice,
 } from "@/content";
 import { createServerDice } from "./server-dice";
@@ -21,21 +21,15 @@ import { subscribeNpcMessages } from "./npc-messages";
 import { subscribeKnockbackMessages, subscribePoseForgetting } from "./net/handlers/movement";
 import { subscribeDebugMessages } from "./debug-messages";
 import { Npc, type NpcDefinition } from "./npc";
+import { subscribeCompanions } from "./companions";
 import { DEFAULT_SERVER_FPS, createNetIds, type GameIo } from "@/network";
 import type { Database } from "./persistence/database";
 
-/* Find NPCs in data lists, and add `kind` to them */
-function getNpcFromLists(name: string): NpcDefinition | undefined {
-  if (Object.keys(keepers).includes(name)) {
-    /* Flavour text is for the wiki; spawned keepers don't carry it. */
-    const { flavor: _flavor, ...keeper } = keepers[name as keyof typeof keepers];
-    return { ...(keeper as NpcDefinition), kind: "keeper" };
-  }
-  if (Object.keys(nasties).includes(name)) {
-    /* Flavour text is for the wiki; spawned monsters don't carry it. */
-    const { flavor: _flavor, ...nasty } = nasties[name as keyof typeof nasties];
-    return { ...(nasty as NpcDefinition), kind: "nasty" };
-  }
+/** An actor's content, ready to place. Flavour text is for the wiki; spawned actors don't carry it. */
+function getActorDefinition(name: string): NpcDefinition | undefined {
+  if (!isActorId(name)) return;
+  const { flavor: _flavor, ...actor } = actors[name];
+  return actor as NpcDefinition;
 }
 
 /** Puts every NPC the map places into the world. */
@@ -47,7 +41,7 @@ function spawnNpcs(world: ServerWorld, room: Room) {
   }
 }
 
-/** Puts one keeper or nasty into a room. Returns undefined when no NPC has that name. */
+/** Puts one actor into a room. Returns undefined when no actor has that name. */
 export function spawnNpc(
   world: ServerWorld,
   room: Room,
@@ -58,7 +52,7 @@ export function spawnNpc(
     properties = [],
   }: { name: string; x: number; y: number; properties?: { name: string; value: unknown }[] },
 ): Npc | undefined {
-  const npc = getNpcFromLists(name);
+  const npc = getActorDefinition(name);
   if (!npc) return;
   const id = world.dice.newId();
   world.npcs[id] = new Npc(world, {
@@ -68,7 +62,7 @@ export function spawnNpc(
     //need to merge these keys together, but add their values
     baseStats: npcBaseStats(npc),
     name,
-    kind: npc?.kind,
+    kind: "npc",
     x,
     y,
     state: {
@@ -117,9 +111,10 @@ export function createServerWorld({
   subscribeKnockbackMessages(world.events, world);
   subscribePoseForgetting(world.events, world);
   subscribeDebugMessages(world.events, io);
-  subscribeThreat(world.events, (victimId, attackerSocketId, amount) => {
-    world.npcs[victimId]?.addThreat(attackerSocketId, amount);
+  subscribeThreat(world.events, (victimId, attackerId, amount) => {
+    world.npcs[victimId]?.addThreat(attackerId, amount);
   });
+  subscribeCompanions(world.events, world);
   subscribeStats(world.events, (characterId, amount) => {
     world.players[characterId]?.assignExp(amount);
   });

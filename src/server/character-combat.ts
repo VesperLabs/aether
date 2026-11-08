@@ -9,9 +9,9 @@ import {
   type Hand,
 } from "@/rules/combat";
 import { isDodgeInvulnerable } from "@/rules/movement";
-import { isPartyMember } from "@/rules/party";
 import { rollSpellCrit, rollSpellDamage, type getAbilityDetails } from "@/rules/spells";
 import type { ServerCharacter } from "./character";
+import { isAlly } from "./allegiance-adapter";
 
 /** An ability's item data merged with its spell definition. */
 export type AbilityDetails = ReturnType<typeof getAbilityDetails>;
@@ -29,14 +29,9 @@ function cannotBeHit(victim: ServerCharacter) {
   return isDodgeInvulnerable(victim.state, now) || isInStealthGrace(victim.state, now);
 }
 
-/** Self, a party member, or another NPC: the side holy heals instead of hurts. */
-function isAlly(attacker: ServerCharacter, victim: ServerCharacter) {
-  if (attacker === victim) return true;
-  if (attacker.kind !== "player" || victim.kind !== "player") {
-    return attacker.kind === victim.kind;
-  }
-  const { partyId } = attacker as ServerCharacter & { partyId?: string | null };
-  return isPartyMember(attacker.world.partyState, partyId, victim.id);
+/** Self or anyone on its side (party, companions, fellow wild NPCs): holy heals instead of hurts. */
+function isAllyOf(attacker: ServerCharacter, victim: ServerCharacter) {
+  return attacker === victim || isAlly(attacker.world, attacker, victim);
 }
 
 export function applyElementalDamage(eleDamages: ElementalDamages, victim: ServerCharacter) {
@@ -48,11 +43,12 @@ function markHurt(attacker: ServerCharacter, victim: ServerCharacter, amount: nu
   victim.state.lastCombat = victim.world.now();
   victim.dispelBuffsByProperty("dispelInCombat");
   /* The first hit pulls an NPC; after that its threat table decides who it fights. */
-  if (!victim.state.lockedPlayerId) victim.setLockedPlayerId(attacker?.socketId);
+  /* Players are filed under their socket id, NPCs under their id. */
+  const attackerId = attacker.socketId || attacker.id;
+  if (!victim.state.lockedPlayerId && attacker !== victim) victim.setLockedPlayerId(attackerId);
   victim.world?.events?.emit("characterDamaged", {
     victimId: victim.id,
-    attackerId: attacker.id,
-    attackerSocketId: attacker.socketId,
+    attackerId,
     amount,
   });
 }
@@ -98,7 +94,7 @@ export function applySpellDamage(
   holyDamage = crit.holyDamage;
 
   /* Holy heals allies; on enemies it hurts like any other element (ignoring resistances) */
-  if (holyDamage > 0 && isAlly(attacker, victim)) {
+  if (holyDamage > 0 && isAllyOf(attacker, victim)) {
     victim.modifyStat("hp", holyDamage);
     hits.push({
       type: "hp",

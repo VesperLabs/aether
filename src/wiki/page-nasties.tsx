@@ -1,4 +1,5 @@
-import { itemList, nasties, resolveAsset, type BuiltItem, type NastyDefinition } from "@/content";
+import { itemList, resolveAsset, type ActorDefinition, type BuiltItem } from "@/content";
+import { SILENT_ACTORS } from "./actor-groups";
 import { calculateExpValue, npcStats } from "@/rules/stats";
 import { Box, Flex, Grid, Icon, ItemTooltip, Text, Tooltip, TooltipContent } from "@/ui";
 import { useId, useState, type ReactNode } from "react";
@@ -23,9 +24,9 @@ const listedItems = itemList as unknown as Record<
 /** Green for monsters that won't attack first. */
 const PASSIVE_COLOR = "#15803d";
 
-const MONSTERS = Object.entries(nasties as Record<string, NastyDefinition>)
-  .map(([key, mob]) => ({ key, mob, stats: npcStats(mob) }))
-  .sort((a, b) => (a.stats.level ?? 0) - (b.stats.level ?? 0));
+const MONSTERS = SILENT_ACTORS.map(([key, mob]) => ({ key, mob, stats: npcStats(mob) })).sort(
+  (a, b) => (a.stats.level ?? 0) - (b.stats.level ?? 0),
+);
 
 export function PageNasties() {
   useHashScroll();
@@ -48,7 +49,7 @@ export function PageNasties() {
   );
 }
 
-const MonsterCard = ({ mob, stats }: { mob: NastyDefinition; stats: Record<string, number> }) => {
+const MonsterCard = ({ mob, stats }: { mob: ActorDefinition; stats: Record<string, number> }) => {
   const asset = raceAsset(mob.profile.race);
   return (
     <WalkOnHover sx={{ ...PAPER_STYLE, p: 4 }}>
@@ -129,7 +130,7 @@ const MonsterCard = ({ mob, stats }: { mob: NastyDefinition; stats: Record<strin
 };
 
 /** The monster's temper and the spells it casts. */
-const Behavior = ({ mob }: { mob: NastyDefinition }) => {
+const Behavior = ({ mob }: { mob: ActorDefinition }) => {
   const isAggressive = mob.behaviors?.includes("aggressive");
   const spells = Object.values(mob.abilities ?? {});
   return (
@@ -259,7 +260,7 @@ const Stat = ({ label, value }: { label: string; value: ReactNode }) => (
 );
 
 /** What the monster drops, each in its rarity colour with its 1-in-N chance. */
-const Drops = ({ drops }: { drops: NonNullable<NastyDefinition["drops"]> }) => (
+const Drops = ({ drops }: { drops: NonNullable<ActorDefinition["drops"]> }) => (
   <Box sx={{ textAlign: "left", fontSize: 1 }}>
     {!drops.length && <Text sx={{ color: PAPER.muted, fontStyle: "italic" }}>Nothing</Text>}
     {drops.map((drop) => {

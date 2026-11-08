@@ -32,7 +32,7 @@ function placeKeeper(world: Anything, player: Anything, id: string, dx: number, 
     y: player.y,
     room: { name: player.roomName },
     talkingIds: [],
-    keeperData: { shop, home: { x: 11, y: 22 }, ...extra },
+    services: { shop, home: { x: 11, y: 22 }, ...extra },
   };
   return world.npcs[id];
 }
@@ -57,14 +57,12 @@ describe("chatNpc", () => {
     other.room = { name: "somewhere-else" };
 
     for (const npcId of ["far-keeper", "other-room-keeper", "missing", undefined]) {
-      const opened = await replies(socket, "keeperDataUpdate", () =>
-        socket.emit("chatNpc", { npcId }),
-      );
+      const opened = await replies(socket, "npcServices", () => socket.emit("chatNpc", { npcId }));
       expect(opened).toBe(false);
     }
     expect(player.state.targetNpcId).not.toBe("far-keeper");
 
-    const reply = once(socket, "keeperDataUpdate");
+    const reply = once(socket, "npcServices");
     socket.emit("chatNpc", { npcId: "near-keeper" });
     expect((await reply)[0].npcId).toBe("near-keeper");
     expect(near.talkingIds).toContain(socket.id);
@@ -133,7 +131,7 @@ describe("setSpawn", () => {
     expect(await replies(socket, "message", setSpawn)).toBe(false);
 
     keeper.x = player.x;
-    keeper.keeperData.home = undefined;
+    keeper.services.home = undefined;
     expect(await replies(socket, "message", setSpawn)).toBe(false);
 
     player.state.targetNpcId = null;

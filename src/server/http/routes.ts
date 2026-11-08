@@ -35,7 +35,7 @@ export function registerRoutes(app: Express, { aetherServer, db }: RouteDeps) {
 
     const { page, pageSize } = req.query as UnparsedQuery;
     const keeperStates = Object.values(npcs)
-      ?.filter((n) => n?.kind === "keeper" && n?.profile?.race === "human")
+      ?.filter((n) => n?.talks && n?.profile?.race === "human")
       .map(getFullCharacterState);
     res.json(paginate(keeperStates, page, pageSize, 10));
   });

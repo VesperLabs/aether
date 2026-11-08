@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { nasties, questList } from "@/content";
+import { actors, questList } from "@/content";
 import { mobKilledEvents } from "../combat";
 import { createLoot, subscribeLoot, type LootSpawn } from "../loot";
 import { getPlayerQuestStatus, nextNpcKillCount, subscribeQuests } from "../quests";
@@ -40,7 +40,7 @@ function setup() {
   });
 
   const kill = (n: number) => {
-    const hornet = nasties.hornet;
+    const hornet = actors.hornet;
     const killer = { id: "p1", level: 3, magicFind: 0 };
     for (let i = 0; i < n; i++) {
       const mob = {

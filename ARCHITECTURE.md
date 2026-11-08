@@ -7,6 +7,7 @@ Aether is a server-authoritative online game.
 - **Commands in, events and snapshots out.** Clients send intents. The server validates them, applies them, and sends back events plus snapshots and deltas.
 - **Content is typed code.** Items, mobs, spells, quests and maps are TypeScript data, so bad references fail to compile. Ids are typed so a quest pointing at a missing item is a compile error and editors autocomplete them.
 - **Features talk through events.** `mobKilled` is handled by loot, stats and quests; features never call each other's internals.
+- **Actors are made of parts, not kinds.** Every non-player is an actor in `content/actors`. What it does comes from the parts it has (`dialogues`, `shop`, `quests`, `drops`, `behaviors`), never from being a "keeper" or a "monster". Who fights whom is one rule, `rules/allegiance`: players on their own side, companions (`state.ownerId`) on their owner's, everyone else wild.
 
 > Migration in progress: older code doesn't match this yet. All new code does.
 

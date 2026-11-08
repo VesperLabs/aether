@@ -52,15 +52,13 @@ export { getMapByName } from "./maps/get-map";
 export { mapImageList } from "./maps/map-image-list";
 export { mapList } from "./maps/map-list";
 export { musicCredits } from "./maps/music-credits";
-export { keepers, type KeeperId } from "./mobs/keepers";
-export { nasties, type NastyId } from "./mobs/nasties";
+export { actors, isActorId, type ActorId } from "./actors/actors";
 export type {
+  ActorDefinition,
   MobBehavior,
   MobMovementBehavior,
   MobProfile,
-  NastyDefinition,
-} from "./mobs/mob-types";
-export type { KeeperDefinition } from "./mobs/keeper-types";
+} from "./actors/actor-types";
 export { Quest, type QuestObjective } from "./quests/quest";
 export { QuestBuilder } from "./quests/quest-builder";
 export { questList, type QuestId } from "./quests/quest-list";

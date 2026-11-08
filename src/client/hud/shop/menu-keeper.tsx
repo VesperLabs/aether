@@ -13,7 +13,7 @@ const KEEPER_CHAT_ID = "keeper-chat";
 export const MenuKeeper = () => {
   const { hero, keeper, tabKeeper, setTabKeeper, setHomeModal, keeperTab: tab } = useAppContext();
   const { setKeeperTab: setTab } = useAppContext();
-  const { dialogues, shop, quests, home } = keeper?.keeperData ?? {};
+  const { dialogues, shop, quests, home } = keeper?.services ?? {};
 
   const hasQuests = (quests?.length as number) > 0;
   const hasShop = (shop?.length as number) > 0;

@@ -44,9 +44,9 @@ export function createWindowHandlers({
 }: WindowHandlerDeps) {
   const getScene = () => game.scene.getScene("SceneMain") as SceneMain;
 
-  const onKeeperDataUpdate = (args: {
+  const onNpcServices = (args: {
     npcId: string;
-    keeperData: KeeperView["keeperData"];
+    services: KeeperView["services"];
     playerQuests: HudCharacter["quests"];
   }) => {
     const scene = getScene();
@@ -55,7 +55,7 @@ export function createWindowHandlers({
       (n) => n?.id === args?.npcId,
     );
     if (hero?.state?.targetNpcId === args?.npcId) {
-      setKeeper({ ...npc, keeperData: args?.keeperData });
+      setKeeper({ ...npc, services: args?.services });
       setHero((prev) => ({ ...prev, quests: args?.playerQuests }) as HudCharacter);
       setTabKeeper(true);
     }
@@ -74,7 +74,7 @@ export function createWindowHandlers({
       return addMessage({ type: "error", message: "Who are you talking to?" });
     }
 
-    if (target.kind === "keeper") {
+    if ((target as SceneMain["hero"]).talks) {
       // Talking again closes the tab; otherwise the server opens it when it answers.
       if (!tabKeeper) socket.emit("chatNpc", { npcId: hero?.state?.targetNpcId });
       return setTabKeeper(false);
@@ -147,7 +147,7 @@ export function createWindowHandlers({
   };
 
   return {
-    onKeeperDataUpdate,
+    onNpcServices,
     onHeroChatNpc,
     onUpdateHud,
     onUpdateRoomPlayers,

@@ -13,9 +13,9 @@ export function moveItem(ctx: CommandContext, { to, from }: MoveItemCommand = {}
   /* Shop moves need the keeper to still be next to the player. */
   const isShopMove = from?.location === "shop" || to?.location === "shop";
   const keeper = findNearbyNpc(world, socketId, player.state?.targetNpcId);
-  if (isShopMove && !keeper?.keeperData?.shop) return;
+  if (isShopMove && !keeper?.services?.shop) return;
   const npcId = keeper ? player.state.targetNpcId : undefined;
-  const shopSlot = keeper?.keeperData?.shop?.[from?.slot as number];
+  const shopSlot = keeper?.services?.shop?.[from?.slot as number];
   const result = moveItemCommand(
     player,
     { from, to },

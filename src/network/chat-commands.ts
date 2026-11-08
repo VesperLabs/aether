@@ -7,7 +7,8 @@ import {
   canRollRarity,
   findItemKey,
   mapList,
-  nasties,
+  actors,
+  type ActorDefinition,
   type ItemLook,
 } from "@/content";
 
@@ -55,16 +56,22 @@ const ITEM_OPTIONS = ITEM_KEYS.map(({ key, type, rarity, name, look }) => ({
   look,
 }));
 const ROOM_OPTIONS = mapList.map(({ name }) => ({ value: name }));
-const MOB_OPTIONS = Object.entries(nasties).map(([value, { profile, baseStats }]) => ({
-  value,
-  hint: `level ${baseStats.level}`,
-  look: { texture: profile.race, tint: "tint" in profile ? profile.tint : undefined },
-}));
+const MOB_OPTIONS = Object.entries(actors as Record<string, ActorDefinition>).map(
+  ([value, { profile, baseStats }]) => ({
+    value,
+    hint: `level ${baseStats.level}`,
+    look: { texture: profile.race, tint: profile.tint },
+  }),
+);
 const RARITY_OPTIONS = ITEM_BUILD_RARITIES.map((value) => ({ value, rarity: value }));
 
 const NPC_ACTION_OPTIONS = [
-  { value: "spawn", hint: "add mobs next to you" },
-  { value: "despawn", hint: "remove the mobs you spawned in this room" },
+  { value: "spawn", hint: "add NPCs next to you" },
+  { value: "despawn", hint: "remove the NPCs you spawned in this room" },
+  { value: "tame", hint: "make the nearest NPC your companion" },
+  { value: "summon", hint: "spawn an NPC as your companion" },
+  { value: "dismiss", hint: "let your companions go" },
+  { value: "list", hint: "your companions" },
 ];
 const NPC_ACTION: ChatArg = { name: "action", kind: "text" };
 const BOT_ACTION_OPTIONS = [
@@ -102,6 +109,13 @@ const ROLLABLE_RARITY_OPTIONS = ["magic", "rare"].map((value) => ({ value, rarit
 const numArg = (name: string): ChatArg => ({ name, kind: "number" });
 const itemArg = (name: string): ChatArg => ({ name, kind: "item" });
 const optional = (arg: ChatArg): ChatArg => ({ ...arg, optional: true });
+
+/** `/npc` actions that take an actor id, and whether it is required. */
+const NPC_ACTOR_ARG: Record<string, ChatArg> = {
+  spawn: { name: "actor", kind: "mob" },
+  summon: { name: "actor", kind: "mob" },
+  tame: optional({ name: "actor", kind: "mob" }),
+};
 
 /** Only a common base that can roll mods takes a rarity, and only stackables take an amount. */
 function itemArgs([key]: string[]): readonly ChatArg[] {
@@ -269,15 +283,18 @@ export const CHAT_COMMANDS: readonly ChatCommand[] = [
   {
     name: "npc",
     args: [NPC_ACTION],
-    argsFor: ([action]) =>
-      action === "spawn"
-        ? [NPC_ACTION, { name: "mob", kind: "mob" }, optional(numArg("count"))]
-        : [NPC_ACTION],
-    description: "Spawn or remove mobs",
+    argsFor: ([action]) => {
+      const actor = NPC_ACTOR_ARG[action ?? ""];
+      if (!actor) return [NPC_ACTION];
+      return action === "spawn"
+        ? [NPC_ACTION, actor, optional(numArg("count"))]
+        : [NPC_ACTION, actor];
+    },
+    description: "Spawn NPCs, or tame and summon companions",
     cheat: true,
     complete: (index, args) => {
       if (index === 0) return NPC_ACTION_OPTIONS;
-      return index === 1 && args[0] === "spawn" ? MOB_OPTIONS : [];
+      return index === 1 && NPC_ACTOR_ARG[args[0] ?? ""] ? MOB_OPTIONS : [];
     },
   },
   {

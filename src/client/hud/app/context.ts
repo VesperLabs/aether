@@ -27,7 +27,7 @@ interface KeeperChatData {
 }
 
 /** The keeper the hero is chatting with: its sprite's state plus the keeper data. */
-export type KeeperView = Partial<Player> & { keeperData: KeeperChatData; profile?: MobProfile };
+export type KeeperView = Partial<Player> & { services: KeeperChatData; profile?: MobProfile };
 
 /** The item the drop, sell or buy modal is asking about. */
 type DropAction =

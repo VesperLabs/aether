@@ -242,7 +242,7 @@ describe("shop over the socket", () => {
       x: player.x,
       y: player.y,
       room: { name: player.roomName },
-      keeperData: { shop },
+      services: { shop },
     };
     player.state.targetNpcId = "test-shop";
   }

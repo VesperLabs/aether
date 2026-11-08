@@ -1,4 +1,4 @@
-import { keepers, nasties, questList } from "@/content";
+import { actors, questList, type ActorDefinition } from "@/content";
 
 /** Where a player can get an item: monsters that drop it, keepers that sell it, quests that give it. */
 export interface ItemSources {
@@ -23,22 +23,17 @@ const sourcesOf = (key: string) => {
   return sources;
 };
 
-for (const mob of Object.values(nasties)) {
-  for (const drop of (
-    mob as { drops?: readonly { type: string; rarity: string; key: string; chance: number }[] }
-  ).drops ?? []) {
+for (const actor of Object.values(actors as Record<string, ActorDefinition>)) {
+  for (const drop of actor.drops ?? []) {
     sourcesOf(refKey([drop.type, drop.rarity, drop.key])).drops.push({
-      name: mob.profile.userName,
+      name: actor.profile.userName,
       chance: drop.chance,
-      race: mob.profile.race,
-      tint: (mob.profile as { tint?: string }).tint,
+      race: actor.profile.race,
+      tint: actor.profile.tint,
     });
   }
-}
-
-for (const keeper of Object.values(keepers)) {
-  for (const entry of (keeper.keeperData as { shop?: readonly { item: Ref }[] }).shop ?? []) {
-    sourcesOf(refKey(entry.item)).sellers.push(keeper.profile.userName);
+  for (const entry of actor.shop ?? []) {
+    sourcesOf(refKey(entry.item as Ref)).sellers.push(actor.profile.userName);
   }
 }
 
