@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.23.0](https://github.com/VesperLabs/aether/compare/v0.22.1...v0.23.0) (2026-11-09)
+
+
+### Features
+
+* training dummy, bleed and Gutripper, clearer buff and status effects ([#286](https://github.com/VesperLabs/aether/issues/286)) ([7535459](https://github.com/VesperLabs/aether/commit/7535459fae770462761a23c3cb766e8f4512e98d))
+
 ## [0.22.1](https://github.com/VesperLabs/aether/compare/v0.22.0...v0.22.1) (2026-11-08)
 
 
