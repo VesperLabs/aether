@@ -10,10 +10,17 @@ import type { Player } from "./player";
 import { Crosshair } from "@/client/input/crosshair";
 import { toTint } from "./tint";
 import { Bubble } from "./bubble";
-import { WindupRing } from "./windup-ring";
+import { WindupPie } from "./windup-pie";
 import { Bar } from "./bar";
 import { WeaponSprite } from "./weapon-sprite";
 import { BuffRack } from "./buff-rack";
+import { StunStars } from "./stun-stars";
+
+/** The overhead hp bar in world pixels (it is drawn at twice this, then halved). */
+const HP_BAR_WIDTH = 16;
+const HP_BAR_HEIGHT = 6;
+/** The middle of the name's line, under the feet. */
+const NAME_MIDDLE_Y = 11;
 import { deriveElements } from "@/ui/item/weapon-elements";
 
 const { Sprite, BitmapText, Container } = Phaser.GameObjects;
@@ -60,21 +67,25 @@ export function createSpriteLayers(player: Player) {
   player.crosshair = scene.add.existing(
     new Crosshair(scene, 0, player.bodyOffsetY, "icons", "crosshair", player, 40),
   );
-  player.hpBar = scene.add.existing(new Bar(scene, 0, player?.headY, 32, 12)).setVisible(false);
-  player.windupRing = scene.add
-    .existing(new WindupRing(scene, player?.headY - 5))
+  player.hpBar = scene.add
+    .existing(new Bar(scene, 0, player?.headY, HP_BAR_WIDTH * 2, HP_BAR_HEIGHT * 2))
     .setVisible(false);
-  player.once(Phaser.GameObjects.Events.DESTROY, () => player.windupRing.destroy());
+  player.windupPie = scene.add.existing(new WindupPie(scene, player?.headY - 4)).setVisible(false);
+  player.once(Phaser.GameObjects.Events.DESTROY, () => player.windupPie.destroy());
   player.userName = scene.add.existing(
     new BitmapText(player.scene, 0, 8, "nin-light").setScale(0.5),
   );
-  player.buffRack = scene.add.existing(new BuffRack(scene, 0, 19, player.buffs)).setVisible(false);
+  /* Buffs sit right after the name, on its line, shown on hover */
+  player.buffRack = scene.add
+    .existing(new BuffRack(scene, NAME_MIDDLE_Y, player.userName, player.buffs))
+    .setVisible(false);
   player.corpse = scene.add
     .existing(new Sprite(scene, 0, player.bodyOffsetY, "icons", "grave"))
     .setVisible(false);
   player.talkMenu = scene.add
     .existing(new Sprite(scene, 6, player?.headY - 6, "icons", "chat"))
     .setVisible(false);
+  player.stunStars = new StunStars(scene, player);
   /* Everything that moves with the body goes in the rig, so lunges and flinches move it as one */
   player.rig = scene.add.existing(new Container(scene, 0, 0));
   player.rig.add([
@@ -92,8 +103,9 @@ export function createSpriteLayers(player: Player) {
     player.helmet,
     player.handLeft,
     player.handRight,
-    player.buffRack,
     player.userName,
+    player.buffRack,
+    player.stunStars,
     player.bubble,
     player.hpBar,
   ]);

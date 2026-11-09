@@ -18,12 +18,14 @@ export interface CharacterState {
   setFlash: boolean;
   doHpRegen: boolean;
   doBuffPoison: boolean;
+  doBuffBleed: boolean;
   doHpBuffRegen: boolean;
   doMpRegen: boolean;
   doSpRegen: boolean;
   lastTeleport: number;
   deadTime: number;
   lastBuffPoison: number;
+  lastBuffBleed: number;
   lastHpRegen: number;
   lastHpBuffRegen: number;
   lastMpRegen: number;

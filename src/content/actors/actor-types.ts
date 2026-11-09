@@ -74,10 +74,11 @@ export type MobMovementBehavior =
  * Opt-in behaviors: `aggressive` attacks players on sight (otherwise it only fights back),
  * `shootsOverWalls` fires across collision (fish in water) instead of moving for a clear shot, `retreat`
  * limps away once for a few seconds when badly hurt, `kite` keeps casters and archers at range, `follow` stays near a leader (set per spawn with a
- * `leader` property on the map object, which turns `follow` on by itself).
+ * `leader` property on the map object, which turns `follow` on by itself). `passive` never fights,
+ * not even back: hit it and it keeps wandering (training dummies).
  * The rest are on for every mob already.
  */
-export type MobBehavior = MobMovementBehavior | "aggressive" | "shootsOverWalls";
+export type MobBehavior = MobMovementBehavior | "aggressive" | "shootsOverWalls" | "passive";
 
 interface ShopEntry {
   readonly item: ItemRef;

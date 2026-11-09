@@ -20,11 +20,14 @@ import { applyAppearance, createSpriteLayers } from "./player-layers";
 import { applyHit, type HitEffect } from "./player-hit";
 import { toTint } from "./tint";
 import type { Bubble } from "./bubble";
-import type { WindupRing } from "./windup-ring";
+import type { WindupPie } from "./windup-pie";
 import type { Bar } from "./bar";
 import type { BuffRack } from "./buff-rack";
+import type { StunStars } from "./stun-stars";
 import type { WeaponSprite } from "./weapon-sprite";
 import type { Crosshair } from "@/client/input/crosshair";
+import { playPoisonTick } from "./poison-bubbles";
+import { playBleedTick } from "./blood-drops";
 import { checkIsFlash, drawFrame, hackFrameRates, updateCurrentSpeed } from "./player-animation";
 const BLANK_TEXTURE = "human-blank";
 
@@ -72,9 +75,10 @@ export class Player extends Character {
   declare bubble: Bubble;
   declare crosshair: Crosshair;
   declare hpBar: Bar;
-  declare windupRing: WindupRing;
+  declare windupPie: WindupPie;
   declare userName: Phaser.GameObjects.BitmapText;
   declare buffRack: BuffRack;
+  declare stunStars: StunStars;
   declare corpse: Sprite;
   /** The body, gear, hands, name and bars: everything that moves together when the body is nudged. */
   declare rig: Phaser.GameObjects.Container;
@@ -127,6 +131,7 @@ export class Player extends Character {
     patch("ownerId");
     patch("bubbleMessage");
     patch("doBuffPoison");
+    patch("doBuffBleed");
     patch("doHpBuffRegen");
     patch("lastCombat");
 
@@ -172,7 +177,17 @@ export class Player extends Character {
   doRegen() {
     if (this.state.doBuffPoison) {
       const poisonBuff = this.getBuff("poison");
-      if (poisonBuff) this.takeHit({ type: "hp", amount: -(poisonBuff?.stats?.poisonDamage || 0) });
+      if (poisonBuff) {
+        this.takeHit({ type: "hp", amount: -(poisonBuff?.stats?.poisonDamage || 0) });
+        playPoisonTick(this);
+      }
+    }
+    if (this.state.doBuffBleed) {
+      const bleedBuff = this.getBuff("bleed");
+      if (bleedBuff) {
+        this.takeHit({ type: "hp", amount: -(bleedBuff?.stats?.bleedDamage || 0) });
+        playBleedTick(this);
+      }
     }
     if (this.state.doHpBuffRegen) {
       const regenBuff = this.getBuff("regeneration");
@@ -213,17 +228,17 @@ export class Player extends Character {
     const colorHex = inputString.match(regex)?.[0];
     const remainingString = inputString.replace(regex, "");
     this.bubble.setTint(toTint(colorHex ?? "0xFFFFFF"));
-    /* A fighting NPC shows its windup ring beside the hp bar instead of a bubble */
+    /* A fighting NPC shows its windup pie beside the hp bar instead of a bubble */
     const isEngaged = this.kind !== "player" && remainingString === NPC_ENGAGED_BUBBLE;
     this.bubble.setMessage(isEngaged ? undefined : remainingString);
-    this.windupRing.follow(this.x + this.rig.x, this.y + this.rig.y);
-    /* Everyone sees a player aiming a spell (an empty ring) and its cast (the ring filling) */
+    this.windupPie.follow(this.x + this.rig.x, this.y + this.rig.y);
+    /* Everyone sees a player aiming a spell (an empty pie) and its cast (the pie filling) */
     const isSpellAiming = this.state.isAiming && !this.state.isHoldingAttack;
     const showsCast =
       this.kind === "player" &&
       (isSpellAiming || this.isCasting) &&
       (this.isHero || !this.hasBuff("stealth"));
-    this.windupRing.draw((isEngaged || !!showsCast) && !this.state.isDead);
+    this.windupPie.draw((isEngaged || !!showsCast) && !this.state.isDead);
   }
   updateHpBar() {
     const { stats } = this;
@@ -258,10 +273,10 @@ export class Player extends Character {
     this.setBodyVisible(false);
     this.hpBar.setVisible(false);
     this.bubble.setVisible(false);
-    this.windupRing.draw(false);
+    this.windupPie.draw(false);
     this.emit(CHARACTER_DIED);
     this.corpse.setVisible(!this.isMob());
-    this.buffRack.setVisible(false);
+    this.buffRack.setShown(false);
     if (this.hidesName()) this.userName.setVisible(false);
     if (this.isHero) window.dispatchEvent(new Event("HERO_DEAD"));
   }
@@ -289,11 +304,12 @@ export class Player extends Character {
     const shouldShow = !this.checkOutOfCombat() || state?.isHovering;
 
     this.hpBar.setVisible(shouldShow);
-    this.buffRack.setVisible(shouldShow && state?.isHovering);
-
+    /* The name first, so the buff row lays out around the name it will show with */
     if (this.hidesName()) {
       this.userName.setVisible(shouldShow);
     }
+    /* Buffs show on hover only, at once */
+    this.buffRack.setShown(!!(shouldShow && state?.isHovering));
   }
   checkDeath() {
     /* Ensures the textures and depth have been updated for death state */

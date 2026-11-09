@@ -59,6 +59,21 @@ describe("threat, leash and new behaviors", () => {
     expect(decision.behavior).toBe("chase");
   });
 
+  it("a passive NPC never fights back, even when hit", () => {
+    const attacker = player({ x: 10 });
+    const decision = decideNpcAction(
+      input({
+        npc: { behaviors: ["passive"] },
+        state: { npcAttackReady: true },
+        rest: { nearestPlayer: attacker, threatTarget: attacker },
+      }),
+      never,
+    );
+    expect(decision.lockedPlayerId).toBeNull();
+    expect(decision.action).toEqual({ type: "idle" });
+    expect(decision.behavior).not.toBe("chase");
+  });
+
   it("gives up and walks home when pulled past its leash", () => {
     const far = player({ x: 900 });
     const decision = decideNpcAction(

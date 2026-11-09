@@ -120,6 +120,7 @@ describe("checkResting", () => {
   it("doesn't while in combat, poisoned, or already resting", () => {
     expect(checkResting([], 5000, 6000).shouldAddRest).toBe(false);
     expect(checkResting([{ name: "poison" }], 0, 6000).shouldAddRest).toBe(false);
+    expect(checkResting([{ name: "bleed" }], 0, 6000).shouldAddRest).toBe(false);
     expect(checkResting([{ name: "rest" }], 0, 6000)).toEqual({
       shouldAddRest: false,
       isResting: true,
@@ -134,6 +135,7 @@ describe("runRegen", () => {
     lastMpRegen: NOW - ago,
     lastSpRegen: NOW - ago,
     lastBuffPoison: NOW - ago,
+    lastBuffBleed: NOW - ago,
   });
   const stats = {
     hp: 5,
@@ -173,6 +175,13 @@ describe("runRegen", () => {
     expect(result.enteredCombat).toBe(true);
     expect(result.flags.doBuffPoison).toBe(true);
   });
+  it("bleed takes hp and puts the character in combat", () => {
+    const result = run({ buffs: [{ name: "bleed", stats: { bleedDamage: 2 } }] });
+    expect(result.stats.hp).toBe(3);
+    expect(result.enteredCombat).toBe(true);
+    expect(result.flags.doBuffBleed).toBe(true);
+    expect(result.timers.lastBuffBleed).toBe(NOW);
+  });
   it("does nothing for the dead", () => {
     const result = run({ isDead: true, buffs: [{ name: "rest" }] });
     expect(result.flags).toEqual({
@@ -181,6 +190,7 @@ describe("runRegen", () => {
       doMpRegen: false,
       doSpRegen: false,
       doBuffPoison: false,
+      doBuffBleed: false,
     });
     expect(result.stats).toEqual({});
   });
