@@ -1,9 +1,5 @@
 import Phaser from "phaser";
-
-/** How wide a swing sweeps, in degrees, centred on the facing direction. */
-const SWING_DEGREES = 150;
-/** The trail behind the blade, as a fraction of the sweep. */
-const TRAIL_FRACTION = 0.7;
+import { SWING_DEGREES, SWING_TRAIL_FRACTION as TRAIL_FRACTION } from "@/rules/spells";
 /** How thick the crescent is at the blade, as a fraction of the reach. */
 const THICKNESS = 0.35;
 /** Points along each edge of the crescent. More is smoother. */

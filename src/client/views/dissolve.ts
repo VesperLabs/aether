@@ -1,9 +1,9 @@
 import Phaser from "phaser";
 import type { Player } from "./player";
+import { FLASH_MS, fadeShadow, holdFlash } from "./death-flash";
 
 /** Smallest snapshot around a character, in pixels; bigger bodies get one that fits them. */
 const MIN_SNAPSHOT_SIZE = 128;
-const FLASH_MS = 70;
 const DISSOLVE_MS = 750;
 /** How much the top of the body leads the dissolve (0 = pure dither, 1 = a straight wipe). */
 const HEIGHT_BIAS = 0.35;
@@ -56,15 +56,55 @@ export function snapshotBody(player: Player) {
 
 /**
  * Snapshots a dying character's body and dissolves it pixel by pixel in an ordered dither,
- * flashing first. Call before the body is hidden. Visual only.
+ * after a solid white flash. Call before the body is hidden. Visual only.
  */
 export function playDeathDissolve(player: Player) {
-  if (!player.scene) return;
-  dissolveSnapshot(snapshotBody(player));
+  const { scene } = player;
+  if (!scene) return;
+  const snapshot = snapshotBody(player);
+  fadeShadow(player, FLASH_MS + DISSOLVE_MS);
+  /* A hidden tab draws no frames: no flash, or it would hang there until you come back */
+  if (document.hidden) return void dissolveSnapshot(snapshot);
+  const flash = snapshotWhiteBody(player);
+  holdFlash(scene, () => {
+    flash.destroy();
+    if (snapshot.active) dissolveSnapshot(snapshot);
+  });
 }
 
 /**
- * The same dissolve for any one image (a ball, an effect), without the hit flash: it is swapped for
+ * The body painted solid white, over its snapshot. The layers themselves are tinted (as a hit flash
+ * does) and drawn in, rather than tinting the snapshot, which didn't show.
+ */
+function snapshotWhiteBody(player: Player) {
+  const layers = getTintableLayers(player);
+  for (const layer of layers) layer.setTint(0xffffff).setTintMode(Phaser.TintModes.FILL);
+  const flash = snapshotBody(player);
+  flash.setDepth(flash.depth + 0.5);
+  /* Back to untinted: the body is hidden now, and a respawn shows it clean */
+  for (const layer of layers) layer.setTint(0xffffff).setTintMode(Phaser.TintModes.MULTIPLY);
+  return flash;
+}
+
+/**
+ * The body's sprites that take a tint. A held weapon is a container: its own sprites are tinted
+ * instead (its glow stays as it is).
+ */
+function getTintableLayers(player: Player) {
+  const sprites: Phaser.GameObjects.Sprite[] = [];
+  for (const layer of getBodyLayers(player)) {
+    if (typeof layer.setTintMode === "function") sprites.push(layer);
+    else if (layer instanceof Phaser.GameObjects.Container) {
+      for (const child of layer.list) {
+        if (child instanceof Phaser.GameObjects.Sprite) sprites.push(child);
+      }
+    }
+  }
+  return sprites;
+}
+
+/**
+ * The same dissolve for any one image (a ball, an effect): it is swapped for
  * a snapshot of itself that pixelates away, in `durationMs`. With `follow`, it keeps moving to where that says, e.g. on
  * the creature a ball rides. Visual only.
  */
@@ -94,56 +134,45 @@ export function playObjectDissolve(
     scene.events.on("update", move);
     snapshot.once(Phaser.GameObjects.Events.DESTROY, () => scene.events.off("update", move));
   }
-  dissolveSnapshot(snapshot, durationMs, false);
+  dissolveSnapshot(snapshot, durationMs);
 }
 
-/**
- * Erases a snapshot pixel by pixel, some pixels floating off as they go. A body flashes white
- * first, as it is hit; an object just goes.
- */
-function dissolveSnapshot(
-  snapshot: Phaser.GameObjects.RenderTexture,
-  durationMs = DISSOLVE_MS,
-  shouldFlash = true,
-) {
+/** Erases a snapshot pixel by pixel, some pixels floating off as they go. */
+function dissolveSnapshot(snapshot: Phaser.GameObjects.RenderTexture, durationMs = DISSOLVE_MS) {
   const { scene } = snapshot;
   const size = snapshot.width;
   let pixels: Uint8ClampedArray | undefined;
   snapshot.snapshot((image) => {
     if (image instanceof HTMLImageElement) pixels = readPixels(image, size);
   });
-  if (shouldFlash) snapshot.setTint(0xffffff).setTintMode(Phaser.TintModes.FILL);
 
   const order = getDissolveOrder(size);
   const eraser = scene.make.graphics({}, false).fillStyle(0xffffff);
   let erased = 0;
 
-  scene.time.delayedCall(shouldFlash ? FLASH_MS : 0, () => {
-    snapshot.setTint(0xffffff).setTintMode(Phaser.TintModes.MULTIPLY);
-    scene.tweens.add({
-      targets: { t: 0 },
-      t: 1,
-      duration: durationMs,
-      onUpdate: (tween) => {
-        const target = Math.floor(tween.progress * order.length);
-        if (target <= erased) return;
-        eraser.clear().fillStyle(0xffffff);
-        for (; erased < target; erased++) {
-          const index = order[erased];
-          const x = index % size;
-          const y = Math.floor(index / size);
-          eraser.fillRect(x, y, 1, 1);
-          if (pixels && pixels[index * 4 + 3] > 0 && Math.random() < FLOAT_CHANCE) {
-            floatPixel(snapshot, x, y, pixels, index);
-          }
+  scene.tweens.add({
+    targets: { t: 0 },
+    t: 1,
+    duration: durationMs,
+    onUpdate: (tween) => {
+      const target = Math.floor(tween.progress * order.length);
+      if (target <= erased) return;
+      eraser.clear().fillStyle(0xffffff);
+      for (; erased < target; erased++) {
+        const index = order[erased];
+        const x = index % size;
+        const y = Math.floor(index / size);
+        eraser.fillRect(x, y, 1, 1);
+        if (pixels && pixels[index * 4 + 3] > 0 && Math.random() < FLOAT_CHANCE) {
+          floatPixel(snapshot, x, y, pixels, index);
         }
-        snapshot.erase(eraser).render();
-      },
-      onComplete: () => {
-        eraser.destroy();
-        snapshot.destroy();
-      },
-    });
+      }
+      snapshot.erase(eraser).render();
+    },
+    onComplete: () => {
+      eraser.destroy();
+      snapshot.destroy();
+    },
   });
 }
 
@@ -229,18 +258,19 @@ function drawBody(
 export function playSpawnDissolve(player: Player) {
   const { scene } = player;
   if (!scene) return;
-  /* Hidden straight away, so the body never shows whole before the reveal */
-  player.rig.setAlpha(0);
+  /* Only the body is hidden, so its shadow, name and bars stay put rather than popping in after */
+  const showBody = () => setBodyAlpha(player, 1);
+  setBodyAlpha(player, 0);
   /* Wait a frame so the body has its textures and pose before the snapshot */
   scene.events.once("postupdate", () => {
-    if (!player.active) return void player.rig.setAlpha(1);
+    if (!player.active) return void showBody();
     const size = getSnapshotSize(player);
     const half = size / 2;
     const id = Phaser.Utils.String.UUID();
     /* The finished body, and a cover over the pixels not revealed yet */
     const body = scene.textures.addDynamicTexture(`spawn-body-${id}`, size, size);
     const cover = scene.textures.addDynamicTexture(`spawn-cover-${id}`, size, size);
-    if (!body || !cover) return void player.rig.setAlpha(1);
+    if (!body || !cover) return void showBody();
     cover.fill(0xffffff).render();
 
     const shown = scene.add.renderTexture(player.x, player.y, size, size);
@@ -249,37 +279,60 @@ export function playSpawnDissolve(player: Player) {
     const order = getDissolveOrder(size);
     const eraser = scene.make.graphics({}, false);
     let revealed = 0;
+    let isDone = false;
+
+    /* Drawn after physics has moved the character, so a character running out of the reveal is
+       drawn where it is, not a frame behind */
+    const draw = () => {
+      if (isDone) return;
+      if (!player.active || player.state.isDead) return finish();
+      body.clear();
+      setBodyAlpha(player, 1);
+      drawBody(body, player);
+      setBodyAlpha(player, 0);
+      shown.setPosition(player.x, player.y).setDepth(player.depth + 1);
+      shown.clear().stamp(body.key, undefined, half, half).erase(cover.key, half, half).render();
+    };
     const finish = () => {
-      player.rig.setAlpha(1);
+      if (isDone) return;
+      isDone = true;
+      scene.events.off("postupdate", draw);
+      tween.stop();
+      if (player.active) showBody();
       eraser.destroy();
       shown.destroy();
       body.destroy();
       cover.destroy();
     };
 
-    scene.tweens.add({
+    const tween = scene.tweens.add({
       targets: { t: 0 },
       t: 1,
       duration: SPAWN_MS,
-      onUpdate: (tween) => {
-        if (!player.active || player.state.isDead) return tween.complete();
-        const target = Math.floor(tween.progress * order.length);
-        if (target > revealed) {
-          eraser.clear().fillStyle(0xffffff);
-          /* Reveal in reverse of the death order, so the feet come in first */
-          for (; revealed < target; revealed++) {
-            const index = order[order.length - 1 - revealed];
-            eraser.fillRect(index % size, Math.floor(index / size), 1, 1);
-          }
-          cover.erase(eraser).render();
+      onUpdate: (current) => {
+        const target = Math.floor(current.progress * order.length);
+        if (target <= revealed) return;
+        eraser.clear().fillStyle(0xffffff);
+        /* Reveal in reverse of the death order, so the feet come in first */
+        for (; revealed < target; revealed++) {
+          const index = order[order.length - 1 - revealed];
+          eraser.fillRect(index % size, Math.floor(index / size), 1, 1);
         }
-        /* Redrawn each frame, so a character walking out of the reveal walks instead of gliding */
-        body.clear();
-        drawBody(body, player);
-        shown.setPosition(player.x, player.y).setDepth(player.depth + 1);
-        shown.clear().stamp(body.key, undefined, half, half).erase(cover.key, half, half).render();
+        cover.erase(eraser).render();
       },
       onComplete: finish,
     });
+    scene.events.on("postupdate", draw);
+    draw();
   });
+}
+
+/** Hides or shows the body's own layers, leaving its shadow, name and bars as they are. */
+function setBodyAlpha(player: Player, alpha: number) {
+  const { chest, skin, face, whiskers, hair, accessory, armor, boots, gloves, pants } = player;
+  /* Every layer, hidden ones too, so one shown mid-reveal never stays invisible */
+  const layers: { setAlpha(alpha: number): unknown }[] = [chest, skin, face, whiskers, hair];
+  layers.push(accessory, armor, boots, gloves, pants);
+  layers.push(player.helmet, player.handLeft, player.handRight);
+  for (const layer of layers) layer?.setAlpha(alpha);
 }

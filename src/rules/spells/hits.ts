@@ -75,7 +75,10 @@ export function findSpellHits(input: SpellHitInput): string[] {
       ? { kind: "circle", ...characterBodyCircle(victim) }
       : { kind: "box", ...characterHitBox(victim) };
     if (!shapesOverlap(area, shape)) continue;
-    if (isMeleeAttack && isBehindCaster(direction, victim, caster)) continue;
+    /* A swing's wedge already faces the right way; the old round swing needs the back half cut */
+    if (isMeleeAttack && shape.kind !== "sector" && isBehindCaster(direction, victim, caster)) {
+      continue;
+    }
     if (!hitIds.includes(victim.id)) hitIds.push(victim.id);
     hits.push(victim.id);
   }

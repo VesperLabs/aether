@@ -7,6 +7,7 @@ import { toTint } from "./tint";
 import { endOnDeath } from "./end-on-death";
 import { PunchBurst } from "./punch-burst";
 import { SwingArc } from "./swing-arc";
+import { SwingDebug } from "./swing-debug";
 import { deriveElements } from "@/ui/item/weapon-elements";
 import { ELEMENT_SWING_COLORS } from "@/ui/item/element-effects";
 import { getAngleFromDirection, distanceTo } from "@/rules/world";
@@ -16,6 +17,8 @@ import {
   getSpellShape,
   getSpellFlight,
   isSpellExpired,
+  isSwingClockwise,
+  planSwing,
   resolveSpellDetails,
   usesLeftHand,
   usesRightHand,
@@ -130,7 +133,7 @@ export class Spell extends Phaser.GameObjects.Container {
       const bladeDegrees = getBladeDegrees(caster.visibleEquipment?.[hand]?.texture);
       /* The weapon's range stat is the hit radius from body centre; the arc turns around the hand */
       const reach = caster.getWeaponRange(hand);
-      this.setMeleeBody(shape.scale);
+      this.showSwingDebug(hand, isPunching, isUppercut);
       /* A fist is in front of the body, unlike a blade's arc, which sweeps behind it */
       if (isPunching) this.layerDepth = "aboveCaster";
       /* The hand, relative to this spell, which follows the caster's body centre */
@@ -151,15 +154,8 @@ export class Spell extends Phaser.GameObjects.Container {
             /* Turns around the hand holding the weapon */
             pivot: isWielded ? getHand : undefined,
             facing,
-            /*
-             * Facing sideways, a blade comes down (clockwise to the right) and a fist weapon, a
-             * katar, uppercuts. Facing up or down the hand picks: right-hand swings sweep
-             * counter-clockwise, as the sword animations do.
-             */
-            clockwise:
-              caster?.direction === "right" || caster?.direction === "left"
-                ? (caster.direction === "right") !== isUppercut
-                : isLeft && !isRight,
+            /* The same turn the server sweeps its hit along */
+            clockwise: isSwingClockwise(caster?.direction, this.action, isUppercut),
             wielder: isWielded ? { character: caster, hand, artDegrees: bladeDegrees } : undefined,
             color,
             duration: this.maxVisibleTime,
@@ -218,10 +214,12 @@ export class Spell extends Phaser.GameObjects.Container {
     playSpellAudio({ scene, spellName, caster, isMeleeAttack: this.isMeleeAttack });
   }
   /**
-   * Shapes the physics body like the swing the server checks, so the debug view shows its real
-   * reach. This spell stays on the caster's body centre for the arc, so the body is offset instead.
+   * The swing's hit, for the physics debug view: the wedge the server sweeps, from the same rule.
+   * The physics body itself is not used for melee, so it is left out of the debug view.
    */
-  setMeleeBody(scale: number) {
+  showSwingDebug(hand: "handLeft" | "handRight", isPunching: boolean, isUppercut: boolean) {
+    this.body.debugShowBody = false;
+    if (!this.scene.physics.world.drawDebug) return;
     const { caster } = this;
     const swing = getMeleeSwing(
       {
@@ -231,11 +229,20 @@ export class Spell extends Phaser.GameObjects.Container {
         race: caster.profile?.race,
       },
       this.action,
-      (hand) => caster.getWeaponRange(hand),
+      (side) => caster.getWeaponRange(side),
     );
-    const radius = Math.floor((swing.reach ?? this.bodySize) * scale);
-    const offsetY = swing.y - (caster.y + caster.bodyCenterY);
-    this.body.setCircle(radius, -radius, -radius + offsetY);
+    const plan = planSwing({
+      direction: caster.direction,
+      action: this.action,
+      race: caster.profile?.race,
+      reach: caster.getWeaponRange(hand),
+      hasWeaponRange: !!caster.visibleEquipment?.[hand]?.stats?.range,
+      isPunching,
+      isUppercut,
+      bodyPivotY: swing.y - caster.y,
+      visibleMs: this.maxVisibleTime,
+    });
+    new SwingDebug(this.scene, plan, caster, Math.max(this.maxVisibleTime, plan.sweepMs));
   }
   /**
    * Someone else's projectile left the server about half a ping ago (plus its age, for one already

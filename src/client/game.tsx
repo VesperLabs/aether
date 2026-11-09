@@ -5,6 +5,7 @@ import { App } from "@/client/hud/app/app";
 import { createGameSocket, keepSocketConnected } from "@/client/net/socket";
 import { trackLatency } from "@/client/net/latency";
 import { AnimatedTiles } from "@/client/views/animated-tiles";
+import { DEBUG_COLORS } from "@/client/views/debug-palette";
 import { SceneMain } from "@/client/scenes/main-scene";
 import { SceneBoot } from "@/client/scenes/boot-scene";
 import { VJoyPlugin } from "@/client/input/joystick";
@@ -68,6 +69,10 @@ async function startApp() {
       default: "arcade",
       arcade: {
         debug: !!debug,
+        /* Outlines only, in the debug palette: no velocity lines */
+        debugShowVelocity: false,
+        debugBodyColor: DEBUG_COLORS.body,
+        debugStaticBodyColor: DEBUG_COLORS.staticBody,
         gravity: {
           x: 0,
           y: 0,

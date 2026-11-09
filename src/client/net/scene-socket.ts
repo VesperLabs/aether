@@ -268,7 +268,10 @@ export function bindSceneSocket(scene: SceneMain) {
     n.doAttack({ count: count as number, direction, castAngle });
   });
 
-  socket.on("spellHitShapes", ({ spell, victim }) => drawHitShapes(scene, spell, victim));
+  socket.on("spellHitShapes", ({ spell, victim }) => {
+    /* Only with this client's own debug view on: the server's DEBUG setting can differ */
+    if (scene.physics.world.drawDebug) drawHitShapes(scene, spell, victim);
+  });
 
   socket.on("npcWindup", ({ id, kind, windupMs }) => {
     const n = getNpc(scene, id);
@@ -301,7 +304,7 @@ export function bindSceneSocket(scene: SceneMain) {
       playCritShake(victim, attacker, hit, !!scene.userSettings.screenShake);
       /* A drain pulses a ring on the one who drank it (`to`) */
       if (hit?.isDrain) playDrainRing(victim, hit.type as DrainResource);
-      victim?.takeHit?.(hit);
+      victim?.takeHit?.(hit, true, attacker);
     }
   });
 

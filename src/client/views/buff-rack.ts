@@ -5,9 +5,13 @@ const Sprite = Phaser.GameObjects.Sprite;
 
 /** Spell art is 32px; beside the name it shows at this size, in world pixels. */
 const BUFF_ICON_SIZE = 12;
-/** Gap between icons, and between the name and the first icon (the font's last column is blank). */
+/** Scale from spell art to the row: the art is trimmed to its drawn pixels, then shown at this. */
+const ICON_SCALE = BUFF_ICON_SIZE / 32;
+/** Name of the frame cut to an icon's drawn pixels, added to each spell texture once. */
+const TRIMMED_FRAME = "buff-rack-trimmed";
+/** Gap between icons, and between the name and the first icon (plus the font's blank last column). */
 const ICON_GAP = 1;
-const NAME_GAP = -1;
+const NAME_GAP = 2;
 /** A buff listed within this long of its landing is new, not a refresh of one already on them. */
 const FRESH_MS = 500;
 
@@ -45,8 +49,9 @@ export class BuffRack extends Phaser.GameObjects.Container {
   }
 
   addBuff(buff: ActiveBuff) {
-    const sprite = new Sprite(this.scene, 0, 0, `spell-${buff.name}`);
-    sprite.setDisplaySize(BUFF_ICON_SIZE, BUFF_ICON_SIZE);
+    const key = `spell-${buff.name}`;
+    const sprite = new Sprite(this.scene, 0, 0, key, getTrimmedFrame(this.scene, key));
+    sprite.setScale(ICON_SCALE);
     this.buffs.push({ name: buff.name, sprite, addedAt: this.scene.time.now });
     this.add(sprite);
     this.layout();
@@ -66,16 +71,17 @@ export class BuffRack extends Phaser.GameObjects.Container {
    * hidden); the rest wait, hidden.
    */
   layout() {
-    const step = BUFF_ICON_SIZE + ICON_GAP;
     const ready = this.buffs.filter((b) => !this.landing.has(b.name as string));
     const { nameText } = this;
-    const first = nameText.visible
-      ? Math.round(nameText.x + nameText.width + NAME_GAP + BUFF_ICON_SIZE / 2)
-      : -Math.round(((ready.length - 1) * step) / 2);
+    /* Laid out by each icon's drawn width, so they sit close whatever padding the art has */
+    const widths = ready.map((slot) => slot.sprite.displayWidth);
+    const total = widths.reduce((sum, width) => sum + width, 0) + ICON_GAP * (ready.length - 1);
+    let left = nameText.visible ? nameText.x + nameText.width + NAME_GAP : -total / 2;
     for (const slot of this.buffs) slot.sprite.setVisible(false);
     ready.forEach((slot, index) => {
       slot.sprite.setVisible(true);
-      slot.sprite.x = first + index * step;
+      slot.sprite.x = Math.round(left + widths[index] / 2);
+      left += widths[index] + ICON_GAP;
     });
   }
 
@@ -118,4 +124,35 @@ export class BuffRack extends Phaser.GameObjects.Container {
       if (!this.buffs.some((b) => b.name === buff.name)) this.addBuff(buff);
     });
   }
+}
+
+/**
+ * A frame of the spell texture cut to its drawn (non-transparent) pixels, made once per texture.
+ * Falls back to the whole image when the pixels can't be read.
+ */
+function getTrimmedFrame(scene: Phaser.Scene, key: string) {
+  const texture = scene.textures.get(key);
+  if (texture.has(TRIMMED_FRAME)) return TRIMMED_FRAME;
+  const source = texture.getSourceImage() as CanvasImageSource & { width: number; height: number };
+  const { width, height } = source;
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext("2d");
+  if (!context || !width || !height) return undefined;
+  context.drawImage(source, 0, 0);
+  const pixels = context.getImageData(0, 0, width, height).data;
+  let [minX, minY, maxX, maxY] = [width, height, -1, -1];
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      if (pixels[(y * width + x) * 4 + 3] === 0) continue;
+      minX = Math.min(minX, x);
+      maxX = Math.max(maxX, x);
+      minY = Math.min(minY, y);
+      maxY = Math.max(maxY, y);
+    }
+  }
+  if (maxX < 0) return undefined;
+  texture.add(TRIMMED_FRAME, 0, minX, minY, maxX - minX + 1, maxY - minY + 1);
+  return TRIMMED_FRAME;
 }

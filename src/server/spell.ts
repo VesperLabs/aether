@@ -9,11 +9,18 @@ import {
   findSpellHits,
   getMeleeSwing,
   getSpellShape,
+  getSwingActiveMs,
+  getSwingShape,
+  planSwing,
+  usesLeftHand,
+  usesRightHand,
+  type SwingPlan,
   getSpellFlight,
   isSpellExpired,
   resolveSpellDetails,
   toSpellVictims,
 } from "@/rules/spells";
+import { hasWeapon } from "@/rules/combat";
 import { ServerCharacter } from "./character";
 import type { EffectSource, SpellEffectWire } from "@/network";
 
@@ -72,6 +79,8 @@ export class Spell implements EffectSource {
   private action: string;
   private isMissile: boolean;
   private isLunge = false;
+  /** A melee swing: the wedge its blade sweeps, from the swinging hand. */
+  private swing: SwingPlan | null = null;
   private castAngle: number;
   private ilvl: number;
 
@@ -132,6 +141,22 @@ export class Spell implements EffectSource {
       );
       this.y = swing.y;
       this.bodySize = swing.reach ?? this.bodySize;
+      const isLeft = usesLeftHand(this.action);
+      const isRight = usesRightHand(this.action);
+      const hand = isLeft && !isRight ? "handLeft" : "handRight";
+      const held = caster.visibleEquipment?.[hand];
+      this.swing = planSwing({
+        direction: this.direction,
+        action: this.action,
+        race: caster.profile.race,
+        reach: caster.getWeaponRange(hand),
+        hasWeaponRange: !!held?.stats?.range,
+        isPunching: (isLeft || isRight) && !hasWeapon(caster),
+        isUppercut: held?.base === "fist",
+        bodyPivotY: swing.y - caster.y,
+        visibleMs: details?.maxVisibleTime ?? this.maxActiveTime ?? 0,
+      });
+      this.maxActiveTime = getSwingActiveMs(this.swing, this.maxActiveTime);
     }
 
     const flight = getSpellFlight(shape, castAngle, this.action, (hand) =>
@@ -181,6 +206,9 @@ export class Spell implements EffectSource {
   }
   /** The area this spell hits right now. */
   getShape(): Shape | null {
+    if (this.swing) {
+      return getSwingShape(this.swing, this.caster, this.world.now() - this.state.spawnTime);
+    }
     if (this.box) {
       return {
         kind: "box",
@@ -204,6 +232,8 @@ export class Spell implements EffectSource {
     });
 
     if (this.state.isExpired) {
+      /* Ticks are coarser than the blade: one last check of the whole sweep, so its end counts */
+      if (this.swing) this.checkCollisions(true);
       // Casting stealth won't dispel anything.
       if (this?.spellName !== "stealth") {
         this?.caster?.dispelBuffsByProperty("dispelAfterAttack");
@@ -213,8 +243,8 @@ export class Spell implements EffectSource {
     this.adjustSpellPosition();
     this.checkCollisions();
   }
-  checkCollisions() {
-    if (this?.state?.isExpired) return;
+  checkCollisions(isFinalSweep = false) {
+    if (this?.state?.isExpired && !isFinalSweep) return;
     const { target, caster, world } = this;
     const victims = [
       ...entitiesInRoom(world.npcs, this.room?.name),
