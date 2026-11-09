@@ -35,6 +35,7 @@ function pickStatusState(s: Record<string, unknown> | null | undefined): Record<
     ownerId: s.ownerId,
     bubbleMessage: s.bubbleMessage,
     doBuffPoison: s.doBuffPoison,
+    doBuffBleed: s.doBuffBleed,
     doHpBuffRegen: s.doHpBuffRegen,
     lastCombat: s.lastCombat,
     lastAngle: s.lastAngle,

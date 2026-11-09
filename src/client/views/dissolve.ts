@@ -1,8 +1,8 @@
 import Phaser from "phaser";
 import type { Player } from "./player";
 
-/** Size of the snapshot around the character, in pixels. Big enough for bosses. */
-const SNAPSHOT_SIZE = 128;
+/** Smallest snapshot around a character, in pixels; bigger bodies get one that fits them. */
+const MIN_SNAPSHOT_SIZE = 128;
 const FLASH_MS = 70;
 const DISSOLVE_MS = 750;
 /** How much the top of the body leads the dissolve (0 = pure dither, 1 = a straight wipe). */
@@ -31,9 +31,24 @@ function getBodyLayers(player: Player) {
   );
 }
 
+/**
+ * Side of a square, centred on the character, that holds every body layer (a 150px abomination,
+ * a scaled-up wyrm), rounded up to the dither grid.
+ */
+function getSnapshotSize(player: Player) {
+  let reach = 0;
+  for (const layer of getBodyLayers(player)) {
+    const x = Math.abs(player.rig.x + layer.x) + layer.displayWidth / 2;
+    const y = Math.abs(player.rig.y + layer.y) + layer.displayHeight / 2;
+    reach = Math.max(reach, x, y);
+  }
+  return Math.max(MIN_SNAPSHOT_SIZE, Math.ceil((reach * 2) / 4) * 4);
+}
+
 /** A snapshot of a character's body, drawn where it stands, above it. Visual only. */
 export function snapshotBody(player: Player) {
-  const snapshot = player.scene.add.renderTexture(player.x, player.y, SNAPSHOT_SIZE, SNAPSHOT_SIZE);
+  const size = getSnapshotSize(player);
+  const snapshot = player.scene.add.renderTexture(player.x, player.y, size, size);
   snapshot.setDepth(player.depth + 1);
   drawBody(snapshot, player);
   return snapshot;
@@ -60,8 +75,12 @@ export function playObjectDissolve(
 ) {
   const { scene } = object;
   if (!scene) return;
-  const half = SNAPSHOT_SIZE / 2;
-  const snapshot = scene.add.renderTexture(object.x, object.y, SNAPSHOT_SIZE, SNAPSHOT_SIZE);
+  const size = Math.max(
+    MIN_SNAPSHOT_SIZE,
+    Math.ceil(Math.max(object.displayWidth, object.displayHeight) / 4) * 4,
+  );
+  const half = size / 2;
+  const snapshot = scene.add.renderTexture(object.x, object.y, size, size);
   snapshot.setDepth(object.depth);
   /* WebGL adds the offset to the object's own position, so this centres it */
   snapshot.draw(object, half - object.x, half - object.y);
@@ -88,13 +107,14 @@ function dissolveSnapshot(
   shouldFlash = true,
 ) {
   const { scene } = snapshot;
+  const size = snapshot.width;
   let pixels: Uint8ClampedArray | undefined;
   snapshot.snapshot((image) => {
-    if (image instanceof HTMLImageElement) pixels = readPixels(image);
+    if (image instanceof HTMLImageElement) pixels = readPixels(image, size);
   });
   if (shouldFlash) snapshot.setTint(0xffffff).setTintMode(Phaser.TintModes.FILL);
 
-  const order = getDissolveOrder();
+  const order = getDissolveOrder(size);
   const eraser = scene.make.graphics({}, false).fillStyle(0xffffff);
   let erased = 0;
 
@@ -110,8 +130,8 @@ function dissolveSnapshot(
         eraser.clear().fillStyle(0xffffff);
         for (; erased < target; erased++) {
           const index = order[erased];
-          const x = index % SNAPSHOT_SIZE;
-          const y = Math.floor(index / SNAPSHOT_SIZE);
+          const x = index % size;
+          const y = Math.floor(index / size);
           eraser.fillRect(x, y, 1, 1);
           if (pixels && pixels[index * 4 + 3] > 0 && Math.random() < FLOAT_CHANCE) {
             floatPixel(snapshot, x, y, pixels, index);
@@ -127,32 +147,37 @@ function dissolveSnapshot(
   });
 }
 
-/** Every pixel index, sorted by when it vanishes: dither threshold, top rows a little earlier. */
-let dissolveOrder: number[] | undefined;
-function getDissolveOrder() {
-  if (dissolveOrder) return dissolveOrder;
+/**
+ * Every pixel index of a `size` square, sorted by when it vanishes: dither threshold, top rows a
+ * little earlier. Kept per size, since each takes a moment to build.
+ */
+const dissolveOrders = new Map<number, number[]>();
+function getDissolveOrder(size: number) {
+  const cached = dissolveOrders.get(size);
+  if (cached) return cached;
   const thresholds: { index: number; at: number }[] = [];
-  for (let y = 0; y < SNAPSHOT_SIZE; y++) {
-    for (let x = 0; x < SNAPSHOT_SIZE; x++) {
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
       const dither = BAYER[(y % 4) * 4 + (x % 4)] / 16;
-      const height = y / SNAPSHOT_SIZE;
+      const height = y / size;
       const at = dither * (1 - HEIGHT_BIAS) + height * HEIGHT_BIAS + Math.random() * 0.04;
-      thresholds.push({ index: y * SNAPSHOT_SIZE + x, at });
+      thresholds.push({ index: y * size + x, at });
     }
   }
   thresholds.sort((a, b) => a.at - b.at);
-  dissolveOrder = thresholds.map((threshold) => threshold.index);
-  return dissolveOrder;
+  const order = thresholds.map((threshold) => threshold.index);
+  dissolveOrders.set(size, order);
+  return order;
 }
 
 /** The snapshot's RGBA bytes, row by row, so dissolving pixels keep their colour. */
-function readPixels(image: HTMLImageElement) {
+function readPixels(image: HTMLImageElement, size: number) {
   const canvas = document.createElement("canvas");
-  canvas.width = canvas.height = SNAPSHOT_SIZE;
+  canvas.width = canvas.height = size;
   const context = canvas.getContext("2d");
   if (!context) return undefined;
   context.drawImage(image, 0, 0);
-  return context.getImageData(0, 0, SNAPSHOT_SIZE, SNAPSHOT_SIZE).data;
+  return context.getImageData(0, 0, size, size).data;
 }
 
 /** Lifts one of the body's own pixels off the snapshot and floats it up as it fades. */
@@ -165,7 +190,7 @@ function floatPixel(
 ) {
   const { scene } = snapshot;
   const [r, g, b] = pixels.subarray(index * 4, index * 4 + 3);
-  const half = SNAPSHOT_SIZE / 2;
+  const half = snapshot.width / 2;
   const color = Phaser.Display.Color.GetColor(r, g, b);
   const mote = scene.add.rectangle(
     snapshot.x - half + x + 0.5,
@@ -191,7 +216,7 @@ function drawBody(
   target: Phaser.GameObjects.RenderTexture | Phaser.Textures.DynamicTexture,
   player: Player,
 ) {
-  const half = SNAPSHOT_SIZE / 2;
+  const half = target.width / 2;
   /* WebGL adds the offset to each layer's own position, so this places them as in the rig */
   target.draw(getBodyLayers(player), half + player.rig.x, half + player.rig.y);
   target.render();
@@ -209,22 +234,19 @@ export function playSpawnDissolve(player: Player) {
   /* Wait a frame so the body has its textures and pose before the snapshot */
   scene.events.once("postupdate", () => {
     if (!player.active) return void player.rig.setAlpha(1);
-    const half = SNAPSHOT_SIZE / 2;
+    const size = getSnapshotSize(player);
+    const half = size / 2;
     const id = Phaser.Utils.String.UUID();
     /* The finished body, and a cover over the pixels not revealed yet */
-    const body = scene.textures.addDynamicTexture(`spawn-body-${id}`, SNAPSHOT_SIZE, SNAPSHOT_SIZE);
-    const cover = scene.textures.addDynamicTexture(
-      `spawn-cover-${id}`,
-      SNAPSHOT_SIZE,
-      SNAPSHOT_SIZE,
-    );
+    const body = scene.textures.addDynamicTexture(`spawn-body-${id}`, size, size);
+    const cover = scene.textures.addDynamicTexture(`spawn-cover-${id}`, size, size);
     if (!body || !cover) return void player.rig.setAlpha(1);
     cover.fill(0xffffff).render();
 
-    const shown = scene.add.renderTexture(player.x, player.y, SNAPSHOT_SIZE, SNAPSHOT_SIZE);
+    const shown = scene.add.renderTexture(player.x, player.y, size, size);
     shown.setDepth(player.depth + 1);
 
-    const order = getDissolveOrder();
+    const order = getDissolveOrder(size);
     const eraser = scene.make.graphics({}, false);
     let revealed = 0;
     const finish = () => {
@@ -247,7 +269,7 @@ export function playSpawnDissolve(player: Player) {
           /* Reveal in reverse of the death order, so the feet come in first */
           for (; revealed < target; revealed++) {
             const index = order[order.length - 1 - revealed];
-            eraser.fillRect(index % SNAPSHOT_SIZE, Math.floor(index / SNAPSHOT_SIZE), 1, 1);
+            eraser.fillRect(index % size, Math.floor(index / size), 1, 1);
           }
           cover.erase(eraser).render();
         }

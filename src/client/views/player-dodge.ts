@@ -75,7 +75,15 @@ function holdPose(p: Player) {
 }
 
 /** The body's layers and hands, not the shadow or the name, bars and bubbles drawn over it. */
-const GHOST_SKIP = new Set(["shadow", "userName", "hpBar", "bubble", "buffRack", "talkMenu"]);
+const GHOST_SKIP = new Set([
+  "shadow",
+  "userName",
+  "hpBar",
+  "bubble",
+  "buffRack",
+  "stunStars",
+  "talkMenu",
+]);
 
 /** A faint copy of the rig where the player is now, which fades out as they move on. */
 function leaveGhost(p: Player, progress: number) {

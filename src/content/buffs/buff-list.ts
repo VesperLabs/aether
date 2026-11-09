@@ -45,6 +45,14 @@ export const buffList = {
     duration: 6000,
     stats: { poisonDamage: 1 },
   },
+  /** Open wounds: hp drips away, a little faster and shorter than poison. */
+  bleed: {
+    type: "debuff",
+    scaleDuration: false,
+    duration: 4000,
+    stats: { bleedDamage: 1 },
+    description: "Losing HP from open wounds.",
+  },
   fortune: {
     type: "buff",
     scaleDuration: false,

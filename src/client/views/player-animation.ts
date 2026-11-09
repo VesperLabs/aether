@@ -20,7 +20,7 @@ export function checkIsFlash(p: Player) {
 }
 
 /** Drawn over the body in every direction. */
-const OVERLAYS = ["buffRack", "userName", "bubble", "hpBar"] as const;
+const OVERLAYS = ["userName", "buffRack", "stunStars", "bubble", "hpBar"] as const;
 
 /** Stacks the rig's layers for the facing direction. Only reorders when the direction changes. */
 function orderLayers(p: Player) {

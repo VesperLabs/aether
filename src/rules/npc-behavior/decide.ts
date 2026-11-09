@@ -9,6 +9,7 @@ import {
   type NpcAbility,
 } from "./abilities";
 import { decideAggro, isNpcAttackReady, type NpcPlayerView, type NpcSelfView } from "./aggro";
+import { isNpcAggressive, isNpcPassive } from "./stance";
 import {
   NPC_EXTRA_CAST_TIME,
   NPC_HOME_RANGE,
@@ -237,10 +238,12 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
     isAttacking = false;
   }
 
-  if (isResetting()) {
-    // Walking home: nobody gets noticed until it arrives
+  if (isResetting() || isNpcPassive(npc.behaviors)) {
+    // Walking home, or never fights: nobody gets noticed
     setLockedPlayerId(null);
-    if (checkInRange(npc, npc.home ?? npc.startingCoords, NPC_HOME_RANGE)) finishReset = true;
+    if (isResetting() && checkInRange(npc, npc.home ?? npc.startingCoords, NPC_HOME_RANGE)) {
+      finishReset = true;
+    }
   } else {
     if (isNpcAggressive(npc.behaviors)) handleAggroState();
     // Threat outranks proximity: fight whoever angered it most
@@ -392,9 +395,4 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
     }
     return behavior.move(ctx, rng);
   }
-}
-
-/** Does it go after players on sight, rather than only fighting back? */
-export function isNpcAggressive(behaviors: readonly MobBehavior[] | undefined) {
-  return !!behaviors?.includes("aggressive");
 }

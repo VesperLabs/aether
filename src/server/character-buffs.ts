@@ -101,7 +101,7 @@ export function applyRegen(character: BuffHolder) {
   Object.assign(character.stats, stats);
 }
 
-/** Out of combat and not poisoned: starts resting. Returns whether the character is resting. */
+/** Out of combat and not poisoned or bleeding: starts resting. Returns whether the character is resting. */
 export function applyCheckIsResting(character: BuffHolder & { stats: { spellPower?: number } }) {
   const { shouldAddRest, isResting } = checkResting(
     character.buffs,

@@ -5,6 +5,8 @@ import { Buff } from "./buff";
 import { Hit } from "./hit";
 import { playDeathDissolve } from "./dissolve";
 import { playCaptureBeam } from "./capture-beam";
+import { playPoisonLanding } from "./poison-bubbles";
+import { playBleedLanding } from "./blood-drops";
 import { takeCaughtByBall } from "./thrown-ball";
 
 /** How long a hit paints the body solid white before the red tint, in ms. */
@@ -27,7 +29,12 @@ export function applyHit(player: Player, hit: HitEffect, showDamage = true) {
 
   switch (type) {
     case "buff":
-      scene.add.existing(new Buff(player.scene, player, hit?.buffName as string));
+      /* Stun shows as stars circling the head, poison as bubbles, bleed as blood: no landing icon */
+      if (hit?.buffName === "poison") playPoisonLanding(player);
+      else if (hit?.buffName === "bleed") playBleedLanding(player);
+      else if (hit?.buffName !== "stun") {
+        scene.add.existing(new Buff(player.scene, player, hit?.buffName as string));
+      }
       break;
     case "death":
       stats.hp = 0;

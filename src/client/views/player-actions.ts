@@ -5,7 +5,7 @@ import { getSpinDirection } from "@/client/input/spin-direction";
 import type { Player } from "./player";
 import { Spell } from "./spell";
 import { playAttackLunge } from "./hit-impact";
-import { playWindupRing, stopWindupRing } from "./windup-ring";
+import { playWindupPie, stopWindupPie } from "./windup-pie";
 import type { LootItem } from "./loot-item";
 
 const PLAYER_GRAB_RANGE = 32;
@@ -82,14 +82,14 @@ function holdCastPose(player: Player, ms: number) {
 export function beginCast(player: Player, castMs: number) {
   player.isCasting = true;
   holdCastPose(player, castMs);
-  playWindupRing(player, castMs, "cast");
+  playWindupPie(player, castMs, "cast");
 }
 
 /** The timed spell stopped, by landing or being cancelled. */
 export function endCast(player: Player) {
   player.isCasting = false;
   player.castPose = undefined;
-  stopWindupRing(player);
+  stopWindupPie(player);
 }
 
 /** A timed spell fired. The server has charged for it, so this only draws it. */

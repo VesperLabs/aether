@@ -204,6 +204,34 @@ export const weaponSpecial = {
         critChance: 25,
         attackDelay: 140,
       },
+      triggers: [
+        {
+          event: "onAttackHit",
+          type: "debuff",
+          name: "stun",
+          level: 1,
+          chance: 1,
+        },
+      ],
+    },
+    gutripper: {
+      ilvl: 2,
+      base: "fist",
+      name: "Gutripper",
+      flavor: "Hooked claws that open wounds which refuse to close.",
+      texture: "weapon-claw",
+      tint: "0xEEAAAA",
+      slot: "hands",
+      stats: { critChance: [8, 12] },
+      triggers: [
+        {
+          event: "onAttackHit",
+          type: "debuff",
+          name: "bleed",
+          level: 2,
+          chance: 3,
+        },
+      ],
     },
   },
   set: {

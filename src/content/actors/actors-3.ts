@@ -145,6 +145,15 @@ export const actors3 = {
       { type: "stackable", rarity: "common", key: "skull", chance: 4 },
     ],
   },
+  dummy: {
+    charClass: "cleric",
+    profile: { race: "abomination", tint: "0xC8A878", userName: "Dummy" },
+    flavor: "A stuffed sack shaped like a chonks. It takes every hit and never swings back.",
+    behaviors: ["passive"],
+    baseStats: { level: 10 },
+    hitBoxSize: { width: 58, height: 85 },
+    state: { isStatic: true, noWorldDrops: true },
+  },
   merman: {
     charClass: "mage",
     profile: { race: "merman", userName: "Merman" },
