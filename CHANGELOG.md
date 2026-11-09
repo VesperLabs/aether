@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.24.0](https://github.com/VesperLabs/aether/compare/v0.23.0...v0.24.0) (2026-11-09)
+
+
+### Features
+
+* weapon hits sweep from the hand, cleaner combat effects ([#288](https://github.com/VesperLabs/aether/issues/288)) ([8d35ce1](https://github.com/VesperLabs/aether/commit/8d35ce178a2f52ae1ba48ce815b9dc523a932209))
+
 ## [0.23.0](https://github.com/VesperLabs/aether/compare/v0.22.1...v0.23.0) (2026-11-09)
 
 
