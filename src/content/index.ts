@@ -1,6 +1,7 @@
 export { assetList } from "./assets/asset-list";
 export type { AssetDefinition } from "./assets/asset-types";
 export { CLASS_ICON_MAP } from "./assets/class-icons";
+export { getAttackHandOffset } from "./assets/attack-hands";
 export {
   HAND_REACH,
   RANGE_MULTIPLIER,

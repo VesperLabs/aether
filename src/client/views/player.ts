@@ -31,6 +31,9 @@ import { playBleedTick } from "./blood-drops";
 import { checkIsFlash, drawFrame, hackFrameRates, updateCurrentSpeed } from "./player-animation";
 const BLANK_TEXTURE = "human-blank";
 
+/** Status flags the server raises for one regen tick (poison, bleed, regen buff). */
+const REGEN_FLAGS = ["doBuffPoison", "doBuffBleed", "doHpBuffRegen"] as const;
+
 type Sprite = Phaser.GameObjects.Sprite;
 
 /** Where each hand goes on each animation frame, per race (the `weaponAtlas` json). */
@@ -122,6 +125,8 @@ export class Player extends Character {
   hidesName() {
     return this.isMob() && !this.state?.ownerId;
   }
+  /** Regen flags the last status turned on: each is one tick to play. */
+  risenRegenFlags = new Set<string>();
   updateState(state: Record<string, unknown> | undefined) {
     if (!state) return;
     const patch = (key: string) => {
@@ -130,9 +135,13 @@ export class Player extends Character {
     patch("lockedPlayerId");
     patch("ownerId");
     patch("bubbleMessage");
-    patch("doBuffPoison");
-    patch("doBuffBleed");
-    patch("doHpBuffRegen");
+    /* A regen flag only counts as a tick when it turns on: the server can resend one that stayed
+       on (an npc retreating skips its regen) with every other status change */
+    this.risenRegenFlags.clear();
+    for (const key of REGEN_FLAGS) {
+      if (state[key] === true && this.state[key] !== true) this.risenRegenFlags.add(key);
+      patch(key);
+    }
     patch("lastCombat");
 
     if (!this.isHero) {
@@ -175,21 +184,21 @@ export class Player extends Character {
   }
   /** Regen effects from the tick flags. The hp/mp/sp totals themselves come with the tick's vitals. */
   doRegen() {
-    if (this.state.doBuffPoison) {
+    if (this.risenRegenFlags.has("doBuffPoison")) {
       const poisonBuff = this.getBuff("poison");
       if (poisonBuff) {
         this.takeHit({ type: "hp", amount: -(poisonBuff?.stats?.poisonDamage || 0) });
         playPoisonTick(this);
       }
     }
-    if (this.state.doBuffBleed) {
+    if (this.risenRegenFlags.has("doBuffBleed")) {
       const bleedBuff = this.getBuff("bleed");
       if (bleedBuff) {
         this.takeHit({ type: "hp", amount: -(bleedBuff?.stats?.bleedDamage || 0) });
         playBleedTick(this);
       }
     }
-    if (this.state.doHpBuffRegen) {
+    if (this.risenRegenFlags.has("doHpBuffRegen")) {
       const regenBuff = this.getBuff("regeneration");
       if (regenBuff)
         this.takeHit({ type: "hp", amount: regenBuff?.stats?.regenHp, elements: ["holy"] });
@@ -321,8 +330,8 @@ export class Player extends Character {
       return true;
     }
   }
-  takeHit(hit: HitEffect, showDamage = true) {
-    applyHit(this, hit, showDamage);
+  takeHit(hit: HitEffect, showDamage = true, attacker?: { x: number; y: number }) {
+    applyHit(this, hit, showDamage, attacker);
   }
   update() {
     if (this.checkDeath()) return;

@@ -16,7 +16,12 @@ const WHITE_FLASH_MS = 50;
 export type HitEffect = Pick<HitMessage, "type"> & Partial<Omit<HitMessage, "type">>;
 
 /** Applies one hit (damage, buff, death, stat change) to a character and plays its effects. */
-export function applyHit(player: Player, hit: HitEffect, showDamage = true) {
+export function applyHit(
+  player: Player,
+  hit: HitEffect,
+  showDamage = true,
+  attacker?: { x: number; y: number },
+) {
   if (player?.state?.isDead) return;
 
   const { stats, scene } = player || {};
@@ -31,21 +36,26 @@ export function applyHit(player: Player, hit: HitEffect, showDamage = true) {
     case "buff":
       /* Stun shows as stars circling the head, poison as bubbles, bleed as blood: no landing icon */
       if (hit?.buffName === "poison") playPoisonLanding(player);
-      else if (hit?.buffName === "bleed") playBleedLanding(player);
+      else if (hit?.buffName === "bleed") playBleedLanding(player, attacker);
       else if (hit?.buffName !== "stun") {
         scene.add.existing(new Buff(player.scene, player, hit?.buffName as string));
       }
       break;
     case "death":
       stats.hp = 0;
-      if (hit?.isCaught) {
-        /* Its ball plays the catch; a tame with no ball just beams */
-        if (!takeCaughtByBall(player.id)) playCaptureBeam(player);
-      } else {
-        scene.add.existing(new Hit(player.scene, player, elements));
-        playDeathDissolve(player);
+      try {
+        if (hit?.isCaught) {
+          /* Its ball plays the catch; a tame with no ball just beams */
+          if (!takeCaughtByBall(player.id)) playCaptureBeam(player);
+        } else {
+          playDeathDissolve(player);
+          /* Over the dissolve, which covers anything inside the body */
+          scene.add.existing(new Hit(player.scene, player, elements, { isOnTop: true }));
+        }
+      } finally {
+        /* Dead whatever the effects do: a broken effect must never leave someone walking */
+        player.doDeath();
       }
-      player.doDeath();
       break;
     case "hp":
       player.modifyStat("hp", hit?.amount);

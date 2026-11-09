@@ -1,4 +1,5 @@
 import { isSolidTile, worldToTileX, worldToTileY, type TileGrid } from "./tilemap";
+import { sectorOverlapsBox, sectorOverlapsCircle, type Sector } from "./sector";
 
 /** An axis-aligned box, positioned by its centre. */
 export interface Box {
@@ -134,10 +135,19 @@ export function circleOverlapsBox(circle: Circle, box: Box): boolean {
   return dx * dx + dy * dy <= circle.radius * circle.radius;
 }
 
-export type Shape = ({ kind: "circle" } & Circle) | ({ kind: "box" } & Box);
+export type Shape =
+  | ({ kind: "circle" } & Circle)
+  | ({ kind: "box" } & Box)
+  | ({ kind: "sector" } & Sector);
 
-/** Do two circles or boxes overlap? */
+/** Do two shapes overlap? Two wedges are never compared. */
 export function shapesOverlap(a: Shape, b: Shape): boolean {
+  if (a.kind === "sector" || b.kind === "sector") {
+    const [sector, other] = a.kind === "sector" ? [a, b] : [b as Sector, a];
+    if (other.kind === "box") return sectorOverlapsBox(sector, other);
+    if (other.kind === "circle") return sectorOverlapsCircle(sector, other);
+    return false;
+  }
   if (a.kind === "circle" && b.kind === "circle") return circlesOverlap(a, b);
   if (a.kind === "box" && b.kind === "box") return boxesOverlap(a, b);
   return a.kind === "circle"

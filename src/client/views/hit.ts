@@ -9,16 +9,18 @@ export class Hit extends Phaser.GameObjects.Container {
   hits: Phaser.GameObjects.Sprite[];
   victim: Player;
   elements: string[];
+  isOnTop: boolean;
   constructor(
     scene: Phaser.Scene,
     victim: Player,
     elements: string[] | undefined,
-    { scale = 0.5, alpha = 1, silent = false } = {},
+    { scale = 0.35, alpha = 1, silent = false, isOnTop = false } = {},
   ) {
     super(scene, victim.x, victim.y);
     this.hits = [];
     this.victim = victim;
     this.elements = elements ?? [];
+    this.isOnTop = isOnTop;
 
     for (let i = 0; i <= this.elements.length - 1; i++) {
       this.hits[i] = scene.add.existing(new Sprite(scene, 0, 0, BLANK_TEXTURE, 0));
@@ -32,9 +34,15 @@ export class Hit extends Phaser.GameObjects.Container {
           .setTintMode(Phaser.TintModes.FILL)
           .setBlendMode(Phaser.BlendModes.ADD);
       }
-      this.hits[i].y = this.victim.bodyCenterY;
       this.hits[i].on(ANIMATION_COMPLETE_EVENT, this.handleAnimationComplete, this);
-      this.victim.add(this.hits[i]);
+      if (isOnTop) {
+        /* In the world, above the victim and anything drawn over it (a death dissolve) */
+        this.hits[i].setPosition(victim.x, victim.y + victim.bodyCenterY);
+        this.hits[i].setDepth(victim.depth + 2);
+      } else {
+        this.hits[i].y = this.victim.bodyCenterY;
+        this.victim.add(this.hits[i]);
+      }
       if (silent) continue;
       // choose the correct sound
       if (this.elements[i] === "fire") {
@@ -67,6 +75,7 @@ export class Hit extends Phaser.GameObjects.Container {
     this.destroy();
   }
   update() {
+    if (this.isOnTop) return;
     for (let i = 0; i <= this.elements.length - 1; i++) {
       this.victim.bringToTop(this.hits[i]);
     }

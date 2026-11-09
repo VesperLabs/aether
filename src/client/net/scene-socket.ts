@@ -301,7 +301,7 @@ export function bindSceneSocket(scene: SceneMain) {
       playCritShake(victim, attacker, hit, !!scene.userSettings.screenShake);
       /* A drain pulses a ring on the one who drank it (`to`) */
       if (hit?.isDrain) playDrainRing(victim, hit.type as DrainResource);
-      victim?.takeHit?.(hit);
+      victim?.takeHit?.(hit, true, attacker);
     }
   });
 
