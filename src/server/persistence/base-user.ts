@@ -1,4 +1,5 @@
 import { ItemBuilder, type CharClass, type Dice } from "@/content";
+import { ABILITY_SLOTS, EQUIPMENT_SLOTS } from "@/rules/inventory";
 import { DEFAULT_USER_SETTINGS } from "@/rules/world";
 import { getBaseCharacterDefaults } from "../auth/character-defaults";
 
@@ -30,26 +31,15 @@ export const createBaseUser = (
     direction: "down",
     quests: [],
     equipment: {
+      ...Object.fromEntries(EQUIPMENT_SLOTS.map((slot) => [slot, null])),
       handRight: startingWeapon,
-      handLeft: null,
-      helmet: null,
-      accessory: null,
       pants: ItemBuilder.buildItem(dice, "pants", "common", "clothPants"),
       armor: ItemBuilder.buildItem(dice, "armor", "common", "clothRobe"),
-      gloves: null,
-      boots: null,
-      ring1: null,
-      ring2: null,
-      amulet: null,
     },
     inventory: [],
     abilities: {
+      ...Object.fromEntries(ABILITY_SLOTS.map((slot) => [slot, null])),
       1: startingSpell,
-      2: null,
-      3: null,
-      4: null,
-      5: null,
-      6: null,
     },
     profile: {
       userName: "Noob",

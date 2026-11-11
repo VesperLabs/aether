@@ -7,8 +7,7 @@ import { Header } from "./header";
 import { TabBar } from "./tab-bar";
 import { TAB_HEIGHT } from "./menu-bar";
 import { PageItems } from "./page-items";
-import { PageKeepers } from "./page-keepers";
-import { PageNasties } from "./page-nasties";
+import { PageCharacters } from "./page-characters";
 import { PagePlayers } from "./page-players";
 import { MapShowcase } from "./map-showcase";
 import { PageHome } from "./page-home";
@@ -72,9 +71,8 @@ export const App = () => {
               <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
                 <Route path="/" component={PageHome} />
                 <Route path="/items" component={PageItems} />
-                <Route path="/monsters" component={PageNasties} />
                 <Route path="/players" component={PagePlayers} />
-                <Route path="/keepers" component={PageKeepers} />
+                <Route path="/characters" component={PageCharacters} />
               </Box>
             </Flex>
             <Footer />

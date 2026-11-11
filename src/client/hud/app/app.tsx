@@ -23,7 +23,6 @@ import { PadHints } from "./pad-hints";
 import { PadNavBadge } from "./pad-nav-badge";
 import { PadItemMenu } from "@/client/hud/inventory/pad-item-menu";
 import { PadKeyboard } from "@/client/hud/pad-keyboard/pad-keyboard";
-import "react-tooltip/dist/react-tooltip.css";
 import type { Theme } from "theme-ui";
 import { DEFAULT_USER_SETTINGS } from "@/rules/world";
 import { VideoFrame } from "@/client/hud/video/video-frame";

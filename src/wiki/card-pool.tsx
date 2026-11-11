@@ -16,7 +16,7 @@ import {
   WalkingSprite,
   previewSize,
 } from "@/ui";
-import { SILENT_ACTORS, TALKING_ACTORS } from "./actor-groups";
+import { ACTORS } from "./actor-parts";
 import { useQuery } from "@tanstack/react-query";
 import {
   useLayoutEffect,
@@ -52,8 +52,9 @@ export const CARD_COLORS: Record<string, string> = {
   rare: "#7e22ce",
   unique: "#b45309",
   set: "#4d7c0f",
-  monster: "#b91c1c",
-  keeper: "#0f766e",
+  character: "#0f766e",
+  drop: "#b91c1c",
+  shop: "#0f766e",
   player: "#1d4ed8",
 };
 
@@ -151,18 +152,26 @@ export const MobFace = (props: {
 /** The sprite sheet for a mob race. */
 export const raceAsset = (race?: string) => assetList.find((a) => a?.texture === race);
 
-const MONSTER_CARDS: FeaturedCard[] = SILENT_ACTORS.flatMap(([key, mob]) => {
-  const asset = raceAsset(mob.profile.race);
-  if (!asset) return [];
+/** Every actor, drawn in its gear if it's human, else as its race's sheet. */
+const CHARACTER_CARDS: FeaturedCard[] = ACTORS.flatMap(([key, actor]) => {
+  const asset = actor.profile.race === "human" ? undefined : raceAsset(actor.profile.race);
+  /* Built once: a new object each render would make the renderer redraw (and flicker). */
+  const character = asset ? undefined : keeperCharacter(actor);
+  if (!asset && actor.profile.race !== "human") return [];
   return [
     {
-      id: `monster-${key}`,
-      title: mob.profile.userName,
-      category: `Level ${mob.baseStats.level} monster`,
-      color: CARD_COLORS.monster,
-      info: mob.flavor,
-      href: `/monsters#${key}`,
-      art: () => <MobFace asset={asset} tint={mob.profile.tint} />,
+      id: `character-${key}`,
+      title: actor.profile.userName,
+      category: `Level ${actor.baseStats.level} ${actor.charClass}`,
+      color: CARD_COLORS.character,
+      info: actor.flavor,
+      href: `/characters#${key}`,
+      art: () =>
+        asset ? (
+          <MobFace asset={asset} tint={actor.profile.tint} shadow />
+        ) : (
+          <CharacterFace character={character} />
+        ),
     },
   ];
 });
@@ -201,7 +210,7 @@ const ITEM_CARDS: FeaturedCard[] = Object.entries(listedItems).flatMap(([type, b
 );
 
 /** A keeper's equipment refs (`[type, rarity, key]`) turned into the items the renderer draws. */
-export const keeperCharacter = (keeper: { profile: object; equipment?: object }): Character => {
+export function keeperCharacter(keeper: { profile: object; equipment?: object }): Character {
   const equipment = Object.fromEntries(
     Object.entries(keeper.equipment ?? {}).map(([slot, ref]) => {
       const [type, rarity, key] = (ref ?? []) as string[];
@@ -214,23 +223,7 @@ export const keeperCharacter = (keeper: { profile: object; equipment?: object })
     /* The renderer only draws slots listed here. */
     activeItemSlots: Object.keys(equipment).filter((slot) => equipment[slot]),
   };
-};
-
-const KEEPER_CARDS: FeaturedCard[] = TALKING_ACTORS.map(([key, keeper]) => {
-  const asset = keeper.profile.race !== "human" ? raceAsset(keeper.profile.race) : undefined;
-  const greet = keeper.dialogues?.greet;
-  /* Built once: a new object each render would make the renderer redraw (and flicker). */
-  const character = asset ? undefined : keeperCharacter(keeper);
-  return {
-    id: `keeper-${key}`,
-    title: keeper.profile.userName,
-    category: "Keeper",
-    color: CARD_COLORS.keeper,
-    info: (greet ?? "").replace(/<[^>]+>/g, ""),
-    href: `/keepers#${key}`,
-    art: () => (asset ? <MobFace asset={asset} shadow /> : <CharacterFace character={character} />),
-  };
-});
+}
 
 const playerCard = (player: WikiPlayer): FeaturedCard => {
   const worn = Object.values(player.equipment ?? {})
@@ -254,8 +247,5 @@ export function useCardPool() {
     queryFn: fetchPlayers as never,
   });
   const players = ((data as { data?: WikiPlayer[] } | undefined)?.data ?? []).filter(Boolean);
-  return useMemo(
-    () => [...MONSTER_CARDS, ...ITEM_CARDS, ...KEEPER_CARDS, ...players.map(playerCard)],
-    [players],
-  );
+  return useMemo(() => [...CHARACTER_CARDS, ...ITEM_CARDS, ...players.map(playerCard)], [players]);
 }

@@ -16,7 +16,7 @@ const PlayerFace = ({ player }: { player: WikiPlayer }) => (
 
 /**
  * A player on parchment, laid out like the keeper cards: their face, name, level and class, and a
- * line about them. Always the same size; selecting it opens the player's menus in a drawer.
+ * line about them. Always the same size; selecting it opens the player's menus in a modal.
  */
 export const PlayerCard = ({
   player,

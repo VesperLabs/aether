@@ -1,93 +1,35 @@
-import { Box, Icon, BASE_SLOT_STYLE, SLOT_SIZE } from "@/ui";
-import { QuestTooltip } from "./quest-tooltip";
-import { PAD_STOP_ATTR } from "@/client/input/pad-nav";
+import { QuestSlot } from "@/ui";
+import { PAD_POPOVER_ATTR, PAD_STOP_ATTR } from "@/client/input/pad-nav";
 import { useAppContext } from "@/client/hud/app/context";
 import { nanoid } from "nanoid";
-import { isMobile } from "@/ui";
 import { useMemo } from "react";
 import type { Quest as QuestData } from "@/content";
 import type { PlayerQuestStatus } from "@/rules/quests";
+import { QuestActions } from "./quest-actions";
 
+/** A quest in the game's menus: the shared quest slot, with the buttons to accept or turn it in. */
 export const Quest = ({ quest, parent = "keeper" }: { quest: QuestData; parent?: string }) => {
-  const { objectives } = quest ?? {};
   const { hero, currentTooltipId, setCurrentTooltipId } = useAppContext();
-  const isBounty = objectives?.some((objective) => objective?.type === "bounty");
-  const isItem = objectives?.some((objective) => objective?.type === "item");
-  const isChat = objectives?.some((objective) => objective?.type === "chat");
   const playerQuest: PlayerQuestStatus | undefined = hero?.quests?.find(
     (q: PlayerQuestStatus) => q?.questId === quest?.id,
   );
-  const TOOLTIP_ID = useMemo(() => nanoid(), []);
-
-  let icon = "./assets/icons/chest.png";
-  if (isBounty) {
-    icon = "./assets/icons/bounty.png";
-  } else if (isItem) {
-    icon = "./assets/icons/paper.png";
-  } else if (isChat) {
-    icon = "./assets/icons/letter.png";
-  }
-
-  const handleMouseEnter = () => {
-    setCurrentTooltipId(TOOLTIP_ID);
-  };
-
-  const handleMouseLeave = () => {
-    setCurrentTooltipId(null);
-  };
-
-  const outerMouseBinds = isMobile
-    ? {
-        onTouchEnd: handleMouseEnter,
-      }
-    : {
-        onMouseEnter: handleMouseEnter,
-        onMouseLeave: handleMouseLeave,
-      };
-
-  const isReady = playerQuest?.isReady && !playerQuest?.isCompleted;
-  const isCompleted = playerQuest?.isCompleted;
-
-  const getQuestEmoji = () => {
-    if (isCompleted) return "🏆";
-    if (isReady) return "✅";
-    if (playerQuest) return "⏰";
-  };
-
-  const show = currentTooltipId === TOOLTIP_ID;
-
+  /* One tooltip open at a time across the HUD */
+  const tooltipKey = useMemo(() => nanoid(), []);
+  /* Only its own: a late hide mustn't close the quest the pointer has moved on to. */
+  const close = () => setCurrentTooltipId((open) => (open === tooltipKey ? null : open));
   return (
-    <Box
-      sx={BASE_SLOT_STYLE}
-      {...outerMouseBinds}
-      onTouchStart={() => handleMouseEnter()}
-      /* A on it (after its tooltip's Close) opens the tooltip again */
-      onClick={handleMouseEnter}
-      {...{ [PAD_STOP_ATTR]: true }}
+    <QuestSlot
+      quest={quest}
+      playerQuest={playerQuest}
+      player={hero}
+      show={currentTooltipId === tooltipKey}
+      onShow={() => setCurrentTooltipId(tooltipKey)}
+      onHide={close}
+      slotProps={{ [PAD_STOP_ATTR]: true }}
+      /* Its buttons are reached with the controller from the quest */
+      tooltipProps={{ [PAD_POPOVER_ATTR]: true }}
     >
-      <Box
-        data-tooltip-id={TOOLTIP_ID}
-        sx={{
-          position: "relative",
-          overflow: show ? "visible" : "hidden",
-          width: SLOT_SIZE,
-          height: SLOT_SIZE,
-          filter: isCompleted ? `grayScale(100%)` : "none",
-        }}
-      >
-        <Icon icon={icon} sx={{ width: "100%", height: "100%", transform: "scale(2)" }} />
-        {/* Top-right: the controller's A badge sits on the bottom-right corner */}
-        <Box sx={{ position: "absolute", top: 1, right: 1 }}>{getQuestEmoji()}</Box>
-      </Box>
-      <QuestTooltip
-        player={hero}
-        parent={parent}
-        tooltipId={TOOLTIP_ID}
-        quest={quest}
-        show={show}
-        onClose={handleMouseLeave}
-        playerQuest={playerQuest}
-      />
-    </Box>
+      <QuestActions quest={quest} playerQuest={playerQuest} parent={parent} onClose={close} />
+    </QuestSlot>
   );
 };

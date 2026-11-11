@@ -1,4 +1,11 @@
-export { CONSUMABLES_BASES, MAX_INVENTORY_ITEMS, POTION_BASES, SHOP_INFLATION } from "./constants";
+export {
+  ABILITY_SLOTS,
+  CONSUMABLES_BASES,
+  EQUIPMENT_SLOTS,
+  MAX_INVENTORY_ITEMS,
+  POTION_BASES,
+  SHOP_INFLATION,
+} from "./constants";
 export { itemHasRequiredStats } from "./requirements";
 export { consumeItem } from "./consume";
 export { dropItem } from "./drop";

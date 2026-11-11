@@ -2,11 +2,13 @@ import type { ReactNode } from "react";
 import { memo } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
 import type { BuiltItem } from "@/content";
-import { MAX_INVENTORY_ITEMS } from "@/rules/inventory";
+import { ABILITY_SLOTS, EQUIPMENT_SLOTS, MAX_INVENTORY_ITEMS } from "@/rules/inventory";
 import { arePropsEqualWithKeys, Flex, Icon, Text } from "@/ui/kit";
 import { sameRequirementInputs } from "@/ui/item";
 import type { CharacterMenuProps } from "./menu-props";
 import { SlotMenu, type MenuSlot } from "./slot-menu";
+
+/* Equipment and abilities draw every slot a character has, empty or not, as the game does. */
 
 /** Slots `0..count-1` filled from a list. */
 const listSlots = (count: number, items: (BuiltItem | null)[] = [], icon: string): MenuSlot[] =>
@@ -22,9 +24,9 @@ export const MenuEquipment = memo(
       location="equipment"
       player={player}
       events={events}
-      slots={Object.entries<BuiltItem>(player?.equipment || {}).map(([slotKey, item]) => ({
+      slots={EQUIPMENT_SLOTS.map((slotKey) => ({
         slotKey,
-        item,
+        item: player?.equipment?.[slotKey] ?? null,
         icon: `./assets/icons/${slotKey}.png`,
       }))}
     />
@@ -50,9 +52,9 @@ export const MenuAbilities = memo(
       events={events}
       slotBadge={slotBadge}
       sx={{ alignItems: "end", flexDirection: "column" }}
-      slots={Object.entries<BuiltItem>(player?.abilities || {}).map(([slotKey, item]) => ({
+      slots={ABILITY_SLOTS.map((slotKey) => ({
         slotKey,
-        item,
+        item: player?.abilities?.[slotKey] ?? null,
         icon: "./assets/icons/book.png",
       }))}
     />
