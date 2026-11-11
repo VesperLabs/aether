@@ -23,7 +23,7 @@ The main session runs on Opus. When delegating, use the `worker` agent (or `Expl
 
 ## Commands
 
-- `npm run dev`: server, client and wiki together
+- `npm run dev`: server, client, wiki and sprite lab together
 - `npm run check`: format, lint, typecheck, tests, structure. Must pass before committing.
 - `npm test`: tests only
 - `npm run format` / `npx oxfmt <files>`: this repo uses **oxfmt**. Never run `prettier`; its output fails `check:format`.
