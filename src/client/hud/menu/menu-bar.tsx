@@ -21,7 +21,7 @@ import { useAppContext } from "@/client/hud/app/context";
 import { MenuButton } from "./menu-button";
 import { useScrollToOpened } from "./use-scroll-to-opened";
 import { useOpenOrder } from "./use-open-order";
-import { useOverhangPadding } from "./use-overhang-padding";
+import { OVERHANG_VAR, useOverhangPadding } from "./use-overhang-padding";
 import { SkillButtons } from "@/client/hud/abilities/skill-buttons";
 import { useBindings } from "@/client/hud/settings/use-key-bindings";
 import { keyFor } from "@/client/input/key-bindings";
@@ -165,13 +165,31 @@ export const MenuBar = () => {
         maxHeight: `calc((100dvh - ${keyboardOffset}px) / ${zoom})`,
       }}
     >
-      {/* One blur behind the menus and the buttons, so their edges don't each blur on their own */}
-      <Box sx={{ position: "absolute", inset: 0, zIndex: -1, backdropFilter: "blur(10px)" }} />
-      {/* Sits above the menus without taking their height, so menus can fill the screen */}
+      {/* One blur behind the menus and the buttons, so their edges don't each blur on their own.
+      It starts below the room left for a portrait sticking out above the menus. */}
+      <Box
+        sx={{
+          position: "absolute",
+          inset: 0,
+          top: `var(${OVERHANG_VAR}, 0px)`,
+          zIndex: -1,
+          backdropFilter: "blur(10px)",
+        }}
+      />
+      {/* Sits above the menus without taking their height, so menus can fill the screen. On the
+      menu's top, not the room left for a portrait, which rises past these instead. */}
       {/* Chat and the action buttons: the controller has its own buttons for these */}
       <Flex
         {...{ [PAD_SKIP_ATTR]: true }}
-        sx={{ alignItems: "end", position: "absolute", bottom: "100%", left: 0, right: 0 }}
+        sx={{
+          alignItems: "end",
+          position: "absolute",
+          bottom: `calc(100% - var(${OVERHANG_VAR}, 0px))`,
+          left: 0,
+          right: 0,
+          /* Over the portrait's room in the menus below, which would take their clicks */
+          zIndex: 1,
+        }}
       >
         <MessageBox />
         <Flex sx={{ flexDirection: "column" }}>
@@ -244,7 +262,8 @@ export const MenuBar = () => {
           <MenuStats player={hero} isOpen={tabStats} setIsOpen={setTabStats} />
         </Box>
       </Box>
-      <Box sx={{ pointerEvents: "all", flexShrink: 0 }}>
+      {/* Over the chat log and buttons above (zIndex 1), so the chat's `/` command list opens over them */}
+      <Box sx={{ pointerEvents: "all", flexShrink: 0, position: "relative", zIndex: 2 }}>
         <Menu
           /* The buttons that open the panels, not a panel itself (`pad-panels`) */
           data-pad-panel={undefined}
