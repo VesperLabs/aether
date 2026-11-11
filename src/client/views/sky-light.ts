@@ -8,8 +8,11 @@ export interface SkyLight {
   vignette: number;
 }
 
-const NIGHT: SkyLight = { tint: 0x39488a, saturation: -0.45, vignette: 0.85 };
+const NIGHT: SkyLight = { tint: 0x39488a, saturation: -0.3, vignette: 0.85 };
 const DAY: SkyLight = { tint: 0xffffff, saturation: 0.15, vignette: 0 };
+
+/** Underground, at any hour: a little dim, darker towards the edges, colors as drawn. */
+export const CAVE_LIGHT: SkyLight = { tint: 0xd6d6e0, saturation: 0, vignette: 0.55 };
 
 /**
  * The sky at keyed hours; the hours between blend the two around them. Dawn and dusk only dim

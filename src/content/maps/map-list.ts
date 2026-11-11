@@ -26,6 +26,7 @@ export const mapList = [
     name: "mine",
     music: "./assets/music/mine.mp3",
     json: "./assets/tilemaps/mine.json",
+    isCave: true,
   },
   {
     name: "town",
@@ -76,5 +77,6 @@ export const mapList = [
     name: "aqueducts",
     music: "./assets/music/over-ancient-waters.mp3",
     json: "./assets/tilemaps/aqueducts.json",
+    isCave: true,
   },
 ] as const satisfies readonly MapDefinition[];

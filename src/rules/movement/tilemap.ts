@@ -23,6 +23,8 @@ interface TiledLayer {
 
 interface TiledTileset {
   firstgid: number;
+  /** A shared tileset file, before `inlineTilesets` puts it in the map. */
+  source?: string;
   tilecount?: number;
   tiles?: Array<{ id: number; properties?: TiledProperty[] }>;
 }

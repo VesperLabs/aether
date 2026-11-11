@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { fetchMapWithTilesets } from "@/rules/movement";
 import {
   Box,
   Button,
@@ -102,8 +103,10 @@ export const MapApp = () => {
   useEffect(() => saveDraft(draft), [draft]);
 
   useEffect(() => {
-    fetch(TEMPLATE_URL)
-      .then((response) => response.json())
+    /* With its shared tileset files put back in, as the game reads it */
+    fetchMapWithTilesets<TiledMap>(TEMPLATE_URL, (url) =>
+      fetch(url).then((response) => response.json()),
+    )
       .then(setTemplate)
       .catch(() => setError(`Couldn't load ${TEMPLATE_URL}`));
   }, []);

@@ -1,15 +1,11 @@
 import Phaser from "phaser";
 import { getMapByName } from "@/content";
-import { skyLightAt } from "@/client/views/sky-light";
+import { CAVE_LIGHT, skyLightAt } from "@/client/views/sky-light";
 import type { SceneMain } from "./main-scene";
 import { currentHour } from "./world-clock";
 import { DAYLIGHT_DEPTH } from "./world-depths";
-import {
-  LIGHT_KEY,
-  LIGHT_TEXTURE_SIZE,
-  allLights,
-  createLightTextures,
-} from "@/client/views/lights";
+import { createLightTextures } from "@/client/views/lights";
+import { drawLights } from "./light-layers";
 
 /**
  * How far past the camera's view the light map reaches, in world pixels: a safety margin, so a
@@ -32,6 +28,8 @@ const VIGNETTE_COLOR = 0x05060f;
  */
 interface Daylight {
   lightMap: Phaser.GameObjects.RenderTexture;
+  /** Drawn at half strength and multiplied in twice over (see `multiplyTwice`). */
+  isDoubled: boolean;
   colors: Phaser.Filters.ColorMatrix;
   /** The minimap's night: the sky's tint and colors over all of it, lighter so it stays readable. */
   minimapColors?: Phaser.Filters.ColorMatrix;
@@ -65,6 +63,37 @@ function createVignetteTexture(scene: SceneMain) {
   texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
 }
 
+/**
+ * The light map is drawn at half strength and multiplied in twice over (`multiplyTwice`): mid gray
+ * is daylight, darker dims the world, lighter brightens it. A light so makes what it touches
+ * brighter and richer than by day, in proportion to its own colors: outlines and shading stay
+ * dark, nothing washes out the way light added on top would. Without WebGL (no custom blends) it
+ * is drawn at full strength and plainly multiplied: lights then only undo the dark.
+ */
+const half = (color: number) => (color >> 1) & 0x7f7f7f;
+
+/**
+ * How much of a light goes into a half-strength light map: 0.5 brings a spot back to daylight,
+ * more makes it brighter than day.
+ */
+const LIGHT_STRENGTH = 0.62;
+
+let multiplyTwiceMode: number | undefined;
+
+/** A blend that multiplies the world by twice the light map (`src * dst + dst * src`), or none. */
+function multiplyTwice(scene: SceneMain): number | undefined {
+  if (scene.renderer.type !== Phaser.WEBGL) return undefined;
+  if (multiplyTwiceMode === undefined) {
+    const renderer = scene.renderer as Phaser.Renderer.WebGL.WebGLRenderer;
+    const { gl } = renderer;
+    renderer.addBlendMode([gl.DST_COLOR, gl.SRC_COLOR], gl.FUNC_ADD);
+    /* Phaser 4.2.1's addBlendMode returns one less than the mode's index (a normal blend): the new
+    mode is the last one */
+    multiplyTwiceMode = renderer.blendModes.length - 1;
+  }
+  return multiplyTwiceMode;
+}
+
 /** `from` blended `t` of the way to `to`, channel by channel. */
 const mixColor = (from: number, to: number, t: number) =>
   [16, 8, 0].reduce((color, shift) => {
@@ -72,36 +101,6 @@ const mixColor = (from: number, to: number, t: number) =>
     const b = (to >> shift) & 0xff;
     return color | (Math.round(a + (b - a) * t) << shift);
   }, 0);
-
-/**
- * Draws the map's `Above` layer (tree tops, roofs) into the light map as a flat `color` shape,
- * after the lights: so a light on the ground under the leaves never lights them. Only the tiles
- * in view are filled, just for this draw, and put back: the layer itself is never tinted, so the
- * minimap still shows it as drawn.
- */
-function shadeCanopy(
-  scene: SceneMain,
-  lightMap: Phaser.GameObjects.RenderTexture,
-  area: { left: number; top: number; width: number; height: number },
-  color: number,
-) {
-  const layer = scene.map?.getLayer("Above")?.tilemapLayer;
-  if (!layer) return;
-  const { left, top, width, height } = area;
-  const tiles = layer.getTilesWithinWorldXY(left, top, width, height, { isNotEmpty: true });
-  if (tiles.length === 0) return;
-  for (const tile of tiles) {
-    tile.tint = color;
-    tile.tintMode = Phaser.TintModes.FILL;
-  }
-  lightMap.draw(layer, layer.x - left, layer.y - top);
-  /* The draw happens now, in `render`: only then can the tiles go back */
-  lightMap.render();
-  for (const tile of tiles) {
-    tile.tint = 0xffffff;
-    tile.tintMode = Phaser.TintModes.MULTIPLY;
-  }
-}
 
 /** How much to stretch the vignette so it looks the same at any zoom: full dark before the corners. */
 function vignetteScale(view: Phaser.Geom.Rectangle) {
@@ -117,14 +116,16 @@ function vignetteScale(view: Phaser.Geom.Rectangle) {
 export function createDaylight(scene: SceneMain) {
   createVignetteTexture(scene);
   createLightTextures(scene);
+  const doubled = multiplyTwice(scene);
   const lightMap = scene.add
     .renderTexture(0, 0, 1, 1)
     .setOrigin(0, 0)
     .setDepth(DAYLIGHT_DEPTH)
-    .setBlendMode(Phaser.BlendModes.MULTIPLY);
+    .setBlendMode(doubled ?? Phaser.BlendModes.MULTIPLY);
   scene.minimap?.ignore(lightMap);
   daylight = {
     lightMap,
+    isDoubled: doubled !== undefined,
     colors: scene.cameras.main.filters.external.addColorMatrix(),
     minimapColors: scene.minimap?.filters.external.addColorMatrix(),
   };
@@ -144,7 +145,7 @@ export function createDaylight(scene: SceneMain) {
 /** Redraws the light map over the camera's view: the sky's tint, the vignette, then every light. */
 function drawLightMap(
   scene: SceneMain,
-  lightMap: Phaser.GameObjects.RenderTexture,
+  { lightMap, isDoubled }: Pick<Daylight, "lightMap" | "isDoubled">,
   tint: number,
   vignette: number,
 ) {
@@ -159,40 +160,17 @@ function drawLightMap(
 
   /* Dark everywhere as the vignette's edge, then the sky's tint in a clear spot on the hero (or the
   middle of the screen while there is none: the login tour) */
-  lightMap.clear().fill(mixColor(tint, VIGNETTE_COLOR, vignette));
+  const scaled = isDoubled ? half : (color: number) => color;
+  lightMap.clear().fill(scaled(mixColor(tint, VIGNETTE_COLOR, vignette)));
   const center = scene.hero ?? scene.cameras.main.midPoint;
   if (vignette > 0) {
     lightMap.stamp(VIGNETTE_KEY, undefined, center.x - left, center.y - top, {
-      tint,
+      tint: scaled(tint),
       scale: vignetteScale(view),
     });
   }
-  for (const light of allLights()) {
-    const at = light.position();
-    if (!at) continue;
-    /* A stretched light reaches further along its length */
-    const reach = light.radius;
-    const spill = reach * (light.stretch ?? 1);
-    /* Lights near the screen edge still spill in */
-    if (at.x < left - spill || at.x > left + width + spill) continue;
-    if (at.y < top - spill || at.y > top + height + spill) continue;
-    const scale = (reach * 2) / LIGHT_TEXTURE_SIZE;
-    lightMap.stamp(light.texture ?? LIGHT_KEY, undefined, at.x - left, at.y - top, {
-      tint: light.texture ? 0xffffff : light.color,
-      alpha: light.intensity ?? 1,
-      scaleX: scale * (light.stretch ?? 1),
-      scaleY: scale,
-      rotation: light.angle ?? 0,
-      blendMode: Phaser.BlendModes.ADD,
-    });
-  }
-  /* Tree tops take the sky's darkness, half the vignette's, and no light from below */
-  shadeCanopy(
-    scene,
-    lightMap,
-    { left, top, width, height },
-    mixColor(tint, VIGNETTE_COLOR, vignette / 2),
-  );
+  /* The lights, each cut by what stands over it: see `drawLights` */
+  drawLights(scene, lightMap, { left, top, width, height }, isDoubled ? LIGHT_STRENGTH : 1);
   lightMap.render();
 }
 
@@ -210,16 +188,17 @@ export function updateDaylight(scene: SceneMain) {
 function drawDaylight(scene: SceneMain) {
   if (!daylight) return;
   const { lightMap, colors, minimapColors } = daylight;
-  const isOutdoors = Boolean(getMapByName(scene.roomName)?.isOutdoors);
-  lightMap.setVisible(isOutdoors);
-  colors.active = isOutdoors;
-  if (minimapColors) minimapColors.active = isOutdoors;
-  if (!isOutdoors) return;
+  const map = getMapByName(scene.roomName);
+  /* Outdoors the sky's light for the hour; caves their own, always; other indoor maps none */
+  const light = map?.isOutdoors ? skyLightAt(currentHour()) : map?.isCave ? CAVE_LIGHT : undefined;
+  lightMap.setVisible(Boolean(light));
+  colors.active = Boolean(light);
+  if (minimapColors) minimapColors.active = Boolean(map?.isOutdoors);
+  if (!light) return;
 
-  const light = skyLightAt(currentHour());
-  drawLightMap(scene, lightMap, light.tint, light.vignette);
+  drawLightMap(scene, daylight, light.tint, light.vignette);
   colors.colorMatrix.saturate(light.saturation);
-  if (minimapColors) tintMinimap(minimapColors, light.tint, light.saturation);
+  if (minimapColors && map?.isOutdoors) tintMinimap(minimapColors, light.tint, light.saturation);
 }
 
 /** How far the minimap's tint goes back towards white, so it is dimmer at night but readable. */

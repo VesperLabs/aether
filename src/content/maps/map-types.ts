@@ -8,6 +8,8 @@ export interface MapDefinition {
   readonly seasons?: MapSeasons;
   /** Under the open sky, so it darkens at night. */
   readonly isOutdoors?: boolean;
+  /** Underground: always a little dim, darker towards the edges, whatever the time of day. */
+  readonly isCave?: boolean;
 }
 
 export interface MapImageDefinition {

@@ -1,0 +1,15 @@
+{
+ "columns": 8,
+ "image": "grassland-shadows.png",
+ "imageheight": 136,
+ "imagewidth": 272,
+ "margin": 1,
+ "name": "tileset-grassland-shadows",
+ "spacing": 2,
+ "tilecount": 32,
+ "tiledversion": "1.10.1",
+ "tileheight": 32,
+ "tilewidth": 32,
+ "type": "tileset",
+ "version": "1.10"
+}

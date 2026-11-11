@@ -1,9 +1,13 @@
 import { readFileSync } from "node:fs";
+import { readMapWithTilesets } from "@/rules/movement";
 import { describe, expect, it } from "vitest";
 import { blankGrid, setTerrain } from "./map-terrain";
 import { buildTiledMap, type TiledMap } from "./map-tiled";
 
-const template: TiledMap = JSON.parse(readFileSync("public/assets/tilemaps/meadow.json", "utf8"));
+/* With its shared tileset files put back in, as the game and the lab read it */
+const template = readMapWithTilesets<TiledMap>("public/assets/tilemaps/meadow.json", (path) =>
+  JSON.parse(readFileSync(path, "utf8")),
+);
 
 describe("buildTiledMap", () => {
   const grid = setTerrain(setTerrain(blankGrid(5, 4), 0, 0, "w"), 1, 0, "w");

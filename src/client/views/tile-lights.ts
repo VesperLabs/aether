@@ -15,10 +15,13 @@ interface LightLayer {
   speed: number;
   /** How far it wanders from the tile's middle, in pixels. */
   drift: number;
-  /** Where its middle sits from the tile's middle (fires burn above their logs). */
+  /** Where its middle sits from the tile's middle (fires burn above their logs, lanterns hang off-centre). */
+  offsetX?: number;
   offsetY?: number;
   /** How much its size swells and shrinks with the flicker, 0 to 1. */
   breathe?: number;
+  /** The layers drawn over it that it doesn't light (see `Light`). */
+  blockedBy?: readonly string[];
 }
 
 /** A fire is one light with its own colors (`FIRE_LIGHT_KEY`): one shape, no seams between layers. */
@@ -26,7 +29,7 @@ const FIRE: readonly LightLayer[] = [
   {
     texture: FIRE_LIGHT_KEY,
     color: 0xffffff,
-    radius: 120,
+    radius: 180,
     intensity: 0.95,
     flicker: 0.14,
     speed: 7,
@@ -36,10 +39,62 @@ const FIRE: readonly LightLayer[] = [
   },
 ];
 
+/** A street lamp's lantern: a cool, steady glow with the faintest flicker, centred `x, y` in its tile. */
+const lantern = (x: number, y: number): readonly LightLayer[] => [
+  {
+    color: 0xb8dcff,
+    radius: 120,
+    intensity: 0.85,
+    flicker: 0.05,
+    speed: 2,
+    drift: 0,
+    offsetX: x,
+    offsetY: y,
+    /* Up among the roofs: it lights them, and its own lantern */
+    blockedBy: [],
+  },
+];
+
+/**
+ * Warm light from inside a house, through a window or an open door: a candle's slow, small
+ * flicker. Things standing in front of the house (`Extras`: trees, barrels) stay dark; the roof
+ * over it doesn't cut the glow off.
+ */
+const houseLight = (
+  x: number,
+  y: number,
+  { radius = 60, intensity = 0.75 } = {},
+): readonly LightLayer[] => [
+  {
+    color: 0xffad55,
+    radius,
+    intensity,
+    flicker: 0.1,
+    speed: 2.5,
+    drift: 0,
+    offsetX: x,
+    offsetY: y,
+    blockedBy: ["Extras"],
+  },
+];
+
 /** Tiles that give off light at night, by tileset and tile id (the first frame of an animation). */
 const LIT_TILES: ReadonlyArray<{ tileset: string; id: number; layers: readonly LightLayer[] }> = [
   /* The campfire flame */
   { tileset: "tileset-extras", id: 276, layers: FIRE },
+  /* The town's street lamps, hanging right and left of their posts: the tile with the glass */
+  { tileset: "tileset-town", id: 229, layers: lantern(-6, -5) },
+  { tileset: "tileset-town", id: 302, layers: lantern(6, -4) },
+  /* Square windows, in their frames */
+  { tileset: "tileset-town", id: 30, layers: houseLight(0, 5) },
+  { tileset: "tileset-town", id: 158, layers: houseLight(0, 5) },
+  /* The round gable window: its lower half's tile, lighting the upper half among the roofs too */
+  { tileset: "tileset-town", id: 225, layers: houseLight(0, -10) },
+  /* The half-round gable window over the blue-roof cottages' porches, its wheel on blue glass */
+  { tileset: "tileset-town", id: 88, layers: houseLight(0, -2) },
+  /* Open doorways (the plank house, the blue-roof cottage): their lower tile, spilling out onto the steps */
+  { tileset: "tileset-town", id: 283, layers: houseLight(0, -8, { radius: 96, intensity: 0.85 }) },
+  { tileset: "tileset-town", id: 299, layers: houseLight(0, -8, { radius: 96, intensity: 0.85 }) },
 ];
 
 /** Uneven flicker: two waves at unrelated speeds, so it never settles into a steady pulse. */
@@ -58,11 +113,14 @@ function addLayerLight(at: Point, layer: LightLayer, seed: number, swaySeed: num
     flicker,
     speed,
     drift,
+    offsetX = 0,
     offsetY = 0,
     breathe = 0,
+    blockedBy,
   } = layer;
   return addLight({
     texture,
+    blockedBy,
     color,
     get radius() {
       const seconds = performance.now() / 1000;
@@ -75,7 +133,7 @@ function addLayerLight(at: Point, layer: LightLayer, seed: number, swaySeed: num
     position: () => {
       const seconds = performance.now() / 1000;
       return {
-        x: at.x + drift * wobble(seconds, SWAY_SPEED, swaySeed + 4),
+        x: at.x + offsetX + drift * wobble(seconds, SWAY_SPEED, swaySeed + 4),
         y: at.y + offsetY + drift * wobble(seconds, SWAY_SPEED, swaySeed + 8),
       };
     },

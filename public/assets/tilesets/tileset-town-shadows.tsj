@@ -1,0 +1,15 @@
+{
+ "columns": 4,
+ "image": "town-shadows.png",
+ "imageheight": 136,
+ "imagewidth": 136,
+ "margin": 1,
+ "name": "tileset-town-shadows",
+ "spacing": 2,
+ "tilecount": 16,
+ "tiledversion": "1.10.1",
+ "tileheight": 32,
+ "tilewidth": 32,
+ "type": "tileset",
+ "version": "1.10"
+}

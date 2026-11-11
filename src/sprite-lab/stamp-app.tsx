@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { fetchMapWithTilesets } from "@/rules/movement";
 import {
   Box,
   Button,
@@ -27,6 +28,8 @@ const DRAWN_LAYERS = ["Ground", "Shadows", "Overlay", "Extras", "Above", "Collid
 type LoadedMap = SourceMap & { height: number; tilesets: SourceMap["tilesets"] };
 
 const fetchJson = (url: string) => fetch(url).then((response) => response.json());
+/** A map with its shared tileset files put back in, as the game reads it. */
+const fetchMap = (url: string) => fetchMapWithTilesets<LoadedMap>(url, fetchJson);
 
 const rectBetween = (a: { x: number; y: number }, b: { x: number; y: number }): Rect => ({
   x: Math.min(a.x, b.x),
@@ -53,12 +56,12 @@ export const StampApp = () => {
 
   useEffect(() => {
     fetchJson("/api/map-sources").then(setSources);
-    fetchJson(TEMPLATE_URL).then(setTemplate);
+    fetchMap(TEMPLATE_URL).then(setTemplate);
   }, []);
 
   useEffect(() => {
     setSelection(undefined);
-    fetchJson(`${MAPS_URL}/${sourceName}`).then(setSource);
+    fetchMap(`${MAPS_URL}/${sourceName}`).then(setSource);
   }, [sourceName]);
 
   const layers: CanvasLayer[] = (source?.layers ?? [])
