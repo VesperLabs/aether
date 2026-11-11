@@ -3,7 +3,6 @@ import type { Hand } from "@/rules/combat";
 import type { StatBag } from "@/rules/stats";
 import type { ServerWorld } from "./server-world";
 import { CharacterModel, getActiveItemSlots } from "@/rules/character";
-import { ItemBuilder } from "@/content";
 import { applyCalculatedStats } from "./character-stats";
 import {
   applyAttackDamage,
@@ -19,7 +18,6 @@ import {
   applyExpireBuffs,
   applyRegen,
 } from "./character-buffs";
-import { addBuffBonuses } from "@/rules/buffs";
 import { getPlayerQuests } from "@/rules/quests";
 import { calculateNextMaxExp } from "@/rules/stats";
 import type { ElementalDamages } from "@/rules/combat";
