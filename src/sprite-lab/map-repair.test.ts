@@ -4,9 +4,7 @@ import { blankGrid, setTerrain, type WangSet } from "./map-terrain";
 import { createRepair } from "./map-repair";
 import { getTerrainWangset, type TiledMap } from "./map-tiled";
 
-const template: TiledMap = JSON.parse(
-  readFileSync("public/assets/tilemaps/grassland.json", "utf8"),
-);
+const template: TiledMap = JSON.parse(readFileSync("public/assets/tilemaps/meadow.json", "utf8"));
 const wangset: WangSet = getTerrainWangset(template);
 const repair = createRepair(wangset);
 

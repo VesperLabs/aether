@@ -5,6 +5,7 @@ import { changeMusic } from "@/client/audio/music";
 import type { Player } from "@/client/views/player";
 import { getGameZoomLevel } from "./camera-zoom";
 import { layoutMinimap } from "./minimap";
+import { announceRoomChange } from "./room-changed";
 import type { SceneMain } from "./main-scene";
 
 const { RectangleToRectangle } = Phaser.Geom.Intersects;
@@ -66,9 +67,8 @@ export function initPlayerCollision(
 }
 
 export function changeMap(scene: SceneMain, roomName: string) {
-  const tileSetKey = roomName?.split("-")?.[0];
-
   scene.roomName = roomName;
+  announceRoomChange(roomName);
   scene.map = scene.make.tilemap({
     key: roomName,
   });
@@ -77,23 +77,22 @@ export function changeMap(scene: SceneMain, roomName: string) {
 
   const { map } = scene;
   // The map assets are bundled, so a missing tileset or layer is a build error, not a runtime case.
-  const addTileset = (key: string) => map.addTilesetImage(key) as Phaser.Tilemaps.Tileset;
-  const createLayer = (name: string, tileset: Phaser.Tilemaps.Tileset) =>
-    map.createLayer(name, tileset) as Phaser.Tilemaps.TilemapLayer;
+  // Every layer can draw from every tileset the map declares; each tileset's texture key is its Tiled name.
+  const tilesets = map.tilesets.map(
+    (tileset) => map.addTilesetImage(tileset.name) as Phaser.Tilemaps.Tileset,
+  );
+  const createLayer = (name: string) =>
+    map.createLayer(name, tilesets) as Phaser.Tilemaps.TilemapLayer;
 
-  const tileSet = addTileset("tileset-" + tileSetKey);
-  const tilesetShadows = addTileset("tileset-" + tileSetKey + "-shadows");
-  const tilesetCollide = addTileset("tileset-collide");
-  const tilesetExtras = addTileset("tileset-extras");
-  const collideLayer = createLayer("Collide", tilesetCollide).setCollisionByProperty({
+  const collideLayer = createLayer("Collide").setCollisionByProperty({
     collides: true,
   });
 
-  createLayer("Ground", tileSet).setDepth(0);
-  createLayer("Shadows", tilesetShadows).setDepth(1);
-  createLayer("Overlay", tileSet).setDepth(2);
-  createLayer("Extras", tilesetExtras).setDepth(3);
-  createLayer("Above", tileSet).setDepth(9999);
+  createLayer("Ground").setDepth(0);
+  createLayer("Shadows").setDepth(1);
+  createLayer("Overlay").setDepth(2);
+  createLayer("Extras").setDepth(3);
+  createLayer("Above").setDepth(9999);
   if (scene.animatedTiles) scene.animatedTiles.init(scene.map);
 
   /* Create Doors */

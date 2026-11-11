@@ -1,14 +1,14 @@
 {
     "maps": [
         {
-            "fileName": "grassland-2.json",
+            "fileName": "town-road.json",
             "height": 1120,
             "width": 1120,
             "x": -288,
             "y": 64
         },
         {
-            "fileName": "grassland.json",
+            "fileName": "meadow.json",
             "height": 1120,
             "width": 1120,
             "x": -288,
@@ -22,14 +22,14 @@
             "y": -1536
         },
         {
-            "fileName": "grassland-graveyard.json",
+            "fileName": "graveyard.json",
             "height": 1120,
             "width": 1120,
             "x": -1472,
             "y": -2656
         },
         {
-            "fileName": "townInside.json",
+            "fileName": "town-houses.json",
             "height": 1600,
             "width": 2240,
             "x": 2464,
@@ -43,42 +43,42 @@
             "y": -960
         },
         {
-            "fileName": "dungeon-aqueducts.json",
+            "fileName": "aqueducts.json",
             "height": 1600,
             "width": 1600,
             "x": 2464,
             "y": 1632
         },
         {
-            "fileName": "grassland-3.json",
+            "fileName": "wildwood.json",
             "height": 2240,
             "width": 2240,
             "x": -2528,
             "y": 64
         },
         {
-            "fileName": "grassland-peaks.json",
+            "fileName": "foothills.json",
             "height": 1120,
             "width": 1120,
             "x": -2336,
             "y": -1056
         },
         {
-            "fileName": "grassland-peaks-2.json",
+            "fileName": "peak-camp.json",
             "height": 1120,
             "width": 1120,
             "x": -3456,
             "y": -1056
         },
         {
-            "fileName": "townInside-tents.json",
+            "fileName": "tents.json",
             "height": 1600,
             "width": 2240,
             "x": 4128,
             "y": 1632
         },
         {
-            "fileName": "grassland-peaks-3.json",
+            "fileName": "summit.json",
             "height": 1120,
             "width": 1120,
             "x": -4576,

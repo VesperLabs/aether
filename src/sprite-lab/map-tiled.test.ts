@@ -3,9 +3,7 @@ import { describe, expect, it } from "vitest";
 import { blankGrid, setTerrain } from "./map-terrain";
 import { buildTiledMap, type TiledMap } from "./map-tiled";
 
-const template: TiledMap = JSON.parse(
-  readFileSync("public/assets/tilemaps/grassland.json", "utf8"),
-);
+const template: TiledMap = JSON.parse(readFileSync("public/assets/tilemaps/meadow.json", "utf8"));
 
 describe("buildTiledMap", () => {
   const grid = setTerrain(setTerrain(blankGrid(5, 4), 0, 0, "w"), 1, 0, "w");

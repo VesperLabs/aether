@@ -18,7 +18,7 @@ import { captureStamp, Stamp, type Rect, type SourceMap } from "./map-stamps";
 import { useStampLibrary } from "./use-stamp-library";
 import { useTilesets } from "./use-tilesets";
 
-const TEMPLATE_URL = "/assets/tilemaps/grassland.json";
+const TEMPLATE_URL = "/assets/tilemaps/meadow.json";
 const MAPS_URL = "/assets/tilemaps";
 const ZOOMS = [0.5, 1, 1.5, 2];
 const PANEL_WIDTH = 340;

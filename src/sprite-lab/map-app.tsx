@@ -29,7 +29,7 @@ import {
   type TerrainLetter,
 } from "./map-terrain";
 
-const TEMPLATE_URL = "/assets/tilemaps/grassland.json";
+const TEMPLATE_URL = "/assets/tilemaps/meadow.json";
 const DRAFT_KEY = "map-lab-draft";
 const ZOOMS = [0.5, 1, 1.5, 2];
 const BRUSHES = [0, 1, 2];

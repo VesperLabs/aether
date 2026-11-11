@@ -1,0 +1,15 @@
+{
+ "columns": 96,
+ "image": "grassland-winter.png",
+ "imageheight": 544,
+ "imagewidth": 3264,
+ "margin": 1,
+ "name": "tileset-grassland-winter",
+ "spacing": 2,
+ "tilecount": 1536,
+ "tiledversion": "1.10.1",
+ "tileheight": 32,
+ "tilewidth": 32,
+ "type": "tileset",
+ "version": "1.10"
+}
