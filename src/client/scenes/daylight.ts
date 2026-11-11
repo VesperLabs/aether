@@ -12,9 +12,8 @@ import {
 } from "@/client/views/lights";
 
 /**
- * How far past the camera's view the light map and glow reach, in world pixels. They are placed
- * before the camera follows the hero for the frame, so they trail it by a frame: running fast,
- * the screen's edge would pass them without this.
+ * How far past the camera's view the light map reaches, in world pixels: a safety margin, so a
+ * frame where it trails the camera (a pan, the login tour) never shows the world past its edge.
  */
 const VIEW_MARGIN = 64;
 const VIGNETTE_KEY = "daylight-vignette";
@@ -29,11 +28,10 @@ const VIGNETTE_COLOR = 0x05060f;
 /**
  * What draws the sky's light over the world. `lightMap` is how lit each spot is: the sky's tint,
  * darker towards the edges (the vignette), brighter around lights. It is multiplied over the
- * world, so white leaves it as drawn. `glow` is added on top at golden hour.
+ * world, so white leaves it as drawn.
  */
 interface Daylight {
   lightMap: Phaser.GameObjects.RenderTexture;
-  glow: Phaser.GameObjects.Rectangle;
   colors: Phaser.Filters.ColorMatrix;
   /** The minimap's night: the sky's tint and colors over all of it, lighter so it stays readable. */
   minimapColors?: Phaser.Filters.ColorMatrix;
@@ -114,8 +112,7 @@ function vignetteScale(view: Phaser.Geom.Rectangle) {
 
 /**
  * The sky's light over the world: a light map multiplied in to dim it (with lights cutting through),
- * a faint warm glow added at golden hour, and a camera filter for how rich its colors are. Not
- * drawn on the minimap.
+ * and a camera filter for how rich its colors are. Not drawn on the minimap.
  */
 export function createDaylight(scene: SceneMain) {
   createVignetteTexture(scene);
@@ -125,15 +122,9 @@ export function createDaylight(scene: SceneMain) {
     .setOrigin(0, 0)
     .setDepth(DAYLIGHT_DEPTH)
     .setBlendMode(Phaser.BlendModes.MULTIPLY);
-  const glow = scene.add
-    .rectangle(0, 0, 1, 1, 0x000000)
-    .setOrigin(0, 0)
-    .setDepth(DAYLIGHT_DEPTH)
-    .setBlendMode(Phaser.BlendModes.ADD);
-  scene.minimap?.ignore([lightMap, glow]);
+  scene.minimap?.ignore(lightMap);
   daylight = {
     lightMap,
-    glow,
     colors: scene.cameras.main.filters.external.addColorMatrix(),
     minimapColors: scene.minimap?.filters.external.addColorMatrix(),
   };
@@ -218,21 +209,15 @@ export function updateDaylight(scene: SceneMain) {
 /** Lights the world for the hour; maps indoors stay as they are. */
 function drawDaylight(scene: SceneMain) {
   if (!daylight) return;
-  const { lightMap, glow, colors, minimapColors } = daylight;
+  const { lightMap, colors, minimapColors } = daylight;
   const isOutdoors = Boolean(getMapByName(scene.roomName)?.isOutdoors);
   lightMap.setVisible(isOutdoors);
-  glow.setVisible(isOutdoors);
   colors.active = isOutdoors;
   if (minimapColors) minimapColors.active = isOutdoors;
   if (!isOutdoors) return;
 
   const light = skyLightAt(currentHour());
   drawLightMap(scene, lightMap, light.tint, light.vignette);
-  const view = scene.cameras.main.worldView;
-  glow
-    .setPosition(view.x - VIEW_MARGIN, view.y - VIEW_MARGIN)
-    .setSize(view.width + 2 * VIEW_MARGIN, view.height + 2 * VIEW_MARGIN)
-    .setFillStyle(light.glow);
   colors.colorMatrix.saturate(light.saturation);
   if (minimapColors) tintMinimap(minimapColors, light.tint, light.saturation);
 }

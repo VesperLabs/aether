@@ -4,22 +4,10 @@ import { ElementSim, type EffectPixel, type ToLayer } from "@/ui/item/element-si
 import { bladePixels, findEdgePixels } from "@/ui/item/edge-pixels";
 import { WEAPON_GRIP, getWeaponTip } from "@/content";
 import { addLight, type Light } from "./lights";
+import { bladeGlow } from "./blade-glow";
 
 const BORDER_OFFSET = 1;
 
-/**
- * The glow a weapon of each element casts at night, as wide as `radius` and stretched along the
- * blade, flickering by `flicker` (0.3 dips to 70%) at `speed` waves a second. Earth gives none.
- */
-const ELEMENT_LIGHTS: Record<
-  string,
-  { color: number; radius: number; intensity: number; flicker: number; speed: number }
-> = {
-  fire: { color: 0xff7a2a, radius: 22, intensity: 0.75, flicker: 0.3, speed: 8 },
-  light: { color: 0xfff07a, radius: 24, intensity: 0.7, flicker: 0.12, speed: 3 },
-  holy: { color: 0xf8faff, radius: 20, intensity: 0.6, flicker: 0.12, speed: 2 },
-  water: { color: 0x6ab8ff, radius: 16, intensity: 0.4, flicker: 0.08, speed: 1.5 },
-};
 /**
  * How much of the weapon's movement its particles share: they trail behind a swing a little,
  * like physics, but stay close to the blade instead of scattering across the screen.
@@ -105,22 +93,21 @@ export class WeaponSprite extends Phaser.GameObjects.Container {
     scene.events.once("shutdown", this.destroy, this);
   }
   /**
-   * One soft glow stretched along the blade, grip to tip, in its first glowing element's color,
-   * while the weapon is shown. It turns with the blade through a swing.
+   * One soft glow stretched along the blade, grip to tip, while the weapon is shown, in the look
+   * of the element whose turn it is (weapons with several take turns, like their effects). It
+   * turns with the blade through a swing.
    */
   addBladeLight() {
     const light: Light = { position: () => undefined, radius: 0, color: 0 };
     light.position = () => {
-      const element = this.elements.map((name) => ELEMENT_LIGHTS[name]).find(Boolean);
+      const element = bladeGlow(this.elements[this.sim.turn], performance.now() / 1000);
       if (!element || !this.isShown()) return undefined;
       const grip = this.bladePoint(0);
       const tip = this.bladePoint(1);
       const length = Math.hypot(tip.x - grip.x, tip.y - grip.y);
-      const wave = Math.sin((performance.now() / 1000) * element.speed);
       light.color = element.color;
       light.radius = element.radius;
-      light.intensity =
-        element.intensity * (1 - element.flicker / 2 + (element.flicker / 2) * wave);
+      light.intensity = element.intensity;
       /* As long as the blade plus a glow's width past each end */
       light.stretch = (length + element.radius * 2) / (element.radius * 2);
       light.angle = Math.atan2(tip.y - grip.y, tip.x - grip.x);

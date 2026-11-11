@@ -2,31 +2,28 @@
 export interface SkyLight {
   /** Multiplied over the world: white leaves it as drawn, darker colors dim it. */
   tint: number;
-  /** Added over the world: a faint warm wash at sunrise and golden hour, black (none) otherwise. */
-  glow: number;
   /** -1 drains all color, 0 leaves it, above 0 makes it richer. */
   saturation: number;
   /** How dark it gets away from the player, 0 to 1. */
   vignette: number;
 }
 
-const NIGHT: SkyLight = { tint: 0x39488a, glow: 0x000000, saturation: -0.45, vignette: 0.85 };
-const DAY: SkyLight = { tint: 0xfff9ee, glow: 0x000000, saturation: 0.15, vignette: 0 };
+const NIGHT: SkyLight = { tint: 0x39488a, saturation: -0.45, vignette: 0.85 };
+const DAY: SkyLight = { tint: 0xffffff, saturation: 0.15, vignette: 0 };
 
-/** The sky at keyed hours; the hours between blend the two around them. */
+/**
+ * The sky at keyed hours; the hours between blend the two around them. Dawn and dusk only dim
+ * the day, in plain grays, before night's blue takes over.
+ */
 const SKY_BY_HOUR: ReadonlyArray<readonly [hour: number, light: SkyLight]> = [
   [0, NIGHT],
   [4.5, NIGHT],
-  /* Lavender first light, then gold as the sun clears the hills */
-  [5.75, { tint: 0x9a80b4, glow: 0x000000, saturation: -0.15, vignette: 0.55 }],
-  [6.75, { tint: 0xffd4aa, glow: 0x1c0f04, saturation: 0.1, vignette: 0.2 }],
-  [8, DAY],
-  [16.5, DAY],
-  /* Golden hour, then a magenta sunset sinking into blue */
-  [18, { tint: 0xffc68c, glow: 0x241204, saturation: 0.25, vignette: 0.2 }],
-  [19.25, { tint: 0xd47a92, glow: 0x0c0408, saturation: 0, vignette: 0.55 }],
-  [20.5, { tint: 0x4a5298, glow: 0x000000, saturation: -0.35, vignette: 0.8 }],
-  [22, NIGHT],
+  [6, { tint: 0xa8aab4, saturation: -0.1, vignette: 0.4 }],
+  [7.5, DAY],
+  [17, DAY],
+  [18.5, { tint: 0xc8c8c8, saturation: 0, vignette: 0.2 }],
+  [20, { tint: 0x6a7090, saturation: -0.3, vignette: 0.65 }],
+  [21.5, NIGHT],
   [24, NIGHT],
 ];
 
@@ -40,7 +37,6 @@ const mixColor = (from: number, to: number, t: number) =>
 
 const mixLight = (from: SkyLight, to: SkyLight, t: number): SkyLight => ({
   tint: mixColor(from.tint, to.tint, t),
-  glow: mixColor(from.glow, to.glow, t),
   saturation: lerp(from.saturation, to.saturation, t),
   vignette: lerp(from.vignette, to.vignette, t),
 });
