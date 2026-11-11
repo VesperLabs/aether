@@ -1,10 +1,9 @@
 // @vitest-environment node
 import type { Socket } from "socket.io-client";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
-import { botPersonalities } from "@/content";
 import { once, startTestServer, type TestServer } from "./test-server";
 
-/** NPCs whose actor has a `mind`: the planning brain from `rules/bots` on an NPC body. */
+/** Adventurers: ordinary actors whose `behaviors` make them act their own way, on the same brain as mobs. */
 let server: TestServer;
 
 type Anything = any;
@@ -23,8 +22,6 @@ async function spawn(socket: Socket, actor: string): Promise<Anything> {
   );
 }
 
-const distance = (a: Anything, b: Anything) => Math.hypot(a.x - b.x, a.y - b.y);
-
 beforeAll(async () => {
   process.env.ENABLE_CHEATS = "true";
   server = await startTestServer();
@@ -40,17 +37,16 @@ afterEach(() => {
 
 afterAll(() => server?.close());
 
-describe("NPC minds", () => {
-  it("spawns with a human body the room sees, and a mind instead of behaviors", async () => {
+describe("adventurers", () => {
+  it("spawn with the body and gear their actor gives them", async () => {
     const { socket } = await server.login();
     const joined = once(socket, "npcJoin");
     const traveler = await spawn(socket, "traveler");
-    expect(traveler.mind.personality).toBe("wanderer");
     expect((await joined)[0].profile.race).toBe("human");
     expect(traveler.equipment.handLeft?.key).toBe("hatchet");
   });
 
-  it("an idler picks its strategy and stands still", async () => {
+  it("one that guards stays where it spawned", async () => {
     const { socket } = await server.login();
     const loiterer = await spawn(socket, "loiterer");
     let moving = false;
@@ -58,41 +54,36 @@ describe("NPC minds", () => {
       await server.run(socket, 100);
       moving ||= loiterer.vx !== 0 || loiterer.vy !== 0;
     }
-    expect(loiterer.mind.memory.strategy).toBe("idle");
+    expect(loiterer.state.behavior).toBe("guard");
     expect(moving).toBe(false);
   });
 
-  it("a wanderer strolls around where it spawned, and never far", async () => {
+  it("one with only the default behaviors wanders off", async () => {
     const { socket } = await server.login();
     const traveler = await spawn(socket, "traveler");
-    const radius = botPersonalities.wanderer.wanderRadius;
-    let furthest = 0;
-    await server.until(socket, () => furthest > 8, {
-      step: () => {
-        furthest = Math.max(furthest, distance(traveler, traveler.startingCoords));
-        expect(furthest).toBeLessThan(radius + 40);
-      },
+    const start = { x: traveler.x, y: traveler.y };
+    await server.until(socket, () => Math.hypot(traveler.x - start.x, traveler.y - start.y) > 4, {
       maxMs: 30000,
     });
   });
 
-  it("comes back by itself after dying", async () => {
+  it("come back by themselves after dying", async () => {
     const { socket } = await server.login();
     const traveler = await spawn(socket, "traveler");
     traveler.setDead();
     await server.until(socket, () => !traveler.state.isDead, { maxMs: 20000 });
   });
 
-  it("a tamed copy follows its owner instead of thinking for itself", async () => {
+  it("a tamed one follows its owner", async () => {
     const { socket, player } = await server.login();
-    const traveler = await spawn(socket, "traveler");
-    traveler.x = player.x;
-    traveler.y = player.y;
-    expect((await cheat(socket, "/npc tame traveler")).type).toBe("system");
+    const loiterer = await spawn(socket, "loiterer");
+    loiterer.x = player.x;
+    loiterer.y = player.y;
+    expect((await cheat(socket, "/npc tame loiterer")).type).toBe("system");
     const pet = Object.values<Anything>(server.world.npcs).find(
       (npc) => npc.state.ownerId === socket.id,
     );
-    expect(pet.mind).toBeUndefined();
-    expect(pet.behaviors).toContain("follow");
+    player.x += 200;
+    await server.until(socket, () => pet.state.behavior === "follow", { maxMs: 5000 });
   });
 });

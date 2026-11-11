@@ -71,7 +71,7 @@ export function mobBrain(arena: Arena, mob: BrainMob): System<ArenaWorld> {
           abilities: {},
           buffs: [],
           weapons: {},
-          behaviors: ["aggressive"],
+          behaviors: { fight: { starts: "onSight" } },
         },
         state: mob.state,
         isStunned: false,

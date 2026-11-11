@@ -45,7 +45,8 @@ describe("brain", () => {
   });
 
   it("chasing beats everything", () => {
-    const busy = ctx({ canChase: true, state: { isStatic: true }, rest: { isOutOfBounds: true } });
+    const busy = ctx({ canChase: true, rest: { isOutOfBounds: true } });
+    busy.input.npc.behaviors = { guard: {} };
     expect(chooseBehavior(busy, ["wander", "guard", "unstuck", "chase"])).toBe("chase");
   });
 
@@ -56,13 +57,14 @@ describe("brain", () => {
 
   it("guards over talking, talks over leashing", () => {
     const all = ["guard", "talk", "leash", "wander"] as const;
-    const talking = (state: Partial<NpcBehaviorInput["state"]>) => {
-      const c = ctx({ state });
+    const talking = (behaviors: NpcBehaviorInput["npc"]["behaviors"]) => {
+      const c = ctx({});
+      c.input.npc.behaviors = behaviors;
       c.input.npc.hasTalkers = true;
       c.input.npc.x = 500;
       return chooseBehavior(c, all);
     };
-    expect(talking({ isStatic: true })).toBe("guard");
-    expect(talking({ walkRange: 10 })).toBe("talk");
+    expect(talking({ guard: {} })).toBe("guard");
+    expect(talking({ wander: { radius: 10 } })).toBe("talk");
   });
 });

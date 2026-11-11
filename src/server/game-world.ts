@@ -3,7 +3,7 @@ import { ItemBuilder, QuestBuilder, actors, isActorId, mapList, type Dice } from
 import { createServerDice } from "./server-dice";
 import { readMapFile } from "./map-files";
 import { subscribeLoot, type LootItem } from "@/rules/loot";
-import { subscribeThreat } from "@/rules/npc-behavior";
+import { mergeBehaviors, subscribeThreat } from "@/rules/npc-behavior";
 import { subscribeQuests } from "@/rules/quests";
 import { npcBaseStats, subscribeStats } from "@/rules/stats";
 import { addRoom, createRoom, createWorld } from "@/rules/world";
@@ -47,10 +47,17 @@ export function spawnNpc(
   const npc = getActorDefinition(name);
   if (!npc) return;
   const id = world.dice.newId();
+  const spawn = Object.fromEntries(properties.map((p) => [p.name, p.value]));
+  /* A spawn's `walkRange` is its `wander` radius there */
+  const { walkRange, ...state } = spawn;
   world.npcs[id] = new Npc(world, {
     id,
     room,
     ...npc,
+    behaviors: mergeBehaviors(
+      npc.behaviors,
+      typeof walkRange === "number" ? { wander: { radius: walkRange } } : {},
+    ),
     //need to merge these keys together, but add their values
     baseStats: npcBaseStats(npc),
     name,
@@ -59,7 +66,7 @@ export function spawnNpc(
     y,
     state: {
       ...npc.state,
-      ...Object.fromEntries(properties.map((p) => [p.name, p.value])),
+      ...state,
     },
     startingCoords: { x: npc?.x, y: npc?.y },
   }) as unknown as Npc;

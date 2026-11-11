@@ -28,7 +28,7 @@ const AGGRESSIVE_COLOR = 0xef4444;
 const npcColor = (npc: Player) => {
   if (npc.state?.ownerId) return PARTY_COLOR;
   if (npc.talks) return KEEPER_COLOR;
-  return npc.behaviors?.includes("aggressive") ? AGGRESSIVE_COLOR : PASSIVE_COLOR;
+  return npc.aggressive ? AGGRESSIVE_COLOR : PASSIVE_COLOR;
 };
 
 /** Dot textures are drawn this many times sharper than they show, then scaled down smoothly. */

@@ -32,7 +32,7 @@ export const actors1 = {
       gender: "female",
       race: "human",
     },
-    state: { isStatic: true },
+    behaviors: { guard: {} },
     baseStats: { level: 50 },
     abilities: { "1": ["spell", "common", "waterball"] },
     equipment: {
@@ -73,7 +73,7 @@ export const actors1 = {
       gender: "male",
       race: "human",
     },
-    state: { isStatic: true },
+    behaviors: { guard: {} },
     baseStats: { level: 50 },
     equipment: {
       handLeft: ["weapon", "common", "katar"],
@@ -114,7 +114,7 @@ export const actors1 = {
       gender: "male",
       race: "human",
     },
-    state: { isStatic: true },
+    behaviors: { guard: {} },
     baseStats: { level: 50 },
     equipment: {
       handLeft: ["ranged", "common", "shortBow"],
@@ -153,7 +153,7 @@ export const actors1 = {
       gender: "female",
       race: "human",
     },
-    state: { isStatic: true },
+    behaviors: { guard: {} },
     baseStats: { level: 50 },
     equipment: {
       handLeft: null,

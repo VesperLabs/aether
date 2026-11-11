@@ -9,7 +9,7 @@ import {
   type NpcAbility,
 } from "./abilities";
 import { decideAggro, isNpcAttackReady, type NpcPlayerView, type NpcSelfView } from "./aggro";
-import { isNpcAggressive, isNpcPassive } from "./stance";
+import { isNpcAggressive, isNpcPassive, keepsAway } from "./behavior-options";
 import {
   NPC_EXTRA_CAST_TIME,
   NPC_HOME_RANGE,
@@ -22,16 +22,10 @@ import { checkInRange, distanceBetween, getShouldAttackRange } from "./range";
 import { getWeaponBand, isInBand } from "./reach";
 import type { Body, NpcWeaponRanges } from "./range";
 import type { Rng } from "@/rules/world";
-import {
-  DEFAULT_NPC_BEHAVIORS,
-  NPC_BEHAVIORS,
-  type BehaviorContext,
-  type NpcBehavior,
-  type NpcBehaviorId,
-  isMovementBehavior,
-} from "./behaviors";
+import { NPC_BEHAVIOR_IDS, NPC_BEHAVIORS, type NpcBehaviorId } from "./behaviors/behavior-list";
+import type { BehaviorContext, NpcBehavior } from "./behaviors/types";
 import { chooseBehavior } from "./brain";
-import type { MobBehavior } from "@/content";
+import type { ActorBehaviors } from "@/content";
 import { isKnockedBack, type KnockbackState, type LungeState } from "@/rules/movement";
 import { decideLungeMovement, isLungeSpell, isRecoveringFromLunge } from "./lunge";
 import type { WanderStep } from "./wander";
@@ -59,15 +53,13 @@ export interface NpcBehaviorInput {
     abilities: Record<string, NpcAbility | null | undefined>;
     buffs: ActiveBuff[];
     weapons: NpcWeaponRanges;
-    /** Opt-in behaviors from content, on top of `DEFAULT_NPC_BEHAVIORS`. */
-    behaviors?: readonly MobBehavior[];
+    /** What it does, from content and its map spawn; unset parts come from the defaults. */
+    behaviors?: ActorBehaviors;
     /** Warning before an attack or spell lands, from content; unset means `NPC_WARNING_DELAY`. */
     windupMs?: number;
   };
   state: LungeState &
     KnockbackState & {
-      isStatic?: boolean;
-      walkRange?: number;
       isDead?: boolean;
       isAiming?: boolean;
       isAttacking?: boolean;
@@ -112,6 +104,8 @@ export type NpcMovement =
   /** Move toward the target player, pathing around obstacles if `pathed`. */
   | { type: "chase"; pathed: boolean }
   | { type: "returnToSpawn"; pathed: boolean }
+  /** Walk to a spot, like a guard post. */
+  | { type: "walkTo"; to: { x: number; y: number }; pathed: boolean }
   /** Stand at spawn, facing down after `faceDownAfterMs`, or walk back there. */
   | { type: "waitAtSpawn"; faceDownAfterMs: number }
   | { type: "talk" }
@@ -238,14 +232,14 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
     isAttacking = false;
   }
 
-  if (isResetting() || isNpcPassive(npc.behaviors)) {
+  if (isResetting() || isNpcPassive(npc)) {
     // Walking home, or never fights: nobody gets noticed
     setLockedPlayerId(null);
     if (isResetting() && checkInRange(npc, npc.home ?? npc.startingCoords, NPC_HOME_RANGE)) {
       finishReset = true;
     }
   } else {
-    if (isNpcAggressive(npc.behaviors)) handleAggroState();
+    if (isNpcAggressive(npc)) handleAggroState();
     // Threat outranks proximity: fight whoever angered it most
     if (input.threatTarget && !input.threatTarget.isDead) {
       setLockedPlayerId(input.threatTarget.socketId);
@@ -355,7 +349,6 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
   function decideMovement(): NpcMovement {
     // Check if player is in range for aggro
     const canChase = !isResetting() && !!targetPlayer && handleAggroState() && !targetPlayer.isDead;
-    const ids = [...DEFAULT_NPC_BEHAVIORS, ...(npc.behaviors ?? []).filter(isMovementBehavior)];
     // Stand where the next shot lands: the spell it is about to cast, else its ranged weapon,
     // else (kiters) its longest spell
     const nextSpellBand = getNextSpellBand({
@@ -370,7 +363,7 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
     const standBand =
       nextSpellBand ??
       weaponBand ??
-      (ids.includes("kite") ? getLongestSpellBand(npc.abilities) : undefined);
+      (keepsAway(npc) ? getLongestSpellBand(npc.abilities) : undefined);
     const ctx: BehaviorContext = {
       input,
       target: targetPlayer,
@@ -382,7 +375,7 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
       isAttacking,
       isResetting: isResetting(),
     };
-    behaviorId = chooseBehavior(ctx, ids, state.behavior) ?? "wander";
+    behaviorId = chooseBehavior(ctx, NPC_BEHAVIOR_IDS, state.behavior) ?? "idle";
     const behavior: NpcBehavior = NPC_BEHAVIORS[behaviorId];
 
     if (behavior.engaged && targetPlayer) {

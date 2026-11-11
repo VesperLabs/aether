@@ -53,7 +53,7 @@ describe("getFullCharacterState", () => {
       "inventory",
       "profile",
       "kind",
-      "behaviors",
+      "aggressive",
       "talks",
       "charClass",
       "npcKills",

@@ -53,8 +53,8 @@ type BuffUpdate = BuffCharacterWire | FullCharacterWire;
 
 export class Player extends Character {
   declare scene: SceneMain;
-  /** NPCs only: their opt-in behaviors (`aggressive` and so on). */
-  behaviors?: readonly string[];
+  /** NPCs only: attacks on sight. */
+  aggressive?: boolean;
   /** NPCs only: players can talk to it. */
   talks?: boolean;
   /** Only the hero has a party. */
@@ -99,7 +99,7 @@ export class Player extends Character {
   declare isCasting?: boolean;
   constructor(scene: SceneMain, args: CharacterArgs) {
     super(scene, args);
-    this.behaviors = (args as { behaviors?: readonly string[] }).behaviors;
+    this.aggressive = (args as { aggressive?: boolean }).aggressive;
     this.talks = (args as { talks?: boolean }).talks;
 
     if (this.hasBuff("stealth")) {
@@ -286,7 +286,8 @@ export class Player extends Character {
     this.emit(CHARACTER_DIED);
     this.corpse.setVisible(!this.isMob());
     this.buffRack.setShown(false);
-    if (this.hidesName()) this.userName.setVisible(false);
+    /* Mobs leave no corpse, so no name either, companions included */
+    if (this.isMob()) this.userName.setVisible(false);
     if (this.isHero) window.dispatchEvent(new Event("HERO_DEAD"));
   }
   respawn() {
@@ -314,9 +315,8 @@ export class Player extends Character {
 
     this.hpBar.setVisible(shouldShow);
     /* The name first, so the buff row lays out around the name it will show with */
-    if (this.hidesName()) {
-      this.userName.setVisible(shouldShow);
-    }
+    /* Every frame, so it follows changes like a mob becoming a companion */
+    this.userName.setVisible(!this.hidesName() || shouldShow);
     /* Buffs show on hover only, at once */
     this.buffRack.setShown(!!(shouldShow && state?.isHovering));
   }

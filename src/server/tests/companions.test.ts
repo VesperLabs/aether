@@ -97,7 +97,7 @@ describe("companions", () => {
     const [pet] = companionsOf(socket.id as string);
     expect(pet.name).toBe("crab");
     expect(pet).not.toBe(wild);
-    expect(pet.behaviors).toContain("follow");
+    expect(pet.state.ownerId).toBe(socket.id);
     expect(wild.state.isDead).toBe(true);
     expect(wild.state.ownerId).toBeFalsy();
 
@@ -162,8 +162,7 @@ describe("companions", () => {
     const crab = Object.values<Anything>(server.world.npcs).find(
       (npc) => npc.name === "crab" && npc.state.spawnedBy === socket.id && !npc.state.ownerId,
     );
-    crab.behaviors = ["aggressive"];
-    crab.state.isStatic = false;
+    crab.behaviors = { fight: { starts: "onSight" } };
     crab.stats.hp = crab.stats.maxHp = 5;
     const killsBefore = player.npcKills?.crab ?? 0;
 

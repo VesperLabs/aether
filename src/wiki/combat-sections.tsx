@@ -1,20 +1,20 @@
 import { resolveAsset, type ActorDefinition } from "@/content";
+import { isNpcAggressive } from "@/rules/npc-behavior";
 import { Box, Flex, Text } from "@/ui";
 import { CARD_COLORS, SpriteFace } from "./card-pool";
 import { Divider, PAPER } from "./paper";
 import { DottedLine } from "./leader";
 import { ItemHover, ROW_STYLE, listedItems } from "./stat-row";
 
-/** Does it fight on its own terms: loot to drop, a temper, or a mind of its own? */
-export const fights = (actor: ActorDefinition) =>
-  Boolean(actor.drops || actor.behaviors || actor.mind);
+/** Does it fight on its own terms: loot to drop, or its own way of fighting? */
+export const fights = (actor: ActorDefinition) => Boolean(actor.drops || actor.behaviors?.fight);
 
 /** Green for a temper that won't attack first. */
 const PASSIVE_COLOR = "#15803d";
 
 /** "· passive" after the level line, for fighters that leave you be. */
 export const PassiveTag = ({ actor }: { actor: ActorDefinition }) =>
-  fights(actor) && !actor.behaviors?.includes("aggressive") ? (
+  fights(actor) && !isNpcAggressive(actor) ? (
     <Box as="span" sx={{ color: PASSIVE_COLOR }}>
       {" "}
       · passive

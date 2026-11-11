@@ -1,4 +1,5 @@
-import { NPC_BEHAVIORS, type BehaviorContext, type NpcBehaviorId } from "./behaviors";
+import { NPC_BEHAVIORS, type NpcBehaviorId } from "./behaviors/behavior-list";
+import type { BehaviorContext } from "./behaviors/types";
 import { NPC_BEHAVIOR_STICKINESS } from "./constants";
 
 /**
