@@ -2,3 +2,4 @@ export { CharacterModel, filterVisibleEquipment, withCharacterModel } from "./ch
 export type { CharacterState } from "./state";
 export { APPEARANCE_OPTIONS, chooseAppearance, type Appearance } from "./appearance";
 export { cleanUserName } from "./user-name";
+export { getActiveItemSlots, type ActiveSlotsInput } from "./active-slots";
