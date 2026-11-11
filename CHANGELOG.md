@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.28.0](https://github.com/VesperLabs/aether/compare/v0.27.0...v0.28.0) (2026-11-11)
+
+
+### Features
+
+* day/night cycle, lights, real-world seasons and a sky disc ([#304](https://github.com/VesperLabs/aether/issues/304)) ([b6872b8](https://github.com/VesperLabs/aether/commit/b6872b870631f12a24e309d683e0d5805c7b2a5b))
+
 ## [0.27.0](https://github.com/VesperLabs/aether/compare/v0.26.0...v0.27.0) (2026-11-11)
 
 
