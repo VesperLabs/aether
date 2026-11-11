@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.24.1](https://github.com/VesperLabs/aether/compare/v0.24.0...v0.24.1) (2026-11-11)
+
+
+### Bug Fixes
+
+* wiki item refs and Enter behind modals ([#290](https://github.com/VesperLabs/aether/issues/290)) ([07c46ef](https://github.com/VesperLabs/aether/commit/07c46ef8b0e4ebb396d0617f6c72a0cd00792ea5))
+
 ## [0.24.0](https://github.com/VesperLabs/aether/compare/v0.23.0...v0.24.0) (2026-11-09)
 
 
