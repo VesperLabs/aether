@@ -49,8 +49,10 @@ export { itemList } from "./items/item-scaling";
 export { itemSetList, type ItemSetName } from "./items/item-sets";
 export type { BuiltItem, ItemDefinition } from "./items/item-types";
 export { getMapByName } from "./maps/get-map";
+export { currentMapName, type MapName } from "./maps/renamed-maps";
 export { mapImageList } from "./maps/map-image-list";
 export { mapList } from "./maps/map-list";
+export { mapTitle } from "./maps/map-title";
 export { musicCredits } from "./maps/music-credits";
 export { actors, isActorId, type ActorId } from "./actors/actors";
 export type {

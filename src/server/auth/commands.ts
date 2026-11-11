@@ -1,3 +1,4 @@
+import { currentMapName } from "@/content";
 import { broadcastPlayerJoin } from "@/server/net/room-broadcast";
 import { getRoomState } from "@/server/net/room-sync";
 import { areCheatsEnabled } from "@/server/admin/commands";
@@ -87,10 +88,15 @@ function enterWorld(ctx: CommandContext, user: UserDocument) {
     }
   }
 
-  const player = createPlayer(world, user.roomName, {
+  /* Characters saved before a map was renamed load into its new name */
+  const roomName = currentMapName(user.roomName);
+  const spawn = user.spawn && { ...user.spawn, roomName: currentMapName(user.spawn.roomName) };
+  const player = createPlayer(world, roomName, {
     socketId,
     peerId: session.peerId,
     ...user,
+    roomName,
+    ...(spawn && { spawn }),
   });
 
   joinWorld(ctx, player);

@@ -1,5 +1,5 @@
 import mapLoots from "virtual:map-loots";
-import { actors, findDefinition, questList, type ActorDefinition } from "@/content";
+import { actors, findDefinition, mapTitle, questList, type ActorDefinition } from "@/content";
 
 /**
  * Where a player can get an item: monsters that drop it, keepers that sell it, quests that give
@@ -57,15 +57,6 @@ for (const [map, items] of Object.entries(mapLoots)) {
       chance: item.chance,
     });
   }
-}
-
-/** A map's name as a title: "grassland-peaks-2" is "Grassland Peaks 2". */
-function mapTitle(name: string) {
-  return name
-    .replace(/([a-z])([A-Z])/g, "$1 $2")
-    .split("-")
-    .map((word) => word[0].toUpperCase() + word.slice(1))
-    .join(" ");
 }
 
 /** Where to get the item `type/rarity/key`, or `undefined` when nothing in the game gives it. */

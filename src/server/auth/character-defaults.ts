@@ -1,7 +1,7 @@
-import { ItemBuilder, type Dice } from "@/content";
+import { ItemBuilder, type Dice, type MapName } from "@/content";
 import { getBaseStats } from "@/rules/stats";
 
-export const PLAYER_DEFAULT_SPAWN = { roomName: "grassland-3", x: 1496, y: 2028 };
+export const PLAYER_DEFAULT_SPAWN = { roomName: "wildwood" satisfies MapName, x: 1496, y: 2028 };
 
 const STARTING_WEAPONS: Record<string, string> = {
   cleric: "staff",

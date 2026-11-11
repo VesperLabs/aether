@@ -8,6 +8,7 @@ import { FlyingLoot } from "@/client/hud/inventory/flying-loot";
 import { HUD_CONTAINER_ID } from "@/client/hud/app/constants";
 import { ModalSign } from "@/client/hud/menu/modal-sign";
 import { MenuBar } from "@/client/hud/menu/menu-bar";
+import { MapPlaque } from "./map-plaque";
 import { TopRightBar } from "@/client/hud/app/top-right-bar";
 import { ModalHome } from "@/client/hud/shop/modal-home";
 import {
@@ -349,6 +350,7 @@ export function App({ socket, peer, debug, game }: AppProps) {
                   {sign && <ModalSign />}
                   {homeModal?.profile && <ModalHome />}
                   <MenuGlobalKeys />
+                  <MapPlaque />
                   <MenuHud />
                   <MenuBar />
                   <TopRightBar />

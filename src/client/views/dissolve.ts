@@ -14,20 +14,26 @@ const SPAWN_MS = 650;
 /** A 4x4 ordered-dither matrix: pixels vanish in a checkered, retro pattern instead of fading. */
 const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
 
-/** The body layers that make up a character's look, without the bars, name or shadow. */
+/**
+ * The body layers that make up a character's look, without the bars, name or shadow, in the
+ * rig's current stacking order (it is restacked as the character turns).
+ */
 function getBodyLayers(player: Player) {
   const { handLeft, handRight, helmet } = player;
-  const layers: Phaser.GameObjects.GameObject[] = [
+  const layers = new Set<Phaser.GameObjects.GameObject | undefined>([
     player.chest,
     player.skin,
     player.face,
     player.whiskers,
     player.hair,
-  ];
-  layers.push(player.accessory, player.armor, player.boots, player.gloves, player.pants);
-  layers.push(helmet, handLeft, handRight);
-  return layers.filter(
-    (layer): layer is Phaser.GameObjects.Sprite => !!(layer as Phaser.GameObjects.Sprite)?.visible,
+  ]);
+  for (const layer of [player.accessory, player.armor, player.boots, player.gloves, player.pants]) {
+    layers.add(layer);
+  }
+  for (const layer of [helmet, handLeft, handRight]) layers.add(layer);
+  return player.rig.list.filter(
+    (layer): layer is Phaser.GameObjects.Sprite =>
+      layers.has(layer) && !!(layer as Phaser.GameObjects.Sprite).visible,
   );
 }
 

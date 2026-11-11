@@ -2,19 +2,19 @@ import type { MapDefinition } from "./map-types";
 
 export const mapList = [
   {
-    name: "grassland",
+    name: "meadow",
     music: "./assets/music/stories-of-long-ago.mp3",
-    json: "./assets/tilemaps/grassland.json",
+    json: "./assets/tilemaps/meadow.json",
   },
   {
-    name: "grassland-2",
+    name: "town-road",
     music: "./assets/music/stories-of-long-ago.mp3",
-    json: "./assets/tilemaps/grassland-2.json",
+    json: "./assets/tilemaps/town-road.json",
   },
   {
-    name: "grassland-3",
+    name: "wildwood",
     music: "./assets/music/stories-of-long-ago.mp3",
-    json: "./assets/tilemaps/grassland-3.json",
+    json: "./assets/tilemaps/wildwood.json",
   },
   {
     name: "mine",
@@ -27,38 +27,38 @@ export const mapList = [
     json: "./assets/tilemaps/town.json",
   },
   {
-    name: "townInside",
+    name: "town-houses",
     music: "./assets/music/village-life-was-hard.mp3",
-    json: "./assets/tilemaps/townInside.json",
+    json: "./assets/tilemaps/town-houses.json",
   },
   {
-    name: "townInside-tents",
+    name: "tents",
     music: "./assets/music/the-wizards-concoction.mp3",
-    json: "./assets/tilemaps/townInside-tents.json",
+    json: "./assets/tilemaps/tents.json",
   },
   {
-    name: "grassland-graveyard",
+    name: "graveyard",
     music: "./assets/music/troubled-forest.mp3",
-    json: "./assets/tilemaps/grassland-graveyard.json",
+    json: "./assets/tilemaps/graveyard.json",
   },
   {
-    name: "grassland-peaks",
+    name: "foothills",
     music: "./assets/music/our-mountain.mp3",
-    json: "./assets/tilemaps/grassland-peaks.json",
+    json: "./assets/tilemaps/foothills.json",
   },
   {
-    name: "grassland-peaks-2",
+    name: "peak-camp",
     music: "./assets/music/our-mountain.mp3",
-    json: "./assets/tilemaps/grassland-peaks-2.json",
+    json: "./assets/tilemaps/peak-camp.json",
   },
   {
-    name: "grassland-peaks-3",
+    name: "summit",
     music: "./assets/music/our-mountain.mp3",
-    json: "./assets/tilemaps/grassland-peaks-3.json",
+    json: "./assets/tilemaps/summit.json",
   },
   {
-    name: "dungeon-aqueducts",
+    name: "aqueducts",
     music: "./assets/music/over-ancient-waters.mp3",
-    json: "./assets/tilemaps/dungeon-aqueducts.json",
+    json: "./assets/tilemaps/aqueducts.json",
   },
 ] as const satisfies readonly MapDefinition[];

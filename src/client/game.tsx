@@ -51,6 +51,8 @@ async function startApp() {
     },
     antialias: false,
     pixelArt: true,
+    // Snap the camera to whole pixels: at fractional scroll some tiles sample the neighboring texel and shimmer.
+    roundPixels: true,
     plugins: {
       scene: [
         {

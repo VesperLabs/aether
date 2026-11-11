@@ -1,0 +1,41 @@
+{
+  "16,0": {
+    "from": "grassland-2",
+    "tile": [6, 2],
+    "cut": true
+  },
+  "0,11": {
+    "from": "grassland-2",
+    "tile": [6, 2],
+    "cut": true
+  },
+  "16,13": {
+    "from": "grassland-2",
+    "tile": [9, 2],
+    "cut": true
+  },
+  "17,13": {
+    "from": "grassland",
+    "tile": [2, 14],
+    "cut": true
+  },
+  "18,13": {
+    "from": "grassland",
+    "tile": [9, 12],
+    "cut": true
+  },
+  "16,14": {
+    "from": "grassland-2",
+    "tile": [5, 2],
+    "cut": true
+  },
+  "17,14": {
+    "from": "grassland-2",
+    "tile": [9, 1]
+  },
+  "17,15": {
+    "from": "grassland-2",
+    "tile": [12, 4],
+    "cut": true
+  }
+}
