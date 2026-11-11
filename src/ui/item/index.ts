@@ -8,5 +8,6 @@ export { ELEMENT_EFFECTS } from "./element-effects";
 export { ElementSim } from "./element-sim";
 export { outlineFilter } from "./element-outline";
 export { ElementalItemArt, previewSize } from "./elemental-item-art";
+export { ELEMENT_PAD, ElementalSprite } from "./elemental-sprite";
 export { deriveElements } from "./weapon-elements";
 export { SPRING_OPEN_ATTR, SPRING_OPEN_EVENT } from "./drag-spring-open";
