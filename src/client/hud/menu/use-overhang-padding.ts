@@ -3,6 +3,9 @@ import { useLayoutEffect, type RefObject } from "react";
 /** Marks an element that may stick out above its menu, like a big portrait. */
 export const OVERHANG_ATTR = "data-overhang";
 
+/** Set on the stack's parent to the padding, so what sits behind the menus can skip it. */
+export const OVERHANG_VAR = "--menu-overhang";
+
 /**
  * Pads the top of a scrolling menu stack so anything marked with `OVERHANG_ATTR` that sticks out
  * above the stack's content isn't clipped by the scroll box.
@@ -26,7 +29,10 @@ export function useOverhangPadding(ref: RefObject<HTMLElement | null>) {
         if (r.height > 0) overhang = Math.max(overhang, contentTop - r.top);
       }
       const next = `${Math.ceil(Math.max(0, overhang) / scale)}px`;
-      if (box.style.paddingTop !== next) box.style.paddingTop = next;
+      if (box.style.paddingTop !== next) {
+        box.style.paddingTop = next;
+        box.parentElement?.style.setProperty(OVERHANG_VAR, next);
+      }
     };
     const schedule = () => {
       if (!frame) frame = requestAnimationFrame(measure);
