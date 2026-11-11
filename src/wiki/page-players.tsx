@@ -2,7 +2,7 @@ import { Button, Flex, Grid, Text } from "@/ui";
 import { RowTitle } from "./row-title";
 import { useHashScroll } from "./use-hash-scroll";
 import { PlayerCard } from "./player-card";
-import { PlayerPanel } from "./player-panel";
+import { CharacterModal } from "./character-modal";
 import { useState } from "react";
 import { MENU_BUTTON } from "./menu-bar";
 import { useLocation } from "wouter";
@@ -49,14 +49,11 @@ export function PagePlayers() {
       });
 
   const selected = players.find((player) => player.id === selectedId);
-  /* The drawer's player, kept while it slides out after closing. */
-  const [shown, setShown] = useState<WikiPlayer>();
-  if (selected && selected !== shown) setShown(selected);
 
   return (
     <Flex sx={{ gap: 2, flexDirection: "column", mb: 4 }}>
       <RowTitle icon={"social"}>Players</RowTitle>
-      {/* Cards in a grid; the selected player's menus open in a drawer over the page. */}
+      {/* Cards in a grid; the selected player's menus open in a modal over the page. */}
       <Grid
         sx={{
           mt: 2,
@@ -79,14 +76,7 @@ export function PagePlayers() {
         hasNextPage={hasNextPage}
         isFetchingNextPage={isFetchingNextPage}
       />
-      {shown && (
-        <PlayerPanel
-          player={shown}
-          closing={!selected}
-          onClose={() => setSelectedId(null)}
-          onClosed={() => setShown(undefined)}
-        />
-      )}
+      {selected && <CharacterModal player={selected} onClose={() => setSelectedId(null)} />}
     </Flex>
   );
 }

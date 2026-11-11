@@ -35,7 +35,7 @@
     "check:dead-code": "knip --no-progress"
   },
   "dependencies": {
-    "@floating-ui/dom": "1.8.0",
+    "@floating-ui/react-dom": "2.1.9",
     "@tanstack/react-query": "^5.107.1",
     "@tanstack/react-virtual": "^3.14.26",
     "cors": "^2.8.6",
@@ -49,7 +49,6 @@
     "phaser": "^4.2.1",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
-    "react-tooltip": "^6.0.10",
     "socket.io": "^4.8.4",
     "socket.io-client": "^4.8.4",
     "theme-ui": "^0.17.4",

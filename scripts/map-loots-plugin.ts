@@ -1,7 +1,7 @@
 /**
  * `virtual:map-loots`: which items each map spawns on the ground (its "Loots" layer), at their
- * best odds, read from the maps whenever the wiki builds or a map changes in dev. The wiki gets
- * just this list instead of loading every map.
+ * best odds, and which actors any map places (its "Npcs" layer), read from the maps whenever the
+ * wiki builds or a map changes in dev. The wiki gets just these lists instead of loading every map.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -21,26 +21,30 @@ interface SpawnItem {
 
 interface TiledLayer {
   name?: string;
-  objects?: { properties?: { value?: unknown }[] }[];
+  objects?: { name?: string; properties?: { value?: unknown }[] }[];
   layers?: TiledLayer[];
 }
 
-function lootObjects(layers: TiledLayer[] = []): NonNullable<TiledLayer["objects"]> {
+/** Every object on the layers called `name`, nested groups included. */
+function layerObjects(layers: TiledLayer[] = [], name: string): NonNullable<TiledLayer["objects"]> {
   return layers.flatMap((layer) => [
-    ...(layer.name === "Loots" ? (layer.objects ?? []) : []),
-    ...lootObjects(layer.layers),
+    ...(layer.name === name ? (layer.objects ?? []) : []),
+    ...layerObjects(layer.layers, name),
   ]);
 }
 
 function readAll(repoRoot: string) {
   const loots: Record<string, SpawnItem[]> = {};
+  const placed = new Set<string>();
   for (const map of [...mapList].sort((a, b) => a.name.localeCompare(b.name))) {
     const file = path.join(repoRoot, "public", map.json);
     if (!fs.existsSync(file)) continue;
     const tiled = JSON.parse(fs.readFileSync(file, "utf8")) as { layers?: TiledLayer[] };
+    /* An Npcs object is named after the actor it places */
+    for (const { name } of layerObjects(tiled.layers, "Npcs")) if (name) placed.add(name);
     /* One entry per item, at the best odds any of its spots gives */
     const best = new Map<string, SpawnItem>();
-    for (const object of lootObjects(tiled.layers)) {
+    for (const object of layerObjects(tiled.layers, "Loots")) {
       const items = JSON.parse(String(object.properties?.[0]?.value ?? "[]")) as SpawnItem[];
       for (const { type, rarity, key, chance } of items) {
         const id = `${type}/${rarity}/${key}`;
@@ -50,7 +54,7 @@ function readAll(repoRoot: string) {
     }
     if (best.size) loots[map.name] = [...best.entries()].sort().map(([, item]) => item);
   }
-  return loots;
+  return { loots, placedActors: [...placed].sort() };
 }
 
 /** Serves `virtual:map-loots`, and reloads it in dev when a map is saved. */
@@ -62,7 +66,11 @@ export function mapLootsPlugin(repoRoot: string): Plugin {
     load(id) {
       if (id !== RESOLVED_ID) return undefined;
       for (const map of mapList) this.addWatchFile(path.join(repoRoot, "public", map.json));
-      return `export default ${JSON.stringify(readAll(repoRoot))};`;
+      const { loots, placedActors } = readAll(repoRoot);
+      return [
+        `export default ${JSON.stringify(loots)};`,
+        `export const placedActors = ${JSON.stringify(placedActors)};`,
+      ].join("\n");
     },
     handleHotUpdate({ file, server }) {
       if (!file.startsWith(tilemaps)) return;

@@ -30,14 +30,14 @@ export const Sources = ({
       return {
         label: drop.name,
         value: percent(drop.chance),
-        color: CARD_COLORS.monster,
+        color: CARD_COLORS.drop,
         icon: asset && <SpriteFace asset={asset} tint={drop.tint} size={ICON} />,
       };
     }),
     ...(sources?.sellers ?? []).map((name) => ({
       label: name,
       value: "Shop",
-      color: CARD_COLORS.keeper,
+      color: CARD_COLORS.shop,
       icon: icon("pouch"),
     })),
     ...(sources?.quests ?? []).map((name) => ({
@@ -57,7 +57,7 @@ export const Sources = ({
     rows.push({
       label: "Any monster",
       value: `Lv ${randomLevels.min}–${randomLevels.max}`,
-      color: CARD_COLORS.monster,
+      color: CARD_COLORS.drop,
       icon: icon("chest"),
     });
   }

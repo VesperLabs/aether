@@ -159,9 +159,13 @@ export const WalkingSprite = ({
   const { width, height } = bounds;
   /* Sized by the standing frame alone: wider walk frames and the shadow spill past it, so neither
      shrinks the character.
-     Pixel art only stays even at whole-number scales; art bigger than the box shrinks smoothly. */
+     Pixel art only stays even at whole-number scales, so it grows by whole steps, unless that
+     would leave it under three quarters of the box (33px art in a 64px box stays 33px): then it
+     fills the box, a few uneven pixels being better than a tiny sprite. Art bigger than the box
+     shrinks smoothly. */
   const longest = Math.max(standBounds.width, standBounds.height);
-  const scale = longest > size ? size / longest : Math.floor(size / longest);
+  const whole = Math.floor(size / longest);
+  const scale = longest > size || whole * longest < size * 0.75 ? size / longest : whole;
   return (
     <Box
       as="canvas"

@@ -5,8 +5,7 @@ export const NAV = [
   { href: "/", label: "Home", icon: "book" },
   { href: "/players", label: "Players", icon: "social" },
   { href: "/items", label: "Items", icon: "chest" },
-  { href: "/keepers", label: "Keepers", icon: "pouch" },
-  { href: "/monsters", label: "Monsters", icon: "bounty" },
+  { href: "/characters", label: "Characters", icon: "bounty" },
 ];
 
 /** The dark brown outline of the wiki's raised buttons. */
