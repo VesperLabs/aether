@@ -3,7 +3,7 @@ import type { ItemRarityTable } from "./item-types";
 export const armorItems = {
   common: {
     clothRobe: {
-      level: 1,
+      tier: 1,
       name: "Cloth Robe",
       flavor: "A plain cloth robe. Every apprentice owns one.",
       base: "robe",
@@ -13,7 +13,7 @@ export const armorItems = {
       stats: { defense: [2, 3], maxMp: 2 },
     },
     clothCoat: {
-      level: 1,
+      tier: 1,
       name: "Cloth Coat",
       flavor: "A cloth coat, padded at the shoulders.",
       base: "coat",
@@ -24,7 +24,7 @@ export const armorItems = {
       requirements: { dexterity: 2 },
     },
     nutshellPlate: {
-      level: 1,
+      tier: 1,
       name: "Nutshell Light Plate",
       flavor: "Plates of hardened nutshell, laced together.",
       base: "light-plate-armor",
@@ -35,7 +35,7 @@ export const armorItems = {
       requirements: { strength: 4 },
     },
     nutshellHeavyPlate: {
-      level: 1,
+      tier: 1,
       name: "Nutshell Heavy Plate",
       flavor: "Layered nutshell plate. Surprisingly hard to crack.",
       base: "heavy-plate-armor",
@@ -46,7 +46,7 @@ export const armorItems = {
       requirements: { strength: 8 },
     },
     silkRobe: {
-      level: 9,
+      tier: 2,
       name: "Silk Robe",
       flavor: "A silk robe that drapes well and moves better.",
       base: "robe",
@@ -55,7 +55,7 @@ export const armorItems = {
       slot: "armor",
     },
     leatherCoat: {
-      level: 9,
+      tier: 2,
       name: "Leather Coat",
       flavor: "Tough leather, worn soft by the road.",
       base: "coat",
@@ -63,7 +63,7 @@ export const armorItems = {
       slot: "armor",
     },
     bronzePlate: {
-      level: 9,
+      tier: 2,
       name: "Bronze Light Plate",
       flavor: "Light bronze plate, fresh from Steve's forge.",
       base: "light-plate-armor",
@@ -73,7 +73,7 @@ export const armorItems = {
       stats: {},
     },
     bronzeHeavyPlate: {
-      level: 9,
+      tier: 2,
       name: "Bronze Heavy Plate",
       flavor: "Heavy bronze plate. Loud, sturdy and slow.",
       base: "heavy-plate-armor",
@@ -83,7 +83,7 @@ export const armorItems = {
       stats: {},
     },
     wizardRobe: {
-      level: 17,
+      tier: 3,
       name: "Wizard Robe",
       flavor: "Embroidered with runes only half its owners can read.",
       base: "robe",
@@ -92,7 +92,7 @@ export const armorItems = {
       stats: {},
     },
     ghoulhideCoat: {
-      level: 17,
+      tier: 3,
       name: "Ghoulhide Coat",
       flavor: "A coat of ghoul hide. Tough, cold and slightly damp.",
       base: "coat",
@@ -101,7 +101,7 @@ export const armorItems = {
       slot: "armor",
     },
     ironPlate: {
-      level: 17,
+      tier: 3,
       name: "Iron Light Plate",
       flavor: "Light iron plate for those who'd rather not be stabbed.",
       base: "light-plate-armor",
@@ -111,7 +111,7 @@ export const armorItems = {
       stats: {},
     },
     ironHeavyPlate: {
-      level: 17,
+      tier: 3,
       name: "Iron Heavy Plate",
       flavor: "Full iron plate. Arrows just give up.",
       base: "heavy-plate-armor",
@@ -123,7 +123,7 @@ export const armorItems = {
   },
   unique: {
     theMossmanProphecy: {
-      level: 1,
+      tier: 1,
       name: "The Mossman Prophecy",
       flavor: "The moss on it grows into words no one has finished reading.",
       base: "robe",
@@ -139,7 +139,7 @@ export const armorItems = {
       },
     },
     couriersCamouflage: {
-      level: 1,
+      tier: 1,
       name: "Courier's Camouflage",
       flavor: "The Courier was never late, and never seen.",
       base: "coat",
@@ -150,7 +150,7 @@ export const armorItems = {
       triggers: [{ event: "onHurt", type: "buff", name: "evasion", level: 1, chance: 15 }],
     },
     iceCrabShell: {
-      level: 9,
+      tier: 2,
       name: "The Ice Crab Shell",
       flavor: "Pried off an ice crab. It keeps you cool, and alive.",
       base: "heavy-plate-armor",
@@ -175,7 +175,7 @@ export const armorItems = {
       ],
     },
     fateShroud: {
-      level: 17,
+      tier: 3,
       name: "Fate Shroud",
       flavor: "Those who wear it say they already know how it ends.",
       base: "robe",
@@ -188,7 +188,7 @@ export const armorItems = {
   },
   set: {
     chetsPurpleShirt: {
-      level: 1,
+      tier: 1,
       setName: "chets",
       name: "Chet's Purple Shirt",
       flavor: "Chet's lucky shirt. He's never lost a game in it.",

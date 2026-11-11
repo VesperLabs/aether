@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { tierLevel } from "../power-curve";
 import type { Dice } from "../random";
 import { AFFIXES } from "./item-affixes";
 import { ItemBuilder } from "./item-builder";
@@ -53,7 +54,7 @@ describe("buildItem", () => {
     for (let seed = 1; seed <= 200; seed++) {
       const item = ItemBuilder.buildItem(seededDice(seed), "weapon", "rare", "sword");
       for (const name of item?.affixes ?? []) {
-        expect(affixByName.get(name)!.level).toBeLessThanOrEqual(item!.level);
+        expect(tierLevel(affixByName.get(name)!.tier)).toBeLessThanOrEqual(item!.level);
       }
     }
   });
@@ -79,7 +80,7 @@ describe("buildItem", () => {
     });
   });
 
-  it("gives spells a rank from their level", () => {
+  it("gives spells a rank and level from their tier", () => {
     expect(itemList.spell.common.fireball3).toMatchObject({ rank: 3, level: 17 });
   });
 });

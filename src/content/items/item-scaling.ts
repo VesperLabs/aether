@@ -1,4 +1,4 @@
-import { levelPower } from "../power-curve";
+import { tierLevel } from "../power-curve";
 import { itemData } from "./item-data";
 
 /** These stats do not grow with level: speeds, reach, costs and chances. */
@@ -33,9 +33,9 @@ export function multiplyValues(obj: Loose | undefined, multiplier: number): Loos
 }
 
 /**
- * Fills in every item from its base: the level 1 common item with the same `base`. What the item
- * leaves out comes from the base, with the base's stats grown to the item's own level on the level
- * curve. The item's level is also the level needed to use it. Returns a copy.
+ * Fills in every item from its base: the tier 1 common item with the same `base`. What the item
+ * leaves out comes from the base, with the base's stats multiplied by the item's tier. The tier
+ * also sets the item's level, the level needed to use it. Returns a copy.
  */
 export function scaleBaseStats(items: Loose): Loose {
   const merged: Loose = structuredClone(items);
@@ -47,12 +47,11 @@ export function scaleBaseStats(items: Loose): Loose {
     for (const rarity in rarities) {
       for (const key in rarities[rarity]) {
         const item = rarities[rarity][key];
-        item.level = item.level ?? 1;
-        const power = levelPower(item.level);
-        // a spell's rank is its step on the curve: level 1 is rank 1, level 9 rank 2
-        if (itemType === "spell") item.rank = Math.round(power);
+        const power = item.tier ?? 1;
+        item.level = tierLevel(power);
+        if (itemType === "spell") item.rank = power;
 
-        const baseItem = commons.find((c) => c.base === item.base && (c.level ?? 1) === 1);
+        const baseItem = commons.find((c) => c.base === item.base && (c.tier ?? 1) === 1);
         if (!baseItem) continue;
 
         const hasLevelReq =

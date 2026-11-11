@@ -3,7 +3,7 @@ import type { ItemRarityTable } from "./item-types";
 export const bagItems = {
   rare: {
     smallPouch: {
-      level: 1,
+      tier: 1,
       name: "Small Pouch",
       flavor: "A small pouch with room for a few more things.",
       base: "bag",
@@ -12,7 +12,7 @@ export const bagItems = {
       space: 4,
     },
     largePouch: {
-      level: 9,
+      tier: 2,
       name: "Large Pouch",
       flavor: "A large pouch for the serious collector.",
       base: "bag",
@@ -21,7 +21,7 @@ export const bagItems = {
       space: 8,
     },
     mediumPouch: {
-      level: 17,
+      tier: 3,
       name: "Large Pouch",
       flavor: "A sturdy pouch with plenty of room.",
       base: "bag",
@@ -33,7 +33,7 @@ export const bagItems = {
   unique: {
     raesBasket: {
       exclusive: true,
-      level: 9,
+      tier: 2,
       name: "Rae's Basket",
       flavor: "Rae's picnic basket. Somehow it never runs out of room.",
       base: "bag",

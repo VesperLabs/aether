@@ -1,5 +1,5 @@
 /* This file and Diablo II are the main reason this game exists */
-import { levelPower } from "../power-curve";
+import { levelPower, tierLevel } from "../power-curve";
 import { cloneJson, randomNumber, type Dice } from "../random";
 import { getMeleeRange } from "../assets/weapon-tips";
 import { AFFIXES, type AffixDefinition } from "./item-affixes";
@@ -127,7 +127,7 @@ function rollAffixes(
   for (let i = 0; i < wanted; i++) {
     const pool = (AFFIXES as readonly AffixDefinition[]).filter(
       (a) =>
-        a.level <= item.level &&
+        tierLevel(a.tier) <= item.level &&
         (a.types as readonly string[]).includes(item.type) &&
         perKind[a.kind] < count.perKind &&
         Object.keys(a.stats).every((stat) => !usedStats.has(stat)),

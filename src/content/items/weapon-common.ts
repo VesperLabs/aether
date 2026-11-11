@@ -2,7 +2,7 @@ import type { ItemDefinition } from "./item-types";
 
 export const weaponCommon = {
   katar: {
-    level: 1,
+    tier: 1,
     base: "fist",
     name: "Katar",
     flavor: "A punch dagger. Strap it on and swing like you mean it.",
@@ -12,7 +12,7 @@ export const weaponCommon = {
     requirements: { dexterity: 5 },
   },
   dagger: {
-    level: 1,
+    tier: 1,
     base: "dagger",
     name: "Dagger",
     flavor: "Short, quick and easy to hide. Every adventurer starts with one.",
@@ -22,7 +22,7 @@ export const weaponCommon = {
     requirements: { dexterity: 2 },
   },
   sword: {
-    level: 1,
+    tier: 1,
     base: "sword",
     name: "Short Sword",
     flavor: "A plain short sword. Light enough to swing all day.",
@@ -32,7 +32,7 @@ export const weaponCommon = {
     requirements: { strength: 2, dexterity: 2 },
   },
   scimitar: {
-    level: 1,
+    tier: 1,
     base: "scimitar",
     name: "Scimitar",
     flavor: "A curved blade made for slashing from the saddle.",
@@ -42,7 +42,7 @@ export const weaponCommon = {
     requirements: { dexterity: 3 },
   },
   wand: {
-    level: 1,
+    tier: 1,
     base: "wand",
     name: "Wand",
     flavor: "A slim stick that hums with a little stored magic.",
@@ -52,7 +52,7 @@ export const weaponCommon = {
     requirements: { intelligence: 3 },
   },
   staff: {
-    level: 1,
+    tier: 1,
     base: "staff",
     name: "Staff",
     flavor: "A long walking staff, sturdy enough to crack a skull.",
@@ -68,7 +68,7 @@ export const weaponCommon = {
     requirements: { vitality: 3 },
   },
   club: {
-    level: 1,
+    tier: 1,
     base: "club",
     name: "Club",
     flavor: "A heavy stick. The oldest weapon there is.",
@@ -78,7 +78,7 @@ export const weaponCommon = {
     requirements: { strength: 5 },
   },
   hatchet: {
-    level: 1,
+    tier: 1,
     base: "axe",
     name: "Hatchet",
     flavor: "A small axe for chopping wood, or whatever's in the way.",
@@ -88,7 +88,7 @@ export const weaponCommon = {
     requirements: { strength: 5 },
   },
   scythe: {
-    level: 1,
+    tier: 1,
     base: "scythe",
     name: "Scythe",
     flavor: "A farmer's tool that learned a second trade.",
@@ -98,7 +98,7 @@ export const weaponCommon = {
     requirements: { dexterity: 5 },
   },
   spear: {
-    level: 1,
+    tier: 1,
     base: "spear",
     name: "Spear",
     flavor: "Long reach, sharp point. Keeps trouble at arm's length.",
@@ -108,7 +108,7 @@ export const weaponCommon = {
     requirements: { strength: 6 },
   },
   spikes: {
-    level: 9,
+    tier: 2,
     base: "fist",
     name: "Spikes",
     flavor: "Knuckles studded with iron spikes. Not subtle.",
@@ -116,7 +116,7 @@ export const weaponCommon = {
     slot: "hands",
   },
   cinquedea: {
-    level: 9,
+    tier: 2,
     base: "dagger",
     name: "Cinquedea",
     flavor: "A broad, short blade, five fingers wide at the hilt.",
@@ -124,7 +124,7 @@ export const weaponCommon = {
     slot: "hands",
   },
   gladius: {
-    level: 9,
+    tier: 2,
     base: "sword",
     name: "Gladius",
     flavor: "A stout stabbing sword built for close quarters.",
@@ -133,7 +133,7 @@ export const weaponCommon = {
     stats: {},
   },
   talwar: {
-    level: 9,
+    tier: 2,
     base: "scimitar",
     name: "Talwar",
     flavor: "A curved sword with a disc hilt that hugs the hand.",
@@ -141,7 +141,7 @@ export const weaponCommon = {
     slot: "hands",
   },
   rod: {
-    level: 9,
+    tier: 2,
     base: "wand",
     name: "Rod",
     flavor: "A rod of carved wood for focusing simple spells.",
@@ -149,7 +149,7 @@ export const weaponCommon = {
     slot: "hands",
   },
   scepter: {
-    level: 9,
+    tier: 2,
     base: "staff",
     name: "Scepter",
     flavor: "A weighted scepter. Half symbol of office, half mace.",
@@ -158,7 +158,7 @@ export const weaponCommon = {
     slot: "hands",
   },
   cudgel: {
-    level: 9,
+    tier: 2,
     base: "club",
     name: "Cudgel",
     flavor: "A knotted club, thicker and meaner than most.",
@@ -166,7 +166,7 @@ export const weaponCommon = {
     slot: "hands",
   },
   tomahawk: {
-    level: 9,
+    tier: 2,
     base: "axe",
     name: "Tomahawk",
     flavor: "A light axe, balanced well enough to throw.",
@@ -174,7 +174,7 @@ export const weaponCommon = {
     slot: "hands",
   },
   sickle: {
-    level: 9,
+    tier: 2,
     base: "scythe",
     name: "Sickle",
     flavor: "A crescent blade for grain, and for things that bite.",
@@ -182,7 +182,7 @@ export const weaponCommon = {
     slot: "hands",
   },
   halberd: {
-    level: 9,
+    tier: 2,
     base: "spear",
     name: "Halberd",
     flavor: "An axe, a spike and a hook on one long pole.",
@@ -190,7 +190,7 @@ export const weaponCommon = {
     slot: "hands",
   },
   claw: {
-    level: 17,
+    tier: 3,
     base: "fist",
     name: "Claw",
     flavor: "Hooked blades worn over the knuckles.",
@@ -198,7 +198,7 @@ export const weaponCommon = {
     slot: "hands",
   },
   dirk: {
-    level: 17,
+    tier: 3,
     base: "dagger",
     name: "Dirk",
     flavor: "A long dagger, made for thrusting.",
@@ -206,7 +206,7 @@ export const weaponCommon = {
     slot: "hands",
   },
   claymore: {
-    level: 17,
+    tier: 3,
     base: "sword",
     name: "Claymore",
     flavor: "A great two-handed sword. Slow to swing, hard to stop.",
@@ -215,7 +215,7 @@ export const weaponCommon = {
     stats: {},
   },
   shamshir: {
-    level: 17,
+    tier: 3,
     base: "scimitar",
     name: "Shamshir",
     flavor: "A deeply curved blade that bites on the draw.",
@@ -223,7 +223,7 @@ export const weaponCommon = {
     slot: "hands",
   },
   baton: {
-    level: 17,
+    tier: 3,
     base: "wand",
     name: "Baton",
     flavor: "A short, hard rod. Good for keeping order.",
@@ -231,7 +231,7 @@ export const weaponCommon = {
     slot: "hands",
   },
   decanter: {
-    level: 17,
+    tier: 3,
     base: "staff",
     name: "Decanter",
     flavor: "A mage's flask of bottled power. Don't drink it.",
@@ -239,7 +239,7 @@ export const weaponCommon = {
     slot: "hands",
   },
   hammer: {
-    level: 17,
+    tier: 3,
     base: "club",
     name: "Hammer",
     flavor: "A war hammer. Dents armour, and whoever's inside it.",
@@ -247,7 +247,7 @@ export const weaponCommon = {
     slot: "hands",
   },
   cleaver: {
-    level: 17,
+    tier: 3,
     base: "axe",
     name: "Cleaver",
     flavor: "A butcher's blade, heavy and square.",
@@ -255,7 +255,7 @@ export const weaponCommon = {
     slot: "hands",
   },
   harvester: {
-    level: 17,
+    tier: 3,
     base: "scythe",
     name: "Harvester",
     flavor: "A great reaping blade for the end of the season.",
@@ -263,7 +263,7 @@ export const weaponCommon = {
     slot: "hands",
   },
   spetum: {
-    level: 17,
+    tier: 3,
     base: "spear",
     name: "Spetum",
     flavor: "A spear with two curved prongs to catch a blade.",

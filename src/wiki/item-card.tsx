@@ -15,7 +15,13 @@ import { ICON, Row } from "./card-row";
 import { Sources } from "./item-source-rows";
 
 /** An item as the wiki lists it: its definition, plus where it sits in the item list. */
-export type WikiItem = ItemDefinition & { key: string; type: string; rarity: string };
+/** A scaled item, which has the level its tier sets. */
+export type WikiItem = ItemDefinition & {
+  key: string;
+  type: string;
+  rarity: string;
+  level?: number;
+};
 
 /** `earthResistance` as "Earth resistance". */
 const words = (key: string) => {

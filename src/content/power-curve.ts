@@ -1,4 +1,4 @@
-/** Levels per step of the power curve. */
+/** Levels per tier: each tier is one step of the power curve. */
 const LEVELS_PER_POWER = 8;
 
 /**
@@ -8,4 +8,9 @@ const LEVELS_PER_POWER = 8;
  */
 export function levelPower(level: number): number {
   return 1 + (Math.max(1, level) - 1) / LEVELS_PER_POWER;
+}
+
+/** The level of an item tier, and the level needed to use it: tier 1 is 1, tier 2 is 9, 3 is 17. */
+export function tierLevel(tier: number): number {
+  return (Math.max(1, tier) - 1) * LEVELS_PER_POWER + 1;
 }
