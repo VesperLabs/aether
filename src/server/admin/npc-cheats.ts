@@ -95,12 +95,9 @@ function describe(world: ServerWorld, npc: Npc) {
   const name = npc.profile?.userName ?? npc.name;
   const side = npc.state.ownerId ? "yours" : npc.talks ? "peaceful" : "wild";
   const target = findCharacter(world, npc.state.lockedPlayerId);
-  const plan = npc.mind?.memory.plan;
   const doing = npc.state.isDead
     ? "dead"
-    : npc.mind
-      ? `${npc.mind.memory.strategy ?? "thinking"} → ${plan?.steps[plan.step]?.task ?? "-"}`
-      : `${npc.state.behavior ?? "idle"}${target ? ` ${target.profile?.userName ?? target.id}` : ""}`;
+    : `${npc.state.behavior ?? "idle"}${target ? ` ${target.profile?.userName ?? target.id}` : ""}`;
   return `${name} (${side}, ${npc.stats.hp}/${npc.stats.maxHp} hp, ${npc.room.name}): ${doing}`;
 }
 

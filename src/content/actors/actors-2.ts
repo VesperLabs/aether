@@ -12,7 +12,7 @@ export const actors2 = {
       gender: "male",
       race: "human",
     },
-    state: { isStatic: true },
+    behaviors: { guard: {} },
     baseStats: { level: 50 },
     equipment: {
       handLeft: null,
@@ -49,7 +49,6 @@ export const actors2 = {
       gender: "male",
       race: "human",
     },
-    state: { isStatic: false },
     baseStats: { level: 50 },
     equipment: {
       handLeft: null,
@@ -90,7 +89,6 @@ export const actors2 = {
       gender: "female",
       race: "human",
     },
-    state: { isStatic: false },
     baseStats: { level: 50 },
     equipment: {
       handLeft: null,
@@ -127,7 +125,6 @@ export const actors2 = {
       gender: "male",
       race: "human",
     },
-    state: { isStatic: false },
     baseStats: { level: 50 },
     abilities: { "1": ["spell", "common", "fireball"] },
     equipment: {
@@ -169,7 +166,6 @@ export const actors2 = {
       gender: "female",
       race: "human",
     },
-    state: { isStatic: false },
     baseStats: { level: 50 },
     equipment: {
       handLeft: null,
@@ -203,7 +199,7 @@ export const actors2 = {
       gender: "female",
       race: "human",
     },
-    state: { isStatic: true },
+    behaviors: { guard: {} },
     baseStats: { level: 50 },
     equipment: {
       handLeft: ["weapon", "common", "cudgel"],
@@ -240,7 +236,7 @@ export const actors2 = {
       gender: "male",
       race: "human",
     },
-    state: { isStatic: true },
+    behaviors: { guard: {} },
     baseStats: { level: 50 },
     equipment: {
       handLeft: ["weapon", "common", "cleaver"],

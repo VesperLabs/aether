@@ -1,6 +1,6 @@
 import type { ActorDefinition } from "./actor-types";
 
-/** Adventurers that think for themselves: human bodies with a `mind`. */
+/** Adventurers: actors with no shop or quests of their own, out and about like players. */
 export const actors4 = {
   traveler: {
     flavor: "Another adventurer passing through, seeing the sights and minding their own business.",
@@ -18,7 +18,6 @@ export const actors4 = {
       armor: ["armor", "common", "clothRobe"],
       pants: ["pants", "common", "clothPants"],
     },
-    mind: "wanderer",
   },
   loiterer: {
     flavor: "An apprentice mage who would rather people-watch than study.",
@@ -36,6 +35,6 @@ export const actors4 = {
       armor: ["armor", "common", "clothRobe"],
       pants: ["pants", "common", "clothPants"],
     },
-    mind: "idler",
+    behaviors: { guard: {} },
   },
 } as const satisfies Readonly<Record<string, ActorDefinition>>;

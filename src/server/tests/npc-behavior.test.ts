@@ -25,13 +25,10 @@ describe("npc behavior", () => {
     const { world, player, attacks, socket } = await login("warrior");
     const mob = Object.values<Anything>(world.npcs).find(
       (npc) =>
-        npc.room?.name === player.roomName &&
-        !npc.talks &&
-        !npc.state.isDead &&
-        npc.behaviors?.includes("aggressive"),
+        npc.room?.name === player.roomName && !npc.talks && !npc.state.isDead && npc.aggressive,
     );
     expect(mob).toBeTruthy();
-    mob.state.isStatic = false;
+    mob.behaviors = { ...mob.behaviors, guard: false };
 
     const place = () => {
       player.x = mob.x - 20;

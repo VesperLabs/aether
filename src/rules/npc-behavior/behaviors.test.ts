@@ -32,7 +32,7 @@ function input(over: {
       abilities: {},
       buffs: [],
       weapons: {},
-      behaviors: ["aggressive"],
+      behaviors: { fight: { starts: "onSight" } },
       ...over.npc,
     },
     state: {
@@ -63,7 +63,7 @@ describe("threat, leash and new behaviors", () => {
     const attacker = player({ x: 10 });
     const decision = decideNpcAction(
       input({
-        npc: { behaviors: ["passive"] },
+        npc: { behaviors: { fight: false } },
         state: { npcAttackReady: true },
         rest: { nearestPlayer: attacker, threatTarget: attacker },
       }),
@@ -131,12 +131,12 @@ describe("threat, leash and new behaviors", () => {
         }),
         never,
       );
-    expect(hurt(["aggressive"]).behavior).toBe("chase");
-    const retreating = hurt(["aggressive", "retreat"]);
+    expect(hurt({ fight: { starts: "onSight" } }).behavior).toBe("chase");
+    const retreating = hurt({ fight: { starts: "onSight", fleeBelow: 0.25 } });
     expect(retreating.movement).toEqual({ type: "flee", speedRatio: 0.5, retreatAt: NOW });
     expect(retreating.action.type).toBe("idle");
     // Still running a moment later, without restarting the clock
-    expect(hurt(["aggressive", "retreat"], NOW - 1000).movement).toEqual({
+    expect(hurt({ fight: { starts: "onSight", fleeBelow: 0.25 } }, NOW - 1000).movement).toEqual({
       type: "flee",
       speedRatio: 0.5,
     });
@@ -146,7 +146,7 @@ describe("threat, leash and new behaviors", () => {
     const decision = decideNpcAction(
       input({
         npc: {
-          behaviors: ["aggressive", "retreat"],
+          behaviors: { fight: { starts: "onSight", fleeBelow: 0.25 } },
           stats: { level: 5, walkSpeed: 50, attackDelay: 300, castDelay: 300, hp: 1, maxHp: 10 },
         },
         state: { retreatAt: NOW - 3000 },
@@ -160,7 +160,10 @@ describe("threat, leash and new behaviors", () => {
   it("kites with a ranged weapon when the target gets close", () => {
     const decision = decideNpcAction(
       input({
-        npc: { behaviors: ["aggressive", "kite"], weapons: { handLeft: { range: 150 } } },
+        npc: {
+          behaviors: { fight: { starts: "onSight", keepAway: true } },
+          weapons: { handLeft: { range: 150 } },
+        },
         rest: { nearestPlayer: player({ x: 30 }) },
       }),
       never,
@@ -171,7 +174,10 @@ describe("threat, leash and new behaviors", () => {
   it("kiters stand still while winding up a shot", () => {
     const decision = decideNpcAction(
       input({
-        npc: { behaviors: ["aggressive", "kite"], weapons: { handLeft: { range: 150 } } },
+        npc: {
+          behaviors: { fight: { starts: "onSight", keepAway: true } },
+          weapons: { handLeft: { range: 150 } },
+        },
         state: { isAiming: true },
         rest: { nearestPlayer: player({ x: 30 }) },
       }),
@@ -221,7 +227,7 @@ describe("threat, leash and new behaviors", () => {
     const retreating = decideNpcAction(
       input({
         npc: {
-          behaviors: ["aggressive", "retreat"],
+          behaviors: { fight: { starts: "onSight", fleeBelow: 0.25 } },
           stats: { level: 5, walkSpeed: 50, attackDelay: 300, castDelay: 300, hp: 1, maxHp: 10 },
         },
         state: { isAiming: true },
@@ -264,7 +270,10 @@ describe("threat, leash and new behaviors", () => {
     const at = (x: number) =>
       decideNpcAction(
         input({
-          npc: { behaviors: ["aggressive", "kite"], abilities: { "1": { base: "fireball" } } },
+          npc: {
+            behaviors: { fight: { starts: "onSight", keepAway: true } },
+            abilities: { "1": { base: "fireball" } },
+          },
           // Already fighting, so the target is tracked out to the kite range
           state: { lockedPlayerId: "p1" },
           rest: { lockedPlayer: player({ x }), nearestPlayer: player({ x }) },
@@ -279,7 +288,10 @@ describe("threat, leash and new behaviors", () => {
     const at = (x: number) =>
       decideNpcAction(
         input({
-          npc: { behaviors: ["aggressive"], abilities: { "1": { base: "fireball" } } },
+          npc: {
+            behaviors: { fight: { starts: "onSight" } },
+            abilities: { "1": { base: "fireball" } },
+          },
           state: { lockedPlayerId: "p1" },
           rest: { lockedPlayer: player({ x }), nearestPlayer: player({ x }) },
         }),
@@ -293,7 +305,10 @@ describe("threat, leash and new behaviors", () => {
   it("ranged NPCs close in around walls until they have a clear shot", () => {
     const decision = decideNpcAction(
       input({
-        npc: { behaviors: ["aggressive", "kite"], abilities: { "1": { base: "fireball" } } },
+        npc: {
+          behaviors: { fight: { starts: "onSight", keepAway: true } },
+          abilities: { "1": { base: "fireball" } },
+        },
         state: { lockedPlayerId: "p1" },
         rest: {
           lockedPlayer: player({ x: 120 }),
@@ -307,11 +322,20 @@ describe("threat, leash and new behaviors", () => {
     expect(decision.action.type).toBe("idle");
   });
 
+  it("a guard holds its post instead of wandering or following", () => {
+    const guard = (rest = {}) =>
+      decideNpcAction(input({ npc: { behaviors: { guard: {} }, x: 0, y: 0 }, rest }), never)
+        .behavior;
+    expect(decideNpcAction(input({ npc: { behaviors: {} } }), never).behavior).toBe("wander");
+    expect(guard()).toBe("guard");
+    expect(guard({ leader: { x: 200, y: 0 } })).toBe("guard");
+  });
+
   it("follows its leader, waiting when close", () => {
     const follow = (x: number) =>
       decideNpcAction(
         input({
-          npc: { behaviors: ["follow"] },
+          npc: { behaviors: {} },
           rest: { leader: { x, y: 0 } },
         }),
         never,
@@ -352,5 +376,21 @@ describe("lunges", () => {
     );
     expect(decision.movement).toEqual({ type: "standStill" });
     expect(decision.action.type).toBe("idle");
+  });
+});
+
+describe("guard", () => {
+  it("walks to its post when it has one, and waits there", () => {
+    const at = { x: 40, y: 0 };
+    const guard = (x: number) =>
+      decideNpcAction(input({ npc: { x, y: 0, behaviors: { guard: { at } } } }), never).movement;
+    expect(guard(0)).toEqual({ type: "walkTo", to: at, pathed: true });
+    expect(guard(40)).toEqual({ type: "waitAtSpawn", faceDownAfterMs: 200 });
+  });
+
+  it("stands still when it neither wanders nor guards", () => {
+    const decision = decideNpcAction(input({ npc: { behaviors: { wander: false } } }), never);
+    expect(decision.behavior).toBe("idle");
+    expect(decision.movement).toEqual({ type: "standStill" });
   });
 });

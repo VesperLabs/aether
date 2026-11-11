@@ -24,13 +24,11 @@ export const NPC_THREAT_DECAY_PER_SEC = 0.05;
 export const NPC_THREAT_SWITCH_RATIO = 1.1;
 /** How far an NPC follows a fight from its spawn before it gives up, walks home and heals. */
 export const NPC_LEASH_RANGE = 450;
-/** Below this share of max hp, an NPC with `retreat` runs from its target. */
-export const NPC_RETREAT_HP_RATIO = 0.25;
-/** An NPC with `retreat` runs once per fight, for this long, then turns and fights to the end. */
+/** An NPC with `fleeBelow` runs once per fight, for this long, then turns and fights to the end. */
 export const NPC_RETREAT_MS = 3000;
 /** Retreating NPCs limp away at this share of walk speed, so a chaser easily catches them. */
 export const NPC_RETREAT_SPEED_RATIO = 0.5;
-/** An NPC with `kite` and a ranged weapon backs off when its target gets this close. */
+/** An NPC that keeps away backs off when its target gets this close. */
 export const NPC_KITE_MIN_RANGE = 48;
 /** NPCs only shoot from this share of a projectile's flight distance, so a target on the move is still hit. */
 export const NPC_SHOT_MARGIN = 0.85;

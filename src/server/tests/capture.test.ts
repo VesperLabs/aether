@@ -27,7 +27,7 @@ async function setUp(amount: number) {
   crab.x = player.x + 60;
   crab.y = player.y;
   crab.vx = crab.vy = 0;
-  crab.state.isStatic = true;
+  crab.behaviors = { guard: {} };
   return { socket, player, ball, crab };
 }
 

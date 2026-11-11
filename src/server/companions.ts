@@ -1,4 +1,5 @@
 import { getFullCharacterState } from "@/network/sync";
+import { mergeBehaviors } from "@/rules/npc-behavior";
 import type { GameEventBus, Point, RoomData, System } from "@/rules/world";
 import { isAlly } from "./allegiance-adapter";
 import { findCharacter } from "./find-character";
@@ -43,11 +44,9 @@ export const canTame = (npc: Npc) => !npc.state.ownerId && !npc.state.isDead;
  */
 export function makeCompanion(npc: Npc, owner: Player) {
   npc.state.ownerId = owner.socketId;
-  /* Companions think with their follow-and-fight behaviors, not a planning mind. */
-  npc.mind = undefined;
-  npc.state.isStatic = false;
   npc.state.isResetting = false;
-  npc.behaviors = [...(npc.behaviors ?? []).filter((b) => b !== "aggressive"), "follow"];
+  /* It follows its owner (its leader now) instead of guarding a post, and only fights their fights */
+  npc.behaviors = mergeBehaviors(npc.behaviors, { guard: false, fight: { starts: "whenHit" } });
   npc.threat = {};
   npc.setLockedPlayerId(null);
   /* Appears on its owner, out of whatever wall or water it was caught in */

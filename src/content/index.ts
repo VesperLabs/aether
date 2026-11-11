@@ -18,12 +18,6 @@ export { resolveAsset } from "./assets/resolve-asset";
 export { soundList } from "./assets/sound-list";
 export { hairTints, skinTints } from "./assets/tints";
 export { faceTextures, genders, hairTextures, whiskersTextures } from "./assets/looks";
-export {
-  botPersonalities,
-  type BotPersonality,
-  type BotPersonalityId,
-  type BotStrategyId,
-} from "./bots";
 export { buffList, type BuffName } from "./buffs/buff-list";
 export type { BuffDefinition } from "./buffs/buff-types";
 export type { TriggerDefinition } from "./buffs/trigger-types";
@@ -63,12 +57,13 @@ export {
   type SeasonIcon,
 } from "./maps/seasons";
 export { actors, isActorId, type ActorId } from "./actors/actors";
-export type {
-  ActorDefinition,
-  MobBehavior,
-  MobMovementBehavior,
-  MobProfile,
-} from "./actors/actor-types";
+export type { ActorDefinition, MobProfile } from "./actors/actor-types";
+export {
+  DEFAULT_BEHAVIORS,
+  type ActorBehaviors,
+  type BehaviorId,
+  type BehaviorOptions,
+} from "./actors/behaviors";
 export { Quest, type QuestObjective } from "./quests/quest";
 export { QuestBuilder } from "./quests/quest-builder";
 export { questList, type QuestId } from "./quests/quest-list";

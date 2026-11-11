@@ -1,4 +1,4 @@
-import type { BotPersonalityId, MobBehavior } from "@/content";
+import type { ActorBehaviors } from "@/content";
 import type { AbilitySlot } from "@/rules/spells";
 import type { Hand } from "@/rules/combat";
 import {
@@ -11,7 +11,6 @@ import type { Player } from "./player";
 import { findCharacter } from "./find-character";
 import { applyNpcHits } from "./npc-hits";
 import { findLeader, homeOf } from "./npc-leader";
-import { createMind, runMind, type NpcMind } from "./npc-mind";
 import { isAlly } from "./allegiance-adapter";
 import type { Point, RoomData } from "@/rules/world";
 import { createSpell } from "./spell-adapter";
@@ -22,6 +21,7 @@ import {
   checkInRange,
   decayThreat,
   decideNpcAction,
+  isNpcAggressive,
   pickThreatTarget,
   pruneThreat,
   shouldRespawn,
@@ -59,8 +59,7 @@ type NpcArgs = CharacterArgs & {
   home?: Coordinate;
   drops?: Array<Drop>;
   hitBoxSize?: { width: number; height: number };
-  behaviors?: readonly MobBehavior[];
-  mind?: BotPersonalityId;
+  behaviors?: ActorBehaviors;
   windupMs?: number;
 };
 
@@ -97,11 +96,10 @@ export class Npc extends Character {
   /** Threat by player socket id; the top player is who it fights. */
   public threat: ThreatTable = {};
   public windup: WindupTrack = { seq: 0 };
-  /** From content; unset means the default behaviors and warning delay. */
-  public behaviors?: readonly MobBehavior[];
+  /** What it does: its actor's behaviors with its map spawn's merged over them. */
+  public behaviors?: ActorBehaviors;
+  /** From content; unset means the default warning delay. */
   public windupMs?: number;
-  /** A planning brain that runs instead of `behaviors`, from the actor's `mind` part. */
-  public mind?: NpcMind;
   /** Content name of the NPC it follows, from a `leader` map property. */
   public leaderName?: string;
   declare name: string;
@@ -133,10 +131,13 @@ export class Npc extends Character {
     this.rng = createRng(seedFromString(String(this.id ?? this.name)));
     /* Followers are picked per spawn: a `leader` map property makes this one follow. */
     this.leaderName = (this.state as { leader?: string }).leader;
-    this.behaviors = this.leaderName ? [...(args.behaviors ?? []), "follow"] : args.behaviors;
+    this.behaviors = args.behaviors;
     this.windupMs = args.windupMs;
-    if (args.mind) this.mind = createMind(this, args.mind);
     this.calculateStats(true);
+  }
+  /** Attacks on sight; synced so the client can mark it. */
+  get aggressive() {
+    return isNpcAggressive(this);
   }
   addThreat(playerSocketId: string, amount: number) {
     if (this.state.isDead || this.state.isResetting) return;
@@ -234,7 +235,6 @@ export class Npc extends Character {
       delta,
     );
 
-    if (this.mind) return runMind(this, this.mind);
     const decision = decideNpcAction(buildNpcBehaviorInput(this, { time, delta, now }), this.rng);
     this.applyDecision(decision);
   }

@@ -43,6 +43,8 @@ export function performNpcMovement(
       return movement.pathed ? walkToPathed(npc, targetPlayer) : walkTo(npc, targetPlayer);
     case "returnToSpawn":
       return movement.pathed ? walkToPathed(npc, npc.home()) : walkTo(npc, npc.home());
+    case "walkTo":
+      return movement.pathed ? walkToPathed(npc, movement.to) : walkTo(npc, movement.to);
     case "follow":
       if (!leader) return standStill(npc);
       // Around any wall in the way: walking straight at it and only pathing once pressed against

@@ -6,6 +6,7 @@ import { hasLineOfSight } from "@/rules/movement";
 import {
   AGGRO_KITE_RANGE,
   isNpcAggressive,
+  shootsOverWalls,
   type NpcBehaviorInput,
   type NpcPlayerView,
 } from "@/rules/npc-behavior";
@@ -46,8 +47,7 @@ export function buildNpcBehaviorInput(
 ): NpcBehaviorInput {
   const { state, world, room } = npc;
   const lockedPlayer = toPlayerView(findCharacter(world, state?.lockedPlayerId));
-  const nearestPlayer =
-    isNpcAggressive(npc.behaviors) || lockedPlayer ? toPlayerView(nearestFoe(npc)) : null;
+  const nearestPlayer = isNpcAggressive(npc) || lockedPlayer ? toPlayerView(nearestFoe(npc)) : null;
   return {
     now: frame.now,
     time: frame.time,
@@ -80,7 +80,7 @@ export function buildNpcBehaviorInput(
     nearestPlayer,
     threatTarget: toPlayerView(findCharacter(world, npc.threatTargetId())),
     leader: npc.findLeader(),
-    hasClearShot: npc.behaviors?.includes("shootsOverWalls")
+    hasClearShot: shootsOverWalls(npc)
       ? undefined
       : (target) => hasLineOfSight(room.map.grid, npc, target),
     isNearCollideTile: npc.isNearCollideTile(),
