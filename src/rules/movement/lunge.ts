@@ -1,15 +1,17 @@
 import { spellDetails } from "@/content";
 
+const { speed, hitMs } = spellDetails.tackle.delivery;
+
 /**
  * The lunge: a spell that dashes its caster along the aimed angle, hitting whoever it runs
  * through. Warriors and mobs cast the same one. Its length and speed come from the spell's own
- * definition (`maxActiveTime` and `spellSpeed`), so tuning it in content tunes both.
+ * dash (`hitMs` and `speed`), so tuning it in content tunes both.
  */
 
 /** How long the dash lasts, in ms. */
-export const LUNGE_DURATION = spellDetails.tackle.maxActiveTime;
+export const LUNGE_DURATION = hitMs;
 /** Pixels covered by a full lunge in open ground. */
-export const LUNGE_DISTANCE = (spellDetails.tackle.spellSpeed * LUNGE_DURATION) / 1000;
+export const LUNGE_DISTANCE = (speed * LUNGE_DURATION) / 1000;
 
 /** An aimed lunge carries on this far past its target, so one running away is still reached. */
 export const LUNGE_OVERSHOOT = 12;
@@ -47,11 +49,10 @@ export function getLungeDuration(distance?: number) {
     LUNGE_MAX_DISTANCE,
     Math.max(LUNGE_DISTANCE / 2, distance + LUNGE_OVERSHOOT),
   );
-  return (pixels / spellDetails.tackle.spellSpeed) * 1000;
+  return (pixels / speed) * 1000;
 }
 
 /** Velocity of a lunge along `angle` (radians), in pixels per second. */
 export function getLungeVelocity(angle: number) {
-  const speed = spellDetails.tackle.spellSpeed;
   return { x: Math.cos(angle) * speed, y: Math.sin(angle) * speed };
 }

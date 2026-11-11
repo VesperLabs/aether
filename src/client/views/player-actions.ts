@@ -1,6 +1,6 @@
 import { distanceTo } from "@/rules/world";
 import { getAbilityCosts, getCastAction, hasStaminaFor } from "@/rules/combat";
-import type { AbilitySlot } from "@/rules/spells";
+import { isAimed, type AbilitySlot } from "@/rules/spells";
 import { getSpinDirection } from "@/client/input/spin-direction";
 import type { Player } from "./player";
 import { Spell } from "./spell";
@@ -98,7 +98,7 @@ export function landCast(player: Player, { abilitySlot, castAngle }: CastArgs) {
   holdCastPose(player, CAST_POSE_MS);
   const ability = player.getAbilityDetails(abilitySlot);
   /* Only an aimed spell holds its aim: a buff has nothing to face */
-  if (ability?.isAimable) keepAiming(player);
+  if (isAimed(ability.spell)) keepAiming(player);
   player.scene.add.existing(new Spell(player.scene, { ...ability, castAngle, caster: player }));
 }
 
@@ -112,9 +112,10 @@ export function doCast(player: Player, { abilitySlot, castAngle }: CastArgs) {
     player.scene.socket.emit("castSpell", { abilitySlot, castAngle });
   }
   holdCastPose(player, CAST_POSE_MS);
-  if (ability?.isAimable && !ability.isLunge) keepAiming(player);
+  const isDash = ability.spell.delivery.type === "dash";
+  if (isAimed(ability.spell) && !isDash) keepAiming(player);
   /* Lunges dash the caster: the hero moves itself, others just leave the trail */
-  if (ability?.isLunge) {
+  if (isDash) {
     player.state.lungeAt = Date.now();
     player.state.lungeAngle = castAngle;
   }

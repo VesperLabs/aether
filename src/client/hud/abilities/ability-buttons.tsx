@@ -1,6 +1,6 @@
 import { useBindings } from "@/client/hud/settings/use-key-bindings";
 import { keyFor, type BindAction } from "@/client/input/key-bindings";
-import { spellDetails, type BuiltItem, type SpellDefinition } from "@/content";
+import { findSpell, type BuiltItem } from "@/content";
 import type { Cooldown, HudCharacter } from "@/client/hud/app/context";
 import { CONSUMABLES_BASES, POTION_BASES } from "@/rules/inventory";
 import { isThrowable } from "@/rules/capture";
@@ -41,9 +41,8 @@ const TintedIconLoader = ({
   const isSpell = item.type === "spell";
   const isPotion = POTION_BASES.includes(item?.base);
   const isConsumable = CONSUMABLES_BASES.includes(item?.base);
-  const details = spellDetails[item.base as keyof typeof spellDetails] as
-    | SpellDefinition
-    | undefined;
+  /* Attack-spells (flame slash) swing like the attack button */
+  const isSwing = findSpell(item.base)?.delivery.type === "swing";
   const cooldown = isPotion ? "potion" : item?.base;
   const [tintedIcon, setTintedIcon] = useState("./assets/icons/blank.png");
   const [hovering, setHovering] = useState(false);
@@ -68,14 +67,14 @@ const TintedIconLoader = ({
         new CustomEvent("HERO_USE_ITEM", { detail: { item, location: "abilities" } }),
       );
     }
-    if (details?.isMeleeAttack) {
+    if (isSwing) {
       return window.dispatchEvent(new CustomEvent("HERO_ATTACK"));
     }
     return window.dispatchEvent(new CustomEvent("HERO_ABILITY", { detail: slotKey }));
   };
 
   const handleTouchStart = () => {
-    if (details?.isMeleeAttack) {
+    if (isSwing) {
       return window.dispatchEvent(new CustomEvent("HERO_ATTACK_START", { detail: slotKey }));
     }
     return window.dispatchEvent(new CustomEvent("HERO_AIM_START", { detail: slotKey }));
@@ -85,7 +84,7 @@ const TintedIconLoader = ({
   /* Spells and balls carry their costs on them */
   const costs: ResourceCosts =
     isSpell || isThrowable(item?.base) ? getAbilityCosts(item.stats) : {};
-  if (isSpell && details?.isMeleeAttack) {
+  if (isSpell && isSwing) {
     costs.sp = (costs.sp ?? 0) + attackSpCost;
   }
 
@@ -123,7 +122,7 @@ const TintedIconLoader = ({
           cooldown={getLatestCooldown(
             cooldowns["global"],
             cooldowns[cooldown],
-            details?.isMeleeAttack ? cooldowns["attack"] : undefined,
+            isSwing ? cooldowns["attack"] : undefined,
           )}
         />
         <Text

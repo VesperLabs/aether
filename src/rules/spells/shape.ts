@@ -1,48 +1,45 @@
-import { spellDetails, type SpellDefinition } from "@/content";
+import { findSpell, spellDetails, type SpellDefinition } from "@/content";
 
-export interface ResolvedSpell {
-  details: SpellDefinition;
-  /** False when the name was unknown and the plain melee attack was used instead. */
-  found: boolean;
+/** A spell by name. An unknown name gets the plain melee attack, so a bad item still swings. */
+export function getSpell(spellName: string | undefined): SpellDefinition {
+  return findSpell(spellName) ?? spellDetails["attack-melee"];
 }
 
-/** A spell's definition. An unknown spell falls back to the plain melee attack. */
-export function resolveSpellDetails(spellName: string): ResolvedSpell {
-  const details = (spellDetails as Record<string, SpellDefinition>)?.[spellName];
-  if (!details) return { details: spellDetails["attack-melee"], found: false };
-  return { details, found: true };
+/** Swings and dashes strike with the weapon in hand; everything else hits with the spell's own power. */
+export function strikesWithWeapon(spell: SpellDefinition) {
+  return spell.delivery.type === "swing" || spell.delivery.type === "dash";
 }
 
-/** How a spell moves and how big it is, from its definition. */
+/** Projectiles and dashes go where they are aimed; the rest happen where the caster stands. */
+export function isAimed(spell: SpellDefinition) {
+  return spell.delivery.type === "projectile" || spell.delivery.type === "dash";
+}
+
+/** Auras and swings ride their caster; the rest are left where they were cast. */
+export function ridesCaster(spell: SpellDefinition) {
+  return spell.delivery.type === "aura" || spell.delivery.type === "swing";
+}
+
+/** How big a spell is and how long it lasts, at a rank. */
 export interface SpellShape {
-  isMeleeAttack?: boolean;
-  isRangedAttack?: boolean;
-  isMissile: boolean;
-  allowedTargets?: readonly string[];
-  maxActiveTime?: number;
-  maxVisibleTime?: number;
-  bodySize?: number;
-  spellSpeed?: number;
+  /** Radius of its hit area before `scale`. */
+  size: number;
+  /** How long it can hit, in ms; undefined for projectiles, which last until they land. */
+  hitMs: number | undefined;
+  visibleMs: number;
   /** -1 for spells that last by time rather than by how far they travel. */
   maxDistance: number;
-  /** Scale of the spell at rank `rank`. */
   scale: number;
 }
 
-export function getSpellShape(details: SpellDefinition | undefined, rank: number): SpellShape {
-  const scaleBase = details?.scaleBase ?? 1;
-  const scaleMultiplier = details?.scaleMultiplier ?? 0;
+export function getSpellShape(spell: SpellDefinition, rank: number): SpellShape {
+  const { delivery, look, scale } = spell;
   return {
-    isMeleeAttack: details?.isMeleeAttack,
-    isRangedAttack: details?.isRangedAttack,
-    isMissile: details?.isMissile ?? false,
-    allowedTargets: details?.allowedTargets,
-    maxActiveTime: details?.maxActiveTime,
-    maxVisibleTime: details?.maxVisibleTime,
-    bodySize: details?.bodySize,
-    spellSpeed: details?.spellSpeed,
-    maxDistance: details?.maxDistance ?? -1,
-    scale: scaleBase + rank * scaleMultiplier,
+    size: delivery.size,
+    hitMs: delivery.type === "projectile" ? undefined : delivery.hitMs,
+    visibleMs: look.visibleMs,
+    maxDistance: (delivery.type === "projectile" && delivery.range) || -1,
+    scale: (scale?.base ?? 1) + rank * (scale?.perRank ?? 0),
   };
 }
 
@@ -67,35 +64,37 @@ export function isSpellExpired({
 }: SpellLifeInput) {
   return maxDistance > -1
     ? distanceFromSpawn >= maxDistance
-    : now - spawnTime > (lifetime as number);
+    : lifetime !== undefined && now - spawnTime > lifetime;
 }
 
 /** Velocity of a projectile flying at `angle` (radians). */
-export function getSpellVelocity(angle: number, speed: number | undefined) {
-  return { x: Math.cos(angle) * (speed as number), y: Math.sin(angle) * (speed as number) };
+export function getSpellVelocity(angle: number, speed: number) {
+  return { x: Math.cos(angle) * speed, y: Math.sin(angle) * speed };
 }
 
 /** How a projectile flies once cast. */
 export interface SpellFlight {
   velocity: { x: number; y: number };
-  /** Arrows fly as far as the bow in the shooting hand reaches; other projectiles keep their own. */
-  maxDistance?: number;
+  /** How far it flies: its own range, or for arrows as far as the bow in the shooting hand. */
+  maxDistance: number;
 }
 
 /**
- * The flight of an arrow or missile cast at `castAngle`, or null for spells that don't fly.
+ * The flight of a projectile cast at `castAngle`, or null for spells that don't fly.
  * `getWeaponRange` reads the caster's range with the weapon in a hand.
  */
 export function getSpellFlight(
-  shape: Pick<SpellShape, "isRangedAttack" | "isMissile" | "spellSpeed">,
+  spell: SpellDefinition,
   castAngle: number,
   action: string,
   getWeaponRange: (hand: "handLeft" | "handRight") => number,
 ): SpellFlight | null {
-  if (!shape.isRangedAttack && !shape.isMissile) return null;
-  const velocity = getSpellVelocity(castAngle, shape.spellSpeed);
-  if (!shape.isRangedAttack) return { velocity };
-  return { velocity, maxDistance: getWeaponRange(usesLeftHand(action) ? "handLeft" : "handRight") };
+  const { delivery } = spell;
+  if (delivery.type !== "projectile") return null;
+  return {
+    velocity: getSpellVelocity(castAngle, delivery.speed),
+    maxDistance: delivery.range ?? getWeaponRange(usesLeftHand(action) ? "handLeft" : "handRight"),
+  };
 }
 
 /** Where a melee swing hits from, and how far it reaches. */

@@ -1,19 +1,22 @@
 export {
-  BUFF_SPELLS,
   canCastSpell,
   checkCastReady,
   getAbilityDetails,
   getCastReadiness,
+  getSpellCooldown,
 } from "./cast";
-export type { AbilitySlot, LastCast } from "./cast";
+export type { AbilityDetails, AbilitySlot, LastCast } from "./cast";
 export { rollSpellCrit, rollSpellDamage } from "./damage";
 export {
   getMeleeSwing,
+  getSpell,
   getSpellFlight,
   getSpellShape,
   getSpellVelocity,
+  isAimed,
   isSpellExpired,
-  resolveSpellDetails,
+  ridesCaster,
+  strikesWithWeapon,
   usesLeftHand,
   usesRightHand,
 } from "./shape";

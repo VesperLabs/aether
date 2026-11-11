@@ -169,7 +169,7 @@ export class Player extends ServerCharacter {
   }
   /** Casts if the spell is ready and affordable. Returns whether it cast. */
   doCast({ abilitySlot, castAngle }: PlayerCastRequest): boolean {
-    const { spellName, rank, stats } = this.getAbilityDetails(abilitySlot);
+    const { spellName, spell, rank, stats } = this.getAbilityDetails(abilitySlot);
     if (!rank || !spellName) return false;
     if (!this.canCastSpell(abilitySlot)) return false;
     // Modify stats if there's a cost
@@ -178,7 +178,7 @@ export class Player extends ServerCharacter {
     this.modifyStatIfCostExists("sp", stats?.spCost || 0);
 
     this.dispelBuffsByProperty("dispelBeforeAttack");
-    if (spellName === "stealth") vanish(this);
+    if (spell.vanishes) vanish(this);
 
     if (this.room)
       createSpell(this.room, {
@@ -291,7 +291,7 @@ export class Player extends ServerCharacter {
     const { roomName } = this;
     if (!roomName) return;
 
-    const { allowedTargets } = this.getAbilityDetails(abilitySlot);
+    const allowedTargets = this.getAbilityDetails(abilitySlot).spell.targets;
 
     const hitList: Hit[] = [];
     const npcKills: Npc[] = [];

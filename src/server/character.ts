@@ -21,7 +21,7 @@ import {
 import { getPlayerQuests } from "@/rules/quests";
 import { calculateNextMaxExp } from "@/rules/stats";
 import type { ElementalDamages } from "@/rules/combat";
-import type { AbilityDetails } from "./character-combat";
+import type { AbilityDetails } from "@/rules/spells";
 import type { BuffRequest } from "./character-buffs";
 
 /** What a character is created from: the shared constructor args, plus the room it is in. */

@@ -1,19 +1,6 @@
-import { spellDetails } from "@/content";
+import { findSpell, type SpellDefinition } from "@/content";
 import type { StatBag } from "@/rules/stats";
-
-/** Spells that put a buff on the caster or target and show as an aura. */
-export const BUFF_SPELLS = [
-  "evasion",
-  "brute",
-  "endurance",
-  "genius",
-  "haste",
-  "stun",
-  "slow",
-  "regeneration",
-  "stealth",
-  "guard",
-];
+import { getSpell } from "./shape";
 
 /** When each spell was last cast, plus `global` for the shared cast delay. */
 export type LastCast = Record<string, number>;
@@ -25,14 +12,17 @@ export interface CastReadyInput {
   now: number;
 }
 
+/** A spell's own cooldown in ms, on top of the shared cast delay. */
+export function getSpellCooldown(spellName: string | undefined) {
+  return findSpell(spellName)?.cooldown ?? 0;
+}
+
 /** True if the global cast delay, and the spell's own cooldown, have passed. */
 export function checkCastReady({ spellName, lastCast, castDelay, now }: CastReadyInput): boolean {
   let isThisSpellReady = true;
   if (spellName) {
-    const baseCooldown =
-      (spellDetails as Record<string, { baseCooldown?: number }>)?.[spellName]?.baseCooldown ?? 0;
     const last = lastCast?.[spellName] ?? 0;
-    isThisSpellReady = now - last > (castDelay as number) + baseCooldown;
+    isThisSpellReady = now - last > (castDelay as number) + getSpellCooldown(spellName);
   }
   const isGlobalReady = now - lastCast.global > (castDelay as number);
   return isThisSpellReady && isGlobalReady;
@@ -45,9 +35,8 @@ export function getCastReadiness({ spellName, lastCast, castDelay, now }: CastRe
     total > 0 ? Math.min(1, Math.max(0, elapsed / total)) : 1;
   const global = progress(now - (lastCast?.global ?? 0), delay);
   if (!spellName) return global;
-  const baseCooldown =
-    (spellDetails as Record<string, { baseCooldown?: number }>)?.[spellName]?.baseCooldown ?? 0;
-  return Math.min(global, progress(now - (lastCast?.[spellName] ?? 0), delay + baseCooldown));
+  const total = delay + getSpellCooldown(spellName);
+  return Math.min(global, progress(now - (lastCast?.[spellName] ?? 0), total));
 }
 
 /**
@@ -125,24 +114,19 @@ export interface AbilityDetailsInput {
   hasRangedWeapon: boolean;
 }
 
-/** An ability's item data merged with its spell definition, plus `spellName`. */
+/** An ability's item data, with the spell it casts. */
+export type AbilityDetails = Record<string, any> & { spellName: string; spell: SpellDefinition };
+
+/** The item in an ability slot and the spell it casts; no slot is the plain attack. */
 export function getAbilityDetails(
   { abilities, hasRangedWeapon }: AbilityDetailsInput,
   abilitySlot: AbilitySlot | undefined,
-): Record<string, any> & { spellName: string } {
-  let ability: Record<string, any> | null | undefined;
-  let spellName: string;
-
-  if (!abilitySlot) {
-    spellName = hasRangedWeapon ? "attack-ranged" : "attack-melee";
-  } else {
-    ability = abilities?.[abilitySlot];
-    spellName = ability?.base;
-  }
-
-  return {
-    ...ability,
-    ...(spellDetails as Record<string, object>)?.[spellName],
-    spellName,
-  };
+): AbilityDetails {
+  const ability = abilitySlot ? abilities?.[abilitySlot] : undefined;
+  const spellName: string = abilitySlot
+    ? ability?.base
+    : hasRangedWeapon
+      ? "attack-ranged"
+      : "attack-melee";
+  return { ...ability, spellName, spell: getSpell(spellName) };
 }
