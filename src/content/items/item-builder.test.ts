@@ -75,11 +75,11 @@ describe("buildItem", () => {
   it("builds bags and spells asked for as magic as they are written", () => {
     expect(ItemBuilder.buildItem(seededDice(1), "spell", "magic", "fireball")).toMatchObject({
       rarity: "common",
-      rank: 1,
+      level: 1,
     });
   });
 
-  it("gives spells a level from their rank", () => {
+  it("gives spells a rank from their level", () => {
     expect(itemList.spell.common.fireball3).toMatchObject({ rank: 3, level: 17 });
   });
 });

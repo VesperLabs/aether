@@ -23,5 +23,5 @@ export function defenseReduction(defense: number, attackerLevel: number): number
 
 /** A monster's HP at its level, before its own `maxHp` override. */
 export function monsterHealth(level: number): number {
-  return Math.round(18 * levelPower(level) * (1 + level / 50));
+  return Math.round(18 * levelPower(level));
 }

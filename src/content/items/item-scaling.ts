@@ -1,8 +1,8 @@
-import { LEVELS_PER_POWER, levelPower } from "../power-curve";
+import { levelPower } from "../power-curve";
 import { itemData } from "./item-data";
 
-/** These stats do not grow with level: speeds, reach and costs. */
-const STATIC_STATS = ["attackDelay", "castDelay", "castTime", "range", "spCost"];
+/** These stats do not grow with level: speeds, reach, costs and chances. */
+const STATIC_STATS = ["attackDelay", "castDelay", "castTime", "range", "spCost", "blockChance"];
 
 /** Items that have no level requirement however strong they are. */
 const NO_LEVEL_REQUIREMENT_SLOTS = ["bag"];
@@ -14,11 +14,6 @@ function isNumberPair(value: unknown): value is [number, number] {
   return Array.isArray(value) && value.length === 2 && value.every((v) => typeof v === "number");
 }
 
-/** The level of a spell of this rank: rank 1 is level 1, and each rank is a step on the curve. */
-function spellLevel(rank: number): number {
-  return (Math.max(1, rank) - 1) * LEVELS_PER_POWER + 1;
-}
-
 /** Multiplies every scalable value in a stat block by `multiplier`. */
 export function multiplyValues(obj: Loose | undefined, multiplier: number): Loose {
   const multiplied: Loose = {};
@@ -26,11 +21,6 @@ export function multiplyValues(obj: Loose | undefined, multiplier: number): Loos
     const value = obj[key];
     if (STATIC_STATS.includes(key)) {
       multiplied[key] = value;
-    } else if (key === "blockChance") {
-      // a chance grows by steps instead of multiplying
-      multiplied[key] = isNumberPair(value)
-        ? value.map((v) => v + (multiplier - 1) * 5)
-        : value + (multiplier - 1) * 5;
     } else if (typeof value === "number") {
       multiplied[key] = Math.round(value * multiplier);
     } else if (isNumberPair(value)) {
@@ -57,15 +47,14 @@ export function scaleBaseStats(items: Loose): Loose {
     for (const rarity in rarities) {
       for (const key in rarities[rarity]) {
         const item = rarities[rarity][key];
-        if (item.rank !== undefined) item.level = spellLevel(item.rank);
         item.level = item.level ?? 1;
+        const power = levelPower(item.level);
+        // a spell's rank is its step on the curve: level 1 is rank 1, level 9 rank 2
+        if (itemType === "spell") item.rank = Math.round(power);
 
-        const baseItem = commons.find(
-          (c) => c.base === item.base && (c.level ?? spellLevel(c.rank)) === 1,
-        );
+        const baseItem = commons.find((c) => c.base === item.base && (c.level ?? 1) === 1);
         if (!baseItem) continue;
 
-        const power = levelPower(item.level);
         const hasLevelReq =
           item.level > 1 &&
           !NO_LEVEL_REQUIREMENT_SLOTS.includes(item.slot ?? baseItem.slot) &&

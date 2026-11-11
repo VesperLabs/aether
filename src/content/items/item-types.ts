@@ -33,8 +33,7 @@ interface RequirementBlock {
 export interface ItemDefinition {
   /**
    * The item's own level: how strong it is, the level needed to wear it and which monsters drop
-   * it. Fixed per item; what dropped it never changes it. Spells leave it out and get it from
-   * their rank.
+   * it. Fixed per item; what dropped it never changes it.
    */
   readonly level?: number;
   readonly base: string;
@@ -61,8 +60,8 @@ export interface ItemDefinition {
 
 export interface SpellItemDefinition extends ItemDefinition {
   readonly base: SpellName;
-  /** The spell's tier: Fireball 2 is rank 2. Sets its power, size and level. */
-  readonly rank: number;
+  /** Spells are 1, 9 or 17: one step of the power curve per tier. Sets their rank. */
+  readonly level: number;
 }
 
 export type ItemRarityTable<D extends ItemDefinition = ItemDefinition> = {
@@ -74,7 +73,7 @@ export interface BuiltItem {
   id: string;
   key: string;
   level: number;
-  /** Spells only: the spell's tier. */
+  /** Spells only: the spell's tier, from its level (1 → 1, 9 → 2, 17 → 3). */
   rank?: number;
   rarity: string;
   /** The random affixes a magic or rare item rolled, by name, e.g. ["Sturdy", "of the Bear"]. */
