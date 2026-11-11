@@ -70,6 +70,8 @@ export interface SpellLook {
   /** A looping animation, or an icon from the `icons` atlas (an arrow). Swings draw their own arc. */
   readonly sprite?: { readonly animation: string } | { readonly icon: string };
   readonly tint?: string;
+  /** The light it gives off at night: a color and how far it reaches, in pixels. */
+  readonly light?: { readonly color: string; readonly radius: number };
   readonly fades?: boolean;
   readonly sound?: string;
 }

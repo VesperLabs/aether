@@ -4,6 +4,7 @@ import { isMobile } from "@/ui";
 import type { ChatSuggestion } from "./chat-command-match";
 import { ChatActorPreview } from "./chat-actor-preview";
 import { ChatItemPreview } from "./chat-item-preview";
+import { SeasonIconImage } from "@/client/hud/sky-disc/season-icon-image";
 import { PAD_POPUP_ATTR } from "@/client/input/pad-keyboard-events";
 
 const HIGHLIGHT = "rgba(255,255,255,.12)";
@@ -75,7 +76,7 @@ export const ChatCommandPopover = ({
   highlighted: number;
   onPick: (suggestion: ChatSuggestion) => void;
 }) => {
-  const hasPreviews = suggestions.some((s) => s.look);
+  const hasPreviews = suggestions.some((s) => s.look || s.icon);
   const highlightedRow = useRef<HTMLDivElement>(null);
   const list = useRef<HTMLDivElement>(null);
   const roomAbove = useRoomAbove(list);
@@ -144,6 +145,8 @@ export const ChatCommandPopover = ({
                 <ChatActorPreview actorId={suggestion.actor} />
               ) : suggestion.look ? (
                 <ChatItemPreview look={suggestion.look} />
+              ) : suggestion.icon ? (
+                <SeasonIconImage icon={suggestion.icon} size={24} />
               ) : (
                 <Box />
               ))}

@@ -1,29 +1,41 @@
 import { SEASONS, type MapSeasons, type Season } from "@/content";
 
-/** One season lasts a real day, so the year comes round every four. */
-export const SEASON_LENGTH_MS = 24 * 60 * 60 * 1000;
+/** Each month's season, as the northern hemisphere has them: winter is December to February. */
+const SEASON_BY_MONTH: readonly Season[] = [
+  "winter",
+  "winter",
+  "spring",
+  "spring",
+  "spring",
+  "summer",
+  "summer",
+  "summer",
+  "fall",
+  "fall",
+  "fall",
+  "winter",
+];
 
-const YEAR_MS = SEASON_LENGTH_MS * SEASONS.length;
-
-/** The world's calendar: game time plus `offsetMs` gives the time of year. */
+/**
+ * The world's calendar. The season follows the real one, by the month in UTC, unless `/season`
+ * pins one (`pinnedSeason`). Game time plus `dayOffsetMs` gives the time of day (see
+ * `time-of-day`). Cheats change them; nothing else does.
+ */
 export interface Calendar {
-  offsetMs: number;
+  pinnedSeason?: Season;
+  dayOffsetMs: number;
 }
 
-export const createCalendar = (): Calendar => ({ offsetMs: 0 });
+export const createCalendar = (): Calendar => ({ dayOffsetMs: 0 });
 
-/** `value` mod `by`, never negative. */
-const wrap = (value: number, by: number) => ((value % by) + by) % by;
-
-/** The season the world is in at `now`. */
+/** The season the world is in at `now`, a real date in milliseconds. */
 export function seasonAt(now: number, calendar: Calendar): Season {
-  const timeOfYear = wrap(now + calendar.offsetMs, YEAR_MS);
-  return SEASONS[Math.floor(timeOfYear / SEASON_LENGTH_MS)];
+  return calendar.pinnedSeason ?? SEASON_BY_MONTH[new Date(now).getUTCMonth()];
 }
 
-/** Moves the calendar so `season` starts at `now`; the year carries on from there. */
-export function startSeason(calendar: Calendar, now: number, season: Season): void {
-  calendar.offsetMs = SEASONS.indexOf(season) * SEASON_LENGTH_MS - wrap(now, YEAR_MS);
+/** Holds the world in `season`, or hands it back to the real calendar with none. */
+export function pinSeason(calendar: Calendar, season: Season | undefined): void {
+  calendar.pinnedSeason = season;
 }
 
 /** The season a map shows while the world is in `worldSeason`. */

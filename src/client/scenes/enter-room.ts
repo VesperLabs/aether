@@ -3,6 +3,7 @@ import type { Player } from "@/client/views/player";
 import { netInterp } from "@/client/net/scene-interpolation";
 import { resetPoseArrivals } from "@/client/net/net-stats";
 import { changeMap } from "./main-map";
+import { announceSeason, setDayClock } from "./world-clock";
 import type { SceneMain } from "./main-scene";
 import { clearThrownBalls } from "@/client/views/thrown-ball";
 import { startEffect } from "@/client/net/effects";
@@ -20,7 +21,7 @@ import {
 export function enterRoom(
   scene: SceneMain,
   roomName: string,
-  { players = [], npcs = [], loots = [], effects = [], season }: Partial<RoomStateMessage>,
+  { players = [], npcs = [], loots = [], effects = [], season, hour }: Partial<RoomStateMessage>,
   heroSocketId?: string,
 ) {
   clearThrownBalls();
@@ -42,6 +43,10 @@ export function enterRoom(
   }
   /* What is already in flight, from where it has got to */
   for (const effect of effects) startEffect(scene, effect);
-  if (season) scene.season = season;
+  if (season) {
+    scene.season = season;
+    announceSeason(season);
+  }
+  if (hour !== undefined) setDayClock(hour);
   return changeMap(scene, roomName);
 }

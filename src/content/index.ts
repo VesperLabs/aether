@@ -54,7 +54,14 @@ export { mapImageList } from "./maps/map-image-list";
 export { mapList } from "./maps/map-list";
 export { mapTitle } from "./maps/map-title";
 export { musicCredits } from "./maps/music-credits";
-export { SEASONS, type MapSeasons, type Season } from "./maps/seasons";
+export {
+  SEASONS,
+  SEASON_ICONS,
+  EARTH_ICON,
+  type MapSeasons,
+  type Season,
+  type SeasonIcon,
+} from "./maps/seasons";
 export { actors, isActorId, type ActorId } from "./actors/actors";
 export type {
   ActorDefinition,

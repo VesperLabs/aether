@@ -20,6 +20,8 @@ export interface RoomStateMessage {
   effects?: EffectWire[];
   /** The world's season; each map shows it or its own (see `mapSeason`). */
   season: Season;
+  /** The hour of the day, 0 to 24; clients run it on themselves (see `hourAfter`). */
+  hour: number;
 }
 
 /**
@@ -112,6 +114,8 @@ export interface ServerToClientEvents {
   /* World */
   /** The world moved into a new season. */
   seasonChanged: (season: Season) => void;
+  /** The clock was set to a new hour (by `/time`); it runs on from there. */
+  hourSet: (hour: number) => void;
   /** Every character's position in the room, every tick. Each stands alone: see `network/sync/poses`. */
   poses: (poses: ArrayBuffer) => void;
   /** Characters whose state flags or vitals changed this tick. */
