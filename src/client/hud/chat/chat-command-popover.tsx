@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from "react";
 import { Box, Flex, KeyboardKey, Text } from "@/ui";
 import { isMobile } from "@/ui";
 import type { ChatSuggestion } from "./chat-command-match";
@@ -7,6 +7,41 @@ import { ChatItemPreview } from "./chat-item-preview";
 import { PAD_POPUP_ATTR } from "@/client/input/pad-keyboard-events";
 
 const HIGHLIGHT = "rgba(255,255,255,.12)";
+/** The gap between the list and the chat box under it. */
+const GAP_PX = 8;
+/** Room kept between the list's top and the top of what's visible. */
+const TOP_MARGIN_PX = 12;
+/** Never squash the list below about three rows, even if it has to run under the top. */
+const MIN_HEIGHT_PX = 120;
+
+/**
+ * The height the list can fill above the chat box. A phone's keyboard shrinks what's visible
+ * (the visual viewport) without always resizing the page, so `vh` can't tell; this measures the
+ * gap between the box and the visible top, and again whenever the keyboard opens or closes.
+ */
+function useRoomAbove(list: RefObject<HTMLElement | null>) {
+  const [room, setRoom] = useState<number>();
+  useLayoutEffect(() => {
+    const viewport = window.visualViewport;
+    const measure = () => {
+      const anchor = list.current?.parentElement;
+      if (!anchor) return;
+      const visibleTop = viewport?.offsetTop ?? 0;
+      const free = anchor.getBoundingClientRect().top - visibleTop - TOP_MARGIN_PX - GAP_PX;
+      setRoom(Math.max(MIN_HEIGHT_PX, Math.floor(free)));
+    };
+    measure();
+    viewport?.addEventListener("resize", measure);
+    viewport?.addEventListener("scroll", measure);
+    window.addEventListener("resize", measure);
+    return () => {
+      viewport?.removeEventListener("resize", measure);
+      viewport?.removeEventListener("scroll", measure);
+      window.removeEventListener("resize", measure);
+    };
+  }, [list]);
+  return room;
+}
 
 /** One way to type a command, as a little keycap next to its name. */
 const AliasChip = ({ alias }: { alias: string }) => (
@@ -42,6 +77,8 @@ export const ChatCommandPopover = ({
 }) => {
   const hasPreviews = suggestions.some((s) => s.look);
   const highlightedRow = useRef<HTMLDivElement>(null);
+  const list = useRef<HTMLDivElement>(null);
+  const roomAbove = useRoomAbove(list);
   /* By what's listed, not the list itself, which is new each render: scrolling back on every
    * render would undo a controller scrolling the list */
   const listed = suggestions.map((s) => s.value).join("\n");
@@ -50,12 +87,13 @@ export const ChatCommandPopover = ({
   }, [highlighted, listed]);
   return (
     <Box
+      ref={list}
       /* On a controller it takes over from the on-screen keyboard (`PAD_POPUP_ATTR`) */
       {...{ [PAD_POPUP_ATTR]: true }}
       variant="buttons.wood"
       sx={{
         position: "absolute",
-        bottom: "calc(100% + 8px)",
+        bottom: `calc(100% + ${GAP_PX}px)`,
         left: 0,
         minWidth: 260,
         maxWidth: "calc(100vw - 24px)",
@@ -63,8 +101,11 @@ export const ChatCommandPopover = ({
         /* [item icon] | name | hint | key badge */
         gridTemplateColumns: `${hasPreviews ? "32px " : ""}max-content 1fr ${isMobile ? 0 : "36px"}`,
         rowGap: "2px",
-        maxHeight: isMobile ? "40vh" : 360,
+        maxHeight: isMobile ? (roomAbove ?? "40vh") : 360,
         overflowY: "auto",
+        /* It sits in the chat button, whose `touch-action: none` would stop a finger scrolling it */
+        touchAction: "pan-y",
+        overscrollBehavior: "contain",
         p: 1,
         cursor: "default",
         pointerEvents: "all",
