@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.28.1](https://github.com/VesperLabs/aether/compare/v0.28.0...v0.28.1) (2026-11-11)
+
+
+### Bug Fixes
+
+* plain daylight steps and a glow of its own for each weapon element ([#307](https://github.com/VesperLabs/aether/issues/307)) ([c0c554d](https://github.com/VesperLabs/aether/commit/c0c554da6072db939daeae52a3445244b9a04584))
+
 ## [0.28.0](https://github.com/VesperLabs/aether/compare/v0.27.0...v0.28.0) (2026-11-11)
 
 
