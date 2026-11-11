@@ -29,6 +29,12 @@ describe("GET /players/lookup", () => {
     expect(character).not.toHaveProperty("password");
   });
 
+  it("shows a character that never logged in wearing its starting clothes", async () => {
+    const res = await fetch(`${url}?email=${encodeURIComponent("Hero@Aether.gg")}`);
+    const { character } = await res.json();
+    expect(character.activeItemSlots).toEqual(expect.arrayContaining(["armor", "pants"]));
+  });
+
   it("refuses an email that is not a plain string", async () => {
     expect((await fetch(`${url}?email[$ne]=x`)).status).toBe(400);
     expect((await fetch(url)).status).toBe(400);

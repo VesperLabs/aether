@@ -43,7 +43,12 @@ export function registerCharacterLookup(app: Express, db: Database, now: () => n
           level: user.baseStats?.level,
           profile: user.profile,
           equipment: user.equipment,
-          activeItemSlots: user.activeItemSlots,
+          /* Worked out on first login; until then, show whatever the character wears */
+          activeItemSlots:
+            user.activeItemSlots ??
+            Object.entries(user.equipment ?? {})
+              .filter(([, item]) => item)
+              .map(([slot]) => slot),
         }
       : null;
     res.json({ character });
