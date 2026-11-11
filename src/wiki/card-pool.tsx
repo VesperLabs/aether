@@ -1,4 +1,5 @@
 import {
+  findDefinition,
   assetList,
   itemList,
   resolveAsset,
@@ -204,7 +205,7 @@ export const keeperCharacter = (keeper: { profile: object; equipment?: object })
   const equipment = Object.fromEntries(
     Object.entries(keeper.equipment ?? {}).map(([slot, ref]) => {
       const [type, rarity, key] = (ref ?? []) as string[];
-      return [slot, ref ? (listedItems[type]?.[rarity]?.[key] as BuiltItem) : null];
+      return [slot, ref ? (findDefinition(type, rarity, key).item as BuiltItem) : null];
     }),
   );
   return {
