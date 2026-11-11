@@ -23,7 +23,7 @@ export interface SpellEffectWire extends EffectBase {
   spellName: string;
   castAngle: number;
   action?: string;
-  ilvl?: number;
+  rank?: number;
   /** Where it left the caster: they may have moved since. */
   spawnPoint: Point;
 }

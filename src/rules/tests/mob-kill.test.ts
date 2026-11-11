@@ -27,7 +27,6 @@ function setup() {
   });
   subscribeLoot(world.events, {
     rng: () => 0,
-    ilvlMultiplier: 4,
     rollWorldDrop: () => ({ type: "stackable", rarity: "common", key: "crabClaw" }),
     buildItem: (type, rarity, key) => ({ id: "i1", slot: type, rarity, key, amount: 1 }) as never,
     getMobDropInfo: () => ({}),

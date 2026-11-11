@@ -1,4 +1,4 @@
-import { mergeAndAddValues, type StatBag } from "@/rules/stats";
+import { defenseReduction, mergeAndAddValues, type StatBag } from "@/rules/stats";
 import { randomInt, type Rng } from "@/rules/loot";
 
 /** Elemental damage ranges, e.g. `minFireDamage` / `maxFireDamage`. Missing ones count as 0. */
@@ -114,9 +114,9 @@ export function rollAttack(
 
   const damage = calculateWeaponDamage(attacker, rng);
 
-  const defense = Math.max(1, victim.defense || 1);
-  const armorPierce = Math.max(1, attacker.armorPierce || 1);
-  const reduction = Math.min(1, armorPierce / defense);
+  /* Armor pierce ignores that much of the victim's defense; what is left has diminishing returns */
+  const effectiveDefense = Math.max(0, (victim.defense || 0) - (attacker.armorPierce || 0));
+  const reduction = 1 - defenseReduction(effectiveDefense, attacker.level || 1);
   const dodgeChance = Math.max(0, victim.dodgeChance - attacker.accuracy);
 
   let isCritical = false;

@@ -12,10 +12,8 @@ interface MobDropInfo {
 /** How the host game plugs into loot (the rules hold no state and do no I/O). */
 export interface LootHooks {
   rng: Rng;
-  /** Multiplier from item level to mob level. */
-  ilvlMultiplier: number;
-  /** Rolls the world drop for (item level, magic find). */
-  rollWorldDrop: (ilvl: number, magicFind: number) => DropCandidate | null;
+  /** Rolls the world drop for (mob level, magic find). */
+  rollWorldDrop: (mobLevel: number, magicFind: number) => DropCandidate | null;
   buildItem: (type: string, rarity: string, key: string) => LootItem | null;
   /** The mob that died, if the host still knows it. */
   getMobDropInfo: (mobId: string) => MobDropInfo | undefined;
@@ -27,7 +25,7 @@ export interface LootHooks {
 function lootForMobKill(
   kill: MobKilledEvent,
   mob: MobDropInfo | undefined,
-  hooks: Pick<LootHooks, "rng" | "ilvlMultiplier" | "rollWorldDrop" | "buildItem">,
+  hooks: Pick<LootHooks, "rng" | "rollWorldDrop" | "buildItem">,
 ): LootSpawn | null {
   const candidate = rollMobDrop(
     {
@@ -35,7 +33,6 @@ function lootForMobKill(
       magicFind: kill.killerMagicFind,
       noWorldDrops: mob?.noWorldDrops,
       drops: mob?.drops,
-      ilvlMultiplier: hooks.ilvlMultiplier,
     },
     hooks.rng,
     hooks.rollWorldDrop,

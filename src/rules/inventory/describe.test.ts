@@ -61,7 +61,7 @@ describe("describeItem", () => {
     expect(describeItem({ base: "food" }).action).toBe("consume");
     expect(describeItem({ base: "bag" }).action).toBe("open");
     expect(describeItem({ base: "short-sword" }).action).toBeUndefined();
-    const spell = describeItem({ type: "spell", base: "flame-slash", ilvl: 2 });
+    const spell = describeItem({ type: "spell", base: "flame-slash", rank: 2 });
     expect(spell).toMatchObject({ kind: "spell", level: 2 });
     expect(spell.description).toMatch(/fire damage/);
   });

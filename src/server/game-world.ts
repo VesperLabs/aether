@@ -1,13 +1,5 @@
 import type { ServerWorld } from "./server-world";
-import {
-  ILVL_MULTIPLIER,
-  ItemBuilder,
-  QuestBuilder,
-  actors,
-  isActorId,
-  mapList,
-  type Dice,
-} from "@/content";
+import { ItemBuilder, QuestBuilder, actors, isActorId, mapList, type Dice } from "@/content";
 import { createServerDice } from "./server-dice";
 import { readMapFile } from "./map-files";
 import { subscribeLoot, type LootItem } from "@/rules/loot";
@@ -123,8 +115,7 @@ export function createServerWorld({
   });
   subscribeLoot(world.events, {
     rng: world.rng,
-    ilvlMultiplier: ILVL_MULTIPLIER,
-    rollWorldDrop: (ilvl, magicFind) => ItemBuilder.rollDrop(dice, ilvl, magicFind),
+    rollWorldDrop: (mobLevel, magicFind) => ItemBuilder.rollDrop(dice, mobLevel, magicFind),
     buildItem: (type, rarity, key) =>
       ItemBuilder.buildItem(dice, type, rarity, key) as LootItem | null,
     getMobDropInfo: (mobId) => {

@@ -20,8 +20,8 @@ const TYPES = Object.keys(listedItems);
 const ITEMS: WikiItem[] = TYPES.flatMap((type) =>
   RARITIES.flatMap((rarity) =>
     Object.entries(listedItems[type]?.[rarity] ?? {})
-      .map(([key, item]) => ({ ...item, key, type, rarity }))
-      .sort((a, b) => a.ilvl - b.ilvl),
+      .map(([key, item]): WikiItem => ({ ...item, key, type, rarity }))
+      .sort((a, b) => (a.level ?? 1) - (b.level ?? 1)),
   ),
 );
 

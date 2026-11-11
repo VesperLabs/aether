@@ -3,7 +3,7 @@ import type { ItemRarityTable } from "./item-types";
 export const accessoryItems = {
   common: {
     glasses: {
-      ilvl: 1,
+      tier: 1,
       name: "Glasses",
       flavor: "Plain glasses. Everything is suddenly sharper.",
       base: "glasses",
@@ -12,7 +12,7 @@ export const accessoryItems = {
       stats: { accuracy: 1 },
     },
     goggles: {
-      ilvl: 2,
+      tier: 2,
       name: "Goggles",
       flavor: "Goggles for keeping dust and spray out of your eyes.",
       base: "glasses",
@@ -23,7 +23,7 @@ export const accessoryItems = {
   },
   unique: {
     compoundLenses: {
-      ilvl: 1,
+      tier: 1,
       name: "Compound Lenses",
       flavor: "Insect lenses. You see in every direction at once.",
       base: "glasses",
@@ -40,7 +40,7 @@ export const accessoryItems = {
     },
     mermanFins: {
       exclusive: true,
-      ilvl: 2,
+      tier: 2,
       name: "Merman Fins",
       flavor: "Fins of the river folk. Sergio says they once swam his valley.",
       base: "fins",
@@ -58,7 +58,7 @@ export const accessoryItems = {
     },
     jakeMask: {
       exclusive: true,
-      ilvl: 10,
+      tier: 10,
       name: "Action Jake Mask",
       flavor: "Action Jake never left home without it.",
       base: "cap",

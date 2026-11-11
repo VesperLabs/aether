@@ -20,7 +20,7 @@ export interface DescribableItem {
   slot?: string;
   type?: string;
   rarity?: string;
-  ilvl?: number;
+  rank?: number;
   amount?: number;
   cost?: number;
   stats?: Record<string, StatValue>;
@@ -127,7 +127,7 @@ export function describeItem(
 
   return {
     title: item.name ?? "",
-    level: isSpell ? item.ilvl : undefined,
+    level: isSpell ? item.rank : undefined,
     amount: (item.amount ?? 0) > 1 ? item.amount : undefined,
     rarity: item.rarity,
     kind: isSpell ? "spell" : base.replaceAll("-", " "),

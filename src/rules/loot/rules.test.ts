@@ -6,10 +6,8 @@ import {
   LOOT_SPAWN_CYCLE_TIME,
   addStackAmounts,
   createLoot,
-  dropItemLevel,
   expireLoots,
   isMapLootDue,
-  minMobLevelForItem,
   parseMapLootList,
   pickPreferredDrop,
   planMapLootSpawns,
@@ -53,42 +51,18 @@ describe("pickPreferredDrop", () => {
   });
 });
 
-describe("dropItemLevel", () => {
-  it("scales with mob level", () => {
-    expect(dropItemLevel(1, 8)).toBe(1);
-    expect(dropItemLevel(8, 8)).toBe(2);
-    expect(dropItemLevel(16, 8)).toBe(3);
-  });
-});
-
-describe("minMobLevelForItem", () => {
-  it("is the lowest mob level that drops the item level", () => {
-    expect(minMobLevelForItem(1, 8)).toBe(1);
-    expect(minMobLevelForItem(2, 8)).toBe(8);
-    expect(minMobLevelForItem(12, 8)).toBe(88);
-  });
-
-  it("undoes dropItemLevel at every level", () => {
-    for (let ilvl = 1; ilvl <= 30; ilvl++) {
-      const mobLevel = minMobLevelForItem(ilvl, 8);
-      expect(dropItemLevel(mobLevel, 8)).toBeGreaterThanOrEqual(ilvl);
-      if (mobLevel > 1) expect(dropItemLevel(mobLevel - 1, 8)).toBeLessThan(ilvl);
-    }
-  });
-});
-
 describe("rollMobDrop", () => {
   const world = { type: "weapon", rarity: "common", key: "sword" };
-  const base = { mobLevel: 16, magicFind: 7, ilvlMultiplier: 8 };
+  const base = { mobLevel: 16, magicFind: 7 };
 
-  it("passes item level and magic find to the world roll", () => {
+  it("passes mob level and magic find to the world roll", () => {
     const calls: number[][] = [];
     const result = rollMobDrop(
       base,
       () => 0,
-      (ilvl, mf) => (calls.push([ilvl, mf]), world),
+      (level, mf) => (calls.push([level, mf]), world),
     );
-    expect(calls).toEqual([[3, 7]]);
+    expect(calls).toEqual([[16, 7]]);
     expect(result).toBe(world);
   });
   it("skips the world roll for noWorldDrops mobs", () => {

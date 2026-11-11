@@ -3,7 +3,7 @@ import type { ItemRarityTable } from "./item-types";
 export const shieldItems = {
   common: {
     woodenBuckler: {
-      ilvl: 1,
+      tier: 1,
       name: "Wooden Buckler",
       flavor: "A small round buckler of plain wood.",
       base: "roundShield",
@@ -13,7 +13,7 @@ export const shieldItems = {
       requirements: { strength: 3 },
     },
     barkShield: {
-      ilvl: 1,
+      tier: 1,
       name: "Bark Shield",
       flavor: "A shield of layered bark, still smelling of the forest.",
       base: "kiteShield",
@@ -24,7 +24,7 @@ export const shieldItems = {
       requirements: { strength: 5 },
     },
     woodenTowerShield: {
-      ilvl: 1,
+      tier: 1,
       name: "Wooden Tower Shield",
       flavor: "A tall wooden shield to hide behind.",
       base: "towerShield",
@@ -35,7 +35,7 @@ export const shieldItems = {
       requirements: { strength: 8 },
     },
     bronzeRoundShield: {
-      ilvl: 2,
+      tier: 2,
       name: "Bronze Round Shield",
       flavor: "A round bronze shield with a hammered boss.",
       base: "roundShield",
@@ -44,7 +44,7 @@ export const shieldItems = {
       slot: "hands",
     },
     bronzeKiteShield: {
-      ilvl: 2,
+      tier: 2,
       name: "Bronze Kite Shield",
       flavor: "A kite-shaped bronze shield, long enough to guard the legs.",
       base: "kiteShield",
@@ -53,7 +53,7 @@ export const shieldItems = {
       slot: "hands",
     },
     bronzeTowerShield: {
-      ilvl: 2,
+      tier: 2,
       name: "Bronze Tower Shield",
       flavor: "A bronze wall you carry with you.",
       base: "towerShield",
@@ -62,7 +62,7 @@ export const shieldItems = {
       slot: "hands",
     },
     ironRoundShield: {
-      ilvl: 3,
+      tier: 3,
       name: "Iron Round Shield",
       flavor: "A round iron shield, heavy and dependable.",
       base: "roundShield",
@@ -71,7 +71,7 @@ export const shieldItems = {
       slot: "hands",
     },
     ironKiteShield: {
-      ilvl: 3,
+      tier: 3,
       name: "Iron Kite Shield",
       flavor: "An iron kite shield, favoured by the town guard.",
       base: "kiteShield",
@@ -80,7 +80,7 @@ export const shieldItems = {
       slot: "hands",
     },
     ironTowerShield: {
-      ilvl: 3,
+      tier: 3,
       name: "Iron Tower Shield",
       flavor: "A towering iron shield. You'll feel it tomorrow.",
       base: "towerShield",
@@ -91,7 +91,7 @@ export const shieldItems = {
   },
   unique: {
     roundStage: {
-      ilvl: 3,
+      tier: 3,
       name: "Round Stage",
       flavor: "Once a tavern stage. Many a bard performed on it.",
       base: "roundShield",
@@ -101,7 +101,7 @@ export const shieldItems = {
     },
     osteoCrest: {
       exclusive: true,
-      ilvl: 2,
+      tier: 2,
       name: "Osteo Crest",
       flavor: "Bones from the graveyard, bound into a crest.",
       base: "kiteShield",
@@ -116,7 +116,7 @@ export const shieldItems = {
     },
     wyrmScaleWard: {
       exclusive: true,
-      ilvl: 2,
+      tier: 2,
       name: "Wyrm Scale Ward",
       flavor: "A single wyrm scale, large enough to hide behind.",
       base: "kiteShield",
@@ -130,7 +130,7 @@ export const shieldItems = {
       },
     },
     dawnwall: {
-      ilvl: 3,
+      tier: 3,
       name: "Dawnwall",
       flavor: "A tower of gilded oak. The first light of morning still burns on its face.",
       base: "towerShield",

@@ -27,12 +27,12 @@ export const ITEM_KEYS: readonly ItemKeyEntry[] = Object.entries(itemList).flatM
           texture,
           tint,
           name = key,
-          ilvl,
+          rank,
         } = item as ItemLook & {
           name?: string;
-          ilvl?: number;
+          rank?: number;
         };
-        const label = slot === "spell" && ilvl ? `${name} Lv. ${ilvl}` : name;
+        const label = slot === "spell" && rank ? `${name} Lv. ${rank}` : name;
         return { key, type, rarity, name: label, look: { slot, texture, tint } };
       }),
     ),

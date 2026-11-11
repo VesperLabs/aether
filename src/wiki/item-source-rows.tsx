@@ -1,5 +1,3 @@
-import { ILVL_MULTIPLIER } from "@/content";
-import { minMobLevelForItem } from "@/rules/loot";
 import { Icon } from "@/ui";
 import type { ReactNode } from "react";
 import { CARD_COLORS, SpriteFace, raceAsset } from "./card-pool";
@@ -19,11 +17,11 @@ function percent(oneIn: number) {
  */
 export const Sources = ({
   sources,
-  randomLevel,
+  randomLevels,
 }: {
   sources: ReturnType<typeof itemSources>;
-  /** The item level of its random drop, if it ever drops at random; shown as the mob level that reaches it. */
-  randomLevel?: number;
+  /** The monster levels that drop it at random, if it ever drops at random. */
+  randomLevels?: { min: number; max: number };
 }) => {
   const icon = (name: string) => <Icon icon={`./assets/icons/${name}.png`} size={ICON} />;
   const rows: { label: string; value: string; color: string; icon: ReactNode }[] = [
@@ -55,10 +53,10 @@ export const Sources = ({
       icon: icon("chest"),
     })),
   ];
-  if (randomLevel !== undefined) {
+  if (randomLevels) {
     rows.push({
       label: "Any monster",
-      value: `Lv ${minMobLevelForItem(randomLevel, ILVL_MULTIPLIER)}+`,
+      value: `Lv ${randomLevels.min}–${randomLevels.max}`,
       color: CARD_COLORS.monster,
       icon: icon("chest"),
     });

@@ -45,7 +45,7 @@ export interface SpellArgs {
   spellName: string;
   action?: string;
   castAngle?: number;
-  ilvl?: number;
+  rank?: number;
 }
 
 /** A spell or attack in flight. Plain data: where it is, how it moves and what it can hit. */
@@ -82,7 +82,7 @@ export class Spell implements EffectSource {
   /** A melee swing: the wedge its blade sweeps, from the swinging hand. */
   private swing: SwingPlan | null = null;
   private castAngle: number;
-  private ilvl: number;
+  private rank: number;
 
   constructor(
     world: ServerWorld,
@@ -96,7 +96,7 @@ export class Spell implements EffectSource {
       spellName,
       action,
       castAngle = 0,
-      ilvl = 1,
+      rank = 1,
     }: SpellArgs,
   ) {
     this.spawnPoint = { x: caster.x, y: caster.y + caster.bodyCenterY };
@@ -113,11 +113,11 @@ export class Spell implements EffectSource {
     this.abilitySlot = abilitySlot;
     this.action = action ?? "attack_right";
     this.castAngle = castAngle;
-    this.ilvl = ilvl;
+    this.rank = rank;
 
     const { details, found } = resolveSpellDetails(spellName);
     if (!found) console.log("❌ Shit, the spell does not exist in spellDetails!");
-    const shape = getSpellShape(details, ilvl);
+    const shape = getSpellShape(details, rank);
 
     this.isMeleeAttack = !!shape.isMeleeAttack;
     this.isRangedAttack = !!shape.isRangedAttack;
@@ -200,7 +200,7 @@ export class Spell implements EffectSource {
       spellName: this.spellName,
       castAngle: this.castAngle,
       action: this.action,
-      ilvl: this.ilvl,
+      rank: this.rank,
       spawnPoint: this.spawnPoint,
     };
   }

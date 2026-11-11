@@ -66,7 +66,7 @@ type NpcArgs = CharacterArgs & {
 
 /** What an NPC needs to cast a spell. */
 interface NpcCastRequest {
-  ability: NpcAbility & { ilvl?: number };
+  ability: NpcAbility & { rank?: number };
   abilitySlot: AbilitySlot;
   targetPlayer?: ServerCharacter;
   castAngle: number;
@@ -303,7 +303,7 @@ export class Npc extends Character {
         target: targetPlayer,
         spellName,
         castAngle,
-        ilvl: ability?.ilvl,
+        rank: ability?.rank,
         abilitySlot: slot,
       });
 
@@ -356,7 +356,7 @@ export class Npc extends Character {
         direction,
         action,
         castAngle,
-        ilvl: 1,
+        rank: 1,
       });
 
     world.events.emit("npcAttacked", {

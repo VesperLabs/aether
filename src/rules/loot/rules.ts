@@ -82,19 +82,6 @@ export function pickPreferredDrop<T extends { rarity?: string; type?: string }>(
   return item;
 }
 
-/** Item level of the drops of a mob. I.e. a lvl 8 mob drops ilvl 2 items, a lvl 16 mob ilvl 3. */
-export function dropItemLevel(mobLevel: number, ilvlMultiplier: number): number {
-  return 1 + Math.floor(mobLevel / ilvlMultiplier);
-}
-
-/**
- * The lowest mob level whose drops reach item level `ilvl`: the inverse of `dropItemLevel`. I.e.
- * ilvl 1 drops from any mob, ilvl 2 from lvl 8, ilvl 3 from lvl 16.
- */
-export function minMobLevelForItem(ilvl: number, ilvlMultiplier: number): number {
-  return Math.max(1, (ilvl - 1) * ilvlMultiplier);
-}
-
 /** Everything a mob kill needs to roll a drop. */
 export interface MobDropInput {
   mobLevel: number;
@@ -102,25 +89,22 @@ export interface MobDropInput {
   /** Mobs flagged this way skip the world drop and only use their own table. */
   noWorldDrops?: boolean;
   drops?: DropTableEntry[];
-  /** Multiplier from item level to mob level, see `dropItemLevel`. */
-  ilvlMultiplier: number;
 }
 
 /**
  * Rolls what a killed mob drops: one world drop (skipped for `noWorldDrops` mobs) plus each entry
  * of the mob's own table that hits, then picks one by `pickPreferredDrop`.
- * `rollWorldDrop` is the item roll for (item level, magic find).
+ * `rollWorldDrop` is the item roll for (mob level, magic find).
  */
 export function rollMobDrop(
   input: MobDropInput,
   rng: Rng,
-  rollWorldDrop: (ilvl: number, magicFind: number) => DropCandidate | null,
+  rollWorldDrop: (mobLevel: number, magicFind: number) => DropCandidate | null,
 ): DropCandidate | null {
   const runners: DropCandidate[] = [];
-  const ilvl = dropItemLevel(input.mobLevel, input.ilvlMultiplier);
 
   if (!input.noWorldDrops) {
-    const mainDrop = rollWorldDrop(ilvl, input.magicFind);
+    const mainDrop = rollWorldDrop(input.mobLevel, input.magicFind);
     if (mainDrop) runners.push(mainDrop);
   }
   if (input.drops) {

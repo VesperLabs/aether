@@ -7,14 +7,29 @@ interface DropCandidate {
   key: string;
 }
 
-const MAX_MAGIC_FIND = 1000;
+/** "1 in N" chance that a kill drops a random item at all. */
+const WORLD_DROP_CHANCE = 18;
 
-const BASE_DROP_CHANCES = [
-  { rarity: "unique", chance: 2000 },
-  { rarity: "rare", chance: 250 },
-  { rarity: "magic", chance: 40 },
-  { rarity: "common", chance: 40 },
-];
+/** How likely each rarity is once something drops, out of the total. */
+const RARITY_WEIGHTS = [
+  { rarity: "common", weight: 460 },
+  { rarity: "magic", weight: 450 },
+  { rarity: "rare", weight: 75 },
+  { rarity: "set", weight: 5 },
+  { rarity: "unique", weight: 10 },
+] as const;
+
+/** Rarities that magic find makes more likely: the rare finds, not the magic filler. */
+const BOOSTED_RARITIES = new Set(["rare", "set", "unique"]);
+
+/** Magic find with diminishing returns: 250 doubles the odds of rare and better; it never triples them. */
+const MAGIC_FIND_HALF_POINT = 250;
+
+/**
+ * A monster drops items from 1 level above its own down to this many levels below, so low
+ * items stop cluttering high areas.
+ */
+const DROP_LEVEL_SPREAD = 16;
 
 const DROPPABLE_TYPES = [
   "ranged",
@@ -35,79 +50,73 @@ const DROPPABLE_TYPES = [
 /* Uniques and sets drop as themselves; magic and rare drops are rolled from a common base */
 const POOLED_RARITIES = ["unique", "set", "common"];
 
+/** Bonus from magic find, as a fraction: diminishing, so stacking it never guarantees uniques. */
+export function magicFindBonus(magicFind: number): number {
+  const mf = Math.max(0, magicFind);
+  return (mf / (mf + MAGIC_FIND_HALF_POINT)) * 2;
+}
+
 /**
- * The item level a monster's drops must reach to give `type/rarity/key` at random, or undefined when
- * it never drops at random: not a droppable type, magic or rare (rolled from a common base), or
- * kept to one monster (`exclusive`).
+ * The monster levels that give `type/rarity/key` as a random drop, or undefined when it never drops
+ * at random: not a droppable type, magic or rare (rolled from a common base), or kept to one
+ * monster (`exclusive`).
  */
-export function randomDropLevel(type: string, rarity: string, key: string): number | undefined {
+export function randomDropLevels(
+  type: string,
+  rarity: string,
+  key: string,
+): { min: number; max: number } | undefined {
   if (!DROPPABLE_TYPES.includes(type) || !POOLED_RARITIES.includes(rarity)) return undefined;
   const item = itemList[type]?.[rarity]?.[key];
   if (!item || item.exclusive) return undefined;
-  return item.ilvl;
+  return { min: Math.max(1, item.level - 1), max: item.level + DROP_LEVEL_SPREAD };
 }
 
-/** Rolls a random item of a random type that is allowed to drop at this ilvl. */
-export function rollDrop(dice: Dice, ilvl: number, magicFind = 0): DropCandidate | null {
-  if (magicFind >= MAX_MAGIC_FIND) magicFind = MAX_MAGIC_FIND - 1;
-  const magicFindFactor = Math.min(magicFind, MAX_MAGIC_FIND) / MAX_MAGIC_FIND;
+function dropsAt(type: string, rarity: string, key: string, mobLevel: number): boolean {
+  const levels = randomDropLevels(type, rarity, key);
+  return !!levels && mobLevel >= levels.min && mobLevel <= levels.max;
+}
 
-  const dropChances = BASE_DROP_CHANCES.map(({ rarity, chance }) => ({
+/** Picks a rarity by weight, with magic find raising rare and better. */
+function rollRarity(dice: Dice, magicFind: number): string {
+  const boost = 1 + magicFindBonus(magicFind);
+  const weights = RARITY_WEIGHTS.map(({ rarity, weight }) => ({
     rarity,
-    chance: Math.round(chance - chance * magicFindFactor),
+    weight: BOOSTED_RARITIES.has(rarity) ? weight * boost : weight,
   }));
+  const total = weights.reduce((sum, w) => sum + w.weight, 0);
+  let roll = dice.random() * total;
+  for (const { rarity, weight } of weights) {
+    roll -= weight;
+    if (roll < 0) return rarity;
+  }
+  return "common";
+}
 
-  const rolls: Record<string, number> = { set: 0, unique: 0, rare: 0, magic: 0, common: 0 };
+/** Keys of `rarity` items of `type` a monster of this level drops. */
+function poolFor(type: string, rarity: string, mobLevel: number): string[] {
+  return Object.keys(itemList[type]?.[rarity] ?? {}).filter((key) =>
+    dropsAt(type, rarity, key, mobLevel),
+  );
+}
 
-  for (const { rarity, chance } of dropChances) {
-    const roll = randomNumber(dice, 1, Math.floor(chance));
-    if (roll === 1) rolls[rarity] = 1;
+/**
+ * Rolls the random drop of a monster of `mobLevel`: whether anything drops, then one rarity, then
+ * an item of a random type in the monster's level range. A unique or set roll with nothing to give
+ * becomes a rare; magic and rare are common bases that roll affixes when built.
+ */
+export function rollDrop(dice: Dice, mobLevel: number, magicFind = 0): DropCandidate | null {
+  if (randomNumber(dice, 1, WORLD_DROP_CHANCE) !== 1) return null;
+  let rarity = rollRarity(dice, magicFind);
+  const type = DROPPABLE_TYPES[randomNumber(dice, 0, DROPPABLE_TYPES.length - 1)];
+
+  if (rarity === "unique" || rarity === "set") {
+    const pool = poolFor(type, rarity, mobLevel);
+    if (pool.length) return { type, rarity, key: pool[randomNumber(dice, 0, pool.length - 1)] };
+    rarity = "rare";
   }
 
-  const uniquePool: DropCandidate[] = [];
-  const commonPool: DropCandidate[] = [];
-  let item: DropCandidate | null = null;
-
-  const type = DROPPABLE_TYPES[Math.floor(dice.random() * DROPPABLE_TYPES.length)];
-  const theType = itemList[type];
-
-  const addItemToPool = (pool: DropCandidate[], rarity: string, key: string) => {
-    const level = randomDropLevel(type, rarity, key);
-    if (level !== undefined && level <= ilvl) {
-      pool.push({ type, rarity, key });
-    }
-  };
-
-  if (theType["unique"]) {
-    Object.keys(theType["unique"]).forEach((key) => addItemToPool(uniquePool, "unique", key));
-  }
-
-  if (theType["set"]) {
-    Object.keys(theType["set"]).forEach((key) => addItemToPool(uniquePool, "set", key));
-  }
-
-  if (theType["common"]) {
-    Object.keys(theType["common"]).forEach((key) => addItemToPool(commonPool, "common", key));
-  }
-
-  if (rolls.unique && item == null && uniquePool.length > 0) {
-    item = uniquePool[Math.floor(dice.random() * uniquePool.length)];
-  }
-
-  if (rolls.rare == 1 && item == null && commonPool.length > 0) {
-    item = commonPool[Math.floor(dice.random() * commonPool.length)];
-    item.rarity = "rare";
-  }
-
-  if (rolls.magic == 1 && item == null && commonPool.length > 0) {
-    item = commonPool[Math.floor(dice.random() * commonPool.length)];
-    item.rarity = "magic";
-  }
-
-  if (rolls.common == 1 && item == null && commonPool.length > 0) {
-    item = commonPool[Math.floor(dice.random() * commonPool.length)];
-    item.rarity = "common";
-  }
-
-  return item;
+  const commons = poolFor(type, "common", mobLevel);
+  if (!commons.length) return null;
+  return { type, rarity, key: commons[randomNumber(dice, 0, commons.length - 1)] };
 }

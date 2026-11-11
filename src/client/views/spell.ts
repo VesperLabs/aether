@@ -46,7 +46,7 @@ export interface SpellArgs {
   spellName: string;
   action?: string;
   castAngle?: number;
-  ilvl?: number;
+  rank?: number;
   /** Where it left its caster, when the server says (they may have moved since). */
   spawnPoint?: Point;
   /** How long ago it was cast, in ms: it starts that far along (see `sync/effects`). */
@@ -78,7 +78,7 @@ export class Spell extends Phaser.GameObjects.Container {
   declare ageMs: number;
   constructor(
     scene: Phaser.Scene,
-    { id, caster, spellName, action, castAngle = 0, ilvl = 1, ...rest }: SpellArgs,
+    { id, caster, spellName, action, castAngle = 0, rank = 1, ...rest }: SpellArgs,
   ) {
     const spawnPoint = rest.spawnPoint ?? { x: caster.x, y: caster.y + caster.bodyCenterY };
     super(scene, spawnPoint.x, spawnPoint.y);
@@ -99,7 +99,7 @@ export class Spell extends Phaser.GameObjects.Container {
 
     const { details, found } = resolveSpellDetails(spellName);
     if (!found) console.log("❌ Shit, the spell does not exist in spellDetails!");
-    const shape = getSpellShape(details, ilvl);
+    const shape = getSpellShape(details, rank);
 
     this.isMeleeAttack = shape.isMeleeAttack;
     this.isRangedAttack = shape.isRangedAttack;

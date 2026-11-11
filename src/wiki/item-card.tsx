@@ -1,4 +1,4 @@
-import { randomDropLevel, resolveAsset, type ItemDefinition } from "@/content";
+import { randomDropLevels, resolveAsset, type ItemDefinition } from "@/content";
 import {
   buffLines,
   describeItem,
@@ -15,7 +15,13 @@ import { ICON, Row } from "./card-row";
 import { Sources } from "./item-source-rows";
 
 /** An item as the wiki lists it: its definition, plus where it sits in the item list. */
-export type WikiItem = ItemDefinition & { key: string; type: string; rarity: string };
+/** A scaled item, which has the level its tier sets. */
+export type WikiItem = ItemDefinition & {
+  key: string;
+  type: string;
+  rarity: string;
+  level?: number;
+};
 
 /** `earthResistance` as "Earth resistance". */
 const words = (key: string) => {
@@ -110,7 +116,7 @@ export const ItemCard = ({ item }: { item: WikiItem }) => {
           </Flex>
           <Text as="p" sx={{ fontSize: 0, color: PAPER.muted, m: 0, mb: 1 }}>
             {category}
-            {described.level === undefined && ` · item level ${item.ilvl}`}
+            {described.level === undefined && ` · item level ${item.level}`}
           </Text>
           <Text
             as="p"
@@ -151,7 +157,7 @@ export const ItemCard = ({ item }: { item: WikiItem }) => {
       <Column label="Where to find">
         <Sources
           sources={sources}
-          randomLevel={randomDropLevel(item.type, item.rarity, item.key)}
+          randomLevels={randomDropLevels(item.type, item.rarity, item.key)}
         />
       </Column>
     </Grid>

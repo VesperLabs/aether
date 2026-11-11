@@ -100,10 +100,10 @@ describe("getAbilityDetails", () => {
     expect(getAbilityDetails({ hasRangedWeapon: true }, 0).spellName).toBe("attack-ranged");
   });
   it("merges the item with the spell definition", () => {
-    const abilities = { 2: { base: "flame-slash", ilvl: 3, effects: { minFireDamage: 1 } } };
+    const abilities = { 2: { base: "flame-slash", rank: 3, effects: { minFireDamage: 1 } } };
     expect(getAbilityDetails({ abilities, hasRangedWeapon: false }, 2)).toMatchObject({
       spellName: "flame-slash",
-      ilvl: 3,
+      rank: 3,
       effects: { minFireDamage: 1 },
       isMeleeAttack: true,
     });

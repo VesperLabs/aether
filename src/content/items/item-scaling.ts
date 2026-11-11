@@ -1,10 +1,12 @@
+import { tierLevel } from "../power-curve";
 import { itemData } from "./item-data";
 
-/** ilvl * this = monster level that can drop the item. */
-export const ILVL_MULTIPLIER = 8;
+/** These stats do not grow with level: speeds, reach, costs and chances. */
+const STATIC_STATS = ["attackDelay", "castDelay", "castTime", "range", "spCost", "blockChance"];
 
-/** These stats do not scale with ilvl. */
-const STATIC_STATS = ["attackDelay", "castDelay", "castTime", "range", "spCost"];
+/** Items that have no level requirement however strong they are. */
+const NO_LEVEL_REQUIREMENT_SLOTS = ["bag"];
+const NO_LEVEL_REQUIREMENT_BASES = ["material"];
 
 type Loose = Record<string, any>;
 
@@ -18,20 +20,12 @@ export function multiplyValues(obj: Loose | undefined, multiplier: number): Loos
   for (const key in obj) {
     const value = obj[key];
     if (STATIC_STATS.includes(key)) {
-      // value is in static stats, do not scale it.
       multiplied[key] = value;
-    } else if (key === "blockChance") {
-      // values that don't scale linear go here
-      multiplied[key] = isNumberPair(value)
-        ? value.map((v) => v + (multiplier - 1) * 5)
-        : value + (multiplier - 1) * 5;
     } else if (typeof value === "number") {
-      multiplied[key] = value * multiplier;
+      multiplied[key] = Math.round(value * multiplier);
     } else if (isNumberPair(value)) {
-      // stat is a tuple, scale both values
-      multiplied[key] = value.map((v) => v * multiplier);
+      multiplied[key] = value.map((v) => Math.round(v * multiplier));
     } else {
-      // not sure, leave it alone
       multiplied[key] = value;
     }
   }
@@ -39,49 +33,43 @@ export function multiplyValues(obj: Loose | undefined, multiplier: number): Loos
 }
 
 /**
- * Takes in all items in the game. Looks up the base item (ilvl 1) and scales stats by ilvl for
- * each item. Returns a scaled copy; the input is not changed.
+ * Fills in every item from its base: the tier 1 common item with the same `base`. What the item
+ * leaves out comes from the base, with the base's stats multiplied by the item's tier. The tier
+ * also sets the item's level, the level needed to use it. Returns a copy.
  */
 export function scaleBaseStats(items: Loose): Loose {
-  const merged: Loose = JSON.parse(JSON.stringify(items));
+  const merged: Loose = structuredClone(items);
 
   for (const itemType in merged) {
-    const itemRarities = merged[itemType];
+    const rarities = merged[itemType];
+    const commons: Loose[] = Object.values(rarities.common ?? {});
 
-    if (Object.prototype.hasOwnProperty.call(itemRarities, "common")) {
-      // Take note of all the possible common items.
-      const commonItems = itemRarities["common"];
-      const commonKeys = Object.keys(commonItems);
+    for (const rarity in rarities) {
+      for (const key in rarities[rarity]) {
+        const item = rarities[rarity][key];
+        const power = item.tier ?? 1;
+        item.level = tierLevel(power);
+        if (itemType === "spell") item.rank = power;
 
-      for (const itemRarity in itemRarities) {
-        const rarityItems = itemRarities[itemRarity];
+        const baseItem = commons.find((c) => c.base === item.base && (c.tier ?? 1) === 1);
+        if (!baseItem) continue;
 
-        for (const itemKey in rarityItems) {
-          const item = rarityItems[itemKey];
-
-          // The ilvl1 item we will use as a base.
-          const baseItem = commonKeys
-            .map((key) => commonItems[key])
-            .find((commonItem) => commonItem?.base === item?.base && commonItem?.ilvl === 1);
-
-          if (baseItem) {
-            const ilvl = item?.ilvl || 1;
-            const reqLevel = Math.floor((ilvl - 1) * ILVL_MULTIPLIER) - 2;
-            const hasLevelReq = reqLevel > 0 && item?.slot !== "bag" && item?.base !== "material";
-            item.texture = item?.texture || baseItem?.texture;
-            item.slot = item?.slot || baseItem?.slot;
-            item.name = item?.name || baseItem?.name;
-            item.flavor = item?.flavor || baseItem?.flavor;
-            item.stats = { ...multiplyValues(baseItem.stats, ilvl), ...item.stats };
-            item.requirements = {
-              ...(hasLevelReq && { level: reqLevel }), // default required level
-              ...multiplyValues(baseItem.requirements, ilvl),
-              ...item.requirements,
-            };
-            item.buffs = item.buffs || multiplyValues(baseItem.buffs, ilvl);
-            item.effects = { ...multiplyValues(baseItem.effects, ilvl), ...item.effects };
-          }
-        }
+        const hasLevelReq =
+          item.level > 1 &&
+          !NO_LEVEL_REQUIREMENT_SLOTS.includes(item.slot ?? baseItem.slot) &&
+          !NO_LEVEL_REQUIREMENT_BASES.includes(item.base);
+        item.texture = item.texture || baseItem.texture;
+        item.slot = item.slot || baseItem.slot;
+        item.name = item.name || baseItem.name;
+        item.flavor = item.flavor || baseItem.flavor;
+        item.stats = { ...multiplyValues(baseItem.stats, power), ...item.stats };
+        item.requirements = {
+          ...(hasLevelReq && { level: item.level }),
+          ...multiplyValues(baseItem.requirements, power),
+          ...item.requirements,
+        };
+        item.buffs = item.buffs || multiplyValues(baseItem.buffs, power);
+        item.effects = { ...multiplyValues(baseItem.effects, power), ...item.effects };
       }
     }
   }
@@ -89,7 +77,7 @@ export function scaleBaseStats(items: Loose): Loose {
   return merged;
 }
 
-/** Every item with its base stats scaled by ilvl, as `itemList[type][rarity][key]`. */
+/** Every item filled in from its base, as `itemList[type][rarity][key]`. */
 export const itemList: Record<string, Record<string, Record<string, Loose>>> = scaleBaseStats(
   itemData,
 );

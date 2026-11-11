@@ -20,7 +20,6 @@ const kill = (overrides: Partial<MobKilledEvent> = {}): MobKilledEvent => ({
 
 const hooks = (overrides: Partial<LootHooks> = {}): LootHooks => ({
   rng: () => 0,
-  ilvlMultiplier: 8,
   rollWorldDrop: () => ({ type: "weapon", rarity: "common", key: "sword" }),
   buildItem: (type, rarity, key) => ({ id: `${type}-${rarity}-${key}`, type, rarity }),
   getMobDropInfo: () => undefined,
@@ -42,12 +41,12 @@ describe("subscribeLoot", () => {
     });
   });
 
-  it("rolls the world drop with the mob's item level and the killer's magic find", () => {
+  it("rolls the world drop with the mob's level and the killer's magic find", () => {
     const bus = createGameEventBus();
     const rollWorldDrop = vi.fn(() => null);
     subscribeLoot(bus, hooks({ rollWorldDrop }));
     bus.emit("mobKilled", kill());
-    expect(rollWorldDrop).toHaveBeenCalledWith(3, 25);
+    expect(rollWorldDrop).toHaveBeenCalledWith(16, 25);
   });
 
   it("uses the mob's drop table and noWorldDrops flag", () => {
