@@ -2,8 +2,24 @@ import Phaser from "phaser";
 import { ELEMENT_EFFECTS } from "@/ui/item/element-effects";
 import { ElementSim, type EffectPixel, type ToLayer } from "@/ui/item/element-sim";
 import { bladePixels, findEdgePixels } from "@/ui/item/edge-pixels";
+import { WEAPON_GRIP, getWeaponTip } from "@/content";
+import { addLight, type Light } from "./lights";
 
 const BORDER_OFFSET = 1;
+
+/**
+ * The glow a weapon of each element casts at night, as wide as `radius` and stretched along the
+ * blade, flickering by `flicker` (0.3 dips to 70%) at `speed` waves a second. Earth gives none.
+ */
+const ELEMENT_LIGHTS: Record<
+  string,
+  { color: number; radius: number; intensity: number; flicker: number; speed: number }
+> = {
+  fire: { color: 0xff7a2a, radius: 22, intensity: 0.75, flicker: 0.3, speed: 8 },
+  light: { color: 0xfff07a, radius: 24, intensity: 0.7, flicker: 0.12, speed: 3 },
+  holy: { color: 0xf8faff, radius: 20, intensity: 0.6, flicker: 0.12, speed: 2 },
+  water: { color: 0x6ab8ff, radius: 16, intensity: 0.4, flicker: 0.08, speed: 1.5 },
+};
 /**
  * How much of the weapon's movement its particles share: they trail behind a swing a little,
  * like physics, but stay close to the blade instead of scattering across the screen.
@@ -55,6 +71,8 @@ export class WeaponSprite extends Phaser.GameObjects.Container {
   declare solidGraphics: Phaser.GameObjects.Graphics;
   /** Where the weapon is held, from the frame's centre: effects come off the blade, away from it. */
   declare grip: { x: number; y: number };
+  /** Takes the weapon's glow back out of the light map. */
+  declare removeLight: () => void;
   constructor(scene: Phaser.Scene, x: number, y: number, key: string, frame?: string | number) {
     super(scene, x, y);
 
@@ -81,9 +99,44 @@ export class WeaponSprite extends Phaser.GameObjects.Container {
     this.glowGraphics = scene.add.graphics().setBlendMode(Phaser.BlendModes.ADD);
     this.solidGraphics = scene.add.graphics();
     scene.add.existing(this);
+    this.removeLight = this.addBladeLight();
 
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
+  }
+  /**
+   * One soft glow stretched along the blade, grip to tip, in its first glowing element's color,
+   * while the weapon is shown. It turns with the blade through a swing.
+   */
+  addBladeLight() {
+    const light: Light = { position: () => undefined, radius: 0, color: 0 };
+    light.position = () => {
+      const element = this.elements.map((name) => ELEMENT_LIGHTS[name]).find(Boolean);
+      if (!element || !this.isShown()) return undefined;
+      const grip = this.bladePoint(0);
+      const tip = this.bladePoint(1);
+      const length = Math.hypot(tip.x - grip.x, tip.y - grip.y);
+      const wave = Math.sin((performance.now() / 1000) * element.speed);
+      light.color = element.color;
+      light.radius = element.radius;
+      light.intensity =
+        element.intensity * (1 - element.flicker / 2 + (element.flicker / 2) * wave);
+      /* As long as the blade plus a glow's width past each end */
+      light.stretch = (length + element.radius * 2) / (element.radius * 2);
+      light.angle = Math.atan2(tip.y - grip.y, tip.x - grip.x);
+      return { x: (grip.x + tip.x) / 2, y: (grip.y + tip.y) / 2 };
+    };
+    return addLight(light);
+  }
+  /** A point `along` the blade, in the world: 0 at the grip, 1 at the tip. */
+  bladePoint(along: number) {
+    const tip = getWeaponTip(this.mainSprite.texture.key);
+    const x = this.grip.x + (tip.x - WEAPON_GRIP.x) * along;
+    const y = this.grip.y + (tip.y - WEAPON_GRIP.y) * along;
+    const flipX = this.mainSprite.flipX ? -1 : 1;
+    const flipY = this.mainSprite.flipY ? -1 : 1;
+    const world = this.mainSprite.getWorldTransformMatrix().transformPoint(x * flipX, y * flipY);
+    return { x: world.x, y: world.y };
   }
   setElements(elements: string[] = []) {
     const known = elements.filter((element) => ELEMENT_EFFECTS[element]);
@@ -177,6 +230,7 @@ export class WeaponSprite extends Phaser.GameObjects.Container {
       .fillRect(x, y, width, height);
   }
   destroy(fromScene?: boolean) {
+    this.removeLight?.();
     if (this.scene) this.scene.events.off("update", this.update, this);
     this.glowGraphics?.destroy();
     this.solidGraphics?.destroy();

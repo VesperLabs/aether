@@ -6,18 +6,21 @@ export const mapList = [
     music: "./assets/music/stories-of-long-ago.mp3",
     json: "./assets/tilemaps/meadow.json",
     seasons: "cycle",
+    isOutdoors: true,
   },
   {
     name: "town-road",
     music: "./assets/music/stories-of-long-ago.mp3",
     json: "./assets/tilemaps/town-road.json",
     seasons: "cycle",
+    isOutdoors: true,
   },
   {
     name: "wildwood",
     music: "./assets/music/stories-of-long-ago.mp3",
     json: "./assets/tilemaps/wildwood.json",
     seasons: "cycle",
+    isOutdoors: true,
   },
   {
     name: "mine",
@@ -29,6 +32,7 @@ export const mapList = [
     music: "./assets/music/market-day.mp3",
     json: "./assets/tilemaps/town.json",
     seasons: "cycle",
+    isOutdoors: true,
   },
   {
     name: "town-houses",
@@ -45,24 +49,28 @@ export const mapList = [
     music: "./assets/music/troubled-forest.mp3",
     json: "./assets/tilemaps/graveyard.json",
     seasons: "cycle",
+    isOutdoors: true,
   },
   {
     name: "foothills",
     music: "./assets/music/our-mountain.mp3",
     json: "./assets/tilemaps/foothills.json",
     seasons: "cycle",
+    isOutdoors: true,
   },
   {
     name: "peak-camp",
     music: "./assets/music/our-mountain.mp3",
     json: "./assets/tilemaps/peak-camp.json",
     seasons: "winter",
+    isOutdoors: true,
   },
   {
     name: "summit",
     music: "./assets/music/our-mountain.mp3",
     json: "./assets/tilemaps/summit.json",
     seasons: "winter",
+    isOutdoors: true,
   },
   {
     name: "aqueducts",

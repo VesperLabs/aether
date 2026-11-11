@@ -106,7 +106,7 @@ describe("getGhostText", () => {
 
   it("finishes the command name and lists its arguments", () => {
     expect(ghost("/tp")).toBe(" <x> <y>");
-    expect(ghost("/t")).toBe("p <x> <y>");
+    expect(ghost("/t")).toBe("ime [hour]");
     expect(ghost("/w")).toBe("hisper <player> <message>");
     expect(ghost("/")).toBe("");
   });

@@ -5,6 +5,7 @@ import type { Point } from "@/rules/world";
 import type { Player } from "./player";
 import { toTint } from "./tint";
 import { endOnDeath } from "./end-on-death";
+import { addLight } from "./lights";
 import { PunchBurst } from "./punch-burst";
 import { SwingArc } from "./swing-arc";
 import { SwingDebug } from "./swing-debug";
@@ -51,6 +52,8 @@ export interface SpellArgs {
 }
 
 export class Spell extends Phaser.GameObjects.Container {
+  /** Takes its light back out of the light map. */
+  declare removeLight?: () => void;
   declare body: Phaser.Physics.Arcade.Body;
   declare id: string | null | undefined;
   declare spawnPoint: Point;
@@ -102,6 +105,15 @@ export class Spell extends Phaser.GameObjects.Container {
     this.maxDistance = shape.maxDistance;
     this.action = action ?? "attack_right";
     this.spell.setTint(toTint(look.tint ?? "0xFFFFFF"));
+    if (look.light) {
+      const { color, radius } = look.light;
+      /* Fades with the spell, and goes dark once it's spent */
+      this.removeLight = addLight({
+        position: () => (this.active && this.visible && this.spell.alpha > 0 ? this : undefined),
+        radius,
+        color: toTint(color),
+      });
+    }
 
     scene.physics.add.existing(this);
     scene.events.on("update", this.update, this);
@@ -266,6 +278,7 @@ export class Spell extends Phaser.GameObjects.Container {
     this.body.setVelocity(this.velocityX, this.velocityY);
   }
   destroy() {
+    this.removeLight?.();
     if (this.scene) this.scene.events.off("update", this.update, this);
     if (this.scene) this.scene.physics.world.disable(this);
     super.destroy();

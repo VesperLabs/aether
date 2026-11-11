@@ -1,33 +1,24 @@
 import { describe, expect, it } from "vitest";
-import {
-  SEASON_LENGTH_MS,
-  createCalendar,
-  findSeason,
-  mapSeason,
-  seasonAt,
-  startSeason,
-} from "./rules";
+import { createCalendar, findSeason, mapSeason, pinSeason, seasonAt } from "./rules";
+
+const on = (month: number, day: number) => Date.UTC(2026, month - 1, day);
 
 describe("seasons", () => {
-  it("runs spring, summer, fall, winter, then spring again", () => {
+  it("follow the real northern seasons by month", () => {
     const calendar = createCalendar();
-    const at = (seasons: number) => seasonAt(seasons * SEASON_LENGTH_MS, calendar);
-    expect([at(0), at(1.5), at(2), at(3.99), at(4)]).toEqual([
-      "spring",
-      "summer",
-      "fall",
-      "winter",
-      "spring",
-    ]);
+    expect(seasonAt(on(1, 15), calendar)).toBe("winter");
+    expect(seasonAt(on(3, 1), calendar)).toBe("spring");
+    expect(seasonAt(on(7, 4), calendar)).toBe("summer");
+    expect(seasonAt(on(11, 11), calendar)).toBe("fall");
+    expect(seasonAt(on(12, 1), calendar)).toBe("winter");
   });
 
-  it("starts a chosen season now and carries on from it", () => {
+  it("holds a pinned season until it is handed back", () => {
     const calendar = createCalendar();
-    const now = 123_456_789_000;
-    startSeason(calendar, now, "winter");
-    expect(seasonAt(now, calendar)).toBe("winter");
-    expect(seasonAt(now + SEASON_LENGTH_MS - 1, calendar)).toBe("winter");
-    expect(seasonAt(now + SEASON_LENGTH_MS, calendar)).toBe("spring");
+    pinSeason(calendar, "spring");
+    expect(seasonAt(on(11, 11), calendar)).toBe("spring");
+    pinSeason(calendar, undefined);
+    expect(seasonAt(on(11, 11), calendar)).toBe("fall");
   });
 
   it("shows the world's season only on maps that cycle", () => {

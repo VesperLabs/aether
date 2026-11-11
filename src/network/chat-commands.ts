@@ -5,9 +5,12 @@ import {
   findItemKey,
   mapList,
   SEASONS,
+  SEASON_ICONS,
+  EARTH_ICON,
   actors,
   type ActorDefinition,
   type ItemLook,
+  type SeasonIcon,
 } from "@/content";
 
 /** One suggestion for a command argument. */
@@ -21,6 +24,8 @@ export interface ChatCommandOption {
   rarity?: string;
   /** Draws an icon next to the value: an item's, or a mob's body when there's no slot. */
   look?: ItemLook;
+  /** Draws this picture next to the value, for options that aren't items or mobs. */
+  icon?: SeasonIcon;
   /** Draws this actor dressed in its gear instead of `look`: set for humans, whose bare body is plain. */
   actor?: string;
 }
@@ -64,7 +69,19 @@ const MOB_OPTIONS = Object.entries(actors as Record<string, ActorDefinition>).ma
     ...(profile.race === "human" && { actor: value }),
   }),
 );
-const SEASON_OPTIONS = SEASONS.map((value) => ({ value }));
+/** What each `/season` choice does; the months are when Earth's northern half has it. */
+const SEASON_HINTS: Record<(typeof SEASONS)[number] | "real", string> = {
+  spring: "Pin spring: blossoms (Mar-May)",
+  summer: "Pin summer: green leaves (Jun-Aug)",
+  fall: "Pin fall: orange leaves (Sep-Nov)",
+  winter: "Pin winter: snow (Dec-Feb)",
+  real: "Follow Earth's season again",
+};
+
+const SEASON_OPTIONS = [
+  ...SEASONS.map((value) => ({ value, hint: SEASON_HINTS[value], icon: SEASON_ICONS[value] })),
+  { value: "real", hint: SEASON_HINTS.real, icon: EARTH_ICON },
+];
 const RARITY_OPTIONS = ITEM_BUILD_RARITIES.map((value) => ({ value, rarity: value }));
 
 const NPC_ACTION_OPTIONS = [
@@ -241,9 +258,15 @@ export const CHAT_COMMANDS: readonly ChatCommand[] = [
   {
     name: "season",
     args: [optional({ name: "season", kind: "text" })],
-    description: "Show the season, or start a new one",
+    description: "Show the season, pin one, or go back to the real one",
     cheat: true,
     complete: (index) => (index === 0 ? SEASON_OPTIONS : []),
+  },
+  {
+    name: "time",
+    args: [optional(numArg("hour"))],
+    description: "Show the hour, or set it (0 to 24)",
+    cheat: true,
   },
   {
     name: "goto",

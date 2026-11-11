@@ -7,6 +7,8 @@ import { getGameZoomLevel } from "./camera-zoom";
 import { layoutMinimap } from "./minimap";
 import { announceRoomChange } from "./room-changed";
 import { seasonalTilesetKey } from "./map-season";
+import { addTileLights } from "@/client/views/tile-lights";
+import { ABOVE_LAYER_DEPTH } from "./world-depths";
 import type { SceneMain } from "./main-scene";
 
 const { RectangleToRectangle } = Phaser.Geom.Intersects;
@@ -67,6 +69,9 @@ export function initPlayerCollision(
   );
 }
 
+/** Puts out the last map's lit tiles (campfires) when the next one loads. */
+let removeTileLights = () => {};
+
 export function changeMap(scene: SceneMain, roomName: string) {
   scene.roomName = roomName;
   announceRoomChange(roomName);
@@ -90,16 +95,19 @@ export function changeMap(scene: SceneMain, roomName: string) {
   const createLayer = (name: string) =>
     map.createLayer(name, tilesets) as Phaser.Tilemaps.TilemapLayer;
 
-  const collideLayer = createLayer("Collide").setCollisionByProperty({
-    collides: true,
-  });
+  /* Only for collision, never drawn: physics still collides with a hidden layer */
+  const collideLayer = createLayer("Collide")
+    .setCollisionByProperty({ collides: true })
+    .setVisible(false);
 
   createLayer("Ground").setDepth(0);
   createLayer("Shadows").setDepth(1);
   createLayer("Overlay").setDepth(2);
   createLayer("Extras").setDepth(3);
-  createLayer("Above").setDepth(9999);
+  createLayer("Above").setDepth(ABOVE_LAYER_DEPTH);
   if (scene.animatedTiles) scene.animatedTiles.init(scene.map);
+  removeTileLights();
+  removeTileLights = addTileLights(map);
 
   /* Create Doors */
   const mapDoors = (scene.map.getObjectLayer("Doors") as Phaser.Tilemaps.ObjectLayer).objects;

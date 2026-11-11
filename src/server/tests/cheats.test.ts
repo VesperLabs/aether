@@ -126,7 +126,17 @@ describe("cheats", () => {
     expect((await cheat(socket, "/season w")).message).toBe("It is now winter.");
     await server.run(socket, 100);
     expect(await changed).toBe("winter");
-    expect((await cheat(socket, "/season")).message).toBe("It is winter.");
+    expect((await cheat(socket, "/season")).message).toBe("It is winter (pinned).");
+    /* The test server's clock starts on January 1st */
+    expect((await cheat(socket, "/season real")).message).toBe("It is now winter, as on Earth.");
+  });
+
+  it("/time sets the hour for every client", async () => {
+    const socket = await login();
+    const set = waitFor(socket, "hourSet");
+    expect((await cheat(socket, "/time 21.5")).message).toBe("It is now 21:30.");
+    expect(await set).toBeCloseTo(21.5);
+    expect((await cheat(socket, "/time")).message).toBe("It is 21:30.");
   });
 
   it("rejects bad arguments with an error", async () => {
@@ -135,5 +145,6 @@ describe("cheats", () => {
     expect((await cheat(socket, "/tp x")).type).toBe("error");
     expect((await cheat(socket, "/warp nowhere")).type).toBe("error");
     expect((await cheat(socket, "/season monsoon")).type).toBe("error");
+    expect((await cheat(socket, "/time 25")).type).toBe("error");
   });
 });

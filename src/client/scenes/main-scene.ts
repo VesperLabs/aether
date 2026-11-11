@@ -14,6 +14,7 @@ import { getPlayer, getNpc, getNpcs, getPlayers } from "./scene-entities";
 import { enableDoors, initCamera } from "./main-map";
 import { fitTourCamera } from "./observer-tour";
 import { checkProximities } from "./proximity";
+import { createDaylight, updateDaylight } from "./daylight";
 import { animateMinimap, createMinimap, updateMinimap } from "./minimap";
 
 /** A remote player close enough to the hero to video chat with. */
@@ -57,6 +58,7 @@ export class SceneMain extends Phaser.Scene {
     if (!isMobile) {
       scene.minimap = createMinimap(scene);
     }
+    createDaylight(scene);
 
     bindSceneSocket(scene);
     /* Logged in on the wiki. Only now: `heroInit` before the scene listens would never draw it */
@@ -124,6 +126,8 @@ export class SceneMain extends Phaser.Scene {
       updateMinimap(this);
       checkProximities(this, time);
     }
+
+    updateDaylight(this);
 
     if (poses) {
       for (const [id, pose] of poses.npcs) {

@@ -8,11 +8,12 @@ import {
 import { useAppContext } from "@/client/hud/app/context";
 import { MusicPlayer } from "@/client/hud/music/music-player";
 import { NetStatsButton } from "@/client/hud/net-stats/net-stats-button";
+import { SkyDisc } from "@/client/hud/sky-disc/sky-disc";
 
 /** Gap between the bar and the minimap's left edge. */
 const MINIMAP_GAP = 6;
 
-/** The row of glass buttons beside the minimap's top left: net stats, then music. */
+/** The row of glass discs beside the minimap's top left: the sky (season and time), net stats, then music. */
 export const TopRightBar = () => {
   const { userSettings, zoom } = useAppContext();
   const scale = isMobile ? 1 : Number(zoom) || 1;
@@ -35,6 +36,7 @@ export const TopRightBar = () => {
         pointerEvents: "none",
       }}
     >
+      <SkyDisc />
       <NetStatsButton />
       <MusicPlayer />
     </Flex>
