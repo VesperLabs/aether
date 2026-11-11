@@ -96,8 +96,9 @@ export function endCast(player: Player) {
 export function landCast(player: Player, { abilitySlot, castAngle }: CastArgs) {
   endCast(player);
   holdCastPose(player, CAST_POSE_MS);
-  keepAiming(player);
   const ability = player.getAbilityDetails(abilitySlot);
+  /* Only an aimed spell holds its aim: a buff has nothing to face */
+  if (ability?.isAimable) keepAiming(player);
   player.scene.add.existing(new Spell(player.scene, { ...ability, castAngle, caster: player }));
 }
 
@@ -111,7 +112,7 @@ export function doCast(player: Player, { abilitySlot, castAngle }: CastArgs) {
     player.scene.socket.emit("castSpell", { abilitySlot, castAngle });
   }
   holdCastPose(player, CAST_POSE_MS);
-  if (!ability?.isLunge) keepAiming(player);
+  if (ability?.isAimable && !ability.isLunge) keepAiming(player);
   /* Lunges dash the caster: the hero moves itself, others just leave the trail */
   if (ability?.isLunge) {
     player.state.lungeAt = Date.now();
