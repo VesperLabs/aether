@@ -1,5 +1,5 @@
 import mapLoots from "virtual:map-loots";
-import { actors, questList, type ActorDefinition } from "@/content";
+import { actors, findDefinition, questList, type ActorDefinition } from "@/content";
 
 /**
  * Where a player can get an item: monsters that drop it, keepers that sell it, quests that give
@@ -14,7 +14,9 @@ export interface ItemSources {
 
 type Ref = readonly [string, string, string] | readonly string[];
 
-const refKey = (ref: Ref) => ref.slice(0, 3).join("/");
+/* Keyed where the item is written, so a rolled magic or rare ref counts for its common item. */
+const refKey = ([type, rarity, key]: Ref) =>
+  [type, findDefinition(type, rarity, key).definedRarity, key].join("/");
 
 /** Every item's sources, keyed `type/rarity/key`. Built once from the content. */
 const SOURCES = new Map<string, ItemSources>();

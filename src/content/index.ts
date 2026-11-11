@@ -39,6 +39,7 @@ export {
   ITEM_BUILD_RARITIES,
   ItemBuilder,
   canRollRarity,
+  findDefinition,
   isItemBuildRarity,
 } from "./items/item-builder";
 export { randomDropLevel } from "./items/item-drops";

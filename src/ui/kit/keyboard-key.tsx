@@ -22,6 +22,13 @@ export const MODAL_ONLY_KEY = "modalOnly";
 
 const isModalOnly = (e: KeyboardEvent) => MODAL_ONLY_KEY in e;
 
+/**
+ * Enter outside the modals is ignored while one is open: it confirms the modal and must not also
+ * open chat behind it. Other shortcuts still work behind modals like settings.
+ */
+const isBehindModal = (inModal: boolean, keyName: string) =>
+  !inModal && keyName === "ENTER" && !!document.querySelector(`[${MODAL_ATTR}]`);
+
 const IGNORE_PRESS_ELEMENT_TYPES = ["text", "number", "textarea"];
 
 /** The `type` of an input element, if the target is one. */
@@ -108,6 +115,10 @@ export const KeyboardKey: React.FC<KeyboardKeyProps> = ({
   const handleKeyUp = useEffectEvent((e: KeyboardEvent) => {
     if (isModalOnly(e) && !inModal) return;
     const keyName = getEventKeyName(e);
+    if (isBehindModal(inModal, keyName)) {
+      if (keyName === name) setIsPressed(false);
+      return;
+    }
     /* Enter: chat submit unmounts input before keyup; don't treat that keyup as HUD Enter.
      * Every KeyboardKey sees this keyup, so the flag isn't cleared here (the first one to see it
      * would clear it for the rest and the Enter key would reopen chat). The next Enter keydown resets it. */
@@ -134,6 +145,7 @@ export const KeyboardKey: React.FC<KeyboardKeyProps> = ({
   const handleKeyDown = useEffectEvent((e: KeyboardEvent) => {
     if (e.repeat || (isModalOnly(e) && !inModal)) return;
     const keyName = getEventKeyName(e);
+    if (isBehindModal(inModal, keyName)) return;
     if (inputType(document.activeElement) === "text" || inputType(e.target) === "text") {
       return;
     }

@@ -53,7 +53,11 @@ function rollPercentStats(dice: Dice, block: Loose | undefined): Record<string, 
   return rolled;
 }
 
-function findDefinition(type: string, rarity: string, itemKey: string) {
+/**
+ * The item a `[type, rarity, key]` ref names and the rarity table it is written in. A magic or rare
+ * ref with no hand-written version is the common item, rolled with mods when built.
+ */
+export function findDefinition(type: string, rarity: string, itemKey: string) {
   const table = (itemList as Loose)[type];
   let shouldSpawnMods = true;
   let item: Loose | undefined;
@@ -75,9 +79,10 @@ function findDefinition(type: string, rarity: string, itemKey: string) {
       shouldSpawnMods = false;
     } else {
       item = table?.common?.[itemKey];
+      return { item, shouldSpawnMods, definedRarity: "common" };
     }
   }
-  return { item, shouldSpawnMods };
+  return { item, shouldSpawnMods, definedRarity: rarity };
 }
 
 /** `[type, rarity, key, amount?]`. Typed loosely so callers can spread stored references. */
