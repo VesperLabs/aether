@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.30.0](https://github.com/VesperLabs/aether/compare/v0.29.0...v0.30.0) (2026-11-11)
+
+
+### Features
+
+* one wiki Characters page with shared stats and abilities ([#313](https://github.com/VesperLabs/aether/issues/313)) ([612da39](https://github.com/VesperLabs/aether/commit/612da396795c05643f8fb5730bf88d4562fbcbc1))
+
 ## [0.29.0](https://github.com/VesperLabs/aether/compare/v0.28.2...v0.29.0) (2026-11-11)
 
 
