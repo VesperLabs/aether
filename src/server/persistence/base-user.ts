@@ -30,8 +30,8 @@ export const createBaseUser = (
     direction: "down",
     quests: [],
     equipment: {
-      handRight: null,
-      handLeft: startingWeapon,
+      handRight: startingWeapon,
+      handLeft: null,
       helmet: null,
       accessory: null,
       pants: ItemBuilder.buildItem(dice, "pants", "common", "clothPants"),

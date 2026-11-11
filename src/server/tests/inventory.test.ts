@@ -82,11 +82,11 @@ describe("inventory over the socket", () => {
     player.equipment.armor = null;
     socket.emit("moveItem", {
       from: { location: "inventory", slot: 0 },
-      to: { location: "equipment", slot: "handLeft" },
+      to: { location: "equipment", slot: "handRight" },
     });
     await settle(socket);
     expect(player.inventory[0].base).toBe("robe");
-    expect(player.equipment.handLeft.base).toBe("axe");
+    expect(player.equipment.handRight.base).toBe("axe");
   });
 
   it("swaps two inventory slots", async () => {
@@ -310,12 +310,12 @@ describe("shop over the socket", () => {
     expect(sold.inventory[0].amount).toBe(3);
     expect(sold.gold).toBe(2 * (potion.cost as number));
 
-    const weaponCost = player.equipment.handLeft.cost;
+    const weaponCost = player.equipment.handRight.cost;
     const soldWeapon = await emitAndWait(socket, "moveItem", {
-      from: { location: "equipment", slot: "handLeft" },
+      from: { location: "equipment", slot: "handRight" },
       to: { location: "shop", slot: 0 },
     });
-    expect(soldWeapon.equipment.handLeft).toBeFalsy();
+    expect(soldWeapon.equipment.handRight).toBeFalsy();
     expect(soldWeapon.gold).toBe(2 * (potion.cost as number) + weaponCost);
   });
 
