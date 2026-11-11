@@ -1,7 +1,8 @@
 interface Item {
   id: string;
   key: string;
-  ilvl: number;
+  level: number;
+  rank?: number;
   rarity: string;
   stats?: Record<string, number>;
   name: string;

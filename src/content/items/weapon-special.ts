@@ -3,7 +3,7 @@ import type { ItemRarityTable } from "./item-types";
 export const weaponSpecial = {
   unique: {
     darkWhistler: {
-      ilvl: 1,
+      level: 1,
       base: "dagger",
       name: "Dark Whistler",
       flavor: "It whistles as it cuts. The last thing many monsters heard.",
@@ -22,7 +22,7 @@ export const weaponSpecial = {
       ],
     },
     twigmansBranch: {
-      ilvl: 1,
+      level: 1,
       base: "wand",
       name: "Twigman's Branch",
       flavor: "Snapped off the Twigman himself. It still twitches at night.",
@@ -33,7 +33,7 @@ export const weaponSpecial = {
     },
     eyeOfForest: {
       exclusive: true,
-      ilvl: 2,
+      level: 9,
       base: "staff",
       name: "Eye of the Forest",
       flavor: "Grown, not forged. The forest watches through its knot.",
@@ -48,7 +48,7 @@ export const weaponSpecial = {
       },
     },
     rushsteelRazor: {
-      ilvl: 2,
+      level: 9,
       base: "dagger",
       name: "Rushsteel Razor",
       flavor: "Rushsteel takes an edge in seconds and never lets it go.",
@@ -75,7 +75,7 @@ export const weaponSpecial = {
     },
     wyrmBlade: {
       exclusive: true,
-      ilvl: 2,
+      level: 9,
       base: "sword",
       name: "Wyrm Blade",
       flavor: "Ground from a wyrm's tooth. Still warm to the touch.",
@@ -90,7 +90,7 @@ export const weaponSpecial = {
       },
     },
     dawnspear: {
-      ilvl: 3,
+      level: 17,
       base: "spear",
       name: "Dawnspear",
       flavor: "Its point catches the sunrise and never lets it go.",
@@ -105,7 +105,7 @@ export const weaponSpecial = {
       },
     },
     foxBlade: {
-      ilvl: 2,
+      level: 9,
       base: "scimitar",
       name: "Fox Blade",
       flavor: "Quick and sly, like the fox it's named for.",
@@ -114,7 +114,7 @@ export const weaponSpecial = {
       stats: { critChance: [10, 15], minFireDamage: 2, maxFireDamage: 3 },
     },
     carnageDrinker: {
-      ilvl: 2,
+      level: 9,
       base: "dagger",
       name: "Carnage Drinker",
       flavor: "Every swing makes it thirstier.",
@@ -140,7 +140,7 @@ export const weaponSpecial = {
       ],
     },
     soulEdge: {
-      ilvl: 3,
+      level: 17,
       name: "Soul Edge",
       flavor: "Whispers of the fallen echo along its edge.",
       base: "sword",
@@ -156,7 +156,7 @@ export const weaponSpecial = {
       },
     },
     sirocco: {
-      ilvl: 3,
+      level: 17,
       base: "scimitar",
       name: "Sirocco",
       flavor: "A desert wind in every cut: they choke on sand, you breathe easy.",
@@ -172,7 +172,7 @@ export const weaponSpecial = {
       },
     },
     melonBasher: {
-      ilvl: 2,
+      level: 9,
       base: "club",
       name: "The Melon Basher",
       flavor: "Anthony the Lunchmeat Sage swears it was only ever for fruit.",
@@ -192,7 +192,7 @@ export const weaponSpecial = {
     },
     hotDog: {
       exclusive: true,
-      ilvl: 1,
+      level: 1,
       base: "club",
       name: "Hotdog",
       flavor: "A blade shaped like a sausage. Someone thought it was funny.",
@@ -215,7 +215,7 @@ export const weaponSpecial = {
       ],
     },
     gutripper: {
-      ilvl: 2,
+      level: 9,
       base: "fist",
       name: "Gutripper",
       flavor: "Hooked claws that open wounds which refuse to close.",
@@ -237,7 +237,7 @@ export const weaponSpecial = {
   set: {
     tizona: {
       setName: "cids",
-      ilvl: 2,
+      level: 9,
       base: "sword",
       name: "Tizona",
       flavor: "Twin of Colada. Its bearer was never beaten by a single foe.",
@@ -247,7 +247,7 @@ export const weaponSpecial = {
     },
     colada: {
       setName: "cids",
-      ilvl: 2,
+      level: 9,
       base: "sword",
       name: "Colada",
       flavor: "Twin of Tizona. The pair cut cleaner together.",
@@ -256,7 +256,7 @@ export const weaponSpecial = {
       stats: { blockChance: 5, critChance: 5 },
     },
     hawkwingsPincher: {
-      ilvl: 1,
+      level: 1,
       setName: "hawkwings",
       name: "Hawkwing's Pincher",
       flavor: "Hawkwing's claw-blade, for catching what tries to fly away.",

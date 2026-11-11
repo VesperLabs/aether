@@ -3,7 +3,7 @@ import type { ItemRarityTable } from "./item-types";
 export const glovesItems = {
   common: {
     clothGloves: {
-      ilvl: 1,
+      level: 1,
       name: "Cloth Gloves",
       flavor: "Plain cloth gloves for blister-free hands.",
       base: "gloves",
@@ -13,7 +13,7 @@ export const glovesItems = {
       stats: { defense: [1, 2] },
     },
     clothBracers: {
-      ilvl: 1,
+      level: 1,
       name: "Cloth Bracers",
       flavor: "Cloth wraps for the wrists.",
       base: "bracers",
@@ -24,7 +24,7 @@ export const glovesItems = {
       requirements: { dexterity: 2 },
     },
     nutshellGauntlets: {
-      ilvl: 1,
+      level: 1,
       name: "Nutshell Gauntlets",
       flavor: "Nutshell plates riveted over the knuckles.",
       base: "gauntlets",
@@ -35,7 +35,7 @@ export const glovesItems = {
       requirements: { strength: 6 },
     },
     silkGloves: {
-      ilvl: 2,
+      level: 9,
       name: "Silk Gloves",
       flavor: "Silk gloves for a lighter touch.",
       base: "gloves",
@@ -44,7 +44,7 @@ export const glovesItems = {
       slot: "gloves",
     },
     leatherBracers: {
-      ilvl: 2,
+      level: 9,
       name: "Leather Bracers",
       flavor: "Leather bracers to turn a glancing blow.",
       base: "bracers",
@@ -53,7 +53,7 @@ export const glovesItems = {
       slot: "gloves",
     },
     bronzeGauntlets: {
-      ilvl: 2,
+      level: 9,
       name: "Bronze Gauntlets",
       flavor: "Bronze gauntlets. Steve's sturdiest work.",
       base: "gauntlets",
@@ -62,7 +62,7 @@ export const glovesItems = {
       slot: "gloves",
     },
     wizardGloves: {
-      ilvl: 3,
+      level: 17,
       name: "Wizard Gloves",
       flavor: "Gloves stitched to keep spell-sparks off the fingers.",
       base: "gloves",
@@ -71,7 +71,7 @@ export const glovesItems = {
       slot: "gloves",
     },
     ghoulhideBracers: {
-      ilvl: 3,
+      level: 17,
       name: "Ghoulhide Bracers",
       flavor: "Ghoul-hide bracers. They grip back.",
       base: "bracers",
@@ -80,7 +80,7 @@ export const glovesItems = {
       slot: "gloves",
     },
     ironGauntlets: {
-      ilvl: 3,
+      level: 17,
       name: "Iron Gauntlets",
       flavor: "Iron gauntlets that turn a fist into a hammer.",
       base: "gauntlets",
@@ -91,7 +91,7 @@ export const glovesItems = {
   },
   unique: {
     flamingFinger: {
-      ilvl: 1,
+      level: 1,
       name: "The Flaming Finger",
       flavor: "One finger is always lit. Handy for campfires.",
       base: "gloves",
@@ -101,7 +101,7 @@ export const glovesItems = {
       stats: { maxHp: 10, maxMp: 10, castDelay: -50 },
     },
     aeryMitts: {
-      ilvl: 2,
+      level: 9,
       name: "Aery Mitts",
       flavor: "Light as air. Your hands feel like they could float off.",
       base: "gloves",

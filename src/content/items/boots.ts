@@ -3,7 +3,7 @@ import type { ItemRarityTable } from "./item-types";
 export const bootsItems = {
   common: {
     clothBoots: {
-      ilvl: 1,
+      level: 1,
       name: "Cloth Boots",
       flavor: "Soft cloth boots, quiet on the floorboards.",
       base: "boots",
@@ -13,7 +13,7 @@ export const bootsItems = {
       stats: { walkSpeed: 5, defense: [1, 2] },
     },
     nutshellGreaves: {
-      ilvl: 1,
+      level: 1,
       name: "Nutshell Greaves",
       flavor: "Nutshell shin guards for kicking through the brush.",
       base: "greaves",
@@ -24,7 +24,7 @@ export const bootsItems = {
       requirements: { strength: 6 },
     },
     leatherBoots: {
-      ilvl: 2,
+      level: 9,
       name: "Leather Boots",
       flavor: "Good leather boots, broken in on many roads.",
       base: "boots",
@@ -34,7 +34,7 @@ export const bootsItems = {
       stats: {},
     },
     bronzeGreaves: {
-      ilvl: 2,
+      level: 9,
       name: "Bronze Greaves",
       flavor: "Bronze greaves that clank with every step.",
       base: "greaves",
@@ -43,7 +43,7 @@ export const bootsItems = {
       slot: "boots",
     },
     ghoulhideBoots: {
-      ilvl: 3,
+      level: 17,
       name: "Ghoulhide Boots",
       flavor: "Ghoul-hide boots. Nothing follows your tracks.",
       base: "boots",
@@ -52,7 +52,7 @@ export const bootsItems = {
       slot: "boots",
     },
     ironGreaves: {
-      ilvl: 3,
+      level: 17,
       name: "Iron Greaves",
       flavor: "Iron greaves, heavy enough to anchor you in place.",
       base: "greaves",
@@ -63,7 +63,7 @@ export const bootsItems = {
   },
   set: {
     chetsNeonKicks: {
-      ilvl: 1,
+      level: 1,
       setName: "chets",
       name: "Chet's Neon Kicks",
       flavor: "So bright the monsters see you coming. Chet doesn't care.",
@@ -74,7 +74,7 @@ export const bootsItems = {
       stats: { vitality: [5, 6], walkSpeed: 20 },
     },
     crabWalkers: {
-      ilvl: 1,
+      level: 1,
       setName: "crab",
       name: "Crab Walkers",
       flavor: "Walk sideways with pride. Trista wears a pair herself.",
@@ -89,7 +89,7 @@ export const bootsItems = {
   },
   unique: {
     chickenFeet: {
-      ilvl: 2,
+      level: 9,
       name: "Chicken Feet",
       flavor: "They really are chicken feet. You will run faster.",
       base: "boots",

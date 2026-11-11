@@ -1,11 +1,12 @@
 /* This file and Diablo II are the main reason this game exists */
+import { levelPower } from "../power-curve";
 import { cloneJson, randomNumber, type Dice } from "../random";
+import { getMeleeRange } from "../assets/weapon-tips";
+import { AFFIXES, type AffixDefinition } from "./item-affixes";
 import { rollDrop } from "./item-drops";
-import { itemModsList } from "./item-mods";
 import { itemList, multiplyValues, scaleBaseStats } from "./item-scaling";
 import { itemSetList } from "./item-sets";
 import { Item } from "./item";
-import { getMeleeRange } from "../assets/weapon-tips";
 
 type Loose = Record<string, any>;
 
@@ -17,13 +18,19 @@ export function isItemBuildRarity(r: string): boolean {
   return ITEM_BUILD_RARITY_SET.has(r);
 }
 
-/** Bags, spells and stackables never roll magic or rare mods, only their table rarities. */
+/** Bags, spells and stackables never roll magic or rare affixes, only their table rarities. */
 const FIXED_RARITY_TYPES = new Set(["bag", "spell", "stackable"]);
 
 /** Whether a common item of this type can be built as magic or rare. */
 export function canRollRarity(type: string): boolean {
   return !FIXED_RARITY_TYPES.has(type);
 }
+
+/** How many affixes each rarity rolls, and at most how many of each kind. */
+const AFFIX_COUNTS = {
+  magic: { min: 1, max: 2, perKind: 1 },
+  rare: { min: 4, max: 5, perKind: 3 },
+} as const;
 
 function getSetInfo(setName: string) {
   return (itemSetList as Loose)[setName];
@@ -39,184 +46,136 @@ function rollRanges(dice: Dice, block: Loose | undefined): Record<string, number
   return rolled;
 }
 
-function rollPercentStats(dice: Dice, block: Loose | undefined): Record<string, number> {
-  const rolled: Record<string, number> = {};
-  for (const key in block) {
-    const value = block[key];
-    if (typeof value == "number") {
-      rolled[key] = value;
-    } else if (Array.isArray(value) && typeof value[0] == "number") {
-      //we have a percentage value. need to save it.
-      rolled[key] = randomNumber(dice, parseInt(String(value[0])), parseInt(String(value[1])));
-    }
-  }
-  return rolled;
-}
-
 /**
  * The item a `[type, rarity, key]` ref names and the rarity table it is written in. A magic or rare
- * ref with no hand-written version is the common item, rolled with mods when built.
+ * ref with no hand-written version is the common item, rolled with affixes when built.
  */
 export function findDefinition(type: string, rarity: string, itemKey: string) {
-  const table = (itemList as Loose)[type];
-  let shouldSpawnMods = true;
-  let item: Loose | undefined;
-  /*
-   * Resolve by requested rarity — do not load common and then relabel as unique/set/magic/rare.
-   * (Previously /drop weapon-unique-sword could spawn a common sword tagged unique.)
-   */
-  if (rarity === "unique") {
-    item = table?.unique?.[itemKey];
-    shouldSpawnMods = false;
-  } else if (rarity === "set") {
-    item = table?.set?.[itemKey];
-    shouldSpawnMods = false;
-  } else if (rarity === "common") {
-    item = table?.common?.[itemKey];
-  } else if (rarity === "magic" || rarity === "rare") {
-    item = table?.[rarity]?.[itemKey];
-    if (item) {
-      shouldSpawnMods = false;
-    } else {
-      item = table?.common?.[itemKey];
-      return { item, shouldSpawnMods, definedRarity: "common" };
-    }
+  const table = itemList[type];
+  const own = table?.[rarity]?.[itemKey];
+  if (own) return { item: own, rollsAffixes: false, definedRarity: rarity };
+  if (rarity === "magic" || rarity === "rare") {
+    const item = table?.common?.[itemKey];
+    return { item, rollsAffixes: canRollRarity(type), definedRarity: "common" };
   }
-  return { item, shouldSpawnMods, definedRarity: rarity };
+  return { item: undefined, rollsAffixes: false, definedRarity: rarity };
 }
 
 /** `[type, rarity, key, amount?]`. Typed loosely so callers can spread stored references. */
 type BuildItemArgs = string[] | [string, string, string, (number | string)?];
 
 function buildItem(dice: Dice, ...args: BuildItemArgs): Item | null {
-  const [type, rarity, itemKey, amount] = args;
-  if (typeof rarity !== "string" || !isItemBuildRarity(rarity)) {
-    console.log(`🔧 Unknown rarity "${rarity}" for ${type} ${itemKey}`);
+  const [type, requestedRarity, itemKey, amount] = args;
+  if (typeof requestedRarity !== "string" || !isItemBuildRarity(requestedRarity)) {
+    console.log(`🔧 Unknown rarity "${requestedRarity}" for ${type} ${itemKey}`);
     return null;
   }
 
-  const found = findDefinition(type, rarity, itemKey);
-  const shouldSpawnMods = found.shouldSpawnMods;
-
+  const found = findDefinition(type, requestedRarity, itemKey);
   if (!found.item) {
-    console.log(`🔧 Item not found for ${type} ${rarity} ${itemKey}`);
+    console.log(`🔧 Item not found for ${type} ${requestedRarity} ${itemKey}`);
     return null;
   }
-  let item: Loose = cloneJson(found.item);
-  item = { requirements: {}, ...item };
+  // A bag or potion asked for as magic is just the common one
+  const rarity =
+    found.definedRarity !== requestedRarity && !found.rollsAffixes ? "common" : requestedRarity;
 
-  // build the attributes of the item
-  const newEffects = rollRanges(dice, item.effects);
-  const newStats = rollRanges(dice, item.stats);
-  const percentStats = item.percentStats ? rollPercentStats(dice, item.percentStats) : {};
-
+  const item: Loose = { requirements: {}, ...cloneJson(found.item) };
+  delete item.flavor;
   item.key = itemKey;
-  item.tint = item?.tint || "0xFFFFFF";
+  item.tint = item.tint || "0xFFFFFF";
   item.rarity = rarity;
   item.amount = amount || 1;
   item.type = type;
-  item.stats = newStats;
+  item.stats = rollRanges(dice, item.stats);
+  item.effects = rollRanges(dice, item.effects);
+  item.percentStats = rollRanges(dice, item.percentStats);
   /* A melee weapon reaches as far as its art: never hand-written, so it can't drift from the swing */
   if (type === "weapon") item.stats.range = getMeleeRange(item.texture);
-  item.effects = newEffects;
-  item.percentStats = percentStats;
+  item.id = item.slot === "stackable" ? itemKey : dice.newId();
+  if (item.space) item.items = new Array(item.space).fill(null);
 
-  if (item.slot === "stackable") {
-    item.id = itemKey;
-  } else {
-    item.id = dice.newId();
-  }
-
-  /* Default slots on bags */
-  if (item?.space) {
-    item.items = new Array(item.space).fill(null);
-  }
-
-  /* These cannot be magic or rare unless they were found in item table */
-  if (!canRollRarity(item.type) && shouldSpawnMods) {
-    if (["magic", "rare"].includes(item.rarity)) item.rarity = "common";
-  }
-
-  /* Magic and Rare Item Spawning */
-  if (item.rarity == "magic" && shouldSpawnMods) {
-    const randomMod = rollSuffix(dice, item, "magic");
-    if (randomMod) {
-      item.name = item.name + " " + randomMod.name;
-      item.key = item.key.replace("-common-", "-magic-");
-    }
-  }
-
-  if (item.rarity == "rare" && shouldSpawnMods) {
-    for (let i = 0; i < 4; i++) {
-      rollSuffix(dice, item, "rare");
-    }
-    item.key = item.key.replace("-common-", "-rare-");
+  if (found.rollsAffixes && (rarity === "magic" || rarity === "rare")) {
+    rollAffixes(dice, item, AFFIX_COUNTS[rarity]);
   }
 
   item.cost = getItemCost(item);
-
   return new Item(item);
 }
 
-function rollSuffix(dice: Dice, item: Loose, rarity: string) {
-  const ilvl = item.ilvl;
-  const modSuffixes = itemModsList.suffix
-    //only get suffixes ilvl or lower
-    .filter((s) => ilvl >= s.ilvl)
-    // suffixes only allowed on certain types
-    .filter((s) => (s.types as readonly string[]).some((t) => t === "*" || t === item.type));
-  const randomMod = modSuffixes[randomNumber(dice, 0, modSuffixes.length - 1)];
-
-  if (!randomMod) return null;
-  // magic items get a bit more of a buff
-  const rarityBump = rarity === "magic" ? 1 : 0;
-  const modStats = randomMod.stats as Loose;
-
-  Object.keys(modStats).forEach((key) => {
-    if (!item.stats[key]) {
-      item.stats[key] = 0;
-    }
-    if (Array.isArray(modStats[key])) {
-      const low = modStats[key][0] * (ilvl + rarityBump);
-      const high = modStats[key][1] * (ilvl + rarityBump);
-      item.stats[key] += randomNumber(dice, low, high);
-    }
-  });
-
-  return randomMod;
+/** What an affix's level 1 values are multiplied by on an item of this level. */
+function affixMultiplier(affix: AffixDefinition, level: number): number {
+  if (affix.scale === "none") return 1;
+  const power = levelPower(level);
+  return affix.scale === "half" ? 1 + (power - 1) / 2 : power;
 }
 
-function getItemCost(item: Loose): number {
-  const ilvl = item?.ilvl || 1;
-  const rarity = item?.rarity;
-  if (item?.cost) return item.cost;
-  if (item.slot === "spell") {
-    return 50 * ilvl;
-  }
-  if (rarity == "common") {
-    if (item.slot === "stackable") {
-      return 1 * ilvl;
-    } else {
-      return 5 * ilvl;
+/**
+ * Rolls `count` affixes onto a built item from those its type and level allow. No two affixes
+ * share a stat. A magic item is named after its affixes ("Sharp Dagger of Haste").
+ */
+function rollAffixes(
+  dice: Dice,
+  item: Loose,
+  count: { min: number; max: number; perKind: number },
+) {
+  const wanted = randomNumber(dice, count.min, count.max);
+  const usedStats = new Set<string>();
+  const perKind = { prefix: 0, suffix: 0 };
+  const rolled: AffixDefinition[] = [];
+
+  for (let i = 0; i < wanted; i++) {
+    const pool = (AFFIXES as readonly AffixDefinition[]).filter(
+      (a) =>
+        a.level <= item.level &&
+        (a.types as readonly string[]).includes(item.type) &&
+        perKind[a.kind] < count.perKind &&
+        Object.keys(a.stats).every((stat) => !usedStats.has(stat)),
+    );
+    if (!pool.length) break;
+    const affix = pool[randomNumber(dice, 0, pool.length - 1)];
+    const multiplier = affixMultiplier(affix, item.level);
+    for (const [stat, range] of Object.entries(affix.stats) as [string, readonly number[]][]) {
+      const low = Math.round(range[0] * multiplier * 100) / 100;
+      const high = Math.round(range[1] * multiplier * 100) / 100;
+      const value =
+        Number.isInteger(low) && Number.isInteger(high) ? randomNumber(dice, low, high) : low;
+      item.stats[stat] = (item.stats[stat] ?? 0) + value;
+      usedStats.add(stat);
     }
+    perKind[affix.kind]++;
+    rolled.push(affix);
   }
-  if (rarity == "magic") {
-    return 10 * ilvl;
+
+  item.affixes = rolled.map((a) => a.name);
+  if (item.rarity === "magic") {
+    const prefix = rolled.find((a) => a.kind === "prefix")?.name;
+    const suffix = rolled.find((a) => a.kind === "suffix")?.name;
+    item.name = [prefix, item.name, suffix].filter(Boolean).join(" ");
   }
-  if (rarity == "rare") {
-    return 50 * ilvl;
-  }
-  if (rarity == "unique" || rarity == "set") {
-    return 100 * ilvl;
-  }
-  return 1;
+}
+
+/** What a merchant pays: grows with the item's level and its rarity. */
+const RARITY_VALUE: Record<string, number> = {
+  common: 5,
+  magic: 10,
+  rare: 50,
+  unique: 100,
+  set: 100,
+};
+
+function getItemCost(item: Loose): number {
+  if (item?.cost) return item.cost;
+  const power = levelPower(item?.level ?? 1);
+  if (item.slot === "spell") return Math.round(50 * power);
+  if (item.slot === "stackable") return Math.round(power);
+  return Math.round((RARITY_VALUE[item?.rarity] ?? 1) * power);
 }
 
 export const ItemBuilder = {
   getSetInfo,
   rollDrop,
   buildItem,
-  rollSuffix,
   getItemCost,
   scaleBaseStats,
   multiplyValues,

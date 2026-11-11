@@ -136,7 +136,7 @@ const TintedIconLoader = ({
             width: "100%",
           }}
         >
-          {isSpell ? `Lv. ${item?.ilvl}` : item?.amount}
+          {isSpell ? `Lv. ${item?.rank}` : item?.amount}
         </Text>
       </SkillButton>
       <ItemTooltip player={hero} item={item} show={showTooltip} tooltipId={tooltipId} />

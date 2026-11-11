@@ -3,7 +3,7 @@ import type { ItemRarityTable } from "./item-types";
 export const rangedItems = {
   common: {
     shortBow: {
-      ilvl: 1,
+      level: 1,
       base: "shortBow",
       name: "Short Bow",
       flavor: "A short bow, quick to draw and easy to carry.",
@@ -13,7 +13,7 @@ export const rangedItems = {
       requirements: { dexterity: 3 },
     },
     longBow: {
-      ilvl: 1,
+      level: 1,
       base: "longBow",
       name: "Long Bow",
       flavor: "A tall bow with a long reach.",
@@ -23,7 +23,7 @@ export const rangedItems = {
       requirements: { dexterity: 3 },
     },
     swiftBow: {
-      ilvl: 2,
+      level: 9,
       base: "shortBow",
       name: "Swift Bow",
       flavor: "A light bow strung for fast shots.",
@@ -31,7 +31,7 @@ export const rangedItems = {
       slot: "hands",
     },
     greatBow: {
-      ilvl: 2,
+      level: 9,
       base: "longBow",
       name: "Great Bow",
       flavor: "A huge bow. Few have the strength to draw it fully.",
@@ -41,7 +41,7 @@ export const rangedItems = {
   },
   unique: {
     cruelBarb: {
-      ilvl: 1,
+      level: 1,
       base: "longBow",
       texture: "ranged-longBow",
       name: "Cruel Barb",
@@ -60,7 +60,7 @@ export const rangedItems = {
       ],
     },
     stickyWicket: {
-      ilvl: 2,
+      level: 9,
       base: "shortBow",
       texture: "ranged-shortBow-metal",
       name: "The Sticky Wicket",

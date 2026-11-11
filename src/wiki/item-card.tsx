@@ -1,4 +1,4 @@
-import { randomDropLevel, resolveAsset, type ItemDefinition } from "@/content";
+import { randomDropLevels, resolveAsset, type ItemDefinition } from "@/content";
 import {
   buffLines,
   describeItem,
@@ -110,7 +110,7 @@ export const ItemCard = ({ item }: { item: WikiItem }) => {
           </Flex>
           <Text as="p" sx={{ fontSize: 0, color: PAPER.muted, m: 0, mb: 1 }}>
             {category}
-            {described.level === undefined && ` · item level ${item.ilvl}`}
+            {described.level === undefined && ` · item level ${item.level}`}
           </Text>
           <Text
             as="p"
@@ -151,7 +151,7 @@ export const ItemCard = ({ item }: { item: WikiItem }) => {
       <Column label="Where to find">
         <Sources
           sources={sources}
-          randomLevel={randomDropLevel(item.type, item.rarity, item.key)}
+          randomLevels={randomDropLevels(item.type, item.rarity, item.key)}
         />
       </Column>
     </Grid>

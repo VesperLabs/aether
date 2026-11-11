@@ -25,11 +25,11 @@ export interface SpellShape {
   spellSpeed?: number;
   /** -1 for spells that last by time rather than by how far they travel. */
   maxDistance: number;
-  /** Scale of the spell at item level `ilvl`. */
+  /** Scale of the spell at rank `rank`. */
   scale: number;
 }
 
-export function getSpellShape(details: SpellDefinition | undefined, ilvl: number): SpellShape {
+export function getSpellShape(details: SpellDefinition | undefined, rank: number): SpellShape {
   const scaleBase = details?.scaleBase ?? 1;
   const scaleMultiplier = details?.scaleMultiplier ?? 0;
   return {
@@ -42,7 +42,7 @@ export function getSpellShape(details: SpellDefinition | undefined, ilvl: number
     bodySize: details?.bodySize,
     spellSpeed: details?.spellSpeed,
     maxDistance: details?.maxDistance ?? -1,
-    scale: scaleBase + ilvl * scaleMultiplier,
+    scale: scaleBase + rank * scaleMultiplier,
   };
 }
 

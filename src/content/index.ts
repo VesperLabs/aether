@@ -42,10 +42,10 @@ export {
   findDefinition,
   isItemBuildRarity,
 } from "./items/item-builder";
-export { randomDropLevel } from "./items/item-drops";
+export { randomDropLevels } from "./items/item-drops";
 export { itemData } from "./items/item-data";
 export { ITEM_KEYS, findItemKey, type ItemLook } from "./items/item-keys";
-export { ILVL_MULTIPLIER, itemList } from "./items/item-scaling";
+export { itemList } from "./items/item-scaling";
 export { itemSetList, type ItemSetName } from "./items/item-sets";
 export type { BuiltItem, ItemDefinition } from "./items/item-types";
 export { getMapByName } from "./maps/get-map";
@@ -66,3 +66,4 @@ export { spellDetails } from "./spells/spell-details";
 export type { SpellDefinition } from "./spells/spell-types";
 export type { CharClass } from "./stats";
 export { PREVIEW_DICE, cloneJson, randomNumber, type Dice } from "./random";
+export { levelPower } from "./power-curve";

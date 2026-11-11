@@ -3,7 +3,7 @@ import type { ItemRarityTable } from "./item-types";
 export const helmetItems = {
   common: {
     clothCap: {
-      ilvl: 1,
+      level: 1,
       name: "Cloth Cap",
       flavor: "A simple cloth cap. Keeps the sun off, not much else.",
       base: "cap",
@@ -13,7 +13,7 @@ export const helmetItems = {
       stats: { defense: [1, 2] },
     },
     clothHood: {
-      ilvl: 1,
+      level: 1,
       name: "Cloth hood",
       flavor: "A cloth hood, good for staying unseen.",
       base: "hood",
@@ -24,7 +24,7 @@ export const helmetItems = {
       requirements: { dexterity: 2 },
     },
     silkCap: {
-      ilvl: 2,
+      level: 9,
       name: "Silk Cap",
       flavor: "Finely woven silk. More comfortable than protective.",
       base: "cap",
@@ -33,7 +33,7 @@ export const helmetItems = {
       slot: "helmet",
     },
     wizardCap: {
-      ilvl: 3,
+      level: 17,
       name: "Wizard Cap",
       flavor: "A wizard's cap. Danny insists the point focuses the mind.",
       base: "cap",
@@ -42,7 +42,7 @@ export const helmetItems = {
       slot: "helmet",
     },
     leatherHood: {
-      ilvl: 2,
+      level: 9,
       name: "Leather hood",
       flavor: "Tanned leather, stitched snug around the head.",
       base: "hood",
@@ -51,7 +51,7 @@ export const helmetItems = {
       slot: "helmet",
     },
     nutshellArmet: {
-      ilvl: 1,
+      level: 1,
       name: "Nutshell Armet",
       flavor: "A helmet pressed from giant nutshells. Lighter than it looks.",
       base: "armet",
@@ -62,7 +62,7 @@ export const helmetItems = {
       requirements: { strength: 6 },
     },
     bronzeArmet: {
-      ilvl: 2,
+      level: 9,
       name: "Bronze Armet",
       flavor: "A bronze helmet hammered out at Steve's forge.",
       base: "armet",
@@ -71,7 +71,7 @@ export const helmetItems = {
       slot: "helmet",
     },
     ghoulhideHood: {
-      ilvl: 3,
+      level: 17,
       name: "Ghoulhide Hood",
       flavor: "Stitched from ghoul hide. It never quite stops smelling.",
       base: "hood",
@@ -80,7 +80,7 @@ export const helmetItems = {
       slot: "helmet",
     },
     ironArmet: {
-      ilvl: 3,
+      level: 17,
       name: "Iron Armet",
       flavor: "A full iron helm. Hot, heavy and very hard to dent.",
       base: "armet",
@@ -91,7 +91,7 @@ export const helmetItems = {
   },
   unique: {
     tudwicksCap: {
-      ilvl: 1,
+      level: 1,
       name: "Tudwick's Cap",
       flavor: "Tudwick lost his shirt years ago. He kept the hat.",
       base: "cap",
@@ -106,7 +106,7 @@ export const helmetItems = {
       },
     },
     bunnyEars: {
-      ilvl: 1,
+      level: 1,
       name: "Bunny Ears",
       flavor: "Ridiculous, and somehow you hear everything.",
       base: "cap",
@@ -116,7 +116,7 @@ export const helmetItems = {
     },
     chefHat: {
       exclusive: true,
-      ilvl: 2,
+      level: 9,
       name: "Chef Hat",
       flavor: "Anthony's spare. It smells faintly of cured meats.",
       base: "cap",
@@ -126,7 +126,7 @@ export const helmetItems = {
     },
     wolfMask: {
       exclusive: true,
-      ilvl: 2,
+      level: 9,
       name: "Wolf Mask",
       flavor: "Wear the pack's face and the pack might leave you be.",
       base: "hood",
@@ -143,7 +143,7 @@ export const helmetItems = {
       },
     },
     luckyStarCoronet: {
-      ilvl: 3,
+      level: 17,
       name: "Lucky Star Coronet",
       flavor: "Found where a falling star struck the peaks.",
       base: "cap",
@@ -163,7 +163,7 @@ export const helmetItems = {
       ],
     },
     theWyrmWhisker: {
-      ilvl: 3,
+      level: 17,
       name: "The Wyrm Whisker",
       flavor: "A single whisker from the great wyrm, woven into a band.",
       base: "armet",
@@ -183,7 +183,7 @@ export const helmetItems = {
   },
   set: {
     hawkwingsHood: {
-      ilvl: 1,
+      level: 1,
       setName: "hawkwings",
       name: "Hawkwing's Hood",
       flavor: "Hawkwing's hood, feathered to break the wind.",
@@ -194,7 +194,7 @@ export const helmetItems = {
       stats: { dexterity: 5, earthResistance: [10, 15] },
     },
     crabHat: {
-      ilvl: 1,
+      level: 1,
       setName: "crab",
       name: "Crab Hat",
       flavor: "The Crab Warden's colours. Trista would approve.",

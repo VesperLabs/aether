@@ -3,7 +3,7 @@ import type { ItemRarityTable } from "./item-types";
 export const pantsItems = {
   common: {
     clothPants: {
-      ilvl: 1,
+      level: 1,
       name: "Cloth Pants",
       flavor: "Plain cloth trousers. Better than nothing.",
       base: "pants",
@@ -13,7 +13,7 @@ export const pantsItems = {
       stats: { defense: [1, 2] },
     },
     leatherPants: {
-      ilvl: 2,
+      level: 9,
       name: "Leather Pants",
       flavor: "Leather trousers, tough at the knee.",
       base: "pants",
@@ -23,7 +23,7 @@ export const pantsItems = {
       stats: {},
     },
     ghoulhidePants: {
-      ilvl: 3,
+      level: 17,
       name: "Ghoulhide Pants",
       flavor: "Ghoul-hide trousers. Don't ask where the seams came from.",
       base: "pants",
@@ -35,7 +35,7 @@ export const pantsItems = {
   },
   set: {
     chetsChampions: {
-      ilvl: 1,
+      level: 1,
       setName: "chets",
       name: "Chet's Champions",
       flavor: "Chet's championship shorts. The stains are trophies.",
@@ -48,7 +48,7 @@ export const pantsItems = {
   },
   unique: {
     hauntedTrousers: {
-      ilvl: 1,
+      level: 1,
       name: "Haunted Trousers",
       flavor: "Something still lives in the left leg. It's friendly.",
       base: "pants",
@@ -63,7 +63,7 @@ export const pantsItems = {
       },
     },
     greenTeaThreads: {
-      ilvl: 2,
+      level: 9,
       name: "Green Tea's Threads",
       flavor: "Green Tea wove them to stay calm under any blow.",
       base: "pants",
@@ -82,7 +82,7 @@ export const pantsItems = {
       ],
     },
     ferrousLeggings: {
-      ilvl: 3,
+      level: 17,
       name: "Ferrous Leggings",
       flavor: "Iron-thread leggings that hum near the mines.",
       base: "pants",

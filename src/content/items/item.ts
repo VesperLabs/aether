@@ -4,8 +4,10 @@ import type { BuiltItem } from "./item-types";
 export class Item implements BuiltItem {
   id: string;
   key: string;
-  ilvl: number;
+  level: number;
+  rank?: number;
   rarity: string;
+  affixes?: string[];
   stats?: Record<string, number>;
   name: string;
   base: string;
@@ -30,9 +32,11 @@ export class Item implements BuiltItem {
   constructor(item: Partial<BuiltItem>) {
     this.id = item?.id as string;
     this.key = item?.key as string;
-    this.ilvl = item?.ilvl as number;
+    this.level = item?.level as number;
+    this.rank = item?.rank;
     this.stats = item?.stats;
     this.rarity = item?.rarity as string;
+    this.affixes = item?.affixes;
     this.name = item?.name as string;
     this.base = item?.base as string;
     this.slot = item?.slot as string;

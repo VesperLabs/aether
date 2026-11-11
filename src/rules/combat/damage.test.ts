@@ -92,14 +92,15 @@ describe("rollAttack", () => {
     });
   });
 
-  it("reduces damage by defense over armor pierce, at least 1", () => {
+  it("reduces damage by defense left after armor pierce, at least 1", () => {
     const result = rollAttack(
       { ...attacker, armorPierce: 10 },
       { ...victim, defense: 20 },
       undefined,
       () => 0.5,
     );
-    expect(result).toMatchObject({ physicalDamage: 5 });
+    // 10 defense left against a level 1 attacker stops 10 / (10 + 40) of the damage
+    expect(result).toMatchObject({ physicalDamage: 8 });
     const tiny = rollAttack(attacker, { ...victim, defense: 1000 }, undefined, () => 0.5);
     expect(tiny).toMatchObject({ physicalDamage: 1 });
   });

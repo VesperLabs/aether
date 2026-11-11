@@ -1,4 +1,5 @@
 import { ItemBuilder } from "@/content";
+import { unarmedDamage } from "./power";
 
 /** An open-ended bag of stat name -> value. Also carries `triggers` once calculated. */
 export type StatBag = Record<string, any>;
@@ -329,8 +330,8 @@ function calculateHandStats(
   ns.regenHp = (ns.regenHp || 1) + Math.floor(ns.vitality / 20);
   ns.regenMp = (ns.regenMp || 1) + Math.floor(ns.intelligence / 20);
   ns.regenSp = ns.regenSp || 1;
-  ns.armorPierce = ns.armorPierce + ns.dexterity * 0.75 + ns.strength * 0.5;
-  ns.defense = ns.defense + ns.strength;
+  ns.armorPierce = ns.armorPierce || 0;
+  ns.defense = ns.defense + Math.floor(ns.strength / 2);
   ns.critChance = ns.critChance + ns.dexterity * 0.05;
   ns.walkSpeed = ns.walkSpeed + ns.dexterity * 0.03;
   ns.dodgeChance = ns.dodgeChance + ns.dexterity * 0.05;
@@ -351,10 +352,15 @@ function calculateHandStats(
   if (ns.castDelay < 200) ns.castDelay = 200;
   if (ns.attackDelay < 200) ns.attackDelay = 200;
 
-  const damageCalc = ((ns.strength * 2 + ns.dexterity / 2) * ns.level) / 100;
-  const damageModifier = Math.floor(1 + damageCalc);
-  ns.minDamage = ns.minDamage + Math.floor(damageCalc);
-  ns.maxDamage = Math.max(ns.maxDamage + damageModifier, ns.minDamage);
+  /* Fists plus the weapon, multiplied by the attribute the weapon uses: strength, or dexterity for ranged */
+  const [fistMin, fistMax] = unarmedDamage(ns.level);
+  const isRanged = HANDS.some(
+    (hand) => hand !== skipHand && heldItem(player, hand)?.type === "ranged",
+  );
+  const attribute = isRanged ? ns.dexterity : ns.strength;
+  const attributeMultiplier = 1 + Math.max(0, attribute) / 100;
+  ns.minDamage = Math.floor((ns.minDamage + fistMin) * attributeMultiplier);
+  ns.maxDamage = Math.max(Math.floor((ns.maxDamage + fistMax) * attributeMultiplier), ns.minDamage);
 
   /* Any percentStat value that needs to be pre-calculated goes here  */
   Object.keys(totalPercentStats).forEach((key) => {

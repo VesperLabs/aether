@@ -1,5 +1,5 @@
 import { broadcastPlayerUpdate, broadcastLeveled } from "@/server/net/room-broadcast";
-import { ItemBuilder } from "@/content";
+import { ItemBuilder, randomNumber } from "@/content";
 import type { CommandContext } from "@/server/net/command-context";
 import { CHAT_COMMANDS } from "@/network";
 import { spawnLoot } from "../loot-adapter";
@@ -101,7 +101,8 @@ function execute(ctx: CommandContext, command: string[]) {
       }
       let gunItem = null;
       do {
-        gunItem = ItemBuilder.rollDrop(world.dice, 100, 100);
+        // any monster level from 1 to 30, so every item can come up
+        gunItem = ItemBuilder.rollDrop(world.dice, randomNumber(world.dice, 1, 30), 1000);
       } while (gunItem?.rarity !== rarity);
       const gun = ItemBuilder.buildItem(
         world.dice,

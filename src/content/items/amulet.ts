@@ -3,7 +3,7 @@ import type { ItemRarityTable } from "./item-types";
 export const amuletItems = {
   common: {
     silverAmulet: {
-      ilvl: 1,
+      level: 1,
       name: "Copper Amulet",
       flavor: "A copper amulet on a leather cord.",
       base: "amulet",
@@ -13,7 +13,7 @@ export const amuletItems = {
       stats: { defense: 2 },
     },
     bronzeAmulet: {
-      ilvl: 2,
+      level: 9,
       name: "Bronze Amulet",
       flavor: "A bronze amulet, polished smooth by worry.",
       tint: "0xFFEEAA",
@@ -23,7 +23,7 @@ export const amuletItems = {
       stats: {},
     },
     ironAmulet: {
-      ilvl: 3,
+      level: 17,
       name: "Iron Amulet",
       flavor: "An iron amulet, cold against the skin.",
       tint: "0xEEDDDD",
@@ -35,7 +35,7 @@ export const amuletItems = {
   },
   set: {
     timmysChain: {
-      ilvl: 2,
+      level: 9,
       setName: "timmys",
       name: "Timmy's Chain",
       flavor: "Timmy's chain, matched to his signet.",
@@ -47,7 +47,7 @@ export const amuletItems = {
   },
   unique: {
     forestBeads: {
-      ilvl: 1,
+      level: 1,
       name: "The Forest Beads",
       flavor: "Seeds from the oldest trees, strung by Tudwick.",
       base: "amulet",
