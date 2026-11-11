@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.26.0](https://github.com/VesperLabs/aether/compare/v0.25.2...v0.26.0) (2026-11-11)
+
+
+### Features
+
+* build tilesets from exported art in every color ([#300](https://github.com/VesperLabs/aether/issues/300)) ([d35c676](https://github.com/VesperLabs/aether/commit/d35c6769892005054946ed5c98b173d10e5fc500))
+
 ## [0.25.2](https://github.com/VesperLabs/aether/compare/v0.25.1...v0.25.2) (2026-11-11)
 
 
