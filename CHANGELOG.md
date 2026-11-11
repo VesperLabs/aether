@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.31.1](https://github.com/VesperLabs/aether/compare/v0.31.0...v0.31.1) (2026-11-11)
+
+
+### Bug Fixes
+
+* clear an NPC's fight pie when its room empties ([#317](https://github.com/VesperLabs/aether/issues/317)) ([abe984c](https://github.com/VesperLabs/aether/commit/abe984c478f7a276a732b00abb46dcb2c934fab7))
+
 ## [0.31.0](https://github.com/VesperLabs/aether/compare/v0.30.0...v0.31.0) (2026-11-11)
 
 
