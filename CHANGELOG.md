@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.31.0](https://github.com/VesperLabs/aether/compare/v0.30.0...v0.31.0) (2026-11-11)
+
+
+### Features
+
+* one NPC brain with typed behaviors for every actor ([#315](https://github.com/VesperLabs/aether/issues/315)) ([64f4bb1](https://github.com/VesperLabs/aether/commit/64f4bb1f29d3f587731b6a266f27292f3388d94d))
+
 ## [0.30.0](https://github.com/VesperLabs/aether/compare/v0.29.0...v0.30.0) (2026-11-11)
 
 
