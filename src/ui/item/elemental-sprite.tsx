@@ -7,7 +7,8 @@ import { ElementSim, type ToLayer } from "./element-sim";
 import { OUTLINE_OFFSETS, cssColor as css } from "./element-outline";
 
 /** Room around the sprite, in its pixels, for particles to rise and drift into. */
-const PAD = 14;
+export const ELEMENT_PAD = 14;
+const PAD = ELEMENT_PAD;
 /**
  * A weapon sprite drawing `ElementSim`, the same simulation the game draws in a player's hand.
  * Drawn at the sprite's own pixel size and scaled up with crisp pixels.

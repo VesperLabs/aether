@@ -12,6 +12,7 @@ import { Box } from "@/ui/kit";
 import weaponAtlas from "../../../public/assets/atlas/weapon.json";
 import { loadSheet } from "./sprite-sheet";
 import { getWalkFrameName, getWalkFrameRect, useWalkCycle, type WalkPose } from "./walk-cycle";
+import { WeaponEffects, type HeldWeapon } from "./weapon-effects";
 
 const FULL_CANVAS_SIZE = 160;
 export const MIN_CANVAS_SIZE = 100;
@@ -35,6 +36,8 @@ type PlayerAsset = {
   slotKey?: string;
   atlasFile?: string;
   isShield?: boolean;
+  /** The item behind a layer, for its elemental effects (`WeaponEffects`). */
+  item?: BuiltItem;
 };
 
 type WeaponPose = { x: number; y: number; flipX?: boolean; flipY?: boolean; rotation?: number };
@@ -113,6 +116,8 @@ export const PlayerRender = memo(
     const assets = getPlayerEquipmentAssets({ player, filteredSlots, shadow });
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const pose = useWalkCycle(walking);
+    const weapons = heldWeapons(assets, pose);
+    const frame = pose ? getWalkFrameName(pose) : "down-stand";
 
     /* Redraw only when the layers change, not on every new player object. */
     const assetsKey = JSON.stringify(assets.map(({ src, tint, slotKey }) => [src, tint, slotKey]));
@@ -138,16 +143,32 @@ export const PlayerRender = memo(
         sx={{ position: "relative", height: FULL_CANVAS_SIZE, width: FULL_CANVAS_SIZE, ...sx }}
         {...props}
       >
+        <WeaponEffects weapons={weapons} frame={frame} inFront={false} />
         <canvas
           ref={canvasRef}
           width={MIN_CANVAS_SIZE}
           height={MIN_CANVAS_SIZE}
           style={PLAYER_RENDER_CANVAS_STYLE}
         />
+        <WeaponEffects weapons={weapons} frame={frame} inFront />
       </Box>
     );
   },
 );
+
+/** The weapons in a character's hands among its layers, for their elemental effects. */
+const heldWeapons = (assets: PlayerAsset[], pose?: WalkPose): HeldWeapon[] => {
+  const isLeftShield = assets.some((asset) => asset.slotKey === "handLeft" && asset.isShield);
+  const order: readonly string[] | undefined = pose
+    ? getLayerOrder(pose.direction, isLeftShield)
+    : undefined;
+  return assets.flatMap(({ slotKey, item, src, tint }) => {
+    if ((slotKey !== "handLeft" && slotKey !== "handRight") || !item) return [];
+    /* Still, hands are drawn last; walking, the far hand goes behind the body */
+    const inFront = !order || order.lastIndexOf(slotKey) > order.indexOf("skin");
+    return [{ hand: slotKey, item, src, tint, inFront }];
+  });
+};
 
 const getObscuredKeys = ({
   filteredSlots,
@@ -242,6 +263,7 @@ export const getPlayerEquipmentAssets = ({
         tint: item?.tint,
         slot: item?.slot,
         isShield: (item as BuiltItem)?.type === "shield",
+        item: "stats" in item ? (item as BuiltItem) : undefined,
         ...assetRes,
         atlasFile: assetRes.atlas,
         previewRect: resolvePreviewRect({ key }),
