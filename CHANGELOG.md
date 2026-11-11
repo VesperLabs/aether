@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.25.1](https://github.com/VesperLabs/aether/compare/v0.25.0...v0.25.1) (2026-11-11)
+
+
+### Bug Fixes
+
+* new characters show their gear before first login ([#294](https://github.com/VesperLabs/aether/issues/294)) ([8d94564](https://github.com/VesperLabs/aether/commit/8d945641349fc819be8e40fe903326922bff63f7))
+
 ## [0.25.0](https://github.com/VesperLabs/aether/compare/v0.24.1...v0.25.0) (2026-11-11)
 
 
