@@ -1,4 +1,4 @@
-import type { Dice } from "@/content";
+import type { Dice, Season } from "@/content";
 import type { GameIo, NetIds } from "@/network";
 import type { Rng, TickLoop, World } from "@/rules/world";
 import type { Npc } from "./npc";
@@ -29,6 +29,8 @@ export type ServerWorld = World<Player, Npc, Spell, Loot, Quest> & {
   observers: Set<string>;
   /** Who is where in each room this tick (see `room-index.ts`). */
   roomIndexes?: Record<string, RoomIndex>;
+  /** The season clients were last told about, see `announceSeason`. */
+  announcedSeason?: Season;
   /** Wall-clock tick and event loop timings, for the net stats panel. */
   tickHealth: TickHealth;
 };

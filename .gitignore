@@ -33,3 +33,6 @@ public/assets/index-*
 
 # Tileset exports at 128px (large; the source for `npm run tilesets`)
 art/tilesets/exports/
+
+# Tileset exports, backed up outside the repo
+art/tilesets/exports/

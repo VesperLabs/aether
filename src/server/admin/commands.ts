@@ -9,6 +9,7 @@ import type { Cheat } from "./cheat";
 import { CHARACTER_CHEATS } from "./character-cheats";
 import { NPC_CHEATS } from "./npc-cheats";
 import { TRAVEL_CHEATS } from "./travel-cheats";
+import { WORLD_CHEATS } from "./world-cheats";
 
 /** Cheat chat commands (`/drop`, `/ding`...) only work when the server runs with ENABLE_CHEATS=true. */
 export function areCheatsEnabled(): boolean {
@@ -19,6 +20,7 @@ const CHEATS: Record<string, Cheat> = {
   ...CHARACTER_CHEATS,
   ...TRAVEL_CHEATS,
   ...NPC_CHEATS,
+  ...WORLD_CHEATS,
 };
 
 const ADMIN_COMMANDS = new Set<string>(CHAT_COMMANDS.filter((c) => c.cheat).map((c) => c.name));

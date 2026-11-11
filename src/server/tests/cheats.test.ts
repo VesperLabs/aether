@@ -120,10 +120,20 @@ describe("cheats", () => {
     expect(left).toHaveLength(0);
   });
 
+  it("/season starts a season and tells every client", async () => {
+    const socket = await login();
+    const changed = waitFor(socket, "seasonChanged", (season) => season === "winter");
+    expect((await cheat(socket, "/season w")).message).toBe("It is now winter.");
+    await server.run(socket, 100);
+    expect(await changed).toBe("winter");
+    expect((await cheat(socket, "/season")).message).toBe("It is winter.");
+  });
+
   it("rejects bad arguments with an error", async () => {
     const socket = await login();
     expect((await cheat(socket, "/npc spawn nothing")).type).toBe("error");
     expect((await cheat(socket, "/tp x")).type).toBe("error");
     expect((await cheat(socket, "/warp nowhere")).type).toBe("error");
+    expect((await cheat(socket, "/season monsoon")).type).toBe("error");
   });
 });

@@ -5,6 +5,7 @@ import {
   getRoomEffects,
   getRoomState as packRoomState,
 } from "@/network/sync";
+import { seasonAt } from "@/rules/seasons";
 
 /* Thin world adapters: hand the world's collections to the pure packers in network/sync. */
 
@@ -15,12 +16,20 @@ function roomEffects(world: ServerWorld, roomName: string) {
 }
 
 export function getRoomState(world: ServerWorld, roomName: string) {
-  return { ...packRoomState(world, roomName), effects: roomEffects(world, roomName) };
+  return {
+    ...packRoomState(world, roomName),
+    effects: roomEffects(world, roomName),
+    season: seasonAt(world.now(), world.calendar),
+  };
 }
 
 /** A room as anonymous observers see it. */
 export function getPublicRoomState(world: ServerWorld, roomName: string) {
-  return { ...packPublicRoomState(world, roomName), effects: roomEffects(world, roomName) };
+  return {
+    ...packPublicRoomState(world, roomName),
+    effects: roomEffects(world, roomName),
+    season: seasonAt(world.now(), world.calendar),
+  };
 }
 
 export function getBuffRoomState(world: ServerWorld, roomName: string) {

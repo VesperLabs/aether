@@ -15,6 +15,7 @@ import { countRoomClients, getRoomIndex, indexRooms } from "./room-index";
 import { keepCompanionsNear } from "./companions";
 import { resolveBalls } from "./balls";
 import { endTickTimer, startTickTimer } from "./tick-health";
+import { announceSeason } from "./season-announce";
 
 /** A long stall (debugger, GC) must not teleport things across the map. */
 const MAX_STEP_MS = 100;
@@ -113,5 +114,6 @@ export const serverSystems: Array<System<ServerWorld>> = [
   resolveBalls,
   recordPoses,
   updateRooms,
+  announceSeason,
   endTickTimer,
 ];

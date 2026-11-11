@@ -7,6 +7,7 @@ import {
 } from "@/network/sync";
 import { hideWorld, revealWorldWhenSettled } from "@/client/scenes/world-reveal";
 import { enterRoom } from "@/client/scenes/enter-room";
+import { changeSeason } from "@/client/scenes/map-season";
 import { LOGIN_FADE_MS } from "@/client/scenes/login-fade";
 import type { ServerToClientEvents } from "@/network";
 import { onRoomObserved, startObserverTour, stopObserverTour } from "@/client/scenes/observer-tour";
@@ -88,6 +89,8 @@ export function bindSceneSocket(scene: SceneMain) {
     for (const s of p) apply(getPlayer(scene, s.id), s);
   });
 
+  socket.on("seasonChanged", (season) => changeSeason(scene, season));
+
   socket.on("lootExpired", (id) => getLoot(scene, id)?.destroy());
 
   socket.on("partyUpdate", ({ party }) => {
@@ -95,7 +98,7 @@ export function bindSceneSocket(scene: SceneMain) {
   });
 
   const initHero: ServerToClientEvents["heroInit"] = (args, { isRespawn, isLogin } = {}) => {
-    const { socketId, players = [], npcs = [], loots = [], effects = [] } = args ?? {};
+    const { socketId, players = [], npcs = [], loots = [], effects = [], season } = args ?? {};
     if (args && Object.prototype.hasOwnProperty.call(args, "userSettings")) {
       scene.userSettings = { ...DEFAULT_USER_SETTINGS, ...args.userSettings };
     }
@@ -107,7 +110,7 @@ export function bindSceneSocket(scene: SceneMain) {
     const { collideLayer } = enterRoom(
       scene,
       roomName,
-      { players, npcs, loots, effects },
+      { players, npcs, loots, effects, season },
       socketId,
     );
     const { hero } = scene;

@@ -1,4 +1,4 @@
-import type { BuiltItem } from "@/content";
+import type { BuiltItem, Season } from "@/content";
 import type { BuffCharacterWire, FullCharacterWire } from "./sync/character-state";
 import type { RoomStatuses } from "./sync/statuses";
 import type { EffectEndedMessage, EffectWire } from "./sync/effects";
@@ -18,6 +18,8 @@ export interface RoomStateMessage {
   loots: LootMessage[];
   /** What is in flight right now: see `sync/effects`. */
   effects?: EffectWire[];
+  /** The world's season; each map shows it or its own (see `mapSeason`). */
+  season: Season;
 }
 
 /**
@@ -108,6 +110,8 @@ export interface ServerToClientEvents {
   roomObserved: (state: RoomStateMessage & { roomName: string }) => void;
 
   /* World */
+  /** The world moved into a new season. */
+  seasonChanged: (season: Season) => void;
   /** Every character's position in the room, every tick. Each stands alone: see `network/sync/poses`. */
   poses: (poses: ArrayBuffer) => void;
   /** Characters whose state flags or vitals changed this tick. */

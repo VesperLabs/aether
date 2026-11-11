@@ -1,5 +1,6 @@
 import { LOOT_SPAWN_CYCLE_TIME, parseMapLootList, type MapLoot } from "../loot";
 import { createPartyState, type PartyState } from "../party";
+import { createCalendar, type Calendar } from "../seasons";
 import {
   createPathfinder,
   createPoseHistory,
@@ -46,6 +47,8 @@ export interface World<
   doors: Record<string, Record<string, DoorData>>;
   quests: Record<string, Quest>;
   partyState: PartyState;
+  /** Where the world is in the year: see `rules/seasons`. */
+  calendar: Calendar;
   events: GameEventBus;
   /** Ticks run so far. */
   tick: number;
@@ -63,6 +66,7 @@ export function createWorld<P = unknown, N = unknown, S = unknown, L = unknown, 
     doors: {},
     quests,
     partyState: createPartyState(),
+    calendar: createCalendar(),
     events: createGameEventBus(),
     tick: 0,
   };
