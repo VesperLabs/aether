@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.28.2](https://github.com/VesperLabs/aether/compare/v0.28.1...v0.28.2) (2026-11-11)
+
+
+### Bug Fixes
+
+* elemental weapon effects on characters outside the game ([#308](https://github.com/VesperLabs/aether/issues/308)) ([d222a24](https://github.com/VesperLabs/aether/commit/d222a2484f6270c7817c876ab43c3558b5a6f19b))
+
 ## [0.28.1](https://github.com/VesperLabs/aether/compare/v0.28.0...v0.28.1) (2026-11-11)
 
 
