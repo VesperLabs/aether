@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.25.0](https://github.com/VesperLabs/aether/compare/v0.24.1...v0.25.0) (2026-11-11)
+
+
+### Features
+
+* gear-driven damage with item affixes and power curve ([#292](https://github.com/VesperLabs/aether/issues/292)) ([8c9b0f3](https://github.com/VesperLabs/aether/commit/8c9b0f39652784074bf8ea2a68ecde425dcf6105))
+
 ## [0.24.1](https://github.com/VesperLabs/aether/compare/v0.24.0...v0.24.1) (2026-11-11)
 
 
