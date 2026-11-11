@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.31.2](https://github.com/VesperLabs/aether/compare/v0.31.1...v0.31.2) (2026-11-11)
+
+
+### Bug Fixes
+
+* load shared tilesets from the CDN in production ([#319](https://github.com/VesperLabs/aether/issues/319)) ([26d23af](https://github.com/VesperLabs/aether/commit/26d23af244dd758f0c546423bc15a5146c317d77))
+
 ## [0.31.1](https://github.com/VesperLabs/aether/compare/v0.31.0...v0.31.1) (2026-11-11)
 
 
