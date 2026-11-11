@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.29.0](https://github.com/VesperLabs/aether/compare/v0.28.2...v0.29.0) (2026-11-11)
+
+
+### Features
+
+* town and cave lighting, a brighter light map and shared tilesets ([#311](https://github.com/VesperLabs/aether/issues/311)) ([28bad11](https://github.com/VesperLabs/aether/commit/28bad112d28df4fde38dcd64d94a278c29d1a73a))
+
 ## [0.28.2](https://github.com/VesperLabs/aether/compare/v0.28.1...v0.28.2) (2026-11-11)
 
 
