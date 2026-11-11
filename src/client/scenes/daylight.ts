@@ -78,6 +78,19 @@ const half = (color: number) => (color >> 1) & 0x7f7f7f;
  */
 const LIGHT_STRENGTH = 0.62;
 
+/** How dark the sky's tint has to be (1 minus its brightness) for lights to shine at full strength. */
+const FULL_DARK = 0.6;
+
+/**
+ * How much lights show under a sky of `tint`: none in full daylight, all of it in the dark. Lights
+ * only matter as much as it is dark: a lamp at noon must not make the street brighter than day.
+ */
+function lightShare(tint: number) {
+  const brightness =
+    (0.3 * ((tint >> 16) & 0xff) + 0.59 * ((tint >> 8) & 0xff) + 0.11 * (tint & 0xff)) / 255;
+  return Math.min(1, (1 - brightness) / FULL_DARK);
+}
+
 let multiplyTwiceMode: number | undefined;
 
 /** A blend that multiplies the world by twice the light map (`src * dst + dst * src`), or none. */
@@ -170,7 +183,15 @@ function drawLightMap(
     });
   }
   /* The lights, each cut by what stands over it: see `drawLights` */
-  drawLights(scene, lightMap, { left, top, width, height }, isDoubled ? LIGHT_STRENGTH : 1);
+  const share = lightShare(tint);
+  if (share > 0) {
+    drawLights(
+      scene,
+      lightMap,
+      { left, top, width, height },
+      (isDoubled ? LIGHT_STRENGTH : 1) * share,
+    );
+  }
   lightMap.render();
 }
 
