@@ -33,8 +33,6 @@ export const ChatButton = () => {
   const lastCaret = useRef(0);
   const overlay = useRef<HTMLDivElement>(null);
   const [messageIndex, setMessageIndex] = useState<number>(-1);
-  /* Button fires its click on the mouseup after any press inside it, including presses in the input */
-  const isPressInInput = useRef(false);
   const inputBox = useRef<HTMLDivElement>(null);
   /* The input's real font and padding, so the ghost text lines up with what's typed */
   const [ghostFont, setGhostFont] = useState<CSSProperties>();
@@ -111,7 +109,14 @@ export const ChatButton = () => {
     setHighlighted(0);
     setShowError(false);
   };
-  const pickCommand = (suggestion: ChatSuggestion) => editDraft(`${prefix}${suggestion.value} `);
+  /* Puts `value` in the box with the caret after it. Focused now, inside the tap, since a phone only
+   * opens its keyboard for a focus made by the tap itself; the caret moves once it has rendered */
+  const typeIntoBox = (value: string) => {
+    inputBox.current?.querySelector("input")?.focus({ preventScroll: true });
+    pendingCaret.current = value.length;
+    editDraft(value);
+  };
+  const pickCommand = (suggestion: ChatSuggestion) => typeIntoBox(`${prefix}${suggestion.value} `);
 
   /* Enter: finish the word being typed, move on to the next argument, or send */
   const submit = () => {
@@ -154,10 +159,6 @@ export const ChatButton = () => {
       }}
       isActive={tabChat}
       onClick={() => {
-        if (isPressInInput.current) {
-          isPressInInput.current = false;
-          return;
-        }
         if (chatButtonTypes(tabChat, inputBox)) return;
         setTabChat((prev) => !prev);
       }}
@@ -166,6 +167,11 @@ export const ChatButton = () => {
         <Box
           as="form"
           {...{ [CHAT_DROP_ATTR]: true }}
+          /* The chat button toggles chat on any press inside it and swallows the tap. Presses in
+           * the box (`/`, a suggestion, the input) stop here and reach their own controls. Both
+           * kinds: a phone sends mouse events after the touch ones */
+          onTouchStart={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
           /* A real form, so a phone keyboard's Go key submits even when it sends no key code */
           onSubmit={(e) => {
             e.preventDefault();
@@ -186,7 +192,7 @@ export const ChatButton = () => {
               onPointerDown={(e) => e.preventDefault()}
               onClick={(e) => {
                 e.stopPropagation();
-                editDraft("/");
+                typeIntoBox("/");
               }}
               title="Commands"
               /* The input's own style, so it sizes and rims like the input; only hover and press
@@ -330,7 +336,6 @@ export const ChatButton = () => {
                 e.stopPropagation();
                 editDraft("");
               }}
-              onMouseDown={() => (isPressInInput.current = true)}
               onScroll={syncOverlay}
               onSelect={(e) => {
                 const input = e.currentTarget;
