@@ -6,6 +6,7 @@ import type { Player } from "@/client/views/player";
 import { getGameZoomLevel } from "./camera-zoom";
 import { layoutMinimap } from "./minimap";
 import { announceRoomChange } from "./room-changed";
+import { seasonalTilesetKey } from "./map-season";
 import type { SceneMain } from "./main-scene";
 
 const { RectangleToRectangle } = Phaser.Geom.Intersects;
@@ -77,9 +78,14 @@ export function changeMap(scene: SceneMain, roomName: string) {
 
   const { map } = scene;
   // The map assets are bundled, so a missing tileset or layer is a build error, not a runtime case.
-  // Every layer can draw from every tileset the map declares; each tileset's texture key is its Tiled name.
+  // Every layer can draw from every tileset the map declares; each tileset's texture key is its Tiled
+  // name, or that name plus the room's season when there is seasonal art (see `map-season`).
   const tilesets = map.tilesets.map(
-    (tileset) => map.addTilesetImage(tileset.name) as Phaser.Tilemaps.Tileset,
+    (tileset) =>
+      map.addTilesetImage(
+        tileset.name,
+        seasonalTilesetKey(scene, tileset.name),
+      ) as Phaser.Tilemaps.Tileset,
   );
   const createLayer = (name: string) =>
     map.createLayer(name, tilesets) as Phaser.Tilemaps.TilemapLayer;

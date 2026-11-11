@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { DEFAULT_USER_SETTINGS, type UserSettings } from "@/rules/world";
 import type { ClientGameSocket } from "@/network";
+import type { Season } from "@/content";
 import type { Player } from "@/client/views/player";
 import { isMobile } from "@/ui/kit/is-mobile";
 import { netInterp } from "@/client/net/scene-interpolation";
@@ -33,6 +34,8 @@ export class SceneMain extends Phaser.Scene {
   declare map: Phaser.Tilemaps.Tilemap;
   declare animatedTiles?: { init(map: Phaser.Tilemaps.Tilemap): void };
   declare roomName: string;
+  /** The world's season; the room may show its own (see `map-season`). */
+  season: Season = "summer";
   declare minimap?: Phaser.Cameras.Scene2D.Camera;
   nearbyRemotePlayers: NearbyPlayer[];
   /** The next observed room is revealed over the login cover rather than faded in. */

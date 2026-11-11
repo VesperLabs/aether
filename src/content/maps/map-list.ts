@@ -5,16 +5,19 @@ export const mapList = [
     name: "meadow",
     music: "./assets/music/stories-of-long-ago.mp3",
     json: "./assets/tilemaps/meadow.json",
+    seasons: "cycle",
   },
   {
     name: "town-road",
     music: "./assets/music/stories-of-long-ago.mp3",
     json: "./assets/tilemaps/town-road.json",
+    seasons: "cycle",
   },
   {
     name: "wildwood",
     music: "./assets/music/stories-of-long-ago.mp3",
     json: "./assets/tilemaps/wildwood.json",
+    seasons: "cycle",
   },
   {
     name: "mine",
@@ -25,6 +28,7 @@ export const mapList = [
     name: "town",
     music: "./assets/music/market-day.mp3",
     json: "./assets/tilemaps/town.json",
+    seasons: "cycle",
   },
   {
     name: "town-houses",
@@ -40,21 +44,25 @@ export const mapList = [
     name: "graveyard",
     music: "./assets/music/troubled-forest.mp3",
     json: "./assets/tilemaps/graveyard.json",
+    seasons: "cycle",
   },
   {
     name: "foothills",
     music: "./assets/music/our-mountain.mp3",
     json: "./assets/tilemaps/foothills.json",
+    seasons: "cycle",
   },
   {
     name: "peak-camp",
     music: "./assets/music/our-mountain.mp3",
     json: "./assets/tilemaps/peak-camp.json",
+    seasons: "winter",
   },
   {
     name: "summit",
     music: "./assets/music/our-mountain.mp3",
     json: "./assets/tilemaps/summit.json",
+    seasons: "winter",
   },
   {
     name: "aqueducts",

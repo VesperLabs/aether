@@ -4,6 +4,7 @@ import {
   canRollRarity,
   findItemKey,
   mapList,
+  SEASONS,
   actors,
   type ActorDefinition,
   type ItemLook,
@@ -63,6 +64,7 @@ const MOB_OPTIONS = Object.entries(actors as Record<string, ActorDefinition>).ma
     ...(profile.race === "human" && { actor: value }),
   }),
 );
+const SEASON_OPTIONS = SEASONS.map((value) => ({ value }));
 const RARITY_OPTIONS = ITEM_BUILD_RARITIES.map((value) => ({ value, rarity: value }));
 
 const NPC_ACTION_OPTIONS = [
@@ -235,6 +237,13 @@ export const CHAT_COMMANDS: readonly ChatCommand[] = [
     description: "Teleport to a room",
     cheat: true,
     complete: (index) => (index === 0 ? ROOM_OPTIONS : []),
+  },
+  {
+    name: "season",
+    args: [optional({ name: "season", kind: "text" })],
+    description: "Show the season, or start a new one",
+    cheat: true,
+    complete: (index) => (index === 0 ? SEASON_OPTIONS : []),
   },
   {
     name: "goto",
