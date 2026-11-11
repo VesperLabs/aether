@@ -2,8 +2,7 @@ import type { AbilitySlot } from "@/rules/spells";
 import type { Hand } from "@/rules/combat";
 import type { StatBag } from "@/rules/stats";
 import type { ServerWorld } from "./server-world";
-import { CharacterModel } from "@/rules/character";
-import { ItemBuilder } from "@/content";
+import { CharacterModel, getActiveItemSlots } from "@/rules/character";
 import { applyCalculatedStats } from "./character-stats";
 import {
   applyAttackDamage,
@@ -19,7 +18,6 @@ import {
   applyExpireBuffs,
   applyRegen,
 } from "./character-buffs";
-import { addBuffBonuses } from "@/rules/buffs";
 import { getPlayerQuests } from "@/rules/quests";
 import { calculateNextMaxExp } from "@/rules/stats";
 import type { ElementalDamages } from "@/rules/combat";
@@ -52,123 +50,8 @@ export class ServerCharacter extends CharacterModel {
   }
   /* make sure character can wear items */
   calculateActiveItemSlots() {
-    const { equipment = {}, abilities = {}, buffs = [] } = this;
-    const baseStatKeys = [
-      "vitality",
-      "dexterity",
-      "strength",
-      "intelligence",
-      "level",
-      "charClass",
-    ];
-    const allItems = Object.entries({ ...equipment, ...abilities });
-    const { baseStats, percentStats } = addBuffBonuses(
-      buffs,
-      { ...Object.fromEntries(baseStatKeys.map((stat) => [stat, 0])), ...this.baseStats },
-      Object.fromEntries(baseStatKeys.map((stat) => [stat, 0])),
-    );
-    const activeItemSlots = allItems?.map(([slotKey, _]: [string, Item]) => slotKey);
-    const activeSets: string[] = [];
-    const setItems: Item[] = [];
-
-    if (!this.hasAttackableWeapons("equipment")) {
-      activeItemSlots.splice(activeItemSlots.indexOf("handLeft"), 1);
-      activeItemSlots.splice(activeItemSlots.indexOf("handRight"), 1);
-    }
-
-    for (const key of baseStatKeys) {
-      // get all worn items
-      const wornItems = allItems
-        .map(([slotKey, item]: [string, Item]) => ({
-          slotKey, // the slot key is the key of the item in the equipment or ability object
-          ...item,
-        }))
-        .filter((i) => i)
-        .filter((i) => activeItemSlots.includes(i.slotKey))
-        .sort((a, b) => {
-          // if the item doesn't have a requirement, it should be at the beginning of the list
-          return (a?.requirements?.[key] ?? 0) - (b?.requirements?.[key] ?? 0);
-        });
-
-      for (const item of wornItems) {
-        const itemRequirement = item?.requirements?.[key];
-
-        // if the item has a required char class and player does not meet it, remove from the list
-        if (key === "charClass") {
-          if (itemRequirement && this?.charClass !== itemRequirement) {
-            activeItemSlots.splice(activeItemSlots.indexOf(item.slotKey), 1);
-            continue;
-          }
-        }
-
-        // if the item has a requirement and the character doesn't meet it, remove the item from the list
-        const percentStatMultiplier = (percentStats[key] ?? 0) / 100;
-        if (itemRequirement > baseStats[key] + Math.floor(baseStats[key] * percentStatMultiplier)) {
-          activeItemSlots.splice(activeItemSlots.indexOf(item.slotKey), 1);
-          continue;
-        }
-
-        // if the item has a stat, add it
-        if (item?.stats?.[key]) {
-          baseStats[key] += item?.stats?.[key];
-        }
-        // if the item has a percent stat, add it
-        if (item?.percentStats?.[key]) {
-          percentStats[key] += item.percentStats[key];
-        }
-        // if the item is part of a set check if whole set is worn
-        if (item?.setName) {
-          // add item to set item list if it's not already there
-          if (!setItems.find((i) => i.id === item.id)) setItems.push(item);
-          const setInfo = ItemBuilder.getSetInfo(item.setName);
-          const currentSetItems = setItems.filter((i) => i.setName == item.setName);
-          if (currentSetItems?.length >= setInfo?.pieces) {
-            activeSets.push(item.setName);
-            //add the set bonus
-            if (setInfo?.stats?.[key]) {
-              baseStats[key] += setInfo?.stats?.[key];
-            }
-            // if the item has a percent stat, add it
-            if (setInfo?.percentStats?.[key]) {
-              percentStats[key] += setInfo.percentStats[key];
-            }
-          }
-        }
-      }
-    }
-
-    this.activeItemSlots = activeItemSlots;
+    this.activeItemSlots = getActiveItemSlots(this);
     this.updateVisibleEquipment();
-
-    // Post calculations rely on full equipment to be corrected.
-    for (const key of ["weaponType"]) {
-      const wornItems = allItems
-        .map(([slotKey, item]: [string, Item]) => ({
-          slotKey, // the slot key is the key of the item in the equipment or ability object
-          ...item,
-        }))
-        .filter((i) => i)
-        .filter((i) => activeItemSlots.includes(i.slotKey))
-        .sort((a, b) => {
-          // if the item doesn't have a requirement, it should be at the beginning of the list
-          return (a?.requirements?.[key] ?? 0) - (b?.requirements?.[key] ?? 0);
-        });
-
-      for (const item of wornItems) {
-        const itemRequirement = item?.requirements?.[key];
-        // melee spell attacks require a melee weapon
-        if (key === "weaponType") {
-          if (itemRequirement) {
-            if (!this.hasVisibleWeaponType(itemRequirement)) {
-              activeItemSlots.splice(activeItemSlots.indexOf(item.slotKey), 1);
-              continue;
-            }
-          }
-        }
-      }
-    }
-
-    this.activeItemSlots = activeItemSlots;
   }
   calculateElementalDamage(eleDamages: ElementalDamages, victim: ServerCharacter) {
     return applyElementalDamage(eleDamages, victim);

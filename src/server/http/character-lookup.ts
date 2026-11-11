@@ -1,4 +1,5 @@
 import type { Express } from "express";
+import { getActiveItemSlots } from "@/rules/character";
 import type { LoginCharacter } from "@/network";
 import type { Database } from "../persistence/database";
 
@@ -43,7 +44,7 @@ export function registerCharacterLookup(app: Express, db: Database, now: () => n
           level: user.baseStats?.level,
           profile: user.profile,
           equipment: user.equipment,
-          activeItemSlots: user.activeItemSlots,
+          activeItemSlots: getActiveItemSlots(user),
         }
       : null;
     res.json({ character });
