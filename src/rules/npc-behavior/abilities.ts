@@ -1,6 +1,6 @@
-import { spellDetails } from "@/content";
+import { findSpell } from "@/content";
 import { hasBuff, type ActiveBuff } from "@/rules/buffs";
-import { BUFF_SPELLS, checkCastReady, type LastCast } from "@/rules/spells";
+import { checkCastReady, type LastCast } from "@/rules/spells";
 import { NPC_BUFF_CAST_PROBABILITY } from "./constants";
 import type { Body } from "./range";
 import { getSpellBand, isInBand, type ShotBand } from "./reach";
@@ -21,17 +21,10 @@ export interface AbilityChoiceInput {
   now: number;
 }
 
-type Details = {
-  allowedTargets?: readonly string[];
-};
-
-const detailsOf = (spellName?: string) =>
-  (spellDetails as unknown as Record<string, Details>)?.[spellName as string];
-
 function isSpellCastable(input: AbilityChoiceInput, spell: NpcAbility | null | undefined) {
   const spellName = spell?.base;
   return (
-    detailsOf(spellName) &&
+    findSpell(spellName) &&
     checkCastReady({
       spellName,
       lastCast: input.lastCast,
@@ -48,19 +41,15 @@ function isTargetSuitableForSpell(
   rng: () => number,
 ) {
   const spellName = spell?.base;
-  const details = detailsOf(spellName);
-
-  // attack spells
   const band = getSpellBand(spellName);
   if (input.target && band) return isInBand(input.self, input.target, band);
-  // auras
-  if (!input.target && details?.allowedTargets?.includes("self")) {
-    if (BUFF_SPELLS.includes(spellName as string)) {
-      const randomCheck = rng() < NPC_BUFF_CAST_PROBABILITY;
-      // if we already have the buff, don't recast
-      return !hasBuff(input.buffs, spellName as string) && randomCheck;
-    }
+  // Auras on itself, now and then, when out of a fight and not already under them
+  const aura = findSpell(spellName);
+  if (!input.target && aura?.delivery.type === "aura" && aura.targets.includes("self")) {
+    const isLucky = rng() < NPC_BUFF_CAST_PROBABILITY;
+    return isLucky && !hasBuff(input.buffs, spellName as string);
   }
+  return false;
 }
 
 /** The first ability that is ready and fits the situation. */

@@ -1,11 +1,11 @@
-import { spellDetails, type SpellDefinition } from "@/content";
+import { findSpell } from "@/content";
 import { LUNGE_DURATION, isLunging, type LungeState } from "@/rules/movement";
 import type { NpcMovement } from "./decide";
 import { NPC_LUNGE_RECOVERY_MS } from "./constants";
 
 /** Lunges wind up like a weapon swing (its attack delay), not like a spell (its cast delay). */
 export function isLungeSpell(spellName: string | undefined) {
-  return !!(spellDetails as Record<string, SpellDefinition>)[spellName ?? ""]?.isLunge;
+  return findSpell(spellName)?.delivery.type === "dash";
 }
 
 /** True through an NPC's lunge and the pause after it, when it can be punished. */

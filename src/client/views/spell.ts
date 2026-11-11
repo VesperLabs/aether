@@ -12,14 +12,14 @@ import { deriveElements } from "@/ui/item/weapon-elements";
 import { ELEMENT_SWING_COLORS } from "@/ui/item/element-effects";
 import { getAngleFromDirection, distanceTo } from "@/rules/world";
 import {
-  BUFF_SPELLS,
   getMeleeSwing,
+  getSpell,
   getSpellShape,
   getSpellFlight,
   isSpellExpired,
   isSwingClockwise,
   planSwing,
-  resolveSpellDetails,
+  ridesCaster,
   usesLeftHand,
   usesRightHand,
 } from "@/rules/spells";
@@ -33,11 +33,8 @@ function getBladeDegrees(texture: string | undefined) {
   return Phaser.Math.RadToDeg(Math.atan2(tip.y - WEAPON_GRIP.y, tip.x - WEAPON_GRIP.x));
 }
 
-/** The colour of each melee swing's arc. */
-const SWING_COLORS: Record<string, number> = {
-  "attack-melee": 0xdfe8ff,
-  "flame-slash": 0xff7a2a,
-};
+/** A swing's arc when neither the spell nor the weapon's element colours it. */
+const PLAIN_SWING_COLOR = 0xdfe8ff;
 
 /** What a spell is cast from: an ability's details, or the plain attack of a swing. */
 export interface SpellArgs {
@@ -63,18 +60,14 @@ export class Spell extends Phaser.GameObjects.Container {
   declare velocityX: number;
   declare velocityY: number;
   declare spell: Phaser.GameObjects.Sprite;
-  declare isMeleeAttack?: boolean;
-  declare isRangedAttack?: boolean;
-  declare layerDepth?: string;
-  declare allowedTargets?: readonly string[];
-  /** Every spell that is cast defines these, see `getSpellShape`. */
+  declare isMeleeAttack: boolean;
+  /** Drawn under the caster, over the world, or (a punch) just over the caster. */
+  declare layer: "below" | "above" | "aboveCaster";
   declare maxVisibleTime: number;
   declare bodySize: number;
-  declare shouldFade: boolean;
   declare maxDistance: number;
   declare action: string;
-  declare isMissile: boolean;
-  declare stickToCaster?: boolean;
+  declare stickToCaster: boolean;
   declare ageMs: number;
   constructor(
     scene: Phaser.Scene,
@@ -97,21 +90,18 @@ export class Spell extends Phaser.GameObjects.Container {
     this.velocityY = 0;
     this.spell = scene.add.existing(new Sprite(scene, 0, 0, BLANK_TEXTURE, 0));
 
-    const { details, found } = resolveSpellDetails(spellName);
-    if (!found) console.log("❌ Shit, the spell does not exist in spellDetails!");
-    const shape = getSpellShape(details, rank);
+    const spell = getSpell(spellName);
+    const { delivery, look } = spell;
+    const shape = getSpellShape(spell, rank);
 
-    this.isMeleeAttack = shape.isMeleeAttack;
-    this.isRangedAttack = shape.isRangedAttack;
-    this.layerDepth = details?.layerDepth;
-    this.allowedTargets = shape.allowedTargets;
-    this.maxVisibleTime = shape.maxVisibleTime as number;
-    this.bodySize = shape.bodySize as number;
-    this.spell.setTint(toTint(details?.tint || "0xFFFFFF"));
-    this.shouldFade = details?.shouldFade || false;
-    this.maxDistance = shape.maxDistance; //for ranged attacks
+    this.isMeleeAttack = delivery.type === "swing";
+    this.stickToCaster = ridesCaster(spell);
+    this.layer = look.layer;
+    this.maxVisibleTime = shape.visibleMs;
+    this.bodySize = shape.size;
+    this.maxDistance = shape.maxDistance;
     this.action = action ?? "attack_right";
-    this.isMissile = shape.isMissile;
+    this.spell.setTint(toTint(look.tint ?? "0xFFFFFF"));
 
     scene.physics.add.existing(this);
     scene.events.on("update", this.update, this);
@@ -122,7 +112,6 @@ export class Spell extends Phaser.GameObjects.Container {
     if (this.isMeleeAttack) {
       const isLeft = usesLeftHand(this.action);
       const isRight = usesRightHand(this.action);
-      this.stickToCaster = true;
       /* npcs without attack animations use neither hand: they still swing, at body reach */
       const hand = isLeft && !isRight ? "handLeft" : "handRight";
       /* Characters without attack animations swing no weapon: their arc is their body's reach */
@@ -135,15 +124,15 @@ export class Spell extends Phaser.GameObjects.Container {
       const reach = caster.getWeaponRange(hand);
       this.showSwingDebug(hand, isPunching, isUppercut);
       /* A fist is in front of the body, unlike a blade's arc, which sweeps behind it */
-      if (isPunching) this.layerDepth = "aboveCaster";
+      if (isPunching) this.layer = "aboveCaster";
       /* The hand, relative to this spell, which follows the caster's body centre */
       const getHand = () => ({ x: caster[hand].x, y: caster[hand].y - caster.bodyCenterY });
       const facing = getAngleFromDirection(caster?.direction);
       /* Plain swings take the color of the weapon's element, like its outline */
       const color =
-        SWING_COLORS[this.spellName] ??
+        (look.tint ? toTint(look.tint) : undefined) ??
         ELEMENT_SWING_COLORS[deriveElements(caster.visibleEquipment?.[hand]?.stats)[0] as string] ??
-        SWING_COLORS["attack-melee"];
+        PLAIN_SWING_COLOR;
       const swing = isPunching
         ? new PunchBurst(scene, { fist: getHand, facing, color, duration: this.maxVisibleTime })
         : new SwingArc(scene, {
@@ -165,33 +154,27 @@ export class Spell extends Phaser.GameObjects.Container {
       this.setScale(shape.scale);
     }
 
-    const flight = getSpellFlight(shape, castAngle, this.action, (hand) =>
+    const flight = getSpellFlight(spell, castAngle, this.action, (hand) =>
       caster.getWeaponRange(hand),
     );
     if (flight) {
       ({ x: this.velocityX, y: this.velocityY } = flight.velocity);
-      this.maxDistance = flight.maxDistance ?? this.maxDistance;
+      this.maxDistance = flight.maxDistance;
     }
-    if (this.isRangedAttack) {
-      this.spell.setTexture("icons", "arrow");
-      this.spell.setRotation(castAngle + Math.PI / 4);
+    if (look.sprite && "icon" in look.sprite) this.spell.setTexture("icons", look.sprite.icon);
+    if (look.sprite && "animation" in look.sprite) this.spell.play(look.sprite.animation);
+    /* Projectiles face where they fly; icon art points up and to the right */
+    if (flight) {
+      const iconTurn = look.sprite && "icon" in look.sprite ? Math.PI / 4 : 0;
+      this.spell.setRotation(castAngle + iconTurn);
     }
-    if (this.isMissile) {
-      this.spell.play(`spell-anim-${spellName}`);
-      this.spell.setRotation(castAngle);
-    }
-    if (spellName === "quake") {
-      this.body.setSize(this?.bodySize * 4, this?.bodySize * 2);
-      this.y = this.caster.y + 6;
+    if (delivery.type === "burst" && delivery.shape === "box") {
+      this.body.setSize(this.bodySize * 4, this.bodySize * 2);
       this.body.setOffset(-this.bodySize * 2, -this.bodySize);
-      this.spell.play(`spell-anim-${spellName}`);
-    }
-    if (BUFF_SPELLS.includes(spellName)) {
-      this.spell.play("spell-anim-chakra");
-      this.stickToCaster = true;
+      this.y = this.caster.y + 6;
     }
 
-    if (this.shouldFade) {
+    if (look.fades) {
       scene.tweens.add({
         targets: this.spell,
         props: {
@@ -211,7 +194,7 @@ export class Spell extends Phaser.GameObjects.Container {
     if (this.stickToCaster) endOnDeath(caster, this);
     this.catchUpToServer();
     this.adjustSpellPosition();
-    playSpellAudio({ scene, spellName, caster, isMeleeAttack: this.isMeleeAttack });
+    playAudio({ scene, audioKey: look.sound ?? null, caster });
   }
   /**
    * The swing's hit, for the physics debug view: the wedge the server sweeps, from the same rule.
@@ -272,15 +255,9 @@ export class Spell extends Phaser.GameObjects.Container {
     this.adjustSpellPosition();
   }
   adjustSpellPosition() {
-    if (this.layerDepth === "bottom") {
-      this.setDepth(this?.caster?.depth - 20);
-    }
-    if (this.layerDepth === "aboveCaster") {
-      this.setDepth(this?.caster?.depth + 1);
-    }
-    if (this.layerDepth === "top") {
-      this.setDepth(100 + this.y + this.bodySize);
-    }
+    if (this.layer === "below") this.setDepth(this.caster.depth - 20);
+    if (this.layer === "aboveCaster") this.setDepth(this.caster.depth + 1);
+    if (this.layer === "above") this.setDepth(100 + this.y + this.bodySize);
     if (this.stickToCaster) {
       this.x = this.caster.x + this.caster.rig.x;
       this.y = this.caster.y + this.caster.bodyCenterY + this.caster.rig.y;
@@ -294,36 +271,3 @@ export class Spell extends Phaser.GameObjects.Container {
     super.destroy();
   }
 }
-
-const playSpellAudio = ({
-  scene,
-  spellName,
-  caster,
-  isMeleeAttack,
-}: {
-  scene: Phaser.Scene;
-  spellName: string;
-  caster: Player;
-  isMeleeAttack?: boolean;
-}) => {
-  let audioKey = null;
-  if (isMeleeAttack) {
-    audioKey = "melee-swing-1";
-  }
-  if (spellName === "fireball") {
-    audioKey = "spell-fireball";
-  }
-  if (spellName === "waterball") {
-    audioKey = "spell-water";
-  }
-  if (spellName === "lightball") {
-    audioKey = "spell-light";
-  }
-  if (spellName === "quake") {
-    audioKey = "spell-earth";
-  }
-  if (BUFF_SPELLS.includes(spellName)) {
-    audioKey = "spell-buff-1";
-  }
-  return playAudio({ scene, audioKey, caster });
-};

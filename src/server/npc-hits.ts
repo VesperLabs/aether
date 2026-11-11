@@ -13,7 +13,7 @@ import type { Npc } from "./npc";
 export function applyNpcHits(npc: Npc, ids: string[], abilitySlot?: AbilitySlot, hand?: Hand) {
   const { world, room } = npc;
   const roomName = room.name;
-  const { allowedTargets } = npc.getAbilityDetails(abilitySlot);
+  const allowedTargets = npc.getAbilityDetails(abilitySlot).spell.targets;
   const victims = [
     ...entitiesInRoom(world.players, roomName),
     ...entitiesInRoom(world.npcs, roomName),

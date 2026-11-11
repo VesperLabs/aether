@@ -7,6 +7,7 @@ import { getSpinDirection } from "@/client/input/spin-direction";
 import { CONSUMABLES_BASES, POTION_BASES } from "@/rules/inventory";
 import { canThrow, isThrowable } from "@/rules/capture";
 import { getAbilityCosts, hasStaminaFor } from "@/rules/combat";
+import { isAimed } from "@/rules/spells";
 import {
   updateAttackCooldown,
   updatePotionCooldown,
@@ -58,7 +59,7 @@ export function addGlobalEventListeners(scene: SceneHud) {
     hero.pressedAbilitySlot = undefined;
     /* A press during a cast, or while one waits to start, is dropped */
     if (isTypableFieldActive() || hero.isCasting || hero.queuedCastSlot !== undefined) return;
-    const { isAimable, isLunge, spellName, base } = hero.getAbilityDetails(e?.detail);
+    const { spell, spellName, base } = hero.getAbilityDetails(e?.detail);
     /* A ball aims like a ranged shot: hold to aim, let go to throw */
     if (isThrowable(base)) {
       hero.pressedAbilitySlot = e?.detail;
@@ -67,7 +68,7 @@ export function addGlobalEventListeners(scene: SceneHud) {
       scene.socket.emit("updateState", { isAiming: hero.state.isAiming });
       return;
     }
-    if (!isAimable) {
+    if (!isAimed(spell)) {
       hero.pressedAbilitySlot = e?.detail;
       return;
     }
@@ -78,7 +79,7 @@ export function addGlobalEventListeners(scene: SceneHud) {
       hero.state.isAiming = true;
       hero.state.aimingSpellName = spellName;
       /* A lunge taps like a dodge: a tap goes the way you're heading, a hold aims */
-      hero.state.aimPressedAt = isLunge ? Date.now() : undefined;
+      hero.state.aimPressedAt = spell.delivery.type === "dash" ? Date.now() : undefined;
       gameElement.style.cursor = "none";
       scene.socket.emit("updateState", { isAiming: hero.state.isAiming });
     }
@@ -162,7 +163,7 @@ export function addGlobalEventListeners(scene: SceneHud) {
     /* Only the release of a press that was taken: not one made mid-cast, nor one an attack called off */
     if (!hero || hero.pressedAbilitySlot !== abilitySlot) return;
     hero.pressedAbilitySlot = undefined;
-    const { type, isLunge, stats, base, id } = hero.getAbilityDetails(abilitySlot);
+    const { type, spell, stats, base, id } = hero.getAbilityDetails(abilitySlot);
     if (hero.isCasting) return;
 
     if (isThrowable(base)) {
@@ -180,7 +181,7 @@ export function addGlobalEventListeners(scene: SceneHud) {
       /* Tell the UI to update the cooldown */
       updateSpellCooldown(hero, abilitySlot);
 
-      const isTapped = isLunge && isTap(hero.state, Date.now());
+      const isTapped = spell.delivery.type === "dash" && isTap(hero.state, Date.now());
       hero?.doCast?.({
         abilitySlot,
         castAngle: isTapped ? getHeadingAngle(hero) : hero?.state?.lastAngle,

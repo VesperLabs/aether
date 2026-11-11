@@ -1,4 +1,4 @@
-import { spellDetails } from "@/content";
+import { findSpell } from "@/content";
 import { distanceBetween, type Body } from "./range";
 import { NPC_SHOT_MARGIN } from "./constants";
 
@@ -12,44 +12,23 @@ export interface ShotBand {
   max: number;
 }
 
-type Details = {
-  allowedTargets?: readonly string[];
-  npcCastRange?: readonly [number, number];
-  isMissile?: boolean;
-  isRangedAttack?: boolean;
-  maxDistance?: number;
-  maxActiveTime?: number;
-  spellSpeed?: number;
-};
-
-/** Default body radius on each side, which the old edge-to-edge `npcCastRange` left out. */
+/** Default body radius on each side, which the old edge-to-edge `npcRange` left out. */
 const BODY_RADII = 16;
 
-const detailsOf = (spellName?: string) =>
-  (spellDetails as unknown as Record<string, Details>)?.[spellName as string];
-
-/** How far a projectile flies before it vanishes, by distance or by lifetime. */
-function getFlightDistance(details: Details) {
-  if (details.maxDistance !== undefined && details.maxDistance > -1) return details.maxDistance;
-  if (details.spellSpeed && details.maxActiveTime) {
-    return (details.spellSpeed * details.maxActiveTime) / 1000;
-  }
-  return Infinity;
-}
-
 /**
- * Where an attack spell can land from: its `npcCastRange`, capped by how far it actually flies
+ * Where an attack spell can land from: its `npcRange`, capped by how far a projectile flies
  * (with a margin for a target on the move). Undefined for spells that don't target enemies.
  */
 export function getSpellBand(spellName: string | undefined): ShotBand | undefined {
-  const details = detailsOf(spellName);
-  if (!details?.allowedTargets?.includes("enemy") || !details.npcCastRange) return undefined;
-  const [min, max] = details.npcCastRange;
-  if (!details.isMissile && !details.isRangedAttack) {
-    // Area spells around the caster (quake): the range is edge to edge
+  const spell = findSpell(spellName);
+  if (!spell?.targets.includes("enemy") || !spell.npcRange) return undefined;
+  const [min, max] = spell.npcRange;
+  const { delivery } = spell;
+  if (delivery.type !== "projectile") {
+    // Spells starting at the caster (quake, tackle): the range is edge to edge
     return { min: min + BODY_RADII, max: max + BODY_RADII };
   }
-  return { min, max: Math.min(max, getFlightDistance(details) * NPC_SHOT_MARGIN) };
+  return { min, max: Math.min(max, (delivery.range ?? Infinity) * NPC_SHOT_MARGIN) };
 }
 
 /** Where a ranged weapon can land from: its arrows fly `range` from the shooter. */

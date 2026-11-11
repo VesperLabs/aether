@@ -1,5 +1,5 @@
-import { spellDetails } from "@/content";
 import { getNextAttackCount, POTION_COOLDOWN } from "@/rules/combat";
+import { getSpellCooldown } from "@/rules/spells";
 import { DODGE_COOLDOWN } from "@/rules/movement";
 import { THROW_COOLDOWN } from "@/rules/capture";
 import type { Player } from "@/client/views/player";
@@ -38,13 +38,11 @@ export function updateSpellCooldown(hero: Player, abilitySlot: AbilitySlot) {
   const castDelay = hero?.stats?.castDelay;
   const ability = hero?.abilities?.[abilitySlot];
   const spellName = ability?.base;
-  const baseCooldown =
-    (spellDetails as Record<string, { baseCooldown?: number }>)?.[spellName]?.baseCooldown ?? 0;
   window.dispatchEvent(
     new CustomEvent("HERO_START_COOLDOWN", {
       detail: {
         spellName,
-        duration: castDelay + baseCooldown,
+        duration: castDelay + getSpellCooldown(spellName),
         sharedDuration: castDelay,
         startTime: Date.now(),
       },

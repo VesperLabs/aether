@@ -12,7 +12,7 @@ import {
   isBehindCaster,
   isSpellExpired,
   isSpellVictimCandidate,
-  resolveSpellDetails,
+  getSpell,
   rollSpellCrit,
   rollSpellDamage,
   usesLeftHand,
@@ -95,39 +95,44 @@ describe("getAbilityDetails", () => {
   it("is the attack for no slot, ranged if a ranged weapon is held", () => {
     expect(getAbilityDetails({ hasRangedWeapon: false }, undefined)).toMatchObject({
       spellName: "attack-melee",
-      isMeleeAttack: true,
+      spell: { delivery: { type: "swing" } },
     });
     expect(getAbilityDetails({ hasRangedWeapon: true }, 0).spellName).toBe("attack-ranged");
   });
-  it("merges the item with the spell definition", () => {
+  it("gives the item with the spell it casts", () => {
     const abilities = { 2: { base: "flame-slash", rank: 3, effects: { minFireDamage: 1 } } };
     expect(getAbilityDetails({ abilities, hasRangedWeapon: false }, 2)).toMatchObject({
       spellName: "flame-slash",
       rank: 3,
       effects: { minFireDamage: 1 },
-      isMeleeAttack: true,
+      spell: { cooldown: 1000 },
     });
   });
-  it("gives just the name for an unknown ability", () => {
-    expect(getAbilityDetails({ abilities: {}, hasRangedWeapon: false }, 5)).toEqual({
+  it("swings for an empty slot", () => {
+    expect(getAbilityDetails({ abilities: {}, hasRangedWeapon: false }, 5)).toMatchObject({
       spellName: undefined,
+      spell: { delivery: { type: "swing" } },
     });
   });
 });
 
 describe("spell shape", () => {
   it("falls back to the melee attack for unknown spells", () => {
-    expect(resolveSpellDetails("nope")).toMatchObject({ found: false });
-    expect(resolveSpellDetails("nope").details.isMeleeAttack).toBe(true);
-    expect(resolveSpellDetails("fireball").found).toBe(true);
+    expect(getSpell("nope").delivery.type).toBe("swing");
+    expect(getSpell("fireball").delivery.type).toBe("projectile");
   });
-  it("defaults the shape and scales by item level", () => {
-    expect(getSpellShape({ scaleBase: 2, scaleMultiplier: 0.5 }, 4)).toMatchObject({
-      scale: 4,
-      maxDistance: -1,
-      isMissile: false,
+  it("scales by rank and lasts by distance only when it flies", () => {
+    expect(getSpellShape(getSpell("fireball"), 2)).toMatchObject({
+      size: 16,
+      hitMs: undefined,
+      maxDistance: 120,
+      scale: 0.35,
     });
-    expect(getSpellShape(undefined, 3).scale).toBe(1);
+    expect(getSpellShape(getSpell("attack-melee"), 3)).toMatchObject({
+      hitMs: 120,
+      maxDistance: -1,
+      scale: 1,
+    });
   });
   it("expires travelling spells by distance and others by time", () => {
     const input = { distanceFromSpawn: 10, spawnTime: 0, lifetime: 100, now: 100 };
@@ -231,19 +236,20 @@ describe("getSpellFlight", () => {
   const range = (hand: "handLeft" | "handRight") => (hand === "handLeft" ? 100 : 200);
 
   it("sends arrows as far as the shooting hand's weapon reaches", () => {
-    const shape = { isRangedAttack: true, isMissile: false, spellSpeed: 350 };
-    expect(getSpellFlight(shape, 0, "attack_left", range)).toEqual({
+    const arrow = getSpell("attack-ranged");
+    expect(getSpellFlight(arrow, 0, "attack_left", range)).toEqual({
       velocity: { x: 350, y: 0 },
       maxDistance: 100,
     });
-    expect(getSpellFlight(shape, 0, "attack_right", range)?.maxDistance).toBe(200);
+    expect(getSpellFlight(arrow, 0, "attack_right", range)?.maxDistance).toBe(200);
   });
-  it("leaves a missile's own distance alone", () => {
-    const shape = { isRangedAttack: false, isMissile: true, spellSpeed: 100 };
-    expect(getSpellFlight(shape, 0, "cast", range)).toEqual({ velocity: { x: 100, y: 0 } });
+  it("keeps a projectile's own range", () => {
+    expect(getSpellFlight(getSpell("fireball"), 0, "cast", range)).toEqual({
+      velocity: { x: 300, y: 0 },
+      maxDistance: 120,
+    });
   });
   it("is null for spells that don't fly", () => {
-    const shape = { isRangedAttack: false, isMissile: false, spellSpeed: 100 };
-    expect(getSpellFlight(shape, 0, "cast", range)).toBeNull();
+    expect(getSpellFlight(getSpell("quake"), 0, "cast", range)).toBeNull();
   });
 });

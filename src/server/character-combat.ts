@@ -9,12 +9,14 @@ import {
   type Hand,
 } from "@/rules/combat";
 import { isDodgeInvulnerable } from "@/rules/movement";
-import { rollSpellCrit, rollSpellDamage, type getAbilityDetails } from "@/rules/spells";
+import {
+  rollSpellCrit,
+  rollSpellDamage,
+  strikesWithWeapon,
+  type AbilityDetails,
+} from "@/rules/spells";
 import type { ServerCharacter } from "./character";
 import { isAlly } from "./allegiance-adapter";
-
-/** An ability's item data merged with its spell definition. */
-export type AbilityDetails = ReturnType<typeof getAbilityDetails>;
 
 /**
  * Legacy adapters for the pure combat and spell damage rules: roll the dice with the world RNG (`world.rng`),
@@ -232,14 +234,14 @@ export function applyDamage(
 ): Array<Hit> {
   if (victim?.state?.isDead) return [];
   let hitList: Array<Hit>;
-  const abilityDetails = attacker?.getAbilityDetails(abilitySlot);
-  if (!abilitySlot || abilityDetails?.isMeleeAttack || abilityDetails?.isLunge) {
+  const abilityDetails = attacker.getAbilityDetails(abilitySlot);
+  /* Plain attacks (arrows too) and the spells that swing or dash with the weapon */
+  if (!abilitySlot || strikesWithWeapon(abilityDetails.spell)) {
     hitList = applyAttackDamage(attacker, victim, abilityDetails, hand);
   } else {
     hitList = applySpellDamage(attacker, victim, abilityDetails);
   }
-  // Casting stealth won't dispel anything.
-  if (abilityDetails?.spellName !== "stealth") {
+  if (!abilityDetails.spell.vanishes) {
     attacker.dispelBuffsByProperty("dispelOnHit");
   }
   return hitList;

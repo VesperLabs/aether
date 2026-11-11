@@ -62,7 +62,7 @@ export type {
 export { Quest, type QuestObjective } from "./quests/quest";
 export { QuestBuilder } from "./quests/quest-builder";
 export { questList, type QuestId } from "./quests/quest-list";
-export { spellDetails } from "./spells/spell-details";
+export { findSpell, spellDetails } from "./spells/spell-details";
 export type { SpellDefinition } from "./spells/spell-types";
 export type { CharClass } from "./stats";
 export { PREVIEW_DICE, cloneJson, randomNumber, type Dice } from "./random";

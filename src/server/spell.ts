@@ -4,7 +4,6 @@ import { distanceTo } from "@/rules/world";
 import { entitiesInRoom } from "@/rules/world";
 import { LUNGE_HIT_LEAD, getLungeDuration, type Shape } from "@/rules/movement";
 import {
-  BUFF_SPELLS,
   characterHitBox,
   findSpellHits,
   getMeleeSwing,
@@ -16,10 +15,11 @@ import {
   usesRightHand,
   type SwingPlan,
   getSpellFlight,
+  getSpell,
   isSpellExpired,
-  resolveSpellDetails,
   toSpellVictims,
 } from "@/rules/spells";
+import { findSpell } from "@/content";
 import { hasWeapon } from "@/rules/combat";
 import { ServerCharacter } from "./character";
 import type { EffectSource, SpellEffectWire } from "@/network";
@@ -64,20 +64,18 @@ export class Spell implements EffectSource {
   /** Velocity in pixels per second. */
   public velocityX = 0;
   public velocityY = 0;
-  private allowedTargets: Array<string>;
+  private targets: readonly string[];
   private maxActiveTime: number | undefined;
   private maxDistance: number;
   private bodySize: number;
   private scale: number;
-  /** Set for spells with a box instead of a circle (quake). */
+  /** Set for bursts with a box instead of a circle (quake). */
   private box: { halfWidth: number; halfHeight: number } | null = null;
   private hitIds: Array<string> = [];
   private direction: string;
   private isMeleeAttack: boolean;
-  private isRangedAttack: boolean;
   private abilitySlot?: AbilitySlot;
   private action: string;
-  private isMissile: boolean;
   private isLunge = false;
   /** A melee swing: the wedge its blade sweeps, from the swinging hand. */
   private swing: SwingPlan | null = null;
@@ -115,17 +113,16 @@ export class Spell implements EffectSource {
     this.castAngle = castAngle;
     this.rank = rank;
 
-    const { details, found } = resolveSpellDetails(spellName);
-    if (!found) console.log("❌ Shit, the spell does not exist in spellDetails!");
-    const shape = getSpellShape(details, rank);
+    if (!findSpell(spellName)) console.warn(`Unknown spell "${spellName}", swinging instead`);
+    const spell = getSpell(spellName);
+    const { delivery } = spell;
+    const shape = getSpellShape(spell, rank);
 
-    this.isMeleeAttack = !!shape.isMeleeAttack;
-    this.isRangedAttack = !!shape.isRangedAttack;
-    this.allowedTargets = shape.allowedTargets as string[];
-    this.maxActiveTime = shape.maxActiveTime;
-    this.bodySize = shape.bodySize ?? 0;
-    this.maxDistance = shape.maxDistance; //for ranged attacks
-    this.isMissile = shape.isMissile;
+    this.isMeleeAttack = delivery.type === "swing";
+    this.targets = spell.targets;
+    this.maxActiveTime = shape.hitMs;
+    this.bodySize = shape.size;
+    this.maxDistance = shape.maxDistance;
     this.scale = shape.scale;
 
     if (this.isMeleeAttack) {
@@ -154,26 +151,24 @@ export class Spell implements EffectSource {
         isPunching: (isLeft || isRight) && !hasWeapon(caster),
         isUppercut: held?.base === "fist",
         bodyPivotY: swing.y - caster.y,
-        visibleMs: details?.maxVisibleTime ?? this.maxActiveTime ?? 0,
+        visibleMs: shape.visibleMs,
       });
       this.maxActiveTime = getSwingActiveMs(this.swing, this.maxActiveTime);
     }
 
-    const flight = getSpellFlight(shape, castAngle, this.action, (hand) =>
+    const flight = getSpellFlight(spell, castAngle, this.action, (hand) =>
       caster.getWeaponRange(hand),
     );
     if (flight) {
       ({ x: this.velocityX, y: this.velocityY } = flight.velocity);
-      this.maxDistance = flight.maxDistance ?? this.maxDistance;
+      this.maxDistance = flight.maxDistance;
     }
-    if (spellName == "quake") {
+    if (delivery.type === "burst" && delivery.shape === "box") {
       this.box = { halfWidth: this.bodySize * 2, halfHeight: this.bodySize };
       this.y = this.caster.y + 6;
     }
-    if (BUFF_SPELLS.includes(spellName)) {
-      this.stickToCaster = true;
-    }
-    if (details?.isLunge) {
+    if (delivery.type === "aura") this.stickToCaster = true;
+    if (delivery.type === "dash") {
       this.isLunge = true;
       // The hit rides along with the caster, who dashes along the aim (to just past a target)
       this.stickToCaster = true;
@@ -234,9 +229,8 @@ export class Spell implements EffectSource {
     if (this.state.isExpired) {
       /* Ticks are coarser than the blade: one last check of the whole sweep, so its end counts */
       if (this.swing) this.checkCollisions(true);
-      // Casting stealth won't dispel anything.
-      if (this?.spellName !== "stealth") {
-        this?.caster?.dispelBuffsByProperty("dispelAfterAttack");
+      if (!getSpell(this.spellName).vanishes) {
+        this.caster?.dispelBuffsByProperty("dispelAfterAttack");
       }
       return;
     }
@@ -265,7 +259,7 @@ export class Spell implements EffectSource {
       shape,
       victims: victimShapes,
       hitIds: this.hitIds,
-      allowedTargets: this.allowedTargets,
+      allowedTargets: this.targets,
       caster: { id: caster?.id, x: caster.x, y: caster.y, isPlayer: caster?.kind === "player" },
       targetId: target?.id,
       direction: this.direction,
