@@ -1619,19 +1619,43 @@
     },
     {
      "color": "#00ff00",
-     "name": "Water Grass",
+     "name": "Grass",
      "probability": 1,
      "tile": -1
     },
     {
      "color": "#0000ff",
-     "name": "Water Desert",
+     "name": "Water",
      "probability": 1,
      "tile": -1
     },
     {
      "color": "#ff7700",
-     "name": "Grass Desert",
+     "name": "Desert",
+     "probability": 1,
+     "tile": -1
+    },
+    {
+     "color": "#00e9ff",
+     "name": "Ice",
+     "probability": 1,
+     "tile": -1
+    },
+    {
+     "color": "#ff00d8",
+     "name": "Snow",
+     "probability": 1,
+     "tile": -1
+    },
+    {
+     "color": "#2172bf",
+     "name": "Frozen Water",
+     "probability": 1,
+     "tile": -1
+    },
+    {
+     "color": "#371654",
+     "name": "Deep Water",
      "probability": 1,
      "tile": -1
     }

@@ -1,5 +1,12 @@
 export { buildTileGrid, isNextToSolidTile, isOutOfMap, readTileMap } from "./tilemap";
 export type { TileMap, TiledMapJson } from "./tilemap";
+export {
+  fetchMapWithTilesets,
+  inlineTilesets,
+  readMapWithTilesets,
+  tilesetSources,
+} from "./tiled-tilesets";
+export type { TilesetFile } from "./tiled-tilesets";
 export { circleOverlapsBox, moveBox, shapesOverlap } from "./collision";
 export type { Box, Circle, Shape } from "./collision";
 export { hasLineOfSight } from "./line-of-sight";

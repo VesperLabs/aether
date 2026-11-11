@@ -14,6 +14,13 @@ export interface Light {
   stretch?: number;
   /** Which way the stretch runs, in radians. */
   angle?: number;
+  /**
+   * The map's layers drawn over the light, which it doesn't light: by default `Above` (tree tops,
+   * roofs), so a fire under the leaves leaves them dark. A lantern up among the roofs has none; a
+   * window has `Extras`, so a tree standing in front of it stays dark but the eaves over it don't
+   * cut its glow off.
+   */
+  blockedBy?: readonly string[];
   /** A falloff texture with its own colors (`FIRE_LIGHT_KEY`), drawn untinted. Default the plain one. */
   texture?: string;
 }

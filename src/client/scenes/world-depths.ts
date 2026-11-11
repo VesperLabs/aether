@@ -7,7 +7,7 @@
 export const ABOVE_LAYER_DEPTH = 50_000;
 
 /**
- * The night's light map, multiplied over everything below it, tree tops included. It carries the
- * tree tops' shape itself, so a light under the leaves doesn't light them (see `shadeCanopy`).
+ * The night's light map, multiplied over everything below it, tree tops included. Its lights have
+ * the tree tops cut out, so a light under the leaves doesn't light them (see `drawLights`).
  */
 export const DAYLIGHT_DEPTH = 50_001;

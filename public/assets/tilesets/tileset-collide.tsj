@@ -1,0 +1,37 @@
+{
+ "columns": 1,
+ "image": "collide.png",
+ "imageheight": 64,
+ "imagewidth": 32,
+ "margin": 0,
+ "name": "tileset-collide",
+ "spacing": 0,
+ "tilecount": 2,
+ "tiledversion": "1.10.1",
+ "tileheight": 32,
+ "tiles": [
+  {
+   "id": 0,
+   "properties": [
+    {
+     "name": "collides",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 1,
+   "properties": [
+    {
+     "name": "collides",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  }
+ ],
+ "tilewidth": 32,
+ "type": "tileset",
+ "version": "1.10"
+}

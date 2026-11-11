@@ -3,7 +3,8 @@ import path from "node:path";
 import type { PNG } from "pngjs";
 import { TILE } from "./tile-image";
 
-const TILEMAPS = "public/assets/tilemaps";
+/** Each tileset's shared file, which every map using it points at. */
+const TILESETS = "public/assets/tilesets";
 /** Summed RGB difference under which a pixel counts as the same in every frame. */
 const STILL = 48;
 
@@ -12,20 +13,14 @@ interface TiledAnimation {
   readonly animation?: readonly { readonly tileid: number }[];
 }
 
-/** Every animation the maps define for a tileset, as lists of frame tile ids. */
+/** Every animation a tileset defines (in its shared `.tsj` file), as lists of frame tile ids. */
 export const readAnimations = (tileset: string) => {
-  const animations = new Map<number, number[]>();
-  for (const file of fs.readdirSync(TILEMAPS).filter((name) => name.endsWith(".json"))) {
-    const map = JSON.parse(fs.readFileSync(path.join(TILEMAPS, file), "utf8"));
-    const set = map.tilesets.find((candidate: { name: string }) => candidate.name === tileset);
-    for (const tile of (set?.tiles ?? []) as TiledAnimation[])
-      if (tile.animation)
-        animations.set(
-          tile.id,
-          tile.animation.map((frame) => frame.tileid),
-        );
-  }
-  return [...animations.values()];
+  const file = path.join(TILESETS, `${tileset}.tsj`);
+  if (!fs.existsSync(file)) return [];
+  const set = JSON.parse(fs.readFileSync(file, "utf8"));
+  return ((set.tiles ?? []) as TiledAnimation[]).flatMap((tile) =>
+    tile.animation ? [tile.animation.map((frame) => frame.tileid)] : [],
+  );
 };
 
 /**

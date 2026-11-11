@@ -1,0 +1,46 @@
+{
+ "columns": 20,
+ "image": "extras.png",
+ "imageheight": 680,
+ "imagewidth": 680,
+ "margin": 1,
+ "name": "tileset-extras",
+ "spacing": 2,
+ "tilecount": 400,
+ "tiledversion": "1.10.1",
+ "tileheight": 32,
+ "tiles": [
+  {
+   "animation": [
+    {
+     "duration": 200,
+     "tileid": 276
+    },
+    {
+     "duration": 200,
+     "tileid": 277
+    },
+    {
+     "duration": 200,
+     "tileid": 278
+    },
+    {
+     "duration": 200,
+     "tileid": 279
+    },
+    {
+     "duration": 200,
+     "tileid": 296
+    },
+    {
+     "duration": 200,
+     "tileid": 297
+    }
+   ],
+   "id": 276
+  }
+ ],
+ "tilewidth": 32,
+ "type": "tileset",
+ "version": "1.10"
+}

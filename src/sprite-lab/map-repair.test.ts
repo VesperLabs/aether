@@ -1,10 +1,14 @@
 import { readFileSync } from "node:fs";
+import { readMapWithTilesets } from "@/rules/movement";
 import { describe, expect, it } from "vitest";
 import { blankGrid, setTerrain, type WangSet } from "./map-terrain";
 import { createRepair } from "./map-repair";
 import { getTerrainWangset, type TiledMap } from "./map-tiled";
 
-const template: TiledMap = JSON.parse(readFileSync("public/assets/tilemaps/meadow.json", "utf8"));
+/* With its shared tileset files put back in, as the game and the lab read it */
+const template = readMapWithTilesets<TiledMap>("public/assets/tilemaps/meadow.json", (path) =>
+  JSON.parse(readFileSync(path, "utf8")),
+);
 const wangset: WangSet = getTerrainWangset(template);
 const repair = createRepair(wangset);
 

@@ -1,0 +1,290 @@
+{
+ "columns": 37,
+ "image": "dungeon.png",
+ "imageheight": 680,
+ "imagewidth": 1258,
+ "margin": 1,
+ "name": "tileset-dungeon",
+ "spacing": 2,
+ "tilecount": 740,
+ "tiledversion": "1.10.1",
+ "tileheight": 32,
+ "tiles": [
+  {
+   "animation": [
+    {
+     "duration": 500,
+     "tileid": 314
+    },
+    {
+     "duration": 500,
+     "tileid": 425
+    },
+    {
+     "duration": 500,
+     "tileid": 536
+    },
+    {
+     "duration": 500,
+     "tileid": 647
+    }
+   ],
+   "id": 314
+  },
+  {
+   "animation": [
+    {
+     "duration": 500,
+     "tileid": 315
+    },
+    {
+     "duration": 500,
+     "tileid": 426
+    },
+    {
+     "duration": 500,
+     "tileid": 537
+    },
+    {
+     "duration": 500,
+     "tileid": 648
+    }
+   ],
+   "id": 315
+  },
+  {
+   "animation": [
+    {
+     "duration": 500,
+     "tileid": 316
+    },
+    {
+     "duration": 500,
+     "tileid": 427
+    },
+    {
+     "duration": 500,
+     "tileid": 538
+    },
+    {
+     "duration": 500,
+     "tileid": 649
+    }
+   ],
+   "id": 316
+  },
+  {
+   "animation": [
+    {
+     "duration": 500,
+     "tileid": 349
+    },
+    {
+     "duration": 500,
+     "tileid": 460
+    },
+    {
+     "duration": 500,
+     "tileid": 571
+    },
+    {
+     "duration": 500,
+     "tileid": 682
+    }
+   ],
+   "id": 349
+  },
+  {
+   "animation": [
+    {
+     "duration": 500,
+     "tileid": 350
+    },
+    {
+     "duration": 500,
+     "tileid": 461
+    },
+    {
+     "duration": 500,
+     "tileid": 572
+    },
+    {
+     "duration": 500,
+     "tileid": 683
+    }
+   ],
+   "id": 350
+  },
+  {
+   "animation": [
+    {
+     "duration": 500,
+     "tileid": 351
+    },
+    {
+     "duration": 500,
+     "tileid": 462
+    },
+    {
+     "duration": 500,
+     "tileid": 573
+    },
+    {
+     "duration": 500,
+     "tileid": 684
+    }
+   ],
+   "id": 351
+  },
+  {
+   "animation": [
+    {
+     "duration": 500,
+     "tileid": 352
+    },
+    {
+     "duration": 500,
+     "tileid": 463
+    },
+    {
+     "duration": 500,
+     "tileid": 574
+    },
+    {
+     "duration": 500,
+     "tileid": 685
+    }
+   ],
+   "id": 352
+  },
+  {
+   "animation": [
+    {
+     "duration": 500,
+     "tileid": 353
+    },
+    {
+     "duration": 500,
+     "tileid": 464
+    },
+    {
+     "duration": 500,
+     "tileid": 575
+    },
+    {
+     "duration": 500,
+     "tileid": 686
+    }
+   ],
+   "id": 353
+  },
+  {
+   "animation": [
+    {
+     "duration": 500,
+     "tileid": 386
+    },
+    {
+     "duration": 500,
+     "tileid": 497
+    },
+    {
+     "duration": 500,
+     "tileid": 608
+    },
+    {
+     "duration": 500,
+     "tileid": 719
+    }
+   ],
+   "id": 386
+  },
+  {
+   "animation": [
+    {
+     "duration": 500,
+     "tileid": 387
+    },
+    {
+     "duration": 500,
+     "tileid": 498
+    },
+    {
+     "duration": 500,
+     "tileid": 609
+    },
+    {
+     "duration": 500,
+     "tileid": 720
+    }
+   ],
+   "id": 387
+  },
+  {
+   "animation": [
+    {
+     "duration": 500,
+     "tileid": 388
+    },
+    {
+     "duration": 500,
+     "tileid": 499
+    },
+    {
+     "duration": 500,
+     "tileid": 610
+    },
+    {
+     "duration": 500,
+     "tileid": 721
+    }
+   ],
+   "id": 388
+  },
+  {
+   "animation": [
+    {
+     "duration": 500,
+     "tileid": 389
+    },
+    {
+     "duration": 500,
+     "tileid": 500
+    },
+    {
+     "duration": 500,
+     "tileid": 611
+    },
+    {
+     "duration": 500,
+     "tileid": 722
+    }
+   ],
+   "id": 389
+  },
+  {
+   "animation": [
+    {
+     "duration": 500,
+     "tileid": 390
+    },
+    {
+     "duration": 500,
+     "tileid": 501
+    },
+    {
+     "duration": 500,
+     "tileid": 612
+    },
+    {
+     "duration": 500,
+     "tileid": 723
+    }
+   ],
+   "id": 390
+  }
+ ],
+ "tilewidth": 32,
+ "type": "tileset",
+ "version": "1.10"
+}

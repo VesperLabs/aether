@@ -1,4 +1,5 @@
 import { mapList } from "@/content";
+import { fetchMapWithTilesets } from "@/rules/movement";
 import { Box, loadCacheImage } from "@/ui";
 import { useEffect, useRef, useState } from "react";
 
@@ -41,7 +42,10 @@ type Frame = { tileid: number; duration: number };
 
 /** Draws a Tiled map onto a new 1x canvas; `tick` redraws its animated tiles for a given time. */
 async function drawMap(jsonPath: string) {
-  const map = (await (await fetch(jsonPath)).json()) as TiledMap;
+  /* Maps list shared tileset files; read them too, as the game does */
+  const map = await fetchMapWithTilesets<TiledMap>(jsonPath, (url) =>
+    fetch(url).then((response) => response.json()),
+  );
   const images = await Promise.all(
     map.tilesets.map((set) => loadCacheImage(`./assets/tilesets/${set.image.split("/").pop()}`)),
   );

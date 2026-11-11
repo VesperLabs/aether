@@ -1,16 +1,10 @@
 import Phaser from "phaser";
 import type { ClientGameSocket } from "@/network";
 import type { SceneMain } from "./main-scene";
-import {
-  assetList,
-  type AssetDefinition,
-  soundList,
-  iconList,
-  mapList,
-  mapImageList,
-} from "@/content";
+import { assetList, type AssetDefinition, soundList, iconList, mapImageList } from "@/content";
 import { IMAGE_CACHE } from "@/ui/kit/image-tint";
 import { showLoadingBar } from "./loading-bar";
+import { addLoadedMaps, loadMaps } from "./load-maps";
 
 /**
  * Rewrite a `./assets/…` path to the CDN base URL when ASSETS_URL is set.
@@ -43,6 +37,7 @@ export class SceneBoot extends Phaser.Scene {
 
     // Register a load complete event to launch the title screen when all files are loaded
     this.load.on("complete", () => {
+      addLoadedMaps(this);
       /* For loot pics */
       assetList.forEach((asset) => {
         let tempText = this.textures.get(asset.texture);
@@ -68,9 +63,8 @@ export class SceneBoot extends Phaser.Scene {
     mapImageList.forEach((asset) => {
       this.load.image(asset.name, assetUrl(asset.image));
     });
-    mapList.forEach((asset) => {
-      this.load.tilemapTiledJSON(asset.name, assetUrl(asset.json));
-    });
+    /* Maps share their tilesets in separate files; `addLoadedMaps` puts them back together */
+    loadMaps(this, assetUrl);
     assetList.forEach((asset) => {
       this.load.atlas(asset.texture, assetUrl(asset.src), assetUrl(asset.atlas as string));
     });
