@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.25.2](https://github.com/VesperLabs/aether/compare/v0.25.1...v0.25.2) (2026-11-11)
+
+
+### Bug Fixes
+
+* mobile chat command menu, buff aiming and login weapon ([#297](https://github.com/VesperLabs/aether/issues/297)) ([41d17c0](https://github.com/VesperLabs/aether/commit/41d17c070d95d2946dc08cf66cdca722de03b345))
+
 ## [0.25.1](https://github.com/VesperLabs/aether/compare/v0.25.0...v0.25.1) (2026-11-11)
 
 
