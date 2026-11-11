@@ -210,6 +210,8 @@ export class Npc extends Character {
     if (!room || !isRoomWatched(this.world, room.name)) {
       this.setLockedPlayerId(null);
       this.threat = {};
+      /* Out of the fight too, so no one comes back to its engaged pie */
+      this.state.bubbleMessage = null;
       this.vx = 0;
       this.vy = 0;
       this.stats.hp = this.stats.maxHp; //heal to full
