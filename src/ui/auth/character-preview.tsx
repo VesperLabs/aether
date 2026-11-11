@@ -98,7 +98,7 @@ const RisingPortrait = ({ character }: { character: LoginCharacter }) => {
         }}
       >
         <PlayerRender
-          player={{ ...character, equipment: { ...character.equipment, handLeft: null } }}
+          player={{ ...character, equipment: { ...character.equipment, handRight: null } }}
           onLoadComplete={setIsDrawn}
           sx={SPRITE_SX}
         />

@@ -22,7 +22,7 @@
     "server:run": "node --env-file-if-exists=.env --optimize-for-size --max-old-space-size=512 dist/server.cjs",
     "test": "vitest run",
     "format": "oxfmt",
-    "dev": "concurrently -k --pad-prefix -n server,client,wiki -c blue,green,magenta \"npm run -s server:watch\" \"npm run -s client:dev\" \"npm run -s web:dev\"",
+    "dev": "concurrently -k --pad-prefix -n server,client,wiki,lab -c blue,green,magenta,yellow \"npm run -s server:watch\" \"npm run -s client:dev\" \"npm run -s web:dev\" \"npm run -s lab:dev\"",
     "prepare": "husky",
     "typecheck": "tsc --noEmit",
     "test:watch": "vitest",
