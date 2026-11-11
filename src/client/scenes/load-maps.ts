@@ -12,15 +12,19 @@ const tilesetKey = (path: string) => `tileset:${path}`;
 export function loadMaps(scene: Phaser.Scene, assetUrl: (src: string) => string) {
   const queued = new Set<string>();
   for (const { name, json } of mapList) {
-    scene.load.json(mapKey(name), assetUrl(json));
+    const url = assetUrl(json);
+    scene.load.json(mapKey(name), url);
     scene.load.once(
       `filecomplete-json-${mapKey(name)}`,
       (_key: string, _type: string, map: never) => {
-        for (const path of tilesetSources(map, json)) {
-          if (queued.has(path)) continue;
+        // Resolved against where the map really came from (a CDN in production), so each path
+        // is already the URL to load. The keys stay content paths, as `addLoadedMaps` reads them.
+        const urls = tilesetSources(map, url);
+        tilesetSources(map, json).forEach((path, i) => {
+          if (queued.has(path)) return;
           queued.add(path);
-          scene.load.json(tilesetKey(path), assetUrl(`./${path}`));
-        }
+          scene.load.json(tilesetKey(path), urls[i]);
+        });
       },
     );
   }
