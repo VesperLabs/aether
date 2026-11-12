@@ -161,6 +161,7 @@ function drawLightMap(
   { lightMap, isDoubled }: Pick<Daylight, "lightMap" | "isDoubled">,
   tint: number,
   vignette: number,
+  lights: number | undefined,
 ) {
   const view = scene.cameras.main.worldView;
   const width = Math.ceil(view.width) + 2 * VIEW_MARGIN;
@@ -183,7 +184,7 @@ function drawLightMap(
     });
   }
   /* The lights, each cut by what stands over it: see `drawLights` */
-  const share = lightShare(tint);
+  const share = lights ?? lightShare(tint);
   if (share > 0) {
     drawLights(
       scene,
@@ -217,7 +218,7 @@ function drawDaylight(scene: SceneMain) {
   if (minimapColors) minimapColors.active = Boolean(map?.isOutdoors);
   if (!light) return;
 
-  drawLightMap(scene, daylight, light.tint, light.vignette);
+  drawLightMap(scene, daylight, light.tint, light.vignette, light.lights);
   colors.colorMatrix.saturate(light.saturation);
   if (minimapColors && map?.isOutdoors) tintMinimap(minimapColors, light.tint, light.saturation);
 }
