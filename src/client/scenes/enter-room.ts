@@ -3,6 +3,14 @@ import type { Player } from "@/client/views/player";
 import { netInterp } from "@/client/net/scene-interpolation";
 import { resetPoseArrivals } from "@/client/net/net-stats";
 import { changeMap } from "./main-map";
+import { getMapByName, type Season } from "@/content";
+import { mapSeason } from "@/rules/seasons";
+import {
+  prefetchBaseTilesets,
+  prefetchSeason,
+  roomTilesetKeys,
+  whenTexturesLoaded,
+} from "./tileset-textures";
 import { announceSeason, setDayClock } from "./world-clock";
 import type { SceneMain } from "./main-scene";
 import { clearThrownBalls } from "@/client/views/thrown-ball";
@@ -48,5 +56,26 @@ export function enterRoom(
     announceSeason(season);
   }
   if (hour !== undefined) setDayClock(hour);
-  return changeMap(scene, roomName);
+  const built = changeMap(scene, roomName);
+  /* The rest of the art, behind this room's: by the next door it has usually all arrived */
+  prefetchBaseTilesets(scene);
+  prefetchSeason(scene, scene.season);
+  return built;
+}
+
+/**
+ * Runs `enter` once the room's tilesets have loaded in the season it shows, so it is built in that
+ * season's art and never swaps under the player. Boot loads no tileset art, so the first room waits
+ * for its own; later ones have usually arrived in the background.
+ */
+export function whenRoomLoaded(
+  scene: SceneMain,
+  roomName: string,
+  worldSeason: Season,
+  enter: () => void,
+) {
+  const season = mapSeason(getMapByName(roomName)?.seasons, worldSeason);
+  const keys = roomTilesetKeys(scene, roomName);
+  const seasonal = season === "summer" ? [] : keys.map((key) => `${key}-${season}`);
+  whenTexturesLoaded(scene, [...keys, ...seasonal], enter);
 }

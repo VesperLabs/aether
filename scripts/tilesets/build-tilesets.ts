@@ -6,8 +6,10 @@
  *  2. fill the sheet's references from art/tilesets/overrides/<sheet>.json: whole tiles of another export, or
  *     slices of one cut to a shape, so custom tiles come out in every color
  *  3. draw the hand-painted tiles in art/tilesets/overrides/<sheet>.png, then <sheet>-<color>.png on top
- * and writes public/assets/tilesets/<sheet>[-<color>].png, extruded for the game.
+ * and writes public/assets/tilesets/<sheet>[-<color>].png, extruded for the game, then shrinks
+ * them losslessly with oxipng (`brew install oxipng`): the game downloads these before a room shows.
  */
+import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { PNG } from "pngjs";
@@ -103,18 +105,35 @@ export const composeSheet = (sheet: Sheet, color: string, art: Map<string, PNG>)
   return out;
 };
 
+/** Recompresses the PNGs in place, losslessly: the same pixels, a smaller download. */
+const optimizePngs = (files: string[]) => {
+  const result = spawnSync("oxipng", ["--opt", "4", "--strip", "safe", "--quiet", ...files], {
+    stdio: "inherit",
+  });
+  if (result.error)
+    throw new Error("oxipng is needed to shrink the tilesets: brew install oxipng", {
+      cause: result.error,
+    });
+  if (result.status !== 0) throw new Error(`oxipng exited with ${result.status}`);
+};
+
 const main = () => {
   const art = loadExports();
+  const written: string[] = [];
   for (const sheet of SHEETS) {
     const animations = readAnimations(`tileset-${sheet.name}`);
     for (const color of colorsOf(sheet, art)) {
       const name = color ? `${sheet.name}-${color}` : sheet.name;
       const composed = composeSheet(sheet, color, art);
       steadyAnimations(composed, sheet.columns, animations);
-      writePng(path.join(OUT, `${name}.png`), extrude(composed));
+      const file = path.join(OUT, `${name}.png`);
+      writePng(file, extrude(composed));
+      written.push(file);
       console.log("built", name);
     }
   }
+  console.log(`optimizing ${written.length} sheets`);
+  optimizePngs(written);
 };
 
 if (process.argv[1]?.endsWith("build-tilesets.ts")) main();

@@ -3,7 +3,7 @@ import type { Point } from "@/rules/world";
 import type { RoomStateMessage } from "@/network";
 import { getGameZoomLevel } from "./camera-zoom";
 import { zoomToCover } from "./cover-zoom";
-import { enterRoom } from "./enter-room";
+import { enterRoom, whenRoomLoaded } from "./enter-room";
 import type { SceneMain } from "./main-scene";
 import { getNpcs, getPlayers } from "./scene-entities";
 import { hideWorld, revealWorldWhenSettled } from "./world-reveal";
@@ -61,7 +61,15 @@ function panThroughRoom(scene: SceneMain) {
   });
 }
 
-export function onRoomObserved(
+export function onRoomObserved(scene: SceneMain, message: RoomStateMessage & { roomName: string }) {
+  whenRoomLoaded(scene, message.roomName, message.season ?? scene.season, () => {
+    /* Logged in while the room's art loaded: the hero's room has replaced it */
+    if (scene.hero) return;
+    showObservedRoom(scene, message);
+  });
+}
+
+function showObservedRoom(
   scene: SceneMain,
   { roomName, ...room }: RoomStateMessage & { roomName: string },
 ) {
