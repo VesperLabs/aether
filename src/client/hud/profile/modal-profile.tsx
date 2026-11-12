@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from "react";
-import type { MobProfile } from "@/content";
+import { hairTextureNames, hairTintNames, whiskersTextureNames, type MobProfile } from "@/content";
 import { useAppContext } from "@/client/hud/app/context";
 import { MenuButton } from "@/client/hud/menu/menu-button";
 import { APPEARANCE_OPTIONS as O, type Appearance } from "@/rules/character";
@@ -34,10 +34,12 @@ interface LookPicker {
 const PORTRAIT_HEIGHT = 150;
 /** Fixed, so a wider hairstyle or hat never resizes the modal; the character centres in it. */
 const PORTRAIT_WIDTH = 120;
-/** Fits the longest option name ("Color 12") beside the arrow, with room to breathe. */
-const SELECT_WIDTH = 88;
+/** Fits the longest option name ("Periwinkle") beside the arrow, with room to breathe. */
+const SELECT_WIDTH = 104;
 
 const numbered = (noun: string) => (_option: string, index: number) => `${noun} ${index + 1}`;
+
+const colorName = (option: string) => hairTintNames[option as keyof typeof hairTintNames];
 
 /** A part per row, its style and colour side by side, so the column stays short. */
 const ROWS: { label: string; pickers: LookPicker[] }[] = [
@@ -83,7 +85,7 @@ const ROWS: { label: string; pickers: LookPicker[] }[] = [
       {
         label: "Hair",
         options: O.hairTexture,
-        optionLabel: numbered("Style"),
+        optionLabel: (option) => hairTextureNames[option as keyof typeof hairTextureNames],
         current: (p) => p.hair?.texture,
         choose: (texture) => ({ hair: { texture } }),
         preview: (texture, p) => <LookPreview texture={`human-${texture}`} tint={p.hair?.tint} />,
@@ -91,7 +93,7 @@ const ROWS: { label: string; pickers: LookPicker[] }[] = [
       {
         label: "Hair color",
         options: O.hairTint,
-        optionLabel: numbered("Color"),
+        optionLabel: colorName,
         current: (p) => p.hair?.tint,
         choose: (tint) => ({ hair: { tint } }),
         preview: (tint) => <SwatchPreview tint={tint} />,
@@ -104,7 +106,7 @@ const ROWS: { label: string; pickers: LookPicker[] }[] = [
       {
         label: "Whiskers",
         options: O.whiskersTexture,
-        optionLabel: numbered("Style"),
+        optionLabel: (option) => whiskersTextureNames[option as keyof typeof whiskersTextureNames],
         current: (p) => p.whiskers?.texture,
         choose: (texture) => ({ whiskers: { texture } }),
         preview: (texture, p) => (
@@ -114,7 +116,7 @@ const ROWS: { label: string; pickers: LookPicker[] }[] = [
       {
         label: "Whiskers color",
         options: O.whiskersTint,
-        optionLabel: numbered("Color"),
+        optionLabel: colorName,
         current: (p) => p.whiskers?.tint,
         choose: (tint) => ({ whiskers: { tint } }),
         preview: (tint) => <SwatchPreview tint={tint} />,

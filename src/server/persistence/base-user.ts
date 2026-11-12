@@ -45,9 +45,9 @@ export const createBaseUser = (
       userName: "Noob",
       gender,
       race: "human",
-      hair: { tint: "0x99FFFF", texture: gender === "male" ? "hair-1" : "hair-3" },
+      hair: { tint: "0xC4F0F5", texture: gender === "male" ? "hair-1" : "hair-3" },
       face: { texture: "face-1" },
-      whiskers: { texture: "whiskers-3", tint: "0x99FFFF" },
+      whiskers: { texture: "whiskers-3", tint: "0xC4F0F5" },
     },
     userSettings: DEFAULT_USER_SETTINGS,
   };
