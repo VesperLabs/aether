@@ -2,7 +2,7 @@
   "name": "aether",
   "type": "module",
   "private": true,
-  "version": "0.31.3",
+  "version": "0.32.0",
   "engines": {
     "node": ">=26.0.0"
   },

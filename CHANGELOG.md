@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.32.0](https://github.com/VesperLabs/aether/compare/v0.31.3...v0.32.0) (2026-11-12)
+
+
+### Features
+
+* pastel hair tints with named colors and styles ([#324](https://github.com/VesperLabs/aether/issues/324)) ([033aaca](https://github.com/VesperLabs/aether/commit/033aaca1a23a63b8bf0b7f05189de4147ab13ad4))
+
+
+### Performance Improvements
+
+* load tileset art per room instead of at boot ([#323](https://github.com/VesperLabs/aether/issues/323)) ([b9183b8](https://github.com/VesperLabs/aether/commit/b9183b85e4830d7ac2836e3ea6393570dfb541de))
+
 ## [0.31.3](https://github.com/VesperLabs/aether/compare/v0.31.2...v0.31.3) (2026-11-12)
 
 
