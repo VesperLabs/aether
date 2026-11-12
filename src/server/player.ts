@@ -15,7 +15,7 @@ import type { Npc } from "./npc";
 import { isAlly } from "./allegiance-adapter";
 import { createSpell } from "./spell-adapter";
 import { vanish } from "./stealth";
-import { updateCast, type PendingCast } from "./player-cast";
+import { updateCast, type PlayerCast } from "./player-cast";
 import { PLAYER_DEFAULT_SPAWN } from "./auth/character-defaults";
 import { entitiesInRoom } from "@/rules/world";
 import { expForMobKill } from "@/rules/stats";
@@ -100,7 +100,7 @@ export class Player extends ServerCharacter {
     this.state.isDead = true;
   }
   /** The timed spell being cast, if any. */
-  pendingCast?: PendingCast;
+  pendingCast?: PlayerCast;
   /** When this player last threw a ball, for the throw cooldown. */
   lastThrowAt?: number;
   /** Swings if the attack is ready and affordable. Returns whether it swung. */

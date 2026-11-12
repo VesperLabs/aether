@@ -24,6 +24,8 @@ import {
   type MoveTrack,
 } from "@/rules/movement";
 import { isInRoom } from "@/server/player-room";
+import { faceCastAim } from "@/server/player-cast";
+import { isCastRooted } from "@/rules/combat";
 import type { GameEventBus } from "@/rules/world";
 
 /** The last accepted position of each player. Server moves (doors, respawn) restart it. */
@@ -46,6 +48,13 @@ export function playerInput(ctx: CommandContext, input: ParsedCommand<"playerInp
   }
   const effectiveRoom = roomName ?? player.roomName;
   if (player.roomName !== effectiveRoom) return; // player is changing room
+  /* Rooted mid-cast: a step sent now is put back where the server holds the caster */
+  if (isCastRooted(player.pendingCast) && (x !== player.x || y !== player.y)) {
+    player.vx = 0;
+    player.vy = 0;
+    ctx.actor.emit("positionCorrection", { x: player.x, y: player.y });
+    return;
+  }
   const room = player.room;
   if (room) {
     const now = world.now();
@@ -82,6 +91,7 @@ export function playerInput(ctx: CommandContext, input: ParsedCommand<"playerInp
     typeof d === "number"
       ? decodeWireDirection(d, player.direction)
       : (direction ?? player.direction);
+  faceCastAim(player);
 }
 
 /** Remembers how far behind this player sees others, so their hits can be judged by it. */
@@ -98,6 +108,7 @@ export function changeDirection(
   const player = world.players[socketId];
   if (direction) player.direction = direction;
   if (typeof lastAngle === "number") player.state.lastAngle = lastAngle;
+  faceCastAim(player);
 }
 
 /** Tells a shoved player's client to play it, and lets them move its length on top of walking. */

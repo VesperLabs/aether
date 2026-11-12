@@ -1,12 +1,8 @@
+import { beginCast, getCastFacing, stepCast, type PendingCast } from "@/rules/combat";
 import type { AbilitySlot } from "@/rules/spells";
 import type { Player } from "./player";
 
-/** A spell being cast: the server fires it at `landsAt` unless something cancels it first. */
-export interface PendingCast {
-  abilitySlot: AbilitySlot;
-  landsAt: number;
-  roomName?: string;
-}
+export type PlayerCast = PendingCast<AbilitySlot>;
 
 /** Whether this ability takes time to cast, rather than firing as soon as it is used. */
 export function hasCastTime(player: Player, abilitySlot: AbilitySlot | undefined) {
@@ -23,16 +19,32 @@ function emitCancelled(player: Player) {
   player.world.io.to(player.roomName).emit("playerCastCancelled", { socketId: player.socketId });
 }
 
+/** Mid-cast the body faces the aim: the server sets it, so everyone sees the same caster. */
+export function faceCastAim(player: Player) {
+  if (player.pendingCast) player.direction = getCastFacing(player.state.lastAngle ?? 0);
+}
+
 /** Starts a timed spell. Nothing is paid until it lands, so a cancelled cast costs nothing. */
 export function startCast(player: Player, abilitySlot: AbilitySlot) {
-  const { roomName } = player;
-  const castMs = player.getAbilityDetails(abilitySlot).stats?.castTime;
-  const isReady =
-    !player.pendingCast && !player.vx && !player.vy && player.canCastSpell(abilitySlot, false);
+  const cast = beginCast(
+    abilitySlot,
+    {
+      isCasting: !!player.pendingCast,
+      isMoving: !!(player.vx || player.vy),
+      canAfford: !!player.canCastSpell(abilitySlot, false),
+      roomName: player.roomName ?? undefined,
+      castMs: player.getAbilityDetails(abilitySlot).stats?.castTime,
+    },
+    player.world.now(),
+  );
   /* The client rooted itself when it asked, so every refusal answers it or it stays stuck */
-  if (!roomName || !castMs || !isReady) return emitCastRefused(player);
-  player.pendingCast = { abilitySlot, landsAt: player.world.now() + castMs, roomName };
-  player.world.io.to(roomName).emit("playerCastStarted", { socketId: player.socketId, castMs });
+  if (!cast?.roomName) return emitCastRefused(player);
+  player.pendingCast = cast;
+  faceCastAim(player);
+  player.world.io.to(cast.roomName).emit("playerCastStarted", {
+    socketId: player.socketId,
+    castMs: cast.landsAt - player.world.now(),
+  });
 }
 
 /** Calls off the cast in progress, if there is one. */
@@ -46,10 +58,17 @@ export function cancelCast(player: Player) {
 export function updateCast(player: Player) {
   const cast = player.pendingCast;
   if (!cast) return;
-  const isInterrupted =
-    player.state.isDead || player.hasBuff("stun") || player.roomName !== cast.roomName;
-  if (isInterrupted) return cancelCast(player);
-  if (player.world.now() < cast.landsAt) return;
+  const step = stepCast(
+    cast,
+    {
+      isDead: player.state.isDead,
+      isStunned: player.hasBuff("stun"),
+      roomName: player.roomName ?? undefined,
+    },
+    player.world.now(),
+  );
+  if (step === "cancel") return cancelCast(player);
+  if (step === "wait") return;
 
   player.pendingCast = undefined;
   const { abilitySlot } = cast;

@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { decodeTickVitals } from "@/network/sync";
-import { startTestServer, type TestServer } from "./test-server";
+import { once, startTestServer, type TestServer } from "./test-server";
 
 /** Combat, spells and buffs over real sockets against the in-process game server. */
 let server: TestServer;
@@ -139,6 +139,32 @@ describe("casting spells", () => {
     player.vx = 50;
     await server.run(socket, 500);
     expect(events.modifyPlayerStat.filter((e) => e.type === "mp")).toHaveLength(1);
+  });
+
+  it("roots the caster: a step sent mid-cast is put back", async () => {
+    const { socket, player } = await login("mage");
+    const { x, y } = player;
+    socket.emit("startCast", { abilitySlot: 1 });
+    await server.run(socket, 100);
+    const correction = once(socket, "positionCorrection");
+    socket.emit("playerInput", { x: x + 3, y, vx: 100, vy: 0, d: 3 });
+    expect((await correction)[0]).toEqual({ x, y });
+    expect(player.x).toBe(x);
+  });
+
+  it("faces the caster toward its aim until the spell fires, whatever its client says", async () => {
+    const { socket, player } = await login("mage");
+    socket.emit("changeDirection", { direction: "up", lastAngle: Math.PI });
+    socket.emit("startCast", { abilitySlot: 1 });
+    await server.run(socket, 100);
+    expect(player.direction).toBe("left");
+    socket.emit("changeDirection", { direction: "up", lastAngle: Math.PI / 2 });
+    await server.run(socket, 50);
+    expect(player.direction).toBe("down");
+    await server.run(socket, 600);
+    socket.emit("changeDirection", { direction: "up" });
+    await server.run(socket, 50);
+    expect(player.direction).toBe("up");
   });
 
   it("cancelling a cast costs nothing and starts no cooldown", async () => {

@@ -43,3 +43,5 @@ export {
   isDualWielding,
 } from "./weapons";
 export type { EquipmentKey, Hand, WeaponHolder } from "./weapons";
+export { beginCast, getCastFacing, isCastRooted, stepCast } from "./casting";
+export type { PendingCast } from "./casting";
