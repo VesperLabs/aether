@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.31.3](https://github.com/VesperLabs/aether/compare/v0.31.2...v0.31.3) (2026-11-12)
+
+
+### Bug Fixes
+
+* root and face timed casts on the server ([#321](https://github.com/VesperLabs/aether/issues/321)) ([ddc894c](https://github.com/VesperLabs/aether/commit/ddc894ce5fee26a891eb553f2cd21271dc86e55c))
+
 ## [0.31.2](https://github.com/VesperLabs/aether/compare/v0.31.1...v0.31.2) (2026-11-11)
 
 
