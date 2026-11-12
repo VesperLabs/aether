@@ -102,7 +102,7 @@ export function bindSceneSocket(scene: SceneMain) {
   /* The first room may still be loading its art (boot loads none); every later one is there */
   const initHero: ServerToClientEvents["heroInit"] = (args, meta) => {
     const roomName = args?.players?.find((p) => p.socketId === args.socketId)?.roomName as string;
-    whenRoomLoaded(scene, roomName, () => buildHeroRoom(args, meta));
+    whenRoomLoaded(scene, roomName, args?.season ?? scene.season, () => buildHeroRoom(args, meta));
   };
 
   const buildHeroRoom: ServerToClientEvents["heroInit"] = (args, { isRespawn, isLogin } = {}) => {

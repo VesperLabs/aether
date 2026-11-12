@@ -15,25 +15,20 @@ export function seasonalTilesetKey(scene: SceneMain, tilesetName: string): strin
   return season !== "summer" && scene.textures.exists(key) ? key : tilesetName;
 }
 
-/** Redraws the current map's tilesets for the season the world just turned to, fading over. */
-export function changeSeason(scene: SceneMain, season: Season) {
-  scene.season = season;
-  announceSeason(season);
-  showRoomSeason(scene);
-}
-
 /**
- * Fades the current map into its season's art once that has loaded: rooms are built with whatever
- * art is there (the base, until the seasonal copy downloads).
+ * Redraws the current map's tilesets for the season the world just turned to, fading over. Waits for
+ * that season's art to download first, so the fade always runs from one finished look to the next.
  */
-export function showRoomSeason(scene: SceneMain) {
+export function changeSeason(scene: SceneMain, worldSeason: Season) {
+  scene.season = worldSeason;
+  announceSeason(worldSeason);
   const { map } = scene;
   if (!map) return;
-  const season = mapSeason(getMapByName(scene.roomName)?.seasons, scene.season);
+  const season = mapSeason(getMapByName(scene.roomName)?.seasons, worldSeason);
   const seasonal = map.tilesets.map((tileset) => `${tileset.name}-${season}`);
   whenTexturesLoaded(scene, season === "summer" ? [] : seasonal, () => {
-    /* Left the room, or the season turned again, while it loaded */
-    if (scene.map !== map) return;
+    /* Left the room, or the season turned again (that change fades in its own time) */
+    if (scene.map !== map || scene.season !== worldSeason) return;
     const before = map.tilesets.map((tileset) => tileset.image?.key);
     const after = map.tilesets.map((tileset) => seasonalTilesetKey(scene, tileset.name));
     /* Maps with a fixed season (or none) look the same: nothing to fade */

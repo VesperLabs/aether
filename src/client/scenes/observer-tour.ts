@@ -62,7 +62,7 @@ function panThroughRoom(scene: SceneMain) {
 }
 
 export function onRoomObserved(scene: SceneMain, message: RoomStateMessage & { roomName: string }) {
-  whenRoomLoaded(scene, message.roomName, () => {
+  whenRoomLoaded(scene, message.roomName, message.season ?? scene.season, () => {
     /* Logged in while the room's art loaded: the hero's room has replaced it */
     if (scene.hero) return;
     showObservedRoom(scene, message);
