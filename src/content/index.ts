@@ -16,8 +16,15 @@ export { iconList } from "./assets/icon-list";
 export { getLayerOrder } from "./assets/layer-order";
 export { resolveAsset } from "./assets/resolve-asset";
 export { soundList } from "./assets/sound-list";
-export { hairTints, skinTints } from "./assets/tints";
-export { faceTextures, genders, hairTextures, whiskersTextures } from "./assets/looks";
+export { hairTintNames, hairTints, skinTints } from "./assets/tints";
+export {
+  faceTextures,
+  genders,
+  hairTextureNames,
+  hairTextures,
+  whiskersTextureNames,
+  whiskersTextures,
+} from "./assets/looks";
 export { buffList, type BuffName } from "./buffs/buff-list";
 export type { BuffDefinition } from "./buffs/buff-types";
 export type { TriggerDefinition } from "./buffs/trigger-types";
