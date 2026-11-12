@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.33.0](https://github.com/VesperLabs/aether/compare/v0.32.0...v0.33.0) (2026-11-12)
+
+
+### Features
+
+* glowing cave lamps, doorways and crystals ([#326](https://github.com/VesperLabs/aether/issues/326)) ([c43afa4](https://github.com/VesperLabs/aether/commit/c43afa4d9d7943bb98c39d3a2897b433f2f62c98))
+
 ## [0.32.0](https://github.com/VesperLabs/aether/compare/v0.31.3...v0.32.0) (2026-11-12)
 
 
