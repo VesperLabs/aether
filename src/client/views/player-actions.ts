@@ -97,8 +97,7 @@ export function landCast(player: Player, { abilitySlot, castAngle }: CastArgs) {
   endCast(player);
   holdCastPose(player, CAST_POSE_MS);
   const ability = player.getAbilityDetails(abilitySlot);
-  /* Only an aimed spell holds its aim: a buff has nothing to face */
-  if (isAimed(ability.spell)) keepAiming(player);
+  /* The aim was faced for the whole cast; once it fires the hero is free to turn */
   player.scene.add.existing(new Spell(player.scene, { ...ability, castAngle, caster: player }));
 }
 
