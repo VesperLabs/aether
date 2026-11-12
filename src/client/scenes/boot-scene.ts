@@ -1,19 +1,12 @@
 import Phaser from "phaser";
 import type { ClientGameSocket } from "@/network";
 import type { SceneMain } from "./main-scene";
-import { assetList, type AssetDefinition, soundList, iconList, mapImageList } from "@/content";
+import { assetList, type AssetDefinition, soundList, iconList } from "@/content";
 import { IMAGE_CACHE } from "@/ui/kit/image-tint";
 import { showLoadingBar } from "./loading-bar";
 import { addLoadedMaps, loadMaps } from "./load-maps";
 
-/**
- * Rewrite a `./assets/…` path to the CDN base URL when ASSETS_URL is set.
- * JSON data files contain `./assets/` paths that the Vite transform plugin cannot
- * rewrite (it only processes JS/TS modules), so we do it here at runtime.
- */
-const ASSETS_BASE = process.env.ASSETS_URL || "";
-const assetUrl = (src: string) =>
-  ASSETS_BASE ? src.replace(/^\.\/assets\//, ASSETS_BASE + "/") : src;
+import { assetUrl } from "./asset-url";
 
 const onLoadError = (value: unknown) => {
   window.dispatchEvent(
@@ -60,9 +53,7 @@ export class SceneBoot extends Phaser.Scene {
     iconList.forEach((asset) => {
       this.load.image(asset.name, assetUrl(asset.src));
     });
-    mapImageList.forEach((asset) => {
-      this.load.image(asset.name, assetUrl(asset.image));
-    });
+    /* No tileset art: each room loads its own (see `tileset-textures`) */
     /* Maps share their tilesets in separate files; `addLoadedMaps` puts them back together */
     loadMaps(this, assetUrl);
     assetList.forEach((asset) => {

@@ -6,7 +6,7 @@ import {
   type FullCharacterWire,
 } from "@/network/sync";
 import { hideWorld, revealWorldWhenSettled } from "@/client/scenes/world-reveal";
-import { enterRoom } from "@/client/scenes/enter-room";
+import { enterRoom, whenRoomLoaded } from "@/client/scenes/enter-room";
 import { changeSeason } from "@/client/scenes/map-season";
 import { setDayClock } from "@/client/scenes/world-clock";
 import { LOGIN_FADE_MS } from "@/client/scenes/login-fade";
@@ -99,7 +99,13 @@ export function bindSceneSocket(scene: SceneMain) {
     if (scene.hero) scene.hero.party = party;
   });
 
-  const initHero: ServerToClientEvents["heroInit"] = (args, { isRespawn, isLogin } = {}) => {
+  /* The first room may still be loading its art (boot loads none); every later one is there */
+  const initHero: ServerToClientEvents["heroInit"] = (args, meta) => {
+    const roomName = args?.players?.find((p) => p.socketId === args.socketId)?.roomName as string;
+    whenRoomLoaded(scene, roomName, () => buildHeroRoom(args, meta));
+  };
+
+  const buildHeroRoom: ServerToClientEvents["heroInit"] = (args, { isRespawn, isLogin } = {}) => {
     const {
       socketId,
       players = [],

@@ -3,6 +3,13 @@ import type { Player } from "@/client/views/player";
 import { netInterp } from "@/client/net/scene-interpolation";
 import { resetPoseArrivals } from "@/client/net/net-stats";
 import { changeMap } from "./main-map";
+import { showRoomSeason } from "./map-season";
+import {
+  prefetchBaseTilesets,
+  prefetchSeason,
+  roomTilesetKeys,
+  whenTexturesLoaded,
+} from "./tileset-textures";
 import { announceSeason, setDayClock } from "./world-clock";
 import type { SceneMain } from "./main-scene";
 import { clearThrownBalls } from "@/client/views/thrown-ball";
@@ -48,5 +55,18 @@ export function enterRoom(
     announceSeason(season);
   }
   if (hour !== undefined) setDayClock(hour);
-  return changeMap(scene, roomName);
+  const built = changeMap(scene, roomName);
+  showRoomSeason(scene);
+  /* The rest of the art, behind this room's: by the next door it has usually all arrived */
+  prefetchBaseTilesets(scene);
+  prefetchSeason(scene, scene.season);
+  return built;
+}
+
+/**
+ * Runs `enter` once the room's tilesets have loaded: at once after the first few rooms, but boot
+ * loads no tileset art, so the very first room waits for its own.
+ */
+export function whenRoomLoaded(scene: SceneMain, roomName: string, enter: () => void) {
+  whenTexturesLoaded(scene, roomTilesetKeys(scene, roomName), enter);
 }
