@@ -78,6 +78,41 @@ const houseLight = (
   },
 ];
 
+/** A mine's wall lamp: a small fire's warm glow, flickering and swaying softly, lit at every hour underground. */
+const caveLamp = (x: number, y: number): readonly LightLayer[] => [
+  {
+    color: 0xffb060,
+    radius: 110,
+    intensity: 0.85,
+    flicker: 0.16,
+    speed: 5,
+    drift: 1,
+    breathe: 0.03,
+    offsetX: x,
+    offsetY: y,
+    blockedBy: [],
+  },
+];
+
+/** A soft, steady glow of `color`: a doorway's light, a crystal's shine. */
+const glow = (
+  color: number,
+  { x = 0, y = 0, radius = 70, intensity = 0.55, flicker = 0.06, speed = 1.5, breathe = 0 } = {},
+): readonly LightLayer[] => [
+  {
+    color,
+    radius,
+    intensity,
+    flicker,
+    speed,
+    breathe,
+    drift: 0,
+    offsetX: x,
+    offsetY: y,
+    blockedBy: [],
+  },
+];
+
 /** Tiles that give off light at night, by tileset and tile id (the first frame of an animation). */
 const LIT_TILES: ReadonlyArray<{ tileset: string; id: number; layers: readonly LightLayer[] }> = [
   /* The campfire flame */
@@ -85,6 +120,26 @@ const LIT_TILES: ReadonlyArray<{ tileset: string; id: number; layers: readonly L
   /* The town's street lamps, hanging right and left of their posts: the tile with the glass */
   { tileset: "tileset-town", id: 229, layers: lantern(-6, -5) },
   { tileset: "tileset-town", id: 302, layers: lantern(6, -4) },
+  /* The mine's wall lamps */
+  { tileset: "tileset-mine", id: 107, layers: caveLamp(8, -4) },
+  { tileset: "tileset-mine", id: 168, layers: caveLamp(0, -14) },
+  { tileset: "tileset-mine", id: 203, layers: caveLamp(4, 8) },
+  { tileset: "tileset-mine", id: 264, layers: caveLamp(-8, 0) },
+  /* Cave doorways: the white of the way out, on the shadow layer */
+  { tileset: "tileset-mine-shadows", id: 6, layers: glow(0xe8f0ff) },
+  { tileset: "tileset-mine-shadows", id: 7, layers: glow(0xe8f0ff) },
+  { tileset: "tileset-mine-shadows", id: 15, layers: glow(0xe8f0ff) },
+  /* Crystals, pulsing slowly in brightness and size, lit from their lower tile up into the upper one */
+  {
+    tileset: "tileset-extras",
+    id: 200,
+    layers: glow(0xff5a48, { y: -12, radius: 64, flicker: 0.35, speed: 1.2, breathe: 0.08 }),
+  },
+  {
+    tileset: "tileset-extras",
+    id: 201,
+    layers: glow(0x6cffb4, { y: -12, radius: 64, flicker: 0.35, speed: 1.2, breathe: 0.08 }),
+  },
   /* Square windows, in their frames */
   { tileset: "tileset-town", id: 30, layers: houseLight(0, 5) },
   { tileset: "tileset-town", id: 158, layers: houseLight(0, 5) },

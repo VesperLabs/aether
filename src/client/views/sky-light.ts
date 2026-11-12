@@ -6,13 +6,15 @@ export interface SkyLight {
   saturation: number;
   /** How dark it gets away from the player, 0 to 1. */
   vignette: number;
+  /** How much lights show, 0 to 1; left out, as much as the tint is dark. */
+  lights?: number;
 }
 
 const NIGHT: SkyLight = { tint: 0x39488a, saturation: -0.3, vignette: 0.85 };
 const DAY: SkyLight = { tint: 0xffffff, saturation: 0.15, vignette: 0 };
 
-/** Underground, at any hour: a little dim, darker towards the edges, colors as drawn. */
-export const CAVE_LIGHT: SkyLight = { tint: 0xd6d6e0, saturation: 0, vignette: 0.55 };
+/** Underground, at any hour: a little dim, darker towards the edges, colors as drawn, lamps lit. */
+export const CAVE_LIGHT: SkyLight = { tint: 0xd6d6e0, saturation: 0, vignette: 0.55, lights: 1 };
 
 /**
  * The sky at keyed hours; the hours between blend the two around them. Dawn and dusk only dim
