@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Box, LOGIN_RISE_SX } from "@/ui";
 import { GameLogin } from "@/client/hud/auth/game-login";
 import { WikiLink } from "@/client/hud/auth/wiki-link";
+import { LoadingBar, useLoadProgress } from "@/client/hud/loading/loading-bar";
 import { ModalError } from "@/client/hud/menu/modal-error";
 import { LOGIN_FADE_MS } from "@/client/scenes/login-fade";
 import { useWorldReady, WORLD_REVEAL_MS } from "./use-world-ready";
@@ -12,12 +13,15 @@ const WASH_FADE_MS = 1200;
 /** The black cover: clear behind the login screen, closing at login and lifting once the hero's world has drawn. */
 export function LoginBackdrop({
   isLoggedIn,
+  isLoaded,
   hasError,
 }: {
   isLoggedIn: boolean;
+  isLoaded: boolean;
   hasError: boolean;
 }) {
   const isWorldReady = useWorldReady(isLoggedIn);
+  const loadProgress = useLoadProgress();
   const [isLifted, setIsLifted] = useState(false);
 
   useEffect(() => {
@@ -57,7 +61,9 @@ export function LoginBackdrop({
         }}
       />
       {/* Stays through the fade, so nothing changes mid-animation */}
-      {!isLifted && (
+      {/* The form comes in once the assets are down: until then, a bar shows how far they are */}
+      {!isLoaded && <LoadingBar progress={loadProgress} />}
+      {isLoaded && !isLifted && (
         <Box
           sx={{
             /* Fills the screen: the animated transform makes this what the fixed modal sits in */
