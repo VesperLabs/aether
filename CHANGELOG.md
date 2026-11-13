@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.34.0](https://github.com/VesperLabs/aether/compare/v0.33.1...v0.34.0) (2026-11-13)
+
+
+### Features
+
+* monster card editor and NPC looks in the sprite lab ([#333](https://github.com/VesperLabs/aether/issues/333)) ([c7cf124](https://github.com/VesperLabs/aether/commit/c7cf124802b2e0c86ff2f3cfc9477d00460044de))
+
 ## [0.33.1](https://github.com/VesperLabs/aether/compare/v0.33.0...v0.33.1) (2026-11-13)
 
 
