@@ -11,7 +11,7 @@ type Face = { x: number; y: number; size: number };
 const isFace = (face: Face): face is Face =>
   [face?.x, face?.y, face?.size].every(Number.isInteger) && face.size > 0;
 
-/** Saves monster card faces: a diamond PNG per card, and where each sprite's face was cut from. */
+/** Saves monster cards: a finished card PNG (frame, backdrop and face), and where each sprite's face was cut from. */
 export const cardPlugin = (repoRoot: string): Plugin => {
   const folder = path.join(repoRoot, "public", CARD_FOLDER);
   const facesFile = path.join(folder, "faces.json");
@@ -22,13 +22,18 @@ export const cardPlugin = (repoRoot: string): Plugin => {
       server.middlewares.use("/api/cards", async (req, res) => {
         try {
           if (req.method !== "POST") return reply(res, 405, { error: "POST only" });
-          const { name, texture, face, image } = await readJson(req);
-          if (!NAME_PATTERN.test(name) || !NAME_PATTERN.test(texture) || !isFace(face)) {
+          const { name, texture, face, backdrop, image } = await readJson(req);
+          if (
+            !NAME_PATTERN.test(name) ||
+            !NAME_PATTERN.test(texture) ||
+            !isFace(face) ||
+            !NAME_PATTERN.test(backdrop)
+          ) {
             return reply(res, 400, { error: "Not a card" });
           }
           await mkdir(folder, { recursive: true });
           const faces = JSON.parse(await readFile(facesFile, "utf8").catch(() => "{}"));
-          faces[texture] = face;
+          faces[texture] = { ...face, backdrop };
           await writeFile(path.join(folder, `${name}.png`), Buffer.from(image, "base64"));
           await writeFile(facesFile, `${JSON.stringify(faces, null, 2)}\n`);
           reply(res, 200, {});

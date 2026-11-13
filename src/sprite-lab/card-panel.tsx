@@ -12,14 +12,14 @@ import {
   Text,
 } from "@/ui";
 import {
-  CARD_FRAMES,
+  CARD_BACKDROP_NAMES,
+  CARD_BACKDROPS,
+  CARD_ICON_SIZE,
+  type CardBackdrop,
   CARD_SIZE,
-  type CardRarity,
-  CARD_RARITIES,
   cutDiamond,
   FACE_SIZE,
-  formatFaceScale,
-  getFaceCrops,
+  isCardBackdrop,
   isInDiamond,
   paintCard,
   type FaceRect,
@@ -50,9 +50,12 @@ const CANVAS_SX = {
   ...CHECKER_SX,
 } as const;
 
+/** Where a sprite's face was cut from, and the backdrop its card was saved with. */
+type SavedFace = FaceRect & { backdrop?: string };
+
 /** The remembered face for each sprite, from `faces.json`. Empty if none has been saved yet. */
 const useSavedFaces = (revision: number) => {
-  const [faces, setFaces] = useState<Record<string, FaceRect>>({});
+  const [faces, setFaces] = useState<Record<string, SavedFace>>({});
   useEffect(() => {
     fetch(`/assets/cards/faces.json?v=${revision}`)
       .then((response) => response.json())
@@ -61,6 +64,10 @@ const useSavedFaces = (revision: number) => {
   }, [revision]);
   return faces;
 };
+
+/** Just the face's place, without the backdrop it was saved with. */
+const pickFaceRect = (saved?: SavedFace): FaceRect | undefined =>
+  saved && { x: saved.x, y: saved.y, size: FACE_SIZE };
 
 /** Marks the diamond on the frame, so it's clear what the card will cut. */
 const paintOutline = (ctx: CanvasRenderingContext2D, { x, y, size }: FaceRect) => {
@@ -81,7 +88,7 @@ const paintOutline = (ctx: CanvasRenderingContext2D, { x, y, size }: FaceRect) =
 };
 
 /**
- * Marks a sprite's face on the selected frame, previews the card cut from it in a rarity's chrome,
+ * Marks a sprite's face on the selected frame, previews the card cut from it,
  * and saves the diamond as a PNG. Layers are included, so a helmet or hair is part of the card.
  */
 export const CardPanel = ({
@@ -105,8 +112,19 @@ export const CardPanel = ({
   const stack = useFrameStack(base, layers, pending);
   const [savedRevision, setSavedRevision] = useState(0);
   const savedFaces = useSavedFaces(savedRevision);
+  const [pickedBackdrop, setPickedBackdrop] = useState<{
+    texture: string;
+    backdrop: CardBackdrop;
+  }>();
+  const savedBackdrop = savedFaces[base.texture]?.backdrop;
+  /* Each sprite keeps its own backdrop, like its face. */
+  const backdrop =
+    pickedBackdrop?.texture === base.texture
+      ? pickedBackdrop.backdrop
+      : isCardBackdrop(savedBackdrop)
+        ? savedBackdrop
+        : "night";
   const [picked, setPicked] = useState<{ texture: string; face: FaceRect }>();
-  const [rarity, setRarity] = useState<CardRarity>("unique");
   const [name, setName] = useState(defaultName);
   const [status, setStatus] = useState<string>();
   const viewRef = useRef<HTMLCanvasElement>(null);
@@ -117,7 +135,7 @@ export const CardPanel = ({
     () =>
       picked?.texture === base.texture
         ? picked.face
-        : (savedFaces[base.texture] ?? {
+        : (pickFaceRect(savedFaces[base.texture]) ?? {
             size: FACE_SIZE,
             x: Math.round((cell - FACE_SIZE) / 2),
             y: Math.round(cell * 0.2),
@@ -156,26 +174,8 @@ export const CardPanel = ({
     card.height = edge;
     const ctx = getCtx(card);
     ctx.clearRect(0, 0, edge, edge);
-    paintCard(ctx, cutDiamond(composite, face), rarity);
-  }, [composite, face, rarity]);
-
-  /* Sizes step by 2, so the face grows a pixel on every side and its middle never drifts. */
-  /* Biggest zoom first on the slider, so sliding right takes in more of the sprite. */
-  const crops = getFaceCrops(cell);
-  /* A face saved at some other size takes the nearest clean one. */
-  const cropIndex = crops.reduce(
-    (best, crop, i) => (Math.abs(crop - face.size) < Math.abs(crops[best] - face.size) ? i : best),
-    0,
-  );
-  /* Every size shares the same middle pixel, so zooming out and back lands where it started. */
-  const resize = (size: number) => {
-    const half = Math.floor(face.size / 2);
-    setFace({
-      size,
-      x: face.x + half - Math.floor(size / 2),
-      y: face.y + half - Math.floor(size / 2),
-    });
-  };
+    paintCard(ctx, cutDiamond(composite, face), backdrop);
+  }, [composite, face, backdrop]);
 
   /* Dragging carries the face with the pointer; a click centres it on the spot. */
   const place = (e: PointerEvent<HTMLDivElement>) => {
@@ -204,14 +204,17 @@ export const CardPanel = ({
   };
 
   const isNameValid = NAME_PATTERN.test(name);
+  /* The whole card is saved, frame and backdrop included, so the game draws it as is. */
   const save = async () => {
     try {
-      await saveCard({
-        name,
-        texture: base.texture,
-        face,
-        image: cutDiamond(composite, face),
-      });
+      const card = document.createElement("canvas");
+      card.width = CARD_ICON_SIZE;
+      card.height = CARD_ICON_SIZE;
+      const ctx = getCtx(card);
+      const margin = (CARD_ICON_SIZE - CARD_SIZE) / 2;
+      ctx.translate(margin, margin);
+      paintCard(ctx, cutDiamond(composite, face), backdrop);
+      await saveCard({ name, texture: base.texture, face, backdrop, image: card });
       setSavedRevision((revision) => revision + 1);
       setStatus(`Saved assets/cards/${name}.png`);
     } catch (failure) {
@@ -241,14 +244,6 @@ export const CardPanel = ({
         sx={{ ...CANVAS_SX, width: VIEW_SIZE, alignSelf: "center", cursor: "crosshair" }}
       />
       <SliderField
-        label="Face zoom"
-        value={cropIndex}
-        min={0}
-        max={crops.length - 1}
-        format={(index) => formatFaceScale(crops[index])}
-        onChange={(index) => resize(crops[index])}
-      />
-      <SliderField
         label="Face X"
         value={face.x}
         min={-Math.floor(face.size / 2)}
@@ -263,14 +258,16 @@ export const CardPanel = ({
         onChange={(y) => setFace({ y })}
       />
       <Select
-        label="Card frame"
-        value={rarity}
-        options={CARD_RARITIES.map((option) => ({
+        label="Background"
+        value={backdrop}
+        options={CARD_BACKDROP_NAMES.map((option) => ({
           value: option,
-          label: `${option} frame`,
-          icon: <Swatch color={CARD_FRAMES[option].border} />,
+          label: option,
+          icon: <Swatch color={CARD_BACKDROPS[option].glow} />,
         }))}
-        onChange={(option) => setRarity(option as CardRarity)}
+        onChange={(option) =>
+          setPickedBackdrop({ texture: base.texture, backdrop: option as CardBackdrop })
+        }
       />
       {/* A stand of one size, so the panel never jumps; the card sits in it at a whole-number zoom
           to keep its pixels square and its border 1px at that zoom. */}

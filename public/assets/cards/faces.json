@@ -1,8 +1,9 @@
 {
   "wyrm": {
-    "size": 26,
     "x": 26,
-    "y": 14
+    "y": 16,
+    "size": 24,
+    "backdrop": "violet"
   },
   "slime": {
     "size": 26,
