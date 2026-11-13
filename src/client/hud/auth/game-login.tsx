@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { ModalLogin, getLoginScale } from "@/ui";
 import { useAppContext } from "@/client/hud/app/context";
 import { hasPlayTicket } from "@/client/net/play-ticket";
+import { LoadingBar } from "@/client/hud/loading/loading-bar";
 import { DemoForm } from "./demo-form";
 
 /** The login form in the game: a login enters the world on this connection. */
@@ -18,7 +19,7 @@ export const GameLogin = () => {
     };
   }, [socket, isRedeeming]);
 
-  if (isRedeeming) return null;
+  if (isRedeeming) return <LoadingBar progress={1} />;
   return (
     <ModalLogin
       zoom={getLoginScale(zoom)}

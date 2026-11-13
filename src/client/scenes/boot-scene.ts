@@ -3,7 +3,6 @@ import type { ClientGameSocket } from "@/network";
 import type { SceneMain } from "./main-scene";
 import { assetList, type AssetDefinition, soundList, iconList } from "@/content";
 import { IMAGE_CACHE } from "@/ui/kit/image-tint";
-import { showLoadingBar } from "./loading-bar";
 import { addLoadedMaps, loadMaps } from "./load-maps";
 
 import { assetUrl } from "./asset-url";
@@ -25,7 +24,10 @@ export class SceneBoot extends Phaser.Scene {
     this.socket = socket;
   }
   preload() {
-    showLoadingBar(this);
+    /* The page draws the loader (a bar over the login cover), so it never needs Phaser's canvas */
+    this.load.on("progress", (value: number) =>
+      window.dispatchEvent(new CustomEvent("LOAD_PROGRESS", { detail: value })),
+    );
     this.load.on("loaderror", onLoadError);
 
     // Register a load complete event to launch the title screen when all files are loaded

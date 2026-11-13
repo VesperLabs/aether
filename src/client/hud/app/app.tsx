@@ -329,7 +329,7 @@ export function App({ socket, peer, debug, game }: AppProps) {
           {/* The game's screen never scrolls, so focusing a field must not move it */}
           <KeepPageStillContext value>
             <PadHints>
-              <LoginBackdrop isLoggedIn={isLoggedIn} hasError={!!error} />
+              <LoginBackdrop isLoggedIn={isLoggedIn} isLoaded={isLoaded} hasError={!!error} />
               <VideoFrame />
               {isLoggedIn && tabSettings && <ModalSettings />}
               {isLoggedIn && tabSocial && <ModalSocial />}
