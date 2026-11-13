@@ -35,6 +35,8 @@ export interface CharacterState {
   lastAttack: number;
   /** The last swing: 1 is the main hand, 2 a dual-wielder's left (see `getNextAttackCount`). */
   lastAttackCount?: number;
+  /** A player's sp / maxSp when they last swung, before paying for it: sets the swing's damage. */
+  swingStamina?: number;
   /** When the last dodge roll started. */
   lastDodge?: number;
   /** When the character last cast stealth, in ms. */

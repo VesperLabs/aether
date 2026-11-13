@@ -62,7 +62,6 @@ export const SkillButtons = memo(
           onTouchEnd={() => window.dispatchEvent(new CustomEvent("HERO_ATTACK"))}
           keyboardKey={keys.attack}
           costs={{ sp: attackSpCost }}
-          disabled={!canAffordCosts(hero?.stats, { sp: attackSpCost })}
           sx={{ "& > .icon": { transform: attackHand === "handLeft" ? "scaleX(-1)" : "none" } }}
         >
           <CooldownTimer cooldown={cooldowns["attack"]} />

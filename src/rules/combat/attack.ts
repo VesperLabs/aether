@@ -94,7 +94,7 @@ export function canAffordCosts(
   );
 }
 
-/** An attack needs the SP to pay for it: out of stamina, you can't attack until it regenerates. */
+/** Whether there's the SP to pay a cost. Only abilities are gated; swings just drain SP. */
 export function hasStaminaFor(sp: number | null | undefined, spCost: number) {
   return (sp ?? 0) >= spCost;
 }

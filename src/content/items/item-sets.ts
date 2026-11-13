@@ -12,7 +12,7 @@ export const itemSetList = {
     pieces: 2,
     stats: { dodgeChance: 5, blockChance: 25, critChance: 25, magicFind: 15 },
     percentStats: { strength: 10 },
-    triggers: [{ event: "onAttackHit", type: "buff", name: "slow", level: 2, chance: 5 }],
+    triggers: [{ event: "onAttackHit", type: "debuff", name: "slow", level: 2, chance: 5 }],
   },
   crab: {
     name: "Crustacean Chic",

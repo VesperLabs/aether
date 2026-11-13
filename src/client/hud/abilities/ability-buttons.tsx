@@ -82,11 +82,13 @@ const TintedIconLoader = ({
 
   /* Attack-spells (flame slash) also pay the weapon's swing cost */
   /* Spells and balls carry their costs on them */
-  const costs: ResourceCosts =
+  const abilityCosts: ResourceCosts =
     isSpell || isThrowable(item?.base) ? getAbilityCosts(item.stats) : {};
-  if (isSpell && isSwing) {
-    costs.sp = (costs.sp ?? 0) + attackSpCost;
-  }
+  /* Shown with the weapon's swing cost, but only the ability's own cost can block it */
+  const costs: ResourceCosts =
+    isSpell && isSwing
+      ? { ...abilityCosts, sp: (abilityCosts.sp ?? 0) + attackSpCost }
+      : abilityCosts;
 
   return (
     <Box
@@ -110,7 +112,7 @@ const TintedIconLoader = ({
         onTouchEnd={handleTouchEnd}
         keyboardKey={boundKey}
         costs={costs}
-        disabled={!canAffordCosts(hero?.stats, costs)}
+        disabled={!canAffordCosts(hero?.stats, abilityCosts)}
         sx={{
           "& > .icon": {
             mt: "-6px",

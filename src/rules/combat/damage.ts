@@ -74,10 +74,16 @@ export function calculateElementalDamage(
   return { eleDamage, holyDamage, elements: elements.map((d) => d.type) };
 }
 
-/** Weapon damage, rolled between min and max. Stamina doesn't weaken attacks; it gates them. */
-export function calculateWeaponDamage(attacker: StatBag, rng: Rng): number {
+/**
+ * Weapon damage between min and max. With `staminaRatio` (a player's swing: sp / maxSp when it
+ * swung) it is set by stamina, min on an empty bar and max on a full one; without it (NPCs) it's rolled.
+ */
+export function calculateWeaponDamage(attacker: StatBag, rng: Rng, staminaRatio?: number): number {
   const min = attacker.minDamage || 0;
-  return randomInt(rng, min, Math.max(min, attacker.maxDamage || 0));
+  const max = Math.max(min, attacker.maxDamage || 0);
+  if (staminaRatio === undefined) return randomInt(rng, min, max);
+  const ratio = Math.min(1, Math.max(0, staminaRatio));
+  return Math.round(min + (max - min) * ratio);
 }
 
 export type AttackRoll =
@@ -99,12 +105,14 @@ export type AttackRoll =
  * Resolves one weapon attack: dodge, block, crit, then damage. Rolls dodge, block and crit
  * in that order whatever happens, then the elemental rolls only if the attack lands.
  * `effects` are extra stats from an attack-spell (like flame-slash) added to the attacker's.
+ * `staminaRatio` sets a player's weapon damage (see `calculateWeaponDamage`).
  */
 export function rollAttack(
   attacker: StatBag,
   victim: StatBag,
   effects: StatBag | undefined,
   rng: Rng,
+  staminaRatio?: number,
 ): AttackRoll {
   const mergedStats = mergeAndAddValues(attacker, effects);
 
@@ -112,7 +120,7 @@ export function rollAttack(
   const blockRoll = randomInt(rng, 1, 100);
   const critRoll = randomInt(rng, 1, 100);
 
-  const damage = calculateWeaponDamage(attacker, rng);
+  const damage = calculateWeaponDamage(attacker, rng, staminaRatio);
 
   /* Armor pierce ignores that much of the victim's defense; what is left has diminishing returns */
   const effectiveDefense = Math.max(0, (victim.defense || 0) - (attacker.armorPierce || 0));
