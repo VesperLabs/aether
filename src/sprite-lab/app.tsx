@@ -14,7 +14,6 @@ import type { Theme } from "theme-ui";
 import { CHECKER_SX } from "./checker";
 import { DrawPanel } from "./draw-panel";
 import { FloatingPanel } from "./floating-panel";
-import { LabNav } from "./lab-nav";
 import { getFrameKey, setOpenCandidate } from "./open-candidates";
 import { ORIGINAL_TILE_ATTR } from "./generation-list";
 import { useCandidateDrag, type DragItem } from "./use-candidate-drag";
@@ -107,12 +106,7 @@ export const App = () => {
       <Flex sx={{ gap: 3, p: 3, alignItems: "flex-start", boxSizing: "border-box" }}>
         <FloatingPanel
           id="lab"
-          title={
-            <>
-              <Text sx={{ fontWeight: "bold" }}>Sprite Lab</Text>
-              <LabNav />
-            </>
-          }
+          title={<Text sx={{ fontWeight: "bold" }}>Sprite Lab</Text>}
           width={PANEL_WIDTH}
           start={{ x: 16, y: 16 }}
           overflowing
