@@ -10,8 +10,8 @@ export const theme = {
   colors: {
     ...tColors,
     text: tColors.white,
-    /* WoW's legendary orange. */
-    unique: "#ff8000",
+    /* Tailwind orange-300 nudged toward amber, level with rare, set and magic. */
+    unique: "#fdc674",
     rare: tColors.purple[300],
     set: tColors.lime[300],
     legendary: tColors.purple[300],
