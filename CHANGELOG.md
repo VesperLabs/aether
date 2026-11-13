@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.33.1](https://github.com/VesperLabs/aether/compare/v0.33.0...v0.33.1) (2026-11-13)
+
+
+### Bug Fixes
+
+* light windup pies with the night ([#328](https://github.com/VesperLabs/aether/issues/328)) ([32ac20a](https://github.com/VesperLabs/aether/commit/32ac20a74ee7f68a9a9ce24e52a3e17408d47a83))
+* skip the tents map in the login tour ([#329](https://github.com/VesperLabs/aether/issues/329)) ([cdf6655](https://github.com/VesperLabs/aether/commit/cdf66551016171c69e9991063b7bd5532409eeea))
+
 ## [0.33.0](https://github.com/VesperLabs/aether/compare/v0.32.0...v0.33.0) (2026-11-12)
 
 
