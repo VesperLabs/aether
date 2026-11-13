@@ -6,6 +6,7 @@ import {
   fitsGender,
   getLayerSheets,
   getSheetCell,
+  getSheetGender,
   HUMAN_LAYERS,
 } from "./sheets";
 
@@ -14,10 +15,20 @@ describe("sprite lab sheets", () => {
     expect(ANIMATED_SHEETS.filter(({ texture }) => texture === "human")).toHaveLength(1);
   });
 
-  it("lists each image once, however many textures share it", () => {
-    const sources = ANIMATED_SHEETS.map(({ src }) => src);
-    expect(new Set(sources).size).toBe(sources.length);
+  it("lists each image once per gender, however many textures share it", () => {
+    const keys = ANIMATED_SHEETS.map(({ src, texture }) => `${src}|${getSheetGender(texture)}`);
+    expect(new Set(keys).size).toBe(keys.length);
     expect(getLayerSheets("gloves").map(({ texture }) => texture)).toEqual(["human-gloves-cloth"]);
+  });
+
+  it("keeps a shared image for each gender, so either body can wear it", () => {
+    const robes = getLayerSheets("armor")
+      .map(({ texture }) => texture)
+      .filter((texture) => texture.endsWith("-armor-robe-wizard"));
+    expect(robes.sort()).toEqual([
+      "human-female-armor-robe-wizard",
+      "human-male-armor-robe-wizard",
+    ]);
   });
 
   it("finds plain and gendered layer sheets", () => {

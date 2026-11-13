@@ -19,16 +19,26 @@ export const HUMAN_LAYERS = [
 ] as const;
 export type HumanLayer = (typeof HUMAN_LAYERS)[number];
 
+/** The gender a sheet is drawn for, if any: unisex sheets like `human-hair-1` have none. */
+export const getSheetGender = (texture: string) => /^human-(male|female)-/.exec(texture)?.[1];
+
 /** A sheet file. A `tint` colours it for viewing only; edits always load it plain. */
 export type Sheet = { texture: string; src: string; tint?: string };
 
 /**
  * Every character sheet with the walk layout: humans, their layers and mobs. Each image is listed
- * once, under its first texture, though the game may name it several times (all gloves share one).
+ * once per gender, under its first texture for that gender, though the game may name it several
+ * times (all gloves share one). Keeping each gender means a male body still finds a robe whose
+ * image the female one shares.
  */
 export const ANIMATED_SHEETS: (Sheet & { atlas?: string })[] = assetList
   .filter(({ atlas }) => /\/(50x50|80x80|150x150)\.json$/.test(atlas ?? ""))
-  .filter(({ src }, i, all) => all.findIndex((sheet) => sheet.src === src) === i);
+  .filter(
+    ({ src, texture }, i, all) =>
+      all.findIndex(
+        (sheet) => sheet.src === src && getSheetGender(sheet.texture) === getSheetGender(texture),
+      ) === i,
+  );
 
 /** Everything held in a hand: weapons, shields and bows. */
 export const WEAPON_SHEETS: Sheet[] = assetList
@@ -56,9 +66,6 @@ export const getLayerSheets = (layer: HumanLayer) => {
 export const BASE_SHEETS = ANIMATED_SHEETS.filter(
   (sheet) => !HUMAN_LAYERS.some((layer) => getLayerSheets(layer).includes(sheet)),
 );
-
-/** The gender a sheet is drawn for, if any: unisex sheets like `human-hair-1` have none. */
-export const getSheetGender = (texture: string) => /^human-(male|female)-/.exec(texture)?.[1];
 
 /** Whether a sheet fits a body of this gender. With no gender set, everything does. */
 export const fitsGender = (texture: string, gender?: string) => {

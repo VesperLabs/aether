@@ -185,10 +185,11 @@ export const mergeGeneration = async (generation: Generation) => {
   await saveSheet(generation.src, canvas);
 };
 
-/** Saves a card's diamond face, and remembers where the sprite's face is. */
+/** Saves a finished card, and remembers where the sprite's face is and its backdrop. */
 export const saveCard = (card: {
   name: string;
   texture: string;
   face: { x: number; y: number; size: number };
+  backdrop: string;
   image: HTMLCanvasElement;
 }) => post("/api/cards", { ...card, image: toBase64(card.image) });

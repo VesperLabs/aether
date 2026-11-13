@@ -2,6 +2,12 @@ import type { AssetDefinition } from "./asset-types";
 
 export const assetList4 = [
   {
+    texture: "stackable-wyrm-card",
+    src: "./assets/cards/wyrm.png",
+    atlas: "./assets/atlas/32x32-stackable.json",
+    previewRect: [0, 0, 32, 32],
+  },
+  {
     texture: "stackable-pokeball",
     src: "./assets/atlas/stackable/stackable-pokeball.png",
     atlas: "./assets/atlas/32x32-stackable.json",

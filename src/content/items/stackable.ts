@@ -2,6 +2,14 @@ import type { ItemRarityTable } from "./item-types";
 
 export const stackableItems = {
   common: {
+    wyrmCard: {
+      tier: 1,
+      name: "Wyrm Card",
+      flavor: "A card bearing the likeness of a wyrm. It does nothing, yet.",
+      base: "card",
+      slot: "stackable",
+      texture: "stackable-wyrm-card",
+    },
     pokeball: {
       tier: 1,
       name: "Pokeball",

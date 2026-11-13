@@ -1,65 +1,68 @@
-import { mixHex, theme } from "@/ui";
+import { mixHex } from "@/ui";
 import { getCtx } from "./frame-canvas";
 
-/** Where a face sits on a frame, in cell pixels: the top-left of a square the diamond fills. */
+/** Where a face sits on a frame, in cell pixels: the top-left of a square the diamond fills, always `FACE_SIZE`. */
 export type FaceRect = { x: number; y: number; size: number };
 
-/** Every card is a diamond this many pixels across, as big as an item icon. */
-export const CARD_SIZE = 32;
-/** The rings in from the edge: black, then the 1px border, then a dark line. */
-const RING_COUNT = 3;
-/** The diamond window inside the rings. Every face is cut to exactly this, so it fills it. */
-export const FACE_SIZE = CARD_SIZE - RING_COUNT * 2;
-
 /**
- * The crops that scale to the window cleanly: 2x, 1x, or shrunk by a whole number, so every
- * pixel lands evenly. Anything between would double some pixels and not others.
+ * Every card is a diamond this many pixels across. Item art draws at 2x in a 56px slot with a 1px
+ * border, so 26px (52 on screen) leaves a 1px gap inside the border on every side.
  */
-const FACE_SCALES = [2, 1, 1 / 2, 1 / 3, 1 / 4, 1 / 5, 1 / 6];
+export const CARD_SIZE = 26;
+/** The item icon frame a card is saved in, centred, so it loads like any other stackable. */
+export const CARD_ICON_SIZE = 32;
+/** The rings in from the edge: black, then the 1px bevel. */
+const RING_COUNT = 2;
+/** The diamond window inside the black edge. Every face is cut to exactly this, so it fills it. */
+/** How far in the face starts: just inside the black edge, so the translucent bevel lies over it. */
+const FACE_INSET = 1;
+export const FACE_SIZE = CARD_SIZE - FACE_INSET * 2;
 
-/** The clean crop sizes that fit in a frame of `cell` pixels, smallest first. */
-export const getFaceCrops = (cell: number) =>
-  FACE_SCALES.map((scale) => FACE_SIZE / scale).filter((crop) => crop <= cell);
+/** How the backdrop fades: above 1 the bright middle holds wider before dropping off at the tips. */
+const FADE_CURVE = 1.8;
+/** The backdrops a card can have: a lit colour where the light is, fading to a deep one at the tips. */
+export const CARD_BACKDROPS = {
+  night: { glow: "#5a5a78", shade: "#1c1c2a" },
+  ember: { glow: "#f07a3a", shade: "#5a1a0c" },
+  forest: { glow: "#6cc85a", shade: "#163c1a" },
+  ocean: { glow: "#4aa8f0", shade: "#0e2e5a" },
+  violet: { glow: "#a86cf0", shade: "#2e1458" },
+  gold: { glow: "#f0c440", shade: "#5a3a0c" },
+  rose: { glow: "#f06c9c", shade: "#5a1430" },
+  stone: { glow: "#b0aa9c", shade: "#3a362e" },
+} as const;
 
-/** How much a crop is scaled to fill the window, written as a zoom: `2x`, `1x`, `1/2x`. */
-export const formatFaceScale = (crop: number) =>
-  crop <= FACE_SIZE ? `${FACE_SIZE / crop}x` : `1/${crop / FACE_SIZE}x`;
+export type CardBackdrop = keyof typeof CARD_BACKDROPS;
 
-export type CardRarity = "common" | "magic" | "rare" | "unique" | "set";
+export const CARD_BACKDROP_NAMES = Object.keys(CARD_BACKDROPS) as CardBackdrop[];
 
-/** A card's colours: its border, brighter tips, and the backdrop's glow in the middle and dark edge. */
-type CardFrame = { border: string; corner: string; glow: string; shade: string };
-
-/** How far the tips lighten toward white. */
-const TIP_LIGHTEN = 0.5;
-/** How dark the backdrop is in its middle and at its edge: kept low, so the glow is subtle. */
-const GLOW_DARKEN = 0.45;
-const SHADE_DARKEN = 0.95;
-
-/**
- * The chrome of a card, from the theme's colour for each rarity, the same one item names and
- * tooltips use: that colour for the border, lighter for the tips, and a dim glow behind the face.
- */
-export const CARD_FRAMES = Object.fromEntries(
-  (["common", "magic", "rare", "unique", "set"] as const).map((rarity) => {
-    const border = (theme.colors as unknown as Record<string, string>)[rarity];
-    return [
-      rarity,
-      {
-        border,
-        corner: mixHex(border, "#ffffff", TIP_LIGHTEN),
-        glow: mixHex(border, "#000000", GLOW_DARKEN),
-        shade: mixHex(border, "#000000", SHADE_DARKEN),
-      },
-    ];
-  }),
-) as Record<CardRarity, CardFrame>;
-
-export const CARD_RARITIES = Object.keys(CARD_FRAMES) as CardRarity[];
+/** Whether a saved value is one of the backdrops. */
+export const isCardBackdrop = (value: unknown): value is CardBackdrop =>
+  typeof value === "string" && value in CARD_BACKDROPS;
 
 const EDGE_COLOR = "#000";
-/** The line just inside the border, dark enough to set the face off but still see it through. */
-const INNER_COLOR = "rgba(0, 0, 0, 0.55)";
+/**
+ * The bevel: warm light along the top edges and a cool bounce along the bottom, so it reads as
+ * enamel rather than plastic. Each fades from its tip toward the side points, giving it curve.
+ */
+const TOP_LIGHT = "255, 236, 190";
+const BOTTOM_LIGHT = "170, 210, 255";
+const TOP_ALPHA = { tip: 0.5, side: 0.12 };
+const BOTTOM_ALPHA = { tip: 0.4, side: 0.1 };
+/** A crisp glint at the top tip: the two middle pixels brightest, the next ones out a little less. */
+const GLINT = "rgba(255, 255, 255, 0.6)";
+const GLINT_HALO = "rgba(255, 255, 255, 0.4)";
+
+/** A bevel pixel's colour: by which half it's on, and how far it is from that half's tip. */
+const getBevelColor = (x: number, y: number) => {
+  const fromTip = Math.abs(x + 0.5 - CARD_SIZE / 2);
+  const isTop = y < CARD_SIZE / 2;
+  if (isTop && fromTip < 1) return GLINT;
+  if (isTop && fromTip < 2) return GLINT_HALO;
+  const { tip, side } = isTop ? TOP_ALPHA : BOTTOM_ALPHA;
+  const alpha = tip + (side - tip) * Math.min(fromTip / (CARD_SIZE / 2), 1);
+  return `rgba(${isTop ? TOP_LIGHT : BOTTOM_LIGHT}, ${alpha.toFixed(3)})`;
+};
 
 /** Whether a pixel of a `size` square is inside the diamond that touches its four sides. */
 export const isInDiamond = (x: number, y: number, size: number) =>
@@ -69,69 +72,15 @@ export const isInDiamond = (x: number, y: number, size: number) =>
 const isOnCard = (x: number, y: number) =>
   x >= 0 && y >= 0 && x < CARD_SIZE && y < CARD_SIZE && isInDiamond(x, y, CARD_SIZE);
 
-/** The face cut to the card's window, scaled from its crop, with everything outside the diamond clear. */
-/** How dark a pixel looks, to break ties toward outlines and eyes. */
-const getLuminance = (data: Uint8ClampedArray, i: number) =>
-  data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
-
-/**
- * RGBA pixels shrunk by a whole number, keeping pixel art crisp: each new pixel is the colour
- * seen most in its `factor` x `factor` block, so every pixel stays one of the sprite's own colours
- * (averaging would blur them). A tie goes to the darker colour, so thin outlines and eyes survive,
- * and a block that's mostly clear stays clear.
- */
-export const shrinkPixels = (data: Uint8ClampedArray, size: number, factor: number) => {
-  const shrunk = size / factor;
-  const out = new Uint8ClampedArray(shrunk * shrunk * 4);
-  for (let y = 0; y < shrunk; y += 1) {
-    for (let x = 0; x < shrunk; x += 1) {
-      const counts = new Map<number, { count: number; index: number }>();
-      for (let dy = 0; dy < factor; dy += 1) {
-        for (let dx = 0; dx < factor; dx += 1) {
-          const i = ((y * factor + dy) * size + x * factor + dx) * 4;
-          if (!data[i + 3]) continue;
-          const color = (data[i] << 16) | (data[i + 1] << 8) | data[i + 2];
-          const seen = counts.get(color);
-          counts.set(color, { count: (seen?.count ?? 0) + 1, index: seen?.index ?? i });
-        }
-      }
-      const opaque = [...counts.values()].reduce((sum, { count }) => sum + count, 0);
-      if (opaque * 2 < factor * factor) continue;
-      const best = [...counts.values()].reduce((a, b) =>
-        b.count > a.count ||
-        (b.count === a.count && getLuminance(data, b.index) < getLuminance(data, a.index))
-          ? b
-          : a,
-      );
-      out.set(data.subarray(best.index, best.index + 4), (y * shrunk + x) * 4);
-    }
-  }
-  return out;
-};
-
-/**
- * The face cut to the card's window, with everything outside the diamond clear. A small crop is
- * blown up pixel for pixel; a big one is shrunk to its most common colours, so it stays crisp.
- */
-export const cutDiamond = (frame: HTMLCanvasElement, { x, y, size: crop }: FaceRect) => {
+/** The face cut 1:1 from the frame to the card's window, with everything outside the diamond clear. */
+export const cutDiamond = (frame: HTMLCanvasElement, { x, y }: FaceRect) => {
   const size = FACE_SIZE;
   const face = document.createElement("canvas");
   face.width = size;
   face.height = size;
   const ctx = getCtx(face);
-  let pixels: ImageData;
-  if (crop > size) {
-    const source = document.createElement("canvas");
-    source.width = crop;
-    source.height = crop;
-    const sourceCtx = getCtx(source);
-    sourceCtx.drawImage(frame, -x, -y);
-    const { data } = sourceCtx.getImageData(0, 0, crop, crop);
-    pixels = new ImageData(shrinkPixels(data, crop, crop / size), size, size);
-  } else {
-    ctx.drawImage(frame, x, y, crop, crop, 0, 0, size, size);
-    pixels = ctx.getImageData(0, 0, size, size);
-  }
+  ctx.drawImage(frame, x, y, size, size, 0, 0, size, size);
+  const pixels = ctx.getImageData(0, 0, size, size);
   for (let py = 0; py < size; py += 1) {
     for (let px = 0; px < size; px += 1) {
       if (!isInDiamond(px, py, size)) pixels.data[(py * size + px) * 4 + 3] = 0;
@@ -171,16 +120,16 @@ const DEPTHS = getDepths();
 
 /**
  * A card as it shows in the game: an item-sized diamond with the face filling the window in its
- * middle. The rings are drawn over the face, black outside, then a 1px border with
- * brighter tips, then a dark line. The face file itself is only the diamond; the rest is drawn
- * under and over it.
+ * middle. The rings are drawn over the face: black outside, then a translucent 1px bevel, warm
+ * along the top edges with a glint at the tip, and cool along the bottom. The face file itself is only the diamond; the rest is
+ * drawn under and over it.
  */
 export const paintCard = (
   ctx: CanvasRenderingContext2D,
   face: HTMLCanvasElement,
-  rarity: CardRarity,
+  backdrop: CardBackdrop,
 ) => {
-  const { border, corner, glow, shade } = CARD_FRAMES[rarity];
+  const { glow, shade } = CARD_BACKDROPS[backdrop];
   const fill = (x: number, y: number, color: string) => {
     ctx.fillStyle = color;
     ctx.fillRect(x, y, 1, 1);
@@ -190,20 +139,16 @@ export const paintCard = (
       if (!isOnCard(x, y)) continue;
       /* A smooth radial fade from the glow in the middle to the shade at the tips. */
       const reach = Math.hypot(x + 0.5 - CARD_SIZE / 2, y + 0.5 - CARD_SIZE / 2) / (CARD_SIZE / 2);
-      fill(x, y, mixHex(glow, shade, Math.min(reach, 1)));
+      fill(x, y, mixHex(glow, shade, Math.min(reach, 1) ** FADE_CURVE));
     }
   }
-  ctx.drawImage(face, RING_COUNT, RING_COUNT);
+  ctx.drawImage(face, FACE_INSET, FACE_INSET);
   for (let y = 0; y < CARD_SIZE; y += 1) {
     for (let x = 0; x < CARD_SIZE; x += 1) {
       const depth = DEPTHS[y * CARD_SIZE + x];
       if (depth === 0) fill(x, y, EDGE_COLOR);
-      if (depth === 1) {
-        const isTip =
-          Math.abs(x + 0.5 - CARD_SIZE / 2) <= 1 || Math.abs(y + 0.5 - CARD_SIZE / 2) <= 1;
-        fill(x, y, isTip ? corner : border);
-      }
-      if (depth === RING_COUNT - 1) fill(x, y, INNER_COLOR);
+      /* Translucent over the face's outer pixels, so the face shows through the bevel. */
+      if (depth === 1) fill(x, y, getBevelColor(x, y));
     }
   }
 };
