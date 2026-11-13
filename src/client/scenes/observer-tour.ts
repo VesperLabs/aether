@@ -12,8 +12,11 @@ import { hideWorld, revealWorldWhenSettled } from "./world-reveal";
 const PAN_MS = 16000;
 const FADE_MS = 700;
 
-/* Interiors are too small to scroll through */
-const TOUR_ROOMS = mapList.map((map) => map.name).filter((name) => !name.includes("Inside"));
+/* Interiors are too small to scroll through, and tents renders as bare brown */
+const SKIPPED_ROOMS = ["tents"];
+const TOUR_ROOMS = mapList
+  .map((map) => map.name)
+  .filter((name) => !name.includes("Inside") && !SKIPPED_ROOMS.includes(name));
 
 const pickFrom = <T>(list: T[]) => list[Math.floor(Math.random() * list.length)];
 
