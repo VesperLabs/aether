@@ -155,7 +155,14 @@ export function applyAttackDamage(
 
   /* A dual-wielder's left-hand swing uses that weapon's stats, never both weapons' */
   const swingStats = (hand === "handLeft" && attacker.offHandStats) || attacker.stats;
-  const roll = rollAttack(swingStats, victim.stats, abilityDetails?.effects, victim.world.rng);
+  const staminaRatio = attacker.kind === "player" ? attacker.state.swingStamina : undefined;
+  const roll = rollAttack(
+    swingStats,
+    victim.stats,
+    abilityDetails?.effects,
+    victim.world.rng,
+    staminaRatio,
+  );
   if (roll.outcome === "miss") {
     return [{ type: "miss", amount: 0, from: attacker.id, to: victim.id }];
   }

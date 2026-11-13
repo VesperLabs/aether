@@ -30,10 +30,10 @@ export interface AttackArgs extends CastArgs {
   direction?: string;
 }
 
-/** Whether the hero has the SP for this attack (weapon plus attack-spell cost). */
+/** Whether the hero has the SP for this attack's ability. The weapon's cost never blocks a swing. */
 export function hasStaminaForAttack(player: Player, count: number, abilitySlot?: AbilitySlot) {
   const { stats } = player.getAttackActionName({ count, abilitySlot });
-  return hasStaminaFor(player.stats?.sp, player.getAttackSpCost(count) + getAbilityCosts(stats).sp);
+  return hasStaminaFor(player.stats?.sp, getAbilityCosts(stats).sp);
 }
 
 export function doAttack(player: Player, { count, castAngle, direction, abilitySlot }: AttackArgs) {

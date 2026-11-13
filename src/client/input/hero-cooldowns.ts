@@ -7,7 +7,7 @@ import type { AbilitySlot } from "@/client/window-events";
 
 export function updateAttackCooldown(hero: Player) {
   if (hero.state.isAttacking) return;
-  /* Out of stamina the attack won't fire, so don't start its cooldown */
+  /* Without the SP for an attack-spell the attack won't fire, so don't start its cooldown */
   const count = getNextAttackCount(hero.state.lastAttackCount, hero);
   if (!hero.hasStaminaForAttack(count, hero.state.lastAbilitySlot)) return;
   const attackDelay = hero?.getFullAttackDelay(count);

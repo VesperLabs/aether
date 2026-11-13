@@ -53,10 +53,15 @@ describe("calculateElementalDamage", () => {
 });
 
 describe("calculateWeaponDamage", () => {
-  it("rolls between min and max whatever the sp", () => {
-    const stats = { sp: 0, maxSp: 30, minDamage: 10, maxDamage: 20 };
+  const stats = { minDamage: 10, maxDamage: 20 };
+  it("rolls between min and max without a stamina ratio", () => {
     expect(calculateWeaponDamage(stats, () => 0)).toBe(10);
     expect(calculateWeaponDamage(stats, () => 0.99)).toBe(20);
+  });
+  it("is min on an empty bar, max on a full one and in between otherwise", () => {
+    expect(calculateWeaponDamage(stats, () => 0.99, 0)).toBe(10);
+    expect(calculateWeaponDamage(stats, () => 0, 1)).toBe(20);
+    expect(calculateWeaponDamage(stats, () => 0, 0.5)).toBe(15);
   });
 });
 

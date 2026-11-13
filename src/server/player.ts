@@ -105,7 +105,7 @@ export class Player extends ServerCharacter {
   lastThrowAt?: number;
   /** Swings if the attack is ready and affordable. Returns whether it swung. */
   doAttack({ count, direction, castAngle, abilitySlot }: PlayerAttackRequest): boolean {
-    const { world, room, socketId } = this ?? {};
+    const { room } = this ?? {};
 
     if (this?.hasBuff("stun")) return false;
     if (this?.state?.isDead) return false;
@@ -119,20 +119,16 @@ export class Player extends ServerCharacter {
     const { stats, ...spellDetails } = this.getAttackActionName({ count, abilitySlot });
     const spCost = this.getAttackSpCost(count);
     const costs = getAbilityCosts(stats);
-    if (!hasStaminaFor(this.stats.sp, spCost + costs.sp)) return false;
+    /* Swings always go through (stamina sets their damage); only abilities need the SP */
+    if (!hasStaminaFor(this.stats.sp, costs.sp)) return false;
+    this.state.swingStamina = this.stats.maxSp ? this.stats.sp / this.stats.maxSp : 1;
     this.modifyStatIfCostExists("mp", costs.mp);
     this.modifyStatIfCostExists("hp", costs.hp);
     this.modifyStatIfCostExists("sp", costs.sp);
 
     this.direction = direction;
 
-    this.modifyStat("sp", -spCost);
-
-    world.io.to(roomName).emit("modifyPlayerStat", {
-      socketId,
-      type: "sp",
-      amount: -spCost,
-    });
+    this.modifyStatIfCostExists("sp", spCost);
 
     if (castAngle) {
       this.state.lastAngle = castAngle;

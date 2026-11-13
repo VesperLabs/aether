@@ -91,13 +91,14 @@ describe("attacking", () => {
     expect(spCosts).toHaveLength(1);
   });
 
-  it("can't attack without the stamina to pay for it", async () => {
-    const { socket, player, events } = await login("warrior");
+  it("still attacks out of stamina, at the weapon's min damage", async () => {
+    const { socket, player } = await login("warrior");
     player.stats.sp = 0;
     socket.emit("attack", { count: 1, direction: "down", castAngle: 0 });
     await server.run(socket, 150);
-    expect(player.state.isAttacking).toBeFalsy();
-    expect(events.modifyPlayerStat.filter((e) => e.type === "sp")).toHaveLength(0);
+    expect(player.state.isAttacking).toBe(true);
+    expect(player.state.swingStamina).toBe(0);
+    expect(player.stats.sp).toBe(0);
   });
 });
 
