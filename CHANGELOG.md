@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.35.0](https://github.com/VesperLabs/aether/compare/v0.34.1...v0.35.0) (2026-11-13)
+
+
+### Features
+
+* add the wyrm card item and save finished cards from the sprite lab ([#337](https://github.com/VesperLabs/aether/issues/337)) ([64c9512](https://github.com/VesperLabs/aether/commit/64c9512cefd8b5403bf0289fa5ec6489d142910d))
+
 ## [0.34.1](https://github.com/VesperLabs/aether/compare/v0.34.0...v0.34.1) (2026-11-13)
 
 
