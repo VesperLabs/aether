@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.36.0](https://github.com/VesperLabs/aether/compare/v0.35.0...v0.36.0) (2026-11-13)
+
+
+### Features
+
+* stamina sets swing damage instead of blocking swings ([#339](https://github.com/VesperLabs/aether/issues/339)) ([349fd98](https://github.com/VesperLabs/aether/commit/349fd98c9c114368b47a2c11f1a06a430acc7c09))
+
 ## [0.35.0](https://github.com/VesperLabs/aether/compare/v0.34.1...v0.35.0) (2026-11-13)
 
 
