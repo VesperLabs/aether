@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { resourceHex } from "@/ui/kit/resource-colors";
+import { ABOVE_LAYER_DEPTH } from "@/client/scenes/world-depths";
 import type { Player } from "./player";
 
 /** Sizes in world pixels: the pie, and the black edge around it. As tall as the hp bar. */
@@ -14,8 +15,11 @@ const PIE_COLORS = {
   cast: resourceHex("mp"),
 };
 let nextTextureId = 0;
-/** Drawn over every character, so one standing in front never hides another's pie. */
-const PIE_DEPTH = 1_000_000;
+/**
+ * Drawn over every character (and tree tops), so one standing in front never hides another's pie,
+ * but still under the daylight layer so night darkens it like everything else.
+ */
+const PIE_DEPTH = ABOVE_LAYER_DEPTH + 0.5;
 
 /**
  * A tiny pie, centred just above the hp bar, that fills clockwise while a fighting NPC winds up
