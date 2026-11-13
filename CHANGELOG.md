@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.34.1](https://github.com/VesperLabs/aether/compare/v0.34.0...v0.34.1) (2026-11-13)
+
+
+### Bug Fixes
+
+* make unique items a pale amber-orange ([#335](https://github.com/VesperLabs/aether/issues/335)) ([f72cc36](https://github.com/VesperLabs/aether/commit/f72cc36682330e0bb2827af9cc4c547f1ccf363f))
+
 ## [0.34.0](https://github.com/VesperLabs/aether/compare/v0.33.1...v0.34.0) (2026-11-13)
 
 
