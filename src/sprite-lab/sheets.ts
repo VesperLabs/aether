@@ -19,7 +19,8 @@ export const HUMAN_LAYERS = [
 ] as const;
 export type HumanLayer = (typeof HUMAN_LAYERS)[number];
 
-export type Sheet = { texture: string; src: string };
+/** A sheet file. A `tint` colours it for viewing only; edits always load it plain. */
+export type Sheet = { texture: string; src: string; tint?: string };
 
 /**
  * Every character sheet with the walk layout: humans, their layers and mobs. Each image is listed
@@ -73,3 +74,13 @@ export const dropOtherGender = <T extends Record<string, string>>(textures: T, g
       fitsGender(texture, gender) ? texture : "",
     ]),
   ) as T;
+
+/** A layer's pick, as kept in state: a sheet's texture, or `texture|tint` when it's tinted. */
+export type Look = { texture: string; tint?: string };
+
+export const parseLook = (value: string): Look => {
+  const [texture, tint] = value.split("|");
+  return { texture, tint: tint || undefined };
+};
+
+export const formatLook = ({ texture, tint }: Look) => (tint ? `${texture}|${tint}` : texture);

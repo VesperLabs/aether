@@ -149,7 +149,7 @@ const SearchRow = ({
           textAlign: "right",
           fontSize: 1,
           opacity: run ? 1 : 0.5,
-          color: run ? "set" : "text",
+          color: run ? "success" : "text",
         }}
       >
         {label}

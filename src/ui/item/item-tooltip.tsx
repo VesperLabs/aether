@@ -75,7 +75,7 @@ interface ItemTooltipProps {
 export const ItemTooltip = ({ item, player, tooltipId, show }: ItemTooltipProps) => {
   if (!item) return null;
   const d = describeItem(item, player);
-  const setColor = d.set?.active ? "set" : "gray.500";
+  const setColor = d.set?.active ? "success" : "gray.500";
   const art = itemArt(item, player);
 
   return (

@@ -143,7 +143,7 @@ export const ItemCard = ({ item }: { item: WikiItem }) => {
         ))}
         {described.set && (
           <Group
-            icon={<Icon icon="./assets/icons/success.png" size={ICON} />}
+            icon={<Icon icon="./assets/icons/crown.png" size={ICON} />}
             label={described.set.name}
             note={`${described.set.pieces} pieces`}
             color={CARD_COLORS.set}

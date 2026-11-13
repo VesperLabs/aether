@@ -21,7 +21,7 @@ const VERDICT_TEXT: Record<Verdict, string> = {
 };
 
 const VERDICT_COLOR: Record<Verdict, string> = {
-  smooth: "set",
+  smooth: "success",
   network: "warning",
   server: "danger",
 };

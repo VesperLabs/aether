@@ -5,6 +5,7 @@ import {
   getLayerSheets,
   HUMAN_LAYERS,
   WEAPON_SHEETS,
+  parseLook,
   type HumanLayer,
 } from "./sheets";
 
@@ -18,6 +19,7 @@ export type ActiveDraw = { src: string; frame: Frame };
 
 /** Everything on screen; kept in the URL so it survives a refresh and can be linked. */
 export interface LabState {
+  /** The body's texture, as `texture|tint` when its skin is tinted. */
   atlas: string;
   /** Leaves the atlas out of the view. It still sets the sheet's size, and can still be edited. */
   atlasHidden: boolean;
@@ -31,9 +33,11 @@ export interface LabState {
   promptTab: CorePromptId;
   /** The sheet a wearable copies; empty uses the one being edited. */
   wearableSheet: string;
+  /** Whether the monster card panel is open. */
+  card: boolean;
   /** The weapon being placed; empty with the weapon panel closed. */
   weapon: string;
-  /** Each layer's sheet; empty for none. */
+  /** Each layer's sheet, as `texture|tint` when tinted; empty for none. */
   layers: Record<HumanLayer, string>;
 }
 
@@ -61,7 +65,9 @@ export const parseLabState = (search: string): LabState => {
   const model = params.get("model");
   const target = HUMAN_LAYERS.find((layer) => layer === params.get("target"));
   return {
-    atlas: BASE_SHEETS.some(({ texture }) => texture === atlas) ? atlas : START_ATLAS,
+    atlas: BASE_SHEETS.some(({ texture }) => texture === parseLook(atlas).texture)
+      ? atlas
+      : START_ATLAS,
     atlasHidden: params.has("no-atlas"),
     zoom: ZOOMS.includes(zoom) ? zoom : START_ZOOM,
     target,
@@ -70,13 +76,15 @@ export const parseLabState = (search: string): LabState => {
     prompt: params.get("prompt") ?? "",
     promptTab: CORE_PROMPTS.find(({ id }) => id === params.get("tab"))?.id ?? START_CORE_PROMPT,
     wearableSheet: params.get("wearable") ?? "",
+    card: params.has("card"),
     weapon: WEAPON_SHEETS.find(({ texture }) => texture === params.get("weapon"))?.texture ?? "",
     layers: Object.fromEntries(
       HUMAN_LAYERS.map((layer) => {
         const texture = params.get(layer);
         /* An empty value is a cleared layer. */
         const known =
-          texture === "" || getLayerSheets(layer).some((sheet) => sheet.texture === texture);
+          texture === "" ||
+          getLayerSheets(layer).some((sheet) => sheet.texture === parseLook(texture ?? "").texture);
         return [layer, known && texture !== null ? texture : startTexture(layer)];
       }),
     ) as Record<HumanLayer, string>,
@@ -95,6 +103,7 @@ export const serializeLabState = ({
   promptTab,
   wearableSheet,
   weapon,
+  card,
   layers,
 }: LabState) => {
   const params = new URLSearchParams();
@@ -108,6 +117,7 @@ export const serializeLabState = ({
   if (promptTab !== START_CORE_PROMPT) params.set("tab", promptTab);
   if (wearableSheet) params.set("wearable", wearableSheet);
   if (weapon) params.set("weapon", weapon);
+  if (card) params.set("card", "");
   HUMAN_LAYERS.forEach((layer) => {
     if (layers[layer] !== startTexture(layer)) params.set(layer, layers[layer]);
   });

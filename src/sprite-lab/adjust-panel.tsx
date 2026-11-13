@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Flex, Slider, Text } from "@/ui";
+import { Button, Flex, SliderField, Text } from "@/ui";
 import { NO_ADJUSTMENT, type ColorAdjustment } from "./color-adjust";
 import { FloatingPanel } from "./floating-panel";
 
@@ -49,15 +49,14 @@ export const AdjustPanel = ({
     >
       <Text sx={{ fontSize: 0, opacity: 0.5 }}>{hasSelection ? "Selection" : "Whole shape"}</Text>
       {SLIDERS.map(({ key, label, reach }) => (
-        <Flex key={key} sx={{ alignItems: "center", gap: 2 }}>
-          <Text sx={{ width: 76, fontSize: 1 }}>{label}</Text>
-          <Slider
-            label={label}
-            value={(adjustment[key] + reach) / (reach * 2)}
-            onChange={(value) => handleChange(key, Math.round(value * reach * 2 - reach))}
-          />
-          <Text sx={{ width: 32, fontSize: 1, textAlign: "right" }}>{adjustment[key]}</Text>
-        </Flex>
+        <SliderField
+          key={key}
+          label={label}
+          value={adjustment[key]}
+          min={-reach}
+          max={reach}
+          onChange={(value) => handleChange(key, value)}
+        />
       ))}
       <Flex sx={{ gap: 2 }}>
         <Button variant="control" onClick={onCancel} sx={{ flex: 1, justifyContent: "center" }}>

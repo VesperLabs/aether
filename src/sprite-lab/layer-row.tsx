@@ -1,7 +1,8 @@
 import { Box, Field, Select, type SelectOption } from "@/ui";
 import { IconButton } from "./icon-button";
 import { PENDING_COLOR } from "./sheet-canvas";
-import { getSheetOption } from "./sheet-thumb";
+import { getItemLooks } from "./item-looks";
+import { getSheetOption, SheetThumb } from "./sheet-thumb";
 import { fitsGender, getLayerSheets, type HumanLayer } from "./sheets";
 
 const PENDING_DOT = 6;
@@ -54,7 +55,7 @@ export const SheetRow = ({
   </Field>
 );
 
-/** One worn layer, offering the sheets that fit the chest. */
+/** One worn layer, offering the sheets that fit the chest and the tinted items that wear on it. */
 export const LayerRow = ({
   layer,
   texture,
@@ -74,8 +75,15 @@ export const LayerRow = ({
     {...row}
     label={layer}
     value={texture}
-    options={getLayerSheets(layer)
-      .filter(({ texture: option }) => fitsGender(option, gender))
-      .map((sheet) => getSheetOption(sheet, sheet.texture.replace(/^human-/, "")))}
+    options={[
+      ...getLayerSheets(layer)
+        .filter(({ texture: option }) => fitsGender(option, gender))
+        .map((sheet) => getSheetOption(sheet, sheet.texture.replace(/^human-/, ""))),
+      ...getItemLooks(layer, gender).map(({ value, label, texture: sheet, tint }) => ({
+        value,
+        label,
+        icon: <SheetThumb texture={sheet} tint={tint} />,
+      })),
+    ]}
   />
 );

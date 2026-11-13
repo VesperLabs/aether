@@ -1,8 +1,8 @@
 import { copyFile, mkdir, readdir, readFile, rm, stat, writeFile } from "node:fs/promises";
-import type { IncomingMessage, ServerResponse } from "node:http";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 import type { Plugin } from "vite";
+import { readJson, reply } from "./dev-json";
 
 const ATLAS_FOLDER = "assets/atlas";
 const ID_PATTERN = /^[0-9a-f-]{36}$/;
@@ -28,18 +28,6 @@ export const placeWeapon = (
   pose.x = x as number;
   pose.y = y as number;
   return true;
-};
-
-const readJson = async (req: IncomingMessage) => {
-  const chunks: Buffer[] = [];
-  for await (const chunk of req) chunks.push(chunk as Buffer);
-  return JSON.parse(Buffer.concat(chunks).toString());
-};
-
-const reply = (res: ServerResponse, status: number, body: object) => {
-  res.statusCode = status;
-  res.setHeader("Content-Type", "application/json");
-  res.end(JSON.stringify(body));
 };
 
 const decodePng = (image: string) => Buffer.from(image, "base64");
