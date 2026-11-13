@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CARD_FRAMES, formatFaceScale, getFaceCrops, isInDiamond } from "./card-face";
+import { CARD_FRAMES, formatFaceScale, getFaceCrops, isInDiamond, shrinkPixels } from "./card-face";
 
 describe("isInDiamond", () => {
   it("fills the middle and leaves the corners clear", () => {
@@ -42,5 +42,25 @@ describe("CARD_FRAMES", () => {
       shade: "#0d0d0d",
     });
     expect(CARD_FRAMES.unique.border).toBe("#ff8000");
+  });
+});
+
+describe("shrinkPixels", () => {
+  const block = (...pixels: number[][]) => new Uint8ClampedArray(pixels.flat());
+  const RED = [255, 0, 0, 255];
+  const BLACK = [0, 0, 0, 255];
+  const WHITE = [255, 255, 255, 255];
+  const CLEAR = [0, 0, 0, 0];
+
+  it("keeps the colour seen most, never a blend", () => {
+    expect([...shrinkPixels(block(RED, RED, RED, WHITE), 2, 2)]).toEqual(RED);
+  });
+
+  it("breaks a tie toward the darker colour, so outlines survive", () => {
+    expect([...shrinkPixels(block(WHITE, BLACK, BLACK, WHITE), 2, 2)]).toEqual(BLACK);
+  });
+
+  it("leaves a mostly clear block clear", () => {
+    expect([...shrinkPixels(block(RED, CLEAR, CLEAR, CLEAR), 2, 2)]).toEqual(CLEAR);
   });
 });

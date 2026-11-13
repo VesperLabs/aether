@@ -100,7 +100,7 @@ export const CardPanel = ({
   pending: PendingCandidate[];
   frame: Frame;
   cell: number;
-  onClose: () => void;
+  onClose?: () => void;
 }) => {
   const stack = useFrameStack(base, layers, pending);
   const [savedRevision, setSavedRevision] = useState(0);

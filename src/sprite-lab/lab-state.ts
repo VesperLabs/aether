@@ -33,8 +33,6 @@ export interface LabState {
   promptTab: CorePromptId;
   /** The sheet a wearable copies; empty uses the one being edited. */
   wearableSheet: string;
-  /** Whether the monster card panel is open. */
-  card: boolean;
   /** The weapon being placed; empty with the weapon panel closed. */
   weapon: string;
   /** Each layer's sheet, as `texture|tint` when tinted; empty for none. */
@@ -76,7 +74,6 @@ export const parseLabState = (search: string): LabState => {
     prompt: params.get("prompt") ?? "",
     promptTab: CORE_PROMPTS.find(({ id }) => id === params.get("tab"))?.id ?? START_CORE_PROMPT,
     wearableSheet: params.get("wearable") ?? "",
-    card: params.has("card"),
     weapon: WEAPON_SHEETS.find(({ texture }) => texture === params.get("weapon"))?.texture ?? "",
     layers: Object.fromEntries(
       HUMAN_LAYERS.map((layer) => {
@@ -103,7 +100,6 @@ export const serializeLabState = ({
   promptTab,
   wearableSheet,
   weapon,
-  card,
   layers,
 }: LabState) => {
   const params = new URLSearchParams();
@@ -117,7 +113,6 @@ export const serializeLabState = ({
   if (promptTab !== START_CORE_PROMPT) params.set("tab", promptTab);
   if (wearableSheet) params.set("wearable", wearableSheet);
   if (weapon) params.set("weapon", weapon);
-  if (card) params.set("card", "");
   HUMAN_LAYERS.forEach((layer) => {
     if (layers[layer] !== startTexture(layer)) params.set(layer, layers[layer]);
   });

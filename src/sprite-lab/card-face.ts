@@ -70,14 +70,68 @@ const isOnCard = (x: number, y: number) =>
   x >= 0 && y >= 0 && x < CARD_SIZE && y < CARD_SIZE && isInDiamond(x, y, CARD_SIZE);
 
 /** The face cut to the card's window, scaled from its crop, with everything outside the diamond clear. */
+/** How dark a pixel looks, to break ties toward outlines and eyes. */
+const getLuminance = (data: Uint8ClampedArray, i: number) =>
+  data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
+
+/**
+ * RGBA pixels shrunk by a whole number, keeping pixel art crisp: each new pixel is the colour
+ * seen most in its `factor` x `factor` block, so every pixel stays one of the sprite's own colours
+ * (averaging would blur them). A tie goes to the darker colour, so thin outlines and eyes survive,
+ * and a block that's mostly clear stays clear.
+ */
+export const shrinkPixels = (data: Uint8ClampedArray, size: number, factor: number) => {
+  const shrunk = size / factor;
+  const out = new Uint8ClampedArray(shrunk * shrunk * 4);
+  for (let y = 0; y < shrunk; y += 1) {
+    for (let x = 0; x < shrunk; x += 1) {
+      const counts = new Map<number, { count: number; index: number }>();
+      for (let dy = 0; dy < factor; dy += 1) {
+        for (let dx = 0; dx < factor; dx += 1) {
+          const i = ((y * factor + dy) * size + x * factor + dx) * 4;
+          if (!data[i + 3]) continue;
+          const color = (data[i] << 16) | (data[i + 1] << 8) | data[i + 2];
+          const seen = counts.get(color);
+          counts.set(color, { count: (seen?.count ?? 0) + 1, index: seen?.index ?? i });
+        }
+      }
+      const opaque = [...counts.values()].reduce((sum, { count }) => sum + count, 0);
+      if (opaque * 2 < factor * factor) continue;
+      const best = [...counts.values()].reduce((a, b) =>
+        b.count > a.count ||
+        (b.count === a.count && getLuminance(data, b.index) < getLuminance(data, a.index))
+          ? b
+          : a,
+      );
+      out.set(data.subarray(best.index, best.index + 4), (y * shrunk + x) * 4);
+    }
+  }
+  return out;
+};
+
+/**
+ * The face cut to the card's window, with everything outside the diamond clear. A small crop is
+ * blown up pixel for pixel; a big one is shrunk to its most common colours, so it stays crisp.
+ */
 export const cutDiamond = (frame: HTMLCanvasElement, { x, y, size: crop }: FaceRect) => {
   const size = FACE_SIZE;
   const face = document.createElement("canvas");
   face.width = size;
   face.height = size;
   const ctx = getCtx(face);
-  ctx.drawImage(frame, x, y, crop, crop, 0, 0, size, size);
-  const pixels = ctx.getImageData(0, 0, size, size);
+  let pixels: ImageData;
+  if (crop > size) {
+    const source = document.createElement("canvas");
+    source.width = crop;
+    source.height = crop;
+    const sourceCtx = getCtx(source);
+    sourceCtx.drawImage(frame, -x, -y);
+    const { data } = sourceCtx.getImageData(0, 0, crop, crop);
+    pixels = new ImageData(shrinkPixels(data, crop, crop / size), size, size);
+  } else {
+    ctx.drawImage(frame, x, y, crop, crop, 0, 0, size, size);
+    pixels = ctx.getImageData(0, 0, size, size);
+  }
   for (let py = 0; py < size; py += 1) {
     for (let px = 0; px < size; px += 1) {
       if (!isInDiamond(px, py, size)) pixels.data[(py * size + px) * 4 + 3] = 0;

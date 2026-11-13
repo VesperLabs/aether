@@ -1,24 +1,20 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   ButtonGroup,
-  DIRECTIONS,
   Field,
   Flex,
   Select,
-  Switch,
   Text,
   TextDivider,
   ThemeUIProvider,
   theme,
 } from "@/ui";
 import type { Theme } from "theme-ui";
-import { isShowingLook, LAB_ACTORS, toKebab } from "./actor-looks";
-import { ActorThumb } from "./actor-thumb";
-import { CardPanel } from "./card-panel";
 import { CHECKER_SX } from "./checker";
 import { DrawPanel } from "./draw-panel";
 import { FloatingPanel } from "./floating-panel";
+import { LabNav } from "./lab-nav";
 import { getFrameKey, setOpenCandidate } from "./open-candidates";
 import { ORIGINAL_TILE_ATTR } from "./generation-list";
 import { useCandidateDrag, type DragItem } from "./use-candidate-drag";
@@ -33,9 +29,9 @@ import {
   dropOtherGender,
   getSheetGender,
   HUMAN_LAYERS,
-  parseLook,
   WEAPON_SHEETS,
 } from "./sheets";
+import { useCharacterSheets } from "./use-character-sheets";
 import { WeaponPanel } from "./weapon-panel";
 
 const ATLAS_OPTIONS = BASE_SHEETS.map((sheet) => getSheetOption(sheet));
@@ -45,18 +41,6 @@ const WEAPON_OPTIONS = [
   ...WEAPON_SHEETS.map((sheet) => getSheetOption(sheet)),
 ];
 
-const CHARACTER_OPTIONS = [
-  { value: "", label: "Custom" },
-  ...LAB_ACTORS.map(({ key, actor, look, isKeeper }) => ({
-    value: key,
-    icon: <ActorThumb actor={actor} look={look} />,
-    label: `${actor.profile.userName} (${isKeeper ? "keeper" : "mob"} ${actor.baseStats.level})`,
-  })),
-];
-
-/** The first frame facing the viewer, which a card uses until another is picked. */
-const FACING_FRAME = { column: 0, row: DIRECTIONS.indexOf("down") };
-
 const PANEL_WIDTH = 340;
 
 const DRAG_GHOST_SIZE = 64;
@@ -64,7 +48,7 @@ const DRAG_GHOST_SIZE = 64;
 export const App = () => {
   const [state, setState] = useState(() => parseLabState(window.location.search));
   const { zoom, layers: textures } = state;
-  const { texture: baseTexture, tint: skinTint } = parseLook(state.atlas);
+  const { baseTexture, base, layers, isHuman } = useCharacterSheets(state.atlas, textures);
 
   const [drawn, setDrawn] = useState<DrawnSheet>();
   const [draws, setDraws] = useState<ActiveDraw[]>([]);
@@ -77,11 +61,6 @@ export const App = () => {
     window.history.replaceState(null, "", search ? `?${search}` : window.location.pathname);
   }, [state]);
 
-  /* Tints are for viewing: the body and layers show them, the sheet being edited never does. */
-  const base = useMemo(() => {
-    const plain = ANIMATED_SHEETS.find(({ texture }) => texture === baseTexture);
-    return plain && { ...plain, tint: skinTint };
-  }, [baseTexture, skinTint]);
   const { pending, revision, refreshPending } = usePendingCandidates();
 
   const copyToFrame = async (item: DragItem, frame: Frame) => {
@@ -108,23 +87,10 @@ export const App = () => {
     if (frame && !isOwnFrame) copyToFrame(item, frame);
   });
 
-  /* Layers are cut to the human body; they'd sit wrong on anything else. */
-  const isHuman = baseTexture === "human";
-  const layers = useMemo(
-    () =>
-      HUMAN_LAYERS.flatMap((layer) => {
-        const { texture, tint } = parseLook(textures[layer]);
-        const sheet = ANIMATED_SHEETS.find((option) => option.texture === texture);
-        return isHuman && sheet ? [{ layer, sheet: { ...sheet, tint } }] : [];
-      }),
-    [textures, isHuman],
-  );
-
-  /* A cleared layer has no sheet to edit, so the atlas takes over. */
+  /* A cleared layer has no sheet to edit, so the atlas takes over. It's looked up plain, as the
+     shown sheets may be tinted and a tint must never be merged into the file. */
   const editLayer = layers.find(({ layer }) => layer === state.target);
   const target = ANIMATED_SHEETS.find(({ src }) => src === (editLayer?.sheet ?? base)?.src);
-  /* The NPC on screen, if the layers are exactly one's; any change by hand makes it custom. */
-  const shownActor = LAB_ACTORS.find(({ look }) => isShowingLook(look, state));
   const weapon = WEAPON_SHEETS.find(({ texture }) => texture === state.weapon);
 
   return (
@@ -132,20 +98,16 @@ export const App = () => {
       <Flex sx={{ gap: 3, p: 3, alignItems: "flex-start", boxSizing: "border-box" }}>
         <FloatingPanel
           id="lab"
-          title={<Text sx={{ fontWeight: "bold" }}>Sprite Lab</Text>}
+          title={
+            <>
+              <Text sx={{ fontWeight: "bold" }}>Sprite Lab</Text>
+              <LabNav />
+            </>
+          }
           width={PANEL_WIDTH}
           start={{ x: 16, y: 16 }}
           overflowing
         >
-          <Select
-            label="Character"
-            value={shownActor?.key ?? ""}
-            options={CHARACTER_OPTIONS}
-            onChange={(key) => {
-              const look = LAB_ACTORS.find((entry) => entry.key === key)?.look;
-              if (look) setState({ ...state, ...look, atlasHidden: false, target: undefined });
-            }}
-          />
           <Field label="Zoom" layout="row">
             <ButtonGroup
               label="Zoom"
@@ -205,11 +167,6 @@ export const App = () => {
               />
             </>
           )}
-          <Switch
-            label="Monster card"
-            checked={state.card}
-            onChange={(e) => setState({ ...state, card: e.target.checked })}
-          />
         </FloatingPanel>
         <Box sx={{ flex: 1, minWidth: 0, overflow: "auto", ml: PANEL_WIDTH + 16 }}>
           {base && (
@@ -252,18 +209,6 @@ export const App = () => {
             onCandidateChanged={refreshPending}
             onCandidateDragStart={startDrag}
             onClose={() => setState({ ...state, frame: undefined })}
-          />
-        )}
-        {state.card && drawn && base && (
-          <CardPanel
-            key={shownActor?.key ?? base.texture}
-            defaultName={shownActor ? toKebab(shownActor.key) : base.texture}
-            base={base}
-            layers={layers}
-            pending={pending}
-            frame={state.frame ?? FACING_FRAME}
-            cell={drawn.cell}
-            onClose={() => setState({ ...state, card: false })}
           />
         )}
         {isHuman && weapon && state.frame && drawn && base && (
