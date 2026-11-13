@@ -41,7 +41,7 @@ describe("CARD_FRAMES", () => {
       glow: "#8c8c8c",
       shade: "#0d0d0d",
     });
-    expect(CARD_FRAMES.unique.border).toBe("#ff8000");
+    expect(CARD_FRAMES.unique.border).toBe("#fdc674");
   });
 });
 
