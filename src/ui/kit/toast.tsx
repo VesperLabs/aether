@@ -27,7 +27,7 @@ const ToastBadge = ({ kind }: { kind: ToastKind }) => (
       bg: "shadow.30",
       border: "1px solid #000",
       boxShadow: "inset 0px 0px 0px 1px rgba(255,255,255,.15)",
-      color: kind === "success" ? "set" : "danger",
+      color: kind === "success" ? "success" : "danger",
     }}
   >
     <svg width={12} height={12} viewBox="0 0 16 16" aria-hidden>

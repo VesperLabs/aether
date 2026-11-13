@@ -184,3 +184,11 @@ export const mergeGeneration = async (generation: Generation) => {
   ctx.drawImage(cellImage, x, y);
   await saveSheet(generation.src, canvas);
 };
+
+/** Saves a card's diamond face, and remembers where the sprite's face is. */
+export const saveCard = (card: {
+  name: string;
+  texture: string;
+  face: { x: number; y: number; size: number };
+  image: HTMLCanvasElement;
+}) => post("/api/cards", { ...card, image: toBase64(card.image) });

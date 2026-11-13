@@ -1,7 +1,8 @@
 import { Box, Field, Select, type SelectOption } from "@/ui";
 import { IconButton } from "./icon-button";
 import { PENDING_COLOR } from "./sheet-canvas";
-import { getSheetOption } from "./sheet-thumb";
+import { getItemLooks } from "./item-looks";
+import { getSheetOption, SheetThumb } from "./sheet-thumb";
 import { fitsGender, getLayerSheets, type HumanLayer } from "./sheets";
 
 const PENDING_DOT = 6;
@@ -36,9 +37,10 @@ export const SheetRow = ({
   value: string;
   options: SelectOption[];
   /** Whether its sheet has a draw open that isn't merged yet. */
-  hasPending: boolean;
-  editing: boolean;
-  onEdit: () => void;
+  hasPending?: boolean;
+  editing?: boolean;
+  /** Offers to edit the sheet; left out where sheets are only picked, not edited. */
+  onEdit?: () => void;
   onChange: (value: string) => void;
 }) => (
   <Field layout="row" label={label} badge={hasPending && <PendingDot />}>
@@ -49,33 +51,50 @@ export const SheetRow = ({
       options={[{ value: "", label: "None" }, ...options]}
       sx={{ flex: 1 }}
     />
-    {value && <IconButton label={`Edit ${label}`} icon="✏️" active={editing} onClick={onEdit} />}
+    {value && onEdit && (
+      <IconButton label={`Edit ${label}`} icon="✏️" active={editing} onClick={onEdit} />
+    )}
     <IconButton label={`Clear ${label}`} icon="❌" disabled={!value} onClick={() => onChange("")} />
   </Field>
 );
 
-/** One worn layer, offering the sheets that fit the chest. */
+/**
+ * One worn layer, offering the sheets that fit the chest, and with `withItems` the tinted items
+ * that wear on it too.
+ */
 export const LayerRow = ({
   layer,
   texture,
   gender,
+  withItems = false,
   ...row
 }: {
   layer: HumanLayer;
   texture: string;
   /** The chest's gender, which narrows the list. */
   gender?: string;
-  hasPending: boolean;
-  editing: boolean;
-  onEdit: () => void;
+  /** Lists real items, tints and all: for dressing a character, not editing sheets. */
+  withItems?: boolean;
+  hasPending?: boolean;
+  editing?: boolean;
+  onEdit?: () => void;
   onChange: (texture: string) => void;
 }) => (
   <SheetRow
     {...row}
     label={layer}
     value={texture}
-    options={getLayerSheets(layer)
-      .filter(({ texture: option }) => fitsGender(option, gender))
-      .map((sheet) => getSheetOption(sheet, sheet.texture.replace(/^human-/, "")))}
+    options={[
+      ...getLayerSheets(layer)
+        .filter(({ texture: option }) => fitsGender(option, gender))
+        .map((sheet) => getSheetOption(sheet, sheet.texture.replace(/^human-/, ""))),
+      ...(withItems ? getItemLooks(layer, gender) : []).map(
+        ({ value, label, texture: sheet, tint }) => ({
+          value,
+          label,
+          icon: <SheetThumb texture={sheet} tint={tint} />,
+        }),
+      ),
+    ]}
   />
 );

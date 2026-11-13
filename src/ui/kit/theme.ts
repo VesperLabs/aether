@@ -10,12 +10,15 @@ export const theme = {
   colors: {
     ...tColors,
     text: tColors.white,
-    unique: tColors.amber[100],
+    /* WoW's legendary orange. */
+    unique: "#ff8000",
     rare: tColors.purple[300],
     set: tColors.lime[300],
     legendary: tColors.purple[300],
     magic: tColors.blue[300],
     common: tColors.white,
+    /* Done, ready or healthy: checkmarks, toasts, active set bonuses. Never borrow `set` for this. */
+    success: tColors.lime[300],
     background: tColors.black,
     danger: tColors.red[300],
     warning: tColors.orange[300],

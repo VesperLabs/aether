@@ -32,7 +32,7 @@ const LIST_SX: ThemeUIStyleObject = {
 export interface SelectOption {
   value: string;
   label: string;
-  /** Shown before the label in the open list. */
+  /** Shown before the label, in the open list and on the closed box. */
   icon?: ReactNode;
 }
 
@@ -88,7 +88,7 @@ export const Select = ({
   };
 
   return (
-    <Box ref={rootRef} sx={{ position: "relative", minWidth: 0, ...sx }}>
+    <Box ref={rootRef} sx={{ position: "relative", width: "100%", minWidth: 0, ...sx }}>
       <Flex
         as="button"
         {...{ type: "button", "aria-haspopup": "listbox", "aria-expanded": open, title: label }}
@@ -108,16 +108,42 @@ export const Select = ({
           textAlign: "left",
         }}
       >
-        <Text
-          sx={{
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-            opacity: selectedIndex < 0 ? 0.5 : 1,
-          }}
-        >
-          {options[selectedIndex]?.label ?? placeholder}
-        </Text>
+        {/* Every option sits in one grid cell, icon and all, unseen but for the chosen one, so the
+            box is always the size of the biggest and never changes with the value. */}
+        <Box sx={{ display: "grid", alignItems: "center", minWidth: 0, flex: 1 }}>
+          {options.map((option) => (
+            <Flex
+              key={option.value}
+              aria-hidden={option.value !== value || undefined}
+              sx={{
+                gridArea: "1 / 1",
+                alignItems: "center",
+                gap: 2,
+                minWidth: 0,
+                visibility: option.value === value ? "visible" : "hidden",
+              }}
+            >
+              {option.icon}
+              <Text sx={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                {option.label}
+              </Text>
+            </Flex>
+          ))}
+          {selectedIndex < 0 && (
+            <Flex sx={{ gridArea: "1 / 1", alignItems: "center", minWidth: 0 }}>
+              <Text
+                sx={{
+                  opacity: 0.5,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {placeholder}
+              </Text>
+            </Flex>
+          )}
+        </Box>
         <Box
           aria-hidden
           sx={{

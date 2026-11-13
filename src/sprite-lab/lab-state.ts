@@ -5,6 +5,7 @@ import {
   getLayerSheets,
   HUMAN_LAYERS,
   WEAPON_SHEETS,
+  parseLook,
   type HumanLayer,
 } from "./sheets";
 
@@ -18,6 +19,7 @@ export type ActiveDraw = { src: string; frame: Frame };
 
 /** Everything on screen; kept in the URL so it survives a refresh and can be linked. */
 export interface LabState {
+  /** The body's texture, as `texture|tint` when its skin is tinted. */
   atlas: string;
   /** Leaves the atlas out of the view. It still sets the sheet's size, and can still be edited. */
   atlasHidden: boolean;
@@ -33,7 +35,7 @@ export interface LabState {
   wearableSheet: string;
   /** The weapon being placed; empty with the weapon panel closed. */
   weapon: string;
-  /** Each layer's sheet; empty for none. */
+  /** Each layer's sheet, as `texture|tint` when tinted; empty for none. */
   layers: Record<HumanLayer, string>;
 }
 
@@ -61,7 +63,9 @@ export const parseLabState = (search: string): LabState => {
   const model = params.get("model");
   const target = HUMAN_LAYERS.find((layer) => layer === params.get("target"));
   return {
-    atlas: BASE_SHEETS.some(({ texture }) => texture === atlas) ? atlas : START_ATLAS,
+    atlas: BASE_SHEETS.some(({ texture }) => texture === parseLook(atlas).texture)
+      ? atlas
+      : START_ATLAS,
     atlasHidden: params.has("no-atlas"),
     zoom: ZOOMS.includes(zoom) ? zoom : START_ZOOM,
     target,
@@ -76,7 +80,8 @@ export const parseLabState = (search: string): LabState => {
         const texture = params.get(layer);
         /* An empty value is a cleared layer. */
         const known =
-          texture === "" || getLayerSheets(layer).some((sheet) => sheet.texture === texture);
+          texture === "" ||
+          getLayerSheets(layer).some((sheet) => sheet.texture === parseLook(texture ?? "").texture);
         return [layer, known && texture !== null ? texture : startTexture(layer)];
       }),
     ) as Record<HumanLayer, string>,

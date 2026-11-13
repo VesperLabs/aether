@@ -12,7 +12,7 @@ export const ModalHome = () => {
         <Modal.Body>
           <Box sx={{ maxWidth: 300, whiteSpace: "normal", lineHeight: 1.5 }}>
             You are about to make{" "}
-            <Text color="set" sx={{ fontWeight: "bold" }}>
+            <Text color="success" sx={{ fontWeight: "bold" }}>
               {startCaseLower(keeper?.roomName)}
             </Text>{" "}
             your new home. When you die, you will respawn here.

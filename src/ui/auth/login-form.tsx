@@ -26,7 +26,7 @@ const RememberedCheck = () => (
       right: 2,
       top: "50%",
       transform: "translateY(-50%)",
-      color: "set",
+      color: "success",
       lineHeight: 0,
     }}
   >

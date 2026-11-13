@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   ButtonGroup,
@@ -14,6 +14,7 @@ import type { Theme } from "theme-ui";
 import { CHECKER_SX } from "./checker";
 import { DrawPanel } from "./draw-panel";
 import { FloatingPanel } from "./floating-panel";
+import { LabNav } from "./lab-nav";
 import { getFrameKey, setOpenCandidate } from "./open-candidates";
 import { ORIGINAL_TILE_ATTR } from "./generation-list";
 import { useCandidateDrag, type DragItem } from "./use-candidate-drag";
@@ -30,6 +31,7 @@ import {
   HUMAN_LAYERS,
   WEAPON_SHEETS,
 } from "./sheets";
+import { useCharacterSheets } from "./use-character-sheets";
 import { WeaponPanel } from "./weapon-panel";
 
 const ATLAS_OPTIONS = BASE_SHEETS.map((sheet) => getSheetOption(sheet));
@@ -45,7 +47,8 @@ const DRAG_GHOST_SIZE = 64;
 
 export const App = () => {
   const [state, setState] = useState(() => parseLabState(window.location.search));
-  const { atlas: baseTexture, zoom, layers: textures } = state;
+  const { zoom, layers: textures } = state;
+  const { baseTexture, base, layers, isHuman } = useCharacterSheets(state.atlas, textures);
 
   const [drawn, setDrawn] = useState<DrawnSheet>();
   const [draws, setDraws] = useState<ActiveDraw[]>([]);
@@ -58,7 +61,6 @@ export const App = () => {
     window.history.replaceState(null, "", search ? `?${search}` : window.location.pathname);
   }, [state]);
 
-  const base = ANIMATED_SHEETS.find(({ texture }) => texture === baseTexture);
   const { pending, revision, refreshPending } = usePendingCandidates();
 
   const copyToFrame = async (item: DragItem, frame: Frame) => {
@@ -85,20 +87,10 @@ export const App = () => {
     if (frame && !isOwnFrame) copyToFrame(item, frame);
   });
 
-  /* Layers are cut to the human body; they'd sit wrong on anything else. */
-  const isHuman = baseTexture === "human";
-  const layers = useMemo(
-    () =>
-      HUMAN_LAYERS.flatMap((layer) => {
-        const sheet = ANIMATED_SHEETS.find(({ texture }) => texture === textures[layer]);
-        return isHuman && sheet ? [{ layer, sheet }] : [];
-      }),
-    [textures, isHuman],
-  );
-
-  /* A cleared layer has no sheet to edit, so the atlas takes over. */
+  /* A cleared layer has no sheet to edit, so the atlas takes over. It's looked up plain, as the
+     shown sheets may be tinted and a tint must never be merged into the file. */
   const editLayer = layers.find(({ layer }) => layer === state.target);
-  const target = editLayer?.sheet ?? base;
+  const target = ANIMATED_SHEETS.find(({ src }) => src === (editLayer?.sheet ?? base)?.src);
   const weapon = WEAPON_SHEETS.find(({ texture }) => texture === state.weapon);
 
   return (
@@ -106,7 +98,12 @@ export const App = () => {
       <Flex sx={{ gap: 3, p: 3, alignItems: "flex-start", boxSizing: "border-box" }}>
         <FloatingPanel
           id="lab"
-          title={<Text sx={{ fontWeight: "bold" }}>Sprite Lab</Text>}
+          title={
+            <>
+              <Text sx={{ fontWeight: "bold" }}>Sprite Lab</Text>
+              <LabNav />
+            </>
+          }
           width={PANEL_WIDTH}
           start={{ x: 16, y: 16 }}
           overflowing

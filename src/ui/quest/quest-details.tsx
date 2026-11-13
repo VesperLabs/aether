@@ -36,7 +36,7 @@ export const QuestDetails = ({
         alignItems: "center",
         justifyContent: "center",
         flexDirection: "column",
-        "& strong": { fontStyle: "normal", color: done ? "set" : "warning" },
+        "& strong": { fontStyle: "normal", color: done ? "success" : "warning" },
       }}
     >
       <Text sx={{ fontWeight: "bold" }}>

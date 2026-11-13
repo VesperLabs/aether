@@ -115,7 +115,7 @@ export const MenuKeeper = () => {
               }}
             >
               <Text sx={{ lineHeight: 1.5 }}>
-                <Text as="span" sx={{ fontWeight: "bold", color: "set" }}>
+                <Text as="span" sx={{ fontWeight: "bold", color: "success" }}>
                   {keeper?.profile?.userName}:{" "}
                 </Text>
                 <Text

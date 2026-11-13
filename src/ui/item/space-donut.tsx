@@ -8,7 +8,7 @@ export const SpaceDonut = ({ percent = 0 }: { percent?: number }) => {
     if (percent > 0.5) {
       return "yellow.200";
     }
-    return "set";
+    return "success";
   };
   return (
     <Donut

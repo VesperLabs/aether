@@ -15,6 +15,7 @@ import {
   PlayerRender,
   WalkingSprite,
   previewSize,
+  theme,
 } from "@/ui";
 import { ACTORS } from "./actor-parts";
 import { useQuery } from "@tanstack/react-query";
@@ -42,16 +43,21 @@ export type FeaturedCard = {
   art: () => ReactNode;
 };
 
+/** A shade of a colour family from the game's palette, the same one its rarity colours come from. */
+const shade = (family: string, step: number) =>
+  (theme.colors as unknown as Record<string, Record<number, string>>)[family][step];
+
 /**
- * Category colours, readable on paper: item rarities are deeper versions of the game's rarity
- * colours, and each kind of character has its own.
+ * Category colours, readable on paper: item rarities are deeper shades of the game's rarity
+ * colours (orange, purple, lime, blue), and each kind of character has its own. Common is the
+ * game's white, so it takes the ink colour.
  */
 export const CARD_COLORS: Record<string, string> = {
   common: "#6b5a48",
-  magic: "#2563eb",
-  rare: "#7e22ce",
-  unique: "#b45309",
-  set: "#4d7c0f",
+  magic: shade("blue", 600),
+  rare: shade("purple", 700),
+  unique: shade("orange", 700),
+  set: shade("lime", 700),
   character: "#0f766e",
   drop: "#b91c1c",
   shop: "#0f766e",
