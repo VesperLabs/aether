@@ -6,9 +6,9 @@ export const ModalHome = () => {
   const icon = `./assets/icons/pen.png`;
   return keeper ? (
     <>
-      <Modal.Overlay sx={{ backgroundColor: "shadow.50" }} />
+      <Modal.Overlay sx={{ backgroundColor: "shadow.50" }} onClick={() => setHomeModal(null)} />
       <Modal zoom={zoom} bottomOffset={bottomOffset}>
-        <Modal.Header icon={icon}>Please confirm</Modal.Header>
+        <Modal.Header icon={icon}>Confirm Home?</Modal.Header>
         <Modal.Body>
           <Box sx={{ maxWidth: 300, whiteSpace: "normal", lineHeight: 1.5 }}>
             You are about to make{" "}
@@ -19,6 +19,9 @@ export const ModalHome = () => {
           </Box>
         </Modal.Body>
         <Modal.Footer>
+          <KeyboardButton sx={{ flex: 1 }} onClick={() => setHomeModal(null)} keyboardKey="ESCAPE">
+            Cancel
+          </KeyboardButton>
           <KeyboardButton
             sx={{ flex: 1 }}
             onClick={() => {
@@ -27,10 +30,7 @@ export const ModalHome = () => {
             }}
             keyboardKey="ENTER"
           >
-            Okay
-          </KeyboardButton>
-          <KeyboardButton sx={{ flex: 1 }} onClick={() => setHomeModal(null)} keyboardKey="ESCAPE">
-            Close
+            Set Home
           </KeyboardButton>
         </Modal.Footer>
       </Modal>
