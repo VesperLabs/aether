@@ -1,5 +1,4 @@
 import type Phaser from "phaser";
-import { keepAiming } from "@/client/views/player-actions";
 import type { SceneHud } from "@/client/scenes/hud-scene";
 import type { SceneMain } from "@/client/scenes/main-scene";
 import { playAudio } from "@/client/audio/play-audio";
@@ -155,7 +154,6 @@ export function addGlobalEventListeners(scene: SceneHud) {
     lastThrowAt = Date.now();
     updateThrowCooldown(item.base as string);
     socket.emit("throwItem", { location, item: { id: item.id }, angle: hero.state.lastAngle ?? 0 });
-    keepAiming(hero);
   };
   window.addEventListener("HERO_ABILITY", (e) => {
     const hero = mainScene?.hero;

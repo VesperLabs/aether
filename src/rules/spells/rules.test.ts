@@ -205,6 +205,15 @@ describe("spell damage", () => {
     expect(result.eleDamage).toBe(11);
     expect(result.elements).toEqual(["fire"]);
   });
+  it("a crit leaves a damage the spell lacks at 0", () => {
+    expect(
+      rollSpellCrit(
+        { eleDamage: 4, holyDamage: 0 },
+        { critChance: 100, critMultiplier: 2 },
+        () => 0,
+      ),
+    ).toEqual({ isCritical: true, eleDamage: 8, holyDamage: 0 });
+  });
   it("crits scale both damages by the multiplier", () => {
     expect(
       rollSpellCrit(

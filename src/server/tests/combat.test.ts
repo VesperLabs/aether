@@ -1,6 +1,7 @@
 // @vitest-environment node
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { decodeTickVitals } from "@/network/sync";
+import { applyAttackDamage, applySpellDamage } from "@/server/character-combat";
 import { once, startTestServer, type TestServer } from "./test-server";
 
 /** Combat, spells and buffs over real sockets against the in-process game server. */
@@ -307,5 +308,31 @@ describe("buffs", () => {
     socket.emit("attack", { count: 1, direction: "down", castAngle: 0 });
     await server.run(socket, 200);
     expect(events.modifyPlayerStat.filter((e) => e.type === "sp")).toHaveLength(0);
+  });
+});
+
+describe("killing blows", () => {
+  it("a spell that kills lands none of its debuffs", async () => {
+    const { world, player } = await login("mage");
+    const { mob } = weakMobNear(world, player, { x: 0, y: 0 });
+    const hits = applySpellDamage(player, mob, {
+      effects: { minWaterDamage: 5, maxWaterDamage: 5 },
+      buffs: { slow: 1 },
+    } as Anything);
+    expect(mob.state.isDead).toBe(true);
+    expect(hits.some((hit) => hit.type === "buff")).toBe(false);
+    expect(mob.buffs.some((buff: Anything) => buff.name === "slow")).toBe(false);
+  });
+
+  it("a swing that kills lands none of its debuffs", async () => {
+    const { world, player } = await login("warrior");
+    const { mob } = weakMobNear(world, player, { x: 0, y: 0 });
+    player.stats.triggers = [
+      { event: "onAttackHit", type: "debuff", name: "slow", level: 1, chance: 1 },
+    ];
+    const hits = applyAttackDamage(player, mob, { buffs: { stun: 1 } } as Anything);
+    expect(mob.state.isDead).toBe(true);
+    expect(hits.some((hit) => hit.type === "buff" && hit.to === mob.id)).toBe(false);
+    expect(mob.buffs).toHaveLength(0);
   });
 });

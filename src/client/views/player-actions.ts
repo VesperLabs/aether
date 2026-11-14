@@ -1,6 +1,6 @@
 import { distanceTo } from "@/rules/world";
 import { getAbilityCosts, getCastAction, hasStaminaFor } from "@/rules/combat";
-import { isAimed, type AbilitySlot } from "@/rules/spells";
+import type { AbilitySlot } from "@/rules/spells";
 import { getSpinDirection } from "@/client/input/spin-direction";
 import type { Player } from "./player";
 import { Spell } from "./spell";
@@ -11,14 +11,6 @@ import type { LootItem } from "./loot-item";
 const PLAYER_GRAB_RANGE = 32;
 /** How long an instant cast holds the attack frame, in ms. */
 const CAST_POSE_MS = 300;
-/** How long the hero keeps facing its aim after a throw or cast, like a bow after its shot. */
-const KEEP_AIMING_MS = 500;
-
-/** Keeps the hero turned to its aim for a moment, so walking off reads as backing away. */
-export function keepAiming(player: Player) {
-  if (player.isHero) player.keepAimingUntil = Date.now() + KEEP_AIMING_MS;
-}
-
 /** What an attack or a cast needs from the server message that triggered it. */
 export interface CastArgs {
   castAngle?: number;
@@ -112,7 +104,6 @@ export function doCast(player: Player, { abilitySlot, castAngle }: CastArgs) {
   }
   holdCastPose(player, CAST_POSE_MS);
   const isDash = ability.spell.delivery.type === "dash";
-  if (isAimed(ability.spell) && !isDash) keepAiming(player);
   /* Lunges dash the caster: the hero moves itself, others just leave the trail */
   if (isDash) {
     player.state.lungeAt = Date.now();

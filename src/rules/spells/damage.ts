@@ -50,8 +50,9 @@ export function rollSpellCrit(
     const multiplier = casterStats?.critMultiplier || 1;
     return {
       isCritical: true,
-      eleDamage: Math.floor(Math.max(1, eleDamage * multiplier)),
-      holyDamage: Math.floor(Math.max(1, holyDamage * multiplier)),
+      /* Only a damage the spell has gets scaled: a crit must not add holy to a waterball */
+      eleDamage: eleDamage > 0 ? Math.floor(Math.max(1, eleDamage * multiplier)) : 0,
+      holyDamage: holyDamage > 0 ? Math.floor(Math.max(1, holyDamage * multiplier)) : 0,
     };
   }
   return { isCritical: false, eleDamage, holyDamage };

@@ -71,23 +71,19 @@ export function applySpellDamage(
   const elements = rolled.elements as Elements[];
   let { eleDamage, holyDamage } = rolled;
 
-  // add buffs if the spell has any
-  if (buffs) {
-    Object.entries(buffs as Record<string, number>).forEach(([name, level]) => {
-      hits.push({
-        type: "buff",
-        from: attacker.id,
-        buffName: name,
-        elements,
-        to: victim.id,
-      });
-
+  /* The spell's buffs land with it, unless it killed: the dead take no debuffs */
+  const addSpellBuffs = () => {
+    for (const [name, level] of Object.entries((buffs ?? {}) as Record<string, number>)) {
+      hits.push({ type: "buff", from: attacker.id, buffName: name, elements, to: victim.id });
       victim.addBuff({ name, level, caster: attacker });
-    });
-  }
+    }
+  };
 
   // the spell doesnt do damage,
-  if (!Object.entries(effects)?.length) return hits;
+  if (!Object.entries(effects)?.length) {
+    addSpellBuffs();
+    return hits;
+  }
 
   // Spell Crits
   const crit = rollSpellCrit({ eleDamage, holyDamage }, attacker.stats, victim.world.rng);
@@ -139,6 +135,7 @@ export function applySpellDamage(
     });
   }
 
+  addSpellBuffs();
   return hits;
 }
 
@@ -176,10 +173,12 @@ export function applyAttackDamage(
   victim.modifyStat("hp", -totalDamage);
 
   if (totalDamage > 0) markHurt(attacker, victim, totalDamage);
+  /* A killing blow procs nothing on the victim: the dead take no buffs or debuffs */
+  const isKilled = victim.stats.hp <= 0;
 
   /* Buffs the attack-spell casts (tackle's stun) land with the hit, as a spell's do */
   for (const [name, level] of Object.entries(
-    (abilityDetails?.buffs ?? {}) as Record<string, number>,
+    (isKilled ? {} : (abilityDetails?.buffs ?? {})) as Record<string, number>,
   )) {
     hits.push({ type: "buff", from: attacker.id, buffName: name, elements, to: victim.id });
     victim.addBuff({ name, level, caster: attacker });
@@ -192,11 +191,13 @@ export function applyAttackDamage(
     victim.world.rng,
   )) {
     const to = target === "self" ? attacker : victim;
+    if (isKilled && to === victim) continue;
     hits.push({ type: "buff", from: attacker.id, buffName: name, elements, to: to.id });
     to.addBuff({ name, level, caster: attacker });
   }
   // onHurt triggers if we have them
-  for (const { name, level } of rollTriggers(victim?.stats?.triggers, "onHurt", victim.world.rng)) {
+  const victimTriggers = isKilled ? [] : victim?.stats?.triggers;
+  for (const { name, level } of rollTriggers(victimTriggers, "onHurt", victim.world.rng)) {
     hits.push({ type: "buff", from: attacker.id, buffName: name, elements, to: victim.id });
     victim.addBuff({ name, level, caster: attacker });
   }

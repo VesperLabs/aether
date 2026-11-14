@@ -150,9 +150,8 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
     lastAngle = Math.atan2(stick.y, stick.x);
   }
 
-  /* Just after a throw or cast, keep facing the aim: walking off backs away, like after a bow shot */
-  const isKeepingAim = Date.now() < (hero.keepAimingUntil ?? 0);
-  const isFacingAim = hero.state.isAiming || isKeepingAim;
+  /* Only a held aim turns the body: once the shot goes, the hero faces the way it walks */
+  const isFacingAim = hero.state.isAiming;
 
   /* Spin hero when aiming */
   if (isFacingAim || hero.state.isAimingDodge) {
@@ -179,10 +178,10 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
     }
   }
 
-  /* With a controller, the right stick turns the hero while it attacks (no aimer shown), so
-   * swings go where it points while the left stick walks. Walking alone faces the way you go */
-  const isAttacking = hero.state.isAttacking || hero.state.isHoldingAttack;
-  if (isAttacking && !hero.state.isAiming && getLastDevice() === "gamepad") {
+  /* With a controller, the right stick turns the hero while the attack button is held (no aimer
+   * shown), so swings go where it points while the left stick walks. Once a shot goes, or walking
+   * alone, the hero faces the way it walks */
+  if (hero.state.isHoldingAttack && !hero.state.isAiming && getLastDevice() === "gamepad") {
     const aim = getGamepadAim();
     const angle = getGamepadAimAngle();
     if ((aim.x || aim.y) && angle !== null) {
