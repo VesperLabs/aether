@@ -105,10 +105,10 @@ describe("balance table", () => {
     expect(rows.length).toBe(LEVELS.length);
   });
 
-  it("kills a same-level mob in a handful of geared hits at every level", () => {
+  it("takes a real fight (5 to 12 geared hits) to kill a same-level mob at every level", () => {
     for (const row of rows) {
-      expect(row.hitsToKill, `level ${row.level}`).toBeGreaterThanOrEqual(3);
-      expect(row.hitsToKill, `level ${row.level}`).toBeLessThanOrEqual(8);
+      expect(row.hitsToKill, `level ${row.level}`).toBeGreaterThanOrEqual(5);
+      expect(row.hitsToKill, `level ${row.level}`).toBeLessThanOrEqual(12);
     }
   });
 

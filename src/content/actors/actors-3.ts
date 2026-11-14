@@ -241,12 +241,15 @@ export const actors3 = {
     behaviors: { fight: { starts: "onSight" } },
     baseStats: {
       level: 13,
+      maxHp: 600,
       walkSpeed: 10,
       earthResistance: 50,
       fireResistance: -15,
       blockChance: 5,
     },
     hitBoxSize: { width: 78, height: 72 },
+    // Quake punishes standing in her roots; tackle catches anyone backing off to wait out her swings.
+    abilities: { "1": "quake2", "2": "tackle" },
     drops: [{ item: "bigMommaCard", chance: 500 }],
   },
   wolf: {

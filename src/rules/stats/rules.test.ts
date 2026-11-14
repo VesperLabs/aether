@@ -16,22 +16,32 @@ const warrior = (overrides: Partial<StatsInput> = {}): StatsInput => ({
 });
 
 describe("calculateExpValue", () => {
-  it("is half the higher level, at least 3", () => {
-    expect(calculateExpValue({ playerLevel: 1, mobLevel: 1 })).toBe(3);
-    expect(calculateExpValue({ playerLevel: 10, mobLevel: 10 })).toBe(5);
-    expect(calculateExpValue({ playerLevel: 5, mobLevel: 20 })).toBe(10);
-    expect(calculateExpValue({ playerLevel: 20, mobLevel: 15 })).toBe(10);
+  it("is a 25th of the exp bar at the mob's level, at least 5", () => {
+    expect(calculateExpValue({ playerLevel: 1, mobLevel: 1 })).toBe(5);
+    expect(calculateExpValue({ playerLevel: 10, mobLevel: 10 })).toBe(calculateNextMaxExp(10) / 25);
+    expect(calculateExpValue({ playerLevel: 13, mobLevel: 13 })).toBe(42);
   });
 
-  it("is zero when the player is more than 5 levels above the mob", () => {
+  it("gives 10% more per level the mob is above, up to 5 levels", () => {
+    const even = calculateNextMaxExp(12) / 25;
+    expect(calculateExpValue({ playerLevel: 10, mobLevel: 12 })).toBe(Math.round(even * 1.2));
+    expect(calculateExpValue({ playerLevel: 1, mobLevel: 20 })).toBe(
+      Math.round((calculateNextMaxExp(20) / 25) * 1.5),
+    );
+  });
+
+  it("gives 15% less per level the mob is below, and nothing past 5", () => {
+    const even = calculateNextMaxExp(10) / 25;
+    expect(calculateExpValue({ playerLevel: 12, mobLevel: 10 })).toBe(Math.round(even * 0.7));
+    expect(calculateExpValue({ playerLevel: 15, mobLevel: 10 })).toBe(Math.round(even * 0.25));
     expect(calculateExpValue({ playerLevel: 16, mobLevel: 10 })).toBe(0);
-    expect(calculateExpValue({ playerLevel: 15, mobLevel: 10 })).toBe(7);
   });
 
   it("reads levels the way parseInt does and treats junk as 0", () => {
-    expect(calculateExpValue({ playerLevel: "12", mobLevel: "12abc" })).toBe(6);
-    expect(calculateExpValue({ playerLevel: undefined, mobLevel: "x" })).toBe(3);
-    expect(calculateExpValue({ playerLevel: 5, mobLevel: undefined })).toBe(3);
+    expect(calculateExpValue({ playerLevel: "12", mobLevel: "12abc" })).toBe(
+      calculateExpValue({ playerLevel: 12, mobLevel: 12 }),
+    );
+    expect(calculateExpValue({ playerLevel: undefined, mobLevel: "x" })).toBe(5);
     expect(calculateExpValue({ playerLevel: 12, mobLevel: undefined })).toBe(0);
   });
 });

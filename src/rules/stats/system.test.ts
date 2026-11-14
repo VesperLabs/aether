@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import type { MobKilledEvent } from "../events";
 import { createGameEventBus } from "../world";
+import { calculateExpValue } from "./rules";
 import { expForMobKill, subscribeStats } from "./system";
 
 const kill = (overrides: Partial<MobKilledEvent> = {}): MobKilledEvent => ({
@@ -19,9 +20,8 @@ const kill = (overrides: Partial<MobKilledEvent> = {}): MobKilledEvent => ({
 
 describe("expForMobKill", () => {
   it("uses the killer's level and the mob's level", () => {
-    expect(expForMobKill(kill())).toBe(5);
+    expect(expForMobKill(kill())).toBe(calculateExpValue({ playerLevel: 10, mobLevel: 10 }));
     expect(expForMobKill(kill({ killerLevel: 30, mobLevel: 10 }))).toBe(0);
-    expect(expForMobKill(kill({ killerLevel: 1, mobLevel: 40 }))).toBe(20);
   });
 });
 
@@ -33,8 +33,8 @@ describe("subscribeStats", () => {
     const event = kill();
     bus.emit("mobKilled", event);
     expect(award).toHaveBeenCalledTimes(2);
-    expect(award).toHaveBeenNthCalledWith(1, "p1", 5, event);
-    expect(award).toHaveBeenNthCalledWith(2, "p2", 5, event);
+    expect(award).toHaveBeenNthCalledWith(1, "p1", expForMobKill(event), event);
+    expect(award).toHaveBeenNthCalledWith(2, "p2", expForMobKill(event), event);
   });
 
   it("stops awarding after unsubscribing", () => {

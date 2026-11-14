@@ -21,7 +21,10 @@ export function defenseReduction(defense: number, attackerLevel: number): number
   return d / (d + DEFENSE_PER_POWER * levelPower(attackerLevel));
 }
 
-/** A monster's HP at its level, before its own `maxHp` override. */
+/**
+ * A monster's HP at its level, before its own `maxHp` override. Grows faster than the power curve,
+ * since players' attributes and gear mods add damage on top of it.
+ */
 export function monsterHealth(level: number): number {
-  return Math.round(18 * levelPower(level));
+  return Math.round(18 * levelPower(level) ** 1.5);
 }
