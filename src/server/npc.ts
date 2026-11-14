@@ -41,7 +41,7 @@ import {
 } from "@/rules/world";
 import { isRoomWatched } from "./room-index";
 import { afterWindup, cancelWindup, emitNpcWindup, type WindupTrack } from "./npc-windup";
-import { isNextToSolidTile, isOutOfMap } from "@/rules/movement";
+import { habitatMap, isNextToSolidTile, isOutOfHabitat, type Habitat } from "@/rules/movement";
 
 /** An actor as content defines it, before it is placed in a world. */
 // Legacy: `NpcArgs` mixes content with placement; type this as `ActorDefinition` once they split.
@@ -60,6 +60,7 @@ type NpcArgs = CharacterArgs & {
   drops?: Array<Drop>;
   hitBoxSize?: { width: number; height: number };
   behaviors?: ActorBehaviors;
+  habitat?: Habitat;
   windupMs?: number;
 };
 
@@ -98,6 +99,7 @@ export class Npc extends Character {
   public windup: WindupTrack = { seq: 0 };
   /** What it does: its actor's behaviors with its map spawn's merged over them. */
   public behaviors?: ActorBehaviors;
+  public habitat?: Habitat; // unset walks on land
   /** From content; unset means the default warning delay. */
   public windupMs?: number;
   /** Content name of the NPC it follows, from a `leader` map property. */
@@ -132,6 +134,7 @@ export class Npc extends Character {
     /* Followers are picked per spawn: a `leader` map property makes this one follow. */
     this.leaderName = (this.state as { leader?: string }).leader;
     this.behaviors = args.behaviors;
+    this.habitat = args.habitat;
     this.windupMs = args.windupMs;
     this.calculateStats(true);
   }
@@ -196,11 +199,13 @@ export class Npc extends Character {
   checkInRange(target: Point, range: number) {
     return checkInRange(this, target, range);
   }
+  /** The room's map with what is outside its habitat as wall. */
+  movementMap = () => habitatMap(this.room.map, this, this.habitat);
   isNearCollideTile() {
-    return isNextToSolidTile(this.room.map.grid, this.x, this.y);
+    return isNextToSolidTile(this.movementMap().grid, this.x, this.y);
   }
   isOutOfBounds() {
-    return isOutOfMap(this.room.map, this.x, this.y);
+    return isOutOfHabitat(this.room.map, this, this.habitat);
   }
   update(time: number, delta: number, now = this.world.now()) {
     const { state, room } = this ?? {};

@@ -90,6 +90,8 @@ export interface ActorDefinition {
   readonly state?: { readonly noWorldDrops?: boolean };
   /** What it does, merged over the defaults (see `behaviors.ts`). */
   readonly behaviors?: ActorBehaviors;
+  /** `land` (default) keeps out of water; `water` swims, keeps to it and isn't slowed in it. */
+  readonly habitat?: "land" | "water";
   /** Items it can drop when it dies. */
   readonly drops?: readonly ItemDrop[];
   readonly dialogues?: ActorDialogues;

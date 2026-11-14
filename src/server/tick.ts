@@ -5,6 +5,7 @@ import {
   moveBodyFreely,
   moveBodyThroughMap,
   nudgeBodyThroughMap,
+  terrainSpeedScale,
 } from "@/rules/movement";
 import { groupByRoom, type Frame, type System } from "@/rules/world";
 import { encodeRoomPoses, takeChangedStatuses } from "@/network";
@@ -25,7 +26,9 @@ const moveNpcs: System<ServerWorld> = (world, { delta }) => {
   const seconds = Math.min(delta, MAX_STEP_MS) / 1000;
   for (const npc of Object.values(world.npcs)) {
     if (!npc.room || npc.state?.isDead) continue;
-    moveBodyThroughMap(npc.room.map, npc, seconds);
+    /* Wading slows it the same way it slows players */
+    const slowed = seconds * terrainSpeedScale(npc.room.map.grid, npc, npc.habitat);
+    moveBodyThroughMap(npc.movementMap(), npc, slowed);
   }
 };
 
@@ -43,7 +46,7 @@ const separateNpcs: System<ServerWorld> = (world, { delta }) => {
       .near(npc, SEPARATION_RANGE)
       .map((player) => ({ id: player.id, x: player.x, y: player.y, isFixed: true }));
     const push = getSeparationPush(npc, [...npcs, ...players], undefined, maxPush);
-    if (push.x || push.y) nudgeBodyThroughMap(npc.room.map, npc, push);
+    if (push.x || push.y) nudgeBodyThroughMap(npc.movementMap(), npc, push);
   }
 };
 

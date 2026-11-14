@@ -13,6 +13,7 @@ import {
   isDodging,
   isKnockedBack,
   isLunging,
+  WATER_SPEED_SCALE,
 } from "@/rules/movement";
 import { emitPlayerInput } from "@/client/net/player-input";
 import { updateAttackCooldown, updateSpellCooldown } from "./hero-cooldowns";
@@ -24,6 +25,7 @@ import { isMenuMode } from "./pad-nav";
 import { heldSince } from "./held-keys";
 import { getBindings, type BindAction } from "./key-bindings";
 import type { Player } from "@/client/views/player";
+import { isWaterAt } from "@/client/scenes/water-tiles";
 import type { SceneMain } from "@/client/scenes/main-scene";
 
 const { Between } = Phaser.Math.Angle;
@@ -122,7 +124,9 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
     return;
   }
 
-  const walkSpeed = hero.stats.walkSpeed;
+  /* Wading through water is slow; the server checks against full speed, so this only ever undershoots */
+  const walkSpeed =
+    hero.stats.walkSpeed * (isWaterAt(mainScene.map, hero.x, hero.y) ? WATER_SPEED_SCALE : 1);
   const joystick = scene.joystick;
 
   const isHeld = (action: BindAction) => (heldAction(action) === undefined ? 0 : 1);

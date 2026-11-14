@@ -46,6 +46,8 @@ export interface TileGrid {
   tileHeight: number;
   /** `solid[y][x]` is true when the tile blocks movement. */
   solid: boolean[][];
+  /** `water[y][x]` is true on a water tile: walkable, but slow and only half out of it. */
+  water: boolean[][];
 }
 
 export interface TileMap {
@@ -62,32 +64,37 @@ const COLLIDE_LAYER = "Collide";
 /* The top bits of a Tiled tile id are flip flags. */
 const GID_MASK = 0x1fffffff;
 
-const hasCollidesProperty = (properties: TiledProperty[] | undefined) =>
-  !!properties?.some((p) => p.name === "collides" && p.value === true);
+const hasTrueProperty = (properties: TiledProperty[] | undefined, name: string) =>
+  !!properties?.some((p) => p.name === name && p.value === true);
 
-/** Which global tile ids are marked `collides: true` in their tileset, as a lookup. */
-function collidingGids(tilesets: TiledTileset[]): Set<number> {
+/** Which global tile ids have the bool property `name` set in their tileset, as a lookup. */
+function gidsWith(tilesets: TiledTileset[], name: string): Set<number> {
   const gids = new Set<number>();
   for (const tileset of tilesets) {
     for (const tile of tileset.tiles ?? []) {
-      if (hasCollidesProperty(tile.properties)) gids.add(tileset.firstgid + tile.id);
+      if (hasTrueProperty(tile.properties, name)) gids.add(tileset.firstgid + tile.id);
     }
   }
   return gids;
 }
 
-/** Reads the collide layer of a map into a grid of solid tiles. */
+/** Reads the collide layer of a map into grids of solid (`collides`) and `water` tiles. */
 export function buildTileGrid(map: TiledMapJson, layerName = COLLIDE_LAYER): TileGrid {
   const layer = map.layers.find((l) => l.name === layerName && l.type === "tilelayer");
-  const gids = collidingGids(map.tilesets);
+  const solidGids = gidsWith(map.tilesets, "collides");
+  const waterGids = gidsWith(map.tilesets, "water");
   const solid: boolean[][] = [];
+  const water: boolean[][] = [];
   for (let y = 0; y < map.height; y++) {
-    const row: boolean[] = [];
+    const solidRow: boolean[] = [];
+    const waterRow: boolean[] = [];
     for (let x = 0; x < map.width; x++) {
       const gid = (layer?.data?.[y * map.width + x] ?? 0) & GID_MASK;
-      row.push(gid > 0 && gids.has(gid));
+      solidRow.push(gid > 0 && solidGids.has(gid));
+      waterRow.push(gid > 0 && waterGids.has(gid));
     }
-    solid.push(row);
+    solid.push(solidRow);
+    water.push(waterRow);
   }
   return {
     width: map.width,
@@ -95,6 +102,7 @@ export function buildTileGrid(map: TiledMapJson, layerName = COLLIDE_LAYER): Til
     tileWidth: map.tilewidth,
     tileHeight: map.tileheight,
     solid,
+    water,
   };
 }
 
@@ -120,6 +128,16 @@ export function getObjectProperty<T = unknown>(object: TiledObject, name: string
 /** True when the tile at this tile position blocks movement. Outside the map nothing is solid. */
 export function isSolidTile(grid: TileGrid, tileX: number, tileY: number): boolean {
   return grid.solid[tileY]?.[tileX] === true;
+}
+
+/** True when the tile at this tile position is water. */
+function isWaterTile(grid: TileGrid, tileX: number, tileY: number): boolean {
+  return grid.water[tileY]?.[tileX] === true;
+}
+
+/** Is the world point (x, y) on a water tile? */
+export function isInWater(grid: TileGrid, x: number, y: number): boolean {
+  return isWaterTile(grid, worldToTileX(grid, x), worldToTileY(grid, y));
 }
 
 export const worldToTileX = (grid: TileGrid, x: number) => Math.floor(x / grid.tileWidth);

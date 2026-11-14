@@ -3,6 +3,8 @@ import type { TileGrid } from "./tilemap";
 
 /** How many tiles one search may visit before giving up, enough to cross the largest map. */
 const MAX_ITERATIONS = 50_000;
+/** A water tile costs this many land tiles to path through. */
+const WATER_PATH_COST = 3;
 
 export interface Pathfinder {
   easystar: EasyStar.js;
@@ -16,14 +18,18 @@ export interface Pathfinder {
  */
 export function createPathfinder(grid: TileGrid): Pathfinder {
   const easystar = new EasyStar.js();
-  easystar.setGrid(grid.solid.map((row) => row.map((solid) => (solid ? 1 : 0))));
+  easystar.setGrid(
+    grid.solid.map((row, y) => row.map((solid, x) => (solid ? 1 : grid.water[y][x] ? 2 : 0))),
+  );
   easystar.enableSync();
-  easystar.setAcceptableTiles([0]);
+  easystar.setAcceptableTiles([0, 2]);
   easystar.enableDiagonals();
   easystar.disableCornerCutting();
   easystar.setIterationsPerCalculation(MAX_ITERATIONS);
   easystar.setTileCost(1, 1);
   easystar.setTileCost(0, 0);
+  /* Wading is slow, so paths go around water when the way round is short */
+  easystar.setTileCost(2, WATER_PATH_COST);
   return { easystar, tileWidth: grid.tileWidth, tileHeight: grid.tileHeight };
 }
 
