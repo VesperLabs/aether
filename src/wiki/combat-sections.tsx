@@ -1,10 +1,10 @@
-import { resolveAsset, type ActorDefinition } from "@/content";
+import { getCatalogItem, readRef, resolveAsset, type ActorDefinition } from "@/content";
 import { isNpcAggressive } from "@/rules/npc-behavior";
 import { Box, Flex, Text } from "@/ui";
 import { CARD_COLORS, SpriteFace } from "./card-pool";
 import { Divider, PAPER } from "./paper";
 import { DottedLine } from "./leader";
-import { ItemHover, ROW_STYLE, listedItems } from "./stat-row";
+import { ItemHover, ROW_STYLE } from "./stat-row";
 
 /** Does it fight on its own terms: loot to drop, or its own way of fighting? */
 export const fights = (actor: ActorDefinition) => Boolean(actor.drops || actor.behaviors?.fight);
@@ -35,14 +35,15 @@ const Drops = ({ drops }: { drops: NonNullable<ActorDefinition["drops"]> }) => (
   <Box sx={{ textAlign: "left", fontSize: 1 }}>
     {!drops.length && <Text sx={{ color: PAPER.muted, fontStyle: "italic" }}>Nothing</Text>}
     {drops.map((drop) => {
-      const item = listedItems[drop.type]?.[drop.rarity]?.[drop.key];
+      const { key } = readRef(drop.item);
+      const item = getCatalogItem(key);
       const asset = item && resolveAsset(item, { profile: { race: "human", gender: "female" } });
       return (
-        <Flex key={`${drop.type}-${drop.key}`} sx={{ ...ROW_STYLE, gap: 1 }}>
+        <Flex key={key} sx={{ ...ROW_STYLE, gap: 1 }}>
           <DottedLine
             label={
               item ? (
-                <ItemHover item={item} type={drop.type} rarity={drop.rarity} itemKey={drop.key}>
+                <ItemHover item={item}>
                   <Flex sx={{ width: 24, height: 24, flexShrink: 0, justifyContent: "center" }}>
                     {asset && (
                       <SpriteFace asset={asset} tint={item.tint} size={24} pixelScale={1} />
@@ -52,15 +53,15 @@ const Drops = ({ drops }: { drops: NonNullable<ActorDefinition["drops"]> }) => (
                   <Text
                     sx={{
                       alignSelf: "baseline",
-                      color: CARD_COLORS[drop.rarity] ?? CARD_COLORS.common,
+                      color: CARD_COLORS[item.rarity] ?? CARD_COLORS.common,
                       fontWeight: 600,
                     }}
                   >
-                    {item.name ?? drop.key}
+                    {item.name}
                   </Text>
                 </ItemHover>
               ) : (
-                <Text>{drop.key}</Text>
+                <Text>{key}</Text>
               )
             }
             value={

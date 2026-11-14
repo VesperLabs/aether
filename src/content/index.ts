@@ -36,19 +36,24 @@ export {
   HAIR_HIDING_HELMETS,
 } from "./items/hiding";
 export { Item } from "./items/item";
-export {
-  ITEM_BUILD_RARITIES,
-  ItemBuilder,
-  canRollRarity,
-  findDefinition,
-  isItemBuildRarity,
-} from "./items/item-builder";
+export { ItemBuilder, rarityForSlots, takesSlots } from "./items/item-builder";
+export { ITEM_CATALOG, getCatalogItem, type CatalogItem } from "./items/item-catalog";
 export { randomDropLevels } from "./items/item-drops";
-export { itemData } from "./items/item-data";
 export { ITEM_KEYS, findItemKey, type ItemLook } from "./items/item-keys";
-export { itemList } from "./items/item-scaling";
-export { itemSetList, type ItemSetName } from "./items/item-sets";
-export type { BuiltItem, ItemDefinition } from "./items/item-types";
+export { readRef, type AnyItemRef } from "./items/item-refs";
+export { getSetBonus } from "./items/item-sets";
+export { gearFamilies } from "./items/gear-data";
+export { MAX_SLOTS, type GearType } from "./items/gear-types";
+export {
+  canSlotMod,
+  itemEffects,
+  modGearTypes,
+  sumMods,
+  type ItemEffect,
+  type ModName,
+  type ScaledMod,
+} from "./items/mods";
+export { ITEM_RARITIES, type BuiltItem, type ItemRarity } from "./items/item-types";
 export { getMapByName } from "./maps/get-map";
 export { currentMapName, type MapName } from "./maps/renamed-maps";
 export { mapImageList } from "./maps/map-image-list";

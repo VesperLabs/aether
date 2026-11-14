@@ -3,8 +3,8 @@ import {
   getMeleeRange,
   getWeaponLength,
   HAND_REACH,
+  ITEM_CATALOG,
   ItemBuilder,
-  itemData,
   WEAPON_TIPS,
   PREVIEW_DICE,
 } from "@/content";
@@ -85,11 +85,9 @@ describe("weapon queries", () => {
 });
 
 /** Every weapon definition, as `[rarity, key, definition]`. */
-const weaponDefinitions = Object.entries(itemData.weapon).flatMap(([rarity, items]) =>
-  Object.entries(items as Record<string, { texture?: string }>).map(
-    ([key, item]) => [rarity, key, item] as const,
-  ),
-);
+const weaponDefinitions = Object.values(ITEM_CATALOG)
+  .filter((item) => item.type === "weapon")
+  .map((item) => [item.rarity, item.key, item] as const);
 
 describe("melee reach comes from the weapon art", () => {
   it("measures every weapon's art, so none falls back to a guessed tip", () => {
@@ -100,7 +98,7 @@ describe("melee reach comes from the weapon art", () => {
 
   it("gives every built weapon its art's reach as its range stat", () => {
     for (const [rarity, key, item] of weaponDefinitions) {
-      const built = ItemBuilder.buildItem(PREVIEW_DICE, "weapon", rarity, key);
+      const built = ItemBuilder.buildItem(PREVIEW_DICE, key);
       expect(built?.stats?.range, `${rarity} ${key}`).toBe(getMeleeRange(item.texture));
     }
   });

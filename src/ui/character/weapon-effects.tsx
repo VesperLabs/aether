@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { BuiltItem } from "@/content";
-import { ELEMENT_PAD, ElementalSprite, deriveElements } from "@/ui/item";
+import { itemEffects } from "@/content";
+import { ELEMENT_PAD, ElementalSprite } from "@/ui/item";
 import weaponAtlas from "../../../public/assets/atlas/weapon.json";
 import { loadSheet } from "./sprite-sheet";
 
@@ -47,7 +48,7 @@ const useTintedArt = (src: string, tint?: string) => {
 
 const HandEffects = ({ weapon, pose }: { weapon: HeldWeapon; pose: WeaponPose }) => {
   const art = useTintedArt(weapon.src, weapon.tint);
-  const elements = deriveElements(weapon.item.stats);
+  const elements = itemEffects(weapon.item);
   if (!art || elements.length === 0) return null;
   const { x, y, flipX, flipY, rotation = 0 } = pose;
   return (

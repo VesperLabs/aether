@@ -1,102 +1,73 @@
-import type { ItemRarityTable } from "./item-types";
+import type { Families, Uniques } from "./gear-types";
 
-export const bootsItems = {
-  common: {
-    clothBoots: {
-      tier: 1,
-      name: "Cloth Boots",
-      flavor: "Soft cloth boots, quiet on the floorboards.",
-      base: "boots",
-      texture: "boots-cloth",
-      tint: "0xFFDDCC",
-      slot: "boots",
-      stats: { walkSpeed: 5, defense: [1, 2] },
-    },
-    nutshellGreaves: {
-      tier: 1,
-      name: "Nutshell Greaves",
-      flavor: "Nutshell shin guards for kicking through the brush.",
-      base: "greaves",
-      texture: "boots-plate",
-      tint: "0xCC9966",
-      slot: "boots",
-      stats: { walkSpeed: 5, defense: [3, 4] },
-      requirements: { strength: 6 },
-    },
-    leatherBoots: {
-      tier: 2,
-      name: "Leather Boots",
-      flavor: "Good leather boots, broken in on many roads.",
-      base: "boots",
-      texture: "boots-cloth",
-      tint: "0xAA7744",
-      slot: "boots",
-      stats: {},
-    },
-    bronzeGreaves: {
-      tier: 2,
-      name: "Bronze Greaves",
-      flavor: "Bronze greaves that clank with every step.",
-      base: "greaves",
-      texture: "boots-plate",
-      tint: "0xFFEEAA",
-      slot: "boots",
-    },
-    ghoulhideBoots: {
-      tier: 3,
-      name: "Ghoulhide Boots",
-      flavor: "Ghoul-hide boots. Nothing follows your tracks.",
-      base: "boots",
-      texture: "boots-cloth",
-      tint: "0x889988",
-      slot: "boots",
-    },
-    ironGreaves: {
-      tier: 3,
-      name: "Iron Greaves",
-      flavor: "Iron greaves, heavy enough to anchor you in place.",
-      base: "greaves",
-      texture: "boots-plate",
-      tint: "0xEEDDDD",
-      slot: "boots",
-    },
+export const bootsFamilies = {
+  boots: {
+    type: "boots",
+    texture: "boots-cloth",
+    stats: { walkSpeed: 5, defense: 2 },
+    tiers: [
+      {
+        key: "clothBoots",
+        name: "Cloth Boots",
+        flavor: "Soft cloth boots, quiet on the floorboards.",
+        tint: "0xFFDDCC",
+      },
+      {
+        key: "leatherBoots",
+        name: "Leather Boots",
+        flavor: "Good leather boots, broken in on many roads.",
+        tint: "0xAA7744",
+      },
+      {
+        key: "ghoulhideBoots",
+        name: "Ghoulhide Boots",
+        flavor: "Ghoul-hide boots. Nothing follows your tracks.",
+        tint: "0x889988",
+      },
+      null,
+      null,
+      null,
+    ],
   },
-  set: {
-    chetsNeonKicks: {
-      tier: 1,
-      setName: "chets",
-      name: "Chet's Neon Kicks",
-      flavor: "So bright the monsters see you coming. Chet doesn't care.",
-      base: "boots",
-      texture: "boots-cloth",
-      tint: "0x00FF00",
-      slot: "boots",
-      stats: { vitality: [5, 6], walkSpeed: 20 },
-    },
-    crabWalkers: {
-      tier: 1,
-      setName: "crab",
-      name: "Crab Walkers",
-      flavor: "Walk sideways with pride. Trista wears a pair herself.",
-      base: "boots",
-      texture: "boots-cloth",
-      tint: "0xFF6600",
-      slot: "boots",
-      exclusive: true,
-      stats: { waterResistance: [5, 6], strength: [2, 3], walkSpeed: 20 },
-      cost: 20,
-    },
+  greaves: {
+    type: "boots",
+    texture: "boots-plate",
+    stats: { walkSpeed: 5, defense: 4 },
+    requirements: { strength: 6 },
+    tiers: [
+      {
+        key: "nutshellGreaves",
+        name: "Nutshell Greaves",
+        flavor: "Nutshell shin guards for kicking through the brush.",
+        tint: "0xCC9966",
+      },
+      {
+        key: "bronzeGreaves",
+        name: "Bronze Greaves",
+        flavor: "Bronze greaves that clank with every step.",
+        tint: "0xFFEEAA",
+      },
+      {
+        key: "ironGreaves",
+        name: "Iron Greaves",
+        flavor: "Iron greaves, heavy enough to anchor you in place.",
+        tint: "0xEEDDDD",
+      },
+      null,
+      null,
+      null,
+    ],
   },
-  unique: {
-    chickenFeet: {
-      tier: 2,
-      name: "Chicken Feet",
-      flavor: "They really are chicken feet. You will run faster.",
-      base: "boots",
-      texture: "boots-wings",
-      tint: "0xFFFF00",
-      slot: "boots",
-      stats: { walkSpeed: [30, 35], magicFind: [10, 15] },
-    },
+} as const satisfies Families;
+
+export const bootsUniques = {
+  chickenFeet: {
+    family: "boots",
+    tier: 2,
+    name: "Chicken Feet",
+    flavor: "They really are chicken feet. You will run faster.",
+    texture: "boots-wings",
+    tint: "0xFFFF00",
+    mod: "swift",
   },
-} as const satisfies ItemRarityTable;
+} as const satisfies Uniques<typeof bootsFamilies>;

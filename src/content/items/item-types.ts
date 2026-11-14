@@ -2,9 +2,10 @@ import type { BuffName } from "../buffs/buff-list";
 import type { TriggerDefinition } from "../buffs/trigger-types";
 import type { SpellName } from "../spells/spell-details";
 import type { CharClass, EffectBlock, PercentStatBlock, StatBlock } from "../stats";
-import type { ItemSetName } from "./item-sets";
 
-export type ItemRarity = "common" | "magic" | "rare" | "unique" | "set";
+export const ITEM_RARITIES = ["common", "magic", "rare", "unique", "set"] as const;
+
+export type ItemRarity = (typeof ITEM_RARITIES)[number];
 
 type ItemSlot =
   | "hands"
@@ -29,7 +30,7 @@ interface RequirementBlock {
   readonly weaponType?: "melee";
 }
 
-/** An item as written in the content files. Common items may omit what their base provides. */
+/** A stackable or spell as written in its table. Higher tiers may omit what their base provides. */
 export interface ItemDefinition {
   /**
    * How strong the item is: its base's stats times the tier. Tier 1 is level 1, and each tier adds
@@ -52,7 +53,6 @@ export interface ItemDefinition {
   readonly effects?: EffectBlock;
   readonly buffs?: { readonly [K in BuffName]?: number };
   readonly triggers?: readonly TriggerDefinition[];
-  readonly setName?: ItemSetName;
   readonly exclusive?: boolean;
   readonly cost?: number;
   readonly space?: number;
@@ -76,8 +76,13 @@ export interface BuiltItem {
   /** Spells only: the spell's tier. */
   rank?: number;
   rarity: string;
-  /** The random affixes a magic or rare item rolled, by name, e.g. ["Sturdy", "of the Bear"]. */
-  affixes?: string[];
+  tier?: number;
+  /** Gear only: its mod slots, `null` while empty. How many it has is its rarity. */
+  mods?: (string | null)[];
+  /** Cards only: the mod the card puts in a slot. */
+  mod?: string;
+  /** A unique's or set piece's own mod, on top of its slots. */
+  fixedMod?: string;
   name: string;
   base: string;
   slot: string;

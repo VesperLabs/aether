@@ -1,4 +1,4 @@
-import { actors, findDefinition, type ActorDefinition, type BuiltItem } from "@/content";
+import { actors, getCatalogItem, type ActorDefinition, type BuiltItem } from "@/content";
 import { getPlayerEquipmentAssets, type RenderablePlayer } from "@/ui";
 import {
   BASE_SHEETS,
@@ -18,10 +18,10 @@ export type ActorLook = { atlas: string; layers: Record<HumanLayer, string>; wea
 /** An actor as the game's renderer reads it: its profile and the items its equipment names. */
 export const toRenderable = (actor: ActorDefinition): RenderablePlayer => {
   const equipment = Object.fromEntries(
-    Object.entries(actor.equipment ?? {}).map(([slot, ref]) => {
-      const [type, rarity, key] = (ref ?? []) as string[];
-      return [slot, ref ? (findDefinition(type, rarity, key).item as BuiltItem) : null];
-    }),
+    Object.entries(actor.equipment ?? {}).map(([slot, ref]) => [
+      slot,
+      ref ? ((getCatalogItem(ref) ?? null) as BuiltItem | null) : null,
+    ]),
   );
   return {
     profile: actor.profile,

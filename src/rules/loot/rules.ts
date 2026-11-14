@@ -18,15 +18,12 @@ export interface LootItem {
   amount?: number | string;
 }
 
-/** A reference to an item to build: an entry in a mob's drop table or a rolled main drop. */
-export interface DropCandidate {
-  type: string;
-  rarity: string;
-  key: string;
-}
+/** An item to build: its key, or its key and how many blank mod slots it comes with. */
+export type DropRef = string | { readonly key: string; readonly slots?: number };
 
 /** An entry in a mob's drop table. `chance` is the "1 in N" odds. */
-export interface DropTableEntry extends DropCandidate {
+export interface DropTableEntry {
+  item: DropRef;
   chance: number;
 }
 
@@ -92,16 +89,16 @@ export interface MobDropInput {
 }
 
 /**
- * Rolls what a killed mob drops: one world drop (skipped for `noWorldDrops` mobs) plus each entry
- * of the mob's own table that hits, then picks one by `pickPreferredDrop`.
+ * Rolls what a killed mob may drop: one world drop (skipped for `noWorldDrops` mobs) plus each
+ * entry of the mob's own table that hits. Once built, `pickPreferredDrop` picks the one dropped.
  * `rollWorldDrop` is the item roll for (mob level, magic find).
  */
-export function rollMobDrop(
+export function rollMobDrops(
   input: MobDropInput,
   rng: Rng,
-  rollWorldDrop: (mobLevel: number, magicFind: number) => DropCandidate | null,
-): DropCandidate | null {
-  const runners: DropCandidate[] = [];
+  rollWorldDrop: (mobLevel: number, magicFind: number) => DropRef | null,
+): DropRef[] {
+  const runners: DropRef[] = [];
 
   if (!input.noWorldDrops) {
     const mainDrop = rollWorldDrop(input.mobLevel, input.magicFind);
@@ -109,10 +106,10 @@ export function rollMobDrop(
   }
   if (input.drops) {
     for (const entry of input.drops) {
-      if (randomInt(rng, 1, entry.chance) === 1) runners.push(entry);
+      if (randomInt(rng, 1, entry.chance) === 1) runners.push(entry.item);
     }
   }
-  return pickPreferredDrop(runners);
+  return runners;
 }
 
 /**
@@ -170,8 +167,6 @@ export interface MapLoot {
 }
 
 interface MapLootItem {
-  type: string;
-  rarity: string;
   key: string;
   /** "1 in N" odds. */
   chance: number;
@@ -212,7 +207,7 @@ export function planMapLootSpawns(
   mapLootList: readonly MapLoot[],
   existing: readonly Pick<Loot, "x" | "y" | "isPermanent">[],
   rng: Rng,
-  buildItem: (type: string, rarity: string, key: string, amount?: number) => LootItem | null,
+  buildItem: (key: string, amount?: number) => LootItem | null,
 ): LootSpawn[] {
   const spawns: LootSpawn[] = [];
   for (const mapLoot of mapLootList) {
@@ -226,7 +221,7 @@ export function planMapLootSpawns(
       if (randomInt(rng, 1, mapItem.chance) === 1) {
         // decide how many to spawn randomly.
         const amount = randomInt(rng, mapItem.amount?.[0] as number, mapItem.amount?.[1] as number);
-        const built = buildItem(mapItem.type, mapItem.rarity, mapItem.key, amount);
+        const built = buildItem(mapItem.key, amount);
         // An unknown item builds to null and is skipped.
         if (built) runners.push(built);
       }

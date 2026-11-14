@@ -36,12 +36,9 @@ function objectiveText(
   }
   let verb = "";
   let noun: string | undefined;
-  if (objective?.type === "item") {
+  if (objective?.type === "item" && objective.item) {
     verb = "Collect";
-    noun = ItemBuilder.buildItem(
-      PREVIEW_DICE,
-      ...(objective.item as [string, string, string]),
-    )?.name;
+    noun = ItemBuilder.buildItem(PREVIEW_DICE, objective.item)?.name;
   }
   if (objective?.type === "bounty") {
     verb = "Slay";

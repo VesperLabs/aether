@@ -18,7 +18,7 @@ afterAll(() => server?.close());
 /** Logs in holding `amount` pokeballs, with a wild crab right in front of them. */
 async function setUp(amount: number) {
   const { socket, player } = await server.login();
-  const ball = ItemBuilder.buildItem(server.world.dice, "stackable", "common", "pokeball")!;
+  const ball = ItemBuilder.buildItem(server.world.dice, "pokeball")!;
   ball.amount = amount;
   player.inventory = [ball];
   const crab = Object.values<Anything>(server.world.npcs).find(

@@ -1,10 +1,10 @@
 import Phaser from "phaser";
-import { getPreviewGrip, resolveAsset } from "@/content";
+import { getPreviewGrip, itemEffects, resolveAsset } from "@/content";
 import type { LootMessage } from "@/network";
 import type { SceneMain } from "@/client/scenes/main-scene";
 import { tintCanvas } from "@/ui/kit/image-tint";
 import type { LootFlyDetail } from "@/client/window-events";
-import { deriveElements } from "@/ui/item/weapon-elements";
+
 import { toTint } from "./tint";
 import { WeaponSprite } from "./weapon-sprite";
 const Sprite = Phaser.GameObjects.Sprite;
@@ -54,7 +54,7 @@ export class LootItem extends Phaser.GameObjects.Container {
   }
   /** Swaps the plain sprite for a WeaponSprite when the item is a weapon with elements. */
   addElementalSprite() {
-    const elements = this.item.type === "weapon" ? deriveElements(this.item.stats) : [];
+    const elements = this.item.type === "weapon" ? itemEffects(this.item) : [];
     if (elements.length === 0) return;
     const asset = resolveAsset(this.item, this.scene.hero);
     const rect = asset.previewRect as readonly number[];

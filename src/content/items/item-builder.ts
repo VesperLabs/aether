@@ -1,158 +1,90 @@
 /* This file and Diablo II are the main reason this game exists */
-import { levelPower, tierLevel } from "../power-curve";
-import { cloneJson, randomNumber, type Dice } from "../random";
-import { getMeleeRange } from "../assets/weapon-tips";
-import { AFFIXES, type AffixDefinition } from "./item-affixes";
+import { levelPower } from "../power-curve";
+import { cloneJson, type Dice } from "../random";
+import { MAX_SLOTS } from "./gear-types";
+import { getCatalogItem, type CatalogItem } from "./item-catalog";
+import { canSlotMod, sumMods, type ModName } from "./mods";
 import { rollDrop } from "./item-drops";
-import { itemList, multiplyValues, scaleBaseStats } from "./item-scaling";
-import { itemSetList } from "./item-sets";
+import { readRef, type AnyItemRef } from "./item-refs";
+import type { ItemRarity } from "./item-types";
 import { Item } from "./item";
 
 type Loose = Record<string, any>;
 
-/** Only these rarities are valid for buildItem (prevents arbitrary strings + common-base relabeling). */
-export const ITEM_BUILD_RARITIES = ["common", "magic", "rare", "unique", "set"] as const;
-const ITEM_BUILD_RARITY_SET = new Set<string>(ITEM_BUILD_RARITIES);
-
-export function isItemBuildRarity(r: string): boolean {
-  return ITEM_BUILD_RARITY_SET.has(r);
+/** Whether an item takes mod slots: made family tiers. Uniques and sets always have every slot. */
+export function takesSlots(item: Pick<CatalogItem, "rarity" | "type">): boolean {
+  return (
+    item.rarity === "common" &&
+    item.type !== "bag" &&
+    item.type !== "spell" &&
+    item.type !== "stackable"
+  );
 }
 
-/** Bags, spells and stackables never roll magic or rare affixes, only their table rarities. */
-const FIXED_RARITY_TYPES = new Set(["bag", "spell", "stackable"]);
-
-/** Whether a common item of this type can be built as magic or rare. */
-export function canRollRarity(type: string): boolean {
-  return !FIXED_RARITY_TYPES.has(type);
+/** Gear's rarity is how many mod slots it has: none is common, 1–2 magic, 3–4 rare. */
+export function rarityForSlots(slots: number): ItemRarity {
+  if (slots === 0) return "common";
+  return slots <= 2 ? "magic" : "rare";
 }
 
-/** How many affixes each rarity rolls, and at most how many of each kind. */
-const AFFIX_COUNTS = {
-  magic: { min: 1, max: 2, perKind: 1 },
-  rare: { min: 4, max: 5, perKind: 3 },
-} as const;
-
-function getSetInfo(setName: string) {
-  return (itemSetList as Loose)[setName];
-}
-
-/** Rolls the `[min, max]` ranges of a stat block into fixed numbers. */
-function rollRanges(dice: Dice, block: Loose | undefined): Record<string, number> {
-  const rolled: Record<string, number> = {};
-  for (const key in block) {
-    const value = block[key];
-    rolled[key] = Array.isArray(value) ? randomNumber(dice, value[0], value[1]) : value;
-  }
-  return rolled;
+/** How many slots an item gets when it is built with `wanted`. */
+function slotCount(item: CatalogItem, wanted = 0): number {
+  if (item.rarity === "unique" || item.rarity === "set") return item.type === "bag" ? 0 : MAX_SLOTS;
+  return takesSlots(item) ? Math.max(0, Math.min(MAX_SLOTS, Math.floor(wanted))) : 0;
 }
 
 /**
- * The item a `[type, rarity, key]` ref names and the rarity table it is written in. A magic or rare
- * ref with no hand-written version is the common item, rolled with affixes when built.
+ * Builds an item from a ref: a copy of its catalog entry with an id, an amount and its blank mod
+ * slots. `null` for a key that doesn't exist.
  */
-export function findDefinition(type: string, rarity: string, itemKey: string) {
-  const table = itemList[type];
-  const own = table?.[rarity]?.[itemKey];
-  if (own) return { item: own, rollsAffixes: false, definedRarity: rarity };
-  if (rarity === "magic" || rarity === "rare") {
-    const item = table?.common?.[itemKey];
-    return { item, rollsAffixes: canRollRarity(type), definedRarity: "common" };
-  }
-  return { item: undefined, rollsAffixes: false, definedRarity: rarity };
-}
-
-/** `[type, rarity, key, amount?]`. Typed loosely so callers can spread stored references. */
-type BuildItemArgs = string[] | [string, string, string, (number | string)?];
-
-function buildItem(dice: Dice, ...args: BuildItemArgs): Item | null {
-  const [type, requestedRarity, itemKey, amount] = args;
-  if (typeof requestedRarity !== "string" || !isItemBuildRarity(requestedRarity)) {
-    console.log(`🔧 Unknown rarity "${requestedRarity}" for ${type} ${itemKey}`);
+function buildItem(dice: Dice, ref: AnyItemRef, amount = 1): Item | null {
+  const { key, slots } = readRef(ref);
+  const found = getCatalogItem(key);
+  if (!found) {
+    console.log(`🔧 No item called ${key}`);
     return null;
   }
 
-  const found = findDefinition(type, requestedRarity, itemKey);
-  if (!found.item) {
-    console.log(`🔧 Item not found for ${type} ${requestedRarity} ${itemKey}`);
-    return null;
-  }
-  // A bag or potion asked for as magic is just the common one
-  const rarity =
-    found.definedRarity !== requestedRarity && !found.rollsAffixes ? "common" : requestedRarity;
-
-  const item: Loose = { requirements: {}, ...cloneJson(found.item) };
+  const item: Loose = cloneJson(found);
   delete item.flavor;
-  item.key = itemKey;
-  item.tint = item.tint || "0xFFFFFF";
-  item.rarity = rarity;
-  item.amount = amount || 1;
-  item.type = type;
-  item.stats = rollRanges(dice, item.stats);
-  item.effects = rollRanges(dice, item.effects);
-  item.percentStats = rollRanges(dice, item.percentStats);
-  /* A melee weapon reaches as far as its art: never hand-written, so it can't drift from the swing */
-  if (type === "weapon") item.stats.range = getMeleeRange(item.texture);
-  item.id = item.slot === "stackable" ? itemKey : dice.newId();
+  const count = slotCount(found, slots);
+  if (takesSlots(found)) item.rarity = rarityForSlots(count);
+  if (count) item.mods = new Array(count).fill(null);
+  item.tint ??= "0xFFFFFF";
+  item.amount = amount;
+  item.id = item.slot === "stackable" ? key : dice.newId();
   if (item.space) item.items = new Array(item.space).fill(null);
-
-  if (found.rollsAffixes && (rarity === "magic" || rarity === "rare")) {
-    rollAffixes(dice, item, AFFIX_COUNTS[rarity]);
-  }
-
   item.cost = getItemCost(item);
   return new Item(item);
 }
 
-/** What an affix's level 1 values are multiplied by on an item of this level. */
-function affixMultiplier(affix: AffixDefinition, level: number): number {
-  if (affix.scale === "none") return 1;
-  const power = levelPower(level);
-  return affix.scale === "half" ? 1 + (power - 1) / 2 : power;
-}
-
 /**
- * Rolls `count` affixes onto a built item from those its type and level allow. No two affixes
- * share a stat. A magic item is named after its affixes ("Sharp Dagger of Haste").
+ * The item with these mods in its slots, its stats rebuilt from its catalog entry plus what the
+ * mods add at its tier. A mod that doesn't exist or can't go on this gear leaves its slot empty.
  */
-function rollAffixes(
-  dice: Dice,
-  item: Loose,
-  count: { min: number; max: number; perKind: number },
-) {
-  const wanted = randomNumber(dice, count.min, count.max);
-  const usedStats = new Set<string>();
-  const perKind = { prefix: 0, suffix: 0 };
-  const rolled: AffixDefinition[] = [];
-
-  for (let i = 0; i < wanted; i++) {
-    const pool = (AFFIXES as readonly AffixDefinition[]).filter(
-      (a) =>
-        tierLevel(a.tier) <= item.level &&
-        (a.types as readonly string[]).includes(item.type) &&
-        perKind[a.kind] < count.perKind &&
-        Object.keys(a.stats).every((stat) => !usedStats.has(stat)),
-    );
-    if (!pool.length) break;
-    const affix = pool[randomNumber(dice, 0, pool.length - 1)];
-    const multiplier = affixMultiplier(affix, item.level);
-    for (const [stat, range] of Object.entries(affix.stats) as [string, readonly number[]][]) {
-      const low = Math.round(range[0] * multiplier * 100) / 100;
-      const high = Math.round(range[1] * multiplier * 100) / 100;
-      const value =
-        Number.isInteger(low) && Number.isInteger(high) ? randomNumber(dice, low, high) : low;
-      item.stats[stat] = (item.stats[stat] ?? 0) + value;
-      usedStats.add(stat);
-    }
-    perKind[affix.kind]++;
-    rolled.push(affix);
-  }
-
-  item.affixes = rolled.map((a) => a.name);
-  if (item.rarity === "magic") {
-    const prefix = rolled.find((a) => a.kind === "prefix")?.name;
-    const suffix = rolled.find((a) => a.kind === "suffix")?.name;
-    item.name = [prefix, item.name, suffix].filter(Boolean).join(" ");
-  }
+function withMods<T extends Loose>(item: T, mods: readonly (string | null | undefined)[]): T {
+  const base = getCatalogItem(item.key);
+  if (!base || !item.mods) return item;
+  const slotted: (ModName | null)[] = item.mods.map((_: unknown, i: number) => {
+    const mod = mods[i];
+    return mod && canSlotMod(mod, base.type) ? mod : null;
+  });
+  const added = sumMods(
+    slotted.filter((mod): mod is ModName => !!mod),
+    base.tier,
+  );
+  const sum = (a: Loose = {}, b: Loose = {}) => {
+    const total: Loose = { ...a };
+    for (const [stat, value] of Object.entries(b)) total[stat] = (total[stat] ?? 0) + value;
+    return total;
+  };
+  return {
+    ...item,
+    mods: slotted,
+    stats: sum(base.stats, added.stats),
+    percentStats: sum(base.percentStats, added.percentStats),
+    triggers: [...(base.triggers ?? []), ...added.triggers],
+  };
 }
 
 /** What a merchant pays: grows with the item's level and its rarity. */
@@ -172,11 +104,4 @@ function getItemCost(item: Loose): number {
   return Math.round((RARITY_VALUE[item?.rarity] ?? 1) * power);
 }
 
-export const ItemBuilder = {
-  getSetInfo,
-  rollDrop,
-  buildItem,
-  getItemCost,
-  scaleBaseStats,
-  multiplyValues,
-};
+export const ItemBuilder = { rollDrop, buildItem, getItemCost, withMods };

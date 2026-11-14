@@ -10,8 +10,8 @@ export const actors3 = {
     baseStats: { level: 1 },
     hitBoxSize: { width: 18, height: 16 },
     drops: [
-      { type: "boots", rarity: "set", key: "crabWalkers", chance: 1000 },
-      { type: "stackable", rarity: "common", key: "crabClaw", chance: 3 },
+      { item: "crabWalkers", chance: 1000 },
+      { item: "crabClaw", chance: 3 },
     ],
   },
   raccoon: {
@@ -23,8 +23,8 @@ export const actors3 = {
     baseStats: { level: 3 },
     hitBoxSize: { width: 26, height: 24 },
     drops: [
-      { type: "stackable", rarity: "common", key: "grapes", chance: 4 },
-      { type: "stackable", rarity: "common", key: "smallHpPotion", chance: 10 },
+      { item: "grapes", chance: 4 },
+      { item: "smallHpPotion", chance: 10 },
     ],
   },
   slime: {
@@ -34,7 +34,7 @@ export const actors3 = {
       "A wobbling blob that absorbs anything it touches. Nobody knows what it eats, only that it's always hungry.",
     baseStats: { level: 2 },
     hitBoxSize: { width: 24, height: 23 },
-    drops: [{ type: "stackable", rarity: "common", key: "blueSporangium", chance: 3 }],
+    drops: [{ item: "blueSporangium", chance: 3 }],
   },
   hornet: {
     charClass: "rogue",
@@ -43,7 +43,7 @@ export const actors3 = {
       "Fat, angry and fast. You'll hear the buzzing long before you see it, and by then it's already too late.",
     baseStats: { level: 4, walkSpeed: 10 },
     hitBoxSize: { width: 18, height: 32 },
-    drops: [{ type: "stackable", rarity: "common", key: "smallHpPotion", chance: 10 }],
+    drops: [{ item: "smallHpPotion", chance: 10 }],
   },
   fish: {
     charClass: "warrior",
@@ -52,7 +52,7 @@ export const actors3 = {
       "Lynne swears it isn't natural. It flops out of the river on purpose, just to bite the ankles of passers-by.",
     state: { noWorldDrops: true },
     behaviors: { fight: { shootsOverWalls: true } },
-    abilities: { "1": ["spell", "common", "waterSpit"] },
+    abilities: { "1": "waterSpit" },
     baseStats: { level: 1 },
     hitBoxSize: { width: 26, height: 24 },
     drops: [],
@@ -76,8 +76,8 @@ export const actors3 = {
     baseStats: { level: 5 },
     hitBoxSize: { width: 28, height: 22 },
     drops: [
-      { type: "stackable", rarity: "common", key: "spiderMeat", chance: 3 },
-      { type: "stackable", rarity: "common", key: "cheese", chance: 10 },
+      { item: "spiderMeat", chance: 3 },
+      { item: "cheese", chance: 10 },
     ],
   },
   bat: {
@@ -89,8 +89,8 @@ export const actors3 = {
     baseStats: { level: 5 },
     hitBoxSize: { width: 18, height: 28 },
     drops: [
-      { type: "stackable", rarity: "common", key: "batMeat", chance: 3 },
-      { type: "stackable", rarity: "common", key: "cheese", chance: 10 },
+      { item: "batMeat", chance: 3 },
+      { item: "cheese", chance: 10 },
     ],
   },
   hogan: {
@@ -102,8 +102,8 @@ export const actors3 = {
     baseStats: { level: 7 },
     hitBoxSize: { width: 50, height: 40 },
     drops: [
-      { type: "stackable", rarity: "common", key: "spiderMeat", chance: 2 },
-      { type: "stackable", rarity: "common", key: "cheese", chance: 10 },
+      { item: "spiderMeat", chance: 2 },
+      { item: "cheese", chance: 10 },
     ],
   },
   zombie: {
@@ -115,8 +115,8 @@ export const actors3 = {
     baseStats: { level: 6 },
     hitBoxSize: { width: 22, height: 43 },
     drops: [
-      { type: "stackable", rarity: "common", key: "mediumHpPotion", chance: 10 },
-      { type: "stackable", rarity: "common", key: "skull", chance: 4 },
+      { item: "mediumHpPotion", chance: 10 },
+      { item: "skull", chance: 4 },
     ],
   },
   wraith: {
@@ -128,8 +128,8 @@ export const actors3 = {
     baseStats: { level: 7 },
     hitBoxSize: { width: 22, height: 43 },
     drops: [
-      { type: "stackable", rarity: "common", key: "mediumHpPotion", chance: 10 },
-      { type: "stackable", rarity: "common", key: "skull", chance: 4 },
+      { item: "mediumHpPotion", chance: 10 },
+      { item: "skull", chance: 4 },
     ],
   },
   chonks: {
@@ -141,8 +141,8 @@ export const actors3 = {
     baseStats: { level: 10 },
     hitBoxSize: { width: 58, height: 85 },
     drops: [
-      { type: "stackable", rarity: "common", key: "mediumHpPotion", chance: 10 },
-      { type: "stackable", rarity: "common", key: "skull", chance: 4 },
+      { item: "mediumHpPotion", chance: 10 },
+      { item: "skull", chance: 4 },
     ],
   },
   dummy: {
@@ -162,8 +162,8 @@ export const actors3 = {
     behaviors: { fight: { starts: "onSight", keepAway: true } },
     baseStats: { level: 8, waterResistance: 50 },
     hitBoxSize: { width: 24, height: 32 },
-    abilities: { "1": ["spell", "common", "fireball"] },
-    drops: [{ type: "stackable", rarity: "common", key: "shell", chance: 3 }],
+    abilities: { "1": "fireball" },
+    drops: [{ item: "shell", chance: 3 }],
   },
   wyrm: {
     charClass: "warrior",
@@ -173,10 +173,10 @@ export const actors3 = {
     behaviors: { fight: { starts: "onSight" } },
     baseStats: { level: 11, minFireDamage: 1, maxFireDamage: 2, fireResistance: 50 },
     hitBoxSize: { width: 50, height: 78 },
-    abilities: { "1": ["spell", "common", "fireball3"] },
+    abilities: { "1": "fireball3" },
     drops: [
-      { type: "stackable", rarity: "unique", key: "wyrmScale", chance: 4 },
-      { type: "shield", rarity: "unique", key: "wyrmScaleWard", chance: 2000 },
+      { item: "wyrmScale", chance: 4 },
+      { item: "wyrmScaleWard", chance: 2000 },
     ],
   },
   orchid: {
@@ -187,7 +187,7 @@ export const actors3 = {
     behaviors: { fight: { starts: "onSight" } },
     baseStats: { level: 9, earthResistance: 25, fireResistance: -15 },
     hitBoxSize: { width: 26, height: 24 },
-    drops: [{ type: "stackable", rarity: "common", key: "orchidFlower", chance: 4 }],
+    drops: [{ item: "orchidFlower", chance: 4 }],
   },
   earthElemental: {
     charClass: "mage",
@@ -204,12 +204,12 @@ export const actors3 = {
     },
     hitBoxSize: { width: 26, height: 42 },
     drops: [
-      { type: "stackable", rarity: "unique", key: "goldOre", chance: 20 },
-      { type: "stackable", rarity: "magic", key: "ginseng", chance: 10 },
-      { type: "stackable", rarity: "common", key: "leaves", chance: 4 },
-      { type: "stackable", rarity: "common", key: "stone", chance: 4 },
+      { item: "goldOre", chance: 20 },
+      { item: "ginseng", chance: 10 },
+      { item: "leaves", chance: 4 },
+      { item: "stone", chance: 4 },
     ],
-    abilities: { "1": ["spell", "common", "quake"] },
+    abilities: { "1": "quake" },
   },
   bigMomma: {
     charClass: "rogue",
@@ -229,13 +229,13 @@ export const actors3 = {
   wolf: {
     charClass: "rogue",
     profile: { race: "wolf", userName: "Wolf", tint: "0xCCBBAA" },
-    abilities: { "1": ["spell", "common", "tackle"] },
+    abilities: { "1": "tackle" },
     flavor:
       "Grey wolves hunt in packs across the peaks. Where you see one, the rest are already circling.",
     behaviors: { fight: { starts: "onSight" } },
     baseStats: { level: 10, walkSpeed: 20 },
     hitBoxSize: { width: 31, height: 28 },
-    drops: [{ type: "stackable", rarity: "common", key: "wolfPelt", chance: 2 }],
+    drops: [{ item: "wolfPelt", chance: 2 }],
   },
   whiteFang: {
     charClass: "rogue",
@@ -245,8 +245,8 @@ export const actors3 = {
     behaviors: { fight: { starts: "onSight" } },
     baseStats: { level: 12, maxHp: 300, walkSpeed: 20 },
     hitBoxSize: { width: 41, height: 38 },
-    abilities: { "1": ["spell", "common", "stealth"], "2": ["spell", "common", "tackle"] },
-    drops: [{ type: "stackable", rarity: "common", key: "wolfPelt", chance: 2 }],
+    abilities: { "1": "stealth", "2": "tackle" },
+    drops: [{ item: "wolfPelt", chance: 2 }],
   },
   bear: {
     charClass: "cleric",
@@ -255,7 +255,7 @@ export const actors3 = {
     behaviors: { fight: { starts: "onSight" } },
     baseStats: { level: 11, walkSpeed: 10 },
     hitBoxSize: { width: 36, height: 38 },
-    drops: [{ type: "stackable", rarity: "common", key: "bearSteak", chance: 3 }],
+    drops: [{ item: "bearSteak", chance: 3 }],
   },
   iceCrab: {
     charClass: "mage",
@@ -265,10 +265,10 @@ export const actors3 = {
     behaviors: { fight: { keepAway: true } },
     baseStats: { level: 9, waterResistance: 50 },
     hitBoxSize: { width: 18, height: 16 },
-    abilities: { "1": ["spell", "common", "waterball"], "2": ["spell", "common", "guard"] },
+    abilities: { "1": "waterball", "2": "guard" },
     drops: [
-      { type: "armor", rarity: "unique", key: "iceCrabShell", chance: 1000 },
-      { type: "stackable", rarity: "common", key: "iceCrabClaw", chance: 3 },
+      { item: "iceCrabShell", chance: 1000 },
+      { item: "iceCrabClaw", chance: 3 },
     ],
   },
 } as const satisfies Readonly<Record<string, ActorDefinition>>;

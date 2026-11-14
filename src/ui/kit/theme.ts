@@ -44,6 +44,8 @@ export const theme = {
     body: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
     heading: "inherit",
     monospace: "Menlo, monospace",
+    /* Roman numeral ranks: classic serif capitals beside the sans text */
+    numeral: 'Georgia, "Times New Roman", serif',
   },
   fontSizes: [10, 12, 14, 16, 20, 24, 32, 48, 64, 96],
   fontWeights: {

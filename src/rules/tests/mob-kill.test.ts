@@ -27,8 +27,9 @@ function setup() {
   });
   subscribeLoot(world.events, {
     rng: () => 0,
-    rollWorldDrop: () => ({ type: "stackable", rarity: "common", key: "crabClaw" }),
-    buildItem: (type, rarity, key) => ({ id: "i1", slot: type, rarity, key, amount: 1 }) as never,
+    rollWorldDrop: () => "crabClaw",
+    buildItem: (ref) =>
+      ({ id: "i1", slot: "stackable", rarity: "common", key: ref, amount: 1 }) as never,
     getMobDropInfo: () => ({}),
     spawnLoot: (room, spawn) => {
       spawned.push({ room, spawn });

@@ -121,11 +121,6 @@ export function registerRoutes(app: Express, { aetherServer, db }: RouteDeps) {
     res.status(200).json({ status: "ok" });
   });
 
-  // app.get("/players/pruneItem", async (req, res) => {
-  //   await db.pruneItemByKey("voltball");
-  //   res.json({ string: "ok" });
-  // });
-
   // app.get("/players/updateUsersMaxExp", async (req, res) => {
   //   await db.updateUsersMaxExp();
   //   res.json({ string: "ok" });

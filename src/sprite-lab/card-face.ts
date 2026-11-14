@@ -20,25 +20,8 @@ export const FACE_SIZE = CARD_SIZE - FACE_INSET * 2;
 
 /** How the backdrop fades: above 1 the bright middle holds wider before dropping off at the tips. */
 const FADE_CURVE = 1.8;
-/** The backdrops a card can have: a lit colour where the light is, fading to a deep one at the tips. */
-export const CARD_BACKDROPS = {
-  night: { glow: "#5a5a78", shade: "#1c1c2a" },
-  ember: { glow: "#f07a3a", shade: "#5a1a0c" },
-  forest: { glow: "#6cc85a", shade: "#163c1a" },
-  ocean: { glow: "#4aa8f0", shade: "#0e2e5a" },
-  violet: { glow: "#a86cf0", shade: "#2e1458" },
-  gold: { glow: "#f0c440", shade: "#5a3a0c" },
-  rose: { glow: "#f06c9c", shade: "#5a1430" },
-  stone: { glow: "#b0aa9c", shade: "#3a362e" },
-} as const;
-
-export type CardBackdrop = keyof typeof CARD_BACKDROPS;
-
-export const CARD_BACKDROP_NAMES = Object.keys(CARD_BACKDROPS) as CardBackdrop[];
-
-/** Whether a saved value is one of the backdrops. */
-export const isCardBackdrop = (value: unknown): value is CardBackdrop =>
-  typeof value === "string" && value in CARD_BACKDROPS;
+/** Every card's backdrop: night, a lit grey-blue where the light is, fading to a deep one at the tips. */
+const CARD_BACKDROP = { glow: "#5a5a78", shade: "#1c1c2a" } as const;
 
 const EDGE_COLOR = "#000";
 /**
@@ -124,12 +107,8 @@ const DEPTHS = getDepths();
  * along the top edges with a glint at the tip, and cool along the bottom. The face file itself is only the diamond; the rest is
  * drawn under and over it.
  */
-export const paintCard = (
-  ctx: CanvasRenderingContext2D,
-  face: HTMLCanvasElement,
-  backdrop: CardBackdrop,
-) => {
-  const { glow, shade } = CARD_BACKDROPS[backdrop];
+export const paintCard = (ctx: CanvasRenderingContext2D, face: HTMLCanvasElement) => {
+  const { glow, shade } = CARD_BACKDROP;
   const fill = (x: number, y: number, color: string) => {
     ctx.fillStyle = color;
     ctx.fillRect(x, y, 1, 1);

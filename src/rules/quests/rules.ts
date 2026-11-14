@@ -19,8 +19,8 @@ export interface QuestDefinition {
 
 interface QuestObjectiveDefinition {
   type: string;
-  /** `[slot, rarity, key]` of the item to collect. */
-  item?: string[];
+  /** The key of the item to collect. */
+  item?: string;
   monster?: string;
   keeper?: string;
   amount?: number;
@@ -56,21 +56,21 @@ export interface QuestProgressInput {
   abilities: Record<string, QuestItem | null | undefined>;
 }
 
-const matchesTarget = (item: QuestItem | null | undefined, target: string[] | undefined) =>
-  item?.slot === target?.[0] && item?.rarity === target?.[1] && item?.key === target?.[2];
+const matchesTarget = (item: QuestItem | null | undefined, target: string | undefined) =>
+  !!target && item?.key === target;
 
-/** An item sitting loose in the inventory that matches `[slot, rarity, key]`. */
+/** An item sitting loose in the inventory that has the key `target`. */
 export function findInventoryQuestItem(
   inventory: QuestProgressInput["inventory"],
-  target: string[] | undefined,
+  target: string | undefined,
 ) {
   return inventory.find((i) => matchesTarget(i, target));
 }
 
-/** An item inside one of the inventory's bags that matches `[slot, rarity, key]`. */
+/** An item inside one of the inventory's bags that has the key `target`. */
 export function findBagQuestItem(
   inventory: QuestProgressInput["inventory"],
-  target: string[] | undefined,
+  target: string | undefined,
 ) {
   const bags = inventory?.filter((item) => item?.base === "bag");
   for (const bag of bags) {
@@ -80,10 +80,10 @@ export function findBagQuestItem(
   return null;
 }
 
-/** An item in an ability slot that matches `[slot, rarity, key]`. */
+/** An item in an ability slot that has the key `target`. */
 export function findAbilityQuestItem(
   abilities: QuestProgressInput["abilities"],
-  target: string[] | undefined,
+  target: string | undefined,
 ) {
   const [, foundItem] = Object.entries(abilities).find(([, slotItem]) =>
     matchesTarget(slotItem, target),
@@ -202,19 +202,19 @@ export interface CompleteQuestResult {
   error?: string;
   /** Reward items to give. Empty when `error` is set. */
   itemsToAdd: unknown[];
-  /** Quest items to take from the player: `[slot, rarity, key]` and how many. */
-  itemsToRemove: { item: string[]; amount: number }[];
+  /** Quest items to take from the player: their key and how many. */
+  itemsToRemove: { item: string; amount: number }[];
   exp: number | undefined;
   gold: number;
 }
 
 /**
- * Takes exactly `amount` of the item matching `[slot, rarity, key]`, from loose inventory stacks,
+ * Takes exactly `amount` of the item with the key `target`, from loose inventory stacks,
  * then bags, then abilities. Returns null (and changes nothing) when the player has fewer.
  */
 export function takeQuestItems(
   carried: Pick<QuestProgressInput, "inventory" | "abilities">,
-  target: string[] | undefined,
+  target: string | undefined,
   amount: number,
 ): Pick<QuestProgressInput, "inventory" | "abilities"> | null {
   let left = amount;
@@ -265,7 +265,7 @@ export function completeQuest(input: CompleteQuestInput): CompleteQuestResult {
     const next = takeQuestItems(carried, objective.item, amount);
     if (!next) return { ...empty, error: "Quest objectives are not complete." };
     carried = next;
-    itemsToRemove.push({ item: objective.item as string[], amount });
+    itemsToRemove.push({ item: objective.item as string, amount });
   }
 
   /* Every reward needs a slot of its own, counted after the quest items are gone. */

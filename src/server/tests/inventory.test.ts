@@ -15,8 +15,7 @@ const login = (charClass?: string) => server.login(charClass);
 
 /** Real dice: items in an inventory need ids of their own, apart from the server's. */
 const dice = createServerDice(TEST_SEED + 1);
-const build = (...args: (string | number)[]) =>
-  ItemBuilder.buildItem(dice, ...(args as [string, string, string, number?]))!;
+const build = (key: string, amount?: number) => ItemBuilder.buildItem(dice, key, amount)!;
 const emitAndWait = async (socket: Socket, event: string, payload: Anything) => {
   const update = once(socket, "playerUpdate");
   socket.emit(event as never, payload as never);
@@ -51,10 +50,10 @@ describe("inventory over the socket", () => {
   it("a grab with a full inventory goes into the first bag with room", async () => {
     const { socket } = await login("warrior");
     const hero = server.world.players[socket.id as string];
-    const filler = () => build("armor", "common", "clothRobe");
-    const fullBag = { ...build("bag", "rare", "smallPouch"), items: [filler()] };
+    const filler = () => build("clothRobe");
+    const fullBag = { ...build("smallPouch"), items: [filler()] };
     (fullBag as Anything).space = 1;
-    const openBag = { ...build("bag", "rare", "smallPouch"), items: [filler(), null] };
+    const openBag = { ...build("smallPouch"), items: [filler(), null] };
     (openBag as Anything).space = 2;
     hero.inventory = [fullBag, openBag, ...Array.from({ length: MAX_INVENTORY_ITEMS - 2 }, filler)];
     const item = filler();
@@ -91,8 +90,8 @@ describe("inventory over the socket", () => {
 
   it("swaps two inventory slots", async () => {
     const { socket, player } = await login("rogue");
-    const a = build("armor", "common", "clothRobe");
-    const b = build("pants", "common", "clothPants");
+    const a = build("clothRobe");
+    const b = build("clothPants");
     player.inventory = [a, b];
     const update = await emitAndWait(socket, "moveItem", {
       from: { location: "inventory", slot: 0 },
@@ -104,9 +103,9 @@ describe("inventory over the socket", () => {
 
   it("moves an item into a bag and back out", async () => {
     const { socket, player } = await login("warrior");
-    const bag = build("bag", "rare", "smallPouch");
+    const bag = build("smallPouch");
     bag.items = [null, null, null, null];
-    const pants = build("pants", "common", "clothPants");
+    const pants = build("clothPants");
     player.inventory = [bag, pants];
 
     const inBag = await emitAndWait(socket, "moveItem", {
@@ -126,8 +125,8 @@ describe("inventory over the socket", () => {
 
   it("does not put a bag inside a bag", async () => {
     const { socket, player, world } = await login("warrior");
-    const bag = build("bag", "rare", "smallPouch");
-    const other = build("bag", "rare", "largePouch");
+    const bag = build("smallPouch");
+    const other = build("largePouch");
     bag.items = [null, null];
     other.items = [null, null];
     player.inventory = [bag, other];
@@ -145,11 +144,9 @@ describe("inventory over the socket", () => {
 
   it("answers dropping on a full bag with an error", async () => {
     const { socket, player } = await login("warrior");
-    const bag = build("bag", "rare", "smallPouch");
-    bag.items = Array.from({ length: bag.space as number }, () =>
-      build("pants", "common", "clothPants"),
-    );
-    player.inventory = [bag, build("armor", "common", "clothRobe")];
+    const bag = build("smallPouch");
+    bag.items = Array.from({ length: bag.space as number }, () => build("clothPants"));
+    player.inventory = [bag, build("clothRobe")];
     const message = once(socket, "message");
     socket.emit("moveItem", {
       from: { location: "inventory", slot: 1 },
@@ -163,7 +160,7 @@ describe("inventory over the socket", () => {
 
   it("drops part of a stack and spawns it as loot", async () => {
     const { socket, player, world } = await login("warrior");
-    player.inventory = [build("stackable", "common", "smallHpPotion", 5)];
+    player.inventory = [build("smallHpPotion", 5)];
     const before = Object.keys(world.loots).length;
     const update = await emitAndWait(socket, "dropItem", {
       location: "inventory",
@@ -178,7 +175,7 @@ describe("inventory over the socket", () => {
 
   it("drops a whole stack when the amount covers it", async () => {
     const { socket, player } = await login("warrior");
-    player.inventory = [build("stackable", "common", "smallHpPotion", 2)];
+    player.inventory = [build("smallHpPotion", 2)];
     const update = await emitAndWait(socket, "dropItem", {
       location: "inventory",
       item: { id: "smallHpPotion" },
@@ -189,8 +186,8 @@ describe("inventory over the socket", () => {
 
   it("refuses to drop a bag with items inside", async () => {
     const { socket, player } = await login("warrior");
-    const bag = build("bag", "rare", "smallPouch");
-    bag.items = [build("pants", "common", "clothPants"), null];
+    const bag = build("smallPouch");
+    bag.items = [build("clothPants"), null];
     player.inventory = [bag];
     const message = once(socket, "message");
     socket.emit("dropItem", {
@@ -206,7 +203,7 @@ describe("inventory over the socket", () => {
 
   it("consumes a potion, heals and starts the cooldown", async () => {
     const { socket, player } = await login("warrior");
-    player.inventory = [build("stackable", "common", "smallHpPotion", 3)];
+    player.inventory = [build("smallHpPotion", 3)];
     player.stats.hp = 1;
     const update = await emitAndWait(socket, "consumeItem", {
       location: "inventory",
@@ -219,8 +216,8 @@ describe("inventory over the socket", () => {
 
   it("uses up the last potion in a bag", async () => {
     const { socket, player } = await login("warrior");
-    const bag = build("bag", "rare", "smallPouch");
-    bag.items = [build("stackable", "common", "smallMpPotion", 1)];
+    const bag = build("smallPouch");
+    bag.items = [build("smallMpPotion", 1)];
     player.inventory = [bag];
     const update = await emitAndWait(socket, "consumeItem", {
       location: "bag",
@@ -254,7 +251,7 @@ describe("shop over the socket", () => {
 
   it("buys an item for its price and removes the shop inflation", async () => {
     const { socket, player, world } = await login("warrior");
-    const pants = build("pants", "common", "clothPants");
+    const pants = build("clothPants");
     stockShop(world, player, [pants]);
     player.gold = 100;
     const update = await emitAndWait(socket, "moveItem", {
@@ -268,7 +265,7 @@ describe("shop over the socket", () => {
 
   it("cannot buy without enough gold", async () => {
     const { socket, player, world } = await login("warrior");
-    stockShop(world, player, [build("pants", "common", "clothPants")]);
+    stockShop(world, player, [build("clothPants")]);
     player.gold = 0;
     const message = once(socket, "message");
     socket.emit("moveItem", {
@@ -284,9 +281,9 @@ describe("shop over the socket", () => {
 
   it("adds a bought stackable to the stack the player already owns", async () => {
     const { socket, player, world } = await login("warrior");
-    const potion = build("stackable", "common", "smallHpPotion", 1);
+    const potion = build("smallHpPotion", 1);
     stockShop(world, player, [potion]);
-    player.inventory = [build("stackable", "common", "smallHpPotion", 2)];
+    player.inventory = [build("smallHpPotion", 2)];
     player.gold = 1000;
     const update = await emitAndWait(socket, "moveItem", {
       from: { location: "shop", slot: 0, amount: 3 },
@@ -299,8 +296,8 @@ describe("shop over the socket", () => {
 
   it("sells part of a stack and an equipped item for gold", async () => {
     const { socket, player, world } = await login("warrior");
-    stockShop(world, player, [build("pants", "common", "clothPants")]);
-    const potion = build("stackable", "common", "smallHpPotion", 5);
+    stockShop(world, player, [build("clothPants")]);
+    const potion = build("smallHpPotion", 5);
     player.inventory = [potion];
     player.gold = 0;
     const sold = await emitAndWait(socket, "moveItem", {
@@ -321,15 +318,15 @@ describe("shop over the socket", () => {
 
   it("credits gold only for what was actually removed", async () => {
     const { socket, player, world } = await login("warrior");
-    stockShop(world, player, [build("pants", "common", "clothPants")]);
-    const potion = build("stackable", "common", "smallHpPotion", 5);
+    stockShop(world, player, [build("clothPants")]);
+    const potion = build("smallHpPotion", 5);
     const cost = potion.cost as number;
-    const bag = build("bag", "rare", "smallPouch");
-    bag.items = [build("stackable", "common", "smallHpPotion", 3)];
+    const bag = build("smallPouch");
+    bag.items = [build("smallHpPotion", 3)];
     player.inventory = [potion, bag];
     player.abilities = {
       ...player.abilities,
-      a1: build("stackable", "common", "smallHpPotion", 3),
+      a1: build("smallHpPotion", 3),
     };
     player.gold = 0;
     const sell = (from: Anything) =>

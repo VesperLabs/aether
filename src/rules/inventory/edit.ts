@@ -53,8 +53,25 @@ export function subtractInventoryItemAtId(
   return { result: inventory, subtracted: null };
 }
 
-/** Puts an item in the first empty inventory slot, or at the end when none is free. */
+/**
+ * Puts an item in the first empty inventory slot, or at the end when none is free. A stackable
+ * the player already carries, loose or in a bag, joins that stack instead.
+ */
 export function addInventoryItem(inventory: ItemSlotValue[], item: InventoryItem) {
+  if (item.type === "stackable") {
+    const add = (stack: InventoryItem) => ({
+      ...stack,
+      amount: Number(stack.amount || 0) + Number(item.amount || 1),
+    });
+    const loose = inventory.findIndex((slot) => slot?.id === item.id);
+    if (loose !== -1) return withSlot(inventory, loose, add(inventory[loose] as InventoryItem));
+    const { bagIndex, slotIndex } = locateBagItem(inventory, item.id);
+    if (bagIndex !== -1) {
+      return changeBagItem(inventory, item.id, (items) =>
+        withSlot(items, slotIndex, add(items[slotIndex] as InventoryItem)),
+      );
+    }
+  }
   for (let i = 0; i < inventory.length; i++) {
     if (!inventory[i]?.id) return withSlot(inventory, i, item);
   }

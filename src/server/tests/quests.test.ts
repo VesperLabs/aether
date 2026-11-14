@@ -114,10 +114,10 @@ describe("quests", () => {
     await once(socket, "playerUpdate");
     const player = world().players[socket.id as string];
     const quest = world().quests["crab-claws"];
-    const [slot, rarity, key] = quest.objectives[0].item;
+    const key = quest.objectives[0].item;
     const need = quest.objectives[0].amount;
-    const stack = (id: string, amount: number) => ({ id, slot, rarity, key, amount });
-    const other = { id: "other", slot, rarity, key: "otherKey", amount: 7 };
+    const stack = (id: string, amount: number) => ({ id, slot: "stackable", key, amount });
+    const other = { id: "other", slot: "stackable", key: "otherKey", amount: 7 };
     player.inventory = [stack("s1", need), other];
     const update = once(socket, "playerUpdate");
     socket.emit("completeQuest", "crab-claws");

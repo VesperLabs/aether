@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import { ELEMENT_EFFECTS } from "@/ui/item/element-effects";
 import { ElementSim, type EffectPixel, type ToLayer } from "@/ui/item/element-sim";
 import { bladePixels, findEdgePixels } from "@/ui/item/edge-pixels";
-import { WEAPON_GRIP, getWeaponTip } from "@/content";
+import { WEAPON_GRIP, getWeaponTip, type ItemEffect } from "@/content";
 import { addLight, type Light } from "./lights";
 import { bladeGlow } from "./blade-glow";
 
@@ -51,7 +51,7 @@ function getEdgePixels(frame: Phaser.Textures.Frame, grip: { x: number; y: numbe
 export class WeaponSprite extends Phaser.GameObjects.Container {
   declare borderSprites: Phaser.GameObjects.Sprite[];
   declare mainSprite: Phaser.GameObjects.Sprite;
-  declare elements: string[];
+  declare elements: ItemEffect[];
   declare sim: ElementSim;
   /** The sim's light, added to what's behind it. */
   declare glowGraphics: Phaser.GameObjects.Graphics;
@@ -125,7 +125,7 @@ export class WeaponSprite extends Phaser.GameObjects.Container {
     const world = this.mainSprite.getWorldTransformMatrix().transformPoint(x * flipX, y * flipY);
     return { x: world.x, y: world.y };
   }
-  setElements(elements: string[] = []) {
+  setElements(elements: ItemEffect[] = []) {
     const known = elements.filter((element) => ELEMENT_EFFECTS[element]);
     if (known.join() === this.elements.join()) return;
     this.elements = known;

@@ -1,10 +1,10 @@
-import { type ActorDefinition } from "@/content";
+import { getCatalogItem, type ActorDefinition } from "@/content";
 import { calculateExpValue, npcStats } from "@/rules/stats";
 import { Flex, Grid, Icon, Text, Tooltip, TooltipContent } from "@/ui";
 import { useId } from "react";
 import { fights } from "./combat-sections";
 import { Divider } from "./paper";
-import { ItemHover, ROW_STYLE, Stat, listedItems } from "./stat-row";
+import { ItemHover, ROW_STYLE, Stat } from "./stat-row";
 
 /** What every actor shares, keeper or mob: its stats and resistances. */
 export const StatsSection = ({ actor }: { actor: ActorDefinition }) => {
@@ -53,11 +53,11 @@ export const AbilitiesSection = ({ actor }: { actor: ActorDefinition }) => {
     <>
       <Divider label="Abilities" />
       <Grid columns={2} sx={{ columnGap: 2, rowGap: 1, fontSize: 1 }}>
-        {spells.map(([type, rarity, key]) => {
-          const item = listedItems[type]?.[rarity]?.[key];
+        {spells.map((ref) => {
+          const item = getCatalogItem(ref);
           if (!item) return null;
           return (
-            <ItemHover key={key} gap={1} item={item} type={type} rarity={rarity} itemKey={key}>
+            <ItemHover key={item.key} gap={1} item={item}>
               {/* The same icon the action bar shows once the spell is bound, at its native 32px */}
               <Icon
                 icon={`./assets/atlas/spell/spell-${item.base}.png`}
@@ -65,7 +65,7 @@ export const AbilitiesSection = ({ actor }: { actor: ActorDefinition }) => {
                 // The art sits inside transparent padding; pull the name in to match the elements.
                 sx={{ flexShrink: 0, my: "-4px", mr: "-6px" }}
               />
-              <Text sx={{ fontWeight: 700, whiteSpace: "nowrap" }}>{item.name ?? key}</Text>
+              <Text sx={{ fontWeight: 700, whiteSpace: "nowrap" }}>{item.name}</Text>
             </ItemHover>
           );
         })}

@@ -10,6 +10,7 @@ import {
 import { focusNavOn, holdNavItem } from "@/client/input/pad-nav";
 import { useAppContext } from "@/client/hud/app/context";
 import { CONSUMABLES_BASES, checkSlotsMatch } from "@/rules/inventory";
+import { canSlotMod } from "@/content";
 
 /* As the chat's command list highlights its rows */
 const HIGHLIGHT = "rgba(255,255,255,.12)";
@@ -19,6 +20,7 @@ const SPACE = 8;
 /** What can be done with an item from its menu; the first is highlighted when it opens. */
 type Option =
   | "Use"
+  | "Socket"
   | "Unequip"
   | "Buy"
   | "Sell"
@@ -39,6 +41,15 @@ function optionsFor(slot: Element) {
     ];
   }
   const worn = isWorn(slot);
+  /* A card's one use is socketing: carried to the first gear it fits, to place with A */
+  if (slot.getAttribute("data-base") === "card") {
+    return [
+      { label: "Socket" as const, hint: "Into your gear" },
+      ...(openShop() ? [{ label: "Sell" as const, hint: "To the shop" }] : []),
+      { label: "Move" as const, hint: "Pick up to place" },
+      { label: "Drop" as const, hint: "On the ground" },
+    ];
+  }
   return [
     /* Worn (equipment, abilities): take it off. Else use or put it on */
     ...(worn
@@ -91,6 +102,17 @@ function equipSlotFor(slot: Element) {
   return fits.find((s) => !s.getAttribute("data-base")) ?? fits[0] ?? null;
 }
 
+/** The first gear `card` fits with an empty mod slot: worn first, then carried. */
+function socketTargetFor(card: Element) {
+  const mod = card.getAttribute("data-mod") ?? "";
+  const fits = (s: Element) =>
+    !!s.getAttribute("data-open-mods") && canSlotMod(mod, s.getAttribute("data-item-type") ?? "");
+  const slots = (location: string) => [
+    ...document.querySelectorAll(`[data-location="${location}"][data-slot-key]`),
+  ];
+  return slots("equipment").find(fits) ?? slots("inventory").find(fits) ?? null;
+}
+
 type CarryMenu = "inventory" | "equipment" | "abilities";
 
 /** Opens that menu, if shut. */
@@ -124,6 +146,9 @@ function act(option: Option, slot: Element, openMenu: OpenMenu) {
   const wornIn = equipLocation(slot);
   if (option === "To equipment" && wornIn) {
     return carryTo(slot, wornIn, () => equipSlotFor(slot), openMenu);
+  }
+  if (option === "Socket") {
+    return carryTo(slot, "equipment", () => socketTargetFor(slot) ?? slot, openMenu);
   }
   if (option === "Drop") {
     const ground = document.querySelector("#game canvas");

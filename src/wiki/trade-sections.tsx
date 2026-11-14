@@ -1,15 +1,16 @@
-import { itemList, resolveAsset, type ActorDefinition, type BuiltItem } from "@/content";
+import {
+  getCatalogItem,
+  readRef,
+  resolveAsset,
+  type ActorDefinition,
+  type AnyItemRef,
+  type BuiltItem,
+} from "@/content";
 import { Flex, ItemTooltip, Text } from "@/ui";
 import { useId, useState } from "react";
 import { SpriteFace } from "./card-pool";
 import { QuestIcon } from "./quest-icon";
 import { Divider, PAPER } from "./paper";
-
-type ListedItem = { name?: string; texture?: string; slot?: string; tint?: string; cost?: number };
-const listedItems = itemList as unknown as Record<
-  string,
-  Record<string, Record<string, ListedItem>>
->;
 
 /** What a keeper offers: the quests it gives, the shop it keeps and a respawn point. */
 export const TradeSections = ({ actor }: { actor: ActorDefinition }) => {
@@ -30,13 +31,8 @@ export const TradeSections = ({ actor }: { actor: ActorDefinition }) => {
         <>
           <Divider label="Shop" />
           <Flex sx={{ gap: 1, flexWrap: "wrap" }}>
-            {shop.map(({ item: [type, rarity, key] }) => (
-              <ShopItem
-                key={`${type}-${rarity}-${key}`}
-                type={type}
-                rarity={rarity}
-                itemKey={key}
-              />
+            {shop.map(({ item }) => (
+              <ShopItem key={readRef(item).key} item={item} />
             ))}
           </Flex>
         </>
@@ -54,10 +50,10 @@ export const TradeSections = ({ actor }: { actor: ActorDefinition }) => {
 };
 
 /** One item for sale: just its sprite, with the game's item tooltip on hover. */
-const ShopItem = ({ type, rarity, itemKey }: { type: string; rarity: string; itemKey: string }) => {
+const ShopItem = ({ item: ref }: { item: AnyItemRef }) => {
   const [hovering, setHovering] = useState(false);
   const tooltipId = useId();
-  const item = listedItems[type]?.[rarity]?.[itemKey];
+  const item = getCatalogItem(ref);
   const asset = item && resolveAsset(item, { profile: { race: "human", gender: "female" } });
   if (!item || !asset) return null;
   return (
@@ -68,11 +64,7 @@ const ShopItem = ({ type, rarity, itemKey }: { type: string; rarity: string; ite
       sx={{ width: 32, height: 32, alignItems: "center", justifyContent: "center", cursor: "help" }}
     >
       <SpriteFace asset={asset} tint={item.tint} size={32} pixelScale={1} />
-      <ItemTooltip
-        item={{ ...item, key: itemKey, rarity, type } as BuiltItem}
-        show={hovering}
-        tooltipId={tooltipId}
-      />
+      <ItemTooltip item={item as BuiltItem} show={hovering} tooltipId={tooltipId} />
     </Flex>
   );
 };

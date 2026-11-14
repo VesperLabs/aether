@@ -1,4 +1,4 @@
-import { ItemBuilder } from "@/content";
+import { getSetBonus } from "@/content";
 import { addBuffBonuses, type ActiveBuff } from "@/rules/buffs";
 import { hasAttackableWeapons, hasVisibleWeaponType } from "@/rules/combat";
 
@@ -73,11 +73,11 @@ export function getActiveItemSlots(character: ActiveSlotsInput): string[] {
       if (item.percentStats?.[key]) percentStats[key] += item.percentStats[key];
       if (item.setName) {
         setItems.set(item.id, item);
-        const setInfo = ItemBuilder.getSetInfo(item.setName);
+        const setInfo = getSetBonus(item.setName);
         const pieces = [...setItems.values()].filter((i) => i?.setName === item.setName);
-        if (pieces.length >= setInfo?.pieces) {
-          if (setInfo?.stats?.[key]) baseStats[key] += setInfo.stats[key];
-          if (setInfo?.percentStats?.[key]) percentStats[key] += setInfo.percentStats[key];
+        if (setInfo && pieces.length >= setInfo.pieces) {
+          if (setInfo.stats[key]) baseStats[key] += setInfo.stats[key];
+          if (setInfo.percentStats[key]) percentStats[key] += setInfo.percentStats[key];
         }
       }
     }

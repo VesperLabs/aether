@@ -12,8 +12,6 @@ const VIRTUAL_ID = "virtual:map-loots";
 const RESOLVED_ID = `\0${VIRTUAL_ID}`;
 
 interface SpawnItem {
-  type: string;
-  rarity: string;
   key: string;
   /** "1 in N" odds. */
   chance: number;
@@ -46,10 +44,9 @@ function readAll(repoRoot: string) {
     const best = new Map<string, SpawnItem>();
     for (const object of layerObjects(tiled.layers, "Loots")) {
       const items = JSON.parse(String(object.properties?.[0]?.value ?? "[]")) as SpawnItem[];
-      for (const { type, rarity, key, chance } of items) {
-        const id = `${type}/${rarity}/${key}`;
-        const seen = best.get(id);
-        if (!seen || chance < seen.chance) best.set(id, { type, rarity, key, chance });
+      for (const { key, chance } of items) {
+        const seen = best.get(key);
+        if (!seen || chance < seen.chance) best.set(key, { key, chance });
       }
     }
     if (best.size) loots[map.name] = [...best.entries()].sort().map(([, item]) => item);

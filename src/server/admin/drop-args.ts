@@ -1,41 +1,37 @@
-import { canRollRarity, findItemKey, isItemBuildRarity } from "@/content";
+import { findItemKey, getCatalogItem, MAX_SLOTS, takesSlots } from "@/content";
 
 export interface DropArgs {
-  type: string;
-  rarity: string;
   key: string;
+  /** Blank mod slots, for gear that takes them. */
+  slots: number;
   amount: number;
 }
 
 export const DROP_USAGE =
-  "Usage: /drop <item> [rarity] [amount], e.g. /drop sword, /drop sword magic, /drop smallHpPotion 20";
+  "Usage: /drop <item> [slots | amount], e.g. /drop sword, /drop sword 3, /drop smallHpPotion 20";
 
 /**
- * Reads `/drop` args: `<item> [rarity] [amount]` in any order after the item, where the item's
- * type and default rarity come from its key. The old `<type>-<rarity>-<key>-<amount>` still works.
+ * Reads `/drop` args: `<item>`, then a number that is the gear's mod slots (0–4) or a stack's
+ * amount. No item takes both.
  */
 export function parseDropArgs(args: string[]): DropArgs | { error: string } {
-  const [first, ...rest] = args.filter(Boolean);
+  const [first, count, ...extra] = args.filter(Boolean);
   if (!first) return { error: DROP_USAGE };
 
-  const legacy = first.split("-");
-  if (legacy.length === 4 && rest.length === 0) {
-    const [type, rarity, key, amount] = legacy;
-    return { type, rarity, key, amount: Number(amount) || 1 };
-  }
+  const item = getCatalogItem(findItemKey(first)?.key ?? "");
+  if (!item) return { error: `No item called "${first}". ${DROP_USAGE}` };
+  if (extra.length) return { error: `Don't know "${extra.join(" ")}". ${DROP_USAGE}` };
 
-  const entry = findItemKey(first);
-  if (!entry) return { error: `No item called "${first}". ${DROP_USAGE}` };
-
-  let rarity = entry.rarity;
-  let amount = 1;
-  for (const arg of rest) {
-    if (isItemBuildRarity(arg.toLowerCase())) rarity = arg.toLowerCase();
-    else if (/^\d+$/.test(arg) && Number(arg) > 0) amount = Number(arg);
-    else return { error: `Don't know "${arg}". ${DROP_USAGE}` };
+  const dropped = { key: item.key, slots: 0, amount: 1 };
+  if (count === undefined) return dropped;
+  const value = /^\d+$/.test(count) ? Number(count) : NaN;
+  if (takesSlots(item)) {
+    if (!(value <= MAX_SLOTS)) return { error: `${item.name} takes 0 to ${MAX_SLOTS} slots.` };
+    return { ...dropped, slots: value };
   }
-  if (rarity !== entry.rarity && (entry.rarity !== "common" || !canRollRarity(entry.type))) {
-    return { error: `${entry.name} is always ${entry.rarity}.` };
+  if (item.type === "stackable") {
+    if (!(value > 0)) return { error: `Don't know "${count}". ${DROP_USAGE}` };
+    return { ...dropped, amount: value };
   }
-  return { type: entry.type, rarity, key: entry.key, amount };
+  return { error: `${item.name} is always ${item.rarity}.` };
 }

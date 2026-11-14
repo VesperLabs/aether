@@ -1,7 +1,7 @@
 import { Icon } from "@/ui";
 import type { ReactNode } from "react";
 import { CARD_COLORS, SpriteFace, raceAsset } from "./card-pool";
-import { ICON, Row } from "./card-row";
+import { ICON, NATIVE_ICON, Row } from "./card-row";
 import type { itemSources } from "./item-sources";
 import { PAPER } from "./paper";
 
@@ -23,7 +23,7 @@ export const Sources = ({
   /** The monster levels that drop it at random, if it ever drops at random. */
   randomLevels?: { min: number; max: number };
 }) => {
-  const icon = (name: string) => <Icon icon={`./assets/icons/${name}.png`} size={ICON} />;
+  const icon = (name: string) => <Icon icon={`./assets/icons/${name}.png`} size={NATIVE_ICON} />;
   const rows: { label: string; value: string; color: string; icon: ReactNode }[] = [
     ...(sources?.drops ?? []).map((drop) => {
       const asset = raceAsset(drop.race);

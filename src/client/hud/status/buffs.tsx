@@ -1,5 +1,5 @@
 import { memo, useEffect, useState } from "react";
-import { Flex, Icon, Text } from "@/ui";
+import { Flex, Icon, RomanNumeral, Text } from "@/ui";
 import { arePropsEqualWithKeys } from "@/ui";
 import { formatStats } from "@/rules/stats";
 import { buffList } from "@/content";
@@ -40,7 +40,8 @@ const BuffTooltip = ({
         }}
       >
         <Text>
-          {"Lv." + buff?.level + " " + buff?.name?.charAt(0).toUpperCase() + buff?.name?.slice(1)}
+          {`${buff?.name?.charAt(0).toUpperCase()}${buff?.name?.slice(1)} `}
+          <RomanNumeral value={buff?.level} />
         </Text>
         <TextDivider>Time: {displayTime}</TextDivider>
         {Object.keys(combinedStats).map((key) => (

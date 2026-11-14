@@ -1,9 +1,8 @@
 import { useMemo, useRef, useState } from "react";
-import { actors, itemList, type ActorDefinition, type BuiltItem } from "@/content";
+import { actors, getCatalogItem, type ActorDefinition, type BuiltItem } from "@/content";
 import { Box, PlayerRender, type RenderablePlayer } from "@/ui";
 
 const ACTORS = actors as Record<string, ActorDefinition>;
-const ITEMS = itemList as unknown as Record<string, Record<string, Record<string, BuiltItem>>>;
 /* Held weapons and shields stick out past the icon, so the preview leaves them off */
 const WEAPON_SLOTS = ["handLeft", "handRight"];
 /** The rows with anything drawn on them: from the top of the hair or hat to the feet. */
@@ -37,9 +36,9 @@ const dressedActor = (actor: ActorDefinition): RenderablePlayer => {
   const equipment = Object.fromEntries(
     Object.entries(actor.equipment ?? {}).flatMap(([slot, ref]) => {
       if (!ref || WEAPON_SLOTS.includes(slot)) return [];
-      const [type, rarity, key] = ref as readonly string[];
-      const item = ITEMS[type]?.[rarity]?.[key];
-      return item ? [[slot, item]] : [];
+      const item = getCatalogItem(ref);
+      /* Only the look is drawn, so the unbuilt catalog item does */
+      return item ? [[slot, item as BuiltItem]] : [];
     }),
   );
   /* The renderer only draws slots listed as active */

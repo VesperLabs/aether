@@ -194,7 +194,8 @@ describe("calculateStats", () => {
     expect(two.activeSets).toEqual(["crab"]);
     // Set stats the character does not have yet become NaN and then 0 (legacy quirk).
     expect(two.stats.waterResistance).toBe(0);
-    expect(two.stats.vitality).toBe(6);
+    // Crustacean Chic's bonus mods at tier 1: Swift is +5 walk speed
+    expect(two.stats.walkSpeed - one.stats.walkSpeed).toBe(5);
   });
 
   it("counts two of the same item as one set piece", () => {

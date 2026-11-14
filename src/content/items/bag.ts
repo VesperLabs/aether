@@ -1,45 +1,42 @@
-import type { ItemRarityTable } from "./item-types";
+import type { Families, Uniques } from "./gear-types";
 
-export const bagItems = {
-  rare: {
-    smallPouch: {
-      tier: 1,
-      name: "Small Pouch",
-      flavor: "A small pouch with room for a few more things.",
-      base: "bag",
-      slot: "bag",
-      texture: "bag-small-pouch",
-      space: 4,
-    },
-    largePouch: {
-      tier: 2,
-      name: "Large Pouch",
-      flavor: "A large pouch for the serious collector.",
-      base: "bag",
-      slot: "bag",
-      texture: "bag-large-pouch",
-      space: 8,
-    },
-    mediumPouch: {
-      tier: 3,
-      name: "Large Pouch",
-      flavor: "A sturdy pouch with plenty of room.",
-      base: "bag",
-      slot: "bag",
-      texture: "bag-large-pouch",
-      space: 12,
-    },
+export const bagFamilies = {
+  bag: {
+    type: "bag",
+    texture: "bag-small-pouch",
+    space: 4,
+    tiers: [
+      {
+        key: "smallPouch",
+        name: "Small Pouch",
+        flavor: "A small pouch with room for a few more things.",
+      },
+      {
+        key: "mediumPouch",
+        name: "Medium Pouch",
+        flavor: "A sturdy pouch with plenty of room.",
+        texture: "bag-large-pouch",
+      },
+      {
+        key: "largePouch",
+        name: "Large Pouch",
+        flavor: "A large pouch for the serious collector.",
+        texture: "bag-large-pouch",
+      },
+      null,
+      null,
+      null,
+    ],
   },
-  unique: {
-    raesBasket: {
-      exclusive: true,
-      tier: 2,
-      name: "Rae's Basket",
-      flavor: "Rae's picnic basket. Somehow it never runs out of room.",
-      base: "bag",
-      slot: "bag",
-      texture: "bag-basket",
-      space: 10,
-    },
+} as const satisfies Families;
+
+export const bagUniques = {
+  raesBasket: {
+    family: "bag",
+    tier: 2,
+    name: "Rae's Basket",
+    flavor: "Rae's picnic basket. Somehow it never runs out of room.",
+    texture: "bag-basket",
+    exclusive: true,
   },
-} as const satisfies ItemRarityTable;
+} as const satisfies Uniques<typeof bagFamilies>;

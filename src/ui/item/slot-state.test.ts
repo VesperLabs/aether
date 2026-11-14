@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { sameRequirementInputs } from "./slot-state";
+import { sameRequirementInputs, shouldReRenderSlot } from "./slot-state";
 
 const hero = (stats: Record<string, number>, rest: Record<string, unknown> = {}) => ({
   charClass: "warrior",
@@ -22,5 +22,14 @@ describe("sameRequirementInputs", () => {
   it("sees a class or gear change", () => {
     expect(sameRequirementInputs(hero({}), hero({}, { charClass: "mage" }))).toBe(false);
     expect(sameRequirementInputs(hero({}), hero({}, { activeItemSlots: [] }))).toBe(false);
+  });
+});
+
+describe("shouldReRenderSlot", () => {
+  it("re-renders when a card is socketed: same item, new mods", () => {
+    const slot = (mods: (string | null)[]) =>
+      ({ location: "inventory", item: { id: "sword1", mods } }) as never;
+    expect(shouldReRenderSlot(slot([null]), slot([null]))).toBe(true);
+    expect(shouldReRenderSlot(slot([null]), slot(["sharp"]))).toBe(false);
   });
 });

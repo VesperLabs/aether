@@ -95,11 +95,21 @@ const Corner = ({ sx }: { sx: object }) => (
  * A thin rule in the card's trim colour. With a `label` it doubles as the section's heading,
  * set in small caps in the middle of the rule; without one, a small diamond sits there instead.
  */
-export const Divider = ({ label }: { label?: string }) => (
-  <Flex sx={{ alignItems: "center", gap: 2, my: 3 }}>
+export const Divider = ({
+  label,
+  color = PAPER.muted,
+  spacing = 3,
+}: {
+  label?: string;
+  /** The label's colour: a set's green, say. */
+  color?: string;
+  /** Space above and below, on the theme's scale. */
+  spacing?: number;
+}) => (
+  <Flex sx={{ alignItems: "center", gap: 2, my: spacing }}>
     <Box aria-hidden sx={{ flex: 1, height: "1px", bg: PAPER.frame }} />
     {label ? (
-      <Text sx={{ fontSize: 0, color: PAPER.muted, letterSpacing: "0.12em", lineHeight: 1 }}>
+      <Text sx={{ fontSize: 0, color, letterSpacing: "0.12em", lineHeight: 1 }}>
         {label.toUpperCase()}
       </Text>
     ) : (

@@ -5,6 +5,7 @@ import {
   ACCESSORY_HIDING_HELMETS,
   FACE_HIDING_ACCESSORIES,
   HAIR_HIDING_ACCESSORIES,
+  itemEffects,
 } from "@/content";
 import type { Player } from "./player";
 import { Crosshair } from "@/client/input/crosshair";
@@ -21,7 +22,6 @@ const HP_BAR_WIDTH = 16;
 const HP_BAR_HEIGHT = 6;
 /** The middle of the name's line, under the feet. */
 const NAME_MIDDLE_Y = 11;
-import { deriveElements } from "@/ui/item/weapon-elements";
 
 const { Sprite, BitmapText, Container } = Phaser.GameObjects;
 const BLANK_TEXTURE = "human-blank";
@@ -139,10 +139,10 @@ export function applyAppearance(player: Player) {
 
   if (player.profile.race === "human") {
     (player.handLeft as WeaponSprite).setElements(
-      player.hasWeaponLeft() ? deriveElements(visibleEquipment?.handLeft?.stats) : [],
+      player.hasWeaponLeft() ? itemEffects(visibleEquipment?.handLeft) : [],
     );
     (player.handRight as WeaponSprite).setElements(
-      player.hasWeaponRight() ? deriveElements(visibleEquipment?.handRight?.stats) : [],
+      player.hasWeaponRight() ? itemEffects(visibleEquipment?.handRight) : [],
     );
   }
 

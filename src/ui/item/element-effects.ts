@@ -1,3 +1,4 @@
+import type { ItemEffect } from "@/content";
 import type { VineStyle } from "./vines";
 
 interface Range {
@@ -233,10 +234,16 @@ const holy: ElementEffect = {
 /** How long each of a weapon's elements shows before the next takes over. */
 export const ELEMENT_TURN_MS = 1500;
 
-export const ELEMENT_EFFECTS: Record<string, ElementEffect> = { fire, water, light, earth, holy };
+export const ELEMENT_EFFECTS: Record<ItemEffect, ElementEffect> = {
+  fire,
+  water,
+  light,
+  earth,
+  holy,
+};
 
 /** Swing trails for weapons of each element, matching their outlines. */
-export const ELEMENT_SWING_COLORS: Record<string, number> = {
+export const ELEMENT_SWING_COLORS: Record<ItemEffect, number> = {
   fire: 0xff7a2a,
   water: 0x6ab8ff,
   light: 0xfff07a,

@@ -1,3 +1,4 @@
+import type { Item } from "@/content";
 import type { CharacterState } from "@/rules/character";
 import type { createBaseUser } from "./base-user";
 
@@ -24,10 +25,10 @@ interface SavedPlayer {
   gold?: unknown;
   npcKills?: unknown;
   stats?: { hp?: number; mp?: number; sp?: number; exp?: number };
-  equipment?: unknown;
-  inventory?: unknown;
+  equipment?: Record<string, Item | null | undefined>;
+  inventory?: (Item | null)[];
   baseStats?: unknown;
-  abilities?: unknown;
+  abilities?: Record<string, Item | null | undefined>;
   activeItemSlots?: unknown;
 }
 
@@ -52,7 +53,6 @@ export interface Database {
   countAllUsers(): Promise<number>;
   updateUsersMaxExp(): Promise<void>;
   pruneNoobs(): Promise<void>;
-  pruneItemByKey(keyToRemove: string): Promise<void>;
   createUser(args: {
     email?: string | null;
     charClass?: string | null;

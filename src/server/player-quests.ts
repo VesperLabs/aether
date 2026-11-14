@@ -53,9 +53,11 @@ export function applyCompleteQuest(
       player.abilities = taken.abilities;
     }
   }
-  /* Rewards are built once per world, so each player gets their own copy with its own id */
+  /* Rewards are built once per world, so each player gets their own copy with its own id.
+     Stackables keep theirs, their key, so they join a stack the player already has. */
   for (const item of result.itemsToAdd) {
-    player.addInventoryItem({ ...structuredClone(item as Item), id: newId() });
+    const copy = structuredClone(item as Item);
+    player.addInventoryItem(copy.type === "stackable" ? copy : { ...copy, id: newId() });
   }
   const didLevel = player.assignExp(result.exp as number);
   player.gold += result.gold;

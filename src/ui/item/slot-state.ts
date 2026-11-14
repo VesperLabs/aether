@@ -25,7 +25,8 @@ export function shouldReRenderSlot(prevProps: SlotProps, nextProps: SlotProps) {
     return false;
   }
 
-  return ["id", "item.amount", "item.items", "item.stock", "item.id"].every((key) => {
+  /* Socketing a card keeps the item's id but changes its mods, stats and tooltip with them */
+  return ["id", "item.amount", "item.items", "item.stock", "item.id", "item.mods"].every((key) => {
     return isEqual(get(prevProps, key), get(nextProps, key));
   });
 }

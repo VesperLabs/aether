@@ -6,7 +6,7 @@ import { CONSUMABLES_BASES, POTION_BASES } from "@/rules/inventory";
 import { isThrowable } from "@/rules/capture";
 import { applyTintToImage, loadCacheImage } from "@/ui";
 import { arePropsEqualWithKeys } from "@/ui";
-import { isMobile } from "@/ui";
+import { isMobile, RomanNumeral } from "@/ui";
 import { CooldownTimer, getLatestCooldown } from "./cooldown-timer";
 import { ItemTooltip } from "@/ui";
 import { SkillButton } from "./skill-button";
@@ -137,7 +137,7 @@ const TintedIconLoader = ({
             width: "100%",
           }}
         >
-          {isSpell ? `Lv. ${item?.rank}` : item?.amount}
+          {isSpell ? <RomanNumeral value={item?.rank} /> : item?.amount}
         </Text>
       </SkillButton>
       <ItemTooltip player={hero} item={item} show={showTooltip} tooltipId={tooltipId} />

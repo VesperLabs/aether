@@ -200,20 +200,21 @@ describe("casting spells", () => {
     expect(cancels).toEqual([{ socketId: player.socketId }]);
   });
 
+  /* Stealth takes time to cast, like every spell, so it goes through startCast */
   it("a rogue casting stealth becomes stealthed", async () => {
     const { socket, player } = await login("rogue");
-    socket.emit("castSpell", { abilitySlot: 1, castAngle: 0 });
+    socket.emit("startCast", { abilitySlot: 1 });
     await server.until(socket, () => player.hasBuff("stealth"), { maxMs: 3000 });
   });
 
   it("a cast refused for its cost does not start the spell's cooldown", async () => {
     const { socket, player } = await login("rogue");
     player.stats.sp = 0;
-    socket.emit("castSpell", { abilitySlot: 1, castAngle: 0 });
+    socket.emit("startCast", { abilitySlot: 1 });
     await server.run(socket, 100);
     expect(player.state.lastCast.stealth).toBeFalsy();
     player.stats.sp = player.stats.maxSp;
-    socket.emit("castSpell", { abilitySlot: 1, castAngle: 0 });
+    socket.emit("startCast", { abilitySlot: 1 });
     await server.until(socket, () => player.hasBuff("stealth"), { maxMs: 3000 });
   });
 

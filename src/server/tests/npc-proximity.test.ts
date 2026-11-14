@@ -17,7 +17,7 @@ function placeKeeper(world: Anything, player: Anything, id: string, dx: number, 
   const shop = [
     {
       item: {
-        ...ItemBuilder.buildItem(PREVIEW_DICE, "pants", "common", "clothPants")!,
+        ...ItemBuilder.buildItem(PREVIEW_DICE, "clothPants")!,
         cost: 40,
       },
       stock: 10,

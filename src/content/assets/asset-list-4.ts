@@ -1,12 +1,18 @@
 import type { AssetDefinition } from "./asset-types";
+import { cardItems } from "../items/card";
 
-export const assetList4 = [
-  {
-    texture: "stackable-wyrm-card",
-    src: "./assets/cards/wyrm.png",
+/** Each card's art, saved from the sprite lab's card panel. */
+const cardArt = Object.values(cardItems).flatMap((cards) =>
+  Object.values(cards).map(({ texture }) => ({
+    texture,
+    src: `./assets/cards/${texture.replace(/^stackable-|-card$/g, "")}.png`,
     atlas: "./assets/atlas/32x32-stackable.json",
     previewRect: [0, 0, 32, 32],
-  },
+  })),
+);
+
+export const assetList4 = [
+  ...cardArt,
   {
     texture: "stackable-pokeball",
     src: "./assets/atlas/stackable/stackable-pokeball.png",

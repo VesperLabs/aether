@@ -87,6 +87,25 @@ const profileSchema = {
   },
 };
 
+/** An item as `saved-item.ts` saves it: gear by id, key and mods, stackables by key and amount. */
+const savedItemSchema = {
+  bsonType: ["object", "null"],
+  required: ["key"],
+  properties: {
+    id: { bsonType: "string" },
+    key: { bsonType: "string" },
+    amount: { bsonType: "number" },
+    mods: { bsonType: "array", items: { bsonType: ["string", "null"] } },
+    items: { bsonType: "array" },
+  },
+  additionalProperties: false,
+};
+
+const itemSlotsSchema = {
+  bsonType: "object",
+  additionalProperties: savedItemSchema,
+};
+
 const userSchema = {
   bsonType: "object",
   required: ["x", "y", "roomName", "baseStats", "updatedAt"],
@@ -133,6 +152,9 @@ const userSchema = {
       bsonType: "date",
       description: "must be a date",
     },
+    equipment: itemSlotsSchema,
+    abilities: itemSlotsSchema,
+    inventory: { bsonType: "array", items: savedItemSchema },
     activeItemSlots: {
       bsonType: "array",
       description: "must be an array",

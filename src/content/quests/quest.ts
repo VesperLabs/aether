@@ -13,7 +13,8 @@ export interface QuestObjective {
   questId: string;
   keeper?: string;
   monster?: string;
-  item?: string[];
+  /** The key of the item to collect. */
+  item?: string;
   amount?: number;
 }
 
