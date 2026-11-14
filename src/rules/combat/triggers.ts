@@ -1,4 +1,5 @@
-import { randomInt, type Rng } from "@/rules/loot";
+import { mergeTriggers } from "@/content";
+import type { Rng } from "@/rules/loot";
 
 export type TriggerEvent = "onAttackHit" | "onHurt";
 
@@ -19,9 +20,9 @@ export interface FiredTrigger {
 }
 
 /**
- * Rolls every trigger of `event` in order (each rolls 1..chance and fires on a 1).
- * The hitter's `onAttackHit` buffs land on itself and its debuffs on the victim;
- * the victim's `onHurt` buffs land on the victim itself ("self" is whoever owns the trigger).
+ * Rolls every trigger of `event` once, copies of the same one merged first: two 5% Venomous
+ * roll once at 10%. The hitter's `onAttackHit` buffs land on itself and its debuffs on the
+ * victim; the victim's `onHurt` buffs land on the victim itself ("self" is whoever owns it).
  */
 export function rollTriggers(
   triggers: Array<TriggerLike | null | undefined> | undefined,
@@ -29,17 +30,11 @@ export function rollTriggers(
   rng: Rng,
 ): FiredTrigger[] {
   const fired: FiredTrigger[] = [];
-  const matching = triggers?.filter((t) => t?.event === event);
-  if (!matching?.length) return fired;
-  for (const trigger of matching) {
-    const { name, level, type, chance } = (trigger ?? {}) as TriggerLike;
-    const roll = randomInt(rng, 1, chance as number);
-    if (roll !== 1) continue;
-    if (type === "buff")
-      fired.push({ name: name as string, level: level as number, target: "self" });
-    if (type === "debuff" && event === "onAttackHit") {
-      fired.push({ name: name as string, level: level as number, target: "other" });
-    }
+  const matching = mergeTriggers(triggers).filter((trigger) => trigger.event === event);
+  for (const { name, level, type, percent } of matching) {
+    if (rng() * 100 >= percent) continue;
+    if (type === "buff") fired.push({ name, level, target: "self" });
+    if (type === "debuff" && event === "onAttackHit") fired.push({ name, level, target: "other" });
   }
   return fired;
 }

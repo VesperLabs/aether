@@ -37,13 +37,17 @@ describe("createBuff", () => {
       level: 2,
       spawnTime: NOW,
       duration: 30000,
-      stats: { walkSpeed: 20, attackDelay: -25, castDelay: -100 },
+      stats: { walkSpeed: 25, attackDelay: -30, castDelay: -120 },
       percentStats: {},
     });
   });
-  it("only scales stats for buffs that ask for it", () => {
-    const evasion = createBuff({ name: "evasion", level: 3, now: NOW });
-    expect(evasion?.stats?.dodgeChance).toBe(5);
+  it("grows each value by its perLevel step", () => {
+    expect(createBuff({ name: "evasion", level: 3, now: NOW })?.stats?.dodgeChance).toBe(15);
+    expect(createBuff({ name: "slow", level: 3, now: NOW })).toMatchObject({
+      duration: 4000,
+      stats: { walkSpeed: -25 },
+    });
+    expect(createBuff({ name: "protein", level: 2, now: NOW })?.stats?.regenHp).toBe(6);
     expect(createBuff({ name: "poison", level: 3, now: NOW })?.duration).toBe(6000);
   });
   it("makes regeneration stronger with the caster's spell power", () => {
@@ -53,6 +57,11 @@ describe("createBuff", () => {
       regenHp: 3 + 4,
     });
     expect(createBuff({ name: "regeneration", level: 1, now: NOW })?.stats?.regenHp).toBe(3);
+  });
+  it("scales regeneration with its level, then adds the caster's spell power", () => {
+    expect(
+      createBuff({ name: "regeneration", level: 2, casterSpellPower: 10, now: NOW })?.stats,
+    ).toEqual({ regenHp: 6 + 2 });
   });
   it("doesn't change the content definition", () => {
     createBuff({ name: "regeneration", level: 1, casterSpellPower: 50, now: NOW });

@@ -24,17 +24,49 @@ describe("describeItem", () => {
     expect(d.stats).toEqual([{ label: "vitality", value: "5% ↔ 10%" }]);
   });
 
-  it("scales buff stats and duration by level", () => {
+  it("scales buff stats by level, as the buff itself does, but not its duration", () => {
     const d = describeItem({ buffs: { evasion: 2 } });
     expect(d.buffs).toEqual([
       {
         name: "evasion",
         level: 2,
         stats: [
-          { label: "duration", value: "60s" },
+          { label: "duration", value: "30s" },
           { label: "dodgeChance", value: "10%" },
         ],
       },
+    ]);
+  });
+
+  it("shows a spell's own buff as its effects, at its rank, with no note", () => {
+    const d = describeItem({ type: "spell", base: "haste", buffs: { haste: 3 } });
+    expect(d.buffs).toEqual([]);
+    expect(d.effects).toContainEqual({ label: "walkSpeed", value: "30" });
+  });
+
+  it("keeps a buff a spell inflicts under its own name", () => {
+    const d = describeItem({ type: "spell", base: "quake", buffs: { stun: 1 } });
+    expect(d.buffs.map((buff) => buff.name)).toEqual(["stun"]);
+  });
+
+  it("marks a card's flat stats and triggers as multiplied by tier, but not its percents", () => {
+    expect(describeItem({ mod: "strong" }).mods.added.stats).toEqual([
+      { label: "strength", value: "2", note: "(×tier)" },
+    ]);
+    expect(describeItem({ mod: "sanguine" }).mods.added.stats).toEqual([
+      { label: "maxHp", value: "12%" },
+    ]);
+    expect(describeItem({ mod: "venomous" }).mods.added.triggers[0]?.perTier).toBe(true);
+  });
+
+  it("marks only the buff stats that scale by level as multiplied by a card's tier", () => {
+    expect(describeItem({ mod: "enduring" }).mods.added.triggers[0]?.stats).toEqual([
+      { label: "duration", value: "30s" },
+      { label: "maxHp", value: "15", note: "(+15/tier)" },
+    ]);
+    const slow = describeItem({ mod: "slowing" }).mods.added.triggers[0]?.stats;
+    expect(slow?.filter((line) => line.note)).toEqual([
+      { label: "duration", value: "3s", note: "(+0.5s/tier)" },
     ]);
   });
 
@@ -84,12 +116,32 @@ describe("describeItem", () => {
 });
 
 describe("a card's gear", () => {
-  it("lists the gear its mod can go on, every piece when it isn't limited", () => {
+  it("shows copies of a trigger as one line, their chances added", () => {
+    const venom = { event: "onAttackHit", type: "debuff", name: "poison", level: 2, chance: 20 };
+    const d = describeItem({ triggers: [venom, venom] } as never);
+    expect(d.mods.added.triggers).toMatchObject([{ name: "poison", chancePercent: 10 }]);
+  });
+
+  it("splits a weapon's mods into its own swings' and the global ones", () => {
+    const venom = { event: "onAttackHit", type: "debuff", name: "poison", level: 1, chance: 20 };
+    const sword = { type: "weapon", tier: 1, mods: ["precise", "arcane"], triggers: [venom] };
+    const { added } = describeItem(sword as never).mods;
+    expect(added.stats).toEqual([{ label: "critChance", value: "2%" }]);
+    expect(added.triggers.map((t) => t.name)).toEqual(["poison"]);
+    expect(added.global).toEqual([{ label: "spellPower", value: "2" }]);
+    const ring = describeItem({ type: "ring", tier: 1, mods: ["precise"] } as never);
+    expect(ring.mods.added.global).toBeUndefined();
+  });
+
+  it("lists the few kinds of gear its mod can go on", () => {
     expect(describeItem({ name: "Wolf Card", base: "card", mod: "sharp" }).fits).toEqual([
       "weapon",
       "ranged",
     ]);
-    expect(describeItem({ name: "Bear Card", base: "card", mod: "strong" }).fits).toHaveLength(11);
+    expect(describeItem({ name: "Bear Card", base: "card", mod: "strong" }).fits).toEqual([
+      "gloves",
+      "ring",
+    ]);
     expect(describeItem({ name: "Sword", base: "sword" }).fits).toBeUndefined();
   });
 });

@@ -10,24 +10,17 @@ import {
   type BuiltItem,
 } from "@/content";
 import {
-  assetToCanvas,
   Box,
   ElementalItemArt,
   PlayerRender,
   WalkingSprite,
   previewSize,
   theme,
+  useAssetArt,
 } from "@/ui";
 import { ACTORS } from "./actor-parts";
 import { useQuery } from "@tanstack/react-query";
-import {
-  useLayoutEffect,
-  useMemo,
-  useState,
-  type ComponentProps,
-  type ReactNode,
-  type SyntheticEvent,
-} from "react";
+import { useMemo, useState, type ComponentProps, type ReactNode, type SyntheticEvent } from "react";
 import { fetchPlayers, type PlayersQueryKey } from "./api";
 import type { WikiPlayer } from "./page-players";
 import { useWalkOnHover } from "./walk-on-hover";
@@ -88,13 +81,8 @@ export const SpriteFace = ({
   /** A weapon's elements: drawn with the same moving outline and particles as in the game. */
   elements?: ItemEffect[];
 }) => {
-  const [imageData, setImageData] = useState<string>();
+  const imageData = useAssetArt(asset, tint);
   const [natural, setNatural] = useState<{ width: number; height: number }>();
-  /* Keyed on the art, not the asset object, which callers rebuild every render */
-  const artKey = `${asset.src}|${asset.previewRect?.join(",")}`;
-  useLayoutEffect(() => {
-    return assetToCanvas({ asset, tint, setImageData });
-  }, [artKey, tint]);
 
   /* Pixel art only stays even at whole-number scales: use the largest that fits the box. A sprite
      bigger than the box is shrunk smoothly instead, since crisp pixels would drop rows. */

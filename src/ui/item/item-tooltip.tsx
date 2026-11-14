@@ -9,6 +9,7 @@ import {
 import { Box, Flex, Text, theme, Tooltip, TooltipContent } from "@/ui/kit";
 import {
   BODY_ICON,
+  BuffDetails,
   BuffName,
   Divider,
   Level,
@@ -88,7 +89,11 @@ const ModSection = ({
   title?: string;
 }) => {
   const { fixed, added, slots } = mods;
-  const hasLines = (lines?: ModLines) => !!lines && lines.stats.length + lines.triggers.length > 0;
+  const hasLines = (lines?: ModLines) =>
+    !!lines && lines.stats.length + lines.triggers.length + (lines.global?.length ?? 0) > 0;
+  const hasGlobal = !!(fixed?.global?.length || added.global?.length);
+  const strikes = (lines?: ModLines) => !!lines && lines.stats.length + lines.triggers.length > 0;
+  const hasStrikes = strikes(fixed) || strikes(added);
   const filled = hasLines(fixed) || hasLines(added);
   if (!fixed && !filled && !slots.length) return null;
   return (
@@ -104,6 +109,12 @@ const ModSection = ({
       </SectionTitle>
       {filled && (
         <StatGrid>
+          {/* A weapon's global mods first, then a hairline, then what only its strikes get */}
+          <StatRows lines={fixed?.global ?? []} color={UNIQUE_GOLD} />
+          <StatRows lines={added.global ?? []} />
+          {hasGlobal && hasStrikes && (
+            <Box sx={{ height: "1px", bg: "rgba(255, 255, 255, 0.12)", my: "3px" }} />
+          )}
           {fixed && <ModRows lines={fixed} color={UNIQUE_GOLD} />}
           <ModRows lines={added} />
         </StatGrid>
@@ -188,7 +199,7 @@ export const ItemTooltip = ({ item, player, tooltipId, show }: ItemTooltipProps)
               <BuffName name={buff.name} level={buff.level} sx={{ alignSelf: "flex-start" }} />
             )}
             <StatGrid>
-              <StatRows lines={buff.stats} />
+              <BuffDetails lines={buff.stats} />
             </StatGrid>
           </Fragment>
         ))}

@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
-import { assetToDataUrl, Icon } from "@/ui/kit";
+import { Icon, useAssetArt } from "@/ui/kit";
 
 /** Who wears an item when its art depends on the wearer and nobody is given (armor is drawn per race). */
 export const DEFAULT_ASSET_USER = { profile: { race: "human", gender: "female" } };
@@ -23,17 +22,7 @@ export const ArtIcon = ({
   size: number;
   sx?: ThemeUIStyleObject;
 }) => {
-  const [art, setArt] = useState<string>();
-  const rectKey = rect?.join(",");
-  useEffect(() => {
-    let live = true;
-    assetToDataUrl({ src, previewRect: rectKey ? rectKey.split(",").map(Number) : undefined }, tint)
-      .then((url) => live && setArt(url))
-      .catch(() => {});
-    return () => {
-      live = false;
-    };
-  }, [src, rectKey, tint]);
+  const art = useAssetArt({ src, previewRect: rect }, tint);
   return (
     <Icon
       icon={art}

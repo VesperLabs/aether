@@ -1,4 +1,4 @@
-import { buffList } from "@/content";
+import { buffAtLevel, buffList } from "@/content";
 import { isOutOfCombat } from "@/rules/combat";
 
 /** A buff on a character, as stored on it. Only the fields the buff rules read are named. */
@@ -29,12 +29,6 @@ export interface CreateBuffInput {
   now: number;
 }
 
-function scaleStats(stats: Record<string, number>, level: number) {
-  return Object.fromEntries(
-    Object.entries(stats).map(([stat, value]) => [stat, value * level]),
-  ) as Record<string, number>;
-}
-
 /** Builds a buff from its content definition, scaled by level. `null` for an unknown buff. */
 export function createBuff({
   name,
@@ -46,22 +40,16 @@ export function createBuff({
   const buff = definition ? JSON.parse(JSON.stringify(definition)) : null;
   if (!buff) return null;
 
-  const stats: Record<string, number> = buff?.scaleStats
-    ? scaleStats(buff.stats || {}, level)
-    : buff.stats || {};
-  const percentStats = buff?.scaleStats
-    ? scaleStats(buff.percentStats || {}, level)
-    : buff.percentStats || {};
+  const { duration, stats, percentStats } = buffAtLevel(definition, level);
 
   if (name === "regeneration") {
-    stats.regenHp =
-      Number(buff?.stats?.regenHp || 0) + Math.floor(Number(casterSpellPower || 1) / 5);
+    stats.regenHp = Number(stats.regenHp || 0) + Math.floor(Number(casterSpellPower || 1) / 5);
   }
 
   return {
     ...buff,
     name,
-    duration: buff.scaleDuration ? buff.duration * level : buff.duration,
+    duration,
     level,
     stats,
     percentStats,

@@ -36,8 +36,10 @@ const COLUMN_STYLES: ThemeUIStyleObject = {
 };
 
 export const MenuStats = memo(
-  ({ player, isOpen, setIsOpen }: CharacterMenuProps) => {
-    const { stats } = player ?? {};
+  ({ player, isOpen, setIsOpen, nextHand }: CharacterMenuProps) => {
+    /* Dual-wielding, each hand swings with its own weapon's damage, speed and crit: show the next */
+    const stats =
+      nextHand === "handLeft" && player?.offHandStats ? player.offHandStats : player?.stats;
     if (!stats) return null;
     return (
       <Menu
@@ -129,5 +131,5 @@ export const MenuStats = memo(
       </Menu>
     );
   },
-  arePropsEqualWithKeys(["isOpen", "player.stats"]),
+  arePropsEqualWithKeys(["isOpen", "player.stats", "player.offHandStats", "nextHand"]),
 );

@@ -92,6 +92,8 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
     inventory!: any;
     baseStats!: any;
     stats!: any;
+    /** Dual-wielding only: the left hand's swing stats (see `calculateStats`). */
+    offHandStats?: any;
     npcKills!: Record<string, number>;
     buffs!: ActiveBuff[];
     quests!: Array<PlayerQuestRecord>;

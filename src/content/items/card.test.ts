@@ -24,7 +24,8 @@ describe("cards", () => {
   });
 
   it("carry a mod that fits some gear", () => {
-    const types = ["weapon", "ranged", "helmet", "armor", "shield", "ring", "boots"];
+    const types = ["weapon", "ranged", "helmet", "armor", "gloves", "boots", "pants", "shield"];
+    types.push("ring", "amulet", "accessory");
     for (const [, card] of cards) {
       expect(types.some((type) => canSlotMod(card.mod, type))).toBe(true);
     }

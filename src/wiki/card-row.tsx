@@ -25,23 +25,20 @@ export const Row = ({
   labelColor,
   valueColor,
   bold = !!labelColor,
-  small = false,
 }: {
   icon?: ReactNode;
-  label: string;
+  label: ReactNode;
   value: ReactNode;
   labelColor?: string;
   valueColor?: string;
   /** Whether the label is bold: by default when it names something (a monster, a set). */
   bold?: boolean;
-  /** A detail of the row above (what a buff does), in smaller type so it isn't read as a stat. */
-  small?: boolean;
 }) => (
   <Flex
     sx={{
       ...ROW_STYLE,
       gap: 1,
-      fontSize: small ? 0 : 1,
+      fontSize: 1,
     }}
   >
     {icon && (

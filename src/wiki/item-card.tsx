@@ -46,7 +46,12 @@ export const ItemCard = ({ item }: { item: WikiItem }) => {
   const color = CARD_COLORS[item.rarity] ?? CARD_COLORS.common;
   const { fixed, added } = described.mods;
   const modTriggers = [...(fixed?.triggers ?? []), ...added.triggers];
-  const hasMods = !!fixed?.stats.length || added.stats.length > 0 || modTriggers.length > 0;
+  const hasMods =
+    !!fixed?.stats.length ||
+    added.stats.length > 0 ||
+    modTriggers.length > 0 ||
+    !!fixed?.global?.length ||
+    !!added.global?.length;
   const charClass = item.requirements?.charClass;
   /* "Unique scimitar · Lv 9": what it is and when it can be worn */
   /* The name's colour already says common; any other rarity is worth the word */
@@ -174,6 +179,13 @@ export const ItemCard = ({ item }: { item: WikiItem }) => {
             )}
             {hasMods && (
               <Section title="Mods">
+                {/* A weapon's global mods first, then a hairline, then what only its strikes get */}
+                <Lines lines={fixed?.global ?? []} color={CARD_COLORS.unique} />
+                <Lines lines={added.global ?? []} />
+                {!!(fixed?.global?.length || added.global?.length) &&
+                  !!(fixed?.stats.length || added.stats.length || modTriggers.length) && (
+                    <Box sx={{ height: "1px", bg: PAPER.ornament, my: 1 }} />
+                  )}
                 <Lines lines={fixed?.stats ?? []} color={CARD_COLORS.unique} />
                 <Triggers triggers={fixed?.triggers ?? []} color={CARD_COLORS.unique} />
                 <Lines lines={added.stats} />
@@ -217,19 +229,37 @@ const Column = ({ label, children }: { label?: string; children: ReactNode }) =>
 const Buff = ({
   name,
   level,
+  perTier,
+  chance,
   color,
   lines,
 }: {
   name: string;
   level: number;
+  /** A card's: its level is the tier of the gear it goes in. */
+  perTier?: boolean;
+  /** A trigger's: what sets it off and how often, on the right as in the game's tooltip. */
+  chance?: { when: string; percent: number };
   /** Where it comes from (a mod, a set), for the whole buff; plain ink otherwise. */
   color?: string;
   lines: StatLine[];
 }) => (
   <Group
     icon={<Icon icon={`./assets/atlas/spell/spell-${name}.png`} size={NATIVE_ICON} />}
-    label={capitalize(name)}
-    note={<RomanNumeral value={level} />}
+    label={
+      <>
+        {capitalize(name)}
+        <Small>{perTier ? "(×tier)" : <RomanNumeral value={level} />}</Small>
+      </>
+    }
+    note={
+      chance && (
+        <>
+          <Small>({chance.when})</Small>
+          {chance.percent}%
+        </>
+      )
+    }
     color={color}
     bold={false}
     lines={lines}
@@ -246,7 +276,7 @@ const Group = ({
   lines,
 }: {
   icon: ReactNode;
-  label: string;
+  label: ReactNode;
   note?: ReactNode;
   /** Where it comes from, for the header only; plain ink otherwise. */
   color?: string;
@@ -263,9 +293,9 @@ const Group = ({
       bold={bold}
     />
     {/* Under the header, branching down from its icon */}
-    <Box sx={treeBranches({ indent: BUFF_INDENT, stem: ICON / 2, color: PAPER.ornament })}>
+    <Box sx={treeBranches({ indent: BUFF_INDENT, stem: ICON / 2, color: TREE })}>
       {/* Details stay plain: the header's colour already says where the buff comes from */}
-      <Lines lines={lines} small />
+      <Lines lines={lines} />
     </Box>
   </Box>
 );
@@ -274,20 +304,36 @@ const Group = ({
  * Stat lines, as rows. A `color` marks where they come from (a unique's mod, a set): the whole
  * row takes it, so a mod reads as one thing.
  */
-const Lines = ({ lines, color, small }: { lines: StatLine[]; color?: string; small?: boolean }) => (
+const Lines = ({ lines, color }: { lines: StatLine[]; color?: string }) => (
   <>
     {lines.map((line, i) => (
       <Row
         key={`${line.label}-${i}`}
         label={words(line.label)}
-        value={range(line.value)}
+        value={
+          line.note ? (
+            <>
+              {range(line.value)}
+              <Small>{line.note}</Small>
+            </>
+          ) : (
+            range(line.value)
+          )
+        }
         labelColor={color}
         valueColor={color}
         bold={false}
-        small={small}
       />
     ))}
   </>
+);
+
+/** A buff's tree on paper: between the ornament and the muted ink, so it reads clearly. */
+const TREE = "#b09878";
+
+/** A detail beside a name or value (a level, "(hit)", "(+2/tier)"): smaller, muted, not bold. */
+const Small = ({ children }: { children: ReactNode }) => (
+  <Text sx={{ fontSize: 0, fontWeight: 400, color: PAPER.muted, mx: 1 }}>{children}</Text>
 );
 
 /** A part of the stats under a divider like a keeper card's, its rows flush with the rest. */
@@ -316,11 +362,10 @@ const Triggers = ({ triggers, color }: { triggers: TriggerLine[]; color?: string
         key={`${trigger.name}-${i}`}
         name={trigger.name}
         level={trigger.level}
+        perTier={trigger.perTier}
+        chance={{ when: trigger.when, percent: trigger.chancePercent }}
         color={color}
-        lines={[
-          { label: `chance on ${trigger.when}`, value: `${trigger.chancePercent}%` },
-          ...trigger.stats,
-        ]}
+        lines={trigger.stats}
       />
     ))}
   </>

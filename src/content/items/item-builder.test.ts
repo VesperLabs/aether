@@ -89,7 +89,7 @@ describe("mods", () => {
 
   it("multiply by tier, the same as buffs by level", () => {
     expect(scaleMod("sharp", 3).stats).toEqual({ minDamage: 3, maxDamage: 6 });
-    expect(scaleMod("venomous", 2).triggers[0]).toMatchObject({ level: 2, chance: 4 });
+    expect(scaleMod("venomous", 2).triggers[0]).toMatchObject({ level: 2, chance: 20 });
   });
 });
 

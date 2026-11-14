@@ -11,8 +11,9 @@ type ModPower = "normal" | "major";
 /**
  * Everything gear does beyond its family's base stats is a mod: a card slotted into one of its
  * slots, a unique's fixed mod, or a set bonus. Each changes one thing: a stat (a damage range
- * counts as one), a percent stat, or a trigger. Values are for tier 1; on an item they are
- * multiplied by its tier, the same way buffs scale with their level. Nothing is rolled.
+ * counts as one), a percent stat, or a trigger. Values are for tier 1; on an item, stats and
+ * trigger levels are multiplied by its tier, the same way buffs scale with their level. Percent
+ * stats are not: they already grow with the stats they multiply. Nothing is rolled.
  */
 interface ModDefinition {
   readonly label: string;
@@ -21,8 +22,8 @@ interface ModDefinition {
   readonly percentStats?: { readonly [K in PercentStatName]?: number };
   /** A trigger's `level` is multiplied by the tier; its chance stays. */
   readonly triggers?: readonly TriggerDefinition[];
-  /** The gear it can go on. Every type when left out. */
-  readonly types?: readonly GearType[];
+  /** The gear it can go on: only a few kinds, so every slot is a choice. */
+  readonly types: readonly GearType[];
   /** How it shows on the item: an outline and particles, drawn wherever the item is. */
   readonly effect?: ItemEffect;
 }
@@ -31,13 +32,20 @@ interface ModDefinition {
 export type ItemEffect = "fire" | "water" | "light" | "earth" | "holy";
 
 const WEAPONS = ["weapon", "ranged"] as const;
-const ARMOR = ["helmet", "armor", "gloves", "boots", "pants", "shield"] as const;
-const JEWELRY = ["ring", "amulet", "accessory"] as const;
-const WORN = [...ARMOR, ...JEWELRY] as const;
 
-const onHit = (type: "debuff", name: "poison" | "bleed" | "stun" | "slow", chance: number) =>
-  [{ event: "onAttackHit", type, name, level: 1, chance }] as const;
+/**
+ * Every trigger mod fires on 1 hit in 20 (5%), so stacking copies only ever adds a little.
+ * A "when you hit" mod goes on weapons; a "when you're hurt" one on anything but.
+ */
+const CHANCE = 20;
 
+const onHit = (type: "buff" | "debuff", name: TriggerDefinition["name"]) =>
+  [{ event: "onAttackHit", type, name, level: 1, chance: CHANCE }] as TriggerDefinition[];
+
+const onHurt = (name: TriggerDefinition["name"]) =>
+  [{ event: "onHurt", type: "buff", name, level: 1, chance: CHANCE }] as TriggerDefinition[];
+
+/* Each mod fits only a few kinds of gear, so every slot is a choice */
 const MODS = {
   /* Power */
   sharp: { label: "Sharp", power: "normal", stats: { minDamage: 1, maxDamage: 2 }, types: WEAPONS },
@@ -45,22 +53,25 @@ const MODS = {
     label: "Piercing",
     power: "normal",
     stats: { armorPierce: 3 },
-    types: [...WEAPONS, "gloves"],
+    types: ["weapon", "gloves"],
   },
-  sturdy: { label: "Sturdy", power: "normal", stats: { defense: 3 }, types: ARMOR },
-  hale: { label: "Hale", power: "normal", stats: { maxHp: 6 }, types: WORN },
-  mystic: { label: "Mystic", power: "normal", stats: { maxMp: 6 }, types: WORN },
+  sturdy: {
+    label: "Sturdy",
+    power: "normal",
+    stats: { defense: 3 },
+    types: ["armor", "pants", "shield"],
+  },
   arcane: {
     label: "Arcane",
     power: "normal",
     stats: { spellPower: 2 },
-    types: ["weapon", "helmet", ...JEWELRY],
+    types: ["weapon", "helmet", "amulet"],
   },
   lucky: {
     label: "Lucky",
     power: "normal",
     stats: { magicFind: 8 },
-    types: ["helmet", "gloves", "boots", ...JEWELRY],
+    types: ["helmet", "accessory"],
   },
   fiery: {
     label: "Fiery",
@@ -99,138 +110,176 @@ const MODS = {
   },
 
   /* Attributes */
-  strong: { label: "Strong", power: "normal", stats: { strength: 2 } },
-  agile: { label: "Agile", power: "normal", stats: { dexterity: 2 } },
-  vital: { label: "Vital", power: "normal", stats: { vitality: 2 } },
-  wise: { label: "Wise", power: "normal", stats: { intelligence: 2 } },
+  strong: { label: "Strong", power: "normal", stats: { strength: 2 }, types: ["gloves", "ring"] },
+  agile: { label: "Agile", power: "normal", stats: { dexterity: 2 }, types: ["boots", "ring"] },
+  vital: { label: "Vital", power: "normal", stats: { vitality: 2 }, types: ["armor", "amulet"] },
+  wise: { label: "Wise", power: "normal", stats: { intelligence: 2 }, types: ["helmet", "ring"] },
 
   /* Utility */
-  mending: { label: "Mending", power: "normal", stats: { regenHp: 1 }, types: WORN },
-  focused: { label: "Focused", power: "normal", stats: { regenMp: 1 }, types: WORN },
-  swift: { label: "Swift", power: "normal", stats: { walkSpeed: 5 }, types: ["boots", "pants"] },
+  mending: { label: "Mending", power: "normal", stats: { regenHp: 3 }, types: ["armor", "pants"] },
+  focused: {
+    label: "Focused",
+    power: "normal",
+    stats: { regenMp: 2 },
+    types: ["helmet", "amulet"],
+  },
+  swift: { label: "Swift", power: "normal", stats: { walkSpeed: 5 }, types: ["boots"] },
   hasty: {
     label: "Hasty",
     power: "normal",
     stats: { attackDelay: -8 },
-    types: [...WEAPONS, "gloves", "ring"],
+    types: ["weapon", "gloves"],
   },
   casting: {
     label: "Casting",
     power: "normal",
     stats: { castDelay: -30 },
-    types: ["weapon", "helmet", "gloves", "ring", "amulet"],
+    types: ["weapon", "gloves"],
   },
-  blocking: {
-    label: "Blocking",
-    power: "normal",
-    stats: { blockChance: 3 },
-    types: ["shield", ...WEAPONS],
-  },
+  blocking: { label: "Blocking", power: "normal", stats: { blockChance: 3 }, types: ["shield"] },
   reaching: { label: "Reaching", power: "normal", stats: { range: 0.5 }, types: ["ranged"] },
   precise: {
     label: "Precise",
     power: "normal",
     stats: { critChance: 2 },
-    types: [...WEAPONS, "gloves", ...JEWELRY],
+    types: ["ranged", "gloves"],
   },
   evasive: {
     label: "Evasive",
     power: "normal",
     stats: { dodgeChance: 2 },
-    types: [...WORN, "ranged"],
+    types: ["boots", "accessory"],
   },
   leeching: {
     label: "Leeching",
     power: "normal",
     stats: { hpSteal: 1 },
-    types: [...WEAPONS, "ring", "amulet", "shield"],
+    types: ["weapon", "ring"],
   },
   siphoning: {
     label: "Siphoning",
     power: "normal",
     stats: { mpSteal: 1 },
-    types: [...WEAPONS, "ring", "amulet"],
+    types: ["weapon", "amulet"],
   },
 
-  /* Wards */
-  flameWard: { label: "Flame Ward", power: "normal", stats: { fireResistance: 5 }, types: WORN },
-  stormWard: { label: "Storm Ward", power: "normal", stats: { lightResistance: 5 }, types: WORN },
-  tideWard: { label: "Tide Ward", power: "normal", stats: { waterResistance: 5 }, types: WORN },
-  stoneWard: { label: "Stone Ward", power: "normal", stats: { earthResistance: 5 }, types: WORN },
+  /* Wards: each guards one place, and the shield takes any */
+  flameWard: {
+    label: "Flame Ward",
+    power: "normal",
+    stats: { fireResistance: 5 },
+    types: ["armor", "shield"],
+  },
+  stormWard: {
+    label: "Storm Ward",
+    power: "normal",
+    stats: { lightResistance: 5 },
+    types: ["helmet", "shield"],
+  },
+  tideWard: {
+    label: "Tide Ward",
+    power: "normal",
+    stats: { waterResistance: 5 },
+    types: ["boots", "shield"],
+  },
+  stoneWard: {
+    label: "Stone Ward",
+    power: "normal",
+    stats: { earthResistance: 5 },
+    types: ["pants", "shield"],
+  },
 
-  /* Percent */
-  sanguine: { label: "Sanguine", power: "normal", percentStats: { maxHp: 8 }, types: JEWELRY },
-  lunar: { label: "Lunar", power: "normal", percentStats: { maxMp: 8 }, types: JEWELRY },
+  /* Percent: they grow with you already, so tier doesn't multiply them */
+  sanguine: { label: "Sanguine", power: "normal", percentStats: { maxHp: 12 }, types: ["amulet"] },
+  lunar: { label: "Lunar", power: "normal", percentStats: { maxMp: 12 }, types: ["ring"] },
 
-  /* Major: they change how an item plays */
-  venomous: { label: "Venomous", power: "major", triggers: onHit("debuff", "poison", 4) },
-  bleeding: { label: "Bleeding", power: "major", triggers: onHit("debuff", "bleed", 3) },
-  stunning: { label: "Stunning", power: "major", triggers: onHit("debuff", "stun", 10) },
-  slowing: { label: "Slowing", power: "major", triggers: onHit("debuff", "slow", 4) },
+  /* Major, when you hit: weapons only */
+  venomous: {
+    label: "Venomous",
+    power: "major",
+    triggers: onHit("debuff", "poison"),
+    types: WEAPONS,
+  },
+  bleeding: {
+    label: "Bleeding",
+    power: "major",
+    triggers: onHit("debuff", "bleed"),
+    types: ["weapon"],
+  },
+  stunning: {
+    label: "Stunning",
+    power: "major",
+    triggers: onHit("debuff", "stun"),
+    types: ["weapon"],
+  },
+  slowing: {
+    label: "Slowing",
+    power: "major",
+    triggers: onHit("debuff", "slow"),
+    types: ["ranged"],
+  },
   adrenal: {
     label: "Adrenal",
     power: "major",
-    triggers: [{ event: "onAttackHit", type: "buff", name: "adrenaline", level: 1, chance: 15 }],
+    triggers: onHit("buff", "adrenaline"),
+    types: WEAPONS,
   },
   vampiric: {
     label: "Vampiric",
     power: "major",
-    triggers: [{ event: "onAttackHit", type: "buff", name: "vampire", level: 1, chance: 15 }],
+    triggers: onHit("buff", "vampire"),
+    types: WEAPONS,
   },
   draining: {
     label: "Draining",
     power: "major",
-    triggers: [{ event: "onAttackHit", type: "buff", name: "siphon", level: 1, chance: 15 }],
+    triggers: onHit("buff", "siphon"),
+    types: WEAPONS,
   },
+  frenzied: { label: "Frenzied", power: "major", triggers: onHit("buff", "haste"), types: WEAPONS },
+
+  /* Major, when you're hurt: never on weapons */
   wrathful: {
     label: "Wrathful",
     power: "major",
-    triggers: [{ event: "onHurt", type: "buff", name: "brute", level: 1, chance: 15 }],
+    triggers: onHurt("brute"),
+    types: ["helmet", "gloves"],
   },
   elusive: {
     label: "Elusive",
     power: "major",
-    triggers: [{ event: "onHurt", type: "buff", name: "evasion", level: 1, chance: 15 }],
+    triggers: onHurt("evasion"),
+    types: ["boots", "pants"],
   },
-  enduring: {
-    label: "Enduring",
-    power: "major",
-    triggers: [{ event: "onHurt", type: "buff", name: "endurance", level: 1, chance: 15 }],
-  },
+  enduring: { label: "Enduring", power: "major", triggers: onHurt("endurance"), types: ["armor"] },
+  inspired: { label: "Inspired", power: "major", triggers: onHurt("genius"), types: ["helmet"] },
+  lucid: { label: "Lucid", power: "major", triggers: onHurt("clarity"), types: ["amulet"] },
   fortunate: {
     label: "Fortunate",
     power: "major",
-    triggers: [{ event: "onHurt", type: "buff", name: "fortune", level: 1, chance: 4 }],
+    triggers: onHurt("fortune"),
+    types: ["accessory"],
   },
   regenerating: {
     label: "Regenerating",
     power: "major",
-    triggers: [{ event: "onHurt", type: "buff", name: "regeneration", level: 1, chance: 30 }],
+    triggers: onHurt("regeneration"),
+    types: ["armor", "pants"],
   },
-  dawning: {
-    label: "Dawning",
-    power: "major",
-    triggers: [{ event: "onHurt", type: "buff", name: "aureole", level: 1, chance: 5 }],
-  },
+  dawning: { label: "Dawning", power: "major", triggers: onHurt("aureole"), types: ["shield"] },
 
   /* Unique: only on unique cards */
   wyrmscale: {
     label: "Wyrmscale",
     power: "major",
-    triggers: [{ event: "onHurt", type: "buff", name: "guard", level: 1, chance: 10 }],
-    types: ARMOR,
-  },
-  blooming: {
-    label: "Blooming",
-    power: "major",
-    triggers: onHit("debuff", "poison", 12),
-    types: WEAPONS,
+    triggers: onHurt("guard"),
+    types: ["armor", "shield"],
   },
 } as const satisfies Readonly<Record<string, ModDefinition>>;
 
 export type ModName = keyof typeof MODS;
 
-/** What a mod adds to an item of `tier`: its tier 1 values, times the tier. */
+/** What a mod adds to an item of `tier`: its tier 1 values, times the tier (but not percents). */
 export interface ScaledMod {
   stats: Record<string, number>;
   percentStats: Record<string, number>;
@@ -244,7 +293,7 @@ export function scaleMod(name: ModName, tier: number): ScaledMod {
   const mod: ModDefinition = MODS[name];
   return {
     stats: times(mod.stats, tier),
-    percentStats: times(mod.percentStats, tier),
+    percentStats: { ...mod.percentStats },
     triggers: (mod.triggers ?? []).map((trigger) => ({ ...trigger, level: trigger.level * tier })),
   };
 }
@@ -275,16 +324,13 @@ export function itemEffects(
   return [...new Set(effects.filter((effect): effect is ItemEffect => !!effect))];
 }
 
-/** Every gear with mod slots: all but bags. A mod with no `types` goes on each of these. */
-const SOCKETED_GEAR = ["weapon", "ranged", "shield", ...ARMOR.slice(0, -1), ...JEWELRY] as const;
-
 /** The gear `name` can go on. */
 export function modGearTypes(name: string): readonly GearType[] {
-  return (MODS as Record<string, ModDefinition>)[name]?.types ?? SOCKETED_GEAR;
+  return (MODS as Record<string, ModDefinition>)[name]?.types ?? [];
 }
 
 /** Whether `name` is a mod that can go on gear of `type`: what a slotted card must pass. */
 export function canSlotMod(name: string, type: string): name is ModName {
   const mod: ModDefinition | undefined = (MODS as Record<string, ModDefinition>)[name];
-  return !!mod && (!mod.types || (mod.types as readonly string[]).includes(type));
+  return !!mod && (mod.types as readonly string[]).includes(type);
 }
