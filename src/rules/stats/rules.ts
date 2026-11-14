@@ -50,24 +50,35 @@ export interface ExpValueInput {
 const PLAYER_BASE_EXP = 50; // base experience needed for level 1
 const PLAYER_BASE_ATTACK_DELAY = 100;
 
+/** A player levels up after about this many kills of mobs their own level. */
+const KILLS_PER_LEVEL = 25;
+/** Fewest exp a mob that gives any is worth. */
+const MIN_MOB_EXP = 5;
+/** Extra exp per level a mob is above the player, up to `EXP_LEVEL_GAP` levels. */
+const EXP_BONUS_PER_LEVEL_ABOVE = 0.1;
+/** Exp lost per level a mob is below the player. */
+const EXP_PENALTY_PER_LEVEL_BELOW = 0.15;
+/** Past this many levels below the player a mob gives nothing; above, the bonus stops growing. */
+const EXP_LEVEL_GAP = 5;
+
 type CharClass = "mage" | "warrior" | "rogue" | "cleric";
 
 /**
- * Exp gain from a mob depends on the player's level and the difference between player and
- * mob level, with a cap at 5 levels of difference.
+ * Exp from a mob: a `KILLS_PER_LEVEL`th of the exp bar at the mob's level, more for mobs above the
+ * player, less for mobs below, none more than 5 levels below.
  */
 export function calculateExpValue({ playerLevel, mobLevel }: ExpValueInput): number {
   const player = parseInt(playerLevel as string) || 0;
   const mob = parseInt(mobLevel as string) || 0;
+  const gap = mob - player;
+  if (gap < -EXP_LEVEL_GAP) return 0; // Mob too wimpy. no exp.
 
-  const playerGreaterBy = Math.max(0, player - mob);
-
-  // Exp from a mob is capped at the mob's level for players that are lower level than the mob.
-  const levelMultiplier = mob > player ? mob : player;
-
-  if (playerGreaterBy > 5) return 0; // Mob too wimpy. no exp.
-
-  return Math.max(3, Math.floor(levelMultiplier * 0.5));
+  const levelMultiplier =
+    gap >= 0
+      ? 1 + EXP_BONUS_PER_LEVEL_ABOVE * Math.min(gap, EXP_LEVEL_GAP)
+      : 1 + EXP_PENALTY_PER_LEVEL_BELOW * gap;
+  const base = Math.max(MIN_MOB_EXP, calculateNextMaxExp(Math.max(1, mob)) / KILLS_PER_LEVEL);
+  return Math.max(1, Math.round(base * levelMultiplier));
 }
 
 /** How much exp is needed for the next level each time a player levels up. */
