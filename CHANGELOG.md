@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.37.0](https://github.com/VesperLabs/aether/compare/v0.36.0...v0.37.0) (2026-11-14)
+
+
+### Features
+
+* tiered item families with card mod slots ([#341](https://github.com/VesperLabs/aether/issues/341)) ([ec36381](https://github.com/VesperLabs/aether/commit/ec363817a6dbd8d74bfaf6181d6c7b7fda2399b4))
+
 ## [0.36.0](https://github.com/VesperLabs/aether/compare/v0.35.0...v0.36.0) (2026-11-13)
 
 
