@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.39.0](https://github.com/VesperLabs/aether/compare/v0.38.0...v0.39.0) (2026-11-14)
+
+
+### Features
+
+* tougher mob health curve, level-scaled mob exp and Big Momma abilities ([#348](https://github.com/VesperLabs/aether/issues/348)) ([2ecd66b](https://github.com/VesperLabs/aether/commit/2ecd66b022e1421f19f663cd2699cee377234f48))
+
 ## [0.38.0](https://github.com/VesperLabs/aether/compare/v0.37.1...v0.38.0) (2026-11-14)
 
 
