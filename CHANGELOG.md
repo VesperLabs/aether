@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.37.1](https://github.com/VesperLabs/aether/compare/v0.37.0...v0.37.1) (2026-11-14)
+
+
+### Bug Fixes
+
+* spell crits no longer add holy, controller stops facing old aim, kills proc no debuffs ([#343](https://github.com/VesperLabs/aether/issues/343)) ([904df6e](https://github.com/VesperLabs/aether/commit/904df6e80cf99507901c88f53392b35ff85d6355))
+
 ## [0.37.0](https://github.com/VesperLabs/aether/compare/v0.36.0...v0.37.0) (2026-11-14)
 
 
