@@ -61,7 +61,7 @@ export function performNpcMovement(
           npc,
           targetPlayer,
           npc.stats.walkSpeed * (movement.speedRatio ?? 1),
-          (point) => isOutOfMap(npc.room.map, point.x, point.y),
+          (point) => isOutOfMap(npc.movementMap(), point.x, point.y),
           { vx: npc.vx, vy: npc.vy },
           NPC_WALL_RADIUS,
         ),
@@ -133,7 +133,8 @@ function strafe(
     const ahead = (NPC_WALL_RADIUS + 16) / speed;
     const next = { x: npc.x + vx * ahead, y: npc.y + vy * ahead };
     return (
-      isOutOfMap(npc.room.map, next.x, next.y) || !hasLineOfSight(npc.room.map.grid, next, target)
+      isOutOfMap(npc.movementMap(), next.x, next.y) ||
+      !hasLineOfSight(npc.room.map.grid, next, target)
     );
   };
   const step = strafeAround(npc, target, { clockwise, distance, speed }, isBlocked);
@@ -153,6 +154,8 @@ function walkSpeedOf(npc: Npc) {
 
 /** Walks to the next tile on the way to `target`, found on the tick before. */
 function walkToPathed(npc: Npc, target: Point) {
+  /* Paths are laid for walkers; a swimmer heads straight there and stops at the bank */
+  if (npc.habitat === "water") return walkTo(npc, target);
   const { nextPath } = npc;
   const next = findNextWaypoint(npc.room.pathfinder, npc, target);
   if (next?.x !== nextPath?.x || next?.y !== nextPath?.y) npc.nextPath = next as Point;

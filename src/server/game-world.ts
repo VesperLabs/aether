@@ -2,6 +2,7 @@ import type { ServerWorld } from "./server-world";
 import { ItemBuilder, QuestBuilder, actors, isActorId, mapList, type Dice } from "@/content";
 import { createServerDice } from "./server-dice";
 import { readMapFile } from "./map-files";
+import { isInWater, nearestWater } from "@/rules/movement";
 import { subscribeLoot, type LootItem } from "@/rules/loot";
 import { mergeBehaviors, subscribeThreat } from "@/rules/npc-behavior";
 import { subscribeQuests } from "@/rules/quests";
@@ -46,6 +47,12 @@ export function spawnNpc(
 ): Npc | undefined {
   const npc = getActorDefinition(name);
   if (!npc) return;
+  /* A swimmer placed on the bank lives in the water beside it; with none nearby it walks */
+  if (npc.habitat === "water" && !isInWater(room.map.grid, x, y)) {
+    const water = nearestWater(room.map.grid, { x, y });
+    if (water) ({ x, y } = water);
+    else npc.habitat = undefined;
+  }
   const id = world.dice.newId();
   const spawn = Object.fromEntries(properties.map((p) => [p.name, p.value]));
   /* A spawn's `walkRange` is its `wander` radius there */

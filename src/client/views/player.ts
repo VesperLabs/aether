@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { updateWading } from "./wading";
 import type { FullCharacterWire, PartyMessage } from "@/network";
 import type { BuffCharacterWire } from "@/network/sync";
 import type { SceneMain } from "@/client/scenes/main-scene";
@@ -338,6 +339,7 @@ export class Player extends Character {
     hackFrameRates(this, Math.round(80 + 2500 / (this.currentSpeed + 10)));
     updateCurrentSpeed(this);
     drawFrame(this);
+    updateWading(this);
     applyDodge(this);
     checkIsFlash(this);
     this.showHideNameAndBars();

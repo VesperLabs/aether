@@ -54,3 +54,12 @@ export {
 export type { KnockbackState } from "./knockback";
 export type { MoveContext, MoveTrack } from "./move-validation";
 export { ATTACK_WALK_SPEED_SCALE, approachVelocity, getWalkVelocity } from "./walking";
+export {
+  WATER_SPEED_SCALE,
+  habitatMap,
+  isOutOfHabitat,
+  nearestWater,
+  terrainSpeedScale,
+} from "./terrain";
+export type { Habitat } from "./terrain";
+export { isInWater } from "./tilemap";

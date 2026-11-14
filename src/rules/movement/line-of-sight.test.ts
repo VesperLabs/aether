@@ -7,6 +7,7 @@ const grid = {
   tileWidth: 16,
   tileHeight: 16,
   solid: [[false, true, false]],
+  water: [[false, false, false]],
 };
 
 describe("hasLineOfSight", () => {

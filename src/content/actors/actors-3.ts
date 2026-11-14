@@ -12,6 +12,7 @@ export const actors3 = {
     drops: [
       { item: "crabWalkers", chance: 1000 },
       { item: "crabClaw", chance: 3 },
+      { item: "crabCard", chance: 40 },
     ],
   },
   raccoon: {
@@ -25,6 +26,7 @@ export const actors3 = {
     drops: [
       { item: "grapes", chance: 4 },
       { item: "smallHpPotion", chance: 10 },
+      { item: "raccoonCard", chance: 40 },
     ],
   },
   slime: {
@@ -34,7 +36,10 @@ export const actors3 = {
       "A wobbling blob that absorbs anything it touches. Nobody knows what it eats, only that it's always hungry.",
     baseStats: { level: 2 },
     hitBoxSize: { width: 24, height: 23 },
-    drops: [{ item: "blueSporangium", chance: 3 }],
+    drops: [
+      { item: "blueSporangium", chance: 3 },
+      { item: "slimeCard", chance: 40 },
+    ],
   },
   hornet: {
     charClass: "rogue",
@@ -43,7 +48,10 @@ export const actors3 = {
       "Fat, angry and fast. You'll hear the buzzing long before you see it, and by then it's already too late.",
     baseStats: { level: 4, walkSpeed: 10 },
     hitBoxSize: { width: 18, height: 32 },
-    drops: [{ item: "smallHpPotion", chance: 10 }],
+    drops: [
+      { item: "smallHpPotion", chance: 10 },
+      { item: "hornetCard", chance: 40 },
+    ],
   },
   fish: {
     charClass: "warrior",
@@ -52,10 +60,11 @@ export const actors3 = {
       "Lynne swears it isn't natural. It flops out of the river on purpose, just to bite the ankles of passers-by.",
     state: { noWorldDrops: true },
     behaviors: { fight: { shootsOverWalls: true } },
+    habitat: "water",
     abilities: { "1": "waterSpit" },
     baseStats: { level: 1 },
     hitBoxSize: { width: 26, height: 24 },
-    drops: [],
+    drops: [{ item: "fishCard", chance: 40 }],
   },
   hawkwing: {
     charClass: "rogue",
@@ -65,7 +74,7 @@ export const actors3 = {
     behaviors: { fight: { starts: "onSight" } },
     baseStats: { level: 6, walkSpeed: 20 },
     hitBoxSize: { width: 28, height: 48 },
-    drops: [],
+    drops: [{ item: "hawkwingCard", chance: 100 }],
   },
   spider: {
     charClass: "warrior",
@@ -78,6 +87,7 @@ export const actors3 = {
     drops: [
       { item: "spiderMeat", chance: 3 },
       { item: "cheese", chance: 10 },
+      { item: "spiderCard", chance: 40 },
     ],
   },
   bat: {
@@ -91,6 +101,7 @@ export const actors3 = {
     drops: [
       { item: "batMeat", chance: 3 },
       { item: "cheese", chance: 10 },
+      { item: "batCard", chance: 40 },
     ],
   },
   hogan: {
@@ -104,6 +115,7 @@ export const actors3 = {
     drops: [
       { item: "spiderMeat", chance: 2 },
       { item: "cheese", chance: 10 },
+      { item: "hoganCard", chance: 200 },
     ],
   },
   zombie: {
@@ -117,6 +129,7 @@ export const actors3 = {
     drops: [
       { item: "mediumHpPotion", chance: 10 },
       { item: "skull", chance: 4 },
+      { item: "zombieCard", chance: 40 },
     ],
   },
   wraith: {
@@ -130,6 +143,7 @@ export const actors3 = {
     drops: [
       { item: "mediumHpPotion", chance: 10 },
       { item: "skull", chance: 4 },
+      { item: "wraithCard", chance: 40 },
     ],
   },
   chonks: {
@@ -143,6 +157,7 @@ export const actors3 = {
     drops: [
       { item: "mediumHpPotion", chance: 10 },
       { item: "skull", chance: 4 },
+      { item: "chonksCard", chance: 200 },
     ],
   },
   dummy: {
@@ -163,7 +178,10 @@ export const actors3 = {
     baseStats: { level: 8, waterResistance: 50 },
     hitBoxSize: { width: 24, height: 32 },
     abilities: { "1": "fireball" },
-    drops: [{ item: "shell", chance: 3 }],
+    drops: [
+      { item: "shell", chance: 3 },
+      { item: "mermanCard", chance: 40 },
+    ],
   },
   wyrm: {
     charClass: "warrior",
@@ -177,6 +195,7 @@ export const actors3 = {
     drops: [
       { item: "wyrmScale", chance: 4 },
       { item: "wyrmScaleWard", chance: 2000 },
+      { item: "wyrmCard", chance: 500 },
     ],
   },
   orchid: {
@@ -187,7 +206,10 @@ export const actors3 = {
     behaviors: { fight: { starts: "onSight" } },
     baseStats: { level: 9, earthResistance: 25, fireResistance: -15 },
     hitBoxSize: { width: 26, height: 24 },
-    drops: [{ item: "orchidFlower", chance: 4 }],
+    drops: [
+      { item: "orchidFlower", chance: 4 },
+      { item: "orchidCard", chance: 40 },
+    ],
   },
   earthElemental: {
     charClass: "mage",
@@ -208,6 +230,7 @@ export const actors3 = {
       { item: "ginseng", chance: 10 },
       { item: "leaves", chance: 4 },
       { item: "stone", chance: 4 },
+      { item: "earthElementalCard", chance: 200 },
     ],
     abilities: { "1": "quake" },
   },
@@ -224,7 +247,7 @@ export const actors3 = {
       blockChance: 5,
     },
     hitBoxSize: { width: 78, height: 72 },
-    drops: [],
+    drops: [{ item: "bigMommaCard", chance: 500 }],
   },
   wolf: {
     charClass: "rogue",
@@ -235,7 +258,10 @@ export const actors3 = {
     behaviors: { fight: { starts: "onSight" } },
     baseStats: { level: 10, walkSpeed: 20 },
     hitBoxSize: { width: 31, height: 28 },
-    drops: [{ item: "wolfPelt", chance: 2 }],
+    drops: [
+      { item: "wolfPelt", chance: 2 },
+      { item: "wolfCard", chance: 40 },
+    ],
   },
   whiteFang: {
     charClass: "rogue",
@@ -246,7 +272,10 @@ export const actors3 = {
     baseStats: { level: 12, maxHp: 300, walkSpeed: 20 },
     hitBoxSize: { width: 41, height: 38 },
     abilities: { "1": "stealth", "2": "tackle" },
-    drops: [{ item: "wolfPelt", chance: 2 }],
+    drops: [
+      { item: "wolfPelt", chance: 2 },
+      { item: "whiteFangCard", chance: 200 },
+    ],
   },
   bear: {
     charClass: "cleric",
@@ -255,7 +284,10 @@ export const actors3 = {
     behaviors: { fight: { starts: "onSight" } },
     baseStats: { level: 11, walkSpeed: 10 },
     hitBoxSize: { width: 36, height: 38 },
-    drops: [{ item: "bearSteak", chance: 3 }],
+    drops: [
+      { item: "bearSteak", chance: 3 },
+      { item: "bearCard", chance: 40 },
+    ],
   },
   iceCrab: {
     charClass: "mage",
@@ -269,6 +301,7 @@ export const actors3 = {
     drops: [
       { item: "iceCrabShell", chance: 1000 },
       { item: "iceCrabClaw", chance: 3 },
+      { item: "iceCrabCard", chance: 40 },
     ],
   },
 } as const satisfies Readonly<Record<string, ActorDefinition>>;

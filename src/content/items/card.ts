@@ -26,16 +26,19 @@ const card = (
   flavor,
 });
 
-/** Every card, by rarity: plain mobs are common, keepers magic, bosses magic and up. */
+/**
+ * Every card, by rarity: plain mobs are common, keepers magic, bosses magic and up. Only mobs drop
+ * theirs (from their own `drops`); NPC cards are not obtainable yet.
+ */
 export const cardItems = {
   common: {
-    catCard: card("cat", "Cat", "agile", "Light on its feet, and never where you swing."),
+    catCard: card("cat", "Cat", "evasive", "Light on its feet, and never where you swing."),
     dogCard: card("dog", "Dog", "swift", "Always first to the gate, tail going."),
     crabCard: card("crab", "Crab", "sturdy", "A shell's worth of stubbornness."),
-    raccoonCard: card("raccoon", "Raccoon", "lucky", "The bandit always finds the good stuff."),
+    raccoonCard: card("raccoon", "Raccoon", "wise", "Clever paws that always find the snacks."),
     slimeCard: card("slime", "Slime", "mending", "It soaks up anything, wounds included."),
     hornetCard: card("hornet", "Hornet", "hasty", "Fast, angry and never still."),
-    fishCard: card("fish", "Fish", "evasive", "Slippery, and it knows it."),
+    fishCard: card("fish", "Fish", "agile", "Slippery, and it knows it."),
     spiderCard: card("spider", "Spider", "piercing", "Fangs that find the gap in any armour."),
     batCard: card("bat", "Bat", "leeching", "It always goes for the neck."),
     zombieCard: card("zombie", "Zombie", "vital", "Slow, stupid and very hard to keep down."),
@@ -47,7 +50,7 @@ export const cardItems = {
     iceCrabCard: card("ice-crab", "Ice Crab", "tideWard", "Cold water rolls right off it."),
   },
   magic: {
-    hawkwingCard: card("hawkwing", "Hawkwing", "adrenal", "The rush of the hunt, on prized wings."),
+    hawkwingCard: card("hawkwing", "Hawkwing", "lucky", "Prized wings, and a nose for treasure."),
     tristaCard: card("trista", "Trista", "blocking", "The Crab Warden stands like a shell."),
     sergioCard: card("sergio", "Sergio", "radiant", "The light of a lost river valley."),
     tudwickCard: card("tudwick", "Tudwick", "stoneWard", "Rangers sleep on rocks. It shows."),
