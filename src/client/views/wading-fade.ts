@@ -48,6 +48,11 @@ function mirror(copy: Phaser.GameObjects.Sprite, layer: Phaser.GameObjects.Sprit
   layer.parentContainer?.moveAbove(copy, layer);
 }
 
+/** The faded copies under `layer`'s waterline that are showing, so a snapshot of the body has them. */
+export function getShownBands(layer: Phaser.GameObjects.Sprite) {
+  return (bands.get(layer) ?? []).filter((copy) => copy.visible);
+}
+
 /**
  * Cuts a body layer off at the waterline and fades what's under it out in a few pixel steps,
  * erasing it so the real water shows through instead of painting over it. Undefined puts the

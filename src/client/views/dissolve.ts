@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import type { Player } from "./player";
+import { getUnderwaterLayers } from "./wading";
 import { FLASH_MS, fadeShadow, holdFlash } from "./death-flash";
 
 /** Smallest snapshot around a character, in pixels; bigger bodies get one that fits them. */
@@ -31,6 +32,8 @@ function getBodyLayers(player: Player) {
     layers.add(layer);
   }
   for (const layer of [helmet, handLeft, handRight]) layers.add(layer);
+  /* Wading, the faded part under the waterline goes with the body */
+  for (const layer of getUnderwaterLayers(player)) layers.add(layer);
   return player.rig.list.filter(
     (layer): layer is Phaser.GameObjects.Sprite =>
       layers.has(layer) && !!(layer as Phaser.GameObjects.Sprite).visible,

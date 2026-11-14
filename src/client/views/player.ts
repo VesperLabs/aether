@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { updateWading } from "./wading";
+import { leaveWater, updateWading } from "./wading";
 import type { FullCharacterWire, PartyMessage } from "@/network";
 import type { BuffCharacterWire } from "@/network/sync";
 import type { SceneMain } from "@/client/scenes/main-scene";
@@ -281,6 +281,8 @@ export class Player extends Character {
     this.state.isDead = true;
     this.state.isAttacking = false;
     this.setBodyVisible(false);
+    /* Its update stops now, so the faded part under the waterline would stay behind */
+    leaveWater(this);
     this.hpBar.setVisible(false);
     this.bubble.setVisible(false);
     this.windupPie.draw(false);
