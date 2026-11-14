@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.38.0](https://github.com/VesperLabs/aether/compare/v0.37.1...v0.38.0) (2026-11-14)
+
+
+### Features
+
+* walkable water tiles with wading, swimming fish and mob card drops ([#346](https://github.com/VesperLabs/aether/issues/346)) ([6d34281](https://github.com/VesperLabs/aether/commit/6d34281f35b70bb14e0c1dcaa5859409a7092244))
+
 ## [0.37.1](https://github.com/VesperLabs/aether/compare/v0.37.0...v0.37.1) (2026-11-14)
 
 
