@@ -14,10 +14,12 @@ export const ModalDropAmount = () => {
     bagId,
     action,
     dataset,
+    gear,
     ...item
   } = dropItem as DropItem;
   const [amount, setAmount] = useState<number | string>(defaultAmount);
   const isShop = action?.includes("SHOP");
+  const isSocket = action === "SOCKET_CONFIRM";
   const isConfirm = action?.includes("CONFIRM");
   const isBuying = action?.includes("BUY");
   const isSelling = action?.includes("SELL");
@@ -33,7 +35,12 @@ export const ModalDropAmount = () => {
       );
     }
     /* If we are selling to the shop, send the amount */
-    if (isShop && isSelling) {
+    if (isSocket) {
+      socket.emit("moveItem", {
+        from: { slot: slotKey, bagId, location },
+        to: { slot: dataset?.slotKey, bagId: dataset?.bagId, location: dataset?.location },
+      });
+    } else if (isShop && isSelling) {
       socket.emit("moveItem", {
         to: {
           location: "shop",
@@ -62,63 +69,79 @@ export const ModalDropAmount = () => {
   };
 
   return (
-    <Modal zoom={zoom} bottomOffset={bottomOffset}>
-      <Modal.Header>
-        {isConfirm && "Confirm"}
-        {isBuying && "Buy"}
-        {isSelling && "Sell"}
-      </Modal.Header>
-      <Modal.Body
-        sx={{
-          flexDirection: "row",
-          gap: 2,
-          alignItems: "center",
-          justifyContent: "center",
-          width: "300px",
-        }}
-      >
-        <Slot
-          player={hero}
-          item={{ ...item, id: item?.id + "modal" } as BuiltItem}
-          disabled={true}
-        />
-        {!isConfirm && (
-          <Flex sx={{ flex: 1, alignItems: "center", gap: 2, minWidth: 100 }}>
-            <Text>x</Text>
-            <Input
-              max={maxAmount}
-              min={1}
-              autoFocus={true}
-              type="number"
-              pattern="\d*"
-              value={amount}
-              onChange={(e) => {
-                setAmount(e.target.value);
-              }}
+    <>
+      <Modal.Overlay sx={{ backgroundColor: "shadow.50" }} onClick={() => setDropItem(null)} />
+      <Modal zoom={zoom} bottomOffset={bottomOffset}>
+        <Modal.Header icon="./assets/icons/pen.png">
+          {isSocket
+            ? "Confirm Socket?"
+            : isBuying
+              ? "Buy"
+              : isSelling
+                ? isConfirm
+                  ? "Confirm Sale?"
+                  : "Sell"
+                : isConfirm
+                  ? "Confirm Drop?"
+                  : "Drop"}
+        </Modal.Header>
+        <Modal.Body sx={{ gap: 2, alignItems: "stretch", minWidth: 300 }}>
+          <Flex sx={{ gap: 2, alignItems: "center", justifyContent: "center" }}>
+            <Slot
+              player={hero}
+              item={{ ...item, id: item?.id + "modal" } as BuiltItem}
+              disabled={true}
             />
+            {isSocket && gear && (
+              <>
+                <Text>→</Text>
+                <Slot player={hero} item={{ ...gear, id: gear.id + "modal" }} disabled={true} />
+              </>
+            )}
+            {!isConfirm && (
+              <Flex sx={{ flex: 1, alignItems: "center", gap: 2, minWidth: 100 }}>
+                <Text>x</Text>
+                <Input
+                  max={maxAmount}
+                  min={1}
+                  autoFocus={true}
+                  type="number"
+                  pattern="\d*"
+                  value={amount}
+                  onChange={(e) => {
+                    setAmount(e.target.value);
+                  }}
+                />
+              </Flex>
+            )}
           </Flex>
-        )}
-      </Modal.Body>
-      <Modal.Footer>
-        <KeyboardButton sx={{ flex: 1 }} onClick={() => setDropItem(null)} keyboardKey="ESCAPE">
-          Cancel
-        </KeyboardButton>
-        <KeyboardButton
-          sx={{ flex: 1 }}
-          keyboardKey="ENTER"
-          onClick={handleAction}
-          disabled={Number(amount) < 1}
-        >
-          {isShop ? (
-            <>
-              <Icon icon="./assets/icons/gold.png" size={16} sx={{ flexShrink: 0 }} />
-              <Text>{Number(amount) * (item?.cost as number)}</Text>
-            </>
-          ) : (
-            <Text>Drop</Text>
+          {isSocket && (
+            <Text sx={{ textAlign: "center", fontSize: 0, opacity: 0.8 }}>
+              The card is used up for good.
+            </Text>
           )}
-        </KeyboardButton>
-      </Modal.Footer>
-    </Modal>
+        </Modal.Body>
+        <Modal.Footer>
+          <KeyboardButton sx={{ flex: 1 }} onClick={() => setDropItem(null)} keyboardKey="ESCAPE">
+            Cancel
+          </KeyboardButton>
+          <KeyboardButton
+            sx={{ flex: 1 }}
+            keyboardKey="ENTER"
+            onClick={handleAction}
+            disabled={Number(amount) < 1}
+          >
+            {isShop ? (
+              <>
+                <Icon icon="./assets/icons/gold.png" size={16} sx={{ flexShrink: 0 }} />
+                <Text>{Number(amount) * (item?.cost as number)}</Text>
+              </>
+            ) : (
+              <Text>{isSocket ? "Socket" : "Drop"}</Text>
+            )}
+          </KeyboardButton>
+        </Modal.Footer>
+      </Modal>
+    </>
   );
 };

@@ -35,7 +35,7 @@ export class ServerCharacter extends CharacterModel {
   /** How far behind the server this character sees others: players report it, npcs see live. */
   viewLagMs = 0;
   /** Dual-wielding only: the stats the left hand's swings use (see `calculateStats`). */
-  offHandStats?: StatBag;
+  declare offHandStats?: StatBag;
   constructor(world: ServerWorld, args: CharacterArgs) {
     super();
     this.world = world;

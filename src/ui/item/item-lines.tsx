@@ -1,10 +1,12 @@
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
 import type { StatLine, TriggerLine } from "@/rules/inventory";
-import { Box, Flex, RomanNumeral, Text } from "@/ui/kit";
+import { Box, Flex, RomanNumeral, Text, treeBranches } from "@/ui/kit";
 
 /** The faint grey of every dotted line: the leaders joining labels to values, and buff branches. */
 const DOTS = "rgba(255, 255, 255, 0.15)";
+/** A buff's tree: brighter than the leaders, so its details read as hanging off it. */
+const TREE = "rgba(255, 255, 255, 0.4)";
 import { ArtIcon } from "./art-icon";
 
 /**
@@ -110,20 +112,8 @@ const Leader = () => (
 );
 
 /** A label, a leader, then the value right-aligned. */
-const Row = ({
-  label,
-  value,
-  color,
-  small = false,
-}: {
-  label: ReactNode;
-  value: ReactNode;
-  color?: string;
-  /** A detail of the row above (a buff's chance), in the small type so it isn't read as a stat. */
-  small?: boolean;
-}) => {
-  /* Small text on the same line height, so every row spaces the same */
-  const type = small ? { ...TYPE.meta, lineHeight: TYPE.body.lineHeight } : TYPE.body;
+const Row = ({ label, value, color }: { label: ReactNode; value: ReactNode; color?: string }) => {
+  const type = TYPE.body;
   return (
     /* Exactly one body line tall, icon or not */
     <Flex sx={{ alignItems: "center", height: TYPE.body.lineHeight }}>
@@ -147,18 +137,34 @@ const Row = ({
 const spaced = (label: string) => label.replace(/([a-z])([A-Z])/g, "$1 $2");
 
 /** One "label ····· value" row per stat, for inside a `StatGrid`. */
-export const StatRows = ({
-  lines,
-  color,
-  small,
-}: {
-  lines: StatLine[];
-  color?: string;
-  small?: boolean;
-}) =>
-  lines.map(({ label, value }) => (
-    <Row key={label} label={spaced(label)} value={value} color={color} small={small} />
+export const StatRows = ({ lines, color }: { lines: StatLine[]; color?: string }) =>
+  lines.map(({ label, value, note }) => (
+    <Row
+      key={label}
+      label={spaced(label)}
+      value={note ? <Note value={value} note={note} color={color} /> : value}
+      color={color}
+    />
   ));
+
+/** A card's value and how the gear's tier grows it: "2" then a small grey "(×tier)" or "(+2/tier)". */
+const Note = ({ value, note, color }: { value: string; note: string; color?: string }) => (
+  <Text sx={{ ...TYPE.body, fontWeight: "bold", color }}>
+    {value}
+    <Text sx={{ ...TYPE.meta, ml: 1, fontWeight: "normal", color: "gray.400" }}>{note}</Text>
+  </Text>
+);
+
+/** What a buff does, under its name: rows branching down from its icon, as in the wiki. */
+export const BuffDetails = ({ lines }: { lines: StatLine[] }) =>
+  lines.length > 0 && (
+    /* From the icon in the gutter, so the rows line up with the buff's name */
+    <Box sx={ICON_IN_GUTTER}>
+      <Box sx={treeBranches({ indent: BUFF_INDENT, stem: BODY_ICON / 2, color: TREE })}>
+        <StatRows lines={lines} />
+      </Box>
+    </Box>
+  );
 
 /** A buff with its icon: "[icon] Stun II", a `body` line. */
 export const BuffName = ({
@@ -198,26 +204,34 @@ export const BuffName = ({
  */
 export const TriggerRows = ({ triggers, color }: { triggers: TriggerLine[]; color?: string }) =>
   triggers.map((t, idx) => (
-    <Box key={idx} sx={ICON_IN_GUTTER}>
-      <Row
-        label={
-          <Flex sx={{ alignItems: "center", gap: `${ICON_GAP}px`, minWidth: 0 }}>
-            <ArtIcon src={spellIcon(t.name)} size={BODY_ICON} />
-            <Text sx={{ ...TYPE.body, fontWeight: "normal", color: color ?? "gray.400" }}>
-              {t.name}
-              <Level level={t.level} />
+    <Fragment key={idx}>
+      <Box sx={ICON_IN_GUTTER}>
+        <Row
+          label={
+            <Flex sx={{ alignItems: "center", gap: `${ICON_GAP}px`, minWidth: 0 }}>
+              <ArtIcon src={spellIcon(t.name)} size={BODY_ICON} />
+              <Text sx={{ ...TYPE.body, fontWeight: "normal", color: color ?? "gray.400" }}>
+                {t.name}
+                {t.perTier ? (
+                  <Text sx={{ ...TYPE.meta, ml: 1, color: "gray.400" }}>(×tier)</Text>
+                ) : (
+                  <Level level={t.level} />
+                )}
+              </Text>
+            </Flex>
+          }
+          value={
+            <Text sx={{ ...TYPE.body, fontWeight: "bold", color }}>
+              <Text sx={{ ...TYPE.meta, mr: 1, color: "gray.400" }}>({t.when})</Text>
+              {t.chancePercent}%
             </Text>
-          </Flex>
-        }
-        value={
-          <Text sx={{ ...TYPE.body, fontWeight: "bold", color }}>
-            <Text sx={{ ...TYPE.meta, mr: 1, color: "gray.400" }}>({t.when})</Text>
-            {t.chancePercent}%
-          </Text>
-        }
-        color={color}
-      />
-    </Box>
+          }
+          color={color}
+        />
+      </Box>
+      {/* What the buff does, branching down from it */}
+      <BuffDetails lines={t.stats} />
+    </Fragment>
   ));
 
 /** A titled grid of stat rows; renders nothing when there are none. */

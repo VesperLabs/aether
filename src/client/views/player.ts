@@ -157,6 +157,7 @@ export class Player extends Character {
     this.inventory = data?.inventory;
     this.profile = data?.profile;
     this.stats = data?.stats;
+    this.offHandStats = data?.offHandStats;
     this.gold = data?.gold;
     this.npcKills = data?.npcKills;
     this.quests = data?.quests;
@@ -170,6 +171,7 @@ export class Player extends Character {
     // Update properties within stats object, excluding hp, mp, and sp
     this.buffs = data?.buffs;
     this.stats = data?.stats;
+    this.offHandStats = data?.offHandStats;
     this.state.activeSets = data?.state?.activeSets;
     // filter out equipment slotNames that are not in activeItemsSlots array
     this.updateVisibleEquipment();

@@ -1,9 +1,9 @@
-import { useState, useLayoutEffect, useEffect, useEffectEvent, useRef, memo } from "react";
+import { useState, useEffect, useEffectEvent, useRef, memo } from "react";
 import { useDoubleTap } from "use-double-tap";
 import type { ThemeUIStyleObject } from "theme-ui";
 import { itemEffects, resolveAsset, type BuiltItem } from "@/content";
 import type { FullCharacterWire } from "@/network";
-import { assetToCanvas, Box, Icon, isMobile, Portal, RomanNumeral, theme } from "@/ui/kit";
+import { Box, Icon, isMobile, Portal, RomanNumeral, theme, useAssetArt } from "@/ui/kit";
 import { SLOT_SIZE, STYLE_NON_EMPTY, STYLE_SLOT_EMPTY } from "./slot-style";
 import { ItemTooltip } from "./item-tooltip";
 import { SpaceDonut } from "./space-donut";
@@ -70,7 +70,6 @@ export const ItemSlot = memo(
     events,
     ...props
   }: SlotProps) => {
-    const [imageData, setImageData] = useState(BLANK_IMAGE);
     const [hovering, setHovering] = useState(false);
     const place = item ? { item, location, slotKey, bagId, player } : undefined;
     const dropItem = (t: Element | null) => place && events?.onDrop(place, t);
@@ -117,13 +116,12 @@ export const ItemSlot = memo(
 
     const profile = player?.profile;
 
-    /* Loads the item canvas data out of the texture */
-    useLayoutEffect(() => {
-      if (!item) return;
-      const asset = resolveAsset(item, profile ? { profile } : DEFAULT_ASSET_USER);
-      if (!asset) return;
-      return assetToCanvas({ asset, tint: item?.tint, setImageData });
-    }, [item, profile]);
+    /* The item's art out of its texture: blank while it loads, never the last item's */
+    const art = useAssetArt(
+      item ? resolveAsset(item, profile ? { profile } : DEFAULT_ASSET_USER) : undefined,
+      item?.tint,
+    );
+    const imageData = art ?? BLANK_IMAGE;
 
     const outerMouseBinds = {
       onMouseEnter: handleMouseEnter,

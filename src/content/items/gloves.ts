@@ -105,6 +105,6 @@ export const glovesUniques = {
     flavor: "Light as air. Your hands feel like they could float off.",
     texture: "gloves-fur",
     tint: "0x66CCFF",
-    mod: "mystic",
+    mod: "casting",
   },
 } as const satisfies Uniques<typeof glovesFamilies>;

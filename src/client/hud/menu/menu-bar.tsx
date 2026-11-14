@@ -23,6 +23,7 @@ import { useScrollToOpened } from "./use-scroll-to-opened";
 import { useOpenOrder } from "./use-open-order";
 import { OVERHANG_VAR, useOverhangPadding } from "./use-overhang-padding";
 import { SkillButtons } from "@/client/hud/abilities/skill-buttons";
+import { useNextAttack } from "@/client/hud/abilities/use-next-attack-sp-cost";
 import { useBindings } from "@/client/hud/settings/use-key-bindings";
 import { keyFor } from "@/client/input/key-bindings";
 import { setMenusOpen } from "@/client/input/last-device";
@@ -83,6 +84,8 @@ export const MenuBar = () => {
     sign,
     error,
   } = useAppContext();
+  /* A dual-wielder's stats are the hand that swings next */
+  const { hand: nextHand } = useNextAttack(hero);
   /* Only chat types into the bar, so only chat lifts it above the keyboard; other inputs (renaming) sit in modals */
   const keyboardOffset = tabChat ? bottomOffset : 0;
   const stackRef = useScrollToOpened<HTMLDivElement>();
@@ -259,7 +262,7 @@ export const MenuBar = () => {
           <MenuQuests player={hero} isOpen={tabQuests} setIsOpen={setTabQuests} />
         </Box>
         <Box sx={{ pointerEvents: "all", order: orderOf("stats") }}>
-          <MenuStats player={hero} isOpen={tabStats} setIsOpen={setTabStats} />
+          <MenuStats player={hero} nextHand={nextHand} isOpen={tabStats} setIsOpen={setTabStats} />
         </Box>
       </Box>
       {/* Over the chat log and buttons above (zIndex 1), so the chat's `/` command list opens over them */}

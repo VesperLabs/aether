@@ -1,5 +1,6 @@
 import { getSetBonus } from "@/content";
 import { unarmedDamage } from "./power";
+import { isSwingStat } from "./swing-stats";
 
 /** An open-ended bag of stat name -> value. Also carries `triggers` once calculated. */
 export type StatBag = Record<string, any>;
@@ -193,7 +194,7 @@ export function calculateStats(player: StatsInput, shouldHeal = false): StatsRes
   return { ...main, offHandStats: off.stats };
 }
 
-/** `calculateStats` for one hand's swings: the weapon held in `skipHand` counts only for sets. */
+/** `calculateStats` for one hand's swings: the weapon in `skipHand` gives no swing stats or triggers. */
 function calculateHandStats(
   player: StatsInput,
   shouldHeal: boolean,
@@ -235,7 +236,8 @@ function calculateHandStats(
           setList[item.setName] = 1;
         }
       }
-      if (eKey === skipHand) return;
+      /* The other hand's weapon still gives what isn't about swinging (spell power, cast speed) */
+      const isOtherHand = eKey === skipHand;
       if (item.percentStats) {
         Object.keys(item.percentStats).forEach((key) => {
           if (!totalPercentStats[key]) {
@@ -247,10 +249,10 @@ function calculateHandStats(
       }
       if (item.stats) {
         Object.keys(item.stats).forEach((key) => {
-          addTo(ns, key, item.stats![key]);
+          if (!isOtherHand || !isSwingStat(key)) addTo(ns, key, item.stats![key]);
         });
       }
-      if (item.triggers) {
+      if (item.triggers && !isOtherHand) {
         item.triggers.forEach((trigger) => {
           ns.triggers.push(trigger);
         });

@@ -6,8 +6,16 @@ export interface BuffDefinition {
   readonly description?: string;
   readonly stats?: StatBlock;
   readonly percentStats?: PercentStatBlock;
-  readonly scaleDuration?: boolean;
-  readonly scaleStats?: boolean;
+  /**
+   * What each level past 1 adds: a level 3 buff has its values plus twice these. Mods apply
+   * buffs at the gear's tier, spells at their rank, food at its own level. Left out, a buff is
+   * the same at every level.
+   */
+  readonly perLevel?: {
+    readonly duration?: number;
+    readonly stats?: StatBlock;
+    readonly percentStats?: PercentStatBlock;
+  };
   readonly dispelInCombat?: boolean;
   readonly dispelAfterAttack?: boolean;
   readonly dispelOnHit?: boolean;

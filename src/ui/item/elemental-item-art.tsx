@@ -1,8 +1,7 @@
 import type { ItemEffect } from "@/content";
-import { useLayoutEffect, useState } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
 import { getPreviewGrip, type AssetDefinition } from "@/content";
-import { assetToCanvas } from "@/ui/kit";
+import { useAssetArt } from "@/ui/kit";
 import { ElementalSprite } from "./elemental-sprite";
 
 /** The size of a weapon's preview art: the `previewRect` cut out of its texture. */
@@ -30,12 +29,7 @@ export const ElementalItemArt = ({
   /** Places the art: see `ElementalSprite`. */
   layerSx?: ThemeUIStyleObject;
 }) => {
-  const [imageData, setImageData] = useState<string>();
-  /* Keyed on the art, not the asset object, which callers rebuild every render */
-  const artKey = `${asset.src}|${asset.previewRect?.join(",")}`;
-  useLayoutEffect(() => {
-    return assetToCanvas({ asset, tint, setImageData, shouldTrim: false });
-  }, [artKey, tint]);
+  const imageData = useAssetArt(asset, tint, false);
   if (!imageData) return null;
   const grip = getPreviewGrip(asset.previewRect as readonly number[]);
   return (

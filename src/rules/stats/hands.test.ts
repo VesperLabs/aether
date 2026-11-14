@@ -37,6 +37,17 @@ describe("calculateStats hands", () => {
     expect(stats.offHandAttackDelay).toBe(daggerOnly.attackDelay);
   });
 
+  it("counts both weapons' spell power and cast speed, but each one's crit only for its hand", () => {
+    const wand = { type: "weapon", stats: { spellPower: 4, castDelay: -30, critChance: 6 } };
+    const { stats, offHandStats } = calculateStats(rogue({ handRight: axe, handLeft: wand }));
+    const axeOnly = calculateStats(rogue({ handRight: axe })).stats;
+
+    expect(stats.spellPower).toBe(axeOnly.spellPower + 4);
+    expect(stats.castDelay).toBe(axeOnly.castDelay - 30);
+    expect(stats.critChance).toBe(axeOnly.critChance);
+    expect(offHandStats?.critChance).toBe(axeOnly.critChance + 6);
+  });
+
   it("has no off-hand stats with one weapon", () => {
     expect(
       calculateStats(rogue({ handRight: axe, handLeft: shield })).offHandStats,

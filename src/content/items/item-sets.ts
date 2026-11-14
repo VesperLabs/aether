@@ -76,7 +76,7 @@ export const itemSetList = {
         name: "Crab Hat",
         flavor: "The Crab Warden's colours. Trista would approve.",
         texture: "helmet-crab",
-        mod: "hale",
+        mod: "sturdy",
         exclusive: true,
       },
       crabWalkers: {
@@ -126,7 +126,7 @@ export const itemSetList = {
         family: "amulet",
         name: "Timmy's Chain",
         flavor: "Timmy's chain, matched to his signet.",
-        mod: "hale",
+        mod: "sanguine",
       },
     },
   },

@@ -1,6 +1,12 @@
 import React from "react";
 import { CHAT_DROP_ATTR, linkItemToChat } from "@/client/hud/chat/chat-links";
-import { CONSUMABLES_BASES } from "@/rules/inventory";
+import { canSlotMod, type BuiltItem } from "@/content";
+import {
+  CONSUMABLES_BASES,
+  findBagItemById,
+  findEquipmentById,
+  findInventoryItemById,
+} from "@/rules/inventory";
 import type { ClientGameSocket } from "@/network";
 import { isThrowable } from "@/rules/capture";
 import type { DropItem, HudCharacter } from "./context";
@@ -126,6 +132,19 @@ export function createItemEventHandlers({
           });
         }
       }
+      /* A card on gear it fits: socketing uses the card up for good, so confirm first */
+      const gear = socketTarget(hero, item, dataset);
+      if (gear) {
+        return setDropItem({
+          ...item,
+          location,
+          action: "SOCKET_CONFIRM",
+          slotKey,
+          bagId,
+          dataset,
+          gear,
+        });
+      }
       /* Dragging directly on to a bag */
       if (item?.base !== "bag" && dataset?.base === "bag") {
         return socket.emit("moveItem", {
@@ -149,4 +168,20 @@ export function createItemEventHandlers({
   }
 
   return { onDoubleClickItem, onDropItem };
+}
+
+/** The gear a card dropped on `dataset`'s slot would socket into, if it has room and fits. */
+function socketTarget(
+  hero: HudCharacter | null,
+  card: BuiltItem,
+  dataset: DOMStringMap,
+): BuiltItem | null {
+  if (card?.base !== "card" || !dataset.openMods) return null;
+  if (!canSlotMod(card.mod ?? "", dataset.itemType ?? "")) return null;
+  const id = dataset.id;
+  const gear =
+    findEquipmentById(hero?.equipment, id).item ??
+    findInventoryItemById(hero?.inventory, id) ??
+    findBagItemById(hero?.inventory, id).item;
+  return (gear as BuiltItem | null) ?? null;
 }

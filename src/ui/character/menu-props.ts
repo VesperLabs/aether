@@ -8,4 +8,6 @@ export interface CharacterMenuProps {
   setIsOpen: (isOpen: boolean) => void;
   /** What dragging and double-clicking an item does; the wiki leaves it out, so its slots are display-only. */
   events?: SlotEvents;
+  /** Dual-wielding: the hand that swings next, whose stats show. The right hand's otherwise. */
+  nextHand?: "handLeft" | "handRight";
 }

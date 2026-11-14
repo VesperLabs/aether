@@ -32,14 +32,9 @@ export { Toast } from "./toast";
 export type { ToastKind, ToastMessage } from "./toast";
 export { Menu, MenuHeader, MENU_MAX_WIDTH } from "./menu";
 export { arePropsEqualWithKeys, get, isEqual } from "./are-props-equal";
-export {
-  applyTintToImage,
-  assetToDataUrl,
-  loadCacheImage,
-  tintCanvas,
-  trimCanvas,
-} from "./image-tint";
+export { applyTintToImage, loadCacheImage, tintCanvas, trimCanvas } from "./image-tint";
 export { assetToCanvas } from "./asset-to-canvas";
+export { useAssetArt } from "./use-asset-art";
 export { isMobile } from "./is-mobile";
 export * from "./hooks";
 export { NotificationBadge } from "./notification-badge";

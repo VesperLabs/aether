@@ -35,7 +35,8 @@ type DropAction =
   | "DROP_CONFIRM"
   | "SHOP_SELL_AMOUNT"
   | "SHOP_SELL_CONFIRM"
-  | "SHOP_BUY_AMOUNT";
+  | "SHOP_BUY_AMOUNT"
+  | "SOCKET_CONFIRM";
 
 export type DropItem = BuiltItem & {
   location: string;
@@ -43,6 +44,8 @@ export type DropItem = BuiltItem & {
   bagId?: string;
   slotKey?: string;
   dataset?: DOMStringMap;
+  /** SOCKET_CONFIRM only: the gear the card is going into. */
+  gear?: BuiltItem;
 };
 
 export interface ErrorModal {

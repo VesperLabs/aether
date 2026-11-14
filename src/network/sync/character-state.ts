@@ -25,6 +25,8 @@ export interface CharacterSyncInput {
   vy: number;
   direction: string;
   stats: Opaque;
+  /** Dual-wielding only: the stats of the left hand's swings (its weapon's damage, speed, crit). */
+  offHandStats?: Opaque;
   state: Record<string, Opaque>;
   equipment: Opaque;
   inventory: Opaque;
@@ -61,6 +63,8 @@ export interface FullCharacterWire {
   vy: number;
   direction: string;
   stats: Opaque;
+  /** Dual-wielding only: the stats of the left hand's swings (its weapon's damage, speed, crit). */
+  offHandStats?: Opaque;
   state: Record<string, Opaque>;
   equipment: Opaque;
   inventory: Opaque;
@@ -88,6 +92,8 @@ export interface BuffCharacterWire {
   socketId: string;
   state: Record<string, Opaque>;
   stats: Opaque;
+  /** Dual-wielding only: the stats of the left hand's swings (its weapon's damage, speed, crit). */
+  offHandStats?: Opaque;
   buffs: Opaque[];
   activeItemSlots: Opaque[];
 }
@@ -107,6 +113,7 @@ export function getFullCharacterState(p: CharacterSyncInput): FullCharacterWire 
     vy: p?.vy,
     direction: p?.direction,
     stats: p?.stats,
+    offHandStats: p?.offHandStats,
     state: p?.state,
     equipment: p?.equipment,
     inventory: p?.inventory,
@@ -144,7 +151,10 @@ export function getPublicCharacterState(p: CharacterSyncInput): FullCharacterWir
  * the change is being sent now, so it is not sent again next tick.
  */
 export function getBuffCharacterState(
-  p: Pick<CharacterSyncInput, "id" | "socketId" | "state" | "stats" | "buffs" | "activeItemSlots">,
+  p: Pick<
+    CharacterSyncInput,
+    "id" | "socketId" | "state" | "stats" | "offHandStats" | "buffs" | "activeItemSlots"
+  >,
 ): BuffCharacterWire {
   const uid = (p?.socketId || p?.id) as string;
   if (p?.state) {
@@ -156,6 +166,7 @@ export function getBuffCharacterState(
     socketId: uid,
     state: p?.state,
     stats: p?.stats,
+    offHandStats: p?.offHandStats,
     buffs: p?.buffs,
     activeItemSlots: p?.activeItemSlots,
   };

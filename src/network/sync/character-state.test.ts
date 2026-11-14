@@ -48,6 +48,7 @@ describe("getFullCharacterState", () => {
       "vy",
       "direction",
       "stats",
+      "offHandStats",
       "state",
       "equipment",
       "inventory",
@@ -92,6 +93,7 @@ describe("getBuffCharacterState", () => {
       "socketId",
       "state",
       "stats",
+      "offHandStats",
       "buffs",
       "activeItemSlots",
     ]);
