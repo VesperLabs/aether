@@ -35,8 +35,15 @@ export type { FoundSlot } from "./lookup";
 export { moveItem } from "./move";
 export { checkSlotsMatch, withoutSlot } from "./slots";
 export type { InventoryItem, InventoryState, MoveContext } from "./types";
-export { buffLines, describeItem } from "./describe";
-export type { DescribableItem, DescribePlayer, StatLine, TriggerLine } from "./describe";
+export { describeItem } from "./describe";
+export type {
+  DescribableItem,
+  DescribePlayer,
+  ItemDescription,
+  ModLines,
+  StatLine,
+  TriggerLine,
+} from "./describe";
 export {
   consumeItemCommand,
   dropItemCommand,

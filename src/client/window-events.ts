@@ -1,4 +1,4 @@
-import type { BuiltItem } from "@/content";
+import type { BuiltItem, ItemEffect } from "@/content";
 import type { NearbyPlayer } from "@/client/scenes/main-scene";
 import type { Player } from "@/client/views/player";
 import type { AbilitySlot } from "@/rules/spells";
@@ -23,8 +23,8 @@ export interface LootFlyDetail {
   src: string;
   rect: { x: number; y: number; width: number; height: number };
   rarity?: string;
-  /** A weapon's elements, so it keeps its colored outline on the way to the bag. */
-  elements?: string[];
+  /** A weapon's mod effects, so it keeps its colored outline on the way to the bag. */
+  elements?: ItemEffect[];
   /** Screen pixels per art pixel, so the outline is one art pixel wide. */
   pixelSize?: number;
 }

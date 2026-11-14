@@ -13,7 +13,7 @@ import {
   planMapLootSpawns,
   randomInt,
   resolveGrab,
-  rollMobDrop,
+  rollMobDrops,
 } from "./rules";
 import type { Loot } from "./rules";
 
@@ -51,55 +51,50 @@ describe("pickPreferredDrop", () => {
   });
 });
 
-describe("rollMobDrop", () => {
-  const world = { type: "weapon", rarity: "common", key: "sword" };
+describe("rollMobDrops", () => {
+  const world = { key: "sword", slots: 0 };
   const base = { mobLevel: 16, magicFind: 7 };
 
   it("passes mob level and magic find to the world roll", () => {
     const calls: number[][] = [];
-    const result = rollMobDrop(
+    const result = rollMobDrops(
       base,
       () => 0,
       (level, mf) => (calls.push([level, mf]), world),
     );
     expect(calls).toEqual([[16, 7]]);
-    expect(result).toBe(world);
+    expect(result).toEqual([world]);
   });
   it("skips the world roll for noWorldDrops mobs", () => {
     let called = false;
-    const result = rollMobDrop(
+    const result = rollMobDrops(
       { ...base, noWorldDrops: true },
       () => 0,
       () => ((called = true), world),
     );
     expect(called).toBe(false);
-    expect(result).toBeNull();
+    expect(result).toEqual([]);
   });
   it("adds drop table entries whose 1-in-N roll hits", () => {
-    const hit = { type: "stackable", rarity: "common", key: "gold", chance: 4 };
-    const miss = { type: "ring", rarity: "common", key: "band", chance: 4 };
+    const hit = { item: "gold", chance: 4 };
+    const miss = { item: "band", chance: 4 };
     // rng 0 -> roll 1 (hit); rng 0.9 -> roll 4 (miss)
-    const result = rollMobDrop(
+    const result = rollMobDrops(
       { ...base, noWorldDrops: true, drops: [hit, miss] },
       seq(0, 0.9),
       () => null,
     );
-    expect(result).toBe(hit);
+    expect(result).toEqual(["gold"]);
   });
-  it("prefers a non-stackable world drop over later stackables", () => {
-    const gold = {
-      type: "stackable",
-      rarity: "common",
-      key: "gold",
-      chance: 1,
-    };
+  it("rolls the world drop before the table", () => {
+    const gold = { item: "gold", chance: 1 };
     expect(
-      rollMobDrop(
+      rollMobDrops(
         { ...base, drops: [gold] },
         () => 0,
         () => world,
       ),
-    ).toBe(world);
+    ).toEqual([world, "gold"]);
   });
 });
 
@@ -165,7 +160,7 @@ describe("expireLoots", () => {
 
 describe("map loot", () => {
   it("parses the Loots object layer", () => {
-    const items = [{ type: "stackable", rarity: "common", key: "gold", chance: 1 }];
+    const items = [{ key: "gold", chance: 1 }];
     expect(
       parseMapLootList([{ id: 3, x: 10, y: 20, properties: [{ value: JSON.stringify(items) }] }]),
     ).toEqual([{ id: 3, x: 10, y: 20, items }]);
@@ -182,19 +177,12 @@ describe("map loot", () => {
     y: 5,
     items,
   });
-  const build = (type: string, rarity: string, key: string, amount?: number) => ({
-    type,
-    rarity,
-    key,
-    amount,
-  });
+  const build = (key: string, amount?: number) => ({ key, amount });
 
   it("spawns permanent sparkly loot where the roll hits", () => {
     const list = [
       spot(1, [
         {
-          type: "stackable",
-          rarity: "common",
           key: "gold",
           chance: 1,
           amount: [2, 4],
@@ -208,15 +196,15 @@ describe("map loot", () => {
         y: 5,
         texture: "loot-anim-sparkle",
         isPermanent: true,
-        item: { type: "stackable", rarity: "common", key: "gold", amount: 2 },
+        item: { key: "gold", amount: 2 },
       },
     ]);
   });
   it("skips spots that already hold permanent loot, including ones planned this cycle", () => {
     const list = [
-      spot(1, [{ type: "weapon", rarity: "common", key: "a", chance: 1 }]),
-      spot(1, [{ type: "weapon", rarity: "common", key: "b", chance: 1 }]),
-      spot(2, [{ type: "weapon", rarity: "common", key: "c", chance: 1 }]),
+      spot(1, [{ key: "a", chance: 1 }]),
+      spot(1, [{ key: "b", chance: 1 }]),
+      spot(2, [{ key: "c", chance: 1 }]),
     ];
     const spawns = planMapLootSpawns(list, [{ x: 2, y: 5, isPermanent: true }], () => 0, build);
     expect(spawns.map((s) => (s.item as { key: string }).key)).toEqual(["a"]);
@@ -224,18 +212,18 @@ describe("map loot", () => {
   it("skips items that fail to build", () => {
     const list = [
       spot(1, [
-        { type: "weapon", rarity: "common", key: "missing", chance: 1 },
-        { type: "weapon", rarity: "common", key: "a", chance: 1 },
+        { key: "missing", chance: 1 },
+        { key: "a", chance: 1 },
       ]),
-      spot(2, [{ type: "weapon", rarity: "common", key: "missing", chance: 1 }]),
+      spot(2, [{ key: "missing", chance: 1 }]),
     ];
-    const buildKnown = (type: string, rarity: string, key: string, amount?: number) =>
-      key === "missing" ? null : build(type, rarity, key, amount);
+    const buildKnown = (key: string, amount?: number) =>
+      key === "missing" ? null : build(key, amount);
     const spawns = planMapLootSpawns(list, [], () => 0, buildKnown);
     expect(spawns.map((s) => [s.x, (s.item as { key: string }).key])).toEqual([[1, "a"]]);
   });
   it("spawns nothing when no roll hits", () => {
-    const list = [spot(1, [{ type: "weapon", rarity: "common", key: "a", chance: 10 }])];
+    const list = [spot(1, [{ key: "a", chance: 10 }])];
     expect(planMapLootSpawns(list, [], () => 0.5, build)).toEqual([]);
   });
 });

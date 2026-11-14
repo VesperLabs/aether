@@ -45,6 +45,7 @@ export const spellItems = {
       slot: "spell",
       texture: "scroll-blue",
       effects: { minWaterDamage: 1, maxWaterDamage: 1 },
+      stats: { castTime: 500 },
       exclusive: true,
     },
     lightball: {
@@ -78,7 +79,7 @@ export const spellItems = {
       texture: "scroll-green",
       buffs: { evasion: 1 },
       requirements: { charClass: "rogue" },
-      stats: { mpCost: 10 },
+      stats: { mpCost: 10, castTime: 500 },
     },
     haste: {
       tier: 1,
@@ -89,7 +90,7 @@ export const spellItems = {
       texture: "scroll-green",
       buffs: { haste: 1 },
       requirements: { charClass: "cleric" },
-      stats: { hpCost: 4 },
+      stats: { hpCost: 4, castTime: 500 },
     },
     brute: {
       tier: 1,
@@ -100,7 +101,7 @@ export const spellItems = {
       texture: "scroll-red",
       buffs: { brute: 1 },
       requirements: { charClass: "warrior" },
-      stats: { mpCost: 4 },
+      stats: { mpCost: 4, castTime: 500 },
     },
     guard: {
       tier: 1,
@@ -111,7 +112,7 @@ export const spellItems = {
       texture: "scroll-red",
       buffs: { guard: 1 },
       requirements: { charClass: "warrior" },
-      stats: { mpCost: 4 },
+      stats: { mpCost: 4, castTime: 500 },
     },
     genius: {
       tier: 1,
@@ -122,7 +123,7 @@ export const spellItems = {
       texture: "scroll-blue",
       buffs: { genius: 1 },
       requirements: { charClass: "mage" },
-      stats: { mpCost: 4 },
+      stats: { mpCost: 4, castTime: 500 },
     },
     endurance: {
       tier: 1,
@@ -133,7 +134,7 @@ export const spellItems = {
       texture: "scroll-yellow",
       buffs: { endurance: 1 },
       requirements: { charClass: "cleric" },
-      stats: { hpCost: 4 },
+      stats: { hpCost: 4, castTime: 500 },
     },
     regeneration: {
       tier: 1,
@@ -144,7 +145,7 @@ export const spellItems = {
       texture: "scroll-gray",
       buffs: { regeneration: 1 },
       requirements: { charClass: "cleric" },
-      stats: { hpCost: 10 },
+      stats: { hpCost: 10, castTime: 500 },
     },
     stealth: {
       tier: 1,
@@ -155,7 +156,7 @@ export const spellItems = {
       texture: "scroll-gray",
       buffs: { stealth: 1 },
       requirements: { charClass: "rogue" },
-      stats: { spCost: 5 },
+      stats: { spCost: 5, castTime: 500 },
     },
     tackle: {
       tier: 1,
@@ -164,7 +165,7 @@ export const spellItems = {
       base: "tackle",
       slot: "spell",
       texture: "scroll-red",
-      stats: { spCost: 6 },
+      stats: { spCost: 6, castTime: 300 },
       buffs: { stun: 1 },
       requirements: { charClass: "warrior", weaponType: "melee" },
       exclusive: true,
@@ -177,7 +178,7 @@ export const spellItems = {
       slot: "spell",
       texture: "scroll-red",
       effects: { minFireDamage: 3, maxFireDamage: 4 },
-      stats: { mpCost: 4 },
+      stats: { mpCost: 4, castTime: 300 },
       requirements: { charClass: "warrior", weaponType: "melee" },
     },
     fireball2: { tier: 2, base: "fireball" },

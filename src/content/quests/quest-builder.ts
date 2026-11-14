@@ -22,7 +22,7 @@ function buildQuest(dice: Dice, key: string): Quest {
     rewards: {
       exp: quest?.level * QUEST_EXP_MULTIPLIER,
       gold: quest?.level * QUEST_GOLD_MULTIPLIER,
-      items: rewardItems?.map((item) => ItemBuilder.buildItem(dice, item[0], item[1], item[2])),
+      items: rewardItems?.map((item) => ItemBuilder.buildItem(dice, item)),
     },
   };
   return new Quest(questData as never);

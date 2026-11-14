@@ -36,8 +36,7 @@ export function updateRoomLoot(world: ServerWorld, room: Room) {
       state.mapLootList,
       lootInRoom(world, room.name),
       world.rng,
-      (type, rarity, key, amount) =>
-        ItemBuilder.buildItem(world.dice, type, rarity, key, amount) as LootItem | null,
+      (key, amount) => ItemBuilder.buildItem(world.dice, key, amount) as LootItem | null,
     );
     for (const spawn of spawns) spawnLoot(world, room.name, spawn);
   }

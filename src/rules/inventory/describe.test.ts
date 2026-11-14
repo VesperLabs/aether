@@ -10,6 +10,7 @@ describe("describeItem", () => {
       percentStats: { vitality: 5 },
     });
     expect(d.kind).toBe("short sword");
+    expect(describeItem({ base: "shortBow" }).kind).toBe("short bow");
     expect(d.stats).toEqual([
       { label: "AttackDamage", value: "2 ↔ 5" },
       { label: "hp", value: "+10" },
@@ -37,11 +38,21 @@ describe("describeItem", () => {
     ]);
   });
 
-  it("describes triggers", () => {
+  it("shows a mod's stat under mods, out of the base stats, scaled by tier", () => {
+    const d = describeItem({ tier: 2, stats: { defense: 4, critChance: 4 }, fixedMod: "precise" });
+    expect(d.stats).toEqual([{ label: "defense", value: "4" }]);
+    expect(d.mods.fixed?.stats).toEqual([{ label: "critChance", value: "4%" }]);
+    expect(d.mods.added.stats).toEqual([]);
+  });
+
+  it("describes triggers as mods", () => {
     const d = describeItem({
       triggers: [{ event: "onHurt", type: "buff", name: "evasion", level: 3, chance: 4 }],
     });
-    expect(d.triggers).toEqual([{ name: "evasion", level: 3, chancePercent: 25, when: "on hurt" }]);
+    expect(d.mods.added.triggers).toMatchObject([
+      { name: "evasion", level: 3, chancePercent: 25, when: "hurt" },
+    ]);
+    expect(d.mods.added.triggers[0].stats.length).toBeGreaterThan(0);
   });
 
   it("treats requirements as met and sets as active without a player", () => {
@@ -69,5 +80,16 @@ describe("describeItem", () => {
   it("multiplies cost by amount and counts bag space", () => {
     const d = describeItem({ cost: 10, amount: 3, space: 4, items: [{}, null, {}] });
     expect(d).toMatchObject({ cost: 30, amount: 3, space: { used: 2, total: 4 } });
+  });
+});
+
+describe("a card's gear", () => {
+  it("lists the gear its mod can go on, every piece when it isn't limited", () => {
+    expect(describeItem({ name: "Wolf Card", base: "card", mod: "sharp" }).fits).toEqual([
+      "weapon",
+      "ranged",
+    ]);
+    expect(describeItem({ name: "Bear Card", base: "card", mod: "strong" }).fits).toHaveLength(11);
+    expect(describeItem({ name: "Sword", base: "sword" }).fits).toBeUndefined();
   });
 });

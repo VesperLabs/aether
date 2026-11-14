@@ -1,4 +1,4 @@
-import { ItemBuilder } from "@/content";
+import { getSetBonus } from "@/content";
 import { unarmedDamage } from "./power";
 
 /** An open-ended bag of stat name -> value. Also carries `triggers` once calculated. */
@@ -260,7 +260,7 @@ function calculateHandStats(
 
   /* if more than one set item is equipped, we might have a set bonus */
   Object.keys(setList).forEach((setName) => {
-    const setInfo = ItemBuilder.getSetInfo(setName);
+    const setInfo = getSetBonus(setName);
     if (setInfo) {
       if (setList[setName] >= setInfo.pieces) {
         activeSets.push(setName);

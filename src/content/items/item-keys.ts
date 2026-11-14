@@ -1,6 +1,6 @@
-import { itemList } from "./item-scaling";
+import { ITEM_CATALOG } from "./item-catalog";
 
-/** Where an item key lives in `itemList`. Every key is unique across types and rarities. */
+/** Where an item key lives in `itemList`. Every key is unique across types. */
 export interface ItemKeyEntry {
   key: string;
   type: string;
@@ -17,25 +17,14 @@ export interface ItemLook {
   tint?: string;
 }
 
-/* Uses the scaled list so level variants (`fireball2`) inherit their base's name and texture */
-export const ITEM_KEYS: readonly ItemKeyEntry[] = Object.entries(itemList).flatMap(
-  ([type, rarities]) =>
-    Object.entries(rarities).flatMap(([rarity, items]) =>
-      Object.entries(items).map(([key, item]) => {
-        const {
-          slot,
-          texture,
-          tint,
-          name = key,
-          rank,
-        } = item as ItemLook & {
-          name?: string;
-          rank?: number;
-        };
-        const label = slot === "spell" && rank ? `${name} Lv. ${rank}` : name;
-        return { key, type, rarity, name: label, look: { slot, texture, tint } };
-      }),
-    ),
+export const ITEM_KEYS: readonly ItemKeyEntry[] = Object.values(ITEM_CATALOG).map(
+  ({ key, type, rarity, name, rank, slot, texture, tint }) => ({
+    key,
+    type,
+    rarity,
+    name: slot === "spell" && rank ? `${name} Lv. ${rank}` : name,
+    look: { slot, texture, tint },
+  }),
 );
 
 const BY_LOWER_KEY = new Map(ITEM_KEYS.map((entry) => [entry.key.toLowerCase(), entry]));

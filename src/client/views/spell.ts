@@ -9,7 +9,7 @@ import { addLight } from "./lights";
 import { PunchBurst } from "./punch-burst";
 import { SwingArc } from "./swing-arc";
 import { SwingDebug } from "./swing-debug";
-import { deriveElements } from "@/ui/item/weapon-elements";
+
 import { ELEMENT_SWING_COLORS } from "@/ui/item/element-effects";
 import { getAngleFromDirection, distanceTo } from "@/rules/world";
 import {
@@ -24,7 +24,7 @@ import {
   usesLeftHand,
   usesRightHand,
 } from "@/rules/spells";
-import { HAND_REACH, WEAPON_GRIP, getWeaponTip } from "@/content";
+import { HAND_REACH, WEAPON_GRIP, getWeaponTip, itemEffects } from "@/content";
 const Sprite = Phaser.GameObjects.Sprite;
 const BLANK_TEXTURE = "human-blank";
 
@@ -140,10 +140,11 @@ export class Spell extends Phaser.GameObjects.Container {
       /* The hand, relative to this spell, which follows the caster's body centre */
       const getHand = () => ({ x: caster[hand].x, y: caster[hand].y - caster.bodyCenterY });
       const facing = getAngleFromDirection(caster?.direction);
-      /* Plain swings take the color of the weapon's element, like its outline */
+      /* Plain swings take the color of the weapon's first mod effect, like its outline */
+      const [effect] = itemEffects(caster.visibleEquipment?.[hand]);
       const color =
         (look.tint ? toTint(look.tint) : undefined) ??
-        ELEMENT_SWING_COLORS[deriveElements(caster.visibleEquipment?.[hand]?.stats)[0] as string] ??
+        (effect && ELEMENT_SWING_COLORS[effect]) ??
         PLAIN_SWING_COLOR;
       const swing = isPunching
         ? new PunchBurst(scene, { fist: getHand, facing, color, duration: this.maxVisibleTime })

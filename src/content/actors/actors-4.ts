@@ -14,9 +14,9 @@ export const actors4 = {
     },
     baseStats: { level: 1 },
     equipment: {
-      handLeft: ["weapon", "common", "hatchet"],
-      armor: ["armor", "common", "clothRobe"],
-      pants: ["pants", "common", "clothPants"],
+      handLeft: "hatchet",
+      armor: "clothRobe",
+      pants: "clothPants",
     },
   },
   loiterer: {
@@ -31,9 +31,9 @@ export const actors4 = {
     },
     baseStats: { level: 1 },
     equipment: {
-      handLeft: ["weapon", "common", "wand"],
-      armor: ["armor", "common", "clothRobe"],
-      pants: ["pants", "common", "clothPants"],
+      handLeft: "wand",
+      armor: "clothRobe",
+      pants: "clothPants",
     },
     behaviors: { guard: {} },
   },

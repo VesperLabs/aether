@@ -20,8 +20,8 @@ const kill = (overrides: Partial<MobKilledEvent> = {}): MobKilledEvent => ({
 
 const hooks = (overrides: Partial<LootHooks> = {}): LootHooks => ({
   rng: () => 0,
-  rollWorldDrop: () => ({ type: "weapon", rarity: "common", key: "sword" }),
-  buildItem: (type, rarity, key) => ({ id: `${type}-${rarity}-${key}`, type, rarity }),
+  rollWorldDrop: () => ({ key: "sword", slots: 0 }),
+  buildItem: (ref) => ({ id: typeof ref === "string" ? ref : ref.key, rarity: "common" }),
   getMobDropInfo: () => undefined,
   spawnLoot: vi.fn(),
   ...overrides,
@@ -36,7 +36,7 @@ describe("subscribeLoot", () => {
     expect(h.spawnLoot).toHaveBeenCalledWith("grassland-1", {
       x: 10,
       y: 20,
-      item: { id: "weapon-common-sword", type: "weapon", rarity: "common" },
+      item: { id: "sword", rarity: "common" },
       npcId: "m1",
     });
   });
@@ -56,7 +56,7 @@ describe("subscribeLoot", () => {
       rollWorldDrop,
       getMobDropInfo: () => ({
         noWorldDrops: true,
-        drops: [{ type: "stackable", rarity: "common", key: "gold", chance: 1 }],
+        drops: [{ item: "gold", chance: 1 }],
       }),
     });
     subscribeLoot(bus, h);

@@ -16,3 +16,13 @@ html {
      (A reserved scrollbar gutter would leave a strip the fixed map background can't cover.) */
   margin-left: calc(100vw - 100%);
 }
+/* The game's theme turns off text selection everywhere; the wiki is for reading, so it is back on */
+#root * {
+  -webkit-user-select: text;
+  user-select: text;
+}
+#root button,
+#root button * {
+  -webkit-user-select: none;
+  user-select: none;
+}

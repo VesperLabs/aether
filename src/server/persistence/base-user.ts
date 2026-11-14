@@ -33,8 +33,8 @@ export const createBaseUser = (
     equipment: {
       ...Object.fromEntries(EQUIPMENT_SLOTS.map((slot) => [slot, null])),
       handRight: startingWeapon,
-      pants: ItemBuilder.buildItem(dice, "pants", "common", "clothPants"),
-      armor: ItemBuilder.buildItem(dice, "armor", "common", "clothRobe"),
+      pants: ItemBuilder.buildItem(dice, "clothPants"),
+      armor: ItemBuilder.buildItem(dice, "clothRobe"),
     },
     inventory: [],
     abilities: {

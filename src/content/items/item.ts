@@ -7,7 +7,10 @@ export class Item implements BuiltItem {
   level: number;
   rank?: number;
   rarity: string;
-  affixes?: string[];
+  tier?: number;
+  mods?: (string | null)[];
+  mod?: string;
+  fixedMod?: string;
   stats?: Record<string, number>;
   name: string;
   base: string;
@@ -36,7 +39,10 @@ export class Item implements BuiltItem {
     this.rank = item?.rank;
     this.stats = item?.stats;
     this.rarity = item?.rarity as string;
-    this.affixes = item?.affixes;
+    this.tier = item?.tier;
+    this.mods = item?.mods;
+    this.mod = item?.mod;
+    this.fixedMod = item?.fixedMod;
     this.name = item?.name as string;
     this.base = item?.base as string;
     this.slot = item?.slot as string;

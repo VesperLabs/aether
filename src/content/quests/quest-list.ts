@@ -17,7 +17,7 @@ export const questList = {
         "Among the coastal sands, a legion of crabs scuttles with resilience and purpose. To truly comprehend their essence, you must face them in battle. {objective}, and you shall gain insight into the cycle of life and the sacrifices we make for growth.",
     },
     objectives: [{ type: "bounty", monster: "crab", amount: 60 }],
-    rewards: { items: [["gloves", "magic", "clothGloves"]] },
+    rewards: { items: [{ key: "clothGloves", slots: 2 }] },
   },
   "crab-claws": {
     level: 1,
@@ -26,8 +26,8 @@ export const questList = {
       description:
         "Ah, the legendary helmet of the crab! Indeed, it is a task that requires dedication and bravery. The very essence of the shoreline is woven into these crabs. If you wish to contribute, you must {objective} for me. With your help, we can forge a helmet that will withstand the fiercest of tides.",
     },
-    objectives: [{ type: "item", item: ["stackable", "common", "crabClaw"], amount: 30 }],
-    rewards: { items: [["helmet", "set", "crabHat"]] },
+    objectives: [{ type: "item", item: "crabClaw", amount: 30 }],
+    rewards: { items: ["crabHat"] },
   },
   "fish-spearing": {
     level: 1,
@@ -45,7 +45,7 @@ export const questList = {
         "Listen up, brave soul! The buzzin' hornets have been causing quite a ruckus around here. I need you to take 'em down, {objective}, and make sure they learn their lesson. Return to me triumphant, and I'll make it worth your while.",
     },
     objectives: [{ type: "bounty", monster: "hornet", amount: 20 }],
-    rewards: { items: [["ring", "magic", "copperRing"]] },
+    rewards: { items: [{ key: "copperRing", slots: 2 }] },
   },
   "slime-roundup": {
     level: 2,
@@ -55,7 +55,7 @@ export const questList = {
         "Prepare yourself, my friend, for an encounter with the slimy menace that plagues our sacred woods. Those pesky blue slimes are multiplying faster than the mushrooms after a rain. Your mission, should you choose to accept, is to {objective}. Return to me, and together we'll restore balance to this green realm.",
     },
     objectives: [{ type: "bounty", monster: "slime", amount: 30 }],
-    rewards: { items: [["boots", "magic", "clothBoots"]] },
+    rewards: { items: [{ key: "clothBoots", slots: 2 }] },
   },
   "slime-eggs": {
     level: 2,
@@ -67,7 +67,7 @@ export const questList = {
     objectives: [
       {
         type: "item",
-        item: ["stackable", "common", "blueSporangium"],
+        item: "blueSporangium",
         amount: 15,
       },
     ],
@@ -87,7 +87,7 @@ export const questList = {
       description:
         "Ah, the elusive mushrooms! The woodland delicacy I've been yearning for. I've heard whispers that you can find 'em all over the place. {objective} for me, my fungi-loving friend.",
     },
-    objectives: [{ type: "item", item: ["stackable", "common", "mushroom"], amount: 30 }],
+    objectives: [{ type: "item", item: "mushroom", amount: 30 }],
   },
   "raccoon-hunting": {
     level: 3,
@@ -97,7 +97,7 @@ export const questList = {
         "Armed with tenacity and skill, your mission is to track down these clever critters, outmaneuver their cunning tricks. Please {objective} and return victorious with tales of your thrilling escapades.",
     },
     objectives: [{ type: "bounty", monster: "raccoon", amount: 40 }],
-    rewards: { items: [["amulet", "magic", "silverAmulet"]] },
+    rewards: { items: [{ key: "silverAmulet", slots: 2 }] },
   },
   "grape-finding": {
     level: 3,
@@ -106,7 +106,7 @@ export const questList = {
       description:
         "{objective} from raccoons and report back to me. But beware, dear seeker of sweetness, for the raccoons are no ordinary tricksters. With their agile moves and roguish charm, they've guarded their grape cache fiercely, making your journey a thrilling test of skill and strategy.",
     },
-    objectives: [{ type: "item", item: ["stackable", "common", "grapes"], amount: 20 }],
+    objectives: [{ type: "item", item: "grapes", amount: 20 }],
   },
   "hawkwing-hunting": {
     level: 4,
@@ -116,7 +116,7 @@ export const questList = {
         "Amidst this lush wilderness lies a daunting challenge: a colossal, emerald-hued hornet reigning as the undisputed ruler of the woods. A force of nature itself, this formidable creature demands a reckoning - a fierce and daring confrontation awaits. Please {objective} and return to me for a reward.",
     },
     objectives: [{ type: "bounty", monster: "hawkwing", amount: 1 }],
-    rewards: { items: [["weapon", "magic", "scythe"]] },
+    rewards: { items: [{ key: "scythe", slots: 2 }] },
   },
   "spidermeat-finding": {
     level: 4,
@@ -125,7 +125,7 @@ export const questList = {
       description:
         "Ah, courageous wanderer! I beseech you to embark on a noble quest: the pursuit of extraordinary spider meat. Deep within the shadowed recesses of these caves, the arachnids weave their delicate webs. Your mission, should you accept, is to {objective} from these eight-legged creatures. Their succulent meat holds a flavor unmatched by any other.",
     },
-    objectives: [{ type: "item", item: ["stackable", "common", "spiderMeat"], amount: 20 }],
+    objectives: [{ type: "item", item: "spiderMeat", amount: 20 }],
   },
   "batmeat-finding": {
     level: 4,
@@ -134,7 +134,7 @@ export const questList = {
       description:
         "Ah, the ethereal flavors of succulent bat meat! Your noble task, should you accept it, is to {objective} from the winged denizens of the night. ",
     },
-    objectives: [{ type: "item", item: ["stackable", "common", "batMeat"], amount: 20 }],
+    objectives: [{ type: "item", item: "batMeat", amount: 20 }],
   },
   "cheese-finding": {
     level: 4,
@@ -143,8 +143,8 @@ export const questList = {
       description:
         "Listen carefully, intrepid adventurer! In your journey through these caverns, seek not only the sweet meats of bats but also the delicate strands of spider-spun artistry. {objective} from both bats and spiders, and present them to me.",
     },
-    objectives: [{ type: "item", item: ["stackable", "common", "cheese"], amount: 10 }],
-    rewards: { items: [["armor", "magic", "clothRobe"]] },
+    objectives: [{ type: "item", item: "cheese", amount: 10 }],
+    rewards: { items: [{ key: "clothRobe", slots: 2 }] },
   },
   "hogan-hunting": {
     level: 5,
@@ -154,7 +154,7 @@ export const questList = {
         "Embark on a perilous expedition, brave soul, to the depths of the mines. There, hidden among shadows, awaits the elusive {objective}, known as the Demon Spider. Only by triumphing over this formidable arachnid shall you earn the acclaim and epicurean rewards befitting a true lunchmeat enthusiast.",
     },
     objectives: [{ type: "bounty", monster: "hogan", amount: 1 }],
-    rewards: { items: [["helmet", "unique", "chefHat"]] },
+    rewards: { items: ["chefHat"] },
   },
   "fauna-gatherer": {
     level: 5,
@@ -164,11 +164,11 @@ export const questList = {
         "Search for flowers, and leaf piles. {objective} and bring them to me.  I can use them for my studies.",
     },
     objectives: [
-      { type: "item", item: ["stackable", "magic", "ginseng"], amount: 1 },
-      { type: "item", item: ["stackable", "common", "daisy"], amount: 30 },
-      { type: "item", item: ["stackable", "common", "leaves"], amount: 50 },
+      { type: "item", item: "ginseng", amount: 1 },
+      { type: "item", item: "daisy", amount: 30 },
+      { type: "item", item: "leaves", amount: 50 },
     ],
-    rewards: { items: [["bag", "unique", "raesBasket"]] },
+    rewards: { items: ["raesBasket"] },
   },
   "shitake-search": {
     level: 5,
@@ -177,7 +177,7 @@ export const questList = {
       description:
         "{objective}.  These show up in the same places as mushrooms, but can be much rarer to find.",
     },
-    objectives: [{ type: "item", item: ["stackable", "common", "shitake"], amount: 8 }],
+    objectives: [{ type: "item", item: "shitake", amount: 8 }],
   },
   "talk-steve": {
     level: 3,
@@ -213,8 +213,8 @@ export const questList = {
       description:
         "Beware, wanderer, for the graveyard lies just north of this cursed town. {objective} if you dare, amidst the haunting wraiths and soulless zombies that haunt that accursed place. Tread carefully, and if you manage to survive the malevolent specters, I shall imbue your soul with a great shield, crafted from the remnants of the undead. Embrace the darkness, for your fate awaits in the cold embrace of the tomb.",
     },
-    objectives: [{ type: "item", item: ["stackable", "common", "skull"], amount: 200 }],
-    rewards: { items: [["shield", "unique", "osteoCrest"]] },
+    objectives: [{ type: "item", item: "skull", amount: 200 }],
+    rewards: { items: ["osteoCrest"] },
   },
   "chonks-hunting": {
     level: 7,
@@ -224,7 +224,7 @@ export const questList = {
         "There is a beast north of the cemetary who has grown fat eating the bodies of the dead. {objective} and I will reward you.",
     },
     objectives: [{ type: "bounty", monster: "chonks", amount: 1 }],
-    rewards: { items: [["ring", "rare", "bronzeRing"]] },
+    rewards: { items: [{ key: "bronzeRing", slots: 3 }] },
   },
   "shell-finding": {
     level: 8,
@@ -233,8 +233,8 @@ export const questList = {
       description:
         "The merman have been taking over the aqueducts below the city. {objective} and bring them to me. I will forge you a great accessory.",
     },
-    objectives: [{ type: "item", item: ["stackable", "common", "shell"], amount: 100 }],
-    rewards: { items: [["accessory", "unique", "mermanFins"]] },
+    objectives: [{ type: "item", item: "shell", amount: 100 }],
+    rewards: { items: ["mermanFins"] },
   },
   "wyrm-blade": {
     level: 8,
@@ -243,8 +243,8 @@ export const questList = {
       description:
         "Below this town are ancient aqueducts. {objective} and from it I shall temper an awesome weapon.",
     },
-    objectives: [{ type: "item", item: ["stackable", "unique", "wyrmScale"], amount: 1 }],
-    rewards: { items: [["weapon", "unique", "wyrmBlade"]] },
+    objectives: [{ type: "item", item: "wyrmScale", amount: 1 }],
+    rewards: { items: ["wyrmBlade"] },
   },
   "orchid-gathering": {
     level: 9,
@@ -256,11 +256,11 @@ export const questList = {
     objectives: [
       {
         type: "item",
-        item: ["stackable", "common", "orchidFlower"],
+        item: "orchidFlower",
         amount: 20,
       },
     ],
-    rewards: { items: [["ring", "rare", "bronzeRing"]] },
+    rewards: { items: [{ key: "bronzeRing", slots: 3 }] },
   },
   "weed-wacker": {
     level: 9,
@@ -270,7 +270,7 @@ export const questList = {
         "The wild Orchids are running rampant. {objective} and I will give you an hairloom of the wilds.",
     },
     objectives: [{ type: "bounty", monster: "orchid", amount: 120 }],
-    rewards: { items: [["weapon", "unique", "eyeOfForest"]] },
+    rewards: { items: ["eyeOfForest"] },
   },
   "talk-derek": {
     level: 3,
@@ -289,7 +289,7 @@ export const questList = {
         "There is an orchid that's grown three times the size one should. {objective} and return to me.",
     },
     objectives: [{ type: "bounty", monster: "bigMomma", amount: 1 }],
-    rewards: { items: [["armor", "rare", "leatherCoat"]] },
+    rewards: { items: [{ key: "leatherCoat", slots: 3 }] },
   },
   "ice-crab-claws": {
     level: 10,
@@ -297,7 +297,7 @@ export const questList = {
     dialogues: {
       description: "{objective} from the crabs around here.  They are really good to eat.",
     },
-    objectives: [{ type: "item", item: ["stackable", "common", "iceCrabClaw"], amount: 60 }],
+    objectives: [{ type: "item", item: "iceCrabClaw", amount: 60 }],
   },
   "wolf-culling": {
     level: 11,
@@ -307,7 +307,7 @@ export const questList = {
         "The wolves up here are hungry and will attack you at first sight. Help me {objective}.",
     },
     objectives: [{ type: "bounty", monster: "wolf", amount: 120 }],
-    rewards: { items: [["accessory", "rare", "goggles"]] },
+    rewards: { items: [{ key: "goggles", slots: 3 }] },
   },
   "wolf-pelts": {
     level: 11,
@@ -316,8 +316,8 @@ export const questList = {
       description:
         "{objective} from the wolves in these mountains. I can make you something good from the materials.",
     },
-    objectives: [{ type: "item", item: ["stackable", "common", "wolfPelt"], amount: 100 }],
-    rewards: { items: [["helmet", "unique", "wolfMask"]] },
+    objectives: [{ type: "item", item: "wolfPelt", amount: 100 }],
+    rewards: { items: ["wolfMask"] },
   },
 } as const satisfies Readonly<Record<string, QuestDefinition>>;
 

@@ -33,8 +33,8 @@ describe("readChatDraft suggestions", () => {
     expect(prefix).toBe("/drop ");
   });
 
-  it("offers rolled rarities only for common bases", () => {
-    expect(values("/drop sword ")).toEqual(["magic", "rare"]);
+  it("offers mod slots only for family tiers", () => {
+    expect(values("/drop sword ")).toEqual(["0", "1", "2", "3", "4"]);
     expect(values("/drop foxBlade ")).toEqual([]);
     expect(values("/drop fireball ")).toEqual([]);
   });
@@ -118,8 +118,8 @@ describe("getGhostText", () => {
     expect(ghost("/drop foxB")).toBe("lade");
   });
 
-  it("asks for rarity only on rollable bases and amount only on stackables", () => {
-    expect(ghost("/drop sword ")).toBe("[rarity]");
+  it("asks for slots only on family tiers and amount only on stackables", () => {
+    expect(ghost("/drop sword ")).toBe("[slots]");
     expect(ghost("/drop smallHpPotion ")).toBe("[amount]");
     expect(ghost("/give foxBlade ")).toBe("");
     expect(ghost("/dro")).toBe("p <item>");

@@ -1,25 +1,10 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
+import { Box, Button, DIRECTIONS, FieldHint, Flex, Input, SliderField, Text } from "@/ui";
 import {
-  Box,
-  Button,
-  DIRECTIONS,
-  FieldHint,
-  Flex,
-  Input,
-  Select,
-  SliderField,
-  Swatch,
-  Text,
-} from "@/ui";
-import {
-  CARD_BACKDROP_NAMES,
-  CARD_BACKDROPS,
   CARD_ICON_SIZE,
-  type CardBackdrop,
   CARD_SIZE,
   cutDiamond,
   FACE_SIZE,
-  isCardBackdrop,
   isInDiamond,
   paintCard,
   type FaceRect,
@@ -50,8 +35,8 @@ const CANVAS_SX = {
   ...CHECKER_SX,
 } as const;
 
-/** Where a sprite's face was cut from, and the backdrop its card was saved with. */
-type SavedFace = FaceRect & { backdrop?: string };
+/** Where a sprite's face was cut from. */
+type SavedFace = FaceRect;
 
 /** The remembered face for each sprite, from `faces.json`. Empty if none has been saved yet. */
 const useSavedFaces = (revision: number) => {
@@ -65,7 +50,7 @@ const useSavedFaces = (revision: number) => {
   return faces;
 };
 
-/** Just the face's place, without the backdrop it was saved with. */
+/** The saved face's place, at the face's fixed size. */
 const pickFaceRect = (saved?: SavedFace): FaceRect | undefined =>
   saved && { x: saved.x, y: saved.y, size: FACE_SIZE };
 
@@ -112,18 +97,6 @@ export const CardPanel = ({
   const stack = useFrameStack(base, layers, pending);
   const [savedRevision, setSavedRevision] = useState(0);
   const savedFaces = useSavedFaces(savedRevision);
-  const [pickedBackdrop, setPickedBackdrop] = useState<{
-    texture: string;
-    backdrop: CardBackdrop;
-  }>();
-  const savedBackdrop = savedFaces[base.texture]?.backdrop;
-  /* Each sprite keeps its own backdrop, like its face. */
-  const backdrop =
-    pickedBackdrop?.texture === base.texture
-      ? pickedBackdrop.backdrop
-      : isCardBackdrop(savedBackdrop)
-        ? savedBackdrop
-        : "night";
   const [picked, setPicked] = useState<{ texture: string; face: FaceRect }>();
   const [name, setName] = useState(defaultName);
   const [status, setStatus] = useState<string>();
@@ -174,8 +147,8 @@ export const CardPanel = ({
     card.height = edge;
     const ctx = getCtx(card);
     ctx.clearRect(0, 0, edge, edge);
-    paintCard(ctx, cutDiamond(composite, face), backdrop);
-  }, [composite, face, backdrop]);
+    paintCard(ctx, cutDiamond(composite, face));
+  }, [composite, face]);
 
   /* Dragging carries the face with the pointer; a click centres it on the spot. */
   const place = (e: PointerEvent<HTMLDivElement>) => {
@@ -213,8 +186,8 @@ export const CardPanel = ({
       const ctx = getCtx(card);
       const margin = (CARD_ICON_SIZE - CARD_SIZE) / 2;
       ctx.translate(margin, margin);
-      paintCard(ctx, cutDiamond(composite, face), backdrop);
-      await saveCard({ name, texture: base.texture, face, backdrop, image: card });
+      paintCard(ctx, cutDiamond(composite, face));
+      await saveCard({ name, texture: base.texture, face, image: card });
       setSavedRevision((revision) => revision + 1);
       setStatus(`Saved assets/cards/${name}.png`);
     } catch (failure) {
@@ -256,18 +229,6 @@ export const CardPanel = ({
         min={-Math.floor(face.size / 2)}
         max={cell - Math.ceil(face.size / 2)}
         onChange={(y) => setFace({ y })}
-      />
-      <Select
-        label="Background"
-        value={backdrop}
-        options={CARD_BACKDROP_NAMES.map((option) => ({
-          value: option,
-          label: option,
-          icon: <Swatch color={CARD_BACKDROPS[option].glow} />,
-        }))}
-        onChange={(option) =>
-          setPickedBackdrop({ texture: base.texture, backdrop: option as CardBackdrop })
-        }
       />
       {/* A stand of one size, so the panel never jumps; the card sits in it at a whole-number zoom
           to keep its pixels square and its border 1px at that zoom. */}

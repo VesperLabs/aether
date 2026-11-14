@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ItemBuilder, itemList, PREVIEW_DICE, type Item } from "@/content";
+import { ITEM_CATALOG, ItemBuilder, PREVIEW_DICE, type Item } from "@/content";
 import { rollAttack } from "@/rules/combat";
 import { calculateStats, getBaseStats, type StatBag } from "./rules";
 import { npcStats } from "./npc";
@@ -38,12 +38,12 @@ function requiredLevel(item: { requirements?: Record<string, unknown> }): number
 
 /** The common item of `type` with the highest `score` a level `level` player may wear. */
 function bestCommon(type: string, level: number, score: (stats: StatBag) => number) {
-  const candidates = Object.entries(itemList[type]?.common ?? {}).filter(
-    ([, def]) => requiredLevel(def) <= level,
+  const candidates = Object.values(ITEM_CATALOG).filter(
+    (item) => item.type === type && item.rarity === "common" && requiredLevel(item) <= level,
   );
-  candidates.sort(([, a], [, b]) => score(rolledMax(b)) - score(rolledMax(a)));
-  const key = candidates[0]?.[0];
-  return key ? (ItemBuilder.buildItem(PREVIEW_DICE, type, "common", key) as Item) : null;
+  candidates.sort((a, b) => score(rolledMax(b)) - score(rolledMax(a)));
+  const key = candidates[0]?.key;
+  return key ? (ItemBuilder.buildItem(PREVIEW_DICE, key) as Item) : null;
 }
 
 function rolledMax(def: StatBag): StatBag {

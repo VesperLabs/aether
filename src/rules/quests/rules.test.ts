@@ -14,7 +14,7 @@ import {
   type QuestProgressInput,
 } from "./rules";
 
-const claw = ["stackable", "common", "crabClaw"];
+const claw = "crabClaw";
 const clawItem = (amount: number, id = "claw") => ({
   id,
   slot: "stackable",

@@ -1,16 +1,17 @@
 import {
-  findDefinition,
   assetList,
-  itemList,
+  getCatalogItem,
+  ITEM_CATALOG,
+  itemEffects,
   resolveAsset,
+  type AnyItemRef,
   type AssetDefinition,
+  type ItemEffect,
   type BuiltItem,
-  type ItemDefinition,
 } from "@/content";
 import {
   assetToCanvas,
   Box,
-  deriveElements,
   ElementalItemArt,
   PlayerRender,
   WalkingSprite,
@@ -68,14 +69,8 @@ export const CARD_COLORS: Record<string, string> = {
 const ITEM_SIZE = 52;
 
 type Character = Parameters<typeof PlayerRender>[0]["player"];
-type ListedItem = Partial<BuiltItem> & Pick<ItemDefinition, "flavor">;
-const listedItems = itemList as unknown as Record<
-  string,
-  Record<string, Record<string, ListedItem>>
->;
 
 const capitalize = (text = "") => text.charAt(0).toUpperCase() + text.slice(1);
-const words = (key: string) => capitalize(key.replace(/([A-Z])/g, " $1").toLowerCase());
 
 /** One sprite cut out of its texture and blown up with crisp pixels. */
 export const SpriteFace = ({
@@ -91,7 +86,7 @@ export const SpriteFace = ({
   /** Draw at this exact scale instead of filling `size`, so sprites in a list share one pixel size. */
   pixelScale?: number;
   /** A weapon's elements: drawn with the same moving outline and particles as in the game. */
-  elements?: string[];
+  elements?: ItemEffect[];
 }) => {
   const [imageData, setImageData] = useState<string>();
   const [natural, setNatural] = useState<{ width: number; height: number }>();
@@ -182,46 +177,41 @@ const CHARACTER_CARDS: FeaturedCard[] = ACTORS.flatMap(([key, actor]) => {
   ];
 });
 
-const ITEM_CARDS: FeaturedCard[] = Object.entries(listedItems).flatMap(([type, byRarity]) =>
-  type === "stackable"
-    ? []
-    : Object.entries(byRarity).flatMap(([rarity, byKey]) =>
-        Object.entries(byKey).flatMap(([key, item]) => {
-          const asset = resolveAsset(item, { profile: { race: "human", gender: "female" } });
-          if (!asset) return [];
-          const charClass = (item.requirements as { charClass?: string } | undefined)?.charClass;
-          return [
-            {
-              id: `item-${type}-${rarity}-${key}`,
-              title: item.name ?? words(key),
-              category:
-                type === "spell"
-                  ? `${capitalize(charClass)} spell`
-                  : `${capitalize(rarity)} ${type}`,
-              info: item.flavor ?? "",
-              href: `/items#${type}-${rarity}-${key}`,
-              color: CARD_COLORS[rarity] ?? CARD_COLORS.common,
-              art: () => (
-                <SpriteFace
-                  asset={asset}
-                  tint={item.tint}
-                  size={ITEM_SIZE}
-                  elements={type === "weapon" ? deriveElements(item.stats) : []}
-                />
-              ),
-            },
-          ];
-        }),
+const ITEM_CARDS: FeaturedCard[] = Object.values(ITEM_CATALOG).flatMap((item) => {
+  if (item.type === "stackable") return [];
+  const asset = resolveAsset(item, { profile: { race: "human", gender: "female" } });
+  if (!asset) return [];
+  const charClass = item.requirements.charClass as string | undefined;
+  return [
+    {
+      id: `item-${item.key}`,
+      title: item.name,
+      category:
+        item.type === "spell"
+          ? `${capitalize(charClass)} spell`
+          : `${capitalize(item.rarity)} ${item.type}`,
+      info: item.flavor ?? "",
+      href: `/items#${item.key}`,
+      color: CARD_COLORS[item.rarity] ?? CARD_COLORS.common,
+      art: () => (
+        <SpriteFace
+          asset={asset}
+          tint={item.tint}
+          size={ITEM_SIZE}
+          elements={item.type === "weapon" ? itemEffects(item) : []}
+        />
       ),
-);
+    },
+  ];
+});
 
-/** A keeper's equipment refs (`[type, rarity, key]`) turned into the items the renderer draws. */
+/** A keeper's equipment refs turned into the items the renderer draws. */
 export function keeperCharacter(keeper: { profile: object; equipment?: object }): Character {
   const equipment = Object.fromEntries(
-    Object.entries(keeper.equipment ?? {}).map(([slot, ref]) => {
-      const [type, rarity, key] = (ref ?? []) as string[];
-      return [slot, ref ? (findDefinition(type, rarity, key).item as BuiltItem) : null];
-    }),
+    Object.entries(keeper.equipment ?? {}).map(([slot, ref]) => [
+      slot,
+      ref ? ((getCatalogItem(ref as AnyItemRef) ?? null) as BuiltItem | null) : null,
+    ]),
   );
   return {
     profile: keeper.profile as NonNullable<Character>["profile"],

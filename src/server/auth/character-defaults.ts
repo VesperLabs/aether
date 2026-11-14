@@ -30,8 +30,8 @@ export function getBaseCharacterDefaults({
   const weapon = STARTING_WEAPONS[charClass as string];
   const spell = STARTING_SPELLS[charClass as string];
   return {
-    startingWeapon: weapon ? ItemBuilder.buildItem(dice, "weapon", "common", weapon) : undefined,
-    startingSpell: spell ? ItemBuilder.buildItem(dice, "spell", "common", spell) : undefined,
+    startingWeapon: weapon ? ItemBuilder.buildItem(dice, weapon) : undefined,
+    startingSpell: spell ? ItemBuilder.buildItem(dice, spell) : undefined,
     baseStats: getBaseStats({ level, charClass }),
     ...PLAYER_DEFAULT_SPAWN,
   };

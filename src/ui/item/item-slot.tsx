@@ -1,9 +1,9 @@
 import { useState, useLayoutEffect, useEffect, useEffectEvent, useRef, memo } from "react";
 import { useDoubleTap } from "use-double-tap";
 import type { ThemeUIStyleObject } from "theme-ui";
-import { resolveAsset, type BuiltItem } from "@/content";
+import { itemEffects, resolveAsset, type BuiltItem } from "@/content";
 import type { FullCharacterWire } from "@/network";
-import { assetToCanvas, Box, Icon, isMobile, Portal, theme } from "@/ui/kit";
+import { assetToCanvas, Box, Icon, isMobile, Portal, RomanNumeral, theme } from "@/ui/kit";
 import { SLOT_SIZE, STYLE_NON_EMPTY, STYLE_SLOT_EMPTY } from "./slot-style";
 import { ItemTooltip } from "./item-tooltip";
 import { SpaceDonut } from "./space-donut";
@@ -14,7 +14,7 @@ import { ElementalItemArt } from "./elemental-item-art";
 import { DEFAULT_ASSET_USER } from "./art-icon";
 import { SPRING_OPEN_ATTR } from "./drag-spring-open";
 import { springWiggle } from "./spring-wiggle";
-import { deriveElements } from "./weapon-elements";
+
 import { PAD_DROP_EVENT, PAD_USE_EVENT, type PadDropEvent } from "./pad-slot-events";
 
 const BLANK_IMAGE =
@@ -150,7 +150,7 @@ export const ItemSlot = memo(
         : null,
     );
 
-    const elements = item?.type === "weapon" ? deriveElements(item.stats) : [];
+    const elements = item?.type === "weapon" ? itemEffects(item) : [];
     const asset =
       elements.length > 0 && item
         ? resolveAsset(item, profile ? { profile } : DEFAULT_ASSET_USER)
@@ -180,6 +180,10 @@ export const ItemSlot = memo(
       "data-base": item?.base,
       /* The kind of slot it goes in, so a controller's "Use" can equip it (`pad-item-menu`) */
       "data-slot-type": item?.slot ?? undefined,
+      /* For a controller's "Socket": a card's mod, and the gear it could go in */
+      "data-mod": item?.mod ?? undefined,
+      "data-item-type": item?.type ?? undefined,
+      "data-open-mods": item?.mods?.filter((mod) => !mod).length || undefined,
     };
 
     return (
@@ -218,7 +222,11 @@ export const ItemSlot = memo(
               />
             )}
             {item?.amount > 1 && <SlotAmount>{item?.amount}</SlotAmount>}
-            {item?.slot === "spell" && <SlotAmount>Lvl. {item?.rank}</SlotAmount>}
+            {item?.slot === "spell" && (
+              <SlotAmount>
+                <RomanNumeral value={item?.rank} />
+              </SlotAmount>
+            )}
             <Icon
               icon={imageData}
               size={size * 2} // Fixes large images to not get cut off

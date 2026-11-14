@@ -1,3 +1,4 @@
+import type { ItemEffect } from "@/content";
 import { useLayoutEffect, useState } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
 import { getPreviewGrip, type AssetDefinition } from "@/content";
@@ -24,7 +25,7 @@ export const ElementalItemArt = ({
 }: {
   asset: AssetDefinition;
   tint?: string;
-  elements: string[];
+  elements: ItemEffect[];
   scale: number;
   /** Places the art: see `ElementalSprite`. */
   layerSx?: ThemeUIStyleObject;

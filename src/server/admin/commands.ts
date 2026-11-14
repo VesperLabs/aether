@@ -1,5 +1,5 @@
 import { broadcastPlayerUpdate, broadcastLeveled } from "@/server/net/room-broadcast";
-import { ItemBuilder, randomNumber } from "@/content";
+import { ITEM_RARITIES, ItemBuilder, randomNumber, type ItemRarity } from "@/content";
 import type { CommandContext } from "@/server/net/command-context";
 import { CHAT_COMMANDS } from "@/network";
 import { spawnLoot } from "../loot-adapter";
@@ -54,16 +54,8 @@ function execute(ctx: CommandContext, command: string[]) {
     case "drop": {
       const drop = parseDropArgs(command.slice(1));
       if ("error" in drop) return cmdErr(drop.error);
-      const built = ItemBuilder.buildItem(
-        world.dice,
-        drop.type,
-        drop.rarity,
-        drop.key,
-        drop.amount,
-      ) as Item | null;
-      if (!built) {
-        return cmdErr(`There is no ${drop.rarity} ${drop.key}. ${DROP_USAGE}`);
-      }
+      const built = ItemBuilder.buildItem(world.dice, drop, drop.amount) as Item | null;
+      if (!built) return cmdErr(`There is no ${drop.key}. ${DROP_USAGE}`);
       spawnLoot(world, player?.roomName, {
         x: player?.x,
         y: player?.y,
@@ -94,24 +86,16 @@ function execute(ctx: CommandContext, command: string[]) {
       return cmdInfo(`Added ${gold} gold.`);
     }
     case "guns": {
-      const gunRarities = ["unique", "common", "set", "rare", "magic"] as const;
       const rarity = command[1];
-      if (!rarity || !gunRarities.includes(rarity as (typeof gunRarities)[number])) {
-        return cmdErr(
-          "Usage: /guns <rarity> — rarity must be exactly one of: unique, common, set, rare, magic.",
-        );
+      if (!ITEM_RARITIES.includes(rarity as ItemRarity)) {
+        return cmdErr(`Usage: /guns <rarity>, one of: ${ITEM_RARITIES.join(", ")}.`);
       }
-      let gunItem = null;
+      let gun: Item | null = null;
       do {
         // any monster level from 1 to 30, so every item can come up
-        gunItem = ItemBuilder.rollDrop(world.dice, randomNumber(world.dice, 1, 30), 1000);
-      } while (gunItem?.rarity !== rarity);
-      const gun = ItemBuilder.buildItem(
-        world.dice,
-        gunItem.type,
-        gunItem.rarity,
-        gunItem.key,
-      ) as Item;
+        const drop = ItemBuilder.rollDrop(world.dice, randomNumber(world.dice, 1, 30), 1000);
+        gun = drop && (ItemBuilder.buildItem(world.dice, drop) as Item | null);
+      } while (gun?.rarity !== rarity);
       spawnLoot(world, player?.roomName, { x: player?.x, y: player?.y, item: gun, npcId: null });
       return cmdInfo(`Dropped ${itemLabel(gun)}.`);
     }

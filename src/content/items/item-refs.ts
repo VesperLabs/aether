@@ -1,36 +1,31 @@
-import type { itemData } from "./item-data";
-import type { ItemRarity } from "./item-types";
+import type { TierKey, UniqueKey } from "./gear-data";
+import type { SlotCount } from "./gear-types";
+import type { cardItems } from "./card";
+import type { SetPieceKey } from "./item-sets";
+import type { spellItems } from "./spell";
+import type { stackableItems } from "./stackable";
 
-type ItemTable = typeof itemData;
+type TableKey<T> = { [R in keyof T]: keyof T[R] }[keyof T];
 
-/** "weapon", "helmet", "spell"... : every top-level group in the item data. */
-type ItemType = keyof ItemTable;
+/** Every item's key. A ref to an item that doesn't exist, or a tier not made yet, won't compile. */
+type ItemKey =
+  | TierKey
+  | UniqueKey
+  | SetPieceKey
+  | TableKey<typeof stackableItems>
+  | TableKey<typeof cardItems>
+  | TableKey<typeof spellItems>;
 
-type CommonKeys<T extends ItemType> = "common" extends keyof ItemTable[T]
-  ? keyof ItemTable[T]["common" & keyof ItemTable[T]]
-  : never;
+/** An item to build: its key, or a family tier with a set number of blank mod slots. */
+export type ItemRef = ItemKey | { readonly key: TierKey; readonly slots: SlotCount };
 
-/**
- * Keys that exist for a type and rarity. Magic and rare items fall back to the common item
- * with the same key when there is no hand-written magic or rare version.
- */
-type ItemKeyFor<T extends ItemType, R extends ItemRarity> =
-  | (R extends keyof ItemTable[T] ? keyof ItemTable[T][R] : never)
-  | (R extends "magic" | "rare" ? CommonKeys<T> : never);
+/** A mob drop: an item ref with a 1-in-`chance` roll. */
+export type ItemDrop = { readonly item: ItemRef; readonly chance: number };
 
-/** `[type, rarity, key]`. Only combinations that exist in the item data compile. */
-export type ItemRef = {
-  [T in ItemType]: { [R in ItemRarity]: readonly [T, R, ItemKeyFor<T, R>] }[ItemRarity];
-}[ItemType];
+/** A ref read from stored or network data, typed loosely: `ItemRef` is one. */
+export type AnyItemRef = string | { readonly key: string; readonly slots?: number };
 
-/** A mob drop: an item reference with a 1-in-`chance` roll. */
-export type ItemDrop = {
-  [T in ItemType]: {
-    [R in ItemRarity]: {
-      readonly type: T;
-      readonly rarity: R;
-      readonly key: ItemKeyFor<T, R>;
-      readonly chance: number;
-    };
-  }[ItemRarity];
-}[ItemType];
+/** A ref as plain parts: its key, and its slot count when it sets one. */
+export function readRef(ref: AnyItemRef): { key: string; slots?: number } {
+  return typeof ref === "string" ? { key: ref } : ref;
+}

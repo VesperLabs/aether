@@ -1,8 +1,11 @@
 import {
-  ITEM_BUILD_RARITIES,
   ITEM_KEYS,
-  canRollRarity,
+  ITEM_RARITIES,
+  MAX_SLOTS,
   findItemKey,
+  getCatalogItem,
+  rarityForSlots,
+  takesSlots,
   mapList,
   SEASONS,
   SEASON_ICONS,
@@ -31,7 +34,7 @@ export interface ChatCommandOption {
 }
 
 /** What an argument takes, so the client can check it and pick a keyboard before sending. */
-type ChatArgKind = "number" | "item" | "room" | "mob" | "rarity" | "text";
+type ChatArgKind = "number" | "item" | "room" | "mob" | "rarity" | "slots" | "text";
 
 export interface ChatArg {
   name: string;
@@ -47,7 +50,7 @@ export interface ChatCommand {
   cheat: boolean;
   /** Other ways to type it, without the slash (`w` for `whisper`). */
   aliases?: readonly string[];
-  /** The arguments, when they depend on what's typed (an item's rarity and amount). */
+  /** The arguments, when they depend on what's typed (an item's slots or amount). */
   argsFor?: (args: string[]) => readonly ChatArg[];
   /** Suggestions for the argument at `index`, given the args typed before it. */
   complete?: (index: number, args: string[]) => readonly ChatCommandOption[];
@@ -82,7 +85,7 @@ const SEASON_OPTIONS = [
   ...SEASONS.map((value) => ({ value, hint: SEASON_HINTS[value], icon: SEASON_ICONS[value] })),
   { value: "real", hint: SEASON_HINTS.real, icon: EARTH_ICON },
 ];
-const RARITY_OPTIONS = ITEM_BUILD_RARITIES.map((value) => ({ value, rarity: value }));
+const RARITY_OPTIONS = ITEM_RARITIES.map((value) => ({ value, rarity: value }));
 
 const NPC_ACTION_OPTIONS = [
   { value: "spawn", hint: "add any actor next to you; add pet to make them yours" },
@@ -91,8 +94,12 @@ const NPC_ACTION_OPTIONS = [
   { value: "clear", hint: "remove what you spawned and your companions" },
 ];
 const NPC_ACTION: ChatArg = { name: "action", kind: "text" };
-/** A common base can roll magic or rare mods (not bags, spells, stackables); anything else is fixed. */
-const ROLLABLE_RARITY_OPTIONS = ["magic", "rare"].map((value) => ({ value, rarity: value }));
+/** Gear with 0 to 4 blank mod slots, each colored like the rarity it makes. */
+const SLOT_OPTIONS = Array.from({ length: MAX_SLOTS + 1 }, (_, slots) => ({
+  value: String(slots),
+  hint: `${slots} mod slots, ${rarityForSlots(slots)}`,
+  rarity: rarityForSlots(slots),
+}));
 
 const numArg = (name: string): ChatArg => ({ name, kind: "number" });
 const itemArg = (name: string): ChatArg => ({ name, kind: "item" });
@@ -105,20 +112,19 @@ const NPC_ACTOR_ARG: Record<string, ChatArg> = {
   tame: optional({ name: "actor", kind: "mob" }),
 };
 
-/** Only a common base that can roll mods takes a rarity, and only stackables take an amount. */
+/** Gear that takes mod slots takes how many, and only stackables take an amount. */
 function itemArgs([key]: string[]): readonly ChatArg[] {
-  const item = findItemKey(key ?? "");
-  const rollable = item?.rarity === "common" && canRollRarity(item.type);
+  const item = getCatalogItem(findItemKey(key ?? "")?.key ?? "");
   return [
     itemArg("item"),
-    ...(rollable ? [optional({ name: "rarity", kind: "rarity" })] : []),
+    ...(item && takesSlots(item) ? [optional({ name: "slots", kind: "slots" })] : []),
     ...(item?.type === "stackable" ? [optional(numArg("amount"))] : []),
   ];
 }
 
 function completeItem(index: number, args: string[]) {
   if (index === 0) return ITEM_OPTIONS;
-  return itemArgs(args)[index]?.kind === "rarity" ? ROLLABLE_RARITY_OPTIONS : [];
+  return itemArgs(args)[index]?.kind === "slots" ? SLOT_OPTIONS : [];
 }
 
 const textArg = (name: string): ChatArg => ({ name, kind: "text" });
@@ -329,6 +335,7 @@ const KIND_OPTIONS: Partial<Record<ChatArgKind, readonly ChatCommandOption[]>> =
   room: ROOM_OPTIONS,
   mob: MOB_OPTIONS,
   rarity: RARITY_OPTIONS,
+  slots: SLOT_OPTIONS,
 };
 
 /** Why `value` won't do for `arg`, or undefined when it will. The server still checks it again. */

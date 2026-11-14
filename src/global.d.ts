@@ -20,6 +20,9 @@ interface Item {
   triggers?: Array<Trigger>;
   percentStats?: Record<string, number>;
   setName?: string;
+  tier?: number;
+  mods?: (string | null)[];
+  fixedMod?: string;
   space?: number;
   items?: Array<Item>;
 }
@@ -38,9 +41,7 @@ interface Loot {
 }
 
 interface Drop {
-  type: string;
-  rarity: string;
-  key: string;
+  item: string | { key: string; slots?: number };
   chance: integer;
 }
 

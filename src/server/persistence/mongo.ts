@@ -4,10 +4,9 @@ import { createServerDice } from "../server-dice";
 import { hashPassword, verifyPassword } from "../auth/password";
 import { MongoClient, type Db } from "mongodb";
 import { userSchema } from "./schema";
-import { filterNullEmpty } from "./filter-empty";
+import { hydrateSlots, toSavedSlots } from "./saved-item";
 import { calculateNextMaxExp } from "@/rules/stats";
 import { createBaseUser } from "./base-user";
-import { pruneItemFromUser, type StoredItemLists } from "./prune-item";
 import type { Database, UserDocument } from "./database";
 
 const getDatabaseApi = (db: Db, dice: Dice): Database => ({
@@ -15,7 +14,7 @@ const getDatabaseApi = (db: Db, dice: Dice): Database => ({
     return execute("getUserByEmail", async () => {
       if (!email) return console.log("❌ Email not provided");
       const user = await db.collection("users").findOne({ email });
-      return user as UserDocument | null;
+      return user && hydrateUser(user as UserDocument, dice);
     });
   },
   getAllUsers: async ({ page = 1, pageSize = 10, sortBy = "updatedAt" }) => {
@@ -28,7 +27,7 @@ const getDatabaseApi = (db: Db, dice: Dice): Database => ({
       .limit(pageSize)
       .toArray();
 
-    return users as unknown as UserDocument[];
+    return (users as unknown as UserDocument[]).map((user) => hydrateUser(user, dice));
   },
   countAllUsers: async () => {
     return execute("countAllUsers", async () => {
@@ -67,23 +66,15 @@ const getDatabaseApi = (db: Db, dice: Dice): Database => ({
       // Print the number of documents deleted
     });
   },
-  pruneItemByKey: async (keyToRemove: string) => {
-    return execute("pruneItemByKey", async () => {
-      const users = db.collection<StoredItemLists>("users");
-      for await (const doc of users.find({})) {
-        if (pruneItemFromUser(doc, keyToRemove)) {
-          await users.updateOne({ _id: doc._id }, { $set: doc });
-        }
-      }
-    });
-  },
   getUserByLogin: async ({ email, password = "" }) => {
     return execute("getUserByLogin", async () => {
       if (!email) return console.log("❌ Email not provided");
       const user = (await db
         .collection("users")
         .findOne({ email: `${email}`.toLowerCase() })) as UserDocument | null;
-      return user && (await verifyPassword(password ?? "", user.password)) ? user : null;
+      return user && (await verifyPassword(password ?? "", user.password))
+        ? hydrateUser(user, dice)
+        : null;
     });
   },
   createUser: async ({ email, charClass, gender, password }) => {
@@ -109,11 +100,11 @@ const getDatabaseApi = (db: Db, dice: Dice): Database => ({
           sp: player?.stats?.sp,
           exp: player?.stats?.exp,
         },
-        equipment: filterNullEmpty(player?.equipment),
-        inventory: filterNullEmpty(player.inventory),
+        equipment: toSavedSlots(player?.equipment),
+        inventory: toSavedSlots(player.inventory),
         baseStats: player?.baseStats,
         roomName: player?.roomName,
-        abilities: filterNullEmpty(player?.abilities),
+        abilities: toSavedSlots(player?.abilities),
         updatedAt,
         createdAt,
         userSettings: player?.userSettings,
@@ -191,11 +182,11 @@ const getDatabaseApi = (db: Db, dice: Dice): Database => ({
               sp: player?.stats?.sp,
               exp: player?.stats?.exp,
             },
-            equipment: filterNullEmpty(player?.equipment),
-            inventory: filterNullEmpty(player.inventory),
+            equipment: toSavedSlots(player?.equipment),
+            inventory: toSavedSlots(player.inventory),
             baseStats: player?.baseStats,
             //roomName: player?.room?.name,
-            abilities: filterNullEmpty(player?.abilities),
+            abilities: toSavedSlots(player?.abilities),
             activeItemSlots: player?.activeItemSlots,
             updatedAt,
           },
@@ -228,6 +219,16 @@ async function execute<T>(
  */
 async function attemptSave(operationName: string, operation: () => Promise<void>) {
   await execute(operationName, operation).catch(() => {});
+}
+
+/** A stored user with its items rebuilt from content. */
+function hydrateUser(user: UserDocument, dice: Dice): UserDocument {
+  return {
+    ...user,
+    equipment: hydrateSlots(dice, user.equipment),
+    inventory: hydrateSlots(dice, user.inventory),
+    abilities: hydrateSlots(dice, user.abilities),
+  } as UserDocument;
 }
 
 function getAuditFields() {

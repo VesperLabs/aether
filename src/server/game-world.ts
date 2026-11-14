@@ -123,8 +123,7 @@ export function createServerWorld({
   subscribeLoot(world.events, {
     rng: world.rng,
     rollWorldDrop: (mobLevel, magicFind) => ItemBuilder.rollDrop(dice, mobLevel, magicFind),
-    buildItem: (type, rarity, key) =>
-      ItemBuilder.buildItem(dice, type, rarity, key) as LootItem | null,
+    buildItem: (ref) => ItemBuilder.buildItem(dice, ref) as LootItem | null,
     getMobDropInfo: (mobId) => {
       const npc = world.npcs[mobId];
       return npc && { drops: npc.drops, noWorldDrops: npc.state?.noWorldDrops };

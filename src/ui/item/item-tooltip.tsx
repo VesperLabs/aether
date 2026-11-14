@@ -1,10 +1,16 @@
 import { Fragment } from "react";
-import { describeItem, type DescribableItem, type DescribePlayer } from "@/rules/inventory";
-import { Flex, Text, theme, Tooltip, TooltipContent } from "@/ui/kit";
+import {
+  describeItem,
+  type DescribableItem,
+  type DescribePlayer,
+  type ItemDescription,
+  type ModLines,
+} from "@/rules/inventory";
+import { Box, Flex, Text, theme, Tooltip, TooltipContent } from "@/ui/kit";
 import {
   BODY_ICON,
   BuffName,
-  FadedRule,
+  Divider,
   Level,
   SectionTitle,
   StatGrid,
@@ -15,10 +21,19 @@ import {
   spellIcon,
 } from "./item-lines";
 import { GildedCorners } from "./gilded-corners";
+import { GearSlotIcons } from "./gear-slot-icons";
 import { ArtIcon, DEFAULT_ASSET_USER } from "./art-icon";
 import { resolveAsset, type BuiltItem } from "@/content";
 
 const RESOURCE_ICONS = { mp: "mana", hp: "health", sp: "stamina" } as const;
+
+/** A card's gear: the slot icons of everything its mod can go in. */
+const FitsSection = ({ fits }: { fits: NonNullable<ItemDescription["fits"]> }) => (
+  <>
+    <SectionTitle>Socket into</SectionTitle>
+    <GearSlotIcons types={fits} />
+  </>
+);
 
 const HINT_STYLE = {
   ...TYPE.meta,
@@ -41,6 +56,68 @@ function itemArt(item: DescribableItem, player?: DescribePlayer | null) {
     asset && { src: asset.src, rect: asset.previewRect, tint: (item as { tint?: string }).tint }
   );
 }
+
+const UNIQUE_GOLD = (theme.colors as unknown as Record<string, string>).unique;
+
+/** One mod slot as a small pixel diamond: hollow while empty, filled once a mod is in it. */
+const Diamond = ({ fill }: { fill?: string }) => (
+  <Box
+    as="span"
+    sx={{
+      display: "inline-block",
+      width: 5,
+      height: 5,
+      transform: "rotate(45deg)",
+      border: "1px solid",
+      borderColor: fill ?? "gray.500",
+      bg: fill ?? "transparent",
+    }}
+  />
+);
+
+/**
+ * What the item's mods add. The title shows its slots as diamonds: a gold one for a unique's own
+ * mod, then one per slot, hollow until a mod fills it. The unique's own mod reads in the same
+ * gold; the rest in the plain stat colours.
+ */
+const ModSection = ({
+  mods,
+  title = "Mods",
+}: {
+  mods: ItemDescription["mods"];
+  title?: string;
+}) => {
+  const { fixed, added, slots } = mods;
+  const hasLines = (lines?: ModLines) => !!lines && lines.stats.length + lines.triggers.length > 0;
+  const filled = hasLines(fixed) || hasLines(added);
+  if (!fixed && !filled && !slots.length) return null;
+  return (
+    <>
+      <SectionTitle>
+        <Flex as="span" sx={{ alignItems: "center", gap: "5px" }}>
+          {title}
+          {fixed && <Diamond fill={UNIQUE_GOLD} />}
+          {slots.map((filled, i) => (
+            <Diamond key={i} fill={filled ? "gray.300" : undefined} />
+          ))}
+        </Flex>
+      </SectionTitle>
+      {filled && (
+        <StatGrid>
+          {fixed && <ModRows lines={fixed} color={UNIQUE_GOLD} />}
+          <ModRows lines={added} />
+        </StatGrid>
+      )}
+    </>
+  );
+};
+
+const ModRows = ({ lines, color }: { lines: ModLines; color?: string }) => (
+  <>
+    <StatRows lines={lines.stats} color={color} />
+    <TriggerRows triggers={lines.triggers} color={color} />
+  </>
+);
 
 /** Rarities whose tooltip is gilded: all but common. */
 const GILDED_RARITIES = ["magic", "rare", "unique", "set"];
@@ -99,6 +176,9 @@ export const ItemTooltip = ({ item, player, tooltipId, show }: ItemTooltipProps)
           </Flex>
         </Flex>
         <StatSection title="Stats" lines={d.stats} />
+        {/* A card carries one mod, the one it sockets */}
+        <ModSection mods={d.mods} title={d.fits ? "Mod" : "Mods"} />
+        {d.fits && <FitsSection fits={d.fits} />}
         <StatSection title="Effects" lines={d.effects} />
         {d.buffs.map((buff) => (
           <Fragment key={buff.name}>
@@ -112,14 +192,6 @@ export const ItemTooltip = ({ item, player, tooltipId, show }: ItemTooltipProps)
             </StatGrid>
           </Fragment>
         ))}
-        {d.triggers.length > 0 && (
-          <>
-            <SectionTitle>Procs</SectionTitle>
-            <StatGrid>
-              <TriggerRows triggers={d.triggers} />
-            </StatGrid>
-          </>
-        )}
         {d.requirements.length > 0 && (
           <>
             <SectionTitle>Requires</SectionTitle>
@@ -154,13 +226,27 @@ export const ItemTooltip = ({ item, player, tooltipId, show }: ItemTooltipProps)
         )}
         {(d.description || d.action) && (
           <>
-            <FadedRule />
+            <Divider />
             {d.description && <Text sx={HINT_STYLE}>{d.description}</Text>}
             {d.action && <Text sx={HINT_STYLE}>Double click to {d.action}</Text>}
           </>
         )}
-        <FadedRule />
-        <Flex sx={{ ...TYPE.body, alignItems: "center", gap: 3 }}>
+        {/* What it costs, in a lighter pill of its own rather than under another rule */}
+        <Flex
+          sx={{
+            ...TYPE.body,
+            alignItems: "center",
+            gap: 3,
+            mt: "8px",
+            px: 2,
+            py: "2px",
+            borderRadius: 999,
+            /* Pressed in: light catches the rim all round, which casts a soft shadow inside */
+            background:
+              "linear-gradient(to bottom, rgba(0, 0, 0, 0.32), rgba(255, 255, 255, 0.11))",
+            boxShadow: "0 0 0 1px rgba(255, 255, 255, 0.1), inset 0 3px 5px rgba(0, 0, 0, 0.58)",
+          }}
+        >
           <Flex sx={{ alignItems: "center", gap: 1 }}>
             <ArtIcon src="./assets/icons/gold.png" size={BODY_ICON} />
             {d.cost}

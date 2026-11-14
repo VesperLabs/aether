@@ -1,3 +1,4 @@
+import type { ItemEffect } from "@/content";
 import { Box } from "@/ui/kit";
 import { useEffect, useRef } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
@@ -26,7 +27,7 @@ export const ElementalSprite = ({
   width: number;
   height: number;
   scale: number;
-  elements: string[];
+  elements: ItemEffect[];
   /** Where the weapon is held, in the image's pixels: effects come off the blade, away from it. */
   grip: { x: number; y: number };
   /**
@@ -50,7 +51,7 @@ export const ElementalSprite = ({
     const solid = solidRef.current?.getContext("2d");
     const effects = elementKey
       .split(",")
-      .map((element) => ELEMENT_EFFECTS[element])
+      .map((element) => ELEMENT_EFFECTS[element as ItemEffect])
       .filter(Boolean);
     if (!canvas || !glow || !solid || effects.length === 0) return;
 

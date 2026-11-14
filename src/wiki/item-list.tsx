@@ -64,4 +64,4 @@ export const ItemList = ({ items }: { items: WikiItem[] }) => {
   );
 };
 
-const key = (item: WikiItem) => `${item.type}-${item.rarity}-${item.key}`;
+const key = (item: WikiItem) => item.key;

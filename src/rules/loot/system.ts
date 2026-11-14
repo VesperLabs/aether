@@ -1,7 +1,7 @@
 import type { MobKilledEvent } from "../events";
 import type { GameEventBus } from "../world";
-import { rollMobDrop } from "./rules";
-import type { DropCandidate, DropTableEntry, LootItem, LootSpawn, Rng } from "./rules";
+import { pickPreferredDrop, rollMobDrops } from "./rules";
+import type { DropRef, DropTableEntry, LootItem, LootSpawn, Rng } from "./rules";
 
 /** What loot needs to know about a mob beyond the event: its own drop table. */
 interface MobDropInfo {
@@ -13,8 +13,8 @@ interface MobDropInfo {
 export interface LootHooks {
   rng: Rng;
   /** Rolls the world drop for (mob level, magic find). */
-  rollWorldDrop: (mobLevel: number, magicFind: number) => DropCandidate | null;
-  buildItem: (type: string, rarity: string, key: string) => LootItem | null;
+  rollWorldDrop: (mobLevel: number, magicFind: number) => DropRef | null;
+  buildItem: (ref: DropRef) => LootItem | null;
   /** The mob that died, if the host still knows it. */
   getMobDropInfo: (mobId: string) => MobDropInfo | undefined;
   /** Puts a drop on the ground. */
@@ -27,7 +27,7 @@ function lootForMobKill(
   mob: MobDropInfo | undefined,
   hooks: Pick<LootHooks, "rng" | "rollWorldDrop" | "buildItem">,
 ): LootSpawn | null {
-  const candidate = rollMobDrop(
+  const refs = rollMobDrops(
     {
       mobLevel: kill.mobLevel,
       magicFind: kill.killerMagicFind,
@@ -37,11 +37,13 @@ function lootForMobKill(
     hooks.rng,
     hooks.rollWorldDrop,
   );
-  if (!candidate) return null;
+  const built = refs.map(hooks.buildItem).filter((item): item is LootItem => !!item);
+  const item = pickPreferredDrop(built);
+  if (!item) return null;
   return {
     x: kill.x,
     y: kill.y,
-    item: hooks.buildItem(candidate.type, candidate.rarity, candidate.key),
+    item,
     npcId: kill.mobId,
   };
 }

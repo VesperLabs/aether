@@ -2,9 +2,16 @@ import { Flex, Text } from "@/ui";
 import type { ReactNode } from "react";
 import { PAPER } from "./paper";
 import { DottedLine } from "./leader";
+import { ROW_STYLE } from "./stat-row";
 
-/** The size of every icon on the card, and of the slot that holds it. */
-export const ICON = 32;
+/** The slot every row's icon sits in, as tall as the row, so rows with and without icons match. */
+export const ICON = 24;
+
+/**
+ * The game's 32px icons, drawn at their native size (halving pixel art drops every other pixel).
+ * Their art sits inside transparent padding, so they overhang the 24px slot without crowding.
+ */
+export const NATIVE_ICON = 32;
 
 /**
  * Every line on the card: an optional icon, a label and a value joined by a dotted leader.
@@ -17,14 +24,26 @@ export const Row = ({
   value,
   labelColor,
   valueColor,
+  bold = !!labelColor,
+  small = false,
 }: {
   icon?: ReactNode;
   label: string;
-  value: string;
+  value: ReactNode;
   labelColor?: string;
   valueColor?: string;
+  /** Whether the label is bold: by default when it names something (a monster, a set). */
+  bold?: boolean;
+  /** A detail of the row above (what a buff does), in smaller type so it isn't read as a stat. */
+  small?: boolean;
 }) => (
-  <Flex sx={{ alignItems: "center", gap: 1, fontSize: 1, minHeight: icon ? ICON : undefined }}>
+  <Flex
+    sx={{
+      ...ROW_STYLE,
+      gap: 1,
+      fontSize: small ? 0 : 1,
+    }}
+  >
     {icon && (
       <Flex
         sx={{
@@ -33,6 +52,7 @@ export const Row = ({
           flexShrink: 0,
           alignItems: "center",
           justifyContent: "center",
+          overflow: "visible",
         }}
       >
         {icon}
@@ -43,8 +63,10 @@ export const Row = ({
         <Text
           sx={{
             color: labelColor ?? PAPER.muted,
-            fontWeight: labelColor ? 600 : 400,
-            whiteSpace: "nowrap",
+            fontWeight: bold ? 600 : 400,
+            /* A long name (a quest) wraps rather than running into its value */
+            minWidth: 0,
+            overflowWrap: "anywhere",
           }}
         >
           {label}
@@ -54,8 +76,10 @@ export const Row = ({
         <Text
           sx={{
             color: valueColor ?? (labelColor ? PAPER.muted : PAPER.ink),
-            fontWeight: labelColor ? 400 : 700,
+            /* Values are always bold */
+            fontWeight: 700,
             whiteSpace: "nowrap",
+            flexShrink: 0,
           }}
         >
           {value}

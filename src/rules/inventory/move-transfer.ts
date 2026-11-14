@@ -9,8 +9,9 @@ const CONTAINERS: string[] = ["inventory", "equipment", "abilities", "bag"];
 /** Equipment and abilities do not swap with each other. */
 const UNSUPPORTED_PAIRS = ["equipment>abilities", "abilities>equipment"];
 
+/** What an ability slot takes: spells and stackables, but not cards, which only socket into gear. */
 const isSpellOrStackable = (item: ItemSlotValue) =>
-  ["spell", "stackable"].includes(item?.type as string);
+  ["spell", "stackable"].includes(item?.type as string) && item?.base !== "card";
 
 /**
  * Whether the item may go where it is headed. Every pair of places has its own checks;
@@ -40,9 +41,13 @@ function isAllowed(from: Endpoint, to: Endpoint, fromItem: ItemSlotValue, toItem
     case "equipment>bag":
       return !(toItem && !checkSlotsMatch(toItem.slot, fromItem?.slot)) && !!to.bagId;
     case "abilities>inventory":
-      return !(toItem && !checkSlotsMatch(toItem.type, fromItem?.type));
+      return !(toItem && !checkSlotsMatch(toItem.type, fromItem?.type)) && toItem?.base !== "card";
     case "abilities>bag":
-      return !(toItem && !checkSlotsMatch(toItem.type, fromItem?.type)) && !!to.bagId;
+      return (
+        !(toItem && !checkSlotsMatch(toItem.type, fromItem?.type)) &&
+        toItem?.base !== "card" &&
+        !!to.bagId
+      );
     default:
       return true;
   }
@@ -63,7 +68,11 @@ function take(state: InventoryState, from: Endpoint): InventoryState {
 }
 
 /** Puts an item into a slot. Null when the slot is in a bag that does not exist. */
-function put(state: InventoryState, where: Endpoint, item: ItemSlotValue): InventoryState | null {
+export function putItem(
+  state: InventoryState,
+  where: Endpoint,
+  item: ItemSlotValue,
+): InventoryState | null {
   switch (where.location) {
     case "inventory":
       return { ...state, inventory: withSlot(state.inventory, where.slot, item) };
@@ -91,6 +100,6 @@ export function transferItem(
     CONTAINERS.includes(from.location as string) && CONTAINERS.includes(to.location as string);
   if (!known || UNSUPPORTED_PAIRS.includes(`${from.location}>${to.location}`)) return null;
   if (!isAllowed(from, to, fromItem, toItem)) return null;
-  const placed = put(take(state, from), to, fromItem);
-  return placed && put(placed, from, toItem);
+  const placed = putItem(take(state, from), to, fromItem);
+  return placed && putItem(placed, from, toItem);
 }
