@@ -29,6 +29,7 @@ import type { ActorBehaviors } from "@/content";
 import { isKnockedBack, type KnockbackState, type LungeState } from "@/rules/movement";
 import { decideLungeMovement, isLungeSpell, isRecoveringFromLunge } from "./lunge";
 import type { WanderStep } from "./wander";
+import { decideSwing, type NpcSwing } from "./swings";
 
 export interface NpcBehaviorInput {
   /** Wall clock (ms). */
@@ -75,6 +76,8 @@ export interface NpcBehaviorInput {
       nextStrafeAt?: number;
       /** When it began its one retreat this fight, if it has. */
       retreatAt?: number;
+      /** A companion's owner: it never walks home to reset. */
+      ownerId?: string | null;
       /** Leashed and walking home; players are ignored until it gets there. */
       isResetting?: boolean;
       /** What it did last tick, which it slightly prefers to keep doing. */
@@ -129,6 +132,7 @@ export type NpcAction =
       direction: CardinalDirection;
       castAngle: number;
       windupMs: number;
+      swing?: NpcSwing;
     }
   | { type: "cast"; abilitySlot: string; ability: NpcAbility; windupMs: number };
 
@@ -274,6 +278,10 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
   const inMeleeReach = !weaponBand && !!checkInRange(npc, targetPlayer, attackRange);
   // Still decided while lunging, so aggro and bubbles keep up; the lunge just overrides the move
   const planned = decideMovement();
+  // Lost its foe mid-fight (outran, hid, killed): walk home and heal, as after a leash. Not a
+  // companion, nor one that already retreated: it stays hurt rather than heal off a getaway.
+  const lostFoe = !!state.lockedPlayerId && !lockedPlayerId && !isResetting();
+  if (lostFoe && !state.ownerId && state.retreatAt === undefined) startReset = true;
   // Winding up plants its feet; giving up the fight calls it off (an untargeted buff has no fight)
   const chosen = NPC_BEHAVIORS[behaviorId];
   const leftFight = !chosen.engaged && input.isWindupTargeted !== false;
@@ -302,7 +310,7 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
       type: "attack",
       direction: getCharacterDirection(npc, targetPlayer),
       castAngle: Math.atan2(targetPlayer.y - npc.y, targetPlayer.x - npc.x),
-      windupMs: warningMs + attackDelay,
+      ...decideSwing(!!weaponBand, warningMs, attackDelay, rng),
     };
   } else if (
     // intendCastSpell (an attack in progress means the NPC is now aiming)

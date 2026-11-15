@@ -134,7 +134,13 @@ export function createServerWorld({
     buildItem: (ref) => ItemBuilder.buildItem(dice, ref) as LootItem | null,
     getMobDropInfo: (mobId) => {
       const npc = world.npcs[mobId];
-      return npc && { drops: npc.drops, noWorldDrops: npc.state?.noWorldDrops };
+      return (
+        npc && {
+          drops: npc.drops,
+          noWorldDrops: npc.state?.noWorldDrops,
+          isCompanion: !!npc.state?.ownerId,
+        }
+      );
     },
     spawnLoot: (roomName, spawn) => spawnLoot(world, roomName, spawn),
   });

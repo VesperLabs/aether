@@ -24,7 +24,6 @@ export function npcBaseStats({ baseStats = {}, charClass }: NpcStatsInput): Stat
     // claws and teeth: a natural weapon as strong as their fists, added on top of them
     minDamage: classStats.minDamage + unarmedDamage(level)[0],
     maxDamage: classStats.maxDamage + unarmedDamage(level)[1],
-    walkSpeed: classStats.walkSpeed - 30,
     intelligence: classStats.intelligence + level,
     strength: classStats.strength + level,
     dexterity: classStats.dexterity + level,

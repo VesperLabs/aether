@@ -47,6 +47,16 @@ export const spellDetails = {
     look: { visibleMs: 160, layer: "below" },
     description: "Dash forward and tackle whoever you run through with your weapon.",
   },
+  pounce: {
+    delivery: { type: "dash", size: 16, speed: 350, hitMs: 160 },
+    targets: ["enemy"],
+    pounces: true,
+    cooldown: 4000,
+    // Further out than tackle: springs at a foe hovering just out of reach
+    npcRange: [24, 72],
+    look: { visibleMs: 160, layer: "below" },
+    description: "Spring to where your prey is headed.",
+  },
   "flame-slash": {
     delivery: { type: "swing", size: 16, hitMs: 120 },
     targets: ["enemy"],

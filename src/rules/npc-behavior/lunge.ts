@@ -10,6 +10,8 @@ export function isLungeSpell(spellName: string | undefined) {
 
 /** True through an NPC's lunge and the pause after it, when it can be punished. */
 export function isRecoveringFromLunge(state: LungeState, now: number) {
+  // A pounce leaves it free to attack as it lands
+  if (state.isPounce) return false;
   const elapsed = now - (state.lungeAt ?? -Infinity);
   return elapsed >= 0 && elapsed < (state.lungeMs ?? LUNGE_DURATION) + NPC_LUNGE_RECOVERY_MS;
 }

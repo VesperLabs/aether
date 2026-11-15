@@ -170,6 +170,17 @@ export const spellItems = {
       requirements: { charClass: "warrior", weaponType: "melee" },
       exclusive: true,
     },
+    pounce: {
+      tier: 1,
+      name: "Pounce",
+      flavor: "A coiled spring of teeth, waiting for prey to stray close.",
+      base: "pounce",
+      slot: "spell",
+      texture: "scroll-red",
+      stats: { spCost: 6, castTime: 300 },
+      // A mob's ability: never a random drop
+      exclusive: true,
+    },
     flameSlash: {
       tier: 1,
       name: "Flame Slash",

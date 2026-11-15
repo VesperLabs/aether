@@ -7,6 +7,8 @@ import type { DropRef, DropTableEntry, LootItem, LootSpawn, Rng } from "./rules"
 interface MobDropInfo {
   drops?: DropTableEntry[];
   noWorldDrops?: boolean;
+  /** Someone's companion: it drops nothing. */
+  isCompanion?: boolean;
 }
 
 /** How the host game plugs into loot (the rules hold no state and do no I/O). */
@@ -27,6 +29,7 @@ function lootForMobKill(
   mob: MobDropInfo | undefined,
   hooks: Pick<LootHooks, "rng" | "rollWorldDrop" | "buildItem">,
 ): LootSpawn | null {
+  if (mob?.isCompanion) return null;
   const refs = rollMobDrops(
     {
       mobLevel: kill.mobLevel,

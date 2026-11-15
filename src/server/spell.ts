@@ -20,6 +20,7 @@ import {
   toSpellVictims,
 } from "@/rules/spells";
 import { findSpell } from "@/content";
+import { aimPounce } from "@/rules/npc-behavior";
 import { hasWeapon } from "@/rules/combat";
 import { ServerCharacter } from "./character";
 import type { EffectSource, SpellEffectWire } from "@/network";
@@ -77,6 +78,8 @@ export class Spell implements EffectSource {
   private abilitySlot?: AbilitySlot;
   private action: string;
   private isLunge = false;
+  /** A pounce only carries its caster: it never hits anyone. */
+  private isPounce = false;
   /** A melee swing: the wedge its blade sweeps, from the swinging hand. */
   private swing: SwingPlan | null = null;
   private castAngle: number;
@@ -172,7 +175,12 @@ export class Spell implements EffectSource {
       this.isLunge = true;
       // The hit rides along with the caster, who dashes along the aim (to just past a target)
       this.stickToCaster = true;
-      const lungeMs = getLungeDuration(target ? distanceTo(caster, target) : undefined);
+      const lungeMs =
+        spell.pounces && target
+          ? aimPounce(caster, target).ms
+          : getLungeDuration(target ? distanceTo(caster, target) : undefined);
+      this.isPounce = !!spell.pounces;
+      caster.state.isPounce = this.isPounce;
       this.maxActiveTime = lungeMs;
       caster.state.lungeAt = world.now();
       caster.state.lungeAngle = castAngle;
@@ -238,7 +246,7 @@ export class Spell implements EffectSource {
     this.checkCollisions();
   }
   checkCollisions(isFinalSweep = false) {
-    if (this?.state?.isExpired && !isFinalSweep) return;
+    if (this.isPounce || (this?.state?.isExpired && !isFinalSweep)) return;
     const { target, caster, world } = this;
     const victims = [
       ...entitiesInRoom(world.npcs, this.room?.name),

@@ -166,7 +166,10 @@ export function applyAttackDamage(
   if (roll.outcome === "block") {
     return [{ type: "block", amount: 0, from: attacker.id, to: victim.id }];
   }
-  const { isCritical, physicalDamage, totalDamage } = roll;
+  const { isCritical, physicalDamage } = roll;
+  /* An NPC's jab hits lighter and its heavy blow harder (see `npc-behavior/swings`) */
+  const power = attacker.kind === "npc" ? (attacker.state.swingPower ?? 1) : 1;
+  const totalDamage = Math.round(roll.totalDamage * power);
   const elements = roll.elements as Elements[];
 
   const hits: Array<Hit> = [];
