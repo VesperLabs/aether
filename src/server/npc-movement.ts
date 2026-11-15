@@ -6,7 +6,7 @@ import {
   decideTalkingEnded,
   fleeAround,
   leadNpcChase,
-  NPC_CALM_SPEED_RATIO,
+  NPC_CHASE_SPEED_RATIO,
   NPC_STRAFE_SPEED_RATIO,
   seek,
   separate,
@@ -44,16 +44,12 @@ export function performNpcMovement(
       if (!targetPlayer) return standStill(npc);
       // In the open it heads where the target is going; around walls, straight for them
       return movement.pathed
-        ? walkToPathed(npc, targetPlayer)
-        : walkTo(npc, leadNpcChase(npc, targetPlayer, walkSpeedOf(npc)));
+        ? walkToPathed(npc, targetPlayer, NPC_CHASE_SPEED_RATIO)
+        : walkTo(npc, leadNpcChase(npc, targetPlayer, walkSpeedOf(npc)), NPC_CHASE_SPEED_RATIO);
     case "returnToSpawn":
-      return movement.pathed
-        ? walkToPathed(npc, npc.home(), NPC_CALM_SPEED_RATIO)
-        : walkTo(npc, npc.home(), NPC_CALM_SPEED_RATIO);
+      return movement.pathed ? walkToPathed(npc, npc.home()) : walkTo(npc, npc.home());
     case "walkTo":
-      return movement.pathed
-        ? walkToPathed(npc, movement.to, NPC_CALM_SPEED_RATIO)
-        : walkTo(npc, movement.to, NPC_CALM_SPEED_RATIO);
+      return movement.pathed ? walkToPathed(npc, movement.to) : walkTo(npc, movement.to);
     case "follow":
       if (!leader) return standStill(npc);
       // Around any wall in the way: walking straight at it and only pathing once pressed against

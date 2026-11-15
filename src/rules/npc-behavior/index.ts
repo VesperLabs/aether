@@ -4,7 +4,7 @@ export {
   NPC_TALK_LATENCY_TOLERANCE,
   NPC_TALK_RANGE,
   NPC_STRAFE_SPEED_RATIO,
-  NPC_CALM_SPEED_RATIO,
+  NPC_CHASE_SPEED_RATIO,
 } from "./constants";
 export { findSuitableAbility } from "./abilities";
 export type { NpcAbility } from "./abilities";
