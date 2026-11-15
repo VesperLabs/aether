@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.40.0](https://github.com/VesperLabs/aether/compare/v0.39.1...v0.40.0) (2026-11-15)
+
+
+### Features
+
+* livelier mob combat: pounce, jab or full swings, leading aim and resets on lost aggro ([#353](https://github.com/VesperLabs/aether/issues/353)) ([0d94f96](https://github.com/VesperLabs/aether/commit/0d94f968163f97ed6032b51270cb7ec7e906c944))
+
 ## [0.39.1](https://github.com/VesperLabs/aether/compare/v0.39.0...v0.39.1) (2026-11-15)
 
 
