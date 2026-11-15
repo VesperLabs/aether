@@ -86,6 +86,8 @@ export const ItemCard = ({ item }: { item: WikiItem }) => {
         rowGap: 3,
         /* As many columns as fit, none narrower than reads well: they wrap rather than crush */
         gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 200px), 1fr))",
+        /* The name's row hugs it; the tall columns' extra height goes to the row under it */
+        gridTemplateRows: "auto 1fr",
         alignItems: "start",
       }}
     >
@@ -153,7 +155,7 @@ export const ItemCard = ({ item }: { item: WikiItem }) => {
       {/* The same sections as the item's tooltip; one with nothing in it isn't shown at all */}
       {described.fits ? (
         /* A card is only its mod, and the gear it sockets into: as its tooltip shows them */
-        <Column label="Mod">
+        <Column label="Mod" tall>
           <Lines lines={added.stats} />
           <Triggers triggers={added.triggers} />
           <Section title="Socket into">
@@ -164,6 +166,7 @@ export const ItemCard = ({ item }: { item: WikiItem }) => {
         hasStats && (
           /* With no plain stats (a spell), its first section's own heading starts the column */
           <Column
+            tall
             label={described.stats.length > 0 || described.buffs.length > 0 ? "Stats" : undefined}
           >
             <Lines lines={described.stats} />
@@ -205,7 +208,7 @@ export const ItemCard = ({ item }: { item: WikiItem }) => {
         )
       )}
       {described.requirements.length > 0 && (
-        <Column label="Requires">
+        <Column label="Requires" tall>
           <Lines lines={described.requirements} />
         </Column>
       )}
@@ -217,8 +220,23 @@ export const ItemCard = ({ item }: { item: WikiItem }) => {
 };
 
 /** A column under a divider like its sections', so each still reads when they stack on phones. */
-const Column = ({ label, children }: { label?: string; children: ReactNode }) => (
-  <Box sx={{ minWidth: 0, "& > :first-of-type": { mt: 0 } }}>
+const Column = ({
+  label,
+  tall,
+  children,
+}: {
+  label?: string;
+  /** Spans two rows, so a short column after it tucks under the name instead of under this. */
+  tall?: boolean;
+  children: ReactNode;
+}) => (
+  <Box
+    sx={{
+      minWidth: 0,
+      gridRow: tall ? ["auto", "span 2"] : undefined,
+      "& > :first-of-type": { mt: 0 },
+    }}
+  >
     {label && <Divider label={label} spacing={2} />}
     {children}
   </Box>
