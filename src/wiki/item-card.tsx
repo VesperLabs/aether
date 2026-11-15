@@ -1,4 +1,4 @@
-import { itemEffects, randomDropLevels, resolveAsset, type CatalogItem } from "@/content";
+import { buffIcon, itemEffects, randomDropLevels, resolveAsset, type CatalogItem } from "@/content";
 import {
   describeItem,
   type DescribableItem,
@@ -262,7 +262,7 @@ const Buff = ({
   lines: StatLine[];
 }) => (
   <Group
-    icon={<Icon icon={`./assets/atlas/spell/spell-${name}.png`} size={NATIVE_ICON} />}
+    icon={<Icon icon={`./assets/atlas/spell/${buffIcon(name)}.png`} size={NATIVE_ICON} />}
     label={
       <>
         {capitalize(name)}

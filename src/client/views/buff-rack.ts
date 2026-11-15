@@ -1,3 +1,4 @@
+import { buffIcon } from "@/content";
 import Phaser from "phaser";
 import type { ActiveBuff } from "@/rules/buffs";
 
@@ -49,7 +50,7 @@ export class BuffRack extends Phaser.GameObjects.Container {
   }
 
   addBuff(buff: ActiveBuff) {
-    const key = `spell-${buff.name}`;
+    const key = buffIcon(buff.name ?? "");
     const sprite = new Sprite(this.scene, 0, 0, key, getTrimmedFrame(this.scene, key));
     sprite.setScale(ICON_SCALE);
     this.buffs.push({ name: buff.name, sprite, addedAt: this.scene.time.now });

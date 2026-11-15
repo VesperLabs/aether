@@ -146,8 +146,8 @@ export const assetList4 = [
     previewRect: [0, 0, 32, 32],
   },
   {
-    texture: "spell-aureole",
-    src: "./assets/atlas/spell/spell-aureole.png",
+    texture: "spell-holy",
+    src: "./assets/atlas/spell/spell-holy.png",
     atlas: "./assets/atlas/32x32-stackable.json",
     previewRect: [0, 0, 32, 32],
   },
