@@ -7,6 +7,12 @@ import { TILE } from "./tile-image";
 const TILESETS = "public/assets/tilesets";
 /** Summed RGB difference under which a pixel counts as the same in every frame. */
 const STILL = 48;
+/**
+ * Share of a tile that must hold still for it to be steadied. Shores (still ground, a strip of foam)
+ * pass; falling water moves everywhere, but subtly, so freezing its "still" pixels left specks
+ * moving in a frozen sheet and the streaks came out jagged. Those tiles keep their frames as drawn.
+ */
+const MOSTLY_STILL = 0.8;
 
 interface TiledAnimation {
   readonly id: number;
@@ -31,11 +37,12 @@ export const readAnimations = (tileset: string) => {
 export const steadyAnimations = (sheet: PNG, columns: number, animations: number[][]) => {
   const at = (tile: number, x: number, y: number) =>
     ((Math.floor(tile / columns) * TILE + y) * sheet.width + (tile % columns) * TILE + x) * 4;
-  for (const frames of animations)
+  for (const frames of animations) {
+    const still: [number, number][] = [];
     for (let y = 0; y < TILE; y++)
       for (let x = 0; x < TILE; x++) {
         const first = at(frames[0], x, y);
-        const still = frames.every((frame) => {
+        const isStill = frames.every((frame) => {
           const pixel = at(frame, x, y);
           const alpha = Math.abs(sheet.data[pixel + 3] - sheet.data[first + 3]);
           const color =
@@ -44,8 +51,13 @@ export const steadyAnimations = (sheet: PNG, columns: number, animations: number
             Math.abs(sheet.data[pixel + 2] - sheet.data[first + 2]);
           return alpha < 32 && color < STILL;
         });
-        if (still)
-          for (const frame of frames.slice(1))
-            sheet.data.copy(sheet.data, at(frame, x, y), first, first + 4);
+        if (isStill) still.push([x, y]);
       }
+    if (still.length < TILE * TILE * MOSTLY_STILL) continue;
+    for (const [x, y] of still) {
+      const first = at(frames[0], x, y);
+      for (const frame of frames.slice(1))
+        sheet.data.copy(sheet.data, at(frame, x, y), first, first + 4);
+    }
+  }
 };
