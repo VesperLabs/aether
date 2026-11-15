@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.42.0](https://github.com/VesperLabs/aether/compare/v0.41.0...v0.42.0) (2026-11-15)
+
+
+### Features
+
+* mob-only cards and percent endurance and genius buffs ([#359](https://github.com/VesperLabs/aether/issues/359)) ([a4d053e](https://github.com/VesperLabs/aether/commit/a4d053eff99e92a25e50624c62a7f259fc198748))
+
 ## [0.41.0](https://github.com/VesperLabs/aether/compare/v0.40.1...v0.41.0) (2026-11-15)
 
 
