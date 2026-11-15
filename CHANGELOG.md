@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.43.0](https://github.com/VesperLabs/aether/compare/v0.42.1...v0.43.0) (2026-11-15)
+
+
+### Features
+
+* water from terrain corners, footprints, and door arrival at the same spot along the door ([#363](https://github.com/VesperLabs/aether/issues/363)) ([6d07127](https://github.com/VesperLabs/aether/commit/6d071278882a07d5ba95da6b2b8bfb339c6975f9))
+
 ## [0.42.1](https://github.com/VesperLabs/aether/compare/v0.42.0...v0.42.1) (2026-11-15)
 
 
