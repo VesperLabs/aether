@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.41.0](https://github.com/VesperLabs/aether/compare/v0.40.1...v0.41.0) (2026-11-15)
+
+
+### Features
+
+* turnable profile character, denser stats screen and holy icon ([#357](https://github.com/VesperLabs/aether/issues/357)) ([8458a51](https://github.com/VesperLabs/aether/commit/8458a518a9d03f524bd51f436af5ba892373b91b))
+
 ## [0.40.1](https://github.com/VesperLabs/aether/compare/v0.40.0...v0.40.1) (2026-11-15)
 
 
