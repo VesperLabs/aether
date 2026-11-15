@@ -70,10 +70,9 @@ function holdCastPose(player: Player, ms: number) {
   if (action) player.castPose = { action, until: Date.now() + ms };
 }
 
-/** A timed spell began: the attack frame holds and the ring fills until it lands. */
+/** A timed spell began: the ring fills until it lands. The pose waits for the spell to go off. */
 export function beginCast(player: Player, castMs: number) {
   player.isCasting = true;
-  holdCastPose(player, castMs);
   playWindupPie(player, castMs, "cast");
 }
 
@@ -87,6 +86,7 @@ export function endCast(player: Player) {
 /** A timed spell fired. The server has charged for it, so this only draws it. */
 export function landCast(player: Player, { abilitySlot, castAngle }: CastArgs) {
   endCast(player);
+  /* Only now, briefly, as it goes off */
   holdCastPose(player, CAST_POSE_MS);
   const ability = player.getAbilityDetails(abilitySlot);
   /* The aim was faced for the whole cast; once it fires the hero is free to turn */

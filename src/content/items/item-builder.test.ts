@@ -66,6 +66,22 @@ describe("buildItem", () => {
   });
 });
 
+describe("getItemCost", () => {
+  const cost = (key: string) => ItemBuilder.getItemCost(ITEM_CATALOG[key]);
+
+  it("prices cards by rarity and their mob's level, well above its gear", () => {
+    expect(cost("crabCard")).toBe(15);
+    expect(cost("hornetCard")).toBeGreaterThan(cost("crabCard"));
+    expect(cost("hoganCard")).toBeGreaterThan(cost("bearCard"));
+    expect(cost("wyrmCard")).toBeGreaterThan(cost("hoganCard"));
+    expect(cost("crabCard")).toBeGreaterThan(cost("sword"));
+  });
+
+  it("prices rarer stackables higher", () => {
+    expect(cost("blueCrystal")).toBeGreaterThan(cost("redApple"));
+  });
+});
+
 describe("rarityForSlots", () => {
   it("is common, then magic, then rare", () => {
     expect([0, 1, 2, 3, 4].map(rarityForSlots)).toEqual([
@@ -88,8 +104,13 @@ describe("mods", () => {
   });
 
   it("multiply by tier, the same as buffs by level", () => {
-    expect(scaleMod("sharp", 3).stats).toEqual({ minDamage: 3, maxDamage: 6 });
+    expect(scaleMod("strong", 3).stats).toEqual({ strength: 6 });
     expect(scaleMod("venomous", 2).triggers[0]).toMatchObject({ level: 2, chance: 20 });
+  });
+
+  it("keep half steps exact, for the stats to round once they add up", () => {
+    expect(scaleMod("sharp", 1).stats).toEqual({ minDamage: 0.5, maxDamage: 1 });
+    expect(scaleMod("sharp", 3).stats).toEqual({ minDamage: 1.5, maxDamage: 3 });
   });
 });
 

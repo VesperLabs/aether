@@ -159,6 +159,24 @@ describe("calculateStats", () => {
     expect(active.strength).toBe(15);
   });
 
+  it("adds up half-step damage from gear before rounding it down", () => {
+    const half = { minDamage: 0.5, maxDamage: 1, minFireDamage: 0.5, maxFireDamage: 1 };
+    const equip = (slots: string[]) =>
+      calculateStats(
+        warrior({
+          equipment: Object.fromEntries(slots.map((slot) => [slot, { key: slot, stats: half }])),
+          activeItemSlots: slots,
+        }),
+      ).stats;
+    const bare = equip([]);
+    const one = equip(["handRight"]);
+    const two = equip(["handRight", "gloves"]);
+    expect([one.minFireDamage, one.maxFireDamage]).toEqual([0, 1]);
+    expect([two.minFireDamage, two.maxFireDamage]).toEqual([1, 2]);
+    expect(two.minDamage).toBeGreaterThan(bare.minDamage);
+    expect(Number.isInteger(one.minDamage)).toBe(true);
+  });
+
   it("adds ability stats and collects triggers", () => {
     const trigger = { event: "onHurt", name: "thorns" };
     const { stats } = calculateStats(

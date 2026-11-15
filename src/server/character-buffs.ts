@@ -53,7 +53,14 @@ export function applyAddBuff(
 
   character.buffs = applyBuff(character.buffs, buff);
 
-  if (shouldCalculateStats) character.calculateStats();
+  if (shouldCalculateStats) {
+    /* A buff that raises max HP or MP fills the new room, so it helps the moment it lands */
+    const { maxHp, maxMp } = character.stats;
+    character.calculateStats();
+    const { stats } = character;
+    if (stats.hp > 0) stats.hp += Math.max(0, stats.maxHp - maxHp);
+    stats.mp += Math.max(0, stats.maxMp - maxMp);
+  }
 
   character.state.hasBuffChanges = true;
 

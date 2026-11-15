@@ -1,3 +1,4 @@
+import { actors } from "../actors/actors";
 import type { ItemDefinition } from "./item-types";
 import type { ModName } from "./mods";
 
@@ -9,88 +10,70 @@ import type { ModName } from "./mods";
 export interface CardDefinition extends ItemDefinition {
   readonly base: "card";
   readonly mod: ModName;
+  /** Its mob's level: what the card is worth grows with it (see `getItemCost`). */
+  readonly mobLevel: number;
 }
 
+/** `iceCrab` as "ice-crab", the name its art is saved under. */
+const kebab = (id: string) => id.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
+
+/** A mob's card: named after it, with its art, and its flavor taken from the mob itself. */
+const mob = (id: string) =>
+  (actors as Record<string, { flavor?: string; baseStats?: { level?: number } }>)[id];
+
+/* The id is a plain string: typed as an actor id, the item list and the actors (whose drops name
+   items) would each wait on the other's type. The card test checks every id is a real mob. */
 const card = (
-  file: string,
+  id: string,
   name: string,
   mod: ModName,
-  flavor: string,
 ): CardDefinition & { readonly texture: string } => ({
   tier: 1,
   base: "card",
   slot: "stackable",
   name: `${name} Card`,
-  texture: `stackable-${file}-card`,
+  texture: `stackable-${kebab(id)}-card`,
   mod,
-  flavor,
+  flavor: mob(id)?.flavor,
+  mobLevel: mob(id)?.baseStats?.level ?? 1,
 });
 
 /**
- * Every card, by rarity: plain mobs are common, keepers magic, bosses magic and up. Only mobs drop
- * theirs (from their own `drops`); NPC cards are not obtainable yet.
+ * Every card, by rarity: plain mobs are common, bosses rare and up. Only mobs have cards, each
+ * dropped from its own `drops`. Early mobs carry the plain stats every build wants (damage,
+ * defense, its main attribute); later ones speed, elements and spells; bosses the triggers. The
+ * strongest plain mods (stat steals, percent HP and MP, crit, block) wait for later mobs.
  */
 export const cardItems = {
   common: {
-    catCard: card("cat", "Cat", "evasive", "Light on its feet, and never where you swing."),
-    dogCard: card("dog", "Dog", "swift", "Always first to the gate, tail going."),
-    crabCard: card("crab", "Crab", "sturdy", "A shell's worth of stubbornness."),
-    raccoonCard: card("raccoon", "Raccoon", "wise", "Clever paws that always find the snacks."),
-    slimeCard: card("slime", "Slime", "mending", "It soaks up anything, wounds included."),
-    hornetCard: card("hornet", "Hornet", "hasty", "Fast, angry and never still."),
-    fishCard: card("fish", "Fish", "agile", "Slippery, and it knows it."),
-    spiderCard: card("spider", "Spider", "piercing", "Fangs that find the gap in any armour."),
-    batCard: card("bat", "Bat", "leeching", "It always goes for the neck."),
-    zombieCard: card("zombie", "Zombie", "vital", "Slow, stupid and very hard to keep down."),
-    wraithCard: card("wraith", "Wraith", "siphoning", "It steals the warmth, then the will."),
-    mermanCard: card("merman", "Merman", "frozen", "The river's cold, carried in a blade."),
-    orchidCard: card("orchid", "Orchid", "earthen", "Pretty, rooted and full of teeth."),
-    wolfCard: card("wolf", "Wolf", "sharp", "Grey teeth, honed on the peaks."),
-    bearCard: card("bear", "Bear", "strong", "Never get between it and anything."),
-    iceCrabCard: card("ice-crab", "Ice Crab", "tideWard", "Cold water rolls right off it."),
+    /* Levels 1–5: the basics */
+    crabCard: card("crab", "Crab", "sturdy"),
+    fishCard: card("fish", "Fish", "agile"),
+    slimeCard: card("slime", "Slime", "vital"),
+    raccoonCard: card("raccoon", "Raccoon", "wise"),
+    hornetCard: card("hornet", "Hornet", "sharp"),
+    spiderCard: card("spider", "Spider", "piercing"),
+    batCard: card("bat", "Bat", "evasive"),
+    /* Levels 6–11: staying power, spells, elements and speed */
+    zombieCard: card("zombie", "Zombie", "mending"),
+    wraithCard: card("wraith", "Wraith", "arcane"),
+    mermanCard: card("merman", "Merman", "frozen"),
+    orchidCard: card("orchid", "Orchid", "earthen"),
+    iceCrabCard: card("iceCrab", "Ice Crab", "tideWard"),
+    wolfCard: card("wolf", "Wolf", "hasty"),
+    bearCard: card("bear", "Bear", "strong"),
   },
   magic: {
-    hawkwingCard: card("hawkwing", "Hawkwing", "lucky", "Prized wings, and a nose for treasure."),
-    tristaCard: card("trista", "Trista", "blocking", "The Crab Warden stands like a shell."),
-    sergioCard: card("sergio", "Sergio", "radiant", "The light of a lost river valley."),
-    tudwickCard: card("tudwick", "Tudwick", "stoneWard", "Rangers sleep on rocks. It shows."),
-    lynneCard: card("lynne", "Lynne", "precise", "She always gets the shot."),
-    anthonyCard: card(
-      "anthony",
-      "Anthony",
-      "sanguine",
-      "Every cured meat, every bit of it, in you.",
-    ),
-    steveCard: card("steve", "Steve", "fiery", "Still warm off the anvil."),
-    siobhanCard: card("siobhan", "Siobhan", "focused", "A calm mind, steeped like a good brew."),
-    dannyCard: card("danny", "Danny", "arcane", "Theatrical, but the magic is real."),
-    raeCard: card("rae", "Rae", "lunar", "A naturalist's patience, bottled."),
-    aleCard: card("ale", "Ale", "wise", "A clear head, pressed from good apples."),
-    derekCard: card("derek", "Derek", "flameWard", "Sat by the only campfire on the peaks."),
+    hawkwingCard: card("hawkwing", "Hawkwing", "lucky"),
   },
   rare: {
-    hoganCard: card("hogan", "Hogan", "slowing", "Webs thick as rope, and you're in them."),
-    chonksCard: card("chonks", "Chonks", "enduring", "The more you hit it, the bigger it gets."),
-    whiteFangCard: card(
-      "white-fang",
-      "White Fang",
-      "bleeding",
-      "The pack leader never misses twice.",
-    ),
-    earthElementalCard: card(
-      "earth-elemental",
-      "Earth Elemental",
-      "stunning",
-      "Living stone that hits like a landslide.",
-    ),
+    hoganCard: card("hogan", "Hogan", "slowing"),
+    chonksCard: card("chonks", "Chonks", "enduring"),
+    whiteFangCard: card("whiteFang", "White Fang", "bleeding"),
+    earthElementalCard: card("earthElemental", "Earth Elemental", "stunning"),
   },
   unique: {
-    wyrmCard: card("wyrm", "Wyrm", "wyrmscale", "Scales worth a fortune, and harder than steel."),
-    bigMommaCard: card(
-      "big-momma",
-      "Big Momma",
-      "venomous",
-      "Every orchid in the valley started here.",
-    ),
+    wyrmCard: card("wyrm", "Wyrm", "wyrmscale"),
+    bigMommaCard: card("bigMomma", "Big Momma", "venomous"),
   },
 } as const;

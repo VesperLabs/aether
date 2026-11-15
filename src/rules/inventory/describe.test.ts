@@ -62,7 +62,7 @@ describe("describeItem", () => {
   it("marks only the buff stats that scale by level as multiplied by a card's tier", () => {
     expect(describeItem({ mod: "enduring" }).mods.added.triggers[0]?.stats).toEqual([
       { label: "duration", value: "30s" },
-      { label: "maxHp", value: "15", note: "(+15/tier)" },
+      { label: "maxHp", value: "10%", note: "(+10%/tier)" },
     ]);
     const slow = describeItem({ mod: "slowing" }).mods.added.triggers[0]?.stats;
     expect(slow?.filter((line) => line.note)).toEqual([
