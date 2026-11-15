@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.44.0](https://github.com/VesperLabs/aether/compare/v0.43.0...v0.44.0) (2026-11-15)
+
+
+### Features
+
+* flying mobs ignore water and snow ([#365](https://github.com/VesperLabs/aether/issues/365)) ([2399261](https://github.com/VesperLabs/aether/commit/2399261db3ca39e6c7c1c065dc0a3c06db32a161))
+
 ## [0.43.0](https://github.com/VesperLabs/aether/compare/v0.42.1...v0.43.0) (2026-11-15)
 
 
