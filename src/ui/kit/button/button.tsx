@@ -77,7 +77,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         className={className}
         tabIndex={-1}
         {...THEME_KEY}
-        variant="default"
+        /* The game's wood control unless asked otherwise: a bare button never fits the game */
+        variant="control"
         ref={ref}
         type="button"
         {...(!isLink && {
