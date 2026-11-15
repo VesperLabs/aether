@@ -1,40 +1,115 @@
-import type { ThemeUIStyleObject } from "theme-ui";
-import { memo } from "react";
+import { memo, type ReactNode } from "react";
 import { convertMsToS } from "@/rules/stats";
+import { SectionTitle, StatRow } from "@/ui/item";
 import {
   arePropsEqualWithKeys,
+  Box,
   Flex,
-  Grid,
+  Icon,
   Menu,
-  MENU_MAX_WIDTH,
   MenuHeader,
+  resourceToken,
   Text,
 } from "@/ui/kit";
 import type { CharacterMenuProps } from "./menu-props";
 
-const COLUMN_STYLES: ThemeUIStyleObject = {
-  gap: 1,
-  width: "auto",
-  flex: 1,
-  gridTemplateColumns: "2fr 1.5fr",
-  textAlign: "right",
-  alignItems: "center",
-  whiteSpace: "nowrap",
-  fontSize: [0, 1, 2],
-  "& > *": {
-    py: 1,
-  },
-  "& > :nth-of-type(odd)": {
-    pr: 1,
-    fontSize: [0, 1, 1],
-  },
-  "& > :nth-of-type(even)": {
-    px: 2,
-    background: "shadow.20",
-    borderRadius: 6,
-  },
+type Stats = NonNullable<CharacterMenuProps["player"]>["stats"];
+
+/** Narrow enough for three columns on a phone held sideways, two upright. */
+const COLUMN_MIN = 136;
+/** Never wider, so a wide screen doesn't stretch the rows into long empty leaders. */
+const COLUMN_MAX = 200;
+/** A size up from a tooltip's rows: this is a screen to read, not a hover. */
+const ROW_TYPE = { fontSize: 2, lineHeight: "20px" };
+/** Labels in the menu's own white: its wood is too light for grey. Values are the bold ones. */
+const LABEL = "text";
+/** Section titles: a very light grey, a step back from the white rows. */
+const TITLE = "gray.200";
+/** The DMG and RES columns of the elements table: wide enough for "12–34" and "100%". */
+const CELL = 44;
+/** The element icons' own size: shown whole and unscaled, so no pixel is cut or smeared. */
+const ELEMENT_ICON = 24;
+
+/** A short label with its full name on hover, as tooltip rows read. */
+const Short = ({ label, title }: { label: string; title: string }) => (
+  <Text title={title} sx={{ ...ROW_TYPE, color: LABEL }}>
+    {label}
+  </Text>
+);
+
+const row = (label: string, value: ReactNode, title?: string) => (
+  <StatRow
+    key={label}
+    type={ROW_TYPE}
+    /* Every label and value styled here, so none falls back to the tooltip's smaller grey */
+    label={<Short label={label} title={title ?? label} />}
+    value={
+      typeof value === "string" ? (
+        <Text sx={{ ...ROW_TYPE, fontWeight: "bold" }}>{value}</Text>
+      ) : (
+        value
+      )
+    }
+  />
+);
+
+/** A value in a fixed-width cell, right-aligned, so a table's columns line up. */
+const Cell = ({ children, muted }: { children: ReactNode; muted?: boolean }) => (
+  <Text
+    sx={{
+      ...ROW_TYPE,
+      width: CELL,
+      textAlign: "right",
+      fontWeight: muted ? "normal" : "bold",
+      color: muted ? LABEL : undefined,
+    }}
+  >
+    {children}
+  </Text>
+);
+
+/** Each element, with its icon in `assets/icons/elements/`; holy can't be resisted. */
+const ELEMENTS = ["fire", "water", "earth", "light", "holy"] as const;
+
+const Elements = ({ stats }: { stats: Stats }) => {
+  const s = stats as unknown as Record<string, number | undefined>;
+  return (
+    <>
+      <Flex sx={{ justifyContent: "flex-end" }}>
+        <Cell muted>DMG</Cell>
+        <Cell muted>RES</Cell>
+      </Flex>
+      {ELEMENTS.map((name) => {
+        const title = name[0].toUpperCase() + name.slice(1);
+        const resistance = s[`${name}Resistance`];
+        return (
+          <Flex key={name} title={title} sx={{ alignItems: "center", height: ELEMENT_ICON }}>
+            <Box sx={{ flex: 1, display: "flex", alignItems: "center", gap: 1 }}>
+              <Icon icon={`./assets/icons/elements/${name}.png`} size={ELEMENT_ICON} />
+              <Short label={title} title={title} />
+            </Box>
+            <Cell>
+              {s[`min${title}Damage`] ?? 0}–{s[`max${title}Damage`] ?? 0}
+            </Cell>
+            <Cell muted={resistance === undefined}>
+              {resistance === undefined ? "—" : `${resistance.toFixed(0)}%`}
+            </Cell>
+          </Flex>
+        );
+      })}
+    </>
+  );
 };
 
+/** A titled block that stays whole: the column flow moves it, never splits it. */
+const Section = ({ title, children }: { title: string; children: ReactNode }) => (
+  <Box sx={{ breakInside: "avoid", pb: 2 }}>
+    <SectionTitle color={TITLE}>{title}</SectionTitle>
+    {children}
+  </Box>
+);
+
+/** The character's numbers, laid out like an item tooltip: titled sections of dotted rows. */
 export const MenuStats = memo(
   ({ player, isOpen, setIsOpen, nextHand }: CharacterMenuProps) => {
     /* Dual-wielding, each hand swings with its own weapon's damage, speed and crit: show the next */
@@ -42,92 +117,66 @@ export const MenuStats = memo(
       nextHand === "handLeft" && player?.offHandStats ? player.offHandStats : player?.stats;
     if (!stats) return null;
     return (
-      <Menu
-        sx={{
-          display: isOpen ? "flex" : "none",
-        }}
-      >
+      <Menu sx={{ display: isOpen ? "flex" : "none" }}>
         <MenuHeader icon={`./assets/icons/stats.png`} onClick={() => setIsOpen(false)}>
           Stats
         </MenuHeader>
-        <Flex sx={{ gap: 3, flexWrap: "wrap", justifyContent: "end", maxWidth: MENU_MAX_WIDTH }}>
-          <Grid sx={COLUMN_STYLES}>
-            <Text>Strength</Text>
-            <Text>{stats?.strength}</Text>
-            <Text>Dexterity</Text>
-            <Text>{stats?.dexterity}</Text>
-            <Text>Intelligence</Text>
-            <Text>{stats?.intelligence}</Text>
-            <Text>Vitality</Text>
-            <Text>{stats?.vitality}</Text>
-            <Text>Damage</Text>
-            <Text>
-              {stats?.minDamage} - {stats?.maxDamage}
-            </Text>
-            <Text>Fire Damage</Text>
-            <Text>
-              {stats?.minFireDamage} - {stats?.maxFireDamage}
-            </Text>
-            <Text>Water Damage</Text>
-            <Text>
-              {stats?.minWaterDamage} - {stats?.maxWaterDamage}
-            </Text>
-            <Text>Light Damage</Text>
-            <Text>
-              {stats?.minLightDamage} - {stats?.maxLightDamage}
-            </Text>
-            <Text>Earth Damage</Text>
-            <Text>
-              {stats?.minEarthDamage} - {stats?.maxEarthDamage}
-            </Text>
-            <Text>Holy Damage</Text>
-            <Text>
-              {stats?.minHolyDamage} - {stats?.maxHolyDamage}
-            </Text>
-          </Grid>
-          <Grid sx={COLUMN_STYLES}>
-            <Text>Spell Power</Text>
-            <Text>{stats?.spellPower}</Text>
-            <Text>Crit Chance</Text>
-            <Text>{stats?.critChance?.toFixed(1)}%</Text>
-            <Text>Crit Multiplier</Text>
-            <Text>{stats?.critMultiplier?.toFixed(1)}x</Text>
-            <Text>Armor Pierce</Text>
-            <Text>{stats?.armorPierce}</Text>
-            <Text>Accuracy</Text>
-            <Text>{stats?.accuracy}</Text>
-            <Text>Cast Delay</Text>
-            <Text>{convertMsToS(stats?.castDelay)}</Text>
-            <Text>Attack Delay</Text>
-            <Text>{convertMsToS(stats?.attackDelay)}</Text>
-            <Text>Walk Speed</Text>
-            <Text>{Math.round(stats?.walkSpeed)}</Text>
-            <Text>Magic Find</Text>
-            <Text>{stats?.magicFind}%</Text>
-          </Grid>
-          <Grid sx={COLUMN_STYLES}>
-            <Text>Regen Hp</Text>
-            <Text>+{stats?.regenHp}</Text>
-            <Text>Regen Mp</Text>
-            <Text>+{stats?.regenMp}</Text>
-            <Text>Regen Sp</Text>
-            <Text>+{stats?.regenSp}</Text>
-            <Text>Fire Resistance</Text>
-            <Text>{stats?.fireResistance?.toFixed(0)}%</Text>
-            <Text>Light Resistance</Text>
-            <Text>{stats?.lightResistance?.toFixed(0)}%</Text>
-            <Text>Water Resistance</Text>
-            <Text>{stats?.waterResistance?.toFixed(0)}%</Text>
-            <Text>Earth Resistance</Text>
-            <Text>{stats?.earthResistance?.toFixed(0)}%</Text>
-            <Text>Dodge Chance</Text>
-            <Text>{stats?.dodgeChance?.toFixed(1)}%</Text>
-            <Text>Block Chance</Text>
-            <Text>{stats?.blockChance?.toFixed(1)}%</Text>
-            <Text>Defense</Text>
-            <Text>{stats?.defense}</Text>
-          </Grid>
-        </Flex>
+        {/* Sections flow down balanced columns, as many as fit, so a phone never shows a
+            short column beside a tall one with a hole under it */}
+        <Box
+          sx={{
+            width: "100%",
+            maxWidth: 3 * COLUMN_MAX + 4 * 16,
+            mx: "auto",
+            /* Clear of the menu's edges, as its other panels sit */
+            px: 3,
+            boxSizing: "border-box",
+            columnWidth: COLUMN_MIN,
+            columnCount: 3,
+            columnGap: 3,
+            "& > :first-of-type > :first-of-type": { mt: 0 },
+          }}
+        >
+          <Section title="Attributes">
+            {row("Strength", String(stats.strength))}
+            {row("Dexterity", String(stats.dexterity))}
+            {row("Intelligence", String(stats.intelligence))}
+            {row("Vitality", String(stats.vitality))}
+          </Section>
+          <Section title="Offense">
+            {row("Damage", `${stats.minDamage}–${stats.maxDamage}`)}
+            {row("Spell power", String(stats.spellPower))}
+            {row("Crit chance", `${stats.critChance?.toFixed(1)}%`, "Crit chance")}
+            {row("Crit multiplier", `${stats.critMultiplier?.toFixed(1)}x`)}
+            {row("Armor pierce", String(stats.armorPierce))}
+            {row("Accuracy", String(stats.accuracy))}
+          </Section>
+          <Section title="Defense">
+            {row("Defense", String(stats.defense))}
+            {row("Dodge chance", `${stats.dodgeChance?.toFixed(1)}%`, "Dodge chance")}
+            {row("Block chance", `${stats.blockChance?.toFixed(1)}%`, "Block chance")}
+          </Section>
+          <Section title="Regen">
+            {row(
+              "HP · MP · SP",
+              <Text sx={{ ...ROW_TYPE, fontWeight: "bold" }}>
+                <Text sx={{ color: "danger" }}>+{stats.regenHp}</Text>{" "}
+                <Text sx={{ color: resourceToken("mp") }}>+{stats.regenMp}</Text>{" "}
+                <Text sx={{ color: resourceToken("sp") }}>+{stats.regenSp}</Text>
+              </Text>,
+              "Health, mana and stamina regenerated",
+            )}
+          </Section>
+          <Section title="Speed">
+            {row("Attack delay", String(convertMsToS(stats.attackDelay)))}
+            {row("Cast delay", String(convertMsToS(stats.castDelay)))}
+            {row("Walk speed", String(Math.round(stats.walkSpeed)))}
+          </Section>
+          <Section title="Elements">
+            <Elements stats={stats} />
+          </Section>
+          <Section title="Loot">{row("Magic find", `${stats.magicFind}%`)}</Section>
+        </Box>
       </Menu>
     );
   },
