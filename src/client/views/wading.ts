@@ -135,7 +135,8 @@ function drawRing(
 }
 
 /** Do the feet, where they are drawn, stand in the shallows: on the water side of a shore tile? */
-const isAtShore = (player: Player, feetY: number) => isShallowAt(player.scene.map, player.x, feetY);
+const isAtShore = (player: Player, feetY: number) =>
+  player.habitat !== "air" && isShallowAt(player.scene.map, player.x, feetY);
 
 /** A foot landing in the shallows: a small ring where it lands and a few drops off the boot. */
 function step(player: Player, leftFoot: boolean, feetY: number) {
@@ -175,7 +176,8 @@ function idleRipple(player: Player, feetY: number) {
 export function updateWading(player: Player) {
   const scale = player.profile?.scale || 1;
   const isAlive = !player.state.isDead;
-  const isWading = isAlive && isWaterAt(player.scene.map, player.x, player.y);
+  const isWading =
+    isAlive && player.habitat !== "air" && isWaterAt(player.scene.map, player.x, player.y);
   const now = player.scene.time.now;
   if (!isAlive && !views.has(player)) return;
   const view = viewOf(player);

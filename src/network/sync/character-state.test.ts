@@ -56,6 +56,7 @@ describe("getFullCharacterState", () => {
       "kind",
       "aggressive",
       "talks",
+      "habitat",
       "charClass",
       "npcKills",
       "buffs",

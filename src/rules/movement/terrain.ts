@@ -1,14 +1,14 @@
 import { isInWater, isOutOfMap, type TileGrid, type TileMap } from "./tilemap";
 
-/** Where a body lives: `land` walkers go anywhere, wading slowly; `water` swimmers keep to it. */
-export type Habitat = "land" | "water";
+/** Where a body lives: `land` walkers go anywhere, wading slowly; `water` swimmers keep to it; `air` flyers pass over water unslowed. */
+export type Habitat = "land" | "water" | "air";
 
 /** Share of walk speed kept while wading through water. Swimmers keep their full speed. */
 export const WATER_SPEED_SCALE = 0.5;
 
 /** How fast a body in its spot moves, as a share of its walk speed. */
 export function terrainSpeedScale(grid: TileGrid, at: { x: number; y: number }, habitat?: Habitat) {
-  return habitat !== "water" && isInWater(grid, at.x, at.y) ? WATER_SPEED_SCALE : 1;
+  return (habitat ?? "land") === "land" && isInWater(grid, at.x, at.y) ? WATER_SPEED_SCALE : 1;
 }
 
 const waterMaps = new WeakMap<TileMap, TileMap>();
