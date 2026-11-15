@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.40.1](https://github.com/VesperLabs/aether/compare/v0.40.0...v0.40.1) (2026-11-15)
+
+
+### Bug Fixes
+
+* slower calm npcs that speed up to chase, and tighter wiki item cards ([#355](https://github.com/VesperLabs/aether/issues/355)) ([39a758b](https://github.com/VesperLabs/aether/commit/39a758b03c009c764cf51ada9a83ece210145390))
+
 ## [0.40.0](https://github.com/VesperLabs/aether/compare/v0.39.1...v0.40.0) (2026-11-15)
 
 
