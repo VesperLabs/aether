@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import { isWaterAt } from "@/client/scenes/water-tiles";
 import type { Player } from "./player";
 import { bodyExtentOf } from "./body-extent";
-import { fadeBelow } from "./wading-fade";
+import { fadeBelow, getShownBands } from "./wading-fade";
 import { spawnDrops, spawnRipple, spawnWake } from "./splashes";
 
 /** How far a wading body sinks, and how much of it is under the surface then, as shares of its height. */
@@ -42,6 +42,20 @@ const bodyLayers = (player: Player) => [
   player.pants,
   player.helmet,
 ];
+
+/** The faded copies under the waterline that are showing now, one set per body layer. */
+export function getUnderwaterLayers(player: Player) {
+  return bodyLayers(player).flatMap((layer) => (layer ? getShownBands(layer) : []));
+}
+
+/** Out of the water at once, as on death, when `updateWading` stops running: whole body, no ring. */
+export function leaveWater(player: Player) {
+  const view = views.get(player);
+  if (!view) return;
+  view.depth = 0;
+  view.ring.clear();
+  for (const layer of bodyLayers(player)) layer && fadeBelow(layer, undefined, 1);
+}
 
 interface WadingView {
   ring: Phaser.GameObjects.Graphics;
