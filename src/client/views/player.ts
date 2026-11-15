@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { leaveWater, updateWading } from "./wading";
+import { updateFootprints } from "./footprints";
 import type { FullCharacterWire, PartyMessage } from "@/network";
 import type { BuffCharacterWire } from "@/network/sync";
 import type { SceneMain } from "@/client/scenes/main-scene";
@@ -342,6 +343,7 @@ export class Player extends Character {
     updateCurrentSpeed(this);
     drawFrame(this);
     updateWading(this);
+    updateFootprints(this);
     applyDodge(this);
     checkIsFlash(this);
     this.showHideNameAndBars();

@@ -1,5 +1,5 @@
 export { buildTileGrid, isNextToSolidTile, isOutOfMap, readTileMap } from "./tilemap";
-export type { TileMap, TiledMapJson } from "./tilemap";
+export type { TileGrid, TileMap, TiledMapJson } from "./tilemap";
 export {
   fetchMapWithTilesets,
   inlineTilesets,
@@ -12,7 +12,7 @@ export type { Box, Circle, Shape } from "./collision";
 export { hasLineOfSight } from "./line-of-sight";
 export { MAX_REWIND_MS, clampRewind, createPoseHistory } from "./pose-history";
 export type { PoseHistory } from "./pose-history";
-export { readDoors } from "./doors";
+export { doorArrival, readDoors } from "./doors";
 export type { DoorData } from "./doors";
 export { createPathfinder, findNextWaypoint, findPath } from "./pathfinding";
 export type { Pathfinder } from "./pathfinding";
@@ -65,3 +65,4 @@ export {
 } from "./terrain";
 export type { Habitat } from "./terrain";
 export { isInWater } from "./tilemap";
+export { isWaterTerrain, readTerrainQuarters } from "./terrain-corners";
