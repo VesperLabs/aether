@@ -16,6 +16,8 @@ export interface SpellDefinition {
   readonly vanishes?: boolean;
   /** NPCs cast it with their target this far away, edge to edge for bursts, else centre to centre. */
   readonly npcRange?: readonly [min: number, max: number];
+  /** A dash that touches no one, carrying the caster to where the target will be. */
+  readonly pounces?: boolean;
   readonly description?: string;
 }
 

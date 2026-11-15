@@ -65,6 +65,16 @@ describe("subscribeLoot", () => {
     expect(h.spawnLoot).toHaveBeenCalledTimes(1);
   });
 
+  it("a companion drops nothing", () => {
+    const bus = createGameEventBus();
+    const h = hooks({
+      getMobDropInfo: () => ({ isCompanion: true, drops: [{ item: "gold", chance: 1 }] }),
+    });
+    subscribeLoot(bus, h);
+    bus.emit("mobKilled", kill());
+    expect(h.spawnLoot).not.toHaveBeenCalled();
+  });
+
   it("spawns nothing when nothing drops", () => {
     const bus = createGameEventBus();
     const h = hooks({ rollWorldDrop: () => null });

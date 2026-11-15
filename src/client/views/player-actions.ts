@@ -108,6 +108,7 @@ export function doCast(player: Player, { abilitySlot, castAngle }: CastArgs) {
   if (isDash) {
     player.state.lungeAt = Date.now();
     player.state.lungeAngle = castAngle;
+    player.state.isPounce = !!ability.spell.pounces;
   }
 
   player.scene.add.existing(new Spell(player.scene, { ...ability, castAngle, caster: player }));

@@ -8,6 +8,8 @@ const { speed, hitMs } = spellDetails.tackle.delivery;
  * dash (`hitMs` and `speed`), so tuning it in content tunes both.
  */
 
+/** How fast a lunge dashes, px/s. */
+export const LUNGE_SPEED = speed;
 /** How long the dash lasts, in ms. */
 export const LUNGE_DURATION = hitMs;
 /** Pixels covered by a full lunge in open ground. */
@@ -30,6 +32,8 @@ export interface LungeState {
   lungeAngle?: number;
   /** How long it lasts, in ms; unset means `LUNGE_DURATION`. */
   lungeMs?: number;
+  /** A pounce: carries its caster, touching no one, with no recovery after. */
+  isPounce?: boolean;
 }
 
 /** True while a lunge is carrying its caster forward. */

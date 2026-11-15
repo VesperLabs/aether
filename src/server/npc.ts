@@ -31,7 +31,7 @@ import {
   type ThreatTable,
 } from "@/rules/npc-behavior";
 import { performNpcMovement } from "./npc-movement";
-import { aimNpcShot } from "@/rules/npc-behavior";
+import { aimNpcShot, aimNpcSwing, getSwingPower } from "@/rules/npc-behavior";
 import {
   createRng,
   createTimers,
@@ -380,12 +380,13 @@ export class Npc extends Character {
     this.state.isAiming = true;
 
     this.state.lastAngle = action.castAngle;
+    this.state.swingPower = getSwingPower(action.swing);
 
     emitNpcWindup(this, action, targetPlayer.id);
-    // Swings and shots land toward where the target is now, so circling it doesn't leave it facing off
+    // Swings land a beat ahead of where the target is now, so circling it doesn't leave it facing off
     afterWindup(this, action.windupMs, targetPlayer.id, () => {
-      this.faceTarget(targetPlayer);
-      const target = { id: targetPlayer.id, x: targetPlayer.x, y: targetPlayer.y };
+      const target = { id: targetPlayer.id, ...aimNpcSwing(targetPlayer) };
+      this.faceTarget(target);
       const castAngle = Math.atan2(target.y - this.y, target.x - this.x);
       this.doAttack({ target, direction: `${this.direction}`, castAngle });
       this.state.isAiming = false;

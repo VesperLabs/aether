@@ -55,3 +55,14 @@ export const NPC_LUNGE_EXTRA_WINDUP = 250;
 
 /** NPCs take this much longer than players to cast a spell, so there is time to dodge it, in ms. */
 export const NPC_EXTRA_CAST_TIME = 1000;
+
+/** A pounce lands this far short of where it predicts the target will be, px. */
+export const NPC_POUNCE_STOP_SHORT = 6;
+/** Out of a fight (walking home, to its post), an NPC walks at this share of its speed; it only goes all out when fighting. */
+export const NPC_CALM_SPEED_RATIO = 0.7;
+/** A melee swing aims this far ahead of a moving target, ms. */
+export const NPC_SWING_LEAD_MS = 150;
+/** A chase leads its target by up to this long, ms... */
+export const NPC_CHASE_LEAD_MAX_MS = 600;
+/** ...times this share, so it closes in without overshooting a target that turns. */
+export const NPC_CHASE_LEAD_RATIO = 0.5;

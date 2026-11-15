@@ -4,6 +4,7 @@ export {
   NPC_TALK_LATENCY_TOLERANCE,
   NPC_TALK_RANGE,
   NPC_STRAFE_SPEED_RATIO,
+  NPC_CALM_SPEED_RATIO,
 } from "./constants";
 export { findSuitableAbility } from "./abilities";
 export type { NpcAbility } from "./abilities";
@@ -18,8 +19,10 @@ export { canTalkToNpc } from "./talk";
 export type { BehaviorContext } from "./behaviors/types";
 export { chooseBehavior } from "./brain";
 export { flee, fleeAround, seek, separate, steerWithSeparation, strafeAround } from "./steering";
-export { aimNpcShot } from "./aim";
+export { aimNpcShot, aimNpcSwing, leadNpcChase } from "./aim";
 export type { Velocity } from "./steering";
 export { addThreat, decayThreat, pickThreatTarget, pruneThreat } from "./threat";
 export type { ThreatTable } from "./threat";
 export { subscribeThreat } from "./system";
+export { aimPounce } from "./pounce";
+export { getSwingPower } from "./swings";

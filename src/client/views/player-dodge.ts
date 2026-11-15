@@ -42,13 +42,15 @@ export function applyDodge(p: Player) {
   const now = Date.now();
   const rolling = isDodging(p.state, now);
   /* An attack out of a roll plays its swing; the trail keeps going */
-  const posed = rolling && !p.state.isAttacking;
+  const lunging = isLunging(p.state, now);
+  /* A pounce is a leap: held mid-stride, without a lunge's dust and dome */
+  const pouncing = lunging && !!p.state.isPounce;
+  const posed = (rolling && !p.state.isAttacking) || pouncing;
   if (posed) holdPose(p);
   else if (p.state.isDodgePosed) releasePose(p);
   if (rolling) trail(p, now, (now - (p.state.lastDodge ?? 0)) / DODGE_DURATION);
-  const lunging = isLunging(p.state, now);
-  if (lunging) trailDust(p, now);
-  updateVortex(p, lunging);
+  if (lunging && !pouncing) trailDust(p, now);
+  updateVortex(p, lunging && !pouncing);
 }
 
 function trail(p: Player, now: number, progress: number) {

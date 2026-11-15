@@ -40,6 +40,8 @@ export {
   LUNGE_DISTANCE,
   LUNGE_DURATION,
   LUNGE_HIT_LEAD,
+  LUNGE_MAX_DISTANCE,
+  LUNGE_SPEED,
   getLungeDuration,
   getLungeVelocity,
   isLunging,

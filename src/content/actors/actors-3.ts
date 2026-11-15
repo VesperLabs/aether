@@ -201,6 +201,8 @@ export const actors3 = {
   orchid: {
     charClass: "rogue",
     profile: { race: "orchid", userName: "Orchid" },
+    // Springs at anyone hovering just out of reach
+    abilities: { "1": "pounce" },
     flavor:
       "One of the killer plants that overran Sergio's valley. Pretty from a distance, all teeth up close.",
     behaviors: { fight: { starts: "onSight" } },
