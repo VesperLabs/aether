@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.39.1](https://github.com/VesperLabs/aether/compare/v0.39.0...v0.39.1) (2026-11-15)
+
+
+### Bug Fixes
+
+* underwater part of a wading body dissolves on death ([#349](https://github.com/VesperLabs/aether/issues/349)) ([e06c029](https://github.com/VesperLabs/aether/commit/e06c02922c1d9f1faa57160189f3b245f909f3b4))
+
 ## [0.39.0](https://github.com/VesperLabs/aether/compare/v0.38.0...v0.39.0) (2026-11-14)
 
 
