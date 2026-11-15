@@ -21,7 +21,11 @@ export const ALL_WALK_POSES: WalkPose[] = DIRECTIONS.flatMap((direction) =>
   [0, 1, 2].map((step) => ({ direction, step })),
 );
 
-export const getWalkFrameName = ({ direction, step }: WalkPose) => `${direction}-walk.00${step}`;
+/** A pose's step for standing still: the sheet's first column, before the walk. */
+export const STAND_STEP = -1;
+
+export const getWalkFrameName = ({ direction, step }: WalkPose) =>
+  step === STAND_STEP ? `${direction}-stand` : `${direction}-walk.00${step}`;
 
 /** The side of a sheet's square cell, read from its atlas name (`80x80.json`). */
 const getCellSize = (atlas?: string) => Number(/(\d+)x\d+\.json$/.exec(atlas ?? "")?.[1] ?? 0);

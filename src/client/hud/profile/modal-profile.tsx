@@ -10,13 +10,15 @@ import {
   Grid,
   KeyboardButton,
   Modal,
-  PlayerPortrait,
   Select,
+  SheetThumb,
+  SwatchThumb,
   Text,
   isMobile,
 } from "@/ui";
-import { BodyPreview, LookPreview, SwatchPreview } from "./look-preview";
+import { BodyPreview } from "./look-preview";
 import { ModalRename } from "./modal-rename";
+import { TurningPortrait } from "./turning-portrait";
 
 /** One dropdown: the options it lists and the choice each one makes. */
 interface LookPicker {
@@ -62,7 +64,7 @@ const ROWS: { label: string; pickers: LookPicker[] }[] = [
         optionLabel: numbered("Tone"),
         current: (p) => p.tint,
         choose: (tint) => ({ tint }),
-        preview: (tint) => <SwatchPreview tint={tint} />,
+        preview: (tint) => <SwatchThumb tint={tint} />,
       },
     ],
   },
@@ -75,7 +77,7 @@ const ROWS: { label: string; pickers: LookPicker[] }[] = [
         optionLabel: numbered("Face"),
         current: (p) => p.face?.texture,
         choose: (texture) => ({ face: { texture } }),
-        preview: (texture) => <LookPreview texture={`human-${texture}`} />,
+        preview: (texture) => <SheetThumb texture={`human-${texture}`} />,
       },
     ],
   },
@@ -88,7 +90,7 @@ const ROWS: { label: string; pickers: LookPicker[] }[] = [
         optionLabel: (option) => hairTextureNames[option as keyof typeof hairTextureNames],
         current: (p) => p.hair?.texture,
         choose: (texture) => ({ hair: { texture } }),
-        preview: (texture, p) => <LookPreview texture={`human-${texture}`} tint={p.hair?.tint} />,
+        preview: (texture, p) => <SheetThumb texture={`human-${texture}`} tint={p.hair?.tint} />,
       },
       {
         label: "Hair color",
@@ -96,7 +98,7 @@ const ROWS: { label: string; pickers: LookPicker[] }[] = [
         optionLabel: colorName,
         current: (p) => p.hair?.tint,
         choose: (tint) => ({ hair: { tint } }),
-        preview: (tint) => <SwatchPreview tint={tint} />,
+        preview: (tint) => <SwatchThumb tint={tint} />,
       },
     ],
   },
@@ -110,7 +112,7 @@ const ROWS: { label: string; pickers: LookPicker[] }[] = [
         current: (p) => p.whiskers?.texture,
         choose: (texture) => ({ whiskers: { texture } }),
         preview: (texture, p) => (
-          <LookPreview texture={`human-${texture}`} tint={p.whiskers?.tint} />
+          <SheetThumb texture={`human-${texture}`} tint={p.whiskers?.tint} />
         ),
       },
       {
@@ -119,7 +121,7 @@ const ROWS: { label: string; pickers: LookPicker[] }[] = [
         optionLabel: colorName,
         current: (p) => p.whiskers?.tint,
         choose: (tint) => ({ whiskers: { tint } }),
-        preview: (tint) => <SwatchPreview tint={tint} />,
+        preview: (tint) => <SwatchThumb tint={tint} />,
       },
     ],
   },
@@ -143,22 +145,12 @@ export const ModalProfile = () => {
           <Flex sx={{ flexDirection: "column", gap: 3 }}>
             {/* Small enough side by side for a phone held upright, so it needs no second layout */}
             <Flex sx={{ gap: 3, alignItems: "flex-end" }}>
-              <Flex
-                sx={{
-                  flexShrink: 0,
-                  width: PORTRAIT_WIDTH,
-                  height: PORTRAIT_HEIGHT,
-                  alignItems: "flex-end",
-                  justifyContent: "center",
-                }}
-              >
-                <PlayerPortrait
-                  player={hero}
-                  scale={3}
-                  shadow
-                  filteredSlots={["accessory", "helmet", "hands"]}
-                />
-              </Flex>
+              <TurningPortrait
+                player={hero}
+                width={PORTRAIT_WIDTH}
+                height={PORTRAIT_HEIGHT}
+                filteredSlots={["accessory", "helmet", "hands"]}
+              />
               <Grid
                 sx={{
                   gridTemplateColumns: `repeat(2, ${SELECT_WIDTH}px)`,
