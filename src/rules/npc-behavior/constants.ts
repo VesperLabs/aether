@@ -58,8 +58,8 @@ export const NPC_EXTRA_CAST_TIME = 1000;
 
 /** A pounce lands this far short of where it predicts the target will be, px. */
 export const NPC_POUNCE_STOP_SHORT = 6;
-/** Out of a fight (walking home, to its post), an NPC walks at this share of its speed; it only goes all out when fighting. */
-export const NPC_CALM_SPEED_RATIO = 0.7;
+/** Chasing a foe, an NPC speeds up to this share of its walk speed: still a little slower than a player. */
+export const NPC_CHASE_SPEED_RATIO = 1.2;
 /** A melee swing aims this far ahead of a moving target, ms. */
 export const NPC_SWING_LEAD_MS = 150;
 /** A chase leads its target by up to this long, ms... */
