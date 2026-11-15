@@ -1,4 +1,5 @@
 import type { CharClass } from "@/content";
+import type { Habitat } from "@/rules/movement";
 
 // oxlint-disable-next-line typescript/no-explicit-any
 type Opaque = any; // equipment, stats, buffs ... get exact types when their rules move into rules
@@ -37,6 +38,7 @@ export interface CharacterSyncInput {
   aggressive?: boolean;
   /** NPCs only: players can talk to it (it has `dialogues`). */
   talks?: boolean;
+  habitat?: Habitat;
   charClass?: CharClass;
   npcKills?: Opaque;
   buffs: Opaque[];
@@ -72,6 +74,7 @@ export interface FullCharacterWire {
   kind: string;
   aggressive?: boolean;
   talks?: boolean;
+  habitat?: Habitat;
   charClass: CharClass;
   npcKills: Opaque;
   buffs: Opaque[];
@@ -121,6 +124,7 @@ export function getFullCharacterState(p: CharacterSyncInput): FullCharacterWire 
     kind: p?.kind,
     aggressive: p?.aggressive,
     talks: p?.talks,
+    habitat: p?.habitat,
     charClass: p?.charClass as CharClass,
     npcKills: p?.npcKills,
     buffs: p?.buffs,

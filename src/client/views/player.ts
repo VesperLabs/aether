@@ -1,3 +1,4 @@
+import type { Habitat } from "@/rules/movement";
 import Phaser from "phaser";
 import { leaveWater, updateWading } from "./wading";
 import { updateFootprints } from "./footprints";
@@ -59,6 +60,8 @@ export class Player extends Character {
   aggressive?: boolean;
   /** NPCs only: players can talk to it. */
   talks?: boolean;
+  /** `air`: flies, so water and snow leave it alone. */
+  habitat?: Habitat;
   /** Only the hero has a party. */
   party?: PartyMessage | null;
   declare weaponAtlas: WeaponAtlas;
@@ -101,6 +104,7 @@ export class Player extends Character {
     super(scene, args);
     this.aggressive = (args as { aggressive?: boolean }).aggressive;
     this.talks = (args as { talks?: boolean }).talks;
+    this.habitat = (args as { habitat?: Habitat }).habitat;
 
     if (this.hasBuff("stealth")) {
       this.setAlpha(0);

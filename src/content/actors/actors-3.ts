@@ -42,6 +42,7 @@ export const actors3 = {
     ],
   },
   hornet: {
+    habitat: "air",
     charClass: "rogue",
     profile: { race: "bee", userName: "Hornet" },
     flavor:
@@ -67,6 +68,7 @@ export const actors3 = {
     drops: [{ item: "fishCard", chance: 40 }],
   },
   hawkwing: {
+    habitat: "air",
     charClass: "rogue",
     profile: { race: "bee", tint: "0x44FFCC", scale: 1.5, userName: "Hawkwing" },
     flavor:
@@ -91,6 +93,7 @@ export const actors3 = {
     ],
   },
   bat: {
+    habitat: "air",
     charClass: "mage",
     profile: { race: "bat", userName: "Bat" },
     flavor:

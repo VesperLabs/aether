@@ -145,7 +145,8 @@ export function updateFootprints(player: Player) {
   track.lastX = player.x;
   track.lastY = player.y;
   /* A jump across the map (a door, a teleport) leaves no trail */
-  if (moved > stride * 4 || player.state.isDead || !showsWinter(player)) return;
+  if (moved > stride * 4 || player.state.isDead || player.habitat === "air" || !showsWinter(player))
+    return;
   const feetY = player.y + player.rig.y + feetOffsetOf(player);
   const { map } = player.scene;
   if (!isSnowyAt(map, player.x, feetY) || isWaterAt(map, player.x, player.y)) return;
