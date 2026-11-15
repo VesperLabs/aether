@@ -31,3 +31,26 @@ export function readDoors(map: TileMap): Record<string, DoorData> {
   }
   return doors;
 }
+
+type DoorRect = Pick<DoorData, "x" | "y" | "width" | "height" | "centerPos">;
+
+/**
+ * Where a player walking through `from` comes out of `to`: at the same spot along the door, so
+ * walking through the left edge of a wide door lands on the left edge of the next one. The spot is
+ * kept as a fraction of the door's long side; across the door it stays the center.
+ */
+export function doorArrival(
+  player: { x: number; y: number },
+  from: DoorRect,
+  to: DoorRect,
+): { x: number; y: number } {
+  const fraction = (pos: number, start: number, size: number) =>
+    size > 0 ? Math.min(1, Math.max(0, (pos - start) / size)) : 0.5;
+  const along =
+    from.width >= from.height
+      ? fraction(player.x, from.x, from.width)
+      : fraction(player.y, from.y, from.height);
+  return to.width >= to.height
+    ? { x: to.x + along * to.width, y: to.centerPos.y }
+    : { x: to.centerPos.x, y: to.y + along * to.height };
+}

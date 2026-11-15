@@ -25,7 +25,7 @@ import { isMenuMode } from "./pad-nav";
 import { heldSince } from "./held-keys";
 import { getBindings, type BindAction } from "./key-bindings";
 import type { Player } from "@/client/views/player";
-import { isWaterAt } from "@/client/scenes/water-tiles";
+import { isWaterAt } from "@/client/scenes/ground-terrain";
 import type { SceneMain } from "@/client/scenes/main-scene";
 
 const { Between } = Phaser.Math.Angle;

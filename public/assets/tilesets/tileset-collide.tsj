@@ -29,21 +29,6 @@
      "value": true
     }
    ]
-  },
-  {
-   "id": 2,
-   "properties": [
-    {
-     "name": "collides",
-     "type": "bool",
-     "value": false
-    },
-    {
-     "name": "water",
-     "type": "bool",
-     "value": true
-    }
-   ]
   }
  ],
  "tilewidth": 32,

@@ -3,6 +3,9 @@
  * from 100 up, under all of these.
  */
 
+/** Marks left on the ground (footprints in snow): over the map's ground layers, under everything standing on them. */
+export const GROUND_MARKS_DEPTH = 4;
+
 /** The map's `Above` layer (tree tops, roofs), drawn over characters. */
 export const ABOVE_LAYER_DEPTH = 50_000;
 

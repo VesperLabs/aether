@@ -10,6 +10,8 @@ import { seasonalTilesetKey } from "./map-season";
 import { addTileLights } from "@/client/views/tile-lights";
 import { ABOVE_LAYER_DEPTH } from "./world-depths";
 import type { SceneMain } from "./main-scene";
+import { readMapGround } from "./ground-terrain";
+import type { TiledMapJson } from "@/rules/movement";
 
 const { RectangleToRectangle } = Phaser.Geom.Intersects;
 
@@ -82,6 +84,7 @@ export function changeMap(scene: SceneMain, roomName: string) {
   if (scene.hero) changeMusic(scene);
 
   const { map } = scene;
+  readMapGround(map, scene.cache.tilemap.get(roomName).data as TiledMapJson);
   // The map assets are bundled, so a missing tileset or layer is a build error, not a runtime case.
   // Every layer can draw from every tileset the map declares; each tileset's texture key is its Tiled
   // name, or that name plus the room's season when there is seasonal art (see `map-season`).

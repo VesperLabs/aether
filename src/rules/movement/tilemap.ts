@@ -1,3 +1,5 @@
+import { readWaterTiles, type TiledWangSet } from "./terrain-corners";
+
 /** A Tiled map as it is stored in the map JSON files. Only the fields the game reads. */
 interface TiledProperty {
   name: string;
@@ -27,6 +29,7 @@ interface TiledTileset {
   source?: string;
   tilecount?: number;
   tiles?: Array<{ id: number; properties?: TiledProperty[] }>;
+  wangsets?: TiledWangSet[];
 }
 
 export interface TiledMapJson {
@@ -46,7 +49,10 @@ export interface TileGrid {
   tileHeight: number;
   /** `solid[y][x]` is true when the tile blocks movement. */
   solid: boolean[][];
-  /** `water[y][x]` is true on a water tile: walkable, but slow and only half out of it. */
+  /**
+   * `water[y][x]` is true on a tile painted water on all four corners (`water-corners`): walkable,
+   * but slow and only half out of it. Shore tiles are dry.
+   */
   water: boolean[][];
 }
 
@@ -78,23 +84,18 @@ function gidsWith(tilesets: TiledTileset[], name: string): Set<number> {
   return gids;
 }
 
-/** Reads the collide layer of a map into grids of solid (`collides`) and `water` tiles. */
+/** Reads a map's walls (`collides` tiles on the collide layer) and its painted water. */
 export function buildTileGrid(map: TiledMapJson, layerName = COLLIDE_LAYER): TileGrid {
   const layer = map.layers.find((l) => l.name === layerName && l.type === "tilelayer");
   const solidGids = gidsWith(map.tilesets, "collides");
-  const waterGids = gidsWith(map.tilesets, "water");
   const solid: boolean[][] = [];
-  const water: boolean[][] = [];
   for (let y = 0; y < map.height; y++) {
     const solidRow: boolean[] = [];
-    const waterRow: boolean[] = [];
     for (let x = 0; x < map.width; x++) {
       const gid = (layer?.data?.[y * map.width + x] ?? 0) & GID_MASK;
       solidRow.push(gid > 0 && solidGids.has(gid));
-      waterRow.push(gid > 0 && waterGids.has(gid));
     }
     solid.push(solidRow);
-    water.push(waterRow);
   }
   return {
     width: map.width,
@@ -102,7 +103,7 @@ export function buildTileGrid(map: TiledMapJson, layerName = COLLIDE_LAYER): Til
     tileWidth: map.tilewidth,
     tileHeight: map.tileheight,
     solid,
-    water,
+    water: readWaterTiles(map),
   };
 }
 

@@ -18,6 +18,7 @@ import {
   canDodge,
   checkMove,
   clampRewind,
+  doorArrival,
   grantMoveBudget,
   isWithinDoorRange,
   startMoveTrack,
@@ -180,7 +181,7 @@ export function enterDoor(ctx: CommandContext, doorName: ParsedCommand<"enterDoo
   const destMap = prev.destMap;
   const next = getDoor(world, destMap, prev.destDoor);
   if (!next || !world.rooms[destMap]) return;
-  teleportPlayer(ctx, destMap, next.centerPos);
+  teleportPlayer(ctx, destMap, doorArrival(player, prev, next));
 }
 
 /** Moves a player to a spot in any room, as a door does, and tells both rooms. */

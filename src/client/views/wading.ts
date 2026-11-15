@@ -1,7 +1,8 @@
 import Phaser from "phaser";
-import { isWaterAt } from "@/client/scenes/water-tiles";
+import { isShallowAt, isWaterAt } from "@/client/scenes/ground-terrain";
 import type { Player } from "./player";
 import { bodyExtentOf } from "./body-extent";
+import { feetOffsetOf } from "./feet";
 import { fadeBelow, getShownBands } from "./wading-fade";
 import { spawnDrops, spawnRipple, spawnWake } from "./splashes";
 
@@ -20,9 +21,8 @@ const RING_LIGHT = 0xd8f0ff;
 const RING_DARK = 0x6fb4e8;
 /** Ms to wade in to the waist, or back out of the water. */
 const WADE_MS = 260;
-/** Steps at the shore: how often a foot lands while walking, and how close to water the feet must be. */
+/** Steps in the shallows: how often a foot lands while walking. */
 const STEP_EVERY_MS = 230;
-const SPLASH_REACH = 10;
 /** How often a wading body leaves a beat of its V wake while it moves. */
 const WAKE_EVERY_MS = 150;
 /** Standing at the shore, a slow ripple under the feet this often. */
@@ -134,17 +134,8 @@ function drawRing(
   player.rig.bringToTop(ring);
 }
 
-/** Is there water within `SPLASH_REACH` of the feet, though they stand on dry ground? */
-function isAtShore(player: Player) {
-  const { map } = player.scene;
-  const reach = SPLASH_REACH * (player.profile?.scale || 1);
-  return [
-    [reach, 0],
-    [-reach, 0],
-    [0, reach],
-    [0, -reach],
-  ].some(([dx, dy]) => isWaterAt(map, player.x + dx, player.y + dy));
-}
+/** Do the feet, where they are drawn, stand in the shallows: on the water side of a shore tile? */
+const isAtShore = (player: Player, feetY: number) => isShallowAt(player.scene.map, player.x, feetY);
 
 /** A foot landing in the shallows: a small ring where it lands and a few drops off the boot. */
 function step(player: Player, leftFoot: boolean, feetY: number) {
@@ -196,8 +187,7 @@ export function updateWading(player: Player) {
   /* Feet and height from the art, in the rig's coordinates as drawn when dry */
   const skin = player.skin;
   const extent = bodyExtentOf(skin, player.direction);
-  const skinTop = player.bodyOffsetY - skin.displayOriginY * skin.scaleY;
-  const feet = extent ? skinTop + (extent.bottom + 1) * skin.scaleY : player.bodySize;
+  const feet = feetOffsetOf(player);
   const height = extent ? (extent.bottom + 1 - extent.top) * skin.scaleY : FALLBACK_HEIGHT * scale;
   const sinkDepth = height * SINK_SHARE;
   const sink = Math.round(sinkDepth * depth + bob * scale);
@@ -238,7 +228,7 @@ export function updateWading(player: Player) {
   if (!isAlive) return;
   const feetY = player.y + player.rig.y + feet;
   if (player.currentSpeed === 0) {
-    if (!isWading && now >= view.nextIdleRippleAt && isAtShore(player)) {
+    if (!isWading && now >= view.nextIdleRippleAt && isAtShore(player, feetY)) {
       idleRipple(player, feetY);
       view.nextIdleRippleAt = now + IDLE_RIPPLE_MS;
     }
@@ -272,7 +262,7 @@ export function updateWading(player: Player) {
     }
     view.nextSplashAt = now + WAKE_EVERY_MS;
   } else {
-    if (isAtShore(player)) step(player, view.leftFoot, feetY);
+    if (isAtShore(player, feetY)) step(player, view.leftFoot, feetY);
     view.leftFoot = !view.leftFoot;
     view.nextSplashAt = now + STEP_EVERY_MS;
   }
