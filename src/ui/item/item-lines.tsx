@@ -1,3 +1,4 @@
+import { buffIcon } from "@/content";
 import { Fragment, type ReactNode } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
 import type { StatLine, TriggerLine } from "@/rules/inventory";
@@ -39,6 +40,9 @@ const ICON_IN_GUTTER = { ml: -BUFF_INDENT, width: `calc(100% + ${BUFF_INDENT}px)
 
 /** A buff's (or spell's) icon, the one the buff rack shows. */
 export const spellIcon = (name: string) => `./assets/atlas/spell/spell-${name}.png`;
+
+/** A buff's icon, which a few buffs share (every holy one shows the holy icon). */
+const buffIconSrc = (name: string) => `./assets/atlas/spell/${buffIcon(name)}.png`;
 
 const RULE = "rgba(255, 255, 255, 0.16)";
 
@@ -97,11 +101,21 @@ const Leader = () => (
 );
 
 /** A label, a leader, then the value right-aligned. */
-const Row = ({ label, value, color }: { label: ReactNode; value: ReactNode; color?: string }) => {
-  const type = TYPE.body;
+export const StatRow = ({
+  label,
+  value,
+  color,
+  type = TYPE.body,
+}: {
+  label: ReactNode;
+  value: ReactNode;
+  color?: string;
+  /** Its text style; a tooltip's body by default. A roomier screen passes a larger one. */
+  type?: { fontSize: number; lineHeight: string };
+}) => {
   return (
-    /* Exactly one body line tall, icon or not */
-    <Flex sx={{ alignItems: "center", height: TYPE.body.lineHeight }}>
+    /* Exactly one line tall, icon or not */
+    <Flex sx={{ alignItems: "center", height: type.lineHeight }}>
       {typeof label === "string" ? (
         <Text sx={{ ...type, fontWeight: "normal", color: color ?? "gray.400" }}>{label}</Text>
       ) : (
@@ -124,7 +138,7 @@ const spaced = (label: string) => label.replace(/([a-z])([A-Z])/g, "$1 $2");
 /** One "label ····· value" row per stat, for inside a `StatGrid`. */
 export const StatRows = ({ lines, color }: { lines: StatLine[]; color?: string }) =>
   lines.map(({ label, value, note }) => (
-    <Row
+    <StatRow
       key={label}
       label={spaced(label)}
       value={note ? <Note value={value} note={note} color={color} /> : value}
@@ -173,7 +187,7 @@ export const BuffName = ({
       ...sx,
     }}
   >
-    <ArtIcon src={spellIcon(name)} size={BODY_ICON} />
+    <ArtIcon src={buffIconSrc(name)} size={BODY_ICON} />
     {/* Name and level share a line of text, so they sit on one baseline like the item's title */}
     <Text sx={{ ...TYPE.body, fontWeight: "normal" }}>
       {name}
@@ -191,10 +205,10 @@ export const TriggerRows = ({ triggers, color }: { triggers: TriggerLine[]; colo
   triggers.map((t, idx) => (
     <Fragment key={idx}>
       <Box sx={ICON_IN_GUTTER}>
-        <Row
+        <StatRow
           label={
             <Flex sx={{ alignItems: "center", gap: `${ICON_GAP}px`, minWidth: 0 }}>
-              <ArtIcon src={spellIcon(t.name)} size={BODY_ICON} />
+              <ArtIcon src={buffIconSrc(t.name)} size={BODY_ICON} />
               <Text sx={{ ...TYPE.body, fontWeight: "normal", color: color ?? "gray.400" }}>
                 {t.name}
                 {t.perTier ? (

@@ -28,6 +28,7 @@ export {
 export { buffList, type BuffName } from "./buffs/buff-list";
 export type { BuffDefinition } from "./buffs/buff-types";
 export { buffAtLevel, growsWithLevel } from "./buffs/buff-level";
+export { buffIcon } from "./buffs/buff-icon";
 export type { TriggerDefinition } from "./buffs/trigger-types";
 export { mergeTriggers } from "./buffs/trigger-merge";
 export {

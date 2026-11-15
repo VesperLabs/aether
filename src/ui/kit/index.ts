@@ -34,6 +34,7 @@ export { Menu, MenuHeader, MENU_MAX_WIDTH } from "./menu";
 export { arePropsEqualWithKeys, get, isEqual } from "./are-props-equal";
 export { applyTintToImage, loadCacheImage, tintCanvas, trimCanvas } from "./image-tint";
 export { assetToCanvas } from "./asset-to-canvas";
+export { SheetThumb, SwatchThumb, THUMB_SIZE } from "./sheet-thumb";
 export { useAssetArt } from "./use-asset-art";
 export { isMobile } from "./is-mobile";
 export * from "./hooks";

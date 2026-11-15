@@ -1,11 +1,7 @@
-import { Box, PlayerPortrait } from "@/ui";
+import { Box, PlayerPortrait, SheetThumb, THUMB_SIZE } from "@/ui";
 import type { ActorDefinition } from "@/content";
 import { toRenderable, type ActorLook } from "./actor-looks";
-import { SheetThumb } from "./sheet-thumb";
 import { parseLook } from "./sheets";
-
-/** As big as a sheet's thumbnail, so options line up whichever kind they are. */
-const THUMB_SIZE = 24;
 
 /**
  * An NPC as the game draws it, tints and all, fitted whole into a thumbnail. A human is dressed

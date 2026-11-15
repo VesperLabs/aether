@@ -8,6 +8,7 @@ import {
   type RenderablePlayer,
 } from "./player-render";
 import { loadSheet } from "./sprite-sheet";
+import { STAND_STEP, type WalkDirection } from "./walk-cycle";
 
 /**
  * The character standing, cut to its own pixels and scaled by a whole number so they stay even.
@@ -18,6 +19,7 @@ export const PlayerPortrait = ({
   filteredSlots,
   scale = 3,
   shadow = false,
+  facing,
   sx,
 }: {
   player?: RenderablePlayer;
@@ -25,6 +27,8 @@ export const PlayerPortrait = ({
   scale?: number;
   /** Draws the shadow the character casts in the game. */
   shadow?: boolean;
+  /** Stands facing this way; its preview pose (facing the viewer) when unset. */
+  facing?: WalkDirection;
   sx?: ThemeUIStyleObject;
 }) => {
   const [art, setArt] = useState<{ url: string; width: number; height: number }>();
@@ -37,7 +41,7 @@ export const PlayerPortrait = ({
       if (!current) return;
       const canvas = document.createElement("canvas");
       canvas.width = canvas.height = MIN_CANVAS_SIZE;
-      drawLayers(canvas, assets, layers);
+      drawLayers(canvas, assets, layers, facing && { direction: facing, step: STAND_STEP });
       const trimmed = trimCanvas(canvas);
       setArt({ url: trimmed.toDataURL(), width: trimmed.width, height: trimmed.height });
     });
@@ -45,7 +49,7 @@ export const PlayerPortrait = ({
       current = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- redraws only when the layers change
-  }, [assetsKey]);
+  }, [assetsKey, facing]);
 
   return (
     <Box

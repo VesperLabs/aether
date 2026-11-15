@@ -2,7 +2,7 @@ import { memo, useEffect, useState } from "react";
 import { Flex, Icon, RomanNumeral, Text } from "@/ui";
 import { arePropsEqualWithKeys } from "@/ui";
 import { formatStats } from "@/rules/stats";
-import { buffList } from "@/content";
+import { buffIcon, buffList } from "@/content";
 import type { ThemeUIStyleObject } from "theme-ui";
 import type { ActiveBuff } from "@/rules/buffs";
 import type { HudCharacter } from "@/client/hud/app/context";
@@ -105,7 +105,7 @@ const Buff = ({ buff, tooltipId, player }: BuffProps) => {
         player={player}
       />
       <Icon
-        icon={`./assets/atlas/spell/spell-${buff.name}.png`}
+        icon={`./assets/atlas/spell/${buffIcon(buff.name ?? "")}.png`}
         size={24}
         data-tooltip-place="bottom"
         data-tooltip-id={tooltipId}

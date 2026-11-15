@@ -1,3 +1,4 @@
+import { buffIcon } from "@/content";
 import Phaser from "phaser";
 import type { Player } from "./player";
 import { endOnDeath } from "./end-on-death";
@@ -35,7 +36,7 @@ export class Buff extends Phaser.GameObjects.Container {
     super(scene, victim.x, victim.y);
 
     this.victim = victim;
-    this.buff = new Sprite(scene, 0, 0, `spell-${buffName}`);
+    this.buff = new Sprite(scene, 0, 0, buffIcon(buffName));
     this.buff.setOrigin(0.5);
     this.victim.add(this.buff);
     endOnDeath(victim, this);

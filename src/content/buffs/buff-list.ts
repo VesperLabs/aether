@@ -15,6 +15,7 @@ export const buffList = {
   /** A halo of dawn light: swings burn with holy damage for a moment. */
   aureole: {
     type: "buff",
+    icon: "holy",
     duration: 6000,
     stats: { minHolyDamage: 2, maxHolyDamage: 4 },
     perLevel: { stats: { minHolyDamage: 2, maxHolyDamage: 4 } },

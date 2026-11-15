@@ -2,6 +2,8 @@ import type { PercentStatBlock, StatBlock } from "../stats";
 
 export interface BuffDefinition {
   readonly type: "buff" | "debuff" | "guard";
+  /** The `spell-` sheet its icon comes from, when it shares one (every holy buff shows `holy`). */
+  readonly icon?: string;
   readonly duration?: number;
   readonly description?: string;
   readonly stats?: StatBlock;

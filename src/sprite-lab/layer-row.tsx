@@ -1,8 +1,8 @@
-import { Box, Field, Select, type SelectOption } from "@/ui";
+import { Box, Field, Select, SheetThumb, type SelectOption } from "@/ui";
 import { IconButton } from "./icon-button";
 import { PENDING_COLOR } from "./sheet-canvas";
 import { getItemLooks } from "./item-looks";
-import { getSheetOption, SheetThumb } from "./sheet-thumb";
+import { getSheetOption } from "./sheet-thumb";
 import { fitsGender, getLayerSheets, type HumanLayer } from "./sheets";
 
 const PENDING_DOT = 6;

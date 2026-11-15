@@ -1,8 +1,7 @@
 import type { ReactNode } from "react";
 import { Textarea } from "theme-ui";
-import { Box, Button, Field, Flex, Text } from "@/ui";
+import { Box, Button, Field, Flex, SheetThumb, Text } from "@/ui";
 import { CORE_PROMPTS, type CorePromptId } from "./core-prompts";
-import { SheetThumb } from "./sheet-thumb";
 
 const TAB_SIZE = 34;
 const TAB_RADIUS = 8;
