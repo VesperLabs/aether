@@ -9,11 +9,11 @@ export type { AbilitySlot } from "@/rules/spells";
 interface ItemEventDetail {
   item: BuiltItem;
   location: string;
+  bagId?: string;
+  slotKey?: string;
 }
 
 interface DropItemDetail extends ItemEventDetail {
-  bagId?: string;
-  slotKey?: string;
   player?: unknown;
   target: Element | null;
 }

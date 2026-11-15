@@ -10,6 +10,7 @@ import {
 import type { ClientGameSocket } from "@/network";
 import { isThrowable } from "@/rules/capture";
 import type { DropItem, HudCharacter } from "./context";
+import { doubleClickMove } from "./double-click-move";
 
 interface ItemEventDeps {
   hero: HudCharacter | null;
@@ -30,6 +31,10 @@ export function createItemEventHandlers({
   function onDoubleClickItem(e: WindowEventMap["HERO_DOUBLE_CLICK_ITEM"]) {
     const { item, location } = e.detail;
     const isConsumable = CONSUMABLES_BASES.includes(item?.base) || isThrowable(item?.base);
+
+    /* Gear and spells move to an open slot: on from the bags, off when equipped */
+    const move = hero?.state?.isDead ? null : doubleClickMove(hero, e.detail);
+    if (move) return socket.emit("moveItem", move);
 
     if (!["inventory", "abilities", "bag"].includes(location)) return;
     /* If it is food we are trying to consume it */

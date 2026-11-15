@@ -40,7 +40,7 @@ export {
 export { Item } from "./items/item";
 export { ItemBuilder, rarityForSlots, takesSlots } from "./items/item-builder";
 export { ITEM_CATALOG, getCatalogItem, type CatalogItem } from "./items/item-catalog";
-export { randomDropLevels } from "./items/item-drops";
+export { randomDropLevels, rollSlots } from "./items/item-drops";
 export { ITEM_KEYS, findItemKey, type ItemLook } from "./items/item-keys";
 export { readRef, type AnyItemRef } from "./items/item-refs";
 export { getSetBonus } from "./items/item-sets";

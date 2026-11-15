@@ -12,12 +12,14 @@ import type { ParsedCommand } from "@/network";
 import type { CommandContext } from "@/server/net/command-context";
 import { findNearbyNpc } from "@/server/net/nearby-keeper";
 import { isInRoom } from "@/server/player-room";
+import { restockIfNewDay } from "@/server/shop-stock";
 
 export function chatNpc(ctx: CommandContext, { npcId }: ParsedCommand<"chatNpc"> = {}) {
   const { world, actor, socketId } = ctx;
   const player: Player = world?.players?.[socketId];
   const npc = findNearbyNpc(world, socketId, npcId);
   if (!player || !npc) return;
+  restockIfNewDay(world, npc);
   if (!npc.talkingIds.includes(socketId)) npc.talkingIds.push(socketId);
   player.state.targetNpcId = npcId;
   /* Quests that are of type: chat need to be updated */

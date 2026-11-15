@@ -5,7 +5,7 @@ import {
   findInventoryItemById,
   findOpenBagSlot,
 } from "./lookup";
-import { cloneItem } from "./slots";
+import { cloneItem, toQuantity } from "./slots";
 import type {
   InventoryItem,
   ItemSlotValue,
@@ -55,6 +55,9 @@ function resolveFrom(
       if (!npcId) return reject();
       if (!shopSlot?.stock) return reject();
       if (to.location === "shop") return reject();
+      if (isStackable && toQuantity(from.amount) > shopSlot.stock) {
+        return reject(`Only ${shopSlot.stock} left today`);
+      }
       from.itemId = shopSlot?.item?.id;
       return cloneItem({
         ...(shopSlot?.item || {}),

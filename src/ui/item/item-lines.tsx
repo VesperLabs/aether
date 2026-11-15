@@ -42,32 +42,18 @@ export const spellIcon = (name: string) => `./assets/atlas/spell/spell-${name}.p
 
 const RULE = "rgba(255, 255, 255, 0.16)";
 
-/** The tooltip's own side padding plus the item tooltip's: how far a divider reaches out. */
-const TOOLTIP_INSET = 16 + 8;
-
-/** Splits the tooltip's footer (hints, then costs) from its sections, from edge to edge. */
-export const Divider = () => (
-  <Box
-    aria-hidden
-    sx={{ alignSelf: "stretch", height: "1px", bg: RULE, mx: -TOOLTIP_INSET, my: "6px" }}
-  />
-);
-
 /** A title's rules never shrink below this, so a long title (a set's name) widens the tooltip. */
 const RULE_STYLE = { flex: 1, minWidth: 16, height: "1px" } as const;
 
-/** A 3px square where a title's rule meets its text: crisp, like the pixel art. */
-const RulePip = () => (
-  <Box aria-hidden sx={{ width: 3, height: 3, flexShrink: 0, bg: "rgba(255, 255, 255, 0.35)" }} />
-);
+/** Where a title's rule starts at the tooltip's edge: faint, but never gone. */
+const RULE_EDGE = "rgba(255, 255, 255, 0.05)";
 
 /**
- * A section heading: small spaced capitals between two hairlines that fade out toward the edges, each ending in a square pip beside the text.
+ * A section heading: small spaced capitals between two hairlines that fade toward the edges but never vanish.
  */
 export const SectionTitle = ({ children, color }: { children: ReactNode; color?: string }) => (
   <Flex sx={{ alignItems: "center", width: "100%", mt: "8px", mb: "3px" }}>
-    <Box sx={{ ...RULE_STYLE, background: `linear-gradient(to right, transparent, ${RULE})` }} />
-    <RulePip />
+    <Box sx={{ ...RULE_STYLE, background: `linear-gradient(to right, ${RULE_EDGE}, ${RULE})` }} />
     <Text
       sx={{
         ...TYPE.meta,
@@ -79,8 +65,7 @@ export const SectionTitle = ({ children, color }: { children: ReactNode; color?:
     >
       {children}
     </Text>
-    <RulePip />
-    <Box sx={{ ...RULE_STYLE, background: `linear-gradient(to left, transparent, ${RULE})` }} />
+    <Box sx={{ ...RULE_STYLE, background: `linear-gradient(to left, ${RULE_EDGE}, ${RULE})` }} />
   </Flex>
 );
 

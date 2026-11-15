@@ -91,6 +91,21 @@ function rollKind(dice: Dice, magicFind: number): DropRoll {
   return 0;
 }
 
+/**
+ * How many mod slots a plain piece of gear comes with, at the same odds as a world drop's slot
+ * count (without uniques and sets, or magic find). Merchants roll their gear with this.
+ */
+export function rollSlots(dice: Dice): number {
+  const weights = DROP_WEIGHTS.filter((w) => typeof w.roll === "number");
+  const total = weights.reduce((sum, w) => sum + w.weight, 0);
+  let left = dice.random() * total;
+  for (const { roll, weight } of weights) {
+    left -= weight;
+    if (left < 0) return roll as number;
+  }
+  return 0;
+}
+
 /** Keys of `type` items a monster of this level drops: uniques, sets, or everything else. */
 function poolFor(type: string, kind: "unique" | "set" | "plain", mobLevel: number): string[] {
   return Object.values(ITEM_CATALOG)

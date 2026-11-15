@@ -107,10 +107,10 @@ export const actors2 = {
     },
     quests: [],
     shop: [
-      { item: "smallHpPotion", stock: 1 },
-      { item: "smallMpPotion", stock: 1 },
-      { item: "mediumHpPotion", stock: 1 },
-      { item: "mediumMpPotion", stock: 1 },
+      { item: "smallHpPotion", stock: 20 },
+      { item: "smallMpPotion", stock: 20 },
+      { item: "mediumHpPotion", stock: 10 },
+      { item: "mediumMpPotion", stock: 10 },
     ],
   },
   danny: {
@@ -257,7 +257,7 @@ export const actors2 = {
     quests: ["ice-crab-claws", "wolf-pelts", "wolf-culling"],
     shop: [
       { item: "tomahawk", stock: 1 },
-      { item: "mediumHpPotion", stock: 1 },
+      { item: "mediumHpPotion", stock: 10 },
     ],
     home: { x: 560, y: 597 },
   },

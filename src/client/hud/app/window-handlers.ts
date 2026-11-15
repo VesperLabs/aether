@@ -60,6 +60,15 @@ export function createWindowHandlers({
     }
   };
 
+  /* Shelves changed while the player is shopping: something sold out or it restocked */
+  const onNpcShop = (args: { npcId: string; shop: KeeperView["services"]["shop"] }) => {
+    setKeeper((prev) =>
+      prev?.id === args?.npcId
+        ? { ...prev, services: { ...prev.services, shop: args.shop } }
+        : prev,
+    );
+  };
+
   const onHeroChatNpc = () => {
     const scene = getScene();
     const hero = scene.hero;
@@ -155,6 +164,7 @@ export function createWindowHandlers({
 
   return {
     onNpcServices,
+    onNpcShop,
     onHeroChatNpc,
     onUpdateHud,
     onUpdateRoomPlayers,

@@ -163,18 +163,17 @@ export const ItemCard = ({ item }: { item: WikiItem }) => {
       ) : (
         hasStats && (
           /* With no plain stats (a spell), its first section's own heading starts the column */
-          <Column label={described.stats.length > 0 ? "Stats" : undefined}>
+          <Column
+            label={described.stats.length > 0 || described.buffs.length > 0 ? "Stats" : undefined}
+          >
             <Lines lines={described.stats} />
+            {/* What a spell casts reads as part of its stats */}
+            {described.buffs.map((buff) => (
+              <Buff key={buff.name} name={buff.name} level={buff.level} lines={buff.stats} />
+            ))}
             {described.effects.length > 0 && (
               <Section title="Effects">
                 <Lines lines={described.effects} />
-              </Section>
-            )}
-            {described.buffs.length > 0 && (
-              <Section title="Casts">
-                {described.buffs.map((buff) => (
-                  <Buff key={buff.name} name={buff.name} level={buff.level} lines={buff.stats} />
-                ))}
               </Section>
             )}
             {hasMods && (
