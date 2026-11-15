@@ -96,11 +96,26 @@ const RARITY_VALUE: Record<string, number> = {
   set: 100,
 };
 
+/**
+ * What a merchant pays for a stackable: potions and food are pocket change, but rarer finds (crystals,
+ * wyrm scales) are worth the trip back to town.
+ */
+const STACKABLE_VALUE: Record<string, number> = { common: 1, magic: 3, rare: 8, unique: 20 };
+
+/**
+ * A card is worth more than the gear its mob drops: it's a mod for life. Bosses' cards most, and
+ * every card more the stronger its mob.
+ */
+const CARD_VALUE: Record<string, number> = { common: 15, magic: 40, rare: 100, unique: 250 };
+
 function getItemCost(item: Loose): number {
   if (item?.cost) return item.cost;
   const power = levelPower(item?.level ?? 1);
   if (item.slot === "spell") return Math.round(50 * power);
-  if (item.slot === "stackable") return Math.round(power);
+  if (item.base === "card") {
+    return Math.round((CARD_VALUE[item.rarity] ?? 1) * levelPower(item.mobLevel ?? 1));
+  }
+  if (item.slot === "stackable") return Math.round((STACKABLE_VALUE[item.rarity] ?? 1) * power);
   return Math.round((RARITY_VALUE[item?.rarity] ?? 1) * power);
 }
 

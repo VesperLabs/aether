@@ -48,7 +48,12 @@ const onHurt = (name: TriggerDefinition["name"]) =>
 /* Each mod fits only a few kinds of gear, so every slot is a choice */
 const MODS = {
   /* Power */
-  sharp: { label: "Sharp", power: "normal", stats: { minDamage: 1, maxDamage: 2 }, types: WEAPONS },
+  sharp: {
+    label: "Sharp",
+    power: "normal",
+    stats: { minDamage: 0.5, maxDamage: 1 },
+    types: WEAPONS,
+  },
   piercing: {
     label: "Piercing",
     power: "normal",
@@ -76,35 +81,35 @@ const MODS = {
   fiery: {
     label: "Fiery",
     power: "normal",
-    stats: { minFireDamage: 1, maxFireDamage: 2 },
+    stats: { minFireDamage: 0.5, maxFireDamage: 1 },
     types: WEAPONS,
     effect: "fire",
   },
   frozen: {
     label: "Frozen",
     power: "normal",
-    stats: { minWaterDamage: 1, maxWaterDamage: 2 },
+    stats: { minWaterDamage: 0.5, maxWaterDamage: 1 },
     types: WEAPONS,
     effect: "water",
   },
   shocking: {
     label: "Shocking",
     power: "normal",
-    stats: { minLightDamage: 1, maxLightDamage: 2 },
+    stats: { minLightDamage: 0.5, maxLightDamage: 1 },
     types: WEAPONS,
     effect: "light",
   },
   earthen: {
     label: "Earthen",
     power: "normal",
-    stats: { minEarthDamage: 1, maxEarthDamage: 2 },
+    stats: { minEarthDamage: 0.5, maxEarthDamage: 1 },
     types: WEAPONS,
     effect: "earth",
   },
   radiant: {
     label: "Radiant",
     power: "normal",
-    stats: { minHolyDamage: 1, maxHolyDamage: 2 },
+    stats: { minHolyDamage: 0.5, maxHolyDamage: 1 },
     types: WEAPONS,
     effect: "holy",
   },
@@ -286,6 +291,10 @@ export interface ScaledMod {
   triggers: TriggerDefinition[];
 }
 
+/**
+ * A mod's stats at a tier, exact. Damage can grow in half steps per tier (0.5–1): the stats it
+ * adds up into round damage once, so a few small mods still add up.
+ */
 const times = (block: Readonly<Record<string, number>> = {}, tier: number) =>
   Object.fromEntries(Object.entries(block).map(([stat, value]) => [stat, value * tier]));
 

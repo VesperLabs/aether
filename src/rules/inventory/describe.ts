@@ -200,21 +200,24 @@ const trimZeros = (value: string) =>
 function buffLines(name: string, level: number, perTier = false): StatLine[] {
   const buff = buffList[name as BuffName] as BuffDefinition | undefined;
   if (!buff) return [];
-  const { duration, stats } = buffAtLevel(buff, level);
-  const lines = statLines({ duration, ...stats });
+  const { duration, stats, percentStats } = buffAtLevel(buff, level);
+  const lines = [...statLines({ duration, ...stats }), ...statLines(percentStats, "%")];
   if (!perTier) return lines;
   const step = buff.perLevel ?? {};
+  const steps = [
+    ...statLines({ ...(step.duration && { duration: step.duration }), ...step.stats }),
+    ...statLines(step.percentStats, "%"),
+  ];
   const note = new Map(
-    statLines({ ...(step.duration && { duration: step.duration }), ...step.stats }).map(
-      ({ label, value }) => [
-        label,
-        `(${value.startsWith("-") ? "" : "+"}${trimZeros(value)}/tier)`,
-      ],
-    ),
+    steps.map(({ label, value }) => [
+      `${label}${value.endsWith("%")}`,
+      `(${value.startsWith("-") ? "" : "+"}${trimZeros(value)}/tier)`,
+    ]),
   );
-  return lines.map((line) =>
-    note.has(line.label) ? { ...line, note: note.get(line.label) } : line,
-  );
+  return lines.map((line) => {
+    const lineNote = note.get(`${line.label}${line.value.endsWith("%")}`);
+    return lineNote ? { ...line, note: lineNote } : line;
+  });
 }
 
 /**

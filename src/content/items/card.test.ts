@@ -3,17 +3,20 @@ import { actors } from "../actors/actors";
 import { cardItems } from "./card";
 import { canSlotMod } from "./mods";
 
-/** Actors that are neither a keeper nor a mob: no card. */
-const NO_CARD = ["dummy", "traveler", "loiterer"];
+/** Adventurers out and about like players, and the training dummy: not mobs, no card. */
+const NOT_MOBS = ["traveler", "loiterer", "dummy"];
+
+/** Mobs: actors that don't talk (keepers and townsfolk do) and aren't one of the above. */
+const mobs = Object.entries(actors)
+  .filter(([id, actor]) => !NOT_MOBS.includes(id) && !(actor as { dialogues?: object }).dialogues)
+  .map(([id]) => id);
 
 const cards = Object.values(cardItems).flatMap((table) => Object.entries(table));
 const kebab = (id: string) => id.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
 
 describe("cards", () => {
-  it("exist for every keeper and mob, named after it", () => {
-    const wanted = Object.keys(actors)
-      .filter((id) => !NO_CARD.includes(id))
-      .map((id) => `${id}Card`);
+  it("exist for every mob and nothing else, named after it", () => {
+    const wanted = mobs.map((id) => `${id}Card`);
     expect(cards.map(([key]) => key).sort()).toEqual(wanted.sort());
   });
 

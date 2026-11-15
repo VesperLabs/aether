@@ -28,7 +28,7 @@ const socket = (from: InventoryState) =>
 describe("socketing a card", () => {
   it("puts its mod in the gear's first empty slot, its stats added, and uses one card", () => {
     const sword = build({ key: "sword", slots: 2 });
-    const result = socket(state(build("wolfCard", 3), sword));
+    const result = socket(state(build("hornetCard", 3), sword));
     if (!result.moved) throw new Error("refused");
     const socketed = result.state.equipment.handRight as InventoryItem;
     expect(socketed.mods).toEqual(["sharp", null]);
@@ -37,19 +37,19 @@ describe("socketing a card", () => {
   });
 
   it("removes the last card of a stack", () => {
-    const result = socket(state(build("wolfCard"), build({ key: "sword", slots: 1 })));
+    const result = socket(state(build("hornetCard"), build({ key: "sword", slots: 1 })));
     expect(result.moved && result.state.inventory[0]).toBeNull();
   });
 
   it("refuses gear with no empty slot, or a mod that can't go on it", () => {
-    expect(socket(state(build("wolfCard"), build("sword")))).toMatchObject({ moved: false });
+    expect(socket(state(build("hornetCard"), build("sword")))).toMatchObject({ moved: false });
     const sturdyOnSword = socket(state(build("crabCard"), build({ key: "sword", slots: 1 })));
     expect(sturdyOnSword).toMatchObject({ moved: false, error: expect.stringContaining("can't") });
   });
 
   it("never goes in an ability slot", () => {
     const result = moveItem(
-      state(build("wolfCard"), build("sword")),
+      state(build("hornetCard"), build("sword")),
       { from: { location: "inventory", slot: 0 }, to: { location: "abilities", slot: 1 } },
       context,
     );

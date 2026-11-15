@@ -59,14 +59,14 @@ export const buffList = {
   endurance: {
     type: "buff",
     duration: 30000,
-    stats: { maxHp: 15 },
-    perLevel: { stats: { maxHp: 15 } },
+    percentStats: { maxHp: 10 },
+    perLevel: { percentStats: { maxHp: 10 } },
   },
   genius: {
     type: "buff",
     duration: 30000,
-    stats: { maxMp: 15 },
-    perLevel: { stats: { maxMp: 15 } },
+    percentStats: { maxMp: 10 },
+    perLevel: { percentStats: { maxMp: 10 } },
   },
   protein: {
     type: "buff",

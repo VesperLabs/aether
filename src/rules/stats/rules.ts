@@ -1,5 +1,5 @@
 import { getSetBonus } from "@/content";
-import { unarmedDamage } from "./power";
+import { finishDamage } from "./damage-stats";
 import { isSwingStat } from "./swing-stats";
 
 /** An open-ended bag of stat name -> value. Also carries `triggers` once calculated. */
@@ -365,15 +365,10 @@ function calculateHandStats(
   if (ns.castDelay < 200) ns.castDelay = 200;
   if (ns.attackDelay < 200) ns.attackDelay = 200;
 
-  /* Fists plus the weapon, multiplied by the attribute the weapon uses: strength, or dexterity for ranged */
-  const [fistMin, fistMax] = unarmedDamage(ns.level);
   const isRanged = HANDS.some(
     (hand) => hand !== skipHand && heldItem(player, hand)?.type === "ranged",
   );
-  const attribute = isRanged ? ns.dexterity : ns.strength;
-  const attributeMultiplier = 1 + Math.max(0, attribute) / 100;
-  ns.minDamage = Math.floor((ns.minDamage + fistMin) * attributeMultiplier);
-  ns.maxDamage = Math.max(Math.floor((ns.maxDamage + fistMax) * attributeMultiplier), ns.minDamage);
+  finishDamage(ns, isRanged);
 
   /* Any percentStat value that needs to be pre-calculated goes here  */
   Object.keys(totalPercentStats).forEach((key) => {
