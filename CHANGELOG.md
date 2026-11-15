@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.42.1](https://github.com/VesperLabs/aether/compare/v0.42.0...v0.42.1) (2026-11-15)
+
+
+### Bug Fixes
+
+* smooth waterfall animations and animated winter water ([#361](https://github.com/VesperLabs/aether/issues/361)) ([3b84d3e](https://github.com/VesperLabs/aether/commit/3b84d3e184b7f97e476251228f3d0cf8a51cf497))
+
 ## [0.42.0](https://github.com/VesperLabs/aether/compare/v0.41.0...v0.42.0) (2026-11-15)
 
 
