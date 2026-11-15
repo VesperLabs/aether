@@ -43,11 +43,6 @@ import { isRoomWatched } from "./room-index";
 import { afterWindup, cancelWindup, emitNpcWindup, type WindupTrack } from "./npc-windup";
 import { habitatMap, isNextToSolidTile, isOutOfHabitat, type Habitat } from "@/rules/movement";
 
-/** An actor as content defines it, before it is placed in a world. */
-// Legacy: `NpcArgs` mixes content with placement; type this as `ActorDefinition` once they split.
-// oxlint-disable-next-line typescript/no-explicit-any
-export type NpcDefinition = Record<string, any>;
-
 /** What an NPC is created from: a content definition placed in a room. */
 type NpcArgs = CharacterArgs & {
   name: string;
@@ -87,6 +82,9 @@ export class Npc extends Character {
   public respawnTime: number;
   public drops: Array<Drop>;
   public talkingIds: Array<string>;
+  /** The content's shop lines and the game day they were stocked; see `server/shop-stock`. */
+  public shopEntries?: Array<ShopEntry>;
+  public shopStockedOn?: number;
   public services: NpcServices;
   /** Players can talk to it: it has `dialogues`. */
   public talks: boolean;
@@ -113,9 +111,7 @@ export class Npc extends Character {
     { equipment = {}, abilities = {}, dialogues, shop, quests, home, ...args }: NpcArgs,
   ) {
     super(world, args);
-
     this.name = args?.name;
-    this.world = world;
     this.respawnTime = 10000;
     /* Actors without a `drops` part drop nothing of their own. */
     this.drops = args?.drops as Array<Drop>;
@@ -129,6 +125,7 @@ export class Npc extends Character {
       quests: quests?.map((questId) => world?.quests?.[questId]),
       home,
     };
+    this.shopEntries = shop;
     this.talks = !!dialogues;
     this.rng = createRng(seedFromString(String(this.id ?? this.name)));
     /* Followers are picked per spawn: a `leader` map property makes this one follow. */

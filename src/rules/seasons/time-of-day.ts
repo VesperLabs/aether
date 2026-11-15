@@ -13,6 +13,11 @@ export function hourAt(now: number, calendar: Calendar): number {
   return (wrap(now + calendar.dayOffsetMs, DAY_LENGTH_MS) / DAY_LENGTH_MS) * HOURS_PER_DAY;
 }
 
+/** Which game day `now` falls on, counting up from the clock's start. */
+export function dayAt(now: number, calendar: Calendar): number {
+  return Math.floor((now + calendar.dayOffsetMs) / DAY_LENGTH_MS);
+}
+
 /** Moves the clock so it is `hour` at `now`; the day carries on from there. */
 export function setHour(calendar: Calendar, now: number, hour: number): void {
   const target = (wrap(hour, HOURS_PER_DAY) / HOURS_PER_DAY) * DAY_LENGTH_MS;

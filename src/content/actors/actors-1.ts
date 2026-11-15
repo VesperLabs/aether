@@ -97,7 +97,7 @@ export const actors1 = {
       { item: "spikes", stock: 1 },
       { item: "staff", stock: 1 },
       { item: "tomahawk", stock: 1 },
-      { item: "mediumHpPotion", stock: 1 },
+      { item: "mediumHpPotion", stock: 10 },
     ],
     home: { x: 1554, y: 664 },
   },

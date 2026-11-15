@@ -14,6 +14,7 @@ import { ElementalItemArt } from "./elemental-item-art";
 import { DEFAULT_ASSET_USER } from "./art-icon";
 import { SPRING_OPEN_ATTR } from "./drag-spring-open";
 import { springWiggle } from "./spring-wiggle";
+import { ModBurst, useModBurst } from "./mod-burst";
 
 import { PAD_DROP_EVENT, PAD_USE_EVENT, type PadDropEvent } from "./pad-slot-events";
 
@@ -115,6 +116,7 @@ export const ItemSlot = memo(
     };
 
     const profile = player?.profile;
+    const modBursts = useModBurst(item);
 
     /* The item's art out of its texture: blank while it loads, never the last item's */
     const art = useAssetArt(
@@ -212,6 +214,7 @@ export const ItemSlot = memo(
       >
         {item && (
           <>
+            {modBursts > 0 && <ModBurst key={modBursts} />}
             {item?.base === "bag" && (
               <SpaceDonut
                 percent={
@@ -219,7 +222,11 @@ export const ItemSlot = memo(
                 }
               />
             )}
-            {item?.amount > 1 && <SlotAmount>{item?.amount}</SlotAmount>}
+            {stock !== undefined && stock > 1 ? (
+              <SlotAmount>{stock}</SlotAmount>
+            ) : (
+              item?.amount > 1 && <SlotAmount>{item?.amount}</SlotAmount>
+            )}
             {item?.slot === "spell" && (
               <SlotAmount>
                 <RomanNumeral value={item?.rank} />

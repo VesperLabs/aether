@@ -150,6 +150,8 @@ export interface ServerToClientEvents {
     services: NpcServices;
     playerQuests: FullCharacterWire["quests"];
   }) => void;
+  /** A keeper's shelves changed: something sold out or it restocked. */
+  npcShop: (payload: { npcId: string; shop: NpcServices["shop"] }) => void;
   respawnNpc: (payload: { id: string; x: number; y: number; respawnTime: number }) => void;
   /** An NPC appeared after the room was sent (a cheat spawned it). */
   npcJoin: (npc: FullCharacterWire) => void;

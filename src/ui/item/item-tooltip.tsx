@@ -11,7 +11,6 @@ import {
   BODY_ICON,
   BuffDetails,
   BuffName,
-  Divider,
   Level,
   SectionTitle,
   StatGrid,
@@ -186,23 +185,32 @@ export const ItemTooltip = ({ item, player, tooltipId, show }: ItemTooltipProps)
             </Text>
           </Flex>
         </Flex>
-        <StatSection title="Stats" lines={d.stats} />
+        {/* What a spell casts reads as part of its stats */}
+        {(d.stats.length > 0 || d.buffs.length > 0) && (
+          <>
+            <SectionTitle>Stats</SectionTitle>
+            {d.stats.length > 0 && (
+              <StatGrid>
+                <StatRows lines={d.stats} />
+              </StatGrid>
+            )}
+            {d.buffs.map((buff) => (
+              <Fragment key={buff.name}>
+                {/* A self-buff spell (Endurance) already shows its icon and name up top */}
+                {buff.name !== item.base && (
+                  <BuffName name={buff.name} level={buff.level} sx={{ alignSelf: "flex-start" }} />
+                )}
+                <StatGrid>
+                  <BuffDetails lines={buff.stats} />
+                </StatGrid>
+              </Fragment>
+            ))}
+          </>
+        )}
         {/* A card carries one mod, the one it sockets */}
         <ModSection mods={d.mods} title={d.fits ? "Mod" : "Mods"} />
         {d.fits && <FitsSection fits={d.fits} />}
         <StatSection title="Effects" lines={d.effects} />
-        {d.buffs.map((buff) => (
-          <Fragment key={buff.name}>
-            <SectionTitle>Casts</SectionTitle>
-            {/* A self-buff spell (Endurance) already shows its icon and name up top */}
-            {buff.name !== item.base && (
-              <BuffName name={buff.name} level={buff.level} sx={{ alignSelf: "flex-start" }} />
-            )}
-            <StatGrid>
-              <BuffDetails lines={buff.stats} />
-            </StatGrid>
-          </Fragment>
-        ))}
         {d.requirements.length > 0 && (
           <>
             <SectionTitle>Requires</SectionTitle>
@@ -236,11 +244,11 @@ export const ItemTooltip = ({ item, player, tooltipId, show }: ItemTooltipProps)
           </>
         )}
         {(d.description || d.action) && (
-          <>
-            <Divider />
+          /* Set apart from the sections by space alone, no rule */
+          <Flex sx={{ flexDirection: "column", alignItems: "inherit", mt: "10px" }}>
             {d.description && <Text sx={HINT_STYLE}>{d.description}</Text>}
             {d.action && <Text sx={HINT_STYLE}>Double click to {d.action}</Text>}
-          </>
+          </Flex>
         )}
         {/* What it costs, in a lighter pill of its own rather than under another rule */}
         <Flex

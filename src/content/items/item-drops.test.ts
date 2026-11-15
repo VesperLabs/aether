@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Dice } from "../random";
-import { magicFindBonus, randomDropLevels, rollDrop } from "./item-drops";
+import { magicFindBonus, randomDropLevels, rollDrop, rollSlots } from "./item-drops";
 import { ITEM_CATALOG } from "./item-catalog";
 
 function seededDice(seed: number): Dice {
@@ -67,5 +67,17 @@ describe("rollDrop", () => {
   it("finds more 3 and 4 slot gear with magic find", () => {
     const rares = (mf: number) => rollMany(10, mf).filter((d) => d.slots >= 3).length;
     expect(rares(250)).toBeGreaterThan(rares(0) * 1.5);
+  });
+});
+
+describe("rollSlots", () => {
+  it("rolls 0 to 4 slots, mostly none, at the world drop odds", () => {
+    const dice = seededDice(7);
+    const counts = [0, 0, 0, 0, 0];
+    for (let i = 0; i < 10000; i++) counts[rollSlots(dice)]!++;
+    // Weights 460/250/200/60/15 out of 985.
+    expect(counts[0]! / 10000).toBeCloseTo(460 / 985, 1);
+    expect(counts[4]! / 10000).toBeCloseTo(15 / 985, 1);
+    expect(counts.reduce((a, b) => a + b)).toBe(10000);
   });
 });

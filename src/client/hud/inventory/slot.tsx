@@ -25,10 +25,10 @@ export const HUD_SLOT_EVENTS: SlotEvents = {
       }),
     );
   },
-  onDoubleClick: ({ item, location }) => {
+  onDoubleClick: ({ item, location, slotKey, bagId }) => {
     window.dispatchEvent(
       new CustomEvent("HERO_DOUBLE_CLICK_ITEM", {
-        detail: { item, location: location as string },
+        detail: { item, location: location as string, slotKey, bagId },
       }),
     );
   },

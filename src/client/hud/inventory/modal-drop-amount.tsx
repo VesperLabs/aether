@@ -3,7 +3,7 @@ import { useAppContext } from "@/client/hud/app/context";
 import { Slot } from "./slot";
 import type { BuiltItem } from "@/content";
 import type { DropItem } from "@/client/hud/app/context";
-import { Modal, Flex, Input, Icon, Text, KeyboardButton } from "@/ui";
+import { Modal, Flex, Input, Icon, Text, KeyboardButton, expectModBurst } from "@/ui";
 
 export const ModalDropAmount = () => {
   const { socket, dropItem, setDropItem, zoom, bottomOffset, hero } = useAppContext();
@@ -36,6 +36,7 @@ export const ModalDropAmount = () => {
     }
     /* If we are selling to the shop, send the amount */
     if (isSocket) {
+      expectModBurst(gear?.id);
       socket.emit("moveItem", {
         from: { slot: slotKey, bagId, location },
         to: { slot: dataset?.slotKey, bagId: dataset?.bagId, location: dataset?.location },
@@ -74,7 +75,7 @@ export const ModalDropAmount = () => {
       <Modal zoom={zoom} bottomOffset={bottomOffset}>
         <Modal.Header icon="./assets/icons/pen.png">
           {isSocket
-            ? "Confirm Socket?"
+            ? "Confirm Mod?"
             : isBuying
               ? "Buy"
               : isSelling
@@ -137,7 +138,7 @@ export const ModalDropAmount = () => {
                 <Text>{Number(amount) * (item?.cost as number)}</Text>
               </>
             ) : (
-              <Text>{isSocket ? "Socket" : "Drop"}</Text>
+              <Text>{isSocket ? "Mod" : "Drop"}</Text>
             )}
           </KeyboardButton>
         </Modal.Footer>

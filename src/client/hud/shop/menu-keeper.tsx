@@ -140,7 +140,7 @@ export const MenuKeeper = () => {
             justifyContent: "end",
           }}
         >
-          {shop?.map(({ item }, idx) => {
+          {shop?.map(({ item, stock }, idx) => {
             return (
               <Slot
                 key={idx}
@@ -148,6 +148,7 @@ export const MenuKeeper = () => {
                 slotKey={`${idx}`}
                 icon="./assets/icons/chest.png"
                 item={item}
+                stock={item?.type === "stackable" ? stock : undefined}
                 player={hero}
               />
             );

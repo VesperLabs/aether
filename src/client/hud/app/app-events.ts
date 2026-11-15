@@ -12,6 +12,7 @@ export interface SocketHandlers {
   playerUpdate: ServerToClientEvents["playerUpdate"];
   lootGrabbed: ServerToClientEvents["lootGrabbed"];
   npcServices: ServerToClientEvents["npcServices"];
+  npcShop: ServerToClientEvents["npcShop"];
   message: ServerToClientEvents["message"];
   playerJoin: ServerToClientEvents["playerJoin"];
   remove: ServerToClientEvents["remove"];
@@ -44,6 +45,7 @@ export function bindSocketHandlers(socket: ClientGameSocket, handlers: SocketHan
   socket.on("playerUpdate", handlers.playerUpdate);
   socket.on("lootGrabbed", handlers.lootGrabbed);
   socket.on("npcServices", handlers.npcServices);
+  socket.on("npcShop", handlers.npcShop);
   socket.on("message", handlers.message);
   socket.on("playerJoin", handlers.playerJoin);
   socket.on("remove", handlers.remove);
@@ -59,6 +61,7 @@ export function bindSocketHandlers(socket: ClientGameSocket, handlers: SocketHan
     socket.off("playerUpdate", handlers.playerUpdate);
     socket.off("lootGrabbed", handlers.lootGrabbed);
     socket.off("npcServices", handlers.npcServices);
+    socket.off("npcShop", handlers.npcShop);
     socket.off("message", handlers.message);
     socket.off("playerJoin", handlers.playerJoin);
     socket.off("remove", handlers.remove);

@@ -59,6 +59,7 @@ type MobAbilities = { readonly [slot in "1" | "2" | "3" | "4" | "5"]?: ItemRef }
 
 interface ShopEntry {
   readonly item: ItemRef;
+  /** How many a stackable sells per game day. Gear always sells one a day, rolled fresh. */
   readonly stock: number;
 }
 

@@ -59,7 +59,7 @@ const MODS = {
     label: "Sturdy",
     power: "normal",
     stats: { defense: 3 },
-    types: ["armor", "pants", "shield"],
+    types: ["armor", "pants", "shield", "helmet", "gloves", "boots"],
   },
   arcane: {
     label: "Arcane",

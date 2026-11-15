@@ -159,6 +159,7 @@ export function App({ socket, peer, debug, game }: AppProps) {
 
   const {
     onNpcServices,
+    onNpcShop,
     onHeroChatNpc,
     onUpdateHud,
     onUpdateRoomPlayers,
@@ -202,6 +203,7 @@ export function App({ socket, peer, debug, game }: AppProps) {
     playerUpdate: onPlayerUpdate,
     lootGrabbed: onLootGrabbed,
     npcServices: onNpcServices,
+    npcShop: onNpcShop,
     message: (message) => addMessage(message as ChatMessage), // called without one when there is nothing to say
     playerJoin: onPlayerJoin,
     remove: onPlayerLeave,
