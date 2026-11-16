@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.46.0](https://github.com/VesperLabs/aether/compare/v0.45.0...v0.46.0) (2026-11-16)
+
+
+### Features
+
+* body definitions with per-hand points, hand-aware NPC melee, and sprite lab body window ([#369](https://github.com/VesperLabs/aether/issues/369)) ([7693e1d](https://github.com/VesperLabs/aether/commit/7693e1d532b8297ed4c02dba87d3349e6ed40bff))
+
 ## [0.45.0](https://github.com/VesperLabs/aether/compare/v0.44.0...v0.45.0) (2026-11-16)
 
 
