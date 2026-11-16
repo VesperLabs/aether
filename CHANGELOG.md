@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.45.0](https://github.com/VesperLabs/aether/compare/v0.44.0...v0.45.0) (2026-11-16)
+
+
+### Features
+
+* bow nocking, spell chaining, sand footprints and class balance ([#367](https://github.com/VesperLabs/aether/issues/367)) ([d0ea0a7](https://github.com/VesperLabs/aether/commit/d0ea0a71e11699a8b78b8d00143905d76909e25f))
+
 ## [0.44.0](https://github.com/VesperLabs/aether/compare/v0.43.0...v0.44.0) (2026-11-15)
 
 
