@@ -43,7 +43,6 @@ export function updateSpellCooldown(hero: Player, abilitySlot: AbilitySlot) {
       detail: {
         spellName,
         duration: castDelay + getSpellCooldown(spellName),
-        sharedDuration: castDelay,
         startTime: Date.now(),
       },
     }),

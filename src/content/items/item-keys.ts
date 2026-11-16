@@ -7,6 +7,8 @@ export interface ItemKeyEntry {
   rarity: string;
   /** The display name, e.g. "Fox Blade" for `foxBlade`. Spells add their level: "Fireball Lv. 2". */
   name: string;
+  /** How strong it is, for tiered gear. */
+  tier?: number;
   /** What the item looks like, enough to draw an icon. */
   look: ItemLook;
 }
@@ -18,8 +20,9 @@ export interface ItemLook {
 }
 
 export const ITEM_KEYS: readonly ItemKeyEntry[] = Object.values(ITEM_CATALOG).map(
-  ({ key, type, rarity, name, rank, slot, texture, tint }) => ({
+  ({ key, type, rarity, name, rank, tier, slot, texture, tint }) => ({
     key,
+    tier,
     type,
     rarity,
     name: slot === "spell" && rank ? `${name} Lv. ${rank}` : name,

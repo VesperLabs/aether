@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useThemeUI } from "theme-ui";
-import { Box, Flex, Text } from "@/ui";
+import { Box, Flex, GLASS_BACKDROP, Text } from "@/ui";
 import { useAppContext } from "@/client/hud/app/context";
 import { readNetStats, type NetStats } from "@/client/net/net-stats";
 import { msToHours } from "@/rules/stats";
@@ -194,7 +194,7 @@ const NetStatsPanel = ({ stats, verdict }: { stats: NetStats; verdict: Verdict }
         p: "8px",
         borderRadius: 10,
         bg: "shadow.30",
-        backdropFilter: "blur(10px)",
+        backdropFilter: GLASS_BACKDROP,
         color: "white",
         fontSize: 0,
         lineHeight: 1.2,

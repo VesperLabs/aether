@@ -47,10 +47,10 @@ describe("readChatDraft suggestions", () => {
 });
 
 describe("item hints", () => {
-  it("finds items by their hint, like rarity and type", () => {
+  it("finds items by their rarity, though the hint doesn't show it", () => {
     const { suggestions } = readChatDraft("/drop rare", commands);
     expect(suggestions.length).toBeGreaterThan(0);
-    expect(suggestions.every((s) => s.hint?.startsWith("rare "))).toBe(true);
+    expect(suggestions.every((s) => s.rarity === "rare")).toBe(true);
   });
 });
 

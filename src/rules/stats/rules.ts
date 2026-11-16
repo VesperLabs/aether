@@ -141,7 +141,12 @@ export function getBaseStats({ level = 1, charClass }: { level?: number; charCla
   const isRogue = charClass === ("rogue" satisfies CharClass);
   const isCleric = charClass === ("cleric" satisfies CharClass);
 
-  const startStat = 2 * level + 3;
+  /*
+   * A class's main stat starts at 5 and grows 1.5 a level; the others grow 1 a level, so every
+   * class has at least its level in every stat and can use any gear at the level it drops (see
+   * `scaleRequirements` in item-catalog.ts). Casters (mage and cleric) lean on intelligence.
+   */
+  const startStat = Math.round(1.5 * level + 3.5);
 
   return {
     level,
@@ -153,8 +158,8 @@ export function getBaseStats({ level = 1, charClass }: { level?: number; charCla
     armorPierce: 0,
     dexterity: isRogue ? startStat : level,
     strength: isWarrior ? startStat : level,
-    vitality: isCleric ? startStat : level,
-    intelligence: isMage ? startStat : level,
+    vitality: level,
+    intelligence: isMage || isCleric ? startStat : level,
     defense: 0,
     blockChance: 0,
     critChance: 0,

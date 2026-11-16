@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from "react";
-import { Box, Flex, KeyboardKey, Text } from "@/ui";
+import { Box, Flex, KeyboardKey, Text, toRoman } from "@/ui";
 import { isMobile } from "@/ui";
 import type { ChatSuggestion } from "./chat-command-match";
 import { ChatActorPreview } from "./chat-actor-preview";
@@ -177,7 +177,9 @@ export const ChatCommandPopover = ({
                 ...(isMobile && suggestion.aliases && { gridColumn: "1 / -1", mt: 1 }),
               }}
             >
-              {suggestion.hint}
+              {suggestion.tier
+                ? `${suggestion.hint} · ${toRoman(suggestion.tier)}`
+                : suggestion.hint}
             </Text>
             <Box sx={{ position: "relative", height: 16 }}>
               {isHighlighted && !isMobile && (

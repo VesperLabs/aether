@@ -63,3 +63,7 @@ const SNOWY_TERRAINS = new Set(["Grass", "Dark Grass", "Snow"]);
 export const isSnowyAt = (map: Phaser.Tilemaps.Tilemap | undefined, x: number, y: number) =>
   terrainShareAt(map, x, y, (terrain) => terrain !== undefined && SNOWY_TERRAINS.has(terrain)) >
   0.5;
+
+/** Is the world point on painted sand, in any season? Where feet leave prints too. */
+export const isSandyAt = (map: Phaser.Tilemaps.Tilemap | undefined, x: number, y: number) =>
+  terrainShareAt(map, x, y, (terrain) => terrain === "Desert") > 0.5;

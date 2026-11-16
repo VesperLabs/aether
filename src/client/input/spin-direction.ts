@@ -21,3 +21,8 @@ export function getSpinDirection(hero: Point, point: Point) {
     }
   }
 }
+
+/** The facing for an aim angle (radians, 0 pointing right), by the same rule as `getSpinDirection`. */
+export function getAngleDirection(angle: number) {
+  return getSpinDirection({ x: 0, y: 0 }, { x: Math.cos(angle), y: Math.sin(angle) });
+}

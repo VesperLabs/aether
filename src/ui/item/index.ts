@@ -12,4 +12,4 @@ export { ElementalItemArt, previewSize } from "./elemental-item-art";
 export { ELEMENT_PAD, ElementalSprite } from "./elemental-sprite";
 export { SPRING_OPEN_ATTR, SPRING_OPEN_EVENT } from "./drag-spring-open";
 export { expectModBurst } from "./mod-burst";
-export { SectionTitle, StatRow } from "./item-lines";
+export { ColumnTitle, SectionTitle, StatRow } from "./item-lines";

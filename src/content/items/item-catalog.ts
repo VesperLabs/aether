@@ -71,6 +71,29 @@ const SLOT_OF: Partial<Record<GearType, string>> = {
   shield: "hands",
 };
 
+/** The stat requirement that asks for an item's whole tier level: the heaviest gear's. */
+const FULL_REQUIREMENT = 8;
+
+/**
+ * Stat requirements grow with the tier's level, as a share of it: a family's number out of
+ * `FULL_REQUIREMENT`, so the heaviest gear asks for the whole level and lighter gear less. Every
+ * class has at least its level in every stat, so anyone can use any item at the level it drops;
+ * the class whose stat it is just clears it with room to spare.
+ */
+function scaleRequirements(block: Loose | undefined, tier: number): Loose {
+  const scaled: Loose = {};
+  for (const [stat, value] of Object.entries(block ?? {})) {
+    const grows = typeof value === "number" && !STATIC_STATS.has(stat);
+    scaled[stat] = grows
+      ? Math.max(
+          1,
+          Math.round((Math.min(value, FULL_REQUIREMENT) / FULL_REQUIREMENT) * tierLevel(tier)),
+        )
+      : value;
+  }
+  return scaled;
+}
+
 function scale(block: Loose | undefined, tier: number): Loose {
   const scaled: Loose = {};
   for (const [stat, value] of Object.entries(block ?? {})) {
@@ -119,7 +142,7 @@ function gearItem(
     effects: scale(family.effects, tier),
     requirements: {
       ...(level > 1 && !isBag && { level }),
-      ...scale(family.requirements, tier),
+      ...scaleRequirements(family.requirements, tier),
     },
     triggers: mod?.triggers,
     fixedMod: look.mod,
@@ -175,7 +198,7 @@ function* tabled(type: string, table: Partial<Record<ItemRarity, Loose>>): Gener
         buffs: own.buffs ?? scale(first.buffs, tier),
         requirements: {
           ...(needsLevel && { level }),
-          ...scale(first.requirements, tier),
+          ...scaleRequirements(first.requirements, tier),
           ...own.requirements,
         },
       } as CatalogItem;

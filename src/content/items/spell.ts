@@ -10,7 +10,7 @@ export const spellItems = {
       slot: "spell",
       texture: "scroll-red",
       effects: { minFireDamage: 2, maxFireDamage: 4 },
-      stats: { mpCost: 4, castTime: 500 },
+      stats: { mpCost: 4, castTime: 250 },
       requirements: { charClass: "mage" },
     },
     quake: {
@@ -22,7 +22,7 @@ export const spellItems = {
       texture: "scroll-green",
       effects: { minEarthDamage: 4, maxEarthDamage: 5 },
       buffs: { stun: 1 },
-      stats: { mpCost: 5, castTime: 500 },
+      stats: { mpCost: 5, castTime: 250 },
       requirements: { charClass: "mage" },
     },
     waterball: {
@@ -34,7 +34,7 @@ export const spellItems = {
       texture: "scroll-blue",
       effects: { minWaterDamage: 3, maxWaterDamage: 4 },
       buffs: { slow: 1 },
-      stats: { mpCost: 4, castTime: 500 },
+      stats: { mpCost: 4, castTime: 250 },
       requirements: { charClass: "mage" },
     },
     waterSpit: {
@@ -45,7 +45,7 @@ export const spellItems = {
       slot: "spell",
       texture: "scroll-blue",
       effects: { minWaterDamage: 1, maxWaterDamage: 1 },
-      stats: { castTime: 500 },
+      stats: { castTime: 250 },
       exclusive: true,
     },
     lightball: {
@@ -56,7 +56,7 @@ export const spellItems = {
       slot: "spell",
       texture: "scroll-yellow",
       effects: { minLightDamage: 1, maxLightDamage: 5 },
-      stats: { hpCost: 1, castTime: 500 },
+      stats: { mpCost: 1, castTime: 250 },
       requirements: { charClass: "cleric" },
     },
     holyball: {
@@ -67,7 +67,7 @@ export const spellItems = {
       slot: "spell",
       texture: "scroll-gray",
       effects: { minHolyDamage: 3, maxHolyDamage: 4 },
-      stats: { hpCost: 4, castTime: 500 },
+      stats: { mpCost: 4, castTime: 250 },
       requirements: { charClass: "cleric" },
     },
     evasion: {
@@ -90,7 +90,7 @@ export const spellItems = {
       texture: "scroll-green",
       buffs: { haste: 1 },
       requirements: { charClass: "cleric" },
-      stats: { hpCost: 4, castTime: 500 },
+      stats: { mpCost: 4, castTime: 500 },
     },
     brute: {
       tier: 1,
@@ -134,7 +134,7 @@ export const spellItems = {
       texture: "scroll-yellow",
       buffs: { endurance: 1 },
       requirements: { charClass: "cleric" },
-      stats: { hpCost: 4, castTime: 500 },
+      stats: { mpCost: 4, castTime: 500 },
     },
     regeneration: {
       tier: 1,
@@ -145,7 +145,7 @@ export const spellItems = {
       texture: "scroll-gray",
       buffs: { regeneration: 1 },
       requirements: { charClass: "cleric" },
-      stats: { hpCost: 10, castTime: 500 },
+      stats: { mpCost: 10, castTime: 500 },
     },
     stealth: {
       tier: 1,

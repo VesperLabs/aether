@@ -2,6 +2,7 @@ import type { Habitat } from "@/rules/movement";
 import Phaser from "phaser";
 import { leaveWater, updateWading } from "./wading";
 import { updateFootprints } from "./footprints";
+import { updateNockedArrow } from "./nocked-arrow";
 import type { FullCharacterWire, PartyMessage } from "@/network";
 import type { BuffCharacterWire } from "@/network/sync";
 import type { SceneMain } from "@/client/scenes/main-scene";
@@ -90,12 +91,14 @@ export class Player extends Character {
   declare corpse: Sprite;
   /** The body, gear, hands, name and bars: everything that moves together when the body is nudged. */
   declare rig: Phaser.GameObjects.Container;
-  declare layerOrderKey?: string; // the direction and shield the rig was last stacked for
+  declare layerOrderKey?: string; // the direction, shield and drawn bow the rig was last stacked for
   declare talkMenu: Sprite;
   /** The attack frame a cast holds, and until when. A pose only: it locks nothing, unlike a swing. */
   declare castPose?: { action: string; until: number };
   /** The hero let go of a timed spell, which starts as soon as it has stopped moving. */
   declare queuedCastSlot?: AbilitySlot;
+  /** When `queuedCastSlot` was set, so a cast that never starts can be dropped. */
+  declare queuedCastAt?: number;
   /** The ability key whose press was taken; only letting go of that key uses it. */
   declare pressedAbilitySlot?: AbilitySlot;
   /** A timed spell is counting down. */
@@ -248,7 +251,10 @@ export class Player extends Character {
     this.bubble.setMessage(isEngaged ? undefined : remainingString);
     this.windupPie.follow(this.x + this.rig.x, this.y + this.rig.y);
     /* Everyone sees a player aiming a spell (an empty pie) and its cast (the pie filling) */
-    const isSpellAiming = this.state.isAiming && !this.state.isHoldingAttack;
+    /* Held: an aimed spell aims (everyone sees), a non-aimed one is only pressed (the hero sees) */
+    const isSpellAiming =
+      (this.state.isAiming && !this.state.isHoldingAttack) ||
+      (this.isHero && this.pressedAbilitySlot !== undefined);
     const showsCast =
       this.kind === "player" &&
       (isSpellAiming || this.isCasting) &&
@@ -348,6 +354,7 @@ export class Player extends Character {
     drawFrame(this);
     updateWading(this);
     updateFootprints(this);
+    updateNockedArrow(this);
     applyDodge(this);
     checkIsFlash(this);
     this.showHideNameAndBars();

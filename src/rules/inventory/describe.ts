@@ -245,6 +245,12 @@ export function describeItem(
   const hands = (lines: ModLines) => (isWeapon ? perHand(lines) : lines);
   const ownBuffs = Object.entries(item.buffs ?? {}).filter(isOwnBuff);
   const castBuffs = Object.entries(item.buffs ?? {}).filter((buff) => !isOwnBuff(buff));
+  /*
+   * How long before a spell can be cast again: its own cooldown, plus the caster's cast delay when
+   * we know who's looking (the wiki doesn't, so shows the spell's own)
+   */
+  const ownCooldown = (spellDetails as Record<string, { cooldown?: number }>)[base]?.cooldown ?? 0;
+  const cooldown = isSpell ? ownCooldown + (player?.stats?.castDelay ?? 0) : 0;
 
   return {
     title: item.name ?? "",
@@ -255,6 +261,7 @@ export function describeItem(
     stats: [
       ...statLines(without(item.stats, mods.stats)),
       ...statLines(without(item.percentStats, mods.percentStats), "%"),
+      ...(cooldown > 0 ? statLines({ cooldown }) : []),
     ],
     /* A spell that casts itself (Haste) does what its buff does, as a damage spell's damage */
     effects: [
