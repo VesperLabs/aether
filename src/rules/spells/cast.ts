@@ -17,26 +17,26 @@ export function getSpellCooldown(spellName: string | undefined) {
   return findSpell(spellName)?.cooldown ?? 0;
 }
 
-/** True if the global cast delay, and the spell's own cooldown, have passed. */
+/**
+ * True if the spell's own cooldown (the cast delay plus its own) has passed since it was last cast.
+ * Spells don't share a cooldown, so they chain; only a cast with no spell waits on `global`.
+ */
 export function checkCastReady({ spellName, lastCast, castDelay, now }: CastReadyInput): boolean {
-  let isThisSpellReady = true;
   if (spellName) {
     const last = lastCast?.[spellName] ?? 0;
-    isThisSpellReady = now - last > (castDelay as number) + getSpellCooldown(spellName);
+    return now - last > (castDelay as number) + getSpellCooldown(spellName);
   }
-  const isGlobalReady = now - lastCast.global > (castDelay as number);
-  return isThisSpellReady && isGlobalReady;
+  return now - (lastCast?.global ?? 0) > (castDelay as number);
 }
 
-/** How far through its cooldown (global cast delay and its own) a spell is, 0 to 1. */
+/** How far through its own cooldown (the cast delay plus its own) a spell is, 0 to 1. */
 export function getCastReadiness({ spellName, lastCast, castDelay, now }: CastReadyInput): number {
   const delay = castDelay ?? 0;
   const progress = (elapsed: number, total: number) =>
     total > 0 ? Math.min(1, Math.max(0, elapsed / total)) : 1;
-  const global = progress(now - (lastCast?.global ?? 0), delay);
-  if (!spellName) return global;
+  if (!spellName) return progress(now - (lastCast?.global ?? 0), delay);
   const total = delay + getSpellCooldown(spellName);
-  return Math.min(global, progress(now - (lastCast?.[spellName] ?? 0), total));
+  return progress(now - (lastCast?.[spellName] ?? 0), total);
 }
 
 /**

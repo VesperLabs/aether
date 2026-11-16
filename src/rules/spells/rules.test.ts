@@ -77,7 +77,12 @@ describe("canCastSpell", () => {
   });
   it("refuses the dead, and anything still on cooldown", () => {
     expect(canCastSpell({ ...base, isDead: true }).allowed).toBe(false);
-    expect(canCastSpell({ ...base, lastCast: { global: 950 } })).toEqual({ allowed: false });
+    expect(canCastSpell({ ...base, lastCast: { global: 950, fireball: 950 } })).toEqual({
+      allowed: false,
+    });
+  });
+  it("chains spells: another spell's cast doesn't hold this one back", () => {
+    expect(canCastSpell({ ...base, lastCast: { global: 950, quake: 950 } }).allowed).toBe(true);
   });
   it("lets attacks (no slot) through", () => {
     expect(canCastSpell({ ...base, abilitySlot: undefined })).toEqual({ allowed: true });

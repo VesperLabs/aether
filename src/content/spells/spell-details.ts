@@ -37,7 +37,7 @@ export const spellDetails = {
   "attack-ranged": {
     delivery: { type: "projectile", size: 4, speed: 350 },
     targets: ["enemy"],
-    look: { visibleMs: 2000, layer: "above", sprite: { icon: "arrow" } },
+    look: { visibleMs: 2000, layer: "above", sprite: { icon: "arrow" }, shadow: true },
   },
   tackle: {
     delivery: { type: "dash", size: 16, speed: 350, hitMs: 160 },
@@ -99,7 +99,7 @@ export const spellDetails = {
   quake: {
     delivery: { type: "burst", shape: "box", size: 32, hitMs: 100 },
     targets: ["enemy"],
-    cooldown: 3000,
+    cooldown: 2000,
     scale: { base: 0.35, perRank: 0.1 },
     npcRange: [0, 16],
     look: {

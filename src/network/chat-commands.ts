@@ -23,7 +23,9 @@ export interface ChatCommandOption {
   /** What the row shows, when it isn't `value` (an item's real name). Typing matches either. */
   label?: string;
   hint?: string;
-  /** Colors the value like an item of this rarity. */
+  /** Shown after the hint as a roman numeral: an item's tier. */
+  tier?: number;
+  /** Colors the value like an item of this rarity, and typing it finds the item. */
   rarity?: string;
   /** Draws an icon next to the value: an item's, or a mob's body when there's no slot. */
   look?: ItemLook;
@@ -56,10 +58,11 @@ export interface ChatCommand {
   complete?: (index: number, args: string[]) => readonly ChatCommandOption[];
 }
 
-const ITEM_OPTIONS = ITEM_KEYS.map(({ key, type, rarity, name, look }) => ({
+const ITEM_OPTIONS = ITEM_KEYS.map(({ key, type, rarity, name, tier, look }) => ({
   value: key,
   label: name,
-  hint: `${rarity} ${type}`,
+  hint: type,
+  tier,
   rarity,
   look,
 }));

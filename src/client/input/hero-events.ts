@@ -15,6 +15,7 @@ import {
 } from "./hero-cooldowns";
 import { isTypableFieldActive } from "./typable-field";
 import { getHeadingAngle, isTap } from "./tap-aim";
+import { bufferCast, clearBufferedCast, isReadyToCast, releaseBufferedCast } from "./cast-buffer";
 
 /** Wires window and canvas events (attack, aim, abilities, items, dragging) to the hero. */
 export function addGlobalEventListeners(scene: SceneHud) {
@@ -56,9 +57,17 @@ export function addGlobalEventListeners(scene: SceneHud) {
     if (!hero) return;
     /* A dropped press drops its release too, so nothing casts without the aimer having shown */
     hero.pressedAbilitySlot = undefined;
-    /* A press during a cast, or while one waits to start, is dropped */
-    if (isTypableFieldActive() || hero.isCasting || hero.queuedCastSlot !== undefined) return;
+    if (isTypableFieldActive()) return;
     const { spell, spellName, base } = hero.getAbilityDetails(e?.detail);
+    const slot = e?.detail;
+    if (slot === undefined) return;
+    if (isThrowable(base)) {
+      /* A throw pressed during a cast, or while one waits to start, is dropped */
+      if (hero.isCasting || hero.queuedCastSlot !== undefined) return;
+    } else if (!isReadyToCast(hero, slot)) {
+      /* A spell pressed mid-cast or on cooldown waits and goes once it can (see cast-buffer.ts) */
+      return bufferCast(slot);
+    }
     /* A ball aims like a ranged shot: hold to aim, let go to throw */
     if (isThrowable(base)) {
       hero.pressedAbilitySlot = e?.detail;
@@ -111,6 +120,7 @@ export function addGlobalEventListeners(scene: SceneHud) {
     if (!mainScene?.hero) return;
     const hero = mainScene?.hero;
 
+    clearBufferedCast();
     /* Attacking while aiming or casting only calls the spell off: it doesn't swing too */
     if (hero.isCasting) return scene.socket.emit("cancelCast");
     if (hero.queuedCastSlot !== undefined) {
@@ -158,6 +168,7 @@ export function addGlobalEventListeners(scene: SceneHud) {
   window.addEventListener("HERO_ABILITY", (e) => {
     const hero = mainScene?.hero;
     const abilitySlot = e?.detail;
+    if (releaseBufferedCast(abilitySlot, Date.now())) return;
     /* Only the release of a press that was taken: not one made mid-cast, nor one an attack called off */
     if (!hero || hero.pressedAbilitySlot !== abilitySlot) return;
     hero.pressedAbilitySlot = undefined;
@@ -174,7 +185,10 @@ export function addGlobalEventListeners(scene: SceneHud) {
        * Letting go starts the cast, once the hero has stopped (see hero-movement.ts), so a tap
        * still works while slowing down. Aiming stays on: the spell fires where you aim at the end.
        */
-      if (hero.canCastSpell(abilitySlot, false)) hero.queuedCastSlot = abilitySlot;
+      if (hero.canCastSpell(abilitySlot, false)) {
+        hero.queuedCastSlot = abilitySlot;
+        hero.queuedCastAt = Date.now();
+      }
     } else if (type === "spell") {
       /* Tell the UI to update the cooldown */
       updateSpellCooldown(hero, abilitySlot);

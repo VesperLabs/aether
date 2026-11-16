@@ -58,6 +58,7 @@ function rankSuggestions<T extends ChatSuggestion>(
       option.label ? scoreName(option.label.replace(/\s+/g, "")) : Infinity,
       ...(option.aliases?.map(scoreName) ?? []),
       needle && option.hint?.toLowerCase().includes(needle) ? HINT_MATCH_SCORE : Infinity,
+      needle && option.rarity?.toLowerCase().includes(needle) ? HINT_MATCH_SCORE : Infinity,
     );
   return (
     options

@@ -1,6 +1,6 @@
 import { getNextAttackCount } from "@/rules/combat";
 import Phaser from "phaser";
-import { getSpinDirection } from "./spin-direction";
+import { getAngleDirection, getSpinDirection } from "./spin-direction";
 import { getAngleFromDirection } from "@/rules/world";
 import {
   ATTACK_WALK_SPEED_SCALE,
@@ -18,6 +18,7 @@ import {
 import { emitPlayerInput } from "@/client/net/player-input";
 import { updateAttackCooldown, updateSpellCooldown } from "./hero-cooldowns";
 import { isTypableFieldActive } from "./typable-field";
+import { updateCastBuffer } from "./cast-buffer";
 import type { SceneHud } from "@/client/scenes/hud-scene";
 import { getGamepadAim, getGamepadAimAngle, getGamepadStick } from "./gamepad";
 import { getLastDevice, isModalOpen } from "./last-device";
@@ -217,6 +218,20 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
     });
   }
 
+  /*
+   * A drawn bow always faces where it aims, whatever the device or walking said: the body's facing
+   * picks the pose and which side the bow is drawn on, so the two must never disagree.
+   */
+  if (
+    hero.state.isHoldingAttack &&
+    hero.hasRangedWeapon() &&
+    lastAngle !== undefined &&
+    !isRolling &&
+    !isLungingNow
+  ) {
+    direction = getAngleDirection(lastAngle);
+  }
+
   hero.state.lastAngle = lastAngle;
   const lastAbilitySlot = hero?.state?.lastAbilitySlot;
 
@@ -245,7 +260,8 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
   }
 
   /* A released spell roots the hero until it lands; only attacking calls it off */
-  if (hero.isCasting || hero.queuedCastSlot !== undefined) {
+  const isCastRooted = hero.isCasting || hero.queuedCastSlot !== undefined;
+  if (isCastRooted) {
     vx = 0;
     vy = 0;
   }
@@ -272,7 +288,10 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
       current = { x: (current.x / speed) * walkSpeed, y: (current.y / speed) * walkSpeed };
     }
     ({ x: vx, y: vy } = approachVelocity(current, { x: vx, y: vy }, walkSpeed, seconds));
-    lastCrowdPush = getCrowdPush(mainScene, hero, walkSpeed, { x: vx, y: vy });
+    /* A rooted caster stands firm: pushed, it would never be still enough to start its cast */
+    lastCrowdPush = isCastRooted
+      ? { x: 0, y: 0 }
+      : getCrowdPush(mainScene, hero, walkSpeed, { x: vx, y: vy });
     vx += lastCrowdPush.x;
     vy += lastCrowdPush.y;
   }
@@ -288,13 +307,24 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
   hero.state.wasRolling = isRolling;
   emitPlayerInput(scene, hero, vx, vy, hero.direction, isRolling || !!wasRolling);
   startQueuedCast(scene, hero);
+  updateCastBuffer(hero, Date.now());
   hero.state.isIdle = hero.vx === vx && hero.vy === vy && vx === 0 && vy === 0;
 }
+
+/** How long a released timed spell waits for the hero to stand still before it is dropped, ms. */
+const QUEUED_CAST_WAIT_MS = 1000;
 
 /** Sent after the stopped position, so the server never sees the cast start on a moving hero. */
 function startQueuedCast(scene: SceneHud, hero: Player) {
   const abilitySlot = hero.queuedCastSlot;
-  if (abilitySlot === undefined || hero.vx || hero.vy) return;
+  if (abilitySlot === undefined) return;
+  /* Never stuck waiting: a cast that can't start soon is dropped, and the hero freed */
+  if (Date.now() - (hero.queuedCastAt ?? 0) > QUEUED_CAST_WAIT_MS) {
+    hero.queuedCastSlot = undefined;
+    window.dispatchEvent(new CustomEvent("HERO_CAST_ENDED", { detail: null }));
+    return;
+  }
+  if (hero.vx || hero.vy) return;
   hero.queuedCastSlot = undefined;
   /* Rooted from here: the server's reply ends this if it refuses the cast */
   hero.isCasting = true;

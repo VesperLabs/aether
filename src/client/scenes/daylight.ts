@@ -4,6 +4,7 @@ import { CAVE_LIGHT, skyLightAt } from "@/client/views/sky-light";
 import type { SceneMain } from "./main-scene";
 import { currentHour } from "./world-clock";
 import { DAYLIGHT_DEPTH } from "./world-depths";
+import { glassAtNight } from "@/ui/kit/glass";
 import { createLightTextures } from "@/client/views/lights";
 import { drawLights } from "./light-layers";
 
@@ -213,6 +214,7 @@ function drawDaylight(scene: SceneMain) {
   const map = getMapByName(scene.roomName);
   /* Outdoors the sky's light for the hour; caves their own, always; other indoor maps none */
   const light = map?.isOutdoors ? skyLightAt(currentHour()) : map?.isCave ? CAVE_LIGHT : undefined;
+  showNightToHud(light ? lightShare(light.tint) : 0);
   lightMap.setVisible(Boolean(light));
   colors.active = Boolean(light);
   if (minimapColors) minimapColors.active = Boolean(map?.isOutdoors);
@@ -221,6 +223,19 @@ function drawDaylight(scene: SceneMain) {
   drawLightMap(scene, daylight, light.tint, light.vignette, light.lights);
   colors.colorMatrix.saturate(light.saturation);
   if (minimapColors && map?.isOutdoors) tintMinimap(minimapColors, light.tint, light.saturation);
+}
+
+let shownNight: number | undefined;
+
+/** Tells the HUD how dark the world is, 0 to 1, so its glass can stand out at night. */
+function showNightToHud(night: number) {
+  /* In twentieths, so the page restyles only when it visibly changes */
+  const rounded = Math.round(night * 20) / 20;
+  if (rounded === shownNight) return;
+  shownNight = rounded;
+  for (const [name, value] of Object.entries(glassAtNight(rounded))) {
+    document.documentElement.style.setProperty(name, value);
+  }
 }
 
 /** How far the minimap's tint goes back towards white, so it is dimmer at night but readable. */

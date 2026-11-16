@@ -1,6 +1,6 @@
 import { memo, type ReactNode } from "react";
 import { convertMsToS } from "@/rules/stats";
-import { SectionTitle, StatRow } from "@/ui/item";
+import { ColumnTitle, SectionTitle, StatRow } from "@/ui/item";
 import {
   arePropsEqualWithKeys,
   Box,
@@ -25,8 +25,8 @@ const ROW_TYPE = { fontSize: 2, lineHeight: "20px" };
 const LABEL = "text";
 /** Section titles: a very light grey, a step back from the white rows. */
 const TITLE = "gray.200";
-/** The DMG and RES columns of the elements table: wide enough for "12–34" and "100%". */
-const CELL = 44;
+/** The DMG and RES columns of the elements table: wide enough for "12–34", and for its title between little lines. */
+const CELL = 56;
 /** The element icons' own size: shown whole and unscaled, so no pixel is cut or smeared. */
 const ELEMENT_ICON = 24;
 
@@ -53,13 +53,13 @@ const row = (label: string, value: ReactNode, title?: string) => (
   />
 );
 
-/** A value in a fixed-width cell, right-aligned, so a table's columns line up. */
+/** A value in a fixed-width cell, centred under its column's title, so the columns line up. */
 const Cell = ({ children, muted }: { children: ReactNode; muted?: boolean }) => (
   <Text
     sx={{
       ...ROW_TYPE,
       width: CELL,
-      textAlign: "right",
+      textAlign: "center",
       fontWeight: muted ? "normal" : "bold",
       color: muted ? LABEL : undefined,
     }}
@@ -75,9 +75,13 @@ const Elements = ({ stats }: { stats: Stats }) => {
   const s = stats as unknown as Record<string, number | undefined>;
   return (
     <>
-      <Flex sx={{ justifyContent: "flex-end" }}>
-        <Cell muted>DMG</Cell>
-        <Cell muted>RES</Cell>
+      <Flex sx={{ justifyContent: "flex-end", mb: "2px" }}>
+        <ColumnTitle color={TITLE} width={CELL}>
+          Dmg
+        </ColumnTitle>
+        <ColumnTitle color={TITLE} width={CELL}>
+          Res
+        </ColumnTitle>
       </Flex>
       {ELEMENTS.map((name) => {
         const title = name[0].toUpperCase() + name.slice(1);

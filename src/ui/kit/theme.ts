@@ -1,4 +1,5 @@
 import tColors from "./colors-tailwind.json";
+import { BUTTON_GLASS_BACKDROP, GLASS_WASH_LAYER } from "./glass";
 
 /**
  * The one text size for every control: inputs, dropdowns, buttons and button groups. With the
@@ -114,8 +115,9 @@ export const theme = {
       variant: "buttons.default",
       opacity: 1,
       backgroundColor: "shadow.30",
+      backgroundImage: GLASS_WASH_LAYER,
       borderRadius: "100%",
-      backdropFilter: "blur(2px)",
+      backdropFilter: BUTTON_GLASS_BACKDROP,
     },
     header: {
       variant: "buttons.default",

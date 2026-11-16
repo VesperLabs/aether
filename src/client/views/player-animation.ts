@@ -22,14 +22,36 @@ export function checkIsFlash(p: Player) {
 /** Drawn over the body in every direction. */
 const OVERLAYS = ["userName", "buffRack", "stunStars", "bubble", "hpBar"] as const;
 
-/** Stacks the rig's layers for the facing direction. Only reorders when the direction changes. */
+/** The hand holding a bow drawn to aim, if the body is in that pose. */
+function aimedBowHand(p: Player) {
+  if (p.action === "attack_right" && p.hasRangedWeaponRight()) return "handRight";
+  if (p.action === "attack_left" && p.hasRangedWeaponLeft()) return "handLeft";
+  return undefined;
+}
+
+/**
+ * Stacks the rig's layers for the facing direction. Only reorders when that changes. Facing left
+ * or right, a drawn bow goes over the body from the far hand (the left facing right, the right
+ * facing left) and under it from the near hand. Facing up or down it keeps the direction's order.
+ * A drawn bow's facing always comes from its aim (see hero-movement.ts), so the two agree.
+ */
 function orderLayers(p: Player) {
   const isLeftShield = p.visibleEquipment?.handLeft?.type === "shield";
-  const key = `${p.direction}:${isLeftShield}`;
+  const bowHand = aimedBowHand(p);
+  const key = `${p.direction}:${isLeftShield}:${bowHand}`;
   if (p.layerOrderKey === key) return;
   p.layerOrderKey = key;
   for (const layer of [...getLayerOrder(p.direction, isLeftShield), ...OVERLAYS])
     p.rig.bringToTop(p[layer]);
+  if (!bowHand || (p.direction !== "left" && p.direction !== "right")) return;
+  if ((bowHand === "handLeft") === (p.direction === "right")) {
+    p.rig.bringToTop(p[bowHand]);
+    for (const layer of OVERLAYS) p.rig.bringToTop(p[layer]);
+  } else {
+    /* Just over the shadow, under everything else (`moveAbove` won't move what's already above) */
+    p.rig.sendToBack(p[bowHand]);
+    p.rig.sendToBack(p.shadow);
+  }
 }
 
 export function drawFrame(p: Player) {

@@ -1,6 +1,8 @@
 import {
   Box,
   Flex,
+  GLASS_BACKDROP,
+  GLASS_WASH,
   KeyboardKey,
   Menu,
   MenuAbilities,
@@ -176,7 +178,8 @@ export const MenuBar = () => {
           inset: 0,
           top: `var(${OVERHANG_VAR}, 0px)`,
           zIndex: -1,
-          backdropFilter: "blur(10px)",
+          backdropFilter: GLASS_BACKDROP,
+          bg: GLASS_WASH,
         }}
       />
       {/* Sits above the menus without taking their height, so menus can fill the screen. On the

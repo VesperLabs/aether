@@ -75,5 +75,7 @@ export interface SpellLook {
   /** The light it gives off at night: a color and how far it reaches, in pixels. */
   readonly light?: { readonly color: string; readonly radius: number };
   readonly fades?: boolean;
+  /** Casts a faint copy of its sprite on the ground below it as it flies, at the caster's feet. */
+  readonly shadow?: boolean;
   readonly sound?: string;
 }

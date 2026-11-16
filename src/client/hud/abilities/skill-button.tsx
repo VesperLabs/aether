@@ -50,6 +50,7 @@ export const SkillButton = ({
         /* With costs, the glass is drawn by CostBadge as one shape with its pills */
         ...(withCosts && {
           backgroundColor: "transparent",
+          backgroundImage: "none",
           backdropFilter: "none",
           isolation: "isolate",
         }),

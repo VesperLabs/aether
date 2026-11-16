@@ -86,8 +86,12 @@ describe("getBaseStats", () => {
       dexterity: 1,
       vitality: 1,
     });
-    expect(getBaseStats({ level: 3, charClass: "rogue" }).dexterity).toBe(9);
-    expect(getBaseStats({ level: 1, charClass: "cleric" }).vitality).toBe(5);
+    expect(getBaseStats({ level: 3, charClass: "rogue" }).dexterity).toBe(8);
+    expect(getBaseStats({ level: 9, charClass: "warrior" }).strength).toBe(17);
+    expect(getBaseStats({ level: 1, charClass: "cleric" })).toMatchObject({
+      intelligence: 5,
+      vitality: 1,
+    });
   });
   it("only warriors get fire resistance", () => {
     expect(getBaseStats({ charClass: "warrior" }).fireResistance).toBe(10);

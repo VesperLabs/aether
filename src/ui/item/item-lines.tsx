@@ -73,6 +73,44 @@ export const SectionTitle = ({ children, color }: { children: ReactNode; color?:
   </Flex>
 );
 
+/**
+ * A section title in small, for a column: the same letter-spaced capitals between short fading
+ * lines, sized to the column it heads ("DMG" over a damage column).
+ */
+export const ColumnTitle = ({
+  children,
+  color,
+  width,
+}: {
+  children: ReactNode;
+  color?: string;
+  width: number;
+}) => (
+  <Flex sx={{ alignItems: "center", justifyContent: "center", width }}>
+    <Box
+      sx={{
+        flex: 1,
+        height: "1px",
+        background: `linear-gradient(to right, ${RULE_EDGE}, ${RULE})`,
+      }}
+    />
+    <Text
+      sx={{
+        ...TYPE.meta,
+        color: color ?? "gray.500",
+        letterSpacing: "0.12em",
+        textTransform: "uppercase",
+        px: "3px",
+      }}
+    >
+      {children}
+    </Text>
+    <Box
+      sx={{ flex: 1, height: "1px", background: `linear-gradient(to left, ${RULE_EDGE}, ${RULE})` }}
+    />
+  </Flex>
+);
+
 /** A grey rank after a name, as a numeral ("Fireball II"), on the name's baseline. */
 export const Level = ({ level }: { level: number }) => (
   /* The size of the name it follows: "Fireball II" reads as one title */

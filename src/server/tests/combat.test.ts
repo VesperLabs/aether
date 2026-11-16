@@ -121,9 +121,10 @@ describe("casting spells", () => {
     const { socket, player, events } = await login("mage");
     socket.emit("castSpell", { abilitySlot: 1, castAngle: 0 });
     socket.emit("startCast", { abilitySlot: 1 });
-    await server.run(socket, 300);
+    /* Fireball casts in 250ms */
+    await server.run(socket, 150);
     expect(events.modifyPlayerStat.filter((e) => e.type === "mp")).toHaveLength(0);
-    await server.run(socket, 300);
+    await server.run(socket, 200);
     expect(events.modifyPlayerStat.filter((e) => e.type === "mp")).toHaveLength(1);
     expect(player.pendingCast).toBeUndefined();
   });

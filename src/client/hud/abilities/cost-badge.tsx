@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState } from "react";
-import { Box, Text, resourceToken } from "@/ui";
+import { BUTTON_GLASS_BACKDROP, Box, GLASS_WASH_LAYER, Text, resourceToken } from "@/ui";
 
 export interface ResourceCosts {
   hp?: number;
@@ -129,7 +129,8 @@ export const CostBadge = ({ costs }: { costs: ResourceCosts }) => {
               inset: 0,
               /* Same glass as a plain skill button */
               backgroundColor: "shadow.30",
-              backdropFilter: "blur(2px)",
+              backgroundImage: GLASS_WASH_LAYER,
+              backdropFilter: BUTTON_GLASS_BACKDROP,
               maskImage: layout.mask,
               maskSize: "100% 100%",
             }}

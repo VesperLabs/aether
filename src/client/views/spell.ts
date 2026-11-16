@@ -9,6 +9,8 @@ import { addLight } from "./lights";
 import { PunchBurst } from "./punch-burst";
 import { SwingArc } from "./swing-arc";
 import { SwingDebug } from "./swing-debug";
+import { takeNockedArrow } from "./nocked-arrow";
+import { droopSpentArrow, endSpentShot } from "./spell-ending";
 
 import { ELEMENT_SWING_COLORS } from "@/ui/item/element-effects";
 import { getAngleFromDirection, distanceTo } from "@/rules/world";
@@ -27,6 +29,10 @@ import {
 import { HAND_REACH, WEAPON_GRIP, getWeaponTip, itemEffects } from "@/content";
 const Sprite = Phaser.GameObjects.Sprite;
 const BLANK_TEXTURE = "human-blank";
+/** A shot leaving a drawn bow is drawn from the nocked arrow, sliding onto its real path over this long, ms. */
+const NOCK_BLEND_MS = 120;
+/** A flying spell's shadow: its sprite in black, this see-through. */
+const SHADOW_ALPHA = 0.12;
 
 /** Which way a weapon's art points, in degrees on screen, from its tip. */
 function getBladeDegrees(texture: string | undefined) {
@@ -72,6 +78,16 @@ export class Spell extends Phaser.GameObjects.Container {
   declare action: string;
   declare stickToCaster: boolean;
   declare ageMs: number;
+  /** Where the sprite starts off its real path (from the nocked arrow), shrinking to nothing. */
+  declare nockOffset?: Point;
+  /** A faint black copy of the sprite on the ground below it (`look.shadow`). */
+  declare shadow?: Phaser.GameObjects.Sprite;
+  /** How far below the sprite the ground is: from the caster's body centre down to its feet. */
+  declare shadowDrop: number;
+  /** Ran out of range or time and is playing its ending; no longer moved or checked. */
+  declare isEnding?: boolean;
+  /** Which way the sprite is turned flying level, before an arrow dips at the end. */
+  declare flightTurn: number;
   constructor(
     scene: Phaser.Scene,
     { id, caster, spellName, action, castAngle = 0, rank = 1, ...rest }: SpellArgs,
@@ -202,10 +218,13 @@ export class Spell extends Phaser.GameObjects.Container {
       });
     }
 
+    this.flightTurn = this.spell.rotation;
+    if (look.shadow && flight) this.addShadow();
     this.add(this.spell);
     /* Spells riding their caster (a lunge, a buff) end when the caster dies */
     if (this.stickToCaster) endOnDeath(caster, this);
     this.catchUpToServer();
+    if (flight && !this.stickToCaster) this.leaveFromNock();
     this.adjustSpellPosition();
     playAudio({ scene, audioKey: look.sound ?? null, caster });
   }
@@ -253,8 +272,33 @@ export class Spell extends Phaser.GameObjects.Container {
     this.y += (this.velocityY * leadMs) / 1000;
     this.spellState.spawnTime -= leadMs;
   }
+  /** Copies the sprite as it is now (texture, frame, turn, scale) into a black shadow on the ground. */
+  addShadow() {
+    this.shadowDrop = -this.caster.bodyCenterY;
+    this.shadow = new Sprite(
+      this.scene,
+      0,
+      this.shadowDrop,
+      this.spell.texture.key,
+      this.spell.frame.name,
+    )
+      .setRotation(this.spell.rotation)
+      .setScale(this.spell.scaleX, this.spell.scaleY)
+      .setTint(0x000000)
+      .setAlpha(SHADOW_ALPHA);
+    this.add(this.shadow);
+  }
+  /** A shot from a drawn bow starts drawn where its nocked arrow was, on the bow in the hand. */
+  leaveFromNock() {
+    const nock = takeNockedArrow(this.caster);
+    if (!nock) return;
+    this.nockOffset = { x: (nock.x - this.x) / this.scaleX, y: (nock.y - this.y) / this.scaleY };
+    this.spell.setPosition(this.nockOffset.x, this.nockOffset.y);
+    this.shadow?.setPosition(this.nockOffset.x, this.shadowDrop + this.nockOffset.y);
+  }
   create() {}
   update() {
+    if (this.isEnding) return;
     this.spellState.isExpired = isSpellExpired({
       maxDistance: this.maxDistance,
       distanceFromSpawn: distanceTo(this, this.spawnPoint),
@@ -262,10 +306,53 @@ export class Spell extends Phaser.GameObjects.Container {
       lifetime: this.maxVisibleTime,
       now: Date.now(),
     });
-    if (!this.scene || this.spellState.isExpired) return this.destroy();
+    if (!this.scene) return this.destroy();
+    if (this.spellState.isExpired) return this.end();
     /* A spell riding its caster that was removed ends with it, not where it was */
     if (this.stickToCaster && !this.caster?.active) return this.destroy();
     this.adjustSpellPosition();
+    this.blendFromNock();
+    this.droop();
+  }
+  /** How much longer it flies, ms: until its range or its lifetime runs out, whichever is first. */
+  msLeft() {
+    const speed = Math.hypot(this.velocityX, this.velocityY);
+    const age = Date.now() - this.spellState.spawnTime;
+    const byTime = this.maxVisibleTime - age;
+    if (!speed || !this.maxDistance) return byTime;
+    const byRange = ((this.maxDistance - distanceTo(this, this.spawnPoint)) / speed) * 1000;
+    return Math.min(byTime, byRange);
+  }
+  /** An arrow comes down onto its shadow as its flight ends (see spell-ending.ts). */
+  droop() {
+    if (!this.shadow) return;
+    droopSpentArrow(this, {
+      msLeft: this.msLeft(),
+      y: this.spell.y,
+      turn: this.flightTurn,
+      shadowY: this.shadow.y,
+      shadowAlpha: SHADOW_ALPHA,
+    });
+  }
+  /** A flying shot that's spent ends gently (see spell-ending.ts); anything else just goes. */
+  end() {
+    const isFlying = !this.stickToCaster && (this.velocityX || this.velocityY);
+    if (!isFlying) return this.destroy();
+    this.isEnding = true;
+    this.nockOffset = undefined;
+    this.scene.physics.world.disable(this);
+    endSpentShot(this, () => this.destroy());
+  }
+  blendFromNock() {
+    if (!this.nockOffset) {
+      /* Level again each frame, for an arrow's droop to dip from */
+      if (this.shadow) this.spell.y = 0;
+      return;
+    }
+    const left = 1 - Math.min(1, (Date.now() - this.spellState.spawnTime) / NOCK_BLEND_MS);
+    this.spell.setPosition(this.nockOffset.x * left, this.nockOffset.y * left);
+    this.shadow?.setPosition(this.spell.x, this.shadowDrop + this.spell.y);
+    if (!left) this.nockOffset = undefined;
   }
   adjustSpellPosition() {
     if (this.layer === "below") this.setDepth(this.caster.depth - 20);
