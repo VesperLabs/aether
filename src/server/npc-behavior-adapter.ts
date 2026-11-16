@@ -2,14 +2,41 @@ import type { ServerCharacter } from "./character";
 import { findCharacter } from "./find-character";
 import type { Npc } from "./npc";
 import { getRoomIndex } from "./room-index";
+import { getBody } from "@/content";
 import { hasLineOfSight } from "@/rules/movement";
 import {
   AGGRO_KITE_RANGE,
   isNpcAggressive,
   shootsOverWalls,
   type NpcBehaviorInput,
+  type NpcNextSwing,
   type NpcPlayerView,
 } from "@/rules/npc-behavior";
+
+/**
+ * The melee swing an NPC throws next, when its body has the swinging hand placed: the hand `doAttack` picks
+ * (it alternates when both hold weapons), and what `planSwing` needs to sweep it.
+ */
+function getNextSwing(npc: Npc): NpcNextSwing | undefined {
+  const race = npc.profile?.race;
+  const count = npc.action === "attack_right" && npc.hasWeaponLeft() ? 2 : 1;
+  const { action } = npc.getAttackActionName({ count });
+  if (action !== "attack_right" && action !== "attack_left") return;
+  const hand = action === "attack_left" ? "handLeft" : "handRight";
+  if (!getBody(race)[hand]) return;
+  const isMelee = hand === "handLeft" ? npc.hasMeleeWeaponLeft() : npc.hasMeleeWeaponRight();
+  if (!isMelee) return;
+  const held = npc.visibleEquipment?.[hand];
+  return {
+    race: race as string,
+    action,
+    reach: npc.getWeaponRange(hand),
+    hasWeaponRange: !!held?.stats?.range,
+    isUppercut: held?.base === "fist",
+    bodyCenterY: npc.bodyCenterY,
+    scale: npc.profile?.scale ?? 1,
+  };
+}
 
 /** What the behavior rules need to know about a target, a player or an NPC. */
 const toPlayerView = (target: ServerCharacter | undefined): NpcPlayerView | null =>
@@ -71,6 +98,7 @@ export function buildNpcBehaviorInput(
         meleeReach: npc.getWeaponRange(
           npc.hasMeleeWeaponRight() && !npc.hasMeleeWeaponLeft() ? "handRight" : "handLeft",
         ),
+        swing: getNextSwing(npc),
       },
     },
     state,

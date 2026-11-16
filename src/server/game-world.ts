@@ -44,7 +44,15 @@ export function spawnNpc(
     x,
     y,
     properties = [],
-  }: { name: string; x: number; y: number; properties?: { name: string; value: unknown }[] },
+    equipment,
+  }: {
+    name: string;
+    x: number;
+    y: number;
+    properties?: { name: string; value: unknown }[];
+    /** Gear worn over the actor's own, by slot (`handRight: "axe"`). */
+    equipment?: Record<string, string>;
+  },
 ): Npc | undefined {
   const npc = getActorDefinition(name);
   if (!npc) return;
@@ -62,6 +70,7 @@ export function spawnNpc(
     id,
     room,
     ...npc,
+    equipment: { ...npc.equipment, ...equipment },
     behaviors: mergeBehaviors(
       npc.behaviors,
       typeof walkRange === "number" ? { wander: { radius: walkRange } } : {},

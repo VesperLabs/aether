@@ -82,6 +82,8 @@ type HeaderProps = FlexProps & { cap?: boolean; titleRule?: boolean; icon?: stri
 /* The login's tabs at its 1.2x boost, so every modal's title reads like them on screen. */
 const HEADER_FONT_SIZE = 2;
 const HEADER_ICON_SIZE = 26;
+/** The header's padding, above and below its content together. */
+const HEADER_PADDING_Y = 12;
 
 /* A groove under the title: a dark line over a light one, fading out at both ends. */
 const TITLE_RULE: ThemeUIStyleObject = {
@@ -110,17 +112,20 @@ const ModalHeader = ({
         position: "relative",
         alignItems: "center",
         px: 2,
-        pt: 2,
-        pb: 1,
-        minHeight: 32,
+        /* Even above and below, so a title alone sits in the bar's middle, as an icon does */
+        py: `${HEADER_PADDING_Y / 2}px`,
+        /* As tall as a header with its icon, so a title lines up the same with or without one */
+        minHeight: HEADER_ICON_SIZE + HEADER_PADDING_Y,
         fontSize: HEADER_FONT_SIZE,
         gap: 1,
         borderRadius: 3,
         flex: "none",
         bg: "shadow.25",
         "& .icon": { filter: "drop-shadow(0 1px 1px rgba(0, 0, 0, 0.6))" },
-        /* Joined to a body: one panel, with nothing between them. */
-        "&:has(+ .modal-body)": {
+        /* Joined to a shown body: one panel, with nothing between them. Alone, it rounds all round. */
+        /* Its own bottom edge shows only when it stands alone (a folded panel), as a body's would */
+        "&:has(+ .modal-body:not([hidden])) > .header-bottom-cap": { display: "none" },
+        "&:has(+ .modal-body:not([hidden]))": {
           borderBottomLeftRadius: 0,
           borderBottomRightRadius: 0,
         },
@@ -129,6 +134,7 @@ const ModalHeader = ({
       {...props}
     >
       {cap && <Box sx={edgeCap("top")} />}
+      {cap && <Box className="header-bottom-cap" sx={edgeCap("bottom")} />}
       {titleRule && <Box sx={TITLE_RULE} />}
       {icon && <Icon icon={icon} size={HEADER_ICON_SIZE} />}
       {children}

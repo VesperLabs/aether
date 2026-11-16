@@ -1,19 +1,43 @@
 import { useState, type PointerEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Flex, Panel } from "@/ui";
+import { FoldButton } from "./fold-icon";
 import { IconButton } from "./icon-button";
 import { usePanelPosition, type PanelPosition } from "./use-panel-position";
 
 /** Under the tool panel and dropdowns, which sit on the theme's `menus` layer. */
 let topLayer = 100;
-const BEHIND_LAYER = topLayer;
+
+const collapsedKey = (id: string) => `sprite-lab-panel-${id}-collapsed`;
+
+/** Whether a window was left folded up; open when unknown or storage is unavailable. */
+const readCollapsed = (id: string) => {
+  try {
+    return localStorage.getItem(collapsedKey(id)) === "1";
+  } catch {
+    return false;
+  }
+};
+
+const saveCollapsed = (id: string, collapsed: boolean) => {
+  try {
+    localStorage.setItem(collapsedKey(id), collapsed ? "1" : "0");
+  } catch {
+    /* Only a convenience: it just opens unfolded next time. */
+  }
+};
 
 const getNextLayer = () => {
   topLayer += 1;
   return topLayer;
 };
 
-/** A window: dragged by its title bar, stays where it's left, comes to the front when pressed. */
+/**
+ * A window: dragged by its title bar, stays where it's left, comes to the front when pressed, and
+ * folds up to its title bar with its fold button or a double click on the bar (remembered per
+ * window). Folded, its contents stay
+ * mounted, so nothing in them is lost.
+ */
 export const FloatingPanel = ({
   id,
   title,
@@ -21,7 +45,6 @@ export const FloatingPanel = ({
   start,
   onClose,
   overflowing = false,
-  behind = false,
   children,
 }: {
   /** Names its remembered position. */
@@ -32,12 +55,15 @@ export const FloatingPanel = ({
   onClose?: () => void;
   /** Lets things stick out past the window, at the cost of scrolling when it's too tall. */
   overflowing?: boolean;
-  /** Stays under every other window, so a big one can't bury the small ones it's used with. */
-  behind?: boolean;
   children: ReactNode;
 }) => {
   const { position, startDrag } = usePanelPosition(id, start);
   const [layer, setLayer] = useState(getNextLayer);
+  const [collapsed, setCollapsed] = useState(() => readCollapsed(id));
+  const toggleCollapsed = () => {
+    saveCollapsed(id, !collapsed);
+    setCollapsed(!collapsed);
+  };
 
   const handleDown = (e: PointerEvent<HTMLDivElement>) => {
     const target = e.target as Element;
@@ -52,11 +78,18 @@ export const FloatingPanel = ({
   return createPortal(
     <Flex
       onPointerDownCapture={handleDown}
-      style={{ left: position.x, top: position.y, zIndex: behind ? BEHIND_LAYER : layer }}
+      onDoubleClick={(e) => {
+        const target = e.target as Element;
+        /* Only the bar itself: not its buttons, nor anything a portal passes up from elsewhere */
+        if (!e.currentTarget.contains(target) || target.closest("button")) return;
+        if (target.closest(".modal-header")) toggleCollapsed();
+      }}
+      style={{ left: position.x, top: position.y, zIndex: layer }}
       sx={{ position: "fixed", ".modal-header": { cursor: "move", touchAction: "none" } }}
     >
       <Panel
         width={width}
+        collapsed={collapsed}
         sx={{
           maxHeight: "calc(100vh - 16px)",
           boxShadow: "0 4px 10px rgba(0, 0, 0, .5)",
@@ -65,7 +98,10 @@ export const FloatingPanel = ({
         header={
           <>
             {title}
-            {onClose && <IconButton label="Close" icon="❌" onClick={onClose} />}
+            <Flex sx={{ ml: "auto", gap: 1, flexShrink: 0 }}>
+              <FoldButton folded={collapsed} onClick={toggleCollapsed} />
+              {onClose && <IconButton label="Close" icon="❌" onClick={onClose} />}
+            </Flex>
           </>
         }
       >

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { flee, fleeAround, seek, separate, steerWithSeparation, strafeAround } from ".";
+import { arrive, flee, fleeAround, seek, separate, steerWithSeparation, strafeAround } from ".";
 
 describe("steering", () => {
   it("seeks and flees at full speed", () => {
@@ -80,5 +80,16 @@ describe("strafeAround", () => {
       () => true,
     );
     expect(stuck.velocity).toEqual({ vx: 0, vy: 0 });
+  });
+});
+
+describe("arrive", () => {
+  it("goes full speed when far, slows in the last stretch, and stops on the spot", () => {
+    const self = { x: 0, y: 0 };
+    expect(Math.hypot(...Object.values(arrive(self, { x: 100, y: 0 }, 60)))).toBeCloseTo(60);
+    const near = arrive(self, { x: 6, y: 0 }, 60);
+    expect(near.vx).toBeGreaterThan(0);
+    expect(near.vx).toBeLessThan(60);
+    expect(arrive(self, { x: 0.5, y: 0 }, 60)).toEqual({ vx: 0, vy: 0 });
   });
 });

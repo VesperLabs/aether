@@ -1,4 +1,5 @@
-import { OUT_OF_COMBAT_MS, RACES_WITH_ATTACK_ANIMS } from "./constants";
+import { getBody } from "@/content";
+import { OUT_OF_COMBAT_MS } from "./constants";
 import {
   getFreeHand,
   hasRangedWeapon,
@@ -121,14 +122,22 @@ export type AttackAction = { action: string; spellName: string } & Record<string
 
 /**
  * The attack pose a cast shows: the hand holding a weapon, else an empty one, the right if both
- * qualify. Never a shield hand. Undefined for races without attack animations.
+ * qualify. Never a shield hand. Undefined for bodies without attack animations.
  */
 export function getCastAction(character: WeaponHolder) {
-  if (!RACES_WITH_ATTACK_ANIMS.includes((character.profile as { race: string }).race)) return;
+  if (!getBody(character.profile?.race).attackAnims) return;
   if (hasWeaponRight(character)) return "attack_right";
   if (hasWeaponLeft(character)) return "attack_left";
   if (!hasShieldRight(character)) return "attack_right";
   if (!hasShieldLeft(character)) return "attack_left";
+}
+
+/**
+ * The animation a character shows for an action: an attack is its standing frames on a body that
+ * has no attack animations, while the action itself still says which hand swings.
+ */
+export function getShownAction(race: string | undefined, action: string) {
+  return action.startsWith("attack") && !getBody(race).attackAnims ? "stand" : action;
 }
 
 /** Which hand swings, and which spell the swing is, for attack number `count` (1 or 2). */
@@ -139,10 +148,8 @@ export function getAttackActionName(
   let spellName = "attack-melee";
   let action = currentAction;
 
-  if (!RACES_WITH_ATTACK_ANIMS.includes((character.profile as { race: string }).race)) {
-    return { action, spellName };
-  }
-
+  /* Every body picks its hand the same way, so attacks alternate; one without attack animations
+     just shows its standing frames for them (see `getShownAction`). */
   const freeHand = getFreeHand(character);
   if (freeHand) {
     const hand = count === 2 && isBareHanded(character) ? "handLeft" : freeHand;

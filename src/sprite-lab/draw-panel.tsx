@@ -7,7 +7,7 @@ import { getCorePrompt } from "./core-prompts";
 import type { DrawPanelProps } from "./draw-panel-props";
 import { FramePreview } from "./frame-preview";
 import { FrameEditor } from "./frame-editor";
-import { blankCanvas, cropFrame, paintFrameStack, useFrameStack, keepRedrawn } from "./frame-stack";
+import { blankCanvas, cropFrame, paintFrameStack, useFrameStack } from "./frame-stack";
 import { GenerationList } from "./generation-list";
 import {
   copyGeneration,
@@ -28,6 +28,7 @@ import {
 import { NudgePanel } from "./nudge-panel";
 import { PromptFields } from "./prompt-fields";
 import { PromptWindow } from "./prompt-window";
+import { ReferenceFramePicker } from "./reference-frame-picker";
 import { WearableWindow, type WearableInputs } from "./wearable-window";
 import { FloatingPanel } from "./floating-panel";
 import { WINDOW_WIDTH } from "./window-layout";
@@ -69,6 +70,9 @@ export const DrawPanel = ({
   const core = getCorePrompt(promptTab).prompt;
   const [error, setError] = useState("");
   const [targetImage, setTargetImage] = useState<HTMLCanvasElement | null>(null);
+  /* The frame a "from another frame" draw starts from: this row's standing one until picked */
+  const [reference, setReference] = useState<Frame>({ column: 0, row: frame.row });
+  const fromFrame = promptTab === "fromFrame" && targetImage ? reference : undefined;
   const [result, setResult] = useState<Result>();
   /* Only shown on its own frame. */
   const frameKey = getFrameKey(target.src, frame);
@@ -139,9 +143,7 @@ export const DrawPanel = ({
     ctx: CanvasRenderingContext2D,
     drawTarget: (ctx: CanvasRenderingContext2D) => void,
   ) => {
-    const shownStack =
-      promptTab === "quarterTurn" ? keepRedrawn(stack, frame, target.src, pending) : stack;
-    if (shownStack.length) paintFrameStack(ctx, shownStack, frame, cell, target.src, drawTarget);
+    if (stack.length) paintFrameStack(ctx, stack, frame, cell, target.src, drawTarget);
     else drawTarget(ctx);
   };
 
@@ -232,13 +234,14 @@ export const DrawPanel = ({
     try {
       const fullPrompt = wearable
         ? fillWearablePrompt(frame, prompt, wearable.layer)
-        : fillPrompt(core, frame, prompt);
+        : fillPrompt(core, frame, prompt, fromFrame);
       const drawn = await drawFrame({
         target: targetImage,
         frame,
-        /* Whatever is open is what gets redrawn, so a good draw can be refined. */
-        /* A wearable works on the open candidate, or starts from nothing. */
-        source: shown?.canvas ?? (wearable ? blankCanvas(cell) : undefined),
+        /* The picked frame, else what's open (so a draw can be refined), else nothing for a wearable */
+        source: fromFrame
+          ? cropFrame(targetImage, fromFrame, cell)
+          : (shown?.canvas ?? (wearable ? blankCanvas(cell) : undefined)),
         views: wearable?.views,
         wornViews: wearable?.wornViews,
         fitBody: wearable?.body,
@@ -287,6 +290,12 @@ export const DrawPanel = ({
             prompt={prompt}
             onPrompt={onPrompt}
           />
+          {fromFrame && targetImage && (
+            <ReferenceFramePicker
+              sheet={targetImage}
+              {...{ cell, frame, value: fromFrame, onChange: setReference }}
+            />
+          )}
           <Button
             variant="control"
             disabled={drawing || !targetImage}

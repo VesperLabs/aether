@@ -41,7 +41,13 @@ export const PlayerPortrait = ({
       if (!current) return;
       const canvas = document.createElement("canvas");
       canvas.width = canvas.height = MIN_CANVAS_SIZE;
-      drawLayers(canvas, assets, layers, facing && { direction: facing, step: STAND_STEP });
+      drawLayers(
+        canvas,
+        assets,
+        layers,
+        facing && { direction: facing, step: STAND_STEP },
+        player?.profile?.race,
+      );
       const trimmed = trimCanvas(canvas);
       setArt({ url: trimmed.toDataURL(), width: trimmed.width, height: trimmed.height });
     });

@@ -1,28 +1,8 @@
+import type { BodyId } from "../bodies/bodies";
 import type { ItemDrop, ItemRef } from "../items/item-refs";
 import type { ActorBehaviors } from "./behaviors";
 import type { QuestId } from "../quests/quest-list";
 import type { CharClass, StatName } from "../stats";
-
-type MobRace =
-  | "abomination"
-  | "bat"
-  | "bear"
-  | "bee"
-  | "cat"
-  | "crab"
-  | "dog"
-  | "earth-elemental"
-  | "fish"
-  | "human"
-  | "merman"
-  | "orchid"
-  | "raccoon"
-  | "slime"
-  | "spider"
-  | "wolf"
-  | "wraith"
-  | "wyrm"
-  | "zombie";
 
 interface TexturedLook {
   readonly texture: string;
@@ -31,7 +11,7 @@ interface TexturedLook {
 
 export interface MobProfile {
   readonly userName: string;
-  readonly race: MobRace;
+  readonly race: BodyId;
   readonly gender?: "male" | "female";
   readonly tint?: string;
   readonly scale?: number;

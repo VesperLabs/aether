@@ -18,7 +18,15 @@ export { decideTalkingEnded, decideWander } from "./wander";
 export { canTalkToNpc } from "./talk";
 export type { BehaviorContext } from "./behaviors/types";
 export { chooseBehavior } from "./brain";
-export { flee, fleeAround, seek, separate, steerWithSeparation, strafeAround } from "./steering";
+export {
+  arrive,
+  flee,
+  fleeAround,
+  seek,
+  separate,
+  steerWithSeparation,
+  strafeAround,
+} from "./steering";
 export { aimNpcShot, aimNpcSwing, leadNpcChase } from "./aim";
 export type { Velocity } from "./steering";
 export { addThreat, decayThreat, pickThreatTarget, pruneThreat } from "./threat";
@@ -26,3 +34,4 @@ export type { ThreatTable } from "./threat";
 export { subscribeThreat } from "./system";
 export { aimPounce } from "./pounce";
 export { getSwingPower } from "./swings";
+export type { NpcNextSwing } from "./hand-reach";

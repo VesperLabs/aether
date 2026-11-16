@@ -1,3 +1,4 @@
+import { getBody } from "@/content";
 import { RANGE_MULTIPLIER, UNARMED_RANGE } from "./constants";
 
 /** What a hand is holding. Only the fields the weapon rules read. */
@@ -29,12 +30,19 @@ export function hasWeaponLeft(character: WeaponHolder, key: EquipmentKey = "visi
   return WEAPON_TYPES.includes(character?.[key]?.handLeft?.type as string);
 }
 
-/** Non-humans always count as armed in their right hand (their claws, teeth and so on). */
+/**
+ * Only a body with both hands punches. Any other (a crab, a one-handed beast) always counts as
+ * armed in its right hand: its claws, teeth and so on, swung from its body as its sprite shows,
+ * unless it holds something there.
+ */
 export function hasWeaponRight(character: WeaponHolder, key: EquipmentKey = "visibleEquipment") {
-  return (
-    WEAPON_TYPES.includes(character?.[key]?.handRight?.type as string) ||
-    (character.profile as { race?: string }).race !== "human"
-  );
+  return WEAPON_TYPES.includes(character?.[key]?.handRight?.type as string) || !canPunch(character);
+}
+
+/** A body with both hands fights bare-handed with its fists; any other uses what its sprite shows. */
+function canPunch(character: WeaponHolder) {
+  const body = getBody(character.profile?.race);
+  return body.handLeft && body.handRight;
 }
 
 export function hasWeapon(character: WeaponHolder, key: EquipmentKey = "visibleEquipment") {

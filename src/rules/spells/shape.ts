@@ -1,4 +1,4 @@
-import { findSpell, spellDetails, type SpellDefinition } from "@/content";
+import { findSpell, getBody, hasAnyHand, spellDetails, type SpellDefinition } from "@/content";
 
 /** A spell by name. An unknown name gets the plain melee attack, so a bad item still swings. */
 export function getSpell(spellName: string | undefined): SpellDefinition {
@@ -107,14 +107,14 @@ export interface MeleeSwing {
 
 /**
  * A swing turns around the caster's body, or around its feet when swinging up (an upward reach
- * looks too long from above) and for non-humans. It reaches as far as the swinging hand's weapon.
+ * looks too long from above) and for bodies without hands. It reaches as far as the swinging hand's weapon.
  */
 export function getMeleeSwing(
   caster: { y: number; bodyCenterY: number; direction?: string; race?: string },
   action: string,
   getWeaponRange: (hand: "handLeft" | "handRight") => number,
 ): MeleeSwing {
-  const fromFeet = caster.direction === "up" || caster.race !== "human";
+  const fromFeet = caster.direction === "up" || !hasAnyHand(getBody(caster.race));
   const y = fromFeet ? caster.y : caster.y + caster.bodyCenterY;
   if (usesRightHand(action)) return { y, reach: getWeaponRange("handRight") };
   if (usesLeftHand(action)) return { y, reach: getWeaponRange("handLeft") };

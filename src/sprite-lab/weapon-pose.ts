@@ -33,7 +33,11 @@ export const getPoseName = ({ column, row }: Frame) => {
 export const getStartHand = (frame: Frame) =>
   HANDS.find((hand) => hand === getAttackingHand(frame)) ?? "right";
 
-/** One frame of the character, with the weapon in its place in the stack. */
+/** The ring drawn round a hand point in place of the weapon, in preview pixels. */
+const POINT_RADIUS = 3;
+const POINT_COLOR = "#ff4d4d";
+
+/** One frame of the character, with the weapon in its place in the stack, or a ring at its point. */
 export const paintWeaponFrame = (
   ctx: CanvasRenderingContext2D,
   {
@@ -44,6 +48,7 @@ export const paintWeaponFrame = (
     frame: { column, row },
     cell,
     size,
+    pointOnly,
   }: {
     stack: StackedSheet[];
     weapon: HTMLCanvasElement | null;
@@ -53,12 +58,15 @@ export const paintWeaponFrame = (
     cell: number;
     /** The canvas, larger than a cell so long weapons fit. */
     size: number;
+    /** Draws a ring round the hand point instead of the weapon. */
+    pointOnly?: boolean;
   },
 ) => {
   const slot = hand === "left" ? "handLeft" : "handRight";
   const margin = (size - cell) / 2;
   const { x, y, flipX, flipY, rotation = 0 } = pose;
-  const layers = [...stack, ...(weapon ? [{ layer: slot, image: weapon }] : [])];
+  const held = weapon && !pointOnly ? [{ layer: slot, image: weapon }] : [];
+  const layers = [...stack, ...held];
   sortForDirection(DIRECTIONS[row], layers).forEach(({ layer, image }) => {
     if (layer !== slot) {
       ctx.drawImage(image, column * cell, row * cell, cell, cell, margin, margin, cell, cell);
@@ -71,4 +79,13 @@ export const paintWeaponFrame = (
     ctx.drawImage(image, -image.width / 2, -image.height / 2);
     ctx.restore();
   });
+  if (pointOnly) {
+    ctx.save();
+    ctx.strokeStyle = POINT_COLOR;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(size / 2 + x + 0.5, size / 2 + y + BODY_OFFSET_Y + 0.5, POINT_RADIUS, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+  }
 };

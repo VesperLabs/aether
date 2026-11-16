@@ -2,6 +2,7 @@ import type { Npc } from "./npc";
 import type { ServerCharacter } from "./character";
 import { getRoomIndex } from "./room-index";
 import {
+  arrive,
   checkInRange,
   decideTalkingEnded,
   fleeAround,
@@ -30,6 +31,22 @@ const NPC_SEPARATION_RADIUS = 20;
 /** How hard that push steers, as a share of walk speed. */
 const NPC_SEPARATION_STRENGTH = 0.6;
 
+/** How long, in ms, an NPC keeps a new facing before it may turn again, so it never jitters. */
+const FACING_HOLD_MS = 250;
+/** When each NPC last turned. */
+const turnedAt = new WeakMap<Npc, number>();
+
+/** Turns the NPC toward `point`, unless it turned too recently or the point barely differs. */
+function face(npc: Npc, point: Point) {
+  const next = getStickyDirection(npc.direction, npc, point);
+  if (next === npc.direction) return;
+  const now = npc.world.now();
+  const last = turnedAt.get(npc);
+  if (last !== undefined && now - last < FACING_HOLD_MS) return;
+  npc.direction = next;
+  turnedAt.set(npc, now);
+}
+
 /** Carries out the movement the behavior rules chose, as velocity and facing on the NPC. */
 export function performNpcMovement(
   npc: Npc,
@@ -40,12 +57,17 @@ export function performNpcMovement(
   switch (movement.type) {
     case "standStill":
       return standStill(npc);
-    case "chase":
+    case "chase": {
       if (!targetPlayer) return standStill(npc);
-      // In the open it heads where the target is going; around walls, straight for them
-      return movement.pathed
-        ? walkToPathed(npc, targetPlayer, NPC_CHASE_SPEED_RATIO)
-        : walkTo(npc, leadNpcChase(npc, targetPlayer, walkSpeedOf(npc)), NPC_CHASE_SPEED_RATIO);
+      // Shifted by its aim, so a swinging hand (not its body) arrives on the target
+      const { x: ax, y: ay } = movement.aim ?? { x: 0, y: 0 };
+      const target = { ...targetPlayer, x: targetPlayer.x + ax, y: targetPlayer.y + ay };
+      // In the open it heads where the target is going; around walls, straight for them. Lining
+      // up a swing, it eases onto its spot instead of overshooting into the target's body.
+      if (movement.pathed) return walkToPathed(npc, target, NPC_CHASE_SPEED_RATIO);
+      const lead = leadNpcChase(npc, target, walkSpeedOf(npc));
+      return walkTo(npc, lead, NPC_CHASE_SPEED_RATIO, !!movement.aim);
+    }
     case "returnToSpawn":
       return movement.pathed ? walkToPathed(npc, npc.home()) : walkTo(npc, npc.home());
     case "walkTo":
@@ -105,8 +127,12 @@ export function performNpcMovement(
   }
 }
 
-/** Sets `base` as the velocity, pushed apart from nearby NPCs, and faces the way it moves. */
-function steer(npc: Npc, base: Velocity) {
+/**
+ * Sets `base` as the velocity, pushed apart from nearby NPCs, and faces the way it means to go:
+ * the push is a shove, not a heading, and turning with it spins a crowd on a diagonal. `facing`
+ * overrides where it looks (a strafer watches its target).
+ */
+function steer(npc: Npc, base: Velocity, facing?: Point) {
   const neighbors = getRoomIndex(npc.world, npc.room.name).npcs.near(npc, NPC_SEPARATION_RADIUS);
   const { vx, vy } = steerWithSeparation(
     base,
@@ -115,7 +141,7 @@ function steer(npc: Npc, base: Velocity) {
   );
   npc.vx = vx;
   npc.vy = vy;
-  npc.direction = getStickyDirection(npc.direction, npc, { x: npc.x + vx, y: npc.y + vy });
+  face(npc, facing ?? { x: npc.x + base.vx, y: npc.y + base.vy });
 }
 
 /**
@@ -144,13 +170,14 @@ function strafe(
   };
   const step = strafeAround(npc, target, { clockwise, distance, speed }, isBlocked);
   npc.state.strafeClockwise = step.clockwise;
-  steer(npc, step.velocity);
-  npc.direction = getStickyDirection(npc.direction, npc, target);
+  steer(npc, step.velocity, target);
 }
 
 /** Walks straight to `coords` at `speedRatio` of its walk speed. */
-function walkTo(npc: Npc, coords: Point, speedRatio = 1) {
-  steer(npc, seek(npc, coords, walkSpeedOf(npc) * speedRatio));
+/** Walks to `coords`; `arriving` slows down to stop there (see `arrive`). */
+function walkTo(npc: Npc, coords: Point, speedRatio = 1, arriving = false) {
+  const speed = walkSpeedOf(npc) * speedRatio;
+  steer(npc, arriving ? arrive(npc, coords, speed) : seek(npc, coords, speed));
 }
 
 /** How fast it walks: a companion keeps pace with its owner, so it never falls behind. */

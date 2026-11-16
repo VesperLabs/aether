@@ -1,3 +1,4 @@
+import type { NpcNextSwing } from "./hand-reach";
 import { NPC_SHOT_MARGIN, NPC_SHOULD_ATTACK_RANGE } from "./constants";
 
 /** Anything with a position and, optionally, a body radius. */
@@ -28,6 +29,8 @@ export interface NpcWeaponRanges {
   handRight?: { range: number } | null;
   /** How far its melee swing reaches from its body centre, in pixels. */
   meleeReach?: number;
+  /** Its next melee swing, when it has hands placed and a melee weapon in the swinging one. */
+  swing?: NpcNextSwing;
 }
 
 /**

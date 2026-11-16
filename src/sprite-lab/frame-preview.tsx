@@ -121,7 +121,6 @@ export const FramePreview = ({
               y: Math.max(0, (window.innerHeight - width - PANEL_CHROME) / 2),
             }}
             onClose={() => setExpanded(false)}
-            behind
           >
             <Box ref={placeFrame} />
           </FloatingPanel>

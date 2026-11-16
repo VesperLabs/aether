@@ -108,7 +108,7 @@ describe("cheats", () => {
     const socket = await login();
     const watcher = await login();
     const joined = waitFor(watcher, "npcJoin");
-    const reply = await cheat(socket, "/npc spawn crab 3");
+    const reply = await cheat(socket, "/npc spawn crab wild 3");
     expect(reply.type).toBe("system");
     expect((await joined).state.isCheatSpawned).toBe(true);
 

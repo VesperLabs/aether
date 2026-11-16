@@ -1,20 +1,9 @@
 import { useEffect, useState } from "react";
-import {
-  Box,
-  ButtonGroup,
-  Field,
-  Flex,
-  Select,
-  Text,
-  TextDivider,
-  ThemeUIProvider,
-  theme,
-} from "@/ui";
+import { Box, ButtonGroup, Field, Flex, Text, ThemeUIProvider, theme } from "@/ui";
 import type { Theme } from "theme-ui";
 import { CHECKER_SX } from "./checker";
 import { DrawPanel } from "./draw-panel";
 import { FloatingPanel } from "./floating-panel";
-import { LabNav } from "./lab-nav";
 import { getFrameKey, setOpenCandidate } from "./open-candidates";
 import { ORIGINAL_TILE_ATTR } from "./generation-list";
 import { useCandidateDrag, type DragItem } from "./use-candidate-drag";
@@ -29,19 +18,16 @@ import {
   dropOtherGender,
   getSheetGender,
   HUMAN_LAYERS,
-  WEAPON_SHEETS,
 } from "./sheets";
 import { useCharacterSheets } from "./use-character-sheets";
-import { WeaponPanel } from "./weapon-panel";
+import { BodyPanel } from "./body-panel";
 
 const ATLAS_OPTIONS = BASE_SHEETS.map((sheet) => getSheetOption(sheet));
 
-const WEAPON_OPTIONS = [
-  { value: "", label: "No weapon" },
-  ...WEAPON_SHEETS.map((sheet) => getSheetOption(sheet)),
-];
-
 const PANEL_WIDTH = 340;
+
+/** The frame the body window shows until one is picked: standing, facing the viewer. */
+const FACING_FRAME = { column: 0, row: 2 };
 
 const DRAG_GHOST_SIZE = 64;
 
@@ -91,19 +77,13 @@ export const App = () => {
      shown sheets may be tinted and a tint must never be merged into the file. */
   const editLayer = layers.find(({ layer }) => layer === state.target);
   const target = ANIMATED_SHEETS.find(({ src }) => src === (editLayer?.sheet ?? base)?.src);
-  const weapon = WEAPON_SHEETS.find(({ texture }) => texture === state.weapon);
 
   return (
     <ThemeUIProvider theme={theme as Theme}>
       <Flex sx={{ gap: 3, p: 3, alignItems: "flex-start", boxSizing: "border-box" }}>
         <FloatingPanel
           id="lab"
-          title={
-            <>
-              <Text sx={{ fontWeight: "bold" }}>Sprite Lab</Text>
-              <LabNav />
-            </>
-          }
+          title={<Text sx={{ fontWeight: "bold" }}>Sprite Lab</Text>}
           width={PANEL_WIDTH}
           start={{ x: 16, y: 16 }}
           overflowing
@@ -156,17 +136,6 @@ export const App = () => {
                 }
               />
             ))}
-          {isHuman && (
-            <>
-              <TextDivider />
-              <Select
-                label="Weapon"
-                value={state.weapon}
-                options={WEAPON_OPTIONS}
-                onChange={(texture) => setState({ ...state, weapon: texture })}
-              />
-            </>
-          )}
         </FloatingPanel>
         <Box sx={{ flex: 1, minWidth: 0, overflow: "auto", ml: PANEL_WIDTH + 16 }}>
           {base && (
@@ -211,15 +180,15 @@ export const App = () => {
             onClose={() => setState({ ...state, frame: undefined })}
           />
         )}
-        {isHuman && weapon && state.frame && drawn && base && (
-          <WeaponPanel
-            weapon={weapon}
-            frame={state.frame}
-            cell={drawn.cell}
+        {drawn && base && (
+          <BodyPanel
             base={base}
             layers={layers}
             pending={pending}
-            onClose={() => setState({ ...state, weapon: "" })}
+            frame={state.frame ?? FACING_FRAME}
+            cell={drawn.cell}
+            weaponTexture={state.weapon}
+            onWeapon={(texture) => setState({ ...state, weapon: texture })}
           />
         )}
       </Flex>

@@ -1,0 +1,31 @@
+{
+  "abomination": {},
+  "bat": {},
+  "bear": {
+    "attackAnims": true
+  },
+  "bee": {},
+  "cat": {},
+  "crab": {
+    "attackAnims": true
+  },
+  "dog": {},
+  "earth-elemental": {},
+  "fish": {},
+  "human": {
+    "attackAnims": true
+  },
+  "merman": {},
+  "orchid": {},
+  "raccoon": {},
+  "slime": {
+    "attackAnims": true
+  },
+  "spider": {},
+  "wolf": {
+    "attackAnims": true
+  },
+  "wraith": {},
+  "wyrm": {},
+  "zombie": {}
+}

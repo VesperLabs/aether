@@ -111,12 +111,23 @@ export const loadGenerationCanvas = async (generation: Generation, cell: number)
   return canvas;
 };
 
-/** Moves a hand's weapon on one frame, in `weapon.json`. */
-export const saveWeaponPose = (pose: { frame: string; hand: string; x: number; y: number }) =>
-  post("/api/weapon-poses", pose);
+/** Replaces a body's hand points in `weapon.json`; `null` takes its hands away. */
+export const saveBodyHandPoints = (change: { body: string; points: object | null }) =>
+  post("/api/hand-points", change);
+
+/** Each body's flags, from `bodies.json`. */
+export const loadBodyFlags = async (): Promise<Record<string, { attackAnims?: boolean }>> => {
+  const response = await fetch("/api/body-flags");
+  if (!response.ok) throw new Error("Could not read bodies.json");
+  return response.json();
+};
+
+/** Switches a body's attack animations in `bodies.json`. */
+export const saveBodyFlags = (change: { body: string; attackAnims: boolean }) =>
+  post("/api/body-flags", change);
 
 /** Writes a whole sheet over its file. */
-const saveSheet = (src: string, canvas: HTMLCanvasElement) =>
+export const saveSheet = (src: string, canvas: HTMLCanvasElement) =>
   post("/api/sheets", { src, image: toBase64(canvas) });
 
 /** Saves what a merge is about to replace as a candidate, so it can be merged back. */

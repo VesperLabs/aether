@@ -254,7 +254,9 @@ export class Spell extends Phaser.GameObjects.Container {
       hasWeaponRange: !!caster.visibleEquipment?.[hand]?.stats?.range,
       isPunching,
       isUppercut,
+      isEmptyHand: !caster.visibleEquipment?.[hand],
       bodyPivotY: swing.y - caster.y,
+      scale: caster.profile?.scale ?? 1,
       visibleMs: this.maxVisibleTime,
     });
     new SwingDebug(this.scene, plan, caster, Math.max(this.maxVisibleTime, plan.sweepMs));

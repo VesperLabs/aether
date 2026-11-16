@@ -14,19 +14,61 @@ export const resolveSheetPath = (publicDir: string, src: string) => {
   return file.startsWith(atlas + path.sep) && file.endsWith(".png") ? file : undefined;
 };
 
-type WeaponPosePlacement = { frame: unknown; hand: unknown; x: unknown; y: unknown };
+type HandPoints = Record<string, Record<string, { x: number; y: number }>>;
 
-/** Moves one hand on one frame of a parsed `weapon.json`. False if there's no such pose. */
-export const placeWeapon = (
-  atlas: { offsets: { human: Record<string, Record<string, { x: number; y: number }>> } },
-  { frame, hand, x, y }: WeaponPosePlacement,
+/** A body's name as `weapon.json` keys it: its sheet's texture, like `wolf`. */
+const BODY_PATTERN = /^[a-z][a-z-]*$/;
+
+/** Whether `points` is hand points for the same frames as `human`'s, every hand at whole pixels. */
+const isHandPoints = (points: unknown, human: HandPoints): points is HandPoints => {
+  if (typeof points !== "object" || points === null || Array.isArray(points)) return false;
+  const frames = Object.keys(points);
+  const isWhole = (pose: unknown) =>
+    typeof pose === "object" &&
+    pose !== null &&
+    Number.isInteger((pose as { x: unknown }).x) &&
+    Number.isInteger((pose as { y: unknown }).y);
+  return (
+    frames.length === Object.keys(human).length &&
+    frames.every(
+      (frame) =>
+        Object.hasOwn(human, frame) &&
+        Object.values((points as Record<string, Record<string, unknown>>)[frame] ?? {}).every(
+          isWhole,
+        ),
+    )
+  );
+};
+
+/**
+ * Replaces a body's hand points, or with `null` takes its hands away. The human's always stay:
+ * players hold weapons. False if refused.
+ */
+export const setBodyHandPoints = (
+  atlas: { offsets: Record<string, HandPoints> },
+  { body, points }: { body: unknown; points: unknown },
 ) => {
-  const { human } = atlas.offsets;
-  const hands = Object.hasOwn(human, String(frame)) ? human[String(frame)] : undefined;
-  const pose = hands && Object.hasOwn(hands, String(hand)) ? hands[String(hand)] : undefined;
-  if (!pose || !Number.isInteger(x) || !Number.isInteger(y)) return false;
-  pose.x = x as number;
-  pose.y = y as number;
+  const { offsets } = atlas;
+  if (typeof body !== "string" || !BODY_PATTERN.test(body)) return false;
+  if (points === null) {
+    if (body === "human") return false;
+    delete offsets[body];
+    return true;
+  }
+  if (!isHandPoints(points, offsets.human)) return false;
+  offsets[body] = points;
+  return true;
+};
+
+/** Switches one known body's attack animations in a parsed `bodies.json`. False if refused. */
+export const setBodyFlags = (
+  bodies: Record<string, { attackAnims?: boolean }>,
+  { body, attackAnims }: { body: unknown; attackAnims: unknown },
+) => {
+  if (typeof body !== "string" || !Object.hasOwn(bodies, body)) return false;
+  if (typeof attackAnims !== "boolean") return false;
+  const { attackAnims: _old, ...rest } = bodies[body];
+  bodies[body] = attackAnims ? { ...rest, attackAnims } : rest;
   return true;
 };
 
@@ -113,15 +155,32 @@ export const storePlugin = (repoRoot: string): Plugin => {
         }
       });
 
-      server.middlewares.use("/api/weapon-poses", async (req, res) => {
+      server.middlewares.use("/api/hand-points", async (req, res) => {
         try {
           if (req.method !== "POST") return reply(res, 405, { error: "POST only" });
           const file = path.join(publicDir, ATLAS_FOLDER, "weapon.json");
           const atlas = JSON.parse(await readFile(file, "utf8"));
-          if (!placeWeapon(atlas, await readJson(req))) {
-            return reply(res, 400, { error: "Not a weapon pose" });
+          if (!setBodyHandPoints(atlas, await readJson(req))) {
+            return reply(res, 400, { error: "Not hand points for a body" });
           }
           await writeFile(file, `${JSON.stringify(atlas, null, 2)}\n`);
+          reply(res, 200, {});
+        } catch (error) {
+          reply(res, 500, { error: error instanceof Error ? error.message : "Save failed" });
+        }
+      });
+
+      /* Each body's flags, read and switched by the NPC editor */
+      server.middlewares.use("/api/body-flags", async (req, res) => {
+        try {
+          const file = path.join(repoRoot, "src/content/bodies/bodies.json");
+          const bodies = JSON.parse(await readFile(file, "utf8"));
+          if (req.method === "GET") return reply(res, 200, bodies);
+          if (req.method !== "POST") return reply(res, 405, { error: "GET or POST only" });
+          if (!setBodyFlags(bodies, await readJson(req))) {
+            return reply(res, 400, { error: "Not a body's flag" });
+          }
+          await writeFile(file, `${JSON.stringify(bodies, null, 2)}\n`);
           reply(res, 200, {});
         } catch (error) {
           reply(res, 500, { error: error instanceof Error ? error.message : "Save failed" });

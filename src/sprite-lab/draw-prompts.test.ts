@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { describeFrame, fillPrompt, HUMAN_PROMPT, QUARTER_TURN_PROMPT } from "./draw-prompts";
+import { describeFrame, fillPrompt, FROM_FRAME_PROMPT, HUMAN_PROMPT } from "./draw-prompts";
 
 describe("draw prompts", () => {
   it("describes frames from their place on the sheet", () => {
@@ -15,13 +15,10 @@ describe("draw prompts", () => {
     expect(filled).not.toMatch(/\{frame\}|\{request\}/);
   });
 
-  it("turns each row to its own diagonal", () => {
-    const facing = [0, 1, 2, 3].map((row) =>
-      fillPrompt(QUARTER_TURN_PROMPT, { column: 0, row }, ""),
-    );
-    ["north-east", "south-east", "south-west", "north-west"].forEach((diagonal, row) =>
-      expect(facing[row]).toContain(`to face ${diagonal}`),
-    );
-    expect(facing[0]).not.toContain("{diagonal}");
+  it("describes the frame it draws from and the one it draws", () => {
+    const filled = fillPrompt(FROM_FRAME_PROMPT, { column: 1, row: 1 }, "", { column: 0, row: 2 });
+    expect(filled).toContain("It shows the character facing the viewer, standing still");
+    expect(filled).toContain("This frame shows the character facing right, walking");
+    expect(filled).not.toMatch(/\{reference\}|\{frame\}/);
   });
 });

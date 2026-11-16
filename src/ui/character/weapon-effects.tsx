@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import type { BuiltItem } from "@/content";
-import { itemEffects } from "@/content";
+import { getFrameHands, itemEffects } from "@/content";
 import { ELEMENT_PAD, ElementalSprite } from "@/ui/item";
-import weaponAtlas from "../../../public/assets/atlas/weapon.json";
 import { loadSheet } from "./sprite-sheet";
 
 /** A held weapon's frame: 100px square, held at its middle. */
@@ -79,6 +78,7 @@ const HandEffects = ({ weapon, pose }: { weapon: HeldWeapon; pose: WeaponPose })
 export const WeaponEffects = ({
   weapons,
   frame,
+  race = "human",
   inFront,
 }: {
   weapons: readonly HeldWeapon[];
@@ -86,8 +86,10 @@ export const WeaponEffects = ({
   inFront: boolean;
   /** The walk frame the picture is drawn in (`down-stand` when still). */
   frame: string;
+  /** The body, whose hand points place the weapons. */
+  race?: string;
 }) => {
-  const atlas = (weaponAtlas.offsets.human as Record<string, WeaponOffsets>)[frame];
+  const atlas = getFrameHands(race, frame) as WeaponOffsets | undefined;
   if (!atlas) return null;
   return weapons
     .filter((weapon) => weapon.inFront === inFront)

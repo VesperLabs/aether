@@ -17,7 +17,12 @@ export type { DoorData } from "./doors";
 export { createPathfinder, findNextWaypoint, findPath } from "./pathfinding";
 export type { Pathfinder } from "./pathfinding";
 export { NPC_WALL_RADIUS, moveBodyFreely, moveBodyThroughMap, nudgeBodyThroughMap } from "./system";
-export { MAX_PUSH_SPEED, getSeparationPush, getSeparationVelocity } from "./separation";
+export {
+  BODY_RADIUS,
+  MAX_PUSH_SPEED,
+  getSeparationPush,
+  getSeparationVelocity,
+} from "./separation";
 export {
   DOOR_USE_RANGE,
   checkMove,

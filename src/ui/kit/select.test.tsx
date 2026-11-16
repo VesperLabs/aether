@@ -26,7 +26,8 @@ describe("Select", () => {
     } as DOMRect);
     render(<Select label="Fruit" value="a" options={OPTIONS} onChange={() => {}} />);
     fireEvent.click(screen.getByRole("button", { name: "Fruit" }));
-    expect(screen.getByRole("listbox")).toHaveStyle({ bottom: "100%" });
+    /* Its bottom sits just above the box's top: 40px up from the screen's bottom, plus the gap */
+    expect(screen.getByRole("listbox")).toHaveStyle({ bottom: "44px" });
     vi.restoreAllMocks();
   });
 
