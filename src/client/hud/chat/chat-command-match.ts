@@ -65,7 +65,12 @@ function rankSuggestions<T extends ChatSuggestion>(
       .map((option) => ({ option, score: score(option) }))
       /* About one wrong letter in three; anything further off isn't what they meant */
       .filter(({ score }) => score <= Math.max(1, Math.floor(needle.length / 3)))
-      .sort((a, b) => a.score - b.score || a.option.value.localeCompare(b.option.value))
+      .sort(
+        (a, b) =>
+          Number(!!b.option.pinned) - Number(!!a.option.pinned) ||
+          a.score - b.score ||
+          (a.option.pinned ? 0 : a.option.value.localeCompare(b.option.value)),
+      )
       .slice(0, max)
       .map(({ option }) => option)
   );

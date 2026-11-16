@@ -79,8 +79,8 @@ describe("weapon queries", () => {
     expect(hasVisibleWeaponType(holding("ranged", undefined), "ranged")).toBe(false);
   });
 
-  it("throws for the right hand of a character with no profile, as before", () => {
-    expect(() => hasWeaponRight({})).toThrow();
+  it("arms the right hand of a character without a known body, which has no hands", () => {
+    expect(hasWeaponRight({})).toBe(true);
   });
 });
 

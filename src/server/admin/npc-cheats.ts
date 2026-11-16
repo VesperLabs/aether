@@ -1,5 +1,6 @@
-import { isActorId } from "@/content";
+import { actors, findItemKey, getBody, isActorId } from "@/content";
 import { entitiesInRoom } from "@/rules/world";
+import { EMPTY_HAND, SPAWN_SIDES } from "@/network";
 import { getFullCharacterState } from "@/network/sync";
 import { catchAsCompanion } from "@/server/catching";
 import { canTame, makeCompanion, removeNpc } from "@/server/companions";
@@ -21,14 +22,24 @@ const SPAWN_DISTANCE = 48;
 /** How close an NPC must be to tame it. */
 const TAME_RANGE = 160;
 
-const SPAWN_USAGE = "Usage: /npc spawn <actor> [pet] [count]";
+const SPAWN_USAGE = "Usage: /npc spawn <actor> [wild|pet] [count] [right hand] [left hand]";
+/** What a spawn can be handed: anything held. */
+const HELD_TYPES = ["weapon", "ranged", "shield"];
+const HANDS = ["handRight", "handLeft"] as const;
 
 /** Places one actor and shows it to the room, marked as this player's spawn. */
-function place(world: ServerWorld, player: PlayerInRoom, actor: string, x: number, y: number) {
+function place(
+  world: ServerWorld,
+  player: PlayerInRoom,
+  actor: string,
+  { x, y }: { x: number; y: number },
+  equipment: Record<string, string>,
+) {
   const npc = spawnNpc(world, player.room, {
     name: actor,
     x,
     y,
+    equipment,
     properties: [
       { name: "isCheatSpawned", value: true },
       { name: "spawnedBy", value: player.socketId },
@@ -40,15 +51,28 @@ function place(world: ServerWorld, player: PlayerInRoom, actor: string, x: numbe
 }
 
 /**
- * `/npc spawn <actor> [pet] [count]`: any actor, a crab or a shopkeeper alike. With `pet` they are
- * your companions. The count comes last and defaults to 1.
+ * `/npc spawn <actor> [wild|pet] [count] [right hand] [left hand]`: any actor, a crab or a
+ * shopkeeper alike. `pet` makes them your companions; the count defaults to 1. Weapons, shields or
+ * bows go in the hands over the actor's own; `none` leaves a hand as it is. Slots left off take
+ * their defaults.
  */
-const spawn: Cheat = (ctx, player, [actor, ...args], reply) => {
+const spawn: Cheat = (ctx, player, [actor, side = "wild", countArg = "1", ...hands], reply) => {
   if (!actor || !isActorId(actor)) return reply.error(SPAWN_USAGE);
-  const isPet = args[0]?.toLowerCase() === "pet";
-  const [countArg, ...rest] = isPet ? args.slice(1) : args;
-  const count = countArg === undefined ? 1 : parseInteger(countArg);
-  if (count === undefined || rest.length > 0) return reply.error(SPAWN_USAGE);
+  if (!(SPAWN_SIDES as readonly string[]).includes(side.toLowerCase())) {
+    return reply.error(SPAWN_USAGE);
+  }
+  const isPet = side.toLowerCase() === "pet";
+  const count = parseInteger(countArg);
+  if (count === undefined || hands.length > HANDS.length) return reply.error(SPAWN_USAGE);
+  const equipment: Record<string, string> = {};
+  for (const [i, name] of hands.entries()) {
+    if (name.toLowerCase() === EMPTY_HAND) continue;
+    const item = findItemKey(name);
+    if (!item || !HELD_TYPES.includes(item.type)) {
+      return reply.error(`${name} is not a weapon, shield or bow. ${SPAWN_USAGE}`);
+    }
+    equipment[HANDS[i]] = item.key;
+  }
   if (count < 1 || count > MAX_SPAWNS) {
     return reply.error(`Spawn between 1 and ${MAX_SPAWNS} at a time.`);
   }
@@ -58,11 +82,18 @@ const spawn: Cheat = (ctx, player, [actor, ...args], reply) => {
     const angle = (i / count) * Math.PI * 2;
     const x = player.x + Math.cos(angle) * SPAWN_DISTANCE;
     const y = player.y + Math.sin(angle) * SPAWN_DISTANCE;
-    const npc = place(ctx.world, player, actor, x, y);
+    const npc = place(ctx.world, player, actor, { x, y }, equipment);
     if (npc) spawned.push(npc);
   }
   if (isPet) for (const npc of spawned) makeCompanion(npc, player);
   reply.info(`Spawned ${count} ${actor}${isPet ? " as your companions" : ""}.`);
+  const body = getBody(actors[actor].profile.race);
+  const handless = HANDS.filter((hand) => equipment[hand] && !body[hand]);
+  if (handless.length > 0) {
+    reply.info(
+      `${actor} has no ${handless.map((hand) => (hand === "handLeft" ? "left" : "right")).join(" or ")} hand, so it can't use what it holds there. Place it in the Sprites page's body window.`,
+    );
+  }
 };
 
 /**

@@ -5,6 +5,7 @@ import {
   ACCESSORY_HIDING_HELMETS,
   FACE_HIDING_ACCESSORIES,
   HAIR_HIDING_ACCESSORIES,
+  getBody,
   itemEffects,
 } from "@/content";
 import type { Player } from "./player";
@@ -37,7 +38,7 @@ export function createSpriteLayers(player: Player) {
   ];
   player.setDepth(100);
 
-  const isHuman = player?.profile?.race === "human";
+  const body = getBody(player?.profile?.race);
 
   player.skin = scene.add.existing(new Sprite(...defaults));
   player.chest = scene.add.existing(new Sprite(...defaults));
@@ -51,12 +52,12 @@ export function createSpriteLayers(player: Player) {
   player.pants = scene.add.existing(new Sprite(...defaults));
   player.accessory = scene.add.existing(new Sprite(...defaults));
   player.handLeft = scene.add.existing(
-    isHuman
+    body.handLeft
       ? new WeaponSprite(scene, 13, -9, BLANK_TEXTURE)
       : new Sprite(scene, 13, -9, BLANK_TEXTURE),
   );
   player.handRight = scene.add.existing(
-    isHuman
+    body.handRight
       ? new WeaponSprite(scene, -13, -9, BLANK_TEXTURE)
       : new Sprite(scene, -13, -9, BLANK_TEXTURE),
   );
@@ -127,8 +128,26 @@ export function applyAppearance(player: Player) {
   if (profile?.userName) {
     player.updateUserName();
   }
-  player.skin.setScale(profile?.scale || 1);
-  player.shadow.setScale(profile?.scale || 1);
+  /* Everything on the body grows with it, gear and held weapons too, so a big body wears big gear */
+  const scale = profile?.scale || 1;
+  for (const layer of [
+    player.skin,
+    player.shadow,
+    player.chest,
+    player.face,
+    player.whiskers,
+    player.hair,
+    player.armor,
+    player.helmet,
+    player.boots,
+    player.gloves,
+    player.pants,
+    player.accessory,
+    player.handLeft,
+    player.handRight,
+  ]) {
+    layer.setScale(scale);
+  }
   player.corpse.setScale(isBoss ? profile?.scale / 2 : 1);
   player.corpse.setTint(isBoss ? 0xaa88aa : 0xcc9966);
   player.skin.setTint(toTint(profile?.tint || "0xFFFFFF"));
@@ -137,10 +156,14 @@ export function applyAppearance(player: Player) {
   player.face.setTint(toTint(profile?.face?.tint || "0xFFFFFF"));
   player.whiskers.setTint(toTint(profile?.whiskers?.tint || "0xFFFFFF"));
 
-  if (player.profile.race === "human") {
+  /* Only a hand the body has is a weapon sprite, with elements to show */
+  const body = getBody(player.profile.race);
+  if (body.handLeft) {
     (player.handLeft as WeaponSprite).setElements(
       player.hasWeaponLeft() ? itemEffects(visibleEquipment?.handLeft) : [],
     );
+  }
+  if (body.handRight) {
     (player.handRight as WeaponSprite).setElements(
       player.hasWeaponRight() ? itemEffects(visibleEquipment?.handRight) : [],
     );

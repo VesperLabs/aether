@@ -152,3 +152,31 @@ export const GILDED_CORNERS: ThemeUIStyleObject = {
     background: CORNERS.map((corner) => `${corner} / ${SIZE}px ${SIZE}px no-repeat`).join(", "),
   },
 };
+
+const cornerLayers = (corners: string[]) =>
+  corners.map((corner) => `${corner} / ${SIZE}px ${SIZE}px no-repeat`).join(", ");
+
+/**
+ * `GILDED_CORNERS` split in two halves that each stop at the middle, for a panel that can be short
+ * (one folded to its header): the top pair on the panel itself, the bottom pair on a child styled
+ * with `GILDED_BOTTOM_CORNERS`. On a tall panel it looks the same; on a short one the corners meet
+ * in the middle instead of overlapping.
+ */
+export const GILDED_TOP_CORNERS: ThemeUIStyleObject = {
+  "&::after": {
+    content: '""',
+    position: "absolute",
+    inset: `${-1 - OVERHANG}px ${-1 - OVERHANG}px 50% ${-1 - OVERHANG}px`,
+    zIndex: -1,
+    pointerEvents: "none",
+    background: cornerLayers(CORNERS.slice(0, 2)),
+  },
+};
+
+export const GILDED_BOTTOM_CORNERS: ThemeUIStyleObject = {
+  position: "absolute",
+  inset: `50% ${-1 - OVERHANG}px ${-1 - OVERHANG}px ${-1 - OVERHANG}px`,
+  zIndex: -1,
+  pointerEvents: "none",
+  background: cornerLayers(CORNERS.slice(2)),
+};

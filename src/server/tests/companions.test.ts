@@ -77,11 +77,23 @@ describe("companions", () => {
     expect(companionsOf(socket.id as string).map((npc) => npc.name)).toEqual(["dog"]);
   });
 
-  it("/npc spawn takes the count last, and pet before it", async () => {
+  it("/npc spawn takes wild or pet, then the count, each in its place", async () => {
     const { socket } = await server.login();
     await cheat(socket, "/npc spawn crab pet 2");
     expect(companionsOf(socket.id as string)).toHaveLength(2);
     expect((await cheat(socket, "/npc spawn crab 2 pet")).type).toBe("error");
+    expect((await cheat(socket, "/npc spawn crab wild 2")).type).toBe("system");
+  });
+
+  it("/npc spawn puts weapons in its hands, right then left", async () => {
+    const { socket } = await server.login();
+    expect((await cheat(socket, "/npc spawn crab pet 1 sword dagger")).type).toBe("system");
+    const [crab] = companionsOf(socket.id as string);
+    expect(crab.equipment.handRight?.key).toBe("sword");
+    expect(crab.equipment.handLeft?.key).toBe("dagger");
+    expect((await cheat(socket, "/npc spawn crab wild 1 healthPotion")).type).toBe("error");
+    expect((await cheat(socket, "/npc spawn crab wild 1 none dagger")).type).toBe("system");
+    await cheat(socket, "/npc clear");
   });
 
   it("/npc tame catches a copy: the wild one drops and respawns at its spot", async () => {

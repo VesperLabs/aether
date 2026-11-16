@@ -18,7 +18,8 @@ interface ThumbBox {
 
 /**
  * A wooden plate under the chosen option, matching the wood buttons, filling its segment to the
- * track's edges. It slides in steps, not smoothly, to keep the pixel feel.
+ * track's edges. It jumps straight to the chosen one: a slide reads oddly when a folded panel
+ * opens and the plate travels in from where its hidden buttons measured nothing.
  */
 const THUMB_SX: ThemeUIStyleObject = {
   position: "absolute",
@@ -30,12 +31,10 @@ const THUMB_SX: ThemeUIStyleObject = {
      plate sits against the track's own dark edge, which already draws that line. */
   bg: "yellow.900",
   boxShadow: "inset 0 0 0 1px rgba(255, 255, 255, .25)",
-  transition: "transform 120ms steps(4), width 120ms steps(4), height 120ms steps(4)",
-  "@media (prefers-reduced-motion: reduce)": { transition: "none" },
 };
 
 /**
- * One choice from a few, as joined segments in the field look. A gold plate slides under the
+ * One choice from a few, as joined segments in the field look. A gold plate sits under the
  * chosen one.
  */
 export const ButtonGroup = <Value extends string | number>({

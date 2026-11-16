@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import type { Player } from "./player";
 import { getSwingWeaponAngle } from "./swing-arc";
+import { getShownAction } from "@/rules/combat";
 import { isDodging } from "@/rules/movement";
 import { getLayerOrder } from "@/content";
 
@@ -68,13 +69,15 @@ export function drawFrame(p: Player) {
     boots,
     shadow,
     direction,
-    action,
+    action: chosenAction,
     visibleEquipment,
     profile,
     face,
     whiskers,
     hair,
   } = p;
+  /* An attack on a body without attack animations shows its standing frames */
+  const action = getShownAction(profile?.race, chosenAction);
 
   orderLayers(p);
 
@@ -184,11 +187,13 @@ function playWeapons(player: Player) {
     left: undefined,
     right: undefined,
   };
-  handLeft.setPosition(left?.x, left?.y);
+  /* Hand points are drawn for a body at scale 1, so a bigger body holds farther out */
+  const scale = profile?.scale || 1;
+  handLeft.setPosition(left && left.x * scale, left && left.y * scale);
   handLeft.setFlipX(!!left?.flipX);
   handLeft.setFlipY(!!left?.flipY);
   handLeft.setAngle(left?.rotation);
-  handRight.setPosition(right?.x, right?.y);
+  handRight.setPosition(right && right.x * scale, right && right.y * scale);
   handRight.setFlipX(!!right?.flipX);
   handRight.setFlipY(!!right?.flipY);
   handRight.setAngle(right?.rotation);

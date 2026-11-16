@@ -1,7 +1,7 @@
 import type { ActiveBuff } from "@/rules/buffs";
 import { isRespawnDue } from "@/rules/combat";
 import { checkCastReady, type LastCast } from "@/rules/spells";
-import { getCharacterDirection, type CardinalDirection } from "@/rules/world";
+import type { CardinalDirection } from "@/rules/world";
 import {
   findSuitableAbility,
   getLongestSpellBand,
@@ -19,6 +19,7 @@ import {
   NPC_WARNING_DELAY,
 } from "./constants";
 import { checkInRange, distanceBetween, getShouldAttackRange } from "./range";
+import { getSwingFacing, isInMeleeReach } from "./hand-reach";
 import { getWeaponBand, isInBand } from "./reach";
 import type { Body, NpcWeaponRanges } from "./range";
 import type { Rng } from "@/rules/world";
@@ -105,7 +106,7 @@ export interface NpcBehaviorInput {
 export type NpcMovement =
   | { type: "standStill" }
   /** Move toward the target player, pathing around obstacles if `pathed`. */
-  | { type: "chase"; pathed: boolean }
+  | { type: "chase"; pathed: boolean; aim?: { x: number; y: number } }
   | { type: "returnToSpawn"; pathed: boolean }
   /** Walk to a spot, like a guard post. */
   | { type: "walkTo"; to: { x: number; y: number }; pathed: boolean }
@@ -275,7 +276,7 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
   const weaponBand = isRanged ? getWeaponBand(attackRange) : undefined;
   const hasClearShot = !!targetPlayer && (input.hasClearShot?.(targetPlayer) ?? true);
   // Close enough to swing: the weapon beats its spells
-  const inMeleeReach = !weaponBand && !!checkInRange(npc, targetPlayer, attackRange);
+  const inMeleeReach = !weaponBand && isInMeleeReach(npc, targetPlayer, attackRange);
   // Still decided while lunging, so aggro and bubbles keep up; the lunge just overrides the move
   const planned = decideMovement();
   // Lost its foe mid-fight (outran, hid, killed): walk home and heal, as after a leash. Not a
@@ -303,12 +304,12 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
     !isRecovering &&
     (weaponBand
       ? isInBand(npc, targetPlayer, weaponBand)
-      : checkInRange(npc, targetPlayer, attackRange)) &&
+      : isInMeleeReach(npc, targetPlayer, attackRange)) &&
     npcAttackReady
   ) {
     action = {
       type: "attack",
-      direction: getCharacterDirection(npc, targetPlayer),
+      direction: getSwingFacing(npc, targetPlayer),
       castAngle: Math.atan2(targetPlayer.y - npc.y, targetPlayer.x - npc.x),
       ...decideSwing(!!weaponBand, warningMs, attackDelay, rng),
     };

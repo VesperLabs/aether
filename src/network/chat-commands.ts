@@ -15,6 +15,7 @@ import {
   type ItemLook,
   type SeasonIcon,
 } from "@/content";
+import { completeNpcSpawn, NPC_SPAWN_ARGS } from "./npc-spawn-args";
 
 /** One suggestion for a command argument. */
 export interface ChatCommandOption {
@@ -33,6 +34,8 @@ export interface ChatCommandOption {
   icon?: SeasonIcon;
   /** Draws this actor dressed in its gear instead of `look`: set for humans, whose bare body is plain. */
   actor?: string;
+  /** Listed first, in the order given, ahead of the rest: an optional argument's default. */
+  pinned?: boolean;
 }
 
 /** What an argument takes, so the client can check it and pick a keyboard before sending. */
@@ -42,6 +45,8 @@ export interface ChatArg {
   name: string;
   kind: ChatArgKind;
   optional?: boolean;
+  /** Words that also fill it (`none` for an empty hand); for text, the only words it takes. */
+  words?: readonly string[];
 }
 
 /** A `/command` typed into chat. `cheat` commands only exist when the server runs with ENABLE_CHEATS=true. */
@@ -108,7 +113,6 @@ const numArg = (name: string): ChatArg => ({ name, kind: "number" });
 const itemArg = (name: string): ChatArg => ({ name, kind: "item" });
 const optional = (arg: ChatArg): ChatArg => ({ ...arg, optional: true });
 
-const NPC_PET_OPTIONS = [{ value: "pet", hint: "spawn them as your companions" }];
 /** `/npc` actions that take an actor id, and whether it is required. */
 const NPC_ACTOR_ARG: Record<string, ChatArg> = {
   spawn: { name: "actor", kind: "mob" },
@@ -293,19 +297,17 @@ export const CHAT_COMMANDS: readonly ChatCommand[] = [
   {
     name: "npc",
     args: [NPC_ACTION],
-    argsFor: ([action]) => {
-      const actor = NPC_ACTOR_ARG[action ?? ""];
+    argsFor: (args) => {
+      const actor = NPC_ACTOR_ARG[args[0] ?? ""];
       if (!actor) return [NPC_ACTION];
-      return action === "spawn"
-        ? [NPC_ACTION, actor, optional({ name: "pet", kind: "text" }), optional(numArg("count"))]
-        : [NPC_ACTION, actor];
+      return args[0] === "spawn" ? [NPC_ACTION, actor, ...NPC_SPAWN_ARGS] : [NPC_ACTION, actor];
     },
     description: "Spawn, tame, list and clear NPCs",
     cheat: true,
     complete: (index, args) => {
       if (index === 0) return NPC_ACTION_OPTIONS;
       if (index === 1 && NPC_ACTOR_ARG[args[0] ?? ""]) return MOB_OPTIONS;
-      return index === 2 && args[0] === "spawn" ? NPC_PET_OPTIONS : [];
+      return args[0] === "spawn" ? completeNpcSpawn(index - 2, ITEM_OPTIONS) : [];
     },
   },
 ];
@@ -343,6 +345,9 @@ const KIND_OPTIONS: Partial<Record<ChatArgKind, readonly ChatCommandOption[]>> =
 
 /** Why `value` won't do for `arg`, or undefined when it will. The server still checks it again. */
 export function checkChatArg(arg: ChatArg, value: string): string | undefined {
+  if (arg.words?.includes(value.toLowerCase())) return undefined;
+  /* A text argument with its own words takes only those */
+  if (arg.words && arg.kind === "text") return `${arg.name} is ${arg.words.join(" or ")}`;
   if (arg.kind === "number") return /^-?\d+$/.test(value) ? undefined : `${arg.name} is a number`;
   if (arg.kind === "item") return findItemKey(value) ? undefined : `No item called "${value}"`;
   const options = KIND_OPTIONS[arg.kind];

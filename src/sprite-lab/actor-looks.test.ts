@@ -20,6 +20,8 @@ describe("LAB_ACTORS", () => {
     const { look } = LAB_ACTORS.find(({ look }) => look.atlas.startsWith("human"))!;
     expect(isShowingLook(look, look)).toBe(true);
     expect(isShowingLook(look, { ...look, layers: { ...look.layers, helmet: "x" } })).toBe(false);
+    const withOtherWeapon = { ...look, weapon: "weapon-axe" };
+    expect(isShowingLook(look, withOtherWeapon)).toBe(true);
   });
 });
 

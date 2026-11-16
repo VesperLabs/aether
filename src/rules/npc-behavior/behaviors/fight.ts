@@ -10,6 +10,7 @@ import {
 import type { NpcMovement } from "../decide";
 import { checkInRange, distanceBetween } from "../range";
 import { getIdealDistance } from "../reach";
+import { getSwingAim } from "../hand-reach";
 import type { BehaviorContext, NpcBehavior } from "./types";
 
 /*
@@ -27,7 +28,11 @@ export const chase: NpcBehavior = {
   score: (ctx) => (ctx.canChase ? 1 : 0),
   move: ({ input, target, standBand, hasClearShot, inMeleeReach, isAttacking }, rng) => {
     if (input.state.isAiming || isAttacking || inMeleeReach) return { type: "standStill" };
-    if (!standBand) return { type: "chase", pathed: input.isNearCollideTile };
+    // Melee walks its swinging hand, not its body, onto the target
+    if (!standBand) {
+      const aim = target ? getSwingAim(input.npc, target) : undefined;
+      return { type: "chase", pathed: input.isNearCollideTile, ...(aim && { aim }) };
+    }
     if (!hasClearShot) return { type: "chase", pathed: true };
     // Close in until well inside the band, then sidestep there
     const ideal = getIdealDistance(standBand);

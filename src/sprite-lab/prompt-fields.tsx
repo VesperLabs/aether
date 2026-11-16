@@ -7,12 +7,12 @@ const TAB_SIZE = 34;
 const TAB_RADIUS = 8;
 const TAB_ICONS: Record<CorePromptId, ReactNode> = {
   human: <SheetThumb texture="human" />,
-  /* No sheet shows a diagonal, so the arrow says what the tab does to the sprite. */
-  quarterTurn: (
+  /* The arrow says it draws this frame from another one. */
+  fromFrame: (
     <Box sx={{ position: "relative" }}>
       <SheetThumb texture="human" />
       <Text sx={{ position: "absolute", right: -1, bottom: -1, fontSize: 0, lineHeight: 1 }}>
-        ↗️
+        ↪️
       </Text>
     </Box>
   ),

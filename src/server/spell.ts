@@ -153,7 +153,9 @@ export class Spell implements EffectSource {
         hasWeaponRange: !!held?.stats?.range,
         isPunching: (isLeft || isRight) && !hasWeapon(caster),
         isUppercut: held?.base === "fist",
+        isEmptyHand: !held,
         bodyPivotY: swing.y - caster.y,
+        scale: caster.profile?.scale ?? 1,
         visibleMs: shape.visibleMs,
       });
       this.maxActiveTime = getSwingActiveMs(this.swing, this.maxActiveTime);

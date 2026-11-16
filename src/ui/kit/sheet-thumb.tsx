@@ -9,14 +9,27 @@ export const THUMB_SIZE = 24;
 /** A colour chip sits inside a thumbnail's square, a little smaller so it reads as a chip. */
 const SWATCH_SIZE = 18;
 
-/** A sheet's art, tinted if given, trimmed and fitted into a thumbnail. */
-export const SheetThumb = ({ texture, tint }: { texture: string; tint?: string }) => {
+/**
+ * A sheet's art, tinted if given, trimmed and fitted into a thumbnail: its preview, or the cell at
+ * `rect` (`[x, y, width, height]`, such as one frame of a body).
+ */
+export const SheetThumb = ({
+  texture,
+  tint,
+  rect,
+}: {
+  texture: string;
+  tint?: string;
+  rect?: readonly number[];
+}) => {
   const [url, setUrl] = useState<string>();
+  const rectKey = rect?.join(",");
 
   useEffect(() => {
     const asset = assetList.find((option) => option.texture === texture);
-    return asset && assetToCanvas({ asset, tint, setImageData: setUrl });
-  }, [texture, tint]);
+    const shown = asset && (rect ? { ...asset, previewRect: rect } : asset);
+    return shown && assetToCanvas({ asset: shown, tint, setImageData: setUrl });
+  }, [texture, tint, rectKey]);
 
   return <Icon icon={url} size={THUMB_SIZE} sx={{ flexShrink: 0, backgroundSize: "contain" }} />;
 };
@@ -42,4 +55,16 @@ export const SwatchThumb = ({ tint }: { tint: string }) => (
       }}
     />
   </Box>
+);
+
+/**
+ * The thumbnail for a "nothing" choice (no weapon, no layer): the grab hand, faded, so an empty
+ * value still has an icon and its row lines up with the rest.
+ */
+export const NoneThumb = () => (
+  <Icon
+    icon="./assets/icons/grab.png"
+    size={THUMB_SIZE}
+    sx={{ flexShrink: 0, backgroundSize: "contain", opacity: 0.25 }}
+  />
 );

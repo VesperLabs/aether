@@ -2,7 +2,7 @@ import { Box, Field, Select, SheetThumb, type SelectOption } from "@/ui";
 import { IconButton } from "./icon-button";
 import { PENDING_COLOR } from "./sheet-canvas";
 import { getItemLooks } from "./item-looks";
-import { getSheetOption } from "./sheet-thumb";
+import { getNoneOption, getSheetOption } from "./sheet-thumb";
 import { fitsGender, getLayerSheets, type HumanLayer } from "./sheets";
 
 const PENDING_DOT = 6;
@@ -48,7 +48,7 @@ export const SheetRow = ({
       label={`${label} sheet`}
       value={value}
       onChange={onChange}
-      options={[{ value: "", label: "None" }, ...options]}
+      options={[getNoneOption("none"), ...options]}
       sx={{ flex: 1 }}
     />
     {value && onEdit && (

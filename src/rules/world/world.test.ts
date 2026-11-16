@@ -114,6 +114,9 @@ describe("sticky facing", () => {
     const at = { x: 0, y: 0 };
     expect(getStickyDirection("left", at, { x: -10, y: 11 })).toBe("left");
     expect(getStickyDirection("down", at, { x: -11, y: 10 })).toBe("down");
+    /* Standing still keeps the facing, instead of snapping left or up */
+    expect(getStickyDirection("right", at, at)).toBe("right");
+    expect(getStickyDirection("down", at, at)).toBe("down");
     expect(getStickyDirection("left", at, { x: -10, y: 20 })).toBe("down");
     expect(getStickyDirection("left", at, { x: 10, y: 1 })).toBe("right");
     expect(getStickyDirection(undefined, at, { x: 0, y: -5 })).toBe("up");

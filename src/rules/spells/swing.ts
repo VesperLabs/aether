@@ -24,14 +24,24 @@ export interface SwingInput {
   reach: number;
   /** The weapon has its own range stat, so the reach is measured to the hand, then the blade. */
   hasWeaponRange: boolean;
-  /** A human swinging an empty hand. */
+  /** A two-handed body swinging an empty hand. */
   isPunching: boolean;
+  /**
+   * Nothing is held in the swinging hand. Unless punching, it's a body's own attack (a claw, a
+   * bite), swung from the body as for a body without hands, not from the hand point.
+   */
+  isEmptyHand?: boolean;
   /** The hand holds a fist weapon (a katar): it swings up instead of down when facing sideways. */
   isUppercut: boolean;
   /** Where the swing turns when there is no hand to turn around: from the character's position. */
   bodyPivotY: number;
   /** How long the swing's art shows, in ms: the blade's timing comes from it. */
   visibleMs: number;
+  /**
+   * The body's size (`profile.scale`): its hands sit that much farther out and its weapon is drawn
+   * that much bigger, so a held weapon's swing grows with it. Unset is 1.
+   */
+  scale?: number;
 }
 
 /** A swing worked out once, when cast: everything but where the caster is now. */
@@ -71,7 +81,10 @@ export function planSwing(input: SwingInput): SwingPlan {
   const isLeft = usesLeftHand(action);
   const isWielded = isLeft || usesRightHand(action);
   const hand = isLeft && !usesRightHand(action) ? "handLeft" : "handRight";
-  const handOffset = isWielded ? getAttackHandOffset(race, direction, action, hand) : undefined;
+  const scale = input.scale ?? 1;
+  const fromHand = isWielded && (isPunching || !input.isEmptyHand);
+  const drawnHand = fromHand ? getAttackHandOffset(race, direction, action, hand) : undefined;
+  const handOffset = drawnHand && { x: drawnHand.x * scale, y: drawnHand.y * scale };
   const pivot = handOffset ?? { x: 0, y: input.bodyPivotY };
   const facing = getAngleFromDirection(direction ?? "down");
   if (isPunching) {
@@ -86,7 +99,7 @@ export function planSwing(input: SwingInput): SwingPlan {
   }
   const turn = isSwingClockwise(direction, action, isUppercut) ? 1 : -1;
   /* From the hand, the weapon's range stat counts the hand's own reach too */
-  const radius = handOffset && input.hasWeaponRange ? reach - HAND_REACH : reach;
+  const radius = handOffset && input.hasWeaponRange ? (reach - HAND_REACH) * scale : reach;
   return {
     pivot,
     radius,

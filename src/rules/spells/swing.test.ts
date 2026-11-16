@@ -30,10 +30,27 @@ describe("planSwing", () => {
     expect(plan.radius).toBe(40 - HAND_REACH);
   });
 
+  it("grows the hand's place and the blade's reach with the body's scale", () => {
+    const hand = getAttackHandOffset("human", "right", "attack_right", "handRight") as {
+      x: number;
+      y: number;
+    };
+    const plan = planSwing({ ...sword, scale: 2 });
+    expect(plan.pivot).toEqual({ x: hand.x * 2, y: hand.y * 2 });
+    expect(plan.radius).toBe((40 - HAND_REACH) * 2);
+  });
+
   it("turns around the body for a character with no hand frames", () => {
     const plan = planSwing({ ...sword, race: "wolf", hasWeaponRange: false });
     expect(plan.pivot).toEqual({ x: 0, y: -12 });
     expect(plan.radius).toBe(40);
+  });
+
+  it("swings an empty hand from the body, as its own attack, unless it's a punch", () => {
+    const claw = planSwing({ ...sword, hasWeaponRange: false, isEmptyHand: true });
+    expect(claw.pivot).toEqual({ x: 0, y: -12 });
+    const punch = planSwing({ ...sword, isPunching: true, isEmptyHand: true });
+    expect(punch.pivot).toEqual(getAttackHandOffset("human", "right", "attack_right", "handRight"));
   });
 
   it("punches straight ahead all at once", () => {

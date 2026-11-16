@@ -13,6 +13,22 @@ export function seek(self: Point, target: Point, speed: number): Velocity {
   return { vx: speed * Math.cos(angle), vy: speed * Math.sin(angle) };
 }
 
+/** Within this many pixels of where it's going, an arriving NPC slows down, to stop right there. */
+const ARRIVE_RADIUS = 24;
+/** Closer than this it has arrived and stands still. */
+const ARRIVED = 1;
+
+/**
+ * Toward `target`, slowing in the last stretch so it stops on the spot instead of overshooting
+ * it every tick: a melee NPC lining up a swing beside its target would otherwise bounce off the
+ * target's body, which pushes it back, and never settle.
+ */
+export function arrive(self: Point, target: Point, speed: number): Velocity {
+  const distance = Math.hypot(target.x - self.x, target.y - self.y);
+  if (distance < ARRIVED) return { vx: 0, vy: 0 };
+  return seek(self, target, speed * Math.min(1, distance / ARRIVE_RADIUS));
+}
+
 /** Full speed straight away from `threat`. */
 export function flee(self: Point, threat: Point, speed: number): Velocity {
   const toward = seek(self, threat, speed);

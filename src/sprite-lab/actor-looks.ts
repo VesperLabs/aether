@@ -75,12 +75,14 @@ export const LAB_ACTORS = Object.entries(actors as Record<string, ActorDefinitio
       a.actor.profile.userName.localeCompare(b.actor.profile.userName),
   );
 
-/** Whether the lab is showing exactly this look, so the picker can name it. */
+/**
+ * Whether the lab is showing this look, so the picker can name it. The weapon doesn't count: trying
+ * another one to place its hand points keeps the same character.
+ */
 export const isShowingLook = (
   look: ActorLook,
-  shown: { atlas: string; layers: Record<HumanLayer, string>; weapon: string },
+  shown: { atlas: string; layers: Record<HumanLayer, string> },
 ) =>
   look.atlas === shown.atlas &&
-  look.weapon === shown.weapon &&
   (!look.atlas.startsWith("human") ||
     HUMAN_LAYERS.every((layer) => look.layers[layer] === shown.layers[layer]));

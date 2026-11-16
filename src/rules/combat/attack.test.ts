@@ -5,6 +5,7 @@ import {
   expAfterDeath,
   getAbilityCosts,
   getAttackActionName,
+  getShownAction,
   getCastAction,
   getAttackSpCost,
   getNextAttackCount,
@@ -99,12 +100,18 @@ describe("getCastAction", () => {
 });
 
 describe("getAttackActionName", () => {
-  it("keeps the action for races without attack animations", () => {
-    const ghost = { ...human("weapon"), profile: { race: "ghost" } };
-    expect(getAttackActionName(ghost, { action: "stand", count: 1 })).toEqual({
-      action: "stand",
-      spellName: "attack-melee",
-    });
+  it("picks and alternates hands for bodies without attack animations too", () => {
+    const ghost = { ...human("weapon", "weapon"), profile: { race: "ghost" } };
+    expect(getAttackActionName(ghost, { action: "stand", count: 1 }).action).toBe("attack_right");
+    expect(getAttackActionName(ghost, { action: "attack_right", count: 2 }).action).toBe(
+      "attack_left",
+    );
+  });
+
+  it("shows standing frames for an attack on a body without attack animations", () => {
+    expect(getShownAction("ghost", "attack_right")).toBe("stand");
+    expect(getShownAction("human", "attack_right")).toBe("attack_right");
+    expect(getShownAction("ghost", "walk")).toBe("walk");
   });
 
   it("swings the right hand first, then the left", () => {

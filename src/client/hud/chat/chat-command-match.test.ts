@@ -136,3 +136,36 @@ describe("far-off typing", () => {
     expect(values("/guns qqq")).toEqual([]);
   });
 });
+
+describe("/npc spawn arguments", () => {
+  const read = (draft: string) => readChatDraft(draft, commands);
+
+  it("suggests each slot's default first", () => {
+    expect(values("/npc spawn wolf ")).toEqual(["wild", "pet"]);
+    expect(values("/npc spawn wolf wild ")[0]).toBe("1");
+    expect(values("/npc spawn wolf wild 1 ")[0]).toBe("none");
+    expect(values("/npc spawn wolf wild 1 sw")).toContain("sword");
+    expect(values("/npc spawn wolf wild 1 none da")).toContain("dagger");
+  });
+
+  it("takes each slot in its place, any left off", () => {
+    for (const draft of [
+      "/npc spawn wolf",
+      "/npc spawn wolf pet",
+      "/npc spawn wolf wild 3",
+      "/npc spawn wolf wild 1 sword",
+      "/npc spawn wolf pet 2 none dagger",
+    ]) {
+      expect(read(draft).error, draft).toBeUndefined();
+    }
+    expect(read("/npc spawn wolf 2").error).toBeTruthy();
+    expect(read("/npc spawn wolf wild sword").error).toBeTruthy();
+    expect(read("/npc spawn wolf wild 1 potato").error).toBeTruthy();
+  });
+
+  it("shows the slots still to come", () => {
+    expect(getGhostText(read("/npc spawn wolf "))).toBe(
+      "[wild|pet] [count] [right hand] [left hand]",
+    );
+  });
+});

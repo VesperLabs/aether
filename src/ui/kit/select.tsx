@@ -6,6 +6,7 @@ import {
   type KeyboardEvent,
   type ReactNode,
 } from "react";
+import { createPortal } from "react-dom";
 import type { ThemeUIStyleObject } from "theme-ui";
 import { Box, Flex, Text } from "theme-ui";
 import { CONTROL_GOLD } from "./modal-gilding";
@@ -13,15 +14,19 @@ import { CONTROL_TEXT } from "./theme";
 
 const LIST_MAX_HEIGHT = 260;
 
+/** Room between the box and its open list, in pixels. */
+const LIST_GAP = 4;
+
+/*
+ * The open list lives on the page, not in the box's panel, so no window or modal that scrolls or
+ * clips its contents can cut it off. It's placed by the box's spot on screen.
+ */
 const LIST_SX: ThemeUIStyleObject = {
-  position: "absolute",
+  position: "fixed",
   zIndex: "menus",
-  left: 0,
-  right: 0,
   p: 1,
   maxHeight: LIST_MAX_HEIGHT,
-  /* At least as wide as the button, and wider when its options need it */
-  minWidth: "max-content",
+  width: "max-content",
   overflowY: "auto",
   bg: "yellow.900",
   border: "1px solid #000",
@@ -43,6 +48,7 @@ export const Select = ({
   options,
   onChange,
   placeholder = "None",
+  disabled = false,
   sx,
 }: {
   label: string;
@@ -51,6 +57,8 @@ export const Select = ({
   onChange: (value: string) => void;
   /** Shown dimmed when the value is none of the options, so the box keeps its size. */
   placeholder?: string;
+  /** Shown dimmed, and it won't open or change. */
+  disabled?: boolean;
   sx?: ThemeUIStyleObject;
 }) => {
   const [open, setOpen] = useState(false);
@@ -58,27 +66,55 @@ export const Select = ({
   const listRef = useRef<HTMLDivElement>(null);
   const selectedRef = useRef<HTMLDivElement>(null);
   const [dropUp, setDropUp] = useState(false);
+  /* Where the box is on screen, which places the list */
+  const [anchor, setAnchor] = useState<DOMRect>();
   const selectedIndex = options.findIndex((option) => option.value === value);
 
-  /* Measured before painting, so the list never flashes on the wrong side. */
+  /* Measured before painting, so the list never flashes on the wrong side. It follows the box as
+     the page or its window scrolls, resizes or is dragged. */
   useLayoutEffect(() => {
-    if (!open || !rootRef.current || !listRef.current) return;
+    if (!open || !rootRef.current) return;
+    const place = () => {
+      if (!rootRef.current) return;
+      const box = rootRef.current.getBoundingClientRect();
+      const below = window.innerHeight - box.bottom;
+      const height = listRef.current?.offsetHeight ?? 0;
+      setDropUp(height > below && box.top > below);
+      setAnchor(box);
+    };
+    place();
+    window.addEventListener("scroll", place, true);
+    window.addEventListener("resize", place);
+    window.addEventListener("pointermove", place);
+    return () => {
+      window.removeEventListener("scroll", place, true);
+      window.removeEventListener("resize", place);
+      window.removeEventListener("pointermove", place);
+    };
+  }, [open]);
+
+  /* Once the list is on screen its height is known: open it upward if it won't fit below */
+  const isPlaced = !!anchor;
+  useLayoutEffect(() => {
+    if (!open || !isPlaced || !rootRef.current || !listRef.current) return;
     const { top, bottom } = rootRef.current.getBoundingClientRect();
     const below = window.innerHeight - bottom;
     setDropUp(listRef.current.offsetHeight > below && top > below);
-  }, [open]);
+  }, [open, isPlaced]);
 
   useEffect(() => {
     if (!open) return;
     selectedRef.current?.scrollIntoView?.({ block: "nearest" });
     const closeOnOutsidePress = (e: PointerEvent) => {
-      if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
+      const target = e.target as Node;
+      if (!rootRef.current?.contains(target) && !listRef.current?.contains(target)) setOpen(false);
     };
     document.addEventListener("pointerdown", closeOnOutsidePress);
     return () => document.removeEventListener("pointerdown", closeOnOutsidePress);
   }, [open]);
 
   const handleKeyDown = (e: KeyboardEvent) => {
+    if (disabled) return;
     if (e.key === "Escape") setOpen(false);
     if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
     e.preventDefault();
@@ -91,7 +127,13 @@ export const Select = ({
     <Box ref={rootRef} sx={{ position: "relative", width: "100%", minWidth: 0, ...sx }}>
       <Flex
         as="button"
-        {...{ type: "button", "aria-haspopup": "listbox", "aria-expanded": open, title: label }}
+        {...{
+          type: "button",
+          "aria-haspopup": "listbox",
+          "aria-expanded": open,
+          title: label,
+          disabled,
+        }}
         aria-label={label}
         onClick={() => setOpen(!open)}
         onKeyDown={handleKeyDown}
@@ -103,7 +145,8 @@ export const Select = ({
           justifyContent: "space-between",
           gap: 2,
           color: "text",
-          cursor: "pointer",
+          cursor: disabled ? "default" : "pointer",
+          opacity: disabled ? 0.5 : 1,
           borderRadius: 4,
           textAlign: "left",
         }}
@@ -155,45 +198,57 @@ export const Select = ({
           }}
         />
       </Flex>
-      {open && (
-        <Box
-          ref={listRef}
-          role="listbox"
-          aria-label={label}
-          sx={{ ...LIST_SX, ...(dropUp ? { bottom: "100%", mb: 1 } : { top: "100%", mt: 1 }) }}
-        >
-          {options.map((option) => {
-            const selected = option.value === value;
-            return (
-              <Flex
-                key={option.value}
-                ref={selected ? selectedRef : undefined}
-                role="option"
-                aria-selected={selected}
-                onClick={() => {
-                  onChange(option.value);
-                  setOpen(false);
-                }}
-                sx={{
-                  alignItems: "center",
-                  gap: 2,
-                  px: 2,
-                  py: 1,
-                  ...CONTROL_TEXT,
-                  borderRadius: 3,
-                  cursor: "pointer",
-                  color: selected ? CONTROL_GOLD : "text",
-                  bg: selected ? "shadow.30" : "transparent",
-                  "&:hover": { bg: "shadow.25" },
-                }}
-              >
-                {option.icon}
-                {option.label}
-              </Flex>
-            );
-          })}
-        </Box>
-      )}
+      {open &&
+        !disabled &&
+        anchor &&
+        createPortal(
+          <Box
+            ref={listRef}
+            role="listbox"
+            aria-label={label}
+            sx={LIST_SX}
+            style={{
+              left: anchor.left,
+              /* At least as wide as the box, and wider when its options need it */
+              minWidth: Math.max(anchor.width, 0),
+              ...(dropUp
+                ? { bottom: window.innerHeight - anchor.top + LIST_GAP }
+                : { top: anchor.bottom + LIST_GAP }),
+            }}
+          >
+            {options.map((option) => {
+              const selected = option.value === value;
+              return (
+                <Flex
+                  key={option.value}
+                  ref={selected ? selectedRef : undefined}
+                  role="option"
+                  aria-selected={selected}
+                  onClick={() => {
+                    onChange(option.value);
+                    setOpen(false);
+                  }}
+                  sx={{
+                    alignItems: "center",
+                    gap: 2,
+                    px: 2,
+                    py: 1,
+                    ...CONTROL_TEXT,
+                    borderRadius: 3,
+                    cursor: "pointer",
+                    color: selected ? CONTROL_GOLD : "text",
+                    bg: selected ? "shadow.30" : "transparent",
+                    "&:hover": { bg: "shadow.25" },
+                  }}
+                >
+                  {option.icon}
+                  {option.label}
+                </Flex>
+              );
+            })}
+          </Box>,
+          document.body,
+        )}
     </Box>
   );
 };

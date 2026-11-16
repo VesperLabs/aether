@@ -1,4 +1,11 @@
-import { assetList, getLayerOrder, resolveAsset, type BuiltItem, type MobProfile } from "@/content";
+import {
+  assetList,
+  getFrameHands,
+  getLayerOrder,
+  resolveAsset,
+  type BuiltItem,
+  type MobProfile,
+} from "@/content";
 import {
   ACCESSORY_HIDING_HELMETS,
   HAIR_HIDING_HELMETS,
@@ -9,7 +16,6 @@ import { filterVisibleEquipment } from "@/rules/character";
 import { memo, useEffect, useEffectEvent, useRef, type ComponentProps } from "react";
 import type { CSSProperties } from "react";
 import { Box } from "@/ui/kit";
-import weaponAtlas from "../../../public/assets/atlas/weapon.json";
 import { loadSheet } from "./sprite-sheet";
 import { getWalkFrameName, getWalkFrameRect, useWalkCycle, type WalkPose } from "./walk-cycle";
 import { WeaponEffects, type HeldWeapon } from "./weapon-effects";
@@ -59,9 +65,10 @@ export const drawLayers = (
   assets: PlayerAsset[],
   layers: (HTMLCanvasElement | null)[],
   pose?: WalkPose,
+  race = "human",
 ) => {
   const frame = pose ? getWalkFrameName(pose) : "down-stand";
-  const atlas = (weaponAtlas.offsets.human as Record<string, WeaponOffsets>)[frame];
+  const atlas = getFrameHands(race, frame) as WeaponOffsets | undefined;
   const isLeftShield = assets.some((asset) => asset.slotKey === "handLeft" && asset.isShield);
   const order = pose ? getLayerOrder(pose.direction, isLeftShield) : undefined;
   /* A layer listed twice is drawn at its last place, the same way Phaser's bringToTop stacks it. */
@@ -80,6 +87,8 @@ export const drawLayers = (
     const [x, y, w, h] = (pose && getWalkFrameRect(asset.atlasFile, pose)) || asset.previewRect;
     const isLeftWeapon = asset.slotKey === "handLeft";
     if (isLeftWeapon || asset.slotKey === "handRight") {
+      /* A body without hand points holds nothing to draw */
+      if (!atlas) return;
       const { x: tx, y: ty, flipX, flipY, rotation = 0 } = isLeftWeapon ? atlas.left : atlas.right;
       ctx.save();
       ctx.translate(MIN_CANVAS_SIZE / 2 + tx, MIN_CANVAS_SIZE / 2 + ty + 14);
@@ -125,7 +134,7 @@ export const PlayerRender = memo(
       /* Every sheet loads at once; drawing waits for them all. */
       const layers = await Promise.all(assets.map(loadSheet));
       if (!isCurrent() || !canvasRef.current) return;
-      drawLayers(canvasRef.current, assets, layers, pose);
+      drawLayers(canvasRef.current, assets, layers, pose, player?.profile?.race);
       onLoadComplete(true);
     });
 
@@ -143,14 +152,19 @@ export const PlayerRender = memo(
         sx={{ position: "relative", height: FULL_CANVAS_SIZE, width: FULL_CANVAS_SIZE, ...sx }}
         {...props}
       >
-        <WeaponEffects weapons={weapons} frame={frame} inFront={false} />
+        <WeaponEffects
+          weapons={weapons}
+          frame={frame}
+          race={player?.profile?.race}
+          inFront={false}
+        />
         <canvas
           ref={canvasRef}
           width={MIN_CANVAS_SIZE}
           height={MIN_CANVAS_SIZE}
           style={PLAYER_RENDER_CANVAS_STYLE}
         />
-        <WeaponEffects weapons={weapons} frame={frame} inFront />
+        <WeaponEffects weapons={weapons} frame={frame} race={player?.profile?.race} inFront />
       </Box>
     );
   },

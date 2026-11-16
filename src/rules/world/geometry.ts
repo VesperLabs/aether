@@ -47,7 +47,8 @@ const FACING_SWITCH_RATIO = 1.3;
 
 /**
  * Like `getCharacterDirection`, but keeps the current facing's axis until the other one clearly
- * wins, so walking near a diagonal doesn't flicker between the left and down sprites.
+ * wins, so walking near a diagonal doesn't flicker between the left and down sprites. Standing
+ * still keeps the current facing.
  */
 export function getStickyDirection(
   current: string | undefined,
@@ -56,6 +57,7 @@ export function getStickyDirection(
 ): CardinalDirection {
   const dx = point.x - character.x;
   const dy = point.y - character.y;
+  if (dx === 0 && dy === 0 && isCardinal(current)) return current;
   const horizontal: CardinalDirection = dx > 0 ? "right" : "left";
   const vertical: CardinalDirection = dy > 0 ? "down" : "up";
   if (current === "left" || current === "right") {
@@ -65,4 +67,10 @@ export function getStickyDirection(
     return Math.abs(dx) > Math.abs(dy) * FACING_SWITCH_RATIO ? horizontal : vertical;
   }
   return getCharacterDirection(character, point);
+}
+
+function isCardinal(direction: string | undefined): direction is CardinalDirection {
+  return (
+    direction === "up" || direction === "down" || direction === "left" || direction === "right"
+  );
 }

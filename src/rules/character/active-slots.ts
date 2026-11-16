@@ -1,4 +1,4 @@
-import { getSetBonus } from "@/content";
+import { getBody, getSetBonus } from "@/content";
 import { addBuffBonuses, type ActiveBuff } from "@/rules/buffs";
 import { hasAttackableWeapons, hasVisibleWeaponType } from "@/rules/combat";
 
@@ -47,6 +47,10 @@ export function getActiveItemSlots(character: ActiveSlotsInput): string[] {
     active = active.filter((slot) => slot !== slotKey);
   };
 
+  /* A hand the body doesn't have holds nothing, and what's held must be something to attack with */
+  const body = getBody(character.profile?.race);
+  if (!body.handLeft) drop("handLeft");
+  if (!body.handRight) drop("handRight");
   if (!hasAttackableWeapons(character, "equipment")) {
     drop("handLeft");
     drop("handRight");
