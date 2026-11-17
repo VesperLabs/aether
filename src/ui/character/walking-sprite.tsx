@@ -70,6 +70,7 @@ export const WalkingSprite = ({
   walking = false,
   shadow = false,
   maxScale,
+  wholeSteps = false,
 }: {
   asset: AssetDefinition;
   tint?: string;
@@ -79,6 +80,11 @@ export const WalkingSprite = ({
    * small art sits at it, crisp; bigger art shrinks to fit, smoothed if that's uneven.
    */
   maxScale?: number;
+  /**
+   * With `maxScale`: rounds the fit to the nearest whole step (when it's 1x or more), so it's
+   * crisp. Rounding up can let it reach a little past `size`, as item art does in a slot.
+   */
+  wholeSteps?: boolean;
   walking?: boolean;
   /** Draws the shadow the character casts in the game. */
   shadow?: boolean;
@@ -173,8 +179,11 @@ export const WalkingSprite = ({
   const whole = Math.floor(size / longest);
   /* Capped: as big as fits the box both ways, never past the cap */
   const fitted = Math.min(size / standBounds.width, size / standBounds.height);
-  const scale = maxScale
-    ? Math.min(maxScale, fitted)
+  const capped = maxScale && Math.min(maxScale, fitted);
+  const scale = capped
+    ? wholeSteps && capped >= 1
+      ? Math.round(capped)
+      : capped
     : longest > size || whole * longest < size * 0.75
       ? size / longest
       : whole;
