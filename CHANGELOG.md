@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.48.1](https://github.com/VesperLabs/aether/compare/v0.48.0...v0.48.1) (2026-11-17)
+
+
+### Bug Fixes
+
+* tamed swimmers walk on land with their owner ([#375](https://github.com/VesperLabs/aether/issues/375)) ([3035de7](https://github.com/VesperLabs/aether/commit/3035de7c75a2033658bf350df57f13f91d50ca17))
+
 ## [0.48.0](https://github.com/VesperLabs/aether/compare/v0.47.0...v0.48.0) (2026-11-17)
 
 
