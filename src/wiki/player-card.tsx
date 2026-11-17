@@ -4,7 +4,7 @@ import { PAPER, PAPER_STYLE, PaperFrame } from "./paper";
 import type { WikiPlayer } from "./page-players";
 import { CARD_COLORS, CharacterFace } from "./card-pool";
 import { WalkOnHover } from "./walk-on-hover";
-import { CompanionFace } from "./companion-face";
+import { PetFace } from "./pet-face";
 
 /**
  * The player's feet, from the bottom of the 64px face box: they stand 20px under the middle of
@@ -12,9 +12,9 @@ import { CompanionFace } from "./companion-face";
  */
 const PLAYER_FEET_BOTTOM = -12;
 
-/** The character, drawn small: the head and shoulders fill the box. Their companion stands at their feet, bottom right, facing out. */
+/** The character, drawn small: the head and shoulders fill the box. Their active pet stands at their feet, bottom right, facing out. */
 const PlayerFace = ({ player }: { player: WikiPlayer }) => {
-  const companion = player.companions?.[0];
+  const pet = player.pets?.active;
   return (
     <Flex
       sx={{
@@ -27,7 +27,7 @@ const PlayerFace = ({ player }: { player: WikiPlayer }) => {
       }}
     >
       <CharacterFace character={player} />
-      {companion && (
+      {pet && (
         /* Its sheet is cut to its body, so its bottom is its feet: stood level with theirs */
         <Box
           sx={{
@@ -38,7 +38,7 @@ const PlayerFace = ({ player }: { player: WikiPlayer }) => {
             lineHeight: 0,
           }}
         >
-          <CompanionFace name={companion.name} />
+          <PetFace name={pet.name} />
         </Box>
       )}
     </Flex>

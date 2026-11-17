@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { PET_SLOTS } from "@/rules/capture";
 import {
   faceTextures,
   genders,
@@ -116,10 +117,12 @@ export const commands = {
   /** Throws an item (a pokeball) along `angle`. */
   throwItem: z.object({ location: z.string(), item: itemRef, angle: z.number() }),
   consumeItem: z.object({ location: z.string().nullish(), item: itemRef.nullish() }).optional(),
-  /** Brings a caught companion out, or puts it away, by its saved id. */
-  toggleCompanion: z.object({ id: z.string() }),
-  /** Lets a caught companion go for good, by its saved id. */
-  releaseCompanion: z.object({ id: z.string() }),
+  /** Moves a pet between slots, swapping with what's there (into `active`: out). */
+  movePet: z.object({ from: z.enum(PET_SLOTS), to: z.enum(PET_SLOTS) }),
+  /** A double-click on a pet slot: stored swaps in to be active, active is stored. */
+  swapPet: z.object({ slot: z.enum(PET_SLOTS) }),
+  /** Lets the pet in a slot go for good. */
+  releasePet: z.object({ slot: z.enum(PET_SLOTS) }),
 
   /* Social */
   message: z

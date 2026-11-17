@@ -73,7 +73,7 @@ export function checkProximities(scene: SceneMain, time: number) {
   let hoveredDistance = Infinity;
   /* Fighting the hero, with how far each is, to list the nearest first */
   const foes: { npc: Player; distance: number }[] = [];
-  const companions: Player[] = [];
+  const owned: Player[] = [];
   const pointer = scene.input.activePointer;
   const cursorPoint = pointer.positionToCamera(scene.cameras.main) as Phaser.Math.Vector2;
 
@@ -96,7 +96,7 @@ export function checkProximities(scene: SceneMain, time: number) {
     if (entity?.kind === "npc") {
       const cursorDistance = distanceTo(entity, cursorPoint);
       const npc = entity as Player;
-      if (npc.state?.ownerId === hero.socketId && !npc.state.isDead) companions.push(npc);
+      if (npc.state?.ownerId === hero.socketId && !npc.state.isDead) owned.push(npc);
       if (npc.state?.lockedPlayerId === hero.socketId && !npc.state.isDead) {
         foes.push({ npc, distance });
       }
@@ -113,7 +113,8 @@ export function checkProximities(scene: SceneMain, time: number) {
   }
   foes.sort((a, b) => a.distance - b.distance);
   reportNpcPlates(
-    companions,
+    /* Pets before followers */
+    owned.sort((a, b) => Number(!!b.state.petId) - Number(!!a.state.petId)),
     foes.map(({ npc }) => npc),
     hovered,
   );

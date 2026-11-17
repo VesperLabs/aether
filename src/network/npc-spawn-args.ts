@@ -1,5 +1,5 @@
 /*
- * `/npc spawn <actor> [wild|pet] [count] [right hand] [left hand]`: each slot has its place, and
+ * `/npc spawn <actor> [wild|follower] [count] [right hand] [left hand]`: each slot has its place, and
  * its first suggestion is its default (`wild`, `1`, `none`), so filling a later slot is a pick or
  * two away. Slots left off take their default. Read by `server/admin/npc-cheats.ts`.
  */
@@ -13,12 +13,12 @@ interface SpawnArg {
 }
 
 /** Whether they are yours. */
-export const SPAWN_SIDES = ["wild", "pet"] as const;
+export const SPAWN_SIDES = ["wild", "follower"] as const;
 /** The word for a hand left as the actor has it. */
 export const EMPTY_HAND = "none";
 
 export const NPC_SPAWN_ARGS: SpawnArg[] = [
-  { name: "wild|pet", kind: "text", optional: true, words: SPAWN_SIDES },
+  { name: "wild|follower", kind: "text", optional: true, words: SPAWN_SIDES },
   { name: "count", kind: "number", optional: true },
   { name: "right hand", kind: "item", optional: true, words: [EMPTY_HAND] },
   { name: "left hand", kind: "item", optional: true, words: [EMPTY_HAND] },
@@ -26,7 +26,7 @@ export const NPC_SPAWN_ARGS: SpawnArg[] = [
 
 const SIDE_OPTIONS = [
   { value: "wild", hint: "default: they fight anyone", pinned: true },
-  { value: "pet", hint: "your companions", pinned: true },
+  { value: "follower", hint: "temporary: they follow and fight for you", pinned: true },
 ];
 const COUNT_OPTIONS = [
   { value: "1", hint: "default", pinned: true },
@@ -35,7 +35,7 @@ const COUNT_OPTIONS = [
 const HAND_OPTION = { value: EMPTY_HAND, hint: "default: what the actor holds", pinned: true };
 const HELD_TYPES = ["weapon", "ranged", "shield"];
 
-/** Suggestions for slot `slot` after the actor (0 is wild or pet), its default first. */
+/** Suggestions for slot `slot` after the actor (0 is wild or follower), its default first. */
 export function completeNpcSpawn<T extends { hint?: string }>(slot: number, items: readonly T[]) {
   if (slot === 0) return SIDE_OPTIONS;
   if (slot === 1) return COUNT_OPTIONS;

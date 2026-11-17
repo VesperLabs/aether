@@ -141,7 +141,7 @@ describe("/npc spawn arguments", () => {
   const read = (draft: string) => readChatDraft(draft, commands);
 
   it("suggests each slot's default first", () => {
-    expect(values("/npc spawn wolf ")).toEqual(["wild", "pet"]);
+    expect(values("/npc spawn wolf ")).toEqual(["wild", "follower"]);
     expect(values("/npc spawn wolf wild ")[0]).toBe("1");
     expect(values("/npc spawn wolf wild 1 ")[0]).toBe("none");
     expect(values("/npc spawn wolf wild 1 sw")).toContain("sword");
@@ -151,10 +151,10 @@ describe("/npc spawn arguments", () => {
   it("takes each slot in its place, any left off", () => {
     for (const draft of [
       "/npc spawn wolf",
-      "/npc spawn wolf pet",
+      "/npc spawn wolf follower",
       "/npc spawn wolf wild 3",
       "/npc spawn wolf wild 1 sword",
-      "/npc spawn wolf pet 2 none dagger",
+      "/npc spawn wolf follower 2 none dagger",
     ]) {
       expect(read(draft).error, draft).toBeUndefined();
     }
@@ -165,7 +165,7 @@ describe("/npc spawn arguments", () => {
 
   it("shows the slots still to come", () => {
     expect(getGhostText(read("/npc spawn wolf "))).toBe(
-      "[wild|pet] [count] [right hand] [left hand]",
+      "[wild|follower] [count] [right hand] [left hand]",
     );
   });
 });

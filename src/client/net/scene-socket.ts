@@ -24,7 +24,7 @@ import { beginCast, endCast, landCast } from "@/client/views/player-actions";
 import { playWindupPie, stopWindupPie } from "@/client/views/windup-pie";
 import { drawHitShapes } from "@/client/views/hit-shapes";
 import { hasPlayTicket } from "@/client/net/play-ticket";
-import { playSpawnDissolve } from "@/client/views/dissolve";
+import { playLeaveDissolve, playSpawnDissolve } from "@/client/views/dissolve";
 import {
   addPlayer,
   getPlayer,
@@ -342,12 +342,18 @@ export function bindSceneSocket(scene: SceneMain) {
     playSpawnDissolve(npc);
   });
 
-  /* Spawned, tamed, or a companion following its owner in: it dissolves in */
+  /* Spawned, caught, or a pet or follower following its owner in: it dissolves in */
   socket.on("npcJoin", (npc) => {
     if (!getNpc(scene, npc.id)) playSpawnDissolve(addNpc(scene, npc));
   });
 
-  socket.on("npcRemove", (id) => getNpc(scene, id)?.destroy());
+  /* Put away, cleared, or gone to another room: it dissolves away, as it dissolved in */
+  socket.on("npcRemove", (id) => {
+    const npc = getNpc(scene, id);
+    if (!npc) return;
+    playLeaveDissolve(npc);
+    npc.destroy();
+  });
 
   socket.on("lootSpawned", ({ loot, npcId }) => {
     /*  We will fake the loot pos when an enemy dies by overriding xy */

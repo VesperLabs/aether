@@ -1,4 +1,5 @@
 import { Button, Flex, Grid, Text } from "@/ui";
+import type { PetSlots } from "@/rules/capture";
 import { RowTitle } from "./row-title";
 import { useHashScroll } from "./use-hash-scroll";
 import { PlayerCard } from "./player-card";
@@ -15,8 +16,8 @@ export type WikiPlayer = Partial<FullCharacterWire> & {
   id: string;
   isGhost?: boolean;
   updatedAt?: string | number;
-  /** The companions they keep, each the actor it is a copy of. */
-  companions?: { name: string }[];
+  /** The pets they keep, by slot: the active one is out with them. */
+  pets?: PetSlots;
 };
 
 export function PagePlayers() {

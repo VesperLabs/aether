@@ -62,7 +62,7 @@ export function registerRoutes(app: Express, { aetherServer, db }: RouteDeps) {
         profile: player?.profile,
         updatedAt: player?.updatedAt,
         quests: player?.quests,
-        companions: player?.companions,
+        pets: player?.pets,
       };
     });
 

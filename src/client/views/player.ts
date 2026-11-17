@@ -114,7 +114,7 @@ export class Player extends Character {
   isMob() {
     return this.kind === "npc" && !this.talks && !getBody(this.profile?.race).leavesGrave;
   }
-  /** Mobs show their name only in combat or on hover; companions always do. */
+  /** Mobs show their name only in combat or on hover; pets and followers always do. */
   hidesName() {
     return this.isMob() && !this.state?.ownerId;
   }
@@ -285,7 +285,7 @@ export class Player extends Character {
     this.windupPie.draw(false);
     this.emit(CHARACTER_DIED);
     this.corpse.setVisible(!this.isMob());
-    /* Mobs leave no corpse, so no name either, companions included */
+    /* Mobs leave no corpse, so no name either, pets and followers included */
     if (this.isMob()) this.userName.setVisible(false);
     if (this.isHero) window.dispatchEvent(new Event("HERO_DEAD"));
   }
@@ -313,7 +313,7 @@ export class Player extends Character {
     const shouldShow = !this.checkOutOfCombat() || state?.isHovering;
 
     this.hpBar.setVisible(shouldShow);
-    /* Every frame, so it follows changes like a mob becoming a companion */
+    /* Every frame, so it follows changes like a mob becoming a pet */
     this.userName.setVisible(!this.hidesName() || shouldShow);
   }
   checkDeath() {

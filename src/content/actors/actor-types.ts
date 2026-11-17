@@ -52,7 +52,7 @@ interface ActorDialogues {
 }
 
 /**
- * Anything in the world that isn't a player: a crab, a shopkeeper, a tamed pet. There are no kinds of
+ * Anything in the world that isn't a player: a crab, a shopkeeper, a pet. There are no kinds of
  * actor; what one does comes from the parts it has. `dialogues` lets players talk to it, `shop`
  * sells, `quests` hands them out, `drops` is its loot, and `behaviors` say how it moves and fights.
  */

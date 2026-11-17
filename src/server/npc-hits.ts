@@ -8,7 +8,7 @@ import type { Npc } from "./npc";
 
 /**
  * Damages (or, for holy, heals) everyone an NPC's attack or spell hit: foes need "enemy", its own side
- * "ally", itself "self". A companion's kills count as its owner's: exp, loot and quest progress.
+ * "ally", itself "self". An owned NPC's kills count as its owner's: exp, loot and quest progress.
  */
 export function applyNpcHits(
   npc: Npc,

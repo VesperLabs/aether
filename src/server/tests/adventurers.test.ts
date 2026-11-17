@@ -74,12 +74,12 @@ describe("adventurers", () => {
     await server.until(socket, () => !traveler.state.isDead, { maxMs: 20000 });
   });
 
-  it("a tamed one follows its owner", async () => {
+  it("a follower follows its owner", async () => {
     const { socket, player } = await server.login();
     const loiterer = await spawn(socket, "loiterer");
     loiterer.x = player.x;
     loiterer.y = player.y;
-    expect((await cheat(socket, "/npc tame loiterer")).type).toBe("system");
+    expect((await cheat(socket, "/npc follow loiterer")).type).toBe("system");
     const pet = Object.values<Anything>(server.world.npcs).find(
       (npc) => npc.state.ownerId === socket.id,
     );

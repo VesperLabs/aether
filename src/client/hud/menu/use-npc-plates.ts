@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { NPC_PLATES_EVENT, type NpcPlates } from "@/client/scenes/npc-plates";
 
-const NONE: NpcPlates = { companions: [], foes: [], hovered: null };
+const NONE: NpcPlates = { owned: [], foes: [], hovered: null };
 
-/** The NPCs that get plates beside the hero's: their companions, foes fighting them, and the one hovered. */
+/** The NPCs that get plates beside the hero's: their pets and followers, foes fighting them, and the one hovered. */
 export function useNpcPlates() {
   const [plates, setPlates] = useState<NpcPlates>(NONE);
   useEffect(() => {

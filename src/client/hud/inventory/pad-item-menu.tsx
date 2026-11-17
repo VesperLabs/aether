@@ -11,7 +11,7 @@ import { focusNavOn, holdNavItem } from "@/client/input/pad-nav";
 import { useAppContext } from "@/client/hud/app/context";
 import { CONSUMABLES_BASES, checkSlotsMatch } from "@/rules/inventory";
 import { canSlotMod } from "@/content";
-import { COMPANION_LOCATION } from "@/client/hud/social/companions-panel";
+import { PET_LOCATION } from "@/client/hud/pets/pets-row";
 
 /* As the chat's command list highlights its rows */
 const HIGHLIGHT = "rgba(255,255,255,.12)";
@@ -35,12 +35,13 @@ type Option =
 
 /** What can be done with the item in `slot`; the first is highlighted when the menu opens. */
 function optionsFor(slot: Element) {
-  /* A caught companion (Social's Companions tab): out or away, or let go */
-  if (slot.getAttribute("data-location") === COMPANION_LOCATION) {
+  /* A pet (Pets & Abilities menu): swapped in or out of active, or let go */
+  if (slot.getAttribute("data-location") === PET_LOCATION) {
+    if (!slot.getAttribute("data-id")) return [];
     return [
-      slot.hasAttribute("data-away")
-        ? { label: "Bring out" as const, hint: "Out with you" }
-        : { label: "Put away" as const, hint: "Still yours" },
+      slot.getAttribute("data-pet-slot") === "active"
+        ? { label: "Put away" as const, hint: "Into a free store" }
+        : { label: "Bring out" as const, hint: "Swap in as active" },
       { label: "Release" as const, hint: "Let it go for good" },
     ];
   }

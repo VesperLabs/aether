@@ -31,7 +31,7 @@ function cannotBeHit(victim: ServerCharacter) {
   return isDodgeInvulnerable(victim.state, now) || isInStealthGrace(victim.state, now);
 }
 
-/** Self or anyone on its side (party, companions, fellow wild NPCs): holy heals instead of hurts. */
+/** Self or anyone on its side (party, owned NPCs, fellow wild NPCs): holy heals instead of hurts. */
 function isAllyOf(attacker: ServerCharacter, victim: ServerCharacter) {
   return attacker === victim || isAlly(attacker.world, attacker, victim);
 }

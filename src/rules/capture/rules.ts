@@ -43,15 +43,3 @@ export const getCatchChance = (level = 1) =>
 
 /** Whether a ball that hit catches its target. `random` is the world's dice, in [0, 1). */
 export const rollCatch = (random: () => number, level?: number) => random() < getCatchChance(level);
-
-/** How many caught companions a player can keep at once. */
-export const MAX_COMPANIONS = 1;
-
-/** A caught companion as saved on its owner's account: the actor it is a copy of. */
-export interface SavedCompanion {
-  /** Ties the saved entry to the companion out in the world (its `state.keptId`). */
-  id: string;
-  name: string;
-  /** Put away: saved, but not out with its owner. */
-  isAway?: boolean;
-}

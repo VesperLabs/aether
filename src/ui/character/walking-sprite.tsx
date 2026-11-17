@@ -69,10 +69,16 @@ export const WalkingSprite = ({
   size = 80,
   walking = false,
   shadow = false,
+  maxScale,
 }: {
   asset: AssetDefinition;
   tint?: string;
   size?: number;
+  /**
+   * Grows to fit `size` by width and height, but never past this scale (item art is 2x in slots):
+   * small art sits at it, crisp; bigger art shrinks to fit, smoothed if that's uneven.
+   */
+  maxScale?: number;
   walking?: boolean;
   /** Draws the shadow the character casts in the game. */
   shadow?: boolean;
@@ -165,7 +171,13 @@ export const WalkingSprite = ({
      shrinks smoothly. */
   const longest = Math.max(standBounds.width, standBounds.height);
   const whole = Math.floor(size / longest);
-  const scale = longest > size || whole * longest < size * 0.75 ? size / longest : whole;
+  /* Capped: as big as fits the box both ways, never past the cap */
+  const fitted = Math.min(size / standBounds.width, size / standBounds.height);
+  const scale = maxScale
+    ? Math.min(maxScale, fitted)
+    : longest > size || whole * longest < size * 0.75
+      ? size / longest
+      : whole;
   return (
     <Box
       as="canvas"
@@ -181,7 +193,8 @@ export const WalkingSprite = ({
         marginTop: `${(bounds.y - standBounds.y) * scale}px`,
         marginRight: `${(standBounds.x + standBounds.width - bounds.x - width) * scale}px`,
         marginBottom: `${(standBounds.y + standBounds.height - bounds.y - height) * scale}px`,
-        imageRendering: scale >= 1 ? "pixelated" : "auto",
+        /* Crisp on whole pixels; an uneven size would drop rows, so it's smoothed */
+        imageRendering: Number.isInteger(scale) ? "pixelated" : "auto",
       }}
     />
   );

@@ -29,7 +29,7 @@ async function setUp(amount: number) {
   crab.vx = crab.vy = 0;
   crab.behaviors = { guard: {} };
   /* Balls stop on the first foe they meet: everyone else (earlier tests' players, their
-   * companions, creatures that broke free and wandered) goes out of the throw, behind it */
+   * pets and followers, creatures that broke free and wandered) goes out of the throw, behind it */
   const others = [
     ...Object.values<Anything>(server.world.players).filter((other) => other !== player),
     ...Object.values<Anything>(server.world.npcs).filter((npc) => npc !== crab),
@@ -38,7 +38,7 @@ async function setUp(amount: number) {
   return { socket, player, ball, crab };
 }
 
-const companionsOf = (ownerId: string) =>
+const ownedBy = (ownerId: string) =>
   Object.values<Anything>(server.world.npcs).filter((npc) => npc.state.ownerId === ownerId);
 
 const isCapturing = (npc: Anything) =>
@@ -65,7 +65,7 @@ describe("pokeball", () => {
 
     expect(player.inventory[0].amount).toBe(1);
     expect(player.stats.sp).toBeLessThan(sp);
-    expect(companionsOf(socket.id as string)[0].name).toBe(crab.name);
+    expect(ownedBy(socket.id as string)[0].name).toBe(crab.name);
     expect(crab.state.isDead).toBe(true);
   });
 
@@ -94,7 +94,7 @@ describe("pokeball", () => {
     server.world.dice.random = random;
 
     expect(isCapturing(crab)).toBe(false);
-    expect(companionsOf(socket.id as string)).toHaveLength(0);
+    expect(ownedBy(socket.id as string)).toHaveLength(0);
     expect(crab.state.isDead).toBeFalsy();
   });
 
@@ -103,7 +103,7 @@ describe("pokeball", () => {
     await throwAndSettle(socket, ball.id, crab, 0.99);
 
     expect(player.inventory[0]).toBeFalsy();
-    expect(companionsOf(socket.id as string)).toHaveLength(0);
+    expect(ownedBy(socket.id as string)).toHaveLength(0);
     expect(crab.state.isDead).toBeFalsy();
   });
 

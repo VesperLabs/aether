@@ -17,6 +17,7 @@ import { AbilityButtons } from "@/client/hud/abilities/ability-buttons";
 import { AbilityKeyBadge } from "@/client/hud/abilities/ability-key-badge";
 import { ChatButton } from "@/client/hud/chat/chat-button";
 import { MenuKeeper } from "@/client/hud/shop/menu-keeper";
+import { PetsRow } from "@/client/hud/pets/pets-row";
 import { MenuQuests } from "@/client/hud/quests/menu-quests";
 import { MessageBox } from "@/client/hud/chat/message-box";
 import { useAppContext } from "@/client/hud/app/context";
@@ -230,6 +231,8 @@ export const MenuBar = () => {
         </Box>
         <Box sx={{ pointerEvents: "all", order: orderOf("abilities") }}>
           <MenuAbilities
+            /* The pets you caught sit above your spells */
+            top={<PetsRow />}
             slotBadge={abilityBadge}
             player={hero}
             events={HUD_SLOT_EVENTS}

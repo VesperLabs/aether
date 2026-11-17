@@ -8,41 +8,48 @@ import type { Player } from "./player";
 import type { ServerWorld } from "./server-world";
 
 /*
- * Companions: NPCs a player owns. Any NPC can be one; owning it only sets `state.ownerId`, which puts
- * it on its owner's side (`rules/allegiance`), makes it follow them, and has it join their fights.
+ * Owned NPCs: ones a player owns, of two kinds. A *pet* was caught: it has a slot and is saved
+ * (`server/pets`, marked by `state.petId`). A *follower* was made yours by an admin: temporary, no
+ * slot. Either way owning only sets `state.ownerId`, which puts it on its owner's side
+ * (`rules/allegiance`), makes it follow them, and has it join their fights.
  */
 
-/** A companion further than this from its owner (or in another room) appears on them. */
+/** A pet: caught, in its owner's slots and saved. */
+export const isPet = (npc: Npc) => !!npc.state?.petId;
+/** A follower: owned, but only for now (an admin's), never saved. */
+export const isFollower = (npc: Npc) => !!npc.state?.ownerId && !isPet(npc);
+
+/** An owned NPC further than this from its owner (or in another room) appears on them. */
 const CATCH_UP_DISTANCE = 480;
-/** Least threat a companion takes from its owner's fight, so even weak hits pull it in. */
+/** Least threat an owned NPC takes from its owner's fight, so even weak hits pull it in. */
 const MIN_ASSIST_THREAT = 10;
 /**
- * Companions draw this much more threat per point of damage than players, so they pull foes off
- * their owner the way a tank does, even pets that hit far softer than they do.
+ * Owned NPCs draw this much more threat per point of damage than players, so they pull foes off
+ * their owner the way a tank does, even ones that hit far softer than they do.
  */
-const COMPANION_THREAT_MULTIPLIER = 4;
+const OWNED_THREAT_MULTIPLIER = 4;
 
-/** The threat a hit of `amount` from `attackerId` is worth: more from a companion. */
+/** The threat a hit of `amount` from `attackerId` is worth: more from an owned NPC. */
 export function threatOfHit(world: ServerWorld, attackerId: string, amount: number) {
-  return world.npcs[attackerId]?.state.ownerId ? amount * COMPANION_THREAT_MULTIPLIER : amount;
+  return world.npcs[attackerId]?.state.ownerId ? amount * OWNED_THREAT_MULTIPLIER : amount;
 }
 
 /** Every NPC `ownerId` owns. */
-function companionsOf(world: ServerWorld, ownerId: string): Npc[] {
+function ownedBy(world: ServerWorld, ownerId: string): Npc[] {
   return Object.values(world.npcs).filter((npc) => npc.state.ownerId === ownerId);
 }
 
 /**
- * Any living NPC nobody owns yet can be tamed, keepers included (an admin can). What a ball may
+ * Any living NPC nobody owns yet can be taken, keepers included (an admin can). What a ball may
  * catch is `isCatchable`, on top of this.
  */
-export const canTame = (npc: Npc) => !npc.state.ownerId && !npc.state.isDead;
+export const canOwn = (npc: Npc) => !npc.state.ownerId && !npc.state.isDead;
 
 /**
  * Makes a fresh NPC belong to `owner`: it appears on them, stops picking fights, follows them and
  * fights for them.
  */
-export function makeCompanion(npc: Npc, owner: Player) {
+export function makeOwned(npc: Npc, owner: Player) {
   npc.state.ownerId = owner.socketId;
   npc.state.isResetting = false;
   /* It follows its owner (its leader now) instead of guarding a post, and only fights their fights */
@@ -93,22 +100,22 @@ function moveNpc(npc: Npc, room: RoomData, to: Point) {
 }
 
 /**
- * Brings a player's companions to them right away, e.g. as they go through a door, so they are
+ * Brings a player's owned NPCs to them right away, e.g. as they go through a door, so they are
  * in the room state the player loads instead of joining a scene that isn't ready yet.
  */
-export function bringCompanions(world: ServerWorld, owner: Player) {
+export function bringOwned(world: ServerWorld, owner: Player) {
   const room = owner.roomName ? world.rooms[owner.roomName] : undefined;
   if (!room) return;
-  for (const npc of companionsOf(world, owner.socketId)) {
+  for (const npc of ownedBy(world, owner.socketId)) {
     if (!npc.state.isDead) moveNpc(npc, room, { x: owner.x, y: owner.y });
   }
 }
 
 /**
- * Keeps companions with their owners: one left behind (another room, or far away) appears on
+ * Keeps owned NPCs with their owners: one left behind (another room, or far away) appears on
  * its owner, and one whose owner left the game leaves with them. Runs before rooms are indexed.
  */
-export const keepCompanionsNear: System<ServerWorld> = (world) => {
+export const keepOwnedNear: System<ServerWorld> = (world) => {
   for (const npc of Object.values(world.npcs)) {
     if (!npc.state.ownerId) continue;
     const owner = world.players[npc.state.ownerId];
@@ -126,16 +133,16 @@ export const keepCompanionsNear: System<ServerWorld> = (world) => {
 };
 
 /**
- * Companions join their owner's fights: whoever the owner hurts, and whoever hurts the owner, gains
- * threat with each of the owner's companions in the room.
+ * Owned NPCs join their owner's fights: whoever the owner hurts, and whoever hurts the owner, gains
+ * threat with each of the owner's NPCs in the room.
  */
-export function subscribeCompanions(bus: GameEventBus, world: ServerWorld) {
+export function subscribeOwnedNpcs(bus: GameEventBus, world: ServerWorld) {
   return bus.on("characterDamaged", ({ victimId, attackerId, amount }) => {
     const attacker = findCharacter(world, attackerId);
     const victim = findCharacter(world, victimId);
     if (!attacker || !victim || isAlly(world, attacker, victim)) return;
     const assist = (ownerId: string, foeId: string) => {
-      for (const pet of companionsOf(world, ownerId)) {
+      for (const pet of ownedBy(world, ownerId)) {
         if (pet.room.name !== victim.room?.name) continue;
         /* At least enough to act on: a 1-damage hit's threat would fade before the next tick */
         pet.addThreat(foeId, Math.max(amount, MIN_ASSIST_THREAT));

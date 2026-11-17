@@ -65,7 +65,7 @@ describe("getFullCharacterState", () => {
       "abilities",
       "activeItemSlots",
       "gold",
-      "companions",
+      "pets",
     ]);
   });
 

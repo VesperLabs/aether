@@ -65,10 +65,10 @@ describe("subscribeLoot", () => {
     expect(h.spawnLoot).toHaveBeenCalledTimes(1);
   });
 
-  it("a companion drops nothing", () => {
+  it("an owned NPC drops nothing", () => {
     const bus = createGameEventBus();
     const h = hooks({
-      getMobDropInfo: () => ({ isCompanion: true, drops: [{ item: "gold", chance: 1 }] }),
+      getMobDropInfo: () => ({ isOwned: true, drops: [{ item: "gold", chance: 1 }] }),
     });
     subscribeLoot(bus, h);
     bus.emit("mobKilled", kill());
