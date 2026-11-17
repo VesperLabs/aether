@@ -10,6 +10,7 @@ import {
   type FaceRect,
 } from "./card-face";
 import { CHECKER_SX } from "./checker";
+import { isCardName } from "./card-name";
 import { FloatingPanel } from "./floating-panel";
 import { getCtx } from "./frame-canvas";
 import { sortForDirection, useFrameStack } from "./frame-stack";
@@ -25,7 +26,6 @@ const CARD_ZOOM = 4;
 const CARD_VIEW_SIZE = 140;
 const OUTLINE_COLOR = "#ff4df0";
 const NUDGE_FAR = 4;
-const NAME_PATTERN = /^[a-z0-9-]+$/;
 
 const CANVAS_SX = {
   display: "block",
@@ -176,7 +176,7 @@ export const CardPanel = ({
     setFace({ x: face.x + move[0], y: face.y + move[1] });
   };
 
-  const isNameValid = NAME_PATTERN.test(name);
+  const isNameValid = isCardName(name);
   /* The whole card is saved, frame and backdrop included, so the game draws it as is. */
   const save = async () => {
     try {
@@ -253,11 +253,7 @@ export const CardPanel = ({
           }}
         />
       </Flex>
-      <Input
-        aria-label="Card name"
-        value={name}
-        onChange={(e) => setName(e.target.value.toLowerCase())}
-      />
+      <Input aria-label="Card name" value={name} onChange={(e) => setName(e.target.value)} />
       <Button variant="control" disabled={!isNameValid} onClick={save}>
         Save card
       </Button>

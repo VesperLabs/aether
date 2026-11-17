@@ -1,5 +1,6 @@
 import {
   assetList,
+  getBody,
   getCatalogItem,
   ITEM_CATALOG,
   itemEffects,
@@ -141,12 +142,13 @@ export const MobFace = (props: {
 /** The sprite sheet for a mob race. */
 export const raceAsset = (race?: string) => assetList.find((a) => a?.texture === race);
 
-/** Every actor, drawn in its gear if it's human, else as its race's sheet. */
+/** Every actor, drawn in its gear if its body is layered, else as its race's sheet. */
 const CHARACTER_CARDS: FeaturedCard[] = ACTORS.flatMap(([key, actor]) => {
-  const asset = actor.profile.race === "human" ? undefined : raceAsset(actor.profile.race);
+  const layered = getBody(actor.profile.race).layered;
+  const asset = layered ? undefined : raceAsset(actor.profile.race);
   /* Built once: a new object each render would make the renderer redraw (and flicker). */
   const character = asset ? undefined : keeperCharacter(actor);
-  if (!asset && actor.profile.race !== "human") return [];
+  if (!asset && !layered) return [];
   return [
     {
       id: `character-${key}`,

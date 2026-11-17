@@ -1,4 +1,4 @@
-import { getFullCharacterState } from "@/network/sync";
+import { getPublicCharacterState } from "@/network/sync";
 import { catchNpc, makeCompanion } from "./companions";
 import { spawnNpc } from "./game-world";
 import type { Npc } from "./npc";
@@ -25,7 +25,7 @@ export function catchAsCompanion(
   if (!pet) return undefined;
   /* Owned before the room hears of it, so it arrives as a companion */
   makeCompanion(pet, owner);
-  world.io.to(owner.roomName).emit("npcJoin", getFullCharacterState(pet));
+  world.io.to(owner.roomName).emit("npcJoin", getPublicCharacterState(pet));
   catchNpc(wild);
   return pet;
 }

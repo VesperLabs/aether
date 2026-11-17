@@ -1,7 +1,13 @@
 /** Soft collision between characters: overlapping bodies ease apart over a few ticks instead of blocking. */
 
-/** Radius characters keep between each other. Wider than the wall box so crowds read as separate bodies. */
-export const BODY_RADIUS = 10;
+/** How much wider than its feet a body keeps others off, so crowds read as separate bodies. */
+const SEPARATION_GAP = 2;
+
+/** The radius a body keeps others out of: its feet (`bodySize`, already scaled) plus a gap. */
+export const separationRadius = (bodySize: number) => bodySize + SEPARATION_GAP;
+
+/** The radius of a body that doesn't say: a human's feet at scale 1, plus the gap. */
+export const BODY_RADIUS = separationRadius(8);
 
 /**
  * Share of an overlap undone each tick. Below 1 so crowds settle smoothly instead of snapping and
@@ -22,6 +28,8 @@ export interface SeparatingBody {
   id: string;
   x: number;
   y: number;
+  /** How far it keeps others off (`separationRadius`); the `radius` passed in when unset. */
+  radius?: number;
 }
 
 export interface Neighbour extends SeparatingBody {
@@ -32,7 +40,8 @@ export interface Neighbour extends SeparatingBody {
 /**
  * How far `body` should move to ease out of the neighbours it overlaps. Between two movable bodies
  * each takes half the overlap; against a fixed one it takes all of it. Bodies on the exact same
- * spot split along x by id, so the result stays deterministic.
+ * spot split along x by id, so the result stays deterministic. Two bodies touch at the sum of their
+ * radii, so a big body keeps small ones further off.
  */
 export function getSeparationPush(
   body: SeparatingBody,
@@ -40,7 +49,7 @@ export function getSeparationPush(
   radius = BODY_RADIUS,
   maxPush = MAX_PUSH_PER_TICK,
 ): { x: number; y: number } {
-  const reach = radius * 2;
+  const own = body.radius ?? radius;
   let pushX = 0;
   let pushY = 0;
   for (const other of neighbours) {
@@ -48,6 +57,7 @@ export function getSeparationPush(
     const dx = body.x - other.x;
     const dy = body.y - other.y;
     const distanceSquared = dx * dx + dy * dy;
+    const reach = own + (other.radius ?? radius);
     if (distanceSquared >= reach * reach) continue;
     const share = other.isFixed ? 1 : 0.5;
     const distance = Math.sqrt(distanceSquared);

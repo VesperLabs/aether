@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isShowingLook, LAB_ACTORS, toKebab } from "./actor-looks";
+import { isShowingLook, LAB_ACTORS } from "./actor-looks";
 
 describe("LAB_ACTORS", () => {
   it("lists keepers first, each with a body the lab can open", () => {
@@ -22,11 +22,5 @@ describe("LAB_ACTORS", () => {
     expect(isShowingLook(look, { ...look, layers: { ...look.layers, helmet: "x" } })).toBe(false);
     const withOtherWeapon = { ...look, weapon: "weapon-axe" };
     expect(isShowingLook(look, withOtherWeapon)).toBe(true);
-  });
-});
-
-describe("toKebab", () => {
-  it("turns an actor id into a file name", () => {
-    expect(toKebab("chetTheMerchant")).toBe("chet-the-merchant");
   });
 });

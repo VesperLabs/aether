@@ -29,6 +29,8 @@ export const Panel = ({
       borderRadius: 3,
       width,
       boxSizing: "border-box",
+      /* Folded to its header, the header ends with a body's bottom edge */
+      ...(collapsed && { "& .header-bottom-cap": { display: "block" } }),
       ...sx,
     }}
     {...props}

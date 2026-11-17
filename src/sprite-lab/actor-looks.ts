@@ -60,9 +60,6 @@ const getActorLook = (actor: ActorDefinition): ActorLook | undefined => {
   return { atlas, layers, weapon };
 };
 
-/** `chetTheMerchant` as `chet-the-merchant`, for file names. */
-export const toKebab = (key: string) => key.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
-
 /** Every actor the lab can show, keepers (the ones you can talk to) first, then by name. */
 export const LAB_ACTORS = Object.entries(actors as Record<string, ActorDefinition>)
   .flatMap(([key, actor]) => {

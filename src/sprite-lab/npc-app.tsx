@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getBody, type BodyDefinition } from "@/content";
 import { DIRECTIONS, FieldHint, Flex, loadSheet, Select, Text } from "@/ui";
-import { isShowingLook, LAB_ACTORS, toKebab } from "./actor-looks";
+import { isShowingLook, LAB_ACTORS } from "./actor-looks";
 import { ActorThumb } from "./actor-thumb";
 import { getNoneOption } from "./sheet-thumb";
 import { CardPanel } from "./card-panel";
@@ -134,7 +134,7 @@ export const NpcApp = () => {
       {base && size && (
         <CardPanel
           key={shownActor?.key ?? base.texture}
-          defaultName={shownActor ? toKebab(shownActor.key) : base.texture}
+          defaultName={shownActor?.key ?? base.texture}
           base={base}
           layers={layers}
           pending={NO_PENDING}

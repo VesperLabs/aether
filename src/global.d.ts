@@ -138,7 +138,6 @@ interface FullCharacterState {
   quests: Array<PlayerQuest>;
   activeItemSlots: Array<string>;
   gold: integer;
-  hitBoxSize: any;
   services?: NpcServices;
 }
 

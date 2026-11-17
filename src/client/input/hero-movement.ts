@@ -10,6 +10,7 @@ import {
   getWalkVelocity,
   getLungeVelocity,
   getSeparationVelocity,
+  separationRadius,
   isDodging,
   isKnockedBack,
   isLunging,
@@ -79,10 +80,16 @@ function getCrowdPush(
       if (child === hero || child.state?.isDead) continue;
       if (Math.abs(child.x - hero.x) > CROWD_RANGE || Math.abs(child.y - hero.y) > CROWD_RANGE)
         continue;
-      neighbours.push({ id: child.id, x: child.x, y: child.y });
+      neighbours.push({
+        id: child.id,
+        x: child.x,
+        y: child.y,
+        radius: separationRadius(child.bodySize),
+      });
     }
   }
-  return getSeparationVelocity(hero, neighbours, walkSpeed, walk);
+  const self = { id: hero.id, x: hero.x, y: hero.y, radius: separationRadius(hero.bodySize) };
+  return getSeparationVelocity(self, neighbours, walkSpeed, walk);
 }
 
 /** Reads keyboard, joystick and pointer and applies them to the hero for this frame. */

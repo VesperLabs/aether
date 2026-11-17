@@ -21,6 +21,7 @@ export {
   BODY_RADIUS,
   MAX_PUSH_SPEED,
   getSeparationPush,
+  separationRadius,
   getSeparationVelocity,
 } from "./separation";
 export {

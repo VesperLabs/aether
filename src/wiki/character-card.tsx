@@ -1,4 +1,4 @@
-import { type ActorDefinition } from "@/content";
+import { getBody, type ActorDefinition } from "@/content";
 import { Box, Flex, Text } from "@/ui";
 import { CARD_COLORS, CharacterFace, MobFace, keeperCharacter, raceAsset } from "./card-pool";
 import { DropsSection, PassiveTag } from "./combat-sections";
@@ -7,7 +7,7 @@ import { TradeSections } from "./trade-sections";
 import { WalkOnHover } from "./walk-on-hover";
 import { PAPER, PAPER_STYLE, PaperFrame } from "./paper";
 
-/** How an actor is drawn: a human in its gear, or its race's sprite sheet. */
+/** How an actor is drawn: a layered body in its gear, or its race's sprite sheet. */
 export type ActorArt = {
   character?: ReturnType<typeof keeperCharacter>;
   asset?: ReturnType<typeof raceAsset>;
@@ -15,7 +15,7 @@ export type ActorArt = {
 
 /** Built once per actor: a new character object each render would make the renderer redraw. */
 export const actorArt = (actor: ActorDefinition): ActorArt =>
-  actor.profile.race === "human"
+  getBody(actor.profile.race).layered
     ? { character: keeperCharacter(actor) }
     : { asset: raceAsset(actor.profile.race) };
 

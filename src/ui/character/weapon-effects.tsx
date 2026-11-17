@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { BuiltItem } from "@/content";
+import type { BuiltItem, HandPose } from "@/content";
 import { getFrameHands, itemEffects } from "@/content";
 import { ELEMENT_PAD, ElementalSprite } from "@/ui/item";
 import { loadSheet } from "./sprite-sheet";
@@ -16,9 +16,6 @@ const HAND_DROP = 14;
  * land on the hand, and that the weapon turns about.
  */
 const GRIP_IN_LAYER = (ELEMENT_PAD + GRIP.x) * SCALE;
-
-type WeaponPose = { x: number; y: number; flipX?: boolean; flipY?: boolean; rotation?: number };
-type WeaponOffsets = { left: WeaponPose; right: WeaponPose };
 
 /** A weapon in a character's hand, as the picture draws it. */
 export interface HeldWeapon {
@@ -45,7 +42,7 @@ const useTintedArt = (src: string, tint?: string) => {
   return art;
 };
 
-const HandEffects = ({ weapon, pose }: { weapon: HeldWeapon; pose: WeaponPose }) => {
+const HandEffects = ({ weapon, pose }: { weapon: HeldWeapon; pose: HandPose }) => {
   const art = useTintedArt(weapon.src, weapon.tint);
   const elements = itemEffects(weapon.item);
   if (!art || elements.length === 0) return null;
@@ -89,15 +86,12 @@ export const WeaponEffects = ({
   /** The body, whose hand points place the weapons. */
   race?: string;
 }) => {
-  const atlas = getFrameHands(race, frame) as WeaponOffsets | undefined;
+  const atlas = getFrameHands(race, frame);
   if (!atlas) return null;
   return weapons
     .filter((weapon) => weapon.inFront === inFront)
-    .map((weapon) => (
-      <HandEffects
-        key={weapon.hand}
-        weapon={weapon}
-        pose={weapon.hand === "handLeft" ? atlas.left : atlas.right}
-      />
-    ));
+    .map((weapon) => {
+      const pose = weapon.hand === "handLeft" ? atlas.left : atlas.right;
+      return pose && <HandEffects key={weapon.hand} weapon={weapon} pose={pose} />;
+    });
 };

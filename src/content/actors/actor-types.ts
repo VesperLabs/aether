@@ -1,4 +1,4 @@
-import type { BodyId } from "../bodies/bodies";
+import type { BodyData, BodyId } from "../bodies/bodies";
 import type { ItemDrop, ItemRef } from "../items/item-refs";
 import type { ActorBehaviors } from "./behaviors";
 import type { QuestId } from "../quests/quest-list";
@@ -62,7 +62,6 @@ export interface ActorDefinition {
   readonly charClass: CharClass;
   readonly profile: MobProfile;
   readonly baseStats: { readonly level: number } & { readonly [K in StatName]?: number };
-  readonly hitBoxSize?: { readonly width: number; readonly height: number };
   readonly abilities?: MobAbilities;
   readonly equipment?: MobEquipment;
   /** Warning, in ms, before its attacks and spells land. Unset means the default. */
@@ -71,8 +70,8 @@ export interface ActorDefinition {
   readonly state?: { readonly noWorldDrops?: boolean };
   /** What it does, merged over the defaults (see `behaviors.ts`). */
   readonly behaviors?: ActorBehaviors;
-  /** `land` (default) wades slowly through water; `water` swims and keeps to it; `air` flies over it unslowed. */
-  readonly habitat?: "land" | "water" | "air";
+  /** Where it can go, when not where its body can (the body file's `habitat`). */
+  readonly habitat?: BodyData["habitat"];
   /** Items it can drop when it dies. */
   readonly drops?: readonly ItemDrop[];
   readonly dialogues?: ActorDialogues;

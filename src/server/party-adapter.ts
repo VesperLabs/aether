@@ -10,7 +10,7 @@ import {
   type PartyPlayer,
   type PartyResult,
 } from "@/rules/party";
-import { getFullCharacterState } from "@/network/sync";
+import { getRoomMateState } from "@/network/sync";
 
 /**
  * Legacy adapter between the party rules and the server world: copies players into the rules'
@@ -64,7 +64,7 @@ function applyEffects(
         break;
       case "partyInvite": {
         const inviteData = {
-          inviter: getFullCharacterState(world.players?.[effect.inviterId]),
+          inviter: getRoomMateState(world.players?.[effect.inviterId]),
           partyId: effect.partyId,
         };
         world.io.to(effect.socketId).emit("partyInvite", inviteData);

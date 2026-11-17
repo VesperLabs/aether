@@ -69,7 +69,7 @@ function dropBlood(player: Player, delay: number, spurt: boolean, away?: Directi
   if (count >= MAX_DROPS) return;
   dropCounts.set(player, count + 1);
   const release = () => dropCounts.set(player, Math.max(0, (dropCounts.get(player) ?? 1) - 1));
-  const bodyHeight = player.hitBoxSize?.height ?? 32;
+  const bodyHeight = player.hitBoxSize.height;
   const spread = particleSpread(player);
   const drop = drawDrop(scene);
   const startX = Math.round(Phaser.Math.Between(-spread / 2, spread / 2));

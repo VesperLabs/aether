@@ -1,0 +1,11 @@
+{
+  "hitBox": {
+    "width": 18,
+    "height": 32
+  },
+  "feetRadius": 8,
+  "headY": -30,
+  "spriteAboveFeet": 14,
+  "portraitRect": [0, 160, 80, 80],
+  "habitat": "air"
+}

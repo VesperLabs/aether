@@ -78,7 +78,8 @@ describe("pokeball", () => {
     const [effect] = await started;
     await server.run(socket, 500);
 
-    const { effects } = getRoomState(server.world, server.world.players[socket.id!].roomName!);
+    const { roomName } = server.world.players[socket.id!];
+    const { effects } = getRoomState(server.world, roomName!, socket.id!);
     const shown = effects.find((e) => e.id === effect.id);
     expect(shown).toMatchObject({ kind: "ball", targetId: effect.targetId });
     expect(shown!.ageMs).toBeGreaterThanOrEqual(500);

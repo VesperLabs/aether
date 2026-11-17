@@ -8,13 +8,6 @@ export const withPlacement = (poses: WeaponPoses, { frame, hand, x, y }: HandPla
   [frame]: { ...poses[frame], [hand]: { ...poses[frame]?.[hand], x, y } },
 });
 
-/** Every body's hand points, as `weapon.json` has them. */
-export const loadHandPoints = async (): Promise<Record<string, WeaponPoses>> => {
-  const response = await fetch(`/assets/atlas/weapon.json?fresh=${Date.now()}`);
-  if (!response.ok) throw new Error("Could not read weapon.json");
-  return (await response.json()).offsets;
-};
-
 /** Whether the points place this hand on any frame: whether the body has it. */
 export const hasHandIn = (points: WeaponPoses | null | undefined, hand: Hand) =>
   !!points && Object.values(points).some((frame) => !!frame[hand]);
@@ -25,7 +18,7 @@ export const hasHandIn = (points: WeaponPoses | null | undefined, hand: Hand) =>
  * no hands at all.
  */
 export const withHand = (
-  points: WeaponPoses | null,
+  points: WeaponPoses | undefined,
   hand: Hand,
   on: boolean,
   from: WeaponPoses,
@@ -36,6 +29,6 @@ export const withHand = (
       const { [hand]: _dropped, ...rest } = points?.[frame] ?? {};
       return [frame, on && from[frame]?.[hand] ? { ...rest, [hand]: from[frame][hand] } : rest];
     }),
-  ) as WeaponPoses;
+  );
   return hasHandIn(next, "left") || hasHandIn(next, "right") ? next : null;
 };

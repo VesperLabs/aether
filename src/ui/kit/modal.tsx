@@ -123,8 +123,6 @@ const ModalHeader = ({
         bg: "shadow.25",
         "& .icon": { filter: "drop-shadow(0 1px 1px rgba(0, 0, 0, 0.6))" },
         /* Joined to a shown body: one panel, with nothing between them. Alone, it rounds all round. */
-        /* Its own bottom edge shows only when it stands alone (a folded panel), as a body's would */
-        "&:has(+ .modal-body:not([hidden])) > .header-bottom-cap": { display: "none" },
         "&:has(+ .modal-body:not([hidden]))": {
           borderBottomLeftRadius: 0,
           borderBottomRightRadius: 0,
@@ -134,7 +132,8 @@ const ModalHeader = ({
       {...props}
     >
       {cap && <Box sx={edgeCap("top")} />}
-      {cap && <Box className="header-bottom-cap" sx={edgeCap("bottom")} />}
+      {/* A bottom edge too, shown only when its panel is folded to it (see `Panel`) */}
+      {cap && <Box className="header-bottom-cap" sx={{ ...edgeCap("bottom"), display: "none" }} />}
       {titleRule && <Box sx={TITLE_RULE} />}
       {icon && <Icon icon={icon} size={HEADER_ICON_SIZE} />}
       {children}

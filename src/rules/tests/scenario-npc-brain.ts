@@ -1,7 +1,10 @@
+import { getBodyShape } from "@/content";
 import { getKnockbackVelocity, moveBodyThroughMap } from "../movement";
 import { decideNpcAction, seek, type NpcBehaviorInput } from "../npc-behavior";
 import { distanceTo, type System } from "../world";
 import { START_NOW, type Arena, type ArenaCharacter, type ArenaWorld } from "./scenario-arena";
+
+const HUMAN = getBodyShape("human");
 
 /** A mob that thinks with the real npc-behavior rules. */
 export interface BrainMob extends ArenaCharacter {
@@ -19,8 +22,9 @@ export function createBrainMob(id: string, x: number, y: number): BrainMob {
     y,
     vx: 0,
     vy: 0,
-    bodySize: 8,
-    hitBoxSize: { width: 16, height: 32 },
+    /* A real body's size, from its file */
+    bodySize: HUMAN.feetRadius,
+    hitBoxSize: HUMAN.hitBox,
     hp: 50,
     isDead: false,
     walkSpeed: 60,

@@ -1,13 +1,26 @@
 import type { questList } from "../quests/quest-list";
-import { actors1 } from "./actors-1";
-import { actors2 } from "./actors-2";
-import { actors3 } from "./actors-3";
-import { actors4 } from "./actors-4";
+import type { ItemDrop } from "../items/item-refs";
+import { CARD_DROPS } from "../items/card";
+import { actorDefs } from "./actor-defs";
 
-/** Every actor the maps and cheats can place, by id. */
-export const actors = { ...actors1, ...actors2, ...actors3, ...actors4 } as const;
+type Defs = typeof actorDefs;
 
-export type ActorId = keyof typeof actors;
+/**
+ * Every actor the maps and cheats can place, by id: as written, with its card added to its drops
+ * (each card names its actor; its rarity sets the chance), so no actor lists its own card.
+ */
+export const actors = Object.fromEntries(
+  Object.entries(actorDefs).map(([id, actor]) => {
+    const card = CARD_DROPS.get(id);
+    const drops = [
+      ...((actor as { drops?: readonly ItemDrop[] }).drops ?? []),
+      ...(card ? [card] : []),
+    ];
+    return [id, drops.length ? { ...actor, drops } : actor];
+  }),
+) as { readonly [K in keyof Defs]: Defs[K] & { readonly drops?: readonly ItemDrop[] } };
+
+export type ActorId = keyof Defs;
 
 export const isActorId = (id: string): id is ActorId => Object.hasOwn(actors, id);
 

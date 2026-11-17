@@ -1,0 +1,11 @@
+{
+  "hitBox": {
+    "width": 26,
+    "height": 42
+  },
+  "feetRadius": 8,
+  "headY": -40,
+  "spriteAboveFeet": 14,
+  "portraitRect": [0, 160, 80, 80],
+  "habitat": "land"
+}

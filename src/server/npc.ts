@@ -1,4 +1,4 @@
-import type { ActorBehaviors } from "@/content";
+import { getBody, type ActorBehaviors } from "@/content";
 import type { AbilitySlot } from "@/rules/spells";
 import type { Hand } from "@/rules/combat";
 import {
@@ -53,7 +53,6 @@ type NpcArgs = CharacterArgs & {
   quests?: readonly string[];
   home?: Coordinate;
   drops?: Array<Drop>;
-  hitBoxSize?: { width: number; height: number };
   behaviors?: ActorBehaviors;
   habitat?: Habitat;
   windupMs?: number;
@@ -131,7 +130,8 @@ export class Npc extends Character {
     /* Followers are picked per spawn: a `leader` map property makes this one follow. */
     this.leaderName = (this.state as { leader?: string }).leader;
     this.behaviors = args.behaviors;
-    this.habitat = args.habitat;
+    /* Where its body can go, unless the actor says otherwise */
+    this.habitat = args.habitat ?? getBody(this.profile?.race).habitat;
     this.windupMs = args.windupMs;
     this.calculateStats(true);
   }

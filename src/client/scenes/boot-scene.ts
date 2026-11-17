@@ -79,7 +79,6 @@ export class SceneBoot extends Phaser.Scene {
     this.load.image("misc-slash", assetUrl("./assets/images/slash.png"));
     this.load.image("sign-1", assetUrl("./assets/images/sign-1.png"));
     this.load.image("sign-blank", assetUrl("./assets/images/sign-blank.png"));
-    this.load.json("weaponAtlas", assetUrl("./assets/atlas/weapon.json"));
     loadSpritesheets(this);
   }
   create() {

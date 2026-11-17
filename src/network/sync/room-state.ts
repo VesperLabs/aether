@@ -2,6 +2,7 @@ import {
   getBuffCharacterState,
   getFullCharacterState,
   getPublicCharacterState,
+  getRoomMateState,
   type BuffCharacterWire,
   type CharacterSyncInput,
   type FullCharacterWire,
@@ -18,18 +19,24 @@ type InRoom = { room?: { name?: string } | null };
 type BuffFlagged = InRoom & { state?: { hasBuffChanges?: unknown } };
 type LootInRoom = { roomName?: string };
 
-/** Everything in a room, for the first message a client gets (heroInit) or a late join. */
+/**
+ * Everything in a room, for the first message a client gets (heroInit) or a late join: the
+ * `viewer`'s own character whole, everyone else's as a room mate's, and NPCs public.
+ */
 export function getRoomState<L extends LootInRoom>(
   world: RoomSyncInput<CharacterSyncInput, L>,
   roomName: string,
+  viewer?: string,
 ): { players: FullCharacterWire[]; npcs: FullCharacterWire[]; loots: L[] } {
   return {
     players: Object.values(world.players)
       ?.filter((p) => p?.room?.name === roomName)
-      .map((p) => getFullCharacterState(p)),
+      .map((p) =>
+        (p.socketId || p.id) === viewer ? getFullCharacterState(p) : getRoomMateState(p),
+      ),
     npcs: Object.values(world.npcs)
       ?.filter((n) => n?.room?.name === roomName)
-      .map((p) => getFullCharacterState(p)),
+      .map(getPublicCharacterState),
     loots: Object.values(world.loots)?.filter((l) => l?.roomName === roomName),
   };
 }

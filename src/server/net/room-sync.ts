@@ -15,9 +15,10 @@ function roomEffects(world: ServerWorld, roomName: string) {
   return getRoomEffects(sources, roomName, world.now());
 }
 
-export function getRoomState(world: ServerWorld, roomName: string) {
+/** A room as `viewer` (a socket id) sees it on joining: its own character whole. */
+export function getRoomState(world: ServerWorld, roomName: string, viewer: string) {
   return {
-    ...packRoomState(world, roomName),
+    ...packRoomState(world, roomName, viewer),
     effects: roomEffects(world, roomName),
     season: seasonAt(world.now(), world.calendar),
     hour: hourAt(world.now(), world.calendar),

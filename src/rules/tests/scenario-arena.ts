@@ -1,3 +1,4 @@
+import { getBodyShape } from "@/content";
 import type { TiledMapJson } from "../movement";
 import {
   addRoom,
@@ -9,6 +10,8 @@ import {
   type System,
   type World,
 } from "../world";
+
+const HUMAN = getBodyShape("human");
 
 /** Milliseconds per tick in scenarios (20 ticks a second). */
 export const TICK_MS = 50;
@@ -45,8 +48,9 @@ export function createArenaCharacter(
     y,
     vx: 0,
     vy: 0,
-    bodySize: 8,
-    hitBoxSize: { width: 16, height: 32 },
+    /* A real body's size, from its file */
+    bodySize: HUMAN.feetRadius,
+    hitBoxSize: HUMAN.hitBox,
     hp: 100,
     isDead: false,
     ...over,

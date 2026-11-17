@@ -12,7 +12,15 @@ export {
   getPreviewGrip,
   getWeaponTip,
 } from "./assets/weapon-tips";
-export { getBody, hasAnyHand, type BodyDefinition } from "./bodies/bodies";
+export {
+  getBody,
+  getBodyShape,
+  type HandPose,
+  hasAnyHand,
+  type BodyData,
+  type BodyDefinition,
+  type BodyShape,
+} from "./bodies/bodies";
 export { iconList } from "./assets/icon-list";
 export { getLayerOrder } from "./assets/layer-order";
 export { resolveAsset } from "./assets/resolve-asset";

@@ -2,6 +2,7 @@ import type { ServerWorld } from "./server-world";
 import {
   MAX_PUSH_SPEED,
   getSeparationPush,
+  separationRadius,
   moveBodyFreely,
   moveBodyThroughMap,
   nudgeBodyThroughMap,
@@ -28,9 +29,17 @@ const moveNpcs: System<ServerWorld> = (world, { delta }) => {
     if (!npc.room || npc.state?.isDead) continue;
     /* Wading slows it the same way it slows players */
     const slowed = seconds * terrainSpeedScale(npc.room.map.grid, npc, npc.habitat);
-    moveBodyThroughMap(npc.movementMap(), npc, slowed);
+    moveBodyThroughMap(npc.movementMap(), npc, slowed, npc.bodySize);
   }
 };
+
+/** A character as separation sees it: where it is and how far it keeps others off. */
+const toSeparating = (c: { id: string; x: number; y: number; bodySize: number }) => ({
+  id: c.id,
+  x: c.x,
+  y: c.y,
+  radius: separationRadius(c.bodySize),
+});
 
 /** How far around an NPC to look for bodies it overlaps: two body radii, with room to spare. */
 const SEPARATION_RANGE = 24;
@@ -41,12 +50,14 @@ const separateNpcs: System<ServerWorld> = (world, { delta }) => {
   for (const npc of Object.values(world.npcs)) {
     if (!npc.room || npc.state?.isDead) continue;
     const index = getRoomIndex(world, npc.room.name);
-    const npcs = index.npcs.near(npc, SEPARATION_RANGE);
+    /* A big body reaches further, so it looks further */
+    const range = Math.max(SEPARATION_RANGE, separationRadius(npc.bodySize) * 3);
+    const npcs = index.npcs.near(npc, range).map(toSeparating);
     const players = index.players
-      .near(npc, SEPARATION_RANGE)
-      .map((player) => ({ id: player.id, x: player.x, y: player.y, isFixed: true }));
-    const push = getSeparationPush(npc, [...npcs, ...players], undefined, maxPush);
-    if (push.x || push.y) nudgeBodyThroughMap(npc.movementMap(), npc, push);
+      .near(npc, range)
+      .map((player) => ({ ...toSeparating(player), isFixed: true }));
+    const push = getSeparationPush(toSeparating(npc), [...npcs, ...players], undefined, maxPush);
+    if (push.x || push.y) nudgeBodyThroughMap(npc.movementMap(), npc, push, npc.bodySize);
   }
 };
 

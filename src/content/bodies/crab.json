@@ -1,0 +1,12 @@
+{
+  "attackAnims": true,
+  "hitBox": {
+    "width": 18,
+    "height": 16
+  },
+  "feetRadius": 8,
+  "headY": -14,
+  "spriteAboveFeet": 14,
+  "portraitRect": [0, 160, 80, 80],
+  "habitat": "land"
+}

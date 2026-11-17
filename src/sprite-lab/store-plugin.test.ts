@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { resolveSheetPath, setBodyFlags, setBodyHandPoints } from "./store-plugin";
+import { resolveSheetPath, toBodyFile } from "./store-plugin";
 
 describe("resolveSheetPath", () => {
   it("accepts a sheet in the atlas folder", () => {
@@ -15,45 +15,49 @@ describe("resolveSheetPath", () => {
   });
 });
 
-describe("setBodyHandPoints", () => {
-  const getAtlas = (): { offsets: Record<string, any> } => ({
-    offsets: { human: { "up-stand": { left: { x: 1, y: 2 } } } },
-  });
-  const points = { "up-stand": { left: { x: 5, y: 6 } } };
+describe("toBodyFile", () => {
+  const shape = {
+    hitBox: { width: 18, height: 28 },
+    feetRadius: 8,
+    headY: -26,
+    spriteAboveFeet: 14,
+    portraitRect: [0, 160, 80, 80],
+    habitat: "air",
+  };
+  const hands = { "up-stand": { left: { x: 1, y: 2 } } };
+  const getBodies = (): Record<string, any> => ({ human: { ...shape, hands }, bat: shape });
 
-  it("gives a body its points, and takes them away with null", () => {
-    const atlas = getAtlas();
-    expect(setBodyHandPoints(atlas, { body: "wolf", points })).toBe(true);
-    expect(atlas.offsets.wolf).toEqual(points);
-    expect(setBodyHandPoints(atlas, { body: "wolf", points: null })).toBe(true);
-    expect(atlas).toEqual(getAtlas());
-  });
-
-  it("never takes the human's hands, and refuses anything that isn't points or a body", () => {
-    const atlas = getAtlas();
-    expect(setBodyHandPoints(atlas, { body: "human", points: null })).toBe(false);
-    expect(setBodyHandPoints(atlas, { body: "__proto__", points })).toBe(false);
-    expect(setBodyHandPoints(atlas, { body: "wolf", points: { nope: {} } })).toBe(false);
-    const half = { "up-stand": { left: { x: 1.5, y: 2 } } };
-    expect(setBodyHandPoints(atlas, { body: "wolf", points: half })).toBe(false);
-    expect(atlas).toEqual(getAtlas());
-  });
-});
-
-describe("setBodyFlags", () => {
-  it("switches a known body's attack animations, leaving nothing behind when off", () => {
-    const bodies: Record<string, { attackAnims?: boolean }> = { bat: {} };
-    expect(setBodyFlags(bodies, { body: "bat", attackAnims: true })).toBe(true);
-    expect(bodies.bat).toEqual({ attackAnims: true });
-    expect(setBodyFlags(bodies, { body: "bat", attackAnims: false })).toBe(true);
-    expect(bodies.bat).toEqual({});
+  it("writes a known body, leaving attack animations out when off", () => {
+    const data = { ...shape, attackAnims: true, feetRadius: 6 };
+    expect(toBodyFile(getBodies(), { body: "bat", data })).toEqual(data);
+    expect(
+      toBodyFile(getBodies(), { body: "bat", data: { ...shape, attackAnims: false } }),
+    ).toEqual(shape);
   });
 
-  it("refuses unknown bodies and anything that isn't a flag", () => {
-    const bodies: Record<string, { attackAnims?: boolean }> = { bat: {} };
-    expect(setBodyFlags(bodies, { body: "dragon", attackAnims: true })).toBe(false);
-    expect(setBodyFlags(bodies, { body: "__proto__", attackAnims: true })).toBe(false);
-    expect(setBodyFlags(bodies, { body: "bat", attackAnims: "yes" })).toBe(false);
-    expect(bodies).toEqual({ bat: {} });
+  it("gives a body hand points for the human's frames, at whole pixels", () => {
+    const withHands = { ...shape, hands: { "up-stand": { right: { x: 5, y: 6 } } } };
+    expect(toBodyFile(getBodies(), { body: "bat", data: withHands })).toEqual(withHands);
+    const off = { ...shape, hands: { "down-stand": { right: { x: 5, y: 6 } } } };
+    expect(toBodyFile(getBodies(), { body: "bat", data: off })).toBeUndefined();
+    const half = { ...shape, hands: { "up-stand": { right: { x: 0.5, y: 6 } } } };
+    expect(toBodyFile(getBodies(), { body: "bat", data: half })).toBeUndefined();
+  });
+
+  it("never takes the human's hands away", () => {
+    expect(toBodyFile(getBodies(), { body: "human", data: shape })).toBeUndefined();
+  });
+
+  it("refuses unknown bodies and anything that isn't a body", () => {
+    const refuse = (body: string, data: object) =>
+      expect(toBodyFile(getBodies(), { body, data })).toBeUndefined();
+    refuse("dragon", shape);
+    refuse("__proto__", shape);
+    refuse("bat", { ...shape, attackAnims: "yes" });
+    refuse("bat", { ...shape, feetRadius: 0 });
+    refuse("bat", { ...shape, headY: 4 });
+    refuse("bat", { ...shape, hitBox: { width: 1.5, height: 2 } });
+    refuse("bat", { ...shape, extra: 1 });
+    refuse("bat", { ...shape, habitat: "lava" });
   });
 });

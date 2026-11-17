@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   getBuffCharacterState,
   getFullCharacterState,
+  getPublicCharacterState,
+  getRoomMateState,
   type CharacterSyncInput,
 } from "./character-state";
 
@@ -28,7 +30,6 @@ function makeCharacter(over: Partial<CharacterSyncInput> = {}): CharacterSyncInp
     abilities: { 0: 1 },
     activeItemSlots: ["a"],
     gold: 7,
-    hitBoxSize: { w: 1 },
     getQuests: () => [{ id: "q" }],
     ...over,
   };
@@ -64,9 +65,6 @@ describe("getFullCharacterState", () => {
       "abilities",
       "activeItemSlots",
       "gold",
-      "hitBoxSize",
-      "bodySize",
-      "bodyCenterY",
     ]);
   });
 
@@ -85,6 +83,37 @@ describe("getFullCharacterState", () => {
     expect(out.quests).toEqual([{ id: "q" }]);
   });
 });
+describe("who sees what", () => {
+  const getQuests = () => [{ id: "q" }];
+  const character = () =>
+    makeCharacter({ inventory: [{ id: "sword" }], gold: 50, npcKills: { rat: 2 }, getQuests });
+
+  it("shows a player's bag, gold, quests and kills only to that player", () => {
+    expect(getFullCharacterState(character())).toMatchObject({
+      inventory: [{ id: "sword" }],
+      gold: 50,
+      npcKills: { rat: 2 },
+      quests: [{ id: "q" }],
+    });
+    for (const pack of [getRoomMateState, getPublicCharacterState]) {
+      expect(pack(character())).toMatchObject({ inventory: [], gold: 0, npcKills: {}, quests: [] });
+    }
+  });
+
+  it("gives room mates the peer id for video chat, but not observers", () => {
+    expect(getRoomMateState(character()).peerId).toBe("peer-1");
+    expect(getPublicCharacterState(character()).peerId).toBeUndefined();
+  });
+
+  it("never reads quests for anyone but the player", () => {
+    let reads = 0;
+    const counted = makeCharacter({ getQuests: () => (reads++, []) });
+    getRoomMateState(counted);
+    getPublicCharacterState(counted);
+    expect(reads).toBe(0);
+  });
+});
+
 describe("getBuffCharacterState", () => {
   it("packs buff fields and clears the change flag", () => {
     const p = makeCharacter();

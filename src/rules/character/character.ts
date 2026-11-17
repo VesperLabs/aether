@@ -1,6 +1,6 @@
 import { getAngleFromDirection, type Point } from "@/rules/world";
 import { getBuff, hasBuff, type ActiveBuff } from "@/rules/buffs";
-import type { CharClass } from "@/content";
+import { getBodyShape, type CharClass } from "@/content";
 import type { RoomData } from "@/rules/world";
 import type { PlayerQuestRecord } from "@/rules/quests";
 import type { CharacterState } from "./state";
@@ -41,11 +41,18 @@ import { canCastSpell, checkCastReady, getAbilityDetails, type AbilitySlot } fro
 // TODO: narrow once server entities stop relying on the global Item interface.
 export type CharacterItem = any;
 
-/** Radius of a character's body, in pixels (before the profile scale). */
-const BODY_SIZE = 8;
-
 /** Players' spell hit box sits this far inside their drawn box, top and bottom, in pixels. */
 const PLAYER_HIT_BOX_INSET = 6;
+
+/**
+ * What a character is made from. Its body's size comes only from `profile.race` and
+ * `profile.scale`, typed here so nothing else can sneak in; the rest is still legacy and loose.
+ */
+interface CharacterInit {
+  profile?: { readonly race?: string; readonly scale?: number; readonly [key: string]: unknown };
+  // TODO: type the rest as the character's own fields are typed.
+  [key: string]: any;
+}
 
 /** The equipment a character can actually use right now (worn in an active slot). */
 export function filterVisibleEquipment(player: {
@@ -114,7 +121,7 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
     clock!: () => number;
 
     /** Copies the constructor args onto the character and fills in the defaults. */
-    initCharacter(args: any, clock: () => number) {
+    initCharacter(args: CharacterInit, clock: () => number) {
       this.clock = clock;
       const now = clock();
       const {
@@ -141,7 +148,6 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
         buffs = [],
         abilities = {},
         activeItemSlots = [],
-        hitBoxSize = { width: 18, height: 46 }, //human hitbox
       } = args;
       this.x = x;
       this.y = y;
@@ -208,11 +214,12 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
       this.npcKills = npcKills;
       this.quests = quests;
       this.proScale = this?.profile?.scale || 1;
-      this.bodySize = BODY_SIZE * this.proScale;
-      this.bodyOffsetY = -14 * this.proScale;
-      this.hitBoxSize = hitBoxSize;
-      this.headY = -hitBoxSize.height + this.bodySize - 6;
-      // hits will go here
+      /* Size and points come from its body file, grown by its scale: the client works out the same */
+      const body = getBodyShape(profile?.race, this.proScale);
+      this.bodySize = body.feetRadius;
+      this.bodyOffsetY = -body.spriteAboveFeet;
+      this.hitBoxSize = body.hitBox;
+      this.headY = body.headY;
       this.bodyCenterY = this.headY / 2 + this.bodySize;
       this.updateVisibleEquipment();
     }
