@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.47.0](https://github.com/VesperLabs/aether/compare/v0.46.0...v0.47.0) (2026-11-17)
+
+
+### Features
+
+* per-body config files, body editor in sprite lab, and private character sync ([#371](https://github.com/VesperLabs/aether/issues/371)) ([bb5b0ef](https://github.com/VesperLabs/aether/commit/bb5b0ef6b8f3c2179696300e89c3d81406999bcc))
+
 ## [0.46.0](https://github.com/VesperLabs/aether/compare/v0.45.0...v0.46.0) (2026-11-16)
 
 
