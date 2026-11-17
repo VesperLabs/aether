@@ -22,11 +22,11 @@ export const PET_LOCATION = "pets";
 const SLOT_ATTR = "data-pet-slot";
 
 /**
- * A pet's art in its slot, as item art: at most 2x (4x while it's dragged, in twice the
- * room), and less for big creatures, so it always fits.
+ * A pet's art: 1x in its slot and 2x while it's dragged, the same for every pet, so all share one
+ * pixel size and their sizes compare as in the game. One too big for its slot even at 1x shrinks.
  */
-const ART_SCALE = 2;
-const DRAG_SCALE = 4;
+const ART_SCALE = 1;
+const DRAG_SCALE = 2;
 /** What an empty slot shows: the active one is who's out with you, the rest are stored. */
 const EMPTY_ICON = (slot: PetSlot) => `./assets/icons/${slot === "active" ? "star" : "skull"}.png`;
 
@@ -128,7 +128,7 @@ const PetSlotView = ({
         {/* While it's dragged, a faded grey copy stays behind in the slot, as an item's does */}
         {pet && dragging && (
           <Box sx={{ opacity: 0.5, filter: "grayscale(100%)", lineHeight: 0 }}>
-            <ActorSprite name={pet.name} size={SLOT_SIZE} maxScale={ART_SCALE} />
+            <ActorSprite name={pet.name} size={SLOT_SIZE} maxScale={ART_SCALE} wholeSteps />
           </Box>
         )}
         {pet && (
@@ -156,6 +156,8 @@ const PetSlotView = ({
                 name={pet.name}
                 size={dragging ? SLOT_SIZE * 2 : SLOT_SIZE}
                 maxScale={dragging ? DRAG_SCALE : ART_SCALE}
+                /* On whole pixels, in its slot or picked up: a fraction would blur it */
+                wholeSteps
               />
             </Box>
           </Portal>

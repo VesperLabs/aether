@@ -10,11 +10,14 @@ export const ActorSprite = ({
   name,
   size = 32,
   maxScale,
+  wholeSteps,
 }: {
   name: string;
   size?: number;
   /** A race sheet grows by whole steps up to this scale, within `size`, rather than filling it. */
   maxScale?: number;
+  /** A race sheet's fit rounded to a whole step, so it's crisp. */
+  wholeSteps?: boolean;
 }) => {
   const actor = isActorId(name) ? (actors[name] as ActorDefinition) : undefined;
   if (!actor) return null;
@@ -24,5 +27,13 @@ export const ActorSprite = ({
   }
   const asset = assetList.find((a) => a?.texture === race);
   if (!asset) return null;
-  return <WalkingSprite asset={asset} tint={tint} size={size} maxScale={maxScale} />;
+  return (
+    <WalkingSprite
+      asset={asset}
+      tint={tint}
+      size={size}
+      maxScale={maxScale}
+      wholeSteps={wholeSteps}
+    />
+  );
 };
