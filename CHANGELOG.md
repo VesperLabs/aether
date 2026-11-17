@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.50.1](https://github.com/VesperLabs/aether/compare/v0.50.0...v0.50.1) (2026-11-17)
+
+
+### Bug Fixes
+
+* draw pets at one crisp pixel size in their slots ([#381](https://github.com/VesperLabs/aether/issues/381)) ([5259c87](https://github.com/VesperLabs/aether/commit/5259c87a93e17c804dde0853662ac25d4b0842b9))
+
 ## [0.50.0](https://github.com/VesperLabs/aether/compare/v0.49.0...v0.50.0) (2026-11-17)
 
 
