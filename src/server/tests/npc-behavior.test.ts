@@ -21,6 +21,16 @@ beforeAll(async () => {
 afterAll(() => server?.close());
 
 describe("npc behavior", () => {
+  it("mobs in a room nobody is in rest, so whoever walks in sees them resting", async () => {
+    const { socket, world, player } = await login("warrior");
+    await server.run(socket, 100);
+    const elsewhere = Object.values<Anything>(world.npcs).filter(
+      (npc) => npc.room?.name !== player.roomName && !npc.state.isDead,
+    );
+    expect(elsewhere.length).toBeGreaterThan(0);
+    for (const npc of elsewhere) expect(npc.buffs.map((b: Anything) => b.name)).toEqual(["rest"]);
+  });
+
   it("a mob notices a nearby player, locks on and attacks them", async () => {
     const { world, player, attacks, socket } = await login("warrior");
     const mob = Object.values<Anything>(world.npcs).find(

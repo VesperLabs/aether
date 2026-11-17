@@ -7,6 +7,7 @@ import { DROP_USAGE, parseDropArgs } from "./drop-args";
 import { isInRoom } from "@/server/player-room";
 import type { Cheat } from "./cheat";
 import { CHARACTER_CHEATS } from "./character-cheats";
+import { COMPANION_CHEATS } from "./companion-cheats";
 import { NPC_CHEATS } from "./npc-cheats";
 import { TRAVEL_CHEATS } from "./travel-cheats";
 import { WORLD_CHEATS } from "./world-cheats";
@@ -20,6 +21,7 @@ const CHEATS: Record<string, Cheat> = {
   ...CHARACTER_CHEATS,
   ...TRAVEL_CHEATS,
   ...NPC_CHEATS,
+  ...COMPANION_CHEATS,
   ...WORLD_CHEATS,
 };
 

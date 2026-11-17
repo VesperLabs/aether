@@ -4,6 +4,7 @@ import { isMobile } from "@/ui/kit/is-mobile";
 import type { Player } from "@/client/views/player";
 import type { Sign } from "@/client/views/sign";
 import type { NearbyPlayer, SceneMain } from "./main-scene";
+import { reportNpcPlates } from "./npc-plates";
 
 /** What the hero can walk up to: a keeper (or other character) or a sign. */
 type Entity = Player | Sign;
@@ -68,6 +69,11 @@ export function checkProximities(scene: SceneMain, time: number) {
   let PLAYER_CLOSEST_DISTANCE = 200;
 
   const nearbyPlayers: Player[] = [];
+  let hovered: Player | undefined;
+  let hoveredDistance = Infinity;
+  /* Fighting the hero, with how far each is, to list the nearest first */
+  const foes: { npc: Player; distance: number }[] = [];
+  const companions: Player[] = [];
   const pointer = scene.input.activePointer;
   const cursorPoint = pointer.positionToCamera(scene.cameras.main) as Phaser.Math.Vector2;
 
@@ -90,12 +96,27 @@ export function checkProximities(scene: SceneMain, time: number) {
     if (entity?.kind === "npc") {
       const cursorDistance = distanceTo(entity, cursorPoint);
       const npc = entity as Player;
+      if (npc.state?.ownerId === hero.socketId && !npc.state.isDead) companions.push(npc);
+      if (npc.state?.lockedPlayerId === hero.socketId && !npc.state.isDead) {
+        foes.push({ npc, distance });
+      }
       if (npc.state && !isMobile) {
         npc.state.isHovering =
           cursorDistance < (npc?.hitBoxSize?.width + npc?.hitBoxSize?.height) / 2;
+        /* The plate shows the one nearest the cursor, if several are under it */
+        if (npc.state.isHovering && !npc.state.isDead && cursorDistance < hoveredDistance) {
+          hovered = npc;
+          hoveredDistance = cursorDistance;
+        }
       }
     }
   }
+  foes.sort((a, b) => a.distance - b.distance);
+  reportNpcPlates(
+    companions,
+    foes.map(({ npc }) => npc),
+    hovered,
+  );
 
   triggerEntityProximity(scene, closestEntity);
   triggerPlayerProximity(scene, nearbyPlayers);

@@ -14,6 +14,7 @@ import { updateRoomLoot } from "./loot-adapter";
 import { expireSpells } from "./spell-adapter";
 import { countRoomClients, getRoomIndex, indexRooms } from "./room-index";
 import { keepCompanionsNear } from "./companions";
+import { loseDeadCompanions } from "./kept-companions";
 import { endTickTimer, startTickTimer } from "./tick-health";
 import { announceSeason } from "./season-announce";
 
@@ -120,6 +121,7 @@ export const serverSystems: Array<System<ServerWorld>> = [
   moveNpcs,
   moveSpells,
   keepCompanionsNear,
+  loseDeadCompanions,
   indexRooms,
   separateNpcs,
   updateEntities,

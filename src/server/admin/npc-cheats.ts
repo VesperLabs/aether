@@ -139,9 +139,9 @@ const list: Cheat = (ctx, player, _args, reply) => {
   reply.info(npcs.map((npc) => describe(ctx.world, npc)).join("\n"));
 };
 
-/** `/npc clear`: removes what you spawned and your companions. */
+/** `/npc clear`: removes what you spawned and your temporary pets. A ball-caught companion stays (`/companion away`). */
 const clear: Cheat = (ctx, player, _args, reply) => {
-  const npcs = yours(ctx.world, player);
+  const npcs = yours(ctx.world, player).filter((npc) => !npc.state.keptId);
   for (const npc of npcs) removeNpc(npc);
   reply.info(`Removed ${npcs.length} NPC${npcs.length === 1 ? "" : "s"}.`);
 };

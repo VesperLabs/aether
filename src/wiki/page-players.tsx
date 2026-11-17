@@ -15,6 +15,8 @@ export type WikiPlayer = Partial<FullCharacterWire> & {
   id: string;
   isGhost?: boolean;
   updatedAt?: string | number;
+  /** The companions they keep, each the actor it is a copy of. */
+  companions?: { name: string }[];
 };
 
 export function PagePlayers() {

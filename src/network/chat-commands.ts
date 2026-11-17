@@ -100,9 +100,13 @@ const NPC_ACTION_OPTIONS = [
   { value: "spawn", hint: "add any actor next to you; add pet to make them yours" },
   { value: "tame", hint: "catch the nearest wild NPC as your companion" },
   { value: "list", hint: "what you spawned and your companions, and what they are doing" },
-  { value: "clear", hint: "remove what you spawned and your companions" },
+  { value: "clear", hint: "remove what you spawned and your temporary pets" },
 ];
 const NPC_ACTION: ChatArg = { name: "action", kind: "text" };
+const COMPANION_ACTION_OPTIONS = [
+  { value: "out", hint: "bring out the companion you caught" },
+  { value: "away", hint: "put it away; it stays yours" },
+];
 /** Gear with 0 to 4 blank mod slots, each colored like the rarity it makes. */
 const SLOT_OPTIONS = Array.from({ length: MAX_SLOTS + 1 }, (_, slots) => ({
   value: String(slots),
@@ -310,6 +314,13 @@ export const CHAT_COMMANDS: readonly ChatCommand[] = [
       if (index === 1 && NPC_ACTOR_ARG[args[0] ?? ""]) return MOB_OPTIONS;
       return args[0] === "spawn" ? completeNpcSpawn(index - 2, ITEM_OPTIONS) : [];
     },
+  },
+  {
+    name: "companion",
+    args: [NPC_ACTION],
+    description: "Bring out or put away the companion you caught",
+    cheat: true,
+    complete: (index) => (index === 0 ? COMPANION_ACTION_OPTIONS : []),
   },
 ];
 

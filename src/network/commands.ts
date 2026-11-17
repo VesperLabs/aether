@@ -116,6 +116,10 @@ export const commands = {
   /** Throws an item (a pokeball) along `angle`. */
   throwItem: z.object({ location: z.string(), item: itemRef, angle: z.number() }),
   consumeItem: z.object({ location: z.string().nullish(), item: itemRef.nullish() }).optional(),
+  /** Brings a caught companion out, or puts it away, by its saved id. */
+  toggleCompanion: z.object({ id: z.string() }),
+  /** Lets a caught companion go for good, by its saved id. */
+  releaseCompanion: z.object({ id: z.string() }),
 
   /* Social */
   message: z

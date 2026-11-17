@@ -1,172 +1,164 @@
 import Phaser from "phaser";
+import { buffIcon } from "@/content";
+import { getTrimmedFrame } from "./trimmed-frame";
 const Sprite = Phaser.GameObjects.Sprite;
 type Sprite = Phaser.GameObjects.Sprite;
+type Piece = Phaser.GameObjects.BitmapText | Sprite;
 
 const FRAME_SIZE = 4;
+/** Widest a line gets before it wraps, in bubble pixels (the bubble shows at half size). */
+const MAX_WIDTH = 256;
+/** Longest run of letters before a word is broken onto the next line. */
+const MAX_WORD = 20;
+/** A buff icon in a message, in bubble pixels: spell art is 32px. */
+const ICON_SIZE = 24;
+const LINE_GAP = 2;
+/** `&poison` in a message draws the poison icon; anything else after `&` stays text. */
+const ICON_CODE = /^&([A-Za-z0-9_-]+)$/;
+
+let fontMetrics: { textHeight: number; space: number } | undefined;
+
+/**
+ * A speech bubble over a character's head. Its message is words and icon codes (`&poison`):
+ * players type them after `!` in chat.
+ */
 export class Bubble extends Phaser.GameObjects.Container {
-  declare bg: Sprite;
-  declare bl: Sprite;
-  declare bot: Sprite;
-  declare br: Sprite;
-  declare bubbleText: Phaser.GameObjects.BitmapText;
   declare headY: number;
-  declare left: Sprite;
-  declare maxWidth: number;
-  declare message: string | undefined;
-  /** The message the bubble was last sized for. */
+  /** The message the bubble was last laid out for. */
   declare laidOutMessage: string | undefined;
-  declare right: Sprite;
+  /** The frame: corners, edges, fill and tail. */
+  declare frame: Record<
+    "tl" | "top" | "tr" | "left" | "bg" | "right" | "bl" | "bot" | "br",
+    Sprite
+  >;
   declare tail: Sprite;
-  declare tl: Sprite;
-  declare top: Sprite;
-  declare tr: Sprite;
-  /**
-   * @param {Phaser.Scene} scene
-   * @param {number} headY negative number of the position from center a sprites head is
-   * @param {object} text
-   * @memberof Bubble
-   */
+  /** The words and icons inside the frame. */
+  declare content: Phaser.GameObjects.Container;
+
   constructor(scene: Phaser.Scene, headY: number, message: string | undefined) {
     super(scene, 0, 0);
-
     this.headY = headY;
-    this.message = message;
-    this.maxWidth = 256;
-    this.width = 30;
-    this.height = 30;
-
-    this.bubbleText = new Phaser.GameObjects.BitmapText(this.scene, 8, 6, "nin-dark", this.message);
-
-    // The corners
-    this.tl = scene.add.existing(
-      new Sprite(scene, 0, 0, "misc-bubble", 0).setFrame(0).setOrigin(0, 0),
-    );
-    this.bl = scene.add.existing(
-      new Sprite(scene, 0, this.height, "misc-bubble", 0).setFrame(6).setOrigin(0, 1),
-    );
-    this.tr = scene.add.existing(
-      new Sprite(scene, this.width, 0, "misc-bubble", 0).setFrame(2).setOrigin(1, 0),
-    );
-    this.br = scene.add.existing(
-      new Sprite(scene, this.width, this.height, "misc-bubble", 0).setFrame(8).setOrigin(1, 1),
-    );
-
-    // The top and bottom slices
-    this.top = scene.add.existing(
-      new Sprite(scene, FRAME_SIZE, 0, "misc-bubble", 0).setFrame(1).setOrigin(0, 0),
-    );
-    this.bot = scene.add.existing(
-      new Sprite(scene, FRAME_SIZE, this.height, "misc-bubble", 0).setFrame(7).setOrigin(0, 1),
-    );
-    // The left and right slices
-    this.left = scene.add.existing(
-      new Sprite(scene, 0, FRAME_SIZE, "misc-bubble", 0).setFrame(3).setOrigin(0, 0),
-    );
-    this.right = scene.add.existing(
-      new Sprite(scene, this.width, FRAME_SIZE, "misc-bubble", 0).setFrame(5).setOrigin(1, 0),
-    );
-    this.bg = scene.add.existing(
-      new Sprite(scene, FRAME_SIZE, FRAME_SIZE, "misc-bubble", 0).setFrame(4).setOrigin(0, 0),
-    );
-    this.tail = scene.add.existing(
-      new Sprite(scene, FRAME_SIZE, this.height, "misc-bubble-tail", 0).setOrigin(0, 1),
-    );
-
-    // Add everything to the container
-    this.add(this.tl);
-    this.add(this.bl);
-    this.add(this.tr);
-    this.add(this.br);
-    this.add(this.top);
-    this.add(this.bot);
-    this.add(this.left);
-    this.add(this.right);
-    this.add(this.bg);
-    this.add(this.tail);
-    this.wrapBitmapText(this.bubbleText, this.maxWidth);
-    this.add(this.bubbleText);
-    this.setMessage(this.message);
+    /* The 3×3 frame sheet, top-left to bottom-right */
+    const names = ["tl", "top", "tr", "left", "bg", "right", "bl", "bot", "br"] as const;
+    this.frame = Object.fromEntries(
+      names.map((name, index) => [
+        name,
+        new Sprite(scene, 0, 0, "misc-bubble", index).setOrigin(0, 0),
+      ]),
+    ) as Bubble["frame"];
+    this.tail = new Sprite(scene, 0, 0, "misc-bubble-tail", 0).setOrigin(0, 1);
+    this.content = new Phaser.GameObjects.Container(scene, FRAME_SIZE * 2, FRAME_SIZE + 2);
+    this.add([...Object.values(this.frame), this.tail, this.content]);
+    this.setScale(0.5);
+    this.setMessage(message);
   }
+
   setTint(tintColor: number) {
-    // Set tint for all the sprites in the Bubble
-    this.tl.setTint(tintColor);
-    this.bl.setTint(tintColor);
-    this.tr.setTint(tintColor);
-    this.br.setTint(tintColor);
-    this.top.setTint(tintColor);
-    this.bot.setTint(tintColor);
-    this.left.setTint(tintColor);
-    this.right.setTint(tintColor);
-    this.bg.setTint(tintColor);
+    for (const piece of Object.values(this.frame)) piece.setTint(tintColor);
     this.tail.setTint(tintColor);
   }
+
   setMessage(message: string | undefined) {
-    if (!message) {
+    if (!message?.trim()) {
+      this.laidOutMessage = undefined;
       return this.setVisible(false);
     }
-    /* Called every frame: only lay out again when the text changes, so offsets like recoil stick */
+    /* Called every frame: only lay out again when the message changes, so offsets like recoil stick */
     if (message === this.laidOutMessage && this.visible) return;
     this.setVisible(true);
-    this.message = message;
     this.laidOutMessage = message;
-    this.bubbleText.setText(this.message);
-    this.wrapBitmapText(this.bubbleText, this.maxWidth);
-    this.width = this.bubbleText.width + 10;
-    this.height = this.bubbleText.height + 5;
-    this.bg.setDisplaySize(this.width, this.height);
-    this.top.setDisplaySize(this.width, FRAME_SIZE);
-    this.bot.setDisplaySize(this.width, FRAME_SIZE);
-    this.bot.y = this.height + FRAME_SIZE * 2;
-    this.br.y = this.height + FRAME_SIZE * 2;
-    this.br.x = this.width + FRAME_SIZE * 2;
-    this.bl.y = this.height + FRAME_SIZE * 2;
-    this.left.setDisplaySize(FRAME_SIZE, this.height);
-    this.right.setDisplaySize(FRAME_SIZE, this.height);
-    this.right.x = this.width + FRAME_SIZE * 2;
-    this.tr.x = this.width + FRAME_SIZE * 2;
-    this.tail.y = this.height + FRAME_SIZE * 2 + 3;
-    this.tail.x = (this.width + FRAME_SIZE * 2) / 2 - 4;
-    this.setScale(0.5);
-    this.center();
+    const { width, height } = this.layOut(message);
+    this.fitFrame(width + 10, height + 5);
+    this.center(width + 10, height + 5);
   }
-  wrapBitmapText(bitmapText: Phaser.GameObjects.BitmapText, maxWidth: number) {
-    var words = bitmapText.text.split(" ");
-    let output = "";
-    let test = "";
 
-    for (var w = 0, len = words.length; w < len; w++) {
-      test += words[w] + " ";
-      bitmapText.setText(test);
-      bitmapText.update();
-      if (bitmapText.width > maxWidth) {
-        output += "\n" + words[w] + " ";
-      } else {
-        output += words[w] + " ";
+  /** Fills the content with the message's words and icons, wrapped; returns its size. */
+  private layOut(message: string) {
+    this.content.removeAll(true);
+    const { textHeight, space } = this.measureFont();
+    const lines: { pieces: Piece[]; width: number; height: number }[] = [];
+    let line = { pieces: [] as Piece[], width: 0, height: textHeight };
+    for (const piece of message
+      .trim()
+      .split(/\s+/)
+      .flatMap((word) => this.pieces(word))) {
+      const gap = line.pieces.length ? space : 0;
+      if (line.pieces.length && line.width + gap + piece.displayWidth > MAX_WIDTH) {
+        lines.push(line);
+        line = { pieces: [], width: 0, height: textHeight };
       }
-      test = output;
+      piece.x = line.width + (line.pieces.length ? space : 0);
+      line.width = piece.x + piece.displayWidth;
+      line.height = Math.max(line.height, piece.displayHeight);
+      line.pieces.push(piece);
     }
+    lines.push(line);
+    let top = 0;
+    for (const { pieces, height } of lines) {
+      for (const piece of pieces) {
+        /* Words share a baseline; icons sit centred on the line */
+        const pieceHeight = piece instanceof Sprite ? piece.displayHeight : textHeight;
+        piece.y = Math.round(top + (height - pieceHeight) / 2);
+        this.content.add(piece);
+      }
+      top += height + LINE_GAP;
+    }
+    return {
+      width: Math.max(...lines.map((l) => l.width)),
+      height: top - LINE_GAP,
+    };
+  }
 
-    output = output.replace(/(\s)$/gm, ""); // remove trailing spaces
-    output = output.replace(/^\s+|\s+$/g, ""); // remove beginning/trailing returns
-    output = this.wbr(output, 20);
-    bitmapText.setText(output);
-    bitmapText.update();
+  /** One word as what it draws: an icon for a known code, else text in runs short enough to wrap. */
+  private pieces(word: string): Piece[] {
+    const code = word.match(ICON_CODE)?.[1];
+    const key = code && buffIcon(code);
+    if (key && this.scene.textures.exists(key)) {
+      const icon = new Sprite(this.scene, 0, 0, key, getTrimmedFrame(this.scene, key));
+      return [icon.setOrigin(0, 0).setScale(ICON_SIZE / 32)];
+    }
+    const runs = word.match(new RegExp(`.{1,${MAX_WORD}}`, "gu")) ?? [];
+    return runs.map((run) => this.text(run));
   }
-  wbr(str: string, num: number) {
-    return str.replace(
-      RegExp("(\\w{" + num + "})(\\w)", "g"),
-      function (_all: string, text: string, char: string) {
-        return text + "\n" + char;
-      },
-    );
+
+  /** The font's line height and the width of a space, measured once. */
+  private measureFont() {
+    const measure = (text: string) => {
+      const piece = this.text(text);
+      const { width, height } = piece;
+      piece.destroy();
+      return { width, height };
+    };
+    fontMetrics ??= {
+      textHeight: measure("Ag").height,
+      space: measure("a a").width - measure("aa").width,
+    };
+    return fontMetrics;
   }
-  center() {
-    this.x = -Math.floor((this.width + FRAME_SIZE * 2) / 4);
-    this.y = -Math.floor(this.height / 2 + (FRAME_SIZE * 2) / 2) + this.headY - 2;
+
+  private text(text: string) {
+    return new Phaser.GameObjects.BitmapText(this.scene, 0, 0, "nin-dark", text);
   }
-  update() {}
-  destroy() {
-    if (this.scene) this.scene.events.off("update", this.update, this);
-    super.destroy();
+
+  /** Stretches the frame around a `width` × `height` inside. */
+  private fitFrame(width: number, height: number) {
+    const { tl, top, tr, left, bg, right, bl, bot, br } = this.frame;
+    const [x, y] = [width + FRAME_SIZE, height + FRAME_SIZE];
+    tl.setPosition(0, 0);
+    top.setPosition(FRAME_SIZE, 0).setDisplaySize(width, FRAME_SIZE);
+    tr.setPosition(x, 0);
+    left.setPosition(0, FRAME_SIZE).setDisplaySize(FRAME_SIZE, height);
+    bg.setPosition(FRAME_SIZE, FRAME_SIZE).setDisplaySize(width, height);
+    right.setPosition(x, FRAME_SIZE).setDisplaySize(FRAME_SIZE, height);
+    bl.setPosition(0, y);
+    bot.setPosition(FRAME_SIZE, y).setDisplaySize(width, FRAME_SIZE);
+    br.setPosition(x, y);
+    this.tail.setPosition((width + FRAME_SIZE * 2) / 2 - 4, y + FRAME_SIZE + 3);
+  }
+
+  /** Sits the bubble centred over the head. */
+  private center(width: number, height: number) {
+    this.x = -Math.floor((width + FRAME_SIZE * 2) / 4);
+    this.y = -Math.floor(height / 2 + FRAME_SIZE) + this.headY - 2;
   }
 }

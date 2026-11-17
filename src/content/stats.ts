@@ -6,6 +6,7 @@ export type StatName =
   | "armorPierce"
   | "attackDelay"
   | "blockChance"
+  | "catchChance"
   | "castDelay"
   | "castTime"
   | "critChance"
