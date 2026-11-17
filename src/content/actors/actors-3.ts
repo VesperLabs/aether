@@ -8,11 +8,9 @@ export const actors3 = {
     flavor:
       "A shore crab with a mean pinch and a meaner temper. Trista keeps their numbers down, but there are always more.",
     baseStats: { level: 1 },
-    hitBoxSize: { width: 18, height: 16 },
     drops: [
       { item: "crabWalkers", chance: 1000 },
       { item: "crabClaw", chance: 3 },
-      { item: "crabCard", chance: 40 },
     ],
   },
   raccoon: {
@@ -22,11 +20,9 @@ export const actors3 = {
     flavor:
       "A masked bandit of the grassland. It raids packs and campfires, and it will fight you for your snacks.",
     baseStats: { level: 3 },
-    hitBoxSize: { width: 26, height: 24 },
     drops: [
       { item: "grapes", chance: 4 },
       { item: "smallHpPotion", chance: 10 },
-      { item: "raccoonCard", chance: 40 },
     ],
   },
   slime: {
@@ -35,24 +31,15 @@ export const actors3 = {
     flavor:
       "A wobbling blob that absorbs anything it touches. Nobody knows what it eats, only that it's always hungry.",
     baseStats: { level: 2 },
-    hitBoxSize: { width: 24, height: 23 },
-    drops: [
-      { item: "blueSporangium", chance: 3 },
-      { item: "slimeCard", chance: 40 },
-    ],
+    drops: [{ item: "blueSporangium", chance: 3 }],
   },
   hornet: {
-    habitat: "air",
     charClass: "rogue",
     profile: { race: "bee", userName: "Hornet" },
     flavor:
       "Fat, angry and fast. You'll hear the buzzing long before you see it, and by then it's already too late.",
     baseStats: { level: 4, walkSpeed: 10 },
-    hitBoxSize: { width: 18, height: 32 },
-    drops: [
-      { item: "smallHpPotion", chance: 10 },
-      { item: "hornetCard", chance: 40 },
-    ],
+    drops: [{ item: "smallHpPotion", chance: 10 }],
   },
   fish: {
     charClass: "warrior",
@@ -61,22 +48,16 @@ export const actors3 = {
       "Lynne swears it isn't natural. It flops out of the river on purpose, just to bite the ankles of passers-by.",
     state: { noWorldDrops: true },
     behaviors: { fight: { shootsOverWalls: true } },
-    habitat: "water",
     abilities: { "1": "waterSpit" },
     baseStats: { level: 1 },
-    hitBoxSize: { width: 26, height: 24 },
-    drops: [{ item: "fishCard", chance: 40 }],
   },
   hawkwing: {
-    habitat: "air",
     charClass: "rogue",
     profile: { race: "bee", tint: "0x44FFCC", scale: 1.5, userName: "Hawkwing" },
     flavor:
       "A giant hornet that rules the skies over the peaks. Its wings are prized by hunters, if they survive.",
     behaviors: { fight: { starts: "onSight" } },
     baseStats: { level: 6, walkSpeed: 20 },
-    hitBoxSize: { width: 28, height: 48 },
-    drops: [{ item: "hawkwingCard", chance: 100 }],
   },
   spider: {
     charClass: "warrior",
@@ -85,26 +66,21 @@ export const actors3 = {
       "Eight legs, too many eyes and a taste for the unwary. It waits in the dark corners of the mine for prey.",
     behaviors: { fight: { starts: "onSight" } },
     baseStats: { level: 5 },
-    hitBoxSize: { width: 28, height: 22 },
     drops: [
       { item: "spiderMeat", chance: 3 },
       { item: "cheese", chance: 10 },
-      { item: "spiderCard", chance: 40 },
     ],
   },
   bat: {
-    habitat: "air",
     charClass: "mage",
     profile: { race: "bat", userName: "Bat" },
     flavor:
       "It squeaks in the dark, circles once, then comes straight for your neck. Rarely alone in the mine.",
     behaviors: { fight: { starts: "onSight" } },
     baseStats: { level: 5 },
-    hitBoxSize: { width: 18, height: 28 },
     drops: [
       { item: "batMeat", chance: 3 },
       { item: "cheese", chance: 10 },
-      { item: "batCard", chance: 40 },
     ],
   },
   hogan: {
@@ -114,11 +90,9 @@ export const actors3 = {
       "A monstrous pink spider. The webs around its lair are thick as rope and full of the last adventurers.",
     behaviors: { fight: { starts: "onSight" } },
     baseStats: { level: 7 },
-    hitBoxSize: { width: 50, height: 40 },
     drops: [
       { item: "spiderMeat", chance: 2 },
       { item: "cheese", chance: 10 },
-      { item: "hoganCard", chance: 200 },
     ],
   },
   zombie: {
@@ -128,11 +102,9 @@ export const actors3 = {
       "The graveyard doesn't keep its dead for long. They wander slow and stubborn, and they never sleep.",
     behaviors: { fight: { starts: "onSight" } },
     baseStats: { level: 6 },
-    hitBoxSize: { width: 22, height: 43 },
     drops: [
       { item: "mediumHpPotion", chance: 10 },
       { item: "skull", chance: 4 },
-      { item: "zombieCard", chance: 40 },
     ],
   },
   wraith: {
@@ -142,11 +114,9 @@ export const actors3 = {
       "A restless spirit that drifts through walls and steals the warmth from anyone foolish enough to linger.",
     behaviors: { fight: { starts: "onSight" } },
     baseStats: { level: 7 },
-    hitBoxSize: { width: 22, height: 43 },
     drops: [
       { item: "mediumHpPotion", chance: 10 },
       { item: "skull", chance: 4 },
-      { item: "wraithCard", chance: 40 },
     ],
   },
   chonks: {
@@ -156,11 +126,9 @@ export const actors3 = {
       "A lumbering abomination stitched from something better left buried. Slow, but it hits like a cart.",
     behaviors: { fight: { starts: "onSight" } },
     baseStats: { level: 10 },
-    hitBoxSize: { width: 58, height: 85 },
     drops: [
       { item: "mediumHpPotion", chance: 10 },
       { item: "skull", chance: 4 },
-      { item: "chonksCard", chance: 200 },
     ],
   },
   dummy: {
@@ -169,7 +137,6 @@ export const actors3 = {
     flavor: "A stuffed sack shaped like a chonks. It takes every hit and never swings back.",
     behaviors: { fight: false, guard: {} },
     baseStats: { level: 10 },
-    hitBoxSize: { width: 58, height: 85 },
     state: { noWorldDrops: true },
   },
   merman: {
@@ -179,12 +146,8 @@ export const actors3 = {
       "One of the river folk. They turned hostile when the valley fell, and now they guard what's left of it.",
     behaviors: { fight: { starts: "onSight", keepAway: true } },
     baseStats: { level: 8, waterResistance: 50 },
-    hitBoxSize: { width: 24, height: 32 },
     abilities: { "1": "fireball" },
-    drops: [
-      { item: "shell", chance: 3 },
-      { item: "mermanCard", chance: 40 },
-    ],
+    drops: [{ item: "shell", chance: 3 }],
   },
   wyrm: {
     charClass: "warrior",
@@ -193,12 +156,10 @@ export const actors3 = {
       "The great serpent of the aqueducts. Its scales are worth a fortune, if you can live long enough to take one.",
     behaviors: { fight: { starts: "onSight" } },
     baseStats: { level: 11, minFireDamage: 1, maxFireDamage: 2, fireResistance: 50 },
-    hitBoxSize: { width: 50, height: 78 },
     abilities: { "1": "fireball3" },
     drops: [
       { item: "wyrmScale", chance: 4 },
       { item: "wyrmScaleWard", chance: 2000 },
-      { item: "wyrmCard", chance: 500 },
     ],
   },
   orchid: {
@@ -210,15 +171,11 @@ export const actors3 = {
       "One of the killer plants that overran Sergio's valley. Pretty from a distance, all teeth up close.",
     behaviors: { fight: { starts: "onSight" } },
     baseStats: { level: 9, earthResistance: 25, fireResistance: -15 },
-    hitBoxSize: { width: 26, height: 24 },
-    drops: [
-      { item: "orchidFlower", chance: 4 },
-      { item: "orchidCard", chance: 40 },
-    ],
+    drops: [{ item: "orchidFlower", chance: 4 }],
   },
   earthElemental: {
     charClass: "mage",
-    profile: { race: "earth-elemental", userName: "Earth Elemental" },
+    profile: { race: "earthElemental", userName: "Earth Elemental" },
     flavor:
       "Living stone, woken deep in the mine. It moves slowly and hits like a falling ceiling.",
     baseStats: {
@@ -229,13 +186,11 @@ export const actors3 = {
       fireResistance: 50,
       waterResistance: -50,
     },
-    hitBoxSize: { width: 26, height: 42 },
     drops: [
       { item: "goldOre", chance: 20 },
       { item: "ginseng", chance: 10 },
       { item: "leaves", chance: 4 },
       { item: "stone", chance: 4 },
-      { item: "earthElementalCard", chance: 200 },
     ],
     abilities: { "1": "quake" },
   },
@@ -252,10 +207,8 @@ export const actors3 = {
       fireResistance: -15,
       blockChance: 5,
     },
-    hitBoxSize: { width: 78, height: 72 },
     // Quake punishes standing in her roots; tackle catches anyone backing off to wait out her swings.
     abilities: { "1": "quake2", "2": "tackle" },
-    drops: [{ item: "bigMommaCard", chance: 500 }],
   },
   wolf: {
     charClass: "rogue",
@@ -265,11 +218,7 @@ export const actors3 = {
       "Grey wolves hunt in packs across the peaks. Where you see one, the rest are already circling.",
     behaviors: { fight: { starts: "onSight" } },
     baseStats: { level: 10, walkSpeed: 20 },
-    hitBoxSize: { width: 31, height: 28 },
-    drops: [
-      { item: "wolfPelt", chance: 2 },
-      { item: "wolfCard", chance: 40 },
-    ],
+    drops: [{ item: "wolfPelt", chance: 2 }],
   },
   whiteFang: {
     charClass: "rogue",
@@ -278,12 +227,8 @@ export const actors3 = {
       "The leader of the peak wolves. Bigger and faster than the rest, and never alone for long.",
     behaviors: { fight: { starts: "onSight" } },
     baseStats: { level: 12, maxHp: 300, walkSpeed: 20 },
-    hitBoxSize: { width: 41, height: 38 },
     abilities: { "1": "stealth", "2": "tackle" },
-    drops: [
-      { item: "wolfPelt", chance: 2 },
-      { item: "whiteFangCard", chance: 200 },
-    ],
+    drops: [{ item: "wolfPelt", chance: 2 }],
   },
   bear: {
     charClass: "cleric",
@@ -291,11 +236,7 @@ export const actors3 = {
     flavor: "A huge brown bear that wanders the forest edge. Never get between it and a beehive.",
     behaviors: { fight: { starts: "onSight" } },
     baseStats: { level: 11, walkSpeed: 10 },
-    hitBoxSize: { width: 36, height: 38 },
-    drops: [
-      { item: "bearSteak", chance: 3 },
-      { item: "bearCard", chance: 40 },
-    ],
+    drops: [{ item: "bearSteak", chance: 3 }],
   },
   iceCrab: {
     charClass: "mage",
@@ -304,12 +245,10 @@ export const actors3 = {
       "A crab from the frozen shore. Its claws are cold enough to burn, and its shell turns most blades.",
     behaviors: { fight: { keepAway: true } },
     baseStats: { level: 9, waterResistance: 50 },
-    hitBoxSize: { width: 18, height: 16 },
     abilities: { "1": "waterball", "2": "guard" },
     drops: [
       { item: "iceCrabShell", chance: 1000 },
       { item: "iceCrabClaw", chance: 3 },
-      { item: "iceCrabCard", chance: 40 },
     ],
   },
 } as const satisfies Readonly<Record<string, ActorDefinition>>;

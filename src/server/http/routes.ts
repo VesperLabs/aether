@@ -3,7 +3,7 @@ import type { Express } from "express";
 import type { Database } from "../persistence/database";
 import type { GameServer } from "../game-server";
 import { applyCalculatedStats } from "../character-stats";
-import { getFullCharacterState } from "@/network/sync";
+import { getPublicCharacterState } from "@/network/sync";
 import { registerCharacterLookup } from "./character-lookup";
 import { registerAuthRoutes } from "./auth-routes";
 import { paginate, parsePageQuery } from "./pagination";
@@ -22,7 +22,7 @@ export function registerRoutes(app: Express, { aetherServer, db }: RouteDeps) {
   // app.get("/metrics/players", (req, res) => {
   //   const world = aetherServer.world;
   //   const { players } = world ?? {};
-  //   const playerStates = Object.values(players).map(getFullCharacterState);
+  //   const playerStates = Object.values(players).map(getPublicCharacterState);
   //   res.json(playerStates);
   // });
 
@@ -35,8 +35,8 @@ export function registerRoutes(app: Express, { aetherServer, db }: RouteDeps) {
 
     const { page, pageSize } = req.query as UnparsedQuery;
     const keeperStates = Object.values(npcs)
-      ?.filter((n) => n?.talks && n?.profile?.race === "human")
-      .map(getFullCharacterState);
+      ?.filter((n) => n?.talks)
+      .map(getPublicCharacterState);
     res.json(paginate(keeperStates, page, pageSize, 10));
   });
 

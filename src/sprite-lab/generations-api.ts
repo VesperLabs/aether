@@ -1,3 +1,4 @@
+import type { BodyData } from "@/content";
 import { OVERWRITTEN_MODEL } from "./draw-models";
 import type { Frame } from "./lab-state";
 import { getSheetCell, type Sheet } from "./sheets";
@@ -111,20 +112,15 @@ export const loadGenerationCanvas = async (generation: Generation, cell: number)
   return canvas;
 };
 
-/** Replaces a body's hand points in `weapon.json`; `null` takes its hands away. */
-export const saveBodyHandPoints = (change: { body: string; points: object | null }) =>
-  post("/api/hand-points", change);
-
-/** Each body's flags, from `bodies.json`. */
-export const loadBodyFlags = async (): Promise<Record<string, { attackAnims?: boolean }>> => {
-  const response = await fetch("/api/body-flags");
-  if (!response.ok) throw new Error("Could not read bodies.json");
+/** Every body's file (`src/content/bodies/<race>.json`), by race. */
+export const loadBodies = async (): Promise<Record<string, BodyData>> => {
+  const response = await fetch("/api/bodies");
+  if (!response.ok) throw new Error("Could not read the bodies");
   return response.json();
 };
 
-/** Switches a body's attack animations in `bodies.json`. */
-export const saveBodyFlags = (change: { body: string; attackAnims: boolean }) =>
-  post("/api/body-flags", change);
+/** Replaces a body's file: its flags, shape and hand points. */
+export const saveBody = (change: { body: string; data: BodyData }) => post("/api/bodies", change);
 
 /** Writes a whole sheet over its file. */
 export const saveSheet = (src: string, canvas: HTMLCanvasElement) =>

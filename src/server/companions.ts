@@ -1,4 +1,4 @@
-import { getFullCharacterState } from "@/network/sync";
+import { getPublicCharacterState } from "@/network/sync";
 import { mergeBehaviors } from "@/rules/npc-behavior";
 import type { GameEventBus, Point, RoomData, System } from "@/rules/world";
 import { isAlly } from "./allegiance-adapter";
@@ -87,7 +87,7 @@ function moveNpc(npc: Npc, room: RoomData, to: Point) {
   npc.room = room;
   npc.roomName = room.name;
   io.to(from).emit("npcRemove", npc.id);
-  io.to(room.name).emit("npcJoin", getFullCharacterState(npc));
+  io.to(room.name).emit("npcJoin", getPublicCharacterState(npc));
 }
 
 /**

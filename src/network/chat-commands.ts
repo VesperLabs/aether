@@ -11,6 +11,7 @@ import {
   SEASON_ICONS,
   EARTH_ICON,
   actors,
+  getBody,
   type ActorDefinition,
   type ItemLook,
   type SeasonIcon,
@@ -77,7 +78,7 @@ const MOB_OPTIONS = Object.entries(actors as Record<string, ActorDefinition>).ma
     value,
     hint: `level ${baseStats.level}`,
     look: { texture: profile.race, tint: profile.tint },
-    ...(profile.race === "human" && { actor: value }),
+    ...(getBody(profile.race).layered && { actor: value }),
   }),
 );
 /** What each `/season` choice does; the months are when Earth's northern half has it. */

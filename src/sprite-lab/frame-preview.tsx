@@ -4,6 +4,7 @@ import { Box, Text } from "@/ui";
 import { CHECKER_SX } from "./checker";
 import { FloatingPanel } from "./floating-panel";
 import { IconButton } from "./icon-button";
+import { useWholeZoom } from "./use-whole-zoom";
 
 /** Room for the big panel's title bar and padding, so the whole frame fits on screen. */
 const PANEL_CHROME = 100;
@@ -12,7 +13,7 @@ const MAX_PANEL_WIDTH = 900;
 
 const FRAME_SX = {
   position: "relative",
-  width: "100%",
+  mx: "auto",
   aspectRatio: "1",
   ...CHECKER_SX,
   borderRadius: 2,
@@ -58,9 +59,12 @@ const FrameMirror = ({
     return () => cancelAnimationFrame(request);
   }, [cell]);
 
+  const { measure, width: frameWidth } = useWholeZoom(cell);
   return (
-    <Box sx={{ ...FRAME_SX, flexShrink: 0 }}>
-      <Box as="canvas" ref={ref} aria-hidden {...{ width: cell, height: cell }} sx={CANVAS_SX} />
+    <Box ref={measure} sx={{ width: "100%", flexShrink: 0 }}>
+      <Box sx={{ ...FRAME_SX, width: frameWidth }}>
+        <Box as="canvas" ref={ref} aria-hidden {...{ width: cell, height: cell }} sx={CANVAS_SX} />
+      </Box>
     </Box>
   );
 };
@@ -106,6 +110,7 @@ export const FramePreview = ({
   }, [expanded]);
 
   const width = getBigPanelWidth();
+  const { measure, width: frameWidth } = useWholeZoom(cell);
 
   return (
     <>
@@ -129,20 +134,22 @@ export const FramePreview = ({
         <Box ref={placeFrame} sx={{ flexShrink: 0 }} />
       )}
       {createPortal(
-        <Box sx={FRAME_SX}>
-          <Box
-            as="canvas"
-            ref={ref}
-            aria-label={label}
-            {...{ width: cell, height: cell }}
-            sx={CANVAS_SX}
-          />
-          {children?.(expanded)}
-          {!expanded && (
-            <Box sx={{ position: "absolute", top: 1, right: 1 }}>
-              <IconButton label="Open big" icon="⛶" onClick={() => setExpanded(true)} />
-            </Box>
-          )}
+        <Box ref={measure} sx={{ width: "100%" }}>
+          <Box sx={{ ...FRAME_SX, width: frameWidth }}>
+            <Box
+              as="canvas"
+              ref={ref}
+              aria-label={label}
+              {...{ width: cell, height: cell }}
+              sx={CANVAS_SX}
+            />
+            {children?.(expanded)}
+            {!expanded && (
+              <Box sx={{ position: "absolute", top: 1, right: 1 }}>
+                <IconButton label="Open big" icon="⛶" onClick={() => setExpanded(true)} />
+              </Box>
+            )}
+          </Box>
         </Box>,
         frameHome,
       )}

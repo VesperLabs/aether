@@ -10,7 +10,6 @@ export const actors1 = {
     dialogues: {
       greet: "Meow. I take it this isn't the first time you've talked to a cat.",
     },
-    hitBoxSize: { width: 22, height: 22 },
   },
   dog: {
     flavor:
@@ -19,7 +18,6 @@ export const actors1 = {
     profile: { userName: "Dog", race: "dog" },
     baseStats: { level: 1 },
     dialogues: { greet: "Woof. Woof. Greetings adventurer!" },
-    hitBoxSize: { width: 22, height: 22 },
   },
   trista: {
     flavor:

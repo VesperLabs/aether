@@ -1,7 +1,7 @@
 import { actors, findItemKey, getBody, isActorId } from "@/content";
 import { entitiesInRoom } from "@/rules/world";
 import { EMPTY_HAND, SPAWN_SIDES } from "@/network";
-import { getFullCharacterState } from "@/network/sync";
+import { getPublicCharacterState } from "@/network/sync";
 import { catchAsCompanion } from "@/server/catching";
 import { canTame, makeCompanion, removeNpc } from "@/server/companions";
 import { findCharacter } from "@/server/find-character";
@@ -46,7 +46,7 @@ function place(
     ],
   });
   if (!npc) return;
-  world.io.to(player.roomName).emit("npcJoin", getFullCharacterState(npc));
+  world.io.to(player.roomName).emit("npcJoin", getPublicCharacterState(npc));
   return npc;
 }
 

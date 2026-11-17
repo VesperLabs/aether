@@ -3,6 +3,7 @@ import {
   getFrameHands,
   getLayerOrder,
   resolveAsset,
+  getBody,
   type BuiltItem,
   type MobProfile,
 } from "@/content";
@@ -46,9 +47,6 @@ type PlayerAsset = {
   item?: BuiltItem;
 };
 
-type WeaponPose = { x: number; y: number; flipX?: boolean; flipY?: boolean; rotation?: number };
-type WeaponOffsets = { left: WeaponPose; right: WeaponPose };
-
 /** The parts of a character the renderer reads: how it looks and what it wears. */
 export interface RenderablePlayer {
   profile?: MobProfile;
@@ -68,7 +66,7 @@ export const drawLayers = (
   race = "human",
 ) => {
   const frame = pose ? getWalkFrameName(pose) : "down-stand";
-  const atlas = getFrameHands(race, frame) as WeaponOffsets | undefined;
+  const atlas = getFrameHands(race, frame);
   const isLeftShield = assets.some((asset) => asset.slotKey === "handLeft" && asset.isShield);
   const order = pose ? getLayerOrder(pose.direction, isLeftShield) : undefined;
   /* A layer listed twice is drawn at its last place, the same way Phaser's bringToTop stacks it. */
@@ -87,11 +85,15 @@ export const drawLayers = (
     const [x, y, w, h] = (pose && getWalkFrameRect(asset.atlasFile, pose)) || asset.previewRect;
     const isLeftWeapon = asset.slotKey === "handLeft";
     if (isLeftWeapon || asset.slotKey === "handRight") {
-      /* A body without hand points holds nothing to draw */
-      if (!atlas) return;
-      const { x: tx, y: ty, flipX, flipY, rotation = 0 } = isLeftWeapon ? atlas.left : atlas.right;
+      /* A hand the body doesn't have holds nothing to draw */
+      const hand = isLeftWeapon ? atlas?.left : atlas?.right;
+      if (!hand) return;
+      const { x: tx, y: ty, flipX, flipY, rotation = 0 } = hand;
       ctx.save();
-      ctx.translate(MIN_CANVAS_SIZE / 2 + tx, MIN_CANVAS_SIZE / 2 + ty + 14);
+      ctx.translate(
+        MIN_CANVAS_SIZE / 2 + tx,
+        MIN_CANVAS_SIZE / 2 + ty + getBody(race).spriteAboveFeet,
+      );
       ctx.rotate((rotation * Math.PI) / 180);
       ctx.scale(flipX ? -1 : 1, flipY ? -1 : 1);
       ctx.drawImage(layer, -w / 2, -h / 2, w, h);
@@ -262,10 +264,9 @@ export const getPlayerEquipmentAssets = ({
 
   function resolvePreviewRect({ key }: { key: string }) {
     const isWeapon = ["handLeft", "handRight"]?.includes(key);
-    const isSmallSprite = ["dog", "cat"]?.includes(player?.profile?.race as string);
     if (isWeapon) return [0, 0, MIN_CANVAS_SIZE, MIN_CANVAS_SIZE];
-    if (isSmallSprite) return [0, 100, 50, 80];
-    return [0, 160, 80, 80];
+    /* The part of the body's sheet its portrait shows, from its file */
+    return [...getBody(player?.profile?.race).portraitRect];
   }
 
   const playerAssets: Array<PlayerAsset> = keyOrder?.reduce<PlayerAsset[]>((acc, key) => {

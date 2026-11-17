@@ -1,5 +1,5 @@
 import { getAttackHandOffset } from "@/content";
-import { BODY_RADIUS, shapesOverlap, type Shape } from "@/rules/movement";
+import { BODY_RADIUS, separationRadius, shapesOverlap, type Shape } from "@/rules/movement";
 import { getMeleeSwing, getSwingShape, planSwing } from "@/rules/spells";
 import { getCharacterDirection, type CardinalDirection } from "@/rules/world";
 import { NPC_SHOT_MARGIN } from "./constants";
@@ -24,11 +24,17 @@ export interface NpcNextSwing {
   scale?: number;
 }
 
+/** How far outside the push the NPC stands, so nothing pushes it while it swings. */
+const CONTACT_CLEARANCE = 3;
+
 /**
  * How close an NPC stands to its target, centre to centre: soft collision pushes bodies apart
- * inside `BODY_RADIUS * 2`, so it keeps a little clear of that, where nothing pushes it.
+ * inside the sum of their radii, so it keeps a little clear of that.
  */
-const CONTACT = BODY_RADIUS * 2 + 3;
+const getContact = (npc: Body, target: Body) =>
+  (npc.bodySize ? separationRadius(npc.bodySize) : BODY_RADIUS) +
+  (target.bodySize ? separationRadius(target.bodySize) : BODY_RADIUS) +
+  CONTACT_CLEARANCE;
 
 const FACINGS: readonly CardinalDirection[] = ["up", "right", "down", "left"];
 
@@ -131,16 +137,17 @@ export function getSwingAim(npc: Body & { weapons?: NpcWeaponRanges | null }, ta
   const swing = npc.weapons?.swing;
   if (!hasHandSwing(swing)) return undefined;
   let best: { x: number; y: number; distance: number } | undefined;
+  const contact = getContact(npc, target);
   for (const facing of FACINGS) {
     const pivot = getSwingPivot(swing, facing);
     if (!pivot) continue;
     let aim = { x: -pivot.x, y: -pivot.y };
     const length = Math.hypot(aim.x, aim.y);
-    if (length < CONTACT) {
+    if (length < contact) {
       /* Straight at the target, the side it comes from is the one to stop on */
       const side = length > 1e-6 ? aim : { x: npc.x - target.x, y: npc.y - target.y };
       const sideLength = Math.hypot(side.x, side.y) || 1;
-      aim = { x: (side.x / sideLength) * CONTACT, y: (side.y / sideLength) * CONTACT };
+      aim = { x: (side.x / sideLength) * contact, y: (side.y / sideLength) * contact };
     }
     const spot = { x: target.x + aim.x, y: target.y + aim.y };
     if (!swingHits(spot, target, swing, facing)) continue;

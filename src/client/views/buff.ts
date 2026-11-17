@@ -48,7 +48,7 @@ export class Buff extends Phaser.GameObjects.Container {
     this.buff.x = this.victim.rig.x;
     this.buff.y = this.victim.rig.y + this.victim.bodyCenterY;
 
-    const bodyHeight = victim.hitBoxSize?.height ?? 0;
+    const bodyHeight = victim.hitBoxSize.height;
     const popSize = Math.max(MIN_POP_SIZE, Math.round(bodyHeight * POP_BODY_RATIO));
     scene.tweens.chain({
       targets: this.buff,

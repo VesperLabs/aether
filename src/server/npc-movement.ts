@@ -17,7 +17,6 @@ import {
   type Velocity,
 } from "@/rules/npc-behavior";
 import {
-  NPC_WALL_RADIUS,
   findNextWaypoint,
   getKnockbackVelocity,
   getLungeVelocity,
@@ -90,7 +89,7 @@ export function performNpcMovement(
           npc.stats.walkSpeed * (movement.speedRatio ?? 1),
           (point) => isOutOfMap(npc.movementMap(), point.x, point.y),
           { vx: npc.vx, vy: npc.vy },
-          NPC_WALL_RADIUS,
+          npc.bodySize,
         ),
       );
     case "lunge": {
@@ -161,7 +160,7 @@ function strafe(
   const speed = npc.stats.walkSpeed * NPC_STRAFE_SPEED_RATIO;
   // A step into a wall, or one that puts a wall between it and the target, counts as blocked
   const isBlocked = ({ vx, vy }: Velocity) => {
-    const ahead = (NPC_WALL_RADIUS + 16) / speed;
+    const ahead = (npc.bodySize + 16) / speed;
     const next = { x: npc.x + vx * ahead, y: npc.y + vy * ahead };
     return (
       isOutOfMap(npc.movementMap(), next.x, next.y) ||

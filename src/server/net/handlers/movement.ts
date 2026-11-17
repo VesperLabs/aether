@@ -216,7 +216,7 @@ export function teleportPlayer(
   });
 
   actor.emit("heroInit", {
-    ...getRoomState(world, destMap),
+    ...getRoomState(world, destMap, socketId),
     socketId,
   });
 
@@ -259,7 +259,7 @@ export function respawn(ctx: CommandContext) {
   actor.emit(
     "heroInit",
     {
-      ...getRoomState(world, newRoom),
+      ...getRoomState(world, newRoom, socketId),
       socketId,
     },
     { isRespawn: true },

@@ -1,8 +1,7 @@
 import { useState, type PointerEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Flex, Panel } from "@/ui";
-import { FoldButton } from "./fold-icon";
-import { IconButton } from "./icon-button";
+import { SignButton } from "./sign-button";
 import { usePanelPosition, type PanelPosition } from "./use-panel-position";
 
 /** Under the tool panel and dropdowns, which sit on the theme's `menus` layer. */
@@ -99,8 +98,12 @@ export const FloatingPanel = ({
           <>
             {title}
             <Flex sx={{ ml: "auto", gap: 1, flexShrink: 0 }}>
-              <FoldButton folded={collapsed} onClick={toggleCollapsed} />
-              {onClose && <IconButton label="Close" icon="❌" onClick={onClose} />}
+              <SignButton
+                sign={collapsed ? "plus" : "minus"}
+                label={collapsed ? "Unfold" : "Fold up"}
+                onClick={toggleCollapsed}
+              />
+              {onClose && <SignButton sign="close" label="Close" onClick={onClose} />}
             </Flex>
           </>
         }

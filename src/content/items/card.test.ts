@@ -12,7 +12,6 @@ const mobs = Object.entries(actors)
   .map(([id]) => id);
 
 const cards = Object.values(cardItems).flatMap((table) => Object.entries(table));
-const kebab = (id: string) => id.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
 
 describe("cards", () => {
   it("exist for every mob and nothing else, named after it", () => {
@@ -20,9 +19,18 @@ describe("cards", () => {
     expect(cards.map(([key]) => key).sort()).toEqual(wanted.sort());
   });
 
-  it("use the actor's id in kebab case for their art", () => {
+  it("use the actor's id for their art and name", () => {
     for (const [key, card] of cards) {
-      expect(card.texture).toBe(`stackable-${kebab(key.replace(/Card$/, ""))}-card`);
+      const id = key.replace(/Card$/, "");
+      expect(card.texture).toBe(`stackable-${id}-card`);
+      expect(card.name).toBe(`${(actors as Record<string, any>)[id].profile.userName} Card`);
+    }
+  });
+
+  it("are dropped by their own mob, once, by rarity", () => {
+    for (const [key] of cards) {
+      const { drops } = (actors as Record<string, any>)[key.replace(/Card$/, "")];
+      expect(drops.filter((drop: { item: string }) => drop.item === key)).toHaveLength(1);
     }
   });
 

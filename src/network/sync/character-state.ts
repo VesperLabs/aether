@@ -45,9 +45,6 @@ export interface CharacterSyncInput {
   abilities: Opaque;
   activeItemSlots: Opaque[];
   gold: number;
-  hitBoxSize?: Opaque;
-  bodySize?: number;
-  bodyCenterY?: number;
   getQuests(): Opaque[];
 }
 
@@ -82,11 +79,6 @@ export interface FullCharacterWire {
   abilities: Opaque;
   activeItemSlots: Opaque[];
   gold: number;
-  hitBoxSize: Opaque;
-  /** Feet radius: sets unarmed reach and where hit boxes stand. */
-  bodySize: number;
-  /** Where its body's middle sits above its feet; melee swings turn around it. */
-  bodyCenterY: number;
 }
 
 /** The parts of a character that change when buffs do. */
@@ -101,13 +93,19 @@ export interface BuffCharacterWire {
   activeItemSlots: Opaque[];
 }
 
-export function getFullCharacterState(p: CharacterSyncInput): FullCharacterWire {
+/**
+ * A character as anyone may see it: how it looks, moves and fights, never what it carries. Its
+ * bag, gold, quests and kills are left empty, and its quests are never even read. NPCs and
+ * spectators get this.
+ */
+export function getPublicCharacterState(p: CharacterSyncInput): FullCharacterWire {
   const uid = (p?.socketId || p?.id) as string;
   return {
     id: uid, //required for SI
     socketId: uid,
     nid: p?.nid as number,
-    peerId: p?.peerId,
+    /* Only room mates get it (`getRoomMateState`); kept here so the wire's keys stay in order */
+    peerId: undefined,
     // Undefined for a player between rooms; the client types still expect it set.
     roomName: p?.room?.name as string,
     x: p?.x,
@@ -119,34 +117,35 @@ export function getFullCharacterState(p: CharacterSyncInput): FullCharacterWire 
     offHandStats: p?.offHandStats,
     state: p?.state,
     equipment: p?.equipment,
-    inventory: p?.inventory,
+    inventory: [],
     profile: p?.profile,
     kind: p?.kind,
     aggressive: p?.aggressive,
     talks: p?.talks,
     habitat: p?.habitat,
     charClass: p?.charClass as CharClass,
-    npcKills: p?.npcKills,
+    npcKills: {},
     buffs: p?.buffs,
-    quests: p?.getQuests(),
+    quests: [],
     abilities: p?.abilities,
     activeItemSlots: p?.activeItemSlots,
-    gold: p?.gold,
-    hitBoxSize: p?.hitBoxSize,
-    bodySize: p?.bodySize as number,
-    bodyCenterY: p?.bodyCenterY as number,
+    gold: 0,
   };
 }
 
-/** A character as anonymous observers see it: how it looks and acts, nothing it owns or knows. */
-export function getPublicCharacterState(p: CharacterSyncInput): FullCharacterWire {
+/** Another player in your room: public, plus their `peerId` so nearby players can video chat. */
+export function getRoomMateState(p: CharacterSyncInput): FullCharacterWire {
+  return { ...getPublicCharacterState(p), peerId: p?.peerId };
+}
+
+/** Your own character, whole: its bag, gold, quests and kills too. Only ever sent to its player. */
+export function getFullCharacterState(p: CharacterSyncInput): FullCharacterWire {
   return {
-    ...getFullCharacterState(p),
-    peerId: undefined,
-    inventory: [],
-    gold: 0,
-    quests: [],
-    npcKills: {},
+    ...getRoomMateState(p),
+    inventory: p?.inventory,
+    npcKills: p?.npcKills,
+    quests: p?.getQuests(),
+    gold: p?.gold,
   };
 }
 

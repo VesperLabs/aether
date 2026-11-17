@@ -1,5 +1,6 @@
 import type { Habitat } from "@/rules/movement";
 import Phaser from "phaser";
+import { getBody } from "@/content";
 import { leaveWater, updateWading } from "./wading";
 import { updateFootprints } from "./footprints";
 import { updateNockedArrow } from "./nocked-arrow";
@@ -40,18 +41,6 @@ const REGEN_FLAGS = ["doBuffPoison", "doBuffBleed", "doHpBuffRegen"] as const;
 
 type Sprite = Phaser.GameObjects.Sprite;
 
-/** Where each hand goes on each animation frame, per race (the `weaponAtlas` json). */
-interface HandOffset {
-  x: number;
-  y: number;
-  flipX: boolean;
-  flipY: boolean;
-  rotation: number;
-}
-interface WeaponAtlas {
-  offsets?: Record<string, Record<string, { left?: HandOffset; right?: HandOffset }>>;
-}
-
 /** The part of a character that changes with its buffs. */
 type BuffUpdate = BuffCharacterWire | FullCharacterWire;
 
@@ -65,7 +54,6 @@ export class Player extends Character {
   habitat?: Habitat;
   /** Only the hero has a party. */
   party?: PartyMessage | null;
-  declare weaponAtlas: WeaponAtlas;
   declare skin: Sprite;
   declare chest: Sprite;
   declare face: Sprite;
@@ -113,7 +101,6 @@ export class Player extends Character {
       this.setAlpha(0);
     }
 
-    this.weaponAtlas = scene.cache.json.get("weaponAtlas");
     this.updateData(args);
     this.initSpriteLayers();
     this.drawCharacterFromUserData();
@@ -124,9 +111,9 @@ export class Player extends Character {
     scene.events.on("update", this.update, this);
     scene.events.once("shutdown", this.destroy, this);
   }
-  /** An NPC that neither talks nor has a human body: it leaves no corpse. */
+  /** An NPC that neither talks nor leaves a grave (its body's `leavesGrave`). */
   isMob() {
-    return this.kind === "npc" && !this.talks && this.profile?.race !== "human";
+    return this.kind === "npc" && !this.talks && !getBody(this.profile?.race).leavesGrave;
   }
   /** Mobs show their name only in combat or on hover; companions always do. */
   hidesName() {

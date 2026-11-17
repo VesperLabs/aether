@@ -176,8 +176,8 @@ export const assetList1 = [
     previewRect: [0, 160, 80, 80],
   },
   {
-    texture: "earth-elemental",
-    src: "./assets/atlas/mob/earth-elemental.png",
+    texture: "earthElemental",
+    src: "./assets/atlas/mob/earthElemental.png",
     atlas: "./assets/atlas/80x80.json",
     previewRect: [0, 160, 80, 80],
   },

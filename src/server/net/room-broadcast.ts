@@ -2,6 +2,7 @@ import type { LootMessage, ServerToClientEvents } from "@/network";
 import {
   getFullCharacterState,
   getPublicCharacterState,
+  getRoomMateState,
   type CharacterSyncInput,
   type FullCharacterWire,
 } from "@/network/sync";
@@ -22,13 +23,23 @@ export const toRoomPlayers = (world: ServerWorld, roomName: string) =>
 export const toAllPlayers = (world: ServerWorld) =>
   world.io.except(Object.keys(world.rooms).map(observersOf));
 
-/** Sends to a room, packing characters whole for its players and trimmed for its observers. */
+/**
+ * Sends to a room, packing each character for who's looking: whole for its own player (the
+ * `subjects`, sent theirs apart), without bag, gold, quests or kills for the room's other players,
+ * and without their peer ids too for observers. Nobody gets the message twice.
+ */
 function sendCharacters(
   world: ServerWorld,
   roomName: string,
+  subjects: string[],
   send: (to: RoomOperator, pack: PackCharacter) => void,
 ) {
-  send(toRoomPlayers(world, roomName), getFullCharacterState);
+  send(toRoomPlayers(world, roomName).except(subjects), getRoomMateState);
+  for (const id of subjects) {
+    send(world.io.to(id), (c) =>
+      (c.socketId || c.id) === id ? getFullCharacterState(c) : getRoomMateState(c),
+    );
+  }
   send(world.io.to(observersOf(roomName)), getPublicCharacterState);
 }
 
@@ -38,7 +49,9 @@ export function broadcastPlayerUpdate(
   meta?: Parameters<ServerToClientEvents["playerUpdate"]>[1],
 ) {
   if (!player.roomName) return;
-  sendCharacters(world, player.roomName, (to, pack) => to.emit("playerUpdate", pack(player), meta));
+  sendCharacters(world, player.roomName, [player.id], (to, pack) =>
+    to.emit("playerUpdate", pack(player), meta),
+  );
 }
 
 /** Tells a room a player arrived, everyone but that player. */
@@ -48,7 +61,7 @@ export function broadcastPlayerJoin(
   player: BroadcastCharacter,
   meta: Parameters<ServerToClientEvents["playerJoin"]>[1],
 ) {
-  sendCharacters(world, roomName, (to, pack) =>
+  sendCharacters(world, roomName, [], (to, pack) =>
     to.except(player.id).emit("playerJoin", pack(player), meta),
   );
 }
@@ -59,7 +72,7 @@ export function broadcastLootGrabbed(
   player: BroadcastCharacter,
   loot: LootMessage,
 ) {
-  sendCharacters(world, roomName, (to, pack) =>
+  sendCharacters(world, roomName, [player.id], (to, pack) =>
     to.emit("lootGrabbed", { socketId: player.id, loot, player: pack(player) }),
   );
 }
@@ -71,7 +84,10 @@ export function broadcastLeveled(
   players: BroadcastCharacter[],
   playerIdsThatLeveled: string[],
 ) {
-  sendCharacters(world, roomName, (to, pack) =>
-    to.emit("buffUpdate", { players: players.map(pack), playerIdsThatLeveled }),
+  sendCharacters(
+    world,
+    roomName,
+    players.map(({ id }) => id),
+    (to, pack) => to.emit("buffUpdate", { players: players.map(pack), playerIdsThatLeveled }),
   );
 }

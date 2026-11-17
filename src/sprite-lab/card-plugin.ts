@@ -1,10 +1,10 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import type { Plugin } from "vite";
+import { isCardName } from "./card-name";
 import { readJson, reply } from "./dev-json";
 
 const CARD_FOLDER = "assets/cards";
-const NAME_PATTERN = /^[a-z0-9-]+$/;
 
 type Face = { x: number; y: number; size: number };
 
@@ -23,7 +23,7 @@ export const cardPlugin = (repoRoot: string): Plugin => {
         try {
           if (req.method !== "POST") return reply(res, 405, { error: "POST only" });
           const { name, texture, face, image } = await readJson(req);
-          if (!NAME_PATTERN.test(name) || !NAME_PATTERN.test(texture) || !isFace(face)) {
+          if (!isCardName(name) || !isCardName(texture) || !isFace(face)) {
             return reply(res, 400, { error: "Not a card" });
           }
           await mkdir(folder, { recursive: true });

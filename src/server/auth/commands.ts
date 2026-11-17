@@ -122,7 +122,7 @@ function joinWorld(ctx: CommandContext, player: Player) {
   actor.emit(
     "heroInit",
     {
-      ...getRoomState(world, roomName),
+      ...getRoomState(world, roomName, socketId),
       userSettings: player.userSettings,
       cheats: areCheatsEnabled(),
       socketId,

@@ -3,7 +3,7 @@ import type { Player } from "./player";
 import { getSwingWeaponAngle } from "./swing-arc";
 import { getShownAction } from "@/rules/combat";
 import { isDodging } from "@/rules/movement";
-import { getLayerOrder } from "@/content";
+import { getBody, getFrameHands, getLayerOrder } from "@/content";
 
 const BLANK_TEXTURE = "human-blank";
 
@@ -82,7 +82,7 @@ export function drawFrame(p: Player) {
   orderLayers(p);
 
   p?.playAnim(skin, [profile?.race, direction, action]);
-  if (profile?.race === "human") {
+  if (getBody(profile?.race).layered) {
     p?.playAnim(chest, [profile?.race, profile?.gender, "chest-bare", direction, action]);
   } else {
     p?.playAnim(chest, [BLANK_TEXTURE, direction, action]);
@@ -179,14 +179,9 @@ export function hackFrameRates(player: Player, rate: number) {
 }
 
 function playWeapons(player: Player) {
-  const { profile, handLeft, handRight, weaponAtlas: w, action } = player;
-  const currentFrame = player?.skin?.anims?.currentFrame;
-  const { left, right } = w?.offsets?.[profile?.race]?.[
-    (currentFrame as Phaser.Animations.AnimationFrame).textureFrame
-  ] || {
-    left: undefined,
-    right: undefined,
-  };
+  const { profile, handLeft, handRight, action } = player;
+  const currentFrame = player?.skin?.anims?.currentFrame as Phaser.Animations.AnimationFrame;
+  const { left, right } = getFrameHands(profile?.race, String(currentFrame?.textureFrame)) ?? {};
   /* Hand points are drawn for a body at scale 1, so a bigger body holds farther out */
   const scale = profile?.scale || 1;
   handLeft.setPosition(left && left.x * scale, left && left.y * scale);
