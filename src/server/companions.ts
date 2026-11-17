@@ -47,6 +47,8 @@ export function makeCompanion(npc: Npc, owner: Player) {
   npc.state.isResetting = false;
   /* It follows its owner (its leader now) instead of guarding a post, and only fights their fights */
   npc.behaviors = mergeBehaviors(npc.behaviors, { guard: false, fight: { starts: "whenHit" } });
+  /* A swimmer follows its owner onto land; fliers keep flying */
+  if (npc.habitat === "water") npc.habitat = "land";
   npc.threat = {};
   npc.setLockedPlayerId(null);
   /* Appears on its owner, out of whatever wall or water it was caught in */
