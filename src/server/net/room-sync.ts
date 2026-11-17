@@ -9,10 +9,9 @@ import { hourAt, seasonAt } from "@/rules/seasons";
 
 /* Thin world adapters: hand the world's collections to the pure packers in network/sync. */
 
-/** What is in flight in a room: spells flying on their own, and thrown balls. */
+/** What is in flight in a room: spells flying on their own. */
 function roomEffects(world: ServerWorld, roomName: string) {
-  const sources = [...Object.values(world.spells), ...Object.values(world.balls)];
-  return getRoomEffects(sources, roomName, world.now());
+  return getRoomEffects(Object.values(world.spells), roomName, world.now());
 }
 
 /** A room as `viewer` (a socket id) sees it on joining: its own character whole. */

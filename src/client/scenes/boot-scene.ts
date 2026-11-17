@@ -6,6 +6,7 @@ import { IMAGE_CACHE } from "@/ui/kit/image-tint";
 import { addLoadedMaps, loadMaps } from "./load-maps";
 
 import { assetUrl } from "./asset-url";
+import { BALL_FRAMES, BALL_ROWS, BALL_SHEET } from "@/client/views/ball-sheet";
 
 const onLoadError = (value: unknown) => {
   window.dispatchEvent(
@@ -181,6 +182,18 @@ function createSpellAnims(scene: SceneMain) {
     yoyo: false,
     frameRate: 20,
   });
+  /* One row per ball, each a whole tumble that loops */
+  BALL_ROWS.forEach((ball, row) =>
+    createAnimIfMissing(scene, {
+      key: `${ball}-roll`,
+      frames: scene.anims.generateFrameNumbers(BALL_SHEET, {
+        start: row * BALL_FRAMES,
+        end: row * BALL_FRAMES + BALL_FRAMES - 1,
+      }),
+      repeat: -1,
+      frameRate: 30,
+    }),
+  );
   createAnimIfMissing(scene, {
     key: "spell-anim-chakra",
     frames: scene.anims.generateFrameNumbers("spell-anim-chakra", { start: 0, end: 5 }),
@@ -287,6 +300,10 @@ function loadSpritesheets(scene: Phaser.Scene) {
   scene.load.spritesheet("spell-anim-balls", assetUrl("./assets/images/spell-anim-balls.png"), {
     frameWidth: 96,
     frameHeight: 96,
+  });
+  scene.load.spritesheet(BALL_SHEET, assetUrl("./assets/images/pokeball-roll.png"), {
+    frameWidth: 16,
+    frameHeight: 16,
   });
   scene.load.spritesheet("spell-anim-chakra", assetUrl("./assets/images/spell-anim-chakra.png"), {
     frameWidth: 150,

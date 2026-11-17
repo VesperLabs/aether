@@ -75,6 +75,8 @@ export interface CharacterState {
   hasBuffChanges?: boolean;
   isAiming?: boolean;
   isHoldingAttack?: boolean;
+  /** The ball held out to throw (its base), so every client draws it in the hand. */
+  aimingBall?: string | null;
   /** The spell being aimed, so the crosshair fades with its cooldown instead of the attack's. */
   aimingSpellName?: string | null;
   bubbleMessage?: string | null;

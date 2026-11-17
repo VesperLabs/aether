@@ -35,7 +35,7 @@ import {
   getLoot,
 } from "@/client/scenes/scene-entities";
 import type { SceneMain } from "@/client/scenes/main-scene";
-import { endEffect, startEffect } from "./effects";
+import { startEffect } from "./effects";
 import { initCamera, initPlayerCollision } from "@/client/scenes/main-map";
 
 /** What a tick's vitals update on a player or npc sprite. */
@@ -284,7 +284,6 @@ export function bindSceneSocket(scene: SceneMain) {
   });
 
   socket.on("effectStarted", (effect) => startEffect(scene, effect));
-  socket.on("effectEnded", endEffect);
 
   socket.on("npcAttack", ({ id, count, direction, castAngle }) => {
     const n = getNpc(scene, id);

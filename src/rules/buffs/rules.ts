@@ -80,6 +80,8 @@ export interface ExpireBuffsResult {
   buffs: ActiveBuff[];
   /** True if any buff was removed. */
   changed: boolean;
+  /** The buffs that ran out on their own this time: not dispelled, not forced off. */
+  ranOut: ActiveBuff[];
 }
 
 /**
@@ -87,13 +89,17 @@ export interface ExpireBuffsResult {
  * `force` removes them all.
  */
 export function expireBuffs(buffs: ActiveBuff[], now: number, force = false): ExpireBuffsResult {
-  if (force && buffs?.length > 0) return { buffs: [], changed: true };
-  const remaining = buffs.filter((buff) => {
+  if (force && buffs?.length > 0) return { buffs: [], changed: true, ranOut: [] };
+  const remaining: ActiveBuff[] = [];
+  const ranOut: ActiveBuff[] = [];
+  for (const buff of buffs) {
     const limitedBuff = (buff.duration as number) > 0;
-    const isTimedOut = now - (buff.spawnTime as number) > (buff.duration as number);
-    return !(buff?.isExpired || (isTimedOut && limitedBuff));
-  });
-  return { buffs: remaining, changed: remaining.length !== buffs.length };
+    const isTimedOut = limitedBuff && now - (buff.spawnTime as number) > (buff.duration as number);
+    if (buff?.isExpired) continue;
+    if (isTimedOut) ranOut.push(buff);
+    else remaining.push(buff);
+  }
+  return { buffs: remaining, changed: remaining.length !== buffs.length, ranOut };
 }
 
 export interface RestingResult {

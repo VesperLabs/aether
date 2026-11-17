@@ -74,8 +74,13 @@ export class ServerCharacter extends CharacterModel {
   ): Array<Hit> {
     return applyAttackDamage(this, victim, abilityDetails);
   }
-  calculateDamage(victim: ServerCharacter, abilitySlot?: AbilitySlot, hand?: Hand): Array<Hit> {
-    return applyDamage(this, victim, abilitySlot, hand);
+  calculateDamage(
+    victim: ServerCharacter,
+    abilitySlot?: AbilitySlot,
+    hand?: Hand,
+    ability?: AbilityDetails,
+  ): Array<Hit> {
+    return applyDamage(this, victim, abilitySlot, hand, ability);
   }
   doRegen() {
     applyRegen(this);
@@ -137,7 +142,13 @@ export class ServerCharacter extends CharacterModel {
   expireBuffs(forceExpire = false) {
     applyExpireBuffs(this, forceExpire);
   }
-  doHit(_ids: Array<string>, _abilitySlot?: AbilitySlot, _hand?: Hand): void {
+  /** `ability` is what the spell carries, as it was cast: a thrown item is gone before it lands. */
+  doHit(
+    _ids: Array<string>,
+    _abilitySlot?: AbilitySlot,
+    _hand?: Hand,
+    _ability?: AbilityDetails,
+  ): void {
     //placeholder
   }
   setLockedPlayerId(id: string | null | undefined) {

@@ -1,5 +1,8 @@
 import Phaser from "phaser";
 import type { Player } from "./player";
+import { BALL_SHEET } from "./ball-sheet";
+import { heldBallFrame } from "./ball-in-hand";
+import { aimedBowHand } from "./nocked-arrow";
 import { getSwingWeaponAngle } from "./swing-arc";
 import { getShownAction } from "@/rules/combat";
 import { isDodging } from "@/rules/movement";
@@ -21,12 +24,16 @@ export function checkIsFlash(p: Player) {
 }
 
 /** Drawn over the body in every direction. */
-const OVERLAYS = ["userName", "buffRack", "stunStars", "bubble", "hpBar"] as const;
+const OVERLAYS = ["userName", "buffRack", "stunStars", "captureBall", "bubble", "hpBar"] as const;
 
-/** The hand holding a bow drawn to aim, if the body is in that pose. */
-function aimedBowHand(p: Player) {
-  if (p.action === "attack_right" && p.hasRangedWeaponRight()) return "handRight";
-  if (p.action === "attack_left" && p.hasRangedWeaponLeft()) return "handLeft";
+/** A ball in the hand is drawn at the size it flies. */
+const BALL_IN_HAND_SCALE = 0.5;
+
+/** The hand holding a shot ready: a drawn bow, or a ball held out to throw. */
+function heldShotHand(p: Player) {
+  const bow = aimedBowHand(p);
+  if (bow) return bow === p.handRight ? "handRight" : "handLeft";
+  if (p.action === "attack_right" && heldBallFrame(p) !== undefined) return "handRight";
   return undefined;
 }
 
@@ -38,7 +45,7 @@ function aimedBowHand(p: Player) {
  */
 function orderLayers(p: Player) {
   const isLeftShield = p.visibleEquipment?.handLeft?.type === "shield";
-  const bowHand = aimedBowHand(p);
+  const bowHand = heldShotHand(p);
   const key = `${p.direction}:${isLeftShield}:${bowHand}`;
   if (p.layerOrderKey === key) return;
   p.layerOrderKey = key;
@@ -104,7 +111,11 @@ export function drawFrame(p: Player) {
   p?.playAnim(pants, [profile?.race, visibleEquipment?.pants?.texture, direction, action]);
   p?.playAnim(accessory, [profile?.race, visibleEquipment?.accessory?.texture, direction, action]);
   playWeapons(p);
-  handRight.setTexture(visibleEquipment?.handRight?.texture);
+  /* Aiming a throw, the ball sits in the right hand in place of whatever it holds */
+  const ballFrame = heldBallFrame(p);
+  if (ballFrame === undefined) handRight.setTexture(visibleEquipment?.handRight?.texture);
+  else handRight.setTexture(BALL_SHEET, ballFrame);
+  handRight.setScale(ballFrame === undefined ? 1 : BALL_IN_HAND_SCALE);
   handLeft.setTexture(visibleEquipment?.handLeft?.texture);
 }
 
@@ -136,6 +147,12 @@ export function updateCurrentSpeed(player: Player) {
     if (player.hasRangedWeaponLeft()) player.action = "attack_left";
     if (player.hasRangedWeaponRight()) player.action = "attack_right";
     if (player.hasRangedWeapon()) return;
+  }
+
+  /* A ball aimed to throw is held out in the right hand, drawn like a bow */
+  if (heldBallFrame(player) !== undefined) {
+    player.action = "attack_right";
+    return;
   }
 
   if (player.state.isAiming) {
@@ -224,6 +241,13 @@ function playWeapons(player: Player) {
 
   if (isRightRanged) {
     if (action === "attack_right") aimBow(handRight);
+  }
+
+  /* A held-out ball sits upright in the hand */
+  if (action === "attack_right" && heldBallFrame(player) !== undefined) {
+    handRight.setFlipX(false);
+    handRight.setFlipY(false);
+    handRight.setRotation(0);
   }
 
   if (isLeftRanged) {

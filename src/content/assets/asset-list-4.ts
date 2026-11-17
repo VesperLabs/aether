@@ -20,6 +20,24 @@ export const assetList4 = [
     previewRect: [0, 0, 32, 32],
   },
   {
+    texture: "stackable-greatball",
+    src: "./assets/atlas/stackable/stackable-greatball.png",
+    atlas: "./assets/atlas/32x32-stackable.json",
+    previewRect: [0, 0, 32, 32],
+  },
+  {
+    texture: "stackable-ultraball",
+    src: "./assets/atlas/stackable/stackable-ultraball.png",
+    atlas: "./assets/atlas/32x32-stackable.json",
+    previewRect: [0, 0, 32, 32],
+  },
+  {
+    texture: "stackable-masterball",
+    src: "./assets/atlas/stackable/stackable-masterball.png",
+    atlas: "./assets/atlas/32x32-stackable.json",
+    previewRect: [0, 0, 32, 32],
+  },
+  {
     texture: "stackable-apple",
     src: "./assets/atlas/stackable/stackable-apple.png",
     atlas: "./assets/atlas/32x32-stackable.json",
@@ -166,6 +184,12 @@ export const assetList4 = [
   {
     texture: "spell-slow",
     src: "./assets/atlas/spell/spell-slow.png",
+    atlas: "./assets/atlas/32x32-stackable.json",
+    previewRect: [0, 0, 32, 32],
+  },
+  {
+    texture: "spell-capturing",
+    src: "./assets/atlas/spell/spell-capturing.png",
     atlas: "./assets/atlas/32x32-stackable.json",
     previewRect: [0, 0, 32, 32],
   },

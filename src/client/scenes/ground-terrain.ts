@@ -22,6 +22,20 @@ export function readMapGround(map: Phaser.Tilemaps.Tilemap, json: TiledMapJson) 
   grounds.set(map, { grid: buildTileGrid(json), quarters: readTerrainQuarters(json) });
 }
 
+/**
+ * The walls of a shown map, as the server reads them: for a spell that banks off them
+ * (`ricochet`) to follow the same path on screen.
+ */
+export function wallsOf(map: Phaser.Tilemaps.Tilemap | undefined) {
+  const ground = map && grounds.get(map);
+  if (!ground) return undefined;
+  return {
+    grid: ground.grid,
+    widthInPixels: map.widthInPixels,
+    heightInPixels: map.heightInPixels,
+  };
+}
+
 /** Is the world point on a water tile of the shown map, by the same rule the server uses for wading speed? */
 export function isWaterAt(map: Phaser.Tilemaps.Tilemap | undefined, x: number, y: number) {
   const ground = map && grounds.get(map);

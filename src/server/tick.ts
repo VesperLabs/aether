@@ -3,7 +3,6 @@ import {
   MAX_PUSH_SPEED,
   getSeparationPush,
   separationRadius,
-  moveBodyFreely,
   moveBodyThroughMap,
   nudgeBodyThroughMap,
   terrainSpeedScale,
@@ -15,7 +14,6 @@ import { updateRoomLoot } from "./loot-adapter";
 import { expireSpells } from "./spell-adapter";
 import { countRoomClients, getRoomIndex, indexRooms } from "./room-index";
 import { keepCompanionsNear } from "./companions";
-import { resolveBalls } from "./balls";
 import { endTickTimer, startTickTimer } from "./tick-health";
 import { announceSeason } from "./season-announce";
 
@@ -61,12 +59,12 @@ const separateNpcs: System<ServerWorld> = (world, { delta }) => {
   }
 };
 
-/** Flies spells along their velocity. They ignore walls. */
+/** Flies spells along their velocity: through walls, or banking off them (`ricochet`). */
 const moveSpells: System<ServerWorld> = (world, { delta }) => {
   const seconds = Math.min(delta, MAX_STEP_MS) / 1000;
   for (const spell of Object.values(world.spells)) {
     if (spell.stickToCaster || spell.state.isExpired) continue;
-    moveBodyFreely(spell, { x: spell.velocityX, y: spell.velocityY }, seconds);
+    spell.fly(seconds);
   }
 };
 
@@ -125,7 +123,6 @@ export const serverSystems: Array<System<ServerWorld>> = [
   indexRooms,
   separateNpcs,
   updateEntities,
-  resolveBalls,
   recordPoses,
   updateRooms,
   announceSeason,

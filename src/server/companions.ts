@@ -33,8 +33,8 @@ function companionsOf(world: ServerWorld, ownerId: string): Npc[] {
 }
 
 /**
- * Any living NPC nobody owns yet can be tamed, keepers included. What a player may catch in play (a
- * pokeball won't take a keeper) is that item's own rule, on top of this.
+ * Any living NPC nobody owns yet can be tamed, keepers included (an admin can). What a ball may
+ * catch is `isCatchable`, on top of this.
  */
 export const canTame = (npc: Npc) => !npc.state.ownerId && !npc.state.isDead;
 

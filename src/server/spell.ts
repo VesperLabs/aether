@@ -2,7 +2,13 @@ import type { AbilitySlot } from "@/rules/spells";
 import type { ServerWorld } from "./server-world";
 import { distanceTo } from "@/rules/world";
 import { entitiesInRoom } from "@/rules/world";
-import { LUNGE_HIT_LEAD, getLungeDuration, type Shape } from "@/rules/movement";
+import {
+  LUNGE_HIT_LEAD,
+  getLungeDuration,
+  moveBodyFreely,
+  moveRicocheting,
+  type Shape,
+} from "@/rules/movement";
 import {
   characterHitBox,
   findSpellHits,
@@ -17,11 +23,15 @@ import {
   getSpellFlight,
   getSpell,
   isSpellExpired,
+  piercesThrough,
+  takeHits,
   toSpellVictims,
+  type AbilityDetails,
 } from "@/rules/spells";
 import { findSpell } from "@/content";
 import { aimPounce } from "@/rules/npc-behavior";
 import { hasWeapon } from "@/rules/combat";
+import { isAlly } from "./allegiance-adapter";
 import { ServerCharacter } from "./character";
 import type { EffectSource, SpellEffectWire } from "@/network";
 
@@ -47,6 +57,8 @@ export interface SpellArgs {
   action?: string;
   castAngle?: number;
   rank?: number;
+  /** What it carries (effects, buffs, costs), when not read from `abilitySlot`: a thrown item. */
+  ability?: AbilityDetails;
 }
 
 /** A spell or attack in flight. Plain data: where it is, how it moves and what it can hit. */
@@ -76,8 +88,17 @@ export class Spell implements EffectSource {
   private direction: string;
   private isMeleeAttack: boolean;
   private abilitySlot?: AbilitySlot;
+  /** What it carries when not read from its slot: a thrown item, used up before it lands. */
+  private ability?: AbilityDetails;
   private action: string;
   private isLunge = false;
+  /** Banks off walls (`ricochet`), meeting them at its ground point, this far below it. */
+  public ricochet?: { depth: number; bounciness?: number };
+  public groundOffset = 0;
+  /** How far it has flown, bounces and all: a ricochet's range. */
+  public travelled = 0;
+  /** A spell that doesn't pierce stops here once it has hit someone. */
+  private hasLanded = false;
   /** A pounce only carries its caster: it never hits anyone. */
   private isPounce = false;
   /** A melee swing: the wedge its blade sweeps, from the swinging hand. */
@@ -98,6 +119,7 @@ export class Spell implements EffectSource {
       action,
       castAngle = 0,
       rank = 1,
+      ability,
     }: SpellArgs,
   ) {
     this.spawnPoint = { x: caster.x, y: caster.y + caster.bodyCenterY };
@@ -112,6 +134,7 @@ export class Spell implements EffectSource {
     this.direction = direction ?? caster?.direction;
     this.state = { spawnTime: this.world.now(), isExpired: false };
     this.abilitySlot = abilitySlot;
+    this.ability = ability;
     this.action = action ?? "attack_right";
     this.castAngle = castAngle;
     this.rank = rank;
@@ -122,6 +145,8 @@ export class Spell implements EffectSource {
     const shape = getSpellShape(spell, rank);
 
     this.isMeleeAttack = delivery.type === "swing";
+    this.ricochet = spell.ricochet;
+    this.groundOffset = -caster.bodyCenterY;
     this.targets = spell.targets;
     this.maxActiveTime = shape.hitMs;
     this.bodySize = shape.size;
@@ -209,6 +234,18 @@ export class Spell implements EffectSource {
       spawnPoint: this.spawnPoint,
     };
   }
+  /** Flies it `seconds` along its velocity: through walls, or banking off them with `ricochet`. */
+  fly(seconds: number) {
+    const velocity = { x: this.velocityX, y: this.velocityY };
+    if (!this.ricochet || !this.room?.map) return moveBodyFreely(this, velocity, seconds);
+    const flown = moveRicocheting(this.room.map, this, velocity, seconds, {
+      depth: this.ricochet.depth,
+      bounciness: this.ricochet.bounciness,
+      groundOffset: this.groundOffset,
+    });
+    ({ x: this.velocityX, y: this.velocityY } = flown.velocity);
+    this.travelled += flown.distance;
+  }
   /** The area this spell hits right now. */
   getShape(): Shape | null {
     if (this.swing) {
@@ -227,14 +264,16 @@ export class Spell implements EffectSource {
     return radius > 0 ? { kind: "circle", x: this.x, y: this.y, radius } : null;
   }
   update() {
-    this.state.isExpired = isSpellExpired({
-      maxDistance: this.maxDistance,
-      distanceFromSpawn: distanceTo(this, this.spawnPoint),
-      spawnTime: this.state.spawnTime,
-      /* Spells without a lifetime never time out (undefined compares false). */
-      lifetime: this.maxActiveTime as number,
-      now: this.world.now(),
-    });
+    this.state.isExpired =
+      this.hasLanded ||
+      isSpellExpired({
+        maxDistance: this.maxDistance,
+        distanceFromSpawn: this.ricochet ? this.travelled : distanceTo(this, this.spawnPoint),
+        spawnTime: this.state.spawnTime,
+        /* Spells without a lifetime never time out (undefined compares false). */
+        lifetime: this.maxActiveTime as number,
+        now: this.world.now(),
+      });
 
     if (this.state.isExpired) {
       /* Ticks are coarser than the blade: one last check of the whole sweep, so its end counts */
@@ -265,7 +304,7 @@ export class Spell implements EffectSource {
         ? (id) => (id === caster.id ? undefined : history.positionAt(id, seenAt))
         : undefined,
     );
-    const hits = findSpellHits({
+    const overlapped = findSpellHits({
       shape,
       victims: victimShapes,
       hitIds: this.hitIds,
@@ -275,14 +314,22 @@ export class Spell implements EffectSource {
       direction: this.direction,
       isMeleeAttack: this.isMeleeAttack,
     });
+    if (overlapped.length === 0) return;
+    /* Anyone it passed (an ally, for a hit on foes) is passed for good */
+    this.hitIds = [...new Set([...this.hitIds, ...overlapped])];
+    const { hits, stops } = takeHits(overlapped, {
+      pierces: piercesThrough(getSpell(this.spellName)),
+      mayTouch: (id) => this.mayTouch(victims.find((v) => v.id === id)),
+    });
+    if (stops) this.hasLanded = true;
     if (hits.length === 0) return;
-    this.hitIds = [...new Set([...this.hitIds, ...hits])];
     /* Everyone hit this tick lands together, so their drains add up into one total. Without an
      * ability slot it is an attack, made with the hand that swung. */
     this.caster.doHit(
       hits,
       this.abilitySlot,
       this.action === "attack_left" ? "handLeft" : "handRight",
+      this.ability,
     );
     for (const id of hits) {
       const victim = victimShapes.find((v) => v.id === id);
@@ -294,6 +341,12 @@ export class Spell implements EffectSource {
         });
       }
     }
+  }
+  /** Whether it may touch `victim`: an ally only if it targets allies, anyone else if enemies. */
+  private mayTouch(victim: ServerCharacter | undefined) {
+    if (!victim) return false;
+    const isOnSide = isAlly(this.world, this.caster, victim);
+    return this.targets.includes(isOnSide ? "ally" : "enemy");
   }
   adjustSpellPosition() {
     if (this.stickToCaster) {

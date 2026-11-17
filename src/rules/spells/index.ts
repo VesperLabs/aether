@@ -32,4 +32,5 @@ export {
 } from "./swing";
 export type { SwingPlan } from "./swing";
 export { characterHitBox, getAimAngle } from "./overlap";
+export { piercesThrough, takeHits } from "./pierce";
 export type { CharacterShapeInput } from "./overlap";

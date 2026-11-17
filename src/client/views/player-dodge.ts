@@ -84,6 +84,7 @@ const GHOST_SKIP = new Set([
   "bubble",
   "buffRack",
   "stunStars",
+  "captureBall",
   "talkMenu",
 ]);
 

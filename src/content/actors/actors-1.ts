@@ -20,6 +20,7 @@ export const actors1 = {
     dialogues: { greet: "Woof. Woof. Greetings adventurer!" },
   },
   trista: {
+    state: { catchable: false },
     flavor:
       "The Crab Warden of the shore. She has watched the tides for years and knows every crab by its pinch.",
     charClass: "rogue",
@@ -60,6 +61,7 @@ export const actors1 = {
     home: { x: 1496, y: 2028 },
   },
   sergio: {
+    state: { catchable: false },
     flavor:
       "Once the keeper of a great river valley, until the killer plants overran it. He still plans its revival.",
     charClass: "cleric",
@@ -100,6 +102,7 @@ export const actors1 = {
     home: { x: 1554, y: 664 },
   },
   tudwick: {
+    state: { catchable: false },
     flavor:
       "A shirtless forest ranger who gave up on conventions long ago. He knows every trail in the eastern woods.",
     charClass: "warrior",
@@ -141,6 +144,7 @@ export const actors1 = {
     home: { x: 253, y: 581 },
   },
   lynne: {
+    state: { catchable: false },
     flavor:
       "A filmmaker chasing the perfect nature documentary. The wildlife keeps attacking her crew, and her.",
     charClass: "rogue",

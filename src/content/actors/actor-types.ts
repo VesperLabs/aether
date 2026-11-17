@@ -66,8 +66,11 @@ export interface ActorDefinition {
   readonly equipment?: MobEquipment;
   /** Warning, in ms, before its attacks and spells land. Unset means the default. */
   readonly windupMs?: number;
-  /** `noWorldDrops` drops only its own `drops`, never random loot. */
-  readonly state?: { readonly noWorldDrops?: boolean };
+  /**
+   * `noWorldDrops` drops only its own `drops`, never random loot. `catchable: false` can't be caught
+   * in a ball (keepers the game needs): it always breaks free.
+   */
+  readonly state?: { readonly noWorldDrops?: boolean; readonly catchable?: boolean };
   /** What it does, merged over the defaults (see `behaviors.ts`). */
   readonly behaviors?: ActorBehaviors;
   /** Where it can go, when not where its body can (the body file's `habitat`). */

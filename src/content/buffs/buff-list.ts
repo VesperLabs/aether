@@ -109,6 +109,16 @@ export const buffList = {
     description: "Regenerating HP while you are out of combat.",
   },
   stun: { type: "debuff", duration: 500, knockback: true, perLevel: { duration: 100 } },
+  /**
+   * Struggling in a thrown ball. When it runs out the thrower may catch it (`rules/capture`): the
+   * better the ball, the higher the level, the likelier the catch.
+   */
+  capturing: {
+    type: "debuff",
+    duration: 1800,
+    onExpire: "catch",
+    description: "Struggling inside a ball.",
+  },
   slow: {
     type: "debuff",
     duration: 3000,

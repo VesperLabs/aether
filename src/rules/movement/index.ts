@@ -10,6 +10,7 @@ export type { TilesetFile } from "./tiled-tilesets";
 export { circleOverlapsBox, moveBox, shapesOverlap } from "./collision";
 export type { Box, Circle, Shape } from "./collision";
 export { hasLineOfSight } from "./line-of-sight";
+export { moveRicocheting } from "./ricochet";
 export { MAX_REWIND_MS, clampRewind, createPoseHistory } from "./pose-history";
 export type { PoseHistory } from "./pose-history";
 export { doorArrival, readDoors } from "./doors";

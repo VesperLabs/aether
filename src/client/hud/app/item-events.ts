@@ -8,9 +8,9 @@ import {
   findInventoryItemById,
 } from "@/rules/inventory";
 import type { ClientGameSocket } from "@/network";
-import { isThrowable } from "@/rules/capture";
 import type { DropItem, HudCharacter } from "./context";
 import { doubleClickMove } from "./double-click-move";
+import { isThrowable } from "@/rules/capture";
 
 interface ItemEventDeps {
   hero: HudCharacter | null;

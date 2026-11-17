@@ -236,18 +236,23 @@ export function applyAttackDamage(
   return hits;
 }
 
-/** An attack (no ability slot, a melee attack-spell or a lunge) or a spell hitting `victim`. */
+/**
+ * An attack (no ability slot, a melee attack-spell or a lunge) or a spell hitting `victim`. A spell
+ * that carries its own `ability` (a thrown item) is never a plain attack, slot or not.
+ */
 export function applyDamage(
   attacker: ServerCharacter,
   victim: ServerCharacter,
   abilitySlot?: AbilitySlot,
   hand?: Hand,
+  ability?: AbilityDetails,
 ): Array<Hit> {
   if (victim?.state?.isDead) return [];
+  const abilityDetails = ability ?? attacker.getAbilityDetails(abilitySlot);
+  const isPlainAttack = !abilitySlot && !ability;
   let hitList: Array<Hit>;
-  const abilityDetails = attacker.getAbilityDetails(abilitySlot);
   /* Plain attacks (arrows too) and the spells that swing or dash with the weapon */
-  if (!abilitySlot || strikesWithWeapon(abilityDetails.spell)) {
+  if (isPlainAttack || strikesWithWeapon(abilityDetails.spell)) {
     hitList = applyAttackDamage(attacker, victim, abilityDetails, hand);
   } else {
     hitList = applySpellDamage(attacker, victim, abilityDetails);

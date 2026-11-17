@@ -89,7 +89,11 @@ export const commands = {
     lastAngle: z.number().nullish(),
   }),
   updateState: z
-    .object({ isAiming: z.boolean().optional(), isHoldingAttack: z.boolean().optional() })
+    .object({
+      isAiming: z.boolean().optional(),
+      isHoldingAttack: z.boolean().optional(),
+      aimingBall: z.string().nullable().optional(),
+    })
     .strict(),
   enterDoor: z.string(),
   respawn: z.unknown(),
@@ -109,8 +113,9 @@ export const commands = {
     })
     .optional(),
   moveItem: z.object({ to: itemSlot.nullish(), from: itemSlot.nullish() }).optional(),
-  consumeItem: z.object({ location: z.string().nullish(), item: itemRef.nullish() }).optional(),
+  /** Throws an item (a pokeball) along `angle`. */
   throwItem: z.object({ location: z.string(), item: itemRef, angle: z.number() }),
+  consumeItem: z.object({ location: z.string().nullish(), item: itemRef.nullish() }).optional(),
 
   /* Social */
   message: z

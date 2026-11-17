@@ -6,6 +6,7 @@ import { createTickLoop, type Clock } from "@/rules/world";
 import type { Dice } from "@/content";
 import { DEFAULT_SERVER_FPS } from "@/network";
 import type { ClientToServerEvents, GameIo, ServerToClientEvents } from "@/network";
+import { subscribeCapture } from "./capture";
 import { createServerWorld } from "./game-world";
 import { listenForConnections } from "./net/connection";
 import { serverSystems } from "./tick";
@@ -50,6 +51,8 @@ export class GameServer {
 
     this.db = db;
     this.world = createServerWorld({ io: this.io, db, now, dice });
+    /* Here, not with the other subscribers: catching spawns NPCs, so game-world can't import it */
+    subscribeCapture(this.world.events, this.world);
     this.world.tickHealth.targetTickMs = 1000 / serverFps;
     this.world.loop = createTickLoop(this.world, serverSystems, { fps: serverFps, clock });
     listenForConnections(this.world);
