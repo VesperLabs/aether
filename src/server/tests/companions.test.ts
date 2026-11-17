@@ -61,6 +61,14 @@ describe("companions", () => {
     expect(companionsOf(socket.id as string)).toHaveLength(0);
   });
 
+  it("a tamed swimmer walks on land with its owner", async () => {
+    const { socket, player } = await server.login();
+    const fish = await summon(socket, "fish");
+    expect(fish.habitat).toBe("land");
+    expect(fish.isOutOfBounds()).toBe(false);
+    expect({ x: fish.x, y: fish.y }).toEqual({ x: player.x, y: player.y });
+  });
+
   it("admin cheats can make anyone a companion, keepers included", async () => {
     const { socket, player } = await server.login();
     const trista = await summon(socket, "trista");
