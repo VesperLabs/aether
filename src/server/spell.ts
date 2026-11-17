@@ -32,8 +32,6 @@ import { findSpell } from "@/content";
 import { aimPounce } from "@/rules/npc-behavior";
 import { hasWeapon } from "@/rules/combat";
 import { isAlly } from "./allegiance-adapter";
-import { isCatchable, isThrowable } from "@/rules/capture";
-import { catchTargetOf } from "./catch-target";
 import { ServerCharacter } from "./character";
 import type { EffectSource, SpellEffectWire } from "@/network";
 
@@ -344,13 +342,9 @@ export class Spell implements EffectSource {
       }
     }
   }
-  /**
-   * Whether it may touch `victim`: an ally only if it targets allies, anyone else if enemies. A ball
-   * passes through what it can't catch.
-   */
+  /** Whether it may touch `victim`: an ally only if it targets allies, anyone else if enemies. */
   private mayTouch(victim: ServerCharacter | undefined) {
     if (!victim) return false;
-    if (isThrowable(this.spellName) && !isCatchable(catchTargetOf(victim))) return false;
     const isOnSide = isAlly(this.world, this.caster, victim);
     return this.targets.includes(isOnSide ? "ally" : "enemy");
   }

@@ -68,7 +68,7 @@ export interface ActorDefinition {
   readonly windupMs?: number;
   /**
    * `noWorldDrops` drops only its own `drops`, never random loot. `catchable: false` can't be caught
-   * in a ball (keepers the game needs): balls pass through it.
+   * in a ball (keepers the game needs): it always breaks free.
    */
   readonly state?: { readonly noWorldDrops?: boolean; readonly catchable?: boolean };
   /** What it does, merged over the defaults (see `behaviors.ts`). */

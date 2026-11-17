@@ -17,7 +17,7 @@ interface CatchTarget {
   catchable?: boolean;
 }
 
-/** Can a ball catch it? Only a living, wild NPC not marked `catchable: false`; balls pass the rest. */
+/** Can a ball catch it? Only a living, wild NPC not marked `catchable: false`. The rest still struggle, then break free. */
 export const isCatchable = ({ isPlayer, ownerId, isDead, catchable }: CatchTarget) =>
   !isPlayer && !ownerId && !isDead && catchable !== false;
 
