@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import {
   calculateNpcAggroRange,
   canTalkToNpc,
-  NPC_ENGAGED_BUBBLE,
   NPC_TALK_LATENCY_TOLERANCE,
   NPC_TALK_RANGE,
   checkInRange,
@@ -223,7 +222,7 @@ describe("deciding what an npc does", () => {
     const decision = decideNpcAction(input({ npc: { behaviors: {} } }), always);
     expect(decision.movement).toMatchObject({ type: "wander" });
     expect(decision.action).toEqual({ type: "idle" });
-    expect(decision.bubbleMessage).toBeNull();
+    expect(decision.lockedPlayerId).toBeFalsy();
   });
 
   it("aggroes on a nearby player, chases and breaks their stealth", () => {
@@ -234,7 +233,6 @@ describe("deciding what an npc does", () => {
     expect(decision.npcAttackReady).toBe(false);
     expect(decision.movement).toEqual({ type: "chase", pathed: false });
     expect(decision.expireStealthOfPlayerId).toBe("p1");
-    expect(decision.bubbleMessage).toBe(NPC_ENGAGED_BUBBLE);
   });
 
   it("paths when next to a collision tile", () => {

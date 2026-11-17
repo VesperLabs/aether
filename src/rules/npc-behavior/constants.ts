@@ -48,8 +48,6 @@ export const NPC_BEHAVIOR_STICKINESS = 0.04;
 export const NPC_HOME_RANGE = 4;
 /** How long an NPC stands still after a lunge: the window to hit back. */
 export const NPC_LUNGE_RECOVERY_MS = 450;
-/** Bubble over an NPC fighting someone. Clients draw it as a ring that fills while it winds up. */
-export const NPC_ENGAGED_BUBBLE = "!";
 /** Extra windup on an NPC lunge, on top of the warning and its attack delay: the dash is fast, so the tell is long. */
 export const NPC_LUNGE_EXTRA_WINDUP = 250;
 

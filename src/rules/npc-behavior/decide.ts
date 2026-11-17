@@ -14,7 +14,6 @@ import {
   NPC_EXTRA_CAST_TIME,
   NPC_HOME_RANGE,
   NPC_LEASH_RANGE,
-  NPC_ENGAGED_BUBBLE,
   NPC_LUNGE_EXTRA_WINDUP,
   NPC_WARNING_DELAY,
 } from "./constants";
@@ -144,8 +143,6 @@ export interface NpcDecision {
   resetAttackTimer: boolean;
   npcAttackReady: boolean | undefined;
   isAttacking: boolean | undefined;
-  /** `undefined` leaves the bubble as it is. */
-  bubbleMessage: string | null | undefined;
   /** Chasing a player breaks their stealth. */
   expireStealthOfPlayerId?: string;
   /** The player the NPC acted against this tick, as resolved before it moved. */
@@ -181,7 +178,6 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
   let isAttacking = state.isAttacking;
   let lockedPlayerId = state.lockedPlayerId;
   let resetAttackTimer = false;
-  let bubbleMessage: string | null | undefined;
   let expireStealthOfPlayerId: string | undefined;
   let behaviorId: NpcBehaviorId = state.behavior ?? "wander";
   let startReset = false;
@@ -195,7 +191,6 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
     resetAttackTimer,
     npcAttackReady,
     isAttacking,
-    bubbleMessage,
     expireStealthOfPlayerId,
     targetPlayerId: targetPlayer?.socketId,
     movement,
@@ -277,7 +272,7 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
   const hasClearShot = !!targetPlayer && (input.hasClearShot?.(targetPlayer) ?? true);
   // Close enough to swing: the weapon beats its spells
   const inMeleeReach = !weaponBand && isInMeleeReach(npc, targetPlayer, attackRange);
-  // Still decided while lunging, so aggro and bubbles keep up; the lunge just overrides the move
+  // Still decided while lunging, so aggro keeps up; the lunge just overrides the move
   const planned = decideMovement();
   // Lost its foe mid-fight (outran, hid, killed): walk home and heal, as after a leash. Not a
   // companion, nor one that already retreated: it stays hurt rather than heal off a getaway.
@@ -389,11 +384,9 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
 
     if (behavior.engaged && targetPlayer) {
       expireStealthOfPlayerId = targetPlayer.socketId;
-      bubbleMessage = NPC_ENGAGED_BUBBLE;
     } else {
       // Not fighting: let go of the target
       setLockedPlayerId(null);
-      bubbleMessage = null;
     }
     return behavior.move(ctx, rng);
   }

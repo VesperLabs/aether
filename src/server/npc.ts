@@ -164,7 +164,6 @@ export class Npc extends Character {
     this.threat = {};
     this.state.isDead = true;
     this.state.deadTime = this.world.now();
-    this.state.bubbleMessage = null;
     this.setLockedPlayerId(null);
     this.vx = 0;
     this.vy = 0;
@@ -212,8 +211,6 @@ export class Npc extends Character {
     if (!room || !isRoomWatched(this.world, room.name)) {
       this.setLockedPlayerId(null);
       this.threat = {};
-      /* Out of the fight too, so no one comes back to its engaged pie */
-      this.state.bubbleMessage = null;
       this.vx = 0;
       this.vy = 0;
       this.stats.hp = this.stats.maxHp; //heal to full
@@ -254,7 +251,6 @@ export class Npc extends Character {
     if (state.lockedPlayerId !== decision.lockedPlayerId) {
       state.lockedPlayerId = decision.lockedPlayerId;
     }
-    if (decision.bubbleMessage !== undefined) state.bubbleMessage = decision.bubbleMessage;
 
     const targetPlayer = findCharacter(world, decision.targetPlayerId);
     if (decision.expireStealthOfPlayerId) {
