@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.50.0](https://github.com/VesperLabs/aether/compare/v0.49.0...v0.50.0) (2026-11-17)
+
+
+### Features
+
+* pet slots in the Pets & Abilities menu, and pets split from followers ([#379](https://github.com/VesperLabs/aether/issues/379)) ([2c61047](https://github.com/VesperLabs/aether/commit/2c610470124136e234c17b777c3dfd6df4ef63e8))
+
 ## [0.49.0](https://github.com/VesperLabs/aether/compare/v0.48.1...v0.49.0) (2026-11-17)
 
 
