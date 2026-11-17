@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.48.0](https://github.com/VesperLabs/aether/compare/v0.47.0...v0.48.0) (2026-11-17)
+
+
+### Features
+
+* balls fly as spells, held in hand, and only catch wild NPCs ([#373](https://github.com/VesperLabs/aether/issues/373)) ([099ad0b](https://github.com/VesperLabs/aether/commit/099ad0ba455f9a0b54d00d85609e6fb669c9082e))
+
 ## [0.47.0](https://github.com/VesperLabs/aether/compare/v0.46.0...v0.47.0) (2026-11-17)
 
 
