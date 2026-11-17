@@ -227,7 +227,7 @@ export const MenuHud = () => {
     remoteVideoStreams,
     isConnected,
   } = useAppContext();
-  const { companions, foes, hovered } = useNpcPlates();
+  const { owned, foes, hovered } = useNpcPlates();
   const [nearbySocketIds, setNearbySocketIds] = useState<string[]>([]);
   const [exitingNearbyIds, setExitingNearbyIds] = useState<Set<string>>(() => new Set());
   const nearbyExitTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
@@ -319,7 +319,7 @@ export const MenuHud = () => {
         isBig={true}
         portraitVideoStream={heroPortraitVideo}
       />
-      {/* Your party, your companions, players near you, foes fighting you, then the NPC under
+      {/* Your party, your pets and followers, players near you, foes fighting you, then the NPC under
           the cursor */}
       <Grid sx={PLATE_GRID}>
         {hasParty &&
@@ -334,7 +334,7 @@ export const MenuHud = () => {
               />
             );
           })}
-        {companions.map((npc) => (
+        {owned.map((npc) => (
           <PlayerHud player={npc as Partial<HudCharacter>} isBig={false} key={npc.id} />
         ))}
         {nearbyNonPartyIds.map((socketId) => {

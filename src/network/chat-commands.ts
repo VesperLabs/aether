@@ -97,14 +97,15 @@ const SEASON_OPTIONS = [
 const RARITY_OPTIONS = ITEM_RARITIES.map((value) => ({ value, rarity: value }));
 
 const NPC_ACTION_OPTIONS = [
-  { value: "spawn", hint: "add any actor next to you; add pet to make them yours" },
-  { value: "tame", hint: "catch the nearest wild NPC as your companion" },
-  { value: "list", hint: "what you spawned and your companions, and what they are doing" },
-  { value: "clear", hint: "remove what you spawned and your temporary pets" },
+  { value: "spawn", hint: "add any actor next to you; add follower to have them follow you" },
+  { value: "follow", hint: "the nearest wild NPC follows you, for now" },
+  { value: "catch", hint: "catch the nearest wild NPC as a pet, as a ball would" },
+  { value: "list", hint: "what you spawned, your pets and followers, and what they're doing" },
+  { value: "clear", hint: "remove what you spawned and your followers (never pets)" },
 ];
 const NPC_ACTION: ChatArg = { name: "action", kind: "text" };
-const COMPANION_ACTION_OPTIONS = [
-  { value: "out", hint: "bring out the companion you caught" },
+const PET_ACTION_OPTIONS = [
+  { value: "out", hint: "bring out a pet you caught" },
   { value: "away", hint: "put it away; it stays yours" },
 ];
 /** Gear with 0 to 4 blank mod slots, each colored like the rarity it makes. */
@@ -121,7 +122,8 @@ const optional = (arg: ChatArg): ChatArg => ({ ...arg, optional: true });
 /** `/npc` actions that take an actor id, and whether it is required. */
 const NPC_ACTOR_ARG: Record<string, ChatArg> = {
   spawn: { name: "actor", kind: "mob" },
-  tame: optional({ name: "actor", kind: "mob" }),
+  follow: optional({ name: "actor", kind: "mob" }),
+  catch: optional({ name: "actor", kind: "mob" }),
 };
 
 /** Gear that takes mod slots takes how many, and only stackables take an amount. */
@@ -307,7 +309,7 @@ export const CHAT_COMMANDS: readonly ChatCommand[] = [
       if (!actor) return [NPC_ACTION];
       return args[0] === "spawn" ? [NPC_ACTION, actor, ...NPC_SPAWN_ARGS] : [NPC_ACTION, actor];
     },
-    description: "Spawn, tame, list and clear NPCs",
+    description: "Spawn NPCs, make them follow you or catch them as pets, list and clear them",
     cheat: true,
     complete: (index, args) => {
       if (index === 0) return NPC_ACTION_OPTIONS;
@@ -316,11 +318,11 @@ export const CHAT_COMMANDS: readonly ChatCommand[] = [
     },
   },
   {
-    name: "companion",
+    name: "pet",
     args: [NPC_ACTION],
-    description: "Bring out or put away the companion you caught",
+    description: "Bring out or put away the pet you caught",
     cheat: true,
-    complete: (index) => (index === 0 ? COMPANION_ACTION_OPTIONS : []),
+    complete: (index) => (index === 0 ? PET_ACTION_OPTIONS : []),
   },
 ];
 

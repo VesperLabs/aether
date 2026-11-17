@@ -45,7 +45,7 @@ export function applyHit(
       stats.hp = 0;
       try {
         if (hit?.isCaught) {
-          /* Its ball plays the catch; a tame with no ball just beams */
+          /* Its ball plays the catch; an admin's follow, with no ball, just beams */
           if (!player.captureBall?.catchInto()) playCaptureBeam(player);
         } else {
           playDeathDissolve(player);

@@ -1,7 +1,7 @@
 import type { Player } from "@/client/views/player";
 
 /**
- * The NPCs the HUD shows plates for beside the hero's: the hero's companions, the ones fighting
+ * The NPCs the HUD shows plates for beside the hero's: the hero's pets and followers, the ones fighting
  * the hero, and the one under the cursor. Sent on every proximity check while there are any, so their bars and buffs
  * stay live, then once more, empty, when there are none.
  */
@@ -14,11 +14,11 @@ export type PlateNpc = Pick<
 >;
 
 export interface NpcPlates {
-  /** The hero's own companions. */
-  companions: PlateNpc[];
+  /** The hero's own NPCs: pets first, then followers. */
+  owned: PlateNpc[];
   /** Fighting the hero (locked on to them), nearest first. */
   foes: PlateNpc[];
-  /** Under the cursor, unless it already has a plate as a companion or foe. */
+  /** Under the cursor, unless it already has a plate as theirs or a foe. */
   hovered: PlateNpc | null;
 }
 
@@ -39,14 +39,14 @@ const plateOf = (npc: Player): PlateNpc => ({
 });
 
 /** Tells the HUD which NPCs get plates. Call on every proximity check. */
-export function reportNpcPlates(companions: Player[], foes: Player[], hovered: Player | undefined) {
+export function reportNpcPlates(owned: Player[], foes: Player[], hovered: Player | undefined) {
   const shown = foes.slice(0, MAX_FOES);
-  const isShowing = companions.length > 0 || shown.length > 0 || !!hovered;
+  const isShowing = owned.length > 0 || shown.length > 0 || !!hovered;
   if (!isShowing && !wasShowing) return;
   wasShowing = isShowing;
-  const listed = [...companions, ...shown];
+  const listed = [...owned, ...shown];
   const detail: NpcPlates = {
-    companions: companions.map(plateOf),
+    owned: owned.map(plateOf),
     foes: shown.map(plateOf),
     hovered: hovered && !listed.includes(hovered) ? plateOf(hovered) : null,
   };

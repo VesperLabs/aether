@@ -10,7 +10,7 @@ interface Sided {
   state?: { ownerId?: string | null } | null;
 }
 
-/** Are two live characters on the same side? Players in one party are, and so are their companions. */
+/** Are two live characters on the same side? Players in one party are, and so are the NPCs they own. */
 export function isAlly(world: ServerWorld, a: Sided, b: Sided): boolean {
   return areAllies(toSide(a), toSide(b), (playerA, playerB) =>
     isPartyMember(world.partyState, world.players[playerA]?.partyId, playerB),

@@ -6,7 +6,7 @@ import { decodeWireDirection } from "@/network/sync";
 import { getRoomState } from "@/server/net/room-sync";
 import type { ParsedCommand } from "@/network";
 import { isThrowable } from "@/rules/capture";
-import { bringCompanions } from "../../companions";
+import { bringOwned } from "../../owned-npcs";
 import { addPlayerToRoom, removePlayerFromRoom } from "../../player-room";
 import { legacyUpdateMemberRoom } from "../../party-adapter";
 import type { CommandContext } from "@/server/net/command-context";
@@ -210,7 +210,7 @@ export function teleportPlayer(
   player.x = x;
   player.y = y;
   forgetPoses(world, socketId);
-  bringCompanions(world, player);
+  bringOwned(world, player);
 
   /* Save the new room */
   world.db.updateUserMapDetails(player);
@@ -250,7 +250,7 @@ export function respawn(ctx: CommandContext) {
   player.x = newX;
   player.y = newY;
   forgetPoses(world, socketId);
-  bringCompanions(world, player);
+  bringOwned(world, player);
 
   /* Save the new room */
   world.db.updateUserMapDetails(player);

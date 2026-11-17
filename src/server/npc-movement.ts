@@ -179,7 +179,7 @@ function walkTo(npc: Npc, coords: Point, speedRatio = 1, arriving = false) {
   steer(npc, arriving ? arrive(npc, coords, speed) : seek(npc, coords, speed));
 }
 
-/** How fast it walks: a companion keeps pace with its owner, so it never falls behind. */
+/** How fast it walks: an owned NPC keeps pace with its owner, so it never falls behind. */
 function walkSpeedOf(npc: Npc) {
   return npc.owner()?.stats.walkSpeed ?? npc.stats.walkSpeed;
 }

@@ -1,6 +1,6 @@
 import type { Item } from "@/content";
 import type { CharacterState } from "@/rules/character";
-import type { SavedCompanion } from "@/rules/capture";
+import type { PetSlots } from "@/rules/capture";
 import type { createBaseUser } from "./base-user";
 
 /** A user as stored in the `users` collection. */
@@ -13,8 +13,8 @@ export type UserDocument = ReturnType<typeof createBaseUser> & {
   activeItemSlots?: string[];
   updatedAt?: Date;
   state?: CharacterState;
-  /** Companions the player keeps: the actor each is a copy of. */
-  companions?: SavedCompanion[];
+  /** The pets the player keeps, by slot: the actor each is a copy of. */
+  pets?: PetSlots;
 };
 
 /** The parts of a player the database reads when saving. */
@@ -33,7 +33,7 @@ interface SavedPlayer {
   baseStats?: unknown;
   abilities?: Record<string, Item | null | undefined>;
   activeItemSlots?: unknown;
-  companions?: SavedCompanion[];
+  pets?: PetSlots;
 }
 
 /** Where a player is, for saving their position. */

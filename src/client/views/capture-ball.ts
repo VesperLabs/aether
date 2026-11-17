@@ -92,7 +92,7 @@ export class CaptureBall extends Phaser.GameObjects.Container {
 
   /**
    * It was caught: the creature goes into the ball in a burst of light, and the ball goes with the
-   * flash. Returns false if no ball was on it, for a tame that just beams.
+   * flash. Returns false if no ball was on it, for an admin's follow that just beams.
    */
   catchInto() {
     if (!this.isShown && !this.popTimer) return false;

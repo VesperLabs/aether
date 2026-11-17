@@ -41,9 +41,15 @@ export const MenuAbilities = memo(
     setIsOpen,
     events,
     slotBadge,
-  }: CharacterMenuProps & { slotBadge?: (slotKey: string) => ReactNode }) => (
+    top,
+  }: CharacterMenuProps & {
+    slotBadge?: (slotKey: string) => ReactNode;
+    /** Above the spells: the app's pet slots. */
+    top?: ReactNode;
+  }) => (
     <SlotMenu
-      title="Abilities"
+      title="Pets & Abilities"
+      top={top}
       icon="./assets/icons/book.png"
       isOpen={isOpen}
       onClose={() => setIsOpen(false)}
@@ -59,7 +65,13 @@ export const MenuAbilities = memo(
       }))}
     />
   ),
-  arePropsEqualWithKeys(["isOpen", "player.abilities", "player.activeItemSlots", "player.stats"]),
+  arePropsEqualWithKeys([
+    "isOpen",
+    "player.abilities",
+    "player.activeItemSlots",
+    "player.stats",
+    "player.pets",
+  ]),
 );
 
 const GoldDisplay = ({ gold, sx }: { gold?: number; sx?: ThemeUIStyleObject }) => (

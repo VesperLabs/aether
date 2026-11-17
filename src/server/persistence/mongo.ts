@@ -188,7 +188,7 @@ const getDatabaseApi = (db: Db, dice: Dice): Database => ({
             //roomName: player?.room?.name,
             abilities: toSavedSlots(player?.abilities),
             activeItemSlots: player?.activeItemSlots,
-            companions: player?.companions ?? [],
+            pets: player?.pets,
             updatedAt,
           },
         },

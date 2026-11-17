@@ -146,7 +146,7 @@ export class Npc extends Character {
   threatTargetId() {
     return pickThreatTarget(this.threat, this.state.lockedPlayerId);
   }
-  /** The player this companion belongs to, if it has one and they are still here. */
+  /** The player this NPC belongs to, if it has one and they are still here. */
   owner(): Player | undefined {
     const { ownerId } = this.state;
     return ownerId ? this.world.players[ownerId] : undefined;

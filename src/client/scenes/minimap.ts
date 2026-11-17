@@ -24,7 +24,7 @@ const KEEPER_COLOR = 0x22c55e;
 const PASSIVE_COLOR = 0xf59e0b;
 const AGGRESSIVE_COLOR = 0xef4444;
 
-/** Companions party blue, talkers green, others amber when they only fight back and red when they attack on sight. */
+/** Pets and followers party blue, talkers green, others amber when they only fight back and red when they attack on sight. */
 const npcColor = (npc: Player) => {
   if (npc.state?.ownerId) return PARTY_COLOR;
   if (npc.talks) return KEEPER_COLOR;

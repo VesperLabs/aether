@@ -53,8 +53,8 @@ const toPlayerView = (target: ServerCharacter | undefined): NpcPlayerView | null
     : null;
 
 /**
- * The foe nearest an NPC that it would attack on sight. Wild NPCs go for players and companions;
- * companions never pick fights, they only answer them (through threat).
+ * The foe nearest an NPC that it would attack on sight. Wild NPCs go for players and owned NPCs;
+ * owned NPCs never pick fights, they only answer them (through threat).
  */
 function nearestFoe(npc: Npc): ServerCharacter | undefined {
   if (npc.state.ownerId) return;

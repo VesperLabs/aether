@@ -82,6 +82,16 @@ export function playDeathDissolve(player: Player) {
 }
 
 /**
+ * A character leaving the world (a pet put away, a spawn cleared) dissolves away as a death
+ * does, without the death's white flash. Call before it's destroyed. Visual only.
+ */
+export function playLeaveDissolve(player: Player) {
+  if (!player.scene || player.state?.isDead) return;
+  fadeShadow(player, DISSOLVE_MS);
+  dissolveSnapshot(snapshotBody(player));
+}
+
+/**
  * The body painted solid white, over its snapshot. The layers themselves are tinted (as a hit flash
  * does) and drawn in, rather than tinting the snapshot, which didn't show.
  */

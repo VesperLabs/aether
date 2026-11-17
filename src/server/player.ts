@@ -45,7 +45,7 @@ import {
   withoutSlot,
 } from "@/rules/inventory";
 
-import type { SavedCompanion } from "@/rules/capture";
+import { readPetSlots, type PetSlots } from "@/rules/capture";
 /** What a player is created from: the stored user plus the connection it logged in on. */
 export type PlayerArgs = CharacterArgs & {
   email?: string;
@@ -73,7 +73,7 @@ export class Player extends ServerCharacter {
   public isDemoAccount?: boolean;
   public spawn?: SpawnPoint;
   public userSettings?: UserSettings;
-  public companions: SavedCompanion[]; // saved to the account (`kept-companions`)
+  public pets: PetSlots; // caught and saved to the account (`pets`)
   public partyId?: string | null;
   /** Who last whispered this player, for `/reply`. */
   public lastWhisperFrom?: string;
@@ -84,7 +84,7 @@ export class Player extends ServerCharacter {
     this.userSettings = args?.userSettings;
     this.kind = "player";
     this.spawn = args?.spawn;
-    this.companions = args?.companions ?? [];
+    this.pets = readPetSlots(args?.pets);
     this.calculateStats(true);
   }
   setDead() {
@@ -301,7 +301,7 @@ export class Player extends ServerCharacter {
 
     for (const npc of npcs) {
       if (!ids.includes(npc.id)) continue;
-      /* Companions are on their owner's side, so they take what a party member would. */
+      /* Owned NPCs are on their owner's side, so they take what a party member would. */
       const isOnSide = isAlly(world, this, npc);
       if (
         isOnSide
@@ -350,7 +350,7 @@ export class Player extends ServerCharacter {
   }
   /**
    * Awards the kills to this player and the party members in the room with them: exp, loot and quest
-   * progress (through `mobKilled`). Adds the exp hits to `hitList`. Companions' kills come here too.
+   * progress (through `mobKilled`). Adds the exp hits to `hitList`. Owned NPCs' kills come here too.
    */
   creditKills(npcKills: Npc[], hitList: Hit[]) {
     const { world, roomName } = this;

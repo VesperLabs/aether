@@ -22,6 +22,8 @@ interface SlotMenuProps extends Pick<CharacterMenuProps, "player" | "events"> {
   slots: MenuSlot[];
   sx?: ThemeUIStyleObject;
   children?: ReactNode;
+  /** Above the slots, under the header (the abilities' pets). */
+  top?: ReactNode;
   /** Drawn over each slot's corner (an ability's key), by the app that knows it. */
   slotBadge?: (slotKey: string) => ReactNode;
 }
@@ -39,12 +41,14 @@ export const SlotMenu = ({
   events,
   sx,
   children,
+  top,
   slotBadge,
 }: SlotMenuProps) => (
   <Menu sx={{ display: isOpen ? "flex" : "none", ...sx }}>
     <MenuHeader icon={icon} onClick={onClose}>
       {title}
     </MenuHeader>
+    {top}
     <Flex sx={{ gap: 2, flexWrap: "wrap", justifyContent: "end", maxWidth: MENU_MAX_WIDTH }}>
       {slots.map(({ slotKey, item, icon }) => {
         const slot = (

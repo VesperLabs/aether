@@ -49,7 +49,7 @@ describe("losing its foe", () => {
     expect(decision.startReset).toBeUndefined();
   });
 
-  it("a companion stays with its owner instead", () => {
+  it("an owned NPC stays with its owner instead", () => {
     const decision = decideNpcAction(losingFoe({ ownerId: "owner" }), () => 0.99);
     expect(decision.startReset).toBeUndefined();
   });

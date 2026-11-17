@@ -1,3 +1,12 @@
+import { PET_SLOTS } from "@/rules/capture";
+
+/** A pet in a slot, or nothing there. */
+const savedPetSchema = {
+  bsonType: ["object", "null"],
+  required: ["id", "name"],
+  properties: { id: { bsonType: "string" }, name: { bsonType: "string" } },
+};
+
 const hairSchema = {
   bsonType: "object",
   required: ["tint", "texture"],
@@ -159,18 +168,10 @@ const userSchema = {
       bsonType: "array",
       description: "must be an array",
     },
-    companions: {
-      bsonType: "array",
-      description: "companions the player keeps, each the actor it is a copy of",
-      items: {
-        bsonType: "object",
-        required: ["id", "name"],
-        properties: {
-          id: { bsonType: "string" },
-          name: { bsonType: "string" },
-          isAway: { bsonType: "bool" },
-        },
-      },
+    pets: {
+      bsonType: "object",
+      description: "pets the player keeps, by slot, each the actor it is a copy of",
+      properties: Object.fromEntries(PET_SLOTS.map((slot) => [slot, savedPetSchema])),
     },
     createdAt: {
       bsonType: "date",

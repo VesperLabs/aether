@@ -13,8 +13,8 @@ import { getBuffRoomState } from "@/server/net/room-sync";
 import { updateRoomLoot } from "./loot-adapter";
 import { expireSpells } from "./spell-adapter";
 import { countRoomClients, getRoomIndex, indexRooms } from "./room-index";
-import { keepCompanionsNear } from "./companions";
-import { loseDeadCompanions } from "./kept-companions";
+import { keepOwnedNear } from "./owned-npcs";
+import { loseDeadPets } from "./pets";
 import { endTickTimer, startTickTimer } from "./tick-health";
 import { announceSeason } from "./season-announce";
 
@@ -120,8 +120,8 @@ export const serverSystems: Array<System<ServerWorld>> = [
   startTickTimer,
   moveNpcs,
   moveSpells,
-  keepCompanionsNear,
-  loseDeadCompanions,
+  keepOwnedNear,
+  loseDeadPets,
   indexRooms,
   separateNpcs,
   updateEntities,

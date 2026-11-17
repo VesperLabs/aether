@@ -15,7 +15,7 @@ import { subscribeKnockbackMessages, subscribePoseForgetting } from "./net/handl
 import { subscribeDebugMessages } from "./debug-messages";
 import { Npc } from "./npc";
 import type { NpcDefinition } from "./npc-build";
-import { subscribeCompanions, threatOfHit } from "./companions";
+import { subscribeOwnedNpcs, threatOfHit } from "./owned-npcs";
 import { DEFAULT_SERVER_FPS, createNetIds, type GameIo } from "@/network";
 import type { Database } from "./persistence/database";
 
@@ -88,7 +88,7 @@ export function spawnNpc(
     startingCoords: { x: npc?.x, y: npc?.y },
   }) as unknown as Npc;
   world.npcs[id].nid = world.netIds.take(id);
-  /* Resting from the start, so a room sent before its first tick (a companion out as its owner
+  /* Resting from the start, so a room sent before its first tick (a pet out as its owner
    * logs in) shows it resting, not a buff update the client may not be ready for */
   world.npcs[id].checkIsResting();
   return world.npcs[id];
@@ -132,7 +132,7 @@ export function createServerWorld({
   subscribeThreat(world.events, (victimId, attackerId, amount) => {
     world.npcs[victimId]?.addThreat(attackerId, threatOfHit(world, attackerId, amount));
   });
-  subscribeCompanions(world.events, world);
+  subscribeOwnedNpcs(world.events, world);
   subscribeStats(world.events, (characterId, amount) => {
     world.players[characterId]?.assignExp(amount);
   });
@@ -149,7 +149,7 @@ export function createServerWorld({
         npc && {
           drops: npc.drops,
           noWorldDrops: npc.state?.noWorldDrops,
-          isCompanion: !!npc.state?.ownerId,
+          isOwned: !!npc.state?.ownerId,
         }
       );
     },

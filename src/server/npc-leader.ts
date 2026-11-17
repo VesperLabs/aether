@@ -4,7 +4,7 @@ import type { Npc } from "./npc";
 import { getRoomIndex } from "./room-index";
 
 /*
- * Who an NPC follows, one rule for pets and packs: a companion follows its owner
+ * Who an NPC follows, one rule for owned NPCs and packs: an owned NPC follows its owner
  * (`state.ownerId`); a pack follower (a `leader` map property naming an actor) follows the
  * nearest living one of those it can walk to, and sticks with it until it dies or leaves.
  */

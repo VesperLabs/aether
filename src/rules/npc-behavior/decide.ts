@@ -76,7 +76,7 @@ export interface NpcBehaviorInput {
       nextStrafeAt?: number;
       /** When it began its one retreat this fight, if it has. */
       retreatAt?: number;
-      /** A companion's owner: it never walks home to reset. */
+      /** An owned NPC's owner: it never walks home to reset. */
       ownerId?: string | null;
       /** Leashed and walking home; players are ignored until it gets there. */
       isResetting?: boolean;
@@ -275,7 +275,7 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
   // Still decided while lunging, so aggro keeps up; the lunge just overrides the move
   const planned = decideMovement();
   // Lost its foe mid-fight (outran, hid, killed): walk home and heal, as after a leash. Not a
-  // companion, nor one that already retreated: it stays hurt rather than heal off a getaway.
+  // pet or follower, nor one that already retreated: it stays hurt rather than heal off a getaway.
   const lostFoe = !!state.lockedPlayerId && !lockedPlayerId && !isResetting();
   if (lostFoe && !state.ownerId && state.retreatAt === undefined) startReset = true;
   // Winding up plants its feet; giving up the fight calls it off (an untargeted buff has no fight)
