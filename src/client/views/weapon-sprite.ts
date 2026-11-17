@@ -144,9 +144,9 @@ export class WeaponSprite extends Phaser.GameObjects.Container {
     this.mainSprite.setFlipX(flip);
     this.borderSprites.forEach((borderSprite) => borderSprite.setFlipX(flip));
   }
-  setTexture(texture: string) {
-    this.mainSprite.setTexture(texture);
-    this.borderSprites.forEach((borderSprite) => borderSprite.setTexture(texture));
+  setTexture(texture: string, frame?: string | number) {
+    this.mainSprite.setTexture(texture, frame);
+    this.borderSprites.forEach((borderSprite) => borderSprite.setTexture(texture, frame));
   }
   setFlipY(flip: boolean) {
     this.mainSprite.setFlipY(flip);

@@ -28,6 +28,7 @@ import type { Bubble } from "./bubble";
 import type { WindupPie } from "./windup-pie";
 import type { Bar } from "./bar";
 import type { BuffRack } from "./buff-rack";
+import type { CaptureBall } from "./capture-ball";
 import type { StunStars } from "./stun-stars";
 import type { WeaponSprite } from "./weapon-sprite";
 import type { Crosshair } from "@/client/input/crosshair";
@@ -76,6 +77,7 @@ export class Player extends Character {
   declare userName: Phaser.GameObjects.BitmapText;
   declare buffRack: BuffRack;
   declare stunStars: StunStars;
+  declare captureBall: CaptureBall;
   declare corpse: Sprite;
   /** The body, gear, hands, name and bars: everything that moves together when the body is nudged. */
   declare rig: Phaser.GameObjects.Container;
@@ -142,6 +144,7 @@ export class Player extends Character {
       patch("lastAngle");
       patch("isAiming");
       patch("isHoldingAttack");
+      patch("aimingBall");
     }
   }
   updateData(data: FullCharacterWire) {

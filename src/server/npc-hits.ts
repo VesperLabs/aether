@@ -1,4 +1,4 @@
-import type { AbilitySlot } from "@/rules/spells";
+import type { AbilityDetails, AbilitySlot } from "@/rules/spells";
 import { canHitPlayer } from "@/rules/spells";
 import type { Hand } from "@/rules/combat";
 import { entitiesInRoom } from "@/rules/world";
@@ -10,10 +10,16 @@ import type { Npc } from "./npc";
  * Damages (or, for holy, heals) everyone an NPC's attack or spell hit: foes need "enemy", its own side
  * "ally", itself "self". A companion's kills count as its owner's: exp, loot and quest progress.
  */
-export function applyNpcHits(npc: Npc, ids: string[], abilitySlot?: AbilitySlot, hand?: Hand) {
+export function applyNpcHits(
+  npc: Npc,
+  ids: string[],
+  abilitySlot?: AbilitySlot,
+  hand?: Hand,
+  ability?: AbilityDetails,
+) {
   const { world, room } = npc;
   const roomName = room.name;
-  const allowedTargets = npc.getAbilityDetails(abilitySlot).spell.targets;
+  const allowedTargets = (ability ?? npc.getAbilityDetails(abilitySlot)).spell.targets;
   const victims = [
     ...entitiesInRoom(world.players, roomName),
     ...entitiesInRoom(world.npcs, roomName),
@@ -26,7 +32,7 @@ export function applyNpcHits(npc: Npc, ids: string[], abilitySlot?: AbilitySlot,
     const isSelf = victim.id === npc.id;
     const isPartyMember = !isSelf && isAlly(world, npc, victim);
     if (!canHitPlayer({ allowedTargets, isSelf, isPartyMember })) continue;
-    const newHits = npc.calculateDamage(victim, abilitySlot, hand);
+    const newHits = npc.calculateDamage(victim, abilitySlot, hand, ability);
     if (victim.kind === "npc" && newHits.some((hit) => hit.type === "death")) {
       kills.push(victim as Npc);
     }

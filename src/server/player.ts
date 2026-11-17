@@ -1,5 +1,5 @@
 import { broadcastLeveled } from "@/server/net/room-broadcast";
-import type { AbilitySlot } from "@/rules/spells";
+import type { AbilityDetails, AbilitySlot } from "@/rules/spells";
 import type { Hand } from "@/rules/combat";
 import type { ServerWorld } from "./server-world";
 import { ServerCharacter, type CharacterArgs } from "./character";
@@ -101,8 +101,6 @@ export class Player extends ServerCharacter {
   }
   /** The timed spell being cast, if any. */
   pendingCast?: PlayerCast;
-  /** When this player last threw a ball, for the throw cooldown. */
-  lastThrowAt?: number;
   /** Swings if the attack is ready and affordable. Returns whether it swung. */
   doAttack({ count, direction, castAngle, abilitySlot }: PlayerAttackRequest): boolean {
     const { room } = this ?? {};
@@ -281,13 +279,18 @@ export class Player extends ServerCharacter {
     this.checkBubbleMessage();
   }
 
-  doHit(ids: Array<string>, abilitySlot?: AbilitySlot, hand?: Hand): void {
+  doHit(
+    ids: Array<string>,
+    abilitySlot?: AbilitySlot,
+    hand?: Hand,
+    ability?: AbilityDetails,
+  ): void {
     const { world } = this ?? {};
     if (!this || this?.state?.isDead) return;
     const { roomName } = this;
     if (!roomName) return;
 
-    const allowedTargets = this.getAbilityDetails(abilitySlot).spell.targets;
+    const allowedTargets = (ability ?? this.getAbilityDetails(abilitySlot)).spell.targets;
 
     const hitList: Hit[] = [];
     const npcKills: Npc[] = [];
@@ -307,7 +310,7 @@ export class Player extends ServerCharacter {
         continue;
       }
 
-      const newHits = this.calculateDamage(npc, abilitySlot, hand);
+      const newHits = this.calculateDamage(npc, abilitySlot, hand, ability);
 
       if (newHits.find((hit) => hit.type === "death")) {
         npcKills.push(npc);
@@ -334,7 +337,7 @@ export class Player extends ServerCharacter {
         continue;
       }
 
-      const newHits = this.calculateDamage(player, abilitySlot, hand);
+      const newHits = this.calculateDamage(player, abilitySlot, hand, ability);
       if (newHits.length > 0) {
         hitList.push(...newHits);
       }

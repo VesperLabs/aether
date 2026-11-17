@@ -31,6 +31,16 @@ interface CharacterDamagedEvent {
   amount: number;
 }
 
+/** A buff ran out on its own (not dispelled, not on death). Its `onExpire` hook runs from this. */
+interface BuffExpiredEvent {
+  name: string;
+  /** Who wore it: a player's socket id or an NPC's id. */
+  wearerId: string;
+  /** Who put it on them, filed the same way, if anyone. */
+  casterId?: string;
+  level: number;
+}
+
 /** An NPC swung at its target. `count` is which hand (1 or 2). */
 interface NpcAttackedEvent {
   npcId: string;
@@ -98,5 +108,6 @@ export interface GameEvents {
   npcWindupCancelled: NpcWindupCancelledEvent;
   npcRespawned: NpcRespawnedEvent;
   spellHitShapes: SpellHitShapesEvent;
+  buffExpired: BuffExpiredEvent;
   playerKnockedBack: PlayerKnockedBackEvent;
 }

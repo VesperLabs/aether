@@ -1,17 +1,17 @@
 import { getAbilityCosts, hasStaminaFor } from "@/rules/combat";
-import { canThrow, getThrowFlight, isThrowable } from "@/rules/capture";
+import { isThrowable } from "@/rules/capture";
 import { takeOneItemCommand } from "@/rules/inventory";
-import { entitiesInRoom } from "@/rules/world";
+import { checkCastReady, getSpell } from "@/rules/spells";
 import type { ParsedCommand } from "@/network";
-import { throwBall } from "@/server/balls";
-import { canTame } from "@/server/companions";
 import type { CommandContext } from "@/server/net/command-context";
 import { broadcastPlayerUpdate } from "@/server/net/room-broadcast";
 import { isInRoom } from "@/server/player-room";
+import { createSpell } from "@/server/spell-adapter";
 
 /**
- * Throws a ball along `angle`: it uses up one ball and some stamina, and the ball goes into the
- * world (`balls.ts`), which decides the catch once it lands and the creature has struggled.
+ * Throws an item (a pokeball) along `angle`. Throwing is the item's own: it uses one up and some
+ * stamina. Once thrown it is the spell of the same name, carrying the item's buffs: a ball puts
+ * `capturing` on what it hits, and that debuff decides the catch when it runs out (`server/capture`).
  */
 export function throwItem(
   ctx: CommandContext,
@@ -19,40 +19,35 @@ export function throwItem(
 ) {
   const { world, socketId } = ctx;
   const player = world.players[socketId];
-  if (!isInRoom(player) || player.state.isDead || player.hasBuff("stun")) return;
+  if (!isInRoom(player)) return;
+  /* Thrown or refused, the ball leaves the hand */
+  player.state.aimingBall = null;
+  if (player.state.isDead || player.hasBuff("stun")) return;
   const now = world.now();
-  if (!canThrow(player.lastThrowAt, now)) return;
+  const { lastCast } = player.state;
 
-  /* A ball costs the stamina on it, as a spell does */
   const ball = takeOneItemCommand(
     player,
     { location, item },
-    (it) => isThrowable(it.base) && hasStaminaFor(player.stats?.sp, getAbilityCosts(it.stats).sp),
+    (it) =>
+      isThrowable(it.base) &&
+      checkCastReady({ spellName: it.base, lastCast, castDelay: 0, now }) &&
+      hasStaminaFor(player.stats?.sp, getAbilityCosts(it.stats).sp),
   );
   if (!ball) return;
-  const spCost = getAbilityCosts(ball.stats).sp;
-  player.lastThrowAt = now;
+  const spellName = ball.base as string;
+  lastCast[spellName] = now;
   player.state.lastAngle = angle;
-  player.modifyStat("sp", -spCost);
-  world.io.to(player.roomName).emit("modifyPlayerStat", {
-    socketId,
-    type: "sp",
-    amount: -spCost,
-  });
+  player.modifyStatIfCostExists("sp", getAbilityCosts(ball.stats).sp ?? 0);
 
-  const from = { x: player.x, y: player.y + player.bodyCenterY };
-  /* Only a creature nobody owns and nobody else's ball is on can be hit */
-  const struggling = new Set(Object.values(world.balls).map((b) => b.target?.id));
-  const wild = entitiesInRoom(world.npcs, player.roomName).filter(
-    (npc) => canTame(npc) && !struggling.has(npc.id),
-  );
-  throwBall(world, {
-    room: player.room,
-    throwerId: socketId,
-    texture: ball.texture as string,
-    from,
-    flight: getThrowFlight(from, angle, wild),
+  const spell = createSpell(player.room, {
+    caster: player,
+    spellName,
+    castAngle: angle,
+    ability: { ...ball, spellName, spell: getSpell(spellName) },
   });
+  const effect = spell.toEffect(now);
+  if (effect) world.io.to(player.roomName).emit("effectStarted", effect);
   world.db.updateUser(player);
   broadcastPlayerUpdate(world, player);
 }

@@ -7,7 +7,6 @@ import { playDeathDissolve } from "./dissolve";
 import { playCaptureBeam } from "./capture-beam";
 import { playPoisonLanding } from "./poison-bubbles";
 import { playBleedLanding } from "./blood-drops";
-import { takeCaughtByBall } from "./thrown-ball";
 
 /** How long a hit paints the body solid white before the red tint, in ms. */
 const WHITE_FLASH_MS = 50;
@@ -34,10 +33,11 @@ export function applyHit(
 
   switch (type) {
     case "buff":
-      /* Stun shows as stars circling the head, poison as bubbles, bleed as blood: no landing icon */
+      /* Stun shows as stars circling the head, poison as bubbles, bleed as blood, capturing as its
+       * ball: no landing icon */
       if (hit?.buffName === "poison") playPoisonLanding(player);
       else if (hit?.buffName === "bleed") playBleedLanding(player, attacker);
-      else if (hit?.buffName !== "stun") {
+      else if (hit?.buffName !== "stun" && hit?.buffName !== "capturing") {
         scene.add.existing(new Buff(player.scene, player, hit?.buffName as string));
       }
       break;
@@ -46,7 +46,7 @@ export function applyHit(
       try {
         if (hit?.isCaught) {
           /* Its ball plays the catch; a tame with no ball just beams */
-          if (!takeCaughtByBall(player.id)) playCaptureBeam(player);
+          if (!player.captureBall?.catchInto()) playCaptureBeam(player);
         } else {
           playDeathDissolve(player);
           /* Over the dissolve, which covers anything inside the body */

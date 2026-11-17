@@ -16,12 +16,34 @@ export interface SpellDefinition {
   readonly vanishes?: boolean;
   /** NPCs cast it with their target this far away, edge to edge for bursts, else centre to centre. */
   readonly npcRange?: readonly [min: number, max: number];
+  /**
+   * Whether it goes on through everyone it hits (the default) or stops at the first one it may
+   * touch (`false`: a thrown ball), passing anyone it may not. Not tied to projectiles: an arrow
+   * or a weapon's swing could stop the same way.
+   */
+  readonly pierces?: boolean;
+  /**
+   * Banks off walls and the map's edge instead of flying through them (a thrown ball). Its range
+   * is then how far it has flown, bounces and all.
+   */
+  readonly ricochet?: Ricochet;
   /** A dash that touches no one, carrying the caster to where the target will be. */
   readonly pounces?: boolean;
   readonly description?: string;
 }
 
 type SpellTarget = "enemy" | "ally" | "self";
+
+/** How a spell banks off walls. */
+interface Ricochet {
+  /**
+   * How far past a wall's face its middle goes before it turns back, in pixels, so the bounce
+   * lands: it sinks into the wall and comes back out. 0 bounces on the face; less, short of it.
+   */
+  readonly depth: number;
+  /** The share of its speed into a wall it keeps coming off it, 0 to 1. Default 1. */
+  readonly bounciness?: number;
+}
 
 /** How a spell reaches its victims. Sizes are radii in pixels, times in ms. */
 type Delivery = Swing | Projectile | Dash | Burst | Aura;
@@ -71,6 +93,16 @@ export interface SpellLook {
   readonly layer: "below" | "above";
   /** A looping animation, or an icon from the `icons` atlas (an arrow). Swings draw their own arc. */
   readonly sprite?: { readonly animation: string } | { readonly icon: string };
+  /**
+   * Stays upright as it flies instead of turning to face its way, mirrored when it flies left: a
+   * ball whose animation already rolls.
+   */
+  readonly upright?: boolean;
+  /**
+   * How it ends when it runs out without hitting: it fizzles (the default), or it drops and `rolls`
+   * on a little, lies there, and pixelates away (a thrown ball). One with a shadow lands instead.
+   */
+  readonly spent?: "fizzles" | "rolls";
   readonly tint?: string;
   /** The light it gives off at night: a color and how far it reaches, in pixels. */
   readonly light?: { readonly color: string; readonly radius: number };

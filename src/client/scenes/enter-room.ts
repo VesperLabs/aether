@@ -13,7 +13,6 @@ import {
 } from "./tileset-textures";
 import { announceSeason, setDayClock } from "./world-clock";
 import type { SceneMain } from "./main-scene";
-import { clearThrownBalls } from "@/client/views/thrown-ball";
 import { startEffect } from "@/client/net/effects";
 import {
   addLoot,
@@ -32,7 +31,6 @@ export function enterRoom(
   { players = [], npcs = [], loots = [], effects = [], season, hour }: Partial<RoomStateMessage>,
   heroSocketId?: string,
 ) {
-  clearThrownBalls();
   resetEntities(scene);
   scene.hero = undefined as unknown as Player;
   netInterp.reset();

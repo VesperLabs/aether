@@ -1,6 +1,8 @@
 import Phaser from "phaser";
 import { getOneWayLatency } from "@/client/net/latency";
 import { playAudio } from "@/client/audio/play-audio";
+import { isBallSpell, tumbleStart } from "./ball-sheet";
+import { takeHeldBall } from "./ball-in-hand";
 import type { Point } from "@/rules/world";
 import type { Player } from "./player";
 import { toTint } from "./tint";
@@ -11,9 +13,11 @@ import { SwingArc } from "./swing-arc";
 import { SwingDebug } from "./swing-debug";
 import { takeNockedArrow } from "./nocked-arrow";
 import { droopSpentArrow, endSpentShot } from "./spell-ending";
+import { hasStoppedOnSomeone } from "./spell-stop";
+import { distanceFlown, flyRicocheting, rollWithFlight } from "./spell-ricochet";
 
 import { ELEMENT_SWING_COLORS } from "@/ui/item/element-effects";
-import { getAngleFromDirection, distanceTo } from "@/rules/world";
+import { getAngleFromDirection } from "@/rules/world";
 import {
   getMeleeSwing,
   getSpell,
@@ -86,6 +90,10 @@ export class Spell extends Phaser.GameObjects.Container {
   declare shadowDrop: number;
   /** Ran out of range or time and is playing its ending; no longer moved or checked. */
   declare isEnding?: boolean;
+  /** Banks off walls (`ricochet`): flown by `spell-ricochet.ts`, not the physics body. */
+  declare ricochet?: { depth: number; bounciness?: number };
+  declare groundOffset: number;
+  declare travelled: number;
   /** Which way the sprite is turned flying level, before an arrow dips at the end. */
   declare flightTurn: number;
   constructor(
@@ -114,6 +122,9 @@ export class Spell extends Phaser.GameObjects.Container {
     const shape = getSpellShape(spell, rank);
 
     this.isMeleeAttack = delivery.type === "swing";
+    this.ricochet = spell.ricochet;
+    this.groundOffset = -caster.bodyCenterY;
+    this.travelled = 0;
     this.stickToCaster = ridesCaster(spell);
     this.layer = look.layer;
     this.maxVisibleTime = shape.visibleMs;
@@ -191,9 +202,11 @@ export class Spell extends Phaser.GameObjects.Container {
       this.maxDistance = flight.maxDistance;
     }
     if (look.sprite && "icon" in look.sprite) this.spell.setTexture("icons", look.sprite.icon);
-    if (look.sprite && "animation" in look.sprite) this.spell.play(look.sprite.animation);
+    if (look.sprite && "animation" in look.sprite)
+      this.spell.play({ key: look.sprite.animation, startFrame: tumbleStart(spellName) });
     /* Projectiles face where they fly; icon art points up and to the right */
-    if (flight) {
+    if (flight && look.upright) this.spell.setFlipX(Math.cos(castAngle) < 0);
+    else if (flight) {
       const iconTurn = look.sprite && "icon" in look.sprite ? Math.PI / 4 : 0;
       this.spell.setRotation(castAngle + iconTurn);
     }
@@ -270,8 +283,10 @@ export class Spell extends Phaser.GameObjects.Container {
     if ((this.caster.isHero && !this.ageMs) || this.stickToCaster) return;
     if (!this.velocityX && !this.velocityY) return;
     const leadMs = getOneWayLatency() + this.ageMs;
-    this.x += (this.velocityX * leadMs) / 1000;
-    this.y += (this.velocityY * leadMs) / 1000;
+    if (!flyRicocheting(this, leadMs / 1000)) {
+      this.x += (this.velocityX * leadMs) / 1000;
+      this.y += (this.velocityY * leadMs) / 1000;
+    }
     this.spellState.spawnTime -= leadMs;
   }
   /** Copies the sprite as it is now (texture, frame, turn, scale) into a black shadow on the ground. */
@@ -290,20 +305,24 @@ export class Spell extends Phaser.GameObjects.Container {
       .setAlpha(SHADOW_ALPHA);
     this.add(this.shadow);
   }
-  /** A shot from a drawn bow starts drawn where its nocked arrow was, on the bow in the hand. */
+  /** A shot starts drawn where it was held: an arrow on the drawn bow, a ball in the hand. */
   leaveFromNock() {
-    const nock = takeNockedArrow(this.caster);
+    const nock = isBallSpell(this.spellName)
+      ? takeHeldBall(this.caster)
+      : takeNockedArrow(this.caster);
     if (!nock) return;
     this.nockOffset = { x: (nock.x - this.x) / this.scaleX, y: (nock.y - this.y) / this.scaleY };
     this.spell.setPosition(this.nockOffset.x, this.nockOffset.y);
     this.shadow?.setPosition(this.nockOffset.x, this.shadowDrop + this.nockOffset.y);
   }
   create() {}
-  update() {
+  update(_time?: number, delta = 0) {
     if (this.isEnding) return;
+    /* A ricochet flies by the rules, so it banks where the server's does */
+    if (!this.stickToCaster && flyRicocheting(this, delta / 1000)) rollWithFlight(this);
     this.spellState.isExpired = isSpellExpired({
       maxDistance: this.maxDistance,
-      distanceFromSpawn: distanceTo(this, this.spawnPoint),
+      distanceFromSpawn: distanceFlown(this),
       spawnTime: this.spellState.spawnTime,
       lifetime: this.maxVisibleTime,
       now: Date.now(),
@@ -312,6 +331,8 @@ export class Spell extends Phaser.GameObjects.Container {
     if (this.spellState.isExpired) return this.end();
     /* A spell riding its caster that was removed ends with it, not where it was */
     if (this.stickToCaster && !this.caster?.active) return this.destroy();
+    /* One that doesn't pierce goes no further than whoever it stopped on */
+    if (!this.stickToCaster && hasStoppedOnSomeone(this)) return this.destroy();
     this.adjustSpellPosition();
     this.blendFromNock();
     this.droop();
@@ -322,7 +343,7 @@ export class Spell extends Phaser.GameObjects.Container {
     const age = Date.now() - this.spellState.spawnTime;
     const byTime = this.maxVisibleTime - age;
     if (!speed || !this.maxDistance) return byTime;
-    const byRange = ((this.maxDistance - distanceTo(this, this.spawnPoint)) / speed) * 1000;
+    const byRange = ((this.maxDistance - distanceFlown(this)) / speed) * 1000;
     return Math.min(byTime, byRange);
   }
   /** An arrow comes down onto its shadow as its flight ends (see spell-ending.ts). */
@@ -343,7 +364,8 @@ export class Spell extends Phaser.GameObjects.Container {
     this.isEnding = true;
     this.nockOffset = undefined;
     this.scene.physics.world.disable(this);
-    endSpentShot(this, () => this.destroy());
+    const rolls = getSpell(this.spellName).look.spent === "rolls";
+    endSpentShot(this, () => this.destroy(), { rolls });
   }
   blendFromNock() {
     if (!this.nockOffset) {
@@ -365,7 +387,9 @@ export class Spell extends Phaser.GameObjects.Container {
       this.y = this.caster.y + this.caster.bodyCenterY + this.caster.rig.y;
       return;
     }
-    this.body.setVelocity(this.velocityX, this.velocityY);
+    /* A ricochet is flown by the rules (see `update`), not the body */
+    if (this.ricochet) this.body.setVelocity(0, 0);
+    else this.body.setVelocity(this.velocityX, this.velocityY);
   }
   destroy() {
     this.removeLight?.();

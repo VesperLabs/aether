@@ -97,7 +97,7 @@ describe("expireBuffs", () => {
   });
 
   it("removes timed out and flagged buffs, keeps unlimited ones", () => {
-    const { buffs, changed } = expireBuffs(
+    const { buffs, changed, ranOut } = expireBuffs(
       [
         buff("a", 1000, 2000),
         buff("b", -1, 99999),
@@ -108,17 +108,23 @@ describe("expireBuffs", () => {
     );
     expect(buffs.map((b) => b.name)).toEqual(["b", "c"]);
     expect(changed).toBe(true);
+    /* Only the one that timed out ran out: a dispelled buff never runs its hook */
+    expect(ranOut.map((b) => b.name)).toEqual(["a"]);
   });
   it("reports no change when nothing expires", () => {
     expect(expireBuffs([buff("a", 1000, 10)], NOW).changed).toBe(false);
   });
   it("removes everything when forced", () => {
-    expect(expireBuffs([buff("a", -1, 0)], NOW, true)).toEqual({ buffs: [], changed: true });
+    expect(expireBuffs([buff("a", -1, 0)], NOW, true)).toEqual({
+      buffs: [],
+      changed: true,
+      ranOut: [],
+    });
     expect(expireBuffs([], NOW, true).changed).toBe(false);
   });
   it("removes neighbouring expired buffs in the same call", () => {
     const buffs = [buff("a", 10, 100), buff("b", 10, 100), buff("c", 10, 100)];
-    expect(expireBuffs(buffs, NOW)).toEqual({ buffs: [], changed: true });
+    expect(expireBuffs(buffs, NOW)).toMatchObject({ buffs: [], changed: true });
   });
 });
 

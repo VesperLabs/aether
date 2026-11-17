@@ -11,12 +11,19 @@ import {
 } from "@/rules/buffs";
 import type { CharacterState } from "@/rules/character";
 import { buffList, type BuffDefinition } from "@/content";
+import type { GameEventBus } from "@/rules/world";
 
 /** What a buff needs to know about the character that cast it. */
 export interface BuffRequest {
   name: string;
   level: number;
-  caster?: { stats?: { spellPower?: number }; x?: number; y?: number };
+  caster?: {
+    id?: string;
+    socketId?: string;
+    stats?: { spellPower?: number };
+    x?: number;
+    y?: number;
+  };
   shouldCalculateStats?: boolean;
 }
 
@@ -31,7 +38,9 @@ interface BuffHolder {
   y: number;
   addBuff(args: BuffRequest): unknown;
   dispelBuffsByProperty(prop: string, value?: unknown): void;
-  world: { now: () => number };
+  id?: string;
+  socketId?: string;
+  world: { now: () => number; events?: GameEventBus };
 }
 
 /**
@@ -50,6 +59,9 @@ export function applyAddBuff(
     now: character.world.now(),
   });
   if (!buff) return false;
+  /* Remembered so its `onExpire` hook knows whose it was (a thrown ball's catch) */
+  const casterId = caster?.socketId || caster?.id;
+  if (casterId) buff.casterId = casterId;
 
   character.buffs = applyBuff(character.buffs, buff);
 
@@ -82,11 +94,24 @@ export function applyExpireBuff(character: BuffHolder, name: string) {
 
 /** Removes timed out and dispelled buffs, then recalculates stats and flags the change for sync. */
 export function applyExpireBuffs(character: BuffHolder, forceExpire = false) {
-  const { buffs, changed } = expireBuffs(character.buffs, character.world.now(), forceExpire);
-  if (changed) {
-    character.buffs = buffs;
-    character.calculateStats();
-    character.state.hasBuffChanges = true;
+  const { buffs, changed, ranOut } = expireBuffs(
+    character.buffs,
+    character.world.now(),
+    forceExpire,
+  );
+  if (!changed) return;
+  character.buffs = buffs;
+  character.calculateStats();
+  character.state.hasBuffChanges = true;
+  const wearerId = character.socketId || character.id;
+  if (!wearerId) return;
+  for (const { name, casterId, level } of ranOut) {
+    character.world.events?.emit("buffExpired", {
+      name: name as string,
+      wearerId,
+      casterId,
+      level: level ?? 1,
+    });
   }
 }
 

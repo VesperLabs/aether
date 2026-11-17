@@ -4,9 +4,9 @@ import type { SceneMain } from "@/client/scenes/main-scene";
 import { playAudio } from "@/client/audio/play-audio";
 import { getSpinDirection } from "@/client/input/spin-direction";
 import { CONSUMABLES_BASES, POTION_BASES } from "@/rules/inventory";
-import { canThrow, isThrowable } from "@/rules/capture";
+import { isThrowable } from "@/rules/capture";
 import { getAbilityCosts, hasStaminaFor } from "@/rules/combat";
-import { isAimed } from "@/rules/spells";
+import { getSpellCooldown, isAimed } from "@/rules/spells";
 import {
   updateAttackCooldown,
   updatePotionCooldown,
@@ -72,8 +72,9 @@ export function addGlobalEventListeners(scene: SceneHud) {
     if (isThrowable(base)) {
       hero.pressedAbilitySlot = e?.detail;
       hero.state.isAiming = true;
+      hero.state.aimingBall = base;
       gameElement.style.cursor = "none";
-      scene.socket.emit("updateState", { isAiming: hero.state.isAiming });
+      scene.socket.emit("updateState", { isAiming: true, aimingBall: base });
       return;
     }
     if (!isAimed(spell)) {
@@ -145,13 +146,19 @@ export function addGlobalEventListeners(scene: SceneHud) {
       isHoldingAttack: hero.state.isHoldingAttack,
     });
   });
-  const stopAiming = (hero: NonNullable<SceneMain["hero"]>) => {
+  /** A thrown ball stays in the hand until its flight takes it (see ball-in-hand.ts). */
+  const stopAiming = (hero: NonNullable<SceneMain["hero"]>, isThrown = false) => {
     hero.state.isAiming = false;
     hero.state.aimingSpellName = null;
-    scene.socket.emit("updateState", { isAiming: hero.state.isAiming });
+    if (isThrown || !hero.state.aimingBall) {
+      scene.socket.emit("updateState", { isAiming: false });
+    } else {
+      hero.state.aimingBall = null;
+      scene.socket.emit("updateState", { isAiming: false, aimingBall: null });
+    }
     gameElement.style.cursor = "default";
   };
-  /* The server picks what it hits and whether it catches; the flying ball is drawn when it says so */
+  /* Thrown, it flies as a spell the server starts; whatever it hits struggles in `capturing` */
   let lastThrowAt: number | undefined;
   const throwBall = (
     hero: NonNullable<SceneMain["hero"]>,
@@ -159,11 +166,13 @@ export function addGlobalEventListeners(scene: SceneHud) {
     location: string,
   ) => {
     /* Too soon or too tired: the server would refuse it anyway */
-    if (!item?.id || !canThrow(lastThrowAt, Date.now())) return;
-    if (!hasStaminaFor(hero.stats?.sp, getAbilityCosts(item.stats).sp)) return;
+    const cooldown = getSpellCooldown(item?.base);
+    if (!item?.id || Date.now() - (lastThrowAt ?? -Infinity) < cooldown) return false;
+    if (!hasStaminaFor(hero.stats?.sp, getAbilityCosts(item.stats).sp)) return false;
     lastThrowAt = Date.now();
     updateThrowCooldown(item.base as string);
     socket.emit("throwItem", { location, item: { id: item.id }, angle: hero.state.lastAngle ?? 0 });
+    return true;
   };
   window.addEventListener("HERO_ABILITY", (e) => {
     const hero = mainScene?.hero;
@@ -176,8 +185,7 @@ export function addGlobalEventListeners(scene: SceneHud) {
     if (hero.isCasting) return;
 
     if (isThrowable(base)) {
-      throwBall(hero, { id, base, stats }, "abilities");
-      return stopAiming(hero);
+      return stopAiming(hero, throwBall(hero, { id, base, stats }, "abilities"));
     }
 
     if (type === "spell" && stats?.castTime) {

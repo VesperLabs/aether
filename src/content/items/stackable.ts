@@ -4,12 +4,14 @@ export const stackableItems = {
   common: {
     pokeball: {
       tier: 1,
-      name: "Pokeball",
+      name: "Poké Ball",
       flavor: "Aim and throw it at a wild creature to try to catch it.",
       base: "pokeball",
       slot: "stackable",
       texture: "stackable-pokeball",
       stats: { spCost: 4 },
+      /* Thrown as the `pokeball` spell; the level of `capturing` is how likely it is to catch */
+      buffs: { capturing: 1 },
       /* Never a random drop: only given out on purpose */
       exclusive: true,
     },
@@ -242,6 +244,19 @@ export const stackableItems = {
     },
   },
   magic: {
+    greatBall: {
+      tier: 2,
+      name: "Great Ball",
+      flavor: "A sturdier ball. Better odds of a catch.",
+      base: "greatball",
+      slot: "stackable",
+      texture: "stackable-greatball",
+      stats: { spCost: 4 },
+      /* Thrown as the `greatball` spell; the level of `capturing` is how likely it is to catch */
+      buffs: { capturing: 2 },
+      /* Never a random drop: only given out on purpose */
+      exclusive: true,
+    },
     ginseng: {
       tier: 1,
       name: "Ginseng",
@@ -254,6 +269,19 @@ export const stackableItems = {
     },
   },
   rare: {
+    ultraBall: {
+      tier: 3,
+      name: "Ultra Ball",
+      flavor: "A finely made ball. Few creatures slip out of it.",
+      base: "ultraball",
+      slot: "stackable",
+      texture: "stackable-ultraball",
+      stats: { spCost: 4 },
+      /* Thrown as the `ultraball` spell; the level of `capturing` is how likely it is to catch */
+      buffs: { capturing: 3 },
+      /* Never a random drop: only given out on purpose */
+      exclusive: true,
+    },
     clover: {
       tier: 1,
       name: "Clover",
@@ -282,6 +310,19 @@ export const stackableItems = {
     },
   },
   unique: {
+    masterBall: {
+      tier: 4,
+      name: "Master Ball",
+      flavor: "The finest ball there is. Nothing escapes it.",
+      base: "masterball",
+      slot: "stackable",
+      texture: "stackable-masterball",
+      stats: { spCost: 4 },
+      /* Thrown as the `masterball` spell; the level of `capturing` is how likely it is to catch */
+      buffs: { capturing: 4 },
+      /* Never a random drop: only given out on purpose */
+      exclusive: true,
+    },
     wyrmScale: {
       tier: 2,
       name: "Wyrm Scale",

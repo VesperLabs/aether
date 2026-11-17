@@ -16,6 +16,7 @@ import { WindupPie } from "./windup-pie";
 import { Bar } from "./bar";
 import { WeaponSprite } from "./weapon-sprite";
 import { BuffRack } from "./buff-rack";
+import { CaptureBall } from "./capture-ball";
 import { StunStars } from "./stun-stars";
 
 /** The overhead hp bar in world pixels (it is drawn at twice this, then halved). */
@@ -87,6 +88,7 @@ export function createSpriteLayers(player: Player) {
     .existing(new Sprite(scene, 6, player?.headY - 6, "icons", "chat"))
     .setVisible(false);
   player.stunStars = new StunStars(scene, player);
+  player.captureBall = new CaptureBall(scene, player);
   /* Everything that moves with the body goes in the rig, so lunges and flinches move it as one */
   player.rig = scene.add.existing(new Container(scene, 0, 0));
   player.rig.add([
@@ -107,6 +109,7 @@ export function createSpriteLayers(player: Player) {
     player.userName,
     player.buffRack,
     player.stunStars,
+    player.captureBall,
     player.bubble,
     player.hpBar,
   ]);

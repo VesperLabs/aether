@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { playObjectDissolve } from "./dissolve";
 
 /** How long a spent spell takes to flare and fade where it ended, ms. */
 const FLARE_MS = 160;
@@ -21,8 +22,21 @@ const MOTE_SPREAD = 4;
 const MOTE_MS = 450;
 const MOTE_ALPHA = 0.7;
 
+/** How far a spent ball rolls on along its throw, px, slowing to a stop over `ROLL_MS`. */
+const ROLL_DISTANCE = 8;
+/** How much farther or shorter than `ROLL_DISTANCE` one may roll, as a share of it. */
+const ROLL_SPREAD = 0.5;
+/** How far off its throw one may veer as it rolls, either way, in radians. */
+const ROLL_VEER = 0.5;
+const ROLL_MS = 300;
+/** How long it lies still before it goes, ms, and how long it takes to pixelate away. */
+const LIE_MS = 450;
+const PIXELATE_MS = 300;
+
 /** What a spent flying shot needs to end gently. */
 interface SpentShot {
+  /** Seeds how it rolls, so everyone watching sees the same. */
+  id?: string | null;
   scene: Phaser.Scene;
   depth: number;
   x: number;
@@ -64,8 +78,13 @@ function releaseMotes(shot: SpentShot) {
  * fizzles out where it ended, swelling and fading as faint motes rise from it, going no further than the shot did.
  * Calls `done` when it's gone.
  */
-export function endSpentShot(shot: SpentShot, done: () => void) {
+export function endSpentShot(
+  shot: SpentShot,
+  done: () => void,
+  { rolls = false }: { rolls?: boolean } = {},
+) {
   const { scene, spell, shadow } = shot;
+  if (rolls) return rollToRest(shot, done);
   if (!shadow) {
     scene.tweens.add({
       targets: spell,
@@ -112,4 +131,59 @@ export function droopSpentArrow(
   spell.y = y + (shadowY - y) * fall;
   spell.rotation = turn;
   shadow.setAlpha(shadowAlpha * (1 + (SHADOW_DARKEN - 1) * fall));
+}
+
+/**
+ * A thrown ball that hit nothing: it rolls on a little along its throw, its tumble slowing with it,
+ * lies there a moment, then pixelates away as a creature does when it dies. Calls `done` once it
+ * is off the shot, which it outlives as a copy in the world.
+ */
+function rollToRest(shot: SpentShot, done: () => void) {
+  const { scene, spell, shadow } = shot;
+  /* Each ball rolls a little differently: as far and as far off its line as its id says */
+  const seed = hashId(shot.id ?? "");
+  const share = (bits: number) => ((seed >>> bits) % 1000) / 1000;
+  const distance = ROLL_DISTANCE * (1 - ROLL_SPREAD + 2 * ROLL_SPREAD * share(0));
+  const angle = Math.atan2(shot.velocityY, shot.velocityX) + (share(10) * 2 - 1) * ROLL_VEER;
+  const dx = Math.cos(angle) * distance;
+  const dy = Math.sin(angle) * distance;
+  /* It has come down onto its shadow (see `droopSpentArrow`), which rolls along under it */
+  scene.tweens.add({
+    targets: shadow ? [spell, shadow] : spell,
+    x: `+=${dx}`,
+    y: `+=${dy}`,
+    duration: ROLL_MS,
+    ease: Phaser.Math.Easing.Quadratic.Out,
+  });
+  /* The tumble winds down with the roll, and stops on whatever face it reached */
+  scene.tweens.add({
+    targets: spell.anims,
+    timeScale: 0,
+    duration: ROLL_MS,
+    ease: Phaser.Math.Easing.Quadratic.Out,
+    onComplete: () => spell.anims.pause(),
+  });
+  scene.time.delayedCall(ROLL_MS + LIE_MS, () => {
+    if (!spell.active) return done();
+    shadow?.setVisible(false);
+    /* A copy in the world pixelates away; the shot itself can go */
+    const { tx, ty } = spell.getWorldTransformMatrix();
+    const resting = scene.add
+      .image(tx, ty, spell.texture.key, spell.frame.name)
+      .setScale(spell.scaleX * (spell.parentContainer?.scaleX ?? 1))
+      .setFlipX(spell.flipX)
+      .setDepth(shot.depth);
+    done();
+    playObjectDissolve(resting, PIXELATE_MS);
+  });
+}
+
+/** A steady number from an id (FNV-1a). */
+function hashId(id: string) {
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < id.length; i++) {
+    hash ^= id.charCodeAt(i);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return hash >>> 0;
 }

@@ -10,6 +10,31 @@ function ball(name: string, speed: number, look: Partial<SpellLook> = {}) {
   } as const;
 }
 
+/** A thrown ball, playing its own row of the `pokeball-roll` sheet as it flies. */
+function thrownBall(animation: string) {
+  return {
+    /* Drawn at half its art's size (about 8px across), and it hits, and meets walls, as big as it
+     * looks: a radius of size times scale, 4px */
+    delivery: { type: "projectile", size: 8, speed: 200, range: 100 },
+    scale: { base: 0.5 },
+    targets: ["enemy"],
+    pierces: false,
+    /* Sinks a little into a wall before it turns back, and comes off it slower than it went in */
+    ricochet: { depth: 8, bounciness: 0.6 },
+    cooldown: 800,
+    look: {
+      visibleMs: 1000,
+      layer: "above",
+      sprite: { animation },
+      upright: true,
+      /* Comes down onto its shadow as its flight ends, then rolls on along the ground */
+      shadow: true,
+      spent: "rolls",
+    },
+    description: "Aim and throw it at a wild creature to try to catch it.",
+  } as const;
+}
+
 /** A buff that glows on the caster for a moment, catching any ally it overlaps. */
 function aura(tint: string) {
   return {
@@ -122,6 +147,11 @@ export const spellDetails = {
     cooldown: 30000,
     description: "Grants HP regeneration while active.  Effects are boosted by caster spell power.",
   },
+  /* Thrown balls: whoever one hits struggles in it (`capturing`), and may be caught when that ends */
+  pokeball: thrownBall("pokeball-roll"),
+  greatball: thrownBall("greatball-roll"),
+  ultraball: thrownBall("ultraball-roll"),
+  masterball: thrownBall("masterball-roll"),
   stealth: {
     ...aura("0x777777"),
     targets: ["self"],

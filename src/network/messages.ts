@@ -1,7 +1,7 @@
 import type { BuiltItem, Season } from "@/content";
 import type { BuffCharacterWire, FullCharacterWire } from "./sync/character-state";
 import type { RoomStatuses } from "./sync/statuses";
-import type { EffectEndedMessage, EffectWire } from "./sync/effects";
+import type { EffectWire } from "./sync/effects";
 import type { Box, Shape } from "@/rules/movement";
 import type { Party, PartyUpdatePayload } from "@/rules/party";
 
@@ -184,10 +184,8 @@ export interface ServerToClientEvents {
     abilitySlot: number | string;
     castAngle: number;
   }) => void;
-  /** Something started in flight in the room: a spell on its own, or a thrown ball. */
+  /** Something started in flight in the room: a spell on its own. */
   effectStarted: (effect: EffectWire) => void;
-  /** It ended, and how. */
-  effectEnded: (payload: EffectEndedMessage) => void;
   npcAttack: (payload: {
     id: string;
     count?: number;

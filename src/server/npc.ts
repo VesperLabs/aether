@@ -1,5 +1,5 @@
 import { getBody, type ActorBehaviors } from "@/content";
-import type { AbilitySlot } from "@/rules/spells";
+import type { AbilityDetails, AbilitySlot } from "@/rules/spells";
 import type { Hand } from "@/rules/combat";
 import {
   ServerCharacter as Character,
@@ -217,6 +217,8 @@ export class Npc extends Character {
       this.vx = 0;
       this.vy = 0;
       this.stats.hp = this.stats.maxHp; //heal to full
+      /* No buff runs out on its own here, so none lasts: a ball's catch can't come */
+      if (this.buffs.length) this.expireBuffs(true);
       return;
     }
 
@@ -392,7 +394,7 @@ export class Npc extends Character {
       this.state.isAiming = false;
     });
   }
-  doHit(ids: Array<string>, abilitySlot?: AbilitySlot, hand?: Hand): void {
-    applyNpcHits(this, ids, abilitySlot, hand);
+  doHit(ids: Array<string>, abilitySlot?: AbilitySlot, hand?: Hand, ability?: AbilityDetails) {
+    applyNpcHits(this, ids, abilitySlot, hand, ability);
   }
 }

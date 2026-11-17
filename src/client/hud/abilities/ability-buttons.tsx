@@ -3,7 +3,6 @@ import { keyFor, type BindAction } from "@/client/input/key-bindings";
 import { findSpell, type BuiltItem } from "@/content";
 import type { Cooldown, HudCharacter } from "@/client/hud/app/context";
 import { CONSUMABLES_BASES, POTION_BASES } from "@/rules/inventory";
-import { isThrowable } from "@/rules/capture";
 import { applyTintToImage, loadCacheImage } from "@/ui";
 import { arePropsEqualWithKeys } from "@/ui";
 import { isMobile, RomanNumeral } from "@/ui";
@@ -15,6 +14,7 @@ import { canAffordCosts, getAbilityCosts } from "@/rules/combat";
 import { useNextAttackSpCost } from "./use-next-attack-sp-cost";
 import { Box, Flex, Text } from "@/ui";
 import React, { memo, useEffect, useState } from "react";
+import { isThrowable } from "@/rules/capture";
 
 /** An entry of the hero's `abilities`: a spell or an item on the action bar. */
 type AbilityItem = BuiltItem;

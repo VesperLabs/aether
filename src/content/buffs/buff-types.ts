@@ -21,6 +21,14 @@ export interface BuffDefinition {
   readonly dispelInCombat?: boolean;
   readonly dispelAfterAttack?: boolean;
   readonly dispelOnHit?: boolean;
+  /**
+   * What happens when it runs out on its own (not dispelled, not on death): a hook a feature
+   * handles through the `buffExpired` event.
+   */
+  readonly onExpire?: BuffExpireHook;
   /** Landing it shoves the target away from whoever applied it (see `rules/movement/knockback.ts`). */
   readonly knockback?: boolean;
 }
+
+/** The hooks a buff may run when it runs out. `catch`: its caster may catch its wearer. */
+type BuffExpireHook = "catch";

@@ -49,7 +49,7 @@ function nockOf(player: Player) {
  * The hand holding a bow turned to aim, if the body is in that pose. Only then does the arrow lie
  * along the bow; in any other pose the bow is held loose and no arrow shows.
  */
-function aimedBowHand(player: Player) {
+export function aimedBowHand(player: Player) {
   if (player.action === "attack_right" && player.hasRangedWeaponRight()) return player.handRight;
   if (player.action === "attack_left" && player.hasRangedWeaponLeft()) return player.handLeft;
   return undefined;

@@ -2,6 +2,7 @@ import type { ActorDefinition } from "./actor-types";
 
 export const actors2 = {
   anthony: {
+    state: { catchable: false },
     flavor:
       "The Lunchmeat Sage. He has tasted every cured meat known to the realm, and hunts the caves for more.",
     charClass: "warrior",
@@ -39,6 +40,7 @@ export const actors2 = {
     ],
   },
   steve: {
+    state: { catchable: false },
     flavor:
       "The master of the town forge. Half the armour on the road came off his anvil, still warm.",
     charClass: "warrior",
@@ -79,6 +81,7 @@ export const actors2 = {
     ],
   },
   siobhan: {
+    state: { catchable: false },
     flavor:
       "A gentle spirit who brews potions for weary travelers. No one has ever seen her hurry.",
     charClass: "mage",
@@ -114,6 +117,7 @@ export const actors2 = {
     ],
   },
   danny: {
+    state: { catchable: false },
     flavor:
       "A grand and slightly theatrical wizard. He guards his robe more fiercely than any spellbook.",
     charClass: "mage",
@@ -156,6 +160,7 @@ export const actors2 = {
     home: { x: 1087, y: 1396 },
   },
   rae: {
+    state: { catchable: false },
     flavor:
       "A curious naturalist studying the creatures of these lands. Her basket is always full of samples.",
     charClass: "cleric",
@@ -189,6 +194,7 @@ export const actors2 = {
     ],
   },
   ale: {
+    state: { catchable: false },
     flavor:
       "A cheerful merchant who sells fresh fruit and vegetables in town. Her prices are fair, her Spanish fast.",
     charClass: "rogue",
@@ -225,6 +231,7 @@ export const actors2 = {
     ],
   },
   derek: {
+    state: { catchable: false },
     flavor:
       "The ranger of the Aery Peaks. His campfire is the only warm place for miles, and he shares it freely.",
     charClass: "warrior",

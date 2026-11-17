@@ -5,6 +5,7 @@ import { PLAYER_DEFAULT_SPAWN } from "../../auth/character-defaults";
 import { decodeWireDirection } from "@/network/sync";
 import { getRoomState } from "@/server/net/room-sync";
 import type { ParsedCommand } from "@/network";
+import { isThrowable } from "@/rules/capture";
 import { bringCompanions } from "../../companions";
 import { addPlayerToRoom, removePlayerFromRoom } from "../../player-room";
 import { legacyUpdateMemberRoom } from "../../party-adapter";
@@ -163,10 +164,13 @@ export function updateState(ctx: CommandContext, state: ParsedCommand<"updateSta
   const { world, socketId } = ctx;
   const player = world?.players?.[socketId];
   if (!player) return;
-  /* Only the two flags the client owns. The schema already drops anything else. */
+  /* Only the flags the client owns. The schema already drops anything else. */
   if (typeof state.isAiming === "boolean") player.state.isAiming = state.isAiming;
   if (typeof state.isHoldingAttack === "boolean") {
     player.state.isHoldingAttack = state.isHoldingAttack;
+  }
+  if (state.aimingBall !== undefined) {
+    player.state.aimingBall = isThrowable(state.aimingBall ?? undefined) ? state.aimingBall : null;
   }
 }
 
