@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.49.0](https://github.com/VesperLabs/aether/compare/v0.48.1...v0.49.0) (2026-11-17)
+
+
+### Features
+
+* keep caught companions, plates for party, companions and foes, ball catch rates ([#377](https://github.com/VesperLabs/aether/issues/377)) ([ab31ddb](https://github.com/VesperLabs/aether/commit/ab31ddb3ce268c661a642142d4751cbd9dbc35ee))
+
 ## [0.48.1](https://github.com/VesperLabs/aether/compare/v0.48.0...v0.48.1) (2026-11-17)
 
 
