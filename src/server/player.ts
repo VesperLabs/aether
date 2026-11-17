@@ -45,6 +45,7 @@ import {
   withoutSlot,
 } from "@/rules/inventory";
 
+import type { SavedCompanion } from "@/rules/capture";
 /** What a player is created from: the stored user plus the connection it logged in on. */
 export type PlayerArgs = CharacterArgs & {
   email?: string;
@@ -67,23 +68,23 @@ export interface PlayerCastRequest {
   castAngle?: number;
 }
 
-/* Server level Player object */
 export class Player extends ServerCharacter {
   public email?: string;
   public isDemoAccount?: boolean;
   public spawn?: SpawnPoint;
   public userSettings?: UserSettings;
+  public companions: SavedCompanion[]; // saved to the account (`kept-companions`)
   public partyId?: string | null;
   /** Who last whispered this player, for `/reply`. */
   public lastWhisperFrom?: string;
   constructor(world: ServerWorld, args: PlayerArgs) {
     super(world, args);
-    this.world = world;
     this.email = args?.email;
     this.isDemoAccount = args?.isDemoAccount;
     this.userSettings = args?.userSettings;
     this.kind = "player";
     this.spawn = args?.spawn;
+    this.companions = args?.companions ?? [];
     this.calculateStats(true);
   }
   setDead() {

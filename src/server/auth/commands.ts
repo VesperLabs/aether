@@ -15,6 +15,7 @@ import type { UserDocument } from "../persistence";
 import { TOO_MANY_TRIES } from "./accounts";
 import { isLoginAllowed } from "./login-limit";
 import { redeemPlayTicket } from "./play-tickets";
+import { bringOutCompanions } from "@/server/kept-companions";
 
 /** Demo logins (throwaway, unsaved characters) are for development only, never production. */
 function isDemoAllowed() {
@@ -118,6 +119,8 @@ function joinWorld(ctx: CommandContext, player: Player) {
 
   if (!roomName) return;
 
+  /* Its companions come with it, in the room state it is about to get */
+  bringOutCompanions(world, player);
   actor.join(roomName);
   actor.emit(
     "heroInit",

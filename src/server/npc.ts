@@ -214,8 +214,10 @@ export class Npc extends Character {
       this.vx = 0;
       this.vy = 0;
       this.stats.hp = this.stats.maxHp; //heal to full
-      /* No buff runs out on its own here, so none lasts: a ball's catch can't come */
-      if (this.buffs.length) this.expireBuffs(true);
+      /* No buff runs out on its own here, so none lasts: a ball's catch can't come. It rests,
+       * so whoever joins sees it resting from the start, not after an update they may miss. */
+      if (this.buffs.some((buff) => buff.name !== "rest")) this.expireBuffs(true);
+      this.checkIsResting();
       return;
     }
 

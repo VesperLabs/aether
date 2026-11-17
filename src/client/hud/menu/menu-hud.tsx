@@ -1,13 +1,49 @@
 import { memo, useEffect, useRef, useState, type ElementType } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
-import { Box, Flex, Text } from "@/ui";
+import { Box, Flex, Grid, Text } from "@/ui";
 import { useAppContext, type HudCharacter } from "@/client/hud/app/context";
 import { Portrait } from "@/client/hud/status/portrait";
 import { arePropsEqualWithKeys } from "@/ui";
 import { streamHasUsableVideo } from "@/client/hud/video/video-support";
 import { Bar } from "@/client/hud/status/stat-bar";
 import { Buffs } from "@/client/hud/status/buffs";
+import { PIES_OVERHANG, StatPies, statPie } from "@/client/hud/status/stat-pies";
 import { Tooltip, resourceToken } from "@/ui";
+import { useNpcPlates } from "./use-npc-plates";
+import { LevelIcon } from "./level-icon";
+
+/**
+ * A small plate's level badge is drawn small, not shrunk, so its lines stay as fine as the big
+ * plate's. Its buffs are the big plate's size.
+ */
+const MINI_LEVEL = { minWidth: 14, lineHeight: "11px", fontSize: "8px", borderRadius: 4 };
+
+/** Small plates, two to a row from the screen's edge. */
+/** Between a plate's portrait and its name and bars, in px. */
+const PORTRAIT_GAP = 0;
+/**
+ * Small plates, two to a row in even halves of your plate's width: its 56px portrait, the gap and
+ * its 100px bars. Fixed, not taken from your plate, whose buff row grows it, so plates never shift
+ * as names and buffs change.
+ */
+const PLATE_GRID = {
+  gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+  gap: "2px 8px",
+  mt: 1,
+  width: 56 + PORTRAIT_GAP + 100,
+};
+/** Every plate's name, as the player typed it. */
+const NAME = { lineHeight: 1.2 };
+/** A small plate's name fades out at its column's edge, rather than widening it. */
+const FADING_NAME = {
+  overflow: "hidden",
+  whiteSpace: "nowrap",
+  maskImage: "linear-gradient(to right, #000 calc(100% - 10px), transparent)",
+};
+/** A small plate's portrait, in px. */
+const MINI_PORTRAIT = 28;
+/** Rows of buffs a small plate shows before cutting the rest off. */
+const MINI_BUFF_ROWS = 2;
 
 const UserName = ({
   sx,
@@ -34,6 +70,13 @@ const PlayerHud = memo(
     const { stats, profile, equipment, activeItemSlots } = player ?? {};
     const isOffScreen = !player;
     const videoStream = portraitVideoStream ?? null;
+    /* A small plate's stats, as pies on its ring: HP, and a party member's MP and SP */
+    const pies = [
+      statPie.hp(stats?.hp, stats?.maxHp),
+      ...(!isNearby && player?.kind === "player"
+        ? [statPie.mp(stats?.mp, stats?.maxMp), statPie.sp(stats?.sp, stats?.maxSp)]
+        : []),
+    ];
     const memoProps = {
       activeItemSlots,
       equipment,
@@ -45,39 +88,58 @@ const PlayerHud = memo(
     return (
       <Flex
         sx={{
-          gap: 1,
+          /* The name and bars almost touch the portrait */
+          gap: `${PORTRAIT_GAP}px`,
           position: "relative",
           filter: isOffScreen ? "grayscale(100%)" : "none",
+          minWidth: 0,
         }}
       >
-        <Memoized
-          as={Portrait}
-          player={player}
-          videoStream={videoStream}
-          muteVideo={isNearby ? false : isBig}
-          filteredSlots={["boots", "pants"]}
-          size={isBig ? 54 : 32}
-          scale={isBig ? 1 : 0.57}
-          topOffset={isBig ? 22 : 12}
-          memoProps={memoProps}
-        />
-        <Flex sx={{ flexDirection: "column", gap: "1px", pointerEvents: "all" }}>
+        <Box
+          sx={{
+            position: "relative",
+            alignSelf: "flex-start",
+            /* Room for the pies hanging below the ring */
+            mb: isBig ? 0 : `${PIES_OVERHANG}px`,
+          }}
+        >
+          <Memoized
+            as={Portrait}
+            player={player}
+            videoStream={videoStream}
+            muteVideo={isNearby ? false : isBig}
+            filteredSlots={["boots", "pants"]}
+            size={isBig ? 54 : MINI_PORTRAIT}
+            /* The render is drawn at 2x: half that lands a small portrait on whole pixels (1x), crisp */
+            scale={isBig ? 1 : 0.5}
+            topOffset={isBig ? 22 : 10}
+            memoProps={memoProps}
+          />
+          {/* The ring is the portrait and its 1px border each side */}
+          {!isBig && <StatPies ringSize={MINI_PORTRAIT + 2} pies={pies} />}
+        </Box>
+        <Flex
+          sx={{ flexDirection: "column", gap: "1px", pointerEvents: "all", minWidth: 0, flex: 1 }}
+        >
           <Memoized
             as={UserName}
-            sx={{ fontSize: isBig ? 2 : 0 }}
+            sx={{ ...NAME, ...(isBig ? { fontSize: 1 } : { fontSize: "9px", ...FADING_NAME }) }}
             player={player}
             memoProps={memoProps}
           />
-          <Bar
-            data-tooltip-content={`HP: ${stats?.hp} / ${stats?.maxHp}`}
-            color="red.700"
-            max={stats?.maxHp}
-            min={stats?.hp}
-            showText={isBig}
-            width={isBig ? 100 : 50}
-            height={isBig ? 12 : 6}
-          />
-          {!isNearby && (
+          {isBig && (
+            <Bar
+              data-tooltip-content={`HP: ${stats?.hp} / ${stats?.maxHp}`}
+              color="red.700"
+              max={stats?.maxHp}
+              min={stats?.hp}
+              showText
+              width={100}
+              height={12}
+            />
+          )}
+          {/* NPCs never spend mana or stamina, so theirs would only sit full */}
+          {isBig && player?.kind === "player" && (
             <>
               <Bar
                 data-tooltip-content={`MP: ${stats?.mp} / ${stats?.maxMp}`}
@@ -99,7 +161,8 @@ const PlayerHud = memo(
               />
             </>
           )}
-          {isBig && (
+          {/* Mobs have no experience to show */}
+          {isBig && player?.kind === "player" && (
             <Bar
               data-tooltip-content={`EXP: ${stats?.exp} / ${stats?.maxExp}`}
               color="purple.400"
@@ -109,12 +172,19 @@ const PlayerHud = memo(
               showText={false}
             />
           )}
-          <Buffs player={player} sx={!isBig ? { transform: `scale(0.6)` } : {}} />
+          {/* Right under the name on a small plate, which has no bars between them. Pulled left by the
+              empty edge around the buff art (5 of its 32px, so about 4 at 24), so the icons line
+              up with the name */}
+          <Buffs
+            player={player}
+            sx={isBig ? { mt: 0 } : { mt: "-2px", ml: "-4px" }}
+            wrapRows={isBig ? undefined : MINI_BUFF_ROWS}
+          />
         </Flex>
         <Memoized
           as={LevelIcon}
           player={player}
-          sx={!isBig ? { transform: `scale(0.6)` } : {}}
+          sx={!isBig ? MINI_LEVEL : {}}
           memoProps={memoProps}
         />
       </Flex>
@@ -130,39 +200,6 @@ const PlayerHud = memo(
     "isNearby",
   ]),
 );
-
-const LevelIcon = ({
-  player,
-  sx,
-}: {
-  player?: Partial<HudCharacter> | null;
-  sx?: ThemeUIStyleObject;
-}) => {
-  return (
-    <Box
-      data-tooltip-place="bottom"
-      data-tooltip-id="hud"
-      data-tooltip-content={`Level ${player?.stats?.level} ${player?.charClass} `}
-      sx={{
-        textTransform: "capitalize",
-        borderRadius: 6,
-        minWidth: 20,
-        textAlign: "center",
-        lineHeight: "16px",
-        fontSize: 0,
-        pointerEvents: "all",
-        position: "absolute",
-        background: "black",
-        border: `1px solid white`,
-        boxShadow: `0px 0px 0px 1px black`,
-        transformOrigin: "top left",
-        ...sx,
-      }}
-    >
-      {player?.stats?.level}
-    </Box>
-  );
-};
 
 /** Fade-out duration for proximity plates; WebRTC teardown is delayed to match (see VideoFrame). */
 const NEARBY_EXIT_MS = 380;
@@ -190,6 +227,7 @@ export const MenuHud = () => {
     remoteVideoStreams,
     isConnected,
   } = useAppContext();
+  const { companions, foes, hovered } = useNpcPlates();
   const [nearbySocketIds, setNearbySocketIds] = useState<string[]>([]);
   const [exitingNearbyIds, setExitingNearbyIds] = useState<Set<string>>(() => new Set());
   const nearbyExitTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
@@ -281,52 +319,54 @@ export const MenuHud = () => {
         isBig={true}
         portraitVideoStream={heroPortraitVideo}
       />
-      <Flex sx={{ flexDirection: "row", alignItems: "flex-start", gap: 3 }}>
-        <Flex sx={{ flexDirection: "column" }}>
-          {hasParty &&
-            partyIds?.map((id: string) => {
-              const p = players?.find((pl) => pl?.id === id);
-              return (
-                <PlayerHud
-                  isBig={false}
-                  player={structuredClone(p)}
-                  key={id}
-                  portraitVideoStream={remotePortraitStream(videoChatOn, remoteVideoStreams, p)}
-                />
-              );
-            })}
-        </Flex>
-        {nearbyNonPartyIds.length > 0 && (
-          <Flex sx={{ flexDirection: "column", gap: "2px" }}>
-            {nearbyNonPartyIds.map((socketId) => {
-              const p = players?.find(
-                (pl) =>
-                  String(pl?.socketId) === String(socketId) || String(pl?.id) === String(socketId),
-              );
-              if (!p) return null;
-              const isExiting = exitingNearbyIds.has(socketId);
-              return (
-                <Flex
-                  key={`nearby-${socketId}`}
-                  sx={{
-                    opacity: isExiting ? 0 : 1,
-                    transition: `opacity ${NEARBY_EXIT_MS}ms ease-out`,
-                    animation: `nearby-plate-in ${NEARBY_FADE_IN_MS}ms ease-out`,
-                    pointerEvents: isExiting ? "none" : "auto",
-                  }}
-                >
-                  <PlayerHud
-                    isBig={false}
-                    isNearby={true}
-                    player={structuredClone(p)}
-                    portraitVideoStream={remotePortraitStream(videoChatOn, remoteVideoStreams, p)}
-                  />
-                </Flex>
-              );
-            })}
-          </Flex>
-        )}
-      </Flex>
+      {/* Your party, your companions, players near you, foes fighting you, then the NPC under
+          the cursor */}
+      <Grid sx={PLATE_GRID}>
+        {hasParty &&
+          partyIds?.map((id: string) => {
+            const p = players?.find((pl) => pl?.id === id);
+            return (
+              <PlayerHud
+                isBig={false}
+                player={structuredClone(p)}
+                key={id}
+                portraitVideoStream={remotePortraitStream(videoChatOn, remoteVideoStreams, p)}
+              />
+            );
+          })}
+        {companions.map((npc) => (
+          <PlayerHud player={npc as Partial<HudCharacter>} isBig={false} key={npc.id} />
+        ))}
+        {nearbyNonPartyIds.map((socketId) => {
+          const p = players?.find(
+            (pl) =>
+              String(pl?.socketId) === String(socketId) || String(pl?.id) === String(socketId),
+          );
+          if (!p) return null;
+          const isExiting = exitingNearbyIds.has(socketId);
+          return (
+            <Flex
+              key={`nearby-${socketId}`}
+              sx={{
+                opacity: isExiting ? 0 : 1,
+                transition: `opacity ${NEARBY_EXIT_MS}ms ease-out`,
+                animation: `nearby-plate-in ${NEARBY_FADE_IN_MS}ms ease-out`,
+                pointerEvents: isExiting ? "none" : "auto",
+              }}
+            >
+              <PlayerHud
+                isBig={false}
+                isNearby={true}
+                player={structuredClone(p)}
+                portraitVideoStream={remotePortraitStream(videoChatOn, remoteVideoStreams, p)}
+              />
+            </Flex>
+          );
+        })}
+        {[...foes, ...(hovered ? [hovered] : [])].map((npc) => (
+          <PlayerHud player={npc as Partial<HudCharacter>} isBig={false} key={npc.id} />
+        ))}
+      </Grid>
     </Box>
   );
 };

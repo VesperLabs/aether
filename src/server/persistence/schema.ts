@@ -159,6 +159,19 @@ const userSchema = {
       bsonType: "array",
       description: "must be an array",
     },
+    companions: {
+      bsonType: "array",
+      description: "companions the player keeps, each the actor it is a copy of",
+      items: {
+        bsonType: "object",
+        required: ["id", "name"],
+        properties: {
+          id: { bsonType: "string" },
+          name: { bsonType: "string" },
+          isAway: { bsonType: "bool" },
+        },
+      },
+    },
     createdAt: {
       bsonType: "date",
       description: "must be a date",

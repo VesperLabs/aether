@@ -26,7 +26,6 @@ import { toTint } from "./tint";
 import type { Bubble } from "./bubble";
 import type { WindupPie } from "./windup-pie";
 import type { Bar } from "./bar";
-import type { BuffRack } from "./buff-rack";
 import type { CaptureBall } from "./capture-ball";
 import type { StunStars } from "./stun-stars";
 import type { WeaponSprite } from "./weapon-sprite";
@@ -74,7 +73,6 @@ export class Player extends Character {
   declare hpBar: Bar;
   declare windupPie: WindupPie;
   declare userName: Phaser.GameObjects.BitmapText;
-  declare buffRack: BuffRack;
   declare stunStars: StunStars;
   declare captureBall: CaptureBall;
   declare corpse: Sprite;
@@ -178,7 +176,6 @@ export class Player extends Character {
   updateExtas() {
     this.drawCharacterFromUserData();
     this.updateHpBar();
-    this.buffRack.compareBuffs(this.buffs);
   }
   /** Regen effects from the tick flags. The hp/mp/sp totals themselves come with the tick's vitals. */
   doRegen() {
@@ -288,7 +285,6 @@ export class Player extends Character {
     this.windupPie.draw(false);
     this.emit(CHARACTER_DIED);
     this.corpse.setVisible(!this.isMob());
-    this.buffRack.setShown(false);
     /* Mobs leave no corpse, so no name either, companions included */
     if (this.isMob()) this.userName.setVisible(false);
     if (this.isHero) window.dispatchEvent(new Event("HERO_DEAD"));
@@ -317,11 +313,8 @@ export class Player extends Character {
     const shouldShow = !this.checkOutOfCombat() || state?.isHovering;
 
     this.hpBar.setVisible(shouldShow);
-    /* The name first, so the buff row lays out around the name it will show with */
     /* Every frame, so it follows changes like a mob becoming a companion */
     this.userName.setVisible(!this.hidesName() || shouldShow);
-    /* Buffs show on hover only, at once */
-    this.buffRack.setShown(!!(shouldShow && state?.isHovering));
   }
   checkDeath() {
     /* Ensures the textures and depth have been updated for death state */

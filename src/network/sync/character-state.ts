@@ -1,4 +1,5 @@
 import type { CharClass } from "@/content";
+import type { SavedCompanion } from "@/rules/capture";
 import type { Habitat } from "@/rules/movement";
 
 // oxlint-disable-next-line typescript/no-explicit-any
@@ -45,6 +46,8 @@ export interface CharacterSyncInput {
   abilities: Opaque;
   activeItemSlots: Opaque[];
   gold: number;
+  /** Players only: the companions they caught and keep. */
+  companions?: SavedCompanion[];
   getQuests(): Opaque[];
 }
 
@@ -79,6 +82,8 @@ export interface FullCharacterWire {
   abilities: Opaque;
   activeItemSlots: Opaque[];
   gold: number;
+  /** Your own character only: the companions you caught and keep. */
+  companions?: SavedCompanion[];
 }
 
 /** The parts of a character that change when buffs do. */
@@ -146,6 +151,7 @@ export function getFullCharacterState(p: CharacterSyncInput): FullCharacterWire 
     npcKills: p?.npcKills,
     quests: p?.getQuests(),
     gold: p?.gold,
+    companions: p?.companions,
   };
 }
 

@@ -23,15 +23,11 @@ const LANDINGS: Partial<Record<string, Landing>> = { stealth: "expand" };
 
 /**
  * A buff or debuff landing: its icon pops on the body, then drops a little and fades away (or, for
- * `LANDINGS` set to expand, like stealth, swells out as it fades). Its
- * icon joins the buff row after the name (shown on hover) only once this is over. Visual only.
+ * `LANDINGS` set to expand, like stealth, swells out as it fades). Visual only.
  */
 export class Buff extends Phaser.GameObjects.Container {
   declare buff: Phaser.GameObjects.Sprite;
   declare victim: Player;
-  declare buffName: string;
-  /** Whether this landing keeps the icon out of the row, so must let it in when done. */
-  declare held: boolean;
   constructor(scene: Phaser.Scene, victim: Player, buffName: string) {
     super(scene, victim.x, victim.y);
 
@@ -40,9 +36,6 @@ export class Buff extends Phaser.GameObjects.Container {
     this.buff.setOrigin(0.5);
     this.victim.add(this.buff);
     endOnDeath(victim, this);
-    /* Its icon joins the buff row only once this is over */
-    this.buffName = buffName;
-    this.held = victim.buffRack?.holdSlot(buffName) ?? false;
 
     this.buff.setDisplaySize(0, 0);
     this.buff.x = this.victim.rig.x;
@@ -80,8 +73,6 @@ export class Buff extends Phaser.GameObjects.Container {
     this.victim.bringToTop(this.buff);
   }
   destroy() {
-    if (this.held) this.victim?.buffRack?.releaseSlot(this.buffName);
-    this.held = false;
     if (this.scene) this.scene.events.off("update", this.update, this);
     this.buff.destroy();
     super.destroy();

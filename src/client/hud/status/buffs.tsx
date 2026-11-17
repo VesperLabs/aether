@@ -10,6 +10,9 @@ import { Tooltip } from "@/ui";
 import { Label } from "@/ui";
 import { TextDivider } from "@/ui";
 
+/** A buff's icon on the big plate, in px. */
+const DEFAULT_ICON_SIZE = 24;
+
 interface BuffProps {
   buff: ActiveBuff;
   tooltipId: string;
@@ -65,7 +68,7 @@ const BuffTooltip = ({
   );
 };
 
-const Buff = ({ buff, tooltipId, player }: BuffProps) => {
+const Buff = ({ buff, tooltipId, player, size }: BuffProps & { size: number }) => {
   const [timeLeft, setTimeLeft] = useState<number>();
 
   useEffect(() => {
@@ -106,17 +109,35 @@ const Buff = ({ buff, tooltipId, player }: BuffProps) => {
       />
       <Icon
         icon={`./assets/atlas/spell/${buffIcon(buff.name ?? "")}.png`}
-        size={24}
+        size={size}
         data-tooltip-place="bottom"
         data-tooltip-id={tooltipId}
-        sx={blinkingStyle} // Apply the blinking style conditionally
+        sx={{
+          ...blinkingStyle,
+          /* The whole 32px art shrunk to fit, not its middle cut out. Shrunk by an uneven fraction
+             (24px), crisp pixels would drop rows: smoothed. A whole fraction (16px) stays crisp */
+          backgroundSize: "contain",
+          imageRendering: 32 % size ? "auto" : "pixelated",
+        }}
       />
     </>
   );
 };
 
 export const Buffs = memo(
-  ({ player, sx }: { player?: Partial<HudCharacter> | null; sx?: ThemeUIStyleObject }) => {
+  ({
+    player,
+    sx,
+    iconSize = DEFAULT_ICON_SIZE,
+    wrapRows,
+  }: {
+    player?: Partial<HudCharacter> | null;
+    sx?: ThemeUIStyleObject;
+    /** Each buff's icon, in px. */
+    iconSize?: number;
+    /** Wraps onto this many rows, left to right, cutting off the rest; else one row, any length. */
+    wrapRows?: number;
+  }) => {
     const buffs = player?.buffs;
     return (
       <Flex
@@ -127,10 +148,36 @@ export const Buffs = memo(
           ...sx,
         }}
       >
-        <Flex sx={{ flexDirection: "row-reverse", gap: 1, height: 24 }}>
+        <Flex
+          sx={{
+            /* Each icon overlaps the one before it by the empty edge around the art (5 of its
+               32px, about 4 at 24, on each side), so the drawn icons sit about 2px apart: on its
+               right when laid out right to left, its left when wrapping left to right */
+            ...(wrapRows
+              ? {
+                  flexWrap: "wrap",
+                  maxHeight: iconSize * wrapRows,
+                  overflow: "hidden",
+                  "& > .icon ~ .icon": { marginLeft: `${-iconSize / 4}px` },
+                }
+              : {
+                  flexDirection: "row-reverse",
+                  height: iconSize,
+                  "& > .icon ~ .icon": { marginRight: `${-iconSize / 4}px` },
+                }),
+          }}
+        >
           {buffs?.map((buff: ActiveBuff) => {
             const tooltipId = `buffs-${buff?.name}-${player?.id}`;
-            return <Buff key={tooltipId} tooltipId={tooltipId} buff={buff} player={player} />;
+            return (
+              <Buff
+                key={tooltipId}
+                tooltipId={tooltipId}
+                buff={buff}
+                player={player}
+                size={iconSize}
+              />
+            );
           })}
         </Flex>
       </Flex>

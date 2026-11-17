@@ -2,11 +2,8 @@ import { describe, expect, it } from "vitest";
 import { getCatchChance, isCatchable, rollCatch } from "./rules";
 
 describe("getCatchChance", () => {
-  it("grows with the ball, up to a Master Ball that always catches", () => {
-    const chances = [1, 2, 3, 4].map(getCatchChance);
-    expect(chances).toEqual([...chances].sort((a, b) => a - b));
-    expect(new Set(chances).size).toBe(4);
-    expect(getCatchChance(4)).toBe(1);
+  it("is each ball's catch chance: 25% up to a Master Ball that always catches", () => {
+    expect([1, 2, 3, 4].map(getCatchChance)).toEqual([0.25, 0.5, 0.75, 1]);
   });
 
   it("treats a missing or out-of-range level as the nearest ball", () => {

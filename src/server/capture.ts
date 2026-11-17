@@ -3,6 +3,7 @@ import { isCatchable, rollCatch } from "@/rules/capture";
 import type { GameEventBus } from "@/rules/world";
 import { catchAsCompanion } from "./catching";
 import { canTame } from "./companions";
+import { canKeepCompanion, COMPANIONS_FULL } from "./kept-companions";
 import { catchTargetOf } from "./catch-target";
 import { isInRoom } from "./player-room";
 import type { ServerWorld } from "./server-world";
@@ -20,6 +21,11 @@ export function subscribeCapture(bus: GameEventBus, world: ServerWorld) {
     const thrower = world.players[casterId];
     if (!wild || !canTame(wild) || !isCatchable(catchTargetOf(wild)) || !isInRoom(thrower)) return;
     if (wild.room.name !== thrower.roomName || !rollCatch(world.dice.random, level)) return;
-    catchAsCompanion(world, thrower, wild);
+    /* It would have been caught, but there is no room for it: it breaks free, and they hear why */
+    if (!canKeepCompanion(thrower)) {
+      world.io.to(thrower.socketId).emit("message", { type: "error", message: COMPANIONS_FULL });
+      return;
+    }
+    catchAsCompanion(world, thrower, wild, [], { keep: true });
   });
 }

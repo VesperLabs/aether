@@ -4,15 +4,46 @@ import { PAPER, PAPER_STYLE, PaperFrame } from "./paper";
 import type { WikiPlayer } from "./page-players";
 import { CARD_COLORS, CharacterFace } from "./card-pool";
 import { WalkOnHover } from "./walk-on-hover";
+import { CompanionFace } from "./companion-face";
 
-/** The character, drawn small: the head and shoulders fill the box. */
-const PlayerFace = ({ player }: { player: WikiPlayer }) => (
-  <Flex
-    sx={{ width: 64, height: 64, flexShrink: 0, alignItems: "center", justifyContent: "center" }}
-  >
-    <CharacterFace character={player} />
-  </Flex>
-);
+/**
+ * The player's feet, from the bottom of the 64px face box: they stand 20px under the middle of
+ * their 80px frame, drawn at twice that size from the middle of the box, so 8px below its edge.
+ */
+const PLAYER_FEET_BOTTOM = -12;
+
+/** The character, drawn small: the head and shoulders fill the box. Their companion stands at their feet, bottom right, facing out. */
+const PlayerFace = ({ player }: { player: WikiPlayer }) => {
+  const companion = player.companions?.[0];
+  return (
+    <Flex
+      sx={{
+        position: "relative",
+        width: 64,
+        height: 64,
+        flexShrink: 0,
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <CharacterFace character={player} />
+      {companion && (
+        /* Its sheet is cut to its body, so its bottom is its feet: stood level with theirs */
+        <Box
+          sx={{
+            position: "absolute",
+            right: "-12px",
+            /* In px: theme-ui reads a bare number here as a step on its spacing scale */
+            bottom: `${PLAYER_FEET_BOTTOM}px`,
+            lineHeight: 0,
+          }}
+        >
+          <CompanionFace name={companion.name} />
+        </Box>
+      )}
+    </Flex>
+  );
+};
 
 /**
  * A player on parchment, laid out like the keeper cards: their face, name, level and class, and a

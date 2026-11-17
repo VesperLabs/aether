@@ -88,6 +88,9 @@ export function spawnNpc(
     startingCoords: { x: npc?.x, y: npc?.y },
   }) as unknown as Npc;
   world.npcs[id].nid = world.netIds.take(id);
+  /* Resting from the start, so a room sent before its first tick (a companion out as its owner
+   * logs in) shows it resting, not a buff update the client may not be ready for */
+  world.npcs[id].checkIsResting();
   return world.npcs[id];
 }
 

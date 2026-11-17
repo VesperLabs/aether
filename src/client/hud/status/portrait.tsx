@@ -1,7 +1,8 @@
 import type { ThemeUIStyleObject } from "theme-ui";
 import type { HudCharacter } from "@/client/hud/app/context";
 import { arePropsEqualWithKeys } from "@/ui";
-import { Box, PlayerRender } from "@/ui";
+import { Box, Flex, PlayerRender, WalkingSprite } from "@/ui";
+import { assetList, getBody } from "@/content";
 import { memo, useEffect, useRef, useState, type AnimationEvent } from "react";
 import { streamHasUsableVideo } from "@/client/hud/video/video-support";
 
@@ -123,6 +124,13 @@ export const Portrait = memo(
             ) : (
               <Box sx={{ position: "absolute", inset: 0, bg: "shadow.30" }} />
             )
+          ) : !getBody(player?.profile?.race).layered ? (
+            /* A creature isn't drawn in layers: its own sheet, standing and facing out */
+            <CreaturePortrait
+              race={player?.profile?.race}
+              tint={player?.profile?.tint}
+              size={size}
+            />
           ) : (
             <PlayerRender
               player={player ?? undefined}
@@ -148,3 +156,23 @@ export const Portrait = memo(
     );
   },
 );
+
+/** A creature's race sheet in the portrait's circle, filling most of it. */
+function CreaturePortrait({ race, tint, size }: { race?: string; tint?: string; size: number }) {
+  const asset = assetList.find((a) => a?.texture === race);
+  if (!asset) return null;
+  return (
+    <Flex
+      sx={{
+        position: "absolute",
+        inset: 0,
+        width: size,
+        height: size,
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <WalkingSprite asset={asset} tint={tint} size={Math.round(size * 0.8)} />
+    </Flex>
+  );
+}

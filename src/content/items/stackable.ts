@@ -9,8 +9,9 @@ export const stackableItems = {
       base: "pokeball",
       slot: "stackable",
       texture: "stackable-pokeball",
-      stats: { spCost: 4 },
-      /* Thrown as the `pokeball` spell; the level of `capturing` is how likely it is to catch */
+      /* The chance it catches what it hits, in percent */
+      stats: { spCost: 4, catchChance: 25 },
+      /* Thrown as the `pokeball` spell; `capturing`'s level says which ball it was */
       buffs: { capturing: 1 },
       /* Never a random drop: only given out on purpose */
       exclusive: true,
@@ -251,8 +252,9 @@ export const stackableItems = {
       base: "greatball",
       slot: "stackable",
       texture: "stackable-greatball",
-      stats: { spCost: 4 },
-      /* Thrown as the `greatball` spell; the level of `capturing` is how likely it is to catch */
+      /* The chance it catches what it hits, in percent */
+      stats: { spCost: 4, catchChance: 50 },
+      /* Thrown as the `greatball` spell; `capturing`'s level says which ball it was */
       buffs: { capturing: 2 },
       /* Never a random drop: only given out on purpose */
       exclusive: true,
@@ -276,8 +278,9 @@ export const stackableItems = {
       base: "ultraball",
       slot: "stackable",
       texture: "stackable-ultraball",
-      stats: { spCost: 4 },
-      /* Thrown as the `ultraball` spell; the level of `capturing` is how likely it is to catch */
+      /* The chance it catches what it hits, in percent */
+      stats: { spCost: 4, catchChance: 75 },
+      /* Thrown as the `ultraball` spell; `capturing`'s level says which ball it was */
       buffs: { capturing: 3 },
       /* Never a random drop: only given out on purpose */
       exclusive: true,
@@ -317,8 +320,9 @@ export const stackableItems = {
       base: "masterball",
       slot: "stackable",
       texture: "stackable-masterball",
-      stats: { spCost: 4 },
-      /* Thrown as the `masterball` spell; the level of `capturing` is how likely it is to catch */
+      /* The chance it catches what it hits, in percent */
+      stats: { spCost: 4, catchChance: 100 },
+      /* Thrown as the `masterball` spell; `capturing`'s level says which ball it was */
       buffs: { capturing: 4 },
       /* Never a random drop: only given out on purpose */
       exclusive: true,

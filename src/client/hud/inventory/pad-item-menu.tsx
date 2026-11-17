@@ -11,6 +11,7 @@ import { focusNavOn, holdNavItem } from "@/client/input/pad-nav";
 import { useAppContext } from "@/client/hud/app/context";
 import { CONSUMABLES_BASES, checkSlotsMatch } from "@/rules/inventory";
 import { canSlotMod } from "@/content";
+import { COMPANION_LOCATION } from "@/client/hud/social/companions-panel";
 
 /* As the chat's command list highlights its rows */
 const HIGHLIGHT = "rgba(255,255,255,.12)";
@@ -27,10 +28,22 @@ type Option =
   | "Move"
   | "To inventory"
   | "To equipment"
-  | "Drop";
+  | "Drop"
+  | "Bring out"
+  | "Put away"
+  | "Release";
 
 /** What can be done with the item in `slot`; the first is highlighted when the menu opens. */
 function optionsFor(slot: Element) {
+  /* A caught companion (Social's Companions tab): out or away, or let go */
+  if (slot.getAttribute("data-location") === COMPANION_LOCATION) {
+    return [
+      slot.hasAttribute("data-away")
+        ? { label: "Bring out" as const, hint: "Out with you" }
+        : { label: "Put away" as const, hint: "Still yours" },
+      { label: "Release" as const, hint: "Let it go for good" },
+    ];
+  }
   /* A shop's item: bought into the first free slot, or one picked with Move */
   if (slot.getAttribute("data-location") === "shop") {
     return [
@@ -150,9 +163,11 @@ function act(option: Option, slot: Element, openMenu: OpenMenu) {
   if (option === "Socket") {
     return carryTo(slot, "equipment", () => socketTargetFor(slot) ?? slot, openMenu);
   }
-  if (option === "Drop") {
+  if (option === "Drop" || option === "Release") {
     const ground = document.querySelector("#game canvas");
     if (ground) slot.dispatchEvent(new CustomEvent(PAD_DROP_EVENT, { detail: ground }));
+  } else if (option === "Bring out" || option === "Put away") {
+    slot.dispatchEvent(new CustomEvent(PAD_USE_EVENT));
   } else if (option === "Use") {
     /* Equipment and spells equip as a drag onto their slot would; the rest use as a double-click */
     const target = equipSlotFor(slot);

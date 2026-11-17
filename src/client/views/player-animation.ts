@@ -24,7 +24,7 @@ export function checkIsFlash(p: Player) {
 }
 
 /** Drawn over the body in every direction. */
-const OVERLAYS = ["userName", "buffRack", "stunStars", "captureBall", "bubble", "hpBar"] as const;
+const OVERLAYS = ["userName", "stunStars", "captureBall", "bubble", "hpBar"] as const;
 
 /** A ball in the hand is drawn at the size it flies. */
 const BALL_IN_HAND_SCALE = 0.5;
