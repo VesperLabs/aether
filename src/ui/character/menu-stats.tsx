@@ -1,5 +1,5 @@
 import { memo, type ReactNode } from "react";
-import { convertMsToS } from "@/rules/stats";
+import { convertMsToS, roundStat } from "@/rules/stats";
 import { ColumnTitle, SectionTitle, StatRow } from "@/ui/item";
 import {
   arePropsEqualWithKeys,
@@ -148,7 +148,7 @@ export const MenuStats = memo(
             {row("Vitality", String(stats.vitality))}
           </Section>
           <Section title="Offense">
-            {row("Damage", `${stats.minDamage}–${stats.maxDamage}`)}
+            {row("Damage", `${roundStat(stats.minDamage)}–${roundStat(stats.maxDamage)}`)}
             {row("Spell power", String(stats.spellPower))}
             {row("Crit chance", `${stats.critChance?.toFixed(1)}%`, "Crit chance")}
             {row("Crit multiplier", `${stats.critMultiplier?.toFixed(1)}x`)}
@@ -164,9 +164,9 @@ export const MenuStats = memo(
             {row(
               "HP · MP · SP",
               <Text sx={{ ...ROW_TYPE, fontWeight: "bold" }}>
-                <Text sx={{ color: "danger" }}>+{stats.regenHp}</Text>{" "}
-                <Text sx={{ color: resourceToken("mp") }}>+{stats.regenMp}</Text>{" "}
-                <Text sx={{ color: resourceToken("sp") }}>+{stats.regenSp}</Text>
+                <Text sx={{ color: "danger" }}>+{roundStat(stats.regenHp)}</Text>{" "}
+                <Text sx={{ color: resourceToken("mp") }}>+{roundStat(stats.regenMp)}</Text>{" "}
+                <Text sx={{ color: resourceToken("sp") }}>+{roundStat(stats.regenSp)}</Text>
               </Text>,
               "Health, mana and stamina regenerated",
             )}
@@ -179,7 +179,7 @@ export const MenuStats = memo(
           <Section title="Elements">
             <Elements stats={stats} />
           </Section>
-          <Section title="Loot">{row("Magic find", `${stats.magicFind}%`)}</Section>
+          <Section title="Loot">{row("Magic find", `${roundStat(stats.magicFind)}%`)}</Section>
         </Box>
       </Menu>
     );

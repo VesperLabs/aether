@@ -151,7 +151,7 @@ export const actors3 = {
   },
   wyrm: {
     charClass: "warrior",
-    profile: { race: "wyrm", userName: "Wyrm", scale: 2 },
+    profile: { race: "wyrm", userName: "Wyrm", scale: 1 },
     flavor:
       "The great serpent of the aqueducts. Its scales are worth a fortune, if you can live long enough to take one.",
     behaviors: { fight: { starts: "onSight" } },

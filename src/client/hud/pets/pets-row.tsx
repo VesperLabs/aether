@@ -12,7 +12,11 @@ import {
   useSlotDrag,
 } from "@/ui";
 import { useAppContext } from "@/client/hud/app/context";
-import { PetTooltip } from "./pet-tooltip";
+import { actors, isActorId, type ActorDefinition } from "@/content";
+import { npcStats } from "@/rules/stats";
+import { useNpcPlates } from "@/client/hud/menu/use-npc-plates";
+import { HealthPip } from "./health-pip";
+import { PetTooltip, type PetHealth } from "./pet-tooltip";
 import { ModalReleasePet } from "./modal-release-pet";
 import { PAD_DROP_EVENT, PAD_USE_EVENT, type PadDropEvent } from "@/ui/item/pad-slot-events";
 
@@ -38,12 +42,20 @@ const EMPTY_ICON = (slot: PetSlot) => `./assets/icons/${slot === "active" ? "sta
 export const PetsRow = () => {
   const { hero } = useAppContext();
   const slots = hero?.pets ?? emptyPetSlots();
+  /* The pet that's out is live in the world: its plate has its HP as it is now */
+  const { owned } = useNpcPlates();
   /* Dropped on the ground: asked before it's let go, in a modal over everything */
   const [releasing, setReleasing] = useState<PetSlot | null>(null);
   return (
     <Flex sx={{ gap: 2, justifyContent: "end", flexWrap: "wrap" }}>
       {PET_SLOTS.map((slot) => (
-        <PetSlotView key={slot} slot={slot} pet={slots[slot]} onRelease={setReleasing} />
+        <PetSlotView
+          key={slot}
+          slot={slot}
+          pet={slots[slot]}
+          live={owned.find((npc) => npc.petId && npc.petId === slots[slot]?.id)?.stats}
+          onRelease={setReleasing}
+        />
       ))}
       {releasing && (
         <Portal container={document.body}>
@@ -54,13 +66,28 @@ export const PetsRow = () => {
   );
 };
 
+/**
+ * A pet's HP: live while it's out; stored, its saved share of the max HP it comes out with,
+ * rounded as it comes out (never below 1).
+ */
+function petHealth(pet: SavedPet, live?: PetHealth): PetHealth | undefined {
+  if (live) return { hp: live.hp, maxHp: live.maxHp };
+  const actor = isActorId(pet.name) ? (actors[pet.name] as ActorDefinition) : undefined;
+  const maxHp = actor ? npcStats(actor).maxHp : 0;
+  if (!maxHp) return undefined;
+  return { hp: Math.max(1, Math.round(maxHp * (pet.hp ?? 1))), maxHp };
+}
+
 const PetSlotView = ({
   slot,
   pet,
+  live,
   onRelease,
 }: {
   slot: PetSlot;
   pet: SavedPet | null;
+  /** The pet's stats out in the world, when it's out. */
+  live?: PetHealth;
   onRelease: (slot: PetSlot) => void;
 }) => {
   const { socket } = useAppContext();
@@ -100,6 +127,7 @@ const PetSlotView = ({
   }, []);
 
   const tooltipId = `pet-${slot}`;
+  const health = pet ? petHealth(pet, live) : undefined;
   const isActive = slot === "active";
   return (
     /* The active slot is marked with a star on its corner */
@@ -124,7 +152,9 @@ const PetSlotView = ({
           userSelect: "none",
         }}
       >
-        {pet && !dragging && <PetTooltip tooltipId={tooltipId} slot={slot} pet={pet} />}
+        {pet && !dragging && (
+          <PetTooltip tooltipId={tooltipId} slot={slot} pet={pet} health={health} />
+        )}
         {/* While it's dragged, a faded grey copy stays behind in the slot, as an item's does */}
         {pet && dragging && (
           <Box sx={{ opacity: 0.5, filter: "grayscale(100%)", lineHeight: 0 }}>
@@ -163,6 +193,9 @@ const PetSlotView = ({
           </Portal>
         )}
       </Flex>
+      {pet && !dragging && (
+        <HealthPip share={health ? health.hp / health.maxHp : 1} slotSize={SLOT_SIZE} />
+      )}
       {isActive && pet && (
         <Icon
           icon="./assets/icons/star.png"

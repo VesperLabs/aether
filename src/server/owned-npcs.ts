@@ -1,4 +1,5 @@
 import { getPublicCharacterState } from "@/network/sync";
+import { findOpenSpot } from "@/rules/movement";
 import { mergeBehaviors } from "@/rules/npc-behavior";
 import type { GameEventBus, Point, RoomData, System } from "@/rules/world";
 import { isAlly } from "./allegiance-adapter";
@@ -21,6 +22,30 @@ export const isFollower = (npc: Npc) => !!npc.state?.ownerId && !isPet(npc);
 
 /** An owned NPC further than this from its owner (or in another room) appears on them. */
 const CATCH_UP_DISTANCE = 480;
+/**
+ * An owned NPC that has tried to follow for this long, in ms, without getting anywhere is wedged:
+ * it appears beside its owner instead of pushing at the wall.
+ */
+const STUCK_MS = 2000;
+/** Moving less than this many pixels over `STUCK_MS` counts as getting nowhere. */
+const STUCK_MOVE = 12;
+/** Closer than this to its owner it is where it wants to be, not stuck. */
+const NEAR_OWNER = 80;
+/** Where each owned NPC last made headway, and when. */
+const headway = new WeakMap<Npc, { x: number; y: number; at: number }>();
+
+/** Has `npc` been trying to reach its owner and not moving for `STUCK_MS`? */
+function isWedged(npc: Npc, owner: Player, now: number) {
+  const last = headway.get(npc);
+  const idle = !!npc.state.lockedPlayerId || !(npc.vx || npc.vy);
+  const isClose = Math.hypot(npc.x - owner.x, npc.y - owner.y) <= NEAR_OWNER;
+  if (idle || isClose || !last || Math.hypot(npc.x - last.x, npc.y - last.y) > STUCK_MOVE) {
+    headway.set(npc, { x: npc.x, y: npc.y, at: now });
+    return false;
+  }
+  return now - last.at >= STUCK_MS;
+}
+
 /** Least threat an owned NPC takes from its owner's fight, so even weak hits pull it in. */
 const MIN_ASSIST_THREAT = 10;
 /**
@@ -84,17 +109,21 @@ export function removeNpc(npc: Npc) {
   world.io.to(npc.room.name).emit("npcRemove", npc.id);
 }
 
-/** Puts an NPC somewhere else, telling both rooms when it changes room. */
+/**
+ * Puts an NPC at `to`, or the nearest spot its body fits (a big body put in its owner's narrow
+ * corridor would wedge again), telling both rooms when it changes room.
+ */
 function moveNpc(npc: Npc, room: RoomData, to: Point) {
   const { io } = npc.world;
   const from = npc.room.name;
-  npc.x = to.x;
-  npc.y = to.y;
+  npc.room = room;
+  npc.roomName = room.name;
+  const spot = findOpenSpot(npc.movementMap(), to, npc.bodySize);
+  npc.x = spot.x;
+  npc.y = spot.y;
   npc.vx = 0;
   npc.vy = 0;
   if (from === room.name) return;
-  npc.room = room;
-  npc.roomName = room.name;
   io.to(from).emit("npcRemove", npc.id);
   io.to(room.name).emit("npcJoin", getPublicCharacterState(npc));
 }
@@ -125,9 +154,17 @@ export const keepOwnedNear: System<ServerWorld> = (world) => {
     }
     const room = owner.roomName ? world.rooms[owner.roomName] : undefined;
     if (!room || npc.state.isDead) continue;
-    const isAway = npc.room.name !== room.name;
-    if (isAway || Math.hypot(npc.x - owner.x, npc.y - owner.y) > CATCH_UP_DISTANCE) {
+    if (npc.room.name !== room.name) {
       moveNpc(npc, room, { x: owner.x, y: owner.y });
+    } else if (
+      Math.hypot(npc.x - owner.x, npc.y - owner.y) > CATCH_UP_DISTANCE ||
+      isWedged(npc, owner, world.now())
+    ) {
+      /* Same room: screens dissolve it out where it was and in beside its owner, not snap it */
+      moveNpc(npc, room, { x: owner.x, y: owner.y });
+      headway.delete(npc);
+      const { x, y } = npc;
+      world.events.emit("npcWarped", { npcId: npc.id, roomName: room.name, x, y, at: world.now() });
     }
   }
 };

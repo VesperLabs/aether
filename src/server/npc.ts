@@ -198,7 +198,7 @@ export class Npc extends Character {
   /** The room's map with what is outside its habitat as wall. */
   movementMap = () => habitatMap(this.room.map, this, this.habitat);
   isNearCollideTile() {
-    return isNextToSolidTile(this.movementMap().grid, this.x, this.y);
+    return isNextToSolidTile(this.movementMap().grid, this.x, this.y, this.bodySize);
   }
   isOutOfBounds() {
     return isOutOfHabitat(this.room.map, this, this.habitat);

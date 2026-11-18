@@ -33,6 +33,26 @@ describe("gamepad buttons", () => {
     vi.unstubAllGlobals();
     resetBindings("gamepad");
     setMenusOpen(false);
+    vi.restoreAllMocks();
+  });
+
+  it("does nothing in a window without focus, so another open tab can have the controller", () => {
+    vi.spyOn(document, "hasFocus").mockReturnValue(false);
+    expect(press([7])).toEqual([]);
+  });
+
+  it("lets go of a held button when the window loses focus", () => {
+    const sent: string[] = [];
+    const log = (e: KeyboardEvent) => sent.push(`${e.type}:${e.key}`);
+    window.addEventListener("keydown", log);
+    window.addEventListener("keyup", log);
+    vi.stubGlobal("navigator", { getGamepads: () => [pad([7])] });
+    pollGamepadButtons();
+    vi.spyOn(document, "hasFocus").mockReturnValue(false);
+    pollGamepadButtons();
+    window.removeEventListener("keydown", log);
+    window.removeEventListener("keyup", log);
+    expect(sent).toEqual(["keydown: ", "keyup: "]);
   });
 
   it("attacks with RT and dashes with RB in play", () => {

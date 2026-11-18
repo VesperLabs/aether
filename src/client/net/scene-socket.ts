@@ -342,6 +342,16 @@ export function bindSceneSocket(scene: SceneMain) {
     playSpawnDissolve(npc);
   });
 
+  /* Left far behind, it dissolves away where it was and back in beside its owner */
+  socket.on("warpNpc", ({ id, x, y, warpTime }) => {
+    const npc = getNpc(scene, id);
+    if (!npc) return;
+    playLeaveDissolve(npc);
+    npc.state.lastTeleport = warpTime;
+    npc.setPosition(x, y);
+    playSpawnDissolve(npc);
+  });
+
   /* Spawned, caught, or a pet or follower following its owner in: it dissolves in */
   socket.on("npcJoin", (npc) => {
     if (!getNpc(scene, npc.id)) playSpawnDissolve(addNpc(scene, npc));

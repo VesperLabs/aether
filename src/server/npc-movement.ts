@@ -20,6 +20,7 @@ import {
   findNextWaypoint,
   getKnockbackVelocity,
   getLungeVelocity,
+  hasClearWalk,
   hasLineOfSight,
   isOutOfMap,
 } from "@/rules/movement";
@@ -75,7 +76,7 @@ export function performNpcMovement(
       if (!leader) return standStill(npc);
       // Around any wall in the way: walking straight at it and only pathing once pressed against
       // it flips between the two every few ticks, which is the wiggle
-      return movement.pathed || !hasLineOfSight(npc.room.map.grid, npc, leader)
+      return movement.pathed || !hasClearWalk(npc.movementMap().grid, npc, leader, npc.bodySize)
         ? walkToPathed(npc, leader)
         : walkTo(npc, leader);
     case "flee":
@@ -189,7 +190,7 @@ function walkToPathed(npc: Npc, target: Point, speedRatio = 1) {
   /* Paths are laid for walkers; a swimmer heads straight there and stops at the bank */
   if (npc.habitat === "water") return walkTo(npc, target, speedRatio);
   const { nextPath } = npc;
-  const next = findNextWaypoint(npc.room.pathfinder, npc, target);
+  const next = findNextWaypoint(npc.room.pathfinder, npc, target, npc.bodySize);
   if (next?.x !== nextPath?.x || next?.y !== nextPath?.y) npc.nextPath = next as Point;
   // No way around (the target stands in a wall, or past the search limit): head straight for it
   if (!next) return walkTo(npc, target, speedRatio);

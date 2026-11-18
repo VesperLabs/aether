@@ -129,9 +129,13 @@ function forgetPoses(world: ServerWorld, id: string) {
   for (const room of Object.values(world.rooms)) room.poseHistory.forget(id);
 }
 
-/** Respawned npcs jump home: forget where they stood before. */
+/** Respawned npcs jump home, and owned ones left behind jump to their owner: forget where they stood. */
 export function subscribePoseForgetting(bus: GameEventBus, world: ServerWorld) {
-  return bus.on("npcRespawned", ({ npcId }) => forgetPoses(world, npcId));
+  const offs = [
+    bus.on("npcRespawned", ({ npcId }) => forgetPoses(world, npcId)),
+    bus.on("npcWarped", ({ npcId }) => forgetPoses(world, npcId)),
+  ];
+  return () => offs.forEach((off) => off());
 }
 
 /** Lets a player who just started a lunge move its length on top of their walking budget. */

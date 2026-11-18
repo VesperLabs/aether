@@ -144,12 +144,16 @@ export function isInWater(grid: TileGrid, x: number, y: number): boolean {
 export const worldToTileX = (grid: TileGrid, x: number) => Math.floor(x / grid.tileWidth);
 export const worldToTileY = (grid: TileGrid, y: number) => Math.floor(y / grid.tileHeight);
 
-/** Is any of the eight tiles around the one at world point (x, y) solid? */
-export function isNextToSolidTile(grid: TileGrid, x: number, y: number): boolean {
+/**
+ * Is any tile around the one at world point (x, y) solid? Looks one tile out, plus however far a
+ * body of `radius` reaches past its own tile.
+ */
+export function isNextToSolidTile(grid: TileGrid, x: number, y: number, radius = 0): boolean {
   const tileX = worldToTileX(grid, x);
   const tileY = worldToTileY(grid, y);
-  for (let dx = -1; dx <= 1; dx++) {
-    for (let dy = -1; dy <= 1; dy++) {
+  const reach = 1 + Math.max(0, Math.ceil((radius - grid.tileWidth / 2) / grid.tileWidth));
+  for (let dx = -reach; dx <= reach; dx++) {
+    for (let dy = -reach; dy <= reach; dy++) {
       if (dx === 0 && dy === 0) continue;
       if (isSolidTile(grid, tileX + dx, tileY + dy)) return true;
     }

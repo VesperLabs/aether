@@ -8,6 +8,7 @@ import { registerCommands } from "./dispatcher";
 import { commandHandlers } from "./handlers/command-handlers";
 import { stopObserving } from "./handlers/observe";
 import { shouldPause } from "./world-pause";
+import { recordPetHealth } from "@/server/pets";
 
 /** Wires every new socket to the command dispatcher and cleans up when it goes away. */
 export function listenForConnections(world: ServerWorld) {
@@ -26,7 +27,10 @@ export function listenForConnections(world: ServerWorld) {
       const { socketId } = ctx;
       const player = world.players?.[socketId];
       /* A socket that never logged in has nobody to save */
-      if (player) world.db.updateUser(player);
+      if (player) {
+        recordPetHealth(world, player);
+        world.db.updateUser(player);
+      }
       console.log(`🔌 ${player?.profile?.userName ?? "Anonymous"} disconnected`);
       stopObserving(ctx);
       legacyLeaveParty(world, socketId, ctx.actor);
