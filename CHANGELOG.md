@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.51.0](https://github.com/VesperLabs/aether/compare/v0.50.1...v0.51.0) (2026-11-18)
+
+
+### Features
+
+* followers ([#383](https://github.com/VesperLabs/aether/issues/383)) ([321d0a0](https://github.com/VesperLabs/aether/commit/321d0a0a03ab77386879ba3728d8ff040119a55e))
+
 ## [0.50.1](https://github.com/VesperLabs/aether/compare/v0.50.0...v0.50.1) (2026-11-17)
 
 
