@@ -2,10 +2,12 @@ import { describe, expect, it } from "vitest";
 import {
   emptyPetSlots,
   findPetSlot,
+  isActiveOut,
   movePet,
   readPetSlots,
   slotForCatch,
   swapTarget,
+  toggleActiveAway,
 } from "./pet-slots";
 
 const crab = { id: "a", name: "crab" };
@@ -38,11 +40,22 @@ describe("pet slots", () => {
     expect(findPetSlot(slots, "b")).toBe("stored2");
   });
 
-  it("a double-click swaps a stored one in, and puts the active one in the first free store", () => {
+  it("a double-click swaps a stored one in; the active one toggles away instead of moving", () => {
     const slots = { ...emptyPetSlots(), active: crab, stored2: bat };
     expect(swapTarget(slots, "stored2")).toBe("active");
-    expect(swapTarget(slots, "active")).toBe("stored1");
+    expect(swapTarget(slots, "active")).toBeUndefined();
     expect(swapTarget(slots, "stored1")).toBeUndefined();
+  });
+
+  it("puts the active one away in its slot and back, and a move brings it out", () => {
+    const slots = { ...emptyPetSlots(), active: crab, stored2: bat };
+    const away = toggleActiveAway(slots);
+    expect(away.active).toEqual({ ...crab, isAway: true });
+    expect(isActiveOut(away)).toBe(false);
+    expect(toggleActiveAway(away).active).toEqual(crab);
+    /* Swapped out to a store, it isn't away there; the one swapped in comes out */
+    expect(movePet(away, "active", "stored2")).toMatchObject({ active: bat, stored2: crab });
+    expect(readPetSlots(away).active).toEqual({ ...crab, isAway: true });
   });
 
   it("reads only pets in known slots from a save", () => {

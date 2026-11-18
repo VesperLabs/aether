@@ -35,13 +35,17 @@ type Option =
 
 /** What can be done with the item in `slot`; the first is highlighted when the menu opens. */
 function optionsFor(slot: Element) {
-  /* A pet (Pets & Abilities menu): swapped in or out of active, or let go */
+  /* A pet (Pets & Abilities menu): swapped in as active, the active one put away or called back, or let go */
   if (slot.getAttribute("data-location") === PET_LOCATION) {
     if (!slot.getAttribute("data-id")) return [];
+    const isActive = slot.getAttribute("data-pet-slot") === "active";
+    const isAway = slot.hasAttribute("data-away");
     return [
-      slot.getAttribute("data-pet-slot") === "active"
-        ? { label: "Put away" as const, hint: "Into a free store" }
-        : { label: "Bring out" as const, hint: "Swap in as active" },
+      !isActive
+        ? { label: "Bring out" as const, hint: "Swap in as active" }
+        : isAway
+          ? { label: "Bring out" as const, hint: "Call it back" }
+          : { label: "Put away" as const, hint: "Keep it in its slot" },
       { label: "Release" as const, hint: "Let it go for good" },
     ];
   }

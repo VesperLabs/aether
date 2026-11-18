@@ -14,6 +14,8 @@ export interface SavedPet {
   name: string;
   /** Its HP as it was put away, as a share of its max (0 to 1), so swapping never heals. Full if missing. */
   hp?: number;
+  /** In the active slot but put away, not out with its owner (a double-click calls it back). */
+  isAway?: boolean;
 }
 
 export type PetSlots = Record<PetSlot, SavedPet | null>;
@@ -35,7 +37,13 @@ export function readPetSlots(saved: unknown): PetSlots {
     const pet = (saved as Record<string, unknown>)[slot] as SavedPet | null;
     if (typeof pet?.id === "string" && typeof pet?.name === "string") {
       const { id, name, hp } = pet;
-      slots[slot] = typeof hp === "number" && hp >= 0 && hp <= 1 ? { id, name, hp } : { id, name };
+      slots[slot] = {
+        id,
+        name,
+        ...(typeof hp === "number" && hp >= 0 && hp <= 1 && { hp }),
+        /* Only the active one can be put away in place: a stored one is away already */
+        ...(slot === "active" && pet.isAway === true && { isAway: true }),
+      };
     }
   }
   return slots;
@@ -49,21 +57,37 @@ export const slotForCatch = (slots: PetSlots): PetSlot | undefined =>
 export const findPetSlot = (slots: PetSlots, id: unknown) =>
   PET_SLOTS.find((slot) => slots[slot]?.id === id);
 
+/** A pet as it lands in a new slot: no longer put away (one moved into `active` comes out). */
+function moved(pet: SavedPet | null): SavedPet | null {
+  if (!pet?.isAway) return pet;
+  const { isAway: _isAway, ...rest } = pet;
+  return rest;
+}
+
 /** Moves a pet to another slot, swapping with whatever is there. */
 export const movePet = (slots: PetSlots, from: PetSlot, to: PetSlot): PetSlots => ({
   ...slots,
-  [from]: slots[to],
-  [to]: slots[from],
+  [from]: moved(slots[to]),
+  [to]: moved(slots[from]),
 });
 
+/** Puts the active pet away in its slot, or calls it back out. Unchanged with none active. */
+export function toggleActiveAway(slots: PetSlots): PetSlots {
+  const { active } = slots;
+  if (!active) return slots;
+  return { ...slots, active: active.isAway ? moved(active) : { ...active, isAway: true } };
+}
+
+/** Whether the active pet is out with its owner: there is one, and it isn't put away. */
+export const isActiveOut = (slots: PetSlots) => !!slots.active && !slots.active.isAway;
+
 /**
- * A double-click on a slot: a stored pet swaps into `active`; the active one goes to the
- * first free store. Undefined when there is nothing to do.
+ * Where a double-click on a stored slot sends its pet: into `active`, swapping with the one
+ * there. Undefined for an empty slot, or for `active` itself, which toggles away instead.
  */
 export function swapTarget(slots: PetSlots, from: PetSlot): PetSlot | undefined {
-  if (!slots[from]) return undefined;
-  if (from !== "active") return "active";
-  return STORED_PET_SLOTS.find((slot) => !slots[slot]);
+  if (!slots[from] || from === "active") return undefined;
+  return "active";
 }
 
 /** Takes a pet out of its slot. */

@@ -20,6 +20,12 @@ import { PetTooltip, type PetHealth } from "./pet-tooltip";
 import { ModalReleasePet } from "./modal-release-pet";
 import { PAD_DROP_EVENT, PAD_USE_EVENT, type PadDropEvent } from "@/ui/item/pad-slot-events";
 
+/** Faded and grey: a dragged pet's ghost, and a put-away active pet and its star. */
+const FADED_STYLE = { filter: "grayscale(100%)" };
+
+/** Two presses on a slot within this many ms are a double-click. */
+const DOUBLE_PRESS_MS = 300;
+
 /** Where pet slots are, for the controller's menu (`pad-item-menu`). */
 export const PET_LOCATION = "pets";
 /** Marks a pet slot with its slot id, for drops onto it. */
@@ -37,7 +43,8 @@ const EMPTY_ICON = (slot: PetSlot) => `./assets/icons/${slot === "active" ? "sta
 /**
  * The pets you caught, a row of fixed slots like equipment's above the abilities' spells:
  * the active one, out with you, then the stored ones. Drag between slots to swap them,
- * double-click to swap one in or out, drag one onto the ground to let it go.
+ * double-click a stored one to swap it in or the active one to put it away and back, drag one
+ * onto the ground to let it go.
  */
 export const PetsRow = () => {
   const { hero } = useAppContext();
@@ -126,21 +133,47 @@ const PetSlotView = ({
     };
   }, []);
 
+  /* Two presses close together are a double-click. Counted on the press, not the click: the
+   * press starts a drag that carries the art off into a portal, so no click ever lands */
+  const lastPress = useRef(0);
+  const onPress = () => {
+    const now = performance.now();
+    if (now - lastPress.current < DOUBLE_PRESS_MS) {
+      lastPress.current = 0;
+      swap();
+    } else lastPress.current = now;
+  };
+  const pressBinds = pet
+    ? {
+        onMouseDown: (e: React.MouseEvent) => {
+          onPress();
+          dragBinds.onMouseDown?.(e);
+        },
+        onTouchStart: (e: React.TouchEvent) => {
+          onPress();
+          dragBinds.onTouchStart?.(e);
+        },
+      }
+    : {};
+
   const tooltipId = `pet-${slot}`;
   const health = pet ? petHealth(pet, live) : undefined;
   const isActive = slot === "active";
+  /* The active one put away: it stays in its slot, greyed like a dragged pet's ghost, star too */
+  const isAway = !!pet?.isAway;
   return (
     /* The active slot is marked with a star on its corner */
     <Box sx={{ position: "relative" }}>
       <Flex
         ref={slotRef}
         {...dragBinds}
-        onDoubleClick={swap}
+        {...pressBinds}
         /* A slot to drops and to the controller's highlight, with its own menu on a held A */
         {...{ [SLOT_ATTR]: slot }}
         data-slot-key={`pet-${slot}`}
         data-location={PET_LOCATION}
         data-id={pet?.id}
+        data-away={isAway || undefined}
         data-tooltip-id={pet ? tooltipId : undefined}
         sx={{
           /* As an equipment slot: a filled one in its rarity's colours, an empty one greyed out */
@@ -157,7 +190,7 @@ const PetSlotView = ({
         )}
         {/* While it's dragged, a faded grey copy stays behind in the slot, as an item's does */}
         {pet && dragging && (
-          <Box sx={{ opacity: 0.5, filter: "grayscale(100%)", lineHeight: 0 }}>
+          <Box sx={{ ...FADED_STYLE, lineHeight: 0 }}>
             <ActorSprite name={pet.name} size={SLOT_SIZE} maxScale={ART_SCALE} wholeSteps />
           </Box>
         )}
@@ -174,6 +207,7 @@ const PetSlotView = ({
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
+                ...(isAway && !dragging && FADED_STYLE),
                 ...(dragging && {
                   position: "fixed",
                   left: `${position.x}px`,
@@ -200,7 +234,14 @@ const PetSlotView = ({
         <Icon
           icon="./assets/icons/star.png"
           size={24}
-          sx={{ position: "absolute", top: "-8px", left: "-8px", pointerEvents: "none", zIndex: 1 }}
+          sx={{
+            position: "absolute",
+            top: "-8px",
+            left: "-8px",
+            pointerEvents: "none",
+            zIndex: 1,
+            ...(isAway && FADED_STYLE),
+          }}
         />
       )}
     </Box>

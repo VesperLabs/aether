@@ -2,9 +2,11 @@ import { getPublicCharacterState } from "@/network/sync";
 import {
   PET_SLOTS,
   findPetSlot,
+  isActiveOut,
   movePet,
   slotForCatch,
   swapTarget,
+  toggleActiveAway,
   withoutPet,
   type PetSlot,
   type PetSlots,
@@ -103,7 +105,7 @@ export function keepPet(owner: Player, npc: Npc) {
 /** Brings out the owner's active pet at their feet, as they log in (before their room is sent). */
 export function bringOutPet(world: ServerWorld, owner: Player) {
   const { active } = owner.pets;
-  return active ? bringOut(world, owner, active) : undefined;
+  return active && isActiveOut(owner.pets) ? bringOut(world, owner, active) : undefined;
 }
 
 /**
@@ -118,13 +120,29 @@ export function movePetSlot(world: ServerWorld, owner: Player, from: PetSlot, to
   const moved = movePet(withActiveHp(world, slots), from, to);
   if (moved.active?.id !== slots.active?.id) {
     putAway(world, slots.active);
-    if (moved.active) bringOut(world, owner, moved.active);
+    if (moved.active && isActiveOut(moved)) bringOut(world, owner, moved.active);
   }
   savePets(owner, moved);
 }
 
-/** A double-click on a slot: a stored pet swaps in to be active; the active one is stored. */
+/**
+ * Puts the active pet away in its slot, or calls it back out, so the active slot can go quiet
+ * even with every store full.
+ */
+export function toggleActivePet(world: ServerWorld, owner: Player) {
+  const slots = withActiveHp(world, owner.pets);
+  if (!slots.active) return;
+  /* A dying active pet can't be put away: it is about to be lost */
+  if (outInWorld(world, slots.active.id)?.state.isDead) return;
+  const toggled = toggleActiveAway(slots);
+  if (isActiveOut(toggled)) bringOut(world, owner, toggled.active!);
+  else putAway(world, slots.active);
+  savePets(owner, toggled);
+}
+
+/** A double-click on a slot: a stored pet swaps in to be active; the active one goes away or comes back. */
 export function swapPet(world: ServerWorld, owner: Player, from: PetSlot) {
+  if (from === "active") return toggleActivePet(world, owner);
   const to = swapTarget(owner.pets, from);
   if (to) movePetSlot(world, owner, from, to);
 }
