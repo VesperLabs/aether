@@ -23,9 +23,14 @@ export const pauseGamepadButtons = (pause: boolean) => {
   paused = pause;
 };
 
-/** The first connected controller, if any. */
+/**
+ * The first connected controller, if any, and only in the window that has focus: the browser
+ * gives every open tab the same controller, so two games side by side would both obey it.
+ * Unfocused, it reads as unplugged, which lets go of anything held.
+ */
 export function getGamepad() {
   if (typeof navigator === "undefined" || !navigator.getGamepads) return undefined;
+  if (typeof document !== "undefined" && !document.hasFocus()) return undefined;
   return navigator.getGamepads().find((pad) => pad?.connected) ?? undefined;
 }
 

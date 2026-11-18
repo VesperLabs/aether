@@ -52,4 +52,9 @@ describe("pet slots", () => {
       active: crab,
     });
   });
+
+  it("keeps a saved HP share, and drops one that isn't a share", () => {
+    expect(readPetSlots({ active: { ...crab, hp: 0.4 } }).active).toEqual({ ...crab, hp: 0.4 });
+    expect(readPetSlots({ active: { ...crab, hp: 7 } }).active).toEqual(crab);
+  });
 });

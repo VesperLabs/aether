@@ -1,5 +1,5 @@
 import { getCatalogItem, type ActorDefinition } from "@/content";
-import { calculateExpValue, npcStats } from "@/rules/stats";
+import { calculateExpValue, npcStats, roundStat } from "@/rules/stats";
 import { Flex, Grid, Icon, Text, Tooltip, TooltipContent } from "@/ui";
 import { useId } from "react";
 import { fights } from "./combat-sections";
@@ -81,16 +81,17 @@ const ELEMENTS = ["fire", "water", "earth", "light"];
 const Resistance = ({ element, value }: { element: string; value: number }) => {
   const tooltipId = useId();
   const name = element[0].toUpperCase() + element.slice(1);
+  const percent = roundStat(value);
   return (
     <Flex
       data-tooltip-id={tooltipId}
       sx={{ ...ROW_STYLE, alignItems: "center", gap: 1, cursor: "help" }}
     >
       <Icon icon={`./assets/icons/elements/${element}.png`} size={24} sx={{ flexShrink: 0 }} />
-      <Text sx={{ fontWeight: 700, whiteSpace: "nowrap" }}>{value}%</Text>
+      <Text sx={{ fontWeight: 700, whiteSpace: "nowrap" }}>{percent}%</Text>
       <Tooltip id={tooltipId}>
         <TooltipContent>
-          {name} resistance: takes {value}% less {element} damage
+          {name} resistance: takes {percent}% less {element} damage
         </TooltipContent>
       </Tooltip>
     </Flex>

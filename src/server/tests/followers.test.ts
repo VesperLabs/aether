@@ -143,6 +143,25 @@ describe("followers", () => {
     await cheat(socket, "/npc clear");
   });
 
+  it("warps beside its owner once it has been wedged for a while, dissolving on screens", async () => {
+    const { socket, player } = await server.login();
+    const follower = await summon(socket, "crab");
+    const warps: Anything[] = [];
+    socket.on("warpNpc", (warp: Anything) => warps.push(warp));
+
+    /* Barely able to move (owned NPCs walk at their owner's pace): it gets nowhere, as when wedged */
+    const walkSpeed = player.stats.walkSpeed;
+    player.stats.walkSpeed = 0.5;
+    player.x += 200;
+    await server.run(socket, 3000);
+    player.stats.walkSpeed = walkSpeed;
+
+    expect(Math.hypot(follower.x - player.x, follower.y - player.y)).toBeLessThan(40);
+    expect(warps).toContainEqual(expect.objectContaining({ id: follower.id }));
+    socket.off("warpNpc");
+    await cheat(socket, "/npc clear");
+  });
+
   it("comes through a door with its owner, in the room the owner loads", async () => {
     const { socket, player } = await server.login();
     const follower = await summon(socket, "crab");

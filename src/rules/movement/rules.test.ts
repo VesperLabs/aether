@@ -100,4 +100,42 @@ describe("pathfinding", () => {
     expect(around!.some((t) => t.x === 80 && t.y === 16)).toBe(false);
     expect(findPath(pf, from, to)).toContainEqual({ x: 80, y: 16 });
   });
+
+  it("takes a wide body the long way round instead of through a one-tile gap", () => {
+    /* 9x8 of 16px tiles: a wall down column 4 with a one-tile gap at row 5, open over the top */
+    const rows = [
+      ".........",
+      ".........",
+      ".........",
+      "....#....",
+      "....#....",
+      ".........",
+      "....#....",
+      "....#....",
+    ];
+    const gapGrid = buildTileGrid({
+      width: 9,
+      height: 8,
+      tilewidth: 16,
+      tileheight: 16,
+      tilesets: [
+        { firstgid: 1, tiles: [{ id: 1, properties: [{ name: "collides", value: true }] }] },
+      ],
+      layers: [
+        {
+          name: "Collide",
+          type: "tilelayer",
+          data: rows.flatMap((row) => [...row].map((c) => (c === "#" ? 2 : 0))),
+        },
+      ],
+    });
+    const pf = createPathfinder(gapGrid);
+    const [from, to] = [
+      { x: 24, y: 88 },
+      { x: 120, y: 88 },
+    ];
+    const gap = { x: 72, y: 88 };
+    expect(findPath(pf, from, to)).toContainEqual(gap);
+    expect(findPath(pf, from, to, [], 16)).not.toContainEqual(gap);
+  });
 });

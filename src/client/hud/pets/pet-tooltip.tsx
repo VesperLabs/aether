@@ -25,16 +25,26 @@ const SHOWN_STATS = [
   "dodgeChance",
 ] as const;
 
-/** A pet's stats as tooltip rows: as it comes out, before any buffs. */
-function statLines(actor: ActorDefinition) {
+/** A pet's HP now and its max. */
+export interface PetHealth {
+  hp: number;
+  maxHp: number;
+}
+
+/**
+ * A pet's stats as tooltip rows: as it comes out, before any buffs. With its `health`, its max HP
+ * row reads as HP now over max.
+ */
+function statLines(actor: ActorDefinition, health?: PetHealth) {
   const stats = npcStats(actor);
   const shown = Object.fromEntries(
     SHOWN_STATS.filter((key) => stats[key] !== undefined).map((key) => [key, stats[key]]),
   );
-  return Object.entries(formatStats(shown)).map(([label, value]) => ({
-    label,
-    value: Array.isArray(value) ? value.join(" ↔ ") : String(value),
-  }));
+  return Object.entries(formatStats(shown)).map(([label, value]) =>
+    label === "maxHp" && health
+      ? { label: "hp", value: `${Math.round(health.hp)} / ${Math.round(health.maxHp)}` }
+      : { label, value: Array.isArray(value) ? value.join(" ↔ ") : String(value) },
+  );
 }
 
 /** A pet slot's tooltip, styled as an item's: its art, name and level, then its stats. */
@@ -42,10 +52,12 @@ export const PetTooltip = ({
   tooltipId,
   slot,
   pet,
+  health,
 }: {
   tooltipId: string;
   slot: PetSlot;
   pet: SavedPet;
+  health?: PetHealth;
 }) => {
   const actor = isActorId(pet.name) ? (actors[pet.name] as ActorDefinition) : undefined;
   if (!actor) return null;
@@ -68,7 +80,7 @@ export const PetTooltip = ({
         </Flex>
         <SectionTitle>Stats</SectionTitle>
         <StatGrid>
-          <StatRows lines={statLines(actor)} />
+          <StatRows lines={statLines(actor, health)} />
         </StatGrid>
       </TooltipContent>
     </Tooltip>

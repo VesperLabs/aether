@@ -12,6 +12,8 @@ export interface SavedPet {
   /** Ties the saved entry to the pet out in the world (its `state.petId`). */
   id: string;
   name: string;
+  /** Its HP as it was put away, as a share of its max (0 to 1), so swapping never heals. Full if missing. */
+  hp?: number;
 }
 
 export type PetSlots = Record<PetSlot, SavedPet | null>;
@@ -32,7 +34,8 @@ export function readPetSlots(saved: unknown): PetSlots {
   for (const slot of PET_SLOTS) {
     const pet = (saved as Record<string, unknown>)[slot] as SavedPet | null;
     if (typeof pet?.id === "string" && typeof pet?.name === "string") {
-      slots[slot] = { id: pet.id, name: pet.name };
+      const { id, name, hp } = pet;
+      slots[slot] = typeof hp === "number" && hp >= 0 && hp <= 1 ? { id, name, hp } : { id, name };
     }
   }
   return slots;

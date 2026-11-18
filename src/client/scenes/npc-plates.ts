@@ -11,7 +11,10 @@ export const NPC_PLATES_EVENT = "NPC_PLATES";
 export type PlateNpc = Pick<
   Player,
   "id" | "kind" | "profile" | "stats" | "buffs" | "equipment" | "activeItemSlots" | "charClass"
->;
+> & {
+  /** Its saved pet entry's id, when it's one of the hero's pets. */
+  petId?: string;
+};
 
 export interface NpcPlates {
   /** The hero's own NPCs: pets first, then followers. */
@@ -36,6 +39,7 @@ const plateOf = (npc: Player): PlateNpc => ({
   equipment: npc.equipment,
   activeItemSlots: npc.activeItemSlots,
   charClass: npc.charClass,
+  petId: npc.state?.petId,
 });
 
 /** Tells the HUD which NPCs get plates. Call on every proximity check. */

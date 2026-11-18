@@ -149,6 +149,19 @@ describe("pets", () => {
     expect(ownedBy(socket.id as string)).toHaveLength(1);
   });
 
+  it("comes back as hurt as it was put away, so swapping never heals it", async () => {
+    const { socket, player, pet } = await catchFirstCrab();
+    const id = pet.state.petId;
+    pet.stats.hp = Math.round(pet.stats.maxHp * 0.4);
+    socket.emit("swapPet", { slot: "active" });
+    await server.until(socket, () => !player.pets.active);
+    expect(player.pets.stored1?.hp).toBeCloseTo(0.4, 1);
+    socket.emit("swapPet", { slot: "stored1" });
+    await server.until(socket, () => player.pets.active?.id === id);
+    const back = ownedBy(socket.id as string)[0];
+    expect(back.stats.hp / back.stats.maxHp).toBeCloseTo(0.4, 1);
+  });
+
   it("released, it leaves the world and the account", async () => {
     const { socket, player, pet } = await catchFirstCrab();
     socket.emit("releasePet", { slot: "active" });

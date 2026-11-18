@@ -47,13 +47,18 @@ const outInWorld = (world: ServerWorld, id: string | undefined) =>
   id ? Object.values(world.npcs).find((npc) => npc.state?.petId === id) : undefined;
 
 /** Spawns the active pet at its owner's feet and tells the room. */
-function bringOut(world: ServerWorld, owner: Player, { id, name }: SavedPet) {
+function bringOut(world: ServerWorld, owner: Player, saved: SavedPet) {
+  const { id, name } = saved;
   const room = owner.roomName ? world.rooms[owner.roomName] : undefined;
   if (!room || outInWorld(world, id)) return undefined;
   const properties = [{ name: "petId", value: id }];
   const pet = spawnNpc(world, room, { name, x: owner.x, y: owner.y, properties });
   if (!pet) return undefined;
   makeOwned(pet, owner);
+  /* As hurt as it was put away (never dead: a lost pet leaves its slot) */
+  if (saved.hp !== undefined) {
+    pet.stats.hp = Math.max(1, Math.round(pet.stats.maxHp * saved.hp));
+  }
   /* The owner gets it in their room state on login; everyone already there hears now */
   world.io.to(room.name).emit("npcJoin", getPublicCharacterState(pet));
   return pet;
@@ -63,6 +68,22 @@ function bringOut(world: ServerWorld, owner: Player, { id, name }: SavedPet) {
 function putAway(world: ServerWorld, saved: SavedPet | null) {
   const pet = outInWorld(world, saved?.id);
   if (pet && !pet.state.isDead) removeNpc(pet);
+}
+
+/** Its HP now as a share of its max, for its saved entry. */
+const hpShare = (pet: Npc) =>
+  pet.stats.maxHp > 0 ? Math.max(0, Math.min(1, pet.stats.hp / pet.stats.maxHp)) : 1;
+
+/** `slots` with the active pet's current HP written into its entry, while it's out and alive. */
+function withActiveHp(world: ServerWorld, slots: PetSlots): PetSlots {
+  const pet = outInWorld(world, slots.active?.id);
+  if (!slots.active || !pet || pet.state.isDead) return slots;
+  return { ...slots, active: { ...slots.active, hp: hpShare(pet) } };
+}
+
+/** Writes the active pet's HP into the owner's save, e.g. as they log out, so it comes back as hurt. */
+export function recordPetHealth(world: ServerWorld, owner: Player) {
+  owner.pets = withActiveHp(world, owner.pets);
 }
 
 /**
@@ -75,7 +96,7 @@ export function keepPet(owner: Player, npc: Npc) {
   const id = owner.world.dice.newId();
   npc.state.petId = id;
   if (slot !== "active") removeNpc(npc);
-  savePets(owner, { ...owner.pets, [slot]: { id, name: npc.name } });
+  savePets(owner, { ...owner.pets, [slot]: { id, name: npc.name, hp: hpShare(npc) } });
   return slot === "active";
 }
 
@@ -94,7 +115,7 @@ export function movePetSlot(world: ServerWorld, owner: Player, from: PetSlot, to
   if (from === to || !slots[from]) return;
   /* A dying active pet can't be swapped out: it is about to be lost */
   if (outInWorld(world, slots.active?.id)?.state.isDead) return;
-  const moved = movePet(slots, from, to);
+  const moved = movePet(withActiveHp(world, slots), from, to);
   if (moved.active?.id !== slots.active?.id) {
     putAway(world, slots.active);
     if (moved.active) bringOut(world, owner, moved.active);

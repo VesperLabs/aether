@@ -107,6 +107,8 @@ export interface GameEvents {
   npcWindupStarted: NpcWindupStartedEvent;
   npcWindupCancelled: NpcWindupCancelledEvent;
   npcRespawned: NpcRespawnedEvent;
+  /** An owned NPC left far behind appeared beside its owner, in the same room. */
+  npcWarped: NpcRespawnedEvent;
   spellHitShapes: SpellHitShapesEvent;
   buffExpired: BuffExpiredEvent;
   playerKnockedBack: PlayerKnockedBackEvent;
