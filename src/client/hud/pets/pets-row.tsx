@@ -135,11 +135,11 @@ const PetSlotView = ({
 
   /* Two presses close together are a double-click. Counted on the press, not the click: the
    * press starts a drag that carries the art off into a portal, so no click ever lands */
-  const lastPress = useRef(0);
+  const lastPress = useRef(-Infinity);
   const onPress = () => {
     const now = performance.now();
     if (now - lastPress.current < DOUBLE_PRESS_MS) {
-      lastPress.current = 0;
+      lastPress.current = -Infinity;
       swap();
     } else lastPress.current = now;
   };

@@ -1,7 +1,9 @@
 // @vitest-environment jsdom
 import { fireEvent, render } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { ThemeUIProvider, type Theme } from "theme-ui";
 import { emptyPetSlots } from "@/rules/capture";
+import { theme } from "@/ui/kit/theme";
 
 const emit = vi.fn();
 vi.mock("@/client/hud/app/context", () => ({
@@ -13,11 +15,21 @@ vi.mock("@/client/hud/app/context", () => ({
 
 const { PetsRow } = await import("./pets-row");
 
+/* jsdom has no layout, so nothing is ever under the pointer */
+document.elementFromPoint = () => null;
+
+const renderRow = () =>
+  render(
+    <ThemeUIProvider theme={theme as Theme}>
+      <PetsRow />
+    </ThemeUIProvider>,
+  );
+
 describe("pet slots", () => {
   afterEach(() => emit.mockClear());
 
   it("a double-click on a pet swaps it, though each press starts a drag", () => {
-    const { container } = render(<PetsRow />);
+    const { container } = renderRow();
     const slot = container.querySelector('[data-pet-slot="active"]')!;
     fireEvent.mouseDown(slot);
     fireEvent.mouseUp(document);
@@ -27,8 +39,8 @@ describe("pet slots", () => {
   });
 
   it("presses far apart are two single clicks", () => {
-    vi.useFakeTimers();
-    const { container } = render(<PetsRow />);
+    vi.useFakeTimers({ toFake: ["performance"] });
+    const { container } = renderRow();
     const slot = container.querySelector('[data-pet-slot="active"]')!;
     fireEvent.mouseDown(slot);
     fireEvent.mouseUp(document);
