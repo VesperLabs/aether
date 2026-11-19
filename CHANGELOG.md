@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.52.0](https://github.com/VesperLabs/aether/compare/v0.51.0...v0.52.0) (2026-11-19)
+
+
+### Features
+
+* toggle the active pet ([#385](https://github.com/VesperLabs/aether/issues/385)) ([c1c203b](https://github.com/VesperLabs/aether/commit/c1c203b8fa02864e05886deea7d0d758cd3f9c26))
+
 ## [0.51.0](https://github.com/VesperLabs/aether/compare/v0.50.1...v0.51.0) (2026-11-18)
 
 
