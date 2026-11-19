@@ -23,7 +23,7 @@ const LIST_GAP = 4;
  */
 const LIST_SX: ThemeUIStyleObject = {
   position: "fixed",
-  zIndex: "menus",
+  zIndex: "dropdown",
   p: 1,
   maxHeight: LIST_MAX_HEIGHT,
   width: "max-content",
@@ -163,7 +163,8 @@ export const Select = ({
                 alignItems: "center",
                 gap: 2,
                 minWidth: 0,
-                visibility: option.value === value ? "visible" : "hidden",
+                /* inherit, not visible, so a hidden tab or panel hides it too */
+                visibility: option.value === value ? "inherit" : "hidden",
               }}
             >
               {option.icon}

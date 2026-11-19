@@ -137,15 +137,27 @@ describe("pets", () => {
     expect(out.state.petId).toBe(second.state.petId);
   });
 
-  it("a double-click puts the active one in the first free store, and brings it back", async () => {
+  it("a double-click puts the active one away in its slot, and calls it back", async () => {
     const { socket, player, pet } = await catchFirstCrab();
     const id = pet.state.petId;
     socket.emit("swapPet", { slot: "active" });
-    await server.until(socket, () => !player.pets.active);
-    expect(player.pets.stored1?.id).toBe(id);
+    await server.until(socket, () => !!player.pets.active?.isAway);
+    expect(player.pets.active?.id).toBe(id);
     expect(ownedBy(socket.id as string)).toHaveLength(0);
+    socket.emit("swapPet", { slot: "active" });
+    await server.until(socket, () => ownedBy(socket.id as string).length === 1);
+    expect(player.pets.active?.isAway).toBeUndefined();
+  });
+
+  it("put away, a stored one double-clicked in swaps with it and comes out", async () => {
+    const { socket, player, pet } = await catchFirstCrab();
+    const second = await catchCrab(socket, player);
+    socket.emit("swapPet", { slot: "active" });
+    await server.until(socket, () => !!player.pets.active?.isAway);
     socket.emit("swapPet", { slot: "stored1" });
-    await server.until(socket, () => player.pets.active?.id === id);
+    await server.until(socket, () => player.pets.active?.id === second.state.petId);
+    expect(player.pets.stored1).toMatchObject({ id: pet.state.petId });
+    expect(player.pets.stored1?.isAway).toBeUndefined();
     expect(ownedBy(socket.id as string)).toHaveLength(1);
   });
 
@@ -154,10 +166,11 @@ describe("pets", () => {
     const id = pet.state.petId;
     pet.stats.hp = Math.round(pet.stats.maxHp * 0.4);
     socket.emit("swapPet", { slot: "active" });
-    await server.until(socket, () => !player.pets.active);
-    expect(player.pets.stored1?.hp).toBeCloseTo(0.4, 1);
-    socket.emit("swapPet", { slot: "stored1" });
-    await server.until(socket, () => player.pets.active?.id === id);
+    await server.until(socket, () => !!player.pets.active?.isAway);
+    expect(player.pets.active?.hp).toBeCloseTo(0.4, 1);
+    socket.emit("swapPet", { slot: "active" });
+    await server.until(socket, () => ownedBy(socket.id as string).length === 1);
+    expect(player.pets.active?.id).toBe(id);
     const back = ownedBy(socket.id as string)[0];
     expect(back.stats.hp / back.stats.maxHp).toBeCloseTo(0.4, 1);
   });
@@ -169,11 +182,11 @@ describe("pets", () => {
     expect(server.world.npcs[pet.id]).toBeUndefined();
   });
 
-  it("/pet away stores it, still saved, and /pet out brings it back", async () => {
+  it("/pet away puts it away, still saved, and /pet out brings it back", async () => {
     const { socket, player, pet } = await catchFirstCrab();
     expect((await cheat(socket, "/pet away")).type).toBe("system");
     expect(server.world.npcs[pet.id]).toBeUndefined();
-    expect(player.pets.stored1).toMatchObject({ name: "crab" });
+    expect(player.pets.active).toMatchObject({ name: "crab", isAway: true });
 
     expect((await cheat(socket, "/pet out")).type).toBe("system");
     const [back] = ownedBy(socket.id as string);
@@ -233,5 +246,12 @@ describe("pets", () => {
     expect({ x: pets[0].x, y: pets[0].y }).toEqual({ x: player.x, y: player.y });
     /* Already resting in the room its owner is sent, before any tick */
     expect(pets[0].buffs.map((b: Anything) => b.name)).toContain("rest");
+  });
+
+  it("an active one put away stays away when its owner logs in", async () => {
+    const { player } = await server.login();
+    player.pets = { ...emptyPetSlots(), active: { id: "saved-crab", name: "crab", isAway: true } };
+    bringOutPet(server.world, player);
+    expect(ownedBy(player.socketId)).toHaveLength(0);
   });
 });

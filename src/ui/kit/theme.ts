@@ -36,6 +36,8 @@ export const theme = {
     /* The controller's button badge, over everything it can sit on (the on-screen keyboard) */
     padBadge: 99999999,
     tooltip: 9999999,
+    /* An open dropdown list, over the modal or window that opened it */
+    dropdown: 9999998,
     draggable: 999999,
     modal: 99999,
     menus: 9999,
