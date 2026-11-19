@@ -47,7 +47,6 @@ export const commands = {
   demoLogin: z
     .object({ charClass: z.string().nullish(), gender: z.enum(genders).optional() })
     .optional(),
-  login: z.object({ email: text, password: text }).optional(),
   /** Log in with the one-time ticket from logging in on the wiki. */
   ticketLogin: z.object({ ticket: z.string() }),
   /** Watch a room without a character, from behind the login screen. */

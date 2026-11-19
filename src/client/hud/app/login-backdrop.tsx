@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useAppContext } from "./context";
 import { Box, LOGIN_RISE_SX } from "@/ui";
 import { GameLogin } from "@/client/hud/auth/game-login";
 import { WikiLink } from "@/client/hud/auth/wiki-link";
@@ -14,15 +15,19 @@ const WASH_FADE_MS = 1200;
 export function LoginBackdrop({
   isLoggedIn,
   isLoaded,
+  hasTicket,
   hasError,
 }: {
   isLoggedIn: boolean;
   isLoaded: boolean;
+  /** Arrived logged in from the wiki: one loading bar until the world shows, no form unless refused. */
+  hasTicket: boolean;
   hasError: boolean;
 }) {
   const isWorldReady = useWorldReady(isLoggedIn);
   const loadProgress = useLoadProgress();
   const [isLifted, setIsLifted] = useState(false);
+  const isRedeeming = useIsRedeeming(hasTicket);
 
   useEffect(() => {
     if (isLoggedIn) return;
@@ -62,8 +67,8 @@ export function LoginBackdrop({
       />
       {/* Stays through the fade, so nothing changes mid-animation */}
       {/* The form comes in once the assets are down: until then, a bar shows how far they are */}
-      {!isLoaded && <LoadingBar progress={loadProgress} />}
-      {isLoaded && !isLifted && (
+      {(!isLoaded || (isRedeeming && isCovering)) && <LoadingBar progress={loadProgress} />}
+      {isLoaded && !isRedeeming && !isLifted && (
         <Box
           sx={{
             /* Fills the screen: the animated transform makes this what the fixed modal sits in */
@@ -79,8 +84,23 @@ export function LoginBackdrop({
         </Box>
       )}
       {/* Outside the form's box, so it stays put while the form slides in */}
-      {!isLoggedIn && <WikiLink />}
+      {!isLoggedIn && !isRedeeming && <WikiLink />}
       {hasError && <ModalError />}
     </Box>
   );
+}
+
+/** True while a wiki ticket is on its way in: false again only if the server refuses it. */
+function useIsRedeeming(hasTicket: boolean) {
+  const { socket } = useAppContext();
+  const [isRedeeming, setIsRedeeming] = useState(hasTicket);
+  useEffect(() => {
+    if (!isRedeeming) return;
+    const showForm = () => setIsRedeeming(false);
+    socket.once("formError", showForm);
+    return () => {
+      socket.off("formError", showForm);
+    };
+  }, [socket, isRedeeming]);
+  return isRedeeming;
 }

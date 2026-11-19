@@ -1,6 +1,7 @@
 // @vitest-environment node
 import type { Socket } from "socket.io-client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { issuePlayTicket } from "../auth/play-tickets";
 import { settle, startTestServer, type TestServer } from "./test-server";
 
 /** Party flows against the real game server with two connected clients. */
@@ -24,7 +25,7 @@ function once<T = Anything>(socket: Socket, event: string, timeoutMs = 5000): Pr
 async function login(charClass = "warrior", email?: string) {
   const socket = await server.connect();
   const heroInit = once(socket, "heroInit");
-  if (email) socket.emit("login", { email, password: "x" });
+  if (email) socket.emit("ticketLogin", { ticket: issuePlayTicket(email, server.world.now()) });
   else socket.emit("demoLogin", { charClass });
   await heroInit;
   return socket;

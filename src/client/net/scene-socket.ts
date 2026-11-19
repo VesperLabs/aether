@@ -23,7 +23,6 @@ import type { DrainResource } from "@/rules/combat";
 import { beginCast, endCast, landCast } from "@/client/views/player-actions";
 import { playWindupPie, stopWindupPie } from "@/client/views/windup-pie";
 import { drawHitShapes } from "@/client/views/hit-shapes";
-import { hasPlayTicket } from "@/client/net/play-ticket";
 import { playLeaveDissolve, playSpawnDissolve } from "@/client/views/dissolve";
 import {
   addPlayer,
@@ -71,7 +70,7 @@ export function bindSceneSocket(scene: SceneMain) {
   const socket = scene.socket;
 
   /* Arriving with a ticket, the hero's own room is next: touring one first only competes for its art */
-  const isRedeeming = hasPlayTicket(); /* Read now: the scene wipes the ticket from the URL next */
+  const isRedeeming = !!scene.ticket; /* Read now: the scene spends the ticket next */
   const tourIfLoggedOut = () => {
     if (!isRedeeming) startObserverTour(scene);
   };

@@ -8,7 +8,6 @@ import { netInterp } from "@/client/net/scene-interpolation";
 import { applyPose } from "@/client/net/apply-pose";
 import { easeHeroCorrection } from "@/client/net/position-correction";
 import { bindSceneSocket } from "@/client/net/scene-socket";
-import { takePlayTicket } from "@/client/net/play-ticket";
 import { changeMusic, setMusicVolume } from "@/client/audio/music";
 import { getPlayer, getNpc, getNpcs, getPlayers } from "./scene-entities";
 import { enableDoors, initCamera } from "./main-map";
@@ -42,10 +41,13 @@ export class SceneMain extends Phaser.Scene {
   /** The next observed room is revealed over the login cover rather than faded in. */
   isTourHidden = true;
   socket: ClientGameSocket;
+  /** The wiki login ticket this page arrived with, until it is sent. */
+  ticket: string | null;
   userSettings: UserSettings;
-  constructor(socket: ClientGameSocket) {
+  constructor(socket: ClientGameSocket, ticket: string | null) {
     super({ key: "SceneMain" });
     this.socket = socket;
+    this.ticket = ticket;
     this.lastUpdateTime = 0;
     this.userSettings = DEFAULT_USER_SETTINGS;
     this.nearbyRemotePlayers = [];
@@ -62,8 +64,8 @@ export class SceneMain extends Phaser.Scene {
 
     bindSceneSocket(scene);
     /* Logged in on the wiki. Only now: `heroInit` before the scene listens would never draw it */
-    const ticket = takePlayTicket();
-    if (ticket) scene.socket.emit("ticketLogin", { ticket });
+    if (scene.ticket) scene.socket.emit("ticketLogin", { ticket: scene.ticket });
+    scene.ticket = null;
 
     const onVideoChatStreamReady = () => {
       for (const { peerId, socketId } of scene.nearbyRemotePlayers ?? []) {

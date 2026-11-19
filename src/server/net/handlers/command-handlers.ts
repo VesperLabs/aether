@@ -1,4 +1,4 @@
-import { demoLogin, login, ticketLogin } from "../../auth/commands";
+import { demoLogin, ticketLogin } from "../../auth/commands";
 import type { CommandHandlers } from "../dispatcher";
 import { attack, cancelCastCommand, castSpell, startCast } from "./combat";
 import { throwItem } from "./capture";
@@ -31,7 +31,6 @@ import {
 /** Which function answers which command. The compiler fails here if a command has no handler. */
 export const commandHandlers: CommandHandlers = {
   demoLogin,
-  login,
   ticketLogin,
   observe,
   latency,
