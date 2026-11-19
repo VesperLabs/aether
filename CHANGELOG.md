@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.52.1](https://github.com/VesperLabs/aether/compare/v0.52.0...v0.52.1) (2026-11-19)
+
+
+### Bug Fixes
+
+* arrive from the wiki login without the form flickering ([#387](https://github.com/VesperLabs/aether/issues/387)) ([2195213](https://github.com/VesperLabs/aether/commit/2195213b08b6ae2f6450e4c720f47c58b268dbb7))
+
 ## [0.52.0](https://github.com/VesperLabs/aether/compare/v0.51.0...v0.52.0) (2026-11-19)
 
 
