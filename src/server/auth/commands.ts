@@ -12,8 +12,6 @@ import type { Player } from "../player";
 import type { ParsedCommand } from "@/network";
 import type { CommandContext } from "@/server/net/command-context";
 import type { UserDocument } from "../persistence";
-import { TOO_MANY_TRIES } from "./accounts";
-import { isLoginAllowed } from "./login-limit";
 import { redeemPlayTicket } from "./play-tickets";
 import { bringOutPet } from "@/server/pets";
 
@@ -45,18 +43,6 @@ export async function demoLogin(
   });
 
   joinWorld(ctx, player);
-}
-
-export async function login(ctx: CommandContext, args: ParsedCommand<"login"> = {}) {
-  const { world, actor, session } = ctx;
-  const { email, password } = args;
-  const address = session.address;
-  if (!isLoginAllowed(world.db, address, email ?? "", world.now())) {
-    return actor.emit("formError", { error: TOO_MANY_TRIES });
-  }
-  const user = await world.db.getUserByLogin({ email, password });
-  if (!user) return actor.emit("formError", { error: "Invalid login" });
-  enterWorld(ctx, user);
 }
 
 /** Logs in with the one-time ticket the wiki sent this client here with. */

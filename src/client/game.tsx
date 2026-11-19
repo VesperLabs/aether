@@ -3,6 +3,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { App } from "@/client/hud/app/app";
 import { createGameSocket, keepSocketConnected } from "@/client/net/socket";
+import { takePlayTicket } from "@/client/net/play-ticket";
 import { trackLatency } from "@/client/net/latency";
 import { AnimatedTiles } from "@/client/views/animated-tiles";
 import { DEBUG_COLORS } from "@/client/views/debug-palette";
@@ -22,6 +23,8 @@ const PEER_CLIENT_PORT = parseInt(process.env.PEER_CLIENT_PORT as string);
 const PEER_CLIENT_PATH = process.env.PEER_CLIENT_PATH as string;
 
 const socket = createGameSocket();
+/* Logged in on the wiki: read once, here, so nothing else has to check the URL */
+const ticket = takePlayTicket();
 startGamepadLoop();
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
@@ -86,12 +89,12 @@ async function startApp() {
       imageLoadType: "HTMLImageElement",
       crossOrigin: "anonymous",
     },
-    scene: [new SceneBoot(socket), new SceneMain(socket), new SceneHud(socket)],
+    scene: [new SceneBoot(socket), new SceneMain(socket, ticket), new SceneHud(socket)],
   });
 
   root.render(
     <React.StrictMode>
-      <App socket={socket} peer={peer} game={game} debug={debug} />
+      <App socket={socket} peer={peer} game={game} debug={debug} hasTicket={!!ticket} />
     </React.StrictMode>,
   );
 

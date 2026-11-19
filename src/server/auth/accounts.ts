@@ -4,7 +4,7 @@ import { createLoginToken, isLoginTokenValid, readLoginTokenEmail } from "./logi
 
 const MIN_PASSWORD_LENGTH = 6;
 export const MAX_PASSWORD_LENGTH = 256;
-export const TOO_MANY_TRIES = "Too many tries, wait a minute";
+const TOO_MANY_TRIES = "Too many tries, wait a minute";
 const LOOKS_LIKE_EMAIL = /^\S+@\S+\.\S+$/;
 
 type Refusal = { error: string; status: number; expired?: boolean };

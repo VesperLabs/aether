@@ -62,9 +62,11 @@ interface AppProps {
   peer: Peer;
   debug: string | undefined;
   game: Phaser.Game;
+  /** Arrived logged in from the wiki. */
+  hasTicket: boolean;
 }
 
-export function App({ socket, peer, debug, game }: AppProps) {
+export function App({ socket, peer, debug, game, hasTicket }: AppProps) {
   const [currentTooltipId, setCurrentTooltipId] = useState<string | null>(null);
   const [partyInvites, setPartyInvites] = useState<Array<PartyInvite>>([]);
   const [party, setParty] = useState<PartyMessage | null>();
@@ -331,7 +333,12 @@ export function App({ socket, peer, debug, game }: AppProps) {
           {/* The game's screen never scrolls, so focusing a field must not move it */}
           <KeepPageStillContext value>
             <PadHints>
-              <LoginBackdrop isLoggedIn={isLoggedIn} isLoaded={isLoaded} hasError={!!error} />
+              <LoginBackdrop
+                isLoggedIn={isLoggedIn}
+                isLoaded={isLoaded}
+                hasTicket={hasTicket}
+                hasError={!!error}
+              />
               <VideoFrame />
               {isLoggedIn && tabSettings && <ModalSettings />}
               {isLoggedIn && tabSocial && <ModalSocial />}
