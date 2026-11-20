@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.56.0](https://github.com/VesperLabs/aether/compare/v0.55.1...v0.56.0) (2026-11-20)
+
+
+### Features
+
+* badge quest buttons for quests to take or turn in ([#398](https://github.com/VesperLabs/aether/issues/398)) ([7b45a1f](https://github.com/VesperLabs/aether/commit/7b45a1f03d3bc236463d75113e1146c9787d2221))
+
+
+### Bug Fixes
+
+* don't glow a ball held out to throw with the weapon's elements ([#399](https://github.com/VesperLabs/aether/issues/399)) ([805a754](https://github.com/VesperLabs/aether/commit/805a7545bfc7aa6e14b361a4a57bdb35c26de89c))
+
 ## [0.55.1](https://github.com/VesperLabs/aether/compare/v0.55.0...v0.55.1) (2026-11-20)
 
 
