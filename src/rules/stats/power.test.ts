@@ -131,3 +131,26 @@ describe("defense", () => {
     expect(defenseReduction(DEFENSE_PER_POWER * 2, 9)).toBe(0.5);
   });
 });
+
+describe("level gap", () => {
+  /** Hits a geared player needs to kill a mob `gap` levels up, and hits it needs to kill them. */
+  const fight = (level: number, gap: number) => {
+    const player = warrior(level, true);
+    const mob = npcStats({ baseStats: { level: level + gap }, charClass: "warrior" });
+    return {
+      toKill: mob.maxHp / averageHit(player, mob),
+      toDie: player.maxHp / averageHit(mob, player),
+    };
+  };
+
+  it("makes a mob 4 levels up win the fight while you're low level", () => {
+    for (const level of [1, 5]) {
+      const { toKill, toDie } = fight(level, 4);
+      expect(toKill, `level ${level}`).toBeGreaterThan(toDie);
+    }
+  });
+
+  it("kills a level 1 in a handful of hits from a level 9", () => {
+    expect(fight(1, 8).toDie).toBeLessThan(6);
+  });
+});

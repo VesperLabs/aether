@@ -1,3 +1,4 @@
+import type { ItemEffect } from "@/content/items/mods";
 /**
  * A spell is how an ability behaves: how it reaches its victims (`delivery`), whom it may touch
  * (`targets`), and how it looks. How strong it is (damage, buffs, costs, rank) lives on the spell
@@ -107,6 +108,8 @@ export interface SpellLook {
   /** The light it gives off at night: a color and how far it reaches, in pixels. */
   readonly light?: { readonly color: string; readonly radius: number };
   readonly fades?: boolean;
+  /** A swing that sets the weapon alight for a moment with this element, as an elemental weapon. */
+  readonly weaponElement?: ItemEffect;
   /** Casts a faint copy of its sprite on the ground below it as it flies, at the caster's feet. */
   readonly shadow?: boolean;
   readonly sound?: string;

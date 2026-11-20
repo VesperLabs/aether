@@ -38,6 +38,7 @@ export { buffList, type BuffName } from "./buffs/buff-list";
 export type { BuffDefinition } from "./buffs/buff-types";
 export { buffAtLevel, growsWithLevel } from "./buffs/buff-level";
 export { buffIcon } from "./buffs/buff-icon";
+export { DOT_TICK_MS, isDotStat } from "./buffs/damage-over-time";
 export type { TriggerDefinition } from "./buffs/trigger-types";
 export { mergeTriggers } from "./buffs/trigger-merge";
 export {
@@ -92,7 +93,7 @@ export { Quest, type QuestObjective } from "./quests/quest";
 export { QuestBuilder } from "./quests/quest-builder";
 export { questList, type QuestId } from "./quests/quest-list";
 export { findSpell, spellDetails } from "./spells/spell-details";
-export type { SpellDefinition } from "./spells/spell-types";
+export type { SpellDefinition, SpellLook } from "./spells/spell-types";
 export type { CharClass } from "./stats";
 export { PREVIEW_DICE, cloneJson, randomNumber, type Dice } from "./random";
 export { levelPower } from "./power-curve";

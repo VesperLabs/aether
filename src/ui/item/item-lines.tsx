@@ -160,9 +160,9 @@ export const StatRow = ({
         label
       )}
       <Leader />
-      {/* Values are always bold */}
+      {/* Values are always bold, and keep their case ("2/s") under a capitalizing tooltip */}
       {typeof value === "string" ? (
-        <Text sx={{ ...type, fontWeight: "bold", color }}>{value}</Text>
+        <Text sx={{ ...type, fontWeight: "bold", color, textTransform: "none" }}>{value}</Text>
       ) : (
         value
       )}
@@ -186,7 +186,7 @@ export const StatRows = ({ lines, color }: { lines: StatLine[]; color?: string }
 
 /** A card's value and how the gear's tier grows it: "2" then a small grey "(×tier)" or "(+2/tier)". */
 const Note = ({ value, note, color }: { value: string; note: string; color?: string }) => (
-  <Text sx={{ ...TYPE.body, fontWeight: "bold", color }}>
+  <Text sx={{ ...TYPE.body, fontWeight: "bold", color, textTransform: "none" }}>
     {value}
     <Text sx={{ ...TYPE.meta, ml: 1, fontWeight: "normal", color: "gray.400" }}>{note}</Text>
   </Text>

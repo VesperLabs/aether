@@ -108,14 +108,14 @@ export interface RestingResult {
   isResting: boolean;
 }
 
-/** A character that is out of combat, and not poisoned or bleeding, starts resting. */
+/** A character that is out of combat, and not poisoned, bleeding or burning, starts resting. */
 export function checkResting(
   buffs: ActiveBuff[] | undefined,
   lastCombat: number,
   now: number,
 ): RestingResult {
   const isResting = hasBuff(buffs, "rest");
-  const isHurting = hasBuff(buffs, "poison") || hasBuff(buffs, "bleed");
+  const isHurting = hasBuff(buffs, "poison") || hasBuff(buffs, "bleed") || hasBuff(buffs, "burn");
   const shouldAddRest = isOutOfCombat(lastCombat, now) && !isResting && !isHurting;
   return { shouldAddRest, isResting: shouldAddRest ? true : isResting };
 }

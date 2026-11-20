@@ -6,7 +6,7 @@ export {
   getSpellCooldown,
 } from "./cast";
 export type { AbilityDetails, AbilitySlot, LastCast } from "./cast";
-export { rollSpellCrit, rollSpellDamage } from "./damage";
+export { rollSpellBuff, rollSpellCrit, rollSpellDamage } from "./damage";
 export {
   getMeleeSwing,
   getSpell,

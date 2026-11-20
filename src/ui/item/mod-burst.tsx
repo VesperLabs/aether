@@ -37,9 +37,19 @@ export function useModBurst(item: BuiltItem | null | undefined): number {
 
 /**
  * The glow behind a freshly modded item, the one a caught character bursts with: soft rays that
- * swell out and turn around a warm core, then fade.
+ * swell out and turn around a warm core, then fade. Gone once it has played: a hidden inventory
+ * shown again restarts any CSS animation still in it, which would replay the burst every open.
  */
-export const ModBurst = () => (
+export const ModBurst = () => {
+  const [isPlaying, setIsPlaying] = useState(true);
+  useEffect(() => {
+    const timer = setTimeout(() => setIsPlaying(false), BURST_MS);
+    return () => clearTimeout(timer);
+  }, []);
+  return isPlaying ? <BurstGlow /> : null;
+};
+
+const BurstGlow = () => (
   <Box
     aria-hidden
     sx={{

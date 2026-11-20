@@ -57,3 +57,9 @@ export function rollSpellCrit(
   }
   return { isCritical: false, eleDamage, holyDamage };
 }
+
+/** Whether a spell's buffs land on this hit: `chance` percent of the time, always without one. */
+export function rollSpellBuff(chance: number | undefined, rng: Rng): boolean {
+  if (chance === undefined) return true;
+  return randomInt(rng, 1, 100) <= chance;
+}

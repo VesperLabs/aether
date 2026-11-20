@@ -39,6 +39,7 @@ export type StatName =
   | "mpSteal"
   | "poisonDamage"
   | "bleedDamage"
+  | "burnDamage"
   | "range"
   | "regenHp"
   | "regenMp"

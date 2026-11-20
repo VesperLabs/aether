@@ -16,3 +16,13 @@ describe("formatStats", () => {
     expect(shown.attackDelay).toBe("1.23s");
   });
 });
+
+describe("damage over time", () => {
+  it("reads as damage per second, whatever the tick", () => {
+    expect(formatStats({ poisonDamage: 2, burnDamage: 3, bleedDamage: 1 })).toEqual({
+      poisonDamage: "2/s",
+      burnDamage: "3/s",
+      bleedDamage: "1.43/s",
+    });
+  });
+});

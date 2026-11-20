@@ -1,3 +1,5 @@
+import { DOT_TICK_MS, isDotStat } from "@/content";
+
 export function convertMsToS(s: number) {
   return (s / 1000).toFixed(2) + "s";
 }
@@ -36,6 +38,12 @@ const tidy = (value: StatValue): StatValue =>
 
 const formatStat = (key: string, raw: FormattedStat): FormattedStat => {
   const value = Array.isArray(raw) ? raw.map(tidy) : tidy(raw);
+  if (isDotStat(key)) {
+    /* Damage over time reads as per second, whatever its tick */
+    const perSecond = (item: StatValue) =>
+      typeof item === "number" ? `${roundStat((item * 1000) / DOT_TICK_MS[key])}/s` : item;
+    return Array.isArray(value) ? value.map(perSecond).join(" ↔ ") : perSecond(value);
+  }
   if (key.includes("Damage")) {
     if (Array.isArray(value)) {
       const formattedValue = value.map((item) => `${item}`).join(" ↔ ");

@@ -195,17 +195,30 @@ export const ItemTooltip = ({ item, player, tooltipId, show }: ItemTooltipProps)
                 <StatRows lines={d.stats} />
               </StatGrid>
             )}
-            {d.buffs.map((buff) => (
-              <Fragment key={buff.name}>
-                {/* A self-buff spell (Endurance) already shows its icon and name up top */}
-                {buff.name !== item.base && (
-                  <BuffName name={buff.name} level={buff.level} sx={{ alignSelf: "flex-start" }} />
-                )}
-                <StatGrid>
-                  <BuffDetails lines={buff.stats} />
+            {d.buffs.map((buff) =>
+              buff.chancePercent !== undefined ? (
+                /* A spell's: reads like a weapon's proc, "[icon] Burn I ··· (hit) 25%" */
+                <StatGrid key={buff.name}>
+                  <TriggerRows
+                    triggers={[{ ...buff, chancePercent: buff.chancePercent, when: "hit" }]}
+                  />
                 </StatGrid>
-              </Fragment>
-            ))}
+              ) : (
+                <Fragment key={buff.name}>
+                  {/* A self-buff spell (Endurance) already shows its icon and name up top */}
+                  {buff.name !== item.base && (
+                    <BuffName
+                      name={buff.name}
+                      level={buff.level}
+                      sx={{ alignSelf: "flex-start" }}
+                    />
+                  )}
+                  <StatGrid>
+                    <BuffDetails lines={buff.stats} />
+                  </StatGrid>
+                </Fragment>
+              ),
+            )}
           </>
         )}
         {/* A card carries one mod, the one it sockets */}

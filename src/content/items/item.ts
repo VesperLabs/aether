@@ -24,6 +24,8 @@ export class Item implements BuiltItem {
   cost?: number;
   effects?: Record<string, number>;
   buffs?: Record<string, number>;
+  /** Spells only: the percent chance its buffs land on a hit. */
+  buffChance?: number;
   triggers?: BuiltItem["triggers"];
   percentStats?: Record<string, number>;
   setName?: string;
@@ -56,6 +58,7 @@ export class Item implements BuiltItem {
     this.effects = item?.effects;
     this.triggers = item?.triggers;
     this.buffs = item?.buffs;
+    this.buffChance = item?.buffChance;
     this.percentStats = item?.percentStats;
     this.setName = item?.setName;
     this.setBonus = item?.setBonus;

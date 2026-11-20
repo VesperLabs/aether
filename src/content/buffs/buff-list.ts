@@ -139,6 +139,14 @@ export const buffList = {
     perLevel: { stats: { bleedDamage: 1 } },
     description: "Losing HP from open wounds.",
   },
+  /** On fire: hp burns away in fire damage, harder than poison but over quickly. */
+  burn: {
+    type: "debuff",
+    duration: 3000,
+    stats: { burnDamage: 2 },
+    perLevel: { stats: { burnDamage: 1 } },
+    description: "Losing HP to flames.",
+  },
   fortune: {
     type: "buff",
     duration: 10000,

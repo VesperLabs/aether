@@ -1,3 +1,4 @@
+import { DOT_TICK_MS } from "@/content";
 import { modifyStat } from "@/rules/combat";
 import type { ActiveBuff } from "./rules";
 
@@ -6,8 +7,9 @@ const HP_REGEN_INTERVAL = 5000;
 const HP_BUFF_REGEN_INTERVAL = 5000;
 const MP_REGEN_INTERVAL = 1000;
 const SP_REGEN_INTERVAL = 600;
-const POISON_INTERVAL = 1000;
-const BLEED_INTERVAL = 700;
+const POISON_INTERVAL = DOT_TICK_MS.poisonDamage;
+const BLEED_INTERVAL = DOT_TICK_MS.bleedDamage;
+const BURN_INTERVAL = DOT_TICK_MS.burnDamage;
 /** Resting heals this share of max HP each tick on top of `regenHp`: full in about a minute. */
 const REST_HEAL_SHARE = 0.08;
 
@@ -18,6 +20,7 @@ export interface RegenTimers {
   lastSpRegen: number;
   lastBuffPoison: number;
   lastBuffBleed: number;
+  lastBuffBurn: number;
 }
 
 export interface RegenInput {
@@ -26,6 +29,8 @@ export interface RegenInput {
   stats: Record<string, any>;
   timers: RegenTimers;
   now: number;
+  /** False while running away hurt: no hp comes back, but poison, bleed and burn still tick. */
+  isHealing?: boolean;
 }
 
 interface RegenFlags {
@@ -35,6 +40,7 @@ interface RegenFlags {
   doSpRegen: boolean;
   doBuffPoison: boolean;
   doBuffBleed: boolean;
+  doBuffBurn: boolean;
 }
 
 export interface RegenResult {
@@ -44,16 +50,23 @@ export interface RegenResult {
   stats: { hp?: number; mp?: number; sp?: number };
   /** Timers to store, only the ones that ticked. */
   timers: Partial<RegenTimers>;
-  /** Poison or bleed ticked: the character counts as in combat now, so combat-dispelled buffs go. */
+  /** Poison, bleed or burn ticked: the character counts as in combat now, so combat-dispelled buffs go. */
   enteredCombat: boolean;
 }
 
 /**
  * One tick of regeneration. mp and sp regenerate on their own, hp regenerates with a
- * regeneration buff or while resting (out of combat), and poison and bleed take hp away.
+ * regeneration buff or while resting (out of combat), and poison, bleed and burn take hp away.
  * Dead characters don't tick. Nothing is changed: the result says what to store.
  */
-export function runRegen({ isDead, buffs, stats, timers, now }: RegenInput): RegenResult {
+export function runRegen({
+  isDead,
+  buffs,
+  stats,
+  timers,
+  now,
+  isHealing = true,
+}: RegenInput): RegenResult {
   const isResting = buffs?.some((b) => ["rest"]?.includes(b?.name as string));
   const regenBuff = buffs?.find((b) => ["regeneration"]?.includes(b?.name as string));
   const poisonBuff = buffs?.find((b) => ["poison"]?.includes(b?.name as string));
@@ -64,6 +77,8 @@ export function runRegen({ isDead, buffs, stats, timers, now }: RegenInput): Reg
   const isBuffPoisonReady = now - timers.lastBuffPoison > POISON_INTERVAL;
   const bleedBuff = buffs?.find((b) => b?.name === "bleed");
   const isBuffBleedReady = now - timers.lastBuffBleed > BLEED_INTERVAL;
+  const burnBuff = buffs?.find((b) => b?.name === "burn");
+  const isBuffBurnReady = now - timers.lastBuffBurn > BURN_INTERVAL;
 
   const flags: RegenFlags = {
     doHpRegen: false,
@@ -72,6 +87,7 @@ export function runRegen({ isDead, buffs, stats, timers, now }: RegenInput): Reg
     doSpRegen: false,
     doBuffPoison: false,
     doBuffBleed: false,
+    doBuffBurn: false,
   };
   const changedTimers: Partial<RegenTimers> = {};
   const result: RegenResult = { flags, stats: {}, timers: changedTimers, enteredCombat: false };
@@ -95,7 +111,7 @@ export function runRegen({ isDead, buffs, stats, timers, now }: RegenInput): Reg
     change("sp", work.regenSp);
   }
 
-  if (regenBuff) {
+  if (regenBuff && isHealing) {
     if (isHpBuffRegenReady && work.hp < work.maxHp) {
       flags.doHpBuffRegen = true;
       changedTimers.lastHpBuffRegen = now;
@@ -103,7 +119,7 @@ export function runRegen({ isDead, buffs, stats, timers, now }: RegenInput): Reg
     }
   }
 
-  if (isResting) {
+  if (isResting && isHealing) {
     if (isHpRegenReady && work.hp < work.maxHp) {
       flags.doHpRegen = true;
       changedTimers.lastHpRegen = now;
@@ -125,6 +141,13 @@ export function runRegen({ isDead, buffs, stats, timers, now }: RegenInput): Reg
     changedTimers.lastBuffBleed = now;
     result.enteredCombat = true;
     change("hp", -(bleedBuff?.stats?.bleedDamage || 0));
+  }
+
+  if (burnBuff && isBuffBurnReady) {
+    flags.doBuffBurn = true;
+    changedTimers.lastBuffBurn = now;
+    result.enteredCombat = true;
+    change("hp", -(burnBuff?.stats?.burnDamage || 0));
   }
 
   for (const key of ["hp", "mp", "sp"] as const) {

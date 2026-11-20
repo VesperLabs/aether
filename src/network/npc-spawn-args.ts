@@ -36,9 +36,12 @@ const HAND_OPTION = { value: EMPTY_HAND, hint: "default: what the actor holds", 
 const HELD_TYPES = ["weapon", "ranged", "shield"];
 
 /** Suggestions for slot `slot` after the actor (0 is wild or follower), its default first. */
-export function completeNpcSpawn<T extends { hint?: string }>(slot: number, items: readonly T[]) {
+export function completeNpcSpawn<T extends { itemType?: string }>(
+  slot: number,
+  items: readonly T[],
+) {
   if (slot === 0) return SIDE_OPTIONS;
   if (slot === 1) return COUNT_OPTIONS;
   if (slot > 3) return [];
-  return [HAND_OPTION, ...items.filter(({ hint }) => HELD_TYPES.includes(hint ?? ""))];
+  return [HAND_OPTION, ...items.filter(({ itemType }) => HELD_TYPES.includes(itemType ?? ""))];
 }

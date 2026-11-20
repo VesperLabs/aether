@@ -16,7 +16,7 @@ import { droopSpentArrow, endSpentShot } from "./spell-ending";
 import { hasStoppedOnSomeone } from "./spell-stop";
 import { distanceFlown, flyRicocheting, rollWithFlight } from "./spell-ricochet";
 
-import { ELEMENT_SWING_COLORS } from "@/ui/item/element-effects";
+import { swingColor } from "./swing-element";
 import { getAngleFromDirection } from "@/rules/world";
 import {
   getMeleeSwing,
@@ -30,7 +30,7 @@ import {
   usesLeftHand,
   usesRightHand,
 } from "@/rules/spells";
-import { HAND_REACH, WEAPON_GRIP, getWeaponTip, itemEffects } from "@/content";
+import { HAND_REACH, WEAPON_GRIP, getWeaponTip } from "@/content";
 const Sprite = Phaser.GameObjects.Sprite;
 const BLANK_TEXTURE = "human-blank";
 /** A shot leaving a drawn bow is drawn from the nocked arrow, sliding onto its real path over this long, ms. */
@@ -43,9 +43,6 @@ function getBladeDegrees(texture: string | undefined) {
   const tip = getWeaponTip(texture);
   return Phaser.Math.RadToDeg(Math.atan2(tip.y - WEAPON_GRIP.y, tip.x - WEAPON_GRIP.x));
 }
-
-/** A swing's arc when neither the spell nor the weapon's element colours it. */
-const PLAIN_SWING_COLOR = 0xdfe8ff;
 
 /** What a spell is cast from: an ability's details, or the plain attack of a swing. */
 export interface SpellArgs {
@@ -167,12 +164,7 @@ export class Spell extends Phaser.GameObjects.Container {
       /* The hand, relative to this spell, which follows the caster's body centre */
       const getHand = () => ({ x: caster[hand].x, y: caster[hand].y - caster.bodyCenterY });
       const facing = getAngleFromDirection(caster?.direction);
-      /* Plain swings take the color of the weapon's first mod effect, like its outline */
-      const [effect] = itemEffects(caster.visibleEquipment?.[hand]);
-      const color =
-        (look.tint ? toTint(look.tint) : undefined) ??
-        (effect && ELEMENT_SWING_COLORS[effect]) ??
-        PLAIN_SWING_COLOR;
+      const color = swingColor(look, caster, hand, this.maxVisibleTime);
       const swing = isPunching
         ? new PunchBurst(scene, { fist: getHand, facing, color, duration: this.maxVisibleTime })
         : new SwingArc(scene, {

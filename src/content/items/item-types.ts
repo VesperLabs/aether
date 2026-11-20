@@ -52,6 +52,8 @@ export interface ItemDefinition {
   readonly requirements?: RequirementBlock;
   readonly effects?: EffectBlock;
   readonly buffs?: { readonly [K in BuffName]?: number };
+  /** Spells only: the percent chance each of its `buffs` lands on a hit. Always, when missing. */
+  readonly buffChance?: number;
   readonly triggers?: readonly TriggerDefinition[];
   readonly exclusive?: boolean;
   readonly cost?: number;
@@ -96,6 +98,7 @@ export interface BuiltItem {
   cost?: number;
   effects?: Record<string, number>;
   buffs?: Record<string, number>;
+  buffChance?: number;
   triggers?: TriggerDefinition[];
   percentStats?: Record<string, number>;
   setName?: string;

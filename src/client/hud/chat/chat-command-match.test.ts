@@ -27,6 +27,9 @@ describe("readChatDraft suggestions", () => {
     expect(values("/gins")[0]).toBe("/guns");
   });
 
+  it("finds gear by its family", () => {
+    expect(values("/drop fist")).toEqual(expect.arrayContaining(["katar", "spikes", "claw"]));
+  });
   it("suggests items after /drop, keeping what's before the word", () => {
     const { suggestions, prefix } = readChatDraft("/drop foxb", commands);
     expect(suggestions[0].value).toBe("foxBlade");

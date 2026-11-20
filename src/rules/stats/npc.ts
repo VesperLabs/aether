@@ -2,6 +2,12 @@ import { monsterHealth, unarmedDamage } from "./power";
 import { HP_PER_VITALITY } from "./scaling";
 import { calculateStats, getBaseStats, mergeAndAddValues, type StatBag } from "./rules";
 
+/**
+ * How much harder a monster's natural weapon hits than a fist of its level. A mob at your level
+ * should take about a dozen of its hits to kill you, so ones a few levels up are a real danger.
+ */
+const NATURAL_WEAPON_SCALE = 3;
+
 /** What an NPC's stats are worked out from: its level, class and any base stats it overrides. */
 export interface NpcStatsInput {
   baseStats?: StatBag & { level?: number };
@@ -22,9 +28,9 @@ export function npcBaseStats({ baseStats = {}, charClass }: NpcStatsInput): Stat
     // vitality still adds HP, so this lands the total on the monster curve
     maxHp: monsterHealth(level) - classStats.vitality * HP_PER_VITALITY,
     maxMp: 0,
-    // claws and teeth: a natural weapon as strong as their fists, added on top of them
-    minDamage: classStats.minDamage + unarmedDamage(level)[0],
-    maxDamage: classStats.maxDamage + unarmedDamage(level)[1],
+    // claws and teeth: a natural weapon, harder than a fist, added on top of them
+    minDamage: classStats.minDamage + Math.round(unarmedDamage(level)[0] * NATURAL_WEAPON_SCALE),
+    maxDamage: classStats.maxDamage + Math.round(unarmedDamage(level)[1] * NATURAL_WEAPON_SCALE),
     walkSpeed: classStats.walkSpeed - 30,
     intelligence: classStats.intelligence + level,
     strength: classStats.strength + level,

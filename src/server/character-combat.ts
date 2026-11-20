@@ -14,6 +14,7 @@ import {
   rollSpellDamage,
   strikesWithWeapon,
   type AbilityDetails,
+  rollSpellBuff,
 } from "@/rules/spells";
 import type { ServerCharacter } from "./character";
 import { isAlly } from "./allegiance-adapter";
@@ -65,7 +66,7 @@ export function applySpellDamage(
     return [{ type: "miss", amount: 0, from: attacker.id, to: victim.id }];
   }
   const hits: Array<Hit> = [];
-  const { effects = {}, buffs } = abilityDetails ?? ({} as Partial<AbilityDetails>);
+  const { effects = {}, buffs, buffChance } = abilityDetails ?? ({} as Partial<AbilityDetails>);
 
   const rolled = rollSpellDamage(effects, attacker?.stats, victim.stats, victim.world.rng);
   const elements = rolled.elements as Elements[];
@@ -73,6 +74,7 @@ export function applySpellDamage(
 
   /* The spell's buffs land with it, unless it killed: the dead take no debuffs */
   const addSpellBuffs = () => {
+    if (!rollSpellBuff(buffChance, victim.world.rng)) return;
     for (const [name, level] of Object.entries((buffs ?? {}) as Record<string, number>)) {
       hits.push({ type: "buff", from: attacker.id, buffName: name, elements, to: victim.id });
       victim.addBuff({ name, level, caster: attacker });
@@ -180,8 +182,9 @@ export function applyAttackDamage(
   const isKilled = victim.stats.hp <= 0;
 
   /* Buffs the attack-spell casts (tackle's stun) land with the hit, as a spell's do */
+  const landsBuffs = !isKilled && rollSpellBuff(abilityDetails?.buffChance, victim.world.rng);
   for (const [name, level] of Object.entries(
-    (isKilled ? {} : (abilityDetails?.buffs ?? {})) as Record<string, number>,
+    (landsBuffs ? (abilityDetails?.buffs ?? {}) : {}) as Record<string, number>,
   )) {
     hits.push({ type: "buff", from: attacker.id, buffName: name, elements, to: victim.id });
     victim.addBuff({ name, level, caster: attacker });

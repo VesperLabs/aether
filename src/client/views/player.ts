@@ -32,11 +32,12 @@ import type { WeaponSprite } from "./weapon-sprite";
 import type { Crosshair } from "@/client/input/crosshair";
 import { playPoisonTick } from "./poison-bubbles";
 import { playBleedTick } from "./blood-drops";
+import { playBurnTick } from "./burn-flames";
 import { checkIsFlash, drawFrame, hackFrameRates, updateCurrentSpeed } from "./player-animation";
 const BLANK_TEXTURE = "human-blank";
 
-/** Status flags the server raises for one regen tick (poison, bleed, regen buff). */
-const REGEN_FLAGS = ["doBuffPoison", "doBuffBleed", "doHpBuffRegen"] as const;
+/** Status flags the server raises for one regen tick (poison, bleed, burn, regen buff). */
+const REGEN_FLAGS = ["doBuffPoison", "doBuffBleed", "doBuffBurn", "doHpBuffRegen"] as const;
 
 type Sprite = Phaser.GameObjects.Sprite;
 
@@ -191,6 +192,17 @@ export class Player extends Character {
       if (bleedBuff) {
         this.takeHit({ type: "hp", amount: -(bleedBuff?.stats?.bleedDamage || 0) });
         playBleedTick(this);
+      }
+    }
+    if (this.risenRegenFlags.has("doBuffBurn")) {
+      const burnBuff = this.getBuff("burn");
+      if (burnBuff) {
+        this.takeHit({
+          type: "hp",
+          amount: -(burnBuff?.stats?.burnDamage || 0),
+          elements: ["fire"],
+        });
+        playBurnTick(this);
       }
     }
     if (this.risenRegenFlags.has("doHpBuffRegen")) {
