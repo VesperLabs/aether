@@ -227,8 +227,8 @@ export class Npc extends Character {
     // If dead, do not continue update
     if (state?.isDead) return this.tryRespawn();
 
-    // Regenerate health points, except while running away hurt
-    if (state.behavior !== "retreat") this.doRegen();
+    // Regenerate health points, except while running away hurt; damage over time ticks either way
+    this.doRegen(state.behavior !== "retreat");
 
     this.threat = decayThreat(
       pruneThreat(this.threat, (id) => {

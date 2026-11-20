@@ -1,4 +1,5 @@
 import { DEFAULT_USER_SETTINGS, type UserSettings } from "@/rules/world";
+import { popLootFrom } from "@/client/views/loot-pop";
 import {
   decodeRoomPoses,
   decodeTickVitals,
@@ -365,13 +366,14 @@ export function bindSceneSocket(scene: SceneMain) {
   });
 
   socket.on("lootSpawned", ({ loot, npcId }) => {
-    /*  We will fake the loot pos when an enemy dies by overriding xy */
+    /* A mob's drop starts where its body is and pops out of it as it dies */
     const n = getNpc(scene, npcId);
     if (n) {
       loot.x = n.x;
       loot.y = n.y;
     }
-    addLoot(scene, loot);
+    const dropped = addLoot(scene, loot);
+    if (n) popLootFrom(dropped, n);
   });
 
   socket.on("remove", (socketId) => removePlayer(scene, socketId));

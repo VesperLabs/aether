@@ -36,6 +36,7 @@ export interface DescribableItem {
   effects?: Record<string, StatValue>;
   requirements?: Record<string, number | string>;
   buffs?: Record<string, number>;
+  buffChance?: number;
   triggers?: readonly TriggerDefinition[];
   setName?: string;
   /** Gear's mod slots, `null` while empty, and a unique's own mod on top. Both scale by tier. */
@@ -82,7 +83,8 @@ export interface ItemDescription {
   kind: string;
   stats: StatLine[];
   effects: StatLine[];
-  buffs: { name: string; level: number; stats: StatLine[] }[];
+  /** A spell's: how often it lands on a hit, 100 when always. */
+  buffs: { name: string; level: number; chancePercent?: number; stats: StatLine[] }[];
   requirements: (StatLine & { met: boolean })[];
   set?: {
     name: string;
@@ -272,7 +274,13 @@ export function describeItem(
       ...statLines(item.effects),
       ...ownBuffs.flatMap(([name, level]) => buffLines(name, level)),
     ],
-    buffs: castBuffs.map(([name, level]) => ({ name, level, stats: buffLines(name, level) })),
+    buffs: castBuffs.map(([name, level]) => ({
+      name,
+      level,
+      /* A spell says how often each lands, even when it always does */
+      ...(isSpell && { chancePercent: item.buffChance ?? 100 }),
+      stats: buffLines(name, level),
+    })),
     requirements: Object.entries(requirements).map(([label, value]) => ({
       label,
       value: String(value),

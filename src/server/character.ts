@@ -23,6 +23,7 @@ import { calculateNextMaxExp, classAttributes } from "@/rules/stats";
 import type { ElementalDamages } from "@/rules/combat";
 import type { AbilityDetails } from "@/rules/spells";
 import type { BuffRequest } from "./character-buffs";
+import { applyDotDeath } from "./dot-death";
 
 /** What a character is created from: the shared constructor args, plus the room it is in. */
 // Legacy: loaded users and NPC definitions both flow in here untyped.
@@ -82,8 +83,10 @@ export class ServerCharacter extends CharacterModel {
   ): Array<Hit> {
     return applyDamage(this, victim, abilitySlot, hand, ability);
   }
-  doRegen() {
-    applyRegen(this);
+  /** `isHealing` false: damage over time still ticks, nothing heals. */
+  doRegen(isHealing = true) {
+    applyRegen(this, isHealing);
+    applyDotDeath(this);
   }
   setDead() {
     //placeholder

@@ -4,7 +4,7 @@ export const weaponFamilies = {
   fist: {
     type: "weapon",
     texture: "weapon-katar",
-    stats: { attackDelay: 140, minDamage: 0, maxDamage: 1, spCost: 1 },
+    stats: { attackDelay: 160, minDamage: 0, maxDamage: 2, spCost: 1 },
     requirements: { dexterity: 5 },
     tiers: [
       {

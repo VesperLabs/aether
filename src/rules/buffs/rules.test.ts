@@ -151,6 +151,7 @@ describe("runRegen", () => {
     lastSpRegen: NOW - ago,
     lastBuffPoison: NOW - ago,
     lastBuffBleed: NOW - ago,
+    lastBuffBurn: NOW - ago,
   });
   const stats = {
     hp: 5,
@@ -197,6 +198,21 @@ describe("runRegen", () => {
     expect(result.flags.doBuffBleed).toBe(true);
     expect(result.timers.lastBuffBleed).toBe(NOW);
   });
+  it("burn takes hp and puts the character in combat", () => {
+    const result = run({ buffs: [{ name: "burn", stats: { burnDamage: 2 } }] });
+    expect(result.stats.hp).toBe(3);
+    expect(result.enteredCombat).toBe(true);
+    expect(result.flags.doBuffBurn).toBe(true);
+    expect(result.timers.lastBuffBurn).toBe(NOW);
+  });
+  it("still burns while not healing (running away hurt), but heals nothing", () => {
+    const result = run({
+      isHealing: false,
+      buffs: [{ name: "rest" }, { name: "burn", stats: { burnDamage: 2 } }],
+    });
+    expect(result.stats.hp).toBe(3);
+    expect(result.flags.doHpRegen).toBe(false);
+  });
   it("does nothing for the dead", () => {
     const result = run({ isDead: true, buffs: [{ name: "rest" }] });
     expect(result.flags).toEqual({
@@ -206,6 +222,7 @@ describe("runRegen", () => {
       doSpRegen: false,
       doBuffPoison: false,
       doBuffBleed: false,
+      doBuffBurn: false,
     });
     expect(result.stats).toEqual({});
   });

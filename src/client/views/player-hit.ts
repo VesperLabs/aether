@@ -7,6 +7,7 @@ import { playDeathDissolve } from "./dissolve";
 import { playCaptureBeam } from "./capture-beam";
 import { playPoisonLanding } from "./poison-bubbles";
 import { playBleedLanding } from "./blood-drops";
+import { playBurnLanding } from "./burn-flames";
 
 /** How long a hit paints the body solid white before the red tint, in ms. */
 const WHITE_FLASH_MS = 50;
@@ -33,10 +34,11 @@ export function applyHit(
 
   switch (type) {
     case "buff":
-      /* Stun shows as stars circling the head, poison as bubbles, bleed as blood, capturing as its
+      /* Stun shows as stars circling the head, poison as bubbles, bleed as blood, burn as flames, capturing as its
        * ball: no landing icon */
       if (hit?.buffName === "poison") playPoisonLanding(player);
       else if (hit?.buffName === "bleed") playBleedLanding(player, attacker);
+      else if (hit?.buffName === "burn") playBurnLanding(player);
       else if (hit?.buffName !== "stun" && hit?.buffName !== "capturing") {
         scene.add.existing(new Buff(player.scene, player, hit?.buffName as string));
       }

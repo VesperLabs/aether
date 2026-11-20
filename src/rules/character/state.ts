@@ -19,6 +19,7 @@ export interface CharacterState {
   doHpRegen: boolean;
   doBuffPoison: boolean;
   doBuffBleed: boolean;
+  doBuffBurn: boolean;
   doHpBuffRegen: boolean;
   doMpRegen: boolean;
   doSpRegen: boolean;
@@ -26,6 +27,7 @@ export interface CharacterState {
   deadTime: number;
   lastBuffPoison: number;
   lastBuffBleed: number;
+  lastBuffBurn: number;
   lastHpRegen: number;
   lastHpBuffRegen: number;
   lastMpRegen: number;

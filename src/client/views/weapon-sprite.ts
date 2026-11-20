@@ -8,6 +8,9 @@ import { bladeGlow } from "./blade-glow";
 
 const BORDER_OFFSET = 1;
 
+/** A spell's flash of element stays on the blade this long after its swing, in ms. */
+const FLASH_LINGER_MS = 300;
+
 /**
  * How much of the weapon's movement its particles share: they trail behind a swing a little,
  * like physics, but stay close to the blade instead of scattering across the screen.
@@ -52,6 +55,9 @@ export class WeaponSprite extends Phaser.GameObjects.Container {
   declare borderSprites: Phaser.GameObjects.Sprite[];
   declare mainSprite: Phaser.GameObjects.Sprite;
   declare elements: ItemEffect[];
+  /** The equipped weapon's own elements, shown again once a spell's flash ends. */
+  declare equippedElements: ItemEffect[];
+  declare flashTimer?: Phaser.Time.TimerEvent;
   declare sim: ElementSim;
   /** The sim's light, added to what's behind it. */
   declare glowGraphics: Phaser.GameObjects.Graphics;
@@ -66,6 +72,7 @@ export class WeaponSprite extends Phaser.GameObjects.Container {
 
     this.borderSprites = [];
     this.elements = [];
+    this.equippedElements = [];
     this.sim = new ElementSim([]);
     this.grip = { x: 0, y: 0 };
 
@@ -126,6 +133,19 @@ export class WeaponSprite extends Phaser.GameObjects.Container {
     return { x: world.x, y: world.y };
   }
   setElements(elements: ItemEffect[] = []) {
+    this.equippedElements = elements;
+    if (!this.flashTimer) this.showElements(elements);
+  }
+  /** A spell sets the blade alight with `element` for `ms` (Flame Slash), then it goes back. */
+  flashElement(element: ItemEffect, ms: number) {
+    this.flashTimer?.remove();
+    this.showElements([element, ...this.equippedElements.filter((e) => e !== element)]);
+    this.flashTimer = this.scene.time.delayedCall(ms + FLASH_LINGER_MS, () => {
+      this.flashTimer = undefined;
+      this.showElements(this.equippedElements);
+    });
+  }
+  private showElements(elements: ItemEffect[]) {
     const known = elements.filter((element) => ELEMENT_EFFECTS[element]);
     if (known.join() === this.elements.join()) return;
     this.elements = known;

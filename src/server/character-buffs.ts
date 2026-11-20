@@ -116,7 +116,7 @@ export function applyExpireBuffs(character: BuffHolder, forceExpire = false) {
 }
 
 /** One regeneration tick: stores which ticks happened and the resulting hp, mp and sp. */
-export function applyRegen(character: BuffHolder) {
+export function applyRegen(character: BuffHolder, isHealing = true) {
   const now = character.world.now();
   const { flags, stats, timers, enteredCombat } = runRegen({
     isDead: character.state.isDead,
@@ -124,6 +124,7 @@ export function applyRegen(character: BuffHolder) {
     stats: character.stats,
     timers: character.state as RegenTimers,
     now,
+    isHealing,
   });
   Object.assign(character.state, flags, timers);
   if (enteredCombat) {
@@ -133,7 +134,7 @@ export function applyRegen(character: BuffHolder) {
   Object.assign(character.stats, stats);
 }
 
-/** Out of combat and not poisoned or bleeding: starts resting. Returns whether the character is resting. */
+/** Out of combat and not poisoned, bleeding or burning: starts resting. Returns whether the character is resting. */
 export function applyCheckIsResting(character: BuffHolder & { stats: { spellPower?: number } }) {
   const { shouldAddRest, isResting } = checkResting(
     character.buffs,

@@ -89,11 +89,10 @@ export const spellDetails = {
     look: {
       visibleMs: 300,
       layer: "below",
-      tint: "0xFF7A2A",
-      light: { color: "0xFF7A2A", radius: 40 },
+      weaponElement: "fire",
       sound: "melee-swing-1",
     },
-    description: "A melee attack that deals extra fire damage to enemies",
+    description: "A melee attack that deals fire damage and sets enemies alight.",
   },
   fireball: {
     ...ball("fireball", 300, {
@@ -103,7 +102,7 @@ export const spellDetails = {
     }),
     targets: ["enemy"],
     scale: { base: 0.15, perRank: 0.1 },
-    description: "Deals fire damage to enemies this spell passes through.",
+    description: "Deals fire damage to enemies this spell passes through, and may set them alight.",
   },
   waterball: {
     ...ball("waterball", 200, { light: { color: "0x4A8AD8", radius: 32 }, sound: "spell-water" }),

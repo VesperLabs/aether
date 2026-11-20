@@ -64,10 +64,12 @@ export interface ChatCommand {
   complete?: (index: number, args: string[]) => readonly ChatCommandOption[];
 }
 
-const ITEM_OPTIONS = ITEM_KEYS.map(({ key, type, rarity, name, tier, look }) => ({
+const ITEM_OPTIONS = ITEM_KEYS.map(({ key, type, rarity, name, tier, look, base }) => ({
   value: key,
   label: name,
-  hint: type,
+  /* The family too ("fist weapon"), so typing "fist" finds every katar, spikes and claw */
+  hint: base && base !== type ? `${base} ${type}` : type,
+  itemType: type,
   tier,
   rarity,
   look,

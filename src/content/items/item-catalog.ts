@@ -42,6 +42,7 @@ export interface CatalogItem {
   effects?: Loose;
   requirements: Loose;
   buffs?: Loose;
+  buffChance?: number;
   triggers?: Loose[];
   /** Cards only: the mod the card puts in a slot. */
   mod?: ModName;
@@ -203,6 +204,7 @@ function* tabled(type: string, table: Partial<Record<ItemRarity, Loose>>): Gener
         stats: { ...scale(first.stats, tier), ...own.stats },
         effects: { ...scale(first.effects, tier), ...own.effects },
         buffs: own.buffs ?? scale(first.buffs, tier),
+        buffChance: own.buffChance ?? first.buffChance,
         requirements: {
           ...(needsLevel && { level }),
           ...scaleRequirements(first.requirements, tier),

@@ -158,6 +158,12 @@ export const assetList4 = [
     previewRect: [0, 0, 32, 32],
   },
   {
+    texture: "spell-burn",
+    src: "./assets/atlas/spell/spell-burn.png",
+    atlas: "./assets/atlas/32x32-stackable.json",
+    previewRect: [0, 0, 32, 32],
+  },
+  {
     texture: "spell-poison",
     src: "./assets/atlas/spell/spell-poison.png",
     atlas: "./assets/atlas/32x32-stackable.json",

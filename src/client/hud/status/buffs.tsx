@@ -49,7 +49,8 @@ const BuffTooltip = ({
         <TextDivider>Time: {displayTime}</TextDivider>
         {Object.keys(combinedStats).map((key) => (
           <Text key={key}>
-            <Label>{key}:</Label> {combinedStats[key]}
+            <Label>{key}:</Label>{" "}
+            <span style={{ textTransform: "none" }}>{combinedStats[key]}</span>
           </Text>
         ))}
         {Object.keys(buff?.percentStats || {}).map((key) => (
