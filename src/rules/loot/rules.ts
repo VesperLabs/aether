@@ -48,6 +48,8 @@ export interface LootSpawn {
   item?: LootItem | null;
   /** Set when the drop pops out of an npc, so clients can animate it. */
   npcId?: string | null;
+  /** Set when a player drops it, so clients can toss it out of them. */
+  playerId?: string | null;
   /** Custom texture for how it shows on the map. */
   texture?: string;
   grabMessage?: boolean;

@@ -81,6 +81,7 @@ export function dropItem(ctx: CommandContext, request: ParsedCommand<"dropItem">
     ...dropPosition(player),
     item: result.item,
     npcId: null,
+    playerId: socketId,
   });
   /* Save the users data */
   world.db.updateUser(player);

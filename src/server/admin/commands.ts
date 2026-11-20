@@ -63,6 +63,7 @@ function execute(ctx: CommandContext, command: string[]) {
         y: player?.y,
         item: built,
         npcId: null,
+        playerId: ctx.socketId,
       });
       return cmdInfo(`Dropped ${itemLabel(built, drop.amount)}.`);
     }
@@ -98,7 +99,13 @@ function execute(ctx: CommandContext, command: string[]) {
         const drop = ItemBuilder.rollDrop(world.dice, randomNumber(world.dice, 1, 30), 1000);
         gun = drop && (ItemBuilder.buildItem(world.dice, drop) as Item | null);
       } while (gun?.rarity !== rarity);
-      spawnLoot(world, player?.roomName, { x: player?.x, y: player?.y, item: gun, npcId: null });
+      spawnLoot(world, player?.roomName, {
+        x: player?.x,
+        y: player?.y,
+        item: gun,
+        npcId: null,
+        playerId: ctx.socketId,
+      });
       return cmdInfo(`Dropped ${itemLabel(gun)}.`);
     }
   }

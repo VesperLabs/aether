@@ -19,7 +19,9 @@ export function spawnLoot(world: ServerWorld, roomName: string, spawn: LootSpawn
   // The rules type the item loosely; the spawner always hands it a built item.
   const placed = loot as unknown as Loot;
   world.loots[loot.id] = placed;
-  world.io.to(roomName).emit("lootSpawned", { loot: placed, npcId: spawn.npcId });
+  world.io
+    .to(roomName)
+    .emit("lootSpawned", { loot: placed, npcId: spawn.npcId, playerId: spawn.playerId });
 }
 
 export function removeLoot(world: ServerWorld, id: string) {
