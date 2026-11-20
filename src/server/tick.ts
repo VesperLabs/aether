@@ -76,14 +76,32 @@ const updateEntities: System<ServerWorld> = (world, { time, delta, now }) => {
   for (const spell of Object.values(world.spells)) spell.update();
 };
 
+/** Each room's characters as their own small player and npc maps, built in one pass over everyone. */
+function charactersByRoom(world: ServerWorld) {
+  const rooms: Record<string, Pick<ServerWorld, "players" | "npcs">> = {};
+  const roomOf = (name: string) => (rooms[name] ??= { players: {}, npcs: {} });
+  for (const [id, player] of Object.entries(world.players)) {
+    const name = player?.room?.name;
+    if (name) roomOf(name).players[id] = player;
+  }
+  for (const [id, npc] of Object.entries(world.npcs)) {
+    const name = npc?.room?.name;
+    if (name) roomOf(name).npcs[id] = npc;
+  }
+  return rooms;
+}
+
+const hasBuffChanges = (characters: Pick<ServerWorld, "players" | "npcs">) =>
+  Object.values(characters.players).some((c) => c.state?.hasBuffChanges) ||
+  Object.values(characters.npcs).some((c) => c.state?.hasBuffChanges);
+
+const NO_CHARACTERS: Pick<ServerWorld, "players" | "npcs"> = { players: {}, npcs: {} };
+
 /** Loot, finished spells, and sending each room's poses and changed statuses to the clients in it. */
 const updateRooms: System<ServerWorld> = (world: ServerWorld, { now }: Frame) => {
   const { io } = world;
-  /* One pass over everyone, not one per room */
-  const roomsWithBuffChanges = new Set<string>();
-  for (const c of [...Object.values(world.players), ...Object.values(world.npcs)]) {
-    if (c?.state?.hasBuffChanges && c.room?.name) roomsWithBuffChanges.add(c.room.name);
-  }
+  /* One pass over everyone, not one per room: each room then only looks at its own characters */
+  const byRoom = charactersByRoom(world);
   for (const room of Object.values(world.rooms)) {
     /* Simulate first so what is sent matches what clients see on the next frame (loot expiry, spawns). */
     updateRoomLoot(world, room);
@@ -95,11 +113,12 @@ const updateRooms: System<ServerWorld> = (world: ServerWorld, { now }: Frame) =>
       continue;
     }
 
-    if (roomsWithBuffChanges.has(room.name))
-      io.to(room.name).emit("buffUpdate", getBuffRoomState(world, room.name));
+    const characters = byRoom[room.name] ?? NO_CHARACTERS;
+    if (hasBuffChanges(characters))
+      io.to(room.name).emit("buffUpdate", getBuffRoomState(characters, room.name));
 
-    io.to(room.name).emit("poses", encodeRoomPoses(world, room.name, now));
-    const statuses = takeChangedStatuses(world, room.name, room.sentStatuses);
+    io.to(room.name).emit("poses", encodeRoomPoses(characters, room.name, now));
+    const statuses = takeChangedStatuses(characters, room.name, room.sentStatuses);
     if (statuses) io.to(room.name).emit("statuses", statuses);
   }
 };
@@ -111,6 +130,12 @@ const recordPoses: System<ServerWorld> = (world) => {
   const players = groupByRoom(world.players, roomNames);
   const npcs = groupByRoom(world.npcs, roomNames);
   for (const room of Object.values(world.rooms)) {
+    /* Only players' hits are rewound, so a room without any keeps an empty frame: cheap, and no
+     * hit can blend positions across the gap once someone arrives */
+    if (players[room.name].length === 0) {
+      room.poseHistory.record(now, []);
+      continue;
+    }
     room.poseHistory.record(now, [...players[room.name], ...npcs[room.name]]);
   }
 };

@@ -53,7 +53,7 @@ export function leaveWater(player: Player) {
   const view = views.get(player);
   if (!view) return;
   view.depth = 0;
-  view.ring.clear();
+  clearRing(view.ring);
   for (const layer of bodyLayers(player)) layer && fadeBelow(layer, undefined, 1);
 }
 
@@ -76,6 +76,15 @@ interface WadingView {
 }
 
 const views = new WeakMap<Player, WadingView>();
+
+/** What each ring last drew, so an unchanged frame keeps its graphics. */
+const ringLooks = new WeakMap<Phaser.GameObjects.Graphics, string>();
+
+function clearRing(ring: Phaser.GameObjects.Graphics) {
+  if (!ringLooks.has(ring)) return;
+  ringLooks.delete(ring);
+  ring.clear();
+}
 
 function viewOf(player: Player): WadingView {
   let view = views.get(player);
@@ -115,8 +124,8 @@ function drawRing(
   const moving = player.currentSpeed > 0 ? 1 : 0;
   const rx = Math.round((size.ringX + moving + bob) * scale);
   const ry = Math.round((size.ringY + bob * 0.5) * scale);
-  ring.clear();
   const steps = Math.max(rx * 3, 12);
+  const pixels: { x: number; y: number; lit: boolean }[] = [];
   for (let i = 0; i <= steps; i++) {
     const angle = (Math.PI * i) / steps;
     const cos = Math.cos(angle);
@@ -127,11 +136,19 @@ function drawRing(
     const x = Math.round(cos * (rx + bulge));
     const y = Math.round(waterline + sin * (ry + bulge / 2));
     /* Foam only while it pushes through; standing still, the ring is calm whichever way it faces */
-    const lit = moving > 0 && push > 0.5;
-    ring.fillStyle(lit ? RING_LIGHT : RING_DARK, (lit ? 0.9 : 0.7) * depth);
-    ring.fillRect(x, y, 1, 1);
+    pixels.push({ x, y, lit: moving > 0 && push > 0.5 });
   }
-  player.rig.bringToTop(ring);
+  /* Most frames draw the same pixels: skip rebuilding the graphics then */
+  const look = `${depth}|${pixels.map((p) => `${p.x},${p.y},${+p.lit}`).join(";")}`;
+  if (ringLooks.get(ring) !== look) {
+    ringLooks.set(ring, look);
+    ring.clear();
+    for (const { x, y, lit } of pixels) {
+      ring.fillStyle(lit ? RING_LIGHT : RING_DARK, (lit ? 0.9 : 0.7) * depth);
+      ring.fillRect(x, y, 1, 1);
+    }
+  }
+  if (player.rig.last !== ring) player.rig.bringToTop(ring);
 }
 
 /** Do the feet, where they are drawn, stand in the shallows: on the water side of a shore tile? */
@@ -225,7 +242,7 @@ export function updateWading(player: Player) {
   const middle = skin.flipX ? skin.frame.width - artMiddle : artMiddle;
   view.ring.x = Math.round(skinLeft + middle * skin.scaleX);
   if (depth > 0) drawRing(player, view.ring, waterline, bob, depth, view, { ringX, ringY });
-  else view.ring.clear();
+  else clearRing(view.ring);
 
   if (!isAlive) return;
   const feetY = player.y + player.rig.y + feet;

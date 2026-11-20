@@ -7,6 +7,31 @@ const FADE_BAND = 3;
 /** The faded copies of each body layer, one per step, made the first time it wades. */
 const bands = new WeakMap<Phaser.GameObjects.Sprite, Phaser.GameObjects.Sprite[]>();
 
+/** What each layer last looked like when its bands were drawn, so an unchanged frame skips the work. */
+const lastLook = new WeakMap<Phaser.GameObjects.Sprite, string>();
+
+/** Everything about `layer` and its waterline that the cut and the bands depend on. */
+function lookOf(layer: Phaser.GameObjects.Sprite, waterline: number, scale: number) {
+  return [
+    layer.texture.key,
+    layer.frame.name,
+    layer.x,
+    layer.y,
+    layer.scaleX,
+    layer.scaleY,
+    layer.originX,
+    layer.originY,
+    layer.flipX,
+    layer.flipY,
+    layer.angle,
+    layer.tintTopLeft,
+    layer.alpha,
+    layer.visible,
+    waterline,
+    scale,
+  ].join("|");
+}
+
 /** Shows only the rows of `sprite` between `from` and `to` (in its container's coordinates). */
 function cropRows(sprite: Phaser.GameObjects.Sprite, from: number, to: number) {
   const { width, height } = sprite.frame;
@@ -45,7 +70,8 @@ function mirror(copy: Phaser.GameObjects.Sprite, layer: Phaser.GameObjects.Sprit
     .setAlpha(layer.alpha * alpha)
     .setVisible(layer.visible);
   /* Right above its layer, so the stacking of the body's layers carries over */
-  layer.parentContainer?.moveAbove(copy, layer);
+  const rig = layer.parentContainer;
+  if (rig && rig.getIndex(copy) !== rig.getIndex(layer) + 1) rig.moveAbove(copy, layer);
 }
 
 /** The faded copies under `layer`'s waterline that are showing, so a snapshot of the body has them. */
@@ -64,10 +90,15 @@ export function fadeBelow(
   scale: number,
 ) {
   if (waterline === undefined) {
+    if (!lastLook.has(layer)) return;
+    lastLook.delete(layer);
     if (layer.isCropped) layer.setCrop();
     bands.get(layer)?.forEach((copy) => copy.setVisible(false));
     return;
   }
+  const look = lookOf(layer, waterline, scale);
+  if (lastLook.get(layer) === look) return;
+  lastLook.set(layer, look);
   cropRows(layer, -Infinity, waterline);
   const band = FADE_BAND * scale;
   bandsOf(layer).forEach((copy, i) => {

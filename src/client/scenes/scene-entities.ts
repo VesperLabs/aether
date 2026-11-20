@@ -1,3 +1,4 @@
+import type Phaser from "phaser";
 import { Player } from "@/client/views/player";
 import type { CharacterArgs } from "@/client/views/character";
 import { LootItem } from "@/client/views/loot-item";
@@ -42,14 +43,33 @@ export function getNpcs(scene: SceneMain) {
   return (scene.npcs?.getChildren() ?? []) as Player[];
 }
 
+type Group = Phaser.Physics.Arcade.Group;
+type IdKey = "socketId" | "id";
+
+/** Each group's characters by id, so a lookup is not a search: poses look up every character every frame. */
+const indexes = new WeakMap<Group, Map<string, Player>>();
+
+/** The character in `group` whose `key` is `id`. The index is rebuilt only when it is out of date. */
+function lookUp(group: Group, key: IdKey, id: string) {
+  const found = indexes.get(group)?.get(id);
+  if (found?.active && found[key] === id && group.contains(found)) return found;
+  const index = new Map<string, Player>();
+  for (const child of group.getChildren() as Player[]) {
+    const childId = child[key];
+    if (childId) index.set(childId, child);
+  }
+  indexes.set(group, index);
+  return index.get(id);
+}
+
 export function getPlayer(scene: SceneMain, socketId: string | undefined) {
-  if (!scene.players) return;
-  return getPlayers(scene).find((player) => socketId === player.socketId);
+  if (!scene.players || !socketId) return;
+  return lookUp(scene.players, "socketId", socketId);
 }
 
 export function getNpc(scene: SceneMain, id: string | null | undefined) {
-  if (!scene.npcs) return;
-  return getNpcs(scene).find((npc) => id === npc.id);
+  if (!scene.npcs || !id) return;
+  return lookUp(scene.npcs, "id", id);
 }
 
 export function getLoot(scene: SceneMain, id: string) {

@@ -3,7 +3,6 @@ import type { ServerCharacter } from "./character";
 import { getRoomIndex } from "./room-index";
 import {
   arrive,
-  checkInRange,
   decideTalkingEnded,
   fleeAround,
   leadNpcChase,
@@ -17,12 +16,12 @@ import {
   type Velocity,
 } from "@/rules/npc-behavior";
 import {
-  findNextWaypoint,
   getKnockbackVelocity,
   getLungeVelocity,
   hasClearWalk,
   hasLineOfSight,
   isOutOfMap,
+  planNextWaypoint,
 } from "@/rules/movement";
 import { getCharacterDirection, getStickyDirection, type Point } from "@/rules/world";
 
@@ -194,18 +193,19 @@ function walkSpeedOf(npc: Npc) {
 function walkToPathed(npc: Npc, target: Point, speedRatio = 1, facing?: Point) {
   /* Paths are laid for walkers; a swimmer heads straight there and stops at the bank */
   if (npc.habitat === "water") return walkTo(npc, target, speedRatio, false, facing);
-  const { nextPath } = npc;
-  const next = findNextWaypoint(npc.room.pathfinder, npc, target, npc.bodySize);
-  if (next?.x !== nextPath?.x || next?.y !== nextPath?.y) npc.nextPath = next as Point;
+  /* The path is kept between ticks and searched again only when stale, or the target moved off it */
+  const { next, plan } = planNextWaypoint(
+    npc.room.pathfinder,
+    npc.pathPlan,
+    npc,
+    target,
+    npc.world.now(),
+    npc.bodySize,
+  );
+  npc.pathPlan = plan;
   // No way around (the target stands in a wall, or past the search limit): head straight for it
   if (!next) return walkTo(npc, target, speedRatio, false, facing);
-  if (nextPath) {
-    walkTo(npc, nextPath, speedRatio, false, facing);
-    if (checkInRange(npc, nextPath, 1)) {
-      /* Cleared with null; the shared model types it as always set. */
-      npc.nextPath = null as unknown as Point;
-    }
-  }
+  walkTo(npc, next, speedRatio, false, facing);
 }
 
 function standStill(npc: Npc) {

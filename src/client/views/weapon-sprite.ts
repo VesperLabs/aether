@@ -20,6 +20,14 @@ const FLASH_LINGER_MS = 300;
  * Blade edge pixels per frame and grip, relative to the centre of the untrimmed frame the sprite
  * draws.
  */
+/** Scratch matrices and points for placing effect pixels, reused instead of made per pixel. Safe to
+ * share: each update finishes with them before the next starts. */
+const SPRITE_MATRIX = new Phaser.GameObjects.Components.TransformMatrix();
+const ROOT_MATRIX = new Phaser.GameObjects.Components.TransformMatrix();
+const PARENT_MATRIX = new Phaser.GameObjects.Components.TransformMatrix();
+const WORLD_POINT = new Phaser.Math.Vector2();
+const LAYER_POINT = new Phaser.Math.Vector2();
+
 const EDGE_PIXELS = new Map<string, { x: number; y: number }[]>();
 
 function getEdgePixels(frame: Phaser.Textures.Frame, grip: { x: number; y: number }) {
@@ -200,7 +208,7 @@ export class WeaponSprite extends Phaser.GameObjects.Container {
       if (!obj.visible || obj.alpha === 0) return false;
       obj = obj.parentContainer;
     }
-    const { tx: x, ty: y } = this.mainSprite.getWorldTransformMatrix();
+    const { tx: x, ty: y } = this.mainSprite.getWorldTransformMatrix(SPRITE_MATRIX, PARENT_MATRIX);
     return this.scene.cameras.main.worldView.contains(x, y);
   }
   update(time: number, delta: number) {
@@ -209,14 +217,15 @@ export class WeaponSprite extends Phaser.GameObjects.Container {
     if (this.elements.length === 0) return;
 
     const shown = this.isShown();
-    const matrix = this.mainSprite.getWorldTransformMatrix();
-    const rootMatrix = this.placeEffects()?.getWorldTransformMatrix();
+    /* Reused matrices and points: toLayer runs for every effect pixel, every frame */
+    const matrix = this.mainSprite.getWorldTransformMatrix(SPRITE_MATRIX, PARENT_MATRIX);
+    const rootMatrix = this.placeEffects()?.getWorldTransformMatrix(ROOT_MATRIX, PARENT_MATRIX);
     const flipX = this.mainSprite.flipX ? -1 : 1;
     const flipY = this.mainSprite.flipY ? -1 : 1;
     const toLayer: ToLayer = (pixel) => {
-      const world = matrix.transformPoint(pixel.x * flipX, pixel.y * flipY);
+      const world = matrix.transformPoint(pixel.x * flipX, pixel.y * flipY, WORLD_POINT);
       if (!rootMatrix) return { x: world.x, y: world.y };
-      const { x, y } = rootMatrix.applyInverse(world.x, world.y);
+      const { x, y } = rootMatrix.applyInverse(world.x, world.y, LAYER_POINT);
       return { x, y };
     };
 
