@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.53.0](https://github.com/VesperLabs/aether/compare/v0.52.1...v0.53.0) (2026-11-20)
+
+
+### Features
+
+* pokeball borders, smoother follower pathing and leaving NPC windows ([#389](https://github.com/VesperLabs/aether/issues/389)) ([6f00482](https://github.com/VesperLabs/aether/commit/6f0048251229923f58aa95b5ba355b595b617558))
+
 ## [0.52.1](https://github.com/VesperLabs/aether/compare/v0.52.0...v0.52.1) (2026-11-19)
 
 
