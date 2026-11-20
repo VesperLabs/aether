@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.57.0](https://github.com/VesperLabs/aether/compare/v0.56.0...v0.57.0) (2026-11-20)
+
+
+### Features
+
+* hidden /admin command grants the admin role, which unlocks cheats ([#401](https://github.com/VesperLabs/aether/issues/401)) ([3df56bc](https://github.com/VesperLabs/aether/commit/3df56bcb1f6d168afbea938d24e8d25d7b65fabc))
+
 ## [0.56.0](https://github.com/VesperLabs/aether/compare/v0.55.1...v0.56.0) (2026-11-20)
 
 
