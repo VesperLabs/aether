@@ -7,6 +7,7 @@ export interface SocketHandlers {
   connect: () => void;
   disconnect: () => void;
   heroInit: ServerToClientEvents["heroInit"];
+  cheatsChanged: ServerToClientEvents["cheatsChanged"];
   loggedOut: ServerToClientEvents["loggedOut"];
   buffUpdate: ServerToClientEvents["buffUpdate"];
   playerUpdate: ServerToClientEvents["playerUpdate"];
@@ -40,6 +41,7 @@ export function bindSocketHandlers(socket: ClientGameSocket, handlers: SocketHan
   socket.on("connect", handlers.connect);
   socket.on("disconnect", handlers.disconnect);
   socket.on("heroInit", handlers.heroInit);
+  socket.on("cheatsChanged", handlers.cheatsChanged);
   socket.on("loggedOut", handlers.loggedOut);
   socket.on("buffUpdate", handlers.buffUpdate);
   socket.on("playerUpdate", handlers.playerUpdate);
@@ -56,6 +58,7 @@ export function bindSocketHandlers(socket: ClientGameSocket, handlers: SocketHan
     socket.off("connect", handlers.connect);
     socket.off("disconnect", handlers.disconnect);
     socket.off("heroInit", handlers.heroInit);
+    socket.off("cheatsChanged", handlers.cheatsChanged);
     socket.off("loggedOut", handlers.loggedOut);
     socket.off("buffUpdate", handlers.buffUpdate);
     socket.off("playerUpdate", handlers.playerUpdate);

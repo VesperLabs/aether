@@ -199,6 +199,7 @@ export function App({ socket, peer, debug, game, hasTicket }: AppProps) {
     connect: onConnect,
     disconnect: onDisconnect,
     heroInit: onHeroInit,
+    cheatsChanged: setCheats,
     loggedOut: () => {
       forgetLoginToken();
       window.location.reload();

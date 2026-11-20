@@ -11,10 +11,17 @@ import { PET_CHEATS } from "./pet-cheats";
 import { NPC_CHEATS } from "./npc-cheats";
 import { TRAVEL_CHEATS } from "./travel-cheats";
 import { WORLD_CHEATS } from "./world-cheats";
+import { isAdmin, isAdminPassword, markAdmin } from "./admin-role";
+import type { Player } from "@/server/player";
 
 /** Cheat chat commands (`/drop`, `/ding`...) only work when the server runs with ENABLE_CHEATS=true. */
-export function areCheatsEnabled(): boolean {
+function areCheatsEnabled(): boolean {
   return process.env.ENABLE_CHEATS === "true";
+}
+
+/** Whether this player may use cheats: everyone when the server has them on, else only admins. */
+export function canCheat(player: Player | undefined): boolean {
+  return areCheatsEnabled() || (!!player && isAdmin(player));
 }
 
 const CHEATS: Record<string, Cheat> = {
@@ -32,11 +39,26 @@ const ADMIN_COMMANDS = new Set<string>(CHAT_COMMANDS.filter((c) => c.cheat).map(
  * answered, false when it is not one (or admin commands are off) and should be sent as plain chat.
  */
 export function runAdminCommand(ctx: CommandContext, rawMessage: string): boolean {
-  if (!areCheatsEnabled()) return false;
   const command = rawMessage.substr(1).split(" ");
+  /* Hidden: never listed, and swallowed either way so the password is never sent as chat */
+  if (command[0] === "admin") {
+    grantAdmin(ctx, command[1]);
+    return true;
+  }
+  if (!canCheat(ctx.world?.players?.[ctx.socketId])) return false;
   if (!ADMIN_COMMANDS.has(command[0])) return false;
   execute(ctx, command);
   return true;
+}
+
+/** `/admin <password>`: gives the account the admin role for good, and turns cheats on now. */
+function grantAdmin(ctx: CommandContext, password: string | undefined) {
+  const player = ctx.world?.players?.[ctx.socketId];
+  if (!player || !isAdminPassword(password)) return;
+  markAdmin(player);
+  ctx.world.db.grantAdmin(player);
+  ctx.actor.emit("cheatsChanged", true);
+  ctx.actor.emit("message", { type: "system", message: "You are an admin." });
 }
 
 function execute(ctx: CommandContext, command: string[]) {

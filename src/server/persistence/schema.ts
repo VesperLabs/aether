@@ -119,6 +119,10 @@ const userSchema = {
   bsonType: "object",
   required: ["x", "y", "roomName", "baseStats", "updatedAt"],
   properties: {
+    isAdmin: {
+      bsonType: "bool",
+      description: "must be a boolean",
+    },
     x: {
       bsonType: "number",
       description: "must be a number and is required",

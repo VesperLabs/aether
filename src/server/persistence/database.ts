@@ -15,6 +15,8 @@ export type UserDocument = ReturnType<typeof createBaseUser> & {
   state?: CharacterState;
   /** The pets the player keeps, by slot: the actor each is a copy of. */
   pets?: PetSlots;
+  /** Set by `/admin <password>`: this account can use cheats on any server. */
+  isAdmin?: boolean;
 };
 
 /** The parts of a player the database reads when saving. */
@@ -69,4 +71,6 @@ export interface Database {
     setting: { name: string; value: unknown },
   ): Promise<void>;
   updateUser(player: SavedPlayer): Promise<void>;
+  /** Gives the account the admin role, for good. */
+  grantAdmin(player: { email?: string; isDemoAccount?: boolean }): Promise<void>;
 }

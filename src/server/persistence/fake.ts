@@ -13,6 +13,7 @@ const getDatabaseApi = (dice: Dice): Database => ({
   pruneNoobs: async () => {},
   createUser: async () => true,
   updateUser: async () => {},
+  grantAdmin: async () => {},
   updateUserMapDetails: async () => {},
   updateUserSetting: async () => {},
   updateUsersMaxExp: async () => {},
