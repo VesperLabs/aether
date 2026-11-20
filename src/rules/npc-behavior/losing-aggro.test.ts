@@ -17,7 +17,7 @@ function losingFoe(state: Partial<NpcBehaviorInput["state"]> = {}): NpcBehaviorI
       baseLevel: 5,
       stats: { level: 5, walkSpeed: 50, attackDelay: 300, castDelay: 300 },
       startingCoords: { x: 0, y: 0 },
-      hasTalkers: false,
+      talker: null,
       abilities: {},
       buffs: [],
       weapons: {},

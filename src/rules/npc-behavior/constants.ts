@@ -42,6 +42,11 @@ export const NPC_STRAFE_SWITCH_MS = 1500;
 export const NPC_KITE_SPEED_RATIO = 0.6;
 /** A follower walks to its leader once it is further than this, and waits when closer. */
 export const NPC_FOLLOW_DISTANCE = 40;
+/**
+ * Further than this from its leader, a follower paths around walls; closer, it walks straight.
+ * Pathing steps between tile centres, which turns it sideways and back, so it is the last resort.
+ */
+export const NPC_FOLLOW_PATH_DISTANCE = 160;
 /** The behavior an NPC is already doing gets this much added to its score, so it doesn't flicker. */
 export const NPC_BEHAVIOR_STICKINESS = 0.04;
 /** Close enough to spawn to count as home after a reset. */

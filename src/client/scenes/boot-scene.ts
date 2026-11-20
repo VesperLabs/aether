@@ -302,8 +302,8 @@ function loadSpritesheets(scene: Phaser.Scene) {
     frameHeight: 96,
   });
   scene.load.spritesheet(BALL_SHEET, assetUrl("./assets/images/pokeball-roll.png"), {
-    frameWidth: 16,
-    frameHeight: 16,
+    frameWidth: 20,
+    frameHeight: 20,
   });
   scene.load.spritesheet("spell-anim-chakra", assetUrl("./assets/images/spell-anim-chakra.png"), {
     frameWidth: 150,

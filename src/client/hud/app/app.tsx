@@ -20,6 +20,7 @@ import {
 } from "@/ui";
 import { getHudZoom } from "./hud-zoom";
 import { PadHints } from "./pad-hints";
+import { useLeaveNpc } from "./use-leave-npc";
 import { PadNavBadge } from "./pad-nav-badge";
 import { PadItemMenu } from "@/client/hud/inventory/pad-item-menu";
 import { PadKeyboard } from "@/client/hud/pad-keyboard/pad-keyboard";
@@ -101,6 +102,7 @@ export function App({ socket, peer, debug, game, hasTicket }: AppProps) {
   const [cheats, setCheats] = useState(false);
   const [localVideoChatStream, setLocalVideoChatStream] = useState<MediaStream | null>(null);
   const [remoteVideoStreams, setRemoteVideoStreams] = useState<Record<string, MediaStream>>({});
+  useLeaveNpc(socket, tabKeeper);
 
   /* Is the bag open or closed */
   const toggleBagState = (id: string) => {

@@ -1,5 +1,6 @@
 /*
- * The thrown balls' sprite sheet: one row per ball, each a whole tumble of 16x16 frames that loops.
+ * The thrown balls' sprite sheet: one row per ball, each a whole tumble of 20x20 frames that loops:
+ * a 15px ball with a 1px outline, centred so neighbouring frames sit 3px apart.
  * A ball's row is its tier less one, which is also the level of `capturing` it puts on.
  */
 

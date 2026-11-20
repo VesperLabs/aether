@@ -22,6 +22,8 @@ import { PAD_DROP_EVENT, PAD_USE_EVENT, type PadDropEvent } from "@/ui/item/pad-
 
 /** Faded and grey: a dragged pet's ghost, and a put-away active pet and its star. */
 const FADED_STYLE = { filter: "grayscale(100%)" };
+/** What stays in the slot while it's dragged: the same see-through grey an item leaves behind. */
+const LEFT_BEHIND_STYLE = { filter: "grayscale(100%)", opacity: 0.5 };
 
 /** Two presses on a slot within this many ms are a double-click. */
 const DOUBLE_PRESS_MS = 300;
@@ -190,7 +192,7 @@ const PetSlotView = ({
         )}
         {/* While it's dragged, a faded grey copy stays behind in the slot, as an item's does */}
         {pet && dragging && (
-          <Box sx={{ ...FADED_STYLE, lineHeight: 0 }}>
+          <Box sx={{ ...LEFT_BEHIND_STYLE, lineHeight: 0 }}>
             <ActorSprite name={pet.name} size={SLOT_SIZE} maxScale={ART_SCALE} wholeSteps />
           </Box>
         )}

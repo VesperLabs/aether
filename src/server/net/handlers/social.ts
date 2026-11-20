@@ -18,7 +18,7 @@ export function chatNpc(ctx: CommandContext, { npcId }: ParsedCommand<"chatNpc">
   const { world, actor, socketId } = ctx;
   const player: Player = world?.players?.[socketId];
   const npc = findNearbyNpc(world, socketId, npcId);
-  if (!player || !npc) return;
+  if (!player || !npc?.talks) return;
   restockIfNewDay(world, npc);
   if (!npc.talkingIds.includes(socketId)) npc.talkingIds.push(socketId);
   player.state.targetNpcId = npcId;
@@ -29,6 +29,14 @@ export function chatNpc(ctx: CommandContext, { npcId }: ParsedCommand<"chatNpc">
     services: npc.services,
     playerQuests: player.getQuests(),
   });
+}
+
+/** The player closed the window: whoever they were talking to stops, wherever they are. */
+export function leaveNpc(ctx: CommandContext) {
+  const { world, socketId } = ctx;
+  const npc = world?.npcs?.[world?.players?.[socketId]?.state?.targetNpcId ?? ""];
+  if (!npc) return;
+  npc.talkingIds = npc.talkingIds.filter((id) => id !== socketId);
 }
 
 export function acceptQuest(ctx: CommandContext, questId: ParsedCommand<"acceptQuest">) {

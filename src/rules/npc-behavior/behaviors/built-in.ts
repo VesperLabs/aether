@@ -1,4 +1,5 @@
-import { NPC_FOLLOW_DISTANCE, NPC_HOME_RANGE } from "../constants";
+import { NPC_FOLLOW_DISTANCE, NPC_FOLLOW_PATH_DISTANCE, NPC_HOME_RANGE } from "../constants";
+import { getCharacterDirection } from "@/rules/world";
 import { checkInRange, distanceBetween } from "../range";
 import type { NpcBehavior } from "./types";
 
@@ -16,10 +17,11 @@ export const reset: NpcBehavior = {
 /** Stay close to a leader, waiting at heel when near. */
 export const follow: NpcBehavior = {
   score: ({ input }) => (input.leader ? 0.65 : 0),
-  move: ({ input }) =>
-    distanceBetween(input.npc, input.leader) > NPC_FOLLOW_DISTANCE
-      ? { type: "follow", pathed: input.isNearCollideTile }
-      : { type: "standStill" },
+  move: ({ input }) => {
+    const distance = distanceBetween(input.npc, input.leader);
+    if (distance <= NPC_FOLLOW_DISTANCE) return { type: "standStill" };
+    return { type: "follow", pathed: distance > NPC_FOLLOW_PATH_DISTANCE };
+  },
 };
 
 /** Stuck in a wall or off the map: head home. */
@@ -29,10 +31,13 @@ export const unstuck: NpcBehavior = {
   move: () => ({ type: "returnToSpawn", pathed: true }),
 };
 
-/** Stand still while someone is talking to it. */
+/** Stand still while someone is talking to it, turned to face them. */
 export const talk: NpcBehavior = {
-  score: ({ input }) => (input.npc.hasTalkers ? 0.7 : 0),
-  move: () => ({ type: "talk" }),
+  score: ({ input }) => (input.npc.talker ? 0.7 : 0),
+  move: ({ input }) => ({
+    type: "talk",
+    face: getCharacterDirection(input.npc, input.npc.talker ?? input.npc),
+  }),
 };
 
 /** Stand still: the last resort when nothing else applies (no `wander`). */

@@ -41,7 +41,7 @@ export function playHitImpact(
     /* A killed victim turns into a corpse, which should not flinch */
     if (!isKill) recoil(victim, attacker, isCritical ? CRIT_RECOIL_PIXELS : RECOIL_PIXELS);
   }
-  if (isKill) popCorpse(victim);
+  if (isKill && victim.kind === "player") popCorpse(victim);
 }
 
 /** Shakes the camera a little when the hero lands a crit on someone else, unless it's turned off. */

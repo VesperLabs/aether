@@ -50,7 +50,8 @@ export interface NpcBehaviorInput {
     startingCoords: Body;
     /** Where it leashes to and walks back to: its leader's spawn for followers, else its own. */
     home?: Body;
-    hasTalkers: boolean;
+    /** Where the player who last started talking to it is, while anyone is. */
+    talker?: Body | null;
     abilities: Record<string, NpcAbility | null | undefined>;
     buffs: ActiveBuff[];
     weapons: NpcWeaponRanges;
@@ -111,7 +112,8 @@ export type NpcMovement =
   | { type: "walkTo"; to: { x: number; y: number }; pathed: boolean }
   /** Stand at spawn, facing down after `faceDownAfterMs`, or walk back there. */
   | { type: "waitAtSpawn"; faceDownAfterMs: number }
-  | { type: "talk" }
+  /** Stand still, turned to face whoever is talking to it. */
+  | { type: "talk"; face: CardinalDirection }
   /** Run away from the target, around walls, at `speedRatio` of walk speed (default full). Sets when a retreat began. */
   | { type: "flee"; speedRatio?: number; retreatAt?: number }
   /** Sidestep around the target, drifting back to `distance` from it. Sets the side and when to next pick one. */

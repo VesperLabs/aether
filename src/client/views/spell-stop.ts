@@ -1,5 +1,6 @@
 import { areAllies } from "@/rules/allegiance";
 import { findSpellHits, getSpell, piercesThrough, takeHits, toSpellVictims } from "@/rules/spells";
+import { isBallSpell } from "./ball-sheet";
 import type { Player } from "./player";
 
 /** What a flying spell on screen needs to know whether it has stopped on someone. */
@@ -11,6 +12,8 @@ interface FlyingSpell {
   bodySize: number;
   spellName: string;
   caster: Player;
+  /** What it's drawn as: a thrown ball's frame carries on as the ball its target struggles in. */
+  spell: Phaser.GameObjects.Sprite;
 }
 
 /** The side a character on screen is on (`rules/allegiance`). Players go by socket id. */
@@ -21,13 +24,13 @@ const sideOf = (c: Player) => ({
 });
 
 /**
- * Whether a spell that doesn't pierce has reached someone it stops on, by the same rules the server
+ * Who a spell that doesn't pierce has reached and stops on, if anyone, by the same rules the server
  * uses (`takeHits`), so it stops where the server stops it instead of flying on through them. The
  * server alone decides what the hit does.
  */
-export function hasStoppedOnSomeone(spell: FlyingSpell) {
+function stoppedOn(spell: FlyingSpell): Player | undefined {
   const definition = getSpell(spell.spellName);
-  if (piercesThrough(definition)) return false;
+  if (piercesThrough(definition)) return undefined;
   /* Straight from the scene's groups: its entity helpers import the views, this among them */
   const { npcs, players } = spell.scene as {
     npcs?: Phaser.GameObjects.Group;
@@ -52,5 +55,16 @@ export function hasStoppedOnSomeone(spell: FlyingSpell) {
     const isOnSide = areAllies(sideOf(caster), sideOf(victim));
     return definition.targets.includes(isOnSide ? "ally" : "enemy");
   };
-  return takeHits(overlapped, { pierces: false, mayTouch }).stops;
+  const [stopper] = takeHits(overlapped, { pierces: false, mayTouch }).hits;
+  return characters.find((c) => c.id === stopper);
+}
+
+/**
+ * Whether a spell that doesn't pierce has stopped on someone (see `stoppedOn`). A thrown ball that
+ * did is handed to them, so it stays on screen until the capture it starts shows.
+ */
+export function hasStoppedOnSomeone(spell: FlyingSpell) {
+  const stopper = stoppedOn(spell);
+  if (stopper && isBallSpell(spell.spellName)) stopper.captureBall?.catchThrown(spell.spell);
+  return !!stopper;
 }

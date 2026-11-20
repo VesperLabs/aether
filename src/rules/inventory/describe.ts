@@ -75,6 +75,8 @@ export interface ItemDescription {
   title: string;
   /** "Lv. n" for spells. */
   level?: number;
+  /** Gear's tier, shown before its rarity and kind. */
+  tier?: number;
   amount?: number;
   rarity?: string;
   kind: string;
@@ -241,6 +243,7 @@ export function describeItem(
   const mods = sumMods([item.fixedMod, ...(item.mods ?? [])].filter(Boolean) as ModName[], tier);
 
   const isOwnBuff = ([name]: [string, number]) => isSpell && name === base;
+  const isGear = !isSpell && item.slot !== "stackable" && item.base !== "card";
   const isWeapon = ["weapon", "ranged"].includes(item.type ?? "");
   const hands = (lines: ModLines) => (isWeapon ? perHand(lines) : lines);
   const ownBuffs = Object.entries(item.buffs ?? {}).filter(isOwnBuff);
@@ -255,6 +258,7 @@ export function describeItem(
   return {
     title: item.name ?? "",
     level: isSpell ? item.rank : undefined,
+    tier: isGear ? tier : undefined,
     amount: (item.amount ?? 0) > 1 ? item.amount : undefined,
     rarity: item.rarity,
     kind: isSpell ? "spell" : kindName(base),

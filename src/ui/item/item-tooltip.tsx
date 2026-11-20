@@ -6,7 +6,7 @@ import {
   type ItemDescription,
   type ModLines,
 } from "@/rules/inventory";
-import { Box, Flex, Text, theme, Tooltip, TooltipContent } from "@/ui/kit";
+import { Box, Flex, Text, theme, toRoman, Tooltip, TooltipContent } from "@/ui/kit";
 import {
   BODY_ICON,
   BuffDetails,
@@ -181,6 +181,7 @@ export const ItemTooltip = ({ item, player, tooltipId, show }: ItemTooltipProps)
               {!!d.level && <Level level={d.level} />}
             </Text>
             <Text sx={{ ...TYPE.meta, color: d.rarity }}>
+              {!!d.tier && `tier ${toRoman(d.tier)} `}
               {d.rarity} {d.kind}
             </Text>
           </Flex>
