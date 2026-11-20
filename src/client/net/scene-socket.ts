@@ -365,15 +365,13 @@ export function bindSceneSocket(scene: SceneMain) {
     npc.destroy();
   });
 
-  socket.on("lootSpawned", ({ loot, npcId }) => {
-    /* A mob's drop starts where its body is and pops out of it as it dies */
+  socket.on("lootSpawned", ({ loot, npcId, playerId }) => {
+    /* A mob's drop pops out of its body as it dies; a player's is tossed out of them at once */
     const n = getNpc(scene, npcId);
-    if (n) {
-      loot.x = n.x;
-      loot.y = n.y;
-    }
-    const dropped = addLoot(scene, loot);
+    const p = getPlayer(scene, playerId ?? undefined);
+    const dropped = addLoot(scene, n ? { ...loot, x: n.x, y: n.y } : loot);
     if (n) popLootFrom(dropped, n);
+    else if (p) popLootFrom(dropped, p, { delay: 0, scatter: false });
   });
 
   socket.on("remove", (socketId) => removePlayer(scene, socketId));
