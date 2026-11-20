@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.55.1](https://github.com/VesperLabs/aether/compare/v0.55.0...v0.55.1) (2026-11-20)
+
+
+### Bug Fixes
+
+* toss player-dropped loot out of the player like mob drops ([#395](https://github.com/VesperLabs/aether/issues/395)) ([a53b250](https://github.com/VesperLabs/aether/commit/a53b250ada5de42a02d3ed750fb2f37334e737da))
+
 ## [0.55.0](https://github.com/VesperLabs/aether/compare/v0.54.0...v0.55.0) (2026-11-20)
 
 
