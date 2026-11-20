@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.55.0](https://github.com/VesperLabs/aether/compare/v0.54.0...v0.55.0) (2026-11-20)
+
+
+### Features
+
+* burn debuff, early-game balance and loot pop ([#393](https://github.com/VesperLabs/aether/issues/393)) ([1fc596f](https://github.com/VesperLabs/aether/commit/1fc596fdacea2c3b817529867180b00f6d9e4f2b))
+
 ## [0.54.0](https://github.com/VesperLabs/aether/compare/v0.53.0...v0.54.0) (2026-11-20)
 
 
