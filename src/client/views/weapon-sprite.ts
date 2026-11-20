@@ -66,6 +66,8 @@ export class WeaponSprite extends Phaser.GameObjects.Container {
   /** The equipped weapon's own elements, shown again once a spell's flash ends. */
   declare equippedElements: ItemEffect[];
   declare flashTimer?: Phaser.Time.TimerEvent;
+  /** Something else is in the hand (a ball held out to throw): no outline, effects or glow. */
+  declare elementsHidden: boolean;
   declare sim: ElementSim;
   /** The sim's light, added to what's behind it. */
   declare glowGraphics: Phaser.GameObjects.Graphics;
@@ -81,6 +83,7 @@ export class WeaponSprite extends Phaser.GameObjects.Container {
     this.borderSprites = [];
     this.elements = [];
     this.equippedElements = [];
+    this.elementsHidden = false;
     this.sim = new ElementSim([]);
     this.grip = { x: 0, y: 0 };
 
@@ -153,8 +156,16 @@ export class WeaponSprite extends Phaser.GameObjects.Container {
       this.showElements(this.equippedElements);
     });
   }
+  /** Hides the weapon's elements while the hand shows something else, and brings them back. */
+  setElementsHidden(hidden: boolean) {
+    if (hidden === this.elementsHidden) return;
+    this.elementsHidden = hidden;
+    this.flashTimer?.remove();
+    this.flashTimer = undefined;
+    this.showElements(this.equippedElements);
+  }
   private showElements(elements: ItemEffect[]) {
-    const known = elements.filter((element) => ELEMENT_EFFECTS[element]);
+    const known = this.elementsHidden ? [] : elements.filter((element) => ELEMENT_EFFECTS[element]);
     if (known.join() === this.elements.join()) return;
     this.elements = known;
     this.sim = new ElementSim(known.map((element) => ELEMENT_EFFECTS[element]));

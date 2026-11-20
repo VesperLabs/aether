@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import type { Player } from "./player";
 import { BALL_SHEET } from "./ball-sheet";
 import { heldBallFrame } from "./ball-in-hand";
+import { WeaponSprite } from "./weapon-sprite";
 import { aimedBowHand } from "./nocked-arrow";
 import { getSwingWeaponAngle } from "./swing-arc";
 import { getShownAction } from "@/rules/combat";
@@ -116,6 +117,8 @@ export function drawFrame(p: Player) {
   if (ballFrame === undefined) handRight.setTexture(visibleEquipment?.handRight?.texture);
   else handRight.setTexture(BALL_SHEET, ballFrame);
   handRight.setScale(ballFrame === undefined ? 1 : BALL_IN_HAND_SCALE);
+  /* The ball isn't the weapon: it takes none of the weapon's glow */
+  if (handRight instanceof WeaponSprite) handRight.setElementsHidden(ballFrame !== undefined);
   handLeft.setTexture(visibleEquipment?.handLeft?.texture);
 }
 
