@@ -1,3 +1,4 @@
+import { refreshHud } from "@/client/hud-refresh";
 import { DEFAULT_USER_SETTINGS, type UserSettings } from "@/rules/world";
 import { popLootFrom } from "@/client/views/loot-pop";
 import {
@@ -63,7 +64,7 @@ function applyTickVitals(character: VitalsHolder, v: unknown) {
   if (keys.every((key) => stats[key] === vitals[key])) return;
   Object.assign(stats, vitals);
   character.updateHpBar();
-  if (character.isHero) window.dispatchEvent(new Event("UPDATE_HUD"));
+  if (character.isHero) refreshHud();
 }
 
 /** Registers every server message the main scene reacts to. */

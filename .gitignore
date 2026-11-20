@@ -36,3 +36,6 @@ art/tilesets/exports/
 
 # Tileset exports, backed up outside the repo
 art/tilesets/exports/
+
+# Debug Chrome profile (npm run dev)
+.chrome-debug

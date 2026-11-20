@@ -2,6 +2,7 @@ import { getAngleFromDirection, type Point } from "@/rules/world";
 import { getBuff, hasBuff, type ActiveBuff } from "@/rules/buffs";
 import { getBodyShape, type CharClass } from "@/content";
 import type { RoomData } from "@/rules/world";
+import type { PathPlan } from "@/rules/movement";
 import type { PlayerQuestRecord } from "@/rules/quests";
 import type { CharacterState } from "./state";
 import {
@@ -88,7 +89,8 @@ export function withCharacterModel<TBase extends Constructor<{ x: number; y: num
     action!: string;
     direction!: string;
     currentSpeed!: number;
-    nextPath!: Point;
+    /** The path an NPC is walking, kept between ticks so it is not searched every tick. */
+    pathPlan?: PathPlan;
     vx!: any;
     vy!: any;
     kind!: any;

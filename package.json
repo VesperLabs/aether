@@ -8,6 +8,7 @@
   },
   "scripts": {
     "lint": "oxlint",
+    "chrome:debug": "tsx scripts/debug-chrome.ts",
     "client:dev": "vite --config src/client/vite.config.ts",
     "client:build": "vite build --config src/client/vite.config.ts",
     "client:preview": "vite preview --config src/client/vite.config.ts",
@@ -22,7 +23,7 @@
     "server:run": "node --env-file-if-exists=.env --optimize-for-size --max-old-space-size=512 dist/server.cjs",
     "test": "vitest run",
     "format": "oxfmt",
-    "dev": "concurrently -k --pad-prefix -n server,client,wiki,lab -c blue,green,magenta,yellow \"npm run -s server:watch\" \"npm run -s client:dev\" \"npm run -s web:dev\" \"npm run -s lab:dev\"",
+    "dev": "concurrently -k --pad-prefix -n server,client,wiki,lab,chrome -c blue,green,magenta,yellow,cyan \"npm run -s server:watch\" \"npm run -s client:dev\" \"npm run -s web:dev\" \"npm run -s lab:dev\" \"npm run -s chrome:debug\"",
     "prepare": "husky",
     "typecheck": "tsc --noEmit",
     "test:watch": "vitest",

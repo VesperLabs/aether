@@ -1,3 +1,4 @@
+import { refreshHud } from "@/client/hud-refresh";
 import type { HitMessage } from "@/network";
 import type { Player } from "./player";
 import { Damage } from "./damage";
@@ -83,7 +84,7 @@ export function applyHit(
 
   /* Not sure events like player is the best approach */
   if (player?.isHero) {
-    window.dispatchEvent(new Event("UPDATE_HUD"));
+    refreshHud();
   }
 
   player.updateHpBar();

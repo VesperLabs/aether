@@ -29,6 +29,8 @@ export interface NpcPlates {
 const MAX_FOES = 4;
 
 let wasShowing = false;
+/** What was last sent, so an unchanged report re-renders nothing. */
+let lastSent = "";
 
 const plateOf = (npc: Player): PlateNpc => ({
   id: npc.id,
@@ -42,6 +44,10 @@ const plateOf = (npc: Player): PlateNpc => ({
   petId: npc.state?.petId,
 });
 
+/** What a plate shows that can change: equipment and profile don't while it stays the same NPC. */
+const plateKey = (plates: PlateNpc | PlateNpc[] | null) =>
+  [plates ?? []].flat().map(({ id, stats, buffs, petId }) => [id, stats, buffs, petId]);
+
 /** Tells the HUD which NPCs get plates. Call on every proximity check. */
 export function reportNpcPlates(owned: Player[], foes: Player[], hovered: Player | undefined) {
   const shown = foes.slice(0, MAX_FOES);
@@ -54,5 +60,9 @@ export function reportNpcPlates(owned: Player[], foes: Player[], hovered: Player
     foes: shown.map(plateOf),
     hovered: hovered && !listed.includes(hovered) ? plateOf(hovered) : null,
   };
+  /* Checks run several times a second; most find the same plates, so only send a change */
+  const key = JSON.stringify([detail.owned, detail.foes, detail.hovered].map(plateKey));
+  if (key === lastSent) return;
+  lastSent = key;
   window.dispatchEvent(new CustomEvent(NPC_PLATES_EVENT, { detail }));
 }

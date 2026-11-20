@@ -16,6 +16,8 @@ export type { PoseHistory } from "./pose-history";
 export { doorArrival, readDoors } from "./doors";
 export type { DoorData } from "./doors";
 export { createPathfinder, findNextWaypoint, findPath } from "./pathfinding";
+export { planNextWaypoint } from "./path-plan";
+export type { PathPlan } from "./path-plan";
 export type { Pathfinder } from "./pathfinding";
 export { NPC_WALL_RADIUS, moveBodyFreely, moveBodyThroughMap, nudgeBodyThroughMap } from "./system";
 export {

@@ -34,6 +34,7 @@ export function getPublicRoomState(world: ServerWorld, roomName: string) {
   };
 }
 
-export function getBuffRoomState(world: ServerWorld, roomName: string) {
+/** Takes any players and npcs, such as just one room's, so it need not scan the whole world. */
+export function getBuffRoomState(world: Pick<ServerWorld, "players" | "npcs">, roomName: string) {
   return packBuffRoomState(world, roomName);
 }
