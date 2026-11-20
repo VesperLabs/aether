@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.54.0](https://github.com/VesperLabs/aether/compare/v0.53.0...v0.54.0) (2026-11-20)
+
+
+### Features
+
+* rebalance combat, stats, spells and gear ([#391](https://github.com/VesperLabs/aether/issues/391)) ([06f597d](https://github.com/VesperLabs/aether/commit/06f597d2cb102e0298afeca6bb73678556b4d614))
+
 ## [0.53.0](https://github.com/VesperLabs/aether/compare/v0.52.1...v0.53.0) (2026-11-20)
 
 
