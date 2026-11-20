@@ -19,6 +19,7 @@ import { ChatButton } from "@/client/hud/chat/chat-button";
 import { MenuKeeper } from "@/client/hud/shop/menu-keeper";
 import { PetsRow } from "@/client/hud/pets/pets-row";
 import { MenuQuests } from "@/client/hud/quests/menu-quests";
+import { countQuestsToTurnIn } from "@/client/hud/quests/quest-badges";
 import { MessageBox } from "@/client/hud/chat/message-box";
 import { useAppContext } from "@/client/hud/app/context";
 import { MenuButton } from "./menu-button";
@@ -311,6 +312,7 @@ export const MenuBar = () => {
                 springOpen
                 iconName="quests"
                 isActive={tabQuests}
+                badge={countQuestsToTurnIn(hero?.quests)}
                 onClick={() => setTabQuests((prev) => !prev)}
               />
               <MenuButton
