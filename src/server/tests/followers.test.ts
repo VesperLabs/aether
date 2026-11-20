@@ -69,10 +69,11 @@ describe("followers", () => {
     expect({ x: fish.x, y: fish.y }).toEqual({ x: player.x, y: player.y });
   });
 
-  it("admin cheats can make anyone a follower, keepers included", async () => {
+  it("admin cheats can make anyone a follower, keepers included, who then stop talking", async () => {
     const { socket, player } = await server.login();
     const trista = await summon(socket, "trista");
-    expect(trista.talks).toBe(true);
+    expect(trista.talks).toBe(false);
+    expect(trista.services).toEqual({});
     await cheat(socket, "/npc clear");
 
     await cheat(socket, "/npc spawn dog");
@@ -225,6 +226,28 @@ describe("followers", () => {
     expect(threatOfHit(server.world, follower.id, 10)).toBeGreaterThan(
       threatOfHit(server.world, player.socketId, 10) * 2,
     );
+  });
+
+  it("makes its foe resent the owner too, so the foe comes for them once it is dead", async () => {
+    const { socket, player } = await server.login();
+    const follower = await summon(socket, "bear");
+    await cheat(socket, "/npc spawn crab");
+    const crab = Object.values<Anything>(server.world.npcs).find(
+      (npc) => npc.name === "crab" && npc.state.spawnedBy === socket.id && !npc.state.ownerId,
+    );
+    server.world.events.emit("characterDamaged", {
+      victimId: crab.id,
+      attackerId: follower.id,
+      amount: 5,
+    } as Anything);
+    expect(crab.threat[player.socketId]).toBeGreaterThan(0);
+    expect(crab.threat[follower.id]).toBeGreaterThan(crab.threat[player.socketId]);
+
+    follower.state.isDead = true;
+    crab.threat = Object.fromEntries(
+      Object.entries<number>(crab.threat).filter(([id]) => id !== follower.id),
+    );
+    expect(crab.threatTargetId()).toBe(player.socketId);
   });
 
   it("casts its self buffs while following, out of a fight", async () => {

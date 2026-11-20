@@ -74,11 +74,13 @@ export function performNpcMovement(
       return movement.pathed ? walkToPathed(npc, movement.to) : walkTo(npc, movement.to);
     case "follow":
       if (!leader) return standStill(npc);
-      // Around any wall in the way: walking straight at it and only pathing once pressed against
-      // it flips between the two every few ticks, which is the wiggle
+      // Paths only when far behind, or when a wall stands right in the way: walking straight at
+      // it and only pathing once pressed against it flips between the two, which is the wiggle.
+      // It looks at its leader, not the next tile centre, so stepping round a corner never turns
+      // it around.
       return movement.pathed || !hasClearWalk(npc.movementMap().grid, npc, leader, npc.bodySize)
-        ? walkToPathed(npc, leader)
-        : walkTo(npc, leader);
+        ? walkToPathed(npc, leader, 1, leader)
+        : walkTo(npc, leader, 1, false, leader);
     case "flee":
       if (movement.retreatAt !== undefined) npc.state.retreatAt = movement.retreatAt;
       if (!targetPlayer) return standStill(npc);
@@ -117,6 +119,7 @@ export function performNpcMovement(
       });
       return standStill(npc);
     case "talk":
+      npc.direction = movement.face;
       return checkTalking(npc);
     case "wander": {
       const { type: _type, nextWanderAt, ...change } = movement;
@@ -173,11 +176,13 @@ function strafe(
   steer(npc, step.velocity, target);
 }
 
-/** Walks straight to `coords` at `speedRatio` of its walk speed. */
-/** Walks to `coords`; `arriving` slows down to stop there (see `arrive`). */
-function walkTo(npc: Npc, coords: Point, speedRatio = 1, arriving = false) {
+/**
+ * Walks to `coords` at `speedRatio` of its walk speed; `arriving` slows down to stop there (see
+ * `arrive`), and `facing` is where it looks (the way it walks when left out).
+ */
+function walkTo(npc: Npc, coords: Point, speedRatio = 1, arriving = false, facing?: Point) {
   const speed = walkSpeedOf(npc) * speedRatio;
-  steer(npc, arriving ? arrive(npc, coords, speed) : seek(npc, coords, speed));
+  steer(npc, arriving ? arrive(npc, coords, speed) : seek(npc, coords, speed), facing);
 }
 
 /** How fast it walks: an owned NPC keeps pace with its owner, so it never falls behind. */
@@ -185,17 +190,17 @@ function walkSpeedOf(npc: Npc) {
   return npc.owner()?.stats.walkSpeed ?? npc.stats.walkSpeed;
 }
 
-/** Walks to the next tile on the way to `target`, found on the tick before. */
-function walkToPathed(npc: Npc, target: Point, speedRatio = 1) {
+/** Walks to the next tile on the way to `target`, found on the tick before, looking at `facing`. */
+function walkToPathed(npc: Npc, target: Point, speedRatio = 1, facing?: Point) {
   /* Paths are laid for walkers; a swimmer heads straight there and stops at the bank */
-  if (npc.habitat === "water") return walkTo(npc, target, speedRatio);
+  if (npc.habitat === "water") return walkTo(npc, target, speedRatio, false, facing);
   const { nextPath } = npc;
   const next = findNextWaypoint(npc.room.pathfinder, npc, target, npc.bodySize);
   if (next?.x !== nextPath?.x || next?.y !== nextPath?.y) npc.nextPath = next as Point;
   // No way around (the target stands in a wall, or past the search limit): head straight for it
-  if (!next) return walkTo(npc, target, speedRatio);
+  if (!next) return walkTo(npc, target, speedRatio, false, facing);
   if (nextPath) {
-    walkTo(npc, nextPath, speedRatio);
+    walkTo(npc, nextPath, speedRatio, false, facing);
     if (checkInRange(npc, nextPath, 1)) {
       /* Cleared with null; the shared model types it as always set. */
       npc.nextPath = null as unknown as Point;

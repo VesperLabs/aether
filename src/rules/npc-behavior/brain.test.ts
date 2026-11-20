@@ -15,7 +15,7 @@ function ctx(over: {
       y: 0,
       stats: { walkSpeed: 50 },
       startingCoords: { x: 0, y: 0 },
-      hasTalkers: false,
+      talker: null,
       abilities: {},
       buffs: [],
       weapons: {},
@@ -60,7 +60,7 @@ describe("brain", () => {
     const talking = (behaviors: NpcBehaviorInput["npc"]["behaviors"]) => {
       const c = ctx({});
       c.input.npc.behaviors = behaviors;
-      c.input.npc.hasTalkers = true;
+      c.input.npc.talker = { x: 0, y: 0 };
       c.input.npc.x = 500;
       return chooseBehavior(c, all);
     };

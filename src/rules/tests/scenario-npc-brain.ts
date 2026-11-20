@@ -71,7 +71,7 @@ export function mobBrain(arena: Arena, mob: BrainMob): System<ArenaWorld> {
             castDelay: 300,
           },
           startingCoords: { x: mob.x, y: mob.y },
-          hasTalkers: false,
+          talker: null,
           abilities: {},
           buffs: [],
           weapons: {},

@@ -46,7 +46,7 @@ function input(over: {
       baseLevel: 5,
       stats: { level: 5, walkSpeed: 50, attackDelay: 300, castDelay: 300 },
       startingCoords: { x: 0, y: 0 },
-      hasTalkers: false,
+      talker: null,
       abilities: {},
       buffs: [],
       weapons: {},
@@ -352,9 +352,12 @@ describe("deciding what an npc does", () => {
     ).toEqual({ type: "returnToSpawn", pathed: false });
   });
 
-  it("stops to talk when players are talking to it", () => {
-    const decision = decideNpcAction(input({ npc: { hasTalkers: true, behaviors: {} } }), never);
-    expect(decision.movement).toEqual({ type: "talk" });
+  it("stops to talk when players are talking to it, turned to face them", () => {
+    const talker = (x: number, y: number) =>
+      decideNpcAction(input({ npc: { talker: { x, y }, behaviors: {} } }), never).movement;
+    const { x, y } = input({}).npc;
+    expect(talker(x + 20, y)).toEqual({ type: "talk", face: "right" });
+    expect(talker(x, y - 20)).toEqual({ type: "talk", face: "up" });
   });
 });
 

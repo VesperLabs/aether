@@ -87,7 +87,8 @@ export function buildNpcBehaviorInput(
       stats: npc.stats,
       startingCoords: npc.startingCoords,
       home: npc.home(),
-      hasTalkers: npc.talkingIds?.length > 0,
+      /* The latest to start talking: the one it turns to */
+      talker: world?.players?.[npc.talkingIds?.at(-1) ?? ""] ?? null,
       abilities: npc.abilities,
       buffs: npc.buffs,
       behaviors: npc.behaviors,

@@ -284,9 +284,10 @@ export class Player extends Character {
     this.bubble.setVisible(false);
     this.windupPie.draw(false);
     this.emit(CHARACTER_DIED);
-    this.corpse.setVisible(!this.isMob());
-    /* Mobs leave no corpse, so no name either, pets and followers included */
-    if (this.isMob()) this.userName.setVisible(false);
+    /* Only players leave a grave; everyone else just dissolves, name and all */
+    const leavesGrave = this.kind === "player";
+    this.corpse.setVisible(leavesGrave);
+    if (!leavesGrave) this.userName.setVisible(false);
     if (this.isHero) window.dispatchEvent(new Event("HERO_DEAD"));
   }
   respawn() {

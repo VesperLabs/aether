@@ -26,6 +26,7 @@ function placeKeeper(world: Anything, player: Anything, id: string, dx: number, 
   world.npcs[id] = {
     id,
     fake: true,
+    talks: true,
     getQuests: () => [],
     name: id,
     x: player.x + dx,

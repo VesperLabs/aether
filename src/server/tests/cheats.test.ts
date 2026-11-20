@@ -147,4 +147,25 @@ describe("cheats", () => {
     expect((await cheat(socket, "/season monsoon")).type).toBe("error");
     expect((await cheat(socket, "/time 25")).type).toBe("error");
   });
+
+  it("/npc spawn's NPCs leave with whoever spawned them, even mid-conversation", async () => {
+    const socket = await login();
+    const watcher = await login();
+    await cheat(socket, "/npc spawn cat wild");
+    const spawnerId = socket.id;
+    const [cat] = Object.values<Anything>(server.world.npcs).filter(
+      (n) => n.state?.spawnedBy === spawnerId,
+    );
+    const talker = serverPlayer(watcher);
+    talker.x = cat.x;
+    talker.y = cat.y;
+    watcher.emit("chatNpc", { npcId: cat.id });
+    await server.until(watcher, () => cat.talkingIds.length > 0);
+
+    const removed = waitFor(watcher, "npcRemove");
+    socket.disconnect();
+    await server.until(watcher, () => !server.world.npcs[cat.id]);
+    expect(await removed).toBe(cat.id);
+    expect(server.world.npcs[cat.id]).toBeUndefined();
+  });
 });

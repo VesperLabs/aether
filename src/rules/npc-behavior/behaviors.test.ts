@@ -28,7 +28,7 @@ function input(over: {
       baseLevel: 5,
       stats: { level: 5, walkSpeed: 50, attackDelay: 300, castDelay: 300 },
       startingCoords: { x: 0, y: 0 },
-      hasTalkers: false,
+      talker: null,
       abilities: {},
       buffs: [],
       weapons: {},
@@ -340,7 +340,8 @@ describe("threat, leash and new behaviors", () => {
         }),
         never,
       ).movement;
-    expect(follow(200)).toEqual({ type: "follow", pathed: false });
+    expect(follow(100)).toEqual({ type: "follow", pathed: false });
+    expect(follow(200)).toEqual({ type: "follow", pathed: true });
     expect(follow(20)).toEqual({ type: "standStill" });
   });
 });

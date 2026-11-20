@@ -132,6 +132,8 @@ export const commands = {
     })
     .optional(),
   chatNpc: z.object({ npcId: z.string().optional() }).optional(),
+  /** Closed the NPC's window: it stops talking to them, and stops facing them. */
+  leaveNpc: z.unknown(),
   acceptQuest: z.string(),
   completeQuest: z.string(),
   inviteToParty: z.string(),

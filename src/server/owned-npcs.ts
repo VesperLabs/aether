@@ -83,6 +83,10 @@ export function makeOwned(npc: Npc, owner: Player) {
   if (npc.habitat === "water") npc.habitat = "land";
   npc.threat = {};
   npc.setLockedPlayerId(null);
+  /* Yours now, it no longer talks, sells or gives quests: a caught keeper is just a companion */
+  npc.talks = false;
+  npc.services = {};
+  npc.talkingIds = [];
   /* Appears on its owner, out of whatever wall or water it was caught in */
   if (owner.room) moveNpc(npc, owner.room, { x: owner.x, y: owner.y });
 }
@@ -142,10 +146,16 @@ export function bringOwned(world: ServerWorld, owner: Player) {
 
 /**
  * Keeps owned NPCs with their owners: one left behind (another room, or far away) appears on
- * its owner, and one whose owner left the game leaves with them. Runs before rooms are indexed.
+ * its owner, and one whose owner left the game leaves with them, as does anything an admin
+ * spawned (`/npc spawn`) once they leave. Runs before rooms are indexed.
  */
 export const keepOwnedNear: System<ServerWorld> = (world) => {
   for (const npc of Object.values(world.npcs)) {
+    const { spawnedBy } = npc.state;
+    if (typeof spawnedBy === "string" && !world.players[spawnedBy]) {
+      removeNpc(npc);
+      continue;
+    }
     if (!npc.state.ownerId) continue;
     const owner = world.players[npc.state.ownerId];
     if (!owner) {
@@ -187,5 +197,10 @@ export function subscribeOwnedNpcs(bus: GameEventBus, world: ServerWorld) {
     };
     if (attacker.kind === "player") assist(attackerId, victimId);
     if (victim.kind === "player") assist(victimId, attackerId);
+    /* A companion fights for its owner: its foe resents the owner too, so killing it isn't the end */
+    const ownerId = world.npcs[attackerId]?.state.ownerId;
+    if (ownerId && world.npcs[victimId]) {
+      world.npcs[victimId].addThreat(ownerId, Math.max(amount, MIN_ASSIST_THREAT));
+    }
   });
 }

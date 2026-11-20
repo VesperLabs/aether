@@ -2,6 +2,12 @@ import { describe, expect, it } from "vitest";
 import { describeItem } from ".";
 
 describe("describeItem", () => {
+  it("gives gear its tier, but not a potion or a card", () => {
+    expect(describeItem({ name: "Spikes", base: "fist", type: "weapon", tier: 2 }).tier).toBe(2);
+    expect(describeItem({ name: "Potion", slot: "stackable", tier: 1 }).tier).toBeUndefined();
+    expect(describeItem({ name: "Crab Card", base: "card", tier: 1 }).tier).toBeUndefined();
+  });
+
   it("formats stats, percent stats and damage ranges", () => {
     const d = describeItem({
       name: "Sword",
