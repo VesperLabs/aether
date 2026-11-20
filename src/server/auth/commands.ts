@@ -1,7 +1,8 @@
 import { currentMapName } from "@/content";
 import { broadcastPlayerJoin } from "@/server/net/room-broadcast";
 import { getRoomState } from "@/server/net/room-sync";
-import { areCheatsEnabled } from "@/server/admin/commands";
+import { canCheat } from "@/server/admin/commands";
+import { markAdmin } from "@/server/admin/admin-role";
 import { removePlayer } from "../remove-player";
 import { createPlayer } from "../player-room";
 import { legacyLeaveParty } from "../party-adapter";
@@ -85,6 +86,7 @@ function enterWorld(ctx: CommandContext, user: UserDocument) {
     roomName,
     ...(spawn && { spawn }),
   });
+  if (user.isAdmin) markAdmin(player);
 
   joinWorld(ctx, player);
 }
@@ -113,7 +115,7 @@ function joinWorld(ctx: CommandContext, player: Player) {
     {
       ...getRoomState(world, roomName, socketId),
       userSettings: player.userSettings,
-      cheats: areCheatsEnabled(),
+      cheats: canCheat(player),
       socketId,
     },
     { isLogin: true },

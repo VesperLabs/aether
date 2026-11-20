@@ -157,6 +157,12 @@ const getDatabaseApi = (db: Db, dice: Dice): Database => ({
       );
     });
   },
+  grantAdmin: async (player) => {
+    return attemptSave("grantAdmin", async () => {
+      if (player?.isDemoAccount || !player?.email) return;
+      await db.collection("users").updateOne({ email: player.email }, { $set: { isAdmin: true } });
+    });
+  },
   updateUser: async (player) => {
     return attemptSave("updateUser", async () => {
       if (player?.isDemoAccount) {

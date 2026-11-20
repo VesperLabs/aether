@@ -106,6 +106,8 @@ export interface ServerToClientEvents {
     meta?: { isLogin?: boolean; isRespawn?: boolean },
   ) => void;
 
+  /** The player's account just got the admin role, which turns cheat chat commands on. */
+  cheatsChanged: (on: boolean) => void;
   /** Answers `/logout`: the client forgets its login and goes back to the login screen. */
   loggedOut: () => void;
   /** The room an observer asked to watch, whole. */
