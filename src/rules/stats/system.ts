@@ -1,6 +1,6 @@
 import type { MobKilledEvent } from "../events";
 import type { GameEventBus } from "../world";
-import { calculateExpValue } from "./rules";
+import { calculateExpValue } from "./exp";
 
 /** Experience one kill is worth to everyone who shares it (based on the killer's level). */
 export function expForMobKill(kill: MobKilledEvent): number {

@@ -4,7 +4,7 @@ export const rangedFamilies = {
   shortBow: {
     type: "ranged",
     texture: "ranged-shortBow",
-    stats: { range: 4.5, attackDelay: 700, minDamage: 1, maxDamage: 1, spCost: 3 },
+    stats: { range: 4.5, attackDelay: 700, minDamage: 2, maxDamage: 3, spCost: 3 },
     requirements: { dexterity: 3 },
     tiers: [
       {
@@ -22,7 +22,7 @@ export const rangedFamilies = {
   longBow: {
     type: "ranged",
     texture: "ranged-longBow",
-    stats: { range: 7, attackDelay: 900, minDamage: 1, maxDamage: 2, spCost: 3 },
+    stats: { range: 7, attackDelay: 900, minDamage: 2, maxDamage: 4, spCost: 3 },
     requirements: { dexterity: 3 },
     tiers: [
       { key: "longBow", name: "Long Bow", flavor: "A tall bow with a long reach." },

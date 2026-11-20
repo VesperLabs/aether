@@ -1,4 +1,5 @@
 import { monsterHealth, unarmedDamage } from "./power";
+import { HP_PER_VITALITY } from "./scaling";
 import { calculateStats, getBaseStats, mergeAndAddValues, type StatBag } from "./rules";
 
 /** What an NPC's stats are worked out from: its level, class and any base stats it overrides. */
@@ -18,8 +19,8 @@ export function npcBaseStats({ baseStats = {}, charClass }: NpcStatsInput): Stat
   // remove level so it does not get added twice
   const { level: _level, ...tuned } = {
     ...classStats,
-    // vitality still adds 3 HP a point, so this lands the total on the monster curve
-    maxHp: monsterHealth(level) - classStats.vitality * 3,
+    // vitality still adds HP, so this lands the total on the monster curve
+    maxHp: monsterHealth(level) - classStats.vitality * HP_PER_VITALITY,
     maxMp: 0,
     // claws and teeth: a natural weapon as strong as their fists, added on top of them
     minDamage: classStats.minDamage + unarmedDamage(level)[0],

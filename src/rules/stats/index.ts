@@ -1,12 +1,7 @@
-export {
-  addValuesToExistingKeys,
-  calculateExpValue,
-  calculateNextMaxExp,
-  calculateStats,
-  getBaseStats,
-  mergeAndAddValues,
-} from "./rules";
+export { addValuesToExistingKeys, calculateStats, getBaseStats, mergeAndAddValues } from "./rules";
+export { calculateExpValue, calculateNextMaxExp } from "./exp";
 export type { StatBag, StatsInput } from "./rules";
+export { classAttributes } from "./class-attributes";
 export { npcBaseStats, npcStats } from "./npc";
 export { defenseReduction } from "./power";
 export { isSwingStat } from "./swing-stats";

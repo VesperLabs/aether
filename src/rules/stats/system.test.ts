@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import type { MobKilledEvent } from "../events";
 import { createGameEventBus } from "../world";
-import { calculateExpValue } from "./rules";
+import { calculateExpValue } from "./exp";
 import { expForMobKill, subscribeStats } from "./system";
 
 const kill = (overrides: Partial<MobKilledEvent> = {}): MobKilledEvent => ({

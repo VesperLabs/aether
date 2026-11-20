@@ -23,14 +23,14 @@ export const buffList = {
   haste: {
     type: "buff",
     duration: 30000,
-    stats: { walkSpeed: 20, attackDelay: -25, castDelay: -100 },
-    perLevel: { stats: { walkSpeed: 5, attackDelay: -5, castDelay: -20 } },
+    stats: { walkSpeed: 20, attackDelay: -40, castDelay: -100 },
+    perLevel: { stats: { walkSpeed: 5, attackDelay: -10, castDelay: -20 } },
   },
   brute: {
     type: "buff",
     duration: 30000,
-    stats: { minDamage: 2, maxDamage: 3 },
-    perLevel: { stats: { minDamage: 2, maxDamage: 3 } },
+    stats: { minDamage: 1, maxDamage: 1 },
+    perLevel: { stats: { minDamage: 1, maxDamage: 1 } },
   },
   guard: {
     type: "guard",

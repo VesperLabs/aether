@@ -127,7 +127,7 @@ describe("sets", () => {
     expect(getSetBonus("cids")).toMatchObject({
       name: "El Cid's Swords",
       pieces: 2,
-      stats: { critChance: 4, blockChance: 6 },
+      stats: { critChance: 6, blockChance: 6 },
     });
     expect(getSetBonus("nope")).toBeUndefined();
   });

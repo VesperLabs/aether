@@ -1,6 +1,18 @@
 import { getSetBonus } from "@/content";
+import { PLAYER_BASE_EXP } from "./exp";
+import { classAttributes } from "./class-attributes";
 import { finishDamage } from "./damage-stats";
 import { isSwingStat } from "./swing-stats";
+import {
+  CRIT_PER_DEXTERITY,
+  DODGE_PER_DEXTERITY,
+  HP_PER_VITALITY,
+  MAX_AVOIDANCE,
+  MAX_RESISTANCE,
+  RESISTANCES,
+  SPELL_POWER_PER_INTELLIGENCE,
+  SP_PER_VITALITY,
+} from "./scaling";
 
 /** An open-ended bag of stat name -> value. Also carries `triggers` once calculated. */
 export type StatBag = Record<string, any>;
@@ -41,57 +53,8 @@ export interface StatsResult {
   activeSets: string[];
 }
 
-export interface ExpValueInput {
-  /** The killer's level. */
-  playerLevel: number | string | undefined;
-  mobLevel: number | string | undefined;
-}
-
-const PLAYER_BASE_EXP = 50; // base experience needed for level 1
 const PLAYER_BASE_ATTACK_DELAY = 100;
-
-/** A player levels up after about this many kills of mobs their own level. */
-const KILLS_PER_LEVEL = 25;
-/** Fewest exp a mob that gives any is worth. */
-const MIN_MOB_EXP = 5;
-/** Extra exp per level a mob is above the player, up to `EXP_LEVEL_GAP` levels. */
-const EXP_BONUS_PER_LEVEL_ABOVE = 0.1;
-/** Exp lost per level a mob is below the player. */
-const EXP_PENALTY_PER_LEVEL_BELOW = 0.15;
-/** Past this many levels below the player a mob gives nothing; above, the bonus stops growing. */
-const EXP_LEVEL_GAP = 5;
-
 type CharClass = "mage" | "warrior" | "rogue" | "cleric";
-
-/**
- * Exp from a mob: a `KILLS_PER_LEVEL`th of the exp bar at the mob's level, more for mobs above the
- * player, less for mobs below, none more than 5 levels below.
- */
-export function calculateExpValue({ playerLevel, mobLevel }: ExpValueInput): number {
-  const player = parseInt(playerLevel as string) || 0;
-  const mob = parseInt(mobLevel as string) || 0;
-  const gap = mob - player;
-  if (gap < -EXP_LEVEL_GAP) return 0; // Mob too wimpy. no exp.
-
-  const levelMultiplier =
-    gap >= 0
-      ? 1 + EXP_BONUS_PER_LEVEL_ABOVE * Math.min(gap, EXP_LEVEL_GAP)
-      : 1 + EXP_PENALTY_PER_LEVEL_BELOW * gap;
-  const base = Math.max(MIN_MOB_EXP, calculateNextMaxExp(Math.max(1, mob)) / KILLS_PER_LEVEL);
-  return Math.max(1, Math.round(base * levelMultiplier));
-}
-
-/** How much exp is needed for the next level each time a player levels up. */
-export function calculateNextMaxExp(level: number): number {
-  const baseExp = PLAYER_BASE_EXP;
-  let totalExp = baseExp;
-
-  for (let i = 2; i <= level; i++) {
-    totalExp += baseExp + baseExp * 0.1 * (i - 1);
-  }
-
-  return Math.floor(totalExp);
-}
 
 /** Sum two stat bags key by key. Keys in only one bag are kept as they are. */
 export function mergeAndAddValues(obj1: StatBag = {}, obj2: StatBag = {}): StatBag {
@@ -136,17 +99,7 @@ export function addValuesToExistingKeys(
 
 /** Base stats for a brand new character of this class and level. */
 export function getBaseStats({ level = 1, charClass }: { level?: number; charClass?: string }) {
-  const isMage = charClass === ("mage" satisfies CharClass);
   const isWarrior = charClass === ("warrior" satisfies CharClass);
-  const isRogue = charClass === ("rogue" satisfies CharClass);
-  const isCleric = charClass === ("cleric" satisfies CharClass);
-
-  /*
-   * A class's main stat starts at 5 and grows 1.5 a level; the others grow 1 a level, so every
-   * class has at least its level in every stat and can use any gear at the level it drops (see
-   * `scaleRequirements` in item-catalog.ts). Casters (mage and cleric) lean on intelligence.
-   */
-  const startStat = Math.round(1.5 * level + 3.5);
 
   return {
     level,
@@ -156,14 +109,11 @@ export function getBaseStats({ level = 1, charClass }: { level?: number; charCla
     spellPower: 0,
     castDelay: 1000,
     armorPierce: 0,
-    dexterity: isRogue ? startStat : level,
-    strength: isWarrior ? startStat : level,
-    vitality: level,
-    intelligence: isMage || isCleric ? startStat : level,
+    ...classAttributes(level, charClass),
     defense: 0,
     blockChance: 0,
     critChance: 0,
-    critMultiplier: 1.5,
+    critMultiplier: 2,
     dodgeChance: 0,
     maxDamage: 0,
     minDamage: 0,
@@ -171,7 +121,7 @@ export function getBaseStats({ level = 1, charClass }: { level?: number; charCla
     regenHp: 1,
     regenMp: 1,
     regenSp: 1,
-    maxHp: 10,
+    maxHp: 30,
     maxMp: 10,
     maxSp: 20,
     maxExp: PLAYER_BASE_EXP,
@@ -330,9 +280,9 @@ function calculateHandStats(
       ns[key] += percentIncrease;
   });
 
-  ns.maxHp = ns.maxHp + ns.vitality * 3;
+  ns.maxHp = ns.maxHp + ns.vitality * HP_PER_VITALITY;
   ns.maxMp = ns.maxMp + ns.intelligence * 3;
-  ns.maxSp = ns.maxSp + Math.floor(ns.vitality * 0.03);
+  ns.maxSp = ns.maxSp + Math.floor(ns.vitality * SP_PER_VITALITY);
   ns.magicFind = ns.magicFind || 0;
   ns.maxExp = ns.maxExp || 0;
   ns.exp = current.exp || 0;
@@ -341,7 +291,7 @@ function calculateHandStats(
   ns.waterResistance = ns.waterResistance || 0;
   ns.earthResistance = ns.earthResistance || 0;
   ns.attackDelay = ns.attackDelay + ns.dexterity * 0.03 || 0;
-  ns.spellPower = Math.floor((ns.spellPower || 0) + ns.intelligence * 0.25);
+  ns.spellPower = Math.floor((ns.spellPower || 0) + ns.intelligence * SPELL_POWER_PER_INTELLIGENCE);
   ns.attackDelay = 1 - Math.floor(ns.dexterity * 0.5) + ns.attackDelay;
   ns.castDelay = ns.castDelay || 1000;
   ns.castDelay = 1 - Math.floor(ns.intelligence * 0.5) + ns.castDelay;
@@ -350,9 +300,9 @@ function calculateHandStats(
   ns.regenSp = ns.regenSp || 1;
   ns.armorPierce = ns.armorPierce || 0;
   ns.defense = ns.defense + Math.floor(ns.strength / 2);
-  ns.critChance = ns.critChance + ns.dexterity * 0.05;
+  ns.critChance = ns.critChance + ns.dexterity * CRIT_PER_DEXTERITY;
   ns.walkSpeed = ns.walkSpeed + ns.dexterity * 0.03;
-  ns.dodgeChance = ns.dodgeChance + ns.dexterity * 0.05;
+  ns.dodgeChance = ns.dodgeChance + ns.dexterity * DODGE_PER_DEXTERITY;
   ns.hpSteal = ns.hpSteal || 0;
   ns.mpSteal = ns.mpSteal || 0;
   ns.spSteal = ns.spSteal || 0;
@@ -361,12 +311,15 @@ function calculateHandStats(
   if (ns.walkSpeed < 15) ns.walkSpeed = 15;
   if (ns.walkSpeed > 600) ns.walkSpeed = 600;
   if (ns.critChance > 100) ns.critChance = 100;
-  if (ns.dodgeChance > 75) ns.dodgeChance = 75;
+  if (ns.dodgeChance > MAX_AVOIDANCE) ns.dodgeChance = MAX_AVOIDANCE;
+  for (const element of RESISTANCES) {
+    if (ns[element] > MAX_RESISTANCE) ns[element] = MAX_RESISTANCE;
+  }
   /* Without a shield, block chance from gear doesn't count (a mob's own still does) */
   if (!HANDS.some((hand) => heldItem(player, hand)?.type === "shield")) {
     ns.blockChance = player.baseStats.blockChance || 0;
   }
-  if (ns.blockChance > 75) ns.blockChance = 75;
+  if (ns.blockChance > MAX_AVOIDANCE) ns.blockChance = MAX_AVOIDANCE;
   if (ns.castDelay < 200) ns.castDelay = 200;
   if (ns.attackDelay < 200) ns.attackDelay = 200;
 

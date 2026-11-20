@@ -71,14 +71,18 @@ const SLOT_OF: Partial<Record<GearType, string>> = {
   shield: "hands",
 };
 
-/** The stat requirement that asks for an item's whole tier level: the heaviest gear's. */
+/** The stat requirement that asks for the most: the heaviest gear's. */
 const FULL_REQUIREMENT = 8;
+/**
+ * The heaviest gear asks for this much more than its level (plus one), a little past what every
+ * class has there (the level plus one): the class it suits wears it at once, the others a few
+ * levels later. Lighter gear asks for its share of that, which anyone clears.
+ */
+const HEAVY_REQUIREMENT_SCALE = 1.2;
 
 /**
- * Stat requirements grow with the tier's level, as a share of it: a family's number out of
- * `FULL_REQUIREMENT`, so the heaviest gear asks for the whole level and lighter gear less. Every
- * class has at least its level in every stat, so anyone can use any item at the level it drops;
- * the class whose stat it is just clears it with room to spare.
+ * Stat requirements grow with the tier's level: a family's number out of `FULL_REQUIREMENT`, so
+ * the heaviest gear asks for the most (see `HEAVY_REQUIREMENT_SCALE`) and lighter gear less.
  */
 function scaleRequirements(block: Loose | undefined, tier: number): Loose {
   const scaled: Loose = {};
@@ -87,7 +91,10 @@ function scaleRequirements(block: Loose | undefined, tier: number): Loose {
     scaled[stat] = grows
       ? Math.max(
           1,
-          Math.round((Math.min(value, FULL_REQUIREMENT) / FULL_REQUIREMENT) * tierLevel(tier)),
+          Math.round(
+            (Math.min(value, FULL_REQUIREMENT) / FULL_REQUIREMENT) *
+              (tierLevel(tier) * HEAVY_REQUIREMENT_SCALE + 1),
+          ),
         )
       : value;
   }

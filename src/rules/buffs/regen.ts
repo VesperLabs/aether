@@ -8,6 +8,8 @@ const MP_REGEN_INTERVAL = 1000;
 const SP_REGEN_INTERVAL = 600;
 const POISON_INTERVAL = 1000;
 const BLEED_INTERVAL = 700;
+/** Resting heals this share of max HP each tick on top of `regenHp`: full in about a minute. */
+const REST_HEAL_SHARE = 0.08;
 
 export interface RegenTimers {
   lastHpBuffRegen: number;
@@ -105,7 +107,7 @@ export function runRegen({ isDead, buffs, stats, timers, now }: RegenInput): Reg
     if (isHpRegenReady && work.hp < work.maxHp) {
       flags.doHpRegen = true;
       changedTimers.lastHpRegen = now;
-      change("hp", work.regenHp);
+      change("hp", work.regenHp + Math.ceil((work.maxHp || 0) * REST_HEAL_SHARE));
     }
   }
 

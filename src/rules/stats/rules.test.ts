@@ -1,8 +1,7 @@
+import { calculateExpValue, calculateNextMaxExp } from "./exp";
 import { describe, expect, it } from "vitest";
 import {
   addValuesToExistingKeys,
-  calculateExpValue,
-  calculateNextMaxExp,
   calculateStats,
   getBaseStats,
   mergeAndAddValues,
@@ -81,16 +80,17 @@ describe("addValuesToExistingKeys", () => {
 describe("getBaseStats", () => {
   it("gives the class stat a head start", () => {
     expect(getBaseStats({ level: 1, charClass: "mage" })).toMatchObject({
-      intelligence: 5,
-      strength: 1,
-      dexterity: 1,
-      vitality: 1,
+      intelligence: 4,
+      strength: 2,
+      dexterity: 2,
+      vitality: 2,
     });
-    expect(getBaseStats({ level: 3, charClass: "rogue" }).dexterity).toBe(8);
-    expect(getBaseStats({ level: 9, charClass: "warrior" }).strength).toBe(17);
+    expect(getBaseStats({ level: 3, charClass: "rogue" }).dexterity).toBe(7);
+    expect(getBaseStats({ level: 9, charClass: "warrior" }).strength).toBe(14);
+    expect(getBaseStats({ level: 9, charClass: "warrior" }).dexterity).toBe(10);
     expect(getBaseStats({ level: 1, charClass: "cleric" })).toMatchObject({
-      intelligence: 5,
-      vitality: 1,
+      intelligence: 3,
+      vitality: 3,
     });
   });
   it("only warriors get fire resistance", () => {
@@ -108,23 +108,23 @@ describe("calculateStats", () => {
     expect(activeSets).toEqual([]);
     expect(stats).toMatchObject({
       level: 1,
-      strength: 5,
-      dexterity: 1,
-      vitality: 1,
-      intelligence: 1,
-      maxHp: 13,
-      maxMp: 13,
-      maxSp: 20,
-      hp: 13,
-      mp: 13,
-      sp: 20,
+      strength: 4,
+      dexterity: 2,
+      vitality: 2,
+      intelligence: 2,
+      maxHp: 44,
+      maxMp: 16,
+      maxSp: 21,
+      hp: 44,
+      mp: 16,
+      sp: 21,
       defense: 2,
       minDamage: 1,
       maxDamage: 2,
       fireResistance: 10,
-      castDelay: 1000 + 1 - 0,
+      castDelay: 1000 + 1 - 1,
       attackDelay: 200,
-      walkSpeed: 100.03,
+      walkSpeed: 100.06,
       exp: 0,
       triggers: [],
     });
@@ -139,7 +139,7 @@ describe("calculateStats", () => {
 
   it("only heals dead resources when asked", () => {
     expect(calculateStats(warrior(), false).stats).toMatchObject({ hp: 0, mp: 0, sp: 0 });
-    expect(calculateStats(warrior(), true).stats).toMatchObject({ hp: 13, mp: 13, sp: 20 });
+    expect(calculateStats(warrior(), true).stats).toMatchObject({ hp: 44, mp: 16, sp: 21 });
   });
 
   it("keeps current hp/mp/sp and clamps them to the new maximum", () => {
@@ -147,7 +147,7 @@ describe("calculateStats", () => {
       warrior({ stats: { hp: 5, mp: 99999, sp: 7, exp: 42 } }),
       true,
     );
-    expect(stats).toMatchObject({ hp: 5, mp: 13, sp: 7, exp: 42 });
+    expect(stats).toMatchObject({ hp: 5, mp: 16, sp: 7, exp: 42 });
   });
 
   it("treats missing stats as a dead character with no exp", () => {
@@ -159,8 +159,8 @@ describe("calculateStats", () => {
     const equipment = { head: { key: "h", stats: { strength: 10 } } };
     const inactive = calculateStats(warrior({ equipment, activeItemSlots: [] })).stats;
     const active = calculateStats(warrior({ equipment, activeItemSlots: ["head"] })).stats;
-    expect(inactive.strength).toBe(5);
-    expect(active.strength).toBe(15);
+    expect(inactive.strength).toBe(4);
+    expect(active.strength).toBe(14);
   });
 
   it("adds up half-step damage from gear before rounding it down", () => {
@@ -189,7 +189,7 @@ describe("calculateStats", () => {
         activeItemSlots: ["1"],
       }),
     );
-    expect(stats.spellPower).toBe(4);
+    expect(stats.spellPower).toBe(5); // 4 + 2 intelligence * 0.5
     expect(stats.triggers).toEqual([trigger]);
   });
 
@@ -197,20 +197,29 @@ describe("calculateStats", () => {
     const { stats } = calculateStats(
       warrior({ buffs: [{ stats: { strength: 5 }, percentStats: { strength: 50 } }] }),
     );
-    // strength 5 + 5 = 10, then +50% = 15
-    expect(stats.strength).toBe(15);
+    // strength 4 + 5 = 9, then +50% (rounded down) = 13
+    expect(stats.strength).toBe(13);
   });
 
   it("scales maxHp by percent stats after the vitality bonus", () => {
     const { stats } = calculateStats(warrior({ buffs: [{ percentStats: { maxHp: 100 } }] }));
-    expect(stats.maxHp).toBe(26);
+    expect(stats.maxHp).toBe(88);
   });
 
-  it("caps crit, dodge and walk speed", () => {
+  it("caps crit, dodge, resistances and walk speed", () => {
     const { stats } = calculateStats(
-      warrior({ buffs: [{ stats: { critChance: 500, dodgeChance: 500, walkSpeed: 5000 } }] }),
+      warrior({
+        buffs: [
+          { stats: { critChance: 500, dodgeChance: 500, walkSpeed: 5000, fireResistance: 200 } },
+        ],
+      }),
     );
-    expect(stats).toMatchObject({ critChance: 100, dodgeChance: 75, walkSpeed: 600 });
+    expect(stats).toMatchObject({
+      critChance: 100,
+      dodgeChance: 60,
+      fireResistance: 75,
+      walkSpeed: 600,
+    });
     const slow = calculateStats(warrior({ buffs: [{ stats: { walkSpeed: -500 } }] })).stats;
     expect(slow.walkSpeed).toBe(15);
   });
