@@ -19,7 +19,7 @@ import {
   applyRegen,
 } from "./character-buffs";
 import { getPlayerQuests } from "@/rules/quests";
-import { calculateNextMaxExp } from "@/rules/stats";
+import { calculateNextMaxExp, classAttributes } from "@/rules/stats";
 import type { ElementalDamages } from "@/rules/combat";
 import type { AbilityDetails } from "@/rules/spells";
 import type { BuffRequest } from "./character-buffs";
@@ -102,14 +102,7 @@ export class ServerCharacter extends CharacterModel {
       this.stats.exp = trailingExp;
       this.baseStats.level++;
       this.baseStats.maxExp = calculateNextMaxExp(this.baseStats.level);
-      if (this.charClass == "warrior") this.baseStats.strength += 1;
-      else if (this.charClass == "rogue") this.baseStats.dexterity += 1;
-      else if (this.charClass == "mage") this.baseStats.intelligence += 1;
-      else if (this.charClass == "cleric") this.baseStats.vitality += 1;
-      this.baseStats.strength += 1;
-      this.baseStats.dexterity += 1;
-      this.baseStats.intelligence += 1;
-      this.baseStats.vitality += 1;
+      Object.assign(this.baseStats, classAttributes(this.baseStats.level, this.charClass));
       didLevel = true;
     }
     this.calculateStats();

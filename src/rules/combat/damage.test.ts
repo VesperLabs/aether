@@ -61,7 +61,8 @@ describe("calculateWeaponDamage", () => {
   it("is min on an empty bar, max on a full one and in between otherwise", () => {
     expect(calculateWeaponDamage(stats, () => 0.99, 0)).toBe(10);
     expect(calculateWeaponDamage(stats, () => 0, 1)).toBe(20);
-    expect(calculateWeaponDamage(stats, () => 0, 0.5)).toBe(15);
+    expect(calculateWeaponDamage(stats, () => 0, 0.5)).toBe(18);
+    expect(calculateWeaponDamage(stats, () => 0, 0.25)).toBe(14);
   });
 });
 

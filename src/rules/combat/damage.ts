@@ -76,14 +76,17 @@ export function calculateElementalDamage(
 
 /**
  * Weapon damage between min and max. With `staminaRatio` (a player's swing: sp / maxSp when it
- * swung) it is set by stamina, min on an empty bar and max on a full one; without it (NPCs) it's rolled.
+ * swung) it is set by stamina, min on an empty bar and max on a full one, on an ease-out curve so
+ * a half-full bar still hits for 75% of the way to max and only a nearly empty one drops off hard.
+ * Without it (NPCs) it's rolled.
  */
 export function calculateWeaponDamage(attacker: StatBag, rng: Rng, staminaRatio?: number): number {
   const min = attacker.minDamage || 0;
   const max = Math.max(min, attacker.maxDamage || 0);
   if (staminaRatio === undefined) return randomInt(rng, min, max);
   const ratio = Math.min(1, Math.max(0, staminaRatio));
-  return Math.round(min + (max - min) * ratio);
+  const eased = 1 - (1 - ratio) ** 2;
+  return Math.round(min + (max - min) * eased);
 }
 
 export type AttackRoll =

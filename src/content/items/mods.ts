@@ -63,7 +63,7 @@ const MODS = {
   sturdy: {
     label: "Sturdy",
     power: "normal",
-    stats: { defense: 3 },
+    stats: { defense: 2 },
     types: ["armor", "pants", "shield", "helmet", "gloves", "boots"],
   },
   arcane: {
@@ -146,7 +146,7 @@ const MODS = {
   precise: {
     label: "Precise",
     power: "normal",
-    stats: { critChance: 2 },
+    stats: { critChance: 3 },
     types: ["ranged", "gloves"],
   },
   evasive: {

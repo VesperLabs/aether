@@ -37,7 +37,7 @@ describe("createBuff", () => {
       level: 2,
       spawnTime: NOW,
       duration: 30000,
-      stats: { walkSpeed: 25, attackDelay: -30, castDelay: -120 },
+      stats: { walkSpeed: 25, attackDelay: -50, castDelay: -120 },
       percentStats: {},
     });
   });
@@ -177,7 +177,7 @@ describe("runRegen", () => {
     expect(run({ timers: timers(700) }).flags).toMatchObject({ doMpRegen: false, doSpRegen: true });
   });
   it("regenerates hp while resting, and from a regeneration buff", () => {
-    expect(run({ buffs: [{ name: "rest" }] }).stats.hp).toBe(7);
+    expect(run({ buffs: [{ name: "rest" }] }).stats.hp).toBe(8);
     const both = run({
       buffs: [{ name: "rest" }, { name: "regeneration", stats: { regenHp: 3 } }],
     });

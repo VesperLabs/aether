@@ -77,9 +77,9 @@ describe("describeItem", () => {
   });
 
   it("shows a mod's stat under mods, out of the base stats, scaled by tier", () => {
-    const d = describeItem({ tier: 2, stats: { defense: 4, critChance: 4 }, fixedMod: "precise" });
+    const d = describeItem({ tier: 2, stats: { defense: 4, critChance: 6 }, fixedMod: "precise" });
     expect(d.stats).toEqual([{ label: "defense", value: "4" }]);
-    expect(d.mods.fixed?.stats).toEqual([{ label: "critChance", value: "4%" }]);
+    expect(d.mods.fixed?.stats).toEqual([{ label: "critChance", value: "6%" }]);
     expect(d.mods.added.stats).toEqual([]);
   });
 
@@ -132,7 +132,7 @@ describe("a card's gear", () => {
     const venom = { event: "onAttackHit", type: "debuff", name: "poison", level: 1, chance: 20 };
     const sword = { type: "weapon", tier: 1, mods: ["precise", "arcane"], triggers: [venom] };
     const { added } = describeItem(sword as never).mods;
-    expect(added.stats).toEqual([{ label: "critChance", value: "2%" }]);
+    expect(added.stats).toEqual([{ label: "critChance", value: "3%" }]);
     expect(added.triggers.map((t) => t.name)).toEqual(["poison"]);
     expect(added.global).toEqual([{ label: "spellPower", value: "2" }]);
     const ring = describeItem({ type: "ring", tier: 1, mods: ["precise"] } as never);
