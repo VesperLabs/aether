@@ -19,9 +19,11 @@ export {
   hasAnyHand,
   type BodyData,
   type BodyDefinition,
+  type BodyHabitat,
   type BodyShape,
 } from "./bodies/bodies";
 export { shadowOf, shadowPixels, type ShadowShape } from "./bodies/shadow";
+export { currentHabitat, habitatTexture } from "./bodies/habitats";
 export { iconList } from "./assets/icon-list";
 export { getLayerOrder } from "./assets/layer-order";
 export { resolveAsset } from "./assets/resolve-asset";

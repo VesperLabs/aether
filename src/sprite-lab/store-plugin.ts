@@ -47,6 +47,12 @@ const isHandPoints = (points: unknown, human: HandPoints): points is HandPoints 
   );
 };
 
+const isHabitat = (value: unknown) => value === "land" || value === "water" || value === "air";
+
+/** One habitat, or a list of them for a body that switches (a bird on land and in the air). */
+const isHabitats = (value: unknown) =>
+  isHabitat(value) || (Array.isArray(value) && value.length > 0 && value.every(isHabitat));
+
 /** Whether `data` is a whole body file: flags, shape, portrait, and hand points if any. */
 const isBodyData = (data: unknown, human: HandPoints): data is BodyData => {
   if (!data || typeof data !== "object") return false;
@@ -68,7 +74,7 @@ const isBodyData = (data: unknown, human: HandPoints): data is BodyData => {
     Object.keys(extra).length === 0 &&
     (attackAnims === undefined || typeof attackAnims === "boolean") &&
     (leavesGrave === undefined || typeof leavesGrave === "boolean") &&
-    (habitat === "land" || habitat === "water" || habitat === "air") &&
+    isHabitats(habitat) &&
     Array.isArray(rect) &&
     rect.length === 4 &&
     rect.every((value) => isWhole(value, 0, 4096)) &&
@@ -114,7 +120,7 @@ export const toBodyFile = (
     headY,
     spriteAboveFeet,
     portraitRect: [...portraitRect],
-    habitat,
+    habitat: typeof habitat === "string" ? habitat : [...habitat],
     ...(hands && { hands }),
   };
 };

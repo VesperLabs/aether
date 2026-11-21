@@ -63,6 +63,12 @@ export interface CharacterState {
   noExp?: boolean;
   /** NPC only: when it began its one retreat this fight. */
   retreatAt?: number;
+  /** NPC only: the habitat it is in, of its body's several (a bird in the `air`); unset or null is the first. */
+  habitat?: string | null;
+  /** NPC only: when a player last came too near it, while `skittish`. */
+  scaredAt?: number;
+  /** NPC only: where a scared `skittish` NPC is getting away to. */
+  escapeTo?: { x: number; y: number };
   /** NPC only: loop time of the next wander direction change. */
   nextWanderAt?: number;
   /** When the last lunge started (see `rules/movement/lunge.ts`). */

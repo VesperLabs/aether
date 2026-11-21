@@ -1,4 +1,5 @@
-import { getBody, type ActorBehaviors } from "@/content";
+import type { ActorBehaviors } from "@/content";
+import { changeHabitat, npcHabitat } from "./npc-habitat";
 import type { AbilityDetails, AbilitySlot } from "@/rules/spells";
 import type { Hand } from "@/rules/combat";
 import {
@@ -97,6 +98,7 @@ export class Npc extends Character {
   /** What it does: its actor's behaviors with its map spawn's merged over them. */
   public behaviors?: ActorBehaviors;
   public habitat?: Habitat; // unset walks on land
+  public actorHabitat?: Habitat; // its actor's, over its body's
   /** From content; unset means the default warning delay. */
   public windupMs?: number;
   /** Content name of the NPC it follows, from a `leader` map property. */
@@ -130,8 +132,7 @@ export class Npc extends Character {
     /* Followers are picked per spawn: a `leader` map property makes this one follow. */
     this.leaderName = (this.state as { leader?: string }).leader;
     this.behaviors = args.behaviors;
-    /* Where its body can go, unless the actor says otherwise */
-    this.habitat = args.habitat ?? getBody(this.profile?.race).habitat;
+    this.habitat = npcHabitat(this, (this.actorHabitat = args.habitat));
     this.windupMs = args.windupMs;
     this.calculateStats(true);
   }
@@ -260,6 +261,7 @@ export class Npc extends Character {
     }
 
     if (decision.behavior !== state.behavior) state.behavior = decision.behavior;
+    changeHabitat(this, decision.habitat);
     if (decision.startReset) {
       state.isResetting = true;
       this.threat = {};

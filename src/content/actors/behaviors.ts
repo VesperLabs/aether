@@ -1,3 +1,5 @@
+import type { BodyHabitat } from "../bodies/bodies";
+
 /*
  * What an actor can do, each with its options. Every actor starts with `DEFAULT_BEHAVIORS`; its
  * own `behaviors` merge over them and `false` turns one off. How it fights comes from what it
@@ -26,6 +28,15 @@ interface GuardOptions {
   readonly at?: { readonly x: number; readonly y: number };
 }
 
+interface SkittishOptions {
+  /** Takes off when a player comes this close, px. Default: `SKITTISH_RANGE`. */
+  readonly range?: number;
+  /** Lands at the latest this long after it was last scared, even short of its spot, ms. Default: `SKITTISH_CALM_MS`. */
+  readonly calmMs?: number;
+  /** Where it goes while scared (a bird takes to the `air`), back to its first habitat once calm. */
+  readonly to?: BodyHabitat;
+}
+
 export interface BehaviorOptions {
   /** Fights foes. `false` never fights, not even back (training dummies). */
   fight: FightOptions;
@@ -33,6 +44,8 @@ export interface BehaviorOptions {
   wander: WanderOptions;
   /** Holds a spot, facing down: shopkeepers, guards. */
   guard: GuardOptions;
+  /** Flees anyone who comes near, taking to another habitat if it has one (birds take off). */
+  skittish: SkittishOptions;
 }
 
 export type BehaviorId = keyof BehaviorOptions;

@@ -43,6 +43,16 @@ export const actors3 = {
     behaviors: { fight: false, wander: { radius: 64 } },
     active: { seasons: ["spring", "summer"], hours: [6, 20] },
   },
+  sparrow: {
+    charClass: "rogue",
+    profile: { race: "bird", userName: "Sparrow" },
+    flavor:
+      "It hops about the path pecking at crumbs, and is off over the rooftops the moment anyone comes near.",
+    baseStats: { level: 1 },
+    state: { noWorldDrops: true, noExp: true, catchable: false },
+    behaviors: { fight: false, wander: {}, skittish: { to: "air" } },
+    active: { seasons: ["spring", "summer", "fall"], hours: [6, 19] },
+  },
   hornet: {
     charClass: "rogue",
     profile: { race: "bee", userName: "Hornet" },

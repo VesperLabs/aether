@@ -10,7 +10,12 @@ export type { NpcAbility } from "./abilities";
 export { calculateNpcAggroRange, decideAggro, isNpcAttackReady, isStillAggro } from "./aggro";
 export type { NpcPlayerView } from "./aggro";
 export { decideNpcAction, shouldRespawn } from "./decide";
-export { isNpcAggressive, mergeBehaviors, shootsOverWalls } from "./behavior-options";
+export {
+  isNpcAggressive,
+  isNpcSkittish,
+  mergeBehaviors,
+  shootsOverWalls,
+} from "./behavior-options";
 export type { NpcAction, NpcBehaviorInput, NpcDecision, NpcMovement } from "./decide";
 export { checkInRange, getShouldAttackRange } from "./range";
 export { decideTalkingEnded, decideWander } from "./wander";

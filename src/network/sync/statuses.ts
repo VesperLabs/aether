@@ -43,6 +43,7 @@ function pickStatusState(s: Record<string, unknown> | null | undefined): Record<
     isAiming: s.isAiming,
     isHoldingAttack: s.isHoldingAttack,
     aimingBall: s.aimingBall,
+    habitat: s.habitat ?? null,
   };
 }
 

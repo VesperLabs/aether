@@ -14,7 +14,10 @@ type CharacterLayer =
   | "handLeft"
   | "handRight";
 
-/** Back to front, per facing direction. Hands on the far side go behind the body. */
+/**
+ * Back to front, per facing direction. Hands on the far side go behind the body; side on, the near
+ * glove goes over the weapon it holds, so the grip shows.
+ */
 const LAYER_ORDER: Record<string, CharacterLayer[]> = {
   up: [
     "shadow",
@@ -61,8 +64,8 @@ const LAYER_ORDER: Record<string, CharacterLayer[]> = {
     "whiskers",
     "accessory",
     "helmet",
-    "gloves",
     "handLeft",
+    "gloves",
   ],
   right: [
     "shadow",
@@ -77,8 +80,8 @@ const LAYER_ORDER: Record<string, CharacterLayer[]> = {
     "whiskers",
     "accessory",
     "helmet",
-    "gloves",
     "handRight",
+    "gloves",
   ],
 };
 

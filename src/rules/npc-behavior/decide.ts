@@ -1,7 +1,7 @@
 import type { ActiveBuff } from "@/rules/buffs";
 import { isRespawnDue } from "@/rules/combat";
 import { checkCastReady, type LastCast } from "@/rules/spells";
-import type { CardinalDirection } from "@/rules/world";
+import type { CardinalDirection, Point } from "@/rules/world";
 import {
   findSuitableAbility,
   getLongestSpellBand,
@@ -25,10 +25,10 @@ import type { Rng } from "@/rules/world";
 import { NPC_BEHAVIOR_IDS, NPC_BEHAVIORS, type NpcBehaviorId } from "./behaviors/behavior-list";
 import type { BehaviorContext, NpcBehavior } from "./behaviors/types";
 import { chooseBehavior } from "./brain";
-import type { ActorBehaviors } from "@/content";
+import type { ActorBehaviors, BodyHabitat } from "@/content";
 import { isKnockedBack, type KnockbackState, type LungeState } from "@/rules/movement";
 import { decideLungeMovement, isLungeSpell, isRecoveringFromLunge } from "./lunge";
-import type { WanderStep } from "./wander";
+import type { NpcMovement } from "./movement";
 import { decideSwing, type NpcSwing } from "./swings";
 
 export interface NpcBehaviorInput {
@@ -83,6 +83,9 @@ export interface NpcBehaviorInput {
       isResetting?: boolean;
       /** What it did last tick, which it slightly prefers to keep doing. */
       behavior?: NpcBehaviorId;
+      /** When a player last came too near a `skittish` NPC, and where it is getting away to. */
+      scaredAt?: number;
+      escapeTo?: { x: number; y: number };
     };
   isStunned: boolean;
   /** Its windup (while `isAiming`) is aimed at someone, not a self buff cast out of a fight. */
@@ -97,34 +100,15 @@ export interface NpcBehaviorInput {
   leader?: Body | null;
   /** Is there no wall between the NPC and `target`? Assumed clear when not given. */
   hasClearShot?: (target: Body) => boolean;
+  /** Can it go straight to `to`, inside the map and its habitat? Assumed so when not given. */
+  canTravel?: (to: Point) => boolean;
   /** Is the NPC next to a collision tile (so it should path)? */
   isNearCollideTile: boolean;
   /** Is the NPC outside the map or inside a collision tile? */
   isOutOfBounds: boolean;
 }
 
-export type NpcMovement =
-  | { type: "standStill" }
-  /** Move toward the target player, pathing around obstacles if `pathed`. */
-  | { type: "chase"; pathed: boolean; aim?: { x: number; y: number } }
-  | { type: "returnToSpawn"; pathed: boolean }
-  /** Walk to a spot, like a guard post. */
-  | { type: "walkTo"; to: { x: number; y: number }; pathed: boolean }
-  /** Stand at spawn, facing down after `faceDownAfterMs`, or walk back there. */
-  | { type: "waitAtSpawn"; faceDownAfterMs: number }
-  /** Stand still, turned to face whoever is talking to it. */
-  | { type: "talk"; face: CardinalDirection }
-  /** Run away from the target, around walls, at `speedRatio` of walk speed (default full). Sets when a retreat began. */
-  | { type: "flee"; speedRatio?: number; retreatAt?: number }
-  /** Sidestep around the target, drifting back to `distance` from it. Sets the side and when to next pick one. */
-  | { type: "strafe"; clockwise: boolean; distance: number; nextStrafeAt?: number }
-  /** Walk to the leader. */
-  | { type: "follow"; pathed: boolean }
-  | ({ type: "wander" } & WanderStep)
-  /** Dash along `angle` (radians): a lunge spell carries it. */
-  | { type: "lunge"; angle: number }
-  /** Shoved along `angle` (radians), `elapsed` ms in: no turning, no acting. */
-  | { type: "knockback"; angle: number; elapsed: number };
+export type { NpcMovement } from "./movement";
 
 export type NpcAction =
   | { type: "idle" }
@@ -153,6 +137,8 @@ export interface NpcDecision {
   action: NpcAction;
   /** The behavior that chose the movement. */
   behavior: NpcBehaviorId;
+  /** The habitat that behavior takes it to; unset is its body's first. */
+  habitat?: BodyHabitat;
   /** Pulled past its leash: forget every player and walk home. */
   startReset?: boolean;
   /** Home after a reset: heal up and go back to normal. */
@@ -185,6 +171,7 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
   let startReset = false;
   let finishReset = false;
   let cancelWindup = false;
+  let habitat: BodyHabitat | undefined;
   const isResetting = () => (!!state.isResetting || startReset) && !finishReset;
 
   const idle: NpcAction = { type: "idle" };
@@ -198,6 +185,7 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
     movement,
     action,
     behavior: behaviorId,
+    habitat,
     ...(startReset && { startReset }),
     ...(finishReset && { finishReset }),
     ...(cancelWindup && { cancelWindup }),
@@ -385,6 +373,7 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
     };
     behaviorId = chooseBehavior(ctx, NPC_BEHAVIOR_IDS, state.behavior) ?? "idle";
     const behavior: NpcBehavior = NPC_BEHAVIORS[behaviorId];
+    habitat = behavior.habitat?.(ctx);
 
     if (behavior.engaged && targetPlayer) {
       expireStealthOfPlayerId = targetPlayer.socketId;

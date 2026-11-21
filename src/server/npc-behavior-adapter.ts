@@ -3,10 +3,11 @@ import { findCharacter } from "./find-character";
 import type { Npc } from "./npc";
 import { getRoomIndex } from "./room-index";
 import { getBody } from "@/content";
-import { hasLineOfSight } from "@/rules/movement";
+import { hasClearWalk, hasLineOfSight, isOutOfMap } from "@/rules/movement";
 import {
   AGGRO_KITE_RANGE,
   isNpcAggressive,
+  isNpcSkittish,
   shootsOverWalls,
   type NpcBehaviorInput,
   type NpcNextSwing,
@@ -74,7 +75,8 @@ export function buildNpcBehaviorInput(
 ): NpcBehaviorInput {
   const { state, world, room } = npc;
   const lockedPlayer = toPlayerView(findCharacter(world, state?.lockedPlayerId));
-  const nearestPlayer = isNpcAggressive(npc) || lockedPlayer ? toPlayerView(nearestFoe(npc)) : null;
+  const watches = isNpcAggressive(npc) || isNpcSkittish(npc) || lockedPlayer;
+  const nearestPlayer = watches ? toPlayerView(nearestFoe(npc)) : null;
   return {
     now: frame.now,
     time: frame.time,
@@ -112,6 +114,10 @@ export function buildNpcBehaviorInput(
     hasClearShot: shootsOverWalls(npc)
       ? undefined
       : (target) => hasLineOfSight(room.map.grid, npc, target),
+    canTravel: (to) => {
+      const map = npc.movementMap();
+      return !isOutOfMap(map, to.x, to.y) && hasClearWalk(map.grid, npc, to, npc.bodySize);
+    },
     isNearCollideTile: npc.isNearCollideTile(),
     isOutOfBounds: npc.isOutOfBounds(),
   };

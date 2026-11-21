@@ -1,4 +1,4 @@
-import { pulseShadow } from "./shadow";
+import { followHabitat, pulseShadow } from "./shadow";
 import type { Habitat } from "@/rules/movement";
 import Phaser from "phaser";
 import { getBody } from "@/content";
@@ -131,6 +131,8 @@ export class Player extends Character {
     patch("lockedPlayerId");
     patch("ownerId");
     patch("bubbleMessage");
+    /* Which block of its sheet a body with several habitats shows (a bird in the air) */
+    patch("habitat");
     /* A regen flag only counts as a tick when it turns on: the server can resend one that stayed
        on (an npc retreating skips its regen) with every other status change */
     this.risenRegenFlags.clear();
@@ -349,6 +351,7 @@ export class Player extends Character {
     hackFrameRates(this, Math.round(80 + 2500 / (this.currentSpeed + 10)));
     updateCurrentSpeed(this);
     drawFrame(this);
+    followHabitat(this);
     pulseShadow(this, this.scene.time.now);
     updateWading(this);
     updateFootprints(this);
