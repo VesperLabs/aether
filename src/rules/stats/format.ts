@@ -44,6 +44,8 @@ const formatStat = (key: string, raw: FormattedStat): FormattedStat => {
       typeof item === "number" ? `${roundStat((item * 1000) / DOT_TICK_MS[key])}/s` : item;
     return Array.isArray(value) ? value.map(perSecond).join(" ↔ ") : perSecond(value);
   }
+  /* A buff that lasts until something breaks it (stealth) has a duration of -1 */
+  if (key === "duration" && typeof value === "number" && value < 0) return "∞";
   if (key.includes("Damage")) {
     if (Array.isArray(value)) {
       const formattedValue = value.map((item) => `${item}`).join(" ↔ ");
