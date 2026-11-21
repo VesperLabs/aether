@@ -122,7 +122,7 @@ describe("calculateStats", () => {
       minDamage: 1,
       maxDamage: 2,
       fireResistance: 10,
-      castDelay: 1000 + 1 - 1,
+      castDelay: 990, // 2 intelligence: 1% faster
       attackDelay: 200,
       walkSpeed: 100.06,
       exp: 0,

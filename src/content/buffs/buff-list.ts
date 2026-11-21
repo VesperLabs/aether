@@ -23,8 +23,9 @@ export const buffList = {
   haste: {
     type: "buff",
     duration: 30000,
-    stats: { walkSpeed: 20, attackDelay: -40, castDelay: -100 },
-    perLevel: { stats: { walkSpeed: 5, attackDelay: -10, castDelay: -20 } },
+    stats: { walkSpeed: 20 },
+    percentStats: { attackDelay: -15, castDelay: -15 },
+    perLevel: { stats: { walkSpeed: 5 }, percentStats: { attackDelay: -3, castDelay: -3 } },
   },
   brute: {
     type: "buff",
@@ -122,7 +123,8 @@ export const buffList = {
   slow: {
     type: "debuff",
     duration: 3000,
-    stats: { walkSpeed: -25, attackDelay: 50, castDelay: 100 },
+    stats: { walkSpeed: -25 },
+    percentStats: { attackDelay: 20, castDelay: 20 },
     perLevel: { duration: 500 },
   },
   poison: {

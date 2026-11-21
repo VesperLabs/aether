@@ -9,6 +9,9 @@ export const SPELL_POWER_PER_INTELLIGENCE = 0.5;
 /** Crit and dodge chance (percent) each point of dexterity adds. */
 export const CRIT_PER_DEXTERITY = 0.2;
 export const DODGE_PER_DEXTERITY = 0.15;
+/** Percent faster swings per dexterity, and faster casts per intelligence: 20 points is 10%. */
+export const ATTACK_SPEED_PER_DEXTERITY = 0.5;
+export const CAST_SPEED_PER_INTELLIGENCE = 0.5;
 /** Highest dodge or block chance (percent): stacking both still leaves most hits landing. */
 export const MAX_AVOIDANCE = 60;
 /** Highest elemental resistance (percent): past 100 an element would heal, so it stops short. */

@@ -4,6 +4,8 @@ import { classAttributes } from "./class-attributes";
 import { finishDamage } from "./damage-stats";
 import { isSwingStat } from "./swing-stats";
 import {
+  ATTACK_SPEED_PER_DEXTERITY,
+  CAST_SPEED_PER_INTELLIGENCE,
   CRIT_PER_DEXTERITY,
   DODGE_PER_DEXTERITY,
   HP_PER_VITALITY,
@@ -290,11 +292,9 @@ function calculateHandStats(
   ns.lightResistance = ns.lightResistance || 0;
   ns.waterResistance = ns.waterResistance || 0;
   ns.earthResistance = ns.earthResistance || 0;
-  ns.attackDelay = ns.attackDelay + ns.dexterity * 0.03 || 0;
   ns.spellPower = Math.floor((ns.spellPower || 0) + ns.intelligence * SPELL_POWER_PER_INTELLIGENCE);
-  ns.attackDelay = 1 - Math.floor(ns.dexterity * 0.5) + ns.attackDelay;
+  ns.attackDelay = ns.attackDelay || 0;
   ns.castDelay = ns.castDelay || 1000;
-  ns.castDelay = 1 - Math.floor(ns.intelligence * 0.5) + ns.castDelay;
   ns.regenHp = (ns.regenHp || 1) + Math.floor(ns.vitality / 20);
   ns.regenMp = (ns.regenMp || 1) + Math.floor(ns.intelligence / 20);
   ns.regenSp = ns.regenSp || 1;
@@ -334,6 +334,13 @@ function calculateHandStats(
     if (key == "maxHp" || key == "maxMp" || key == "defense" || key == "walkSpeed")
       ns[key] += percentIncrease;
   });
+  /* Speeds are percents of the whole delay, so slow weapons gain as much as fast ones */
+  const faster = (delay: number, percent = 0) =>
+    Math.max(200, Math.round(delay * (1 + percent / 100)));
+  const fromDexterity = -ns.dexterity * ATTACK_SPEED_PER_DEXTERITY;
+  const fromIntelligence = -ns.intelligence * CAST_SPEED_PER_INTELLIGENCE;
+  ns.attackDelay = faster(ns.attackDelay, (totalPercentStats.attackDelay ?? 0) + fromDexterity);
+  ns.castDelay = faster(ns.castDelay, (totalPercentStats.castDelay ?? 0) + fromIntelligence);
 
   // Moving values
   if (current.hp <= 0) ns.hp = shouldHeal ? ns.maxHp : 0;

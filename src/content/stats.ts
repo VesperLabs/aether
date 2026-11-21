@@ -53,6 +53,8 @@ export type StatName =
   | "waterResistance";
 
 export type PercentStatName =
+  | "attackDelay"
+  | "castDelay"
   | "defense"
   | "dexterity"
   | "intelligence"

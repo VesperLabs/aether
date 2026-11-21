@@ -54,10 +54,10 @@ describe("calculateStats hands", () => {
     ).toBeUndefined();
   });
 
-  it("slows the weapon by the shield's delay", () => {
+  it("slows the weapon by the shield's delay (less the rogue's dexterity speedup)", () => {
     const bare = calculateStats(rogue({ handRight: axe })).stats;
     const shielded = calculateStats(rogue({ handRight: axe, handLeft: shield })).stats;
-    expect(shielded.attackDelay).toBe(bare.attackDelay + 60);
+    expect(shielded.attackDelay - bare.attackDelay).toBeCloseTo(60, -1);
   });
 
   it("adds a shield's damage to the weapon's swings", () => {
