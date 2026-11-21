@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.57.1](https://github.com/VesperLabs/aether/compare/v0.57.0...v0.57.1) (2026-11-21)
+
+
+### Bug Fixes
+
+* let the client send the hidden /admin command ([#403](https://github.com/VesperLabs/aether/issues/403)) ([0a2a49c](https://github.com/VesperLabs/aether/commit/0a2a49c316600957493421d63884a132ea0cfc89))
+
 ## [0.57.0](https://github.com/VesperLabs/aether/compare/v0.56.0...v0.57.0) (2026-11-20)
 
 
