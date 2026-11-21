@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.61.1](https://github.com/VesperLabs/aether/compare/v0.61.0...v0.61.1) (2026-11-21)
+
+
+### Bug Fixes
+
+* stop the login preview's leg fade cutting off long weapons ([#413](https://github.com/VesperLabs/aether/issues/413)) ([1887056](https://github.com/VesperLabs/aether/commit/1887056253a4c0449683cefd70d983e9ac6e8eb4))
+
 ## [0.61.0](https://github.com/VesperLabs/aether/compare/v0.60.0...v0.61.0) (2026-11-21)
 
 
