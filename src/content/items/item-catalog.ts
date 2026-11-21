@@ -58,6 +58,7 @@ export interface CatalogItem {
 
 /** These stats are the same at every tier: speeds, reach, costs and chances. */
 const STATIC_STATS = new Set([
+  "walkSpeed",
   "attackDelay",
   "castDelay",
   "castTime",
@@ -102,6 +103,11 @@ function scaleRequirements(block: Loose | undefined, tier: number): Loose {
   return scaled;
 }
 
+/**
+ * A family's stats times the tier, to the nearest whole number. A stat can be a fraction, the way
+ * buffs grow by decimals per level, so it still grows evenly: `minDamage: 0.5` is 1 at tier 1,
+ * 2 at tier 3 and 3 at tier 6, never stuck at 0.
+ */
 function scale(block: Loose | undefined, tier: number): Loose {
   const scaled: Loose = {};
   for (const [stat, value] of Object.entries(block ?? {})) {

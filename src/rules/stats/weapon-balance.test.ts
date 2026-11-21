@@ -11,8 +11,11 @@ import { calculateStats, getBaseStats, npcStats, type StatBag } from "./index";
 
 const SAMPLES = 4000;
 const SPELL_FAMILIES = ["wand", "staff"];
-/** No family may stray further than this from the tier's median damage per second. */
-const MAX_SPREAD = 0.2;
+/**
+ * No family may stray further than this from the tier's median damage per second. Families are
+ * tuned to about the same; what's left is whole-number rounding of small tier 1 damage.
+ */
+const MAX_SPREAD = 0.12;
 /** Who would wield it: dexterity weapons go to a rogue, the rest to a warrior. */
 const WIELDER: Record<string, string> = {
   dagger: "rogue",

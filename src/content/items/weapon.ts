@@ -4,7 +4,7 @@ export const weaponFamilies = {
   fist: {
     type: "weapon",
     texture: "weapon-katar",
-    stats: { attackDelay: 160, minDamage: 0, maxDamage: 2, spCost: 1 },
+    stats: { attackDelay: 160, minDamage: 0.4, maxDamage: 1.5, spCost: 1 },
     requirements: { dexterity: 5 },
     tiers: [
       {
@@ -32,7 +32,7 @@ export const weaponFamilies = {
   dagger: {
     type: "weapon",
     texture: "weapon-dagger",
-    stats: { attackDelay: 180, minDamage: 0, maxDamage: 2, spCost: 1 },
+    stats: { attackDelay: 180, minDamage: 0.45, maxDamage: 1.55, spCost: 1 },
     requirements: { dexterity: 2 },
     tiers: [
       {
@@ -60,7 +60,7 @@ export const weaponFamilies = {
   sword: {
     type: "weapon",
     texture: "weapon-sword-short",
-    stats: { attackDelay: 220, minDamage: 1, maxDamage: 2, spCost: 2 },
+    stats: { attackDelay: 220, minDamage: 0.85, maxDamage: 1.75, spCost: 2 },
     requirements: { strength: 2, dexterity: 2 },
     tiers: [
       {
@@ -88,7 +88,7 @@ export const weaponFamilies = {
   scimitar: {
     type: "weapon",
     texture: "weapon-scimitar",
-    stats: { attackDelay: 200, minDamage: 0, maxDamage: 2, spCost: 2 },
+    stats: { attackDelay: 200, minDamage: 0.45, maxDamage: 2.1, spCost: 2 },
     requirements: { dexterity: 3 },
     tiers: [
       {
@@ -169,7 +169,7 @@ export const weaponFamilies = {
   club: {
     type: "weapon",
     texture: "weapon-club",
-    stats: { attackDelay: 420, minDamage: 3, maxDamage: 3, spCost: 2 },
+    stats: { attackDelay: 420, minDamage: 2.9, maxDamage: 2.9, spCost: 2 },
     requirements: { strength: 5 },
     tiers: [
       { key: "club", name: "Club", flavor: "A heavy stick. The oldest weapon there is." },
@@ -193,7 +193,7 @@ export const weaponFamilies = {
   axe: {
     type: "weapon",
     texture: "weapon-hatchet",
-    stats: { attackDelay: 320, minDamage: 1, maxDamage: 3, spCost: 2 },
+    stats: { attackDelay: 320, minDamage: 1.2, maxDamage: 3.35, spCost: 2 },
     requirements: { strength: 5 },
     tiers: [
       {
@@ -221,7 +221,7 @@ export const weaponFamilies = {
   scythe: {
     type: "weapon",
     texture: "weapon-scythe",
-    stats: { attackDelay: 320, minDamage: 1, maxDamage: 3, spCost: 2 },
+    stats: { attackDelay: 320, minDamage: 1.15, maxDamage: 3.45, spCost: 2 },
     requirements: { dexterity: 5 },
     tiers: [
       { key: "scythe", name: "Scythe", flavor: "A farmer's tool that learned a second trade." },
@@ -245,7 +245,7 @@ export const weaponFamilies = {
   spear: {
     type: "weapon",
     texture: "weapon-spear",
-    stats: { attackDelay: 500, minDamage: 2, maxDamage: 4, spCost: 3 },
+    stats: { attackDelay: 500, minDamage: 2.45, maxDamage: 4.45, spCost: 3 },
     requirements: { strength: 6 },
     tiers: [
       {

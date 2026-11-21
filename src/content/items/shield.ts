@@ -4,7 +4,7 @@ export const shieldFamilies = {
   roundShield: {
     type: "shield",
     texture: "shield-buckler",
-    stats: { attackDelay: 60, defense: 10, blockChance: 10 },
+    stats: { attackDelay: 60, defense: 8, blockChance: 10 },
     requirements: { strength: 3 },
     tiers: [
       {
@@ -34,7 +34,7 @@ export const shieldFamilies = {
   kiteShield: {
     type: "shield",
     texture: "shield-broken",
-    stats: { attackDelay: 80, defense: 10, blockChance: 15 },
+    stats: { attackDelay: 100, defense: 12, blockChance: 15, walkSpeed: -5 },
     requirements: { strength: 5 },
     tiers: [
       {
@@ -65,7 +65,7 @@ export const shieldFamilies = {
   towerShield: {
     type: "shield",
     texture: "shield-tower",
-    stats: { attackDelay: 100, defense: 15, blockChance: 20 },
+    stats: { attackDelay: 150, defense: 16, blockChance: 20, walkSpeed: -12 },
     requirements: { strength: 8 },
     tiers: [
       {
