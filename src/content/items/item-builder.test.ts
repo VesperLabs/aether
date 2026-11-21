@@ -139,3 +139,12 @@ describe("spells", () => {
     expect(spells.filter((spell) => !spell.stats.castTime).map((spell) => spell.key)).toEqual([]);
   });
 });
+
+describe("ITEM_CATALOG", () => {
+  it("grows every weapon's damage past tier 1, even a 0 minimum", () => {
+    for (const item of Object.values(ITEM_CATALOG)) {
+      if (item.tier < 2 || item.stats?.maxDamage === undefined) continue;
+      expect(item.stats.minDamage, item.key).toBeGreaterThan(0);
+    }
+  });
+});
