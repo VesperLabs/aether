@@ -4,7 +4,7 @@ import { cardItems } from "./card";
 import { canSlotMod } from "./mods";
 
 /** Adventurers out and about like players, the training dummy and critters: not mobs, no card. */
-const NOT_MOBS = ["traveler", "loiterer", "dummy", "butterfly"];
+const NOT_MOBS = ["traveler", "loiterer", "dummy", "butterfly", "sparrow"];
 
 /** Mobs: actors that don't talk (keepers and townsfolk do) and aren't one of the above. */
 const mobs = Object.entries(actors)

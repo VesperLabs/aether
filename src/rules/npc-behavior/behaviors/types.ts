@@ -1,3 +1,4 @@
+import type { BodyHabitat } from "@/content";
 import type { Rng } from "@/rules/world";
 import type { NpcPlayerView } from "../aggro";
 import type { NpcBehaviorInput, NpcMovement } from "../decide";
@@ -34,17 +35,6 @@ export interface NpcBehavior {
   engaged?: boolean;
   /** Neither attacks nor casts while chosen, so it doesn't turn on the target mid-run. */
   holdsFire?: boolean;
-}
-
-/**
- * One thing an NPC can be doing. Each tick the brain scores every behavior and runs the highest;
- * 0 means "not now". Behaviors are pure and only describe a movement.
- */
-export interface NpcBehavior {
-  score(ctx: BehaviorContext): number;
-  move(ctx: BehaviorContext, rng: Rng): NpcMovement;
-  /** Fighting a target. Choosing anything else drops the target. */
-  engaged?: boolean;
-  /** Neither attacks nor casts while chosen, so it doesn't turn on the target mid-run. */
-  holdsFire?: boolean;
+  /** The habitat it takes to while chosen (a bird the `air`); unset is its body's first. */
+  habitat?(ctx: BehaviorContext): BodyHabitat | undefined;
 }

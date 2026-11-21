@@ -80,7 +80,7 @@ export function performNpcMovement(
       return movement.pathed || !hasClearWalk(npc.movementMap().grid, npc, leader, npc.bodySize)
         ? walkToPathed(npc, leader, 1, leader)
         : walkTo(npc, leader, 1, false, leader);
-    case "flee":
+    case "flee": {
       if (movement.retreatAt !== undefined) npc.state.retreatAt = movement.retreatAt;
       if (!targetPlayer) return standStill(npc);
       return steer(
@@ -94,6 +94,11 @@ export function performNpcMovement(
           npc.bodySize,
         ),
       );
+    }
+    case "escape":
+      if (movement.scaredAt !== undefined) npc.state.scaredAt = movement.scaredAt;
+      npc.state.escapeTo = movement.to;
+      return walkTo(npc, movement.to, movement.speedRatio, true);
     case "lunge": {
       // Straight along the aim: no separation pushing it off the line the player is dodging
       const { x: vx, y: vy } = getLungeVelocity(movement.angle);

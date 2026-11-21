@@ -17,6 +17,9 @@ export interface HandPose extends HandOffset {
 /** A body's hands on one frame; a hand it doesn't have is left out. */
 export type FrameHands = { readonly left?: HandPose; readonly right?: HandPose };
 
+/** Where a body can go: `land` wades slowly through water, `water` swims and keeps to it, `air` flies over it. */
+export type BodyHabitat = "land" | "water" | "air";
+
 /** A body's size and points, in sprite pixels at scale 1, measured from its feet. */
 export interface BodyShape {
   /** The box spells must touch to hit it, standing on the bottom of its feet. */
@@ -36,8 +39,12 @@ export interface BodyShape {
 export interface BodyData extends BodyShape {
   /** Leaves a grave where it dies; one that doesn't is a mob, its name hidden until a fight. */
   readonly leavesGrave?: boolean;
-  /** Where it can go: `land` wades slowly through water, `water` swims and keeps to it, `air` flies over it. */
-  readonly habitat: "land" | "water" | "air";
+  /**
+   * Where it can go: `land` wades slowly through water, `water` swims and keeps to it, `air` flies
+   * over it. A list is a body that switches between them (a bird on the ground and in flight), the
+   * first where it starts. Each later one has its own ordinary sheet, `<race>-<habitat>`.
+   */
+  readonly habitat: BodyHabitat | readonly BodyHabitat[];
   /** The part of its sheet a portrait shows (inventory, wiki), as `[x, y, width, height]`. */
   readonly portraitRect: readonly number[];
   /** How wide the shadow at its feet is, px; unset is half again its hit box (see `shadowOf`). */
@@ -56,7 +63,11 @@ export interface BodyData extends BodyShape {
  * What a character's body can do and how big it is, by its `race`. Rules ask the body, never "is it
  * human".
  */
-export interface BodyDefinition extends BodyData {
+export interface BodyDefinition extends Omit<BodyData, "habitat"> {
+  /** Where it starts out: the first of its habitats. */
+  readonly habitat: BodyHabitat;
+  /** Every habitat it switches between, one sheet each; just `habitat` for most bodies. */
+  readonly habitats: readonly BodyHabitat[];
   readonly leavesGrave: boolean;
   /**
    * Drawn in layers like a player: a bare chest, face, hair and gear sheets over its own. Never a
@@ -68,11 +79,18 @@ export interface BodyDefinition extends BodyData {
   readonly attackAnims: boolean;
 }
 
-const HABITATS: readonly string[] = ["land", "water", "air"] satisfies BodyData["habitat"][];
+const HABITATS: readonly string[] = ["land", "water", "air"] satisfies BodyHabitat[];
+
+const isHabitat = (value: unknown): value is BodyHabitat =>
+  typeof value === "string" && HABITATS.includes(value);
 
 /** A body's file, checked once at load: JSON can't say a habitat is one of the three. */
-const readBody = (race: string, data: Omit<BodyData, "habitat"> & { habitat: string }) => {
-  if (!HABITATS.includes(data.habitat)) throw new Error(`${race}.json: unknown habitat`);
+const readBody = (
+  race: string,
+  data: Omit<BodyData, "habitat"> & { habitat: string | string[] },
+) => {
+  const list = typeof data.habitat === "string" ? [data.habitat] : data.habitat;
+  if (!list.length || !list.every(isHabitat)) throw new Error(`${race}.json: unknown habitat`);
   return data as BodyData;
 };
 
@@ -93,8 +111,12 @@ const hasLayerSheets = (race: string | undefined) =>
       texture === `${race}-male-chest-bare` || texture === `${race}-female-chest-bare`,
   );
 
+const habitatsOf = ({ habitat }: BodyData) => (typeof habitat === "string" ? [habitat] : habitat);
+
 const define = (race: string | undefined, data: BodyData): BodyDefinition => ({
   ...data,
+  habitat: habitatsOf(data)[0],
+  habitats: habitatsOf(data),
   handLeft: hasHandIn(data, "left"),
   handRight: hasHandIn(data, "right"),
   attackAnims: !!data.attackAnims,

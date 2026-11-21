@@ -69,3 +69,14 @@ export const NPC_SWING_LEAD_MS = 150;
 export const NPC_CHASE_LEAD_MAX_MS = 600;
 /** ...times this share, so it closes in without overshooting a target that turns. */
 export const NPC_CHASE_LEAD_RATIO = 0.5;
+/** How close a player comes before a `skittish` NPC takes off, px. */
+export const SKITTISH_RANGE = 72;
+/** The longest a scared `skittish` NPC keeps getting away after it was last scared, ms. */
+export const SKITTISH_CALM_MS = 4000;
+/** How far a scared `skittish` NPC gets away from whoever scared it, px: between these. */
+export const SKITTISH_ESCAPE_MIN = 150;
+export const SKITTISH_ESCAPE_MAX = 240;
+/** How far, in radians, its escape may veer either side of straight away. */
+export const SKITTISH_ESCAPE_VEER = 0.7;
+/** How much faster than its walk a scared `skittish` NPC gets away. */
+export const SKITTISH_SPEED_RATIO = 1.8;

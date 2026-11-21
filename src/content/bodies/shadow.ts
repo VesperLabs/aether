@@ -1,4 +1,4 @@
-import type { BodyData } from "./bodies";
+import type { BodyDefinition } from "./bodies";
 
 /** The soft oval a body casts on the ground, in sprite pixels at scale 1. */
 export interface ShadowShape {
@@ -21,7 +21,9 @@ const AIR_OPACITY = 0.7;
 const AIR_BELOW_FEET = 12;
 
 /** The shadow a body casts: sized from its hit box (or `shadowWidth`), smaller in the air. */
-export function shadowOf(body: Pick<BodyData, "hitBox" | "habitat" | "shadowWidth">): ShadowShape {
+export function shadowOf(
+  body: Pick<BodyDefinition, "hitBox" | "habitat" | "shadowWidth">,
+): ShadowShape {
   const flies = body.habitat === "air";
   const base = body.shadowWidth ?? body.hitBox.width * WIDTH_PER_HIT_BOX;
   const width = Math.max(4, Math.round(base * (flies ? AIR_SIZE : 1)));

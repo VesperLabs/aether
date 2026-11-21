@@ -7,7 +7,7 @@ import { aimedBowHand } from "./nocked-arrow";
 import { getSwingWeaponAngle } from "./swing-arc";
 import { getShownAction } from "@/rules/combat";
 import { isDodging } from "@/rules/movement";
-import { getBody, getFrameHands, getLayerOrder } from "@/content";
+import { getBody, habitatTexture, getFrameHands, getLayerOrder } from "@/content";
 
 const BLANK_TEXTURE = "human-blank";
 
@@ -88,7 +88,8 @@ export function drawFrame(p: Player) {
 
   orderLayers(p);
 
-  p?.playAnim(skin, [profile?.race, direction, action]);
+  /* A body in a later habitat (a bird in the air) plays that habitat's own sheet (`bird-air`) */
+  p?.playAnim(skin, [habitatTexture(profile?.race, p.state?.habitat), direction, action]);
   if (getBody(profile?.race).layered) {
     p?.playAnim(chest, [profile?.race, profile?.gender, "chest-bare", direction, action]);
   } else {

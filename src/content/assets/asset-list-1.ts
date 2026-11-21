@@ -128,6 +128,18 @@ export const assetList1 = [
     previewRect: [0, 160, 80, 80],
   },
   {
+    texture: "bird",
+    src: "./assets/atlas/mob/bird.png",
+    atlas: "./assets/atlas/50x50.json",
+    previewRect: [0, 100, 50, 50],
+  },
+  {
+    texture: "bird-air",
+    src: "./assets/atlas/mob/bird-air.png",
+    atlas: "./assets/atlas/50x50.json",
+    previewRect: [0, 100, 50, 50],
+  },
+  {
     texture: "butterfly",
     src: "./assets/atlas/mob/butterfly.png",
     atlas: "./assets/atlas/50x50.json",

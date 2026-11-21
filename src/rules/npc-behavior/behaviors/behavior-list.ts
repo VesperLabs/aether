@@ -2,6 +2,7 @@ import { idle, follow, reset, talk, unstuck } from "./built-in";
 import { chase, kite, retreat } from "./fight";
 import { guard } from "./guard";
 import type { NpcBehavior } from "./types";
+import { skittish } from "./skittish";
 import { leash, wander } from "./wander";
 
 /** Every behavior, in tie-break order. Each scores 0 when the NPC lacks it or it doesn't apply. */
@@ -11,6 +12,7 @@ export const NPC_BEHAVIORS = {
   unstuck,
   guard,
   talk,
+  skittish,
   leash,
   wander,
   retreat,

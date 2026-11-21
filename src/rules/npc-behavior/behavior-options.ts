@@ -26,6 +26,9 @@ export function isNpcAggressive(npc: WithBehaviors) {
   return !!fight && fight.starts === "onSight";
 }
 
+/** Gets away from anyone who comes near (see the `skittish` behavior). */
+export const isNpcSkittish = (npc: WithBehaviors) => !!behaviorOptions(npc, "skittish");
+
 /** Never fights, not even when hit. */
 export const isNpcPassive = (npc: WithBehaviors) => !behaviorOptions(npc, "fight");
 
