@@ -60,7 +60,11 @@ describe("getAttackSpCost", () => {
   });
   it("is 1 for anything else", () => {
     expect(getAttackSpCost(equipment, 0)).toBe(1);
-    expect(getAttackSpCost(undefined, 1)).toBe(0);
+  });
+  it("is 1 for a bare fist", () => {
+    expect(getAttackSpCost(undefined, 1)).toBe(1);
+    expect(getAttackSpCost({ handLeft: null, handRight: null }, 1)).toBe(1);
+    expect(getAttackSpCost({ handRight: { stats: { spCost: 3 } } }, 2)).toBe(1);
   });
 });
 
