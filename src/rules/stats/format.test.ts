@@ -26,3 +26,9 @@ describe("damage over time", () => {
     });
   });
 });
+
+describe("duration", () => {
+  it("reads as infinite for a buff that lasts until broken", () => {
+    expect(formatStats({ duration: -1 }).duration).toBe("∞");
+  });
+});

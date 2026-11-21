@@ -154,7 +154,7 @@ export const spellDetails = {
   stealth: {
     ...aura("0x777777"),
     targets: ["self"],
-    cooldown: 20000,
+    cooldown: 10000,
     vanishes: true,
   },
 } as const satisfies Readonly<Record<string, SpellDefinition>>;
