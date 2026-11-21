@@ -32,7 +32,7 @@ export const weaponFamilies = {
   dagger: {
     type: "weapon",
     texture: "weapon-dagger",
-    stats: { attackDelay: 180, minDamage: 0.6, maxDamage: 1.5, spCost: 1 },
+    stats: { attackDelay: 180, minDamage: 0.45, maxDamage: 1.55, spCost: 1 },
     requirements: { dexterity: 2 },
     tiers: [
       {
@@ -193,7 +193,7 @@ export const weaponFamilies = {
   axe: {
     type: "weapon",
     texture: "weapon-hatchet",
-    stats: { attackDelay: 320, minDamage: 1.2, maxDamage: 3.5, spCost: 2 },
+    stats: { attackDelay: 320, minDamage: 1.2, maxDamage: 3.35, spCost: 2 },
     requirements: { strength: 5 },
     tiers: [
       {
@@ -245,7 +245,7 @@ export const weaponFamilies = {
   spear: {
     type: "weapon",
     texture: "weapon-spear",
-    stats: { attackDelay: 500, minDamage: 2.8, maxDamage: 4.45, spCost: 3 },
+    stats: { attackDelay: 500, minDamage: 2.45, maxDamage: 4.45, spCost: 3 },
     requirements: { strength: 6 },
     tiers: [
       {
