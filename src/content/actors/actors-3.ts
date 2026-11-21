@@ -33,6 +33,16 @@ export const actors3 = {
     baseStats: { level: 2 },
     drops: [{ item: "blueSporangium", chance: 3 }],
   },
+  butterfly: {
+    charClass: "rogue",
+    profile: { race: "butterfly", userName: "Butterfly" },
+    flavor:
+      "It drifts from flower to flower on warm days. Children chase them; nobody has ever caught one on purpose.",
+    baseStats: { level: 1 },
+    state: { noWorldDrops: true, noExp: true, catchable: false },
+    behaviors: { fight: false, wander: { radius: 64 } },
+    active: { seasons: ["spring", "summer"], hours: [6, 20] },
+  },
   hornet: {
     charClass: "rogue",
     profile: { race: "bee", userName: "Hornet" },
@@ -136,7 +146,8 @@ export const actors3 = {
     profile: { race: "abomination", tint: "0xC8A878", userName: "Dummy" },
     flavor: "A stuffed sack shaped like a chonks. It takes every hit and never swings back.",
     behaviors: { fight: false, guard: {} },
-    baseStats: { level: 10 },
+    /* Enough to never fall to a training session */
+    baseStats: { level: 10, maxHp: 250_000 },
     state: { noWorldDrops: true },
   },
   merman: {

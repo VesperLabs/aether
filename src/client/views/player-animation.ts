@@ -75,7 +75,6 @@ export function drawFrame(p: Player) {
     pants,
     gloves,
     boots,
-    shadow,
     direction,
     action: chosenAction,
     visibleEquipment,
@@ -95,7 +94,6 @@ export function drawFrame(p: Player) {
   } else {
     p?.playAnim(chest, [BLANK_TEXTURE, direction, action]);
   }
-  p?.playAnim(shadow, ["shadow", direction, action]);
   p?.playAnim(face, [profile?.race, profile?.face?.texture, direction, action]);
   p?.playAnim(whiskers, [profile?.race, profile?.whiskers?.texture, direction, action]);
   p?.playAnim(hair, [profile?.race, profile?.hair?.texture, direction, action]);
@@ -180,7 +178,6 @@ export function approachAlpha(currentAlpha: number, targetAlpha: number, step: n
 
 export function hackFrameRates(player: Player, rate: number) {
   const spriteKeys = [
-    "shadow",
     "chest",
     "skin",
     "face",

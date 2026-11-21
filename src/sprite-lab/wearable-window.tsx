@@ -15,7 +15,7 @@ import type { PendingCandidate } from "./use-pending-candidates";
 import { WINDOW_WIDTH } from "./window-layout";
 
 const LABEL_SX = { fontSize: 0, opacity: 0.5 };
-const CLOTHING_OPTIONS = HUMAN_LAYERS.filter((layer) => layer !== "shadow").flatMap(getLayerSheets);
+const CLOTHING_OPTIONS = HUMAN_LAYERS.flatMap(getLayerSheets);
 /** Gloves are only hands, so any pair says where the hands are on every frame. */
 const [GLOVES] = getLayerSheets("gloves");
 

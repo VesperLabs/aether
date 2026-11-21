@@ -18,6 +18,8 @@ export interface MobKilledEvent {
   mobId: string;
   mobName: string;
   mobLevel: number;
+  /** Worth no experience (harmless critters). */
+  noExp?: boolean;
   roomName: string;
   x: number;
   y: number;
@@ -76,6 +78,12 @@ interface NpcWindupCancelledEvent {
 }
 
 /** A dead NPC came back at its spawn point. */
+/** An NPC left for a while (outside its actor's `active` times): hidden, not killed. */
+interface NpcWentAwayEvent {
+  npcId: string;
+  roomName: string;
+}
+
 interface NpcRespawnedEvent {
   npcId: string;
   roomName: string;
@@ -107,6 +115,7 @@ export interface GameEvents {
   npcWindupStarted: NpcWindupStartedEvent;
   npcWindupCancelled: NpcWindupCancelledEvent;
   npcRespawned: NpcRespawnedEvent;
+  npcWentAway: NpcWentAwayEvent;
   /** An owned NPC left far behind appeared beside its owner, in the same room. */
   npcWarped: NpcRespawnedEvent;
   spellHitShapes: SpellHitShapesEvent;

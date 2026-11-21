@@ -4,6 +4,7 @@ import { calculateExpValue } from "./exp";
 
 /** Experience one kill is worth to everyone who shares it (based on the killer's level). */
 export function expForMobKill(kill: MobKilledEvent): number {
+  if (kill.noExp) return 0;
   return calculateExpValue({ playerLevel: kill.killerLevel, mobLevel: kill.mobLevel });
 }
 

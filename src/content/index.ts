@@ -21,6 +21,7 @@ export {
   type BodyDefinition,
   type BodyShape,
 } from "./bodies/bodies";
+export { shadowOf, shadowPixels, type ShadowShape } from "./bodies/shadow";
 export { iconList } from "./assets/icon-list";
 export { getLayerOrder } from "./assets/layer-order";
 export { resolveAsset } from "./assets/resolve-asset";
@@ -82,7 +83,7 @@ export {
   type SeasonIcon,
 } from "./maps/seasons";
 export { actors, isActorId, type ActorId } from "./actors/actors";
-export type { ActorDefinition, MobProfile } from "./actors/actor-types";
+export type { ActiveTimes, ActorDefinition, MobProfile } from "./actors/actor-types";
 export {
   DEFAULT_BEHAVIORS,
   type ActorBehaviors,

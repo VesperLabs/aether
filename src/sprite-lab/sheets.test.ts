@@ -42,9 +42,7 @@ describe("sprite lab sheets", () => {
   it("offers bodies and mobs as bases, and nothing worn over them", () => {
     const bases = BASE_SHEETS.map(({ texture }) => texture);
     expect(bases).toEqual(expect.arrayContaining(["human", "wolf"]));
-    expect(bases).not.toContain("shadow");
     expect(bases).not.toContain("human-hair-1");
-    expect(getLayerSheets("shadow").map(({ texture }) => texture)).toEqual(["shadow"]);
   });
 
   it("has sheets for every layer", () => {

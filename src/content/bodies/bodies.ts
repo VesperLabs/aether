@@ -40,6 +40,8 @@ export interface BodyData extends BodyShape {
   readonly habitat: "land" | "water" | "air";
   /** The part of its sheet a portrait shows (inventory, wiki), as `[x, y, width, height]`. */
   readonly portraitRect: readonly number[];
+  /** How wide the shadow at its feet is, px; unset is half again its hit box (see `shadowOf`). */
+  readonly shadowWidth?: number;
   /** Has `attack_left`/`attack_right` animations; other bodies just stand while attacking. */
   readonly attackAnims?: boolean;
   /**

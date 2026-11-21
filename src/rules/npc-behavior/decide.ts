@@ -279,7 +279,9 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
   // Lost its foe mid-fight (outran, hid, killed): walk home and heal, as after a leash. Not a
   // pet or follower, nor one that already retreated: it stays hurt rather than heal off a getaway.
   const lostFoe = !!state.lockedPlayerId && !lockedPlayerId && !isResetting();
-  if (lostFoe && !state.ownerId && state.retreatAt === undefined) startReset = true;
+  // One that never fights never had a foe to lose: a hit only marks who struck it, so it stays hurt
+  const fights = !isNpcPassive(npc);
+  if (lostFoe && fights && !state.ownerId && state.retreatAt === undefined) startReset = true;
   // Winding up plants its feet; giving up the fight calls it off (an untargeted buff has no fight)
   const chosen = NPC_BEHAVIORS[behaviorId];
   const leftFight = !chosen.engaged && input.isWindupTargeted !== false;

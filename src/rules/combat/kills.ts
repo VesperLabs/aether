@@ -13,6 +13,7 @@ export interface SlainMob {
   id: string;
   name: string;
   stats: { level: number };
+  state?: { noExp?: boolean };
   x: number;
   y: number;
 }
@@ -36,6 +37,7 @@ export function mobKilledEvents(
     mobId: mob.id,
     mobName: mob.name,
     mobLevel: mob.stats.level,
+    noExp: mob.state?.noExp || undefined,
     roomName,
     x: mob.x,
     y: mob.y,

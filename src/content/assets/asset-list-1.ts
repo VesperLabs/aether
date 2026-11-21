@@ -8,12 +8,6 @@ export const assetList1 = [
     previewRect: [0, 160, 80, 80],
   },
   {
-    texture: "shadow",
-    src: "./assets/atlas/shadow.png",
-    atlas: "./assets/atlas/80x80.json",
-    previewRect: [0, 160, 80, 80],
-  },
-  {
     texture: "human",
     src: "./assets/atlas/human.png",
     atlas: "./assets/atlas/80x80.json",
@@ -132,6 +126,12 @@ export const assetList1 = [
     src: "./assets/atlas/mob/slime.png",
     atlas: "./assets/atlas/80x80.json",
     previewRect: [0, 160, 80, 80],
+  },
+  {
+    texture: "butterfly",
+    src: "./assets/atlas/mob/butterfly.png",
+    atlas: "./assets/atlas/50x50.json",
+    previewRect: [0, 100, 50, 50],
   },
   {
     texture: "bee",

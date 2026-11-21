@@ -378,7 +378,7 @@ export class Player extends ServerCharacter {
     /* Stats (experience) reacts to this and awards exp and kill credit to the recipients. */
     for (const kill of kills) world.events.emit("mobKilled", kill);
     recipients.forEach((member, i) => {
-      for (const kill of kills) {
+      for (const kill of kills.filter((k) => !k.noExp)) {
         hitList.push({
           type: "exp",
           amount: expForMobKill(kill),

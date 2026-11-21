@@ -17,6 +17,7 @@ import { Bar } from "./bar";
 import { WeaponSprite } from "./weapon-sprite";
 import { CaptureBall } from "./capture-ball";
 import { StunStars } from "./stun-stars";
+import { placeShadow } from "./shadow";
 
 /** The overhead hp bar in world pixels (it is drawn at twice this, then halved). */
 const HP_BAR_WIDTH = 16;
@@ -59,7 +60,7 @@ export function createSpriteLayers(player: Player) {
       ? new WeaponSprite(scene, -13, -9, BLANK_TEXTURE)
       : new Sprite(scene, -13, -9, BLANK_TEXTURE),
   );
-  player.shadow = scene.add.existing(new Sprite(...defaults));
+  player.shadow = scene.add.existing(new Phaser.GameObjects.Image(scene, 0, 0, BLANK_TEXTURE));
   player.bubble = scene.add.existing(
     new Bubble(scene, player?.headY, player.state?.bubbleMessage ?? undefined),
   );
@@ -127,7 +128,6 @@ export function applyAppearance(player: Player) {
   const scale = profile?.scale || 1;
   for (const layer of [
     player.skin,
-    player.shadow,
     player.chest,
     player.face,
     player.whiskers,
@@ -143,6 +143,7 @@ export function applyAppearance(player: Player) {
   ]) {
     layer.setScale(scale);
   }
+  placeShadow(player);
   player.corpse.setScale(isBoss ? profile?.scale / 2 : 1);
   player.corpse.setTint(isBoss ? 0xaa88aa : 0xcc9966);
   player.skin.setTint(toTint(profile?.tint || "0xFFFFFF"));

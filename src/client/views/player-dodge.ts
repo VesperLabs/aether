@@ -20,7 +20,6 @@ const GHOST_FOLLOW = 0.5;
 const POSED_LAYERS = [
   "skin",
   "chest",
-  "shadow",
   "face",
   "whiskers",
   "hair",

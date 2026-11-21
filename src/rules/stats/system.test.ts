@@ -23,6 +23,10 @@ describe("expForMobKill", () => {
     expect(expForMobKill(kill())).toBe(calculateExpValue({ playerLevel: 10, mobLevel: 10 }));
     expect(expForMobKill(kill({ killerLevel: 30, mobLevel: 10 }))).toBe(0);
   });
+
+  it("is nothing for a mob worth no exp", () => {
+    expect(expForMobKill(kill({ killerLevel: 1, mobLevel: 10, noExp: true }))).toBe(0);
+  });
 });
 
 describe("subscribeStats", () => {
