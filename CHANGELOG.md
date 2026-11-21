@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.60.0](https://github.com/VesperLabs/aether/compare/v0.59.0...v0.60.0) (2026-11-21)
+
+
+### Features
+
+* level-up effect every player in the room sees ([#409](https://github.com/VesperLabs/aether/issues/409)) ([37e151c](https://github.com/VesperLabs/aether/commit/37e151cd005b2850116d83aa8d877c89e920c41f))
+
 ## [0.59.0](https://github.com/VesperLabs/aether/compare/v0.58.0...v0.59.0) (2026-11-21)
 
 
