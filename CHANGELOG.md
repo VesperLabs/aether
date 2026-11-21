@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.64.0](https://github.com/VesperLabs/aether/compare/v0.63.0...v0.64.0) (2026-11-21)
+
+
+### Features
+
+* sparrows that take flight when you come near, and bodies that switch habitat ([#421](https://github.com/VesperLabs/aether/issues/421)) ([e709778](https://github.com/VesperLabs/aether/commit/e70977875b044ae5b5b9125cef41afcb04e3f8c1))
+
 ## [0.63.0](https://github.com/VesperLabs/aether/compare/v0.62.1...v0.63.0) (2026-11-21)
 
 
