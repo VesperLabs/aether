@@ -96,7 +96,7 @@ export const glovesUniques = {
     name: "The Flaming Finger",
     flavor: "One finger is always lit. Handy for campfires.",
     tint: "0xFF4400",
-    mod: "casting",
+    mod: "blazing",
   },
   aeryMitts: {
     family: "gloves",
@@ -105,6 +105,6 @@ export const glovesUniques = {
     flavor: "Light as air. Your hands feel like they could float off.",
     texture: "gloves-fur",
     tint: "0x66CCFF",
-    mod: "casting",
+    mod: "tidal",
   },
 } as const satisfies Uniques<typeof glovesFamilies>;

@@ -15,6 +15,7 @@ export type StatName =
   | "dexterity"
   | "dodgeChance"
   | "earthResistance"
+  | "fireDamagePercent"
   | "fireResistance"
   | "hpCost"
   | "hpSteal"
@@ -50,6 +51,7 @@ export type StatName =
   | "strength"
   | "vitality"
   | "walkSpeed"
+  | "waterDamagePercent"
   | "waterResistance";
 
 export type PercentStatName =
@@ -57,6 +59,8 @@ export type PercentStatName =
   | "castDelay"
   | "defense"
   | "dexterity"
+  | "fireDamage"
+  | "waterDamage"
   | "intelligence"
   | "maxHp"
   | "maxMp"

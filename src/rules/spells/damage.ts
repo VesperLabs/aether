@@ -30,7 +30,15 @@ export function rollSpellDamage(
     {},
   );
 
-  return calculateElementalDamage(dmgWithSpellPower, victimStats, rng);
+  return calculateElementalDamage(
+    {
+      ...dmgWithSpellPower,
+      fireDamagePercent: casterStats?.fireDamagePercent,
+      waterDamagePercent: casterStats?.waterDamagePercent,
+    },
+    victimStats,
+    rng,
+  );
 }
 
 export interface SpellCrit {

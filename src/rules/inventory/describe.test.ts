@@ -55,12 +55,12 @@ describe("describeItem", () => {
     expect(d.buffs.map((buff) => buff.name)).toEqual(["stun"]);
   });
 
-  it("marks a card's flat stats and triggers as multiplied by tier, but not its percents", () => {
+  it("marks a card's flat stats and triggers as multiplied by tier, and its percents by half steps", () => {
     expect(describeItem({ mod: "strong" }).mods.added.stats).toEqual([
       { label: "strength", value: "2", note: "(×tier)" },
     ]);
     expect(describeItem({ mod: "sanguine" }).mods.added.stats).toEqual([
-      { label: "maxHp", value: "+12%" },
+      { label: "maxHp", value: "+12%", note: "(+6%/tier)" },
     ]);
     expect(describeItem({ mod: "venomous" }).mods.added.triggers[0]?.perTier).toBe(true);
   });
