@@ -37,8 +37,8 @@ describe("createBuff", () => {
       level: 2,
       spawnTime: NOW,
       duration: 30000,
-      stats: { walkSpeed: 25, attackDelay: -50, castDelay: -120 },
-      percentStats: {},
+      stats: { walkSpeed: 25 },
+      percentStats: { attackDelay: -18, castDelay: -18 },
     });
   });
   it("grows each value by its perLevel step", () => {

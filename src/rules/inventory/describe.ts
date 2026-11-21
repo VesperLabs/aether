@@ -122,6 +122,22 @@ function statLines(stats: Record<string, StatValue> = {}, suffix = "", note?: st
   }));
 }
 
+/**
+ * Percent stats, signed ("+12%"). A lower delay is a faster speed, so those read as one:
+ * `attackDelay: -12` is "attack speed +12%".
+ */
+const SPEED_OF: Record<string, string> = { attackDelay: "attackSpeed", castDelay: "castSpeed" };
+function percentLines(stats: Record<string, StatValue> = {}): StatLine[] {
+  return Object.entries(stats).map(([stat, value]) => {
+    const flip = stat in SPEED_OF ? -1 : 1;
+    const signed = (v: number) => `${v * flip > 0 ? "+" : ""}${v * flip}%`;
+    return {
+      label: SPEED_OF[stat] ?? stat,
+      value: Array.isArray(value) ? value.map(signed).join(" ↔ ") : signed(Number(value)),
+    };
+  });
+}
+
 /** What some mods add, as stat lines and procs. */
 export interface ModLines {
   stats: StatLine[];
@@ -136,7 +152,7 @@ export interface ModLines {
 /** With `perTier` (a card), flat stats are marked as multiplied by tier; percents never are. */
 const modStatLines = (mod: ScaledMod, perTier = false) => [
   ...statLines(mod.stats, "", perTier ? "(×tier)" : undefined),
-  ...statLines(mod.percentStats, "%"),
+  ...percentLines(mod.percentStats),
 ];
 
 /**
@@ -205,17 +221,17 @@ function buffLines(name: string, level: number, perTier = false): StatLine[] {
   const buff = buffList[name as BuffName] as BuffDefinition | undefined;
   if (!buff) return [];
   const { duration, stats, percentStats } = buffAtLevel(buff, level);
-  const lines = [...statLines({ duration, ...stats }), ...statLines(percentStats, "%")];
+  const lines = [...statLines({ duration, ...stats }), ...percentLines(percentStats)];
   if (!perTier) return lines;
   const step = buff.perLevel ?? {};
   const steps = [
     ...statLines({ ...(step.duration && { duration: step.duration }), ...step.stats }),
-    ...statLines(step.percentStats, "%"),
+    ...percentLines(step.percentStats),
   ];
   const note = new Map(
     steps.map(({ label, value }) => [
       `${label}${value.endsWith("%")}`,
-      `(${value.startsWith("-") ? "" : "+"}${trimZeros(value)}/tier)`,
+      `(${/^[-+]/.test(value) ? "" : "+"}${trimZeros(value)}/tier)`,
     ]),
   );
   return lines.map((line) => {
@@ -266,7 +282,7 @@ export function describeItem(
     kind: isSpell ? "spell" : kindName(base),
     stats: [
       ...statLines(without(item.stats, mods.stats)),
-      ...statLines(without(item.percentStats, mods.percentStats), "%"),
+      ...percentLines(without(item.percentStats, mods.percentStats)),
       ...(cooldown > 0 ? statLines({ cooldown }) : []),
     ],
     /* A spell that casts itself (Haste) does what its buff does, as a damage spell's damage */
@@ -290,7 +306,7 @@ export function describeItem(
       name: set.name,
       pieces: set.pieces,
       active: !player || !!player.state?.activeSets?.includes(item.setName as string),
-      stats: [...statLines(set.percentStats, "%"), ...statLines(set.stats)],
+      stats: [...percentLines(set.percentStats), ...statLines(set.stats)],
       triggers: triggerLines(set.triggers),
     },
     mods: {

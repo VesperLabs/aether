@@ -20,14 +20,14 @@ describe("describeItem", () => {
     expect(d.stats).toEqual([
       { label: "AttackDamage", value: "2 ↔ 5" },
       { label: "hp", value: "+10" },
-      { label: "vitality", value: "5%" },
+      { label: "vitality", value: "+5%" },
     ]);
     expect(d.resourceCosts).toEqual([{ resource: "sp", amount: 3 }]);
   });
 
   it("joins wiki [min, max] ranges", () => {
     const d = describeItem({ percentStats: { vitality: [5, 10] } });
-    expect(d.stats).toEqual([{ label: "vitality", value: "5% ↔ 10%" }]);
+    expect(d.stats).toEqual([{ label: "vitality", value: "+5% ↔ +10%" }]);
   });
 
   it("scales buff stats by level, as the buff itself does, but not its duration", () => {
@@ -60,7 +60,7 @@ describe("describeItem", () => {
       { label: "strength", value: "2", note: "(×tier)" },
     ]);
     expect(describeItem({ mod: "sanguine" }).mods.added.stats).toEqual([
-      { label: "maxHp", value: "12%" },
+      { label: "maxHp", value: "+12%" },
     ]);
     expect(describeItem({ mod: "venomous" }).mods.added.triggers[0]?.perTier).toBe(true);
   });
@@ -68,7 +68,7 @@ describe("describeItem", () => {
   it("marks only the buff stats that scale by level as multiplied by a card's tier", () => {
     expect(describeItem({ mod: "enduring" }).mods.added.triggers[0]?.stats).toEqual([
       { label: "duration", value: "30s" },
-      { label: "maxHp", value: "10%", note: "(+10%/tier)" },
+      { label: "maxHp", value: "+10%", note: "(+10%/tier)" },
     ]);
     const slow = describeItem({ mod: "slowing" }).mods.added.triggers[0]?.stats;
     expect(slow?.filter((line) => line.note)).toEqual([

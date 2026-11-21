@@ -132,13 +132,13 @@ const MODS = {
   hasty: {
     label: "Hasty",
     power: "normal",
-    stats: { attackDelay: -8 },
+    percentStats: { attackDelay: -12 },
     types: ["weapon", "gloves"],
   },
   casting: {
     label: "Casting",
     power: "normal",
-    stats: { castDelay: -30 },
+    percentStats: { castDelay: -15 },
     types: ["weapon", "gloves"],
   },
   blocking: { label: "Blocking", power: "normal", stats: { blockChance: 3 }, types: ["shield"] },
@@ -194,7 +194,7 @@ const MODS = {
     types: ["pants", "shield"],
   },
 
-  /* Percent: they grow with you already, so tier doesn't multiply them */
+  /* Percent (and Hasty, Casting): they grow with you already, so tier doesn't multiply them */
   sanguine: { label: "Sanguine", power: "normal", percentStats: { maxHp: 12 }, types: ["amulet"] },
   lunar: { label: "Lunar", power: "normal", percentStats: { maxMp: 12 }, types: ["ring"] },
 
