@@ -72,14 +72,15 @@ export function getNextAttackCount(lastAttackCount: number | undefined, characte
 
 /** SP an attack costs. Count 1 is the right hand (or the left if it has none), 2 is the left. */
 export function getAttackSpCost(visibleEquipment: HandEquipment | null | undefined, count: number) {
-  if (count === 1) {
-    return (
-      visibleEquipment?.handRight?.stats?.spCost || visibleEquipment?.handLeft?.stats?.spCost || 0
-    );
-  }
-  if (count === 2) {
-    return visibleEquipment?.handLeft?.stats?.spCost || 0;
-  }
+  /* Count 1 swings the right hand, or the left when only the left holds something */
+  const weapon =
+    count === 1
+      ? (visibleEquipment?.handRight ?? visibleEquipment?.handLeft)
+      : count === 2
+        ? visibleEquipment?.handLeft
+        : undefined;
+  /* An empty hand is a fist, which costs the base stamina */
+  if (weapon) return weapon.stats?.spCost ?? 0;
   return 1;
 }
 
