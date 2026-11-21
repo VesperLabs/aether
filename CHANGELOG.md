@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.62.1](https://github.com/VesperLabs/aether/compare/v0.62.0...v0.62.1) (2026-11-21)
+
+
+### Bug Fixes
+
+* balance weapon and shield families, outline the capturing icon ([#417](https://github.com/VesperLabs/aether/issues/417)) ([e51f9d5](https://github.com/VesperLabs/aether/commit/e51f9d5df4d552590daeae20f66f7a0328f771c8))
+
 ## [0.62.0](https://github.com/VesperLabs/aether/compare/v0.61.1...v0.62.0) (2026-11-21)
 
 
