@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.61.0](https://github.com/VesperLabs/aether/compare/v0.60.0...v0.61.0) (2026-11-21)
+
+
+### Features
+
+* show the next swing's weapon on the attack button and charge fists 1 SP ([#411](https://github.com/VesperLabs/aether/issues/411)) ([65a2c68](https://github.com/VesperLabs/aether/commit/65a2c683b7761cb7fbfe37e9aa5eb4fd614ff3a9))
+
 ## [0.60.0](https://github.com/VesperLabs/aether/compare/v0.59.0...v0.60.0) (2026-11-21)
 
 
