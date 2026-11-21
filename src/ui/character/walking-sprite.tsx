@@ -63,6 +63,9 @@ const unionRects = (a: Rect, b: Rect) => {
 };
 
 /** A whole-sheet sprite for a mob or keeper: stands facing the viewer, walks while `walking`. */
+/** How far past its box a sprite may grow to reach the next whole scale */
+const SPILL = 1.2;
+
 export const WalkingSprite = ({
   asset,
   tint,
@@ -171,22 +174,24 @@ export const WalkingSprite = ({
   const { width, height } = bounds;
   /* Sized by the standing frame alone: wider walk frames and the shadow spill past it, so neither
      shrinks the character.
-     Pixel art only stays even at whole-number scales, so it grows by whole steps, unless that
-     would leave it under three quarters of the box (33px art in a 64px box stays 33px): then it
-     fills the box, a few uneven pixels being better than a tiny sprite. Art bigger than the box
-     shrinks smoothly. */
+     Pixel art only stays crisp at whole-number scales, so it grows by whole steps, rounding up
+     when that spills at most a little past the box (a sprite at 1.9x shows at 2x, not 1x). Only
+     art bigger than the box shrinks, smoothly. */
   const longest = Math.max(standBounds.width, standBounds.height);
-  const whole = Math.floor(size / longest);
   /* Capped: as big as fits the box both ways, never past the cap */
   const fitted = Math.min(size / standBounds.width, size / standBounds.height);
   const capped = maxScale && Math.min(maxScale, fitted);
   const scale = capped
-    ? wholeSteps && capped >= 1
-      ? Math.round(capped)
+    ? capped >= 1
+      ? wholeSteps
+        ? Math.round(capped)
+        : Math.floor(capped)
       : capped
-    : longest > size || whole * longest < size * 0.75
+    : longest > size
       ? size / longest
-      : whole;
+      : Math.round(size / longest) * longest <= size * SPILL
+        ? Math.round(size / longest)
+        : Math.floor(size / longest);
   return (
     <Box
       as="canvas"

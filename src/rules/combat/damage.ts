@@ -1,7 +1,10 @@
 import { defenseReduction, mergeAndAddValues, type StatBag } from "@/rules/stats";
 import { randomInt, type Rng } from "@/rules/loot";
 
-/** Elemental damage ranges, e.g. `minFireDamage` / `maxFireDamage`. Missing ones count as 0. */
+/**
+ * Elemental damage ranges, e.g. `minFireDamage` / `maxFireDamage`, and the attacker's
+ * `fireDamagePercent` / `waterDamagePercent` (more of that damage from gear). Missing ones count as 0.
+ */
 export type ElementalDamages = Record<string, number | undefined>;
 
 export interface ElementalResult {
@@ -30,11 +33,15 @@ export function calculateElementalDamage(
     maxEarthDamage = 0,
     minHolyDamage = 0,
     maxHolyDamage = 0,
+    fireDamagePercent = 0,
+    waterDamagePercent = 0,
   } = eleDamages;
 
-  const fireDamageRoll = randomInt(rng, minFireDamage, maxFireDamage);
+  const fireDamageRoll =
+    randomInt(rng, minFireDamage, maxFireDamage) * (1 + fireDamagePercent / 100);
   const lightDamageRoll = randomInt(rng, minLightDamage, maxLightDamage);
-  const waterDamageRoll = randomInt(rng, minWaterDamage, maxWaterDamage);
+  const waterDamageRoll =
+    randomInt(rng, minWaterDamage, maxWaterDamage) * (1 + waterDamagePercent / 100);
   const earthDamageRoll = randomInt(rng, minEarthDamage, maxEarthDamage);
   const holyDamageRoll = randomInt(rng, minHolyDamage, maxHolyDamage);
 

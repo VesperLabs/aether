@@ -19,6 +19,28 @@ const attacker = {
 const victim = { defense: 1, dodgeChance: 0, blockChance: 0 };
 
 describe("calculateElementalDamage", () => {
+  it("scales fire damage by the attacker's fire and water damage percents", () => {
+    const result = calculateElementalDamage(
+      {
+        minFireDamage: 10,
+        maxFireDamage: 10,
+        minWaterDamage: 4,
+        maxWaterDamage: 4,
+        fireDamagePercent: 50,
+      },
+      {},
+      () => 0,
+    );
+    expect(result.eleDamage).toBe(19);
+    expect(
+      calculateElementalDamage(
+        { minWaterDamage: 4, maxWaterDamage: 4, waterDamagePercent: 50 },
+        {},
+        () => 0,
+      ).eleDamage,
+    ).toBe(6);
+  });
+
   it("rolls each range and reduces by resistance, holy ignores it", () => {
     const result = calculateElementalDamage(
       {

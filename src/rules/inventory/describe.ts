@@ -127,13 +127,15 @@ function statLines(stats: Record<string, StatValue> = {}, suffix = "", note?: st
  * `attackDelay: -12` is "attack speed +12%".
  */
 const SPEED_OF: Record<string, string> = { attackDelay: "attackSpeed", castDelay: "castSpeed" };
-function percentLines(stats: Record<string, StatValue> = {}): StatLine[] {
+function percentLines(stats: Record<string, StatValue> = {}, perTier = false): StatLine[] {
   return Object.entries(stats).map(([stat, value]) => {
     const flip = stat in SPEED_OF ? -1 : 1;
-    const signed = (v: number) => `${v * flip > 0 ? "+" : ""}${v * flip}%`;
+    const signed = (v: number) => `${v * flip > 0 ? "+" : ""}${trimZeros(String(v * flip))}%`;
     return {
       label: SPEED_OF[stat] ?? stat,
       value: Array.isArray(value) ? value.map(signed).join(" ↔ ") : signed(Number(value)),
+      /* A card's percent gains half its tier 1 value per tier */
+      ...(perTier && !Array.isArray(value) && { note: `(${signed(Number(value) / 2)}/tier)` }),
     };
   });
 }
@@ -149,10 +151,10 @@ export interface ModLines {
   global?: StatLine[];
 }
 
-/** With `perTier` (a card), flat stats are marked as multiplied by tier; percents never are. */
+/** With `perTier` (a card), each line is marked with how it grows with the gear's tier. */
 const modStatLines = (mod: ScaledMod, perTier = false) => [
   ...statLines(mod.stats, "", perTier ? "(×tier)" : undefined),
-  ...percentLines(mod.percentStats),
+  ...percentLines(mod.percentStats, perTier),
 ];
 
 /**

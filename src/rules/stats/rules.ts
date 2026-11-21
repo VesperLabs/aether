@@ -334,9 +334,18 @@ function calculateHandStats(
     if (key == "maxHp" || key == "maxMp" || key == "defense" || key == "walkSpeed")
       ns[key] += percentIncrease;
   });
-  /* Speeds are percents of the whole delay, so slow weapons gain as much as fast ones */
-  const faster = (delay: number, percent = 0) =>
-    Math.max(200, Math.round(delay * (1 + percent / 100)));
+  /* More fire or water damage from gear: combat scales every such roll by it, weapon or spell */
+  ns.fireDamagePercent = totalPercentStats.fireDamage ?? 0;
+  ns.waterDamagePercent = totalPercentStats.waterDamage ?? 0;
+
+  /* Speed mods add up into one "increased speed" total, and the delay is divided by it (+100% is
+     half the delay), so each one still helps but never reaches zero. A negative delay percent is
+     more speed; a positive one is slowness and stretches the delay the same way. */
+  const faster = (delay: number, percent = 0) => {
+    const speed = -percent / 100;
+    const scaled = speed >= 0 ? delay / (1 + speed) : delay * (1 - speed);
+    return Math.max(200, Math.round(scaled));
+  };
   const fromDexterity = -ns.dexterity * ATTACK_SPEED_PER_DEXTERITY;
   const fromIntelligence = -ns.intelligence * CAST_SPEED_PER_INTELLIGENCE;
   ns.attackDelay = faster(ns.attackDelay, (totalPercentStats.attackDelay ?? 0) + fromDexterity);

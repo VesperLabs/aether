@@ -13,7 +13,8 @@ type ModPower = "normal" | "major";
  * slots, a unique's fixed mod, or a set bonus. Each changes one thing: a stat (a damage range
  * counts as one), a percent stat, or a trigger. Values are for tier 1; on an item, stats and
  * trigger levels are multiplied by its tier, the same way buffs scale with their level. Percent
- * stats are not: they already grow with the stats they multiply. Nothing is rolled.
+ * stats grow by half a step per tier (`percentScale`): they already grow with the stats they
+ * multiply, so a full step would run away. Nothing is rolled.
  */
 interface ModDefinition {
   readonly label: string;
@@ -135,6 +136,22 @@ const MODS = {
     percentStats: { attackDelay: -12 },
     types: ["weapon", "gloves"],
   },
+  /* More of every fire damage you deal, from weapons and spells */
+  blazing: {
+    label: "Blazing",
+    power: "normal",
+    percentStats: { fireDamage: 15 },
+    types: ["weapon", "gloves"],
+    effect: "fire",
+  },
+  /* More of every water damage you deal, from weapons and spells */
+  tidal: {
+    label: "Tidal",
+    power: "normal",
+    percentStats: { waterDamage: 15 },
+    types: ["weapon", "gloves"],
+    effect: "water",
+  },
   casting: {
     label: "Casting",
     power: "normal",
@@ -194,7 +211,7 @@ const MODS = {
     types: ["pants", "shield"],
   },
 
-  /* Percent (and Hasty, Casting): they grow with you already, so tier doesn't multiply them */
+  /* Percent (and Hasty, Casting): they grow with you already, so they gain only half a step per tier */
   sanguine: { label: "Sanguine", power: "normal", percentStats: { maxHp: 12 }, types: ["amulet"] },
   lunar: { label: "Lunar", power: "normal", percentStats: { maxMp: 12 }, types: ["ring"] },
 
@@ -284,7 +301,7 @@ const MODS = {
 
 export type ModName = keyof typeof MODS;
 
-/** What a mod adds to an item of `tier`: its tier 1 values, times the tier (but not percents). */
+/** What a mod adds to an item of `tier`: its tier 1 values, times the tier (percents by half steps). */
 export interface ScaledMod {
   stats: Record<string, number>;
   percentStats: Record<string, number>;
@@ -298,11 +315,14 @@ export interface ScaledMod {
 const times = (block: Readonly<Record<string, number>> = {}, tier: number) =>
   Object.fromEntries(Object.entries(block).map(([stat, value]) => [stat, value * tier]));
 
+/** How much a percent mod grows at `tier`: its tier 1 value, plus half of it per tier above 1. */
+const percentScale = (tier: number) => 1 + (tier - 1) / 2;
+
 export function scaleMod(name: ModName, tier: number): ScaledMod {
   const mod: ModDefinition = MODS[name];
   return {
     stats: times(mod.stats, tier),
-    percentStats: { ...mod.percentStats },
+    percentStats: times(mod.percentStats, percentScale(tier)),
     triggers: (mod.triggers ?? []).map((trigger) => ({ ...trigger, level: trigger.level * tier })),
   };
 }
