@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.62.0](https://github.com/VesperLabs/aether/compare/v0.61.1...v0.62.0) (2026-11-21)
+
+
+### Features
+
+* crisp wiki sprites, tier-scaled percent mods, elemental damage mods ([#415](https://github.com/VesperLabs/aether/issues/415)) ([d484331](https://github.com/VesperLabs/aether/commit/d4843313d69a0726b3ce459c0f614adac68943f3))
+
 ## [0.61.1](https://github.com/VesperLabs/aether/compare/v0.61.0...v0.61.1) (2026-11-21)
 
 
