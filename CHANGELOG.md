@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.63.0](https://github.com/VesperLabs/aether/compare/v0.62.1...v0.63.0) (2026-11-21)
+
+
+### Features
+
+* butterflies that come out by day in spring and summer, and generated shadows ([#419](https://github.com/VesperLabs/aether/issues/419)) ([e0dbaeb](https://github.com/VesperLabs/aether/commit/e0dbaeb7acfe30dc4f7bda1e61956d8785b38bc0))
+
 ## [0.62.1](https://github.com/VesperLabs/aether/compare/v0.62.0...v0.62.1) (2026-11-21)
 
 
