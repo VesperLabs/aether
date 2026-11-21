@@ -56,6 +56,8 @@ export interface ChatCommand {
   args?: readonly ChatArg[];
   description: string;
   cheat: boolean;
+  /** Never suggested: works only for someone who already knows it (`/admin`). */
+  hidden?: boolean;
   /** Other ways to type it, without the slash (`w` for `whisper`). */
   aliases?: readonly string[];
   /** The arguments, when they depend on what's typed (an item's slots or amount). */
@@ -195,6 +197,7 @@ const PLAYER_COMMANDS: readonly ChatCommand[] = [
     description: "Leave your party",
     cheat: false,
   },
+  { name: "admin", description: "", cheat: false, hidden: true },
   { name: "logout", description: "Leave the game and forget this login", cheat: false },
   {
     name: "roll",

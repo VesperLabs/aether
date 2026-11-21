@@ -152,7 +152,7 @@ export function runPlayerCommand(
 ): boolean {
   const name = rawMessage.slice(1).split(" ", 1)[0];
   const command = findChatCommand(name, CHAT_COMMANDS);
-  if (!command || command.cheat) return false;
+  if (!command || command.cheat || command.hidden) return false;
   PLAYER_COMMANDS[command.name]?.(ctx, player, rawMessage.slice(name.length + 1).trim(), links);
   return true;
 }

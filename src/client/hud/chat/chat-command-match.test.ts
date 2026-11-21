@@ -67,8 +67,14 @@ describe("item names", () => {
 describe("readChatDraft arguments", () => {
   const read = (draft: string) => readChatDraft(draft, commands);
 
-  it("lists every command after a bare slash", () => {
-    expect(read("/").suggestions).toHaveLength(commands.length);
+  it("lists every command but the hidden ones after a bare slash", () => {
+    const listed = commands.filter((c) => !c.hidden);
+    expect(read("/").suggestions).toHaveLength(listed.length);
+    expect(read("/").suggestions.map((s) => s.value)).not.toContain("/admin");
+  });
+
+  it("knows a hidden command without suggesting it", () => {
+    expect(read("/admin")).toMatchObject({ error: undefined, suggestions: [] });
   });
 
   it("knows which argument is being typed", () => {
