@@ -100,7 +100,8 @@ export interface ChatDraft {
   needsMore: boolean;
 }
 
-function listCommands(commands: readonly ChatCommand[]): ChatSuggestion[] {
+function listCommands(allCommands: readonly ChatCommand[]): ChatSuggestion[] {
+  const commands = allCommands.filter((c) => !c.hidden);
   /* Player commands keep their written order, most used first; cheats are a long list, so A to Z */
   const cheats = commands.filter((c) => c.cheat).sort((a, b) => a.name.localeCompare(b.name));
   return [...commands.filter((c) => !c.cheat), ...cheats].map((c) => ({
