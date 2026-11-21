@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.59.0](https://github.com/VesperLabs/aether/compare/v0.58.0...v0.59.0) (2026-11-21)
+
+
+### Features
+
+* halve stealth cooldown and show its duration as infinite ([#406](https://github.com/VesperLabs/aether/issues/406)) ([34329b7](https://github.com/VesperLabs/aether/commit/34329b7114cd36e7753d174753694b6b952d3d89))
+
 ## [0.58.0](https://github.com/VesperLabs/aether/compare/v0.57.1...v0.58.0) (2026-11-21)
 
 
