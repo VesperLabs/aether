@@ -37,6 +37,7 @@ import {
 } from "@/client/scenes/scene-entities";
 import type { SceneMain } from "@/client/scenes/main-scene";
 import { startEffect } from "./effects";
+import { playLevelUp } from "@/client/views/level-up";
 import { initCamera, initPlayerCollision } from "@/client/scenes/main-map";
 
 /** What a tick's vitals update on a player or npc sprite. */
@@ -198,19 +199,21 @@ export function bindSceneSocket(scene: SceneMain) {
     if (scene.hero?.body) correctHeroPosition(scene.hero, x, y);
   });
 
-  socket.on("playerUpdate", (userData) => {
+  socket.on("playerUpdate", (userData, meta) => {
     const player = getPlayer(scene, userData.socketId);
     if (!player) return;
     player.updateData(userData);
     player.updateExtas();
+    if (meta?.didLevel) playLevelUp(player, userData.stats?.level);
   });
 
-  socket.on("buffUpdate", ({ npcs = [], players = [] } = {}) => {
+  socket.on("buffUpdate", ({ npcs = [], players = [], playerIdsThatLeveled = [] } = {}) => {
     for (const p of players) {
       const player = getPlayer(scene, p.id);
       if (!player) continue;
       player.updateBuffData(p);
       player.updateExtas();
+      if (playerIdsThatLeveled.includes(p.id)) playLevelUp(player, p.stats?.level);
     }
     for (const n of npcs) {
       const npc = getNpc(scene, n.id);
