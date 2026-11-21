@@ -10,8 +10,11 @@ const PORTRAIT_WIDTH = 44;
 /** Taller than the box, so the head rises out of its top. */
 const PORTRAIT_HEIGHT = 50;
 
-/** Down the sprite's 160px frame: where the legs start to fade, gone just above the email input. */
-const LEG_FADE = "linear-gradient(to bottom, black 85px, transparent 110px)";
+/** The sprite's canvas as drawn (100px at 2x). The masked box must cover all of it: a mask hides
+ * everything outside its box, which cut off the tips of long weapons. */
+const SPRITE_SIZE = 200;
+/** Down the sprite's box: where the legs start to fade, gone just above the email input. */
+const LEG_FADE = "linear-gradient(to bottom, black 105px, transparent 130px)";
 
 const CARD_SX: ThemeUIStyleObject = {
   position: "relative",
@@ -46,6 +49,8 @@ const SPRITE_SX: ThemeUIStyleObject = {
   left: "50%",
   top: "50%",
   transform: "translate(-50%,-50%)",
+  width: SPRITE_SIZE,
+  height: SPRITE_SIZE,
   mt: 10,
   maskImage: LEG_FADE,
 };
