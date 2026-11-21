@@ -57,6 +57,10 @@ export interface CharacterState {
   wasRolling?: boolean;
   lastFlash: number;
   lastCast: LastCast;
+  /** NPC only: out of the world for a while (outside its actor's `active` times). */
+  isAway?: boolean;
+  /** NPC only: killing it is worth no experience. */
+  noExp?: boolean;
   /** NPC only: when it began its one retreat this fight. */
   retreatAt?: number;
   /** NPC only: loop time of the next wander direction change. */

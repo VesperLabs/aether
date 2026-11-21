@@ -5,7 +5,6 @@ const DIRECTIONS_PER_SHEET = 4;
 
 /** The layers worn over a human, in the game's `getLayerOrder` names. */
 export const HUMAN_LAYERS = [
-  "shadow",
   "chest",
   "pants",
   "boots",
@@ -57,8 +56,7 @@ export const getSheetCell = (src: string, height: number) => {
 
 /** Sheets for one layer, whether gendered or not (`human-hair-1`, `human-male-armor-coat`). */
 export const getLayerSheets = (layer: HumanLayer) => {
-  /* The shadow is one sheet of its own, not one of the human's. */
-  const name = layer === "shadow" ? /^shadow$/ : new RegExp(`^human-((male|female)-)?${layer}-`);
+  const name = new RegExp(`^human-((male|female)-)?${layer}-`);
   return ANIMATED_SHEETS.filter(({ texture }) => name.test(texture));
 };
 

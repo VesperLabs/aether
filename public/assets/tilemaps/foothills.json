@@ -427,6 +427,120 @@
          "objects":[
                 {
                  "height":0,
+                 "id":68,
+                 "name":"butterfly",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"tint",
+                         "type":"string",
+                         "value":"0xC9A0FF"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":452,
+                 "y":656
+                },
+                {
+                 "height":0,
+                 "id":69,
+                 "name":"butterfly",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"tint",
+                         "type":"string",
+                         "value":"0xC9A0FF"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":476,
+                 "y":648
+                },
+                {
+                 "height":0,
+                 "id":70,
+                 "name":"butterfly",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"tint",
+                         "type":"string",
+                         "value":"0xFFFFFF"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":964,
+                 "y":496
+                },
+                {
+                 "height":0,
+                 "id":71,
+                 "name":"butterfly",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"tint",
+                         "type":"string",
+                         "value":"0x9BE38A"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":988,
+                 "y":488
+                },
+                {
+                 "height":0,
+                 "id":72,
+                 "name":"butterfly",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"tint",
+                         "type":"string",
+                         "value":"0x9BE38A"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":388,
+                 "y":976
+                },
+                {
+                 "height":0,
+                 "id":73,
+                 "name":"butterfly",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"tint",
+                         "type":"string",
+                         "value":"0x9BE38A"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":412,
+                 "y":968
+                },
+                {
+                 "height":0,
                  "id":55,
                  "name":"wolf",
                  "opacity":1,
@@ -549,7 +663,7 @@
          "y":0
         }],
  "nextlayerid":21,
- "nextobjectid":68,
+ "nextobjectid":74,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.2",

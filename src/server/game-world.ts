@@ -64,12 +64,13 @@ export function spawnNpc(
   }
   const id = world.dice.newId();
   const spawn = Object.fromEntries(properties.map((p) => [p.name, p.value]));
-  /* A spawn's `walkRange` is its `wander` radius there */
-  const { walkRange, ...state } = spawn;
+  /* A spawn's `walkRange` is its `wander` radius there, and its `tint` colors it (butterflies) */
+  const { walkRange, tint, ...state } = spawn;
   world.npcs[id] = new Npc(world, {
     id,
     room,
     ...npc,
+    profile: typeof tint === "string" ? { ...npc.profile, tint } : npc.profile,
     equipment: { ...npc.equipment, ...equipment },
     behaviors: mergeBehaviors(
       npc.behaviors,

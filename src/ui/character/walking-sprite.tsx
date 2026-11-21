@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { assetList, type AssetDefinition } from "@/content";
+import type { AssetDefinition } from "@/content";
 import { Box } from "@/ui/kit";
 import { loadSheet } from "./sprite-sheet";
+import { getShadowSheet } from "./shadow-sheet";
 import { ALL_WALK_POSES, getWalkFrameRect, useWalkCycle } from "./walk-cycle";
 
 type Rect = { x: number; y: number; width: number; height: number };
@@ -46,9 +47,6 @@ const measureWalk = (sheet: HTMLCanvasElement, cell: number) => {
     height: Math.max(...opaque.map((frame) => frame.bottom)) - y + 1,
   } satisfies Rect;
 };
-
-const SHADOW_ASSET = assetList.find(({ texture }) => texture === "shadow");
-const SHADOW_CELL = 80;
 
 /** The smallest box around both. */
 const unionRects = (a: Rect, b: Rect) => {
@@ -105,7 +103,9 @@ export const WalkingSprite = ({
 
   useEffect(() => {
     let live = true;
-    const loadingShadow = shadow && SHADOW_ASSET ? loadSheet(SHADOW_ASSET) : null;
+    /* Laid out like the body's own sheet, so it shares its cells and frames */
+    const shadowAsset = shadow ? getShadowSheet(asset.texture) : undefined;
+    const loadingShadow = shadowAsset ? loadSheet(shadowAsset) : null;
     Promise.all([loadSheet({ src: asset.src, tint }), loadingShadow]).then(
       ([sheet, shadowSheet]) => {
         if (!live || !sheet || !cell) return;
@@ -122,16 +122,8 @@ export const WalkingSprite = ({
               height: stand.bottom - stand.top + 1,
             }
           : fullCell;
-        const shadowBounds = shadowSheet && measureWalk(shadowSheet, SHADOW_CELL);
-        /* Both sheets' cells share a centre in the game */
-        const inset = (cell - SHADOW_CELL) / 2;
-        const bounds = shadowBounds
-          ? unionRects(bodyBounds, {
-              ...shadowBounds,
-              x: shadowBounds.x + inset,
-              y: shadowBounds.y + inset,
-            })
-          : bodyBounds;
+        const shadowBounds = shadowSheet && measureWalk(shadowSheet, cell);
+        const bounds = shadowBounds ? unionRects(bodyBounds, shadowBounds) : bodyBounds;
         setArt({ sheet, canWalk, bounds, standBounds, shadowSheet });
       },
     );
@@ -147,25 +139,8 @@ export const WalkingSprite = ({
     const walkPose = canWalk ? pose : undefined;
     const { x, y, width, height } = bounds;
     ctx.clearRect(0, 0, width, height);
-    if (shadowSheet) {
-      const [sx, sy] = (walkPose && getWalkFrameRect(SHADOW_ASSET?.atlas, walkPose)) ?? [
-        0,
-        2 * SHADOW_CELL,
-      ];
-      const inset = (cell - SHADOW_CELL) / 2;
-      ctx.drawImage(
-        shadowSheet,
-        sx,
-        sy,
-        SHADOW_CELL,
-        SHADOW_CELL,
-        inset - x,
-        inset - y,
-        SHADOW_CELL,
-        SHADOW_CELL,
-      );
-    }
     const [sx, sy] = (walkPose && getWalkFrameRect(asset.atlas, walkPose)) ?? [0, 2 * cell];
+    if (shadowSheet) ctx.drawImage(shadowSheet, sx, sy, cell, cell, -x, -y, cell, cell);
     ctx.drawImage(sheet, sx, sy, cell, cell, -x, -y, cell, cell);
   }, [art, pose, asset.atlas, cell]);
 

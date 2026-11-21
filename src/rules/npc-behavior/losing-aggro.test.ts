@@ -49,6 +49,14 @@ describe("losing its foe", () => {
     expect(decision.startReset).toBeUndefined();
   });
 
+  it("one that never fights doesn't heal when hit (the hit locks on, the passive drops it)", () => {
+    const passive = losingFoe();
+    passive.npc.behaviors = { fight: false, wander: {} };
+    const decision = decideNpcAction(passive, () => 0.99);
+    expect(decision.lockedPlayerId).toBeNull();
+    expect(decision.startReset).toBeUndefined();
+  });
+
   it("an owned NPC stays with its owner instead", () => {
     const decision = decideNpcAction(losingFoe({ ownerId: "owner" }), () => 0.99);
     expect(decision.startReset).toBeUndefined();

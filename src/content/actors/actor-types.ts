@@ -3,6 +3,7 @@ import type { ItemDrop, ItemRef } from "../items/item-refs";
 import type { ActorBehaviors } from "./behaviors";
 import type { QuestId } from "../quests/quest-list";
 import type { CharClass, StatName } from "../stats";
+import type { Season } from "../maps/seasons";
 
 interface TexturedLook {
   readonly texture: string;
@@ -52,6 +53,17 @@ interface ActorDialogues {
 }
 
 /**
+ * When an actor is about. Unset parts never keep it away: no `seasons` is every season, no `hours`
+ * every hour.
+ */
+export interface ActiveTimes {
+  /** The seasons it's out in, by its map's season (a map pinned to winter is always winter). */
+  readonly seasons?: readonly Season[];
+  /** From and to hour of the day, 0 to 24; `[20, 6]` wraps past midnight. */
+  readonly hours?: readonly [from: number, to: number];
+}
+
+/**
  * Anything in the world that isn't a player: a crab, a shopkeeper, a pet. There are no kinds of
  * actor; what one does comes from the parts it has. `dialogues` lets players talk to it, `shop`
  * sells, `quests` hands them out, `drops` is its loot, and `behaviors` say how it moves and fights.
@@ -68,9 +80,15 @@ export interface ActorDefinition {
   readonly windupMs?: number;
   /**
    * `noWorldDrops` drops only its own `drops`, never random loot. `catchable: false` can't be caught
-   * in a ball (keepers the game needs): it always breaks free.
+   * in a ball (keepers the game needs): it always breaks free. `noExp` is worth no experience.
    */
-  readonly state?: { readonly noWorldDrops?: boolean; readonly catchable?: boolean };
+  readonly state?: {
+    readonly noWorldDrops?: boolean;
+    readonly catchable?: boolean;
+    readonly noExp?: boolean;
+  };
+  /** When it's out in the world; the rest of the time it's away: hidden and out of reach. */
+  readonly active?: ActiveTimes;
   /** What it does, merged over the defaults (see `behaviors.ts`). */
   readonly behaviors?: ActorBehaviors;
   /** Where it can go, when not where its body can (the body file's `habitat`). */

@@ -1,5 +1,4 @@
 import {
-  assetList,
   getFrameHands,
   getLayerOrder,
   resolveAsset,
@@ -18,6 +17,7 @@ import { memo, useEffect, useEffectEvent, useRef, type ComponentProps } from "re
 import type { CSSProperties } from "react";
 import { Box } from "@/ui/kit";
 import { loadSheet } from "./sprite-sheet";
+import { getShadowSheet } from "./shadow-sheet";
 import { getWalkFrameName, getWalkFrameRect, useWalkCycle, type WalkPose } from "./walk-cycle";
 import { WeaponEffects, type HeldWeapon } from "./weapon-effects";
 
@@ -292,8 +292,8 @@ export const getPlayerEquipmentAssets = ({
   const visibleAssets = playerAssets?.filter(
     (asset) => !obscuredKeys.includes(asset?.slot as string),
   );
-  const shadowAsset = assetList.find(({ texture }) => texture === "shadow");
-  if (!shadow || !shadowAsset) return visibleAssets;
+  const shadowAsset = shadow ? getShadowSheet(player?.profile?.race ?? "human") : undefined;
+  if (!shadowAsset) return visibleAssets;
   return [
     {
       ...shadowAsset,

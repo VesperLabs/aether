@@ -3,6 +3,7 @@ import abomination from "./abomination.json";
 import bat from "./bat.json";
 import bear from "./bear.json";
 import bee from "./bee.json";
+import butterfly from "./butterfly.json";
 import cat from "./cat.json";
 import crab from "./crab.json";
 import dog from "./dog.json";
@@ -25,6 +26,7 @@ export const BODY_FILES = {
   bat,
   bear,
   bee,
+  butterfly,
   cat,
   crab,
   dog,

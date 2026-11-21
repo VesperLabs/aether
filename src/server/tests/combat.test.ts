@@ -22,7 +22,8 @@ async function login(charClass: string) {
 /** A mob in the player's room, set up to die to one hit and to never dodge or block. */
 function weakMobNear(world: Anything, player: Anything, offset: { x: number; y: number }) {
   const mob = Object.values<Anything>(world.npcs).find(
-    (npc) => npc.room?.name === player.roomName && !npc.state.isDead,
+    /* A real mob, worth exp: not a critter */
+    (npc) => npc.room?.name === player.roomName && !npc.state.isDead && !npc.state.noExp,
   );
   mob.stats.hp = 1;
   mob.stats.dodgeChance = 0;

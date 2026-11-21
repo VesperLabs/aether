@@ -159,6 +159,8 @@ export interface ServerToClientEvents {
   /** A keeper's shelves changed: something sold out or it restocked. */
   npcShop: (payload: { npcId: string; shop: NpcServices["shop"] }) => void;
   respawnNpc: (payload: { id: string; x: number; y: number; respawnTime: number }) => void;
+  /** An NPC left for a while (a butterfly at dusk); `respawnNpc` brings it back. */
+  npcAway: (payload: { id: string }) => void;
   /** An owned NPC left far behind jumped to its owner, in the same room. */
   warpNpc: (payload: { id: string; x: number; y: number; warpTime: number }) => void;
   /** An NPC appeared after the room was sent (a cheat spawned it). */

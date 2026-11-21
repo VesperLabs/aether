@@ -22,7 +22,11 @@ async function setUp(amount: number) {
   ball.amount = amount;
   player.inventory = [ball];
   const crab = Object.values<Anything>(server.world.npcs).find(
-    (npc) => npc.room.name === player.roomName && !npc.state.ownerId && !npc.state.isDead,
+    (npc) =>
+      npc.room.name === player.roomName &&
+      !npc.state.ownerId &&
+      !npc.state.isDead &&
+      npc.state.catchable !== false,
   );
   crab.x = player.x + 60;
   crab.y = player.y;

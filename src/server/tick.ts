@@ -17,6 +17,7 @@ import { keepOwnedNear } from "./owned-npcs";
 import { loseDeadPets } from "./pets";
 import { endTickTimer, startTickTimer } from "./tick-health";
 import { announceSeason } from "./season-announce";
+import { keepActorsToTheirTimes } from "./npc-away";
 
 /** A long stall (debugger, GC) must not teleport things across the map. */
 const MAX_STEP_MS = 100;
@@ -72,7 +73,9 @@ const moveSpells: System<ServerWorld> = (world, { delta }) => {
 /** Runs the per-tick logic of every player, NPC and spell (AI, regen, buffs, collisions). */
 const updateEntities: System<ServerWorld> = (world, { time, delta, now }) => {
   for (const player of Object.values(world.players)) player.update?.(time, delta);
-  for (const npc of Object.values(world.npcs)) npc.update?.(time, delta, now);
+  /* Away NPCs wait out of the world; `keepActorsToTheirTimes` brings them back */
+  for (const npc of Object.values(world.npcs))
+    if (!npc.state.isAway) npc.update?.(time, delta, now);
   for (const spell of Object.values(world.spells)) spell.update();
 };
 
@@ -149,6 +152,7 @@ export const serverSystems: Array<System<ServerWorld>> = [
   loseDeadPets,
   indexRooms,
   separateNpcs,
+  keepActorsToTheirTimes,
   updateEntities,
   recordPoses,
   updateRooms,

@@ -1,3 +1,4 @@
+import { pulseShadow } from "./shadow";
 import type { Habitat } from "@/rules/movement";
 import Phaser from "phaser";
 import { getBody } from "@/content";
@@ -68,7 +69,8 @@ export class Player extends Character {
   /** Humans get an elemental border on their weapons, everything else a plain sprite. */
   declare handLeft: Sprite | WeaponSprite;
   declare handRight: Sprite | WeaponSprite;
-  declare shadow: Sprite;
+  /** The oval at its feet, sized to its body (see `shadow.ts`). */
+  declare shadow: Phaser.GameObjects.Image;
   declare bubble: Bubble;
   declare crosshair: Crosshair;
   declare hpBar: Bar;
@@ -347,6 +349,7 @@ export class Player extends Character {
     hackFrameRates(this, Math.round(80 + 2500 / (this.currentSpeed + 10)));
     updateCurrentSpeed(this);
     drawFrame(this);
+    pulseShadow(this, this.scene.time.now);
     updateWading(this);
     updateFootprints(this);
     updateNockedArrow(this);

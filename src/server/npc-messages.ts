@@ -19,6 +19,9 @@ export function subscribeNpcMessages(bus: GameEventBus, io: GameIo) {
     bus.on("npcRespawned", ({ npcId, roomName, x, y, at }) => {
       io.to(roomName).emit("respawnNpc", { id: npcId, x, y, respawnTime: at });
     }),
+    bus.on("npcWentAway", ({ npcId, roomName }) => {
+      io.to(roomName).emit("npcAway", { id: npcId });
+    }),
     bus.on("npcWarped", ({ npcId, roomName, x, y, at }) => {
       io.to(roomName).emit("warpNpc", { id: npcId, x, y, warpTime: at });
     }),
