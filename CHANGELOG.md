@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.58.0](https://github.com/VesperLabs/aether/compare/v0.57.1...v0.58.0) (2026-11-21)
+
+
+### Features
+
+* make attack and cast speed percent-based and buff weak speed mods ([#405](https://github.com/VesperLabs/aether/issues/405)) ([92cbf2d](https://github.com/VesperLabs/aether/commit/92cbf2d68ba71fd3735a961e5d5e2e0480e252d7))
+
 ## [0.57.1](https://github.com/VesperLabs/aether/compare/v0.57.0...v0.57.1) (2026-11-21)
 
 
