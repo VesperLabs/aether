@@ -12,6 +12,7 @@ import { decideAggro, isNpcAttackReady, type NpcPlayerView, type NpcSelfView } f
 import { isNpcAggressive, isNpcPassive, keepsAway } from "./behavior-options";
 import {
   NPC_EXTRA_CAST_TIME,
+  NPC_LAND_SETTLE_MS,
   NPC_HOME_RANGE,
   NPC_LEASH_RANGE,
   NPC_LUNGE_EXTRA_WINDUP,
@@ -86,6 +87,8 @@ export interface NpcBehaviorInput {
       /** When a player last came too near a `skittish` NPC, and where it is getting away to. */
       scaredAt?: number;
       escapeTo?: { x: number; y: number };
+      /** The habitat it is in, of its body's several; unset or null is the first. */
+      habitat?: string | null;
     };
   isStunned: boolean;
   /** Its windup (while `isAiming`) is aimed at someone, not a self buff cast out of a fight. */
@@ -374,6 +377,10 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
     behaviorId = chooseBehavior(ctx, NPC_BEHAVIOR_IDS, state.behavior) ?? "idle";
     const behavior: NpcBehavior = NPC_BEHAVIORS[behaviorId];
     habitat = behavior.habitat?.(ctx);
+    // Touching down (a bird landing): stop and keep facing the way it flew, then carry on
+    if (state.habitat && !habitat) {
+      return { type: "wander", vx: 0, vy: 0, nextWanderAt: input.time + NPC_LAND_SETTLE_MS };
+    }
 
     if (behavior.engaged && targetPlayer) {
       expireStealthOfPlayerId = targetPlayer.socketId;

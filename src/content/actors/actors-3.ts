@@ -35,12 +35,17 @@ export const actors3 = {
   },
   butterfly: {
     charClass: "rogue",
-    profile: { race: "butterfly", userName: "Butterfly" },
+    profile: {
+      race: "butterfly",
+      userName: "Butterfly",
+      /* Orange, sky blue, pink, lemon, lavender, mint, white */
+      tints: ["0xFFB347", "0x7FB3FF", "0xFF8FC8", "0xFFE066", "0xC8A2FF", "0x8FE3B0", "0xFFFFFF"],
+    },
     flavor:
       "It drifts from flower to flower on warm days. Children chase them; nobody has ever caught one on purpose.",
     baseStats: { level: 1 },
     state: { noWorldDrops: true, noExp: true, catchable: false },
-    behaviors: { fight: false, wander: { radius: 64 } },
+    behaviors: { fight: false, wander: { radius: 64 }, skittish: { speed: 1.3 } },
     active: { seasons: ["spring", "summer"], hours: [6, 20] },
   },
   sparrow: {

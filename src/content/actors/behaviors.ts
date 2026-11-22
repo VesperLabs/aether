@@ -35,6 +35,8 @@ interface SkittishOptions {
   readonly calmMs?: number;
   /** Where it goes while scared (a bird takes to the `air`), back to its first habitat once calm. */
   readonly to?: BodyHabitat;
+  /** How fast it gets away, as a share of its walk speed. Default: `SKITTISH_SPEED_RATIO`. */
+  readonly speed?: number;
 }
 
 export interface BehaviorOptions {

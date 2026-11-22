@@ -94,4 +94,21 @@ describe("skittish", () => {
     );
     expect(decision.habitat).toBeUndefined();
   });
+
+  it("gets away at its own speed, staying in its habitat when it has no other", () => {
+    const input = bird(player(30));
+    input.npc.behaviors = { fight: false, wander: {}, skittish: { speed: 1.3 } };
+    const decision = decideNpcAction(input, () => 0.5);
+    expect(decision.movement).toMatchObject({ type: "escape", speedRatio: 1.3 });
+    expect(decision.habitat).toBeUndefined();
+  });
+
+  it("stops on landing and keeps its facing for a moment before wandering on", () => {
+    const decision = decideNpcAction(
+      bird(null, { habitat: "air", scaredAt: NOW - 1000, escapeTo: { x: 5, y: 0 } }),
+      () => 0.1,
+    );
+    expect(decision.habitat).toBeUndefined();
+    expect(decision.movement).toEqual({ type: "wander", vx: 0, vy: 0, nextWanderAt: 5 + 900 });
+  });
 });
