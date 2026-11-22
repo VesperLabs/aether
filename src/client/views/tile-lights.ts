@@ -74,7 +74,7 @@ const houseLight = (
     drift: 0,
     offsetX: x,
     offsetY: y,
-    blockedBy: ["Extras"],
+    blockedBy: ["Extras", "Extras Top"],
   },
 ];
 

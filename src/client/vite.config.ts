@@ -51,6 +51,7 @@ export default ({ mode, command }: ConfigEnv) => {
     define: {
       /* Values must be JSON-serialized literals; undefined breaks esbuild in CI/Docker with no .env */
       "process.env.DEBUG": env.DEBUG === "true",
+      "process.env.DEBUG_EXTRAS": env.DEBUG_EXTRAS === "true",
       "process.env.SERVER_FPS": JSON.stringify(env.SERVER_FPS ?? String(DEFAULT_SERVER_FPS)),
       "process.env.SERVER_URL": pageHostUrl(env.SERVER_URL ?? "", command),
       __APP_VERSION__: JSON.stringify(getAppVersion(repoRoot)),

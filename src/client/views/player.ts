@@ -361,7 +361,8 @@ export class Player extends Character {
     this.showHideNameAndBars();
     this.setBubbleMessage();
     this.setTalkMenu();
-    this.setDepth(100 + this.y + this?.body?.height);
+    /* By the bottom of the shadow under the feet, where props sort by their base too */
+    this.setDepth(100 + this.y + this.shadow.y + this.shadow.displayHeight / 2);
     this.checkAttackReady();
     fadeStealth(this, this.scene.game.loop.delta);
     if (this.isHero) {

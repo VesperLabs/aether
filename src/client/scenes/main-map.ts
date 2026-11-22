@@ -1,3 +1,4 @@
+import { sortExtras, type FeetGrid } from "./extras-sorting";
 import Phaser from "phaser";
 import { Door, type DoorObject } from "@/client/views/door";
 import { Sign, type SignObject } from "@/client/views/sign";
@@ -73,6 +74,13 @@ export function initPlayerCollision(
 
 /** Puts out the last map's lit tiles (campfires) when the next one loads. */
 let removeTileLights = () => {};
+/**
+ * The layers drawn as props sorted with characters (see `sortExtras`). Each finds its props on its
+ * own, so a bush on `Extras Top` never joins the wall behind it on `Extras`; on a tie it draws over.
+ */
+const SORTED_LAYERS = ["Extras", "Extras Top"];
+/** Removes the last map's sorted extras images when the next one loads. */
+let removeExtras = () => {};
 
 export function changeMap(scene: SceneMain, roomName: string) {
   scene.roomName = roomName;
@@ -106,11 +114,22 @@ export function changeMap(scene: SceneMain, roomName: string) {
   createLayer("Ground").setDepth(0);
   createLayer("Shadows").setDepth(1);
   createLayer("Overlay").setDepth(2);
-  createLayer("Extras").setDepth(3);
+  const sorted = SORTED_LAYERS.filter((name) => map.getLayer(name)).map((name) =>
+    createLayer(name).setDepth(3),
+  );
   createLayer("Above").setDepth(ABOVE_LAYER_DEPTH);
   if (scene.animatedTiles) scene.animatedTiles.init(scene.map);
   removeTileLights();
   removeTileLights = addTileLights(map);
+  removeExtras();
+  /* Each layer sorts over the one under it, as Tiled stacks them */
+  let below: FeetGrid | undefined;
+  const removers = sorted.map((layer) => {
+    const { remove, feet } = sortExtras(scene, layer, below);
+    below = feet;
+    return remove;
+  });
+  removeExtras = () => removers.forEach((remove) => remove());
 
   /* Create Doors */
   const mapDoors = (scene.map.getObjectLayer("Doors") as Phaser.Tilemaps.ObjectLayer).objects;
