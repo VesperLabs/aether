@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.65.1](https://github.com/VesperLabs/aether/compare/v0.65.0...v0.65.1) (2026-11-22)
+
+
+### Bug Fixes
+
+* extras sort ([#425](https://github.com/VesperLabs/aether/issues/425)) ([8231796](https://github.com/VesperLabs/aether/commit/8231796d97aa59b28900512d5a34182ee13c0348))
+
 ## [0.65.0](https://github.com/VesperLabs/aether/compare/v0.64.0...v0.65.0) (2026-11-22)
 
 
