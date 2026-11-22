@@ -801,12 +801,6 @@
                  "name":"butterfly",
                  "opacity":1,
                  "point":true,
-                 "properties":[
-                        {
-                         "name":"tint",
-                         "type":"string",
-                         "value":"0xFFE066"
-                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -820,12 +814,6 @@
                  "name":"butterfly",
                  "opacity":1,
                  "point":true,
-                 "properties":[
-                        {
-                         "name":"tint",
-                         "type":"string",
-                         "value":"0xFFE066"
-                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -839,12 +827,6 @@
                  "name":"butterfly",
                  "opacity":1,
                  "point":true,
-                 "properties":[
-                        {
-                         "name":"tint",
-                         "type":"string",
-                         "value":"0xC9A0FF"
-                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -858,12 +840,6 @@
                  "name":"butterfly",
                  "opacity":1,
                  "point":true,
-                 "properties":[
-                        {
-                         "name":"tint",
-                         "type":"string",
-                         "value":"0xFFFFFF"
-                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -877,12 +853,6 @@
                  "name":"butterfly",
                  "opacity":1,
                  "point":true,
-                 "properties":[
-                        {
-                         "name":"tint",
-                         "type":"string",
-                         "value":"0xFFFFFF"
-                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -896,12 +866,6 @@
                  "name":"butterfly",
                  "opacity":1,
                  "point":true,
-                 "properties":[
-                        {
-                         "name":"tint",
-                         "type":"string",
-                         "value":"0xFFFFFF"
-                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -915,12 +879,6 @@
                  "name":"butterfly",
                  "opacity":1,
                  "point":true,
-                 "properties":[
-                        {
-                         "name":"tint",
-                         "type":"string",
-                         "value":"0x9BE38A"
-                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -934,12 +892,6 @@
                  "name":"butterfly",
                  "opacity":1,
                  "point":true,
-                 "properties":[
-                        {
-                         "name":"tint",
-                         "type":"string",
-                         "value":"0xFFB347"
-                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -953,12 +905,6 @@
                  "name":"butterfly",
                  "opacity":1,
                  "point":true,
-                 "properties":[
-                        {
-                         "name":"tint",
-                         "type":"string",
-                         "value":"0xFFB347"
-                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -972,12 +918,6 @@
                  "name":"butterfly",
                  "opacity":1,
                  "point":true,
-                 "properties":[
-                        {
-                         "name":"tint",
-                         "type":"string",
-                         "value":"0xFFB347"
-                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -991,12 +931,6 @@
                  "name":"butterfly",
                  "opacity":1,
                  "point":true,
-                 "properties":[
-                        {
-                         "name":"tint",
-                         "type":"string",
-                         "value":"0x7FB3FF"
-                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -1010,12 +944,6 @@
                  "name":"butterfly",
                  "opacity":1,
                  "point":true,
-                 "properties":[
-                        {
-                         "name":"tint",
-                         "type":"string",
-                         "value":"0xFF8FC8"
-                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -1811,12 +1739,6 @@
                  "name":"butterfly",
                  "opacity":1,
                  "point":true,
-                 "properties":[
-                        {
-                         "name":"tint",
-                         "type":"string",
-                         "value":"0xFFB347"
-                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,

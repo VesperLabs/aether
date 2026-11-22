@@ -15,6 +15,8 @@ export interface MobProfile {
   readonly race: BodyId;
   readonly gender?: "male" | "female";
   readonly tint?: string;
+  /** Colors it may come in: each spawn picks one at random (butterflies). A map's `tint` wins. */
+  readonly tints?: readonly string[];
   readonly scale?: number;
   readonly face?: TexturedLook;
   readonly hair?: TexturedLook;

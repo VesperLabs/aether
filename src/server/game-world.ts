@@ -64,13 +64,16 @@ export function spawnNpc(
   }
   const id = world.dice.newId();
   const spawn = Object.fromEntries(properties.map((p) => [p.name, p.value]));
-  /* A spawn's `walkRange` is its `wander` radius there, and its `tint` colors it (butterflies) */
+  /* A spawn's `walkRange` is its `wander` radius there, and its `tint` colors it over the actor's */
   const { walkRange, tint, ...state } = spawn;
+  const { tints, ...profile } = npc.profile;
+  const rolled = tints?.length ? tints[Math.floor(world.rng() * tints.length)] : undefined;
+  const chosenTint = typeof tint === "string" ? tint : rolled;
   world.npcs[id] = new Npc(world, {
     id,
     room,
     ...npc,
-    profile: typeof tint === "string" ? { ...npc.profile, tint } : npc.profile,
+    profile: chosenTint ? { ...profile, tint: chosenTint } : profile,
     equipment: { ...npc.equipment, ...equipment },
     behaviors: mergeBehaviors(
       npc.behaviors,
