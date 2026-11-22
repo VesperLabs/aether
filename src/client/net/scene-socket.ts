@@ -13,7 +13,7 @@ import { changeSeason } from "@/client/scenes/map-season";
 import { setDayClock } from "@/client/scenes/world-clock";
 import { LOGIN_FADE_MS } from "@/client/scenes/login-fade";
 import type { ServerToClientEvents } from "@/network";
-import { onRoomObserved, startObserverTour, stopObserverTour } from "@/client/scenes/observer-tour";
+import { onRoomObserved, stopObserverTour } from "@/client/scenes/observer-tour";
 import { netInterp } from "@/client/net/scene-interpolation";
 import { recordPoseArrival } from "@/client/net/net-stats";
 import { idOfNetId } from "@/client/net/net-ids";
@@ -27,6 +27,7 @@ import { playWindupPie, stopWindupPie } from "@/client/views/windup-pie";
 import { drawHitShapes } from "@/client/views/hit-shapes";
 import { playLeaveDissolve, playSpawnDissolve } from "@/client/views/dissolve";
 import { bindNpcSocket } from "./npc-socket";
+import { bindConnectionSocket } from "./connection-socket";
 import {
   addPlayer,
   getPlayer,
@@ -74,12 +75,7 @@ export function bindSceneSocket(scene: SceneMain) {
   const socket = scene.socket;
 
   /* Arriving with a ticket, the hero's own room is next: touring one first only competes for its art */
-  const isRedeeming = !!scene.ticket; /* Read now: the scene spends the ticket next */
-  const tourIfLoggedOut = () => {
-    if (!isRedeeming) startObserverTour(scene);
-  };
-  socket.on("connect", tourIfLoggedOut);
-  if (socket.connected) tourIfLoggedOut();
+  bindConnectionSocket(scene);
   socket.on("roomObserved", (state) => onRoomObserved(scene, state));
 
   socket.on("poses", (data) => {
