@@ -13,6 +13,7 @@ export interface ShadowShape {
 /** Shadows are half again as wide as the body's hit box, and half as tall as wide. */
 const WIDTH_PER_HIT_BOX = 1.5;
 const OPACITY = 0.15;
+/** How far below the feet a shadow's middle sits: a quarter of its height, at most this. */
 const BELOW_FEET = 4;
 /** A flier's shadow is smaller and fainter: it's further from the ground. */
 const AIR_SIZE = 0.6;
@@ -27,10 +28,12 @@ export function shadowOf(
   const flies = body.habitat === "air";
   const base = body.shadowWidth ?? body.hitBox.width * WIDTH_PER_HIT_BOX;
   const width = Math.max(4, Math.round(base * (flies ? AIR_SIZE : 1)));
+  const height = Math.max(2, Math.round(width / 2));
   return {
     width,
-    height: Math.max(2, Math.round(width / 2)),
-    below: flies ? AIR_BELOW_FEET : BELOW_FEET,
+    height,
+    /* A small body's oval is short: a fixed drop leaves its feet on the rim, as if floating */
+    below: flies ? AIR_BELOW_FEET : Math.min(BELOW_FEET, Math.round(height / 4)),
     opacity: OPACITY * (flies ? AIR_OPACITY : 1),
   };
 }

@@ -10,7 +10,7 @@ export function unarmedDamage(level: number): [number, number] {
 }
 
 /** How much defense an attacker of this level shrugs off: defense equal to it halves damage. */
-export const DEFENSE_PER_POWER = 40;
+export const DEFENSE_PER_POWER = 30;
 
 /**
  * The share of physical damage that `defense` stops, from 0 up to (never reaching) 1. Diminishing

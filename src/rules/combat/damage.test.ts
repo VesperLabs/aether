@@ -127,8 +127,8 @@ describe("rollAttack", () => {
       undefined,
       () => 0.5,
     );
-    // 10 defense left against a level 1 attacker stops 10 / (10 + 40) of the damage
-    expect(result).toMatchObject({ physicalDamage: 8 });
+    // 10 defense left against a level 1 attacker stops 10 / (10 + 30) of the damage
+    expect(result).toMatchObject({ physicalDamage: 7 });
     const tiny = rollAttack(attacker, { ...victim, defense: 1000 }, undefined, () => 0.5);
     expect(tiny).toMatchObject({ physicalDamage: 1 });
   });

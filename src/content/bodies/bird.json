@@ -5,7 +5,7 @@
   },
   "feetRadius": 4,
   "headY": -18,
-  "spriteAboveFeet": 6,
+  "spriteAboveFeet": 8,
   "portraitRect": [0, 100, 50, 50],
   "habitat": ["land", "air"]
 }

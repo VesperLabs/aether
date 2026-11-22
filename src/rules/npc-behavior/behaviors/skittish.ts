@@ -1,5 +1,6 @@
 import { behaviorOptions } from "../behavior-options";
 import {
+  SKITTISH_ARRIVED,
   SKITTISH_CALM_MS,
   SKITTISH_ESCAPE_MAX,
   SKITTISH_ESCAPE_MIN,
@@ -14,6 +15,12 @@ import { wander } from "./wander";
 
 const optionsOf = (ctx: BehaviorContext) => behaviorOptions(ctx.input.npc, "skittish");
 
+/** How fast it gets away, as a share of its walk speed. */
+const speedOf = (ctx: BehaviorContext) => {
+  const options = optionsOf(ctx);
+  return (options && options.speed) || SKITTISH_SPEED_RATIO;
+};
+
 /** The living player inside its range, if one is. */
 function intruder(ctx: BehaviorContext) {
   const options = optionsOf(ctx);
@@ -23,9 +30,6 @@ function intruder(ctx: BehaviorContext) {
     ? near
     : undefined;
 }
-
-/** Close enough to its escape spot to land. */
-const ARRIVED = 12;
 
 /**
  * Still on its way to its escape spot, and not yet flying for longer than its calm time since it
@@ -38,7 +42,7 @@ function isEscaping(ctx: BehaviorContext) {
     !!options &&
     !!escapeTo &&
     scaredAt !== undefined &&
-    distanceBetween(ctx.input.npc, escapeTo) > ARRIVED &&
+    distanceBetween(ctx.input.npc, escapeTo) > SKITTISH_ARRIVED &&
     ctx.input.now - scaredAt < (options.calmMs ?? SKITTISH_CALM_MS)
   );
 }
@@ -89,18 +93,18 @@ export const skittish: NpcBehavior = {
       /* Keeps its spot unless it was never picked, it got there, or the intruder is near it too */
       const keep =
         current &&
-        distanceBetween(input.npc, current) > ARRIVED &&
+        distanceBetween(input.npc, current) > SKITTISH_ARRIVED &&
         distanceBetween(near, current) > range * 2;
       const to = keep ? current : (escapeSpot(ctx, near, rng) ?? input.npc);
       return {
         type: "escape",
         to: { x: to.x, y: to.y },
-        speedRatio: SKITTISH_SPEED_RATIO,
+        speedRatio: speedOf(ctx),
         scaredAt: input.now,
       };
     }
     if (current && isEscaping(ctx)) {
-      return { type: "escape", to: current, speedRatio: SKITTISH_SPEED_RATIO };
+      return { type: "escape", to: current, speedRatio: speedOf(ctx) };
     }
     return wander.move(ctx, rng);
   },

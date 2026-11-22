@@ -8,6 +8,7 @@ import {
   leadNpcChase,
   NPC_CHASE_SPEED_RATIO,
   NPC_STRAFE_SPEED_RATIO,
+  SKITTISH_ARRIVED,
   seek,
   separate,
   steerWithSeparation,
@@ -53,6 +54,7 @@ export function performNpcMovement(
   targetPlayer: ServerCharacter | undefined,
   leader: Point | null | undefined,
 ) {
+  endEscapeOnArrival(npc);
   switch (movement.type) {
     case "standStill":
       return standStill(npc);
@@ -98,7 +100,7 @@ export function performNpcMovement(
     case "escape":
       if (movement.scaredAt !== undefined) npc.state.scaredAt = movement.scaredAt;
       npc.state.escapeTo = movement.to;
-      return walkTo(npc, movement.to, movement.speedRatio, true);
+      return walkTo(npc, movement.to, movement.speedRatio);
     case "lunge": {
       // Straight along the aim: no separation pushing it off the line the player is dodging
       const { x: vx, y: vy } = getLungeVelocity(movement.angle);
@@ -131,6 +133,14 @@ export function performNpcMovement(
       Object.assign(npc, change);
       return;
     }
+  }
+}
+
+/** At its escape spot the escape is over, so nothing (a leash walking it home) can restart it. */
+function endEscapeOnArrival(npc: Npc) {
+  const to = npc.state.escapeTo;
+  if (to && Math.hypot(to.x - npc.x, to.y - npc.y) <= SKITTISH_ARRIVED) {
+    npc.state.escapeTo = undefined;
   }
 }
 

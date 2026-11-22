@@ -10,6 +10,7 @@ export type { NpcAbility } from "./abilities";
 export { calculateNpcAggroRange, decideAggro, isNpcAttackReady, isStillAggro } from "./aggro";
 export type { NpcPlayerView } from "./aggro";
 export { decideNpcAction, shouldRespawn } from "./decide";
+export { SKITTISH_ARRIVED } from "./constants";
 export {
   isNpcAggressive,
   isNpcSkittish,
