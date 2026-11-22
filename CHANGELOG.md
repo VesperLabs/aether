@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.65.0](https://github.com/VesperLabs/aether/compare/v0.64.0...v0.65.0) (2026-11-22)
+
+
+### Features
+
+* butterflies flee and come in random colors, plus bird, defense and reconnect fixes ([#423](https://github.com/VesperLabs/aether/issues/423)) ([60472d6](https://github.com/VesperLabs/aether/commit/60472d6956a10080bcc16deea68dbeb8525d2a94))
+
 ## [0.64.0](https://github.com/VesperLabs/aether/compare/v0.63.0...v0.64.0) (2026-11-21)
 
 
