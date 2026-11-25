@@ -46,15 +46,6 @@
                 }]
         }, 
         {
-         "id":19,
-         "properties":[
-                {
-                 "name":"base",
-                 "type":"bool",
-                 "value":true
-                }]
-        }, 
-        {
          "id":20,
          "properties":[
                 {
@@ -334,15 +325,6 @@
                 }]
         }, 
         {
-         "id":79,
-         "properties":[
-                {
-                 "name":"base",
-                 "type":"bool",
-                 "value":true
-                }]
-        }, 
-        {
          "id":90,
          "properties":[
                 {
@@ -397,15 +379,6 @@
                 }]
         }, 
         {
-         "id":98,
-         "properties":[
-                {
-                 "name":"base",
-                 "type":"bool",
-                 "value":true
-                }]
-        }, 
-        {
          "id":104,
          "properties":[
                 {
@@ -443,33 +416,6 @@
         }, 
         {
          "id":121,
-         "properties":[
-                {
-                 "name":"base",
-                 "type":"bool",
-                 "value":true
-                }]
-        }, 
-        {
-         "id":136,
-         "properties":[
-                {
-                 "name":"base",
-                 "type":"bool",
-                 "value":true
-                }]
-        }, 
-        {
-         "id":138,
-         "properties":[
-                {
-                 "name":"base",
-                 "type":"bool",
-                 "value":true
-                }]
-        }, 
-        {
-         "id":139,
          "properties":[
                 {
                  "name":"base",
@@ -533,24 +479,6 @@
         }, 
         {
          "id":155,
-         "properties":[
-                {
-                 "name":"base",
-                 "type":"bool",
-                 "value":true
-                }]
-        }, 
-        {
-         "id":157,
-         "properties":[
-                {
-                 "name":"base",
-                 "type":"bool",
-                 "value":true
-                }]
-        }, 
-        {
-         "id":158,
          "properties":[
                 {
                  "name":"base",
@@ -641,24 +569,6 @@
         }, 
         {
          "id":176,
-         "properties":[
-                {
-                 "name":"base",
-                 "type":"bool",
-                 "value":true
-                }]
-        }, 
-        {
-         "id":177,
-         "properties":[
-                {
-                 "name":"base",
-                 "type":"bool",
-                 "value":true
-                }]
-        }, 
-        {
-         "id":178,
          "properties":[
                 {
                  "name":"base",
@@ -812,15 +722,6 @@
         }, 
         {
          "id":214,
-         "properties":[
-                {
-                 "name":"base",
-                 "type":"bool",
-                 "value":true
-                }]
-        }, 
-        {
-         "id":216,
          "properties":[
                 {
                  "name":"base",
