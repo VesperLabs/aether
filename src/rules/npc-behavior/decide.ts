@@ -12,7 +12,6 @@ import { decideAggro, isNpcAttackReady, type NpcPlayerView, type NpcSelfView } f
 import { isNpcAggressive, isNpcPassive, keepsAway } from "./behavior-options";
 import {
   NPC_EXTRA_CAST_TIME,
-  NPC_LAND_SETTLE_MS,
   NPC_HOME_RANGE,
   NPC_LEASH_RANGE,
   NPC_LUNGE_EXTRA_WINDUP,
@@ -31,6 +30,7 @@ import { isKnockedBack, type KnockbackState, type LungeState } from "@/rules/mov
 import { decideLungeMovement, isLungeSpell, isRecoveringFromLunge } from "./lunge";
 import type { NpcMovement } from "./movement";
 import { decideSwing, type NpcSwing } from "./swings";
+import { landingDrift } from "./landing";
 
 export interface NpcBehaviorInput {
   /** Wall clock (ms). */
@@ -48,6 +48,9 @@ export interface NpcBehaviorInput {
       hp?: number;
       maxHp?: number;
     } | null;
+    /** How it is moving now, px/s: a bird touching down carries on a little that way. */
+    vx?: number;
+    vy?: number;
     startingCoords: Body;
     /** Where it leashes to and walks back to: its leader's spawn for followers, else its own. */
     home?: Body;
@@ -377,10 +380,8 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
     behaviorId = chooseBehavior(ctx, NPC_BEHAVIOR_IDS, state.behavior) ?? "idle";
     const behavior: NpcBehavior = NPC_BEHAVIORS[behaviorId];
     habitat = behavior.habitat?.(ctx);
-    // Touching down (a bird landing): stop and keep facing the way it flew, then carry on
-    if (state.habitat && !habitat) {
-      return { type: "wander", vx: 0, vy: 0, nextWanderAt: input.time + NPC_LAND_SETTLE_MS };
-    }
+    // Touching down (a bird landing): hop on a little the way it flew, slowing, then carry on
+    if (state.habitat && !habitat) return landingDrift(npc, input.time);
 
     if (behavior.engaged && targetPlayer) {
       expireStealthOfPlayerId = targetPlayer.socketId;

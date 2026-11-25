@@ -84,6 +84,8 @@ export function buildNpcBehaviorInput(
     npc: {
       x: npc.x,
       y: npc.y,
+      vx: npc.vx,
+      vy: npc.vy,
       bodySize: npc.bodySize,
       baseLevel: npc.baseStats?.level,
       stats: npc.stats,
