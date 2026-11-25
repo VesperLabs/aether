@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.66.0](https://github.com/VesperLabs/aether/compare/v0.65.1...v0.66.0) (2026-11-25)
+
+
+### Features
+
+* props layers, hay terrain, and skittish bird tweaks ([#427](https://github.com/VesperLabs/aether/issues/427)) ([7eb596f](https://github.com/VesperLabs/aether/commit/7eb596fa46de5ac16fd243d5ce7f60c0e1496262))
+
 ## [0.65.1](https://github.com/VesperLabs/aether/compare/v0.65.0...v0.65.1) (2026-11-22)
 
 
