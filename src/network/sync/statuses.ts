@@ -39,6 +39,7 @@ function pickStatusState(s: Record<string, unknown> | null | undefined): Record<
     doBuffBurn: s.doBuffBurn,
     doHpBuffRegen: s.doHpBuffRegen,
     lastCombat: s.lastCombat,
+    hurtBy: s.hurtBy,
     lastAngle: s.lastAngle,
     isAiming: s.isAiming,
     isHoldingAttack: s.isHoldingAttack,

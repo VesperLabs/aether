@@ -48,6 +48,8 @@ function markHurt(attacker: ServerCharacter, victim: ServerCharacter, amount: nu
   /* The first hit pulls an NPC; after that its threat table decides who it fights. */
   /* Players are filed under their socket id, NPCs under their id. */
   const attackerId = attacker.socketId || attacker.id;
+  /* Who last hurt it, for plates: kept even when it doesn't fight back (a bird that flees) */
+  victim.state.hurtBy = attackerId;
   if (!victim.state.lockedPlayerId && attacker !== victim) victim.setLockedPlayerId(attackerId);
   victim.world?.events?.emit("characterDamaged", {
     victimId: victim.id,

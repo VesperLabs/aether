@@ -141,6 +141,7 @@ export class Player extends Character {
       patch(key);
     }
     patch("lastCombat");
+    patch("hurtBy");
 
     if (!this.isHero) {
       patch("lastAngle");
