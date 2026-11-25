@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { debugExtras } from "./extras-debug";
 import { findProps, propFoot, type CellAt } from "./extras-props";
+import { pixelsOf } from "./tile-pixels";
 
 /** Characters sort from here by their feet (see `Player`); props sort the same way by their base. */
 const SORT_DEPTH = 100;
@@ -31,29 +32,6 @@ function tileFrame(tile: Phaser.Tilemaps.Tile) {
     texture.add(name, 0, x, y, tileset.tileWidth, tileset.tileHeight);
   }
   return { key: texture.key, name };
-}
-
-/** Each tileset texture's pixels, read once. */
-const texturePixels = new Map<string, ImageData>();
-
-function pixelsOf(texture: Phaser.Textures.Texture) {
-  let pixels = texturePixels.get(texture.key);
-  if (!pixels) {
-    const source = texture.getSourceImage() as CanvasImageSource & {
-      width: number;
-      height: number;
-    };
-    const canvas = document.createElement("canvas");
-    canvas.width = source.width;
-    canvas.height = source.height;
-    const context = canvas.getContext("2d", {
-      willReadFrequently: true,
-    }) as CanvasRenderingContext2D;
-    context.drawImage(source, 0, 0);
-    pixels = context.getImageData(0, 0, source.width, source.height);
-    texturePixels.set(texture.key, pixels);
-  }
-  return pixels;
 }
 
 /** Each tile art's lowest row with a solid pixel, measured once. */

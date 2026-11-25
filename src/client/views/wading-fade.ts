@@ -88,6 +88,8 @@ export function fadeBelow(
   layer: Phaser.GameObjects.Sprite,
   waterline: number | undefined,
   scale: number,
+  /** False cuts sharp at the line with no faded steps under it (hay hides, it isn't see-through). */
+  soft = true,
 ) {
   if (waterline === undefined) {
     if (!lastLook.has(layer)) return;
@@ -96,10 +98,14 @@ export function fadeBelow(
     bands.get(layer)?.forEach((copy) => copy.setVisible(false));
     return;
   }
-  const look = lookOf(layer, waterline, scale);
+  const look = `${lookOf(layer, waterline, scale)}|${soft}`;
   if (lastLook.get(layer) === look) return;
   lastLook.set(layer, look);
   cropRows(layer, -Infinity, waterline);
+  if (!soft) {
+    bands.get(layer)?.forEach((copy) => copy.setVisible(false));
+    return;
+  }
   const band = FADE_BAND * scale;
   bandsOf(layer).forEach((copy, i) => {
     mirror(copy, layer, FADE_ALPHAS[i]);

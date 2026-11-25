@@ -1,14 +1,21 @@
 import Phaser from "phaser";
-import { isShallowAt, isWaterAt } from "@/client/scenes/ground-terrain";
+import { hayColorAt, hayDepthAt, isShallowAt, isWaterAt } from "@/client/scenes/ground-terrain";
 import type { Player } from "./player";
 import { bodyExtentOf } from "./body-extent";
 import { feetOffsetOf } from "./feet";
 import { fadeBelow, getShownBands } from "./wading-fade";
+import { clearHayBlades, drawHayBlades } from "./hay-blades";
 import { spawnDrops, spawnRipple, spawnWake } from "./splashes";
 
 /** How far a wading body sinks, and how much of it is under the surface then, as shares of its height. */
 const SINK_SHARE = 0.1;
 const SUBMERGED_SHARE = 0.4;
+/** How much of a body hay hides, from its feet up, as a share of its height. It stands on the ground. */
+const HAY_SHARE = 0.4;
+/** Px of hay above the feet (at scale 1) for the full depth: entering, it rises over this many px. */
+const HAY_RISE_PX = 8;
+/** Px into the hay, from any edge, before it starts hiding the body. */
+const HAY_EDGE_PX = 4;
 /** For a body whose art can't be measured yet: its height, px at scale 1. */
 const FALLBACK_HEIGHT = 28;
 /** The body bobs this many px, once every `BOB_MS`, so it floats instead of standing on a floor. */
@@ -53,12 +60,16 @@ export function leaveWater(player: Player) {
   const view = views.get(player);
   if (!view) return;
   view.depth = 0;
+  view.hayDepth = 0;
   clearRing(view.ring);
+  clearHayBlades(view.blades);
   for (const layer of bodyLayers(player)) layer && fadeBelow(layer, undefined, 1);
 }
 
 interface WadingView {
   ring: Phaser.GameObjects.Graphics;
+  /** Hay stalks in front of the body while it walks through hay. */
+  blades: Phaser.GameObjects.Graphics;
   nextSplashAt: number;
   /** Standing ripples run on their own clock, so walking off splashes at once. */
   nextIdleRippleAt: number;
@@ -68,6 +79,8 @@ interface WadingView {
   wakeBeats: number;
   /** How far in it is, 0 (dry) to 1 (to the waist), eased so it walks in and out instead of popping. */
   depth: number;
+  /** How far into hay it is, 0 to 1, eased the same way. */
+  hayDepth: number;
   /** Where it was last frame, and the way it is heading through the water (smoothed, unit-ish). */
   lastX: number;
   lastY: number;
@@ -91,17 +104,20 @@ function viewOf(player: Player): WadingView {
   if (!view) {
     view = {
       ring: player.scene.add.graphics(),
+      blades: player.scene.add.graphics(),
       nextSplashAt: 0,
       nextIdleRippleAt: 0,
       leftFoot: false,
       wakeBeats: 0,
       depth: 0,
+      hayDepth: 0,
       lastX: player.x,
       lastY: player.y,
       dirX: 0,
       dirY: 0,
     };
     player.rig.add(view.ring);
+    player.rig.add(view.blades);
     views.set(player, view);
   }
   return view;
@@ -207,20 +223,43 @@ export function updateWading(player: Player) {
   const skin = player.skin;
   const extent = bodyExtentOf(skin, player.direction);
   const feet = feetOffsetOf(player);
+  /* Hay rises with how much hay art stands over the bottom of the feet, so it starts as they touch it */
+  view.hayDepth =
+    isAlive && player.habitat !== "air"
+      ? hayDepthAt(
+          player.scene.map,
+          player.x,
+          player.y + player.rig.y + feet - 1,
+          HAY_RISE_PX * scale,
+          HAY_EDGE_PX * scale,
+        )
+      : 0;
+  const hayDepth = view.hayDepth;
   const height = extent ? (extent.bottom + 1 - extent.top) * skin.scaleY : FALLBACK_HEIGHT * scale;
   const sinkDepth = height * SINK_SHARE;
   const sink = Math.round(sinkDepth * depth + bob * scale);
   /* The surface rises from the feet to `SUBMERGED_SHARE` of the sunk body */
   const surface = feet + sinkDepth - height * SUBMERGED_SHARE;
   const waterline = Math.round(Phaser.Math.Linear(feet, surface, depth));
+  /* Hay hides the legs like water, but the body stands on the ground: no sinking, no ring */
+  const hayline = Math.round(feet - height * HAY_SHARE * hayDepth);
+  const cut =
+    depth > 0 && hayDepth > 0
+      ? Math.min(waterline, hayline)
+      : depth > 0
+        ? waterline
+        : hayDepth > 0
+          ? hayline
+          : undefined;
+  const hayCuts = hayDepth > 0 && cut === hayline;
   for (const sprite of bodyLayers(player)) {
     sprite.y = player.bodyOffsetY + sink;
-    fadeBelow(sprite, depth > 0 ? waterline : undefined, scale);
+    fadeBelow(sprite, cut, scale, !hayCuts);
   }
   /* Weapons ride with the body; the animation puts them back in place every frame */
   player.handLeft.y += sink;
   player.handRight.y += sink;
-  player.shadow.setVisible(depth < 0.5);
+  player.shadow.setVisible(depth < 0.5 && hayDepth < 0.5);
   /* Heading from how it actually moved, so other players and mobs (moved by snapshots) get it too */
   const dx = player.x - view.lastX;
   const dy = player.y - view.lastY;
@@ -243,6 +282,21 @@ export function updateWading(player: Player) {
   view.ring.x = Math.round(skinLeft + middle * skin.scaleX);
   if (depth > 0) drawRing(player, view.ring, waterline, bob, depth, view, { ringX, ringY });
   else clearRing(view.ring);
+  if (hayCuts) {
+    drawHayBlades(view.blades, {
+      worldX: player.x,
+      hayColor: (x, y) => hayColorAt(player.scene.map, player.x + x, player.y + player.rig.y + y),
+      middle: view.ring.x,
+      halfWidth: ringX,
+      line: hayline,
+      depth: hayDepth,
+      scale,
+      time: now,
+      moving: player.currentSpeed > 0,
+      lean: view.dirX,
+    });
+    if (player.rig.last !== view.blades) player.rig.bringToTop(view.blades);
+  } else clearHayBlades(view.blades);
 
   if (!isAlive) return;
   const feetY = player.y + player.rig.y + feet;
