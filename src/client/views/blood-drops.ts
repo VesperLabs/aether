@@ -29,7 +29,7 @@ const SPLAT_MS = 1200;
 const MAX_FOOT = 14;
 /** Half the angle of the cone blood sprays in, away from the blow, in radians. */
 const SPRAY_CONE = 0.6;
-/** Above the map's ground, shadow, overlay and extras layers (0 to 3), below characters (100+). */
+/** Above the map's ground, shadow, overlay and props layers (0 to 3), below characters (100+). */
 const GROUND_DEPTH = 4;
 
 /** A tiny pixel drop: 2 wide, 3 tall, rounder at the bottom, with a glint. */

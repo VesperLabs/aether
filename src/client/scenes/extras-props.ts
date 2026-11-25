@@ -1,4 +1,4 @@
-/** A painted `Extras` cell: whether its tileset marks it `base`, the bottom tile of a prop. */
+/** A painted cell of a props layer: whether its tileset marks it `base`, the bottom tile of a prop. */
 export interface ExtrasCell {
   base: boolean;
   /** A `base` tile that never joins the `base` tiles beside it (one with its own `sortOffset`). */

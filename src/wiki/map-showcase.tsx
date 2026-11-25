@@ -12,7 +12,7 @@ const TICK_MS = 100;
 const MIN_ZOOM = 2;
 /** Tiles kept off-screen along every map edge, where maps are often empty or unfinished. */
 const EDGE_TILES = 3;
-const DRAWN_LAYERS = ["Ground", "Shadows", "Overlay", "Extras", "Above"];
+const DRAWN_LAYERS = ["Ground", "Shadows", "Overlay", "Props 1", "Props 2", "Props 3", "Above"];
 const GID_MASK = 0x1fffffff;
 const FLIP_H = 0x80000000;
 const FLIP_V = 0x40000000;
