@@ -10,6 +10,33 @@
  "tileheight":32,
  "tiles":[
         {
+         "id":73,
+         "properties":[
+                {
+                 "name":"base",
+                 "type":"bool",
+                 "value":true
+                }]
+        }, 
+        {
+         "id":200,
+         "properties":[
+                {
+                 "name":"base",
+                 "type":"bool",
+                 "value":true
+                }]
+        }, 
+        {
+         "id":328,
+         "properties":[
+                {
+                 "name":"base",
+                 "type":"bool",
+                 "value":true
+                }]
+        }, 
+        {
          "id":332,
          "properties":[
                 {
@@ -66,6 +93,15 @@
         }, 
         {
          "id":392,
+         "properties":[
+                {
+                 "name":"base",
+                 "type":"bool",
+                 "value":true
+                }]
+        }, 
+        {
+         "id":396,
          "properties":[
                 {
                  "name":"base",
@@ -246,6 +282,15 @@
         }, 
         {
          "id":491,
+         "properties":[
+                {
+                 "name":"base",
+                 "type":"bool",
+                 "value":true
+                }]
+        }, 
+        {
+         "id":492,
          "properties":[
                 {
                  "name":"base",

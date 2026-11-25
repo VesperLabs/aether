@@ -18,7 +18,7 @@ export const isWaterTerrain = (terrain: string | undefined) =>
  * no terrain (rocks, cattails, a waterfall's sides) are see-through, except a `bridge` tile, which
  * makes the spot dry.
  */
-const TERRAIN_LAYERS = ["Extras", "Overlay", "Ground"];
+const TERRAIN_LAYERS = ["Props 3", "Props 2", "Props 1", "Overlay", "Ground"];
 /** A Tiled wang id lists the edges and corners clockwise from the top; these are the corners. */
 const TOP_LEFT = 7;
 const TOP_RIGHT = 1;

@@ -57,7 +57,7 @@ const lantern = (x: number, y: number): readonly LightLayer[] => [
 
 /**
  * Warm light from inside a house, through a window or an open door: a candle's slow, small
- * flicker. Things standing in front of the house (`Extras`: trees, barrels) stay dark; the roof
+ * flicker. Things standing in front of the house (the props layers: trees, barrels) stay dark; the roof
  * over it doesn't cut the glow off.
  */
 const houseLight = (
@@ -74,7 +74,7 @@ const houseLight = (
     drift: 0,
     offsetX: x,
     offsetY: y,
-    blockedBy: ["Extras", "Extras Top"],
+    blockedBy: ["Props 1", "Props 2", "Props 3"],
   },
 ];
 

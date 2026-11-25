@@ -74,13 +74,15 @@ export const SKITTISH_RANGE = 72;
 /** The longest a scared `skittish` NPC keeps getting away after it was last scared, ms. */
 export const SKITTISH_CALM_MS = 4000;
 /** How far a scared `skittish` NPC gets away from whoever scared it, px: between these. */
-export const SKITTISH_ESCAPE_MIN = 150;
-export const SKITTISH_ESCAPE_MAX = 240;
+export const SKITTISH_ESCAPE_MIN = 220;
+export const SKITTISH_ESCAPE_MAX = 320;
 /** How far, in radians, its escape may veer either side of straight away. */
 export const SKITTISH_ESCAPE_VEER = 0.7;
 /** How much faster than its walk a scared `skittish` NPC gets away. */
 export const SKITTISH_SPEED_RATIO = 1.8;
 /** How close a `skittish` NPC gets to its escape spot to call the escape done, px. */
 export const SKITTISH_ARRIVED = 12;
-/** How long an NPC stands still after landing, facing the way it flew, before it wanders on, ms. */
+/** Share of its flight speed a bird keeps after landing, never above its walk speed. */
+export const NPC_LAND_DRIFT_RATIO = 0.3;
+/** How long an NPC drifts on after landing, the way it flew, before it wanders on, ms. */
 export const NPC_LAND_SETTLE_MS = 900;

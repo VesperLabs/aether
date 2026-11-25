@@ -75,10 +75,11 @@ export function initPlayerCollision(
 /** Puts out the last map's lit tiles (campfires) when the next one loads. */
 let removeTileLights = () => {};
 /**
- * The layers drawn as props sorted with characters (see `sortExtras`). Each finds its props on its
- * own, so a bush on `Extras Top` never joins the wall behind it on `Extras`; on a tie it draws over.
+ * The layers drawn as props sorted with characters (see `sortExtras`), bottom to top. Each finds its
+ * props on its own, so a bush on `Props 2` never joins the wall behind it on `Props 1`, and draws
+ * over it only where it covers it.
  */
-const SORTED_LAYERS = ["Extras", "Extras Top"];
+const SORTED_LAYERS = ["Props 1", "Props 2", "Props 3"];
 /** Removes the last map's sorted extras images when the next one loads. */
 let removeExtras = () => {};
 

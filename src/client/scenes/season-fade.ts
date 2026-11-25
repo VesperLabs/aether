@@ -7,7 +7,7 @@ const FADE_MS = 1500;
 /** Extra snapshot around the screen, so walking during the fade doesn't show its edge. */
 const MARGIN = 0.5;
 /** The map's drawn layers, bottom to top (see `changeMap`). */
-const ART_LAYERS = ["Ground", "Shadows", "Overlay", "Extras", "Extras Top", "Above"];
+const ART_LAYERS = ["Ground", "Shadows", "Overlay", "Props 1", "Props 2", "Props 3", "Above"];
 
 let fading: Phaser.GameObjects.RenderTexture[] = [];
 

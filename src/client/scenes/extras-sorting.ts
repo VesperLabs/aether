@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { debugExtras } from "./extras-debug";
 import { findProps, propFoot, type CellAt } from "./extras-props";
+import { pixelsOf } from "./tile-pixels";
 
 /** Characters sort from here by their feet (see `Player`); props sort the same way by their base. */
 const SORT_DEPTH = 100;
@@ -31,29 +32,6 @@ function tileFrame(tile: Phaser.Tilemaps.Tile) {
     texture.add(name, 0, x, y, tileset.tileWidth, tileset.tileHeight);
   }
   return { key: texture.key, name };
-}
-
-/** Each tileset texture's pixels, read once. */
-const texturePixels = new Map<string, ImageData>();
-
-function pixelsOf(texture: Phaser.Textures.Texture) {
-  let pixels = texturePixels.get(texture.key);
-  if (!pixels) {
-    const source = texture.getSourceImage() as CanvasImageSource & {
-      width: number;
-      height: number;
-    };
-    const canvas = document.createElement("canvas");
-    canvas.width = source.width;
-    canvas.height = source.height;
-    const context = canvas.getContext("2d", {
-      willReadFrequently: true,
-    }) as CanvasRenderingContext2D;
-    context.drawImage(source, 0, 0);
-    pixels = context.getImageData(0, 0, source.width, source.height);
-    texturePixels.set(texture.key, pixels);
-  }
-  return pixels;
 }
 
 /** Each tile art's lowest row with a solid pixel, measured once. */
@@ -102,12 +80,14 @@ function redraw(sorted: SortedTile) {
 }
 
 /**
- * Draws the `Extras` layer as one image per tile, sorted with characters by where the prop each
+ * Draws a props layer (`Props 1` to `3`) as one image per tile, sorted with characters by where the prop each
  * tile belongs to stands (see `findProps` and `propFoot`): its lowest solid pixel, so a tree sorts at
  * the foot of its trunk. Walking below it puts you in front, above it behind. The layer itself stays, hidden, as the tiles' data: the animated tiles plugin
  * and season changes still change its tiles, and each image follows its tile every frame.
- * A layer drawn over another (`Extras Top` over `Extras`) passes that one's `feet`: each of its
- * props sorts just past whatever it covers there, so it stays on top as in Tiled.
+ * A layer drawn over another (`Props 2` over `Props 1`) passes that one's `feet`: a tile that
+ * covers a painted cell there sorts just past it, so it stays on top as in Tiled, while the rest of
+ * its prop keeps its own foot rather than joining the prop below. Where it covers, the prop below
+ * hides you anyway, so the tile drawing over you there shows nothing new.
  * Returns a function that removes the images, and the foot each cell sorts at.
  */
 export function sortExtras(
@@ -143,11 +123,13 @@ export function sortExtras(
     const own =
       propFoot(prop, layer.layer.tileHeight, (cell) => lowestSolidRow(at(cell))) +
       shift * layer.layer.tileHeight;
-    const covered = prop.map(([r, c]) => below?.[r]?.[c] ?? -Infinity);
-    const foot = Math.max(own, Math.max(...covered) + COVER_STEP);
-    for (const [r, c] of prop) feet[r][c] = foot;
-    debug.push({ cells: prop, foot: foot + layer.y });
+    /* Each line it sorts at, with its cells: its own, and past the layer below where it covers it */
+    const lines = new Map<number, CellAt[]>();
     for (const cell of prop) {
+      const [r, c] = cell;
+      const foot = Math.max(own, (below?.[r]?.[c] ?? -Infinity) + COVER_STEP);
+      feet[r][c] = foot;
+      lines.set(foot, [...(lines.get(foot) ?? []), cell]);
       const tile = at(cell);
       /* Bottom-aligned like Phaser draws tiles, so taller tileset tiles grow upward */
       const image = scene.add
@@ -159,6 +141,7 @@ export function sortExtras(
       redraw(entry);
       sorted.push(entry);
     }
+    for (const [foot, cells] of lines) debug.push({ cells, foot: foot + layer.y });
   }
 
   const follow = () => {

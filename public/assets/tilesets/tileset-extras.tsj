@@ -46,15 +46,6 @@
                 }]
         }, 
         {
-         "id":19,
-         "properties":[
-                {
-                 "name":"base",
-                 "type":"bool",
-                 "value":true
-                }]
-        }, 
-        {
          "id":20,
          "properties":[
                 {
@@ -334,15 +325,6 @@
                 }]
         }, 
         {
-         "id":79,
-         "properties":[
-                {
-                 "name":"base",
-                 "type":"bool",
-                 "value":true
-                }]
-        }, 
-        {
          "id":90,
          "properties":[
                 {
@@ -397,15 +379,6 @@
                 }]
         }, 
         {
-         "id":98,
-         "properties":[
-                {
-                 "name":"base",
-                 "type":"bool",
-                 "value":true
-                }]
-        }, 
-        {
          "id":104,
          "properties":[
                 {
@@ -443,33 +416,6 @@
         }, 
         {
          "id":121,
-         "properties":[
-                {
-                 "name":"base",
-                 "type":"bool",
-                 "value":true
-                }]
-        }, 
-        {
-         "id":136,
-         "properties":[
-                {
-                 "name":"base",
-                 "type":"bool",
-                 "value":true
-                }]
-        }, 
-        {
-         "id":138,
-         "properties":[
-                {
-                 "name":"base",
-                 "type":"bool",
-                 "value":true
-                }]
-        }, 
-        {
-         "id":139,
          "properties":[
                 {
                  "name":"base",
@@ -533,24 +479,6 @@
         }, 
         {
          "id":155,
-         "properties":[
-                {
-                 "name":"base",
-                 "type":"bool",
-                 "value":true
-                }]
-        }, 
-        {
-         "id":157,
-         "properties":[
-                {
-                 "name":"base",
-                 "type":"bool",
-                 "value":true
-                }]
-        }, 
-        {
-         "id":158,
          "properties":[
                 {
                  "name":"base",
@@ -641,24 +569,6 @@
         }, 
         {
          "id":176,
-         "properties":[
-                {
-                 "name":"base",
-                 "type":"bool",
-                 "value":true
-                }]
-        }, 
-        {
-         "id":177,
-         "properties":[
-                {
-                 "name":"base",
-                 "type":"bool",
-                 "value":true
-                }]
-        }, 
-        {
-         "id":178,
          "properties":[
                 {
                  "name":"base",
@@ -812,15 +722,6 @@
         }, 
         {
          "id":214,
-         "properties":[
-                {
-                 "name":"base",
-                 "type":"bool",
-                 "value":true
-                }]
-        }, 
-        {
-         "id":216,
          "properties":[
                 {
                  "name":"base",
@@ -1659,5 +1560,75 @@
         }],
  "tilewidth":32,
  "type":"tileset",
- "version":"1.10"
+ "version":"1.10",
+ "wangsets":[
+        {
+         "colors":[
+                {
+                 "color":"#ffd700",
+                 "name":"Hay",
+                 "probability":1,
+                 "tile":134
+                }],
+         "name":"Terrains",
+         "tile":-1,
+         "type":"corner",
+         "wangtiles":[
+                {
+                 "tileid":111,
+                 "wangid":[0, 1, 0, 0, 0, 1, 0, 1]
+                }, 
+                {
+                 "tileid":112,
+                 "wangid":[0, 1, 0, 1, 0, 0, 0, 1]
+                }, 
+                {
+                 "tileid":113,
+                 "wangid":[0, 0, 0, 1, 0, 0, 0, 0]
+                }, 
+                {
+                 "tileid":114,
+                 "wangid":[0, 0, 0, 1, 0, 1, 0, 0]
+                }, 
+                {
+                 "tileid":115,
+                 "wangid":[0, 0, 0, 0, 0, 1, 0, 0]
+                }, 
+                {
+                 "tileid":131,
+                 "wangid":[0, 0, 0, 1, 0, 1, 0, 1]
+                }, 
+                {
+                 "tileid":132,
+                 "wangid":[0, 1, 0, 1, 0, 1, 0, 0]
+                }, 
+                {
+                 "tileid":133,
+                 "wangid":[0, 1, 0, 1, 0, 0, 0, 0]
+                }, 
+                {
+                 "tileid":134,
+                 "wangid":[0, 1, 0, 1, 0, 1, 0, 1]
+                }, 
+                {
+                 "tileid":135,
+                 "wangid":[0, 0, 0, 0, 0, 1, 0, 1]
+                }, 
+                {
+                 "tileid":152,
+                 "wangid":[0, 1, 0, 0, 0, 0, 0, 1]
+                }, 
+                {
+                 "tileid":153,
+                 "wangid":[0, 1, 0, 0, 0, 0, 0, 0]
+                }, 
+                {
+                 "tileid":154,
+                 "wangid":[0, 1, 0, 0, 0, 0, 0, 1]
+                }, 
+                {
+                 "tileid":155,
+                 "wangid":[0, 0, 0, 0, 0, 0, 0, 1]
+                }]
+        }]
 }

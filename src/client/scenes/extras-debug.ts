@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import type { CellAt } from "./extras-props";
 
 /**
- * Outlines each `Extras` prop, one color each, with a line at its foot, and the hero's sort line in
+ * Outlines each prop on the props layers, one color each, with a line at its foot, and the hero's sort line in
  * white: you go behind a prop when the white line is above its line. On with `DEBUG_EXTRAS=true`.
  */
 export function debugExtras(
