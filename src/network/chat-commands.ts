@@ -301,6 +301,11 @@ export const CHAT_COMMANDS: readonly ChatCommand[] = [
     cheat: true,
   },
   {
+    name: "savepos",
+    description: "Save where you stand, so you log back in there",
+    cheat: true,
+  },
+  {
     name: "where",
 
     description: "List who is in this room and where",

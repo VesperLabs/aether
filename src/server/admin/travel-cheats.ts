@@ -49,5 +49,13 @@ const where: Cheat = (ctx, player, _args, reply) => {
   );
 };
 
+/** Saves the spot you stand on as where you log back in (until you die and respawn elsewhere). */
+const savepos: Cheat = (ctx, player, _args, reply) => {
+  if (player.isDemoAccount) return reply.error("Demo accounts aren't saved.");
+  const at = { roomName: player.roomName, x: Math.round(player.x), y: Math.round(player.y) };
+  ctx.world.db.updateUserMapDetails({ email: player.email, ...at });
+  reply.info(`Saved ${at.roomName} at ${at.x}, ${at.y}. You'll log back in here.`);
+};
+
 /** Cheats that move you around the world. */
-export const TRAVEL_CHEATS = { tp, warp, goto, where };
+export const TRAVEL_CHEATS = { tp, warp, goto, where, savepos };
