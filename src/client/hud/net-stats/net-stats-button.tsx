@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useThemeUI } from "theme-ui";
-import { Box, Flex, GLASS_BACKDROP, Text } from "@/ui";
+import { Box, Flex, GLASS_EDGE, GLASS_WASH_LAYER, Text } from "@/ui";
 import { useAppContext } from "@/client/hud/app/context";
 import { readNetStats, type NetStats } from "@/client/net/net-stats";
 import { msToHours } from "@/rules/stats";
 import { DiscButton, GLASS_PILL } from "@/client/hud/app/glass-disc";
+import { useFrameStats } from "./use-frame-stats";
 
 /** Snapshots come every tick; a gap this many ticks long is a visible hitch. */
 const HITCH_TICKS = 3;
@@ -180,6 +181,7 @@ const ms = (value: number) => `${Math.round(value)} ms`;
 const NetStatsPanel = ({ stats, verdict }: { stats: NetStats; verdict: Verdict }) => {
   const { isConnected } = useAppContext();
   const { server } = stats;
+  const frames = useFrameStats();
   const tickMs = server?.targetTickMs ?? FALLBACK_TICK_MS;
   const color = isConnected ? VERDICT_COLOR[verdict] : "danger";
   return (
@@ -194,7 +196,8 @@ const NetStatsPanel = ({ stats, verdict }: { stats: NetStats; verdict: Verdict }
         p: "8px",
         borderRadius: 10,
         bg: "shadow.30",
-        backdropFilter: GLASS_BACKDROP,
+        backgroundImage: GLASS_WASH_LAYER,
+        boxShadow: GLASS_EDGE,
         color: "white",
         fontSize: 0,
         lineHeight: 1.2,
@@ -231,6 +234,25 @@ const NetStatsPanel = ({ stats, verdict }: { stats: NetStats; verdict: Verdict }
         <Tile label="p95 gap" value={stats.gapP95} />
         <Tile label="p95 ping" value={stats.rttP95} />
       </Flex>
+      {/* This browser's drawing, so a slow screen isn't mistaken for a slow server */}
+      <Flex sx={{ flexDirection: "column", gap: "3px", px: "2px" }}>
+        <Row
+          label="Client fps"
+          value={String(Math.round(frames.fps))}
+          warn={frames.fps > 0 && frames.fps < 45}
+        />
+        <Row
+          label="Frame p95 / max"
+          value={`${Math.round(frames.frameP95Ms)} / ${ms(frames.frameMaxMs)}`}
+          warn={frames.frameMaxMs >= 50}
+        />
+        <Row
+          label="Our work avg / max"
+          value={`${frames.workMs.toFixed(1)} / ${ms(frames.workMaxMs)}`}
+          warn={frames.workMs >= 12}
+        />
+        <Row label="Canvas pixels" value={frames.pixels} />
+      </Flex>
       {server ? (
         <Flex sx={{ flexDirection: "column", gap: "3px", px: "2px" }}>
           <Row
@@ -258,7 +280,7 @@ const NetStatsPanel = ({ stats, verdict }: { stats: NetStats; verdict: Verdict }
   );
 };
 
-/** Wifi icon right of the music disc; click for snapshot gaps, round trips and server tick health. */
+/** Wifi icon right of the music disc; click for snapshot gaps, round trips, server tick health and client fps. */
 export const NetStatsButton = () => {
   const { isConnected } = useAppContext();
   const [open, setOpen] = useState(false);
