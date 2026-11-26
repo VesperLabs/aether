@@ -1,6 +1,7 @@
 import { LOOT_SPAWN_CYCLE_TIME, parseMapLootList, type MapLoot } from "../loot";
 import { createPartyState, type PartyState } from "../party";
 import { createCalendar, type Calendar } from "../seasons";
+import { createWeatherState, type WeatherState } from "../weather";
 import {
   createPathfinder,
   createPoseHistory,
@@ -49,6 +50,8 @@ export interface World<
   partyState: PartyState;
   /** Where the world is in the year: see `rules/seasons`. */
   calendar: Calendar;
+  /** The sky, when `/weather` pins it: see `rules/weather`. */
+  weather: WeatherState;
   events: GameEventBus;
   /** Ticks run so far. */
   tick: number;
@@ -67,6 +70,7 @@ export function createWorld<P = unknown, N = unknown, S = unknown, L = unknown, 
     quests,
     partyState: createPartyState(),
     calendar: createCalendar(),
+    weather: createWeatherState(),
     events: createGameEventBus(),
     tick: 0,
   };

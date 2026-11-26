@@ -14,6 +14,8 @@ import { enableDoors, initCamera } from "./main-map";
 import { fitTourCamera } from "./observer-tour";
 import { checkProximities } from "./proximity";
 import { createDaylight, updateDaylight } from "./daylight";
+import { updateClouds } from "./clouds";
+import { updateFog } from "./fog";
 import { animateMinimap, createMinimap, updateMinimap } from "./minimap";
 
 /** A remote player close enough to the hero to video chat with. */
@@ -130,6 +132,8 @@ export class SceneMain extends Phaser.Scene {
     }
 
     updateDaylight(this);
+    updateClouds(this, delta);
+    updateFog(this, delta);
 
     if (poses) {
       for (const [id, pose] of poses.npcs) {

@@ -10,6 +10,7 @@ import {
 import { hideWorld, revealWorldWhenSettled } from "@/client/scenes/world-reveal";
 import { enterRoom, whenRoomLoaded } from "@/client/scenes/enter-room";
 import { changeSeason } from "@/client/scenes/map-season";
+import { setWeather } from "@/client/scenes/clouds";
 import { setDayClock } from "@/client/scenes/world-clock";
 import { LOGIN_FADE_MS } from "@/client/scenes/login-fade";
 import type { ServerToClientEvents } from "@/network";
@@ -97,6 +98,7 @@ export function bindSceneSocket(scene: SceneMain) {
 
   socket.on("seasonChanged", (season) => changeSeason(scene, season));
   socket.on("hourSet", setDayClock);
+  socket.on("weatherChanged", setWeather);
 
   socket.on("lootExpired", (id) => getLoot(scene, id)?.destroy());
 

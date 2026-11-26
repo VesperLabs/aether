@@ -1,4 +1,5 @@
 import type { BuiltItem, Season } from "@/content";
+import type { Weather } from "@/rules/weather";
 import type { BuffCharacterWire, FullCharacterWire } from "./sync/character-state";
 import type { RoomStatuses } from "./sync/statuses";
 import type { EffectWire } from "./sync/effects";
@@ -22,6 +23,10 @@ export interface RoomStateMessage {
   season: Season;
   /** The hour of the day, 0 to 24; clients run it on themselves (see `hourAfter`). */
   hour: number;
+  /** The sky over outdoor maps, and the wind its clouds drift on. */
+  weather: Weather;
+  /** The world's time when this was sent (ms): clients keep their own in step for the clouds. */
+  now: number;
 }
 
 /**
@@ -116,6 +121,8 @@ export interface ServerToClientEvents {
   /* World */
   /** The world moved into a new season. */
   seasonChanged: (season: Season) => void;
+  /** The sky or the wind turned, by the forecast or by `/weather`. */
+  weatherChanged: (weather: Weather) => void;
   /** The clock was set to a new hour (by `/time`); it runs on from there. */
   hourSet: (hour: number) => void;
   /** Every character's position in the room, every tick. Each stands alone: see `network/sync/poses`. */

@@ -16,6 +16,17 @@ export function setDayClock(hour: number) {
 /** The hour now, 0 to 24, by the client's clock. */
 export const currentHour = () => hourAfter(clock.hour, performance.now() - clock.at);
 
+/** How far the world's clock runs ahead of this machine's, ms. */
+let worldOffset = 0;
+
+/** Keeps the world's time in step with the server's, from the time it last sent. */
+export function setWorldNow(now: number) {
+  worldOffset = now - Date.now();
+}
+
+/** The world's time now (ms), as the server keeps it, give or take the trip here. */
+export const worldNow = () => Date.now() + worldOffset;
+
 /** The world's season, for HUD that mounts after it last changed. */
 export const currentSeason = () => season;
 

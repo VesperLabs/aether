@@ -98,6 +98,12 @@ const SEASON_OPTIONS = [
   ...SEASONS.map((value) => ({ value, hint: SEASON_HINTS[value], icon: SEASON_ICONS[value] })),
   { value: "real", hint: SEASON_HINTS.real, icon: EARTH_ICON },
 ];
+const WEATHER_OPTIONS = [
+  { value: "clear", hint: "Pin a clear sky" },
+  { value: "cloudy", hint: "Pin clouds drifting over" },
+  { value: "foggy", hint: "Pin fog rolling in" },
+  { value: "real", hint: "Follow the forecast again" },
+];
 const RARITY_OPTIONS = ITEM_RARITIES.map((value) => ({ value, rarity: value }));
 
 const NPC_ACTION_OPTIONS = [
@@ -286,6 +292,13 @@ export const CHAT_COMMANDS: readonly ChatCommand[] = [
     description: "Show the season, pin one, or go back to the real one",
     cheat: true,
     complete: (index) => (index === 0 ? SEASON_OPTIONS : []),
+  },
+  {
+    name: "weather",
+    args: [optional({ name: "sky", kind: "text" })],
+    description: "Show the sky, pin one, or go back to the forecast",
+    cheat: true,
+    complete: (index) => (index === 0 ? WEATHER_OPTIONS : []),
   },
   {
     name: "time",

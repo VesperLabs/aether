@@ -1,5 +1,6 @@
 import { SEASONS } from "@/content";
 import { findSeason, hourAt, pinSeason, seasonAt, setHour } from "@/rules/seasons";
+import { SKIES, findSky, pinSky, weatherAt } from "@/rules/weather";
 import type { Cheat } from "./cheat";
 
 /**
@@ -36,5 +37,24 @@ const time: Cheat = (ctx, _player, [value], reply) => {
   reply.info(`It is now ${formatHour(hour % 24)}.`);
 };
 
+/**
+ * `/weather` names the sky; `/weather <sky>` holds it, for every player, until `/weather real`
+ * hands it back to the forecast.
+ */
+const weather: Cheat = (ctx, _player, [name], reply) => {
+  const { world } = ctx;
+  if (!name) {
+    const pinned = world.weather.pinnedSky ? " (pinned)" : "";
+    return reply.info(`The sky is ${weatherAt(world.now(), world.weather).sky}${pinned}.`);
+  }
+  const real = name.toLowerCase() === "real";
+  const chosen = real ? undefined : findSky(name);
+  if (!real && !chosen) return reply.error(`Usage: /weather [${SKIES.join("|")}|real]`);
+  /* The tick's weather announcement tells every client, this player included */
+  pinSky(world.weather, chosen);
+  const now = weatherAt(world.now(), world.weather).sky;
+  reply.info(`The sky is now ${now}${real ? ", as forecast" : ""}.`);
+};
+
 /** Cheats that change the whole world. */
-export const WORLD_CHEATS = { season, time };
+export const WORLD_CHEATS = { season, time, weather };
