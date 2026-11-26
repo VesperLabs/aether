@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.69.0](https://github.com/VesperLabs/aether/compare/v0.68.0...v0.69.0) (2026-11-26)
+
+
+### Features
+
+* cast bar under the hp bar, both drawn crisp at any zoom ([#433](https://github.com/VesperLabs/aether/issues/433)) ([04d69bf](https://github.com/VesperLabs/aether/commit/04d69bf982bccdd33a85c3ad4412a2562bb24e5f))
+
 ## [0.68.0](https://github.com/VesperLabs/aether/compare/v0.67.0...v0.68.0) (2026-11-26)
 
 
