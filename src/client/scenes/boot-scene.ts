@@ -285,10 +285,6 @@ function loadSpritesheets(scene: Phaser.Scene) {
     frameWidth: 7,
     frameHeight: 7,
   });
-  scene.load.spritesheet("misc-bars", assetUrl("./assets/images/bars.png"), {
-    frameWidth: 4,
-    frameHeight: 4,
-  });
   scene.load.spritesheet(
     "spell-anim-fireball",
     assetUrl("./assets/images/spell-anim-fireball.png"),

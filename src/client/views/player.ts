@@ -25,8 +25,8 @@ import { applyAppearance, createSpriteLayers } from "./player-layers";
 import { applyHit, type HitEffect } from "./player-hit";
 import { toTint } from "./tint";
 import type { Bubble } from "./bubble";
-import type { WindupPie } from "./windup-pie";
-import type { Bar } from "./bar";
+import type { CastBar } from "./cast-bar";
+import type { HpBar } from "./hp-bar";
 import type { CaptureBall } from "./capture-ball";
 import type { StunStars } from "./stun-stars";
 import type { WeaponSprite } from "./weapon-sprite";
@@ -73,8 +73,8 @@ export class Player extends Character {
   declare shadow: Phaser.GameObjects.Image;
   declare bubble: Bubble;
   declare crosshair: Crosshair;
-  declare hpBar: Bar;
-  declare windupPie: WindupPie;
+  declare hpBar: HpBar;
+  declare castBar: CastBar;
   declare userName: Phaser.GameObjects.BitmapText;
   declare stunStars: StunStars;
   declare captureBall: CaptureBall;
@@ -250,19 +250,11 @@ export class Player extends Character {
     const remainingString = inputString.replace(regex, "");
     this.bubble.setTint(toTint(colorHex ?? "0xFFFFFF"));
     this.bubble.setMessage(remainingString);
-    /* A fighting NPC (locked on to someone) shows its windup pie beside the hp bar */
-    const isEngaged = this.kind !== "player" && !!this.state.lockedPlayerId;
-    this.windupPie.follow(this.x + this.rig.x, this.y + this.rig.y);
-    /* Everyone sees a player aiming a spell (an empty pie) and its cast (the pie filling) */
-    /* Held: an aimed spell aims (everyone sees), a non-aimed one is only pressed (the hero sees) */
-    const isSpellAiming =
-      (this.state.isAiming && !this.state.isHoldingAttack) ||
-      (this.isHero && this.pressedAbilitySlot !== undefined);
-    const showsCast =
-      this.kind === "player" &&
-      (isSpellAiming || this.isCasting) &&
-      (this.isHero || !this.hasBuff("stealth"));
-    this.windupPie.draw((isEngaged || !!showsCast) && !this.state.isDead);
+  }
+  /** A windup is filling, and (a stealthed player's cast stays hidden from others) it shows. */
+  showsWindup() {
+    if (!this.castBar.isFilling) return false;
+    return this.kind !== "player" || this.isHero || !this.hasBuff("stealth");
   }
   updateHpBar() {
     const { stats } = this;
@@ -299,7 +291,7 @@ export class Player extends Character {
     leaveWater(this);
     this.hpBar.setVisible(false);
     this.bubble.setVisible(false);
-    this.windupPie.draw(false);
+    this.castBar.draw(false);
     this.emit(CHARACTER_DIED);
     /* Only players leave a grave; everyone else just dissolves, name and all */
     const leavesGrave = this.kind === "player";
@@ -328,9 +320,13 @@ export class Player extends Character {
   }
   showHideNameAndBars() {
     const { state } = this ?? {};
-    const shouldShow = !this.checkOutOfCombat() || state?.isHovering;
-
-    this.hpBar.setVisible(shouldShow);
+    /* An NPC locked on to a target is fighting even before anyone hurts it (a companion attacking) */
+    const isEngaged = this.kind !== "player" && !!state?.lockedPlayerId;
+    const shouldShow = !this.checkOutOfCombat() || isEngaged || state?.isHovering;
+    /* A windup brings out the hp bar with its cast bar underneath */
+    const showsWindup = this.showsWindup() && !state?.isDead;
+    this.hpBar.setVisible((shouldShow || showsWindup) && !state?.isDead);
+    this.castBar.draw(showsWindup);
     /* Every frame, so it follows changes like a mob becoming a pet */
     this.userName.setVisible(!this.hidesName() || shouldShow);
   }

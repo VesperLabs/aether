@@ -12,8 +12,8 @@ import type { Player } from "./player";
 import { Crosshair } from "@/client/input/crosshair";
 import { toTint } from "./tint";
 import { Bubble } from "./bubble";
-import { WindupPie } from "./windup-pie";
-import { Bar } from "./bar";
+import { CastBar } from "./cast-bar";
+import { HpBar } from "./hp-bar";
 import { WeaponSprite } from "./weapon-sprite";
 import { CaptureBall } from "./capture-ball";
 import { StunStars } from "./stun-stars";
@@ -21,7 +21,8 @@ import { placeShadow } from "./shadow";
 
 /** The overhead hp bar in world pixels (it is drawn at twice this, then halved). */
 const HP_BAR_WIDTH = 16;
-const HP_BAR_HEIGHT = 6;
+const HP_BAR_HEIGHT = 3;
+const CAST_BAR_HEIGHT = HP_BAR_HEIGHT;
 
 const { Sprite, BitmapText, Container } = Phaser.GameObjects;
 const BLANK_TEXTURE = "human-blank";
@@ -68,10 +69,20 @@ export function createSpriteLayers(player: Player) {
     new Crosshair(scene, 0, player.bodyOffsetY, "icons", "crosshair", player, 40),
   );
   player.hpBar = scene.add
-    .existing(new Bar(scene, 0, player?.headY, HP_BAR_WIDTH * 2, HP_BAR_HEIGHT * 2))
+    .existing(new HpBar(scene, -HP_BAR_WIDTH / 2, player?.headY, HP_BAR_WIDTH, HP_BAR_HEIGHT))
     .setVisible(false);
-  player.windupPie = scene.add.existing(new WindupPie(scene, player?.headY - 4)).setVisible(false);
-  player.once(Phaser.GameObjects.Events.DESTROY, () => player.windupPie.destroy());
+  /* Just under the hp bar, as wide, thinner */
+  player.castBar = scene.add
+    .existing(
+      new CastBar(
+        scene,
+        -HP_BAR_WIDTH / 2,
+        player?.headY + HP_BAR_HEIGHT,
+        HP_BAR_WIDTH,
+        CAST_BAR_HEIGHT,
+      ),
+    )
+    .setVisible(false);
   player.userName = scene.add.existing(
     new BitmapText(player.scene, 0, 8, "nin-light").setScale(0.5),
   );
@@ -105,6 +116,7 @@ export function createSpriteLayers(player: Player) {
     player.captureBall,
     player.bubble,
     player.hpBar,
+    player.castBar,
   ]);
   player.add(player.corpse);
   player.add(player.rig);
