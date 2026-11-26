@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.67.0](https://github.com/VesperLabs/aether/compare/v0.66.0...v0.67.0) (2026-11-26)
+
+
+### Features
+
+* weather, fog puffs, cheaper hud glass and client fps stats ([#429](https://github.com/VesperLabs/aether/issues/429)) ([0e5c12b](https://github.com/VesperLabs/aether/commit/0e5c12b5e8124acc7e18175b5a57b457e4d15f3b))
+
 ## [0.66.0](https://github.com/VesperLabs/aether/compare/v0.65.1...v0.66.0) (2026-11-25)
 
 
