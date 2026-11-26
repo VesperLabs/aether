@@ -12,6 +12,8 @@ export interface SavedPet {
   /** Ties the saved entry to the pet out in the world (its `state.petId`). */
   id: string;
   name: string;
+  /** The color it was caught in, for an actor that comes in several (a butterfly). */
+  tint?: string;
   /** Its HP as it was put away, as a share of its max (0 to 1), so swapping never heals. Full if missing. */
   hp?: number;
   /** In the active slot but put away, not out with its owner (a double-click calls it back). */
@@ -36,10 +38,11 @@ export function readPetSlots(saved: unknown): PetSlots {
   for (const slot of PET_SLOTS) {
     const pet = (saved as Record<string, unknown>)[slot] as SavedPet | null;
     if (typeof pet?.id === "string" && typeof pet?.name === "string") {
-      const { id, name, hp } = pet;
+      const { id, name, hp, tint } = pet;
       slots[slot] = {
         id,
         name,
+        ...(typeof tint === "string" && { tint }),
         ...(typeof hp === "number" && hp >= 0 && hp <= 1 && { hp }),
         /* Only the active one can be put away in place: a stored one is away already */
         ...(slot === "active" && pet.isAway === true && { isAway: true }),

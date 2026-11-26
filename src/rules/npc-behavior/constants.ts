@@ -47,6 +47,8 @@ export const NPC_FOLLOW_DISTANCE = 40;
  * Pathing steps between tile centres, which turns it sideways and back, so it is the last resort.
  */
 export const NPC_FOLLOW_PATH_DISTANCE = 160;
+/** A pet that can fly (a caught sparrow) takes off this far behind its leader, px, to catch up. */
+export const NPC_FOLLOW_FLY_DISTANCE = 96;
 /** The behavior an NPC is already doing gets this much added to its score, so it doesn't flicker. */
 export const NPC_BEHAVIOR_STICKINESS = 0.04;
 /** Close enough to spawn to count as home after a reset. */

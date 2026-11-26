@@ -50,10 +50,14 @@ const outInWorld = (world: ServerWorld, id: string | undefined) =>
 
 /** Spawns the active pet at its owner's feet and tells the room. */
 function bringOut(world: ServerWorld, owner: Player, saved: SavedPet) {
-  const { id, name } = saved;
+  const { id, name, tint } = saved;
   const room = owner.roomName ? world.rooms[owner.roomName] : undefined;
   if (!room || outInWorld(world, id)) return undefined;
-  const properties = [{ name: "petId", value: id }];
+  const properties = [
+    { name: "petId", value: id },
+    /* In the color it was caught in, not a fresh roll */
+    ...(tint ? [{ name: "tint", value: tint }] : []),
+  ];
   const pet = spawnNpc(world, room, { name, x: owner.x, y: owner.y, properties });
   if (!pet) return undefined;
   makeOwned(pet, owner);
@@ -98,7 +102,15 @@ export function keepPet(owner: Player, npc: Npc) {
   const id = owner.world.dice.newId();
   npc.state.petId = id;
   if (slot !== "active") removeNpc(npc);
-  savePets(owner, { ...owner.pets, [slot]: { id, name: npc.name, hp: hpShare(npc) } });
+  savePets(owner, {
+    ...owner.pets,
+    [slot]: {
+      id,
+      name: npc.name,
+      ...(npc.profile?.tint && { tint: npc.profile.tint }),
+      hp: hpShare(npc),
+    },
+  });
   return slot === "active";
 }
 

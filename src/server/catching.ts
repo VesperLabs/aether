@@ -22,7 +22,11 @@ export function catchAsOwned(
     name: wild.name,
     x: owner.x,
     y: owner.y,
-    properties,
+    /* The copy comes in the color of the one caught (a pink butterfly stays pink) */
+    properties: [
+      ...(wild.profile?.tint ? [{ name: "tint", value: wild.profile.tint }] : []),
+      ...properties,
+    ],
   });
   if (!pet) return undefined;
   /* Owned before the room hears of it, so it arrives as theirs */

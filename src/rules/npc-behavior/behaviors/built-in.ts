@@ -1,4 +1,10 @@
-import { NPC_FOLLOW_DISTANCE, NPC_FOLLOW_PATH_DISTANCE, NPC_HOME_RANGE } from "../constants";
+import {
+  NPC_FOLLOW_DISTANCE,
+  NPC_FOLLOW_FLY_DISTANCE,
+  NPC_FOLLOW_PATH_DISTANCE,
+  NPC_HOME_RANGE,
+} from "../constants";
+import { behaviorOptions } from "../behavior-options";
 import { getCharacterDirection } from "@/rules/world";
 import { checkInRange, distanceBetween } from "../range";
 import type { NpcBehavior } from "./types";
@@ -21,6 +27,19 @@ export const follow: NpcBehavior = {
     const distance = distanceBetween(input.npc, input.leader);
     if (distance <= NPC_FOLLOW_DISTANCE) return { type: "standStill" };
     return { type: "follow", pathed: distance > NPC_FOLLOW_PATH_DISTANCE };
+  },
+  /*
+   * One that takes to the air when scared (a caught sparrow) flies to catch up when left behind,
+   * and stays up until it is back at heel, then lands.
+   */
+  habitat: ({ input }) => {
+    const skittish = behaviorOptions(input.npc, "skittish");
+    if (!skittish || !skittish.to || !input.leader) return undefined;
+    const distance = distanceBetween(input.npc, input.leader);
+    const flying = !!input.state.habitat;
+    return distance > (flying ? NPC_FOLLOW_DISTANCE : NPC_FOLLOW_FLY_DISTANCE)
+      ? skittish.to
+      : undefined;
   },
 };
 
