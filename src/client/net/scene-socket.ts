@@ -24,7 +24,7 @@ import { playCritShake, playHitImpact } from "@/client/views/hit-impact";
 import { playDrainRing } from "@/client/views/drain-ring";
 import type { DrainResource } from "@/rules/combat";
 import { beginCast, endCast, landCast } from "@/client/views/player-actions";
-import { playWindupPie, stopWindupPie } from "@/client/views/windup-pie";
+import { playCastBar, stopCastBar } from "@/client/views/cast-bar";
 import { drawHitShapes } from "@/client/views/hit-shapes";
 import { playLeaveDissolve, playSpawnDissolve } from "@/client/views/dissolve";
 import { bindNpcSocket } from "./npc-socket";
@@ -302,12 +302,12 @@ export function bindSceneSocket(scene: SceneMain) {
 
   socket.on("npcWindup", ({ id, kind, windupMs }) => {
     const n = getNpc(scene, id);
-    if (n) playWindupPie(n, windupMs, kind);
+    if (n) playCastBar(n, windupMs, kind);
   });
 
   socket.on("npcWindupCancelled", ({ id }) => {
     const n = getNpc(scene, id);
-    if (n) stopWindupPie(n);
+    if (n) stopCastBar(n);
   });
 
   socket.on("npcCastSpell", ({ id, abilitySlot, castAngle }) => {

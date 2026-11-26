@@ -5,7 +5,7 @@ import { getSpinDirection } from "@/client/input/spin-direction";
 import type { Player } from "./player";
 import { Spell } from "./spell";
 import { playAttackLunge } from "./hit-impact";
-import { playWindupPie, stopWindupPie } from "./windup-pie";
+import { playCastBar, stopCastBar } from "./cast-bar";
 import type { LootItem } from "./loot-item";
 
 const PLAYER_GRAB_RANGE = 32;
@@ -73,14 +73,14 @@ function holdCastPose(player: Player, ms: number) {
 /** A timed spell began: the ring fills until it lands. The pose waits for the spell to go off. */
 export function beginCast(player: Player, castMs: number) {
   player.isCasting = true;
-  playWindupPie(player, castMs, "cast");
+  playCastBar(player, castMs, "cast");
 }
 
 /** The timed spell stopped, by landing or being cancelled. */
 export function endCast(player: Player) {
   player.isCasting = false;
   player.castPose = undefined;
-  stopWindupPie(player);
+  stopCastBar(player);
 }
 
 /** A timed spell fired. The server has charged for it, so this only draws it. */
