@@ -1,6 +1,6 @@
 import type { MouseEvent, ReactNode } from "react";
 import type { ThemeUIStyleObject } from "theme-ui";
-import { Box, GLASS_BACKDROP, GLASS_WASH_LAYER } from "@/ui";
+import { Box, GLASS_EDGE, GLASS_WASH_LAYER } from "@/ui";
 
 /** The collapsed disc's size. */
 export const DISC_SIZE = 30;
@@ -11,7 +11,7 @@ export const GLASS_PILL: ThemeUIStyleObject = {
   borderRadius: 999,
   bg: "shadow.30",
   backgroundImage: GLASS_WASH_LAYER,
-  backdropFilter: GLASS_BACKDROP,
+  boxShadow: GLASS_EDGE,
   pointerEvents: "all",
 };
 

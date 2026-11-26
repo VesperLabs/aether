@@ -52,6 +52,7 @@ export const SkillButton = ({
           backgroundColor: "transparent",
           backgroundImage: "none",
           backdropFilter: "none",
+          boxShadow: "none",
           isolation: "isolate",
         }),
         ...sx,
