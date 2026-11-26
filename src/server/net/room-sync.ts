@@ -6,6 +6,7 @@ import {
   getRoomState as packRoomState,
 } from "@/network/sync";
 import { hourAt, seasonAt } from "@/rules/seasons";
+import { weatherAt } from "@/rules/weather";
 
 /* Thin world adapters: hand the world's collections to the pure packers in network/sync. */
 
@@ -21,6 +22,8 @@ export function getRoomState(world: ServerWorld, roomName: string, viewer: strin
     effects: roomEffects(world, roomName),
     season: seasonAt(world.now(), world.calendar),
     hour: hourAt(world.now(), world.calendar),
+    weather: weatherAt(world.now(), world.weather),
+    now: world.now(),
   };
 }
 
@@ -31,6 +34,8 @@ export function getPublicRoomState(world: ServerWorld, roomName: string) {
     effects: roomEffects(world, roomName),
     season: seasonAt(world.now(), world.calendar),
     hour: hourAt(world.now(), world.calendar),
+    weather: weatherAt(world.now(), world.weather),
+    now: world.now(),
   };
 }
 

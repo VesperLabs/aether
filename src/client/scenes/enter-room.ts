@@ -1,3 +1,4 @@
+import { setWeather } from "./clouds";
 import type { RoomStateMessage } from "@/network";
 import type { Player } from "@/client/views/player";
 import { netInterp } from "@/client/net/scene-interpolation";
@@ -11,7 +12,7 @@ import {
   roomTilesetKeys,
   whenTexturesLoaded,
 } from "./tileset-textures";
-import { announceSeason, setDayClock } from "./world-clock";
+import { announceSeason, setDayClock, setWorldNow } from "./world-clock";
 import type { SceneMain } from "./main-scene";
 import { startEffect } from "@/client/net/effects";
 import {
@@ -28,7 +29,16 @@ import {
 export function enterRoom(
   scene: SceneMain,
   roomName: string,
-  { players = [], npcs = [], loots = [], effects = [], season, hour }: Partial<RoomStateMessage>,
+  {
+    players = [],
+    npcs = [],
+    loots = [],
+    effects = [],
+    season,
+    hour,
+    weather,
+    now,
+  }: Partial<RoomStateMessage>,
   heroSocketId?: string,
 ) {
   resetEntities(scene);
@@ -54,6 +64,8 @@ export function enterRoom(
     announceSeason(season);
   }
   if (hour !== undefined) setDayClock(hour);
+  if (weather) setWeather(weather);
+  if (now !== undefined) setWorldNow(now);
   const built = changeMap(scene, roomName);
   /* The rest of the art, behind this room's: by the next door it has usually all arrived */
   prefetchBaseTilesets(scene);

@@ -14,3 +14,9 @@ export const ABOVE_LAYER_DEPTH = 50_000;
  * the tree tops cut out, so a light under the leaves doesn't light them (see `drawLights`).
  */
 export const DAYLIGHT_DEPTH = 50_001;
+
+/** Cloud shadows drifting over the map: over tree tops and roofs, under the night's light map. */
+export const CLOUD_DEPTH = 50_000.5;
+
+/** Ground mist: over the map's ground layers and marks on them, under everything standing in it. */
+export const GROUND_FOG_DEPTH = 5;

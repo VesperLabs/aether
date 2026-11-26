@@ -53,6 +53,27 @@ function triggerEntityProximity(scene: SceneMain, closestEntity: Entity | undefi
   }
 }
 
+/** Hover reaches at least this far from a body's middle each way, px, so small critters are easy to point at. */
+const MIN_HOVER_HALF = 12;
+
+/**
+ * Is the cursor over the NPC: inside the box spells hit (where its body is drawn), grown to
+ * `MIN_HOVER_HALF` for small ones. And how far the cursor is from that box's middle.
+ */
+function hoverOf(npc: Player, cursor: { x: number; y: number }) {
+  const box = npc.hitBox;
+  const x = npc.x + box.x;
+  const y = npc.y + box.y;
+  const halfWidth = Math.max(MIN_HOVER_HALF, box.displayWidth / 2);
+  const halfHeight = Math.max(MIN_HOVER_HALF, box.displayHeight / 2);
+  const dx = cursor.x - x;
+  const dy = cursor.y - y;
+  return {
+    isOver: Math.abs(dx) <= halfWidth && Math.abs(dy) <= halfHeight,
+    distance: Math.hypot(dx, dy),
+  };
+}
+
 export function checkProximities(scene: SceneMain, time: number) {
   const { hero } = scene ?? {};
   if (time % 8 > 1) return;
@@ -94,19 +115,20 @@ export function checkProximities(scene: SceneMain, time: number) {
     }
 
     if (entity?.kind === "npc") {
-      const cursorDistance = distanceTo(entity, cursorPoint);
       const npc = entity as Player;
+      const hover = hoverOf(npc, cursorPoint);
       if (npc.state?.ownerId === hero.socketId && !npc.state.isDead) owned.push(npc);
-      if (npc.state?.lockedPlayerId === hero.socketId && !npc.state.isDead) {
+      /* Fighting the hero, or hurt by them and still in combat (one that flees instead) */
+      const isHurtByHero = npc.state?.hurtBy === hero.socketId && !npc.checkOutOfCombat();
+      if ((npc.state?.lockedPlayerId === hero.socketId || isHurtByHero) && !npc.state.isDead) {
         foes.push({ npc, distance });
       }
       if (npc.state && !isMobile) {
-        npc.state.isHovering =
-          cursorDistance < (npc?.hitBoxSize?.width + npc?.hitBoxSize?.height) / 2;
+        npc.state.isHovering = hover.isOver;
         /* The plate shows the one nearest the cursor, if several are under it */
-        if (npc.state.isHovering && !npc.state.isDead && cursorDistance < hoveredDistance) {
+        if (hover.isOver && !npc.state.isDead && hover.distance < hoveredDistance) {
           hovered = npc;
-          hoveredDistance = cursorDistance;
+          hoveredDistance = hover.distance;
         }
       }
     }

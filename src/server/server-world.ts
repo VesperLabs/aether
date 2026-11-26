@@ -28,6 +28,8 @@ export type ServerWorld = World<Player, Npc, Spell, Loot, Quest> & {
   roomIndexes?: Record<string, RoomIndex>;
   /** The season clients were last told about, see `announceSeason`. */
   announcedSeason?: Season;
+  /** The weather clients were last told about, see `announceWeather`. */
+  announcedWeather?: string;
   /** Wall-clock tick and event loop timings, for the net stats panel. */
   tickHealth: TickHealth;
 };

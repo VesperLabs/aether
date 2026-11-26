@@ -1,8 +1,7 @@
 import {
   Box,
   Flex,
-  GLASS_BACKDROP,
-  GLASS_WASH,
+  GLASS_WASH_LAYER,
   KeyboardKey,
   Menu,
   MenuAbilities,
@@ -172,16 +171,17 @@ export const MenuBar = () => {
         maxHeight: `calc((100dvh - ${keyboardOffset}px) / ${zoom})`,
       }}
     >
-      {/* One blur behind the menus and the buttons, so their edges don't each blur on their own.
-      It starts below the room left for a portrait sticking out above the menus. */}
+      {/* One frost behind the menus, so their edges don't each frost on their own. Its tint and
+      the menus' own make the dark glass the action buttons match. It starts below the room left
+      for a portrait sticking out above the menus. */}
       <Box
         sx={{
           position: "absolute",
           inset: 0,
           top: `var(${OVERHANG_VAR}, 0px)`,
           zIndex: -1,
-          backdropFilter: GLASS_BACKDROP,
-          bg: GLASS_WASH,
+          bg: "shadow.30",
+          backgroundImage: GLASS_WASH_LAYER,
         }}
       />
       {/* Sits above the menus without taking their height, so menus can fill the screen. On the

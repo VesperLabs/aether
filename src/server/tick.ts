@@ -17,6 +17,7 @@ import { keepOwnedNear } from "./owned-npcs";
 import { loseDeadPets } from "./pets";
 import { endTickTimer, startTickTimer } from "./tick-health";
 import { announceSeason } from "./season-announce";
+import { announceWeather } from "./weather-announce";
 import { keepActorsToTheirTimes } from "./npc-away";
 
 /** A long stall (debugger, GC) must not teleport things across the map. */
@@ -157,5 +158,6 @@ export const serverSystems: Array<System<ServerWorld>> = [
   recordPoses,
   updateRooms,
   announceSeason,
+  announceWeather,
   endTickTimer,
 ];

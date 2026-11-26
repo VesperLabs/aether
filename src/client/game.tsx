@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { watchFrameWork } from "./scenes/frame-work";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { App } from "@/client/hud/app/app";
@@ -91,6 +92,7 @@ async function startApp() {
     },
     scene: [new SceneBoot(socket), new SceneMain(socket, ticket), new SceneHud(socket)],
   });
+  watchFrameWork(game);
 
   root.render(
     <React.StrictMode>

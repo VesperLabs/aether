@@ -1,5 +1,5 @@
 import tColors from "./colors-tailwind.json";
-import { BUTTON_GLASS_BACKDROP, GLASS_WASH_LAYER } from "./glass";
+import { GLASS_EDGE, GLASS_WASH_LAYER } from "./glass";
 
 /**
  * The one text size for every control: inputs, dropdowns, buttons and button groups. With the
@@ -116,10 +116,11 @@ export const theme = {
     skill: {
       variant: "buttons.default",
       opacity: 1,
-      backgroundColor: "shadow.30",
+      /* As dark as an open menu: the menu bar's tint under the menu's own */
+      backgroundColor: "shadow.50",
       backgroundImage: GLASS_WASH_LAYER,
+      boxShadow: GLASS_EDGE,
       borderRadius: "100%",
-      backdropFilter: BUTTON_GLASS_BACKDROP,
     },
     header: {
       variant: "buttons.default",

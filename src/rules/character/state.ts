@@ -33,6 +33,8 @@ export interface CharacterState {
   lastMpRegen: number;
   lastSpRegen: number;
   lastCombat: number;
+  /** Who last hurt it (socket id or NPC id): their plates list it while it's in combat. */
+  hurtBy?: string;
   lastPotion: number;
   lastAttack: number;
   /** The last swing: 1 is the main hand, 2 a dual-wielder's left (see `getNextAttackCount`). */
