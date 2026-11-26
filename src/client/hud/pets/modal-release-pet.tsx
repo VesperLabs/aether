@@ -29,7 +29,7 @@ export const ModalReleasePet = ({ slot, onClose }: { slot: PetSlot; onClose: () 
               overflow: "hidden",
             }}
           >
-            <ActorSprite name={pet.name} size={SLOT_SIZE} maxScale={1} wholeSteps />
+            <ActorSprite name={pet.name} tint={pet.tint} size={SLOT_SIZE} maxScale={1} wholeSteps />
           </Flex>
           <Text sx={{ textAlign: "center", fontSize: 0, opacity: 0.8 }}>
             It goes back to the wild, and is gone for good.

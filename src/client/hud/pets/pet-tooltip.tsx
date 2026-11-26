@@ -65,7 +65,7 @@ export const PetTooltip = ({
     <Tooltip id={tooltipId}>
       <TooltipContent sx={{ px: 2, py: "6px", minWidth: 150 }}>
         <Flex sx={{ alignItems: "center", gap: 2, width: "100%" }}>
-          <ActorSprite name={pet.name} size={32} />
+          <ActorSprite name={pet.name} tint={pet.tint} size={32} />
           <Flex sx={{ flexDirection: "column", alignItems: "flex-start" }}>
             <Text sx={TYPE.name}>
               {actor.profile.userName}

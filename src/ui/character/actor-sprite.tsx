@@ -11,8 +11,11 @@ export const ActorSprite = ({
   size = 32,
   maxScale,
   wholeSteps,
+  tint: ownTint,
 }: {
   name: string;
+  /** This one's color, over its actor's (a butterfly caught pink). */
+  tint?: string;
   size?: number;
   /** A race sheet grows by whole steps up to this scale, within `size`, rather than filling it. */
   maxScale?: number;
@@ -21,7 +24,8 @@ export const ActorSprite = ({
 }) => {
   const actor = isActorId(name) ? (actors[name] as ActorDefinition) : undefined;
   if (!actor) return null;
-  const { race, tint } = actor.profile;
+  const { race } = actor.profile;
+  const tint = ownTint ?? actor.profile.tint;
   if (getBody(race).layered) {
     return <PlayerRender player={{ profile: actor.profile }} sx={{ width: size, height: size }} />;
   }

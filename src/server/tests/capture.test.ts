@@ -26,7 +26,9 @@ async function setUp(amount: number) {
       npc.room.name === player.roomName &&
       !npc.state.ownerId &&
       !npc.state.isDead &&
-      npc.state.catchable !== false,
+      npc.state.catchable !== false &&
+      /* Not a butterfly or sparrow: the fixed dice rolls make them dodge, and they flutter off */
+      !npc.behaviors?.skittish,
   );
   crab.x = player.x + 60;
   crab.y = player.y;

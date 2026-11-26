@@ -193,7 +193,13 @@ const PetSlotView = ({
         {/* While it's dragged, a faded grey copy stays behind in the slot, as an item's does */}
         {pet && dragging && (
           <Box sx={{ ...LEFT_BEHIND_STYLE, lineHeight: 0 }}>
-            <ActorSprite name={pet.name} size={SLOT_SIZE} maxScale={ART_SCALE} wholeSteps />
+            <ActorSprite
+              name={pet.name}
+              tint={pet.tint}
+              size={SLOT_SIZE}
+              maxScale={ART_SCALE}
+              wholeSteps
+            />
           </Box>
         )}
         {pet && (
@@ -220,6 +226,7 @@ const PetSlotView = ({
             >
               <ActorSprite
                 name={pet.name}
+                tint={pet.tint}
                 size={dragging ? SLOT_SIZE * 2 : SLOT_SIZE}
                 maxScale={dragging ? DRAG_SCALE : ART_SCALE}
                 /* On whole pixels, in its slot or picked up: a fraction would blur it */

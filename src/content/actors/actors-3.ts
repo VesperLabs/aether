@@ -44,7 +44,7 @@ export const actors3 = {
     flavor:
       "It drifts from flower to flower on warm days. Children chase them; nobody has ever caught one on purpose.",
     baseStats: { level: 1 },
-    state: { noWorldDrops: true, noExp: true, catchable: false },
+    state: { noWorldDrops: true, noExp: true },
     behaviors: { fight: false, wander: { radius: 64 }, skittish: { speed: 1.3 } },
     active: { seasons: ["spring", "summer"], hours: [6, 20] },
   },
@@ -54,7 +54,7 @@ export const actors3 = {
     flavor:
       "It hops about the path pecking at crumbs, and is off over the rooftops the moment anyone comes near.",
     baseStats: { level: 1 },
-    state: { noWorldDrops: true, noExp: true, catchable: false },
+    state: { noWorldDrops: true, noExp: true },
     behaviors: { fight: false, wander: {}, skittish: { to: "air" } },
     active: { seasons: ["spring", "summer", "fall"], hours: [6, 19] },
   },
