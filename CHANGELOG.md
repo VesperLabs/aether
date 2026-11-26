@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.68.0](https://github.com/VesperLabs/aether/compare/v0.67.0...v0.68.0) (2026-11-26)
+
+
+### Features
+
+* butterflies and sparrows can be caught ([#431](https://github.com/VesperLabs/aether/issues/431)) ([c7955da](https://github.com/VesperLabs/aether/commit/c7955da5fe9e70fdfb3b47cb8975a1692b7c796b))
+
 ## [0.67.0](https://github.com/VesperLabs/aether/compare/v0.66.0...v0.67.0) (2026-11-26)
 
 
