@@ -1,4 +1,4 @@
-import { readWaterTiles, type TiledWangSet } from "./terrain-corners";
+import { readIceQuarters, readWaterTiles, type TiledWangSet } from "./terrain-corners";
 
 /** A Tiled map as it is stored in the map JSON files. Only the fields the game reads. */
 interface TiledProperty {
@@ -54,6 +54,8 @@ export interface TileGrid {
    * but slow and only half out of it. Shore tiles are dry.
    */
   water: boolean[][];
+  /** `ice[qy][qx]` is true on a quarter tile painted ice: bodies slide on it. */
+  ice?: boolean[][];
 }
 
 export interface TileMap {
@@ -84,7 +86,7 @@ function gidsWith(tilesets: TiledTileset[], name: string): Set<number> {
   return gids;
 }
 
-/** Reads a map's walls (`collides` tiles on the collide layer) and its painted water. */
+/** Reads a map's walls (`collides` tiles on the collide layer) and its painted water and ice. */
 export function buildTileGrid(map: TiledMapJson, layerName = COLLIDE_LAYER): TileGrid {
   const layer = map.layers.find((l) => l.name === layerName && l.type === "tilelayer");
   const solidGids = gidsWith(map.tilesets, "collides");
@@ -104,6 +106,7 @@ export function buildTileGrid(map: TiledMapJson, layerName = COLLIDE_LAYER): Til
     tileHeight: map.tileheight,
     solid,
     water: readWaterTiles(map),
+    ice: readIceQuarters(map),
   };
 }
 
@@ -165,4 +168,11 @@ export function isNextToSolidTile(grid: TileGrid, x: number, y: number, radius =
 export function isOutOfMap(map: TileMap, x: number, y: number): boolean {
   if (x < 0 || y < 0 || x >= map.widthInPixels || y >= map.heightInPixels) return true;
   return isSolidTile(map.grid, worldToTileX(map.grid, x), worldToTileY(map.grid, y));
+}
+
+/** Is the world point (x, y) on an ice tile? */
+export function isOnIce(grid: TileGrid, x: number, y: number): boolean {
+  const qx = Math.floor((x * 2) / grid.tileWidth);
+  const qy = Math.floor((y * 2) / grid.tileHeight);
+  return grid.ice?.[qy]?.[qx] === true;
 }

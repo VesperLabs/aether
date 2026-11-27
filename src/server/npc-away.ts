@@ -1,5 +1,6 @@
 import { actors, getMapByName, isActorId, type ActiveTimes, type ActorDefinition } from "@/content";
 import { hourAt, isActive, mapSeason, seasonAt } from "@/rules/seasons";
+import { skyIn, weatherAt } from "@/rules/weather";
 import type { System } from "@/rules/world";
 import type { Npc } from "./npc";
 import type { ServerWorld } from "./server-world";
@@ -30,7 +31,8 @@ function bringBack(npc: Npc) {
 }
 
 /**
- * Sends actors away outside their `active` times (butterflies at night and in fall and winter) and
+ * Sends actors away outside their `active` times (butterflies at night, in fall and winter, and in
+ * showers and storms) and
  * brings them back when their time comes round, by their map's season. Runs before NPCs update,
  * which skip anyone away, so nothing respawns them early.
  */
@@ -38,11 +40,13 @@ export const keepActorsToTheirTimes: System<ServerWorld> = (world) => {
   const now = world.now();
   const worldSeason = seasonAt(now, world.calendar);
   const hour = hourAt(now, world.calendar);
+  const { sky } = weatherAt(now, world.weather, worldSeason);
   for (const npc of Object.values(world.npcs)) {
     const active = activeTimesOf(npc);
     if (!active || !npc.room) continue;
     const season = mapSeason(getMapByName(npc.room.name)?.seasons, worldSeason);
-    const about = isActive(active, season, hour);
+    const isFalling = !!skyIn(sky, season).fall;
+    const about = isActive(active, { season, hour, isFalling });
     if (!about && !npc.state.isAway) sendAway(world, npc);
     else if (about && npc.state.isAway) bringBack(npc);
   }

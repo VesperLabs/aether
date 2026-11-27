@@ -102,6 +102,8 @@ const WEATHER_OPTIONS = [
   { value: "clear", hint: "Pin a clear sky" },
   { value: "cloudy", hint: "Pin clouds drifting over" },
   { value: "foggy", hint: "Pin fog rolling in" },
+  { value: "showers", hint: "Pin showers: light rain, or snow in winter" },
+  { value: "storm", hint: "Pin a storm: lightning and heavy rain, or snow in winter" },
   { value: "real", hint: "Follow the forecast again" },
 ];
 const RARITY_OPTIONS = ITEM_RARITIES.map((value) => ({ value, rarity: value }));

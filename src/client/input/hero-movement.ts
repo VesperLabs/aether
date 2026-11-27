@@ -4,6 +4,8 @@ import { getAngleDirection, getSpinDirection } from "./spin-direction";
 import { getAngleFromDirection } from "@/rules/world";
 import {
   ATTACK_WALK_SPEED_SCALE,
+  GROUND,
+  ICE,
   approachVelocity,
   getDodgeVelocity,
   getKnockbackVelocity,
@@ -27,7 +29,7 @@ import { isMenuMode } from "./pad-nav";
 import { heldSince } from "./held-keys";
 import { getBindings, type BindAction } from "./key-bindings";
 import type { Player } from "@/client/views/player";
-import { isWaterAt } from "@/client/scenes/ground-terrain";
+import { isIceAt, isWaterAt } from "@/client/scenes/ground-terrain";
 import type { SceneMain } from "@/client/scenes/main-scene";
 
 const { Between } = Phaser.Math.Angle;
@@ -133,8 +135,12 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
   }
 
   /* Wading through water is slow; the server checks against full speed, so this only ever undershoots */
+  /* On ice it glides: faster, with wide turns and a long slide to a stop */
+  const surface = isIceAt(mainScene.map, hero.x, hero.y) ? ICE : GROUND;
   const walkSpeed =
-    hero.stats.walkSpeed * (isWaterAt(mainScene.map, hero.x, hero.y) ? WATER_SPEED_SCALE : 1);
+    hero.stats.walkSpeed *
+    (isWaterAt(mainScene.map, hero.x, hero.y) ? WATER_SPEED_SCALE : 1) *
+    surface.speedScale;
   const joystick = scene.joystick;
 
   const isHeld = (action: BindAction) => (heldAction(action) === undefined ? 0 : 1);
@@ -294,7 +300,7 @@ export function moveDirectHero(scene: SceneHud, deltaMs: number) {
     if (speed > walkSpeed) {
       current = { x: (current.x / speed) * walkSpeed, y: (current.y / speed) * walkSpeed };
     }
-    ({ x: vx, y: vy } = approachVelocity(current, { x: vx, y: vy }, walkSpeed, seconds));
+    ({ x: vx, y: vy } = approachVelocity(current, { x: vx, y: vy }, walkSpeed, seconds, surface));
     /* A rooted caster stands firm: pushed, it would never be still enough to start its cast */
     lastCrowdPush = isCastRooted
       ? { x: 0, y: 0 }

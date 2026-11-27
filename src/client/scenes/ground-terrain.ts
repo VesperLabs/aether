@@ -2,6 +2,7 @@ import type Phaser from "phaser";
 import {
   buildTileGrid,
   isInWater,
+  isOnIce,
   isWaterTerrain,
   readTerrainQuarters,
   type TiledMapJson,
@@ -62,6 +63,12 @@ export function wallsOf(map: Phaser.Tilemaps.Tilemap | undefined) {
 export function isWaterAt(map: Phaser.Tilemaps.Tilemap | undefined, x: number, y: number) {
   const ground = map && grounds.get(map);
   return !!ground && isInWater(ground.grid, x, y);
+}
+
+/** Is the world point on an ice tile of the shown map, by the same rule the server slides NPCs by? */
+export function isIceAt(map: Phaser.Tilemaps.Tilemap | undefined, x: number, y: number) {
+  const ground = map && grounds.get(map);
+  return !!ground && isOnIce(ground.grid, x, y);
 }
 
 /**

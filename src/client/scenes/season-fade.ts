@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import type { SceneMain } from "./main-scene";
-import { ABOVE_LAYER_DEPTH } from "./world-depths";
+import { ABOVE_LAYER_DEPTH, ABOVE_LAYER_FADE_DEPTH } from "./world-depths";
 
 /** How long the old season takes to fade away. */
 const FADE_MS = 1500;
@@ -46,7 +46,7 @@ export function fadeMapChange(scene: SceneMain, swap: () => void) {
   /* Just over the layers each one covers */
   fading = [
     snapshot(scene, below, Math.max(...below.map((layer) => layer.depth)) + 0.5),
-    ...(above.length ? [snapshot(scene, above, ABOVE_LAYER_DEPTH + 0.5)] : []),
+    ...(above.length ? [snapshot(scene, above, ABOVE_LAYER_FADE_DEPTH)] : []),
   ];
 
   /* The snapshot draws during the next render; swap only once it has, or it shows the new season */

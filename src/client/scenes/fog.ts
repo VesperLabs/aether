@@ -5,7 +5,7 @@ import { drawFogArt } from "./fog-art";
 import { clearPuffKicks, drawPuffs } from "./fog-puffs";
 import { clearSwirls, feetOf, leaveSwirls, swirlsAt } from "./fog-swirls";
 import type { SceneMain } from "./main-scene";
-import { currentSky } from "./clouds";
+import { skyOver } from "./clouds";
 import { getNpcs, getPlayers } from "./scene-entities";
 import { worldNow } from "./world-clock";
 import { GROUND_FOG_DEPTH } from "./world-depths";
@@ -109,7 +109,7 @@ function fogOf(scene: SceneMain): Fog {
 export function updateFog(scene: SceneMain, delta: number) {
   fogOf(scene);
   const map = getMapByName(scene.roomName);
-  const target = map?.isOutdoors && currentSky() === "foggy" ? 1 : 0;
+  const target = map?.isOutdoors && skyOver(scene).sky === "foggy" ? 1 : 0;
   /* A new map opens in the fog it has, already there */
   if (shownMap !== scene.roomName) {
     shownMap = scene.roomName;

@@ -21,8 +21,7 @@ import { placeShadow } from "./shadow";
 
 /** The overhead hp bar in world pixels (it is drawn at twice this, then halved). */
 const HP_BAR_WIDTH = 16;
-const HP_BAR_HEIGHT = 3;
-const CAST_BAR_HEIGHT = HP_BAR_HEIGHT;
+const BAR_HEIGHT = 4;
 
 const { Sprite, BitmapText, Container } = Phaser.GameObjects;
 const BLANK_TEXTURE = "human-blank";
@@ -69,18 +68,12 @@ export function createSpriteLayers(player: Player) {
     new Crosshair(scene, 0, player.bodyOffsetY, "icons", "crosshair", player, 40),
   );
   player.hpBar = scene.add
-    .existing(new HpBar(scene, -HP_BAR_WIDTH / 2, player?.headY, HP_BAR_WIDTH, HP_BAR_HEIGHT))
+    .existing(new HpBar(scene, -HP_BAR_WIDTH / 2, player?.headY, HP_BAR_WIDTH, BAR_HEIGHT))
     .setVisible(false);
-  /* Just under the hp bar, as wide, thinner */
+  /* Just under the hp bar, as wide and as tall */
   player.castBar = scene.add
     .existing(
-      new CastBar(
-        scene,
-        -HP_BAR_WIDTH / 2,
-        player?.headY + HP_BAR_HEIGHT,
-        HP_BAR_WIDTH,
-        CAST_BAR_HEIGHT,
-      ),
+      new CastBar(scene, -HP_BAR_WIDTH / 2, player?.headY + BAR_HEIGHT, HP_BAR_WIDTH, BAR_HEIGHT),
     )
     .setVisible(false);
   player.userName = scene.add.existing(

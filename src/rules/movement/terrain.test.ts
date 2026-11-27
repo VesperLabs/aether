@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildTileGrid, isOutOfMap, readTileMap, type TiledMapJson } from "./tilemap";
+import { buildTileGrid, isOnIce, isOutOfMap, readTileMap, type TiledMapJson } from "./tilemap";
 import { readTerrainQuarters } from "./terrain-corners";
 import {
   WATER_SPEED_SCALE,
@@ -112,5 +112,36 @@ describe("habitatMap", () => {
 describe("nearestWater", () => {
   it("finds the middle of the closest water tile", () => {
     expect(nearestWater(map.grid, land)).toEqual(water);
+  });
+});
+
+describe("ice tiles", () => {
+  it("are slippery a quarter tile at a time, so edges are icy only on their ice side", () => {
+    const icy: TiledMapJson = {
+      ...json,
+      tilesets: [
+        {
+          firstgid: 1,
+          wangsets: [
+            {
+              name: "Terrains",
+              colors: [{ name: "Ice" }],
+              wangtiles: [
+                { tileid: 3, wangid: WATER_CORNERS },
+                { tileid: 4, wangid: [0, 1, 0, 0, 0, 0, 0, 1] },
+              ],
+            },
+          ],
+        },
+      ],
+      layers: [{ name: "Ground", type: "tilelayer", data: [4, 5, 0] }],
+    };
+    const grid = buildTileGrid(icy);
+    expect(grid.ice?.[0]).toEqual([true, true, true, true, false, false]);
+    expect(grid.ice?.[1]).toEqual([true, true, false, false, false, false]);
+    expect(isOnIce(grid, 16, 16)).toBe(true);
+    expect(isOnIce(grid, 48, 8)).toBe(true);
+    expect(isOnIce(grid, 48, 24)).toBe(false);
+    expect(isOnIce(grid, 80, 8)).toBe(false);
   });
 });

@@ -64,7 +64,14 @@ export {
 } from "./knockback";
 export type { KnockbackState } from "./knockback";
 export type { MoveContext, MoveTrack } from "./move-validation";
-export { ATTACK_WALK_SPEED_SCALE, approachVelocity, getWalkVelocity } from "./walking";
+export {
+  ATTACK_WALK_SPEED_SCALE,
+  GROUND,
+  ICE,
+  approachVelocity,
+  getWalkVelocity,
+  slideVelocity,
+} from "./walking";
 export {
   WATER_SPEED_SCALE,
   habitatMap,
@@ -73,6 +80,6 @@ export {
   terrainSpeedScale,
 } from "./terrain";
 export type { Habitat } from "./terrain";
-export { isInWater } from "./tilemap";
+export { isInWater, isOnIce } from "./tilemap";
 export { isWaterTerrain, readTerrainQuarters } from "./terrain-corners";
 export { findOpenSpot } from "./open-spot";
