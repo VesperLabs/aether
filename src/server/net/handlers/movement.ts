@@ -12,10 +12,10 @@ import { legacyUpdateMemberRoom } from "../../party-adapter";
 import type { CommandContext } from "@/server/net/command-context";
 import { findNearbyNpc } from "@/server/net/nearby-keeper";
 import {
-  DODGE_DISTANCE,
   DODGE_SP_COST,
   KNOCKBACK_DISTANCE,
   LUNGE_DISTANCE,
+  DODGE_DISTANCE,
   canDodge,
   checkMove,
   clampRewind,
@@ -158,6 +158,9 @@ export function dodge(ctx: CommandContext, { angle }: ParsedCommand<"dodge">) {
     amount: -DODGE_SP_COST,
   });
   player.state.lastDodge = now;
+  /* Backdated by how far behind they see others: they rolled against a windup that already lay
+   * that far in the server's past */
+  player.state.dodgeSeenAt = now - (player.viewLagMs ?? 0);
   player.state.lastAngle = angle;
   const track = moveTracks.get(player);
   if (track) moveTracks.set(player, grantMoveBudget(track, DODGE_DISTANCE));

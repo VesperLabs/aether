@@ -25,4 +25,6 @@ export type NpcMovement =
   /** Dash along `angle` (radians): a lunge spell carries it. */
   | { type: "lunge"; angle: number }
   /** Shoved along `angle` (radians), `elapsed` ms in: no turning, no acting. */
-  | { type: "knockback"; angle: number; elapsed: number };
+  | { type: "knockback"; angle: number; elapsed: number }
+  /** Surge along a melee swing as it fires (see `step-in.ts`). */
+  | { type: "stepIn"; angle: number; distance: number; elapsed: number };

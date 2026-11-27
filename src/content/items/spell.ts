@@ -158,7 +158,7 @@ export const spellItems = {
       texture: "scroll-gray",
       buffs: { stealth: 1 },
       requirements: { charClass: "rogue" },
-      stats: { spCost: 5, castTime: 500 },
+      stats: { mpCost: 5, castTime: 500 },
     },
     tackle: {
       tier: 1,
@@ -167,7 +167,7 @@ export const spellItems = {
       base: "tackle",
       slot: "spell",
       texture: "scroll-red",
-      stats: { spCost: 6, castTime: 300 },
+      stats: { mpCost: 6, castTime: 300 },
       buffs: { stun: 1 },
       requirements: { charClass: "warrior", weaponType: "melee" },
       exclusive: true,
@@ -179,7 +179,7 @@ export const spellItems = {
       base: "pounce",
       slot: "spell",
       texture: "scroll-red",
-      stats: { spCost: 6, castTime: 300 },
+      stats: { mpCost: 6, castTime: 300 },
       // A mob's ability: never a random drop
       exclusive: true,
     },

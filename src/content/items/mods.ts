@@ -35,16 +35,17 @@ export type ItemEffect = "fire" | "water" | "light" | "earth" | "holy";
 const WEAPONS = ["weapon", "ranged"] as const;
 
 /**
- * Every trigger mod fires on 1 hit in 20 (5%), so stacking copies only ever adds a little.
- * A "when you hit" mod goes on weapons; a "when you're hurt" one on anything but.
+ * Every trigger mod fires on 15% of hits (of a medium-speed swing; see `TriggerDefinition`), so it
+ * shows up every fight. A "when you hit" mod goes on weapons; a "when you're hurt" one on anything
+ * but.
  */
-const CHANCE = 20;
+const PERCENT = 15;
 
-const onHit = (type: "buff" | "debuff", name: TriggerDefinition["name"]) =>
-  [{ event: "onAttackHit", type, name, level: 1, chance: CHANCE }] as TriggerDefinition[];
+const onHit = (type: "buff" | "debuff", name: TriggerDefinition["name"], level = 1) =>
+  [{ event: "onAttackHit", type, name, level, percent: PERCENT }] as TriggerDefinition[];
 
-const onHurt = (name: TriggerDefinition["name"]) =>
-  [{ event: "onHurt", type: "buff", name, level: 1, chance: CHANCE }] as TriggerDefinition[];
+const onHurt = (name: TriggerDefinition["name"], level = 1) =>
+  [{ event: "onHurt", type: "buff", name, level, percent: PERCENT }] as TriggerDefinition[];
 
 /* Each mod fits only a few kinds of gear, so every slot is a choice */
 const MODS = {
@@ -270,7 +271,7 @@ const MODS = {
   elusive: {
     label: "Elusive",
     power: "major",
-    triggers: onHurt("evasion"),
+    triggers: onHurt("evasion", 3),
     types: ["boots", "pants"],
   },
   enduring: { label: "Enduring", power: "major", triggers: onHurt("endurance"), types: ["armor"] },

@@ -171,9 +171,7 @@ export function applyAttackDamage(
     return [{ type: "block", amount: 0, from: attacker.id, to: victim.id }];
   }
   const { isCritical, physicalDamage } = roll;
-  /* An NPC's jab hits lighter and its heavy blow harder (see `npc-behavior/swings`) */
-  const power = attacker.kind === "npc" ? (attacker.state.swingPower ?? 1) : 1;
-  const totalDamage = Math.round(roll.totalDamage * power);
+  const totalDamage = roll.totalDamage;
   const elements = roll.elements as Elements[];
 
   const hits: Array<Hit> = [];
@@ -197,6 +195,7 @@ export function applyAttackDamage(
     swingStats?.triggers,
     "onAttackHit",
     victim.world.rng,
+    attacker.getFullAttackDelay(),
   )) {
     const to = target === "self" ? attacker : victim;
     if (isKilled && to === victim) continue;

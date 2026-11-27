@@ -20,14 +20,17 @@ import type { BehaviorContext, NpcBehavior } from "./types";
  */
 
 /**
- * Close in on the target, stopping once it is in attack range or while winding up. Ranged NPCs
+ * Close in on the target, stopping once it is in attack range. Melee keeps closing while it winds
+ * up and swings; aiming a shot or a spell roots it, as it does a player. Ranged NPCs
  * keep closing (pathing around walls) until they have a clear shot, then sidestep between shots.
  */
 export const chase: NpcBehavior = {
   engaged: true,
   score: (ctx) => (ctx.canChase ? 1 : 0),
-  move: ({ input, target, standBand, hasClearShot, inMeleeReach, isAttacking }, rng) => {
-    if (input.state.isAiming || isAttacking || inMeleeReach) return { type: "standStill" };
+  move: ({ input, target, standBand, hasClearShot, inMeleeReach }, rng) => {
+    // Aiming a shot or a spell roots it, as it does a player; a melee swing doesn't
+    const isRooted = input.state.isAiming && (!!standBand || !!input.state.isAimingCast);
+    if (inMeleeReach || isRooted) return { type: "standStill" };
     // Melee walks its swinging hand, not its body, onto the target
     if (!standBand) {
       const aim = target ? getSwingAim(input.npc, target) : undefined;
@@ -94,8 +97,9 @@ export const kite: NpcBehavior = {
     checkInRange(input.npc, target, NPC_KITE_MIN_RANGE)
       ? 1.05
       : 0,
-  move: ({ input, isAttacking }) =>
-    input.state.isAiming || isAttacking
+  // Roots while it aims, as everything aiming does
+  move: ({ input }) =>
+    input.state.isAiming
       ? { type: "standStill" }
       : { type: "flee", speedRatio: NPC_KITE_SPEED_RATIO },
 };

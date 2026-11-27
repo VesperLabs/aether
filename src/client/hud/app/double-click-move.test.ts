@@ -8,14 +8,16 @@ const spell = { slot: "spell", type: "spell" } as BuiltItem;
 const worn = {} as BuiltItem;
 
 describe("doubleClickMove", () => {
-  it("puts a weapon in the first open hand and refuses when both are full", () => {
+  it("puts a weapon in the first open hand, swapping into the first when both are full", () => {
     const picked = { item: sword, location: "inventory", slotKey: "3" };
     expect(doubleClickMove({ equipment: {} }, picked)?.to).toEqual({
       location: "equipment",
       slot: "handRight",
     });
     expect(doubleClickMove({ equipment: { handRight: worn } }, picked)?.to.slot).toBe("handLeft");
-    expect(doubleClickMove({ equipment: { handRight: worn, handLeft: worn } }, picked)).toBeNull();
+    expect(doubleClickMove({ equipment: { handRight: worn, handLeft: worn } }, picked)?.to).toEqual(
+      { location: "equipment", slot: "handRight" },
+    );
   });
 
   it("puts a ring in the open ring slot", () => {

@@ -18,6 +18,7 @@ import { WeaponSprite } from "./weapon-sprite";
 import { CaptureBall } from "./capture-ball";
 import { StunStars } from "./stun-stars";
 import { placeShadow } from "./shadow";
+import { createOverheadBars } from "./overhead-bars";
 
 /** The overhead hp bar in world pixels (it is drawn at twice this, then halved). */
 const HP_BAR_WIDTH = 16;
@@ -108,9 +109,8 @@ export function createSpriteLayers(player: Player) {
     player.stunStars,
     player.captureBall,
     player.bubble,
-    player.hpBar,
-    player.castBar,
   ]);
+  player.overheadBars = createOverheadBars(player);
   player.add(player.corpse);
   player.add(player.rig);
   player.add(player.talkMenu);

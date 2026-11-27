@@ -21,7 +21,10 @@ interface Picked {
   bagId?: string;
 }
 
-/** Where a double-clicked item moves: always into an open slot, never swapping anything out. */
+/**
+ * Where a double-clicked item moves: into an open slot, or for gear with every fitting slot full,
+ * swapped with what the first one holds (the server checks the swap is allowed).
+ */
 export function doubleClickMove(
   hero: Hero | null | undefined,
   { item, location, slotKey, bagId }: Picked,
@@ -44,9 +47,8 @@ export function doubleClickMove(
     const open = ABILITY_SLOTS.find((slot) => isOpen(hero?.abilities, slot));
     return open ? { from, to: { location: "abilities", slot: open } } : null;
   }
-  /* Gear goes to the first open slot it fits: either hand, either ring */
-  const open = EQUIPMENT_SLOTS.find(
-    (slot) => checkSlotsMatch(item?.slot, slot) && isOpen(hero?.equipment, slot),
-  );
-  return open ? { from, to: { location: "equipment", slot: open } } : null;
+  /* Gear goes to the first open slot it fits (either hand, either ring), else swaps into the first */
+  const fits = EQUIPMENT_SLOTS.filter((slot) => checkSlotsMatch(item?.slot, slot));
+  const slot = fits.find((each) => isOpen(hero?.equipment, each)) ?? fits[0];
+  return slot ? { from, to: { location: "equipment", slot } } : null;
 }

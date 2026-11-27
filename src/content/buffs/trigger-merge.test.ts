@@ -1,12 +1,18 @@
 import { describe, expect, it } from "vitest";
 import { mergeTriggers } from "./trigger-merge";
 
-const venom = { event: "onAttackHit", type: "debuff", name: "poison", level: 2, chance: 20 };
+const venom = { event: "onAttackHit", type: "debuff", name: "poison", level: 2, percent: 15 };
 
 describe("mergeTriggers", () => {
   it("adds up the chances of copies of one trigger, at the highest level", () => {
     expect(mergeTriggers([venom, { ...venom, level: 3 }])).toEqual([
-      { event: "onAttackHit", type: "debuff", name: "poison", level: 3, percent: 10 },
+      {
+        event: "onAttackHit",
+        type: "debuff",
+        name: "poison",
+        level: 3,
+        percent: 30,
+      },
     ]);
   });
 
@@ -16,6 +22,6 @@ describe("mergeTriggers", () => {
   });
 
   it("never goes past 100%", () => {
-    expect(mergeTriggers([{ ...venom, chance: 1 }, venom])[0]?.percent).toBe(100);
+    expect(mergeTriggers([{ ...venom, percent: 90 }, venom])[0]?.percent).toBe(100);
   });
 });

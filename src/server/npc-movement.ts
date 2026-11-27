@@ -5,6 +5,8 @@ import {
   arrive,
   decideTalkingEnded,
   fleeAround,
+  getStepInDistance,
+  getStepInVelocity,
   leadNpcChase,
   NPC_CHASE_SPEED_RATIO,
   NPC_STRAFE_SPEED_RATIO,
@@ -107,6 +109,12 @@ export function performNpcMovement(
       npc.vx = vx;
       npc.vy = vy;
       npc.direction = getCharacterDirection(npc, { x: npc.x + vx, y: npc.y + vy });
+      return;
+    }
+    case "stepIn": {
+      // Along the swing's aim, still facing the way it swings
+      const { angle, distance, elapsed } = movement;
+      ({ x: npc.vx, y: npc.vy } = getStepInVelocity(angle, distance, elapsed));
       return;
     }
     case "knockback": {
@@ -236,4 +244,18 @@ function checkTalking(npc: Npc) {
     const index = npc.talkingIds.indexOf(playerId);
     if (index !== -1) npc.talkingIds.splice(index, 1);
   }
+}
+
+/**
+ * As a melee swing fires, surges the NPC toward where it aimed, up to the target's body (see
+ * `npc-behavior/step-in.ts`). Not for ranged shots, nor a swing a stun called off.
+ */
+export function stepIntoSwing(npc: Npc, target: Point & { bodySize?: number }, angle: number) {
+  const now = npc.world.now();
+  if (npc.state.lastAttack !== now || npc.hasRangedWeapon() || npc.hasBuff("stun")) return;
+  const gap =
+    Math.hypot(target.x - npc.x, target.y - npc.y) - npc.bodySize - (target.bodySize ?? 0);
+  npc.state.stepInAt = now;
+  npc.state.stepInAngle = angle;
+  npc.state.stepInDistance = getStepInDistance(gap);
 }

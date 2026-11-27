@@ -258,7 +258,6 @@ describe("deciding what an npc does", () => {
       direction: "right",
       castAngle: 0,
       // The roll comes up a full blow: the usual windup
-      swing: "heavy",
       windupMs: 500,
     });
   });

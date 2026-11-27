@@ -105,7 +105,7 @@ describe("mods", () => {
 
   it("multiply by tier, the same as buffs by level", () => {
     expect(scaleMod("strong", 3).stats).toEqual({ strength: 6 });
-    expect(scaleMod("venomous", 2).triggers[0]).toMatchObject({ level: 2, chance: 20 });
+    expect(scaleMod("venomous", 2).triggers[0]).toMatchObject({ level: 2, percent: 15 });
   });
 
   it("keep half steps exact, for the stats to round once they add up", () => {

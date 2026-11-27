@@ -85,7 +85,7 @@ describe("describeItem", () => {
 
   it("describes triggers as mods", () => {
     const d = describeItem({
-      triggers: [{ event: "onHurt", type: "buff", name: "evasion", level: 3, chance: 4 }],
+      triggers: [{ event: "onHurt", type: "buff", name: "evasion", level: 3, percent: 25 }],
     });
     expect(d.mods.added.triggers).toMatchObject([
       { name: "evasion", level: 3, chancePercent: 25, when: "hurt" },
@@ -123,13 +123,13 @@ describe("describeItem", () => {
 
 describe("a card's gear", () => {
   it("shows copies of a trigger as one line, their chances added", () => {
-    const venom = { event: "onAttackHit", type: "debuff", name: "poison", level: 2, chance: 20 };
+    const venom = { event: "onAttackHit", type: "debuff", name: "poison", level: 2, percent: 5 };
     const d = describeItem({ triggers: [venom, venom] } as never);
     expect(d.mods.added.triggers).toMatchObject([{ name: "poison", chancePercent: 10 }]);
   });
 
   it("splits a weapon's mods into its own swings' and the global ones", () => {
-    const venom = { event: "onAttackHit", type: "debuff", name: "poison", level: 1, chance: 20 };
+    const venom = { event: "onAttackHit", type: "debuff", name: "poison", level: 1, percent: 5 };
     const sword = { type: "weapon", tier: 1, mods: ["precise", "arcane"], triggers: [venom] };
     const { added } = describeItem(sword as never).mods;
     expect(added.stats).toEqual([{ label: "critChance", value: "3%" }]);

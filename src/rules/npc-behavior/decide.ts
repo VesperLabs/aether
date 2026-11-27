@@ -27,9 +27,9 @@ import type { BehaviorContext, NpcBehavior } from "./behaviors/types";
 import { chooseBehavior } from "./brain";
 import type { ActorBehaviors, BodyHabitat } from "@/content";
 import { isKnockedBack, type KnockbackState, type LungeState } from "@/rules/movement";
+import { decideStepInMovement, type StepInState } from "./step-in";
 import { decideLungeMovement, isLungeSpell, isRecoveringFromLunge } from "./lunge";
 import type { NpcMovement } from "./movement";
-import { decideSwing, type NpcSwing } from "./swings";
 import { landingDrift } from "./landing";
 
 export interface NpcBehaviorInput {
@@ -65,9 +65,12 @@ export interface NpcBehaviorInput {
     windupMs?: number;
   };
   state: LungeState &
-    KnockbackState & {
+    KnockbackState &
+    StepInState & {
       isDead?: boolean;
       isAiming?: boolean;
+      /** Its windup is a spell, not a swing. */
+      isAimingCast?: boolean;
       isAttacking?: boolean;
       npcAttackReady?: boolean;
       lastAttack: number;
@@ -124,7 +127,6 @@ export type NpcAction =
       direction: CardinalDirection;
       castAngle: number;
       windupMs: number;
-      swing?: NpcSwing;
     }
   | { type: "cast"; abilitySlot: string; ability: NpcAbility; windupMs: number };
 
@@ -276,14 +278,12 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
   // One that never fights never had a foe to lose: a hit only marks who struck it, so it stays hurt
   const fights = !isNpcPassive(npc);
   if (lostFoe && fights && !state.ownerId && state.retreatAt === undefined) startReset = true;
-  // Winding up plants its feet; giving up the fight calls it off (an untargeted buff has no fight)
+  // Giving up the fight calls it off (an untargeted buff has no fight)
   const chosen = NPC_BEHAVIORS[behaviorId];
   const leftFight = !chosen.engaged && input.isWindupTargeted !== false;
   cancelWindup = !!state.isAiming && (leftFight || !!chosen.holdsFire);
-  // ...and through the swing that follows, even once the target is dead
-  const holdsWindup = (!!state.isAiming && !cancelWindup) || !!isAttacking;
-  const movement =
-    decideLungeMovement(state, now) ?? (holdsWindup ? { type: "standStill" } : planned);
+  // It keeps moving through its windup and swing; only a lunge or a step-in takes over its feet
+  const movement = decideLungeMovement(state, now) ?? decideStepInMovement(state, now) ?? planned;
   const isRecovering = isRecoveringFromLunge(state, now);
   if (chosen.holdsFire) return result(movement);
 
@@ -304,7 +304,7 @@ export function decideNpcAction(input: NpcBehaviorInput, rng: Rng): NpcDecision 
       type: "attack",
       direction: getSwingFacing(npc, targetPlayer),
       castAngle: Math.atan2(targetPlayer.y - npc.y, targetPlayer.x - npc.x),
-      ...decideSwing(!!weaponBand, warningMs, attackDelay, rng),
+      windupMs: warningMs + attackDelay,
     };
   } else if (
     // intendCastSpell (an attack in progress means the NPC is now aiming)

@@ -96,7 +96,7 @@ export const helmetUniques = {
     name: "Tudwick's Cap",
     flavor: "Tudwick lost his shirt years ago. He kept the hat.",
     texture: "helmet-cap-raccoon",
-    mod: "agile",
+    mod: "elusive",
   },
   bunnyEars: {
     family: "cap",
