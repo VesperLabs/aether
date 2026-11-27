@@ -11,12 +11,17 @@ export const DODGE_DURATION = 180;
 /** How long, in ms from the start of a roll, hits miss: the roll and a moment after it. */
 export const DODGE_INVULNERABLE_MS = 400;
 /** Pixels covered by a full roll in open ground. */
-export const DODGE_DISTANCE = 80;
+export const DODGE_DISTANCE = 32;
 
 export interface DodgeState {
   isDead?: boolean;
   /** When the last roll started, in ms. */
   lastDodge?: number;
+  /**
+   * When the last roll started as the roller saw the world: earlier than `lastDodge` by how far
+   * behind they see others, so a roll timed against a windup on their screen counts on the server.
+   */
+  dodgeSeenAt?: number;
 }
 
 export interface DodgeInput {
@@ -38,9 +43,12 @@ export function isDodging(state: DodgeState, now: number) {
   return elapsed >= 0 && elapsed < DODGE_DURATION;
 }
 
-/** True from the start of a roll until `DODGE_INVULNERABLE_MS` later, while hits can't land. */
+/**
+ * True from the start of a roll until `DODGE_INVULNERABLE_MS` later, while hits can't land. Timed
+ * from when the roller saw it start (`dodgeSeenAt`), so their lag doesn't eat into the window.
+ */
 export function isDodgeInvulnerable(state: DodgeState, now: number) {
-  const elapsed = now - (state.lastDodge ?? -Infinity);
+  const elapsed = now - (state.dodgeSeenAt ?? state.lastDodge ?? -Infinity);
   return elapsed >= 0 && elapsed < DODGE_INVULNERABLE_MS;
 }
 

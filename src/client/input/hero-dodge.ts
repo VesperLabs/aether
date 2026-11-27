@@ -6,7 +6,8 @@ import { updateDodgeCooldown } from "./hero-cooldowns";
 import { getHeadingAngle, isTap } from "./tap-aim";
 
 /**
- * Dodge button (Shift, or the mobile button): a tap rolls the way you're going; holding it shows
+ * Dodge button (Shift, or the mobile button): a tap rolls the way you're going, or steps back
+ * when no direction is held; holding it shows
  * the aimer without rooting the hero, and releasing rolls that way. The hero starts rolling right away; the server checks and may correct.
  */
 export function addDodgeListeners(scene: SceneHud) {
@@ -37,7 +38,14 @@ export function addDodgeListeners(scene: SceneHud) {
     const now = Date.now();
     const sp = hero.stats?.sp ?? 0;
     if (!canDodge({ state: hero.state, sp, isStunned: hero.hasBuff("stun"), now })) return;
-    const angle = isTap(hero.state, now) ? getHeadingAngle(hero) : (hero.state.lastAngle ?? 0);
+    /* A tap with no direction held steps back, away from where it faces */
+    const isTapped = isTap(hero.state, now);
+    const backstep = isTapped && !hero.vx && !hero.vy;
+    const angle = backstep
+      ? getHeadingAngle(hero) + Math.PI
+      : isTapped
+        ? getHeadingAngle(hero)
+        : (hero.state.lastAngle ?? 0);
     hero.state.lastDodge = now;
     hero.state.dodgeAngle = angle;
     /* Keep facing the way you were, so rolling backwards reads as a step back */

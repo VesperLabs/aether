@@ -1,10 +1,12 @@
 import Phaser from "phaser";
+import { theme } from "@/ui/kit/theme";
 import { GAUGE_COLORS, drawFrame, gaugeResolution } from "./gauge-chrome";
 
 /** After a drop, the ghost strip waits this long and then drains to the new value, in ms. */
 const GHOST_DELAY_MS = 250;
 const GHOST_DRAIN_MS = 300;
-const FILL_COLOR = "#ff0000";
+/** The hud's hp bar red. */
+const FILL_COLOR = theme.colors.red[700];
 /** A pale strip behind the fill that drains slowly, showing how much was just lost. */
 const GHOST_COLOR = "#a8945f";
 let nextTextureId = 0;

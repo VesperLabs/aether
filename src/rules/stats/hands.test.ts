@@ -4,7 +4,7 @@ import { calculateStats, getBaseStats, type StatsInput } from "./rules";
 const dagger = {
   type: "weapon",
   stats: { attackDelay: 140, minDamage: 2, maxDamage: 4 },
-  triggers: [{ event: "onAttackHit", type: "buff", name: "haste", level: 1, chance: 5 }],
+  triggers: [{ event: "onAttackHit", type: "buff", name: "haste", level: 1, percent: 20 }],
 };
 const axe = {
   type: "weapon",

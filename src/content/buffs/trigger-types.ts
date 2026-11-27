@@ -13,7 +13,12 @@ type BuffNameOfType<T extends "buff" | "debuff"> = {
 export type TriggerDefinition = {
   readonly event: "onAttackHit" | "onHurt";
   readonly level: number;
-  readonly chance: number;
+  /**
+   * The chance it fires on each event, 0 to 100. On a hit it's for a swing of
+   * `TRIGGER_REFERENCE_SWING_MS`: slower weapons get more per hit and faster ones less, so every
+   * weapon procs about as often per minute.
+   */
+  readonly percent: number;
 } & (
   | { readonly type: "buff"; readonly name: BuffNameOfType<"buff"> }
   | { readonly type: "debuff"; readonly name: BuffNameOfType<"debuff"> }

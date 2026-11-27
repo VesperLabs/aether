@@ -38,6 +38,11 @@ describe("isDodging", () => {
     expect(isDodging({ lastDodge: 1000 }, 1000 + DODGE_DURATION - 1)).toBe(true);
     expect(isDodging({ lastDodge: 1000 }, 1000 + DODGE_DURATION)).toBe(false);
   });
+  it("is timed from when the roller saw it start, so their lag doesn't shorten it", () => {
+    const state = { lastDodge: 1100, dodgeSeenAt: 1000 };
+    expect(isDodgeInvulnerable(state, 1050)).toBe(true);
+    expect(isDodgeInvulnerable(state, 1000 + DODGE_INVULNERABLE_MS)).toBe(false);
+  });
   it("is false before any roll", () => {
     expect(isDodging({}, 1000)).toBe(false);
   });

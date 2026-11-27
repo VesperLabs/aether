@@ -31,8 +31,8 @@ import {
   type NpcDecision,
   type ThreatTable,
 } from "@/rules/npc-behavior";
-import { performNpcMovement } from "./npc-movement";
-import { aimNpcShot, aimNpcSwing, getSwingPower } from "@/rules/npc-behavior";
+import { performNpcMovement, stepIntoSwing } from "./npc-movement";
+import { aimNpcShot, aimNpcSwing } from "@/rules/npc-behavior";
 import {
   createRng,
   createTimers,
@@ -320,7 +320,7 @@ export class Npc extends Character {
     targetPlayer: ServerCharacter | undefined,
   ) {
     const { ability, abilitySlot } = action;
-    this.state.isAiming = true;
+    Object.assign(this.state, { isAiming: true, isAimingCast: true });
     if (targetPlayer) this.faceTarget(targetPlayer);
     emitNpcWindup(this, action, targetPlayer?.id);
     afterWindup(this, action.windupMs, targetPlayer?.id, () => {
@@ -337,7 +337,6 @@ export class Npc extends Character {
     if (state.isAttacking || state?.isDead) return;
     if (!targetPlayer || targetPlayer?.state?.isDead) return;
 
-    // decides what hand ot hit with
     const count = this.action === "attack_right" && this.hasWeaponLeft() ? 2 : 1;
     // Set state to attacking and record attack time
     this.state.isAttacking = true;
@@ -379,10 +378,9 @@ export class Npc extends Character {
   ) {
     if (!targetPlayer) return;
     this.direction = action.direction;
-    this.state.isAiming = true;
+    Object.assign(this.state, { isAiming: true, isAimingCast: false });
 
     this.state.lastAngle = action.castAngle;
-    this.state.swingPower = getSwingPower(action.swing);
 
     emitNpcWindup(this, action, targetPlayer.id);
     // Swings land a beat ahead of where the target is now, so circling it doesn't leave it facing off
@@ -391,6 +389,7 @@ export class Npc extends Character {
       this.faceTarget(target);
       const castAngle = Math.atan2(target.y - this.y, target.x - this.x);
       this.doAttack({ target, direction: `${this.direction}`, castAngle });
+      stepIntoSwing(this, { ...target, bodySize: targetPlayer.bodySize }, castAngle);
       this.state.isAiming = false;
     });
   }

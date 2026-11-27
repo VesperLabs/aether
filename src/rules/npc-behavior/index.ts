@@ -38,5 +38,5 @@ export { addThreat, decayThreat, pickThreatTarget, pruneThreat } from "./threat"
 export type { ThreatTable } from "./threat";
 export { subscribeThreat } from "./system";
 export { aimPounce } from "./pounce";
-export { getSwingPower } from "./swings";
+export { getStepInDistance, getStepInVelocity } from "./step-in";
 export type { NpcNextSwing } from "./hand-reach";

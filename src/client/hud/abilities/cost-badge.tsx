@@ -7,10 +7,10 @@ export interface ResourceCosts {
   sp?: number;
 }
 
-/** Each cost is coloured like its bar in the hero HUD. */
+/** Each cost is coloured like its bar in the hero HUD; mana a shade lighter, to read on the button. */
 const COST_COLORS = [
   ["hp", "red.500"],
-  ["mp", resourceToken("mp")],
+  ["mp", "blue.400"],
   ["sp", resourceToken("sp")],
 ] as const;
 

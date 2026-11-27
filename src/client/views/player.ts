@@ -21,6 +21,7 @@ import {
 import { fadeStealth } from "./player-stealth";
 import { CHARACTER_DIED } from "./end-on-death";
 import { applyDodge } from "./player-dodge";
+import { fadeBar } from "./overhead-bars";
 import { applyAppearance, createSpriteLayers } from "./player-layers";
 import { applyHit, type HitEffect } from "./player-hit";
 import { toTint } from "./tint";
@@ -81,6 +82,7 @@ export class Player extends Character {
   declare corpse: Sprite;
   /** The body, gear, hands, name and bars: everything that moves together when the body is nudged. */
   declare rig: Phaser.GameObjects.Container;
+  declare overheadBars: Phaser.GameObjects.Container;
   declare layerOrderKey?: string; // the direction, shield and drawn bow the rig was last stacked for
   declare talkMenu: Sprite;
   /** The attack frame a cast holds, and until when. A pose only: it locks nothing, unlike a swing. */
@@ -325,8 +327,11 @@ export class Player extends Character {
     const shouldShow = !this.checkOutOfCombat() || isEngaged || state?.isHovering;
     /* A windup brings out the hp bar with its cast bar underneath */
     const showsWindup = this.showsWindup() && !state?.isDead;
-    this.hpBar.setVisible((shouldShow || showsWindup) && !state?.isDead);
-    this.castBar.draw(showsWindup);
+    /* They fade out rather than pop away; the cast bar keeps its last fill while it fades */
+    const { delta } = this.scene.game.loop;
+    fadeBar(this.hpBar, (shouldShow || showsWindup) && !state?.isDead, delta);
+    if (showsWindup) this.castBar.draw(true);
+    fadeBar(this.castBar, showsWindup, delta);
     /* Every frame, so it follows changes like a mob becoming a pet */
     this.userName.setVisible(!this.hidesName() || shouldShow);
   }

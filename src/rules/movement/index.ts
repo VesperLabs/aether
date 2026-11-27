@@ -36,12 +36,12 @@ export {
 } from "./move-validation";
 export {
   DODGE_COOLDOWN,
-  DODGE_DISTANCE,
   DODGE_DURATION,
   DODGE_SP_COST,
   canDodge,
   getDodgeReadiness,
   getDodgeVelocity,
+  DODGE_DISTANCE,
   isDodgeInvulnerable,
   isDodging,
 } from "./dodge";

@@ -330,7 +330,7 @@ describe("killing blows", () => {
     const { world, player } = await login("warrior");
     const { mob } = weakMobNear(world, player, { x: 0, y: 0 });
     player.stats.triggers = [
-      { event: "onAttackHit", type: "debuff", name: "slow", level: 1, chance: 1 },
+      { event: "onAttackHit", type: "debuff", name: "slow", level: 1, percent: 100 },
     ];
     const hits = applyAttackDamage(player, mob, { buffs: { stun: 1 } } as Anything);
     expect(mob.state.isDead).toBe(true);

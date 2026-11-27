@@ -79,6 +79,10 @@ export interface CharacterState {
   lungeAngle?: number;
   /** How long that lunge lasts, in ms. */
   lungeMs?: number;
+  /** NPC only: when its last step-in started, which way and how far (see `npc-behavior/step-in.ts`). */
+  stepInAt?: number;
+  stepInAngle?: number;
+  stepInDistance?: number;
   /** When the last knockback started (see `rules/movement/knockback.ts`). */
   knockbackAt?: number;
   /** Which way that knockback pushes, in radians. */
@@ -88,6 +92,8 @@ export interface CharacterState {
   activeSets: string[];
   hasBuffChanges?: boolean;
   isAiming?: boolean;
+  /** An NPC's windup is a spell, not a swing: it roots, as a casting player does. */
+  isAimingCast?: boolean;
   isHoldingAttack?: boolean;
   /** The ball held out to throw (its base), so every client draws it in the hand. */
   aimingBall?: string | null;

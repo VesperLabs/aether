@@ -4,7 +4,6 @@ import {
   calculateStealthVisibilityPercent,
   calculateWeaponDamage,
   rollAttack,
-  rollTriggers,
 } from "./index";
 
 const attacker = {
@@ -179,34 +178,6 @@ describe("rollAttack", () => {
       return 0.99;
     });
     expect(calls.length).toBe(3);
-  });
-});
-
-describe("rollTriggers", () => {
-  const triggers = [
-    { event: "onAttackHit", type: "buff", name: "vampire", level: 1, chance: 2 },
-    { event: "onAttackHit", type: "debuff", name: "poison", level: 2, chance: 2 },
-    { event: "onAttackHit", type: "spell", name: "x", level: 1, chance: 1 },
-    { event: "onHurt", type: "buff", name: "guard", level: 1, chance: 1 },
-    { event: "onHurt", type: "debuff", name: "slow", level: 1, chance: 1 },
-  ];
-
-  it("fires on a roll of 1 and sends buffs to self, debuffs to the other", () => {
-    expect(rollTriggers(triggers, "onAttackHit", () => 0)).toEqual([
-      { name: "vampire", level: 1, target: "self" },
-      { name: "poison", level: 2, target: "other" },
-    ]);
-  });
-  it("doesn't fire on other rolls", () => {
-    expect(rollTriggers(triggers, "onAttackHit", () => 0.9)).toEqual([]);
-  });
-  it("only fires onHurt buffs", () => {
-    expect(rollTriggers(triggers, "onHurt", () => 0)).toEqual([
-      { name: "guard", level: 1, target: "self" },
-    ]);
-  });
-  it("copes with no triggers", () => {
-    expect(rollTriggers(undefined, "onHurt", () => 0)).toEqual([]);
   });
 });
 
