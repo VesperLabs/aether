@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.70.0](https://github.com/VesperLabs/aether/compare/v0.69.0...v0.70.0) (2026-11-27)
+
+
+### Features
+
+* storms with rain, lightning and thunder ([#435](https://github.com/VesperLabs/aether/issues/435)) ([1870605](https://github.com/VesperLabs/aether/commit/1870605673c59d331f8d2b07335846c321f86e78))
+
 ## [0.69.0](https://github.com/VesperLabs/aether/compare/v0.68.0...v0.69.0) (2026-11-26)
 
 
