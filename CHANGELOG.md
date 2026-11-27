@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.71.0](https://github.com/VesperLabs/aether/compare/v0.70.0...v0.71.0) (2026-11-27)
+
+
+### Features
+
+* combat feel pass for mobs, dodge, bars and procs ([#437](https://github.com/VesperLabs/aether/issues/437)) ([5d38a25](https://github.com/VesperLabs/aether/commit/5d38a252ce2ee8f439125a1cad1bf0e680a9efac))
+
 ## [0.70.0](https://github.com/VesperLabs/aether/compare/v0.69.0...v0.70.0) (2026-11-27)
 
 
