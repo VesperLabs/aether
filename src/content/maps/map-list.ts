@@ -56,7 +56,7 @@ export const mapList = [
     name: "foothills",
     music: "./assets/music/our-mountain.mp3",
     json: "./assets/tilemaps/foothills.json",
-    seasons: "cycle",
+    seasons: "winter",
     isOutdoors: true,
   },
   {

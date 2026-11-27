@@ -46,7 +46,7 @@ export const actors3 = {
     baseStats: { level: 1 },
     state: { noWorldDrops: true, noExp: true },
     behaviors: { fight: false, wander: { radius: 64 }, skittish: { speed: 1.3 } },
-    active: { seasons: ["spring", "summer"], hours: [6, 20] },
+    active: { seasons: ["spring", "summer"], hours: [6, 20], fairWeather: true },
   },
   sparrow: {
     charClass: "rogue",

@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { getMapByName } from "@/content";
-import { CLOUD_SHAPES, cloudsOver, type Weather } from "@/rules/weather";
+import { mapSeason } from "@/rules/seasons";
+import { CLOUD_SHAPES, cloudsOver, skyIn, type LocalSky, type Weather } from "@/rules/weather";
 import { cloudRoll, drawCloudArt } from "./cloud-art";
 import type { SceneMain } from "./main-scene";
 import { worldNow } from "./world-clock";
@@ -34,8 +35,13 @@ export function setWeather(next: Weather) {
   weather = next;
 }
 
-/** The sky the server last sent. */
-export const currentSky = () => weather.sky;
+/** The wind the server last sent: which way, radians, and how fast, px/s. */
+export const currentWind = () => ({ angle: weather.windAngle, speed: weather.windSpeed });
+
+/** The sky over the scene's map: the world's, as its season allows (showers and storms snow only in winter). */
+export function skyOver(scene: SceneMain): LocalSky {
+  return skyIn(weather.sky, mapSeason(getMapByName(scene.roomName)?.seasons, scene.season));
+}
 
 const keyOf = (shape: number) => `cloud-shape-${shape}`;
 
@@ -98,7 +104,8 @@ export function updateClouds(scene: SceneMain, delta: number) {
     layer?.setVisible(false);
     return;
   }
-  const alpha = weather.sky === "cloudy" ? CLOUDY_ALPHA : 0;
+  /* Only a cloudy sky has drifting clouds; showers and storms are an even overcast (see `overcast`) */
+  const alpha = skyOver(scene).sky === "cloudy" ? CLOUDY_ALPHA : 0;
   /* A new map opens under the sky it has, already there */
   if (shownMap !== scene.roomName) {
     shownMap = scene.roomName;

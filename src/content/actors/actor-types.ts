@@ -63,6 +63,8 @@ export interface ActiveTimes {
   readonly seasons?: readonly Season[];
   /** From and to hour of the day, 0 to 24; `[20, 6]` wraps past midnight. */
   readonly hours?: readonly [from: number, to: number];
+  /** Shelters from showers and storms: away while anything falls on its map. */
+  readonly fairWeather?: boolean;
 }
 
 /**

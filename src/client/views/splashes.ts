@@ -6,6 +6,33 @@ const RIPPLE_COLOR = 0xd8f0ff;
 const RIPPLE_DARK = 0x6fb4e8;
 
 /**
+ * One ripple ring at (x, y) into `g`, `rx` wide and `ry` tall, in `steps` single pixels like the
+ * waterline ring: lit along the front, darker at the back.
+ */
+export function drawRippleRing(
+  g: Phaser.GameObjects.Graphics,
+  x: number,
+  y: number,
+  rx: number,
+  ry: number,
+  alpha: number,
+  steps: number,
+) {
+  g.fillStyle(RIPPLE_COLOR, alpha);
+  for (let i = 0; i < steps; i++) {
+    const angle = (Math.PI * 2 * i) / steps;
+    if (Math.sin(angle) <= 0) continue;
+    g.fillRect(x + Math.round(Math.cos(angle) * rx), y + Math.round(Math.sin(angle) * ry), 1, 1);
+  }
+  g.fillStyle(RIPPLE_DARK, alpha * 0.7);
+  for (let i = 0; i < steps; i++) {
+    const angle = (Math.PI * 2 * i) / steps;
+    if (Math.sin(angle) > 0) continue;
+    g.fillRect(x + Math.round(Math.cos(angle) * rx), y + Math.round(Math.sin(angle) * ry), 1, 1);
+  }
+}
+
+/**
  * A ring on the water that spreads out from (x, y) and fades: a step in the shallows or a wading
  * body's wake. Flat, like the water: `flatness` times as wide as it is tall.
  */
@@ -28,14 +55,7 @@ export function spawnRipple(
       const rx = Math.round(Phaser.Math.Linear(from, to, t));
       const ry = Math.max(1, Math.round(rx / flatness));
       ring.clear();
-      /* In single pixels, like the waterline ring: lit along the front, darker at the back */
-      const steps = Math.max(8, rx * 6);
-      for (let i = 0; i < steps; i++) {
-        const angle = (Math.PI * 2 * i) / steps;
-        const front = Math.sin(angle) > 0;
-        ring.fillStyle(front ? RIPPLE_COLOR : RIPPLE_DARK, alpha * (1 - t) * (front ? 1 : 0.7));
-        ring.fillRect(Math.round(Math.cos(angle) * rx), Math.round(Math.sin(angle) * ry), 1, 1);
-      }
+      drawRippleRing(ring, 0, 0, rx, ry, alpha * (1 - t), Math.max(8, rx * 6));
     },
     onComplete: () => ring.destroy(),
   });

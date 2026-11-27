@@ -5,6 +5,10 @@ import {
   separationRadius,
   moveBodyThroughMap,
   nudgeBodyThroughMap,
+  GROUND,
+  ICE,
+  isOnIce,
+  slideVelocity,
   terrainSpeedScale,
 } from "@/rules/movement";
 import { groupByRoom, type Frame, type System } from "@/rules/world";
@@ -23,14 +27,37 @@ import { keepActorsToTheirTimes } from "./npc-away";
 /** A long stall (debugger, GC) must not teleport things across the map. */
 const MAX_STEP_MS = 100;
 
-/** Moves NPCs along their velocity, stopped by the walls and the map edge. */
+/** How each NPC is actually moving, which on ice lags behind the velocity it wants. */
+const slides = new WeakMap<object, { x: number; y: number }>();
+
+/**
+ * Moves NPCs along their velocity, stopped by the walls and the map edge. On ice they carry on
+ * the way they were going, turning and stopping slowly (fliers don't touch it).
+ */
 const moveNpcs: System<ServerWorld> = (world, { delta }) => {
   const seconds = Math.min(delta, MAX_STEP_MS) / 1000;
   for (const npc of Object.values(world.npcs)) {
-    if (!npc.room || npc.state?.isDead) continue;
+    if (!npc.room || npc.state?.isDead) {
+      slides.delete(npc);
+      continue;
+    }
+    const { grid } = npc.room.map;
     /* Wading slows it the same way it slows players */
-    const slowed = seconds * terrainSpeedScale(npc.room.map.grid, npc, npc.habitat);
-    moveBodyThroughMap(npc.movementMap(), npc, slowed, npc.bodySize);
+    const slowed = seconds * terrainSpeedScale(grid, npc, npc.habitat);
+    const surface = npc.habitat !== "air" && isOnIce(grid, npc.x, npc.y) ? ICE : GROUND;
+    const desired = { x: npc.vx ?? 0, y: npc.vy ?? 0 };
+    const slide = slideVelocity(
+      slides.get(npc) ?? desired,
+      desired,
+      seconds,
+      surface,
+      npc.stats.walkSpeed,
+    );
+    slides.set(npc, slide);
+    const body = { x: npc.x, y: npc.y, vx: slide.x, vy: slide.y };
+    moveBodyThroughMap(npc.movementMap(), body, slowed, npc.bodySize);
+    npc.x = body.x;
+    npc.y = body.y;
   }
 };
 

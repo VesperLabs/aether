@@ -16,6 +16,10 @@ import { checkProximities } from "./proximity";
 import { createDaylight, updateDaylight } from "./daylight";
 import { updateClouds } from "./clouds";
 import { updateFog } from "./fog";
+import { updateOvercast } from "./overcast";
+import { updateStormStrength } from "./storm-strength";
+import { updatePrecipitation } from "./precipitation";
+import { updateRainSplashes } from "./rain-splashes";
 import { animateMinimap, createMinimap, updateMinimap } from "./minimap";
 
 /** A remote player close enough to the hero to video chat with. */
@@ -134,6 +138,10 @@ export class SceneMain extends Phaser.Scene {
     updateDaylight(this);
     updateClouds(this, delta);
     updateFog(this, delta);
+    updateStormStrength(this, delta);
+    updateOvercast(this, delta);
+    updatePrecipitation(this, delta);
+    updateRainSplashes(this, delta);
 
     if (poses) {
       for (const [id, pose] of poses.npcs) {

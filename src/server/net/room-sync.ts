@@ -22,7 +22,7 @@ export function getRoomState(world: ServerWorld, roomName: string, viewer: strin
     effects: roomEffects(world, roomName),
     season: seasonAt(world.now(), world.calendar),
     hour: hourAt(world.now(), world.calendar),
-    weather: weatherAt(world.now(), world.weather),
+    weather: weatherAt(world.now(), world.weather, seasonAt(world.now(), world.calendar)),
     now: world.now(),
   };
 }
@@ -34,7 +34,7 @@ export function getPublicRoomState(world: ServerWorld, roomName: string) {
     effects: roomEffects(world, roomName),
     season: seasonAt(world.now(), world.calendar),
     hour: hourAt(world.now(), world.calendar),
-    weather: weatherAt(world.now(), world.weather),
+    weather: weatherAt(world.now(), world.weather, seasonAt(world.now(), world.calendar)),
     now: world.now(),
   };
 }

@@ -45,14 +45,16 @@ const weather: Cheat = (ctx, _player, [name], reply) => {
   const { world } = ctx;
   if (!name) {
     const pinned = world.weather.pinnedSky ? " (pinned)" : "";
-    return reply.info(`The sky is ${weatherAt(world.now(), world.weather).sky}${pinned}.`);
+    return reply.info(
+      `The sky is ${weatherAt(world.now(), world.weather, seasonAt(world.now(), world.calendar)).sky}${pinned}.`,
+    );
   }
   const real = name.toLowerCase() === "real";
   const chosen = real ? undefined : findSky(name);
   if (!real && !chosen) return reply.error(`Usage: /weather [${SKIES.join("|")}|real]`);
   /* The tick's weather announcement tells every client, this player included */
   pinSky(world.weather, chosen);
-  const now = weatherAt(world.now(), world.weather).sky;
+  const now = weatherAt(world.now(), world.weather, seasonAt(world.now(), world.calendar)).sky;
   reply.info(`The sky is now ${now}${real ? ", as forecast" : ""}.`);
 };
 

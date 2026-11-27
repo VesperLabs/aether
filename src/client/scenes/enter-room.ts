@@ -15,6 +15,7 @@ import {
 import { announceSeason, setDayClock, setWorldNow } from "./world-clock";
 import type { SceneMain } from "./main-scene";
 import { startEffect } from "@/client/net/effects";
+import { replayNpcBacklog, startNpcBacklog } from "@/client/net/npc-socket";
 import {
   addLoot,
   addNpc,
@@ -67,16 +68,30 @@ export function enterRoom(
   if (weather) setWeather(weather);
   if (now !== undefined) setWorldNow(now);
   const built = changeMap(scene, roomName);
+  /* Who left or came back while it loaded, after its snapshot was taken */
+  replayNpcBacklog();
   /* The rest of the art, behind this room's: by the next door it has usually all arrived */
   prefetchBaseTilesets(scene);
   prefetchSeason(scene, scene.season);
   return built;
 }
 
+/** Counts room entries, so only the latest one waiting on its art is ever built. */
+let latestEntry = 0;
+
+/**
+ * Drops any room still waiting on its art: a dropped connection (a server restart) makes its
+ * snapshot stale, and building it later would leave characters the new server never moves.
+ */
+export function cancelPendingRooms() {
+  latestEntry++;
+}
+
 /**
  * Runs `enter` once the room's tilesets have loaded in the season it shows, so it is built in that
  * season's art and never swaps under the player. Boot loads no tileset art, so the first room waits
- * for its own; later ones have usually arrived in the background.
+ * for its own; later ones have usually arrived in the background. Only the latest entry runs: one
+ * that finishes loading after a newer one (slow seasonal art) is stale and dropped.
  */
 export function whenRoomLoaded(
   scene: SceneMain,
@@ -84,8 +99,12 @@ export function whenRoomLoaded(
   worldSeason: Season,
   enter: () => void,
 ) {
+  const entry = ++latestEntry;
+  startNpcBacklog();
   const season = mapSeason(getMapByName(roomName)?.seasons, worldSeason);
   const keys = roomTilesetKeys(scene, roomName);
   const seasonal = season === "summer" ? [] : keys.map((key) => `${key}-${season}`);
-  whenTexturesLoaded(scene, [...keys, ...seasonal], enter);
+  whenTexturesLoaded(scene, [...keys, ...seasonal], () => {
+    if (entry === latestEntry) enter();
+  });
 }

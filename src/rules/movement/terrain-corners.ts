@@ -10,6 +10,9 @@ const TERRAIN_SET = "Terrains";
 /** Terrains a body wades or swims in. Frozen water is walked on, like ice. */
 const WATER_TERRAINS = new Set(["Water", "Deep Water"]);
 
+/** Terrains a body slides on. */
+const ICE_TERRAINS = new Set(["Ice"]);
+
 /** Is this painted terrain water? */
 export const isWaterTerrain = (terrain: string | undefined) =>
   terrain !== undefined && WATER_TERRAINS.has(terrain);
@@ -93,6 +96,16 @@ export function readWaterTiles(map: TerrainSource): boolean[][] {
   const cornersAt = readCorners(map);
   return Array.from({ length: map.height }, (_, y) =>
     Array.from({ length: map.width }, (_, x) => cornersAt(x, y)?.every(isWaterTerrain) === true),
+  );
+}
+
+/**
+ * `ice[qy][qx]`: is this quarter tile painted ice? Quarters as in `readTerrainQuarters`, so an ice
+ * patch's edge tiles are slippery on their icy side and give grip on the snowy one.
+ */
+export function readIceQuarters(map: TerrainSource): boolean[][] {
+  return readTerrainQuarters(map).map((row) =>
+    row.map((terrain) => terrain !== undefined && ICE_TERRAINS.has(terrain)),
   );
 }
 

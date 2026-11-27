@@ -1,5 +1,6 @@
 // @vitest-environment node
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { getMapByName } from "@/content";
 import { pinSeason, setHour } from "@/rules/seasons";
 import { spawnNpc } from "../game-world";
 import { startTestServer, type TestServer } from "./test-server";
@@ -15,8 +16,11 @@ beforeAll(async () => {
 
 afterAll(() => server?.close());
 
+/** Butterflies on maps that follow the world's seasons (one pinned to winter keeps them away). */
 const butterflies = () =>
-  Object.values<Anything>(server.world.npcs).filter((npc) => npc.name === "butterfly");
+  Object.values<Anything>(server.world.npcs).filter(
+    (npc) => npc.name === "butterfly" && getMapByName(npc.room.name)?.seasons !== "winter",
+  );
 
 async function at(socket: Anything, season: "spring" | "summer" | "fall" | "winter", hour: number) {
   const { world } = server;
